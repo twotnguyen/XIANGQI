@@ -7,6 +7,7 @@ import { Register } from '../features/auth/Register.js';
 import { Callback } from '../features/auth/Callback.js';
 import { ResetPassword } from '../features/auth/ResetPassword.js';
 import { Onboarding } from '../features/auth/Onboarding.js';
+import { Friends } from '../features/friends/Friends.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
 function Home() {
@@ -70,6 +71,7 @@ export function App() {
         <Route path="/auth/callback" element={<Callback />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/friends" element={<Friends />} />
         <Route path="/dev/board" element={<DevBoard />} />
       </Routes>
     </BrowserRouter>
