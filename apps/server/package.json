@@ -12,11 +12,12 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
-    "@xiangqi/contracts": "workspace:*",
-    "@xiangqi/game-rules": "workspace:*",
     "@xiangqi/ai": "workspace:*",
     "@xiangqi/ai-worker": "workspace:*",
+    "@xiangqi/contracts": "workspace:*",
+    "@xiangqi/game-rules": "workspace:*",
     "fastify": "^5.3.0",
+    "livekit-server-sdk": "^2.19.0",
     "pg": "^8.23.0",
     "zod": "^4.6.2"
   },

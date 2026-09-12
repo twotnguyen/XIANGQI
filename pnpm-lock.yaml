@@ -72,6 +72,9 @@ importers:
       fastify:
         specifier: ^5.3.0
         version: 5.12.4
+      livekit-server-sdk:
+        specifier: ^2.19.0
+        version: 2.19.0
       pg:
         specifier: ^8.23.0
         version: 8.23.0
