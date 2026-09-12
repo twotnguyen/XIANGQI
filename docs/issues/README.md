@@ -1,6 +1,6 @@
 # Mục lục 32 issue triển khai
 
-Đọc [START-HERE](../handoff/START-HERE.md). Tất cả issue hiện TODO vì task này chỉ lập kế hoạch. Các số dependency dưới đây là bắt buộc. Dependency LOCAL_DONE đủ cho consumer local nếu chỉ thiếu provider smoke không liên quan; xem định nghĩa trạng thái trong START-HERE. Mốc online/final vẫn cần tất cả gate external bắt buộc. Mỗi issue có đường dẫn file/module, hợp đồng, bước làm và test cụ thể.
+Đọc [START-HERE](../handoff/START-HERE.md). Tất cả issue hiện TODO vì task này chỉ lập kế hoạch. Các số dependency dưới đây là bắt buộc, và PR dependency phải đã merge vào main trước khi consumer bắt đầu. Dependency LOCAL_DONE đủ cho consumer local nếu chỉ thiếu provider smoke không liên quan; xem định nghĩa trạng thái trong START-HERE. Mốc online/final vẫn cần tất cả gate external bắt buộc. Mỗi issue có đường dẫn file/module, hợp đồng, bước làm và test cụ thể.
 
 ## Thứ tự đề xuất
 

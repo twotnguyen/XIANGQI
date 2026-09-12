@@ -58,3 +58,9 @@ Cập nhật đoạn này với thông tin thật, không chỉ ghi “đang là
 Mỗi docs/test-reports/ISSUE-NNN.md ghi: trạng thái, commit/diff, môi trường, thay đổi, lệnh/exit/count, acceptance case→test/artifact, limitation, next action. Nếu có manual/provider test chưa chạy phải chỉ rõ và giữ trạng thái phù hợp.
 
 LOCAL_DONE cho phép tiến hành consumer local không phụ thuộc gate external còn thiếu; DONE yêu cầu mọi acceptance của issue, gồm provider/manual được giao. Registry hiện TODO toàn bộ.
+
+## Theo dõi Git/GitHub
+
+Người dùng đã ủy quyền vòng Git tự động theo [GIT-WORKFLOW](GIT-WORKFLOW.md). Registry issue phía trên là trạng thái kỹ thuật; mỗi issue khi bắt đầu thêm branch/PR/evidence vào cột cuối. Consumer chỉ bắt đầu khi PR dependency trên GitHub đã MERGED và gate kỹ thuật phù hợp. Không giả định DONE nghĩa đã merge.
+
+Thay đổi chuẩn bị hiện tại: nhánh `docs/git-workflow`; chưa triển khai issue ứng dụng nào. URL PR được bổ sung sau khi tạo. Trạng thái tích hợp luôn tra GitHub, không dự đoán trước merge.
