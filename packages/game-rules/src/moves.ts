@@ -44,7 +44,10 @@ function pseudoMoves(board: Board, from: Square, side: Side): Square[] {
   const add = (sq: Square) => {
     if (!inBounds(sq)) return;
     const target = board[squareToIndex(sq)];
-    if (target && target.side === side) return; // can't capture own piece
+    if (target) {
+      if (target.side === side) return; // can't capture own piece
+      if (target.type === 'GENERAL') return; // cannot capture general as a normal move
+    }
     targets.push(sq);
   };
 
@@ -99,7 +102,7 @@ function pseudoMoves(board: Board, from: Square, side: Side): Square[] {
           if (!inBounds(sq)) break;
           const target = board[squareToIndex(sq)];
           if (target) {
-            if (target.side !== side) targets.push(sq); // capture
+            if (target.side !== side && target.type !== 'GENERAL') targets.push(sq);
             break;
           }
           targets.push(sq);
@@ -123,7 +126,7 @@ function pseudoMoves(board: Board, from: Square, side: Side): Square[] {
           } else {
             // After screen: can only capture, not move to empty
             if (target) {
-              if (target.side !== side) targets.push(sq);
+              if (target.side !== side && target.type !== 'GENERAL') targets.push(sq);
               break;
             }
           }
