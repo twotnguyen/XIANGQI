@@ -19,6 +19,10 @@ const LogoutBodySchema = z.object({
   scope: z.enum(['CURRENT', 'ALL']).default('CURRENT'),
 }).strict();
 
+const UpdateProfileSchema = z.object({
+  displayName: z.string().min(1).max(32),
+}).strict();
+
 const CompleteProfileSchema = z.object({
   username: z.string().regex(/^[a-z0-9_]{3,24}$/),
   displayName: z.string().min(1).max(32).optional(),
@@ -190,6 +194,57 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
                 }
               : null,
             onboardingRequired: !profile?.username,
+          },
+          requestId: request.id,
+        });
+      } finally {
+        client.release();
+      }
+    },
+  );
+
+  // PATCH /api/v1/me (update displayName only)
+  app.patch(
+    '/api/v1/me',
+    { preHandler: [requireAuth] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const parsed = UpdateProfileSchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.status(400).send({
+          ok: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Tên hiển thị phải từ 1-32 ký tự' },
+          requestId: request.id,
+        });
+      }
+
+      const userId = request.user!.id;
+      const pool = getPool();
+      const client = await pool.connect();
+
+      try {
+        const res = await client.query(
+          `UPDATE public.profiles
+           SET display_name = $1, updated_at = now()
+           WHERE id = $2
+           RETURNING id, username, display_name`,
+          [parsed.data.displayName, userId],
+        );
+
+        if (res.rowCount === 0) {
+          return reply.status(404).send({
+            ok: false,
+            error: { code: 'NOT_FOUND', message: 'Hồ sơ không tồn tại' },
+            requestId: request.id,
+          });
+        }
+
+        const profile = res.rows[0];
+        return reply.send({
+          ok: true,
+          data: {
+            id: profile.id,
+            username: profile.username,
+            displayName: profile.display_name,
           },
           requestId: request.id,
         });
