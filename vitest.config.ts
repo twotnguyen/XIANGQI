@@ -11,6 +11,7 @@ export default defineConfig({
       '@xiangqi/contracts': path.resolve(__dirname, 'packages/contracts/src'),
       '@xiangqi/game-rules': path.resolve(__dirname, 'packages/game-rules/src'),
       '@xiangqi/ai': path.resolve(__dirname, 'packages/ai/src'),
+      '@xiangqi/ai-worker': path.resolve(__dirname, 'apps/ai-worker/src'),
     },
   },
 });
