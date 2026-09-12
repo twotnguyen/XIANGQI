@@ -1,0 +1,273 @@
+[
+  {
+    "id": "corpus-01-initial",
+    "description": "Thế cờ khởi đầu chuẩn",
+    "category": "OPENING",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rr1", "type": "CHARIOT", "side": "RED", "x": 0, "y": 0 },
+      { "id": "rn1", "type": "HORSE", "side": "RED", "x": 1, "y": 0 },
+      { "id": "rb1", "type": "ELEPHANT", "side": "RED", "x": 2, "y": 0 },
+      { "id": "ra1", "type": "ADVISOR", "side": "RED", "x": 3, "y": 0 },
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "ra2", "type": "ADVISOR", "side": "RED", "x": 5, "y": 0 },
+      { "id": "rb2", "type": "ELEPHANT", "side": "RED", "x": 6, "y": 0 },
+      { "id": "rn2", "type": "HORSE", "side": "RED", "x": 7, "y": 0 },
+      { "id": "rr2", "type": "CHARIOT", "side": "RED", "x": 8, "y": 0 },
+      { "id": "rc1", "type": "CANNON", "side": "RED", "x": 1, "y": 2 },
+      { "id": "rc2", "type": "CANNON", "side": "RED", "x": 7, "y": 2 },
+      { "id": "rp1", "type": "SOLDIER", "side": "RED", "x": 0, "y": 3 },
+      { "id": "rp2", "type": "SOLDIER", "side": "RED", "x": 2, "y": 3 },
+      { "id": "rp3", "type": "SOLDIER", "side": "RED", "x": 4, "y": 3 },
+      { "id": "rp4", "type": "SOLDIER", "side": "RED", "x": 6, "y": 3 },
+      { "id": "rp5", "type": "SOLDIER", "side": "RED", "x": 8, "y": 3 },
+      { "id": "br1", "type": "CHARIOT", "side": "BLACK", "x": 0, "y": 9 },
+      { "id": "bn1", "type": "HORSE", "side": "BLACK", "x": 1, "y": 9 },
+      { "id": "bb1", "type": "ELEPHANT", "side": "BLACK", "x": 2, "y": 9 },
+      { "id": "ba1", "type": "ADVISOR", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "ba2", "type": "ADVISOR", "side": "BLACK", "x": 5, "y": 9 },
+      { "id": "bb2", "type": "ELEPHANT", "side": "BLACK", "x": 6, "y": 9 },
+      { "id": "bn2", "type": "HORSE", "side": "BLACK", "x": 7, "y": 9 },
+      { "id": "br2", "type": "CHARIOT", "side": "BLACK", "x": 8, "y": 9 },
+      { "id": "bc1", "type": "CANNON", "side": "BLACK", "x": 1, "y": 7 },
+      { "id": "bc2", "type": "CANNON", "side": "BLACK", "x": 7, "y": 7 },
+      { "id": "bp1", "type": "SOLDIER", "side": "BLACK", "x": 0, "y": 6 },
+      { "id": "bp2", "type": "SOLDIER", "side": "BLACK", "x": 2, "y": 6 },
+      { "id": "bp3", "type": "SOLDIER", "side": "BLACK", "x": 4, "y": 6 },
+      { "id": "bp4", "type": "SOLDIER", "side": "BLACK", "x": 6, "y": 6 },
+      { "id": "bp5", "type": "SOLDIER", "side": "BLACK", "x": 8, "y": 6 }
+    ]
+  },
+  {
+    "id": "corpus-02-mate-in-1",
+    "description": "Chiếu hết 1 nước bằng Xe đâm đáy",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 0, "y": 4 }
+    ]
+  },
+  {
+    "id": "corpus-03-cannon-screen",
+    "description": "Pháo gián tiếp chiếu qua ngòi",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "ba", "type": "ADVISOR", "side": "BLACK", "x": 4, "y": 8 },
+      { "id": "rc", "type": "CANNON", "side": "RED", "x": 4, "y": 2 }
+    ]
+  },
+  {
+    "id": "corpus-04-horse-fork",
+    "description": "Mã bắt đôi Xe và Tướng",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "br", "type": "CHARIOT", "side": "BLACK", "x": 1, "y": 8 },
+      { "id": "rn", "type": "HORSE", "side": "RED", "x": 2, "y": 6 }
+    ]
+  },
+  {
+    "id": "corpus-05-pawn-endgame",
+    "description": "Tốt qua sông áp sát cung tướng",
+    "category": "ENDGAME",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "ba", "type": "ADVISOR", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rp", "type": "SOLDIER", "side": "RED", "x": 4, "y": 8 }
+    ]
+  },
+  {
+    "id": "corpus-06-chariot-advisor-mate",
+    "description": "Xe kẹp cổ tướng đen",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "ba1", "type": "ADVISOR", "side": "BLACK", "x": 3, "y": 8 },
+      { "id": "ba2", "type": "ADVISOR", "side": "BLACK", "x": 5, "y": 8 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 4, "y": 7 }
+    ]
+  },
+  {
+    "id": "corpus-07-two-horses",
+    "description": "Song mã liên hoàn",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rn1", "type": "HORSE", "side": "RED", "x": 3, "y": 5 },
+      { "id": "rn2", "type": "HORSE", "side": "RED", "x": 5, "y": 6 }
+    ]
+  },
+  {
+    "id": "corpus-08-elephant-defense",
+    "description": "Tượng liên kết phòng thủ trung lộ",
+    "category": "DEFENSE",
+    "turn": "BLACK",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "bb1", "type": "ELEPHANT", "side": "BLACK", "x": 2, "y": 9 },
+      { "id": "bb2", "type": "ELEPHANT", "side": "BLACK", "x": 4, "y": 7 },
+      { "id": "rc", "type": "CANNON", "side": "RED", "x": 4, "y": 4 }
+    ]
+  },
+  {
+    "id": "corpus-09-cannon-chariot-battery",
+    "description": "Xe Pháo phối hợp đè cột",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 1, "y": 8 },
+      { "id": "rc", "type": "CANNON", "side": "RED", "x": 1, "y": 2 }
+    ]
+  },
+  {
+    "id": "corpus-10-pinned-horse",
+    "description": "Mã bị chặn cẳng không thể đi",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "bn", "type": "HORSE", "side": "BLACK", "x": 4, "y": 6 },
+      { "id": "rp", "type": "SOLDIER", "side": "RED", "x": 4, "y": 5 }
+    ]
+  },
+  {
+    "id": "corpus-11-advisor-shield",
+    "description": "Sĩ che tướng chống xe chiếu ngang",
+    "category": "DEFENSE",
+    "turn": "BLACK",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "ba", "type": "ADVISOR", "side": "BLACK", "x": 3, "y": 8 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 0, "y": 9 }
+    ]
+  },
+  {
+    "id": "corpus-12-double-cannon-check",
+    "description": "Trùng pháo chiếu hết",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "rc1", "type": "CANNON", "side": "RED", "x": 4, "y": 8 },
+      { "id": "rc2", "type": "CANNON", "side": "RED", "x": 4, "y": 7 }
+    ]
+  },
+  {
+    "id": "corpus-13-horse-palace-threat",
+    "description": "Mã ngọa tào uy hiếp góc cung",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "rn", "type": "HORSE", "side": "RED", "x": 2, "y": 8 },
+      { "id": "ba", "type": "ADVISOR", "side": "BLACK", "x": 5, "y": 8 }
+    ]
+  },
+  {
+    "id": "corpus-14-advance-pawn-crossed",
+    "description": "Tốt đỏ lách ngang đe dọa sĩ",
+    "category": "ENDGAME",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rp", "type": "SOLDIER", "side": "RED", "x": 2, "y": 8 }
+    ]
+  },
+  {
+    "id": "corpus-15-chariot-rook-fork",
+    "description": "Xe đỏ bắt đôi quân nhẹ",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 6, "y": 7 },
+      { "id": "bn", "type": "HORSE", "side": "BLACK", "x": 6, "y": 9 },
+      { "id": "bc", "type": "CANNON", "side": "BLACK", "x": 2, "y": 7 }
+    ]
+  },
+  {
+    "id": "corpus-16-stalemate-defense",
+    "description": "Thế vây ép hết nước",
+    "category": "ENDGAME",
+    "turn": "BLACK",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 4, "y": 9 },
+      { "id": "ra", "type": "ADVISOR", "side": "RED", "x": 4, "y": 1 }
+    ]
+  },
+  {
+    "id": "corpus-17-open-file-control",
+    "description": "Xe chiếm lộ thông thoáng",
+    "category": "STRATEGY",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 8, "y": 4 }
+    ]
+  },
+  {
+    "id": "corpus-18-trapped-chariot",
+    "description": "Xe đen bị cô lập góc bàn",
+    "category": "STRATEGY",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "br", "type": "CHARIOT", "side": "BLACK", "x": 0, "y": 9 },
+      { "id": "rn", "type": "HORSE", "side": "RED", "x": 1, "y": 7 }
+    ]
+  },
+  {
+    "id": "corpus-19-pawn-advancement-clash",
+    "description": "Đối công tranh tốt qua sông",
+    "category": "TACTIC",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rp", "type": "SOLDIER", "side": "RED", "x": 4, "y": 5 },
+      { "id": "bp", "type": "SOLDIER", "side": "BLACK", "x": 4, "y": 6 }
+    ]
+  },
+  {
+    "id": "corpus-20-complex-middlegame",
+    "description": "Trung cuộc phức tạp Xe Pháo Mã hai bên",
+    "category": "MIDDLEGAME",
+    "turn": "RED",
+    "pieces": [
+      { "id": "rk", "type": "GENERAL", "side": "RED", "x": 4, "y": 0 },
+      { "id": "bk", "type": "GENERAL", "side": "BLACK", "x": 3, "y": 9 },
+      { "id": "rr", "type": "CHARIOT", "side": "RED", "x": 0, "y": 5 },
+      { "id": "rc", "type": "CANNON", "side": "RED", "x": 4, "y": 2 },
+      { "id": "rn", "type": "HORSE", "side": "RED", "x": 2, "y": 4 },
+      { "id": "br", "type": "CHARIOT", "side": "BLACK", "x": 8, "y": 7 },
+      { "id": "bc", "type": "CANNON", "side": "BLACK", "x": 7, "y": 7 },
+      { "id": "bn", "type": "HORSE", "side": "BLACK", "x": 6, "y": 6 }
+    ]
+  }
+]
