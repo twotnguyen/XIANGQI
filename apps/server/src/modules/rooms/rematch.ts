@@ -6,8 +6,8 @@ import crypto from 'node:crypto';
 import type pg from 'pg';
 import { getPool } from '../../db/pool.js';
 import { withTransaction } from '../../db/transaction.js';
-import { createInitialPosition, getLegalMoves } from '@xiangqi/game-rules';
-import type { MatchSnapshot, ClockState, Side } from '@xiangqi/contracts';
+import { createInitialPosition } from '@xiangqi/game-rules';
+import type { MatchSnapshot, ClockState } from '@xiangqi/contracts';
 
 export async function voteRematch(
   userId: string,
