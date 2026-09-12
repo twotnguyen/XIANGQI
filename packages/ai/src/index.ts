@@ -7,3 +7,5 @@ export {
 } from './evaluate.js';
 
 export { orderMoves } from './ordering.js';
+export { negamax, MATE_SCORE } from './minimax.js';
+export { searchBestMove } from './search.js';
