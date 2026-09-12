@@ -30,8 +30,15 @@ export function Callback() {
         });
         const data = await res.json();
 
+        // Safe redirect guard: only internal relative paths, never external URLs
+        const searchParams = new URLSearchParams(window.location.search);
+        const nextParam = searchParams.get('next');
+        const isSafeRedirect = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') && !nextParam.includes(':');
+
         if (data.data?.onboardingRequired) {
           navigate('/onboarding');
+        } else if (isSafeRedirect) {
+          navigate(nextParam);
         } else {
           navigate('/lobby');
         }
