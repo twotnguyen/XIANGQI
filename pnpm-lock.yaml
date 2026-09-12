@@ -38,6 +38,9 @@ importers:
       '@xiangqi/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@xiangqi/game-rules':
+        specifier: workspace:*
+        version: link:../../packages/game-rules
       fastify:
         specifier: ^5.3.0
         version: 5.12.4
