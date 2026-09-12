@@ -1,0 +1,32 @@
+.boardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+  max-width: 100%;
+  touch-action: manipulation;
+}
+
+.boardContainer:focus-visible {
+  outline: 2px solid var(--color-focus, #155E75);
+  outline-offset: 4px;
+}
+
+.boardSvg {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  aspect-ratio: 520 / 576;
+}
+
+.clickTarget {
+  cursor: pointer;
+}
+
+.clickTarget:hover {
+  fill: rgba(21, 94, 117, 0.1);
+}
+
+.lastMove {
+  pointer-events: none;
+}
