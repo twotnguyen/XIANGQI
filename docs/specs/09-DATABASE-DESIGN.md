@@ -502,7 +502,7 @@ DB transaction isolation READ COMMITTED với explicit row locks và uniqueness 
 - **Undo:** append UNDO, dựng lại effective branch/counts, clock không refund, invalidate job token dưới lock.
 - **Rematch:** room/profiles/old match, receipt/votes, defer side unique, swap hai membership sides; create new match/START/slots/controls, clear votes/finished_at, room_version++; old match bất biến, media mới OFF.
 - **Viewer revoke:** room lock tăng watch_epoch/remove members và controls CASCADE, mark affected media ROTATING/enqueue durable job; sau commit remove socket topics, SFU runner. DB commit không đồng nghĩa SFU đã ngừng truyền.
-- **Boot recovery:** trước nhận command, ACTIVE cũ INTERRUPTED/SERVER_RESTART, release slots/controls, enqueue cleanup; reconcile mọi pending/failed media job và generation cũ trước cấp token. Room lịch sử vẫn còn.
+- **Boot recovery:** trước nhận command, ACTIVE cũ INTERRUPTED/SERVER_RESTART, release slots/controls, enqueue cleanup; reconcile mọi media job PENDING/RUNNING/RETRY/FAILED theo9.3 và generation cũ trước cấp token. Room lịch sử vẫn còn.
 
 ### 12.3. Pagination, expiry và hiệu năng
 
