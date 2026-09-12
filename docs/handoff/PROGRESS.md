@@ -65,4 +65,4 @@ Người dùng đã ủy quyền vòng Git tự động theo [GIT-WORKFLOW](GIT-
 
 Thay đổi chuẩn bị hiện tại: nhánh `docs/git-workflow`; chưa triển khai issue ứng dụng nào. PR: [#1](https://github.com/twotnguyen/XIANGQI/pull/1). Trạng thái tích hợp luôn tra GitHub, không dự đoán trước merge.
 
-Bảo trì repository: nhánh `chore/repository-hygiene`, bổ sung ignore metadata/cache/build/test output/local state và gate review file staged. PR sẽ được ghi khi tạo; chưa triển khai issue ứng dụng.
+Bảo trì repository: nhánh `chore/repository-hygiene`, bổ sung ignore metadata/cache/build/test output/local state và gate review file staged. PR: [#2](https://github.com/twotnguyen/XIANGQI/pull/2); chưa triển khai issue ứng dụng. Kiểm chứng local: 83 path cases đạt, không có file tracked bị ignore, không có historical blob trên5MiB.
