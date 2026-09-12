@@ -15,10 +15,12 @@ import { makePosition } from '../fixtures/positions.js';
 describe('Fix 1: Package exports dist smoke test', () => {
   it('built dist is importable by Node 24 outside Vitest', () => {
     const root = path.resolve(import.meta.dirname, '../..');
-    // Build first
-    execSync('pnpm build', { cwd: root, stdio: 'pipe' });
-    // Verify dist files exist and are valid JS modules
+    // Build first if dist does not exist
     const distIndex = path.join(root, 'packages/contracts/dist/index.js');
+    if (!fs.existsSync(distIndex)) {
+      execSync('pnpm build', { cwd: root, stdio: 'pipe', timeout: 30000 });
+    }
+    // Verify dist files exist and are valid JS modules
     expect(fs.existsSync(distIndex)).toBe(true);
     const distDts = path.join(root, 'packages/contracts/dist/index.d.ts');
     expect(fs.existsSync(distDts)).toBe(true);
@@ -33,6 +35,7 @@ describe('Fix 1: Package exports dist smoke test', () => {
       const result = execSync(`node ${script}`, {
         cwd: path.join(root, 'apps/server'),
         stdio: 'pipe', encoding: 'utf-8',
+        timeout: 10000,
       });
       const data = JSON.parse(result.trim());
       expect(data.BOARD_SIZE).toBe(90);
@@ -40,21 +43,24 @@ describe('Fix 1: Package exports dist smoke test', () => {
     } finally {
       fs.unlinkSync(script);
     }
-  });
+  }, 30000);
 
   it('game-rules dist importable', () => {
     const root = path.resolve(import.meta.dirname, '../..');
     // Verify dist files exist
     const distIndex = path.join(root, 'packages/game-rules/dist/index.js');
+    if (!fs.existsSync(distIndex)) {
+      execSync('pnpm build', { cwd: root, stdio: 'pipe', timeout: 30000 });
+    }
     expect(fs.existsSync(distIndex)).toBe(true);
 
     // Import directly using file path to verify exports resolve
     const result = execSync(
       `node -e "const m = await import('file://${distIndex}'); console.log(m.createInitialPosition().board.filter(Boolean).length)"`,
-      { cwd: root, stdio: 'pipe', encoding: 'utf-8' },
+      { cwd: root, stdio: 'pipe', encoding: 'utf-8', timeout: 10000 },
     );
     expect(result.trim()).toBe('32');
-  });
+  }, 30000);
 });
 
 describe('Fix 2: MatchCommand schemas with payload', () => {

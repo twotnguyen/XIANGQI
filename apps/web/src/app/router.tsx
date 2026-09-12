@@ -2,13 +2,22 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import { createInitialPosition, getLegalMoves } from '@xiangqi/game-rules';
 import { Board } from '../components/board/Board.js';
+import { Login } from '../features/auth/Login.js';
+import { Register } from '../features/auth/Register.js';
+import { Callback } from '../features/auth/Callback.js';
+import { ResetPassword } from '../features/auth/ResetPassword.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
 function Home() {
   return (
-    <main>
+    <main style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', textAlign: 'center' }}>
       <h1>Cờ Tướng Online</h1>
       <p>Chào mừng đến với ứng dụng cờ tướng trực tuyến.</p>
+      <div style={{ marginTop: '20px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+        <a href="/login">Đăng nhập</a>
+        <a href="/register">Đăng ký</a>
+        <a href="/dev/board">Bàn cờ thử nghiệm</a>
+      </div>
     </main>
   );
 }
@@ -22,7 +31,6 @@ function DevBoard() {
   const legalMoves = getLegalMoves(position);
 
   const handleMove = (move: Move) => {
-    // In dev mode, just note the move
     setLastMove(move);
   };
 
@@ -56,6 +64,10 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<Callback />} />
+        <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/dev/board" element={<DevBoard />} />
       </Routes>
     </BrowserRouter>
