@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { supabase } from '../../lib/supabase.js';
 import { InvitePanel } from './InvitePanel.js';
+import { SpectatorPanel } from './SpectatorPanel.js';
 import type { RoomDTO } from '@xiangqi/contracts';
 
 export function RoomWaiting() {
@@ -207,6 +208,9 @@ export function RoomWaiting() {
           </button>
         </div>
       )}
+
+      {/* Spectator panel */}
+      <SpectatorPanel members={room.members} />
 
       {/* Invite panel */}
       {room.status === 'WAITING' && (
