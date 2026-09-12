@@ -103,19 +103,20 @@ Prefix `/api/v1`. Public routes chỉ auth và health. Các route còn lại Bea
 | POST /matches/:id/commands/propose | MatchCommand<{kind:DRAW/UNDO}> | CommandResult |
 | POST /matches/:id/commands/respond | MatchCommand<{proposalId,accept:boolean}> | CommandResult |
 | POST /matches/:id/commands/undo-ai | MatchCommand<{}> | CommandResult |
-| POST /rooms/:id/rematch | commandId UUID,accept:boolean | Room DTO + match if both accept |
+| POST /rooms/:id/rematch | commandId UUID,expectedMatchId UUID,accept:boolean | `{room:RoomDTO,newMatchId:string|null}`; snapshot mới lấy qua match subscription |
 | GET /history?cursor=... | — | participant match summaries ≤20 |
 | GET /matches/:id/replay | — | initialPosition, effectiveMoves, undoCount,outcome |
 | GET /rooms/:id/chat?cursor=... | current match inferred | authorized channel messages ≤50 |
 | POST /rooms/:id/chat | clientMessageId UUID,content | ChatMessage |
 | POST /ai/matches | side,level,timeControl | MatchSnapshot |
 | POST /media/session | roomId,matchId,controllerId | media connection grants, see media spec |
-| PATCH /media/policy | matchId,kind CAMERA/MICROPHONE,audience,policyVersion | committed policy + version |
+| GET /media/policy?matchId=... | membership, read-only | `{policies:PolicyState[]}` theo06 |
+| PATCH /media/policy | matchId,kind CAMERA/MICROPHONE,audience,policyVersion | PolicyState desired/applied/status theo06 |
 | POST /media/end | matchId | `{stopped:true}` own tracks only |
 
 Google and recovery callback SPA paths `/auth/callback` and `/auth/reset-password`; official Supabase PKCE/exchange/updateUser SDK flow in auth spec. No custom OAuth token exchange protocol. AI create also enforces one active match/user even without room.
 
-Controller lease qua `X-Control-Id` và `X-Control-Epoch` bắt buộc cho HTTP match commands, chat send, media session/policy/end. Nếu body media/session có controllerId thì phải khớp header. Socket mutation chat:send và match:move mang controllerId/controlEpoch, server kiểm với lease hiện hành; handshake không đủ thay cho epoch check mỗi write. Read-only snapshot/chat history không yêu cầu controller, vẫn kiểm membership/session. IDs are UUID except codes. No implicit actorId in request. Signup/recovery/resend dùng browser Supabase SDK theo auth spec, không có BFF endpoint tương ứng.
+Controller lease qua `X-Control-Id` và `X-Control-Epoch` bắt buộc cho HTTP match commands, room rematch, chat send, media session/policy/end. Nếu body media/session có controllerId thì phải khớp header. Socket mutation chat:send và match:move mang controllerId/controlEpoch, server kiểm với lease hiện hành; handshake không đủ thay cho epoch check mỗi write. Read-only snapshot/chat history không yêu cầu controller, vẫn kiểm membership/session. IDs are UUID except codes. No implicit actorId in request. Signup/recovery/resend dùng browser Supabase SDK theo auth spec, không có BFF endpoint tương ứng.
 
 ## Socket.IO
 
@@ -138,7 +139,7 @@ One namespace `/`, WebSocket transport for game server deployment (HTTP command 
 | presence:changed | server→friends/room | userId,online |
 | access:revoked | server→affected client | roomId,reason,roomVersion |
 | control:revoked | server→old controller | roomId:string|null,matchId:string|null,controlEpoch |
-| media:policy | server→room | userId,kind,audience,policyVersion; no secrets |
+| media:policy | server→room | {matchId,policy:PolicyState}; desired/applied/status theo06, no secrets |
 
 Ack envelope `ApiResult<T>`; match mutation T là CommandResult, sync T là MatchSnapshot. Same command receipt trả appliedVersion gốc và snapshot hiện tại theo state spec. Client waits 5 seconds, retries at most twice with same commandId/payload/version; if ambiguous then sync. HTTP and socket adapters call same service functions. Board subscription and chat groups are server-generated; room access is checked on every read/write. Broadcaster never sends PLAYERS chat to generic room topic.
 
@@ -164,7 +165,9 @@ All application tables under `public` with RLS enabled, no anon/authenticated gr
 | chat_messages | id,room_id,match_id,sender_id,channel,client_message_id,content,created_at; UNIQUE(match_id,sender_id,client_message_id) |
 | media_transports | match_id,kind,audience,generation,room_name UNIQUE,status; UNIQUE(match_id,kind,audience), server-only |
 | media_policy_jobs | id,match_id,desired_version,status,attempts,last_error; server-only |
-| media_policies | match_id,user_id,camera_audience,microphone_audience,policy_version,epoch; UNIQUE(match_id,user_id) |
+| room_rematch_votes | room_id,match_id,user_id; PK(room_id,match_id,user_id); vote row means accept=true, FK room/match/profile; added ISSUE-027 |
+| room_command_receipts | room_id,actor_id,command_id,command_type,payload_hash,new_match_id nullable; PK(room_id,actor_id,command_id); added ISSUE-027 |
+| media_policies | match_id,user_id,camera_audience,microphone_audience,policy_version,applied_camera_audience,applied_microphone_audience,applied_version,status APPLYING/APPLIED,epoch; UNIQUE(match_id,user_id) |
 
 Lock `rooms FOR UPDATE` before membership counting/change and starting match; lock user profiles in user_id order when accepting invitations to avoid cross-room races. Require count WATCH<5 within lock, not count-before-transaction. Across room/member/match changes lock order: room → user rows ordered → match. Mọi ONLINE match command/scheduler/finalizer lấy room lock trước match lock; đọc immutable match.room_id trước transaction để xác định room. AI chỉ match lock. Không có đường match→room lock. finalizer cập nhật room đã khóa trong cùng transaction. Media external calls after authorization snapshot use epoch checks and compensating revocation, not DB lock held across network.
 

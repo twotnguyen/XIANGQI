@@ -40,6 +40,7 @@ Validator kiểm:
 - Ownership harness/CI, service thật, test discovery rỗng phải fail, teardown và isolation DB, clock/race/fault injection.
 - Fixture terminal có tọa độ và đáp án review tay; sửa fixture mở mặt tướng để tốt đã qua sông và đi ngang đúng luật hình học.
 - Mẫu evidence tách local/provider/hardware, count/exit/version/test path và bước tiếp tục; prompt bàn giao trỏ tới test plan.
+- Review bổ sung chốt rematch votes/receipts, terminal event ownership/status mapping, controller transport và desired/applied media DTO; test phủ retry/stale round/thu hồi kết nối hiện hữu.
 - Sửa chỉ dẫn Git cũ trong001 cho nhất quán với quyền tự push/PR/merge đã cấp.
 
 ## Giới hạn của kết luận
