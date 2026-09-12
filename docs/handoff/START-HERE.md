@@ -35,7 +35,7 @@ Trạng thái: TODO, IN_PROGRESS, LOCAL_DONE, DONE, BLOCKED_EXTERNAL. LOCAL_DONE
 
 Trước khi dừng ghi vào PROGRESS: issue đang làm, files changed, lệnh cuối/kết quả, blocker, bước tiếp theo có đường dẫn và lệnh. Task mới đọc PROGRESS và evidence, kiểm tra code rồi tiếp tục; không chạy lại interview hoặc tạo plan mới trùng.
 
-Không cần đổi model tự động; người dùng tự chọn 5.6 sol. Nếu có parallel workers, chia ownership rõ và tích hợp chung; concurrency không thay dependency. Tránh delegate issue UI và service cùng sửa contract chưa chốt.
+Không cần đổi model tự động; người dùng tự chọn 5.6 sol. Nếu có parallel workers, chia ownership rõ trong cùng nhánh issue; chỉ coordinator sửa PROGRESS và thao tác Git/PR. Tích hợp các issue tuần tự để tránh nhiều nhánh cùng sửa registry; concurrency không thay dependency. Tránh delegate issue UI và service cùng sửa contract chưa chốt.
 
 ## Git và hoàn tất
 
@@ -52,7 +52,7 @@ Hãy triển khai toàn bộ dự án cờ tướng trong thư mục XIANGQI the
 
 Mỗi issue phải có implementation thật, các test/tiêu chí nghiệm thu tương ứng và bằng chứng trong docs/test-reports/ISSUE-NNN.md. Cập nhật trạng thái issue và PROGRESS để task sau tiếp tục được. Nếu thiếu credential/provider, hoàn thành phần local và các issue độc lập, ghi rõ phần BLOCKED_EXTERNAL và chỉ hỏi đúng đầu vào còn thiếu. Không đánh dấu hoàn thành bằng mock hoặc tự cắt phạm vi. Không mua dịch vụ trả phí.
 
-Tuân thủ docs/handoff/GIT-WORKFLOW.md: mỗi issue một nhánh/PR, tự commit, push, review và squash merge khi kiểm tra đạt; sau merge đồng bộ main rồi tiếp tục. Luôn fetch trước push, không tự giải quyết conflict và không thêm co-author AI. Ghi branch/PR vào PROGRESS; chỉ dùng dependency đã merge.
+Tuân thủ docs/handoff/GIT-WORKFLOW.md: mỗi issue một PR triển khai chính (có PR verify/fix bổ sung khi cần), tự commit, push, review và squash merge khi kiểm tra đạt; sau merge đồng bộ main rồi tiếp tục. Luôn fetch trước push, không tự giải quyết conflict và không thêm co-author AI. Ghi branch/PR vào PROGRESS; chỉ dùng dependency đã merge.
 
 Bắt đầu từ issue tiếp theo chưa hoàn thành; nếu chưa có code, bắt đầu ISSUE-001. Không phỏng vấn lại những quyết định đã chốt.
 ```

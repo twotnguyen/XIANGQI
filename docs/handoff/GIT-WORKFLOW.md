@@ -6,7 +6,7 @@ Repository: `twotnguyen/XIANGQI`, nhánh tích hợp `main`. Đọc [START-HERE]
 
 ## Nhánh và phạm vi
 
-Mỗi issue một nhánh, một PR vào main. Tạo từ origin/main đã đồng bộ và chứa dependency đã merge. Không triển khai trực tiếp trên main. Không tạo nhánh tầng trên nhánh chưa merge trong workflow mặc định.
+Mỗi issue có một nhánh/PR triển khai chính vào main. Nếu đã merge ở LOCAL_DONE, được tạo PR kiểm chứng bổ sung cho đúng issue khi provider/thiết bị sẵn sàng; PR này chỉ thêm bằng chứng thật và chuyển trạng thái gate. Nếu phát hiện lỗi code thì tạo PR fix của chính issue, kiểm thử và review đầy đủ. Tạo từ origin/main đã đồng bộ và chứa dependency đã merge. Không triển khai trực tiếp trên main. Không tạo nhánh tầng trên nhánh chưa merge trong workflow mặc định.
 
 | Loại | Mẫu / ví dụ |
 |---|---|
@@ -15,6 +15,7 @@ Mỗi issue một nhánh, một PR vào main. Tạo từ origin/main đã đồn
 | Tài liệu | `docs/git-workflow` hoặc `docs/issue-032-defense` |
 | Công cụ/CI | `chore/issue-001-foundation` |
 | Test bổ sung | `test/issue-030-reconnect` |
+| Kiểm chứng gate sau LOCAL_DONE | `verify/issue-008-google-smoke` |
 
 Tên lowercase ASCII, gạch nối, có ID issue nếu thuộc issue. Nhánh đã có thì đọc diff/PR và tiếp tục đúng công việc; không ghi đè hoặc tái sử dụng nhánh đã merge cho việc mới. Nhánh hotfix sau merge dùng slug mới, ví dụ `fix/issue-007-reset-expiry`.
 
@@ -24,6 +25,10 @@ Tên lowercase ASCII, gạch nối, có ID issue nếu thuộc issue. Nhánh đ�
 2. `git fetch origin`; kiểm tra main và origin/main. Main chỉ dùng để fast-forward, không chứa commit triển khai riêng.
 3. Nếu main chỉ behind và sạch, `git switch main` rồi `git merge --ff-only origin/main`; nếu main diverged, điều tra commit trước, không reset hay force push.
 4. Tạo nhánh theo bảng; đánh dấu IN_PROGRESS và ghi tên nhánh vào PROGRESS. Dependency cần đủ gate kỹ thuật **và PR đã MERGED trên GitHub**; DONE trên nhánh chưa merge chưa đủ.
+
+### Điều phối khi có nhiều agent
+
+Mặc định hoàn thành/merge từng issue tuần tự. Có thể dùng agent phụ làm các phần độc lập trong cùng nhánh issue với ownership file rõ; chỉ agent điều phối sửa PROGRESS và thao tác Git/PR/merge. Agent phụ không tự commit/push/merge hoặc sửa registry chung. Không mở nhiều nhánh issue cùng sửa PROGRESS trong workflow mặc định. Nếu vẫn phát sinh conflict thì giữ nguyên quy tắc dừng, không coi điều phối là quyền tự giải quyết conflict.
 
 ## Commit
 
@@ -36,7 +41,7 @@ fix(match): preserve elapsed time after undo [ISSUE-014]
 docs(workflow): define autonomous GitHub delivery
 ```
 
-Types: feat, fix, docs, test, chore, refactor. Scope theo module, không dùng tên model. Không cần một commit cho mỗi file hoặc mỗi bước nhỏ; mỗi commit phải có ý nghĩa và không chứa thay đổi không liên quan. Stage đường dẫn rõ ràng, xem staged diff trước commit. Không commit secret, .env, node_modules, runtime state hoặc log chứa token. Không thêm `Co-Authored-By: Codex` hay co-author AI; giữ Git author người dùng đang cấu hình, không giả tác giả khác.
+Commit types: feat, fix, docs, test, chore, refactor. Nhánh verify dùng commit docs hoặc test theo nội dung, không cần thêm commit type verify. Scope theo module, không dùng tên model. Không cần một commit cho mỗi file hoặc mỗi bước nhỏ; mỗi commit phải có ý nghĩa và không chứa thay đổi không liên quan. Stage đường dẫn rõ ràng, xem staged diff trước commit. Không commit secret, .env, node_modules, runtime state hoặc log chứa token. Không thêm `Co-Authored-By: Codex` hay co-author AI; giữ Git author người dùng đang cấu hình, không giả tác giả khác.
 
 Nếu cần checkpoint dở dang, push nhánh/draft PR được phép nhưng ghi rõ chưa qua nghiệm thu; không merge. Sửa review bằng commit mới trên nhánh đã push, tránh rewrite/force push. Không dùng `--no-verify` để né hook lỗi.
 
@@ -84,6 +89,6 @@ Xác minh PR state MERGED, merge commit SHA và remote main. Fetch; main sạch 
 
 **Trạng thái kỹ thuật** (TODO/IN_PROGRESS/LOCAL_DONE/DONE/BLOCKED_EXTERNAL) và **trạng thái tích hợp** là hai thứ khác nhau. Trước merge, file issue có thể DONE theo acceptance; PROGRESS ghi branch/PR và `Xem trạng thái PR trên GitHub`. Không ghi trước MERGED hoặc tự đoán SHA merge.
 
-GitHub là nguồn trạng thái PR/merge chính thức. Task tiếp theo tra PR URL để biết đã tích hợp; khi có PR nghiệp vụ tiếp theo có thể cập nhật lại dòng tiến độ cũ thành MERGED + SHA đã xác minh. Không cần tạo vô hạn PR chỉ để ghi việc PR cập nhật trạng thái trước đó đã merge. PR cuối đã chứa evidence/URL; xác nhận final merge bằng GitHub và phản hồi bàn giao là đủ.
+GitHub là nguồn trạng thái PR/merge chính thức. Task tiếp theo tra PR URL để biết đã tích hợp; khi có PR nghiệp vụ tiếp theo có thể cập nhật lại dòng tiến độ cũ thành MERGED + SHA đã xác minh. PR verify cho gate còn thiếu là hợp lệ vì có kết quả kiểm chứng mới; không tạo PR verify chỉ để ghi rằng chính PR trước đã merge. Không cần tạo vô hạn PR chỉ để ghi việc PR cập nhật trạng thái trước đó đã merge. PR cuối đã chứa evidence/URL; xác nhận final merge bằng GitHub và phản hồi bàn giao là đủ.
 
 Nếu bị chặn, ghi bước tiếp theo, branch/PR/commit đã push và lý do. Tiếp tục issue độc lập không đụng file đang conflict nếu có thể; không tuyên bố toàn bộ xong khi PR bắt buộc chưa merge.
