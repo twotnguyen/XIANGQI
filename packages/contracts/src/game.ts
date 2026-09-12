@@ -99,7 +99,12 @@ export const ClockStateSchema = z.object({
 export type ClockState = z.infer<typeof ClockStateSchema>;
 
 // ── Proposal ────────────────────────────────────────────────
-
+/**
+ * Proposal DTO exposed to clients.
+ * - `requesterId` is the user UUID of the requesting player.
+ * - DB stores `requester` as Side ('RED'|'BLACK') in matches.proposal JSONB.
+ * - Repository layer maps between Side and userId using match participant IDs.
+ */
 export const ProposalKindSchema = z.enum(['DRAW', 'UNDO']);
 
 export const ProposalSchema = z.object({
@@ -132,10 +137,43 @@ export type ApiResult<T> =
 
 // ── Match command ───────────────────────────────────────────
 
-export const MatchCommandSchema = z.object({
+/** Base command envelope — individual commands extend with typed payload */
+export const MatchCommandBaseSchema = z.object({
   commandId: z.string().uuid(),
   expectedVersion: z.number().int().min(0),
 }).strict();
+
+export const MoveCommandSchema = MatchCommandBaseSchema.extend({
+  payload: MoveSchema,
+}).strict();
+
+export const ResignCommandSchema = MatchCommandBaseSchema.extend({
+  payload: z.object({}).strict(),
+}).strict();
+
+export const ProposeCommandSchema = MatchCommandBaseSchema.extend({
+  payload: z.object({
+    kind: ProposalKindSchema,
+  }).strict(),
+}).strict();
+
+export const RespondCommandSchema = MatchCommandBaseSchema.extend({
+  payload: z.object({
+    proposalId: z.string().uuid(),
+    accept: z.boolean(),
+  }).strict(),
+}).strict();
+
+export const UndoAiCommandSchema = MatchCommandBaseSchema.extend({
+  payload: z.object({}).strict(),
+}).strict();
+
+/** Generic command type for TypeScript consumers */
+export type MatchCommand<T> = {
+  commandId: string;
+  expectedVersion: number;
+  payload: T;
+};
 
 // ── Match snapshot (type only, Zod for runtime validation where needed) ─
 

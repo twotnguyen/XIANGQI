@@ -1,7 +1,7 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
-- Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và hardening toàn diện đã deploy, kiểm chứng hoàn tất.
+- Trạng thái sản phẩm: IN_PROGRESS — nền tảng workspace (ISSUE-001) và contracts/position (ISSUE-002) xong; schema CSDL đã deploy (ISSUE-006 schema LOCAL_DONE).
 - Issue đang làm: ISSUE-001 DONE, ISSUE-002 DONE. Issue tiếp: ISSUE-003 (legal moves).
 - Bước tiếp theo: Tạo nhánh ISSUE-003, triển khai luật di chuyển và an toàn tướng.
 - Blocker hiện tại của lập trình local: không có.
