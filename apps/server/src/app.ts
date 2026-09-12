@@ -6,6 +6,7 @@ import { invitationsRoutes } from './modules/invitations/routes.js';
 import { matchesRoutes } from './modules/matches/routes.js';
 import { chatRoutes } from './modules/chat/routes.js';
 import { aiRoutes } from './modules/ai/routes.js';
+import { historyRoutes } from './modules/history/routes.js';
 
 export async function createApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: false });
@@ -21,6 +22,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(matchesRoutes);
   await app.register(chatRoutes);
   await app.register(aiRoutes);
+  await app.register(historyRoutes);
 
   return app;
 }
