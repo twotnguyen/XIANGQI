@@ -15,6 +15,7 @@ import { MatchPage } from '../features/match/MatchPage.js';
 import { NewAiMatch } from '../features/ai/NewAiMatch.js';
 import { HistoryList } from '../features/history/HistoryList.js';
 import { MatchReplay } from '../features/history/MatchReplay.js';
+import { Navbar } from '../components/layout/Navbar.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
 function Home() {
@@ -71,6 +72,7 @@ function DevBoard() {
 export function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
