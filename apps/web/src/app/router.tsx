@@ -8,6 +8,8 @@ import { Callback } from '../features/auth/Callback.js';
 import { ResetPassword } from '../features/auth/ResetPassword.js';
 import { Onboarding } from '../features/auth/Onboarding.js';
 import { Friends } from '../features/friends/Friends.js';
+import { Lobby } from '../features/lobby/Lobby.js';
+import { RoomWaiting } from '../features/room/RoomWaiting.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
 function Home() {
@@ -72,6 +74,8 @@ export function App() {
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/friends" element={<Friends />} />
+        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/rooms/:id" element={<RoomWaiting />} />
         <Route path="/dev/board" element={<DevBoard />} />
       </Routes>
     </BrowserRouter>
