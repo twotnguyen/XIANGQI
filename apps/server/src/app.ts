@@ -1,5 +1,6 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { authRoutes } from './auth/routes.js';
+import { friendsRoutes } from './modules/friends/routes.js';
 
 export async function createApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: false });
@@ -9,6 +10,7 @@ export async function createApp(): Promise<FastifyInstance> {
   });
 
   await app.register(authRoutes);
+  await app.register(friendsRoutes);
 
   return app;
 }
