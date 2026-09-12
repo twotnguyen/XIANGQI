@@ -37,9 +37,9 @@ Network partition SFU: không báo đã thu hồi khi DeleteRoom thất bại. U
 
 ## API details
 
-`POST /media/session`: membership+ACTIVE+session+controller; server suy ra identities/room names/grants. Viewer role không cần player controller nhưng cần tab controller cho viewer. Return `{policyVersion, transports:[{kind,audience,roomName,url,token,generation,canPublish}], policy}`; no-store. Request không chứa role/identity/grants tùy ý. Policy write accepts expected `policyVersion`; mismatch CONFLICT. Per-user camera/mic version riêng, room transport rotation dưới lock theo match; serialize jobs cùng match để hai request A/B không ghi đè.
+`POST /media/session`: membership+ACTIVE+session+controller; server suy ra identities/room names/grants. Viewer role không cần player controller nhưng cần tab controller cho viewer. Return MediaSession theo DTO bên dưới; no-store. Request không chứa role/identity/grants tùy ý. Policy write accepts expected `policyVersion`; mismatch CONFLICT. Một policyVersion chung cho cặp camera/mic của mỗi user (khớp media_policies.policy_version); camera/mic vẫn có audience độc lập. Đổi một mục tăng version một lần; hai update cùng base version chỉ một commit, client đọc policy mới trước retry mục còn lại. Version A và B độc lập. Room transport rotation dưới lock theo match; serialize jobs cùng match để hai request A/B không ghi đè.
 
-`PATCH /media/policy`: ghi desired→apply external→return `{status:'APPLIED'|'APPLYING',policyVersion,policy}`. MediaUnavailable báo lỗi riêng; UI vẫn hiển thị desired và pending. Không hold SQL transaction qua API SFU. Mọi retry có job ID idempotent. Late token issuance kiểm lại transport generation ngay trước trả response; nếu rotation bắt đầu sau trả, old room sẽ bị delete trước thế hệ mới phát.
+`PATCH /media/policy`: ghi desired→apply external→return PolicyState theo DTO bên dưới. MediaUnavailable báo lỗi riêng; UI vẫn hiển thị desired và pending. Không hold SQL transaction qua API SFU. Mọi retry có job ID idempotent. Late token issuance kiểm lại transport generation ngay trước trả response; nếu rotation bắt đầu sau trả, old room sẽ bị delete trước thế hệ mới phát.
 
 Token không lưu localStorage, không log, không trả trong generic socket broadcast. Token plan chỉ private HTTPS response cho người nhận. Room maxParticipants là phòng vệ phụ, slot 5 vẫn do SQL game server.
 
@@ -60,3 +60,29 @@ Self-host: bảo vệ khỏi người xem sửa client hoặc giữ JWT cũ khi 
 Cloud: thêm RemoveParticipant với revoke_token_ts cho mọi identity cũ rồi DeleteRoom; test token cũ reconnect bị từ chối theo hỗ trợ provider. Nếu chỉ triển khai local, ghi rõ mức kiểm chứng self-host trong report; không đánh đồng với Cloud token revocation.
 
 APPLIED nghĩa desired policy version còn hiện hành, thao tác thu hồi SFU đã xác nhận và generation mới sẵn cấp đúng grants; không cần đợi người đang offline reconnect. Client publication có trạng thái riêng CONNECTING/LIVE/ERROR. Jobs cùng match serialize, sau external effect đọc lại desired_version để coalesce bản mới nhất, cleanup generation orphan. Nếu SFU mất liên lạc, media cũ có thể còn chảy đến khi thao tác thu hồi thành công; UI nói rõ chưa áp dụng xong, không báo quyền đã bảo vệ thành công.
+
+## DTO media cho implementation
+
+Các type này export từ packages/contracts; không suy ra quyền bằng UI. `policyVersion` thuộc caller; viewer có ownPolicy=null. policies chứa trạng thái công khai của hai players, không có token. camera_audience/microphone_audience DB là desired; applied_* và applied_version chỉ cập nhật sau SFU ACK khi version vẫn hiện hành. Bản ghi mới có desired/applied đều OFF, versions0, status APPLIED. applied mô tả cấu hình đã xác nhận gần nhất, không chứng minh media vẫn đang chảy; UI dùng status/publication riêng.
+
+```ts
+type SourcePolicy = { camera: Audience; microphone: Audience };
+type PolicyState = {
+  userId: string; policyVersion: number; appliedVersion: number;
+  desired: SourcePolicy; applied: SourcePolicy;
+  status: 'APPLYING' | 'APPLIED';
+};
+type TransportGrant = {
+  kind: 'CAMERA' | 'MICROPHONE'; audience: 'PRIVATE' | 'WATCH';
+  roomName: string; url: string; token: string; generation: number;
+  status: 'READY'; expiresAtMs: number;
+  canPublish: boolean; canSubscribe: boolean;
+  publishSource: 'CAMERA' | 'MICROPHONE' | null;
+};
+type MediaSession = {
+  ownPolicy: PolicyState | null; policies: PolicyState[];
+  transports: TransportGrant[];
+};
+```
+
+Transport đang ROTATING không cấp grant. Viewer publishSource=null/canPublish=false; player chỉ publish source đúng kind khi policy cho phép, watch canSubscribe=false. Session bị chặn do rotation trả MEDIA_UNAVAILABLE, client retry bounded theo06. Để đọc trạng thái sau timeout mà không xin token, bổ sung `GET /media/policy?matchId=...` → `{policies:PolicyState[]}` cho member hợp lệ, không cần controller vì chỉ đọc. `media:policy` payload là PolicyState đầy đủ, có matchId ở envelope; chỉ broadcast tới room members. Chính sách PATCH dùng header controller epoch theo04. Response timeout không che desired đã commit; client đọc lại GET và giữ APPLYING.

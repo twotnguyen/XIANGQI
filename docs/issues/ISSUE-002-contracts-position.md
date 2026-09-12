@@ -79,6 +79,8 @@ expect(positionKey({ ...p, turn: 'BLACK' })).not.toBe(positionKey(p));
 
 ## Lệnh kiểm chứng
 
+Bắt buộc đối chiếu hàng **ISSUE-002** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T002-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
+
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
 ```bash

@@ -78,6 +78,8 @@ expect(await snapshotsAgree(['A','B','S1','S2','S3','S4','S5'])).toBe(true);
 
 ## Lệnh kiểm chứng
 
+Bắt buộc đối chiếu hàng **ISSUE-030** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T030-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
+
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
 ```bash

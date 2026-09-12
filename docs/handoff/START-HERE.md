@@ -9,7 +9,8 @@ Bộ issue đã chốt sản phẩm qua phỏng vấn. Task mới dùng cùng th
 3. [PROGRESS](PROGRESS.md): trạng thái issue và công việc đang dở.
 4. [Mục lục issue](../issues/README.md): chọn issue tiếp theo mà mọi dependency đã qua gate cần thiết (DONE hoặc LOCAL_DONE cho phần local).
 5. Đọc [Git/GitHub workflow](GIT-WORKFLOW.md) trước tạo nhánh/commit/PR; người dùng đã ủy quyền tự review và merge khi gate đạt.
-6. Chỉ đọc spec chuyên biệt được issue trỏ tới và evidence dependencies. Auth đọc 05, game đọc03/04, media đọc06, UI/benchmark đọc07.
+6. Đọc [kế hoạch kiểm thử](../specs/08-TEST-EXECUTION.md), phần harness/gate và hàng của issue đang làm; dùng [mẫu evidence](EVIDENCE-TEMPLATE.md).
+7. Chỉ đọc spec chuyên biệt được issue trỏ tới và evidence dependencies. Auth đọc 05, game đọc03/04, media đọc06, UI/benchmark đọc07.
 
 Nếu là lần bắt đầu đầu tiên, làm ISSUE-001, sau đó ưu tiên ISSUE-002 và006 để thử media ISSUE-024 sớm. Có thể đi theo số thứ tự nếu chỉ thực thi tuần tự; không nhảy qua dependencies.
 
@@ -49,6 +50,8 @@ Phân biệt các nhãn: **PLAN_READY** chỉ bộ tài liệu; **LOCAL_COMPLETE
 Hãy triển khai toàn bộ dự án cờ tướng trong thư mục XIANGQI theo docs/README.md và docs/handoff/START-HERE.md.
 
 Đọc docs/handoff/PROGRESS.md, chọn issue đủ dependency từ docs/issues/README.md, thực hiện lần lượt đến khi hoàn thành. Dùng docs/specs làm nguồn yêu cầu chính thức, không dùng các giả định cũ trong DU_AN_CO_TUONG_ONLINE.md.
+
+Áp dụng docs/specs/08-TEST-EXECUTION.md: mỗi case TNNN-xx và acceptance riêng phải có test/evidence theo docs/handoff/EVIDENCE-TEMPLATE.md. Không coi test discovery rỗng, skipped required test hoặc mock provider là pass.
 
 Mỗi issue phải có implementation thật, các test/tiêu chí nghiệm thu tương ứng và bằng chứng trong docs/test-reports/ISSUE-NNN.md. Cập nhật trạng thái issue và PROGRESS để task sau tiếp tục được. Nếu thiếu credential/provider, hoàn thành phần local và các issue độc lập, ghi rõ phần BLOCKED_EXTERNAL và chỉ hỏi đúng đầu vào còn thiếu. Không đánh dấu hoàn thành bằng mock hoặc tự cắt phạm vi. Không mua dịch vụ trả phí.
 

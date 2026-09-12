@@ -77,6 +77,8 @@ await expect(page.getByTestId('ai-status')).toContainText(/Đang chờ|Đang suy
 
 ## Lệnh kiểm chứng
 
+Bắt buộc đối chiếu hàng **ISSUE-022** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T022-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
+
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
 ```bash

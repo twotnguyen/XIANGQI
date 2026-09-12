@@ -78,6 +78,8 @@ expect(s.outcome).toEqual({winner:'BLACK',reason:'TIMEOUT'});
 
 ## Lệnh kiểm chứng
 
+Bắt buộc đối chiếu hàng **ISSUE-013** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T013-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
+
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
 ```bash

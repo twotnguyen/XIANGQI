@@ -72,6 +72,8 @@ expect(fast.nodes).toBeLessThanOrEqual(base.nodes);
 
 ## Lệnh kiểm chứng
 
+Bắt buộc đối chiếu hàng **ISSUE-020** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T020-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
+
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
 ```bash
