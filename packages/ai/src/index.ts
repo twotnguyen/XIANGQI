@@ -8,4 +8,5 @@ export {
 
 export { orderMoves } from './ordering.js';
 export { negamax, MATE_SCORE } from './minimax.js';
-export { searchBestMove } from './search.js';
+export { alphaBeta, searchBestMove } from './search.js';
+export { LEVEL_CONFIGS, getLevelConfig, type LevelConfig } from './levels.js';
