@@ -5,6 +5,7 @@
     { "path": "packages/game-rules" },
     { "path": "packages/ai" },
     { "path": "apps/server" },
-    { "path": "apps/web" }
+    { "path": "apps/web" },
+    { "path": "apps/ai-worker" }
   ]
 }
