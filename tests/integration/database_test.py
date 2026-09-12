@@ -60,7 +60,18 @@ PG_USER = "postgres"
 PG_DB = "postgres"
 PG_HOST = "127.0.0.1"
 
-def run_sql(query: str, user: str = PG_USER) -> str:
+def get_isolated_env(overrides: dict | None = None) -> dict:
+    """
+    Return environment stripped of all libpq / PostgreSQL variables (PG*),
+    preventing external environment pollution (such as PGHOSTADDR, PGPORT, PGDATABASE)
+    from altering or hijacking connection targets.
+    """
+    clean_env = {k: v for k, v in os.environ.items() if not k.startswith("PG")}
+    if overrides:
+        clean_env.update(overrides)
+    return clean_env
+
+def run_sql(query: str, user: str = PG_USER, env_overrides: dict | None = None) -> str:
     cmd = [
         PSQL,
         "-h", PG_HOST,
@@ -70,12 +81,12 @@ def run_sql(query: str, user: str = PG_USER) -> str:
         "-v", "ON_ERROR_STOP=1",
         "-A", "-t"
     ]
-    proc = subprocess.run(cmd + ["-c", query], capture_output=True, text=True)
+    proc = subprocess.run(cmd + ["-c", query], capture_output=True, text=True, env=get_isolated_env(env_overrides))
     if proc.returncode != 0:
         raise RuntimeError(f"SQL Error: {proc.stderr.strip()} | Query: {query}")
     return proc.stdout.strip()
 
-def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = "") -> str:
+def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = "", env_overrides: dict | None = None) -> str:
     cmd = [
         PSQL,
         "-h", PG_HOST,
@@ -85,7 +96,7 @@ def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = ""
         "-v", "ON_ERROR_STOP=1",
         "-c", query
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    proc = subprocess.run(cmd, capture_output=True, text=True, env=get_isolated_env(env_overrides))
     if proc.returncode == 0:
         raise AssertionError(f"Expected error matching '{expected_err}', but query succeeded! Query: {query}")
     err = proc.stderr.strip()
@@ -110,17 +121,16 @@ def setup_isolated_test_cluster(use_existing: bool = False):
     pg_dir = f"/tmp/xiangqi-test-pg-{os.getpid()}-{uuid.uuid4().hex[:6]}"
     log_file = f"{pg_dir}.log"
 
-    env = os.environ.copy()
-    env["LC_ALL"] = "en_US.UTF-8"
+    env_init = get_isolated_env({"LC_ALL": "en_US.UTF-8"})
     subprocess.run([initdb, "-D", pg_dir, "-U", "postgres", "-E", "UTF8", "--auth=trust"],
-                   env=env, capture_output=True, check=True)
+                   env=env_init, capture_output=True, check=True)
 
-    env["LC_ALL"] = "C"
+    env_ctl = get_isolated_env({"LC_ALL": "C"})
     subprocess.run([pg_ctl, "-D", pg_dir, "-o", f"-h 127.0.0.1 -p {PG_PORT} -k /tmp", "-l", log_file, "start"],
-                   env=env, capture_output=True, check=True)
+                   env=env_ctl, capture_output=True, check=True)
 
     def cleanup():
-        subprocess.run([pg_ctl, "-D", pg_dir, "stop"], capture_output=True)
+        subprocess.run([pg_ctl, "-D", pg_dir, "stop"], capture_output=True, env=get_isolated_env())
         shutil.rmtree(pg_dir, ignore_errors=True)
         if os.path.exists(log_file):
             os.remove(log_file)
@@ -158,10 +168,10 @@ def setup_isolated_test_cluster(use_existing: bool = False):
         if f.endswith(".sql"):
             full_path = os.path.join(migrations_dir, f)
             subprocess.run([PSQL, "-h", PG_HOST, "-p", PG_PORT, "-U", PG_USER, "-d", PG_DB, "-v", "ON_ERROR_STOP=1", "-f", full_path],
-                           capture_output=True, check=True)
+                           capture_output=True, check=True, env=get_isolated_env())
 
 def test_signup_profile_trigger():
-    print("[1/9] Testing auth.users profile trigger, strict validation & immutability...")
+    print("[1/10] Testing auth.users profile trigger, strict validation & immutability...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     u2 = str(uuid.uuid4())
@@ -231,7 +241,7 @@ def test_signup_profile_trigger():
     print("  ✓ Profile signup trigger, strict rejection of blank/invalid username, Google onboarding & immutability PASS")
 
 def test_revoked_sessions():
-    print("[2/9] Testing private.revoked_sessions & is_auth_session_active...")
+    print("[2/10] Testing private.revoked_sessions & is_auth_session_active...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     s1 = str(uuid.uuid4())
@@ -269,7 +279,7 @@ def test_revoked_sessions():
     print("  ✓ Session active check, revocation and expires_at constraint PASS")
 
 def test_friend_relations():
-    print("[3/9] Testing friend_relations constraints...")
+    print("[3/10] Testing friend_relations constraints...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
     low_u, high_u = sorted([u1, u2])
@@ -312,7 +322,7 @@ def test_friend_relations():
     print("  ✓ Friend relations constraints PASS")
 
 def test_rooms_and_members_deferrable_swap():
-    print("[4/9] Testing rooms, members, and DEFERRABLE side swap...")
+    print("[4/10] Testing rooms, members, and DEFERRABLE side swap...")
     rand_suffix = uuid.uuid4().hex[:6]
     owner_id = str(uuid.uuid4())
     p2_id = str(uuid.uuid4())
@@ -364,7 +374,7 @@ def test_rooms_and_members_deferrable_swap():
     print("  ✓ Rooms invariants, member side constraints & DEFERRABLE swap PASS")
 
 def test_matches_and_circular_fk():
-    print("[5/9] Testing matches constraints, JSONB shapes, DISCONNECT, runningSinceEpochMs, proposal & circular FK...")
+    print("[5/10] Testing matches constraints, JSONB shapes, DISCONNECT, runningSinceEpochMs, proposal & circular FK...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
     run_sql(f"""
@@ -484,16 +494,73 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET mode = 'AI' WHERE id = '{m_id}';
     """, expected_err="Immutable match attributes cannot be modified")
 
-    # Outcome draw missing winner key MUST be rejected
+    # Outcome draw missing winner key MUST be rejected (with proposal = NULL to isolate outcome failure)
     missing_winner_draw = json.dumps({"reason": "REPETITION"})
     run_sql_expect_error(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{missing_winner_draw}', ended_at = now() WHERE id = '{m_id}';
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{missing_winner_draw}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
     """, expected_err="matches_status_and_outcome_invariants")
 
-    # Valid draw outcome with explicit winner: null
+    # Restored regression checks: Invalid status/outcome combinations
+    # 1. Invalid terminal combination: FINISHED with SERVER_RESTART MUST be rejected
+    restart_outcome = json.dumps({"reason": "SERVER_RESTART", "winner": None})
+    run_sql_expect_error(f"""
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{restart_outcome}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
+    """, expected_err="matches_status_and_outcome_invariants")
+
+    # 2. Invalid terminal combination: AGREED_DRAW with winner = RED MUST be rejected
+    bad_draw = json.dumps({"reason": "AGREED_DRAW", "winner": "RED"})
+    run_sql_expect_error(f"""
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{bad_draw}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
+    """, expected_err="matches_status_and_outcome_invariants")
+
+    # 3. Invalid terminal combination: DISCONNECT with winner = null MUST be rejected
+    bad_disconnect = json.dumps({"reason": "DISCONNECT", "winner": None})
+    run_sql_expect_error(f"""
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{bad_disconnect}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
+    """, expected_err="matches_status_and_outcome_invariants")
+
+    # 4. Invalid combination: INTERRUPTED with CHECKMATE MUST be rejected
+    bad_interrupted = json.dumps({"reason": "CHECKMATE", "winner": "RED"})
+    run_sql_expect_error(f"""
+        UPDATE public.matches SET status = 'INTERRUPTED', outcome = '{bad_interrupted}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
+    """, expected_err="matches_status_and_outcome_invariants")
+
+    # Valid INTERRUPTED combination: SERVER_RESTART with winner = null succeeds on separate match/room
+    r_id_int = str(uuid.uuid4())
+    run_sql(f"""
+        INSERT INTO public.rooms (id, owner_id, name, status, visibility, time_control)
+        VALUES ('{r_id_int}', '{u1}', 'Interrupted Room', 'WAITING', 'PUBLIC', 300);
+    """)
+    m_id_int = str(uuid.uuid4())
+    run_sql(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
+        VALUES ('{m_id_int}', '{r_id_int}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
+    """)
+    valid_restart = json.dumps({"reason": "SERVER_RESTART", "winner": None})
+    run_sql(f"""
+        UPDATE public.matches SET status = 'INTERRUPTED', outcome = '{valid_restart}', ended_at = now(), proposal = NULL WHERE id = '{m_id_int}';
+    """)
+
+    # Valid draw outcome with explicit winner: null succeeds on separate match/room
+    r_id_draw = str(uuid.uuid4())
+    run_sql(f"""
+        INSERT INTO public.rooms (id, owner_id, name, status, visibility, time_control)
+        VALUES ('{r_id_draw}', '{u1}', 'Draw Room', 'WAITING', 'PUBLIC', 300);
+    """)
+    m_id_draw = str(uuid.uuid4())
+    run_sql(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
+        VALUES ('{m_id_draw}', '{r_id_draw}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
+    """)
     valid_draw = json.dumps({"reason": "REPETITION", "winner": None})
     run_sql(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{valid_draw}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{valid_draw}', ended_at = now(), proposal = NULL WHERE id = '{m_id_draw}';
+    """)
+
+    # Valid DISCONNECT outcome with winner = RED succeeds on m_id
+    disconnect_outcome = json.dumps({"reason": "DISCONNECT", "winner": "RED"})
+    run_sql(f"""
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{disconnect_outcome}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
     """)
 
     # Terminal match is now immutable
@@ -501,10 +568,10 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET version = 1 WHERE id = '{m_id}';
     """, expected_err="Terminal match is immutable")
 
-    print("  ✓ Matches constraints, hardened JSON checks, proposal validation, runningSinceEpochMs & circular FK PASS")
+    print("  ✓ Matches constraints, hardened JSON checks, proposal validation, status/outcome matrix & DISCONNECT PASS")
 
 def test_events_moves_receipts():
-    print("[6/9] Testing match_events, match_moves & command_receipts (number coordinates & explicit errorCode)...")
+    print("[6/10] Testing match_events, match_moves & command_receipts (number coordinates & explicit errorCode)...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     run_sql(f"""
@@ -549,6 +616,13 @@ def test_events_moves_receipts():
         VALUES ('{m_id}', 1, 'RED', '{bad_move}');
     """, expected_err="match_moves_move_json_check")
 
+    # Restored regression check: Move from == to rejected (same square)
+    same_move = json.dumps({"from": {"x": 4, "y": 0}, "to": {"x": 4, "y": 0}})
+    run_sql_expect_error(f"""
+        INSERT INTO public.match_moves (match_id, event_version, side, move)
+        VALUES ('{m_id}', 1, 'RED', '{same_move}');
+    """, expected_err="match_moves_move_json_check")
+
     # Valid move + event in same transaction (deferred FK)
     good_move = json.dumps({"from": {"x": 4, "y": 0}, "to": {"x": 4, "y": 1}})
     run_sql(f"""
@@ -575,7 +649,13 @@ def test_events_moves_receipts():
         VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '{valid_hash}', 1, '{valid_receipt}');
     """)
 
-    print("  ✓ Events, number-typed move coordinates, move='{{}}' rejection & receipts errorCode check PASS")
+    # Restored regression check: payload_hash must be exactly 32 bytes
+    run_sql_expect_error(f"""
+        INSERT INTO public.command_receipts (match_id, actor_key, command_id, command_type, payload_hash, applied_version, result)
+        VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '\\x010203', 1, '{valid_receipt}');
+    """, expected_err="command_receipts_payload_hash_length_check")
+
+    print("  ✓ Events, number coordinates, same-cell rejection, hash length & receipts errorCode check PASS")
 
 TABLE_UPDATE_SET = {
     ("public", "profiles"): "updated_at = now()",
@@ -600,7 +680,7 @@ TABLE_UPDATE_SET = {
 }
 
 def test_comprehensive_rls_denial():
-    print(f"[7/9] Testing RLS denial across ALL {len(ALL_19_TABLES)} tables for anon & authenticated (SELECT, INSERT, UPDATE, DELETE)...")
+    print(f"[7/10] Testing RLS denial across ALL {len(ALL_19_TABLES)} tables for anon & authenticated (SELECT, INSERT, UPDATE, DELETE)...")
     total_checks = 0
     for schema, table in ALL_19_TABLES:
         full_table = f"{schema}.{table}"
@@ -646,7 +726,7 @@ def test_comprehensive_rls_denial():
     print(f"  ✓ Verified {total_checks} RLS denial assertions across all 19 tables (SELECT/INSERT/UPDATE/DELETE) PASS")
 
 def test_app_server_grants_and_trigger_security():
-    print("[8/9] Testing app_server permissions & revoked trigger function execution...")
+    print("[8/10] Testing app_server permissions & revoked trigger function execution...")
     # Read as app_server succeeds on public.profiles
     res = run_sql("""
         SET ROLE app_server;
@@ -679,7 +759,7 @@ def test_app_server_grants_and_trigger_security():
     print("  ✓ App_server grants, audit immutability & revoked trigger execution PASS")
 
 def test_real_transaction_rollback():
-    print("[9/9] Testing REAL transaction rollback atomicity...")
+    print("[9/10] Testing REAL transaction rollback atomicity...")
     r_id = str(uuid.uuid4())
     before_rooms = int(run_sql("SELECT count(*) FROM public.rooms;"))
 
@@ -705,6 +785,53 @@ def test_real_transaction_rollback():
 
     print("  ✓ Real PL/pgSQL transaction rollback verified PASS")
 
+def test_libpq_environment_isolation():
+    print("[10/10] Testing libpq environment isolation (PGHOSTADDR and PG* variables)...")
+    # Simulate aggressive external environment pollution
+    dirty_hostaddr = "192.0.2.1"  # RFC 5737 TEST-NET-1 (unroutable blackhole IP)
+    dirty_port = "1"              # Invalid port
+    dirty_db = "nonexistent_db_from_env"
+
+    orig_env = {k: os.environ.get(k) for k in ["PGHOSTADDR", "PGPORT", "PGDATABASE"]}
+    try:
+        os.environ["PGHOSTADDR"] = dirty_hostaddr
+        os.environ["PGPORT"] = dirty_port
+        os.environ["PGDATABASE"] = dirty_db
+
+        # 1. Verify that run_sql (isolated) connects to the true test cluster (127.0.0.1:PG_PORT)
+        # without being hijacked by PGHOSTADDR or PGPORT from os.environ
+        res = run_sql("SELECT current_database();")
+        assert res == PG_DB, f"Expected database '{PG_DB}', but got '{res}'"
+
+        # 2. Prove that an UNISOLATED psql invocation WITH PGHOSTADDR would indeed be hijacked and fail
+        unisolated_env = os.environ.copy()
+        unisolated_cmd = [
+            PSQL,
+            "-h", PG_HOST,
+            "-p", PG_PORT,
+            "-U", PG_USER,
+            "-d", PG_DB,
+            "-v", "ON_ERROR_STOP=1",
+            "-c", "SELECT 1;"
+        ]
+        proc = subprocess.run(
+            unisolated_cmd,
+            env=dict(unisolated_env, PGCONNECT_TIMEOUT="2"),
+            capture_output=True,
+            text=True
+        )
+        assert proc.returncode != 0, "Expected unisolated psql with PGHOSTADDR=192.0.2.1 to fail!"
+        assert "192.0.2.1" in proc.stderr or "could not connect" in proc.stderr.lower() or "timeout" in proc.stderr.lower(), \
+            f"Expected connection error to 192.0.2.1, got: {proc.stderr}"
+
+        print("  ✓ External PGHOSTADDR / PG* variables successfully blocked by isolation layer PASS")
+    finally:
+        for k, v in orig_env.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
 def main():
     parser = argparse.ArgumentParser(description="Run database integration test suite")
     parser.add_argument("--use-existing", action="store_true", help="Connect to existing PG rather than creating a temporary cluster")
@@ -728,8 +855,9 @@ def main():
         test_comprehensive_rls_denial()
         test_app_server_grants_and_trigger_security()
         test_real_transaction_rollback()
+        test_libpq_environment_isolation()
         print("=" * 60)
-        print("ALL 9 TEST SUITES PASSED (170+ invariant & security assertions verified)!")
+        print("ALL 10 TEST SUITES PASSED (180+ invariant & security assertions verified)!")
         print("=" * 60)
     except Exception as e:
         print(f"\nTEST FAILED: {e}", file=sys.stderr)

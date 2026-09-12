@@ -2,8 +2,8 @@
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
 - Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và hardening toàn diện đã deploy, kiểm chứng hoàn tất.
-- Issue đang làm: fix bổ sung ISSUE-006 đợt 3 (nhánh `fix/issue-006-json-contract-hardening`).
-- Bước tiếp theo: Merge PR fix json contract hardening đợt 3, tiếp tục ISSUE-001/002.
+- Issue đang làm: fix bổ sung ISSUE-006 đợt 4 (nhánh `fix/issue-006-harness-isolation`).
+- Bước tiếp theo: Mở PR `fix/issue-006-harness-isolation`, review, squash merge và triển khai ISSUE-001/002.
 - Blocker hiện tại của lập trình local: không có.
 - External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng và đã đồng bộ 8 migration files.
 
@@ -16,7 +16,7 @@
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
 | [ISSUE-005](../issues/ISSUE-005-board-ui.md) | TODO | Chưa thực thi |
-| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `fix/issue-006-json-contract-hardening`, [PR #8](https://github.com/twotnguyen/XIANGQI/pull/8); 19 bảng, RLS & migration 8 fixes đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
+| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | PR #8 đã MERGED (`f24acb4`); nhánh fix `fix/issue-006-harness-isolation` cô lập libpq (`PGHOSTADDR`) và khôi phục regression tests (10 suites, 180+ assertions PASS); báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
 | [ISSUE-007](../issues/ISSUE-007-password-auth.md) | TODO | Chưa thực thi |
 | [ISSUE-008](../issues/ISSUE-008-google-profile.md) | TODO | Chưa thực thi |
 | [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | TODO | Chưa thực thi |
@@ -48,9 +48,9 @@
 
 Cập nhật đoạn này với thông tin thật, không chỉ ghi “đang làm”.
 
-- Code changes: `supabase/migrations/20260912000008_json_contract_hardening.sql`, `tests/integration/database_test.py` (tự cô lập port động, 9 suites, 170+ assertions, 152 RLS checks), `docs/test-reports/DATABASE-SETUP.md`.
-- Last command/test: Áp dụng migration 8 lên Supabase `snsnkoicxmubuotcdafi`, đồng bộ `supabase_migrations.schema_migrations` (8/8 migrations khớp Git), local test 9/9 suites pass (170+ assertions, bao gồm RLS 4 quyền SELECT/INSERT/UPDATE/DELETE 19 bảng và clean rollback).
-- Next exact action: Mở PR nhánh `fix/issue-006-json-contract-hardening`, review, squash merge và đồng bộ `main`.
+- Code changes: `tests/integration/database_test.py` (cô lập libpq PGHOSTADDR, khôi phục regression tests same-cell move, hash length, status/outcome matrix, 10 suites, 180+ assertions), `docs/test-reports/DATABASE-SETUP.md`.
+- Last command/test: `python3 tests/integration/database_test.py` (exit code 0, 10/10 suites pass, 180+ assertions).
+- Next exact action: Mở PR nhánh `fix/issue-006-harness-isolation`, review, squash merge và đồng bộ `main`.
 - External blocker: Không có. Project Supabase `snsnkoicxmubuotcdafi` sẵn sàng.
 
 ## Mẫu evidence
