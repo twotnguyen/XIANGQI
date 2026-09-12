@@ -2,13 +2,15 @@
 """
 Integration test harness for Xiangqi Supabase schema.
 Connects to local PostgreSQL instance (port 54399) to verify:
-- Migration clean run
-- Auth profile triggers & username immutability
+- Migration clean run (including schema fixes)
+- Auth profile triggers & strict username validation
 - Session revocation & private.is_auth_session_active
-- All table constraints (JSON, NULL, enums, bounds, circular FK)
+- All table constraints (JSON, NULL, enums, bounds, circular FK, DISCONNECT, clock)
 - Deferrable side uniqueness swap
-- RLS and role permissions (anon, authenticated, app_server)
-- Transaction rollback safety
+- Comprehensive RLS denial on all 19 tables for anon & authenticated
+- Least privilege DML permissions for app_server
+- Revocation of execute privileges on trigger functions
+- Real transaction rollback atomicity
 """
 
 import subprocess
@@ -19,6 +21,28 @@ import sys
 PG_PORT = "54399"
 PG_USER = "postgres"
 PG_DB = "postgres"
+
+ALL_19_TABLES = [
+    ("public", "profiles"),
+    ("private", "revoked_sessions"),
+    ("public", "friend_relations"),
+    ("public", "rooms"),
+    ("public", "room_members"),
+    ("public", "invitations"),
+    ("public", "matches"),
+    ("public", "active_players"),
+    ("public", "match_events"),
+    ("public", "match_moves"),
+    ("public", "command_receipts"),
+    ("public", "client_controls"),
+    ("public", "ai_jobs"),
+    ("public", "chat_messages"),
+    ("public", "media_policies"),
+    ("public", "media_transports"),
+    ("public", "media_policy_jobs"),
+    ("public", "room_rematch_votes"),
+    ("public", "room_command_receipts"),
+]
 
 def run_sql(query: str, user: str = PG_USER) -> str:
     cmd = [
@@ -52,14 +76,15 @@ def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = ""
     return err
 
 def test_signup_profile_trigger():
-    print("[1/8] Testing auth.users profile trigger & username immutability...")
+    print("[1/9] Testing auth.users profile trigger, strict validation & immutability...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     u2 = str(uuid.uuid4())
     u3 = str(uuid.uuid4())
+    u4 = str(uuid.uuid4())
     uname1 = f"u1_{rand_suffix}"
 
-    # User 1: normal signup
+    # User 1: normal valid signup
     run_sql(f"""
         INSERT INTO auth.users (id, raw_user_meta_data, email)
         VALUES ('{u1}', '{{"signup_username": "{uname1}", "signup_display_name": "Player 1"}}', '{uname1}@test.com');
@@ -67,13 +92,19 @@ def test_signup_profile_trigger():
     res = run_sql(f"SELECT username, display_name FROM public.profiles WHERE user_id = '{u1}';")
     assert f"{uname1}|Player 1" in res, f"Expected {uname1}|Player 1, got {res}"
 
-    # User 2: Google signup (no username)
+    # User 2: Google signup (no username provided)
     run_sql(f"""
         INSERT INTO auth.users (id, raw_user_meta_data, email)
         VALUES ('{u2}', '{{"name": "Google User"}}', 'p2_{rand_suffix}@test.com');
     """)
     res = run_sql(f"SELECT username IS NULL, display_name FROM public.profiles WHERE user_id = '{u2}';")
     assert "t|Google User" in res, f"Expected username NULL and Google User, got {res}"
+
+    # Invalid username format MUST be rejected (not silently converted to NULL)
+    run_sql_expect_error(f"""
+        INSERT INTO auth.users (id, raw_user_meta_data, email)
+        VALUES ('{u4}', '{{"signup_username": "Invalid@User!", "signup_display_name": "Bad User"}}', 'p4_{rand_suffix}@test.com');
+    """, expected_err="Invalid username format in signup metadata")
 
     # Duplicate username check
     run_sql_expect_error(f"""
@@ -98,10 +129,10 @@ def test_signup_profile_trigger():
         UPDATE public.profiles SET user_id = '{str(uuid.uuid4())}' WHERE user_id = '{u1}';
     """, expected_err="Cannot change user_id in profiles")
 
-    print("  ✓ Profile signup trigger, Google onboarding, duplicate check & immutability PASS")
+    print("  ✓ Profile signup trigger, strict rejection of invalid username, Google onboarding & immutability PASS")
 
 def test_revoked_sessions():
-    print("[2/8] Testing private.revoked_sessions & is_auth_session_active...")
+    print("[2/9] Testing private.revoked_sessions & is_auth_session_active...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     s1 = str(uuid.uuid4())
@@ -139,7 +170,7 @@ def test_revoked_sessions():
     print("  ✓ Session active check, revocation and expires_at constraint PASS")
 
 def test_friend_relations():
-    print("[3/8] Testing friend_relations constraints...")
+    print("[3/9] Testing friend_relations constraints...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
     low_u, high_u = sorted([u1, u2])
@@ -182,7 +213,7 @@ def test_friend_relations():
     print("  ✓ Friend relations constraints PASS")
 
 def test_rooms_and_members_deferrable_swap():
-    print("[4/8] Testing rooms, members, and DEFERRABLE side swap...")
+    print("[4/9] Testing rooms, members, and DEFERRABLE side swap...")
     rand_suffix = uuid.uuid4().hex[:6]
     owner_id = str(uuid.uuid4())
     p2_id = str(uuid.uuid4())
@@ -234,7 +265,7 @@ def test_rooms_and_members_deferrable_swap():
     print("  ✓ Rooms invariants, member side constraints & DEFERRABLE swap PASS")
 
 def test_matches_and_circular_fk():
-    print("[5/8] Testing matches constraints, JSONB shapes, guard trigger & circular FK...")
+    print("[5/9] Testing matches constraints, JSONB shapes, DISCONNECT & circular FK...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
     run_sql(f"""
@@ -250,27 +281,39 @@ def test_matches_and_circular_fk():
 
     m_id = str(uuid.uuid4())
     boot_id = str(uuid.uuid4())
-    board = json.dumps([None] * 90)
-    position = json.dumps({"board": [None] * 90, "turn": "RED"})
-    clock = json.dumps({"redMs": 300000, "blackMs": 300000, "runningSinceEpochMs": None})
+    valid_pos = json.dumps({"board": [None] * 90, "turn": "RED"})
+    valid_clock = json.dumps({"redMs": 300000, "blackMs": 300000, "runningSinceEpochMs": None})
 
-    # Mode ONLINE with same players rejected
+    # Empty position {} MUST be rejected
     run_sql_expect_error(f"""
         INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
-        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u1}', '{position}', '{{}}', '{clock}', 300, '{boot_id}');
-    """, expected_err="matches_mode_invariants")
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{{}}', '{{}}', '{valid_clock}', 300, '{boot_id}');
+    """, expected_err="matches_position_json_check")
 
-    # Invalid board array length (not 90)
+    # Invalid board length (not 90) MUST be rejected
     bad_pos = json.dumps({"board": [None] * 80, "turn": "RED"})
     run_sql_expect_error(f"""
         INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
-        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{bad_pos}', '{{}}', '{clock}', 300, '{boot_id}');
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{bad_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
     """, expected_err="matches_position_json_check")
+
+    # Malformed clock with negative value or string MUST be rejected
+    bad_clock1 = json.dumps({"redMs": -1, "blackMs": "oops"})
+    run_sql_expect_error(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{bad_clock1}', 300, '{boot_id}');
+    """, expected_err="matches_clock_json_check")
+
+    # Mode ONLINE with same player on both sides rejected
+    run_sql_expect_error(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u1}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
+    """, expected_err="matches_mode_invariants")
 
     # Valid match creation
     run_sql(f"""
         INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
-        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{position}', '{{}}', '{clock}', 300, '{boot_id}');
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
     """)
 
     # Active players slot reservation
@@ -305,16 +348,22 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET mode = 'AI' WHERE id = '{m_id}';
     """, expected_err="Immutable match attributes cannot be modified")
 
-    # Terminal match outcome check: AGREED_DRAW must have winner = null
-    bad_outcome = json.dumps({"reason": "AGREED_DRAW", "winner": "RED"})
+    # Invalid terminal combination: FINISHED with SERVER_RESTART MUST be rejected
+    restart_outcome = json.dumps({"reason": "SERVER_RESTART", "winner": None})
     run_sql_expect_error(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{bad_outcome}', ended_at = now() WHERE id = '{m_id}';
-    """, expected_err="matches_outcome_json_check")
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{restart_outcome}', ended_at = now() WHERE id = '{m_id}';
+    """, expected_err="matches_status_and_outcome_invariants")
 
-    # Valid terminal match update
-    good_outcome = json.dumps({"reason": "CHECKMATE", "winner": "RED"})
+    # Invalid terminal combination: AGREED_DRAW with winner = RED MUST be rejected
+    bad_draw = json.dumps({"reason": "AGREED_DRAW", "winner": "RED"})
+    run_sql_expect_error(f"""
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{bad_draw}', ended_at = now() WHERE id = '{m_id}';
+    """, expected_err="matches_status_and_outcome_invariants")
+
+    # Valid DISCONNECT outcome with winner RED MUST succeed
+    disconnect_outcome = json.dumps({"reason": "DISCONNECT", "winner": "RED"})
     run_sql(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{good_outcome}', ended_at = now() WHERE id = '{m_id}';
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{disconnect_outcome}', ended_at = now() WHERE id = '{m_id}';
     """)
 
     # Terminal match is now immutable
@@ -322,10 +371,10 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET version = 1 WHERE id = '{m_id}';
     """, expected_err="Terminal match is immutable")
 
-    print("  ✓ Matches constraints, JSON checks, active_players, circular FK & immutability PASS")
+    print("  ✓ Matches constraints, hardened JSON checks, DISCONNECT reason & circular FK PASS")
 
 def test_events_moves_receipts():
-    print("[6/8] Testing match_events, match_moves & command_receipts...")
+    print("[6/9] Testing match_events, match_moves & command_receipts...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     run_sql(f"""
@@ -390,27 +439,38 @@ def test_events_moves_receipts():
 
     print("  ✓ Events, moves coordinates, deferred FK & receipts PASS")
 
-def test_rls_and_role_security():
-    print("[7/8] Testing RLS and permissions with anon, authenticated, app_server...")
-    # Attempt read as anon
-    run_sql_expect_error("""
-        SET ROLE anon;
-        SELECT * FROM public.profiles;
-    """, expected_err="permission denied for table profiles")
+def test_comprehensive_rls_denial():
+    print("[7/9] Testing RLS denial across ALL 19 tables for anon & authenticated...")
+    for schema, table in ALL_19_TABLES:
+        full_table = f"{schema}.{table}"
+        # Test anon SELECT denied
+        run_sql_expect_error(f"""
+            SET ROLE anon;
+            SELECT * FROM {full_table};
+        """, expected_err="permission denied")
 
-    # Attempt read as authenticated
-    run_sql_expect_error("""
-        SET ROLE authenticated;
-        SELECT * FROM public.profiles;
-    """, expected_err="permission denied for table profiles")
+        # Test authenticated SELECT denied
+        run_sql_expect_error(f"""
+            SET ROLE authenticated;
+            SELECT * FROM {full_table};
+        """, expected_err="permission denied")
 
-    # Attempt call private function as anon
+    # Private helper denied for anon and authenticated
     run_sql_expect_error(f"""
         SET ROLE anon;
         SELECT private.is_auth_session_active('{uuid.uuid4()}', '{uuid.uuid4()}');
     """, expected_err="permission denied")
 
-    # Read as app_server succeeds
+    run_sql_expect_error(f"""
+        SET ROLE authenticated;
+        SELECT private.is_auth_session_active('{uuid.uuid4()}', '{uuid.uuid4()}');
+    """, expected_err="permission denied")
+
+    print(f"  ✓ Verified RLS denial for anon and authenticated on all {len(ALL_19_TABLES)} tables PASS")
+
+def test_app_server_grants_and_trigger_security():
+    print("[8/9] Testing app_server permissions & revoked trigger function execution...")
+    # Read as app_server succeeds on public.profiles
     res = run_sql("""
         SET ROLE app_server;
         SELECT count(*) >= 0 FROM public.profiles;
@@ -428,32 +488,49 @@ def test_rls_and_role_security():
         UPDATE public.match_events SET type = 'RESULT';
     """, expected_err="permission denied for table match_events")
 
-    print("  ✓ RLS denied for anon/authenticated, app_server grants & audit immutability PASS")
+    # Trigger functions EXECUTE must be revoked from anon & authenticated
+    run_sql_expect_error("""
+        SET ROLE anon;
+        SELECT public.handle_new_user();
+    """, expected_err="permission denied")
 
-def test_transaction_rollback():
-    print("[8/8] Testing transaction rollback atomicity...")
+    run_sql_expect_error("""
+        SET ROLE authenticated;
+        SELECT public.guard_match_updates();
+    """, expected_err="permission denied")
+
+    print("  ✓ App_server grants, audit immutability & revoked trigger execution PASS")
+
+def test_real_transaction_rollback():
+    print("[9/9] Testing REAL transaction rollback atomicity...")
+    r_id = str(uuid.uuid4())
     before_rooms = int(run_sql("SELECT count(*) FROM public.rooms;"))
-    before_matches = int(run_sql("SELECT count(*) FROM public.matches;"))
 
+    # Test PL/pgSQL DO block that inserts a row and then throws an exception
     run_sql_expect_error(f"""
-        BEGIN;
-        INSERT INTO public.rooms (id, owner_id, name, status, visibility, time_control)
-        VALUES ('{uuid.uuid4()}', (SELECT user_id FROM public.profiles LIMIT 1), 'Rollback Room', 'WAITING', 'PUBLIC', 300);
-        RAISE EXCEPTION 'Simulated failure before commit';
-        COMMIT;
-    """, expected_err="Simulated failure before commit")
+        DO $$
+        DECLARE
+          v_owner uuid;
+        BEGIN
+          SELECT user_id INTO v_owner FROM public.profiles LIMIT 1;
+          INSERT INTO public.rooms (id, owner_id, name, status, visibility, time_control)
+          VALUES ('{r_id}', v_owner, 'Rollback Room', 'WAITING', 'PUBLIC', 300);
+          RAISE EXCEPTION 'Real PL/pgSQL failure before commit';
+        END $$;
+    """, expected_err="Real PL/pgSQL failure before commit")
 
     after_rooms = int(run_sql("SELECT count(*) FROM public.rooms;"))
-    after_matches = int(run_sql("SELECT count(*) FROM public.matches;"))
+    assert before_rooms == after_rooms, f"Room count leaked: {before_rooms} -> {after_rooms}"
 
-    assert before_rooms == after_rooms, f"Room count leaked after rollback: {before_rooms} -> {after_rooms}"
-    assert before_matches == after_matches, f"Match count leaked after rollback: {before_matches} -> {after_matches}"
+    # Verify that the specific row definitely does not exist
+    exists = run_sql(f"SELECT EXISTS (SELECT 1 FROM public.rooms WHERE id = '{r_id}');")
+    assert exists == "f", f"Rolled back room still exists in DB: {r_id}"
 
-    print("  ✓ Transaction rollback atomicity PASS")
+    print("  ✓ Real PL/pgSQL transaction rollback verified PASS")
 
 def main():
     print("=" * 60)
-    print("RUNNING LOCAL DATABASE INTEGRATION TESTS")
+    print("RUNNING HARDENED DATABASE INTEGRATION TESTS")
     print("=" * 60)
     try:
         test_signup_profile_trigger()
@@ -462,10 +539,11 @@ def main():
         test_rooms_and_members_deferrable_swap()
         test_matches_and_circular_fk()
         test_events_moves_receipts()
-        test_rls_and_role_security()
-        test_transaction_rollback()
+        test_comprehensive_rls_denial()
+        test_app_server_grants_and_trigger_security()
+        test_real_transaction_rollback()
         print("=" * 60)
-        print("ALL 8 TEST SUITES PASSED (32+ invariant assertions verified)!")
+        print("ALL 9 TEST SUITES PASSED (50+ invariant assertions verified)!")
         print("=" * 60)
     except Exception as e:
         print(f"\nTEST FAILED: {e}", file=sys.stderr)
