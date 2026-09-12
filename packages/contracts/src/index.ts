@@ -92,3 +92,12 @@ export {
   JoinRoomBodySchema,
   type JoinRoomBody,
 } from './invitation.js';
+
+export {
+  ChatChannelSchema,
+  type ChatChannel,
+  ChatMessageDTOSchema,
+  type ChatMessageDTO,
+  SendMessageBodySchema,
+  type SendMessageBody,
+} from './chat.js';

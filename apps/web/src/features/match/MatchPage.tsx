@@ -6,6 +6,7 @@ import { Board } from '../../components/board/Board.js';
 import { Clock } from './Clock.js';
 import { Controls } from './Controls.js';
 import { useMatch } from './useMatch.js';
+import { ChatPanel } from '../chat/ChatPanel.js';
 import type { Side } from '@xiangqi/contracts';
 
 export function MatchPage() {
@@ -189,6 +190,11 @@ export function MatchPage() {
           onProposeUndo={() => propose('UNDO')}
           onResign={resign}
         />
+      )}
+
+      {/* Room chat */}
+      {snapshot.roomId && (
+        <ChatPanel roomId={snapshot.roomId} />
       )}
     </main>
   );
