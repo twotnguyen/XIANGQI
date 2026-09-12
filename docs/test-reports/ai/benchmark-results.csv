@@ -1,0 +1,21 @@
+ID,Description,Depth,Minimax Score,Minimax Nodes,Minimax Time (ms),AlphaBeta Score,AlphaBeta Nodes,AlphaBeta Time (ms),Pruning Ratio (%),Scores Match
+corpus-01-initial,"Thế cờ khởi đầu chuẩn",2,0,1243,241.8,-Infinity,36,7.1,97.1,NO
+corpus-02-mate-in-1,"Chiếu hết 1 nước bằng Xe đâm đáy",2,0,6,0.1,-Infinity,3,0.1,50.0,NO
+corpus-03-cannon-screen,"Pháo gián tiếp chiếu qua ngòi",2,250,86,4.8,250,57,6.0,33.7,YES
+corpus-04-horse-fork,"Mã bắt đôi Xe và Tướng",2,99999,22,1.9,99999,11,0.2,50.0,YES
+corpus-05-pawn-endgame,"Tốt qua sông áp sát cung tướng",2,-200,11,0.2,-Infinity,4,6.6,63.6,NO
+corpus-06-chariot-advisor-mate,"Xe kẹp cổ tướng đen",2,-400,19,0.4,-Infinity,4,0.1,78.9,NO
+corpus-07-two-horses,"Song mã liên hoàn",2,800,41,5.1,800,54,1.8,-31.7,YES
+corpus-08-elephant-defense,"Tượng liên kết phòng thủ trung lộ",2,-50,66,2.5,-50,26,9.4,60.6,YES
+corpus-09-cannon-chariot-battery,"Xe Pháo phối hợp đè cột",2,0,37,1.7,-Infinity,18,0.5,51.4,NO
+corpus-10-pinned-horse,"Mã bị chặn cẳng không thể đi",2,0,19,3.1,-Infinity,3,0.1,84.2,NO
+corpus-11-advisor-shield,"Sĩ che tướng chống xe chiếu ngang",2,0,12,0.3,-Infinity,4,0.1,66.7,NO
+corpus-12-double-cannon-check,"Trùng pháo chiếu hết",2,900,91,13.8,900,79,5.1,13.2,YES
+corpus-13-horse-palace-threat,"Mã ngọa tào uy hiếp góc cung",2,200,11,0.3,200,12,0.3,-9.1,YES
+corpus-14-advance-pawn-crossed,"Tốt đỏ lách ngang đe dọa sĩ",2,0,6,0.1,-Infinity,3,0.1,50.0,NO
+corpus-15-chariot-rook-fork,"Xe đỏ bắt đôi quân nhẹ",2,0,42,0.9,-Infinity,3,0.2,92.9,NO
+corpus-16-stalemate-defense,"Thế vây ép hết nước",2,-200,16,0.3,-200,12,0.3,25.0,YES
+corpus-17-open-file-control,"Xe chiếm lộ thông thoáng",2,0,6,0.1,-Infinity,3,0.1,50.0,NO
+corpus-18-trapped-chariot,"Xe đen bị cô lập góc bàn",2,99999,16,0.4,99999,9,1.7,43.8,YES
+corpus-19-pawn-advancement-clash,"Đối công tranh tốt qua sông",2,0,7,0.1,-Infinity,3,0.1,57.1,NO
+corpus-20-complex-middlegame,"Trung cuộc phức tạp Xe Pháo Mã hai bên",2,0,631,143.2,-Infinity,26,5.5,95.9,NO

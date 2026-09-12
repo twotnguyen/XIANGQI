@@ -14,7 +14,7 @@
     "test:unit": "pnpm exec vitest run --config vitest.config.ts",
     "test:integration": "pnpm exec vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test",
-    "test:ai": "echo 'AI suite not yet created (ISSUE-018+)' && exit 1",
+    "test:ai": "vitest run --config vitest.config.ts tests/ai/benchmark.test.ts",
     "test:load": "echo 'Load suite not yet created (ISSUE-030)' && exit 1"
   },
   "pnpm": {
