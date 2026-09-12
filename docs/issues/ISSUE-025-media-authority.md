@@ -13,6 +13,8 @@ Chỉ sửa các module phục vụ mục tiêu này. Các chức năng khác th
 
 ## Đọc trước
 
+- [09-DATABASE-DESIGN](../specs/09-DATABASE-DESIGN.md): schema/transactions và acceptance DB liên quan.
+
 - [06-MEDIA.md](../specs/06-MEDIA.md)
 - [04-CONTRACTS.md](../specs/04-CONTRACTS.md)
 
