@@ -7,6 +7,7 @@ import { Clock } from './Clock.js';
 import { Controls } from './Controls.js';
 import { useMatch } from './useMatch.js';
 import { ChatPanel } from '../chat/ChatPanel.js';
+import { MediaPanel } from '../media/MediaPanel.js';
 import type { Side } from '@xiangqi/contracts';
 
 export function MatchPage() {
@@ -275,6 +276,11 @@ export function MatchPage() {
           }}
           onResign={resign}
         />
+      )}
+
+      {/* Media camera/mic panel */}
+      {snapshot.roomId && (
+        <MediaPanel roomId={snapshot.roomId} isPlayer={isPlayer} />
       )}
 
       {/* Room chat */}
