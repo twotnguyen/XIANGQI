@@ -1,6 +1,17 @@
 import { createApp } from './app.js';
+import { recoverActiveMatchesOnBoot } from './modules/matches/deadlines.js';
 
 const PORT = Number(process.env['PORT'] ?? 3001);
+
+// Boot recovery: mark surviving ACTIVE matches as INTERRUPTED (SERVER_RESTART)
+try {
+  const recovered = await recoverActiveMatchesOnBoot();
+  if (recovered > 0) {
+    console.log(`Boot recovery: marked ${recovered} active matches as INTERRUPTED`);
+  }
+} catch {
+  // DB might not be connected yet in pure test/dev; ignore gracefully
+}
 
 const app = await createApp();
 
