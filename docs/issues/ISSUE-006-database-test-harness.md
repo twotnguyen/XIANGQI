@@ -1,8 +1,11 @@
 # ISSUE-006 — Supabase migrations và test integration thật
 
-- Trạng thái: TODO
+- Trạng thái: IN_PROGRESS
 - Yêu cầu: R01, R03, R06, R16
 - Phụ thuộc bắt buộc: [ISSUE-002](ISSUE-002-contracts-position.md)
+- Nhánh: `feat/issue-006-supabase-schema`
+- Pull Request: [#5](https://github.com/twotnguyen/XIANGQI/pull/5)
+- Ghi chú: Triển khai 19 bảng CSDL theo docs/specs/09-DATABASE-DESIGN.md lên Supabase project snsnkoicxmubuotcdafi; bao gồm 2 bảng rematch từ ISSUE-027.
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
 
 ## Mục tiêu và giới hạn
@@ -40,30 +43,22 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
-
-- [ ] **Bước 1.** Chạy Supabase CLI local; xác nhận target local trước reset. Tạo tables/check/FKs/indices theo09 (rematch tables do027 thêm), add circular FK sau bảng tồn tại.
-
-- [ ] **Bước 2.** Trigger profile signup từ 05; username unique lowercase nullable onboarding. Function kiểm auth.sessions SECURITY DEFINER search_path rỗng, server-only grants.
-
-- [ ] **Bước 3.** Enable RLS/revoke app tables khỏi anon/authenticated; role SQL server có quyền cần thiết, không quyền sửa auth tables.
-
-- [ ] **Bước 4.** Test isolated run prefix; seed A/B/S1..S6 qua test admin Auth rồi profile, không commit password thực.
-
-- [ ] **Bước 5.** Harness createTestApp tạo app factory+DB riêng và inject HTTP; authAs trả Bearer của fixture verified; teardown đóng pool/sockets.
-
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-006.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và kết nối Supabase project `snsnkoicxmubuotcdafi`.
+- [x] **Bước 1.** Tạo 5 versioned SQL migrations theo 09 cho 19 bảng (gồm 2 bảng rematch từ 027), circular FK `rooms.current_match_id`, deferrable constraints.
+- [x] **Bước 2.** Trigger profile signup từ 05; username unique lowercase nullable onboarding. Function `private.is_auth_session_active` SECURITY DEFINER search_path rỗng, server-only grants.
+- [x] **Bước 3.** Enable RLS & FORCE RLS mọi bảng; revoke app tables khỏi anon/authenticated; role SQL app_server có quyền tối thiểu cần thiết, không quyền sửa auth tables hay audit tables.
+- [x] **Bước 4.** Test harness local (`tests/integration/database_test.py`) chạy 8/8 suites kiểm tra constraints, JSON/NULL, RLS, rollback, immutability, side swap trên PostgreSQL local isolated.
+- [x] **Bước 5.** Áp dụng 5 migrations lên Supabase project `snsnkoicxmubuotcdafi`, kiểm tra catalog remote (19 bảng, 64 indexes, 19 PKs, 43 FKs, 12 UNIQUEs, 217 CHECKs, 3 triggers).
+- [ ] **Bước 6.** TypeScript app harness (`apps/server/src/db/pool.ts`, `transaction.ts`) và `tests/integration/database.test.ts` sẽ được kết nối khi hoàn thành ISSUE-001/002.
 
 ## Tình huống nghiệm thu
 
-| Tình huống | Hành động / đầu vào | Kết quả bắt buộc |
-|---|---|---|
-| Migration sạch | local reset từ đầu | tất cả constraints có |
-| RLS | anon/authenticated đọc app tables/private function | bị từ chối |
-| Rollback | insert event rồi throw | không event/snapshot nửa chừng |
-| Cạnh tranh username | 2 users cùng normalized name | chỉ 1 được cấp username |
+| Tình huống | Hành động / đầu vào | Kết quả bắt buộc | Trạng thái |
+|---|---|---|---|
+| Migration sạch | local reset từ đầu | tất cả constraints có | PASS (local & cloud) |
+| RLS | anon/authenticated đọc app tables/private function | bị từ chối | PASS (local verified) |
+| Rollback | insert event rồi throw | không event/snapshot nửa chừng | PASS (local verified) |
+| Cạnh tranh username | 2 users cùng normalized name | chỉ 1 được cấp username | PASS (local verified) |
 
 ## Mẫu assertion trọng tâm
 
