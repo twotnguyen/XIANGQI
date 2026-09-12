@@ -11,7 +11,8 @@
 5. [Auth](specs/05-AUTH.md), [Media](specs/06-MEDIA.md), [UI và tests](specs/07-UI-AND-TESTS.md): hợp đồng chuyên biệt.
 6. [32 issue](issues/README.md): các bước thực thi theo dependency.
 7. [PROGRESS](handoff/PROGRESS.md), [truy vết yêu cầu](TRACEABILITY.md), [readiness](READINESS.md): theo dõi và kiểm tra.
-8. [Đầu vào external](handoff/EXTERNAL-INPUTS.md): credentials/thiết bị cần ở mốc tương ứng.
+8. [Git/GitHub workflow](handoff/GIT-WORKFLOW.md): tự tạo nhánh, commit, PR, review và squash merge theo ủy quyền.
+9. [Đầu vào external](handoff/EXTERNAL-INPUTS.md): credentials/thiết bị cần ở mốc tương ứng.
 
 Khi nội dung chuyên biệt và tóm tắt có khác nhau, hợp đồng chuyên biệt ưu tiên cho phần đó; sửa đồng thời bản tóm tắt trước coding tiếp. Yêu cầu mới trực tiếp từ người dùng luôn ưu tiên, ghi lại quyết định và cập nhật issue liên quan.
 
