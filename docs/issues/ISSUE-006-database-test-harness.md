@@ -4,6 +4,7 @@
 - Yêu cầu: R01, R03, R06, R16
 - Phụ thuộc bắt buộc: [ISSUE-002](ISSUE-002-contracts-position.md)
 - Nhánh: `feat/issue-006-supabase-schema`
+- Pull Request: [#5](https://github.com/twotnguyen/XIANGQI/pull/5)
 - Ghi chú: Triển khai 19 bảng CSDL theo docs/specs/09-DATABASE-DESIGN.md lên Supabase project snsnkoicxmubuotcdafi; bao gồm 2 bảng rematch từ ISSUE-027.
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
 
