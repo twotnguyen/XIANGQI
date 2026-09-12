@@ -45,6 +45,23 @@ Commit types: feat, fix, docs, test, chore, refactor. Nhánh verify dùng commit
 
 Nếu cần checkpoint dở dang, push nhánh/draft PR được phép nhưng ghi rõ chưa qua nghiệm thu; không merge. Sửa review bằng commit mới trên nhánh đã push, tránh rewrite/force push. Không dùng `--no-verify` để né hook lỗi.
 
+## File được đưa vào lịch sử Git
+
+`.gitignore` ở repo root loại metadata macOS/Windows, dependency/cache/build, log, test output tự sinh, env riêng, service state/dumps local và runtime agent/deployment. Khi thêm công cụ mới, cập nhật pattern hẹp theo output thực tế trước stage. Không dùng `git add -f` để vượt ignore cho file sinh tự động.
+
+Giữ source, lockfile pnpm, migrations/seed SQL, config deploy, `.env.example`/`.env.*.example` đã làm sạch, fixture test nhỏ, font/ảnh sản phẩm có license và báo cáo nghiệm thu được chọn lọc trong `docs/test-reports/`. Không ignore toàn bộ `*.sql`, `*.json`, `*.png`, `*.svg`, `*.csv` hoặc thư mục docs/test-reports vì chúng có thể là đầu vào/bằng chứng cần bàn giao. VS Code chỉ cho phép extensions/settings/tasks/launch dùng chung và đã rà secret/đường dẫn cá nhân.
+
+Dùng `artifacts/` ở root cho trace, video test, dump benchmark thô và ảnh debug tự sinh; dùng `backups/`, `dumps/`, `infra/data/`, `infra/certs/` cho dữ liệu/certificate local. Supabase migrations/seed/config vẫn theo dõi. Báo cáo Markdown/JSON/CSV nhỏ và ảnh minh họa cần thiết được chọn lọc vào docs/test-reports; file media/dump lớn đưa GitHub release/artifact khi được phép và tham chiếu bằng link, không đưa lặp vào commit.
+
+Trước commit, bắt buộc:
+
+1. `git diff --cached --name-status` và `git diff --cached --stat`: xác nhận chỉ các file có mục đích trong issue.
+2. `git ls-files -ci --exclude-standard`: tìm file **đã tracked** nhưng khớp ignore; `.gitignore` không tự gỡ file đã commit.
+3. Kiểm tra kích thước blob staged của file thêm/sửa. File trên **5 MiB** phải được xem riêng và nêu lý do cần version trong PR; đây là ngưỡng review nội bộ, không phải giới hạn GitHub. File generated/dump/media thử nghiệm lớn chuyển sang artifact ngoài Git. Không tự chuyển Git LFS hoặc mua storage.
+4. Dùng `git check-ignore -v --no-index DUONG_DAN` để kiểm quy tắc nếu nghi ngờ; kiểm cả file cần loại lẫn file cần giữ. Không ghi secrets vào report của phép kiểm.
+
+Nếu phát hiện file rác đã tracked, dùng `git rm --cached -- DUONG_DAN_CU_THE` sau xác nhận đúng file sinh tự động, giữ bản local. Với tệp lớn trong commit cũ, thao tác đó không làm nhỏ lịch sử đã tồn tại; ghi nhận để người dùng quyết định, không tự rewrite history/force push. Secret từng commit cần xử lý/thu hồi riêng, không coi gitignore là biện pháp xóa secret khỏi lịch sử.
+
 ## Trước mỗi push
 
 Bắt buộc `git fetch origin`, kể cả push lần đầu. Kiểm tra origin/nhánh hiện tại có commit remote mà local thiếu hay không:
