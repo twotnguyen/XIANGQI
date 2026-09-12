@@ -115,7 +115,7 @@ Prefix `/api/v1`. Public routes chỉ auth và health. Các route còn lại Bea
 
 Google and recovery callback SPA paths `/auth/callback` and `/auth/reset-password`; official Supabase PKCE/exchange/updateUser SDK flow in auth spec. No custom OAuth token exchange protocol. AI create also enforces one active match/user even without room.
 
-Match command HTTP controller lease through `X-Control-Id` and `X-Control-Epoch`; Socket auth + attached controller same requirement. IDs are UUID except codes. No implicit actorId in request. Signup/recovery/resend dùng browser Supabase SDK theo auth spec, không có BFF endpoint tương ứng.
+Controller lease qua `X-Control-Id` và `X-Control-Epoch` bắt buộc cho HTTP match commands, chat send, media session/policy/end. Nếu body media/session có controllerId thì phải khớp header. Socket mutation chat:send và match:move mang controllerId/controlEpoch, server kiểm với lease hiện hành; handshake không đủ thay cho epoch check mỗi write. Read-only snapshot/chat history không yêu cầu controller, vẫn kiểm membership/session. IDs are UUID except codes. No implicit actorId in request. Signup/recovery/resend dùng browser Supabase SDK theo auth spec, không có BFF endpoint tương ứng.
 
 ## Socket.IO
 
@@ -128,7 +128,7 @@ One namespace `/`, WebSocket transport for game server deployment (HTTP command 
 | ai:status | server→human participant | matchId,jobId,jobVersion,state; independent of match.version |
 | match:move | client→server ack | matchId,controllerId,controlEpoch,commandId,expectedVersion,payload Move |
 | match:sync | client→server ack | matchId,lastVersion; return snapshot after access/deadline check |
-| chat:send | client→server ack | roomId,clientMessageId,content; same service as HTTP |
+| chat:send | client→server ack | roomId,controllerId,controlEpoch,clientMessageId,content; same service as HTTP |
 | presence:heartbeat | client→server ack | tabId; refresh lease for authenticated current control context: online membership or AI human participant |
 | room:updated | server→client | Room DTO |
 | match:state | server→client | MatchSnapshot |

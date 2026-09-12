@@ -71,6 +71,8 @@ expect(getTerminalOutcome(p, 3)).toEqual({winner:null,reason:'REPETITION'});
 
 ## Lệnh kiểm chứng
 
+Bắt buộc đối chiếu hàng **ISSUE-004** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T004-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
+
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
 ```bash

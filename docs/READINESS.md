@@ -21,7 +21,7 @@ Lệnh tái kiểm tra từ repo root:
 python3 docs/planning/validate_docs.py
 ```
 
-Kết quả ngày 12/09/2026: exit0; **50 file Markdown,32 issue,16 nhóm yêu cầu,375 liên kết nội bộ hợp lệ, dependency graph không chu kỳ,0 lỗi**. `TODO` chỉ là trạng thái công việc chưa triển khai, không phải chi tiết đặc tả để trống.
+Kết quả ngày 12/09/2026: exit0; **54 file Markdown,32 issue,32 hàng ma trận test,16 nhóm yêu cầu,451 liên kết nội bộ hợp lệ, dependency graph không chu kỳ,0 lỗi**. `TODO` chỉ là trạng thái công việc chưa triển khai, không phải chi tiết đặc tả để trống.
 
 Rà soát độc lập đã kiểm các luồng finalizer/clock retry/AI control/undo/lifecycle/benchmark. Các blocker phát hiện đã sửa; hai dòng hợp đồng heartbeat và control:revoked còn theo room-only cũng đã đổi để hỗ trợ AI context không có roomId. Auth/media được nghiên cứu riêng bằng nguồn chính thức; phạm vi bảo đảm self-host được ghi đúng giới hạn.
 
@@ -33,6 +33,14 @@ Validator kiểm:
 - R01…R16 có issue trong bảng truy vết.
 - Liên kết Markdown nội bộ có file đích.
 - UTF-8 không lỗi, code fences cân bằng, không còn marker chi tiết chưa xác định trong specs.
+
+## Bổ sung cho agent thực thi sau đợt rà soát
+
+- Ma trận test cho đủ32 issue với case ID ổn định, lane test và kết quả cần assert; cả acceptance issue và ma trận đều bắt buộc.
+- Ownership harness/CI, service thật, test discovery rỗng phải fail, teardown và isolation DB, clock/race/fault injection.
+- Fixture terminal có tọa độ và đáp án review tay; sửa fixture mở mặt tướng để tốt đã qua sông và đi ngang đúng luật hình học.
+- Mẫu evidence tách local/provider/hardware, count/exit/version/test path và bước tiếp tục; prompt bàn giao trỏ tới test plan.
+- Sửa chỉ dẫn Git cũ trong001 cho nhất quán với quyền tự push/PR/merge đã cấp.
 
 ## Giới hạn của kết luận
 
