@@ -101,3 +101,16 @@ export {
   SendMessageBodySchema,
   type SendMessageBody,
 } from './chat.js';
+
+export {
+  MediaTrackSchema,
+  type MediaTrack,
+  MediaScopeSchema,
+  type MediaScope,
+  MediaTransportDTOSchema,
+  type MediaTransportDTO,
+  MediaSessionDTOSchema,
+  type MediaSessionDTO,
+  UpdateMediaPolicyBodySchema,
+  type UpdateMediaPolicyBody,
+} from './media.js';
