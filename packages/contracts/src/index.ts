@@ -14,7 +14,14 @@ export {
   ProposalKindSchema,
   ProposalSchema,
   ClockStateSchema,
-  MatchCommandSchema,
+
+  // Command schemas
+  MatchCommandBaseSchema,
+  MoveCommandSchema,
+  ResignCommandSchema,
+  ProposeCommandSchema,
+  RespondCommandSchema,
+  UndoAiCommandSchema,
 
   // Schemas
   SquareSchema,
@@ -44,6 +51,7 @@ export {
   type Proposal,
   type ErrorCode,
   type ApiResult,
+  type MatchCommand,
   type MatchMode,
   type MatchStatus,
   type MatchSnapshot,

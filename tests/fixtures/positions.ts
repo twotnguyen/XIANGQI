@@ -21,6 +21,12 @@ export function makePosition(
   const usedIds = new Set<string>();
 
   for (const p of pieces) {
+    if (!Number.isInteger(p.x) || p.x < 0 || p.x > 8) {
+      throw new Error(`x out of bounds: ${p.x} (must be integer 0..8)`);
+    }
+    if (!Number.isInteger(p.y) || p.y < 0 || p.y > 9) {
+      throw new Error(`y out of bounds: ${p.y} (must be integer 0..9)`);
+    }
     const idx = squareToIndex({ x: p.x, y: p.y });
     if (idx < 0 || idx >= BOARD_SIZE) {
       throw new Error(`Square out of bounds: (${p.x}, ${p.y})`);
