@@ -1,11 +1,11 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
-- Trạng thái sản phẩm: NOT_STARTED — chưa có mã ứng dụng hoặc test ứng dụng chạy.
-- Issue đang làm: chưa có.
-- Bước tiếp theo: ISSUE-001, đọc START-HERE.md rồi khởi tạo workspace/toolchain.
-- Blocker hiện tại của lập trình local: chưa ghi nhận; tool/runtime sẽ kiểm ở001.
-- External setup: xem [đầu vào](EXTERNAL-INPUTS.md), không phải lý do dừng mọi issue.
+- Trạng thái sản phẩm: IN_PROGRESS — đang triển khai schema CSDL và harness kiểm thử.
+- Issue đang làm: ISSUE-006 (nhánh `feat/issue-006-supabase-schema`).
+- Bước tiếp theo: Tạo migrations 19 bảng, test harness local, kiểm chứng trên PostgreSQL local trước khi áp dụng lên Supabase remote.
+- Blocker hiện tại của lập trình local: không có.
+- External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng.
 
 ## Registry
 
@@ -16,7 +16,7 @@
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
 | [ISSUE-005](../issues/ISSUE-005-board-ui.md) | TODO | Chưa thực thi |
-| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | TODO | Chưa thực thi |
+| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `feat/issue-006-supabase-schema`; 19 bảng và RLS đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
 | [ISSUE-007](../issues/ISSUE-007-password-auth.md) | TODO | Chưa thực thi |
 | [ISSUE-008](../issues/ISSUE-008-google-profile.md) | TODO | Chưa thực thi |
 | [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | TODO | Chưa thực thi |
@@ -37,7 +37,7 @@
 | [ISSUE-024](../issues/ISSUE-024-media-spike.md) | TODO | Chưa thực thi |
 | [ISSUE-025](../issues/ISSUE-025-media-authority.md) | TODO | Chưa thực thi |
 | [ISSUE-026](../issues/ISSUE-026-media-ui.md) | TODO | Chưa thực thi |
-| [ISSUE-027](../issues/ISSUE-027-history-rematch.md) | TODO | Chưa thực thi |
+| [ISSUE-027](../issues/ISSUE-027-history-rematch.md) | TODO | Schema 2 bảng rematch đã tạo sớm ở ISSUE-006; logic/routes/UI giữ TODO |
 | [ISSUE-028](../issues/ISSUE-028-responsive-polish.md) | TODO | Chưa thực thi |
 | [ISSUE-029](../issues/ISSUE-029-security-hardening.md) | TODO | Chưa thực thi |
 | [ISSUE-030](../issues/ISSUE-030-acceptance-load.md) | TODO | Chưa thực thi |
@@ -48,10 +48,10 @@
 
 Cập nhật đoạn này với thông tin thật, không chỉ ghi “đang làm”.
 
-- Code changes: chưa có.
-- Last command/test: chưa chạy test ứng dụng; chỉ có kiểm tra tài liệu ở READINESS.
-- Next exact action: đọc ISSUE-001 và kiểm runtime.
-- External blocker: chưa cần credentials để bắt đầu.
+- Code changes: `supabase/config.toml`, 5 files migrations SQL (`20260912000001_roles_private_profiles.sql` .. `20260912000005_rematch.sql`), harness `tests/integration/database_test.py`, report `docs/test-reports/DATABASE-SETUP.md`.
+- Last command/test: Áp dụng 5 migrations lên Supabase project `snsnkoicxmubuotcdafi`, catalog verified (19 bảng, 64 indexes, 19 PKs, 43 FKs, 12 UNIQUEs, 217 CHECKs, 3 triggers, RLS forced trên toàn bộ 19 bảng; non-destructive smoke test pass).
+- Next exact action: Mở PR từ nhánh `feat/issue-006-supabase-schema` vào `main`, review, squash merge và đồng bộ `main`.
+- External blocker: Không có. Supabase `snsnkoicxmubuotcdafi` hoạt động ổn định.
 
 ## Mẫu evidence
 
