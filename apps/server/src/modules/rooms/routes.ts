@@ -19,6 +19,7 @@ import {
   leaveRoom,
   takeoverControl,
 } from './service.js';
+import { startMatchFromRoom } from '../matches/service.js';
 
 export async function roomsRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/v1/rooms
@@ -150,9 +151,16 @@ export async function roomsRoutes(app: FastifyInstance): Promise<void> {
 
       try {
         const res = await setReady(id, request.user!.id, parsed.data.ready);
+        let matchSnapshot = null;
+        if (res.canStart) {
+          matchSnapshot = await startMatchFromRoom(id);
+        }
         return reply.send({
           ok: true,
-          data: res,
+          data: {
+            ...res.room,
+            matchSnapshot,
+          },
           requestId: request.id,
         });
       } catch (err: unknown) {
