@@ -11,11 +11,12 @@
     "lint": "eslint src/"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
+    "@xiangqi/contracts": "workspace:*",
+    "@xiangqi/game-rules": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.6.0",
-    "@xiangqi/contracts": "workspace:*",
-    "@xiangqi/game-rules": "workspace:*"
+    "react-router": "^7.6.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",
