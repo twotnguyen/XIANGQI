@@ -3,7 +3,12 @@ import path from 'path';
 
 export default defineConfig({
   test: {
-    include: ['tests/unit/**/*.test.ts', 'tests/ai/**/*.test.ts', 'tests/load/**/*.test.ts'],
+    include: [
+      'tests/unit/**/*.test.ts',
+      'tests/ai/**/*.test.ts',
+      'tests/load/**/*.test.ts',
+      'tests/integration/**/*.test.ts',
+    ],
     globals: false,
   },
   resolve: {
