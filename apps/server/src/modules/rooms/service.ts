@@ -217,6 +217,18 @@ export async function patchRoom(
     const newTc = updates.timeControl ?? room.time_control;
     const newVersion = room.room_version + 1;
 
+    // If locking room: revoke all spectators per spec
+    if (newVis === 'LOCKED') {
+      await client.query(
+        'DELETE FROM public.room_members WHERE room_id = $1 AND role = \'SPECTATOR\'',
+        [roomId],
+      );
+      await client.query(
+        'UPDATE public.invitations SET status = \'REVOKED\' WHERE room_id = $1 AND role = \'SPECTATOR\'',
+        [roomId],
+      );
+    }
+
     await client.query(
       `UPDATE public.rooms
        SET name = $1, visibility = $2, time_control = $3, room_version = $4, updated_at = now()
