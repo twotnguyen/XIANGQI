@@ -1,6 +1,7 @@
 # ISSUE-027 — Lịch sử, replay và tái đấu đổi bên
 
 - Trạng thái: TODO
+- Ghi chú: Schema CSDL 2 bảng `room_rematch_votes` và `room_command_receipts` đã được tạo sớm và triển khai lên Supabase qua migration `20260912000005_rematch.sql` (báo cáo tại `docs/test-reports/DATABASE-SETUP.md`). Nghiệp vụ rematch, routes, UI và tests của ISSUE-027 vẫn giữ nguyên TODO chờ đến lượt triển khai theo dependencies.
 - Yêu cầu: R14, R13
 - Phụ thuộc bắt buộc: [ISSUE-014](ISSUE-014-draw-undo-resign.md), [ISSUE-017](ISSUE-017-private-chat.md), [ISSUE-021](ISSUE-021-ai-worker-server.md), [ISSUE-022](ISSUE-022-ai-ui.md), [ISSUE-026](ISSUE-026-media-ui.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
