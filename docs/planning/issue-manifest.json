@@ -1,0 +1,406 @@
+[
+  {
+    "n": 1,
+    "file": "ISSUE-001-foundation.md",
+    "deps": [],
+    "req": [
+      "R16"
+    ]
+  },
+  {
+    "n": 2,
+    "file": "ISSUE-002-contracts-position.md",
+    "deps": [
+      1
+    ],
+    "req": [
+      "R05",
+      "R06"
+    ]
+  },
+  {
+    "n": 3,
+    "file": "ISSUE-003-legal-moves.md",
+    "deps": [
+      2
+    ],
+    "req": [
+      "R05"
+    ]
+  },
+  {
+    "n": 4,
+    "file": "ISSUE-004-terminal-repetition.md",
+    "deps": [
+      3
+    ],
+    "req": [
+      "R07"
+    ]
+  },
+  {
+    "n": 5,
+    "file": "ISSUE-005-board-ui.md",
+    "deps": [
+      3
+    ],
+    "req": [
+      "R05",
+      "R15"
+    ]
+  },
+  {
+    "n": 6,
+    "file": "ISSUE-006-database-test-harness.md",
+    "deps": [
+      2
+    ],
+    "req": [
+      "R01",
+      "R03",
+      "R06",
+      "R16"
+    ]
+  },
+  {
+    "n": 7,
+    "file": "ISSUE-007-password-auth.md",
+    "deps": [
+      6
+    ],
+    "req": [
+      "R01"
+    ]
+  },
+  {
+    "n": 8,
+    "file": "ISSUE-008-google-profile.md",
+    "deps": [
+      7
+    ],
+    "req": [
+      "R01",
+      "R02"
+    ]
+  },
+  {
+    "n": 9,
+    "file": "ISSUE-009-friends-presence.md",
+    "deps": [
+      7
+    ],
+    "req": [
+      "R02"
+    ]
+  },
+  {
+    "n": 10,
+    "file": "ISSUE-010-rooms-lobby.md",
+    "deps": [
+      6,
+      7,
+      9
+    ],
+    "req": [
+      "R03",
+      "R04",
+      "R08"
+    ]
+  },
+  {
+    "n": 11,
+    "file": "ISSUE-011-invitations.md",
+    "deps": [
+      10
+    ],
+    "req": [
+      "R02",
+      "R03",
+      "R04"
+    ]
+  },
+  {
+    "n": 12,
+    "file": "ISSUE-012-authoritative-match.md",
+    "deps": [
+      4,
+      10,
+      11
+    ],
+    "req": [
+      "R06",
+      "R07"
+    ]
+  },
+  {
+    "n": 13,
+    "file": "ISSUE-013-clocks-reconnect.md",
+    "deps": [
+      12
+    ],
+    "req": [
+      "R08",
+      "R09"
+    ]
+  },
+  {
+    "n": 14,
+    "file": "ISSUE-014-draw-undo-resign.md",
+    "deps": [
+      13
+    ],
+    "req": [
+      "R13"
+    ]
+  },
+  {
+    "n": 15,
+    "file": "ISSUE-015-online-ui.md",
+    "deps": [
+      5,
+      14
+    ],
+    "req": [
+      "R05",
+      "R06",
+      "R08",
+      "R09",
+      "R13",
+      "R15"
+    ]
+  },
+  {
+    "n": 16,
+    "file": "ISSUE-016-spectators.md",
+    "deps": [
+      11,
+      12,
+      15
+    ],
+    "req": [
+      "R04",
+      "R15"
+    ]
+  },
+  {
+    "n": 17,
+    "file": "ISSUE-017-private-chat.md",
+    "deps": [
+      16
+    ],
+    "req": [
+      "R10"
+    ]
+  },
+  {
+    "n": 18,
+    "file": "ISSUE-018-ai-evaluation.md",
+    "deps": [
+      4
+    ],
+    "req": [
+      "R12"
+    ]
+  },
+  {
+    "n": 19,
+    "file": "ISSUE-019-ai-minimax.md",
+    "deps": [
+      18
+    ],
+    "req": [
+      "R12",
+      "R07"
+    ]
+  },
+  {
+    "n": 20,
+    "file": "ISSUE-020-ai-alpha-beta.md",
+    "deps": [
+      19
+    ],
+    "req": [
+      "R12"
+    ]
+  },
+  {
+    "n": 21,
+    "file": "ISSUE-021-ai-worker-server.md",
+    "deps": [
+      13,
+      14,
+      20
+    ],
+    "req": [
+      "R12",
+      "R08",
+      "R09",
+      "R13"
+    ]
+  },
+  {
+    "n": 22,
+    "file": "ISSUE-022-ai-ui.md",
+    "deps": [
+      15,
+      21
+    ],
+    "req": [
+      "R12",
+      "R13",
+      "R15"
+    ]
+  },
+  {
+    "n": 23,
+    "file": "ISSUE-023-ai-experiments.md",
+    "deps": [
+      20,
+      21,
+      22
+    ],
+    "req": [
+      "R12",
+      "R16"
+    ]
+  },
+  {
+    "n": 24,
+    "file": "ISSUE-024-media-spike.md",
+    "deps": [
+      1,
+      6
+    ],
+    "req": [
+      "R11",
+      "R16"
+    ]
+  },
+  {
+    "n": 25,
+    "file": "ISSUE-025-media-authority.md",
+    "deps": [
+      8,
+      16,
+      24
+    ],
+    "req": [
+      "R11",
+      "R04",
+      "R09"
+    ]
+  },
+  {
+    "n": 26,
+    "file": "ISSUE-026-media-ui.md",
+    "deps": [
+      15,
+      17,
+      25
+    ],
+    "req": [
+      "R11",
+      "R15"
+    ]
+  },
+  {
+    "n": 27,
+    "file": "ISSUE-027-history-rematch.md",
+    "deps": [
+      14,
+      17,
+      21,
+      22,
+      26
+    ],
+    "req": [
+      "R14",
+      "R13"
+    ]
+  },
+  {
+    "n": 28,
+    "file": "ISSUE-028-responsive-polish.md",
+    "deps": [
+      8,
+      9,
+      15,
+      17,
+      22,
+      26,
+      27
+    ],
+    "req": [
+      "R15",
+      "R05"
+    ]
+  },
+  {
+    "n": 29,
+    "file": "ISSUE-029-security-hardening.md",
+    "deps": [
+      8,
+      16,
+      17,
+      25,
+      27
+    ],
+    "req": [
+      "R01",
+      "R04",
+      "R06",
+      "R10",
+      "R11",
+      "R16"
+    ]
+  },
+  {
+    "n": 30,
+    "file": "ISSUE-030-acceptance-load.md",
+    "deps": [
+      23,
+      28,
+      29
+    ],
+    "req": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16"
+    ]
+  },
+  {
+    "n": 31,
+    "file": "ISSUE-031-deploy-runbook.md",
+    "deps": [
+      30
+    ],
+    "req": [
+      "R16"
+    ]
+  },
+  {
+    "n": 32,
+    "file": "ISSUE-032-final-handoff.md",
+    "deps": [
+      30,
+      31
+    ],
+    "req": [
+      "R16",
+      "R12"
+    ]
+  }
+]
