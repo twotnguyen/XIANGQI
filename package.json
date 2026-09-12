@@ -10,7 +10,7 @@
     "dev": "pnpm --filter @xiangqi/web dev & pnpm --filter @xiangqi/server dev & wait",
     "build": "pnpm -r --workspace-concurrency=1 build",
     "lint": "eslint 'apps/*/src/**/*.{ts,tsx}' 'packages/*/src/**/*.ts' 'tests/**/*.ts'",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "tsc -b",
     "test:unit": "pnpm exec vitest run --config vitest.config.ts",
     "test:integration": "pnpm exec vitest run --config vitest.integration.config.ts",
     "test:e2e": "echo 'E2E suite not yet created (ISSUE-015+)' && exit 1",
@@ -26,6 +26,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.10.0",
     "globals": "^17.12.0",
+    "typescript": "~5.8.3",
     "typescript-eslint": "^8.70.0",
     "vitest": "^3.2.7"
   }

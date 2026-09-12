@@ -1,3 +1,2 @@
-// Game rules package — pure move generation and position logic.
-// Populated by ISSUE-002/003.
-export {};
+export { createInitialPosition } from './initial.js';
+export { positionKey } from './position-key.js';
