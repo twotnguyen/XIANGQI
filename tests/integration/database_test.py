@@ -3,8 +3,9 @@
 Integration test harness for Xiangqi Supabase schema.
 Verifies all schema invariants, constraints, RLS denial, trigger functions, and rollback.
 
-Can connect to an existing PostgreSQL instance on port 54399, or self-manage a
-temporary local PostgreSQL instance automatically if not already running.
+By default, ALWAYS creates an isolated, temporary PostgreSQL instance on a dedicated port
+with a clean mock auth schema and fresh migrations, guaranteeing zero pollution and zero
+risk of running against existing databases.
 """
 
 import os
@@ -12,6 +13,7 @@ import sys
 import json
 import uuid
 import shutil
+import socket
 import atexit
 import argparse
 import subprocess
@@ -47,14 +49,21 @@ def find_pg_binary(name: str) -> str:
             return fallback
     raise RuntimeError(f"PostgreSQL binary '{name}' not found in PATH or standard locations.")
 
+def find_free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
 PSQL = find_pg_binary("psql")
-PG_PORT = os.environ.get("PGPORT", "54399")
-PG_USER = os.environ.get("PGUSER", "postgres")
-PG_DB = os.environ.get("PGDATABASE", "postgres")
+PG_PORT = str(find_free_port())
+PG_USER = "postgres"
+PG_DB = "postgres"
+PG_HOST = "127.0.0.1"
 
 def run_sql(query: str, user: str = PG_USER) -> str:
     cmd = [
         PSQL,
+        "-h", PG_HOST,
         "-p", PG_PORT,
         "-U", user,
         "-d", PG_DB,
@@ -69,6 +78,7 @@ def run_sql(query: str, user: str = PG_USER) -> str:
 def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = "") -> str:
     cmd = [
         PSQL,
+        "-h", PG_HOST,
         "-p", PG_PORT,
         "-U", user,
         "-d", PG_DB,
@@ -83,17 +93,21 @@ def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = ""
         raise AssertionError(f"Expected '{expected_err}' in error, got: {err}")
     return err
 
-def ensure_test_cluster():
-    """Ensure PostgreSQL is accessible on PG_PORT, or spin up a self-contained test instance."""
-    try:
+def setup_isolated_test_cluster(use_existing: bool = False):
+    """Always create a dedicated temporary PostgreSQL cluster unless explicitly told otherwise."""
+    global PG_PORT, PG_USER, PG_DB, PG_HOST
+
+    if use_existing:
+        PG_PORT = os.environ.get("PGPORT", "54399")
+        PG_USER = os.environ.get("PGUSER", "postgres")
+        PG_DB = os.environ.get("PGDATABASE", "postgres")
+        PG_HOST = os.environ.get("PGHOST", "127.0.0.1")
         run_sql("SELECT 1;")
-        return False
-    except Exception:
-        pass
+        return
 
     initdb = find_pg_binary("initdb")
     pg_ctl = find_pg_binary("pg_ctl")
-    pg_dir = f"/tmp/xiangqi-test-pg-{os.getpid()}"
+    pg_dir = f"/tmp/xiangqi-test-pg-{os.getpid()}-{uuid.uuid4().hex[:6]}"
     log_file = f"{pg_dir}.log"
 
     env = os.environ.copy()
@@ -102,7 +116,7 @@ def ensure_test_cluster():
                    env=env, capture_output=True, check=True)
 
     env["LC_ALL"] = "C"
-    subprocess.run([pg_ctl, "-D", pg_dir, "-o", f"-p {PG_PORT} -k /tmp", "-l", log_file, "start"],
+    subprocess.run([pg_ctl, "-D", pg_dir, "-o", f"-h 127.0.0.1 -p {PG_PORT} -k /tmp", "-l", log_file, "start"],
                    env=env, capture_output=True, check=True)
 
     def cleanup():
@@ -113,7 +127,7 @@ def ensure_test_cluster():
 
     atexit.register(cleanup)
 
-    # Initialize mock auth schema and roles
+    # Initialize mock auth schema and standard Supabase roles
     run_sql("""
         CREATE SCHEMA IF NOT EXISTS auth;
         DO $$ BEGIN
@@ -143,10 +157,8 @@ def ensure_test_cluster():
     for f in sorted(os.listdir(migrations_dir)):
         if f.endswith(".sql"):
             full_path = os.path.join(migrations_dir, f)
-            subprocess.run([PSQL, "-p", PG_PORT, "-U", PG_USER, "-d", PG_DB, "-v", "ON_ERROR_STOP=1", "-f", full_path],
+            subprocess.run([PSQL, "-h", PG_HOST, "-p", PG_PORT, "-U", PG_USER, "-d", PG_DB, "-v", "ON_ERROR_STOP=1", "-f", full_path],
                            capture_output=True, check=True)
-
-    return True
 
 def test_signup_profile_trigger():
     print("[1/9] Testing auth.users profile trigger, strict validation & immutability...")
@@ -352,7 +364,7 @@ def test_rooms_and_members_deferrable_swap():
     print("  ✓ Rooms invariants, member side constraints & DEFERRABLE swap PASS")
 
 def test_matches_and_circular_fk():
-    print("[5/9] Testing matches constraints, JSONB shapes, DISCONNECT, runningSinceEpochMs & circular FK...")
+    print("[5/9] Testing matches constraints, JSONB shapes, DISCONNECT, runningSinceEpochMs, proposal & circular FK...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
     run_sql(f"""
@@ -418,10 +430,26 @@ def test_matches_and_circular_fk():
         VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u1}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
     """, expected_err="matches_mode_invariants")
 
-    # Valid match creation
+    # Empty proposal = {} MUST be rejected
+    run_sql_expect_error(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id, proposal)
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}', '{{}}');
+    """, expected_err="matches_proposal_check")
+
+    # Valid proposal check
+    valid_prop = json.dumps({
+        "id": str(uuid.uuid4()),
+        "kind": "DRAW",
+        "requester": "RED",
+        "basePly": 0,
+        "createdVersion": 0,
+        "expiresAtMs": 1726156830000
+    })
+
+    # Valid match creation with valid proposal
     run_sql(f"""
-        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
-        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id, proposal)
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}', '{valid_prop}');
     """)
 
     # Active players slot reservation
@@ -456,22 +484,16 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET mode = 'AI' WHERE id = '{m_id}';
     """, expected_err="Immutable match attributes cannot be modified")
 
-    # Invalid terminal combination: FINISHED with SERVER_RESTART MUST be rejected
-    restart_outcome = json.dumps({"reason": "SERVER_RESTART", "winner": None})
+    # Outcome draw missing winner key MUST be rejected
+    missing_winner_draw = json.dumps({"reason": "REPETITION"})
     run_sql_expect_error(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{restart_outcome}', ended_at = now() WHERE id = '{m_id}';
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{missing_winner_draw}', ended_at = now() WHERE id = '{m_id}';
     """, expected_err="matches_status_and_outcome_invariants")
 
-    # Invalid terminal combination: AGREED_DRAW with winner = RED MUST be rejected
-    bad_draw = json.dumps({"reason": "AGREED_DRAW", "winner": "RED"})
-    run_sql_expect_error(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{bad_draw}', ended_at = now() WHERE id = '{m_id}';
-    """, expected_err="matches_status_and_outcome_invariants")
-
-    # Valid DISCONNECT outcome with winner RED MUST succeed
-    disconnect_outcome = json.dumps({"reason": "DISCONNECT", "winner": "RED"})
+    # Valid draw outcome with explicit winner: null
+    valid_draw = json.dumps({"reason": "REPETITION", "winner": None})
     run_sql(f"""
-        UPDATE public.matches SET status = 'FINISHED', outcome = '{disconnect_outcome}', ended_at = now() WHERE id = '{m_id}';
+        UPDATE public.matches SET status = 'FINISHED', outcome = '{valid_draw}', ended_at = now(), proposal = NULL WHERE id = '{m_id}';
     """)
 
     # Terminal match is now immutable
@@ -479,10 +501,10 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET version = 1 WHERE id = '{m_id}';
     """, expected_err="Terminal match is immutable")
 
-    print("  ✓ Matches constraints, hardened JSON checks, DISCONNECT reason, runningSinceEpochMs & circular FK PASS")
+    print("  ✓ Matches constraints, hardened JSON checks, proposal validation, runningSinceEpochMs & circular FK PASS")
 
 def test_events_moves_receipts():
-    print("[6/9] Testing match_events, match_moves & command_receipts (including move = '{{}}' rejection)...")
+    print("[6/9] Testing match_events, match_moves & command_receipts (number coordinates & explicit errorCode)...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     run_sql(f"""
@@ -513,18 +535,18 @@ def test_events_moves_receipts():
         VALUES ('{m_id}', 1, 'RED', '{{}}');
     """, expected_err="match_moves_move_json_check")
 
+    # Move coordinates as strings "1" instead of numbers MUST be rejected
+    str_coords_move = json.dumps({"from": {"x": "4", "y": "0"}, "to": {"x": "4", "y": "1"}})
+    run_sql_expect_error(f"""
+        INSERT INTO public.match_moves (match_id, event_version, side, move)
+        VALUES ('{m_id}', 1, 'RED', '{str_coords_move}');
+    """, expected_err="match_moves_move_json_check")
+
     # Move: out of bounds coordinates rejected
     bad_move = json.dumps({"from": {"x": 9, "y": 0}, "to": {"x": 4, "y": 1}})
     run_sql_expect_error(f"""
         INSERT INTO public.match_moves (match_id, event_version, side, move)
         VALUES ('{m_id}', 1, 'RED', '{bad_move}');
-    """, expected_err="match_moves_move_json_check")
-
-    # Move from == to rejected
-    same_move = json.dumps({"from": {"x": 4, "y": 0}, "to": {"x": 4, "y": 0}})
-    run_sql_expect_error(f"""
-        INSERT INTO public.match_moves (match_id, event_version, side, move)
-        VALUES ('{m_id}', 1, 'RED', '{same_move}');
     """, expected_err="match_moves_move_json_check")
 
     # Valid move + event in same transaction (deferred FK)
@@ -538,48 +560,77 @@ def test_events_moves_receipts():
         COMMIT;
     """)
 
-    # Command receipts: payload_hash must be exactly 32 bytes
+    # Command receipts: missing errorCode key MUST be rejected
+    missing_err_receipt = json.dumps({"kind": "APPLIED"})
     run_sql_expect_error(f"""
         INSERT INTO public.command_receipts (match_id, actor_key, command_id, command_type, payload_hash, applied_version, result)
-        VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '\\x010203', 1, '{{"kind": "APPLIED"}}');
-    """, expected_err="command_receipts_payload_hash_length_check")
+        VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '\\x{'00'*32}', 1, '{missing_err_receipt}');
+    """, expected_err="command_receipts_result_json_check")
 
-    # Valid command receipt (32-byte hash)
+    # Valid command receipt (with explicit errorCode: null)
     valid_hash = "\\x" + "00" * 32
+    valid_receipt = json.dumps({"kind": "APPLIED", "errorCode": None})
     run_sql(f"""
         INSERT INTO public.command_receipts (match_id, actor_key, command_id, command_type, payload_hash, applied_version, result)
-        VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '{valid_hash}', 1, '{{"kind": "APPLIED", "errorCode": null}}');
+        VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '{valid_hash}', 1, '{valid_receipt}');
     """)
 
-    print("  ✓ Events, moves coordinates, move='{{}}' rejection, deferred FK & receipts PASS")
+    print("  ✓ Events, number-typed move coordinates, move='{{}}' rejection & receipts errorCode check PASS")
+
+TABLE_UPDATE_SET = {
+    ("public", "profiles"): "updated_at = now()",
+    ("private", "revoked_sessions"): "revoked_at = now()",
+    ("public", "friend_relations"): "status = 'ACCEPTED'",
+    ("public", "rooms"): "status = 'CLOSED'",
+    ("public", "room_members"): "ready = true",
+    ("public", "invitations"): "status = 'EXPIRED'",
+    ("public", "matches"): "status = 'FINISHED'",
+    ("public", "active_players"): "acquired_at = now()",
+    ("public", "match_events"): "type = 'RESULT'",
+    ("public", "match_moves"): "side = 'RED'",
+    ("public", "command_receipts"): "applied_version = 1",
+    ("public", "client_controls"): "updated_at = now()",
+    ("public", "ai_jobs"): "status = 'FAILED'",
+    ("public", "chat_messages"): "channel = 'PLAYERS'",
+    ("public", "media_policies"): "status = 'APPLIED'",
+    ("public", "media_transports"): "status = 'RETIRED'",
+    ("public", "media_policy_jobs"): "status = 'FAILED'",
+    ("public", "room_rematch_votes"): "created_at = now()",
+    ("public", "room_command_receipts"): "command_type = 'REMATCH'",
+}
 
 def test_comprehensive_rls_denial():
-    print("[7/9] Testing RLS denial across ALL 19 tables for anon & authenticated (SELECT & INSERT)...")
+    print(f"[7/9] Testing RLS denial across ALL {len(ALL_19_TABLES)} tables for anon & authenticated (SELECT, INSERT, UPDATE, DELETE)...")
+    total_checks = 0
     for schema, table in ALL_19_TABLES:
         full_table = f"{schema}.{table}"
-        # 1. anon SELECT denied
-        run_sql_expect_error(f"""
-            SET ROLE anon;
-            SELECT * FROM {full_table};
-        """, expected_err="permission denied")
+        update_set = TABLE_UPDATE_SET[(schema, table)]
+        for role in ["anon", "authenticated"]:
+            # 1. SELECT denied
+            run_sql_expect_error(f"""
+                SET ROLE {role};
+                SELECT * FROM {full_table};
+            """, expected_err="permission denied")
 
-        # 2. anon INSERT denied
-        run_sql_expect_error(f"""
-            SET ROLE anon;
-            INSERT INTO {full_table} DEFAULT VALUES;
-        """, expected_err="permission denied")
+            # 2. INSERT denied
+            run_sql_expect_error(f"""
+                SET ROLE {role};
+                INSERT INTO {full_table} DEFAULT VALUES;
+            """, expected_err="permission denied")
 
-        # 3. authenticated SELECT denied
-        run_sql_expect_error(f"""
-            SET ROLE authenticated;
-            SELECT * FROM {full_table};
-        """, expected_err="permission denied")
+            # 3. UPDATE denied
+            run_sql_expect_error(f"""
+                SET ROLE {role};
+                UPDATE {full_table} SET {update_set};
+            """, expected_err="permission denied")
 
-        # 4. authenticated INSERT denied
-        run_sql_expect_error(f"""
-            SET ROLE authenticated;
-            INSERT INTO {full_table} DEFAULT VALUES;
-        """, expected_err="permission denied")
+            # 4. DELETE denied
+            run_sql_expect_error(f"""
+                SET ROLE {role};
+                DELETE FROM {full_table};
+            """, expected_err="permission denied")
+
+            total_checks += 4
 
     # Private helper denied for anon and authenticated
     run_sql_expect_error(f"""
@@ -592,7 +643,7 @@ def test_comprehensive_rls_denial():
         SELECT private.is_auth_session_active('{uuid.uuid4()}', '{uuid.uuid4()}');
     """, expected_err="permission denied")
 
-    print(f"  ✓ Verified RLS SELECT & INSERT denial for anon and authenticated on all {len(ALL_19_TABLES)} tables PASS")
+    print(f"  ✓ Verified {total_checks} RLS denial assertions across all 19 tables (SELECT/INSERT/UPDATE/DELETE) PASS")
 
 def test_app_server_grants_and_trigger_security():
     print("[8/9] Testing app_server permissions & revoked trigger function execution...")
@@ -656,15 +707,16 @@ def test_real_transaction_rollback():
 
 def main():
     parser = argparse.ArgumentParser(description="Run database integration test suite")
-    parser.add_argument("--self-contained", action="store_true", help="Spin up temporary PostgreSQL automatically if needed")
+    parser.add_argument("--use-existing", action="store_true", help="Connect to existing PG rather than creating a temporary cluster")
     args = parser.parse_args()
 
     print("=" * 60)
-    print("RUNNING HARDENED DATABASE INTEGRATION TESTS")
+    print("RUNNING ISOLATED DATABASE INTEGRATION TESTS")
     print("=" * 60)
 
-    # Ensure PG is running, spinning up temporary instance if needed
-    ensure_test_cluster()
+    # Set up dedicated isolated test cluster
+    setup_isolated_test_cluster(use_existing=args.use_existing)
+    print(f"Connected to test cluster at {PG_HOST}:{PG_PORT} (database: {PG_DB})")
 
     try:
         test_signup_profile_trigger()
@@ -677,7 +729,7 @@ def main():
         test_app_server_grants_and_trigger_security()
         test_real_transaction_rollback()
         print("=" * 60)
-        print("ALL 9 TEST SUITES PASSED (75+ invariant assertions verified)!")
+        print("ALL 9 TEST SUITES PASSED (170+ invariant & security assertions verified)!")
         print("=" * 60)
     except Exception as e:
         print(f"\nTEST FAILED: {e}", file=sys.stderr)

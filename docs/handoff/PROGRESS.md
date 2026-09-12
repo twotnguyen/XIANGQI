@@ -1,11 +1,11 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
-- Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và fixes đợt 2 đã deploy, kiểm chứng hoàn tất.
-- Issue đang làm: fix bổ sung ISSUE-006 đợt 2 (nhánh `fix/issue-006-schema-hardening-v2`).
-- Bước tiếp theo: Merge PR fix schema hardening đợt 2, tiếp tục ISSUE-001/002.
+- Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và hardening toàn diện đã deploy, kiểm chứng hoàn tất.
+- Issue đang làm: fix bổ sung ISSUE-006 đợt 3 (nhánh `fix/issue-006-json-contract-hardening`).
+- Bước tiếp theo: Merge PR fix json contract hardening đợt 3, tiếp tục ISSUE-001/002.
 - Blocker hiện tại của lập trình local: không có.
-- External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng và đã đồng bộ 7 migration files.
+- External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng và đã đồng bộ 8 migration files.
 
 ## Registry
 
@@ -16,7 +16,7 @@
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
 | [ISSUE-005](../issues/ISSUE-005-board-ui.md) | TODO | Chưa thực thi |
-| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `fix/issue-006-schema-hardening-v2`, [PR #7](https://github.com/twotnguyen/XIANGQI/pull/7); 19 bảng, RLS & migration 7 fixes đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
+| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `fix/issue-006-json-contract-hardening`; 19 bảng, RLS & migration 8 fixes đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
 | [ISSUE-007](../issues/ISSUE-007-password-auth.md) | TODO | Chưa thực thi |
 | [ISSUE-008](../issues/ISSUE-008-google-profile.md) | TODO | Chưa thực thi |
 | [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | TODO | Chưa thực thi |
@@ -48,9 +48,9 @@
 
 Cập nhật đoạn này với thông tin thật, không chỉ ghi “đang làm”.
 
-- Code changes: `supabase/migrations/20260912000007_schema_hardening.sql`, `supabase/config.toml` (callback allowlist), `tests/integration/database_test.py` (tự động dựng PG, 9 suites, 75+ assertions), `docs/test-reports/DATABASE-SETUP.md`.
-- Last command/test: Áp dụng migration 7 lên Supabase `snsnkoicxmubuotcdafi`, đồng bộ `supabase_migrations.schema_migrations` (7/7 migrations khớp Git), local test 9/9 suites pass (75+ assertions, bao gồm RLS SELECT/INSERT 19 bảng và clean rollback).
-- Next exact action: Mở PR nhánh `fix/issue-006-schema-hardening-v2`, review, squash merge và đồng bộ `main`.
+- Code changes: `supabase/migrations/20260912000008_json_contract_hardening.sql`, `tests/integration/database_test.py` (tự cô lập port động, 9 suites, 170+ assertions, 152 RLS checks), `docs/test-reports/DATABASE-SETUP.md`.
+- Last command/test: Áp dụng migration 8 lên Supabase `snsnkoicxmubuotcdafi`, đồng bộ `supabase_migrations.schema_migrations` (8/8 migrations khớp Git), local test 9/9 suites pass (170+ assertions, bao gồm RLS 4 quyền SELECT/INSERT/UPDATE/DELETE 19 bảng và clean rollback).
+- Next exact action: Mở PR nhánh `fix/issue-006-json-contract-hardening`, review, squash merge và đồng bộ `main`.
 - External blocker: Không có. Project Supabase `snsnkoicxmubuotcdafi` sẵn sàng.
 
 ## Mẫu evidence
