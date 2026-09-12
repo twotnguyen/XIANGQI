@@ -1,4 +1,6 @@
 import Fastify, { type FastifyInstance } from 'fastify';
+import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
 import { authRoutes } from './auth/routes.js';
 import { friendsRoutes } from './modules/friends/routes.js';
 import { roomsRoutes } from './modules/rooms/routes.js';
@@ -10,7 +12,23 @@ import { historyRoutes } from './modules/history/routes.js';
 import { mediaRoutes } from './modules/media/routes.js';
 
 export async function createApp(): Promise<FastifyInstance> {
-  const app = Fastify({ logger: false });
+  const app = Fastify({
+    logger: false,
+    bodyLimit: 65536, // 64KB per spec R16 / DoS protection
+  });
+
+  // Security Headers
+  await app.register(helmet, {
+    contentSecurityPolicy: false, // BFF serves JSON API; frontend served by Vite
+    crossOriginEmbedderPolicy: false,
+  });
+
+  // CORS protection
+  await app.register(cors, {
+    origin: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   app.get('/health', async () => {
     return { status: 'ok' };

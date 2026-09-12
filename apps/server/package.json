@@ -11,6 +11,8 @@
     "lint": "eslint src/ tests/"
   },
   "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@fastify/helmet": "^13.1.1",
     "@supabase/supabase-js": "^2.116.0",
     "@xiangqi/ai": "workspace:*",
     "@xiangqi/ai-worker": "workspace:*",
