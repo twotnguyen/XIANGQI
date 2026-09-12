@@ -77,3 +77,18 @@ export {
   ControllerLeaseSchema,
   type ControllerLease,
 } from './room.js';
+
+export {
+  InvitationStatusSchema,
+  type InvitationStatus,
+  InvitationDTOSchema,
+  type InvitationDTO,
+  CreateInvitationBodySchema,
+  type CreateInvitationBody,
+  RespondInvitationBodySchema,
+  type RespondInvitationBody,
+  WatchCodeBodySchema,
+  type WatchCodeBody,
+  JoinRoomBodySchema,
+  type JoinRoomBody,
+} from './invitation.js';
