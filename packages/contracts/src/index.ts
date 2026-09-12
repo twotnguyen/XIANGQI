@@ -59,3 +59,21 @@ export {
 } from './game.js';
 
 export type { SearchInput, SearchResult } from './ai.js';
+
+export {
+  RoomStatusSchema,
+  type RoomStatus,
+  RoomMemberDTOSchema,
+  type RoomMemberDTO,
+  RoomDTOSchema,
+  type RoomDTO,
+  CreateRoomBodySchema,
+  type CreateRoomBody,
+  PatchRoomBodySchema,
+  type PatchRoomBody,
+  ReadyBodySchema,
+  LeaveRoomBodySchema,
+  TakeoverBodySchema,
+  ControllerLeaseSchema,
+  type ControllerLease,
+} from './room.js';
