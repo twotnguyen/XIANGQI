@@ -149,26 +149,67 @@ export function MatchPage() {
         </div>
       )}
 
-      {/* Terminal banner */}
+      {/* Terminal banner and post-game actions */}
       {snapshot.outcome && (
-        <div
-          style={{
-            backgroundColor: snapshot.outcome.winner === mySide ? '#D4EDDA' : '#F8D7DA',
-            color: snapshot.outcome.winner === mySide ? '#155724' : '#721C24',
-            padding: '12px',
-            borderRadius: '8px',
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: '16px',
-            margin: '12px 0',
-          }}
-          data-testid="outcome-banner"
-        >
-          {snapshot.outcome.winner === null
-            ? `Hòa! Lý do: ${snapshot.outcome.reason}`
-            : snapshot.outcome.winner === mySide
-              ? `Bạn đã thắng! (${snapshot.outcome.reason})`
-              : `Bạn đã thua! (${snapshot.outcome.reason})`}
+        <div style={{ margin: '12px 0', textAlign: 'center' }}>
+          <div
+            style={{
+              backgroundColor: snapshot.outcome.winner === mySide ? '#D4EDDA' : '#F8D7DA',
+              color: snapshot.outcome.winner === mySide ? '#155724' : '#721C24',
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              marginBottom: '12px',
+            }}
+            data-testid="outcome-banner"
+          >
+            {snapshot.outcome.winner === null
+              ? `Hòa! Lý do: ${snapshot.outcome.reason}`
+              : snapshot.outcome.winner === mySide
+                ? `Bạn đã thắng! (${snapshot.outcome.reason})`
+                : `Bạn đã thua! (${snapshot.outcome.reason})`}
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+            <button
+              onClick={() => navigate(`/matches/${snapshot.id}/replay`)}
+              style={{ padding: '8px 16px', fontSize: '13px', backgroundColor: '#155E75', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              data-testid="view-replay-btn"
+            >
+              Xem lại ván cờ
+            </button>
+
+            {snapshot.mode === 'ONLINE' && snapshot.roomId && (
+              <button
+                onClick={async () => {
+                  const session = (await supabase.auth.getSession()).data.session;
+                  await fetch(`/api/v1/rooms/${snapshot.roomId}/rematch`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${session?.access_token ?? ''}`,
+                    },
+                    body: JSON.stringify({ expectedMatchId: snapshot.id }),
+                  });
+                }}
+                style={{ padding: '8px 16px', fontSize: '13px', backgroundColor: '#A51F25', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                data-testid="rematch-btn"
+              >
+                Tái đấu (Đổi bên)
+              </button>
+            )}
+
+            {snapshot.mode === 'AI' && (
+              <button
+                onClick={() => navigate('/ai/new')}
+                style={{ padding: '8px 16px', fontSize: '13px', backgroundColor: '#A51F25', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                data-testid="play-again-ai-btn"
+              >
+                Chơi ván mới
+              </button>
+            )}
+          </div>
         </div>
       )}
 

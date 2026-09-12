@@ -13,6 +13,8 @@ import { RoomWaiting } from '../features/room/RoomWaiting.js';
 import { JoinRedirect } from '../features/auth/JoinRedirect.js';
 import { MatchPage } from '../features/match/MatchPage.js';
 import { NewAiMatch } from '../features/ai/NewAiMatch.js';
+import { HistoryList } from '../features/history/HistoryList.js';
+import { MatchReplay } from '../features/history/MatchReplay.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
 function Home() {
@@ -80,6 +82,8 @@ export function App() {
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/rooms/:id" element={<RoomWaiting />} />
         <Route path="/matches/:id" element={<MatchPage />} />
+        <Route path="/matches/:id/replay" element={<MatchReplay />} />
+        <Route path="/history" element={<HistoryList />} />
         <Route path="/ai/new" element={<NewAiMatch />} />
         <Route path="/join" element={<JoinRedirect />} />
         <Route path="/dev/board" element={<DevBoard />} />
