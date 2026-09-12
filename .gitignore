@@ -1,10 +1,84 @@
+# Operating-system metadata
 .DS_Store
+.AppleDouble/
+.LSOverride
+._*
+.Spotlight-V100/
+.Trashes/
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Local credentials and environment; keep sanitized examples
 .env
 .env.*
 !.env.example
+!.env.*.example
+.envrc
+
+# Dependencies, package-manager caches and build output
 node_modules/
+.pnpm-store/
+.npm/
 dist/
+build/
+.vite/
+.cache/
+.parcel-cache/
+.turbo/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# Logs and transient editor files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.swp
+*.swo
+*~
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Generated test output; curated docs/test-reports remain tracked
 coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+/artifacts/
+
+# Local Python tooling
 __pycache__/
-*.pyc
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local service state, dumps and development certificates
+/supabase/.temp/
+/supabase/.branches/
+/infra/data/
+/infra/certs/
+/certs/
+/data/
+/backups/
+/dumps/
+/tmp/
+/temp/
+/.local/
+
+# Deployment linkage and agent runtime state
+.vercel/
+.render/
 .omx/
