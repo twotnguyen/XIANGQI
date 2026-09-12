@@ -16,7 +16,7 @@
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
 | [ISSUE-005](../issues/ISSUE-005-board-ui.md) | TODO | Chưa thực thi |
-| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `fix/issue-006-json-contract-hardening`; 19 bảng, RLS & migration 8 fixes đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
+| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `fix/issue-006-json-contract-hardening`, [PR #8](https://github.com/twotnguyen/XIANGQI/pull/8); 19 bảng, RLS & migration 8 fixes đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
 | [ISSUE-007](../issues/ISSUE-007-password-auth.md) | TODO | Chưa thực thi |
 | [ISSUE-008](../issues/ISSUE-008-google-profile.md) | TODO | Chưa thực thi |
 | [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | TODO | Chưa thực thi |
