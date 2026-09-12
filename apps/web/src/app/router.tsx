@@ -10,6 +10,7 @@ import { Onboarding } from '../features/auth/Onboarding.js';
 import { Friends } from '../features/friends/Friends.js';
 import { Lobby } from '../features/lobby/Lobby.js';
 import { RoomWaiting } from '../features/room/RoomWaiting.js';
+import { JoinRedirect } from '../features/auth/JoinRedirect.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
 function Home() {
@@ -76,6 +77,7 @@ export function App() {
         <Route path="/friends" element={<Friends />} />
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/rooms/:id" element={<RoomWaiting />} />
+        <Route path="/join" element={<JoinRedirect />} />
         <Route path="/dev/board" element={<DevBoard />} />
       </Routes>
     </BrowserRouter>
