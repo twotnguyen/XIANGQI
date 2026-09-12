@@ -63,4 +63,4 @@ LOCAL_DONE cho phép tiến hành consumer local không phụ thuộc gate exter
 
 Người dùng đã ủy quyền vòng Git tự động theo [GIT-WORKFLOW](GIT-WORKFLOW.md). Registry issue phía trên là trạng thái kỹ thuật; mỗi issue khi bắt đầu thêm branch/PR/evidence vào cột cuối. Consumer chỉ bắt đầu khi PR dependency trên GitHub đã MERGED và gate kỹ thuật phù hợp. Không giả định DONE nghĩa đã merge.
 
-Thay đổi chuẩn bị hiện tại: nhánh `docs/git-workflow`; chưa triển khai issue ứng dụng nào. URL PR được bổ sung sau khi tạo. Trạng thái tích hợp luôn tra GitHub, không dự đoán trước merge.
+Thay đổi chuẩn bị hiện tại: nhánh `docs/git-workflow`; chưa triển khai issue ứng dụng nào. PR: [#1](https://github.com/twotnguyen/XIANGQI/pull/1). Trạng thái tích hợp luôn tra GitHub, không dự đoán trước merge.
