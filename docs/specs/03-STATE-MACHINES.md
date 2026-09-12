@@ -30,7 +30,7 @@ ack; broadcast sanitized snapshot
 
 Refused validation không ghi receipt trừ kết quả timeout đã commit. Socket identity lấy từ auth, actor máy là `AI`, không giả user ID. Timeout scheduler dùng cùng lock/pipeline. Read snapshot settle/check overdue qua service, không trả match ACTIVE hết giờ mãi mãi.
 
-Clock ACTIVE lưu remainingRedMs/remainingBlackMs và runningSinceEpochMs. Remaining là số dư tại lần settle cuối. `elapsed=max(0, now-runningSince)`; trừ bên đến lượt, clamp 0. Sau move chuyển sang đối phương; sau undo lấy lượt từ vị trí được khôi phục (không toggle lần nữa); runningSince=now. Null ở no-limit. Deadline tại `runningSince+remaining(side)`, timestamp server. Tại deadline chính xác nước đi muộn bị từ chối. Proposal vẫn settle và duy trì đúng running side, không tạm dừng đồng hồ.
+Clock ACTIVE lưu redMs/blackMs và runningSinceEpochMs. Remaining là số dư tại lần settle cuối. `elapsed=max(0, now-runningSince)`; trừ bên đến lượt, clamp 0. Sau move chuyển sang đối phương; sau undo lấy lượt từ vị trí được khôi phục (không toggle lần nữa); runningSince=now. Null ở no-limit. Deadline tại `runningSince+remaining(side)`, timestamp server. Tại deadline chính xác nước đi muộn bị từ chối. Proposal vẫn settle và duy trì đúng running side, không tạm dừng đồng hồ.
 
 Không giữ transaction khi tính AI, gửi mail hoặc gọi media API. Giao dịch match chỉ chứa SQL và logic luật hữu hạn. Broadcast sau commit có thể thất bại: sync snapshot + version là đường khôi phục, không rollback nước đã commit.
 

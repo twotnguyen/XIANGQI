@@ -52,3 +52,5 @@ Tài khoản Google/provider, cloud media, SMTP, thiết bị thật và hai m�
 ## Thiết kế CSDL chi tiết
 
 Bổ sung [09-DATABASE-DESIGN](specs/09-DATABASE-DESIGN.md):19bảng ứng dụng, từ điển cột/type/NULL/default, khóa/ràng buộc/index, ERD, JSON validation, grants/RLS, retention, migration order và19case DB. Nghiên cứu nền tảng bằng nguồn Supabase/PostgreSQL chính thức được lưu riêng; không tạo project/migration hay thay đổi dữ liệu Supabase ở bước thiết kế này. Kiểm tra cấu trúc Markdown xác nhận19bảng duy nhất có từ điển kiểu dữ liệu và PK; chưa phải kiểm chứng DDL thực thi. Agent006 vẫn phải chạy migration/constraints/RLS trên Supabase local thật.
+
+Kiểm chứng sau bổ sung CSDL: validator đạt56Markdown/32issue/32hàng test/474liên kết, dependency acyclic,0lỗi; git diff --check đạt. Review sửa job media RUNNING bị kẹt sau crash, thống nhất redMs/blackMs và profile privileges. Không có SQL/migration/cloud acceptance đã chạy.

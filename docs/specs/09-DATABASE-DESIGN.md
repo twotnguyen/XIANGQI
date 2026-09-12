@@ -415,7 +415,7 @@ Một job chưa giải quyết/match; serialize external effects cho cả A/B. D
 
 UNIQUE partial(match_id) WHERE status<>'SUCCEEDED'; kể cả FAILED phải được đối soát, không tạo job mới để bỏ qua effect cũ. CHECK attempts0..4, epochs>=0, enum, completed_at NN iff SUCCEEDED; RETRY next_attempt_at NN; các status khác next_attempt_at NULL. Index(next_attempt_at,id) WHERE status='RETRY'; index(match_id,created_at DESC,id DESC) cho audit; không index JSON trừ khi có truy vấn thực.
 
-Trước SFU call persist effects đủ roomName/identity/generation; sau ACK persist checkpoint. Coalesce request mới cập nhật target versions/epochs trong job đang mở, **không xóa effects chưa xử lý**. Khi đang RUNNING, runner giữ effect batch bất biến, hoàn tất batch rồi đọc targets mới và lập batch tiếp. Room/match lock ngắn cho authorize/coalesce/claim/finalize; một runner/match trong server một instance; không giữ transaction SQL suốt cuộc gọi mạng. Request END/RESTART là terminal intent ưu tiên, không bị POLICY cũ mở lại media.
+Trước SFU call persist effects đủ roomName/identity/generation; sau ACK persist checkpoint. Coalesce request mới cập nhật target versions/epochs trong job đang mở, **không xóa effects chưa xử lý**. Khi đang RUNNING, runner giữ effect batch bất biến, hoàn tất batch rồi đọc targets mới và lập batch tiếp. Room/match lock ngắn cho authorize/coalesce/claim/finalize; một runner/match trong server một instance; không giữ transaction SQL suốt cuộc gọi mạng. Request END/RESTART là terminal intent ưu tiên, không bị POLICY cũ mở lại media. Startup của server một instance, trước nhận traffic/cấp grants và sau khi bảo đảm không còn runner process cũ, chuyển mọi RUNNING tồn đọng sang PENDING để reclaim; giữ nguyên effects/ACK checkpoints/targets, reset attempts=0 cho recovery cycle mới và ghi log recovery. Không tạo job thay thế hoặc bỏ qua unique job hiện hành. FAILED/RETRY cũng được đối soát theo recovery policy bên dưới; không chỉ tìm PENDING mà để RUNNING kẹt mãi.
 
 Retry3lần sau initial attempt:1/2/5giây (attempts tối đa4). FAILED giữ APPLYING/chặn grants liên quan; khi SFU phục hồi, recovery tiếp tục **cùng job/effects**, bắt đầu retry cycle mới có ghi nhận updated_at, không quên tên cũ. Chỉ SUCCEEDED khi mọi effect cần thiết đã ACK và target versions/epochs còn khớp. Nếu targets đổi thì tiếp tục cùng job, chưa APPLIED. `effects` là kế hoạch bù trừ có cấu trúc, không phải log tùy ý hoặc nơi chứa token. Không cần hàng outbox chung cho game broadcast: game sync snapshot đã giải quyết mất event, chỉ media cần durable side-effect work.
 
@@ -523,7 +523,8 @@ Enable RLS **mọi bảng ứng dụng**, kể cả private.revoked_sessions. Kh
 
 DML tối thiểu app_server:
 
-- SELECT/INSERT/UPDATE: profiles (UPDATE cột username/display_name/updated_at, immutable guard), rooms, matches (guard terminal), invitations, ai_jobs, media_policies, media_transports, media_policy_jobs. Không DELETE các bảng này trong runtime.
+- SELECT và UPDATE cột username/display_name/updated_at: profiles; không INSERT/DELETE bởi app_server, Auth trigger owner tạo profile.
+- SELECT/INSERT/UPDATE: rooms, matches (guard terminal), invitations, ai_jobs, media_policies, media_transports, media_policy_jobs. Không DELETE các bảng này trong runtime.
 - SELECT/INSERT/UPDATE/DELETE: friend_relations, room_members, client_controls.
 - SELECT/INSERT/DELETE: active_players, room_rematch_votes, chat_messages (DELETE chỉ cleanup service path), private.revoked_sessions; thêm UPDATE expires_at ở revoked_sessions cho upsert tăng retention.
 - SELECT/INSERT: match_moves, match_events, command_receipts, room_command_receipts.
@@ -583,7 +584,7 @@ Các case dưới là **test phải viết ở issue triển khai**, chưa phả
 | DB-12 | Viewer đọc PLAYERS bằng forged channel; member đã rời đọc chat; chat31ngày | Không nhận dữ liệu; TTL áp ngay trước cleanup |
 | DB-13 | Session Auth bị revoke trong lúc JWT chưa exp | Helper false, HTTP/socket/media bị chặn; expired marker chưa cleanup vẫn chặn |
 | DB-14 | A camera và A mic cùng policyVersion; A/B cùng version số nhưng khác user | A chỉ1update thắng; B không bị merge vào version A |
-| DB-15 | Crash giữa publish revoke/DeleteRoom/DB ACK/new generation | Old room_name vẫn có; recovery retire rồi mới cấp generation mới |
+| DB-15 | Crash khi job RUNNING trước/sau SFU ACK, giữa publish revoke/DeleteRoom/DB ACK/new generation | Startup reclaim RUNNING cùng job/effects; old room_name vẫn có; recovery retire rồi mới cấp generation mới |
 | DB-16 | SFU lỗi, targets coalesce A/B/viewer epoch/end | Giữ effects chưa ACK, APPLYING không APPLIED giả; END không mở lại media |
 | DB-17 | Worker late result sau undo, id mới job_version cao, worker crash retry | Không thêm nước stale; queue bounds đúng; jobVersion không reset |
 | DB-18 | app_server UPDATE/DELETE moves/events/receipts, đổi participant/username/terminal | Privilege/guard reject; admin access không dùng làm bằng chứng RLS |
