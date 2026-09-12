@@ -30,11 +30,36 @@ importers:
         specifier: ^3.2.7
         version: 3.2.7(@types/node@24.13.4)(tsx@4.23.13)
 
+  apps/ai-worker:
+    dependencies:
+      '@xiangqi/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
+      '@xiangqi/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@xiangqi/game-rules':
+        specifier: workspace:*
+        version: link:../../packages/game-rules
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.4
+      typescript:
+        specifier: ~5.8.0
+        version: 5.8.3
+
   apps/server:
     dependencies:
       '@supabase/supabase-js':
         specifier: ^2.116.0
         version: 2.116.0
+      '@xiangqi/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
+      '@xiangqi/ai-worker':
+        specifier: workspace:*
+        version: link:../ai-worker
       '@xiangqi/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

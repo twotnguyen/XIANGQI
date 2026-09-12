@@ -8,7 +8,6 @@
   "references": [
     { "path": "../../packages/contracts" },
     { "path": "../../packages/game-rules" },
-    { "path": "../../packages/ai" },
-    { "path": "../ai-worker" }
+    { "path": "../../packages/ai" }
   ]
 }
