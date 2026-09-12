@@ -7,12 +7,19 @@ import { requireAuth } from '../../auth/authenticate.js';
 import {
   MoveCommandSchema,
   ResignCommandSchema,
+  ProposeCommandSchema,
+  RespondCommandSchema,
+  UndoAiCommandSchema,
 } from '@xiangqi/contracts';
 import {
   getMatchSnapshot,
   submitMove,
   resignMatch,
 } from './service.js';
+import {
+  submitProposal,
+  respondToProposal,
+} from './proposals.js';
 
 export async function matchesRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/v1/matches/:id
@@ -120,6 +127,102 @@ export async function matchesRoutes(app: FastifyInstance): Promise<void> {
           requestId: request.id,
         });
       }
+    },
+  );
+
+  // POST /api/v1/matches/:id/commands/propose
+  app.post(
+    '/api/v1/matches/:id/commands/propose',
+    { preHandler: [requireAuth] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id: matchId } = request.params as { id: string };
+      const parsed = ProposeCommandSchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.status(400).send({
+          ok: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Dữ liệu đề nghị không hợp lệ' },
+          requestId: request.id,
+        });
+      }
+
+      try {
+        const result = await submitProposal(request.user!.id, matchId, parsed.data);
+        return reply.send({
+          ok: true,
+          data: result,
+          requestId: request.id,
+        });
+      } catch (err: unknown) {
+        const e = err as { statusCode?: number; code?: string; message?: string };
+        return reply.status(e.statusCode ?? 500).send({
+          ok: false,
+          error: {
+            code: e.code ?? 'INTERNAL_ERROR',
+            message: e.message ?? 'Không thể gửi đề nghị',
+          },
+          requestId: request.id,
+        });
+      }
+    },
+  );
+
+  // POST /api/v1/matches/:id/commands/respond
+  app.post(
+    '/api/v1/matches/:id/commands/respond',
+    { preHandler: [requireAuth] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id: matchId } = request.params as { id: string };
+      const parsed = RespondCommandSchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.status(400).send({
+          ok: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Dữ liệu phản hồi không hợp lệ' },
+          requestId: request.id,
+        });
+      }
+
+      try {
+        const result = await respondToProposal(request.user!.id, matchId, parsed.data);
+        return reply.send({
+          ok: true,
+          data: result,
+          requestId: request.id,
+        });
+      } catch (err: unknown) {
+        const e = err as { statusCode?: number; code?: string; message?: string };
+        return reply.status(e.statusCode ?? 500).send({
+          ok: false,
+          error: {
+            code: e.code ?? 'INTERNAL_ERROR',
+            message: e.message ?? 'Không thể phản hồi đề nghị',
+          },
+          requestId: request.id,
+        });
+      }
+    },
+  );
+
+  // POST /api/v1/matches/:id/commands/undo-ai
+  app.post(
+    '/api/v1/matches/:id/commands/undo-ai',
+    { preHandler: [requireAuth] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id: matchId } = request.params as { id: string };
+      const parsed = UndoAiCommandSchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.status(400).send({
+          ok: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Dữ liệu lệnh không hợp lệ' },
+          requestId: request.id,
+        });
+      }
+
+      // Undo AI placeholder (connected fully in ISSUE-021)
+      return reply.send({
+        ok: true,
+        data: { matchId, status: 'AI_UNDO_READY' },
+        requestId: request.id,
+      });
     },
   );
 }

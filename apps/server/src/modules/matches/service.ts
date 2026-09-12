@@ -305,9 +305,10 @@ export async function submitMove(
       );
     } else {
       const clockJson = settled?.clock ? JSON.stringify(settled.clock) : null;
+      // Per spec: any new move automatically invalidates pending proposal
       await client.query(
         `UPDATE public.matches
-         SET position = $1, version = $2, ply = $3, clock = $4, updated_at = now()
+         SET position = $1, version = $2, ply = $3, clock = $4, proposal = NULL, updated_at = now()
          WHERE id = $5`,
         [JSON.stringify(nextPos), newVersion, newPly, clockJson, matchId],
       );
