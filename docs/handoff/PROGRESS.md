@@ -2,8 +2,8 @@
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
 - Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và hardening toàn diện đã deploy, kiểm chứng hoàn tất.
-- Issue đang làm: ISSUE-001 LOCAL_DONE, chuẩn bị PR.
-- Bước tiếp theo: Commit, push, tạo PR `chore/issue-001-foundation`, review, merge. Sau đó ISSUE-002.
+- Issue đang làm: ISSUE-001 DONE, ISSUE-002 DONE. Issue tiếp: ISSUE-003 (legal moves).
+- Bước tiếp theo: Tạo nhánh ISSUE-003, triển khai luật di chuyển và an toàn tướng.
 - Blocker hiện tại của lập trình local: không có.
 - External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng và đã đồng bộ 8 migration files.
 
@@ -12,7 +12,7 @@
 | Issue | Trạng thái | Evidence / bước tiếp theo |
 |---|---|---|
 | [ISSUE-001](../issues/ISSUE-001-foundation.md) | DONE | PR [#10](https://github.com/twotnguyen/XIANGQI/pull/10) MERGED (`f397cba`); evidence `docs/test-reports/ISSUE-001.md`; 4 tests, build/lint/typecheck/CI pass |
-| [ISSUE-002](../issues/ISSUE-002-contracts-position.md) | IN_PROGRESS | Nhánh `feat/issue-002-contracts-position`; 20 tests pass, lint/typecheck/build OK |
+| [ISSUE-002](../issues/ISSUE-002-contracts-position.md) | DONE | PR [#11](https://github.com/twotnguyen/XIANGQI/pull/11) MERGED (`d8e9dba`); evidence `docs/test-reports/ISSUE-002.md`; 20 tests, lint/typecheck/build/CI pass |
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
 | [ISSUE-005](../issues/ISSUE-005-board-ui.md) | TODO | Chưa thực thi |
