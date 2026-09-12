@@ -172,6 +172,29 @@ export function MatchPage() {
         </div>
       )}
 
+      {/* AI thinking / queued status banner */}
+      {snapshot.mode === 'AI' && snapshot.aiState && snapshot.status === 'ACTIVE' && (
+        <div
+          style={{
+            padding: '8px 12px',
+            borderRadius: '4px',
+            backgroundColor: snapshot.aiState.state === 'THINKING' ? '#FEF3C7' : '#E0F2FE',
+            color: snapshot.aiState.state === 'THINKING' ? '#92400E' : '#0369A1',
+            fontWeight: 'bold',
+            fontSize: '14px',
+            textAlign: 'center',
+            margin: '8px 0',
+          }}
+          data-testid="ai-status"
+        >
+          {snapshot.aiState.state === 'THINKING'
+            ? '🤖 Máy đang suy nghĩ...'
+            : snapshot.aiState.state === 'QUEUED'
+              ? '⏳ Máy đang trong hàng đợi tính toán...'
+              : 'Lượt của bạn'}
+        </div>
+      )}
+
       {/* Board */}
       <Board
         position={snapshot.position}
@@ -186,8 +209,29 @@ export function MatchPage() {
       {isPlayer && snapshot.status === 'ACTIVE' && (
         <Controls
           disabled={isPending}
+          isAiMode={snapshot.mode === 'AI'}
+          canUndo={snapshot.ply > 0}
           onProposeDraw={() => propose('DRAW')}
-          onProposeUndo={() => propose('UNDO')}
+          onProposeUndo={async () => {
+            if (snapshot.mode === 'AI') {
+              // Call instant undo for AI
+              const session = (await supabase.auth.getSession()).data.session;
+              await fetch(`/api/v1/matches/${snapshot.id}/commands/undo-ai`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${session?.access_token ?? ''}`,
+                },
+                body: JSON.stringify({
+                  commandId: crypto.randomUUID(),
+                  expectedVersion: snapshot.version,
+                  payload: {},
+                }),
+              });
+            } else {
+              propose('UNDO');
+            }
+          }}
           onResign={resign}
         />
       )}

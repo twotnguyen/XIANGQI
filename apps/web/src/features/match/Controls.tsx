@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 
 interface ControlsProps {
   disabled: boolean;
-  onProposeDraw: () => void;
+  isAiMode?: boolean;
+  canUndo?: boolean;
+  onProposeDraw?: () => void;
   onProposeUndo: () => void;
   onResign: () => void;
 }
 
 export function Controls({
   disabled,
+  isAiMode = false,
+  canUndo = true,
   onProposeDraw,
   onProposeUndo,
   onResign,
@@ -25,22 +29,25 @@ export function Controls({
       }}
       data-testid="match-controls"
     >
-      <button
-        onClick={onProposeDraw}
-        disabled={disabled}
-        data-testid="propose-draw-btn"
-        style={{ padding: '8px 16px', fontSize: '13px' }}
-      >
-        Xin hòa
-      </button>
+      {/* Xin hòa chỉ có ở chế độ online giữa 2 người chơi */}
+      {!isAiMode && onProposeDraw && (
+        <button
+          onClick={onProposeDraw}
+          disabled={disabled}
+          data-testid="propose-draw-btn"
+          style={{ padding: '8px 16px', fontSize: '13px' }}
+        >
+          Xin hòa
+        </button>
+      )}
 
       <button
         onClick={onProposeUndo}
-        disabled={disabled}
+        disabled={disabled || !canUndo}
         data-testid="propose-undo-btn"
         style={{ padding: '8px 16px', fontSize: '13px' }}
       >
-        Xin đi lại
+        {isAiMode ? 'Đi lại' : 'Xin đi lại'}
       </button>
 
       {confirmResign ? (
