@@ -1,11 +1,11 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
-- Trạng thái sản phẩm: IN_PROGRESS — đang triển khai schema CSDL và harness kiểm thử.
-- Issue đang làm: ISSUE-006 (nhánh `feat/issue-006-supabase-schema`).
-- Bước tiếp theo: Tạo migrations 19 bảng, test harness local, kiểm chứng trên PostgreSQL local trước khi áp dụng lên Supabase remote.
+- Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và fixes đã deploy, kiểm chứng hoàn tất.
+- Issue đang làm: fix bổ sung ISSUE-006 (nhánh `fix/issue-006-schema-hardening`).
+- Bước tiếp theo: Merge PR fix schema hardening, tiếp tục ISSUE-001/002.
 - Blocker hiện tại của lập trình local: không có.
-- External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng.
+- External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng và đã đồng bộ migration history.
 
 ## Registry
 
@@ -16,7 +16,7 @@
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
 | [ISSUE-005](../issues/ISSUE-005-board-ui.md) | TODO | Chưa thực thi |
-| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `feat/issue-006-supabase-schema`, [PR #5](https://github.com/twotnguyen/XIANGQI/pull/5); 19 bảng và RLS đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
+| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | LOCAL_DONE | Nhánh `fix/issue-006-schema-hardening`; 19 bảng, RLS & migration 6 fixes đã deploy Supabase `snsnkoicxmubuotcdafi`; báo cáo `docs/test-reports/DATABASE-SETUP.md`; phần TS pool/harness hoàn thiện sau ISSUE-001/002 |
 | [ISSUE-007](../issues/ISSUE-007-password-auth.md) | TODO | Chưa thực thi |
 | [ISSUE-008](../issues/ISSUE-008-google-profile.md) | TODO | Chưa thực thi |
 | [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | TODO | Chưa thực thi |
@@ -48,10 +48,10 @@
 
 Cập nhật đoạn này với thông tin thật, không chỉ ghi “đang làm”.
 
-- Code changes: `supabase/config.toml`, 5 files migrations SQL (`20260912000001_roles_private_profiles.sql` .. `20260912000005_rematch.sql`), harness `tests/integration/database_test.py`, report `docs/test-reports/DATABASE-SETUP.md`.
-- Last command/test: Áp dụng 5 migrations lên Supabase project `snsnkoicxmubuotcdafi`, catalog verified (19 bảng, 64 indexes, 19 PKs, 43 FKs, 12 UNIQUEs, 217 CHECKs, 3 triggers, RLS forced trên toàn bộ 19 bảng; non-destructive smoke test pass).
-- Next exact action: Mở PR từ nhánh `feat/issue-006-supabase-schema` vào `main`, review, squash merge và đồng bộ `main`.
-- External blocker: Không có. Supabase `snsnkoicxmubuotcdafi` hoạt động ổn định.
+- Code changes: `supabase/migrations/20260912000006_schema_fixes.sql`, `supabase/config.toml`, `tests/integration/database_test.py`, `docs/test-reports/DATABASE-SETUP.md`.
+- Last command/test: Áp dụng migration 6 lên Supabase `snsnkoicxmubuotcdafi`, đồng bộ `supabase_migrations.schema_migrations` (6/6 migrations khớp Git), local test 9/9 suites pass (50+ assertions).
+- Next exact action: Mở PR nhánh `fix/issue-006-schema-hardening`, review, squash merge và đồng bộ `main`.
+- External blocker: Không có. Project Supabase `snsnkoicxmubuotcdafi` sẵn sàng.
 
 ## Mẫu evidence
 
