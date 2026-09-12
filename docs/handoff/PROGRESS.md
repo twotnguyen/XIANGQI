@@ -2,8 +2,8 @@
 
 - Trạng thái bộ tài liệu: PLAN_READY sau khi kiểm tra docs/READINESS.md.
 - Trạng thái sản phẩm: LOCAL_DONE — schema CSDL 19 bảng và hardening toàn diện đã deploy, kiểm chứng hoàn tất.
-- Issue đang làm: fix bổ sung ISSUE-006 đợt 4 (nhánh `fix/issue-006-harness-isolation`).
-- Bước tiếp theo: Mở PR `fix/issue-006-harness-isolation`, review, squash merge và triển khai ISSUE-001/002.
+- Issue đang làm: ISSUE-001 LOCAL_DONE, chuẩn bị PR.
+- Bước tiếp theo: Commit, push, tạo PR `chore/issue-001-foundation`, review, merge. Sau đó ISSUE-002.
 - Blocker hiện tại của lập trình local: không có.
 - External setup: Supabase project `snsnkoicxmubuotcdafi` (XIANGQI) sẵn sàng và đã đồng bộ 8 migration files.
 
@@ -11,7 +11,7 @@
 
 | Issue | Trạng thái | Evidence / bước tiếp theo |
 |---|---|---|
-| [ISSUE-001](../issues/ISSUE-001-foundation.md) | TODO | Chưa thực thi |
+| [ISSUE-001](../issues/ISSUE-001-foundation.md) | LOCAL_DONE | Nhánh `chore/issue-001-foundation`, evidence `docs/test-reports/ISSUE-001.md`; 4 tests pass, build/lint/typecheck OK; CI chờ push |
 | [ISSUE-002](../issues/ISSUE-002-contracts-position.md) | TODO | Chưa thực thi |
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | TODO | Chưa thực thi |
 | [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | TODO | Chưa thực thi |
@@ -48,10 +48,10 @@
 
 Cập nhật đoạn này với thông tin thật, không chỉ ghi “đang làm”.
 
-- Code changes: `tests/integration/database_test.py` (cô lập libpq PGHOSTADDR, khôi phục regression tests same-cell move, hash length, status/outcome matrix, 10 suites, 180+ assertions), `docs/test-reports/DATABASE-SETUP.md`.
-- Last command/test: `python3 tests/integration/database_test.py` (exit code 0, 10/10 suites pass, 180+ assertions).
-- Next exact action: Mở PR nhánh `fix/issue-006-harness-isolation`, review, squash merge và đồng bộ `main`.
-- External blocker: Không có. Project Supabase `snsnkoicxmubuotcdafi` sẵn sàng.
+- Code changes: Toàn bộ workspace ISSUE-001 — package.json, pnpm-workspace.yaml, tsconfig.base.json, eslint.config.js, vitest.config.ts, .nvmrc, .env.example, README.md, apps/server/src/{app,main,config}.ts, apps/web/*, packages/{contracts,game-rules,ai}/*, infra/compose.yaml, .github/workflows/ci.yml, tests/unit/{health,config}.test.ts, docs/test-reports/ISSUE-001.md.
+- Last command/test: `pnpm test:unit` (exit 0, 2 files, 4 tests pass), `pnpm build` (exit 0), `pnpm typecheck` (exit 0), `pnpm lint` (exit 0).
+- Next exact action: Commit, push, tạo PR, review, merge; sau merge tiếp ISSUE-002.
+- External blocker: Không có. CI sẽ chạy khi push.
 
 ## Mẫu evidence
 
