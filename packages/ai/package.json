@@ -1,0 +1,21 @@
+{
+  "name": "@xiangqi/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@xiangqi/contracts": "workspace:*",
+    "@xiangqi/game-rules": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.0"
+  }
+}

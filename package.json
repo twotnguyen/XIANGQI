@@ -1,0 +1,32 @@
+{
+  "name": "xiangqi",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @xiangqi/web dev & pnpm --filter @xiangqi/server dev & wait",
+    "build": "pnpm -r --workspace-concurrency=1 build",
+    "lint": "eslint 'apps/*/src/**/*.{ts,tsx}' 'packages/*/src/**/*.ts' 'tests/**/*.ts'",
+    "typecheck": "pnpm -r typecheck",
+    "test:unit": "pnpm exec vitest run --config vitest.config.ts",
+    "test:integration": "pnpm exec vitest run --config vitest.integration.config.ts",
+    "test:e2e": "echo 'E2E suite not yet created (ISSUE-015+)' && exit 1",
+    "test:ai": "echo 'AI suite not yet created (ISSUE-018+)' && exit 1",
+    "test:load": "echo 'Load suite not yet created (ISSUE-030)' && exit 1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.10.0",
+    "globals": "^17.12.0",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^3.2.7"
+  }
+}
