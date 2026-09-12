@@ -66,3 +66,5 @@ Người dùng đã ủy quyền vòng Git tự động theo [GIT-WORKFLOW](GIT-
 Lịch sử chuẩn bị: [PR #1](https://github.com/twotnguyen/XIANGQI/pull/1) đã MERGED, commit `e211bbae`; bổ sung workflow Git/GitHub. Chưa triển khai issue ứng dụng nào.
 
 Bảo trì repository: nhánh `chore/repository-hygiene`, bổ sung ignore metadata/cache/build/test output/local state và gate review file staged. PR: [#2](https://github.com/twotnguyen/XIANGQI/pull/2); chưa triển khai issue ứng dụng. Kiểm chứng local: 83 path cases đạt, không có file tracked bị ignore, không có historical blob trên5MiB.
+
+Rà soát sẵn sàng bàn giao: nhánh `docs/implementation-readiness`, [PR #3](https://github.com/twotnguyen/XIANGQI/pull/3). Bổ sung ma trận test đủ32 issue, harness/CI ownership, mẫu evidence, prompt và sửa các seam hợp đồng qua review. PR #2 đã MERGED tại `81374ee`. Sản phẩm vẫn NOT_STARTED; agent code bắt đầu001, trạng thái tích hợp PR #3 tra trên GitHub.

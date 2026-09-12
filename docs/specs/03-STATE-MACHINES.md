@@ -4,7 +4,7 @@ Nguồn chuẩn cho match lifecycle; đọc cùng [contracts](04-CONTRACTS.md). 
 
 ## Trạng thái
 
-Room: WAITING → PLAYING → FINISHED → CLOSED. Match: ACTIVE → FINISHED hoặc INTERRUPTED. Sau INTERRUPTED room FINISHED để tạo ván mới; không có winner. Match kết thúc không trở lại ACTIVE. Presence, media và proposal là trạng thái riêng.
+Room: WAITING → PLAYING → FINISHED → CLOSED; FINISHED → PLAYING chỉ qua tái đấu được hai player chấp nhận trước hạn10phút, tạo match mới và xóa finished_at atomic. Match: ACTIVE → FINISHED hoặc INTERRUPTED. Sau INTERRUPTED room FINISHED để tạo ván mới; không có winner. Match kết thúc không trở lại ACTIVE. Presence, media và proposal là trạng thái riêng.
 
 `version` tăng mỗi lần mutation match được chấp nhận, gồm move, undo, proposal, result; `ply` là độ dài nhánh nước đi hiệu lực, có thể giảm. `roomVersion` tăng ở thay đổi membership/settings/ready; không dùng version match cho quyền xem.
 
@@ -21,7 +21,8 @@ lookup receipt(match, actor, commandId)
 check match ACTIVE, expectedVersion
 settleClock(nowMs); if expired => finalize TIMEOUT, reject requested action
 validate role, turn, schema and rule
-apply mutation; version++; append immutable event; update snapshot
+apply mutation; if terminal: finalizeMatch owns version/event/snapshot
+otherwise: version++; append immutable event; update snapshot
 insert command_receipt with command type + expectedVersion + canonical payload hash + appliedVersion/result metadata
 COMMIT
 ack; broadcast sanitized snapshot
@@ -41,7 +42,7 @@ Một người offline: lưu disconnectedAt/deadline trong DB; timer clock và g
 
 Cả hai offline trước bất kỳ deadline kết thúc nào: chuyển INTERRUPTED ngay sau khi server đã xác định cả hai lease mất; không có winner. Server restart: trước nhận command, đánh dấu các ACTIVE do bootId cũ sở hữu thành INTERRUPTED/SERVER_RESTART trong transaction, giữ lịch sử. Không giả phục hồi thắng/thua bằng thời gian downtime. Chỉ một instance game server trong bản này; horizontal scale chưa hỗ trợ.
 
-Client resync khi connect, sau lỗi VERSION_CONFLICT, khi thấy version nhảy, và 15 giây/lần đang ở ván. Snapshot đã nhận version <= hiện tại bỏ qua trừ response reset phòng/khác matchId. Server revalidate admission epoch trước mọi subscribe/sync. Không replay cache packet riêng tư vào membership đã bị thu hồi.
+Client resync khi connect, sau lỗi VERSION_CONFLICT, khi thấy version nhảy, và 15 giây/lần đang ở ván. Snapshot version thấp hơn hiện tại bỏ qua; cùng version vẫn nhận clock/presence nếu serverNowMs mới hơn theo mục retry bên dưới; khác matchId reset state. Server revalidate admission epoch trước mọi subscribe/sync. Không replay cache packet riêng tư vào membership đã bị thu hồi.
 
 ## Undo và sự kiện
 
@@ -63,7 +64,7 @@ AI human offline: giữ 60 giây, sau đó INTERRUPTED nếu chưa có timeout h
 
 ## Finalizer chung và đồng hồ khi retry
 
-ISSUE-012 cung cấp `finalizeMatch(tx, match, outcome, nowMs): MatchSnapshot`, caller đã giữ room→match lock (AI chỉ match). Hàm đặt status FINISHED/INTERRUPTED, ended_at, outcome, clear proposal, settle/stop clock, tăng version một lần cho mutation terminal, append event, giải phóng active_players, cập nhật room FINISHED/finished_at nếu có. Move kết thúc ván dùng một version/event MOVE chứa outcome, không tăng hai lần. Timeout/resign là một event terminal. Sau commit mới broadcast và phát hook media cleanup. Mọi consumer013/014/021 dùng hàm này, không tự viết finalizer riêng.
+ISSUE-012 cung cấp `finalizeMatch(tx, match, outcome, nowMs, terminalEvent): MatchSnapshot`, caller đã giữ room→match lock (AI chỉ match). Hàm đặt status FINISHED/INTERRUPTED, ended_at, outcome, clear proposal, settle/stop clock, tăng version một lần cho mutation terminal, append event, giải phóng active_players, cập nhật room FINISHED/finished_at nếu có. Move kết thúc ván dùng một version/event MOVE chứa outcome, không tăng hai lần. Timeout/resign là một event terminal. Sau commit mới broadcast và phát hook media cleanup. Mọi consumer013/014/021 dùng hàm này, không tự viết finalizer riêng.
 
 Canonical receipt hash gồm `{type,expectedVersion,payload}` với object keys sorted; matchId/actor/commandId nằm trong unique key. `{}` của RESIGN không trùng `{}` của UNDO_AI. Duplicate trả `{appliedVersion,snapshot}` với snapshot hiện tại đọc từ DB; không trả timestamp/clock snapshot đã lưu từ lần đầu. Command thành công mới cũng dùng cùng envelope. Nếu ván đã tiến triển, snapshot có version cao hơn appliedVersion là bình thường.
 
@@ -78,3 +79,13 @@ Snapshot DTO chiếu số dư clock tới `serverNowMs` tại lúc trả (không
 ## Cleanup sau ván
 
 ISSUE-027 sở hữu scheduler room FINISHED sau10 phút từ finished_at → CLOSED, dùng room lock, kiểm currentMatchId/status để không đóng room đã tái đấu. Thu hồi invitations/memberships/chat subscriptions và media hooks; giữ matches/events/history. Tái đấu xóa finished_at. Fake-clock test expiry và rematch đồng thời là bắt buộc.
+
+## Hợp đồng kết thúc và tái đấu bổ sung
+
+Finalizer là chủ sở hữu duy nhất việc tăng version/append event khi terminal; caller truyền terminalEvent trước khi tăng version, không append thêm event. TerminalEvent là discriminated union trong contracts: `{type:'MOVE',payload:{moveId,parentMoveId,side,move}}` hoặc `{type:'RESULT',payload:{actorKey:string|null}}`. Finalizer thêm outcome vào payload lưu DB. Mọi terminal không phải move (resign, draw accept, timeout, disconnect/restart/AI fault) dùng RESULT; reason nằm trong outcome. Nonterminal events gồm START(version0), MOVE, UNDO, PROPOSAL_CREATED và PROPOSAL_RESOLVED; resolved payload có proposalId và resolution REJECTED/EXPIRED, accepted DRAW dùng RESULT, accepted UNDO dùng UNDO. Move vô hiệu proposal thể hiện trong snapshot cùng MOVE, không ghi thêm event cùng version. Proposal creation payload là Proposal; UNDO theo mục Undo ở trên; START chứa initial position và ruleSetVersion.
+
+Mapping bắt buộc: BOTH_OFFLINE, SERVER_RESTART, AI_UNAVAILABLE → INTERRUPTED/winner=null; AGREED_DRAW và REPETITION → FINISHED/winner=null; CHECKMATE, STALEMATE, RESIGN, TIMEOUT, DISCONNECT → FINISHED/winner side thắng. AI chỉ có human offline hết grace dùng BOTH_OFFLINE/winner=null (tên reason dùng chung cho mất toàn bộ human participants); timeout đã tới hạn vẫn ưu tiên như trên.
+
+Rematch nhận `{commandId,expectedMatchId,accept}` dưới current controller lease. ISSUE-027 thêm migrations `room_rematch_votes` và `room_command_receipts` theo04. Lock room rồi user rows theo thứ tự rồi old match; xác minh hai player hiện tại vẫn là participant của expectedMatchId. Receipt key(roomId,actorId,commandId), canonical hash gồm type REMATCH + expectedMatchId + accept. Exact retry trả newMatchId đã ghi (nullable nếu mới vote), kèm Room DTO hiện tại sau access check; payload khác COMMAND_ID_REUSED. Không dùng DTO retry để tự phát động rematch tiếp theo.
+
+Request mới chỉ hợp lệ nếu room FINISHED, currentMatchId=expectedMatchId và now < finished_at+10phút; stale round trả CONFLICT, closed/expired trả ROOM_CLOSED (đóng room dưới cùng lock nếu đã tới hạn). accept=true upsert vote của actor; accept=false xóa cả hai votes vòng này, không ảnh hưởng match cũ. Hai vote true tạo đúng một match mới, đổi sides/giữ timeControl, claim active_players, cập nhật currentMatchId/status/roomVersion, clear finished_at và votes trong cùng transaction. Receipt của command tạo ván ghi newMatchId; các receipt vote cũ không sửa. Sau khi currentMatchId đổi, commandId mới cho vòng cũ phải reject, kể cả hai click đến sát nhau. Tại đúng hạn10phút close thắng rematch. Close xóa votes, giữ receipt audit; read retry vẫn kiểm quyền hiện tại. Client nhận room:updated để thấy đối thủ vote đã tạo ván mới; không cần bổ sung tính năng thông báo ngoài room.

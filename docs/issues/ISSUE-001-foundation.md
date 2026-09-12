@@ -50,7 +50,7 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 - [ ] **Bước 4.** Tạo scripts unit/integration/e2e/ai/load forward arguments; script cho suite chưa tồn tại phải báo chưa có suite, không trả PASS giả. CI ban đầu chỉ chạy suite đã tạo.
 
-- [ ] **Bước 5.** Tạo gitignore env/build/artifacts và README local; nếu chưa có git chỉ git init local, không tự tạo remote/push.
+- [ ] **Bước 5.** Tạo gitignore env/build/artifacts và README local; repository đã có Git/remote; giữ .gitignore hiện hữu và tuân thủ Git/GitHub workflow được ủy quyền.
 
 - [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
 - [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-001.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
@@ -76,6 +76,8 @@ await app.close();
 ```
 
 ## Lệnh kiểm chứng
+
+Bắt buộc đối chiếu hàng **ISSUE-001** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T001-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
 
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 

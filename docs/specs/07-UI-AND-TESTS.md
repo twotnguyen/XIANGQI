@@ -18,7 +18,7 @@ Mỗi page có empty/loading/error/retry/unauthorized. Input schema error tiến
 
 Fixtures luật tối thiểu:
 - Initial 32 pieces, 16 mỗi side, key ban đầu đếm 1.
-- Hai tướng `(4,0)` BLACK và `(4,9)` RED, tốt đỏ `(4,5)` chắn. Move tốt sang `(3,5)` mở mặt tướng phải bị từ chối.
+- Hai tướng `(4,0)` BLACK và `(4,9)` RED, tốt đỏ `(4,4)` đã qua sông chắn. Move tốt sang `(3,4)` mở mặt tướng phải bị từ chối.
 - Mã đỏ `(1,9)`, quân đỏ `(1,8)`: đích `(0,7)` và `(2,7)` bị cản; bỏ quân chắn thì đường mã hợp lệ nếu tướng an toàn.
 - Pháo đỏ `(0,7)`, mục tiêu đen `(0,2)`; kiểm 0/1/2 ngòi giữa chúng cho capture.
 - Tượng đỏ `(2,9)` đến `(4,7)`, mắt `(3,8)` trống/bị chắn; đến hàng phía bắc sông bị cấm.
@@ -49,3 +49,5 @@ Thử tải local: 10 room, 70 client, 2 AI workers; đo server command p95, mem
 ## Gate benchmark bổ sung
 
 ISSUE-023 chạy ít nhất5 repeats/position/level; search p95 <= budget + max(50ms,10% budget), báo IPC/network riêng. Mỗi pair20ván, tổng60ván cho3 cấp; cap200ply chỉ trong harness chấm ADJUDICATED_DRAW=0.5 điểm mỗi bên. Illegal move/crash làm run lỗi, không chấm thua như thể đó là sức mạnh AI. Node tăng1 mỗi search position visit, kể root/terminal. Tập thế cờ và ordering giữ giống nhau khi so baseline/pruning.
+
+Cách dựng harness, case ID theo từng issue và fixture terminal cụ thể: [08-TEST-EXECUTION](08-TEST-EXECUTION.md).

@@ -24,6 +24,7 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 - `apps/server/src/modules/history/service.ts`
 - `apps/server/src/modules/history/routes.ts`
 - `apps/server/src/modules/rooms/rematch.ts`
+- `supabase/migrations/` (votes và room command receipts theo04)
 - `apps/web/src/features/history/`
 - `tests/integration/history-rematch.test.ts`
 - `tests/e2e/replay.spec.ts`
@@ -49,7 +50,7 @@ Issue này sở hữu room FINISHED→CLOSED sau10phút từ finished_at. Dùng 
 
 - [ ] **Bước 2.** Build effective sequence từ activeMoveIds; next/prev/start/end controls, nhãn undoCount, không edit ended.
 
-- [ ] **Bước 3.** Online rematch both accept trong10m FINISHED, transaction lock room, new match ID đổi sides/keep time, reset ready proposal state.
+- [ ] **Bước 3.** Online rematch both accept trong10m FINISHED, transaction lock room, persisted votes/receipts và expectedMatchId theo03/04; new match ID đổi sides/keep time, reset ready proposal state.
 
 - [ ] **Bước 4.** New chat matchId, media OFF/delete old generations; keep valid viewers và policy room hiện tại.
 
@@ -83,6 +84,8 @@ expect(next.version).toBe(0);
 ```
 
 ## Lệnh kiểm chứng
+
+Bắt buộc đối chiếu hàng **ISSUE-027** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T027-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
 
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 

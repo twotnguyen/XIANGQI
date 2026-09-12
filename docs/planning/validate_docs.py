@@ -23,6 +23,15 @@ for x in items:
  for d in x['deps']:
   if f'ISSUE-{d:03d}' not in s:errors.append(f'{p.name}:missing dependency reference')
  if len(re.findall(r'^\|',s,re.M))<5:errors.append(f'{p.name}:too few acceptance cases')
+test_plan=(root/'docs/specs/08-TEST-EXECUTION.md').read_text()
+matrix=test_plan.split('## Ma trận test tối thiểu theo issue',1)[1].split('## Fixture terminal',1)[0]
+test_rows=re.findall(r'^\| ISSUE-(\d{3}) \|',matrix,re.M)
+if sorted(test_rows)!=[f'{n:03d}' for n in range(1,33)]:
+ errors.append('Test matrix must contain exactly one row per issue')
+for x in items:
+ s=(root/'docs/issues'/x['file']).read_text()
+ if '08-TEST-EXECUTION.md' not in s or f"T{x['n']:03d}-xx" not in s:
+  errors.append(f"{x['file']}:missing test matrix/case ID handoff")
 covered=set(r for x in items for r in x['req'])
 if covered!={f'R{i:02d}' for i in range(1,17)}:errors.append('Requirement coverage mismatch')
 mds=list((root/'docs').rglob('*.md'))+list(root.glob('*.md'))
@@ -39,5 +48,5 @@ for p in mds:
   if not (p.parent/target).resolve().exists():errors.append(f'{p.relative_to(root)}:broken link {target}')
  for line in s.splitlines():
   if re.search(r'\b(TBD|CHANGEME|REPLACE_ME)\b',line):errors.append(f'{p}:unresolved placeholder')
-print(json.dumps({'markdownFiles':len(mds),'issueCount':len(items),'requirementsCovered':len(covered),'localLinksChecked':linkcount,'dependencyGraph':'acyclic' if len(done)==32 else 'invalid','errors':errors},ensure_ascii=False,indent=2))
+print(json.dumps({'markdownFiles':len(mds),'issueCount':len(items),'requirementsCovered':len(covered),'testMatrixRows':len(test_rows),'localLinksChecked':linkcount,'dependencyGraph':'acyclic' if len(done)==32 else 'invalid','errors':errors},ensure_ascii=False,indent=2))
 raise SystemExit(1 if errors else 0)

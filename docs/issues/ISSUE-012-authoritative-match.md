@@ -37,7 +37,7 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Finalizer và receipt chuẩn
 
-Sở hữu finalizeMatch(tx,match,outcome,nowMs) theo state spec: online luôn room→match lock; kết quả đặt ended_at/outcome, clear proposal, release active_players, room FINISHED/finished_at và event cùng transaction. Move terminal chỉ tăng version một lần. Canonical hash gồm command type, expectedVersion và payload. Return ApiResult<CommandResult>, gồm appliedVersion gốc và snapshot hiện tại với clock projection mới. Snapshot retry không lấy serverNowMs cũ từ receipt. Cung cấp match:subscribe cho cả loại match; AI auth handler nối ở021.
+Sở hữu finalizeMatch(tx,match,outcome,nowMs,terminalEvent) theo state spec: online luôn room→match lock; kết quả đặt ended_at/outcome, clear proposal, release active_players, room FINISHED/finished_at và event cùng transaction. Move terminal chỉ tăng version một lần. Canonical hash gồm command type, expectedVersion và payload. Return ApiResult<CommandResult>, gồm appliedVersion gốc và snapshot hiện tại với clock projection mới. Snapshot retry không lấy serverNowMs cũ từ receipt. Cung cấp match:subscribe cho cả loại match; AI auth handler nối ở021.
 
 ## Các bước thực hiện
 
@@ -84,6 +84,8 @@ expect(await countMoves(first.data.snapshot.id)).toBe(1);
 ```
 
 ## Lệnh kiểm chứng
+
+Bắt buộc đối chiếu hàng **ISSUE-012** trong [ma trận test và harness](../specs/08-TEST-EXECUTION.md); ghi từng case `T012-xx` vào báo cáo theo [mẫu evidence](../handoff/EVIDENCE-TEMPLATE.md), ngoài acceptance riêng bên trên.
 
 Chạy từ repo root sau khi dependencies của issue đã hoàn thành:
 
