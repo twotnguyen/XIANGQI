@@ -1,26 +1,20 @@
 #!/usr/bin/env python3
 """
 Integration test harness for Xiangqi Supabase schema.
-Connects to local PostgreSQL instance (port 54399) to verify:
-- Migration clean run (including schema fixes)
-- Auth profile triggers & strict username validation
-- Session revocation & private.is_auth_session_active
-- All table constraints (JSON, NULL, enums, bounds, circular FK, DISCONNECT, clock)
-- Deferrable side uniqueness swap
-- Comprehensive RLS denial on all 19 tables for anon & authenticated
-- Least privilege DML permissions for app_server
-- Revocation of execute privileges on trigger functions
-- Real transaction rollback atomicity
+Verifies all schema invariants, constraints, RLS denial, trigger functions, and rollback.
+
+Can connect to an existing PostgreSQL instance on port 54399, or self-manage a
+temporary local PostgreSQL instance automatically if not already running.
 """
 
-import subprocess
+import os
+import sys
 import json
 import uuid
-import sys
-
-PG_PORT = "54399"
-PG_USER = "postgres"
-PG_DB = "postgres"
+import shutil
+import atexit
+import argparse
+import subprocess
 
 ALL_19_TABLES = [
     ("public", "profiles"),
@@ -44,9 +38,23 @@ ALL_19_TABLES = [
     ("public", "room_command_receipts"),
 ]
 
+def find_pg_binary(name: str) -> str:
+    path = shutil.which(name)
+    if path:
+        return path
+    for fallback in [f"/opt/homebrew/bin/{name}", f"/usr/local/bin/{name}", f"/usr/bin/{name}"]:
+        if os.path.exists(fallback):
+            return fallback
+    raise RuntimeError(f"PostgreSQL binary '{name}' not found in PATH or standard locations.")
+
+PSQL = find_pg_binary("psql")
+PG_PORT = os.environ.get("PGPORT", "54399")
+PG_USER = os.environ.get("PGUSER", "postgres")
+PG_DB = os.environ.get("PGDATABASE", "postgres")
+
 def run_sql(query: str, user: str = PG_USER) -> str:
     cmd = [
-        "/opt/homebrew/bin/psql",
+        PSQL,
         "-p", PG_PORT,
         "-U", user,
         "-d", PG_DB,
@@ -58,9 +66,9 @@ def run_sql(query: str, user: str = PG_USER) -> str:
         raise RuntimeError(f"SQL Error: {proc.stderr.strip()} | Query: {query}")
     return proc.stdout.strip()
 
-def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = ""):
+def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = "") -> str:
     cmd = [
-        "/opt/homebrew/bin/psql",
+        PSQL,
         "-p", PG_PORT,
         "-U", user,
         "-d", PG_DB,
@@ -75,6 +83,71 @@ def run_sql_expect_error(query: str, user: str = PG_USER, expected_err: str = ""
         raise AssertionError(f"Expected '{expected_err}' in error, got: {err}")
     return err
 
+def ensure_test_cluster():
+    """Ensure PostgreSQL is accessible on PG_PORT, or spin up a self-contained test instance."""
+    try:
+        run_sql("SELECT 1;")
+        return False
+    except Exception:
+        pass
+
+    initdb = find_pg_binary("initdb")
+    pg_ctl = find_pg_binary("pg_ctl")
+    pg_dir = f"/tmp/xiangqi-test-pg-{os.getpid()}"
+    log_file = f"{pg_dir}.log"
+
+    env = os.environ.copy()
+    env["LC_ALL"] = "en_US.UTF-8"
+    subprocess.run([initdb, "-D", pg_dir, "-U", "postgres", "-E", "UTF8", "--auth=trust"],
+                   env=env, capture_output=True, check=True)
+
+    env["LC_ALL"] = "C"
+    subprocess.run([pg_ctl, "-D", pg_dir, "-o", f"-p {PG_PORT} -k /tmp", "-l", log_file, "start"],
+                   env=env, capture_output=True, check=True)
+
+    def cleanup():
+        subprocess.run([pg_ctl, "-D", pg_dir, "stop"], capture_output=True)
+        shutil.rmtree(pg_dir, ignore_errors=True)
+        if os.path.exists(log_file):
+            os.remove(log_file)
+
+    atexit.register(cleanup)
+
+    # Initialize mock auth schema and roles
+    run_sql("""
+        CREATE SCHEMA IF NOT EXISTS auth;
+        DO $$ BEGIN
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN; END IF;
+        END $$;
+
+        CREATE TABLE IF NOT EXISTS auth.users (
+          id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+          raw_user_meta_data jsonb,
+          raw_app_meta_data jsonb,
+          email text,
+          created_at timestamptz DEFAULT now()
+        );
+
+        CREATE TABLE IF NOT EXISTS auth.sessions (
+          id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+          user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+          created_at timestamptz DEFAULT now()
+        );
+    """)
+
+    # Apply all migrations in order
+    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    migrations_dir = os.path.join(repo_root, "supabase", "migrations")
+    for f in sorted(os.listdir(migrations_dir)):
+        if f.endswith(".sql"):
+            full_path = os.path.join(migrations_dir, f)
+            subprocess.run([PSQL, "-p", PG_PORT, "-U", PG_USER, "-d", PG_DB, "-v", "ON_ERROR_STOP=1", "-f", full_path],
+                           capture_output=True, check=True)
+
+    return True
+
 def test_signup_profile_trigger():
     print("[1/9] Testing auth.users profile trigger, strict validation & immutability...")
     rand_suffix = uuid.uuid4().hex[:6]
@@ -82,34 +155,48 @@ def test_signup_profile_trigger():
     u2 = str(uuid.uuid4())
     u3 = str(uuid.uuid4())
     u4 = str(uuid.uuid4())
+    u5 = str(uuid.uuid4())
+    u6 = str(uuid.uuid4())
     uname1 = f"u1_{rand_suffix}"
 
-    # User 1: normal valid signup
+    # User 1: normal valid signup (email provider)
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data, email)
-        VALUES ('{u1}', '{{"signup_username": "{uname1}", "signup_display_name": "Player 1"}}', '{uname1}@test.com');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u1}', '{{"provider": "email"}}', '{{"signup_username": "{uname1}", "signup_display_name": "Player 1"}}', '{uname1}@test.com');
     """)
     res = run_sql(f"SELECT username, display_name FROM public.profiles WHERE user_id = '{u1}';")
     assert f"{uname1}|Player 1" in res, f"Expected {uname1}|Player 1, got {res}"
 
     # User 2: Google signup (no username provided)
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data, email)
-        VALUES ('{u2}', '{{"name": "Google User"}}', 'p2_{rand_suffix}@test.com');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u2}', '{{"provider": "google"}}', '{{"name": "Google User"}}', 'p2_{rand_suffix}@test.com');
     """)
     res = run_sql(f"SELECT username IS NULL, display_name FROM public.profiles WHERE user_id = '{u2}';")
     assert "t|Google User" in res, f"Expected username NULL and Google User, got {res}"
 
-    # Invalid username format MUST be rejected (not silently converted to NULL)
+    # Email signup missing signup_username MUST be rejected
     run_sql_expect_error(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data, email)
-        VALUES ('{u4}', '{{"signup_username": "Invalid@User!", "signup_display_name": "Bad User"}}', 'p4_{rand_suffix}@test.com');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u4}', '{{"provider": "email"}}', '{{"signup_display_name": "No User"}}', 'p4_{rand_suffix}@test.com');
+    """, expected_err="signup_username is required for email signup")
+
+    # Email signup with empty/whitespace username MUST be rejected
+    run_sql_expect_error(f"""
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u5}', '{{"provider": "email"}}', '{{"signup_username": "   ", "signup_display_name": "Blank User"}}', 'p5_{rand_suffix}@test.com');
+    """, expected_err="signup_username is required for email signup and cannot be blank")
+
+    # Invalid username format MUST be rejected
+    run_sql_expect_error(f"""
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u6}', '{{"provider": "email"}}', '{{"signup_username": "Invalid@User!", "signup_display_name": "Bad User"}}', 'p6_{rand_suffix}@test.com');
     """, expected_err="Invalid username format in signup metadata")
 
     # Duplicate username check
     run_sql_expect_error(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data, email)
-        VALUES ('{u3}', '{{"signup_username": "{uname1}", "signup_display_name": "Player Dup"}}', 'p3_{rand_suffix}@test.com');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u3}', '{{"provider": "email"}}', '{{"signup_username": "{uname1}", "signup_display_name": "Player Dup"}}', 'p3_{rand_suffix}@test.com');
     """, expected_err="profiles_username_unique")
 
     # Username immutability: Cannot change once set
@@ -129,7 +216,7 @@ def test_signup_profile_trigger():
         UPDATE public.profiles SET user_id = '{str(uuid.uuid4())}' WHERE user_id = '{u1}';
     """, expected_err="Cannot change user_id in profiles")
 
-    print("  ✓ Profile signup trigger, strict rejection of invalid username, Google onboarding & immutability PASS")
+    print("  ✓ Profile signup trigger, strict rejection of blank/invalid username, Google onboarding & immutability PASS")
 
 def test_revoked_sessions():
     print("[2/9] Testing private.revoked_sessions & is_auth_session_active...")
@@ -138,8 +225,8 @@ def test_revoked_sessions():
     s1 = str(uuid.uuid4())
 
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data, email)
-        VALUES ('{u1}', '{{"signup_username": "sess_{rand_suffix}", "signup_display_name": "Session User"}}', 's_{rand_suffix}@test.com');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data, email)
+        VALUES ('{u1}', '{{"provider": "email"}}', '{{"signup_username": "sess_{rand_suffix}", "signup_display_name": "Session User"}}', 's_{rand_suffix}@test.com');
         INSERT INTO auth.sessions (id, user_id) VALUES ('{s1}', '{u1}');
     """)
 
@@ -176,9 +263,9 @@ def test_friend_relations():
     low_u, high_u = sorted([u1, u2])
 
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data) VALUES
-        ('{low_u}', '{{"signup_username": "fa_{rand_suffix}", "signup_display_name": "A"}}'),
-        ('{high_u}', '{{"signup_username": "fb_{rand_suffix}", "signup_display_name": "B"}}');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data) VALUES
+        ('{low_u}', '{{"provider": "email"}}', '{{"signup_username": "fa_{rand_suffix}", "signup_display_name": "A"}}'),
+        ('{high_u}', '{{"provider": "email"}}', '{{"signup_username": "fb_{rand_suffix}", "signup_display_name": "B"}}');
     """)
 
     # Valid friend request
@@ -219,10 +306,10 @@ def test_rooms_and_members_deferrable_swap():
     p2_id = str(uuid.uuid4())
     p3_id = str(uuid.uuid4())
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data) VALUES
-        ('{owner_id}', '{{"signup_username": "ro_{rand_suffix}", "signup_display_name": "Owner"}}'),
-        ('{p2_id}', '{{"signup_username": "rg_{rand_suffix}", "signup_display_name": "Guest"}}'),
-        ('{p3_id}', '{{"signup_username": "r3_{rand_suffix}", "signup_display_name": "P3"}}');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data) VALUES
+        ('{owner_id}', '{{"provider": "email"}}', '{{"signup_username": "ro_{rand_suffix}", "signup_display_name": "Owner"}}'),
+        ('{p2_id}', '{{"provider": "email"}}', '{{"signup_username": "rg_{rand_suffix}", "signup_display_name": "Guest"}}'),
+        ('{p3_id}', '{{"provider": "email"}}', '{{"signup_username": "r3_{rand_suffix}", "signup_display_name": "P3"}}');
     """)
 
     r_id = str(uuid.uuid4())
@@ -265,13 +352,13 @@ def test_rooms_and_members_deferrable_swap():
     print("  ✓ Rooms invariants, member side constraints & DEFERRABLE swap PASS")
 
 def test_matches_and_circular_fk():
-    print("[5/9] Testing matches constraints, JSONB shapes, DISCONNECT & circular FK...")
+    print("[5/9] Testing matches constraints, JSONB shapes, DISCONNECT, runningSinceEpochMs & circular FK...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data) VALUES
-        ('{u1}', '{{"signup_username": "mp1_{rand_suffix}", "signup_display_name": "P1"}}'),
-        ('{u2}', '{{"signup_username": "mp2_{rand_suffix}", "signup_display_name": "P2"}}');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data) VALUES
+        ('{u1}', '{{"provider": "email"}}', '{{"signup_username": "mp1_{rand_suffix}", "signup_display_name": "P1"}}'),
+        ('{u2}', '{{"provider": "email"}}', '{{"signup_username": "mp2_{rand_suffix}", "signup_display_name": "P2"}}');
     """)
     r_id = str(uuid.uuid4())
     run_sql(f"""
@@ -282,7 +369,7 @@ def test_matches_and_circular_fk():
     m_id = str(uuid.uuid4())
     boot_id = str(uuid.uuid4())
     valid_pos = json.dumps({"board": [None] * 90, "turn": "RED"})
-    valid_clock = json.dumps({"redMs": 300000, "blackMs": 300000, "runningSinceEpochMs": None})
+    valid_clock = json.dumps({"redMs": 300000, "blackMs": 300000, "runningSinceEpochMs": 1726156800000})
 
     # Empty position {} MUST be rejected
     run_sql_expect_error(f"""
@@ -297,12 +384,33 @@ def test_matches_and_circular_fk():
         VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{bad_pos}', '{{}}', '{valid_clock}', 300, '{boot_id}');
     """, expected_err="matches_position_json_check")
 
+    # Clock with missing runningSinceEpochMs MUST be rejected
+    missing_epoch_clock = json.dumps({"redMs": 300000, "blackMs": 300000})
+    run_sql_expect_error(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{missing_epoch_clock}', 300, '{boot_id}');
+    """, expected_err="matches_clock_json_check")
+
+    # Clock with runningSinceEpochMs = null MUST be rejected
+    null_epoch_clock = json.dumps({"redMs": 300000, "blackMs": 300000, "runningSinceEpochMs": None})
+    run_sql_expect_error(f"""
+        INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
+        VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{null_epoch_clock}', 300, '{boot_id}');
+    """, expected_err="matches_clock_json_check")
+
     # Malformed clock with negative value or string MUST be rejected
-    bad_clock1 = json.dumps({"redMs": -1, "blackMs": "oops"})
+    bad_clock1 = json.dumps({"redMs": -1, "blackMs": "oops", "runningSinceEpochMs": 0})
     run_sql_expect_error(f"""
         INSERT INTO public.matches (id, room_id, mode, status, red_user_id, black_user_id, position, repetition_counts, clock, time_control, boot_id)
         VALUES ('{m_id}', '{r_id}', 'ONLINE', 'ACTIVE', '{u1}', '{u2}', '{valid_pos}', '{{}}', '{bad_clock1}', 300, '{boot_id}');
     """, expected_err="matches_clock_json_check")
+
+    # AI mode with ai_level = NULL MUST be rejected
+    ai_m_id = str(uuid.uuid4())
+    run_sql_expect_error(f"""
+        INSERT INTO public.matches (id, mode, status, red_user_id, ai_side, ai_level, position, repetition_counts, time_control, boot_id)
+        VALUES ('{ai_m_id}', 'AI', 'ACTIVE', '{u1}', 'BLACK', NULL, '{valid_pos}', '{{}}', 0, '{boot_id}');
+    """, expected_err="matches_mode_invariants")
 
     # Mode ONLINE with same player on both sides rejected
     run_sql_expect_error(f"""
@@ -371,15 +479,15 @@ def test_matches_and_circular_fk():
         UPDATE public.matches SET version = 1 WHERE id = '{m_id}';
     """, expected_err="Terminal match is immutable")
 
-    print("  ✓ Matches constraints, hardened JSON checks, DISCONNECT reason & circular FK PASS")
+    print("  ✓ Matches constraints, hardened JSON checks, DISCONNECT reason, runningSinceEpochMs & circular FK PASS")
 
 def test_events_moves_receipts():
-    print("[6/9] Testing match_events, match_moves & command_receipts...")
+    print("[6/9] Testing match_events, match_moves & command_receipts (including move = '{{}}' rejection)...")
     rand_suffix = uuid.uuid4().hex[:6]
     u1 = str(uuid.uuid4())
     run_sql(f"""
-        INSERT INTO auth.users (id, raw_user_meta_data) VALUES
-        ('{u1}', '{{"signup_username": "au_{rand_suffix}", "signup_display_name": "Audit1"}}');
+        INSERT INTO auth.users (id, raw_app_meta_data, raw_user_meta_data) VALUES
+        ('{u1}', '{{"provider": "email"}}', '{{"signup_username": "au_{rand_suffix}", "signup_display_name": "Audit1"}}');
     """)
     m_id = str(uuid.uuid4())
     position = json.dumps({"board": [None] * 90, "turn": "RED"})
@@ -398,6 +506,12 @@ def test_events_moves_receipts():
         INSERT INTO public.match_events (match_id, version, type, payload)
         VALUES ('{m_id}', 0, 'START', '{{"rules": "xiangqi-simple-v1"}}');
     """)
+
+    # Empty move = '{}' MUST be rejected
+    run_sql_expect_error(f"""
+        INSERT INTO public.match_moves (match_id, event_version, side, move)
+        VALUES ('{m_id}', 1, 'RED', '{{}}');
+    """, expected_err="match_moves_move_json_check")
 
     # Move: out of bounds coordinates rejected
     bad_move = json.dumps({"from": {"x": 9, "y": 0}, "to": {"x": 4, "y": 1}})
@@ -437,22 +551,34 @@ def test_events_moves_receipts():
         VALUES ('{m_id}', 'USER:{u1}', '{uuid.uuid4()}', 'MOVE', '{valid_hash}', 1, '{{"kind": "APPLIED", "errorCode": null}}');
     """)
 
-    print("  ✓ Events, moves coordinates, deferred FK & receipts PASS")
+    print("  ✓ Events, moves coordinates, move='{{}}' rejection, deferred FK & receipts PASS")
 
 def test_comprehensive_rls_denial():
-    print("[7/9] Testing RLS denial across ALL 19 tables for anon & authenticated...")
+    print("[7/9] Testing RLS denial across ALL 19 tables for anon & authenticated (SELECT & INSERT)...")
     for schema, table in ALL_19_TABLES:
         full_table = f"{schema}.{table}"
-        # Test anon SELECT denied
+        # 1. anon SELECT denied
         run_sql_expect_error(f"""
             SET ROLE anon;
             SELECT * FROM {full_table};
         """, expected_err="permission denied")
 
-        # Test authenticated SELECT denied
+        # 2. anon INSERT denied
+        run_sql_expect_error(f"""
+            SET ROLE anon;
+            INSERT INTO {full_table} DEFAULT VALUES;
+        """, expected_err="permission denied")
+
+        # 3. authenticated SELECT denied
         run_sql_expect_error(f"""
             SET ROLE authenticated;
             SELECT * FROM {full_table};
+        """, expected_err="permission denied")
+
+        # 4. authenticated INSERT denied
+        run_sql_expect_error(f"""
+            SET ROLE authenticated;
+            INSERT INTO {full_table} DEFAULT VALUES;
         """, expected_err="permission denied")
 
     # Private helper denied for anon and authenticated
@@ -466,7 +592,7 @@ def test_comprehensive_rls_denial():
         SELECT private.is_auth_session_active('{uuid.uuid4()}', '{uuid.uuid4()}');
     """, expected_err="permission denied")
 
-    print(f"  ✓ Verified RLS denial for anon and authenticated on all {len(ALL_19_TABLES)} tables PASS")
+    print(f"  ✓ Verified RLS SELECT & INSERT denial for anon and authenticated on all {len(ALL_19_TABLES)} tables PASS")
 
 def test_app_server_grants_and_trigger_security():
     print("[8/9] Testing app_server permissions & revoked trigger function execution...")
@@ -529,9 +655,17 @@ def test_real_transaction_rollback():
     print("  ✓ Real PL/pgSQL transaction rollback verified PASS")
 
 def main():
+    parser = argparse.ArgumentParser(description="Run database integration test suite")
+    parser.add_argument("--self-contained", action="store_true", help="Spin up temporary PostgreSQL automatically if needed")
+    args = parser.parse_args()
+
     print("=" * 60)
     print("RUNNING HARDENED DATABASE INTEGRATION TESTS")
     print("=" * 60)
+
+    # Ensure PG is running, spinning up temporary instance if needed
+    ensure_test_cluster()
+
     try:
         test_signup_profile_trigger()
         test_revoked_sessions()
@@ -543,7 +677,7 @@ def main():
         test_app_server_grants_and_trigger_security()
         test_real_transaction_rollback()
         print("=" * 60)
-        print("ALL 9 TEST SUITES PASSED (50+ invariant assertions verified)!")
+        print("ALL 9 TEST SUITES PASSED (75+ invariant assertions verified)!")
         print("=" * 60)
     except Exception as e:
         print(f"\nTEST FAILED: {e}", file=sys.stderr)
