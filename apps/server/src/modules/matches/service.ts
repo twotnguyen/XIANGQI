@@ -25,6 +25,7 @@ import type {
 } from '@xiangqi/contracts';
 import { squareToIndex } from '@xiangqi/contracts';
 import { matchBroadcaster } from '../../realtime/broadcast.js';
+import { settleClock, projectClock } from './clock.js';
 
 export function hashPayload(payload: unknown): string {
   return crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
@@ -192,6 +193,36 @@ export async function submitMove(
       throw { statusCode: 403, code: 'NOT_YOUR_TURN', message: 'Chưa tới lượt đi của bạn' };
     }
 
+    const nowMs = Date.now();
+
+    // 5b. Settle clock for side-to-move
+    const currentClock = match.clock
+      ? (typeof match.clock === 'string' ? JSON.parse(match.clock) : match.clock)
+      : null;
+    const settled = settleClock(currentClock, pos.turn, nowMs);
+
+    if (settled && settled.expired) {
+      // Clock ran out! Reject move and finalize as TIMEOUT
+      const winningSide: Side = pos.turn === 'RED' ? 'BLACK' : 'RED';
+      const timeoutOutcome: Outcome = { winner: winningSide, reason: 'TIMEOUT' };
+      const newVersion = match.version + 1;
+
+      await finalizeMatch(client, match, timeoutOutcome, roomId);
+      await client.query(
+        `UPDATE public.matches
+         SET status = 'FINISHED', outcome = $1, version = $2, ended_at = now()
+         WHERE id = $3`,
+        [JSON.stringify(timeoutOutcome), newVersion, matchId],
+      );
+
+      const finalSnapshot = await getMatchSnapshotFromClient(client, matchId);
+      snapshotToBroadcast = finalSnapshot;
+      return {
+        appliedVersion: newVersion,
+        snapshot: finalSnapshot,
+      };
+    }
+
     // 6. Validate move using pure game-rules
     const moveValidation = validateMove(pos, command.payload);
     if (!moveValidation.valid) {
@@ -273,11 +304,12 @@ export async function submitMove(
         [JSON.stringify(nextPos), newVersion, newPly, JSON.stringify(outcome), matchId],
       );
     } else {
+      const clockJson = settled?.clock ? JSON.stringify(settled.clock) : null;
       await client.query(
         `UPDATE public.matches
-         SET position = $1, version = $2, ply = $3, updated_at = now()
-         WHERE id = $4`,
-        [JSON.stringify(nextPos), newVersion, newPly, matchId],
+         SET position = $1, version = $2, ply = $3, clock = $4, updated_at = now()
+         WHERE id = $5`,
+        [JSON.stringify(nextPos), newVersion, newPly, clockJson, matchId],
       );
     }
 
@@ -475,7 +507,12 @@ async function getMatchSnapshotFromClient(
   const m = matchRes.rows[0];
 
   const pos = typeof m.position === 'string' ? JSON.parse(m.position) : m.position;
-  const clock = m.clock ? (typeof m.clock === 'string' ? JSON.parse(m.clock) : m.clock) : null;
+  const clockRaw = m.clock ? (typeof m.clock === 'string' ? JSON.parse(m.clock) : m.clock) : null;
+  const nowMs = Date.now();
+  // Project clock forward to current moment if game is still active
+  const clock = m.status === 'ACTIVE' && clockRaw
+    ? projectClock(clockRaw, pos.turn, nowMs)
+    : clockRaw;
   const outcome = m.outcome ? (typeof m.outcome === 'string' ? JSON.parse(m.outcome) : m.outcome) : null;
   const proposal = m.proposal ? (typeof m.proposal === 'string' ? JSON.parse(m.proposal) : m.proposal) : null;
 
