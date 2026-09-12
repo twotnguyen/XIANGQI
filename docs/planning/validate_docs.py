@@ -25,7 +25,7 @@ for x in items:
  if len(re.findall(r'^\|',s,re.M))<5:errors.append(f'{p.name}:too few acceptance cases')
 covered=set(r for x in items for r in x['req'])
 if covered!={f'R{i:02d}' for i in range(1,17)}:errors.append('Requirement coverage mismatch')
-mds=list((root/'docs').rglob('*.md'))+[root/'DU_AN_CO_TUONG_ONLINE.md']
+mds=list((root/'docs').rglob('*.md'))+list(root.glob('*.md'))
 linkcount=0
 for p in mds:
  s=p.read_text(encoding='utf8')
