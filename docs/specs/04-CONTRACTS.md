@@ -18,6 +18,9 @@ export type Audience = 'OFF' | 'OPPONENT_ONLY' | 'OPPONENT_AND_SPECTATORS';
 export type TimeControl = 0 | 300 | 600 | 900; // seconds each; 0 unlimited
 export type AiLevel = 'EASY' | 'MEDIUM' | 'HARD';
 export type Outcome = { winner: Side | null; reason: 'CHECKMATE' | 'STALEMATE' | 'REPETITION' | 'RESIGN' | 'AGREED_DRAW' | 'TIMEOUT' | 'DISCONNECT' | 'BOTH_OFFLINE' | 'SERVER_RESTART' | 'AI_UNAVAILABLE' };
+export type TerminalEvent =
+  | { type: 'MOVE'; payload: { moveId: string; parentMoveId: string | null; side: Side; move: Move } }
+  | { type: 'RESULT'; payload: { actorKey: string | null } }; // finalizer appends outcome before persistence
 export type ClockState = { redMs: number; blackMs: number; runningSinceEpochMs: number } | null;
 export type Proposal = { id: string; kind: 'DRAW' | 'UNDO'; requesterId: string; basePly: number; createdVersion: number; expiresAtMs: number };
 export type MatchSnapshot = {
