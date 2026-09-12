@@ -7,7 +7,7 @@ test.describe('Password Auth Pages', () => {
     await expect(page.getByRole('heading', { name: 'Đăng nhập' })).toBeVisible();
     await expect(page.getByLabel('Tên đăng nhập')).toBeVisible();
     await expect(page.getByLabel('Mật khẩu')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Đăng nhập' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Đăng nhập', exact: true })).toBeVisible();
 
     // Links to register and reset password
     await expect(page.getByRole('link', { name: 'Đăng ký' })).toBeVisible();

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { supabase } from '../../lib/supabase.js';
+import { GoogleLogin } from './GoogleLogin.js';
 
 export function Login() {
   const [username, setUsername] = useState('');
@@ -85,6 +86,10 @@ export function Login() {
           {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
         </button>
       </form>
+      <div style={{ margin: '16px 0', textAlign: 'center', color: '#666' }}>
+        <span>hoặc</span>
+      </div>
+      <GoogleLogin />
       <p style={{ marginTop: '16px', textAlign: 'center' }}>
         Chưa có tài khoản? <Link to="/register">Đăng ký</Link> |{' '}
         <Link to="/auth/reset-password">Quên mật khẩu?</Link>
