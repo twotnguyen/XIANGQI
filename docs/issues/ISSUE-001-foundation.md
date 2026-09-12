@@ -1,8 +1,10 @@
 # ISSUE-001 — Workspace, toolchain và ứng dụng khởi động được
 
-- Trạng thái: TODO
+- Trạng thái: LOCAL_DONE
 - Yêu cầu: R16
 - Phụ thuộc bắt buộc: Không có
+- Nhánh: `chore/issue-001-foundation`
+- Evidence: [docs/test-reports/ISSUE-001.md](../test-reports/ISSUE-001.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
 
 ## Mục tiêu và giới hạn
@@ -39,21 +41,21 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Kiểm tra runtime/Docker có sẵn; chọn exact phiên bản tương thích Node 24, ghi quyết định và khóa lockfile. Không cài package trùng chức năng.
+- [x] **Bước 1.** Kiểm tra runtime/Docker có sẵn; chọn exact phiên bản tương thích Node 24, ghi quyết định và khóa lockfile. Không cài package trùng chức năng.
 
-- [ ] **Bước 2.** Tạo pnpm workspace, TypeScript strict, package exports, build theo dependency; package luật/AI mới có manifest, không giả triển khai.
+- [x] **Bước 2.** Tạo pnpm workspace, TypeScript strict, package exports, build theo dependency; package luật/AI mới có manifest, không giả triển khai.
 
-- [ ] **Bước 3.** Tạo app factory và entrypoint riêng, health, web shell tiếng Việt; một lệnh dev khởi động web/server, child AI được bổ sung ISSUE-021.
+- [x] **Bước 3.** Tạo app factory và entrypoint riêng, health, web shell tiếng Việt; một lệnh dev khởi động web/server, child AI được bổ sung ISSUE-021.
 
-- [ ] **Bước 4.** Tạo scripts unit/integration/e2e/ai/load forward arguments; script cho suite chưa tồn tại phải báo chưa có suite, không trả PASS giả. CI ban đầu chỉ chạy suite đã tạo.
+- [x] **Bước 4.** Tạo scripts unit/integration/e2e/ai/load forward arguments; script cho suite chưa tồn tại phải báo chưa có suite, không trả PASS giả. CI ban đầu chỉ chạy suite đã tạo.
 
-- [ ] **Bước 5.** Tạo gitignore env/build/artifacts và README local; repository đã có Git/remote; giữ .gitignore hiện hữu và tuân thủ Git/GitHub workflow được ủy quyền.
+- [x] **Bước 5.** Tạo gitignore env/build/artifacts và README local; repository đã có Git/remote; giữ .gitignore hiện hữu và tuân thủ Git/GitHub workflow được ủy quyền.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-001.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-001.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -89,12 +91,19 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 
-Ghi API/file thực tế đã tạo, khác biệt có lý do so với đường dẫn dự kiến, test đã chạy và limitation còn tồn tại trong evidence. Không yêu cầu người thực hiện sau đọc lịch sử chat để hiểu kết quả.
+- `createApp()`: `apps/server/src/app.ts` — Fastify factory, không listen, GET /health trả `{status:"ok"}`.
+- `loadConfig()` / `requireDatabaseUrl()`: `apps/server/src/config.ts` — validation throws naming var.
+- Root scripts: dev, build, lint, typecheck, test:unit. Scripts e2e/ai/load exit 1 có message.
+- Vitest config: `vitest.config.ts` root, tests/unit/**/*.test.ts.
+- Web SPA: `apps/web/` — React 19, Vite 6, React Router, Home page tiếng Việt.
+- Packages: contracts/game-rules/ai có manifest chỉ, chưa có logic.
+- CI: `.github/workflows/ci.yml` chạy install/build/typecheck/lint/test:unit.
+- Node 24.21.0 via fnm, pnpm 10.34.5 via corepack.
