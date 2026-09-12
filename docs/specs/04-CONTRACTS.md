@@ -148,29 +148,9 @@ Ack envelope `ApiResult<T>`; match mutation T là CommandResult, sync T là Matc
 
 ## Database blueprint
 
-All application tables under `public` with RLS enabled, no anon/authenticated grants to read/write; tạo policies TO app_server USING(true) WITH CHECK(true) cho các bảng app cần dùng, cùng SQL grants tối thiểu. app_server là role riêng chỉ backend có credential, không BYPASSRLS, không cấp browser; BFF SQL role with least privilege for app tables. `private` schema for session secrets excluded Data API. Supabase Auth remains owner of `auth.users`; don't alter its internals.
+Nguồn schema chi tiết là [09-DATABASE-DESIGN](09-DATABASE-DESIGN.md): từ điển19bảng, kiểu/NULL/default, PK/FK/UNIQUE/CHECK/index, RLS/grants, JSON shapes, retention và migration order. Agent viết SQL phải đọc09; bảng tóm tắt trước đây được thay bằng nguồn này để không có hai schema lệch nhau. Public DTO phía trên giữ nguyên, database snake_case được map rõ tại repository layer.
 
-| Table | Required fields / constraints |
-|---|---|
-| profiles | user_id PK FK auth.users, username UNIQUE nullable until onboarding, display_name, created_at; CHECK(username IS NULL OR username ~ '^[a-z0-9_]{3,24}$') |
-| private.revoked_sessions | session_id PK, user_id, expires_at; indexed user |
-| friend_relations | id, user_low,user_high UNIQUE pair ordered, requester_id,status PENDING/ACCEPTED, created_at |
-| rooms | id,owner_id,name,visibility,status,room_version,current_match_id,time_control,watch_epoch,finished_at,closed_at |
-| room_members | room_id,user_id,role,side,ready,admission_epoch,disconnected_at; UNIQUE user_id for current memberships, UNIQUE(room_id,side) for players |
-| invitations | id,room_id,sender_id,recipient_id nullable,role PLAY/WATCH,token_hash nullable,code_hash nullable,status,expires_at,epoch; partial unique active code_hash |
-| matches | id,room_id nullable,mode,status,red_user_id,black_user_id,ai_side,ai_level,position jsonb,version,ply,time_control,clock jsonb,rule_set_version,outcome jsonb,active_move_ids jsonb,repetition_counts jsonb,proposal jsonb,boot_id,created_at,ended_at |
-| client_controls | user_id PK,room_id nullable,match_id nullable,controller_id,control_epoch,lease_until,disconnected_at; works for online/AI/viewer |
-| ai_jobs | id,match_id,expected_version,status,job_version,queued_at,started_at,completed_at; one current job per match |
-| active_players | user_id PK,match_id FK; one active match including AI; release atomically on result |
-| match_events | id,match_id,version,type,payload jsonb,created_at; UNIQUE(match_id,version) |
-| match_moves | id,match_id,parent_move_id nullable,side,move jsonb,created_at; immutable, no delete on undo |
-| command_receipts | match_id,actor_key,command_id,command_type,payload_hash,applied_version,result jsonb; PK(match_id,actor_key,command_id) |
-| chat_messages | id,room_id,match_id,sender_id,channel,client_message_id,content,created_at; UNIQUE(match_id,sender_id,client_message_id) |
-| media_transports | match_id,kind,audience,generation,room_name UNIQUE,status; UNIQUE(match_id,kind,audience), server-only |
-| media_policy_jobs | id,match_id,desired_version,status,attempts,last_error; server-only |
-| room_rematch_votes | room_id,match_id,user_id; PK(room_id,match_id,user_id); vote row means accept=true, FK room/match/profile; added ISSUE-027 |
-| room_command_receipts | room_id,actor_id,command_id,command_type,payload_hash,new_match_id nullable; PK(room_id,actor_id,command_id); added ISSUE-027 |
-| media_policies | match_id,user_id,camera_audience,microphone_audience,policy_version,applied_camera_audience,applied_microphone_audience,applied_version,status APPLYING/APPLIED,epoch; UNIQUE(match_id,user_id) |
+Những chi tiết cần chú ý: `ai_jobs` có PK match_id và id là search token; `media_transports` giữ row theo generation; `media_policy_jobs` dùng desired_versions nhiều user và effects durable; composite FK bảo vệ room/match/ancestry; UNIQUE room_members(room_id,side) deferrable cho swap rematch. Tables vẫn backend-only/RLS; app_server không BYPASSRLS hoặc quyền trực tiếp Auth.
 
 Lock `rooms FOR UPDATE` before membership counting/change and starting match; lock user profiles in user_id order when accepting invitations to avoid cross-room races. Require count WATCH<5 within lock, not count-before-transaction. Across room/member/match changes lock order: room → user rows ordered → match. Mọi ONLINE match command/scheduler/finalizer lấy room lock trước match lock; đọc immutable match.room_id trước transaction để xác định room. AI chỉ match lock. Không có đường match→room lock. finalizer cập nhật room đã khóa trong cùng transaction. Media external calls after authorization snapshot use epoch checks and compensating revocation, not DB lock held across network.
 

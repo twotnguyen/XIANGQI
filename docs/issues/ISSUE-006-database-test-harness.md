@@ -13,6 +13,7 @@ Chỉ sửa các module phục vụ mục tiêu này. Các chức năng khác th
 
 ## Đọc trước
 
+- [09-DATABASE-DESIGN.md](../specs/09-DATABASE-DESIGN.md) — nguồn bảng/cột/khóa/check/index/grants/JSON và DB-01…19
 - [04-CONTRACTS.md](../specs/04-CONTRACTS.md)
 - [05-AUTH.md](../specs/05-AUTH.md)
 
@@ -33,7 +34,7 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Hợp đồng đầu vào / đầu ra
 
-**Nhận:** Blueprint bảng 04; Supabase Auth owns auth.users, không tự passwordHash/sessions app thay Auth.
+**Nhận:** Từ điển schema09, mapping DTO04; Supabase Auth owns auth.users, không tự passwordHash/sessions app thay Auth.
 
 **Cung cấp:** SQL migrations, pg Pool/withTransaction(), private session-active function; createTestApp(), authAs(user), seedUsers(), resetTestData() trong harness.
 
@@ -42,7 +43,7 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 - [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
 - [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Chạy Supabase CLI local; xác nhận target local trước reset. Tạo tables/check/FKs/indices theo blueprint, add circular FK sau bảng tồn tại.
+- [ ] **Bước 1.** Chạy Supabase CLI local; xác nhận target local trước reset. Tạo tables/check/FKs/indices theo09 (rematch tables do027 thêm), add circular FK sau bảng tồn tại.
 
 - [ ] **Bước 2.** Trigger profile signup từ 05; username unique lowercase nullable onboarding. Function kiểm auth.sessions SECURITY DEFINER search_path rỗng, server-only grants.
 

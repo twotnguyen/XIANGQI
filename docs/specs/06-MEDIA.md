@@ -20,7 +20,7 @@ Một player capture camera/mic sau thao tác người dùng; clone track của 
 
 LiveKit self-host không vô hiệu JWT cũ ngay khi RemoveParticipant. TTL ngắn một mình không đủ bảo vệ người xem bị thu hồi. [Giới hạn upstream](https://docs.livekit.io/frontends/reference/tokens-grants/).
 
-**Thiết kế bắt buộc: room generations.** DB `media_transports(match_id, kind, audience, generation, room_name, status)` và `media_policy_jobs(id,match_id,desired_version,status,attempts,last_error)` server-only. Mỗi room_name chứa nonce 128-bit, không tái sử dụng. Khi cần thu hẹp quyền hoặc kick viewer/controller:
+**Thiết kế bắt buộc: room generations.** DB `media_transports` giữ từng generation và `media_policy_jobs` giữ desired_versions của hai người cùng effects/epochs theo [09-DATABASE-DESIGN](09-DATABASE-DESIGN.md), server-only. Không overwrite tên generation cũ trước thu hồi. Mỗi room_name chứa nonce 128-bit, không tái sử dụng. Khi cần thu hẹp quyền hoặc kick viewer/controller:
 
 1. Ghi desired policy/membership mới và đặt transport affected ROTATING; endpoint không cấp token cũ/mới trong thời gian này.
 2. Dừng/unpublish local source ngay ở client yêu cầu OFF; server gọi UpdateParticipant canPublish:false đối với nguồn bị thu hẹp, rồi DeleteRoom affected cũ, chờ ack. Trên Cloud gọi RemoveParticipant với revoke_token_ts cho từng identity cũ trước DeleteRoom. Source còn private không bị đổi nếu chỉ thu hẹp watch.
@@ -59,7 +59,7 @@ Self-host: bảo vệ khỏi người xem sửa client hoặc giữ JWT cũ khi 
 
 Cloud: thêm RemoveParticipant với revoke_token_ts cho mọi identity cũ rồi DeleteRoom; test token cũ reconnect bị từ chối theo hỗ trợ provider. Nếu chỉ triển khai local, ghi rõ mức kiểm chứng self-host trong report; không đánh đồng với Cloud token revocation.
 
-APPLIED nghĩa desired policy version còn hiện hành, thao tác thu hồi SFU đã xác nhận và generation mới sẵn cấp đúng grants; không cần đợi người đang offline reconnect. Client publication có trạng thái riêng CONNECTING/LIVE/ERROR. Jobs cùng match serialize, sau external effect đọc lại desired_version để coalesce bản mới nhất, cleanup generation orphan. Nếu SFU mất liên lạc, media cũ có thể còn chảy đến khi thao tác thu hồi thành công; UI nói rõ chưa áp dụng xong, không báo quyền đã bảo vệ thành công.
+APPLIED nghĩa desired policy version còn hiện hành, thao tác thu hồi SFU đã xác nhận và generation mới sẵn cấp đúng grants; không cần đợi người đang offline reconnect. Client publication có trạng thái riêng CONNECTING/LIVE/ERROR. Jobs cùng match serialize, sau external effect đọc lại desired_versions/target epochs để coalesce bản mới nhất, cleanup generation orphan. Nếu SFU mất liên lạc, media cũ có thể còn chảy đến khi thao tác thu hồi thành công; UI nói rõ chưa áp dụng xong, không báo quyền đã bảo vệ thành công.
 
 ## DTO media cho implementation
 

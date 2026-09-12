@@ -30,7 +30,7 @@ ack; broadcast sanitized snapshot
 
 Refused validation không ghi receipt trừ kết quả timeout đã commit. Socket identity lấy từ auth, actor máy là `AI`, không giả user ID. Timeout scheduler dùng cùng lock/pipeline. Read snapshot settle/check overdue qua service, không trả match ACTIVE hết giờ mãi mãi.
 
-Clock ACTIVE lưu remainingRedMs/remainingBlackMs và runningSinceEpochMs. Remaining là số dư tại lần settle cuối. `elapsed=max(0, now-runningSince)`; trừ bên đến lượt, clamp 0. Sau move chuyển sang đối phương; sau undo lấy lượt từ vị trí được khôi phục (không toggle lần nữa); runningSince=now. Null ở no-limit. Deadline tại `runningSince+remaining(side)`, timestamp server. Tại deadline chính xác nước đi muộn bị từ chối. Proposal vẫn settle và duy trì đúng running side, không tạm dừng đồng hồ.
+Clock ACTIVE lưu redMs/blackMs và runningSinceEpochMs. Remaining là số dư tại lần settle cuối. `elapsed=max(0, now-runningSince)`; trừ bên đến lượt, clamp 0. Sau move chuyển sang đối phương; sau undo lấy lượt từ vị trí được khôi phục (không toggle lần nữa); runningSince=now. Null ở no-limit. Deadline tại `runningSince+remaining(side)`, timestamp server. Tại deadline chính xác nước đi muộn bị từ chối. Proposal vẫn settle và duy trì đúng running side, không tạm dừng đồng hồ.
 
 Không giữ transaction khi tính AI, gửi mail hoặc gọi media API. Giao dịch match chỉ chứa SQL và logic luật hữu hạn. Broadcast sau commit có thể thất bại: sync snapshot + version là đường khôi phục, không rollback nước đã commit.
 
@@ -74,7 +74,7 @@ Snapshot DTO chiếu số dư clock tới `serverNowMs` tại lúc trả (không
 
 `client_controls` tồn tại cho mỗi user đang có ngữ cảnh room/match, unique user_id. Waiting/finished room dùng roomId; ACTIVE online có cả roomId/matchId; AI chỉ matchId. Start/finish cập nhật context trong transaction. `POST /control/takeover` lấy context từ user, tab mới không được tự chọn context người khác. `match:subscribe` phục vụ cả ONLINE/AI, trả snapshot và controller grant riêng; ONLINE còn kiểm room admission. AI chỉ human participant được subscribe.
 
-`ai_jobs` lưu jobId,matchId,expectedVersion,status QUEUED/THINKING/IDLE/FAILED,jobVersion,queuedAt,startedAt; trạng thái worker không tăng match.version. `ai:status` event có matchId,jobId,jobVersion,state; client bỏ jobVersion cũ. Snapshot chứa aiState cùng jobVersion, hỗ trợ refresh. Presence event/snapshot có userId,online,disconnectDeadlineMs; không lộ controller secret.
+`ai_jobs` một row/match (PK match_id), id là search token thay đổi, job_version tăng xuyên lượt theo09; lưu expectedVersion,status QUEUED/THINKING/IDLE/FAILED,queuedAt,startedAt; trạng thái worker không tăng match.version. `ai:status` event có matchId,jobId,jobVersion,state; client bỏ jobVersion cũ. Snapshot chứa aiState cùng jobVersion, hỗ trợ refresh. Presence event/snapshot có userId,online,disconnectDeadlineMs; không lộ controller secret.
 
 ## Cleanup sau ván
 
@@ -89,3 +89,5 @@ Mapping bắt buộc: BOTH_OFFLINE, SERVER_RESTART, AI_UNAVAILABLE → INTERRUPT
 Rematch nhận `{commandId,expectedMatchId,accept}` dưới current controller lease. ISSUE-027 thêm migrations `room_rematch_votes` và `room_command_receipts` theo04. Lock room rồi user rows theo thứ tự rồi old match; xác minh hai player hiện tại vẫn là participant của expectedMatchId. Receipt key(roomId,actorId,commandId), canonical hash gồm type REMATCH + expectedMatchId + accept. Exact retry trả newMatchId đã ghi (nullable nếu mới vote), kèm Room DTO hiện tại sau access check; payload khác COMMAND_ID_REUSED. Không dùng DTO retry để tự phát động rematch tiếp theo.
 
 Request mới chỉ hợp lệ nếu room FINISHED, currentMatchId=expectedMatchId và now < finished_at+10phút; stale round trả CONFLICT, closed/expired trả ROOM_CLOSED (đóng room dưới cùng lock nếu đã tới hạn). accept=true upsert vote của actor; accept=false xóa cả hai votes vòng này, không ảnh hưởng match cũ. Hai vote true tạo đúng một match mới, đổi sides/giữ timeControl, claim active_players, cập nhật currentMatchId/status/roomVersion, clear finished_at và votes trong cùng transaction. Receipt của command tạo ván ghi newMatchId; các receipt vote cũ không sửa. Sau khi currentMatchId đổi, commandId mới cho vòng cũ phải reject, kể cả hai click đến sát nhau. Tại đúng hạn10phút close thắng rematch. Close xóa votes, giữ receipt audit; read retry vẫn kiểm quyền hiện tại. Client nhận room:updated để thấy đối thủ vote đã tạo ván mới; không cần bổ sung tính năng thông báo ngoài room.
+
+Chi tiết persisted schema, session/tab controller, membership presence và transaction DB: [09-DATABASE-DESIGN](09-DATABASE-DESIGN.md).
