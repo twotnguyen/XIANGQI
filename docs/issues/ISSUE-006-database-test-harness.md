@@ -1,6 +1,7 @@
 # ISSUE-006 — Supabase migrations và test integration thật
 
-- Trạng thái: IN_PROGRESS
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-006.md](../test-reports/ISSUE-006.md)
 - Yêu cầu: R01, R03, R06, R16
 - Phụ thuộc bắt buộc: [ISSUE-002](ISSUE-002-contracts-position.md)
 - Nhánh: `feat/issue-006-supabase-schema`
@@ -49,7 +50,7 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 - [x] **Bước 3.** Enable RLS & FORCE RLS mọi bảng; revoke app tables khỏi anon/authenticated; role SQL app_server có quyền tối thiểu cần thiết, không quyền sửa auth tables hay audit tables.
 - [x] **Bước 4.** Test harness local (`tests/integration/database_test.py`) chạy 8/8 suites kiểm tra constraints, JSON/NULL, RLS, rollback, immutability, side swap trên PostgreSQL local isolated.
 - [x] **Bước 5.** Áp dụng 5 migrations lên Supabase project `snsnkoicxmubuotcdafi`, kiểm tra catalog remote (19 bảng, 64 indexes, 19 PKs, 43 FKs, 12 UNIQUEs, 217 CHECKs, 3 triggers).
-- [ ] **Bước 6.** TypeScript app harness (`apps/server/src/db/pool.ts`, `transaction.ts`) và `tests/integration/database.test.ts` sẽ được kết nối khi hoàn thành ISSUE-001/002.
+- [x] **Bước 6.** TypeScript app harness (`apps/server/src/db/pool.ts`, `transaction.ts`) và `tests/integration/database.test.ts` sẽ được kết nối khi hoàn thành ISSUE-001/002.
 
 ## Tình huống nghiệm thu
 
@@ -87,11 +88,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

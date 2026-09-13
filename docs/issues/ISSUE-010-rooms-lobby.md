@@ -1,6 +1,7 @@
 # ISSUE-010 — Phòng chờ, ghế và sẵn sàng
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-010.md](../test-reports/ISSUE-010.md)
 - Yêu cầu: R03, R04, R08
 - Phụ thuộc bắt buộc: [ISSUE-006](ISSUE-006-database-test-harness.md), [ISSUE-007](ISSUE-007-password-auth.md), [ISSUE-009](ISSUE-009-friends-presence.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
@@ -41,21 +42,21 @@ Dùng bảng client_controls của contracts, không đặt authority chỉ tron
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Create owner red in one transaction, time selection default 0; public listing paginate 20 chỉ PUBLIC.
+- [x] **Bước 1.** Create owner red in one transaction, time selection default 0; public listing paginate 20 chỉ PUBLIC.
 
-- [ ] **Bước 2.** Giữ lock room và user order khi join/leave; unique current membership/user. Ready reset khi ghế đổi.
+- [x] **Bước 2.** Giữ lock room và user order khi join/leave; unique current membership/user. Ready reset khi ghế đổi.
 
-- [ ] **Bước 3.** Room owner policy/name edit; timeControl chỉ WAITING. Start validation needs 2 ready, defer actual start to 012 service integration.
+- [x] **Bước 3.** Room owner policy/name edit; timeControl chỉ WAITING. Start validation needs 2 ready, defer actual start to 012 service integration.
 
-- [ ] **Bước 4.** UI seats/invite placeholder disabled đến 011; chủ rời WAITING đóng, khách rời reset.
+- [x] **Bước 4.** UI seats/invite placeholder disabled đến 011; chủ rời WAITING đóng, khách rời reset.
 
-- [ ] **Bước 5.** Control lease tab ID/controller epoch, tab mới observer và takeover command; server kiểm epoch mutation.
+- [x] **Bước 5.** Control lease tab ID/controller epoch, tab mới observer và takeover command; server kiểm epoch mutation.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-010.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-010.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -91,11 +92,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

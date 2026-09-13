@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Docker 28.0.1  
-**Tiêu chuẩn kiểm chứng:** [02-ARCHITECTURE.md](../../specs/02-ARCHITECTURE.md) & [ISSUE-031](../../issues/ISSUE-031-deploy-runbook.md)  
+**Tiêu chuẩn kiểm chứng:** [02-ARCHITECTURE.md](../specs/02-ARCHITECTURE.md) & [ISSUE-031](../issues/ISSUE-031-deploy-runbook.md)  
 
 ---
 
