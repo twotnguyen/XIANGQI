@@ -200,6 +200,9 @@ test.describe('Online match realtime sync', () => {
       await pageA.evaluate(() => {
         (window as unknown as { __e2eLoadedOnce?: boolean }).__e2eLoadedOnce = true;
       });
+      await expect(pageA.getByTestId('realtime-status')).toHaveAttribute('data-status', 'connected', {
+        timeout: 20_000,
+      });
 
       // Opponent joins over HTTP: the seat must appear from the push, not a re-fetch.
       const joined = await request.post(`${API_URL}/api/v1/rooms/join`, {

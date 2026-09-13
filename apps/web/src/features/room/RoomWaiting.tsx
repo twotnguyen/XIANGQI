@@ -11,9 +11,11 @@ export function RoomWaiting() {
   const [room, setRoom] = useState<RoomDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [realtimeStatus, setRealtimeStatus] = useState(realtime.getStatus());
   const navigate = useNavigate();
   const navigatedRef = useRef(false);
 
+  useEffect(() => realtime.onStatus(setRealtimeStatus), []);
   const getHeaders = async () => {
     const session = (await supabase.auth.getSession()).data.session;
     return {
@@ -156,6 +158,7 @@ export function RoomWaiting() {
 
   return (
     <main style={{ maxWidth: '600px', margin: '20px auto', padding: '20px' }}>
+      <div data-testid="realtime-status" data-status={realtimeStatus} style={{ display: 'none' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>{room.name}</h1>
         <button onClick={handleLeave} style={{ padding: '8px 16px' }}>
