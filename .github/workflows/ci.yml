@@ -81,6 +81,11 @@ jobs:
       - name: Integration lane (real Postgres + Auth)
         run: pnpm test:integration
 
+      # ISSUE-030: 10 rooms / 70 concurrent Socket.IO clients / 10 parallel moves.
+      # Runs on its own step so no other suite competes for the runner's cores.
+      - name: Concurrency and load lane (real sockets)
+        run: pnpm test:load
+
       - name: Stop local Supabase stack
         if: always()
         run: supabase stop --no-backup
