@@ -135,19 +135,6 @@ export function useMatch(matchId: string | undefined) {
     [applySnapshot, syncNow],
   );
 
-  const makeMove = useCallback(
-    async (move: Move) => {
-      const current = snapshotRef.current;
-      if (!matchId || !current || current.status !== 'ACTIVE') return;
-      await sendCommand(async () => {
-        const res = await realtime.sendMove(matchId, move, current.version);
-        if (res.ok) return { ok: true as const, snapshot: res.data.snapshot };
-        return { ok: false as const, code: res.error.code, message: res.error.message };
-      });
-    },
-    [matchId, sendCommand],
-  );
-
   const submitHttpCommand = useCallback(
     async (path: string, payload: Record<string, unknown>) => {
       const current = snapshotRef.current;
@@ -183,6 +170,28 @@ export function useMatch(matchId: string | undefined) {
     [matchId, sendCommand],
   );
 
+  /**
+   * Moves go over the socket (spec 04) and fall back to the HTTP command adapter
+   * when the socket is not usable — both call the same authoritative service and
+   * carry the same controller lease, so the move is never silently dropped.
+   */
+  const makeMove = useCallback(
+    async (move: Move) => {
+      const current = snapshotRef.current;
+      if (!matchId || !current || current.status !== 'ACTIVE') return;
+      if (realtime.getStatus() === 'connected') {
+        await sendCommand(async () => {
+          const res = await realtime.sendMove(matchId, move, current.version);
+          if (res.ok) return { ok: true as const, snapshot: res.data.snapshot };
+          return { ok: false as const, code: res.error.code, message: res.error.message };
+        });
+        return;
+      }
+      await submitHttpCommand('move', move as unknown as Record<string, unknown>);
+    },
+    [matchId, sendCommand, submitHttpCommand],
+  );
+
   const propose = useCallback(
     (kind: 'DRAW' | 'UNDO') => submitHttpCommand('propose', { kind }),
     [submitHttpCommand],
@@ -197,12 +206,21 @@ export function useMatch(matchId: string | undefined) {
 
   const undoAi = useCallback(() => submitHttpCommand('undo-ai', {}), [submitHttpCommand]);
 
+  /**
+   * Only the tab that holds the controller lease on a live socket may mutate
+   * (spec 03: a second tab is read-only). The board uses this to stay honest
+   * instead of accepting a click that the server will refuse.
+   */
+  const canMutate =
+    snapshot?.status === 'ACTIVE' && status === 'connected' && controller !== null;
+
   return {
     snapshot,
     error,
     isPending,
     status,
     controller,
+    canMutate,
     makeMove,
     propose,
     respond,

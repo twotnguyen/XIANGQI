@@ -28,6 +28,7 @@ export function MatchPage() {
     isPending,
     status,
     controller,
+    canMutate,
     makeMove,
     propose,
     respond,
@@ -58,7 +59,10 @@ export function MatchPage() {
   const orientation: Side = isBlack ? 'BLACK' : 'RED'; // Red plays from bottom, Black flips
 
   const isMyTurn = isPlayer && snapshot.position.turn === mySide;
-  const isInteractive = isPlayer && isMyTurn && snapshot.status === 'ACTIVE' && !isPending;
+  // Mutating needs the tab's controller lease on a live socket (spec 03/04): a tab
+  // that has not been granted control must not accept a move the server will refuse.
+  const isInteractive =
+    isPlayer && isMyTurn && snapshot.status === 'ACTIVE' && !isPending && canMutate;
 
   // Legal moves for current side
   const legalMoves = isInteractive ? getLegalMoves(snapshot.position) : [];
@@ -300,7 +304,7 @@ export function MatchPage() {
       {/* Player action controls */}
       {isPlayer && snapshot.status === 'ACTIVE' && (
         <Controls
-          disabled={isPending}
+          disabled={isPending || !canMutate}
           isAiMode={snapshot.mode === 'AI'}
           canUndo={snapshot.ply > 0}
           onProposeDraw={() => propose('DRAW')}

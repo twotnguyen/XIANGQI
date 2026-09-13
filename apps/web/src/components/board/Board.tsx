@@ -162,11 +162,13 @@ export function Board({
       onKeyDown={handleKeyDown}
       role="region"
       aria-label="Bàn cờ tướng"
+      data-interactive={interactive ? 'true' : 'false'}
     >
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         className={styles.boardSvg}
         data-testid="xiangqi-board"
+        data-interactive={interactive ? 'true' : 'false'}
       >
         {/* Board wood background */}
         <rect

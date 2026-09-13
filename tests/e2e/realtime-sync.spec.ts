@@ -324,6 +324,11 @@ test.describe('Online match realtime sync', () => {
       });
 
       // --- A plays RED pawn (0,3) → (0,4) through the board.
+      // The board only accepts input once this tab holds the control lease on a live
+      // socket (spec 03/04), so wait for that instead of racing the subscribe ack.
+      await expect(pageA.getByTestId('xiangqi-board')).toHaveAttribute('data-interactive', 'true', {
+        timeout: 20_000,
+      });
       await pageA.getByTestId('square-0-3').click();
       await expect(pageA.getByTestId('legal-target-0-4')).toBeVisible();
       await pageA.getByTestId('square-0-4').click();
