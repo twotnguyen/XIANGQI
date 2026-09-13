@@ -452,19 +452,33 @@ export function createRealtimeGateway(options: RealtimeGatewayOptions): Realtime
         const parsed = RoomSubscribePayloadSchema.safeParse(payload);
         if (!parsed.success) validationError();
         await revalidateSession(deps, state);
-        const sub = await deps.roomAccess(state.userId, parsed.data.roomId);
+
+        // Join the primary room topic before reading DB snapshot so any concurrent
+        // mutation broadcast that commits while reading is never dropped.
+        const primaryTopic = roomTopic(parsed.data.roomId);
+        await socket.join(primaryTopic);
+
+        let sub: RoomSubscription;
+        try {
+          sub = await deps.roomAccess(state.userId, parsed.data.roomId);
+        } catch (err) {
+          await socket.leave(primaryTopic);
+          throw err;
+        }
 
         state.roomId = sub.room.id;
         state.matchId = sub.matchId;
         state.channel = sub.channel;
         state.admissionEpoch = sub.admissionEpoch;
-        const topics = [roomTopic(sub.room.id)];
+        const extraTopics: string[] = [];
         if (sub.matchId) {
-          topics.push(matchTopic(sub.matchId), chatTopic(sub.matchId, sub.channel));
+          extraTopics.push(matchTopic(sub.matchId), chatTopic(sub.matchId, sub.channel));
           retainMatchTopic(sub.matchId);
         }
-        await socket.join(topics);
-        state.topics = topics;
+        if (extraTopics.length > 0) {
+          await socket.join(extraTopics);
+        }
+        state.topics = [primaryTopic, ...extraTopics];
         defaultPresence.heartbeat(state.userId, state.tabId, Date.now());
 
         return {
@@ -482,18 +496,32 @@ export function createRealtimeGateway(options: RealtimeGatewayOptions): Realtime
         const parsed = MatchSubscribePayloadSchema.safeParse(payload);
         if (!parsed.success) validationError();
         await revalidateSession(deps, state);
-        const sub = await deps.matchAccess(state.userId, parsed.data.matchId);
-        assertAdmissionUnchanged(state, sub.admissionEpoch);
+
+        // Join the primary match topic before reading DB snapshot so any concurrent
+        // state push that commits while reading is never dropped.
+        const primaryTopic = matchTopic(parsed.data.matchId);
+        await socket.join(primaryTopic);
+
+        let sub: MatchSubscription;
+        try {
+          sub = await deps.matchAccess(state.userId, parsed.data.matchId);
+          assertAdmissionUnchanged(state, sub.admissionEpoch);
+        } catch (err) {
+          await socket.leave(primaryTopic);
+          throw err;
+        }
 
         state.matchId = sub.matchId;
         state.roomId = sub.roomId;
         state.channel = sub.channel;
         state.admissionEpoch = sub.admissionEpoch;
-        const topics = [matchTopic(sub.matchId)];
-        if (sub.roomId) topics.push(roomTopic(sub.roomId));
-        if (sub.channel) topics.push(chatTopic(sub.matchId, sub.channel));
-        await socket.join(topics);
-        state.topics = topics;
+        const extraTopics: string[] = [];
+        if (sub.roomId) extraTopics.push(roomTopic(sub.roomId));
+        if (sub.channel) extraTopics.push(chatTopic(sub.matchId, sub.channel));
+        if (extraTopics.length > 0) {
+          await socket.join(extraTopics);
+        }
+        state.topics = [primaryTopic, ...extraTopics];
         retainMatchTopic(sub.matchId);
         defaultPresence.heartbeat(state.userId, state.tabId, Date.now());
 

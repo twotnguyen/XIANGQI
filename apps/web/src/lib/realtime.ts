@@ -357,11 +357,11 @@ class RealtimeClient {
     });
     this.socket = socket;
 
-    socket.on('connect', () => {
+    socket.on('connect', async () => {
       this.reconnectAttempt = 0;
-      this.setStatus('connected');
       this.startHeartbeat();
-      void this.resubscribeAll();
+      await this.resubscribeAll();
+      this.setStatus('connected');
     });
     socket.on('disconnect', () => {
       this.setStatus('offline');
@@ -601,6 +601,14 @@ class RealtimeClient {
     return this.addSubscription('room', roomId, opts.claimControl ?? false);
   }
 
+  isRoomSubscribed(roomId: string): boolean {
+    return this.status === 'connected' && this.appliedRoomIds.has(roomId);
+  }
+
+  isMatchSubscribed(matchId: string): boolean {
+    return this.status === 'connected' && this.appliedMatchIds.has(matchId);
+  }
+
   private addSubscription(kind: 'match' | 'room', id: string, claimControl: boolean): () => void {
     const token = Symbol(`${kind}:${id}`);
     this.subscriptions.set(token, { kind, id, claimControl });
@@ -623,17 +631,15 @@ class RealtimeClient {
   }
 
   private async reconcileSubscriptions(): Promise<void> {
-    if (this.status !== 'connected') return;
+    if (this.status !== 'connected' && !this.socket?.connected) return;
     const match = this.desiredIds('match');
     const room = this.desiredIds('room');
     for (const matchId of match.ids) {
       if (this.appliedMatchIds.has(matchId)) continue;
-      this.appliedMatchIds.add(matchId);
       await this.doMatchSubscribe(matchId, match.claimControl);
     }
     for (const roomId of room.ids) {
       if (this.appliedRoomIds.has(roomId)) continue;
-      this.appliedRoomIds.add(roomId);
       await this.doRoomSubscribe(roomId, room.claimControl);
     }
   }
@@ -648,9 +654,11 @@ class RealtimeClient {
   private async doMatchSubscribe(matchId: string, claimControl: boolean): Promise<void> {
     const res = await this.emitWithAck('match:subscribe', { matchId });
     if (!res.ok) {
+      this.appliedMatchIds.delete(matchId);
       console.warn(`[realtime] match:subscribe failed (${res.error.code}): ${res.error.message}`);
       return;
     }
+    this.appliedMatchIds.add(matchId);
     const data = res.data as MatchSubscription;
     if (data.controller) this.setController(data.controller);
     else if (claimControl) await this.claimControl('match', matchId, data.snapshot);
@@ -661,7 +669,12 @@ class RealtimeClient {
 
   private async doRoomSubscribe(roomId: string, claimControl: boolean): Promise<void> {
     const res = await this.emitWithAck('room:subscribe', { roomId });
-    if (!res.ok) return;
+    if (!res.ok) {
+      this.appliedRoomIds.delete(roomId);
+      console.warn(`[realtime] room:subscribe failed (${res.error.code}): ${res.error.message}`);
+      return;
+    }
+    this.appliedRoomIds.add(roomId);
     const data = res.data as RoomSubscription;
     if (data.controller) this.setController(data.controller);
     else if (claimControl) await this.claimControl('room', roomId, data.room);

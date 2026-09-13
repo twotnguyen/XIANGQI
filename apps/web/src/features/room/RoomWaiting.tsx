@@ -30,6 +30,8 @@ export function RoomWaiting() {
     });
   }, []);
 
+  const roomRef = useRef<RoomDTO | null>(null);
+
   // A PLAYING room pulls this screen into the match (from HTTP or a push).
   const followMatch = useCallback(
     (next: RoomDTO) => {
@@ -42,6 +44,26 @@ export function RoomWaiting() {
     [navigate],
   );
 
+  const applyRoom = useCallback(
+    (incoming: RoomDTO) => {
+      const current = roomRef.current;
+      if (current && current.id === incoming.id) {
+        // Monotonic version protection: do not downgrade to a stale snapshot
+        if (incoming.roomVersion < current.roomVersion) return;
+        if (
+          incoming.roomVersion === current.roomVersion &&
+          incoming.members.length < current.members.length
+        ) {
+          return;
+        }
+      }
+      roomRef.current = incoming;
+      setRoom(incoming);
+      followMatch(incoming);
+    },
+    [followMatch],
+  );
+
   const loadRoom = useCallback(async () => {
     if (!roomId) return null;
     try {
@@ -49,8 +71,7 @@ export function RoomWaiting() {
       const res = await fetch(`/api/v1/rooms/${roomId}`, { headers });
       const data = await res.json();
       if (data.ok) {
-        setRoom(data.data);
-        followMatch(data.data);
+        applyRoom(data.data);
         return data.data as RoomDTO;
       }
       setError(data.error?.message ?? 'Không thể tải thông tin phòng');
@@ -58,21 +79,21 @@ export function RoomWaiting() {
       setError('Lỗi kết nối máy chủ');
     }
     return null;
-  }, [roomId, followMatch]);
+  }, [roomId, applyRoom]);
 
   // Room state arrives over the socket (`room:updated`); HTTP is the first-paint
   // fallback so the screen is never blank while the socket handshakes.
   useEffect(() => {
     if (!roomId) return;
     navigatedRef.current = false;
+    roomRef.current = null;
     setRoom(null);
     setError(null);
     void loadRoom();
 
     const offRoom = realtime.subscribe('room:updated', (payload) => {
       if (payload.roomId !== roomId) return;
-      setRoom(payload.room);
-      followMatch(payload.room);
+      applyRoom(payload.room);
     });
     const offRevoked = realtime.subscribe('access:revoked', (payload) => {
       if (payload.roomId !== roomId) return;
@@ -91,7 +112,7 @@ export function RoomWaiting() {
       offStatus();
       unsubscribe();
     };
-  }, [roomId, loadRoom, followMatch]);
+  }, [roomId, loadRoom, applyRoom]);
 
   const handleToggleReady = async () => {
     if (!roomId || !room) return;
@@ -108,7 +129,7 @@ export function RoomWaiting() {
       const data = await res.json();
       if (data.ok) {
         const r = data.data.room ?? data.data;
-        setRoom(r);
+        applyRoom(r);
         const matchId = data.data.matchSnapshot?.id ?? r.currentMatchId;
         if (matchId) {
           navigate(`/matches/${matchId}`);
