@@ -2,7 +2,35 @@ import { describe, it, expect } from 'vitest';
 import { createApp } from '../../apps/server/src/app.js';
 import { hashPayload } from '../../apps/server/src/modules/matches/service.js';
 import { matchBroadcaster } from '../../apps/server/src/realtime/broadcast.js';
-import type { MatchSnapshot } from '@xiangqi/contracts';
+import type { MatchSnapshot, TerminalEvent } from '@xiangqi/contracts';
+
+describe('T012-03: TerminalEvent contract (spec 03 §Hợp đồng kết thúc, spec 04)', () => {
+  it('models the MOVE variant with move ancestry', () => {
+    const terminal: TerminalEvent = {
+      type: 'MOVE',
+      payload: {
+        moveId: '550e8400-e29b-41d4-a716-446655440010',
+        parentMoveId: null,
+        side: 'RED',
+        move: { from: { x: 0, y: 3 }, to: { x: 0, y: 4 } },
+      },
+    };
+
+    expect(terminal.type).toBe('MOVE');
+    expect(terminal.payload.parentMoveId).toBeNull();
+    expect(terminal.payload.move.to).toEqual({ x: 0, y: 4 });
+  });
+
+  it('models the RESULT variant for every non-move terminal', () => {
+    const terminal: TerminalEvent = { type: 'RESULT', payload: { actorKey: null } };
+
+    expect(terminal.type).toBe('RESULT');
+    expect(terminal.payload.actorKey).toBeNull();
+    // MOVE is the only variant carrying ancestry.
+    // @ts-expect-error parentMoveId does not exist on the RESULT payload
+    expect(terminal.payload.parentMoveId).toBeUndefined();
+  });
+});
 
 describe('T012-01: Match helpers and validation', () => {
   it('hashPayload produces consistent sha256 hex string', () => {

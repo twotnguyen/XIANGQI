@@ -13,13 +13,13 @@ pg.types.setTypeParser(20, (val) => parseInt(val, 10));
 let poolInstance: pg.Pool | null = null;
 
 export function getPool(connectionString?: string): pg.Pool {
-  if (!poolInstance) {
+  if (!poolInstance || poolInstance.ended || (poolInstance as unknown as { ending: boolean }).ending) {
     const connStr = connectionString ?? requireDatabaseUrl(loadConfig());
     poolInstance = new Pool({
       connectionString: connStr,
-      max: 10,
+      max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 10000,
     });
   }
   return poolInstance;
@@ -27,7 +27,8 @@ export function getPool(connectionString?: string): pg.Pool {
 
 export async function closePool(): Promise<void> {
   if (poolInstance) {
-    await poolInstance.end();
+    const instance = poolInstance;
     poolInstance = null;
+    await instance.end().catch(() => undefined);
   }
 }

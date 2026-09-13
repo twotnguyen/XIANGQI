@@ -148,8 +148,19 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
           await admin.auth.admin.signOut(token, 'local');
         }
 
+        // Auth has already revoked the session; persist the DB marker too
+        // (spec 05). A DB failure here must not turn a successful logout into
+        // a 500, so it is logged and the request still reports success.
         if (request.user?.sessionId) {
-          await recordRevokedSession(request.user.sessionId, request.user.id);
+          try {
+            await recordRevokedSession(
+              request.user.sessionId,
+              request.user.id,
+              request.user.sessionExpiresAtMs,
+            );
+          } catch (err) {
+            request.log.error({ err }, 'Failed to record revoked session');
+          }
         }
 
         return reply.send({

@@ -19,22 +19,22 @@ Tài liệu chuẩn bị các luận điểm kỹ thuật, kiến trúc cốt l�
 - **Giải pháp:**
   - Xây dựng cụm **Worker Threads Pool** (`apps/ai-worker`) độc lập với 2 luồng tính toán song song và hàng đợi 8 tác vụ.
   - Sử dụng `SharedArrayBuffer` và `Atomics` để gửi tín hiệu hủy (cancel signal) tức thì khi người chơi nhấn "Xin đi lại" (Undo), không lãng phí CPU.
-  - Triển khai thuật toán **Alpha-Beta Pruning** kết hợp **Iterative Deepening** và **MVV-LVA Move Ordering**: giảm **84.51%** số node cần duyệt so với Minimax cổ điển (từ 2,388 nodes xuống 370 nodes ở cùng độ sâu 2).
+  - Triển khai thuật toán **Alpha-Beta Pruning** kết hợp **Iterative Deepening** và **MVV-LVA Move Ordering**: giảm **78.86%** số node cần duyệt so với Minimax cổ điển (từ 4,669 nodes xuống 987 nodes ở cùng độ sâu 2, điểm số 20/20 thế cờ trùng khớp 100%).
 
 ### 1.3. An toàn Phân quyền WebRTC (Media Source Isolation)
 - **Vấn đề:** Khán giả (Spectator) không được phép nghe lén cuộc gọi riêng tư của 2 người chơi hoặc phát mã độc âm thanh/hình ảnh.
 - **Giải pháp:**
-  - Chia tách thành 2 transports riêng biệt: `ROOM` (giữa 2 người chơi) và `WATCH` (cho khán giả).
-  - Khán giả chỉ nhận token với quyền `canPublish: false`.
-  - Token có thời hạn siêu ngắn **60 giây** (`TTL: 60s`), không lưu trữ lâu dài.
-  - Khi phòng khóa hoặc ván đấu kết thúc, hệ thống kích hoạt **Room Generation Rotation** và gọi `deleteRoom` trên LiveKit SFU để vô hiệu hóa ngay lập tức toàn bộ token cũ.
+  - Chia tách thành 4 transports độc lập theo spec 06 (`PRIVATE_CAMERA`, `PRIVATE_MICROPHONE`, `WATCH_CAMERA`, `WATCH_MICROPHONE`) để camera và micro hoạt động độc lập theo 3 mức chia sẻ (TẮT / CHỈ ĐỐI THỦ / ĐỐI THỦ VÀ KHÁN GIẢ).
+  - Khán giả chỉ nhận token với quyền `canPublish: false` và chỉ subscribe các track được người chơi cho phép.
+  - Token có thời hạn ngắn **60 giây** (`TTL: 60s`), chính sách lưu bền vững trong CSDL (`media_policies`, `media_policy_jobs`).
+  - Khi phòng khóa, người chơi rời phòng hoặc kết thúc ván, hệ thống kích hoạt **Room Generation Rotation** và gọi `deleteRoom` trên LiveKit SFU để vô hiệu hóa ngay lập tức toàn bộ token cũ; lỗi SFU giữ trạng thái APPLYING chứ không báo thành công giả.
 
 ---
 
 ## 2. Các Câu Hỏi Phản Biện Dự Kiến & Cách Trả Lời
 
-### Q1: Tại sao không dùng Socket.IO hoàn toàn mà lại dùng Fastify HTTP + Server-Sent Events/Polling?
-> **Trả lời:** Mô hình BFF (Backend-for-Frontend) của Fastify cho phép quản lý chặt chẽ theo từng transaction CSDL PostgreSQL, gắn liền với bảo mật Row Level Security của Supabase và middleware Bearer Token. Fastify 5 có thông lượng cực cao, p95 latency đo được dưới tải 70 clients chỉ là **28.7ms**, hoàn toàn đáp ứng thời gian thực cho cờ tướng theo lượt.
+### Q1: Kiến trúc giao tiếp thời gian thực của hệ thống hoạt động như thế nào?
+> **Trả lời:** Hệ thống sử dụng Socket.IO 4 chạy trên cùng tiến trình Fastify HTTP server (namespace `/`, transport thuần WebSocket) kết hợp với hàng đợi sự kiện sau commit (`realtime/events.ts`). Handshake yêu cầu Bearer token xác thực và Origin allowlist. Lệnh đi cờ và chat thực hiện qua socket kèm cơ chế kiểm soát lease phiên (`X-Control-Id`/`X-Control-Epoch`) để chống thao tác từ tab cũ. Dưới tải 70 clients đồng thời (10 phòng, 20 kỳ thủ + 50 khán giả + 2 ván cờ AI), p95 latency đo được qua đo đạc roundtrip thực tế đạt **67.64ms**, hoàn toàn dưới ngưỡng 100ms quy định.
 
 ### Q2: Nếu người chơi mất kết nối giữa chừng thì sao?
 > **Trả lời:** Hệ thống có cơ chế ân hạn rớt mạng 60 giây (`disconnect grace period`). Trong 60 giây đó, đồng hồ của người chơi vẫn tiếp tục chạy. Nếu họ kết nối lại trước thời hạn, trạng thái bàn cờ được đồng bộ nguyên vẹn từ snapshot mới nhất. Nếu hết 60 giây mà không kết nối lại, máy chủ xử thua do `DISCONNECT`. Nếu cả hai cùng mất kết nối, ván đấu kết thúc hòa do `BOTH_OFFLINE` mà không trừ điểm oan.
@@ -46,7 +46,7 @@ Tài liệu chuẩn bị các luận điểm kỹ thuật, kiến trúc cốt l�
 
 ## 3. Bảng Tóm tắt Số liệu Kỹ thuật
 
-- **Số lượng Test Cases:** 196 unit tests + 3 integration tests + 78 Playwright E2E tests = **277 automated tests** (Tỷ lệ pass: 100%).
-- **Hiệu quả cắt tỉa AI:** Giảm 84.51% số node duyệt.
-- **Độ trễ máy chủ:** p95 latency 28.7ms dưới tải 70 clients đồng thời.
+- **Số lượng Test Cases:** 301 unit tests + 90 integration tests + 8 media SFU tests + 92 Playwright E2E tests = **491 automated tests** (Tỷ lệ pass: 100%, 0 failed).
+- **Hiệu quả cắt tỉa AI:** Giảm 78.86% số node duyệt (từ 4,669 xuống 987 nodes), 20/20 thế cờ chuẩn xác 100%.
+- **Độ trễ máy chủ:** p95 latency 67.64ms dưới tải 70 kết nối Socket.IO đồng thời.
 - **Bảo mật:** 0 credentials lộ trong bundle phân phối tĩnh frontend; bảo vệ 64KB DoS limit.

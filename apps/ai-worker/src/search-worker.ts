@@ -6,7 +6,7 @@ if (parentPort) {
   parentPort.on('message', (msg: SearchJobRequest) => {
     if (msg.type !== 'SEARCH') return;
 
-    const { jobId, matchId, expectedVersion, input, cancelBuffer } = msg;
+    const { jobId, matchId, expectedVersion, jobVersion, input, cancelBuffer } = msg;
     const cancelView = new Int32Array(cancelBuffer);
 
     try {
@@ -20,6 +20,7 @@ if (parentPort) {
         jobId,
         matchId,
         expectedVersion,
+        jobVersion,
         result,
       });
     } catch (err: unknown) {
@@ -28,6 +29,7 @@ if (parentPort) {
         jobId,
         matchId,
         expectedVersion,
+        jobVersion,
         error: String(err),
       });
     }

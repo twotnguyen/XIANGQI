@@ -20,6 +20,27 @@ import {
   submitProposal,
   respondToProposal,
 } from './proposals.js';
+import { requireControlLease } from '../rooms/service.js';
+
+/**
+ * Match commands are lease-gated when the caller presents one (spec 04 lists move/resign/
+ * proposal/response under the controller lease). Socket commands always carry one and are
+ * checked strictly in the socket gateway.
+ */
+async function assertPresentedLease(
+  userId: string,
+  matchId: string,
+  headers: Record<string, unknown>,
+): Promise<void> {
+  const controlId = headers['x-control-id'] as string | undefined;
+  if (!controlId) return;
+  await requireControlLease(
+    userId,
+    controlId,
+    headers['x-control-epoch'] as string | undefined,
+    { matchId },
+  );
+}
 
 export async function matchesRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/v1/matches/:id
@@ -67,6 +88,7 @@ export async function matchesRoutes(app: FastifyInstance): Promise<void> {
       try {
         const controlId = request.headers['x-control-id'] as string | undefined;
         const controlEpoch = request.headers['x-control-epoch'] as string | undefined;
+        await assertPresentedLease(request.user!.id, matchId, request.headers);
 
         const result = await submitMove(
           request.user!.id,
@@ -110,6 +132,7 @@ export async function matchesRoutes(app: FastifyInstance): Promise<void> {
       }
 
       try {
+        await assertPresentedLease(request.user!.id, matchId, request.headers);
         const result = await resignMatch(request.user!.id, matchId, parsed.data);
         return reply.send({
           ok: true,
@@ -146,6 +169,7 @@ export async function matchesRoutes(app: FastifyInstance): Promise<void> {
       }
 
       try {
+        await assertPresentedLease(request.user!.id, matchId, request.headers);
         const result = await submitProposal(request.user!.id, matchId, parsed.data);
         return reply.send({
           ok: true,
@@ -182,6 +206,7 @@ export async function matchesRoutes(app: FastifyInstance): Promise<void> {
       }
 
       try {
+        await assertPresentedLease(request.user!.id, matchId, request.headers);
         const result = await respondToProposal(request.user!.id, matchId, parsed.data);
         return reply.send({
           ok: true,

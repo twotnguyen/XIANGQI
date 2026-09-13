@@ -1,262 +1,831 @@
-[
-  {
-    "id": "corpus-01-initial",
-    "description": "Thế cờ khởi đầu chuẩn",
+{
+  "meta": {
+    "corpus": "tests/fixtures/ai-corpus.json",
     "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 1243,
-    "minimaxTimeMs": 168.89016600000002,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 36,
-    "alphaBetaTimeMs": 6.912624999999991,
-    "pruningRatio": 0.9710378117457763,
-    "scoresMatch": false
+    "seed": 42,
+    "deadlineMsPerPosition": 10000,
+    "algorithmNotes": "MINIMAX = single-pass negamax; ALPHA_BETA = alpha-beta negamax with iterative deepening and PV move ordering",
+    "aggregatePruningDefinition": "100 * (sum(minimaxNodes) - sum(alphaBetaNodes)) / sum(minimaxNodes) — node-weighted over all positions; per-position ratios can be negative when alpha-beta visits more nodes"
   },
-  {
-    "id": "corpus-02-mate-in-1",
-    "description": "Chiếu hết 1 nước bằng Xe đâm đáy",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 6,
-    "minimaxTimeMs": 0.1334590000000162,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 3,
-    "alphaBetaTimeMs": 0.0631249999999568,
-    "pruningRatio": 0.5,
-    "scoresMatch": false
+  "aggregate": {
+    "positions": 20,
+    "totalMinimaxNodes": 4669,
+    "totalAlphaBetaNodes": 987,
+    "aggregatePruningPercent": 78.86056971514243,
+    "aggregatePruningDefinition": "100 * (sum(minimaxNodes) - sum(alphaBetaNodes)) / sum(minimaxNodes) — node-weighted over all positions; per-position ratios can be negative when alpha-beta visits more nodes",
+    "positionsWhereAlphaBetaVisitedMore": 6,
+    "positionIdsWhereAlphaBetaVisitedMore": [
+      "corpus-05-pawn-endgame",
+      "corpus-07-two-horses",
+      "corpus-09-cannon-chariot-battery",
+      "corpus-11-rook-check-evasion",
+      "corpus-14-advance-pawn-crossed",
+      "corpus-17-open-file-control"
+    ],
+    "scoreAgreement": 20,
+    "scoreAgreementPercent": 100,
+    "depthsMatchAll": true
   },
-  {
-    "id": "corpus-03-cannon-screen",
-    "description": "Pháo gián tiếp chiếu qua ngòi",
-    "depth": 2,
-    "minimaxScore": 250,
-    "minimaxNodes": 86,
-    "minimaxTimeMs": 4.787417000000005,
-    "alphaBetaScore": 250,
-    "alphaBetaNodes": 57,
-    "alphaBetaTimeMs": 4.446750000000009,
-    "pruningRatio": 0.3372093023255814,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-04-horse-fork",
-    "description": "Mã bắt đôi Xe và Tướng",
-    "depth": 2,
-    "minimaxScore": 99999,
-    "minimaxNodes": 22,
-    "minimaxTimeMs": 1.279875000000004,
-    "alphaBetaScore": 99999,
-    "alphaBetaNodes": 11,
-    "alphaBetaTimeMs": 0.2443330000000401,
-    "pruningRatio": 0.5,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-05-pawn-endgame",
-    "description": "Tốt qua sông áp sát cung tướng",
-    "depth": 2,
-    "minimaxScore": -200,
-    "minimaxNodes": 11,
-    "minimaxTimeMs": 0.20383299999997462,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 4,
-    "alphaBetaTimeMs": 0.08620799999999917,
-    "pruningRatio": 0.6363636363636364,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-06-chariot-advisor-mate",
-    "description": "Xe kẹp cổ tướng đen",
-    "depth": 2,
-    "minimaxScore": -400,
-    "minimaxNodes": 19,
-    "minimaxTimeMs": 0.34404200000000174,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 4,
-    "alphaBetaTimeMs": 0.11687499999999318,
-    "pruningRatio": 0.7894736842105263,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-07-two-horses",
-    "description": "Song mã liên hoàn",
-    "depth": 2,
-    "minimaxScore": 800,
-    "minimaxNodes": 41,
-    "minimaxTimeMs": 1.7546670000000404,
-    "alphaBetaScore": 800,
-    "alphaBetaNodes": 54,
-    "alphaBetaTimeMs": 1.712916000000007,
-    "pruningRatio": -0.3170731707317073,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-08-elephant-defense",
-    "description": "Tượng liên kết phòng thủ trung lộ",
-    "depth": 2,
-    "minimaxScore": -50,
-    "minimaxNodes": 66,
-    "minimaxTimeMs": 2.3734589999999685,
-    "alphaBetaScore": -50,
-    "alphaBetaNodes": 26,
-    "alphaBetaTimeMs": 1.1082920000000058,
-    "pruningRatio": 0.6060606060606061,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-09-cannon-chariot-battery",
-    "description": "Xe Pháo phối hợp đè cột",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 37,
-    "minimaxTimeMs": 1.438250000000039,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 18,
-    "alphaBetaTimeMs": 0.34170800000003965,
-    "pruningRatio": 0.5135135135135135,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-10-pinned-horse",
-    "description": "Mã bị chặn cẳng không thể đi",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 19,
-    "minimaxTimeMs": 0.34841699999998355,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 3,
-    "alphaBetaTimeMs": 0.10233299999998735,
-    "pruningRatio": 0.8421052631578947,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-11-advisor-shield",
-    "description": "Sĩ che tướng chống xe chiếu ngang",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 12,
-    "minimaxTimeMs": 0.2644159999999829,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 4,
-    "alphaBetaTimeMs": 0.08287500000000136,
-    "pruningRatio": 0.6666666666666666,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-12-double-cannon-check",
-    "description": "Trùng pháo chiếu hết",
-    "depth": 2,
-    "minimaxScore": 900,
-    "minimaxNodes": 91,
-    "minimaxTimeMs": 6.928125000000023,
-    "alphaBetaScore": 900,
-    "alphaBetaNodes": 79,
-    "alphaBetaTimeMs": 3.38570900000002,
-    "pruningRatio": 0.13186813186813187,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-13-horse-palace-threat",
-    "description": "Mã ngọa tào uy hiếp góc cung",
-    "depth": 2,
-    "minimaxScore": 200,
-    "minimaxNodes": 11,
-    "minimaxTimeMs": 0.3380000000000223,
-    "alphaBetaScore": 200,
-    "alphaBetaNodes": 12,
-    "alphaBetaTimeMs": 0.293042000000014,
-    "pruningRatio": -0.09090909090909091,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-14-advance-pawn-crossed",
-    "description": "Tốt đỏ lách ngang đe dọa sĩ",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 6,
-    "minimaxTimeMs": 0.09154200000000401,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 3,
-    "alphaBetaTimeMs": 0.050709000000040305,
-    "pruningRatio": 0.5,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-15-chariot-rook-fork",
-    "description": "Xe đỏ bắt đôi quân nhẹ",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 42,
-    "minimaxTimeMs": 0.7707079999999564,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 3,
-    "alphaBetaTimeMs": 0.19904199999996308,
-    "pruningRatio": 0.9285714285714286,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-16-stalemate-defense",
-    "description": "Thế vây ép hết nước",
-    "depth": 2,
-    "minimaxScore": -200,
-    "minimaxNodes": 16,
-    "minimaxTimeMs": 0.2749589999999671,
-    "alphaBetaScore": -200,
-    "alphaBetaNodes": 12,
-    "alphaBetaTimeMs": 0.24083300000006602,
-    "pruningRatio": 0.25,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-17-open-file-control",
-    "description": "Xe chiếm lộ thông thoáng",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 6,
-    "minimaxTimeMs": 0.09116699999992761,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 3,
-    "alphaBetaTimeMs": 0.049167000000011285,
-    "pruningRatio": 0.5,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-18-trapped-chariot",
-    "description": "Xe đen bị cô lập góc bàn",
-    "depth": 2,
-    "minimaxScore": 99999,
-    "minimaxNodes": 16,
-    "minimaxTimeMs": 0.3558340000000726,
-    "alphaBetaScore": 99999,
-    "alphaBetaNodes": 9,
-    "alphaBetaTimeMs": 0.173958999999968,
-    "pruningRatio": 0.4375,
-    "scoresMatch": true
-  },
-  {
-    "id": "corpus-19-pawn-advancement-clash",
-    "description": "Đối công tranh tốt qua sông",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 7,
-    "minimaxTimeMs": 0.10791699999992943,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 3,
-    "alphaBetaTimeMs": 0.04995799999994688,
-    "pruningRatio": 0.5714285714285714,
-    "scoresMatch": false
-  },
-  {
-    "id": "corpus-20-complex-middlegame",
-    "description": "Trung cuộc phức tạp Xe Pháo Mã hai bên",
-    "depth": 2,
-    "minimaxScore": 0,
-    "minimaxNodes": 631,
-    "minimaxTimeMs": 50.722999999999956,
-    "alphaBetaScore": null,
-    "alphaBetaNodes": 26,
-    "alphaBetaTimeMs": 3.058375000000069,
-    "pruningRatio": 0.9587955625990491,
-    "scoresMatch": false
-  }
-]
+  "rows": [
+    {
+      "id": "corpus-01-initial",
+      "description": "Thế cờ khởi đầu chuẩn (32 quân), Đỏ đi trước",
+      "category": "OPENING",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -50,
+      "minimaxNodes": 1965,
+      "minimaxTimeMs": 342.742792,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 1,
+          "y": 2
+        },
+        "to": {
+          "x": 1,
+          "y": 9
+        }
+      },
+      "alphaBetaScore": -50,
+      "alphaBetaNodes": 174,
+      "alphaBetaTimeMs": 33.14529100000004,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 1,
+          "y": 2
+        },
+        "to": {
+          "x": 1,
+          "y": 9
+        }
+      },
+      "pruningRatio": 0.9114503816793893,
+      "nodeDelta": 1791,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-02-rook-siege",
+      "description": "Hai Xe đỏ (0,0) và (8,8) vây Tướng đen, Sĩ đen (4,8) giữ hàng cuối chặn nước chiếu hết; Đỏ đi trước",
+      "category": "TACTIC",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 1600,
+      "minimaxNodes": 142,
+      "minimaxTimeMs": 12.640083000000004,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 0,
+          "y": 0
+        },
+        "to": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      "alphaBetaScore": 1600,
+      "alphaBetaNodes": 85,
+      "alphaBetaTimeMs": 4.6127500000000055,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 0,
+          "y": 0
+        },
+        "to": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      "pruningRatio": 0.4014084507042254,
+      "nodeDelta": 57,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-03-cannon-screen",
+      "description": "Pháo đỏ (4,2) chiếu Tướng đen (4,9) qua ngòi Sĩ đen (4,8); Đen đi trước phải giải chiếu",
+      "category": "TACTIC",
+      "turn": "BLACK",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -250,
+      "minimaxNodes": 79,
+      "minimaxTimeMs": 1.8504580000000033,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 8
+        },
+        "to": {
+          "x": 3,
+          "y": 7
+        }
+      },
+      "alphaBetaScore": -250,
+      "alphaBetaNodes": 29,
+      "alphaBetaTimeMs": 1.1739999999999782,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 8
+        },
+        "to": {
+          "x": 3,
+          "y": 7
+        }
+      },
+      "pruningRatio": 0.6329113924050633,
+      "nodeDelta": 50,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-04-horse-attacks-rook",
+      "description": "Mã đỏ (2,6) tấn công Xe đen (1,8) bị dồn ra góc cột 1; Đỏ đi trước ăn được Xe",
+      "category": "TACTIC",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 400,
+      "minimaxNodes": 150,
+      "minimaxTimeMs": 5.442916999999966,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 2,
+          "y": 6
+        },
+        "to": {
+          "x": 1,
+          "y": 8
+        }
+      },
+      "alphaBetaScore": 400,
+      "alphaBetaNodes": 32,
+      "alphaBetaTimeMs": 1.6852090000000999,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 2,
+          "y": 6
+        },
+        "to": {
+          "x": 1,
+          "y": 8
+        }
+      },
+      "pruningRatio": 0.7866666666666666,
+      "nodeDelta": 118,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-05-pawn-endgame",
+      "description": "Tốt đỏ (4,7) đã qua sông, áp sát cung Đen và chắn cột 4; Đỏ đi trước",
+      "category": "ENDGAME",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 140,
+      "minimaxNodes": 12,
+      "minimaxTimeMs": 0.3326670000000149,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 0
+        },
+        "to": {
+          "x": 3,
+          "y": 0
+        }
+      },
+      "alphaBetaScore": 140,
+      "alphaBetaNodes": 16,
+      "alphaBetaTimeMs": 0.35787500000003547,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 0
+        },
+        "to": {
+          "x": 3,
+          "y": 0
+        }
+      },
+      "pruningRatio": -0.3333333333333333,
+      "nodeDelta": -4,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-06-advisor-pair-endgame",
+      "description": "Sĩ đen giữ hai góc cung (3,8) và (5,8), Xe đỏ (0,7) ở cánh trái; Đỏ đi trước",
+      "category": "ENDGAME",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 500,
+      "minimaxNodes": 104,
+      "minimaxTimeMs": 5.701000000000022,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 5,
+          "y": 0
+        },
+        "to": {
+          "x": 5,
+          "y": 1
+        }
+      },
+      "alphaBetaScore": 500,
+      "alphaBetaNodes": 60,
+      "alphaBetaTimeMs": 2.4095419999999876,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 5,
+          "y": 0
+        },
+        "to": {
+          "x": 5,
+          "y": 1
+        }
+      },
+      "pruningRatio": 0.4230769230769231,
+      "nodeDelta": 44,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-07-two-horses",
+      "description": "Hai Mã đỏ (3,5) và (5,6) chiếm trung lộ; Đỏ đi trước",
+      "category": "MIDDLEGAME",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 800,
+      "minimaxNodes": 41,
+      "minimaxTimeMs": 1.6429999999999154,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 0
+        },
+        "to": {
+          "x": 3,
+          "y": 0
+        }
+      },
+      "alphaBetaScore": 800,
+      "alphaBetaNodes": 54,
+      "alphaBetaTimeMs": 1.5482920000000604,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 0
+        },
+        "to": {
+          "x": 3,
+          "y": 0
+        }
+      },
+      "pruningRatio": -0.3170731707317073,
+      "nodeDelta": -13,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-08-elephant-defense",
+      "description": "Pháo đỏ (4,4) chiếu Tướng đen qua ngòi Tượng đen (4,7); Đen đi trước",
+      "category": "DEFENSE",
+      "turn": "BLACK",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -50,
+      "minimaxNodes": 66,
+      "minimaxTimeMs": 2.4531670000000076,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 7
+        },
+        "to": {
+          "x": 2,
+          "y": 5
+        }
+      },
+      "alphaBetaScore": -50,
+      "alphaBetaNodes": 26,
+      "alphaBetaTimeMs": 1.1940420000000813,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 7
+        },
+        "to": {
+          "x": 2,
+          "y": 5
+        }
+      },
+      "pruningRatio": 0.6060606060606061,
+      "nodeDelta": 40,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-09-cannon-chariot-battery",
+      "description": "Xe đỏ (1,5) và Pháo đỏ (1,2) dàn quân trên cột 1; Đỏ đi trước",
+      "category": "TACTIC",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 1350,
+      "minimaxNodes": 80,
+      "minimaxTimeMs": 5.772500000000036,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 5,
+          "y": 0
+        },
+        "to": {
+          "x": 4,
+          "y": 0
+        }
+      },
+      "alphaBetaScore": 1350,
+      "alphaBetaNodes": 86,
+      "alphaBetaTimeMs": 3.6272500000000036,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 5,
+          "y": 0
+        },
+        "to": {
+          "x": 4,
+          "y": 0
+        }
+      },
+      "pruningRatio": -0.075,
+      "nodeDelta": -6,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-10-blocked-horse",
+      "description": "Tốt đỏ (4,5) chặn hai hướng lên (3,4) và (5,4) của Mã đen (4,6); Đỏ đi trước",
+      "category": "TACTIC",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 320,
+      "minimaxNodes": 44,
+      "minimaxTimeMs": 1.0871660000000247,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 5
+        },
+        "to": {
+          "x": 4,
+          "y": 6
+        }
+      },
+      "alphaBetaScore": 320,
+      "alphaBetaNodes": 18,
+      "alphaBetaTimeMs": 0.5456249999999727,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 5
+        },
+        "to": {
+          "x": 4,
+          "y": 6
+        }
+      },
+      "pruningRatio": 0.5909090909090909,
+      "nodeDelta": 26,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-11-rook-check-evasion",
+      "description": "Xe đỏ (0,9) chiếu ngang hàng cuối; Đen đi trước né Tướng xuống (4,8)",
+      "category": "TACTIC",
+      "turn": "BLACK",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -700,
+      "minimaxNodes": 20,
+      "minimaxTimeMs": 0.5078750000000127,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 4,
+          "y": 8
+        }
+      },
+      "alphaBetaScore": -700,
+      "alphaBetaNodes": 22,
+      "alphaBetaTimeMs": 0.5758749999999964,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 4,
+          "y": 8
+        }
+      },
+      "pruningRatio": -0.1,
+      "nodeDelta": -2,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-12-double-cannon-check",
+      "description": "Pháo đỏ (4,7) chiếu Tướng đen qua ngòi Pháo đỏ (4,8); Đen đi trước có thể ăn ngòi (4,8)",
+      "category": "TACTIC",
+      "turn": "BLACK",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -450,
+      "minimaxNodes": 63,
+      "minimaxTimeMs": 1.0504170000000386,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 4,
+          "y": 8
+        }
+      },
+      "alphaBetaScore": -450,
+      "alphaBetaNodes": 19,
+      "alphaBetaTimeMs": 0.8117919999999685,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 4,
+          "y": 8
+        }
+      },
+      "pruningRatio": 0.6984126984126984,
+      "nodeDelta": 44,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-13-horse-palace-threat",
+      "description": "Mã đỏ (2,8) chiếu Tướng đen (4,9) — thế Mã ngọa tào; Đen đi trước có nước né (3,9)/(5,9)",
+      "category": "TACTIC",
+      "turn": "BLACK",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -200,
+      "minimaxNodes": 20,
+      "minimaxTimeMs": 0.700458000000026,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 3,
+          "y": 9
+        }
+      },
+      "alphaBetaScore": -200,
+      "alphaBetaNodes": 15,
+      "alphaBetaTimeMs": 0.3876669999999649,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 3,
+          "y": 9
+        }
+      },
+      "pruningRatio": 0.25,
+      "nodeDelta": 5,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-14-advance-pawn-crossed",
+      "description": "Tốt đỏ (2,7) đã qua sông, đe dọa (2,8) và (3,7); Đỏ đi trước",
+      "category": "ENDGAME",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 360,
+      "minimaxNodes": 13,
+      "minimaxTimeMs": 0.30395900000007714,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 2,
+          "y": 7
+        },
+        "to": {
+          "x": 2,
+          "y": 8
+        }
+      },
+      "alphaBetaScore": 360,
+      "alphaBetaNodes": 17,
+      "alphaBetaTimeMs": 0.27995900000007623,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 2,
+          "y": 7
+        },
+        "to": {
+          "x": 2,
+          "y": 8
+        }
+      },
+      "pruningRatio": -0.3076923076923077,
+      "nodeDelta": -4,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-15-rook-double-attack",
+      "description": "Xe đỏ (6,7) đe dọa Mã đen (6,9) và Pháo đen (2,7) cùng lúc; Đỏ đi trước",
+      "category": "TACTIC",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 500,
+      "minimaxNodes": 325,
+      "minimaxTimeMs": 20.06325000000004,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 6,
+          "y": 7
+        },
+        "to": {
+          "x": 2,
+          "y": 7
+        }
+      },
+      "alphaBetaScore": 500,
+      "alphaBetaNodes": 58,
+      "alphaBetaTimeMs": 4.305082999999968,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 6,
+          "y": 7
+        },
+        "to": {
+          "x": 2,
+          "y": 7
+        }
+      },
+      "pruningRatio": 0.8215384615384616,
+      "nodeDelta": 267,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-16-advisor-file-block",
+      "description": "Sĩ đỏ (4,1) chắn cột 4 ngăn hai Tướng đối mặt; Đen đi trước còn nước hợp lệ",
+      "category": "ENDGAME",
+      "turn": "BLACK",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": -200,
+      "minimaxNodes": 16,
+      "minimaxTimeMs": 0.26870900000005804,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 4,
+          "y": 8
+        }
+      },
+      "alphaBetaScore": -200,
+      "alphaBetaNodes": 12,
+      "alphaBetaTimeMs": 0.24737500000003365,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 9
+        },
+        "to": {
+          "x": 4,
+          "y": 8
+        }
+      },
+      "pruningRatio": 0.25,
+      "nodeDelta": 4,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-17-open-file-control",
+      "description": "Xe đỏ (8,4) độc chiếm cột 8 trống; Đỏ đi trước",
+      "category": "STRATEGY",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 900,
+      "minimaxNodes": 53,
+      "minimaxTimeMs": 2.2835420000000113,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 5,
+          "y": 0
+        },
+        "to": {
+          "x": 4,
+          "y": 0
+        }
+      },
+      "alphaBetaScore": 900,
+      "alphaBetaNodes": 59,
+      "alphaBetaTimeMs": 1.665958000000046,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 5,
+          "y": 0
+        },
+        "to": {
+          "x": 4,
+          "y": 0
+        }
+      },
+      "pruningRatio": -0.11320754716981132,
+      "nodeDelta": -6,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-18-trapped-chariot",
+      "description": "Xe đen (0,9) ở góc bàn bị Mã đỏ (1,7) tấn công; Đỏ đi trước ăn được Xe",
+      "category": "STRATEGY",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 400,
+      "minimaxNodes": 88,
+      "minimaxTimeMs": 2.818667000000005,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 1,
+          "y": 7
+        },
+        "to": {
+          "x": 0,
+          "y": 9
+        }
+      },
+      "alphaBetaScore": 400,
+      "alphaBetaNodes": 26,
+      "alphaBetaTimeMs": 1.1607910000000174,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 1,
+          "y": 7
+        },
+        "to": {
+          "x": 0,
+          "y": 9
+        }
+      },
+      "pruningRatio": 0.7045454545454546,
+      "nodeDelta": 62,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-19-pawn-advancement-clash",
+      "description": "Hai Tốt đối đầu trên cột 4: Đỏ (4,5) và Đen (4,6); Đỏ đi trước",
+      "category": "TACTIC",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 320,
+      "minimaxNodes": 20,
+      "minimaxTimeMs": 0.4365419999999176,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 5
+        },
+        "to": {
+          "x": 4,
+          "y": 6
+        }
+      },
+      "alphaBetaScore": 320,
+      "alphaBetaNodes": 18,
+      "alphaBetaTimeMs": 0.3494580000000269,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 5
+        },
+        "to": {
+          "x": 4,
+          "y": 6
+        }
+      },
+      "pruningRatio": 0.1,
+      "nodeDelta": 2,
+      "scoresMatch": true,
+      "depthsMatch": true
+    },
+    {
+      "id": "corpus-20-complex-middlegame",
+      "description": "Trung cuộc Xe–Pháo–Mã cả hai bên (8 quân), Đỏ đi trước",
+      "category": "MIDDLEGAME",
+      "turn": "RED",
+      "depth": 2,
+      "seed": 42,
+      "minimaxScore": 0,
+      "minimaxNodes": 1368,
+      "minimaxTimeMs": 170.6142920000001,
+      "minimaxCompletedDepth": 2,
+      "minimaxMove": {
+        "from": {
+          "x": 4,
+          "y": 0
+        },
+        "to": {
+          "x": 5,
+          "y": 0
+        }
+      },
+      "alphaBetaScore": 0,
+      "alphaBetaNodes": 161,
+      "alphaBetaTimeMs": 21.733833000000004,
+      "alphaBetaCompletedDepth": 2,
+      "alphaBetaMove": {
+        "from": {
+          "x": 4,
+          "y": 0
+        },
+        "to": {
+          "x": 5,
+          "y": 0
+        }
+      },
+      "pruningRatio": 0.8823099415204678,
+      "nodeDelta": 1207,
+      "scoresMatch": true,
+      "depthsMatch": true
+    }
+  ]
+}

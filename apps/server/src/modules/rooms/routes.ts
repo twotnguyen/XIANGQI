@@ -219,7 +219,16 @@ export async function roomsRoutes(app: FastifyInstance): Promise<void> {
       }
 
       try {
-        const lease = await takeoverControl(request.user!.id, parsed.data.tabId);
+        const sessionId = request.user!.sessionId;
+        if (!sessionId) {
+          return reply.status(401).send({
+            ok: false,
+            error: { code: 'UNAUTHENTICATED', message: 'Phiên đăng nhập không hợp lệ' },
+            requestId: request.id,
+          });
+        }
+
+        const lease = await takeoverControl(request.user!.id, parsed.data.tabId, sessionId);
         return reply.send({
           ok: true,
           data: lease,

@@ -11,12 +11,20 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'off',
   },
-  webServer: {
-    command: 'pnpm --filter @xiangqi/web dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-    timeout: 15000,
-  },
+  webServer: [
+    {
+      command: 'pnpm --filter @xiangqi/server dev',
+      url: 'http://localhost:3001/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 20000,
+    },
+    {
+      command: 'pnpm --filter @xiangqi/web dev --mode test',
+      url: 'http://localhost:5173',
+      reuseExistingServer: !process.env.CI,
+      timeout: 20000,
+    },
+  ],
   projects: [
     {
       name: 'chromium',

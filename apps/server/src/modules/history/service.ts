@@ -6,6 +6,7 @@ import type pg from 'pg';
 import { getPool } from '../../db/pool.js';
 import { createInitialPosition, applyMove } from '@xiangqi/game-rules';
 import type { Position, Move, Outcome } from '@xiangqi/contracts';
+import { loadActiveBranch, parseActiveMoveIds } from '../matches/undo.js';
 
 export interface MatchSummaryDTO {
   id: string;
@@ -34,7 +35,28 @@ export interface MatchReplayDTO {
   redUserId: string | null;
   blackUserId: string | null;
   outcome: Outcome | null;
+  /** Initial position persisted by the START event (spec 09 §11). */
+  initialPosition: Position;
+  /** Moves of the effective branch in ply order (spec 04 replay payload). */
+  effectiveMoves: Move[];
+  /** Number of UNDO events committed for this match. */
+  undoCount: number;
+  /** Derived ply-by-ply projection consumed by the existing replay UI. */
   plies: ReplayPly[];
+}
+
+function readStoredInitialPosition(payload: unknown): Position | null {
+  const parsed: unknown = typeof payload === 'string' ? JSON.parse(payload) : payload;
+  if (!parsed || typeof parsed !== 'object' || !('initialPosition' in parsed)) return null;
+  const candidate: unknown = parsed.initialPosition;
+  if (!candidate || typeof candidate !== 'object') return null;
+  if (!('board' in candidate) || !('turn' in candidate)) return null;
+  const board: unknown = candidate.board;
+  const turn: unknown = candidate.turn;
+  if (!Array.isArray(board) || board.length !== 90) return null;
+  if (turn !== 'RED' && turn !== 'BLACK') return null;
+  // Shape validated above (90 board slots + legal turn); the cast only names it.
+  return candidate as Position;
 }
 
 /**
@@ -120,26 +142,44 @@ export async function getMatchReplay(
       throw { statusCode: 403, code: 'FORBIDDEN', message: 'Bạn không có quyền xem lại ván cờ này' };
     }
 
-    // 2. Fetch surviving moves (ordered by move_number)
-    const movesRes = await client.query(
-      'SELECT * FROM public.moves WHERE match_id = $1 ORDER BY move_number ASC',
+    // 2. Initial position comes from the START event so an old match replays with the
+    //    board/rules it was created under (spec 09 §11).
+    const startRes = await client.query(
+      `SELECT payload FROM public.match_events
+       WHERE match_id = $1 AND type = 'START'
+       ORDER BY version ASC LIMIT 1`,
+      [matchId],
+    );
+    const initialPosition =
+      (startRes.rowCount ?? 0) > 0
+        ? readStoredInitialPosition(startRes.rows[0].payload) ?? createInitialPosition()
+        : createInitialPosition();
+
+    // 3. Effective branch only: walk match_moves ancestry from the active tip, so replay
+    //    never shows a branch abandoned by undo (F-02b/F-18, ISSUE-027).
+    const branch = await loadActiveBranch(
+      client,
+      matchId,
+      parseActiveMoveIds(m.active_move_ids),
+    );
+    const effectiveMoves: Move[] = branch.map((entry) => entry.move);
+
+    const undoRes = await client.query(
+      `SELECT count(*)::int AS undo_count FROM public.match_events
+       WHERE match_id = $1 AND type = 'UNDO'`,
       [matchId],
     );
 
-    // 3. Step forward from initial position to build full replay sequence
-    let currentPos = createInitialPosition();
+    // 4. Ply-by-ply projection derived from the same effective branch (replay UI).
+    let currentPos = initialPosition;
     const plies: ReplayPly[] = [
       { ply: 0, move: null, position: currentPos },
     ];
 
-    for (const row of movesRes.rows) {
-      const move: Move = {
-        from: { x: row.from_x, y: row.from_y },
-        to: { x: row.to_x, y: row.to_y },
-      };
+    for (const move of effectiveMoves) {
       currentPos = applyMove(currentPos, move);
       plies.push({
-        ply: row.move_number,
+        ply: plies.length,
         move,
         position: currentPos,
       });
@@ -151,6 +191,9 @@ export async function getMatchReplay(
       redUserId: m.red_user_id,
       blackUserId: m.black_user_id,
       outcome: m.outcome ? (typeof m.outcome === 'string' ? JSON.parse(m.outcome) : m.outcome) : null,
+      initialPosition,
+      effectiveMoves,
+      undoCount: undoRes.rows[0].undo_count,
       plies,
     };
   } finally {
