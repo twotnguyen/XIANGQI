@@ -1,8 +1,8 @@
 # Báo cáo Nghiệm thu Môi trường Staging (Staging Acceptance Report) — XIANGQI
 
 **Ngày thực hiện:** 2026-09-14
-**Nhánh triển khai:** `docs/issue-031-staging-sync`
-**Base commit:** `e75f995` (main)
+**Nhánh triển khai:** `docs/issue-031-main-ci-sync`
+**Base commit:** `9cb7766` (main)
 **Tiêu chuẩn đối chiếu:** [ISSUE-031](../issues/ISSUE-031-deploy-runbook.md), [02-ARCHITECTURE.md](../specs/02-ARCHITECTURE.md), [05-AUTH.md](../specs/05-AUTH.md), [06-MEDIA.md](../specs/06-MEDIA.md)
 **Trạng thái nghiệm thu:** **LOCAL_COMPLETE** *(Sẵn sàng triển khai cloud; chờ cấp quyền và credentials môi trường ngoài)*
 
@@ -164,7 +164,7 @@ Bảng `supabase_migrations.schema_migrations` trên cloud xác nhận:
 
 1. **Trạng thái mã nguồn và cơ sở dữ liệu:**
    - 100% mã nguồn, cấu hình Docker, blueprint Render, rewrite Vercel và 11 migration Supabase đã hoàn tất và được xác thực tự động.
-   - Bốn lane CI trên GitHub Actions của nhánh `main` (`e75f995`) đạt 100% PASS (481/481 tests tự động qua [CI Run #34774320639](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639)).
+   - Bốn lane CI trên GitHub Actions của nhánh `main` (`9cb7766`) đạt 100% PASS (482/482 tests tự động qua [CI Run #34777360077](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077)).
 2. **Nguyên tắc nghiệm thu:**
    - Duy trì trạng thái **`LOCAL_COMPLETE`**.
    - Tuyệt đối **chưa ghi `PROJECT_COMPLETE`** chừng nào các cổng triển khai dịch vụ ngoài (Vercel, Render, Google OAuth production, LiveKit Cloud và 2 thiết bị di động thật) chưa được cấp tài nguyên và xác minh thực tế.

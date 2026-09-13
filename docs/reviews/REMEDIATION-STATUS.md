@@ -72,12 +72,12 @@ Mỗi bộ kiểm thử dưới đây được ghi nhận chính xác về lện
 
 | Bộ kiểm thử | Lệnh thực thi (Command) | Commit SHA | Môi trường kiểm thử | Pass | Fail | Skipped | Link / File Bằng chứng |
 |---|---|---|---|:---:|:---:|:---:|---|
-| **Unit Tests (CI check)** | `pnpm run test:unit` (`vitest run --config vitest.config.ts`) | `e75f995` (main) | Ubuntu Linux (GitHub Actions Runner), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34774320639 (Job 103769504748)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **Integration Tests (CI integration)** | `pnpm run test:integration` (`vitest run --config vitest.integration.config.ts tests/integration`) | `e75f995` (main) | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật, Node 24.15.0 | 81 | 0 | 0 | [CI Run #34774320639 (Job 103769504825)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **Media SFU Tests (CI media)** | `pnpm run test:media` (`vitest run --config vitest.integration.config.ts tests/media`) | `e75f995` (main) | Ubuntu Linux, LiveKit SFU local container thật (RTP bytes/frames > 10KB), Node 24.15.0 | 8 | 0 | 0 | [CI Run #34774320639 (Job 103769504946)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **E2E Tests (CI e2e)** | `pnpm run test:e2e` (`playwright test`) | `e75f995` (main) | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34774320639 (Job 103769504851)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **AI Benchmark** | `pnpm run test:ai` / `pnpm run bench:ai:export` | `8bfa200`, `d47e73e` & `e75f995` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% node pruning, 20/20 scores match) |
-| **Socket Load Test** | `pnpm run test:load` (`vitest run --config vitest.integration.config.ts tests/load/socket-load.test.ts`) | `8bfa200`, `3d16a8a` & `e75f995` | Máy tham chiếu 8-core, 10 phòng / 70 kết nối Socket.IO đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
+| **Unit Tests (CI check)** | `pnpm run test:unit` (`vitest run --config vitest.config.ts`) | `9cb7766` (main) | Ubuntu Linux (GitHub Actions Runner), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34777360077 (Job 103777808801)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **Integration Tests (CI integration)** | `pnpm run test:integration` (`vitest run --config vitest.integration.config.ts tests/integration`) | `9cb7766` (main) | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật, Node 24.15.0 | 82 | 0 | 0 | [CI Run #34777360077 (Job 103777808673)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **Media SFU Tests (CI media)** | `pnpm run test:media` (`vitest run --config vitest.integration.config.ts tests/media`) | `9cb7766` (main) | Ubuntu Linux, LiveKit SFU local container thật (RTP bytes/frames > 10KB), Node 24.15.0 | 8 | 0 | 0 | [CI Run #34777360077 (Job 103777808875)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **E2E Tests (CI e2e)** | `pnpm run test:e2e` (`playwright test`) | `9cb7766` (main) | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34777360077 (Job 103777808805)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **AI Benchmark** | `pnpm run test:ai` / `pnpm run bench:ai:export` | `8bfa200`, `d47e73e`, `e75f995` & `9cb7766` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% node pruning, 20/20 scores match) |
+| **Socket Load Test** | `pnpm run test:load` (`vitest run --config vitest.integration.config.ts tests/load/socket-load.test.ts`) | `8bfa200`, `3d16a8a`, `e75f995` & `9cb7766` | Máy tham chiếu 8-core, 10 phòng / 70 kết nối Socket.IO đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
 | **Nghiệm thu Browser UI (Orca)** | Orca CLI 1.3.1 (`orca tab create / exec / mouse`) | `aa20d4b` *(chính xác)* | macOS Darwin, 2 profile độc lập (`Default`, `Player 2`), web dev local port 5173, API port 3001, Supabase local | 8 luồng | 0 | 0 (4 BLOCKED ngoại vi) | `docs/test-reports/ORCA-ACCEPTANCE.md` *(xác thực đúng trên HEAD `aa20d4b`, không ghi đè lên HEAD khác)* |
 
 ---
@@ -86,12 +86,10 @@ Mỗi bộ kiểm thử dưới đây được ghi nhận chính xác về lện
 
 1. **So với baseline cũ trước remediation ("196 unit / 84.51% pruning / p95 28.7ms / 5-5 SFU"):**
    - Con số cũ trong tài liệu lịch sử trước remediation đã bị bác bỏ do các finding F-10 (harness media không chạy được), F-13 (corpus AI sai tên quân dẫn đến điểm số vô hạn), F-15 (thử tải cũ không tải thật) và F-12 (test DB tự mock). Đợt remediation đã thay thế bằng test thực tế với assertion nghiêm ngặt.
-2. **So với báo cáo PR #48 (`8bfa200`, ghi nhận 491 tests tự động):**
-   - Tại commit `8bfa200`, tổng số 491 tests gồm: 301 unit + 90 integration + 8 media + 92 E2E.
-   - Tại commit `3d16a8a` (PR #50), `d47e73e` (PR #51) và `e75f995` (main hiện tại):
-     - **Lane check (Unit):** điều chỉnh cấu hình glob để phân định sạch giữa unit thuần túy (298 tests) và integration/media.
-     - **Lane integration:** tách bài kiểm thử tải nặng `socket-load` sang workflow thủ công `Load lane (manual)` (giảm từ 90 xuống 81 integration tests chạy trên PR gate, do runner GitHub 2 core bị nhiễu đo đạc p95).
-     - **Lane E2E:** tăng từ 92 lên 94 tests do bổ sung các assertion timeout hardening và spectator capacity checks.
-     - Tổng số test tự động chạy trong 4 lane CI bắt buộc là **481 tests** (298 + 81 + 8 + 94 = 481), tất cả đều PASS 100%, 0 fail, 0 skip trên CI Run #34761345660 và CI Run #34774320639.
+2. **So với báo cáo PR #48 (`8bfa200`, 491 tests) và các mốc PR #50 - PR #54:**
+   - Tại commit `8bfa200` (PR #48): tổng số 491 tests gồm: 301 unit + 90 integration + 8 media + 92 E2E.
+   - Tại commit `3d16a8a` (PR #50), `d47e73e` (PR #51) và `e75f995` (PR #52): tách bài kiểm thử tải nặng `socket-load` sang workflow thủ công để bảo vệ runner GitHub 2-core (giảm từ 90 xuống 81 integration tests), tăng E2E lên 94 tests (tổng cộng 481 tests).
+   - Tại commit `9cb7766` (PR #54, squash merge khắc phục ISSUE-015 realtime sync race): bổ sung 1 regression test tích hợp trong `tests/integration/realtime.test.ts` (`pushes room:updated with incremented room_version when opponent joins a waiting room`), nâng tổng số integration tests lên **82 tests**.
+   - Tổng số test tự động chạy trong 4 lane CI bắt buộc trên HEAD `9cb7766` là **482 tests** (298 check + 82 integration + 8 media + 94 E2E = 482), tất cả đều PASS 100%, 0 fail, 0 skip trên [CI Run #34777360077](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077).
 3. **Bằng chứng nghiệm thu Orca:**
    - Phiên nghiệm thu thực tế bằng trình duyệt thật thông qua Orca CLI được thực hiện tại commit **`aa20d4b`** (ngay sau PR #48 và PR #49), trên stack local (`http://localhost:5173` và `http://localhost:3001`). Bằng chứng được ghi lại đầy đủ trong `docs/test-reports/ORCA-ACCEPTANCE.md`. Tài liệu khẳng định rõ bằng chứng này được thực hiện tại HEAD `aa20d4b` và không được ghi nhận sai thành đã chạy lại trên các HEAD sau.
