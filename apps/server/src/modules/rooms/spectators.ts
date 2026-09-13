@@ -3,29 +3,49 @@
  * Enforces:
  * - Max 5 spectators per room
  * - Room lock before spectator counting to prevent race conditions
- * - Revocation of spectators when room visibility changes to LOCKED
- * - Event broadcast for access:revoked
+ * - Revocation of spectator memberships when a room becomes LOCKED
  */
 import type pg from 'pg';
 import { getPool } from '../../db/pool.js';
 import { withTransaction } from '../../db/transaction.js';
-import { getRoom } from './service.js';
+import { readRoomWithClient } from './service.js';
 import type { RoomDTO } from '@xiangqi/contracts';
 
 export const MAX_SPECTATORS = 5;
 
-type RevokeListener = (data: { roomId: string; reason: string; roomVersion: number }) => void;
-const revokeListeners = new Set<RevokeListener>();
+export type SpectatorRevokeReason = 'ROOM_LOCKED' | 'ROOM_CLOSED';
 
-export function onAccessRevoked(listener: RevokeListener): () => void {
-  revokeListeners.add(listener);
-  return () => revokeListeners.delete(listener);
+/** Result of a spectator revocation; also the `access:revoked` payload shape (spec 04). */
+export interface SpectatorRevocation {
+  roomId: string;
+  reason: SpectatorRevokeReason;
+  revokedUserIds: string[];
+  roomVersion: number;
 }
 
-export function emitAccessRevoked(data: { roomId: string; reason: string; roomVersion: number }): void {
-  for (const listener of revokeListeners) {
+type AccessRevokedNotice = {
+  roomId: string;
+  reason: SpectatorRevokeReason;
+  roomVersion: number;
+};
+
+type AccessRevokedListener = (notice: AccessRevokedNotice) => void;
+const accessRevokedListeners = new Set<AccessRevokedListener>();
+
+/**
+ * In-process hook for local subscribers (media generation rotation). The
+ * network emit is `emitAccessRevoked` from `realtime/events.ts`.
+ */
+export function onAccessRevoked(listener: AccessRevokedListener): () => void {
+  accessRevokedListeners.add(listener);
+  return () => accessRevokedListeners.delete(listener);
+}
+
+/** Fan out a revocation to in-process listeners. Call after commit. */
+export function notifyAccessRevoked(notice: AccessRevokedNotice): void {
+  for (const listener of accessRevokedListeners) {
     try {
-      listener(data);
+      listener(notice);
     } catch (err) {
       console.error('Access revoked listener error:', err);
     }
@@ -64,7 +84,7 @@ export async function admitSpectator(
       [roomId, userId],
     );
     if (existing.rowCount! > 0) {
-      return getRoom(roomId, userId, p);
+      return readRoomWithClient(client, roomId, userId);
     }
 
     // 3. Count spectators within lock
@@ -85,53 +105,45 @@ export async function admitSpectator(
       [roomId, userId],
     );
 
-    return getRoom(roomId, userId, p);
+    return readRoomWithClient(client, roomId, userId);
   }, p);
 }
 
 /**
- * Revoke all spectators from a room (e.g. when room is LOCKED).
- * Bumps room_version, removes spectator members, emits access:revoked.
+ * Revoke every spectator membership of a room (room becoming LOCKED/CLOSED).
+ *
+ * Runs inside the caller's transaction while the caller already holds
+ * `rooms FOR UPDATE` (spec 09 lock order), so no lock is taken here. Bumps
+ * `room_version` once and returns the affected user ids plus the new version;
+ * the caller emits `access:revoked` AFTER commit (never inside the tx).
  */
 export async function revokeSpectators(
+  tx: pg.PoolClient,
   roomId: string,
-  reason: string,
-  pool?: pg.Pool,
-): Promise<{ revokedCount: number; newRoomVersion: number }> {
-  const p = pool ?? getPool();
-  let emitData: { roomId: string; reason: string; roomVersion: number } | null = null;
-
-  const result = await withTransaction(async (client) => {
-    // 1. Lock room
-    const roomRes = await client.query(
-      'SELECT room_version FROM public.rooms WHERE id = $1 FOR UPDATE',
-      [roomId],
-    );
-    if (roomRes.rowCount === 0) return { revokedCount: 0, newRoomVersion: 0 };
-
-    const newVersion = roomRes.rows[0].room_version + 1;
-
-    // 2. Remove all spectator members
-    const deleteRes = await client.query(
-      'DELETE FROM public.room_members WHERE room_id = $1 AND role = \'SPECTATOR\'',
-      [roomId],
-    );
-    const revokedCount = deleteRes.rowCount ?? 0;
-
-    // 3. Bump room version
-    await client.query(
-      'UPDATE public.rooms SET room_version = $1, updated_at = now() WHERE id = $2',
-      [newVersion, roomId],
-    );
-
-    emitData = { roomId, reason, roomVersion: newVersion };
-    return { revokedCount, newRoomVersion: newVersion };
-  }, p);
-
-  // Emit event after transaction commits
-  if (emitData) {
-    emitAccessRevoked(emitData);
+  reason: SpectatorRevokeReason,
+): Promise<SpectatorRevocation> {
+  const versionRes = await tx.query(
+    `UPDATE public.rooms
+     SET room_version = room_version + 1, updated_at = now()
+     WHERE id = $1
+     RETURNING room_version`,
+    [roomId],
+  );
+  if (versionRes.rowCount === 0) {
+    throw { statusCode: 404, code: 'NOT_FOUND', message: 'Phòng không tồn tại' };
   }
 
-  return result;
+  const deleted = await tx.query(
+    `DELETE FROM public.room_members
+     WHERE room_id = $1 AND role = 'SPECTATOR'
+     RETURNING user_id`,
+    [roomId],
+  );
+
+  return {
+    roomId,
+    reason,
+    revokedUserIds: deleted.rows.map((row) => row.user_id as string),
+    roomVersion: versionRes.rows[0].room_version as number,
+  };
 }

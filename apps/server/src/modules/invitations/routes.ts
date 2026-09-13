@@ -4,6 +4,7 @@
  */
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { requireAuth } from '../../auth/authenticate.js';
+import { requireOnboarded } from '../../auth/onboarding-gate.js';
 import {
   CreateInvitationBodySchema,
   RespondInvitationBodySchema,
@@ -18,11 +19,47 @@ import {
   joinRoom,
 } from './service.js';
 
+type ServiceError = { statusCode?: number; code?: string; message?: string };
+
+/**
+ * Send one service failure as the standard ApiResult envelope.
+ *
+ * Intentional 4xx codes/messages thrown by the service pass through untouched.
+ * Anything else (raw `pg` errors such as `42703 column ... does not exist`, or an
+ * unexpected throw) becomes a generic 500 `INTERNAL_ERROR`: driver codes and SQL
+ * text must never leak through the API.
+ */
+function sendServiceError(
+  reply: FastifyReply,
+  request: FastifyRequest,
+  err: unknown,
+  fallbackMessage: string,
+): FastifyReply {
+  const e = err as ServiceError;
+  const status = typeof e.statusCode === 'number' && e.statusCode >= 400 && e.statusCode < 500
+    ? e.statusCode
+    : 500;
+
+  if (status === 500) {
+    return reply.status(500).send({
+      ok: false,
+      error: { code: 'INTERNAL_ERROR', message: fallbackMessage },
+      requestId: request.id,
+    });
+  }
+
+  return reply.status(status).send({
+    ok: false,
+    error: { code: e.code ?? 'INTERNAL_ERROR', message: e.message ?? fallbackMessage },
+    requestId: request.id,
+  });
+}
+
 export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
   // POST /api/v1/rooms/:id/invitations
   app.post(
     '/api/v1/rooms/:id/invitations',
-    { preHandler: [requireAuth] },
+    { preHandler: [requireAuth, requireOnboarded] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { id: roomId } = request.params as { id: string };
       const parsed = CreateInvitationBodySchema.safeParse(request.body ?? {});
@@ -42,15 +79,7 @@ export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
           requestId: request.id,
         });
       } catch (err: unknown) {
-        const e = err as { statusCode?: number; code?: string; message?: string };
-        return reply.status(e.statusCode ?? 500).send({
-          ok: false,
-          error: {
-            code: e.code ?? 'INTERNAL_ERROR',
-            message: e.message ?? 'Không thể tạo lời mời',
-          },
-          requestId: request.id,
-        });
+        return sendServiceError(reply, request, err, 'Không thể tạo lời mời');
       }
     },
   );
@@ -58,21 +87,25 @@ export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/v1/invitations
   app.get(
     '/api/v1/invitations',
-    { preHandler: [requireAuth] },
+    { preHandler: [requireAuth, requireOnboarded] },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const items = await getReceivedInvitations(request.user!.id);
-      return reply.send({
-        ok: true,
-        data: items,
-        requestId: request.id,
-      });
+      try {
+        const items = await getReceivedInvitations(request.user!.id);
+        return reply.send({
+          ok: true,
+          data: items,
+          requestId: request.id,
+        });
+      } catch (err: unknown) {
+        return sendServiceError(reply, request, err, 'Không thể tải danh sách lời mời');
+      }
     },
   );
 
   // POST /api/v1/invitations/:id/respond
   app.post(
     '/api/v1/invitations/:id/respond',
-    { preHandler: [requireAuth] },
+    { preHandler: [requireAuth, requireOnboarded] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { id } = request.params as { id: string };
       const parsed = RespondInvitationBodySchema.safeParse(request.body);
@@ -92,15 +125,7 @@ export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
           requestId: request.id,
         });
       } catch (err: unknown) {
-        const e = err as { statusCode?: number; code?: string; message?: string };
-        return reply.status(e.statusCode ?? 500).send({
-          ok: false,
-          error: {
-            code: e.code ?? 'INTERNAL_ERROR',
-            message: e.message ?? 'Không thể phản hồi lời mời',
-          },
-          requestId: request.id,
-        });
+        return sendServiceError(reply, request, err, 'Không thể phản hồi lời mời');
       }
     },
   );
@@ -108,28 +133,27 @@ export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
   // POST /api/v1/rooms/:id/watch-code
   app.post(
     '/api/v1/rooms/:id/watch-code',
-    { preHandler: [requireAuth] },
+    { preHandler: [requireAuth, requireOnboarded] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { id: roomId } = request.params as { id: string };
-      WatchCodeBodySchema.safeParse(request.body ?? {});
+      const parsed = WatchCodeBodySchema.safeParse(request.body ?? {});
+      if (!parsed.success) {
+        return reply.status(400).send({
+          ok: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Dữ liệu đổi mã xem không hợp lệ' },
+          requestId: request.id,
+        });
+      }
 
       try {
-        const grant = await rotateWatchCode(request.user!.id, roomId);
+        const grant = await rotateWatchCode(request.user!.id, roomId, parsed.data.rotate);
         return reply.send({
           ok: true,
           data: grant,
           requestId: request.id,
         });
       } catch (err: unknown) {
-        const e = err as { statusCode?: number; code?: string; message?: string };
-        return reply.status(e.statusCode ?? 500).send({
-          ok: false,
-          error: {
-            code: e.code ?? 'INTERNAL_ERROR',
-            message: e.message ?? 'Không thể cập nhật mã xem',
-          },
-          requestId: request.id,
-        });
+        return sendServiceError(reply, request, err, 'Không thể cập nhật mã xem');
       }
     },
   );
@@ -137,7 +161,7 @@ export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
   // POST /api/v1/rooms/join
   app.post(
     '/api/v1/rooms/join',
-    { preHandler: [requireAuth] },
+    { preHandler: [requireAuth, requireOnboarded] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const parsed = JoinRoomBodySchema.safeParse(request.body);
       if (!parsed.success) {
@@ -160,15 +184,7 @@ export async function invitationsRoutes(app: FastifyInstance): Promise<void> {
           requestId: request.id,
         });
       } catch (err: unknown) {
-        const e = err as { statusCode?: number; code?: string; message?: string };
-        return reply.status(e.statusCode ?? 500).send({
-          ok: false,
-          error: {
-            code: e.code ?? 'INTERNAL_ERROR',
-            message: e.message ?? 'Không thể vào phòng',
-          },
-          requestId: request.id,
-        });
+        return sendServiceError(reply, request, err, 'Không thể vào phòng');
       }
     },
   );
