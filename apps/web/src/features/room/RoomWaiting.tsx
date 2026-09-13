@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { supabase } from '../../lib/supabase.js';
+import { realtime } from '../../lib/realtime.js';
 import { InvitePanel } from './InvitePanel.js';
 import { SpectatorPanel } from './SpectatorPanel.js';
 import type { RoomDTO } from '@xiangqi/contracts';
@@ -10,8 +11,11 @@ export function RoomWaiting() {
   const [room, setRoom] = useState<RoomDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [realtimeStatus, setRealtimeStatus] = useState(realtime.getStatus());
   const navigate = useNavigate();
+  const navigatedRef = useRef(false);
 
+  useEffect(() => realtime.onStatus(setRealtimeStatus), []);
   const getHeaders = async () => {
     const session = (await supabase.auth.getSession()).data.session;
     return {
@@ -26,30 +30,68 @@ export function RoomWaiting() {
     });
   }, []);
 
-  const loadRoom = async () => {
-    if (!roomId) return;
+  // A PLAYING room pulls this screen into the match (from HTTP or a push).
+  const followMatch = useCallback(
+    (next: RoomDTO) => {
+      if (navigatedRef.current) return;
+      if (next.status === 'PLAYING' && next.currentMatchId) {
+        navigatedRef.current = true;
+        navigate(`/matches/${next.currentMatchId}`);
+      }
+    },
+    [navigate],
+  );
+
+  const loadRoom = useCallback(async () => {
+    if (!roomId) return null;
     try {
       const headers = await getHeaders();
       const res = await fetch(`/api/v1/rooms/${roomId}`, { headers });
       const data = await res.json();
       if (data.ok) {
         setRoom(data.data);
-        if (data.data.status === 'PLAYING' && data.data.currentMatchId) {
-          navigate(`/matches/${data.data.currentMatchId}`);
-        }
-      } else {
-        setError(data.error?.message ?? 'Không thể tải thông tin phòng');
+        followMatch(data.data);
+        return data.data as RoomDTO;
       }
+      setError(data.error?.message ?? 'Không thể tải thông tin phòng');
     } catch {
       setError('Lỗi kết nối máy chủ');
     }
-  };
+    return null;
+  }, [roomId, followMatch]);
 
+  // Room state arrives over the socket (`room:updated`); HTTP is the first-paint
+  // fallback so the screen is never blank while the socket handshakes.
   useEffect(() => {
-    loadRoom();
-    const interval = setInterval(loadRoom, 1500);
-    return () => clearInterval(interval);
-  }, [roomId]);
+    if (!roomId) return;
+    navigatedRef.current = false;
+    setRoom(null);
+    setError(null);
+    void loadRoom();
+
+    const offRoom = realtime.subscribe('room:updated', (payload) => {
+      if (payload.roomId !== roomId) return;
+      setRoom(payload.room);
+      followMatch(payload.room);
+    });
+    const offRevoked = realtime.subscribe('access:revoked', (payload) => {
+      if (payload.roomId !== roomId) return;
+      setError('Bạn không còn quyền truy cập phòng này');
+    });
+    // Spec 03 resync: pushes missed while the socket was down are recovered with one
+    // HTTP read on every (re)connect — never a polling timer.
+    const offStatus = realtime.onStatus((next) => {
+      if (next === 'connected') void loadRoom();
+    });
+    const unsubscribe = realtime.subscribeRoom(roomId, { claimControl: true });
+
+    return () => {
+      offRoom();
+      offRevoked();
+      offStatus();
+      unsubscribe();
+    };
+  }, [roomId, loadRoom, followMatch]);
 
   const handleToggleReady = async () => {
     if (!roomId || !room) return;
@@ -116,6 +158,7 @@ export function RoomWaiting() {
 
   return (
     <main style={{ maxWidth: '600px', margin: '20px auto', padding: '20px' }}>
+      <div data-testid="realtime-status" data-status={realtimeStatus} style={{ display: 'none' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>{room.name}</h1>
         <button onClick={handleLeave} style={{ padding: '8px 16px' }}>

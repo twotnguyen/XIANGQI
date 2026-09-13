@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import type { Position, Side, Square, Move } from '@xiangqi/contracts';
 import { squareToIndex } from '@xiangqi/contracts';
 import { canonicalToView, viewToCanonical } from './coordinates.js';
@@ -22,6 +22,18 @@ const WIDTH = 8 * CELL + 2 * PADDING;   // 8 intervals = 9 lines
 const HEIGHT = 9 * CELL + 2 * PADDING;  // 9 intervals = 10 lines
 const PIECE_RADIUS = 22;
 
+/** Arrow keys move the cursor in VIEW space, so a flipped board still moves "up" on screen. */
+const ARROW_DELTAS: Record<string, [number, number]> = {
+  ArrowUp: [0, -1],
+  ArrowDown: [0, 1],
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+};
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function Board({
   position,
   orientation = 'RED',
@@ -32,6 +44,8 @@ export function Board({
   inCheckSide = null,
 }: BoardProps) {
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+  const [cursor, setCursor] = useState<Square | null>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
 
   // Filter legal moves for selected piece
   const targetsForSelected = selectedSquare
@@ -39,6 +53,27 @@ export function Board({
         (m) => m.from.x === selectedSquare.x && m.from.y === selectedSquare.y,
       )
     : [];
+
+  /** Roving tabindex anchor: the cursor, or the first movable piece of the side to move. */
+  const tabStop = (): Square => {
+    if (cursor) return cursor;
+    for (let i = 0; i < 90; i += 1) {
+      const piece = position.board[i];
+      if (piece && piece.side === position.turn) {
+        return { x: i % 9, y: Math.floor(i / 9) };
+      }
+    }
+    return { x: 4, y: position.turn === 'RED' ? 9 : 0 };
+  };
+  const activeSquare = tabStop();
+
+  const focusSquare = useCallback((square: Square) => {
+    setCursor(square);
+    const element = boardRef.current?.querySelector<SVGElement>(
+      `[data-testid="square-${square.x}-${square.y}"]`,
+    );
+    element?.focus();
+  }, []);
 
   const handleSquareClick = useCallback(
     (canonical: Square) => {
@@ -81,11 +116,36 @@ export function Board({
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (!interactive) return;
+
       if (e.key === 'Escape') {
         setSelectedSquare(null);
+        return;
+      }
+
+      const delta = ARROW_DELTAS[e.key];
+      if (delta) {
+        e.preventDefault();
+        const from = canonicalToView(activeSquare, orientation);
+        const col = clamp(from.col + delta[0], 0, 8);
+        const row = clamp(from.row + delta[1], 0, 9);
+        focusSquare(viewToCanonical(col, row, orientation));
+        return;
+      }
+
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        if (
+          selectedSquare &&
+          selectedSquare.x === activeSquare.x &&
+          selectedSquare.y === activeSquare.y
+        ) {
+          setSelectedSquare(null);
+          return;
+        }
+        handleSquareClick(activeSquare);
       }
     },
-    [interactive],
+    [interactive, activeSquare, orientation, focusSquare, selectedSquare, handleSquareClick],
   );
 
   // Pixel coordinates for a view grid point (col, row)
@@ -96,16 +156,19 @@ export function Board({
 
   return (
     <div
+      ref={boardRef}
       className={styles.boardContainer}
-      tabIndex={interactive ? 0 : -1}
+      tabIndex={-1}
       onKeyDown={handleKeyDown}
       role="region"
       aria-label="Bàn cờ tướng"
+      data-interactive={interactive ? 'true' : 'false'}
     >
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         className={styles.boardSvg}
         data-testid="xiangqi-board"
+        data-interactive={interactive ? 'true' : 'false'}
       >
         {/* Board wood background */}
         <rect
@@ -333,6 +396,10 @@ export function Board({
           const canonical = viewToCanonical(col, row, orientation);
           const pt = toPx(col, row);
           const piece = position.board[squareToIndex(canonical)];
+          const isTabStop =
+            interactive && canonical.x === activeSquare.x && canonical.y === activeSquare.y;
+          const isCursor =
+            activeSquare.x === canonical.x && activeSquare.y === canonical.y;
 
           return (
             <circle
@@ -343,8 +410,13 @@ export function Board({
               fill="transparent"
               className={styles.clickTarget}
               onClick={() => handleSquareClick(canonical)}
+              onFocus={() => setCursor(canonical)}
               data-testid={`square-${canonical.x}-${canonical.y}`}
+              data-cursor={isCursor ? 'true' : undefined}
               role="button"
+              tabIndex={isTabStop ? 0 : -1}
+              stroke={isCursor ? '#155E75' : undefined}
+              strokeWidth={isCursor ? 3 : undefined}
               aria-label={
                 piece
                   ? undefined // Piece already has label

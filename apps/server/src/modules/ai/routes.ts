@@ -6,6 +6,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { requireAuth } from '../../auth/authenticate.js';
 import { SideSchema, TimeControlSchema, AiLevelSchema } from '@xiangqi/contracts';
+import { isAiSupervisorError } from '@xiangqi/ai-worker';
 import { createAiMatch } from './service.js';
 
 const CreateAiMatchBodySchema = z.object({
@@ -42,6 +43,14 @@ export async function aiRoutes(app: FastifyInstance): Promise<void> {
           requestId: request.id,
         });
       } catch (err: unknown) {
+        // Capacity/worker failures surface as 503 AI_BUSY / AI_UNAVAILABLE before any match row exists.
+        if (isAiSupervisorError(err)) {
+          return reply.status(err.statusCode).send({
+            ok: false,
+            error: { code: err.code, message: err.message },
+            requestId: request.id,
+          });
+        }
         const e = err as { statusCode?: number; code?: string; message?: string };
         return reply.status(e.statusCode ?? 500).send({
           ok: false,

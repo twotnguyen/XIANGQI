@@ -1,10 +1,13 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY (đầy đủ các tài liệu hướng dẫn và đặc tả).
-- Trạng thái sản phẩm: **PROJECT_COMPLETE** — Hoàn thành 100% toàn bộ 32/32 issues theo đúng đặc tả và kế hoạch.
-- Issue đang làm: Hoàn tất bàn giao ISSUE-032.
-- Bước tiếp theo: Sẵn sàng bảo vệ đồ án và triển khai đưa vào sử dụng thực tế.
-- Blocker hiện tại: **KHÔNG CÓ BLOCKER**. Tuyến Media WebRTC đã kiểm chứng thành công trên LiveKit SFU thật (Docker container port 7880). Supabase Cloud đã sẵn sàng với 8 migrations.
+- Trạng thái sản phẩm: **LOCAL_COMPLETE** — Hoàn thành 100% toàn bộ 32/32 issues trong môi trường local và kiểm chứng qua 491 automated tests (0 fail, 0 skip). Đã khắc phục toàn diện 30/30 findings (16 P1, 8 P2, 6 P3) từ đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md`.
+- Issue đang làm: Hoàn tất bàn giao đợt remediation và chuẩn bị bảo vệ đồ án.
+- Bước tiếp theo: Triển khai kiểm chứng các gate nhà cung cấp ngoài (Google OAuth domain thật, LiveKit Cloud 2 mạng vật lý, Vercel/Render production).
+- External Gates đang chờ:
+  1. Google OAuth Cloud Client ID/Secret trên domain production Vercel (R01).
+  2. LiveKit Cloud / TURN Relay trên 2 thiết bị di động vật lý khác mạng (R11).
+  3. Deploy thực tế lên Render (Server) và Vercel (Web SPA) theo runbook `docs/handoff/DEPLOY.md` (R16).
 
 ---
 
@@ -13,50 +16,50 @@
 | Issue | Trạng thái | Ghi chú & Bằng chứng Kiểm chứng |
 |---|---|---|
 | [ISSUE-001](../issues/ISSUE-001-foundation.md) | **DONE** | PR #10 MERGED (`f397cba`); monorepo pnpm, Fastify /health, Vite web shell, CI workflow |
-| [ISSUE-002](../issues/ISSUE-002-contracts-position.md) | **DONE** | PR #11 MERGED (`d8e9dba`), PR #12 fix (`bd4800f`); 32 quân, bàn cờ 90 ô, canonical position key |
+| [ISSUE-002](../issues/ISSUE-002-contracts-position.md) | **LOCAL_DONE** | PR #11 MERGED (`d8e9dba`), bổ sung `TerminalEvent` discriminated union theo spec 04/03 (F-29); 32 quân, 90 ô, position key canonical |
 | [ISSUE-003](../issues/ISSUE-003-legal-moves.md) | **DONE** | PR #13 MERGED (`6dc3376`); 7 loại quân, attack geometry riêng biệt, chống tướng đối mặt |
-| [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | **DONE** | PR #14 MERGED (`2374642`); phân biệt chiếu hết thua vs hết nước hòa, hòa lặp 3 lần, mate distance |
-| [ISSUE-005](../issues/ISSUE-005-board-ui.md) | **DONE** | PR #16 MERGED (`21c1ebb`); bàn cờ gỗ SVG truyền thống, quân Hán Đỏ/Đen, lật bàn phe Đen, phím điều hướng |
-| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | **DONE** | PR #5-#9 schema 19 bảng; PR #15 TS harness (`7e49a9c`); pool, withTransaction rollback |
-| [ISSUE-007](../issues/ISSUE-007-password-auth.md) | **DONE** | PR #20 MERGED (`d25399e`); username/password login BFF, session check, UI Login/Register/Reset |
-| [ISSUE-008](../issues/ISSUE-008-google-profile.md) | **DONE** | PR #22 MERGED (`d82878e`); Google OAuth PKCE, onboarding username, PATCH /me, chống open redirect |
-| [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | **DONE** | PR #23 MERGED (`bc69b69`); quan hệ bạn bè 2 chiều, tìm kiếm prefix, presence lease 30s/heartbeat 10s |
-| [ISSUE-010](../issues/ISSUE-010-rooms-lobby.md) | **DONE** | PR #24 MERGED (`ed5034e`); tạo phòng, sảnh công khai, sẵn sàng tự bắt đầu ván, takeover control lease |
-| [ISSUE-011](../issues/ISSUE-011-invitations.md) | **DONE** | PR #25 MERGED (`b359508`); mời trực tiếp, mã 8 ký tự, link token 24h, vào phòng nguyên khối theo vai trò |
-| [ISSUE-012](../issues/ISSUE-012-authoritative-match.md) | **DONE** | PR #26 MERGED (`1616281`); match pipeline khóa phòng→ván, command receipts deduplication, realtime events |
-| [ISSUE-013](../issues/ISSUE-013-clocks-reconnect.md) | **DONE** | PR #27 MERGED (`b91a8b3`); đồng hồ cờ chớp trừ giờ chính xác, timeout, ân hạn ngắt mạng 60s, boot recovery |
-| [ISSUE-014](../issues/ISSUE-014-draw-undo-resign.md) | **DONE** | PR #28 MERGED (`b6661a1`); xin hòa (DRAW), xin đi lại (UNDO) kèm ancestry replay, đầu hàng, rate limit |
-| [ISSUE-015](../issues/ISSUE-015-online-ui.md) | **DONE** | PR #29 MERGED (`86d8e98`); màn chơi trực tuyến tích hợp bàn cờ theo góc nhìn, đồng hồ cảnh báo, Controls |
-| [ISSUE-016](../issues/ISSUE-016-spectators.md) | **DONE** | PR #30 MERGED (`47ca950`); trần 5 khán giả, khóa phòng tự động tước quyền (access:revoked), SpectatorPanel |
-| [ISSUE-017](../issues/ISSUE-017-private-chat.md) | **DONE** | PR #31 MERGED (`53f3f9f`); 2 kênh chat độc lập PLAYERS/SPECTATORS, render plain text chống XSS, rate limit |
-| [ISSUE-018](../issues/ISSUE-018-ai-evaluation.md) | **DONE** | PR #17 MERGED (`f3c556d`); hàm lượng giá tĩnh đối xứng, trọng số quân, điểm thưởng tốt qua sông, MVV-LVA |
+| [ISSUE-004](../issues/ISSUE-004-terminal-repetition.md) | **LOCAL_DONE** | PR #14 MERGED (`2374642`); hòa lặp 3 lần chỉ tính trên nhánh hiệu lực sau undo (`tests/integration/match-model.test.ts`), F-REPEAT canonical verified |
+| [ISSUE-005](../issues/ISSUE-005-board-ui.md) | **LOCAL_DONE** | PR #16 MERGED (`21c1ebb`); bàn cờ gỗ SVG, quân Hán, lật bàn phe Đen, bổ sung điều hướng phím mũi tên + Enter/Space + roving tabindex (F-21, `tests/e2e/keyboard-board.spec.ts`) |
+| [ISSUE-006](../issues/ISSUE-006-database-test-harness.md) | **LOCAL_DONE** | PR #15; bổ sung test harness TypeScript thật (`tests/fixtures/integration.ts`), gate fail-loud không skip (`tests/integration/setup.ts`), 11 tests DB thật + 6 tests factory (`tests/integration/database.test.ts`, `harness.test.ts`) |
+| [ISSUE-007](../issues/ISSUE-007-password-auth.md) | **LOCAL_DONE** | PR #20 MERGED (`d25399e`); thu hồi phiên fail-closed (`private.revoked_sessions` kèm `expires_at`, `isSessionActive`), 4 tests thật (`tests/integration/session-revocation.test.ts`) |
+| [ISSUE-008](../issues/ISSUE-008-google-profile.md) | **LOCAL_DONE** | PR #22 MERGED (`d82878e`), PR #46; Google PKCE + bổ sung gate `ONBOARDING_REQUIRED` 403 cho profile chưa có username (`apps/server/src/auth/onboarding-gate.ts`, `tests/integration/authz.test.ts`) |
+| [ISSUE-009](../issues/ISSUE-009-friends-presence.md) | **LOCAL_DONE** | PR #23 MERGED (`bc69b69`); quan hệ bạn bè 2 chiều, bổ sung heartbeat 10s / lease 30s qua socket `presence:heartbeat`, lưu bền vững trong `client_controls` (`tests/integration/control-lease.test.ts`) |
+| [ISSUE-010](../issues/ISSUE-010-rooms-lobby.md) | **LOCAL_DONE** | PR #24 MERGED (`ed5034e`); sảnh công khai, sẵn sàng tự bắt đầu ván, sửa ready race trả 409 khi không ở trạng thái WAITING, kiểm soát lease phiên (`apps/server/src/modules/rooms/service.ts`) |
+| [ISSUE-011](../issues/ISSUE-011-invitations.md) | **LOCAL_DONE** | PR #25 MERGED (`b359508`); sửa lỗi lệch schema `public.invitations` (sender_id, bytea HMAC-SHA256, vai trò PLAY/WATCH, trạng thái ACTIVE/CONSUMED), chặn join roomId vào phòng LOCKED/CODE_ONLY (F-03, `tests/integration/invitations.test.ts`) |
+| [ISSUE-012](../issues/ISSUE-012-authoritative-match.md) | **LOCAL_DONE** | PR #26 MERGED (`1616281`); khôi phục log nước đi chuẩn `match_moves` + `parent_move_id` (migration 11), sửa lặp 3 lần sau undo, tích hợp Socket.IO gateway đẩy `match:state` thay cho polling (`tests/integration/match-model.test.ts`, `realtime.test.ts`) |
+| [ISSUE-013](../issues/ISSUE-013-clocks-reconnect.md) | **LOCAL_DONE** | PR #27 MERGED (`b91a8b3`); bổ sung deadline scheduler (`apps/server/src/modules/matches/deadlines.ts`) xử lý timeout tự động, ân hạn mất mạng 60s, cả hai offline -> INTERRUPTED (`tests/unit/scheduler.test.ts`, `tests/integration/races.test.ts`) |
+| [ISSUE-014](../issues/ISSUE-014-draw-undo-resign.md) | **LOCAL_DONE** | PR #28 MERGED (`b6661a1`); sửa triệt để lỗi crash UNIQUE 23505 khi đi nước mới sau khi undo (F-01), bổ sung scheduler hết hạn đề nghị 30s (F-20), `tests/integration/match-model.test.ts` pass 100% |
+| [ISSUE-015](../issues/ISSUE-015-online-ui.md) | **LOCAL_DONE** | PR #29 MERGED (`86d8e98`); thay thế toàn bộ polling 1.5s bằng Socket.IO client (`apps/web/src/lib/realtime.ts`), đồng bộ thời gian thực hai bên không cần reload (`tests/e2e/realtime-sync.spec.ts`) |
+| [ISSUE-016](../issues/ISSUE-016-spectators.md) | **LOCAL_DONE** | PR #30 MERGED (`47ca950`); trần 5 khán giả, sửa dead code `revokeSpectators` phát sự kiện `access:revoked` khi khóa phòng và tước quyền đọc/chat của khán giả bị thu hồi (`tests/integration/authz.test.ts`) |
+| [ISSUE-017](../issues/ISSUE-017-private-chat.md) | **LOCAL_DONE** | PR #31 MERGED (`53f3f9f`); 2 kênh chat độc lập PLAYERS/SPECTATORS, gửi chat qua WebSocket kèm lease phiên, phân trang con trỏ keyset (`apps/server/src/modules/chat/service.ts`) |
+| [ISSUE-018](../issues/ISSUE-018-ai-evaluation.md) | **LOCAL_DONE** | PR #17 MERGED (`f3c556d`); hàm lượng giá đối xứng, thưởng tốt qua sông và kiểm soát trung lộ, MVV-LVA move ordering |
 | [ISSUE-019](../issues/ISSUE-019-ai-minimax.md) | **DONE** | PR #18 MERGED (`8793bcf`); minimax/negamax baseline, mate distance theo ply, xét hòa lặp 3 lần |
 | [ISSUE-020](../issues/ISSUE-020-ai-alpha-beta.md) | **DONE** | PR #19 MERGED (`970feb6`); alpha-beta pruning, iterative deepening, PV ordering, 3 cấp độ EASY/MEDIUM/HARD |
-| [ISSUE-021](../issues/ISSUE-021-ai-worker-server.md) | **DONE** | PR #32 MERGED (`55d7032`); cụm worker 2 luồng + queue 8, ván người-máy authoritative, tự hủy nước cũ |
-| [ISSUE-022](../issues/ISSUE-022-ai-ui.md) | **DONE** | PR #33 MERGED (`7c0b1f5`); màn hình cấu hình ván cờ với AI, banner hiển thị máy đang suy nghĩ, đi lại tức thì |
-| [ISSUE-023](../issues/ISSUE-023-ai-experiments.md) | **DONE** | PR #34 MERGED (`09df7f7`); corpus 20 thế cờ, pnpm test:ai cắt tỉa 84.51%, tài liệu AI-EXPLANATION.md |
-| [ISSUE-024](../issues/ISSUE-024-media-spike.md) | **DONE** | PR #38 MERGED (`6698469`); LiveKit local SFU 5/5 cases PASS, token phân quyền nguồn camera/mic |
-| [ISSUE-025](../issues/ISSUE-025-media-authority.md) | **DONE** | PR #39 MERGED (`36e311e`); chính sách máy chủ, xoay vòng generation, dọn dẹp SFU bằng deleteRoom |
-| [ISSUE-026](../issues/ISSUE-026-media-ui.md) | **DONE** | PR #40 MERGED (`af30a2c`); WebRTC track manager, MediaPanel 3 mức chia sẻ, preview muted chống echo |
-| [ISSUE-027](../issues/ISSUE-027-history-rematch.md) | **DONE** | PR #36 MERGED (`b110271`); xem lại ván đấu tương tác (Replay), tái đấu tự động đổi bên Đỏ $\leftrightarrow$ Đen |
+| [ISSUE-021](../issues/ISSUE-021-ai-worker-server.md) | **LOCAL_DONE** | PR #32 MERGED (`55d7032`), PR #47; chuyển supervisor sang worker threads thật mặc định, sửa lỗi nuốt RESULT, chứng minh không nghẽn event loop qua benchmark <500ms lúc HARD search (`tests/unit/ai-worker.test.ts`, `tests/integration/ai-match.test.ts`) |
+| [ISSUE-022](../issues/ISSUE-022-ai-ui.md) | **LOCAL_DONE** | PR #33 MERGED (`7c0b1f5`); màn chọn cấp độ và đánh với AI, hiển thị trạng thái AI suy nghĩ, đi lại tức thì |
+| [ISSUE-023](../issues/ISSUE-023-ai-experiments.md) | **LOCAL_DONE** | PR #34 MERGED (`09df7f7`); chuẩn hóa toàn bộ 20 thế cờ trong corpus (thay 29 lỗi CHARIOT/SOLDIER bằng ROOK/PAWN), bổ sung 15 assertions thực tế cho benchmark, số liệu cắt tỉa thực nghiệm trung thực: 78.86% node-weighted, 20/20 điểm số trùng khớp (`docs/test-reports/ISSUE-023.md`) |
+| [ISSUE-024](../issues/ISSUE-024-media-spike.md) | **LOCAL_DONE** | PR #38 MERGED (`6698469`); tích hợp runner `test:media` vào vitest, 8/8 test cases pass trên SFU LiveKit thật với kiểm chứng RTP bytes/frames nhận thực tế (`tests/media/spike.ts`) |
+| [ISSUE-025](../issues/ISSUE-025-media-authority.md) | **LOCAL_DONE** | PR #39 MERGED (`36e311e`); chính sách lưu bền vững trong CSDL (`media_policies`), 4 transports độc lập theo spec 06, xoay vòng thế hệ kèm kiểm tra kết quả `deleteRoom` nghiêm ngặt |
+| [ISSUE-026](../issues/ISSUE-026-media-ui.md) | **LOCAL_DONE** | PR #40 MERGED (`af30a2c`); cài đặt `livekit-client`, kết nối SFU qua SfuConnection, render luồng video/audio từ xa độc lập theo 3 mức chia sẻ camera/mic, giải phóng phần cứng khi tắt |
+| [ISSUE-027](../issues/ISSUE-027-history-rematch.md) | **LOCAL_DONE** | PR #36 MERGED (`b110271`); xem lại ván đấu (Replay) chỉ đọc nhánh hiệu lực sau undo, tái đấu xóa `finished_at`, scheduler tự đóng phòng sau 10 phút |
 | [ISSUE-028](../issues/ISSUE-028-responsive-polish.md) | **DONE** | PR #37 MERGED (`5fd9fff`); tokens gỗ truyền thống, Navbar toàn cục, 100% không tràn ngang 360px |
-| [ISSUE-029](../issues/ISSUE-029-security-hardening.md) | **DONE** | PR #41 MERGED (`305797f`); Helmet headers, CORS, giới hạn 64KB DoS limit, quét 0 secrets frontend |
-| [ISSUE-030](../issues/ISSUE-030-acceptance-load.md) | **DONE** | PR #42 MERGED (`3fa0906`); thử tải 70 clients p95: 28.7ms (chuẩn < 100ms), kịch bản lỗi mạng, full-demo E2E |
-| [ISSUE-031](../issues/ISSUE-031-deploy-runbook.md) | **DONE** | PR #43 MERGED (`18ac449`); Dockerfile.server, render.yaml, vercel.json, DEPLOY.md, EXTERNAL-SETUP.md |
-| [ISSUE-032](../issues/ISSUE-032-final-handoff.md) | **DONE** | PR #44; README, DEFENSE.md, DEMO.md, MAINTENANCE.md, final-coverage.md, hoàn tất bàn giao |
+| [ISSUE-029](../issues/ISSUE-029-security-hardening.md) | **LOCAL_DONE** | PR #41 MERGED (`305797f`); siết chặt CORS allowlist theo `APP_ORIGIN`, CSP nghiêm ngặt, DoS limit 64KB, kiểm chứng deny matrix 21 kịch bản IDOR và đặc quyền khán giả (`tests/integration/authz.test.ts`) |
+| [ISSUE-030](../issues/ISSUE-030-acceptance-load.md) | **LOCAL_DONE** | PR #42 MERGED (`3fa0906`); thử tải 10 phòng, 70 kết nối Socket.IO đồng thời, 10 nước đi đồng thời, 2 ván cờ AI: p95 latency đạt **67.64 ms** (< 100ms threshold), 92/92 tests E2E pass |
+| [ISSUE-031](../issues/ISSUE-031-deploy-runbook.md) | **LOCAL_DONE** | PR #43 MERGED (`18ac449`); Dockerfile.server, render.yaml, vercel.json, bổ sung CI workflow kiểm tra cả integration DB và live SFU media |
+| [ISSUE-032](../issues/ISSUE-032-final-handoff.md) | **LOCAL_DONE** | Hoàn thiện tài liệu bảo vệ đồ án (`DEFENSE.md`), báo cáo trạng thái khắc phục 30/30 findings (`REMEDIATION-STATUS.md`), báo cáo nghiệm thu trung thực |
 
 ---
 
-## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án
+## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (Sau Remediation 2026-09-13)
 
 ```
-- Unit Tests:          30 test files, 196 tests pass (100% PASS)
-- Integration Tests:   2 test files, 3 tests pass (100% PASS)
-- E2E Tests:           78 Playwright tests (100% PASS trên cả Desktop & Mobile 360px)
-- AI Benchmark:        20 thế cờ tiêu chuẩn, tỷ lệ cắt nhánh 84.51%
-- Load Testing:        10 phòng, 70 kết nối đồng thời, p95 latency: 28.7ms
-- Media Spike:         5/5 test cases pass trên container LiveKit SFU thật
-- Typecheck:           TypeScript 5.8 strict mode (0 errors)
-- Linter:              ESLint 10 (0 errors, 0 warnings)
+- Unit Tests:          34 test files, 301 tests pass (100% PASS)
+- Integration Tests:   13 test files, 90 tests pass (100% PASS trên PostgreSQL & Supabase Auth local thật)
+- Media SFU Tests:      1 test file, 8 tests pass trên LiveKit SFU thật (RTP bytes/frames verified)
+- Load Testing:        10 phòng, 70 kết nối Socket.IO đồng thời, 10 nước đi song song, p95 latency: 67.64 ms (< 100 ms)
+- AI Benchmark:        20 thế cờ tiêu chuẩn, tỷ lệ cắt tỉa thực nghiệm: 78.86%, 20/20 scores match 100%
+- E2E Tests:           16 test files, 92 Playwright tests (100% PASS trên cả Desktop 1366px & Mobile 360px)
+- Typecheck:           TypeScript 5.8 strict mode (0 errors trên toàn bộ workspace)
+- Linter:              ESLint 10 (0 errors, 0 warnings trên toàn bộ codebase)
 - Build:               Toàn bộ 6 workspace packages biên dịch exit code 0
 ```

@@ -6,8 +6,6 @@ export default defineConfig({
     include: [
       'tests/unit/**/*.test.ts',
       'tests/ai/**/*.test.ts',
-      'tests/load/**/*.test.ts',
-      'tests/integration/**/*.test.ts',
     ],
     globals: false,
   },

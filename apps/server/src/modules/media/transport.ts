@@ -1,109 +1,136 @@
 /**
- * LiveKit media transport helper.
- * Generates short-lived tokens (TTL 60s) with strict source grants according to policy.
+ * LiveKit transport grants (spec 06 "SFU và bốn phòng truyền tải").
+ *
+ * A match has four independent opaque rooms: PRIVATE/WATCH x CAMERA/MICROPHONE.
+ * Tokens are room-specific, identity is `<userUUID>-<controlEpoch>`, TTL 60s,
+ * `canPublishData:false`. A viewer never publishes; a player's WATCH token is
+ * publish-only (`canSubscribe:false`) so listeners get each source once.
  */
 import { AccessToken, TrackSource } from 'livekit-server-sdk';
-import type { MediaTransportDTO, MediaScope } from '@xiangqi/contracts';
+import type {
+  MediaKind,
+  SourcePolicy,
+  TransportAudience,
+  TransportGrant,
+} from '@xiangqi/contracts';
 
-const LIVEKIT_API_KEY = process.env['LIVEKIT_API_KEY'] ?? 'devkey';
-const LIVEKIT_API_SECRET = process.env['LIVEKIT_API_SECRET'] ?? 'secret';
+export const TOKEN_TTL_SECONDS = 60;
 
-function toTrackSources(sources: ('camera' | 'microphone')[]): TrackSource[] {
-  return sources.map((s) => (s === 'camera' ? TrackSource.CAMERA : TrackSource.MICROPHONE));
+export interface LivekitConfig {
+  url: string;
+  apiKey: string;
+  apiSecret: string;
 }
 
-export interface UserMediaPolicy {
-  camera: MediaScope;
-  microphone: MediaScope;
+export function getLivekitConfig(): LivekitConfig {
+  return {
+    url: process.env['LIVEKIT_URL'] ?? 'http://127.0.0.1:7880',
+    apiKey: process.env['LIVEKIT_API_KEY'] ?? 'devkey',
+    apiSecret: process.env['LIVEKIT_API_SECRET'] ?? 'secret',
+  };
+}
+
+/** One persisted `media_transports` row (READY generation). */
+export interface TransportRoom {
+  kind: MediaKind;
+  audience: TransportAudience;
+  generation: number;
+  roomName: string;
+}
+
+/** Server-derived grant capability for one (role, kind, audience, policy) tuple. */
+export interface GrantCapability {
+  canPublish: boolean;
+  canSubscribe: boolean;
+  publishSource: MediaKind | null;
 }
 
 /**
- * Generate transport tokens for a participant (Player or Spectator).
- * Enforces:
- * - ROOM transport: player-to-player private communication
- * - WATCH transport: public broadcast to spectators
+ * Derive the transport capability from the viewer's role and the player's own
+ * desired policy. The client never chooses this: it obeys the returned grants.
  */
-export async function createMediaTransports(
-  userId: string,
-  roomId: string,
-  generation: number,
+export function deriveGrantCapability(
   role: 'PLAYER' | 'SPECTATOR',
-  myPolicy: UserMediaPolicy,
-): Promise<MediaTransportDTO[]> {
-  const roomName = `${roomId}:gen_${generation}`;
-  const transports: MediaTransportDTO[] = [];
-
-  if (role === 'PLAYER') {
-    // 1. ROOM transport: can publish sources if policy !== 'OFF'
-    const roomSources: ('camera' | 'microphone')[] = [];
-    if (myPolicy.camera !== 'OFF') roomSources.push('camera');
-    if (myPolicy.microphone !== 'OFF') roomSources.push('microphone');
-
-    const roomToken = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-      identity: userId,
-      ttl: '60s', // No-store short-lived per spec
-    });
-    roomToken.addGrant({
-      roomJoin: true,
-      room: roomName,
-      canPublish: roomSources.length > 0,
-      canPublishSources: toTrackSources(roomSources),
-      canSubscribe: true,
-    });
-
-    transports.push({
-      audience: 'ROOM',
-      roomName,
-      token: await roomToken.toJwt(),
-      canPublishSources: roomSources,
-      canSubscribe: true,
-    });
-
-    // 2. WATCH transport: only publish if scope === 'PUBLIC'
-    const watchSources: ('camera' | 'microphone')[] = [];
-    if (myPolicy.camera === 'PUBLIC') watchSources.push('camera');
-    if (myPolicy.microphone === 'PUBLIC') watchSources.push('microphone');
-
-    const watchToken = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-      identity: userId,
-      ttl: '60s',
-    });
-    watchToken.addGrant({
-      roomJoin: true,
-      room: `${roomName}:watch`,
-      canPublish: watchSources.length > 0,
-      canPublishSources: toTrackSources(watchSources),
-      canSubscribe: true,
-    });
-
-    transports.push({
-      audience: 'WATCH',
-      roomName: `${roomName}:watch`,
-      token: await watchToken.toJwt(),
-      canPublishSources: watchSources,
-      canSubscribe: true,
-    });
-  } else {
-    // SPECTATOR: strictly subscribe-only, can only join WATCH transport
-    const watchToken = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-      identity: userId,
-      ttl: '60s',
-    });
-    watchToken.addGrant({
-      roomJoin: true,
-      room: `${roomName}:watch`,
-      canPublish: false,
-      canSubscribe: true,
-    });
-
-    transports.push({
-      audience: 'WATCH',
-      roomName: `${roomName}:watch`,
-      token: await watchToken.toJwt(),
-      canPublishSources: [],
-      canSubscribe: true,
-    });
+  kind: MediaKind,
+  audience: TransportAudience,
+  ownPolicy: SourcePolicy,
+): GrantCapability {
+  if (role === 'SPECTATOR') {
+    // Viewers are subscribe-only, and only ever receive WATCH rooms.
+    return { canPublish: false, canSubscribe: true, publishSource: null };
   }
 
-  return transports;
+  const sourceAudience = kind === 'CAMERA' ? ownPolicy.camera : ownPolicy.microphone;
+
+  if (audience === 'PRIVATE') {
+    // Private rooms carry player-to-player media for every non-OFF source.
+    const canPublish = sourceAudience !== 'OFF';
+    return { canPublish, canSubscribe: true, publishSource: canPublish ? kind : null };
+  }
+
+  // Player WATCH token: publish-only, and only while the source is public.
+  const canPublish = sourceAudience === 'OPPONENT_AND_SPECTATORS';
+  return { canPublish, canSubscribe: false, publishSource: canPublish ? kind : null };
+}
+
+async function mintToken(
+  config: LivekitConfig,
+  roomName: string,
+  identity: string,
+  capability: GrantCapability,
+  kind: MediaKind,
+): Promise<string> {
+  const token = new AccessToken(config.apiKey, config.apiSecret, {
+    identity,
+    ttl: `${TOKEN_TTL_SECONDS}s`,
+  });
+  token.addGrant({
+    roomJoin: true,
+    room: roomName,
+    canPublish: capability.canPublish,
+    canPublishSources: capability.canPublish
+      ? [kind === 'CAMERA' ? TrackSource.CAMERA : TrackSource.MICROPHONE]
+      : [],
+    canSubscribe: capability.canSubscribe,
+    canPublishData: false,
+  });
+  return token.toJwt();
+}
+
+/** Build the room-specific grants for one participant. */
+export async function buildTransportGrants(params: {
+  userId: string;
+  controlEpoch: number;
+  role: 'PLAYER' | 'SPECTATOR';
+  ownPolicy: SourcePolicy;
+  rooms: TransportRoom[];
+  config?: LivekitConfig;
+}): Promise<TransportGrant[]> {
+  const { userId, controlEpoch, role, ownPolicy, rooms } = params;
+  const config = params.config ?? getLivekitConfig();
+  const identity = `${userId}-${controlEpoch}`;
+  const nowMs = Date.now();
+
+  const wanted = rooms
+    .filter((room) => (role === 'SPECTATOR' ? room.audience === 'WATCH' : true))
+    .map((room) => {
+      const capability = deriveGrantCapability(role, room.kind, room.audience, ownPolicy);
+      return { room, capability };
+    });
+
+  return Promise.all(
+    wanted.map(async ({ room, capability }) => ({
+      kind: room.kind,
+      audience: room.audience,
+      roomName: room.roomName,
+      url: config.url,
+      token: await mintToken(config, room.roomName, identity, capability, room.kind),
+      generation: room.generation,
+      status: 'READY' as const,
+      expiresAtMs: nowMs + TOKEN_TTL_SECONDS * 1000,
+      canPublish: capability.canPublish,
+      canSubscribe: capability.canSubscribe,
+      publishSource: capability.publishSource,
+    })),
+  );
 }

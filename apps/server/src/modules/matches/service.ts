@@ -22,12 +22,38 @@ import type {
   Position,
   Side,
   TimeControl,
+  ClockState,
 } from '@xiangqi/contracts';
 import { squareToIndex } from '@xiangqi/contracts';
 import { matchBroadcaster } from '../../realtime/broadcast.js';
+import { loadMatchPresence } from '../../realtime/presence.js';
+import { emitMatchState, emitRoomUpdated } from '../../realtime/events.js';
+import { getRoom } from '../rooms/service.js';
+import { endMatchMedia } from '../media/service.js';
 import { settleClock, projectClock } from './clock.js';
+import { settleMatchDeadlines } from './deadlines.js';
+import {
+  loadActiveBranch,
+  parseActiveMoveIds,
+  rebuildFromAncestry,
+} from './undo.js';
 
 const AI_ACTOR_ID = '00000000-0000-0000-0000-000000000001';
+
+/** Structural board comparison: jsonb key order makes JSON.stringify unusable here. */
+function samePosition(a: Position, b: Position): boolean {
+  if (a.turn !== b.turn || a.board.length !== b.board.length) return false;
+  for (let i = 0; i < a.board.length; i++) {
+    const x = a.board[i];
+    const y = b.board[i];
+    if (x === null || y === null) {
+      if (x !== y) return false;
+      continue;
+    }
+    if (x.id !== y.id || x.type !== y.type || x.side !== y.side) return false;
+  }
+  return true;
+}
 
 export function hashPayload(payload: unknown): string {
   return crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
@@ -39,7 +65,7 @@ export async function startMatchFromRoom(
 ): Promise<MatchSnapshot> {
   const p = pool ?? getPool();
 
-  return withTransaction(async (client) => {
+  const result = await withTransaction(async (client) => {
     // 1. Lock room
     const roomRes = await client.query(
       'SELECT * FROM public.rooms WHERE id = $1 FOR UPDATE',
@@ -116,8 +142,32 @@ export async function startMatchFromRoom(
       [matchId, JSON.stringify({ initialPosition: initialPos, key: initialKey })],
     );
 
-    return getMatchSnapshotFromClient(client, matchId);
+    // 6. Point both players' control context at the new match in the same transaction
+    //    (spec 03 §AI job và control lifecycle): presence/deadline rows must cover the
+    //    ACTIVE match, not just the room.
+    await client.query(
+      `UPDATE public.client_controls
+          SET match_id = $1, room_id = $2, updated_at = now()
+        WHERE user_id = ANY($3::uuid[])`,
+      [matchId, roomId, [redMember.user_id, blackMember.user_id]],
+    );
+
+    return {
+      snapshot: await getMatchSnapshotFromClient(client, matchId),
+      starterId: redMember.user_id as string,
+    };
   }, p);
+
+  // After commit: the room is PLAYING with a fresh current_match_id, so members can
+  // transition from the waiting screen without polling. A failed push is recovered by the
+  // next `room:subscribe`/sync read.
+  try {
+    emitRoomUpdated({ roomId, room: await getRoom(roomId, result.starterId) });
+  } catch {
+    // The match is committed; the room push is best-effort.
+  }
+  emitMatchState({ matchId: result.snapshot.id, snapshot: result.snapshot });
+  return result.snapshot;
 }
 
 export async function submitMove(
@@ -129,6 +179,7 @@ export async function submitMove(
 ): Promise<CommandResult> {
   const p = pool ?? getPool();
   let snapshotToBroadcast: MatchSnapshot | null = null;
+  let countsToBroadcast: Record<string, number> | null = null;
 
   const result = await withTransaction(async (client) => {
     // 1. Determine room_id first to establish lock order
@@ -207,18 +258,12 @@ export async function submitMove(
     const settled = settleClock(currentClock, pos.turn, nowMs);
 
     if (settled && settled.expired) {
-      // Clock ran out! Reject move and finalize as TIMEOUT
+      // Clock ran out! Reject move and finalize as TIMEOUT through the shared finalizer.
       const winningSide: Side = pos.turn === 'RED' ? 'BLACK' : 'RED';
       const timeoutOutcome: Outcome = { winner: winningSide, reason: 'TIMEOUT' };
-      const newVersion = Number(match.version) + 1;
-
-      await finalizeMatch(client, match, timeoutOutcome, roomId);
-      await client.query(
-        `UPDATE public.matches
-         SET status = 'FINISHED', outcome = $1, version = $2, proposal = NULL, ended_at = now()
-         WHERE id = $3`,
-        [JSON.stringify(timeoutOutcome), newVersion, matchId],
-      );
+      const newVersion = await finalizeMatchTx(client, match, timeoutOutcome, roomId, {
+        clock: settled.clock,
+      });
 
       const finalSnapshot = await getMatchSnapshotFromClient(client, matchId);
       snapshotToBroadcast = finalSnapshot;
@@ -234,57 +279,43 @@ export async function submitMove(
       throw { statusCode: 400, code: 'INVALID_MOVE', message: moveValidation.reason };
     }
 
-    // 7. Apply move to get next position
-    const nextPos = applyMove(pos, command.payload);
-    const nextKey = positionKey(nextPos);
+    // 7. Rebuild the effective branch (spec 09 §6.3 ancestry) and verify it against the
+    //    persisted snapshot. Repetition is counted on this branch only — never by scanning
+    //    match_events, because abandoned branches stay in the log as audit (F-02).
+    const activeIds = parseActiveMoveIds(match.active_move_ids);
+    const branch = await loadActiveBranch(client, matchId, activeIds);
+    const effective = rebuildFromAncestry(branch);
 
-    // 8. Count occurrences for threefold repetition
-    // Count past occurrences of this key from match_events
-    const eventsRes = await client.query(
-      'SELECT payload FROM public.match_events WHERE match_id = $1 ORDER BY version ASC',
-      [matchId],
-    );
-    let occurrences = 1; // current position counts as 1
-    for (const ev of eventsRes.rows) {
-      const p = typeof ev.payload === 'string' ? JSON.parse(ev.payload) : ev.payload;
-      if (p.key === nextKey) occurrences++;
+    if (
+      effective.activeMoveIds.length !== Number(match.ply) ||
+      !samePosition(effective.position, pos)
+    ) {
+      throw {
+        statusCode: 409,
+        code: 'CONFLICT',
+        message: 'Nhánh nước đi hiệu lực không khớp với snapshot ván cờ',
+      };
     }
 
-    // 9. Check terminal outcome
+    // 8. Apply the move on the verified effective branch
+    const nextPos = applyMove(effective.position, command.payload);
+    const nextKey = positionKey(nextPos);
+    const occurrences = (effective.repetitionCounts[nextKey] ?? 0) + 1;
     const outcome: Outcome | null = getTerminalOutcome(nextPos, occurrences);
     const newVersion = match.version + 1;
-    const newPly = match.ply + 1;
+    const parentMoveId =
+      effective.activeMoveIds.length > 0
+        ? effective.activeMoveIds[effective.activeMoveIds.length - 1]!
+        : null;
 
-    // 10. Record move in `moves` table
-    const fromIdx = squareToIndex(command.payload.from);
-    const toIdx = squareToIndex(command.payload.to);
-    const moverPiece = pos.board[fromIdx]!;
-    const capturedPiece = pos.board[toIdx];
-
-    await client.query(
-      `INSERT INTO public.moves (
-         match_id, move_number, player_id, side,
-         from_x, from_y, to_x, to_y, piece_type, captured_type
-       ) VALUES (
-         $1, $2, $3, $4,
-         $5, $6, $7, $8, $9, $10
-       )`,
-      [
-        matchId,
-        newPly,
-        isAiTurn ? null : userId,
-        moverPiece.side,
-        command.payload.from.x,
-        command.payload.from.y,
-        command.payload.to.x,
-        command.payload.to.y,
-        moverPiece.type,
-        capturedPiece?.type ?? null,
-      ],
-    );
-
-    // 11. Record event
+    // 9. Snapshot of the resulting branch: append the new move to the active prefix
     const moveId = crypto.randomUUID();
+    const nextActiveIds = [...effective.activeMoveIds, moveId];
+    const nextCounts = { ...effective.repetitionCounts, [nextKey]: occurrences };
+    const moverPiece = effective.position.board[squareToIndex(command.payload.from)]!;
+
+    // 10. Append exactly one immutable MOVE event carrying the move ancestry, then the
+    //     canonical match_moves row (event_version FK is deferred to commit).
     await client.query(
       `INSERT INTO public.match_events (match_id, version, type, payload)
        VALUES ($1, $2, 'MOVE', $3)`,
@@ -293,37 +324,62 @@ export async function submitMove(
         newVersion,
         JSON.stringify({
           moveId,
+          parentMoveId,
           side: moverPiece.side,
           move: command.payload,
-          key: nextKey,
+          ...(outcome ? { outcome } : {}),
         }),
       ],
     );
 
-    // 12. If terminal: finalize match
+    await client.query(
+      `INSERT INTO public.match_moves (id, match_id, parent_move_id, event_version, side, move)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        moveId,
+        matchId,
+        parentMoveId,
+        newVersion,
+        moverPiece.side,
+        JSON.stringify(command.payload),
+      ],
+    );
+
+    // 11. Update the snapshot: position/ply/activeMoveIds/repetition cache move together.
+    //     A terminal move writes its MOVE event (above, carrying the outcome) and lets the
+    //     shared finalizer own the terminal columns/version — never a second finalizer, and
+    //     never two version bumps.
+    const clockJson = settled?.clock ? JSON.stringify(settled.clock) : null;
+
     if (outcome) {
-      await finalizeMatch(client, match, outcome, roomId);
-      await client.query(
-        `UPDATE public.matches
-         SET position = $1, version = $2, ply = $3, outcome = $4, status = 'FINISHED',
-             proposal = NULL,
-             active_move_ids = active_move_ids || jsonb_build_array($6::text),
-             ended_at = now()
-         WHERE id = $5`,
-        [JSON.stringify(nextPos), newVersion, newPly, JSON.stringify(outcome), matchId, moveId],
-      );
+      await finalizeMatchTx(client, match, outcome, roomId, {
+        position: nextPos,
+        ply: nextActiveIds.length,
+        clock: settled?.clock ?? null,
+        activeMoveIds: nextActiveIds,
+        repetitionCounts: nextCounts,
+        appendResultEvent: false,
+      });
     } else {
-      const clockJson = settled?.clock ? JSON.stringify(settled.clock) : null;
       // Per spec: any new move automatically invalidates pending proposal
       await client.query(
         `UPDATE public.matches
          SET position = $1, version = $2, ply = $3, clock = $4, proposal = NULL,
-             active_move_ids = active_move_ids || jsonb_build_array($6::text),
-             updated_at = now()
-         WHERE id = $5`,
-        [JSON.stringify(nextPos), newVersion, newPly, clockJson, matchId, moveId],
+             active_move_ids = $5::jsonb, repetition_counts = $6::jsonb, updated_at = now()
+         WHERE id = $7`,
+        [
+          JSON.stringify(nextPos),
+          newVersion,
+          nextActiveIds.length,
+          clockJson,
+          JSON.stringify(nextActiveIds),
+          JSON.stringify(nextCounts),
+          matchId,
+        ],
       );
     }
+
+    countsToBroadcast = nextCounts;
 
     // 13. Record command receipt
     const finalSnapshot = await getMatchSnapshotFromClient(client, matchId);
@@ -353,6 +409,7 @@ export async function submitMove(
   if (snapshotToBroadcast) {
     const snap = snapshotToBroadcast as MatchSnapshot;
     matchBroadcaster.emit(matchId, snap);
+    if (snap.status !== 'ACTIVE') releaseMatchMedia(matchId);
 
     // If AI match and next turn belongs to AI: trigger AI turn
     if (
@@ -361,6 +418,7 @@ export async function submitMove(
       snap.aiSide === snap.position.turn &&
       snap.aiLevel
     ) {
+      // Static import would create a matches/service ⇄ ai/service module cycle.
       const { triggerAiTurn } = await import('../ai/service.js');
       triggerAiTurn(
         matchId,
@@ -368,7 +426,7 @@ export async function submitMove(
         snap.version,
         snap.aiLevel,
         snap.clock,
-        {},
+        countsToBroadcast ?? {},
       ).catch((err) => console.error('AI turn trigger error:', err));
     }
   }
@@ -437,23 +495,9 @@ export async function resignMatch(
     const resigningSide: Side = match.red_user_id === userId ? 'RED' : 'BLACK';
     const winningSide: Side = resigningSide === 'RED' ? 'BLACK' : 'RED';
     const outcome: Outcome = { winner: winningSide, reason: 'RESIGN' };
-    const newVersion = Number(match.version) + 1;
 
-    // Finalize match and release slots
-    await finalizeMatch(client, match, outcome, roomId);
-    await client.query(
-      `UPDATE public.matches
-       SET status = 'FINISHED', outcome = $1, version = $2, proposal = NULL, ended_at = now()
-       WHERE id = $3`,
-      [JSON.stringify(outcome), newVersion, matchId],
-    );
-
-    // Event
-    await client.query(
-      `INSERT INTO public.match_events (match_id, version, type, payload)
-       VALUES ($1, $2, 'RESULT', $3)`,
-      [matchId, newVersion, JSON.stringify({ outcome, actorKey: userId })],
-    );
+    // Finalize match and release slots through the shared terminal path.
+    const newVersion = await finalizeMatchTx(client, match, outcome, roomId, { actorKey: userId });
 
     const finalSnapshot = await getMatchSnapshotFromClient(client, matchId);
     await client.query(
@@ -480,17 +524,76 @@ export async function resignMatch(
 
   if (snapshotToBroadcast) {
     matchBroadcaster.emit(matchId, snapshotToBroadcast);
+    releaseMatchMedia(matchId);
   }
 
   return result;
 }
 
-async function finalizeMatch(
+/**
+ * After an ONLINE match reaches a terminal status, its media transports are retired
+ * (spec 06 §Cleanup). Fire-and-forget: the committed result is never rolled back by an
+ * SFU failure, and a failed deletion leaves the tuple ROTATING for the media retry job.
+ */
+function releaseMatchMedia(matchId: string): void {
+  void endMatchMedia(matchId).catch(() => undefined);
+}
+
+export interface FinalizeMatchExtras {
+  /** Terminal match columns written in the same statement as the terminal status. */
+  position?: Position;
+  ply?: number;
+  clock?: ClockState | null;
+  activeMoveIds?: string[];
+  repetitionCounts?: Record<string, number>;
+  /** false when the caller already appended the terminal event (a terminal MOVE). */
+  appendResultEvent?: boolean;
+  actorKey?: string | null;
+}
+
+/**
+ * The single match finalizer (spec 03 §"Finalizer chung"): status, outcome, version bump,
+ * `ended_at`, proposal clear, terminal event, `active_players` release and the guarded
+ * `rooms.status = FINISHED`. Callers must already hold the room → match locks (AI: match
+ * only) and pass the `MatchCommand`/deadline-specific columns through `extras`.
+ */
+export async function finalizeMatchTx(
   client: pg.PoolClient,
-  match: { id: string },
+  match: { id: string; version: number | string },
   outcome: Outcome,
   roomId: string | null,
-): Promise<void> {
+  extras: FinalizeMatchExtras = {},
+): Promise<number> {
+  const newVersion = Number(match.version) + 1;
+  const interrupted =
+    outcome.reason === 'BOTH_OFFLINE' ||
+    outcome.reason === 'SERVER_RESTART' ||
+    outcome.reason === 'AI_UNAVAILABLE';
+
+  await client.query(
+    `UPDATE public.matches
+        SET status = $1, outcome = $2, version = $3, ended_at = now(), proposal = NULL,
+            position = COALESCE($4::jsonb, position),
+            ply = COALESCE($5::int, ply),
+            clock = CASE WHEN $6::boolean THEN $7::jsonb ELSE clock END,
+            active_move_ids = COALESCE($8::jsonb, active_move_ids),
+            repetition_counts = COALESCE($9::jsonb, repetition_counts),
+            updated_at = now()
+      WHERE id = $10`,
+    [
+      interrupted ? 'INTERRUPTED' : 'FINISHED',
+      JSON.stringify(outcome),
+      newVersion,
+      extras.position ? JSON.stringify(extras.position) : null,
+      extras.ply ?? null,
+      extras.clock !== undefined,
+      extras.clock === undefined || extras.clock === null ? null : JSON.stringify(extras.clock),
+      extras.activeMoveIds ? JSON.stringify(extras.activeMoveIds) : null,
+      extras.repetitionCounts ? JSON.stringify(extras.repetitionCounts) : null,
+      match.id,
+    ],
+  );
+
   // 1. Release active_players for both participants
   await client.query(
     'DELETE FROM public.active_players WHERE match_id = $1 OR (room_id IS NOT NULL AND room_id = $2)',
@@ -498,14 +601,33 @@ async function finalizeMatch(
   );
 
   if (roomId) {
-    // 2. Set room status to FINISHED
+    // 2. Set room status to FINISHED — only for the room that owns this match. A room whose
+    //    current_match_id is NULL/another match must not be forced to FINISHED: it violates
+    //    rooms_status_invariants and aborts the whole terminal transaction.
     await client.query(
       `UPDATE public.rooms
        SET status = 'FINISHED', finished_at = now(), updated_at = now()
-       WHERE id = $1`,
-      [roomId],
+       WHERE id = $1 AND current_match_id = $2`,
+      [roomId, match.id],
     );
   }
+
+  // 3. The match context is over: leases fall back to the room (spec 03 §Cleanup sau ván).
+  await client.query(
+    'UPDATE public.client_controls SET match_id = NULL, updated_at = now() WHERE match_id = $1',
+    [match.id],
+  );
+
+  // 4. One terminal event per version: RESULT unless the terminal MOVE already wrote it.
+  if (extras.appendResultEvent !== false) {
+    await client.query(
+      `INSERT INTO public.match_events (match_id, version, type, payload)
+       VALUES ($1, $2, 'RESULT', $3)`,
+      [match.id, newVersion, JSON.stringify({ outcome, actorKey: extras.actorKey ?? null })],
+    );
+  }
+
+  return newVersion;
 }
 
 export async function getMatchSnapshot(
@@ -514,22 +636,49 @@ export async function getMatchSnapshot(
   pool?: pg.Pool,
 ): Promise<MatchSnapshot> {
   const p = pool ?? getPool();
+  const nowMs = Date.now();
+
+  // A snapshot read settles overdue deadlines first (spec 03: "Read snapshot settle/check
+  // overdue qua service, không trả match ACTIVE hết giờ mãi mãi"). The scheduler is the
+  // primary driver; this is only the read-side safety net for a stalled timer.
+  await settleMatchDeadlines(matchId, nowMs, p);
+
   const client = await p.connect();
   try {
-    // Check permission: participant or spectator
-    const matchRes = await client.query('SELECT * FROM public.matches WHERE id = $1', [matchId]);
+    const matchRes = await client.query(
+      'SELECT mode, room_id, red_user_id, black_user_id FROM public.matches WHERE id = $1',
+      [matchId],
+    );
     if (matchRes.rowCount === 0) {
       throw { statusCode: 404, code: 'NOT_FOUND', message: 'Ván cờ không tồn tại' };
     }
-    return getMatchSnapshotFromClient(client, matchId);
+    const match = matchRes.rows[0];
+    const isParticipant = match.red_user_id === userId || match.black_user_id === userId;
+
+    if (match.mode === 'ONLINE') {
+      // ONLINE access is room membership: players and admitted spectators alike, and a
+      // revoked spectator loses read access the moment the row is gone (F-07).
+      const memberRes = await client.query(
+        'SELECT 1 FROM public.room_members WHERE room_id = $1 AND user_id = $2',
+        [match.room_id, userId],
+      );
+      if (memberRes.rowCount === 0) {
+        throw { statusCode: 403, code: 'FORBIDDEN', message: 'Bạn không có quyền xem ván này' };
+      }
+    } else if (!isParticipant) {
+      throw { statusCode: 403, code: 'FORBIDDEN', message: 'Bạn không có quyền xem ván này' };
+    }
+
+    return getMatchSnapshotFromClient(client, matchId, nowMs);
   } finally {
     client.release();
   }
 }
 
-async function getMatchSnapshotFromClient(
+export async function getMatchSnapshotFromClient(
   client: pg.PoolClient,
   matchId: string,
+  nowMs: number = Date.now(),
 ): Promise<MatchSnapshot> {
   const matchRes = await client.query('SELECT * FROM public.matches WHERE id = $1', [matchId]);
   if (matchRes.rowCount === 0) {
@@ -539,13 +688,19 @@ async function getMatchSnapshotFromClient(
 
   const pos = typeof m.position === 'string' ? JSON.parse(m.position) : m.position;
   const clockRaw = m.clock ? (typeof m.clock === 'string' ? JSON.parse(m.clock) : m.clock) : null;
-  const nowMs = Date.now();
   // Project clock forward to current moment if game is still active
   const clock = m.status === 'ACTIVE' && clockRaw
     ? projectClock(clockRaw, pos.turn, nowMs)
     : clockRaw;
   const outcome = m.outcome ? (typeof m.outcome === 'string' ? JSON.parse(m.outcome) : m.outcome) : null;
   const proposal = m.proposal ? (typeof m.proposal === 'string' ? JSON.parse(m.proposal) : m.proposal) : null;
+
+  // Presence comes from the real control leases, not from room membership (spec 03).
+  const participants =
+    m.mode === 'AI'
+      ? [m.ai_side === 'RED' ? m.black_user_id : m.red_user_id]
+      : [m.red_user_id, m.black_user_id];
+  const presence = await loadMatchPresence(client, participants, nowMs);
 
   return {
     id: m.id,
@@ -563,10 +718,10 @@ async function getMatchSnapshotFromClient(
     timeControl: m.time_control,
     clock,
     outcome,
-    activeMoveIds: [],
+    activeMoveIds: parseActiveMoveIds(m.active_move_ids),
     proposal,
     serverNowMs: Date.now(),
     aiState: null,
-    presence: [],
+    presence,
   };
 }
