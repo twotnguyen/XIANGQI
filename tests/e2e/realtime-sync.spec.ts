@@ -165,6 +165,54 @@ async function readLease(page: Page): Promise<ControllerLease> {
   return lease;
 }
 
+/**
+ * Wait until this tab may mutate (control lease + live socket), and on failure
+ * report the tab's real state instead of a bare attribute timeout.
+ */
+async function expectBoardInteractive(page: Page, timeout = 20_000): Promise<void> {
+  try {
+    await expect(page.getByTestId('xiangqi-board')).toHaveAttribute('data-interactive', 'true', {
+      timeout,
+    });
+  } catch (error) {
+    const state = await page.evaluate(async () => {
+      const url = '/src/lib/realtime.ts';
+      const mod = (await import(/* @vite-ignore */ url)) as {
+        realtime?: { getStatus(): string; getController(scope?: string): unknown };
+      };
+      const alert = document.querySelector('[role="alert"]');
+      return {
+        status: mod.realtime?.getStatus() ?? 'unknown',
+        matchLease: Boolean(mod.realtime?.getController('match')),
+        roomLease: Boolean(mod.realtime?.getController()),
+        alert: alert?.textContent ?? null,
+        bodyText: document.body.innerText.replace(/\s+/g, ' ').slice(0, 200),
+      };
+    });
+    throw new Error(
+      `board never became interactive: ${JSON.stringify(state)} (${error instanceof Error ? error.message.split('\n')[0] : String(error)})`,
+      { cause: error },
+    );
+  }
+}
+
+/**
+ * Wait for a piece to appear, but fail with the on-screen reason when the client
+ * rejected the move instead of timing out silently (CI-only races are otherwise
+ * impossible to diagnose from the report).
+ */
+async function expectPieceMoved(page: Page, name: RegExp, timeout = 15_000): Promise<void> {
+  const piece = page.getByRole('img', { name });
+  // Only the match-level error counts: the media panel has its own alert.
+  const alert = page.getByTestId('match-error');
+  await Promise.race([
+    piece.waitFor({ state: 'visible', timeout }),
+    alert.waitFor({ state: 'visible', timeout }).then(async () => {
+      throw new Error(`client rejected the move: ${(await alert.textContent()) ?? ''}`);
+    }),
+  ]);
+}
+
 test.describe('Online match realtime sync', () => {
   test('T015-E2E-04: waiting room follows room:updated and the match start without reload', async ({
     browser,
@@ -326,22 +374,16 @@ test.describe('Online match realtime sync', () => {
       // --- A plays RED pawn (0,3) → (0,4) through the board.
       // The board only accepts input once this tab holds the control lease on a live
       // socket (spec 03/04), so wait for that instead of racing the subscribe ack.
-      await expect(pageA.getByTestId('xiangqi-board')).toHaveAttribute('data-interactive', 'true', {
-        timeout: 20_000,
-      });
+      await expectBoardInteractive(pageA);
       await pageA.getByTestId('square-0-3').click();
       await expect(pageA.getByTestId('legal-target-0-4')).toBeVisible();
       await pageA.getByTestId('square-0-4').click();
 
       // A's own board commits the server snapshot.
-      await expect(pageA.getByRole('img', { name: /Tốt đỏ, cột 1 hàng 5/ })).toBeVisible({
-        timeout: 15_000,
-      });
+      await expectPieceMoved(pageA, /Tốt đỏ, cột 1 hàng 5/);
 
       // B's board follows within a few seconds, with no reload.
-      await expect(pageB.getByRole('img', { name: /Tốt đỏ, cột 1 hàng 5/ })).toBeVisible({
-        timeout: 15_000,
-      });
+      await expectPieceMoved(pageB, /Tốt đỏ, cột 1 hàng 5/);
       await expect(pageB.getByRole('img', { name: /Tốt đỏ, cột 1 hàng 4/ })).toHaveCount(0);
       expect(
         await pageB.evaluate(
@@ -395,14 +437,13 @@ test.describe('Online match realtime sync', () => {
       await expect(pageB.getByRole('img', { name: /Tốt đen, cột 1 hàng 5/ })).toHaveCount(0);
       await expect(pageA.getByRole('img', { name: /Tốt đen, cột 1 hàng 7/ })).toBeVisible();
 
+      await expectBoardInteractive(pageB);
       await pageB.getByTestId('square-0-6').click();
       await expect(pageB.getByTestId('legal-target-0-5')).toBeVisible();
       await pageB.getByTestId('square-0-5').click();
 
       // The legal move after the rejection lands on the opponent's board.
-      await expect(pageA.getByRole('img', { name: /Tốt đen, cột 1 hàng 6/ })).toBeVisible({
-        timeout: 5_000,
-      });
+      await expectPieceMoved(pageA, /Tốt đen, cột 1 hàng 6/);
 
       // --- Chat send goes over `chat:send` with the room lease and reaches the opponent.
       const message = `Xin chào ${runId}`;

@@ -17,9 +17,9 @@ export function getPool(connectionString?: string): pg.Pool {
     const connStr = connectionString ?? requireDatabaseUrl(loadConfig());
     poolInstance = new Pool({
       connectionString: connStr,
-      max: 10,
+      max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 10000,
     });
   }
   return poolInstance;

@@ -194,10 +194,16 @@ class RealtimeClient {
   private readonly subscriptions = new Map<symbol, Subscription>();
   private readonly appliedMatchIds = new Set<string>();
   private readonly appliedRoomIds = new Set<string>();
-  private readonly controllers = new Map<ControlScope, ControllerGrant | null>();
+  /**
+   * The tab's controller lease. Spec 03 keeps ONE `client_controls` row per user, so a
+   * later takeover (room scope, then match scope) REPLACES the same server-side lease.
+   * Holding a separate grant per scope would keep sending a stale controllerId/epoch for
+   * the other scope and every write would be refused with CONTROL_REQUIRED — so the
+   * newest grant is the tab's only grant, and every write uses it.
+   */
+  private controller: ControllerGrant | null = null;
   private readonly claimAttempted = new Set<string>();
-  /** Grant that `controlHeaders()`/`getController()` prefer when no scope is given. */
-  private lastGrantedScope: ControlScope | null = null;
+  private claimInFlight = false;
 
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -225,21 +231,17 @@ class RealtimeClient {
       this.controllerListeners.set(scope, set);
     }
     set.add(listener);
-    listener(this.controllers.get(scope) ?? null);
+    listener(this.controller);
     return () => {
       set?.delete(listener);
     };
   }
 
   getController(scope?: ControlScope): ControllerGrant | null {
-    if (scope) return this.controllers.get(scope) ?? null;
-    if (this.lastGrantedScope) {
-      const grant = this.controllers.get(this.lastGrantedScope);
-      if (grant) return grant;
-    }
-    for (const grant of this.controllers.values()) {
-      if (grant) return grant;
-    }
+    // `scope` is advisory only: the server keeps one lease per user, so the tab's
+    // single grant is what every scoped write must carry.
+    void scope;
+    return this.controller;
     return null;
   }
 
@@ -455,13 +457,16 @@ class RealtimeClient {
     if (event === 'control:revoked') {
       const p = payload as RealtimeEventMap['control:revoked'];
       if (!this.userId || p.userId === this.userId) {
-        for (const [scope, grant] of this.controllers) {
-          if (grant && grant.controlEpoch <= p.controlEpoch) this.setController(scope, null);
+        if (this.controller && this.controller.controlEpoch <= p.controlEpoch) {
+          this.setController(null);
+          // The lease moved to another tab: allow exactly one fresh claim if this tab
+          // is still the one the user is acting in.
+          this.claimAttempted.clear();
         }
       }
     }
     if (event === 'access:revoked') {
-      for (const scope of this.controllers.keys()) this.setController(scope, null);
+      this.setController(null);
     }
     const set = this.handlers.get(event);
     if (!set) return;
@@ -647,7 +652,7 @@ class RealtimeClient {
       return;
     }
     const data = res.data as MatchSubscription;
-    if (data.controller) this.setController('match', data.controller);
+    if (data.controller) this.setController(data.controller);
     else if (claimControl) await this.claimControl('match', matchId, data.snapshot);
     // Feed the ack snapshot through the same path as pushes so consumers have
     // one code path for "snapshot arrived".
@@ -658,7 +663,7 @@ class RealtimeClient {
     const res = await this.emitWithAck('room:subscribe', { roomId });
     if (!res.ok) return;
     const data = res.data as RoomSubscription;
-    if (data.controller) this.setController('room', data.controller);
+    if (data.controller) this.setController(data.controller);
     else if (claimControl) await this.claimControl('room', roomId, data.room);
     this.dispatch('room:updated', { roomId, room: data.room });
     if (data.match) {
@@ -666,20 +671,18 @@ class RealtimeClient {
     }
   }
 
-  private setController(scope: ControlScope, grant: ControllerGrant | null): void {
-    const previous = this.controllers.get(scope) ?? null;
-    this.controllers.set(scope, grant);
-    if (grant) this.lastGrantedScope = scope;
-    else if (this.lastGrantedScope === scope) this.lastGrantedScope = null;
+  private setController(grant: ControllerGrant | null): void {
+    const previous = this.controller;
+    this.controller = grant;
     if (
       previous?.controllerId === grant?.controllerId &&
       previous?.controlEpoch === grant?.controlEpoch
     ) {
       return;
     }
-    const listeners = this.controllerListeners.get(scope);
-    if (!listeners) return;
-    for (const listener of listeners) listener(grant);
+    for (const listeners of this.controllerListeners.values()) {
+      for (const listener of listeners) listener(grant);
+    }
   }
 
   /**
@@ -694,8 +697,11 @@ class RealtimeClient {
   ): Promise<void> {
     const key = `${scope}:${contextId}`;
     if (this.claimAttempted.has(key)) return;
-    this.claimAttempted.add(key);
+    // A tab that is not (yet) a participant, or whose claim fails, must be able to try
+    // again: only a SUCCESSFUL claim is remembered, so a race with the session/user id
+    // or a transient server error cannot leave the tab read-only for the whole match.
     if (!this.isParticipant(scope, context)) return;
+    this.claimAttempted.add(key);
 
     try {
       const headers = await authHeaders();
@@ -706,13 +712,32 @@ class RealtimeClient {
       });
       const data = await res.json();
       if (res.ok && data?.ok && data.data) {
-        this.setController(scope, {
+        this.setController({
           controllerId: data.data.controllerId as string,
           controlEpoch: Number(data.data.controlEpoch),
         });
+        return;
       }
+      this.claimAttempted.delete(key);
     } catch {
-      // Leave the tab read-only; the server remains the authority.
+      this.claimAttempted.delete(key);
+    }
+  }
+
+  /**
+   * Public re-claim used by consumers that see a participant tab without a lease
+   * (for example after the server rotated the lease or a first claim raced the
+   * session). Idempotent: a claim already in flight is not duplicated.
+   */
+  async claimController(scope: ControlScope, contextId: string, context: MatchSnapshot | RoomDTO): Promise<void> {
+    if (this.controller) return;
+    if (this.claimInFlight) return;
+    this.claimInFlight = true;
+    try {
+      this.claimAttempted.delete(`${scope}:${contextId}`);
+      await this.claimControl(scope, contextId, context);
+    } finally {
+      this.claimInFlight = false;
     }
   }
 

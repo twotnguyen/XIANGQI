@@ -5,6 +5,8 @@ import { supabase } from '../../lib/supabase.js';
 
 /** Spec 03: cheap `match:sync` while the match is active (not a poll loop). */
 const ACTIVE_RESYNC_MS = 15_000;
+/** Read-only tabs re-claim the lease this often until they hold it. */
+const CLAIM_RETRY_MS = 2_000;
 
 /**
  * Authoritative match state for one screen.
@@ -99,12 +101,22 @@ export function useMatch(matchId: string | undefined) {
       if (snapshotRef.current?.status === 'ACTIVE') void syncNow();
     }, ACTIVE_RESYNC_MS);
 
+    // A participant tab without the lease (first claim raced the session, or the
+    // server rotated it) re-claims instead of staying read-only for the whole match.
+    const claimTimer = setInterval(() => {
+      const current = snapshotRef.current;
+      if (!current || current.status !== 'ACTIVE') return;
+      if (realtime.getController('match')) return;
+      void realtime.claimController('match', matchId, current);
+    }, CLAIM_RETRY_MS);
+
     return () => {
       offMatchState();
       offStatus();
       offController();
       unsubscribe();
       clearInterval(interval);
+      clearInterval(claimTimer);
     };
   }, [matchId, applySnapshot, syncNow, fetchSnapshot]);
 

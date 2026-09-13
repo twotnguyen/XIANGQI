@@ -19,15 +19,26 @@ export async function isSessionActive(
   pool?: pg.Pool,
 ): Promise<boolean> {
   const p = pool ?? getPool();
-  const client = await p.connect();
-  try {
-    const res = await client.query(
-      'SELECT private.is_auth_session_active($1::uuid, $2::uuid) AS active',
-      [sessionId, userId],
-    );
-    return res.rows[0]?.active === true;
-  } finally {
-    client.release();
+
+  // One retry on a transient failure (pool exhaustion / connection timeout):
+  // the caller fails closed on error, so a momentary DB blip must not be
+  // mistaken for a revoked session and 401 every in-flight request.
+  for (let attempt = 0; ; attempt += 1) {
+    const client = await p.connect();
+    try {
+      const res = await client.query(
+        'SELECT private.is_auth_session_active($1::uuid, $2::uuid) AS active',
+        [sessionId, userId],
+      );
+      return res.rows[0]?.active === true;
+    } catch (err) {
+      if (attempt >= 1) throw err;
+      const { promise, resolve } = Promise.withResolvers<void>();
+      setTimeout(resolve, 100);
+      await promise;
+    } finally {
+      client.release();
+    }
   }
 }
 

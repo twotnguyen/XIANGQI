@@ -135,7 +135,11 @@ export function MatchPage() {
 
       {/* Error alert */}
       {error && (
-        <div role="alert" style={{ color: '#DC3545', margin: '4px 0', textAlign: 'center', fontSize: '14px' }}>
+        <div
+          role="alert"
+          data-testid="match-error"
+          style={{ color: '#DC3545', margin: '4px 0', textAlign: 'center', fontSize: '14px' }}
+        >
           {error}
         </div>
       )}
