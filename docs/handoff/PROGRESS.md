@@ -1,8 +1,8 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY (đầy đủ các tài liệu hướng dẫn và đặc tả).
-- Trạng thái sản phẩm: **LOCAL_COMPLETE** — 32/32 issue đạt tiêu chuẩn nghiệm thu local; 30/30 finding của đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md` đã xử lý xong (28 `FIXED`, 2 ghi nhận tài liệu/ngữ nghĩa) và merge vào `main` qua **PR #48 (squash `8bfa200`)**, cùng PR #49 (`aa20d4b`, ghi merge SHA) và PR #50 (`3d16a8a`, lane tải thủ công + hardening E2E).
-- Issue đang làm: Hoàn tất bàn giao; sẵn sàng kiểm chứng gate provider/thiết bị ngoài.
+- Trạng thái sản phẩm: **LOCAL_COMPLETE** — 32/32 issue đạt tiêu chuẩn nghiệm thu local; 30/30 finding của đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md` đã xử lý xong (28 `FIXED`, 2 ghi nhận tài liệu/ngữ nghĩa) và merge vào `main` qua **PR #48 (squash `8bfa200`)**, cùng PR #49 (`aa20d4b`, ghi merge SHA), PR #50 (`3d16a8a`, lane tải thủ công + hardening E2E), PR #51 (`d47e73e`, hoàn thiện bàn giao local-complete) và PR #52 (`e75f995`, đồng bộ test registries và nghiệm thu staging).
+- Issue đang làm: Đồng bộ registry kiểm thử và nghiệm thu staging (nhánh `docs/issue-031-staging-sync`).
 - Bước tiếp theo: chạy các gate ngoài (Google OAuth domain thật, LiveKit 2 thiết bị khác mạng, deploy Render/Vercel) theo `docs/handoff/DEPLOY.md`; lane tải chạy trên máy đủ cấu hình qua workflow `Load lane (manual)`.
 - External Gates đang chờ:
   1. Google OAuth Cloud Client ID/Secret trên domain production Vercel (R01).
@@ -45,29 +45,29 @@
 | [ISSUE-028](../issues/ISSUE-028-responsive-polish.md) | **DONE** | PR #37 MERGED (`5fd9fff`); tokens gỗ truyền thống, Navbar toàn cục, 100% không tràn ngang 360px |
 | [ISSUE-029](../issues/ISSUE-029-security-hardening.md) | **LOCAL_DONE** | PR #41 MERGED (`305797f`); siết chặt CORS allowlist theo `APP_ORIGIN`, CSP nghiêm ngặt, DoS limit 64KB, kiểm chứng deny matrix 21 kịch bản IDOR và đặc quyền khán giả (`tests/integration/authz.test.ts`) |
 | [ISSUE-030](../issues/ISSUE-030-acceptance-load.md) | **LOCAL_DONE** | PR #42 MERGED (`3fa0906`); thử tải 10 phòng, 70 kết nối Socket.IO đồng thời, 10 nước đi đồng thời, 2 ván cờ AI: p95 latency đạt **67.64 ms** (< 100ms threshold), 92/92 tests E2E pass |
-| [ISSUE-031](../issues/ISSUE-031-deploy-runbook.md) | **LOCAL_DONE** | PR #43 MERGED (`18ac449`); Dockerfile.server, render.yaml, vercel.json, bổ sung CI workflow kiểm tra cả integration DB và live SFU media |
+| [ISSUE-031](../issues/ISSUE-031-deploy-runbook.md) | **LOCAL_DONE** | PR #43 MERGED (`18ac449`), PR #52 MERGED (`e75f995`); Dockerfile.server, render.yaml, vercel.json, báo cáo nghiệm thu staging `docs/test-reports/STAGING-ACCEPTANCE.md` |
 | [ISSUE-032](../issues/ISSUE-032-final-handoff.md) | **LOCAL_DONE** | Hoàn thiện tài liệu bảo vệ đồ án (`DEFENSE.md`), báo cáo trạng thái khắc phục 30/30 findings (`REMEDIATION-STATUS.md`), báo cáo nghiệm thu trung thực |
 
 ---
 
-## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `d47e73e`)
+## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `e75f995`)
 
-Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `d47e73e` qua [CI Run #34761345660](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660)) cùng lane tải thủ công và nghiệm thu UI:
+Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `e75f995` qua [CI Run #34774320639](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639)) cùng lane tải thủ công và nghiệm thu UI:
 
 ### Bảng Đăng Ký Kiểm Thử Tự Động & Môi Trường
 
 | Bộ kiểm thử | Lệnh thực thi (Command) | Commit SHA | Môi trường kiểm thử | Pass | Fail | Skipped | Link / File Bằng chứng |
 |---|---|---|---|:---:|:---:|:---:|---|
-| **Lane check (Unit)** | `pnpm run test:unit` | `d47e73e` | Ubuntu Linux (GitHub Actions), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34761345660 (Job 103734620162)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
-| **Lane integration** | `pnpm run test:integration` | `d47e73e` | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật | 81 | 0 | 0 | [CI Run #34761345660 (Job 103734620028)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
-| **Lane media** | `pnpm run test:media` | `d47e73e` | Ubuntu Linux, LiveKit SFU local container (RTP bytes/frames > 10KB) | 8 | 0 | 0 | [CI Run #34761345660 (Job 103734620170)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
-| **Lane e2e** | `pnpm run test:e2e` | `d47e73e` | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34761345660 (Job 103734620158)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
-| **AI Benchmark** | `pnpm run test:ai` | `8bfa200` & `d47e73e` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% pruning, 20/20 scores match) |
-| **Socket Load Test** | `pnpm run test:load` | `8bfa200` & `3d16a8a` | Máy tham chiếu 8-core, 10 phòng / 70 socket đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
+| **Lane check (Unit)** | `pnpm run test:unit` | `e75f995` | Ubuntu Linux (GitHub Actions), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34774320639 (Job 103769504748)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
+| **Lane integration** | `pnpm run test:integration` | `e75f995` | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật | 81 | 0 | 0 | [CI Run #34774320639 (Job 103769504825)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
+| **Lane media** | `pnpm run test:media` | `e75f995` | Ubuntu Linux, LiveKit SFU local container (RTP bytes/frames > 10KB) | 8 | 0 | 0 | [CI Run #34774320639 (Job 103769504946)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
+| **Lane e2e** | `pnpm run test:e2e` | `e75f995` | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34774320639 (Job 103769504851)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
+| **AI Benchmark** | `pnpm run test:ai` | `8bfa200`, `d47e73e` & `e75f995` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% pruning, 20/20 scores match) |
+| **Socket Load Test** | `pnpm run test:load` | `8bfa200`, `3d16a8a` & `e75f995` | Máy tham chiếu 8-core, 10 phòng / 70 socket đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
 | **Nghiệm thu Browser UI (Orca)** | Orca CLI 1.3.1 | `aa20d4b` *(chính xác)* | macOS Darwin, 2 profile độc lập (`Default`, `Player 2`), web dev local port 5173, API port 3001 | 8 luồng | 0 | 0 (4 BLOCKED ngoại vi) | `docs/test-reports/ORCA-ACCEPTANCE.md` *(xác thực đúng trên HEAD `aa20d4b`, không ghi đè lên HEAD khác)* |
-| **Typecheck** | `pnpm run typecheck` (`tsc -b`) | `d47e73e` | Toàn bộ 6 workspace packages | 0 err | 0 | 0 | Exit 0 |
-| **Linter** | `pnpm run lint` (`eslint`) | `d47e73e` | Toàn bộ codebase | 0 err | 0 warn | 0 | Exit 0 |
-| **Build** | `pnpm run build` | `d47e73e` | Toàn bộ 6 workspace packages | 6 pkgs | 0 | 0 | Exit 0 |
+| **Typecheck** | `pnpm run typecheck` (`tsc -b`) | `e75f995` | Toàn bộ 6 workspace packages | 0 err | 0 | 0 | Exit 0 |
+| **Linter** | `pnpm run lint` (`eslint`) | `e75f995` | Toàn bộ codebase | 0 err | 0 warn | 0 | Exit 0 |
+| **Build** | `pnpm run build` | `e75f995` | Toàn bộ 6 workspace packages | 6 pkgs | 0 | 0 | Exit 0 |
 
 ---
 
@@ -75,10 +75,10 @@ Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `d47e73e` q
 
 - **Baseline cũ trước remediation ("196 unit tests / 84.51% pruning / p95 28.7ms / 5-5 SFU PASS"):** Từng được dùng để kết luận vội `PROJECT_COMPLETE`. Các số đó đã bị bác bỏ do F-10, F-12, F-13, F-15 và được thay thế bằng các bộ test thực tế với assertion nghiêm ngặt.
 - **Báo cáo PR #48 (`8bfa200`, 491 tests):** gồm 301 unit + 90 integration + 8 media + 92 e2e.
-- **Báo cáo PR #50 (`3d16a8a`) & main (`d47e73e`, 481 CI tests):**
+- **Báo cáo PR #50 (`3d16a8a`), PR #51 (`d47e73e`) & main (`e75f995`, 481 CI tests):**
   - Unit: điều chỉnh glob loại trừ các test integration/media/load, còn 298 tests unit thuần túy.
   - Integration: tách socket-load sang manual workflow do runner CI 2-core bị nghẽn đo đạc p95, còn 81 tests integration.
   - Media: 8 tests SFU độc lập có kiểm chứng RTP bytes/frames.
   - E2E: tăng từ 92 lên 94 tests nhờ bổ sung kiểm chứng timeout và sức chứa khán giả.
-  - Tổng số test trong 4 lane CI bắt buộc là 481 tests (298 + 81 + 8 + 94), 100% PASS trên CI Run #34761345660.
+  - Tổng số test trong 4 lane CI bắt buộc là 481 tests (298 + 81 + 8 + 94), 100% PASS trên CI Run #34761345660 và CI Run #34774320639.
 - **Bằng chứng Orca:** Nghiệm thu bằng browser thật qua Orca CLI được chạy và xác nhận tại **HEAD `aa20d4b`** (sau PR #48 và PR #49) trong môi trường local stack, được ghi lại chi tiết trong `docs/test-reports/ORCA-ACCEPTANCE.md` và không bị ghi sai thành đã chạy trên các commit khác. Trạng thái dự án hiện tại duy trì chuẩn xác là **LOCAL_COMPLETE**.
