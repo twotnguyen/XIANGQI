@@ -45,6 +45,7 @@ jobs:
           version: latest
 
       - run: pnpm install --frozen-lockfile
+      - run: pnpm build
 
       - name: Start local Supabase stack
         run: supabase start
@@ -90,6 +91,7 @@ jobs:
           version: latest
 
       - run: pnpm install --frozen-lockfile
+      - run: pnpm build
 
       - name: Start local Supabase stack
         run: supabase start
