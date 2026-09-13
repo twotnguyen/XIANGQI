@@ -1,5 +1,19 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { createApp } from './app.js';
 import { recoverActiveMatchesOnBoot } from './modules/matches/deadlines.js';
+
+for (const envPath of ['.env', '../../.env', '../.env']) {
+  const resolved = path.resolve(process.cwd(), envPath);
+  if (fs.existsSync(resolved)) {
+    try {
+      process.loadEnvFile(resolved);
+      break;
+    } catch {
+      // ignore
+    }
+  }
+}
 
 const PORT = Number(process.env['PORT'] ?? 3001);
 
