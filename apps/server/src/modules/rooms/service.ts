@@ -306,7 +306,7 @@ export async function leaveRoom(
 
     // If owner leaves WAITING room: close the entire room
     if (room.owner_id === userId && room.status === 'WAITING') {
-      await client.query('UPDATE public.rooms SET status = \'CLOSED\' WHERE id = $1', [roomId]);
+      await client.query('UPDATE public.rooms SET status = \'CLOSED\', closed_at = now() WHERE id = $1', [roomId]);
       // Remove all members from active_players
       await client.query('DELETE FROM public.active_players WHERE room_id = $1', [roomId]);
       await client.query('DELETE FROM public.room_members WHERE room_id = $1', [roomId]);

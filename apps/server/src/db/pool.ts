@@ -7,6 +7,9 @@ import { loadConfig, requireDatabaseUrl } from '../config.js';
 
 const { Pool } = pg;
 
+// Parse PostgreSQL int8 (bigint) columns as JavaScript numbers
+pg.types.setTypeParser(20, (val) => parseInt(val, 10));
+
 let poolInstance: pg.Pool | null = null;
 
 export function getPool(connectionString?: string): pg.Pool {

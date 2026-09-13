@@ -177,7 +177,24 @@ export function Lobby() {
                 Người chơi: {room.members.filter((m) => m.role === 'PLAYER').length}/2
               </p>
               <button
-                onClick={() => navigate(`/rooms/${room.id}`)}
+                onClick={async () => {
+                  try {
+                    const session = (await supabase.auth.getSession()).data.session;
+                    if (session?.access_token) {
+                      await fetch('/api/v1/rooms/join', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${session.access_token}`,
+                        },
+                        body: JSON.stringify({ roomId: room.id, role: 'PLAYER' }),
+                      });
+                    }
+                  } catch {
+                    // ignore
+                  }
+                  navigate(`/rooms/${room.id}`);
+                }}
                 style={{ marginTop: '8px', width: '100%', padding: '8px' }}
               >
                 Vào phòng
