@@ -217,12 +217,22 @@ export async function matchesRoutes(app: FastifyInstance): Promise<void> {
         });
       }
 
-      // Undo AI placeholder (connected fully in ISSUE-021)
-      return reply.send({
-        ok: true,
-        data: { matchId, status: 'AI_UNDO_READY' },
-        requestId: request.id,
-      });
+      try {
+        const { undoAiMatch } = await import('../ai/service.js');
+        const snapshot = await undoAiMatch(request.user!.id, matchId);
+        return reply.send({
+          ok: true,
+          data: { matchId, snapshot },
+          requestId: request.id,
+        });
+      } catch (err: unknown) {
+        const e = err as { statusCode?: number; code?: string; message?: string };
+        return reply.status(e.statusCode ?? 500).send({
+          ok: false,
+          error: { code: e.code ?? 'INTERNAL_ERROR', message: e.message ?? 'Không thể đi lại' },
+          requestId: request.id,
+        });
+      }
     },
   );
 }
