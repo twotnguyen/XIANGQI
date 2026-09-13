@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 jobs:
+  # Fast static analysis & unit test lane (zero external services needed).
   check:
     runs-on: ubuntu-latest
     steps:
@@ -24,8 +25,6 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test:unit
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
 
   # ISSUE-006 lane: real migrations, constraints and RLS on the local Supabase stack.
   # The lane fails (it never skips) when the stack or its env is missing.
@@ -60,6 +59,10 @@ jobs:
           sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=${API_URL}|" .env.test
           sed -i "s|^SUPABASE_PUBLISHABLE_KEY=.*|SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}|" .env.test
           sed -i "s|^SUPABASE_SECRET_KEY=.*|SUPABASE_SECRET_KEY=${SECRET_KEY}|" .env.test
+          echo "VITE_API_URL=http://localhost:3001" >> .env.test
+          echo "VITE_SUPABASE_URL=${API_URL}" >> .env.test
+          echo "VITE_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}" >> .env.test
+          echo "VITE_SUPABASE_ANON_KEY=${PUBLISHABLE_KEY}" >> .env.test
 
       - name: Integration lane (real Postgres + Auth)
         run: pnpm test:integration
@@ -99,6 +102,10 @@ jobs:
           sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=${API_URL}|" .env.test
           sed -i "s|^SUPABASE_PUBLISHABLE_KEY=.*|SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}|" .env.test
           sed -i "s|^SUPABASE_SECRET_KEY=.*|SUPABASE_SECRET_KEY=${SECRET_KEY}|" .env.test
+          echo "VITE_API_URL=http://localhost:3001" >> .env.test
+          echo "VITE_SUPABASE_URL=${API_URL}" >> .env.test
+          echo "VITE_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}" >> .env.test
+          echo "VITE_SUPABASE_ANON_KEY=${PUBLISHABLE_KEY}" >> .env.test
 
       - name: Start LiveKit SFU (dev mode)
         run: docker run -d --name livekit --network host livekit/livekit-server --dev
@@ -131,6 +138,52 @@ jobs:
       - name: Stop LiveKit SFU
         if: always()
         run: docker rm -f livekit || true
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: supabase stop --no-backup
+
+  # E2E Playwright lane: full browser journey against live backend & local Supabase.
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      - name: Write .env.test from the local stack
+        run: |
+          cp .env.test.example .env.test
+          supabase status -o env > /tmp/supabase.env
+          set -a && . /tmp/supabase.env && set +a
+          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=${API_URL}|" .env.test
+          sed -i "s|^SUPABASE_PUBLISHABLE_KEY=.*|SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}|" .env.test
+          sed -i "s|^SUPABASE_SECRET_KEY=.*|SUPABASE_SECRET_KEY=${SECRET_KEY}|" .env.test
+          echo "VITE_API_URL=http://localhost:3001" >> .env.test
+          echo "VITE_SUPABASE_URL=${API_URL}" >> .env.test
+          echo "VITE_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}" >> .env.test
+          echo "VITE_SUPABASE_ANON_KEY=${PUBLISHABLE_KEY}" >> .env.test
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        run: pnpm test:e2e
 
       - name: Stop local Supabase stack
         if: always()
