@@ -139,6 +139,9 @@ export async function ensureMatchTransports(
   pool?: pg.Pool,
 ): Promise<TransportRow[]> {
   return withTransaction(async (client) => {
+    // Generation numbers come from MAX(generation)+1, so two concurrent sessions for the
+    // same match would insert the same primary key (23505). Serialize per match.
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`media:${matchId}`]);
     const active = await loadActiveTransports(matchId, undefined, client);
     const have: Record<string, true> = {};
     for (const row of active) have[`${row.kind}:${row.audience}`] = true;
@@ -154,7 +157,8 @@ export async function ensureMatchTransports(
       const generation = Number(maxRes.rows[0].max_gen) + 1;
       await client.query(
         `INSERT INTO public.media_transports (match_id, kind, audience, generation, room_name, status)
-         VALUES ($1, $2, $3, $4, $5, 'READY')`,
+         VALUES ($1, $2, $3, $4, $5, 'READY')
+         ON CONFLICT (match_id, kind, audience, generation) DO NOTHING`,
         [matchId, tuple.kind, tuple.audience, generation, createRoomName(matchId, tuple.kind, tuple.audience)],
       );
     }
@@ -244,6 +248,7 @@ export async function rotateTransports(
     const { kind, audience } = target;
     // 1. Claim the active generation as ROTATING (durable, survives a crash).
     const claimed = await withTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`media:${matchId}`]);
       const res = await client.query(
         `SELECT match_id, kind, audience, generation, room_name, status
            FROM public.media_transports
@@ -275,6 +280,7 @@ export async function rotateTransports(
 
     // 3. ACK observed: retire the old name and publish the next generation.
     const next = await withTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`media:${matchId}`]);
       await client.query(
         `UPDATE public.media_transports
             SET status = 'RETIRED', retired_at = now()
