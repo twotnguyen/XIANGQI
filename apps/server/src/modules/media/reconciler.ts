@@ -308,13 +308,14 @@ export async function rotateTransports(
 export async function deleteMatchTransports(
   matchId: string,
   pool?: pg.Pool,
+  options?: { attempts?: number },
 ): Promise<{ retired: number; failed: { key: TransportKey; error: string }[] }> {
   const active = await loadActiveTransports(matchId, pool);
   const failed: { key: TransportKey; error: string }[] = [];
   let retired = 0;
 
   for (const row of active) {
-    const ack = await deleteRoomAcknowledged(row.roomName);
+    const ack = await deleteRoomAcknowledged(row.roomName, options?.attempts);
     if (!ack.ok) {
       failed.push({ key: { kind: row.kind, audience: row.audience }, error: ack.error ?? 'SFU deleteRoom failed' });
       continue;
@@ -369,7 +370,7 @@ export async function recoverMediaOnBoot(
   let failed = 0;
   for (const row of matchRes.rows) {
     const matchId = row.match_id as string;
-    const outcome = await withMatchMediaLock(matchId, () => deleteMatchTransports(matchId, p), p);
+    const outcome = await withMatchMediaLock(matchId, () => deleteMatchTransports(matchId, p, { attempts: 1 }), p);
     transportsRetired += outcome.retired;
     failed += outcome.failed.length;
   }
