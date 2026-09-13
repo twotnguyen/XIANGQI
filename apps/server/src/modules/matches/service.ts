@@ -110,7 +110,7 @@ export async function startMatchFromRoom(
     // 5. Insert initial match_event version 0
     await client.query(
       `INSERT INTO public.match_events (match_id, version, type, payload)
-       VALUES ($1, 0, 'INITIAL', $2)`,
+       VALUES ($1, 0, 'START', $2)`,
       [matchId, JSON.stringify({ initialPosition: initialPos, key: initialKey })],
     );
 
@@ -181,7 +181,7 @@ export async function submitMove(
     }
 
     // 4. Expected version must match current match version
-    if (command.expectedVersion !== match.version) {
+    if (command.expectedVersion !== Number(match.version)) {
       throw { statusCode: 409, code: 'VERSION_CONFLICT', message: 'Trạng thái ván cờ đã thay đổi, vui lòng đồng bộ lại' };
     }
 
@@ -205,12 +205,12 @@ export async function submitMove(
       // Clock ran out! Reject move and finalize as TIMEOUT
       const winningSide: Side = pos.turn === 'RED' ? 'BLACK' : 'RED';
       const timeoutOutcome: Outcome = { winner: winningSide, reason: 'TIMEOUT' };
-      const newVersion = match.version + 1;
+      const newVersion = Number(match.version) + 1;
 
       await finalizeMatch(client, match, timeoutOutcome, roomId);
       await client.query(
         `UPDATE public.matches
-         SET status = 'FINISHED', outcome = $1, version = $2, ended_at = now()
+         SET status = 'FINISHED', outcome = $1, version = $2, proposal = NULL, ended_at = now()
          WHERE id = $3`,
         [JSON.stringify(timeoutOutcome), newVersion, matchId],
       );
@@ -279,6 +279,7 @@ export async function submitMove(
     );
 
     // 11. Record event
+    const moveId = crypto.randomUUID();
     await client.query(
       `INSERT INTO public.match_events (match_id, version, type, payload)
        VALUES ($1, $2, 'MOVE', $3)`,
@@ -286,7 +287,7 @@ export async function submitMove(
         matchId,
         newVersion,
         JSON.stringify({
-          moveId: crypto.randomUUID(),
+          moveId,
           side: moverPiece.side,
           move: command.payload,
           key: nextKey,
@@ -299,18 +300,23 @@ export async function submitMove(
       await finalizeMatch(client, match, outcome, roomId);
       await client.query(
         `UPDATE public.matches
-         SET position = $1, version = $2, ply = $3, outcome = $4, status = 'FINISHED', ended_at = now()
+         SET position = $1, version = $2, ply = $3, outcome = $4, status = 'FINISHED',
+             proposal = NULL,
+             active_move_ids = active_move_ids || jsonb_build_array($6::text),
+             ended_at = now()
          WHERE id = $5`,
-        [JSON.stringify(nextPos), newVersion, newPly, JSON.stringify(outcome), matchId],
+        [JSON.stringify(nextPos), newVersion, newPly, JSON.stringify(outcome), matchId, moveId],
       );
     } else {
       const clockJson = settled?.clock ? JSON.stringify(settled.clock) : null;
       // Per spec: any new move automatically invalidates pending proposal
       await client.query(
         `UPDATE public.matches
-         SET position = $1, version = $2, ply = $3, clock = $4, proposal = NULL, updated_at = now()
+         SET position = $1, version = $2, ply = $3, clock = $4, proposal = NULL,
+             active_move_ids = active_move_ids || jsonb_build_array($6::text),
+             updated_at = now()
          WHERE id = $5`,
-        [JSON.stringify(nextPos), newVersion, newPly, clockJson, matchId],
+        [JSON.stringify(nextPos), newVersion, newPly, clockJson, matchId, moveId],
       );
     }
 
@@ -407,13 +413,13 @@ export async function resignMatch(
     const resigningSide: Side = match.red_user_id === userId ? 'RED' : 'BLACK';
     const winningSide: Side = resigningSide === 'RED' ? 'BLACK' : 'RED';
     const outcome: Outcome = { winner: winningSide, reason: 'RESIGN' };
-    const newVersion = match.version + 1;
+    const newVersion = Number(match.version) + 1;
 
     // Finalize match and release slots
     await finalizeMatch(client, match, outcome, roomId);
     await client.query(
       `UPDATE public.matches
-       SET status = 'FINISHED', outcome = $1, version = $2, ended_at = now()
+       SET status = 'FINISHED', outcome = $1, version = $2, proposal = NULL, ended_at = now()
        WHERE id = $3`,
       [JSON.stringify(outcome), newVersion, matchId],
     );
@@ -461,17 +467,17 @@ async function finalizeMatch(
   outcome: Outcome,
   roomId: string | null,
 ): Promise<void> {
-  if (roomId) {
-    // 1. Release active_players for both participants
-    await client.query(
-      'DELETE FROM public.active_players WHERE room_id = $1',
-      [roomId],
-    );
+  // 1. Release active_players for both participants
+  await client.query(
+    'DELETE FROM public.active_players WHERE match_id = $1 OR (room_id IS NOT NULL AND room_id = $2)',
+    [match.id, roomId],
+  );
 
+  if (roomId) {
     // 2. Set room status to FINISHED
     await client.query(
       `UPDATE public.rooms
-       SET status = 'FINISHED', updated_at = now()
+       SET status = 'FINISHED', finished_at = now(), updated_at = now()
        WHERE id = $1`,
       [roomId],
     );
@@ -523,8 +529,8 @@ async function getMatchSnapshotFromClient(
     mode: m.mode,
     status: m.status,
     position: pos,
-    version: m.version,
-    ply: m.ply,
+    version: Number(m.version),
+    ply: Number(m.ply),
     ruleSetVersion: 'xiangqi-simple-v1',
     redUserId: m.red_user_id,
     blackUserId: m.black_user_id,

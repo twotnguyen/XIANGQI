@@ -88,16 +88,16 @@ export async function recoverActiveMatchesOnBoot(
       );
 
       // 2. Release active players
-      if (match.room_id) {
-        await client.query(
-          'DELETE FROM public.active_players WHERE room_id = $1',
-          [match.room_id],
-        );
+      await client.query(
+        'DELETE FROM public.active_players WHERE match_id = $1 OR (room_id IS NOT NULL AND room_id = $2)',
+        [match.id, match.room_id],
+      );
 
+      if (match.room_id) {
         // 3. Mark room FINISHED
         await client.query(
           `UPDATE public.rooms
-           SET status = 'FINISHED', updated_at = now()
+           SET status = 'FINISHED', finished_at = now(), updated_at = now()
            WHERE id = $1`,
           [match.room_id],
         );
@@ -135,7 +135,7 @@ async function finalizeMatchTx(
   if (roomId) {
     await client.query('DELETE FROM public.active_players WHERE room_id = $1', [roomId]);
     await client.query(
-      `UPDATE public.rooms SET status = 'FINISHED', updated_at = now() WHERE id = $1`,
+      `UPDATE public.rooms SET status = 'FINISHED', finished_at = now(), updated_at = now() WHERE id = $1`,
       [roomId],
     );
   }

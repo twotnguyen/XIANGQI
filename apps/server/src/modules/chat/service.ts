@@ -125,10 +125,10 @@ export async function sendMessage(
     const id = crypto.randomUUID();
     const insertRes = await client.query(
       `INSERT INTO public.chat_messages (
-         id, match_id, channel, sender_id, client_message_id, content
-       ) VALUES ($1, $2, $3, $4, $5, $6)
+         id, room_id, match_id, channel, sender_id, client_message_id, content
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [id, matchId, channel, userId, clientMessageId, content],
+      [id, roomId, matchId, channel, userId, clientMessageId, content],
     );
 
     const row = insertRes.rows[0];

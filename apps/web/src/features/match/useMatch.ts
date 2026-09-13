@@ -58,7 +58,7 @@ export function useMatch(matchId: string | undefined) {
           headers,
           body: JSON.stringify({
             commandId,
-            expectedVersion: currentVersionRef.current,
+            expectedVersion: Number(currentVersionRef.current),
             payload: move,
           }),
         });

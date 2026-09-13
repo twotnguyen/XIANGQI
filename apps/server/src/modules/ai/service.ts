@@ -48,14 +48,11 @@ export async function createAiMatch(
         throw { statusCode: 409, code: 'USER_IN_ACTIVE_ROOM', message: 'Bạn đang trong một ván hoặc phòng khác' };
       }
 
-      // 2. Insert into active_players
-      await client.query(
-        'INSERT INTO public.active_players (user_id) VALUES ($1)',
-        [userId],
-      );
-
       const matchId = crypto.randomUUID();
       const initialPos = createInitialPosition();
+      const aiSide = humanSide === 'RED' ? 'BLACK' : 'RED';
+      const dbRedUserId = humanSide === 'RED' ? userId : null;
+      const dbBlackUserId = humanSide === 'BLACK' ? userId : null;
       const redUserId = humanSide === 'RED' ? userId : AI_ACTOR_ID;
       const blackUserId = humanSide === 'BLACK' ? userId : AI_ACTOR_ID;
 
@@ -65,27 +62,34 @@ export async function createAiMatch(
         runningSinceEpochMs: Date.now(),
       } : null;
 
-      // 3. Insert matches row
+      // 2. Insert matches row
       await client.query(
         `INSERT INTO public.matches (
            id, room_id, mode, status, position, version, ply,
-           red_user_id, black_user_id, time_control, clock, ai_level
-         ) VALUES ($1, NULL, 'VS_AI', 'ACTIVE', $2, 0, 0, $3, $4, $5, $6, $7)`,
+           red_user_id, black_user_id, ai_side, ai_level, time_control, clock
+         ) VALUES ($1, NULL, 'AI', 'ACTIVE', $2, 0, 0, $3, $4, $5, $6, $7, $8)`,
         [
           matchId,
           JSON.stringify(initialPos),
-          redUserId,
-          blackUserId,
+          dbRedUserId,
+          dbBlackUserId,
+          aiSide,
+          level,
           timeControl,
           clock ? JSON.stringify(clock) : null,
-          level,
         ],
+      );
+
+      // 3. Insert into active_players
+      await client.query(
+        'INSERT INTO public.active_players (user_id, match_id, created_at) VALUES ($1, $2, now())',
+        [userId, matchId],
       );
 
       // 4. Initial match event
       await client.query(
         `INSERT INTO public.match_events (match_id, version, type, payload)
-         VALUES ($1, 0, 'INITIAL', $2)`,
+         VALUES ($1, 0, 'START', $2)`,
         [matchId, JSON.stringify({ position: initialPos, clock })],
       );
 

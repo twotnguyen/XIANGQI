@@ -251,7 +251,7 @@ export async function joinRoom(
 ): Promise<RoomDTO> {
   const p = pool ?? getPool();
 
-  return withTransaction(async (client) => {
+  const targetId = await withTransaction(async (client) => {
     let targetRoomId: string | null = null;
     let grantRole: MemberRole | null = null;
     let invitationIdToConsume: string | null = null;
@@ -327,7 +327,7 @@ export async function joinRoom(
       [targetRoomId, userId],
     );
     if (existingMember.rowCount! > 0) {
-      return getRoom(targetRoomId, userId, p);
+      return targetRoomId;
     }
 
     if (requestedRole === 'PLAYER') {
@@ -391,8 +391,10 @@ export async function joinRoom(
       );
     }
 
-    return getRoom(targetRoomId, userId, p);
+    return targetRoomId;
   }, p);
+
+  return getRoom(targetId, userId, p);
 }
 
 export async function rotateWatchCode(
