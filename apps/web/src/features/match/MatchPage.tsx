@@ -23,6 +23,7 @@ export function MatchPage() {
     propose,
     respond,
     resign,
+    refresh,
   } = useMatch(matchId);
 
   useEffect(() => {
@@ -270,6 +271,7 @@ export function MatchPage() {
                   payload: {},
                 }),
               });
+              await refresh();
             } else {
               propose('UNDO');
             }
