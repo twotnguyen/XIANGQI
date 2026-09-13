@@ -398,6 +398,51 @@ describe.runIf(inIntegrationLane)('T015: realtime socket acceptance', () => {
     });
   }, 60_000);
 
+  it('pushes room:updated with incremented room_version when opponent joins a waiting room', async () => {
+    await withTestContext(async (ctx) => {
+      try {
+        const roomRes = await ctx.app.inject({
+          method: 'POST',
+          url: '/api/v1/rooms',
+          headers: ctx.authAs('A'),
+          payload: { name: `room-join-push-${ctx.runId.slice(0, 10)}`, visibility: 'PUBLIC', timeControl: 0 },
+        });
+        expect(roomRes.statusCode, roomRes.body).toBe(200);
+        const createdRoom = unwrap<RoomDTO>(roomRes);
+        const roomId = createdRoom.id;
+        expect(createdRoom.roomVersion).toBe(1);
+
+        await ctx.app.listen({ port: 0, host: '127.0.0.1' });
+        const port = (ctx.app.server.address() as AddressInfo).port;
+        const tabId = crypto.randomUUID();
+        const playerA = connect(port, ctx.users['A'], tabId);
+        expect(await connected(playerA)).toBe(true);
+        expect((await request(playerA, 'room:subscribe', { roomId })).ok).toBe(true);
+
+        const pushed = nextOnce(playerA, 'room:updated');
+        const join = await ctx.app.inject({
+          method: 'POST',
+          url: '/api/v1/rooms/join',
+          headers: ctx.authAs('B'),
+          payload: { roomId, role: 'PLAYER' },
+        });
+        expect(join.statusCode, join.body).toBe(200);
+        const joinedRoom = unwrap<RoomDTO>(join);
+        expect(joinedRoom.roomVersion).toBe(2);
+
+        const frame = (await pushed) as { roomId: string; room: RoomDTO };
+        expect(frame.roomId).toBe(roomId);
+        expect(frame.room.roomVersion).toBe(2);
+        expect(frame.room.members).toHaveLength(2);
+        const blackMember = frame.room.members.find((m: RoomDTO['members'][number]) => m.userId === ctx.users['B'].id);
+        expect(blackMember?.side).toBe('BLACK');
+        expect(blackMember?.role).toBe('PLAYER');
+      } finally {
+        for (const socket of sockets.splice(0)) socket.disconnect();
+      }
+    });
+  }, 60_000);
+
   it('rejects a revoked session at handshake and on resubscribe', async () => {
     await withTestContext(async (ctx) => {
       const h = await setupMatch(ctx, { red: 'A', black: 'B' });

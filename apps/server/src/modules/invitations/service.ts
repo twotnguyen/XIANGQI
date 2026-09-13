@@ -550,6 +550,11 @@ export async function joinRoom(
       );
     }
 
+    await client.query(
+      `UPDATE public.rooms SET room_version = room_version + 1, updated_at = now() WHERE id = $1`,
+      [targetRoomId],
+    );
+
     return targetRoomId;
   }, p);
 
