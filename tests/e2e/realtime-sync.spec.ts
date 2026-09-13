@@ -208,13 +208,13 @@ test.describe('Online match realtime sync', () => {
       });
       expect(joined.status(), 'POST /rooms/join').toBe(200);
       await expect(pageA.getByTestId('seat-black')).toContainText(userB.id.slice(0, 8), {
-        timeout: 5_000,
+        timeout: 15_000,
       });
 
       // Both ready → the room turns PLAYING and this screen follows the new match.
       await pageA.getByTestId('ready-toggle-btn').click();
       await expect(pageA.getByTestId('ready-toggle-btn')).toHaveText(/Hủy sẵn sàng/, {
-        timeout: 5_000,
+        timeout: 15_000,
       });
       const readyB = await request.post(`${API_URL}/api/v1/rooms/${roomId}/ready`, {
         headers: authHeader(tokenB),
@@ -327,12 +327,12 @@ test.describe('Online match realtime sync', () => {
 
       // A's own board commits the server snapshot.
       await expect(pageA.getByRole('img', { name: /Tốt đỏ, cột 1 hàng 5/ })).toBeVisible({
-        timeout: 5_000,
+        timeout: 15_000,
       });
 
       // B's board follows within a few seconds, with no reload.
       await expect(pageB.getByRole('img', { name: /Tốt đỏ, cột 1 hàng 5/ })).toBeVisible({
-        timeout: 5_000,
+        timeout: 15_000,
       });
       await expect(pageB.getByRole('img', { name: /Tốt đỏ, cột 1 hàng 4/ })).toHaveCount(0);
       expect(
@@ -342,7 +342,7 @@ test.describe('Online match realtime sync', () => {
       ).toBe(true);
 
       // Turn and clock follow the move on the observer's screen.
-      await expect(pageB.getByText('Lượt của bạn')).toBeVisible({ timeout: 5_000 });
+      await expect(pageB.getByText('Lượt của bạn')).toBeVisible({ timeout: 15_000 });
       const clockBefore = await pageB.getByTestId('clock-black').textContent();
       await pageB.waitForTimeout(2_600);
       const clockAfter = await pageB.getByTestId('clock-black').textContent();

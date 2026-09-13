@@ -13,7 +13,7 @@
     "typecheck": "tsc -b",
     "test": "pnpm run test:unit && pnpm run test:e2e",
     "test:unit": "pnpm exec vitest run --config vitest.config.ts",
-    "test:integration": "pnpm exec vitest run --config vitest.integration.config.ts",
+    "test:integration": "pnpm exec vitest run --config vitest.integration.config.ts tests/integration",
     "test:media": "pnpm exec vitest run --config vitest.integration.config.ts tests/media",
     "test:e2e": "playwright test",
     "test:ai": "vitest run --config vitest.config.ts tests/ai/benchmark.test.ts",
