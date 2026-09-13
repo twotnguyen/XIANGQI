@@ -17,6 +17,7 @@ import type {
   Proposal,
   Outcome,
   Position,
+  Side,
 } from '@xiangqi/contracts';
 import { rebuildActiveBranch } from './undo.js';
 import { settleClock } from './clock.js';
@@ -108,14 +109,20 @@ export async function submitProposal(
 
     // Create proposal: 30s TTL
     const proposalId = crypto.randomUUID();
-    const newVersion = match.version + 1;
+    const newVersion = Number(match.version) + 1;
+    const userSide: Side = match.red_user_id === userId ? 'RED' : 'BLACK';
     const proposal: Proposal = {
       id: proposalId,
       kind: command.payload.kind,
       requesterId: userId,
-      basePly: match.ply,
+      basePly: Number(match.ply),
       createdVersion: newVersion,
       expiresAtMs: nowMs + 30000,
+    };
+
+    const dbProposal = {
+      ...proposal,
+      requester: userSide,
     };
 
     lastProposalTimes.set(rateLimitKey, nowMs);
@@ -125,7 +132,7 @@ export async function submitProposal(
       `UPDATE public.matches
        SET proposal = $1, version = $2, updated_at = now()
        WHERE id = $3`,
-      [JSON.stringify(proposal), newVersion, matchId],
+      [JSON.stringify(dbProposal), newVersion, matchId],
     );
 
     // Record event
@@ -258,7 +265,7 @@ export async function respondToProposal(
       if (roomId) {
         await client.query('DELETE FROM public.active_players WHERE room_id = $1', [roomId]);
         await client.query(
-          `UPDATE public.rooms SET status = 'FINISHED', updated_at = now() WHERE id = $1`,
+          `UPDATE public.rooms SET status = 'FINISHED', finished_at = now(), updated_at = now() WHERE id = $1`,
           [roomId],
         );
       }
@@ -376,8 +383,8 @@ async function getMatchSnapshotClient(
     mode: m.mode,
     status: m.status,
     position: pos,
-    version: m.version,
-    ply: m.ply,
+    version: Number(m.version),
+    ply: Number(m.ply),
     ruleSetVersion: 'xiangqi-simple-v1',
     redUserId: m.red_user_id,
     blackUserId: m.black_user_id,
