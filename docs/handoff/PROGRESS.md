@@ -1,9 +1,9 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY (đầy đủ các tài liệu hướng dẫn và đặc tả).
-- Trạng thái sản phẩm: **LOCAL_COMPLETE** — Hoàn thành 100% toàn bộ 32/32 issues trong môi trường local và kiểm chứng qua 491 automated tests (0 fail, 0 skip). Đã khắc phục toàn diện 30/30 findings (16 P1, 8 P2, 6 P3) từ đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md`.
-- Issue đang làm: Hoàn tất bàn giao đợt remediation và chuẩn bị bảo vệ đồ án.
-- Bước tiếp theo: Triển khai kiểm chứng các gate nhà cung cấp ngoài (Google OAuth domain thật, LiveKit Cloud 2 mạng vật lý, Vercel/Render production).
+- Trạng thái sản phẩm: **LOCAL_COMPLETE** — 32/32 issue đạt tiêu chuẩn nghiệm thu local; 30/30 finding của đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md` đã xử lý xong (28 `FIXED`, 2 ghi nhận tài liệu/ngữ nghĩa) và merge vào `main` qua **PR #48 (squash `8bfa200`)**, cùng PR #49 (`aa20d4b`, ghi merge SHA) và PR #50 (`3d16a8a`, lane tải thủ công + hardening E2E).
+- Issue đang làm: Hoàn tất bàn giao; sẵn sàng kiểm chứng gate provider/thiết bị ngoài.
+- Bước tiếp theo: chạy các gate ngoài (Google OAuth domain thật, LiveKit 2 thiết bị khác mạng, deploy Render/Vercel) theo `docs/handoff/DEPLOY.md`; lane tải chạy trên máy đủ cấu hình qua workflow `Load lane (manual)`.
 - External Gates đang chờ:
   1. Google OAuth Cloud Client ID/Secret trên domain production Vercel (R01).
   2. LiveKit Cloud / TURN Relay trên 2 thiết bị di động vật lý khác mạng (R11).
@@ -50,16 +50,24 @@
 
 ---
 
-## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (Sau Remediation 2026-09-13)
+## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `3d16a8a`)
+
+Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA đã merge) cùng một lane tải thủ công:
 
 ```
-- Unit Tests:          34 test files, 301 tests pass (100% PASS)
-- Integration Tests:   13 test files, 90 tests pass (100% PASS trên PostgreSQL & Supabase Auth local thật)
-- Media SFU Tests:      1 test file, 8 tests pass trên LiveKit SFU thật (RTP bytes/frames verified)
-- Load Testing:        10 phòng, 70 kết nối Socket.IO đồng thời, 10 nước đi song song, p95 latency: 67.64 ms (< 100 ms)
-- AI Benchmark:        20 thế cờ tiêu chuẩn, tỷ lệ cắt tỉa thực nghiệm: 78.86%, 20/20 scores match 100%
-- E2E Tests:           16 test files, 92 Playwright tests (100% PASS trên cả Desktop 1366px & Mobile 360px)
-- Typecheck:           TypeScript 5.8 strict mode (0 errors trên toàn bộ workspace)
-- Linter:              ESLint 10 (0 errors, 0 warnings trên toàn bộ codebase)
-- Build:               Toàn bộ 6 workspace packages biên dịch exit code 0
+- Lane check (build + typecheck + lint + unit):  32 file, 298 test pass (0 fail)
+- Lane integration (Postgres + Supabase Auth local thật): 11 file, 81 test pass (0 fail, 0 skip)
+- Lane media (LiveKit SFU thật, có positive control RTP bytes/frames): 8 test pass
+- Lane e2e (Playwright, Chromium 1366px + Mobile 360px, stack thật): 94 test pass (0 fail)
+- Lane load (workflow thủ công, ISSUE-030): máy tham chiếu 10 phòng / 70 socket đồng thời /
+  10 nước đi song song → p50 9.47ms, p95 67.64ms (ngưỡng < 100ms), PASS.
+  Runner GitHub 2 core đo p95 405ms — không phải tham chiếu năng lực, nên lane này
+  tách khỏi PR gate và chạy bằng `workflow_dispatch`.
+- AI Benchmark (pnpm test:ai): 20 thế cờ, cắt tỉa node-weighted 78.86%, 20/20 điểm trùng khớp
+- Nghiệm thu UI bằng browser Orca (thật, 2 profile độc lập): docs/test-reports/ORCA-ACCEPTANCE.md
+- Typecheck: TypeScript 5.8 strict, exit 0 (toàn workspace)
+- Linter: ESLint 10, 0 error / 0 warning
+- Build: 6 workspace package, exit 0
 ```
+
+Ghi chú trung thực: baseline trước remediation ghi "196 unit tests / 84.51% pruning / p95 28.7ms / 5-5 SFU PASS" từng được dùng để kết luận `PROJECT_COMPLETE`; các số đó đã bị bác bỏ (F-13/F-15/F-10) và được thay bằng số đo ở trên. Số test tăng/giảm giữa các lane là do cách chia lane (unit không còn glob integration/media/load), không phải tiêu chí hoàn thành.
