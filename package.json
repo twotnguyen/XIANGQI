@@ -14,9 +14,11 @@
     "test": "pnpm run test:unit && pnpm run test:e2e",
     "test:unit": "pnpm exec vitest run --config vitest.config.ts",
     "test:integration": "pnpm exec vitest run --config vitest.integration.config.ts",
+    "test:media": "pnpm exec vitest run --config vitest.integration.config.ts tests/media",
     "test:e2e": "playwright test",
     "test:ai": "vitest run --config vitest.config.ts tests/ai/benchmark.test.ts",
-    "test:load": "vitest run --config vitest.config.ts tests/load/socket-load.test.ts"
+    "bench:ai:export": "AI_BENCH_EXPORT_DIR=docs/test-reports/ai vitest run --config vitest.config.ts tests/ai/benchmark.test.ts",
+    "test:load": "vitest run --config vitest.integration.config.ts tests/load/socket-load.test.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
