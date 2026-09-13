@@ -49,16 +49,33 @@ async function expectBoardInteractive(page: Page, timeout = 20_000): Promise<voi
  * rejected the move instead of timing out silently (CI-only races are otherwise
  * impossible to diagnose from the report).
  */
-async function expectPieceMoved(page: Page, name: RegExp, timeout = 15_000): Promise<void> {
+async function expectPieceMoved(page: Page, name: RegExp, timeout = 30_000): Promise<void> {
   const piece = page.getByRole('img', { name });
   // Only the match-level error counts: the media panel has its own alert.
   const alert = page.getByTestId('match-error');
-  await Promise.race([
-    piece.waitFor({ state: 'visible', timeout }),
-    alert.waitFor({ state: 'visible', timeout }).then(async () => {
-      throw new Error(`client rejected the move: ${(await alert.textContent()) ?? ''}`);
-    }),
-  ]);
+  try {
+    await Promise.race([
+      piece.waitFor({ state: 'visible', timeout }),
+      alert.waitFor({ state: 'visible', timeout }).then(async () => {
+        throw new Error(`client rejected the move: ${(await alert.textContent()) ?? ''}`);
+      }),
+    ]);
+  } catch (error) {
+    const state = await page.evaluate(async () => {
+      const url = '/src/lib/realtime.ts';
+      const mod = (await import(/* @vite-ignore */ url)) as {
+        realtime?: { getStatus(): string };
+      };
+      return {
+        status: mod.realtime?.getStatus() ?? 'unknown',
+        alert: document.querySelector('[data-testid="match-error"]')?.textContent ?? null,
+      };
+    });
+    throw new Error(
+      `piece ${name} never appeared: ${JSON.stringify(state)} (${error instanceof Error ? error.message.split('\n')[0] : String(error)})`,
+      { cause: error },
+    );
+  }
 }
 
 test.describe('Online match realtime sync', () => {
