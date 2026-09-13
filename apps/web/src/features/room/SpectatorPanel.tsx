@@ -23,7 +23,7 @@ export function SpectatorPanel({ members }: SpectatorPanelProps) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h4 style={{ margin: 0, fontSize: '14px' }}>
-          Người xem ({count}/5)
+          Người xem (<span data-testid="spectator-count">{count}/5</span>)
         </h4>
         {isFull && (
           <span
