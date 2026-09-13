@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Fastify 5.3.0, Playwright Chromium  
-**Tiêu chuẩn kiểm chứng:** [07-UI-AND-TESTS.md](../../specs/07-UI-AND-TESTS.md) & [ISSUE-030](../../issues/ISSUE-030-acceptance-load.md)  
+**Tiêu chuẩn kiểm chứng:** [07-UI-AND-TESTS.md](../specs/07-UI-AND-TESTS.md) & [ISSUE-030](../issues/ISSUE-030-acceptance-load.md)  
 
 ---
 

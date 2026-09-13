@@ -1,6 +1,7 @@
 # ISSUE-012 — Ván online, transaction nước đi và resync
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-012.md](../test-reports/ISSUE-012.md)
 - Yêu cầu: R06, R07
 - Phụ thuộc bắt buộc: [ISSUE-004](ISSUE-004-terminal-repetition.md), [ISSUE-010](ISSUE-010-rooms-lobby.md), [ISSUE-011](ISSUE-011-invitations.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
@@ -43,21 +44,21 @@ Sở hữu finalizeMatch(tx,match,outcome,nowMs,terminalEvent) theo state spec: 
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Both-ready transaction tạo ACTIVE match version0/initial key count1, active_players constraints và room PLAYING.
+- [x] **Bước 1.** Both-ready transaction tạo ACTIVE match version0/initial key count1, active_players constraints và room PLAYING.
 
-- [ ] **Bước 2.** Implement pipeline 03: lock, receipt lookup+payload hash, version/turn/role, validate/apply, terminal, event/snapshot, commit rồi emit.
+- [x] **Bước 2.** Implement pipeline 03: lock, receipt lookup+payload hash, version/turn/role, validate/apply, terminal, event/snapshot, commit rồi emit.
 
-- [ ] **Bước 3.** Socket auth/Origin kiểm trước subscribe, mỗi command kiểm session/member/controller; payload identity không tin.
+- [x] **Bước 3.** Socket auth/Origin kiểm trước subscribe, mỗi command kiểm session/member/controller; payload identity không tin.
 
-- [ ] **Bước 4.** Client sync contract snapshot by version, server periodic sync request support; drop/dup events fixture.
+- [x] **Bước 4.** Client sync contract snapshot by version, server periodic sync request support; drop/dup events fixture.
 
-- [ ] **Bước 5.** Rollback test DB failure: không ack/broadcast accepted. Không hold lock khi network emit.
+- [x] **Bước 5.** Rollback test DB failure: không ack/broadcast accepted. Không hold lock khi network emit.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-012.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-012.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -99,11 +100,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

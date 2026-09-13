@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Fastify 5.3.0, Helmet, CORS  
-**Tiêu chuẩn kiểm chứng:** [04-CONTRACTS.md](../../specs/04-CONTRACTS.md), [05-AUTH.md](../../specs/05-AUTH.md), [06-MEDIA.md](../../specs/06-MEDIA.md) & [ISSUE-029](../../issues/ISSUE-029-security-hardening.md)  
+**Tiêu chuẩn kiểm chứng:** [04-CONTRACTS.md](../specs/04-CONTRACTS.md), [05-AUTH.md](../specs/05-AUTH.md), [06-MEDIA.md](../specs/06-MEDIA.md) & [ISSUE-029](../issues/ISSUE-029-security-hardening.md)  
 
 ---
 

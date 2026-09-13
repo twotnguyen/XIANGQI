@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Apple Silicon (arm64)  
-**Tiêu chuẩn kiểm chứng:** [08-TEST-EXECUTION.md](../../specs/08-TEST-EXECUTION.md) & [ISSUE-023](../../issues/ISSUE-023-ai-experiments.md)  
+**Tiêu chuẩn kiểm chứng:** [08-TEST-EXECUTION.md](../specs/08-TEST-EXECUTION.md) & [ISSUE-023](../issues/ISSUE-023-ai-experiments.md)  
 
 ---
 
