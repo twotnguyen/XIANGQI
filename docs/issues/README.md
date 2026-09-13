@@ -1,6 +1,6 @@
 # Mục lục 32 issue triển khai
 
-Đọc [START-HERE](../handoff/START-HERE.md). Trạng thái dự án: **PROJECT_COMPLETE** — Toàn bộ 32/32 issue đã hoàn thành (**DONE**) và được kiểm chứng đầy đủ. Các số dependency dưới đây là bắt buộc, và PR dependency đã merge vào main. Mốc online/final đáp ứng tất cả gate bắt buộc. Mỗi issue có đường dẫn file/module, hợp đồng, bước làm, test cụ thể và evidence report tương ứng.
+Đọc [START-HERE](../handoff/START-HERE.md). Trạng thái dự án: **LOCAL_IN_PROGRESS** — Đang remediation sau review `../reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md` (kết luận **NOT_READY** cho nhãn `PROJECT_COMPLETE`). Tuyên bố "32/32 DONE, kiểm chứng đầy đủ" trước đây **không đúng** (xem F-16): 27 issue đang `IN_PROGRESS` (lý do ở mục "Trạng thái remediation" dưới đây), chỉ 5 issue giữ `DONE` (001, 003, 019, 020, 028). Các số dependency dưới đây là bắt buộc, và PR dependency đã merge vào main. Không tuyên bố hoàn thành cho tới khi các fix P1 merge kèm evidence.
 
 ## Thứ tự đề xuất
 
@@ -49,3 +49,41 @@ Với một model thực thi, đi theo số tăng dần cũng hợp lệ. Depend
 | [ISSUE-030](ISSUE-030-acceptance-load.md) | Nghiệm thu xuyên suốt, lỗi mạng và thử tải | 023, 028, 029 | R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15, R16 |
 | [ISSUE-031](ISSUE-031-deploy-runbook.md) | Triển khai Vercel/Render/Supabase và media online | 030 | R16 |
 | [ISSUE-032](ISSUE-032-final-handoff.md) | Báo cáo đồ án, demo và bàn giao hoàn chỉnh | 030, 031 | R16, R12 |
+
+## Trạng thái remediation (sau review 2026-09-13)
+
+Giữ `DONE` (review xác minh tuân thủ): **001, 003, 019, 020, 028**.
+
+Mở lại `IN_PROGRESS` với lý do một dòng từ bảng C của review:
+
+| Issue | Lý do mở lại |
+|---|---|
+| ISSUE-002 | Thiếu export `TerminalEvent` theo spec 04/03 (F-29) |
+| ISSUE-004 | Không có test undo nhánh lặp; fixture F-MATE/F-STALEMATE/F-REPEAT của spec 08 chưa implement (F-17) |
+| ISSUE-005 | Thiếu phím mũi tên/Enter, 90 giao điểm không có `tabindex` (F-21) |
+| ISSUE-006 | Harness TS theo spec không tồn tại; test integration DB luôn bị skip (F-11); test "DB" bằng mock tự đối chiếu (F-12) |
+| ISSUE-007 | Thu hồi phiên không hoạt động (F-05) |
+| ISSUE-008 | Vá luồng runtime ở PR #46 sau tuyên bố DONE; chưa smoke provider thật |
+| ISSUE-009 | `PresenceTracker` in-memory nhưng không có endpoint/heartbeat nào gọi tới (F-06, F-22) |
+| ISSUE-010 | Thiếu `prepareStart`; ready race trả lỗi DB thay vì 409 (F-19) |
+| ISSUE-011 | Join theo roomId bỏ qua visibility (F-03) |
+| ISSUE-012 | Đếm lặp sai sau undo (F-02); `activeMoveIds` luôn `[]` (F-02b); client polling thay socket (F-06) |
+| ISSUE-013 | Không có scheduler, không grace 60s, không both-offline (F-04) |
+| ISSUE-014 | Đi nước sau undo lỗi UNIQUE → 500 (F-01); thiếu timer hết hạn proposal 30s (F-20) |
+| ISSUE-015 | Đồng bộ bằng polling 1.5s, không có socket (F-06) |
+| ISSUE-016 | `revokeSpectators`/`admitSpectator` là code chết, không phát `access:revoked` (F-07) |
+| ISSUE-017 | Không có event realtime, không cursor, không cleanup 30 ngày (F-06) |
+| ISSUE-018 | Thiếu piece-square table cho các quân khác (drift tài liệu, F-16) |
+| ISSUE-021 | Worker thread tắt mặc định, chạy đồng bộ trong event loop; `onWorkerMessage` nuốt RESULT (F-08) |
+| ISSUE-022 | E2E chỉ kiểm tra render form |
+| ISSUE-023 | Corpus sai tên quân, 12/20 điểm không hữu hạn; benchmark không có assertion (F-13) |
+| ISSUE-024 | Spike không WebRTC và không thuộc runner nào (F-10); unit media chỉ assert object tự tạo (F-14) |
+| ISSUE-025 | Policy in-memory (mất khi restart), 2 phòng thay vì 4, lỗi `deleteRoom` bị bỏ qua (F-09) |
+| ISSUE-026 | Không có `livekit-client`; chỉ preview camera local, không có track từ xa (F-09) |
+| ISSUE-027 | Đọc `public.moves` không lọc nhánh sau undo; rematch không reset `finished_at`; thiếu scheduler đóng phòng 10 phút (F-20, F-02b) |
+| ISSUE-029 | CORS `origin: true`, CSP tắt, thu hồi token không hoạt động (F-05) |
+| ISSUE-030 | "Thử tải" chỉ là `app.inject('/health')` tuần tự; full-demo E2E chỉ 1 test điều hướng, không có 8 context (F-15) |
+| ISSUE-031 | Chưa có smoke HTTPS/provider thật |
+| ISSUE-032 | Tuyên bố `PROJECT_COMPLETE` không khớp thực tế; thiếu ghi nhận PR #45–#47 (F-16) |
+
+Không đánh dấu issue nào là `FIXED` — các fix chưa merge.
