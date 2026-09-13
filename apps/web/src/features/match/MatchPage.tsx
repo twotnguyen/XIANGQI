@@ -8,7 +8,14 @@ import { Controls } from './Controls.js';
 import { useMatch } from './useMatch.js';
 import { ChatPanel } from '../chat/ChatPanel.js';
 import { MediaPanel } from '../media/MediaPanel.js';
+import { realtime } from '../../lib/realtime.js';
 import type { Side } from '@xiangqi/contracts';
+
+const STATUS_LABEL: Record<string, string> = {
+  connected: 'Trực tuyến',
+  connecting: 'Đang kết nối...',
+  offline: 'Mất kết nối',
+};
 
 export function MatchPage() {
   const { id: matchId } = useParams<{ id: string }>();
@@ -19,11 +26,13 @@ export function MatchPage() {
     snapshot,
     error,
     isPending,
+    status,
+    controller,
     makeMove,
     propose,
     respond,
     resign,
-    refresh,
+    undoAi,
   } = useMatch(matchId);
 
   useEffect(() => {
@@ -59,6 +68,10 @@ export function MatchPage() {
     ? snapshot.position.turn
     : null;
 
+  // Presence comes from the snapshot (never guessed from the socket).
+  const opponents = (snapshot.presence ?? []).filter((p) => p.userId !== currentUserId);
+  const offlineOpponent = opponents.find((p) => !p.online && p.disconnectDeadlineMs !== null);
+
   // Pending proposal from opponent
   const incomingProposal = snapshot.proposal && snapshot.proposal.requesterId !== currentUserId
     ? snapshot.proposal
@@ -81,6 +94,32 @@ export function MatchPage() {
         <span style={{ fontSize: '12px', color: '#666' }}>
           {isPlayer ? `Bạn cầm quân ${mySide === 'RED' ? 'Đỏ' : 'Đen'}` : 'Đang xem'}
         </span>
+      </div>
+
+      {/* Realtime connection + presence (from the snapshot, not from the socket) */}
+      <div
+        style={{ display: 'flex', gap: '8px', justifyContent: 'center', fontSize: '12px', color: '#666' }}
+        data-testid="realtime-status"
+        data-status={status}
+      >
+        <span>{STATUS_LABEL[status] ?? status}</span>
+        {isPlayer && snapshot.status === 'ACTIVE' && (
+          <span data-testid="control-status">{controller ? '· Giữ quyền điều khiển' : '· Chỉ đọc'}</span>
+        )}
+        {opponents.map((presence) => (
+          <span key={presence.userId} data-testid="presence-status">
+            {presence.online
+              ? '· Đối thủ trực tuyến'
+              : presence.disconnectDeadlineMs !== null
+                ? '· Đối thủ mất kết nối'
+                : '· Đối thủ ngoại tuyến'}
+          </span>
+        ))}
+        {offlineOpponent && (
+          <span data-testid="disconnect-countdown">
+            (còn {Math.max(0, Math.ceil((offlineOpponent.disconnectDeadlineMs! - snapshot.serverNowMs) / 1000))}s)
+          </span>
+        )}
       </div>
 
       {/* Clock */}
@@ -186,14 +225,24 @@ export function MatchPage() {
               <button
                 onClick={async () => {
                   const session = (await supabase.auth.getSession()).data.session;
-                  await fetch(`/api/v1/rooms/${snapshot.roomId}/rematch`, {
+                  const res = await fetch(`/api/v1/rooms/${snapshot.roomId}/rematch`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
                       Authorization: `Bearer ${session?.access_token ?? ''}`,
+                      ...realtime.controlHeaders('room'),
                     },
-                    body: JSON.stringify({ expectedMatchId: snapshot.id }),
+                    body: JSON.stringify({
+                      commandId: crypto.randomUUID(),
+                      expectedMatchId: snapshot.id,
+                      accept: true,
+                    }),
                   });
+                  const data = await res.json();
+                  const newMatchId = data?.data?.newMatchId ?? data?.data?.room?.currentMatchId ?? null;
+                  if (data?.ok && newMatchId) {
+                    navigate(`/matches/${newMatchId}`);
+                  }
                 }}
                 style={{ padding: '8px 16px', fontSize: '13px', backgroundColor: '#A51F25', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                 data-testid="rematch-btn"
@@ -255,25 +304,11 @@ export function MatchPage() {
           isAiMode={snapshot.mode === 'AI'}
           canUndo={snapshot.ply > 0}
           onProposeDraw={() => propose('DRAW')}
-          onProposeUndo={async () => {
+          onProposeUndo={() => {
             if (snapshot.mode === 'AI') {
-              // Call instant undo for AI
-              const session = (await supabase.auth.getSession()).data.session;
-              await fetch(`/api/v1/matches/${snapshot.id}/commands/undo-ai`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${session?.access_token ?? ''}`,
-                },
-                body: JSON.stringify({
-                  commandId: crypto.randomUUID(),
-                  expectedVersion: snapshot.version,
-                  payload: {},
-                }),
-              });
-              await refresh();
+              void undoAi();
             } else {
-              propose('UNDO');
+              void propose('UNDO');
             }
           }}
           onResign={resign}
@@ -282,7 +317,7 @@ export function MatchPage() {
 
       {/* Media camera/mic panel */}
       {snapshot.roomId && (
-        <MediaPanel roomId={snapshot.roomId} isPlayer={isPlayer} />
+        <MediaPanel roomId={snapshot.roomId} matchId={snapshot.id} isPlayer={isPlayer} />
       )}
 
       {/* Room chat */}

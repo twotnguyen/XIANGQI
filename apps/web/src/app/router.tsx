@@ -18,6 +18,9 @@ import { MatchReplay } from '../features/history/MatchReplay.js';
 import { Navbar } from '../components/layout/Navbar.js';
 import type { Move, Side } from '@xiangqi/contracts';
 
+/** Test-only board route; `import.meta.env.DEV` lets the production build drop it entirely. */
+const DEV_ROUTES = import.meta.env.DEV;
+
 function Home() {
   return (
     <main style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', textAlign: 'center' }}>
@@ -26,7 +29,7 @@ function Home() {
       <div style={{ marginTop: '20px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
         <a href="/login">Đăng nhập</a>
         <a href="/register">Đăng ký</a>
-        <a href="/dev/board">Bàn cờ thử nghiệm</a>
+        {DEV_ROUTES && <a href="/dev/board">Bàn cờ thử nghiệm</a>}
       </div>
     </main>
   );
@@ -65,6 +68,11 @@ function DevBoard() {
         onMove={handleMove}
         lastMove={lastMove}
       />
+      <div data-testid="dev-last-move" style={{ marginTop: '12px', fontSize: '14px' }}>
+        {lastMove
+          ? `Nước đã chọn: (${lastMove.from.x},${lastMove.from.y}) → (${lastMove.to.x},${lastMove.to.y})`
+          : 'Nước đã chọn: chưa có'}
+      </div>
     </main>
   );
 }
@@ -88,7 +96,7 @@ export function App() {
         <Route path="/history" element={<HistoryList />} />
         <Route path="/ai/new" element={<NewAiMatch />} />
         <Route path="/join" element={<JoinRedirect />} />
-        <Route path="/dev/board" element={<DevBoard />} />
+        {DEV_ROUTES && <Route path="/dev/board" element={<DevBoard />} />}
       </Routes>
     </BrowserRouter>
   );

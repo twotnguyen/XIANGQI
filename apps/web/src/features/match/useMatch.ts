@@ -1,178 +1,212 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '../../lib/supabase.js';
 import type { MatchSnapshot, Move } from '@xiangqi/contracts';
+import { realtime, type ControllerGrant, type RealtimeStatus } from '../../lib/realtime.js';
+import { supabase } from '../../lib/supabase.js';
 
+/** Spec 03: cheap `match:sync` while the match is active (not a poll loop). */
+const ACTIVE_RESYNC_MS = 15_000;
+
+/**
+ * Authoritative match state for one screen.
+ *
+ * Snapshots arrive over the socket (`match:subscribe` ack + `match:state`
+ * pushes). Resync runs on connect, on `VERSION_CONFLICT`, when a pushed version
+ * jumps, and every 15s while the match is ACTIVE — always a cheap `match:sync`,
+ * never a full polling loop. HTTP `GET /matches/:id` remains only as the
+ * first-paint/offline fallback.
+ */
 export function useMatch(matchId: string | undefined) {
   const [snapshot, setSnapshot] = useState<MatchSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-  const currentVersionRef = useRef<number>(0);
+  const [status, setStatus] = useState<RealtimeStatus>(realtime.getStatus());
+  const [controller, setController] = useState<ControllerGrant | null>(null);
 
-  const getHeaders = useCallback(async () => {
-    const session = (await supabase.auth.getSession()).data.session;
-    return {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session?.access_token ?? ''}`,
-    };
+  const snapshotRef = useRef<MatchSnapshot | null>(null);
+  const pendingRef = useRef(false);
+
+  const applySnapshot = useCallback((incoming: MatchSnapshot) => {
+    const current = snapshotRef.current;
+    if (current && current.id === incoming.id) {
+      // Older version → drop. Same version with an older server clock → drop.
+      // Same version with a newer serverNowMs still updates clock/presence.
+      if (incoming.version < current.version) return;
+      if (incoming.version === current.version && incoming.serverNowMs <= current.serverNowMs) return;
+    }
+    snapshotRef.current = incoming;
+    setSnapshot(incoming);
   }, []);
 
+  const syncNow = useCallback(async () => {
+    if (!matchId) return;
+    const lastVersion = snapshotRef.current?.version ?? 0;
+    const res = await realtime.syncMatch(matchId, lastVersion);
+    if (res.ok) {
+      applySnapshot(res.data);
+      setError(null);
+    } else if (res.error.code !== 'OFFLINE' && res.error.code !== 'ACK_TIMEOUT') {
+      setError(res.error.message);
+    }
+  }, [matchId, applySnapshot]);
+
+  /** HTTP fallback for first paint and for when the socket is unavailable. */
   const fetchSnapshot = useCallback(async () => {
     if (!matchId) return;
     try {
-      const headers = await getHeaders();
-      const res = await fetch(`/api/v1/matches/${matchId}`, { headers });
+      const session = (await supabase.auth.getSession()).data.session;
+      const res = await fetch(`/api/v1/matches/${matchId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token ?? ''}`,
+        },
+      });
       const data = await res.json();
       if (data.ok) {
-        setSnapshot(data.data);
-        currentVersionRef.current = data.data.version;
+        applySnapshot(data.data as MatchSnapshot);
       } else {
         setError(data.error?.message ?? 'Không thể tải ván cờ');
       }
     } catch {
-      // Network hiccup — keep existing snapshot
+      // Network hiccup — keep whatever the socket already delivered.
     }
-  }, [matchId, getHeaders]);
+  }, [matchId, applySnapshot]);
 
-  // Initial fetch + periodic sync (1.5s interval for active match)
   useEffect(() => {
-    fetchSnapshot();
-    const interval = setInterval(() => {
-      if (snapshot?.status === 'ACTIVE' || !snapshot) {
-        fetchSnapshot();
-      }
-    }, 1500);
-    return () => clearInterval(interval);
-  }, [fetchSnapshot, snapshot?.status]);
+    if (!matchId) return;
+    snapshotRef.current = null;
+    setSnapshot(null);
+    setError(null);
 
-  const makeMove = useCallback(
-    async (move: Move) => {
-      if (!matchId || isPending) return;
+    const offMatchState = realtime.subscribe('match:state', (payload) => {
+      if (payload.matchId !== matchId) return;
+      const previousVersion = snapshotRef.current?.version ?? -1;
+      applySnapshot(payload.snapshot);
+      // A version jump means we missed pushes → resync from the server.
+      if (previousVersion >= 0 && payload.snapshot.version > previousVersion + 1) {
+        void syncNow();
+      }
+    });
+    const offStatus = realtime.onStatus((next) => {
+      setStatus(next);
+      if (next === 'connected') void syncNow();
+    });
+    const offController = realtime.onController('match', setController);
+
+    const unsubscribe = realtime.subscribeMatch(matchId, { claimControl: true });
+    void fetchSnapshot();
+
+    const interval = setInterval(() => {
+      if (snapshotRef.current?.status === 'ACTIVE') void syncNow();
+    }, ACTIVE_RESYNC_MS);
+
+    return () => {
+      offMatchState();
+      offStatus();
+      offController();
+      unsubscribe();
+      clearInterval(interval);
+    };
+  }, [matchId, applySnapshot, syncNow, fetchSnapshot]);
+
+  const sendCommand = useCallback(
+    async (request: () => Promise<{ ok: true; snapshot: MatchSnapshot } | { ok: false; code: string; message: string }>) => {
+      if (pendingRef.current) return;
+      pendingRef.current = true;
       setIsPending(true);
       setError(null);
-
-      const commandId = crypto.randomUUID();
       try {
-        const headers = await getHeaders();
-        const res = await fetch(`/api/v1/matches/${matchId}/commands/move`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            commandId,
-            expectedVersion: Number(currentVersionRef.current),
-            payload: move,
-          }),
-        });
-
-        const data = await res.json();
-        if (data.ok) {
-          setSnapshot(data.data.snapshot);
-          currentVersionRef.current = data.data.snapshot.version;
-        } else {
-          setError(data.error?.message ?? 'Nước đi không hợp lệ');
-          // Re-sync on conflict
-          await fetchSnapshot();
+        const result = await request();
+        if (result.ok) {
+          applySnapshot(result.snapshot);
+          return;
         }
-      } catch {
-        setError('Lỗi kết nối khi gửi nước đi');
+        // The UI never keeps an unconfirmed move: any rejection — including
+        // VERSION_CONFLICT, which the spec requires a resync for — re-reads the
+        // authoritative snapshot first, then surfaces the server's reason.
+        await syncNow();
+        setError(
+          result.code === 'CONTROL_REQUIRED' ? 'Tab này không giữ quyền điều khiển' : result.message,
+        );
       } finally {
+        pendingRef.current = false;
         setIsPending(false);
       }
     },
-    [matchId, isPending, getHeaders, fetchSnapshot],
+    [applySnapshot, syncNow],
+  );
+
+  const makeMove = useCallback(
+    async (move: Move) => {
+      const current = snapshotRef.current;
+      if (!matchId || !current || current.status !== 'ACTIVE') return;
+      await sendCommand(async () => {
+        const res = await realtime.sendMove(matchId, move, current.version);
+        if (res.ok) return { ok: true as const, snapshot: res.data.snapshot };
+        return { ok: false as const, code: res.error.code, message: res.error.message };
+      });
+    },
+    [matchId, sendCommand],
+  );
+
+  const submitHttpCommand = useCallback(
+    async (path: string, payload: Record<string, unknown>) => {
+      const current = snapshotRef.current;
+      if (!matchId || !current) return;
+      await sendCommand(async () => {
+        try {
+          const session = (await supabase.auth.getSession()).data.session;
+          const res = await fetch(`/api/v1/matches/${matchId}/commands/${path}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session?.access_token ?? ''}`,
+              ...realtime.controlHeaders('match'),
+            },
+            body: JSON.stringify({
+              commandId: crypto.randomUUID(),
+              expectedVersion: current.version,
+              payload,
+            }),
+          });
+          const data = await res.json();
+          if (data.ok) return { ok: true as const, snapshot: data.data.snapshot as MatchSnapshot };
+          return {
+            ok: false as const,
+            code: (data.error?.code ?? 'UNKNOWN') as string,
+            message: (data.error?.message ?? 'Lệnh không được chấp nhận') as string,
+          };
+        } catch {
+          return { ok: false as const, code: 'NETWORK', message: 'Lỗi kết nối khi gửi lệnh' };
+        }
+      });
+    },
+    [matchId, sendCommand],
   );
 
   const propose = useCallback(
-    async (kind: 'DRAW' | 'UNDO') => {
-      if (!matchId) return;
-      const commandId = crypto.randomUUID();
-      try {
-        const headers = await getHeaders();
-        const res = await fetch(`/api/v1/matches/${matchId}/commands/propose`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            commandId,
-            expectedVersion: currentVersionRef.current,
-            payload: { kind },
-          }),
-        });
-        const data = await res.json();
-        if (data.ok) {
-          setSnapshot(data.data.snapshot);
-          currentVersionRef.current = data.data.snapshot.version;
-        } else {
-          setError(data.error?.message ?? 'Không thể gửi đề nghị');
-        }
-      } catch {
-        setError('Lỗi kết nối');
-      }
-    },
-    [matchId, getHeaders],
+    (kind: 'DRAW' | 'UNDO') => submitHttpCommand('propose', { kind }),
+    [submitHttpCommand],
   );
 
   const respond = useCallback(
-    async (proposalId: string, accept: boolean) => {
-      if (!matchId) return;
-      const commandId = crypto.randomUUID();
-      try {
-        const headers = await getHeaders();
-        const res = await fetch(`/api/v1/matches/${matchId}/commands/respond`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            commandId,
-            expectedVersion: currentVersionRef.current,
-            payload: { proposalId, accept },
-          }),
-        });
-        const data = await res.json();
-        if (data.ok) {
-          setSnapshot(data.data.snapshot);
-          currentVersionRef.current = data.data.snapshot.version;
-        } else {
-          setError(data.error?.message ?? 'Không thể phản hồi');
-        }
-      } catch {
-        setError('Lỗi kết nối');
-      }
-    },
-    [matchId, getHeaders],
+    (proposalId: string, accept: boolean) => submitHttpCommand('respond', { proposalId, accept }),
+    [submitHttpCommand],
   );
 
-  const resign = useCallback(async () => {
-    if (!matchId) return;
-    const commandId = crypto.randomUUID();
-    try {
-      const headers = await getHeaders();
-      const res = await fetch(`/api/v1/matches/${matchId}/commands/resign`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          commandId,
-          expectedVersion: currentVersionRef.current,
-          payload: {},
-        }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setSnapshot(data.data.snapshot);
-        currentVersionRef.current = data.data.snapshot.version;
-      } else {
-        setError(data.error?.message ?? 'Không thể đầu hàng');
-      }
-    } catch {
-      setError('Lỗi kết nối');
-    }
-  }, [matchId, getHeaders]);
+  const resign = useCallback(() => submitHttpCommand('resign', {}), [submitHttpCommand]);
+
+  const undoAi = useCallback(() => submitHttpCommand('undo-ai', {}), [submitHttpCommand]);
 
   return {
     snapshot,
     error,
     isPending,
+    status,
+    controller,
     makeMove,
     propose,
     respond,
     resign,
-    refresh: fetchSnapshot,
+    undoAi,
   };
 }

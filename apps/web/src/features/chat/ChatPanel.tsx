@@ -1,9 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../../lib/supabase.js';
+import { realtime } from '../../lib/realtime.js';
 import type { ChatMessageDTO, ChatChannel } from '@xiangqi/contracts';
 
 interface ChatPanelProps {
   roomId: string;
+}
+
+const CHANNEL_LABEL: Record<ChatChannel, string> = {
+  PLAYERS: 'Người chơi',
+  SPECTATORS: 'Khán giả',
+};
+
+function appendUnique(list: ChatMessageDTO[], incoming: ChatMessageDTO): ChatMessageDTO[] {
+  if (list.some((m) => m.id === incoming.id)) return list;
+  return [...list, incoming];
+}
+
+/** Prepend an older page, dropping ids already rendered (live pushes can overlap a page). */
+function prependOlder(older: ChatMessageDTO[], current: ChatMessageDTO[]): ChatMessageDTO[] {
+  const known = new Set(current.map((m) => m.id));
+  return [...older.filter((m) => !known.has(m.id)), ...current];
 }
 
 export function ChatPanel({ roomId }: ChatPanelProps) {
@@ -11,39 +28,76 @@ export function ChatPanel({ roomId }: ChatPanelProps) {
   const [channel, setChannel] = useState<ChatChannel>('PLAYERS');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const channelRef = useRef<ChatChannel>('PLAYERS');
+  /** Kept so a retry of the same draft reuses the same `clientMessageId`. */
+  const pendingRef = useRef<{ clientMessageId: string; content: string } | null>(null);
 
-  const getHeaders = async () => {
-    const session = (await supabase.auth.getSession()).data.session;
-    return {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session?.access_token ?? ''}`,
-    };
-  };
-
-  const loadHistory = async () => {
-    try {
-      const headers = await getHeaders();
-      const res = await fetch(`/api/v1/rooms/${roomId}/chat`, { headers });
-      const data = await res.json();
-      if (data.ok) {
-        setChannel(data.data.channel);
-        setMessages(data.data.messages);
+  /** HTTP history page (keyset cursor walks backwards to older messages). */
+  const loadHistory = useCallback(
+    async (cursor?: string) => {
+      try {
+        const session = (await supabase.auth.getSession()).data.session;
+        const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : '';
+        const res = await fetch(`/api/v1/rooms/${roomId}/chat${query}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.access_token ?? ''}`,
+          },
+        });
+        const data = await res.json();
+        if (!data.ok) return;
+        const nextChannel = data.data.channel as ChatChannel;
+        channelRef.current = nextChannel;
+        setChannel(nextChannel);
+        const page = data.data.messages as ChatMessageDTO[];
+        setMessages((prev) => prependOlder(page, prev));
+        setNextCursor((data.data.nextCursor as string | null) ?? null);
+      } catch {
+        // History stays as-is; live messages still arrive over the socket.
       }
-    } catch {
-      // Background poll failure is non-fatal
-    }
-  };
+    },
+    [roomId],
+  );
 
-  // Initial load + periodic poll (2s)
+  const handleLoadOlder = useCallback(async () => {
+    if (!nextCursor || loadingOlder) return;
+    const container = containerRef.current;
+    const previousHeight = container?.scrollHeight ?? 0;
+    setLoadingOlder(true);
+    await loadHistory(nextCursor);
+    setLoadingOlder(false);
+    // Keep the reader anchored on the message they were looking at.
+    requestAnimationFrame(() => {
+      if (container) container.scrollTop += container.scrollHeight - previousHeight;
+    });
+  }, [nextCursor, loadingOlder, loadHistory]);
+
+  // History over HTTP (cursor-paged by the server) + live `chat:message` pushes.
   useEffect(() => {
-    loadHistory();
-    const interval = setInterval(loadHistory, 2000);
-    return () => clearInterval(interval);
-  }, [roomId]);
+    channelRef.current = 'PLAYERS';
+    setMessages([]);
+    setNextCursor(null);
+    void loadHistory();
+
+    // Joining the room is what makes the server push this tab's chat channels.
+    const unsubscribeRoom = realtime.subscribeRoom(roomId);
+    const offChat = realtime.subscribe('chat:message', (payload) => {
+      if (payload.roomId !== roomId) return;
+      if (payload.channel !== channelRef.current) return;
+      setMessages((prev) => appendUnique(prev, payload.message));
+    });
+
+    return () => {
+      offChat();
+      unsubscribeRoom();
+    };
+  }, [roomId, loadHistory]);
 
   // Scroll to bottom when messages update
   useEffect(() => {
@@ -58,30 +112,21 @@ export function ChatPanel({ roomId }: ChatPanelProps) {
     setLoading(true);
     setError(null);
 
-    const clientMessageId = crypto.randomUUID();
-    try {
-      const headers = await getHeaders();
-      const res = await fetch(`/api/v1/rooms/${roomId}/chat`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          clientMessageId,
-          content: trimmed,
-        }),
-      });
+    // Same draft → same clientMessageId, so a lost ack retries idempotently.
+    const pending = pendingRef.current;
+    const clientMessageId =
+      pending && pending.content === trimmed ? pending.clientMessageId : crypto.randomUUID();
+    pendingRef.current = { clientMessageId, content: trimmed };
 
-      const data = await res.json();
-      if (data.ok) {
-        setContent('');
-        setMessages((prev) => [...prev, data.data]);
-      } else {
-        setError(data.error?.message ?? 'Không thể gửi tin nhắn');
-      }
-    } catch {
-      setError('Lỗi kết nối');
-    } finally {
-      setLoading(false);
+    const res = await realtime.sendChat(roomId, clientMessageId, trimmed);
+    if (res.ok) {
+      pendingRef.current = null;
+      setContent('');
+      setMessages((prev) => appendUnique(prev, res.data));
+    } else {
+      setError(res.error.message);
     }
+    setLoading(false);
   };
 
   return (
@@ -109,7 +154,7 @@ export function ChatPanel({ roomId }: ChatPanelProps) {
           justifyContent: 'space-between',
         }}
       >
-        <span>Trò chuyện ({channel === 'PLAYERS' ? 'Người chơi' : 'Khán giả'})</span>
+        <span>Trò chuyện ({CHANNEL_LABEL[channel]})</span>
         <span style={{ fontSize: '11px', color: '#999' }}>Tối đa 1000 ký tự</span>
       </div>
 
@@ -130,6 +175,19 @@ export function ChatPanel({ roomId }: ChatPanelProps) {
         }}
         data-testid="chat-messages-container"
       >
+        {nextCursor && (
+          <div style={{ padding: '4px 12px 0' }}>
+            <button
+              type="button"
+              onClick={handleLoadOlder}
+              disabled={loadingOlder}
+              style={{ fontSize: '12px', padding: '2px 8px' }}
+              data-testid="chat-load-older"
+            >
+              {loadingOlder ? 'Đang tải...' : 'Tải tin nhắn cũ hơn'}
+            </button>
+          </div>
+        )}
         {messages.length === 0 ? (
           <p style={{ color: '#999', textAlign: 'center', margin: '20px 0' }}>
             Chưa có tin nhắn nào.

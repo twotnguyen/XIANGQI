@@ -6,7 +6,11 @@
 import crypto from 'node:crypto';
 import type pg from 'pg';
 import { getPool } from '../../db/pool.js';
+import { emitChatMessage as emitRealtimeChatMessage } from '../../realtime/events.js';
 import type { ChatMessageDTO, ChatChannel } from '@xiangqi/contracts';
+
+/** Maximum page size for chat history (spec 04 `GET /rooms/:id/chat?cursor=`). */
+export const CHAT_PAGE_SIZE = 50;
 
 // In-memory rate limiter: Map<userId, timestamp[]>
 const userMessageTimestamps = new Map<string, number[]>();
@@ -144,8 +148,10 @@ export async function sendMessage(
       createdAt: row.created_at,
     };
 
-    // Emit to channel subscribers
+    // Emit to channel subscribers (in-process bus) and to the socket transport. Both run
+    // after the INSERT committed, so a failed broadcast never loses the message.
     emitChatMessage(dto);
+    emitRealtimeChatMessage({ roomId, matchId, channel, message: dto });
 
     return { message: dto, isDuplicate: false };
   } finally {
@@ -156,8 +162,9 @@ export async function sendMessage(
 export async function getChatHistory(
   userId: string,
   roomId: string,
+  options: { cursor?: string; limit?: number } = {},
   pool?: pg.Pool,
-): Promise<{ channel: ChatChannel; messages: ChatMessageDTO[] }> {
+): Promise<{ channel: ChatChannel; messages: ChatMessageDTO[]; nextCursor: string | null }> {
   const p = pool ?? getPool();
   const client = await p.connect();
 
@@ -172,7 +179,7 @@ export async function getChatHistory(
     }
     const matchId = roomRes.rows[0].current_match_id;
     if (!matchId) {
-      return { channel: 'PLAYERS', messages: [] };
+      return { channel: 'PLAYERS', messages: [], nextCursor: null };
     }
 
     // 2. Check membership & derive authorized channel
@@ -186,19 +193,27 @@ export async function getChatHistory(
 
     const role = memberRes.rows[0].role as 'PLAYER' | 'SPECTATOR';
     const channel: ChatChannel = role === 'PLAYER' ? 'PLAYERS' : 'SPECTATORS';
+    const limit = Math.min(Math.max(options.limit ?? CHAT_PAGE_SIZE, 1), CHAT_PAGE_SIZE);
 
-    // 3. Fetch up to 50 messages strictly matching the user's channel
+    // 3. Keyset page: strictly this channel, newest-first scan bounded by `limit`, and
+    //    `cursor` (a message id of this match) walks backwards. The page is reversed to
+    //    ascending order for rendering; `nextCursor` is present only while older rows may
+    //    remain.
     const msgsRes = await client.query(
       `SELECT cm.*, p.username, p.display_name
        FROM public.chat_messages cm
        JOIN public.profiles p ON p.id = cm.sender_id
        WHERE cm.match_id = $1 AND cm.channel = $2
-       ORDER BY cm.created_at ASC
-       LIMIT 50`,
-      [matchId, channel],
+         AND ($3::uuid IS NULL OR (cm.created_at, cm.id) < (
+              SELECT c2.created_at, c2.id FROM public.chat_messages c2
+               WHERE c2.id = $3::uuid AND c2.match_id = $1 AND c2.channel = $2))
+       ORDER BY cm.created_at DESC, cm.id DESC
+       LIMIT $4`,
+      [matchId, channel, options.cursor ?? null, limit],
     );
 
-    const messages = msgsRes.rows.map((row) => ({
+    const rows = [...msgsRes.rows].reverse();
+    const messages = rows.map((row) => ({
       id: row.id,
       matchId: row.match_id,
       channel: row.channel,
@@ -210,7 +225,9 @@ export async function getChatHistory(
       createdAt: row.created_at,
     }));
 
-    return { channel, messages };
+    const nextCursor =
+      msgsRes.rowCount === limit && messages.length > 0 ? messages[0]!.id : null;
+    return { channel, messages, nextCursor };
   } finally {
     client.release();
   }
