@@ -91,7 +91,7 @@ Qua phân tích log CI run #34775069536 và trace của Playwright, lỗi `expec
 ## 4. Theo Dõi Git & CI Recovery
 
 - **PR Branch:** `fix/issue-015-realtime-sync-race`
-- **PR Number:** *(Sẽ cập nhật khi tạo PR)*
-- **PR CI Run:** *(Sẽ cập nhật sau khi push và trigger)*
-- **Merge Commit (Main SHA):** *(Sẽ cập nhật sau squash merge)*
-- **Main CI Run:** *(Sẽ cập nhật sau khi theo dõi workflow run trên main)*
+- **PR Number:** [PR #54](https://github.com/twotnguyen/XIANGQI/pull/54)
+- **PR CI Run:** [GitHub Actions Run #34777052679](https://github.com/twotnguyen/XIANGQI/actions/runs/34777052679) (482/482 passed: 298 unit, 82 integration, 8 media, 94 e2e)
+- **Merge Commit (Main SHA):** `9cb7766` (Squash merge PR #54 vào `main`)
+- **Main CI Run:** [GitHub Actions Run #34777360077](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) (482/482 passed: 298 unit, 82 integration, 8 media, 94 e2e — 100% PASS)

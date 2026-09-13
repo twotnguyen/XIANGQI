@@ -1,8 +1,8 @@
 # Tiến độ thực thi
 
 - Trạng thái bộ tài liệu: PLAN_READY (đầy đủ các tài liệu hướng dẫn và đặc tả).
-- Trạng thái sản phẩm: **LOCAL_COMPLETE** — 32/32 issue đạt tiêu chuẩn nghiệm thu local; 30/30 finding của đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md` đã xử lý xong (28 `FIXED`, 2 ghi nhận tài liệu/ngữ nghĩa) và merge vào `main` qua **PR #48 (squash `8bfa200`)**, cùng PR #49 (`aa20d4b`, ghi merge SHA), PR #50 (`3d16a8a`, lane tải thủ công + hardening E2E), PR #51 (`d47e73e`, hoàn thiện bàn giao local-complete) và PR #52 (`e75f995`, đồng bộ test registries và nghiệm thu staging).
-- Issue đang làm: Đồng bộ registry kiểm thử và nghiệm thu staging (nhánh `docs/issue-031-staging-sync`).
+- Trạng thái sản phẩm: **LOCAL_COMPLETE** — 32/32 issue đạt tiêu chuẩn nghiệm thu local; 30/30 finding của đợt review `docs/reviews/AGENT-HANDOFF-REVIEW-20260913-1706.md` đã xử lý xong (28 `FIXED`, 2 ghi nhận tài liệu/ngữ nghĩa) và merge vào `main` qua **PR #48 (squash `8bfa200`)**, cùng PR #49 (`aa20d4b`, ghi merge SHA), PR #50 (`3d16a8a`, lane tải thủ công + hardening E2E), PR #51 (`d47e73e`, hoàn thiện bàn giao local-complete), PR #52 (`e75f995`, đồng bộ test registries) và PR #54 (`9cb7766`, khắc phục ISSUE-015 realtime sync race và chuẩn hóa nghiệm thu staging).
+- Issue đang làm: Bàn giao staging và các external gates (nhánh `main`).
 - Bước tiếp theo: chạy các gate ngoài (Google OAuth domain thật, LiveKit 2 thiết bị khác mạng, deploy Render/Vercel) theo `docs/handoff/DEPLOY.md`; lane tải chạy trên máy đủ cấu hình qua workflow `Load lane (manual)`.
 - External Gates đang chờ:
   1. Google OAuth Cloud Client ID/Secret trên domain production Vercel (R01).
@@ -50,24 +50,24 @@
 
 ---
 
-## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `e75f995`)
+## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `9cb7766`)
 
-Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `e75f995` qua [CI Run #34774320639](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639)) cùng lane tải thủ công và nghiệm thu UI:
+Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `9cb7766` qua [CI Run #34777360077](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077)) cùng lane tải thủ công và nghiệm thu UI:
 
 ### Bảng Đăng Ký Kiểm Thử Tự Động & Môi Trường
 
 | Bộ kiểm thử | Lệnh thực thi (Command) | Commit SHA | Môi trường kiểm thử | Pass | Fail | Skipped | Link / File Bằng chứng |
 |---|---|---|---|:---:|:---:|:---:|---|
-| **Lane check (Unit)** | `pnpm run test:unit` | `e75f995` | Ubuntu Linux (GitHub Actions), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34774320639 (Job 103769504748)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **Lane integration** | `pnpm run test:integration` | `e75f995` | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật | 81 | 0 | 0 | [CI Run #34774320639 (Job 103769504825)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **Lane media** | `pnpm run test:media` | `e75f995` | Ubuntu Linux, LiveKit SFU local container (RTP bytes/frames > 10KB) | 8 | 0 | 0 | [CI Run #34774320639 (Job 103769504946)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **Lane e2e** | `pnpm run test:e2e` | `e75f995` | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34774320639 (Job 103769504851)](https://github.com/twotnguyen/XIANGQI/actions/runs/34774320639) |
-| **AI Benchmark** | `pnpm run test:ai` | `8bfa200`, `d47e73e` & `e75f995` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% pruning, 20/20 scores match) |
-| **Socket Load Test** | `pnpm run test:load` | `8bfa200`, `3d16a8a` & `e75f995` | Máy tham chiếu 8-core, 10 phòng / 70 socket đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
+| **Lane check (Unit)** | `pnpm run test:unit` | `9cb7766` | Ubuntu Linux (GitHub Actions), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34777360077 (Job 103777808801)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **Lane integration** | `pnpm run test:integration` | `9cb7766` | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật | 82 | 0 | 0 | [CI Run #34777360077 (Job 103777808673)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **Lane media** | `pnpm run test:media` | `9cb7766` | Ubuntu Linux, LiveKit SFU local container (RTP bytes/frames > 10KB) | 8 | 0 | 0 | [CI Run #34777360077 (Job 103777808875)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **Lane e2e** | `pnpm run test:e2e` | `9cb7766` | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34777360077 (Job 103777808805)](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077) |
+| **AI Benchmark** | `pnpm run test:ai` | `8bfa200`, `d47e73e`, `e75f995` & `9cb7766` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% pruning, 20/20 scores match) |
+| **Socket Load Test** | `pnpm run test:load` | `8bfa200`, `3d16a8a`, `e75f995` & `9cb7766` | Máy tham chiếu 8-core, 10 phòng / 70 socket đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
 | **Nghiệm thu Browser UI (Orca)** | Orca CLI 1.3.1 | `aa20d4b` *(chính xác)* | macOS Darwin, 2 profile độc lập (`Default`, `Player 2`), web dev local port 5173, API port 3001 | 8 luồng | 0 | 0 (4 BLOCKED ngoại vi) | `docs/test-reports/ORCA-ACCEPTANCE.md` *(xác thực đúng trên HEAD `aa20d4b`, không ghi đè lên HEAD khác)* |
-| **Typecheck** | `pnpm run typecheck` (`tsc -b`) | `e75f995` | Toàn bộ 6 workspace packages | 0 err | 0 | 0 | Exit 0 |
-| **Linter** | `pnpm run lint` (`eslint`) | `e75f995` | Toàn bộ codebase | 0 err | 0 warn | 0 | Exit 0 |
-| **Build** | `pnpm run build` | `e75f995` | Toàn bộ 6 workspace packages | 6 pkgs | 0 | 0 | Exit 0 |
+| **Typecheck** | `pnpm run typecheck` (`tsc -b`) | `9cb7766` | Toàn bộ 6 workspace packages | 0 err | 0 | 0 | Exit 0 |
+| **Linter** | `pnpm run lint` (`eslint`) | `9cb7766` | Toàn bộ codebase | 0 err | 0 warn | 0 | Exit 0 |
+| **Build** | `pnpm run build` | `9cb7766` | Toàn bộ 6 workspace packages | 6 pkgs | 0 | 0 | Exit 0 |
 
 ---
 
@@ -75,10 +75,10 @@ Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `e75f995` q
 
 - **Baseline cũ trước remediation ("196 unit tests / 84.51% pruning / p95 28.7ms / 5-5 SFU PASS"):** Từng được dùng để kết luận vội `PROJECT_COMPLETE`. Các số đó đã bị bác bỏ do F-10, F-12, F-13, F-15 và được thay thế bằng các bộ test thực tế với assertion nghiêm ngặt.
 - **Báo cáo PR #48 (`8bfa200`, 491 tests):** gồm 301 unit + 90 integration + 8 media + 92 e2e.
-- **Báo cáo PR #50 (`3d16a8a`), PR #51 (`d47e73e`) & main (`e75f995`, 481 CI tests):**
+- **Báo cáo PR #50 (`3d16a8a`), PR #51 (`d47e73e`), PR #52 (`e75f995`) & PR #54 (`9cb7766`, 482 CI tests):**
   - Unit: điều chỉnh glob loại trừ các test integration/media/load, còn 298 tests unit thuần túy.
-  - Integration: tách socket-load sang manual workflow do runner CI 2-core bị nghẽn đo đạc p95, còn 81 tests integration.
+  - Integration: tách socket-load sang manual workflow do runner CI 2-core bị nghẽn đo đạc p95 (còn 81 tests), sau đó bổ sung 1 regression test cho `joinRoom` push trong PR #54 (lên 82 tests).
   - Media: 8 tests SFU độc lập có kiểm chứng RTP bytes/frames.
   - E2E: tăng từ 92 lên 94 tests nhờ bổ sung kiểm chứng timeout và sức chứa khán giả.
-  - Tổng số test trong 4 lane CI bắt buộc là 481 tests (298 + 81 + 8 + 94), 100% PASS trên CI Run #34761345660 và CI Run #34774320639.
-- **Bằng chứng Orca:** Nghiệm thu bằng browser thật qua Orca CLI được chạy và xác nhận tại **HEAD `aa20d4b`** (sau PR #48 và PR #49) trong môi trường local stack, được ghi lại chi tiết trong `docs/test-reports/ORCA-ACCEPTANCE.md` và không bị ghi sai thành đã chạy trên các commit khác. Trạng thái dự án hiện tại duy trì chuẩn xác là **LOCAL_COMPLETE**.
+  - Tổng số test trong 4 lane CI bắt buộc là **482 tests** (298 + 82 + 8 + 94), 100% PASS trên [CI Run #34777360077](https://github.com/twotnguyen/XIANGQI/actions/runs/34777360077).
+- **Bằng chứng Orca:** Nghiệm thu bằng browser thật qua Orca CLI được chạy và xác nhận tại **HEAD `aa20d4b`** (sau PR #48 và PR #49) trong môi trường local stack, được ghi lại chi tiết trong `docs/test-reports/ORCA-ACCEPTANCE.md` và không bị ghi sai thành đã chạy lại trên các commit khác. Trạng thái dự án hiện tại duy trì chuẩn xác là **LOCAL_COMPLETE**.
