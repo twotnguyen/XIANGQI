@@ -47,8 +47,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+      # The image pull is the flakiest step on a hosted runner: retry before failing.
       - name: Start local Supabase stack
-        run: supabase start
+        run: |
+          for attempt in 1 2 3; do
+            if supabase start; then
+              exit 0
+            fi
+            echo "::warning::supabase start failed (attempt ${attempt}); retrying"
+            supabase stop --no-backup || true
+            sleep 15
+          done
+          echo "::error::supabase start failed after 3 attempts"
+          exit 1
 
       # .env.test is gitignored: build it from the committed local template plus the
       # Publishable/Secret keys `supabase status` prints for this stack.
@@ -95,8 +106,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+      # The image pull is the flakiest step on a hosted runner: retry before failing.
       - name: Start local Supabase stack
-        run: supabase start
+        run: |
+          for attempt in 1 2 3; do
+            if supabase start; then
+              exit 0
+            fi
+            echo "::warning::supabase start failed (attempt ${attempt}); retrying"
+            supabase stop --no-backup || true
+            sleep 15
+          done
+          echo "::error::supabase start failed after 3 attempts"
+          exit 1
 
       - name: Write .env.test from the local stack
         run: |
@@ -169,8 +191,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+      # The image pull is the flakiest step on a hosted runner: retry before failing.
       - name: Start local Supabase stack
-        run: supabase start
+        run: |
+          for attempt in 1 2 3; do
+            if supabase start; then
+              exit 0
+            fi
+            echo "::warning::supabase start failed (attempt ${attempt}); retrying"
+            supabase stop --no-backup || true
+            sleep 15
+          done
+          echo "::error::supabase start failed after 3 attempts"
+          exit 1
 
       - name: Write .env.test from the local stack
         run: |
