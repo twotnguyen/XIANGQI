@@ -2,12 +2,32 @@
 
 Tổng hợp mức độ đáp ứng và bằng chứng kiểm chứng cho toàn bộ 16 yêu cầu nghiệp vụ (R01 đến R16) của đề tài sau đợt remediation ngày 2026-09-13.
 
-> **Trạng thái:** Toàn bộ 16/16 yêu cầu kỹ thuật đã có bằng chứng kiểm chứng tự động đạt **100% PASS** trong môi trường kiểm thử tích hợp local thật (PostgreSQL local + Supabase Auth local + LiveKit SFU local + Chromium/Mobile).
+> **Trạng thái:** Toàn bộ 16/16 yêu cầu kỹ thuật đã có bằng chứng kiểm chứng tự động đạt **100% PASS** trong môi trường kiểm thử tích hợp local thật (PostgreSQL local + Supabase Auth local + LiveKit SFU local + Chromium/Mobile). Duy trì trạng thái **LOCAL_COMPLETE**; chưa ghi `PROJECT_COMPLETE` cho đến khi hoàn tất nghiệm thu các external staging gates.
 >
 > **Quy ước:** 
 > - `PASS (Local)`: Đã có test kiểm chứng tự động thật trên stack local (PostgreSQL, Supabase Auth, Fastify, Socket.IO, Playwright) và, cho UI, nghiệm thu bằng browser thật (`docs/test-reports/ORCA-ACCEPTANCE.md`);
 > - `PASS (Local SFU)`: Đã có test kiểm chứng nhận luồng RTP bytes/frames thật trên SFU LiveKit container local;
 > - `PENDING EXTERNAL`: Các cổng phụ thuộc dịch vụ đám mây công cộng hoặc thiết bị vật lý bên ngoài (được ghi rõ trong từng mục).
+
+---
+
+## Bảng Đăng Ký Kiểm Thử Tự Động Toàn Workspace (sau remediation, main `d47e73e`)
+
+| Bộ kiểm thử | Lệnh thực thi (Command) | Commit SHA | Môi trường kiểm thử | Pass | Fail | Skipped | Link / File Bằng chứng |
+|---|---|---|---|:---:|:---:|:---:|---|
+| **Unit Tests (CI check)** | `pnpm run test:unit` | `d47e73e` | Ubuntu Linux (GitHub Actions Runner), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34761345660 (Job 103734620162)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Integration Tests (CI integration)** | `pnpm run test:integration` | `d47e73e` | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật | 81 | 0 | 0 | [CI Run #34761345660 (Job 103734620028)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Media SFU Tests (CI media)** | `pnpm run test:media` | `d47e73e` | Ubuntu Linux, LiveKit SFU local container (RTP bytes/frames > 10KB) | 8 | 0 | 0 | [CI Run #34761345660 (Job 103734620170)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **E2E Tests (CI e2e)** | `pnpm run test:e2e` | `d47e73e` | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34761345660 (Job 103734620158)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **AI Benchmark** | `pnpm run test:ai` | `8bfa200` & `d47e73e` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% node pruning, 20/20 scores match) |
+| **Socket Load Test** | `pnpm run test:load` | `8bfa200` & `3d16a8a` | Máy tham chiếu 8-core, 10 phòng / 70 socket đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
+| **Nghiệm thu Browser UI (Orca)** | Orca CLI 1.3.1 | `aa20d4b` *(chính xác)* | macOS Darwin, 2 profile độc lập (`Default`, `Player 2`), web dev local port 5173, API port 3001 | 8 luồng | 0 | 0 (4 BLOCKED ngoại vi) | `docs/test-reports/ORCA-ACCEPTANCE.md` *(xác thực đúng trên HEAD `aa20d4b`, không ghi đè lên HEAD khác)* |
+
+### Giải Thích Minh Bạch Chênh Lệch Số Lượng Test
+- **So với baseline cũ trước remediation (196 unit / 84.51% pruning / p95 28.7ms):** Con số cũ bị bác bỏ do các finding F-10, F-12, F-13, F-15; đã được thay bằng test suite đo đạc thực tế có assertion nghiêm ngặt.
+- **So với PR #48 (`8bfa200`, 491 tests):** gồm 301 unit + 90 integration + 8 media + 92 e2e.
+- **So với PR #50 (`3d16a8a`) & main hiện tại (`d47e73e`, 481 CI tests):** Lane check tách sạch test unit thuần túy (298 tests); lane integration chuyển test tải sang workflow thủ công (còn 81 tests); lane e2e tăng từ 92 lên 94 tests nhờ bổ sung timeout hardening và spectator capacity tests. Tổng cộng 4 lane CI bắt buộc là 481 tests pass 100%, 0 fail, 0 skip.
+- **Nghiệm thu Orca:** Được thực hiện chính xác tại commit `aa20d4b` trên stack local (`docs/test-reports/ORCA-ACCEPTANCE.md`), không bị ghi nhận nhầm lẫn sang các commit khác.
 
 ---
 

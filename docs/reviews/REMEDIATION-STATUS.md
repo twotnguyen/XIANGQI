@@ -62,10 +62,36 @@ Hai finding `F-17` và `F-26` giữ trạng thái `CONFIRMED` vì là ghi nhận
 - **Số finding đã FIXED:** 28 (gồm 16/16 finding P1)
 - **Số finding CONFIRMED (đã làm rõ tài liệu / không phải bug mã nguồn):** 2 (F-17 và F-26)
 - **Số finding BLOCKED:** 0
-- **Tỷ lệ Pass các bộ kiểm thử tự động:** 491/491 tests (100% PASS)
-  - Unit: 301/301 tests pass
-  - Integration: 90/90 tests pass
-  - Media SFU: 8/8 tests pass
-  - Socket Load: p95 67.64ms (70 clients thật)
-  - AI Benchmark: 20/20 scores match, 78.86% pruning
-  - E2E Playwright: 92/92 tests pass (Chromium 1366px + Mobile 360px)
+- **Trạng thái tổng thể:** **LOCAL_COMPLETE** (toàn bộ 32/32 issue và 30/30 finding đã pass trong môi trường local/CI; giữ nguyên LOCAL_COMPLETE, chưa ghi PROJECT_COMPLETE cho đến khi hoàn tất nghiệm thu external staging gates).
+
+---
+
+## Bảng Đăng Ký Kiểm Thử Tự Động & Môi Trường Thực Thi
+
+Mỗi bộ kiểm thử dưới đây được ghi nhận chính xác về lệnh thực thi, commit SHA, môi trường, số lượng pass/fail/skipped và bằng chứng đối chiếu:
+
+| Bộ kiểm thử | Lệnh thực thi (Command) | Commit SHA | Môi trường kiểm thử | Pass | Fail | Skipped | Link / File Bằng chứng |
+|---|---|---|---|:---:|:---:|:---:|---|
+| **Unit Tests (CI check)** | `pnpm run test:unit` (`vitest run --config vitest.config.ts`) | `d47e73e` (main) | Ubuntu Linux (GitHub Actions Runner), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34761345660 (Job 103734620162)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Integration Tests (CI integration)** | `pnpm run test:integration` (`vitest run --config vitest.integration.config.ts tests/integration`) | `d47e73e` (main) | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật, Node 24.15.0 | 81 | 0 | 0 | [CI Run #34761345660 (Job 103734620028)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Media SFU Tests (CI media)** | `pnpm run test:media` (`vitest run --config vitest.integration.config.ts tests/media`) | `d47e73e` (main) | Ubuntu Linux, LiveKit SFU local container thật (RTP bytes/frames > 10KB), Node 24.15.0 | 8 | 0 | 0 | [CI Run #34761345660 (Job 103734620170)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **E2E Tests (CI e2e)** | `pnpm run test:e2e` (`playwright test`) | `d47e73e` (main) | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34761345660 (Job 103734620158)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **AI Benchmark** | `pnpm run test:ai` / `pnpm run bench:ai:export` | `8bfa200` & `d47e73e` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% node pruning, 20/20 scores match) |
+| **Socket Load Test** | `pnpm run test:load` (`vitest run --config vitest.integration.config.ts tests/load/socket-load.test.ts`) | `8bfa200` & `3d16a8a` | Máy tham chiếu 8-core, 10 phòng / 70 kết nối Socket.IO đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
+| **Nghiệm thu Browser UI (Orca)** | Orca CLI 1.3.1 (`orca tab create / exec / mouse`) | `aa20d4b` *(chính xác)* | macOS Darwin, 2 profile độc lập (`Default`, `Player 2`), web dev local port 5173, API port 3001, Supabase local | 8 luồng | 0 | 0 (4 BLOCKED ngoại vi) | `docs/test-reports/ORCA-ACCEPTANCE.md` *(xác thực đúng trên HEAD `aa20d4b`, không ghi đè lên HEAD khác)* |
+
+---
+
+## Giải Thích Minh Bạch Chênh Lệch Số Lượng Test Giữa Các Báo Cáo
+
+1. **So với baseline cũ trước remediation ("196 unit / 84.51% pruning / p95 28.7ms / 5-5 SFU"):**
+   - Con số cũ trong tài liệu lịch sử trước remediation đã bị bác bỏ do các finding F-10 (harness media không chạy được), F-13 (corpus AI sai tên quân dẫn đến điểm số vô hạn), F-15 (thử tải cũ không tải thật) và F-12 (test DB tự mock). Đợt remediation đã thay thế bằng test thực tế với assertion nghiêm ngặt.
+2. **So với báo cáo PR #48 (`8bfa200`, ghi nhận 491 tests tự động):**
+   - Tại commit `8bfa200`, tổng số 491 tests gồm: 301 unit + 90 integration + 8 media + 92 E2E.
+   - Tại commit `3d16a8a` (PR #50) và `d47e73e` (main hiện tại):
+     - **Lane check (Unit):** điều chỉnh cấu hình glob để phân định sạch giữa unit thuần túy (298 tests) và integration/media.
+     - **Lane integration:** tách bài kiểm thử tải nặng `socket-load` sang workflow thủ công `Load lane (manual)` (giảm từ 90 xuống 81 integration tests chạy trên PR gate, do runner GitHub 2 core bị nhiễu đo đạc p95).
+     - **Lane E2E:** tăng từ 92 lên 94 tests do bổ sung các assertion timeout hardening và spectator capacity checks.
+     - Tổng số test tự động chạy trong 4 lane CI bắt buộc là **481 tests** (298 + 81 + 8 + 94 = 481), tất cả đều PASS 100%, 0 fail, 0 skip trên CI Run #34761345660.
+3. **Bằng chứng nghiệm thu Orca:**
+   - Phiên nghiệm thu thực tế bằng trình duyệt thật thông qua Orca CLI được thực hiện tại commit **`aa20d4b`** (ngay sau PR #48 và PR #49), trên stack local (`http://localhost:5173` và `http://localhost:3001`). Bằng chứng được ghi lại đầy đủ trong `docs/test-reports/ORCA-ACCEPTANCE.md`. Tài liệu khẳng định rõ bằng chứng này được thực hiện tại HEAD `aa20d4b` và không được ghi nhận sai thành đã chạy lại trên các HEAD sau.
