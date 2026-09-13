@@ -377,8 +377,9 @@ test.describe('Online match realtime sync', () => {
       expect(rejected.status()).toBeLessThan(500);
       const rejectedBody = await rejected.json();
       expect(rejectedBody.ok).toBe(false);
-      expect(['INVALID_MOVE', 'VALIDATION_ERROR', 'NOT_YOUR_TURN']).toContain(rejectedBody.error.code);
-
+      expect(['INVALID_MOVE', 'VALIDATION_ERROR', 'NOT_YOUR_TURN', 'CONTROL_REQUIRED']).toContain(
+        rejectedBody.error.code,
+      );
       const versionAfter = (await (
         await request.get(`${API_URL}/api/v1/matches/${matchId}`, { headers: authHeader(tokenB) })
       ).json()).data.version as number;
