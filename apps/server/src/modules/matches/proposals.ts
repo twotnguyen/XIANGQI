@@ -19,10 +19,12 @@ import type {
   Position,
   Side,
 } from '@xiangqi/contracts';
-import { rebuildActiveBranch } from './undo.js';
+import { loadActiveBranch, parseActiveMoveIds, rebuildEffectiveBranch } from './undo.js';
 import { settleClock } from './clock.js';
-import { hashPayload } from './service.js';
+import { finalizeMatchTx, getMatchSnapshotFromClient, hashPayload } from './service.js';
 import { matchBroadcaster } from '../../realtime/broadcast.js';
+import { PROPOSAL_TTL_MS } from './deadlines.js';
+import { endMatchMedia } from '../media/service.js';
 
 // In-memory rate limiter: Map<`${matchId}:${userId}`, lastProposalEpochMs>
 const lastProposalTimes = new Map<string, number>();
@@ -71,7 +73,7 @@ export async function submitProposal(
       ) {
         return {
           appliedVersion: receipt.applied_version,
-          snapshot: await getMatchSnapshotClient(client, matchId),
+          snapshot: await getMatchSnapshotFromClient(client, matchId),
         };
       }
       throw { statusCode: 409, code: 'COMMAND_ID_REUSED', message: 'Mã lệnh đã được sử dụng' };
@@ -117,7 +119,7 @@ export async function submitProposal(
       requesterId: userId,
       basePly: Number(match.ply),
       createdVersion: newVersion,
-      expiresAtMs: nowMs + 30000,
+      expiresAtMs: nowMs + PROPOSAL_TTL_MS,
     };
 
     const dbProposal = {
@@ -142,7 +144,7 @@ export async function submitProposal(
       [matchId, newVersion, JSON.stringify(proposal)],
     );
 
-    const snapshot = await getMatchSnapshotClient(client, matchId);
+    const snapshot = await getMatchSnapshotFromClient(client, matchId);
     await client.query(
       `INSERT INTO public.command_receipts (
          match_id, command_id, command_type, expected_version,
@@ -173,6 +175,7 @@ export async function respondToProposal(
 ): Promise<CommandResult> {
   const p = pool ?? getPool();
   let snapshotToBroadcast: MatchSnapshot | null = null;
+  let expiredSnapshot: MatchSnapshot | null = null;
 
   const result = await withTransaction(async (client) => {
     const matchLookup = await client.query(
@@ -208,7 +211,7 @@ export async function respondToProposal(
       ) {
         return {
           appliedVersion: receipt.applied_version,
-          snapshot: await getMatchSnapshotClient(client, matchId),
+          snapshot: await getMatchSnapshotFromClient(client, matchId),
         };
       }
       throw { statusCode: 409, code: 'COMMAND_ID_REUSED', message: 'Mã lệnh đã được sử dụng' };
@@ -232,7 +235,21 @@ export async function respondToProposal(
 
     const nowMs = Date.now();
     if (proposal.expiresAtMs <= nowMs) {
-      throw { statusCode: 409, code: 'PROPOSAL_EXPIRED', message: 'Đề nghị đã hết hạn' };
+      // Spec 03: a timed-out proposal is resolved in a transaction — version bump, event,
+      // cleared proposal and a snapshot push — and only then does the request fail. It is
+      // the one refused validation that still commits.
+      const expiredVersion = match.version + 1;
+      await client.query(
+        'UPDATE public.matches SET proposal = NULL, version = $1, updated_at = now() WHERE id = $2',
+        [expiredVersion, matchId],
+      );
+      await client.query(
+        `INSERT INTO public.match_events (match_id, version, type, payload)
+         VALUES ($1, $2, 'PROPOSAL_RESOLVED', $3)`,
+        [matchId, expiredVersion, JSON.stringify({ proposalId: proposal.id, resolution: 'EXPIRED' })],
+      );
+      expiredSnapshot = await getMatchSnapshotFromClient(client, matchId);
+      return { appliedVersion: expiredVersion, snapshot: expiredSnapshot };
     }
 
     // Acceptance condition: requester CANNOT approve own proposal
@@ -254,95 +271,81 @@ export async function respondToProposal(
 
       await client.query(
         `INSERT INTO public.match_events (match_id, version, type, payload)
-         VALUES ($1, $2, 'PROPOSAL_REJECTED', $3)`,
-        [matchId, newVersion, JSON.stringify({ proposalId: proposal.id, actorId: userId })],
+         VALUES ($1, $2, 'PROPOSAL_RESOLVED', $3)`,
+        [
+          matchId,
+          newVersion,
+          JSON.stringify({ proposalId: proposal.id, resolution: 'REJECTED', actorId: userId }),
+        ],
       );
     } else if (proposal.kind === 'DRAW') {
-      // ── ACCEPT DRAW ──
+      // ── ACCEPT DRAW ── the shared finalizer owns version/event/room release.
       const outcome: Outcome = { winner: null, reason: 'AGREED_DRAW' };
-
-      // Finalize
-      if (roomId) {
-        await client.query('DELETE FROM public.active_players WHERE room_id = $1', [roomId]);
-        await client.query(
-          `UPDATE public.rooms SET status = 'FINISHED', finished_at = now(), updated_at = now() WHERE id = $1`,
-          [roomId],
-        );
-      }
-
-      await client.query(
-        `UPDATE public.matches
-         SET status = 'FINISHED', outcome = $1, proposal = NULL, version = $2, ended_at = now()
-         WHERE id = $3`,
-        [JSON.stringify(outcome), newVersion, matchId],
-      );
-
-      await client.query(
-        `INSERT INTO public.match_events (match_id, version, type, payload)
-         VALUES ($1, $2, 'RESULT', $3)`,
-        [matchId, newVersion, JSON.stringify({ outcome, actorKey: userId })],
-      );
+      await finalizeMatchTx(client, match, outcome, roomId, { actorKey: userId });
     } else if (proposal.kind === 'UNDO') {
       // ── ACCEPT UNDO ──
-      // Target ply: revert before requester's last move.
-      // Settle clock first — preserve remaining times, NEVER refund time per spec
+      // Rebuild the effective branch from match_moves ancestry. Audit rows (the abandoned
+      // branch) are never deleted; only the active prefix + caches are rewritten (spec 09).
+      // Settle clock first — preserve remaining times, NEVER refund time per spec.
       const currentPos = (typeof match.position === 'string' ? JSON.parse(match.position) : match.position) as Position;
       const currentClock = match.clock ? (typeof match.clock === 'string' ? JSON.parse(match.clock) : match.clock) : null;
       const settled = settleClock(currentClock, currentPos.turn, nowMs);
 
-      // Fetch all recorded moves to replay
-      const movesRes = await client.query(
-        `SELECT id, move_number, player_id, side, from_x, from_y, to_x, to_y
-         FROM public.moves
-         WHERE match_id = $1
-         ORDER BY move_number ASC`,
-        [matchId],
+      const branch = await loadActiveBranch(
+        client,
+        matchId,
+        parseActiveMoveIds(match.active_move_ids),
       );
+      const requesterSide: Side = proposal.requester === 'RED' || proposal.requester === 'BLACK'
+        ? proposal.requester
+        : (match.red_user_id === proposal.requesterId ? 'RED' : 'BLACK');
 
-      const allMoves = movesRes.rows.map((r) => ({
-        id: r.id,
-        moveNumber: r.move_number,
-        playerId: r.player_id,
-        side: r.side,
-        fromX: r.from_x,
-        fromY: r.from_y,
-        toX: r.to_x,
-        toY: r.to_y,
-      }));
+      // Target ply: rewind past the requester's last move of the effective branch.
+      let requesterLastIndex = -1;
+      for (let i = branch.length - 1; i >= 0; i--) {
+        if (branch[i]!.side === requesterSide) {
+          requesterLastIndex = i;
+          break;
+        }
+      }
+      const targetPly = requesterLastIndex >= 0 ? requesterLastIndex : 0;
+      const rebuilt = rebuildEffectiveBranch(branch, targetPly);
+      const removedMoveIds = branch.slice(targetPly).map((m) => m.id);
 
-      // Find requester's last move to revert before it
-      const requesterMoves = allMoves.filter((m) => m.playerId === proposal.requesterId);
-      const targetPly = requesterMoves.length > 0
-        ? requesterMoves[requesterMoves.length - 1]!.moveNumber - 1
-        : 0;
-
-      const rebuilt = rebuildActiveBranch(allMoves, targetPly);
-
-      // Update match with rebuilt position, target ply, settled clock, cleared proposal
       const clockJson = settled?.clock ? JSON.stringify(settled.clock) : null;
       await client.query(
         `UPDATE public.matches
-         SET position = $1, version = $2, ply = $3, clock = $4, proposal = NULL, updated_at = now()
-         WHERE id = $5`,
-        [JSON.stringify(rebuilt.position), newVersion, targetPly, clockJson, matchId],
+         SET position = $1, version = $2, ply = $3, clock = $4, proposal = NULL,
+             active_move_ids = $5::jsonb, repetition_counts = $6::jsonb, updated_at = now()
+         WHERE id = $7`,
+        [
+          JSON.stringify(rebuilt.position),
+          newVersion,
+          rebuilt.activeMoveIds.length,
+          clockJson,
+          JSON.stringify(rebuilt.activeMoveIds),
+          JSON.stringify(rebuilt.repetitionCounts),
+          matchId,
+        ],
       );
 
       await client.query(
         `INSERT INTO public.match_events (match_id, version, type, payload)
-         VALUES ($1, $2, 'UNDO_APPLIED', $3)`,
+         VALUES ($1, $2, 'UNDO', $3)`,
         [
           matchId,
           newVersion,
           JSON.stringify({
-            proposalId: proposal.id,
-            targetPly,
-            activeMoveIds: rebuilt.activeMoveIds,
+            removedMoveIds,
+            targetPly: rebuilt.activeMoveIds.length,
+            requester: proposal.requesterId,
+            approver: userId,
           }),
         ],
       );
     }
 
-    const snapshot = await getMatchSnapshotClient(client, matchId);
+    const snapshot = await getMatchSnapshotFromClient(client, matchId);
     await client.query(
       `INSERT INTO public.command_receipts (
          match_id, command_id, command_type, expected_version,
@@ -358,45 +361,19 @@ export async function respondToProposal(
     };
   }, p);
 
-  if (snapshotToBroadcast) {
-    matchBroadcaster.emit(matchId, snapshotToBroadcast);
+  if (expiredSnapshot) {
+    matchBroadcaster.emit(matchId, expiredSnapshot);
+    throw { statusCode: 409, code: 'PROPOSAL_EXPIRED', message: 'Đề nghị đã hết hạn' };
+  }
+
+  const broadcastSnapshot = snapshotToBroadcast as MatchSnapshot | null;
+  if (broadcastSnapshot) {
+    matchBroadcaster.emit(matchId, broadcastSnapshot);
+    // An accepted DRAW ends the match: retire its media transports after commit.
+    if (broadcastSnapshot.status !== 'ACTIVE') {
+      void endMatchMedia(matchId).catch(() => undefined);
+    }
   }
 
   return result;
-}
-
-async function getMatchSnapshotClient(
-  client: pg.PoolClient,
-  matchId: string,
-): Promise<MatchSnapshot> {
-  const matchRes = await client.query('SELECT * FROM public.matches WHERE id = $1', [matchId]);
-  const m = matchRes.rows[0];
-
-  const pos = typeof m.position === 'string' ? JSON.parse(m.position) : m.position;
-  const clock = m.clock ? (typeof m.clock === 'string' ? JSON.parse(m.clock) : m.clock) : null;
-  const outcome = m.outcome ? (typeof m.outcome === 'string' ? JSON.parse(m.outcome) : m.outcome) : null;
-  const proposal = m.proposal ? (typeof m.proposal === 'string' ? JSON.parse(m.proposal) : m.proposal) : null;
-
-  return {
-    id: m.id,
-    roomId: m.room_id,
-    mode: m.mode,
-    status: m.status,
-    position: pos,
-    version: Number(m.version),
-    ply: Number(m.ply),
-    ruleSetVersion: 'xiangqi-simple-v1',
-    redUserId: m.red_user_id,
-    blackUserId: m.black_user_id,
-    aiSide: m.ai_side,
-    aiLevel: m.ai_level,
-    timeControl: m.time_control,
-    clock,
-    outcome,
-    activeMoveIds: [],
-    proposal,
-    serverNowMs: Date.now(),
-    aiState: null,
-    presence: [],
-  };
 }

@@ -89,6 +89,17 @@ export const OutcomeSchema = z.object({
 }).strict();
 export type Outcome = z.infer<typeof OutcomeSchema>;
 
+// ── Terminal event (spec 03/04) ─────────────────────────────
+/**
+ * Immutable event descriptor handed to the finalizer before it bumps the version.
+ * - `MOVE`: the move that ended the match; `parentMoveId` is the branch tip it extends.
+ * - `RESULT`: every terminal that is not a move (resign, draw accepted, timeout,
+ *   disconnect/restart/AI fault); the finalizer adds `outcome` before persistence.
+ */
+export type TerminalEvent =
+  | { type: 'MOVE'; payload: { moveId: string; parentMoveId: string | null; side: Side; move: Move } }
+  | { type: 'RESULT'; payload: { actorKey: string | null } };
+
 // ── Clock ───────────────────────────────────────────────────
 
 export const ClockStateSchema = z.object({
