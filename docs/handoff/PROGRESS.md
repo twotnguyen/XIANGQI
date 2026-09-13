@@ -50,24 +50,35 @@
 
 ---
 
-## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `3d16a8a`)
+## Thống Kê Chất Lượng & Bằng Chứng Toàn Bộ Dự Án (sau remediation, main `d47e73e`)
 
-Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA đã merge) cùng một lane tải thủ công:
+Bốn lane CI bắt buộc trên PR (đã xanh trên đúng HEAD SHA `d47e73e` qua [CI Run #34761345660](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660)) cùng lane tải thủ công và nghiệm thu UI:
 
-```
-- Lane check (build + typecheck + lint + unit):  32 file, 298 test pass (0 fail)
-- Lane integration (Postgres + Supabase Auth local thật): 11 file, 81 test pass (0 fail, 0 skip)
-- Lane media (LiveKit SFU thật, có positive control RTP bytes/frames): 8 test pass
-- Lane e2e (Playwright, Chromium 1366px + Mobile 360px, stack thật): 94 test pass (0 fail)
-- Lane load (workflow thủ công, ISSUE-030): máy tham chiếu 10 phòng / 70 socket đồng thời /
-  10 nước đi song song → p50 9.47ms, p95 67.64ms (ngưỡng < 100ms), PASS.
-  Runner GitHub 2 core đo p95 405ms — không phải tham chiếu năng lực, nên lane này
-  tách khỏi PR gate và chạy bằng `workflow_dispatch`.
-- AI Benchmark (pnpm test:ai): 20 thế cờ, cắt tỉa node-weighted 78.86%, 20/20 điểm trùng khớp
-- Nghiệm thu UI bằng browser Orca (thật, 2 profile độc lập): docs/test-reports/ORCA-ACCEPTANCE.md
-- Typecheck: TypeScript 5.8 strict, exit 0 (toàn workspace)
-- Linter: ESLint 10, 0 error / 0 warning
-- Build: 6 workspace package, exit 0
-```
+### Bảng Đăng Ký Kiểm Thử Tự Động & Môi Trường
 
-Ghi chú trung thực: baseline trước remediation ghi "196 unit tests / 84.51% pruning / p95 28.7ms / 5-5 SFU PASS" từng được dùng để kết luận `PROJECT_COMPLETE`; các số đó đã bị bác bỏ (F-13/F-15/F-10) và được thay bằng số đo ở trên. Số test tăng/giảm giữa các lane là do cách chia lane (unit không còn glob integration/media/load), không phải tiêu chí hoàn thành.
+| Bộ kiểm thử | Lệnh thực thi (Command) | Commit SHA | Môi trường kiểm thử | Pass | Fail | Skipped | Link / File Bằng chứng |
+|---|---|---|---|:---:|:---:|:---:|---|
+| **Lane check (Unit)** | `pnpm run test:unit` | `d47e73e` | Ubuntu Linux (GitHub Actions), Node 24.15.0 | 298 | 0 | 0 | [CI Run #34761345660 (Job 103734620162)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Lane integration** | `pnpm run test:integration` | `d47e73e` | Ubuntu Linux, PostgreSQL 17 + Supabase Auth local thật | 81 | 0 | 0 | [CI Run #34761345660 (Job 103734620028)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Lane media** | `pnpm run test:media` | `d47e73e` | Ubuntu Linux, LiveKit SFU local container (RTP bytes/frames > 10KB) | 8 | 0 | 0 | [CI Run #34761345660 (Job 103734620170)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **Lane e2e** | `pnpm run test:e2e` | `d47e73e` | Ubuntu Linux, Playwright Chromium Desktop 1366px & Mobile 360px | 94 | 0 | 0 | [CI Run #34761345660 (Job 103734620158)](https://github.com/twotnguyen/XIANGQI/actions/runs/34761345660) |
+| **AI Benchmark** | `pnpm run test:ai` | `8bfa200` & `d47e73e` | macOS / Ubuntu, 20 thế cờ chuẩn hóa ROOK/PAWN | 20 | 0 | 0 | `docs/test-reports/ai/benchmark-results.json` (78.86% pruning, 20/20 scores match) |
+| **Socket Load Test** | `pnpm run test:load` | `8bfa200` & `3d16a8a` | Máy tham chiếu 8-core, 10 phòng / 70 socket đồng thời / 10 nước đi song song | 1 | 0 | 0 | `docs/test-reports/ISSUE-030.md` (p50 9.47ms, p95 67.64ms < 100ms) |
+| **Nghiệm thu Browser UI (Orca)** | Orca CLI 1.3.1 | `aa20d4b` *(chính xác)* | macOS Darwin, 2 profile độc lập (`Default`, `Player 2`), web dev local port 5173, API port 3001 | 8 luồng | 0 | 0 (4 BLOCKED ngoại vi) | `docs/test-reports/ORCA-ACCEPTANCE.md` *(xác thực đúng trên HEAD `aa20d4b`, không ghi đè lên HEAD khác)* |
+| **Typecheck** | `pnpm run typecheck` (`tsc -b`) | `d47e73e` | Toàn bộ 6 workspace packages | 0 err | 0 | 0 | Exit 0 |
+| **Linter** | `pnpm run lint` (`eslint`) | `d47e73e` | Toàn bộ codebase | 0 err | 0 warn | 0 | Exit 0 |
+| **Build** | `pnpm run build` | `d47e73e` | Toàn bộ 6 workspace packages | 6 pkgs | 0 | 0 | Exit 0 |
+
+---
+
+### Giải Thích Minh Bạch Chênh Lệch Số Lượng Test
+
+- **Baseline cũ trước remediation ("196 unit tests / 84.51% pruning / p95 28.7ms / 5-5 SFU PASS"):** Từng được dùng để kết luận vội `PROJECT_COMPLETE`. Các số đó đã bị bác bỏ do F-10, F-12, F-13, F-15 và được thay thế bằng các bộ test thực tế với assertion nghiêm ngặt.
+- **Báo cáo PR #48 (`8bfa200`, 491 tests):** gồm 301 unit + 90 integration + 8 media + 92 e2e.
+- **Báo cáo PR #50 (`3d16a8a`) & main (`d47e73e`, 481 CI tests):**
+  - Unit: điều chỉnh glob loại trừ các test integration/media/load, còn 298 tests unit thuần túy.
+  - Integration: tách socket-load sang manual workflow do runner CI 2-core bị nghẽn đo đạc p95, còn 81 tests integration.
+  - Media: 8 tests SFU độc lập có kiểm chứng RTP bytes/frames.
+  - E2E: tăng từ 92 lên 94 tests nhờ bổ sung kiểm chứng timeout và sức chứa khán giả.
+  - Tổng số test trong 4 lane CI bắt buộc là 481 tests (298 + 81 + 8 + 94), 100% PASS trên CI Run #34761345660.
+- **Bằng chứng Orca:** Nghiệm thu bằng browser thật qua Orca CLI được chạy và xác nhận tại **HEAD `aa20d4b`** (sau PR #48 và PR #49) trong môi trường local stack, được ghi lại chi tiết trong `docs/test-reports/ORCA-ACCEPTANCE.md` và không bị ghi sai thành đã chạy trên các commit khác. Trạng thái dự án hiện tại duy trì chuẩn xác là **LOCAL_COMPLETE**.
