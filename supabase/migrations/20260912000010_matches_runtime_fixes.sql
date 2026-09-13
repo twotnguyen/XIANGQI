@@ -6,8 +6,9 @@ ALTER TABLE public.active_players ALTER COLUMN match_id DROP NOT NULL;
 ALTER TABLE public.active_players ADD COLUMN IF NOT EXISTS room_id uuid NULL;
 ALTER TABLE public.active_players ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
 
--- 2. room_members: set default 0 for admission_epoch
+-- 2. room_members: set default 0 for admission_epoch, drop user_unique to rely on active_players PK
 ALTER TABLE public.room_members ALTER COLUMN admission_epoch SET DEFAULT 0;
+ALTER TABLE public.room_members DROP CONSTRAINT IF EXISTS room_members_user_unique;
 
 -- 3. matches: defaults for required fields, updated_at column
 ALTER TABLE public.matches ALTER COLUMN repetition_counts SET DEFAULT '{}'::jsonb;

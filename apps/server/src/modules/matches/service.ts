@@ -27,6 +27,8 @@ import { squareToIndex } from '@xiangqi/contracts';
 import { matchBroadcaster } from '../../realtime/broadcast.js';
 import { settleClock, projectClock } from './clock.js';
 
+const AI_ACTOR_ID = '00000000-0000-0000-0000-000000000001';
+
 export function hashPayload(payload: unknown): string {
   return crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 }
@@ -189,7 +191,10 @@ export async function submitMove(
     const pos = (typeof match.position === 'string' ? JSON.parse(match.position) : match.position) as Position;
     const expectedUser = pos.turn === 'RED' ? match.red_user_id : match.black_user_id;
 
-    if (expectedUser !== userId) {
+    const isAiTurn = match.mode === 'AI' && match.ai_side === pos.turn;
+    const isAuthorized = isAiTurn ? userId === AI_ACTOR_ID : expectedUser === userId;
+
+    if (!isAuthorized) {
       throw { statusCode: 403, code: 'NOT_YOUR_TURN', message: 'Chưa tới lượt đi của bạn' };
     }
 
@@ -267,7 +272,7 @@ export async function submitMove(
       [
         matchId,
         newPly,
-        userId,
+        isAiTurn ? null : userId,
         moverPiece.side,
         command.payload.from.x,
         command.payload.from.y,
@@ -346,7 +351,26 @@ export async function submitMove(
 
   // 14. Emit broadcast after commit (outside transaction)
   if (snapshotToBroadcast) {
-    matchBroadcaster.emit(matchId, snapshotToBroadcast);
+    const snap = snapshotToBroadcast as MatchSnapshot;
+    matchBroadcaster.emit(matchId, snap);
+
+    // If AI match and next turn belongs to AI: trigger AI turn
+    if (
+      snap.mode === 'AI' &&
+      snap.status === 'ACTIVE' &&
+      snap.aiSide === snap.position.turn &&
+      snap.aiLevel
+    ) {
+      const { triggerAiTurn } = await import('../ai/service.js');
+      triggerAiTurn(
+        matchId,
+        snap.position,
+        snap.version,
+        snap.aiLevel,
+        snap.clock,
+        {},
+      ).catch((err) => console.error('AI turn trigger error:', err));
+    }
   }
 
   return result;

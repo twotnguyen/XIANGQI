@@ -34,6 +34,9 @@ export function RoomWaiting() {
       const data = await res.json();
       if (data.ok) {
         setRoom(data.data);
+        if (data.data.status === 'PLAYING' && data.data.currentMatchId) {
+          navigate(`/matches/${data.data.currentMatchId}`);
+        }
       } else {
         setError(data.error?.message ?? 'Không thể tải thông tin phòng');
       }
@@ -44,6 +47,8 @@ export function RoomWaiting() {
 
   useEffect(() => {
     loadRoom();
+    const interval = setInterval(loadRoom, 1500);
+    return () => clearInterval(interval);
   }, [roomId]);
 
   const handleToggleReady = async () => {
@@ -60,7 +65,12 @@ export function RoomWaiting() {
       });
       const data = await res.json();
       if (data.ok) {
-        setRoom(data.data.room);
+        const r = data.data.room ?? data.data;
+        setRoom(r);
+        const matchId = data.data.matchSnapshot?.id ?? r.currentMatchId;
+        if (matchId) {
+          navigate(`/matches/${matchId}`);
+        }
       }
     } catch {
       setError('Không thể cập nhật trạng thái');

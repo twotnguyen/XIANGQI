@@ -223,7 +223,7 @@ export async function undoAiMatch(
     }
 
     const m = matchRes.rows[0];
-    if (m.mode !== 'VS_AI') {
+    if (m.mode !== 'AI' && m.mode !== 'VS_AI') {
       throw { statusCode: 400, code: 'BAD_REQUEST', message: 'Lệnh này chỉ dùng cho ván cờ với AI' };
     }
     if (m.status !== 'ACTIVE') {
@@ -231,7 +231,7 @@ export async function undoAiMatch(
     }
 
     const humanSide: Side = m.red_user_id === userId ? 'RED' : 'BLACK';
-    const pos = m.position as Position;
+    const pos = (typeof m.position === 'string' ? JSON.parse(m.position) : m.position) as Position;
 
     // 3. Fetch moves
     const movesRes = await client.query(
@@ -246,11 +246,11 @@ export async function undoAiMatch(
     // Target ply calculation:
     // If current turn is AI's turn (human just moved) -> revert 1 ply
     // If current turn is human's turn (AI responded) -> revert 2 plies
-    const targetPly = pos.turn !== humanSide ? Math.max(0, m.ply - 1) : Math.max(0, m.ply - 2);
+    const targetPly = pos.turn !== humanSide ? Math.max(0, Number(m.ply) - 1) : Math.max(0, Number(m.ply) - 2);
 
     const { position: revertedPos } = rebuildActiveBranch(moves, targetPly);
 
-    const newVersion = m.version + 1;
+    const newVersion = Number(m.version) + 1;
 
     // 4. Update matches
     await client.query(
