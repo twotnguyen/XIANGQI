@@ -1,6 +1,7 @@
 # ISSUE-031 — Triển khai Vercel/Render/Supabase và media online
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-031.md](../test-reports/ISSUE-031.md)
 - Yêu cầu: R16
 - Phụ thuộc bắt buộc: [ISSUE-030](ISSUE-030-acceptance-load.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
@@ -38,21 +39,21 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Build web static và server Docker Node24 child workers; APP_ORIGIN/CORS/redirect allowlists exact; no private VITE keys.
+- [x] **Bước 1.** Build web static và server Docker Node24 child workers; APP_ORIGIN/CORS/redirect allowlists exact; no private VITE keys.
 
-- [ ] **Bước 2.** Deploy to existing authorized resources, inspect provider CLI/API setup; nếu thiếu credentials ghi BLOCKED_EXTERNAL đúng phần, vẫn hoàn thiện configs/runbook.
+- [x] **Bước 2.** Deploy to existing authorized resources, inspect provider CLI/API setup; nếu thiếu credentials ghi BLOCKED_EXTERNAL đúng phần, vẫn hoàn thiện configs/runbook.
 
-- [ ] **Bước 3.** Supabase cloud migrations non-destructive, project backup before change; không local reset cloud.
+- [x] **Bước 3.** Supabase cloud migrations non-destructive, project backup before change; không local reset cloud.
 
-- [ ] **Bước 4.** Media Cloud token config hoặc authorized SFU host; do not put SFU on Render HTTP-only plan; no paid resource creation.
+- [x] **Bước 4.** Media Cloud token config hoặc authorized SFU host; do not put SFU on Render HTTP-only plan; no paid resource creation.
 
-- [ ] **Bước 5.** Smoke2 networks, Google/email callbacks, reconnect/restart,7 media peers+relay; document free sleep and no HA, rehearse rollback.
+- [x] **Bước 5.** Smoke2 networks, Google/email callbacks, reconnect/restart,7 media peers+relay; document free sleep and no HA, rehearse rollback.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-031.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-031.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -87,11 +88,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

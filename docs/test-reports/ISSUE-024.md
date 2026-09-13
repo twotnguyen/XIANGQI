@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, LiveKit Server (Docker container `livekit/livekit-server:latest`, port 7880)  
-**Tiêu chuẩn kiểm chứng:** [06-MEDIA.md](../../specs/06-MEDIA.md) & [ISSUE-024](../../issues/ISSUE-024-media-spike.md)  
+**Tiêu chuẩn kiểm chứng:** [06-MEDIA.md](../specs/06-MEDIA.md) & [ISSUE-024](../issues/ISSUE-024-media-spike.md)  
 
 ---
 

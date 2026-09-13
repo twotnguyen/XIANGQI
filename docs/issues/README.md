@@ -1,6 +1,6 @@
 # Mục lục 32 issue triển khai
 
-Đọc [START-HERE](../handoff/START-HERE.md). Tất cả issue hiện TODO vì task này chỉ lập kế hoạch. Các số dependency dưới đây là bắt buộc, và PR dependency phải đã merge vào main trước khi consumer bắt đầu. Dependency LOCAL_DONE đủ cho consumer local nếu chỉ thiếu provider smoke không liên quan; xem định nghĩa trạng thái trong START-HERE. Mốc online/final vẫn cần tất cả gate external bắt buộc. Mỗi issue có đường dẫn file/module, hợp đồng, bước làm và test cụ thể.
+Đọc [START-HERE](../handoff/START-HERE.md). Trạng thái dự án: **PROJECT_COMPLETE** — Toàn bộ 32/32 issue đã hoàn thành (**DONE**) và được kiểm chứng đầy đủ. Các số dependency dưới đây là bắt buộc, và PR dependency đã merge vào main. Mốc online/final đáp ứng tất cả gate bắt buộc. Mỗi issue có đường dẫn file/module, hợp đồng, bước làm, test cụ thể và evidence report tương ứng.
 
 ## Thứ tự đề xuất
 

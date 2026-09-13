@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Playwright Chromium  
-**Tiêu chuẩn kiểm chứng:** [06-MEDIA.md](../../specs/06-MEDIA.md) & [ISSUE-026](../../issues/ISSUE-026-media-ui.md)  
+**Tiêu chuẩn kiểm chứng:** [06-MEDIA.md](../specs/06-MEDIA.md) & [ISSUE-026](../issues/ISSUE-026-media-ui.md)  
 
 ---
 

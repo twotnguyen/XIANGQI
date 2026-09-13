@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Docker 28.0.1  
-**Tiêu chuẩn kiểm chứng:** [01-PRODUCT.md](../../specs/01-PRODUCT.md), [07-UI-AND-TESTS.md](../../specs/07-UI-AND-TESTS.md) & [ISSUE-032](../../issues/ISSUE-032-final-handoff.md)  
+**Tiêu chuẩn kiểm chứng:** [01-PRODUCT.md](../specs/01-PRODUCT.md), [07-UI-AND-TESTS.md](../specs/07-UI-AND-TESTS.md) & [ISSUE-032](../issues/ISSUE-032-final-handoff.md)  
 
 ---
 

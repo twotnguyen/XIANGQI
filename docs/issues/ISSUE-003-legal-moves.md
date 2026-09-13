@@ -1,6 +1,7 @@
 # ISSUE-003 — Luật di chuyển và an toàn tướng
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-003.md](../test-reports/ISSUE-003.md)
 - Yêu cầu: R05
 - Phụ thuộc bắt buộc: [ISSUE-002](ISSUE-002-contracts-position.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
@@ -36,21 +37,21 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Viết table tests riêng từng quân, cản mã/mắt tượng/ngòi pháo/cung/sông; dùng đủ hai tướng trong fixture.
+- [x] **Bước 1.** Viết table tests riêng từng quân, cản mã/mắt tượng/ngòi pháo/cung/sông; dùng đủ hai tướng trong fixture.
 
-- [ ] **Bước 2.** Tách pseudo-legal movement và attack geometry. isInCheck không gọi getLegalMoves bên kia gây recursion.
+- [x] **Bước 2.** Tách pseudo-legal movement và attack geometry. isInCheck không gọi getLegalMoves bên kia gây recursion.
 
-- [ ] **Bước 3.** Với mỗi candidate, apply trên board copy rồi kiểm an toàn tướng; cấm capture tướng như move thường.
+- [x] **Bước 3.** Với mỗi candidate, apply trên board copy rồi kiểm an toàn tướng; cấm capture tướng như move thường.
 
-- [ ] **Bước 4.** applyMove thuần, thay turn, giữ piece id; illegal input lỗi rõ trong API nội bộ, server validate trước gọi.
+- [x] **Bước 4.** applyMove thuần, thay turn, giữ piece id; illegal input lỗi rõ trong API nội bộ, server validate trước gọi.
 
-- [ ] **Bước 5.** Kiểm symmetry đỏ/đen và lật UI không can thiệp logic; không dùng thư viện cờ hoặc engine để thay luật.
+- [x] **Bước 5.** Kiểm symmetry đỏ/đen và lật UI không can thiệp logic; không dùng thư viện cờ hoặc engine để thay luật.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-003.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-003.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -87,11 +88,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

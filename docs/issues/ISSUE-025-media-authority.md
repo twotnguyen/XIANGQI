@@ -1,6 +1,7 @@
 # ISSUE-025 — Backend media policy, token và thu hồi
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-025.md](../test-reports/ISSUE-025.md)
 - Yêu cầu: R11, R04, R09
 - Phụ thuộc bắt buộc: [ISSUE-008](ISSUE-008-google-profile.md), [ISSUE-016](ISSUE-016-spectators.md), [ISSUE-024](ISSUE-024-media-spike.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
@@ -38,21 +39,21 @@ Spec là nguồn quyết định; nghiên cứu và bản phân tích ban đầu
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Derive room identities/grants server, no-store tokens60s; viewer/public source conditions; reject unknown privilege fields.
+- [x] **Bước 1.** Derive room identities/grants server, no-store tokens60s; viewer/public source conditions; reject unknown privilege fields.
 
-- [ ] **Bước 2.** Persist desired policy/version/job; transaction ngắn, external SFU side effects ngoài DB lock.
+- [x] **Bước 2.** Persist desired policy/version/job; transaction ngắn, external SFU side effects ngoài DB lock.
 
-- [ ] **Bước 3.** Implement revoke rotation theo06, DeleteRoom ack trước new publish, old generation never reuse; failure preserve desired restrictive state.
+- [x] **Bước 3.** Implement revoke rotation theo06, DeleteRoom ack trước new publish, old generation never reuse; failure preserve desired restrictive state.
 
-- [ ] **Bước 4.** Wire spectator eviction/logout/takeover/end/restart rotate/delete đúng rooms; policy mặc định OFF.
+- [x] **Bước 4.** Wire spectator eviction/logout/takeover/end/restart rotate/delete đúng rooms; policy mặc định OFF.
 
-- [ ] **Bước 5.** Matrix tests race A/B policies, duplicate request/job, API failure, old-token rejoin.
+- [x] **Bước 5.** Matrix tests race A/B policies, duplicate request/job, API failure, old-token rejoin.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-025.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-025.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -88,11 +89,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

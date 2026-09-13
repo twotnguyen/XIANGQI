@@ -2,7 +2,7 @@
 
 **Ngày thực hiện:** 2026-09-13  
 **Môi trường:** macOS Darwin 24.6.0, Node.js v24.21.0, Playwright Chromium (Desktop 1366x768 & Mobile 360x800)  
-**Tiêu chuẩn kiểm chứng:** [07-UI-AND-TESTS.md](../../specs/07-UI-AND-TESTS.md) & [ISSUE-028](../../issues/ISSUE-028-responsive-polish.md)  
+**Tiêu chuẩn kiểm chứng:** [07-UI-AND-TESTS.md](../specs/07-UI-AND-TESTS.md) & [ISSUE-028](../issues/ISSUE-028-responsive-polish.md)  
 
 ---
 

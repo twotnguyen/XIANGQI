@@ -1,6 +1,7 @@
 # ISSUE-023 — Thí nghiệm AI và số liệu bảo vệ
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-023.md](../test-reports/ISSUE-023.md)
 - Yêu cầu: R12, R16
 - Phụ thuộc bắt buộc: [ISSUE-020](ISSUE-020-ai-alpha-beta.md), [ISSUE-021](ISSUE-021-ai-worker-server.md), [ISSUE-022](ISSUE-022-ai-ui.md)
 - Phạm vi bàn giao: một lát chức năng kiểm chứng được; đọc [hướng dẫn thực thi](../handoff/START-HERE.md) trước issue đầu tiên.
@@ -39,21 +40,21 @@ Benchmark tối thiểu5 repeats/position/level trên cùng hardware đã ghi, m
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Tạo20 positions có đáp án/constraint giải tay và expected acceptable moves; không tự lấy AI output làm đáp án.
+- [x] **Bước 1.** Tạo20 positions có đáp án/constraint giải tay và expected acceptable moves; không tự lấy AI output làm đáp án.
 
-- [ ] **Bước 2.** So cùng fixed depth baseline với alpha-beta để tách tác dụng pruning khỏi time budget.
+- [x] **Bước 2.** So cùng fixed depth baseline với alpha-beta để tách tác dụng pruning khỏi time budget.
 
-- [ ] **Bước 3.** Đo budget thực hardware ghi CPU/RAM/runtime, repeats và p50/p95, deadline overshoot; tune caps/weights nếu cần trong budget.
+- [x] **Bước 3.** Đo budget thực hardware ghi CPU/RAM/runtime, repeats và p50/p95, deadline overshoot; tune caps/weights nếu cần trong budget.
 
-- [ ] **Bước 4.** Đấu20 ván mỗi pair từ10 openings đảo màu, seed cố định, giới hạn200 ply chỉ ở harness; báo adjudication riêng.
+- [x] **Bước 4.** Đấu20 ván mỗi pair từ10 openings đảo màu, seed cố định, giới hạn200 ply chỉ ở harness; báo adjudication riêng.
 
-- [ ] **Bước 5.** Gate cấp cao >50% điểm trên pair corpus và tactical score không giảm; nếu fail tune+retest, báo không suy Elo.
+- [x] **Bước 5.** Gate cấp cao >50% điểm trên pair corpus và tactical score không giảm; nếu fail tune+retest, báo không suy Elo.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-023.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-023.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -91,11 +92,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

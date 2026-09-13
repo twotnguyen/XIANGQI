@@ -1,6 +1,7 @@
 # ISSUE-027 — Lịch sử, replay và tái đấu đổi bên
 
-- Trạng thái: TODO
+- Trạng thái: DONE
+- Evidence: [docs/test-reports/ISSUE-027.md](../test-reports/ISSUE-027.md)
 - Ghi chú: Schema CSDL 2 bảng `room_rematch_votes` và `room_command_receipts` đã được tạo sớm và triển khai lên Supabase qua migration `20260912000005_rematch.sql` (báo cáo tại `docs/test-reports/DATABASE-SETUP.md`). Nghiệp vụ rematch, routes, UI và tests của ISSUE-027 vẫn giữ nguyên TODO chờ đến lượt triển khai theo dependencies.
 - Yêu cầu: R14, R13
 - Phụ thuộc bắt buộc: [ISSUE-014](ISSUE-014-draw-undo-resign.md), [ISSUE-017](ISSUE-017-private-chat.md), [ISSUE-021](ISSUE-021-ai-worker-server.md), [ISSUE-022](ISSUE-022-ai-ui.md), [ISSUE-026](ISSUE-026-media-ui.md)
@@ -46,21 +47,21 @@ Issue này sở hữu room FINISHED→CLOSED sau10phút từ finished_at. Dùng 
 
 ## Các bước thực hiện
 
-- [ ] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
-- [ ] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
+- [x] Đọc dependency evidence, kiểm tra trạng thái mã hiện tại và chạy suite liên quan đã có. Ghi lỗi có sẵn riêng trước sửa.
+- [x] Với mỗi bước logic dưới đây, viết case nghiệm thu tương ứng trước, chạy thấy lỗi đúng nguyên nhân rồi mới triển khai bước đó. UI thuần dùng visual/E2E.
 
-- [ ] **Bước 1.** Query own matches paginate20; viewer chỉ replay current match khi còn membership, không xem private history.
+- [x] **Bước 1.** Query own matches paginate20; viewer chỉ replay current match khi còn membership, không xem private history.
 
-- [ ] **Bước 2.** Build effective sequence từ activeMoveIds; next/prev/start/end controls, nhãn undoCount, không edit ended.
+- [x] **Bước 2.** Build effective sequence từ activeMoveIds; next/prev/start/end controls, nhãn undoCount, không edit ended.
 
-- [ ] **Bước 3.** Online rematch both accept trong10m FINISHED, transaction lock room, persisted votes/receipts và expectedMatchId theo03/04; new match ID đổi sides/keep time, reset ready proposal state.
+- [x] **Bước 3.** Online rematch both accept trong10m FINISHED, transaction lock room, persisted votes/receipts và expectedMatchId theo03/04; new match ID đổi sides/keep time, reset ready proposal state.
 
-- [ ] **Bước 4.** New chat matchId, media OFF/delete old generations; keep valid viewers và policy room hiện tại.
+- [x] **Bước 4.** New chat matchId, media OFF/delete old generations; keep valid viewers và policy room hiện tại.
 
-- [ ] **Bước 5.** AI replay/new match giữ level/time, side chọn lại; closed room token old reject.
+- [x] **Bước 5.** AI replay/new match giữ level/time, side chọn lại; closed room token old reject.
 
-- [ ] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
-- [ ] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-027.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
+- [x] Viết các test dưới đây trước phần logic tương ứng, chạy thấy lỗi đúng nguyên nhân; triển khai tối thiểu rồi chạy lại. Thay đổi UI thuần dùng visual/E2E, không tạo unit test chỉ soi class CSS.
+- [x] Chạy lệnh kiểm chứng, ghi output thật vào `docs/test-reports/ISSUE-027.md`, cập nhật issue và [tiến độ](../handoff/PROGRESS.md).
 
 ## Tình huống nghiệm thu
 
@@ -100,11 +101,11 @@ Kỳ vọng: exit 0 và toàn bộ tình huống trong bảng có bằng chứng
 
 ## Điều kiện hoàn thành
 
-- [ ] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
-- [ ] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
-- [ ] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
-- [ ] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
-- [ ] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
+- [x] Đầu ra đúng hợp đồng, không để implementation placeholder hoặc handler trả success giả.
+- [x] Mọi dòng trong bảng nghiệm thu được kiểm chứng, gồm đường thất bại và quyền truy cập liên quan.
+- [x] Dependency consumers vẫn tương thích; nếu đổi contract cập nhật spec và test consumer trong cùng thay đổi.
+- [x] Evidence có command, exit code, môi trường, số test, artifact; phân biệt automated/mock/manual/external.
+- [x] Issue và PROGRESS cập nhật cùng trạng thái; phần chưa xong có bước tiếp theo cụ thể.
 
 ## Bàn giao cho issue sau
 

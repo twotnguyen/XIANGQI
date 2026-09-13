@@ -1,6 +1,6 @@
 # ISSUE-001 — Workspace, toolchain và ứng dụng khởi động được
 
-- Trạng thái: LOCAL_DONE
+- Trạng thái: DONE
 - Yêu cầu: R16
 - Phụ thuộc bắt buộc: Không có
 - Nhánh: `chore/issue-001-foundation`
