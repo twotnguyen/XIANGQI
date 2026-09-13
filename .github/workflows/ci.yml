@@ -26,3 +26,112 @@ jobs:
       - run: pnpm test:unit
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+
+  # ISSUE-006 lane: real migrations, constraints and RLS on the local Supabase stack.
+  # The lane fails (it never skips) when the stack or its env is missing.
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      # .env.test is gitignored: build it from the committed local template plus the
+      # Publishable/Secret keys `supabase status` prints for this stack.
+      - name: Write .env.test from the local stack
+        run: |
+          cp .env.test.example .env.test
+          supabase status -o env > /tmp/supabase.env
+          set -a && . /tmp/supabase.env && set +a
+          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=${API_URL}|" .env.test
+          sed -i "s|^SUPABASE_PUBLISHABLE_KEY=.*|SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}|" .env.test
+          sed -i "s|^SUPABASE_SECRET_KEY=.*|SUPABASE_SECRET_KEY=${SECRET_KEY}|" .env.test
+
+      - name: Integration lane (real Postgres + Auth)
+        run: pnpm test:integration
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: supabase stop --no-backup
+
+  # ISSUE-024 lane: real LiveKit SFU. The media spike asserts real room create/delete
+  # against the SFU and a DB-backed policy, so both services must be up or the lane fails.
+  media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      - name: Write .env.test from the local stack
+        run: |
+          cp .env.test.example .env.test
+          supabase status -o env > /tmp/supabase.env
+          set -a && . /tmp/supabase.env && set +a
+          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=${API_URL}|" .env.test
+          sed -i "s|^SUPABASE_PUBLISHABLE_KEY=.*|SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}|" .env.test
+          sed -i "s|^SUPABASE_SECRET_KEY=.*|SUPABASE_SECRET_KEY=${SECRET_KEY}|" .env.test
+
+      - name: Start LiveKit SFU (dev mode)
+        run: docker run -d --name livekit --network host livekit/livekit-server --dev
+
+      # The spike provisions its own SFU (loopback candidates enabled) on free ports, so
+      # the livekit-server binary must be on PATH; it fails loudly when it is missing.
+      - name: Expose the livekit-server binary
+        run: |
+          docker cp livekit:/livekit-server /usr/local/bin/livekit-server
+          chmod +x /usr/local/bin/livekit-server
+          livekit-server --version
+
+      - name: Wait for LiveKit readiness
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:7880/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::LiveKit SFU is not reachable on 127.0.0.1:7880 after 30s"
+          docker logs livekit || true
+          exit 1
+
+      - name: Media lane (real SFU)
+        env:
+          LIVEKIT_BINARY: /usr/local/bin/livekit-server
+        run: pnpm test:media
+
+      - name: Stop LiveKit SFU
+        if: always()
+        run: docker rm -f livekit || true
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: supabase stop --no-backup
