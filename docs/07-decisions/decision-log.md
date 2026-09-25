@@ -975,7 +975,7 @@ Google053 giữ nghiệm thu provider thật, có thể BLOCKED_EXTERNAL;054 ph�
 
 **Ngày:** 2026-09-25 · **Status:** Accepted · **Nguồn:** chỉ đạo trực tiếp của PO · **Supersedes:** phần chọn thư mục nguồn của `DEC-001`.
 
-**Quyết định:** `/Users/twot/Documents/CODE/XIANGQI` là thư mục và Git repository chính của dự án. Xoá nội dung làm việc của lần triển khai cũ, giữ lịch sử Git và remote để truy vết; đưa toàn bộ đặc tả, hướng dẫn agent và trang đọc tài liệu mới từ `XIANGQI-Design` vào đây. Từ thời điểm này, mọi thay đổi tài liệu và mã nguồn mới thực hiện trong `XIANGQI`. `XIANGQI-Design` là bản nguồn tại thời điểm chuyển, không còn là nơi cập nhật chính.
+**Quyết định:** `/Users/twot/Documents/CODE/XIANGQI` là thư mục và Git repository chính của dự án. Xoá nội dung làm việc của lần triển khai cũ, giữ lịch sử Git và remote để truy vết; đưa toàn bộ đặc tả, hướng dẫn agent, tài liệu Jira và trang đọc tài liệu mới từ `XIANGQI-Design` vào đây. Từ thời điểm này, mọi thay đổi tài liệu và mã nguồn mới thực hiện trong `XIANGQI`. `XIANGQI-Design` là bản nguồn tại thời điểm chuyển, không còn là nơi cập nhật chính.
 
 **Trạng thái khởi động lại:** chưa có mã ứng dụng, migration hoặc kết quả kiểm thử runtime mới. Giữ tài liệu `docs/99-archive/` làm lịch sử, không dùng bằng chứng của lần build trước để đánh dấu các issue mới `DONE`. Bắt đầu với `ISSUE-001` theo dependency và WORKFLOW.
 
