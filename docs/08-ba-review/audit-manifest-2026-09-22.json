@@ -1,0 +1,1528 @@
+{
+  "auditId": "BA-20260922",
+  "snapshot": "before audit artifacts",
+  "fileCount": 304,
+  "lineCount": 33809,
+  "files": [
+    {
+      "file": "AGENTS.md",
+      "lines": 360,
+      "sha256": "4de79f1b5a5e701c7186678d9616ee4d8e637bdcc448bfbb1d2eeb6196bdcf18"
+    },
+    {
+      "file": "README.md",
+      "lines": 173,
+      "sha256": "e27ae6fe40714cdfca52dc6f6a81b884bcfaefbae5d8a94741cf010dc5c6d417"
+    },
+    {
+      "file": "docs/00-overview/actors.md",
+      "lines": 194,
+      "sha256": "a86e22c7013987c3a35172302573abec8a6b46c2afe631b54018ccd5d4d0027e"
+    },
+    {
+      "file": "docs/00-overview/glossary.md",
+      "lines": 241,
+      "sha256": "268f1ba1af005c32c82581d5bab6de7e6084fe79885fbfbfba7cb197c2a69750"
+    },
+    {
+      "file": "docs/00-overview/product-overview.md",
+      "lines": 139,
+      "sha256": "e7dfe94ebca482bd18bb48aac2d7379760cdfa8df7ad021a0618ef32511214d2"
+    },
+    {
+      "file": "docs/00-overview/scope.md",
+      "lines": 143,
+      "sha256": "236dc78e9ba07844001ed8b5cab8c69d9b254c9d537db3aeaf26af7fffa0a946"
+    },
+    {
+      "file": "docs/01-requirements/README.md",
+      "lines": 102,
+      "sha256": "cd5b54cc006f0120aedb319bea0e209bb4e2b0fa80cfc272dd3a2ba94c31f2d7"
+    },
+    {
+      "file": "docs/01-requirements/REQ-AI.md",
+      "lines": 275,
+      "sha256": "3843a4c4343137825b22928804fb5bee80c3eec70ef5c5b88bfeef270262cbe1"
+    },
+    {
+      "file": "docs/01-requirements/REQ-AUTH.md",
+      "lines": 242,
+      "sha256": "80868b3ab72923f247e20fa6c3afa6204bd2c381c3ddd8d43078b8ab7fa82ec2"
+    },
+    {
+      "file": "docs/01-requirements/REQ-BOARD.md",
+      "lines": 224,
+      "sha256": "f839529822e549dd5c153f3a508a831f34de0b04e152b6f407858e6197623253"
+    },
+    {
+      "file": "docs/01-requirements/REQ-CHAT.md",
+      "lines": 332,
+      "sha256": "7e6c84faaf36e310f532ebea0df742ef7f677e9ab9f265aaafbe2e2e0d1b1521"
+    },
+    {
+      "file": "docs/01-requirements/REQ-CLOCK.md",
+      "lines": 216,
+      "sha256": "937f18d09ff952de721d27d7b9f66211b5d89e56399915cb4efe90e34f43aa28"
+    },
+    {
+      "file": "docs/01-requirements/REQ-DISCONNECT.md",
+      "lines": 225,
+      "sha256": "fcf0de3c8210ebab9c030a2471be0e8983818ffcbd18e1428996f689170e4d1f"
+    },
+    {
+      "file": "docs/01-requirements/REQ-GAME-ACTIONS.md",
+      "lines": 280,
+      "sha256": "6c40a05fd397b763b9c5c0e3476086a459c234ac909c8165d309ba4beaf963b6"
+    },
+    {
+      "file": "docs/01-requirements/REQ-HISTORY-REMATCH.md",
+      "lines": 258,
+      "sha256": "1c4364f263fbc2bacc1f70d39ca5684a93a0635dc49ffaf34df947741ab40d72"
+    },
+    {
+      "file": "docs/01-requirements/REQ-INACTIVITY.md",
+      "lines": 314,
+      "sha256": "c26823e3dafb17f83e79d45acc5065b18885351c4f3b7a5e199096333b621394"
+    },
+    {
+      "file": "docs/01-requirements/REQ-INVITE.md",
+      "lines": 286,
+      "sha256": "93e38115487572358b06e19cefd7fd2b55937cbd7aa67c98c99ebc7e781b679b"
+    },
+    {
+      "file": "docs/01-requirements/REQ-LOBBY.md",
+      "lines": 193,
+      "sha256": "fb3e80889c9da50218570e9f914bfbdf3b22e9f801cd5842ae911e275e8cee80"
+    },
+    {
+      "file": "docs/01-requirements/REQ-MATCH.md",
+      "lines": 249,
+      "sha256": "4b929c9630cb37c4f942aa7501ef20b49fe33af1db56231a90966fbeaca21ea0"
+    },
+    {
+      "file": "docs/01-requirements/REQ-MEDIA.md",
+      "lines": 273,
+      "sha256": "a740de156c31c98dd3d907c4424155d9e1b1e8666f7e0fcc2fe376787bccd838"
+    },
+    {
+      "file": "docs/01-requirements/REQ-PROFILE-FRIENDS.md",
+      "lines": 213,
+      "sha256": "575bd499a697dfb4da645df0a92bca39add4b8d2471fe66be0f6dc958af16698"
+    },
+    {
+      "file": "docs/01-requirements/REQ-ROOM.md",
+      "lines": 292,
+      "sha256": "75368851557b3825b06ff0824b12ff715a2bfcdadc03985e584ed0a7a894f4a8"
+    },
+    {
+      "file": "docs/01-requirements/REQ-SPECTATOR.md",
+      "lines": 357,
+      "sha256": "18e24b16f0f3ec02cfbf7877b82943bc8bae5ea548e767072c30ad75dc797490"
+    },
+    {
+      "file": "docs/02-flows/FLOW-AI.md",
+      "lines": 155,
+      "sha256": "97ebc72bd2310fd3444e82ab0f77c3c6a56d90fc7d61fb8f3686965ca57bd448"
+    },
+    {
+      "file": "docs/02-flows/FLOW-AUTH.md",
+      "lines": 186,
+      "sha256": "a983a2fbd5c3915e60169fb8e07cc34709bccb80c48e738ecc20c4b9df1123c4"
+    },
+    {
+      "file": "docs/02-flows/FLOW-CREATE-ROOM.md",
+      "lines": 95,
+      "sha256": "0125f337fa5dcc2cea467923d3067e14a0fd7dd0e457b32e454aed0fbd0f6948"
+    },
+    {
+      "file": "docs/02-flows/FLOW-DISCONNECT.md",
+      "lines": 204,
+      "sha256": "5ab2e86e9eed658a05d68f0752d22922b627d4e06dca384bdffa4d5abddc7b3b"
+    },
+    {
+      "file": "docs/02-flows/FLOW-INACTIVITY.md",
+      "lines": 152,
+      "sha256": "01566b93773ec42ccc3daba907fb578711521bda38079aab8bad4c56717a797f"
+    },
+    {
+      "file": "docs/02-flows/FLOW-JOIN-ROOM.md",
+      "lines": 176,
+      "sha256": "265e7e3901e13990bbd3d39e065b1357a6f42abdb9656e5a932f74ec16b5941d"
+    },
+    {
+      "file": "docs/02-flows/FLOW-MATCH.md",
+      "lines": 178,
+      "sha256": "f348072d611c871f7da5dc32826df7667909bc34589342339778a20eb1ced4b3"
+    },
+    {
+      "file": "docs/02-flows/FLOW-MEDIA.md",
+      "lines": 148,
+      "sha256": "ef20f1d5cde225ea4028ddf1a6f44beceb019d4f031e1a680f445c8fbce636cd"
+    },
+    {
+      "file": "docs/02-flows/FLOW-SPECTATOR.md",
+      "lines": 185,
+      "sha256": "8d413d4a6df2e71eaba3ae7b249b4d438504b4a291fd11020f91d67cf3cdb378"
+    },
+    {
+      "file": "docs/02-flows/README.md",
+      "lines": 17,
+      "sha256": "5c91580f4a9d443e6881cbf56046706d268256127533004ab21985e8bd2c42ea"
+    },
+    {
+      "file": "docs/03-screens/design-tokens.md",
+      "lines": 221,
+      "sha256": "0cb468a2a20dcd5b4a31835c0d9cd0b8cd8c2901cf36b5b05c67d526e7f52044"
+    },
+    {
+      "file": "docs/03-screens/screen-inventory.md",
+      "lines": 172,
+      "sha256": "aa7f0a4fa9673fcebeecf7731ab4a2daf7433b1389b3813a19f08ad73891536e"
+    },
+    {
+      "file": "docs/04-business-rules/business-rules.md",
+      "lines": 190,
+      "sha256": "19941b3668eff24289e99e2343cfe164b8722d940ac16213193dcbe19dc8994d"
+    },
+    {
+      "file": "docs/04-business-rules/game-rules.md",
+      "lines": 310,
+      "sha256": "50b4d414f549b95bbd2c706f7ef3b019ae536844005bf6f187cf60d0c61c7e2b"
+    },
+    {
+      "file": "docs/04-business-rules/permissions.md",
+      "lines": 205,
+      "sha256": "a2154a4011632b700e22a5d22da4665140f09e2542f1ef1936f870ceb04b3064"
+    },
+    {
+      "file": "docs/05-data-and-realtime/data-flows.md",
+      "lines": 359,
+      "sha256": "c3c7a6abbf5e487c1d7198024a1c6d23485e87ff1b508f536a942f23959df154"
+    },
+    {
+      "file": "docs/05-data-and-realtime/data-model.md",
+      "lines": 228,
+      "sha256": "d7c81e3cfb7afd7bf6adab5ebd257d47f0889863730134a6e81eaf891ca40a40"
+    },
+    {
+      "file": "docs/05-data-and-realtime/session-state.md",
+      "lines": 233,
+      "sha256": "f52cff71b8f1a1eb6d8b9208ce379bede4d2e7f7c27f2cc475bd887a6681cc09"
+    },
+    {
+      "file": "docs/05-data-and-realtime/state-machines.md",
+      "lines": 304,
+      "sha256": "a7776a7c19c2fcd818d9811cc1c698a20c61c805030f3469f0dbeac4d72fe236"
+    },
+    {
+      "file": "docs/06-acceptance/acceptance-criteria.md",
+      "lines": 124,
+      "sha256": "7a9158a5036110f4f818436f916a9353939d8ebb2eb78663846120480b83c739"
+    },
+    {
+      "file": "docs/06-acceptance/test-scenarios.md",
+      "lines": 238,
+      "sha256": "adb1ad7ea7fc184f9a09250a5c8d01be1e33e2226d711adcae5c8b20feff5ec1"
+    },
+    {
+      "file": "docs/07-decisions/decision-log.md",
+      "lines": 581,
+      "sha256": "9fd9be1bd7597b373985417b41e39f396c8c49f93d84f58df10e74e22105240c"
+    },
+    {
+      "file": "docs/07-decisions/interview-log.md",
+      "lines": 276,
+      "sha256": "db3d9091a9fd70794908a422f5476cf4708f9c33f7cc8c4826ecd05c2e780a1d"
+    },
+    {
+      "file": "docs/08-ba-review/final-audit.md",
+      "lines": 205,
+      "sha256": "0bfd50cc4342c744492bf05de869cce97acae3180eb10b631ba6f30d0f92ecc0"
+    },
+    {
+      "file": "docs/08-ba-review/initial-audit.md",
+      "lines": 466,
+      "sha256": "7630c688f0b0e0a174702c737620e0b67c534afe3e50570ba34c386e722dd013"
+    },
+    {
+      "file": "docs/08-ba-review/open-questions.md",
+      "lines": 260,
+      "sha256": "232eb6c8b35d83f3ac877300b302784ecdcb031c329c7cf0c2115a84932175ae"
+    },
+    {
+      "file": "docs/08-ba-review/proposed-structure.md",
+      "lines": 192,
+      "sha256": "7a3e568c043a869469242758479d4e05ff4f29697148737a06d3beb7f33da468"
+    },
+    {
+      "file": "docs/08-ba-review/traceability-matrix.md",
+      "lines": 102,
+      "sha256": "52c7a2c89bca48be38e4a99c04c25355bfe33808ee4ed7c23e9db92bf77601b8"
+    },
+    {
+      "file": "docs/09-technical/README.md",
+      "lines": 14,
+      "sha256": "834df1978f4165ddedd46189921fb4bcdae6a73ed7304097a636e9d55015becc"
+    },
+    {
+      "file": "docs/09-technical/architecture.md",
+      "lines": 184,
+      "sha256": "e97cb452f3d42e153bd29194542b24e57d6fb32c9c195343da1c40d2d0a43080"
+    },
+    {
+      "file": "docs/09-technical/deployment.md",
+      "lines": 122,
+      "sha256": "3ab784b388140c6736df5816579d6e818c332a7a6e3a0774daad6199af636a76"
+    },
+    {
+      "file": "docs/09-technical/tech-stack.md",
+      "lines": 169,
+      "sha256": "6d6bc675a055b97ab55df933c295657696d1848b4943f2c4e29d4c8803de7076"
+    },
+    {
+      "file": "docs/10-issues/EXTERNAL-SETUP.md",
+      "lines": 386,
+      "sha256": "53626c9516abcf9d178b89d6d24391e038dbc357c7c8ea364398aa78606e2bfc"
+    },
+    {
+      "file": "docs/10-issues/INDEX.md",
+      "lines": 261,
+      "sha256": "043f39cce7c365adfd18536b75a4d31d2a0437de9f1186d2096e66f1b343e702"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-001.md",
+      "lines": 101,
+      "sha256": "eec95d44d67aa9b899f7e9a4e04319fc4f02102117b5b78855cc71941a99901a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-002.md",
+      "lines": 65,
+      "sha256": "e22a368ec21e84ada0d7247a60be91947155db1e96b57953a5bc47d2f5bc6af4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-003.md",
+      "lines": 75,
+      "sha256": "1990787428604d16c7ae6aab7660fd7f1d24494d64f1594a333b545cf81024f8"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-004.md",
+      "lines": 72,
+      "sha256": "5b4bd9d6a78d80636a3014d9a5202e2037a3ea6a725a1f577bb00d74f9884655"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-005.md",
+      "lines": 70,
+      "sha256": "cd9ef18d0ea9192ade0a93af4c432998153b7b7e8693fda6917784fb9246cefb"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-006.md",
+      "lines": 87,
+      "sha256": "e4c175ada39ee7b988702702bbd68eec3438eb52ea65a9554903c6b81a33d446"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-007.md",
+      "lines": 62,
+      "sha256": "37a4c1268d12835738ffa4bee385e1dbcd3e45781eb20b2e1c1798952e12d725"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-008.md",
+      "lines": 72,
+      "sha256": "0b718a032b2414916fb02642066de65ce9e02a725c399e0230e0daf5ac359972"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-009.md",
+      "lines": 56,
+      "sha256": "0caecf55b42cb78ba4584fbebc8a1be8fd7c885b9c1ec0323f377af5a55a3e55"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-010.md",
+      "lines": 87,
+      "sha256": "5311133fe01fbc07fc1372cec35df737c4e108487764d888555cd1ecaaef8bd0"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-011.md",
+      "lines": 70,
+      "sha256": "8fab71aff22d029f3c8cfc8972c0af58b7fb7f6235fa6cd8e706abcea950fa0a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-012.md",
+      "lines": 62,
+      "sha256": "f24b41f40f71b279c072953a79d144b42153e7fac4c44ec7632048e843ada32b"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-013.md",
+      "lines": 47,
+      "sha256": "8320e231833b7c18e30744531aa7abb64c8680c38757976c2fbb7c0ff44dbe7c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-014.md",
+      "lines": 63,
+      "sha256": "0a6959b659944616df9df16170241c02aea80127b05ef9319818906299289194"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-015.md",
+      "lines": 51,
+      "sha256": "cb4309676d0fdecda87ccde053584f96030fdb093ec276ace1b5fc688ba4d1c0"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-016.md",
+      "lines": 50,
+      "sha256": "3551f28cca89f3799519e5ccc1d2e207d7366a976f3cf99017fda3d22eaa6c47"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-017.md",
+      "lines": 56,
+      "sha256": "23b101a0124fd86d832a3b5f33d3756e68fd83f4baddff23f56763efc1d03349"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-018.md",
+      "lines": 50,
+      "sha256": "b88a50de6f94ff9f26680616a2ae1dc67629600c80e5c2c435a62ba8838d7405"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-019.md",
+      "lines": 54,
+      "sha256": "276f983f1d29316b0991349226d6e01d28d599eb3b6e0be77f35c289b4f521d8"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-020.md",
+      "lines": 61,
+      "sha256": "d624ee46e65da6bbd096df4d9ba27dde73e4eb16f51265cacd66c80248ef6912"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-021.md",
+      "lines": 44,
+      "sha256": "33bd6032251f86fe4bd901e0174ff289763c29deec84911a39d1c1ee5af3cdae"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-022.md",
+      "lines": 63,
+      "sha256": "4fa3c15e957558d0714ee309a21a55cede66f86c02e8f15e4b91f90def7319d3"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-023.md",
+      "lines": 57,
+      "sha256": "eb5261933217458afb111bea9a3765fa7d930e075d8253e8710cdbe636701667"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-024.md",
+      "lines": 78,
+      "sha256": "478ff7a9977d7ab2db822cc82688e4ea4a5866789eba247d9a399176e0e418a4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-025.md",
+      "lines": 61,
+      "sha256": "947f083ad5058b63509c3b74c8380dc03a12cf8b2e65b1fd2a2f09a2d8c9c539"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-026.md",
+      "lines": 61,
+      "sha256": "c8d454bb975914d9e5593e564981bd44566882016ecb0f8df3920ceae7bb8952"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-027.md",
+      "lines": 52,
+      "sha256": "85b9857737b8b110fde8e3dc28849855167781ed6020fc91fa31c9248f6e8772"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-028.md",
+      "lines": 51,
+      "sha256": "6a656c2a5a3026f5fe5206e9b9f31316137804b81c148e84e56f55b6413d2242"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-029.md",
+      "lines": 62,
+      "sha256": "a0dd78dcc484a8f4eb9173732e075638f684270396f30c8c286dc56ff40ab923"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-030.md",
+      "lines": 61,
+      "sha256": "c900e7592e446089638e97edfe26e3deb4c2f64ef3d4aec9a83c8cd8d837b61a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-031.md",
+      "lines": 67,
+      "sha256": "77c14c1c07fda72422c62021c4c7ad92a8c580f4161edf39f6d0db99c822d463"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-032.md",
+      "lines": 84,
+      "sha256": "958fefdadaa23eb91d0477d81fb540e56ba695bc7dbcbb38093523c289969a17"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-033.md",
+      "lines": 68,
+      "sha256": "030f34b914725771099d73f16aeef78d078512061c1dd6402c432fb1646e9f80"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-034.md",
+      "lines": 59,
+      "sha256": "7a538d8173c38407c25df954317fb2db24f991ecef6b6cc846114b944e1b0a88"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-035.md",
+      "lines": 66,
+      "sha256": "94733c49cfd905409605769732749d075d2743d356b5234dcb093218aceb06a6"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-036.md",
+      "lines": 61,
+      "sha256": "1b72461a9f6f66e9674e9bbc4fff0b745e672f3c341d7cacf0b3eb2051bedf6e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-037.md",
+      "lines": 69,
+      "sha256": "4cb15fe16bc8e19c945aeed0f2052d220f1e242be90922a566336f2d5622fa2c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-038.md",
+      "lines": 80,
+      "sha256": "ac3abf58b8c2600986f1bb4b485b7c33d3f0ffae3ec63115fe7db05342807069"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-039.md",
+      "lines": 62,
+      "sha256": "54fe7cf074c41e8a51c790e2b31ff8808c229b07e46b58a8c625f17ad390635a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-040.md",
+      "lines": 63,
+      "sha256": "2e4739ed65733b0063cfcff0e84f3d73466000bbccc63e2346eac1bd433cf1db"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-041.md",
+      "lines": 73,
+      "sha256": "dd572dc1bf527a92e466d3526de58fe6e8daabfae74ff70da5aa79300e78967f"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-042.md",
+      "lines": 70,
+      "sha256": "b2cf9eee679f9729fdd58eecce67022a460f4e1c18ca797b0ab8a6de398f7223"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-043.md",
+      "lines": 68,
+      "sha256": "94815a9254f42891376a678f19a21ad69eedea30ef91219cceba46583957c1c4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-044.md",
+      "lines": 75,
+      "sha256": "58a48bc1a733ec0b158eb1dbf3c72eb77f53e371ce586a3e0865d8a93ccdfffb"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-045.md",
+      "lines": 59,
+      "sha256": "6fbfac540c9cf1269ee8f5e5cdbf0ca37e3928f8a75e214f08355a2799df6637"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-046.md",
+      "lines": 59,
+      "sha256": "bc252eba9263a712719bcfc7647c5936ec2e4938d7baf3a65c2eec777f959512"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-047.md",
+      "lines": 52,
+      "sha256": "b3d7c6e7c2d4d0da17fa813231bc8cc14ab351cdd7a587c66cbde674a12c8f6d"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-048.md",
+      "lines": 55,
+      "sha256": "48ae7739bdc769a419368c2565d3450e997ddba551e1d76c9a7378e25be9c0d2"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-049.md",
+      "lines": 61,
+      "sha256": "c2c3341e0e1e631f92b7959a9882921a7de1eef3f3be88a9a6276f3a2c06cae3"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-050.md",
+      "lines": 54,
+      "sha256": "e3d97a221ce830746a51ebfdf14665ea3a58b152bb1156b95da910aa40ee7b83"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-051.md",
+      "lines": 57,
+      "sha256": "64b8339a5ab2b401bf08f115cacf5a0e1d09520a54601a0625bb92041f1213ee"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-052.md",
+      "lines": 58,
+      "sha256": "6184d874e46163a3c1eb33b6ec388267a0090b00049742b7d68096764bcb2ac4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-053.md",
+      "lines": 59,
+      "sha256": "9da792390f73cad6ddae6e9044d979b533aabe42cea8f1d7022a377fb91188d0"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-054.md",
+      "lines": 54,
+      "sha256": "4d4edf4fa619dcf639c1782ac26266893f0cec7c08d6105c53daa15219c3b0b4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-055.md",
+      "lines": 63,
+      "sha256": "63e4c1792bed391a0c0be0d57c13ae0294ac819804fb144c2e7bbaa823b8b3c9"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-056.md",
+      "lines": 53,
+      "sha256": "9ca570988164c2c8db031d800ca95d8b90787e1e9cfeeb52c32059dd7406dc7f"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-057.md",
+      "lines": 55,
+      "sha256": "3812cb13c30253d2821f7e61597d15709445914af54202e17bee38642a1473e2"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-058.md",
+      "lines": 57,
+      "sha256": "916e50d9fc5cc5b7d83a2e1f659bd7165ed0149dcfd444f4980dc76ed72d5971"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-059.md",
+      "lines": 50,
+      "sha256": "a27483b6feec44d0c54c86bca179cde6be757cd199af6e8f30053df6971e2116"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-060.md",
+      "lines": 55,
+      "sha256": "e50270e903444999768d9fedc988a1b508928b71c3e859f79584b2a9b8b8c2e4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-061.md",
+      "lines": 60,
+      "sha256": "1b20af868df5df312d30116978210113cf452cefdd5ca5db90e416b4aabc5d62"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-062.md",
+      "lines": 57,
+      "sha256": "9df8894e27ddfe819ac0539ef7abefda6e563367bf347670fa320b7f996dcb91"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-063.md",
+      "lines": 65,
+      "sha256": "31271ee91b859296e3f3d72a201665fcc9111f8d1b25324ef73b42ed2031892c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-064.md",
+      "lines": 68,
+      "sha256": "114f0f07d904e76524e7d2f45fc117854081bacb5cbc37165ca623339959f786"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-065.md",
+      "lines": 60,
+      "sha256": "44bb03d2a27da0be77565305805513a1e5a68b33fab37c4ce3e7f0e10ee2dc33"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-066.md",
+      "lines": 66,
+      "sha256": "95a2ac7399aeebdf513dbf0ee280248a9ec9666cbdab81900c6053acabb4c898"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-067.md",
+      "lines": 59,
+      "sha256": "790964a753b41b270db3d399cabce2c56b27d3376d7643b0a0d11348203f70e5"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-068.md",
+      "lines": 62,
+      "sha256": "3cb128033215ef82f22f746b9935848ab0c86350a2fb1b8c2b1f6bc983f325fa"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-069.md",
+      "lines": 59,
+      "sha256": "3329fcdbdbe6bf295dbfcd7517733426f42c652f88c01f5f1673ceb940beb549"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-070.md",
+      "lines": 59,
+      "sha256": "2d31d113d213d4bc47820284c81265ad306eb92eb38627633769a9b31d483f2a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-071.md",
+      "lines": 63,
+      "sha256": "aa82ea67eb46a49aa1f523ece4d919a379f6c50e8ed93c4fc4708de9e8702a7e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-072.md",
+      "lines": 58,
+      "sha256": "bb7662171b01ddd22b9962c05263235f9268ff0057721ad96b5f4e8c225e382e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-073.md",
+      "lines": 69,
+      "sha256": "4295fb88bc0b97eb7a8bd13fb984d7db82cd3e2cbbca9f4ce03e0525f5966520"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-074.md",
+      "lines": 58,
+      "sha256": "f761b75b67254b516672ddea92ddbaa3333053fa702c29dc8cc838f057d8ebae"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-075.md",
+      "lines": 65,
+      "sha256": "500a5a674d41966c504498e3a77a938a36e9fc160ebbe67fb5233fa6ce243f2c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-076.md",
+      "lines": 67,
+      "sha256": "2fedc8d9ee2fb55da9f23feb30b4a17fa95fa89c48c7f2239ad9d45099b0672b"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-077.md",
+      "lines": 58,
+      "sha256": "98e0ff58355ea24bd2183643343fa425964157757ae26f4ff00bd244e2707fec"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-078.md",
+      "lines": 55,
+      "sha256": "a6af68087bdc3c36be4b67fce9bd751715b0348570e55776bb126c836b8d3600"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-079.md",
+      "lines": 63,
+      "sha256": "326118f7152af2a852ee405039375838946f2684b9c53c4b8e44ff194fda2784"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-080.md",
+      "lines": 56,
+      "sha256": "46c8f40c6d9caea8c2d50ded938e5d27ba37c9146f84ea96b8ed9895c3763829"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-081.md",
+      "lines": 53,
+      "sha256": "7e419b4fbbf17c1511f677c84d05d438f5e048441673db81c6ae5192225d6086"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-082.md",
+      "lines": 57,
+      "sha256": "c7cff570f0f6f3a7a9832d21ed3e0312fb08bacb273858c6bc477ac7ccb8a6c2"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-083.md",
+      "lines": 52,
+      "sha256": "158e866612dc574ba418fc5b9ad9e0fe39925b4806ce0778c648d79b23c7140c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-084.md",
+      "lines": 57,
+      "sha256": "66284352897620dcbf6a0de50584c48c4cb034f08953058fec200d24022ac694"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-085.md",
+      "lines": 68,
+      "sha256": "47e58b9e830b1b4a3e692d6a4ebccb680439a91d62550b5fbcc48b159262228e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-086.md",
+      "lines": 60,
+      "sha256": "858631d8c5b9a78a288744f57fb7d8053d4e1f57927f12de77c65ea635cf439a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-087.md",
+      "lines": 60,
+      "sha256": "4d7f7b0fd179f34397f128dbbcf167b6fba66a7e3893051612929f59b7342995"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-088.md",
+      "lines": 61,
+      "sha256": "55ef9ef51f1d54835e699c05e3e8696ba4cc5069fd4f4b2ac426b8eacef19bfa"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-089.md",
+      "lines": 73,
+      "sha256": "02655b88507d076724ace502913fcfee48eb1998dd5b0504bd2b94b9d1ac9bce"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-090.md",
+      "lines": 59,
+      "sha256": "33069c6670022da2bc493c1b7f2319cfec4ba2b30d534356b0dfd714fa605337"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-091.md",
+      "lines": 58,
+      "sha256": "c42f7cd1e6e566d76bfd7e4520caa9d86edcc9c55e5a7ccd98f919783e5b9240"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-092.md",
+      "lines": 65,
+      "sha256": "d95b3d27de9656511e5921685029e440ab10ca1e917c735671b086f5120c875e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-093.md",
+      "lines": 54,
+      "sha256": "4379776c5f83a0fa64e367cc1b0411fe18b7c612084244cf7eb45635721bb667"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-094.md",
+      "lines": 57,
+      "sha256": "621aced47d5ea78114c9b63b21738caa0639202ccdd9e097d906adf7bf4c3a74"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-095.md",
+      "lines": 55,
+      "sha256": "a33154d35cdc8039bb7fc3229cfbf3f6db59927c59a0e4729c671a4e7fcac18b"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-096.md",
+      "lines": 57,
+      "sha256": "d5eb7a79bafb819f7283073eac8e1c956140479b3351d3aa34fe5bf55d4f2198"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-097.md",
+      "lines": 60,
+      "sha256": "4edac138e8083d95616d694eb9a096f011e8ee2874a6cc03d577e82750659c0d"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-098.md",
+      "lines": 59,
+      "sha256": "3ca37bdf4cfcda128e2a85d18b7fce1554428b5e600135ffdb63441f4bd9f804"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-099.md",
+      "lines": 62,
+      "sha256": "a6bcdc63598fd89dd39fd57fb67e4bbf6a6476c5db239f1d67b6948a563e0522"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-100.md",
+      "lines": 63,
+      "sha256": "829113c8dafee95d4eac1c26a0e859d5a6e9367dc6b9d1429382363cc84a977c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-101.md",
+      "lines": 68,
+      "sha256": "e89a17e6aefd9afa0aefb3c9521292b1ab50b0eda1b4fb739a7f05ad3342331e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-102.md",
+      "lines": 70,
+      "sha256": "4b453b1e0f959b5dfe439e6d58698ae35f1f9323bf9c6bf763cafa23b505fe89"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-103.md",
+      "lines": 81,
+      "sha256": "122f23b3f69b34e7fca365e0a360e71a8207fae3b76ebcf85d9d3096b20f3c78"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-104.md",
+      "lines": 52,
+      "sha256": "91382ffb0f06423da329e3fdbebd8442a3b96a785bb9fa2d689b91f2ebaa2823"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-105.md",
+      "lines": 66,
+      "sha256": "47afa4119b35bc99256e97ae20c9bce94768e602c7df002029dc1cc8efe976ef"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-106.md",
+      "lines": 66,
+      "sha256": "ac36fc8cf165811461ef334530457b73cd73430fb549200de55afa61b66b0557"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-107.md",
+      "lines": 70,
+      "sha256": "8c6289f6ec90deefae1303c8f4e604fda161176e9374638dccbdbcafd09e4790"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-108.md",
+      "lines": 54,
+      "sha256": "feedd2a6bc2f216b1c7b25791aee129d75221e1ecf25c977df7e38224935e858"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-109.md",
+      "lines": 62,
+      "sha256": "d5f615fb47761f1c5bd32a7df87842f1b9e2faac1023a96906d9d9fa97afc9bc"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-110.md",
+      "lines": 56,
+      "sha256": "9fb757a6abab1fd6641f3d445a4561d47431b7fc2893d43342cd67ecfdfe042b"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-111.md",
+      "lines": 65,
+      "sha256": "20520aa8d4b9f32ecab956f3327adf5672225574eb1fad2cf4e0f592b3e6eb53"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-112.md",
+      "lines": 94,
+      "sha256": "c924ccd95c575d27d760e00eed58b33741809ac3ed325e01b9b892203dcbe64a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-113.md",
+      "lines": 58,
+      "sha256": "a99ff0f8ee0e74831c93de5ca6dff20abb13512a75f44ffdf19586601d6f14ad"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-114.md",
+      "lines": 66,
+      "sha256": "c8d9cac7ea1e1a06219c38ac8719537c5bfd21d07b949f887fab115a3b4ab64a"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-115.md",
+      "lines": 74,
+      "sha256": "548f8d7ffd73ae691c14e81b351fcdda8b690a614a29f17c530600f5c6c47c4e"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-116.md",
+      "lines": 63,
+      "sha256": "870cab3b8c40915151f9010f4a67ff234add272a9aa611014dd1a4a46b4db548"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-117.md",
+      "lines": 61,
+      "sha256": "bbd0b69e31c193a6a64f29d57f1ce2a880341ab541a333c74b2bc132fa281f02"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-118.md",
+      "lines": 66,
+      "sha256": "b7139da541c6c8888cb36557768760976fb19621eeacea8eb6c427e10f972b2c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-119.md",
+      "lines": 53,
+      "sha256": "238513a102ac01a3cddf379d495c68e6f5439f143341eb90df74b9f25841571b"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-120.md",
+      "lines": 63,
+      "sha256": "e7fbe9b90777bde4b0c6afb7b3b2b7a2d7790e768f46b022100e28cb203ff22d"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-121.md",
+      "lines": 62,
+      "sha256": "a3618de1b50468cc3380208e84a6c813f3296c474ea0b114f0c449989d381fe4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-122.md",
+      "lines": 55,
+      "sha256": "55ba4ffab07c96cc628cff41505a02190ce372ec1f7241aecb92589225ee51e7"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-123.md",
+      "lines": 57,
+      "sha256": "4470a142f28bd5bbcf530841cf9700af93bdbfaed200ff1a82580fd7b248a093"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-124.md",
+      "lines": 66,
+      "sha256": "4be3c6586cebe45af87f177fb6ef162e5bd5f9da6d640d8ad35e22945aec5e3c"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-125.md",
+      "lines": 53,
+      "sha256": "868a5f06cddd1f193761edcd464f45523db543d99474552d0ddb3fd46c54c121"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-126.md",
+      "lines": 59,
+      "sha256": "7cbeb927d7d495c243ea65ed0df2da7572d5d13d8b42353b0c517a449ce0b8c3"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-127.md",
+      "lines": 72,
+      "sha256": "12caf9aa9d7f43ed60dbbcee661bcb38167638a72da80bb023b358982e28ef82"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-128.md",
+      "lines": 64,
+      "sha256": "b9596e2a2b5cb09f077c8a189d763e352ca3b011369cb59f0cc6742d3e70f00f"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-129.md",
+      "lines": 61,
+      "sha256": "5ec3ac1a92d1cfeb00ad8f4ec6d05392261a5a76674391fe6349a54900641cd7"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-130.md",
+      "lines": 55,
+      "sha256": "344a4e3da5c0bc240e28f48984d81cb137eb80071a0232c77308c887700e8687"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-131.md",
+      "lines": 57,
+      "sha256": "0b4eeab7a5f8ba493ebe337093dbfcb7ac3cb024c94eae43d13bac868b2c0f80"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-132.md",
+      "lines": 55,
+      "sha256": "58b347db8cdaf3dfb0b73d93a6a1df64a325229616da40ccda1a3164f269d6d4"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-133.md",
+      "lines": 65,
+      "sha256": "f9b15922df397523b014fbe9bad104d948500fa02446af10b66fd777c0b6d2df"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-134.md",
+      "lines": 59,
+      "sha256": "3bd8bbafac4e7074a2b72472b69263a00f589f821436b44058559f7c4ee2fc91"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-135.md",
+      "lines": 66,
+      "sha256": "3650e55771d8216d6a5930d07c9cbf24ce5fe7dcc816162a4b465b4bcd8fff02"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-136.md",
+      "lines": 53,
+      "sha256": "932db097400b9791d6551755bd197a9d210d4c04af88f2574576ca5b9e9b400d"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-137.md",
+      "lines": 70,
+      "sha256": "e95b05c378516f022ef8965cbb677e20ccbf52debfe76c710ecbeaa74634e06d"
+    },
+    {
+      "file": "docs/10-issues/ISSUE-138.md",
+      "lines": 87,
+      "sha256": "5b4742689dc75946a7518f5f38398ba59606190c2c17ca5cc5e698e3aa70be8d"
+    },
+    {
+      "file": "docs/10-issues/README.md",
+      "lines": 135,
+      "sha256": "2808b0b6b7f06aa1ec203a2727765ccab5c7364fe2860e55d76a9f95c2248c09"
+    },
+    {
+      "file": "docs/10-issues/WORKFLOW.md",
+      "lines": 161,
+      "sha256": "3a44f317decaeedaf94b3df07ce79c7b236a2353cbde955f025d3b9c617638e8"
+    },
+    {
+      "file": "docs/99-archive/READINESS.md",
+      "lines": 56,
+      "sha256": "eb29b7ce2f813af68f4132a0c74fee678bae3b1ac2cb62d6dc580e17b85e3415"
+    },
+    {
+      "file": "docs/99-archive/README-v1.md",
+      "lines": 31,
+      "sha256": "ffbb48135ffdbd96b85dceb10fe5bb93ca551a31f033a1cea94bed415b009369"
+    },
+    {
+      "file": "docs/99-archive/README.md",
+      "lines": 68,
+      "sha256": "0ca61453532c98df6c30356fa759e71d661ce919d02a4d730b06b6220f4da8c2"
+    },
+    {
+      "file": "docs/99-archive/TRACEABILITY.md",
+      "lines": 22,
+      "sha256": "b781cab8bd948a7d167912bf94abf309992c0e78cb726f8f65a5fcf546b18738"
+    },
+    {
+      "file": "docs/99-archive/brief-v1/ba-role-prompt-v1.md",
+      "lines": 1172,
+      "sha256": "7c715565f9b11135c94fa61477afec2e0713411f353dd72276cdd0df29a0ec8d"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/AI-EXPLANATION.md",
+      "lines": 112,
+      "sha256": "8c025ca221f3e20bb42b0758f6aa09013ccfeeec52d7e3aa0e999ac890ced31e"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/DEFENSE.md",
+      "lines": 52,
+      "sha256": "220a4aaa7366876e7b85ec9651ea46049b74fc187c9fbf4686d910a88087197e"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/DEMO.md",
+      "lines": 66,
+      "sha256": "0390660d64d1235f4dc14e2e37f2b0b6039edd4a41688824f0687b7807a17ba6"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/DEPLOY.md",
+      "lines": 92,
+      "sha256": "f7e360a3dd3e310ddab8ba881cbbef97d762d849ae1cbdf2b7d321805f100705"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/EVIDENCE-TEMPLATE.md",
+      "lines": 35,
+      "sha256": "5d91e90091bf09b24a58bd9acd3db706d98e2707e60a1fd733532fcbf1b7bf03"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/EXTERNAL-INPUTS.md",
+      "lines": 19,
+      "sha256": "81b712d6a1bc1e3b2edd80528e74b07c98d192697e185ef4d2f9882788a2a81c"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/EXTERNAL-SETUP.md",
+      "lines": 30,
+      "sha256": "35b50793159e5bc6ab16aecccacf7b54f1b0b2bdab0a5383ff3247b9c58be460"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/GIT-WORKFLOW.md",
+      "lines": 111,
+      "sha256": "099cadfab76b10d479527ee0cfb012a7a871334d381b1a6d294888c3151fbca7"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/GOOGLE-SETUP.md",
+      "lines": 46,
+      "sha256": "04fe1e177221dd3cac05f8106c04843602e95ebb689e830e9dd31b9a7135f7f9"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/MAINTENANCE.md",
+      "lines": 55,
+      "sha256": "30d7b56b03be586eb77e903528192723ade48170fc33cc04c3a934e2c43d86d2"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/PROGRESS.md",
+      "lines": 84,
+      "sha256": "a9039a26d98706eaa172e59718b2ef711286c2616ee8f242f27df822544d9e07"
+    },
+    {
+      "file": "docs/99-archive/handoff-v1/START-HERE.md",
+      "lines": 61,
+      "sha256": "dbc174984c45161a9598290bf5d8a38377c4cf817e17ae846a5521aeec0b4581"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-001-foundation.md",
+      "lines": 109,
+      "sha256": "25a98dff691931c0e3001c36f06d3bd91cb2a1f3f728c985b91d926183cc6f79"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-002-contracts-position.md",
+      "lines": 103,
+      "sha256": "75e8b529d3213989ad731ec5c6c73f1f3f915901e4583ea6f52a9aeda5a1992a"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-003-legal-moves.md",
+      "lines": 99,
+      "sha256": "3ced5bb0ed4089a3efd775fd7516c1887ad09f24e2081af69d39c3f93c23daf6"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-004-terminal-repetition.md",
+      "lines": 95,
+      "sha256": "ccd686e8f6e58f6e30846530694119012df9839a27a4b13a19c3bf63417d436e"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-005-board-ui.md",
+      "lines": 97,
+      "sha256": "4a99c8cc6b1f96062d986162400fa8b2b102013854b32a6a909ec60bd76ab0b6"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-006-database-test-harness.md",
+      "lines": 99,
+      "sha256": "fe6236fdebb9cd9d774e764bff869c62c8ca0506c155a2cb7f13464ed3fa4b63"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-007-password-auth.md",
+      "lines": 100,
+      "sha256": "13a84ac5ed892e9caccbd08d14fed1ca3b24dde69312fd84b660e767af7d4f5d"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-008-google-profile.md",
+      "lines": 98,
+      "sha256": "c636bf9eb494e6887fd92d4584c7adf6a10a80a3213e14ebbcb6154fd959ad82"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-009-friends-presence.md",
+      "lines": 96,
+      "sha256": "1e470ac5cfa82534819dbef7cc64364312ff0e49137018c7fac159dba9674118"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-010-rooms-lobby.md",
+      "lines": 103,
+      "sha256": "def9f2b2738b977e8bea7b5dff7c056f672c887199a0abfb753490eb2f4d23f5"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-011-invitations.md",
+      "lines": 98,
+      "sha256": "bf447fc2c96a1bdf9b24fbf419e7f0a40d0996e57045a4ddae024c8cca1016cd"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-012-authoritative-match.md",
+      "lines": 111,
+      "sha256": "bb9955d10ca49f762f43cab270ff266b8a828fbb82807733ff700e3f56dbb561"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-013-clocks-reconnect.md",
+      "lines": 102,
+      "sha256": "ae9914aebf2342699c4df1d9698c14bb81ed5aac7456445263ea32ece4fd5c85"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-014-draw-undo-resign.md",
+      "lines": 108,
+      "sha256": "e45ee828a7d474e83995af43593762d82423bca2e4476d8e86fa8f0069abbfd4"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-015-online-ui.md",
+      "lines": 103,
+      "sha256": "6c230e047e197946863fdd06d8f388b2df67a4f90ed6aa62809f2e945bd0ca36"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-016-spectators.md",
+      "lines": 98,
+      "sha256": "25d1355edeb4026b90ed32b89c9d11d2f31b7442d14193adf78e696d4daf8f86"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-017-private-chat.md",
+      "lines": 97,
+      "sha256": "e99333bfb3638244ea02c0995f469073e4196224fb6178f9e07384b7c00af0b8"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-018-ai-evaluation.md",
+      "lines": 97,
+      "sha256": "e33e68b37be43e3cf156f9a15c1d5fb551b77dc45af264ff7b963ba00b9e8f24"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-019-ai-minimax.md",
+      "lines": 94,
+      "sha256": "9453bd17bef86e32e55484c2c8c68d468d19c046be6893e920896f1e223a219b"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-020-ai-alpha-beta.md",
+      "lines": 96,
+      "sha256": "94d185b5486e7e96993b82b7d16fad22eb33b093e48fb0b510666080746d6c6e"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-021-ai-worker-server.md",
+      "lines": 114,
+      "sha256": "05fd51068b7b3ab2fafb8f8bddcee21f07a905d72dd6c14e19bc4170fa8de5a5"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-022-ai-ui.md",
+      "lines": 101,
+      "sha256": "32ce60f4aaea0bb0ca3365462d78ed1a31dd779065628408d61cb4a4bb8ade55"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-023-ai-experiments.md",
+      "lines": 103,
+      "sha256": "96e3beceed5445146c956c73fb374041ee21aa36d035d7703bcfd00dae31279c"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-024-media-spike.md",
+      "lines": 96,
+      "sha256": "6fc01d90ea02cc422da81cbb11ba805538ef87f089d4fa2c2c658dd46cd4b426"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-025-media-authority.md",
+      "lines": 100,
+      "sha256": "c44bde65501a513507f51a5af35342b6cd92b1d6f9139873e2404830171f83e8"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-026-media-ui.md",
+      "lines": 97,
+      "sha256": "fa2132f1206ff73d5056b3f61e0e0d816eaf68f6b2a3054b7133606b2125b608"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-027-history-rematch.md",
+      "lines": 112,
+      "sha256": "f19b55e93e5c5c3910b45d508130f058889700bc8806e2b54cafcb298f7dacf7"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-028-responsive-polish.md",
+      "lines": 96,
+      "sha256": "101d3ce1786f01dcd594e08d4592e611ff2a74f6388b4cab59db96fb3c90546a"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-029-security-hardening.md",
+      "lines": 99,
+      "sha256": "4db4f1aa2113f9b5e47b1143db82a85d501ab993377a414c12221b62dbefb8e0"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-030-acceptance-load.md",
+      "lines": 106,
+      "sha256": "23e2895d80dcde20a7dc85d225995b83530c1d3ce98b70780ce97d46f8af0efd"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-031-deploy-runbook.md",
+      "lines": 99,
+      "sha256": "5b4bb7991046bacab0365cccb9f3b0227b82bcc7397820ca2d5a4699c7c2863d"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/ISSUE-032-final-handoff.md",
+      "lines": 109,
+      "sha256": "e8abe8ae4aedf0a3c751fa5f258892b48b43718838a3df68a1e422da7b6ccfbf"
+    },
+    {
+      "file": "docs/99-archive/issues-v1/README.md",
+      "lines": 89,
+      "sha256": "5dc95a66d3c34ff4d5ab5e632b73e722cec636e87c5a4ade469b56028f9676d9"
+    },
+    {
+      "file": "docs/99-archive/original-analysis.md",
+      "lines": 683,
+      "sha256": "a2467b5732353a8eea5681a477ee02268bcb49afb55662d7b7864b0a399c2b9a"
+    },
+    {
+      "file": "docs/99-archive/research/RESEARCH_AUTH.md",
+      "lines": 151,
+      "sha256": "9c2fcb80a9dcdaa796fc72668e021deaaab9105f9307b310e10c149257f08f44"
+    },
+    {
+      "file": "docs/99-archive/research/RESEARCH_DATABASE.md",
+      "lines": 61,
+      "sha256": "dc9389d43c781e086a7475c1e3a8c5af1996a76a4b3962f204bb243d8345f63d"
+    },
+    {
+      "file": "docs/99-archive/research/RESEARCH_MEDIA.md",
+      "lines": 123,
+      "sha256": "7ef9d793fcfd8b87f62156517ad27cb6b297f6368978c819ce7a699b2c98f85e"
+    },
+    {
+      "file": "docs/99-archive/reviews-v1/AGENT-HANDOFF-REVIEW-20260913-1706.md",
+      "lines": 494,
+      "sha256": "8794c32b22d16bb71b228ed0903f9246e316579bbdcd0c1361f41da8cacb57d3"
+    },
+    {
+      "file": "docs/99-archive/reviews-v1/REMEDIATION-STATUS.md",
+      "lines": 95,
+      "sha256": "5458ae361f60704d89bc8b0e11c53239aae60e51864c6a5ec816d7993437e4d3"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/01-PRODUCT.md",
+      "lines": 84,
+      "sha256": "971d762daec0d371dc06e69658fde1fe7a7f096783e72b4b77627733cd2ddcaa"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/02-ARCHITECTURE.md",
+      "lines": 73,
+      "sha256": "44ff41b75bb1acb08fe653104616a7aa57e737e40a665d0f9e6eba195826e1b1"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/03-STATE-MACHINES.md",
+      "lines": 93,
+      "sha256": "0d0964dae8d13acc94c00b13faff5061c6ff5e83790c55e1c95b8563e5446908"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/04-CONTRACTS.md",
+      "lines": 157,
+      "sha256": "1f258a6b00f7e0b70a418c9f7814cc117229214605e554fcffcb027175cebc7e"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/05-AUTH.md",
+      "lines": 46,
+      "sha256": "3f9fd9aa92dfe3ece400dceb0d689a56b8b85405ea9bae40eaa0b0ebfb817ead"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/06-MEDIA.md",
+      "lines": 88,
+      "sha256": "86b4cc05123ca3d0d7e07837cace0c4448d8d1b03ffb167567231fb9bf6fa1a0"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/07-UI-AND-TESTS.md",
+      "lines": 53,
+      "sha256": "d2ea741ff38a2a6f6681c02eebd31df69029a4ba3b5cefa0101e1a6da3d6cfe3"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/08-TEST-EXECUTION.md",
+      "lines": 84,
+      "sha256": "918404f71454fe8287dd8753e70faa04be643a29eba224cea666caae25b70d72"
+    },
+    {
+      "file": "docs/99-archive/specs-v1/09-DATABASE-DESIGN.md",
+      "lines": 602,
+      "sha256": "cbf8ea48855c586f8b861af077edd32e1850dc62b63a65197d4b1e089f224911"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/DATABASE-SETUP.md",
+      "lines": 166,
+      "sha256": "f1b4a8c9ae1b2c1f33f975f262e4fa503751ac0795cebf9bb5d6e13138773f81"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-001.md",
+      "lines": 114,
+      "sha256": "d932168807a34c3faea0edab4e3dc8d4cab6459451edf411d7c095af9d3b172b"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-002.md",
+      "lines": 76,
+      "sha256": "b1b9de439d59e3d8f1d3977b66fe1fd32731b9335cc2ff7b85fb1ea8b2fbeebe"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-003.md",
+      "lines": 50,
+      "sha256": "94cdc67f82ea8c70825e5e3a4aa71e5620775d0c8e9f61898dab6734c03b3892"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-004.md",
+      "lines": 50,
+      "sha256": "fdb7b33aa06d339217de3b775de19674e168c0dcd4bd98b8f6f723680cf40fa3"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-005.md",
+      "lines": 51,
+      "sha256": "9a9425430d02e11543d11af9c57e32f895f7f95640dd7655aa61b4929dd0fc09"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-006.md",
+      "lines": 134,
+      "sha256": "a107781abfe9e08e0e56ed138f83545c477c6c8d7711b89d24595acfd88a3fbf"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-007.md",
+      "lines": 50,
+      "sha256": "e371cef86c524147c1f073a4af751b8f3a93cd8097bfec3d5727529da499486e"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-008.md",
+      "lines": 49,
+      "sha256": "f48cb7cef6259c5a2e524bcb7d7ac7ed6037c9e1c284f8fd56c9a29799740c5c"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-009.md",
+      "lines": 50,
+      "sha256": "34b33e65077e43a728948c8e89165d23592d6b1d84fa7e496b29eb6c7acf4024"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-010.md",
+      "lines": 50,
+      "sha256": "040b61647ba81f2b5dbf814139510c05e0376046dbf8a4a13f6339067f537fac"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-011.md",
+      "lines": 50,
+      "sha256": "0f81393c625b4abba1a2d13ff8af02f188336467fa4baa01a61b2a88c8dcfb75"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-012.md",
+      "lines": 50,
+      "sha256": "d5a39d8ab7e40e011e17de5577f65206c129a519b554831c6d848b38d10d99cd"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-013.md",
+      "lines": 50,
+      "sha256": "8bafd4cbcba3888abe7d9d5a524002cb1416e5a6a602cdccd67cd8a2d6abd64d"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-014.md",
+      "lines": 50,
+      "sha256": "7bcdff80e9959bce193833a3382c3e6f41f64b1e698018dd17e572791ba66941"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-015.md",
+      "lines": 49,
+      "sha256": "d50c8b5518ac1e367c43b7dd45372a2405bc93a567ccaa3f46da80646fc069f1"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-016.md",
+      "lines": 49,
+      "sha256": "04e859f684ff2f43abf4f75bc9ce93eda46bdd734fca00e021e54d3090cf8d39"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-017.md",
+      "lines": 50,
+      "sha256": "20db6dcd5163f532e568603624768817923ffce7c442d0389998da11e81aee8e"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-018.md",
+      "lines": 50,
+      "sha256": "48992cc19683dd30c4e5b7224ce4361353acffc5748ac4b173864472ae7da1d4"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-019.md",
+      "lines": 50,
+      "sha256": "023c2d4d826f27c0ef7b9f28ed455f8fc8dffa5019b43b4461dfabe0e927c90a"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-020.md",
+      "lines": 50,
+      "sha256": "81fb22af16292190bdcf5c9fa8540b5a6d2473ebc785f1b8c25f6a05f6ec007e"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-021.md",
+      "lines": 49,
+      "sha256": "6c00b0e9dc0969db2e506dbffe71f0307741e4d8febfed100a089514e820a126"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-022.md",
+      "lines": 49,
+      "sha256": "60b3ce7484a6875140f22f7b08616c30848478cbe08afd3bd22f991546241e0e"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-023.md",
+      "lines": 203,
+      "sha256": "2e6b6736aec384f52f109274d1a2a79a780a69cac091ee500479af197d255118"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-024.md",
+      "lines": 94,
+      "sha256": "7514074c8b1b7752a72a6c5b4ae68e4f7cc00e371c4f1e35eaff273c1b7159a4"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-025.md",
+      "lines": 74,
+      "sha256": "0d0f8efadef6874953cf33d4a98dba48dabcda92419c8b407dc89e5581a04469"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-026.md",
+      "lines": 80,
+      "sha256": "ba6a0aadd66b521b73428a281c52f306ed5e9317a6f2f789e9db7c11f2d2643b"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-027.md",
+      "lines": 50,
+      "sha256": "ab58727f371c37962298a67954db0efe228786a282b8197164b29606ed8e2be4"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-028.md",
+      "lines": 41,
+      "sha256": "f2ec6e17a0be47b405087527e31110eb7475a8c6df9e22cc2b8bc265f1888ec3"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-029.md",
+      "lines": 46,
+      "sha256": "e324336dfdd66d1bf17628130683b1d29d317711744bfa29e7af64ec42c7b2a0"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-030.md",
+      "lines": 67,
+      "sha256": "01518cd17f46e2d1881744d56004ae2795a0fce6f961daeac46d8f68bf3b20ae"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-031.md",
+      "lines": 54,
+      "sha256": "a850874996830368401039d8bf6e82323d15d927ba0530cc4978f5e6ce5eed40"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ISSUE-032.md",
+      "lines": 72,
+      "sha256": "f9097ced8cd0aaa4754fb334bbbf89f726df80cc2a0900a3b545af86d25195af"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/MAIN-CI-RECOVERY.md",
+      "lines": 97,
+      "sha256": "5650d3a49ff02fd7bef23671443138cc805a83cb46ba3bbd504499c5abd86459"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/ORCA-ACCEPTANCE.md",
+      "lines": 47,
+      "sha256": "97f50e8db8df4c50b697a828ac664c0a24eb4b492a3175f536743974acea4683"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/STAGING-ACCEPTANCE.md",
+      "lines": 170,
+      "sha256": "8a5e1eb65c8b88f5bcb74ed11fc390ed8b0987f9553f00e138f0bf91b497f4f0"
+    },
+    {
+      "file": "docs/99-archive/test-reports-v1/final-coverage.md",
+      "lines": 51,
+      "sha256": "ef13ae3c89b6d5754206462c28fda2ecc8bce1329b1ffda8c2d84195874079e7"
+    },
+    {
+      "file": "docs/ONBOARDING.md",
+      "lines": 295,
+      "sha256": "ae9254f6f806dab7e50d1018d1717973b29da6103433f5ffe65a505685264406"
+    },
+    {
+      "file": "docs/README.md",
+      "lines": 131,
+      "sha256": "acc17aeb7adefee86d1183a037237fc3161019ecd14981cc6e0ee26f9d828030"
+    },
+    {
+      "file": "site/README.md",
+      "lines": 111,
+      "sha256": "6b6770794d1ac1c01d43a4ddbdbe1fc3b9a0e48209d2955e70012ca5f8c05c16"
+    },
+    {
+      "file": "site/_analysis/QC-REPORT.md",
+      "lines": 155,
+      "sha256": "8059d3b95a249768867b10f223771b8757fbd2f58e6bc8db40e69c199d4a9130"
+    },
+    {
+      "file": "site/_analysis/SYNTAX-REPORT.md",
+      "lines": 429,
+      "sha256": "c06acfc04d4001b9adf835a4d82b9cf9f422861ff43c41c13daebb2613b507d2"
+    }
+  ]
+}

@@ -1,31 +1,41 @@
-# Bộ tài liệu triển khai cờ tướng
+# TÀI LIỆU DỰ ÁN — CỜ TƯỚNG ONLINE
 
-**Bắt đầu tại [START-HERE](handoff/START-HERE.md).** Bộ này dành cho task mới/model5.6 sol triển khai toàn bộ mà không cần lịch sử trò chuyện.
+**Trạng thái:** `SPEC_REVIEWED` · **Cập nhật:** 2026-09-22. Đã rà soát đặc tả theo [báo cáo hiện hành](08-ba-review/final-audit-2026-09-22.md); chưa triển khai ứng dụng hay nghiệm thu runtime.
 
-## Nội dung và quyền ưu tiên
+## Đọc từ đầu tới cuối
 
-1. [Product đã chốt](specs/01-PRODUCT.md): yêu cầu người dùng và chi tiết agent đã được phép quyết định.
-2. [Architecture](specs/02-ARCHITECTURE.md): stack/cấu trúc/runtime/deploy.
-3. [State machines](specs/03-STATE-MACHINES.md): game/clock/undo/restart.
-4. [Contracts](specs/04-CONTRACTS.md): types/schema/API/events/DB.
-5. [Auth](specs/05-AUTH.md), [Media](specs/06-MEDIA.md), [UI và tests](specs/07-UI-AND-TESTS.md): hợp đồng chuyên biệt.
-6. [Thiết kế CSDL](specs/09-DATABASE-DESIGN.md): toàn bộ bảng/cột/khóa/index, RLS, JSON schema, retention và migration order.
-7. [Kế hoạch kiểm thử](specs/08-TEST-EXECUTION.md) và [mẫu evidence](handoff/EVIDENCE-TEMPLATE.md): harness, case theo từng issue, gate đóng việc.
-8. [32 issue](issues/README.md): các bước thực thi theo dependency.
-9. [PROGRESS](handoff/PROGRESS.md), [truy vết yêu cầu](TRACEABILITY.md), [readiness](READINESS.md): theo dõi và kiểm tra.
-10. [Git/GitHub workflow](handoff/GIT-WORKFLOW.md): tự tạo nhánh, commit, PR, review và squash merge theo ủy quyền.
-11. [Đầu vào external](handoff/EXTERNAL-INPUTS.md): credentials/thiết bị cần ở mốc tương ứng.
+1. [Tổng quan sản phẩm](00-overview/product-overview.md), [phạm vi](00-overview/scope.md), [thuật ngữ](00-overview/glossary.md), [vai trò](00-overview/actors.md).
+2. [Yêu cầu R01–R19](01-requirements/README.md): hệ thống phải làm gì.
+3. [Luồng người dùng](02-flows/README.md): bước chính, nhánh thay thế và lỗi.
+4. [Màn hình và trạng thái](03-screens/README.md): route, hành động và phản hồi UI.
+5. [Luật cờ](04-business-rules/game-rules.md), [chỉ mục nghiệp vụ](04-business-rules/business-rules.md), [quyền](04-business-rules/permissions.md).
+6. [Dữ liệu và realtime](05-data-and-realtime/README.md): dữ liệu, phiên, chuyển trạng thái và thứ tự sự kiện.
+7. [Nghiệm thu và truy vết](06-acceptance/README.md): từng BR/AC có nguồn, tiêu chí cần chứng minh.
+8. [Nhật ký quyết định](07-decisions/decision-log.md): lý do, quyết định thay thế và thẩm quyền PO/BA.
+9. [Kiến trúc](09-technical/architecture.md), [công nghệ](09-technical/tech-stack.md), [triển khai](09-technical/deployment.md), các contract kỹ thuật liên quan.
+10. [Hướng dẫn giao agent](10-issues/AGENT-START-HERE.md), [kế hoạch 138 đầu việc](10-issues/README.md), [các mốc thực thi](10-issues/execution-milestones.md), [INDEX](10-issues/INDEX.md) và [WORKFLOW](10-issues/WORKFLOW.md).
 
-Khi nội dung chuyên biệt và tóm tắt có khác nhau, hợp đồng chuyên biệt ưu tiên cho phần đó; sửa đồng thời bản tóm tắt trước coding tiếp. Yêu cầu mới trực tiếp từ người dùng luôn ưu tiên, ghi lại quyết định và cập nhật issue liên quan.
+Đọc theo vai trò: [ONBOARDING](ONBOARDING.md). Đọc trên web: [site/index.html](../site/index.html).
 
-[Nhật ký](planning/PHONG_VAN_YEU_CAU.md) và các RESEARCH là lịch sử/nguồn, không phải bổ sung tính năng. [Bản phân tích ban đầu](../DU_AN_CO_TUONG_ONLINE.md) đã bị thay thế ở các điểm như AI engine,2viewers,media chỉ hai người và auth tự viết.
+## Nguồn chuẩn và cách xử lý mâu thuẫn
 
-## Phạm vi đã chốt
+| Loại nội dung | Nguồn định nghĩa |
+|---|---|
+| BR/AC nghiệp vụ | REQ tương ứng trong01; phiên/AC-SS ở05/session-state |
+| Luật di chuyển và kết thúc cờ |04/game-rules; bộ luật dự án giản lược theo DEC-019 |
+| Quyền |04/permissions dẫn tới BR; backend phải kiểm trên mọi đường vào |
+| UI, route, trạng thái |03/screen-inventory và screen-states; quyền không do UI quyết định |
+| Contract/schema/cơ chế kỹ thuật |05/data-model và09; công nghệ không biến thành nhu cầu sản phẩm |
+| Lý do hoặc thay đổi một quyết định |07/decision-log; đọc ghi chú Superseded |
+| Tiến độ thực thi |10/INDEX + bằng chứng test/PR; Ready của tài liệu không phải DONE issue |
 
-Website tiếng Việt cho desktop/điện thoại, bàn gỗ/quân Hán; Supabase Auth+PostgreSQL; username/password+email verified/recovery+Google; bạn bè/mời/link/mã;2players+5viewers;3 chế độ phòng;2 chat riêng; camera/mic độc lập3 mức chia sẻ; AI tự viết3 cấp; luật giản lược; đồng hồ; reconnect; undo/draw/resign; replay/rematch.
+[Requirement register](06-acceptance/requirement-register.md) lập chỉ mục ID và nguồn, không định nghĩa luật lần hai. Các bảng tóm tắt, flow và issue diễn giải cùng nguồn. Mâu thuẫn mới chưa được DEC giải quyết phải được báo, không chọn ngầm bản thuận tiện nhất.
 
-Không recording, Elo, giải đấu, thanh toán hoặc app native. Hoàn thành local trước, sau đó deploy/test Internet bằng tài nguyên được cấp. AI là nội dung học thuật phải có số đo, không thay bằng engine sẵn.
+## Tài liệu hiện hành và lịch sử
 
-## Trạng thái
+- [Báo cáo audit hiện hành](08-ba-review/final-audit-2026-09-22.md) và [backlog hiện hành](08-ba-review/question-backlog-2026-09-22.md) ghi các quyết định, giới hạn kiểm chứng.
+- [Mục lục audit](08-ba-review/README.md) chỉ rõ snapshot cũ. Các số đếm/readiness trong báo cáo cũ không đại diện trạng thái hiện tại.
+- `99-archive/` giữ nguyên để tra bài học. Không dùng toạ độ, điều kiện PASS hoặc lựa chọn cũ trong archive thay đặc tả hiện hành; không xoá.
+- Supabase/Auth/Google/SMTP/LiveKit/hosting và benchmark vẫn cần cấu hình, chạy thực tế, ghi bằng chứng ở các issue tương ứng. Không có runtime PASS từ việc sửa Markdown.
 
-Bộ tài liệu sẵn sàng để bắt đầu sau kiểm tra trong READINESS. Chưa có mã ứng dụng, chưa chạy unit/integration/E2E sản phẩm. Mọi issue TODO là việc cần thực hiện, không phải hạng mục đã hoàn thành. Online/provider smoke có thể cần cấu hình tài khoản ngoài; không ngăn bắt đầu local.
+Bộ issue đã được cụ thể hoá sau vòng audit BA: xem [PLAN-REVIEW](10-issues/PLAN-REVIEW.md), [thứ tự thực thi](10-issues/EXECUTION-ORDER.md), [phân công 333 AC](10-issues/AC-COVERAGE.md). Báo cáo BA trước đó là snapshot của vòng audit yêu cầu, không phải kết quả chạy bộ test này.
