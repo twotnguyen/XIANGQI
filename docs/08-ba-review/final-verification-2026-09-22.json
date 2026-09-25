@@ -1,0 +1,45 @@
+{
+  "date": "2026-09-22",
+  "status": "SPEC_REVIEWED",
+  "runtime_tests_run": false,
+  "static": {
+    "markdown_files": 322,
+    "active_scan": 213,
+    "immutable_history_changed": [],
+    "broken_links": [],
+    "issues": 138,
+    "edges": 223,
+    "cycles": [],
+    "unknown_numbered_rule_refs": {},
+    "screens": 36,
+    "states": 36,
+    "screen_state_difference": [],
+    "unknown_scr_refs": {},
+    "decisions": 49,
+    "decision_duplicates": [],
+    "test_duplicates": {},
+    "test_count_mismatch": {}
+  },
+  "site": {
+    "site_stats": {
+      "docs": 217,
+      "chars": 1371812,
+      "lines": 24830,
+      "archive": 102,
+      "screens": 36,
+      "businessRules": 315,
+      "acceptance": 333,
+      "decisions": 49
+    },
+    "rendered_markdown": 217,
+    "archive_payload_verified": 102,
+    "screen_table_rows": 36,
+    "index_headers_verified": 138,
+    "errors": []
+  },
+  "limitations": [
+    "Relative link file targets checked; all external URLs and heading fragments not exhaustively verified",
+    "Parser render checked, not browser visual QA",
+    "No application implementation, OAuth/email/media or AI benchmark executed"
+  ]
+}
