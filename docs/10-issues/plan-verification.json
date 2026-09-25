@@ -1,0 +1,74 @@
+{
+  "date": "2026-09-22",
+  "scope": "Documentation and implementation planning only",
+  "status": "STATIC_CHECKS_PASSED",
+  "runtimeTests": "NOT_RUN — application does not exist in this repository",
+  "plan": {
+    "issues": 138,
+    "dependencyEdges": 248,
+    "indexRows": 138,
+    "canonicalAc": 333,
+    "assignedAc": 333,
+    "errors": []
+  },
+  "markdown": {
+    "markdownFiles": 328,
+    "activeMarkdownChecked": 216,
+    "issueFilesChanged": 138,
+    "immutableHistoryChanged": [],
+    "brokenLinks": [],
+    "issueStatusCounts": {
+      "TODO": 138
+    },
+    "otherChangedMarkdown": [
+      "README.md",
+      "AGENTS.md",
+      "docs/README.md",
+      "docs/ONBOARDING.md",
+      "docs/10-issues/WORKFLOW.md",
+      "docs/10-issues/README.md",
+      "docs/10-issues/INDEX.md",
+      "docs/01-requirements/REQ-MEDIA.md",
+      "docs/01-requirements/REQ-GAME-ACTIONS.md",
+      "docs/01-requirements/REQ-DISCONNECT.md",
+      "docs/01-requirements/REQ-MATCH.md"
+    ],
+    "newMarkdown": [
+      "docs/10-issues/AGENT-START-HERE.md",
+      "docs/10-issues/EXECUTION-ORDER.md",
+      "docs/10-issues/AC-COVERAGE.md",
+      "docs/10-issues/PLAN-REVIEW.md",
+      "docs/10-issues/TEST-REPORT-TEMPLATE.md",
+      "docs/10-issues/TEST-CONVENTIONS.md"
+    ]
+  },
+  "content": {
+    "immutable_history_changes": [],
+    "original_table_count_mismatches": [],
+    "errors": []
+  },
+  "javascriptSyntaxExitCode": 0,
+  "siteBuildExitCode": 0,
+  "site": {
+    "site_stats": {
+      "docs": 223,
+      "chars": 2241613,
+      "lines": 35780,
+      "archive": 102,
+      "screens": 36,
+      "businessRules": 315,
+      "acceptance": 333,
+      "decisions": 49
+    },
+    "rendered_markdown": 223,
+    "archive_payload_verified": 102,
+    "screen_table_rows": 36,
+    "index_headers_verified": 138,
+    "errors": []
+  },
+  "limitations": [
+    "Static checks do not compile future application snippets or prove runtime behavior.",
+    "All 138 issues remain TODO. Completion requires implemented tests, actual evidence and merged PRs.",
+    "External acceptance remains assigned to ISSUE-053/137 and requires real services/devices."
+  ]
+}

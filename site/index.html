@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tài liệu dự án — Cờ Tướng Online</title>
+<meta name="description" content="Toàn bộ tài liệu Business Analyst của dự án Cờ Tướng Online: yêu cầu, luồng, màn hình, luật nghiệp vụ, dữ liệu, nghiệm thu và 138 đầu việc triển khai.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23b02a1e'/><circle cx='50' cy='50' r='38' fill='none' stroke='%23fff' stroke-width='4'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%23fff' font-family='serif'>帥</text></svg>">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<a href="#main" class="sr-only">Bỏ qua điều hướng</a>
+
+<header class="hdr">
+  <button class="btn btn--icon btn--ghost hdr__menu" id="btnMenu" aria-label="Mở danh mục" aria-expanded="false">☰</button>
+
+  <a class="hdr__brand" href="#/">
+    <span class="hdr__logo" aria-hidden="true">帥</span>
+    <span>Cờ Tướng Online <span class="hdr__sub">· Tài liệu dự án</span></span>
+  </a>
+
+  <span class="hdr__spacer"></span>
+
+  <button class="btn searchbtn" id="btnSearch" aria-label="Tìm kiếm">
+    🔍 <span>Tìm trong tài liệu…</span> <kbd>Ctrl K</kbd>
+  </button>
+  <button class="btn btn--icon" id="btnTheme" aria-label="Đổi nền sáng/tối" title="Đổi nền sáng/tối">🌙</button>
+</header>
+
+<div class="scrim" id="scrim" data-open="false"></div>
+
+<div class="shell">
+  <nav class="side" id="side" data-open="false" aria-label="Danh mục tài liệu">
+    <input class="side__filter" id="navFilter" type="search" placeholder="Lọc nhanh theo tên…" aria-label="Lọc danh mục">
+    <div id="navTree"></div>
+  </nav>
+
+  <main class="main" id="main">
+    <div id="view"><p style="color:var(--text-mute)">Đang tải tài liệu…</p></div>
+  </main>
+
+  <aside class="toc" id="toc" aria-label="Mục lục trang"></aside>
+</div>
+
+<div class="ovl" id="ovlSearch" data-open="false" role="dialog" aria-modal="true" aria-label="Tìm kiếm tài liệu">
+  <div class="srch">
+    <input class="srch__in" id="srchIn" type="search" placeholder="Gõ từ khoá, mã định danh (DEC-025, R17, ISSUE-032)…" autocomplete="off" spellcheck="false">
+    <div class="srch__res" id="srchRes"></div>
+    <div class="srch__foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> chọn</span>
+      <span><kbd>Enter</kbd> mở</span>
+      <span><kbd>Esc</kbd> đóng</span>
+    </div>
+  </div>
+</div>
+
+<script src="assets/marked.min.js"></script>
+<script src="data/docs.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
