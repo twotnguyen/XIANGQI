@@ -15,7 +15,9 @@ Hiện tại đây là **kho đặc tả**, chưa có mã nguồn.
 XIANGQI/
 ├── README.md      ← bạn đang đọc
 ├── AGENTS.md      ← luật làm việc cho coding agent — ĐỌC TRƯỚC KHI CODE
-└── docs/          ← yêu cầu và kế hoạch: yêu cầu · luồng · màn hình · luật · 138 đầu việc
+├── docs/          ← yêu cầu và kế hoạch: yêu cầu · luồng · màn hình · luật · 138 đầu việc
+├── Jira/          ← nhóm công việc và mô tả component cho Jira
+└── site/          ← trang đọc tài liệu tĩnh
 ```
 
 Mã nguồn sẽ được xây dựng theo **138 đầu việc** trong [docs/10-issues/](docs/10-issues/), lần lượt tạo ra cấu trúc:
