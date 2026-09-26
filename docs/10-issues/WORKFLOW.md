@@ -132,7 +132,7 @@ packages/
 supabase/migrations/
 tests/
   fixtures/ · unit/ · integration/ · e2e/ · media/ · load/
-docs/               ← đặc tả đã có sẵn trong kho chính XIANGQI
+docs/               ← copy từ XIANGQI-Design
 ```
 
 ---
