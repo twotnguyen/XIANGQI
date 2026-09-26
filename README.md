@@ -3,7 +3,7 @@
 > Chơi cờ tướng trực tuyến với bạn bè hoặc với máy — có phòng riêng, người xem, chat và camera/mic.
 
 **Trạng thái:** 📐 `SPEC_REVIEWED` — đã rà soát đặc tả; **chưa triển khai ứng dụng**
-**Cập nhật:** 2026-09-25
+**Cập nhật:** 2026-09-22
 
 ---
 
@@ -12,12 +12,10 @@
 Hiện tại đây là **kho đặc tả**, chưa có mã nguồn.
 
 ```
-XIANGQI/
+XIANGQI-Design/
 ├── README.md      ← bạn đang đọc
 ├── AGENTS.md      ← luật làm việc cho coding agent — ĐỌC TRƯỚC KHI CODE
-├── docs/          ← yêu cầu và kế hoạch: yêu cầu · luồng · màn hình · luật · 138 đầu việc
-├── Jira/          ← nhóm công việc và mô tả component cho Jira
-└── site/          ← trang đọc tài liệu tĩnh
+└── docs/          ← yêu cầu và kế hoạch: yêu cầu · luồng · màn hình · luật · 138 đầu việc
 ```
 
 Mã nguồn sẽ được xây dựng theo **138 đầu việc** trong [docs/10-issues/](docs/10-issues/), lần lượt tạo ra cấu trúc:

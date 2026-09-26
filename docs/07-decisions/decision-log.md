@@ -22,7 +22,7 @@ Ghi nhận các quyết định của Product Owner trong quá trình audit BA. 
 
 ## DEC-001 — `XIANGQI-Design` là nguồn tài liệu chính thức để xây dựng lại dự án
 
-**Date:** 2026-09-21 · **Status:** Superseded by `DEC-049` on 2026-09-25 · **Resolves:** Q-001, Q-007
+**Date:** 2026-09-21 · **Status:** Accepted · **Resolves:** Q-001, Q-007
 
 **Context:** Tồn tại hai thư mục: `XIANGQI/` (có mã nguồn, git HEAD `332ae5b`, docs giống hệt từng byte) và `XIANGQI-Design/` (chỉ docs, không phải git repo). Tài liệu tự mâu thuẫn về trạng thái: `docs/README.md` nói "chưa có mã ứng dụng", `PROGRESS.md` nói "LOCAL_COMPLETE, 482 test PASS".
 
@@ -968,15 +968,3 @@ Google053 giữ nghiệm thu provider thật, có thể BLOCKED_EXTERNAL;054 ph�
 **Lịch sử:** 99-archive và các báo cáo audit cũ giữ nguyên. Mục lục08 phân biệt snapshot cũ, backlog hiện tại và final-audit-2026-09-22. Badge SPEC_REVIEWED nghĩa đã rà soát đặc tả trong phạm vi báo cáo; không có nghĩa triển khai, benchmark, media hoặc external integration đã PASS.
 
 **Lý do:** Developer cần đường đọc liền mạch và hành vi UI kiểm được; PO cần biết chính xác bằng chứng nào hiện có. Không thêm tính năng ngoài phạm vi và không đổi kết quả ván chỉ vì đóng một khung UI.
-
----
-
-## DEC-049 — `XIANGQI` là kho chính để xây dựng lại dự án
-
-**Ngày:** 2026-09-25 · **Status:** Accepted · **Nguồn:** chỉ đạo trực tiếp của PO · **Supersedes:** phần chọn thư mục nguồn của `DEC-001`.
-
-**Quyết định:** `/Users/twot/Documents/CODE/XIANGQI` là thư mục và Git repository chính của dự án. Xoá nội dung làm việc của lần triển khai cũ, giữ lịch sử Git và remote để truy vết; đưa toàn bộ đặc tả, hướng dẫn agent, tài liệu Jira và trang đọc tài liệu mới từ `XIANGQI-Design` vào đây. Từ thời điểm này, mọi thay đổi tài liệu và mã nguồn mới thực hiện trong `XIANGQI`. `XIANGQI-Design` là bản nguồn tại thời điểm chuyển, không còn là nơi cập nhật chính.
-
-**Trạng thái khởi động lại:** chưa có mã ứng dụng, migration hoặc kết quả kiểm thử runtime mới. Giữ tài liệu `docs/99-archive/` làm lịch sử, không dùng bằng chứng của lần build trước để đánh dấu các issue mới `DONE`. Bắt đầu với `ISSUE-001` theo dependency và WORKFLOW.
-
-**Ảnh hưởng:** README, AGENTS, WORKFLOW, ISSUE-001 và vị trí làm việc của toàn bộ 138 issue. Các quyết định sản phẩm khác không đổi.

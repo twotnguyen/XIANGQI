@@ -1,6 +1,6 @@
 # Jira Components — Nhóm công việc dự án Cờ Tướng Online
 
-**Cập nhật:** 2026-09-22
+**Cập nhật:** 2026-09-22  
 **Danh mục đã thống nhất:** Frontend, Backend, AI, Design, Tester, DevOps.
 
 Dự án sử dụng đúng **6 component**, phân chia theo mảng công việc và nhóm phụ trách. Một người có thể kiêm nhiều nhóm; không bắt buộc có 6 thành viên riêng biệt. Các chức năng như tài khoản, phòng, chat và media được thể hiện trong tên/nội dung đầu việc để kết hợp với cách phân nhóm này.
@@ -50,14 +50,14 @@ Không tạo component PM, BA hoặc DA trong danh mục hiện tại. Việc đ
 ## 4. Quy tắc gán component
 
 1. Chọn theo **nội dung công việc**, không theo chức danh của người nhận. Người Backend sửa UI thì phần việc đó thuộc Frontend.
-2. Mỗi issue có một nhóm chịu trách nhiệm chính về kết quả; nhóm phối hợp được ghi rõ trong mô tả. Đây là quy ước phân công của dự án, không yêu cầu tạo thêm trường tên “component chính”.
-3. Một chức năng có thể có nhiều phần việc thuộc Design, Frontend, Backend và Tester. Khi giao độc lập, ghi rõ phần việc, đầu ra và liên kết tới issue gốc để tránh làm trùng hoặc bỏ sót.
-4. Giữ nguyên ID, dependency, checklist PASS và quy trình một issue/một nhánh/một PR của 138 issue đã có. Việc phân nhóm không làm một issue được bắt đầu sớm hơn các phụ thuộc của nó.
+2. **Mỗi Jira Task chỉ có một vai trò duy nhất** trong sáu component. Story là cổng nghiệm thu kết quả của ISSUE-NNN, có thể cần nhiều Task thuộc các vai trò khác nhau; Epic gom các Story theo nhóm E00–E20.
+3. Một chức năng có nhiều phần việc phải tách thành Task Design, Frontend, Backend, AI, Tester hoặc DevOps theo đầu ra thực tế. Không dùng một Task để giao cả mã `apps/web` và `apps/server`, hoặc cả triển khai và nghiệm thu độc lập.
+4. Giữ nguyên ID, dependency và checklist PASS của 138 file nguồn. Trong Jira, Story `ISSUE-NNN` chỉ hoàn thành sau khi các Task của nó và test gốc hoàn thành; Story phụ thuộc trước phải DONE/merge rồi mới bắt đầu Task kế tiếp. Mỗi Task mã có nhánh/PR riêng nếu được triển khai độc lập; bằng chứng vẫn truy về ISSUE-NNN.
 5. Không gán tất cả component chỉ vì các nhóm có tham gia review. Ghi nhóm phối hợp khi có nhiệm vụ hoặc đầu ra cụ thể cần bàn giao.
 
 ## 5. Ánh xạ chủ trì cho 138 issue hiện có
 
-Bảng này là hướng dẫn phân công, bao phủ mỗi issue đúng một lần. Một số issue có cả API và UI, nên nhóm chủ trì phải phối hợp nhóm còn lại theo phạm vi thực tế trong file issue.
+Bảng dưới đây là **ánh xạ chủ trì cũ**, chỉ giữ để truy vết bản nháp ngày 2026-09-22. Nó không dùng để phân công Jira Task vì một số ISSUE gộp nhiều vai trò và 048, 052, 098 bị gán Backend dù phần mã sản phẩm thuộc Frontend. Ánh xạ mới cho đủ 138 ISSUE nằm trong [AUDIT-138](AUDIT-138.md) và [plan.json](plan.json); mọi ISSUE có nhiều vai trò được tách thành Task riêng.
 
 | Component | Issue chủ trì |
 |---|---|
@@ -68,7 +68,7 @@ Bảng này là hướng dẫn phân công, bao phủ mỗi issue đúng một l
 | Tester | [003](../docs/10-issues/ISSUE-003.md)–[004](../docs/10-issues/ISSUE-004.md); [044](../docs/10-issues/ISSUE-044.md); [117](../docs/10-issues/ISSUE-117.md); [133](../docs/10-issues/ISSUE-133.md); [135](../docs/10-issues/ISSUE-135.md)–[136](../docs/10-issues/ISSUE-136.md) |
 | DevOps | [001](../docs/10-issues/ISSUE-001.md)–[002](../docs/10-issues/ISSUE-002.md); [005](../docs/10-issues/ISSUE-005.md); [034](../docs/10-issues/ISSUE-034.md); [112](../docs/10-issues/ISSUE-112.md); [137](../docs/10-issues/ISSUE-137.md); [138](../docs/10-issues/ISSUE-138.md) |
 
-**Phần việc Design:** đọc [danh mục màn hình](../docs/03-screens/screen-inventory.md), [trạng thái màn hình](../docs/03-screens/screen-states.md) và [design tokens](../docs/03-screens/design-tokens.md); chuẩn bị thiết kế trước phần giao diện tương ứng và review khi hiện thực. Không đổi các issue lập trình thành issue thiết kế chỉ để có số lượng phân công. Tài liệu này chưa tạo thêm ID ngoài bộ 138 issue.
+**Phần việc Design:** đọc [danh mục màn hình](../docs/03-screens/screen-inventory.md), [trạng thái màn hình](../docs/03-screens/screen-states.md) và [design tokens](../docs/03-screens/design-tokens.md); tạo Task Design riêng, bàn giao trước Task Frontend liên quan và review sau khi hiện thực. Không đổi 138 ISSUE nguồn thành issue thiết kế chỉ để có số lượng phân công.
 
 **Các điểm phối hợp quan trọng:**
 
@@ -94,6 +94,7 @@ Bảng này là hướng dẫn phân công, bao phủ mỗi issue đúng một l
 
 ## 7. Tài liệu dùng chung
 
+- [Kế hoạch Jira 4 tuần](PLAN-4-WEEKS.md), [rà soát 138 ISSUE](AUDIT-138.md), [truy vết nguồn ↔ Jira](TRACEABILITY.md) và [đối chiếu Jira](REMOTE-VERIFICATION.md): backlog đã tạo, vai trò, Blocks và giới hạn khả thi.
 - [INDEX — 138 issue](../docs/10-issues/INDEX.md) và [thứ tự thực thi](../docs/10-issues/EXECUTION-ORDER.md): chọn việc đủ phụ thuộc.
 - [Yêu cầu](../docs/01-requirements/README.md), [flows](../docs/02-flows/README.md), [quyền](../docs/04-business-rules/permissions.md) và [decision log](../docs/07-decisions/decision-log.md): làm rõ hành vi.
 - [Kiến trúc](../docs/09-technical/architecture.md), [công nghệ](../docs/09-technical/tech-stack.md) và [hướng dẫn bắt đầu](../docs/10-issues/AGENT-START-HERE.md): triển khai đúng ranh giới.

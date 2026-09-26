@@ -23,7 +23,7 @@ Dựng bộ khung kho mã trống nhưng **build được**, có đủ 6 package
 - `tsconfig.base.json` chế độ **nghiêm ngặt**
 - `.gitignore` · `.env.example`
 - Mỗi package có `package.json` + `tsconfig.json` + `src/index.ts` rỗng
-- Giữ nguyên `docs/` đã có sẵn trong kho chính `XIANGQI`
+- `docs/` copy từ `XIANGQI-Design/docs`
 
 **❌ KHÔNG LÀM**
 - Logic nghiệp vụ nào
@@ -46,7 +46,7 @@ docs/            ← copy toàn bộ
 
 ## 5. CÁC BƯỚC
 
-1. Dùng Git repository `XIANGQI` hiện có; kiểm tra `.gitignore` (`node_modules` · `dist` · `.env` · `artifacts` · `test-results`). Không khởi tạo lại Git.
+1. `git init`, tạo `.gitignore` (`node_modules` · `dist` · `.env` · `artifacts` · `test-results`)
 2. Tạo `pnpm-workspace.yaml`:
    ```yaml
    packages: ['apps/*', 'packages/*']
@@ -63,7 +63,7 @@ docs/            ← copy toàn bộ
    ```
 9. **Khoá chính xác phiên bản** mọi thư viện (`TECH-04`). Không dùng `^` hay `~`
 10. Ghi phiên bản thực tế vào `docs/test-reports/toolchain.md`
-11. Kiểm tra `docs/` có đủ bộ đặc tả hiện hành trong kho; không ghi đè bằng bản cũ ở thư mục khác.
+11. Copy `XIANGQI-Design/docs/` vào `docs/`
 
 ## 6. TEST BẮT BUỘC
 
