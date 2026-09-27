@@ -44,16 +44,16 @@ Tên dạng `[BE] TK10.3.1 · …` — tiền tố là vai trò, mỗi Task ch�
 3. **Bẫy**: lỗi dễ gặp ở đúng chỗ đó.
 4. **🧪 Kiểm thử khi Ready for Test**: ca kiểm thử (bước, kết quả mong đợi), tiêu chí PASS, bằng chứng, xử lý khi FAIL. Task `[QA]` tích hợp thì toàn bộ nội dung là ca kiểm thử.
 
-Trong "Is blocked by": mã có hậu tố **(Done)** là phải chờ Task đó Done. Mã không có hậu tố thì chỉ cần Task đó tới `Ready For Test`.
+Trong "Is blocked by": Task sau chỉ bắt đầu khi Task chặn đã **Done** (code chỉ vào `main` khi Done). Hậu tố **(Done)** còn sót giữ nguyên nghĩa đó.
 
 ## Luồng trạng thái trên board
 
-`To Do → Ready For Dev → In Progress → Ready For Test → Done`. Người làm kéo Task sang **Ready For Test** khi PR đã review, CI xanh và đã merge `main`. Tester kiểm, PASS thì kéo sang **Done**; FAIL thì tạo Bug và kéo Task về **In Progress**. Chi tiết ở [00-CAU-HINH-JIRA.md §10](00-CAU-HINH-JIRA.md).
+`To Do → Ready For Dev → In Progress → Ready For Test → Done`. Người làm mở PR (4 cổng xanh) rồi kéo Task sang **Ready For Test**. Ở bước này người review duyệt code **và** Tester kiểm trên nhánh PR. Có ≥ 1 approve + CI xanh + Tester PASS thì merge `main` và Tester kéo sang **Done**; FAIL thì tạo Bug, Task về **In Progress**. Chi tiết ở [AGENTS.md §8](../AGENTS.md).
 
 ## Các quy tắc đã đảm bảo (kiểm bằng script)
 
 - Mỗi Task phát triển/thiết kế có mục 🧪 kiểm thử và giờ kiểm; mỗi Task đúng một component khớp tiền tố vai trò.
-- Liên kết `Blocks` hai chiều khớp nhau. Task chỉ bắt đầu sau khi Task chặn tới `Ready For Test`, hoặc tới `Done` nếu có ghi `(Done)`.
+- Liên kết `Blocks` hai chiều khớp nhau. Task chỉ bắt đầu sau khi Task chặn **Done**.
 - Mọi Task (kể cả thời gian kiểm thử) nằm trong cửa sổ sprint của Story; Done muộn nhất 23/10/2026.
 - Story Points tính từ tổng giờ làm + giờ kiểm của các Task (thang Fibonacci, xem 00-CAU-HINH-JIRA.md).
 
