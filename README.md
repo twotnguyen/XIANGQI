@@ -136,18 +136,27 @@ Tester dùng [sổ tay kiểm thử](Jira/04-HUONG-DAN-KIEM-THU.md) và công c�
 
 ## Quy trình làm việc
 
+**Nhánh:**
+
+| Nhánh | Vai trò | Ai merge vào |
+|---|---|---|
+| `main` | Ổn định nhất; **deploy từ nhánh này** | Chỉ trưởng nhóm hoặc Tester, bằng PR `develop → main` (phát hành cuối sprint) |
+| `develop` | Nhánh làm việc chung của cả nhóm | Mọi thành viên, qua PR đã được review + CI xanh + Tester PASS |
+| `feature/XW-…`, `fix/XW-…`… | Một Task | Tạo từ `develop`, PR ngược về `develop` |
+
+
 Mỗi Task đi theo vòng đời trên Jira:
 
 ```
-To Do → Ready For Dev → In Progress → Ready For Test (review + test) → merge main → Done
+To Do → Ready For Dev → In Progress → Ready For Test (review + test) → merge develop → Done
 ```
 
 1. Chỉ nhận Task khi mọi Task chặn đã **Done**. Đọc file `Jira/task/TKxx.y.z-….md` và các `docs/10-issues/ISSUE-NNN.md` mà Task truy về. Kéo sang **In Progress**.
-2. Tạo nhánh từ `main` có Key Jira: `feature/XW-72-khoi-tao-monorepo`.
+2. Tạo nhánh từ `develop` có Key Jira: `feature/XW-72-khoi-tao-monorepo`.
 3. Viết test trước, rồi viết mã; chạy 4 cổng. Commit: `feat(auth): API đăng nhập [XW-111]`.
-4. Mở PR `[XW-72] TK01.1.1 · …` vào `main` — **một Task một PR**. Comment bàn giao, giao cho Người kiểm, kéo sang **Ready For Test**.
+4. Mở PR `[XW-72] TK01.1.1 · …` vào **`develop`** — **một Task một PR**. Comment bàn giao, giao cho Người kiểm, kéo sang **Ready For Test**.
 5. Ở Ready For Test: ≥ 1 người khác **review + approve**, Tester **kiểm trên nhánh PR** theo mục 🧪. FAIL ⇒ Bug, sửa tiếp trên cùng PR.
-6. Đủ approve + CI xanh + Tester PASS ⇒ merge `main` ⇒ Tester kéo sang **Done**. Log work.
+6. Đủ approve + CI xanh + Tester PASS ⇒ merge `develop` ⇒ Tester kéo sang **Done**. Log work.
 
 Chi tiết (Definition of Ready/Done, mẫu PR, mẫu comment, mẫu Bug): [AGENTS.md §8](AGENTS.md). Cấu hình Jira: [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md).
 
