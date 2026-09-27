@@ -12,6 +12,7 @@
 | [03-TRUY-VET.md](03-TRUY-VET.md) | Bảng Epic → Story → Task ↔ issue đặc tả, có cột Key Jira để điền khi tạo |
 | [04-HUONG-DAN-KIEM-THU.md](04-HUONG-DAN-KIEM-THU.md) | **Sổ tay Tester** (đọc 1 lần): dựng môi trường, bộ tài khoản test, mở nhiều người chơi, gửi lệnh giả mạo bằng `qa`/`qsock`, xem DB, chạy test, đồng hồ giả, ghi bằng chứng, tạo Bug |
 | [05-TU-DIEN-KY-THUAT.md](05-TU-DIEN-KY-THUAT.md) | **Từ điển kỹ thuật cho sinh viên**: transaction, khoá dòng, race condition, idempotency, cursor, IDOR… — nghĩa, ví dụ trong dự án, làm sai thì sao |
+| [06-HOP-DONG-API-SU-KIEN.md](06-HOP-DONG-API-SU-KIEN.md) | **Hợp đồng API & sự kiện realtime**: một chỗ duy nhất chốt mọi đường dẫn HTTP và tên sự kiện Socket.IO (nguồn đặc tả hay nhóm chốt), cách đổi tên |
 | [tools/](tools/) | `qa.sh` (gửi lệnh HTTP bằng lệnh ngắn) và `sock.mjs` (gửi sự kiện Socket.IO) cho Tester |
 | [epic/](epic/) | 16 file, mỗi file **một Epic**: trường Jira, mục tiêu, luật chung của Epic, danh sách Story (có link), tiêu chí hoàn thành |
 | [story/](story/) | 55 file, mỗi file **một Story**: trường Jira, câu chuyện, tiêu chí chấp nhận, bảng thứ tự Task (có link) |

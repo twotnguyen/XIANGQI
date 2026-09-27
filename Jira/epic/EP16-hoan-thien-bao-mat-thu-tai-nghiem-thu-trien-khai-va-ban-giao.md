@@ -13,11 +13,62 @@
 | Start date / Due date | 2026-10-12 / 2026-10-23 |
 | Nguồn đặc tả | ISSUE-098, ISSUE-130 … ISSUE-138 (R15, R16 + nghiệm thu R01–R19) |
 
-**Mục tiêu:** Đảm bảo toàn bộ ứng dụng dùng được ở 4 kích thước (360, 390, 1366, 1920), đạt WCAG 2.1 AA, đủ 5 trạng thái ở 36 màn/cửa sổ; chứng minh **mọi ô ❌ trong ma trận quyền bị chặn ở máy chủ** bằng dữ liệu giả mạo; có giới hạn tần suất/kích thước/tiêu đề bảo mật; thử tải **thật** 10 phòng / 70 kết nối đồng thời; nghiệm thu R01–R19 bằng kịch bản xương sống 8 phiên; triển khai lên Internet (Vercel + Render + Supabase Cloud + LiveKit Cloud) và đóng gói hồ sơ bàn giao/bảo vệ.
+---
 
-**Nguyên tắc báo cáo trung thực (áp dụng mọi mục kiểm thử và Task Tester trong Epic):** không đạt ngưỡng ⇒ ghi **số thật** + Flag (`blocked`); thiếu tài nguyên ngoài ⇒ `blocked-external` + ghi rõ thiếu gì; **không** hạ ngưỡng, **không** thay bằng giả lập rồi báo đạt; cột "bỏ qua" (skip) luôn = 0.
+> ⏱ **Đọc lần đầu:** khoảng 10 phút. · Từ kỹ thuật lạ ⇒ [Từ điển kỹ thuật](../05-TU-DIEN-KY-THUAT.md) · Cách kiểm ⇒ [Sổ tay kiểm thử](../04-HUONG-DAN-KIEM-THU.md)
 
-**Danh sách Story:**
+## 1. TÓM TẮT (đọc trong 1 phút)
+
+**Hoàn thiện + nghiệm thu + triển khai**:
+- Kiểm chứng tổng hợp: nhiều tab, ma trận quyền giả mạo, thử tải 70 kết nối, R01–R19.
+- Responsive 4 kích thước, WCAG AA, 5 trạng thái 36 màn.
+- Bảo mật: giới hạn tần suất, body, CORS, tiêu đề.
+- Triển khai Internet (Vercel + Render + Supabase Cloud + LiveKit Cloud), hồ sơ bàn giao, ghi chú bảo vệ.
+
+## 2. BỐI CẢNH — VÌ SAO EPIC NÀY TỒN TẠI
+
+- Nhiều Task là **Task QA** — Tester là người làm chính, viết test tổng hợp và báo cáo.
+- Lỗi lần trước `F-15`: "thử tải" không đồng thời. Nguyên tắc chung của Epic: **báo cáo trung thực** (xem §5).
+
+## 3. KHÁI NIỆM CẦN HIỂU
+
+| Khái niệm | Giải thích |
+|---|---|
+| **Nghiệm thu local vs Internet** | Local: mọi AC chạy trên máy. Internet: email/Google thật, 2 mạng — ghi CHỜ tới TK16.6.1 |
+| **Đối chứng âm** | Cố tình làm chậm / làm hỏng để chứng minh phép đo / test bắt được lỗi |
+| **BLOCKED_EXTERNAL** | Thiếu tài nguyên ngoài — **không** phải Done |
+| **DEMO_SLEEP_ALLOWED** | Gói miễn phí Render được ngủ; không ping chống ngủ |
+
+Tra thêm: [Test lanes](../05-TU-DIEN-KY-THUAT.md#test-lanes) · [Không skip](../05-TU-DIEN-KY-THUAT.md#skip) · [IDOR](../05-TU-DIEN-KY-THUAT.md#idor) · [Trợ năng](../05-TU-DIEN-KY-THUAT.md#aria) · [Migration](../05-TU-DIEN-KY-THUAT.md#migration)
+
+## 4. PHẠM VI
+
+**✅ LÀM:** kiểm chứng tổng hợp; responsive + trợ năng + trạng thái; bảo mật; triển khai; hồ sơ bàn giao; ghi chú bảo vệ.
+
+**❌ KHÔNG LÀM**
+| Việc | Ở đâu |
+|---|---|
+| Nhiều máy chủ / tự co giãn | **Không** làm (known-limitations) |
+| Redis, dịch vụ trả phí | **Không** dùng |
+| Hứa 10 phòng video | **Không** — chỉ đã thử 1 phòng 2 phát + 5 xem |
+
+## 5. LUẬT BẮT BUỘC CHO MỌI TASK
+
+| Luật | Nghĩa |
+|---|---|
+| Báo cáo trung thực | Không đạt ngưỡng ⇒ ghi **số thật** + Flag (`blocked`); ⛔ không hạ ngưỡng |
+| Tài nguyên ngoài | Thiếu ⇒ `blocked-external` + ghi rõ thiếu gì; ⛔ không thay bằng giả lập rồi báo đạt |
+| Skip = 0 | Cột "bỏ qua" luôn = 0; không `.only` |
+| Không khoá bí mật trong `VITE_*` | Mọi `VITE_*` đều công khai |
+| Không `prisma migrate` | Cloud dùng `supabase db push` |
+| `docs/99-archive/` | Không xoá; so SHA-256 với baseline |
+
+## 6. ĐẦU VÀO
+
+Toàn bộ EP01–EP15.
+
+## 7. DANH SÁCH STORY
+
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
 | [ST16.1](../story/ST16.1-kiem-chung-mo-hinh-nhieu-tab-moi-tab-thao-tac-chong-xung-dot.md) | Kiểm chứng mô hình nhiều tab (mọi tab thao tác, chống xung đột) | 4 | 1 |
@@ -28,3 +79,28 @@
 | [ST16.6](../story/ST16.6-kiem-tren-moi-truong-internet-that-ho-so-ban-giao-va-bao-ve.md) | Kiểm trên môi trường Internet thật, hồ sơ bàn giao và bảo vệ | 4 | 5 |
 | [ST16.7](../story/ST16.7-gioi-han-tan-suat-kich-thuoc-body-cors-va-tieu-de-bao-mat.md) | Giới hạn tần suất, kích thước body, CORS và tiêu đề bảo mật | 3 | 2 |
 | [ST16.8](../story/ST16.8-ha-tang-internet-ban-dau-healthz-trien-khai-vercel-render-mo.md) | Hạ tầng Internet bản đầu: /healthz, triển khai Vercel + Render, môi trường thử tải | 3 | 5 |
+
+```
+TK16.8.1 ─► TK16.8.2 (+TK16.7.1) ─┬─► TK16.8.3 (QA)
+                                  └─► TK16.6.1 (QA)
+TK16.8.4 ─► TK16.4.1 (QA) ─► TK16.6.2 ─┐
+TK15.3.1 ─► TK16.6.3 ──────────────────┴─► TK16.6.4 (QA)
+TK16.7.1 ─► TK16.3.1 (QA) ─┬─► TK16.5.1 (QA)
+TK16.1.1 (QA) ─────────────┴─► TK16.5.2 (QA)
+TK16.2.1 ─┬─► TK16.2.2 ─┐
+          ├─► TK16.2.3 ─┼─► TK16.2.5 (QA)
+          └─► TK16.2.4 ─┘
+```
+
+## 8. TIÊU CHÍ HOÀN THÀNH EPIC
+
+- [ ] 8 Story Done (hoặc Flagged / BLOCKED_EXTERNAL ghi rõ số thật / lý do).
+- [ ] R01–R19 local có bằng chứng; 6 hồi quy đạt; skip = 0.
+- [ ] Sản phẩm chạy trên Internet; hồ sơ bàn giao cho người lạ < 15 phút.
+
+## 9. KỊCH BẢN DEMO (~10 phút)
+
+1. Mở web Vercel trên 2 điện thoại khác mạng; chơi 1 ván có camera.
+2. Mở báo cáo thử tải: p50/p95/p99 thật + đối chứng âm.
+3. Mở báo cáo ma trận quyền: 17 TS-AUTH + 10 điều cấm.
+4. Người ngoài nhóm làm theo README, bấm giờ.

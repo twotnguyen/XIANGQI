@@ -138,9 +138,28 @@ Cần có `jq`, `psql`, `uuidgen` (macOS có sẵn `uuidgen`; `brew install jq l
 | Xin hoà / xin đi lại | `qa propose A DRAW` · `qa propose A UNDO` | Nhớ mã đề nghị vừa tạo |
 | Trả lời đề nghị | `qa respond B yes` · `qa respond B no` | Mặc định trả lời đề nghị vừa tạo |
 | Rút đề nghị | `qa withdraw A` | |
+| "Tôi còn đây" (chống treo ván) | `qa alive A` | |
 | Phiếu tái đấu | `qa rematch A yes` | |
 | Lịch sử / xem lại | `qa hist A` · `qa replay A <mã ván>` | |
+| ⭐ **Dựng nhanh 1 ván online** | `qa quickmatch 600` | A tạo phòng → B vào → A, B online → sẵn sàng → nhớ MATCH. Cần đã `qa login A`, `qa login B` và cài `qsock` (§5.5). A = ĐỎ, B = ĐEN |
+| Dọn để làm ván mới | `qa cleanup` rồi `qa quickmatch 600` | Tắt kết nối nền + đưa mọi người ra khỏi phòng bằng SQL (chỉ dựng dữ liệu) |
+| Giữ ai đó online / cho offline | `qa online S1` · `qa offline B` · `qa log B` | Chạy `qsock` nghe phòng ở nền; `qa log` xem sự kiện người đó nhận |
+| Tạo phòng | `qa room-create A PUBLIC 600 'Phòng 1'` | Chế độ `PUBLIC`/`CODE_ONLY`/`LOCKED`; thời gian 0/300/600/900 giây. Tự nhớ ROOM |
+| Xem phòng / thành viên | `qa room A` · `qa members` | `members` đọc DB: username, role, side, ready |
+| Vào phòng | `qa join S1 WATCH` · `qa join B PLAY inv` · `qa join B PLAY code` · `qa join C WATCH code:ABCD2345` | Nguồn: bỏ trống = mã phòng; `code`/`token`/`inv` = cái vừa tạo |
+| Sẵn sàng / đổi bên | `qa ready A yes` · `qa swap A` · `qa swap-respond B yes` | Tự đọc membershipId, revision |
+| Rời / cài đặt phòng / đuổi | `qa leave B` · `qa leave B resign` · `qa room-set A '{"visibility":"LOCKED"}'` · `qa kick A S1` | |
+| Mã / link / mời | `qa code A PLAY` · `qa link A WATCH` · `qa rotate-watch A` · `qa invite A B PLAY` · `qa inv-respond B yes` · `qa inbox B` | |
+| Dựng lời mời bằng SQL | `qa grant A B PLAY` | **Chỉ** khi API mời (TK08.4.2) chưa có |
+| Chơi với máy | `qa ai-new A HARD BLACK 300` · `qa undo-ai A` · `qa snap` | Tạo ván xong nhớ MATCH; đi nước bằng `qa move A …` |
+| Camera / micro | `qa media A OPPONENT_ONLY OFF` · `qa media-get S1` · `qa media-token S1 CAMERA` | Mức: `OFF`, `OPPONENT_ONLY`, `OPPONENT_AND_SPECTATORS`. `media-token` **không in token** (chỉ phòng + quyền) |
+| Chat | `qa chat A ROOM 'Xin chào'` · `qa chat A PLAYERS 'Riêng'` · `qa chat-hist S1 ROOM` | Tự lấy kênh của phòng đang chọn. Gửi lại đúng 1 tin: `M=$(qa cid); QA_MSGID=$M qa chat A ROOM 'x'` (2 lần) |
+| Lấy user id | `qa uid B` | Đọc DB theo username |
+| Đổi tên hiển thị | `qa rename A 'Nguyễn Văn Á'` | |
+| Tìm người dùng | `qa search A min` | Tự mã hoá ký tự đặc biệt (`%`, `'`…) |
+| Bạn bè | `qa friends A` · `qa friend-add A B` · `qa friend-respond B yes` · `qa friend-cancel A` · `qa unfriend A B` | `friend-add` nhớ mã lời mời vừa gửi |
 | Chạy câu SQL | `qa sql "select status from matches"` | Chỉ nên `select` |
+| Lấy **một giá trị** SQL gán vào biến | `CTX=$(qa val "select current_chat_context_id from rooms where id='$(qa get ROOM)'")` | In đúng giá trị, không kẻ bảng |
 | Gửi lại **đúng** một lệnh | `CID=$(qa cid)` rồi `QA_CID=$CID qa resign A` hai lần | Kiểm chống gửi trùng |
 | Gửi request bất kỳ | `qa raw A GET /history` · `qa raw - GET /history` | `-` = không gửi token |
 
@@ -185,7 +204,7 @@ Số HTTP đi kèm mỗi `code` theo bảng ánh xạ trong `packages/contracts/
 | `✗ Không gọi được máy chủ` | Server chưa chạy ⇒ `pnpm dev` |
 | `Đăng nhập tester_a thất bại` | Tài khoản chưa đăng ký hoặc chưa xác minh email (§3) |
 | `Không đọc được version` | A không ở trong phòng ⇒ `QA_SNAP_AS=B qa …` |
-| Lệnh trả `404` với đường dẫn lạ | Dev đặt đường dẫn khác đề xuất ⇒ xem comment PR, gửi bằng `qa raw` và báo Dev cập nhật Task |
+| Lệnh trả `404` với đường dẫn lạ | Đối chiếu [Hợp đồng API & sự kiện](06-HOP-DONG-API-SU-KIEN.md). Code khác bảng ⇒ Bug cho Dev (hoặc Dev phải cập nhật bảng + `qa.sh` cùng PR); tạm thời gửi bằng `qa raw` |
 
 ### 5.5 Gửi lệnh qua Socket.IO — công cụ `qsock`
 
@@ -205,6 +224,16 @@ echo "alias qsock='node ~/qa-tools/sock.mjs'" >> ~/.zshrc && source ~/.zshrc
 | A xin hoà qua socket | `qsock A match.propose '{"kind":"DRAW"}'` |
 | B đồng ý đề nghị vừa tạo | `qsock B match.respondProposal '{"accept":true}'` |
 | Thêm trường thừa để thử giả mạo | `qsock S1 match.resign '{"side":"RED"}'` |
+| **Nghe** mọi sự kiện máy chủ đẩy tới B (in kèm giờ) | `qsock B --listen` (Ctrl+C để dừng) · `qsock B --listen 40` (tự dừng sau 40 giây) |
+| Nghe sau khi **đăng ký** một kênh (sảnh, phòng) | `qsock B --listen 0 lobby.subscribe` · `qsock S1 --listen 0 room.subscribe` (tự thêm `roomId` đang chọn) — `0` = không giới hạn thời gian |
+| Thử kết nối **giả mạo** | `QA_TOKEN=none qsock A --listen 5` (không token) · `QA_TOKEN="$(qa get token_A)x" qsock A --listen 5` (sửa chữ ký) · `QA_WEB_ORIGIN=https://evil.example qsock A --listen 5` (Origin lạ) |
+
+Ví dụ output khi nghe:
+```
+· 14:02:10 B đã kết nối, đang nghe (Ctrl+C để dừng)…
+14:02:15  presence.changed  {"userId":"3f1c…","online":true}
+```
+Mẹo: mở **mỗi người một cửa sổ terminal** nghe (`qsock B --listen`, `qsock C --listen`) rồi thao tác ở cửa sổ khác — nhìn được ai nhận, ai không.
 
 `qsock` tự thêm `matchId`, `commandId`, `expectedVersion`, `proposalId`. Kết quả in ra là **ack** — cùng dạng `{"ok": …}` như HTTP. `✗ CONNECT_ERROR` = server chưa chạy hoặc token hết hạn (chạy lại `qa login`).
 
@@ -365,3 +394,134 @@ Cột "Không chạy" phải bằng **0** mới được Done.
 | **commandId** | Mã duy nhất mỗi lệnh; gửi lại cùng mã ⇒ máy chủ trả kết quả cũ, không làm lại |
 | **ACTIVE / FINISHED / INTERRUPTED** | Ván đang chơi / đã kết thúc có kết quả / bị gián đoạn (không ai thắng) |
 | **Toạ độ** | `(x, y)`, x 0–8 trái→phải, y 0–9 **trên→dưới**. ĐEN ở trên (y=0), ĐỎ ở dưới (y=9). ĐỎ đi trước. Ví dụ: Xe ĐỎ góc trái dưới = `(0,9)`, Pháo ĐỎ trái = `(1,7)`, Tướng ĐEN = `(4,0)`. Người cầm ĐEN thấy bàn lật nhưng toạ độ **không đổi** |
+
+---
+
+## 13. KIỂM THỬ TASK THIẾT KẾ (Design — `[DS]`)
+
+Task thiết kế không có code, nên **"Ready for Test"** nghĩa là: người thiết kế đã
+1. chia sẻ **link Figma** (quyền *can view* cho cả nhóm) trong comment Jira,
+2. đính **ảnh PNG** mọi frame vào Task (Attachment),
+3. dán **bảng chữ** (mọi câu thông báo chính xác từng chữ) vào comment.
+
+### 13.1 Công cụ
+| Việc | Làm thế nào |
+|---|---|
+| Xem mã màu, khoảng cách, cỡ chữ | Mở link Figma → chọn một lớp (layer) → bảng bên phải tab **Inspect** (hoặc **Dev Mode**) hiện mã màu `#…`, `padding`, `gap`, `font-size`, kích thước |
+| Đo khoảng cách giữa 2 lớp | Chọn lớp 1 → giữ **Alt** (Option trên Mac) → rê chuột lên lớp 2 ⇒ Figma hiện số px màu đỏ |
+| Đo tương phản chữ/nền | Mở https://webaim.org/resources/contrastchecker/ → dán mã màu chữ vào *Foreground*, mã nền vào *Background* → đọc **Contrast Ratio** và các ô *WCAG AA: Pass/Fail* |
+| Xem như người mù màu / ảnh đen trắng | Mở ảnh PNG trong Chrome → F12 → nút ⋮ → *More tools* → **Rendering** → *Emulate vision deficiencies* → chọn **Achromatopsia** (đen trắng), **Protanopia**, **Deuteranopia** |
+| Xem kích thước frame | Chọn frame → góc phải trên bảng thuộc tính có `W` × `H` |
+
+### 13.2 Ngưỡng tương phản (WCAG 2.1 AA — `DEC-024`)
+| Loại | Ngưỡng tối thiểu |
+|---|---|
+| Chữ thường (< 24 px, hoặc < 18,66 px đậm) | **4,5 : 1** |
+| Chữ lớn (≥ 24 px, hoặc ≥ 18,66 px đậm) | **3 : 1** |
+| Đồ hoạ cần thiết để hiểu (viền nút, biểu tượng, quân cờ, viền tiêu điểm) | **3 : 1** |
+
+### 13.3 Năm trạng thái bắt buộc mỗi màn
+**Đang tải** (khung xương, không trắng trơn) · **Trống** (giải thích vì sao + gợi ý hành động) · **Lỗi** (nói rõ + nút *Thử lại*) · **Vô hiệu** (phải có câu giải thích vì sao) · **Thành công**. Trạng thái nào không áp dụng cho một màn thì thiết kế phải ghi *"Không áp dụng vì …"*.
+
+### 13.4 Bằng chứng
+Báo cáo `docs/test-reports/<mã-task>.md` gồm bảng ca PASS/FAIL, ảnh chụp chỗ đo (Inspect, WebAIM), ảnh giả lập mù màu. Bug thiết kế: `[BUG][DS] … (từ TKxx.y.z)`, đính ảnh khoanh vùng lỗi.
+
+---
+
+## 14. TESTER VIẾT TEST PHỤ (`tests/unit/qa/`)
+
+Với phần **luật cờ, AI, contracts** (hàm thuần, không giao diện), cách kiểm nhanh và chắc nhất là Tester **tự viết một file test nhỏ** với đáp án **đếm tay** — độc lập với test của Dev.
+
+### 14.1 Mẫu file (copy rồi sửa)
+```ts
+// tests/unit/qa/qa-TK03.2.2.test.ts   ← đặt tên theo mã Task
+import { describe, it, expect } from 'vitest';
+import { makePosition } from '../../fixtures/positions';
+import { pawnMoves } from '@xiangqi/game-rules';            // hàm cần kiểm (tên theo Task)
+
+// so 2 danh sách ô KHÔNG phụ thuộc thứ tự
+const toSet = (moves: { to: { x: number; y: number } }[]) => new Set(moves.map((m) => `${m.to.x},${m.to.y}`));
+
+describe('QA TK03.2.2', () => {
+  it('QA03.2.2-07 Tốt ĐỎ (4,5) chưa qua sông chỉ tiến', () => {
+    const pos = makePosition([
+      { type: 'GENERAL', side: 'BLACK', x: 4, y: 0 },
+      { type: 'GENERAL', side: 'RED',   x: 3, y: 9 },
+      { type: 'PAWN',    side: 'RED',   x: 4, y: 5 },
+    ], 'RED');
+    expect(toSet(pawnMoves(pos.board, { x: 4, y: 5 }))).toEqual(new Set(['4,4']));
+  });
+});
+```
+Chạy: `pnpm test:unit -- tests/unit/qa/qa-TK03.2.2.test.ts`
+
+### 14.2 Quy tắc
+- Đáp án phải **tự suy ra bằng tay** (vẽ ra giấy nếu cần) — **không** chạy hàm rồi chép kết quả làm đáp án.
+- Mọi thế cờ dựng bằng `makePosition` và **có đủ 2 tướng**; đặt hai tướng **khác cột** hoặc có quân chắn, để luật "tướng đối mặt" không làm lệch kết quả (trừ khi ca đang kiểm đúng luật đó).
+- Toạ độ: x 0–8 trái→phải, y 0–9 **trên→dưới**; **ĐEN ở trên (y=0), ĐỎ ở dưới (y=9)**.
+- File test phụ **được commit** (nhánh `qa/<mã-task>`, mở PR riêng) để làm test hồi quy về sau.
+- Ca "thử phá" (sửa tạm code của Dev để xem test đỏ) làm trên nhánh tạm, **không** commit, xong `git checkout .`.
+
+---
+
+## 15. KIỂM MIGRATION / RÀNG BUỘC DB BẰNG SQL
+
+Dùng cho các Task tạo bảng (EP05) và mọi ca "kiểm DB chặn dữ liệu sai".
+
+### 15.1 Kết nối
+```bash
+# quyền quản trị — CHỈ để dựng dữ liệu thử
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
+# quyền máy chủ thật (app_server) — để kiểm phân quyền (mật khẩu theo README/.env)
+psql "$DATABASE_URL"
+```
+Trong `psql`, bật hiện **mã lỗi**: `\set VERBOSITY verbose` ⇒ lỗi in dạng `ERROR:  23514: new row … violates check constraint "…"`.
+
+| Mã SQLSTATE | Nghĩa |
+|---|---|
+| `23514` | Vi phạm **CHECK** (giá trị không hợp lệ) |
+| `23505` | Vi phạm **UNIQUE** (trùng) |
+| `23503` | Vi phạm **khoá ngoại** (trỏ tới dòng không có / xoá dòng đang được trỏ) |
+| `23502` | Cột **NOT NULL** bị để trống |
+| `42501` | **Không có quyền** (permission denied) |
+
+### 15.2 Thử mà không làm bẩn dữ liệu
+```sql
+BEGIN;
+  INSERT INTO rooms (…) VALUES (…);     -- thử
+  -- xem lỗi / xem kết quả
+ROLLBACK;                               -- huỷ mọi thứ vừa làm
+```
+Lỗi xảy ra giữa `BEGIN` thì mọi lệnh sau bị bỏ ⇒ gõ `ROLLBACK;` rồi làm lại. Lỡ làm bẩn ⇒ `pnpm db:reset` (xoá sạch, áp lại migration).
+
+### 15.3 Tạo user Supabase Auth để thử
+**Cách 1 (giao diện):** Studio http://127.0.0.1:54323 → *Authentication* → *Add user* → nhập email + mật khẩu, tick *Auto confirm*.
+**Cách 2 (lệnh, có metadata):**
+```bash
+SECRET=<secret key lấy từ pnpm db:status>
+curl -s -X POST http://127.0.0.1:54321/auth/v1/admin/users \
+  -H "apikey: $SECRET" -H "Authorization: Bearer $SECRET" -H 'Content-Type: application/json' \
+  -d '{"email":"alice@test.local","password":"Test@12345","email_confirm":true,
+       "user_metadata":{"signup_username":"alice","signup_display_name":"Alice"}}' | jq '{id, email}'
+```
+
+### 15.4 Sinh nhiều dòng để kiểm index (`EXPLAIN`)
+```sql
+-- ví dụ 1000 phòng trộn trạng thái (sửa tên cột theo migration thật)
+INSERT INTO rooms (id, name, owner_id, visibility, status, room_version, time_control, created_at)
+SELECT gen_random_uuid(), 'P'||g, '<user_id có sẵn>',
+       (ARRAY['PUBLIC','CODE_ONLY','LOCKED'])[1 + g % 3],
+       (ARRAY['WAITING','PLAYING','FINISHED','CLOSED'])[1 + g % 4],
+       0, 0, now() - (g || ' minutes')::interval
+FROM generate_series(1, 1000) g;
+ANALYZE rooms;                          -- cập nhật thống kê để planner chọn index
+EXPLAIN SELECT … ;                      -- tìm dòng có "Index Scan" / "Bitmap Index Scan"
+```
+
+### 15.5 Xem cấu trúc bảng, ràng buộc, index
+```sql
+\d+ rooms                                                        -- cột, CHECK, index, FK của bảng
+SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'public.rooms'::regclass;
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'rooms';
+SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public';   -- RLS bật chưa
+```

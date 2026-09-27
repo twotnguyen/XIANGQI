@@ -15,6 +15,16 @@
 //   qsock A  match.resync '{}'
 //   QA_CID=<uuid> qsock A match.resign            dùng lại đúng một commandId
 //   QA_RAW=1 qsock A match.resign '{"matchId":"…","commandId":"…","expectedVersion":3}'   KHÔNG tự thêm gì
+//
+// Chế độ NGHE (in mọi sự kiện máy chủ đẩy tới người này, kèm giờ:phút:giây):
+//   qsock B --listen            nghe tới khi bấm Ctrl+C
+//   qsock B --listen 40         nghe 40 giây rồi tự thoát
+//   qsock B --listen 0 lobby.subscribe   kết nối xong gửi lobby.subscribe rồi nghe (0 = không giới hạn thời gian)
+//
+// Thử giả mạo kết nối:
+//   QA_TOKEN=none qsock A --listen 5                    không gửi token
+//   QA_TOKEN="$(qa get token_A)x" qsock A --listen 5    token bị sửa 1 ký tự
+//   QA_WEB_ORIGIN=https://evil.example qsock A --listen 5   Origin lạ
 // =============================================================================
 import { io } from 'socket.io-client';
 import { readFileSync } from 'node:fs';
@@ -28,9 +38,31 @@ const WEB_ORIGIN = process.env.QA_WEB_ORIGIN ?? 'http://localhost:5173';
 const read = (k) => { try { return readFileSync(`${STATE}/${k}`, 'utf8').trim(); } catch { return ''; } };
 const die = (m) => { console.error(`✗ ${m}`); process.exit(2); };
 
-const [who, event, extraJson = '{}'] = process.argv.slice(2);
-if (!who || !event) die("Dùng: qsock <người> <sự-kiện> ['<json>']  — ví dụ: qsock S1 match.resign");
-const token = read(`token_${who}`) || die(`Chưa đăng nhập ${who}. Chạy: qa login ${who}`);
+const [who, event, extraJson = '{}', subEvent] = process.argv.slice(2);
+if (!who || !event) die("Dùng: qsock <người> <sự-kiện> ['<json>']  — ví dụ: qsock S1 match.resign  ·  nghe: qsock B --listen");
+// QA_TOKEN=none ⇒ không gửi token · QA_TOKEN=<chuỗi> ⇒ dùng chuỗi đó (thử token giả/sửa chữ ký)
+const token = process.env.QA_TOKEN === 'none' ? undefined
+  : (process.env.QA_TOKEN || read(`token_${who}`) || die(`Chưa đăng nhập ${who}. Chạy: qa login ${who}`));
+
+if (event === '--listen') {
+  const secs = Number(extraJson === '{}' ? 0 : extraJson) || 0;
+  const hms = () => new Date().toTimeString().slice(0, 8);
+  const s = io(`${ORIGIN_HTTP}/ws`, {
+    transports: ['websocket'], auth: { accessToken: token, tabId: `qa-listen-${Date.now()}` },
+    extraHeaders: { Origin: WEB_ORIGIN }, reconnection: false,
+  });
+  s.on('connect_error', (e) => { console.log(`✗ CONNECT_ERROR: ${e.message}`); process.exit(1); });
+  s.on('connect', () => {
+    console.error(`· ${hms()} ${who} đã kết nối, đang nghe${secs ? ` ${secs} giây` : ' (Ctrl+C để dừng)'}…`);
+    if (subEvent) {
+      const p = subEvent.startsWith('room.') ? { roomId: read('ROOM') } : subEvent.startsWith('match.') ? { matchId: read('MATCH') } : {};
+      s.emit(subEvent, p, (ack) => console.error(`· đã gửi ${subEvent} ${JSON.stringify(p)} → ack ${JSON.stringify(ack)}`));
+    }
+  });
+  s.on('disconnect', (r) => { console.log(`${hms()}  [ngắt kết nối] ${r}`); process.exit(0); });
+  s.onAny((ev, ...args) => console.log(`${hms()}  ${ev}  ${JSON.stringify(args.length === 1 ? args[0] : args)}`));
+  if (secs > 0) setTimeout(() => { s.close(); process.exit(0); }, secs * 1000);
+} else {
 let extra; try { extra = JSON.parse(extraJson); } catch { die('JSON bổ sung không hợp lệ'); }
 
 let payload = extra;
@@ -73,3 +105,4 @@ s.on('connect', () => {
     process.exit(0);
   });
 });
+}

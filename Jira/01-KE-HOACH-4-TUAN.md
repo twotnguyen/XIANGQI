@@ -1,6 +1,6 @@
 # 01 — KẾ HOẠCH 4 TUẦN (28/09 – 23/10/2026)
 
-**Dự án:** Cờ Tướng Online · **Jira:** `XW` (board Scrum `XW board`) · **Cập nhật:** 2026-09-26
+**Dự án:** Cờ Tướng Online · **Jira:** `XW` (board Scrum `XW board`) · **Cập nhật:** 2026-09-27
 
 ---
 
@@ -17,7 +17,7 @@
 | — Design `[DS]` | 8 |
 | — DevOps `[OPS]` | 11 |
 | — Tester `[QA]` (kiểm thử tích hợp nhiều Task / toàn hệ thống) | 20 |
-| Tổng ước lượng | **871 giờ** = 608h làm + 194h Tester kiểm ở bước Ready For Test + 69h Task Tester tích hợp |
+| Tổng ước lượng | **879.5 giờ** = 608h làm + 202.5h Tester kiểm ở bước Ready For Test + 69h Task Tester tích hợp |
 | Cổng chặn | 2 — cổng đo AI (ST04.3) · cổng media (ST14.1) |
 
 **Cách kiểm thử:** mỗi Task phát triển/thiết kế (115 Task) có sẵn mục **"🧪 Kiểm thử khi Ready for Test"** gồm ca kiểm thử, tiêu chí PASS và bằng chứng. Người làm xong kéo Task sang **Ready For Test** thì Tester vào kiểm. PASS thì Tester kéo sang **Done**; FAIL thì Tester tạo Bug và kéo Task về **In Progress**. Chi tiết quy trình ở [00-CAU-HINH-JIRA.md §10](00-CAU-HINH-JIRA.md).
@@ -86,12 +86,12 @@ Một Story chỉ được tính vào kết quả sprint khi **mọi Sub-task đ
 | ST06.1 | Guard xác thực API, đăng ký và xác minh email | 07/10 | 09/10 | 5 | BE · FE | — | ST01.3, ST02.2, ST03.1, ST05.3 |
 | ST08.1 | Tạo phòng và nhận người vào phòng không vượt trần | 08/10 | 09/10 | 5 | BE | — | ST05.2, ST06.1 |
 
-### Sprint 3 (12/10 – 18/10) — 15 Story, 85 SP
+### Sprint 3 (12/10 – 18/10) — 15 Story, 87 SP
 
 | Story | Tên | Bắt đầu | Done (dự kiến) | SP | Vai trò làm | Task `[QA]` tích hợp | Bị chặn bởi |
 |---|---|---|---|---|---|---|---|
 | ST06.2 | Đăng nhập bằng username, phiên 30 ngày/phiên tạm, đăng xuất | 12/10 | 14/10 | 8 | BE · FE | — | ST01.3, ST02.2, ST06.1 |
-| ST07.1 | Hồ sơ, tìm người dùng, kết bạn | 12/10 | 14/10 | 3 | BE · FE | — | ST02.2, ST06.1, ST06.2 |
+| ST07.1 | Hồ sơ, tìm người dùng, kết bạn | 12/10 | 14/10 | 5 | BE · FE | — | ST02.2, ST06.1, ST06.2 |
 | ST07.2 | Trạng thái online và trang bạn bè | 12/10 | 14/10 | 5 | BE · FE | — | ST02.2, ST07.1, ST10.2 |
 | ST08.2 | Sảnh, sẵn sàng/bắt đầu ván, đổi bên và giao diện phòng chờ | 12/10 | 15/10 | 8 | BE · FE | — | ST02.2, ST05.1, ST08.1, ST10.2 |
 | ST10.2 | Gateway realtime, presence/heartbeat, đường xử lý lệnh + biên lai | 12/10 | 13/10 | 8 | BE | 1 | ST05.3, ST06.2, ST08.1 |
@@ -142,11 +142,11 @@ Một Story chỉ được tính vào kết quả sprint khi **mọi Sub-task đ
 | AI | 0 | 34 | 20 | 3 | 57 |
 | Design | 26 | 18 | 0 | 3 | 47 |
 | DevOps | 26 | 4 | 14 | 4 | 48 |
-| Tester: kiểm ở bước Ready For Test | 33 | 39 | 61.5 | 60.5 | 194 |
+| Tester: kiểm ở bước Ready For Test | 35.5 | 39.5 | 63.5 | 64 | 202.5 |
 | Tester: Task tích hợp `[QA]` | 3.5 | 2 | 10.5 | 53 | 69 |
-| **Tổng** | **150.5** | **170** | **256** | **294.5** | **871** |
+| **Tổng** | **153** | **170.5** | **258** | **298** | **879.5** |
 
-Sức làm ước tính của 7 người là khoảng **262 giờ/sprint** (5 ngày × 7,5 giờ × 7 người). Sprint 1–3 vừa sức. **Sprint 4 vượt khoảng 32 giờ**, và riêng phần kiểm thử ở Sprint 4 đã là 113,5 giờ, cần khoảng 3 người kiểm cùng lúc.
+Sức làm ước tính của 7 người là khoảng **262 giờ/sprint** (5 ngày × 7,5 giờ × 7 người). Sprint 1–3 vừa sức. **Sprint 4 vượt khoảng 36 giờ**, và riêng phần kiểm thử ở Sprint 4 đã là 117 giờ, cần khoảng 3 người kiểm cùng lúc.
 
 **Gợi ý phân công 7 thành viên.** Component của Task giữ đúng theo nội dung việc. Một người có thể nhận Task của component khác khi rảnh, và kiểm ở bước Ready For Test nếu **không phải người làm Task đó**.
 
