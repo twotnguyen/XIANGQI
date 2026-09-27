@@ -1,5 +1,7 @@
 # QUY TRÌNH THỰC THI
 
+> **Cập nhật 2026-09-27:** nhóm làm việc theo **Jira Task** (`TKxx.y.z`). Nhánh, commit, PR và bằng chứng theo [AGENTS.md §8](../../AGENTS.md); issue trong thư mục này vẫn là **đặc tả** mà Task truy về.
+
 **Dành cho agent làm issue.** Đọc một lần, áp dụng cho mọi issue.
 
 ---

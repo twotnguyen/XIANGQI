@@ -1,5 +1,7 @@
 # BẮT ĐẦU TRIỂN KHAI — HƯỚNG DẪN CHO AGENT MỚI
 
+> **Cập nhật 2026-09-27:** nhóm làm việc theo **Jira Task** (`TKxx.y.z`). Nhánh, commit, PR và bằng chứng theo [AGENTS.md §8](../../AGENTS.md); issue trong thư mục này vẫn là **đặc tả** mà Task truy về.
+
 **Goal:** Xây toàn bộ Cờ Tướng Online đúng quyết định đã thống nhất, đi từ kho đặc tả đến ứng dụng local và Internet đã có bằng chứng nghiệm thu.
 
 **Architecture:** Frontend gửi ý định; backend quyết định quyền, luật cờ, thứ tự và kết quả. PostgreSQL lưu trạng thái, lệnh tranh chấp dùng SQL và khoá; AI ở child process; media có nguồn và thế hệ riêng.
