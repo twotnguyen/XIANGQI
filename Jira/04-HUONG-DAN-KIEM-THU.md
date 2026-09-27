@@ -13,7 +13,7 @@
 1. Dev làm xong Task → mở PR (4 cổng xanh) → kéo Task sang **Ready For Test** và đổi Assignee sang bạn. Dev ghi comment trên Jira: link PR + cách chạy thử. **PR chưa merge** — trong lúc bạn kiểm, một người khác review code.
 2. Bạn **lấy code của nhánh PR** (mục 2), dựng môi trường, làm **đủ mọi ca** trong mục **🧪 Kiểm thử khi Ready for Test** của Task.
 3. Mỗi ca bạn ghi: **PASS** hoặc **FAIL**, kèm **bằng chứng** (ảnh chụp, log terminal, kết quả truy vấn DB).
-4. Tất cả PASS → commit báo cáo `docs/test-reports/<mã-task>.md` **vào chính nhánh PR** → comment PASS trên Jira và PR. Khi PR có ≥ 1 approve + CI xanh, Dev merge `main` → bạn kiểm PR đã merge rồi kéo Task sang **Done** → log work số giờ kiểm.
+4. Tất cả PASS → commit báo cáo `docs/test-reports/<mã-task>.md` **vào chính nhánh PR** → comment PASS trên Jira và PR. Khi PR có ≥ 1 approve + CI xanh, Dev merge `develop` → bạn kiểm PR đã merge rồi kéo Task sang **Done** → log work số giờ kiểm.
 5. Có ca FAIL → tạo **Bug** (mục 10) → kéo Task về **In Progress** → đổi Assignee về Dev. Dev sửa **trên cùng PR**, xong kéo lại Ready For Test → bạn **kiểm lại TOÀN BỘ ca**, không chỉ ca đã FAIL (vì sửa chỗ này có thể làm hỏng chỗ khác).
 
 **Ba điều tuyệt đối không làm:**

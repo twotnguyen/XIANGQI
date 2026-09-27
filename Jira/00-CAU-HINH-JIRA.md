@@ -148,7 +148,7 @@ Jira hiện chỉ có `v1.0.0` (ngày 28/09–03/10). **Trước khi tạo issue
 3. **Epic:** version của sprint **kết thúc muộn nhất** trong các Story con (Epic trải Sprint 2–4 ⇒ `v1.0.0`). Trang Releases vẫn đếm được từng Story/Task theo version riêng của nó.
 4. **Bug:** gán version của sprint **đang chạy** lúc tạo Bug (Bug phải sửa xong trong version đó).
 5. Story bị dời sang sprint sau ⇒ đổi **sprint và version** của Story **và** toàn bộ Task có nhãn `stxx-y` cho khớp; không để version cũ.
-6. Cuối mỗi sprint (buổi review): mở trang **Releases**, version đạt điều kiện ⇒ bấm **Release**; còn issue chưa Done ⇒ dời theo quy tắc 5 rồi mới Release. Không Release khi còn issue mở.
+6. Cuối mỗi sprint (buổi review): trưởng nhóm/Tester merge PR `develop → main` (`release: vX.Y.Z`) và gắn tag `vX.Y.Z` ([AGENTS.md §8.9](../AGENTS.md)); rồi mở trang **Releases**, version đạt điều kiện ⇒ bấm **Release**; còn issue chưa Done ⇒ dời theo quy tắc 5 rồi mới Release. Không Release khi còn issue mở.
 
 Số lượng: `v0.1.0` 9 Story/25 Task · `v0.2.0` 11 Story/25 Task · `v0.3.0` 15 Story/40 Task · `v1.0.0` 20 Story/45 Task. Epic: `v0.1.0` EP01, EP03 · `v0.2.0` EP02, EP04, EP05 · `v0.3.0` EP06, EP07 · `v1.0.0` EP08–EP16.
 
@@ -158,7 +158,7 @@ Số lượng: `v0.1.0` 9 Story/25 Task · `v0.2.0` 11 Story/25 Task · `v0.3.0`
 
 | Loại link | id | Chiều | Dùng khi |
 |---|---|---|---|
-| **Blocks** | 10000 | A `blocks` B ⇔ B `is blocked by` A | **Đầu ra của A là đầu vào của B.** B chỉ được bắt đầu khi A **`Done`** (review + Tester PASS + đã merge `main`) |
+| **Blocks** | 10000 | A `blocks` B ⇔ B `is blocked by` A | **Đầu ra của A là đầu vào của B.** B chỉ được bắt đầu khi A **`Done`** (review + Tester PASS + đã merge `develop`) |
 | Relates | 10003 | hai chiều | Liên quan nhưng **làm song song được** |
 | Duplicate, Cloners | — | — | Không dùng |
 
@@ -199,12 +199,12 @@ Story Points (Fibonacci) quy đổi từ **tổng giờ làm + giờ kiểm th�
 
 ## 10. WORKFLOW TRẠNG THÁI (đã kiểm trên Jira)
 
-Workflow của dự án có các trạng thái: `To Do` · `Ready For Dev` · `In Progress` · `In Review` · `Ready For Test` · `Done` (và `Red` do Jira tự quản lý — **không dùng**). Mọi chuyển trạng thái là global (chuyển được từ bất kỳ trạng thái nào). Board có 5 cột: **TO DO · READY FOR DEV · IN PROGRESS · READY FOR TEST · DONE**. **Không dùng `In Review`**: bước review code nằm trong **Ready For Test**, cùng lúc với Tester kiểm trên nhánh PR; PR chỉ merge `main` khi đã approve + CI xanh + Tester PASS. Các bước chi tiết, quy ước nhánh/commit/PR, mẫu comment và Definition of Done: [AGENTS.md §8](../AGENTS.md).
+Workflow của dự án có các trạng thái: `To Do` · `Ready For Dev` · `In Progress` · `In Review` · `Ready For Test` · `Done` (và `Red` do Jira tự quản lý — **không dùng**). Mọi chuyển trạng thái là global (chuyển được từ bất kỳ trạng thái nào). Board có 5 cột: **TO DO · READY FOR DEV · IN PROGRESS · READY FOR TEST · DONE**. **Không dùng `In Review`**: bước review code nằm trong **Ready For Test**, cùng lúc với Tester kiểm trên nhánh PR; PR chỉ merge `develop` khi đã approve + CI xanh + Tester PASS. Các bước chi tiết, quy ước nhánh/commit/PR, mẫu comment và Definition of Done: [AGENTS.md §8](../AGENTS.md).
 
 ### 10.1 Task phát triển / thiết kế (FE · BE · AI · OPS · DS)
 
 ```
-To Do ──► Ready For Dev ──► In Progress ──► Ready For Test ──► (merge main) ──► Done
+To Do ──► Ready For Dev ──► In Progress ──► Ready For Test ──► (merge develop) ──► Done
                                   ▲          (review + test)
                                   └──── FAIL ◄─────┘  (Tester tạo Bug, sửa tiếp trên cùng PR)  (Tester tạo Bug, đổi Assignee về người làm)
 ```
@@ -214,12 +214,12 @@ To Do ──► Ready For Dev ──► In Progress ──► Ready For Test ─
 | To Do | Mới tạo; hoặc còn Task chặn chưa tới mức cần | — | Người làm |
 | Ready For Dev | Mọi Task chặn đã **`Done`** | Trưởng nhóm / người làm (lúc Daily) | Người làm |
 | In Progress | Đã tạo nhánh `feature/XW-<số>-ten-ngan`, đang làm | Người làm | Người làm |
-| Ready For Test | PR **đã mở** vào `main`, 4 cổng xanh ở máy, CI đang chạy/xanh. Người làm comment: link PR + cách chạy thử. Trong trạng thái này: ≥ 1 người khác người làm **review + approve**, Tester **kiểm trên nhánh PR** | Người làm | **Đổi sang Tester** |
-| Done | Tester chạy **đủ ca** 🧪 trên nhánh PR, **PASS**, báo cáo `docs/test-reports/<mã-task>.md` đã commit vào PR; PR có ≥ 1 approve + CI xanh ⇒ người làm **merge `main`**; Tester log work giờ kiểm và chuyển Done | Tester | Giữ Tester |
+| Ready For Test | PR **đã mở** vào `develop`, 4 cổng xanh ở máy, CI đang chạy/xanh. Người làm comment: link PR + cách chạy thử. Trong trạng thái này: ≥ 1 người khác người làm **review + approve**, Tester **kiểm trên nhánh PR** | Người làm | **Đổi sang Tester** |
+| Done | Tester chạy **đủ ca** 🧪 trên nhánh PR, **PASS**, báo cáo `docs/test-reports/<mã-task>.md` đã commit vào PR; PR có ≥ 1 approve + CI xanh ⇒ người làm **merge `develop`**; Tester log work giờ kiểm và chuyển Done | Tester | Giữ Tester |
 
 **Khi Tester FAIL:** tạo `Bug` (`[BUG][<vai trò>] … (từ TKxx.y.z)`, link `Relates` tới Task, dán bước tái hiện + kết quả thật), chuyển Task về **`In Progress`**, đổi Assignee về người làm. Sửa **trên cùng PR**, xong ⇒ lại `Ready For Test`, Tester kiểm lại **toàn bộ** ca (không chỉ ca đã FAIL). Bug mức `Highest`/`High` được sửa **trước** khi người làm nhận Task mới.
 
-**Task sau đã bắt đầu từ lúc Task trước ở `Ready For Test`, nếu Task trước FAIL thì sao:** người làm Task sau vẫn tiếp tục; bản sửa Bug merge vào `main` rồi Task sau rebase. Nếu Bug làm đổi hợp đồng API/dữ liệu mà Task sau đang dùng ⇒ báo trưởng nhóm trong ngày.
+**Task sau đã bắt đầu từ lúc Task trước ở `Ready For Test`, nếu Task trước FAIL thì sao:** người làm Task sau vẫn tiếp tục; bản sửa Bug merge vào `develop` rồi Task sau rebase. Nếu Bug làm đổi hợp đồng API/dữ liệu mà Task sau đang dùng ⇒ báo trưởng nhóm trong ngày.
 
 ### 10.2 Task Tester tích hợp `[QA]` (20 Task)
 
