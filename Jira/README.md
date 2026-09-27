@@ -1,6 +1,6 @@
 # KẾ HOẠCH JIRA — CỜ TƯỚNG ONLINE (bản làm lại v2)
 
-**Dự án Jira:** `XW` · **Thời gian:** 4 tuần, 4 sprint (28/09 – 23/10/2026) · **Trạng thái:** bản nháp để duyệt, **chưa** tạo trên Jira.
+**Dự án Jira:** `XW` · **Thời gian:** 4 tuần, 4 sprint (28/09 – 23/10/2026) · **Trạng thái:** đã tạo trên Jira (XW-1…206, 2026-09-27); Key từng mục ở [03-TRUY-VET.md](03-TRUY-VET.md).
 
 ## Mục lục
 

@@ -1,166 +1,177 @@
-# CỜ TƯỚNG ONLINE
+# Cờ Tướng Online
 
-> Chơi cờ tướng trực tuyến với bạn bè hoặc với máy — có phòng riêng, người xem, chat và camera/mic.
+Ứng dụng web chơi cờ tướng trực tuyến với bạn bè hoặc với máy: phòng riêng, người xem, chat hai kênh và camera/mic.
 
-**Trạng thái:** 📐 `SPEC_REVIEWED` — đã rà soát đặc tả; **chưa triển khai ứng dụng**
-**Cập nhật:** 2026-09-22
+> **Trạng thái:** đặc tả đã rà soát xong, **chưa có mã nguồn ứng dụng**. Việc xây dựng chạy theo 4 sprint từ **28/09 đến 23/10/2026** trên Jira project [`XW`](https://xiangqi-web.atlassian.net/jira/software/c/projects/XW/boards/4).
 
 ---
 
-## ⚠ KHO MÃ NÀY ĐANG CHỨA GÌ
+## Mục lục
 
-Hiện tại đây là **kho đặc tả**, chưa có mã nguồn.
+- [Tính năng](#tính-năng)
+- [Công nghệ](#công-nghệ)
+- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [Bắt đầu](#bắt-đầu)
+- [Lệnh thường dùng](#lệnh-thường-dùng)
+- [Kiểm thử](#kiểm-thử)
+- [Quy trình làm việc](#quy-trình-làm-việc)
+- [Tài liệu](#tài-liệu)
+- [Nhóm phát triển](#nhóm-phát-triển)
+- [Bảo mật](#bảo-mật)
+- [Giấy phép](#giấy-phép)
+
+---
+
+## Tính năng
+
+| Nhóm | Nội dung |
+|---|---|
+| Tài khoản | Đăng ký bằng username + email, xác minh email, đăng nhập Google, phiên nhớ 30 ngày |
+| Bạn bè | Tìm người dùng, kết bạn, xem ai đang online |
+| Phòng | Phòng công khai / riêng tư / cần mã, sảnh phòng, mời bằng mã, link hoặc hộp thư |
+| Chơi cờ | Luật cờ tướng của dự án (`DEC-019`), đồng hồ, đầu hàng, xin hoà, xin đi lại, tái đấu |
+| Người xem | Tối đa 5 người xem mỗi phòng; chủ phòng và người chơi đuổi được |
+| Chat | Hai kênh: riêng giữa 2 người chơi và chung cả phòng |
+| Camera / mic | Bật tắt độc lập; người xem chỉ nhận khi được cho phép |
+| Chơi với máy | 3 mức độ khó; máy cờ chạy ở tiến trình riêng |
+| Lịch sử | Lưu ván đã đánh, xem lại từng nước |
+
+Chi tiết: [docs/01-requirements/](docs/01-requirements/). Những gì **cố ý không làm**: [docs/00-overview/scope.md](docs/00-overview/scope.md).
+
+## Công nghệ
+
+Đã chốt tại `DEC-025` ([decision-log](docs/07-decisions/decision-log.md)); lý do từng lựa chọn ở [tech-stack.md](docs/09-technical/tech-stack.md).
+
+| Lớp | Công nghệ |
+|---|---|
+| Ngôn ngữ / runtime | TypeScript (strict), Node.js 24 LTS, pnpm workspace |
+| Giao diện | React, Vite, React Router, bàn cờ vẽ bằng SVG, TanStack Query, Zustand, CSS Modules + design tokens |
+| Máy chủ | NestJS, Socket.IO |
+| Dữ liệu | Supabase PostgreSQL; Prisma cho truy vấn thường, SQL thuần cho đường xử lý cần khoá; migration bằng file `.sql` qua Supabase CLI |
+| Camera / mic | LiveKit |
+| Máy cờ | TypeScript, chạy ở tiến trình riêng |
+| Kiểm thử | Vitest, Playwright |
+
+Không dùng: Redis, BullMQ, Tailwind, thư viện UI dựng sẵn, SSR/Next.js, Swagger, i18next, Prometheus.
+
+## Cấu trúc thư mục
+
+Hiện có:
 
 ```
-XIANGQI-Design/
-├── README.md      ← bạn đang đọc
-├── AGENTS.md      ← luật làm việc cho coding agent — ĐỌC TRƯỚC KHI CODE
-└── docs/          ← yêu cầu và kế hoạch: yêu cầu · luồng · màn hình · luật · 138 đầu việc
+.
+├── AGENTS.md        Luật làm việc cho AI agent (người mới cũng nên đọc)
+├── docs/            Đặc tả: yêu cầu, luồng, màn hình, luật, dữ liệu, nghiệm thu, quyết định, 138 issue
+├── Jira/            Kế hoạch 4 tuần: 16 Epic, 55 Story, 135 Task, sổ tay kiểm thử, công cụ QA
+└── site/            Trang web đọc tài liệu (mở site/index.html)
 ```
 
-Mã nguồn sẽ được xây dựng theo **138 đầu việc** trong [docs/10-issues/](docs/10-issues/), lần lượt tạo ra cấu trúc:
+Sẽ hình thành dần qua các Task (không tạo trước):
 
 ```
-apps/web/        giao diện React
-apps/server/     máy chủ NestJS + Socket.IO
-apps/ai-worker/  máy cờ — tiến trình RIÊNG
-packages/        contracts · game-rules · ai
-supabase/        migration SQL
+apps/
+  web/           Giao diện React
+  server/        API NestJS + Socket.IO
+  ai-worker/     Máy cờ, tiến trình riêng
+packages/
+  contracts/     Kiểu dữ liệu + schema Zod dùng chung
+  game-rules/    Luật cờ thuần, không phụ thuộc gì
+  ai/            Lượng giá, tìm kiếm
+supabase/migrations/
 tests/           unit · integration · e2e · media · load
 ```
 
----
+## Bắt đầu
 
-## 🎮 SẢN PHẨM LÀ GÌ
+### Yêu cầu
 
-Một trang web chơi cờ tướng. Người dùng đăng ký tài khoản, tạo phòng, mời bạn vào đánh, và có thể vừa đánh vừa nói chuyện qua camera/mic.
+- Node.js 24 LTS và pnpm (phiên bản chính xác sẽ ghi trong `package.json` → `engines` / `packageManager`)
+- Docker Desktop (Supabase local, LiveKit local)
+- Supabase CLI
+- Git
 
-| Nhóm chức năng | Nội dung |
+### Cài đặt và chạy
+
+> Các lệnh dưới đây có hiệu lực sau khi Task [TK01.1.1](Jira/task/TK01.1.1-khoi-tao-monorepo-pnpm-typescript-nghiem-ngat.md) (khởi tạo monorepo) và [TK01.2.2](Jira/task/TK01.2.2-supabase-local-bien-moi-truong-mau-va-runner-test-tich-hop.md) (Supabase local) được merge.
+
+```bash
+git clone https://github.com/twotnguyen/XIANGQI.git
+cd XIANGQI
+pnpm install --frozen-lockfile
+cp .env.example .env          # điền giá trị local, KHÔNG commit .env
+pnpm db:start                 # Supabase local: Studio :54323, hộp thư :54324
+pnpm dev                      # web http://localhost:5173 · API http://127.0.0.1:3000/health
+```
+
+### Đọc tài liệu
+
+Mở `site/index.html` bằng trình duyệt (không cần server): có lộ trình đọc theo vai trò, tìm kiếm toàn văn, nền sáng/tối. Sửa file trong `docs/` xong chạy `node site/build.mjs` để cập nhật trang. Xem [site/README.md](site/README.md).
+
+## Lệnh thường dùng
+
+| Lệnh | Việc |
 |---|---|
-| **Tài khoản** | Đăng ký · đăng nhập · đăng nhập Google · phiên nhớ 30 ngày |
-| **Bạn bè** | Tìm người dùng · kết bạn · thấy ai đang online |
-| **Phòng** | Tạo phòng công khai / riêng tư / cần mã · sảnh phòng · mời bằng mã, link hoặc hộp thư |
-| **Chơi cờ** | Bộ luật cờ tướng dự án (DEC-019) · đồng hồ · đầu hàng · xin hoà · xin đi lại · tái đấu |
-| **Người xem** | Tối đa **5** người xem mỗi phòng · chủ phòng và người chơi đuổi được |
-| **Chat** | **Hai khung**: kênh riêng giữa 2 người chơi + kênh chung cả phòng |
-| **Camera / Mic** | Bật tắt độc lập · người xem chỉ nhận khi được cho phép |
-| **Chơi với máy** | 3 mức độ khó · máy chạy tiến trình riêng |
-| **Lịch sử** | Lưu ván đã đánh · xem lại từng nước |
+| `pnpm dev` | Chạy web (5173) và server (3000) cùng lúc |
+| `pnpm build` | Build mọi package |
+| `pnpm typecheck` | Kiểm kiểu TypeScript |
+| `pnpm lint` | ESLint + Prettier + luật ranh giới kiến trúc |
+| `pnpm test:unit` | Unit test (Vitest) |
+| `pnpm test:integration` | Test trên PostgreSQL thật |
+| `pnpm test:e2e` | Test trình duyệt thật (Playwright) |
+| `pnpm test:ai` · `test:media` · `test:load` | Đo máy cờ · đo luồng camera/mic thật · thử tải |
+| `pnpm db:start` | Bật Supabase local |
 
-Chi tiết từng chức năng: [docs/01-requirements/](docs/01-requirements/) · Cái gì **cố ý không làm**: [docs/00-overview/scope.md](docs/00-overview/scope.md)
+Lane nào chưa có công cụ sẽ **báo lỗi** `NOT_IMPLEMENTED — xem <Task>` và thoát mã 1, không bao giờ báo xanh giả.
 
----
+## Kiểm thử
 
-## 🚀 BẮT ĐẦU TỪ ĐÂU
+- **Bốn cổng bắt buộc** trước mỗi PR: `pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit`.
+- Test dữ liệu chạy trên **PostgreSQL thật**; thiếu DB thì test phải đỏ.
+- Test thời gian dùng **đồng hồ giả tiêm vào**, không `sleep` thật.
+- Không `.only`, không test bị bỏ qua.
+- Hai cổng đo chặn tiến độ: **máy cờ** tính độ sâu 6 trong 3000 ms (p95, [TK04.3.1](Jira/task/TK04.3.1-corpus-hieu-nang-20-the-benchmark-cong-depth-lane-test-ai.md)) và **LiveKit** truyền byte RTP + khung hình thật ([ST14.1](Jira/story/ST14.1-cong-media-livekit-local-do-byte-rtp-that.md)). Không đạt thì ghi số thật, **không hạ ngưỡng**.
 
-Giao cho agent triển khai: [hướng dẫn bắt đầu](docs/10-issues/AGENT-START-HERE.md), [138 issue](docs/10-issues/INDEX.md), [333 AC và nơi kiểm chứng](docs/10-issues/AC-COVERAGE.md), [kiểm tra kế hoạch](docs/10-issues/PLAN-REVIEW.md).
+Tester dùng [sổ tay kiểm thử](Jira/04-HUONG-DAN-KIEM-THU.md) và công cụ `Jira/tools/qa.sh`, `Jira/tools/sock.mjs`.
 
-### 🌐 Đọc tài liệu dưới dạng web (dễ nhất)
+## Quy trình làm việc
 
-Double-click **[site/index.html](site/index.html)** — không cần cài gì, không cần server.
+1. Nhận một Task trên Jira (`XW-…`), đọc file `Jira/task/TKxx.y.z-….md` tương ứng và các `docs/10-issues/ISSUE-NNN.md` mà Task truy về.
+2. Tạo nhánh `issue/TKxx.y.z-ten-ngan` từ `main`.
+3. Viết test trước, rồi viết mã cho test xanh; chạy 4 cổng.
+4. Commit theo dạng `<loại>(<phạm vi>): <mô tả> [TKxx.y.z]` (loại: `feat` · `fix` · `test` · `docs` · `chore` · `refactor`).
+5. Mở PR vào `main` — **một Task một PR**. Review + CI xanh ⇒ merge.
+6. Kéo Task sang **Ready For Test**, giao cho Người kiểm. Tester PASS ⇒ **Done**; FAIL ⇒ Bug và Task về **In Progress**.
 
-Có lộ trình đọc theo vai trò, tìm kiếm toàn văn (gõ được cả không dấu), theo dõi tiến độ đọc, nền sáng/tối.
-Hướng dẫn và cách đưa lên mạng: [site/README.md](site/README.md).
+Board: `To Do → Ready For Dev → In Progress → Ready For Test → Done`. Chi tiết: [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md).
 
-### Tôi là người mới, muốn hiểu dự án
+## Tài liệu
 
-👉 **[docs/ONBOARDING.md](docs/ONBOARDING.md)** — lộ trình đọc riêng cho từng vai trò, có bài tự kiểm tra.
-
-Hoặc đọc nhanh bộ lõi theo **đúng thứ tự này** — khoảng 1 giờ:
-
-| # | Đọc | Bạn sẽ biết |
-|---|---|---|
-| 1 | [docs/00-overview/product-overview.md](docs/00-overview/product-overview.md) | Sản phẩm giải quyết vấn đề gì |
-| 2 | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) | ⭐ **Bắt buộc** — thuật ngữ dùng thống nhất |
-| 3 | [docs/00-overview/actors.md](docs/00-overview/actors.md) | Ai làm được gì |
-| 4 | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 | ⭐ **Hệ toạ độ** — nền của mọi luật cờ |
-| 5 | [docs/README.md](docs/README.md) | Bản đồ toàn bộ tài liệu |
-
-> ⚠ **Đừng bỏ bước 2 và 4.** Glossary tránh nhầm `SPECTATOR` với `WATCH`. Hệ toạ độ hiểu sai là code sai toàn bộ luật cờ.
-
-### Tôi là coding agent, sắp viết mã
-
-👉 **[AGENTS.md](AGENTS.md)** — đọc hết trước khi chạm vào bất kỳ file nào.
-
-### Tôi muốn bắt đầu xây dựng
-
-| Bước | Vào đây |
+| Cần | Xem |
 |---|---|
-| 1. Luật làm việc của đội | [docs/10-issues/README.md](docs/10-issues/README.md) |
-| 2. Quy trình làm một đầu việc | [docs/10-issues/WORKFLOW.md](docs/10-issues/WORKFLOW.md) |
-| 3. Chọn việc theo thứ tự | [docs/10-issues/INDEX.md](docs/10-issues/INDEX.md) |
-| 4. Xin tài nguyên bên ngoài | [docs/10-issues/EXTERNAL-SETUP.md](docs/10-issues/EXTERNAL-SETUP.md) |
+| Người mới bắt đầu từ đâu | [docs/ONBOARDING.md](docs/ONBOARDING.md) |
+| Thuật ngữ (bắt buộc đọc) | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) |
+| Hệ toạ độ bàn cờ | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 |
+| Bản đồ toàn bộ đặc tả | [docs/README.md](docs/README.md) |
+| Kiến trúc | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) |
+| Vì sao quyết định như vậy | [docs/07-decisions/decision-log.md](docs/07-decisions/decision-log.md) |
+| Kế hoạch 4 tuần | [Jira/01-KE-HOACH-4-TUAN.md](Jira/01-KE-HOACH-4-TUAN.md) |
+| Task ↔ Key Jira ↔ issue đặc tả | [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) |
+| API HTTP và sự kiện realtime | [Jira/06-HOP-DONG-API-SU-KIEN.md](Jira/06-HOP-DONG-API-SU-KIEN.md) |
+| Từ kỹ thuật cho sinh viên | [Jira/05-TU-DIEN-KY-THUAT.md](Jira/05-TU-DIEN-KY-THUAT.md) |
+| Dùng AI agent với dự án | [AGENTS.md](AGENTS.md) |
 
-Việc đầu tiên: [ISSUE-001](docs/10-issues/ISSUE-001.md).
+`docs/99-archive/` là lịch sử của lần xây trước (có 30 lỗi đã phân tích): không xoá, không dùng làm căn cứ triển khai.
 
----
+## Nhóm phát triển
 
-## 🔧 CÔNG NGHỆ
+7 thành viên, vai trò TV1–TV7 (Backend ×2, Frontend ×2, AI + luật cờ, Design/Tester, Tester + DevOps). Phân công từng Task: [Jira/07-PHAN-CONG.md](Jira/07-PHAN-CONG.md).
 
-Đã chốt tại [`DEC-025`](docs/07-decisions/decision-log.md). Muốn đổi phải có quyết định mới.
+## Bảo mật
 
-| Lớp | Chọn |
-|---|---|
-| Ngôn ngữ | **TypeScript** toàn bộ, chế độ nghiêm ngặt |
-| Runtime | Node.js 24 LTS · **pnpm workspace** |
-| Giao diện | React + Vite + React Router · **bàn cờ vẽ bằng SVG** |
-| Trạng thái | TanStack Query (đọc HTTP) + Zustand (ván realtime) |
-| CSS | Tokens toàn cục + CSS Modules — **không** dùng thư viện giao diện dựng sẵn |
-| Máy chủ | NestJS + Socket.IO |
-| Cơ sở dữ liệu | Supabase PostgreSQL · **Prisma lai** (xem `TECH-07`) |
-| Migration | Supabase CLI `.sql` — ⛔ **không** `prisma migrate` |
-| Camera/mic | LiveKit |
-| Máy cờ | TypeScript, **tiến trình riêng** |
-| Kiểm thử | Vitest + Playwright |
+- Không commit khoá bí mật; `.env` đã nằm trong `.gitignore`, chỉ commit `.env.example` với giá trị mẫu.
+- Mọi biến `VITE_*` đều **công khai** trong trình duyệt — không đặt khoá bí mật vào đó.
+- Phát hiện lỗ hổng: báo trực tiếp trưởng nhóm, không mở issue công khai.
 
-**Cố ý không dùng:** Redis · BullMQ · Prometheus · Swagger · i18next · SSR/Next.js · Tailwind.
+## Giấy phép
 
-Lý do từng lựa chọn: [docs/09-technical/tech-stack.md](docs/09-technical/tech-stack.md)
-
----
-
-## ⛔ HAI CỔNG CHẶN
-
-Hai câu hỏi chưa có đáp án, phải **đo thật** trước khi đi tiếp:
-
-| Cổng | Câu hỏi | Điều kiện qua |
-|---|---|---|
-| [ISSUE-032](docs/10-issues/ISSUE-032.md) | TypeScript có tính nổi **độ sâu 6** trong 3 giây không? | p95 < 3000 ms trên 20 thế cờ × 5 lần lặp |
-| [ISSUE-112](docs/10-issues/ISSUE-112.md) | LiveKit có truyền được **gói tin thật** không? | Số byte RTP > 0 **và** số khung hình > 0 |
-
-**Không đạt thì không được làm tiếp nhánh đó.** Và ⛔ **không được hạ ngưỡng** để đi tiếp — ghi số thật rồi tối ưu.
-
----
-
-## 📐 VÌ SAO TÀI LIỆU NHIỀU ĐẾN VẬY
-
-Dự án này **đã từng được xây một lần**. Lần đó có đợt review độc lập tìm ra **30 lỗi thật** — lưu ở [docs/99-archive/reviews-v1/](docs/99-archive/reviews-v1/).
-
-Vài lỗi tiêu biểu:
-
-| Từng xảy ra | Lần này phòng ở đâu |
-|---|---|
-| Đi nước mới sau khi **đi lại** luôn lỗi trùng khoá | Nước đi lưu dạng **cây**, không phải danh sách |
-| Đếm lặp 3 lần tính **cả nhánh đã bỏ** ⇒ hoà sai | Chỉ đếm trên **nhánh đang có hiệu lực** |
-| Vào phòng bằng mã **bỏ qua kiểm tra riêng tư** | Kiểm quyền ở **mọi** đường vào |
-| Thu hồi quyền người xem là **code chết** | Test phải xác nhận **hiệu lực thật** |
-| Test dữ liệu **tự mock chính nó** | Test chạy trên PostgreSQL **thật**, thiếu DB là test **đỏ** |
-| Camera "kết nối" nhưng **không có gói tin nào** | Cổng chặn đo **byte RTP thật** |
-
-**Toàn bộ 30 lỗi đã được gắn vào đúng đầu việc sẽ gặp chúng** — mục "⚠ CẠM BẪY" ở cuối mỗi issue.
-
----
-
-## 📊 TRẠNG THÁI
-
-Đặc tả, quyết định, flow, màn hình, contract và kế hoạch đã được rà soát trong [final audit 2026-09-22](docs/08-ba-review/final-audit-2026-09-22.md). [Truy vết hiện hành](docs/06-acceptance/traceability-matrix.md) và [registry ID](docs/06-acceptance/requirement-register.md) thay các tổng số chép tay cũ.
-
-**138 issue vẫn TODO.** Chưa có mã ứng dụng, kết quả unit/integration/e2e, phép đo AI/RTP hoặc triển khai Internet. Bộ biến thiết kế đặt mục tiêu trợ năng; không thay cho kiểm chứng giao diện chạy thật.
-
----
-
-## 📜 GIẤY PHÉP & GHI CHÚ
-
-- `docs/99-archive/` là **lịch sử**, ⛔ **không xoá** và **không dùng làm căn cứ triển khai**
-- Font chữ Hán phải **tự host** và kiểm/lưu giấy phép của đúng font được dùng khi triển khai
-- ⛔ **Không commit khoá bí mật.** Mọi giá trị thật điền trên bảng điều khiển của dịch vụ
+Chưa chọn giấy phép. Font chữ Hán dùng trong bàn cờ phải tự host và lưu giấy phép của đúng font được dùng.

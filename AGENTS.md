@@ -1,115 +1,128 @@
-# AGENTS.md — LUẬT LÀM VIỆC CHO CODING AGENT
+# AGENTS.md — Hướng dẫn cho AI agent
 
-**Dự án:** Cờ Tướng Online · **Cập nhật:** 2026-09-21
-**Áp dụng cho:** mọi agent viết mã trong kho này.
+**Dự án:** Cờ Tướng Online · **Cập nhật:** 2026-09-27 · **Áp dụng cho:** mọi AI agent đọc, viết mã, viết test hoặc sửa tài liệu trong kho này.
 
-> Đọc **hết** file này trước khi chạm vào bất kỳ file nào. Mất 10 phút, tiết kiệm nhiều ngày sửa lỗi.
-
----
-
-## 0. TÓM TẮT 60 GIÂY
-
-```
-① Kho này CHƯA CÓ MÃ NGUỒN. Chỉ có đặc tả trong docs/
-② Mã được xây theo 138 đầu việc, THEO PHỤ THUỘC, trong docs/10-issues/
-③ Một issue = một nhánh = một PR
-④ Đặc tả là LUẬT. Thấy đặc tả sai ⇒ DỪNG, hỏi người dùng. KHÔNG tự sửa yêu cầu
-⑤ Không tự hạ ngưỡng đo để báo đạt. Ghi số thật luôn tốt hơn
-```
-
-**Bắt đầu làm việc:** đọc [hướng dẫn bàn giao](docs/10-issues/AGENT-START-HERE.md), mở [docs/10-issues/INDEX.md](docs/10-issues/INDEX.md), chọn issue `TODO` đầu tiên có **mọi phụ thuộc đã `DONE`**, rồi mở file `ISSUE-NNN.md` đó ra làm theo.
+Đọc hết file này trước khi sửa bất kỳ file nào. Các luật dưới đây đều sinh ra từ lỗi đã thật sự xảy ra ở lần xây trước (`docs/99-archive/reviews-v1/`).
 
 ---
 
-## 1. BẮT BUỘC ĐỌC TRƯỚC KHI VIẾT DÒNG MÃ ĐẦU TIÊN
+## 0. Tóm tắt
 
-| # | File | Vì sao bắt buộc |
+```
+① Kho CHƯA CÓ MÃ NGUỒN. Có: đặc tả (docs/), kế hoạch Jira (Jira/), trang tài liệu (site/)
+② Đơn vị công việc = một Jira Task TKxx.y.z (Key XW-…). Một Task = một nhánh = một PR
+③ Đặc tả là LUẬT. Thấy mâu thuẫn hoặc sai ⇒ DỪNG, báo người dùng. Không tự đổi yêu cầu
+④ Viết test trước. Test phải bắt được lỗi mục tiêu
+⑤ Không hạ ngưỡng để báo đạt. Ghi số thật
+```
+
+---
+
+## 1. Nguồn thông tin và thứ tự ưu tiên
+
+| Ưu tiên | Nguồn | Vai trò |
 |---|---|---|
-| 1 | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) | `SPECTATOR` ≠ `WATCH`. Dùng sai từ là lỗi |
-| 2 | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 | **Hệ toạ độ** — xem §2 dưới đây |
-| 3 | [docs/09-technical/tech-stack.md](docs/09-technical/tech-stack.md) §3 | **Ranh giới Prisma / SQL thuần** — viết nhầm bên là mất khoá |
-| 4 | [docs/10-issues/WORKFLOW.md](docs/10-issues/WORKFLOW.md) | Quy trình Git, định dạng bằng chứng, định nghĩa "xong" |
-| 5 | [docs/10-issues/README.md](docs/10-issues/README.md) | Bản đồ 21 nhóm việc + 2 cổng chặn |
+| 1 | Yêu cầu trực tiếp của người dùng trong phiên làm việc | Cao nhất |
+| 2 | File này (`AGENTS.md`) | Luật làm việc |
+| 3 | `docs/` — đặc tả: `01-requirements`, `04-business-rules`, `05-data-and-realtime`, `07-decisions`, `09-technical`, `10-issues/ISSUE-NNN.md` | **Cái gì** phải đúng. Là luật |
+| 4 | `Jira/task/TKxx.y.z-….md` | **Làm thế nào**: file, bước, bẫy, ca kiểm thử. Cụ thể hoá đặc tả, không thay đặc tả |
+| 5 | `Jira/06-HOP-DONG-API-SU-KIEN.md` | Chốt đường dẫn HTTP và tên sự kiện Socket.IO |
 
-> Muốn hiểu tổng thể dự án sâu hơn: [docs/ONBOARDING.md](docs/ONBOARDING.md) §2.6.
-
-Mỗi issue còn có mục **"ĐỌC TRƯỚC"** riêng — đọc **đúng mục được trỏ tới**, không đọc lướt.
+- Task và đặc tả mâu thuẫn ⇒ **dừng**, báo người dùng: trích hai chỗ, nêu tác động. Không tự chọn bên.
+- Chi tiết đánh dấu 🟡 trong Task là **đề xuất**: được đổi, nhưng phải sửa lại chính file Task đó (và `Jira/tools/qa.sh` nếu liên quan) trong cùng PR, ghi rõ lý do trong mô tả PR.
+- Thêm/đổi endpoint hoặc sự kiện realtime ⇒ cập nhật `Jira/06-HOP-DONG-API-SU-KIEN.md` cùng PR.
+- `docs/99-archive/` là lịch sử: ⛔ không dùng làm căn cứ, ⛔ không xoá, không sửa.
+- Mỗi luật chỉ định nghĩa ở **một** chỗ. Thấy cùng một luật ghi khác nhau ở hai nơi ⇒ báo.
+- `docs/01-requirements/` nói **cái gì**, `docs/09-technical/` nói **bằng gì**. Thấy tên thư viện trong `01-` ⇒ lỗi tài liệu, báo.
 
 ---
 
-## 2. ⭐ HỆ TOẠ ĐỘ — SAI CHỖ NÀY LÀ SAI TOÀN BỘ
+## 2. Bắt buộc đọc trước khi viết dòng mã đầu tiên
+
+| # | File | Vì sao |
+|---|---|---|
+| 1 | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) | Dùng sai thuật ngữ là lỗi (`SPECTATOR` ≠ `WATCH`) |
+| 2 | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 | Hệ toạ độ — xem §4 dưới đây |
+| 3 | [docs/09-technical/tech-stack.md](docs/09-technical/tech-stack.md) §3 | Ranh giới Prisma / SQL thuần — xem §6 |
+| 4 | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) | Máy chủ quyết định, thứ tự khoá, tiến trình AI |
+| 5 | [docs/10-issues/TEST-CONVENTIONS.md](docs/10-issues/TEST-CONVENTIONS.md) | Fixture, oracle, đặt tên test, lane |
+| 6 | [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md) §10 | Trạng thái Task, Ready for Test, Done |
+
+Mỗi lần nhận Task: đọc thêm file Task, các `ISSUE-NNN.md` mà Task truy về (nhãn `src-NNN`, cột "Nguồn" trong [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md)), và đúng các mục "ĐỌC TRƯỚC" của những issue đó. Không cần đọc cả 138 issue.
+
+---
+
+## 3. Nhận một Task
+
+1. Người dùng giao Task theo mã `TKxx.y.z` hoặc Key `XW-…`. Tra [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) để ra file Task, Story, Epic và issue nguồn.
+2. Không được giao việc cụ thể ⇒ hỏi người dùng. Không tự chọn Task.
+3. Kiểm **Is blocked by** trong bảng đầu file Task:
+   - Mã có hậu tố `(Done)` ⇒ Task đó phải **Done** (Tester đã PASS).
+   - Mã không hậu tố ⇒ Task đó phải tới **Ready For Test** (PR đã merge `main`).
+   - Chưa đủ ⇒ ⛔ **dừng**, báo người dùng Task nào đang chặn.
+4. Mỗi Task chỉ **một** vai trò (tiền tố `[BE]` `[FE]` `[AI]` `[DS]` `[OPS]` `[QA]`). Không làm lấn sang phạm vi Task khác; mục "❌ Không làm" trong Task là ranh giới.
+
+---
+
+## 4. ⭐ Hệ toạ độ — sai chỗ này là sai toàn bộ
 
 ```
-ĐEN ở TRÊN (y=0)  ·  ĐỎ ở DƯỚI (y=9)  ·  y tăng từ trên xuống
+ĐEN ở TRÊN (y = 0) · ĐỎ ở DƯỚI (y = 9) · y tăng từ trên xuống · ĐỎ đi trước
 ```
 
 | Mục | Quy ước |
 |---|---|
-| Ký hiệu | `(x, y)`, đếm từ **0** |
-| `x` | 0 → 8, trái sang phải (**9 cột**) |
-| `y` | 0 → 9, **trên xuống dưới** (**10 hàng**) |
-| `y = 0` | Hàng cuối của **ĐEN** |
-| `y = 9` | Hàng cuối của **ĐỎ** |
+| Ký hiệu | `(x, y)`, đếm từ 0 |
+| `x` | 0 → 8, trái sang phải (9 cột) |
+| `y` | 0 → 9, trên xuống dưới (10 hàng) |
 | Sông | Giữa `y = 4` và `y = 5` |
-| Cung ĐEN | `x` 3–5, `y` 0–2 · Cung ĐỎ: `x` 3–5, `y` 7–9 |
-| Tốt ĐỎ đã qua sông | `y ≤ 4` · Tốt ĐEN đã qua sông: `y ≥ 5` |
-| Chỉ số mảng | `y * 9 + x` — mảng đúng **90** phần tử |
-| Đi trước | **ĐỎ** |
+| Cung ĐEN / ĐỎ | `x` 3–5, `y` 0–2 / `x` 3–5, `y` 7–9 |
+| Tốt đã qua sông | ĐỎ: `y ≤ 4` · ĐEN: `y ≥ 5` |
+| Chỉ số mảng | `y * 9 + x`, mảng đúng 90 phần tử |
 
-**`GR-COORD-01`** — Người cầm quân đen thấy bàn **lật ngược**. Đó **chỉ là hiển thị**. Toạ độ gửi lên máy chủ **luôn** theo hệ trên, ⛔ **không** đổi theo góc nhìn.
-
-> ⚠ Mã nguồn lần trước đã **đảo ngược** hệ này. Nếu bạn thấy tài liệu nào ghi khác — tài liệu đó sai, báo ngay.
+`GR-COORD-01`: người cầm quân đen thấy bàn **lật ngược** — **chỉ là hiển thị**. Toạ độ gửi lên máy chủ luôn theo hệ trên, ⛔ không đổi theo góc nhìn. Mã lần trước đã đảo ngược hệ này; tài liệu nào ghi khác là tài liệu sai ⇒ báo.
 
 ---
 
-## 3. BẢY LUẬT TUYỆT ĐỐI
+## 5. Bảy luật tuyệt đối
 
-Vi phạm bất kỳ luật nào ⇒ **PR bị từ chối**, không cần xem tiếp.
+Vi phạm bất kỳ luật nào ⇒ PR bị từ chối.
 
 | # | Luật | Nghĩa cụ thể |
 |---|---|---|
-| **1** | **Máy chủ quyết định** | Client chỉ gửi **ý định**. ⛔ Không bao giờ tin dữ liệu client gửi lên |
-| **2** | **Không có quyền ⇒ không nhận dữ liệu** | Lọc ở **máy chủ**, ⛔ không phải gửi hết rồi ẩn ở giao diện |
-| **3** | **Đường xử lý lệnh ván dùng SQL thuần** | `TECH-07` — xem §4 |
-| **4** | **Máy cờ chạy tiến trình riêng** | `TECH-09` — Node một luồng, để chung = treo mọi ván 3 giây |
-| **5** | **Test thời gian dùng đồng hồ giả tiêm vào** | ⛔ Không `sleep` thật, không `setTimeout` chờ |
-| **6** | **Test dữ liệu chạy trên PostgreSQL thật** | ⛔ Không mock. Thiếu DB ⇒ test phải **ĐỎ**, không được bỏ qua |
-| **7** | **Không tự hạ tiêu chí** | Không đạt ⇒ ghi **số thật** + `BLOCKED`, ⛔ không sửa ngưỡng |
+| 1 | **Máy chủ quyết định** | Client chỉ gửi ý định. ⛔ Không tin dữ liệu client gửi lên |
+| 2 | **Không có quyền ⇒ không nhận dữ liệu** | Lọc ở máy chủ, ⛔ không gửi hết rồi ẩn ở giao diện |
+| 3 | **Đường xử lý lệnh ván dùng SQL thuần** | `TECH-07` — xem §6 |
+| 4 | **Máy cờ chạy tiến trình riêng** | `TECH-09` — Node một luồng; chạy chung = treo mọi ván 3 giây |
+| 5 | **Test thời gian dùng đồng hồ giả tiêm vào** | ⛔ Không `sleep` thật, không `setTimeout` để chờ |
+| 6 | **Test dữ liệu chạy trên PostgreSQL thật** | ⛔ Không mock. Thiếu DB ⇒ test phải **đỏ**, không được bỏ qua |
+| 7 | **Không tự hạ tiêu chí** | Không đạt ⇒ ghi số thật + `BLOCKED`, ⛔ không sửa ngưỡng |
 
 ---
 
-## 4. ⭐ `TECH-07` — RANH GIỚI PRISMA / SQL THUẦN
-
-> Đây là ranh giới **quan trọng nhất của backend**. Viết nhầm bên là **mất khoá dòng** → đúng loại lỗi tranh chấp mà đặc tả đang phòng.
-
-| Dùng **Prisma** | Dùng **SQL thuần** |
-|---|---|
-| Hồ sơ, tên hiển thị | **Đi một nước cờ** |
-| Bạn bè, lời mời kết bạn | **Đầu hàng · xin hoà · xin đi lại** |
-| Lời mời phòng, mã, link | **Nhận người vào phòng** (đếm sức chứa) |
-| Lịch sử tin nhắn (đọc, có predicate quyền) | **Bắt đầu ván** (hai người sẵn sàng) |
-| | **Gửi chat** (khoá/kiểm membership, segment rồi ghi để tuyến tính với thu hồi quyền) |
-| Lịch sử ván (đọc) | **Tái đấu** (đổi bên) |
-| Danh sách sảnh | **Mọi bộ đếm thời hạn** kết thúc ván |
-| | **Đuổi người xem · thu hồi quyền** |
-
-**Quy tắc nhận biết:**
+## 6. ⭐ `TECH-07` — Ranh giới Prisma / SQL thuần
 
 ```
-Cần KHOÁ DÒNG, hoặc THỨ TỰ KHOÁ, hoặc ĐẾM-RỒI-GHI trong cùng transaction
-   ⇒ SQL THUẦN
+Cần KHOÁ DÒNG, THỨ TỰ KHOÁ, hoặc ĐẾM-RỒI-GHI trong cùng transaction ⇒ SQL THUẦN
 Còn lại ⇒ Prisma
 ```
 
-**Kèm theo:**
-- ⛔ **Không bao giờ chạy `prisma migrate`.** Prisma sẽ **xoá** RLS, CHECK constraint và unique hoãn kiểm mà nó không hiểu. Đổi schema **chỉ** bằng file `.sql` qua Supabase CLI
-- Prisma chỉ dùng **`db pull`** để sinh kiểu dữ liệu
-- **Thứ tự khoá luôn là: phòng → người → ván.** Đảo thứ tự = deadlock
-- ⛔ **Không giữ khoá trong lúc gọi ra ngoài** (`ARCH-07`) — chờ máy cờ 3 giây trong khi giữ khoá ván = đứng cả ván đó
+| Prisma | SQL thuần |
+|---|---|
+| Hồ sơ, tên hiển thị | Đi một nước cờ |
+| Bạn bè, lời mời kết bạn | Đầu hàng · xin hoà · xin đi lại |
+| Lời mời phòng, mã, link | Nhận người vào phòng (đếm sức chứa) |
+| Đọc lịch sử tin nhắn (có predicate quyền) | Bắt đầu ván (hai người sẵn sàng) |
+| Đọc lịch sử ván | Gửi chat (khoá/kiểm membership rồi ghi, tuyến tính với thu hồi quyền) |
+| Danh sách sảnh | Tái đấu (đổi bên) · mọi bộ đếm thời hạn kết thúc ván · đuổi người xem · thu hồi quyền |
+
+- ⛔ **Không bao giờ chạy `prisma migrate`** — nó xoá RLS, CHECK và unique hoãn kiểm. Đổi schema **chỉ** bằng file `.sql` trong `supabase/migrations/` qua Supabase CLI. Prisma chỉ dùng `db pull` để sinh kiểu.
+- Thứ tự khoá luôn là **phòng → người → ván**. Đảo thứ tự = deadlock.
+- ⛔ Không giữ khoá khi gọi ra ngoài (`ARCH-07`): chờ máy cờ, LiveKit, email… phải nằm ngoài transaction.
 
 ---
 
-## 5. LỆNH
+## 7. Lệnh và cổng kiểm
 
 ### Bốn cổng bắt buộc trước khi mở PR
 
@@ -117,128 +130,107 @@ Còn lại ⇒ Prisma
 pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit
 ```
 
-**Từ ISSUE-003 trở đi, cả bốn phải exit code 0.** Bootstrap: ISSUE-001 bắt install/build/typecheck/HTTP thật; ISSUE-002 thêm lint; ISSUE-003 thêm unit thật. Không tạo script xanh rỗng để giả cổng chưa tồn tại. Xem [execution-milestones](docs/10-issues/execution-milestones.md).
+Các lane được bật dần theo Task. Lane chưa có phải in `NOT_IMPLEMENTED — xem <Task>` và thoát mã 1. ⛔ Không tạo script xanh rỗng để giả cổng.
 
-### Thêm tuỳ loại issue
-
-| Issue chạm gì | Chạy thêm |
+| Lane / cổng | Có từ Task |
 |---|---|
-| Cơ sở dữ liệu | `pnpm test:integration` |
-| Giao diện | `pnpm test:e2e` |
-| Camera / mic | `pnpm test:media` |
-| Hiệu năng | `pnpm test:load` |
+| `install` · `build` · `typecheck` · `pnpm dev` + `/health` | TK01.1.1 |
+| `lint` | TK01.1.2 |
+| `test:unit` (từ đây đủ 4 cổng, exit 0) | TK01.1.3 |
+| `test:e2e` | TK01.1.4 |
+| `test:integration` (tối thiểu → harness đầy đủ) | TK01.2.2 → TK05.3.1 |
+| `test:ai` | TK04.3.1 |
+| `test:media` | TK14.1.2 |
+| `test:load` | TK16.4.1 |
 
-> Bootstrap 001/002 theo WORKFLOW; từ003 đủ bốn cổng. E2e tạo ở004, integration tối thiểu ở034 rồi harness044, media112, load135. Chưa có lane không được giả PASS. Xem [TEST-CONVENTIONS](docs/10-issues/TEST-CONVENTIONS.md).
+Chạy thêm tuỳ phần mã chạm tới: cơ sở dữ liệu ⇒ `test:integration`; giao diện ⇒ `test:e2e`; camera/mic ⇒ `test:media`; hiệu năng ⇒ `test:load`.
+
+### Hai cổng chặn
+
+| Cổng | Task | Điều kiện qua | Không đạt thì |
+|---|---|---|---|
+| Máy cờ | [TK04.3.1](Jira/task/TK04.3.1-corpus-hieu-nang-20-the-benchmark-cong-depth-lane-test-ai.md) | Độ sâu **6** trong **3000 ms**, p95 trên 20 thế × 5 lần lặp | ⛔ Không làm tiếp EP15. Tối ưu theo đúng thứ tự `TECH-08` |
+| Media | [ST14.1](Jira/story/ST14.1-cong-media-livekit-local-do-byte-rtp-that.md) (TK14.1.1–14.1.3) | LiveKit local cho **byte RTP > 0** và **khung hình > 0** thật | ⛔ Không làm tiếp ST14.2–ST14.3 |
 
 ---
 
-## 6. QUY TRÌNH MỘT ISSUE
+## 8. Quy trình một Task
 
 ```
-① Đọc issue + đúng các mục ở "ĐỌC TRƯỚC"
-② Kiểm PHỤ THUỘC đã MERGE chưa — chưa thì DỪNG, làm issue khác
-③ Tạo nhánh:  issue/NNN-ten-ngan
-④ VIẾT TEST TRƯỚC, theo mục TEST BẮT BUỘC của issue
+① Đọc Task + issue nguồn + mục ĐỌC TRƯỚC           (§2, §3)
+② Kiểm Is blocked by — chưa đủ thì DỪNG
+③ git fetch; tạo nhánh từ main: issue/TKxx.y.z-ten-ngan
+④ VIẾT TEST TRƯỚC theo test bắt buộc của issue và ca 🧪 của Task
 ⑤ Viết mã cho test xanh
-⑥ Chạy các cổng đúng mốc bootstrap; từ 003 đủ 4 cổng
-⑦ Tự đối chiếu CHECKLIST PASS (mục ĐIỀU KIỆN PASS) — thiếu một ô là chưa xong
-⑧ Ghi bằng chứng: docs/test-reports/ISSUE-NNN.md
+⑥ Chạy các cổng đúng mốc (§7)
+⑦ Làm mục "7. TỰ KIỂM TRƯỚC KHI CHUYỂN READY FOR TEST" trong Task
+⑧ Cố tình làm hỏng mã, xác nhận test đỏ, rồi hoàn lại
 ⑨ Commit · push · mở PR
-⑩ Merge xong ⇒ cập nhật trạng thái trong docs/10-issues/INDEX.md
+⑩ Báo người dùng: link PR, lệnh đã chạy + kết quả thật, việc còn thiếu
 ```
+
+Agent **không** tự kéo Task trên Jira sang Done. Ready For Test chỉ sau khi PR đã review, CI xanh và đã merge; người dùng hoặc người làm Task sẽ chuyển trạng thái.
 
 ### Git
 
 | Mục | Quy định |
 |---|---|
-| Nhánh | `issue/NNN-ten-ngan` — ví dụ `issue/017-nuoc-di-ma` |
-| Commit | `<loại>(<phạm vi>): <mô tả> [ISSUE-NNN]` |
-| Loại | `feat` · `fix` · `test` · `docs` · `chore` · `refactor` |
-| Phạm vi | một issue = **một PR** vào `main` |
-| Trước khi push | **luôn** `git fetch` và kiểm commit mới trên remote |
-| Xung đột merge | ⛔ **DỪNG**, báo người dùng file/commit. **Không tự giải quyết** |
-| Cấm | force push · né CI · commit khoá bí mật |
+| Nhánh | `issue/TKxx.y.z-ten-ngan`, ví dụ `issue/TK01.1.1-khoi-tao-monorepo`. Test phụ của Tester: `qa/TKxx.y.z-…` |
+| Commit | `<loại>(<phạm vi>): <mô tả> [TKxx.y.z]` — loại: `feat` · `fix` · `test` · `docs` · `chore` · `refactor` |
+| PR | Một Task = một PR vào `main`. Tiêu đề chứa `TKxx.y.z`; mô tả ghi Key `XW-…`, các `ISSUE-NNN` nguồn, lệnh đã chạy và kết quả |
+| Trước khi push | Luôn `git fetch` và kiểm commit mới trên `main` |
+| Xung đột merge | ⛔ Dừng, báo người dùng file/commit xung đột. Không tự giải quyết |
+| Commit / push / PR | Chỉ khi người dùng yêu cầu hoặc Task yêu cầu rõ |
+| Cấm | Force push · né CI (`--no-verify`, tắt job) · commit khoá bí mật |
 
-**Cuối mỗi commit message:**
-```
-Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
-```
+Nếu dùng AI hỗ trợ, thêm dòng `Co-Authored-By:` của agent ở cuối commit theo quy ước của công cụ đang dùng.
 
-**Cuối mỗi mô tả PR:**
-```
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-```
+### Bằng chứng
+
+- Ghi vào đúng đường dẫn mục **Bằng chứng** của Task/issue (ví dụ `docs/test-reports/TKxx.y.z.md`, `docs/test-reports/ai/ISSUE-032.md`).
+- Ghi **output thật** (dán chữ) và `exit=` của từng lệnh; số đo thật kèm máy/commit. Cột Skip phải là **0**.
+- Khi mọi Task truy về một `ISSUE-NNN` đã Done, cập nhật trạng thái issue đó trong [docs/10-issues/INDEX.md](docs/10-issues/INDEX.md).
+
+### Một Task được coi là xong khi
+
+- [ ] Mọi ca trong mục 🧪 của Task và test bắt buộc của issue nguồn có test tương ứng, xanh
+- [ ] Cổng theo mốc (§7) exit 0; 0 test bị bỏ qua
+- [ ] Đã thử làm hỏng mã và test đỏ
+- [ ] PR đã merge `main`, có bằng chứng theo mục trên
 
 ---
 
-## 7. LUẬT VIẾT TEST
+## 9. Luật viết test
 
 | # | Luật |
 |---|---|
-| 1 | **Thời gian**: dùng đồng hồ giả **tiêm vào**, ⛔ không `sleep` thật |
-| 2 | **Dữ liệu**: chạy trên **PostgreSQL thật**, ⛔ không mock |
-| 3 | **Tranh chấp**: phải có **rào đồng bộ** + **2 kết nối riêng**, nếu không sẽ không tái hiện được |
-| 4 | **Quyền**: phải **GIẢ MẠO dữ liệu gửi thẳng lên máy chủ**. Kiểm nút bị vô hiệu ở giao diện là **CHƯA ĐỦ** |
-| 5 | **Media**: phải **đo luồng dữ liệu thật** (byte RTP > 0), ⛔ không assert object tự tạo |
-| 6 | ⛔ **Cấm `.only`. Cấm test bị bỏ qua.** Cột `Skip` trong báo cáo phải là **0** |
-| 7 | ⭐ **Test phải BẮT được lỗi mục tiêu** |
-
-**Luật 7 quan trọng nhất:** viết test xong, **cố tình làm hỏng mã** xem test có đỏ không. Test luôn xanh dù mã sai là test vô dụng.
-
----
-
-## 8. ⛔ HAI CỔNG CHẶN
-
-| Cổng | Issue | Điều kiện qua | Không đạt thì |
-|---|---|---|---|
-| **Máy cờ** | [032](docs/10-issues/ISSUE-032.md) | Độ sâu **6** trong **3000 ms**, p95 trên 20 thế × 5 lần lặp | ⛔ Cấm làm tiếp nhóm E18. Tối ưu theo đúng thứ tự trong `TECH-08` |
-| **Media** | [112](docs/10-issues/ISSUE-112.md) | LiveKit local cho **byte RTP > 0** và **khung hình > 0** thật | ⛔ Cấm làm tiếp 113–117 |
-
-⛔ **Không được hạ ngưỡng để đi tiếp.** Ghi số thật, rồi tối ưu theo thứ tự đã quy định.
+| 1 | Thời gian: đồng hồ giả **tiêm vào**, ⛔ không `sleep` thật |
+| 2 | Dữ liệu: PostgreSQL **thật**, ⛔ không mock |
+| 3 | Tranh chấp: phải có **rào đồng bộ** + **2 kết nối riêng**, nếu không sẽ không tái hiện được |
+| 4 | Quyền: phải **giả mạo dữ liệu gửi thẳng lên máy chủ**. Kiểm nút bị vô hiệu ở giao diện là chưa đủ |
+| 5 | Media: đo **luồng dữ liệu thật** (byte RTP > 0), ⛔ không assert object tự tạo |
+| 6 | ⛔ Cấm `.only`, cấm `.skip`, cấm test bị bỏ qua |
+| 7 | ⭐ Test phải **bắt được lỗi mục tiêu**: làm hỏng mã ⇒ test phải đỏ |
+| 8 | Test đỏ ⇒ sửa **mã**, ⛔ không sửa test cho dễ qua |
 
 ---
 
-## 9. KHI GẶP VẤN ĐỀ — LÀM GÌ
+## 10. Khi gặp vấn đề
 
 | Tình huống | Làm gì |
 |---|---|
-| Test đỏ | Sửa **mã**. ⛔ Không sửa test cho dễ qua |
-| Không đạt ngưỡng đo | Ghi **số thật** + `BLOCKED`. ⛔ Không hạ ngưỡng |
-| Thiếu tài nguyên ngoài (Google/LiveKit/SMTP…) | `BLOCKED_EXTERNAL` + ghi rõ thiếu gì. Xem [EXTERNAL-SETUP.md](docs/10-issues/EXTERNAL-SETUP.md). ⛔ Không thay bằng giả lập rồi báo đạt |
-| **Phát hiện tài liệu sai hoặc mâu thuẫn** | ⛔ **DỪNG**, báo người dùng. **Không tự đổi yêu cầu** |
-| Phụ thuộc chưa merge | ⛔ **DỪNG**. Chọn issue khác |
-| Không hiểu yêu cầu | **Hỏi**, ⛔ đừng đoán |
+| Không đạt ngưỡng đo | Ghi **số thật** + `BLOCKED`, ⛔ không hạ ngưỡng |
+| Thiếu tài nguyên ngoài (Google, LiveKit Cloud, SMTP, Render/Vercel…) | `BLOCKED_EXTERNAL`, ghi rõ thiếu gì và phần nào đã/chưa chứng minh. Xem [EXTERNAL-SETUP](docs/10-issues/EXTERNAL-SETUP.md). ⛔ Không thay bằng giả lập rồi báo đạt |
+| Tài liệu sai hoặc mâu thuẫn | ⛔ Dừng, báo người dùng. Không tự đổi yêu cầu |
+| Task bị chặn | ⛔ Dừng, báo Task đang chặn |
+| Không hiểu yêu cầu | Hỏi. ⛔ Đừng đoán |
+| Thiếu quyền (Git remote, Jira, dịch vụ) | Báo người dùng, không tìm cách vòng |
 
-> Đặc tả là **luật**, không phải gợi ý. Nhưng đặc tả cũng **có thể sai** — khi đó việc của bạn là **báo**, không phải tự quyết.
-
----
-
-## 10. TRẠNG THÁI ISSUE
-
-| Trạng thái | Nghĩa |
-|---|---|
-| `TODO` | Chưa làm |
-| `IN_PROGRESS` | Đang làm, đã có nhánh |
-| `DONE` | Đã merge, **mọi** ô trong checklist PASS đã đạt |
-| `BLOCKED` | Chưa đạt kiểm thử/cổng hoặc còn điều kiện nội bộ cản triển khai; ghi bằng chứng và lý do |
-| `BLOCKED_EXTERNAL` | Chờ tài nguyên ngoài, ghi rõ phần nào đã làm và chưa chứng minh |
-
-> ⚠ **`BLOCKED_EXTERNAL` KHÔNG phải `DONE`.** Không được chạy bằng giả lập rồi báo đạt (`AC-RULE-02`).
-
-### Một issue `DONE` khi **tất cả** đúng
-
-- [ ] Mọi ô trong CHECKLIST PASS đã tick
-- [ ] Cổng theo mốc bootstrap đạt; từ ISSUE-003 trở đi đủ 4 cổng exit 0
-- [ ] **0 test bị bỏ qua**
-- [ ] Có `docs/test-reports/ISSUE-NNN.md`
-- [ ] PR đã merge vào `main`
-- [ ] `INDEX.md` đã cập nhật
-
-Thiếu **một** ô ⇒ **chưa xong**.
+`BLOCKED_EXTERNAL` **không phải** Done (`AC-RULE-02`).
 
 ---
 
-## 11. THUẬT NGỮ — DÙNG ĐÚNG TỪ
+## 11. Thuật ngữ
 
 | Dùng | ⛔ Không dùng |
 |---|---|
@@ -247,116 +239,72 @@ Thiếu **một** ô ⇒ **chưa xong**.
 | `AI` / máy | bot, engine, máy tính |
 | Host / chủ phòng | owner, room master |
 
-⭐ **`SPECTATOR` ≠ `WATCH`** — đây là hai khái niệm khác nhau:
-
-| | `SPECTATOR` | `WATCH` |
-|---|---|---|
-| Là gì | **Vai trò** của thành viên trong phòng | **Loại quyền** của lời mời / mã / link |
-| Cặp đối xứng | `PLAYER` | `PLAY` |
-
-Dùng mã `WATCH` để vào phòng ⇒ **trở thành** `SPECTATOR`.
-⛔ Không viết "vé SPECTATOR" hay "vai trò WATCH".
-
-Bảng đầy đủ: [docs/00-overview/glossary.md](docs/00-overview/glossary.md)
+`SPECTATOR` là **vai trò** của thành viên trong phòng (cặp với `PLAYER`). `WATCH` là **loại quyền** của lời mời / mã / link (cặp với `PLAY`). Dùng mã `WATCH` vào phòng ⇒ trở thành `SPECTATOR`. ⛔ Không viết "vé SPECTATOR" hay "vai trò WATCH". Bảng đầy đủ: [glossary](docs/00-overview/glossary.md).
 
 ---
 
-## 12. CẤU TRÚC THƯ MỤC ĐÍCH
+## 12. Cấu trúc thư mục đích
 
-Sẽ dần hình thành qua các issue — ⛔ **không tự tạo trước**:
+Hình thành dần qua các Task — ⛔ không tạo trước.
 
 ```
 apps/
-  web/src/
-    app/            router · providers
-    features/       auth · friends · lobby · room · match · chat · media · ai · history
-    components/board/
-    lib/            api · socket · supabase
-    styles/         tokens.css
-  server/src/
-    auth/           guard · strategy · service
-    modules/        friends · rooms · invitations · matches · chat · media · ai · history
-    realtime/       gateway · broadcast · presence
-    db/             pool · transaction · sql/
+  web/src/          app/ (router, providers) · features/ · components/board/ · lib/ (api, socket, supabase) · styles/tokens.css
+  server/src/       auth/ · modules/ · realtime/ (gateway, broadcast, presence) · db/ (pool, transaction, sql/)
   ai-worker/src/    main · supervisor · search-worker
 packages/
-  contracts/src/    kiểu + Zod dùng chung
+  contracts/src/    kiểu + schema Zod dùng chung
   game-rules/src/   luật cờ thuần, KHÔNG phụ thuộc gì
   ai/src/           lượng giá · tìm kiếm
 supabase/migrations/
-tests/
-  fixtures/ · unit/ · integration/ · e2e/ · media/ · load/
-docs/               ← đặc tả, xem §13
+tests/              fixtures/ · unit/ · integration/ · e2e/ · media/ · load/
 ```
 
 ---
 
-## 13. BẢN ĐỒ TÀI LIỆU
+## 13. Bản đồ tài liệu
 
 | Cần gì | Vào đây |
 |---|---|
-| Một chức năng hoạt động ra sao | `docs/01-requirements/` |
+| Chức năng hoạt động ra sao | `docs/01-requirements/` |
 | Người dùng đi qua những bước nào | `docs/02-flows/` |
 | Màn hình có gì, trạng thái nào | `docs/03-screens/` |
 | Luật cờ · luật nghiệp vụ · ai được làm gì | `docs/04-business-rules/` |
-| Dữ liệu chảy thế nào khi realtime | `docs/05-data-and-realtime/` |
+| Dữ liệu và realtime | `docs/05-data-and-realtime/` |
 | Thế nào là đạt | `docs/06-acceptance/` |
-| **Vì sao lại quyết như vậy** | `docs/07-decisions/decision-log.md` |
+| Vì sao quyết định như vậy | `docs/07-decisions/decision-log.md` |
 | Kiến trúc · công nghệ · triển khai | `docs/09-technical/` |
-| **Đầu việc phải làm** | `docs/10-issues/` |
+| Đặc tả từng đầu việc (ISSUE-NNN) | `docs/10-issues/` |
+| Task được giao, cách làm, ca kiểm thử | `Jira/task/` · tra mã ở `Jira/03-TRUY-VET.md` |
+| API HTTP và sự kiện Socket.IO | `Jira/06-HOP-DONG-API-SU-KIEN.md` |
+| Cách Tester kiểm, công cụ `qa.sh` / `sock.mjs` | `Jira/04-HUONG-DAN-KIEM-THU.md`, `Jira/tools/` |
+| Từ kỹ thuật | `Jira/05-TU-DIEN-KY-THUAT.md` |
 
-**Ba quy tắc đọc tài liệu:**
-
-1. `01-requirements/` nói **CÁI GÌ**, `09-technical/` nói **BẰNG GÌ**. Thấy tên thư viện trong `01-` ⇒ lỗi tài liệu, báo ngay
-2. Mỗi luật chỉ có **một** chỗ định nghĩa. Chỗ khác chỉ **liên kết tới**. Thấy cùng một luật ghi khác nhau ở hai nơi ⇒ lỗi, báo ngay
-3. `99-archive/` là **lịch sử**, ⛔ **không** dùng làm căn cứ triển khai và ⛔ **không xoá**
+Sửa file trong `docs/` ⇒ chạy `node site/build.mjs` để cập nhật trang tài liệu.
 
 ---
 
-## 14. ⛔ NHỮNG VIỆC TUYỆT ĐỐI KHÔNG LÀM
+## 14. ⛔ Tuyệt đối không
 
 ```
-⛔ Không tự phát minh yêu cầu. Không có trong docs/ ⇒ HỎI
-⛔ Không tự đổi yêu cầu khi thấy tài liệu sai ⇒ BÁO
-⛔ Không hạ ngưỡng đo để báo đạt
-⛔ Không thay tài nguyên ngoài bằng giả lập rồi đánh dấu DONE
-⛔ Không dùng prisma migrate
-⛔ Không để máy cờ chạy chung tiến trình máy chủ
-⛔ Không commit khoá bí mật
-⛔ Không đặt khoá bí mật vào biến VITE_* (mọi biến VITE_* đều CÔNG KHAI)
-⛔ Không xoá docs/99-archive/
-⛔ Không force push, không né CI
-⛔ Không dùng .only, không để test bị bỏ qua
-⛔ Không làm issue khi phụ thuộc chưa merge
-⛔ Không tự giải quyết xung đột merge
-⛔ Không thêm công nghệ ngoài bảng đã chốt (Redis, Tailwind, thư viện UI dựng sẵn…)
+⛔ Tự phát minh yêu cầu — không có trong docs/ ⇒ HỎI
+⛔ Tự đổi yêu cầu khi thấy tài liệu sai ⇒ BÁO
+⛔ Hạ ngưỡng đo để báo đạt
+⛔ Thay tài nguyên ngoài bằng giả lập rồi báo Done
+⛔ Chạy prisma migrate
+⛔ Để máy cờ chạy chung tiến trình máy chủ
+⛔ Commit khoá bí mật; đặt khoá bí mật vào biến VITE_* (mọi biến VITE_* đều CÔNG KHAI)
+⛔ Xoá hoặc sửa docs/99-archive/
+⛔ Force push, né CI
+⛔ Dùng .only / .skip, để test bị bỏ qua
+⛔ Làm Task khi Task chặn chưa tới trạng thái yêu cầu
+⛔ Tự giải quyết xung đột merge
+⛔ Thêm công nghệ ngoài bảng đã chốt (Redis, Tailwind, thư viện UI dựng sẵn…)
 ```
 
 ---
 
-## 15. VÌ SAO NGHIÊM NGẶT ĐẾN VẬY
-
-Dự án này **đã được xây một lần và thất bại ở 30 chỗ cụ thể** — lưu ở `docs/99-archive/reviews-v1/`.
-
-Mỗi luật trong file này tương ứng với **một lỗi đã thật sự xảy ra**:
-
-| Luật | Lỗi nó phòng |
-|---|---|
-| SQL thuần cho đường xử lý lệnh ván | Mất khoá dòng ⇒ hai nước đi cùng lúc |
-| Nước đi lưu dạng **cây** | Đi lại xong đi nước mới ⇒ lỗi trùng khoá (`F-01`) |
-| Đếm lặp chỉ trên **nhánh có hiệu lực** | Hoà sai (`F-02`) |
-| Kiểm quyền ở **mọi** đường vào | Vào bằng mã bỏ qua kiểm riêng tư (`F-03`) |
-| Test chạy trên PostgreSQL thật | Test tự mock chính nó (`F-11`, `F-12`) |
-| Media đo byte RTP thật | Camera "kết nối" nhưng không có gói tin (`F-14`) |
-| Thử tải phải **đồng thời** | Báo cáo thử tải không phải thử tải (`F-15`) |
-
-**Mỗi issue có mục "⚠ CẠM BẪY" ở cuối** — chỉ đúng lỗi sẽ gặp ở chính chỗ đó. **Đọc nó.**
-
----
-
-## 16. NẾU BẠN CHỈ NHỚ ĐƯỢC MỘT ĐIỀU
+## 15. Nếu chỉ nhớ được một điều
 
 > **Ghi số thật luôn tốt hơn báo cáo đẹp.**
->
-> Một issue ghi `BLOCKED` kèm số đo thật thì có ích.
-> Một issue ghi `DONE` mà ngưỡng đã bị hạ xuống thì **gây hại** — vì nó giấu vấn đề cho tới lúc không sửa được nữa.
+> Một Task ghi `BLOCKED` kèm số đo thật thì có ích. Một Task ghi Done mà ngưỡng đã bị hạ thì gây hại — vì nó giấu vấn đề tới lúc không sửa được nữa.
