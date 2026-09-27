@@ -1,0 +1,3 @@
+# Người được duyệt PR vào nhánh `main` (ruleset "main" bật "Require review from Code Owners").
+# Chỉ trưởng nhóm và Tester chính. Thêm tên GitHub của Tester vào cuối dòng dưới, ví dụ: * @twotnguyen @ten-tester
+* @twotnguyen
