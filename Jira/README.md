@@ -44,11 +44,11 @@ Tên dạng `[BE] TK10.3.1 · …` — tiền tố là vai trò, mỗi Task ch�
 3. **Bẫy**: lỗi dễ gặp ở đúng chỗ đó.
 4. **🧪 Kiểm thử khi Ready for Test**: ca kiểm thử (bước, kết quả mong đợi), tiêu chí PASS, bằng chứng, xử lý khi FAIL. Task `[QA]` tích hợp thì toàn bộ nội dung là ca kiểm thử.
 
-Trong "Is blocked by": Task sau chỉ bắt đầu khi Task chặn đã **Done** (code chỉ vào `main` khi Done). Hậu tố **(Done)** còn sót giữ nguyên nghĩa đó.
+Trong "Is blocked by": Task sau chỉ bắt đầu khi Task chặn đã **Done** (code chỉ vào `develop` khi Done). Hậu tố **(Done)** còn sót giữ nguyên nghĩa đó.
 
 ## Luồng trạng thái trên board
 
-`To Do → Ready For Dev → In Progress → Ready For Test → Done`. Người làm mở PR (4 cổng xanh) rồi kéo Task sang **Ready For Test**. Ở bước này người review duyệt code **và** Tester kiểm trên nhánh PR. Có ≥ 1 approve + CI xanh + Tester PASS thì merge `main` và Tester kéo sang **Done**; FAIL thì tạo Bug, Task về **In Progress**. Chi tiết ở [AGENTS.md §8](../AGENTS.md).
+`To Do → Ready For Dev → In Progress → Ready For Test → Done`. Người làm mở PR (4 cổng xanh) rồi kéo Task sang **Ready For Test**. Ở bước này người review duyệt code **và** Tester kiểm trên nhánh PR. Có ≥ 1 approve + CI xanh + Tester PASS thì merge `develop` và Tester kéo sang **Done**; FAIL thì tạo Bug, Task về **In Progress**. Chi tiết ở [AGENTS.md §8](../AGENTS.md).
 
 ## Các quy tắc đã đảm bảo (kiểm bằng script)
 

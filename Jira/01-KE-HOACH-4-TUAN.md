@@ -23,7 +23,7 @@
 
 **Giả định tốc độ (cập nhật 2026-09-27):** nhóm code với AI agent hỗ trợ ⇒ giờ **viết code** (BE, FE, AI) lấy bằng **50 %** ước lượng gốc; DevOps **80 %** (phụ thuộc dịch vụ ngoài); Design và Task `[QA]` **90 %**; **giờ Tester kiểm ở Ready For Test giữ nguyên** (kiểm tay, thiết bị thật, đo thật). Đây là giả định chưa đo — kiểm lại sau Sprint 1 (§6b).
 
-**Cách kiểm thử:** mỗi Task phát triển/thiết kế (115 Task) có mục **"🧪 Kiểm thử khi Ready for Test"**. Người làm mở PR rồi kéo Task sang **Ready For Test**; người review duyệt code và Tester kiểm **trên nhánh PR**; đủ approve + CI xanh + Tester PASS thì merge `main` và Tester kéo sang **Done**. Chi tiết: [AGENTS.md §8](../AGENTS.md).
+**Cách kiểm thử:** mỗi Task phát triển/thiết kế (115 Task) có mục **"🧪 Kiểm thử khi Ready for Test"**. Người làm mở PR rồi kéo Task sang **Ready For Test**; người review duyệt code và Tester kiểm **trên nhánh PR**; đủ approve + CI xanh + Tester PASS thì merge `develop` và Tester kéo sang **Done**. Chi tiết: [AGENTS.md §8](../AGENTS.md).
 
 ## 2. DANH SÁCH EPIC
 
@@ -57,7 +57,7 @@ Sprint được gán theo **ngày Done của Story** (Story và mọi Task của
 | **3** · `v0.3.0` | 12/10 – 18/10 | 21 | 75 | ST06.1 Guard xác thực API, đăng ký và xác minh email · ST08.2 Sảnh, sẵn sàng/bắt đầu ván, đổi bên và giao diện phòng chờ · ST10.3 Đi nước, cây nước đi, hàm kết thúc ván, snapshot đồng bộ · ST02.3 Màn ván online: thao tác, đồng hồ, chống treo, mất kết nối, kết quả, chat, media · ST10.2 Gateway realtime, presence/heartbeat, đường xử lý lệnh + biên lai · ST08.3 Rời/đóng phòng, đổi cài đặt và thu hồi người xem · ST07.2 Trạng thái online và trang bạn bè · ST11.1 Đồng hồ ván và bộ đếm hết giờ (máy chủ) · ST13.1 Dịch vụ chat 2 kênh: gửi, đọc lịch sử, phân quyền theo segment · ST04.3 ⛔ Cổng đo depth 6/3000 ms và bộ 20 thế cờ có đáp án tay · ST14.2 Chính sách camera/micro, cấp token 4 phòng, thu hồi xoay thế hệ · ST12.2 Lịch sử ván riêng tư và xem lại theo nhánh hiệu lực · ST10.4 Màn phòng chơi realtime (8 phiên) + hiển thị đồng hồ · ST06.2 Đăng nhập bằng username, phiên 30 ngày/phiên tạm, đăng xuất · ST15.1 Tiến trình AI riêng, worker thread, huỷ tức thì, hàng đợi 2/8 · ST15.3 Thí nghiệm 60 ván và báo cáo thuật toán tái lập được · ST13.2 Lịch sử/phân trang, dọn 30 ngày, kiểm thu hồi end-to-end, giao diện chat 2 khung · ST06.3 Quên mật khẩu, đặt lại và chọn username lần đầu · ST09.2 Thu hồi hàng loạt, đuổi người xem và giao diện danh sách người xem · ST11.3 Chống treo ván (R17) và giao diện cho cả 3 phía · ST06.4 Đăng nhập Google (tài nguyên ngoài) |
 | **4** · `v1.0.0` | 19/10 – 23/10 | 16 | 51 | ST08.4 Mã phòng, link mời, mời trực tiếp, hộp thư lời mời · ST16.1 Kiểm chứng mô hình nhiều tab (mọi tab thao tác, chống xung đột) · ST14.3 Giao diện media và một tab một nguồn · ST12.3 Tái đấu đổi bên, đóng phòng 10 phút, màn kết quả · ST15.2 Tích hợp ván với máy, đi lại với máy, giao diện chơi với máy · ST07.1 Hồ sơ, tìm người dùng, kết bạn · ST16.4 Thử tải 10 phòng / 70 kết nối đồng thời · ST11.2 Ân hạn mất kết nối 60 giây, cả hai offline, khởi động lại máy chủ · ST14.4 Kiểm thử ma trận quyền media bằng luồng thật (TS-MED-01..15) · ST12.1 Đầu hàng, xin hoà/đi lại, đi lại trên cây nước, thanh thao tác · ST16.3 Kiểm ma trận quyền bằng dữ liệu giả mạo · ST09.1 Vào xem theo chế độ, trần 5 người, giữ ghế 15 giây · ST16.2 Responsive 4 kích thước, trợ năng WCAG AA, 5 trạng thái toàn bộ màn hình · ST16.6 Kiểm trên môi trường Internet thật, hồ sơ bàn giao và bảo vệ · ST16.5 Nghiệm thu R01–R19 (local) · ST16.8 Hạ tầng Internet bản đầu: /healthz, triển khai Vercel + Render, môi trường thử tải |
 
-Một Story chỉ được tính vào kết quả sprint khi **mọi Task của nó (nhãn `stxx-y`) đã Done**, tức là đã review, Tester PASS và đã merge `main`.
+Một Story chỉ được tính vào kết quả sprint khi **mọi Task của nó (nhãn `stxx-y`) đã Done**, tức là đã review, Tester PASS và đã merge `develop`.
 
 ## 4. STORY THEO SPRINT (lịch có giới hạn người, quy tắc "Task chặn phải Done")
 
@@ -213,7 +213,7 @@ Các Task này ưu tiên `Highest`; trễ một Task trong chuỗi là trễ ng�
 
 ## 6b. KHI NÀO ĐƯỢC BẮT ĐẦU TASK KẾ TIẾP
 
-- **Quy tắc:** Task sau chỉ bắt đầu khi **mọi** Task chặn đã **Done** — review + Tester PASS trên nhánh PR + đã merge `main` ([AGENTS.md §8](../AGENTS.md)). Hậu tố `(Done)` còn ghi ở một số Task có cùng nghĩa.
+- **Quy tắc:** Task sau chỉ bắt đầu khi **mọi** Task chặn đã **Done** — review + Tester PASS trên nhánh PR + đã merge `develop` ([AGENTS.md §8](../AGENTS.md)). Hậu tố `(Done)` còn ghi ở một số Task có cùng nghĩa.
 - Lịch ở §4 được xếp bằng máy theo quy tắc này, có tính **giới hạn người** (mỗi người một việc một lúc, 7,5 giờ/ngày, thứ Hai–thứ Sáu) và giả định tốc độ ở §1.
 - **Kiểm chứng sau Sprint 1 (Review 02/10):** so giờ thật (log work) với Original Estimate.
   - Chậm hơn ước lượng ≤ 20 %: giữ lịch, dùng phần dư cuối kỳ.
@@ -264,6 +264,6 @@ Các phụ thuộc còn lại giữ đúng như đặc tả (ví dụ: luật c�
 
 - **Sprint Planning** (thứ Hai đầu sprint): kéo Story của sprint vào board, gán người theo §5, đánh dấu Task đường găng.
 - **Daily** 15 phút: mỗi người nêu Task đang làm và Task đang chờ. Trưởng nhóm kéo sang **Ready For Dev** những Task đã đủ điều kiện (xem §6b) và xem cột **Ready For Test**.
-- **Một Task phát triển:** `Ready For Dev` → **In Progress**, nhánh `feature/XW-<số>-ten-ngan` → viết test trước → code → mở PR (4 cổng xanh) → **Ready For Test**, đổi Assignee sang Tester, comment link PR + cách chạy thử → review (≥ 1 approve) **và** Tester kiểm trên nhánh PR → PASS + CI xanh ⇒ merge `main` → **Done**; FAIL ⇒ Bug, về **In Progress**, sửa trên cùng PR.
+- **Một Task phát triển:** `Ready For Dev` → **In Progress**, nhánh `feature/XW-<số>-ten-ngan` → viết test trước → code → mở PR (4 cổng xanh) → **Ready For Test**, đổi Assignee sang Tester, comment link PR + cách chạy thử → review (≥ 1 approve) **và** Tester kiểm trên nhánh PR → PASS + CI xanh ⇒ merge `develop` → **Done**; FAIL ⇒ Bug, về **In Progress**, sửa trên cùng PR.
 - **Task Tester tích hợp:** `Ready For Dev` khi mọi Task chặn tới mức cần → chạy đủ ca → ghi báo cáo `docs/test-reports/<mã-task>.md` → **Done**; FAIL thì tạo Bug gán đúng Task gây lỗi.
 - **Sprint Review** (cuối sprint): demo các Story đã Done của sprint (§3). Sau đó **Retrospective** ngắn.
