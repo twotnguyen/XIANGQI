@@ -1,6 +1,6 @@
 # Jira Components — Nhóm công việc dự án Cờ Tướng Online
 
-**Cập nhật:** 2026-09-22  
+**Cập nhật:** 2026-09-27  
 **Danh mục đã thống nhất:** Frontend, Backend, AI, Design, Tester, DevOps.
 
 Dự án sử dụng đúng **6 component**, phân chia theo mảng công việc và nhóm phụ trách. Một người có thể kiêm nhiều nhóm; không bắt buộc có 6 thành viên riêng biệt. Các chức năng như tài khoản, phòng, chat và media được thể hiện trong tên/nội dung đầu việc để kết hợp với cách phân nhóm này.
@@ -57,7 +57,7 @@ Không tạo component PM, BA hoặc DA trong danh mục hiện tại. Việc đ
 
 ## 5. Ánh xạ chủ trì cho 138 issue hiện có
 
-Bảng dưới đây là **ánh xạ chủ trì cũ**, chỉ giữ để truy vết bản nháp ngày 2026-09-22. Nó không dùng để phân công Jira Task vì một số ISSUE gộp nhiều vai trò và 048, 052, 098 bị gán Backend dù phần mã sản phẩm thuộc Frontend. Ánh xạ mới cho đủ 138 ISSUE nằm trong [AUDIT-138](AUDIT-138.md) và [plan.json](plan.json); mọi ISSUE có nhiều vai trò được tách thành Task riêng.
+Bảng dưới đây là **ánh xạ chủ trì cũ**, chỉ giữ để truy vết bản nháp ngày 2026-09-22. Nó không dùng để phân công Jira Task vì một số ISSUE gộp nhiều vai trò và 048, 052, 098 bị gán Backend dù phần mã sản phẩm thuộc Frontend. Ánh xạ mới cho đủ 138 ISSUE nằm trong [02-AUDIT-138-ISSUE.md](02-AUDIT-138-ISSUE.md) và cột "Nguồn (ISSUE)" của [03-TRUY-VET.md](03-TRUY-VET.md); mọi ISSUE có nhiều vai trò được tách thành Task riêng.
 
 | Component | Issue chủ trì |
 |---|---|
@@ -94,7 +94,8 @@ Bảng dưới đây là **ánh xạ chủ trì cũ**, chỉ giữ để truy v�
 
 ## 7. Tài liệu dùng chung
 
-- [Kế hoạch Jira 4 tuần](PLAN-4-WEEKS.md), [rà soát 138 ISSUE](AUDIT-138.md), [truy vết nguồn ↔ Jira](TRACEABILITY.md) và [đối chiếu Jira](REMOTE-VERIFICATION.md): backlog đã tạo, vai trò, Blocks và giới hạn khả thi.
+- [Cấu hình Jira](00-CAU-HINH-JIRA.md), [kế hoạch 4 tuần](01-KE-HOACH-4-TUAN.md), [rà soát 138 ISSUE](02-AUDIT-138-ISSUE.md) và [truy vết Epic → Story → Task ↔ ISSUE](03-TRUY-VET.md): backlog, vai trò, Blocks, ước lượng và thứ tự tạo trên Jira.
+- [Sổ tay kiểm thử](04-HUONG-DAN-KIEM-THU.md), [từ điển kỹ thuật](05-TU-DIEN-KY-THUAT.md) và [hợp đồng API & sự kiện](06-HOP-DONG-API-SU-KIEN.md): dùng chung khi làm và kiểm từng Task.
 - [INDEX — 138 issue](../docs/10-issues/INDEX.md) và [thứ tự thực thi](../docs/10-issues/EXECUTION-ORDER.md): chọn việc đủ phụ thuộc.
 - [Yêu cầu](../docs/01-requirements/README.md), [flows](../docs/02-flows/README.md), [quyền](../docs/04-business-rules/permissions.md) và [decision log](../docs/07-decisions/decision-log.md): làm rõ hành vi.
 - [Kiến trúc](../docs/09-technical/architecture.md), [công nghệ](../docs/09-technical/tech-stack.md) và [hướng dẫn bắt đầu](../docs/10-issues/AGENT-START-HERE.md): triển khai đúng ranh giới.

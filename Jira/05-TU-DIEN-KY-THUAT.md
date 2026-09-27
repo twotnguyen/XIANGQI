@@ -181,7 +181,7 @@ clock.advance(1);      clock.runDueTasks();  // đúng 30 000 ms ⇒ EXPIRED
 <a id="idor"></a>
 ### IDOR (đoán mã đối tượng)
 **Nghĩa:** lỗ hổng khi máy chủ chỉ kiểm "đã đăng nhập", **quên** kiểm "đối tượng này có phải của bạn không". Kẻ gian đổi mã trên URL là xem được dữ liệu người khác.
-**Ví dụ:** `GET /history/<mã ván của người khác>/replay` ⇒ phải `FORBIDDEN`.
+**Ví dụ:** `GET /api/v1/matches/<mã ván của người khác>/replay` ⇒ phải `FORBIDDEN`.
 **Mẹo:** trả **cùng một lỗi** cho "không tồn tại" và "không có quyền", để kẻ gian không dò ra mã nào tồn tại.
 
 <a id="snapshot"></a>

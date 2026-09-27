@@ -74,7 +74,7 @@ Export getPseudoLegalMoves(position:Position):Move[], isInCheck(board:Board, sid
 
 **File kiểm thử chính:** `tests/unit/issue-022.test.ts`. Đặt ID TNNN-xx trong tên test để đối chiếu từng dòng bảng bắt buộc; không gộp nhiều test ID thành một kết luận không có assertion riêng.
 
-Initial 32 quân. Fixture ghim: tướng BLACK(4,0), RED(4,9), RED ROOK(4,5); move(4,5) → (3,5) lộ tướng. Fixture tự chiếu: BLACK GENERAL(3,0), BLACK ROOK(4,0), RED GENERAL(4,9), RED ROOK(4,5). Fixture bí dùng bảng F-STALEMATE GR §6 ngay tại test này, không import terminal-positions 024 tương lai.
+Initial 32 quân. Fixture ghim: tướng BLACK(4,0), RED(4,9), RED CANNON(4,5) là quân chắn duy nhất (dùng Pháo, không dùng Xe: Xe ở (4,5) đã chiếu tướng BLACK trong khi đang lượt RED ⇒ thế không hợp lệ); move(4,5) → (3,5) lộ tướng. Fixture tự chiếu: BLACK GENERAL(3,0), BLACK ROOK(4,0), RED GENERAL(4,9), RED ROOK(4,5). Fixture bí dùng bảng F-STALEMATE GR §6 ngay tại test này, không import terminal-positions 024 tương lai.
 
 - T022-01: count 44 và histogram GENERAL1, ADVISOR2, ELEPHANT4, HORSE4, ROOK4, CANNON24, PAWN5; viết đích từng quân để oracle độc lập.
 - T022-02/03/10: tự chiếu fixture, rook chắn không đi ngang nhưng ăn BLACK ROOK theo cột gỡ chiếu khi hợp lệ; đang chiếu dùng BLACK ROOK(4,7), RED ROOK(3,7) có nước ăn(4,7).
@@ -90,7 +90,7 @@ import { getLegalMoves } from '@xiangqi/game-rules';
 import { makePosition } from '../fixtures/positions';
 test('T022-04 quân chắn rời cột tướng bị loại', () => {
   const p=makePosition([{type:'GENERAL',side:'BLACK',x:4,y:0},
-    {type:'GENERAL',side:'RED',x:4,y:9},{type:'ROOK',side:'RED',x:4,y:5}], 'RED');
+    {type:'GENERAL',side:'RED',x:4,y:9},{type:'CANNON',side:'RED',x:4,y:5}], 'RED');
   expect(getLegalMoves(p)).not.toContainEqual({from:{x:4,y:5},to:{x:3,y:5}});
   expect(getLegalMoves(p)).toContainEqual({from:{x:4,y:5},to:{x:4,y:4}});
 });
