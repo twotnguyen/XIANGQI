@@ -14,17 +14,27 @@
 |---|---|---|---|
 | 1 | **Epic** | 10000 | Một mảng chức năng lớn (16 Epic) |
 | 0 | **Story** | 10013 | Một kết quả người dùng/kỹ thuật nghiệm thu được, **gói gọn trong 1 sprint** |
-| −1 | **Sub-task** | 10012 | **Task** của một vai trò duy nhất, con của Story |
-| 0 | Task | 10015 | *Không dùng trong kế hoạch này* (xem §1.1) |
+| 0 | **Task** | 10015 | **Task** của một vai trò duy nhất; Parent = **Epic**, nối với Story bằng link + nhãn (xem §1.1) |
+| −1 | Sub-task | 10012 | *Không dùng trong kế hoạch này* |
 | 0 | Bug | 10014 | Tester tạo khi kiểm thử FAIL |
 
-### 1.1 Vì sao "Task" trong tài liệu = **Sub-task** trên Jira
+### 1.1 Task dùng loại **Task** — Story nối bằng link + nhãn
 
-Jira phân cấp cố định: `Epic (1) → Story/Task/Bug (0) → Sub-task (−1)`. Loại **Task** cùng cấp với Story nên **không thể là con của Story**. Để có cấu trúc **Epic → Story → Task** như thầy yêu cầu, mỗi Task được tạo bằng loại **Sub-task** và đặt **Parent = Story**. Trong Summary luôn có tiền tố vai trò, nên nhìn board vẫn thấy rõ đây là Task của ai.
+Jira phân cấp cố định: `Epic (1) → Story/Task/Bug (0) → Sub-task (−1)`. Loại **Task** cùng cấp với Story nên **không thể có Parent là Story**. Nhóm chọn dùng loại **Task** (không dùng Sub-task) để Task hiện như một thẻ độc lập trên board, backlog và báo cáo. Cấu trúc **Epic → Story → Task** được giữ bằng 4 cách, **cả 4 đều bắt buộc**:
+
+| # | Cách nối Task ↔ Story | Ví dụ |
+|---|---|---|
+| 1 | **Parent** của Task = **Epic** chứa Story | TK06.2.1 → Parent `EP06` |
+| 2 | Nhãn `stxx-y` (mã Story, dấu chấm đổi thành gạch) | `st06-2` |
+| 3 | Link **`Relates`** Task ↔ Story | TK06.2.1 *relates to* ST06.2 |
+| 4 | Mô tả Story có bảng **Task thuộc Story** ghi Key Jira của từng Task | |
+
+Lọc mọi Task của một Story: `project = XW AND labels = st06-2`.
 
 Hệ quả cần biết:
-- Sub-task **luôn nằm cùng sprint với Story cha** ⇒ mỗi Story được thiết kế để làm xong trong **1 sprint** (kể cả kiểm thử).
-- Story Points đặt ở **Story**; Task ghi **ước lượng giờ** (Original Estimate).
+- Task **không tự theo sprint của Story** ⇒ phải gán **Sprint riêng cho từng Task**, luôn **cùng sprint với Story** của nó. Mỗi Story vẫn được thiết kế để xong trong **1 sprint** (kể cả kiểm thử).
+- Story Points đặt ở **Story**; Task ghi **ước lượng giờ** (Original Estimate). Giờ của Task **không tự cộng** lên Story.
+- Jira **không tự nhắc** Story khi các Task xong ⇒ Scrum Master kiểm Story theo JQL ở §10.3.
 - **Kiểm thử không phải Task riêng.** Mỗi Task phát triển/thiết kế tự mang mục **"🧪 Kiểm thử khi Ready for Test"**. Khi người làm kéo Task sang `Ready For Test`, Tester vào kiểm đúng các ca trong mục đó (xem §10). Chỉ có **20 Task `[QA]` riêng** cho việc kiểm **nhiều Task cùng lúc hoặc toàn hệ thống**: chạy lại cổng chặn, ma trận quyền, tranh chấp nhiều tab, thử tải, kịch bản xương sống, nghiệm thu, kiểm Internet thật.
 - Việc Design phải xong **trước** Frontend một sprint nên được tách thành Story Design riêng (Epic EP02), liên kết `Blocks` sang Task Frontend.
 
@@ -32,18 +42,18 @@ Hệ quả cần biết:
 
 ## 2. TRƯỜNG CẦN ĐIỀN (đã kiểm từng loại issue)
 
-| Trường (tên Jira) | Field id | Epic | Story | Sub-task (Task) | Ghi chú |
+| Trường (tên Jira) | Field id | Epic | Story | Task | Ghi chú |
 |---|---|:---:|:---:|:---:|---|
 | Project | `project` | ✅ bắt buộc | ✅ bắt buộc | ✅ bắt buộc | `XW` (id 10003) |
-| Issue Type | `issuetype` | ✅ | ✅ | ✅ | Epic / Story / Sub-task |
+| Issue Type | `issuetype` | ✅ | ✅ | ✅ | Epic / Story / Task |
 | Summary | `summary` | ✅ bắt buộc | ✅ bắt buộc | ✅ bắt buộc | Quy ước tên ở §4 |
-| Parent | `parent` | — | Epic | **Story — bắt buộc** | Sub-task không tạo được nếu thiếu Parent |
+| Parent | `parent` | — | Epic | **Epic — bắt buộc** | Epic chứa Story của Task. Story nối bằng nhãn `stxx-y` + link `Relates` (§1.1) |
 | Description | `description` | ✅ | ✅ | ✅ | Nội dung file `.md` tương ứng trong `epic/`, `story/`, `task/` (bỏ dòng `> **Loại:**` điều hướng và bảng trường) |
 | Components | `components` | ✅ | ✅ | ✅ **đúng 1** | 6 giá trị ở §3 |
 | Assignee | `assignee` | Trưởng nhóm | Người chủ trì Story | Người làm Task | Khi Task sang `Ready For Test` ⇒ đổi Assignee sang **Tester**; FAIL ⇒ đổi lại người làm (§10) |
 | Priority | `priority` | ✅ | ✅ | ✅ | Highest / High / Medium / Low / Lowest (mặc định Medium) |
 | Labels | `labels` | ✅ | ✅ | ✅ | Quy ước ở §5 |
-| Sprint | `customfield_10020` | — | ✅ | theo Story cha | Xem §6 |
+| Sprint | `customfield_10020` | — | ✅ | ✅ **cùng sprint với Story** | Gán riêng từng Task. Xem §6 |
 | Story Points | `customfield_10040` | — | ✅ | — | Trường ước lượng của board (kiểm ở `board/4/configuration`). **Không có trên màn hình Create** ⇒ tạo xong rồi sửa, hoặc nhờ admin thêm vào Create screen |
 | Start date | `customfield_10015` | ✅ | ✅ | ✅ | yyyy-mm-dd |
 | Due date | `duedate` | ✅ | ✅ | ✅ | yyyy-mm-dd |
@@ -98,6 +108,7 @@ Mã `EPxx / STxx.y / TKxx.y.z` là mã **trong tài liệu**, giúp tra cứu v�
 | Kế hoạch | `xq-v2` | **Mọi** issue của kế hoạch này (lọc nhanh, tách khỏi issue cũ) |
 | Vai trò | `role-fe` `role-be` `role-ai` `role-ds` `role-qa` `role-ops` | Task (trùng component, để lọc JQL nhanh). `role-qa` chỉ có ở 20 Task Tester tích hợp |
 | Epic | `ep01` … `ep16` | Story, Task |
+| Story | `st01-1` … `st16-8` | Task — **bắt buộc**, để lọc Task theo Story (§1.1) |
 | Sprint | `sprint-1` … `sprint-4` | Story, Task |
 | Nguồn | `src-001` … `src-138` | Story/Task truy về issue đặc tả trong `docs/10-issues/` |
 | Đặc biệt | `gate` | Cổng chặn (đo AI 032, đo media 112) |
@@ -133,10 +144,10 @@ Jira hiện chỉ có `v1.0.0` (ngày 28/09–03/10). **Trước khi tạo issue
 
 **Quy tắc gán:**
 1. **Story:** version = version của sprint chứa Story.
-2. **Task (Sub-task):** cùng version với Story cha (Task luôn cùng sprint với Story).
+2. **Task:** cùng version với Story của nó (nhãn `stxx-y`); Task luôn cùng sprint với Story.
 3. **Epic:** version của sprint **kết thúc muộn nhất** trong các Story con (Epic trải Sprint 2–4 ⇒ `v1.0.0`). Trang Releases vẫn đếm được từng Story/Task theo version riêng của nó.
 4. **Bug:** gán version của sprint **đang chạy** lúc tạo Bug (Bug phải sửa xong trong version đó).
-5. Story bị dời sang sprint sau ⇒ đổi version của Story **và** toàn bộ Task con cho khớp; không để version cũ.
+5. Story bị dời sang sprint sau ⇒ đổi **sprint và version** của Story **và** toàn bộ Task có nhãn `stxx-y` cho khớp; không để version cũ.
 6. Cuối mỗi sprint (buổi review): mở trang **Releases**, version đạt điều kiện ⇒ bấm **Release**; còn issue chưa Done ⇒ dời theo quy tắc 5 rồi mới Release. Không Release khi còn issue mở.
 
 Số lượng: `v0.1.0` 9 Story/25 Task · `v0.2.0` 11 Story/25 Task · `v0.3.0` 15 Story/40 Task · `v1.0.0` 20 Story/45 Task. Epic: `v0.1.0` EP01, EP03 · `v0.2.0` EP02, EP04, EP05 · `v0.3.0` EP06, EP07 · `v1.0.0` EP08–EP16.
@@ -218,7 +229,9 @@ To Do ──► Ready For Dev ──► In Progress ──► Ready For Test ─
 
 ### 10.3 Story
 
-Story `Done` khi **mọi Sub-task Done** và tiêu chí chấp nhận của Story đạt. Story chỉ được tính vào kết quả sprint khi Done.
+Story `Done` khi **mọi Task có nhãn `stxx-y` Done** và tiêu chí chấp nhận của Story đạt. Story chỉ được tính vào kết quả sprint khi Done.
+
+Kiểm nhanh (thay nhãn): `project = XW AND labels = st06-2 AND statusCategory != Done` ⇒ **0 kết quả** mới được kéo Story sang Done.
 
 **Không đạt ngưỡng đo / thiếu tài nguyên ngoài:** giữ Task ở `In Progress` (hoặc `Ready For Test` nếu đang kiểm), bật **Flagged** (`customfield_10021`), thêm nhãn `blocked` hoặc `blocked-external`, ghi **số đo thật** trong comment. **Không hạ ngưỡng** để chuyển Done.
 

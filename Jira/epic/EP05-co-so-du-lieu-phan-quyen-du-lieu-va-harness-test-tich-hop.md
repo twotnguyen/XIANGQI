@@ -83,7 +83,7 @@ TK05.1.1 ─► TK05.1.2 ─► TK05.1.3 ─┬─► TK05.2.1 ─┐
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 3 Story Done, mọi Sub-task có báo cáo.
+- [ ] 3 Story Done, mọi Task có báo cáo.
 - [ ] `pnpm db:reset` từ DB sạch áp toàn bộ migration không lỗi.
 - [ ] 100% bảng `public` bật RLS; `anon` và `authenticated` không đọc/ghi được bảng nào (kiểm qua REST thật).
 - [ ] Harness đỏ khi tắt DB; `pnpm prisma:migrate` bị chặn.

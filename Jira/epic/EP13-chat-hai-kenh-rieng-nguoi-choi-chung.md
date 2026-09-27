@@ -86,7 +86,7 @@ TK13.1.1 ─┬─► TK13.2.1 (+TK09.2.1)
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 2 Story Done, mọi Sub-task có báo cáo.
+- [ ] 2 Story Done, mọi Task có báo cáo.
 - [ ] Người xem không nhận / đọc / gửi được kênh riêng (kể cả giả mạo).
 - [ ] Người chơi thay thế không đọc được tin cũ.
 - [ ] Thu hồi end-to-end có đối chứng cho 3 chuyển chế độ + đổi mã xem + đuổi.

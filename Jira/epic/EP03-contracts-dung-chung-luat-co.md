@@ -99,7 +99,7 @@ TK03.1.1 ─┬─► TK03.1.2 ────────────────�
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 3 Story Done; mọi Sub-task có báo cáo và file test phụ của Tester đã merge.
+- [ ] 3 Story Done; mọi Task có báo cáo và file test phụ của Tester đã merge.
 - [ ] `getLegalMoves(createInitialPosition())` trả đúng **44**.
 - [ ] 3 fixture cho đúng kết quả: F-MATE ⇒ `CHECKMATE` ĐỎ thắng; F-STALEMATE ⇒ `STALEMATE` ĐỎ thắng; F-REPEAT 8 nửa nước ⇒ `REPETITION` hoà.
 - [ ] `pnpm test:unit` xanh, 0 skipped; Tester ký xác nhận hệ toạ độ (ĐEN y=0, ĐỎ y=9).

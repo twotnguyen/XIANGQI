@@ -85,7 +85,7 @@ TK10.3.2 ═(Done)═► TK11.1.1 ─► TK11.2.1 (+TK10.2.2) ─┬─► TK11.
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 3 Story Done, mọi Sub-task có báo cáo.
+- [ ] 3 Story Done, mọi Task có báo cáo.
 - [ ] Hết giờ / mất kết nối / treo ván đều tự kết thúc ván không cần ai gửi lệnh.
 - [ ] Khởi động lại máy chủ thật: ván cũ INTERRUPTED trước khi nhận lệnh (có log).
 - [ ] Không test nào dùng `sleep` thật; không ngưỡng nào bị rút ngắn trong code sản phẩm.
