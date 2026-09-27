@@ -61,6 +61,7 @@ Hiện có:
 ```
 .
 ├── AGENTS.md        Luật làm việc cho AI agent (người mới cũng nên đọc)
+├── DESIGN.md        Hệ thống thiết kế giao diện
 ├── docs/            Đặc tả: yêu cầu, luồng, màn hình, luật, dữ liệu, nghiệm thu, quyết định, 138 issue
 ├── Jira/            Kế hoạch 4 tuần: 16 Epic, 55 Story, 135 Task, sổ tay kiểm thử, công cụ QA
 └── site/            Trang web đọc tài liệu (mở site/index.html)
@@ -156,6 +157,7 @@ Chi tiết (Definition of Ready/Done, mẫu PR, mẫu comment, mẫu Bug): [AGEN
 |---|---|
 | Người mới bắt đầu từ đâu | [docs/ONBOARDING.md](docs/ONBOARDING.md) |
 | Thuật ngữ (bắt buộc đọc) | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) |
+| Hệ thống thiết kế (màu, chữ, thành phần, bàn cờ, Figma) | [DESIGN.md](DESIGN.md) |
 | Hệ toạ độ bàn cờ | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 |
 | Bản đồ toàn bộ đặc tả | [docs/README.md](docs/README.md) |
 | Kiến trúc | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) |
