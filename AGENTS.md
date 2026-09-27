@@ -220,7 +220,7 @@ Không dùng trạng thái `In Review`: **Ready For Test là bước review**. �
 
 ### 8.5 Quy ước Git gắn với Jira
 
-Key Jira (`XW-…`) phải có trong **tên nhánh, commit và tiêu đề PR** để GitHub for Jira tự liên kết vào issue.
+Key Jira (`XW-…`) phải có trong **tên nhánh, commit và tiêu đề PR** để Jira tự liên kết vào issue (xem §8.8).
 
 | Mục | Quy định | Ví dụ |
 |---|---|---|
@@ -300,6 +300,29 @@ Một Task chỉ **Done** khi **tất cả** đúng; thiếu một ô là chưa 
 
 Không đạt ngưỡng đo hoặc thiếu tài nguyên ngoài ⇒ giữ Task ở trạng thái hiện tại, bật **Flagged**, thêm nhãn `blocked` / `blocked-external`, ghi **số thật** trong comment. ⛔ Không merge, không chuyển `Done`.
 
+### 8.8 Liên kết tự động Jira ↔ kho mã
+
+Repo `twotnguyen/XIANGQI` nối với Jira bằng app **GitHub for Jira** (GitLab: "GitLab for Jira Cloud"; Bitbucket Cloud: Jira → Settings → Products → Development tools) — việc cài app do người dùng/admin làm. Khi đã nối, Jira **tự** gắn nhánh, commit, PR và build vào issue có Key xuất hiện trong chúng, nên agent không cần dán link từng commit vào Jira; comment bàn giao (mẫu B) vẫn ghi link PR. Luôn ghi Key theo bảng dưới, kể cả khi app chưa cài — lịch sử sẽ được nạp lại (backfill) sau khi nối.
+
+**Agent phải làm đúng:**
+
+| Nơi | Quy tắc | Đúng | Sai |
+|---|---|---|---|
+| Tên nhánh | Có Key, **chữ hoa**, có gạch nối | `feature/XW-72-khoi-tao-monorepo` | `feature/xw-72-…`, `feature/XW72-…`, `feature/TK01.1.1-…` |
+| Mỗi commit | Kết thúc bằng `[XW-<số>]` | `feat(repo): khởi tạo monorepo [XW-72]` | Commit không có Key (bị "mồ côi", không hiện trong issue) |
+| Tiêu đề PR | Bắt đầu bằng `[XW-<số>]` | `[XW-72] TK01.1.1 · Khởi tạo monorepo` | Chỉ ghi `TK01.1.1` |
+| Mô tả PR | Mục `## Jira` ghi Key (mẫu §8.5) | `XW-72 · TK01.1.1 · …` | |
+| Commit sửa Bug | Ghi Key **của Bug**; nếu sửa trên nhánh PR của Task thì ghi cả hai | `fix(auth): chặn nhập mã sai [XW-215][XW-111]` | |
+
+- Một nhánh / một PR chỉ mang Key của **một** Task (cộng Key Bug khi sửa Bug). ⛔ Không nhét Key của Task khác để "gắn nhờ".
+- Key lấy từ [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md); ⛔ không đoán số.
+- ⛔ **Không dùng smart commit để chuyển trạng thái** (`#done`, `#ready-for-test`…) — trạng thái đi theo §8.1 và do đúng người chuyển. Chỉ được dùng `#comment`, `#time` khi người dùng yêu cầu.
+- Sửa lại commit/nhánh đã push để thêm Key: ⛔ không force push lên nhánh đang có review; nếu cần, tạo commit mới có Key và báo người dùng.
+
+**Tự động hoá trên Jira (nếu nhóm đã bật):** tạo nhánh ⇒ Task sang `In Progress`; mở PR ⇒ Task sang `Ready For Test`. Khi đã có rule này, agent **không** chuyển tay trùng lặp; chỉ kiểm lại trạng thái. PR merged **không** tự chuyển `Done` — Tester chuyển (§8.4).
+
+**Kiểm sau khi push/mở PR** (nếu agent có quyền đọc Jira): mở issue, khung **Development** phải hiện đúng nhánh / commit / PR. Không hiện ⇒ kiểm Key (chữ hoa, gạch nối, đúng số) rồi báo người dùng; app chưa cài hoặc chưa cấp quyền repo là việc của người dùng, không tự cấu hình.
+
 ---
 
 ## 9. Luật viết test
@@ -371,6 +394,7 @@ tests/              fixtures/ · unit/ · integration/ · e2e/ · media/ · load
 | Chức năng hoạt động ra sao | `docs/01-requirements/` |
 | Người dùng đi qua những bước nào | `docs/02-flows/` |
 | Màn hình có gì, trạng thái nào | `docs/03-screens/` |
+| Dựng giao diện: token, thành phần, bàn cờ, bố cục, Figma | [DESIGN.md](DESIGN.md) |
 | Luật cờ · luật nghiệp vụ · ai được làm gì | `docs/04-business-rules/` |
 | Dữ liệu và realtime | `docs/05-data-and-realtime/` |
 | Thế nào là đạt | `docs/06-acceptance/` |
