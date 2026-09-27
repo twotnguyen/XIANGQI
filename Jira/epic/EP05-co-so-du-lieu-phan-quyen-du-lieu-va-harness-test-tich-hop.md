@@ -10,7 +10,7 @@
 | Priority | Highest |
 | Labels | `xq-v2`, `ep05`, `critical-path` |
 | Fix versions | `v0.2.0` |
-| Start date / Due date | 2026-09-29 / 2026-10-07 |
+| Start date / Due date | 2026-09-30 / 2026-10-05 |
 | Nguồn đặc tả | ISSUE-035 … ISSUE-045 |
 
 ---
@@ -71,9 +71,9 @@ EP01: Supabase local, lane integration tối thiểu, `ConfigService` (TK01.2.2,
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST05.1](../story/ST05.1-migration-ho-so-ban-be-phong-loi-moi-van-va-cay-nuoc-di.md) | Migration hồ sơ, bạn bè, phòng, lời mời, ván và cây nước đi | 1 | 8 |
-| [ST05.2](../story/ST05.2-migration-chat-media-ai-phien-rls.md) | Migration chat, media, AI, phiên + RLS | 2 | 8 |
-| [ST05.3](../story/ST05.3-harness-test-tich-hop-that-prisma-db-pull-pool-sql.md) | Harness test tích hợp thật + Prisma db pull + pool SQL | 2 | 3 |
+| [ST05.1](../story/ST05.1-migration-ho-so-ban-be-phong-loi-moi-van-va-cay-nuoc-di.md) | Migration hồ sơ, bạn bè, phòng, lời mời, ván và cây nước đi | 1 | 3 |
+| [ST05.2](../story/ST05.2-migration-chat-media-ai-phien-rls.md) | Migration chat, media, AI, phiên + RLS | 2 | 5 |
+| [ST05.3](../story/ST05.3-harness-test-tich-hop-that-prisma-db-pull-pool-sql.md) | Harness test tích hợp thật + Prisma db pull + pool SQL | 2 | 2 |
 
 ```
 TK05.1.1 ─► TK05.1.2 ─► TK05.1.3 ─┬─► TK05.2.1 ─┐

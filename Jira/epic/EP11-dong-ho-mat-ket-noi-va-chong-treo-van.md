@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep11`, `race` |
 | Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-15 / 2026-10-21 |
+| Start date / Due date | 2026-10-13 / 2026-10-20 |
 | Nguồn đặc tả | ISSUE-092 … ISSUE-097, ISSUE-100 … ISSUE-103 (R08, R09, R17) |
 
 ---
@@ -74,9 +74,9 @@ EP10 (pipeline, finalizer, presence/heartbeat, màn phòng chơi), EP08 (phòng 
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST11.1](../story/ST11.1-dong-ho-van-va-bo-dem-het-gio-may-chu.md) | Đồng hồ ván và bộ đếm hết giờ (máy chủ) | 3 | 3 |
-| [ST11.2](../story/ST11.2-an-han-mat-ket-noi-60-giay-ca-hai-offline-khoi-dong-lai-may.md) | Ân hạn mất kết nối 60 giây, cả hai offline, khởi động lại máy chủ | 4 | 5 |
-| [ST11.3](../story/ST11.3-chong-treo-van-r17-va-giao-dien-cho-ca-3-phia.md) | Chống treo ván (R17) và giao diện cho cả 3 phía | 4 | 5 |
+| [ST11.1](../story/ST11.1-dong-ho-van-va-bo-dem-het-gio-may-chu.md) | Đồng hồ ván và bộ đếm hết giờ (máy chủ) | 3 | 2 |
+| [ST11.2](../story/ST11.2-an-han-mat-ket-noi-60-giay-ca-hai-offline-khoi-dong-lai-may.md) | Ân hạn mất kết nối 60 giây, cả hai offline, khởi động lại máy chủ | 4 | 3 |
+| [ST11.3](../story/ST11.3-chong-treo-van-r17-va-giao-dien-cho-ca-3-phia.md) | Chống treo ván (R17) và giao diện cho cả 3 phía | 3 | 3 |
 
 ```
 TK10.3.2 ═(Done)═► TK11.1.1 ─► TK11.2.1 (+TK10.2.2) ─┬─► TK11.2.2

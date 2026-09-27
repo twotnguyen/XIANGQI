@@ -10,7 +10,7 @@
 | Priority | Highest |
 | Labels | `xq-v2`, `ep01`, `critical-path` |
 | Fix versions | `v0.1.0` |
-| Start date / Due date | 2026-09-28 / 2026-09-30 |
+| Start date / Due date | 2026-09-28 / 2026-10-02 |
 | Nguồn đặc tả | ISSUE-001, 002, 003, 004, 005, 034, một phần 055 (router, tokens) |
 
 ---

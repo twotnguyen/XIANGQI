@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep09`, `security`, `race` |
 | Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-19 / 2026-10-21 |
+| Start date / Due date | 2026-10-13 / 2026-10-21 |
 | Nguồn đặc tả | ISSUE-073 … ISSUE-077 (R04, R18) |
 
 ---
@@ -71,8 +71,8 @@ EP08 (JoinService, mã/link/lời mời, `revokeWatch`), EP10 TK10.2.2 (presence
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST09.1](../story/ST09.1-vao-xem-theo-che-do-tran-5-nguoi-giu-ghe-15-giay.md) | Vào xem theo chế độ, trần 5 người, giữ ghế 15 giây | 4 | 3 |
-| [ST09.2](../story/ST09.2-thu-hoi-hang-loat-duoi-nguoi-xem-va-giao-dien-danh-sach-nguo.md) | Thu hồi hàng loạt, đuổi người xem và giao diện danh sách người xem | 4 | 5 |
+| [ST09.1](../story/ST09.1-vao-xem-theo-che-do-tran-5-nguoi-giu-ghe-15-giay.md) | Vào xem theo chế độ, trần 5 người, giữ ghế 15 giây | 4 | 2 |
+| [ST09.2](../story/ST09.2-thu-hoi-hang-loat-duoi-nguoi-xem-va-giao-dien-danh-sach-nguo.md) | Thu hồi hàng loạt, đuổi người xem và giao diện danh sách người xem | 3 | 3 |
 
 ```
 TK09.1.1 ─┬─► TK09.1.2 (QA, + TK08.4.2)

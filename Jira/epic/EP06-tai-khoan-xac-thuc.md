@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep06`, `security` |
 | Fix versions | `v0.3.0` |
-| Start date / Due date | 2026-10-07 / 2026-10-15 |
+| Start date / Due date | 2026-10-05 / 2026-10-16 |
 | Nguồn đặc tả | ISSUE-046 … ISSUE-055 (R01) |
 
 ---
@@ -82,10 +82,10 @@ EP05 (bảng `profiles`, `app_sessions`, `auth_security_jobs`, trigger đổi m�
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST06.1](../story/ST06.1-guard-xac-thuc-api-dang-ky-va-xac-minh-email.md) | Guard xác thực API, đăng ký và xác minh email | 2 | 5 |
-| [ST06.2](../story/ST06.2-dang-nhap-bang-username-phien-30-ngay-phien-tam-dang-xuat.md) | Đăng nhập bằng username, phiên 30 ngày/phiên tạm, đăng xuất | 3 | 8 |
-| [ST06.3](../story/ST06.3-quen-mat-khau-dat-lai-va-chon-username-lan-dau.md) | Quên mật khẩu, đặt lại và chọn username lần đầu | 3 | 5 |
-| [ST06.4](../story/ST06.4-dang-nhap-google-tai-nguyen-ngoai.md) | Đăng nhập Google (tài nguyên ngoài) | 3 | 3 |
+| [ST06.1](../story/ST06.1-guard-xac-thuc-api-dang-ky-va-xac-minh-email.md) | Guard xác thực API, đăng ký và xác minh email | 3 | 3 |
+| [ST06.2](../story/ST06.2-dang-nhap-bang-username-phien-30-ngay-phien-tam-dang-xuat.md) | Đăng nhập bằng username, phiên 30 ngày/phiên tạm, đăng xuất | 3 | 5 |
+| [ST06.3](../story/ST06.3-quen-mat-khau-dat-lai-va-chon-username-lan-dau.md) | Quên mật khẩu, đặt lại và chọn username lần đầu | 3 | 3 |
+| [ST06.4](../story/ST06.4-dang-nhap-google-tai-nguyen-ngoai.md) | Đăng nhập Google (tài nguyên ngoài) | 3 | 2 |
 
 ```
 TK06.1.1 ═(Done)═► TK06.1.2 ─► TK06.1.3

@@ -85,9 +85,9 @@ EP01: monorepo, `pnpm test:unit` thật, đồng hồ giả (TK01.1.1, TK01.1.3)
 
 | Story | Tên | Sprint | SP | Vai trò |
 |---|---|---|---|---|
-| [ST03.1](../story/ST03.1-contracts-kieu-du-lieu-toa-do-schema-zod-ma-loi.md) | Contracts: kiểu dữ liệu, toạ độ, schema Zod, mã lỗi | 1 | 5 | BE |
-| [ST03.2](../story/ST03.2-the-co-ban-dau-khoa-lap-hinh-hoc-tan-cong-nuoc-di-7-loai-qua.md) | Thế cờ ban đầu, khoá lặp, hình học tấn công, nước đi 7 loại quân | 1 | 8 | BE |
-| [ST03.3](../story/ST03.3-nuoc-hop-le-ap-dung-nuoc-ket-thuc-van-va-lap-3-lan.md) | Nước hợp lệ, áp dụng nước, kết thúc ván và lặp 3 lần | 1 | 5 | BE |
+| [ST03.1](../story/ST03.1-contracts-kieu-du-lieu-toa-do-schema-zod-ma-loi.md) | Contracts: kiểu dữ liệu, toạ độ, schema Zod, mã lỗi | 1 | 3 | BE |
+| [ST03.2](../story/ST03.2-the-co-ban-dau-khoa-lap-hinh-hoc-tan-cong-nuoc-di-7-loai-qua.md) | Thế cờ ban đầu, khoá lặp, hình học tấn công, nước đi 7 loại quân | 1 | 3 | BE |
+| [ST03.3](../story/ST03.3-nuoc-hop-le-ap-dung-nuoc-ket-thuc-van-va-lap-3-lan.md) | Nước hợp lệ, áp dụng nước, kết thúc ván và lặp 3 lần | 1 | 3 | BE |
 
 ```
 TK03.1.1 ─┬─► TK03.1.2 ────────────────────────────────┐

@@ -9,8 +9,8 @@
 | Components | Backend, Frontend, Tester |
 | Priority | High |
 | Labels | `xq-v2`, `ep07` |
-| Fix versions | `v0.3.0` |
-| Start date / Due date | 2026-10-12 / 2026-10-14 |
+| Fix versions | `v1.0.0` |
+| Start date / Due date | 2026-10-06 / 2026-10-19 |
 | Nguồn đặc tả | ISSUE-056 … ISSUE-060 (R02) |
 
 ---
@@ -71,8 +71,8 @@ EP06 (guard, `/me`, phiên), EP05 (`profiles`, `friendships`, harness), EP10 TK1
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST07.1](../story/ST07.1-ho-so-tim-nguoi-dung-ket-ban.md) | Hồ sơ, tìm người dùng, kết bạn | 3 | 5 |
-| [ST07.2](../story/ST07.2-trang-thai-online-va-trang-ban-be.md) | Trạng thái online và trang bạn bè | 3 | 5 |
+| [ST07.1](../story/ST07.1-ho-so-tim-nguoi-dung-ket-ban.md) | Hồ sơ, tìm người dùng, kết bạn | 4 | 3 |
+| [ST07.2](../story/ST07.2-trang-thai-online-va-trang-ban-be.md) | Trạng thái online và trang bạn bè | 3 | 3 |
 
 ```
 TK06.1.1 ═(Done)═► TK07.1.1 ─┬─► TK07.1.2

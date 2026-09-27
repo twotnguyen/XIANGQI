@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep15` |
 | Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-12 / 2026-10-22 |
+| Start date / Due date | 2026-10-07 / 2026-10-19 |
 | Nguồn đặc tả | ISSUE-118 … ISSUE-124 (R12) |
 
 ---
@@ -75,9 +75,9 @@ EP04 (thuật toán + cổng đo), EP10 (pipeline, finalizer, bàn cờ, màn ph
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST15.1](../story/ST15.1-tien-trinh-ai-rieng-worker-thread-huy-tuc-thi-hang-doi-2-8.md) | Tiến trình AI riêng, worker thread, huỷ tức thì, hàng đợi 2/8 | 3 | 8 |
-| [ST15.2](../story/ST15.2-tich-hop-van-voi-may-di-lai-voi-may-giao-dien-choi-voi-may.md) | Tích hợp ván với máy, đi lại với máy, giao diện chơi với máy | 4 | 5 |
-| [ST15.3](../story/ST15.3-thi-nghiem-60-van-va-bao-cao-thuat-toan-tai-lap-duoc.md) | Thí nghiệm 60 ván và báo cáo thuật toán tái lập được | 3 | 3 |
+| [ST15.1](../story/ST15.1-tien-trinh-ai-rieng-worker-thread-huy-tuc-thi-hang-doi-2-8.md) | Tiến trình AI riêng, worker thread, huỷ tức thì, hàng đợi 2/8 | 3 | 5 |
+| [ST15.2](../story/ST15.2-tich-hop-van-voi-may-di-lai-voi-may-giao-dien-choi-voi-may.md) | Tích hợp ván với máy, đi lại với máy, giao diện chơi với máy | 4 | 3 |
+| [ST15.3](../story/ST15.3-thi-nghiem-60-van-va-bao-cao-thuat-toan-tai-lap-duoc.md) | Thí nghiệm 60 ván và báo cáo thuật toán tái lập được | 3 | 2 |
 
 ```
 TK04.3.1 ═(Done)═► TK15.1.1 ─► TK15.1.2 ─┬─► TK15.1.5 (QA)

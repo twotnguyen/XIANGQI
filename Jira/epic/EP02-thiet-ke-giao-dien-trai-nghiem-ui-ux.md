@@ -9,8 +9,8 @@
 | Components | Design, Tester |
 | Priority | High |
 | Labels | `xq-v2`, `ep02` |
-| Fix versions | `v0.2.0` |
-| Start date / Due date | 2026-09-28 / 2026-10-06 |
+| Fix versions | `v0.3.0` |
+| Start date / Due date | 2026-09-28 / 2026-10-13 |
 | Nguồn đặc tả | `docs/03-screens/` (design-tokens, screen-inventory, screen-states), REQ-BOARD. Bộ 138 issue gốc **không có** issue Design — Epic này bổ sung phần thiếu đó |
 
 ---
@@ -71,8 +71,8 @@ Không phụ thuộc Epic nào. Cần: tài khoản Figma (gói miễn phí đ�
 | Story | Tên | Sprint | SP | Frontend dùng ở |
 |---|---|---|---|---|
 | [ST02.1](../story/ST02.1-design-system-va-ban-co.md) | Design system và bàn cờ | 1 | 5 | EP01 (TK01.3.1), EP10 |
-| [ST02.2](../story/ST02.2-man-tai-khoan-ban-be-sanh-phong-cho-loi-moi-nguoi-xem.md) | Màn tài khoản, bạn bè, sảnh, phòng chờ, lời mời, người xem | 1 | 5 | EP06–EP09 |
-| [ST02.3](../story/ST02.3-man-van-online-thao-tac-dong-ho-chong-treo-mat-ket-noi-ket-q.md) | Màn ván online: thao tác, đồng hồ, chống treo, mất kết nối, kết quả, chat, media | 2 | 5 | EP10–EP14 |
+| [ST02.2](../story/ST02.2-man-tai-khoan-ban-be-sanh-phong-cho-loi-moi-nguoi-xem.md) | Màn tài khoản, bạn bè, sảnh, phòng chờ, lời mời, người xem | 2 | 3 | EP06–EP09 |
+| [ST02.3](../story/ST02.3-man-van-online-thao-tac-dong-ho-chong-treo-mat-ket-noi-ket-q.md) | Màn ván online: thao tác, đồng hồ, chống treo, mất kết nối, kết quả, chat, media | 3 | 5 | EP10–EP14 |
 | [ST02.4](../story/ST02.4-man-choi-voi-may-lich-su-va-xem-lai.md) | Màn chơi với máy, lịch sử và xem lại | 2 | 2 | EP12, EP15 |
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
