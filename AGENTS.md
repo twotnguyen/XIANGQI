@@ -1,6 +1,6 @@
 # AGENTS.md — Hướng dẫn cho AI agent
 
-**Dự án:** Cờ Tướng Online · **Cập nhật:** 2026-09-27 · **Áp dụng cho:** mọi AI agent đọc, viết mã, viết test hoặc sửa tài liệu trong kho này.
+**Dự án:** Cờ Tướng Online · **Cập nhật:** 2026-09-27 (bổ sung vòng đời Task trên Jira) · **Áp dụng cho:** mọi AI agent đọc, viết mã, viết test hoặc sửa tài liệu trong kho này.
 
 Đọc hết file này trước khi sửa bất kỳ file nào. Các luật dưới đây đều sinh ra từ lỗi đã thật sự xảy ra ở lần xây trước (`docs/99-archive/reviews-v1/`).
 
@@ -10,7 +10,7 @@
 
 ```
 ① Kho CHƯA CÓ MÃ NGUỒN. Có: đặc tả (docs/), kế hoạch Jira (Jira/), trang tài liệu (site/)
-② Đơn vị công việc = một Jira Task TKxx.y.z (Key XW-…). Một Task = một nhánh = một PR
+② Đơn vị công việc = một Jira Task TKxx.y.z (Key XW-…). Một Task = một nhánh = một PR, đi đúng vòng đời §8
 ③ Đặc tả là LUẬT. Thấy mâu thuẫn hoặc sai ⇒ DỪNG, báo người dùng. Không tự đổi yêu cầu
 ④ Viết test trước. Test phải bắt được lỗi mục tiêu
 ⑤ Không hạ ngưỡng để báo đạt. Ghi số thật
@@ -46,23 +46,28 @@
 | 3 | [docs/09-technical/tech-stack.md](docs/09-technical/tech-stack.md) §3 | Ranh giới Prisma / SQL thuần — xem §6 |
 | 4 | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) | Máy chủ quyết định, thứ tự khoá, tiến trình AI |
 | 5 | [docs/10-issues/TEST-CONVENTIONS.md](docs/10-issues/TEST-CONVENTIONS.md) | Fixture, oracle, đặt tên test, lane |
-| 6 | [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md) §10 | Trạng thái Task, Ready for Test, Done |
+| 6 | §3 và §8 của file này | Làm việc với Jira: trạng thái, Git, review, bàn giao, Done |
 
 Mỗi lần nhận Task: đọc thêm file Task, các `ISSUE-NNN.md` mà Task truy về (nhãn `src-NNN`, cột "Nguồn" trong [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md)), và đúng các mục "ĐỌC TRƯỚC" của những issue đó. Không cần đọc cả 138 issue.
 
 ---
 
-## 3. Nhận một Task
+## 3. Jira: dự án, vai trò và quyền của agent
 
-1. Người dùng giao Task theo mã `TKxx.y.z` hoặc Key `XW-…`. Tra [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) để ra file Task, Story, Epic và issue nguồn.
-2. Không được giao việc cụ thể ⇒ hỏi người dùng. Không tự chọn Task.
-3. Kiểm **Is blocked by** trong bảng đầu file Task:
-   - Mã có hậu tố `(Done)` ⇒ Task đó phải **Done** (Tester đã PASS).
-   - Mã không hậu tố ⇒ Task đó phải tới **Ready For Test** (PR đã merge `main`).
-   - Chưa đủ ⇒ ⛔ **dừng**, báo người dùng Task nào đang chặn.
-4. Mỗi Task chỉ **một** vai trò (tiền tố `[BE]` `[FE]` `[AI]` `[DS]` `[OPS]` `[QA]`). Không làm lấn sang phạm vi Task khác; mục "❌ Không làm" trong Task là ranh giới.
+| Mục | Giá trị |
+|---|---|
+| Site / project | `xiangqi-web.atlassian.net` · project **`XW`** · board 4 |
+| Phân cấp | Epic `XW-1…16` → Story `XW-17…71` → Task `XW-72…206`. Task có Parent = Epic, nối Story bằng nhãn `stxx-y` + link `Relates` |
+| Sprint / version | XW Sprint 1–4 (28/09 – 23/10/2026) ↔ `v0.1.0` · `v0.2.0` · `v0.3.0` · `v1.0.0` |
+| Tra mã | `TKxx.y.z` ↔ `XW-…` ↔ `ISSUE-NNN`: [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) · người làm / người kiểm: [Jira/07-PHAN-CONG.md](Jira/07-PHAN-CONG.md) |
+| Cấu hình đầy đủ | [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md) |
 
----
+**Agent có thể đóng vai:** người làm Task (Dev/Design/DevOps), người review PR, hoặc Tester (Task `[QA]` và bước Ready for Test). Người dùng nói rõ vai nào; không rõ ⇒ hỏi.
+
+**Quyền ghi lên Jira:** chuyển trạng thái, comment, tạo Bug, log work là hành động công khai với cả nhóm.
+- Chỉ làm khi người dùng **cho phép trong phiên** và agent có công cụ Jira. Mặc định: **soạn sẵn** nội dung comment/Bug (mẫu ở §8.4) để người dùng tự dán.
+- ⛔ Agent không sửa Summary, Sprint, Fix version, Story Points, Original Estimate, Assignee, link Blocks — đó là việc của trưởng nhóm.
+- ⛔ Agent không chuyển Task **mình làm** sang `Done`. `Done` chỉ do Tester (người khác người làm) chuyển sau khi PASS.
 
 ## 4. ⭐ Hệ toạ độ — sai chỗ này là sai toàn bộ
 
@@ -154,49 +159,146 @@ Chạy thêm tuỳ phần mã chạm tới: cơ sở dữ liệu ⇒ `test:integ
 
 ---
 
-## 8. Quy trình một Task
+## 8. Vòng đời một Task trên Jira
+
+### 8.1 Trạng thái
 
 ```
-① Đọc Task + issue nguồn + mục ĐỌC TRƯỚC           (§2, §3)
-② Kiểm Is blocked by — chưa đủ thì DỪNG
-③ git fetch; tạo nhánh từ main: issue/TKxx.y.z-ten-ngan
-④ VIẾT TEST TRƯỚC theo test bắt buộc của issue và ca 🧪 của Task
-⑤ Viết mã cho test xanh
-⑥ Chạy các cổng đúng mốc (§7)
-⑦ Làm mục "7. TỰ KIỂM TRƯỚC KHI CHUYỂN READY FOR TEST" trong Task
-⑧ Cố tình làm hỏng mã, xác nhận test đỏ, rồi hoàn lại
-⑨ Commit · push · mở PR
-⑩ Báo người dùng: link PR, lệnh đã chạy + kết quả thật, việc còn thiếu
+To Do → Ready For Dev → In Progress → Ready For Test ──(merge main)──► Done
+                             ▲         (review + test)
+                             └──── FAIL: Bug, sửa tiếp trên cùng PR
 ```
 
-Agent **không** tự kéo Task trên Jira sang Done. Ready For Test chỉ sau khi PR đã review, CI xanh và đã merge; người dùng hoặc người làm Task sẽ chuyển trạng thái.
+Không dùng trạng thái `In Review`: **Ready For Test là bước review**. Ở đó người review duyệt code và Tester kiểm **trên nhánh PR** cùng lúc. Code chỉ vào `main` khi cả hai đạt.
 
-### Git
+| Trạng thái | Nghĩa | Điều kiện vào | Ai chuyển | Assignee |
+|---|---|---|---|---|
+| `To Do` | Chưa làm được | Mới tạo, hoặc còn Task chặn chưa Done | — | Người làm |
+| `Ready For Dev` | Làm được ngay | Đạt **Definition of Ready** (§8.2) | Trưởng nhóm / người làm | Người làm |
+| `In Progress` | Đang code | Đã tạo nhánh | Người làm | Người làm |
+| `Ready For Test` | Đang review + test | PR đã mở vào `main`, 4 cổng xanh ở máy, đã comment bàn giao | Người làm | **Người kiểm** (theo 07-PHAN-CONG) |
+| `Done` | Xong, code đã ở `main` | ≥ 1 approve + CI xanh + Tester PASS đủ ca 🧪 ⇒ **đã merge `main`** | Tester | Giữ Tester |
 
-| Mục | Quy định |
-|---|---|
-| Nhánh | `issue/TKxx.y.z-ten-ngan`, ví dụ `issue/TK01.1.1-khoi-tao-monorepo`. Test phụ của Tester: `qa/TKxx.y.z-…` |
-| Commit | `<loại>(<phạm vi>): <mô tả> [TKxx.y.z]` — loại: `feat` · `fix` · `test` · `docs` · `chore` · `refactor` |
-| PR | Một Task = một PR vào `main`. Tiêu đề chứa `TKxx.y.z`; mô tả ghi Key `XW-…`, các `ISSUE-NNN` nguồn, lệnh đã chạy và kết quả |
-| Trước khi push | Luôn `git fetch` và kiểm commit mới trên `main` |
-| Xung đột merge | ⛔ Dừng, báo người dùng file/commit xung đột. Không tự giải quyết |
-| Commit / push / PR | Chỉ khi người dùng yêu cầu hoặc Task yêu cầu rõ |
-| Cấm | Force push · né CI (`--no-verify`, tắt job) · commit khoá bí mật |
+### 8.2 Definition of Ready — trước khi bắt đầu
+
+- [ ] Người dùng đã giao đúng Task (`TKxx.y.z` / `XW-…`). Không được giao ⇒ hỏi, ⛔ không tự chọn.
+- [ ] **Mọi Task trong "Is blocked by" đã `Done`** (code đã merge `main`). Hậu tố `(Done)` còn ghi ở một số Task có cùng nghĩa. Chưa đạt ⇒ ⛔ dừng, báo Task đang chặn.
+- [ ] Đã đọc file Task, các `ISSUE-NNN` nguồn (nhãn `src-NNN`) và mục ĐỌC TRƯỚC của chúng (§2).
+- [ ] Task là **một** vai trò (`[BE]` `[FE]` `[AI]` `[DS]` `[OPS]` `[QA]`); mục "❌ Không làm" là ranh giới, không lấn sang Task khác.
+
+### 8.3 Các bước của người làm
+
+| # | Bước | Jira |
+|---|---|---|
+| 1 | Nhận việc, kiểm Definition of Ready | `Ready For Dev` → **`In Progress`** |
+| 2 | `git fetch && git checkout -b <nhánh> origin/main` (quy ước §8.5) | Comment "Bắt đầu" (mẫu A) |
+| 3 | **Viết test trước**: test bắt buộc của issue + ca 🧪 của Task | — |
+| 4 | Viết mã cho test xanh. Commit nhỏ, có Key Jira | — |
+| 5 | Chạy cổng theo mốc (§7) + mục "7. TỰ KIỂM" trong Task. **Cố tình làm hỏng mã ⇒ test phải đỏ**, rồi hoàn lại | — |
+| 6 | `git fetch`, rebase lên `main` mới nhất, push, mở PR (mẫu PR ở §8.5), nhờ ≥ 1 người review | — |
+| 7 | Comment bàn giao (mẫu B), đổi Assignee sang Người kiểm | **`Ready For Test`** |
+| 8 | Sửa theo review và theo Bug của Tester **trên cùng nhánh PR**; push lại, báo người review/Tester | FAIL ⇒ `In Progress`, sửa xong lại `Ready For Test` |
+| 9 | Đủ **≥ 1 approve (người khác người làm) + CI xanh + Tester PASS** ⇒ rebase nếu `main` đã đổi, chạy lại cổng, **merge `main`** | Comment "Đã merge" (mẫu D) |
+| 10 | Log work giờ làm thật (so với Original Estimate) | Log work |
+
+- ⛔ Không merge khi còn thiếu một trong ba điều kiện ở bước 9.
+- Rebase sau khi Tester đã PASS mà có xung đột hoặc đổi mã ⇒ báo Tester kiểm lại các ca liên quan trước khi merge.
+- Bug `Highest`/`High` sửa **trước** khi nhận Task mới.
+- Agent không tự merge hay chuyển trạng thái khi người dùng chưa cho phép (§3). Dừng ở bước nào thì báo người dùng đang ở bước đó và việc tiếp theo.
+
+### 8.4 Các bước của Tester (khi agent đóng vai Tester)
+
+1. Chỉ kiểm Task **không do mình làm**, đang ở `Ready For Test`.
+2. Lấy code của PR: `git fetch origin && gh pr checkout <số-PR>`, rồi dựng môi trường theo [sổ tay kiểm thử](Jira/04-HUONG-DAN-KIEM-THU.md) §2. Chưa có môi trường Internet (ST16.8) ⇒ kiểm trên máy local.
+3. Chạy **đủ mọi ca** trong mục 🧪 của Task, đúng thứ tự, ghi output thật. Ca ⭐ FAIL ⇒ Bug `Highest`.
+4. PASS ⇒ commit `docs/test-reports/TKxx.y.z.md` **vào chính nhánh PR** (commit `test(report): … [XW-<số>]`; dán **output thật** và `exit=` từng lệnh, số đo kèm máy/commit, cột Skip = 0). Comment PASS (mẫu C) trên Jira và PR.
+5. FAIL ⇒ tạo Bug (mẫu E), link `Relates` tới Task, comment trên PR, chuyển Task về **`In Progress`**, đổi Assignee về người làm. Khi Task quay lại `Ready For Test`, kiểm lại **toàn bộ** ca, không chỉ ca đã FAIL.
+6. Sau khi người làm merge: kiểm PR đã vào `main`, log work giờ kiểm, chuyển **`Done`**.
+7. Task `[QA]` tích hợp: kiểm trên `main` (các Task nó kiểm đã Done); đi `Ready For Dev → In Progress → Done`, không qua `Ready For Test`.
+
+**Story Done:** khi `project = XW AND labels = stxx-y AND statusCategory != Done` trả **0** và tiêu chí chấp nhận của Story đạt.
+
+### 8.5 Quy ước Git gắn với Jira
+
+Key Jira (`XW-…`) phải có trong **tên nhánh, commit và tiêu đề PR** để GitHub for Jira tự liên kết vào issue.
+
+| Mục | Quy định | Ví dụ |
+|---|---|---|
+| Nhánh | `<loại>/XW-<số>-<ten-ngan-khong-dau>` — loại: `feature` · `fix` · `test` · `docs` · `chore` · `refactor` · `qa` | `feature/XW-72-khoi-tao-monorepo` · `fix/XW-215-chan-nhap-ma-sai` · `qa/XW-76-bao-cao` |
+| Commit | `<loại>(<phạm vi>): <mô tả> [XW-<số>]` — loại: `feat` · `fix` · `test` · `docs` · `chore` · `refactor` | `feat(auth): API đăng nhập bằng username [XW-111]` |
+| Tiêu đề PR | `[XW-<số>] TKxx.y.z · <tên Task>` | `[XW-72] TK01.1.1 · Khởi tạo monorepo pnpm + TypeScript` |
+| Phạm vi PR | **Một Task = một PR** vào `main` | |
+| Trước khi push | Luôn `git fetch` và rebase lên `main` mới nhất | |
+| Xung đột merge | ⛔ Dừng, báo người dùng file/commit xung đột. Không tự giải quyết | |
+| Commit / push / PR | Chỉ khi người dùng yêu cầu | |
+| Cấm | Force push lên `main` · né CI (`--no-verify`, tắt job) · commit khoá bí mật | |
 
 Nếu dùng AI hỗ trợ, thêm dòng `Co-Authored-By:` của agent ở cuối commit theo quy ước của công cụ đang dùng.
 
-### Bằng chứng
+**Mô tả PR** (bắt buộc đủ các mục):
 
-- Ghi vào đúng đường dẫn mục **Bằng chứng** của Task/issue (ví dụ `docs/test-reports/TKxx.y.z.md`, `docs/test-reports/ai/ISSUE-032.md`).
-- Ghi **output thật** (dán chữ) và `exit=` của từng lệnh; số đo thật kèm máy/commit. Cột Skip phải là **0**.
-- Khi mọi Task truy về một `ISSUE-NNN` đã Done, cập nhật trạng thái issue đó trong [docs/10-issues/INDEX.md](docs/10-issues/INDEX.md).
+```markdown
+## Jira
+XW-<số> · TKxx.y.z · Story STxx.y · Nguồn: ISSUE-NNN, …
 
-### Một Task được coi là xong khi
+## Thay đổi
+- …
 
-- [ ] Mọi ca trong mục 🧪 của Task và test bắt buộc của issue nguồn có test tương ứng, xanh
-- [ ] Cổng theo mốc (§7) exit 0; 0 test bị bỏ qua
+## Kiểm thử đã chạy
+| Lệnh | Kết quả |
+|---|---|
+| pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit | exit=0, N test, 0 skip |
+| pnpm test:integration (nếu chạm DB) | … |
+
+## Đã thử làm hỏng mã
+<đổi gì> ⇒ test <tên> đỏ ⇒ đã hoàn lại
+
+## Thay đổi mục 🟡 / hợp đồng API (nếu có)
+…
+```
+
+### 8.6 Mẫu comment Jira
+
+```text
+A · Bắt đầu (người làm)
+Bắt đầu TKxx.y.z. Nhánh: feature/XW-<số>-… · Task chặn đã Done: TK…, TK….
+
+B · Bàn giao Ready For Test (người làm)
+PR: <link> (chưa merge) · 4 cổng xanh ở máy: lint · typecheck · build · test:unit (N test, 0 skip).
+Cách chạy thử: gh pr checkout <số>; <lệnh / URL / tài khoản test>.
+Đã làm: … · Chưa làm / giới hạn: … · Thay đổi 🟡: …
+Review: <người review> · Người kiểm: <tên> — theo mục 🧪 (N ca).
+
+C · Tester PASS (Tester)
+PASS N/N ca trên nhánh PR @<sha>. Báo cáo: docs/test-reports/TKxx.y.z.md (đã commit vào PR). Chờ approve + CI để merge.
+
+D · Đã merge (người làm)
+Đã merge <link PR> vào main @<sha> (approve: <người>, CI xanh, Tester PASS). Nhờ <Tester> chuyển Done.
+
+E · Bug (Tester tạo issue loại Bug)
+Summary: [BUG][<vai trò sửa>] <mô tả ngắn> (từ TKxx.y.z)
+Priority: Highest nếu ca ⭐ hoặc chặn cả nhóm; còn lại High/Medium
+Bước tái hiện: 1… 2… 3…
+Mong đợi: … · Thực tế: … (dán output/ảnh)
+Môi trường: nhánh PR @<sha>, trình duyệt/OS
+Link: Relates → XW-<Task>
+```
+
+### 8.7 Definition of Done
+
+Một Task chỉ **Done** khi **tất cả** đúng; thiếu một ô là chưa xong:
+
+- [ ] Mọi ca 🧪 của Task và test bắt buộc của issue nguồn có test tương ứng, xanh
+- [ ] Cổng theo mốc (§7) exit 0 trên máy và CI; **0 test bị bỏ qua**
 - [ ] Đã thử làm hỏng mã và test đỏ
-- [ ] PR đã merge `main`, có bằng chứng theo mục trên
+- [ ] PR có ≥ 1 approve của người khác người làm
+- [ ] Tester (khác người làm) PASS đủ ca trên nhánh PR; báo cáo `docs/test-reports/TKxx.y.z.md` (hoặc đường dẫn mục Bằng chứng của Task) đã nằm trong PR
+- [ ] Tài liệu cập nhật cùng PR: Task (nếu đổi mục 🟡), `Jira/06-HOP-DONG-API-SU-KIEN.md` (nếu đổi API/sự kiện), `.env.example` (nếu thêm biến)
+- [ ] PR **đã merge `main`**
+- [ ] Giờ làm và giờ kiểm đã log work
+- [ ] Mọi Task truy về một `ISSUE-NNN` đã Done ⇒ cập nhật trạng thái issue đó trong [docs/10-issues/INDEX.md](docs/10-issues/INDEX.md)
+
+Không đạt ngưỡng đo hoặc thiếu tài nguyên ngoài ⇒ giữ Task ở trạng thái hiện tại, bật **Flagged**, thêm nhãn `blocked` / `blocked-external`, ghi **số thật** trong comment. ⛔ Không merge, không chuyển `Done`.
 
 ---
 
@@ -297,7 +399,8 @@ Sửa file trong `docs/` ⇒ chạy `node site/build.mjs` để cập nhật tra
 ⛔ Xoá hoặc sửa docs/99-archive/
 ⛔ Force push, né CI
 ⛔ Dùng .only / .skip, để test bị bỏ qua
-⛔ Làm Task khi Task chặn chưa tới trạng thái yêu cầu
+⛔ Làm Task khi Task chặn chưa Done
+⛔ Tự chuyển Task mình làm sang Done; merge PR khi chưa có approve của người khác + CI xanh + Tester PASS
 ⛔ Tự giải quyết xung đột merge
 ⛔ Thêm công nghệ ngoài bảng đã chốt (Redis, Tailwind, thư viện UI dựng sẵn…)
 ```
