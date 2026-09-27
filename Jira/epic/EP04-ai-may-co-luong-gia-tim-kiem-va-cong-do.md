@@ -9,8 +9,8 @@
 | Components | AI, Tester |
 | Priority | Highest |
 | Labels | `xq-v2`, `ep04`, `gate`, `critical-path` |
-| Fix versions | `v0.2.0` |
-| Start date / Due date | 2026-10-05 / 2026-10-08 |
+| Fix versions | `v0.3.0` |
+| Start date / Due date | 2026-10-05 / 2026-10-14 |
 | Nguồn đặc tả | ISSUE-026 … ISSUE-033 |
 
 ---
@@ -86,9 +86,9 @@ EP03: luật cờ đầy đủ (`getLegalMoves`, `applyMove`, `getTerminalOutcom
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST04.1](../story/ST04.1-luong-gia-the-co-va-sap-xep-nuoc.md) | Lượng giá thế cờ và sắp xếp nước | 2 | 3 |
-| [ST04.2](../story/ST04.2-tim-kiem-negamax-alpha-beta-va-dao-sau-dan.md) | Tìm kiếm negamax, alpha-beta và đào sâu dần | 2 | 5 |
-| [ST04.3](../story/ST04.3-cong-do-depth-6-3000-ms-va-bo-20-the-co-co-dap-an-tay.md) | ⛔ Cổng đo depth 6/3000 ms và bộ 20 thế cờ có đáp án tay | 2 | 5 |
+| [ST04.1](../story/ST04.1-luong-gia-the-co-va-sap-xep-nuoc.md) | Lượng giá thế cờ và sắp xếp nước | 2 | 2 |
+| [ST04.2](../story/ST04.2-tim-kiem-negamax-alpha-beta-va-dao-sau-dan.md) | Tìm kiếm negamax, alpha-beta và đào sâu dần | 2 | 3 |
+| [ST04.3](../story/ST04.3-cong-do-depth-6-3000-ms-va-bo-20-the-co-co-dap-an-tay.md) | ⛔ Cổng đo depth 6/3000 ms và bộ 20 thế cờ có đáp án tay | 3 | 3 |
 
 ## 9. TIÊU CHÍ HOÀN THÀNH EPIC
 

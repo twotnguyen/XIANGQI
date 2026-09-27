@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep08`, `race`, `security` |
 | Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-08 / 2026-10-21 |
+| Start date / Due date | 2026-10-06 / 2026-10-19 |
 | Nguồn đặc tả | ISSUE-061 … ISSUE-072 (R03, R04, R19) |
 
 ---
@@ -80,10 +80,10 @@ EP05 (bảng phòng, lời mời, ván), EP06 (guard), EP07 (bạn bè — cho m
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST08.1](../story/ST08.1-tao-phong-va-nhan-nguoi-vao-phong-khong-vuot-tran.md) | Tạo phòng và nhận người vào phòng không vượt trần | 2 | 5 |
-| [ST08.2](../story/ST08.2-sanh-san-sang-bat-dau-van-doi-ben-va-giao-dien-phong-cho.md) | Sảnh, sẵn sàng/bắt đầu ván, đổi bên và giao diện phòng chờ | 3 | 8 |
-| [ST08.3](../story/ST08.3-roi-dong-phong-doi-cai-dat-va-thu-hoi-nguoi-xem.md) | Rời/đóng phòng, đổi cài đặt và thu hồi người xem | 3 | 8 |
-| [ST08.4](../story/ST08.4-ma-phong-link-moi-moi-truc-tiep-hop-thu-loi-moi.md) | Mã phòng, link mời, mời trực tiếp, hộp thư lời mời | 4 | 8 |
+| [ST08.1](../story/ST08.1-tao-phong-va-nhan-nguoi-vao-phong-khong-vuot-tran.md) | Tạo phòng và nhận người vào phòng không vượt trần | 2 | 3 |
+| [ST08.2](../story/ST08.2-sanh-san-sang-bat-dau-van-doi-ben-va-giao-dien-phong-cho.md) | Sảnh, sẵn sàng/bắt đầu ván, đổi bên và giao diện phòng chờ | 3 | 5 |
+| [ST08.3](../story/ST08.3-roi-dong-phong-doi-cai-dat-va-thu-hoi-nguoi-xem.md) | Rời/đóng phòng, đổi cài đặt và thu hồi người xem | 3 | 5 |
+| [ST08.4](../story/ST08.4-ma-phong-link-moi-moi-truc-tiep-hop-thu-loi-moi.md) | Mã phòng, link mời, mời trực tiếp, hộp thư lời mời | 4 | 5 |
 
 ```
 TK08.1.1 ─► TK08.1.2 ─┬─► TK08.2.2 (+TK10.2.2) ─┬─► TK08.3.1 (+TK10.3.2 Done)

@@ -9,8 +9,8 @@
 | Components | Frontend, Backend, Tester |
 | Priority | Highest |
 | Labels | `xq-v2`, `ep10`, `critical-path`, `race` |
-| Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-05 / 2026-10-20 |
+| Fix versions | `v0.3.0` |
+| Start date / Due date | 2026-10-01 / 2026-10-15 |
 | Nguồn đặc tả | ISSUE-078 … ISSUE-091, ISSUE-095 (R05, R06, R07) |
 
 ---
@@ -90,10 +90,10 @@ EP03 (luật cờ, kiểu dữ liệu), EP05 (bảng ván, biên lai), EP06 (xá
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST10.1](../story/ST10.1-ban-co-svg-ve-quan-chon-dich-lat-ban-phim-chuyen-dong.md) | Bàn cờ SVG: vẽ, quân, chọn/đích, lật, bàn phím, chuyển động | 2 | 8 |
-| [ST10.2](../story/ST10.2-gateway-realtime-presence-heartbeat-duong-xu-ly-lenh-bien-la.md) | Gateway realtime, presence/heartbeat, đường xử lý lệnh + biên lai | 3 | 8 |
-| [ST10.3](../story/ST10.3-di-nuoc-cay-nuoc-di-ham-ket-thuc-van-snapshot-dong-bo.md) | Đi nước, cây nước đi, hàm kết thúc ván, snapshot đồng bộ | 3 | 8 |
-| [ST10.4](../story/ST10.4-man-phong-choi-realtime-8-phien-hien-thi-dong-ho.md) | Màn phòng chơi realtime (8 phiên) + hiển thị đồng hồ | 4 | 5 |
+| [ST10.1](../story/ST10.1-ban-co-svg-ve-quan-chon-dich-lat-ban-phim-chuyen-dong.md) | Bàn cờ SVG: vẽ, quân, chọn/đích, lật, bàn phím, chuyển động | 2 | 5 |
+| [ST10.2](../story/ST10.2-gateway-realtime-presence-heartbeat-duong-xu-ly-lenh-bien-la.md) | Gateway realtime, presence/heartbeat, đường xử lý lệnh + biên lai | 3 | 5 |
+| [ST10.3](../story/ST10.3-di-nuoc-cay-nuoc-di-ham-ket-thuc-van-snapshot-dong-bo.md) | Đi nước, cây nước đi, hàm kết thúc ván, snapshot đồng bộ | 3 | 5 |
+| [ST10.4](../story/ST10.4-man-phong-choi-realtime-8-phien-hien-thi-dong-ho.md) | Màn phòng chơi realtime (8 phiên) + hiển thị đồng hồ | 3 | 3 |
 
 ```
 TK10.1.1 ─► TK10.1.2 ─► TK10.1.3 ──────────────────────────────┐

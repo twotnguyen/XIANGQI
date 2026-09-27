@@ -9,8 +9,8 @@
 | Components | Backend, Frontend, Tester |
 | Priority | High |
 | Labels | `xq-v2`, `ep13`, `security`, `race` |
-| Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-19 / 2026-10-22 |
+| Fix versions | `v0.3.0` |
+| Start date / Due date | 2026-10-12 / 2026-10-16 |
 | Nguồn đặc tả | ISSUE-108 … ISSUE-111 (R10) |
 
 ---
@@ -76,8 +76,8 @@ EP05 (bảng chat), EP08 (segment khi vào phòng, `revokeWatch`), EP09 (đuổi
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST13.1](../story/ST13.1-dich-vu-chat-2-kenh-gui-doc-lich-su-phan-quyen-theo-segment.md) | Dịch vụ chat 2 kênh: gửi, đọc lịch sử, phân quyền theo segment | 4 | 3 |
-| [ST13.2](../story/ST13.2-lich-su-phan-trang-don-30-ngay-kiem-thu-hoi-end-to-end-giao.md) | Lịch sử/phân trang, dọn 30 ngày, kiểm thu hồi end-to-end, giao diện chat 2 khung | 4 | 5 |
+| [ST13.1](../story/ST13.1-dich-vu-chat-2-kenh-gui-doc-lich-su-phan-quyen-theo-segment.md) | Dịch vụ chat 2 kênh: gửi, đọc lịch sử, phân quyền theo segment | 3 | 2 |
+| [ST13.2](../story/ST13.2-lich-su-phan-trang-don-30-ngay-kiem-thu-hoi-end-to-end-giao.md) | Lịch sử/phân trang, dọn 30 ngày, kiểm thu hồi end-to-end, giao diện chat 2 khung | 3 | 3 |
 
 ```
 TK13.1.1 ─┬─► TK13.2.1 (+TK09.2.1)

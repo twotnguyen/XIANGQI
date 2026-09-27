@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep14`, `gate`, `security` |
 | Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-05 / 2026-10-22 |
+| Start date / Due date | 2026-10-01 / 2026-10-20 |
 | Nguồn đặc tả | ISSUE-112 … ISSUE-117, ISSUE-099 (R11) |
 
 ---
@@ -76,9 +76,9 @@ EP05 (bảng media), EP06 (phiên — logout thu hồi media), EP08/EP09 (thu h�
 
 | Story | Tên | Sprint | SP |
 |---|---|---|---|
-| [ST14.1](../story/ST14.1-cong-media-livekit-local-do-byte-rtp-that.md) | ⛔ Cổng media: LiveKit local + đo byte RTP thật | 2 | 5 |
-| [ST14.2](../story/ST14.2-chinh-sach-camera-micro-cap-token-4-phong-thu-hoi-xoay-the-h.md) | Chính sách camera/micro, cấp token 4 phòng, thu hồi xoay thế hệ | 3 | 8 |
-| [ST14.3](../story/ST14.3-giao-dien-media-va-mot-tab-mot-nguon.md) | Giao diện media và một tab một nguồn | 4 | 8 |
+| [ST14.1](../story/ST14.1-cong-media-livekit-local-do-byte-rtp-that.md) | ⛔ Cổng media: LiveKit local + đo byte RTP thật | 2 | 3 |
+| [ST14.2](../story/ST14.2-chinh-sach-camera-micro-cap-token-4-phong-thu-hoi-xoay-the-h.md) | Chính sách camera/micro, cấp token 4 phòng, thu hồi xoay thế hệ | 3 | 5 |
+| [ST14.3](../story/ST14.3-giao-dien-media-va-mot-tab-mot-nguon.md) | Giao diện media và một tab một nguồn | 4 | 5 |
 | [ST14.4](../story/ST14.4-kiem-thu-ma-tran-quyen-media-bang-luong-that-ts-med-01-15.md) | Kiểm thử ma trận quyền media bằng luồng thật (TS-MED-01..15) | 4 | 2 |
 
 ```

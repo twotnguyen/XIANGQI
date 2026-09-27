@@ -25,7 +25,7 @@
 - **16 Epic · 55 Story · 135 Task** (Task là loại **Task** trên Jira: Parent = Epic, nối Story bằng link `Relates` + nhãn `stxx-y`)
 - Task theo vai trò: Backend 57 · Frontend 28 · AI 11 · Design 8 · DevOps 11 · Tester 20 (kiểm thử tích hợp nhiều Task / toàn hệ thống)
 - Mọi Task phát triển/thiết kế có sẵn mục **🧪 Kiểm thử khi Ready for Test** để Tester kiểm khi Task được kéo sang `Ready For Test`
-- Tổng ước lượng 871 giờ: Sprint 1 150.5h · Sprint 2 170h · Sprint 3 256h · Sprint 4 294.5h
+- Tổng ước lượng **601 giờ** (đã tính AI agent hỗ trợ: code ×0,5, DevOps ×0,8, Design/QA ×0,9, giờ kiểm giữ nguyên): Sprint 1 101h · Sprint 2 92h · Sprint 3 242h · Sprint 4 166h. Lịch xếp theo quy tắc "Task chặn phải Done", kết thúc dự kiến **22/10** — xem [01-KE-HOACH-4-TUAN.md](01-KE-HOACH-4-TUAN.md)
 
 ## Cách đặt tên file
 

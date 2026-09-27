@@ -10,7 +10,7 @@
 | Priority | High |
 | Labels | `xq-v2`, `ep12`, `race` |
 | Fix versions | `v1.0.0` |
-| Start date / Due date | 2026-10-19 / 2026-10-21 |
+| Start date / Due date | 2026-10-12 / 2026-10-20 |
 | Nguồn đặc tả | ISSUE-104 … ISSUE-107, ISSUE-125 … ISSUE-129 (R13, R14) |
 
 ---
@@ -147,9 +147,9 @@ Khi ván kết thúc, người chơi thấy **màn kết quả** (thắng / thua
 
 | Story | Tên | Sprint | SP | Vai trò |
 |---|---|---|---|---|
-| [ST12.1](../story/ST12.1-dau-hang-xin-hoa-di-lai-di-lai-tren-cay-nuoc-thanh-thao-tac.md) | Đầu hàng, xin hoà/đi lại, đi lại trên cây nước, thanh thao tác | 4 | 8 | BE, FE, QA |
-| [ST12.2](../story/ST12.2-lich-su-van-rieng-tu-va-xem-lai-theo-nhanh-hieu-luc.md) | Lịch sử ván riêng tư và xem lại theo nhánh hiệu lực | 4 | 5 | BE, FE |
-| [ST12.3](../story/ST12.3-tai-dau-doi-ben-dong-phong-10-phut-man-ket-qua.md) | Tái đấu đổi bên, đóng phòng 10 phút, màn kết quả | 4 | 5 | BE, FE |
+| [ST12.1](../story/ST12.1-dau-hang-xin-hoa-di-lai-di-lai-tren-cay-nuoc-thanh-thao-tac.md) | Đầu hàng, xin hoà/đi lại, đi lại trên cây nước, thanh thao tác | 4 | 5 | BE, FE, QA |
+| [ST12.2](../story/ST12.2-lich-su-van-rieng-tu-va-xem-lai-theo-nhanh-hieu-luc.md) | Lịch sử ván riêng tư và xem lại theo nhánh hiệu lực | 3 | 3 | BE, FE |
+| [ST12.3](../story/ST12.3-tai-dau-doi-ben-dong-phong-10-phut-man-ket-qua.md) | Tái đấu đổi bên, đóng phòng 10 phút, màn kết quả | 4 | 3 | BE, FE |
 
 ST12.2 **song song** được với ST12.1 và ST12.3 (không dùng đầu ra của nhau). ST12.1 và ST12.3 cũng song song; chỉ gặp nhau ở màn phòng chơi.
 
