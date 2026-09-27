@@ -394,6 +394,7 @@ tests/              fixtures/ · unit/ · integration/ · e2e/ · media/ · load
 | Chức năng hoạt động ra sao | `docs/01-requirements/` |
 | Người dùng đi qua những bước nào | `docs/02-flows/` |
 | Màn hình có gì, trạng thái nào | `docs/03-screens/` |
+| Dựng giao diện: token, thành phần, bàn cờ, bố cục, Figma | [DESIGN.md](DESIGN.md) |
 | Luật cờ · luật nghiệp vụ · ai được làm gì | `docs/04-business-rules/` |
 | Dữ liệu và realtime | `docs/05-data-and-realtime/` |
 | Thế nào là đạt | `docs/06-acceptance/` |
