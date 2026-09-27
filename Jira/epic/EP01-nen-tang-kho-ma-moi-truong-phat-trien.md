@@ -76,7 +76,7 @@ Và **GitHub tự chặn** mọi PR đỏ không cho merge vào `main`.
 | Không công nghệ ngoài bảng chốt | Không Redis, Tailwind, thư viện UI dựng sẵn… (`AGENTS.md` §14) |
 | Không commit bí mật | `.env` trong `.gitignore`; không khoá thật trong `.env.example` |
 | Mọi lane chưa có phải báo lỗi | `NOT_IMPLEMENTED — xem <Task>` và exit 1 |
-| Git | Nhánh `issue/NNN-ten-ngan`; một Task một PR; commit `<loại>(<phạm vi>): <mô tả> [ISSUE-NNN]` |
+| Git | Nhánh `feature/XW-<số>-ten-ngan`; một Task một PR; commit `<loại>(<phạm vi>): <mô tả> [XW-<số>]` — xem [AGENTS.md §8.5](../../AGENTS.md) |
 
 ## 6. ĐẦU VÀO
 

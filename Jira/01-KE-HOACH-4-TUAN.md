@@ -177,7 +177,8 @@ Các Task trong những chuỗi này gắn nhãn `critical-path`, độ ưu tiê
 
 ## 6b. KHI NÀO ĐƯỢC BẮT ĐẦU TASK KẾ TIẾP
 
-- **Mặc định:** Task sau được bắt đầu khi Task chặn nó tới **Ready For Test**, tức là PR đã review, CI xanh và đã merge `main`. Tester kiểm song song với việc làm Task sau.
+- **Mặc định (cập nhật 2026-09-27):** Task sau chỉ bắt đầu khi Task chặn nó đã **Done** — PR được review **và** Tester kiểm ngay trên nhánh PR ở bước Ready For Test, PASS mới merge `main`.
+- ⚠ Các ngày Bắt đầu / Ready For Test / Done trong kế hoạch này được lập theo quy tắc cũ (Task sau bắt đầu khi Task chặn tới Ready For Test). Với quy tắc mới, mỗi mắt xích trên đường găng chờ thêm thời gian kiểm ⇒ **cần tính lại lịch**.
 - **Phải chờ Done** (ghi `(Done)` trong trường "Is blocked by" của Task):
   - Cổng chặn AI: TK04.3.1, TK04.3.2. EP15 chỉ bắt đầu khi cổng đo đã được chạy lại độc lập và PASS.
   - Cổng chặn media: TK14.1.3. ST14.2–14.4 chỉ bắt đầu khi cổng PASS.
@@ -229,6 +230,6 @@ Các phụ thuộc còn lại giữ đúng như đặc tả (ví dụ: luật c�
 
 - **Sprint Planning** (thứ Hai đầu sprint): kéo Story của sprint vào board, gán người theo §5, đánh dấu Task đường găng.
 - **Daily** 15 phút: mỗi người nêu Task đang làm và Task đang chờ. Trưởng nhóm kéo sang **Ready For Dev** những Task đã đủ điều kiện (xem §6b) và xem cột **Ready For Test**.
-- **Một Task phát triển:** `Ready For Dev` → nhánh `issue/<mã-task>-ten-ngan` → viết test trước → code → PR → review → CI xanh → merge `main` → kéo sang **Ready For Test**, đổi Assignee sang Tester, comment link PR và cách chạy thử → Tester kiểm theo mục 🧪 → **Done**, hoặc Bug và về **In Progress**.
+- **Một Task phát triển:** `Ready For Dev` → **In Progress**, nhánh `feature/XW-<số>-ten-ngan` → viết test trước → code → mở PR (4 cổng xanh) → **Ready For Test**, đổi Assignee sang Tester, comment link PR + cách chạy thử → review (≥ 1 approve) **và** Tester kiểm trên nhánh PR → PASS + CI xanh ⇒ merge `main` → **Done**; FAIL ⇒ Bug, về **In Progress**, sửa trên cùng PR.
 - **Task Tester tích hợp:** `Ready For Dev` khi mọi Task chặn tới mức cần → chạy đủ ca → ghi báo cáo `docs/test-reports/<mã-task>.md` → **Done**; FAIL thì tạo Bug gán đúng Task gây lỗi.
 - **Sprint Review** (cuối sprint): demo theo cột "Kết quả demo" ở §3, chỉ demo Story đã Done. Sau đó **Retrospective** ngắn.

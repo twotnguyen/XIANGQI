@@ -10,11 +10,11 @@
 
 ## 0. TESTER LÀM GÌ TRONG DỰ ÁN NÀY
 
-1. Dev làm xong Task → mở PR → PR được review → CI xanh → merge vào `main` → Dev kéo Task sang **Ready For Test** và đổi Assignee sang bạn. Dev ghi comment trên Jira: link PR + cách chạy thử.
-2. Bạn **lấy code mới nhất** của `main`, dựng môi trường, làm **đủ mọi ca** trong mục **🧪 Kiểm thử khi Ready for Test** của Task.
+1. Dev làm xong Task → mở PR (4 cổng xanh) → kéo Task sang **Ready For Test** và đổi Assignee sang bạn. Dev ghi comment trên Jira: link PR + cách chạy thử. **PR chưa merge** — trong lúc bạn kiểm, một người khác review code.
+2. Bạn **lấy code của nhánh PR** (mục 2), dựng môi trường, làm **đủ mọi ca** trong mục **🧪 Kiểm thử khi Ready for Test** của Task.
 3. Mỗi ca bạn ghi: **PASS** hoặc **FAIL**, kèm **bằng chứng** (ảnh chụp, log terminal, kết quả truy vấn DB).
-4. Tất cả PASS → ghi báo cáo `docs/test-reports/<mã-task>.md` → kéo Task sang **Done** → log work số giờ kiểm.
-5. Có ca FAIL → tạo **Bug** (mục 10) → kéo Task về **In Progress** → đổi Assignee về Dev. Dev sửa xong kéo lại Ready For Test → bạn **kiểm lại TOÀN BỘ ca**, không chỉ ca đã FAIL (vì sửa chỗ này có thể làm hỏng chỗ khác).
+4. Tất cả PASS → commit báo cáo `docs/test-reports/<mã-task>.md` **vào chính nhánh PR** → comment PASS trên Jira và PR. Khi PR có ≥ 1 approve + CI xanh, Dev merge `main` → bạn kiểm PR đã merge rồi kéo Task sang **Done** → log work số giờ kiểm.
+5. Có ca FAIL → tạo **Bug** (mục 10) → kéo Task về **In Progress** → đổi Assignee về Dev. Dev sửa **trên cùng PR**, xong kéo lại Ready For Test → bạn **kiểm lại TOÀN BỘ ca**, không chỉ ca đã FAIL (vì sửa chỗ này có thể làm hỏng chỗ khác).
 
 **Ba điều tuyệt đối không làm:**
 - ⛔ Không ghi PASS khi chưa tự tay chạy ca đó.
@@ -48,8 +48,9 @@ cp .env.example .env        # rồi điền biến theo README (KHÔNG commit fi
 ## 2. MỖI LẦN BẮT ĐẦU KIỂM MỘT TASK
 
 ```bash
-git checkout main
-git pull                         # lấy code mới nhất, có PR của Dev vừa merge
+git fetch origin
+gh pr checkout <số-PR>           # lấy đúng code của PR đang kiểm (số PR ở comment Jira)
+# không có gh: git checkout -b test-pr origin/<tên-nhánh-PR>
 pnpm install --frozen-lockfile   # phòng khi Dev thêm thư viện
 pnpm db:start                    # bật Supabase local (Postgres + Auth + hộp thư)
 pnpm db:reset                    # áp lại TẤT CẢ migration từ đầu → DB sạch, đúng schema mới nhất
@@ -459,7 +460,7 @@ Chạy: `pnpm test:unit -- tests/unit/qa/qa-TK03.2.2.test.ts`
 - Đáp án phải **tự suy ra bằng tay** (vẽ ra giấy nếu cần) — **không** chạy hàm rồi chép kết quả làm đáp án.
 - Mọi thế cờ dựng bằng `makePosition` và **có đủ 2 tướng**; đặt hai tướng **khác cột** hoặc có quân chắn, để luật "tướng đối mặt" không làm lệch kết quả (trừ khi ca đang kiểm đúng luật đó).
 - Toạ độ: x 0–8 trái→phải, y 0–9 **trên→dưới**; **ĐEN ở trên (y=0), ĐỎ ở dưới (y=9)**.
-- File test phụ **được commit** (nhánh `qa/<mã-task>`, mở PR riêng) để làm test hồi quy về sau.
+- File test phụ **được commit** (nhánh `qa/XW-<số>-ten-ngan`, mở PR riêng) để làm test hồi quy về sau.
 - Ca "thử phá" (sửa tạm code của Dev để xem test đỏ) làm trên nhánh tạm, **không** commit, xong `git checkout .`.
 
 ---

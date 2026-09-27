@@ -4,7 +4,7 @@ Dùng khi tạo issue trên Jira: tạo theo thứ tự trong bảng (Epic → S
 
 - Tổng: **16 Epic · 55 Story · 135 Task** (115 Task phát triển/thiết kế có mục 🧪 kiểm thử ở bước Ready For Test + 20 Task Tester tích hợp).
 - Cột "Giờ làm / kiểm": giờ làm của người làm Task (điền vào **Original Estimate**) / giờ Tester kiểm ở bước Ready For Test (Tester **log work** vào chính Task).
-- Trong cột "Is blocked by", mã có hậu tố **(Done)** nghĩa là phải chờ Task đó **Done** (Tester đã PASS). Mã không có hậu tố thì chỉ cần Task đó tới **Ready For Test** (code đã merge `main`).
+- Cột "Is blocked by": Task sau chỉ bắt đầu khi **mọi** Task chặn đã **Done** (review + Tester PASS + đã merge `main`). Hậu tố **(Done)** còn sót trong một số dòng giữ nguyên nghĩa đó.
 - Cột "Nguồn (ISSUE)": số `docs/10-issues/ISSUE-NNN.md` mà Task truy về (nhãn `src-NNN`). Cả 138 issue đều có ít nhất một Task truy về; đối chiếu ngược ở [02-AUDIT-138-ISSUE.md](02-AUDIT-138-ISSUE.md).
 
 | Mã | Loại Jira | Summary | Thuộc (Task → Story, Story → Epic) | Component | Sprint | Bắt đầu | Ready For Test (dự kiến) | Due = Done (dự kiến) | Giờ làm / kiểm · SP | Is blocked by | Nguồn (ISSUE) | Key Jira |
