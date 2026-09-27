@@ -10,7 +10,7 @@
 |---|---:|
 | Epic | **16** |
 | Story | **55** |
-| Task (Sub-task trên Jira) | **135** |
+| Task (loại Task trên Jira) | **135** |
 | — Backend `[BE]` | 57 |
 | — Frontend `[FE]` | 28 |
 | — AI `[AI]` | 11 |
@@ -52,7 +52,7 @@
 | **3** · `v0.3.0` | 12/10 – 18/10 | Đăng nhập/phiên/đăng xuất, quên mật khẩu, Google; gateway + đường xử lý lệnh + đi nước + finalizer + snapshot; sảnh/phòng chờ/sẵn sàng; rời phòng/cài đặt; đồng hồ máy chủ; chính sách + token + thu hồi media; tiến trình AI + hàng đợi; thí nghiệm 60 ván; bạn bè/presence; bảo mật cơ bản; triển khai bản đầu | Hai người tạo phòng, sẵn sàng, bắt đầu ván (API); ván tự kết thúc khi hết giờ; web chạy trên Vercel/Render |
 | **4** · `v1.0.0` | 19/10 – 23/10 | Màn phòng chơi realtime; lời mời; người xem; mất kết nối; chống treo ván; thao tác ván; lịch sử/tái đấu; chat; giao diện media; chơi với máy; responsive/trợ năng; ma trận quyền; thử tải; nghiệm thu; kiểm Internet; bàn giao | Kịch bản xương sống 8 phiên chạy xanh; báo cáo nghiệm thu R01–R19; hồ sơ bảo vệ |
 
-Một Story chỉ được tính vào kết quả sprint khi **mọi Sub-task đã Done**, tức là đã được Tester kiểm và PASS. Ngày "Done (dự kiến)" trong các bảng dưới đã tính cả thời gian kiểm thử.
+Một Story chỉ được tính vào kết quả sprint khi **mọi Task của nó (nhãn `stxx-y`) đã Done**, tức là đã được Tester kiểm và PASS. Ngày "Done (dự kiến)" trong các bảng dưới đã tính cả thời gian kiểm thử.
 
 ## 4. STORY THEO SPRINT (ngày = sớm nhất theo phụ thuộc)
 
@@ -217,7 +217,7 @@ Các phụ thuộc còn lại giữ đúng như đặc tả (ví dụ: luật c�
 
 | Rủi ro | Dấu hiệu | Xử lý (không hạ ngưỡng) |
 |---|---|---|
-| Cổng AI (ST04.3) không đạt p95 depth 6 ≤ 3000 ms | Tester chạy lại ở bước Ready For Test của TK04.3.1 ra số > ngưỡng | Flag Task, ghi số thật; tối ưu **đúng thứ tự**: bỏ cấp phát → killer/history → transposition table → báo trưởng nhóm. Mỗi bước là một Sub-task `[AI] TK04.3.1-OPTn` có mục kiểm thử đo lại. EP15 chưa bắt đầu |
+| Cổng AI (ST04.3) không đạt p95 depth 6 ≤ 3000 ms | Tester chạy lại ở bước Ready For Test của TK04.3.1 ra số > ngưỡng | Flag Task, ghi số thật; tối ưu **đúng thứ tự**: bỏ cấp phát → killer/history → transposition table → báo trưởng nhóm. Mỗi bước là một Task `[AI] TK04.3.1-OPTn` (nhãn `st04-3`) có mục kiểm thử đo lại. EP15 chưa bắt đầu |
 | Cổng media (ST14.1) không có byte RTP | TK14.1.3 đỏ | Flag, kiểm cổng UDP/loopback/phiên bản LiveKit; ST14.2–14.4 chưa bắt đầu |
 | Thiếu tài nguyên ngoài (Google Cloud, SMTP, Render/Vercel, LiveKit Cloud, 2 điện thoại/2 mạng) | TK06.4.1, TK16.8.2, TK16.6.1 | Nhãn `blocked-external`, ghi rõ thiếu gì; **không** giả lập rồi báo đạt; phần local vẫn nghiệm thu |
 | **Cột Ready For Test bị dồn** | Nhiều Task nằm ở Ready For Test quá 1 ngày | Người rảnh nhận kiểm (không kiểm Task mình làm); Task trên đường găng được kiểm trước |

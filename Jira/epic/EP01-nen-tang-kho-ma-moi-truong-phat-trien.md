@@ -94,7 +94,7 @@ ST01.1 phải xong trước; ST01.2 và ST01.3 chạy **song song** sau đó.
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 3 Story Done, mọi Sub-task có báo cáo `docs/test-reports/TK01.*.md`.
+- [ ] 3 Story Done, mọi Task có báo cáo `docs/test-reports/TK01.*.md`.
 - [ ] Một thành viên **mới** clone kho, chỉ đọc README, chạy được mọi lệnh ở bảng mục 1 (TK01.1.5 xác nhận).
 - [ ] PR có lỗi bất kỳ ⇒ CI đỏ đúng bước và **không** merge được (TK01.2.1 xác nhận bằng PR thật).
 - [ ] Không có khoá bí mật trong Git, log hay gói JavaScript web (TK01.2.4 xác nhận).

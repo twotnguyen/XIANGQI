@@ -81,7 +81,7 @@ TK06.1.1 ═(Done)═► TK07.1.1 ─┬─► TK07.1.2
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 2 Story Done, mọi Sub-task có báo cáo.
+- [ ] 2 Story Done, mọi Task có báo cáo.
 - [ ] Không API nào trong Epic trả email (quét response bằng `grep`).
 - [ ] Kiểm actor bằng gọi thẳng API đạt cho cả 3 endpoint lời mời.
 - [ ] Presence không lộ phòng (kiểm lại khi EP08 xong).

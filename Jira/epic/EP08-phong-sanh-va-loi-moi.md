@@ -93,7 +93,7 @@ TK08.1.1 ─► TK08.1.2 ─┬─► TK08.2.2 (+TK10.2.2) ─┬─► TK08.3.1
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 4 Story Done, mọi Sub-task có báo cáo.
+- [ ] 4 Story Done, mọi Task có báo cáo.
 - [ ] Không lần race nào vượt 2 PLAYER / 5 SPECTATOR (truy vấn tổng kết = 0 dòng).
 - [ ] 4 tình huống 404 cho người chưa có bằng chứng giống hệt nhau.
 - [ ] Chuyển kín hơn thu hồi toàn bộ người xem; mã/token không xuất hiện trong dữ liệu phòng, sự kiện, log.

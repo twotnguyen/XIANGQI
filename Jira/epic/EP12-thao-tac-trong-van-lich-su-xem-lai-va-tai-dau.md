@@ -157,7 +157,7 @@ ST12.2 **song song** được với ST12.1 và ST12.3 (không dùng đầu ra c�
 
 Epic chỉ được chuyển **Done** khi **tất cả** ô dưới đây đạt:
 
-- [ ] 3 Story Done (mọi Sub-task Done, Tester đã PASS và có báo cáo `docs/test-reports/TK12.*.md`).
+- [ ] 3 Story Done (mọi Task Done, Tester đã PASS và có báo cáo `docs/test-reports/TK12.*.md`).
 - [ ] Test tự động xanh, **0 skipped**: `issue-104`, `105`, `106`, `125`, `126`, `127`, `128` (integration) và `issue-107`, `129` (e2e, cả desktop lẫn mobile).
 - [ ] Ba lỗi cũ `F-01`, `F-02`, `F-20` có ca kiểm riêng và PASS.
 - [ ] Mọi ca "giả mạo" (người xem / người ngoài gửi lệnh thẳng lên máy chủ) đều bị từ chối và **DB không đổi**.

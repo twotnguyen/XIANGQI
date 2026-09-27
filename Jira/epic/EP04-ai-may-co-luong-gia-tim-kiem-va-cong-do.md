@@ -95,7 +95,7 @@ EP03: luật cờ đầy đủ (`getLegalMoves`, `applyMove`, `getTerminalOutcom
 - [ ] Cổng 032 **PASS với số đo thật** (đủ 3 cấp) và được Tester chạy lại độc lập trên máy khác.
 - [ ] Corpus chất lượng 20 thế được **người khác** review tay; HARD đúng ≥ 16/20, hợp lệ 20/20, tránh lặp 5/5.
 - [ ] Báo cáo so sánh negamax/alpha-beta liệt kê **mọi** thế.
-- [ ] Nếu cổng chưa đạt: Epic **Flagged**, có số thật và Sub-task tối ưu theo thứ tự mục 6 — **không** coi là Done.
+- [ ] Nếu cổng chưa đạt: Epic **Flagged**, có số thật và Task tối ưu theo thứ tự mục 6 — **không** coi là Done.
 
 ## 10. KỊCH BẢN DEMO (~10 phút)
 

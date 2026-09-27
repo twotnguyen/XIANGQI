@@ -77,7 +77,7 @@ Không phụ thuộc Epic nào. Cần: tài khoản Figma (gói miễn phí đ�
 
 ## 8. TIÊU CHÍ HOÀN THÀNH EPIC
 
-- [ ] 4 Story Done; mọi Sub-task có báo cáo rà thiết kế.
+- [ ] 4 Story Done; mọi Task có báo cáo rà thiết kế.
 - [ ] Mọi màn trong `docs/03-screens/screen-inventory.md` có frame 2 kích thước và 5 trạng thái (hoặc ghi "Không áp dụng vì …").
 - [ ] Link Figma gắn vào **từng** Task Frontend tương ứng (xem mục "Bàn giao" của mỗi Task thiết kế).
 - [ ] Không có màu ngoài 7 mã chốt dùng cho chữ; mọi cặp chữ/nền đo đạt AA.

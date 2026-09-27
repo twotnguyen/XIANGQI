@@ -6,22 +6,23 @@
 
 | File | Nội dung |
 |---|---|
-| [00-CAU-HINH-JIRA.md](00-CAU-HINH-JIRA.md) | Các trường Jira (đã kiểm bằng MCP), phân cấp Epic → Story → Sub-task, component, quy ước tên, nhãn, sprint, liên kết, story points, mẫu mô tả |
+| [00-CAU-HINH-JIRA.md](00-CAU-HINH-JIRA.md) | Các trường Jira (đã kiểm bằng MCP), phân cấp Epic → Story → Task, component, quy ước tên, nhãn, sprint, liên kết, story points, mẫu mô tả |
 | [01-KE-HOACH-4-TUAN.md](01-KE-HOACH-4-TUAN.md) | Mục tiêu sprint, Story theo sprint, giờ theo vai trò, gợi ý phân công, đường găng, phụ thuộc đã điều chỉnh, rủi ro |
 | [02-AUDIT-138-ISSUE.md](02-AUDIT-138-ISSUE.md) | Kiểm tra 138 issue trong `docs/10-issues/`: issue nào gộp nhiều vai trò và được tách thành Task nào |
 | [03-TRUY-VET.md](03-TRUY-VET.md) | Bảng Epic → Story → Task ↔ issue đặc tả, có cột Key Jira để điền khi tạo |
 | [04-HUONG-DAN-KIEM-THU.md](04-HUONG-DAN-KIEM-THU.md) | **Sổ tay Tester** (đọc 1 lần): dựng môi trường, bộ tài khoản test, mở nhiều người chơi, gửi lệnh giả mạo bằng `qa`/`qsock`, xem DB, chạy test, đồng hồ giả, ghi bằng chứng, tạo Bug |
 | [05-TU-DIEN-KY-THUAT.md](05-TU-DIEN-KY-THUAT.md) | **Từ điển kỹ thuật cho sinh viên**: transaction, khoá dòng, race condition, idempotency, cursor, IDOR… — nghĩa, ví dụ trong dự án, làm sai thì sao |
 | [06-HOP-DONG-API-SU-KIEN.md](06-HOP-DONG-API-SU-KIEN.md) | **Hợp đồng API & sự kiện realtime**: một chỗ duy nhất chốt mọi đường dẫn HTTP và tên sự kiện Socket.IO (nguồn đặc tả hay nhóm chốt), cách đổi tên |
+| [07-PHAN-CONG.md](07-PHAN-CONG.md) | **Phân công**: 7 thành viên trên Jira (Account ID), vai trò TV1–TV7, khối lượng từng người theo sprint, bảng giao 135 Task (gợi ý + cột điền người làm / người kiểm) |
 | [tools/](tools/) | `qa.sh` (gửi lệnh HTTP bằng lệnh ngắn) và `sock.mjs` (gửi sự kiện Socket.IO) cho Tester |
 | [epic/](epic/) | 16 file, mỗi file **một Epic**: trường Jira, mục tiêu, luật chung của Epic, danh sách Story (có link), tiêu chí hoàn thành |
 | [story/](story/) | 55 file, mỗi file **một Story**: trường Jira, câu chuyện, tiêu chí chấp nhận, bảng thứ tự Task (có link) |
-| [task/](task/) | 135 file, mỗi file **một Task (Sub-task)**: trường Jira, việc cần làm, bẫy, mục 🧪 kiểm thử khi Ready for Test |
+| [task/](task/) | 135 file, mỗi file **một Task** (loại Task trên Jira): trường Jira, việc cần làm, bẫy, mục 🧪 kiểm thử khi Ready for Test |
 | components.md | File cũ, giữ nguyên, không dùng cho bản này |
 
 ## Con số chính
 
-- **16 Epic · 55 Story · 135 Task** (Task = Sub-task trên Jira, Parent là Story)
+- **16 Epic · 55 Story · 135 Task** (Task là loại **Task** trên Jira: Parent = Epic, nối Story bằng link `Relates` + nhãn `stxx-y`)
 - Task theo vai trò: Backend 57 · Frontend 28 · AI 11 · Design 8 · DevOps 11 · Tester 20 (kiểm thử tích hợp nhiều Task / toàn hệ thống)
 - Mọi Task phát triển/thiết kế có sẵn mục **🧪 Kiểm thử khi Ready for Test** để Tester kiểm khi Task được kéo sang `Ready For Test`
 - Tổng ước lượng 871 giờ: Sprint 1 150.5h · Sprint 2 170h · Sprint 3 256h · Sprint 4 294.5h
@@ -59,7 +60,7 @@ Trong "Is blocked by": mã có hậu tố **(Done)** là phải chờ Task đó 
 ## Thứ tự đưa lên Jira (sau khi duyệt)
 
 1. Tạo Sprint 2, 3, 4 trên board (Sprint 1 đã có), đặt ngày theo 01-KE-HOACH §3. Tạo 4 Fix version `v0.1.0`, `v0.2.0`, `v0.3.0`, `v1.0.0` (sửa ngày `v1.0.0` đang có) theo [00-CAU-HINH-JIRA.md §6.1](00-CAU-HINH-JIRA.md).
-2. Tạo 16 Epic → 55 Story → 135 Sub-task theo thứ tự trong 03-TRUY-VET.md, ghi Key vào bảng.
+2. Tạo 16 Epic → 55 Story → 135 Task theo thứ tự trong 03-TRUY-VET.md, ghi Key vào bảng.
 3. Tạo liên kết `Blocks` theo trường "Blocks" trong từng Task/Story.
 4. Điền Story Points và Original Estimate (hai trường này không có trên màn tạo, phải sửa sau khi tạo). Ghi dòng `Chờ Done: XW-…` trong Description của các Task có phụ thuộc `(Done)`.
 5. Gán Story vào sprint; gán người theo 01-KE-HOACH §5.
