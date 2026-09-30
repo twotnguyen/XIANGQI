@@ -1,6 +1,6 @@
 # AGENTS.md — Hướng dẫn cho AI agent
 
-**Dự án:** Cờ Tướng Online · **Cập nhật:** 2026-09-27 (bổ sung vòng đời Task trên Jira) · **Áp dụng cho:** mọi AI agent đọc, viết mã, viết test hoặc sửa tài liệu trong kho này.
+**Dự án:** Cờ Tướng Online · **Cập nhật:** 2026-10-01 (Đồng bộ BA Scope Decisions, Danh mục 37 thành phần UI & Mockup Prototype) · **Áp dụng cho:** mọi AI agent đọc, viết mã, viết test hoặc sửa tài liệu trong kho này.
 
 Đọc hết file này trước khi sửa bất kỳ file nào. Các luật dưới đây đều sinh ra từ lỗi đã thật sự xảy ra ở lần xây trước (`docs/99-archive/reviews-v1/`).
 
@@ -9,11 +9,12 @@
 ## 0. Tóm tắt
 
 ```
-① Kho CHƯA CÓ MÃ NGUỒN. Có: đặc tả (docs/), kế hoạch Jira (Jira/), trang tài liệu (site/)
+① Kho CHƯA CÓ BACKEND/FRONTEND PRODUCTION. Hiện đã có: Bộ Mockup Prototype 37 thành phần hoàn chỉnh (mockups/), Danh mục màn hình (DANH-MUC-MAN-HINH-XIANGQI.md), Quyết định phạm vi (BA-SCOPE-DECISIONS.md), Hệ thống thiết kế (DESIGN.md), và Kế hoạch phân rã Jira (Jira/)
 ② Đơn vị công việc = một Jira Task TKxx.y.z (Key XW-…). Một Task = một nhánh = một PR, đi đúng vòng đời §8
 ③ Đặc tả là LUẬT. Thấy mâu thuẫn hoặc sai ⇒ DỪNG, báo người dùng. Không tự đổi yêu cầu
 ④ Viết test trước. Test phải bắt được lỗi mục tiêu
 ⑤ Không hạ ngưỡng để báo đạt. Ghi số thật
+⑥ Giao diện mặc định phải theo chuẩn Kỳ Đài Cổ Phong (Tea-Room Dark Theme) trong DESIGN.md và đủ 5 trạng thái bắt buộc trong DANH-MUC-MAN-HINH-XIANGQI.md
 ```
 
 ---
@@ -24,9 +25,9 @@
 |---|---|---|
 | 1 | Yêu cầu trực tiếp của người dùng trong phiên làm việc | Cao nhất |
 | 2 | File này (`AGENTS.md`) | Luật làm việc |
-| 3 | `docs/` — đặc tả: `01-requirements`, `04-business-rules`, `05-data-and-realtime`, `07-decisions`, `09-technical`, `10-issues/ISSUE-NNN.md` | **Cái gì** phải đúng. Là luật |
-| 4 | `Jira/task/TKxx.y.z-….md` | **Làm thế nào**: file, bước, bẫy, ca kiểm thử. Cụ thể hoá đặc tả, không thay đặc tả |
-| 5 | `Jira/06-HOP-DONG-API-SU-KIEN.md` | Chốt đường dẫn HTTP và tên sự kiện Socket.IO |
+| 3 | `BA-SCOPE-DECISIONS.md` · `DANH-MUC-MAN-HINH-XIANGQI.md` · `DESIGN.md` · `docs/` (`01-requirements`, `04-business-rules`, `05-data-and-realtime`, `07-decisions`, `09-technical`, `10-issues/ISSUE-NNN.md`) | **Cái gì** phải đúng. Là luật (Scope Freeze 21 yêu cầu R01–R21) |
+| 4 | `Jira/EPIC-01-AUTHENTICATION-IDENTITY.md` · `Jira/task/TKxx.y.z-….md` | **Làm thế nào**: Phân rã User Stories, Engineering Tasks (BE, FE, DB, QA), bước thực hiện, bẫy, ca kiểm thử |
+| 5 | `Jira/06-HOP-DONG-API-SU-KIEN.md` | Chốt đường dẫn HTTP REST API và tên sự kiện Socket.IO |
 
 - Task và đặc tả mâu thuẫn ⇒ **dừng**, báo người dùng: trích hai chỗ, nêu tác động. Không tự chọn bên.
 - Chi tiết đánh dấu 🟡 trong Task là **đề xuất**: được đổi, nhưng phải sửa lại chính file Task đó (và `Jira/tools/qa.sh` nếu liên quan) trong cùng PR, ghi rõ lý do trong mô tả PR.
@@ -41,12 +42,14 @@
 
 | # | File | Vì sao |
 |---|---|---|
-| 1 | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) | Dùng sai thuật ngữ là lỗi (`SPECTATOR` ≠ `WATCH`) |
-| 2 | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 | Hệ toạ độ — xem §4 dưới đây |
-| 3 | [docs/09-technical/tech-stack.md](docs/09-technical/tech-stack.md) §3 | Ranh giới Prisma / SQL thuần — xem §6 |
-| 4 | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) | Máy chủ quyết định, thứ tự khoá, tiến trình AI |
-| 5 | [docs/10-issues/TEST-CONVENTIONS.md](docs/10-issues/TEST-CONVENTIONS.md) | Fixture, oracle, đặt tên test, lane |
-| 6 | §3 và §8 của file này | Làm việc với Jira: trạng thái, Git, review, bàn giao, Done |
+| 1 | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) & §11 file này | Dùng sai thuật ngữ là lỗi (`SPECTATOR` ≠ `WATCH`, `CASUAL` ≠ `RANKED`) |
+| 2 | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) | Đóng băng phạm vi: 21 yêu cầu (R01–R21), quy tắc Casual vs Ranked, Guest |
+| 3 | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) & [DESIGN.md](DESIGN.md) | Danh mục 37 thành phần giao diện, 5 trạng thái bắt buộc, Theme Cổ Phong |
+| 4 | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 | Hệ toạ độ — xem §4 dưới đây |
+| 5 | [docs/09-technical/tech-stack.md](docs/09-technical/tech-stack.md) §3 | Ranh giới Prisma / SQL thuần — xem §6 |
+| 6 | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) | Máy chủ quyết định, thứ tự khoá, tiến trình AI |
+| 7 | [docs/10-issues/TEST-CONVENTIONS.md](docs/10-issues/TEST-CONVENTIONS.md) | Fixture, oracle, đặt tên test, lane |
+| 8 | §3 và §8 của file này | Làm việc với Jira: trạng thái, Git, review, bàn giao, Done |
 
 Mỗi lần nhận Task: đọc thêm file Task, các `ISSUE-NNN.md` mà Task truy về (nhãn `src-NNN`, cột "Nguồn" trong [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md)), và đúng các mục "ĐỌC TRƯỚC" của những issue đó. Không cần đọc cả 138 issue.
 
@@ -61,6 +64,7 @@ Mỗi lần nhận Task: đọc thêm file Task, các `ISSUE-NNN.md` mà Task tr
 | Sprint / version | XW Sprint 1–4 (28/09 – 23/10/2026) ↔ `v0.1.0` · `v0.2.0` · `v0.3.0` · `v1.0.0` |
 | Tra mã | `TKxx.y.z` ↔ `XW-…` ↔ `ISSUE-NNN`: [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) · người làm / người kiểm: [Jira/07-PHAN-CONG.md](Jira/07-PHAN-CONG.md) |
 | Cấu hình đầy đủ | [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md) |
+| Lộ trình phân rã tinh gọn | **6 Epics cốt lõi MVP** (`EPIC-01: Auth & Identity`, `EPIC-02: Board & Realtime Game`, `EPIC-03: AI Engine`, `EPIC-04: Rooms & Lobby`, `EPIC-05: Realtime Media & Chat`, `EPIC-06: Hardening & Launch`) + **2 Epics mở rộng** (Ranked Elo & Friends Social). Xem mẫu phân rã tại [Jira/EPIC-01-AUTHENTICATION-IDENTITY.md](Jira/EPIC-01-AUTHENTICATION-IDENTITY.md) |
 
 **Agent có thể đóng vai:** người làm Task (Dev/Design/DevOps), người review PR, hoặc Tester (Task `[QA]` và bước Ready for Test). Người dùng nói rõ vai nào; không rõ ⇒ hỏi.
 
@@ -376,8 +380,15 @@ Repo `twotnguyen/XIANGQI` nối với Jira bằng app **GitHub for Jira** (GitLa
 | `SPECTATOR` / người xem | viewer, khán giả, observer |
 | `AI` / máy | bot, engine, máy tính |
 | Host / chủ phòng | owner, room master |
+| `CASUAL` / đánh thường | phòng thường, ván tự do |
+| `RANKED` / đấu hạng | rank, leo rank, xếp hạng |
+| `GUEST` / tài khoản khách | anonymous, ẩn danh, người lạ |
 
-`SPECTATOR` là **vai trò** của thành viên trong phòng (cặp với `PLAYER`). `WATCH` là **loại quyền** của lời mời / mã / link (cặp với `PLAY`). Dùng mã `WATCH` vào phòng ⇒ trở thành `SPECTATOR`. ⛔ Không viết "vé SPECTATOR" hay "vai trò WATCH". Bảng đầy đủ: [glossary](docs/00-overview/glossary.md).
+- **Phân định chế độ chơi (Chốt, `R20`):**
+  - **`CASUAL` (Đánh Thường):** Có nút *Xin đi lại (Undo)* (tối đa 3 lần/ván, cần đối thủ đồng ý), có *Panel Khán giả* (mặc định 2 người xem, mở rộng trần 5 người theo `BR-ROOM-01`).
+  - **`RANKED` (Đấu Hạng Elo FIDE):** Cố định 10 phút Rapid mỗi bên. ⛔ **CẤM 100% NÚT UNDO** (không có xin đi lại). ⛔ **CẤM 100% KHÁN GIẢ** (không cho người thứ 3 vào xem để chống gian lận).
+  - **`GUEST` (Khách Chơi Nhanh):** Phiên tạm 12h, tên tạm 2–20 ký tự, được chơi Casual và Đấu AI nhưng ⛔ **CẤM 100% THAM GIA RANKED** (`R01`).
+- `SPECTATOR` là **vai trò** của thành viên trong phòng (cặp với `PLAYER`). `WATCH` là **loại quyền** của lời mời / mã / link (cặp với `PLAY`). Dùng mã `WATCH` vào phòng ⇒ trở thành `SPECTATOR`. ⛔ Không viết "vé SPECTATOR" hay "vai trò WATCH". Bảng đầy đủ: [glossary](docs/00-overview/glossary.md).
 
 ---
 
@@ -404,16 +415,19 @@ tests/              fixtures/ · unit/ · integration/ · e2e/ · media/ · load
 
 | Cần gì | Vào đây |
 |---|---|
+| Quyết định phạm vi cốt lõi & 21 yêu cầu (R01–R21) | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
+| Danh mục 37 thành phần UI & 5 trạng thái bắt buộc | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
+| Bộ Mockup Prototype 37 thành phần HTML/CSS thực tế | Thư mục `mockups/` (Cổng trung tâm: [mockups/index.html](mockups/index.html)) |
+| Dựng giao diện: token hoàng kim, font chữ, bố cục Cổ Phong | [DESIGN.md](DESIGN.md) |
 | Chức năng hoạt động ra sao | `docs/01-requirements/` |
 | Người dùng đi qua những bước nào | `docs/02-flows/` |
-| Màn hình có gì, trạng thái nào | `docs/03-screens/` |
-| Dựng giao diện: token, thành phần, bàn cờ, bố cục, Figma | [DESIGN.md](DESIGN.md) |
 | Luật cờ · luật nghiệp vụ · ai được làm gì | `docs/04-business-rules/` |
 | Dữ liệu và realtime | `docs/05-data-and-realtime/` |
 | Thế nào là đạt | `docs/06-acceptance/` |
 | Vì sao quyết định như vậy | `docs/07-decisions/decision-log.md` |
 | Kiến trúc · công nghệ · triển khai | `docs/09-technical/` |
 | Đặc tả từng đầu việc (ISSUE-NNN) | `docs/10-issues/` |
+| Kế hoạch Epic & User Stories tinh gọn | `Jira/EPIC-01-AUTHENTICATION-IDENTITY.md`... |
 | Task được giao, cách làm, ca kiểm thử | `Jira/task/` · tra mã ở `Jira/03-TRUY-VET.md` |
 | API HTTP và sự kiện Socket.IO | `Jira/06-HOP-DONG-API-SU-KIEN.md` |
 | Cách Tester kiểm, công cụ `qa.sh` / `sock.mjs` | `Jira/04-HUONG-DAN-KIEM-THU.md`, `Jira/tools/` |
@@ -440,6 +454,10 @@ Sửa file trong `docs/` ⇒ chạy `node site/build.mjs` để cập nhật tra
 ⛔ Tự chuyển Task mình làm sang Done; merge PR khi chưa có approve của người khác + CI xanh + Tester PASS
 ⛔ Tự giải quyết xung đột merge
 ⛔ Thêm công nghệ ngoài bảng đã chốt (Redis, Tailwind, thư viện UI dựng sẵn…)
+⛔ Dựng giao diện phẳng văn phòng vô cảm, vi phạm chuẩn WCAG 2.1 AA (mặc định phải theo Theme Kỳ Đài Cổ Phong trong DESIGN.md)
+⛔ Bỏ qua 5 trạng thái bắt buộc (Success, Loading, Empty, Error, Disabled) của màn hình (SCR-RULE-01)
+⛔ Cho phép Undo (xin đi lại) hoặc Spectators (khán giả) trong ván cờ Ranked (R20)
+⛔ Cho phép tài khoản Guest tham gia đấu Ranked (R01)
 ```
 
 ---
