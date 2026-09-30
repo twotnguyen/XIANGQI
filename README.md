@@ -60,11 +60,14 @@ Hiện có:
 
 ```
 .
-├── AGENTS.md        Luật làm việc cho AI agent (người mới cũng nên đọc)
-├── DESIGN.md        Hệ thống thiết kế giao diện
-├── docs/            Đặc tả: yêu cầu, luồng, màn hình, luật, dữ liệu, nghiệm thu, quyết định, 138 issue
-├── Jira/            Kế hoạch 4 tuần: 16 Epic, 55 Story, 135 Task, sổ tay kiểm thử, công cụ QA
-└── site/            Trang web đọc tài liệu (mở site/index.html)
+├── AGENTS.md                   Luật làm việc cho AI agent (người mới cũng nên đọc)
+├── BA-SCOPE-DECISIONS.md       Quyết định chốt phạm vi sản phẩm (Scope Freeze, 21 yêu cầu)
+├── DANH-MUC-MAN-HINH-XIANGQI.md Danh mục chi tiết 37 thành phần giao diện & 5 trạng thái
+├── DESIGN.md                   Hệ thống thiết kế giao diện (Kỳ Đài Cổ Phong)
+├── docs/                       Đặc tả: yêu cầu, luồng, màn hình, luật, dữ liệu, nghiệm thu, quyết định, 138 issue
+├── Jira/                       Kế hoạch Sprint, Epics, User Stories và Tasks
+├── mockups/                    Bộ Mockup Prototype HTML/CSS tương tác 37 thành phần (mở mockups/index.html)
+└── site/                       Trang web đọc tài liệu (mở site/index.html)
 ```
 
 Sẽ hình thành dần qua các Task (không tạo trước):
@@ -161,17 +164,20 @@ To Do → Ready For Dev → In Progress → Ready For Test (review + test) → m
 Chi tiết (Definition of Ready/Done, mẫu PR, mẫu comment, mẫu Bug): [AGENTS.md §8](AGENTS.md). Cấu hình Jira: [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md).
 
 ## Tài liệu
-
+ 
 | Cần | Xem |
 |---|---|
 | Người mới bắt đầu từ đâu | [docs/ONBOARDING.md](docs/ONBOARDING.md) |
-| Thuật ngữ (bắt buộc đọc) | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) |
+| Quyết định chốt phạm vi (21 yêu cầu) | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
+| Danh mục 37 màn hình & 5 trạng thái | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
+| Bộ Mockup Prototype 37 thành phần | [mockups/index.html](mockups/index.html) |
 | Hệ thống thiết kế (màu, chữ, thành phần, bàn cờ, Figma) | [DESIGN.md](DESIGN.md) |
+| Thuật ngữ (bắt buộc đọc) | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) |
 | Hệ toạ độ bàn cờ | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 |
 | Bản đồ toàn bộ đặc tả | [docs/README.md](docs/README.md) |
 | Kiến trúc | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) |
 | Vì sao quyết định như vậy | [docs/07-decisions/decision-log.md](docs/07-decisions/decision-log.md) |
-| Kế hoạch 4 tuần | [Jira/01-KE-HOACH-4-TUAN.md](Jira/01-KE-HOACH-4-TUAN.md) |
+| Kế hoạch 4 tuần & Epics | [Jira/01-KE-HOACH-4-TUAN.md](Jira/01-KE-HOACH-4-TUAN.md) · [Jira/EPIC-01-AUTHENTICATION-IDENTITY.md](Jira/EPIC-01-AUTHENTICATION-IDENTITY.md) |
 | Task ↔ Key Jira ↔ issue đặc tả | [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) |
 | API HTTP và sự kiện realtime | [Jira/06-HOP-DONG-API-SU-KIEN.md](Jira/06-HOP-DONG-API-SU-KIEN.md) |
 | Từ kỹ thuật cho sinh viên | [Jira/05-TU-DIEN-KY-THUAT.md](Jira/05-TU-DIEN-KY-THUAT.md) |

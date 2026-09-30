@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Đăng Nhập Kỳ Đài</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --crimson-mid: #680E13;
+      --crimson-dark: #3F0609;
+      --parchment-bg: #FAF3E3;
+      --wood-frame: #4A2614;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-han: 'SimSun', 'STSong', 'Noto Serif SC', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0B0806;
+      /* Layer 1: Ambient Infinite Background */
+      background-image: 
+        radial-gradient(ellipse at 50% 30%, rgba(220, 140, 50, 0.18) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(11, 8, 6, 0.65) 0%, rgba(11, 8, 6, 0.92) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+    }
+
+    /* Hanging Couplets on Wide Desktop (>= 1240px) */
+    .couplet {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      padding: 18px 6px;
+      background: linear-gradient(180deg, #96181E 0%, #5E0B10 100%);
+      border: 1.5px solid var(--gold-light);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(245, 202, 103, 0.25);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-han);
+      font-size: 22px;
+      font-weight: 900;
+      color: #F8E2B2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+      z-index: 5;
+      pointer-events: none;
+    }
+    .couplet-l { left: calc(50% - 580px); }
+    .couplet-r { right: calc(50% - 580px); }
+
+    @media (max-width: 1240px) {
+      .couplet { display: none; }
+    }
+
+    /* Central Master Modal Card */
+    .master-modal {
+      width: 100%;
+      max-width: 1020px;
+      min-height: 590px;
+      display: grid;
+      grid-template-columns: 1.08fr 1fr;
+      background: #23120A;
+      border: 3.5px solid #542C15;
+      border-radius: 14px;
+      box-shadow: 
+        0 25px 70px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(245, 202, 103, 0.25),
+        inset 0 0 25px rgba(0,0,0,0.7);
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+      margin: auto;
+      transition: all 0.3s ease;
+    }
+
+    /* Antique Brass Corners */
+    .c-decor {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      pointer-events: none;
+      z-index: 15;
+    }
+    .c-decor::before, .c-decor::after {
+      content: '';
+      position: absolute;
+      background: linear-gradient(45deg, #F5CA67, #8B5F19);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+    .ctl { top: 8px; left: 8px; }
+    .ctl::before { top: 0; left: 0; width: 20px; height: 3px; }
+    .ctl::after  { top: 0; left: 0; width: 3px; height: 20px; }
+
+    .ctr { top: 8px; right: 8px; }
+    .ctr::before { top: 0; right: 0; width: 20px; height: 3px; }
+    .ctr::after  { top: 0; right: 0; width: 3px; height: 20px; }
+
+    .cbl { bottom: 8px; left: 8px; }
+    .cbl::before { bottom: 0; left: 0; width: 20px; height: 3px; }
+    .cbl::after  { bottom: 0; left: 0; width: 3px; height: 20px; }
+
+    .cbr { bottom: 8px; right: 8px; }
+    .cbr::before { bottom: 0; right: 0; width: 20px; height: 3px; }
+    .cbr::after  { bottom: 0; right: 0; width: 3px; height: 20px; }
+
+    /* LEFT PANEL: Imperial Silk Crimson Branding */
+    .wing-brand {
+      background: 
+        radial-gradient(circle at 50% 25%, rgba(240, 60, 60, 0.25) 0%, transparent 65%),
+        linear-gradient(155deg, var(--crimson-top) 0%, var(--crimson-mid) 50%, var(--crimson-dark) 100%);
+      color: #FFF;
+      padding: clamp(24px, 4vw, 44px) clamp(20px, 3.5vw, 38px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px solid var(--gold-dark);
+      position: relative;
+    }
+
+    .brand-hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-subtitle-mini {
+      display: none; /* Only visible on mobile header row */
+    }
+
+    /* 3D Master Chess Token */
+    .token-3d {
+      width: clamp(72px, 7.5vw, 92px);
+      height: clamp(72px, 7.5vw, 92px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #F7DCB2 0%, #D8A562 45%, #9E6B2A 85%, #643E12 100%);
+      border: 3.5px solid #FFF8E7;
+      box-shadow: 
+        0 12px 25px rgba(0, 0, 0, 0.7),
+        inset 0 4px 6px rgba(255, 255, 255, 0.7),
+        inset 0 -6px 10px rgba(0, 0, 0, 0.5),
+        0 0 25px rgba(245, 202, 103, 0.4);
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .token-3d::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(120, 60, 15, 0.55);
+    }
+
+    .token-char {
+      font-family: var(--font-han);
+      font-size: clamp(46px, 4.8vw, 58px);
+      font-weight: 900;
+      color: #991319;
+      line-height: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 -1px 0 rgba(0,0,0,0.4), 0 3px 6px rgba(50, 10, 10, 0.8);
+      filter: drop-shadow(0 0 8px rgba(245, 202, 103, 0.45));
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(22px, 2.4vw, 27px);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: linear-gradient(180deg, #FFF6E5 0%, #E5BF77 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .hero-slogan {
+      font-family: var(--font-sans);
+      font-style: italic;
+      font-size: clamp(12.5px, 1.2vw, 14px);
+      color: #F8E2C3;
+      margin-bottom: 20px;
+    }
+
+    /* 4 Feature Badges Grid */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .feat-box {
+      background: rgba(30, 8, 10, 0.45);
+      border: 1px solid rgba(245, 202, 103, 0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .feat-ico {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #C6922A 0%, #6E460B 100%);
+      color: #FFF;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .feat-desc h5 {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #F8EAD0;
+      margin-bottom: 2px;
+    }
+    .feat-desc p {
+      font-size: 10px;
+      color: #CEB59A;
+      line-height: 1.25;
+    }
+
+    .brand-foot {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(245, 202, 103, 0.2);
+      padding-top: 12px;
+      font-size: 11px;
+      color: #C8AA8B;
+    }
+
+    /* RIGHT PANEL: Parchment Paper Form */
+    .wing-form {
+      background: 
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #F5ECDB 100%);
+      padding: clamp(24px, 3.8vw, 38px) clamp(20px, 3.2vw, 34px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-head-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .form-title {
+      font-family: var(--font-serif);
+      font-size: clamp(20px, 2.2vw, 24px);
+      font-weight: 700;
+      color: #24160E;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seal-icon {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #B91C1C 0%, #881318 100%);
+      color: #FFF;
+      font-family: var(--font-han);
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 22px;
+      border-radius: 3px;
+      box-shadow: 0 2px 4px rgba(136, 19, 24, 0.4);
+    }
+
+    .badge-ok {
+      font-size: 10px;
+      font-weight: 700;
+      color: #15803D;
+      background: #DCFCE7;
+      border: 1px solid #86EFAC;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .form-subtitle {
+      font-size: 12px;
+      color: #6C5B50;
+      margin-bottom: 14px;
+    }
+
+    /* Debossed Inputs */
+    .field-row {
+      margin-bottom: 11px;
+    }
+
+    .field-lbl {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #382D25;
+      margin-bottom: 5px;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-ico {
+      position: absolute;
+      left: 12px;
+      font-size: 14px;
+      color: #8C7B6E;
+      pointer-events: none;
+    }
+
+    .input-elem {
+      width: 100%;
+      height: 42px; /* Touch target on desktop & tablet */
+      padding: 0 38px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #201915;
+      font-weight: 600;
+      background: rgba(248, 243, 233, 0.7);
+      border: 1.5px solid rgba(175, 140, 95, 0.55);
+      border-radius: 7px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(70, 45, 20, 0.1), 0 1px 0 rgba(255, 255, 255, 0.7);
+      transition: all 0.2s;
+    }
+
+    .input-elem:focus {
+      background: #FFFFFF;
+      border-color: #A31D24;
+      box-shadow: 0 0 0 3px rgba(163, 29, 36, 0.16);
+    }
+
+    .btn-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #8C7B6E;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    /* Options */
+    .options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0 14px;
+      font-size: 12px;
+      color: #4A3C33;
+    }
+
+    .check-lbl {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .check-lbl input { accent-color: #A31D24; width: 16px; height: 16px; cursor: pointer; }
+
+    .link-forgot {
+      color: #A31D24;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .link-forgot:hover { text-decoration: underline; }
+
+    /* CTA Button (Touch target >= 44px) */
+    .btn-submit {
+      width: 100%;
+      min-height: 44px;
+      background: linear-gradient(180deg, #A82027 0%, #7A1217 100%);
+      color: #FFFDF7;
+      border: 1.5px solid #570B0E;
+      border-radius: 7px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 8px rgba(122, 18, 23, 0.4), inset 0 1px 0 rgba(255, 220, 140, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-submit:hover {
+      background: linear-gradient(180deg, #BA262E 0%, #8C151B 100%);
+      box-shadow: 0 5px 12px rgba(122, 18, 23, 0.5);
+      transform: translateY(-1px);
+    }
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 11px 0;
+      color: #8C7B6E;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px dashed rgba(165, 135, 95, 0.5);
+    }
+    .divider::before { margin-right: 10px; }
+    .divider::after { margin-left: 10px; }
+
+    .btn-google {
+      width: 100%;
+      min-height: 40px;
+      background: #FFFFFF;
+      color: #3C4043;
+      border: 1.5px solid rgba(190, 165, 130, 0.7);
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(70, 45, 20, 0.08);
+      transition: all 0.2s;
+    }
+    .btn-google:hover {
+      background: #F8F9FA;
+      border-color: #9C8363;
+    }
+
+    .guest-wrap {
+      margin-top: 10px;
+      background: rgba(250, 245, 235, 0.75);
+      border: 1.5px solid rgba(210, 185, 150, 0.7);
+      border-radius: 7px;
+      padding: 8px 10px;
+    }
+
+    .btn-guest {
+      width: 100%;
+      min-height: 38px;
+      background: linear-gradient(180deg, #FBF2DE 0%, #EEDBB7 100%);
+      color: #643513;
+      border: 1.5px solid #BA9158;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-guest:hover {
+      background: linear-gradient(180deg, #FFF6E5 0%, #F5E2C2 100%);
+      color: #452109;
+    }
+
+    .guest-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      background: rgba(255, 247, 237, 0.9);
+      border-left: 3px solid #D97706;
+      padding: 5px 7px;
+      border-radius: 4px;
+      margin-top: 6px;
+      font-size: 10.5px;
+      color: #9A3412;
+      line-height: 1.35;
+      text-align: left;
+    }
+
+    .reg-foot {
+      text-align: center;
+      font-size: 12px;
+      color: #574639;
+      margin-top: 12px;
+    }
+    .reg-foot a { color: #A31D24; font-weight: 700; text-decoration: none; }
+    .reg-foot a:hover { text-decoration: underline; }
+
+    /* ========================================================
+       MOBILE RESPONSIVE BREAKPOINT (< 768px)
+       Seamlessly transforms into the dedicated Mobile UI:
+       - Compact Top Brand Banner Header
+       - Touch-Friendly Form (WCAG 2.1 AA >= 44px)
+       - Optimized for 360px - 430px Viewports
+       ======================================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 14px 12px 28px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .master-modal {
+        grid-template-columns: 1fr;
+        width: 100%;
+        max-width: 366px;
+        min-height: auto;
+        margin: 0 auto;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      }
+
+      /* Transform Left Wing into Compact Mobile Header */
+      .wing-brand {
+        padding: 20px 16px 16px;
+        border-right: none;
+        border-bottom: 2px solid var(--gold-dark);
+      }
+
+      .brand-hero {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .token-3d {
+        width: 46px;
+        height: 46px;
+        margin-bottom: 0;
+        border-width: 2.5px;
+      }
+
+      .token-char {
+        font-size: 26px;
+      }
+
+      .brand-title-wrap {
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .hero-title {
+        font-size: 20px;
+        margin-bottom: 1px;
+        line-height: 1.2;
+      }
+
+      .brand-subtitle-mini {
+        display: block;
+        font-size: 9.5px;
+        letter-spacing: 1.5px;
+        color: var(--gold-light);
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .hero-slogan {
+        font-size: 12px;
+        margin: 8px 0 0;
+        text-align: center;
+        width: 100%;
+        opacity: 0.95;
+      }
+
+      /* Hide Desktop feature grid & desktop footer on mobile to avoid endless scrolling */
+      .feat-grid, .brand-foot {
+        display: none;
+      }
+
+      /* Mobile Form Body */
+      .wing-form {
+        padding: 18px 16px 20px;
+      }
+
+      .form-title {
+        font-size: 20px;
+      }
+
+      .input-elem {
+        height: 44px; /* WCAG touch target */
+        font-size: 14.5px;
+      }
+
+      .btn-submit {
+        min-height: 46px;
+        font-size: 15px;
+      }
+
+      .btn-google {
+        min-height: 42px;
+      }
+
+      .btn-guest {
+        min-height: 40px;
+      }
+    }
+
+    /* Extra Small Screen Optimization (<= 360px: Galaxy A, Small devices) */
+    @media (max-width: 360px) {
+      body {
+        padding: 8px 6px 16px;
+      }
+
+      .wing-brand {
+        padding: 16px 12px 12px;
+      }
+
+      .hero-title {
+        font-size: 18px;
+      }
+
+      .token-3d {
+        width: 40px;
+        height: 40px;
+      }
+
+      .token-char {
+        font-size: 22px;
+      }
+
+      .wing-form {
+        padding: 14px 12px 16px;
+      }
+
+      .form-title {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Traditional Couplets on Sides for Widescreen (>= 1240px) -->
+  <div class="couplet couplet-l">
+    <span>楚</span><span>河</span><span>爭</span><span>雄</span>
+  </div>
+  <div class="couplet couplet-r">
+    <span>漢</span><span>界</span><span>稱</span><span>王</span>
+  </div>
+
+  <!-- Central Modular Master Card -->
+  <div class="master-modal">
+    <div class="c-decor ctl"></div>
+    <div class="c-decor ctr"></div>
+    <div class="c-decor cbl"></div>
+    <div class="c-decor cbr"></div>
+
+    <!-- LEFT PANEL: BRANDING WING (Desktop 2-column, Mobile Top Banner) -->
+    <div class="wing-brand">
+      <div class="brand-hero">
+        <div class="token-3d">
+          <span class="token-char">帥</span>
+        </div>
+        <div class="brand-title-wrap">
+          <h1 class="hero-title">CỜ TƯỚNG ONLINE</h1>
+          <span class="brand-subtitle-mini">XIANGQI PLATFORM</span>
+        </div>
+      </div>
+      <div class="hero-slogan">“Kỳ đạo tương phùng, tương đối kiến diện”</div>
+
+      <div class="feat-grid">
+        <div class="feat-box">
+          <div class="feat-ico">👥</div>
+          <div class="feat-desc">
+            <h5>Kỳ Thủ Đông Đảo</h5>
+            <p>Ghép cặp thi đấu tức thì</p>
+          </div>
+        </div>
+        <div class="feat-box">
+          <div class="feat-ico">🏆</div>
+          <div class="feat-desc">
+            <h5>Xếp Hạng FIDE</h5>
+            <p>Hệ thống Elo chuyên nghiệp</p>
+          </div>
+        </div>
+        <div class="feat-box">
+          <div class="feat-ico">🤖</div>
+          <div class="feat-desc">
+            <h5>Máy Cờ 3 Cấp</h5>
+            <p>Rèn luyện từ Dễ đến Khó</p>
+          </div>
+        </div>
+        <div class="feat-box">
+          <div class="feat-ico">📹</div>
+          <div class="feat-desc">
+            <h5>Face Cam Trực Tiếp</h5>
+            <p>Đàm đạo nét mặt đối thủ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-foot">
+        <span>Đồ án 2026 · HUTECH</span>
+        <span>WCAG 2.1 AA · DT-21</span>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: FORM WING -->
+    <div class="wing-form">
+      <div class="form-head-row">
+        <h2 class="form-title">
+          Đăng Nhập Kỳ Đài
+          <span class="seal-icon">印</span>
+        </h2>
+        <span class="badge-ok">✓ SCR-LOGIN</span>
+      </div>
+      <p class="form-subtitle">— Bước một nước cờ, kết vạn tâm giao —</p>
+
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="field-row">
+          <label class="field-lbl" for="usr">Tên đăng nhập (Username)</label>
+          <div class="input-box">
+            <span class="input-ico">👤</span>
+            <input class="input-elem" type="text" id="usr" placeholder="nguyen_tinh99" value="nguyen_tinh99" autocomplete="username">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-lbl" for="pwd">Mật khẩu</label>
+          <div class="input-box">
+            <span class="input-ico">🔒</span>
+            <input class="input-elem" type="password" id="pwd" placeholder="••••••••••••" value="MatKhauBaoMat123" autocomplete="current-password">
+            <button type="button" class="btn-eye" onclick="togglePasswordVisibility()" title="Ẩn/Hiện mật khẩu">👁️</button>
+          </div>
+        </div>
+
+        <div class="options-row">
+          <label class="check-lbl">
+            <input type="checkbox" checked id="chk">
+            <span>Ghi nhớ 30 ngày</span>
+          </label>
+          <a href="SCR-FORGOT-PASSWORD.html" class="link-forgot">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          🏛️ ĐĂNG NHẬP VÀO SẢNH ❯
+        </button>
+
+        <div class="divider">hoặc tiếp tục với</div>
+
+        <button type="button" class="btn-google" onclick="window.location.href='SCR-ONBOARDING.html'">
+          <svg width="17" height="17" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.15z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          Đăng nhập bằng Google
+        </button>
+
+        <div class="guest-wrap">
+          <button type="button" class="btn-guest" onclick="openGuestModal()">
+            ⚡ Chơi Nhanh Với Tư Cách Khách (Guest) ❯
+          </button>
+          <div class="guest-alert">
+            <span>⚠️</span>
+            <span><strong>Lưu ý:</strong> Khách không được tham gia đánh Xếp hạng Elo và không lưu lịch sử ván cờ.</span>
+          </div>
+        </div>
+
+        <div class="reg-foot">
+          Chưa có tài khoản? <a href="SCR-REGISTER.html">Đăng ký ngay →</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      const p = document.getElementById('pwd');
+      p.type = (p.type === 'password') ? 'text' : 'password';
+    }
+  </script>
+
+  <!-- MODAL-GUEST-NAME: Pop-up nhập tên hiển thị cho Khách -->
+  <div id="modal-guest" class="guest-modal-backdrop" style="display: none;">
+    <div class="guest-modal-card">
+      <div class="guest-modal-header">
+        <h3 style="font-family: var(--font-serif); font-size: 18px; color: #24160E; margin: 0; display: flex; align-items: center; gap: 6px;">
+          <span>⚡</span> Nhập Tên Khách Vãng Lai
+        </h3>
+        <button type="button" onclick="closeGuestModal()" style="background: none; border: none; font-size: 20px; color: #7A695C; cursor: pointer;">✕</button>
+      </div>
+      <div style="padding: 18px 20px;">
+        <p style="font-size: 12.5px; color: #574639; line-height: 1.45; margin-bottom: 12px;">
+          Chào mừng bạn đến với <strong>Cờ Tướng Online</strong>. Vui lòng nhập tên hiển thị tạm thời để các kỳ thủ khác dễ dàng xưng hô trên bàn cờ.
+        </p>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #382D25; margin-bottom: 5px;">Tên hiển thị tạm thời (Display Name):</label>
+          <input type="text" id="guest-name-input" placeholder="Ví dụ: Khách Lãng Du, Ẩn Danh Kỳ..." value="Khách Vãng Lai" maxlength="20" style="width: 100%; height: 42px; padding: 0 14px; font-size: 14px; font-family: inherit; font-weight: 600; color: #201915; background: #FFFDF9; border: 1.5px solid #C4A57B; border-radius: 6px; outline: none;">
+          <div style="font-size: 11px; color: #7A695C; margin-top: 4px;">2–20 ký tự (cho phép tiếng Việt có dấu).</div>
+        </div>
+
+        <div style="background: #FFF7ED; border-left: 3px solid #D97706; padding: 7px 10px; border-radius: 4px; font-size: 11px; color: #9A3412; line-height: 1.4; margin-bottom: 16px;">
+          ⚠️ <strong>Quy định:</strong> Chế độ Khách chỉ tham gia được phòng Đánh Thường hoặc Đánh Với Máy. Không thể tham gia Đánh Hạng (Ranked Elo).
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="closeGuestModal()" style="flex: 1; height: 40px; background: transparent; border: 1.5px solid #C4A57B; border-radius: 6px; font-weight: 600; font-size: 13px; color: #574639; cursor: pointer;">
+            Hủy Bỏ
+          </button>
+          <button type="button" onclick="confirmGuestEnter()" style="flex: 1.4; height: 40px; background: linear-gradient(180deg, #A82027 0%, #7A1217 100%); color: #FFF; border: 1.5px solid #570B0E; border-radius: 6px; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 2px 6px rgba(122, 18, 23, 0.4);">
+            Vào Sảnh Chơi ❯
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .guest-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 6, 4, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .guest-modal-card {
+      width: 100%;
+      max-width: 420px;
+      background: #FAF3E3;
+      border: 2.5px solid #542C15;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+      overflow: hidden;
+      animation: modalFadeIn 0.25s ease;
+    }
+    .guest-modal-header {
+      padding: 12px 18px;
+      background: #EED7B3;
+      border-bottom: 1.5px solid #D8C3A5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+
+  <script>
+    function openGuestModal() {
+      document.getElementById('modal-guest').style.display = 'flex';
+      setTimeout(() => { document.getElementById('guest-name-input').focus(); }, 100);
+    }
+    function closeGuestModal() {
+      document.getElementById('modal-guest').style.display = 'none';
+    }
+    function confirmGuestEnter() {
+      const name = document.getElementById('guest-name-input').value.trim() || 'Khách Vãng Lai';
+      if (name.length < 2 || name.length > 20) {
+        alert('Tên hiển thị phải từ 2–20 ký tự!');
+        return;
+      }
+      localStorage.setItem('xiangqi_user', JSON.stringify({
+        username: 'guest_' + Math.floor(Math.random() * 10000),
+        display_name: name,
+        is_guest: true,
+        elo: 1000
+      }));
+      window.location.href = 'SCR-LOBBY.html';
+    }
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const user = document.getElementById('usr').value.trim() || 'nguyen_tinh99';
+      localStorage.setItem('xiangqi_user', JSON.stringify({
+        username: user,
+        display_name: user,
+        is_guest: false,
+        elo: 1280
+      }));
+      window.location.href = 'SCR-LOBBY.html';
+    }
+  </script>
+
+</body>
+</html>
