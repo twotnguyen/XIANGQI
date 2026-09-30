@@ -10,8 +10,9 @@
  */
 import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = new URL('..', import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const OUT  = join(ROOT, 'site', 'data');
 
 /* ---------- Nhãn tiếng Việt cho từng thư mục ---------- */
