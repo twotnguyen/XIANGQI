@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cờ Tướng Online · Danh Mục 37 Thành Phần Giao Diện</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --bg-dark: #120D0A;
+      --card-bg: rgba(36, 22, 16, 0.9);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.15) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(18, 13, 10, 0.9) 0%, rgba(18, 13, 10, 0.98) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .hero-banner {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 24px;
+      background: var(--card-bg);
+      border: 2px solid var(--gold-dark);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      color: #FFF5DF;
+      margin-bottom: 8px;
+    }
+    .hero-sub {
+      font-size: 13.5px;
+      color: var(--gold-light);
+      margin-bottom: 16px;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--gold-dark);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #FFF;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      color: var(--gold-light);
+      margin: 28px 0 14px 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-dark), transparent);
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .item-card {
+      background: var(--card-bg);
+      border: 1.5px solid #542C15;
+      border-radius: 8px;
+      padding: 14px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+    .item-card:hover {
+      border-color: var(--gold-main);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(198, 146, 42, 0.25);
+    }
+
+    .card-code {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .card-desc {
+      font-size: 11.5px;
+      color: #C8B6A2;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #86EFAC;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 8px;
+    }
+
+    .badge-layer {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: rgba(198, 146, 42, 0.15);
+      color: var(--gold-light);
+      border: 1px solid var(--gold-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="hero-banner">
+      <h1 class="hero-title">KỲ ĐÀI CỜ TƯỚNG ONLINE · BỘ PROTOTYPE 37 THÀNH PHẦN</h1>
+      <p class="hero-sub">Hệ thống giao diện Cổ Phong Á Đông (WCAG 2.1 AA) · Đồng bộ theo DANH-MUC-MAN-HINH-XIANGQI.md</p>
+      
+      <div class="stats-row">
+        <div class="stat-pill">📄 15 Trang Định Tuyến</div>
+        <div class="stat-pill">🪟 15 Cửa Sổ Modal</div>
+        <div class="stat-pill">📑 4 Khung Nhúng Panel</div>
+        <div class="stat-pill">📡 3 Lớp Phủ Overlay</div>
+        <div class="stat-pill" style="border-color: #86EFAC; color: #86EFAC;">✓ 100% Hoàn Thiện</div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: LỚP 1 - 15 TRANG ĐỊNH TUYẾN -->
+    <h2 class="section-title">Lớp 1: 15 Trang Định Tuyến Độc Lập (Routed Pages)</h2>
+    <div class="grid-cards">
+      <a href="SCR-LOGIN.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-LOGIN</span>
+          <div class="card-title">1. Đăng Nhập & Chơi Nhanh</div>
+          <div class="card-desc">Đăng nhập tài khoản, Google OAuth và chế độ Khách (Guest cấm đánh Rank).</div>
+        </div>
+        <div class="card-meta">
+          <span>/login</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-REGISTER.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-REGISTER</span>
+          <div class="card-title">2. Đăng Ký Tài Khoản (3 Bước)</div>
+          <div class="card-desc">Wizard đăng ký trực quan: Thông tin ➔ Xác thực OTP 3 phút ➔ Hoàn tất.</div>
+        </div>
+        <div class="card-meta">
+          <span>/register</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-FORGOT-PASSWORD.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-FORGOT-PASSWORD</span>
+          <div class="card-title">3. Quên Mật Khẩu</div>
+          <div class="card-desc">Gửi link/mã đặt lại mật khẩu về email kèm kiểm tra bảo mật.</div>
+        </div>
+        <div class="card-meta">
+          <span>/forgot-password</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-RESET-PASSWORD.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-RESET-PASSWORD</span>
+          <div class="card-title">4. Đặt Lại Mật Khẩu Mới</div>
+          <div class="card-desc">Nhập mật khẩu mới, kiểm tra độ mạnh và xác nhận cập nhật.</div>
+        </div>
+        <div class="card-meta">
+          <span>/reset-password</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-ONBOARDING.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-ONBOARDING</span>
+          <div class="card-title">5. Thiết Lập Google OAuth</div>
+          <div class="card-desc">Dành cho người đăng nhập lần đầu qua Google để đặt Username và mật khẩu phụ.</div>
+        </div>
+        <div class="card-meta">
+          <span>/onboarding</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-LOBBY.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-LOBBY</span>
+          <div class="card-title">6. Sảnh Cờ Chính (Lobby Hub)</div>
+          <div class="card-desc">Trung tâm 3 chế độ: Đánh Thường, Đấu Hạng (Ranked), Đấu Với Máy (AI).</div>
+        </div>
+        <div class="card-meta">
+          <span>/lobby</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-WAITING-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-WAITING-ROOM</span>
+          <div class="card-title">7. Phòng Chờ Thi Đấu</div>
+          <div class="card-desc">2 ghế Đỏ/Đen, xin đổi bên (30s), đếm ngược 3s vào trận, chia sẻ QR/Link.</div>
+        </div>
+        <div class="card-meta">
+          <span>/rooms/:id</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-GAME-ROOM</span>
+          <div class="card-title">8. Phòng Thi Đấu Trực Tiếp</div>
+          <div class="card-desc">Bàn cờ SVG, camera/mic LiveKit, chat 2 kênh, cầu hòa, xin đi lại, đầu hàng.</div>
+        </div>
+        <div class="card-meta">
+          <span>/rooms/:id</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-AI-GAME.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-AI-GAME</span>
+          <div class="card-title">9. Đấu Cờ Với Máy (AI)</div>
+          <div class="card-desc">3 cấp độ thuật toán Minimax/Alpha-Beta, không giới hạn giờ, đi lại tự do.</div>
+        </div>
+        <div class="card-meta">
+          <span>/ai/:id</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-LEADERBOARD.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-LEADERBOARD</span>
+          <div class="card-title">10. Bảng Xếp Hạng Kỳ Thủ</div>
+          <div class="card-desc">Top 50 Elo cao nhất kèm thanh Sticky cố định ghim thứ hạng cá nhân.</div>
+        </div>
+        <div class="card-meta">
+          <span>/leaderboard</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-FRIENDS.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-FRIENDS</span>
+          <div class="card-title">11. Bạn Bè & Thách Đấu</div>
+          <div class="card-desc">3 tab (Bạn bè, Kết bạn, Lời mời), trạng thái Online, chat 1-1, thách đấu.</div>
+        </div>
+        <div class="card-meta">
+          <span>/friends</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-HISTORY.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-HISTORY</span>
+          <div class="card-title">12. Lịch Sử Ván Đấu Cá Nhân</div>
+          <div class="card-desc">Bộ lọc Rank/Casual/Máy, số liệu thắng/thua, nước đi và nút xem lại.</div>
+        </div>
+        <div class="card-meta">
+          <span>/history</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-REPLAY.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-REPLAY</span>
+          <div class="card-title">13. Xem Lại Ván Cờ Từng Nước</div>
+          <div class="card-desc">Tua nước đi tới/lùi, tự động phát lại (auto-play), xuất FEN/PGN.</div>
+        </div>
+        <div class="card-meta">
+          <span>/history/:id</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-PROFILE-SETTINGS.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-PROFILE-SETTINGS</span>
+          <div class="card-title">14. Cài Đặt Hồ Sơ & Đổi Tên</div>
+          <div class="card-desc">Đổi tên hiển thị tự do, quy trình 4 bước đổi Username bảo mật qua OTP.</div>
+        </div>
+        <div class="card-meta">
+          <span>/settings</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+
+      <a href="SCR-ACCESS-DENIED.html" class="item-card">
+        <div>
+          <span class="card-code">SCR-ACCESS-DENIED</span>
+          <div class="card-title">15. Từ Chối Truy Cập</div>
+          <div class="card-desc">Xử lý phòng đầy khán giả (quá 5 người), phòng bị khóa hoặc cấm khán giả.</div>
+        </div>
+        <div class="card-meta">
+          <span>/access-denied</span>
+          <span class="badge-layer">Trang Độc Lập</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- SECTION 2: LỚP 2 - 15 CỬA SỔ MODAL -->
+    <h2 class="section-title">Lớp 2: 15 Cửa Sổ Modal Tương Tác (Interactive Modals)</h2>
+    <div class="grid-cards">
+      <a href="SCR-LOGIN.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-GUEST-NAME</span>
+          <div class="card-title">1. Nhập Tên Khách Tạm (Guest)</div>
+          <div class="card-desc">Nhập Display Name tạm, cảnh báo cấm Rank, tạo phiên tạm 12h.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-LOGIN.html</span></div>
+      </a>
+
+      <a href="SCR-LOBBY.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-CREATE-ROOM</span>
+          <div class="card-title">2. Thiết Lập Tạo Phòng</div>
+          <div class="card-desc">Đặt tên phòng, chọn thời gian (5p, 10p, 15p, ∞), chọn chế độ Public/Code/Lock.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-LOBBY.html</span></div>
+      </a>
+
+      <a href="SCR-WAITING-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-INVITE</span>
+          <div class="card-title">3. Chia Sẻ Phòng Đa Kênh</div>
+          <div class="card-desc">Mã QR phòng cờ, Link mời tham gia, Mã 8 số, Mời bạn bè Online.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-WAITING-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-ROOM-SETTINGS</span>
+          <div class="card-title">4. Cài Đặt Phòng Động</div>
+          <div class="card-desc">Chủ phòng đổi chế độ Public/Code/Locked (khóa phòng giữ khách cũ).</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-LOBBY.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-MATCHMAKING</span>
+          <div class="card-title">5. Hàng Đợi Tìm Trận Ranked</div>
+          <div class="card-desc">Radar quét đối thủ theo Elo (&plusmn;50 mỗi 10s), đồng hồ giây, hủy tự do.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-LOBBY.html</span></div>
+      </a>
+
+      <a href="SCR-LOBBY.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-AI-SETUP</span>
+          <div class="card-title">6. Chọn Cấp Độ & Phe Cờ AI</div>
+          <div class="card-desc">Chọn 3 cấp độ (Dễ, Vừa, Khó), chọn phe Đỏ (đi trước), Đen (đi sau), Ngẫu nhiên.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-LOBBY.html</span></div>
+      </a>
+
+      <a href="SCR-PROFILE-SETTINGS.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-OTP-USERNAME</span>
+          <div class="card-title">7. Xác Thực OTP Đổi Username</div>
+          <div class="card-desc">Quy trình 4 bước xác thực OTP 6 số qua email bảo vệ quyền sở hữu tên.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-PROFILE-SETTINGS.html</span></div>
+      </a>
+
+      <a href="SCR-FRIENDS.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-DIRECT-CHAT</span>
+          <div class="card-title">8. Chat Riêng 1-1 Bạn Bè</div>
+          <div class="card-desc">Trò chuyện 1-1 giữa bạn bè chính thức, lọc từ ngữ thô tục, 12 sticker.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-FRIENDS.html</span></div>
+      </a>
+
+      <a href="SCR-WAITING-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-SIDE-SWAP-PROMPT</span>
+          <div class="card-title">9. Đề Nghị Đổi Bên (Swap Sides)</div>
+          <div class="card-desc">Hiện phía đối thủ phòng chờ kèm đếm lùi 30 giây, nút đồng ý/từ chối.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-WAITING-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-DRAW-PROMPT</span>
+          <div class="card-title">10. Đề Nghị Xin Hòa (Draw Offer)</div>
+          <div class="card-desc">Hiện phía đối thủ trong ván cờ, đồng hồ đếm 30s, chấp nhận hoặc từ chối.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-UNDO-PROMPT</span>
+          <div class="card-title">11. Đề Nghị Xin Đi Lại (Undo)</div>
+          <div class="card-desc">Hiện phía đối thủ khi xin đi lại trong phòng Thường (tối đa 3 lần/ván).</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-CONFIRM-RESIGN</span>
+          <div class="card-title">12. Xác Nhận Đầu Hàng</div>
+          <div class="card-desc">Cảnh báo xử thua lập tức và trừ điểm Elo trên bảng xếp hạng.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-CONFIRM-LEAVE</span>
+          <div class="card-title">13. Cảnh Báo Rời Phòng Thi Đấu</div>
+          <div class="card-desc">Cảnh báo rời phòng lúc đang chơi được tính là Đầu hàng và trừ điểm Elo.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-CONFIRM-KICK</span>
+          <div class="card-title">14. Xác Nhận Đuổi Khán Giả</div>
+          <div class="card-desc">Chủ phòng hoặc đấu thủ 2 trục xuất và chặn khán giả vào lại phòng.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-MATCH-RESULT</span>
+          <div class="card-title">15. Kết Quả Ván Cờ & Tái Đấu</div>
+          <div class="card-desc">Biểu ngữ Thắng/Thua/Hòa, biến động Elo, cụm nút Tái đấu, Replay, Rời phòng.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+    </div>
+
+    <!-- SECTION 3: LỚP 3 - 4 EMBEDDED PANELS & LỚP 4 - 3 OVERLAYS -->
+    <h2 class="section-title">Lớp 3: 4 Khung Nhúng (Panels) & Lớp 4: 3 Lớp Phủ (Overlays)</h2>
+    <div class="grid-cards">
+      <div class="item-card">
+        <div>
+          <span class="card-code">PANEL-NAVBAR</span>
+          <div class="card-title">1. Thanh Header Toàn Cục</div>
+          <div class="card-desc">Đồng bộ trên 15 trang: Logo, Link Sảnh, Xếp hạng, Bạn bè, Elo, Chuông.</div>
+        </div>
+        <div class="card-meta"><span>Lớp 3: Embedded Panel</span></div>
+      </div>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">PANEL-CHAT</span>
+          <div class="card-title">2. Khung Chat 2 Kênh & Sticker</div>
+          <div class="card-desc">2 Tab Kênh Riêng/Chung, bộ lọc từ cấm ***, khay 12 sticker cờ tướng 1 chạm.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">PANEL-MEDIA</span>
+          <div class="card-title">3. Face Cam & Mic LiveKit SFU</div>
+          <div class="card-desc">Video call 2 kỳ thủ, bật/tắt mic/cam độc lập, khán giả chỉ nghe/xem.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">PANEL-SPECTATORS</span>
+          <div class="card-title">4. Danh Sách Khán Giả & Kick</div>
+          <div class="card-desc">Hiển thị khán giả đang xem (tối đa 5), nút Kick cho 2 đấu thủ.</div>
+        </div>
+        <div class="card-meta"><span>Xem tại: SCR-GAME-ROOM.html</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">ALERT-INACTIVITY-BANNER</span>
+          <div class="card-title">5. Cảnh Báo Chống Treo Ván R17</div>
+          <div class="card-desc">Banner nổi trên bàn cờ khi quá 3p không đi, đếm 30s + nút "Tôi còn đây".</div>
+        </div>
+        <div class="card-meta"><span>Lớp 4: System Alert</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">OVERLAY-RECONNECTING</span>
+          <div class="card-title">6. Lớp Phủ Mất Mạng Socket.IO</div>
+          <div class="card-desc">Phủ mờ toàn màn hình, không đóng được bằng Esc, đếm lùi ân hạn 60 giây.</div>
+        </div>
+        <div class="card-meta"><span>Lớp 4: System Overlay</span></div>
+      </a>
+
+      <a href="SCR-GAME-ROOM.html" class="item-card">
+        <div>
+          <span class="card-code">MODAL-MEDIA-TAB-SWITCH</span>
+          <div class="card-title">7. Cảnh Báo Tranh Chấp Media</div>
+          <div class="card-desc">Cảnh báo độc quyền thiết bị một nguồn (ARCH-11) khi mở đa tab.</div>
+        </div>
+        <div class="card-meta"><span>Lớp 4: System Dialog</span></div>
+      </a>
+    </div>
+
+    <footer style="margin-top: 40px; text-align: center; font-size: 12px; color: #7A4E0F;">
+      Dự Án Khóa Luận Tốt Nghiệp Cử Nhân CNTT 2026 · Hệ Thống Cờ Tướng Trực Tuyến (XIANGQI)
+    </footer>
+  </div>
+
+</body>
+</html>

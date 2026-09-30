@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Bàn Cờ Thi Đấu Trực Tiếp</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --crimson-dark: #3F0609;
+      --bg-dark: #0F0B08;
+      --panel-bg: rgba(30, 18, 12, 0.92);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-han: 'SimSun', 'STSong', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 10%, rgba(200, 130, 40, 0.12) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(15, 11, 8, 0.88) 0%, rgba(15, 11, 8, 0.96) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+    .game-navbar {
+      height: 54px;
+      background: linear-gradient(180deg, rgba(32, 18, 12, 0.98) 0%, rgba(20, 11, 7, 0.95) 100%);
+      border-bottom: 2px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .room-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--gold-dark);
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.4);
+    }
+
+    .btn-icon-nav {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #FFF;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-icon-nav:hover { background: rgba(255,255,255,0.15); }
+
+    /* 3-COLUMN ARENA LAYOUT */
+    .arena-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr 320px;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    /* COLUMN 1: PANEL-MEDIA (LIVEKIT SFU CAM & MIC) */
+    .panel-media {
+      background: var(--panel-bg);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+
+    .cam-box {
+      background: #150E0A;
+      border: 1.5px solid #4A2614;
+      border-radius: 8px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cam-box.active-turn {
+      border-color: var(--gold-main);
+      box-shadow: 0 0 12px rgba(245, 202, 103, 0.35);
+    }
+
+    .cam-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .cam-feed-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1;
+    }
+    .cam-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 17px;
+      color: #FFF;
+      border: 2px solid var(--gold-light);
+    }
+
+    .cam-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 6px;
+    }
+
+    .btn-cam-toggle {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #FFF;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-cam-toggle.muted { color: #EF4444; background: rgba(239, 68, 68, 0.2); }
+
+    .digital-clock {
+      font-family: monospace;
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFF;
+      background: #000;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #4B5563;
+    }
+    .digital-clock.low-time { color: #EF4444; animation: blinkClock 1s infinite; }
+    @keyframes blinkClock { 50% { opacity: 0.5; } }
+
+    /* COLUMN 2: CENTER CHESSBOARD SVG (GR-COORD) */
+    .center-board-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    /* INACTIVITY BANNER (ALERT-INACTIVITY-BANNER) */
+    .inactivity-banner {
+      width: 100%;
+      max-width: 580px;
+      background: #D97706;
+      color: #FFF;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+      animation: bannerSlide 0.3s ease;
+    }
+
+    /* SVG CHESSBOARD CONTAINER */
+    .board-wood-frame {
+      background: radial-gradient(circle at 50% 50%, #E3BA82 0%, #C49A62 70%, #9C7238 100%);
+      border: 12px solid #4A2614;
+      border-radius: 10px;
+      box-shadow: 
+        0 20px 50px rgba(0,0,0,0.85),
+        inset 0 0 15px rgba(60, 30, 10, 0.6);
+      padding: 8px;
+      user-select: none;
+    }
+
+    svg.board-svg {
+      display: block;
+      width: 100%;
+      max-width: 540px;
+      height: auto;
+      aspect-ratio: 9 / 10;
+    }
+
+    /* ACTION BUTTONS BAR */
+    .game-actions-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 580px;
+      width: 100%;
+    }
+
+    .btn-action-game {
+      background: rgba(35, 20, 14, 0.9);
+      border: 1.5px solid #542C15;
+      color: #E2CFB7;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .btn-action-game:hover {
+      border-color: var(--gold-main);
+      color: var(--gold-light);
+    }
+    .btn-action-game.danger:hover {
+      border-color: #EF4444;
+      color: #FCA5A5;
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* COLUMN 3: PANEL-CHAT & SPECTATORS */
+    .panel-right {
+      background: var(--panel-bg);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+
+    .chat-tabs-header {
+      display: flex;
+      background: #25160E;
+      border-bottom: 2px solid var(--gold-dark);
+    }
+
+    .chat-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #A89582;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      transition: all 0.2s;
+    }
+    .chat-tab.active {
+      color: var(--gold-light);
+      background: rgba(198, 146, 42, 0.15);
+      border-bottom: 2px solid var(--gold-main);
+    }
+
+    .chat-messages-box {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      max-height: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .chat-msg {
+      line-height: 1.4;
+      background: rgba(0,0,0,0.25);
+      padding: 6px 8px;
+      border-radius: 5px;
+    }
+    .chat-msg .sender-red { color: #FCA5A5; font-weight: 700; }
+    .chat-msg .sender-black { color: #E5E7EB; font-weight: 700; }
+    .chat-msg .sender-spec { color: #FCD34D; font-style: italic; }
+
+    /* STICKERS TRAY (12 STICKERS) */
+    .stickers-tray {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      padding: 6px 10px;
+      background: rgba(0,0,0,0.3);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn-sticker {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      transition: transform 0.1s;
+    }
+    .btn-sticker:hover { transform: scale(1.25); }
+
+    .chat-input-bar {
+      display: flex;
+      padding: 8px 10px;
+      gap: 6px;
+      border-top: 1px solid var(--gold-dark);
+      background: #180F0A;
+    }
+    .chat-text-input {
+      flex: 1;
+      height: 34px;
+      background: #25160E;
+      border: 1px solid #542C15;
+      border-radius: 5px;
+      padding: 0 8px;
+      color: #FFF;
+      font-size: 12px;
+      outline: none;
+    }
+    .btn-send-chat {
+      padding: 0 12px;
+      background: var(--gold-main);
+      color: #FFF;
+      border: none;
+      border-radius: 5px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* SPECTATORS WIDGET (PANEL-SPECTATORS) */
+    .spectators-widget {
+      padding: 10px 12px;
+      border-top: 2px solid var(--gold-dark);
+      background: rgba(20, 11, 7, 0.8);
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 11.5px;
+    }
+    .btn-kick-spec {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #EF4444;
+      color: #FCA5A5;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* MODALS & OVERLAYS */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 6, 4, 0.8);
+      backdrop-filter: blur(5px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      width: 100%;
+      max-width: 420px;
+      background: #25160E;
+      border: 3px solid #542C15;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 20px;
+      text-align: center;
+    }
+
+    @media (max-width: 960px) {
+      .arena-layout { grid-template-columns: 1fr; }
+      .panel-media, .panel-right { max-width: 540px; margin: 0 auto; width: 100%; }
+    }
+
+    /* COUNTDOWN BADGE & RECONNECT OVERLAY STYLES */
+    .countdown-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #FFF;
+      background: #B91C1C;
+      padding: 3px 10px;
+      border-radius: 12px;
+      border: 1px solid #EF4444;
+      animation: timerPulse 1s infinite alternate;
+    }
+    @keyframes timerPulse {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0.65; transform: scale(0.96); }
+    }
+
+    .modal-box-clean {
+      width: 100%;
+      max-width: 440px;
+      background: #25160E;
+      border: 3px solid #542C15;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      overflow: hidden;
+      text-align: left;
+    }
+    .modal-header-clean {
+      padding: 14px 18px;
+      background: #3C1E14;
+      border-bottom: 2px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header-clean h3 {
+      font-family: var(--font-serif);
+      font-size: 16.5px;
+      color: #FFF;
+      margin: 0;
+    }
+    .modal-body-clean {
+      padding: 18px;
+    }
+
+    /* OVERLAY RECONNECTING */
+    .overlay-fullscreen {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 8, 5, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .reconnect-card {
+      width: 100%;
+      max-width: 420px;
+      background: #20130C;
+      border: 2.5px solid #EF4444;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.35);
+    }
+    .reconnect-timer-big {
+      font-family: var(--font-serif);
+      font-size: 52px;
+      font-weight: 700;
+      color: #EF4444;
+      margin: 12px 0;
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+
+    /* FLOATING TEST BAR */
+    .test-suite-floating {
+      position: fixed;
+      bottom: 12px;
+      left: 12px;
+      z-index: 150;
+      background: rgba(24, 15, 10, 0.92);
+      border: 1.5px solid var(--gold-main);
+      border-radius: 8px;
+      padding: 6px 12px;
+      backdrop-filter: blur(8px);
+      font-size: 11.5px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+    .test-suite-menu {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #542C15;
+    }
+    .btn-test-trigger {
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid #542C15;
+      color: var(--gold-light);
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 11px;
+    }
+    .btn-test-trigger:hover {
+      background: var(--gold-main);
+      color: #FFF;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header class="game-navbar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button type="button" class="btn-icon-nav" onclick="openLeaveMatchModal()" title="Rời về Sảnh">❮ Sảnh</button>
+      <span style="font-family: var(--font-serif); font-size: 15px; font-weight: 700; color: #FFF;">Kỳ Đài #88392019</span>
+      <span class="room-tag">⚔️ Đánh Thường</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button type="button" class="btn-icon-nav" id="btn-sound-toggle" onclick="toggleMuteSound()">🔊 Âm Thanh</button>
+      <button type="button" class="btn-icon-nav" onclick="openRoomSettings()">⚙️ Cài Đặt</button>
+    </div>
+  </header>
+
+  <!-- 3-COLUMN ARENA -->
+  <div class="arena-layout">
+
+    <!-- COLUMN 1: PANEL-MEDIA (CAM/MIC & OPPONENTS) -->
+    <aside class="panel-media">
+      <!-- OPPONENT: BLACK -->
+      <div class="cam-box" id="cam-black">
+        <div class="cam-header">
+          <span style="color: #E5E7EB;">⚫ Trần Hưng Đạo (1290)</span>
+          <span class="digital-clock" id="clock-black">09:42</span>
+        </div>
+        <div class="cam-feed-placeholder">
+          <div class="cam-avatar" style="background: #374151;">Đ</div>
+          <span style="font-size: 10.5px; color: #9CA3AF;">LiveKit Video Stream</span>
+        </div>
+        <div class="cam-controls">
+          <span style="font-size: 10px; color: #86EFAC;">● Cam Online</span>
+          <span>🎤 🔊</span>
+        </div>
+      </div>
+
+      <!-- YOU: RED (ACTIVE TURN) -->
+      <div class="cam-box active-turn" id="cam-red">
+        <div class="cam-header">
+          <span style="color: #FCA5A5;">🔴 Bạn: Nguyễn Ngọc Tình (1280)</span>
+          <span class="digital-clock" id="clock-red">09:58</span>
+        </div>
+        <div class="cam-feed-placeholder">
+          <div class="cam-avatar" style="background: #991B1B;">T</div>
+          <span style="font-size: 10.5px; color: var(--gold-light);">Lượt của bạn (Đỏ đi)</span>
+        </div>
+        <div class="cam-controls">
+          <button type="button" class="btn-cam-toggle" id="btn-cam" onclick="toggleCam()">📹 Bật Cam</button>
+          <button type="button" class="btn-cam-toggle" id="btn-mic" onclick="toggleMic()">🎙️ Bật Mic</button>
+        </div>
+      </div>
+
+      <!-- MOVE HISTORY MINI -->
+      <div style="background: #180F0A; border: 1px solid #4A2614; border-radius: 6px; padding: 8px; font-size: 11px;">
+        <div style="font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">Biên bản nước đi gần nhất:</div>
+        <div id="moves-log" style="color: #C8B6A2; line-height: 1.4;">
+          1. 🔴 Pháo 2 bình 5 (Pháo đầu)<br>
+          2. ⚫ Mã 8 tiến 7 (Bình phong mã)
+        </div>
+      </div>
+    </aside>
+
+    <!-- COLUMN 2: CHESSBOARD SVG (GR-COORD) -->
+    <main class="center-board-stage">
+      <!-- INACTIVITY WARNING BANNER -->
+      <div class="inactivity-banner" id="inactivity-alert">
+        <span>⚠️ Cảnh báo: Quá 3 phút chưa đi cờ! Xử thua sau: <strong id="inact-countdown">30s</strong></span>
+        <button type="button" onclick="dismissInactivity()" style="padding: 2px 8px; background: #FFF; border: none; border-radius: 3px; font-weight: 700; cursor: pointer;">Tôi còn đây</button>
+      </div>
+
+      <!-- SVG WOOD CHESSBOARD -->
+      <div class="board-wood-frame">
+        <svg class="board-svg" viewBox="0 0 450 500" id="xiangqi-svg" onclick="handleSvgClick(event)">
+          <!-- Wood texture lines -->
+          <defs>
+            <radialGradient id="piece-red-grad" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#FBF0D9"/>
+              <stop offset="60%" stop-color="#D8A562"/>
+              <stop offset="100%" stop-color="#875B26"/>
+            </radialGradient>
+            <radialGradient id="piece-black-grad" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#71717A"/>
+              <stop offset="60%" stop-color="#3F3F46"/>
+              <stop offset="100%" stop-color="#18181B"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Board Grid Lines (10 rows, 9 cols) -->
+          <!-- Outer border -->
+          <rect x="25" y="25" width="400" height="450" fill="none" stroke="#5C3414" stroke-width="2.5"/>
+
+          <!-- Horizontal Lines -->
+          <g stroke="#78471D" stroke-width="1.4">
+            <line x1="25" y1="25" x2="425" y2="25"/>
+            <line x1="25" y1="75" x2="425" y2="75"/>
+            <line x1="25" y1="125" x2="425" y2="125"/>
+            <line x1="25" y1="175" x2="425" y2="175"/>
+            <line x1="25" y1="225" x2="425" y2="225"/>
+            <!-- RIVER (楚河 漢界) -->
+            <line x1="25" y1="275" x2="425" y2="275"/>
+            <line x1="25" y1="325" x2="425" y2="325"/>
+            <line x1="25" y1="375" x2="425" y2="375"/>
+            <line x1="25" y1="425" x2="425" y2="425"/>
+            <line x1="25" y1="475" x2="425" y2="475"/>
+
+            <!-- Vertical lines (broken across river) -->
+            <line x1="25" y1="25" x2="25" y2="475"/>
+            <line x1="425" y1="25" x2="425" y2="475"/>
+
+            <!-- Inner vertical lines top -->
+            <line x1="75" y1="25" x2="75" y2="225"/>
+            <line x1="125" y1="25" x2="125" y2="225"/>
+            <line x1="175" y1="25" x2="175" y2="225"/>
+            <line x1="225" y1="25" x2="225" y2="225"/>
+            <line x1="275" y1="25" x2="275" y2="225"/>
+            <line x1="325" y1="25" x2="325" y2="225"/>
+            <line x1="375" y1="25" x2="375" y2="225"/>
+
+            <!-- Inner vertical lines bottom -->
+            <line x1="75" y1="275" x2="75" y2="475"/>
+            <line x1="125" y1="275" x2="125" y2="475"/>
+            <line x1="175" y1="275" x2="175" y2="475"/>
+            <line x1="225" y1="275" x2="225" y2="475"/>
+            <line x1="275" y1="275" x2="275" y2="475"/>
+            <line x1="325" y1="275" x2="325" y2="475"/>
+            <line x1="375" y1="275" x2="375" y2="475"/>
+
+            <!-- Nine Palaces diagonals (Top) -->
+            <line x1="175" y1="25" x2="275" y2="125"/>
+            <line x1="275" y1="25" x2="175" y2="125"/>
+
+            <!-- Nine Palaces diagonals (Bottom) -->
+            <line x1="175" y1="375" x2="275" y2="475"/>
+            <line x1="275" y1="375" x2="175" y2="475"/>
+          </g>
+
+          <!-- River Calligraphy Text -->
+          <text x="100" y="256" font-family="SimSun, serif" font-size="22" font-weight="900" fill="#78471D" text-anchor="middle">楚 河</text>
+          <text x="350" y="256" font-family="SimSun, serif" font-size="22" font-weight="900" fill="#78471D" text-anchor="middle">漢 界</text>
+
+          <!-- LAST MOVE HIGHLIGHT (Last Move from (225, 475) to (225, 225)) -->
+          <rect id="last-move-src" x="203" y="353" width="44" height="44" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="4"/>
+          <rect id="last-move-dst" x="203" y="203" width="44" height="44" fill="none" stroke="#F59E0B" stroke-width="3"/>
+
+          <!-- CHECK ALERT HIGHLIGHT -->
+          <circle id="check-alert-ring" cx="225" cy="475" r="24" fill="none" stroke="#EF4444" stroke-width="3" stroke-dasharray="4" style="display:none;"/>
+
+          <!-- CHESS PIECES CONTAINER (RENDERED VIA JAVASCRIPT) -->
+          <g id="pieces-layer"></g>
+
+          <!-- LEGAL MOVE INDICATOR DOTS -->
+          <g id="legal-dots-layer"></g>
+        </svg>
+      </div>
+
+      <!-- GAME ACTIONS CONTROLS -->
+      <div class="game-actions-bar">
+        <button type="button" class="btn-action-game" onclick="promptDraw()">🤝 Xin Hòa</button>
+        <button type="button" class="btn-action-game" id="btn-undo" onclick="promptUndo()">↩️ Xin Đi Lại (3/3)</button>
+        <button type="button" class="btn-action-game danger" onclick="confirmResign()">🏳️ Đầu Hàng</button>
+      </div>
+    </main>
+
+    <!-- COLUMN 3: PANEL-CHAT & SPECTATORS -->
+    <aside class="panel-right">
+      <div class="chat-tabs-header">
+        <button type="button" class="chat-tab active" id="tab-private" onclick="switchChatTab('private')">Kênh Riêng (2 Đấu Thủ)</button>
+        <button type="button" class="chat-tab" id="tab-public" onclick="switchChatTab('public')">Kênh Chung</button>
+      </div>
+
+      <div class="chat-messages-box" id="chat-box">
+        <div class="chat-msg">
+          <span class="sender-red">Nguyễn Ngọc Tình:</span> Chào kỳ hữu! Chúc ván cờ vui vẻ.
+        </div>
+        <div class="chat-msg">
+          <span class="sender-black">Trần Hưng Đạo:</span> Chào bạn, xin chỉ giáo!
+        </div>
+      </div>
+
+      <!-- 12 STICKERS TRAY -->
+      <div class="stickers-tray">
+        <button type="button" class="btn-sticker" onclick="sendSticker('🍵')">🍵</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('👍')">👍</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('👏')">👏</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('⚔️')">⚔️</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🤝')">🤝</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🤯')">🤯</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🤔')">🤔</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🔥')">🔥</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🎯')">🎯</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('⚡')">⚡</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🏆')">🏆</button>
+        <button type="button" class="btn-sticker" onclick="sendSticker('🙏')">🙏</button>
+      </div>
+
+      <form class="chat-input-bar" onsubmit="handleSendChat(event)">
+        <input type="text" class="chat-text-input" id="chat-input" placeholder="Gõ tin nhắn (tự động lọc ***)...">
+        <button type="submit" class="btn-send-chat">Gửi</button>
+      </form>
+
+      <!-- SPECTATORS PANEL -->
+      <div class="spectators-widget">
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: var(--gold-light);">
+          <span>Khán Giả Đang Xem (2 / 5)</span>
+          <span style="color: #86EFAC;">● Live 100%</span>
+        </div>
+        <div class="spec-row">
+          <span>👁️ Kỳ Vương Ba Vì</span>
+          <button type="button" class="btn-kick-spec" onclick="kickSpectator('Kỳ Vương Ba Vì')">Kick</button>
+        </div>
+        <div class="spec-row">
+          <span>👁️ Bạch Thủ Cờ</span>
+          <button type="button" class="btn-kick-spec" onclick="kickSpectator('Bạch Thủ Cờ')">Kick</button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- MODAL: MATCH RESULT (MODAL-MATCH-RESULT) -->
+  <div id="modal-match-result" class="modal-backdrop">
+    <div class="modal-box">
+      <div style="font-size: 48px; margin-bottom: 8px;" id="result-icon">🏆</div>
+      <h2 style="font-family: var(--font-serif); font-size: 24px; color: #FFF5DF; margin-bottom: 4px;" id="result-title">CHIẾN THẮNG!</h2>
+      <p style="font-size: 13px; color: #86EFAC; margin-bottom: 16px;" id="result-elo-delta">+18 Elo (1280 ➔ 1298)</p>
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid #542C15; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 18px;">
+        Đối thủ xin đầu hàng ở nước thứ 28. Bạn đã bảo vệ thành công Tướng Đỏ!
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button type="button" onclick="window.location.href='SCR-LOBBY.html'" style="flex: 1; height: 40px; background: transparent; border: 1.5px solid #542C15; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+          Về Sảnh Cờ
+        </button>
+        <button type="button" onclick="window.location.href='SCR-REPLAY.html?match=88392019'" style="flex: 1.2; height: 40px; background: var(--gold-main); border: none; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+          Xem Lại Ván Cờ ❯
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ROOM SETTINGS (MODAL-ROOM-SETTINGS - STT 18) -->
+  <div id="modal-room-settings" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>⚙️ Cài Đặt Phòng Thi Đấu</h3>
+        <button type="button" onclick="closeRoomSettings()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body-clean">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 12px; color: #E2CFB7; font-weight: 700; display: block; margin-bottom: 6px;">Tên phòng:</label>
+          <input type="text" class="chat-text-input" id="setting-room-name" value="Kỳ Đài #88392019" style="width: 100%; height: 36px; padding: 0 10px; border-radius: 6px;">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 12px; color: #E2CFB7; font-weight: 700; display: block; margin-bottom: 6px;">Chế độ truy cập:</label>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; cursor: pointer; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px; border: 1px solid #542C15;">
+              <input type="radio" name="room-mode-game" value="PUBLIC" checked style="accent-color: var(--gold-main); margin-top: 2px;">
+              <div>
+                <strong style="color: #FFF;">Công khai (Public)</strong>
+                <div style="font-size: 11px; color: #C8B6A2;">Hiện trên sảnh, kỳ thủ khác có thể bấm vào xem ván cờ.</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; cursor: pointer; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px; border: 1px solid #542C15;">
+              <input type="radio" name="room-mode-game" value="LOCKED" style="accent-color: var(--gold-main); margin-top: 2px;">
+              <div>
+                <strong style="color: #FCA5A5;">Khóa phòng (Locked)</strong>
+                <div style="font-size: 11px; color: #C8B6A2;">Chặn người mới hoàn toàn, giữ nguyên 2 khán giả đang có trong phòng.</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 18px; padding-top: 10px; border-top: 1px solid #542C15;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="font-size: 12px; color: #FFF;">Cho phép Khán giả (Spectators):</strong>
+              <div style="font-size: 11px; color: #C8B6A2;">Tối đa 5 người xem cùng lúc</div>
+            </div>
+            <input type="checkbox" id="setting-game-specs" checked style="accent-color: var(--gold-main); width: 18px; height: 18px;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="closeRoomSettings()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            Đóng
+          </button>
+          <button type="button" onclick="saveRoomSettings()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: 1.5px solid #5A3F0E; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            Lưu Cài Đặt
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DRAW PROMPT (MODAL-DRAW-PROMPT - STT 24) -->
+  <div id="modal-draw-prompt" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>🤝 Đề Nghị Cầu Hòa (Draw Offer)</h3>
+        <span class="countdown-badge" id="draw-timer">30s</span>
+      </div>
+      <div class="modal-body-clean">
+        <div style="text-align: center; margin-bottom: 14px;">
+          <div style="font-size: 40px; margin-bottom: 6px;">🤝</div>
+          <p style="font-size: 13.5px; color: #FFF5DF; line-height: 1.5;">
+            Đối thủ <strong style="color: var(--gold-light);">Trần Hưng Đạo</strong> gửi đề nghị **CẦU HÒA**.
+          </p>
+          <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid #542C15; font-size: 12px; color: #C8B6A2; text-align: left;">
+            • Nếu chấp nhận: Ván cờ sẽ lập tức kết thúc với kết quả <strong>HÒA CUỘC</strong> (điểm Elo điều chỉnh theo tỷ số hòa 0.5 - 0.5).<br>
+            • Nếu từ chối hoặc sau 30 giây: Ván cờ tiếp tục bình thường.
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="rejectDrawPrompt()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            ✕ Từ Chối
+          </button>
+          <button type="button" onclick="acceptDrawPrompt()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: 1.5px solid #5A3F0E; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            🤝 Chấp Nhận Hòa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: UNDO PROMPT (MODAL-UNDO-PROMPT - STT 25) -->
+  <div id="modal-undo-prompt" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>↩️ Đề Nghị Xin Đi Lại (Undo Move)</h3>
+        <span class="countdown-badge" id="undo-timer">30s</span>
+      </div>
+      <div class="modal-body-clean">
+        <div style="text-align: center; margin-bottom: 14px;">
+          <div style="font-size: 40px; margin-bottom: 6px;">↩️</div>
+          <p style="font-size: 13.5px; color: #FFF5DF; line-height: 1.5;">
+            Đối thủ <strong style="color: var(--gold-light);">Trần Hưng Đạo</strong> vừa đi nhầm nước cờ và xin được <strong>ĐI LẠI</strong> (còn 2/3 lần).
+          </p>
+          <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid #542C15; font-size: 12px; color: #C8B6A2; text-align: left;">
+            • Nếu đồng ý: Bàn cờ sẽ lùi lại 1 nước để đối thủ chọn nước đi khác.<br>
+            • Tính năng chỉ hỗ trợ trong ván Đánh Thường (Ranked cấm tuyệt đối).
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="rejectUndoPrompt()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            ✕ Từ Chối
+          </button>
+          <button type="button" onclick="acceptUndoPrompt()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: 1.5px solid #5A3F0E; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            ↩️ Đồng Ý Cho Đi Lại
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM RESIGN (MODAL-CONFIRM-RESIGN - STT 26) -->
+  <div id="modal-confirm-resign" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>🏳️ Xác Nhận Đầu Hàng</h3>
+        <button type="button" onclick="closeResignModal()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body-clean">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 40px; margin-bottom: 8px;">🏳️</div>
+          <p style="font-size: 14px; color: #FFF5DF; font-weight: 700; line-height: 1.4;">
+            Bạn có chắc chắn muốn ĐẦU HÀNG ván cờ này?
+          </p>
+          <div style="margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.12); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.35); font-size: 12px; color: #FCA5A5; text-align: left;">
+            ⚠️ <strong>Hậu quả:</strong> Ván cờ sẽ lập tức kết thúc và xử bạn <strong>THUA CUỘC</strong> (trừ điểm xếp hạng Elo nếu là ván Ranked).
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="closeResignModal()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            Ở Lại Đấu Tiếp
+          </button>
+          <button type="button" onclick="doResign()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #B91C1C, #7F1D1D); border: 1.5px solid #991B1B; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            🏳️ Xác Nhận Đầu Hàng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM LEAVE MATCH (MODAL-CONFIRM-LEAVE - STT 27) -->
+  <div id="modal-confirm-leave-match" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>🚪 Cảnh Báo Rời Phòng Thi Đấu</h3>
+        <button type="button" onclick="closeLeaveMatchModal()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body-clean">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 40px; margin-bottom: 8px;">🚪</div>
+          <p style="font-size: 14px; color: #FFF5DF; font-weight: 700; line-height: 1.4;">
+            Ván cờ đang diễn ra! Bạn có chắc muốn rời phòng?
+          </p>
+          <div style="margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.15); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 12px; color: #FCA5A5; text-align: left;">
+            ⛔ <strong>Luật xử phạt:</strong> Rời phòng khi đang thi đấu được hệ thống tính là <strong>ĐẦU HÀNG</strong>. Bạn sẽ bị xử Thua ngay lập tức và bị trừ điểm xếp hạng Elo.
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="closeLeaveMatchModal()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: 1.5px solid #5A3F0E; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            ⚔️ Ở Lại Thi Đấu
+          </button>
+          <button type="button" onclick="confirmLeaveMatch()" style="flex: 1; height: 38px; background: linear-gradient(180deg, #B91C1C, #7F1D1D); border: 1.5px solid #991B1B; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            Rời Phòng (Xử Thua)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM KICK SPECTATOR (MODAL-CONFIRM-KICK - STT 28) -->
+  <div id="modal-confirm-kick" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>⛔ Xác Nhận Đuổi Khán Giả</h3>
+        <button type="button" onclick="closeKickModal()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body-clean">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 40px; margin-bottom: 8px;">⛔</div>
+          <p style="font-size: 13.5px; color: #FFF5DF; line-height: 1.5;">
+            Bạn có chắc chắn muốn trục xuất khán giả <strong style="color: var(--gold-light);" id="kick-target-name">Kỳ Vương Ba Vì</strong> ra khỏi phòng?
+          </p>
+          <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid #542C15; font-size: 12px; color: #C8B6A2; text-align: left;">
+            Khán giả này sẽ bị ngắt kết nối và **chặn không cho phép vào lại phòng này** cho đến khi phòng thi đấu đóng hoàn toàn.
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="closeKickModal()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            Hủy Bỏ
+          </button>
+          <button type="button" onclick="doKickSpectator()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #B91C1C, #7F1D1D); border: 1.5px solid #991B1B; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            ⛔ Đuổi Khán Giả
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: RECONNECTING (OVERLAY-RECONNECTING - STT 35) -->
+  <div id="overlay-reconnecting" class="overlay-fullscreen">
+    <div class="reconnect-card">
+      <div style="font-size: 44px; margin-bottom: 8px; animation: timerPulse 1s infinite;">📡</div>
+      <h2 style="font-family: var(--font-serif); font-size: 19px; color: #FFF; margin-bottom: 6px;">MẤT KẾT NỐI MÁY CHỦ REALTIME</h2>
+      <p style="font-size: 12px; color: #C8B6A2;">Đang tự động kết nối lại Socket.IO... Vui lòng không đóng trình duyệt.</p>
+      
+      <div class="reconnect-timer-big" id="reconnect-countdown">60s</div>
+      
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid #542C15; border-radius: 6px; padding: 10px; font-size: 11.5px; color: #FCA5A5; margin-bottom: 16px;">
+        ⚠️ Thời gian ân hạn 60 giây. Nếu quá 60s không kết nối lại được, ván cờ sẽ bị xử <strong>THUA</strong> do mất kết nối (DISCONNECT).
+      </div>
+
+      <button type="button" onclick="simulateReconnectSuccess()" style="width: 100%; height: 40px; background: linear-gradient(180deg, #C6922A, #875F17); border: 1.5px solid #5A3F0E; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+        ✓ Giả Lập Đã Nối Lại Mạng Thành Công
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: MEDIA TAB SWITCH (MODAL-MEDIA-TAB-SWITCH - STT 36) -->
+  <div id="modal-media-tab-switch" class="modal-backdrop">
+    <div class="modal-box-clean">
+      <div class="modal-header-clean">
+        <h3>📹 Tranh Chấp Thiết Bị Media (ARCH-11)</h3>
+        <button type="button" onclick="closeMediaSwitchModal()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body-clean">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 40px; margin-bottom: 8px;">⚠️</div>
+          <p style="font-size: 13.5px; color: #FFF5DF; line-height: 1.5;">
+            Camera hoặc Micro của bạn đang được phát sóng ở <strong>một Tab trình duyệt khác</strong>!
+          </p>
+          <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid #542C15; font-size: 12px; color: #C8B6A2; text-align: left;">
+            Theo quy tắc độc quyền thiết bị (One-Tab-One-Source), bạn có muốn thu hồi quyền media ở tab cũ và chuyển quyền phát sang tab này không?
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="closeMediaSwitchModal()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            ✕ Hủy Bỏ
+          </button>
+          <button type="button" onclick="confirmMediaSwitch()" style="flex: 1.3; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: 1.5px solid #5A3F0E; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            🔄 Chuyển Thiết Bị Sang Tab Này
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING TEST BAR (GIÚP PREVIEW NGAY LẬP TỨC 36 THÀNH PHẦN) -->
+  <div class="test-suite-floating">
+    <div style="cursor: pointer; font-weight: 700; color: var(--gold-light); display: flex; align-items: center; justify-content: space-between; gap: 8px;" onclick="toggleTestMenu()">
+      <span>🧪 Demo 36 Màn Hình (Test Menu)</span>
+      <span id="test-menu-arrow">▲</span>
+    </div>
+    <div class="test-suite-menu" id="test-menu-box">
+      <button type="button" class="btn-test-trigger" onclick="openRoomSettings()">1. ⚙️ Cài đặt phòng</button>
+      <button type="button" class="btn-test-trigger" onclick="openDrawPromptModal()">2. 🤝 Nhận đề nghị Hòa (30s)</button>
+      <button type="button" class="btn-test-trigger" onclick="openUndoPromptModal()">3. ↩️ Nhận đề nghị Xin đi lại (30s)</button>
+      <button type="button" class="btn-test-trigger" onclick="confirmResign()">4. 🏳️ Modal Đầu Hàng</button>
+      <button type="button" class="btn-test-trigger" onclick="openLeaveMatchModal()">5. 🚪 Modal Rời Phòng</button>
+      <button type="button" class="btn-test-trigger" onclick="kickSpectator('Kỳ Vương Ba Vì')">6. ⛔ Modal Kick Khán Giả</button>
+      <button type="button" class="btn-test-trigger" onclick="simulateDisconnect()">7. 📡 Lớp phủ Mất mạng 60s</button>
+      <button type="button" class="btn-test-trigger" onclick="openMediaSwitchModal()">8. 📹 Tranh chấp Media Đa tab</button>
+      <button type="button" class="btn-test-trigger" onclick="document.getElementById('modal-match-result').style.display='flex'">9. 🏆 Kết Quả Ván Cờ</button>
+    </div>
+  </div>
+
+
+  <script>
+    // Audio Context Synthesizer (Web Audio API - No external mp3 files needed)
+    let audioCtx = null;
+    let isSoundMuted = false;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSound(type) {
+      if (isSoundMuted) return;
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'move') {
+        osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } else if (type === 'capture') {
+        osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'check') {
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+      }
+    }
+
+    function toggleMuteSound() {
+      isSoundMuted = !isSoundMuted;
+      document.getElementById('btn-sound-toggle').textContent = isSoundMuted ? '🔇 Đã Tắt Âm' : '🔊 Âm Thanh';
+    }
+
+    // Interactive Xiangqi Board Representation (GR-COORD standard: x: 0..8, y: 0..9)
+    let pieces = [
+      // Black Pieces (y = 0..3)
+      { id: 'b_c1', type: '車', side: 'black', x: 0, y: 0 },
+      { id: 'b_m1', type: '馬', side: 'black', x: 1, y: 0 },
+      { id: 'b_x1', type: '象', side: 'black', x: 2, y: 0 },
+      { id: 'b_s1', type: '士', side: 'black', x: 3, y: 0 },
+      { id: 'b_k',  type: '將', side: 'black', x: 4, y: 0 },
+      { id: 'b_s2', type: '士', side: 'black', x: 5, y: 0 },
+      { id: 'b_x2', type: '象', side: 'black', x: 6, y: 0 },
+      { id: 'b_m2', type: '馬', side: 'black', x: 7, y: 0 },
+      { id: 'b_c2', type: '車', side: 'black', x: 8, y: 0 },
+      { id: 'b_p1', type: '砲', side: 'black', x: 1, y: 2 },
+      { id: 'b_p2', type: '砲', side: 'black', x: 7, y: 2 },
+      { id: 'b_z1', type: '卒', side: 'black', x: 0, y: 3 },
+      { id: 'b_z2', type: '卒', side: 'black', x: 2, y: 3 },
+      { id: 'b_z3', type: '卒', side: 'black', x: 4, y: 3 },
+      { id: 'b_z4', type: '卒', side: 'black', x: 6, y: 3 },
+      { id: 'b_z5', type: '卒', side: 'black', x: 8, y: 3 },
+
+      // Red Pieces (y = 6..9)
+      { id: 'r_z1', type: '兵', side: 'red', x: 0, y: 6 },
+      { id: 'r_z2', type: '兵', side: 'red', x: 2, y: 6 },
+      { id: 'r_z3', type: '兵', side: 'red', x: 4, y: 6 },
+      { id: 'r_z4', type: '兵', side: 'red', x: 6, y: 6 },
+      { id: 'r_z5', type: '兵', side: 'red', x: 8, y: 6 },
+      { id: 'r_p1', type: '炮', side: 'red', x: 1, y: 7 },
+      { id: 'r_p2', type: '炮', side: 'red', x: 4, y: 5 }, // Advanced cannon
+      { id: 'r_c1', type: '俥', side: 'red', x: 0, y: 9 },
+      { id: 'r_m1', type: '傌', side: 'red', x: 1, y: 9 },
+      { id: 'r_x1', type: '相', side: 'red', x: 2, y: 9 },
+      { id: 'r_s1', type: '仕', side: 'red', x: 3, y: 9 },
+      { id: 'r_k',  type: '帥', side: 'red', x: 4, y: 9 },
+      { id: 'r_s2', type: '仕', side: 'red', x: 5, y: 9 },
+      { id: 'r_x2', type: '相', side: 'red', x: 6, y: 9 },
+      { id: 'r_m2', type: '傌', side: 'red', x: 7, y: 9 },
+      { id: 'r_c2', type: '俥', side: 'red', x: 8, y: 9 }
+    ];
+
+    let selectedPiece = null;
+    let turn = 'red';
+
+    function renderPieces() {
+      const g = document.getElementById('pieces-layer');
+      g.innerHTML = '';
+
+      pieces.forEach(p => {
+        const cx = 25 + p.x * 50;
+        const cy = 25 + p.y * 50;
+
+        const isRed = (p.side === 'red');
+        const fillGrad = isRed ? 'url(#piece-red-grad)' : 'url(#piece-black-grad)';
+        const textColor = isRed ? '#991319' : '#09090B';
+        const borderColor = isRed ? '#FFF8E7' : '#D4D4D8';
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 21);
+        circle.setAttribute('fill', fillGrad);
+        circle.setAttribute('stroke', borderColor);
+        circle.setAttribute('stroke-width', '2.5');
+        circle.setAttribute('filter', 'drop-shadow(0px 3px 4px rgba(0,0,0,0.5))');
+        circle.style.cursor = 'pointer';
+
+        if (selectedPiece && selectedPiece.id === p.id) {
+          circle.setAttribute('stroke', '#F59E0B');
+          circle.setAttribute('stroke-width', '4');
+        }
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', cx);
+        text.setAttribute('y', cy + 8);
+        text.setAttribute('font-family', 'SimSun, STSong, serif');
+        text.setAttribute('font-size', '23');
+        text.setAttribute('font-weight', '900');
+        text.setAttribute('fill', textColor);
+        text.setAttribute('text-anchor', 'middle');
+        text.style.pointerEvents = 'none';
+        text.textContent = p.type;
+
+        g.appendChild(circle);
+        g.appendChild(text);
+      });
+    }
+
+    function handleSvgClick(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const scaleX = 450 / rect.width;
+      const scaleY = 500 / rect.height;
+      const clickX = (e.clientX - rect.left) * scaleX;
+      const clickY = (e.clientY - rect.top) * scaleY;
+
+      const boardX = Math.round((clickX - 25) / 50);
+      const boardY = Math.round((clickY - 25) / 50);
+
+      if (boardX < 0 || boardX > 8 || boardY < 0 || boardY > 9) return;
+
+      const clickedPiece = pieces.find(p => p.x === boardX && p.y === boardY);
+
+      if (selectedPiece) {
+        if (clickedPiece && clickedPiece.side === selectedPiece.side) {
+          selectedPiece = clickedPiece;
+          renderPieces();
+          showLegalMoves();
+          return;
+        }
+
+        // Execute move
+        const oldX = selectedPiece.x;
+        const oldY = selectedPiece.y;
+
+        if (clickedPiece) {
+          // Capture
+          pieces = pieces.filter(p => p.id !== clickedPiece.id);
+          playSound('capture');
+        } else {
+          playSound('move');
+        }
+
+        selectedPiece.x = boardX;
+        selectedPiece.y = boardY;
+
+        // Highlight last move
+        document.getElementById('last-move-src').setAttribute('x', (25 + oldX * 50 - 22));
+        document.getElementById('last-move-src').setAttribute('y', (25 + oldY * 50 - 22));
+        document.getElementById('last-move-dst').setAttribute('x', (25 + boardX * 50 - 22));
+        document.getElementById('last-move-dst').setAttribute('y', (25 + boardY * 50 - 22));
+
+        selectedPiece = null;
+        document.getElementById('legal-dots-layer').innerHTML = '';
+        renderPieces();
+      } else {
+        if (clickedPiece && clickedPiece.side === 'red') {
+          selectedPiece = clickedPiece;
+          renderPieces();
+          showLegalMoves();
+        }
+      }
+    }
+
+    function showLegalMoves() {
+      const g = document.getElementById('legal-dots-layer');
+      g.innerHTML = '';
+      if (!selectedPiece) return;
+
+      // Sample mock legal destinations
+      const offsets = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+      offsets.forEach(([dx, dy]) => {
+        const nx = selectedPiece.x + dx;
+        const ny = selectedPiece.y + dy;
+        if (nx >= 0 && nx <= 8 && ny >= 0 && ny <= 9) {
+          const occ = pieces.find(p => p.x === nx && p.y === ny);
+          if (!occ) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', 25 + nx * 50);
+            circle.setAttribute('cy', 25 + ny * 50);
+            circle.setAttribute('r', 6);
+            circle.setAttribute('fill', '#10B981');
+            circle.setAttribute('opacity', '0.75');
+            g.appendChild(circle);
+          } else if (occ.side !== selectedPiece.side) {
+            const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            ring.setAttribute('cx', 25 + nx * 50);
+            ring.setAttribute('cy', 25 + ny * 50);
+            ring.setAttribute('r', 23);
+            ring.setAttribute('fill', 'none');
+            ring.setAttribute('stroke', '#EF4444');
+            ring.setAttribute('stroke-width', '3');
+            g.appendChild(ring);
+          }
+        }
+      });
+    }
+
+    // Chat Filter & Handling
+    const badWords = ['chó', 'đụ', 'đm', 'vcl', 'clgt', 'ngu'];
+    function filterText(text) {
+      let filtered = text;
+      badWords.forEach(w => {
+        const reg = new RegExp(w, 'gi');
+        filtered = filtered.replace(reg, '***');
+      });
+      return filtered;
+    }
+
+    function handleSendChat(e) {
+      e.preventDefault();
+      const inp = document.getElementById('chat-input');
+      const val = inp.value.trim();
+      if (!val) return;
+
+      const safe = filterText(val);
+      const box = document.getElementById('chat-box');
+      const msg = document.createElement('div');
+      msg.className = 'chat-msg';
+      msg.innerHTML = `<span class="sender-red">Bạn:</span> ${safe}`;
+      box.appendChild(msg);
+      box.scrollTop = box.scrollHeight;
+      inp.value = '';
+    }
+
+    function sendSticker(stk) {
+      const box = document.getElementById('chat-box');
+      const msg = document.createElement('div');
+      msg.className = 'chat-msg';
+      msg.innerHTML = `<span class="sender-red">Bạn:</span> ${stk}`;
+      box.appendChild(msg);
+      box.scrollTop = box.scrollHeight;
+    }
+
+
+    // --- 36 UI COMPONENTS INTERACTIVE LOGIC ---
+    let pendingKickTarget = '';
+    let drawCountdownTimer = null;
+    let drawSeconds = 30;
+    let undoCountdownTimer = null;
+    let undoSeconds = 30;
+    let reconnectTimer = null;
+    let reconnectSeconds = 60;
+
+    // 1. Room Settings Modal
+    function openRoomSettings() {
+      document.getElementById('modal-room-settings').style.display = 'flex';
+    }
+    function closeRoomSettings() {
+      document.getElementById('modal-room-settings').style.display = 'none';
+    }
+    function saveRoomSettings() {
+      alert('✓ Đã cập nhật cài đặt phòng thi đấu!');
+      closeRoomSettings();
+    }
+
+    // 2. Draw Modal (Prompt phía đối thủ)
+    function promptDraw() {
+      alert('Đã gửi đề nghị Hòa cờ tới đối thủ (thời hạn xác nhận 30s).');
+      // Simulate opponent receiving prompt
+      setTimeout(() => {
+        openDrawPromptModal();
+      }, 1000);
+    }
+    function openDrawPromptModal() {
+      drawSeconds = 30;
+      document.getElementById('draw-timer').textContent = `${drawSeconds}s`;
+      document.getElementById('modal-draw-prompt').style.display = 'flex';
+      clearInterval(drawCountdownTimer);
+      drawCountdownTimer = setInterval(() => {
+        drawSeconds--;
+        if (drawSeconds > 0) {
+          document.getElementById('draw-timer').textContent = `${drawSeconds}s`;
+        } else {
+          clearInterval(drawCountdownTimer);
+          alert('Hết thời gian xác nhận cầu hòa (30s). Đề nghị tự động hủy.');
+          rejectDrawPrompt();
+        }
+      }, 1000);
+    }
+    function acceptDrawPrompt() {
+      clearInterval(drawCountdownTimer);
+      document.getElementById('modal-draw-prompt').style.display = 'none';
+      // Trigger Draw Result
+      document.getElementById('result-icon').textContent = '🤝';
+      document.getElementById('result-title').textContent = 'HÒA CUỘC!';
+      document.getElementById('result-elo-delta').textContent = '+0 Elo (1280 ➔ 1280)';
+      document.getElementById('result-elo-delta').style.color = '#F5CA67';
+      document.getElementById('modal-match-result').style.display = 'flex';
+    }
+    function rejectDrawPrompt() {
+      clearInterval(drawCountdownTimer);
+      document.getElementById('modal-draw-prompt').style.display = 'none';
+    }
+
+    // 3. Undo Modal (Prompt phía đối thủ)
+    let undoCount = 3;
+    function promptUndo() {
+      if (undoCount <= 0) {
+        alert('Bạn đã hết lượt xin đi lại (tối đa 3 lần/ván)!');
+        return;
+      }
+      undoCount--;
+      document.getElementById('btn-undo').textContent = `↩️ Xin Đi Lại (${undoCount}/3)`;
+      alert(`Đã gửi yêu cầu Xin đi lại nước cờ (còn ${undoCount} lần).`);
+      // Simulate opponent receiving prompt
+      setTimeout(() => {
+        openUndoPromptModal();
+      }, 1000);
+    }
+    function openUndoPromptModal() {
+      undoSeconds = 30;
+      document.getElementById('undo-timer').textContent = `${undoSeconds}s`;
+      document.getElementById('modal-undo-prompt').style.display = 'flex';
+      clearInterval(undoCountdownTimer);
+      undoCountdownTimer = setInterval(() => {
+        undoSeconds--;
+        if (undoSeconds > 0) {
+          document.getElementById('undo-timer').textContent = `${undoSeconds}s`;
+        } else {
+          clearInterval(undoCountdownTimer);
+          alert('Hết thời gian xác nhận xin đi lại (30s). Yêu cầu đã tự động hủy.');
+          rejectUndoPrompt();
+        }
+      }, 1000);
+    }
+    function acceptUndoPrompt() {
+      clearInterval(undoCountdownTimer);
+      document.getElementById('modal-undo-prompt').style.display = 'none';
+      alert('✓ Đối thủ đã đồng ý cho bạn đi lại nước cờ!');
+      // Rollback last move visually
+      selectedPiece = null;
+      renderPieces();
+    }
+    function rejectUndoPrompt() {
+      clearInterval(undoCountdownTimer);
+      document.getElementById('modal-undo-prompt').style.display = 'none';
+    }
+
+    // 4. Confirm Resign Modal
+    function confirmResign() {
+      document.getElementById('modal-confirm-resign').style.display = 'flex';
+    }
+    function closeResignModal() {
+      document.getElementById('modal-confirm-resign').style.display = 'none';
+    }
+    function doResign() {
+      closeResignModal();
+      document.getElementById('result-icon').textContent = '🏳️';
+      document.getElementById('result-title').textContent = 'BẠN ĐÃ ĐẦU HÀNG';
+      document.getElementById('result-elo-delta').textContent = '-16 Elo (1280 ➔ 1264)';
+      document.getElementById('result-elo-delta').style.color = '#EF4444';
+      document.getElementById('modal-match-result').style.display = 'flex';
+    }
+
+    // 5. Confirm Leave Match Modal
+    function openLeaveMatchModal() {
+      document.getElementById('modal-confirm-leave-match').style.display = 'flex';
+    }
+    function closeLeaveMatchModal() {
+      document.getElementById('modal-confirm-leave-match').style.display = 'none';
+    }
+    function confirmLeaveMatch() {
+      window.location.href = 'SCR-LOBBY.html';
+    }
+
+    // 6. Confirm Kick Spectator Modal
+    function kickSpectator(name) {
+      pendingKickTarget = name;
+      document.getElementById('kick-target-name').textContent = `"${name}"`;
+      document.getElementById('modal-confirm-kick').style.display = 'flex';
+    }
+    function closeKickModal() {
+      document.getElementById('modal-confirm-kick').style.display = 'none';
+    }
+    function doKickSpectator() {
+      closeKickModal();
+      alert(`✓ Đã đuổi khán giả "${pendingKickTarget}" ra khỏi phòng và thêm vào danh sách chặn.`);
+      // Remove from list visually
+      const rows = document.querySelectorAll('.spec-row');
+      rows.forEach(r => {
+        if (r.textContent.includes(pendingKickTarget)) {
+          r.remove();
+        }
+      });
+    }
+
+    // 7. Overlay Reconnecting 60s
+    function simulateDisconnect() {
+      reconnectSeconds = 60;
+      document.getElementById('reconnect-countdown').textContent = `${reconnectSeconds}s`;
+      document.getElementById('overlay-reconnecting').style.display = 'flex';
+      clearInterval(reconnectTimer);
+      reconnectTimer = setInterval(() => {
+        reconnectSeconds--;
+        if (reconnectSeconds > 0) {
+          document.getElementById('reconnect-countdown').textContent = `${reconnectSeconds}s`;
+        } else {
+          clearInterval(reconnectTimer);
+          alert('Quá 60s mất kết nối! Bạn đã bị xử THUA do mất kết nối (DISCONNECT).');
+          document.getElementById('overlay-reconnecting').style.display = 'none';
+          doResign();
+        }
+      }, 1000);
+    }
+    function simulateReconnectSuccess() {
+      clearInterval(reconnectTimer);
+      document.getElementById('overlay-reconnecting').style.display = 'none';
+      alert('✓ Đã khôi phục kết nối thành công! Tiếp tục ván đấu.');
+    }
+
+    // 8. Media Tab Switch Warning Modal
+    function openMediaSwitchModal() {
+      document.getElementById('modal-media-tab-switch').style.display = 'flex';
+    }
+    function closeMediaSwitchModal() {
+      document.getElementById('modal-media-tab-switch').style.display = 'none';
+    }
+    function confirmMediaSwitch() {
+      closeMediaSwitchModal();
+      alert('✓ Đã thu hồi quyền media ở tab cũ và kích hoạt Webcam/Micro tại tab này!');
+    }
+
+    // Test Bar Toggle
+    function toggleTestMenu() {
+      const box = document.getElementById('test-menu-box');
+      const arrow = document.getElementById('test-menu-arrow');
+      if (box.style.display === 'flex') {
+        box.style.display = 'none';
+        arrow.textContent = '▲';
+      } else {
+        box.style.display = 'flex';
+        arrow.textContent = '▼';
+      }
+    }
+
+
+    function toggleCam() {
+      const btn = document.getElementById('btn-cam');
+      btn.classList.toggle('muted');
+      btn.textContent = btn.classList.contains('muted') ? '🚫 Tắt Cam' : '📹 Bật Cam';
+    }
+
+    function toggleMic() {
+      const btn = document.getElementById('btn-mic');
+      btn.classList.toggle('muted');
+      btn.textContent = btn.classList.contains('muted') ? '🚫 Tắt Mic' : '🎙️ Bật Mic';
+    }
+
+    renderPieces();
+  </script>
+</body>
+</html>
