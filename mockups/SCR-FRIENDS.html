@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Bằng Hữu Kỳ Đạo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --bg-dark: #120D0A;
+      --card-bg: rgba(36, 22, 16, 0.9);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-navbar {
+      height: 64px;
+      background: linear-gradient(180deg, rgba(35, 20, 14, 0.96) 0%, rgba(22, 12, 8, 0.92) 100%);
+      border-bottom: 2px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(16px, 4vw, 40px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-token {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: radial-gradient(circle, #D8A562, #875B26);
+      border: 2px solid var(--gold-light);
+      display: grid; place-items: center;
+      font-family: 'SimSun', serif; font-size: 20px; font-weight: 900; color: var(--crimson-top);
+    }
+
+    .nav-links-menu { display: flex; align-items: center; gap: 18px; list-style: none; }
+    .nav-item a {
+      font-size: 13.5px; font-weight: 600; color: #E2CFB7; text-decoration: none; padding: 6px 12px; border-radius: 6px;
+    }
+    .nav-item.active a { color: var(--gold-light); background: rgba(220, 160, 50, 0.15); }
+
+    .main-friends-container {
+      width: 100%;
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .head-card {
+      background: linear-gradient(135deg, rgba(120, 18, 23, 0.85) 0%, rgba(60, 10, 14, 0.9) 100%);
+      border: 2px solid var(--gold-dark);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .search-friend-box {
+      display: flex;
+      gap: 8px;
+      background: rgba(0,0,0,0.4);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1.5px solid var(--gold-dark);
+    }
+    .search-inp {
+      background: transparent;
+      border: none;
+      padding: 6px 12px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+    }
+    .btn-add-friend {
+      background: var(--gold-main);
+      color: #FFF;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tab-pills { display: flex; gap: 8px; margin-bottom: 4px; }
+    .tab-pill {
+      background: rgba(0,0,0,0.3); border: 1.5px solid var(--gold-dark); color: #E2CFB7;
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .tab-pill.active { background: var(--gold-main); color: #FFF; border-color: var(--gold-light); }
+
+    /* FRIENDS LIST */
+    .friends-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    .friend-card {
+      background: var(--card-bg);
+      border: 1.5px solid #542C15;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+    }
+    .friend-card:hover {
+      border-color: var(--gold-main);
+    }
+
+    .f-info { display: flex; align-items: center; gap: 12px; }
+    .f-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: #374151; border: 2px solid var(--gold-light);
+      display: grid; place-items: center; font-weight: 800; font-size: 16px; color: #FFF;
+      position: relative;
+    }
+    .status-dot {
+      position: absolute; bottom: 0; right: 0; width: 12px; height: 12px;
+      border-radius: 50%; border: 2px solid #23120A;
+    }
+    .dot-online { background: #10B981; }
+    .dot-offline { background: #6B7280; }
+
+    .f-actions { display: flex; flex-direction: column; gap: 6px; }
+    .btn-act {
+      padding: 5px 12px; border-radius: 5px; font-size: 11.5px; font-weight: 700; cursor: pointer; border: none;
+    }
+    .btn-challenge { background: var(--crimson-top); color: #FFF; }
+    .btn-chat { background: rgba(255,255,255,0.1); border: 1px solid #C4A57B; color: var(--gold-light); }
+
+    /* FLOATING DIRECT CHAT MODAL (MODAL-DIRECT-CHAT) */
+    .direct-chat-popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 340px;
+      height: 440px;
+      background: #25160E;
+      border: 2px solid var(--gold-main);
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.85);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .dc-header {
+      padding: 10px 14px;
+      background: #3C1E14;
+      border-bottom: 1.5px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dc-body {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .dc-bubble {
+      padding: 6px 10px;
+      border-radius: 8px;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+    .bubble-me { align-self: flex-end; background: #8E161C; color: #FFF; }
+    .bubble-them { align-self: flex-start; background: #374151; color: #E5E7EB; }
+
+    .dc-footer {
+      padding: 8px;
+      border-top: 1px solid var(--gold-dark);
+      display: flex;
+      gap: 6px;
+      background: #180F0A;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links-menu { display: none; }
+      .direct-chat-popup { width: calc(100% - 32px); right: 16px; bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="top-navbar">
+    <a href="SCR-LOBBY.html" class="brand-logo">
+      <div class="logo-token">帥</div>
+      <span style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: #FFF;">Cờ Tướng Online</span>
+    </a>
+
+    <ul class="nav-links-menu">
+      <li class="nav-item"><a href="SCR-LOBBY.html">🏛️ Sảnh cờ</a></li>
+      <li class="nav-item"><a href="SCR-LEADERBOARD.html">🏆 Bảng xếp hạng</a></li>
+      <li class="nav-item active"><a href="SCR-FRIENDS.html">👥 Bạn bè</a></li>
+      <li class="nav-item"><a href="SCR-HISTORY.html">📜 Lịch sử</a></li>
+    </ul>
+
+    <a href="SCR-PROFILE-SETTINGS.html" style="text-decoration: none; font-size: 12px; color: var(--gold-light); border: 1px solid var(--gold-dark); padding: 4px 10px; border-radius: 20px;">
+      ⚙️ Hồ Sơ Cá Nhân
+    </a>
+  </header>
+
+  <main class="main-friends-container">
+
+    <div class="head-card">
+      <div>
+        <h2 style="font-family: var(--font-serif); font-size: 24px; color: #FFF5DF; margin-bottom: 4px;">👥 Bằng Hữu Kỳ Đạo</h2>
+        <p style="font-size: 12.5px; color: #E6CEB3;">Quản lý danh sách tri kỷ so tài, xem trạng thái Online và gửi tin nhắn đàm đạo riêng.</p>
+      </div>
+
+      <div class="search-friend-box">
+        <input type="text" class="search-inp" id="inp-find-user" placeholder="Nhập @username bạn bè...">
+        <button type="button" class="btn-add-friend" onclick="handleAddFriend()">Kết Bạn</button>
+      </div>
+    </div>
+
+    <div class="tab-pills">
+      <button type="button" class="tab-pill active">Tất Cả Bạn Bè (4)</button>
+      <button type="button" class="tab-pill">Đang Online (2)</button>
+      <button type="button" class="tab-pill">Lời Mời Kết Bạn (1)</button>
+    </div>
+
+    <!-- FRIENDS CARDS -->
+    <div class="friends-grid">
+
+      <!-- Friend 1: Online -->
+      <div class="friend-card">
+        <div class="f-info">
+          <div class="f-avatar">
+            Y
+            <span class="status-dot dot-online"></span>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #FFF; font-size: 14px;">Hoàng Kim Yến</div>
+            <div style="font-size: 11.5px; color: var(--gold-light);">⚔️ 1150 Elo · @yen_hoang</div>
+            <div style="font-size: 11px; color: #86EFAC;">🟢 Đang ở Sảnh cờ</div>
+          </div>
+        </div>
+        <div class="f-actions">
+          <button type="button" class="btn-act btn-challenge" onclick="challengeFriend('Hoàng Kim Yến')">Thách Đấu</button>
+          <button type="button" class="btn-act btn-chat" onclick="openDirectChat('Hoàng Kim Yến')">Nhắn Tin</button>
+        </div>
+      </div>
+
+      <!-- Friend 2: Online In Game -->
+      <div class="friend-card">
+        <div class="f-info">
+          <div class="f-avatar">
+            Đ
+            <span class="status-dot dot-online"></span>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #FFF; font-size: 14px;">Trần Hưng Đạo</div>
+            <div style="font-size: 11.5px; color: var(--gold-light);">⚔️ 1290 Elo · @hungdao_tran</div>
+            <div style="font-size: 11px; color: #FCD34D;">⚔️ Đang thi đấu #105</div>
+          </div>
+        </div>
+        <div class="f-actions">
+          <button type="button" class="btn-act" style="background: #374151; color: #9CA3AF; cursor: not-allowed;" disabled>Đang Bận</button>
+          <button type="button" class="btn-act btn-chat" onclick="openDirectChat('Trần Hưng Đạo')">Nhắn Tin</button>
+        </div>
+      </div>
+
+      <!-- Friend 3: Offline -->
+      <div class="friend-card" style="opacity: 0.85;">
+        <div class="f-info">
+          <div class="f-avatar" style="border-color: #6B7280;">
+            H
+            <span class="status-dot dot-offline"></span>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #D1D5DB; font-size: 14px;">Lê Văn Hùng</div>
+            <div style="font-size: 11.5px; color: #9CA3AF;">⚔️ 1310 Elo · @hung_le</div>
+            <div style="font-size: 11px; color: #6B7280;">⚫ Offline (2 giờ trước)</div>
+          </div>
+        </div>
+        <div class="f-actions">
+          <button type="button" class="btn-act" style="background: #374151; color: #6B7280; cursor: not-allowed;" disabled>Offline</button>
+          <button type="button" class="btn-act btn-chat" onclick="openDirectChat('Lê Văn Hùng')">Để Lại Tin</button>
+        </div>
+      </div>
+
+      <!-- Friend 4: Offline -->
+      <div class="friend-card" style="opacity: 0.85;">
+        <div class="f-info">
+          <div class="f-avatar" style="border-color: #6B7280;">
+            B
+            <span class="status-dot dot-offline"></span>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #D1D5DB; font-size: 14px;">Bạch Thủ Cờ</div>
+            <div style="font-size: 11.5px; color: #9CA3AF;">⚔️ 1220 Elo · @bach_thu</div>
+            <div style="font-size: 11px; color: #6B7280;">⚫ Offline (1 ngày trước)</div>
+          </div>
+        </div>
+        <div class="f-actions">
+          <button type="button" class="btn-act" style="background: #374151; color: #6B7280; cursor: not-allowed;" disabled>Offline</button>
+          <button type="button" class="btn-act btn-chat" onclick="openDirectChat('Bạch Thủ Cờ')">Để Lại Tin</button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL-DIRECT-CHAT (R21 1-1 PRIVATE CHAT DIALOG) -->
+  <div id="modal-direct-chat" class="direct-chat-popup">
+    <div class="dc-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">💬</span>
+        <strong id="dc-target-name" style="color: #FFF; font-size: 13px;">Hoàng Kim Yến</strong>
+      </div>
+      <button type="button" onclick="closeDirectChat()" style="background: none; border: none; color: #A89582; font-size: 16px; cursor: pointer;">✕</button>
+    </div>
+
+    <div class="dc-body" id="dc-messages">
+      <div class="dc-bubble bubble-them">Chào bạn! Khi nào rảnh làm ván cờ nhé.</div>
+      <div class="dc-bubble bubble-me">Okii bạn, tôi vừa online đây!</div>
+    </div>
+
+    <form class="dc-footer" onsubmit="handleSendDc(event)">
+      <input type="text" id="dc-input" placeholder="Nhập tin nhắn..." style="flex: 1; height: 32px; background: #25160E; border: 1px solid #542C15; border-radius: 4px; padding: 0 8px; color: #FFF; font-size: 12px; outline: none;">
+      <button type="submit" style="padding: 0 10px; background: var(--gold-main); color: #FFF; border: none; border-radius: 4px; font-weight: 700; font-size: 12px; cursor: pointer;">Gửi</button>
+    </form>
+  </div>
+
+  <script>
+    function challengeFriend(name) {
+      alert(`Đã gửi lời mời thách đấu tới ${name}! Đang chuyển bạn vào Phòng chờ...`);
+      window.location.href = 'SCR-WAITING-ROOM.html?opponent=' + encodeURIComponent(name);
+    }
+
+    function openDirectChat(name) {
+      document.getElementById('dc-target-name').textContent = name;
+      document.getElementById('modal-direct-chat').style.display = 'flex';
+      setTimeout(() => { document.getElementById('dc-input').focus(); }, 100);
+    }
+
+    function closeDirectChat() {
+      document.getElementById('modal-direct-chat').style.display = 'none';
+    }
+
+    function handleSendDc(e) {
+      e.preventDefault();
+      const inp = document.getElementById('dc-input');
+      const val = inp.value.trim();
+      if (!val) return;
+
+      const body = document.getElementById('dc-messages');
+      const bubble = document.createElement('div');
+      bubble.className = 'dc-bubble bubble-me';
+      bubble.textContent = val;
+      body.appendChild(bubble);
+      body.scrollTop = body.scrollHeight;
+      inp.value = '';
+    }
+
+    function handleAddFriend() {
+      const u = document.getElementById('inp-find-user').value.trim();
+      if (!u) {
+        alert('Vui lòng nhập @username người muốn kết bạn!');
+        return;
+      }
+      alert('✓ Đã gửi lời mời kết bạn tới ' + u);
+      document.getElementById('inp-find-user').value = '';
+    }
+  </script>
+</body>
+</html>

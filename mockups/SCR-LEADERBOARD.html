@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Bảng Xếp Hạng Kỳ Thủ</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --bg-dark: #120D0A;
+      --card-bg: rgba(36, 22, 16, 0.9);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-navbar {
+      height: 64px;
+      background: linear-gradient(180deg, rgba(35, 20, 14, 0.96) 0%, rgba(22, 12, 8, 0.92) 100%);
+      border-bottom: 2px solid var(--gold-dark);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(16px, 4vw, 40px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-token {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: radial-gradient(circle, #D8A562, #875B26);
+      border: 2px solid var(--gold-light);
+      display: grid; place-items: center;
+      font-family: 'SimSun', serif; font-size: 20px; font-weight: 900; color: var(--crimson-top);
+    }
+
+    .nav-links-menu { display: flex; align-items: center; gap: 18px; list-style: none; }
+    .nav-item a {
+      font-size: 13.5px; font-weight: 600; color: #E2CFB7; text-decoration: none; padding: 6px 12px; border-radius: 6px;
+    }
+    .nav-item.active a { color: var(--gold-light); background: rgba(220, 160, 50, 0.15); }
+
+    .main-board-container {
+      width: 100%;
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 24px 16px 80px; /* 80px bottom padding for sticky user bar */
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .lb-header-card {
+      background: linear-gradient(135deg, rgba(120, 18, 23, 0.85) 0%, rgba(60, 10, 14, 0.9) 100%);
+      border: 2px solid var(--gold-dark);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .lb-title-wrap h2 { font-family: var(--font-serif); font-size: 24px; color: #FFF5DF; margin-bottom: 4px; }
+    .lb-title-wrap p { font-size: 12.5px; color: #E6CEB3; }
+
+    .tab-pills { display: flex; gap: 8px; }
+    .tab-pill {
+      background: rgba(0,0,0,0.3); border: 1.5px solid var(--gold-dark); color: #E2CFB7;
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .tab-pill.active { background: var(--gold-main); color: #FFF; border-color: var(--gold-light); }
+
+    /* LEADERBOARD TABLE */
+    .lb-table-wrap {
+      background: var(--card-bg);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    table.lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .lb-table th {
+      background: #25160E;
+      padding: 12px 16px;
+      color: var(--gold-light);
+      font-weight: 700;
+      border-bottom: 2px solid var(--gold-dark);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .lb-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #E2CFB7;
+    }
+
+    .lb-table tr:hover td {
+      background: rgba(220, 160, 50, 0.08);
+    }
+
+    .rank-trophy {
+      font-size: 16px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .rank-1 { color: #FBBF24; }
+    .rank-2 { color: #E5E7EB; }
+    .rank-3 { color: #B45309; }
+
+    .player-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .player-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #374151;
+      border: 1.5px solid var(--gold-light);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #FFF;
+      flex-shrink: 0;
+    }
+
+    .tier-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #FDE68A;
+    }
+
+    .elo-cell {
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 15px;
+      color: #FFF;
+    }
+
+    /* STICKY USER ROW PINNED AT BOTTOM (STICKY USER ROW - DECISION 7.1) */
+    .sticky-user-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, #3C1E14 0%, #1E0F0A 100%);
+      border-top: 2.5px solid var(--gold-main);
+      padding: 10px clamp(16px, 4vw, 40px);
+      box-shadow: 0 -8px 25px rgba(0,0,0,0.8);
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sticky-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .sticky-rank-pill {
+      background: #B91C1C;
+      color: #FFF;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid var(--gold-light);
+    }
+
+    .btn-play-ranked {
+      background: linear-gradient(180deg, #A82027 0%, #7A1217 100%);
+      color: #FFF;
+      border: 1.5px solid #570B0E;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 8px rgba(122, 18, 23, 0.4);
+    }
+    .btn-play-ranked:hover {
+      background: linear-gradient(180deg, #BA262E 0%, #8C151B 100%);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links-menu { display: none; }
+      .lb-table th:nth-child(4), .lb-table td:nth-child(4),
+      .lb-table th:nth-child(5), .lb-table td:nth-child(5) { display: none; }
+      .sticky-user-bar { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="top-navbar">
+    <a href="SCR-LOBBY.html" class="brand-logo">
+      <div class="logo-token">帥</div>
+      <span style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: #FFF;">Cờ Tướng Online</span>
+    </a>
+
+    <ul class="nav-links-menu">
+      <li class="nav-item"><a href="SCR-LOBBY.html">🏛️ Sảnh cờ</a></li>
+      <li class="nav-item active"><a href="SCR-LEADERBOARD.html">🏆 Bảng xếp hạng</a></li>
+      <li class="nav-item"><a href="SCR-FRIENDS.html">👥 Bạn bè</a></li>
+      <li class="nav-item"><a href="SCR-HISTORY.html">📜 Lịch sử</a></li>
+    </ul>
+
+    <a href="SCR-PROFILE-SETTINGS.html" style="text-decoration: none; font-size: 12px; color: var(--gold-light); border: 1px solid var(--gold-dark); padding: 4px 10px; border-radius: 20px;">
+      ⚙️ Hồ Sơ Cá Nhân
+    </a>
+  </header>
+
+  <main class="main-board-container">
+
+    <div class="lb-header-card">
+      <div class="lb-title-wrap">
+        <h2>🏆 Bảng Vàng Anh Hào Kỳ Đài</h2>
+        <p>Xếp hạng Top 50 kỳ thủ có điểm Elo FIDE cao nhất toàn máy chủ.</p>
+      </div>
+
+      <div class="tab-pills">
+        <button type="button" class="tab-pill active">Toàn Server (Top 50)</button>
+        <button type="button" class="tab-pill">Tuần Này</button>
+        <button type="button" class="tab-pill">Hôm Nay</button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="lb-table-wrap">
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width: 80px;">Hạng</th>
+            <th>Kỳ Thủ</th>
+            <th>Đẳng Cấp</th>
+            <th>Điểm Elo</th>
+            <th>Tỷ Lệ Thắng</th>
+            <th style="width: 110px;">Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rank 1 -->
+          <tr>
+            <td><span class="rank-trophy rank-1">🥇 #1</span></td>
+            <td>
+              <div class="player-cell">
+                <div class="player-avatar" style="background: #B45309;">V</div>
+                <div>
+                  <div style="font-weight: 700; color: #FFF;">Vương Thiên Nhất</div>
+                  <div style="font-size: 11px; color: #A89582;">@vuong_thien_nhat</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tier-badge" style="background: rgba(245, 158, 11, 0.2); border-color: #F59E0B; color: #FCD34D;">Đặc Cấp Đại Sư</span></td>
+            <td><span class="elo-cell" style="color: #FCD34D;">2480</span></td>
+            <td>84.2% (142 ván)</td>
+            <td><button type="button" onclick="alert('Đã gửi lời mời thách đấu!')" style="padding: 4px 10px; background: #C6922A; border: none; border-radius: 4px; color: #FFF; font-weight: 700; font-size: 11px; cursor: pointer;">Thách Đấu</button></td>
+          </tr>
+
+          <!-- Rank 2 -->
+          <tr>
+            <td><span class="rank-trophy rank-2">🥈 #2</span></td>
+            <td>
+              <div class="player-cell">
+                <div class="player-avatar" style="background: #4B5563;">T</div>
+                <div>
+                  <div style="font-weight: 700; color: #FFF;">Trịnh Duy Đồng</div>
+                  <div style="font-size: 11px; color: #A89582;">@trinh_duy_dong</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tier-badge">Đại Sư Quốc Tế</span></td>
+            <td><span class="elo-cell">2415</span></td>
+            <td>81.0% (130 ván)</td>
+            <td><button type="button" onclick="alert('Đã gửi lời mời thách đấu!')" style="padding: 4px 10px; background: #C6922A; border: none; border-radius: 4px; color: #FFF; font-weight: 700; font-size: 11px; cursor: pointer;">Thách Đấu</button></td>
+          </tr>
+
+          <!-- Rank 3 -->
+          <tr>
+            <td><span class="rank-trophy rank-3">🥉 #3</span></td>
+            <td>
+              <div class="player-cell">
+                <div class="player-avatar" style="background: #78350F;">L</div>
+                <div>
+                  <div style="font-weight: 700; color: #FFF;">Lại Lý Huynh</div>
+                  <div style="font-size: 11px; color: #A89582;">@lai_ly_huynh</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tier-badge">Quốc Thủ Việt Nam</span></td>
+            <td><span class="elo-cell">2390</span></td>
+            <td>79.5% (118 ván)</td>
+            <td><button type="button" onclick="alert('Đã gửi lời mời thách đấu!')" style="padding: 4px 10px; background: #C6922A; border: none; border-radius: 4px; color: #FFF; font-weight: 700; font-size: 11px; cursor: pointer;">Thách Đấu</button></td>
+          </tr>
+
+          <!-- Rank 4 -->
+          <tr>
+            <td><span style="font-weight: 800; color: #C8B6A2; padding-left: 8px;">#4</span></td>
+            <td>
+              <div class="player-cell">
+                <div class="player-avatar">H</div>
+                <div>
+                  <div style="font-weight: 700; color: #FFF;">Hứa Ngân Xuyên</div>
+                  <div style="font-size: 11px; color: #A89582;">@hua_ngan_xuyen</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tier-badge">Kỳ Vương Lão Tướng</span></td>
+            <td><span class="elo-cell">2360</span></td>
+            <td>76.2% (95 ván)</td>
+            <td><button type="button" onclick="alert('Đã gửi lời mời thách đấu!')" style="padding: 4px 10px; background: #C6922A; border: none; border-radius: 4px; color: #FFF; font-weight: 700; font-size: 11px; cursor: pointer;">Thách Đấu</button></td>
+          </tr>
+
+          <!-- Rank 5 -->
+          <tr>
+            <td><span style="font-weight: 800; color: #C8B6A2; padding-left: 8px;">#5</span></td>
+            <td>
+              <div class="player-cell">
+                <div class="player-avatar">N</div>
+                <div>
+                  <div style="font-weight: 700; color: #FFF;">Nguyễn Thành Bảo</div>
+                  <div style="font-size: 11px; color: #A89582;">@nguyen_thanh_bao</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tier-badge">Kiện Tướng Quốc Gia</span></td>
+            <td><span class="elo-cell">2320</span></td>
+            <td>74.0% (88 ván)</td>
+            <td><button type="button" onclick="alert('Đã gửi lời mời thách đấu!')" style="padding: 4px 10px; background: #C6922A; border: none; border-radius: 4px; color: #FFF; font-weight: 700; font-size: 11px; cursor: pointer;">Thách Đấu</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- STICKY USER ROW PINNED AT BOTTOM (BA Scope Decision 7.1) -->
+  <div class="sticky-user-bar">
+    <div class="sticky-info">
+      <span class="sticky-rank-pill">Hạng Của Bạn: #142</span>
+      <div>
+        <div style="font-weight: 700; color: #FFF; font-size: 13.5px;">Nguyễn Ngọc Tình (@nguyen_tinh99)</div>
+        <div style="font-size: 11.5px; color: var(--gold-light);">⚔️ 1280 Elo FIDE · Tỷ lệ thắng 58.4% (36 ván)</div>
+      </div>
+    </div>
+
+    <div>
+      <a href="SCR-LOBBY.html" class="btn-play-ranked">
+        🏆 Đánh Ranked Leo Hạng Ngay ❯
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
