@@ -8,10 +8,15 @@ Trang web tĩnh trình bày toàn bộ tài liệu dự án Cờ Tướng Online
 
 ### Cách nhanh nhất — không cần cài gì
 
-Double-click **`site/index.html`**. Xong.
+```bash
+node site/build.mjs   # vừa clone repo lần đầu: phải chạy để có data/
+```
+Rồi double-click **`site/index.html`**. Xong.
 
-Trang chạy được bằng `file://` vì toàn bộ tài liệu đã được **nhúng sẵn** vào `data/docs.js`.
+Trang chạy được bằng `file://` vì toàn bộ tài liệu được **nhúng sẵn** vào `data/docs.js`.
 (Trình duyệt chặn `fetch()` trên `file://`, nên không thể tải `.md` lúc chạy — đó là lý do phải nhúng.)
+
+> `site/data/` **không được commit** — `.gitignore` đã loại. Mỗi lần clone mới hoặc sửa `.md` đều phải chạy `build.mjs` trước, nếu không trang sẽ trống.
 
 ### Nếu muốn chạy qua server
 
@@ -34,8 +39,10 @@ Lệnh này quét `docs/` + `README.md` + `AGENTS.md`, sinh lại 2 file:
 
 | File | Nội dung |
 |---|---|
-| `site/data/docs.js` | 199 tài liệu chính (~1,3 MB) |
+| `site/data/docs.js` | 225 tài liệu chính (~2,9 MB) |
 | `site/data/archive.js` | 102 tài liệu lưu trữ (~0,9 MB) — chỉ tải khi người dùng mở |
+
+Thư mục `site/data/` nằm trong `.gitignore` nên **hai file này không bao giờ được commit** — sau mỗi lần clone phải chạy lại `build.mjs`.
 
 ⛔ **Đừng sửa tay 2 file trong `data/`** — chúng bị ghi đè mỗi lần build.
 
@@ -83,9 +90,9 @@ site/
 │   ├── app.css         giao diện, nền sáng/tối, kiểu in
 │   ├── app.js          định tuyến · render markdown · tìm kiếm · lộ trình
 │   └── marked.min.js   thư viện dựng markdown (MIT, nhúng sẵn để chạy offline)
-├── data/
-│   ├── docs.js         ⚙️ SINH TỰ ĐỘNG
-│   └── archive.js      ⚙️ SINH TỰ ĐỘNG
+├── data/               ⚙️ SINH TỰ ĐỘNG, KHÔNG COMMIT (gitignore)
+│   ├── docs.js         toàn bộ tài liệu chính
+│   └── archive.js      tài liệu lưu trữ, tải lazy
 └── _analysis/          báo cáo kiểm định (không cần cho lúc chạy)
 ```
 
