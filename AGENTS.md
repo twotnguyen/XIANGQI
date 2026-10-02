@@ -435,6 +435,8 @@ tests/              fixtures/ · unit/ · integration/ · e2e/ · media/ · load
 
 Sửa file trong `docs/` ⇒ chạy `node site/build.mjs` để cập nhật trang tài liệu.
 
+⛔ Commit `site/data/` — thư mục này gitignore, `build.mjs` sinh lại được.
+
 ---
 
 ## 14. ⛔ Tuyệt đối không
