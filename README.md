@@ -109,7 +109,7 @@ pnpm dev                      # web http://localhost:5173 · API http://127.0.0.
 
 ### Đọc tài liệu
 
-Mở `site/index.html` bằng trình duyệt (không cần server): có lộ trình đọc theo vai trò, tìm kiếm toàn văn, nền sáng/tối. Sửa file trong `docs/` xong chạy `node site/build.mjs` để cập nhật trang. Xem [site/README.md](site/README.md).
+Chạy `node site/build.mjs` để sinh `site/data/` (thư mục này gitignore, **không có trong repo**), rồi mở `site/index.html` bằng trình duyệt — không cần server. Trang có lộ trình đọc theo vai trò, tìm kiếm toàn văn, nền sáng/tối. Sửa file trong `docs/` xong cũng phải chạy lại lệnh đó. Xem [site/README.md](site/README.md).
 
 ## Lệnh thường dùng
 
