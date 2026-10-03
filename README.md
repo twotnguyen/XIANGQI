@@ -96,12 +96,13 @@ Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đo�
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 27 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Chưa tạo gì trên Jira |
-| 2 | **Chốt thứ tự dừng phần và mốc kiểm soát** (docs/06 mục 1b, 1c) | P1 ước lượng 128 ngày công, công suất 2 tuần khoảng 78,4; theo ước lượng cơ sở **có thể ở ngày 14 chưa xong mức nào**, chỉ khi ước lượng thực tế thấp hơn nhiều (−30% và hệ số 1,0) thì mới kịp Mức 1, còn Mức 2 vượt hạn khoảng 1 ngày |
-| 3 | **Tên 7 người và vai trò R1–R7** | docs/06 mục 3 |
-| 4 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
-| 5 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
-| 6 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
+| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 27 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Đã nói **chưa tạo, cần review thêm**; chưa tạo gì trên Jira |
+| 2 | Gán tên 7 người vào R1–R7 | Đã chọn để trống, gán sau (Assignee trống, nhãn R1–R7 vẫn có) |
+| 3 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
+| 4 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
+| 5 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
+
+**Đã chốt 03/10/2026:** thứ tự dừng phần (docs/06 mục 1b: làm Mức 1→5, dừng từ Mức cao xuống) và các mốc kiểm soát ngày 4/7/10/12/14 (mục 1c). Cần biết: hạn 14 ngày cố định, theo ước lượng cơ sở **không mức nào kịp**; chỉ Mức 1 kịp ở kịch bản rất lạc quan.
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
