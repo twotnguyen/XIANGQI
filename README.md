@@ -1,197 +1,138 @@
 # Cờ Tướng Online
 
-Ứng dụng web chơi cờ tướng trực tuyến với bạn bè hoặc với máy: phòng riêng, người xem, chat hai kênh và camera/mic.
+Ứng dụng web chơi cờ tướng trực tuyến: đánh thường với bạn bè, đánh hạng Elo, đánh với máy; có phòng riêng, người xem, chat, camera/mic.
 
-> **Trạng thái:** đặc tả đã rà soát xong, **chưa có mã nguồn ứng dụng**. Việc xây dựng chạy theo 4 sprint từ **28/09 đến 23/10/2026** trên Jira project [`XW`](https://xiangqi-web.atlassian.net/jira/software/c/projects/XW/boards/4).
+> **Trạng thái:** đang ở **Giai đoạn 1 — chốt ý tưởng và chức năng tổng quan**. Chưa có mã nguồn, chưa có Epic/Story/Task trên Jira. Hiện có: quyết định phạm vi, danh mục màn hình, hệ thống thiết kế và bộ mockup HTML.
 
 ---
 
 ## Mục lục
 
+- [Lộ trình](#lộ-trình)
 - [Tính năng](#tính-năng)
-- [Công nghệ](#công-nghệ)
+- [Công nghệ dự kiến](#công-nghệ-dự-kiến)
 - [Cấu trúc thư mục](#cấu-trúc-thư-mục)
-- [Bắt đầu](#bắt-đầu)
-- [Lệnh thường dùng](#lệnh-thường-dùng)
-- [Kiểm thử](#kiểm-thử)
-- [Quy trình làm việc](#quy-trình-làm-việc)
+- [Xem mockup](#xem-mockup)
+- [Điểm còn mở cần chốt](#điểm-còn-mở-cần-chốt)
+- [Quy trình Git](#quy-trình-git)
 - [Tài liệu](#tài-liệu)
-- [Nhóm phát triển](#nhóm-phát-triển)
 - [Bảo mật](#bảo-mật)
 - [Giấy phép](#giấy-phép)
 
 ---
 
+## Lộ trình
+
+| Giai đoạn | Việc | Trạng thái |
+|---|---|---|
+| **1. Ý tưởng và chức năng tổng quan** | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | **Đang làm** |
+| 2. Phân tích chuyên sâu từng phần | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | Chưa bắt đầu |
+| 3. Phân vai và lập kế hoạch Jira | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng, lịch | Chưa bắt đầu |
+| 4. Xây dựng | Code, test, review, phát hành | Chưa bắt đầu |
+
+Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn trước đã **okay hết**.
+
 ## Tính năng
+
+Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (24 hạng mục: 21 lõi P1, 3 mở rộng P2; cập nhật 03/10/2026).
 
 | Nhóm | Nội dung |
 |---|---|
-| Tài khoản | Đăng ký bằng username + email, xác minh email, đăng nhập Google, phiên nhớ 30 ngày |
-| Bạn bè | Tìm người dùng, kết bạn, xem ai đang online |
-| Phòng | Phòng công khai / riêng tư / cần mã, sảnh phòng, mời bằng mã, link hoặc hộp thư |
-| Chơi cờ | Luật cờ tướng của dự án (`DEC-019`), đồng hồ, đầu hàng, xin hoà, xin đi lại, tái đấu |
-| Người xem | Tối đa 5 người xem mỗi phòng; chủ phòng và người chơi đuổi được |
-| Chat | Hai kênh: riêng giữa 2 người chơi và chung cả phòng |
-| Camera / mic | Bật tắt độc lập; người xem chỉ nhận khi được cho phép |
-| Chơi với máy | 3 mức độ khó; máy cờ chạy ở tiến trình riêng |
-| Lịch sử | Lưu ván đã đánh, xem lại từng nước |
+| Tài khoản | Đăng ký username + mật khẩu + email xác minh OTP; Google OAuth (thiết lập thêm username + mật khẩu); chế độ Khách (12 giờ, hạn chế quyền); quên/đặt lại mật khẩu bằng OTP; đổi username qua OTP (tên cũ khoá 30 ngày); email không đổi được |
+| Chế độ **Đánh Thường** | Ghép ngẫu nhiên, tạo phòng riêng (link, QR, mã 8 ký tự, mời bạn online), danh sách phòng công khai, xem cờ, đồng hồ 4 mức (không giới hạn / 5 / 10 / 15 phút), xin đi lại tối đa 3 lần |
+| Chế độ **Đánh Hạng** | Ghép ngẫu nhiên 100% theo Elo, 10 phút mỗi bên, cấm khán giả, cấm đi lại, cấm Khách, ngắt kết nối quá 60 giây xử thua; Elo FIDE; bảng xếp hạng |
+| Chế độ **Đánh Với Máy** | 3 cấp (Dễ / Trung bình / Khó), chọn phe, đi lại tối đa 3 lần, không giới hạn thời gian, lưu lịch sử và xem lại |
+| Phòng | Ghế đỏ/đen, xin đổi bên, sẵn sàng + đếm ngược 3 giây, chuyển quyền chủ phòng, tối đa 5 người xem (sức chứa 7), đuổi người xem |
+| Bàn cờ | SVG, quân chữ Hán, click hoặc kéo thả, chấm gợi ý các ô đi hợp lệ (không phải gợi ý nước hay), chiếu tướng, âm thanh Web Audio; luật chiếu liên tục và hòa không ăn quân |
+| Chat | Kênh riêng (2 người chơi) và kênh chung, 12 sticker, bộ lọc từ thô tục, nhắn tin 1-1 giữa bạn bè |
+| Camera / mic | Người chơi tự bật tắt; người xem chỉ xem/nghe, không phát |
+| Bạn bè | Kết bạn hai chiều theo username, trạng thái online/đang đấu, mời vào phòng, Thách đấu |
+| Mở rộng (P2) | Xuất FEN / PGN, widget số liệu AI, công cụ giả lập rớt mạng khi demo |
 
-Chi tiết: [docs/01-requirements/](docs/01-requirements/). Những gì **cố ý không làm**: [docs/00-overview/scope.md](docs/00-overview/scope.md).
+**Cố ý không làm:** giải đấu, gợi ý nước đi khi đánh với máy, cộng giây sau mỗi nước, đổi chữ Hán sang chữ Việt, đổi email, xoá tài khoản trong ứng dụng, báo cáo vi phạm / quản trị viên, tải ảnh đại diện, trang hồ sơ công khai, đa ngôn ngữ (đầy đủ ở BA-SCOPE Quyết định 10.2).
 
-## Công nghệ
+## Công nghệ dự kiến
 
-Đã chốt tại `DEC-025` ([decision-log](docs/07-decisions/decision-log.md)); lý do từng lựa chọn ở [tech-stack.md](docs/09-technical/tech-stack.md).
+> Danh sách này **kế thừa từ lần thiết kế trước** và sẽ được xác nhận lại ở Giai đoạn 2. Chưa phải quyết định cuối.
 
 | Lớp | Công nghệ |
 |---|---|
-| Ngôn ngữ / runtime | TypeScript (strict), Node.js 24 LTS, pnpm workspace |
-| Giao diện | React, Vite, React Router, bàn cờ vẽ bằng SVG, TanStack Query, Zustand, CSS Modules + design tokens |
+| Ngôn ngữ | TypeScript, Node.js, pnpm workspace |
+| Giao diện | React, Vite, bàn cờ vẽ bằng SVG |
 | Máy chủ | NestJS, Socket.IO |
-| Dữ liệu | Supabase PostgreSQL; Prisma cho truy vấn thường, SQL thuần cho đường xử lý cần khoá; migration bằng file `.sql` qua Supabase CLI |
+| Dữ liệu và xác thực | Supabase (PostgreSQL, Auth) |
 | Camera / mic | LiveKit |
-| Máy cờ | TypeScript, chạy ở tiến trình riêng |
+| Máy cờ | TypeScript tự viết (negamax + alpha-beta), chạy ở tiến trình riêng |
 | Kiểm thử | Vitest, Playwright |
-
-Không dùng: Redis, BullMQ, Tailwind, thư viện UI dựng sẵn, SSR/Next.js, Swagger, i18next, Prometheus.
 
 ## Cấu trúc thư mục
 
-Hiện có:
-
 ```
 .
-├── AGENTS.md                   Luật làm việc cho AI agent (người mới cũng nên đọc)
-├── BA-SCOPE-DECISIONS.md       Quyết định chốt phạm vi sản phẩm (Scope Freeze, 21 yêu cầu)
-├── DANH-MUC-MAN-HINH-XIANGQI.md Danh mục chi tiết 37 thành phần giao diện & 5 trạng thái
-├── DESIGN.md                   Hệ thống thiết kế giao diện (Kỳ Đài Cổ Phong)
-├── docs/                       Đặc tả: yêu cầu, luồng, màn hình, luật, dữ liệu, nghiệm thu, quyết định, 138 issue
-├── Jira/                       Kế hoạch Sprint, Epics, User Stories và Tasks
-├── mockups/                    Bộ Mockup Prototype HTML/CSS tương tác 37 thành phần (mở mockups/index.html)
-└── site/                       Trang web đọc tài liệu (mở site/index.html)
+├── AGENTS.md                      Luật làm việc cho người và AI agent
+├── BA-SCOPE-DECISIONS.md          Quyết định chốt phạm vi sản phẩm (nguồn luật chính)
+├── DANH-MUC-MAN-HINH-XIANGQI.md   Danh mục 37 thành phần giao diện và 5 trạng thái bắt buộc
+├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
+├── mockups/                       Mockup HTML/CSS tương tác (mở mockups/index.html)
+├── site/                          Trang đọc tài liệu cũ, đã lỗi thời (xem lưu ý bên dưới)
+└── .github/                       CODEOWNERS
 ```
 
-Sẽ hình thành dần qua các Task (không tạo trước):
+Mã nguồn (`apps/`, `packages/`, `supabase/`, `tests/`) sẽ được tạo ở Giai đoạn 4, không tạo trước.
 
-```
-apps/
-  web/           Giao diện React
-  server/        API NestJS + Socket.IO
-  ai-worker/     Máy cờ, tiến trình riêng
-packages/
-  contracts/     Kiểu dữ liệu + schema Zod dùng chung
-  game-rules/    Luật cờ thuần, không phụ thuộc gì
-  ai/            Lượng giá, tìm kiếm
-supabase/migrations/
-tests/           unit · integration · e2e · media · load
-```
+> **Lưu ý:** thư mục `docs/` và `Jira/` của lần thiết kế trước đã bị xoá vì mâu thuẫn với phạm vi mới (nhánh `chore/xoa-docs-va-jira-cu`). Nội dung cũ còn trong lịch sử git: `git show develop:docs/<đường-dẫn>`. `site/` dựng từ `docs/` nên không còn dữ liệu để chạy; sẽ xoá hoặc làm lại sau.
 
-## Bắt đầu
+## Xem mockup
 
-### Yêu cầu
+Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cần server. Hiện có 15 trang `SCR-*.html`; các modal và panel chưa có file riêng.
 
-- Node.js 24 LTS và pnpm (phiên bản chính xác sẽ ghi trong `package.json` → `engines` / `packageManager`)
-- Docker Desktop (Supabase local, LiveKit local)
-- Supabase CLI
-- Git
+## Điểm còn mở cần chốt
 
-### Cài đặt và chạy
+Ngày 03/10/2026 Product Owner uỷ quyền cho agent tự xử lý mọi mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Toàn bộ đã được ghi vào `BA-SCOPE-DECISIONS.md` (nhãn **`[RV-03/10]`**) và đồng bộ sang `DANH-MUC`, `DESIGN.md`, mockup. Phần còn lại dưới đây là việc **chỉ người dùng quyết được**.
 
-> Các lệnh dưới đây có hiệu lực sau khi Task [TK01.1.1](Jira/task/TK01.1.1-khoi-tao-monorepo-pnpm-typescript-nghiem-ngat.md) (khởi tạo monorepo) và [TK01.2.2](Jira/task/TK01.2.2-supabase-local-bien-moi-truong-mau-va-runner-test-tich-hop.md) (Supabase local) được merge.
-
-```bash
-git clone https://github.com/twotnguyen/XIANGQI.git
-cd XIANGQI
-pnpm install --frozen-lockfile
-cp .env.example .env          # điền giá trị local, KHÔNG commit .env
-pnpm db:start                 # Supabase local: Studio :54323, hộp thư :54324
-pnpm dev                      # web http://localhost:5173 · API http://127.0.0.1:3000/health
-```
-
-### Đọc tài liệu
-
-Chạy `node site/build.mjs` để sinh `site/data/` (thư mục này gitignore, **không có trong repo**), rồi mở `site/index.html` bằng trình duyệt — không cần server. Trang có lộ trình đọc theo vai trò, tìm kiếm toàn văn, nền sáng/tối. Sửa file trong `docs/` xong cũng phải chạy lại lệnh đó. Xem [site/README.md](site/README.md).
-
-## Lệnh thường dùng
-
-| Lệnh | Việc |
-|---|---|
-| `pnpm dev` | Chạy web (5173) và server (3000) cùng lúc |
-| `pnpm build` | Build mọi package |
-| `pnpm typecheck` | Kiểm kiểu TypeScript |
-| `pnpm lint` | ESLint + Prettier + luật ranh giới kiến trúc |
-| `pnpm test:unit` | Unit test (Vitest) |
-| `pnpm test:integration` | Test trên PostgreSQL thật |
-| `pnpm test:e2e` | Test trình duyệt thật (Playwright) |
-| `pnpm test:ai` · `test:media` · `test:load` | Đo máy cờ · đo luồng camera/mic thật · thử tải |
-| `pnpm db:start` | Bật Supabase local |
-
-Lane nào chưa có công cụ sẽ **báo lỗi** `NOT_IMPLEMENTED — xem <Task>` và thoát mã 1, không bao giờ báo xanh giả.
-
-## Kiểm thử
-
-- **Bốn cổng bắt buộc** trước mỗi PR: `pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit`.
-- Test dữ liệu chạy trên **PostgreSQL thật**; thiếu DB thì test phải đỏ.
-- Test thời gian dùng **đồng hồ giả tiêm vào**, không `sleep` thật.
-- Không `.only`, không test bị bỏ qua.
-- Hai cổng đo chặn tiến độ: **máy cờ** tính độ sâu 6 trong 3000 ms (p95, [TK04.3.1](Jira/task/TK04.3.1-corpus-hieu-nang-20-the-benchmark-cong-depth-lane-test-ai.md)) và **LiveKit** truyền byte RTP + khung hình thật ([ST14.1](Jira/story/ST14.1-cong-media-livekit-local-do-byte-rtp-that.md)). Không đạt thì ghi số thật, **không hạ ngưỡng**.
-
-Tester dùng [sổ tay kiểm thử](Jira/04-HUONG-DAN-KIEM-THU.md) và công cụ `Jira/tools/qa.sh`, `Jira/tools/sock.mjs`.
-
-## Quy trình làm việc
-
-**Nhánh:**
-
-| Nhánh | Vai trò | Ai merge vào |
+| # | Việc | Vì sao agent không tự quyết |
 |---|---|---|
-| `main` | Ổn định nhất; **deploy từ nhánh này** | Chỉ trưởng nhóm hoặc Tester, bằng PR `develop → main` (phát hành cuối sprint) |
-| `develop` | Nhánh làm việc chung của cả nhóm | Mọi thành viên, qua PR đã được review + CI xanh + Tester PASS |
-| `feature/XW-…`, `fix/XW-…`… | Một Task | Tạo từ `develop`, PR ngược về `develop` |
+| 1 | **Đọc lại và xác nhận các quyết định `[RV-03/10]`** (tìm bằng `grep "RV-03/10"`) | Agent chọn theo khuyến nghị; chưa phải ý Product Owner đã duyệt |
+| 2 | **Thông tin dự án:** số người trong nhóm, hạn chót, tiêu chí thành công / tiêu chí chấm | Không có trong tài liệu nào |
+| 3 | **Phạm vi so với nguồn lực:** có chuyển một số mục từ P1 xuống P2 không (ứng viên: chat 1-1, Mã QR, sticker, Khách) | AGENTS §3: đổi mức ưu tiên phải được đồng ý |
+| 4 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời; 20 nước mới xin hòa được ở Ranked | Cần dữ liệu và thử nghiệm |
+| 5 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: đang để ngoài phạm vi | Có thể cần cho nộp / công bố thật |
+| 6 | Mockup (`mockups/`) chưa phản ánh hết chi tiết mới (trạng thái "Đang đấu", ẩn Tái đấu ở Ranked, xin hòa sau 20 nước, thẻ tóm tắt người dùng, chọn mức giờ khi ghép Casual…) | Chờ bước 1 xong để khỏi sửa hai lần |
 
+**Rủi ro lớn cần cân nhắc trước khi chia việc**
 
-Mỗi Task đi theo vòng đời trên Jira:
+- Phạm vi (Elo, ghép trận, nhắn tin 1-1, Khách, OTP, 37 thành phần) so với số người và thời gian: xem mục 3 ở trên.
+- Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có phương án dự phòng nếu không đạt.
+- Chạy đồng thời realtime (Socket.IO) và media (LiveKit) là điểm tích hợp rủi ro cao.
+- Hàng đợi Đánh Hạng cần đủ người dùng; khi ít người sẽ hết thời gian chờ 60 giây mà không ghép được (đã có thông báo, chưa có cách giữ chân người chơi).
 
-```
-To Do → Ready For Dev → In Progress → Ready For Test (review + test) → merge develop → Done
-```
+## Quy trình Git
 
-1. Chỉ nhận Task khi mọi Task chặn đã **Done**. Đọc file `Jira/task/TKxx.y.z-….md` và các `docs/10-issues/ISSUE-NNN.md` mà Task truy về. Kéo sang **In Progress**.
-2. Tạo nhánh từ `develop` có Key Jira: `feature/XW-72-khoi-tao-monorepo`.
-3. Viết test trước, rồi viết mã; chạy 4 cổng. Commit: `feat(auth): API đăng nhập [XW-111]`.
-4. Mở PR `[XW-72] TK01.1.1 · …` vào **`develop`** — **một Task một PR**. Comment bàn giao, giao cho Người kiểm, kéo sang **Ready For Test**.
-5. Ở Ready For Test: ≥ 1 người khác **review + approve**, Tester **kiểm trên nhánh PR** theo mục 🧪. FAIL ⇒ Bug, sửa tiếp trên cùng PR.
-6. Đủ approve + CI xanh + Tester PASS ⇒ merge `develop` ⇒ Tester kéo sang **Done**. Log work.
+| Nhánh | Vai trò |
+|---|---|
+| `main` | Ổn định nhất; chỉ nhận PR từ `develop` (phát hành) |
+| `develop` | Nhánh làm việc chung |
+| `feature/…` `fix/…` `docs/…` `chore/…` | Một thay đổi; tạo từ `develop`, PR ngược về `develop` |
 
-Chi tiết (Definition of Ready/Done, mẫu PR, mẫu comment, mẫu Bug): [AGENTS.md §8](AGENTS.md). Cấu hình Jira: [Jira/00-CAU-HINH-JIRA.md](Jira/00-CAU-HINH-JIRA.md).
+- Cấm push thẳng và force push lên `main` / `develop`.
+- Commit: `<loại>(<phạm vi>): <mô tả>`, loại gồm `feat`, `fix`, `test`, `docs`, `chore`, `refactor`.
+- Khi Jira đã được tạo (Giai đoạn 3), thêm Key `[XW-<số>]` vào tên nhánh, commit và tiêu đề PR.
+
+Chi tiết: [AGENTS.md §5](AGENTS.md).
 
 ## Tài liệu
- 
+
 | Cần | Xem |
 |---|---|
-| Người mới bắt đầu từ đâu | [docs/ONBOARDING.md](docs/ONBOARDING.md) |
-| Quyết định chốt phạm vi (21 yêu cầu) | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
-| Danh mục 37 màn hình & 5 trạng thái | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
-| Bộ Mockup Prototype 37 thành phần | [mockups/index.html](mockups/index.html) |
-| Hệ thống thiết kế (màu, chữ, thành phần, bàn cờ, Figma) | [DESIGN.md](DESIGN.md) |
-| Thuật ngữ (bắt buộc đọc) | [docs/00-overview/glossary.md](docs/00-overview/glossary.md) |
-| Hệ toạ độ bàn cờ | [docs/04-business-rules/game-rules.md](docs/04-business-rules/game-rules.md) §1 |
-| Bản đồ toàn bộ đặc tả | [docs/README.md](docs/README.md) |
-| Kiến trúc | [docs/09-technical/architecture.md](docs/09-technical/architecture.md) |
-| Vì sao quyết định như vậy | [docs/07-decisions/decision-log.md](docs/07-decisions/decision-log.md) |
-| Kế hoạch 4 tuần & Epics | [Jira/01-KE-HOACH-4-TUAN.md](Jira/01-KE-HOACH-4-TUAN.md) · [Jira/EPIC-01-AUTHENTICATION-IDENTITY.md](Jira/EPIC-01-AUTHENTICATION-IDENTITY.md) |
-| Task ↔ Key Jira ↔ issue đặc tả | [Jira/03-TRUY-VET.md](Jira/03-TRUY-VET.md) |
-| API HTTP và sự kiện realtime | [Jira/06-HOP-DONG-API-SU-KIEN.md](Jira/06-HOP-DONG-API-SU-KIEN.md) |
-| Từ kỹ thuật cho sinh viên | [Jira/05-TU-DIEN-KY-THUAT.md](Jira/05-TU-DIEN-KY-THUAT.md) |
-| Dùng AI agent với dự án | [AGENTS.md](AGENTS.md) |
-
-`docs/99-archive/` là lịch sử của lần xây trước (có 30 lỗi đã phân tích): không xoá, không dùng làm căn cứ triển khai.
-
-## Nhóm phát triển
-
-7 thành viên, vai trò TV1–TV7 (Backend ×2, Frontend ×2, AI + luật cờ, Design/Tester, Tester + DevOps). Phân công từng Task: [Jira/07-PHAN-CONG.md](Jira/07-PHAN-CONG.md).
+| Phạm vi và quy tắc nghiệp vụ đã chốt | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
+| Danh mục màn hình, 5 trạng thái | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
+| Màu, chữ, thành phần, bàn cờ | [DESIGN.md](DESIGN.md) |
+| Mockup | [mockups/index.html](mockups/index.html) |
+| Luật làm việc cho người và AI agent | [AGENTS.md](AGENTS.md) |
 
 ## Bảo mật
 
-- Không commit khoá bí mật; `.env` đã nằm trong `.gitignore`, chỉ commit `.env.example` với giá trị mẫu.
+- Không commit khoá bí mật; `.env` nằm trong `.gitignore`, chỉ commit `.env.example` với giá trị mẫu.
 - Mọi biến `VITE_*` đều **công khai** trong trình duyệt — không đặt khoá bí mật vào đó.
 - Phát hiện lỗ hổng: báo trực tiếp trưởng nhóm, không mở issue công khai.
 

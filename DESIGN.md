@@ -1,7 +1,9 @@
 # DESIGN.md — Hệ thống thiết kế Cờ Tướng Online
 
-**Cập nhật:** 2026-10-01 (Đồng bộ BA Scope Decisions & Bộ Mockup 37 thành phần) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
-**Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · `DEC-024` (WCAG 2.1 AA)
+**Cập nhật:** 2026-10-03 (Đồng bộ BA Scope Decisions & Bộ Mockup 37 thành phần) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
+**Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · chuẩn WCAG 2.1 AA
+
+> Các mã `DT-xx`, `DEC-xxx`, `GR-COORD`, `SCR-RULE-xx` trong file này là nhãn kế thừa từ bộ tài liệu cũ đã xoá. Nội dung luật đã được viết ngay tại chỗ dùng nó; không cần và không thể tra ở nơi khác. Các mã `TK…` (task Jira cũ) đã được gỡ khỏi file này.
 
 ---
 
@@ -14,7 +16,7 @@
 | 🆕 | Đề xuất **ngoài phạm vi đặc tả hiện tại** (chế độ tối). Cần quyết định `DEC` mới và Task trên Jira trước khi làm |
 
 - Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này.
-- Mọi tỉ lệ tương phản trong file đã được **tính** theo công thức WCAG 2.1 (độ chói tương đối). Khi dựng thật vẫn phải **đo lại** trên màn hình thật (TK16.2.4).
+- Mọi tỉ lệ tương phản trong file đã được **tính** theo công thức WCAG 2.1 (độ chói tương đối). Khi dựng thật vẫn phải **đo lại** trên màn hình thật.
 
 ---
 
@@ -119,9 +121,9 @@ Viền tiêu điểm **trên bàn cờ** luôn dùng `#155E75` (3,54 trên gỗ)
 ### 2.4 Luật dùng màu
 
 - **`DT-01` (chốt):** ⛔ Không truyền thông tin **chỉ bằng màu**. Mọi trạng thái có **chữ hoặc biểu tượng** đi kèm: đến lượt ⇒ viền + "Đến lượt bạn"; bị chiếu ⇒ "Đang bị chiếu" + biểu tượng; online ⇒ chấm + "Đang online"; đồng hồ sắp hết ⇒ số + biểu tượng cảnh báo.
-- Chữ luôn ≥ **4,5:1** với nền của nó; chữ lớn (≥ 24 px, hoặc ≥ 18,66 px đậm) và thành phần UI/đồ hoạ ≥ **3:1** (`DEC-024`).
+- Chữ luôn ≥ **4,5:1** với nền của nó; chữ lớn (≥ 24 px, hoặc ≥ 18,66 px đậm) và thành phần UI/đồ hoạ ≥ **3:1**.
 - Được dùng biến thể **trong suốt** của các màu cho nền phụ, nhưng phải đo lại chữ trên nền đó.
-- ⛔ Không dùng mã màu trực tiếp trong CSS Module — chỉ `var(--color-*)` / `var(--board-*)` (TK01.3.1 kiểm bằng grep).
+- ⛔ Không dùng mã màu trực tiếp trong CSS Module — chỉ `var(--color-*)` / `var(--board-*)` (kiểm bằng grep).
 - ⛔ Không làm đỏ sáng hơn để phân biệt hai phe (đỏ/gỗ đang sát ngưỡng) — xem §7.3.
 
 ---
@@ -141,7 +143,7 @@ Viền tiêu điểm **trên bàn cờ** luôn dùng `#155E75` (3,54 trên gỗ)
 - **`DT-03` (chốt):** Quân cờ chỉ dùng chữ Hán, **không** có tuỳ chọn chữ Việt.
 - Trong Figma: mô phỏng font giao diện bằng **Inter** hoặc **Roboto**; ghi chú cho FE là `system-ui`.
 
-### 3.2 Thang cỡ chữ — 🟡 (TK02.1.1)
+### 3.2 Thang cỡ chữ — 🟡
 
 | Token CSS | Cỡ / dòng | Độ đậm | Dùng cho |
 |---|---|---|---|
@@ -187,7 +189,7 @@ Biến CSS không dùng được trong `@media` ⇒ ghi điểm ngắt thành h�
 | `--radius-lg` | 12 px | Hộp thoại, khung lớn |
 | `--radius-full` | 999 px | Quân cờ, avatar, chấm trạng thái |
 | `--border-width` | 1 px | Viền thường |
-| `--focus-ring` | `3px solid var(--color-focus)`, cách 2 px | Chốt theo TK01.3.1 — `:focus-visible` |
+| `--focus-ring` | `3px solid var(--color-focus)`, cách 2 px | `:focus-visible` |
 | `--shadow-1` | `0 1px 2px rgba(40,34,28,.12)` | Thẻ, quân cờ nằm yên |
 | `--shadow-2` | `0 4px 12px rgba(40,34,28,.18)` | Hộp thoại, menu thả, quân đang chọn (nâng nhẹ) |
 
@@ -220,7 +222,7 @@ Chế độ tối (Kỳ Đài Cổ Phong): bóng khó thấy ⇒ dùng viền `-
 
 ## 5. Biểu tượng
 
-- Bộ **Lucide** (`lucide-react`, đã có trong tech-stack). Cỡ 16 (trong chữ), 20 (nút), 24 (thanh điều hướng); nét 2 px; màu theo chữ (`currentColor`).
+- Bộ icon nét đơn sắc (thư viện cụ thể chọn ở Giai đoạn 2; mọi tên icon trong file này là tên mô tả, ví dụ `play`, `alert-triangle`). Cỡ 16 (trong chữ), 20 (nút), 24 (thanh điều hướng); nét 2 px; màu theo chữ (`currentColor`).
 - Biểu tượng **không bao giờ đứng một mình** mang nghĩa: có chữ bên cạnh, hoặc nút chỉ-icon có `aria-label` + tooltip.
 
 | Nghĩa | Icon Lucide 🟡 |
@@ -250,7 +252,7 @@ Chế độ tối (Kỳ Đài Cổ Phong): bóng khó thấy ⇒ dùng viền `-
 
 ## 6. Thành phần giao diện
 
-Mọi thành phần phải có đủ trạng thái; mỗi màn phải có **5 trạng thái** (`SCR` §3, chốt): **Đang tải** (khung xương, không để trắng) · **Trống** (giải thích vì sao + gợi ý) · **Lỗi** (nói rõ + nút "Thử lại") · **Vô hiệu** (**phải giải thích vì sao**, `SCR-RULE-01`) · **Thành công**.
+Mọi thành phần phải có đủ trạng thái; mỗi màn phải có **5 trạng thái** ([DANH-MUC §2](DANH-MUC-MAN-HINH-XIANGQI.md)): **Đang tải** (khung xương, không để trắng) · **Trống** (giải thích vì sao + gợi ý) · **Lỗi** (nói rõ + nút "Thử lại") · **Vô hiệu** (**phải giải thích vì sao**, `SCR-RULE-01`) · **Thành công**.
 
 ### 6.1 Nút
 
@@ -258,7 +260,7 @@ Mọi thành phần phải có đủ trạng thái; mỗi màn phải có **5 tr
 |---|---|---|---|---|
 | Chính | `--color-btn-primary-bg` | `--color-btn-primary-fg` | — | Hành động chính của màn (một nút chính mỗi khu vực) |
 | Phụ | `--color-surface` | `--color-ink` | `--color-border` | Hành động phụ, Huỷ |
-| Nguy hiểm | `--color-btn-danger-bg` | `--color-btn-danger-fg` | — | Đầu hàng, Đuổi, Đăng xuất mọi thiết bị |
+| Nguy hiểm | `--color-btn-danger-bg` | `--color-btn-danger-fg` | — | Đầu hàng, Đuổi |
 | Nhạt (ghost) | trong suốt | `--color-ink` | — | Hành động phụ trong thanh công cụ |
 
 | Trạng thái | Quy tắc |
@@ -282,21 +284,20 @@ Kích thước: cao ≥ 44 px, đệm ngang 16 px, chữ `--text-md` 600, bo `--
 | Loại | Quy tắc |
 |---|---|
 | Hộp thoại thường | Đóng được bằng **X**, `Esc`, bấm ra ngoài (`SCR-RULE-02`); focus bị giữ trong hộp; đóng xong trả focus về nút đã mở |
-| Không đóng tuỳ ý | `SCR-VERIFY-NOTICE`, `SCR-ONBOARDING`, `SCR-RECONNECTING` — không X; `SCR-INACTIVITY-PROMPT` **không phải modal** (§6.8) |
+| Không đóng tuỳ ý | `SCR-ONBOARDING`, `OVERLAY-RECONNECTING` — không X; `ALERT-INACTIVITY-BANNER` **không phải modal** (§6.8) |
 | Xác nhận nguy hiểm | Tiêu đề câu hỏi · dòng **hậu quả in đậm** · [Huỷ] bên trái, nút nguy hiểm bên phải · **focus mặc định ở Huỷ** (`SCR-RULE-03`) |
 
-Câu bắt buộc (chốt, `SCR` §6):
+Câu bắt buộc (chốt):
 
 | Hành động | Câu |
 |---|---|
 | Đầu hàng | "Bạn sẽ **thua** ván này ngay lập tức." |
 | Rời phòng khi đang chơi | "Rời lúc này được tính là **đầu hàng**." |
 | Đuổi người xem | "Người này sẽ **không vào lại được** phòng này." |
-| Đổi mã xem | "**Toàn bộ** người xem hiện tại sẽ bị đưa ra." |
-| Đổi sang chế độ kín hơn | "**Toàn bộ** người xem sẽ bị đưa ra." |
-| Đăng xuất mọi thiết bị | "Camera/mic đang bật sẽ bị dừng." |
+| Đổi phòng sang `LOCKED` | "Người mới sẽ **không vào được**. Người xem đang có vẫn được giữ lại." |
+| Đổi mật khẩu thành công | "Mọi phiên đăng nhập khác sẽ bị đăng xuất." |
 
-### 6.4 Toast (thư viện `sonner`)
+### 6.4 Toast
 
 - Vị trí **trên giữa**; ⛔ không bao giờ che nút Đầu hàng (`SCR-RULE-05`).
 - 3 loại: thành công · lỗi · thông tin — nền `--color-*-bg`, biểu tượng + chữ.
@@ -312,7 +313,7 @@ Câu bắt buộc (chốt, `SCR` §6):
 ### 6.6 Đồng hồ và dòng lượt
 
 - Định dạng `mm:ss`, `--text-2xl` ở máy tính, `--text-lg` trên thanh dính điện thoại, số `tabular-nums`.
-- Bên đang chạy: ▶ (`play`) **và** chữ. Dưới **30 giây**: `alert-triangle` + số màu `--color-warning` (chốt TK02.3.1 — không chỉ đổi màu). Ván không giới hạn: "∞ Không giới hạn".
+- Bên đang chạy: ▶ (`play`) **và** chữ. Dưới **30 giây**: `alert-triangle` + số màu `--color-warning` (không chỉ đổi màu). Ván không giới hạn: "∞ Không giới hạn".
 - Dòng lượt: "Đến lượt bạn" · "Đang chờ đối thủ" · "Đang bị chiếu" (+ biểu tượng) · người xem: "Lượt: Đỏ" / "Lượt: Đen".
 
 ### 6.7 Danh sách nước đi, khung đề nghị
@@ -463,9 +464,9 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - Toàn bộ giao diện **tiếng Việt**, kể cả lỗi và nhãn trợ năng (`DT` §11).
 - Câu ngắn, xưng "bạn", nói **việc cần làm tiếp**. Lỗi theo mẫu *điều gì xảy ra + cách sửa*: "Mã phòng không đúng. Kiểm tra lại 8 ký tự rồi thử lại."
 - ⛔ Không lộ chi tiết kỹ thuật (mã HTTP, stack), không tiết lộ dữ liệu vượt quyền (ví dụ "email đã tồn tại" ở màn quên mật khẩu).
-- Thuật ngữ theo [glossary](docs/00-overview/glossary.md): **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
+- Thuật ngữ theo [AGENTS.md §4.1](AGENTS.md): **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
 - Thời gian: `mm:ss` cho đồng hồ và đếm ngược; ngày giờ dạng `27/09/2026 14:05`.
-- Các câu đã chốt trong `SCR` (§6.3) và TK02.x phải dùng **đúng chữ**.
+- Các câu đã chốt trong §6.3 phải dùng **đúng chữ**.
 
 ---
 
@@ -479,7 +480,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - [ ] Vô hiệu luôn có giải thích (`SCR-RULE-01`)
 - [ ] `prefers-reduced-motion` tắt chuyển động
 - [ ] Đếm ngược không đọc từng giây; thông báo quan trọng qua `aria-live`
-- [ ] Kiểm chi tiết: [TK16.2.2](Jira/task/TK16.2.2-tro-nang-wcag-aa-tren-toan-bo-ung-dung.md), [TK16.2.5](Jira/task/TK16.2.5-kiem-thu-tro-nang-va-5-trang-thai-36-man.md)
+- [ ] Kiểm chi tiết WCAG và 5 trạng thái cho toàn bộ màn hình: lập kế hoạch ở Giai đoạn 2
 
 ---
 
@@ -487,17 +488,17 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 
 ### 11.1 Cấu trúc file
 
-| Trang Figma | Nội dung bao phủ các màn hình | Task |
-|---|---|---|
-| `00 · Design system` | Color/Text styles, token hoàng kim + gỗ mun, thành phần + mọi trạng thái | TK02.1.1 |
-| `01 · Bàn giao token` | Bảng tên token CSS → giá trị (khớp §12, hỗ trợ 2 theme Sáng/Tối) | TK02.1.1 |
-| `02 · Bàn cờ` | Bàn SVG 3 cỡ × 2 hướng, quân chữ Hán, trạng thái §7.4 (GR-COORD) | TK02.1.2 |
-| `10 · Tài khoản & Auth` | `SCR-LOGIN`, `MODAL-GUEST-NAME`, `SCR-REGISTER` (3 bước), `SCR-FORGOT-PASSWORD`, `SCR-RESET-PASSWORD`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS`, `MODAL-OTP-USERNAME` | TK02.2.1 |
-| `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (3 chế độ), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` | TK02.2.2 |
-| `12 · Phòng thi đấu` | `SCR-GAME-ROOM` (Casual vs Ranked), đồng hồ, đề nghị hòa/undo, cờ treo, mất kết nối, `MODAL-MATCH-RESULT`, `SCR-ACCESS-DENIED` | TK02.3.1 |
-| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 kỳ thủ), `PANEL-CHAT` (Tab Riêng/Chung, 12 sticker, lọc ***), `PANEL-SPECTATORS` (Kick người xem) | TK02.3.2 |
-| `14 · Xếp hạng & Xã hội` | `SCR-LEADERBOARD` (Top 50 + Sticky User Row), `SCR-FRIENDS`, `MODAL-DIRECT-CHAT` (chat 1-1 bạn bè) | TK02.4.1 |
-| `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ, undo tức thì), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) | TK02.4.2 |
+| Trang Figma | Nội dung bao phủ các màn hình |
+|---|---|
+| `00 · Design system` | Color/Text styles, token hoàng kim + gỗ mun, thành phần + mọi trạng thái |
+| `01 · Bàn giao token` | Bảng tên token CSS → giá trị (khớp §12, hỗ trợ 2 theme Sáng/Tối) |
+| `02 · Bàn cờ` | Bàn SVG 3 cỡ × 2 hướng, quân chữ Hán, trạng thái §7.4 (GR-COORD) |
+| `10 · Tài khoản & Auth` | `SCR-LOGIN`, `MODAL-GUEST-NAME`, `SCR-REGISTER` (3 bước), `SCR-FORGOT-PASSWORD`, `SCR-RESET-PASSWORD`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS`, `MODAL-OTP-USERNAME` |
+| `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (3 chế độ), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
+| `12 · Phòng thi đấu` | `SCR-GAME-ROOM` (Casual vs Ranked), đồng hồ, đề nghị hòa/undo, cờ treo, mất kết nối, `MODAL-MATCH-RESULT`, `SCR-ACCESS-DENIED` |
+| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 kỳ thủ), `PANEL-CHAT` (Tab Riêng/Chung, 12 sticker, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
+| `14 · Xếp hạng & Xã hội` | `SCR-LEADERBOARD` (Top 50 + Sticky User Row), `SCR-FRIENDS`, `MODAL-DIRECT-CHAT` (chat 1-1 bạn bè) |
+| `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ, đi lại tối đa 3 lần không cần máy đồng ý), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) |
 
 ### 11.2 Quy ước
 
@@ -513,7 +514,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - [ ] Mọi khoảng cách ∈ {4, 8, 12, 16, 24, 32}; mọi vùng chạm ≥ 44 px
 - [ ] Mọi biến thể vô hiệu có câu giải thích
 - [ ] Bàn cờ xuất PNG, kiểm 3 giả lập mù màu
-- [ ] Comment Jira: link Figma (quyền xem cho cả nhóm) + PNG + bảng token (xem [sổ tay kiểm thử §13](Jira/04-HUONG-DAN-KIEM-THU.md))
+- [ ] Lưu link Figma (quyền xem cho cả nhóm) + PNG + bảng token ở nơi nhóm thống nhất (Jira chưa tồn tại ở Giai đoạn 1)
 
 Đổi giá trị 🟡 trong Figma ⇒ sửa §2–§4 và §12 của file này trong cùng lúc, báo Frontend.
 
@@ -521,7 +522,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 
 ## 12. `tokens.css` tham chiếu
 
-Frontend chép vào `apps/web/src/styles/tokens.css` (TK01.3.1). Hỗ trợ song song cả 2 giao diện Sáng (Giấy Xuyến Chỉ) và Tối (Kỳ Đài Cổ Phong).
+Khi dựng (Giai đoạn 4) frontend chép vào file token CSS của ứng dụng; đường dẫn do Giai đoạn 2 chốt. Hỗ trợ song song cả 2 giao diện Sáng (Giấy Xuyến Chỉ) và Tối (Kỳ Đài Cổ Phong).
 
 ```css
 :root {
@@ -659,11 +660,11 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
 
 ## 13. Hướng dẫn cho AI agent khi dựng giao diện
 
-1. Đọc §1–§9 của file này, đối chiếu chi tiết với [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) (đủ 37 thành phần và 5 trạng thái bắt buộc), và file Task FE/DS đang làm.
+1. Đọc §1–§9 của file này, đối chiếu chi tiết với [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) (đủ 37 thành phần và 5 trạng thái bắt buộc).
 2. **Chỉ dùng token** (`var(--…)`); ⛔ không mã màu, không số px ngoài thang, không font ngoài `--font-ui` / `--font-han`.
 3. Dựng **đủ 5 trạng thái** của màn và mọi trạng thái của thành phần; vô hiệu luôn có câu giải thích.
 4. Dùng câu chữ đã chốt nguyên văn; không tự đặt câu cho các hộp xác nhận ở §6.3.
-5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §14`); icon chỉ từ `lucide-react`, toast chỉ từ `sonner`.
+5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §6`). Thư viện icon và toast chưa chốt (chọn ở Giai đoạn 2, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
 6. Kiểm trước khi mở PR: 4 kích thước (360, 390, 1366, 1920) không cuộn ngang; điều hướng hết bằng bàn phím; bật giảm chuyển động; giả lập mù màu cho bàn cờ.
 7. Cần giá trị chưa có trong file này ⇒ **hỏi** hoặc đề xuất 🟡 (kèm tỉ lệ tương phản đã tính) và cập nhật file này trong cùng PR — ⛔ không tự đặt giá trị rồi dùng lặng lẽ.
 8. Áp dụng chuẩn Theme Kỳ Đài Cổ Phong (Dark Tea-Room) theo định hướng thẩm mỹ Á Đông cao cấp, đảm bảo tương phản WCAG 2.1 AA.
