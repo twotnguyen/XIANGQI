@@ -84,17 +84,19 @@ Các mâu thuẫn và câu hỏi chưa chốt của giai đoạn 1 nằm trong [
 | `RANKED` / Đánh Hạng | rank, leo rank, xếp hạng (khi chỉ chế độ chơi) |
 | `GUEST` / tài khoản khách | anonymous, ẩn danh, người lạ |
 
-> Các tài liệu hiện có (BA-SCOPE, DANH-MUC) còn dùng "kỳ thủ", "khán giả", "Đấu thủ". Khi sửa tài liệu thì thống nhất dần theo bảng này, nhưng **không** đổi hàng loạt nếu người dùng chưa yêu cầu.
+> Đã thống nhất theo bảng này trong toàn bộ tài liệu và mockup (người dùng yêu cầu ngày 03/10/2026). Cấp bậc Elo thấp nhất đổi tên thành "Người mới".
 
 ### 4.2 Ba chế độ chơi (đã chốt)
 
 | Chế độ | Ghép trận | Đi lại | Người xem | Đồng hồ | Khách |
 |---|---|---|---|---|---|
-| `CASUAL` | Ngẫu nhiên hoặc tạo phòng | Tối đa 3 lần/bên/ván, đối thủ đồng ý | Có (tối đa 5) | 4 mức | Được |
+| `CASUAL` | Ngẫu nhiên hoặc tạo phòng | Tối đa 3 lần/bên/ván, đối thủ đồng ý | Có (tối đa 2) | 4 mức | Được |
 | `RANKED` | Ngẫu nhiên 100% theo Elo | ⛔ Cấm hoàn toàn | ⛔ Cấm hoàn toàn | Cố định 10 phút/bên | ⛔ Cấm |
 | `AI` | Chọn cấp Dễ / Trung bình / Khó | Tối đa 3 lần, lùi 1 cặp nước | Không | Không giới hạn | Được |
 
 > Bổ sung (đã duyệt 03/10): `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2). `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của `CASUAL`.
+>
+> **Phân kỳ (đã duyệt 03/10):** nhóm 7 người, khoảng 2 tuần, nên **P1 chỉ gồm 8 mục tiêu cốt lõi** (đăng ký/đăng nhập, tạo phòng, mời bằng link/mã và bạn bè online, bàn cờ, đánh online, phòng công khai/khoá tối đa 2 người xem, chat + camera + mic, đánh với máy). `RANKED` và mọi thứ ngoài 8 mục đó là **P2**: vẫn là luật đã chốt, nhưng làm sau (BA-SCOPE `Phần 11`).
 
 ### 4.3 Hệ toạ độ bàn cờ (kế thừa, xác nhận lại ở GĐ2)
 

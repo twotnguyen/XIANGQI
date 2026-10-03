@@ -34,15 +34,17 @@ Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn
 
 ## Tính năng
 
-Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 hạng mục: 22 lõi P1, 3 mở rộng P2; cập nhật 03/10/2026).
+Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 hạng mục; cập nhật 03/10/2026).
+
+**Phân kỳ (nhóm 7 người, khoảng 2 tuần):** **P1 = 8 mục tiêu cốt lõi** của Product Owner: (1) đăng ký / đăng nhập, (2) tạo phòng, (3) mời vào phòng bằng link, mã và mời bạn bè đang online, (4) khởi tạo bàn cờ, (5) hai người đánh cờ qua mạng, (6) phòng công khai / khoá / khoá nhưng có mã, tối đa 2 người xem, (7) chat + camera + mic cho hai người chơi và kênh chat riêng cho người xem, (8) đánh với máy theo cấp độ. **Mọi thứ còn lại là P2** (đã duyệt, làm sau): Đánh Hạng và Elo, ghép ngẫu nhiên, Khách, Google, quên mật khẩu, đổi username, chat 1-1 giữa bạn bè, sticker, QR, xin đi lại, tái đấu, lịch sử và replay… Chi tiết: BA-SCOPE `Phần 11`; ưu tiên từng thành phần: cột "Ưu tiên" ở DANH-MUC §7 (23 thành phần P1, 14 P2). Bảng dưới mô tả **toàn bộ** tính năng đã duyệt, kể cả P2.
 
 | Nhóm | Nội dung |
 |---|---|
 | Tài khoản | Đăng ký username + mật khẩu + email xác minh OTP; Google OAuth (thiết lập thêm username + mật khẩu); chế độ Khách (12 giờ, hạn chế quyền); quên/đặt lại mật khẩu bằng OTP; đổi username qua OTP (tên cũ khoá 30 ngày); email không đổi được |
 | Chế độ **Đánh Thường** | Ghép ngẫu nhiên, tạo phòng riêng (link, QR, mã 8 ký tự, mời bạn online), danh sách phòng công khai, xem cờ, đồng hồ 4 mức (không giới hạn / 5 / 10 / 15 phút), xin đi lại tối đa 3 lần |
-| Chế độ **Đánh Hạng** | Ghép ngẫu nhiên 100% theo Elo, 10 phút mỗi bên, cấm khán giả, cấm đi lại, cấm Khách, ngắt kết nối quá 60 giây xử thua; Elo FIDE; bảng xếp hạng |
+| Chế độ **Đánh Hạng** | Ghép ngẫu nhiên 100% theo Elo, 10 phút mỗi bên, cấm người xem, cấm đi lại, cấm Khách, ngắt kết nối quá 60 giây xử thua; Elo FIDE; bảng xếp hạng |
 | Chế độ **Đánh Với Máy** | 3 cấp (Dễ / Trung bình / Khó), chọn phe, đi lại tối đa 3 lần, không giới hạn thời gian, lưu lịch sử và xem lại |
-| Phòng | Một lần chia sẻ tạo link + mã + QR cùng quyền; ghế trống thì vào ghế, hết ghế thì làm người xem (người tạo chọn 0–5, mặc định 5); chủ phòng chuyển người giữa ghế và khán giả; khoá phòng khi đủ 2 đấu thủ; ghế đỏ/đen, xin đổi bên, sẵn sàng + đếm ngược 3 giây, chuyển quyền chủ phòng, đuổi người xem |
+| Phòng | Một lần chia sẻ tạo link + mã + QR cùng quyền; ghế trống thì vào ghế, hết ghế thì làm người xem (người tạo chọn 0–2, mặc định 2); chủ phòng chuyển người giữa ghế và người xem; khoá phòng khi đủ 2 người chơi; ghế đỏ/đen, xin đổi bên, sẵn sàng + đếm ngược 3 giây, chuyển quyền chủ phòng, đuổi người xem |
 | Bàn cờ | SVG, quân chữ Hán, click hoặc kéo thả, chấm gợi ý các ô đi hợp lệ (không phải gợi ý nước hay), chiếu tướng, âm thanh Web Audio; luật chiếu liên tục và hòa không ăn quân |
 | Chat | Kênh riêng (2 người chơi) và kênh chung, 12 sticker, bộ lọc từ thô tục, nhắn tin 1-1 giữa bạn bè |
 | Camera / mic | Người chơi tự bật tắt; người xem chỉ xem/nghe, không phát |
@@ -88,22 +90,20 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner uỷ quyền cho agent tự xử lý mọi mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Toàn bộ đã được ghi vào `BA-SCOPE-DECISIONS.md` và **Product Owner đã duyệt hết ngày 03/10/2026**, đồng bộ sang `DANH-MUC` và `DESIGN.md`. Phần còn lại dưới đây là việc **chỉ người dùng quyết được** hoặc việc kế tiếp.
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ các quyết định rà soát, cung cấp quy mô nhóm (7 người), hạn chót (khoảng 2 tuần) và 8 mục tiêu cốt lõi; agent đã phân kỳ P1/P2 (BA-SCOPE `Phần 11`). **Tiêu chí hoàn thành P1 (Product Owner):** demo chạy được 8 mục cốt lõi end-to-end. Còn lại là những việc **chỉ người dùng quyết được** hoặc việc kế tiếp:
 
-| # | Việc | Vì sao agent không tự quyết |
+| # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Thông tin dự án:** số người trong nhóm, hạn chót, tiêu chí thành công / tiêu chí chấm | Không có trong tài liệu nào |
-| 2 | **Phạm vi so với nguồn lực:** có chuyển một số mục từ P1 xuống P2 không (ứng viên: chat 1-1, Mã QR, sticker, Khách) | AGENTS §3: đổi mức ưu tiên phải được đồng ý |
-| 3 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời | Cần dữ liệu và thử nghiệm |
-| 4 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: đang để ngoài phạm vi | Có thể cần cho nộp / công bố thật |
-| 5 | Mockup (`mockups/`) chưa phản ánh hết chi tiết mới (trạng thái "Đang đấu", ẩn Tái đấu ở Ranked, xin hòa sau 20 nước, thẻ tóm tắt người dùng, chọn mức giờ khi ghép Casual, chọn số người xem lúc tạo phòng, đổi chỗ ghế/khán giả, xin đi lại lùi 1–2 nước, nhãn "Bị gián đoạn"/"Bỏ dở"…) | Chờ bước 1 xong để khỏi sửa hai lần |
+| 1 | **Xác nhận Giai đoạn 1 đã xong** để bắt đầu Giai đoạn 2 (phân tích chuyên sâu). Lập Jira là Giai đoạn 3, cần xác nhận riêng | AGENTS §1: chỉ chuyển khi người dùng nói rõ giai đoạn trước đã xong |
+| 2 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời | Cần dữ liệu và thử nghiệm |
+| 3 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
+| 4 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới (đổi chỗ ghế/người xem, xin đi lại lùi 1–2 nước, nhãn "Bị gián đoạn", thẻ tóm tắt người dùng…) | Cập nhật khi dựng giao diện thật |
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
-- Phạm vi (Elo, ghép trận, nhắn tin 1-1, Khách, OTP, 37 thành phần) so với số người và thời gian: xem mục 3 ở trên.
-- Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có phương án dự phòng nếu không đạt.
+- Nhóm 7 người trong khoảng 2 tuần với 8 mục tiêu P1 vẫn chặt: hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết. Nên chạy song song các nhóm việc ngay từ đầu.
+- Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có số đo thực tế. Phương án nghiệp vụ khi không kịp đã chốt (đi nước tốt nhất tìm được; lỗi hoặc quá 10 giây thì ván "Bỏ dở" và nút Thử lại, BA-SCOPE 6.1). Dự phòng tiến độ (gợi ý, chưa bắt buộc): 3 cấp vẫn là P1, nếu thiếu thời gian thì làm cấp Dễ trước.
 - Chạy đồng thời realtime (Socket.IO) và media (LiveKit) là điểm tích hợp rủi ro cao.
-- Hàng đợi Đánh Hạng cần đủ người dùng; khi ít người sẽ hết thời gian chờ 60 giây mà không ghép được (đã có thông báo, chưa có cách giữ chân người chơi).
 
 ## Quy trình Git
 
