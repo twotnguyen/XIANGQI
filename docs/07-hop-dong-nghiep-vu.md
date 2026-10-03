@@ -34,7 +34,7 @@ Khách P2 được quyền CASUAL/AI theo BA 1.3 nhưng không Bạn bè, RANKED
 | Bước | Cam kết |
 |---|---|
 | Nhận ý định | Danh tính lấy từ phiên xác thực; định danh phòng/ván, `commandId` và `matchVersion` cho lệnh ván theo [04] |
-| Tra biên lai | Sau khi xác thực danh tính và **trước** mọi kiểm điều kiện thay đổi: nếu đã có biên lai cho cùng danh tính và `commandId` thì trả lại kết quả đã lưu, không kiểm lại `matchVersion`/lượt/trạng thái. Chỉ lệnh mới (chưa có biên lai) đi tiếp |
+| Tra biên lai | Sau khi xác thực danh tính và **trước** mọi kiểm điều kiện thay đổi: nếu đã có biên lai cho cùng danh tính và `commandId` thì trả lại kết quả đã lưu, không kiểm lại `matchVersion`/lượt/trạng thái. Chỉ lệnh mới (chưa có biên lai) đi tiếp. Biên lai chỉ lưu mã kết quả và định danh tác động; **dữ liệu đọc đi kèm lấy lại theo quyền hiện tại** của người gửi, mất quyền đọc (bị đuổi, đổi vai, huỷ bạn) thì chỉ trả mã kết quả, không trả dữ liệu; tác động không bao giờ thi hành lại (đề xuất 04/10/2026, chờ PO duyệt) |
 | Kiểm trước | Phiên đang điều khiển, quyền, trạng thái, phiên bản, giới hạn và điều kiện thời gian; không tin client báo đã thắng hoặc đã trả lời |
 | Chống trùng | Cùng danh tính và định danh lệnh chỉ có một tác động; gửi lại để lấy kết quả, không tạo thêm ván/nước/tin hoặc trừ lượt |
 | Tuần tự | Khoá logic theo danh tính khi chiếm vị trí chơi, theo phòng/ván khi sửa; kiểm lại trạng thái bên trong vùng xử lý tuần tự |

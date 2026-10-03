@@ -103,6 +103,7 @@ Một Tướng bị **chiếu** khi có quân đối phương có thể ăn Tư�
 4. Áp dụng nước đi, cập nhật bộ đếm nửa nước và khoá thế cờ.
 5. Xét kết thúc theo **thứ tự ưu tiên** (dừng ở điều kiện đầu tiên thoả): `CHECKMATE`/`STALEMATE` → `PERPETUAL_CHECK` → `DRAW_REPETITION` → `DRAW_NO_CAPTURE`.
 6. Ghi nước đi, phát thế cờ mới cho cả phòng.
+Ghi chú: phân xử khi hết giờ và hết ân hạn mất kết nối xảy ra gần nhau là việc của **bộ hẹn giờ chung**, không phải bước của danh sách trên; xem [04] mục đồng hồ (mốc sớm hơn quyết định; trùng đúng một mốc thì ưu tiên `TIMEOUT`, PO chốt 04/10/2026).
 
 Chiếu hết luôn thắng mọi kết quả hoà: nếu nước đi vừa chiếu hết vừa tạo lặp lần 3 hoặc chạm 120 nửa nước thì vẫn là `CHECKMATE`.
 
@@ -249,8 +250,8 @@ Giá trị trên là **điểm xuất phát**, tinh chỉnh bằng chạy máy �
 
 1. Máy chủ gửi cho tiến trình máy cờ: thế cờ (FEN), lịch sử khoá thế, cấp độ, ngân sách.
 2. Tiến trình trả `{ move, depth, nodes, elapsedMs }`.
-3. Thời gian chờ cứng của máy chủ = **ngân sách + 2 giây**; quá hạn thì **kết thúc tiến trình** đó và trả nước đã biết (nếu có).
-4. Lỗi tiến trình hoặc không phản hồi quá hạn 10 giây → ván chuyển `Bỏ dở` và hiện *"Máy cờ gặp sự cố"* kèm nút *Thử lại* (BA 6.1). Thử lại sau `ABANDONED` tạo ván mới cùng cấp độ/phe; không phục hồi ván cũ. `ENGINE_BUSY` chỉ xếp lại tìm nước trong ván hiện tại. Kết quả tìm đến sau khi tác vụ bị huỷ không được áp dụng.
+3. Tiến trình tìm sâu dần và gửi `progress { move, depth }` sau **mỗi độ sâu hoàn tất** (đề xuất 04/10/2026, chờ PO duyệt). Thời gian chờ cứng của máy chủ = **ngân sách + 2 giây**; quá hạn thì **kết thúc tiến trình** đó: nếu máy chủ đã nhận ít nhất một `progress` thì đi nước đó (**không** phải lỗi); nếu chưa có nước nào thì tính là lỗi theo mục 4.
+4. Lỗi tiến trình, chết bất thường, hoặc chưa có nước nào khi quá hạn/không phản hồi quá 10 giây → ván chuyển `Bỏ dở` và hiện *"Máy cờ gặp sự cố"* kèm nút *Thử lại* (BA 6.1). Thử lại sau `ABANDONED` tạo ván mới cùng cấp độ/phe; không phục hồi ván cũ. `ENGINE_BUSY` chỉ xếp lại tìm nước trong ván hiện tại. Kết quả tìm đến sau khi tác vụ bị huỷ không được áp dụng.
 5. Người chơi bấm đi lại khi máy đang nghĩ → **huỷ** tìm kiếm hiện tại (BA 6.3).
 
 ### 9.5 Tiêu chí đạt của máy cờ (đo trên máy chuẩn, mục 3 của [05-kiem-thu.md](05-kiem-thu.md))

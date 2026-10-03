@@ -43,7 +43,7 @@ Khách (`GUEST`, P2) **không có dòng trong `profiles`**; danh tính Khách ch
 | `user_id` | uuid PK | = `auth.users.id` (Supabase Auth) |
 | `username` | citext | **UNIQUE không phân biệt hoa thường**, kiểm tra `^[a-zA-Z0-9_]{3,20}$` (BA 1.4) |
 | `display_name` | text | 2–30 ký tự; mặc định bằng `username` |
-| `email` | text | Chỉ đọc, lấy từ Auth; **không đổi** (BA 1.6) |
+| `email` | text | Chỉ đọc, lấy từ Auth; **không đổi** (BA 1.6); cưỡng chế tại Auth, không chỉ ở giao diện ([04] §3.1) |
 | `created_at` | timestamptz | |
 | `last_seen_at` | timestamptz | Cập nhật khi kết nối; dùng cho trạng thái online (có thể lấy từ bộ nhớ) |
 | `completed_at` | timestamptz NULL | Mốc hoàn tất ghi hồ sơ. Quyền dùng cần cả giá trị này và không còn `PENDING`. Nếu đã có mốc nhưng còn cờ thì **phục hồi xoá cờ, không xoá tài khoản**; chỉ tài khoản email chưa có mốc, quá thời hạn, mới bị dọn. Nguồn: BA 1.1 và [04] mục 3.1 (duyệt 04/10) |
@@ -148,7 +148,7 @@ Chỉ mục: `(match_id, parent_move_id)`, `(match_id, position_key)`. **Đi l�
 | `command_id` | uuid | Do client sinh; khoá chính gộp `(user_id, command_id)`, khớp hợp đồng chống trùng theo danh tính ở [07] (đề xuất) |
 | `match_id` | uuid FK, **nullable** | Rỗng cho lệnh chưa có ván (tạo phòng, chat phòng chờ) (đề xuất) |
 | `user_id` | uuid FK | |
-| `result` | jsonb | Kết quả đã trả để gửi lại khi trùng |
+| `result` | jsonb | Mã kết quả và định danh tác động để gửi lại khi trùng; **không** lưu dữ liệu đọc nhạy cảm, dữ liệu đọc kèm theo được lọc lại theo quyền hiện tại khi gửi lại ([07] §3; áp cả biên lai trong bộ nhớ của ván với máy) (đề xuất 04/10/2026, chờ PO duyệt) |
 | `created_at` | timestamptz | Có thể dọn sau 24 giờ |
 
 ### 2.9 `chat_messages` (P1)
