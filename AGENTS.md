@@ -94,7 +94,8 @@ Các mâu thuẫn và câu hỏi chưa chốt của giai đoạn 1 nằm trong [
 | `RANKED` | Ngẫu nhiên 100% theo Elo | ⛔ Cấm hoàn toàn | ⛔ Cấm hoàn toàn | Cố định 10 phút/bên | ⛔ Cấm |
 | `AI` | Chọn cấp Dễ / Trung bình / Khó | Tối đa 3 lần, lùi 1 cặp nước | Không | Không giới hạn | Được |
 
-> Bổ sung `[RV-03/10]`: `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2). `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của `CASUAL`.
+> Bổ sung đã duyệt 03/10: `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2).
+> Bổ sung `[RV-03/10]` còn chờ duyệt: `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của `CASUAL`.
 
 ### 4.3 Hệ toạ độ bàn cờ (kế thừa, xác nhận lại ở GĐ2)
 

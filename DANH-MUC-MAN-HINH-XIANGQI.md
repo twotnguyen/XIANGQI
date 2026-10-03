@@ -234,7 +234,8 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * Form cập nhật Display Name (đổi tự do, không cần OTP).
   * Nút `🔑 Đổi Username Qua OTP`: Mở `MODAL-OTP-USERNAME` để thực hiện quy trình 4 bước xác thực OTP qua email. Username cũ bị khoá 30 ngày sau khi đổi (BA-SCOPE `Quyết định 1.4`).
   * **`[RV-03/10]`** Lựa chọn giao diện: Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong, theo DESIGN.md §2.3).
-  * **`[RV-03/10]`** Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên). Không có chức năng xoá tài khoản trong ứng dụng ở giai đoạn này.
+  * **`[RV-03/10]`** Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên).
+  * Không có chức năng xoá tài khoản trong ứng dụng ở giai đoạn này (đã duyệt 03/10).
   * Nút `Đăng Xuất` (`SCR-LOGIN`).
 
 ---
