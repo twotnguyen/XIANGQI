@@ -1,6 +1,6 @@
 # docs/ · Tài liệu phân tích chuyên sâu (Giai đoạn 2)
 
-**Trạng thái: Product Owner đã duyệt toàn bộ ngày 03/10/2026** (OTP: Phương án B; 13 quyết định duyệt như đề xuất). Giai đoạn 1 và Giai đoạn 2 xong ngày 03/10/2026; hiện ở Giai đoạn 3. Thư mục `docs/` này là **thư mục mới** (không liên quan `docs/` cũ đã xoá ở nhánh `chore/xoa-docs-va-jira-cu`).
+**Trạng thái: nền tảng đã duyệt 03/10/2026; bản viết lại 04/10/2026 chờ Product Owner review** (OTP: Phương án B; 13 quyết định duyệt như đề xuất). Giai đoạn 1 và Giai đoạn 2 xong ngày 03/10/2026; hiện ở Giai đoạn 3. Thư mục `docs/` này là **thư mục mới** (không liên quan `docs/` cũ đã xoá ở nhánh `chore/xoa-docs-va-jira-cu`).
 
 Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp của người dùng > `AGENTS.md` > [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) > `docs/` > [DANH-MUC](../DANH-MUC-MAN-HINH-XIANGQI.md) > [DESIGN.md](../DESIGN.md) và `mockups/`. **`docs/` chi tiết hoá chứ không đổi phạm vi**; thấy mâu thuẫn với BA-SCOPE thì BA-SCOPE thắng và phải báo người dùng.
 
@@ -47,7 +47,7 @@ Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợ
 | 5 | Mọi dữ liệu trạng thái ván/phòng đi qua máy chủ; client chỉ đọc cột công khai của `profiles` | [03] mục 5 |
 | 6 | Một thể hiện máy chủ, trạng thái ván trong bộ nhớ | [04] mục 11 |
 | 7 | **OTP: Phương án B (OTP gốc Supabase)**; BA 1.1, 1.5 đã sửa lời; "huỷ ở lần sai thứ 5" chỉ gần đúng | [04] mục 3.1 |
-| 8 | Không thêm công nghệ ngoài danh sách README (Phương án B không cần dịch vụ gửi thư); thư viện tạo Mã QR và bộ biểu tượng chọn lúc bắt đầu Giai đoạn 4 | [04] mục 11 |
+| 8 | Không thêm công nghệ ngoài danh sách README (Phương án B: máy chủ ứng dụng không tự gửi thư, dùng SMTP mặc định của Supabase, PO duyệt 04/10/2026: khoảng 2 thư/giờ, chỉ tới địa chỉ thuộc nhóm dự án, demo đăng ký chỉ dùng email thành viên nhóm; BA 10.1); thư viện tạo Mã QR và bộ biểu tượng chọn lúc bắt đầu Giai đoạn 4 | [04] mục 11 |
 | 9 | Chạy 3 thử nghiệm rủi ro cao ngay đầu Giai đoạn 4: LiveKit quyền đăng ký track theo từng người; cấu hình OTP Supabase (hạn 180 giây, gửi lại 60 giây, giới hạn tốc độ xác minh, mã 6 số) và quét dọn bản ghi chưa hoàn tất; độ sâu máy cờ | [04] mục 11 |
 | 10 | Giá trị perft tham chiếu phải được xác minh bằng bộ sinh nước độc lập trước khi dùng làm chuẩn | [05] mục 3.1 |
 | 11 | **Khi cơ sở dữ liệu lỗi**: đóng băng đồng hồ, quá 30 giây thì `INTERRUPTED`, ghi bù khi hồi phục (ván với máy P1 chỉ trong bộ nhớ, không áp dụng) | [04] mục 4.2 |

@@ -2,7 +2,7 @@
 
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
-**Giai đoạn 2 · Trạng thái: **Đã duyệt 03/10/2026** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Công cụ theo README: **Vitest** (đơn vị, tích hợp) và **Playwright** (đầu-cuối). Không thêm công cụ ngoài danh sách khi chưa được đồng ý (AGENTS §8). Nguyên tắc AGENTS §4.4: **không hạ ngưỡng đo để báo đạt**; không đạt thì ghi **số thật** và trạng thái `BLOCKED`.
+**Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Công cụ theo README: **Vitest** (đơn vị, tích hợp) và **Playwright** (đầu-cuối). Không thêm công cụ ngoài danh sách khi chưa được đồng ý (AGENTS §8). Nguyên tắc AGENTS §4.4: **không hạ ngưỡng đo để báo đạt**; không đạt thì ghi **số thật** và trạng thái `BLOCKED`.
 
 Căn cứ: [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) (US, AC, NFR), [02-luat-co-tuong.md](02-luat-co-tuong.md), [03-du-lieu.md](03-du-lieu.md), [04-kien-truc.md](04-kien-truc.md).
 
@@ -27,7 +27,7 @@ Kịch bản demo chuẩn D1–D10 (dùng làm bài kiểm thử chấp nhận P
 | D9 | 5 | A và B **bắt đầu lại một ván online mới**, rồi ngắt mạng một bên giữa ván | Overlay đếm 60 giây; nối lại trong 60 giây thì tiếp tục; quá 60 giây thì bên mất kết nối thua `DISCONNECT` |
 | D10 | 8 | Đóng tab giữa ván với máy rồi mở lại `/ai/:id` trong 30 phút và sau 30 phút | Trong 30 phút vào lại đúng thế cờ; sau 30 phút ván là *Bỏ dở* |
 
-D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR đều đạt; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
+D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR **đã duyệt** thuộc P1 (NFR-01–07, NFR-A11Y) đều đạt; NFR-08–10 là đề xuất chờ PO, chỉ thành điều kiện bắt buộc khi PO duyệt; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
 
 ---
 
@@ -115,7 +115,10 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 | NFR-02 | **50 kết nối đồng thời = 10 ván chạy (20 người chơi) + 30 kết nối khác (người xem, Sảnh, chat)**, mỗi ván đi nước đều đặn trong 10 phút | 0 lỗi mất kết nối ngoài ý muốn; độ trễ nước đi p95 < 300 ms; bộ nhớ và CPU của máy chủ ổn định (không tăng liên tục) |
 | NFR-03 | Ma trận trình duyệt: Chrome, Edge, Firefox, Safari bản mới; màn 360/390/1366/1920 | Không lỗi chức năng, không cuộn ngang |
 | NFR-A11Y | Tương phản các cặp màu ở DESIGN §2 (đã tính lại bằng công thức), bàn phím, nhãn, giảm chuyển động | Đạt WCAG 2.1 AA ở các trạng thái chính; tương phản của **từng trạng thái** (hover, vô hiệu, trong suốt) phải đo thêm khi dựng thật |
-| NFR-07 | Khởi động lại máy chủ khi có ván | Ván thành `INTERRUPTED`, không treo, không mất dữ liệu đã lưu |
+| NFR-07 | Khởi động lại máy chủ khi có ván | Ván thành `INTERRUPTED`, không treo, không mất dữ liệu đã lưu; người chơi thấy kết quả trung tính "Ván bị gián đoạn" (đề xuất 04/10/2026, chờ PO duyệt) |
+| NFR-08 | Gây lỗi (máy cờ sập, ghi cơ sở dữ liệu lỗi, khởi động lại) rồi đọc nhật ký (đề xuất 04/10/2026, chờ PO duyệt) | Có mục nhật ký đúng mã; không có mật khẩu/OTP/token/chat |
+| NFR-09 | Chạy tác vụ dọn: chat phòng `CLOSED`, phiên Khách hết (P2), biên lai > 24 giờ, nhật ký > 14 ngày (đề xuất 04/10/2026, chờ PO duyệt) | Dữ liệu đúng loại đã xoá; ván online và nước đi còn nguyên; ván AI P1 không có bản ghi bền; chat 1-1 không bị xoá theo phòng |
+| NFR-10 | Gửi chuỗi chứa HTML/script/`javascript:` vào chat, tên hiển thị, tên phòng (đề xuất 04/10/2026, chờ PO duyệt) | Hiện nguyên văn như chữ; không script chạy, không điều hướng |
 
 Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem (tối đa 2 mỗi phòng), ở Sảnh và gửi chat. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem.
 
@@ -181,7 +184,7 @@ P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/
 
 | Mã | P | Câu hỏi cần chứng minh | Bằng chứng để thông qua |
 |---|---|---|---|
-| GATE-OTP | P1 | Supabase đáp ứng OTP 6 số, 180 giây, 60 giây gửi lại, chặn gần đúng; phục hồi tài khoản không kẹt | Cấu hình đã che bí mật, số đo thực, ca gián đoạn/đồng thời TC-X-01/02; chưa completed_at/còn PENDING không dùng được |
+| GATE-OTP | P1 | Supabase đáp ứng OTP 6 số, 180 giây, 60 giây gửi lại, chặn gần đúng, **với SMTP mặc định của Supabase (PO duyệt 04/10, BA 10.1)**: đăng ký thành công với email thành viên nhóm trong hạn mức hiện hành của Supabase (ghi số đo thực: số thư gửi được/giờ); email ngoài nhóm hoặc vượt hạn mức thì gửi mã lỗi được báo cho người dùng và không để lại tài khoản kẹt (đề xuất, chưa duyệt); phục hồi tài khoản không kẹt | Cấu hình đã che bí mật, số đo thực, ca gián đoạn/đồng thời TC-X-01/02; chưa completed_at/còn PENDING không dùng được |
 | GATE-MEDIA | P1 | LiveKit publish/subscribe theo từng người, thu quyền khi đổi ghế/chia sẻ/tiếp quản | Log quyền và thử bằng client không được phép; không nhận track trái quyền, không chỉ ẩn UI |
 | GATE-AI | P1 | Máy cờ tự viết đạt thời gian/sức mạnh/độ sâu và ổn định | Cấu hình máy, seed/bộ thế, số đo tại mục 3.2; không giảm ngưỡng để đạt |
 | GATE-PERFT | P1 | Bộ số perft làm oracle có đúng không | Bộ sinh nước độc lập, phiên bản/nguồn, kết quả so sánh; không tự sửa kỳ vọng theo code đang kiểm |

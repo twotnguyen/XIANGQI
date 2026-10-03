@@ -790,7 +790,7 @@ US: US-DEMO-03. Các US-UI-03/04/05/06 áp dụng chung.
 
 ## 6. Cổng nghiệm thu
 
-- P1: D1–D10, mọi AC P1, trạng thái UI P1 áp dụng, ca biên P1 và NFR ở [05]. Không đưa AC P2 vào điều kiện P1.
+- P1: D1–D10, mọi AC P1, trạng thái UI P1 áp dụng, ca biên P1 và các NFR đã duyệt ở [05] (NFR-08–10 chỉ bắt buộc khi PO duyệt). Không đưa AC P2 vào điều kiện P1.
 - P2: mọi AC P2, hồi quy AC P1 còn áp dụng, trạng thái UI mở rộng và các cổng kỹ thuật P2 ở [05]. Không coi P2 đã nghiệm thu vì đã liệt kê US.
 - Không có ứng dụng trong đợt tài liệu này; toàn bộ mục kiểm bên trên đang **NOT_RUN**. Kiểm định tài liệu chỉ chứng minh số lượng/mã/liên kết, không chứng minh hành vi thực.
 
