@@ -399,7 +399,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * Được xem Face cam và nghe giọng nói của 2 người chơi (nếu người chơi chọn mức chia sẻ *"Cả đối thủ và người xem"*).
     * Được gửi và nhận tin nhắn văn bản tại **Kênh Chung (`ROOM_PUBLIC`)**.
     * **Tuyệt đối không có tính năng bật Micro hoặc Camera:** Giao diện của Người xem không xuất hiện các nút bật mic/cam, và máy chủ LiveKit không cấp quyền phát (Publish permission) cho token của Người xem (`canPublish: false`, `canPublishData: false`).
-  * **Ba mức chia sẻ camera/mic của người chơi** (chọn riêng từng người, mặc định **Tắt**): **(1) Không chia sẻ** · **(2) Chỉ đối thủ** · **(3) Cả đối thủ và người xem**. Phòng Ranked không có người xem nên chỉ có mức (1) và (2). Media chỉ được truyền trực tiếp, **không ghi hình, không ghi âm, không lưu**.
+  * **Ba mức chia sẻ camera/mic của người chơi** (chọn riêng từng người chơi; **một mức chia sẻ áp chung cho camera và mic đang bật**; camera và mic **bật/tắt độc lập** nhau (PO làm rõ 04/10/2026); mặc định **Tắt**): **(1) Không chia sẻ** · **(2) Chỉ đối thủ** · **(3) Cả đối thủ và người xem**. Phòng Ranked không có người xem nên chỉ có mức (1) và (2). Media chỉ được truyền trực tiếp, **không ghi hình, không ghi âm, không lưu**.
 * **Lý do nghiệp vụ & kỹ thuật:**
   * Giữ không gian thi đấu tĩnh lặng, tập trung cho 2 người chơi cờ tướng; ngăn chặn triệt để hành vi "nhắc cờ", bình luận khiêu khích hoặc bật tiếng ồn gây rối bằng giọng nói.
   * Tối ưu hóa tối đa băng thông máy chủ LiveKit SFU (chỉ cần chuyển tiếp 2 luồng phát của người chơi tới tối đa 2 người xem).
@@ -414,7 +414,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     1. Hệ thống hiển thị modal xác nhận (`MODAL-CONFIRM-KICK`): *"Bạn có chắc chắn muốn đuổi người xem [Tên] ra khỏi phòng thi đấu không?"*.
     2. Sau khi xác nhận: Máy chủ lập tức ngắt kết nối Socket.IO, hủy token LiveKit của người xem đó, đẩy văng ra Sảnh chính kèm thông báo: *"Bạn đã bị đuổi khỏi phòng thi đấu"*.
     3. Ghi nhận bản ghi vào bảng `room_blocks (room_id, blocked_user_id, created_at)`.
-    4. **Thời hạn chặn:** Người bị đuổi bị chặn vĩnh viễn không thể quay lại phòng này (kể cả có link mời mới hay mã 8 số) cho đến khi phòng cờ kết thúc chu kỳ sống và đóng hoàn toàn (`status = CLOSED`).
+    4. **Thời hạn chặn:** Người bị đuổi bị chặn vĩnh viễn không thể quay lại phòng này (kể cả có link mời mới hay mã 8 ký tự) cho đến khi phòng cờ kết thúc chu kỳ sống và đóng hoàn toàn (`status = CLOSED`).
 * **Giới hạn (đã duyệt 03/10):** Người bị đuổi có thể quay lại bằng một **phiên Khách mới** (danh tính mới) nếu phòng chưa khoá; không chặn tuyệt đối được. Đây là giới hạn chấp nhận được; khoá phòng (`Quyết định 2.8`) để chặn hẳn.
 * **Lợi ích thực tế:** Trao quyền bình đẳng cho cả 2 người chơi tự bảo vệ không gian tập trung của mình trước các hành vi quấy rối, chat toxic của người xem.
 
@@ -705,6 +705,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Mô tả:**
   * **Nguồn lực và hạn chót (Product Owner cung cấp 03/10/2026):** nhóm **7 người**, hạn nộp/demo khoảng **2 tuần** (đến khoảng 17/10/2026). Vì vậy phạm vi làm trước được giới hạn ở P1 theo `Phần 11`.
   * **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
+  * **Hạ tầng media (PO chốt 04/10/2026):** dùng **LiveKit Cloud** (gói miễn phí lúc bắt đầu, không tự dựng LiveKit); hạn mức, chi phí và việc thu hồi quyền theo `docs/04` mục media.
   * **Quy mô thiết kế:** Hướng tới tối đa khoảng **50 người dùng đồng thời và 10 phòng/ván cùng lúc**. Con số đo được chốt ở Giai đoạn 2.
   * **Thiết bị:** Ứng dụng web chạy trên bản mới của Chrome, Edge, Firefox, Safari. Giao diện **responsive từ 360 px** (vì Mã QR hướng tới điện thoại); bàn cờ chơi được bằng cảm ứng.
   * **Gửi email OTP (duyệt 04/10/2026):** dùng **SMTP mặc định của Supabase**, không thêm dịch vụ gửi thư. Hệ quả đã được Product Owner chấp nhận: hạn mức khoảng 2 thư/giờ và chỉ gửi được tới địa chỉ thuộc nhóm dự án Supabase (theo tài liệu Supabase), không dành cho production. Vì vậy buổi demo đăng ký bằng email OTP chỉ dùng email của thành viên nhóm và ít lượt đăng ký; chuẩn bị tài khoản demo trước. Muốn mở cho người ngoài nhóm thì phải đổi quyết định này (gắn SMTP bên ngoài).
