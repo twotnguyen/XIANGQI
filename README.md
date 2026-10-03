@@ -2,7 +2,7 @@
 
 Ứng dụng web chơi cờ tướng trực tuyến: đánh thường với bạn bè, đánh hạng Elo, đánh với máy; có phòng riêng, người xem, chat, camera/mic.
 
-> **Trạng thái:** đang ở **Giai đoạn 1 — chốt ý tưởng và chức năng tổng quan**. Chưa có mã nguồn, chưa có Epic/Story/Task trên Jira. Hiện có: quyết định phạm vi, danh mục màn hình, hệ thống thiết kế và bộ mockup HTML.
+> **Trạng thái:** đang ở **Giai đoạn 3 — phân vai và lập kế hoạch Jira** (Giai đoạn 1 và 2 đã xong ngày 03/10/2026). Chưa có mã nguồn, chưa có Epic/Story/Task trên Jira thật. Tài liệu phân tích và kế hoạch nằm ở [`docs/`](docs/README.md). Hiện có: quyết định phạm vi, danh mục màn hình, hệ thống thiết kế và bộ mockup HTML.
 
 ---
 
@@ -25,9 +25,9 @@
 
 | Giai đoạn | Việc | Trạng thái |
 |---|---|---|
-| **1. Ý tưởng và chức năng tổng quan** | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | **Đang làm** |
-| 2. Phân tích chuyên sâu từng phần | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | Chưa bắt đầu |
-| 3. Phân vai và lập kế hoạch Jira | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng, lịch | Chưa bắt đầu |
+| 1. Ý tưởng và chức năng tổng quan | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | **Đã xong 03/10/2026** |
+| 2. Phân tích chuyên sâu từng phần | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | **Đã xong 03/10/2026** (cả P1 và P2) |
+| **3. Phân vai và lập kế hoạch Jira** | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng, lịch | **Đang làm** |
 | 4. Xây dựng | Code, test, review, phát hành | Chưa bắt đầu |
 
 Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn trước đã **okay hết**.
@@ -36,7 +36,7 @@ Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn
 
 Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 hạng mục; cập nhật 03/10/2026).
 
-**Phân kỳ (nhóm 7 người, khoảng 2 tuần):** **P1 = 8 mục tiêu cốt lõi** của Product Owner: (1) đăng ký / đăng nhập, (2) tạo phòng, (3) mời vào phòng bằng link, mã và mời bạn bè đang online, (4) khởi tạo bàn cờ, (5) hai người đánh cờ qua mạng, (6) phòng công khai / khoá / khoá nhưng có mã, tối đa 2 người xem, (7) chat + camera + mic cho hai người chơi và kênh chat riêng cho người xem, (8) đánh với máy theo cấp độ. **Mọi thứ còn lại là P2** (đã duyệt, làm sau): Đánh Hạng và Elo, ghép ngẫu nhiên, Khách, Google, quên mật khẩu, đổi username, chat 1-1 giữa bạn bè, sticker, QR, xin đi lại, tái đấu, lịch sử và replay… Chi tiết: BA-SCOPE `Phần 11`; ưu tiên từng thành phần: cột "Ưu tiên" ở DANH-MUC §7 (23 thành phần P1, 14 P2). Bảng dưới mô tả **toàn bộ** tính năng đã duyệt, kể cả P2.
+**Phân kỳ (nhóm 7 người, hạn 2 tuần cố định, làm cả cuối tuần):** **P1 = 8 mục tiêu cốt lõi** của Product Owner: (1) đăng ký / đăng nhập, (2) tạo phòng, (3) mời vào phòng bằng link, mã và mời bạn bè đang online, (4) khởi tạo bàn cờ, (5) hai người đánh cờ qua mạng, (6) phòng công khai / khoá / khoá nhưng có mã, tối đa 2 người xem, (7) chat + camera + mic cho hai người chơi và kênh chat riêng cho người xem, (8) đánh với máy theo cấp độ. **Mọi thứ còn lại là P2** (đã duyệt, làm sau): Đánh Hạng và Elo, ghép ngẫu nhiên, Khách, Google, quên mật khẩu, đổi username, chat 1-1 giữa bạn bè, sticker, QR, xin đi lại, tái đấu, lịch sử và replay… Chi tiết: BA-SCOPE `Phần 11`; ưu tiên từng thành phần: cột "Ưu tiên" ở DANH-MUC §7 (23 thành phần P1, 14 P2). Bảng dưới mô tả **toàn bộ** tính năng đã duyệt, kể cả P2.
 
 | Nhóm | Nội dung |
 |---|---|
@@ -75,6 +75,8 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 h
 ├── BA-SCOPE-DECISIONS.md          Quyết định chốt phạm vi sản phẩm (nguồn luật chính)
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   Danh mục 37 thành phần giao diện và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
+├── docs/                          Tài liệu phân tích chuyên sâu Giai đoạn 2 và kế hoạch Giai đoạn 3 (bắt đầu từ docs/README.md)
+├── Jira/                          Bản nháp mỗi Epic, Story, Task một tệp .md để review (chưa tạo trên Jira thật)
 ├── mockups/                       Mockup HTML/CSS tương tác (mở mockups/index.html)
 ├── site/                          Trang đọc tài liệu cũ, đã lỗi thời (xem lưu ý bên dưới)
 └── .github/                       CODEOWNERS
@@ -90,18 +92,21 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner đã duyệt toàn bộ các quyết định rà soát, cung cấp quy mô nhóm (7 người), hạn chót (khoảng 2 tuần) và 8 mục tiêu cốt lõi; agent đã phân kỳ P1/P2 (BA-SCOPE `Phần 11`). **Tiêu chí hoàn thành P1 (Product Owner):** demo chạy được 8 mục cốt lõi end-to-end. Còn lại là những việc **chỉ người dùng quyết được** hoặc việc kế tiếp:
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), cho bắt đầu Giai đoạn 3 và chốt: **hạn 2 tuần cố định, làm cả cuối tuần, được dừng bớt phần để vừa hạn; tạo Jira vào dự án XIAN sau khi review tài liệu `.md`**. Các tệp Epic/Story/Task nằm ở [`Jira/`](Jira/README.md) (bản nháp, chưa tạo trên Jira); kế hoạch ở [docs/06](docs/06-ke-hoach-jira.md). Cần bạn:
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Xác nhận Giai đoạn 1 đã xong** để bắt đầu Giai đoạn 2 (phân tích chuyên sâu). Lập Jira là Giai đoạn 3, cần xác nhận riêng | AGENTS §1: chỉ chuyển khi người dùng nói rõ giai đoạn trước đã xong |
-| 2 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời | Cần dữ liệu và thử nghiệm |
-| 3 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
-| 4 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới (đổi chỗ ghế/người xem, xin đi lại lùi 1–2 nước, nhãn "Bị gián đoạn", thẻ tóm tắt người dùng…) | Cập nhật khi dựng giao diện thật |
+| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 27 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Đã nói **chưa tạo, cần review thêm**; chưa tạo gì trên Jira |
+| 2 | Gán tên 7 người vào R1–R7 | Đã chọn để trống, gán sau (Assignee trống, nhãn R1–R7 vẫn có) |
+| 3 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
+| 4 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
+| 5 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
+
+**Đã chốt 03/10/2026:** thứ tự dừng phần (docs/06 mục 1b: làm Mức 1→5, dừng từ Mức cao xuống) và các mốc kiểm soát ngày 4/7/10/12/14 (mục 1c). Cần biết: hạn 14 ngày cố định, theo ước lượng cơ sở **không mức nào kịp**; chỉ Mức 1 kịp ở kịch bản rất lạc quan.
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
-- Nhóm 7 người trong khoảng 2 tuần với 8 mục tiêu P1 vẫn chặt: hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết. Nên chạy song song các nhóm việc ngay từ đầu.
+- **Nhóm 7 người trong 2 tuần không đủ cho toàn bộ 8 mục tiêu P1 theo ước lượng cơ sở** (128 ngày công so với khoảng 78,4 có sẵn; xem [docs/06](docs/06-ke-hoach-jira.md)). Kế hoạch là **hộp thời gian**: làm theo thứ tự mức, dừng ở mức kịp. Hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết.
 - Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có số đo thực tế. Phương án nghiệp vụ khi không kịp đã chốt (đi nước tốt nhất tìm được; lỗi hoặc quá 10 giây thì ván "Bỏ dở" và nút Thử lại, BA-SCOPE 6.1). Dự phòng tiến độ (gợi ý, chưa bắt buộc): 3 cấp vẫn là P1, nếu thiếu thời gian thì làm cấp Dễ trước.
 - Chạy đồng thời realtime (Socket.IO) và media (LiveKit) là điểm tích hợp rủi ro cao.
 
