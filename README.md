@@ -34,7 +34,9 @@ Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn
 
 ## Tính năng
 
-Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 hạng mục; cập nhật 03/10/2026).
+**Bản đặc tả hoàn thiện 04/10 đang chờ review:** [Ý tưởng](IDEA.md), [chỉ mục](docs/README.md), [hợp đồng nghiệp vụ](docs/07-hop-dong-nghiep-vu.md), [ma trận nghiệm thu](docs/08-ma-tran-nghiem-thu.md). Cả P1/P2 có US và AC; giữ nguyên ưu tiên. Không đọc/sửa Jira, kế hoạch hoặc mockup trong đợt này; các số lượng/kết luận kế hoạch ở phần dưới là ghi nhận trước đó, chưa được đối soát với bản mới.
+
+Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (27 hạng mục trong ma trận; bổ sung đã duyệt 04/10/2026).
 
 **Phân kỳ (nhóm 7 người, hạn 2 tuần cố định, làm cả cuối tuần):** **P1 = 8 mục tiêu cốt lõi** của Product Owner: (1) đăng ký / đăng nhập, (2) tạo phòng, (3) mời vào phòng bằng link, mã và mời bạn bè đang online, (4) khởi tạo bàn cờ, (5) hai người đánh cờ qua mạng, (6) phòng công khai / khoá / khoá nhưng có mã, tối đa 2 người xem, (7) chat + camera + mic cho hai người chơi và kênh chat riêng cho người xem, (8) đánh với máy theo cấp độ. **Mọi thứ còn lại là P2** (đã duyệt, làm sau): Đánh Hạng và Elo, ghép ngẫu nhiên, Khách, Google, quên mật khẩu, đổi username, chat 1-1 giữa bạn bè, sticker, QR, xin đi lại, tái đấu, lịch sử và replay… Chi tiết: BA-SCOPE `Phần 11`; ưu tiên từng thành phần: cột "Ưu tiên" ở DANH-MUC §7 (23 thành phần P1, 14 P2). Bảng dưới mô tả **toàn bộ** tính năng đã duyệt, kể cả P2.
 
@@ -55,7 +57,7 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 h
 
 ## Công nghệ dự kiến
 
-> Danh sách này **kế thừa từ lần thiết kế trước** và sẽ được xác nhận lại ở Giai đoạn 2. Chưa phải quyết định cuối.
+> Danh sách này **đã được Product Owner xác nhận 03/10/2026** (docs/README, quyết định 12). Khả năng đáp ứng của OTP, LiveKit, máy cờ và lựa chọn triển khai vẫn cần kiểm chứng theo các cổng ở docs/05; không đồng nhất đã chọn công nghệ với đã thử nghiệm đạt.
 
 | Lớp | Công nghệ |
 |---|---|
@@ -128,6 +130,8 @@ Chi tiết: [AGENTS.md §5](AGENTS.md).
 
 | Cần | Xem |
 |---|---|
+| Ý tưởng và trải nghiệm trọng tâm | [IDEA.md](IDEA.md) |
+| Hợp đồng và truy vết nghiệm thu | [docs/README.md](docs/README.md) |
 | Phạm vi và quy tắc nghiệp vụ đã chốt | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
 | Danh mục màn hình, 5 trạng thái | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
 | Màu, chữ, thành phần, bàn cờ | [DESIGN.md](DESIGN.md) |
