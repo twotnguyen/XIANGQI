@@ -16,7 +16,7 @@ Kịch bản demo chuẩn D1–D10 (dùng làm bài kiểm thử chấp nhận P
 
 | Bước | Mục tiêu | Thao tác | Kết quả phải thấy |
 |---|---|---|---|
-| D1 | 1 | Người dùng A đăng ký 3 bước với OTP, đăng nhập; người dùng B, C, D cũng đăng ký | Vào được `/lobby` |
+| D1 | 1 | Người dùng A đăng ký 3 bước với **OTP thật** bằng email thành viên nhóm; B, C, D là tài khoản **tạo sẵn trước** (SMTP mặc định chỉ khoảng 2 thư/giờ, BA 10.1), đăng nhập được. Không dùng mock OTP làm bằng chứng đã gửi thư thật (đề xuất 04/10/2026, chờ PO duyệt) | Vào được `/lobby` |
 | D2 | 2 | A tạo phòng (10 phút, `PUBLIC`, tối đa 2 người xem) | A ngồi ghế Đỏ ở phòng chờ |
 | D3 | 3 | A gửi **link/mã** cho B; A **mời bạn bè online** C (sau khi A và C là bạn) | B vào được phòng; C nhận pop-up 30 giây |
 | D4 | 6 | C và D vào sau khi ghế đã kín | Họ thành **Người xem**; người xem thứ 3 bị từ chối |
@@ -27,7 +27,7 @@ Kịch bản demo chuẩn D1–D10 (dùng làm bài kiểm thử chấp nhận P
 | D9 | 5 | A và B **bắt đầu lại một ván online mới**, rồi ngắt mạng một bên giữa ván | Overlay đếm 60 giây; nối lại trong 60 giây thì tiếp tục; quá 60 giây thì bên mất kết nối thua `DISCONNECT` |
 | D10 | 8 | Đóng tab giữa ván với máy rồi mở lại `/ai/:id` trong 30 phút và sau 30 phút | Trong 30 phút vào lại đúng thế cờ; sau 30 phút ván là *Bỏ dở* |
 
-D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR **đã duyệt** thuộc P1 (NFR-01–07, NFR-A11Y) đều đạt; NFR-08–10 là đề xuất chờ PO, chỉ thành điều kiện bắt buộc khi PO duyệt; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
+D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR **đã duyệt** thuộc P1 (NFR-01–07, NFR-A11Y) đều đạt; NFR-08–10 là đề xuất chờ PO, chỉ thành điều kiện bắt buộc khi PO duyệt; tương tự các **nhánh chờ PO** của AC: kết quả trung tính `INTERRUPTED` ở `AC-PLAY-03-02` và dọn chat Khách (P2) chỉ bắt buộc khi PO duyệt, còn hành vi `INTERRUPTED` theo BA 8.3 (không thắng/thua/hoà, không đổi Elo) vẫn phải đúng; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
 
 ---
 
@@ -68,8 +68,9 @@ D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngo�
 | Độ sâu thực tế cấp Khó | Ghi độ sâu hoàn tất mỗi lần | Trung vị ≥ 6 (khởi đầu) và ≥ 5 (trung cuộc) |
 | Phân cấp sức mạnh | Đấu máy với máy ≥ 40 ván, đổi bên đều | Khó thắng TB ≥ 75%; TB thắng Dễ ≥ 75% |
 | Chiếu hết ngắn | Bộ thế "chiếu hết 1 nước" và "2 nước" do nhóm biên soạn **kèm ghi nguồn** | Tìm đúng ≥ 95% |
+| Tìm tĩnh khi bị chiếu | Bộ thế bị chiếu chỉ thoát được bằng nước **không ăn quân**; thế hết nước đi ở biên độ sâu (bất biến đã bắt buộc ở [02] mục tìm tĩnh; riêng bộ fixture cụ thể là đề xuất, không cần PO duyệt từng thế) | Máy chọn đúng nước thoát chiếu; assertion nội bộ: không nút nào dùng điểm tĩnh làm cận dưới khi bị chiếu, hết nước ở biên sâu trả điểm thua ([02] mục tìm tĩnh) |
 | Độ ổn định | 1 000 ván đấu máy, 0 treo, 0 lỗi tiến trình | 0 |
-| Lỗi tiến trình | Giết tiến trình giữa lúc tìm kiếm; trả kết quả tác vụ cũ sau huỷ | Ván `Bỏ dở` khi lỗi hoặc quá hạn phản hồi 10 giây theo BA 6.1; Thử lại tạo ván mới, không hồi sinh ván cũ; bỏ kết quả tìm lỗi thời |
+| Lỗi tiến trình / watchdog | (a) Giết tiến trình giữa lúc tìm kiếm (crash); (b) tìm vượt `budgetMs + 2000` khi đã và chưa có `progress` (đề xuất 04/10/2026, chờ PO duyệt); trả kết quả tác vụ cũ sau huỷ | Ván `Bỏ dở` khi lỗi hoặc quá hạn phản hồi 10 giây theo BA 6.1; Thử lại tạo ván mới, không hồi sinh ván cũ; bỏ kết quả tìm lỗi thời |
 
 **Quy tắc ghi kết quả:** nếu cấp Khó không đạt độ sâu 6 trong 3 giây, ghi **độ sâu và thời gian thực tế**, đánh dấu `BLOCKED` và báo Product Owner. Phương án giảm xuống độ sâu 5 ([02] mục 9.6) cần được Product Owner đồng ý trước khi đổi BA 6.1.
 
@@ -100,7 +101,7 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 | Quyền theo vai trò | Người xem gửi `match.move`, `chat.send` vào Kênh Riêng, bật phát LiveKit: bị từ chối |
 | Không lộ dữ liệu | Người ngoài phòng không nhận `room.state`; Kênh Riêng không gửi tới người xem; email không bao giờ trả về trong đăng nhập |
 | Khoá bí mật | Quét kho và gói client: không có khoá dịch vụ; `VITE_*` chỉ giá trị công khai |
-| Giới hạn tốc độ | Chat, gửi OTP, tạo phòng, kết nối: vượt thì bị chặn |
+| Giới hạn tốc độ | Chat, gửi OTP, tạo phòng, kết nối, đăng nhập sai, nhập mã phòng sai: vượt ngưỡng ở [04] mục giới hạn tốc độ thì bị chặn theo đúng thời gian khoá của từng loại rồi mở lại; báo lỗi chung (ngưỡng theo [04], PO uỷ quyền agent chốt 04/10/2026) |
 | Nhập liệu | Tham số sai kiểu/quá dài/có ký tự điều khiển bị từ chối |
 | OTP (Phương án B, [04] mục 3.1) | Hạn mã 180 giây và gửi lại tối thiểu 60 giây (kiểm cấu hình thực tế); **giới hạn tốc độ xác minh** chặn nhập sai liên tục từ một địa chỉ (mục tiêu 5 lần/5 phút), ghi **số đo thực** vì chỉ là gần đúng; người dùng còn cờ `PENDING` hoặc `completed_at` rỗng **không dùng được ứng dụng** dù có phiên Supabase; client **không ghi trực tiếp** được vào `profiles`; hoàn tất đăng ký có khả năng phục hồi: giết tiến trình **giữa các bước (a)–(d2)**, trong đó **giữa (c)/(d1) và giữa (d1)/(d2)**, thì tác vụ phục hồi phân nhánh: **chưa ghi completed_at** → giữ chặn và dọn sau thời hạn, email/username đăng ký lại được; **đã ghi completed_at nhưng còn PENDING** → chỉ hoàn tất xoá cờ, không xoá tài khoản, giữ username/mật khẩu. Chạy phục hồi lặp và đồng thời với đăng ký không làm hỏng tài khoản hoàn tất; đăng ký dở rồi gửi lại cùng email thì **dùng lại** người dùng dở (không xoá, không phá phiên OTP đang chạy; thử **gửi lại và đăng ký đồng thời** cùng một email); người dùng tạo trực tiếp bằng API công khai **không có cờ `PENDING`** (hoặc máy chủ chết trước khi đặt cờ) vẫn bị quét sau 60 phút cộng tối đa chu kỳ 5 phút khi phụ thuộc hoạt động và không bị chặn nhầm tài khoản đã hoàn tất hay Google; hai lệnh đồng thời trên cùng ván được xử lý tuần tự ([04] mục 4.2); lỗi ghi cơ sở dữ liệu không phát thế cờ mới |
 | Chặn/khoá | Người bị đuổi và phòng `LOCKED` thật sự bị chặn ở máy chủ (không chỉ ở giao diện) |
@@ -120,7 +121,7 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 | NFR-09 | Chạy tác vụ dọn: chat phòng `CLOSED`, phiên Khách hết (P2), biên lai > 24 giờ, nhật ký > 14 ngày (đề xuất 04/10/2026, chờ PO duyệt) | Dữ liệu đúng loại đã xoá; ván online và nước đi còn nguyên; ván AI P1 không có bản ghi bền; chat 1-1 không bị xoá theo phòng |
 | NFR-10 | Gửi chuỗi chứa HTML/script/`javascript:` vào chat, tên hiển thị, tên phòng (đề xuất 04/10/2026, chờ PO duyệt) | Hiện nguyên văn như chữ; không script chạy, không điều hướng |
 
-Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem (tối đa 2 mỗi phòng), ở Sảnh và gửi chat. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem.
+Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem (tối đa 2 mỗi phòng), ở Sảnh và gửi chat. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem. **Phần media của GATE-LOAD** (đề xuất 04/10/2026, chờ PO duyệt): mỗi ván có 2 người chơi bật camera và mic ở mức *Đối thủ và người xem* (20 người phát, 40 luồng), 1 người xem mỗi ván nhận cả hai người (10 người xem media); mỗi ván đi 1 nước/5 giây, 1 tin chat/10 giây; ghi số luồng, băng thông và (nếu môi trường cung cấp số đo) CPU của LiveKit tách khỏi bài tải socket. **Còn thiếu để tái lập:** độ phân giải/FPS/bitrate, môi trường, tiêu chí đạt cho media; chốt ở PoC.
 
 ---
 
@@ -184,8 +185,8 @@ P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/
 
 | Mã | P | Câu hỏi cần chứng minh | Bằng chứng để thông qua |
 |---|---|---|---|
-| GATE-OTP | P1 | Supabase đáp ứng OTP 6 số, 180 giây, 60 giây gửi lại, chặn gần đúng, **với SMTP mặc định của Supabase (PO duyệt 04/10, BA 10.1)**: đăng ký thành công với email thành viên nhóm trong hạn mức hiện hành của Supabase (ghi số đo thực: số thư gửi được/giờ); email ngoài nhóm hoặc vượt hạn mức thì gửi mã lỗi được báo cho người dùng và không để lại tài khoản kẹt (đề xuất, chưa duyệt); phục hồi tài khoản không kẹt | Cấu hình đã che bí mật, số đo thực, ca gián đoạn/đồng thời TC-X-01/02; chưa completed_at/còn PENDING không dùng được |
-| GATE-MEDIA | P1 | LiveKit publish/subscribe theo từng người, thu quyền khi đổi ghế/chia sẻ/tiếp quản | Log quyền và thử bằng client không được phép; không nhận track trái quyền, không chỉ ẩn UI |
+| GATE-OTP | P1 | Gọi trực tiếp API đổi email của Auth bằng phiên hợp lệ phải không đổi được email (đề xuất 04/10/2026, chờ PO duyệt); Supabase đáp ứng OTP 6 số, 180 giây, 60 giây gửi lại, chặn gần đúng, **với SMTP mặc định của Supabase (PO duyệt 04/10, BA 10.1)**: đăng ký thành công với email thành viên nhóm trong hạn mức hiện hành của Supabase (ghi số đo thực: số thư gửi được/giờ); email ngoài nhóm hoặc vượt hạn mức thì gửi mã lỗi được báo cho người dùng và không để lại tài khoản kẹt (đề xuất, chưa duyệt); phục hồi tài khoản không kẹt | Cấu hình đã che bí mật, số đo thực, ca gián đoạn/đồng thời TC-X-01/02; chưa completed_at/còn PENDING không dùng được |
+| GATE-MEDIA | P1 | LiveKit publish/subscribe theo từng người, thu quyền khi đổi ghế/chia sẻ/tiếp quản; token mang quyền cũ không lấy lại được quyền đã mất (đuổi/đổi vai/tiếp quản), trong khi quyền mới hợp lệ vẫn dùng được; dùng LiveKit Cloud (PO chọn 04/10/2026); ghi cửa sổ hiệu lực thực tế của thu hồi và mức dùng hạn mức gói miễn phí (phút người tham gia, GB, kết nối đồng thời) (đề xuất 04/10/2026, chờ PO duyệt) | Log quyền và thử bằng client không được phép; không nhận track trái quyền, không chỉ ẩn UI |
 | GATE-AI | P1 | Máy cờ tự viết đạt thời gian/sức mạnh/độ sâu và ổn định | Cấu hình máy, seed/bộ thế, số đo tại mục 3.2; không giảm ngưỡng để đạt |
 | GATE-PERFT | P1 | Bộ số perft làm oracle có đúng không | Bộ sinh nước độc lập, phiên bản/nguồn, kết quả so sánh; không tự sửa kỳ vọng theo code đang kiểm |
 | GATE-GOOGLE | P2 | Google onboarding và đăng nhập kép không tự liên kết email trái BA 1.2 | Thử email mới/cùng email/danh tính cũ, bỏ dở và hoàn tất; chứng minh tài khoản ứng dụng bị chặn trước hoàn tất |
