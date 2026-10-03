@@ -1,5 +1,7 @@
 # 02 · Luật cờ tướng và máy cờ
 
+> **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
+
 **Giai đoạn 2 · Trạng thái: **Đã duyệt 03/10/2026** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật phạm vi: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (Quyết định 3.1, 3.3, 3.4, 3.5, 6.1, 6.3). Tài liệu này chi tiết hoá, không được mâu thuẫn BA-SCOPE.
 
 Phạm vi: P1 (luật di chuyển, kết thúc ván, máy cờ 3 cấp) và P2 (FEN/PGN). Tài liệu này chốt các **con số tạm** của Giai đoạn 1 (mục 8).
@@ -126,8 +128,8 @@ Ví dụ (đúng với BA 3.5): Đỏ dùng Xe chiếu Tướng Đen, Đen né, 
 ### 4.1 Đuổi quân liên tục (perpetual chase) — **không xử riêng ở bản đầu** (đã duyệt)
 
 BA 3.5 để việc này cho Giai đoạn 2. **Đã duyệt:** ở cả P1 và P2, lặp thế do đuổi quân được xử **hoà** theo bảng trên (hàng "Không / Không"). Lý do: luật đuổi quân chính thức có rất nhiều ngoại lệ (quân được bảo vệ, quân tấn công lẫn nhau, Tướng/Tốt chưa qua sông…) và dễ gây lỗi và tranh cãi; nhóm 7 người trong 2 tuần không đủ để làm và kiểm thử đúng.
-**Rủi ro đã biết:** một bên có thể dùng đuổi quân để "ép hoà" thế đang thua; ảnh hưởng chủ yếu tới Đánh Hạng (P2). **Khác biệt** so với luật cờ tướng chính thức phải được ghi ở trang giới thiệu luật trong ứng dụng.
-**Phương án mở rộng** nếu Product Owner muốn: đưa vào P2 kèm bộ thế cờ kiểm thử riêng.
+**Rủi ro đã biết:** một bên có thể dùng đuổi quân để "ép hoà" thế đang thua; ảnh hưởng chủ yếu tới Đánh Hạng (P2). **Khác biệt** so với luật cờ tướng chính thức phải được ghi trong phần **Luật chơi mở rộng/thu gọn ở Sảnh** (BA 10.4); không thêm trang mới.
+Luật đuổi quân chi tiết vẫn ngoài phạm vi cả P1/P2; chỉ mở lại nếu Product Owner thay đổi phạm vi, không tự đưa vào kế hoạch P2.
 
 ---
 
@@ -248,7 +250,7 @@ Giá trị trên là **điểm xuất phát**, tinh chỉnh bằng chạy máy �
 1. Máy chủ gửi cho tiến trình máy cờ: thế cờ (FEN), lịch sử khoá thế, cấp độ, ngân sách.
 2. Tiến trình trả `{ move, depth, nodes, elapsedMs }`.
 3. Thời gian chờ cứng của máy chủ = **ngân sách + 2 giây**; quá hạn thì **kết thúc tiến trình** đó và trả nước đã biết (nếu có).
-4. **Không phản hồi hoặc lỗi trong 10 giây** → ván chuyển `Bỏ dở` và hiện *"Máy cờ gặp sự cố"* kèm nút *Thử lại* (BA 6.1).
+4. Lỗi tiến trình hoặc không phản hồi quá hạn 10 giây → ván chuyển `Bỏ dở` và hiện *"Máy cờ gặp sự cố"* kèm nút *Thử lại* (BA 6.1). Thử lại sau `ABANDONED` tạo ván mới cùng cấp độ/phe; không phục hồi ván cũ. `ENGINE_BUSY` chỉ xếp lại tìm nước trong ván hiện tại. Kết quả tìm đến sau khi tác vụ bị huỷ không được áp dụng.
 5. Người chơi bấm đi lại khi máy đang nghĩ → **huỷ** tìm kiếm hiện tại (BA 6.3).
 
 ### 9.5 Tiêu chí đạt của máy cờ (đo trên máy chuẩn, mục 3 của [05-kiem-thu.md](05-kiem-thu.md))
@@ -267,7 +269,7 @@ Giá trị trên là **điểm xuất phát**, tinh chỉnh bằng chạy máy �
 
 1. Tối ưu (bảng chuyển vị, sắp xếp nước đi, đại diện bàn cờ bằng mảng phẳng `y*9+x`).
 2. Nếu cấp Khó vẫn không đạt độ sâu 6 trong 3 giây: **giảm độ sâu mục tiêu xuống 5** và ghi số đo thực tế. Phải có Product Owner đồng ý trước khi đổi con số trong BA 6.1.
-3. Nếu thiếu thời gian: làm **cấp Dễ và Trung bình** trước, cấp Khó sau (đã ghi ở README).
+3. Nếu thiếu thời gian: báo Product Owner để quyết định thứ tự/dừng phần trong bước lập kế hoạch; không tự chuyển cấp Khó khỏi P1. Ba cấp vẫn là yêu cầu P1 cho đến khi có quyết định thay đổi.
 
 [01]: 01-yeu-cau-chi-tiet.md
 [02]: 02-luat-co-tuong.md

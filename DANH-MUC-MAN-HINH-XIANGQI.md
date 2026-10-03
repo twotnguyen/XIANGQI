@@ -50,10 +50,11 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 **Các quy tắc giao diện `SCR-RULE` đang dùng** (định nghĩa ở đây là duy nhất):
 * `SCR-RULE-01`: đủ 5 trạng thái ở trên.
-* `SCR-RULE-02`: hộp thoại thường đóng được bằng X, `Esc`, bấm ra ngoài; riêng `OVERLAY-RECONNECTING` và `SCR-ONBOARDING` không đóng tuỳ ý.
+* `SCR-RULE-02`: hộp thoại thường đóng được bằng X, `Esc`, bấm ra ngoài; riêng `OVERLAY-RECONNECTING` và `SCR-ONBOARDING` không đóng tuỳ ý; khung đề nghị không modal theo `SCR-RULE-06`, không áp quy tắc đóng modal này.
 * `SCR-RULE-03`: hộp xác nhận nguy hiểm đặt focus mặc định ở nút *Huỷ*.
 * `SCR-RULE-04`: nút đang xử lý bị chặn bấm hai lần, hiện chữ *"Đang xử lý…"*.
 * `SCR-RULE-05`: toast không bao giờ che nút Đầu hàng.
+* `SCR-RULE-06`: khung Xin hòa/Xin đi lại là **không modal**, không giữ focus; X/Esc thu gọn, có nút mở lại, hạn và đồng hồ vẫn chạy. Từ chối là hành động riêng (BA 3.6, duyệt 04/10). Mã `MODAL-DRAW-PROMPT`/`MODAL-UNDO-PROMPT` giữ nguyên để bảo toàn tham chiếu, không diễn tả cơ chế focus.
 * `SCR-RULE-07`: cảnh báo chống treo ván không modal, không che bàn cờ và nút Đầu hàng.
 
 ---
@@ -123,6 +124,8 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ---
 
 ### 6. `SCR-LOBBY` — Trang Sảnh Chính (Lobby Hub)
+
+* **P1 bổ sung đã duyệt 04/10 (BA 10.4):** phần Luật chơi mở rộng/thu gọn trong Sảnh; nội dung từ docs/02, không trang/modal mới, không tăng số thành phần. Có nhãn và thao tác bàn phím, công bố rõ luật rút gọn.
 * **URL:** `/lobby` | **Quyền:** Đã đăng nhập hoặc Khách. Nếu đang có ván/phòng dở, hiện banner *"Bạn có ván đang chơi dở — Quay lại"*; khi đang ngồi ghế ở một phòng, các nút Tạo phòng/Ghép/Tìm trận `DISABLED` kèm tooltip.
 * **Bố cục (Layout):** Phân chia 3 phân vùng chế độ chơi rõ ràng:
   1. **ĐÁNH THƯỜNG (Casual Mode) — Trọng tâm giao lưu:**
@@ -148,7 +151,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Thành phần & Vận hành:**
   * Host mặc định ngồi **ghế ĐỎ**; khi chỉ có một mình, Host bấm nút *"Đổi ghế"* để chuyển sang ghế Đen hoặc đổi qua lại tự do.
   * Người thứ 2 vào phòng tự động xếp vào ghế còn trống. Người ngồi ghế có nút *"Chuyển sang người xem"*; Host có thêm *"Chuyển sang người xem"* (cho người đang ngồi ghế) và *"Mời xuống ghế"* (cho người xem khi còn ghế trống). Không đổi chỗ khi ván đang diễn ra (BA-SCOPE `Quyết định 2.8`, đã duyệt 03/10).
-  * Khi một người rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (BA-SCOPE `Quyết định 2.3` mục 8).
+  * Trong **CASUAL**, khi một người rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (BA-SCOPE `Quyết định 2.3` mục 8).
   * Nút *"Xin đổi bên"*: Gửi `MODAL-SIDE-SWAP-PROMPT` cho đối thủ (hạn 30s). Đồng ý $\rightarrow$ Hoán đổi ghế và **trạng thái Sẵn sàng của cả 2 bên tự động reset về Chưa sẵn sàng (`ready = false`)**.
   * Nút *"Sẵn sàng"* (Ready): Từng bên bấm sẵn sàng. Khi **cả hai cùng sẵn sàng**: Màn hình kích hoạt đếm ngược **3... 2... 1...** kèm âm thanh cờ gỗ rồi tự động chuyển sang `/rooms/:id` (`status = PLAYING`).
   * Nút *"Chia sẻ phòng"*: Mở `MODAL-INVITE`.
@@ -159,6 +162,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 ### 8. `SCR-GAME-ROOM` — Trang Thi Đấu Cờ Tướng Trực Tiếp
 * **URL:** `/rooms/:id` (khi phòng `status = PLAYING` hoặc `FINISHED`).
+* **RANKED sau ván:** giữ màn kết quả; Rời phòng mới giải phóng vị trí để tìm trận khác. Một người rời không mở phòng chờ cho người còn lại; không Sẵn sàng/Tái đấu/nhận người mới. Hết 10 phút hoặc cả hai rời thì đóng (BA 7.2).
 * **Bố cục (Layout 3 cột):**
   * **Cột trái:** Khung Media Face cam 2 người chơi (`PANEL-MEDIA`), Thẻ thông tin người chơi, Đồng hồ đếm lùi thời gian của 2 bên.
   * **Cột giữa:** Bàn cờ SVG 90 giao điểm chuẩn, Dòng trạng thái lượt đi, Cụm công cụ ván cờ.
@@ -199,7 +203,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **URL:** `/friends` | **Quyền:** Người dùng đã đăng nhập.
 * **Thành phần:**
   * Ô tìm kiếm người dùng theo `username` $\rightarrow$ Nút *"Kết bạn"*. Khách không dùng được màn hình này. Giới hạn 200 bạn, 50 lời mời chờ; bị cùng một người từ chối 2 lần thì không gửi lại được (BA-SCOPE `Quyết định 5.5`).
-  * Tab 1: *"Danh sách bạn bè"* (`status = ACCEPTED`): Avatar, Display Name, @username, Điểm Elo, Trạng thái 🟢 *Online* / 🟠 *Đang đấu* / ⚫ *Offline*. Nút *"Thách đấu"* (chỉ sáng khi 🟢 Online; = tạo nhanh phòng Casual rồi gửi lời mời). **Ở P1** nút "Thách đấu" và "Nhắn tin" `DISABLED` kèm tooltip *"Sắp ra mắt"*; trang này **không có nút mời vào phòng**; mời bạn bè online chỉ qua `MODAL-INVITE` bên trong phòng. Mở `MODAL-DIRECT-CHAT` bằng nút *"Nhắn tin"* là P2.
+  * Tab 1: *"Danh sách bạn bè"* (`status = ACCEPTED`): Avatar, Display Name, @username, Điểm Elo, Trạng thái 🟢 *Online* / 🟠 *Đang đấu* / ⚫ *Offline*. Nút *"Thách đấu"* (chỉ sáng khi 🟢 Online; = mở form Tạo phòng, nhập tên, mặc định 10 phút/CODE_ONLY/2 người xem; xác nhận mới tạo và gửi mời theo BA 2.7). **Ở P1** nút "Thách đấu" và "Nhắn tin" `DISABLED` kèm tooltip *"Sắp ra mắt"*; trang này **không có nút mời vào phòng**; mời bạn bè online chỉ qua `MODAL-INVITE` bên trong phòng. Mở `MODAL-DIRECT-CHAT` bằng nút *"Nhắn tin"* là P2.
   * Tab 2: *"Lời mời kết bạn đang chờ"*: Danh sách yêu cầu gửi đến kèm nút *"Chấp nhận"* và *"Từ chối"*.
 
 ---
@@ -235,14 +239,16 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * Avatar chữ cái đầu/hình đại diện, Display Name, Username (`@username`), Email liên kết, Điểm Elo hiện tại.
   * Form cập nhật Display Name (đổi tự do, không cần OTP).
   * Nút `🔑 Đổi Username Qua OTP`: Mở `MODAL-OTP-USERNAME` để thực hiện quy trình 4 bước xác thực OTP qua email. Username cũ bị khoá 30 ngày sau khi đổi (BA-SCOPE `Quyết định 1.4`).
-  * Lựa chọn giao diện: Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong, theo DESIGN.md §2.3).
+  * **P1:** chỉ Kỳ Đài Cổ Phong, ẩn bộ chọn. **P2:** Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong), theo BA 10.3 và DESIGN §2.3.
   * Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên).
   * Không có chức năng xoá tài khoản trong ứng dụng ở giai đoạn này (đã duyệt 03/10).
   * Nút `Đăng Xuất` (`SCR-LOGIN`).
 
 ---
 
-## 4. CHI TIẾT 15 CỬA SỔ MODAL TƯƠNG TÁC (INTERACTIVE MODALS)
+## 4. CHI TIẾT 15 HỘP THOẠI / KHUNG TƯƠNG TÁC
+
+Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không modal**; các hộp còn lại áp quy tắc modal tương ứng.
 
 1. **`MODAL-GUEST-NAME` (Nhập Tên Khách Tạm Thời):** Mở từ nút Guest tại `SCR-LOGIN`. Nhập Display Name tạm (2–20 ký tự, có dấu tiếng Việt, qua bộ lọc từ cấm, không cần duy nhất). Nhắc nhở cấm đánh Ranked và không lưu lịch sử. Nút *"Vào chơi"* và *"Hủy"*.
 2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Nhập tên phòng (1–60 ký tự, qua bộ lọc từ cấm), chọn thời gian (Không giới hạn, 5p, 10p, 15p - không cộng giây; không đổi được sau khi tạo), chọn chế độ (`PUBLIC` hoặc `CODE_ONLY`; `LOCKED` không chọn được lúc tạo; ý nghĩa ở BA-SCOPE `Quyết định 2.7`), chọn **Người xem**: *Không có người xem* hoặc tối đa 1–2 (**mặc định 2**, không đổi sau khi tạo).
@@ -253,8 +259,8 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 7. **`MODAL-OTP-USERNAME` (Xác Thực OTP Đổi Username):** Mở từ Cài đặt hồ sơ. Quy trình 4 bước: 1) Bấm đổi $\rightarrow$ 2) Nhập 6 số OTP (hạn 3p, giới hạn nhập sai) $\rightarrow$ 3) Xác thực mở khóa $\rightarrow$ 4) Nhập username mới và xác nhận.
 8. **`MODAL-DIRECT-CHAT` (Khung Chat Riêng 1-1 Bạn Bè):** Mở từ `SCR-FRIENDS`. Ràng buộc bạn bè chính thức (`status = ACCEPTED`). Lịch sử tin nhắn, bộ lọc từ cấm `***`, khay 12 sticker cờ tướng.
 9. **`MODAL-SIDE-SWAP-PROMPT` (Nhận Đề Nghị Đổi Bên):** Hiện phía người nhận khi đối thủ xin đổi bên trong phòng chờ. Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý"* và *"Từ chối"*.
-10. **`MODAL-DRAW-PROMPT` (Nhận Đề Nghị Xin Hòa):** Hiện phía người nhận khi đối thủ xin hòa trong ván. Đồng hồ đếm lùi **30 giây**. Nút *"Chấp nhận Hòa"* và *"Từ chối"*.
-11. **`MODAL-UNDO-PROMPT` (Nhận Đề Nghị Xin Đi Lại):** Hiện phía người nhận khi đối thủ bấm xin đi lại trong phòng thường. Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý cho đi lại"* và *"Từ chối"*.
+10. **`MODAL-DRAW-PROMPT` (Nhận Đề Nghị Xin Hòa):** Hiện phía người nhận khi đối thủ xin hòa trong ván. Đồng hồ đếm lùi **30 giây**. Nút *"Chấp nhận Hòa"* và *"Từ chối"*. **Không giữ focus**, bàn cờ tiếp tục thao tác theo quyền lượt; X/Esc thu gọn, có nút mở lại, không tạm dừng đồng hồ/hạn; theo `SCR-RULE-06`.
+11. **`MODAL-UNDO-PROMPT` (Nhận Đề Nghị Xin Đi Lại):** Hiện phía người nhận khi đối thủ bấm xin đi lại trong phòng thường. Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý cho đi lại"* và *"Từ chối"*. **Không giữ focus**, bàn cờ tiếp tục thao tác theo quyền lượt; X/Esc thu gọn, có nút mở lại, không tạm dừng đồng hồ/hạn; theo `SCR-RULE-06`.
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua và trừ điểm Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc người chơi còn lại bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
@@ -264,7 +270,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 ## 5. CHI TIẾT 4 KHUNG NHÚNG CHỨC NĂNG (EMBEDDED PANELS)
 
-1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân, Icon Chuông báo lời mời kết bạn, huy hiệu tin nhắn chưa đọc, Avatar + Tên hiển thị (`Display Name`) kèm menu con Cài đặt hồ sơ.
+1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân, Icon Chuông báo lời mời kết bạn, huy hiệu tổng **tin đến** chưa đọc từ bạn hiện tại (đánh dấu khi tin hiển thị trong vùng nhìn ở tab hoạt động, BA 5.2), Avatar + Tên hiển thị (`Display Name`) kèm menu con Cài đặt hồ sơ.
 2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (người đổi chỗ sau không đọc tin cũ), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. 2 tab: `[Kênh Riêng]` (chỉ 2 người chơi, mặc định mở cho người chơi) và `[Kênh Chung]` (cả người chơi và người xem, người xem chỉ thấy tab này). Công tắc ẩn Kênh Chung. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm.
 3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM`. 2 video trực tiếp SFU của 2 người chơi. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; Ranked chỉ có 2 mức đầu). Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Người xem tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 người chơi giao lưu.
 4. **`PANEL-SPECTATORS` (Danh Sách Người Xem Trong Phòng Thường):** Nằm ở cột phải `SCR-GAME-ROOM` (phòng Ranked cấm xem 100% nên không có). Tiêu đề: *"Người xem (X / N)"* (N = số người xem tối đa của phòng, 1–2). Cả Chủ phòng và người chơi còn lại đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
@@ -307,15 +313,15 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 | 15 | `SCR-PROFILE-SETTINGS` | Cài đặt hồ sơ cá nhân & Đổi Username qua OTP | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | P2 |
 | 17 | `MODAL-CREATE-ROOM` | Thiết lập Tạo phòng thi đấu (4 mức thời gian) | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
-| 18 | `MODAL-INVITE` | Chia sẻ phòng: Mã QR, Link URL, Mã 8 số, Bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
+| 18 | `MODAL-INVITE` | Chia sẻ phòng: Mã QR, Link URL, Mã 8 ký tự, Bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
 | 19 | `MODAL-ROOM-SETTINGS` | Đổi chế độ phòng động (Khóa phòng giữ khách cũ) | Modal Dialog | Mở bởi Host | **P1** |
 | 20 | `MODAL-MATCHMAKING` | Hàng đợi tìm trận Ranked ngẫu nhiên (Hủy tự do) | Modal Dialog | Mở từ `SCR-LOBBY` | P2 |
 | 21 | `MODAL-AI-SETUP` | Chọn cấp độ AI (Dễ/Trung bình/Khó) & Phe cờ (Đỏ/Đen/Random)| Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
 | 22 | `MODAL-OTP-USERNAME` | Xác thực OTP 4 bước Đổi Username trong Hồ sơ | Modal Dialog | Mở từ `SCR-PROFILE-SETTINGS`| P2 |
 | 23 | `MODAL-DIRECT-CHAT` | Khung Chat riêng 1-1 giữa Bạn bè chính thức (R21) | Floating/Modal | Nổi góc phải hoặc từ Bạn bè | P2 |
 | 24 | `MODAL-SIDE-SWAP-PROMPT`| Nhận đề nghị đổi phe cờ Đỏ/Đen (hạn 30s) | Modal Prompt | Mở phía đối thủ phòng chờ | P2 |
-| 25 | `MODAL-DRAW-PROMPT` | Nhận đề nghị xin hòa cờ trong ván (hạn 30s) | Modal Prompt | Mở phía đối thủ trong ván | **P1** |
-| 26 | `MODAL-UNDO-PROMPT` | Nhận đề nghị xin đi lại (hạn 30s, trần 3 lần) | Modal Prompt | Mở phía đối thủ trong ván | P2 |
+| 25 | `MODAL-DRAW-PROMPT` | Nhận đề nghị xin hòa cờ trong ván (hạn 30s) | Non-modal Prompt | Mở phía đối thủ trong ván | **P1** |
+| 26 | `MODAL-UNDO-PROMPT` | Nhận đề nghị xin đi lại (hạn 30s, trần 3 lần) | Non-modal Prompt | Mở phía đối thủ trong ván | P2 |
 | 27 | `MODAL-CONFIRM-RESIGN` | Xác nhận đầu hàng ván cờ (cảnh báo thua ngay) | Modal Dialog | Mở khi bấm Đầu hàng | **P1** |
 | 28 | `MODAL-CONFIRM-LEAVE` | Xác nhận rời phòng khi đang đấu (xử thua) | Modal Dialog | Mở khi bấm Rời phòng | **P1** |
 | 29 | `MODAL-CONFIRM-KICK` | Xác nhận đuổi người xem (chặn vào lại đến đóng phòng)| Modal Dialog | Mở khi bấm Kick người xem | **P1** |
@@ -331,6 +337,8 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ---
 
 ## 8. KIỂM CHỨNG TÍNH KHÉP KÍN (CLOSED-LOOP VERIFICATION)
+
+Ma trận điều kiện và kết quả **năm trạng thái của từng thành phần**, cùng truy vết toàn bộ P1/P2, nằm ở [docs/08-ma-tran-nghiem-thu.md](docs/08-ma-tran-nghiem-thu.md). Bảng danh mục không phải bằng chứng đã dựng/kiểm thử giao diện. Mockup không được sửa trong đợt này; nếu khác đặc tả thì chỉ dùng tham khảo, không dùng nghiệm thu.
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
