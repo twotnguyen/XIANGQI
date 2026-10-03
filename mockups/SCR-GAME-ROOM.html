@@ -734,7 +734,7 @@
       <!-- SPECTATORS PANEL -->
       <div class="spectators-widget">
         <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: var(--gold-light);">
-          <span>Khán Giả Đang Xem (2 / 5)</span>
+          <span>Người Xem Đang Xem (2 / 2)</span>
           <span style="color: #86EFAC;">● Live 100%</span>
         </div>
         <div class="spec-row">
@@ -755,7 +755,7 @@
     <div class="modal-box">
       <div style="font-size: 48px; margin-bottom: 8px;" id="result-icon">🏆</div>
       <h2 style="font-family: var(--font-serif); font-size: 24px; color: #FFF5DF; margin-bottom: 4px;" id="result-title">CHIẾN THẮNG!</h2>
-      <p style="font-size: 13px; color: #86EFAC; margin-bottom: 16px;" id="result-elo-delta">+18 Elo (1280 ➔ 1298)</p>
+      <p style="font-size: 13px; color: #86EFAC; margin-bottom: 16px;" id="result-elo-delta">Ván Đánh Thường · không tính điểm Elo</p>
       <div style="background: rgba(0,0,0,0.4); border: 1px solid #542C15; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 18px;">
         Đối thủ xin đầu hàng ở nước thứ 28. Bạn đã bảo vệ thành công Tướng Đỏ!
       </div>
@@ -790,14 +790,14 @@
               <input type="radio" name="room-mode-game" value="PUBLIC" checked style="accent-color: var(--gold-main); margin-top: 2px;">
               <div>
                 <strong style="color: #FFF;">Công khai (Public)</strong>
-                <div style="font-size: 11px; color: #C8B6A2;">Hiện trên sảnh, kỳ thủ khác có thể bấm vào xem ván cờ.</div>
+                <div style="font-size: 11px; color: #C8B6A2;">Hiện trên sảnh, người chơi khác có thể bấm vào xem ván cờ.</div>
               </div>
             </label>
             <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; cursor: pointer; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px; border: 1px solid #542C15;">
               <input type="radio" name="room-mode-game" value="LOCKED" style="accent-color: var(--gold-main); margin-top: 2px;">
               <div>
                 <strong style="color: #FCA5A5;">Khóa phòng (Locked)</strong>
-                <div style="font-size: 11px; color: #C8B6A2;">Chặn người mới hoàn toàn, giữ nguyên 2 khán giả đang có trong phòng.</div>
+                <div style="font-size: 11px; color: #C8B6A2;">Chặn người mới hoàn toàn, giữ nguyên 2 người xem đang có trong phòng.</div>
               </div>
             </label>
           </div>
@@ -806,8 +806,8 @@
         <div style="margin-bottom: 18px; padding-top: 10px; border-top: 1px solid #542C15;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <strong style="font-size: 12px; color: #FFF;">Cho phép Khán giả (Spectators):</strong>
-              <div style="font-size: 11px; color: #C8B6A2;">Tối đa 5 người xem cùng lúc</div>
+              <strong style="font-size: 12px; color: #FFF;">Cho phép Người xem (Spectators):</strong>
+              <div style="font-size: 11px; color: #C8B6A2;">Tối đa 2 người xem cùng lúc</div>
             </div>
             <input type="checkbox" id="setting-game-specs" checked style="accent-color: var(--gold-main); width: 18px; height: 18px;">
           </div>
@@ -869,7 +869,7 @@
             Đối thủ <strong style="color: var(--gold-light);">Trần Hưng Đạo</strong> vừa đi nhầm nước cờ và xin được <strong>ĐI LẠI</strong> (còn 2/3 lần).
           </p>
           <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid #542C15; font-size: 12px; color: #C8B6A2; text-align: left;">
-            • Nếu đồng ý: Bàn cờ sẽ lùi lại 1 nước để đối thủ chọn nước đi khác.<br>
+            • Nếu đồng ý: Bàn cờ lùi về trước nước gần nhất của người xin (lùi 2 nước nếu bạn đã đi tiếp, 1 nước nếu chưa); đồng hồ không hoàn lại.<br>
             • Tính năng chỉ hỗ trợ trong ván Đánh Thường (Ranked cấm tuyệt đối).
           </div>
         </div>
@@ -928,7 +928,7 @@
             Ván cờ đang diễn ra! Bạn có chắc muốn rời phòng?
           </p>
           <div style="margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.15); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 12px; color: #FCA5A5; text-align: left;">
-            ⛔ <strong>Luật xử phạt:</strong> Rời phòng khi đang thi đấu được hệ thống tính là <strong>ĐẦU HÀNG</strong>. Bạn sẽ bị xử Thua ngay lập tức và bị trừ điểm xếp hạng Elo.
+            ⛔ <strong>Luật xử phạt:</strong> Rời phòng khi đang thi đấu được hệ thống tính là <strong>ĐẦU HÀNG</strong>. Bạn sẽ bị xử Thua ngay lập tức (và bị trừ điểm Elo nếu là ván Đánh Hạng).
           </div>
         </div>
         <div style="display: flex; gap: 10px;">
@@ -947,17 +947,17 @@
   <div id="modal-confirm-kick" class="modal-backdrop">
     <div class="modal-box-clean">
       <div class="modal-header-clean">
-        <h3>⛔ Xác Nhận Đuổi Khán Giả</h3>
+        <h3>⛔ Xác Nhận Đuổi Người Xem</h3>
         <button type="button" onclick="closeKickModal()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
       </div>
       <div class="modal-body-clean">
         <div style="text-align: center; margin-bottom: 16px;">
           <div style="font-size: 40px; margin-bottom: 8px;">⛔</div>
           <p style="font-size: 13.5px; color: #FFF5DF; line-height: 1.5;">
-            Bạn có chắc chắn muốn trục xuất khán giả <strong style="color: var(--gold-light);" id="kick-target-name">Kỳ Vương Ba Vì</strong> ra khỏi phòng?
+            Bạn có chắc chắn muốn trục xuất người xem <strong style="color: var(--gold-light);" id="kick-target-name">Kỳ Vương Ba Vì</strong> ra khỏi phòng?
           </p>
           <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid #542C15; font-size: 12px; color: #C8B6A2; text-align: left;">
-            Khán giả này sẽ bị ngắt kết nối và **chặn không cho phép vào lại phòng này** cho đến khi phòng thi đấu đóng hoàn toàn.
+            Người xem này sẽ bị ngắt kết nối và **chặn không cho phép vào lại phòng này** cho đến khi phòng thi đấu đóng hoàn toàn.
           </div>
         </div>
         <div style="display: flex; gap: 10px;">
@@ -965,7 +965,7 @@
             Hủy Bỏ
           </button>
           <button type="button" onclick="doKickSpectator()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #B91C1C, #7F1D1D); border: 1.5px solid #991B1B; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
-            ⛔ Đuổi Khán Giả
+            ⛔ Đuổi Người Xem
           </button>
         </div>
       </div>
@@ -1032,7 +1032,7 @@
       <button type="button" class="btn-test-trigger" onclick="openUndoPromptModal()">3. ↩️ Nhận đề nghị Xin đi lại (30s)</button>
       <button type="button" class="btn-test-trigger" onclick="confirmResign()">4. 🏳️ Modal Đầu Hàng</button>
       <button type="button" class="btn-test-trigger" onclick="openLeaveMatchModal()">5. 🚪 Modal Rời Phòng</button>
-      <button type="button" class="btn-test-trigger" onclick="kickSpectator('Kỳ Vương Ba Vì')">6. ⛔ Modal Kick Khán Giả</button>
+      <button type="button" class="btn-test-trigger" onclick="kickSpectator('Kỳ Vương Ba Vì')">6. ⛔ Modal Kick Người Xem</button>
       <button type="button" class="btn-test-trigger" onclick="simulateDisconnect()">7. 📡 Lớp phủ Mất mạng 60s</button>
       <button type="button" class="btn-test-trigger" onclick="openMediaSwitchModal()">8. 📹 Tranh chấp Media Đa tab</button>
       <button type="button" class="btn-test-trigger" onclick="document.getElementById('modal-match-result').style.display='flex'">9. 🏆 Kết Quả Ván Cờ</button>
@@ -1346,7 +1346,7 @@
       // Trigger Draw Result
       document.getElementById('result-icon').textContent = '🤝';
       document.getElementById('result-title').textContent = 'HÒA CUỘC!';
-      document.getElementById('result-elo-delta').textContent = '+0 Elo (1280 ➔ 1280)';
+      document.getElementById('result-elo-delta').textContent = 'Ván Đánh Thường · không tính điểm Elo';
       document.getElementById('result-elo-delta').style.color = '#F5CA67';
       document.getElementById('modal-match-result').style.display = 'flex';
     }
@@ -1410,8 +1410,8 @@
       closeResignModal();
       document.getElementById('result-icon').textContent = '🏳️';
       document.getElementById('result-title').textContent = 'BẠN ĐÃ ĐẦU HÀNG';
-      document.getElementById('result-elo-delta').textContent = '-16 Elo (1280 ➔ 1264)';
-      document.getElementById('result-elo-delta').style.color = '#EF4444';
+      document.getElementById('result-elo-delta').textContent = 'Ván Đánh Thường · không tính điểm Elo';
+      document.getElementById('result-elo-delta').style.color = '#C8B6A2';
       document.getElementById('modal-match-result').style.display = 'flex';
     }
 
@@ -1437,7 +1437,7 @@
     }
     function doKickSpectator() {
       closeKickModal();
-      alert(`✓ Đã đuổi khán giả "${pendingKickTarget}" ra khỏi phòng và thêm vào danh sách chặn.`);
+      alert(`✓ Đã đuổi người xem "${pendingKickTarget}" ra khỏi phòng và thêm vào danh sách chặn.`);
       // Remove from list visually
       const rows = document.querySelectorAll('.spec-row');
       rows.forEach(r => {
