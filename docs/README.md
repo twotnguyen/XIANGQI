@@ -8,12 +8,22 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 
 | Tệp | Nội dung | Dùng cho |
 |---|---|---|
-| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | Câu chuyện người dùng (US) và tiêu chí nghiệm thu (AC) cho P1; tóm tắt AC cho P2; yêu cầu phi chức năng | Người chia việc (Giai đoạn 3), người kiểm thử |
+| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 81 US (53 P1, 28 P2), 280 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
 | [02-luat-co-tuong.md](02-luat-co-tuong.md) | Luật cờ tướng chi tiết, kết thúc ván, lặp thế, chiếu liên tục, ký hiệu nước đi, máy cờ và 3 cấp độ | Lập trình luật cờ và máy cờ |
 | [03-du-lieu.md](03-du-lieu.md) | Thực thể, cột, ràng buộc, quyền truy cập, dữ liệu tạm | Lập trình máy chủ và cơ sở dữ liệu |
 | [04-kien-truc.md](04-kien-truc.md) | Thành phần, xác thực, thời gian thực, đồng hồ, LiveKit, máy cờ, bảo mật, triển khai | Mọi lập trình viên |
 | [05-kiem-thu.md](05-kiem-thu.md) | Chiến lược kiểm thử, kịch bản demo (tiêu chí hoàn thành P1), tình huống bắt buộc, con số cần đo | Người kiểm thử, người làm hiệu năng |
 | [06-ke-hoach-jira.md](06-ke-hoach-jira.md) | **Giai đoạn 3:** vai trò, Epic/Story/Task, ước lượng, công suất, lịch, cấu trúc Jira | Product Owner, người chia việc |
+| [07-hop-dong-nghiep-vu.md](07-hop-dong-nghiep-vu.md) | Quyền, vòng đời, tiền/hậu điều kiện, đồng thời, lỗi và phục hồi P1/P2 | Product Owner, người thiết kế/kiểm thử |
+| [08-ma-tran-nghiem-thu.md](08-ma-tran-nghiem-thu.md) | Mọi AC → TC; năm trạng thái của 37 thành phần; ca biên xuyên luồng | Người review và kiểm thử |
+
+## Bản hoàn thiện 04/10/2026
+
+Product Owner đã duyệt các quyết định bổ sung trong BA (nhật ký cuối file) và yêu cầu đặc tả chi tiết **cả P1/P2**, không đổi thứ tự ưu tiên. **Bản viết cập nhật đang chờ review**, chưa được dùng nhãn duyệt 03/10 để tuyên bố toàn bộ thay đổi mới đã được duyệt.
+
+Đọc theo thứ tự: [IDEA](../IDEA.md) → BA → [01] → [07](07-hop-dong-nghiep-vu.md) → [08](08-ma-tran-nghiem-thu.md); [02]–[05] cung cấp chi tiết chuyên môn. Các con số là độ phủ đặc tả, không phải test PASS.
+
+Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợt này. Kế hoạch/US ở các bản nháp cũ chưa được đối soát với baseline mới, **không coi là đã đồng bộ**; khi lập kế hoạch phải làm bước đối soát riêng sau review. Mockup lệch đặc tả chỉ tham khảo.
 
 ## Các con số tạm của Giai đoạn 1 (đã duyệt)
 
@@ -72,7 +82,7 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 | `PANEL-SPECTATORS` | ROOM-09, PLAY-09 |
 | `OVERLAY-RECONNECTING` | PLAY-07 |
 
-Đủ 23 thành phần P1. Các thành phần P2 (14) được mô tả ở Nhóm I–N của [01].
+Đủ 23 thành phần P1 và 14 P2, không thêm màn hình do có phần Luật chơi/bộ chọn giao diện. Ánh xạ đầy đủ hai phân kỳ và 185 trường hợp trạng thái nằm ở [08](08-ma-tran-nghiem-thu.md). Nhãn `MODAL-DRAW-PROMPT` giữ để tham chiếu nhưng hành vi không modal theo BA 3.6.
 
 ## Chưa làm (có chủ ý)
 
@@ -80,11 +90,12 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 * **Chưa viết mã**, chưa tạo `apps/`, `packages/`, `supabase/`, `tests/` (Giai đoạn 4).
 * **Chưa thử nghiệm thực tế**: giá trị perft, độ sâu máy cờ, cấu hình OTP 180 giây của Supabase và quyền đăng ký track của LiveKit đều là **giả định cần đo** ở đầu Giai đoạn 4 (xem [05]). Nếu đo không đạt thì ghi số thật và báo Product Owner.
 
-## Điều kiện đã đáp ứng để sang Giai đoạn 3
+## Mốc duyệt nền và điều kiện dùng baseline cập nhật
 
 1. Product Owner đã duyệt các quyết định ở bảng trên (03/10/2026). ✔
 2. Product Owner đã xác nhận Giai đoạn 2 xong và cho phép bắt đầu Giai đoạn 3 (03/10/2026). ✔
-3. Còn mở: tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 (bổ sung nếu có); cách tạo trên Jira (dự án, khoá) do Product Owner cung cấp ở Giai đoạn 3.
+3. Bản bổ sung 04/10 cần Product Owner review các tài liệu đã viết trước khi dùng để chốt kế hoạch mới. Cổng kỹ thuật NOT_RUN ở [05] mục 11 là phụ thuộc/rủi ro phải giữ trong kế hoạch, không bằng chứng thất bại hay đã đạt.
+4. Tiêu chí chấm ngoài D1–D10 chỉ bổ sung khi được cung cấp. Không xác minh hoặc thao tác Jira trong đợt này; dữ liệu kế hoạch và dự án/key phải được đối soát riêng trước khi tạo issue.
 
 [01]: 01-yeu-cau-chi-tiet.md
 [02]: 02-luat-co-tuong.md
