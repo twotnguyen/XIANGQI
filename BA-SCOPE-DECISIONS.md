@@ -9,6 +9,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 > **Ghi chú rà soát 03/10/2026.** Product Owner uỷ quyền cho agent tự xử lý mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Các quyết định thêm hoặc sửa trong đợt này đã được Product Owner **duyệt toàn bộ ngày 03/10/2026** (gồm nhóm 1–8 và loạt trả lời nhóm B). Riêng các con số tạm (120 nửa nước không ăn quân, luật đuổi quân liên tục, quy mô 50 người dùng đồng thời) được xác nhận lại ở Giai đoạn 2.
 >
+> **Giai đoạn 2 (từ 03/10/2026):** chi tiết hoá yêu cầu, luật cờ, dữ liệu, kiến trúc và kiểm thử nằm ở thư mục [`docs/`](docs/README.md). `docs/` **không thay đổi phạm vi** ở tài liệu này; hai nơi mâu thuẫn thì tài liệu này thắng và phải báo người dùng.
+>
 > **Hai quy ước đọc tài liệu:**
 > 1. Các mã như `R06`, `R17`, `DEC-019`, `ARCH-04`, `GR-END-01`, `EC-0x`, `DT-21`… là **nhãn kế thừa** từ bộ tài liệu cũ đã xoá. Chúng không còn là nguồn tra cứu; luật tương ứng đã được viết đầy đủ bằng chữ trong chính mục chứa nhãn.
 > 2. Tên công nghệ, tên bảng, tên trường dữ liệu (Socket.IO, LiveKit, Supabase, `room_blocks`, `commandId`…) chỉ là **minh hoạ kế thừa**, không phải quyết định công nghệ. Công nghệ chốt ở Giai đoạn 2.
@@ -27,7 +29,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     1. **Bước 1 (Nhập Username & Mật khẩu):** Người dùng điền đầy đủ và bấm nút **"Xác nhận / Tiếp tục"**. Hệ thống kiểm tra tính duy nhất (UNIQUE) của `username`.
     2. **Bước 2 (Nhập Email):** Giao diện chuyển tiếp mượt mà sang khung nhập `Email:`. Người dùng điền địa chỉ email chính chủ và bấm **"Xác nhận Email"**.
     3. **Bước 3 (Xác thực Email qua mã OTP):** Hệ thống kích hoạt Supabase Auth gửi mã OTP 6 chữ số đến địa chỉ email vừa nhập, đồng thời hiển thị khung nhập mã OTP. Người dùng kiểm tra hòm thư (check mail), lấy mã và nhập vào hệ thống để xác nhận email vừa nhập là chính xác và đang hoạt động. Xác thực OTP thành công $\rightarrow$ Tài khoản chuyển sang trạng thái `ACTIVE`, tự động đăng nhập và đưa vào sảnh chính.
-  * **Thời điểm tạo tài khoản:** Tài khoản chỉ được tạo **sau khi OTP xác thực thành công**. Trước đó không có bản ghi tài khoản nào; username **không bị giữ chỗ** khi người dùng bỏ dở giữa chừng (đóng tab, hết hạn OTP). Máy chủ kiểm tra lại tính duy nhất của `username` và `email` ở bước cuối; nếu username đã bị người khác lấy trong lúc chờ thì báo lỗi và quay về Bước 1.
+  * **Thời điểm tạo tài khoản:** Tài khoản **dùng được** (có hồ sơ và đăng nhập được) chỉ có **sau khi OTP xác thực thành công và hoàn tất bước cuối**. Trước đó người dùng chưa có hồ sơ và không đăng nhập được; **hệ thống xác thực (Supabase) có thể giữ tạm một bản ghi xác thực chưa xác nhận** (Product Owner chọn Phương án B ngày 03/10/2026), được dọn sau khoảng 1 giờ (tối đa khoảng 65 phút) để email không bị kẹt; username **không bị giữ chỗ** khi người dùng bỏ dở giữa chừng (đóng tab, hết hạn OTP). Máy chủ kiểm tra lại tính duy nhất của `username` và `email` ở bước cuối; nếu username đã bị người khác lấy trong lúc chờ thì báo lỗi và quay về Bước 1.
   * **Email đã tồn tại:** Ở Bước 2, nếu email đã có tài khoản thì hiển thị ⚠️ *"Email này đã được đăng ký"* (cùng thông báo với luồng Google) và không gửi OTP.
 
 ---
@@ -101,10 +103,10 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ---
 
 ### Quyết định 1.5: Quy chuẩn Thời hạn mã OTP & Chống dò mã (Security Rules)
-* **Lựa chọn đã chốt:** **[OTP-RULES] Hạn 3 phút; Hủy mã ngay khi nhập sai lần thứ 5**
+* **Lựa chọn đã chốt:** **[OTP-RULES] Hạn 3 phút; giới hạn nhập sai theo cơ chế của hệ thống xác thực, mục tiêu 5 lần** (Phương án B, Product Owner duyệt 03/10/2026)
 * **Mô tả nghiệp vụ:**
   * **Thời hạn hiệu lực của mã OTP:** Mã OTP 6 chữ số chỉ có giá trị trong vòng **3 phút (180 giây)** kể từ khi gửi. Quá 3 phút mã sẽ tự động hết hạn và bị vô hiệu hóa.
-  * **Giới hạn số lần nhập sai (Chống dò mã / Anti-Brute-Force):** Nếu người dùng nhập sai mã OTP **5 lần** (huỷ ngay ở lần sai thứ 5, tính cả các lần nhập sai không liên tiếp) $\rightarrow$ Hệ thống lập tức hủy mã OTP hiện tại, khóa phiên xác thực đó và bắt buộc người dùng bấm "Gửi lại mã mới".
+  * **Giới hạn số lần nhập sai (Chống dò mã / Anti-Brute-Force):** **Mục tiêu:** tối đa **5 lần** nhập sai cho mỗi lần gửi mã, sau đó phải chờ hoặc bấm "Gửi lại mã mới". **Cách thực thi dựa vào giới hạn tốc độ xác minh của chính hệ thống xác thực (Supabase)**, nên là **gần đúng, không bảo đảm đếm chính xác từng mã** (đây là sai khác đã được Product Owner chấp nhận khi chọn Phương án B). Giao diện vẫn báo rõ khi bị giới hạn và hướng dẫn gửi mã mới.
   * **Đồng hồ đếm lùi gửi lại:** Nút "Gửi lại mã OTP" áp dụng bộ đếm lùi **60 giây** để chống hành vi bấm spam gửi mail liên tục làm nghẽn máy chủ.
 
 ---
@@ -113,7 +115,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Lựa chọn đã chốt:** **[USER-OTP-FLOW] 4 bước đổi Username qua OTP Supabase; Cấm tuyệt đối đổi Email**
 * **Mô tả quy trình 4 bước:**
   1. **Bước 1 (Chọn chức năng):** Tại Cài đặt hồ sơ (`SCR-PROFILE-SETTINGS`), người dùng bấm nút **"Đổi Username"** $\rightarrow$ Hệ thống gửi mã OTP 6 số về email và mở modal nhập mã OTP (`MODAL-OTP-USERNAME`).
-  2. **Bước 2 (Nhập OTP):** Người dùng kiểm tra email nhận mã, nhập mã OTP vào modal (thời hạn 3 phút, sai 5 lần thì hủy mã).
+  2. **Bước 2 (Nhập OTP):** Người dùng kiểm tra email nhận mã, nhập mã OTP vào modal (thời hạn 3 phút, giới hạn nhập sai theo `Quyết định 1.5`).
   3. **Bước 3 (Xác thực & Mở khóa):** Hệ thống xác thực OTP thành công $\rightarrow$ Mở khóa cho phép nhập liệu ô `Username` mới.
   4. **Bước 4 (Đổi & Xác nhận):** Người dùng nhập `username` mới mong muốn (unique, 3–20 ký tự) và bấm **"Xác nhận thay đổi"** $\rightarrow$ Cập nhật thành công.
 * **Bảo toàn dữ liệu tuyệt đối (Data Integrity):** Toàn bộ lịch sử ván cờ, điểm Elo, tin nhắn chat và danh sách bạn bè đều gắn với `user_id` (UUID bất biến). Đổi Username bảo toàn nguyên vẹn 100% dữ liệu.
@@ -125,7 +127,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Lựa chọn đã chốt:** **[PWD-RESET] Đặt lại mật khẩu bằng OTP gửi về email; áp dụng cho mọi tài khoản**
 * **Mô tả nghiệp vụ:**
   1. Ở `SCR-FORGOT-PASSWORD` người dùng nhập email. Hệ thống **luôn** trả cùng một thông báo *"Nếu email này đã đăng ký, mã khôi phục đã được gửi"*, không tiết lộ email có tồn tại hay không.
-  2. Mã OTP 6 chữ số dùng **đúng quy tắc của `Quyết định 1.5`** (hạn 3 phút, sai 5 lần thì huỷ mã, gửi lại sau 60 giây).
+  2. Mã OTP 6 chữ số dùng **đúng quy tắc của `Quyết định 1.5`** (hạn 3 phút, giới hạn nhập sai theo `Quyết định 1.5`, gửi lại sau 60 giây).
   3. Ở `SCR-RESET-PASSWORD` nhập OTP + mật khẩu mới (tối thiểu 8 ký tự) + xác nhận. Email được chuyển giữa hai màn hình bằng trạng thái của ứng dụng, **không đặt email lên URL**.
   4. Đổi thành công: mọi phiên đăng nhập khác của tài khoản bị đăng xuất; người dùng phải đăng nhập lại bằng mật khẩu mới.
   5. Tài khoản tạo bằng Google cũng có mật khẩu (`Quyết định 1.2`) nên dùng được luồng này.

@@ -1,6 +1,6 @@
 # AGENTS.md — Hướng dẫn cho AI agent
 
-**Dự án:** Cờ Tướng Online · **Giai đoạn hiện tại:** 1 — chốt ý tưởng và chức năng tổng quan · **Áp dụng cho:** mọi AI agent đọc, viết hoặc sửa tài liệu trong kho này.
+**Dự án:** Cờ Tướng Online · **Giai đoạn hiện tại:** 3 — phân vai và lập kế hoạch Jira (Giai đoạn 1 và 2 đã xong, người dùng xác nhận 03/10/2026) · **Áp dụng cho:** mọi AI agent đọc, viết hoặc sửa tài liệu trong kho này.
 
 Đọc hết file này trước khi sửa bất kỳ file nào.
 
@@ -9,8 +9,8 @@
 ## 0. Tóm tắt
 
 ```
-① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/
-② Đang ở GIAI ĐOẠN 1: chốt ý tưởng và chức năng tổng quan. Chưa phân tích chuyên sâu, chưa chia việc, chưa tạo Epic/Story/Task
+① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2 và kế hoạch Giai đoạn 3), Jira/ (bản nháp Epic/Story/Task để review, CHƯA tạo trên Jira thật)
+② Đang ở GIAI ĐOẠN 3: phân vai và lập kế hoạch Jira (Epic/Story/Task, ước lượng). Chưa viết mã. Chỉ tạo trên Jira thật khi người dùng cung cấp dự án/khoá và đồng ý; ⛔ không đoán số Key
 ③ Nguồn luật phạm vi = BA-SCOPE-DECISIONS.md. Thấy mâu thuẫn hoặc chỗ mơ hồ ⇒ DỪNG, báo người dùng. Không tự chọn
 ④ Không tự phát minh yêu cầu. Không có trong nguồn luật ⇒ HỎI
 ⑤ Chỉ chuyển giai đoạn khi người dùng nói rõ giai đoạn trước đã xong
@@ -23,12 +23,12 @@
 
 | GĐ | Việc | Agent được làm | Agent KHÔNG làm |
 |---|---|---|---|
-| **1. Ý tưởng và chức năng tổng quan** (hiện tại) | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | Đọc, rà soát, nêu mâu thuẫn và chỗ mơ hồ, đề xuất phương án, ghi quyết định đã chốt vào tài liệu, chỉnh mockup theo quyết định | Viết mã ứng dụng, chọn công nghệ cuối cùng, chia việc, tạo Jira |
-| 2. Phân tích chuyên sâu | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | Sau khi người dùng cho phép | |
-| 3. Phân vai và lập kế hoạch Jira | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng | Sau khi người dùng cho phép | |
+| 1. Ý tưởng và chức năng tổng quan (**đã xong 03/10/2026**) | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | Đọc, rà soát, nêu mâu thuẫn và chỗ mơ hồ, đề xuất phương án, ghi quyết định đã chốt vào tài liệu, chỉnh mockup theo quyết định | Viết mã ứng dụng, chọn công nghệ cuối cùng, chia việc, tạo Jira |
+| 2. Phân tích chuyên sâu (**đã xong 03/10/2026**) | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | Viết và sửa tài liệu trong `docs/` | — |
+| **3. Phân vai và lập kế hoạch Jira** (hiện tại) | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng | Lập kế hoạch bằng tài liệu trong `docs/`; đề xuất vai trò, ước lượng, lịch; chỉ tạo trên Jira thật khi người dùng cung cấp dự án/khoá và đồng ý | Viết mã ứng dụng; đoán số Key Jira; tạo trên Jira thật khi chưa được đồng ý |
 | 4. Xây dựng | Code, test, review, phát hành | Sau khi người dùng cho phép | |
 
-Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm trước (không tạo thư mục `apps/`, `packages/`, `Jira/`, `docs/`… khi chưa được yêu cầu).
+Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm trước (không tạo thư mục `apps/`, `packages/`, `Jira/`… khi chưa được yêu cầu). Từ Giai đoạn 2, thư mục `docs/` **mới** (không phải `docs/` cũ đã xoá) chứa tài liệu phân tích.
 
 ---
 
@@ -39,6 +39,7 @@ Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm tr�
 | 1 | Yêu cầu trực tiếp của người dùng trong phiên làm việc | Cao nhất |
 | 2 | File này (`AGENTS.md`) | Luật làm việc |
 | 3 | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) | **Cái gì** phải đúng. Nguồn luật phạm vi và nghiệp vụ |
+| 3.5 | [docs/](docs/README.md) (Giai đoạn 2) | Chi tiết hoá yêu cầu, luật cờ, dữ liệu, kiến trúc, kiểm thử. **Không được mâu thuẫn BA-SCOPE**; mâu thuẫn ⇒ BA-SCOPE thắng và báo người dùng. Nội dung chưa được duyệt ghi rõ "Đề xuất" |
 | 4 | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) | Danh mục 37 thành phần giao diện, 5 trạng thái bắt buộc |
 | 5 | [DESIGN.md](DESIGN.md) · `mockups/` | Hệ thống thiết kế và mẫu giao diện |
 
@@ -59,14 +60,15 @@ Các mâu thuẫn và câu hỏi chưa chốt của giai đoạn 1 nằm trong [
 
 ---
 
-## 3. Cách làm việc ở Giai đoạn 1
+## 3. Cách làm việc ở Giai đoạn 1 và 2
 
 - **Hỏi tập trung.** Gom câu hỏi theo nhóm, mỗi câu kèm phương án và một khuyến nghị. Không hỏi câu đã có đáp án trong nguồn luật.
 - **Đánh giá thẳng.** Nêu rủi ro, mâu thuẫn, phạm vi quá sức. Không khen cho đẹp.
 - **Ghi lại bằng chữ của người dùng.** Quyết định ghi vào tài liệu phải đúng ý đã chốt; chỗ chưa chắc thì hỏi, không đoán.
 - **Không đổi phạm vi âm thầm.** Thêm, bớt hoặc đổi mức ưu tiên (P1/P2) một tính năng đều phải được người dùng đồng ý.
 - **Giữ tài liệu nhất quán.** Sau mỗi thay đổi, kiểm lại bảng ma trận cuối `BA-SCOPE-DECISIONS.md`, số lượng thành phần trong `DANH-MUC`, và tên màn hình/mockup.
-- **Không tạo file tài liệu mới** nếu chưa được yêu cầu; ưu tiên sửa file hiện có.
+- **Không tạo file tài liệu mới** ngoài `docs/` (Giai đoạn 2) nếu chưa được yêu cầu; ưu tiên sửa file hiện có.
+- **Giai đoạn 2:** mọi con số, thuật toán, thiết kế do agent đề xuất phải ghi **"Đề xuất"** cho đến khi người dùng duyệt; chỉ bỏ nhãn khi được duyệt.
 
 ---
 
