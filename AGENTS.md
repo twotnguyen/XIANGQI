@@ -9,7 +9,7 @@
 ## 0. Tóm tắt
 
 ```
-① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2)
+① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2 và kế hoạch Giai đoạn 3), Jira/ (bản nháp Epic/Story/Task để review, CHƯA tạo trên Jira thật)
 ② Đang ở GIAI ĐOẠN 3: phân vai và lập kế hoạch Jira (Epic/Story/Task, ước lượng). Chưa viết mã. Chỉ tạo trên Jira thật khi người dùng cung cấp dự án/khoá và đồng ý; ⛔ không đoán số Key
 ③ Nguồn luật phạm vi = BA-SCOPE-DECISIONS.md. Thấy mâu thuẫn hoặc chỗ mơ hồ ⇒ DỪNG, báo người dùng. Không tự chọn
 ④ Không tự phát minh yêu cầu. Không có trong nguồn luật ⇒ HỎI

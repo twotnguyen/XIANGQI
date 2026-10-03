@@ -36,7 +36,7 @@ Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn
 
 Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 hạng mục; cập nhật 03/10/2026).
 
-**Phân kỳ (nhóm 7 người, khoảng 2 tuần):** **P1 = 8 mục tiêu cốt lõi** của Product Owner: (1) đăng ký / đăng nhập, (2) tạo phòng, (3) mời vào phòng bằng link, mã và mời bạn bè đang online, (4) khởi tạo bàn cờ, (5) hai người đánh cờ qua mạng, (6) phòng công khai / khoá / khoá nhưng có mã, tối đa 2 người xem, (7) chat + camera + mic cho hai người chơi và kênh chat riêng cho người xem, (8) đánh với máy theo cấp độ. **Mọi thứ còn lại là P2** (đã duyệt, làm sau): Đánh Hạng và Elo, ghép ngẫu nhiên, Khách, Google, quên mật khẩu, đổi username, chat 1-1 giữa bạn bè, sticker, QR, xin đi lại, tái đấu, lịch sử và replay… Chi tiết: BA-SCOPE `Phần 11`; ưu tiên từng thành phần: cột "Ưu tiên" ở DANH-MUC §7 (23 thành phần P1, 14 P2). Bảng dưới mô tả **toàn bộ** tính năng đã duyệt, kể cả P2.
+**Phân kỳ (nhóm 7 người, hạn 2 tuần cố định, làm cả cuối tuần):** **P1 = 8 mục tiêu cốt lõi** của Product Owner: (1) đăng ký / đăng nhập, (2) tạo phòng, (3) mời vào phòng bằng link, mã và mời bạn bè đang online, (4) khởi tạo bàn cờ, (5) hai người đánh cờ qua mạng, (6) phòng công khai / khoá / khoá nhưng có mã, tối đa 2 người xem, (7) chat + camera + mic cho hai người chơi và kênh chat riêng cho người xem, (8) đánh với máy theo cấp độ. **Mọi thứ còn lại là P2** (đã duyệt, làm sau): Đánh Hạng và Elo, ghép ngẫu nhiên, Khách, Google, quên mật khẩu, đổi username, chat 1-1 giữa bạn bè, sticker, QR, xin đi lại, tái đấu, lịch sử và replay… Chi tiết: BA-SCOPE `Phần 11`; ưu tiên từng thành phần: cột "Ưu tiên" ở DANH-MUC §7 (23 thành phần P1, 14 P2). Bảng dưới mô tả **toàn bộ** tính năng đã duyệt, kể cả P2.
 
 | Nhóm | Nội dung |
 |---|---|
@@ -75,7 +75,8 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 h
 ├── BA-SCOPE-DECISIONS.md          Quyết định chốt phạm vi sản phẩm (nguồn luật chính)
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   Danh mục 37 thành phần giao diện và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
-├── docs/                          Tài liệu phân tích chuyên sâu Giai đoạn 2 (bắt đầu từ docs/README.md)
+├── docs/                          Tài liệu phân tích chuyên sâu Giai đoạn 2 và kế hoạch Giai đoạn 3 (bắt đầu từ docs/README.md)
+├── Jira/                          Bản nháp mỗi Epic, Story, Task một tệp .md để review (chưa tạo trên Jira thật)
 ├── mockups/                       Mockup HTML/CSS tương tác (mở mockups/index.html)
 ├── site/                          Trang đọc tài liệu cũ, đã lỗi thời (xem lưu ý bên dưới)
 └── .github/                       CODEOWNERS
@@ -91,21 +92,20 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), và cho bắt đầu Giai đoạn 3. Kế hoạch ở [docs/06-ke-hoach-jira.md](docs/06-ke-hoach-jira.md) ước lượng **P1 khoảng 127,5 ngày công (73 việc)**; 7 người trong 2 tuần chỉ có khoảng 56. Theo mô phỏng xếp lịch có tính phụ thuộc và vai trò, **P1 cần khoảng 5 tuần cho lõi (đợt 1) và khoảng 7 tuần cho đủ**. Ngay cả tập con nhỏ nhất (đăng nhập, bàn cờ, đánh với máy) cũng cần khoảng 3,9 tuần nếu giữ vai trò cố định. Cần bạn quyết:
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), cho bắt đầu Giai đoạn 3 và chốt: **hạn 2 tuần cố định, làm cả cuối tuần, được dừng bớt phần để vừa hạn; tạo Jira vào dự án XIAN sau khi review tài liệu `.md`**. Các tệp Epic/Story/Task nằm ở [`Jira/`](Jira/README.md) (bản nháp, chưa tạo trên Jira); kế hoạch ở [docs/06](docs/06-ke-hoach-jira.md). Cần bạn:
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Chọn lựa chọn ở docs/06 mục 1:** dời hạn (khuyến nghị: khoảng 5 tuần cho lõi, khoảng 7 tuần cho đủ), hoặc cắt phạm vi P1 để giữ 2 tuần, hoặc tăng nguồn lực | Cắt phạm vi P1 cần bạn đồng ý (AGENTS §8) |
-| 2 | **Tên 7 người và vai trò R1–R7** | docs/06 mục 3 |
-| 3 | **Jira thật:** site Atlassian, tên/khoá dự án, đồng ý cho tạo Epic/Story/Task | Tôi không đoán số Key |
-| 4 | Hệ số hiệu dụng, lịch làm việc (có làm cuối tuần không) | docs/06 mục 2 |
-| 5 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
-| 6 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
-| 7 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
+| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 27 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Chưa tạo gì trên Jira |
+| 2 | **Chốt thứ tự dừng phần và mốc kiểm soát** (docs/06 mục 1b, 1c) | P1 ước lượng 128 ngày công, công suất 2 tuần khoảng 78,4; theo ước lượng cơ sở **có thể ở ngày 14 chưa xong mức nào**, chỉ khi ước lượng thực tế thấp hơn nhiều (−30% và hệ số 1,0) thì mới kịp Mức 1, còn Mức 2 vượt hạn khoảng 1 ngày |
+| 3 | **Tên 7 người và vai trò R1–R7** | docs/06 mục 3 |
+| 4 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
+| 5 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
+| 6 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
-- **Nhóm 7 người trong 2 tuần không đủ cho 8 mục tiêu P1 theo ước lượng** (khoảng 127,5 ngày công so với khoảng 56 có sẵn; xem [docs/06](docs/06-ke-hoach-jira.md)). Hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết.
+- **Nhóm 7 người trong 2 tuần không đủ cho toàn bộ 8 mục tiêu P1 theo ước lượng cơ sở** (128 ngày công so với khoảng 78,4 có sẵn; xem [docs/06](docs/06-ke-hoach-jira.md)). Kế hoạch là **hộp thời gian**: làm theo thứ tự mức, dừng ở mức kịp. Hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết.
 - Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có số đo thực tế. Phương án nghiệp vụ khi không kịp đã chốt (đi nước tốt nhất tìm được; lỗi hoặc quá 10 giây thì ván "Bỏ dở" và nút Thử lại, BA-SCOPE 6.1). Dự phòng tiến độ (gợi ý, chưa bắt buộc): 3 cấp vẫn là P1, nếu thiếu thời gian thì làm cấp Dễ trước.
 - Chạy đồng thời realtime (Socket.IO) và media (LiveKit) là điểm tích hợp rủi ro cao.
 
