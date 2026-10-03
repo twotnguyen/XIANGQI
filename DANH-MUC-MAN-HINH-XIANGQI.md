@@ -3,7 +3,7 @@
 **Tài liệu:** Kiến trúc Giao diện & Bản đồ Màn hình Chuẩn hóa (UI/UX Screen Inventory)  
 **Dự án:** Cờ Tướng Trực Tuyến (`XIANGQI`)  
 **Ngày cập nhật:** 03/10/2026 · **Phiên bản:** v1.1.0 (Scope Freeze, đã rà soát đồng bộ)  
-**Căn cứ pháp lý:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md). Các chỗ có nhãn `[RV-03/10]` là phần bổ sung đợt rà soát 03/10/2026 và cần Product Owner xác nhận. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
+**Căn cứ pháp lý:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
 
 ---
 
@@ -48,7 +48,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 4. **`ERROR` (Lỗi):** Báo lỗi tiếng Việt dễ hiểu, có nút *"Thử lại"* (Retry).
 5. **`DISABLED` (Vô hiệu):** Nút/chức năng bị xám mờ bắt buộc phải có tooltip giải thích rõ lý do (ví dụ: *"Bạn đã dùng hết 3 lượt xin đi lại"*).
 
-**Các quy tắc giao diện `SCR-RULE` đang dùng** `[RV-03/10]` (định nghĩa ở đây là duy nhất):
+**Các quy tắc giao diện `SCR-RULE` đang dùng** (định nghĩa ở đây là duy nhất):
 * `SCR-RULE-01`: đủ 5 trạng thái ở trên.
 * `SCR-RULE-02`: hộp thoại thường đóng được bằng X, `Esc`, bấm ra ngoài; riêng `OVERLAY-RECONNECTING` và `SCR-ONBOARDING` không đóng tuỳ ý.
 * `SCR-RULE-03`: hộp xác nhận nguy hiểm đặt focus mặc định ở nút *Huỷ*.
@@ -66,7 +66,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Thành phần & Dữ liệu:**
   * Logo Cờ Tướng truyền thống (帥/將) + Tiêu đề *"Kỳ Đài Đăng Nhập"*.
   * Form đăng nhập: Ô `Username:` (viết liền không dấu), Ô `Mật khẩu:` (icon ẩn/hiện mật khẩu).
-  * Checkbox `Ghi nhớ đăng nhập`: Mặc định tick (phiên 30 ngày). **`[RV-03/10]`** Bỏ tick: phiên kết thúc khi đóng trình duyệt hoặc sau 12 giờ, tuỳ cái nào đến trước (BA-SCOPE `Quyết định 1.8`).
+  * Checkbox `Ghi nhớ đăng nhập`: Mặc định tick (phiên 30 ngày). Bỏ tick: phiên kết thúc khi đóng trình duyệt hoặc sau 12 giờ, tuỳ cái nào đến trước (BA-SCOPE `Quyết định 1.8`).
   * Nút `Đăng nhập` (Primary button).
   * Nút `Đăng nhập bằng Google` (Google OAuth 1 chạm).
   * **Nút `Guest` (Chơi nhanh) — Nằm riêng biệt nổi bật:**
@@ -93,14 +93,14 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
     * Đồng hồ đếm lùi thời hạn mã: **3 phút (180 giây)**.
     * Nút *"Gửi lại mã OTP"* (kèm bộ đếm lùi 60 giây chống spam).
     * **Xử lý bảo mật:** Nhập sai quá 5 lần $\rightarrow$ Hủy mã OTP, khóa form và bắt buộc bấm gửi lại mã mới.
-    * **`[RV-03/10]`** Tài khoản chỉ được tạo khi OTP đúng; bỏ dở thì không có tài khoản và username không bị giữ. Email đã đăng ký ở Bước 2 $\rightarrow$ báo *"Email này đã được đăng ký"*.
+    * Tài khoản chỉ được tạo khi OTP đúng; bỏ dở thì không có tài khoản và username không bị giữ. Email đã đăng ký ở Bước 2 $\rightarrow$ báo *"Email này đã được đăng ký"*.
     * Nhập đúng OTP $\rightarrow$ Tài khoản chuyển sang `ACTIVE`, tự động gán `display_name = username` (Phương án C), tự động đăng nhập và đưa vào `/lobby`.
 
 ---
 
 ### 3. `SCR-FORGOT-PASSWORD` — Trang Quên Mật Khẩu
 * **URL:** `/forgot-password` | **Quyền:** Tất cả.
-* **Thành phần:** Ô nhập `Email đã đăng ký` + Nút `Gửi mã khôi phục` $\rightarrow$ Chuyển sang `/reset-password`. **`[RV-03/10]`** Luôn hiện cùng thông báo *"Nếu email này đã đăng ký, mã khôi phục đã được gửi"*; email chuyển giữa hai màn hình bằng trạng thái ứng dụng, **không đặt lên URL** (BA-SCOPE `Quyết định 1.7`).
+* **Thành phần:** Ô nhập `Email đã đăng ký` + Nút `Gửi mã khôi phục` $\rightarrow$ Chuyển sang `/reset-password`. Luôn hiện cùng thông báo *"Nếu email này đã đăng ký, mã khôi phục đã được gửi"*; email chuyển giữa hai màn hình bằng trạng thái ứng dụng, **không đặt lên URL** (BA-SCOPE `Quyết định 1.7`).
 
 ---
 
@@ -117,16 +117,16 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * Ô `Username:` (bắt buộc đặt tên duy nhất, 3–20 ký tự không dấu).
   * Ô `Mật khẩu dự phòng:` (để sau này có thể đăng nhập bằng `Username + Password` nếu không muốn dùng Google).
   * Miễn mã OTP (vì Google đã xác thực email an toàn).
-  * Nút `Hoàn tất thiết lập` $\rightarrow$ Tự động gán `display_name = username` (**`[RV-03/10]`** không dùng Họ tên Google) $\rightarrow$ Chuyển thẳng vào `/lobby`. Màn hình không có nút X; thoát giữa chừng thì chưa có tài khoản.
+  * Nút `Hoàn tất thiết lập` $\rightarrow$ Tự động gán `display_name = username` (không dùng Họ tên Google) $\rightarrow$ Chuyển thẳng vào `/lobby`. Màn hình không có nút X; thoát giữa chừng thì chưa có tài khoản.
   * **Kiểm tra trùng Email:** Nếu Gmail này đã có tài khoản trước đó, hiển thị lỗi rõ ràng: ⚠️ *"Email này đã được đăng ký"* và hướng dẫn quay lại trang đăng nhập.
 
 ---
 
 ### 6. `SCR-LOBBY` — Trang Sảnh Chính (Lobby Hub)
-* **URL:** `/lobby` | **Quyền:** Đã đăng nhập hoặc Khách. **`[RV-03/10]`** Nếu đang có ván/phòng dở, hiện banner *"Bạn có ván đang chơi dở — Quay lại"*; khi đang ngồi ghế ở một phòng, các nút Tạo phòng/Ghép/Tìm trận `DISABLED` kèm tooltip.
+* **URL:** `/lobby` | **Quyền:** Đã đăng nhập hoặc Khách. Nếu đang có ván/phòng dở, hiện banner *"Bạn có ván đang chơi dở — Quay lại"*; khi đang ngồi ghế ở một phòng, các nút Tạo phòng/Ghép/Tìm trận `DISABLED` kèm tooltip.
 * **Bố cục (Layout):** Phân chia 3 phân vùng chế độ chơi rõ ràng:
   1. **ĐÁNH THƯỜNG (Casual Mode) — Trọng tâm giao lưu:**
-     * Nút *"Ghép ngẫu nhiên"* (Casual Quick Match): Ghép nhanh giao lưu không tính Elo. **`[RV-03/10]`** Chọn 1 trong 4 mức giờ trước khi ghép (chỉ ghép cùng mức giờ), chờ tối đa 60 giây, có ghi chú *"Ván ghép ngẫu nhiên hiển thị công khai ở Sảnh"* (BA-SCOPE `Quyết định 2.0`).
+     * Nút *"Ghép ngẫu nhiên"* (Casual Quick Match): Ghép nhanh giao lưu không tính Elo. Chọn 1 trong 4 mức giờ trước khi ghép (chỉ ghép cùng mức giờ), chờ tối đa 60 giây, có ghi chú *"Ván ghép ngẫu nhiên hiển thị công khai ở Sảnh"* (BA-SCOPE `Quyết định 2.0`).
      * Nút *"Tạo phòng"* (Custom Solo): Mở `MODAL-CREATE-ROOM`.
      * Ô *"Vào phòng bằng mã"*: Nhập mã 8 ký tự (VD: `K7M2-XQP4`) $\rightarrow$ Tham gia tức thì.
      * *Danh sách phòng đang có (Lobby Room List):*
@@ -134,7 +134,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
        * Cột thông tin: Tên phòng, Chủ phòng, Mức giờ, Số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 7), Nút *"Vào xem"* (luôn vào vai Khán giả).
   2. **ĐÁNH HẠNG (Ranked Mode) — So tài nghiêm ngặt:**
      * Thẻ tóm tắt Rank cá nhân: Huy hiệu Rank, Điểm Elo hiện tại (VD: `1420 Elo`), Thứ hạng hiện tại, Tỷ lệ thắng.
-     * Nút lớn: **"Tìm trận Xếp hạng" (Find Ranked Match)** $\rightarrow$ Mở `MODAL-MATCHMAKING`. (Khách bấm vào bị chặn nhắc đăng ký). **`[RV-03/10]`** Người chưa có ván Ranked nào thấy nhãn *"Chưa xếp hạng"*.
+     * Nút lớn: **"Tìm trận Xếp hạng" (Find Ranked Match)** $\rightarrow$ Mở `MODAL-MATCHMAKING`. (Khách bấm vào bị chặn nhắc đăng ký). Người chưa có ván Ranked nào thấy nhãn *"Chưa xếp hạng"*.
      * Bộ nhãn cam kết nghiêm ngặt: 🚫 *Ghép ngẫu nhiên 100%* | 🚫 *Cấm xem (No Spectators)* | 🚫 *Cấm Undo* | ⏱️ *10 phút Rapid*.
   3. **ĐÁNH VỚI MÁY (AI Mode) — Rèn luyện kỳ nghệ:**
      * 3 thẻ cấp độ: 🟢 **Dễ** (depth 2), 🟡 **Trung bình** (depth 4), 🔴 **Khó** (depth 6).
@@ -181,7 +181,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Quy chuẩn vận hành:**
   * **Đồng hồ thi đấu:** Hoàn toàn **không giới hạn thời gian (No Time Limit)** đối với người chơi; máy cờ tính toán phản hồi nhanh theo cấp độ (Khó $\le 3000$ms). Không áp dụng cơ chế chống treo ván R17.
   * **Nút "Đi lại" (Undo):** Bấm lùi ngay **1 cặp nước đi (2 plies: 1 nước máy + 1 nước người)** ngay lập tức không cần máy đồng ý. Hiển thị nhãn *"Lượt đi lại: X/3"*, hết 3 lần nút bị `DISABLED`.
-  * Không có nút gợi ý nước đi (No Hint). **`[RV-03/10]`** Không có nút Xin hòa (chỉ có Đầu hàng). Cầm Đen mà người chơi chưa đi nước nào thì nút "Đi lại" `DISABLED` kèm tooltip. Ván bỏ dở được giữ 30 phút (vào lại `/ai/:id`), quá hạn lưu là "Bỏ dở". Ván AI không tính Elo; ván của Khách không lưu.
+  * Không có nút gợi ý nước đi (No Hint). Không có nút Xin hòa (chỉ có Đầu hàng). Cầm Đen mà người chơi chưa đi nước nào thì nút "Đi lại" `DISABLED` kèm tooltip. Ván bỏ dở được giữ 30 phút (vào lại `/ai/:id`), quá hạn lưu là "Bỏ dở". Ván AI không tính Elo; ván của Khách không lưu.
   * Ván cờ (của tài khoản chính thức) kết thúc tự động lưu vào Lịch sử ván và mở `MODAL-MATCH-RESULT` có nút xem lại (Replay).
   * *(Stretch P2):* Widget nhỏ hiển thị thông số AI Debug (số node duyệt, depth, độ trễ tính toán ms).
 
@@ -191,14 +191,14 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **URL:** `/leaderboard` | **Quyền:** Tất cả người dùng.
 * **Thành phần:**
   * Bảng danh sách vinh danh **Top 50 kỳ thủ** có điểm Elo cao nhất toàn server (#1 đến #50, Top 3 có cúp Vàng/Bạc/Đồng, Avatar, Display Name, Danh hiệu Rank, Elo, Thắng/Thua/Hòa, Tỷ lệ thắng).
-  * **Dòng ghim vị trí cá nhân cố định (Sticky User Row):** Luôn ghim ở đáy bảng, hiển thị vị trí hiện tại của chính người dùng (VD: *Hạng #142 - Avatar - Display Name - 1280 Elo - Cấp Trung cấp*). **`[RV-03/10]`** Chỉ tài khoản có ≥ 5 ván Ranked hoàn tất mới lên bảng; người chưa đủ thấy *"Chưa xếp hạng — cần thêm X ván"*. Đồng điểm: nhiều thắng hơn xếp trước, rồi đạt mức Elo sớm hơn. Bấm tên một người mở thẻ tóm tắt có nút *Kết bạn* (không có trang hồ sơ công khai).
+  * **Dòng ghim vị trí cá nhân cố định (Sticky User Row):** Luôn ghim ở đáy bảng, hiển thị vị trí hiện tại của chính người dùng (VD: *Hạng #142 - Avatar - Display Name - 1280 Elo - Cấp Trung cấp*). Chỉ tài khoản có ≥ 5 ván Ranked hoàn tất mới lên bảng; người chưa đủ thấy *"Chưa xếp hạng — cần thêm X ván"*. Đồng điểm: nhiều thắng hơn xếp trước, rồi đạt mức Elo sớm hơn. Bấm tên một người mở thẻ tóm tắt có nút *Kết bạn* (không có trang hồ sơ công khai).
 
 ---
 
 ### 11. `SCR-FRIENDS` — Trang Quản Lý Bạn Bè & Thách Đấu
 * **URL:** `/friends` | **Quyền:** Người dùng đã đăng nhập.
 * **Thành phần:**
-  * Ô tìm kiếm người dùng theo `username` $\rightarrow$ Nút *"Kết bạn"*. **`[RV-03/10]`** Khách không dùng được màn hình này. Giới hạn 200 bạn, 50 lời mời chờ; bị cùng một người từ chối 2 lần thì không gửi lại được (BA-SCOPE `Quyết định 5.5`).
+  * Ô tìm kiếm người dùng theo `username` $\rightarrow$ Nút *"Kết bạn"*. Khách không dùng được màn hình này. Giới hạn 200 bạn, 50 lời mời chờ; bị cùng một người từ chối 2 lần thì không gửi lại được (BA-SCOPE `Quyết định 5.5`).
   * Tab 1: *"Danh sách bạn bè"* (`status = ACCEPTED`): Avatar, Display Name, @username, Điểm Elo, Trạng thái 🟢 *Online* / 🟠 *Đang đấu* / ⚫ *Offline*. Nút *"Thách đấu"* (chỉ sáng khi 🟢 Online; = tạo nhanh phòng Casual rồi gửi lời mời) và nút *"Nhắn tin"* (mở `MODAL-DIRECT-CHAT`).
   * Tab 2: *"Lời mời kết bạn đang chờ"*: Danh sách yêu cầu gửi đến kèm nút *"Chấp nhận"* và *"Từ chối"*.
 
@@ -235,8 +235,8 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * Avatar chữ cái đầu/hình đại diện, Display Name, Username (`@username`), Email liên kết, Điểm Elo hiện tại.
   * Form cập nhật Display Name (đổi tự do, không cần OTP).
   * Nút `🔑 Đổi Username Qua OTP`: Mở `MODAL-OTP-USERNAME` để thực hiện quy trình 4 bước xác thực OTP qua email. Username cũ bị khoá 30 ngày sau khi đổi (BA-SCOPE `Quyết định 1.4`).
-  * **`[RV-03/10]`** Lựa chọn giao diện: Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong, theo DESIGN.md §2.3).
-  * **`[RV-03/10]`** Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên).
+  * Lựa chọn giao diện: Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong, theo DESIGN.md §2.3).
+  * Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên).
   * Không có chức năng xoá tài khoản trong ứng dụng ở giai đoạn này (đã duyệt 03/10).
   * Nút `Đăng Xuất` (`SCR-LOGIN`).
 
@@ -266,7 +266,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân, Icon Chuông báo lời mời kết bạn, huy hiệu tin nhắn chưa đọc, Avatar + Tên hiển thị (`Display Name`) kèm menu con Cài đặt hồ sơ.
 2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (người đổi chỗ sau không đọc tin cũ), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. 2 tab: `[Kênh Riêng]` (chỉ 2 đấu thủ, mặc định mở cho đấu thủ) và `[Kênh Chung]` (cả đấu thủ và khán giả, khán giả chỉ thấy tab này). Công tắc ẩn Kênh Chung. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm.
-3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM`. 2 video trực tiếp SFU của 2 đấu thủ. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; Ranked chỉ có 2 mức đầu). **`[RV-03/10]`** Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Khán giả tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 kỳ thủ giao lưu.
+3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM`. 2 video trực tiếp SFU của 2 đấu thủ. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; Ranked chỉ có 2 mức đầu). Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Khán giả tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 kỳ thủ giao lưu.
 4. **`PANEL-SPECTATORS` (Danh Sách Khán Giả Trong Phòng Thường):** Nằm ở cột phải `SCR-GAME-ROOM` (phòng Ranked cấm xem 100% nên không có). Tiêu đề: *"Khán giả (X / N)"* (N = số người xem tối đa của phòng, 1–5). Cả Chủ phòng và Đấu thủ 2 đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
 
 ---

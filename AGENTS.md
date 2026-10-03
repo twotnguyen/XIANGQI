@@ -47,7 +47,7 @@ Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm tr�
 - `site/` dựng từ `docs/` cũ nên đã lỗi thời. Không chạy `site/build.mjs` và không dựa vào nó.
 - Mỗi luật chỉ định nghĩa ở **một** chỗ. Thấy cùng một luật ghi khác nhau ở hai nơi ⇒ báo.
 - Các mã như `R06`, `R17`, `ARCH-xx`, `DEC-xxx`, `TK…`, `DT-xx` còn sót trong tài liệu là **nhãn kế thừa** từ bộ cũ đã xoá, không tra được. Luật tương ứng đã viết bằng chữ ngay tại chỗ; nếu thiếu thì hỏi, đừng đoán từ mã.
-- Nhãn **`[RV-03/10]`** trong `BA-SCOPE-DECISIONS.md` đánh dấu quyết định do agent đề xuất theo uỷ quyền ngày 03/10/2026, **chưa phải điều người dùng đã duyệt cuối cùng**. Khi người dùng xác nhận thì bỏ nhãn; khi họ đổi thì sửa và đồng bộ lại.
+- Các quyết định do agent đề xuất theo uỷ quyền ngày 03/10/2026 đã được người dùng duyệt toàn bộ cùng ngày. Từ đó, quyết định mới do agent đề xuất cũng phải được người dùng duyệt rồi mới coi là chốt; chưa duyệt thì ghi rõ "đề xuất, chưa duyệt" trong tài liệu.
 
 ### Danh sách điểm còn mở
 
@@ -94,8 +94,7 @@ Các mâu thuẫn và câu hỏi chưa chốt của giai đoạn 1 nằm trong [
 | `RANKED` | Ngẫu nhiên 100% theo Elo | ⛔ Cấm hoàn toàn | ⛔ Cấm hoàn toàn | Cố định 10 phút/bên | ⛔ Cấm |
 | `AI` | Chọn cấp Dễ / Trung bình / Khó | Tối đa 3 lần, lùi 1 cặp nước | Không | Không giới hạn | Được |
 
-> Bổ sung đã duyệt 03/10: `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2).
-> Bổ sung `[RV-03/10]` còn chờ duyệt: `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của `CASUAL`.
+> Bổ sung (đã duyệt 03/10): `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2). `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của `CASUAL`.
 
 ### 4.3 Hệ toạ độ bàn cờ (kế thừa, xác nhận lại ở GĐ2)
 
