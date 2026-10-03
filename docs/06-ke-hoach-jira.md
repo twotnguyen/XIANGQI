@@ -4,7 +4,7 @@
 
 ## 1. Quyết định của Product Owner và kết luận về hạn 2 tuần
 
-**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); được phép **dừng bớt phần** để vừa hạn; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** review các tệp `.md` ở [`Jira/`](../Jira/README.md); (3) hệ số hiệu dụng giữ **0,8**.
+**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); được phép **dừng bớt phần** để vừa hạn; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** review các tệp `.md` ở [`Jira/`](../Jira/README.md); (3) hệ số hiệu dụng giữ **0,8**; (4) **đã chốt thứ tự dừng phần (mục 1b) và các mốc kiểm soát (mục 1c) như đề xuất**; (5) **chưa gán tên người** (Assignee để trống, nhãn R1–R7 vẫn có để lọc); (6) **chưa cho tạo lên Jira**, cần review thêm.
 
 **Công suất 2 tuần:** 14 ngày × 7 người × 0,8 = **78,4 ngày công**. Phạm vi P1 ước lượng **128 ngày công** (78 việc, 53 US) nên **không thể làm hết P1 trong 2 tuần** theo ước lượng cơ sở; phải dừng bớt phần theo thứ tự ở mục 1b.
 
@@ -32,7 +32,7 @@ Mỗi mức gồm **đủ mọi việc tiền đề** của các việc kiểm t
 
 **Lối vào khi chưa có Sảnh đầy đủ:** `TG-06` dựng **Sảnh tối giản** (3 thẻ cấp độ máy và Đăng xuất) để Mức 1 chạy được; `TB-08` mở rộng Sảnh ở Mức 2. Các mức chưa làm thì lối vào ở màn hình đã có phải `DISABLED` kèm *"Sắp ra mắt"* hoặc ẩn theo quy tắc ở [DANH-MUC](../DANH-MUC-MAN-HINH-XIANGQI.md) §7. Một Story chỉ **Done** khi mọi việc của nó xong; nếu dừng giữa chừng thì Story ở trạng thái *một phần*.
 
-### 1b. Thứ tự làm và thứ tự dừng phần
+### 1b. Thứ tự làm và thứ tự dừng phần (đã chốt 03/10/2026)
 
 Làm **từ Mức 1 lên Mức 5**; khi trễ thì **dừng từ Mức cao xuống**. Việc thuộc mức thấp luôn được ưu tiên người làm trước việc thuộc mức cao.
 
@@ -44,7 +44,7 @@ Làm **từ Mức 1 lên Mức 5**; khi trễ thì **dừng từ Mức cao xuố
 | 4 | + 3 (bạn bè), 6 (đuổi), 7 (camera/mic), 8 (Khó) | Responsive, trợ năng, tải |
 | 5 | Đủ P1 | — |
 
-### 1c. Mốc kiểm soát (đề xuất)
+### 1c. Mốc kiểm soát (đã chốt 03/10/2026)
 
 Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ số 1,0)** (mục 8); nếu thực tế chậm hơn, các mốc là ngưỡng để quyết định dừng phần sớm.
 
@@ -349,12 +349,11 @@ Một việc hoặc Story chỉ **Done** khi: (1) đạt toàn bộ AC ở [01];
 | Thứ tự phụ thuộc do người lập kế hoạch đoán | Lịch sai | Nhóm xác nhận ở buổi lập kế hoạch đầu tiên |
 | Công nghệ mới với cả nhóm | Chậm | Dành những ngày đầu cho nền tảng và thử nghiệm |
 
-## 13. Việc cần Product Owner cung cấp hoặc quyết
+## 13. Việc còn lại của Product Owner
 
-1. **Review các tệp ở [`Jira/`](../Jira/README.md)** (Epic, Story, Task) rồi cho phép tạo lên Jira dự án **XIAN**. Chưa tạo gì cho đến khi bạn đồng ý.
-2. **Chốt thứ tự dừng phần** ở mục 1b và các mốc kiểm soát ở mục 1c.
-3. **Tên 7 người và vai trò R1–R7** (để gán người thực hiện).
-4. **Tiêu chí chấm** của buổi nộp ngoài kịch bản demo D1–D10 (nếu có).
+1. **Review các tệp ở [`Jira/`](../Jira/README.md)** và cho phép tạo lên Jira dự án **XIAN** (hiện **chưa cho tạo**, cần review thêm). Chưa tạo gì.
+2. Gán tên 7 người vào R1–R7 khi sẵn sàng (hiện để trống).
+3. Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 (nếu có).
 
 
 [01]: 01-yeu-cau-chi-tiet.md
