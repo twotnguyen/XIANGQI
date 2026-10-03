@@ -70,7 +70,7 @@ D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngo�
 | Chiếu hết ngắn | Bộ thế "chiếu hết 1 nước" và "2 nước" do nhóm biên soạn **kèm ghi nguồn** | Tìm đúng ≥ 95% |
 | Tìm tĩnh khi bị chiếu | Bộ thế bị chiếu chỉ thoát được bằng nước **không ăn quân**; thế hết nước đi ở biên độ sâu (bất biến đã bắt buộc ở [02] mục tìm tĩnh; riêng bộ fixture cụ thể là đề xuất, không cần PO duyệt từng thế) | Máy chọn đúng nước thoát chiếu; assertion nội bộ: không nút nào dùng điểm tĩnh làm cận dưới khi bị chiếu, hết nước ở biên sâu trả điểm thua ([02] mục tìm tĩnh) |
 | Độ ổn định | 1 000 ván đấu máy, 0 treo, 0 lỗi tiến trình | 0 |
-| Lỗi tiến trình / watchdog | (a) Giết tiến trình giữa lúc tìm kiếm (crash); (b) tìm vượt `budgetMs + 2000` khi đã và chưa có `progress` (đề xuất 04/10/2026, chờ PO duyệt); trả kết quả tác vụ cũ sau huỷ | Ván `Bỏ dở` khi lỗi hoặc quá hạn phản hồi 10 giây theo BA 6.1; Thử lại tạo ván mới, không hồi sinh ván cũ; bỏ kết quả tìm lỗi thời |
+| Lỗi tiến trình / watchdog | (a) Giết tiến trình giữa lúc tìm kiếm (crash); (b) tìm vượt `budgetMs + 2000` khi **đã có** `progress` (đi nước độ sâu hoàn tất gần nhất, không phải lỗi) và khi **chưa có** (Bỏ dở); trả kết quả tác vụ cũ sau huỷ | Ván `Bỏ dở` khi lỗi hoặc quá hạn phản hồi 10 giây theo BA 6.1; Thử lại tạo ván mới, không hồi sinh ván cũ; bỏ kết quả tìm lỗi thời |
 
 **Quy tắc ghi kết quả:** nếu cấp Khó không đạt độ sâu 6 trong 3 giây, ghi **độ sâu và thời gian thực tế**, đánh dấu `BLOCKED` và báo Product Owner. Phương án giảm xuống độ sâu 5 ([02] mục 9.6) cần được Product Owner đồng ý trước khi đổi BA 6.1.
 
