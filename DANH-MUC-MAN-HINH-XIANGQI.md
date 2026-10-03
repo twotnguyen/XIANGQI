@@ -92,7 +92,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
     * 6 ô nhập mã OTP đơn lẻ, tự động nhảy tiêu điểm khi gõ.
     * Đồng hồ đếm lùi thời hạn mã: **3 phút (180 giây)**.
     * Nút *"Gửi lại mã OTP"* (kèm bộ đếm lùi 60 giây chống spam).
-    * **Xử lý bảo mật:** Nhập sai quá 5 lần $\rightarrow$ Hủy mã OTP, khóa form và bắt buộc bấm gửi lại mã mới.
+    * **Xử lý bảo mật:** Nhập sai nhiều lần bị giới hạn (mục tiêu 5 lần, theo BA-SCOPE `Quyết định 1.5`) $\rightarrow$ khóa form và bắt buộc chờ hoặc bấm gửi lại mã mới.
     * Tài khoản chỉ được tạo khi OTP đúng; bỏ dở thì không có tài khoản và username không bị giữ. Email đã đăng ký ở Bước 2 $\rightarrow$ báo *"Email này đã được đăng ký"*.
     * Nhập đúng OTP $\rightarrow$ Tài khoản chuyển sang `ACTIVE`, tự động gán `display_name = username` (Phương án C), tự động đăng nhập và đưa vào `/lobby`.
 
@@ -106,7 +106,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 ### 4. `SCR-RESET-PASSWORD` — Trang Đặt Lại Mật Khẩu
 * **URL:** `/reset-password` | **Quyền:** Người có mã khôi phục hợp lệ.
-* **Thành phần:** 6 ô nhập mã OTP xác thực email (quy tắc OTP như `Quyết định 1.5`: 3 phút, sai quá 5 lần huỷ mã, gửi lại sau 60 giây) + Ô `Mật khẩu mới` + Ô `Xác nhận mật khẩu mới` + Nút `Xác nhận đổi mật khẩu`. Đổi thành công $\rightarrow$ đăng xuất mọi phiên khác, về `/login`.
+* **Thành phần:** 6 ô nhập mã OTP xác thực email (quy tắc OTP như `Quyết định 1.5`: 3 phút, giới hạn nhập sai, gửi lại sau 60 giây) + Ô `Mật khẩu mới` + Ô `Xác nhận mật khẩu mới` + Nút `Xác nhận đổi mật khẩu`. Đổi thành công $\rightarrow$ đăng xuất mọi phiên khác, về `/login`.
 
 ---
 
@@ -250,7 +250,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 4. **`MODAL-ROOM-SETTINGS` (Cài Đặt Phòng Động):** Chủ phòng đổi giữa `PUBLIC`, `CODE_ONLY`, `LOCKED`; **`LOCKED` chỉ bật được khi đã đủ 2 người chơi** (trước đó nút `DISABLED` kèm tooltip), người đang có ghế/đang xem mất mạng vẫn vào lại được (người chơi 60 giây, người xem 5 phút). Đổi sang `LOCKED`: Ẩn sảnh, chặn người mới, **giữ nguyên người xem đang có trong phòng**.
 5. **`MODAL-MATCHMAKING` (Hàng Đợi Tìm Trận Ranked):** Radar quét đối thủ theo Elo ($\Delta Elo \le 100$, $\pm 50$ mỗi 10s), đồng hồ đếm giây. Nút *"Hủy tìm trận"* (hủy tự do khi chưa thấy đối thủ; khóa nút khi `MATCH_FOUND`).
 6. **`MODAL-AI-SETUP` (Chọn Cấp Độ & Phe Cờ AI):** Mở từ Sảnh. Chọn cấp độ Dễ/Trung bình/Khó. Chọn phe cờ: 🔴 Đỏ (đi trước), ⚫ Đen (đi sau - máy tự đi nước đầu), 🎲 Ngẫu nhiên (50/50).
-7. **`MODAL-OTP-USERNAME` (Xác Thực OTP Đổi Username):** Mở từ Cài đặt hồ sơ. Quy trình 4 bước: 1) Bấm đổi $\rightarrow$ 2) Nhập 6 số OTP (hạn 3p, sai 5 lần hủy) $\rightarrow$ 3) Xác thực mở khóa $\rightarrow$ 4) Nhập username mới và xác nhận.
+7. **`MODAL-OTP-USERNAME` (Xác Thực OTP Đổi Username):** Mở từ Cài đặt hồ sơ. Quy trình 4 bước: 1) Bấm đổi $\rightarrow$ 2) Nhập 6 số OTP (hạn 3p, giới hạn nhập sai) $\rightarrow$ 3) Xác thực mở khóa $\rightarrow$ 4) Nhập username mới và xác nhận.
 8. **`MODAL-DIRECT-CHAT` (Khung Chat Riêng 1-1 Bạn Bè):** Mở từ `SCR-FRIENDS`. Ràng buộc bạn bè chính thức (`status = ACCEPTED`). Lịch sử tin nhắn, bộ lọc từ cấm `***`, khay 12 sticker cờ tướng.
 9. **`MODAL-SIDE-SWAP-PROMPT` (Nhận Đề Nghị Đổi Bên):** Hiện phía người nhận khi đối thủ xin đổi bên trong phòng chờ. Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý"* và *"Từ chối"*.
 10. **`MODAL-DRAW-PROMPT` (Nhận Đề Nghị Xin Hòa):** Hiện phía người nhận khi đối thủ xin hòa trong ván. Đồng hồ đếm lùi **30 giây**. Nút *"Chấp nhận Hòa"* và *"Từ chối"*.
