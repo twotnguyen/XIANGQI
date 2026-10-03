@@ -17,9 +17,10 @@ Chơi với máy. Chi tiết nghiệp vụ theo nguồn luật ở bảng trên;
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Người chơi đi, máy trả lời với **thời gian tính** (từ lúc bắt đầu tìm) trong ngân sách: Dễ ≤ 300 ms, Trung bình ≤ 1 000 ms, Khó ≤ 3 000 ms; hàng đợi chờ tiến trình rảnh (tối đa 3 giây, chỉ khi máy bận) không tính vào ngân sách nhưng báo *Thử lại* nếu quá; hết ngân sách thì máy đi nước tốt nhất đã tìm được.
-* Ván với máy **không giới hạn thời gian** cho người chơi, không có cảnh báo chống treo ván; không tính Elo; **không có nút Xin hoà**, chỉ có *Đầu hàng*.
-* Máy không bao giờ đi nước không hợp lệ.
+* **AC-AI-02-01** — Người chơi đi, máy trả lời với **thời gian tính** (từ lúc bắt đầu tìm) trong ngân sách: Dễ ≤ 300 ms, Trung bình ≤ 1 000 ms, Khó ≤ 3 000 ms; hàng đợi chờ tiến trình rảnh (tối đa 3 giây, chỉ khi máy bận) không tính vào ngân sách nhưng báo *Thử lại* nếu quá; hết ngân sách thì máy đi nước tốt nhất đã tìm được.
+* **AC-AI-02-02** — Ván với máy **không giới hạn thời gian** cho người chơi, không có cảnh báo chống treo ván; không tính Elo; **không có nút Xin hoà**, chỉ có *Đầu hàng*.
+* **AC-AI-02-03** — Máy không bao giờ đi nước không hợp lệ.
+* **AC-AI-02-04** — `ENGINE_BUSY`: giữ cùng Match ID/thế/lượt máy; Thử lại chỉ yêu cầu tìm nước, không gửi lại nước của người chơi. Kết quả tác vụ cũ bị huỷ hoặc phiên bản cũ không được áp dụng (BA 6.1).
 
 ## Việc liên quan (Task)
 
@@ -35,4 +36,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

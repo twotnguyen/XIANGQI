@@ -17,7 +17,7 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Bấm *Đầu hàng* mở xác nhận (*"Bạn sẽ thua ván này ngay lập tức."*, mặc định focus ở Huỷ); đồng ý thì thua ngay, đối thủ thắng.
+* **AC-PLAY-04-01** — Bấm *Đầu hàng* mở xác nhận (*"Bạn sẽ thua ván này ngay lập tức."*, mặc định focus ở Huỷ); đồng ý thì thua ngay, đối thủ thắng.
 
 ## Việc liên quan (Task)
 
@@ -32,4 +32,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

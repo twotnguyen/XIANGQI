@@ -42,7 +42,7 @@ Tạo phòng, mời bằng link và mã, ghế đỏ/đen, người xem tối đ
 * [US-ROOM-08](../stories/US-ROOM-08.md) Danh sách phòng công khai ở Sảnh
 * [US-ROOM-09](../stories/US-ROOM-09.md) Đuổi người xem
 * [US-ROOM-10](../stories/US-ROOM-10.md) Host rời, chuyển quyền, đóng phòng
-* [US-ROOM-11](../stories/US-ROOM-11.md) Sau ván: quay về phòng chờ
+* [US-ROOM-11](../stories/US-ROOM-11.md) Sau ván CASUAL: quay về phòng chờ
 * [US-ROOM-12](../stories/US-ROOM-12.md) Màn hình từ chối truy cập
 
 ## Task

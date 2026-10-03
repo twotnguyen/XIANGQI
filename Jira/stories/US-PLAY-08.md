@@ -17,8 +17,8 @@ Lặp thế, chiếu liên tục, không ăn quân. Chi tiết nghiệp vụ the
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Thế lặp lần thứ 3 xử theo bảng ở [02] mục 4 (chiếu liên tục thì bên chiếu thua; còn lại hoà); 120 nửa nước không ăn quân thì hoà.
-* Chiếu hết luôn ưu tiên hơn các kết quả hoà.
+* **AC-PLAY-08-01** — Thế lặp lần thứ 3 xử theo bảng ở [02] mục 4 (chiếu liên tục thì bên chiếu thua; còn lại hoà); 120 nửa nước không ăn quân thì hoà.
+* **AC-PLAY-08-02** — Chiếu hết luôn ưu tiên hơn các kết quả hoà.
 
 ## Việc liên quan (Task)
 
@@ -33,4 +33,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

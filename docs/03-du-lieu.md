@@ -2,7 +2,7 @@
 
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
-**Giai đoạn 2 · Trạng thái: **Đã duyệt 03/10/2026** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Căn cứ: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Tên bảng và cột là **đề xuất**; công nghệ lưu trữ là PostgreSQL qua Supabase (README, danh sách dự kiến). Thay đổi cấu trúc bằng **tệp SQL migration**, không dùng `prisma migrate` (AGENTS §4.4). Cột "P" cho biết bảng cần ở P1 hay P2.
+**Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Căn cứ: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Tên bảng và cột là **đề xuất**; công nghệ lưu trữ là PostgreSQL qua Supabase (README, danh sách dự kiến). Thay đổi cấu trúc bằng **tệp SQL migration**, không dùng `prisma migrate` (AGENTS §4.4). Cột "P" cho biết bảng cần ở P1 hay P2.
 
 Nguyên tắc chung:
 * Mọi khoá chính là `uuid` (trừ khi ghi khác). Dữ liệu gắn với `user_id` **bất biến** nên đổi username không mất dữ liệu (BA 1.6).
@@ -145,8 +145,8 @@ Chỉ mục: `(match_id, parent_move_id)`, `(match_id, position_key)`. **Đi l�
 
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
-| `command_id` | uuid PK | Do client sinh |
-| `match_id` | uuid FK | |
+| `command_id` | uuid | Do client sinh; khoá chính gộp `(user_id, command_id)`, khớp hợp đồng chống trùng theo danh tính ở [07] (đề xuất) |
+| `match_id` | uuid FK, **nullable** | Rỗng cho lệnh chưa có ván (tạo phòng, chat phòng chờ) (đề xuất) |
 | `user_id` | uuid FK | |
 | `result` | jsonb | Kết quả đã trả để gửi lại khi trùng |
 | `created_at` | timestamptz | Có thể dọn sau 24 giờ |
@@ -234,12 +234,13 @@ Nguyên tắc: **mọi ghi vào bảng trạng thái ván/phòng đi qua máy ch
 ## 4. Dữ liệu tạm và vòng đời
 
 ### 4.1 Khách (P2)
-Danh tính Khách (tên hiển thị tạm, mã phiên) chỉ nằm trong bộ nhớ/phiên. Phiên hết sau 12 giờ hoặc khi **Đăng xuất**; nếu đến hạn trong lúc đang ngồi ghế/đang đấu thì gia hạn tới khi rời. **Rời phòng trước hạn không kết thúc phiên**: Khách về Sảnh vẫn cùng danh tính (BA 1.3). Khi phiên thực sự hết, bản ghi ván giữ cho đối thủ chính thức với tên chung "Khách".
+Danh tính Khách (tên hiển thị tạm, mã phiên) chỉ nằm trong bộ nhớ/phiên. Phiên hết sau 12 giờ hoặc khi **Đăng xuất**; nếu đến hạn trong lúc đang ngồi ghế/đang đấu thì gia hạn tới khi rời. **Rời phòng trước hạn không kết thúc phiên**: Khách về Sảnh vẫn cùng danh tính (BA 1.3). Khi phiên thực sự hết, bản ghi ván giữ cho đối thủ chính thức với tên chung "Khách"; đồng thời máy chủ xoá `chat_messages` do Khách đó gửi và tên hiển thị cá nhân ở mọi phòng còn mở (không chờ phòng `CLOSED`) (đề xuất 04/10/2026, chờ PO duyệt).
 
 ### 4.2 Trong bộ nhớ máy chủ (không lưu cơ sở dữ liệu)
-Hàng đợi ghép trận (P2, mất khi khởi động lại, BA 7.2), bộ đếm đồng hồ đang chạy, đề nghị đang chờ (xin hoà/đi lại/đổi bên), lời mời bạn bè 30 giây, trạng thái kết nối. **Khi máy chủ khởi động lại:** các ván `ONGOING` được chuyển `INTERRUPTED` lúc khởi động (BA 8.3), phòng đang `PLAYING` về `FINISHED`/đóng.
+Hàng đợi ghép trận (P2, mất khi khởi động lại, BA 7.2), bộ đếm đồng hồ đang chạy, đề nghị đang chờ (xin hoà/đi lại/đổi bên), lời mời bạn bè 30 giây, trạng thái kết nối. **Khi máy chủ khởi động lại:** các ván `ONGOING` được chuyển `INTERRUPTED` lúc khởi động (BA 8.3), phòng đang `PLAYING` được đưa về `FINISHED` với ván `INTERRUPTED` (người chơi kết nối lại thấy kết quả trung tính "Ván bị gián đoạn"), rồi theo luật `FINISHED` thông thường: CASUAL tối đa 10 phút thì `CLOSED`; RANKED theo BA 7.2. Không đóng phòng ngay lúc khởi động (đề xuất 04/10/2026, chờ PO duyệt).
 
 ### 4.3 Dọn dẹp
+* Phiên Khách hết → xoá `chat_messages` do Khách đó gửi ở phòng còn mở (P2) (đề xuất 04/10/2026, chờ PO duyệt).
 * Phòng `CLOSED` → xoá `chat_messages` của phòng đó; giữ `matches`/`match_moves` theo quy tắc từng chế độ.
 * `command_receipts` > 24 giờ → xoá.
 * Lời mời kết bạn hết hạn 30 ngày → xoá (**không** xoá `friend_declines`).

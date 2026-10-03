@@ -94,22 +94,22 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), cho bắt đầu Giai đoạn 3 và chốt: **hạn 2 tuần cố định, làm cả cuối tuần, được dừng bớt phần để vừa hạn; tạo Jira vào dự án XIAN sau khi review tài liệu `.md`**. Các tệp Epic/Story/Task nằm ở [`Jira/`](Jira/README.md) (bản nháp, chưa tạo trên Jira); kế hoạch ở [docs/06](docs/06-ke-hoach-jira.md). Cần bạn:
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), cho bắt đầu Giai đoạn 3 và chốt: **hạn 2 tuần cố định, làm cả cuối tuần (**đính chính 04/10/2026: PO không cho phép dừng bớt phần mà yêu cầu đẩy nhanh tiến độ để đủ 14 ngày; PO chốt giữ đủ P1 trong 14 ngày với 7 người và chấp nhận rủi ro, BA 10.1**); tạo Jira vào dự án XIAN sau khi review tài liệu `.md`**. Các tệp Epic/Story/Task nằm ở [`Jira/`](Jira/README.md) (bản nháp, chưa tạo trên Jira); kế hoạch ở [docs/06](docs/06-ke-hoach-jira.md). Cần bạn:
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 27 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Đã nói **chưa tạo, cần review thêm**; chưa tạo gì trên Jira |
+| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 28 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Đã nói **chưa tạo, cần review thêm**; chưa tạo gì trên Jira |
 | 2 | Gán tên 7 người vào R1–R7 | Đã chọn để trống, gán sau (Assignee trống, nhãn R1–R7 vẫn có) |
 | 3 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
 | 4 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
 | 5 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
 
-**Đã chốt 03/10/2026:** thứ tự dừng phần (docs/06 mục 1b: làm Mức 1→5, dừng từ Mức cao xuống) và các mốc kiểm soát ngày 4/7/10/12/14 (mục 1c). Cần biết: hạn 14 ngày cố định, theo ước lượng cơ sở **không mức nào kịp**; chỉ Mức 1 kịp ở kịch bản rất lạc quan.
+**Lịch sử 03/10/2026, đã bị thay thế 04/10/2026:** thứ tự dừng phần (docs/06 mục 1b) và mốc ngày 4/7/10/12/14 (mục 1c). PO quyết định giữ đủ P1 trong 14 ngày, không dừng phần (BA 10.1); các mốc chỉ dùng để theo dõi và báo PO sớm. Cần biết: hạn 14 ngày cố định, theo ước lượng cơ sở **không mức nào kịp**; chỉ Mức 1 kịp ở kịch bản rất lạc quan.
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
-- **Nhóm 7 người trong 2 tuần không đủ cho toàn bộ 8 mục tiêu P1 theo ước lượng cơ sở** (128 ngày công so với khoảng 78,4 có sẵn; xem [docs/06](docs/06-ke-hoach-jira.md)). Kế hoạch là **hộp thời gian**: làm theo thứ tự mức, dừng ở mức kịp. Hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết.
-- Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có số đo thực tế. Phương án nghiệp vụ khi không kịp đã chốt (đi nước tốt nhất tìm được; lỗi hoặc quá 10 giây thì ván "Bỏ dở" và nút Thử lại, BA-SCOPE 6.1). Dự phòng tiến độ (gợi ý, chưa bắt buộc): 3 cấp vẫn là P1, nếu thiếu thời gian thì làm cấp Dễ trước.
+- **Nhóm 7 người trong 2 tuần không đủ cho toàn bộ 8 mục tiêu P1 theo ước lượng cơ sở** (128 ngày công so với khoảng 78,4 có sẵn; xem [docs/06](docs/06-ke-hoach-jira.md)). PO đã chọn giữ đủ P1 và nhận rủi ro (04/10); không áp dụng "hộp thời gian" dừng ở mức kịp; theo dõi bằng các mốc và báo PO khi trễ. Hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết.
+- Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có số đo thực tế. Phương án nghiệp vụ khi không kịp đã chốt (đi nước tốt nhất tìm được; lỗi hoặc quá 10 giây thì ván "Bỏ dở" và nút Thử lại, BA-SCOPE 6.1). Dự phòng tiến độ (gợi ý, chưa bắt buộc): 3 cấp vẫn là P1; nếu trễ thì báo PO, không tự bỏ cấp nào.
 - Chạy đồng thời realtime (Socket.IO) và media (LiveKit) là điểm tích hợp rủi ro cao.
 
 ## Quy trình Git

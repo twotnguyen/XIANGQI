@@ -17,8 +17,9 @@ Sảnh. Chi tiết nghiệp vụ theo nguồn luật ở bảng trên; tài li�
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Có: Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, 3 thẻ Đánh với máy. Thẻ **Đánh Hạng** hiện `DISABLED` + *"Sắp ra mắt"*; *Ghép ngẫu nhiên* **ẩn** ở P1.
-* Có ván/phòng dở thì hiện banner quay lại; đang ngồi ghế ở phòng thì các nút tạo/ghép `DISABLED` kèm tooltip.
+* **AC-UI-02-01** — Có: Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, 3 thẻ Đánh với máy. Thẻ **Đánh Hạng** hiện `DISABLED` + *"Sắp ra mắt"*; *Ghép ngẫu nhiên* **ẩn** ở P1.
+* **AC-UI-02-02** — Có ván/phòng dở thì hiện banner quay lại; đang ngồi ghế ở phòng thì các nút tạo/ghép `DISABLED` kèm tooltip.
+* **AC-UI-02-03** — Sảnh có phần Luật chơi mở rộng/thu gọn bằng chuột/bàn phím, nêu kết thúc ván và khác biệt rút gọn theo BA 10.4 và [02]; không thêm trang/modal hoặc tính vào thành phần thứ 38.
 
 ## Việc liên quan (Task)
 
@@ -33,4 +34,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

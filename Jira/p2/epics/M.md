@@ -10,6 +10,6 @@
 ## Story
 
 * [US-HIS-01](../stories/US-HIS-01.md) Lịch sử ván
-* [US-HIS-02](../stories/US-HIS-02.md) Xem lại ván
+* [US-HIS-02](../stories/US-HIS-02.md) Xem lại
 * [US-HIS-03](../stories/US-HIS-03.md) Đi lại với máy
 * [US-HIS-04](../stories/US-HIS-04.md) Xuất FEN/PGN

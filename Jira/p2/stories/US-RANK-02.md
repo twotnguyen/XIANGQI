@@ -1,4 +1,4 @@
-# [US-RANK-02] Luật ván Ranked (P2)
+# [US-RANK-02] Luật ván Đánh Hạng (P2)
 
 > **Bản nháp P2, chưa lên kế hoạch.** Chưa tạo trên Jira.
 
@@ -9,10 +9,14 @@
 | Nhãn | `P2` |
 | Nguồn luật | BA 8.1, 7.2 |
 
-## Mô tả và tiêu chí chính
+## Tiêu chí nghiệm thu (chép nguyên từ docs/01)
 
-ghép ngẫu nhiên 100%, 10 phút mỗi bên, **cấm người xem, cấm đi lại, cấm Khách, không Tái đấu**; xin hoà chỉ sau **20 nước mỗi bên**; rời phòng giữa ván = Đầu hàng; đầu hàng ở bất kỳ nước nào vẫn trừ Elo thường.
+* **AC-RANK-02-01** — Chỉ ghép ngẫu nhiên, 10 phút/bên không cộng giây; cấm Khách, người xem, Đi lại, Tái đấu ở cả giao diện và máy chủ.
+* **AC-RANK-02-02** — Xin hoà chỉ bật khi mỗi bên đã đi ít nhất 20 nước; 19/20 còn chặn, 20/20 cho phép; hạn 30 giây và chờ 5 nước sau từ chối/hết hạn theo luật chung.
+* **AC-RANK-02-03** — Đầu hàng/rời/Đăng xuất chủ động theo xác nhận như online; dù đầu hàng nước đầu vẫn tính Elo bình thường.
+* **AC-RANK-02-04** — Kết thúc dùng thứ tự luật ở [02], ngừng nhận lệnh; chỉ hai người nhận trạng thái và kết quả. Người ngoài đoán đường dẫn không nhận dữ liệu phòng/ván.
+* **AC-RANK-02-05** — Sau ván giữ FINISHED/ghế tới khi người chơi Rời phòng, sau đó mới tìm trận khác; một người rời không chuyển WAITING. Người còn lại xem kết quả, không Sẵn sàng/Tái đấu/nhận mới; cả hai rời hoặc hết 10 phút ban đầu thì CLOSED (BA 7.2).
 
 ## Ghi chú
 
-Tách thành Task và ước lượng khi lên kế hoạch P2. Tiêu chí nghiệm thu chi tiết bổ sung lúc đó từ nguồn luật ở trên.
+Tách thành Task và ước lượng khi lên kế hoạch P2.

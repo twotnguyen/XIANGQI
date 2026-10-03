@@ -17,9 +17,10 @@ Xin hoà. Chi tiết nghiệp vụ theo nguồn luật ở bảng trên; tài li
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Gửi đề nghị: người nhận thấy `MODAL-DRAW-PROMPT` với đếm lùi 30 giây; người gửi thấy *"Đang chờ đối thủ trả lời…"* và nút *Rút đề nghị*.
-* Đồng ý thì ván hoà; từ chối hoặc hết hạn thì ván tiếp tục.
-* Mỗi người chỉ có **1 đề nghị đang chờ**; bị từ chối hoặc hết hạn thì **phải đi thêm 5 nước của mình** mới xin hoà lại (nút `DISABLED` kèm tooltip số nước còn phải chờ).
+* **AC-PLAY-05-01** — Gửi đề nghị: người nhận thấy `MODAL-DRAW-PROMPT` với đếm lùi 30 giây; người gửi thấy *"Đang chờ đối thủ trả lời…"* và nút *Rút đề nghị*.
+* **AC-PLAY-05-02** — Đồng ý thì ván hoà; từ chối hoặc hết hạn thì ván tiếp tục.
+* **AC-PLAY-05-03** — Mỗi người chỉ có **1 đề nghị đang chờ**; bị từ chối hoặc hết hạn thì **phải đi thêm 5 nước của mình** mới xin hoà lại (nút `DISABLED` kèm tooltip số nước còn phải chờ).
+* **AC-PLAY-05-04** — Khung không modal, không giữ focus, không chặn bàn cờ; đồng hồ chạy. X/Esc thu gọn, có nút mở lại, hạn vẫn chạy; chỉ Từ chối mới gửi phản hồi từ chối. Ván kết thúc thì đề nghị hết hiệu lực, trả lời đến muộn không đổi kết quả (BA 3.6).
 
 ## Việc liên quan (Task)
 
@@ -34,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

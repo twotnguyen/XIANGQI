@@ -17,9 +17,9 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Khi email đã có tài khoản thì báo *"Email này đã được đăng ký"* và không gửi OTP.
-* Khi email hợp lệ và chưa dùng (hoặc chỉ có bản đăng ký dở) thì gửi mã OTP 6 chữ số và sang bước 3.
-* Nút *Gửi lại mã* bị vô hiệu trong 60 giây kể từ lần gửi, kèm bộ đếm lùi và tooltip nêu lý do.
+* **AC-AUTH-02-01** — Khi email đã có tài khoản thì báo *"Email này đã được đăng ký"* và không gửi OTP.
+* **AC-AUTH-02-02** — Khi email hợp lệ và chưa dùng (hoặc chỉ có bản đăng ký dở) thì gửi mã OTP 6 chữ số và sang bước 3.
+* **AC-AUTH-02-03** — Nút *Gửi lại mã* bị vô hiệu trong 60 giây kể từ lần gửi, kèm bộ đếm lùi và tooltip nêu lý do.
 
 ## Việc liên quan (Task)
 
@@ -34,4 +34,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

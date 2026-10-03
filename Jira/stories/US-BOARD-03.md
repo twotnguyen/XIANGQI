@@ -17,8 +17,8 @@ Kéo thả. Chi tiết nghiệp vụ theo nguồn luật ở bảng trên; tài 
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Giữ chuột/ngón tay kéo quân bay theo con trỏ; thả vào giao điểm hợp lệ thì đi; thả sai thì quân **trượt về chỗ cũ**.
-* Hai cách (click và kéo thả) dùng song song, kết quả như nhau; dùng được bằng cảm ứng.
+* **AC-BOARD-03-01** — Giữ chuột/ngón tay kéo quân bay theo con trỏ; thả vào giao điểm hợp lệ thì đi; thả sai thì quân **trượt về chỗ cũ**.
+* **AC-BOARD-03-02** — Hai cách (click và kéo thả) dùng song song, kết quả như nhau; dùng được bằng cảm ứng.
 
 ## Việc liên quan (Task)
 
@@ -32,4 +32,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

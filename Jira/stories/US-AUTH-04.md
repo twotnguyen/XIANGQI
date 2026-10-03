@@ -17,11 +17,11 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Khi nhập đúng thì vào `/lobby` (hoặc vào đúng phòng nếu đến từ link mời, US-AUTH-06).
-* Khi sai tên hoặc mật khẩu thì báo chung *"Sai tên đăng nhập hoặc mật khẩu"* (không nói sai ô nào) và không tiết lộ email.
-* Tick *Ghi nhớ đăng nhập* (mặc định tick) thì phiên giữ 30 ngày; bỏ tick thì phiên hết khi đóng trình duyệt hoặc sau 12 giờ.
-* Nút *Guest* và *Đăng nhập bằng Google* hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"*.
-* Đăng nhập khi đang đăng nhập ở tab/thiết bị khác thì phiên mới tiếp quản, nơi cũ nhận thông báo và chuyển chỉ đọc (BA 1.8).
+* **AC-AUTH-04-01** — Khi nhập đúng thì vào `/lobby` (hoặc vào đúng phòng nếu đến từ link mời, US-AUTH-06).
+* **AC-AUTH-04-02** — Khi sai tên hoặc mật khẩu thì báo chung *"Sai tên đăng nhập hoặc mật khẩu"* (không nói sai ô nào) và không tiết lộ email.
+* **AC-AUTH-04-03** — Tick *Ghi nhớ đăng nhập* (mặc định tick) thì phiên giữ 30 ngày; bỏ tick thì phiên hết khi đóng trình duyệt hoặc sau 12 giờ.
+* **AC-AUTH-04-04** — Nút *Guest* và *Đăng nhập bằng Google* hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"*.
+* **AC-AUTH-04-05** — Đăng nhập khi đang đăng nhập ở tab/thiết bị khác thì phiên mới tiếp quản, nơi cũ nhận thông báo và chuyển chỉ đọc (BA 1.8).
 
 ## Việc liên quan (Task)
 
@@ -36,4 +36,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

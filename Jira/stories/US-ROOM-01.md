@@ -17,10 +17,10 @@ Tạo phòng. Chi tiết nghiệp vụ theo nguồn luật ở bảng trên; tà
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Form gồm: tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ **5 / 10 / 15 phút (mặc định 10)**, chế độ `PUBLIC` hoặc `CODE_ONLY`, số người xem tối đa **Không có người xem / 1 / 2 (mặc định 2)**. `LOCKED` không chọn được lúc tạo.
-* Khi tạo thành công thì tạo mã 8 ký tự, người tạo là **Host** ngồi **ghế Đỏ** ở phòng chờ.
-* Khi đang ngồi ghế ở phòng/ván khác thì nút *Tạo phòng* `DISABLED` kèm tooltip *"Bạn đang ở trong một ván/phòng khác"* (BA 1.8).
-* Mức giờ và số người xem **không đổi được** sau khi tạo.
+* **AC-ROOM-01-01** — Form gồm: tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ **5 / 10 / 15 phút (mặc định 10)**, chế độ `PUBLIC` hoặc `CODE_ONLY`, số người xem tối đa **Không có người xem / 1 / 2 (mặc định 2)**. `LOCKED` không chọn được lúc tạo.
+* **AC-ROOM-01-02** — Khi tạo thành công thì tạo mã 8 ký tự, người tạo là **Host** ngồi **ghế Đỏ** ở phòng chờ.
+* **AC-ROOM-01-03** — Khi đang ngồi ghế ở phòng/ván khác thì nút *Tạo phòng* `DISABLED` kèm tooltip *"Bạn đang ở trong một ván/phòng khác"* (BA 1.8).
+* **AC-ROOM-01-04** — Mức giờ và số người xem **không đổi được** sau khi tạo.
 
 ## Việc liên quan (Task)
 
@@ -35,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

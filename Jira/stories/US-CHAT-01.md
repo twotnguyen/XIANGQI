@@ -17,9 +17,9 @@ Hai kênh chat. Chi tiết nghiệp vụ theo nguồn luật ở bảng trên; t
 
 ## Tiêu chí nghiệm thu (AC)
 
-* **Người chơi:** thấy cả `[Kênh Riêng]` (mặc định mở) và `[Kênh Chung]`, có công tắc ẩn Kênh Chung. **Người xem:** chỉ thấy `[Kênh Chung]`.
-* Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; người đổi chỗ sau không đọc tin cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào.
-* Chat phòng xoá khi phòng đóng.
+* **AC-CHAT-01-01** — **Người chơi:** thấy cả `[Kênh Riêng]` (mặc định mở) và `[Kênh Chung]`, có công tắc ẩn Kênh Chung. **Người xem:** chỉ thấy `[Kênh Chung]`.
+* **AC-CHAT-01-02** — Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; người đổi chỗ sau không đọc tin cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào.
+* **AC-CHAT-01-03** — Chat phòng xoá khi phòng đóng.
 
 ## Việc liên quan (Task)
 
@@ -34,4 +34,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

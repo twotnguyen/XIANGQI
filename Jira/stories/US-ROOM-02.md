@@ -17,9 +17,9 @@ Phòng chờ và ghế ngồi. Chi tiết nghiệp vụ theo nguồn luật ở 
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Host mặc định ghế Đỏ; khi chỉ có một mình, Host đổi sang ghế Đen hoặc đổi lại không giới hạn số lần.
-* Người thứ hai vào phòng thì tự xếp vào **ghế còn trống**.
-* Khi thành phần người ngồi ghế thay đổi thì trạng thái *Sẵn sàng* của cả hai **reset về chưa sẵn sàng** (BA 2.8).
+* **AC-ROOM-02-01** — Host mặc định ghế Đỏ; khi chỉ có một mình, Host đổi sang ghế Đen hoặc đổi lại không giới hạn số lần.
+* **AC-ROOM-02-02** — Người thứ hai vào phòng thì tự xếp vào **ghế còn trống**.
+* **AC-ROOM-02-03** — Khi thành phần người ngồi ghế thay đổi thì trạng thái *Sẵn sàng* của cả hai **reset về chưa sẵn sàng** (BA 2.8).
 
 ## Việc liên quan (Task)
 
@@ -34,4 +34,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).
