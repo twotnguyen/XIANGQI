@@ -13,6 +13,7 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 | [03-du-lieu.md](03-du-lieu.md) | Thực thể, cột, ràng buộc, quyền truy cập, dữ liệu tạm | Lập trình máy chủ và cơ sở dữ liệu |
 | [04-kien-truc.md](04-kien-truc.md) | Thành phần, xác thực, thời gian thực, đồng hồ, LiveKit, máy cờ, bảo mật, triển khai | Mọi lập trình viên |
 | [05-kiem-thu.md](05-kiem-thu.md) | Chiến lược kiểm thử, kịch bản demo (tiêu chí hoàn thành P1), tình huống bắt buộc, con số cần đo | Người kiểm thử, người làm hiệu năng |
+| [06-ke-hoach-jira.md](06-ke-hoach-jira.md) | **Giai đoạn 3:** vai trò, Epic/Story/Task, ước lượng, công suất, lịch, cấu trúc Jira | Product Owner, người chia việc |
 
 ## Các con số tạm của Giai đoạn 1 (đã duyệt)
 
