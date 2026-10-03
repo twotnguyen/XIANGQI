@@ -91,18 +91,21 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner đã duyệt toàn bộ các quyết định rà soát, cung cấp quy mô nhóm (7 người), hạn chót (khoảng 2 tuần) và 8 mục tiêu cốt lõi; agent đã phân kỳ P1/P2 (BA-SCOPE `Phần 11`). **Tiêu chí hoàn thành P1 (Product Owner):** demo chạy được 8 mục cốt lõi end-to-end. Còn lại là những việc **chỉ người dùng quyết được** hoặc việc kế tiếp:
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), và cho bắt đầu Giai đoạn 3. Kế hoạch ở [docs/06-ke-hoach-jira.md](docs/06-ke-hoach-jira.md) ước lượng **P1 khoảng 127,5 ngày công (73 việc)**; 7 người trong 2 tuần chỉ có khoảng 56. Theo mô phỏng xếp lịch có tính phụ thuộc và vai trò, **P1 cần khoảng 5 tuần cho lõi (đợt 1) và khoảng 7 tuần cho đủ**. Cần bạn quyết:
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Duyệt các quyết định Giai đoạn 2** (bảng ở [docs/README.md](docs/README.md)), rồi xác nhận Giai đoạn 2 đã xong. Lập Jira là Giai đoạn 3, cần xác nhận riêng | AGENTS §1: chỉ chuyển khi người dùng nói rõ giai đoạn trước đã xong |
-| 2 | Các con số tạm đã được **đề xuất** ở [docs/](docs/README.md): 120 nửa nước không ăn quân; đuổi quân liên tục không xử riêng; quy mô 50 người dùng đồng thời; chờ Product Owner duyệt và xác minh bằng đo thực tế ở Giai đoạn 4 | Cần dữ liệu và thử nghiệm |
-| 3 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
-| 4 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới (đổi chỗ ghế/người xem, xin đi lại lùi 1–2 nước, nhãn "Bị gián đoạn", thẻ tóm tắt người dùng…) | Cập nhật khi dựng giao diện thật |
+| 1 | **Chọn lựa chọn ở docs/06 mục 1:** dời hạn (khuyến nghị: khoảng 5 tuần cho lõi, khoảng 7 tuần cho đủ), hoặc cắt phạm vi P1 để giữ 2 tuần, hoặc tăng nguồn lực | Cắt phạm vi P1 cần bạn đồng ý (AGENTS §8) |
+| 2 | **Tên 7 người và vai trò R1–R7** | docs/06 mục 3 |
+| 3 | **Jira thật:** site Atlassian, tên/khoá dự án, đồng ý cho tạo Epic/Story/Task | Tôi không đoán số Key |
+| 4 | Hệ số hiệu dụng, lịch làm việc (có làm cuối tuần không) | docs/06 mục 2 |
+| 5 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
+| 6 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
+| 7 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
-- Nhóm 7 người trong khoảng 2 tuần với 8 mục tiêu P1 vẫn chặt: hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết. Nên chạy song song các nhóm việc ngay từ đầu.
+- **Nhóm 7 người trong 2 tuần không đủ cho 8 mục tiêu P1 theo ước lượng** (khoảng 127,5 ngày công so với khoảng 56 có sẵn; xem [docs/06](docs/06-ke-hoach-jira.md)). Hai hạng mục khó nhất là camera/mic (LiveKit) và máy cờ tự viết.
 - Mục tiêu máy cờ "độ sâu 6 trong 3 giây bằng TypeScript thuần" chưa có số đo thực tế. Phương án nghiệp vụ khi không kịp đã chốt (đi nước tốt nhất tìm được; lỗi hoặc quá 10 giây thì ván "Bỏ dở" và nút Thử lại, BA-SCOPE 6.1). Dự phòng tiến độ (gợi ý, chưa bắt buộc): 3 cấp vẫn là P1, nếu thiếu thời gian thì làm cấp Dễ trước.
 - Chạy đồng thời realtime (Socket.IO) và media (LiveKit) là điểm tích hợp rủi ro cao.
 

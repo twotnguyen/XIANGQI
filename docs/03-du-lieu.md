@@ -44,7 +44,7 @@ Khách (`GUEST`, P2) **không có dòng trong `profiles`**; danh tính Khách ch
 | `email` | text | Chỉ đọc, lấy từ Auth; **không đổi** (BA 1.6) |
 | `created_at` | timestamptz | |
 | `last_seen_at` | timestamptz | Cập nhật khi kết nối; dùng cho trạng thái online (có thể lấy từ bộ nhớ) |
-| `completed_at` | timestamptz NULL | Đặt ở bước cuối của đăng ký ([04](04-kien-truc.md) mục 3.1); **NULL = tài khoản chưa hoàn tất, bị chặn dùng**. Hoàn tất cần cả `completed_at` có giá trị **và** không còn cờ `PENDING` ở Supabase Auth; tác vụ quét hoàn tác mọi tài khoản còn `PENDING` quá 10 phút **bất kể `completed_at`** |
+| `completed_at` | timestamptz NULL | Đặt ở bước cuối của đăng ký ([04](04-kien-truc.md) mục 3.1); **NULL = tài khoản chưa hoàn tất, bị chặn dùng**. Hoàn tất cần cả `completed_at` có giá trị **và** không còn cờ `PENDING` ở Supabase Auth; tác vụ quét hoàn tác mọi tài khoản **chưa hoàn tất** (nhà cung cấp email, chưa có `completed_at`, tạo quá 60 phút) **bất kể cờ `PENDING`** ([04](04-kien-truc.md) mục 3.1 điểm 6) |
 
 Chỉ mục: `username` (unique). Hồ sơ **chỉ được tạo sau khi OTP đúng** (BA 1.1) và tài khoản chỉ hoàn tất khi `completed_at` có giá trị; trước đó Supabase Auth có thể giữ tạm một bản ghi xác thực chưa xác nhận (Phương án B, [04](04-kien-truc.md) mục 3.1).
 
