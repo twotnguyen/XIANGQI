@@ -4,9 +4,9 @@
 
 ## 1. Quyết định của Product Owner và kết luận về hạn 2 tuần
 
-**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); được phép **dừng bớt phần** để vừa hạn; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** review các tệp `.md` ở [`Jira/`](../Jira/README.md); (3) hệ số hiệu dụng giữ **0,8**; (4) **đã chốt thứ tự dừng phần (mục 1b) và các mốc kiểm soát (mục 1c) như đề xuất**; (5) **chưa gán tên người** (Assignee để trống, nhãn R1–R7 vẫn có để lọc); (6) **chưa cho tạo lên Jira**, cần review thêm.
+**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); **đính chính 04/10/2026: PO không cho phép dừng bớt phần; yêu cầu đẩy nhanh tiến độ để đủ 14 ngày** **và chốt giữ đủ P1 trong 14 ngày với 7 người, PO chấp nhận rủi ro rất cao và nhận nhóm làm được** (BA 10.1); các mức ở mục 1a và thứ tự dừng ở mục 1b chỉ là phương án tham khảo, không phải quyết định; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** review các tệp `.md` ở [`Jira/`](../Jira/README.md); (3) hệ số hiệu dụng giữ **0,8**; (4) thứ tự dừng phần (mục 1b) và mốc kiểm soát (mục 1c) từng được duyệt 03/10 nhưng **đã bị quyết định giữ đủ P1 trong 14 ngày (04/10) thay thế**; chỉ còn là lịch sử và dữ liệu theo dõi, không có hiệu lực cắt phạm vi; (5) **chưa gán tên người** (Assignee để trống, nhãn R1–R7 vẫn có để lọc); (6) **chưa cho tạo lên Jira**, cần review thêm.
 
-**Công suất 2 tuần:** 14 ngày × 7 người × 0,8 = **78,4 ngày công**. Phạm vi P1 ước lượng **128 ngày công** (78 việc, 53 US) nên **không thể làm hết P1 trong 2 tuần** theo ước lượng cơ sở; phải dừng bớt phần theo thứ tự ở mục 1b.
+**Công suất 2 tuần:** 14 ngày × 7 người × 0,8 = **78,4 ngày công**. Phạm vi P1 ước lượng **128 ngày công** (78 việc, 53 US) nên theo ước lượng cơ sở của agent **không đủ P1 trong 2 tuần**. PO đã quyết giữ đủ P1 và nhận rủi ro (BA 10.1); mục 1b chỉ còn là tham khảo nếu nhóm trễ.
 
 ### 1a. Các mức phạm vi (mỗi mức là tập **đóng theo tiền đề**) và thời gian cần
 
@@ -32,11 +32,13 @@ Mỗi mức gồm **đủ mọi việc tiền đề** của các việc kiểm t
 
 **Lối vào khi chưa có Sảnh đầy đủ:** `TG-06` dựng **Sảnh tối giản** (3 thẻ cấp độ máy và Đăng xuất) để Mức 1 chạy được; `TB-08` mở rộng Sảnh ở Mức 2. Các mức chưa làm thì lối vào ở màn hình đã có phải `DISABLED` kèm *"Sắp ra mắt"* hoặc ẩn theo quy tắc ở [DANH-MUC](../DANH-MUC-MAN-HINH-XIANGQI.md) §7. Một Story chỉ **Done** khi mọi việc của nó xong; nếu dừng giữa chừng thì Story ở trạng thái *một phần*.
 
-### 1b. Thứ tự làm và thứ tự dừng phần (đã chốt 03/10/2026)
+### 1b. Thứ tự làm và phương án dừng phần (LỊCH SỬ 03/10/2026, ĐÃ BỊ THAY THẾ 04/10/2026, không còn hiệu lực)
 
-Làm **từ Mức 1 lên Mức 5**; khi trễ thì **dừng từ Mức cao xuống**. Việc thuộc mức thấp luôn được ưu tiên người làm trước việc thuộc mức cao.
+> PO quyết định 04/10/2026 giữ đủ P1 trong 14 ngày và không dừng bớt phần (BA 10.1). Phần dưới chỉ còn là thứ tự ưu tiên làm việc và cách đọc rủi ro; **không** là lệnh cắt phạm vi.
 
-| Mức | Mục tiêu cốt lõi được phục vụ | Khi dừng ở mức này, cái còn thiếu |
+Làm **từ Mức 1 lên Mức 5**; nếu trễ thì **báo Product Owner để quyết định**, không tự cắt. Việc thuộc mức thấp luôn được ưu tiên người làm trước việc thuộc mức cao.
+
+| Mức | Mục tiêu cốt lõi được phục vụ | Nếu chỉ kịp tới mức này (chỉ để đọc rủi ro), cái còn thiếu |
 |---:|---|---|
 | 1 | 1 (đăng ký/đăng nhập), 4 (bàn cờ), 8 (đánh với máy Dễ/TB) | Phòng, chơi online, chat, camera/mic, bạn bè, cấp Khó |
 | 2 | + 2 (tạo phòng), 3 (mời bằng link/mã), 5 (hai người đánh online, có mất kết nối) | Khoá phòng, người xem, chat, camera/mic, bạn bè |
@@ -44,19 +46,19 @@ Làm **từ Mức 1 lên Mức 5**; khi trễ thì **dừng từ Mức cao xuố
 | 4 | + 3 (bạn bè), 6 (đuổi), 7 (camera/mic), 8 (Khó) | Responsive, trợ năng, tải |
 | 5 | Đủ P1 | — |
 
-### 1c. Mốc kiểm soát (đã chốt 03/10/2026)
+### 1c. Mốc theo dõi tiến độ (duyệt 03/10/2026; từ 04/10 chỉ để theo dõi, không có lệnh dừng phần)
 
-Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ số 1,0)** (mục 8); nếu thực tế chậm hơn, các mốc là ngưỡng để quyết định dừng phần sớm.
+Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ số 1,0)** (mục 8); nếu thực tế chậm hơn, các mốc là ngưỡng để **báo Product Owner sớm**, không phải lệnh cắt phạm vi.
 
-| Mốc | Việc cần xong (theo lịch độ nhạy) | Quy tắc khi trễ |
+| Mốc | Việc cần xong (theo lịch độ nhạy) | Việc làm khi trễ (báo PO, không tự cắt) |
 |---|---|---|
 | **Ngày 4** | 13 việc xong thêm trong khoảng này: `T0-01`, `T0-02`, `T0-05`, `T0-03`, `T0-04`, `TA-05`, `T0-06`, `T0-08`, `TB-01`, `TC-05`, `TA-01`, `TC-01`, `TC-06` | Thử nghiệm đầu: nếu PoC OTP, LiveKit hoặc máy cờ không đạt thì báo Product Owner để đổi phương án ngay (PoC máy cờ `T0-09` chỉ chạy được sau `TC-01`) |
-| **Ngày 7** | 15 việc xong thêm trong khoảng này: `TC-07`, `T0-09`, `TB-02`, `TA-02`, `TA-04`, `TB-03`, `TC-02`, `T0-07`, `TB-08`, `TA-03`, `TA-08`, `TB-07`, `TB-09`, `TA-07`, `TB-05` | Mức 1 đang chạy: nếu trễ hơn 2 ngày thì **dừng nhận Mức 4 trở lên** khỏi kế hoạch |
-| **Ngày 10** | 16 việc xong thêm trong khoảng này: `TB-10`, `TB-11`, `TA-06b`, `TD-01`, `TB-11b`, `TH-01`, `TA-06`, `TG-01`, `TG-02`, `TD-03`, `TD-02`, `TB-06`, `TD-07`, `TE-01`, `TG-04`, `TB-10b` | Mức 2 vào tích hợp: nếu chưa thì **dừng ở Mức 1–2**, chuyển sức sang ổn định |
-| **Ngày 12** | 8 việc xong thêm trong khoảng này: `TE-02`, `TD-04`, `TD-05`, `TD-07b`, `TC-03`, `TG-05`, `TB-04`, `TC-04` | Mức 3 chạy: **ngừng nhận tính năng mới** |
-| **Ngày 14** | 9 việc xong thêm trong khoảng này: `TG-06`, `TD-06`, `TQ-01a`, `TB-09b`, `TE-03`, `TD-08`, `TG-03`, `TF-01`, `TC-08` | Demo mức đạt được; mọi việc chưa xong ghi là *dừng phần* |
+| **Ngày 7** | 15 việc xong thêm trong khoảng này: `TC-07`, `T0-09`, `TB-02`, `TA-02`, `TA-04`, `TB-03`, `TC-02`, `T0-07`, `TB-08`, `TA-03`, `TA-08`, `TB-07`, `TB-09`, `TA-07`, `TB-05` | Mức 1 đang chạy: nếu trễ hơn 2 ngày thì **báo PO** để chọn cách bù (thêm giờ, đơn giản hoá cách làm, đổi người), không tự bỏ Mức 4 trở lên |
+| **Ngày 10** | 16 việc xong thêm trong khoảng này: `TB-10`, `TB-11`, `TA-06b`, `TD-01`, `TB-11b`, `TH-01`, `TA-06`, `TG-01`, `TG-02`, `TD-03`, `TD-02`, `TB-06`, `TD-07`, `TE-01`, `TG-04`, `TB-10b` | Mức 2 vào tích hợp: nếu chưa thì **báo PO** để quyết định cách bù; không tự dừng ở Mức 1–2 |
+| **Ngày 12** | 8 việc xong thêm trong khoảng này: `TE-02`, `TD-04`, `TD-05`, `TD-07b`, `TC-03`, `TG-05`, `TB-04`, `TC-04` | Mức 3 chạy: nên **ngừng nhận tính năng mới ngoài P1** để dồn sức hoàn tất |
+| **Ngày 14** | 9 việc xong thêm trong khoảng này: `TG-06`, `TD-06`, `TQ-01a`, `TB-09b`, `TE-03`, `TD-08`, `TG-03`, `TF-01`, `TC-08` | Demo phần đã xong; việc chưa xong ghi là *trễ so với kế hoạch* và báo PO, không ghi là dừng phần |
 
-**Cần Product Owner chốt:** chấp nhận rằng nếu ước lượng cơ sở đúng thì ở ngày 14 có thể chưa xong mức nào, và quyết định dừng ở mức nào sẽ được đưa ra ở các mốc trên.
+**Cần Product Owner chốt:** chấp nhận rằng nếu ước lượng cơ sở đúng thì ở ngày 14 có thể chưa xong mức nào, và PO sẽ quyết định cách bù tại các mốc trên (PO đã chọn giữ đủ P1).
 
 ## 2. Giả định lập kế hoạch
 
@@ -284,7 +286,7 @@ Lịch xếp **theo lớp mức**: Mức 1 trước, rồi việc Mức 2 chèn 
 | US-ROOM-08 | Danh sách phòng công khai ở Sảnh | TB-01, TB-08 |
 | US-ROOM-09 | Đuổi người xem | TB-06, TB-10b |
 | US-ROOM-10 | Host rời, chuyển quyền, đóng phòng | TB-07 |
-| US-ROOM-11 | Sau ván: quay về phòng chờ | TB-07 |
+| US-ROOM-11 | Sau ván CASUAL: quay về phòng chờ | TB-07 |
 | US-ROOM-12 | Màn hình từ chối truy cập | TB-02, TB-10 |
 | US-BOARD-01 | Hiển thị bàn cờ | TC-05 |
 | US-BOARD-02 | Chọn quân và gợi ý ô đi bằng click | TC-06 |
@@ -333,7 +335,7 @@ Chỉ tạo Epic và Story, **chưa tạo việc** cho đến khi lên kế ho�
 | K · Đánh Thường mở rộng | US-CAS-01 Ghép ngẫu nhiên · -02 Xin đi lại · -03 Đổi bên · -04 Tái đấu · -05 Không giới hạn + chống treo · -06 Mã QR |
 | L · Xã hội mở rộng | US-SOC-01 Chat 1-1 · -02 Sticker · -03 Thách đấu · -04 Người xem tối đa 5 |
 | M · Lịch sử và xem lại | US-HIS-01 Lịch sử · -02 Xem lại · -03 Đi lại với máy · -04 FEN/PGN |
-| N · Tiện ích demo | US-DEMO-01 Widget máy cờ · -02 Giả lập mạng · -03 Chọn thiết bị khi nhiều tab |
+| N · Tiện ích demo | US-DEMO-01 Widget máy cờ · -02 Giả lập mạng · -03 Chọn thiết bị khi nhiều tab · US-UI-P2-01 Chọn giao diện |
 
 ## 11. Định nghĩa hoàn thành (Done)
 

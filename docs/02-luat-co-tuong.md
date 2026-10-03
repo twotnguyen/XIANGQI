@@ -2,7 +2,7 @@
 
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
-**Giai đoạn 2 · Trạng thái: **Đã duyệt 03/10/2026** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật phạm vi: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (Quyết định 3.1, 3.3, 3.4, 3.5, 6.1, 6.3). Tài liệu này chi tiết hoá, không được mâu thuẫn BA-SCOPE.
+**Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật phạm vi: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (Quyết định 3.1, 3.3, 3.4, 3.5, 6.1, 6.3). Tài liệu này chi tiết hoá, không được mâu thuẫn BA-SCOPE.
 
 Phạm vi: P1 (luật di chuyển, kết thúc ván, máy cờ 3 cấp) và P2 (FEN/PGN). Tài liệu này chốt các **con số tạm** của Giai đoạn 1 (mục 8).
 
@@ -97,7 +97,7 @@ Một Tướng bị **chiếu** khi có quân đối phương có thể ăn Tư�
 
 ### 3.4 Thứ tự xử lý khi máy chủ nhận một nước đi
 
-1. Xác thực người gửi, phòng/ván, **đúng lượt**, đúng `matchVersion`, `commandId` chưa xử lý (chống trùng).
+1. Xác thực người gửi; **tra biên lai** theo danh tính và `commandId` (đã có thì trả kết quả cũ, dừng; theo [07](07-hop-dong-nghiep-vu.md) §3). Chỉ **lệnh mới** mới đi tiếp: kiểm phòng/ván, **đúng lượt**, đúng `matchVersion`.
 2. **Kiểm đồng hồ trước** (BA `ARCH-04`): nếu đồng hồ bên đi đã về 0 tại thời điểm nhận lệnh → kết thúc `TIMEOUT`, **không** áp dụng nước đi.
 3. Kiểm nước đi hợp lệ (mục 3.1). Không hợp lệ → từ chối, trả lý do, không đổi trạng thái.
 4. Áp dụng nước đi, cập nhật bộ đếm nửa nước và khoá thế cờ.

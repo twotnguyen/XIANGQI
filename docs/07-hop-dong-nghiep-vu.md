@@ -34,6 +34,7 @@ Khách P2 được quyền CASUAL/AI theo BA 1.3 nhưng không Bạn bè, RANKED
 | Bước | Cam kết |
 |---|---|
 | Nhận ý định | Danh tính lấy từ phiên xác thực; định danh phòng/ván, `commandId` và `matchVersion` cho lệnh ván theo [04] |
+| Tra biên lai | Sau khi xác thực danh tính và **trước** mọi kiểm điều kiện thay đổi: nếu đã có biên lai cho cùng danh tính và `commandId` thì trả lại kết quả đã lưu, không kiểm lại `matchVersion`/lượt/trạng thái. Chỉ lệnh mới (chưa có biên lai) đi tiếp |
 | Kiểm trước | Phiên đang điều khiển, quyền, trạng thái, phiên bản, giới hạn và điều kiện thời gian; không tin client báo đã thắng hoặc đã trả lời |
 | Chống trùng | Cùng danh tính và định danh lệnh chỉ có một tác động; gửi lại để lấy kết quả, không tạo thêm ván/nước/tin hoặc trừ lượt |
 | Tuần tự | Khoá logic theo danh tính khi chiếm vị trí chơi, theo phòng/ván khi sửa; kiểm lại trạng thái bên trong vùng xử lý tuần tự |
@@ -93,6 +94,7 @@ Huỷ xác nhận không gửi lệnh. Nếu lệnh đến khi ván đã kết t
 | PLAYING | Có kết quả hợp lệ | FINISHED, dừng lệnh ván và các đề nghị |
 | FINISHED | Một người rời hoặc đổi thành phần ghế | WAITING; reset Sẵn sàng, chuyển Host nếu cần; vô hiệu hẹn giờ FINISHED cũ |
 | FINISHED | Đủ điều kiện và hai người Tái đấu (P2) | Cùng phòng, phe đổi, đếm 3 giây, Match ID mới |
+| PLAYING | Máy chủ khởi động lại (ván `INTERRUPTED`) | FINISHED, hiện kết quả trung tính "Ván bị gián đoạn"; sau đó như dòng FINISHED bên dưới (đề xuất 04/10/2026, chờ PO duyệt) |
 | FINISHED | Hết 10 phút và chưa chuyển trạng thái | CLOSED; thành viên về Sảnh |
 | WAITING/FINISHED | Người ngồi ghế cuối rời | CLOSED dù còn người xem |
 | CLOSED | Lệnh trễ, link/QR/mã cũ, reconnect | Không mở lại phòng, không phát dữ liệu ván cho người không có quyền |
