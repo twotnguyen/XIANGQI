@@ -532,7 +532,7 @@
       <div class="invite-share-card">
         <div>
           <h4 style="font-family: var(--font-serif); font-size: 16px; color: #FFF; margin-bottom: 4px;">📢 Mời Bạn Bè & Chia Sẻ Phòng</h4>
-          <p style="font-size: 12px; color: #C8B6A2;">Gửi đường link hoặc mã phòng để mời bạn bè vào solo giao lưu hoặc làm khán giả xem cờ.</p>
+          <p style="font-size: 12px; color: #C8B6A2;">Gửi đường link hoặc mã phòng để mời bạn bè vào solo giao lưu hoặc làm người xem theo dõi cờ.</p>
         </div>
         <button type="button" class="btn-open-invite" onclick="openInviteModal()">
           <span>🔗</span> Mở Hộp Thoại Chia Sẻ Đa Kênh ❯
@@ -542,8 +542,8 @@
       <!-- SPECTATORS PANEL -->
       <div class="spectators-panel">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h4 style="font-size: 14.5px; color: #FFF;">Khán Giả Đang Đợi (2 / 5)</h4>
-          <span style="font-size: 11px; color: var(--gold-light);">Tối đa 5 khán giả</span>
+          <h4 style="font-size: 14.5px; color: #FFF;">Người Xem Đang Đợi (2 / 2)</h4>
+          <span style="font-size: 11px; color: var(--gold-light);">Tối đa 2 người xem</span>
         </div>
         <div class="spec-list">
           <div class="spec-chip">👁️ Kỳ Vương Ba Vì</div>
@@ -645,7 +645,7 @@
               <input type="radio" name="room-mode" value="PUBLIC" checked style="accent-color: var(--gold-main); margin-top: 2px;">
               <div>
                 <strong style="color: #FFF;">Công khai (Public)</strong>
-                <div style="font-size: 11px; color: #C8B6A2;">Hiển thị trên Sảnh cờ, mọi kỳ thủ đều có thể vào giao lưu hoặc xem.</div>
+                <div style="font-size: 11px; color: #C8B6A2;">Hiển thị trên Sảnh cờ, mọi người chơi đều có thể vào giao lưu hoặc xem.</div>
               </div>
             </label>
             <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; cursor: pointer; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px; border: 1px solid #542C15;">
@@ -659,7 +659,7 @@
               <input type="radio" name="room-mode" value="LOCKED" style="accent-color: var(--gold-main); margin-top: 2px;">
               <div>
                 <strong style="color: #FCA5A5;">Khóa phòng (Locked)</strong>
-                <div style="font-size: 11px; color: #C8B6A2;">Chặn người mới hoàn toàn, giữ nguyên các khán giả hiện có.</div>
+                <div style="font-size: 11px; color: #C8B6A2;">Chặn người mới hoàn toàn, giữ nguyên các người xem hiện có.</div>
               </div>
             </label>
           </div>
@@ -668,8 +668,8 @@
         <div style="margin-bottom: 18px; padding-top: 10px; border-top: 1px solid #542C15;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <strong style="font-size: 12px; color: #FFF;">Khán giả xem cờ (Spectators):</strong>
-              <div style="font-size: 11px; color: #C8B6A2;">Cho phép tối đa 5 người vào xem</div>
+              <strong style="font-size: 12px; color: #FFF;">Người xem theo dõi cờ (Spectators):</strong>
+              <div style="font-size: 11px; color: #C8B6A2;">Cho phép tối đa 2 người vào xem</div>
             </div>
             <input type="checkbox" id="setting-allow-specs" checked style="accent-color: var(--gold-main); width: 18px; height: 18px;">
           </div>
@@ -701,7 +701,7 @@
             Bạn có chắc chắn muốn rời phòng chờ thi đấu?
           </p>
           <div style="margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.12); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.35); font-size: 11.5px; color: #FCA5A5; text-align: left;">
-            ⚠️ <strong>Quy định:</strong> Vì bạn đang là <strong>Chủ Phòng (Host)</strong>, quyền chủ phòng sẽ được tự động chuyển giao cho kỳ thủ còn lại trong phòng.
+            ⚠️ <strong>Quy định:</strong> Vì bạn đang là <strong>Chủ Phòng (Host)</strong>, quyền chủ phòng sẽ được tự động chuyển giao cho người chơi còn lại trong phòng.
           </div>
         </div>
         <div style="display: flex; gap: 10px;">

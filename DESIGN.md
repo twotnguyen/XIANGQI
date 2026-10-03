@@ -67,9 +67,9 @@ Tương phản đã đo (đặc tả): mực/giấy **12,95** · mực/gỗ **7,
 | `--color-warning-bg` | `#F6E1B8` | Nền cảnh báo | mực 12,26 |
 | `--color-danger-bg` | `#F5DAD3` | Nền lỗi | mực 11,87 |
 | `--color-info-bg` | `#DCE7EF` | Nền thông tin | mực 12,52 |
-| `--color-gold` | `#C6922A` | Viền hoàng kim, huy hiệu xếp hạng, điểm nhấn chính | /nền giấy 4,82 · /nền tối 8,65 |
-| `--color-gold-light` | `#F5CA67` | Chữ hoàng kim sáng, viền nổi, hiệu ứng hover | /nền tối 12,40 |
-| `--color-gold-dark` | `#7A4E0F` | Viền đồng thau dập chìm, đường viền phân cách card | /nền giấy 6,20 |
+| `--color-gold` | `#C6922A` | Viền hoàng kim, huy hiệu xếp hạng, điểm nhấn chính. **Chỉ dùng trên nền tối** (giao diện Giấy Sáng dùng `--color-gold-dark` thay thế) | /nền tối `#120D0A` 6,94 · /surface tối 6,30 · ⛔ /nền giấy chỉ 2,29 (không đạt 3) |
+| `--color-gold-light` | `#F5CA67` | Chữ hoàng kim sáng, viền nổi, hiệu ứng hover | /nền tối 12,44 |
+| `--color-gold-dark` | `#7A4E0F` | Viền đồng thau dập chìm, đường viền phân cách card; thay cho `--color-gold` trên nền sáng | /nền giấy 5,92 · /surface 6,61 |
 
 **Màu riêng của bàn cờ** 🟡 (đều đo trên nền gỗ `#D8AE72`, cần ≥ 3):
 
@@ -90,30 +90,30 @@ Dự án hỗ trợ 2 phong cách hiển thị: **Giao diện Giấy Xuyến Ch�
 **Nguyên tắc:**
 1. **Bàn cờ giữ nguyên** màu sắc vật liệu gỗ mộc chuẩn Á Đông (`#D8AE72`, quân cờ, đường kẻ, dấu trạng thái) ở cả hai chế độ — đảm bảo mọi tương phản quân/gỗ đã đo không bị ảnh hưởng.
 2. Phần **khung giao diện, thẻ card và sảnh chờ**:
-   - Ở chế độ Kỳ Đài Cổ Phong: Sử dụng gam nâu trầm gỗ mun (`#120D0A`, `#241610`), viền đồng thau dập nổi (`#542C15`, `#C6922A`), chữ vàng ngà xuyến chỉ (`#FFF5DF`, `#E2CFB7`), mang lại chiều sâu không gian tĩnh tại.
+   - Ở chế độ Kỳ Đài Cổ Phong: Sử dụng gam nâu trầm gỗ mun (`#120D0A`, `#241610`), viền đồng thau dập nổi (viền trang trí `#542C15` không mang thông tin; viền hoàng kim `#C6922A`), chữ vàng ngà xuyến chỉ (`#FFF5DF`, `#E2CFB7`), mang lại chiều sâu không gian tĩnh tại.
 3. Người dùng có thể tùy chọn trong Cài đặt hồ sơ (Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống), mặc định ưu tiên giao diện Kỳ Đài Cổ Phong.
 
 | Token CSS | Sáng (Giấy Sáng) | Tối (Kỳ Đài Cổ Phong) | Tương phản ở chế độ tối |
 |---|---|---|---|
-| `--color-paper` | `#F5E8CC` | `#120D0A` | chữ 15,20 |
-| `--color-surface` | `#FBF5E8` | `#241610` | chữ 13,85 |
-| `--color-surface-sunken` | `#EDE0C4` | `#180F0A` | chữ 14,96 |
+| `--color-paper` | `#F5E8CC` | `#120D0A` | chữ 17,82 |
+| `--color-surface` | `#FBF5E8` | `#241610` | chữ 16,19 |
+| `--color-surface-sunken` | `#EDE0C4` | `#180F0A` | chữ 17,43 |
 | `--color-ink` | `#28221C` | `#FFF5DF` | — |
-| `--color-ink-muted` | `#5E5145` | `#C8B6A2` | /nền 8,45 · /surface 7,60 |
-| `--color-border` | `#8C6A48` | `#542C15` | /nền 5,10 · /surface 4,75 |
-| `--color-divider` | `#D9C7A3` | `#3D2012` | trang trí |
-| `--color-focus` (ngoài bàn cờ) | `#155E75` | `#F5CA67` | /nền 9,20 · /surface 8,50 |
-| `--color-success` | `#2E6B34` | `#86EFAC` | /nền 9,40 · /nền của nó 7,20 |
-| `--color-warning` | `#8A4B00` | `#FCD34D` | /nền 9,15 · /nền của nó 7,05 |
-| `--color-danger` | `#A51F25` | `#FCA5A5` | /nền 8,20 · /nền của nó 6,50 |
-| `--color-info` | `#1F5A85` | `#93C5FD` | /nền 8,90 · /nền của nó 7,45 |
-| `--color-success-bg` | `#E2EDD6` | `#152E1B` | chữ 11,20 |
-| `--color-warning-bg` | `#F6E1B8` | `#3A240E` | chữ 11,40 |
-| `--color-danger-bg` | `#F5DAD3` | `#3C1412` | chữ 12,15 |
-| `--color-info-bg` | `#DCE7EF` | `#142236` | chữ 12,30 |
-| `--color-btn-primary-bg` | `#704525` | `#C6922A` | chữ `#FFF` trên nó 6,80 |
-| `--color-btn-primary-fg` | `#F5E8CC` | `#FFFFFF` | — |
-| `--color-btn-danger-bg` | `#A51F25` | `#8E161C` | chữ `#FFF` trên nó 5,90 |
+| `--color-ink-muted` | `#5E5145` | `#C8B6A2` | /nền 9,81 · /surface 8,91 |
+| `--color-border` | `#8C6A48` | `#9A7550` | /nền 4,63 · /surface 4,20 (≥ 3) |
+| `--color-divider` | `#D9C7A3` | `#3D2012` | trang trí (không mang thông tin, không cần đạt tương phản) |
+| `--color-focus` (ngoài bàn cờ) | `#155E75` | `#F5CA67` | /nền 12,44 · /surface 11,30 |
+| `--color-success` | `#2E6B34` | `#86EFAC` | /nền 13,75 · /nền của nó 10,40 |
+| `--color-warning` | `#8A4B00` | `#FCD34D` | /nền 13,39 · /nền của nó 10,12 |
+| `--color-danger` | `#A51F25` | `#FCA5A5` | /nền 10,17 · /nền của nó 8,51 |
+| `--color-info` | `#1F5A85` | `#93C5FD` | /nền 10,71 · /nền của nó 8,88 |
+| `--color-success-bg` | `#E2EDD6` | `#152E1B` | chữ 13,47 |
+| `--color-warning-bg` | `#F6E1B8` | `#3A240E` | chữ 13,47 |
+| `--color-danger-bg` | `#F5DAD3` | `#3C1412` | chữ 14,90 |
+| `--color-info-bg` | `#DCE7EF` | `#142236` | chữ 14,77 |
+| `--color-btn-primary-bg` | `#704525` | `#C6922A` | chữ trên nó: sáng 6,74 · tối 6,94 |
+| `--color-btn-primary-fg` | `#F5E8CC` | `#120D0A` | (chữ tối trên nền vàng; ⛔ không dùng chữ trắng, chỉ 2,78) |
+| `--color-btn-danger-bg` | `#A51F25` | `#8E161C` | chữ `#FFF` trên nó 9,20 |
 | `--color-btn-danger-fg` | `#F5E8CC` | `#FFFFFF` | — |
 
 Viền tiêu điểm **trên bàn cờ** luôn dùng `#155E75` (3,54 trên gỗ) ở cả hai chế độ — token `--board-focus`.
@@ -216,7 +216,7 @@ Chế độ tối (Kỳ Đài Cổ Phong): bóng khó thấy ⇒ dùng viền `-
 
 - ⭐ **Chốt:** `prefers-reduced-motion: reduce` ⇒ mọi chuyển động = 0; quân **nhảy thẳng**.
 - Chuyển động **không chặn** thao tác tiếp theo; snapshot mới thay trạng thái, không xếp hàng chờ hiệu ứng cũ.
-- ⛔ Không nhấp nháy, rung, lặp vô hạn (trừ biểu tượng "đang tải").
+- ⛔ Không nhấp nháy, rung, lặp vô hạn (trừ biểu tượng và khung xương "đang tải"; tất cả tắt khi bật giảm chuyển động).
 
 ---
 
@@ -418,10 +418,10 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 ```
 
 **Quy tắc động thích ứng theo Chế độ chơi (Chốt, `BA-SCOPE`):**
-- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–5, mặc định 5; xem BA-SCOPE `Quyết định 2.8`).
+- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–2, mặc định 2; xem BA-SCOPE `Quyết định 2.8`).
 - **Ván Đánh Xếp Hạng (Ranked Elo FIDE):** 
   - ⛔ **ẨN HOÀN TOÀN** nút `[Xin đi lại]` (Cấm Undo 100%).
-  - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm khán giả 100% để chống phím cờ).
+  - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm người xem 100% để chống phím cờ).
   - Cố định 10 phút Rapid mỗi bên.
 
 Cột phải 🟡 320–360 px; bàn cờ chiếm phần còn lại, cao tối đa vừa màn hình (không phải cuộn để thấy cả bàn ở 1366×768).
@@ -496,7 +496,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 | `10 · Tài khoản & Auth` | `SCR-LOGIN`, `MODAL-GUEST-NAME`, `SCR-REGISTER` (3 bước), `SCR-FORGOT-PASSWORD`, `SCR-RESET-PASSWORD`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS`, `MODAL-OTP-USERNAME` |
 | `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (3 chế độ), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
 | `12 · Phòng thi đấu` | `SCR-GAME-ROOM` (Casual vs Ranked), đồng hồ, đề nghị hòa/undo, cờ treo, mất kết nối, `MODAL-MATCH-RESULT`, `SCR-ACCESS-DENIED` |
-| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 kỳ thủ), `PANEL-CHAT` (Tab Riêng/Chung, 12 sticker, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
+| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 người chơi), `PANEL-CHAT` (Tab Riêng/Chung, 12 sticker, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
 | `14 · Xếp hạng & Xã hội` | `SCR-LEADERBOARD` (Top 50 + Sticky User Row), `SCR-FRIENDS`, `MODAL-DIRECT-CHAT` (chat 1-1 bạn bè) |
 | `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ, đi lại tối đa 3 lần không cần máy đồng ý), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) |
 
@@ -613,7 +613,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
   --color-surface-sunken: #180F0A;
   --color-ink: #FFF5DF;
   --color-ink-muted: #C8B6A2;
-  --color-border: #542C15;
+  --color-border: #9A7550;
   --color-divider: #3D2012;
   --color-focus: #F5CA67;
   --color-success: #86EFAC;
@@ -625,7 +625,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
   --color-danger-bg: #3C1412;
   --color-info-bg: #142236;
   --color-btn-primary-bg: #C6922A;
-  --color-btn-primary-fg: #FFFFFF;
+  --color-btn-primary-fg: #120D0A;
   --color-btn-danger-bg: #8E161C;
   --color-btn-danger-fg: #FFFFFF;
   /* --color-wood, --color-wood-edge, --color-red, --color-black, --board-* giữ nguyên */
@@ -637,7 +637,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
     --color-surface-sunken: #180F0A;
     --color-ink: #FFF5DF;
     --color-ink-muted: #C8B6A2;
-    --color-border: #542C15;
+    --color-border: #9A7550;
     --color-divider: #3D2012;
     --color-focus: #F5CA67;
     --color-success: #86EFAC;
@@ -649,7 +649,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
     --color-danger-bg: #3C1412;
     --color-info-bg: #142236;
     --color-btn-primary-bg: #C6922A;
-    --color-btn-primary-fg: #FFFFFF;
+    --color-btn-primary-fg: #120D0A;
     --color-btn-danger-bg: #8E161C;
     --color-btn-danger-fg: #FFFFFF;
   }

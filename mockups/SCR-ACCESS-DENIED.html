@@ -121,7 +121,7 @@
     <h2 class="denied-title" id="denied-heading">Không Thể Truy Cập Phòng</h2>
     
     <div class="denied-desc" id="denied-reason-text">
-      Phòng thi đấu hiện đã đầy tối đa <strong>7 người</strong> (2 kỳ thủ chính + 5 khán giả theo quy định BR-ROOM-01) hoặc đây là ván cờ Xếp Hạng cấm tuyệt đối khán giả vào xem.
+      Phòng thi đấu hiện đã đầy tối đa <strong>4 người</strong> (2 người chơi + tối đa 2 người xem) hoặc đây là ván cờ Xếp Hạng cấm tuyệt đối người xem vào xem.
     </div>
 
     <a href="SCR-LOBBY.html" class="btn-action-home">
@@ -134,14 +134,14 @@
     const reason = params.get('reason');
 
     if (reason === 'ranked') {
-      document.getElementById('denied-heading').textContent = 'Cấm Khán Giả Vào Xem';
-      document.getElementById('denied-reason-text').innerHTML = 'Ván đấu <strong>Đánh Hạng (Ranked Elo FIDE)</strong> áp dụng quy định bảo mật chống gian lận: <em>Tuyệt đối cấm khán giả vào xem</em>.';
+      document.getElementById('denied-heading').textContent = 'Cấm Người Xem Vào Xem';
+      document.getElementById('denied-reason-text').innerHTML = 'Ván đấu <strong>Đánh Hạng (Ranked Elo FIDE)</strong> áp dụng quy định bảo mật chống gian lận: <em>Tuyệt đối cấm người xem vào xem</em>.';
     } else if (reason === 'kicked') {
       document.getElementById('denied-heading').textContent = 'Bạn Đã Bị Mời Ra Khỏi Phòng';
-      document.getElementById('denied-reason-text').innerHTML = 'Bạn đã bị đấu thủ trong phòng thi đấu sử dụng quyền <strong>Kick</strong> để mời ra khỏi phòng.';
+      document.getElementById('denied-reason-text').innerHTML = 'Bạn đã bị người chơi trong phòng thi đấu sử dụng quyền <strong>Kick</strong> để mời ra khỏi phòng.';
     } else if (reason === 'full') {
-      document.getElementById('denied-heading').textContent = 'Phòng Đã Đủ Sức Chứa (7/7)';
-      document.getElementById('denied-reason-text').innerHTML = 'Phòng cờ đã đủ tối đa <strong>2 kỳ thủ và 5 khán giả</strong> theo quy định tiêu chuẩn của Kỳ Đài.';
+      document.getElementById('denied-heading').textContent = 'Phòng Đã Đủ Người';
+      document.getElementById('denied-reason-text').innerHTML = 'Phòng cờ đã đủ tối đa <strong>2 người chơi và 2 người xem</strong>.';
     }
   </script>
 </body>

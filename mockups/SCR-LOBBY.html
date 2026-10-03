@@ -608,7 +608,7 @@
       <div class="user-avatar" id="nav-avatar">T</div>
       <div class="user-name-role">
         <span class="u-name" id="nav-username">Nguyễn Ngọc Tình</span>
-        <span class="u-elo" id="nav-elo">⚔️ Kỳ Thủ · 1280 Elo</span>
+        <span class="u-elo" id="nav-elo">⚔️ Người Chơi · 1280 Elo</span>
       </div>
     </a>
   </header>
@@ -619,11 +619,11 @@
     <!-- WELCOME BANNER -->
     <div class="welcome-banner">
       <div class="banner-text">
-        <h2>Chào Mừng Kỳ Thủ Bước Vào Kỳ Đài</h2>
+        <h2>Chào Mừng Người Chơi Bước Vào Kỳ Đài</h2>
         <p>Tham gia giao lưu tỷ thí, rèn luyện kỳ nghệ hoặc tranh tài Xếp Hạng FIDE chuyên nghiệp.</p>
       </div>
       <div style="font-size: 11px; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-dark); padding: 6px 12px; border-radius: 20px; color: var(--gold-light);">
-        🟢 1,420 Kỳ Thủ Đang Online
+        🟢 1,420 Người Chơi Đang Online
       </div>
     </div>
 
@@ -638,11 +638,11 @@
             <div class="mode-icon-box">🍵</div>
             <h3 class="mode-title">Đánh Thường</h3>
             <p class="mode-desc">
-              Giao lưu không tính điểm Elo. Tự do tạo phòng mời bạn bè, cho phép khán giả vào xem hoặc ghép trận ngẫu nhiên.
+              Giao lưu không tính điểm Elo. Tự do tạo phòng mời bạn bè, cho phép người xem vào xem hoặc ghép trận ngẫu nhiên.
             </p>
             <div class="mode-rule-pills">
               <span class="rule-pill">Cho phép Undo 3 lần</span>
-              <span class="rule-pill">Khán giả xem trực tiếp</span>
+              <span class="rule-pill">Người xem theo dõi trực tiếp</span>
               <span class="rule-pill">Cam / Mic LiveKit</span>
             </div>
           </div>
@@ -663,10 +663,10 @@
             <div class="mode-icon-box">⚔️</div>
             <h3 class="mode-title" style="color: #FCA5A5;">Đánh Xếp Hạng (Ranked)</h3>
             <p class="mode-desc">
-              Thi đấu tính điểm Elo FIDE chuẩn quốc tế. Ghép ngẫu nhiên 100%, tuyệt đối cấm khán giả xem để chống phím cờ.
+              Thi đấu tính điểm Elo FIDE chuẩn quốc tế. Ghép ngẫu nhiên 100%, tuyệt đối cấm người xem theo dõi để chống phím cờ.
             </p>
             <div class="mode-rule-pills">
-              <span class="rule-pill strict">CẤM Khán Giả Xem</span>
+              <span class="rule-pill strict">CẤM Người Xem Xem</span>
               <span class="rule-pill strict">CẤM Xin Đi Lại (Undo)</span>
               <span class="rule-pill">Cố định 10 phút Rapid</span>
               <span class="rule-pill">Tự do bật Mic / Cam</span>
@@ -725,7 +725,7 @@
           </div>
           <div class="room-meta">
             <span>⏱️ 10 phút · Ghế: 1/2</span>
-            <a href="SCR-WAITING-ROOM.html?room=102&seat=black" class="btn-join-room btn-join-play">Vào Ghế Đen ❯</a>
+            <a href="SCR-GAME-ROOM.html?room=102&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem</a>
           </div>
         </div>
 
@@ -739,8 +739,8 @@
             <span class="r-badge playing">Đang đánh</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 15 phút · Khán giả: 2/5</span>
-            <a href="SCR-GAME-ROOM.html?room=105&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (2/5)</a>
+            <span>⏱️ 15 phút · Người xem: 2/2</span>
+            <span class="btn-join-room btn-join-watch" style="opacity: 0.5; cursor: not-allowed;" title="Phòng đã đủ 2 người xem">👁️ Đã đầy (2/2)</span>
           </div>
         </div>
 
@@ -755,7 +755,7 @@
           </div>
           <div class="room-meta">
             <span>⏱️ Không giới hạn · Ghế: 1/2</span>
-            <a href="SCR-WAITING-ROOM.html?room=108&seat=black" class="btn-join-room btn-join-play">Vào Ghế Đen ❯</a>
+            <a href="SCR-GAME-ROOM.html?room=108&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem</a>
           </div>
         </div>
 
@@ -769,8 +769,8 @@
             <span class="r-badge playing">Đang đánh</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 10 phút · Khán giả: 4/5</span>
-            <a href="SCR-GAME-ROOM.html?room=112&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (4/5)</a>
+            <span>⏱️ 10 phút · Người xem: 1/2</span>
+            <a href="SCR-GAME-ROOM.html?room=112&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (1/2)</a>
           </div>
         </div>
       </div>
@@ -807,7 +807,15 @@
             <select class="form-ctrl" id="cr-privacy">
               <option value="PUBLIC">PUBLIC — Công khai trên sảnh cho mọi người vào</option>
               <option value="CODE_ONLY">CODE_ONLY — Chỉ người có Mã/Link mới vào được</option>
-              <option value="LOCKED">LOCKED — Khóa kín (không cho khán giả vào thêm)</option>
+            </select>
+            <div style="font-size: 11px; color: #C8B6A2; margin-top: 4px;">Khoá phòng (LOCKED) chỉ bật được trong phòng sau khi đã đủ 2 người chơi.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl" for="cr-spectators">Người xem</label>
+            <select class="form-ctrl" id="cr-spectators">
+              <option value="2" selected>Tối đa 2 người xem (mặc định)</option>
+              <option value="1">Tối đa 1 người xem</option>
+              <option value="0">Không có người xem</option>
             </select>
           </div>
 
@@ -836,11 +844,11 @@
           <span style="font-size: 32px;">⚔️</span>
         </div>
         <h4 style="font-size: 16px; color: #FFF; margin-bottom: 4px;">Đang Tìm Đối Thủ Tương Đương Elo...</h4>
-        <p style="font-size: 12px; color: var(--gold-light);" id="queue-status-text">Đang tìm kỳ thủ trong khoảng Elo 1180 – 1380</p>
+        <p style="font-size: 12px; color: var(--gold-light);" id="queue-status-text">Đang tìm người chơi trong khoảng Elo 1180 – 1380</p>
         <div style="font-size: 24px; font-weight: 800; color: #FFF; margin: 12px 0;" id="queue-timer">00:08</div>
 
         <div style="background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.4); padding: 8px 10px; border-radius: 6px; font-size: 11px; color: #FCA5A5; line-height: 1.4; margin-bottom: 16px;">
-          ⚠️ <strong>Lưu ý:</strong> Ván Ranked cố định 10 phút, cấm 100% khán giả vào xem và cấm xin đi lại (Undo). Bạn có thể bấm Hủy bất kỳ lúc nào trước khi tìm thấy đối thủ.
+          ⚠️ <strong>Lưu ý:</strong> Ván Ranked cố định 10 phút, cấm 100% người xem vào xem và cấm xin đi lại (Undo). Bạn có thể bấm Hủy bất kỳ lúc nào trước khi tìm thấy đối thủ.
         </div>
 
         <button type="button" id="btn-cancel-queue" onclick="cancelMatchmaking()" style="width: 100%; height: 40px; background: rgba(255,255,255,0.1); border: 1.5px solid #6B7280; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
@@ -922,7 +930,7 @@
       if (savedUser.is_guest) {
         document.getElementById('nav-elo').textContent = '⚡ Chế độ Khách (Guest)';
       } else {
-        document.getElementById('nav-elo').textContent = '⚔️ Kỳ Thủ · ' + (savedUser.elo || 1280) + ' Elo';
+        document.getElementById('nav-elo').textContent = '⚔️ Người Chơi · ' + (savedUser.elo || 1280) + ' Elo';
       }
     }
 
