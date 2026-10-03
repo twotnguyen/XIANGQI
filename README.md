@@ -34,7 +34,7 @@ Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn
 
 ## Tính năng
 
-Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (24 hạng mục: 21 lõi P1, 3 mở rộng P2; cập nhật 03/10/2026).
+Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 hạng mục: 22 lõi P1, 3 mở rộng P2; cập nhật 03/10/2026).
 
 | Nhóm | Nội dung |
 |---|---|
@@ -42,7 +42,7 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (24 h
 | Chế độ **Đánh Thường** | Ghép ngẫu nhiên, tạo phòng riêng (link, QR, mã 8 ký tự, mời bạn online), danh sách phòng công khai, xem cờ, đồng hồ 4 mức (không giới hạn / 5 / 10 / 15 phút), xin đi lại tối đa 3 lần |
 | Chế độ **Đánh Hạng** | Ghép ngẫu nhiên 100% theo Elo, 10 phút mỗi bên, cấm khán giả, cấm đi lại, cấm Khách, ngắt kết nối quá 60 giây xử thua; Elo FIDE; bảng xếp hạng |
 | Chế độ **Đánh Với Máy** | 3 cấp (Dễ / Trung bình / Khó), chọn phe, đi lại tối đa 3 lần, không giới hạn thời gian, lưu lịch sử và xem lại |
-| Phòng | Ghế đỏ/đen, xin đổi bên, sẵn sàng + đếm ngược 3 giây, chuyển quyền chủ phòng, tối đa 5 người xem (sức chứa 7), đuổi người xem |
+| Phòng | Một lần chia sẻ tạo link + mã + QR cùng quyền; ghế trống thì vào ghế, hết ghế thì làm người xem (người tạo chọn 0–5, mặc định 5); chủ phòng chuyển người giữa ghế và khán giả; khoá phòng khi đủ 2 đấu thủ; ghế đỏ/đen, xin đổi bên, sẵn sàng + đếm ngược 3 giây, chuyển quyền chủ phòng, đuổi người xem |
 | Bàn cờ | SVG, quân chữ Hán, click hoặc kéo thả, chấm gợi ý các ô đi hợp lệ (không phải gợi ý nước hay), chiếu tướng, âm thanh Web Audio; luật chiếu liên tục và hòa không ăn quân |
 | Chat | Kênh riêng (2 người chơi) và kênh chung, 12 sticker, bộ lọc từ thô tục, nhắn tin 1-1 giữa bạn bè |
 | Camera / mic | Người chơi tự bật tắt; người xem chỉ xem/nghe, không phát |
@@ -97,7 +97,7 @@ Ngày 03/10/2026 Product Owner uỷ quyền cho agent tự xử lý mọi mâu t
 | 3 | **Phạm vi so với nguồn lực:** có chuyển một số mục từ P1 xuống P2 không (ứng viên: chat 1-1, Mã QR, sticker, Khách) | AGENTS §3: đổi mức ưu tiên phải được đồng ý |
 | 4 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời | Cần dữ liệu và thử nghiệm |
 | 5 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: đang để ngoài phạm vi | Có thể cần cho nộp / công bố thật |
-| 6 | Mockup (`mockups/`) chưa phản ánh hết chi tiết mới (trạng thái "Đang đấu", ẩn Tái đấu ở Ranked, xin hòa sau 20 nước, thẻ tóm tắt người dùng, chọn mức giờ khi ghép Casual…) | Chờ bước 1 xong để khỏi sửa hai lần |
+| 6 | Mockup (`mockups/`) chưa phản ánh hết chi tiết mới (trạng thái "Đang đấu", ẩn Tái đấu ở Ranked, xin hòa sau 20 nước, thẻ tóm tắt người dùng, chọn mức giờ khi ghép Casual, chọn số người xem lúc tạo phòng, đổi chỗ ghế/khán giả, xin đi lại lùi 1–2 nước, nhãn "Bị gián đoạn"/"Bỏ dở"…) | Chờ bước 1 xong để khỏi sửa hai lần |
 
 **Rủi ro lớn cần cân nhắc trước khi chia việc**
 
