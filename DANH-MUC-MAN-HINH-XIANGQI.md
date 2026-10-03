@@ -169,7 +169,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * *Cụm nút công cụ ván cờ:*
     * Nút Mute/Unmute âm thanh Web Audio API.
     * Nút *"Đầu hàng"* $\rightarrow$ Mở `MODAL-CONFIRM-RESIGN`.
-    * Nút *"Xin hòa"* $\rightarrow$ Gửi `MODAL-DRAW-PROMPT` cho đối phương (hạn 30s). **`[RV-03/10]`** Bị từ chối thì 5 nước sau mới xin lại được; ở Ranked chỉ bấm được khi mỗi bên đã đi ≥ 20 nước (tooltip nêu lý do khi `DISABLED`).
+    * Nút *"Xin hòa"* $\rightarrow$ Gửi `MODAL-DRAW-PROMPT` cho đối phương (hạn 30s). Bị từ chối thì 5 nước sau mới xin lại được; ở Ranked chỉ bấm được khi mỗi bên đã đi ≥ 20 nước (tooltip nêu lý do khi `DISABLED`).
     * Nút *"Xin đi lại"* (Undo): Ván Ranked bị ẩn hoàn toàn (CẤM UNDO); Phòng thường hiển thị số lượt còn lại (tối đa 3 lần thành công/bên/ván), gửi `MODAL-UNDO-PROMPT`.
 
 ---
@@ -255,7 +255,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua và trừ điểm Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc Đấu thủ 2 bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
-15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). Cụm nút: 🔄 *Tái đấu (tự hoán bên Đỏ/Đen; **`[RV-03/10]`** không có ở ván Ranked)*, 📜 *Xem lại (Replay)*, 🚪 *Rời phòng*.
+15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). Cụm nút: 🔄 *Tái đấu (tự hoán bên Đỏ/Đen; không có ở ván Ranked)*, 📜 *Xem lại (Replay)*, 🚪 *Rời phòng*.
 
 ---
 
