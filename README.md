@@ -78,7 +78,7 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (27 h
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   Danh mục 37 thành phần giao diện và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
 ├── docs/                          Tài liệu phân tích chuyên sâu Giai đoạn 2 và kế hoạch Giai đoạn 3 (bắt đầu từ docs/README.md)
-├── Jira/                          Bản nháp mỗi Epic, Story, Task một tệp .md để review (chưa tạo trên Jira thật)
+├── Jira/scrum-jira-2026-10-04/    Cẩm nang Scrum/Jira tham khảo (bản nháp Epic/Story/Task cũ đã bị PO xoá 04/10/2026 để lập kế hoạch lại)
 ├── mockups/                       Mockup HTML/CSS tương tác (mở mockups/index.html)
 ├── site/                          Trang đọc tài liệu cũ, đã lỗi thời (xem lưu ý bên dưới)
 └── .github/                       CODEOWNERS
@@ -94,11 +94,11 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), cho bắt đầu Giai đoạn 3 và chốt: **hạn 2 tuần cố định, làm cả cuối tuần (**đính chính 04/10/2026: PO không cho phép dừng bớt phần mà yêu cầu đẩy nhanh tiến độ để đủ 14 ngày; PO chốt giữ đủ P1 trong 14 ngày với 7 người và chấp nhận rủi ro, BA 10.1**); tạo Jira vào dự án XIAN sau khi review tài liệu `.md`**. Các tệp Epic/Story/Task nằm ở [`Jira/`](Jira/README.md) (bản nháp, chưa tạo trên Jira); kế hoạch ở [docs/06](docs/06-ke-hoach-jira.md). Cần bạn:
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), cho bắt đầu Giai đoạn 3 và chốt: **hạn 2 tuần cố định, làm cả cuối tuần (**đính chính 04/10/2026: PO không cho phép dừng bớt phần mà yêu cầu đẩy nhanh tiến độ để đủ 14 ngày; PO chốt giữ đủ P1 trong 14 ngày với 7 người và chấp nhận rủi ro, BA 10.1**); tạo Jira vào dự án XIAN sau khi review tài liệu `.md`**. Các bản nháp Epic/Story/Task cũ ở `Jira/` đã bị PO xoá 04/10/2026 để lập kế hoạch lại từ đầu (chưa tạo gì trên Jira); kế hoạch ở [docs/06](docs/06-ke-hoach-jira.md). Cần bạn:
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Review các tệp ở `Jira/`** (10 Epic, 53 Story, 78 Task cho P1; 6 Epic và 28 Story P2) rồi cho phép tạo lên Jira dự án XIAN | Đã nói **chưa tạo, cần review thêm**; chưa tạo gì trên Jira |
+| 1 | **Lập lại kế hoạch từ đầu** (PO đã xoá 176 bản nháp `Jira/` ngày 04/10/2026), review rồi cho phép tạo lên Jira dự án XIAN | Chưa tạo gì trên Jira; chờ PO review kế hoạch mới và cho phép |
 | 2 | Gán tên 7 người vào R1–R7 | Đã chọn để trống, gán sau (Assignee trống, nhãn R1–R7 vẫn có) |
 | 3 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
 | 4 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
@@ -122,7 +122,7 @@ Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đo�
 
 - Cấm push thẳng và force push lên `main` / `develop`.
 - Commit: `<loại>(<phạm vi>): <mô tả>`, loại gồm `feat`, `fix`, `test`, `docs`, `chore`, `refactor`.
-- Khi Jira đã được tạo (Giai đoạn 3), thêm Key `[XW-<số>]` vào tên nhánh, commit và tiêu đề PR.
+- Khi Jira đã được tạo (Giai đoạn 3), thêm Key `[XIAN-<số>]` vào tên nhánh, commit và tiêu đề PR.
 
 Chi tiết: [AGENTS.md §5](AGENTS.md).
 

@@ -9,7 +9,7 @@
 ## 0. Tóm tắt
 
 ```
-① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2 và kế hoạch Giai đoạn 3), Jira/ (bản nháp Epic/Story/Task để review, CHƯA tạo trên Jira thật)
+① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2 và kế hoạch Giai đoạn 3), Jira/scrum-jira-2026-10-04/ (cẩm nang Scrum/Jira tham khảo; các bản nháp Epic/Story/Task cũ đã bị PO xoá 04/10/2026 để lập kế hoạch lại từ đầu; CHƯA tạo gì trên Jira thật)
 ② Đang ở GIAI ĐOẠN 3: phân vai và lập kế hoạch Jira (Epic/Story/Task, ước lượng). Chưa viết mã. Chỉ tạo trên Jira thật khi người dùng cung cấp dự án/khoá và đồng ý; ⛔ không đoán số Key
 ③ Nguồn luật phạm vi = BA-SCOPE-DECISIONS.md. Thấy mâu thuẫn hoặc chỗ mơ hồ ⇒ DỪNG, báo người dùng. Không tự chọn
 ④ Không tự phát minh yêu cầu. Không có trong nguồn luật ⇒ HỎI
@@ -127,7 +127,7 @@ Chưa phải quyết định cuối. Chỉ dùng làm hướng khi viết tài l
 |---|---|---|
 | Nhánh | Tạo từ `develop`: `<loại>/<ten-ngan-khong-dau>`; loại: `feature` · `fix` · `test` · `docs` · `chore` · `refactor` | `docs/chot-pham-vi-ranked` |
 | Commit | `<loại>(<phạm vi>): <mô tả>`; loại: `feat` · `fix` · `test` · `docs` · `chore` · `refactor` | `docs(scope): chốt Top 50 bảng xếp hạng` |
-| Khi có Jira (GĐ3 trở đi) | Thêm Key `[XW-<số>]` vào tên nhánh, commit và tiêu đề PR. ⛔ Không đoán số Key | `feature/XW-72-khoi-tao-monorepo` |
+| Khi có Jira (GĐ3 trở đi) | Thêm Key `[XIAN-<số>]` (dự án Jira XIAN, PO xác nhận 04/10/2026) vào tên nhánh, commit và tiêu đề PR. ⛔ Không đoán số Key | `feature/XIAN-72-khoi-tao-monorepo` |
 | Commit / push / PR | **Chỉ khi người dùng yêu cầu** | |
 | Cấm | Push thẳng hoặc force push lên `main` / `develop` · né CI (`--no-verify`) · commit khoá bí mật | |
 | Xung đột merge | ⛔ Dừng, báo người dùng file/commit xung đột. Không tự giải quyết | |
