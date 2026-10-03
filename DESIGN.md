@@ -666,7 +666,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
 2. **Chỉ dùng token** (`var(--…)`); ⛔ không mã màu, không số px ngoài thang, không font ngoài `--font-ui` / `--font-han`.
 3. Dựng **đủ 5 trạng thái** của màn và mọi trạng thái của thành phần; vô hiệu luôn có câu giải thích.
 4. Dùng câu chữ đã chốt nguyên văn; không tự đặt câu cho các hộp xác nhận ở §6.3.
-5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §6`). Thư viện icon và toast chưa chốt (chọn ở Giai đoạn 2, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
+5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §6`). Thư viện icon và toast chưa chốt (chọn khi bắt đầu Giai đoạn 4, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
 6. Kiểm trước khi mở PR: 4 kích thước (360, 390, 1366, 1920) không cuộn ngang; điều hướng hết bằng bàn phím; bật giảm chuyển động; giả lập mù màu cho bàn cờ.
 7. Cần giá trị chưa có trong file này ⇒ **hỏi** hoặc đề xuất 🟡 (kèm tỉ lệ tương phản đã tính) và cập nhật file này trong cùng PR — ⛔ không tự đặt giá trị rồi dùng lặng lẽ.
 8. Áp dụng chuẩn Theme Kỳ Đài Cổ Phong (Dark Tea-Room) theo định hướng thẩm mỹ Á Đông cao cấp, đảm bảo tương phản WCAG 2.1 AA.
