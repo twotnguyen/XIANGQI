@@ -28,6 +28,9 @@ coverage/
 /blob-report/
 *.log
 
+# Dữ liệu trang tài liệu — sinh tự động bởi site/build.mjs, không commit
+/site/data/
+
 # Supabase local state
 supabase/.temp/
 supabase/.branches/

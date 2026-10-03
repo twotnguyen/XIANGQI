@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Thiết Lập Tài Khoản Google</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --crimson-mid: #680E13;
+      --crimson-dark: #3F0609;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-han: 'SimSun', 'STSong', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0B0806;
+      background-image: 
+        radial-gradient(ellipse at 50% 30%, rgba(220, 140, 50, 0.18) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(11, 8, 6, 0.65) 0%, rgba(11, 8, 6, 0.92) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+    }
+
+    .master-modal {
+      width: 100%;
+      max-width: 980px;
+      min-height: 560px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      background: #23120A;
+      border: 3.5px solid #542C15;
+      border-radius: 14px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.85);
+      position: relative;
+      overflow: hidden;
+      margin: auto;
+    }
+
+    .c-decor {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      z-index: 15;
+    }
+    .c-decor::before, .c-decor::after {
+      content: '';
+      position: absolute;
+      background: linear-gradient(45deg, #F5CA67, #8B5F19);
+    }
+    .ctl { top: 8px; left: 8px; }
+    .ctl::before { top: 0; left: 0; width: 18px; height: 3px; }
+    .ctl::after  { top: 0; left: 0; width: 3px; height: 18px; }
+    .ctr { top: 8px; right: 8px; }
+    .ctr::before { top: 0; right: 0; width: 18px; height: 3px; }
+    .ctr::after  { top: 0; right: 0; width: 3px; height: 18px; }
+    .cbl { bottom: 8px; left: 8px; }
+    .cbl::before { bottom: 0; left: 0; width: 18px; height: 3px; }
+    .cbl::after  { bottom: 0; left: 0; width: 3px; height: 18px; }
+    .cbr { bottom: 8px; right: 8px; }
+    .cbr::before { bottom: 0; right: 0; width: 18px; height: 3px; }
+    .cbr::after  { bottom: 0; right: 0; width: 3px; height: 18px; }
+
+    /* Left Wing */
+    .wing-brand {
+      background: 
+        radial-gradient(circle at 50% 25%, rgba(240, 60, 60, 0.25) 0%, transparent 65%),
+        linear-gradient(155deg, var(--crimson-top) 0%, var(--crimson-mid) 50%, var(--crimson-dark) 100%);
+      color: #FFF;
+      padding: clamp(24px, 4vw, 40px) clamp(20px, 3.5vw, 36px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px solid var(--gold-dark);
+    }
+
+    .brand-hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .token-3d {
+      width: clamp(70px, 7vw, 86px);
+      height: clamp(70px, 7vw, 86px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #F7DCB2 0%, #D8A562 45%, #9E6B2A 85%, #643E12 100%);
+      border: 3.5px solid #FFF8E7;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.7);
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+    }
+
+    .token-char {
+      font-family: var(--font-han);
+      font-size: 52px;
+      font-weight: 900;
+      color: #991319;
+      line-height: 1;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: linear-gradient(180deg, #FFF6E5 0%, #E5BF77 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .hero-slogan {
+      font-size: 13px;
+      font-style: italic;
+      color: #F8E2C3;
+      margin-bottom: 18px;
+    }
+
+    .google-user-badge {
+      background: rgba(30, 8, 10, 0.55);
+      border: 1px solid rgba(245, 202, 103, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .google-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #4285F4;
+      color: #FFF;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 16px;
+      border: 2px solid var(--gold-light);
+    }
+
+    .brand-foot {
+      border-top: 1px solid rgba(245, 202, 103, 0.2);
+      padding-top: 12px;
+      font-size: 11px;
+      color: #C8AA8B;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Right Wing */
+    .wing-form {
+      background: linear-gradient(180deg, #FFFDF8 0%, #F5ECDB 100%);
+      padding: clamp(22px, 3.5vw, 36px) clamp(18px, 3vw, 32px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .form-head-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .form-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: #24160E;
+    }
+
+    .badge-scr {
+      font-size: 10px;
+      font-weight: 700;
+      color: #15803D;
+      background: #DCFCE7;
+      border: 1px solid #86EFAC;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .form-desc {
+      font-size: 12.5px;
+      color: #6C5B50;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .field-row { margin-bottom: 12px; }
+    .field-lbl { display: block; font-size: 11.5px; font-weight: 700; color: #382D25; margin-bottom: 4px; }
+
+    .input-box { position: relative; display: flex; align-items: center; }
+    .input-ico { position: absolute; left: 12px; font-size: 14px; color: #8C7B6E; }
+
+    .input-elem {
+      width: 100%;
+      height: 40px;
+      padding: 0 38px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #201915;
+      font-weight: 600;
+      background: rgba(248, 243, 233, 0.7);
+      border: 1.5px solid rgba(175, 140, 95, 0.55);
+      border-radius: 7px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .input-elem:focus {
+      background: #FFF;
+      border-color: #A31D24;
+      box-shadow: 0 0 0 3px rgba(163, 29, 36, 0.16);
+    }
+
+    .btn-eye {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      color: #8C7B6E;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: #7A695C;
+      margin-top: 3px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      min-height: 44px;
+      background: linear-gradient(180deg, #A82027 0%, #7A1217 100%);
+      color: #FFFDF7;
+      border: 1.5px solid #570B0E;
+      border-radius: 7px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 8px rgba(122, 18, 23, 0.4);
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+    .btn-submit:hover {
+      background: linear-gradient(180deg, #BA262E 0%, #8C151B 100%);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+      .master-modal {
+        grid-template-columns: 1fr;
+        max-width: 390px;
+      }
+      .wing-brand {
+        padding: 16px 14px 12px;
+        border-right: none;
+        border-bottom: 2px solid var(--gold-dark);
+      }
+      .token-3d { width: 44px; height: 44px; margin-bottom: 0; }
+      .token-char { font-size: 24px; }
+      .brand-hero { flex-direction: row; gap: 10px; }
+      .hero-title { font-size: 18px; margin-bottom: 0; }
+      .hero-slogan, .google-user-badge, .brand-foot { display: none; }
+      .wing-form { padding: 18px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="master-modal">
+    <div class="c-decor ctl"></div>
+    <div class="c-decor ctr"></div>
+    <div class="c-decor cbl"></div>
+    <div class="c-decor cbr"></div>
+
+    <div class="wing-brand">
+      <div class="brand-hero">
+        <div class="token-3d">
+          <span class="token-char">帥</span>
+        </div>
+        <div>
+          <h1 class="hero-title">CỜ TƯỚNG ONLINE</h1>
+          <div style="font-size: 10px; color: var(--gold-light); font-weight: 700; letter-spacing: 1.5px;">XIANGQI PLATFORM</div>
+        </div>
+      </div>
+      <div class="hero-slogan">“Chào mừng tân thủ, định danh xuất quân”</div>
+
+      <div class="google-user-badge">
+        <div class="google-avatar">G</div>
+        <div>
+          <div style="font-size: 11px; color: var(--gold-light); font-weight: 700;">GOOGLE OAUTH XÁC THỰC</div>
+          <div style="font-size: 13px; font-weight: 700; color: #FFF;">twotnguyen@gmail.com</div>
+          <div style="font-size: 10.5px; color: #D8BA9B;">Đã liên kết thành công</div>
+        </div>
+      </div>
+
+      <div class="brand-foot">
+        <span>Đồ án 2026 · HUTECH</span>
+        <span>Google OAuth 2.0</span>
+      </div>
+    </div>
+
+    <div class="wing-form">
+      <div>
+        <div class="form-head-row">
+          <h2 class="form-title">Thiết Lập Kỳ Hiệu</h2>
+          <span class="badge-scr">✓ SCR-ONBOARDING</span>
+        </div>
+        <p class="form-desc">
+          Xác thực Google thành công! Vui lòng chọn Tên đăng nhập duy nhất và Mật khẩu dự phòng để hoàn tất hồ sơ người chơi.
+        </p>
+
+        <form onsubmit="handleOnboarding(event)">
+          <div class="field-row">
+            <label class="field-lbl" for="ob-user">Tên đăng nhập (Username)</label>
+            <div class="input-box">
+              <span class="input-ico">👤</span>
+              <input class="input-elem" type="text" id="ob-user" placeholder="3–20 ký tự (chữ, số, gạch dưới)" value="twot_nguyen" required>
+            </div>
+            <div class="field-hint">Duy nhất trong hệ thống, dùng để bạn bè tìm kiếm và thách đấu.</div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-lbl" for="ob-pass">Mật khẩu dự phòng</label>
+            <div class="input-box">
+              <span class="input-ico">🔒</span>
+              <input class="input-elem" type="password" id="ob-pass" placeholder="Tối thiểu 8 ký tự" value="MatKhauDuPhong123" required>
+              <button type="button" class="btn-eye" onclick="togglePass('ob-pass')">👁️</button>
+            </div>
+            <div class="field-hint">Dùng khi bạn muốn đăng nhập trực tiếp không cần bấm Google.</div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-lbl" for="ob-repass">Xác nhận mật khẩu dự phòng</label>
+            <div class="input-box">
+              <span class="input-ico">🔒</span>
+              <input class="input-elem" type="password" id="ob-repass" placeholder="Nhập lại mật khẩu" value="MatKhauDuPhong123" required>
+              <button type="button" class="btn-eye" onclick="togglePass('ob-repass')">👁️</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            🏛️ Hoàn Tất Hồ Sơ & Vào Sảnh Cờ ❯
+          </button>
+        </form>
+      </div>
+
+      <div style="text-align: center; font-size: 11.5px; color: #7A695C; margin-top: 12px;">
+        Tên hiển thị (Display Name) ban đầu sẽ tự động gán bằng Username của bạn (có thể đổi tự do trong Cài đặt hồ sơ).
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePass(id) {
+      const el = document.getElementById(id);
+      el.type = (el.type === 'password') ? 'text' : 'password';
+    }
+
+    function handleOnboarding(e) {
+      e.preventDefault();
+      const u = document.getElementById('ob-user').value.trim();
+      const p = document.getElementById('ob-pass').value;
+      const rp = document.getElementById('ob-repass').value;
+
+      if (u.length < 3 || u.length > 20 || !/^[a-zA-Z0-9_]+$/.test(u)) {
+        alert('Tên đăng nhập phải từ 3–20 ký tự (chữ, số, gạch dưới)!');
+        return;
+      }
+      if (p.length < 8) {
+        alert('Mật khẩu dự phòng phải có tối thiểu 8 ký tự!');
+        return;
+      }
+      if (p !== rp) {
+        alert('Mật khẩu xác nhận không khớp!');
+        return;
+      }
+
+      localStorage.setItem('xiangqi_user', JSON.stringify({
+        username: u,
+        display_name: u,
+        is_guest: false,
+        elo: 1200
+      }));
+
+      alert('✓ Thiết lập tài khoản Google thành công! Chào mừng Người chơi ' + u + ' bước vào Sảnh cờ.');
+      window.location.href = 'SCR-LOBBY.html';
+    }
+  </script>
+</body>
+</html>

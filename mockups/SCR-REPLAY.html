@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Xem Lại Kỳ Phổ (Replay)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --bg-dark: #0F0B08;
+      --panel-bg: rgba(30, 18, 12, 0.92);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 10%, rgba(200, 130, 40, 0.12) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(15, 11, 8, 0.88) 0%, rgba(15, 11, 8, 0.96) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-navbar {
+      height: 54px;
+      background: linear-gradient(180deg, rgba(32, 18, 12, 0.98) 0%, rgba(20, 11, 7, 0.95) 100%);
+      border-bottom: 2px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .btn-nav {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #FFF;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .replay-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      padding: 16px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      align-items: center;
+    }
+
+    .board-frame {
+      background: radial-gradient(circle at 50% 50%, #E3BA82 0%, #C49A62 70%, #9C7238 100%);
+      border: 12px solid #4A2614;
+      border-radius: 10px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+      padding: 8px;
+      max-width: 500px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    svg.board-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 9 / 10;
+    }
+
+    .replay-sidebar {
+      background: var(--panel-bg);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      max-height: 560px;
+    }
+
+    .moves-table-box {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #4A2614;
+      border-radius: 6px;
+      background: #180F0A;
+      max-height: 280px;
+    }
+
+    .move-row {
+      display: grid;
+      grid-template-columns: 36px 1fr 1fr;
+      padding: 6px 10px;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+    }
+    .move-row:hover, .move-row.active {
+      background: rgba(198, 146, 42, 0.2);
+      color: var(--gold-light);
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .btn-ctrl {
+      flex: 1;
+      height: 38px;
+      background: #3C1E14;
+      border: 1.5px solid var(--gold-dark);
+      color: var(--gold-light);
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .btn-ctrl:hover {
+      background: var(--gold-main);
+      color: #FFF;
+    }
+
+    @media (max-width: 840px) {
+      .replay-layout { grid-template-columns: 1fr; }
+      .replay-sidebar { max-width: 500px; margin: 0 auto; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-navbar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <a href="SCR-HISTORY.html" class="btn-nav">❮ Lịch Sử</a>
+      <a href="SCR-LOBBY.html" class="btn-nav" style="border-color: var(--gold-dark); color: var(--gold-light);">🏛️ Sảnh Cờ</a>
+      <span style="font-family: var(--font-serif); font-size: 15px; font-weight: 700; color: #FFF;">Kỳ Phổ: Nguyễn Ngọc Tình vs Trần Hưng Đạo</span>
+    </div>
+
+    <div>
+      <button type="button" class="btn-nav" onclick="copyFen()">📋 Xuất FEN</button>
+    </div>
+  </header>
+
+  <main class="replay-layout">
+    <!-- BOARD -->
+    <div class="board-frame">
+      <svg class="board-svg" viewBox="0 0 450 500">
+        <defs>
+          <radialGradient id="rep-red" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#FBF0D9"/><stop offset="60%" stop-color="#D8A562"/><stop offset="100%" stop-color="#875B26"/>
+          </radialGradient>
+          <radialGradient id="rep-black" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#71717A"/><stop offset="60%" stop-color="#3F3F46"/><stop offset="100%" stop-color="#18181B"/>
+          </radialGradient>
+        </defs>
+
+        <rect x="25" y="25" width="400" height="450" fill="none" stroke="#5C3414" stroke-width="2.5"/>
+        <g stroke="#78471D" stroke-width="1.4">
+          <line x1="25" y1="25" x2="425" y2="25"/><line x1="25" y1="75" x2="425" y2="75"/><line x1="25" y1="125" x2="425" y2="125"/><line x1="25" y1="175" x2="425" y2="175"/><line x1="25" y1="225" x2="425" y2="225"/><line x1="25" y1="275" x2="425" y2="275"/><line x1="25" y1="325" x2="425" y2="325"/><line x1="25" y1="375" x2="425" y2="375"/><line x1="25" y1="425" x2="425" y2="425"/><line x1="25" y1="475" x2="425" y2="475"/>
+          <line x1="25" y1="25" x2="25" y2="475"/><line x1="425" y1="25" x2="425" y2="475"/>
+          <line x1="75" y1="25" x2="75" y2="225"/><line x1="125" y1="25" x2="125" y2="225"/><line x1="175" y1="25" x2="175" y2="225"/><line x1="225" y1="25" x2="225" y2="225"/><line x1="275" y1="25" x2="275" y2="225"/><line x1="325" y1="25" x2="325" y2="225"/><line x1="375" y1="25" x2="375" y2="225"/>
+          <line x1="75" y1="275" x2="75" y2="475"/><line x1="125" y1="275" x2="125" y2="475"/><line x1="175" y1="275" x2="175" y2="475"/><line x1="225" y1="275" x2="225" y2="475"/><line x1="275" y1="275" x2="275" y2="475"/><line x1="325" y1="275" x2="325" y2="475"/><line x1="375" y1="275" x2="375" y2="475"/>
+          <line x1="175" y1="25" x2="275" y2="125"/><line x1="275" y1="25" x2="175" y2="125"/><line x1="175" y1="375" x2="275" y2="475"/><line x1="275" y1="375" x2="175" y2="475"/>
+        </g>
+        <text x="100" y="256" font-family="SimSun, serif" font-size="22" font-weight="900" fill="#78471D" text-anchor="middle">楚 河</text>
+        <text x="350" y="256" font-family="SimSun, serif" font-size="22" font-weight="900" fill="#78471D" text-anchor="middle">漢 界</text>
+
+        <!-- Static Pieces Demo for Replay -->
+        <circle cx="225" cy="475" r="21" fill="url(#rep-red)" stroke="#FFF8E7" stroke-width="2.5"/>
+        <text x="225" y="483" font-family="SimSun, serif" font-size="23" font-weight="900" fill="#991319" text-anchor="middle">帥</text>
+
+        <circle cx="225" cy="25" r="21" fill="url(#rep-black)" stroke="#D4D4D8" stroke-width="2.5"/>
+        <text x="225" y="33" font-family="SimSun, serif" font-size="23" font-weight="900" fill="#09090B" text-anchor="middle">將</text>
+
+        <circle cx="225" cy="225" r="21" fill="url(#rep-red)" stroke="#FFF8E7" stroke-width="2.5"/>
+        <text x="225" y="233" font-family="SimSun, serif" font-size="23" font-weight="900" fill="#991319" text-anchor="middle">炮</text>
+      </svg>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="replay-sidebar">
+      <div>
+        <h3 style="font-family: var(--font-serif); font-size: 16px; color: #FFF; margin-bottom: 2px;">Danh Sách Nước Đi (28 Nước)</h3>
+        <p style="font-size: 11.5px; color: var(--gold-light);">Nước hiện tại: <span id="cur-step">Nước 28 / 28 (Sát cục)</span></p>
+      </div>
+
+      <div class="moves-table-box">
+        <div class="move-row"><span>#</span><span style="color: #FCA5A5; font-weight: 700;">🔴 Đỏ</span><span style="color: #E5E7EB; font-weight: 700;">⚫ Đen</span></div>
+        <div class="move-row"><span>1</span><span>Pháo 2 bình 5</span><span>Mã 8 tiến 7</span></div>
+        <div class="move-row"><span>2</span><span>Mã 2 tiến 3</span><span>Xe 9 bình 8</span></div>
+        <div class="move-row"><span>3</span><span>Xe 1 bình 2</span><span>Tốt 7 tiến 1</span></div>
+        <div class="move-row"><span>4</span><span>Xe 2 tiến 6</span><span>Pháo 8 bình 9</span></div>
+        <div class="move-row active"><span>28</span><span>Pháo 5 tiến 4 (Chiếu bí)</span><span>Hết cờ</span></div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="controls-row">
+        <button type="button" class="btn-ctrl" onclick="stepMove('start')" title="Về đầu">|❮</button>
+        <button type="button" class="btn-ctrl" onclick="stepMove('prev')" title="Lùi 1 nước">❮</button>
+        <button type="button" class="btn-ctrl" id="btn-play" onclick="togglePlay()" title="Tự động chạy">▶</button>
+        <button type="button" class="btn-ctrl" onclick="stepMove('next')" title="Tiến 1 nước">❯</button>
+        <button type="button" class="btn-ctrl" onclick="stepMove('end')" title="Đến cuối">❯|</button>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    let isPlaying = false;
+    let playTimer = null;
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('btn-play');
+      if (isPlaying) {
+        btn.textContent = '⏸';
+        playTimer = setInterval(() => {
+          // Mock playing
+        }, 1200);
+      } else {
+        btn.textContent = '▶';
+        clearInterval(playTimer);
+      }
+    }
+
+    function stepMove(action) {
+      alert(`Thực hiện tua kỳ phổ: ${action}`);
+    }
+
+    function copyFen() {
+      navigator.clipboard.writeText('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
+      alert('✓ Đã sao chép chuỗi FEN của thế cờ vào bộ nhớ tạm!');
+    }
+  </script>
+</body>
+</html>
