@@ -17,12 +17,12 @@ Thư mục này chứa **mỗi Epic, Story và Task một tệp `.md`** với đ
 | Loại | P1 | P2 |
 |---|---:|---:|
 | Epic | 10 | 6 |
-| Story | 53 | 27 |
+| Story | 53 | 28 |
 | Task | 78 | chưa tạo |
 
 ## Cách review
 
-1. Đọc [docs/06](../docs/06-ke-hoach-jira.md) mục 1 (kết luận về hạn 2 tuần và thứ tự dừng phần).
+1. Đọc [docs/06](../docs/06-ke-hoach-jira.md) mục 1 (kết luận về hạn 2 tuần; thứ tự dừng phần là lịch sử đã bị thay thế 04/10).
 2. Với mỗi Epic: kiểm phạm vi, tiêu chí hoàn thành, rủi ro.
 3. Với mỗi Story: kiểm tiêu chí nghiệm thu (chép nguyên từ docs/01).
 4. Với mỗi Task: kiểm việc cần làm, ước lượng, tiền đề, vai trò.

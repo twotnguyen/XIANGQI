@@ -17,9 +17,9 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Cả Host và người chơi còn lại đều thấy nút *Kick* cạnh mỗi người xem; bấm thì hiện xác nhận *"Người này sẽ không vào lại được phòng này."*
-* Sau xác nhận: người xem bị ngắt kết nối, đưa ra Sảnh kèm *"Bạn đã bị đuổi khỏi phòng thi đấu"*, bị chặn **đến khi phòng đóng**.
-* Người bị đuổi quay lại bằng link hoặc mã thì thấy *"Bạn đã bị đuổi và chặn tham gia phòng cờ này!"*.
+* **AC-ROOM-09-01** — Cả Host và người chơi còn lại đều thấy nút *Kick* cạnh mỗi người xem; bấm thì hiện xác nhận *"Người này sẽ không vào lại được phòng này."*
+* **AC-ROOM-09-02** — Sau xác nhận: người xem bị ngắt kết nối, đưa ra Sảnh kèm *"Bạn đã bị đuổi khỏi phòng thi đấu"*, bị chặn **đến khi phòng đóng**.
+* **AC-ROOM-09-03** — Người bị đuổi quay lại bằng link hoặc mã thì thấy *"Bạn đã bị đuổi và chặn tham gia phòng cờ này!"*.
 
 ## Việc liên quan (Task)
 
@@ -34,4 +34,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

@@ -17,7 +17,7 @@ Màn hình từ chối truy cập. Chi tiết nghiệp vụ theo nguồn luật 
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Hiện đúng thông báo theo lý do: phòng đầy, bị đuổi, phòng `LOCKED` (nội dung theo BA 4.3); chỉ có một nút *Quay về Sảnh*.
+* **AC-ROOM-12-01** — Hiện đúng thông báo theo lý do: phòng đầy, bị đuổi, phòng `LOCKED` (nội dung theo BA 4.3); chỉ có một nút *Quay về Sảnh*.
 
 ## Việc liên quan (Task)
 
@@ -32,4 +32,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

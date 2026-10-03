@@ -9,9 +9,9 @@
 
 ## Story
 
-* [US-CAS-01](../stories/US-CAS-01.md) Ghép ngẫu nhiên Casual
+* [US-CAS-01](../stories/US-CAS-01.md) Ghép ngẫu nhiên Đánh Thường
 * [US-CAS-02](../stories/US-CAS-02.md) Xin đi lại
 * [US-CAS-03](../stories/US-CAS-03.md) Xin đổi bên
 * [US-CAS-04](../stories/US-CAS-04.md) Tái đấu
-* [US-CAS-05](../stories/US-CAS-05.md) Mức giờ "Không giới hạn" và chống treo ván
-* [US-CAS-06](../stories/US-CAS-06.md) Mã QR
+* [US-CAS-05](../stories/US-CAS-05.md) Không giới hạn giờ và chống treo
+* [US-CAS-06](../stories/US-CAS-06.md) Chia sẻ bằng QR

@@ -17,9 +17,9 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Nước vừa đi: 4 góc vuông ở ô đi và ô đến.
-* Khi bị chiếu: vòng cảnh báo quanh Tướng kèm chữ *"Đang bị chiếu"* và biểu tượng; **không nhấp nháy, không rung** (tối đa một nhịp sáng khi vừa bị chiếu; tắt khi bật giảm chuyển động).
-* Không truyền thông tin chỉ bằng màu.
+* **AC-BOARD-04-01** — Nước vừa đi: 4 góc vuông ở ô đi và ô đến.
+* **AC-BOARD-04-02** — Khi bị chiếu: vòng cảnh báo quanh Tướng kèm chữ *"Đang bị chiếu"* và biểu tượng; **không nhấp nháy, không rung** (tối đa một nhịp sáng khi vừa bị chiếu; tắt khi bật giảm chuyển động).
+* **AC-BOARD-04-03** — Không truyền thông tin chỉ bằng màu.
 
 ## Việc liên quan (Task)
 
@@ -33,4 +33,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

@@ -17,10 +17,10 @@ Mời bạn bè online vào phòng. Chi tiết nghiệp vụ theo nguồn luật
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Trong `MODAL-INVITE` (người ngồi ghế mở), danh sách bạn hiện trạng thái; nút *Mời* chỉ sáng với bạn 🟢 Online.
-* Bạn 🟠 Đang đấu thì nút `DISABLED` kèm tooltip *"Bạn bè đang trong ván khác"*; bạn ⚫ Offline thì kèm nhãn *"Ngoại tuyến"*.
-* Người được mời thấy pop-up *"Người chơi [Tên Host] mời bạn tham gia phòng cờ [Tên phòng]"* với *Tham gia* và *Từ chối*, đếm lùi **30 giây** rồi tự tắt.
-* Bấm *Tham gia* thì vào phòng theo US-ROOM-05.
+* **AC-FRIEND-04-01** — Trong `MODAL-INVITE` (người ngồi ghế mở), danh sách bạn hiện trạng thái; nút *Mời* chỉ sáng với bạn 🟢 Online.
+* **AC-FRIEND-04-02** — Bạn 🟠 Đang đấu thì nút `DISABLED` kèm tooltip *"Bạn bè đang trong ván khác"*; bạn ⚫ Offline thì kèm nhãn *"Ngoại tuyến"*.
+* **AC-FRIEND-04-03** — Người được mời thấy pop-up *"Người chơi [Tên Host] mời bạn tham gia phòng cờ [Tên phòng]"* với *Tham gia* và *Từ chối*, đếm lùi **30 giây** rồi tự tắt.
+* **AC-FRIEND-04-04** — Bấm *Tham gia* thì vào phòng theo US-ROOM-05.
 
 ## Việc liên quan (Task)
 
@@ -35,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

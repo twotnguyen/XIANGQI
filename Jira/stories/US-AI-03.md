@@ -17,9 +17,10 @@ Kết thúc, bỏ dở và vào lại. Chi tiết nghiệp vụ theo nguồn lu�
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Kết thúc khi chiếu hết, hết nước đi, đầu hàng hoặc hoà theo [02] mục 3.3; hiện `MODAL-MATCH-RESULT` chỉ có *Rời phòng*.
-* Đóng tab hoặc mất kết nối: ván **giữ 30 phút** để vào lại cùng đường dẫn `/ai/:id`; Sảnh hiện banner *"Bạn có ván đang chơi dở — Quay lại"*. Quá 30 phút thì ván coi là *Bỏ dở* (không tính thắng/thua).
-* Đi lại và lưu Lịch sử là P2, **không hiện** ở P1.
+* **AC-AI-03-01** — Kết thúc khi chiếu hết, hết nước đi, đầu hàng hoặc hoà theo [02] mục 3.3; hiện `MODAL-MATCH-RESULT` chỉ có *Rời phòng*.
+* **AC-AI-03-02** — Đóng tab hoặc mất kết nối: ván **giữ 30 phút** để vào lại cùng đường dẫn `/ai/:id`; Sảnh hiện banner *"Bạn có ván đang chơi dở — Quay lại"*. Quá 30 phút thì ván coi là *Bỏ dở* (không tính thắng/thua).
+* **AC-AI-03-03** — Đi lại và lưu Lịch sử là P2, **không hiện** ở P1.
+* **AC-AI-03-04** — Chủ động Rời ván/Đăng xuất AI đang chơi: xác nhận đầu hàng; đồng ý kết thúc `RESIGN`, huỷ tìm kiếm và giải phóng vị trí chơi; Huỷ giữ ván. Không áp dụng ân hạn 30 phút cho hành động đã xác nhận này (BA 6.3).
 
 ## Việc liên quan (Task)
 
@@ -34,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

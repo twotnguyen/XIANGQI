@@ -1,4 +1,4 @@
-# [US-DEMO-01] Widget thông số máy cờ (P2)
+# [US-DEMO-01] Thông số máy cờ (P2)
 
 > **Bản nháp P2, chưa lên kế hoạch.** Chưa tạo trên Jira.
 
@@ -9,10 +9,12 @@
 | Nhãn | `P2` |
 | Nguồn luật | BA 9.2 |
 
-## Mô tả và tiêu chí chính
+## Tiêu chí nghiệm thu (chép nguyên từ docs/01)
 
-số nút đã duyệt, độ sâu thực tế, thời gian tính, nước dự tính tối ưu.
+* **AC-DEMO-01-01** — Widget AI hiển thị số nút đã duyệt, độ sâu thực tế hoàn tất, thời gian tìm và nước dự tính của máy theo dữ liệu công việc hiện tại.
+* **AC-DEMO-01-02** — Chưa có số đo hiển thị chưa có dữ liệu, không điền số mẫu; lỗi tiến trình hiển thị lỗi tương ứng, không giữ số cũ như số hiện tại.
+* **AC-DEMO-01-03** — Widget không trở thành Gợi ý nước đi cho người chơi; chỉ thể hiện thông số máy theo phạm vi BA 9.2.
 
 ## Ghi chú
 
-Tách thành Task và ước lượng khi lên kế hoạch P2. Tiêu chí nghiệm thu chi tiết bổ sung lúc đó từ nguồn luật ở trên.
+Tách thành Task và ước lượng khi lên kế hoạch P2.

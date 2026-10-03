@@ -17,9 +17,9 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Mức 5/10/15 phút mỗi bên, **không cộng giây**; đồng hồ bên tới lượt chạy, bên kia dừng.
-* Hết giờ thì ván kết thúc `TIMEOUT` và bên hết giờ thua; máy chủ tính giờ trước khi xét nước đi.
-* Dưới 30 giây đồng hồ hiện biểu tượng cảnh báo và đổi màu **kèm chữ/biểu tượng**.
+* **AC-PLAY-02-01** — Mức 5/10/15 phút mỗi bên, **không cộng giây**; đồng hồ bên tới lượt chạy, bên kia dừng.
+* **AC-PLAY-02-02** — Hết giờ thì ván kết thúc `TIMEOUT` và bên hết giờ thua; máy chủ tính giờ trước khi xét nước đi.
+* **AC-PLAY-02-03** — Dưới 30 giây đồng hồ hiện biểu tượng cảnh báo và đổi màu **kèm chữ/biểu tượng**.
 
 ## Việc liên quan (Task)
 
@@ -34,4 +34,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

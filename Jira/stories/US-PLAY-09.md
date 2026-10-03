@@ -17,9 +17,9 @@ Người xem theo dõi trực tiếp. Chi tiết nghiệp vụ theo nguồn lu�
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Người xem thấy bàn cờ, đồng hồ, nước đi **thời gian thực** (không trễ cố ý), chỉ đọc.
-* Người xem không thấy Kênh Riêng; không có nút bật camera/mic.
-* Ngoài danh sách chung, người xem thấy số người xem hiện tại (X / N).
+* **AC-PLAY-09-01** — Người xem thấy bàn cờ, đồng hồ, nước đi **thời gian thực** (không trễ cố ý), chỉ đọc.
+* **AC-PLAY-09-02** — Người xem không thấy Kênh Riêng; không có nút bật camera/mic.
+* **AC-PLAY-09-03** — Ngoài danh sách chung, người xem thấy số người xem hiện tại (X / N).
 
 ## Việc liên quan (Task)
 
@@ -33,4 +33,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

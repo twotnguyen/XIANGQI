@@ -2,7 +2,7 @@
 
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
-**Giai đoạn 2 · Trạng thái: **Đã duyệt 03/10/2026** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (số "BA x.y" là số Quyết định) và [DANH-MUC-MAN-HINH-XIANGQI.md](../DANH-MUC-MAN-HINH-XIANGQI.md). Tài liệu này **không thêm yêu cầu mới**; chỉ chi tiết hoá thành các câu chuyện người dùng (US) có tiêu chí nghiệm thu (AC) kiểm thử được. **Chưa phải Jira**: mã nhóm và mã US chỉ là nhãn tham chiếu, việc chia Epic/Story/Task là Giai đoạn 3.
+**Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (số "BA x.y" là số Quyết định) và [DANH-MUC-MAN-HINH-XIANGQI.md](../DANH-MUC-MAN-HINH-XIANGQI.md). Tài liệu này **không thêm yêu cầu mới**; chỉ chi tiết hoá thành các câu chuyện người dùng (US) có tiêu chí nghiệm thu (AC) kiểm thử được. **Chưa phải Jira**: mã nhóm và mã US chỉ là nhãn tham chiếu, việc chia Epic/Story/Task là Giai đoạn 3.
 
 Cách đọc:
 * **P1** = tám mục tiêu ưu tiên của MVP; mục tiêu khoảng hai tuần phải được kiểm tra công suất ở bước lập kế hoạch, không phải cam kết của đặc tả. **P2** = làm sau (BA Phần 11). Cả hai được đặc tả trong tài liệu này; không đổi phân kỳ.
@@ -188,7 +188,7 @@ Cách đọc:
 
 ### US-PLAY-03 · Kết thúc ván và kết quả (P1) — BA 3.3; [02] mục 3.3
 * **AC-PLAY-03-01** — Chiếu hết thua; hết nước đi (không bị chiếu) cũng thua; xử đúng thứ tự ưu tiên ở [02] mục 3.4.
-* **AC-PLAY-03-02** — `MODAL-MATCH-RESULT` hiện thắng/thua/hoà, lý do kết thúc, chỉ nút *Rời phòng* (không Tái đấu, không Xem lại ở P1).
+* **AC-PLAY-03-02** — `MODAL-MATCH-RESULT` hiện thắng/thua/hoà, lý do kết thúc, chỉ nút *Rời phòng* (không Tái đấu, không Xem lại ở P1). Ván `INTERRUPTED` (máy chủ tự ghi nhận sự cố/khởi động lại) hiện kết quả **trung tính** *"Ván bị gián đoạn"*: không có bên thắng/thua/hoà, không đổi Elo, chỉ nút *Rời phòng* (đề xuất 04/10/2026, chờ PO duyệt).
 * **AC-PLAY-03-03** — Ván ngừng nhận nước đi; người xem thấy kết quả.
 
 ### US-PLAY-04 · Đầu hàng (P1) — BA 3.3
@@ -343,6 +343,9 @@ Cách đọc:
 | NFR-05 | Máy cờ đạt thời gian và sức mạnh ở [02] mục 9.5 | Kiểm thử máy cờ ([05]) |
 | NFR-06 | Chỉ tiếng Việt; không ghi hình/ghi âm | Kiểm thử chấp nhận |
 | NFR-07 | Khi máy chủ khởi động lại, ván đang chạy thành `INTERRUPTED`, không treo | Kiểm thử phục hồi |
+| NFR-08 | Quan sát vận hành (đề xuất 04/10/2026, chờ PO duyệt): máy chủ ghi nhật ký có cấu trúc (thời điểm, mã lệnh/ván, mã lỗi) cho lỗi, `INTERRUPTED`, sự cố máy cờ, đăng ký bị phục hồi; có điểm kiểm tra sức khoẻ; **không ghi** mật khẩu, mã OTP, token, nội dung chat. Không thêm công cụ ngoài danh sách README | Kiểm tra nhật ký ở các ca lỗi; rà không lộ dữ liệu nhạy cảm |
+| NFR-09 | Lưu giữ dữ liệu (đề xuất 04/10/2026, chờ PO duyệt): ván **online** (người–người) và nước đi lưu bền ở quy mô đồ án; ván với máy ở P1 chỉ giữ trong bộ nhớ để vào lại 30 phút (BA 6.3), không lưu bền; chat **phòng** xoá khi phòng `CLOSED` (chat 1-1 P2 theo quy tắc bạn bè, không xoá theo phòng); chat/tên của Khách xoá khi phiên Khách hết (P2); biên lai lệnh xoá sau 24 giờ (đã có ở [03]); nhật ký vận hành giữ tối đa 14 ngày | Kiểm thử dọn dẹp ([05]) |
+| NFR-10 | An toàn hiển thị (đề xuất 04/10/2026, chờ PO duyệt): tin chat, tên hiển thị, tên phòng luôn hiển thị là **văn bản thuần**, không chạy HTML/script/URL tự kích hoạt; độ dài và tần suất theo BA 5.3 | Ca có thẻ `<script>`, thuộc tính sự kiện, URL `javascript:` ở chat/tên/tên phòng |
 
 ---
 
@@ -357,7 +360,7 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 * **AC-AUTH-P2-01-02** — Phiên chỉ trong trình duyệt hiện tại, thời hạn 12 giờ; nếu đến hạn khi đang ngồi ghế/đang đấu thì gia hạn tới lúc rời. Rời phòng trước hạn vẫn giữ cùng phiên; Đăng xuất chủ động kết thúc phiên. Đăng xuất giữa ván theo quy tắc xác nhận đầu hàng ở BA 1.8/6.3.
 * **AC-AUTH-P2-01-03** — Khách được Đánh Thường, AI, xem, chat phòng và camera/mic khi ngồi ghế; máy chủ chặn Đánh Hạng, Elo, bạn bè và thay đổi tài khoản dù gọi trực tiếp.
 * **AC-AUTH-P2-01-04** — Mỗi Khách có tối đa một phòng đang mở do mình tạo, chịu sức chứa và giới hạn chat như tài khoản; phiên mới là danh tính mới, giới hạn né chặn bằng phiên mới được công bố ở BA 4.2.
-* **AC-AUTH-P2-01-05** — Không lịch sử/Replay phía Khách, không chuyển dữ liệu sang tài khoản mới. Đối thủ chính thức vẫn có bản ghi ván; khi phiên Khách hết thì thay tên cá nhân bằng Khách, không xoá bản ghi ván của đối thủ.
+* **AC-AUTH-P2-01-05** — Không lịch sử/Replay phía Khách, không chuyển dữ liệu sang tài khoản mới. Đối thủ chính thức vẫn có bản ghi ván; khi phiên Khách hết thì thay tên cá nhân bằng Khách, không xoá bản ghi ván của đối thủ. Đồng thời xoá khỏi mọi phòng còn mở các tin chat do Khách đó gửi và tên hiển thị cá nhân; người còn trong phòng thấy tin đã bị gỡ, tên chung "Khách" (đề xuất 04/10/2026, chờ PO duyệt).
 
 ### US-AUTH-P2-02 · Google OAuth (P2) — BA 1.2
 * **AC-AUTH-P2-02-01** — Đăng ký bằng Google mới đi tới SCR-ONBOARDING: Username và mật khẩu hợp lệ/xác nhận, không OTP; display_name khởi tạo bằng username.

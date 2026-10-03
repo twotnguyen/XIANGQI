@@ -17,10 +17,10 @@ Camera và micro cho hai người chơi. Chi tiết nghiệp vụ theo nguồn l
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Mỗi người chơi bật/tắt camera và micro độc lập; **mặc định Tắt** khi vào phòng.
-* Có 3 mức chia sẻ chọn riêng từng người: *Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem* (mức 3 chỉ cho khi phòng có người xem).
-* Hai người chơi thấy mặt và nghe tiếng nhau khi cả hai bật mức ≥ 2.
-* Không ghi hình, ghi âm hoặc lưu.
+* **AC-MEDIA-01-01** — Mỗi người chơi bật/tắt camera và micro độc lập; **mặc định Tắt** khi vào phòng.
+* **AC-MEDIA-01-02** — Có 3 mức chia sẻ chọn riêng từng người: *Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem* (mức 3 chỉ cho khi phòng có người xem).
+* **AC-MEDIA-01-03** — Hai người chơi thấy mặt và nghe tiếng nhau khi cả hai bật mức ≥ 2.
+* **AC-MEDIA-01-04** — Không ghi hình, ghi âm hoặc lưu.
 
 ## Việc liên quan (Task)
 
@@ -35,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

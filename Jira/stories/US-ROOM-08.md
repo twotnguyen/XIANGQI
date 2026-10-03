@@ -17,10 +17,10 @@ Danh sách phòng công khai ở Sảnh. Chi tiết nghiệp vụ theo nguồn l
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Chỉ hiện phòng `PUBLIC` đang `WAITING`/`PLAYING`; mỗi dòng: tên phòng, Host, mức giờ, số người `X/Y`, nút *Vào xem*.
-* Sắp mới nhất lên đầu, tối đa 50 phòng, tự làm mới.
-* Phòng đã đủ người xem thì nút *Vào xem* `DISABLED` kèm tooltip nêu lý do.
-* `EMPTY`: hiện giải thích và nút *Tạo phòng*.
+* **AC-ROOM-08-01** — Chỉ hiện phòng `PUBLIC` đang `WAITING`/`PLAYING`; mỗi dòng: tên phòng, Host, mức giờ, số người `X/Y`, nút *Vào xem*.
+* **AC-ROOM-08-02** — Sắp mới nhất lên đầu, tối đa 50 phòng, tự làm mới.
+* **AC-ROOM-08-03** — Phòng đã đủ người xem thì nút *Vào xem* `DISABLED` kèm tooltip nêu lý do.
+* **AC-ROOM-08-04** — `EMPTY`: hiện giải thích và nút *Tạo phòng*.
 
 ## Việc liên quan (Task)
 
@@ -35,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

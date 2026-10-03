@@ -7,12 +7,15 @@
 | Loại | Story |
 | Epic | [K](../epics/K.md) · Đánh Thường mở rộng |
 | Nhãn | `P2` |
-| Nguồn luật | BA 2.3 |
+| Nguồn luật | BA 2.3, 3.6 |
 
-## Mô tả và tiêu chí chính
+## Tiêu chí nghiệm thu (chép nguyên từ docs/01)
 
-hạn 30 giây; đồng ý thì hoán ghế và reset Sẵn sàng; chờ 60 giây mới gửi lại sau từ chối/hết hạn.
+* **AC-CAS-03-01** — Chỉ hai người ngồi ghế ở phòng chờ; Host một mình dùng đổi ghế trực tiếp, không gửi đề nghị tới người chưa có.
+* **AC-CAS-03-02** — Đề nghị hạn 30 giây, tuân một đề nghị/người; đồng ý khi còn hợp lệ hoán hai ghế và reset Sẵn sàng, giữ Host.
+* **AC-CAS-03-03** — Từ chối/hết hạn không đổi ghế; chờ 60 giây trước khi gửi lại; rút lại không đổi ghế.
+* **AC-CAS-03-04** — Khi một người rời/đổi vai hoặc ván đã bắt đầu, yêu cầu cũ không còn điều kiện áp dụng; không hoán ghế của ván đang chơi.
 
 ## Ghi chú
 
-Tách thành Task và ước lượng khi lên kế hoạch P2. Tiêu chí nghiệm thu chi tiết bổ sung lúc đó từ nguồn luật ở trên.
+Tách thành Task và ước lượng khi lên kế hoạch P2.

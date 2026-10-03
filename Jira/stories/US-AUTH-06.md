@@ -17,8 +17,8 @@ Chuyển hướng vào phòng sau đăng nhập. Chi tiết nghiệp vụ theo n
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Khi chưa đăng nhập mà mở link mời thì thấy màn đăng nhập/đăng ký; sau khi đăng nhập hoặc đăng ký xong, **tự vào đúng phòng**, không phải bấm lại link.
-* Khi đã đăng nhập thì vào thẳng phòng (xem US-ROOM-05 để biết vào ghế hay xem).
+* **AC-AUTH-06-01** — Khi chưa đăng nhập mà mở link mời thì thấy màn đăng nhập/đăng ký; sau khi đăng nhập hoặc đăng ký xong, **tự vào đúng phòng**, không phải bấm lại link.
+* **AC-AUTH-06-02** — Khi đã đăng nhập thì vào thẳng phòng (xem US-ROOM-05 để biết vào ghế hay xem).
 
 ## Việc liên quan (Task)
 
@@ -32,4 +32,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

@@ -17,9 +17,9 @@ Host rời, chuyển quyền, đóng phòng. Chi tiết nghiệp vụ theo ngu�
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Host rời lúc phòng `WAITING`: nếu còn người chơi thứ hai thì họ thành Host, phòng vẫn mở.
-* Phòng đóng (`CLOSED`) chỉ khi không còn người chơi nào (kể cả chỉ còn người xem) và Host rời.
-* Đang đấu (`PLAYING`): Host mất kết nối tạm thời **không** đổi Host; Host rời hoặc bị xử thua thì quyền Host chuyển cho người chơi còn lại; rời giữa ván tính là **Đầu hàng**.
+* **AC-ROOM-10-01** — Host rời lúc phòng `WAITING`: nếu còn người chơi thứ hai thì họ thành Host, phòng vẫn mở.
+* **AC-ROOM-10-02** — Khi không còn người ngồi ghế sau khi Host rời, đóng phòng dù còn người xem; họ về Sảnh. Ngoài ra phòng còn đóng khi hết hạn `FINISHED` theo US-ROOM-11, không gọi điều kiện hết ghế là nguyên nhân đóng duy nhất.
+* **AC-ROOM-10-03** — Đang đấu (`PLAYING`): Host mất kết nối tạm thời **không** đổi Host; Host rời hoặc bị xử thua thì quyền Host chuyển cho người chơi còn lại; rời giữa ván tính là **Đầu hàng**.
 
 ## Việc liên quan (Task)
 
@@ -33,4 +33,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

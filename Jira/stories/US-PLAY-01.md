@@ -17,10 +17,10 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Chỉ người ngồi ghế, đúng lượt, mới gửi được nước đi; máy chủ kiểm hợp lệ theo [02] và phát thế mới cho cả phòng (người chơi và người xem) trong **dưới 100 ms** trên mạng cục bộ.
-* Nước không hợp lệ bị từ chối và quân về chỗ cũ; trạng thái ván không đổi.
-* Lệnh gửi trùng (`commandId`) không làm đi hai lần; lệnh cũ (`matchVersion` lỗi thời) bị từ chối kèm thế mới.
-* Quân vừa gửi hiển thị mờ chờ xác nhận (DESIGN §7.4) rồi cố định khi máy chủ xác nhận.
+* **AC-PLAY-01-01** — Chỉ người ngồi ghế, đúng lượt, mới gửi được nước đi; máy chủ kiểm hợp lệ theo [02] và phát thế mới cho cả phòng (người chơi và người xem) trong **dưới 100 ms** trên mạng cục bộ.
+* **AC-PLAY-01-02** — Nước không hợp lệ bị từ chối và quân về chỗ cũ; trạng thái ván không đổi.
+* **AC-PLAY-01-03** — Lệnh gửi trùng (`commandId`) không làm đi hai lần; lệnh cũ (`matchVersion` lỗi thời) bị từ chối kèm thế mới.
+* **AC-PLAY-01-04** — Quân vừa gửi hiển thị mờ chờ xác nhận (DESIGN §7.4) rồi cố định khi máy chủ xác nhận.
 
 ## Việc liên quan (Task)
 
@@ -35,4 +35,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).

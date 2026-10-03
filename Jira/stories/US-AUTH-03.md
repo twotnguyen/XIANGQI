@@ -17,11 +17,12 @@
 
 ## Tiêu chí nghiệm thu (AC)
 
-* Khi nhập đúng mã trong 3 phút thì tài khoản được tạo, `display_name` = `username`, tự đăng nhập và vào `/lobby`.
-* Khi mã hết 3 phút thì báo hết hạn và yêu cầu gửi lại.
-* Khi nhập sai mã thì báo sai; khi bị **giới hạn nhập sai** (mục tiêu 5 lần, thực thi gần đúng theo giới hạn tốc độ của hệ thống xác thực, BA 1.5) thì khoá form và bắt buộc chờ hoặc bấm *Gửi lại mã*.
-* Khi bỏ dở (đóng tab, hết hạn) thì **không có hồ sơ và không đăng nhập được**, username không bị giữ, và có thể đăng ký lại ngay bằng cùng email.
-* Khi username vừa bị người khác lấy trong lúc chờ thì báo lỗi và quay về bước 1.
+* **AC-AUTH-03-01** — Khi nhập đúng mã trong 3 phút thì tài khoản được tạo, `display_name` = `username`, tự đăng nhập và vào `/lobby`.
+* **AC-AUTH-03-02** — Khi mã hết 3 phút thì báo hết hạn và yêu cầu gửi lại.
+* **AC-AUTH-03-03** — Khi nhập sai mã thì báo sai; khi bị **giới hạn nhập sai** (mục tiêu 5 lần, thực thi gần đúng theo giới hạn tốc độ của hệ thống xác thực, BA 1.5) thì khoá form và bắt buộc chờ hoặc bấm *Gửi lại mã*.
+* **AC-AUTH-03-04** — Bỏ dở trước khi xác minh thì chưa có hồ sơ sử dụng được, username không bị giữ; gửi lại cùng email dùng lại bản ghi dở. Nếu tiến trình chết sau ghi hồ sơ thì tài khoản vẫn bị chặn cho tới khi phục hồi theo BA 1.1 và [04] mục 3.1, không được coi là đăng ký thành công.
+* **AC-AUTH-03-05** — Có `completed_at` nhưng còn `PENDING`: phục hồi xoá cờ, không xoá tài khoản; chưa có `completed_at`: dọn sau thời hạn quy định. Gửi lại, hoàn tất và dọn cùng danh tính phải tuần tự hoá; không xoá tài khoản vừa hoàn tất.
+* **AC-AUTH-03-06** — Khi username vừa bị người khác lấy trong lúc chờ thì báo lỗi và quay về bước 1.
 
 ## Việc liên quan (Task)
 
@@ -36,4 +37,4 @@ Xem [docs/05 mục 4](../../docs/05-kiem-thu.md) (tình huống bắt buộc the
 
 ## Định nghĩa hoàn thành
 
-Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu dừng phần theo [docs/06](../../docs/06-ke-hoach-jira.md) mục 1b thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm và lối vào đã `DISABLED`/ẩn), **không** đánh Done.
+Đạt toàn bộ AC ở trên; **tất cả việc liên quan Done (kể cả đợt 2 và 3)**; kiểm thử tự động xanh; đủ 5 trạng thái cho giao diện của Story. Nếu đến hạn mà chưa xong thì Story ở trạng thái *một phần* (ghi rõ việc chưa làm), **không** đánh Done và **báo Product Owner**; không tự cắt phạm vi (BA 10.1).
