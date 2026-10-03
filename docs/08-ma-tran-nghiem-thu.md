@@ -790,8 +790,8 @@ US: US-DEMO-03. Các US-UI-03/04/05/06 áp dụng chung.
 
 ## 6. Cổng nghiệm thu
 
-- P1: D1–D10, mọi AC P1, trạng thái UI P1 áp dụng, ca biên P1 và các NFR đã duyệt ở [05] (NFR-08–10 chỉ bắt buộc khi PO duyệt). Không đưa AC P2 vào điều kiện P1.
-- P2: mọi AC P2, hồi quy AC P1 còn áp dụng, trạng thái UI mở rộng và các cổng kỹ thuật P2 ở [05]. Không coi P2 đã nghiệm thu vì đã liệt kê US.
+- P1: D1–D10, mọi AC P1, trạng thái UI P1 áp dụng, ca biên P1 và các NFR đã duyệt ở [05] (NFR-08–10 và các nhánh AC còn chờ PO — `INTERRUPTED` trung tính ở AC-PLAY-03-02, dọn chat Khách ở AC-AUTH-P2-01-05 — chỉ bắt buộc khi PO duyệt). Không đưa AC P2 vào điều kiện P1.
+- P2: mọi AC P2 (trừ nhánh còn chờ PO, ví dụ dọn chat Khách ở AC-AUTH-P2-01-05, cho đến khi PO duyệt), hồi quy AC P1 còn áp dụng, trạng thái UI mở rộng và các cổng kỹ thuật P2 ở [05]. Không coi P2 đã nghiệm thu vì đã liệt kê US.
 - Không có ứng dụng trong đợt tài liệu này; toàn bộ mục kiểm bên trên đang **NOT_RUN**. Kiểm định tài liệu chỉ chứng minh số lượng/mã/liên kết, không chứng minh hành vi thực.
 
 [01]: 01-yeu-cau-chi-tiet.md

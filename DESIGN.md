@@ -329,9 +329,9 @@ Câu bắt buộc (chốt):
 
 ### 6.9 Chat và camera/mic
 
-- Người chơi thấy **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"** (công tắc Ẩn/Hiện kênh chung); người xem thấy 1 khung. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
+- **Phòng Đánh Hạng (P2) chỉ có Kênh riêng**, không có Kênh chung (BA 5.4, 7.2). Phòng Đánh Thường: người chơi thấy **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"** (công tắc Ẩn/Hiện kênh chung); người xem thấy 1 khung. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
 - Trạng thái tin: đang gửi · đã gửi · gửi lỗi + "Thử lại".
-- Camera/mic: mỗi thiết bị một điều khiển 3 mức **Tắt · Chỉ đối thủ · Đối thủ và người xem** (mặc định Tắt); trạng thái tách rõ: xin quyền · đang kết nối · đang áp dụng · đã áp dụng · bị từ chối · lỗi. Ghi chú "Chỉ trực tiếp — không ghi âm, không ghi hình".
+- Camera/mic: bật/tắt **độc lập từng thiết bị**; **một mức chia sẻ chung** cho cả camera và mic đang bật: **Không chia sẻ · Chỉ đối thủ · Đối thủ và người xem** (mặc định Tắt; BA 4.1; AC-MEDIA-01-02; PO làm rõ 04/10/2026); trạng thái tách rõ: xin quyền · đang kết nối · đang áp dụng · đã áp dụng · bị từ chối · lỗi. Ghi chú "Chỉ trực tiếp — không ghi âm, không ghi hình".
 
 ---
 
@@ -387,7 +387,7 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 
 ### 7.5 Thao tác và trợ năng
 
-- Thao tác chính **chạm quân → chạm đích**; kéo thả tuỳ chọn (`DT-16`).
+- Thao tác chính **chạm quân → chạm đích**; **hỗ trợ song song kéo thả**, bắt buộc ở P1 theo BA 3.4 (không phải tuỳ chọn).
 - Bàn phím (`DT-06`): mũi tên di chuyển con trỏ · `Enter`/`Space` chọn và xác nhận · `Esc` bỏ chọn.
 - Nhãn đọc (`DT-04`): *"<Tên quân> <màu>, cột <x+1> hàng <y+1>"* theo **toạ độ gốc**, không đổi khi lật bàn — ví dụ Mã đỏ ở `(1,9)` ⇒ "Mã đỏ, cột 2 hàng 10"; giao điểm trống 🟡 "Trống, cột 5 hàng 6" (TK02.1.2 §5.9).
 - Chú giải quân (`DT-05`): 14 chữ Hán + tên tiếng Việt.
@@ -398,6 +398,8 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 ## 8. Bố cục trang
 
 ### 8.1 Máy tính (≥ 1024 px)
+
+> Sơ đồ chỉ minh hoạ các khối chức năng. Bố cục của `SCR-GAME-ROOM` lấy **3 cột theo `DANH-MUC-MAN-HINH-XIANGQI.md`** (trái: media, thẻ người chơi, đồng hồ; giữa: bàn cờ, trạng thái lượt, công cụ ván; phải: người xem, chat); khi khác nhau thì theo DANH-MUC (ưu tiên cao hơn). **PO chốt 04/10/2026 theo khuyến nghị: bố cục theo DANH-MUC (3 cột)**; hình vẽ dưới đây chỉ minh hoạ và sẽ được vẽ lại cho khớp khi dựng giao diện. Nguyên tắc giữ: camera không đè bàn cờ.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -418,7 +420,7 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 ```
 
 **Quy tắc động thích ứng theo Chế độ chơi (Chốt, `BA-SCOPE`):**
-- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–2, mặc định 2; xem BA-SCOPE `Quyết định 2.8`).
+- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–2 ở P1 (tới 5 ở P2), mặc định 2; xem BA-SCOPE `Quyết định 2.8`).
 - **Ván Đánh Xếp Hạng (Ranked Elo FIDE):** 
   - ⛔ **ẨN HOÀN TOÀN** nút `[Xin đi lại]` (Cấm Undo 100%).
   - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm người xem 100% để chống phím cờ).

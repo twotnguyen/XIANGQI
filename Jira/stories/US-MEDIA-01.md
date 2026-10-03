@@ -18,7 +18,7 @@ Camera và micro cho hai người chơi. Chi tiết nghiệp vụ theo nguồn l
 ## Tiêu chí nghiệm thu (AC)
 
 * **AC-MEDIA-01-01** — Mỗi người chơi bật/tắt camera và micro độc lập; **mặc định Tắt** khi vào phòng.
-* **AC-MEDIA-01-02** — Có 3 mức chia sẻ chọn riêng từng người: *Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem* (mức 3 chỉ cho khi phòng có người xem).
+* **AC-MEDIA-01-02** — Có 3 mức chia sẻ chọn riêng từng người chơi, áp chung cho camera và micro đang bật: *Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem* (mức 3 chỉ cho khi phòng có người xem).
 * **AC-MEDIA-01-03** — Hai người chơi thấy mặt và nghe tiếng nhau khi cả hai bật mức ≥ 2.
 * **AC-MEDIA-01-04** — Không ghi hình, ghi âm hoặc lưu.
 
