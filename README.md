@@ -2,7 +2,7 @@
 
 Ứng dụng web chơi cờ tướng trực tuyến: đánh thường với bạn bè, đánh hạng Elo, đánh với máy; có phòng riêng, người xem, chat, camera/mic.
 
-> **Trạng thái:** đang ở **Giai đoạn 1 — chốt ý tưởng và chức năng tổng quan**. Chưa có mã nguồn, chưa có Epic/Story/Task trên Jira. Hiện có: quyết định phạm vi, danh mục màn hình, hệ thống thiết kế và bộ mockup HTML.
+> **Trạng thái:** đang ở **Giai đoạn 3 — phân vai và lập kế hoạch Jira** (Giai đoạn 1 và 2 đã xong ngày 03/10/2026). Chưa có mã nguồn, chưa có Epic/Story/Task trên Jira thật. Tài liệu phân tích và kế hoạch nằm ở [`docs/`](docs/README.md). Hiện có: quyết định phạm vi, danh mục màn hình, hệ thống thiết kế và bộ mockup HTML.
 
 ---
 
@@ -25,9 +25,9 @@
 
 | Giai đoạn | Việc | Trạng thái |
 |---|---|---|
-| **1. Ý tưởng và chức năng tổng quan** | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | **Đang làm** |
-| 2. Phân tích chuyên sâu từng phần | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | Chưa bắt đầu |
-| 3. Phân vai và lập kế hoạch Jira | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng, lịch | Chưa bắt đầu |
+| 1. Ý tưởng và chức năng tổng quan | Chốt phạm vi, chế độ chơi, quy tắc nghiệp vụ, danh mục màn hình | **Đã xong 03/10/2026** |
+| 2. Phân tích chuyên sâu từng phần | Yêu cầu chi tiết, luật cờ, dữ liệu, kiến trúc, kiểm thử | **Đã xong 03/10/2026** (cả P1 và P2) |
+| **3. Phân vai và lập kế hoạch Jira** | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng, lịch | **Đang làm** |
 | 4. Xây dựng | Code, test, review, phát hành | Chưa bắt đầu |
 
 Chỉ chuyển sang giai đoạn sau khi người dùng xác nhận giai đoạn trước đã **okay hết**.
@@ -75,6 +75,7 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (25 h
 ├── BA-SCOPE-DECISIONS.md          Quyết định chốt phạm vi sản phẩm (nguồn luật chính)
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   Danh mục 37 thành phần giao diện và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
+├── docs/                          Tài liệu phân tích chuyên sâu Giai đoạn 2 (bắt đầu từ docs/README.md)
 ├── mockups/                       Mockup HTML/CSS tương tác (mở mockups/index.html)
 ├── site/                          Trang đọc tài liệu cũ, đã lỗi thời (xem lưu ý bên dưới)
 └── .github/                       CODEOWNERS
@@ -94,8 +95,8 @@ Ngày 03/10/2026 Product Owner đã duyệt toàn bộ các quyết định rà 
 
 | # | Việc | Ghi chú |
 |---|---|---|
-| 1 | **Xác nhận Giai đoạn 1 đã xong** để bắt đầu Giai đoạn 2 (phân tích chuyên sâu). Lập Jira là Giai đoạn 3, cần xác nhận riêng | AGENTS §1: chỉ chuyển khi người dùng nói rõ giai đoạn trước đã xong |
-| 2 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời | Cần dữ liệu và thử nghiệm |
+| 1 | **Duyệt các quyết định Giai đoạn 2** (bảng ở [docs/README.md](docs/README.md)), rồi xác nhận Giai đoạn 2 đã xong. Lập Jira là Giai đoạn 3, cần xác nhận riêng | AGENTS §1: chỉ chuyển khi người dùng nói rõ giai đoạn trước đã xong |
+| 2 | Các con số tạm đã được **đề xuất** ở [docs/](docs/README.md): 120 nửa nước không ăn quân; đuổi quân liên tục không xử riêng; quy mô 50 người dùng đồng thời; chờ Product Owner duyệt và xác minh bằng đo thực tế ở Giai đoạn 4 | Cần dữ liệu và thử nghiệm |
 | 3 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
 | 4 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới (đổi chỗ ghế/người xem, xin đi lại lùi 1–2 nước, nhãn "Bị gián đoạn", thẻ tóm tắt người dùng…) | Cập nhật khi dựng giao diện thật |
 
