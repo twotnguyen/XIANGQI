@@ -303,14 +303,14 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   2. **Bộ luật phân định Thắng / Thua / Hòa (`R07` / `DEC-019`):**
      * *Chiếu hết (`CHECKMATE`):* Thua.
      * *Bị vây khốn / Hết nước đi (`STALEMATE`):* Thua (`GR-END-01`).
-     * *Lặp thế cờ 3 lần (`DRAW_REPETITION`):* Hòa tự động (`GR-END-02`, chỉ tính trên nhánh nước đi hiệu lực sau khi undo). **`[RV-03/10]`** Ngoại lệ: lặp do chiếu liên tục và hòa do không ăn quân, xem `Quyết định 3.5`.
+     * *Lặp thế cờ 3 lần (`DRAW_REPETITION`):* Hòa tự động (`GR-END-02`, chỉ tính trên nhánh nước đi hiệu lực sau khi undo). Ngoại lệ (đã duyệt 03/10): lặp do chiếu liên tục và hòa do không ăn quân, xem `Quyết định 3.5`.
      * *Đầu hàng (`RESIGN`):* Thua ngay.
      * *Xin hòa (`DRAW_AGREEMENT`):* Đợi đối phương xác nhận trong 30s.
   3. **Đồng hồ thi đấu & Xử lý hết giờ (`R08`):** Chạy trên máy chủ (Casual: Không giới hạn, 5p, 10p, 15p; Ranked: cố định 10p Rapid). Không cộng giây. Hết giờ xử thua (`TIMEOUT`). Ưu tiên tính giờ trước khi xét duyệt nước đi (`ARCH-04`).
   4. **Mất kết nối & Xử lý Rage Quit (`R09` / `EC-03`):** Ân hạn 60s. Quá 60s xử thua (`DISCONNECT`). Trong ván Ranked bị phạt trừ Elo bình thường, đối thủ được cộng Elo. Lỗi sập server toàn cục xử hòa `INTERRUPTED` giữ nguyên Elo (`ARCH-10`).
   5. **Chống treo ván (`R17`):** Ván không giới hạn giờ, sau 3 phút không đi cờ $\rightarrow$ hiện prompt hỏi $\rightarrow$ đếm lùi 30 giây $\rightarrow$ xử thua nếu im lặng (`INACTIVITY`).
   6. **Thao tác trong ván & Undo (`R13` / `EC-01`):** Ván Ranked **tuyệt đối cấm Undo**. Phòng thường cho phép Undo tối đa 3 lần thành công/bên/ván. Dùng cây nước đi `match_moves` lùi con trỏ `current_move_id`, không hoàn lại thời gian đã trôi.
-  7. **Tái đấu đổi bên (`R14`):** Kết thúc ván, phòng giữ trạng thái `FINISHED` trong 10 phút. Cả hai cùng đồng ý Tái đấu $\rightarrow$ tạo ván mới (`new Match ID`) và tự động hoán đổi bên Đỏ $\leftrightarrow$ Đen. **`[RV-03/10]`** Chỉ áp dụng cho Đánh Thường; phòng Đánh Hạng không có Tái đấu (`Quyết định 7.2`).
+  7. **Tái đấu đổi bên (`R14`):** Kết thúc ván, phòng giữ trạng thái `FINISHED` trong 10 phút. Cả hai cùng đồng ý Tái đấu $\rightarrow$ tạo ván mới (`new Match ID`) và tự động hoán đổi bên Đỏ $\leftrightarrow$ Đen. Chỉ áp dụng cho Đánh Thường; phòng Đánh Hạng không có Tái đấu (đã duyệt 03/10, `Quyết định 7.2`).
 
 ---
 
@@ -683,5 +683,5 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 20 | **Demo Admin Controls** | **[P2 - Tool] Phím tắt giả lập rớt mạng 60s và khôi phục phục vụ bảo vệ đồ án** (chỉ bật bằng cờ chế độ demo, không có vai trò Admin) | **Mở rộng (Stretch P2)** |
 | 21 | **Quên / đặt lại mật khẩu & Phiên đăng nhập** `[RV-03/10]` | **[PWD-RESET] + [SESSION]** `Quyết định 1.7, 1.8` | **Chính thức (Core P1)** — đã có màn hình trong DANH-MUC, nay có quyết định nghiệp vụ |
 | 22 | **Hệ thống Bạn bè & Thông báo** `[RV-03/10]` | **[FRIENDS]** `Quyết định 5.5` (nền cho chat 1-1, mời vào phòng, Thách đấu) | **Chính thức (Core P1)** |
-| 23 | **Luật cờ bổ sung & Hàng đợi/chống gian lận Ranked** `[RV-03/10]` | **[RULES-EXTRA] + [RANKED-GUARD] + [ROOM-SPEC]** `Quyết định 3.5, 7.2, 2.7` | **Chính thức (Core P1)** |
-| 24 | **Ràng buộc chung & Danh sách loại trừ** `[RV-03/10]` | **[GLOBAL-CONSTRAINTS] + [OUT-OF-SCOPE]** `Quyết định 10.1, 10.2` | **Chính thức (Core P1)** |
+| 23 | **Luật cờ bổ sung & Hàng đợi/chống gian lận Ranked** `[RV-03/10]` (duyệt một phần: 3.5 và 7.2 mục 4, 5; xem đầu file) | **[RULES-EXTRA] + [RANKED-GUARD] + [ROOM-SPEC]** `Quyết định 3.5, 7.2, 2.7` | **Chính thức (Core P1)** |
+| 24 | **Ràng buộc chung & Danh sách loại trừ** `[RV-03/10]` (duyệt một phần: không có xoá tài khoản; xem đầu file) | **[GLOBAL-CONSTRAINTS] + [OUT-OF-SCOPE]** `Quyết định 10.1, 10.2` | **Chính thức (Core P1)** |
