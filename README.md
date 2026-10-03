@@ -95,7 +95,7 @@ Ngày 03/10/2026 Product Owner uỷ quyền cho agent tự xử lý mọi mâu t
 | 1 | **Đọc lại và xác nhận các quyết định `[RV-03/10]` còn lại** (tìm bằng `grep "RV-03/10"`). Đã duyệt 03/10: luật chiếu liên tục và Quyết định 3.5, ván có Khách hiện ở lịch sử đối thủ, xin hòa Ranked sau 20 nước, không Tái đấu Ranked, khoá username cũ 30 ngày, không có xoá tài khoản | Agent chọn theo khuyến nghị; phần còn lại chưa phải ý Product Owner đã duyệt |
 | 2 | **Thông tin dự án:** số người trong nhóm, hạn chót, tiêu chí thành công / tiêu chí chấm | Không có trong tài liệu nào |
 | 3 | **Phạm vi so với nguồn lực:** có chuyển một số mục từ P1 xuống P2 không (ứng viên: chat 1-1, Mã QR, sticker, Khách) | AGENTS §3: đổi mức ưu tiên phải được đồng ý |
-| 4 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời; 20 nước mới xin hòa được ở Ranked | Cần dữ liệu và thử nghiệm |
+| 4 | Các con số tạm, chốt ở Giai đoạn 2: 120 nửa nước không ăn quân; luật đuổi quân liên tục; quy mô 50 người dùng đồng thời | Cần dữ liệu và thử nghiệm |
 | 5 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: đang để ngoài phạm vi | Có thể cần cho nộp / công bố thật |
 | 6 | Mockup (`mockups/`) chưa phản ánh hết chi tiết mới (trạng thái "Đang đấu", ẩn Tái đấu ở Ranked, xin hòa sau 20 nước, thẻ tóm tắt người dùng, chọn mức giờ khi ghép Casual…) | Chờ bước 1 xong để khỏi sửa hai lần |
 
