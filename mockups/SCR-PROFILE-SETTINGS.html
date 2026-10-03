@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Cài Đặt Hồ Sơ Người Chơi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --bg-dark: #120D0A;
+      --card-bg: rgba(36, 22, 16, 0.9);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-navbar {
+      height: 64px;
+      background: linear-gradient(180deg, rgba(35, 20, 14, 0.96) 0%, rgba(22, 12, 8, 0.92) 100%);
+      border-bottom: 2px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(16px, 4vw, 40px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-token {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: radial-gradient(circle, #D8A562, #875B26);
+      border: 2px solid var(--gold-light);
+      display: grid; place-items: center;
+      font-family: 'SimSun', serif; font-size: 20px; font-weight: 900; color: var(--crimson-top);
+    }
+
+    .nav-links-menu { display: flex; align-items: center; gap: 18px; list-style: none; }
+    .nav-item a {
+      font-size: 13.5px; font-weight: 600; color: #E2CFB7; text-decoration: none; padding: 6px 12px; border-radius: 6px;
+    }
+    .nav-item.active a { color: var(--gold-light); background: rgba(220, 160, 50, 0.15); }
+
+    .main-profile-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .profile-hero {
+      background: linear-gradient(135deg, rgba(120, 18, 23, 0.85) 0%, rgba(60, 10, 14, 0.9) 100%);
+      border: 2px solid var(--gold-dark);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .user-info-large {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .big-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #8E161C;
+      border: 3px solid var(--gold-light);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 26px;
+      color: #FFF;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .stat-pills {
+      display: flex;
+      gap: 12px;
+    }
+    .stat-pill {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--gold-dark);
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    /* FORMS SECTIONS */
+    .section-card {
+      background: var(--card-bg);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: #FFF5DF;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 8px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #E2CFB7;
+    }
+
+    .form-input {
+      height: 40px;
+      padding: 0 12px;
+      background: #180F0A;
+      border: 1.5px solid #542C15;
+      border-radius: 6px;
+      color: #FFF;
+      font-size: 13.5px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--gold-main); }
+    .form-input.readonly {
+      background: rgba(0,0,0,0.4);
+      color: #9CA3AF;
+      border-color: #374151;
+      cursor: not-allowed;
+    }
+
+    .btn-gold {
+      background: linear-gradient(180deg, #C6922A, #875F17);
+      border: none;
+      color: #FFF;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1.5px solid #EF4444;
+      color: #FCA5A5;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* MODAL OTP CHANGE USERNAME (MODAL-OTP-USERNAME) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 6, 4, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 440px;
+      background: #25160E;
+      border: 3px solid #542C15;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links-menu { display: none; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="top-navbar">
+    <a href="SCR-LOBBY.html" class="brand-logo">
+      <div class="logo-token">帥</div>
+      <span style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: #FFF;">Cờ Tướng Online</span>
+    </a>
+
+    <ul class="nav-links-menu">
+      <li class="nav-item"><a href="SCR-LOBBY.html">🏛️ Sảnh cờ</a></li>
+      <li class="nav-item"><a href="SCR-LEADERBOARD.html">🏆 Bảng xếp hạng</a></li>
+      <li class="nav-item"><a href="SCR-FRIENDS.html">👥 Bạn bè</a></li>
+      <li class="nav-item"><a href="SCR-HISTORY.html">📜 Lịch sử</a></li>
+    </ul>
+
+    <a href="SCR-LOBBY.html" style="text-decoration: none; font-size: 12px; color: var(--gold-light); border: 1px solid var(--gold-dark); padding: 4px 10px; border-radius: 20px;">
+      ❮ Quay Về Sảnh
+    </a>
+  </header>
+
+  <main class="main-profile-container">
+
+    <!-- HERO PROFILE -->
+    <div class="profile-hero">
+      <div class="user-info-large">
+        <div class="big-avatar" id="avatar-circle">T</div>
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 22px; color: #FFF5DF;" id="hero-display-name">Nguyễn Ngọc Tình</h2>
+          <div style="font-size: 12.5px; color: var(--gold-light);" id="hero-username">@nguyen_tinh99</div>
+        </div>
+      </div>
+
+      <div class="stat-pills">
+        <div class="stat-pill">
+          <div style="font-size: 11px; color: #A89582;">ĐIỂM ELO</div>
+          <div style="font-size: 18px; font-weight: 800; color: #FFF;" id="hero-elo">1280</div>
+        </div>
+        <div class="stat-pill">
+          <div style="font-size: 11px; color: #A89582;">THỨ HẠNG</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--gold-light);">#142</div>
+        </div>
+        <div class="stat-pill">
+          <div style="font-size: 11px; color: #A89582;">TỶ LỆ THẮNG</div>
+          <div style="font-size: 18px; font-weight: 800; color: #86EFAC;">58.4%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONAL IDENTITY FORM -->
+    <div class="section-card">
+      <h3 class="section-title">👤 Thông Tin Người Chơi & Danh Tính</h3>
+
+      <form onsubmit="handleSaveProfile(event)">
+        <div class="form-grid">
+          <!-- Display Name (Free to change, no OTP) -->
+          <div class="form-group">
+            <label class="form-label" for="inp-disp-name">Tên hiển thị (Display Name):</label>
+            <input type="text" class="form-input" id="inp-disp-name" value="Nguyễn Ngọc Tình" required>
+            <span style="font-size: 11px; color: #86EFAC;">✓ Đổi tự do không cần mã OTP.</span>
+          </div>
+
+          <!-- Email (READONLY - HARD CONSTRAINED IN BA SCOPE) -->
+          <div class="form-group">
+            <label class="form-label" for="inp-email">Địa chỉ Email (Cố định):</label>
+            <input type="email" class="form-input readonly" id="inp-email" value="nguyenngoctinh011258@gmail.com" readonly>
+            <span style="font-size: 11px; color: #9CA3AF;">🔒 Email liên kết cố định để bảo toàn tài khoản vĩnh viễn, không thể chỉnh sửa.</span>
+          </div>
+        </div>
+
+        <!-- Username (Changeable with Supabase 4-step OTP) -->
+        <div class="form-group" style="margin-top: 6px;">
+          <label class="form-label">Tên đăng nhập duy nhất (Username):</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" class="form-input readonly" id="inp-username" value="nguyen_tinh99" readonly style="flex: 1;">
+            <button type="button" class="btn-gold" onclick="openChangeUsernameModal()">
+              🔑 Đổi Username Qua OTP
+            </button>
+          </div>
+          <span style="font-size: 11px; color: var(--gold-light);">Đổi không giới hạn số lần, bảo mật bằng mã OTP gửi về Email đã đăng ký.</span>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <button type="submit" class="btn-gold">
+            💾 Lưu Thay Đổi Hồ Sơ
+          </button>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- LOGOUT / DANGER ZONE -->
+    <div class="section-card" style="display: flex; justify-content: space-between; align-items: center; border-color: #7F1D1D;">
+      <div>
+        <h4 style="color: #FCA5A5; font-size: 15px; margin-bottom: 2px;">Đăng Xuất Khỏi Thiết Bị</h4>
+        <p style="font-size: 12px; color: #C8B6A2;">Đăng xuất phiên hiện tại và quay về màn hình đăng nhập.</p>
+      </div>
+      <button type="button" class="btn-logout" onclick="handleLogout()">
+        🚪 Đăng Xuất
+      </button>
+    </div>
+
+  </main>
+
+  <!-- MODAL: OTP CHANGE USERNAME (MODAL-OTP-USERNAME - 4 STEPS) -->
+  <div id="modal-username-otp" class="modal-backdrop">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-family: var(--font-serif); font-size: 17px; color: #FFF;">🔑 Đổi Username Qua Xác Thực OTP</h3>
+        <button type="button" onclick="closeUsernameModal()" style="background: none; border: none; color: #A89582; font-size: 16px; cursor: pointer;">✕</button>
+      </div>
+
+      <div id="step-send-otp">
+        <p style="font-size: 12px; color: #C8B6A2; margin-bottom: 12px;">
+          Bước 1/3: Để xác nhận danh tính, một mã OTP 6 số sẽ được gửi về Email của bạn. Sau khi xác thực OTP bạn mới nhập được username mới.
+        </p>
+        <button type="button" class="btn-gold" style="width: 100%;" onclick="sendUsernameOtp()">
+          Gửi Mã OTP Về Email ❯
+        </button>
+      </div>
+
+      <div id="step-verify-otp" style="display: none; text-align: center;">
+        <p style="font-size: 12px; color: #C8B6A2; margin-bottom: 12px;">
+          Bước 2/3: Mã xác thực 6 số đã được gửi tới <strong>nguyenngoctinh011258@gmail.com</strong> (hạn 3 phút, sai 5 lần thì huỷ mã).
+        </p>
+        <input type="text" class="form-input" id="otp-input-uname" maxlength="6" placeholder="0 0 0 0 0 0" style="text-align: center; letter-spacing: 6px; font-size: 18px; font-weight: 800; width: 200px; margin-bottom: 12px;">
+        <div style="font-size: 11px; color: #86EFAC; margin-bottom: 14px;" id="otp-timer">Mã có hiệu lực trong 03:00</div>
+        <button type="button" class="btn-gold" style="width: 100%;" onclick="verifyUsernameOtp()">
+          Xác Thực OTP ❯
+        </button>
+      </div>
+
+      <div id="step-new-username" style="display: none;">
+        <p style="font-size: 12px; color: #C8B6A2; margin-bottom: 12px;">
+          Bước 3/3: Nhập username mới (không phân biệt hoa thường; username cũ bị khoá 30 ngày sau khi đổi).
+        </p>
+        <div class="form-group">
+          <label class="form-label">Username mới (3–20 ký tự, a-z, 0-9, _):</label>
+          <input type="text" class="form-input" id="new-uname-val" placeholder="vd: tinh_ky_vuong" required>
+        </div>
+        <button type="button" class="btn-gold" style="width: 100%;" onclick="confirmUsernameChange()">
+          Xác Nhận Thay Đổi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load User info
+    const savedUser = JSON.parse(localStorage.getItem('xiangqi_user') || 'null');
+    if (savedUser) {
+      document.getElementById('inp-disp-name').value = savedUser.display_name || savedUser.username;
+      document.getElementById('hero-display-name').textContent = savedUser.display_name || savedUser.username;
+      document.getElementById('avatar-circle').textContent = (savedUser.display_name || savedUser.username).charAt(0).toUpperCase();
+      document.getElementById('inp-username').value = savedUser.username;
+      document.getElementById('hero-username').textContent = '@' + savedUser.username;
+      if (savedUser.elo) {
+        document.getElementById('hero-elo').textContent = savedUser.elo;
+      }
+    }
+
+    function handleSaveProfile(e) {
+      e.preventDefault();
+      const newDisp = document.getElementById('inp-disp-name').value.trim();
+      if (!newDisp) return;
+      if (savedUser) {
+        savedUser.display_name = newDisp;
+        localStorage.setItem('xiangqi_user', JSON.stringify(savedUser));
+      }
+      document.getElementById('hero-display-name').textContent = newDisp;
+      document.getElementById('avatar-circle').textContent = newDisp.charAt(0).toUpperCase();
+      alert('✓ Đã cập nhật Tên hiển thị (Display Name) thành công!');
+    }
+
+    function handleLogout() {
+      if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        localStorage.removeItem('xiangqi_user');
+        window.location.href = 'SCR-LOGIN.html';
+      }
+    }
+
+    function openChangeUsernameModal() {
+      document.getElementById('modal-username-otp').style.display = 'flex';
+      document.getElementById('step-send-otp').style.display = 'block';
+      document.getElementById('step-verify-otp').style.display = 'none';
+      document.getElementById('step-new-username').style.display = 'none';
+    }
+
+    function closeUsernameModal() {
+      document.getElementById('modal-username-otp').style.display = 'none';
+    }
+
+    function sendUsernameOtp() {
+      document.getElementById('step-send-otp').style.display = 'none';
+      document.getElementById('step-verify-otp').style.display = 'block';
+    }
+
+    function verifyUsernameOtp() {
+      const otp = document.getElementById('otp-input-uname').value.trim();
+      if (otp.length !== 6) {
+        alert('Vui lòng nhập đủ 6 số OTP!');
+        return;
+      }
+      document.getElementById('step-verify-otp').style.display = 'none';
+      document.getElementById('step-new-username').style.display = 'block';
+    }
+
+    function confirmUsernameChange() {
+      const newU = document.getElementById('new-uname-val').value.trim();
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(newU)) {
+        alert('Username phải từ 3–20 ký tự gồm chữ, số hoặc dấu gạch dưới!');
+        return;
+      }
+      if (savedUser) {
+        savedUser.username = newU;
+        localStorage.setItem('xiangqi_user', JSON.stringify(savedUser));
+      }
+      document.getElementById('inp-username').value = newU;
+      document.getElementById('hero-username').textContent = '@' + newU;
+      alert(`✓ Đổi Username thành @${newU} thành công!`);
+      closeUsernameModal();
+    }
+  </script>
+</body>
+</html>

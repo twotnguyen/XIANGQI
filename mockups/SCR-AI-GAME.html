@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Luyện Tập Với Máy (AI)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --bg-dark: #0F0B08;
+      --panel-bg: rgba(30, 18, 12, 0.92);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-han: 'SimSun', 'STSong', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 10%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(15, 11, 8, 0.88) 0%, rgba(15, 11, 8, 0.96) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-navbar {
+      height: 54px;
+      background: linear-gradient(180deg, rgba(32, 18, 12, 0.98) 0%, rgba(20, 11, 7, 0.95) 100%);
+      border-bottom: 2px solid #059669;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .btn-nav {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #FFF;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .ai-arena-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      padding: 16px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      align-items: center;
+    }
+
+    .ai-sidebar {
+      background: var(--panel-bg);
+      border: 2px solid #059669;
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+
+    .ai-card {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1.5px solid #10B981;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .ai-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #065F46;
+      border: 2px solid #34D399;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      margin: 0 auto 8px;
+    }
+
+    .board-frame {
+      background: radial-gradient(circle at 50% 50%, #E3BA82 0%, #C49A62 70%, #9C7238 100%);
+      border: 12px solid #4A2614;
+      border-radius: 10px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+      padding: 8px;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    svg.board-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 9 / 10;
+    }
+
+    .btn-ai-act {
+      width: 100%;
+      height: 40px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-undo-ai {
+      background: linear-gradient(180deg, #D97706, #B45309);
+      color: #FFF;
+    }
+    .btn-reset-ai {
+      background: rgba(255,255,255,0.1);
+      color: #FFF;
+      border: 1px solid #4B5563;
+    }
+
+    @media (max-width: 820px) {
+      .ai-arena-layout { grid-template-columns: 1fr; }
+      .ai-sidebar { max-width: 520px; margin: 0 auto; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-navbar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <a href="SCR-LOBBY.html" class="btn-nav">❮ Sảnh</a>
+      <span style="font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: #FFF;">Luyện Tập Với Máy (AI)</span>
+      <span style="font-size: 11px; background: rgba(16,185,129,0.2); border: 1px solid #10B981; color: #6EE7B7; padding: 2px 7px; border-radius: 4px;" id="ai-level-badge">CẤP ĐỘ: VỪA</span>
+    </div>
+
+    <div>
+      <span style="font-size: 11.5px; color: #A7F3D0;">⏱️ Không giới hạn giờ</span>
+    </div>
+  </header>
+
+  <main class="ai-arena-layout">
+    <!-- SIDEBAR: AI STATUS & UNDO -->
+    <aside class="ai-sidebar">
+      <div class="ai-card">
+        <div class="ai-avatar">🤖</div>
+        <h4 style="font-size: 15px; color: #FFF; margin-bottom: 2px;">Alpha Xiangqi Bot</h4>
+        <div style="font-size: 11px; color: #A7F3D0;" id="ai-think-status">● Đang chờ bạn đi nước đầu tiên...</div>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid #542C15; border-radius: 6px; padding: 10px; font-size: 11.5px; line-height: 1.5;">
+        💡 <strong>Đặc quyền luyện tập:</strong><br>
+        • Đi lại nước cờ (Undo) tức thời không cần hỏi ý kiến máy.<br>
+        • Thoải mái suy nghĩ không lo hết giờ.
+      </div>
+
+      <button type="button" class="btn-ai-act btn-undo-ai" id="btn-undo" onclick="handleAiUndo()">
+        ↩️ Xin Đi Lại (3/3 Lần)
+      </button>
+
+      <button type="button" class="btn-ai-act btn-reset-ai" onclick="resetBoard()">
+        🔄 Ván Mới
+      </button>
+
+      <div style="font-size: 11px; color: #A89582; text-align: center;">
+        Ván tập luyện với máy sẽ tự động lưu lại kỳ phổ để xem lại.
+      </div>
+    </aside>
+
+    <!-- BOARD -->
+    <div class="board-frame">
+      <svg class="board-svg" viewBox="0 0 450 500" id="ai-svg" onclick="handleAiClick(event)">
+        <defs>
+          <radialGradient id="ai-piece-red" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#FBF0D9"/>
+            <stop offset="60%" stop-color="#D8A562"/>
+            <stop offset="100%" stop-color="#875B26"/>
+          </radialGradient>
+          <radialGradient id="ai-piece-black" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#71717A"/>
+            <stop offset="60%" stop-color="#3F3F46"/>
+            <stop offset="100%" stop-color="#18181B"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Board Grid Lines -->
+        <rect x="25" y="25" width="400" height="450" fill="none" stroke="#5C3414" stroke-width="2.5"/>
+        <g stroke="#78471D" stroke-width="1.4">
+          <line x1="25" y1="25" x2="425" y2="25"/><line x1="25" y1="75" x2="425" y2="75"/>
+          <line x1="25" y1="125" x2="425" y2="125"/><line x1="25" y1="175" x2="425" y2="175"/>
+          <line x1="25" y1="225" x2="425" y2="225"/><line x1="25" y1="275" x2="425" y2="275"/>
+          <line x1="25" y1="325" x2="425" y2="325"/><line x1="25" y1="375" x2="425" y2="375"/>
+          <line x1="25" y1="425" x2="425" y2="425"/><line x1="25" y1="475" x2="425" y2="475"/>
+          <line x1="25" y1="25" x2="25" y2="475"/><line x1="425" y1="25" x2="425" y2="475"/>
+          <line x1="75" y1="25" x2="75" y2="225"/><line x1="125" y1="25" x2="125" y2="225"/>
+          <line x1="175" y1="25" x2="175" y2="225"/><line x1="225" y1="25" x2="225" y2="225"/>
+          <line x1="275" y1="25" x2="275" y2="225"/><line x1="325" y1="25" x2="325" y2="225"/>
+          <line x1="375" y1="25" x2="375" y2="225"/>
+          <line x1="75" y1="275" x2="75" y2="475"/><line x1="125" y1="275" x2="125" y2="475"/>
+          <line x1="175" y1="275" x2="175" y2="475"/><line x1="225" y1="275" x2="225" y2="475"/>
+          <line x1="275" y1="275" x2="275" y2="475"/><line x1="325" y1="275" x2="325" y2="475"/>
+          <line x1="375" y1="275" x2="375" y2="475"/>
+          <line x1="175" y1="25" x2="275" y2="125"/><line x1="275" y1="25" x2="175" y2="125"/>
+          <line x1="175" y1="375" x2="275" y2="475"/><line x1="275" y1="375" x2="175" y2="475"/>
+        </g>
+        <text x="100" y="256" font-family="SimSun, serif" font-size="22" font-weight="900" fill="#78471D" text-anchor="middle">楚 河</text>
+        <text x="350" y="256" font-family="SimSun, serif" font-size="22" font-weight="900" fill="#78471D" text-anchor="middle">漢 界</text>
+
+        <g id="ai-pieces-g"></g>
+        <g id="ai-dots-g"></g>
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    let aiPieces = [
+      { id: 'b_c1', type: '車', side: 'black', x: 0, y: 0 },
+      { id: 'b_m1', type: '馬', side: 'black', x: 1, y: 0 },
+      { id: 'b_x1', type: '象', side: 'black', x: 2, y: 0 },
+      { id: 'b_s1', type: '士', side: 'black', x: 3, y: 0 },
+      { id: 'b_k',  type: '將', side: 'black', x: 4, y: 0 },
+      { id: 'b_s2', type: '士', side: 'black', x: 5, y: 0 },
+      { id: 'b_x2', type: '象', side: 'black', x: 6, y: 0 },
+      { id: 'b_m2', type: '馬', side: 'black', x: 7, y: 0 },
+      { id: 'b_c2', type: '車', side: 'black', x: 8, y: 0 },
+      { id: 'b_p1', type: '砲', side: 'black', x: 1, y: 2 },
+      { id: 'b_p2', type: '砲', side: 'black', x: 7, y: 2 },
+      { id: 'b_z1', type: '卒', side: 'black', x: 0, y: 3 },
+      { id: 'b_z2', type: '卒', side: 'black', x: 2, y: 3 },
+      { id: 'b_z3', type: '卒', side: 'black', x: 4, y: 3 },
+      { id: 'b_z4', type: '卒', side: 'black', x: 6, y: 3 },
+      { id: 'b_z5', type: '卒', side: 'black', x: 8, y: 3 },
+
+      { id: 'r_z1', type: '兵', side: 'red', x: 0, y: 6 },
+      { id: 'r_z2', type: '兵', side: 'red', x: 2, y: 6 },
+      { id: 'r_z3', type: '兵', side: 'red', x: 4, y: 6 },
+      { id: 'r_z4', type: '兵', side: 'red', x: 6, y: 6 },
+      { id: 'r_z5', type: '兵', side: 'red', x: 8, y: 6 },
+      { id: 'r_p1', type: '炮', side: 'red', x: 1, y: 7 },
+      { id: 'r_p2', type: '炮', side: 'red', x: 7, y: 7 },
+      { id: 'r_c1', type: '俥', side: 'red', x: 0, y: 9 },
+      { id: 'r_m1', type: '傌', side: 'red', x: 1, y: 9 },
+      { id: 'r_x1', type: '相', side: 'red', x: 2, y: 9 },
+      { id: 'r_s1', type: '仕', side: 'red', x: 3, y: 9 },
+      { id: 'r_k',  type: '帥', side: 'red', x: 4, y: 9 },
+      { id: 'r_s2', type: '仕', side: 'red', x: 5, y: 9 },
+      { id: 'r_x2', type: '相', side: 'red', x: 6, y: 9 },
+      { id: 'r_m2', type: '傌', side: 'red', x: 7, y: 9 },
+      { id: 'r_c2', type: '俥', side: 'red', x: 8, y: 9 }
+    ];
+
+    let aiHistory = [];
+    let selPiece = null;
+    let undoLeft = 3;
+
+    function renderAiPieces() {
+      const g = document.getElementById('ai-pieces-g');
+      g.innerHTML = '';
+
+      aiPieces.forEach(p => {
+        const cx = 25 + p.x * 50;
+        const cy = 25 + p.y * 50;
+        const isRed = p.side === 'red';
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 21);
+        circle.setAttribute('fill', isRed ? 'url(#ai-piece-red)' : 'url(#ai-piece-black)');
+        circle.setAttribute('stroke', isRed ? '#FFF8E7' : '#D4D4D8');
+        circle.setAttribute('stroke-width', '2.5');
+        if (selPiece && selPiece.id === p.id) {
+          circle.setAttribute('stroke', '#10B981');
+          circle.setAttribute('stroke-width', '4');
+        }
+        circle.style.cursor = 'pointer';
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', cx);
+        text.setAttribute('y', cy + 8);
+        text.setAttribute('font-family', 'SimSun, STSong, serif');
+        text.setAttribute('font-size', '23');
+        text.setAttribute('font-weight', '900');
+        text.setAttribute('fill', isRed ? '#991319' : '#09090B');
+        text.setAttribute('text-anchor', 'middle');
+        text.style.pointerEvents = 'none';
+        text.textContent = p.type;
+
+        g.appendChild(circle);
+        g.appendChild(text);
+      });
+    }
+
+    function handleAiClick(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = (e.clientX - rect.left) * (450 / rect.width);
+      const clickY = (e.clientY - rect.top) * (500 / rect.height);
+      const bx = Math.round((clickX - 25) / 50);
+      const by = Math.round((clickY - 25) / 50);
+
+      if (bx < 0 || bx > 8 || by < 0 || by > 9) return;
+      const clicked = aiPieces.find(p => p.x === bx && p.y === by);
+
+      if (selPiece) {
+        if (clicked && clicked.side === 'red') {
+          selPiece = clicked;
+          renderAiPieces();
+          return;
+        }
+
+        // Save snapshot for Undo
+        aiHistory.push(JSON.parse(JSON.stringify(aiPieces)));
+
+        // User move
+        if (clicked) aiPieces = aiPieces.filter(p => p.id !== clicked.id);
+        selPiece.x = bx;
+        selPiece.y = by;
+        selPiece = null;
+        renderAiPieces();
+
+        // Bot respond
+        document.getElementById('ai-think-status').innerHTML = '⏳ Máy đang tính toán nước cờ...';
+        setTimeout(() => {
+          makeBotMove();
+        }, 500);
+      } else {
+        if (clicked && clicked.side === 'red') {
+          selPiece = clicked;
+          renderAiPieces();
+        }
+      }
+    }
+
+    function makeBotMove() {
+      // Pick a random movable black piece
+      const blackPieces = aiPieces.filter(p => p.side === 'black');
+      if (!blackPieces.length) return;
+
+      const botPiece = blackPieces[Math.floor(Math.random() * blackPieces.length)];
+      // Try to advance 1 step
+      const targetY = Math.min(9, botPiece.y + 1);
+      const targetX = botPiece.x;
+
+      const occ = aiPieces.find(p => p.x === targetX && p.y === targetY);
+      if (!occ || occ.side === 'red') {
+        if (occ) aiPieces = aiPieces.filter(p => p.id !== occ.id);
+        botPiece.y = targetY;
+      }
+      renderAiPieces();
+      document.getElementById('ai-think-status').innerHTML = '● Lượt của bạn (Quân Đỏ đi)';
+    }
+
+    function handleAiUndo() {
+      if (undoLeft <= 0) {
+        alert('Bạn đã hết lượt xin đi lại (tối đa 3 lần/ván)!');
+        return;
+      }
+      if (!aiHistory.length) {
+        alert('Chưa có nước cờ nào để đi lại!');
+        return;
+      }
+      undoLeft--;
+      document.getElementById('btn-undo').textContent = `↩️ Xin Đi Lại (${undoLeft}/3 Lần)`;
+      aiPieces = aiHistory.pop(); // Rollback 1 pair
+      renderAiPieces();
+    }
+
+    function resetBoard() {
+      if (confirm('Bắt đầu ván cờ mới với máy?')) {
+        window.location.reload();
+      }
+    }
+
+    renderAiPieces();
+  </script>
+</body>
+</html>

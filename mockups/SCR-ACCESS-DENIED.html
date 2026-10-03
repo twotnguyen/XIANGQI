@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Không Thể Truy Cập Phòng</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --bg-dark: #120D0A;
+      --card-bg: rgba(36, 22, 16, 0.92);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; max-width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 30%, rgba(185, 28, 28, 0.15) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(18, 13, 10, 0.9) 0%, rgba(18, 13, 10, 0.98) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+      color: #F5E8D4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .denied-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 3px solid #7F1D1D;
+      border-radius: 14px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+      position: relative;
+    }
+
+    .lock-icon-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #991B1B, #450A0A);
+      border: 2px solid #EF4444;
+      display: grid;
+      place-items: center;
+      font-size: 38px;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+    }
+
+    .denied-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 700;
+      color: #FCA5A5;
+      margin-bottom: 12px;
+    }
+
+    .denied-desc {
+      font-size: 13.5px;
+      color: #E2CFB7;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      background: rgba(0,0,0,0.3);
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-action-home {
+      width: 100%;
+      height: 44px;
+      background: linear-gradient(180deg, #C6922A, #875F17);
+      border: none;
+      border-radius: 6px;
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(198, 146, 42, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-action-home:hover {
+      background: linear-gradient(180deg, #D4A139, #9E701E);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 500px) {
+      .denied-card { padding: 24px 18px; }
+      .lock-icon-box { width: 64px; height: 64px; font-size: 30px; }
+      .denied-title { font-size: 20px; }
+      .denied-desc { font-size: 12.5px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="denied-card">
+    <div class="lock-icon-box">🔒</div>
+    <h2 class="denied-title" id="denied-heading">Không Thể Truy Cập Phòng</h2>
+    
+    <div class="denied-desc" id="denied-reason-text">
+      Phòng thi đấu hiện đã đầy tối đa <strong>4 người</strong> (2 người chơi + tối đa 2 người xem) hoặc đây là ván cờ Xếp Hạng cấm tuyệt đối người xem vào xem.
+    </div>
+
+    <a href="SCR-LOBBY.html" class="btn-action-home">
+      🏛️ Quay Về Sảnh Chính Kỳ Đài ❯
+    </a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get('reason');
+
+    if (reason === 'ranked') {
+      document.getElementById('denied-heading').textContent = 'Cấm Người Xem Vào Xem';
+      document.getElementById('denied-reason-text').innerHTML = 'Ván đấu <strong>Đánh Hạng (Ranked Elo FIDE)</strong> áp dụng quy định bảo mật chống gian lận: <em>Tuyệt đối cấm người xem vào xem</em>.';
+    } else if (reason === 'kicked') {
+      document.getElementById('denied-heading').textContent = 'Bạn Đã Bị Mời Ra Khỏi Phòng';
+      document.getElementById('denied-reason-text').innerHTML = 'Bạn đã bị người chơi trong phòng thi đấu sử dụng quyền <strong>Kick</strong> để mời ra khỏi phòng.';
+    } else if (reason === 'full') {
+      document.getElementById('denied-heading').textContent = 'Phòng Đã Đủ Người';
+      document.getElementById('denied-reason-text').innerHTML = 'Phòng cờ đã đủ tối đa <strong>2 người chơi và 2 người xem</strong>.';
+    }
+  </script>
+</body>
+</html>

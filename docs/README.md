@@ -1,41 +1,104 @@
-# TÀI LIỆU DỰ ÁN — CỜ TƯỚNG ONLINE
+# docs/ · Tài liệu phân tích chuyên sâu (Giai đoạn 2)
 
-**Trạng thái:** `SPEC_REVIEWED` · **Cập nhật:** 2026-09-22. Đã rà soát đặc tả theo [báo cáo hiện hành](08-ba-review/final-audit-2026-09-22.md); chưa triển khai ứng dụng hay nghiệm thu runtime.
+**Trạng thái: Product Owner đã duyệt toàn bộ ngày 03/10/2026** (OTP: Phương án B; 13 quyết định duyệt như đề xuất). Giai đoạn 1 và Giai đoạn 2 xong ngày 03/10/2026; hiện ở Giai đoạn 3. Thư mục `docs/` này là **thư mục mới** (không liên quan `docs/` cũ đã xoá ở nhánh `chore/xoa-docs-va-jira-cu`).
 
-## Đọc từ đầu tới cuối
+Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp của người dùng > `AGENTS.md` > [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) > `docs/` > [DANH-MUC](../DANH-MUC-MAN-HINH-XIANGQI.md) > [DESIGN.md](../DESIGN.md) và `mockups/`. **`docs/` chi tiết hoá chứ không đổi phạm vi**; thấy mâu thuẫn với BA-SCOPE thì BA-SCOPE thắng và phải báo người dùng.
 
-1. [Tổng quan sản phẩm](00-overview/product-overview.md), [phạm vi](00-overview/scope.md), [thuật ngữ](00-overview/glossary.md), [vai trò](00-overview/actors.md).
-2. [Yêu cầu R01–R19](01-requirements/README.md): hệ thống phải làm gì.
-3. [Luồng người dùng](02-flows/README.md): bước chính, nhánh thay thế và lỗi.
-4. [Màn hình và trạng thái](03-screens/README.md): route, hành động và phản hồi UI.
-5. [Luật cờ](04-business-rules/game-rules.md), [chỉ mục nghiệp vụ](04-business-rules/business-rules.md), [quyền](04-business-rules/permissions.md).
-6. [Dữ liệu và realtime](05-data-and-realtime/README.md): dữ liệu, phiên, chuyển trạng thái và thứ tự sự kiện.
-7. [Nghiệm thu và truy vết](06-acceptance/README.md): từng BR/AC có nguồn, tiêu chí cần chứng minh.
-8. [Nhật ký quyết định](07-decisions/decision-log.md): lý do, quyết định thay thế và thẩm quyền PO/BA.
-9. [Kiến trúc](09-technical/architecture.md), [công nghệ](09-technical/tech-stack.md), [triển khai](09-technical/deployment.md), các contract kỹ thuật liên quan.
-10. [Hướng dẫn giao agent](10-issues/AGENT-START-HERE.md), [kế hoạch 138 đầu việc](10-issues/README.md), [các mốc thực thi](10-issues/execution-milestones.md), [INDEX](10-issues/INDEX.md) và [WORKFLOW](10-issues/WORKFLOW.md).
+## Mục lục
 
-Đọc theo vai trò: [ONBOARDING](ONBOARDING.md). Đọc trên web: [site/index.html](../site/index.html).
+| Tệp | Nội dung | Dùng cho |
+|---|---|---|
+| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 81 US (53 P1, 28 P2), 280 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
+| [02-luat-co-tuong.md](02-luat-co-tuong.md) | Luật cờ tướng chi tiết, kết thúc ván, lặp thế, chiếu liên tục, ký hiệu nước đi, máy cờ và 3 cấp độ | Lập trình luật cờ và máy cờ |
+| [03-du-lieu.md](03-du-lieu.md) | Thực thể, cột, ràng buộc, quyền truy cập, dữ liệu tạm | Lập trình máy chủ và cơ sở dữ liệu |
+| [04-kien-truc.md](04-kien-truc.md) | Thành phần, xác thực, thời gian thực, đồng hồ, LiveKit, máy cờ, bảo mật, triển khai | Mọi lập trình viên |
+| [05-kiem-thu.md](05-kiem-thu.md) | Chiến lược kiểm thử, kịch bản demo (tiêu chí hoàn thành P1), tình huống bắt buộc, con số cần đo | Người kiểm thử, người làm hiệu năng |
+| [06-ke-hoach-jira.md](06-ke-hoach-jira.md) | **Giai đoạn 3:** vai trò, Epic/Story/Task, ước lượng, công suất, lịch, cấu trúc Jira | Product Owner, người chia việc |
+| [07-hop-dong-nghiep-vu.md](07-hop-dong-nghiep-vu.md) | Quyền, vòng đời, tiền/hậu điều kiện, đồng thời, lỗi và phục hồi P1/P2 | Product Owner, người thiết kế/kiểm thử |
+| [08-ma-tran-nghiem-thu.md](08-ma-tran-nghiem-thu.md) | Mọi AC → TC; năm trạng thái của 37 thành phần; ca biên xuyên luồng | Người review và kiểm thử |
 
-## Nguồn chuẩn và cách xử lý mâu thuẫn
+## Bản hoàn thiện 04/10/2026
 
-| Loại nội dung | Nguồn định nghĩa |
+Product Owner đã duyệt các quyết định bổ sung trong BA (nhật ký cuối file) và yêu cầu đặc tả chi tiết **cả P1/P2**, không đổi thứ tự ưu tiên. **Bản viết cập nhật đang chờ review**, chưa được dùng nhãn duyệt 03/10 để tuyên bố toàn bộ thay đổi mới đã được duyệt.
+
+Đọc theo thứ tự: [IDEA](../IDEA.md) → BA → [01] → [07](07-hop-dong-nghiep-vu.md) → [08](08-ma-tran-nghiem-thu.md); [02]–[05] cung cấp chi tiết chuyên môn. Các con số là độ phủ đặc tả, không phải test PASS.
+
+Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợt này. Kế hoạch/US ở các bản nháp cũ chưa được đối soát với baseline mới, **không coi là đã đồng bộ**; khi lập kế hoạch phải làm bước đối soát riêng sau review. Mockup lệch đặc tả chỉ tham khảo.
+
+## Các con số tạm của Giai đoạn 1 (đã duyệt)
+
+| Hạng mục | Giá trị đã duyệt | Nơi định nghĩa |
+|---|---|---|
+| Hoà không ăn quân | 120 nửa nước | [02] mục 5 |
+| Chiếu liên tục | Bên chiếu thua; cả hai chiếu thì hoà | [02] mục 4 |
+| Đuổi quân liên tục | **Không xử riêng**, xử hoà theo lặp 3 lần (khác biệt đã biết với luật chính thức) | [02] mục 4.1 |
+| Máy cờ | Độ sâu 2 / 4 / 6; 300 / 1 000 / 3 000 ms; có phương án dự phòng | [02] mục 9 |
+| Quy mô | 50 người dùng, 10 ván cùng lúc | [04] mục 10; [05] mục 6 |
+| Tiêu chí hoàn thành P1 | Demo 8 mục cốt lõi end-to-end (kịch bản D1–D10) | [05] mục 1 |
+
+## Quyết định (Product Owner đã duyệt 03/10/2026)
+
+| # | Quyết định | Chi tiết |
+|---|---|---|
+| 1 | Đuổi quân liên tục không xử riêng ở cả P1 và P2 | [02] mục 4.1 |
+| 2 | 120 nửa nước không ăn quân | [02] mục 5 |
+| 3 | Thiết kế máy cờ (hàm lượng giá, yếu tố ngẫu nhiên cấp Dễ/Trung bình, phương án dự phòng độ sâu 5) | [02] mục 9 |
+| 4 | Ván với máy ở P1 chỉ giữ trong bộ nhớ 30 phút, chưa lưu cơ sở dữ liệu | [03] mục 5 |
+| 5 | Mọi dữ liệu trạng thái ván/phòng đi qua máy chủ; client chỉ đọc cột công khai của `profiles` | [03] mục 5 |
+| 6 | Một thể hiện máy chủ, trạng thái ván trong bộ nhớ | [04] mục 11 |
+| 7 | **OTP: Phương án B (OTP gốc Supabase)**; BA 1.1, 1.5 đã sửa lời; "huỷ ở lần sai thứ 5" chỉ gần đúng | [04] mục 3.1 |
+| 8 | Không thêm công nghệ ngoài danh sách README (Phương án B không cần dịch vụ gửi thư); thư viện tạo Mã QR và bộ biểu tượng chọn lúc bắt đầu Giai đoạn 4 | [04] mục 11 |
+| 9 | Chạy 3 thử nghiệm rủi ro cao ngay đầu Giai đoạn 4: LiveKit quyền đăng ký track theo từng người; cấu hình OTP Supabase (hạn 180 giây, gửi lại 60 giây, giới hạn tốc độ xác minh, mã 6 số) và quét dọn bản ghi chưa hoàn tất; độ sâu máy cờ | [04] mục 11 |
+| 10 | Giá trị perft tham chiếu phải được xác minh bằng bộ sinh nước độc lập trước khi dùng làm chuẩn | [05] mục 3.1 |
+| 11 | **Khi cơ sở dữ liệu lỗi**: đóng băng đồng hồ, quá 30 giây thì `INTERRUPTED`, ghi bù khi hồi phục (ván với máy P1 chỉ trong bộ nhớ, không áp dụng) | [04] mục 4.2 |
+| 12 | Xác nhận danh sách công nghệ README (TypeScript, Node.js, pnpm, React, Vite, NestJS, Socket.IO, Supabase, LiveKit, Vitest, Playwright) và một thể hiện máy chủ duy nhất | [04] mục 11 |
+| 13 | PGN: chỉ khi công cụ ngoài nhập được chính tệp xuất ra thì mục đích BA 9.1 mới đạt; ngược lại báo Product Owner | [02] mục 7.4 |
+
+## Đối chiếu thành phần giao diện P1 và US
+
+| Thành phần P1 (DANH-MUC §7) | US |
 |---|---|
-| BR/AC nghiệp vụ | REQ tương ứng trong01; phiên/AC-SS ở05/session-state |
-| Luật di chuyển và kết thúc cờ |04/game-rules; bộ luật dự án giản lược theo DEC-019 |
-| Quyền |04/permissions dẫn tới BR; backend phải kiểm trên mọi đường vào |
-| UI, route, trạng thái |03/screen-inventory và screen-states; quyền không do UI quyết định |
-| Contract/schema/cơ chế kỹ thuật |05/data-model và09; công nghệ không biến thành nhu cầu sản phẩm |
-| Lý do hoặc thay đổi một quyết định |07/decision-log; đọc ghi chú Superseded |
-| Tiến độ thực thi |10/INDEX + bằng chứng test/PR; Ready của tài liệu không phải DONE issue |
+| `SCR-LOGIN` | AUTH-04 |
+| `SCR-REGISTER` | AUTH-01, 02, 03 |
+| `SCR-LOBBY` | UI-02, ROOM-08 |
+| `SCR-WAITING-ROOM` | ROOM-02, 03, 06, 10, 11 |
+| `SCR-GAME-ROOM` | BOARD-01…05, PLAY-01…10 |
+| `SCR-AI-GAME` | AI-01…04 |
+| `SCR-ACCESS-DENIED` | ROOM-12 |
+| `SCR-PROFILE-SETTINGS` | AUTH-05 |
+| `SCR-FRIENDS` | FRIEND-01, 02, 03, 05 |
+| `MODAL-CREATE-ROOM` | ROOM-01 |
+| `MODAL-INVITE` | ROOM-04, FRIEND-04 |
+| `MODAL-ROOM-SETTINGS` | ROOM-07 |
+| `MODAL-AI-SETUP` | AI-01 |
+| `MODAL-DRAW-PROMPT` | PLAY-05 |
+| `MODAL-CONFIRM-RESIGN` | PLAY-04 |
+| `MODAL-CONFIRM-LEAVE` | PLAY-06 |
+| `MODAL-CONFIRM-KICK` | ROOM-09 |
+| `MODAL-MATCH-RESULT` | PLAY-03, AI-03 |
+| `PANEL-NAVBAR` | UI-01, FRIEND-02 |
+| `PANEL-CHAT` | CHAT-01, 02 |
+| `PANEL-MEDIA` | MEDIA-01, 02, 03 |
+| `PANEL-SPECTATORS` | ROOM-09, PLAY-09 |
+| `OVERLAY-RECONNECTING` | PLAY-07 |
 
-[Requirement register](06-acceptance/requirement-register.md) lập chỉ mục ID và nguồn, không định nghĩa luật lần hai. Các bảng tóm tắt, flow và issue diễn giải cùng nguồn. Mâu thuẫn mới chưa được DEC giải quyết phải được báo, không chọn ngầm bản thuận tiện nhất.
+Đủ 23 thành phần P1 và 14 P2, không thêm màn hình do có phần Luật chơi/bộ chọn giao diện. Ánh xạ đầy đủ hai phân kỳ và 185 trường hợp trạng thái nằm ở [08](08-ma-tran-nghiem-thu.md). Nhãn `MODAL-DRAW-PROMPT` giữ để tham chiếu nhưng hành vi không modal theo BA 3.6.
 
-## Tài liệu hiện hành và lịch sử
+## Chưa làm (có chủ ý)
 
-- [Báo cáo audit hiện hành](08-ba-review/final-audit-2026-09-22.md) và [backlog hiện hành](08-ba-review/question-backlog-2026-09-22.md) ghi các quyết định, giới hạn kiểm chứng.
-- [Mục lục audit](08-ba-review/README.md) chỉ rõ snapshot cũ. Các số đếm/readiness trong báo cáo cũ không đại diện trạng thái hiện tại.
-- `99-archive/` giữ nguyên để tra bài học. Không dùng toạ độ, điều kiện PASS hoặc lựa chọn cũ trong archive thay đặc tả hiện hành; không xoá.
-- Supabase/Auth/Google/SMTP/LiveKit/hosting và benchmark vẫn cần cấu hình, chạy thực tế, ghi bằng chứng ở các issue tương ứng. Không có runtime PASS từ việc sửa Markdown.
+* **Chưa tạo Epic/Story/Task trên Jira**: đó là Giai đoạn 3 và cần Product Owner xác nhận riêng (AGENTS §1). Mã nhóm A–N và US chỉ là nhãn tham chiếu để Giai đoạn 3 dùng lại.
+* **Chưa viết mã**, chưa tạo `apps/`, `packages/`, `supabase/`, `tests/` (Giai đoạn 4).
+* **Chưa thử nghiệm thực tế**: giá trị perft, độ sâu máy cờ, cấu hình OTP 180 giây của Supabase và quyền đăng ký track của LiveKit đều là **giả định cần đo** ở đầu Giai đoạn 4 (xem [05]). Nếu đo không đạt thì ghi số thật và báo Product Owner.
 
-Bộ issue đã được cụ thể hoá sau vòng audit BA: xem [PLAN-REVIEW](10-issues/PLAN-REVIEW.md), [thứ tự thực thi](10-issues/EXECUTION-ORDER.md), [phân công 333 AC](10-issues/AC-COVERAGE.md). Báo cáo BA trước đó là snapshot của vòng audit yêu cầu, không phải kết quả chạy bộ test này.
+## Mốc duyệt nền và điều kiện dùng baseline cập nhật
+
+1. Product Owner đã duyệt các quyết định ở bảng trên (03/10/2026). ✔
+2. Product Owner đã xác nhận Giai đoạn 2 xong và cho phép bắt đầu Giai đoạn 3 (03/10/2026). ✔
+3. Bản bổ sung 04/10 cần Product Owner review các tài liệu đã viết trước khi dùng để chốt kế hoạch mới. Cổng kỹ thuật NOT_RUN ở [05] mục 11 là phụ thuộc/rủi ro phải giữ trong kế hoạch, không bằng chứng thất bại hay đã đạt.
+4. Tiêu chí chấm ngoài D1–D10 chỉ bổ sung khi được cung cấp. Không xác minh hoặc thao tác Jira trong đợt này; dữ liệu kế hoạch và dự án/key phải được đối soát riêng trước khi tạo issue.
+
+[01]: 01-yeu-cau-chi-tiet.md
+[02]: 02-luat-co-tuong.md
+[03]: 03-du-lieu.md
+[04]: 04-kien-truc.md
+[05]: 05-kiem-thu.md

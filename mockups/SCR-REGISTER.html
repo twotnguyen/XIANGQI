@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cờ Tướng Online · Đăng Ký Tài Khoản Người Chơi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --gold-main: #C6922A;
+      --gold-light: #F5CA67;
+      --gold-dark: #7A4E0F;
+      --crimson-top: #8E161C;
+      --crimson-mid: #680E13;
+      --crimson-dark: #3F0609;
+      --parchment-bg: #FAF3E3;
+      --wood-frame: #4A2614;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-han: 'SimSun', 'STSong', 'Noto Serif SC', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0B0806;
+      /* Background scenery */
+      background-image: 
+        radial-gradient(ellipse at 50% 30%, rgba(220, 140, 50, 0.18) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(11, 8, 6, 0.65) 0%, rgba(11, 8, 6, 0.92) 100%),
+        url('login-bg-scenic.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+    }
+
+    /* Hanging Couplets on Wide Desktop (>= 1240px) */
+    .couplet {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      padding: 18px 6px;
+      background: linear-gradient(180deg, #96181E 0%, #5E0B10 100%);
+      border: 1.5px solid var(--gold-light);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(245, 202, 103, 0.25);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-han);
+      font-size: 22px;
+      font-weight: 900;
+      color: #F8E2B2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+      z-index: 5;
+      pointer-events: none;
+    }
+    .couplet-l { left: calc(50% - 580px); }
+    .couplet-r { right: calc(50% - 580px); }
+
+    @media (max-width: 1240px) {
+      .couplet { display: none; }
+    }
+
+    /* Central Master Modal Card */
+    .master-modal {
+      width: 100%;
+      max-width: 1020px;
+      min-height: 610px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      background: #23120A;
+      border: 3.5px solid #542C15;
+      border-radius: 14px;
+      box-shadow: 
+        0 25px 70px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(245, 202, 103, 0.25),
+        inset 0 0 25px rgba(0,0,0,0.7);
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+      margin: auto;
+      transition: all 0.3s ease;
+    }
+
+    /* Antique Brass Corners */
+    .c-decor {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      pointer-events: none;
+      z-index: 15;
+    }
+    .c-decor::before, .c-decor::after {
+      content: '';
+      position: absolute;
+      background: linear-gradient(45deg, #F5CA67, #8B5F19);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+    .ctl { top: 8px; left: 8px; }
+    .ctl::before { top: 0; left: 0; width: 20px; height: 3px; }
+    .ctl::after  { top: 0; left: 0; width: 3px; height: 20px; }
+
+    .ctr { top: 8px; right: 8px; }
+    .ctr::before { top: 0; right: 0; width: 20px; height: 3px; }
+    .ctr::after  { top: 0; right: 0; width: 3px; height: 20px; }
+
+    .cbl { bottom: 8px; left: 8px; }
+    .cbl::before { bottom: 0; left: 0; width: 20px; height: 3px; }
+    .cbl::after  { bottom: 0; left: 0; width: 3px; height: 20px; }
+
+    .cbr { bottom: 8px; right: 8px; }
+    .cbr::before { bottom: 0; right: 0; width: 20px; height: 3px; }
+    .cbr::after  { bottom: 0; right: 0; width: 3px; height: 20px; }
+
+    /* LEFT PANEL: Imperial Silk Crimson Branding */
+    .wing-brand {
+      background: 
+        radial-gradient(circle at 50% 25%, rgba(240, 60, 60, 0.25) 0%, transparent 65%),
+        linear-gradient(155deg, var(--crimson-top) 0%, var(--crimson-mid) 50%, var(--crimson-dark) 100%);
+      color: #FFF;
+      padding: clamp(24px, 4vw, 44px) clamp(20px, 3.5vw, 38px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px solid var(--gold-dark);
+      position: relative;
+    }
+
+    .brand-hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-subtitle-mini {
+      display: none;
+    }
+
+    /* 3D Master Chess Token */
+    .token-3d {
+      width: clamp(72px, 7.5vw, 92px);
+      height: clamp(72px, 7.5vw, 92px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #F7DCB2 0%, #D8A562 45%, #9E6B2A 85%, #643E12 100%);
+      border: 3.5px solid #FFF8E7;
+      box-shadow: 
+        0 12px 25px rgba(0, 0, 0, 0.7),
+        inset 0 4px 6px rgba(255, 255, 255, 0.7),
+        inset 0 -6px 10px rgba(0, 0, 0, 0.5),
+        0 0 25px rgba(245, 202, 103, 0.4);
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .token-3d::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(120, 60, 15, 0.55);
+    }
+
+    .token-char {
+      font-family: var(--font-han);
+      font-size: clamp(46px, 4.8vw, 58px);
+      font-weight: 900;
+      color: #991319;
+      line-height: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 -1px 0 rgba(0,0,0,0.4), 0 3px 6px rgba(50, 10, 10, 0.8);
+      filter: drop-shadow(0 0 8px rgba(245, 202, 103, 0.45));
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(22px, 2.4vw, 27px);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: linear-gradient(180deg, #FFF6E5 0%, #E5BF77 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .hero-slogan {
+      font-family: var(--font-sans);
+      font-style: italic;
+      font-size: clamp(12.5px, 1.2vw, 14px);
+      color: #F8E2C3;
+      margin-bottom: 20px;
+    }
+
+    /* Registration Perks Grid */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .feat-box {
+      background: rgba(30, 8, 10, 0.45);
+      border: 1px solid rgba(245, 202, 103, 0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .feat-ico {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #C6922A 0%, #6E460B 100%);
+      color: #FFF;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .feat-desc h5 {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #F8EAD0;
+      margin-bottom: 2px;
+    }
+    .feat-desc p {
+      font-size: 10px;
+      color: #CEB59A;
+      line-height: 1.25;
+    }
+
+    .brand-foot {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(245, 202, 103, 0.2);
+      padding-top: 12px;
+      font-size: 11px;
+      color: #C8AA8B;
+    }
+
+    /* RIGHT PANEL: Wizard Form on Parchment Paper */
+    .wing-form {
+      background: 
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #F5ECDB 100%);
+      padding: clamp(22px, 3.5vw, 36px) clamp(18px, 3vw, 32px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .form-head-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .form-title {
+      font-family: var(--font-serif);
+      font-size: clamp(20px, 2.2vw, 24px);
+      font-weight: 700;
+      color: #24160E;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seal-icon {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #B91C1C 0%, #881318 100%);
+      color: #FFF;
+      font-family: var(--font-han);
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 22px;
+      border-radius: 3px;
+      box-shadow: 0 2px 4px rgba(136, 19, 24, 0.4);
+    }
+
+    .badge-scr {
+      font-size: 10px;
+      font-weight: 700;
+      color: #15803D;
+      background: #DCFCE7;
+      border: 1px solid #86EFAC;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* STEPPER BAR */
+    .stepper-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 14px 0 16px;
+      position: relative;
+    }
+
+    .stepper-wrap::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: #D8C3A5;
+      z-index: 1;
+    }
+
+    .step-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #E8D8C0;
+      color: #7A695A;
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      border: 2px solid #D8C3A5;
+      transition: all 0.25s;
+    }
+
+    .step-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: #7A695A;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+
+    .step-item.active .step-num {
+      background: var(--crimson-top);
+      color: #FFF;
+      border-color: var(--gold-light);
+      box-shadow: 0 2px 6px rgba(142, 22, 28, 0.4);
+    }
+    .step-item.active .step-text {
+      color: var(--crimson-top);
+      font-weight: 700;
+    }
+
+    .step-item.completed .step-num {
+      background: #15803D;
+      color: #FFF;
+      border-color: #86EFAC;
+    }
+    .step-item.completed .step-text {
+      color: #15803D;
+    }
+
+    /* Wizard Steps Container */
+    .wizard-step {
+      display: none;
+      animation: fadeInStep 0.25s ease-in-out;
+    }
+    .wizard-step.active-step {
+      display: block;
+    }
+
+    @keyframes fadeInStep {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Inputs */
+    .field-row {
+      margin-bottom: 11px;
+    }
+
+    .field-lbl {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #382D25;
+      margin-bottom: 4px;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-ico {
+      position: absolute;
+      left: 12px;
+      font-size: 14px;
+      color: #8C7B6E;
+      pointer-events: none;
+    }
+
+    .input-elem {
+      width: 100%;
+      height: 40px;
+      padding: 0 38px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #201915;
+      font-weight: 600;
+      background: rgba(248, 243, 233, 0.7);
+      border: 1.5px solid rgba(175, 140, 95, 0.55);
+      border-radius: 7px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(70, 45, 20, 0.1), 0 1px 0 rgba(255, 255, 255, 0.7);
+      transition: all 0.2s;
+    }
+
+    .input-elem:focus {
+      background: #FFFFFF;
+      border-color: #A31D24;
+      box-shadow: 0 0 0 3px rgba(163, 29, 36, 0.16);
+    }
+
+    .btn-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      color: #8C7B6E;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .field-hint {
+      font-size: 10.5px;
+      color: #7A695C;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-hint.valid { color: #15803D; font-weight: 600; }
+    .field-hint.error { color: #B91C1C; font-weight: 600; }
+
+    /* 6-box OTP Container */
+    .otp-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin: 16px 0 14px;
+    }
+
+    .otp-input {
+      width: 100%;
+      height: 48px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--crimson-top);
+      background: #FFFDF8;
+      border: 1.5px solid #C4A57B;
+      border-radius: 8px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+      transition: all 0.2s;
+    }
+    .otp-input:focus {
+      border-color: var(--crimson-top);
+      box-shadow: 0 0 0 3px rgba(165, 31, 37, 0.2);
+      background: #FFF;
+    }
+
+    .otp-info-card {
+      background: #FFF9ED;
+      border: 1px solid #E8D3B0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #5C4533;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    .otp-timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      background: rgba(248, 240, 225, 0.6);
+      border-radius: 6px;
+    }
+
+    .otp-countdown {
+      font-weight: 700;
+      color: var(--crimson-top);
+    }
+
+    .btn-resend {
+      background: none;
+      border: none;
+      color: #A31D24;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 11.5px;
+      text-decoration: underline;
+    }
+    .btn-resend:disabled {
+      color: #9E9184;
+      text-decoration: none;
+      cursor: not-allowed;
+    }
+
+    /* Buttons */
+    .btn-submit {
+      width: 100%;
+      min-height: 42px;
+      background: linear-gradient(180deg, #A82027 0%, #7A1217 100%);
+      color: #FFFDF7;
+      border: 1.5px solid #570B0E;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 8px rgba(122, 18, 23, 0.4), inset 0 1px 0 rgba(255, 220, 140, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-submit:hover {
+      background: linear-gradient(180deg, #BA262E 0%, #8C151B 100%);
+      box-shadow: 0 5px 12px rgba(122, 18, 23, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-back {
+      width: 100%;
+      min-height: 36px;
+      background: transparent;
+      color: #6E5B4D;
+      border: 1px solid #C4A57B;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    .btn-back:hover {
+      background: rgba(220, 195, 160, 0.2);
+      color: #24160E;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 10px 0;
+      color: #8C7B6E;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px dashed rgba(165, 135, 95, 0.5);
+    }
+    .divider::before { margin-right: 10px; }
+    .divider::after { margin-left: 10px; }
+
+    .btn-google {
+      width: 100%;
+      min-height: 38px;
+      background: #FFFFFF;
+      color: #3C4043;
+      border: 1.5px solid rgba(190, 165, 130, 0.7);
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(70, 45, 20, 0.08);
+      transition: all 0.2s;
+    }
+
+    .reg-foot {
+      text-align: center;
+      font-size: 12px;
+      color: #574639;
+      margin-top: 14px;
+    }
+    .reg-foot a { color: #A31D24; font-weight: 700; text-decoration: none; }
+    .reg-foot a:hover { text-decoration: underline; }
+
+    /* Alert Callout */
+    .alert-callout {
+      background: rgba(255, 247, 237, 0.95);
+      border-left: 3px solid #D97706;
+      border-radius: 4px;
+      padding: 7px 10px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      color: #9A3412;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    /* Success / Toast */
+    .toast-box {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(28, 18, 14, 0.95);
+      border: 1.5px solid #C6922A;
+      color: #F8E2C3;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+      display: none;
+      z-index: 100;
+      text-align: center;
+    }
+
+    /* ========================================================
+       MOBILE RESPONSIVE BREAKPOINT (< 768px)
+       ======================================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 10px 24px;
+        align-items: center;
+      }
+
+      .master-modal {
+        grid-template-columns: 1fr;
+        max-width: 390px;
+        min-height: auto;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      }
+
+      .wing-brand {
+        padding: 16px 14px 14px;
+        border-right: none;
+        border-bottom: 2px solid var(--gold-dark);
+      }
+
+      .brand-hero {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .token-3d {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 0;
+        border-width: 2.5px;
+      }
+
+      .token-char {
+        font-size: 24px;
+      }
+
+      .brand-title-wrap {
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .hero-title {
+        font-size: 18px;
+        margin-bottom: 1px;
+        line-height: 1.2;
+      }
+
+      .brand-subtitle-mini {
+        display: block;
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        color: var(--gold-light);
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .hero-slogan {
+        font-size: 11.5px;
+        margin: 6px 0 0;
+        text-align: center;
+        width: 100%;
+        opacity: 0.95;
+      }
+
+      .feat-grid, .brand-foot {
+        display: none;
+      }
+
+      .wing-form {
+        padding: 18px 14px 20px;
+      }
+
+      .form-title {
+        font-size: 19px;
+      }
+
+      .input-elem {
+        height: 44px;
+        font-size: 14.5px;
+      }
+
+      .btn-submit {
+        min-height: 44px;
+        font-size: 14.5px;
+      }
+
+      .otp-input {
+        height: 44px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hanging Couplets on Wide Desktop (>= 1240px) -->
+  <div class="couplet couplet-l">
+    <span>楚</span><span>河</span><span>爭</span><span>雄</span>
+  </div>
+  <div class="couplet couplet-r">
+    <span>漢</span><span>界</span><span>稱</span><span>王</span>
+  </div>
+
+  <div class="master-modal">
+    <div id="toast" class="toast-box"></div>
+    <div class="c-decor ctl"></div>
+    <div class="c-decor ctr"></div>
+    <div class="c-decor cbl"></div>
+    <div class="c-decor cbr"></div>
+
+    <!-- LEFT PANEL: BRANDING WING -->
+    <div class="wing-brand">
+      <div class="brand-hero">
+        <div class="token-3d">
+          <span class="token-char">帥</span>
+        </div>
+        <div class="brand-title-wrap">
+          <h1 class="hero-title">CỜ TƯỚNG ONLINE</h1>
+          <span class="brand-subtitle-mini">XIANGQI PLATFORM</span>
+        </div>
+      </div>
+      <div class="hero-slogan">“Đăng kỳ lập chí, bách chiến xưng vương”</div>
+
+      <div class="feat-grid">
+        <div class="feat-box">
+          <div class="feat-ico">🛡️</div>
+          <div class="feat-desc">
+            <h5>Bảo Toàn Hồ Sơ</h5>
+            <p>Email cố định, bảo mật OTP</p>
+          </div>
+        </div>
+        <div class="feat-box">
+          <div class="feat-ico">🏆</div>
+          <div class="feat-desc">
+            <h5>Gia Nhập Rank Elo</h5>
+            <p>Khởi đầu chuẩn 1200 điểm</p>
+          </div>
+        </div>
+        <div class="feat-box">
+          <div class="feat-ico">📜</div>
+          <div class="feat-desc">
+            <h5>Lưu Trữ Kỳ Phổ</h5>
+            <p>Tự động lưu lịch sử ván cờ</p>
+          </div>
+        </div>
+        <div class="feat-box">
+          <div class="feat-ico">✨</div>
+          <div class="feat-desc">
+            <h5>Tên Tùy Biến</h5>
+            <p>Đổi Display Name miễn phí</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-foot">
+        <span>Đồ án 2026 · HUTECH</span>
+        <span>Chuẩn WCAG 2.1 AA · DT-21</span>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: WIZARD FORM WING -->
+    <div class="wing-form">
+      <div>
+        <div class="form-head-row">
+          <h2 class="form-title">
+            Đăng Ký Tài Khoản
+            <span class="seal-icon">印</span>
+          </h2>
+          <span class="badge-scr">✓ SCR-REGISTER</span>
+        </div>
+
+        <!-- 3-Step Progress Indicator -->
+        <div class="stepper-wrap">
+          <div class="step-item active" id="step-nav-1" onclick="jumpToStep(1)">
+            <div class="step-num">1</div>
+            <div class="step-text">Tài khoản</div>
+          </div>
+          <div class="step-item" id="step-nav-2" onclick="jumpToStep(2)">
+            <div class="step-num">2</div>
+            <div class="step-text">Email</div>
+          </div>
+          <div class="step-item" id="step-nav-3" onclick="jumpToStep(3)">
+            <div class="step-num">3</div>
+            <div class="step-text">Xác thực OTP</div>
+          </div>
+        </div>
+
+        <!-- STEP 1: USERNAME & PASSWORD -->
+        <div class="wizard-step active-step" id="step-1">
+          <div class="field-row">
+            <label class="field-lbl" for="reg-user">Tên đăng nhập (Username)</label>
+            <div class="input-box">
+              <span class="input-ico">👤</span>
+              <input class="input-elem" type="text" id="reg-user" placeholder="3–20 ký tự (chữ, số, gạch dưới)" value="ky_thu_2026" oninput="validateUsername()">
+            </div>
+            <div class="field-hint valid" id="hint-user">✓ Tên đăng nhập hợp lệ và sẵn sàng sử dụng</div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-lbl" for="reg-pass">Mật khẩu</label>
+            <div class="input-box">
+              <span class="input-ico">🔒</span>
+              <input class="input-elem" type="password" id="reg-pass" placeholder="Tối thiểu 8 ký tự" value="KyThuMatKhau123">
+              <button type="button" class="btn-eye" onclick="togglePass('reg-pass')">👁️</button>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-lbl" for="reg-repass">Xác nhận mật khẩu</label>
+            <div class="input-box">
+              <span class="input-ico">🔒</span>
+              <input class="input-elem" type="password" id="reg-repass" placeholder="Nhập lại mật khẩu" value="KyThuMatKhau123">
+              <button type="button" class="btn-eye" onclick="togglePass('reg-repass')">👁️</button>
+            </div>
+          </div>
+
+          <button type="button" class="btn-submit" onclick="goToStep(2)">
+            Tiếp Tục: Nhập Email ❯
+          </button>
+
+          <div class="divider">hoặc đăng ký nhanh</div>
+
+          <button type="button" class="btn-google" onclick="window.location.href='SCR-ONBOARDING.html'">
+            <svg width="17" height="17" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.15z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+            </svg>
+            Đăng ký nhanh bằng Google
+          </button>
+        </div>
+
+        <!-- STEP 2: EMAIL VERIFICATION ENTRY -->
+        <div class="wizard-step" id="step-2">
+          <div class="alert-callout">
+            <span>🛡️</span>
+            <span><strong>Bảo mật danh tính:</strong> Email sau khi xác thực là cố định (READONLY) để bảo vệ toàn vẹn lịch sử thi đấu và điểm xếp hạng Elo.</span>
+          </div>
+
+          <div class="field-row">
+            <label class="field-lbl" for="reg-email">Email chính chủ</label>
+            <div class="input-box">
+              <span class="input-ico">✉️</span>
+              <input class="input-elem" type="email" id="reg-email" placeholder="kythu@gmail.com" value="kythu_hutech@gmail.com">
+            </div>
+            <div class="field-hint" style="color: #6E5A4B;">Mã kích hoạt OTP 6 số sẽ được gửi tới hộp thư này.</div>
+          </div>
+
+          <button type="button" class="btn-submit" onclick="sendOtpAndGoToStep3()">
+            Gửi Mã OTP 6 Số Qua Email ❯
+          </button>
+
+          <button type="button" class="btn-back" onclick="goToStep(1)">
+            ❮ Quay lại chỉnh sửa thông tin tài khoản
+          </button>
+        </div>
+
+        <!-- STEP 3: OTP 6-DIGIT VERIFICATION -->
+        <div class="wizard-step" id="step-3">
+          <div class="otp-info-card">
+            ✉️ Mã xác thực 6 số đã được gửi đến:<br>
+            <strong id="display-target-email" style="color: var(--crimson-top);">kythu_hutech@gmail.com</strong>
+          </div>
+
+          <label class="field-lbl" style="text-align: center;">Nhập mã OTP 6 số:</label>
+          <div class="otp-grid">
+            <input class="otp-input" type="text" maxlength="1" id="otp-1" oninput="handleOtpInput(1)" onkeydown="handleOtpKey(event, 1)">
+            <input class="otp-input" type="text" maxlength="1" id="otp-2" oninput="handleOtpInput(2)" onkeydown="handleOtpKey(event, 2)">
+            <input class="otp-input" type="text" maxlength="1" id="otp-3" oninput="handleOtpInput(3)" onkeydown="handleOtpKey(event, 3)">
+            <input class="otp-input" type="text" maxlength="1" id="otp-4" oninput="handleOtpInput(4)" onkeydown="handleOtpKey(event, 4)">
+            <input class="otp-input" type="text" maxlength="1" id="otp-5" oninput="handleOtpInput(5)" onkeydown="handleOtpKey(event, 5)">
+            <input class="otp-input" type="text" maxlength="1" id="otp-6" oninput="handleOtpInput(6)" onkeydown="handleOtpKey(event, 6)">
+          </div>
+
+          <div class="otp-timer-row">
+            <span>Thời hạn mã: <span class="otp-countdown" id="otp-timer">03:00</span></span>
+            <button type="button" class="btn-resend" id="btn-resend" disabled onclick="resendOtp()">Gửi lại mã (60s)</button>
+          </div>
+
+          <button type="button" class="btn-submit" onclick="verifyAndActivate()">
+            🏛️ KÍCH HOẠT TÀI KHOẢN & VÀO SẢNH ❯
+          </button>
+
+          <button type="button" class="btn-back" onclick="goToStep(2)">
+            ❮ Đổi email nhận mã OTP
+          </button>
+        </div>
+      </div>
+
+      <div class="reg-foot">
+        Đã có tài khoản kỳ đài? <a href="SCR-LOGIN.html">Đăng nhập ngay →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let otpCountdown = 180; // 3 minutes
+    let resendCountdown = 60; // 60s cooldown
+    let timerInterval = null;
+    let resendInterval = null;
+    let failedOtpAttempts = 0;
+
+    function goToStep(step) {
+      if (step === 2) {
+        const u = document.getElementById('reg-user').value.trim();
+        const p = document.getElementById('reg-pass').value;
+        const rp = document.getElementById('reg-repass').value;
+
+        if (u.length < 3 || u.length > 20 || !/^[a-zA-Z0-9_]+$/.test(u)) {
+          showToast('Tên đăng nhập phải từ 3–20 ký tự (chữ, số, gạch dưới)!', 'error');
+          return;
+        }
+        if (p.length < 8) {
+          showToast('Mật khẩu phải có tối thiểu 8 ký tự!', 'error');
+          return;
+        }
+        if (p !== rp) {
+          showToast('Mật khẩu xác nhận không khớp!', 'error');
+          return;
+        }
+      }
+
+      currentStep = step;
+      document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active-step'));
+      document.getElementById('step-' + step).classList.add('active-step');
+
+      // Update stepper header indicators
+      for (let i = 1; i <= 3; i++) {
+        const item = document.getElementById('step-nav-' + i);
+        item.classList.remove('active', 'completed');
+        if (i < step) item.classList.add('completed');
+        if (i === step) item.classList.add('active');
+      }
+    }
+
+    function jumpToStep(step) {
+      if (step < currentStep) {
+        goToStep(step);
+      }
+    }
+
+    function sendOtpAndGoToStep3() {
+      const email = document.getElementById('reg-email').value.trim();
+      if (!email || !email.includes('@')) {
+        showToast('Vui lòng nhập địa chỉ Email hợp lệ!', 'error');
+        return;
+      }
+
+      document.getElementById('display-target-email').textContent = email;
+      goToStep(3);
+      startOtpTimers();
+      showToast('✓ Đã gửi mã OTP 6 số tới ' + email, 'success');
+      setTimeout(() => { document.getElementById('otp-1').focus(); }, 150);
+    }
+
+    function startOtpTimers() {
+      clearInterval(timerInterval);
+      clearInterval(resendInterval);
+      otpCountdown = 180;
+      resendCountdown = 60;
+      failedOtpAttempts = 0;
+
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        otpCountdown--;
+        updateTimerDisplay();
+        if (otpCountdown <= 0) {
+          clearInterval(timerInterval);
+          showToast('Mã OTP đã hết hạn (3 phút). Vui lòng gửi lại mã mới!', 'error');
+        }
+      }, 1000);
+
+      const resendBtn = document.getElementById('btn-resend');
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Gửi lại mã (' + resendCountdown + 's)';
+
+      resendInterval = setInterval(() => {
+        resendCountdown--;
+        if (resendCountdown > 0) {
+          resendBtn.textContent = 'Gửi lại mã (' + resendCountdown + 's)';
+        } else {
+          clearInterval(resendInterval);
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Gửi lại mã OTP';
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(otpCountdown / 60);
+      const s = otpCountdown % 60;
+      document.getElementById('otp-timer').textContent = 
+        (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    function resendOtp() {
+      startOtpTimers();
+      showToast('✓ Đã gửi lại mã OTP mới về hộp thư!', 'success');
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById('otp-' + i).value = '';
+      }
+      document.getElementById('otp-1').focus();
+    }
+
+    function handleOtpInput(idx) {
+      const val = document.getElementById('otp-' + idx).value;
+      if (val.length === 1 && idx < 6) {
+        document.getElementById('otp-' + (idx + 1)).focus();
+      }
+    }
+
+    function handleOtpKey(e, idx) {
+      if (e.key === 'Backspace' && !document.getElementById('otp-' + idx).value && idx > 1) {
+        document.getElementById('otp-' + (idx - 1)).focus();
+      }
+    }
+
+    function verifyAndActivate() {
+      let code = '';
+      for (let i = 1; i <= 6; i++) {
+        code += document.getElementById('otp-' + i).value.trim();
+      }
+
+      if (code.length < 6) {
+        showToast('Vui lòng nhập đầy đủ 6 chữ số mã OTP!', 'error');
+        return;
+      }
+
+      if (otpCountdown <= 0) {
+        showToast('Mã OTP đã hết hạn! Vui lòng bấm Gửi lại mã.', 'error');
+        return;
+      }
+
+      // Demo OTP validation (accepts 123456 or any 6 digits for testing)
+      if (code === '000000') {
+        failedOtpAttempts++;
+        if (failedOtpAttempts >= 5) {
+          showToast('⛔ Bạn đã nhập sai quá 5 lần! Mã OTP đã bị hủy để bảo mật.', 'error');
+          document.getElementById('btn-resend').disabled = false;
+          document.getElementById('btn-resend').textContent = 'Gửi lại mã mới';
+        } else {
+          showToast('Mã OTP không chính xác! (Còn ' + (5 - failedOtpAttempts) + ' lần thử)', 'error');
+        }
+        return;
+      }
+
+      // Success activation
+      const user = document.getElementById('reg-user').value.trim();
+      showToast('🎉 Kích hoạt tài khoản thành công! Tự động gán Display Name = ' + user + '. Đang vào Sảnh...', 'success');
+      localStorage.setItem('xiangqi_user', JSON.stringify({
+        username: user,
+        display_name: user,
+        is_guest: false,
+        elo: 1200
+      }));
+      setTimeout(() => {
+        window.location.href = 'SCR-LOBBY.html';
+      }, 1200);
+    }
+
+    function validateUsername() {
+      const u = document.getElementById('reg-user').value.trim();
+      const hint = document.getElementById('hint-user');
+      if (u.length >= 3 && u.length <= 20 && /^[a-zA-Z0-9_]+$/.test(u)) {
+        hint.textContent = '✓ Tên đăng nhập hợp lệ và sẵn sàng sử dụng';
+        hint.className = 'field-hint valid';
+      } else {
+        hint.textContent = '⚠️ 3–20 ký tự, không dấu, chỉ gồm chữ, số và gạch dưới';
+        hint.className = 'field-hint error';
+      }
+    }
+
+    function togglePass(id) {
+      const el = document.getElementById(id);
+      el.type = (el.type === 'password') ? 'text' : 'password';
+    }
+
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      if (type === 'success') {
+        t.style.borderColor = '#86EFAC';
+        t.style.color = '#86EFAC';
+      } else if (type === 'error') {
+        t.style.borderColor = '#EF4444';
+        t.style.color = '#FCA5A5';
+      } else {
+        t.style.borderColor = '#F5CA67';
+        t.style.color = '#F8E2C3';
+      }
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+  </script>
+</body>
+</html>
