@@ -85,13 +85,13 @@ Tương phản đã đo (đặc tả): mực/giấy **12,95** · mực/gỗ **7,
 
 ### 2.3 Chế độ tối (Kỳ Đài Cổ Phong / Tea-Room Theme) — **Chốt chuẩn giao diện**
 
-Dự án hỗ trợ 2 phong cách hiển thị: **Giao diện Giấy Xuyến Chỉ (Light Paper Theme)** và **Giao diện Kỳ Đài Trà Đình (Dark Tea-Room Theme - Mặc định của Game)**. Cả hai chế độ đều bảo toàn 100% tỷ lệ tương phản WCAG 2.1 AA.
+**Phân kỳ theo BA 10.3 (duyệt 04/10):** P1 chỉ **Kỳ Đài Cổ Phong**, không có bộ chọn. P2 thêm **Giấy Sáng (Light Paper Theme)** và **Theo hệ thống**. Các token dưới đây mô tả thiết kế đích cho cả hai; không có nghĩa phải dựng Giấy Sáng trong P1. Cả hai phải được đo ở giao diện thực để nghiệm thu WCAG 2.1 AA; bảng token không phải bằng chứng đã đạt mọi trạng thái.
 
 **Nguyên tắc:**
 1. **Bàn cờ giữ nguyên** màu sắc vật liệu gỗ mộc chuẩn Á Đông (`#D8AE72`, quân cờ, đường kẻ, dấu trạng thái) ở cả hai chế độ — đảm bảo mọi tương phản quân/gỗ đã đo không bị ảnh hưởng.
 2. Phần **khung giao diện, thẻ card và sảnh chờ**:
    - Ở chế độ Kỳ Đài Cổ Phong: Sử dụng gam nâu trầm gỗ mun (`#120D0A`, `#241610`), viền đồng thau dập nổi (viền trang trí `#542C15` không mang thông tin; viền hoàng kim `#C6922A`), chữ vàng ngà xuyến chỉ (`#FFF5DF`, `#E2CFB7`), mang lại chiều sâu không gian tĩnh tại.
-3. Người dùng có thể tùy chọn trong Cài đặt hồ sơ (Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống), mặc định ưu tiên giao diện Kỳ Đài Cổ Phong.
+3. **Chỉ P2**, người dùng tuỳ chọn trong Cài đặt hồ sơ (Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống), mặc định Kỳ Đài Cổ Phong; P1 không tự theo hệ điều hành.
 
 | Token CSS | Sáng (Giấy Sáng) | Tối (Kỳ Đài Cổ Phong) | Tương phản ở chế độ tối |
 |---|---|---|---|
@@ -283,7 +283,7 @@ Kích thước: cao ≥ 44 px, đệm ngang 16 px, chữ `--text-md` 600, bo `--
 
 | Loại | Quy tắc |
 |---|---|
-| Hộp thoại thường | Đóng được bằng **X**, `Esc`, bấm ra ngoài (`SCR-RULE-02`); focus bị giữ trong hộp; đóng xong trả focus về nút đã mở |
+| Hộp thoại thường | Đóng được bằng **X**, `Esc`, bấm ra ngoài (`SCR-RULE-02`); focus bị giữ trong hộp; đóng xong trả focus về nút đã mở. **Không áp dụng cho hai khung đề nghị không modal** ở §6.7 |
 | Không đóng tuỳ ý | `SCR-ONBOARDING`, `OVERLAY-RECONNECTING` — không X; `ALERT-INACTIVITY-BANNER` **không phải modal** (§6.8) |
 | Xác nhận nguy hiểm | Tiêu đề câu hỏi · dòng **hậu quả in đậm** · [Huỷ] bên trái, nút nguy hiểm bên phải · **focus mặc định ở Huỷ** (`SCR-RULE-03`) |
 
@@ -319,7 +319,7 @@ Câu bắt buộc (chốt):
 ### 6.7 Danh sách nước đi, khung đề nghị
 
 - Nước mới nhất: đậm **+ dấu ▸** (không chỉ màu); tự cuộn tới nước mới.
-- Khung đề nghị hoà/đi lại **không chặn bàn cờ**: người nhận [Từ chối] [Đồng ý] + "Còn 00:23"; người gửi "Đang chờ đối thủ trả lời…" + [Rút đề nghị]; người xem chỉ đọc. X chỉ **thu gọn**, hạn vẫn chạy (`SCR-RULE-06`).
+- Khung đề nghị hoà/đi lại **không chặn bàn cờ**: người nhận [Từ chối] [Đồng ý] + "Còn 00:23"; người gửi "Đang chờ đối thủ trả lời…" + [Rút đề nghị]; người xem chỉ đọc. X/Esc chỉ **thu gọn**, có nút mở lại; hạn và đồng hồ vẫn chạy, không giữ focus (`SCR-RULE-06`). Người xin đi lại vẫn bị chặn đi nước mới theo BA 3.6; không chặn thao tác của người nhận. Chỉ Từ chối gửi phản hồi từ chối. Ván kết thúc thì đề nghị đóng, phản hồi muộn vô hiệu.
 
 ### 6.8 Cảnh báo treo ván, mất kết nối, kết quả
 
@@ -522,7 +522,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 
 ## 12. `tokens.css` tham chiếu
 
-Khi dựng (Giai đoạn 4) frontend chép vào file token CSS của ứng dụng; đường dẫn do Giai đoạn 2 chốt. Hỗ trợ song song cả 2 giao diện Sáng (Giấy Xuyến Chỉ) và Tối (Kỳ Đài Cổ Phong).
+Khi dựng (Giai đoạn 4) frontend chép vào file token CSS của ứng dụng; đường dẫn do Giai đoạn 2 chốt. Mẫu chứa token cho cả hai giao diện để tham khảo đích P2; P1 phải áp Kỳ Đài Cổ Phong cố định, không kích hoạt CSS Theo hệ thống hoặc bộ chọn từ ví dụ này.
 
 ```css
 :root {

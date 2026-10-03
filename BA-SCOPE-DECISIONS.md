@@ -3,13 +3,15 @@
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  
-> **Cập nhật lần cuối:** 03/10/2026 (rà soát đồng bộ Giai đoạn 1 — xem ghi chú bên dưới)  
+> **Cập nhật lần cuối:** 04/10/2026 (hoàn thiện đặc tả P1/P2 theo các quyết định Product Owner duyệt trong phiên này)
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
 > **Ghi chú rà soát 03/10/2026.** Product Owner uỷ quyền cho agent tự xử lý mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Các quyết định thêm hoặc sửa trong đợt này đã được Product Owner **duyệt toàn bộ ngày 03/10/2026** (gồm nhóm 1–8 và loạt trả lời nhóm B). Riêng các con số tạm (120 nửa nước không ăn quân, luật đuổi quân liên tục, quy mô 50 người dùng đồng thời) được xác nhận lại ở Giai đoạn 2.
 >
 > **Giai đoạn 2 (từ 03/10/2026):** chi tiết hoá yêu cầu, luật cờ, dữ liệu, kiến trúc và kiểm thử nằm ở thư mục [`docs/`](docs/README.md). `docs/` **không thay đổi phạm vi** ở tài liệu này; hai nơi mâu thuẫn thì tài liệu này thắng và phải báo người dùng.
+>
+> **Bổ sung 04/10/2026:** hoàn thiện chi tiết cả P1 và P2, giữ nguyên thứ tự ưu tiên. BA là nguồn luật duy nhất; `IDEA.md` chỉ giới thiệu sản phẩm. Không sửa Jira, kế hoạch hiện có hoặc mockup trong đợt này; mockup chỉ tham khảo khi khác đặc tả. Hoàn thiện đặc tả không có nghĩa khả thi kỹ thuật đã được kiểm chứng hay cam kết hoàn thành toàn bộ P1 trong hạn.
 >
 > **Hai quy ước đọc tài liệu:**
 > 1. Các mã như `R06`, `R17`, `DEC-019`, `ARCH-04`, `GR-END-01`, `EC-0x`, `DT-21`… là **nhãn kế thừa** từ bộ tài liệu cũ đã xoá. Chúng không còn là nguồn tra cứu; luật tương ứng đã được viết đầy đủ bằng chữ trong chính mục chứa nhãn.
@@ -30,6 +32,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     2. **Bước 2 (Nhập Email):** Giao diện chuyển tiếp mượt mà sang khung nhập `Email:`. Người dùng điền địa chỉ email chính chủ và bấm **"Xác nhận Email"**.
     3. **Bước 3 (Xác thực Email qua mã OTP):** Hệ thống kích hoạt Supabase Auth gửi mã OTP 6 chữ số đến địa chỉ email vừa nhập, đồng thời hiển thị khung nhập mã OTP. Người dùng kiểm tra hòm thư (check mail), lấy mã và nhập vào hệ thống để xác nhận email vừa nhập là chính xác và đang hoạt động. Xác thực OTP thành công $\rightarrow$ Tài khoản chuyển sang trạng thái `ACTIVE`, tự động đăng nhập và đưa vào sảnh chính.
   * **Thời điểm tạo tài khoản:** Tài khoản **dùng được** (có hồ sơ và đăng nhập được) chỉ có **sau khi OTP xác thực thành công và hoàn tất bước cuối**. Trước đó người dùng chưa có hồ sơ và không đăng nhập được; **hệ thống xác thực (Supabase) có thể giữ tạm một bản ghi xác thực chưa xác nhận** (Product Owner chọn Phương án B ngày 03/10/2026), được dọn sau khoảng 1 giờ (tối đa khoảng 65 phút) để email không bị kẹt; username **không bị giữ chỗ** khi người dùng bỏ dở giữa chừng (đóng tab, hết hạn OTP). Máy chủ kiểm tra lại tính duy nhất của `username` và `email` ở bước cuối; nếu username đã bị người khác lấy trong lúc chờ thì báo lỗi và quay về Bước 1.
+  * **Phục hồi đăng ký (duyệt 04/10):** Nếu đã ghi `profiles.completed_at` nhưng còn cờ `PENDING`, tác vụ phục hồi hoàn tất xoá cờ, **không xoá tài khoản đã ghi hoàn tất**; trước khi phục hồi xong vẫn chặn sử dụng. Nếu chưa có `completed_at`, tiếp tục chặn và dọn theo thời hạn hiện có. Đăng ký, phục hồi và dọn cùng danh tính phải tuần tự hoá để tránh xoá nhầm.
   * **Email đã tồn tại:** Ở Bước 2, nếu email đã có tài khoản thì hiển thị ⚠️ *"Email này đã được đăng ký"* (cùng thông báo với luồng Google) và không gửi OTP.
 
 ---
@@ -67,7 +70,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * *Tên:* Tên hiển thị tạm **không cần duy nhất**. Giao diện luôn gắn nhãn **"(Khách)"** cạnh tên để không thể giả danh người dùng thật. Tên đi qua cùng bộ lọc từ cấm với Display Name (`Quyết định 5.3`).
     * *Được làm:* Đánh Thường (ghép ngẫu nhiên, tạo phòng, vào phòng bằng mã/link/QR), làm Người xem, Đánh Với Máy, chat phòng (cả hai kênh theo vai trò), gửi sticker, bật camera/mic khi ngồi ghế đấu.
     * *Không được làm:* Đánh Hạng; có Elo hoặc lên bảng xếp hạng; kết bạn, nhận/gửi lời mời bạn bè, chat 1-1; đổi username, email, mật khẩu.
-    * *Giới hạn chống spam:* Mỗi Khách chỉ có **tối đa 1 phòng đang mở** do mình tạo cùng lúc; chat bị giới hạn tốc độ như người dùng thường (`Quyết định 5.3`). Khách **có tính** vào trần 5 người xem như mọi người xem khác.
+    * *Giới hạn chống spam:* Mỗi Khách chỉ có **tối đa 1 phòng đang mở** do mình tạo cùng lúc; chat bị giới hạn tốc độ như người dùng thường (`Quyết định 5.3`). Khách **có tính** vào sức chứa người xem của phòng như mọi người xem khác; mức mở rộng P2 xem Phần 11.
     * *"Không lưu lịch sử" (phần ván có Khách hiện ở lịch sử đối thủ chính thức: đã duyệt 03/10):* Ván có Khách **không xuất hiện trong Lịch sử và không có Replay phía Khách**; ván Đánh Với Máy của Khách không lưu. Nếu đối thủ là tài khoản chính thức thì ván vẫn xuất hiện trong Lịch sử của họ (đối thủ hiển thị là "<Tên> (Khách)"); không ảnh hưởng Elo vì chỉ có ván Casual.
 
 ---
@@ -143,6 +146,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * *Nhiều thiết bị:* Đăng nhập thêm ở thiết bị khác được xử lý **như mở thêm tab**: thiết bị vào sau tiếp quản, thiết bị cũ nhận thông báo và chuyển sang chỉ đọc. Một tài khoản chỉ có **một phiên đang chơi**.
   * *Đang trong hàng đợi:* Người đang tìm trận (Casual hoặc Ranked) hiển thị là 🟠 *"Đang đấu"* (không nhận lời mời hay Thách đấu); nếu mất kết nối quá **30 giây** thì tự rút khỏi hàng đợi.
   * *Ván dở:* Nếu có ván hoặc phòng đang dở, Sảnh hiển thị banner **"Bạn có ván đang chơi dở — Quay lại"**.
+  * **Đăng xuất chủ động (duyệt 04/10):** Khi đang đấu online, hiện xác nhận rõ hậu quả đầu hàng; đồng ý thì máy chủ kết thúc ván `RESIGN`, thực hiện rời phòng rồi đăng xuất; Huỷ giữ nguyên ván và phiên. Không được chỉ xoá phiên ở client để thay cho lệnh đầu hàng. Đăng xuất ở `WAITING`/`FINISHED` thực hiện rời phòng theo 2.3, không xử thua. Ván AI theo 6.3. Đóng tab/mất mạng vẫn theo ân hạn, không đồng nhất với Đăng xuất chủ động.
 
 ## PHẦN 2: TẠO PHÒNG, PHÒNG CHỜ & MỜI BẠN (Yêu cầu 2 & 3)
 
@@ -222,7 +226,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   5. **Host khi ván đang diễn ra (`status = PLAYING`):** Vai trò Host chỉ liên quan Cài đặt phòng, nên Host mất kết nối tạm thời **không** làm đổi Host. Nếu Host rời phòng hoặc bị xử thua vì quá ân hạn (`Quyết định 8.3`), quyền Host chuyển cho người chơi còn lại. Host rời giữa ván được tính **Đầu hàng** như mọi người chơi.
   6. **Đổi chỗ giữa ghế và người xem (đã duyệt 03/10):** xem `Quyết định 2.8`.
   7. **Tái đấu giữ phòng:** Tái đấu (`R14`) tạo `Match ID` mới **trong cùng phòng**, nên danh sách chặn (`room_blocks`), danh sách người xem và chế độ phòng giữ nguyên. Chỉ áp dụng cho Đánh Thường (Ranked không có Tái đấu, xem `Quyết định 7.2`). **Đã duyệt 03/10:** cả hai bấm Tái đấu thì vào thẳng ván mới sau 3 giây, không cần bấm Sẵn sàng.
-  8. **Sau ván (đã duyệt 03/10):** Khi một người ngồi ghế rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (nếu người rời là Host thì quyền Host chuyển cho người còn lại); người mới vào theo `Quyết định 2.8`. Mất kết nối ở `WAITING`: giữ ghế 60 giây.
+  8. **Sau ván CASUAL (đã duyệt 03/10; ngoại lệ RANKED ở 7.2):** Khi một người ngồi ghế rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (nếu người rời là Host thì quyền Host chuyển cho người còn lại); người mới vào theo `Quyết định 2.8`. Mất kết nối ở `WAITING`: giữ ghế 60 giây.
 
 ---
 
@@ -273,7 +277,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | `LOCKED` | Không | **Không ai mới vào được**, kể cả có mã/link/QR | Chỉ bật được khi đã đủ 2 người chơi; người đang trong phòng giữ nguyên (`Quyết định 4.3`) |
 
   3. **Danh sách phòng ở Sảnh:** Sắp xếp phòng mới nhất lên đầu, hiển thị tối đa 50 phòng, tự làm mới; mỗi dòng gồm tên phòng, Chủ phòng, mức giờ, số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 4), nút "Vào xem".
-  4. **Thách đấu bạn bè** (`SCR-FRIENDS`) = tạo nhanh một phòng Casual rồi gửi lời mời theo `Quyết định 2.5`.
+  4. **Thách đấu bạn bè (P2, duyệt 04/10):** Từ `SCR-FRIENDS` mở lại `MODAL-CREATE-ROOM`; người gửi nhập tên, mặc định **10 phút / CODE_ONLY / 2 người xem**, được đổi trong phạm vi CASUAL của phân kỳ. Chỉ khi xác nhận mới tạo phòng rồi gửi lời mời theo 2.5. Huỷ form không tạo phòng/không gửi mời. Nếu bạn vừa bận hoặc từ chối/hết hạn, phòng đã tạo **vẫn tồn tại** để Host tự quản lý; không tự đóng hoặc chuyển sang ván với máy.
 
 ---
 
@@ -283,14 +287,15 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   1. **Thiết lập khi tạo phòng:** Người tạo chọn *Không có người xem* hoặc số người xem tối đa 1–2 (**mặc định 2**; yêu cầu cốt lõi của Product Owner 03/10: tối đa 2 người xem; nâng trần lên 5 là việc mở rộng sau). Sức chứa phòng = 2 + số này (tối đa 4). Không đổi sau khi tạo.
   2. **Mời người vào:** Bấm "Chia sẻ phòng" tạo cùng lúc **3 hình thức**: Link, Mã 8 ký tự, Mã QR. Cả ba cho **cùng một quyền**, không phân biệt xem/chơi. Chỉ 2 người chơi thấy nút Chia sẻ.
   3. **Người mới vào đâu:** Ghế đấu còn trống thì vào **ngay ghế đó**. Hai ghế đã kín thì vào làm **Người xem** nếu còn chỗ (`Quyết định 2.6`); hết chỗ thì báo phòng đầy. Vào từ danh sách phòng ở Sảnh (nút "Vào xem") thì **luôn** vào vai Người xem.
-  4. **Đổi chỗ giữa ghế và người xem** (chỉ khi phòng `WAITING` hoặc `FINISHED`, **không đổi chỗ khi ván đang diễn ra**):
+  4. **Đổi chỗ giữa ghế và người xem trong CASUAL** (chỉ khi phòng `WAITING` hoặc `FINISHED`, **không đổi chỗ khi ván đang diễn ra**):
      * Người ngồi ghế tự bấm *"Chuyển sang người xem"*. **Điều kiện (rà soát cuối):** chỉ khi phòng còn chỗ xem (số người xem hiện tại thấp hơn số người xem tối đa của phòng). Phòng "Không có người xem" hoặc đã đủ người xem thì nút `DISABLED` kèm tooltip *"Phòng không còn chỗ cho người xem"*; không bao giờ vượt trần. Không có thao tác hoán đổi trực tiếp.
      * Host bấm *"Chuyển sang người xem"* cho một người đang ngồi ghế, hoặc *"Mời xuống ghế"* cho một người xem khi còn ghế trống (cùng điều kiện còn chỗ xem cho thao tác đầu).
-     * **Đổi người ngồi ghế (rà soát cuối):** Mỗi khi thành phần người ngồi ghế thay đổi (kể cả khi phòng đang `FINISHED`), phòng chuyển về `WAITING` và trạng thái *Sẵn sàng* của cả hai bên **reset về chưa sẵn sàng**; sau đó theo `Quyết định 2.3` (Sẵn sàng + đếm ngược 3 giây).
+     * **Đổi người ngồi ghế CASUAL (rà soát cuối):** Mỗi khi thành phần người ngồi ghế thay đổi (kể cả khi phòng đang `FINISHED`), phòng chuyển về `WAITING` và trạng thái *Sẵn sàng* của cả hai bên **reset về chưa sẵn sàng**; sau đó theo `Quyết định 2.3` (Sẵn sàng + đếm ngược 3 giây).
      * Người xem không tự ngồi vào ghế trống (tránh tranh ghế).
      * **Host luôn là người đang ngồi ghế**: Host không tự chuyển mình sang người xem (nút bị ẩn). Muốn nhường phòng thì Host rời phòng để quyền Host chuyển cho người còn lại (`Quyết định 2.3` mục 4).
   5. **Khoá phòng (`LOCKED`):** Chỉ bật được khi đã đủ 2 người chơi (trước đó nút `DISABLED` kèm tooltip *"Chỉ khoá được khi đã đủ 2 người chơi"*). Khoá rồi thì **không ai mới vào được**, dù có link, mã hay QR. Người đang có ghế hoặc đang xem mà mất mạng vẫn vào lại được (người chơi trong 60 giây theo `Quyết định 8.3`, người xem trong 5 phút); quá hạn thì coi như người mới.
-  6. **Ví dụ minh hoạ** (A, B, C, D là người trong nhóm, E là người ngoài; mục tiêu A đấu C): A tạo phòng và gửi link/mã cho nhóm. B vào trước nên được xếp ngay vào ghế đấu, nhưng B chỉ muốn xem nên chọn chuyển sang người xem (hoặc A chuyển B). C vào thì ngồi ghế đấu, hai bên Sẵn sàng và đấu. D vào lúc đang đấu nên làm người xem cùng B. A thấy đủ người thì khoá phòng; E có link hay mã cũng không vào được. Đấu xong, A rời: phòng vẫn mở, C thành Host, C mời B xuống ghế để đấu tiếp (`Quyết định 2.3` mục 8).
+  6. **Giữ khoá khi thiếu ghế (duyệt 04/10):** Phòng đã `LOCKED` mà mất một người ngồi ghế vẫn giữ `LOCKED`; Host chủ động mở lại để nhận người mới hoặc mời người xem hiện có xuống ghế. Điều kiện đủ hai người chỉ là điều kiện **bật** khoá, không phải tự động mở khoá khi một người rời.
+  7. **Ví dụ minh hoạ** (A, B, C, D là người trong nhóm, E là người ngoài; mục tiêu A đấu C): A tạo phòng và gửi link/mã cho nhóm. B vào trước nên được xếp ngay vào ghế đấu, nhưng B chỉ muốn xem nên chọn chuyển sang người xem (hoặc A chuyển B). C vào thì ngồi ghế đấu, hai bên Sẵn sàng và đấu. D vào lúc đang đấu nên làm người xem cùng B. A thấy đủ người thì khoá phòng; E có link hay mã cũng không vào được. Đấu xong, A rời: phòng vẫn mở, C thành Host, C mời B xuống ghế để đấu tiếp (`Quyết định 2.3` mục 8).
 
 ## PHẦN 3: BÀN CỜ & LUẬT THI ĐẤU (Yêu cầu 4 & 5)
 
@@ -333,7 +338,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   4. **Mất kết nối & Xử lý Rage Quit (`R09` / `EC-03`):** Ân hạn 60s. Quá 60s xử thua (`DISCONNECT`). Trong ván Ranked bị phạt trừ Elo bình thường, đối thủ được cộng Elo. Lỗi sập server toàn cục: ván `INTERRUPTED` (**không có người thắng và không phải hòa**) giữ nguyên Elo (`ARCH-10`; xem `Quyết định 7.3`).
   5. **Chống treo ván (`R17`):** Ván không giới hạn giờ, sau 3 phút không đi cờ $\rightarrow$ hiện prompt hỏi $\rightarrow$ đếm lùi 30 giây $\rightarrow$ xử thua nếu im lặng (`INACTIVITY`). **Đã chốt (rà soát cuối):** mục tiêu là phát hiện người bỏ đi, nên áp dụng cho **bên đang tới lượt**. Bấm *"Tôi còn đây"* đặt lại bộ đếm 3 phút, nhưng **tối đa 2 lần liên tiếp mà chưa có nước đi mới**; lần thứ 3 không còn nút, hết 30 giây là xử thua.
   6. **Thao tác trong ván & Undo (`R13` / `EC-01`):** Ván Ranked **tuyệt đối cấm Undo**. Phòng thường cho phép Undo tối đa 3 lần thành công/bên/ván. Dùng cây nước đi `match_moves` lùi con trỏ `current_move_id`, không hoàn lại thời gian đã trôi.
-  7. **Tái đấu đổi bên (`R14`):** Kết thúc ván, phòng giữ trạng thái `FINISHED` trong 10 phút. Cả hai cùng đồng ý Tái đấu $\rightarrow$ tạo ván mới (`new Match ID`) và tự động hoán đổi bên Đỏ $\leftrightarrow$ Đen. Chỉ áp dụng cho Đánh Thường; phòng Đánh Hạng không có Tái đấu (đã duyệt 03/10, `Quyết định 7.2`).
+  7. **Tái đấu đổi bên (`R14`):** Kết thúc ván, phòng giữ trạng thái `FINISHED` tối đa 10 phút; hết hạn mà vẫn ở `FINISHED` thì đóng phòng và đưa người còn lại về Sảnh (duyệt 04/10). Cả hai cùng đồng ý Tái đấu $\rightarrow$ tạo ván mới (`new Match ID`) và tự động hoán đổi bên Đỏ $\leftrightarrow$ Đen. Chỉ áp dụng cho Đánh Thường; phòng Đánh Hạng không có Tái đấu (đã duyệt 03/10, `Quyết định 7.2`).
 
 ---
 
@@ -369,8 +374,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Lựa chọn đã chốt:** **[RULES-EXTRA] Chiếu liên tục xử thua bên chiếu; hòa khi 120 nửa nước không ăn quân; hạn chế xin hòa lặp**
 * **Mô tả nghiệp vụ:**
   1. **Chiếu liên tục (perpetual check):** Khi một thế cờ lặp lần thứ 3 mà **mọi nước đi của một bên trong chu kỳ lặp đều là nước chiếu** (bên kia không chiếu) thì **bên chiếu liên tục bị xử THUA** (lý do `PERPETUAL_CHECK`). Nếu **cả hai bên** cùng chiếu liên tục thì xử Hòa.
-  2. **Đuổi quân liên tục (perpetual chase):** **Không xử riêng ở Giai đoạn 1.** Lặp thế do đuổi quân được xử Hòa theo quy tắc lặp 3 lần. Luật đuổi quân chi tiết (nếu cần) quyết ở Giai đoạn 2; ghi nhận là rủi ro về công bằng Đánh Hạng.
-  3. **Hòa do không ăn quân:** Sau **120 nửa nước liên tiếp** (mỗi bên 60 nước) không có nước ăn quân thì xử Hòa tự động (`DRAW_NO_CAPTURE`). Con số cuối cùng được xác nhận lại ở Giai đoạn 2.
+  2. **Đuổi quân liên tục (perpetual chase):** **Không xử riêng trong cả P1/P2** (đã duyệt Giai đoạn 2 ngày 03/10). Lặp thế do đuổi quân xử Hoà theo lặp ba lần; khác biệt được công bố theo 10.4. Không tự bổ sung luật đuổi quân vào P2.
+  3. **Hòa do không ăn quân:** Sau **120 nửa nước liên tiếp** (mỗi bên 60 nước) không có nước ăn quân thì xử Hòa tự động (`DRAW_NO_CAPTURE`). Con số đã được xác nhận ở Giai đoạn 2 ngày 03/10/2026.
   4. **Xin hòa (`DRAW_AGREEMENT`):** Hạn trả lời 30 giây. Bên bị từ chối **không được xin hòa lại trong 5 nước kế tiếp của chính mình**; nút `DISABLED` kèm tooltip nêu số nước còn phải chờ. Quy tắc riêng cho Đánh Hạng xem `Quyết định 7.2`.
   5. **Lý do kết thúc ván** hiển thị ở `MODAL-MATCH-RESULT` gồm: `CHECKMATE`, `STALEMATE`, `RESIGN`, `TIMEOUT`, `DISCONNECT`, `INACTIVITY`, `DRAW_REPETITION`, `DRAW_AGREEMENT`, `DRAW_NO_CAPTURE`, `PERPETUAL_CHECK`, `INTERRUPTED`.
 
@@ -381,6 +386,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   2. **Một đề nghị đang chờ:** Mỗi người chỉ có **1 đề nghị đang chờ** cùng lúc (Xin hòa, Xin đi lại, Xin đổi bên) và được **rút lại** bất cứ lúc nào.
   3. **Chờ trước khi gửi lại:** Đề nghị bị từ chối hoặc hết hạn 30 giây thì người gửi phải chờ **3 nước của mình** mới gửi lại **cùng loại** (Xin hòa giữ mức 5 nước của `Quyết định 3.5`). Xin đổi bên chờ **60 giây**.
   4. Lượt Xin đi lại chỉ bị trừ khi đối thủ đồng ý (`Quyết định 3.2`).
+  5. **Khung đề nghị trong ván (duyệt 04/10):** Xin hòa/Xin đi lại dùng khung **không modal**, không giữ focus và không chặn bàn cờ. Đồng hồ tiếp tục chạy. X/Esc chỉ thu gọn, không từ chối; có nút mở lại và hạn trả lời vẫn chạy. Chỉ nút Từ chối tạo phản hồi từ chối; người gửi có Rút đề nghị. Quyền đi cờ không đổi, riêng người đang xin đi lại vẫn bị chặn đi nước mới theo mục 1. Hết hạn/kết thúc ván đóng đề nghị; phản hồi đến sau không đổi kết quả ván.
 
 ---
 
@@ -457,6 +463,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Mô tả nghiệp vụ:**
   * Cho phép hai người dùng đã kết bạn chính thức trò chuyện nhắn tin riêng 1-1 mọi lúc ngoài phòng đấu.
   * Hỗ trợ lưu trữ lịch sử tin nhắn, chỉ báo tin nhắn chưa đọc (Unread badge) trên thanh điều hướng, phân quyền RLS an toàn trong CSDL (`direct_conversations`, `direct_messages`).
+  * **Đọc và badge (duyệt 04/10):** badge là **tổng số tin đến chưa đọc** từ các bạn hiện tại, không tính tin mình gửi. Tin thành đã đọc khi hiển thị trong **vùng nhìn của hội thoại ở tab đang hoạt động**; chỉ tải ngầm hoặc mở tab nền không đủ. Máy chủ lưu và đồng bộ trạng thái đọc giữa các thiết bị. Huỷ bạn loại hội thoại khỏi badge nhưng giữ trạng thái đọc; kết bạn lại tính lại các tin vẫn chưa đọc, không tự coi đã đọc hoặc làm tin đã đọc thành chưa đọc.
 
 ---
 
@@ -491,7 +498,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Lựa chọn đã chốt:** **[FRIENDS] Kết bạn hai chiều theo username; trạng thái online/đang đấu; không có chức năng Chặn riêng**
 * **Mô tả nghiệp vụ:**
   1. **Tìm & gửi lời mời:** Chỉ tài khoản chính thức mới có Bạn bè. Tìm theo `username` (tiền tố, không phân biệt hoa thường). Kết bạn là **hai chiều**: gửi lời mời $\rightarrow$ bên kia **Chấp nhận** hoặc **Từ chối**. Người gửi có thể thu hồi lời mời. Lời mời chờ tự hết hạn sau **30 ngày**.
-  2. **Giới hạn:** Tối đa **200 bạn** và **50 lời mời đang chờ** mỗi tài khoản. Nếu một người bị **cùng một người nhận từ chối 2 lần** thì không gửi lại được lời mời cho người đó (chống quấy rối); đây là cách thay cho chức năng Chặn.
+  2. **Giới hạn:** Tối đa **200 bạn** và **50 lời mời đang chờ** mỗi tài khoản; 50 là **tổng gửi + nhận** (duyệt 04/10). Hai yêu cầu ngược chiều đồng thời chỉ giữ **một lời mời**, không tự thành bạn; bên nhận phải Chấp nhận. Nếu một người bị **cùng một người nhận từ chối 2 lần** thì không gửi lại được lời mời cho người đó (chống quấy rối); đây là cách thay cho chức năng Chặn.
   3. **Huỷ kết bạn:** Hai bên mất quyền nhắn tin 1-1 ngay. Lịch sử tin nhắn **được giữ nhưng ẩn**, hiện lại nếu kết bạn lại.
   4. **Trạng thái:** 🟢 Online (có kết nối hoạt động) · 🟠 Đang đấu (đang ngồi ghế trong ván/phòng) · ⚫ Offline. Chỉ trạng thái 🟢 mới nhận được lời mời vào phòng (`Quyết định 2.5`).
   5. **Thông báo:** Icon chuông liệt kê lời mời kết bạn đang chờ; huy hiệu **tin chưa đọc** hiện trên mục Bạn bè. Lời mời vào phòng là pop-up 30 giây, không lưu lại trong chuông.
@@ -509,7 +516,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * *Khó (Hard):* Depth 6, thời gian phản hồi $\le 3000$ ms.
   * **Lý do:** Giữ kiến trúc giao diện đơn giản, tập trung toàn lực cho AI vượt qua cổng kiểm định chất lượng (tiêu chí đo cụ thể chốt ở Giai đoạn 2) và chạy ở tiến trình tách biệt khỏi máy chủ chính.
   * **Mục tiêu cảm nhận (không ràng buộc, đo ở Giai đoạn 2):** Dễ — người mới học cờ thắng được; Trung bình — người chơi phổ thông thắng khoảng một nửa số ván; Khó — người chơi phổ thông hiếm khi thắng.
-  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). Nếu tiến trình máy cờ **lỗi hoặc không phản hồi sau 10 giây**: ván chuyển "Bỏ dở", báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*. Con số đo thực tế để Giai đoạn 2.
+  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). Nếu tiến trình máy cờ **lỗi hoặc không phản hồi sau 10 giây**: ván chuyển "Bỏ dở", báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*. Con số đo thực tế theo cổng kiểm chứng trong `docs/05`.
+  * **Thử lại (duyệt 04/10):** Nếu chỉ hết thời gian chờ tiến trình (`ENGINE_BUSY`), Thử lại yêu cầu máy tìm nước trên **cùng ván và thế hiện tại**, không gửi lại nước của người chơi. Nếu ván đã `ABANDONED` do sự cố, Thử lại tạo **ván mới, Match ID mới**, cùng cấp độ và phe thực tế của ván cũ (phe Ngẫu nhiên đã bốc không bốc lại); không hồi sinh ván kết thúc. Mỗi lần bấm đang xử lý bị chặn trùng; kiểm lại quyền và một vị trí chơi trước khi tạo ván mới.
 
 ---
 
@@ -550,7 +558,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
      * Người chơi có thể tự do suy ngẫm từng nước cờ mà không lo bị áp lực đồng hồ đếm lùi, không bị xử thua do hết giờ (`TIMEOUT`) và không áp dụng cơ chế cảnh báo chống treo ván `R17`.
      * *Phía máy cờ:* Vẫn tuân thủ nghiêm ngặt ngân sách thời gian tối đa theo từng cấp độ (Dễ $\le 300$ms, Trung bình $\le 1000$ms, Khó $\le 3000$ms).
   4. **Hòa, đầu hàng, bỏ dở:**
-     * Ván với máy **không có nút Xin hòa**; hòa chỉ xảy ra theo `Quyết định 3.5` (lặp thế, 120 nửa nước không ăn quân). Người chơi có nút **Đầu hàng**.
+     * Ván với máy **không có nút Xin hòa**; hòa chỉ xảy ra theo `Quyết định 3.5` (lặp thế, 120 nửa nước không ăn quân). Người chơi có nút **Đầu hàng**. **Chủ động Rời ván/Đăng xuất khi ván AI còn chạy (duyệt 04/10)** cần xác nhận đầu hàng; đồng ý thì kết thúc `RESIGN`, huỷ tác vụ máy và giải phóng vị trí chơi; Huỷ giữ nguyên. Đóng tab/mất mạng vẫn giữ ván theo mục tiếp theo.
      * Mất kết nối hoặc đóng tab giữa ván: ván được **giữ 30 phút** để vào lại cùng đường dẫn `/ai/:id` (Sảnh có banner "ván đang chơi dở"). Quá 30 phút ván tự lưu vào Lịch sử với kết quả **"Bỏ dở"** (không tính thắng/thua). Ván của Khách không lưu (`Quyết định 1.3`).
 
 ---
@@ -566,7 +574,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
        $$E_A = \frac{1}{1 + 10^{(R_B - R_A)/400}}$$
        $$R'_A = R_A + K \times (S_A - E_A)$$
        Trong đó: $R_A, R_B$ là Elo hiện tại; $S_A \in \{1 \text{ (Thắng)}, 0.5 \text{ (Hòa)}, 0 \text{ (Thua)}\}$.
-     * Hệ số $K-factor$: $K = 32$ cho 30 ván đầu tiên (giai đoạn định vị trình độ), $K = 16$ cho các ván tiếp theo. Chỉ **ván Đánh Hạng đã hoàn tất** mới được đếm vào 30 ván; ván Đánh Thường, Đánh Với Máy và ván `INTERRUPTED` không đếm, không đổi Elo. Elo **tối thiểu 100** (không xuống dưới).
+     * Hệ số $K-factor$: $K = 32$ cho 30 ván đầu tiên (giai đoạn định vị trình độ), $K = 16$ cho các ván tiếp theo. Chỉ **ván Đánh Hạng đã hoàn tất** mới được đếm vào 30 ván; ván Đánh Thường, Đánh Với Máy và ván `INTERRUPTED` không đếm, không đổi Elo. Elo **tối thiểu 100** (không xuống dưới). **Làm tròn (duyệt 04/10):** tính độc lập cho hai bên từ Elo trước ván và số ván hoàn tất **trước ván này**; làm tròn Elo mới tới số nguyên gần nhất, phần .5 lên trên, rồi áp dụng sàn 100. Ván thứ 30 còn dùng K=32, ván thứ 31 dùng K=16. Không điều chỉnh cưỡng bức để tổng biến động bằng 0 khi K hai bên khác nhau hoặc chạm sàn.
      * Cấp bậc danh hiệu người chơi (Rank Tiers):
        * *Người mới (Novice):* < 1200
        * *Sơ cấp (Junior):* 1200 – 1399
@@ -591,7 +599,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
      * Màn hình `SCR-LEADERBOARD`: Hiển thị danh sách **Top 50 người chơi** có điểm Elo cao nhất toàn server, danh hiệu rank, số trận thắng/thua/hòa và tỷ lệ thắng.
      * **Dòng ghim vị trí cá nhân cố định (Sticky User Row):** Dưới đáy bảng luôn có một hàng cố định hiển thị: *Thứ hạng hiện tại của chính bạn (VD: Hạng #142 - Elo 1280 - Cấp Trung cấp)* giúp người dùng ngay lập tức biết được vị thế của mình trên bảng tổng sắp mà không phải cuộn tìm kiếm.
      * **Điều kiện lên bảng:** Chỉ tài khoản có **ít nhất 5 ván Đánh Hạng hoàn tất** mới được xếp hạng và hiện trong bảng. Người chưa đủ thì dòng ghim ghi *"Chưa xếp hạng — cần thêm X ván"*. Khách không có mặt trên bảng.
-     * **Đồng điểm:** Xếp theo Elo giảm dần; bằng Elo thì bên có nhiều ván thắng hơn xếp trước; vẫn bằng thì bên đạt mức Elo đó sớm hơn xếp trước. Không có reset theo mùa.
+     * **Đồng điểm:** Xếp theo Elo giảm dần; bằng Elo thì bên có nhiều ván thắng hơn xếp trước; vẫn bằng thì bên đạt mức Elo đó sớm hơn xếp trước; vẫn bằng nữa thì `user_id` tăng dần làm tiêu chí ổn định (duyệt 04/10). Không có reset theo mùa.
   5. **Quyết định về Giải đấu (Tournaments):**
      * **BỎ HOÀN TOÀN HỆ THỐNG GIẢI ĐẤU (OUT-OF-SCOPE):** Không làm tính năng giải đấu (chia bảng, nhánh đấu Knockout) để giữ phạm vi tập trung cao độ vào thi đấu đối kháng trực tiếp và xếp hạng 1-1 theo Elo.
 
@@ -599,10 +607,11 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ### Quyết định 7.2: Hàng đợi Ranked khi ít người, chống bơm Elo, xin hòa & Tái đấu trong Ranked
 * **Lựa chọn đã chốt:** **[RANKED-GUARD] Trần chờ 60 giây; một cặp tối đa 3 ván/24 giờ; xin hòa chỉ sau 20 nước mỗi bên; không Tái đấu**
+* **Sau ván RANKED (duyệt 04/10):** giữ màn kết quả `FINISHED`; mỗi người phải **Rời phòng** trước khi tìm trận mới. Một người rời không đưa phòng về `WAITING`; người còn lại giữ ghế để xem kết quả. Đóng khi cả hai đã rời hoặc hết 10 phút tính từ kết thúc ván, không đặt lại hạn khi một người rời. Không Sẵn sàng, Tái đấu, đổi ghế hoặc nhận người mới; nhánh phòng chờ/đổi thành phần ở 2.3/2.8 chỉ áp cho CASUAL.
 * **Mô tả nghiệp vụ:**
-  1. **Trần chờ hàng đợi:** Biên độ Elo mở thêm ±50 mỗi 10 giây (`Quyết định 7.1`) và **dừng ở 60 giây** (biên độ cuối ±400). **Khi hai người có biên độ khác nhau**, ghép được nếu chênh lệch Elo nằm trong biên độ **lớn hơn** của hai người (người chờ lâu hơn). Cặp đã chạm trần 3 ván/24 giờ bị bỏ qua âm thầm và hệ thống tiếp tục tìm đối thủ khác, không báo lý do. Quá 60 giây không ghép được thì tự rút khỏi hàng đợi, báo *"Chưa tìm được đối thủ phù hợp, hãy thử lại sau"*, không phạt, **không ghép với máy**.
+  1. **Trần chờ hàng đợi:** Biên độ Elo mở thêm ±50 mỗi 10 giây (`Quyết định 7.1`) và **dừng ở 60 giây** (biên độ cuối ±400). **Tại đúng mốc 60 giây (duyệt 04/10):** thử ghép lần cuối với biên độ ±400 rồi mới hết hạn nếu không có đối thủ. **Khi hai người có biên độ khác nhau**, ghép được nếu chênh lệch Elo nằm trong biên độ **lớn hơn** của hai người (người chờ lâu hơn). Cặp đã chạm trần 3 ván/24 giờ bị bỏ qua âm thầm và hệ thống tiếp tục tìm đối thủ khác, không báo lý do. Quá 60 giây không ghép được thì tự rút khỏi hàng đợi, báo *"Chưa tìm được đối thủ phù hợp, hãy thử lại sau"*, không phạt, **không ghép với máy**.
   2. **Mất hàng đợi:** Hàng đợi chỉ nằm trong bộ nhớ máy chủ. Khi máy chủ khởi động lại, hàng đợi mất; giao diện báo *"Hàng đợi đã bị huỷ, hãy tìm lại"*, không phạt.
-  3. **Chống bơm Elo bằng nhiều tài khoản:** Hai tài khoản **không bị ghép với nhau quá 3 ván Đánh Hạng trong 24 giờ**. Hệ thống **không** chặn theo địa chỉ IP hay thiết bị vì buổi demo và lớp học dùng chung một mạng.
+  3. **Chống bơm Elo bằng nhiều tài khoản:** Hai tài khoản **không bị ghép với nhau quá 3 ván Đánh Hạng trong 24 giờ**. **Cách đếm (duyệt 04/10):** cửa sổ trượt theo thời điểm bắt đầu ván; tính cả ván đã bắt đầu rồi `INTERRUPTED`, khác với bộ đếm ván hoàn tất dùng tính K và điều kiện lên bảng. Khi kiểm tại thời điểm t, đếm `started_at > t − 24 giờ` và `started_at ≤ t`; ván đúng mốc t − 24 giờ đã ra khỏi cửa sổ. Hệ thống **không** chặn theo địa chỉ IP hay thiết bị vì buổi demo và lớp học dùng chung một mạng.
   4. **Xin hòa trong Ranked (đã duyệt 03/10):** Cho phép (hạn 30 giây), nhưng chỉ bấm được khi **mỗi bên đã đi ít nhất 20 nước**; trước đó nút `DISABLED` kèm tooltip *"Chỉ xin hòa được sau 20 nước mỗi bên"*. Hòa tính Elo theo $S = 0.5$.
   5. **Không Tái đấu trong Ranked (đã duyệt 03/10):** `MODAL-MATCH-RESULT` của ván Ranked **không có nút Tái đấu**. Phòng Ranked đóng khi cả hai rời; muốn đấu tiếp phải "Tìm trận Xếp hạng" lại.
   6. **Rời phòng giữa ván Ranked** được tính **Đầu hàng** (`MODAL-CONFIRM-LEAVE`), thua và trừ Elo như `Quyết định 7.1`.
@@ -658,7 +667,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ---
 
 ## PHẦN 9: TIỆN ÍCH HỖ TRỢ DEMO BẢO VỆ ĐỒ ÁN & TÍNH NĂNG MỞ RỘNG (STRETCH GOALS / PRIORITY 2)
-*(Ghi nhận làm mục tiêu mở rộng: Nhóm sẽ tiến hành triển khai vào cuối Sprint 4 nếu còn dư thời gian)*
+*(Mục tiêu mở rộng P2; lịch triển khai do bước lập kế hoạch xác định, đặc tả không ấn định Sprint 4.)*
 
 ### Quyết định 9.1: Tiện ích Sao chép thế cờ FEN & Tải biên bản ván đấu PGN
 * **Lựa chọn đã chốt:** **[13B - Stretch P2] Xuất dữ liệu thế cờ FEN & Tải file PGN tại màn hình Replay**
@@ -706,6 +715,13 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ---
 
+### Quyết định 10.3: Giao diện theo phân kỳ (duyệt 04/10/2026)
+* **P1:** chỉ giao diện **Kỳ Đài Cổ Phong**, không có bộ chọn giao diện.
+* **P2:** thêm **Giấy Sáng** và **Theo hệ thống**; Kỳ Đài Cổ Phong vẫn là lựa chọn mặc định khi người dùng chưa chọn. Không đổi màu bàn cờ giữa các giao diện; trợ năng áp dụng cho mọi giao diện được triển khai.
+
+### Quyết định 10.4: Công bố luật rút gọn (duyệt 04/10/2026)
+* **P1:** phần **Luật chơi** mở rộng/thu gọn trong Sảnh hiện có; không tạo trang hoặc modal mới. Nêu cách kết thúc ván, hết nước đi là thua, chiếu liên tục, lặp thế và không ăn quân; thông báo rõ đuổi quân liên tục không xử riêng. Nội dung dẫn từ `docs/02`, không tuyên bố tuân thủ toàn bộ luật thi đấu chính thức.
+
 ## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP 2 TUẦN) VÀ P2 (LÀM SAU)
 
 > Danh sách P1/P2 do agent đề xuất theo uỷ quyền của Product Owner ngày 03/10/2026 và **đã được Product Owner duyệt cùng ngày**, với một điều chỉnh: **mời bạn bè đang online vào phòng phải có ở P1** (nên hệ thống bạn bè tối thiểu thuộc P1). Product Owner có thể kéo bất kỳ mục nào từ P2 lên P1.
@@ -726,10 +742,10 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1, 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 5.4 (3 mức chia sẻ); `PANEL-CHAT`, `PANEL-MEDIA` |
 | 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
 
-* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · chế độ Khách (1.3) · Google OAuth (1.2) · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Xin đổi bên · Tái đấu · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · nâng trần người xem lên 5.
+* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · chế độ Khách (1.3) · Google OAuth (1.2) · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Xin đổi bên · Tái đấu · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · nâng trần người xem lên 5 · lựa chọn Giấy Sáng/Theo hệ thống (10.3).
 * **Quy tắc hiển thị tính năng P2 trong màn hình P1:** xem `DANH-MUC` §7 (lối vào điều hướng chính `DISABLED` + "Sắp ra mắt"; chức năng nằm sâu thì ẩn hẳn).
 * **Hệ quả cho P1:**
-  * Sảnh chỉ có: Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, Đánh với máy. Thẻ **Đánh Hạng hiển thị `DISABLED`** kèm tooltip *"Sắp ra mắt"* (đúng `SCR-RULE-01`).
+  * Sảnh có: Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, Đánh với máy và phần Luật chơi mở rộng/thu gọn (10.4). Thẻ **Đánh Hạng hiển thị `DISABLED`** kèm tooltip *"Sắp ra mắt"* (đúng `SCR-RULE-01`).
   * Đăng nhập chỉ Username + Mật khẩu; người dùng chưa có tài khoản vào link mời phải đăng ký trước (không có Khách ở P1).
   * Ván Đánh Thường **không có Elo** và ván có tài khoản **chưa lưu Lịch sử** ở P1; màn hình Lịch sử, Replay, Bảng xếp hạng chưa làm (màn hình Bạn bè **có** ở P1).
   * `MODAL-MATCH-RESULT` ở P1 chỉ có *Rời phòng* (không Tái đấu, không Xem lại).
@@ -768,3 +784,9 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 23 | **Luật cờ bổ sung & Hàng đợi/chống gian lận Ranked** (đã duyệt) | **[RULES-EXTRA] + [RANKED-GUARD] + [ROOM-SPEC]** `Quyết định 3.5, 7.2, 2.7` | **P1** (3.5, 2.7); **P2** (7.2) |
 | 24 | **Ràng buộc chung & Danh sách loại trừ** (đã duyệt) | **[GLOBAL-CONSTRAINTS] + [OUT-OF-SCOPE]** `Quyết định 10.1, 10.2` | **P1 — MVP 2 tuần** |
 | 25 | **Vào phòng, ghế/người xem, đề nghị trong ván, kết quả ván** (đã duyệt 03/10) | **[ROOM-ACCESS] + [PROPOSALS] + [RESULT-TYPES]** `Quyết định 2.8, 3.6, 7.3` (kèm sửa 1.2, 1.3, 1.4, 2.3, 4.3, 5.3, 6.2) | **P1** (2.8; Xin hòa trong 3.6); **P2** (7.3, Xin đi lại, Đổi bên) |
+| 26 | **Giao diện theo phân kỳ** | Quyết định 10.3: Kỳ Đài Cổ Phong mặc định; bộ chọn Giấy Sáng/Theo hệ thống | **P1** (giao diện mặc định); **P2** (bộ chọn) |
+| 27 | **Công bố luật rút gọn** | Quyết định 10.4: Luật chơi mở rộng/thu gọn trong Sảnh, không thêm màn hình | **P1** |
+
+## Nhật ký hoàn thiện 04/10/2026
+
+Product Owner duyệt trực tiếp trong phiên: phạm vi đặc tả cả P1/P2; tổ chức tài liệu và loại trừ Jira/kế hoạch/mockup; giao diện (10.3); luật ở Sảnh (10.4); Đăng xuất (1.8); phục hồi đăng ký (1.1); đề nghị không modal (3.6); Thử lại AI (6.1); chủ động rời AI (6.3); hết hạn FINISHED và giữ LOCKED (3.3, 2.8); giới hạn/lời mời ngược chiều (5.5); làm tròn Elo, đồng hạng và biên hàng đợi (7.1, 7.2); sau ván RANKED (7.2); cấu hình Thách đấu (2.7); trạng thái đọc và badge 1-1 (5.2). Các mục trên là nguồn định nghĩa, nhật ký này không lặp lại luật. Chi tiết hợp đồng và truy vết nằm ở `docs/07-hop-dong-nghiep-vu.md` và `docs/08-ma-tran-nghiem-thu.md`.

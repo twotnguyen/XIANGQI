@@ -1,5 +1,7 @@
 # 05 · Chiến lược kiểm thử và tiêu chí hoàn thành
 
+> **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
+
 **Giai đoạn 2 · Trạng thái: **Đã duyệt 03/10/2026** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Công cụ theo README: **Vitest** (đơn vị, tích hợp) và **Playwright** (đầu-cuối). Không thêm công cụ ngoài danh sách khi chưa được đồng ý (AGENTS §8). Nguyên tắc AGENTS §4.4: **không hạ ngưỡng đo để báo đạt**; không đạt thì ghi **số thật** và trạng thái `BLOCKED`.
 
 Căn cứ: [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) (US, AC, NFR), [02-luat-co-tuong.md](02-luat-co-tuong.md), [03-du-lieu.md](03-du-lieu.md), [04-kien-truc.md](04-kien-truc.md).
@@ -25,7 +27,7 @@ Kịch bản demo chuẩn D1–D10 (dùng làm bài kiểm thử chấp nhận P
 | D9 | 5 | A và B **bắt đầu lại một ván online mới**, rồi ngắt mạng một bên giữa ván | Overlay đếm 60 giây; nối lại trong 60 giây thì tiếp tục; quá 60 giây thì bên mất kết nối thua `DISCONNECT` |
 | D10 | 8 | Đóng tab giữa ván với máy rồi mở lại `/ai/:id` trong 30 phút và sau 30 phút | Trong 30 phút vào lại đúng thế cờ; sau 30 phút ván là *Bỏ dở* |
 
-Mọi bước D1–D10 đạt thì P1 **hoàn thành**. Ngoài ra phải thoả các NFR ở mục 6.
+D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR đều đạt; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
 
 ---
 
@@ -67,7 +69,7 @@ Mọi bước D1–D10 đạt thì P1 **hoàn thành**. Ngoài ra phải thoả 
 | Phân cấp sức mạnh | Đấu máy với máy ≥ 40 ván, đổi bên đều | Khó thắng TB ≥ 75%; TB thắng Dễ ≥ 75% |
 | Chiếu hết ngắn | Bộ thế "chiếu hết 1 nước" và "2 nước" do nhóm biên soạn **kèm ghi nguồn** | Tìm đúng ≥ 95% |
 | Độ ổn định | 1 000 ván đấu máy, 0 treo, 0 lỗi tiến trình | 0 |
-| Lỗi tiến trình | Giết tiến trình giữa lúc tìm kiếm | Phục hồi trong 10 giây hoặc ván `Bỏ dở` + *Thử lại* |
+| Lỗi tiến trình | Giết tiến trình giữa lúc tìm kiếm; trả kết quả tác vụ cũ sau huỷ | Ván `Bỏ dở` khi lỗi hoặc quá hạn phản hồi 10 giây theo BA 6.1; Thử lại tạo ván mới, không hồi sinh ván cũ; bỏ kết quả tìm lỗi thời |
 
 **Quy tắc ghi kết quả:** nếu cấp Khó không đạt độ sâu 6 trong 3 giây, ghi **độ sâu và thời gian thực tế**, đánh dấu `BLOCKED` và báo Product Owner. Phương án giảm xuống độ sâu 5 ([02] mục 9.6) cần được Product Owner đồng ý trước khi đổi BA 6.1.
 
@@ -75,7 +77,7 @@ Mọi bước D1–D10 đạt thì P1 **hoàn thành**. Ngoài ra phải thoả 
 
 ## 4. Kiểm thử tích hợp và đầu-cuối theo nhóm
 
-Mỗi US ở [01] có ít nhất một kiểm thử; dưới đây là các **tình huống bắt buộc** (không rút gọn).
+Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem-thu.md); AC có nhiều nhánh phải kiểm mọi nhánh. Bảng dưới là nhóm tình huống bổ sung, không thay ma trận cấp AC. Hiện tất cả là **đặc tả test, chưa chạy**.
 
 | Nhóm | Tình huống bắt buộc |
 |---|---|
@@ -100,7 +102,7 @@ Mỗi US ở [01] có ít nhất một kiểm thử; dưới đây là các **t�
 | Khoá bí mật | Quét kho và gói client: không có khoá dịch vụ; `VITE_*` chỉ giá trị công khai |
 | Giới hạn tốc độ | Chat, gửi OTP, tạo phòng, kết nối: vượt thì bị chặn |
 | Nhập liệu | Tham số sai kiểu/quá dài/có ký tự điều khiển bị từ chối |
-| OTP (Phương án B, [04] mục 3.1) | Hạn mã 180 giây và gửi lại tối thiểu 60 giây (kiểm cấu hình thực tế); **giới hạn tốc độ xác minh** chặn nhập sai liên tục từ một địa chỉ (mục tiêu 5 lần/5 phút), ghi **số đo thực** vì chỉ là gần đúng; người dùng còn cờ `PENDING` hoặc `completed_at` rỗng **không dùng được ứng dụng** dù có phiên Supabase; client **không ghi trực tiếp** được vào `profiles`; hoàn tất đăng ký có khả năng phục hồi: giết tiến trình **giữa các bước (a)–(d2)**, trong đó **giữa (c)/(d1) và giữa (d1)/(d2)**, thì tác vụ quét hoàn tác toàn bộ (xoá hồ sơ rồi người dùng, không vướng khoá ngoại) và email, username đăng ký lại được; đăng ký dở rồi gửi lại cùng email thì **dùng lại** người dùng dở (không xoá, không phá phiên OTP đang chạy; thử **gửi lại và đăng ký đồng thời** cùng một email); người dùng tạo trực tiếp bằng API công khai **không có cờ `PENDING`** (hoặc máy chủ chết trước khi đặt cờ) vẫn bị quét sau 60 phút và không bị chặn nhầm tài khoản đã hoàn tất hay Google; hai lệnh đồng thời trên cùng ván được xử lý tuần tự ([04] mục 4.2); lỗi ghi cơ sở dữ liệu không phát thế cờ mới |
+| OTP (Phương án B, [04] mục 3.1) | Hạn mã 180 giây và gửi lại tối thiểu 60 giây (kiểm cấu hình thực tế); **giới hạn tốc độ xác minh** chặn nhập sai liên tục từ một địa chỉ (mục tiêu 5 lần/5 phút), ghi **số đo thực** vì chỉ là gần đúng; người dùng còn cờ `PENDING` hoặc `completed_at` rỗng **không dùng được ứng dụng** dù có phiên Supabase; client **không ghi trực tiếp** được vào `profiles`; hoàn tất đăng ký có khả năng phục hồi: giết tiến trình **giữa các bước (a)–(d2)**, trong đó **giữa (c)/(d1) và giữa (d1)/(d2)**, thì tác vụ phục hồi phân nhánh: **chưa ghi completed_at** → giữ chặn và dọn sau thời hạn, email/username đăng ký lại được; **đã ghi completed_at nhưng còn PENDING** → chỉ hoàn tất xoá cờ, không xoá tài khoản, giữ username/mật khẩu. Chạy phục hồi lặp và đồng thời với đăng ký không làm hỏng tài khoản hoàn tất; đăng ký dở rồi gửi lại cùng email thì **dùng lại** người dùng dở (không xoá, không phá phiên OTP đang chạy; thử **gửi lại và đăng ký đồng thời** cùng một email); người dùng tạo trực tiếp bằng API công khai **không có cờ `PENDING`** (hoặc máy chủ chết trước khi đặt cờ) vẫn bị quét sau 60 phút cộng tối đa chu kỳ 5 phút khi phụ thuộc hoạt động và không bị chặn nhầm tài khoản đã hoàn tất hay Google; hai lệnh đồng thời trên cùng ván được xử lý tuần tự ([04] mục 4.2); lỗi ghi cơ sở dữ liệu không phát thế cờ mới |
 | Chặn/khoá | Người bị đuổi và phòng `LOCKED` thật sự bị chặn ở máy chủ (không chỉ ở giao diện) |
 
 ---
@@ -156,6 +158,38 @@ Mọi thay đổi con số phải được Product Owner duyệt và ghi lại �
 | F | Tích hợp, Playwright D3 |
 | G | Kiểm thử máy cờ, Playwright D8, D10 |
 | H, NFR | Playwright (kích thước, bàn phím), kiểm tay trợ năng, tải |
+
+
+## 10. Nghiệm thu P2 và hồi quy
+
+Nguồn AC chi tiết: Nhóm I–N trong [01], toàn bộ mục kiểm đối ứng tại [08](08-ma-tran-nghiem-thu.md). Không dùng tóm tắt P2 cũ để chia việc bỏ sót nhánh.
+
+| Miền | Tình huống tối thiểu ngoài happy path |
+|---|---|
+| Tài khoản P2 | Guest đến hạn khi còn ghế và sau rời; đối thủ giữ lịch sử ẩn danh; Google cùng email không tự liên kết, onboarding dở bị chặn; OTP đúng mục đích; đổi username cạnh tranh và giữ tên 30 ngày; dữ liệu UUID không đổi |
+| Đánh Hạng | Cấm người xem/Khách/đi lại/Tái đấu ở API; biên hàng đợi, Huỷ đua MATCH_FOUND; mất mạng hàng đợi 30 giây; giới hạn cặp trượt 24 giờ tính INTERRUPTED; Elo ván 30/31, sàn, làm tròn, cập nhật trùng; Top 50 và thứ tự đồng hạng; FINISHED không quay về WAITING, rời mới tìm trận khác |
+| CASUAL mở rộng | Cùng mức giờ, phe ngẫu nhiên; đi lại một/hai nửa nước, không hoàn giờ; đề nghị trễ, rút, cooldown; đổi bên reset Sẵn sàng; Tái đấu giữ phòng/chặn; hết FINISHED; chống treo lần thứ ba; QR bị thu hồi |
+| Xã hội | Huỷ bạn khi đang mở chat; quyền đọc trực tiếp; unread đếm tin đến, chỉ đọc khi vào vùng nhìn tab hoạt động; tải nền không đọc; huỷ/kết bạn lại giữ trạng thái và đồng bộ thiết bị; sticker đủ 12 và chịu rate limit; Thách đấu mở form đúng mặc định, huỷ không tạo, lỗi mời giữ phòng; không thành ghép Ranked; người xem thứ sáu bị chặn |
+| Lịch sử/xuất | Quyền chính chủ, ván 0 nước và INTERRUPTED/ABANDONED; nhánh đã undo không phát lại; FEN theo con trỏ; PGN nhập thật vào công cụ ngoài |
+| Tiện ích/giao diện | DEMO_MODE tắt vẫn chặn API; thông số máy là số thật; nhiều tab chỉ một nơi phát; Giấy Sáng/Theo hệ thống kiểm mọi trạng thái, không biến thành P1 |
+
+P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/NFR liên quan; không có lỗi Cao/Nghiêm trọng. Nâng trần người xem không mặc nhiên thay mục tiêu tổng quy mô đã duyệt; đo thêm tình huống phòng đầy năm người xem trong tải tổng để kiểm quyền và đồng bộ.
+
+## 11. Cổng kiểm chứng kỹ thuật trước cam kết triển khai
+
+**Mọi cổng bên dưới hiện NOT_RUN**. Hoàn thiện đặc tả không thay kết quả thực. Cổng thất bại thì ghi BLOCKED, giải thích phương án cho Product Owner; không tự đổi nguồn luật hoặc công nghệ.
+
+| Mã | P | Câu hỏi cần chứng minh | Bằng chứng để thông qua |
+|---|---|---|---|
+| GATE-OTP | P1 | Supabase đáp ứng OTP 6 số, 180 giây, 60 giây gửi lại, chặn gần đúng; phục hồi tài khoản không kẹt | Cấu hình đã che bí mật, số đo thực, ca gián đoạn/đồng thời TC-X-01/02; chưa completed_at/còn PENDING không dùng được |
+| GATE-MEDIA | P1 | LiveKit publish/subscribe theo từng người, thu quyền khi đổi ghế/chia sẻ/tiếp quản | Log quyền và thử bằng client không được phép; không nhận track trái quyền, không chỉ ẩn UI |
+| GATE-AI | P1 | Máy cờ tự viết đạt thời gian/sức mạnh/độ sâu và ổn định | Cấu hình máy, seed/bộ thế, số đo tại mục 3.2; không giảm ngưỡng để đạt |
+| GATE-PERFT | P1 | Bộ số perft làm oracle có đúng không | Bộ sinh nước độc lập, phiên bản/nguồn, kết quả so sánh; không tự sửa kỳ vọng theo code đang kiểm |
+| GATE-GOOGLE | P2 | Google onboarding và đăng nhập kép không tự liên kết email trái BA 1.2 | Thử email mới/cùng email/danh tính cũ, bỏ dở và hoàn tất; chứng minh tài khoản ứng dụng bị chặn trước hoàn tất |
+| GATE-PGN | P2 | Tệp xuất được công cụ ngoài đọc đúng | Chính tệp xuất, tên/phiên bản công cụ, số nước/thế cuối/kết quả tái dựng khớp; FEN được parse độc lập |
+| GATE-LOAD | Theo đợt phát hành | Quy mô và độ trễ theo NFR, cả người xem và media | Bài tải, môi trường, số kết nối/ván, p95 thực, lỗi và CPU/RAM; tách số đo máy chủ và client |
+
+Lựa chọn nhà cung cấp triển khai/chi phí, thư viện QR và biểu tượng là quyết định triển khai chưa đo/chưa chọn; không chặn việc mô tả nghiệp vụ nhưng cần đưa vào phụ thuộc lập kế hoạch. Tiêu chí hội đồng ngoài D1–D10 chỉ bổ sung khi Product Owner cung cấp, không tự phát minh.
 
 [01]: 01-yeu-cau-chi-tiet.md
 [02]: 02-luat-co-tuong.md
