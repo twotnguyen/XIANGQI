@@ -250,7 +250,7 @@ Giá trị trên là **điểm xuất phát**, tinh chỉnh bằng chạy máy �
 
 1. Máy chủ gửi cho tiến trình máy cờ: thế cờ (FEN), lịch sử khoá thế, cấp độ, ngân sách.
 2. Tiến trình trả `{ move, depth, nodes, elapsedMs }`.
-3. Tiến trình tìm sâu dần và gửi `progress { move, depth }` sau **mỗi độ sâu hoàn tất** (đề xuất 04/10/2026, chờ PO duyệt). Thời gian chờ cứng của máy chủ = **ngân sách + 2 giây**; quá hạn thì **kết thúc tiến trình** đó: nếu máy chủ đã nhận ít nhất một `progress` thì đi nước đó (**không** phải lỗi); nếu chưa có nước nào thì tính là lỗi theo mục 4.
+3. Tiến trình tìm sâu dần và gửi `progress { move, depth }` sau **mỗi độ sâu hoàn tất** (PO chốt hành vi 04/10/2026; chi tiết IPC là thiết kế kỹ thuật). Thời gian chờ cứng của máy chủ = **ngân sách + 2 giây**; quá hạn thì **kết thúc tiến trình** đó: nếu máy chủ đã nhận ít nhất một `progress` thì đi nước đó (**không** phải lỗi); nếu chưa có nước nào thì tính là lỗi theo mục 4.
 4. Lỗi tiến trình, chết bất thường, hoặc chưa có nước nào khi quá hạn/không phản hồi quá 10 giây → ván chuyển `Bỏ dở` và hiện *"Máy cờ gặp sự cố"* kèm nút *Thử lại* (BA 6.1). Thử lại sau `ABANDONED` tạo ván mới cùng cấp độ/phe; không phục hồi ván cũ. `ENGINE_BUSY` chỉ xếp lại tìm nước trong ván hiện tại. Kết quả tìm đến sau khi tác vụ bị huỷ không được áp dụng.
 5. Người chơi bấm đi lại khi máy đang nghĩ → **huỷ** tìm kiếm hiện tại (BA 6.3).
 
