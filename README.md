@@ -91,7 +91,7 @@ Mở [mockups/index.html](mockups/index.html) bằng trình duyệt, không cầ
 
 ## Điểm còn mở cần chốt
 
-Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), và cho bắt đầu Giai đoạn 3. Kế hoạch ở [docs/06-ke-hoach-jira.md](docs/06-ke-hoach-jira.md) ước lượng **P1 khoảng 127,5 ngày công (73 việc)**; 7 người trong 2 tuần chỉ có khoảng 56. Theo mô phỏng xếp lịch có tính phụ thuộc và vai trò, **P1 cần khoảng 5 tuần cho lõi (đợt 1) và khoảng 7 tuần cho đủ**. Cần bạn quyết:
+Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đoạn 1 và 2 (OTP chọn Phương án B), và cho bắt đầu Giai đoạn 3. Kế hoạch ở [docs/06-ke-hoach-jira.md](docs/06-ke-hoach-jira.md) ước lượng **P1 khoảng 127,5 ngày công (73 việc)**; 7 người trong 2 tuần chỉ có khoảng 56. Theo mô phỏng xếp lịch có tính phụ thuộc và vai trò, **P1 cần khoảng 5 tuần cho lõi (đợt 1) và khoảng 7 tuần cho đủ**. Ngay cả tập con nhỏ nhất (đăng nhập, bàn cờ, đánh với máy) cũng cần khoảng 3,9 tuần nếu giữ vai trò cố định. Cần bạn quyết:
 
 | # | Việc | Ghi chú |
 |---|---|---|

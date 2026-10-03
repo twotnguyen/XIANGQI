@@ -19,8 +19,17 @@
 **Các lựa chọn cần Product Owner quyết (khuyến nghị: lựa chọn 1):**
 
 1. **Dời hạn chót** để làm đủ P1: khoảng **5,2 tuần** cho đợt 1 (demo lõi), khoảng **7,3 tuần** cho đủ P1. Có thể công bố sớm bản đợt 1 rồi bổ sung dần.
-2. **Giữ 2 tuần và cắt phạm vi P1.** Phụ thuộc kỹ thuật cho thấy ngay cả chuỗi "nền tảng → phòng → ván online" cũng dài hơn 10 ngày làm việc, nên giữ 2 tuần nghĩa là bỏ phần lớn tính năng thời gian thực (ví dụ chỉ làm bàn cờ, đăng nhập và đánh với máy). **Chưa mô phỏng phương án này**; cần bạn chọn nếu muốn.
+2. **Giữ 2 tuần và cắt phạm vi P1.** Đã mô phỏng hai tập con (mục 1b): ngay cả tập nhỏ nhất hợp lý (đăng nhập, bàn cờ, đánh với máy, không phòng và không chơi online; 24 việc, 41,5 ngày công) cũng cần khoảng **3,9 tuần** vì chuỗi luật cờ → máy cờ nằm trọn trên một người (R3); tập có phòng và ván online cơ bản (38 việc, 71,5 ngày công) cần khoảng **4,9 tuần**. **Không có tập con nào chạy được trong 2 tuần** nếu giữ vai trò cố định; chỉ có thể đạt nếu chia việc luật cờ/máy cờ cho ít nhất hai người và thu hẹp thêm. Đây là việc **đổi phạm vi P1**, cần bạn đồng ý (AGENTS §8).
 3. **Tăng người hoặc tăng giờ làm** (không khuyến nghị: thiếu hơn 2 lần).
+
+### 1b. Mô phỏng hai tập con phạm vi (để giữ hạn ngắn)
+
+| Tập con | Việc | Ngày công | Mô phỏng |
+|---|---:|---:|---:|
+| A: đăng nhập + bàn cờ + đánh với máy (không phòng, không chơi online) | 24 | 41,5 | khoảng 3,9 tuần |
+| B: A + phòng + ván online cơ bản (không mất kết nối, chat, camera/mic, bạn bè, người xem) | 38 | 71,5 | khoảng 4,9 tuần |
+
+Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 02, 04…07, TG-01, 02, 04, 06`; tập B thêm `TB-01…03, TB-07…10, TD-01…03, TD-06, TD-07, TD-09, TQ-01`. Cùng mô hình với mục 8, nên có cùng giới hạn (thứ tự phụ thuộc do người lập kế hoạch đoán, vai trò cố định). Chuỗi dài nhất của tập A nằm ở R3 (luật cờ → máy cờ).
 
 ## 2. Giả định lập kế hoạch
 
