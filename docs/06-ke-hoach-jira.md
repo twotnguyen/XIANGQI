@@ -2,40 +2,67 @@
 
 **Giai đoạn 3 · Trạng thái: Đề xuất (chờ Product Owner duyệt)** · Căn cứ: [01](01-yeu-cau-chi-tiet.md) (US/AC), [02](02-luat-co-tuong.md), [03](03-du-lieu.md), [04](04-kien-truc.md), [05](05-kiem-thu.md), [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) Phần 11. **Chưa tạo gì trên Jira thật**: cần Product Owner cung cấp site/dự án/khoá (AGENTS §1, §5: không đoán số Key). Tệp này là bản kế hoạch dùng để tạo Jira. Bảng ở mục 6 và 8 được **sinh bằng chương trình** từ dữ liệu việc nên các tổng khớp nhau.
 
-## 1. Kết luận quan trọng cho Product Owner
+## 1. Quyết định của Product Owner và kết luận về hạn 2 tuần
 
-**Phạm vi P1 (8 mục tiêu cốt lõi, 53 US) ước lượng khoảng 127,5 ngày công trong 73 việc.** Với 7 người, mỗi người chỉ có khoảng **4 ngày công hiệu dụng mỗi tuần** (5 ngày × hệ số 0,8), nên 2 tuần chỉ có khoảng **56 ngày công** (khoảng 78 nếu làm cả cuối tuần). **Ba cách tính đều cho thấy 2 tuần không đủ:**
+**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); được phép **dừng bớt phần** để vừa hạn; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** review các tệp `.md` ở [`Jira/`](../Jira/README.md); (3) hệ số hiệu dụng giữ **0,8**.
 
-| Phạm vi (đợt) | Ngày công | Cận dưới theo tổng (chia đều 7 người) | Cận dưới theo vai trò (người tải nặng nhất) | Mô phỏng xếp lịch theo phụ thuộc và vai trò |
-|---|---:|---:|---:|---:|
-| Đợt 1: lõi tối thiểu | 89,5 | 3,2 tuần | 4 tuần | 5,2 tuần |
-| Đợt 1+2: đủ chức năng của 8 mục tiêu | 118 | 4,2 tuần | 4,6 tuần | 6,8 tuần |
-| Đợt 1+2+3: đủ P1 và hoàn thiện | 127,5 | 4,6 tuần | 4,9 tuần | 7,3 tuần |
+**Công suất 2 tuần:** 14 ngày × 7 người × 0,8 = **78,4 ngày công**. Phạm vi P1 ước lượng **128 ngày công** (78 việc, 53 US) nên **không thể làm hết P1 trong 2 tuần** theo ước lượng cơ sở; phải dừng bớt phần theo thứ tự ở mục 1b.
 
-*Cận dưới theo tổng* chia tổng cho công suất cả nhóm (28 ngày công/tuần). *Cận dưới theo vai trò* lấy người có nhiều việc nhất chia cho 4 ngày công/tuần (vai trò cố định nên không chia sẻ được). *Mô phỏng* xếp lịch từng việc theo thứ tự phụ thuộc ở mục 6, mỗi vai trò làm tuần tự, việc giao diện và kiểm thử được phép bắt đầu khi bên phụ trợ làm xong một nửa; đây là **ước tính tham lam, không phải bằng chứng** và có thể rút ngắn bằng cách chia việc cho người đang rảnh. Ước lượng thô (±30%). **Kết luận an toàn: P1 cần khoảng 5 đến 7 tuần, không phải 2 tuần.**
+### 1a. Các mức phạm vi (mỗi mức là tập **đóng theo tiền đề**) và thời gian cần
 
-**Đợt (T1/T2/T3) chỉ là thứ tự triển khai, không phải mức ưu tiên cắt được.** Không đợt nào một mình đủ 8 mục tiêu: **P1 chỉ xong khi hoàn tất cả ba đợt**. Bỏ một đợt hoặc một phần là **cắt phạm vi P1** và cần Product Owner đồng ý (AGENTS §8). Phân bổ kịch bản demo ([05](05-kiem-thu.md) §1): Đợt 1 phủ D1, D2, D4, D5, D6, D8 (cấp Dễ/Trung bình), D9; Đợt 2 thêm D3 (mời bạn bè), D7 (camera/mic), D10, cấp Khó, đổi chỗ ghế, đuổi người xem, xin hoà, nhiều tab, hồ sơ; Đợt 3 là hoàn thiện (responsive, trợ năng, tải, đo máy cờ).
+Mỗi mức gồm **đủ mọi việc tiền đề** của các việc kiểm thử chấp nhận của mức đó, nên là một sản phẩm chạy được. Mô phỏng xếp lịch **theo từng lớp mức** (xếp trọn Mức 1 trước; việc Mức 2 chỉ chèn vào chỗ trống, và cứ thế, nên việc mức cao không bao giờ làm chậm mức thấp), theo tiền đề ở mục 6, cho phép chia việc trong cùng nhóm (máy chủ: R1, R2, R6; giao diện: R4, R5, R6; luật cờ và máy cờ: R3; kiểm thử: R7), việc giao diện và kiểm thử được bắt đầu khi bên phụ trợ làm xong một nửa. **Ước tính tham lam, không phải bằng chứng.** Số ngày làm việc (7 ngày/tuần):
 
-**Các lựa chọn cần Product Owner quyết (khuyến nghị: lựa chọn 1):**
+| Mức | Phạm vi | Việc | Ngày công | **Cơ sở** (hệ số 0,8) | Ước lượng −30%, hệ số 0,8 | Độ nhạy: −30%, hệ số 1,0 |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | Đăng ký/đăng nhập, luật cờ, bàn cờ, ván với máy cấp Dễ/Trung bình | 26 | 48 | **22,2** | 15,6 | 12,5 |
+| 2 | Mức 1 + phòng (tạo, vào bằng mã/link, ghế, Sẵn sàng) + phòng thi đấu và ván online (nước đi, đồng hồ, kết thúc ván, mất kết nối) | 40 | 74 | **26,6** | 18,7 | 15 |
+| 3 | Mức 2 + khoá phòng, người xem, chat, PoC LiveKit (**toàn bộ đợt 1**) | 52 | 89 | **27,8** | 19,5 | 15,7 |
+| 4 | Mức 3 + camera/mic, bạn bè và mời, đuổi người xem, đổi chỗ, xin hoà, cấp Khó, nhiều tab, hồ sơ (**đợt 1+2**) | 73 | 118,5 | **35,9** | 25,2 | 20,2 |
+| 5 | Mức 4 + responsive, trợ năng, kiểm thử tải, đo máy cờ (**đủ P1**) | 78 | 128 | **38,4** | 27 | 21,6 |
 
-1. **Dời hạn chót** để làm đủ P1: khoảng **5,2 tuần** cho đợt 1 (demo lõi), khoảng **7,3 tuần** cho đủ P1. Có thể công bố sớm bản đợt 1 rồi bổ sung dần.
-2. **Giữ 2 tuần và cắt phạm vi P1.** Đã mô phỏng hai tập con (mục 1b): ngay cả tập nhỏ nhất hợp lý (đăng nhập, bàn cờ, đánh với máy, không phòng và không chơi online; 24 việc, 41,5 ngày công) cũng cần khoảng **3,9 tuần** vì chuỗi luật cờ → máy cờ nằm trọn trên một người (R3); tập có phòng và ván online cơ bản (38 việc, 71,5 ngày công) cần khoảng **4,9 tuần**. **Không có tập con nào chạy được trong 2 tuần** nếu giữ vai trò cố định; chỉ có thể đạt nếu chia việc luật cờ/máy cờ cho ít nhất hai người và thu hẹp thêm. Đây là việc **đổi phạm vi P1**, cần bạn đồng ý (AGENTS §8).
-3. **Tăng người hoặc tăng giờ làm** (không khuyến nghị: thiếu hơn 2 lần).
+**Đọc bảng:** hạn là **14 ngày**. Mức nào vừa hạn: theo **ước lượng cơ sở** → không mức nào; theo −30% với hệ số 0,8 → không mức nào; theo độ nhạy −30% và hệ số 1,0 (khác hệ số 0,8 bạn đã chọn, **chỉ để thử độ nhạy**) → Mức 1 (Mức 2 cần 15 ngày, vượt hạn không nhiều). Kết luận trung thực: theo ước lượng cơ sở **ngày 14 có thể chưa xong mức nào**; chỉ khi ước lượng thực tế thấp hơn nhiều thì Mức 1–2 mới kịp. Cần đo tốc độ thật ở mốc ngày 4 và 7 để biết.
 
-### 1b. Mô phỏng hai tập con phạm vi (để giữ hạn ngắn)
+**Danh sách việc của từng mức** (cộng dồn):
 
-| Tập con | Việc | Ngày công | Mô phỏng |
-|---|---:|---:|---:|
-| A: đăng nhập + bàn cờ + đánh với máy (không phòng, không chơi online) | 24 | 41,5 | khoảng 3,9 tuần |
-| B: A + phòng + ván online cơ bản (không mất kết nối, chat, camera/mic, bạn bè, người xem) | 38 | 71,5 | khoảng 4,9 tuần |
+* **Mức 1** thêm: `T0-01`, `T0-03`, `T0-04`, `T0-05`, `T0-08`, `T0-09`, `TA-01`, `TA-02`, `TA-03`, `TA-04`, `TA-05`, `TA-08`, `TC-01`, `TC-02`, `TC-05`, `TC-06`, `TC-07`, `TD-01`, `TD-03`, `TD-07`, `TG-01`, `TG-02`, `TG-04`, `TG-05`, `TG-06`, `TQ-01a`
+* **Mức 2** thêm: `TB-01`, `TB-02`, `TB-03`, `TB-07`, `TB-08`, `TB-09`, `TB-10`, `TB-11`, `TC-03`, `TD-02`, `TD-05`, `TD-06`, `TD-09`, `TQ-01b`
+* **Mức 3** thêm: `T0-02`, `T0-06`, `T0-07`, `TA-07`, `TB-05`, `TB-11b`, `TC-04`, `TD-08`, `TE-01`, `TE-02`, `TH-01`, `TQ-01c`
+* **Mức 4** thêm: `TA-06`, `TA-06b`, `TB-04`, `TB-06`, `TB-09b`, `TB-10b`, `TC-08`, `TD-04`, `TD-07b`, `TE-03`, `TE-04`, `TE-05`, `TE-06`, `TF-01`, `TF-02`, `TF-03`, `TF-04`, `TG-03`, `TQ-01d`, `TQ-03`, `TQ-04`
+* **Mức 5** thêm: `TG-07`, `TH-02`, `TH-03`, `TH-04`, `TQ-02`
 
-Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 02, 04…07, TG-01, 02, 04, 06`; tập B thêm `TB-01…03, TB-07…10, TD-01…03, TD-06, TD-07, TD-09, TQ-01`. Cùng mô hình với mục 8, nên có cùng giới hạn (thứ tự phụ thuộc do người lập kế hoạch đoán, vai trò cố định). Chuỗi dài nhất của tập A nằm ở R3 (luật cờ → máy cờ).
+**Lối vào khi chưa có Sảnh đầy đủ:** `TG-06` dựng **Sảnh tối giản** (3 thẻ cấp độ máy và Đăng xuất) để Mức 1 chạy được; `TB-08` mở rộng Sảnh ở Mức 2. Các mức chưa làm thì lối vào ở màn hình đã có phải `DISABLED` kèm *"Sắp ra mắt"* hoặc ẩn theo quy tắc ở [DANH-MUC](../DANH-MUC-MAN-HINH-XIANGQI.md) §7. Một Story chỉ **Done** khi mọi việc của nó xong; nếu dừng giữa chừng thì Story ở trạng thái *một phần*.
+
+### 1b. Thứ tự làm và thứ tự dừng phần
+
+Làm **từ Mức 1 lên Mức 5**; khi trễ thì **dừng từ Mức cao xuống**. Việc thuộc mức thấp luôn được ưu tiên người làm trước việc thuộc mức cao.
+
+| Mức | Mục tiêu cốt lõi được phục vụ | Khi dừng ở mức này, cái còn thiếu |
+|---:|---|---|
+| 1 | 1 (đăng ký/đăng nhập), 4 (bàn cờ), 8 (đánh với máy Dễ/TB) | Phòng, chơi online, chat, camera/mic, bạn bè, cấp Khó |
+| 2 | + 2 (tạo phòng), 3 (mời bằng link/mã), 5 (hai người đánh online, có mất kết nối) | Khoá phòng, người xem, chat, camera/mic, bạn bè |
+| 3 | + 6 (công khai/khoá/mã, tối đa 2 người xem), 7 (chat) | Camera/mic, bạn bè, đuổi người xem, cấp Khó, đổi chỗ, xin hoà |
+| 4 | + 3 (bạn bè), 6 (đuổi), 7 (camera/mic), 8 (Khó) | Responsive, trợ năng, tải |
+| 5 | Đủ P1 | — |
+
+### 1c. Mốc kiểm soát (đề xuất)
+
+Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ số 1,0)** (mục 8); nếu thực tế chậm hơn, các mốc là ngưỡng để quyết định dừng phần sớm.
+
+| Mốc | Việc cần xong (theo lịch độ nhạy) | Quy tắc khi trễ |
+|---|---|---|
+| **Ngày 4** | 13 việc xong thêm trong khoảng này: `T0-01`, `T0-02`, `T0-05`, `T0-03`, `T0-04`, `TA-05`, `T0-06`, `T0-08`, `TB-01`, `TC-05`, `TA-01`, `TC-01`, `TC-06` | Thử nghiệm đầu: nếu PoC OTP, LiveKit hoặc máy cờ không đạt thì báo Product Owner để đổi phương án ngay (PoC máy cờ `T0-09` chỉ chạy được sau `TC-01`) |
+| **Ngày 7** | 15 việc xong thêm trong khoảng này: `TC-07`, `T0-09`, `TB-02`, `TA-02`, `TA-04`, `TB-03`, `TC-02`, `T0-07`, `TB-08`, `TA-03`, `TA-08`, `TB-07`, `TB-09`, `TA-07`, `TB-05` | Mức 1 đang chạy: nếu trễ hơn 2 ngày thì **dừng nhận Mức 4 trở lên** khỏi kế hoạch |
+| **Ngày 10** | 16 việc xong thêm trong khoảng này: `TB-10`, `TB-11`, `TA-06b`, `TD-01`, `TB-11b`, `TH-01`, `TA-06`, `TG-01`, `TG-02`, `TD-03`, `TD-02`, `TB-06`, `TD-07`, `TE-01`, `TG-04`, `TB-10b` | Mức 2 vào tích hợp: nếu chưa thì **dừng ở Mức 1–2**, chuyển sức sang ổn định |
+| **Ngày 12** | 8 việc xong thêm trong khoảng này: `TE-02`, `TD-04`, `TD-05`, `TD-07b`, `TC-03`, `TG-05`, `TB-04`, `TC-04` | Mức 3 chạy: **ngừng nhận tính năng mới** |
+| **Ngày 14** | 9 việc xong thêm trong khoảng này: `TG-06`, `TD-06`, `TQ-01a`, `TB-09b`, `TE-03`, `TD-08`, `TG-03`, `TF-01`, `TC-08` | Demo mức đạt được; mọi việc chưa xong ghi là *dừng phần* |
+
+**Cần Product Owner chốt:** chấp nhận rằng nếu ước lượng cơ sở đúng thì ở ngày 14 có thể chưa xong mức nào, và quyết định dừng ở mức nào sẽ được đưa ra ở các mốc trên.
 
 ## 2. Giả định lập kế hoạch
 
 * **Nhóm 7 người**; tên và vai trò do Product Owner gán (mục 3).
-* **Thời hạn gốc:** khoảng 2 tuần kể từ 03/10/2026 (đến khoảng 17/10/2026): 10 ngày làm việc (05–09/10 và 12–16/10).
-* **Hệ số hiệu dụng 0,8**; một ngày công = một người làm trọn một ngày; 5 ngày làm việc/tuần.
+* **Thời hạn cố định:** 2 tuần kể từ 03/10/2026 (đến khoảng 17/10/2026), **làm cả cuối tuần** (14 ngày).
+* **Hệ số hiệu dụng 0,8**; một ngày công = một người làm trọn một ngày; 7 ngày/tuần.
 * Ước lượng thô (±30%) dựa trên đặc tả ở `docs/`; chưa tính học công nghệ mới và sửa lỗi do PoC thất bại.
 * Thứ tự phụ thuộc ở mục 6 là **phán đoán của người lập kế hoạch**, cần người trong nhóm xác nhận.
 
@@ -44,18 +71,18 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 | Mã | Vai trò | Đợt 1 / 2 / 3 (ngày công) | Tổng |
 |---|---|---|---:|
 | **R1** | Trưởng nhóm kỹ thuật, máy chủ thời gian thực (phòng, ván, đồng hồ, kết nối) | 10,5 / 4,5 / 0 | 15 |
-| **R2** | Backend: tài khoản, phòng, bạn bè, dữ liệu | 14,5 / 4 / 0 | 18,5 |
+| **R2** | Backend: tài khoản, phòng, bạn bè, dữ liệu | 14,5 / 4,5 / 0 | 19 |
 | **R3** | Gói luật cờ và máy cờ | 16 / 2 / 1,5 | 19,5 |
 | **R4** | Frontend trưởng: bàn cờ, phòng thi đấu, ván với máy, responsive | 14 / 2 / 3 | 19 |
-| **R5** | Frontend: tài khoản, Sảnh, phòng chờ, giao diện chung, trợ năng | 14,5 / 2 / 3 | 19,5 |
+| **R5** | Frontend: tài khoản, Sảnh, phòng chờ, giao diện chung, trợ năng | 14 / 2 / 3 | 19 |
 | **R6** | Chat, camera/mic (LiveKit), trang Bạn bè (giao diện), ván: đồng hồ và Host | 8,5 / 8 / 0 | 16,5 |
-| **R7** | Kiểm thử, CI/CD, triển khai, chuẩn bị demo | 11,5 / 6 / 2 | 19,5 |
+| **R7** | Kiểm thử, CI/CD, triển khai, chuẩn bị demo | 11,5 / 6,5 / 2 | 20 |
 
 *Gán tên người vào R1–R7 là việc của Product Owner.* R1 và R2 là điểm nghẽn của chuỗi nền tảng → phòng → ván; R6 làm cả máy chủ lẫn giao diện nên cần người làm được cả hai phía.
 
 ## 4. Cấu trúc Jira đề xuất
 
-* **Epic** = một dòng ở mục 6 (E0, EA…EQ) và các Epic P2 ở mục 10.
+* **Epic** = một dòng ở mục 6 (E0, EA…EQ) và các Epic P2 ở mục 10. Mỗi Epic, Story, Task có **một tệp `.md`** trong [`Jira/`](../Jira/README.md) để review trước khi tạo.
 * **Story** = một US ở [01](01-yeu-cau-chi-tiet.md) (53 US P1); AC chép vào mô tả. Ma trận US → việc ở mục 9.
 * **Task** = một mục việc ở mục 6, gắn với Story bằng liên kết *relates to* (một việc có thể phục vụ nhiều Story). Cột "Tiền đề" thành liên kết *is blocked by*.
 * **Nhãn:** `P1`/`P2`, đợt `T1`/`T2`/`T3`, vai trò `R1`…`R7`, thành phần `FE`/`BE`/`ENGINE`/`MEDIA`/`QA`/`DEVOPS`.
@@ -96,11 +123,12 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 | TA-03 | BE: đăng nhập bằng username, phiên 30 ngày/12 giờ, chặn tài khoản chưa hoàn tất | R2 | 1,5 | T1 | US-AUTH-04 | TA-02 |
 | TA-04 | FE: trình hướng dẫn đăng ký 3 bước, OTP 6 ô, đếm lùi | R5 | 2,5 | T1 | US-AUTH-01,02,03 | T0-05, TA-01 |
 | TA-05 | FE: đăng nhập, ghi nhớ, nút Guest/Google DISABLED | R5 | 1 | T1 | US-AUTH-04 | T0-05 |
-| TA-06 | Hồ sơ cơ bản: đổi tên hiển thị, đăng xuất, lọc từ cấm | R5 | 1,5 | T2 | US-AUTH-05 | TA-03, TA-05 |
+| TA-06 | FE: hồ sơ cơ bản: đổi tên hiển thị, đăng xuất | R5 | 1 | T2 | US-AUTH-05 | TA-05, TA-06b |
+| TA-06b | BE: cập nhật tên hiển thị có lọc từ cấm ở máy chủ (client không ghi trực tiếp) | R2 | 0,5 | T2 | US-AUTH-05 | TA-03 |
 | TA-07 | FE: chuyển hướng vào phòng sau đăng nhập | R5 | 0,5 | T1 | US-AUTH-06 | TA-05, TB-02 |
 | TA-08 | Kiểm thử nhóm A (đơn vị, tích hợp) | R7 | 1,5 | T1 | docs/05 §4 | TA-03 |
 
-### EB · Phòng, mời, ghế, người xem (Nhóm B) — 20 ngày công (đợt 1: 17 · 2: 3 · 3: 0)
+### EB · Phòng, mời, ghế, người xem (Nhóm B) — 20 ngày công (đợt 1: 16,5 · 2: 3,5 · 3: 0)
 
 | Mã | Công việc | Vai trò | Ngày | Đợt | US / tài liệu | Tiền đề |
 |---|---|---|---:|---|---|---|
@@ -114,8 +142,10 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 | TB-08 | FE: Sảnh (danh sách phòng, tạo phòng, vào bằng mã, thẻ chế độ) | R5 | 3 | T1 | US-ROOM-01,08, US-UI-02 | T0-05, TB-01 |
 | TB-09 | FE: phòng chờ (ghế, Sẵn sàng, đếm ngược, cài đặt phòng) | R5 | 2,5 | T1 | US-ROOM-02,03,07 | TB-08, TB-03 |
 | TB-09b | FE: đổi chỗ ghế/người xem trong phòng chờ | R5 | 0,5 | T2 | US-ROOM-06 | TB-09, TB-04 |
-| TB-10 | FE: chia sẻ phòng (link+mã), màn từ chối truy cập, xác nhận đuổi | R5 | 1,5 | T1 | US-ROOM-04,09,12 | TB-09 |
-| TB-11 | Kiểm thử nhóm B (nhiều client, kịch bản A–E của BA 2.8) | R7 | 2 | T1 | docs/05 §4 | TB-07 |
+| TB-10 | FE: chia sẻ phòng (link+mã) và màn từ chối truy cập | R5 | 1 | T1 | US-ROOM-04,12 | TB-09 |
+| TB-10b | FE: danh sách người xem và xác nhận đuổi | R5 | 0,5 | T2 | US-ROOM-09 | TB-10, TB-06 |
+| TB-11 | Kiểm thử nhóm B phần cơ bản: tạo phòng, vào bằng mã/link, ghế, Sẵn sàng, Host rời | R7 | 1 | T1 | docs/05 §4 | TB-07 |
+| TB-11b | Kiểm thử nhóm B: khoá phòng, người xem, kết nối lại, kịch bản A–E của BA 2.8 | R7 | 1 | T1 | docs/05 §4 | TB-05, TB-11 |
 
 ### EC · Bàn cờ và luật cờ (Nhóm C) — 16 ngày công (đợt 1: 14,5 · 2: 1,5 · 3: 0)
 
@@ -134,16 +164,16 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 
 | Mã | Công việc | Vai trò | Ngày | Đợt | US / tài liệu | Tiền đề |
 |---|---|---|---:|---|---|---|
-| TD-01 | BE: dịch vụ ván: nhận nước, tuần tự hoá, biên lai, ghi cơ sở dữ liệu | R1 | 3 | T1 | US-PLAY-01 | TC-02, TB-03 |
+| TD-01 | BE: dịch vụ ván: nhận nước, tuần tự hoá, biên lai, ghi cơ sở dữ liệu | R1 | 3 | T1 | US-PLAY-01 | TC-02, T0-04 |
 | TD-02 | BE: đồng hồ, hết giờ, tính giờ trước khi xét nước | R6 | 1,5 | T1 | US-PLAY-02 | TD-01 |
 | TD-03 | BE: kết thúc ván, đầu hàng, rời phòng, kết quả | R1 | 1,5 | T1 | US-PLAY-03,04,06,08 | TD-01 |
 | TD-04 | BE: xin hoà và giới hạn gửi lại | R1 | 1 | T2 | US-PLAY-05 | TD-03 |
 | TD-05 | BE: mất kết nối, ân hạn theo vai trò, đồng bộ lại, INTERRUPTED | R1 | 2,5 | T1 | US-PLAY-07 | TD-02, TD-03 |
 | TD-06 | FE: phòng thi đấu (bố cục, đồng hồ, bảng nước đi, trạng thái) | R4 | 3 | T1 | US-PLAY-01,02,10 | TC-07, TC-03, TD-01 |
-| TD-07 | FE: kết quả, xác nhận đầu hàng/rời, lớp phủ kết nối | R4 | 2 | T1 | US-PLAY-03,04,06,07 | TD-06, TD-03 |
+| TD-07 | FE: kết quả, xác nhận đầu hàng/rời, lớp phủ kết nối | R4 | 2 | T1 | US-PLAY-03,04,06,07 | TD-03 |
 | TD-07b | FE: xin hoà (gửi, nhận, rút, đếm lùi) | R4 | 0,5 | T2 | US-PLAY-05 | TD-07, TD-04 |
 | TD-08 | FE: chế độ người xem chỉ đọc | R4 | 1 | T1 | US-PLAY-09 | TD-06 |
-| TD-09 | Kiểm thử nhóm D (nhiều client, đồng hồ, kết nối lại) | R7 | 2,5 | T1 | docs/05 §4 | TD-05, TD-07 |
+| TD-09 | Kiểm thử nhóm D (nhiều client, đồng hồ, kết nối lại) | R7 | 2,5 | T1 | docs/05 §4 | TD-05, TD-07, TD-06 |
 
 ### EE · Chat và camera/mic (Nhóm E) — 12 ngày công (đợt 1: 4,5 · 2: 7,5 · 3: 0)
 
@@ -169,12 +199,12 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 
 | Mã | Công việc | Vai trò | Ngày | Đợt | US / tài liệu | Tiền đề |
 |---|---|---|---:|---|---|---|
-| TG-01 | Máy cờ: negamax, alpha-beta, tìm sâu dần, hàm lượng giá | R3 | 3,5 | T1 | docs/02 §9 | TC-02 |
+| TG-01 | Máy cờ: negamax, alpha-beta, tìm sâu dần, hàm lượng giá | R3 | 3,5 | T1 | docs/02 §9 | TC-02, T0-09 |
 | TG-02 | Máy cờ: cấp Dễ và Trung bình (ngẫu nhiên có kiểm soát) | R3 | 1 | T1 | US-AI-02 | TG-01 |
 | TG-03 | Máy cờ: cấp Khó (bảng chuyển vị, tìm tĩnh) | R3 | 2 | T2 | US-AI-02 | TG-02 |
 | TG-04 | Tiến trình máy cờ riêng, hàng đợi, hạn chót, khởi động lại | R3 | 1,5 | T1 | US-AI-04 | TG-02 |
-| TG-05 | BE: dịch vụ ván với máy (phe, vào lại 30 phút, bỏ dở) | R2 | 2 | T1 | US-AI-01,03 | TG-04, TD-01 |
-| TG-06 | FE: thẻ cấp độ, AI-SETUP, trang ván với máy | R4 | 2,5 | T1 | US-AI-01,02,03 | TG-05, TC-07 |
+| TG-05 | BE: dịch vụ ván với máy (phe, vào lại 30 phút, bỏ dở) | R2 | 2 | T1 | US-AI-01,03 | TG-04, TD-01, TD-03 |
+| TG-06 | FE: thẻ cấp độ, AI-SETUP, trang ván với máy | R4 | 2,5 | T1 | US-AI-01,02,03 | TG-05, TC-07, TD-07 |
 | TG-07 | Đo máy cờ: thời gian, sức mạnh, 1 000 ván ổn định | R3 | 1,5 | T3 | NFR-05 | TG-03, TG-04 |
 
 ### EH · Giao diện chung (Nhóm H) — 7,5 ngày công (đợt 1: 1,5 · 2: 0 · 3: 6)
@@ -186,15 +216,17 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 | TH-03 | Trợ năng: bàn phím, nhãn, giảm chuyển động, tương phản | R5 | 1,5 | T3 | US-UI-05 | TH-02 |
 | TH-04 | Kiểm thử trợ năng và responsive | R5 | 1,5 | T3 | docs/05 §6 | TH-03 |
 
-### EQ · Kiểm thử chấp nhận và chuẩn bị demo — 8,5 ngày công (đợt 1: 3 · 2: 3,5 · 3: 2)
+### EQ · Kiểm thử chấp nhận và chuẩn bị demo — 9 ngày công (đợt 1: 3 · 2: 4 · 3: 2)
 
 | Mã | Công việc | Vai trò | Ngày | Đợt | US / tài liệu | Tiền đề |
 |---|---|---|---:|---|---|---|
-| TQ-01 | Playwright kịch bản demo lõi: D1, D2, D4, D5, D6, D8, D9 | R7 | 3 | T1 | docs/05 §1 | TD-09, TB-11, TA-08 |
-| TQ-01b | Playwright kịch bản D3 (mời bạn bè), D7 (camera/mic), D10 | R7 | 1 | T2 | docs/05 §1 | TQ-01, TF-04, TE-06 |
+| TQ-01a | Playwright Mức 1: D1 (đăng ký/đăng nhập) và D8 (ván với máy cấp Dễ/Trung bình) | R7 | 1 | T1 | docs/05 §1 | TA-08, TA-04, TA-05, TG-06, TD-07 |
+| TQ-01b | Playwright Mức 2: D2 (tạo phòng) và D6 (ván online đến chiếu hết) | R7 | 1 | T1 | docs/05 §1 | TD-09, TB-11, TB-10 |
+| TQ-01c | Playwright Mức 3: D4 (người xem), D5 (khoá phòng), D9 (mất kết nối) | R7 | 1 | T1 | docs/05 §1 | TQ-01b, TB-11b, TD-08, TD-05 |
+| TQ-01d | Playwright Mức 4: D3 (mời bạn bè), D7 (camera/mic), D8 cấp Khó, D10, và kịch bản A–E đầy đủ có đổi chỗ ghế | R7 | 1,5 | T2 | docs/05 §1 | TQ-01c, TF-04, TE-06, TG-03, TB-04, TB-09b |
 | TQ-02 | Kiểm thử tải 50 kết nối | R7 | 2 | T3 | NFR-02 | TD-09 |
 | TQ-03 | Kiểm thử bảo mật | R7 | 1,5 | T2 | docs/05 §5 | TA-08, TD-09 |
-| TQ-04 | Chuẩn bị demo: dữ liệu, kịch bản, tập dượt | R7 | 1 | T2 | docs/05 §1 | TQ-01b |
+| TQ-04 | Chuẩn bị demo: dữ liệu, kịch bản, tập dượt | R7 | 1 | T2 | docs/05 §1 | TQ-01d |
 
 ## 7. Tổng hợp theo Epic và công suất
 
@@ -202,33 +234,33 @@ Tập A gồm các việc `T0-01…06, T0-08, T0-09, TA-01…05, TA-08, TC-01, 0
 |---|---:|---:|---:|---:|
 | E0 Nền tảng và thử nghiệm rủi ro | 11 | 0 | 0 | 11 |
 | EA Tài khoản và phiên (Nhóm A) | 10,5 | 1,5 | 0 | 12 |
-| EB Phòng, mời, ghế, người xem (Nhóm B) | 17 | 3 | 0 | 20 |
+| EB Phòng, mời, ghế, người xem (Nhóm B) | 16,5 | 3,5 | 0 | 20 |
 | EC Bàn cờ và luật cờ (Nhóm C) | 14,5 | 1,5 | 0 | 16 |
 | ED Ván đấu online (Nhóm D) | 17 | 1,5 | 0 | 18,5 |
 | EE Chat và camera/mic (Nhóm E) | 4,5 | 7,5 | 0 | 12 |
 | EF Bạn bè (Nhóm F) | 0 | 8 | 0 | 8 |
 | EG Đánh với máy (Nhóm G) | 10,5 | 2 | 1,5 | 14 |
 | EH Giao diện chung (Nhóm H) | 1,5 | 0 | 6 | 7,5 |
-| EQ Kiểm thử chấp nhận và chuẩn bị demo | 3 | 3,5 | 2 | 8,5 |
-| **Cộng** | **89,5** | **28,5** | **9,5** | **127,5** |
+| EQ Kiểm thử chấp nhận và chuẩn bị demo | 3 | 4 | 2 | 9 |
+| **Cộng** | **89** | **29,5** | **9,5** | **128** |
 
-**Công suất (7 người, 4 ngày công/người/tuần):** 2 tuần ≈ 56 · 4 tuần ≈ 112 · 6 tuần ≈ 168 · 7 tuần ≈ 196 ngày công. Tuy nhiên **thời gian thực tế dài hơn tổng chia công suất** vì các việc phụ thuộc nhau và vai trò cố định (mục 1).
+**Công suất (7 người, hệ số 0,8, 7 ngày/tuần):** 14 ngày ≈ 78,4 · 21 ngày ≈ 117,6 · 28 ngày ≈ 156,8 ngày công. Thời gian thực tế dài hơn tổng chia công suất vì các việc phụ thuộc nhau (mục 1a).
 
-## 8. Lịch mô phỏng theo người (đủ cả ba đợt)
+## 8. Lịch mô phỏng theo người, xếp theo lớp mức (độ nhạy: −30%, hệ số 1,0)
 
-Mốc tính bằng **ngày làm việc** kể từ ngày bắt đầu (ngày 0); tuần = ngày/5. Tổng thời gian mô phỏng: **36,6 ngày làm việc ≈ 7,3 tuần**.
+Lịch xếp **theo lớp mức**: Mức 1 trước, rồi việc Mức 2 chèn vào chỗ trống, và cứ thế; nên việc mức cao không làm chậm mức thấp. Mốc là **ngày kể từ ngày bắt đầu** (làm 7 ngày/tuần). Hoàn tất từng mức theo lịch này (việc giao diện/kiểm thử chỉ **bắt đầu** khi tiền đề xong một nửa nhưng chỉ **xong** sau tiền đề cộng thời gian tích hợp): Mức 1: **12,5** ngày, Mức 2: **15** ngày, Mức 3: **15,7** ngày, Mức 4: **20,2** ngày, Mức 5: **21,6** ngày. Đây là kịch bản **độ nhạy**, không phải baseline; người làm chỉ là gợi ý (đổi được trong cùng nhóm máy chủ/giao diện). **Dừng phần theo mức (mục 1b), không theo ngày của từng việc.**
 
 | Vai trò | Chuỗi việc (mã: ngày bắt đầu–kết thúc) |
 |---|---|
-| **R1** | T0-04 (1,2–3,8) → TB-03 (8,1–10) → TD-01 (10–13,8) → TD-03 (13,8–15,6) → TD-04 (15,6–16,9) → TB-06 (16,9–18,1) → TD-05 (18,1–21,2) → TF-02 (21,2–23,1) → TE-05 (23,1–24,4) |
-| **R2** | T0-03 (1,2–3,8) → TB-01 (3,8–5,6) → TB-02 (5,6–8,1) → T0-08 (8,1–8,8) → TA-01 (8,8–10,6) → TA-02 (10,6–13,1) → TA-03 (13,1–15) → TF-01 (15–18,1) → TG-05 (18,1–20,6) → TB-04 (20,6–22,5) → TB-05 (22,5–24,4) |
-| **R3** | TC-01 (1,2–6,2) → TC-02 (6,2–8,8) → TC-03 (8,8–10,6) → TG-01 (10,6–15) → TG-02 (15–16,2) → TG-04 (16,2–18,1) → TG-03 (18,1–20,6) → TC-04 (20,6–22,5) → TG-07 (22,5–24,4) → T0-09 (24,4–25,6) |
-| **R4** | TC-05 (2,5–5,6) → TC-06 (5,6–7,5) → TC-07 (7,5–9,4) → TC-08 (9,4–11,2) → TD-06 (11,9–15,6) → TD-07 (15,6–18,1) → TH-02 (18,1–21,9) → TG-06 (21,9–25) → TD-08 (25–26,2) → TD-07b (26,2–26,9) |
-| **R5** | T0-05 (1,2–3,8) → TA-05 (3,8–5) → TB-08 (5–8,8) → TH-01 (8,8–10,6) → TB-09 (10,6–13,8) → TB-10 (13,8–15,6) → TA-04 (15,6–18,8) → TA-06 (18,8–20,6) → TH-03 (20,6–22,5) → TH-04 (22,5–24,4) → TA-07 (24,4–25) → TB-09b (25–25,6) |
-| **R6** | T0-07 (3,8–5) → TE-03 (8,1–10,6) → TB-07 (10,6–12,5) → TE-01 (12,5–15,6) → TD-02 (15,6–17,5) → TE-04 (17,5–21,2) → TF-03 (21,2–25) → TE-02 (25–27,5) |
-| **R7** | T0-01 (0–1,2) → T0-02 (1,2–1,9) → T0-06 (2,5–3,8) → TB-11 (11,6–14,1) → TA-08 (14,1–15,9) → TD-09 (19,7–22,8) → TQ-01 (22,8–26,6) → TE-06 (26,6–28,4) → TF-04 (28,4–29,7) → TQ-01b (29,7–30,9) → TQ-02 (30,9–33,4) → TQ-03 (33,4–35,3) → TQ-04 (35,3–36,6) |
+| **R1** | T0-03 (0,7–2,1) → T0-08 (2,1–2,4) → TA-01 (2,4–3,5) → TA-02 (3,5–4,9) → TA-03 (4,9–5,9) → TB-05 (5,9–7) → TA-06b (7–7,3) → TD-03 (7,7–8,8) → TB-06 (8,8–9,4) → TG-05 (9,8–11,2) → TE-03 (11,2–12,6) → TF-02 (13,3–14,4) → TE-05 (14,7–15,4) |
+| **R2** | T0-04 (0,7–2,1) → TB-01 (2,1–3,1) → TB-02 (3,1–4,5) → TB-03 (4,5–5,6) → TD-01 (5,6–7,7) → TD-02 (7,7–8,8) → TD-05 (8,8–10,5) → TB-04 (10,5–11,6) → TF-01 (11,6–13,3) |
+| **R3** | TC-01 (0,7–3,5) → T0-09 (3,5–4,2) → TC-02 (4,2–5,6) → TG-01 (5,6–8) → TG-02 (8–8,7) → TG-04 (8,7–9,8) → TC-03 (9,8–10,8) → TC-04 (10,8–11,9) → TG-03 (11,9–13,3) → TG-07 (13,3–14,3) |
+| **R4** | T0-05 (0,7–2,1) → TC-06 (2,3–3,8) → TB-08 (3,8–5,9) → TB-10 (5,9–7,1) → TA-06 (7,2–7,9) → TD-07 (8,2–9,6) → TB-10b (9,6–10) → TG-06 (10,5–12,2) → TB-09b (12,2–12,6) → TE-04 (12,6–14,7) → TH-03 (14,7–15,9) |
+| **R5** | TA-05 (1,4–2,4) → TC-07 (2,8–4,1) → TB-09 (5,1–6,8) → TH-01 (6,8–7,9) → TE-02 (8,8–10,2) → TD-06 (10,3–12,4) → TC-08 (12,4–13,5) → TH-02 (13,5–15,6) |
+| **R6** | TC-05 (1,4–3,1) → TA-04 (3,1–4,9) → T0-07 (4,9–5,6) → TB-07 (5,6–6,6) → TA-07 (6,6–7) → TB-11b (7,2–7,9) → TE-01 (7,9–9,6) → TD-04 (9,6–10,3) → TD-07b (10,3–10,7) → TD-08 (11,4–12,7) → TF-03 (12,7–14,8) → TH-04 (15,2–16,3) |
+| **R7** | T0-01 (0–0,7) → T0-02 (0,7–1) → T0-06 (1,4–2,4) → TA-08 (5,4–6,5) → TB-11 (6,5–7,2) → TQ-01a (11,4–12,5) → TD-09 (12,5–14,3) → TQ-01b (14,3–15) → TQ-01c (15–15,7) → TF-04 (15,7–16,4) → TE-06 (16,4–17,4) → TQ-01d (17,4–18,5) → TQ-04 (18,5–19,2) → TQ-03 (19,2–20,2) → TQ-02 (20,2–21,6) |
 
-**Đường găng (suy ra từ phụ thuộc):** chuỗi dài nhất bắt đầu từ `T0-01` rồi `T0-03/T0-04` → `TB-01` → `TB-02` → `TB-03` → `TD-01` → `TD-03/TD-05` → `TD-09` → `TQ-01`. Rút ngắn đường găng bằng cách: (1) chốt hợp đồng sự kiện sớm ở `T0-04` để giao diện làm song song; (2) tách các việc của R1/R2 cho người đang rảnh (đã chuyển `TD-02` và `TB-07` sang R6, `TG-05` sang R2); (3) viết kiểm thử song song với phát triển.
+**Đường găng:** chuỗi nền tảng → phòng → ván (`T0-01` → `T0-03/T0-04` → `TB-01` → `TB-02` → `TB-03`, song song `TC-01/02` → `TD-01` → `TD-03/TD-05` → `TD-09` → `TQ-01b/c`). Rút ngắn bằng cách chốt hợp đồng sự kiện sớm ở `T0-04`, chia việc cho người đang rảnh trong cùng nhóm, và viết kiểm thử song song.
 
 ## 9. Ma trận US P1 → việc
 
@@ -240,7 +272,7 @@ Mốc tính bằng **ngày làm việc** kể từ ngày bắt đầu (ngày 0);
 | US-AUTH-02 | Đăng ký bước 2: email và gửi OTP | TA-01, TA-04 |
 | US-AUTH-03 | Đăng ký bước 3: xác thực OTP, tạo tài khoản | TA-02, TA-04 |
 | US-AUTH-04 | Đăng nhập bằng username và mật khẩu | TA-03, TA-05 |
-| US-AUTH-05 | Hồ sơ cơ bản và đăng xuất | TA-06 |
+| US-AUTH-05 | Hồ sơ cơ bản và đăng xuất | TA-06, TA-06b |
 | US-AUTH-06 | Chuyển hướng vào phòng sau đăng nhập | TA-07 |
 | US-ROOM-01 | Tạo phòng | TB-01, TB-08 |
 | US-ROOM-02 | Phòng chờ và ghế ngồi | TB-03, TB-09 |
@@ -250,7 +282,7 @@ Mốc tính bằng **ngày làm việc** kể từ ngày bắt đầu (ngày 0);
 | US-ROOM-06 | Đổi chỗ giữa ghế và người xem | TB-04, TB-09b |
 | US-ROOM-07 | Chế độ riêng tư và khoá phòng | TB-05, TB-09 |
 | US-ROOM-08 | Danh sách phòng công khai ở Sảnh | TB-01, TB-08 |
-| US-ROOM-09 | Đuổi người xem | TB-06, TB-10 |
+| US-ROOM-09 | Đuổi người xem | TB-06, TB-10b |
 | US-ROOM-10 | Host rời, chuyển quyền, đóng phòng | TB-07 |
 | US-ROOM-11 | Sau ván: quay về phòng chờ | TB-07 |
 | US-ROOM-12 | Màn hình từ chối truy cập | TB-02, TB-10 |
@@ -319,11 +351,10 @@ Một việc hoặc Story chỉ **Done** khi: (1) đạt toàn bộ AC ở [01];
 
 ## 13. Việc cần Product Owner cung cấp hoặc quyết
 
-1. **Chọn lựa chọn 1, 2 hoặc 3** ở mục 1 (dời hạn, cắt phạm vi, hay tăng nguồn lực).
-2. **Tên 7 người và vai trò R1–R7.**
-3. **Jira thật:** site Atlassian, tên/khoá dự án, đồng ý cho tạo Epic/Story/Task. ⛔ Không đoán số Key.
-4. **Lịch làm việc** (có làm cuối tuần không) và hệ số hiệu dụng.
-5. Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 (nếu có).
+1. **Review các tệp ở [`Jira/`](../Jira/README.md)** (Epic, Story, Task) rồi cho phép tạo lên Jira dự án **XIAN**. Chưa tạo gì cho đến khi bạn đồng ý.
+2. **Chốt thứ tự dừng phần** ở mục 1b và các mốc kiểm soát ở mục 1c.
+3. **Tên 7 người và vai trò R1–R7** (để gán người thực hiện).
+4. **Tiêu chí chấm** của buổi nộp ngoài kịch bản demo D1–D10 (nếu có).
 
 
 [01]: 01-yeu-cau-chi-tiet.md
