@@ -418,7 +418,7 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 ```
 
 **Quy tắc động thích ứng theo Chế độ chơi (Chốt, `BA-SCOPE`):**
-- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (mặc định tối đa 2 khán giả, có thể cấu hình trần 5 người theo `BR-ROOM-01`).
+- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–5, mặc định 5; xem BA-SCOPE `Quyết định 2.8`).
 - **Ván Đánh Xếp Hạng (Ranked Elo FIDE):** 
   - ⛔ **ẨN HOÀN TOÀN** nút `[Xin đi lại]` (Cấm Undo 100%).
   - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm khán giả 100% để chống phím cờ).

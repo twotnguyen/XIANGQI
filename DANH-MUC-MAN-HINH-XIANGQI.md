@@ -131,7 +131,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
      * Ô *"Vào phòng bằng mã"*: Nhập mã 8 ký tự (VD: `K7M2-XQP4`) $\rightarrow$ Tham gia tức thì.
      * *Danh sách phòng đang có (Lobby Room List):*
        * Chỉ hiển thị các phòng ở chế độ **`PUBLIC` (Công khai)**.
-       * Cột thông tin: Tên phòng, Chủ phòng, Mức giờ, Số người (`X/7`), Nút *"Vào xem"* (Khán giả).
+       * Cột thông tin: Tên phòng, Chủ phòng, Mức giờ, Số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 7), Nút *"Vào xem"* (luôn vào vai Khán giả).
   2. **ĐÁNH HẠNG (Ranked Mode) — So tài nghiêm ngặt:**
      * Thẻ tóm tắt Rank cá nhân: Huy hiệu Rank, Điểm Elo hiện tại (VD: `1420 Elo`), Thứ hạng hiện tại, Tỷ lệ thắng.
      * Nút lớn: **"Tìm trận Xếp hạng" (Find Ranked Match)** $\rightarrow$ Mở `MODAL-MATCHMAKING`. (Khách bấm vào bị chặn nhắc đăng ký). **`[RV-03/10]`** Người chưa có ván Ranked nào thấy nhãn *"Chưa xếp hạng"*.
@@ -147,7 +147,8 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Bố cục (Layout):** Ở giữa là 2 Ghế đấu lớn; Phía dưới là Cụm nút Sẵn sàng/Đổi bên/Chia sẻ; Phía phải là Khung chat phòng chờ.
 * **Thành phần & Vận hành:**
   * Host mặc định ngồi **ghế ĐỎ**; khi chỉ có một mình, Host bấm nút *"Đổi ghế"* để chuyển sang ghế Đen hoặc đổi qua lại tự do.
-  * Người thứ 2 vào phòng tự động xếp vào ghế còn trống.
+  * Người thứ 2 vào phòng tự động xếp vào ghế còn trống. Người ngồi ghế có nút *"Chuyển sang khán giả"*; Host có thêm *"Chuyển sang khán giả"* (cho người đang ngồi ghế) và *"Mời xuống ghế"* (cho khán giả khi còn ghế trống). Không đổi chỗ khi ván đang diễn ra (BA-SCOPE `Quyết định 2.8`, đã duyệt 03/10).
+  * Khi một người rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (BA-SCOPE `Quyết định 2.3` mục 8).
   * Nút *"Xin đổi bên"*: Gửi `MODAL-SIDE-SWAP-PROMPT` cho đối thủ (hạn 30s). Đồng ý $\rightarrow$ Hoán đổi ghế và **trạng thái Sẵn sàng của cả 2 bên tự động reset về Chưa sẵn sàng (`ready = false`)**.
   * Nút *"Sẵn sàng"* (Ready): Từng bên bấm sẵn sàng. Khi **cả hai cùng sẵn sàng**: Màn hình kích hoạt đếm ngược **3... 2... 1...** kèm âm thanh cờ gỗ rồi tự động chuyển sang `/rooms/:id` (`status = PLAYING`).
   * Nút *"Chia sẻ phòng"*: Mở `MODAL-INVITE`.
@@ -205,11 +206,12 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 ### 12. `SCR-HISTORY` — Trang Lịch Sử Ván Đấu Cá Nhân
 * **URL:** `/history` | **Quyền:** Người dùng đã đăng nhập.
-* **Thành phần:** Bộ lọc danh mục (*Tất cả / Đánh Hạng / Đánh Thường / Đấu với Máy*). Danh sách ván cờ hiển thị: Thẻ loại ván, Tên/Avatar đối thủ, Phe cờ, Kết quả (kèm lý do kết thúc), Biến động Elo (nếu có), Nút 👁️ *"Xem lại ván cờ"* $\rightarrow$ Chuyển sang `/history/:id`.
+* **Thành phần:** Bộ lọc danh mục (*Tất cả / Đánh Hạng / Đánh Thường / Đấu với Máy*). Danh sách ván cờ hiển thị: Thẻ loại ván, Tên/Avatar đối thủ, Phe cờ, Kết quả (kèm lý do kết thúc), Biến động Elo (nếu có), Nhãn riêng *"Bị gián đoạn"* / *"Bỏ dở"* (không tính thắng/thua/hòa, không đổi Elo; BA-SCOPE `Quyết định 7.3`), Nút 👁️ *"Xem lại ván cờ"* $\rightarrow$ Chuyển sang `/history/:id`.
 
 ---
 
 ### 13. `SCR-REPLAY` — Trang Xem Lại Ván Cờ Từng Nước Đi
+* **Quyền:** Chỉ 2 đấu thủ của ván xem được, từ Lịch sử; người xem không; không có link chia sẻ; ván Ranked cũng riêng tư. Hiển thị chuỗi nước đi hiệu lực (không hiện nước đã đi lại).
 * **URL:** `/history/:id` hoặc `/rooms/:id/replay/:matchId`.
 * **Bố cục (Layout):** Nửa trái là Bàn cờ SVG; Nửa phải là Bảng biên bản danh sách toàn bộ nước đi chuẩn cờ tướng (VD: `1. Pháo 2 bình 5 - Mã 8 tiến 7`).
 * **Công cụ Replay:** Các nút tua `|<<`, `<`, `>`, `>>|`, nút `▶️ Tự động phát` (1.5s/nước), click trực tiếp vào dòng nước cờ để nhảy thế cờ. *(Stretch P2: Nút Sao chép FEN & Tải file PGN)*.
@@ -219,7 +221,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ### 14. `SCR-ACCESS-DENIED` — Trang Báo Lỗi Từ Chối Truy Cập
 * **URL:** `/access-denied` (hoặc hiển thị toàn màn hình khi có sự cố truy cập).
 * **Các kịch bản hiển thị:**
-  * ⚠️ *"Phòng thi đấu đã đủ tối đa 7 người (2 người chơi + 5 khán giả)!"*
+  * ⚠️ *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"* (sức chứa = 2 người chơi + số người xem tối đa của phòng)
   * ⚠️ *"Ván thi đấu Xếp hạng không cho phép khán giả vào xem!"*
   * ⚠️ *"Bạn đã bị đuổi và chặn tham gia phòng cờ này!"*
   * Nút hành động duy nhất: *"Quay về Sảnh chính"* (`/lobby`).
@@ -243,9 +245,9 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ## 4. CHI TIẾT 15 CỬA SỔ MODAL TƯƠNG TÁC (INTERACTIVE MODALS)
 
 1. **`MODAL-GUEST-NAME` (Nhập Tên Khách Tạm Thời):** Mở từ nút Guest tại `SCR-LOGIN`. Nhập Display Name tạm (2–20 ký tự, có dấu tiếng Việt, qua bộ lọc từ cấm, không cần duy nhất). Nhắc nhở cấm đánh Ranked và không lưu lịch sử. Nút *"Vào chơi"* và *"Hủy"*.
-2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Nhập tên phòng (1–60 ký tự, qua bộ lọc từ cấm), chọn thời gian (Không giới hạn, 5p, 10p, 15p - không cộng giây; không đổi được sau khi tạo), chọn chế độ (`PUBLIC`, `CODE_ONLY`, `LOCKED`; ý nghĩa ở BA-SCOPE `Quyết định 2.7`).
-3. **`MODAL-INVITE` (Chia Sẻ Phòng Đa Kênh):** Mở từ phòng chờ/thi đấu. Gồm: Khối hiển thị Mã QR (nút tải/sao chép ảnh), Khối Link URL (Auto-Redirect sau login/guest), Khối Mã 8 số monospace, Tab mời bạn bè Online.
-4. **`MODAL-ROOM-SETTINGS` (Cài Đặt Phòng Động):** Chủ phòng đổi giữa `PUBLIC`, `CODE_ONLY`, `LOCKED`. Đổi sang `LOCKED`: Ẩn sảnh, chặn người mới, **giữ nguyên khán giả đang có trong phòng**.
+2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Nhập tên phòng (1–60 ký tự, qua bộ lọc từ cấm), chọn thời gian (Không giới hạn, 5p, 10p, 15p - không cộng giây; không đổi được sau khi tạo), chọn chế độ (`PUBLIC` hoặc `CODE_ONLY`; `LOCKED` không chọn được lúc tạo; ý nghĩa ở BA-SCOPE `Quyết định 2.7`), chọn **Người xem**: *Không có người xem* hoặc tối đa 1–5 (**mặc định 5**, không đổi sau khi tạo).
+3. **`MODAL-INVITE` (Chia Sẻ Phòng Đa Kênh):** Mở từ phòng chờ/thi đấu. Một lần bấm tạo đủ 3 hình thức (cùng một quyền vào phòng, không phân biệt xem/chơi); chỉ 2 đấu thủ thấy nút này. Gồm: Khối hiển thị Mã QR (nút tải/sao chép ảnh), Khối Link URL (Auto-Redirect sau login/guest), Khối Mã 8 số monospace, Tab mời bạn bè Online.
+4. **`MODAL-ROOM-SETTINGS` (Cài Đặt Phòng Động):** Chủ phòng đổi giữa `PUBLIC`, `CODE_ONLY`, `LOCKED`; **`LOCKED` chỉ bật được khi đã đủ 2 đấu thủ** (trước đó nút `DISABLED` kèm tooltip), người đang có ghế/đang xem mất mạng vẫn vào lại được (đấu thủ 60 giây, người xem 5 phút). Đổi sang `LOCKED`: Ẩn sảnh, chặn người mới, **giữ nguyên khán giả đang có trong phòng**.
 5. **`MODAL-MATCHMAKING` (Hàng Đợi Tìm Trận Ranked):** Radar quét đối thủ theo Elo ($\Delta Elo \le 100$, $\pm 50$ mỗi 10s), đồng hồ đếm giây. Nút *"Hủy tìm trận"* (hủy tự do khi chưa thấy đối thủ; khóa nút khi `MATCH_FOUND`).
 6. **`MODAL-AI-SETUP` (Chọn Cấp Độ & Phe Cờ AI):** Mở từ Sảnh. Chọn cấp độ Dễ/Trung bình/Khó. Chọn phe cờ: 🔴 Đỏ (đi trước), ⚫ Đen (đi sau - máy tự đi nước đầu), 🎲 Ngẫu nhiên (50/50).
 7. **`MODAL-OTP-USERNAME` (Xác Thực OTP Đổi Username):** Mở từ Cài đặt hồ sơ. Quy trình 4 bước: 1) Bấm đổi $\rightarrow$ 2) Nhập 6 số OTP (hạn 3p, sai 5 lần hủy) $\rightarrow$ 3) Xác thực mở khóa $\rightarrow$ 4) Nhập username mới và xác nhận.
@@ -263,9 +265,9 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ## 5. CHI TIẾT 4 KHUNG NHÚNG CHỨC NĂNG (EMBEDDED PANELS)
 
 1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân, Icon Chuông báo lời mời kết bạn, huy hiệu tin nhắn chưa đọc, Avatar + Tên hiển thị (`Display Name`) kèm menu con Cài đặt hồ sơ.
-2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. 2 tab: `[Kênh Riêng]` (chỉ 2 đấu thủ, mặc định mở cho đấu thủ) và `[Kênh Chung]` (cả đấu thủ và khán giả, khán giả chỉ thấy tab này). Công tắc ẩn Kênh Chung. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm.
+2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (người đổi chỗ sau không đọc tin cũ), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. 2 tab: `[Kênh Riêng]` (chỉ 2 đấu thủ, mặc định mở cho đấu thủ) và `[Kênh Chung]` (cả đấu thủ và khán giả, khán giả chỉ thấy tab này). Công tắc ẩn Kênh Chung. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm.
 3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM`. 2 video trực tiếp SFU của 2 đấu thủ. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; Ranked chỉ có 2 mức đầu). **`[RV-03/10]`** Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Khán giả tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 kỳ thủ giao lưu.
-4. **`PANEL-SPECTATORS` (Danh Sách Khán Giả Trong Phòng Thường):** Nằm ở cột phải `SCR-GAME-ROOM` (phòng Ranked cấm xem 100% nên không có). Tiêu đề: *"Khán giả (X / 5)"*. Cả Chủ phòng và Đấu thủ 2 đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
+4. **`PANEL-SPECTATORS` (Danh Sách Khán Giả Trong Phòng Thường):** Nằm ở cột phải `SCR-GAME-ROOM` (phòng Ranked cấm xem 100% nên không có). Tiêu đề: *"Khán giả (X / N)"* (N = số người xem tối đa của phòng, 1–5). Cả Chủ phòng và Đấu thủ 2 đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
 
 ---
 
@@ -314,7 +316,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 | 31 | `PANEL-NAVBAR` | Thanh điều hướng Header toàn cục + Icon thông báo | Embedded Panel| Cố định đầu mọi trang |
 | 32 | `PANEL-CHAT` | Khung chat 2 kênh, bộ lọc từ cấm `***`, 12 sticker | Embedded Panel| Cột phải `SCR-GAME-ROOM` |
 | 33 | `PANEL-MEDIA` | Face cam & Mic LiveKit SFU 2 đấu thủ (3 mức chia sẻ) | Embedded Panel| Cột trái `SCR-GAME-ROOM` |
-| 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa 5) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` |
+| 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa N, 1–5) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` |
 | 35 | `ALERT-INACTIVITY-BANNER`| Cảnh báo chống treo ván R17 đếm 30s không modal | System Alert | Banner nổi trên bàn cờ |
 | 36 | `OVERLAY-RECONNECTING` | Lớp phủ mất kết nối Socket.IO ân hạn 60s | System Overlay| Phủ mờ toàn màn hình |
 | 37 | `MODAL-MEDIA-TAB-SWITCH`| Cảnh báo độc quyền thiết bị Mic/Cam đa tab | System Dialog | Nổi khi tranh chấp thiết bị |
