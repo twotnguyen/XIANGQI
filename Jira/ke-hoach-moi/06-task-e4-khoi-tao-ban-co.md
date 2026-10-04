@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-05 — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã có gói TypeScript và công cụ kiểm thử chạy được.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Tạo "bộ nhớ" của ván cờ: các loại quân, hai phe, toạ độ ô, và **thế cờ ban đầu** đúng như bàn cờ thật. Đây là nền cho mọi phần khác (sinh nước đi, bàn cờ trên màn hình, máy cờ). Gói này **thuần mã**, không phụ thuộc giao diện hay máy chủ.
@@ -67,7 +67,7 @@ Chuẩn bị: bảng vị trí quân ban đầu (viết bằng chuỗi chuẩn c
 ### T-09 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được bộ sinh nước thô cho bảy loại quân, đúng chặn đường và ô đích.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-01`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-01`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Lọc nước thô thành **nước hợp lệ**, nhận biết **chiếu**, **chiếu hết**, **hết nước đi**. Máy chủ và máy cờ dùng chung kết quả này, không mỗi nơi tự làm một kiểu.
@@ -123,7 +123,7 @@ Thêm các luật kết thúc ván khác ngoài chiếu hết: **lặp thế**, 
 ### T-11 — Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được thế khởi đầu, toạ độ và quân. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được, nối được gói dùng chung; nhận được màu và kiểu theme "Kỳ Đài Cổ Phong" và các khối giao diện có đủ 5 trạng thái.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Vẽ **bàn cờ 9 cột × 10 hàng bằng SVG** cùng các quân chữ Hán, **đúng cho cả người cầm Đỏ và Đen**. Thành phần này chỉ **nhận thế cờ để hiển thị**, không tự quyết nước đi hay kết quả.
@@ -167,7 +167,7 @@ Vẽ **bàn cờ 9 cột × 10 hàng bằng SVG** cùng các quân chữ Hán, *
 ### T-18 — Giao diện: bấm chọn quân và chấm gợi ý ô đi
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ. *Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen (T-11)*: nhận được bàn vẽ được, ánh xạ giữa toạ độ gốc và hướng nhìn.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01`, `US-BOARD-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01`, `US-BOARD-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Người có quyền đi **bấm hoặc chạm vào quân của mình** thì thấy **các ô có thể đi**, bấm ô đích để đi. Thành phần chỉ **gửi ý định** đi nước; **không coi là xong** cho tới khi máy chủ xác nhận.
@@ -210,7 +210,7 @@ Người có quyền đi **bấm hoặc chạm vào quân của mình** thì th�
 ### T-22 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện: bấm chọn quân và chấm gợi ý ô đi (T-18)*: nhận được bàn cờ có trạng thái chọn và nhận được dữ liệu thế cờ và lượt.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Thêm cách đi bằng **kéo thả** song song với bấm. Kéo thả cho **cùng kết quả** như bấm; thả sai thì quân **trượt về chỗ cũ**, không đổi thế cờ.
@@ -270,7 +270,7 @@ Cho người chơi **thấy** nước vừa đi, **biết** khi bị chiếu và
 ### T-46 — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine, QA & DevOps · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống chạy kiểm thử và báo đỏ khi sai. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ cho thế cờ chuẩn; nhận được bộ luật P1 đầy đủ. *Bảng nước đi: ký hiệu tiếng Việt và hiển thị (T-42)*: nhận được hàm ký hiệu.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Phát hiện sớm nếu bộ luật cờ **đếm sai số nước đi**. Cách làm: đếm số nước đi có thể xảy ra từ thế khởi đầu ở các độ sâu 1, 2, 3, 4 (gọi là "perft"), rồi so với kết quả của **một công cụ độc lập**, không phải chính mã của chúng ta. Nếu tự lấy kết quả từ mã đang kiểm thì lỗi sẽ tự "xác nhận" chính nó.

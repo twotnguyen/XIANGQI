@@ -10,7 +10,7 @@
 
 # EPIC 1 — Đăng ký và đăng nhập (kèm nền tảng dự án)
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -99,7 +99,7 @@ Hạn mức thư OTP (khoảng 2 thư/giờ); giới hạn nhập sai chỉ gầ
 
 # EPIC 2 — Tạo phòng chơi
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -176,7 +176,7 @@ Hai người tranh ghế cuối; trạng thái một chỗ chơi phải nhất q
 
 # EPIC 3 — Mời bạn vào phòng chơi
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -252,7 +252,7 @@ Lời mời không được giữ chỗ; trạng thái Đang đấu cần sổ c
 
 # EPIC 4 — Khởi tạo bàn cờ
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -327,7 +327,7 @@ Phông chữ Hán; độ đúng luật phải được kiểm bằng nguồn đ�
 
 # EPIC 5 — Hai người đánh cờ qua mạng
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -406,7 +406,7 @@ Chuỗi phụ thuộc dài nhất của dự án; yêu cầu dưới 100 ms ch�
 
 # EPIC 6 — Phòng công khai, khoá phòng và người xem
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -481,7 +481,7 @@ Người bị đuổi phải mất quyền thật; khoá phòng không được 
 
 # EPIC 7 — Chat, camera và micro
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -558,7 +558,7 @@ Có thể vượt hạn mức miễn phí của dịch vụ camera/micro; quyề
 
 # EPIC 8 — Đánh với máy theo cấp độ
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống
+**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 

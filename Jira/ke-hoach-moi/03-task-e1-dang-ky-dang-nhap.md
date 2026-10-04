@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** không có (đây là việc đầu tiên).
-**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Tạo "bộ khung" để cả nhóm cùng cài đặt, chạy và kiểm tra phần mềm theo một cách giống nhau. Mọi task sau đều dùng kho mã này. Task này **chưa làm tính năng cờ tướng nào**.
@@ -76,7 +76,7 @@ Chuẩn bị: một nhánh thử.
 ### T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã để tạo gói dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `contract` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `contract` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Soạn một **bản mô tả thống nhất** cho phần giao diện (trình duyệt) và phần máy chủ: mỗi bên gửi những thông tin gì, nhận lại gì, báo lỗi thế nào. Cả hai nhóm làm theo bản này nên **không phải đoán** và có thể làm song song. Đây là điều kiện để giao diện và máy chủ cùng bắt đầu từ một nơi chung.
@@ -134,7 +134,7 @@ Chuẩn bị: một chương trình mẫu dùng hợp đồng ở cả hai phía
 ### T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được quy ước đặt thông tin cấu hình mà không lộ bí mật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Cấu hình dịch vụ đăng nhập **Supabase** để gửi **mã OTP 6 chữ số** qua email khi người dùng đăng ký, theo đúng quy định của dự án. Kết quả giúp task thử nghiệm OTP và phần đăng ký ở máy chủ dùng được. **Chưa** tạo tài khoản demo (làm ở task chuẩn bị demo).
@@ -186,7 +186,7 @@ Chuẩn bị: dự án Supabase thử, hộp thư của thành viên nhóm.
 ### T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và nơi đặt các tệp tạo bảng dữ liệu.
-**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Tạo **cơ sở dữ liệu** (nơi lưu thông tin lâu dài trên Supabase) gồm các bảng cần cho giai đoạn đầu và **quy tắc ai được đọc, ai được ghi**. Các phần sau lưu và đọc dữ liệu qua đây. Task này chỉ tạo bảng và quy tắc, **không** viết xử lý nghiệp vụ.
@@ -242,7 +242,7 @@ Chuẩn bị: cơ sở dữ liệu thử sạch, hai tài khoản thử.
 ### T-07 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã build được. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách lệnh, thông tin đi kèm và nhóm lỗi. *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình đăng nhập và cách kiểm tra phiên, bí mật chỉ nằm ở máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và chuyển từng lệnh đến đúng nơi xử lý theo hợp đồng chung. Đây là "khung" cho tất cả phần máy chủ về sau; task này chưa chứa luật phòng hay luật ván.
@@ -291,7 +291,7 @@ Chuẩn bị: thông tin đăng nhập thử.
 ### T-08 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và lệnh biên dịch. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói hợp đồng để dùng trong giao diện.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-UI-03`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-UI-03`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Tạo "bộ khung" trang web (React và Vite): có trang, có chuyển trang, nối được với hợp đồng chung. Các màn hình ở các task sau chỉ việc gắn vào. Task này **chưa làm màn hình nào thật** và chưa nối máy chủ.
@@ -349,7 +349,7 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 ### T-10 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói chung dùng được ở cả giao diện và máy chủ, có chỗ trả kết quả lọc. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng "biên lai lệnh" và ràng buộc theo người gửi và mã yêu cầu. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ có điểm kiểm tra khi nhận kết nối và khi chuyển lệnh, và biết ai đang gửi.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Tạo **một bộ lọc từ ngữ bị cấm duy nhất** dùng cho: tên phòng, tên hiển thị của người dùng, tin nhắn chat. Giao diện và máy chủ dùng chung để cho **cùng một kết quả**; máy chủ luôn kiểm lại, không tin kết quả giao diện.
@@ -444,7 +444,7 @@ Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc m
 ### T-12 — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình thư mã 6 số, hạn 180 giây, gửi lại 60 giây, hạn mức thư thử. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cờ đăng ký dở. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận yêu cầu và trả kết quả.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1 · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Khi người dùng gõ tên đăng nhập ở bước đầu của đăng ký, máy chủ trả lời ngay "tên này **dùng được**", "**đã có người dùng**" hoặc "**không hợp lệ**". Bước này **chỉ kiểm tra**, không tạo tài khoản và không giữ chỗ tên. Giao diện đăng ký (task sau) dùng kết quả này.
@@ -514,7 +514,7 @@ Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot"; 
 ### T-19 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (T-12)*: nhận được chức năng kiểm tên đúng quy tắc và không giữ chỗ; nhận được bản đăng ký dở, chức năng gửi mã và cơ chế khoá theo email dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2 · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài khoản: kiểm lại tên, đặt mật khẩu, ghi hồ sơ, đánh dấu hoàn tất và đăng nhập. Phải an toàn khi lỗi xảy ra giữa chừng: **không bao giờ để tài khoản dùng được khi chưa hoàn tất, và không xoá nhầm tài khoản đã hoàn tất**.
@@ -574,7 +574,7 @@ Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" qu
 ### T-20 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được dịch vụ đăng nhập thử đã cấu hình. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cách bảo vệ. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được kết quả đã hoàn thành của task này. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cơ chế khoá khi đăng nhập sai nhiều lần; nhận được hàm kiểm từ cấm dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2 · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Cho người dùng đăng nhập bằng **tên đăng nhập và mật khẩu**, cấp **phiên đăng nhập**, và kiểm tra phiên mỗi lần kết nối. Không bao giờ để lộ email khi đăng nhập.
@@ -647,7 +647,7 @@ Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 ### T-23 — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, QA & DevOps · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình OTP đã ghi, hộp thư nhóm và hạn mức thư thử. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được trạng thái hoàn tất và cờ đang chờ cùng quy trình hoàn tất.
-**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2 · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Trả lời một câu hỏi: **Supabase thật có đáp ứng được cách đăng ký bằng mã OTP mà dự án cần không?** Kết quả là một báo cáo có số đo thật. Task này **không** làm tính năng đăng ký, chỉ giúp nhóm biết có làm được và làm bằng cách nào.
@@ -722,7 +722,7 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 ### T-24 — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu và lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được ô nhập, nút, thông báo lỗi, trạng thái đang tải. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được quy tắc tên hiển thị để giao diện báo đúng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2 · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Màn hình đăng ký gồm **3 bước** dẫn người dùng đến tài khoản: (1) tên đăng nhập và mật khẩu, (2) email, (3) nhập mã OTP. Giao diện này làm trước với **dữ liệu giả**, chưa nối máy chủ thật (việc nối nằm ở task tích hợp T-27).
@@ -829,7 +829,7 @@ Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản
 ### T-27 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend, Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được chức năng thật ở máy chủ. *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được màn hình đã dựng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2 · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng ký tới đăng nhập, sửa hồ sơ, đăng xuất** trên môi trường thử, có email thật.
@@ -880,7 +880,7 @@ Chuẩn bị: máy chủ và giao diện chạy thử, email nhóm.
 ### T-35 — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được trạng thái "hoàn tất" và "đang chờ", các nhánh lỗi và cơ chế khoá theo email.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3 · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Có những người bắt đầu đăng ký rồi bỏ dở, hoặc quy trình bị dừng giữa chừng. Cần một **tác vụ chạy định kỳ** để phục hồi hoặc dọn các tài khoản dở này, **không để kẹt email** và **không bao giờ xoá nhầm tài khoản đã hoàn tất**.
@@ -931,7 +931,7 @@ Chuẩn bị: đồng hồ giả để rút ngắn thời gian; khả năng gây
 ### T-58 — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được kết quả đã hoàn thành của task này. *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-26)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-33)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-37)*: nhận được các màn hình của giai đoạn 1 đã dựng để kiểm quy tắc trên từng màn. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được ứng dụng chạy thật cho từng phần để kích hoạt từng trạng thái trên dữ liệu thật. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-54)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-55)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-03`, `US-AUTH-04`, `US-CHAT-02`, `US-FRIEND-03`, `US-ROOM-04`, `US-ROOM-08`, `US-UI-01`, `US-UI-02`, `US-UI-03`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-03`, `US-AUTH-04`, `US-CHAT-02`, `US-FRIEND-03`, `US-ROOM-04`, `US-ROOM-08`, `US-UI-01`, `US-UI-02`, `US-UI-03`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4 · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Bảo đảm người dùng **biết có những thứ "sắp ra mắt"**, nhưng **không bấm nhầm** vào chức năng chưa làm. Đồng thời **không ẩn nhầm** những chức năng của giai đoạn 1.
@@ -995,7 +995,7 @@ Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và g
 ### T-59 — Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-58)*: nhận được bản ứng dụng hợp nhất đủ trạng thái.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01`, `US-BOARD-03`, `US-BOARD-04`, `US-UI-04`, `US-UI-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01`, `US-BOARD-03`, `US-BOARD-04`, `US-UI-04`, `US-UI-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4 · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Bảo đảm **giai đoạn 1 dùng được từ màn hình 360 px và bằng cảm ứng**: bàn cờ, chat, camera/micro và các nút chính không bị che hay tràn ngang.

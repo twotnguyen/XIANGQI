@@ -8,7 +8,7 @@
 
 ### Story 1 — Đăng ký tài khoản qua ba bước hoặc bằng Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 3)
+**Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người mới, tôi muốn **đăng ký tài khoản qua ba bước** (tên đăng nhập và mật khẩu, email, mã OTP) để dùng được ứng dụng.
 
@@ -98,7 +98,7 @@
 
 ### Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu hoặc bằng Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `US-AUTH-04`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2)
+**Nhãn:** `P1`, `US-AUTH-04`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người đã có tài khoản, tôi muốn **đăng nhập** để vào chơi.
 
@@ -172,7 +172,7 @@ sai thông tin → thông báo chung; bị khoá → báo khoá tạm; phiên h�
 
 ### Story 3 — Hồ sơ cơ bản và đăng xuất
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3)
+**Nhãn:** `P1`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người dùng, tôi muốn **xem và đổi tên hiển thị** của mình và **đăng xuất** khi cần.
 
@@ -247,7 +247,7 @@ tên không hợp lệ hoặc có từ cấm → báo lý do; đăng xuất gi�
 
 ### Story 4 — Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend
-**Nhãn:** `P1`, `US-UI-03`, `US-UI-04`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 4)
+**Nhãn:** `P1`, `US-UI-03`, `US-UI-04`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người dùng, tôi muốn **mọi màn hình trông và hoạt động thống nhất**: luôn biết ứng dụng đang tải, trống, lỗi hay bị khoá; dùng được trên điện thoại và bằng bàn phím; và không bấm nhầm vào chức năng chưa làm.
 
@@ -352,7 +352,7 @@ một khung tải lỗi thì chỉ khung đó báo lỗi, không mất cả màn
 
 ### Story 5 — Tạo phòng
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `US-ROOM-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2)
+**Nhãn:** `P1`, `US-ROOM-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người chơi đã đăng nhập, tôi muốn **tạo một phòng cờ với thiết lập của mình** để mời bạn vào chơi.
 
@@ -421,7 +421,7 @@ tên sai → báo dưới ô tên, giữ thông tin đã điền; đang có ch�
 
 ### Story 6 — Thanh điều hướng và Sảnh
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend
-**Nhãn:** `P1`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2)
+**Nhãn:** `P1`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người dùng đã đăng nhập, tôi muốn **một thanh điều hướng và một trang chính (Sảnh)** để làm mọi việc: tạo phòng, vào phòng, chơi với máy, quay lại ván dở.
 
@@ -476,7 +476,7 @@ một chỗ trên Sảnh tải lỗi thì chỉ chỗ đó báo lỗi (có "Th�
 
 ### Story 7 — Phòng chờ, hai ghế ngồi, Sẵn sàng và bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3)
+**Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người chơi, tôi muốn **thấy phòng chờ với hai ghế, bấm Sẵn sàng và để ván tự bắt đầu** khi cả hai đã sẵn sàng.
 
@@ -552,7 +552,7 @@ hai người tranh ghế cuối thì chỉ một người được; ghi dữ li�
 
 ### Story 8 — Vào phòng bằng mã, đường dẫn hoặc từ Sảnh
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `US-ROOM-05`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2)
+**Nhãn:** `P1`, `US-ROOM-05`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người chơi, tôi muốn **vào một phòng** bằng mã, đường dẫn hoặc từ danh sách ở Sảnh, và nếu không vào được thì **biết rõ lý do**.
 
@@ -620,7 +620,7 @@ gửi lại yêu cầu vào khi mất phản hồi không xếp thêm chỗ; mà
 
 ### Story 9 — Chia sẻ phòng bằng đường dẫn và mã; người được mời đăng nhập xong vào đúng phòng
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
-**Nhãn:** `P1`, `US-ROOM-04`, `US-AUTH-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3)
+**Nhãn:** `P1`, `US-ROOM-04`, `US-AUTH-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người ngồi ghế, tôi muốn **gửi đường dẫn hoặc mã phòng** cho bạn; và là người được mời, tôi muốn **bấm đường dẫn rồi đăng nhập (hoặc đăng ký) là vào đúng phòng**, không phải bấm lại.
 
@@ -692,7 +692,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 
 ### Story 10 — Kết bạn: tìm người, gửi và trả lời lời mời, giới hạn
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
-**Nhãn:** `P1`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4)
+**Nhãn:** `P1`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người dùng, tôi muốn **tìm người, gửi và nhận lời mời kết bạn** để có danh sách bạn.
 
@@ -770,7 +770,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 
 ### Story 11 — Danh sách bạn và trạng thái
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
-**Nhãn:** `P1`, `US-FRIEND-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4)
+**Nhãn:** `P1`, `US-FRIEND-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người dùng, tôi muốn **xem bạn nào đang online, đang đấu hay ngoại tuyến**.
 
@@ -837,7 +837,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 
 ### Story 12 — Mời bạn đang online vào phòng
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
-**Nhãn:** `P1`, `US-FRIEND-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4)
+**Nhãn:** `P1`, `US-FRIEND-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người đang ngồi ghế, tôi muốn **mời một người bạn đang online** vào phòng của mình.
 
@@ -904,7 +904,7 @@ lời mời **không giữ chỗ**; máy chủ **kiểm lại mọi điều ki�
 
 ### Story 13 — Thấy bàn cờ và quân cờ
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine, Frontend
-**Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3)
+**Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người chơi, tôi muốn **thấy bàn cờ tướng đúng chuẩn** (khởi tạo đúng thế, đúng cho cả hai phe) để chơi và xem.
 
@@ -967,7 +967,7 @@ lời mời **không giữ chỗ**; máy chủ **kiểm lại mọi điều ki�
 
 ### Story 14 — Tương tác với quân cờ: chọn, kéo thả, đánh dấu nước đi, cảnh báo chiếu, âm thanh
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend, Game Engine
-**Nhãn:** `P1`, `US-BOARD-02`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2)
+**Nhãn:** `P1`, `US-BOARD-02`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
 
 **Câu chuyện:** Là người chơi, tôi muốn **chọn quân, kéo thả quân, thấy nước vừa đi, biết khi bị chiếu và nghe tiếng quân** như chơi cờ thật.
 

@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-31 — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ và nhận biết chiếu trên thế cờ chuẩn; nhận được luật hợp lệ và kết quả chiếu hết, lặp thế, 120 nửa nước.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Trả lời: **một máy cờ đơn giản chạy ở tiến trình riêng có đạt thời gian suy nghĩ quy định cho ba cấp (Dễ, Trung bình, Khó) không?** Số đo sớm giúp biết có làm được cấp Khó hay không. Đây là đo sơ bộ, **chưa** thay phép đo đầy đủ về sau.
@@ -74,7 +74,7 @@ Chuẩn bị: bộ thế mẫu và hạt giống cố định.
 ### T-37 — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kết quả đã hoàn thành của task này. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được khung Sảnh, chỗ đặt thẻ ván máy và băng "quay lại". *Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (T-22)*: nhận được bàn cờ có dấu nước vừa đi, âm thanh; nhận được kéo thả dùng chung nước hợp lệ với bấm.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Dựng hành trình **chọn cấp, chọn phe và chơi với máy** trên màn hình, và làm rõ cho người dùng khác biệt giữa "tiếp tục vì máy bận" với "bắt đầu ván mới sau sự cố". Làm với dữ liệu giả; nối thật ở T-55.
@@ -141,7 +141,7 @@ Chuẩn bị: dữ liệu giả cho các lỗi, kết quả, đường dẫn `/a
 ### T-43 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được sổ chỗ chơi (ghế phòng và ván với máy) có khoá theo người. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được cách xử lý nước đi lần lượt và luật dùng lại được. *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-31)*: nhận được tiến độ, kết quả và tiến trình riêng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Quản lý **một ván với máy** trong bộ nhớ máy chủ, theo quy tắc "mỗi người một chỗ chơi". Người chơi chọn phe và cấp, và **vào lại đúng ván** nếu mất kết nối.
@@ -209,7 +209,7 @@ Chuẩn bị: máy chủ và máy cờ chạy thử; có thể làm treo hoặc 
 ### T-55 — Nối web, máy chủ và máy cờ thật: ván với máy
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend, AI · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-37)*: nhận được màn hình đã dựng. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được chức năng bắt đầu, đi nước, đồng bộ và quản lý chỗ chơi; nhận được hàng đợi, giới hạn thời gian và hai kiểu Thử lại.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Nối màn hình ván với máy chủ và **máy cờ thật** để chứng minh trọn luồng: ba cấp, ba cách chọn phe, vào lại, rời, và phục hồi sau sự cố đều đúng luật. **Không dùng máy giả** làm bằng chứng thuật toán.
@@ -257,7 +257,7 @@ Chuẩn bị: máy chủ, máy cờ thật, trình duyệt, hai tài khoản th�
 ### T-56 — Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI, QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-31)*: nhận được máy cờ thật ba cấp và công cụ đo độ sâu, số nút, thời gian, hạt giống. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được hàng đợi, giới hạn thời gian, hai nhánh "bận" và "Bỏ dở" đã kiểm. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-46)*: nhận được báo cáo đối chiếu số nước đi với nguồn độc lập; nhận được bộ thế, ca biên, đếm nước chạy trong kiểm tra tự động.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Trả lời bằng **số đo thật**: máy cờ có đạt tiêu chuẩn chất lượng (gọi là **GATE-AI**) hay không. Nhóm tự đặt khung thời gian đo; báo "đạt", "không đạt" hoặc "chưa kết luận" kèm số liệu. **Không hạ ngưỡng và không sửa đáp án để cho đạt.**

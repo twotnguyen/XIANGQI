@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-14 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu tạo, vào, xem danh sách và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được nút, ô nhập, hộp thoại, thông báo; nhận được trang chạy được và cách chuyển trang.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-03`, `US-ROOM-01`, `US-ROOM-05`, `US-ROOM-08`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-03`, `US-ROOM-01`, `US-ROOM-05`, `US-ROOM-08`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Dựng **thanh điều hướng** và **khung Sảnh** thống nhất để các phần khác (phòng, ván với máy, bạn bè) gắn nội dung vào đúng chỗ. Người dùng thấy mọi chức năng của giai đoạn 1 và biết đường quay lại chỗ chơi đang giữ.
@@ -107,7 +107,7 @@ Chuẩn bị: dữ liệu giả cho trạng thái chỗ chơi; chạy giao diệ
 ### T-15 — Giao diện: phòng chờ và màn từ chối vào phòng
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được thông tin ghế, Sẵn sàng, đếm giờ và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được và cách chuyển trang; nhận được nút, hộp thoại, thông báo, chú thích khi mờ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-04`, `US-ROOM-05`, `US-ROOM-09`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-04`, `US-ROOM-05`, `US-ROOM-09`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Dựng **phòng chờ** (hai ghế, nút Sẵn sàng, đếm 3 giây, chia sẻ mã và đường dẫn) và **màn từ chối vào phòng** (nêu lý do và đưa về Sảnh). Mọi thứ hiển thị đúng theo thông tin máy chủ, kể cả khi thông tin đổi lúc đang mở.
@@ -180,7 +180,7 @@ Chuẩn bị: dữ liệu giả cho ghế, đếm giờ, thu hồi, quyền.
 ### T-17 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng phòng, người tham gia, ván và ràng buộc "một ghế mỗi người". *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận lệnh có xác thực người gửi. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách trả lại kết quả cũ khi gửi lại cùng một yêu cầu; nhận được hàm kiểm tên phòng; nhận được cơ chế giới hạn tạo phòng 5 lần trong 10 phút.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-01`, `US-ROOM-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-01`, `US-ROOM-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Làm "bộ não" của phòng: phòng đang ở trạng thái nào, ai ngồi ghế nào, và đảm bảo **mỗi người chỉ có một chỗ chơi** dù nhiều yêu cầu đến cùng lúc. Các task sau (tạo phòng, vào phòng, ghế…) đều dựa vào đây.
@@ -258,7 +258,7 @@ Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng l
 ### T-21 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách nhận ra yêu cầu gửi lại; nhận được cơ chế chặn nhập sai mã. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được phòng, mã, đường dẫn và sức chứa.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-05`, `US-ROOM-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-05`, `US-ROOM-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì ngồi ghế, hết ghế thì làm người xem, hết cả hai thì từ chối**. Mọi quyết định làm tại thời điểm nhận yêu cầu; đường dẫn không phải "vé giữ chỗ".
@@ -308,7 +308,7 @@ Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì
 ### T-25 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được hàm tạo thế cờ ban đầu, Đỏ đi trước. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được người đã vào đúng ghế, thông tin phòng chính thức từ máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Chủ phòng chọn ghế Đỏ/Đen, hai người bấm **Sẵn sàng**, đếm ngược **3 giây**, rồi **bắt đầu ván**: tạo đúng một ván với thế cờ ban đầu. Nếu trong lúc đếm có ai bỏ "Sẵn sàng" hay rời đi thì **không tạo ván**.
@@ -353,7 +353,7 @@ Chuẩn bị: đồng hồ giả để rút ngắn 3 giây.
 ### T-29 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được màn tạo/vào đã dựng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được màn phòng chờ đã dựng. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được chức năng ghế, Sẵn sàng và một ván có mã.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-ROOM-01`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-ROOM-01`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Nối giao diện với máy chủ thật để chứng minh **hai người, trên hai trình duyệt, vào cùng một phòng và bắt đầu ván**. Đây là điểm kiểm tra đầu tiên rằng web và máy chủ khớp nhau.

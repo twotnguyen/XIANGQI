@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-06 — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được môi trường chạy mã và cách đặt cấu hình thử không lộ bí mật.
-**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `SPIKE`, `gate`, `US-MEDIA-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `SPIKE`, `gate`, `US-MEDIA-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Trả lời: **LiveKit Cloud (dịch vụ chạy camera/micro) có cho phép quy định "ai được phát, ai được nhận" theo từng người, và chặn được người đã bị đuổi hay đổi vai không?** Báo cáo mở đường cho Epic Chat, camera và microro; chưa làm tính năng thật.
@@ -55,7 +55,7 @@ Trả lời: **LiveKit Cloud (dịch vụ chạy camera/micro) có cho phép quy
 ### T-41 — Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng tin chat và bảng người tham gia (kèm thời điểm ngồi ghế). *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được hàm che từ cấm dùng chung, danh sách từ cấm và bộ ví dụ đối chiếu; nhận được cách nhận ra tin gửi lại. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được tư cách tham gia phòng và thời điểm vào. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được việc đổi ghế/vai đã ghi lại và thời điểm ngồi ghế được cập nhật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng người có quyền đọc ở thời điểm đó**. Tin hợp lệ được lọc, lưu và gửi đúng kênh.
@@ -102,7 +102,7 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 ### T-49 — Giao diện chat hai kênh và nối web với máy chủ
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kiểu tin chat, phản hồi, lỗi, vai trò. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được nút, hộp thoại, chú thích, thông báo, 5 trạng thái. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được hàm che từ cấm dùng chung. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi ghế, riêng tư, đuổi, chủ phòng rời, đóng phòng chạy thật. *Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (T-41)*: nhận được chat lưu, lọc, giới hạn, gửi theo quyền. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-44)*: nhận được tư cách và trạng thái người xem thật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-CHAT-01`, `US-CHAT-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-CHAT-01`, `US-CHAT-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Dựng khung chat để người dùng **phân biệt rõ hai kênh**, biết tin nào đang gửi, tin nào lỗi, và biết quyền đọc của mình. Dùng dữ liệu giả; nối thật ở bước nối với máy chủ ngay sau đây.
@@ -181,7 +181,7 @@ Chuẩn bị: dữ liệu giả có quyền và thời điểm; nhiều trình d
 ### T-51 — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-06)*: nhận được cách xem luồng theo từng người đã thử trên dịch vụ thật. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được nút, công tắc, chú thích, thông báo.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Dựng **bảng điều khiển camera/micro** cho người chơi: bật/tắt độc lập, chọn mức chia sẻ, thông báo khi chưa có quyền thiết bị hoặc gặp lỗi, **mà không cản việc chơi cờ**.
@@ -240,7 +240,7 @@ Chuẩn bị: máy có camera và micro thật; thử cả khi từ chối quy�
 ### T-53 — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Game Server · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-06)*: nhận được **báo cáo có kết luận đạt** về việc cấp quyền theo người, thu hồi khi dùng token cũ; **chỉ có báo cáo chưa đủ**, phải có kết luận đạt. Nếu không đạt hoặc chưa kết luận thì phần phụ thuộc bị chặn và báo PO. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được kiểm tra phiên và hạn, thu hồi. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được đổi vai đã ghi; nhận được thông báo đuổi, rời, đóng phòng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Từ **vai trò thật trong phòng**, máy chủ cấp và thay đổi quyền camera/micro ở dịch vụ LiveKit: ai được phát, ai được nghe ai. Người dùng hợp lệ giữ quyền mới; **kết nối hay mã truy cập cũ không dùng lại được để lấy quyền đã mất**.
@@ -302,7 +302,7 @@ Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử); hai kết nối t
 ### T-57 — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit)
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được chat và đi nước đang chạy thật để kiểm khi camera/micro hỏng. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được thông báo thay đổi phòng. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi (T-51)*: nhận được bảng điều khiển và việc dọn thiết bị. *Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) (T-53)*: nhận được cấp quyền và thu hồi đã kiểm trên dịch vụ thật; nhận được một kết nối điều khiển và việc chặn lệnh cũ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Nối giao diện, máy chủ và LiveKit Cloud thành **camera/micro chạy thật** và chứng minh: mỗi khi đổi vai, đuổi, đóng phòng hay mở tab mới thì **đúng người nhận luồng**, không rò, và **lỗi camera/micro không làm hỏng việc chơi cờ và chat**.

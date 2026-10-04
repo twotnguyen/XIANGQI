@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-32 — Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được yêu cầu đổi vai, khoá, đuổi cùng lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được hộp thoại, nút, thông báo, quản lý focus. *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được màn phòng chờ, ghế và chỗ gắn thêm nút điều khiển.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-09`, `US-ROOM-01`, `US-ROOM-06`, `US-ROOM-07`, `US-ROOM-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-09`, `US-ROOM-01`, `US-ROOM-06`, `US-ROOM-07`, `US-ROOM-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Thêm vào phòng chờ các điều khiển nâng cao: **cài đặt phòng (khoá)**, **đổi chỗ giữa ghế và người xem**, **danh sách người xem**, **xác nhận đuổi**. Giao diện chỉ phản ánh quyền hiện tại do máy chủ báo, phát ý định để task tích hợp (T-40) nối thật.
@@ -74,7 +74,7 @@ Chuẩn bị: dữ liệu giả có quyền đổi khi hộp đang mở.
 ### T-36 — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được cách xếp người vào phòng, mã và đường dẫn hiện hành.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-04`, `US-ROOM-07`, `US-ROOM-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-04`, `US-ROOM-07`, `US-ROOM-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Thực hiện việc **khoá phòng** và hiển thị **danh sách phòng công khai**. Khoá chỉ chặn **người mới**, **không đuổi** người đang có mặt hợp lệ.
@@ -121,7 +121,7 @@ Chuẩn bị: dữ liệu mẫu nhiều phòng, đồng hồ giả.
 ### T-38 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được ghế, Sẵn sàng và việc huỷ đếm khi đổi người. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kiểu phòng, mã, đường dẫn và quy tắc giữ chỗ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-05`, `US-ROOM-06`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-05`, `US-ROOM-06`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Cho người chơi và người xem **đổi chỗ** theo luật và theo sức chứa. Mỗi lần đổi **xoá trạng thái "Sẵn sàng"** và báo cho các phần khác biết người đó đổi quyền (để chat và camera/mic đổi theo).
@@ -182,7 +182,7 @@ Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời 
 ### T-40 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được luồng tạo, vào, ghế đã chạy thật. *Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi (T-32)*: nhận được các nút và hộp xác nhận đã dựng. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được các chức năng thật ở máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-ROOM-05`, `US-ROOM-06`, `US-ROOM-07`, `US-ROOM-08`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-ROOM-05`, `US-ROOM-06`, `US-ROOM-07`, `US-ROOM-08`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Nối các điều khiển nâng cao với máy chủ thật và kiểm đúng cho **người chơi, người xem và người vừa mất quyền**: đổi chỗ, khoá, đuổi, chủ phòng rời. Quan trọng nhất: người bị đuổi **mất quyền thật** ở máy chủ, không chỉ bị ẩn nút.
@@ -232,7 +232,7 @@ Chuẩn bị: nhiều trình duyệt (chủ phòng, đối thủ, hai người x
 ### T-44 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được tư cách người xem đã kiểm sức chứa. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được trạng thái ván đã lưu và luồng phát. *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được giờ còn lại và mốc lượt do máy chủ tính.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-03`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-03`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
 
 **Mục tiêu**
 Cho **người xem hợp lệ** nhận luồng trạng thái ván **chỉ đọc** (bàn cờ, giờ, nước đi, kết quả, số người xem X/N). Dữ liệu được **lọc ở máy chủ trước khi gửi**, không gửi hết rồi ẩn ở giao diện.

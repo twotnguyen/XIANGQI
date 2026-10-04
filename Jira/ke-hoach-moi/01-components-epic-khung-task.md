@@ -69,12 +69,14 @@ Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên modul
 
 ## 3. Nhịp Sprint
 
-| Sprint | Ngày | Số ngày | Số task | Mục tiêu đề xuất |
-|---|---|---|---:|---|
-| 1 | 04/10–07/10 | 4 ngày | 13 | Nền tảng, hợp đồng chung, luật cờ cốt lõi, đăng nhập phía máy chủ chạy được. |
-| 2 | 08/10–10/10 | 3 ngày | 17 | Đăng ký/đăng nhập chạy thật; hai người vào cùng phòng, bắt đầu ván và đi nước đồng bộ trên hai trình duyệt. |
-| 3 | 11/10–14/10 | 4 ngày | 20 | Ván online hoàn chỉnh (đồng hồ, kết thúc, kết nối), phòng công khai/khoá, chat, bạn bè, ván với máy. |
-| 4 | 15/10–17/10 | 3 ngày | 12 | Camera/micro, mời bạn, hội tụ giao diện, kiểm thử chấp nhận và gói demo. |
+| Sprint | Fix version | Ngày | Số ngày | Số task | Mục tiêu đề xuất |
+|---|---|---|---|---:|---|
+| 1 | `v0.1-sprint-1` | 04/10–07/10 | 4 ngày | 13 | Nền tảng, hợp đồng chung, luật cờ cốt lõi, đăng nhập phía máy chủ chạy được. |
+| 2 | `v0.2-sprint-2` | 08/10–10/10 | 3 ngày | 17 | Đăng ký/đăng nhập chạy thật; hai người vào cùng phòng, bắt đầu ván và đi nước đồng bộ trên hai trình duyệt. |
+| 3 | `v0.3-sprint-3` | 11/10–14/10 | 4 ngày | 20 | Ván online hoàn chỉnh (đồng hồ, kết thúc, kết nối), phòng công khai/khoá, chat, bạn bè, ván với máy. |
+| 4 | `v1.0-sprint-4` | 15/10–17/10 | 3 ngày | 12 | Camera/micro, mời bạn, hội tụ giao diện, kiểm thử chấp nhận và gói demo. |
+
+**Phiên bản (Fix version):** 4 phiên bản, mỗi Sprint một phiên bản. Task gán theo Sprint của nó; Story và Epic gán theo Sprint của Task cuối (nơi việc hoàn thành). Phiên bản `v1.0-sprint-4` là bản nộp bài.
 
 **Nộp ngày 18/10/2026.** Chưa kiểm khả năng chứa vì chưa có ước lượng giờ.
 

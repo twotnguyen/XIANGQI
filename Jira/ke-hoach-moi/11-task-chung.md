@@ -11,7 +11,7 @@ Các task này phục vụ cả dự án nên không thuộc Epic nào; trên Ji
 ### T-13 — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright)
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra chạy mỗi khi có thay đổi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang web chạy được, có cách chuyển trang.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 
 **Mục tiêu**
 Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều trình duyệt, mỗi "người dùng" tách biệt nhau (như trên hai máy khác nhau), để các task sau có chỗ chạy kịch bản nhiều người và thu bằng chứng (video, vết thao tác).
@@ -55,7 +55,7 @@ Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều tr
 ### T-16 — Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra hoạt động. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ chạy và nhận kết nối. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được web biên dịch được, có chỗ cấu hình địa chỉ máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task triển khai · **Nhãn:** `P1`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
 
 **Mục tiêu**
 Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, PO quyết định 04/10/2026): chỉ cần một vài lệnh là chạy được cả web và máy chủ trên máy dùng để trình bày, vẫn nối với Supabase và LiveKit Cloud qua mạng. Nếu sau này cần một địa chỉ ai cũng mở được trên mạng thì dùng **Render làm phương án dự phòng**, chỉ làm khi PO đồng ý chi phí.
@@ -100,7 +100,7 @@ Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, 
 ### T-60 — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (T-13)*: nhận được kết quả đã hoàn thành của task này. *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (T-35)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (T-47)*: nhận được kết quả đã hoàn thành của task này. *Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (T-48)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-54)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-55)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-58)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 **Đối chiếu từng tiêu chí** của giai đoạn 1 với sản phẩm chạy thật và chạy **kịch bản demo D1 đến D10** (xem danh sách ở đầu file). Demo "đường thuận" chỉ là một phần của nghiệm thu.
@@ -152,7 +152,7 @@ Chuẩn bị: bản build tích hợp cùng phiên bản, nhiều trình duyệt
 ### T-61 — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-46)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được ván, kết nối lại, người xem chạy thật. *Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được camera/micro chạy thật cùng đổi vai, đuổi, tiếp quản. *Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (T-59)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `chung`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-01`, `US-UI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `chung`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-01`, `US-UI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Đo **sức chịu tải** và **độ trễ nước đi** tại đúng điểm cần đo. Kiểm: người xem nhận thế cờ mới dưới 100 ms; 50 kết nối với 10 ván cùng lúc, nước đi p95 dưới 300 ms. Phần camera/micro (PO duyệt 04/10/2026) chạy **quy mô nhỏ, khoảng 3 phòng**, **chỉ ghi số đo** (số luồng, băng thông, mức dùng hạn mức miễn phí), **không đặt ngưỡng đạt** và không nằm trong điều kiện đạt của giai đoạn 1, để khỏi dùng hết hạn mức miễn phí trước buổi demo.
@@ -235,7 +235,7 @@ Chuẩn bị: môi trường thử, tập lệnh tải, máy đo; nhiều tài k
 ### T-62 — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình đăng ký bằng mã OTP (chưa có tài khoản demo). *Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng (T-16)*: nhận được hướng dẫn chạy demo cục bộ (và các bước dự phòng trên Render). *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được số liệu thư, hạn mức để lên lịch gửi thư. *Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (T-60)*: nhận được bảng đối chiếu và lỗi có bước tái hiện. *Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (T-61)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 
 **Mục tiêu**
 Chuẩn bị **buổi demo nộp bài** trên môi trường và hạn mức thật: người trình bày có sẵn tài khoản, dữ liệu, thứ tự thao tác và cách xử lý khi gặp sự cố.

@@ -381,6 +381,7 @@ Quy tắc:
 | **Người nhận việc** | Để trống khi tạo; nhóm nhận việc ở buổi lập kế hoạch Sprint |
 | **Ước lượng** | **Bằng giờ**, do chính người làm ước lượng; không đặt hộ |
 | **Sprint** | Chưa gán khi mới tạo; gán khi lập kế hoạch Sprint |
+| **Fix version** | Tạo 4 phiên bản (mỗi Sprint một phiên bản). Task theo Sprint của nó; Story và Epic theo Sprint của Task cuối |
 | **Mức ưu tiên (Priority)** | Không dùng để thể hiện P1/P2 (đã có nhãn) |
 
 ## 11. Trạng thái và quy trình đề xuất
@@ -440,6 +441,7 @@ Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm
 | Bằng chứng nộp (trạng thái ban đầu NOT_RUN) | có | có | có |
 | Rủi ro / chưa rõ / còn mở | có | có | có |
 | Liên kết Jira: Epic cha; `is blocked by`; `relates to` | có | có | có |
+| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1-sprint-1`, `v0.2-sprint-2`, `v0.3-sprint-3`, `v1.0-sprint-4`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
 | Ước lượng | không | không | nhóm điền giờ khi họp Sprint |
 
 Mã tiêu chí (`AC-…`), mã mục yêu cầu (`US-…`), yêu cầu phi chức năng (`NFR-…`) và cổng (`GATE-…`) **chỉ nằm ở các khối "Nguồn", "Phục vụ", bảng tiêu chí và nhãn**, để truy vết; phần mô tả vẫn bằng tiếng thường. Bảng đối chiếu toàn bộ nằm ở `14-bang-doi-chieu-tieu-chi.md`.
