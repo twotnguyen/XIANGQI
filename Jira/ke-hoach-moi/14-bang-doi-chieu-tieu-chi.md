@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai đoạn 1 (157 tiêu chí, 53 mục yêu cầu người dùng) đều thuộc một Story và có Task kiểm. Trạng thái tất cả là **NOT_RUN** (chưa chạy); khi chạy thì ghi đạt, không đạt hoặc bị chặn kèm bằng chứng.
+Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai đoạn 1 (162 tiêu chí, 54 mục yêu cầu người dùng) đều thuộc một Story và có Task kiểm. Trạng thái tất cả là **NOT_RUN** (chưa chạy); khi chạy thì ghi đạt, không đạt hoặc bị chặn kèm bằng chứng.
 
 ## 1. Từng tiêu chí → Story → Task kiểm
 
@@ -33,6 +33,11 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 | `AC-AUTH-05-05` | US-AUTH-05 — Hồ sơ cơ bản và đăng xuất | Story 3 | 1 | T-48 | NOT_RUN |
 | `AC-AUTH-06-01` | US-AUTH-06 — Chuyển hướng vào phòng sau đăng nhập | Story 9 | 3 | T-47 | NOT_RUN |
 | `AC-AUTH-06-02` | US-AUTH-06 — Chuyển hướng vào phòng sau đăng nhập | Story 9 | 3 | T-47 | NOT_RUN |
+| `AC-AUTH-07-01` | US-AUTH-07 — Đăng ký và đăng nhập bằng Google | Story 1 | 1 | T-19, T-24, T-27, T-23 | NOT_RUN |
+| `AC-AUTH-07-02` | US-AUTH-07 — Đăng ký và đăng nhập bằng Google | Story 2 | 1 | T-20, T-24, T-27, T-23 | NOT_RUN |
+| `AC-AUTH-07-03` | US-AUTH-07 — Đăng ký và đăng nhập bằng Google | Story 1 | 1 | T-23, T-19 | NOT_RUN |
+| `AC-AUTH-07-04` | US-AUTH-07 — Đăng ký và đăng nhập bằng Google | Story 1 | 1 | T-19, T-24, T-35 | NOT_RUN |
+| `AC-AUTH-07-05` | US-AUTH-07 — Đăng ký và đăng nhập bằng Google | Story 2 | 1 | T-19, T-20, T-23 | NOT_RUN |
 | `AC-ROOM-01-01` | US-ROOM-01 — Tạo phòng | Story 5 | 2 | T-17, T-14 | NOT_RUN |
 | `AC-ROOM-01-02` | US-ROOM-01 — Tạo phòng | Story 5 | 2 | T-17, T-29 | NOT_RUN |
 | `AC-ROOM-01-03` | US-ROOM-01 — Tạo phòng | Story 5 | 2 | T-17, T-14 | NOT_RUN |
@@ -185,6 +190,7 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 
 | Cổng | Nội dung | Task | Trạng thái |
 |---|---|---|---|
+| GATE-GOOGLE | Google không tự liên kết cùng email; tài khoản bỏ dở không dùng được; một hồ sơ đăng nhập được hai cách | T-03, T-23, T-35 | NOT_RUN |
 | GATE-OTP | Mã OTP 6 số, 180 giây, gửi lại 60 giây, giới hạn gần đúng với thư mặc định; chặn đổi email trực tiếp; phục hồi tài khoản dở | T-03, T-23, T-35 | NOT_RUN |
 | GATE-MEDIA | Phát/nhận camera/micro theo từng người, thu hồi quyền, token cũ | T-06, T-53, T-57 | NOT_RUN |
 | GATE-AI | Thời gian (p95), độ sâu, sức mạnh, ổn định của máy cờ | T-31, T-56 | NOT_RUN |
@@ -195,7 +201,7 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 
 | Kịch bản | Nội dung | Epic | Task chạy |
 |---|---|---|---|
-| D1 | Đăng ký ba bước bằng OTP thật, vào Sảnh | 1 | T-60, T-62 |
+| D1 | Đăng ký ba bước bằng OTP thật (hoặc bằng Google), vào Sảnh | 1 | T-60, T-62 |
 | D2 | Tạo phòng 10 phút công khai, chọn tối đa 2 người xem | 2 | T-60, T-62 |
 | D3 | Gửi đường dẫn/mã, mời bạn online | 3 | T-60, T-62 |
 | D4 | Người xem vào sau khi ghế kín; người thứ ba bị từ chối | 6 | T-60, T-62 |
@@ -206,12 +212,13 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 | D9 | Ván mới, ngắt mạng một bên: 60 giây | 5 | T-60, T-62 |
 | D10 | Đóng tab giữa ván máy; vào lại trong và sau 30 phút | 8 | T-60, T-62 |
 
-## 5. 23 thành phần giao diện của giai đoạn 1 → Task dựng
+## 5. 24 thành phần giao diện của giai đoạn 1 → Task dựng
 
 | Thành phần | Task dựng | Task nối thật | Đủ 5 trạng thái ở |
 |---|---|---|---|
 | Màn hình Đăng nhập (`SCR-LOGIN`) | T-24 | T-27 | T-58 |
 | Màn hình Đăng ký (ba bước) (`SCR-REGISTER`) | T-24 | T-27 | T-58 |
+| Màn hình Thiết lập tài khoản Google (`SCR-ONBOARDING`) | T-24 | T-27 | T-58 |
 | Màn hình Cài đặt hồ sơ (`SCR-PROFILE-SETTINGS`) | T-24 | T-27 | T-58 |
 | Thanh điều hướng (`PANEL-NAVBAR`) | T-14 | T-29 | T-58 |
 | Sảnh (`SCR-LOBBY`) | T-14 | T-29 | T-58 |
@@ -234,7 +241,7 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 | Hộp chọn Cấp độ và Phe (đánh với máy) (`MODAL-AI-SETUP`) | T-37 | T-55 | T-58 |
 | Màn hình Đánh với máy (`SCR-AI-GAME`) | T-37 | T-55 | T-58 |
 
-## 6. 53 mục yêu cầu người dùng → Story
+## 6. 54 mục yêu cầu người dùng → Story
 
 | Mục yêu cầu | Story |
 |---|---|
@@ -244,6 +251,7 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 | US-AUTH-04 — Đăng nhập bằng username và mật khẩu | Story 2 |
 | US-AUTH-05 — Hồ sơ cơ bản và đăng xuất | Story 3 |
 | US-AUTH-06 — Chuyển hướng vào phòng sau đăng nhập | Story 9 |
+| US-AUTH-07 — Đăng ký và đăng nhập bằng Google | Story 1 và Story 2 |
 | US-ROOM-01 — Tạo phòng | Story 5 |
 | US-ROOM-02 — Phòng chờ và ghế ngồi | Story 7 |
 | US-ROOM-03 — Sẵn sàng và bắt đầu ván | Story 7 |

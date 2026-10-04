@@ -63,9 +63,9 @@ Nguồn: BA 1.1/1.5, [04] §3.1. Hai điều kiện dùng ứng dụng: có `com
 
 Giết tiến trình tại từng điểm trước/sau ghi hồ sơ, `completed_at`, xoá cờ; gọi gửi lại/hoàn tất/dọn đồng thời. Kết quả phải là một tài khoản hoàn tất hoặc bản ghi bị chặn và phục hồi được, không tài khoản bị kẹt ngoài mọi nhánh dọn. Trạng thái đăng ký thành công chỉ sau cả hai điều kiện. Không ghi OTP/mật khẩu/token vào nhật ký.
 
-### 4.2 P2: Google, khôi phục, đổi tên và Khách
+### 4.2 Google (P1 từ 04/10/2026) và P2: khôi phục, đổi tên, Khách
 
-- Google: xác minh danh tính nhà cung cấp ở máy chủ; chưa hoàn tất onboarding không có hồ sơ ứng dụng được sử dụng. Phải kiểm khả năng **không tự liên kết cùng email** của Supabase trước khi triển khai; nếu không đáp ứng BA 1.2 thì BLOCKED, không tự gộp. Đây là cổng kiểm chứng kỹ thuật, không tự thêm OTP cho Google.
+- **Google (P1, PO kéo lên 04/10/2026):** xác minh danh tính nhà cung cấp ở máy chủ; chưa hoàn tất onboarding không có hồ sơ ứng dụng được sử dụng. Phải kiểm khả năng **không tự liên kết cùng email** của Supabase trước khi triển khai; nếu không đáp ứng BA 1.2 thì BLOCKED, không tự gộp. Đây là cổng kiểm chứng kỹ thuật, không tự thêm OTP cho Google.
 - OTP đổi username và khôi phục mật khẩu phải gắn đúng danh tính/mục đích; xác minh một luồng không cấp quyền đổi dữ liệu ở luồng khác. Username mới được kiểm trong giao dịch cùng việc giữ tên cũ; người dùng vẫn là cùng UUID.
 - Khách: phiên máy chủ cấp định danh tạm, không giả làm `profiles.user_id`. Cần lưu phân biệt rõ một bên là `ACCOUNT/GUEST/AI` để `NULL user_id` không nhập nhằng giữa Khách và máy; bản ghi dành cho đối thủ chính thức còn lại không bị xoá khi phiên Khách hết.
 - Thiết kế dữ liệu P2 phải mở rộng các tham chiếu Host, thành viên, chặn, bên chơi và người gửi chat cho định danh Khách; **không tạo hồ sơ giả để thoả FK P1**. Các ràng buộc một vị trí chơi/ghế/sức chứa áp cho định danh thật hoặc tạm như nhau. [03] là mô hình nền P1, không được đem FK chỉ-account dùng nguyên cho Khách.

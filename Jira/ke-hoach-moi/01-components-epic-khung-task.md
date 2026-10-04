@@ -40,8 +40,8 @@ Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên modul
 
 | Story | Tên | Epic | Task liên kết |
 |---|---|---|---|
-| Story 1 | Đăng ký tài khoản qua ba bước | 1 | `T-03`, `T-12`, `T-19`, `T-23`, `T-24`, `T-27`, `T-35` |
-| Story 2 | Đăng nhập bằng tên đăng nhập và mật khẩu | 1 | `T-20`, `T-24`, `T-27` |
+| Story 1 | Đăng ký tài khoản qua ba bước hoặc bằng Google | 1 | `T-03`, `T-12`, `T-19`, `T-23`, `T-24`, `T-27`, `T-35` |
+| Story 2 | Đăng nhập bằng tên đăng nhập và mật khẩu hoặc bằng Google | 1 | `T-19`, `T-20`, `T-23`, `T-24`, `T-27` |
 | Story 3 | Hồ sơ cơ bản và đăng xuất | 1 | `T-20`, `T-24`, `T-27`, `T-48` |
 | Story 4 | Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm | 1 | `T-08`, `T-58`, `T-59` |
 | Story 5 | Tạo phòng | 2 | `T-14`, `T-17`, `T-29` |
@@ -101,7 +101,7 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 |---|---|---|---|---|---:|
 | `T-01` | Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động | 1 | `QA & DevOps` | — | 1 |
 | `T-02` | Soạn "hợp đồng chung" giữa trình duyệt và máy chủ | 1 | `Backend` | `T-01` | 1 |
-| `T-03` | Cấu hình Supabase gửi mã OTP đăng ký | 1 | `Authentication` | `T-01` | 1 |
+| `T-03` | Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google | 1 | `Authentication` | `T-01` | 1 |
 | `T-04` | Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập | 1 | `Backend` | `T-01` | 1 |
 | `T-05` | Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân | 4 | `Game Engine` | `T-01` | 1 |
 | `T-06` | Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền | 7 | `Communication`, `QA & DevOps` | `T-01` | 1 |
@@ -121,7 +121,7 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 | `T-20` | Máy chủ: đăng nhập, quản lý phiên và hồ sơ | 1 | `Authentication` | `T-03`, `T-04`, `T-07`, `T-10` | 2 |
 | `T-21` | Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh | 2 | `Room & Social` | `T-10`, `T-17` | 2 |
 | `T-22` | Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh | 4 | `Frontend` | `T-18` | 2 |
-| `T-23` | Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email | 1 | `Authentication`, `QA & DevOps` | `T-03`, `T-19` | 2 |
+| `T-23` | Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email | 1 | `Authentication`, `QA & DevOps` | `T-03`, `T-19` | 2 |
 | `T-24` | Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất | 1 | `Frontend` | `T-02`, `T-08`, `T-20` | 2 |
 | `T-25` | Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván | 2 | `Room & Social` | `T-05`, `T-21` | 2 |
 | `T-26` | Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà | 5 | `Frontend` | `T-02`, `T-08`, `T-22` | 2 |

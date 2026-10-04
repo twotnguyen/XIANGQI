@@ -6,9 +6,9 @@
 
 ---
 
-### Story 1 — Đăng ký tài khoản qua ba bước
+### Story 1 — Đăng ký tài khoản qua ba bước hoặc bằng Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** chưa gán (Task của Story nằm ở Sprint 1, 2, 3)
+**Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** chưa gán (Task của Story nằm ở Sprint 1, 2, 3)
 
 **Câu chuyện:** Là người mới, tôi muốn **đăng ký tài khoản qua ba bước** (tên đăng nhập và mật khẩu, email, mã OTP) để dùng được ứng dụng.
 
@@ -20,8 +20,8 @@
 - Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Đăng ký (ba bước) (`SCR-REGISTER`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Đăng ký bước 1: username và mật khẩu; Đăng ký bước 2: email và gửi OTP; Đăng ký bước 3: xác thực OTP, tạo tài khoản.
-- **Không:** đăng nhập thường ngày (Story 2); quên mật khẩu; **đăng ký bằng Google chạy thật** (giai đoạn sau, chỉ hiện nút mờ "Sắp ra mắt" theo tiêu chí AC-AUTH-04-04 ở Story 2); đổi tên đăng nhập hoặc email sau này.
+- **Có:** Đăng ký bằng Google (chạy thật): bấm nút Google → màn thiết lập tên đăng nhập và mật khẩu dự phòng → Hoàn tất (không OTP); Đăng ký bước 1: username và mật khẩu; Đăng ký bước 2: email và gửi OTP; Đăng ký bước 3: xác thực OTP, tạo tài khoản.
+- **Không:** đăng nhập thường ngày (Story 2); quên mật khẩu; đăng nhập bằng Google ở lần sau (Story 2); đổi tên đăng nhập hoặc email sau này.
 
 **Điều kiện để dùng:** chưa đăng nhập; đang ở màn hình đăng ký.
 
@@ -36,7 +36,7 @@
 
 **Các bước người dùng làm và hệ thống phản hồi**
 1. **Thanh tiến trình ba bước** luôn hiện ở đầu màn hình đăng ký: "1. Tài khoản" → "2. Email" → "3. Xác thực OTP".
-2. **Chọn tên đăng nhập và mật khẩu.** Người dùng gõ tên đăng nhập; sau khi ngừng gõ khoảng 0,3 giây, hệ thống báo "dùng được", "đã có người dùng" hoặc "không hợp lệ". Người dùng gõ mật khẩu và gõ lại ở ô xác nhận. Khi cả hai hợp lệ, nút **Tiếp tục** sáng; bấm thì sang bước tiếp theo. Phía dưới nút Tiếp tục có nút **Đăng ký bằng Google** hiện **mờ** kèm chú thích "Sắp ra mắt" (chưa dùng được ở giai đoạn này).
+2. **Chọn tên đăng nhập và mật khẩu.** Người dùng gõ tên đăng nhập; sau khi ngừng gõ khoảng 0,3 giây, hệ thống báo "dùng được", "đã có người dùng" hoặc "không hợp lệ". Người dùng gõ mật khẩu và gõ lại ở ô xác nhận. Khi cả hai hợp lệ, nút **Tiếp tục** sáng; bấm thì sang bước tiếp theo. Phía dưới nút Tiếp tục có nút **Đăng ký bằng Google** (hoạt động). Bấm nút này: sau khi Google xác thực, người dùng sang **màn thiết lập tài khoản** (ảnh và email Google chỉ đọc; nhập tên đăng nhập, mật khẩu và xác nhận; **không có OTP**, **không có nút đóng**), bấm **Hoàn tất thiết lập** thì tài khoản được tạo với tên hiển thị = tên đăng nhập (không dùng họ tên Google) và vào thẳng Sảnh. Thoát giữa chừng thì chưa có tài khoản. Email đã đăng ký thì báo "Email này đã được đăng ký", không tự gộp.
 3. **Nhập email.** Người dùng nhập email chính chủ và bấm **Xác nhận Email** (có nút **Quay lại** về bước 1). Hệ thống gửi **mã OTP 6 chữ số** tới email đó rồi chuyển sang bước nhập mã. Nếu chưa nhận được thư, người dùng bấm **Gửi lại mã** khi hết đếm ngược.
 4. **Nhập mã OTP.** Màn hình báo "Mã OTP 6 số đã được gửi đến email …" và hiện **6 ô nhập mã riêng**, tự nhảy sang ô kế khi gõ, kèm **đồng hồ đếm lùi 3 phút**. Người dùng nhập mã 6 số trong vòng 3 phút. Hệ thống kiểm tra mã, kiểm lại tên đăng nhập, tạo tài khoản (tên hiển thị mặc định bằng tên đăng nhập), tự đăng nhập và đưa vào Sảnh.
 
@@ -78,6 +78,9 @@
 | `AC-AUTH-03-04` | Bỏ dở trước khi xác minh thì chưa có hồ sơ dùng được và tên đăng nhập không bị giữ; gửi lại cùng email dùng lại bản dở. Nếu tiến trình chết sau khi ghi hồ sơ thì tài khoản vẫn bị chặn cho đến khi phục hồi, không coi là đăng ký thành công. | Bỏ dở ở từng bước; làm dừng quy trình sau khi ghi hồ sơ; thử đăng nhập. | T-19, T-23, T-35 |
 | `AC-AUTH-03-05` | Có thời điểm hoàn tất nhưng còn cờ "đang chờ": phục hồi chỉ bỏ cờ, không xoá tài khoản. Chưa có thời điểm hoàn tất: dọn sau thời hạn. Việc gửi lại, hoàn tất và dọn của cùng một người xử lý lần lượt; không xoá tài khoản vừa hoàn tất. | Chạy tác vụ dọn hai lần với hồ sơ đã hoàn tất còn cờ; chạy dọn cùng lúc hoàn tất. | T-19, T-35 |
 | `AC-AUTH-03-06` | Tên đăng nhập vừa bị người khác lấy trong lúc chờ nhập mã thì báo lỗi và quay về bước 1. | Hai người cùng chọn một tên; người sau nhập mã. | T-19, T-24 |
+| `AC-AUTH-07-01` | Bấm Đăng ký bằng Google và xác thực xong thì sang màn thiết lập tên đăng nhập và mật khẩu, không có bước OTP; Hoàn tất thiết lập thì tạo tài khoản với tên hiển thị = tên đăng nhập và vào Sảnh. | Dùng tài khoản Google thử; đăng ký mới; xem hồ sơ. | T-19, T-24, T-27, T-23 |
+| `AC-AUTH-07-03` | Email Google đã thuộc tài khoản khác thì báo "Email này đã được đăng ký", không tự gộp tài khoản. | Đăng ký Google bằng email đã đăng ký bằng mật khẩu. | T-23, T-19 |
+| `AC-AUTH-07-04` | Bỏ dở giữa chừng hoặc Google lỗi thì không có tài khoản; gửi hoàn tất trùng không nhân đôi; tên bị chiếm thì báo nhập lại; màn thiết lập không có nút đóng. | Bỏ dở rồi làm lại; gửi hoàn tất hai lần; chiếm tên giữa chừng. | T-19, T-24, T-35 |
 
 **Điều kiện hoàn thành (PASS khi)**
 - Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
@@ -85,17 +88,17 @@
 - Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
 - Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
-**Còn mở / chờ quyết định:** Nút "Đăng ký bằng Google" ở bước 1 và liên kết "Quên mật khẩu?" ở màn đăng nhập là **đề xuất chờ PO duyệt** (cả hai chỉ hiện mờ "Sắp ra mắt"). Cách chặn đổi email ở hệ thống đăng nhập phụ thuộc kết quả thử nghiệm OTP thật; nếu không chặn được thì ghi "bị chặn" cho phần đó.
+**Còn mở / chờ quyết định:** Cần khoá OAuth Google do nhóm tự tạo (Google Cloud); nếu hệ thống đăng nhập tự liên kết cùng email thì luồng Google bị chặn (GATE-GOOGLE), không tự gộp. Cách chặn đổi email ở hệ thống đăng nhập phụ thuộc kết quả thử nghiệm OTP thật; nếu không chặn được thì ghi "bị chặn" cho phần đó.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Đăng ký và đăng nhập (kèm nền tảng dự án); liên quan tới (relates to) các Task: T-03 (Cấu hình Supabase gửi mã OTP đăng ký); T-12 (Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)); T-19 (Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)); T-23 (Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email); T-24 (Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất); T-27 (Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ); T-35 (Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở).
+**Liên kết Jira (khi được phép tạo):** Epic: Đăng ký và đăng nhập (kèm nền tảng dự án); liên quan tới (relates to) các Task: T-03 (Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google); T-12 (Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)); T-19 (Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)); T-23 (Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email); T-24 (Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất); T-27 (Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ); T-35 (Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở).
 
 ---
 
-### Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu
+### Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu hoặc bằng Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `US-AUTH-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** chưa gán (Task của Story nằm ở Sprint 2)
+**Nhãn:** `P1`, `US-AUTH-04`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** chưa gán (Task của Story nằm ở Sprint 2)
 
 **Câu chuyện:** Là người đã có tài khoản, tôi muốn **đăng nhập** để vào chơi.
 
@@ -106,30 +109,32 @@
 
 **Nhu cầu và phạm vi**
 - **Có:** Đăng nhập bằng username và mật khẩu.
-- **Không:** quên mật khẩu, đăng nhập Google và khách (giai đoạn sau).
+- **Có thêm:** Đăng nhập bằng Google (đã hoàn tất → Sảnh; chưa → màn thiết lập).
+- **Không:** quên mật khẩu và đăng nhập khách (giai đoạn sau, nút/liên kết mờ "Sắp ra mắt").
 
 **Điều kiện để dùng:** có tài khoản đã hoàn tất.
 
 **Bắt đầu khi (phụ thuộc)**
 - Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
   - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-03 — Cấu hình Supabase gửi mã OTP đăng ký
+  - T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google
   - T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
   - T-07 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
   - T-08 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
   - T-10 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
   - T-19 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)
-  - T-23 — Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email
+  - T-23 — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email
 
 **Các bước người dùng làm và hệ thống phản hồi**
 1. Người dùng nhập tên đăng nhập, mật khẩu; chọn hoặc bỏ "Ghi nhớ đăng nhập" (mặc định chọn).
 2. Bấm Đăng nhập; vào Sảnh (hoặc vào đúng phòng nếu đến từ đường dẫn mời).
+3. Hoặc bấm **Đăng nhập bằng Google**: tài khoản đã hoàn tất thì vào Sảnh (hoặc đúng phòng mời); email chưa đăng ký hoặc chưa thiết lập xong thì sang màn thiết lập và chưa dùng được ứng dụng. Sau khi thiết lập, cùng một tài khoản đăng nhập được bằng Google hoặc bằng tên và mật khẩu.
 
 **Các quy tắc**
 - Đăng nhập sai chỉ báo **một thông báo chung** "Sai tên đăng nhập hoặc mật khẩu", không nói sai ô nào và **không lộ email**.
 - "Ghi nhớ": phiên giữ **30 ngày**. Không ghi nhớ: hết khi đóng trình duyệt hoặc sau **12 giờ**.
 - Sai 5 lần trong 15 phút thì khoá 15 phút.
-- Nút đăng nhập khách và đăng nhập Google **mờ**, có chú thích "Sắp ra mắt".
+- Nút đăng nhập khách và liên kết "Quên mật khẩu?" **mờ**, có chú thích "Sắp ra mắt"; nút đăng nhập/đăng ký bằng Google bấm được.
 - Đăng nhập khi đang đăng nhập ở nơi khác thì **nơi mới tiếp quản**; nơi cũ nhận thông báo và chuyển chỉ đọc.
 
 **Khi có lỗi**
@@ -138,7 +143,7 @@ sai thông tin → thông báo chung; bị khoá → báo khoá tạm; phiên h�
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt |
+| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest và Quên mật khẩu: Sắp ra mắt |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -146,8 +151,10 @@ sai thông tin → thông báo chung; bị khoá → báo khoá tạm; phiên h�
 | `AC-AUTH-04-01` | Đăng nhập đúng thì vào Sảnh (hoặc vào đúng phòng nếu đến từ đường dẫn mời). | Đăng nhập tài khoản mẫu, có và không đi từ đường dẫn mời. | T-20, T-24, T-27, T-47 |
 | `AC-AUTH-04-02` | Sai tên hoặc mật khẩu thì chỉ báo chung "Sai tên đăng nhập hoặc mật khẩu", không nói sai ô nào và không lộ email. | Thử sai tên, sai mật khẩu; so hai thông báo. | T-20, T-24 |
 | `AC-AUTH-04-03` | Chọn "Ghi nhớ đăng nhập" (mặc định chọn) thì phiên giữ 30 ngày; bỏ chọn thì hết khi đóng trình duyệt hoặc sau 12 giờ, cái nào đến trước. | Đăng nhập hai kiểu; đồng hồ giả 12 giờ và 30 ngày; đóng và mở lại trình duyệt. | T-20, T-24 |
-| `AC-AUTH-04-04` | Nút Đăng nhập khách, Đăng nhập bằng Google, liên kết Quên mật khẩu (màn đăng nhập) và nút Đăng ký bằng Google (bước 1 đăng ký) đều mờ kèm chú thích "Sắp ra mắt". *(Nút Đăng ký bằng Google và liên kết Quên mật khẩu là đề xuất mới, chờ PO duyệt.)* | Mở hai màn hình; rê chuột và dùng bàn phím vào từng mục. | T-24, T-58 |
+| `AC-AUTH-04-04` | Nút Đăng nhập khách và liên kết Quên mật khẩu (màn đăng nhập) hiện mờ kèm chú thích "Sắp ra mắt"; nút Đăng nhập bằng Google và Đăng ký bằng Google bấm được. | Mở hai màn hình; rê chuột và dùng bàn phím vào từng mục; bấm hai nút Google. | T-24, T-58 |
 | `AC-AUTH-04-05` | Đăng nhập khi đang đăng nhập ở tab hoặc thiết bị khác thì phiên mới tiếp quản; nơi cũ nhận thông báo và chuyển sang chỉ đọc. | Đăng nhập hai nơi cùng tài khoản; nơi cũ gửi lệnh bị chặn. | T-53, T-57 |
+| `AC-AUTH-07-02` | Đăng nhập bằng Google: tài khoản đã hoàn tất thì vào Sảnh (hoặc đúng phòng mời); chưa hoàn tất thì sang màn thiết lập và chưa dùng được ứng dụng. | Đăng nhập Google với tài khoản đã hoàn tất và với email mới. | T-20, T-24, T-27, T-23 |
+| `AC-AUTH-07-05` | Sau thiết lập, đăng nhập được cả bằng Google lẫn bằng tên đăng nhập và mật khẩu, vào cùng một hồ sơ. | Đăng nhập hai cách rồi so mã người dùng. | T-19, T-20, T-23 |
 
 **Điều kiện hoàn thành (PASS khi)**
 - Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
@@ -183,13 +190,13 @@ sai thông tin → thông báo chung; bị khoá → báo khoá tạm; phiên h�
 **Bắt đầu khi (phụ thuộc)**
 - Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
   - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-03 — Cấu hình Supabase gửi mã OTP đăng ký
+  - T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google
   - T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
   - T-07 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
   - T-08 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
   - T-10 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
   - T-19 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)
-  - T-23 — Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email
+  - T-23 — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email
   - T-38 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
   - T-39 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
   - T-43 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ
@@ -280,7 +287,7 @@ tên không hợp lệ hoặc có từ cấm → báo lý do; đăng xuất gi�
 2. Nút hay chức năng không dùng được thì **mờ** kèm chú thích nêu lý do.
 3. Trên điện thoại (từ 360 px), mọi thứ vẫn dùng được: bàn cờ chơi được bằng cảm ứng; chat và camera thu thành thẻ.
 4. Người dùng chỉ bàn phím, người dùng giảm chuyển động hay dùng trình đọc màn hình vẫn nhận đủ thông tin.
-5. Lối vào của tính năng chưa làm (Đánh Hạng, Bảng xếp hạng, Lịch sử, đăng nhập khách, đăng nhập Google, Nhắn tin, Thách đấu) **mờ kèm "Sắp ra mắt"**; chức năng nằm sâu (mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, trợ giúp của máy, bộ chọn giao diện, ghép ngẫu nhiên) **ẩn hẳn**.
+5. Lối vào của tính năng chưa làm (Đánh Hạng, Bảng xếp hạng, Lịch sử, đăng nhập khách, Quên mật khẩu, Nhắn tin, Thách đấu) **mờ kèm "Sắp ra mắt"**; chức năng nằm sâu (mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, trợ giúp của máy, bộ chọn giao diện, ghép ngẫu nhiên) **ẩn hẳn**.
 
 **Các quy tắc**
 - Mỗi màn hình và khung dữ liệu có đủ **5 trạng thái**: thành công; đang tải (khung xương, không để trắng, không giật bố cục); trống (giải thích và nút hành động); lỗi (tiếng Việt dễ hiểu, nút "Thử lại"); bị khoá (luôn có chú thích lý do).
@@ -294,7 +301,7 @@ một khung tải lỗi thì chỉ khung đó báo lỗi, không mất cả màn
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt |
+| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest và Quên mật khẩu: Sắp ra mắt |
 | Màn hình Đăng ký (ba bước) | Hoàn tất OTP và hồ sơ mới cho vào | Gửi/xác minh/hoàn tất từng bước | Bước chưa có dữ liệu hướng dẫn nhập | Trùng tên/email, sai/hết mã hoặc phục hồi chưa xong; ở đúng bước | Chưa hợp lệ, gửi lại chưa đủ 60 giây, đang xử lý |
 | Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có vị trí chơi hoặc tính năng P2 chưa mở |
 | Màn hình Phòng chờ | Ghế/Host/Sẵn sàng đúng trạng thái | Đang nhận snapshot/chuyển ghế | Ghế còn trống: mời bạn hoặc chia sẻ mã | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ |
@@ -657,7 +664,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt |
+| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest và Quên mật khẩu: Sắp ra mắt |
 | Hộp thoại Chia sẻ phòng | Mã/link hiện hành; QR P2; mời bạn Online | Tải mã/bạn hoặc sao chép | Không bạn Online: vẫn chia sẻ link/mã nếu hợp lệ | Clipboard/lời mời lỗi; báo và cho cách khác | LOCKED/mất ghế; bạn bận/offline; QR ẩn P1 |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**

@@ -8,7 +8,7 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 
 | Tệp | Nội dung | Dùng cho |
 |---|---|---|
-| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 80 US (53 P1, 27 P2), 276 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
+| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 80 US (54 P1, 26 P2), 276 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
 | [02-luat-co-tuong.md](02-luat-co-tuong.md) | Luật cờ tướng chi tiết, kết thúc ván, lặp thế, chiếu liên tục, ký hiệu nước đi, máy cờ và 3 cấp độ | Lập trình luật cờ và máy cờ |
 | [03-du-lieu.md](03-du-lieu.md) | Thực thể, cột, ràng buộc, quyền truy cập, dữ liệu tạm | Lập trình máy chủ và cơ sở dữ liệu |
 | [04-kien-truc.md](04-kien-truc.md) | Thành phần, xác thực, thời gian thực, đồng hồ, LiveKit, máy cờ, bảo mật, triển khai | Mọi lập trình viên |
@@ -82,7 +82,7 @@ Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợ
 | `PANEL-SPECTATORS` | ROOM-09, PLAY-09 |
 | `OVERLAY-RECONNECTING` | PLAY-07 |
 
-Đủ 23 thành phần P1 và 14 P2, không thêm màn hình do có phần Luật chơi/bộ chọn giao diện. Ánh xạ đầy đủ hai phân kỳ và 185 trường hợp trạng thái nằm ở [08](08-ma-tran-nghiem-thu.md). Nhãn `MODAL-DRAW-PROMPT` giữ để tham chiếu nhưng hành vi không modal theo BA 3.6.
+Đủ 24 thành phần P1 và 13 P2, không thêm màn hình do có phần Luật chơi/bộ chọn giao diện. Ánh xạ đầy đủ hai phân kỳ và 185 trường hợp trạng thái nằm ở [08](08-ma-tran-nghiem-thu.md). Nhãn `MODAL-DRAW-PROMPT` giữ để tham chiếu nhưng hành vi không modal theo BA 3.6.
 
 ## Chưa làm (có chủ ý)
 

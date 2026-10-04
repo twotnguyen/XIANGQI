@@ -26,16 +26,16 @@ Người mới (đăng ký), người đã có tài khoản (đăng nhập); nh�
 
 ## Gồm những việc lớn nào (mỗi việc là một Story)
 
-- Story 1 — Đăng ký tài khoản qua ba bước
-- Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu
+- Story 1 — Đăng ký tài khoản qua ba bước hoặc bằng Google
+- Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu hoặc bằng Google
 - Story 3 — Hồ sơ cơ bản và đăng xuất
 - Story 4 — Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm
 
 ## Phạm vi
 
 - **Có:** các Story ở trên.
-- **Không:** Đăng nhập khách, đăng nhập Google, quên mật khẩu, đổi tên đăng nhập hoặc email, ảnh đại diện tuỳ chọn, giao diện sáng (giai đoạn sau).
-- **Giai đoạn sau (có trong đặc tả nhưng không làm ở giai đoạn này):** Đăng nhập khách (BA 1.3), đăng nhập và đăng ký Google (BA 1.2), quên và đặt lại mật khẩu (BA 1.7), đổi tên đăng nhập (BA 1.6) là giai đoạn sau; chỉ hiện nút mờ.
+- **Không:** Đăng nhập khách, quên mật khẩu, đổi tên đăng nhập hoặc email, ảnh đại diện tuỳ chọn, giao diện sáng (giai đoạn sau).
+- **Giai đoạn sau (có trong đặc tả nhưng không làm ở giai đoạn này):** Đăng nhập khách (BA 1.3), quên và đặt lại mật khẩu (BA 1.7), đổi tên đăng nhập (BA 1.6) là giai đoạn sau; chỉ hiện nút/liên kết mờ. **Đăng ký và đăng nhập bằng Google (BA 1.2) chạy thật ở giai đoạn 1 (PO quyết định 04/10/2026).**
 
 ## Các quy tắc quan trọng
 
@@ -74,13 +74,13 @@ Báo cáo demo kịch bản tương ứng (video hoặc báo cáo Playwright), b
 
 ## Rủi ro / điểm chưa rõ
 
-Hạn mức thư OTP (khoảng 2 thư/giờ); giới hạn nhập sai chỉ gần đúng; chưa biết có chặn được đổi email ở hệ thống đăng nhập; nút Đăng ký bằng Google và liên kết Quên mật khẩu đang chờ PO duyệt.
+Hạn mức thư OTP (khoảng 2 thư/giờ); giới hạn nhập sai chỉ gần đúng; chưa biết có chặn được đổi email ở hệ thống đăng nhập; cần khoá OAuth Google do nhóm tự tạo; nếu hệ thống đăng nhập tự liên kết cùng email thì luồng Google bị chặn (GATE-GOOGLE).
 
 ## Task của Epic (liên kết dưới Epic)
 
 - `T-01` — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (Sprint 1)
 - `T-02` — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (Sprint 1)
-- `T-03` — Cấu hình Supabase gửi mã OTP đăng ký (Sprint 1)
+- `T-03` — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (Sprint 1)
 - `T-04` — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (Sprint 1)
 - `T-07` — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (Sprint 1)
 - `T-08` — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (Sprint 1)
@@ -88,7 +88,7 @@ Hạn mức thư OTP (khoảng 2 thư/giờ); giới hạn nhập sai chỉ gầ
 - `T-12` — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (Sprint 1)
 - `T-19` — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (Sprint 2)
 - `T-20` — Máy chủ: đăng nhập, quản lý phiên và hồ sơ (Sprint 2)
-- `T-23` — Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email (Sprint 2)
+- `T-23` — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (Sprint 2)
 - `T-24` — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (Sprint 2)
 - `T-27` — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (Sprint 2)
 - `T-35` — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (Sprint 3)

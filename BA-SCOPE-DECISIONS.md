@@ -713,6 +713,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * **Ván bị gián đoạn khi máy chủ khởi động lại (PO uỷ quyền agent quyết định 04/10/2026, đã chốt):** hiện hộp kết quả trung tính **"Ván bị gián đoạn"**: không có bên thắng, thua hay hoà; không đổi điểm Elo; chỉ có nút *Rời phòng*; không tự hiện nút Tái đấu. Lý do chọn: người chơi không bị phạt vì lỗi hệ thống và không cần thêm màn hình mới.
   * **Yêu cầu phi chức năng NFR-08, NFR-09, NFR-10 (PO duyệt 04/10/2026):** (08) nhật ký vận hành có cấu trúc, điểm kiểm tra sức khoẻ, không ghi mật khẩu/OTP/token/nội dung chat; (09) lưu giữ dữ liệu: ván online và nước đi lưu bền, ván với máy chỉ ở bộ nhớ, chat phòng xoá khi phòng đóng, biên lai lệnh xoá sau 24 giờ, nhật ký giữ tối đa 14 ngày; (10) tin chat, tên hiển thị, tên phòng hiển thị như văn bản thuần. Chi tiết ở `docs/01` (bảng NFR) và cách kiểm ở `docs/05`. Từ nay là điều kiện bắt buộc của nghiệm thu P1.
   * **Cổng kiểm chứng ở `docs/05` (PO duyệt 04/10/2026, theo khuyến nghị):** (a) demo đăng ký phải dùng **OTP thật** tới email thành viên nhóm, không dùng giả lập làm bằng chứng; (b) GATE-OTP: gọi thẳng chức năng đổi email của hệ thống đăng nhập phải không đổi được (nếu cấu hình không chặn được thì ghi "bị chặn" cho phần đó), và email ngoài nhóm hoặc vượt hạn mức thì báo lỗi thật, không để tài khoản kẹt; (c) GATE-MEDIA: ghi thời gian thu hồi quyền thực tế và mức dùng hạn mức miễn phí của LiveKit, **không đặt ngưỡng đạt**; (d) phần camera/micro của bài tải chạy **quy mô nhỏ (~3 phòng)**, **chỉ ghi số đo**, không nằm trong điều kiện đạt P1.
+  * **Google OAuth vào P1 (PO quyết định 04/10/2026):** **đăng ký và đăng nhập bằng Google chạy thật ở P1** (`Quyết định 1.2`, `SCR-ONBOARDING`, mục yêu cầu US-AUTH-07 với 5 tiêu chí; phân kỳ P1 từ 53 lên **54 mục yêu cầu, 157 lên 162 tiêu chí**). Giữ nguyên: nút *Guest* (Khách) và liên kết *Quên mật khẩu?* hiện mờ "Sắp ra mắt". Hệ quả: cần dịch vụ Google OAuth (khoá do nhóm tạo trên Google), thử nghiệm **không tự liên kết cùng email** của Supabase (cổng GATE-GOOGLE chuyển P1) và thêm công việc vào Epic 1.
   * **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
   * **Hạ tầng media (PO chốt 04/10/2026):** dùng **LiveKit Cloud** (gói miễn phí lúc bắt đầu, không tự dựng LiveKit); hạn mức, chi phí và việc thu hồi quyền theo `docs/04` mục media.
   * **Quy mô thiết kế:** Hướng tới tối đa khoảng **50 người dùng đồng thời và 10 phòng/ván cùng lúc**. Con số đo được chốt ở Giai đoạn 2.
@@ -745,7 +746,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 | # | Mục tiêu cốt lõi | Quyết định / thành phần phục vụ |
 |---|---|---|
-| 1 | Giao diện đăng ký / đăng nhập | 1.1 (đăng ký 3 bước OTP), đăng nhập Username + Mật khẩu, 1.8 (phiên); `SCR-LOGIN`, `SCR-REGISTER`, `SCR-PROFILE-SETTINGS` (chỉ Display Name và Đăng xuất) |
+| 1 | Giao diện đăng ký / đăng nhập | 1.1 (đăng ký 3 bước OTP), **1.2 (đăng ký và đăng nhập bằng Google, PO kéo lên P1 ngày 04/10/2026)**, đăng nhập Username + Mật khẩu, 1.8 (phiên); `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS` (chỉ Display Name và Đăng xuất) |
 | 2 | Tạo phòng chơi game | 2.7, 2.8; `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM` |
 | 3 | Mời bạn vào phòng (ngay trong game, gửi link, mã phòng) | 2.2 (Link + Mã 8 ký tự), 2.4 (tự chuyển vào phòng sau đăng nhập), 2.5 (**mời bạn bè đang online**), 5.5 (hệ thống bạn bè tối thiểu: tìm theo username, kết bạn hai chiều, trạng thái online/đang đấu, chuông lời mời kết bạn); `MODAL-INVITE`, `SCR-FRIENDS`. Nhắn tin 1-1 và Thách đấu là P2 |
 | 4 | Khởi tạo bàn cờ | 3.1, 3.4 (bàn cờ SVG, quân chữ Hán, click/kéo thả, âm thanh) |
@@ -754,15 +755,15 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1, 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 5.4 (3 mức chia sẻ); `PANEL-CHAT`, `PANEL-MEDIA` |
 | 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
 
-* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · chế độ Khách (1.3) · Google OAuth (1.2) · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Xin đổi bên · Tái đấu · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · nâng trần người xem lên 5 · lựa chọn Giấy Sáng/Theo hệ thống (10.3).
+* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · chế độ Khách (1.3) · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Xin đổi bên · Tái đấu · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · nâng trần người xem lên 5 · lựa chọn Giấy Sáng/Theo hệ thống (10.3).
 * **Quy tắc hiển thị tính năng P2 trong màn hình P1:** xem `DANH-MUC` §7 (lối vào điều hướng chính `DISABLED` + "Sắp ra mắt"; chức năng nằm sâu thì ẩn hẳn).
 * **Hệ quả cho P1:**
   * Sảnh có: Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, Đánh với máy và phần Luật chơi mở rộng/thu gọn (10.4). Thẻ **Đánh Hạng hiển thị `DISABLED`** kèm tooltip *"Sắp ra mắt"* (đúng `SCR-RULE-01`).
-  * Đăng nhập chỉ Username + Mật khẩu; người dùng chưa có tài khoản vào link mời phải đăng ký trước (không có Khách ở P1).
+  * Đăng nhập bằng Username + Mật khẩu hoặc bằng Google (`Quyết định 1.2`); người dùng chưa có tài khoản vào link mời phải đăng ký trước (không có Khách ở P1).
   * Ván Đánh Thường **không có Elo** và ván có tài khoản **chưa lưu Lịch sử** ở P1; màn hình Lịch sử, Replay, Bảng xếp hạng chưa làm (màn hình Bạn bè **có** ở P1).
   * `MODAL-MATCH-RESULT` ở P1 chỉ có *Rời phòng* (không Tái đấu, không Xem lại).
 * **Bạn bè ở P1 (tối thiểu):** `SCR-FRIENDS` có tìm kiếm, gửi/nhận lời mời, danh sách bạn kèm trạng thái. **Không có nút mời trên trang này**: ở P1 chỉ mời bạn bè online **trong một phòng**, qua `MODAL-INVITE` do người đang ngồi ghế của phòng đó thực hiện (không tự tạo phòng, vì tạo phòng rồi mời là Thách đấu, P2). Nút "Nhắn tin" và "Thách đấu" `DISABLED` kèm tooltip *"Sắp ra mắt"*; huy hiệu tin chưa đọc chưa có.
-* **Ưu tiên theo thành phần:** xem cột "Ưu tiên" ở `DANH-MUC` §7 (23 thành phần P1, 14 thành phần P2).
+* **Ưu tiên theo thành phần:** xem cột "Ưu tiên" ở `DANH-MUC` §7 (24 thành phần P1, 13 thành phần P2).
 * **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người trong 2 tuần nên chạy song song các nhóm việc từ đầu và có phương án dự phòng (ví dụ máy cờ chỉ làm cấp Dễ trước).
 
 ---
@@ -774,7 +775,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 1 | **Chế độ Khách (Guest Mode)** | **[1B] Nút "Guest" nổi bật tại Login kèm ghi chú cấm tham gia Ranked Elo** | **P2 — làm sau MVP** |
 | 2 | Kích hoạt Email | **[2B] Tài khoản chỉ được tạo/kích hoạt sau khi xác thực OTP email lúc đăng ký** (không có bước kích hoạt thứ hai; Email cũng dùng cho OTP đổi Username và quên mật khẩu) | **P1 — MVP 2 tuần** |
 | 3 | **Đổi Username / Cố định Email** | **[1C] Đổi Username không giới hạn tần suất (Quy trình 4 bước qua OTP Supabase); Cấm đổi Email** | **P2 — làm sau MVP** |
-| 4 | **Google OAuth Onboarding** | **[1D] Tạo tài khoản qua Google OAuth kết hợp thiết lập Username + Password** để đăng nhập kép linh hoạt | **P2 — làm sau MVP** |
+| 4 | **Google OAuth Onboarding** | **[1D] Tạo tài khoản qua Google OAuth kết hợp thiết lập Username + Password** để đăng nhập kép linh hoạt | **P1 — MVP 2 tuần (PO kéo lên 04/10/2026)** |
 | 5 | Đồng hồ thi đấu | **[3A] Giữ nguyên 4 mức giờ cố định (chỉ Đánh Thường; Ranked cố định 10 phút là ngoại lệ)**, không áp dụng luật cộng giây | **P1 — MVP 2 tuần** (5/10/15 phút; "Không giới hạn" là P2) |
 | 6 | Chia sẻ phòng đấu | **[4B] Thêm Mã QR (QR Code)** trực quan bên cạnh Link mời và Mã 8 ký tự | **P1** (Link + Mã); **P2** (Mã QR) |
 | 7 | Chữ trên quân cờ | **[5A] Giữ nguyên 100% quân chữ Hán** cổ điển, kết hợp viền trợ năng DT-21 | **P1 — MVP 2 tuần** |

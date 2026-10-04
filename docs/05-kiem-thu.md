@@ -189,7 +189,7 @@ P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/
 | GATE-MEDIA | P1 | LiveKit publish/subscribe theo từng người, thu quyền khi đổi ghế/chia sẻ/tiếp quản; token mang quyền cũ không lấy lại được quyền đã mất (đuổi/đổi vai/tiếp quản), trong khi quyền mới hợp lệ vẫn dùng được; dùng LiveKit Cloud (PO chọn 04/10/2026); ghi cửa sổ hiệu lực thực tế của thu hồi và mức dùng hạn mức gói miễn phí (phút người tham gia, GB, kết nối đồng thời), chỉ ghi số đo thật, không đặt ngưỡng đạt (PO đã duyệt 04/10/2026) | Log quyền và thử bằng client không được phép; không nhận track trái quyền, không chỉ ẩn UI |
 | GATE-AI | P1 | Máy cờ tự viết đạt thời gian/sức mạnh/độ sâu và ổn định | Cấu hình máy, seed/bộ thế, số đo tại mục 3.2; không giảm ngưỡng để đạt |
 | GATE-PERFT | P1 | Bộ số perft làm oracle có đúng không | Bộ sinh nước độc lập, phiên bản/nguồn, kết quả so sánh; không tự sửa kỳ vọng theo code đang kiểm |
-| GATE-GOOGLE | P2 | Google onboarding và đăng nhập kép không tự liên kết email trái BA 1.2 | Thử email mới/cùng email/danh tính cũ, bỏ dở và hoàn tất; chứng minh tài khoản ứng dụng bị chặn trước hoàn tất |
+| GATE-GOOGLE | P1 (PO kéo từ P2 lên 04/10/2026) | Google onboarding và đăng nhập kép không tự liên kết email trái BA 1.2 | Thử email mới/cùng email/danh tính cũ, bỏ dở và hoàn tất; chứng minh tài khoản ứng dụng bị chặn trước hoàn tất |
 | GATE-PGN | P2 | Tệp xuất được công cụ ngoài đọc đúng | Chính tệp xuất, tên/phiên bản công cụ, số nước/thế cuối/kết quả tái dựng khớp; FEN được parse độc lập |
 | GATE-LOAD | Theo đợt phát hành | Quy mô và độ trễ theo NFR, cả người xem và media | Bài tải, môi trường, số kết nối/ván, p95 thực, lỗi và CPU/RAM; tách số đo máy chủ và client |
 

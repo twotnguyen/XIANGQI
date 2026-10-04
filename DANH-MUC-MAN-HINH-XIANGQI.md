@@ -287,10 +287,10 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 ## 7. BẢNG MA TRẬN 37 THÀNH PHẦN TOÀN DIỆN
 
-**Ưu tiên (đã duyệt 03/10):** P1 = làm trong MVP 2 tuần (23 thành phần), P2 = làm sau (14 thành phần). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
+**Ưu tiên (đã duyệt 03/10):** P1 = làm trong MVP 2 tuần (24 thành phần, gồm `SCR-ONBOARDING` do PO kéo lên 04/10/2026), P2 = làm sau (13 thành phần). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
-* **Lối vào cấp điều hướng chính** (thẻ Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, nút Khách và Google ở đăng nhập, nút *Đăng ký bằng Google* ở bước 1 màn đăng ký và liên kết *Quên mật khẩu?* ở màn đăng nhập (đề xuất 04/10/2026, chờ PO duyệt), nút Nhắn tin và Thách đấu ở Bạn bè) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
+* **Lối vào cấp điều hướng chính** (thẻ Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, nút Khách và liên kết *Quên mật khẩu?* ở màn đăng nhập (PO duyệt 04/10/2026), nút Nhắn tin và Thách đấu ở Bạn bè; **nút Đăng nhập/Đăng ký bằng Google hoạt động ở P1**, PO quyết định 04/10/2026) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
 * **Chức năng nằm sâu trong màn hình P1** (Mã QR, Sticker, Xin đi lại, Xin đổi bên, Tái đấu, Xem lại ở kết quả ván, đi lại với máy, Lưu lịch sử, widget AI) **ẩn hoàn toàn** ở P1, không để nút xám.
 * Ngoại lệ duy nhất cho quy tắc "nút dẫn tới màn P2": `MODAL-MATCH-RESULT` ở P1 chỉ có *Rời phòng* (không hiện Xem lại).
 
@@ -300,7 +300,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 2 | `SCR-REGISTER` | Đăng ký tài khoản (Wizard 3 bước OTP 3 phút) | Routed Page | `/register` | **P1** |
 | 3 | `SCR-FORGOT-PASSWORD` | Quên mật khẩu hệ thống | Routed Page | `/forgot-password` | P2 |
 | 4 | `SCR-RESET-PASSWORD` | Đặt mật khẩu mới qua mã OTP email | Routed Page | `/reset-password` | P2 |
-| 5 | `SCR-ONBOARDING` | Đăng ký Google OA tạo Username + Password | Routed Page | `/onboarding` | P2 |
+| 5 | `SCR-ONBOARDING` | Đăng ký Google OA tạo Username + Password | Routed Page | `/onboarding` | **P1** |
 | 6 | `SCR-LOBBY` | Sảnh chính (3 Chế độ: Thường, Hạng, Máy) | Routed Page | `/lobby` | **P1** |
 | 7 | `SCR-WAITING-ROOM` | Phòng chờ, đổi ghế solo, đếm 3s, nhượng Host | Routed Page | `/rooms/:id` (`WAITING`) | **P1** |
 | 8 | `SCR-GAME-ROOM` | Bàn cờ SVG thi đấu, 2 cách đi, đồng hồ, thao tác | Routed Page | `/rooms/:id` (`PLAYING`) | **P1** |
