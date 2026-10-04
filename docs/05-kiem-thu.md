@@ -17,7 +17,7 @@ Kịch bản demo chuẩn D1–D10 (dùng làm bài kiểm thử chấp nhận P
 | Bước | Mục tiêu | Thao tác | Kết quả phải thấy |
 |---|---|---|---|
 | D1 | 1 | Người dùng A đăng ký 3 bước với **OTP thật** bằng email thành viên nhóm; B, C, D là tài khoản **tạo sẵn trước** (SMTP mặc định chỉ khoảng 2 thư/giờ, BA 10.1), đăng nhập được. Không dùng mock OTP làm bằng chứng đã gửi thư thật (đề xuất 04/10/2026, chờ PO duyệt) | Vào được `/lobby` |
-| D2 | 2 | A tạo phòng (10 phút, `PUBLIC`, tối đa 2 người xem) | A ngồi ghế Đỏ ở phòng chờ |
+| D2 | 2 | A tạo phòng (10 phút, `PUBLIC`, chọn tối đa **2** người xem để dễ chạy thử đầy chỗ; mặc định của biểu mẫu là 5) | A ngồi ghế Đỏ ở phòng chờ |
 | D3 | 3 | A gửi **link/mã** cho B; A **mời bạn bè online** C (sau khi A và C là bạn) | B vào được phòng; C nhận pop-up 30 giây |
 | D4 | 6 | C và D vào sau khi ghế đã kín | Họ thành **Người xem**; người xem thứ 3 bị từ chối |
 | D5 | 6 | A thấy phòng đủ, **khoá** phòng; E dùng mã/link | E **không vào được** |
@@ -121,7 +121,7 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 | NFR-09 | Chạy tác vụ dọn: chat phòng `CLOSED`, phiên Khách hết (P2), biên lai > 24 giờ, nhật ký > 14 ngày (đề xuất 04/10/2026, chờ PO duyệt) | Dữ liệu đúng loại đã xoá; ván online và nước đi còn nguyên; ván AI P1 không có bản ghi bền; chat 1-1 không bị xoá theo phòng |
 | NFR-10 | Gửi chuỗi chứa HTML/script/`javascript:` vào chat, tên hiển thị, tên phòng (đề xuất 04/10/2026, chờ PO duyệt) | Hiện nguyên văn như chữ; không script chạy, không điều hướng |
 
-Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem (tối đa 2 mỗi phòng), ở Sảnh và gửi chat. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem. **Phần media của GATE-LOAD** (đề xuất 04/10/2026, chờ PO duyệt): mỗi ván có 2 người chơi bật camera và mic ở mức *Đối thủ và người xem* (20 người phát, 40 luồng), 1 người xem mỗi ván nhận cả hai người (10 người xem media); mỗi ván đi 1 nước/5 giây, 1 tin chat/10 giây; ghi số luồng, băng thông và (nếu môi trường cung cấp số đo) CPU của LiveKit tách khỏi bài tải socket. **Còn thiếu để tái lập:** độ phân giải/FPS/bitrate, môi trường, tiêu chí đạt cho media; chốt ở PoC.
+Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem (mỗi phòng cho phép tối đa 5; phân bổ không nhất thiết đủ) ở Sảnh và gửi chat; thêm một phòng đầy 5 người xem để kiểm quyền và đồng bộ, ở Sảnh và gửi chat. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem. **Phần media của GATE-LOAD** (đề xuất 04/10/2026, chờ PO duyệt): mỗi ván có 2 người chơi bật camera và mic ở mức *Đối thủ và người xem* (20 người phát, 40 luồng), 1 người xem mỗi ván nhận cả hai người (10 người xem media); mỗi ván đi 1 nước/5 giây, 1 tin chat/10 giây; ghi số luồng, băng thông và (nếu môi trường cung cấp số đo) CPU của LiveKit tách khỏi bài tải socket. **Còn thiếu để tái lập:** độ phân giải/FPS/bitrate, môi trường, tiêu chí đạt cho media; chốt ở PoC.
 
 ---
 
@@ -177,7 +177,7 @@ Nguồn AC chi tiết: Nhóm I–N trong [01], toàn bộ mục kiểm đối �
 | Lịch sử/xuất | Quyền chính chủ, ván 0 nước và INTERRUPTED/ABANDONED; nhánh đã undo không phát lại; FEN theo con trỏ; PGN nhập thật vào công cụ ngoài |
 | Tiện ích/giao diện | DEMO_MODE tắt vẫn chặn API; thông số máy là số thật; nhiều tab chỉ một nơi phát; Giấy Sáng/Theo hệ thống kiểm mọi trạng thái, không biến thành P1 |
 
-P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/NFR liên quan; không có lỗi Cao/Nghiêm trọng. Nâng trần người xem không mặc nhiên thay mục tiêu tổng quy mô đã duyệt; đo thêm tình huống phòng đầy năm người xem trong tải tổng để kiểm quyền và đồng bộ.
+P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/NFR liên quan; không có lỗi Cao/Nghiêm trọng.
 
 ## 11. Cổng kiểm chứng kỹ thuật trước cam kết triển khai
 

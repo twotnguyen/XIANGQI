@@ -71,7 +71,7 @@ Kiểm tra trùng username phải xét cả `profiles` và bảng này (chưa h�
 | `kind` | enum `CASUAL` / `RANKED` | P1 chỉ `CASUAL`; `RANKED` ở P2 |
 | `privacy` | enum `PUBLIC` / `CODE_ONLY` / `LOCKED` | CASUAL bật LOCKED cần đủ hai người; đã khoá thì giữ khi mất ghế. RANKED luôn riêng giữa hai người, không có API mở công khai |
 | `clock_seconds` | int NULL | 300 / 600 / 900; `NULL` = không giới hạn (P2) |
-| `max_spectators` | smallint | **P1: 0–2; P2: 0–5**, không đổi sau khi tạo (BA 2.8, Phần 11) |
+| `max_spectators` | smallint | **0–5 (mặc định 5)** từ P1 (PO 04/10/2026), không đổi sau khi tạo (BA 2.8) |
 | `status` | enum `WAITING` / `PLAYING` / `FINISHED` / `CLOSED` | |
 | `invite_token` | text | Token trong link/QR; **đổi mới** khi khoá hoặc mở lại (BA 4.3) |
 | `created_at`, `closed_at` | timestamptz | |

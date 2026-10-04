@@ -260,14 +260,14 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * Khi một người dùng truy cập phòng (qua Link mời, Mã phòng hoặc Mã QR):
     * Nếu 2 ghế đấu đã đủ người, nhưng phòng vẫn còn chỗ xem (số người xem hiện tại thấp hơn số người xem tối đa của phòng, `Quyết định 2.8`) $\rightarrow$ Máy chủ tự động cấp quyền vào phòng với vai trò **Người xem (`role = SPECTATOR`)** và hiển thị thông báo nhẹ:
       > ℹ️ *"Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem."*
-    * Nếu phòng đã đạt sức chứa (**2 người chơi + số người xem tối đa của phòng**, tối đa 4 người; phòng tạo ở chế độ "Không có người xem" thì chỉ 2 người) $\rightarrow$ Máy chủ từ chối tiếp nhận và thông báo lỗi rõ ràng: ⚠️ *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"*.
+    * Nếu phòng đã đạt sức chứa (**2 người chơi + số người xem tối đa của phòng**, tối đa 7 người; phòng tạo ở chế độ "Không có người xem" thì chỉ 2 người) $\rightarrow$ Máy chủ từ chối tiếp nhận và thông báo lỗi rõ ràng: ⚠️ *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"*.
 
 ---
 
 ### Quyết định 2.7: Thông số tạo phòng & ý nghĩa 3 chế độ riêng tư
 * **Lựa chọn đã chốt:** **[ROOM-SPEC] Tạo phòng gồm tên + mức giờ + chế độ riêng tư; định nghĩa rõ `PUBLIC` / `CODE_ONLY` / `LOCKED`**
 * **Mô tả nghiệp vụ:**
-  1. **Trường khi tạo phòng (`MODAL-CREATE-ROOM`):** Tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ (4 mức, `Quyết định 2.1`), chế độ riêng tư (`PUBLIC` hoặc `CODE_ONLY`; `LOCKED` không chọn được lúc tạo, xem `Quyết định 2.8`), số người xem tối đa (**Không có người xem**, hoặc 1–2; **mặc định 2**; không đổi sau khi tạo). Phe mặc định của Host là Đỏ (`Quyết định 2.3`). Mức giờ **không đổi được** sau khi tạo phòng. Mã phòng 8 ký tự do máy chủ sinh.
+  1. **Trường khi tạo phòng (`MODAL-CREATE-ROOM`):** Tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ (4 mức, `Quyết định 2.1`), chế độ riêng tư (`PUBLIC` hoặc `CODE_ONLY`; `LOCKED` không chọn được lúc tạo, xem `Quyết định 2.8`), số người xem tối đa (**Không có người xem**, hoặc 1–5; **mặc định 5**; không đổi sau khi tạo). Phe mặc định của Host là Đỏ (`Quyết định 2.3`). Mức giờ **không đổi được** sau khi tạo phòng. Mã phòng 8 ký tự do máy chủ sinh.
   2. **Ý nghĩa 3 chế độ:**
 
 | Chế độ | Hiện ở Sảnh | Người mới vào bằng | Ghi chú |
@@ -276,15 +276,15 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | `CODE_ONLY` | Không | Mã 8 ký tự, link/QR, lời mời bạn bè | Phải có mã hoặc link |
 | `LOCKED` | Không | **Không ai mới vào được**, kể cả có mã/link/QR | Chỉ bật được khi đã đủ 2 người chơi; người đang trong phòng giữ nguyên (`Quyết định 4.3`) |
 
-  3. **Danh sách phòng ở Sảnh:** Sắp xếp phòng mới nhất lên đầu, hiển thị tối đa 50 phòng, tự làm mới; mỗi dòng gồm tên phòng, Chủ phòng, mức giờ, số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 4), nút "Vào xem".
-  4. **Thách đấu bạn bè (P2, duyệt 04/10):** Từ `SCR-FRIENDS` mở lại `MODAL-CREATE-ROOM`; người gửi nhập tên, mặc định **10 phút / CODE_ONLY / 2 người xem**, được đổi trong phạm vi CASUAL của phân kỳ. Chỉ khi xác nhận mới tạo phòng rồi gửi lời mời theo 2.5. Huỷ form không tạo phòng/không gửi mời. Nếu bạn vừa bận hoặc từ chối/hết hạn, phòng đã tạo **vẫn tồn tại** để Host tự quản lý; không tự đóng hoặc chuyển sang ván với máy.
+  3. **Danh sách phòng ở Sảnh:** Sắp xếp phòng mới nhất lên đầu, hiển thị tối đa 50 phòng, tự làm mới; mỗi dòng gồm tên phòng, Chủ phòng, mức giờ, số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 7), nút "Vào xem".
+  4. **Thách đấu bạn bè (P2, duyệt 04/10):** Từ `SCR-FRIENDS` mở lại `MODAL-CREATE-ROOM`; người gửi nhập tên, mặc định **10 phút / CODE_ONLY / 5 người xem**, được đổi trong phạm vi CASUAL của phân kỳ. Chỉ khi xác nhận mới tạo phòng rồi gửi lời mời theo 2.5. Huỷ form không tạo phòng/không gửi mời. Nếu bạn vừa bận hoặc từ chối/hết hạn, phòng đã tạo **vẫn tồn tại** để Host tự quản lý; không tự đóng hoặc chuyển sang ván với máy.
 
 ---
 
 ### Quyết định 2.8 (đã duyệt 03/10): Vào phòng, ghế ngồi và người xem
 * **Lựa chọn đã chốt:** **[ROOM-ACCESS] Một lời mời = ba cách vào cùng quyền; ghế trống thì vào ghế, hết ghế thì làm người xem; Host sắp xếp ghế/người xem; `LOCKED` chỉ bật khi đủ 2 người chơi**
 * **Mô tả nghiệp vụ:**
-  1. **Thiết lập khi tạo phòng:** Người tạo chọn *Không có người xem* hoặc số người xem tối đa 1–2 (**mặc định 2**; yêu cầu cốt lõi của Product Owner 03/10: tối đa 2 người xem; nâng trần lên 5 là việc mở rộng sau). Sức chứa phòng = 2 + số này (tối đa 4). Không đổi sau khi tạo.
+  1. **Thiết lập khi tạo phòng:** Người tạo chọn *Không có người xem* hoặc số người xem tối đa 1–5 (**mặc định 5**; **PO quyết định 04/10/2026:** ngay từ P1 hỗ trợ tối đa 5 người xem, thay cho mức tối đa 2 chốt 03/10). Sức chứa phòng = 2 + số này (tối đa 7). Không đổi sau khi tạo.
   2. **Mời người vào:** Bấm "Chia sẻ phòng" tạo cùng lúc **3 hình thức**: Link, Mã 8 ký tự, Mã QR. Cả ba cho **cùng một quyền**, không phân biệt xem/chơi. Chỉ 2 người chơi thấy nút Chia sẻ.
   3. **Người mới vào đâu:** Ghế đấu còn trống thì vào **ngay ghế đó**. Hai ghế đã kín thì vào làm **Người xem** nếu còn chỗ (`Quyết định 2.6`); hết chỗ thì báo phòng đầy. Vào từ danh sách phòng ở Sảnh (nút "Vào xem") thì **luôn** vào vai Người xem.
   4. **Đổi chỗ giữa ghế và người xem trong CASUAL** (chỉ khi phòng `WAITING` hoặc `FINISHED`, **không đổi chỗ khi ván đang diễn ra**):
@@ -402,7 +402,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * **Ba mức chia sẻ camera/mic của người chơi** (chọn riêng từng người chơi; **một mức chia sẻ áp chung cho camera và mic đang bật**; camera và mic **bật/tắt độc lập** nhau (PO làm rõ 04/10/2026); mặc định **Tắt**): **(1) Không chia sẻ** · **(2) Chỉ đối thủ** · **(3) Cả đối thủ và người xem**. Phòng Ranked không có người xem nên chỉ có mức (1) và (2). Media chỉ được truyền trực tiếp, **không ghi hình, không ghi âm, không lưu**.
 * **Lý do nghiệp vụ & kỹ thuật:**
   * Giữ không gian thi đấu tĩnh lặng, tập trung cho 2 người chơi cờ tướng; ngăn chặn triệt để hành vi "nhắc cờ", bình luận khiêu khích hoặc bật tiếng ồn gây rối bằng giọng nói.
-  * Tối ưu hóa tối đa băng thông máy chủ LiveKit SFU (chỉ cần chuyển tiếp 2 luồng phát của người chơi tới tối đa 2 người xem).
+  * Tối ưu hóa tối đa băng thông máy chủ LiveKit SFU (chỉ cần chuyển tiếp 2 luồng phát của người chơi tới tối đa 5 người xem).
 
 ---
 
@@ -706,6 +706,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * **Nguồn lực và hạn chót (Product Owner cung cấp 03/10/2026):** nhóm **7 người**, hạn nộp/demo khoảng **2 tuần** (đến khoảng 17/10/2026). Vì vậy phạm vi làm trước được giới hạn ở P1 theo `Phần 11`.
   * **Nhóm và thời gian (PO trả lời 04/10/2026):** Product Owner **nằm trong nhóm 7 người**; **Scrum Master là người đại diện PO (Twot)**; mọi thành viên làm **toàn thời gian** cho dự án và nhóm có **đủ các kỹ năng** cần thiết; **bắt đầu ngay 04/10/2026, hoàn thành sau 2 tuần (nộp 18/10/2026; ngày làm việc D1 = 04/10, D14 = 17/10)**; ước lượng bằng **giờ**. Cách đọc "đủ kỹ năng" và "toàn thời gian" là lời của PO, chưa có bảng giờ từng người; con số 17/10 ở dòng trên là theo mốc bắt đầu cũ 03/10, nay lấy mốc 04/10.
   * **Tiêu chí chấm kế hoạch Jira của giáo viên (PO cung cấp 04/10/2026; đồ án môn học):** kế hoạch phải **hợp lý và cụ thể**; **Description** của từng Epic, Story, Task phải đủ chi tiết để người làm hiểu yêu cầu, mục tiêu và kết quả, **cách kiểm thử và điều kiện PASS**; **thứ tự sắp xếp hợp lý**: kết quả của việc này là điểm bắt đầu của việc kia, **tránh hai việc A và B chạy song song trong khi B cần kết quả của A** (lãng phí thời gian). Giáo viên chưa nêu số Sprint tối thiểu.
+  * **Số người xem (PO quyết định 04/10/2026):** phòng CASUAL có **2 người chơi và tối đa 5 người xem, mặc định 5** ngay từ P1 (thay quyết định 03/10 "tối đa 2 người xem, 5 là mở rộng sau"). Hệ quả: sức chứa phòng tối đa 7; tải máy chủ, luồng camera/mic và bài kiểm tra tải phải tính tới 5 người xem mỗi phòng; Story "Mở rộng người xem" của P2 không còn (đã nằm trong P1).
   * **Nhịp Sprint (PO chọn 04/10/2026):** **4 Sprint** theo độ dài 4 + 3 + 4 + 3 ngày: Sprint 1 từ 04/10 đến 07/10, Sprint 2 từ 08/10 đến 10/10, Sprint 3 từ 11/10 đến 14/10, Sprint 4 từ 15/10 đến 17/10; nộp 18/10/2026. Mỗi Sprint phải có Sprint Goal và một Increment dùng được; số Sprint không làm thay đổi phạm vi P1.
   * **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
   * **Hạ tầng media (PO chốt 04/10/2026):** dùng **LiveKit Cloud** (gói miễn phí lúc bắt đầu, không tự dựng LiveKit); hạn mức, chi phí và việc thu hồi quyền theo `docs/04` mục media.
@@ -744,7 +745,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 3 | Mời bạn vào phòng (ngay trong game, gửi link, mã phòng) | 2.2 (Link + Mã 8 ký tự), 2.4 (tự chuyển vào phòng sau đăng nhập), 2.5 (**mời bạn bè đang online**), 5.5 (hệ thống bạn bè tối thiểu: tìm theo username, kết bạn hai chiều, trạng thái online/đang đấu, chuông lời mời kết bạn); `MODAL-INVITE`, `SCR-FRIENDS`. Nhắn tin 1-1 và Thách đấu là P2 |
 | 4 | Khởi tạo bàn cờ | 3.1, 3.4 (bàn cờ SVG, quân chữ Hán, click/kéo thả, âm thanh) |
 | 5 | Hai người đánh cờ qua mạng | 3.3, 3.5, 8.3 (phần mất kết nối), đồng hồ 5/10/15 phút (mặc định 10), Đầu hàng, Xin hòa; `SCR-GAME-ROOM`, `OVERLAY-RECONNECTING`, `MODAL-MATCH-RESULT` |
-| 6 | Công khai (mọi người xem) / khoá không cho ai vào / khoá nhưng có mã vào xem; **tối đa 2 người xem** | 2.7 (`PUBLIC`, `CODE_ONLY` = có mã mới vào, `LOCKED` = không ai vào), 2.8, 4.2 (đuổi), 4.3; `PANEL-SPECTATORS`, `SCR-ACCESS-DENIED` |
+| 6 | Công khai (mọi người xem) / khoá không cho ai vào / khoá nhưng có mã vào xem; **tối đa 5 người xem** | 2.7 (`PUBLIC`, `CODE_ONLY` = có mã mới vào, `LOCKED` = không ai vào), 2.8, 4.2 (đuổi), 4.3; `PANEL-SPECTATORS`, `SCR-ACCESS-DENIED` |
 | 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1, 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 5.4 (3 mức chia sẻ); `PANEL-CHAT`, `PANEL-MEDIA` |
 | 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
 

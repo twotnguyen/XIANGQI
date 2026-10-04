@@ -4,7 +4,7 @@
 
 ## 1. Độ phủ và cách đọc
 
-- **81 US: 53 P1 + 28 P2; 280 AC có mã duy nhất.** Mã US/AC/TC là nhãn đặc tả, không phải key Jira.
+- **80 US: 53 P1 + 27 P2; 276 AC có mã duy nhất.** Mã US/AC/TC là nhãn đặc tả, không phải key Jira.
 - **37 thành phần: 23 P1 + 14 P2**, mỗi thành phần có điều kiện và kết quả năm trạng thái. Một thành phần P1 có thể có chức năng P2 bên trong; lấy phân kỳ của AC, không lấy toàn màn hình để kéo việc vào P1.
 - `TC-…` đối ứng từng `AC-…`: nội dung AC là oracle (kết quả bắt buộc), không sao chép luật sang bảng test để tạo nguồn thứ hai. Nếu AC có nhiều nhánh, triển khai test tham số hoá cho **từng nhánh**, không lấy một ca đại diện rồi đánh dấu cả AC đạt.
 - Toàn bộ kiểm thử hiện **NOT_RUN**. Số hàng là độ phủ **đặc tả**, không phải độ phủ code hoặc số test PASS.
@@ -15,7 +15,7 @@
 | Nhóm | Fixture và thao tác bắt buộc | Tầng |
 |---|---|---|
 | AUTH | Tài khoản mới/dở/đã hoàn tất; OTP đúng/sai/hết hạn; gián đoạn từng bước; hai phiên và hai yêu cầu đồng thời; nhập ngoài biên tên/mật khẩu | Tích hợp + E2E; nhà cung cấp thật ở cổng [05] |
-| ROOM/FRIEND | A/B ngồi ghế, C/D xem, E thử vào; phòng N=0/1/2 và P2 N=5; đổi vai/quyền trong lúc lệnh đang chờ; trần 200/50 và yêu cầu chéo | Tích hợp nhiều client + E2E |
+| ROOM/FRIEND | A/B ngồi ghế, C/D xem, E thử vào; phòng N=0/1/2 và N=5 (đầy); đổi vai/quyền trong lúc lệnh đang chờ; trần 200/50 và yêu cầu chéo | Tích hợp nhiều client + E2E |
 | BOARD/PLAY | Thế đầu, từng thế kết thúc [02], lệnh trùng/cũ/ngoài lượt; điều khiển thời gian ở trước/tại/sau hạn, kết nối lại và lỗi CSDL | Đơn vị + tích hợp + E2E |
 | CHAT/MEDIA/SOC | Cặp ghế cũ/mới, người xem, bạn/cựu bạn; gửi vượt 200 ký tự/5 tin; cấp/từ chối thiết bị, đổi chia sẻ, nhận track bằng người không có quyền | Tích hợp + E2E + kiểm tay thiết bị |
 | AI | Mỗi cấp × phe, hàng đợi bận, giết tiến trình, kết quả tìm cũ, Thử lại từng loại lỗi, mất kết nối trước/sau 30 phút | Đơn vị + tích hợp + đo thật |
@@ -273,10 +273,6 @@
 | US-SOC-03 | P2 | BA 2.7, 5.5, 2.5 | AC-SOC-03-02 | TC-SOC-03-02 | NOT_RUN |
 | US-SOC-03 | P2 | BA 2.7, 5.5, 2.5 | AC-SOC-03-03 | TC-SOC-03-03 | NOT_RUN |
 | US-SOC-03 | P2 | BA 2.7, 5.5, 2.5 | AC-SOC-03-04 | TC-SOC-03-04 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-01 | TC-SOC-04-01 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-02 | TC-SOC-04-02 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-03 | TC-SOC-04-03 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-04 | TC-SOC-04-04 | NOT_RUN |
 | US-HIS-01 | P2 | BA 6.2, 7.3, 1.3 | AC-HIS-01-01 | TC-HIS-01-01 | NOT_RUN |
 | US-HIS-01 | P2 | BA 6.2, 7.3, 1.3 | AC-HIS-01-02 | TC-HIS-01-02 | NOT_RUN |
 | US-HIS-01 | P2 | BA 6.2, 7.3, 1.3 | AC-HIS-01-03 | TC-HIS-01-03 | NOT_RUN |
@@ -509,7 +505,7 @@ US: US-AUTH-P2-01. Các US-UI-03/04/05/06 áp dụng chung.
 
 ### UI-17 · `MODAL-CREATE-ROOM` · P1
 
-US: US-ROOM-01, US-SOC-04, US-SOC-03. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-ROOM-01, US-SOC-03. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -713,7 +709,7 @@ US: US-MEDIA-01, US-MEDIA-02, US-MEDIA-03, US-RANK-06. Các US-UI-03/04/05/06 á
 
 ### UI-34 · `PANEL-SPECTATORS` · P1
 
-US: US-ROOM-09, US-PLAY-09, US-SOC-04. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-ROOM-09, US-PLAY-09. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -785,7 +781,7 @@ US: US-DEMO-03. Các US-UI-03/04/05/06 áp dụng chung.
 | TC-X-20 | Khách hết phiên sau ván với tài khoản chính thức | Không lịch sử phía Khách; bản ghi đối thủ giữ và tên cá nhân thành Khách | BA 1.3 |
 | TC-X-21 | Khách rời phòng lúc phiên chưa đủ 12 giờ; sau đó thử đến hạn trong lúc còn ghế rồi rời | Trước hạn vẫn cùng danh tính; đến hạn khi có ghế không hết, rời sau hạn mới hết phiên | BA 1.3 |
 | TC-X-22 | RANKED kết thúc; A rời, B ở lại; A tìm mới, B thử tìm trước khi rời; đợi hạn 10 phút | A được tìm, B bị chặn do còn ghế; phòng không WAITING; không reset hạn; tới hạn đóng | BA 7.2 |
-| TC-X-23 | Thách đấu mở form rồi Huỷ; mở lại xác nhận; người nhận vừa bận/từ chối/hết hạn | Huỷ không tạo phòng; mặc định 10 phút/CODE_ONLY/N=2; xác nhận chỉ một phòng, lỗi mời không xoá phòng | BA 2.7 |
+| TC-X-23 | Thách đấu mở form rồi Huỷ; mở lại xác nhận; người nhận vừa bận/từ chối/hết hạn | Huỷ không tạo phòng; mặc định 10 phút/CODE_ONLY/N=5; xác nhận chỉ một phòng, lỗi mời không xoá phòng | BA 2.7 |
 | TC-X-24 | Có hai hội thoại, nhiều tin đến và tin mình gửi; tải ở tab nền rồi xem một phần; huỷ/kết bạn lại | Badge đếm tin đến chưa đọc của bạn hiện tại; chỉ tin vào vùng nhìn tab hoạt động thành đã đọc; đồng bộ thiết bị, không reset read_at | BA 5.2 |
 
 ## 6. Cổng nghiệm thu

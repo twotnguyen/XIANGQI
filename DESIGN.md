@@ -413,14 +413,14 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 │                                ├─────────────────────────┤
 │  [Hệ tọa độ GR-COORD 9x10]     │ 💬 Chat (Kênh Riêng/Chung)│
 │                                ├─────────────────────────┤
-│                                │ 👥 Người xem (Tối đa 2–5)│
+│                                │ 👥 Người xem (Tối đa 5)│
 ├────────────────────────────────┴─────────────────────────┤
 │ [Đầu hàng]  [Xin hoà]  [Xin đi lại*]                     │
 └──────────────────────────────────────────────────────────┘
 ```
 
 **Quy tắc động thích ứng theo Chế độ chơi (Chốt, `BA-SCOPE`):**
-- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–2 ở P1 (tới 5 ở P2), mặc định 2; xem BA-SCOPE `Quyết định 2.8`).
+- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–5, mặc định 5; xem BA-SCOPE `Quyết định 2.8`).
 - **Ván Đánh Xếp Hạng (Ranked Elo FIDE):** 
   - ⛔ **ẨN HOÀN TOÀN** nút `[Xin đi lại]` (Cấm Undo 100%).
   - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm người xem 100% để chống phím cờ).
