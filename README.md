@@ -103,6 +103,7 @@ Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đo�
 | 3 | Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 | |
 | 4 | Điều khoản sử dụng, chính sách quyền riêng tư, chức năng xoá tài khoản: để ngoài phạm vi | Có thể cần nếu công bố thật |
 | 5 | Mockup (`mockups/`) là bản mẫu, chưa cập nhật hết theo phân kỳ P1/P2 và các chi tiết mới | Cập nhật khi dựng giao diện thật |
+| 6 | Nút *Đăng ký bằng Google* (bước 1 đăng ký) và liên kết *Quên mật khẩu?* (màn đăng nhập) hiện mờ "Sắp ra mắt" ở P1 (đề xuất 04/10/2026, đã ghi vào AC-AUTH-04-04 và `DANH-MUC` mục 7) | Chờ PO duyệt |
 
 **Lịch sử 03/10/2026, đã bị thay thế 04/10/2026:** thứ tự dừng phần (docs/06 mục 1b) và mốc ngày 4/7/10/12/14 (mục 1c). PO quyết định giữ đủ P1 trong 14 ngày, không dừng phần (BA 10.1); các mốc chỉ dùng để theo dõi và báo PO sớm. Cần biết: hạn 14 ngày cố định, theo ước lượng cơ sở **không mức nào kịp**; chỉ Mức 1 kịp ở kịch bản rất lạc quan.
 

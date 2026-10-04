@@ -59,7 +59,7 @@ Cách đọc:
 * **AC-AUTH-04-01** — Khi nhập đúng thì vào `/lobby` (hoặc vào đúng phòng nếu đến từ link mời, US-AUTH-06).
 * **AC-AUTH-04-02** — Khi sai tên hoặc mật khẩu thì báo chung *"Sai tên đăng nhập hoặc mật khẩu"* (không nói sai ô nào) và không tiết lộ email.
 * **AC-AUTH-04-03** — Tick *Ghi nhớ đăng nhập* (mặc định tick) thì phiên giữ 30 ngày; bỏ tick thì phiên hết khi đóng trình duyệt hoặc sau 12 giờ.
-* **AC-AUTH-04-04** — Nút *Guest* và *Đăng nhập bằng Google* hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"*.
+* **AC-AUTH-04-04** — Nút *Guest* và *Đăng nhập bằng Google* ở màn đăng nhập, **nút *Đăng ký bằng Google* ở bước 1 của màn đăng ký** và liên kết *Quên mật khẩu?* ở màn đăng nhập hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"* (phần nút Đăng ký bằng Google và liên kết Quên mật khẩu: đề xuất 04/10/2026 để khớp `DANH-MUC` mục 3 `SCR-REGISTER`/`SCR-LOGIN`, chờ PO duyệt).
 * **AC-AUTH-04-05** — Đăng nhập khi đang đăng nhập ở tab/thiết bị khác thì phiên mới tiếp quản, nơi cũ nhận thông báo và chuyển chỉ đọc (BA 1.8).
 
 ### US-AUTH-05 · Hồ sơ cơ bản và đăng xuất (P1) — BA 1.4, 1.6
