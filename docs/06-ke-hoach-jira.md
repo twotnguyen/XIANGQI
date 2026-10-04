@@ -65,7 +65,7 @@ Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ
 ## 2. Giả định lập kế hoạch
 
 * **Nhóm 7 người**; tên và vai trò do Product Owner gán (mục 3).
-* **Thời hạn cố định:** 2 tuần kể từ 03/10/2026 (đến khoảng 17/10/2026), **làm cả cuối tuần** (14 ngày).
+* **Thời hạn cố định:** 2 tuần, **bắt đầu 04/10/2026, nộp 18/10/2026** (PO cập nhật 04/10; mốc cũ 03/10 → 17/10), **làm cả cuối tuần** (14 ngày). *Bản kế hoạch cũ, chỉ để tham khảo.*
 * **Hệ số hiệu dụng 0,8**; một ngày công = một người làm trọn một ngày; 7 ngày/tuần.
 * Ước lượng thô (±30%) dựa trên đặc tả ở `docs/`; chưa tính học công nghệ mới và sửa lỗi do PoC thất bại.
 * Thứ tự phụ thuộc ở mục 6 là **phán đoán của người lập kế hoạch**, cần người trong nhóm xác nhận.
