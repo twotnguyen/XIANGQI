@@ -331,7 +331,7 @@ Phông chữ Hán; độ đúng luật phải được kiểm bằng nguồn đ�
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
-Cho hai người **đánh một ván cờ qua mạng**: đi nước (đồng bộ giữa hai trình duyệt), đồng hồ chạy, kết thúc ván (chiếu hết, hết giờ, đầu hàng, xin hoà), xử lý khi rớt mạng và nối lại, và đăng xuất giữa ván. **Máy chủ quyết định mọi thứ**.
+Cho hai người **đánh một ván cờ qua mạng**: đi nước (hai trình duyệt luôn thấy cùng một thế cờ), đồng hồ chạy, kết thúc ván (chiếu hết, hết giờ, đầu hàng, xin hoà), xử lý khi rớt mạng và nối lại, và đăng xuất giữa ván. **Máy chủ quyết định mọi thứ**.
 
 ## Yêu cầu được giao
 
@@ -589,7 +589,7 @@ Người chơi đã đăng nhập (một mình).
 - Ván với máy **không giới hạn thời gian** cho người chơi; không có xin hoà, không gợi ý nước.
 - Đóng tab: giữ ván **30 phút**; chủ động rời hoặc đăng xuất thì đầu hàng ngay.
 - Máy lỗi quá 10 giây → ván **Bỏ dở**, có nút **Thử lại** (ván mới cùng cấp, cùng phe đã bốc).
-- Phải đạt tiêu chuẩn chất lượng máy cờ: p95 thời gian trong ngưỡng, tỷ lệ thắng cấp cao ≥ 75%, 1.000 ván không lỗi.
+- Phải đạt tiêu chuẩn chất lượng máy cờ: thời gian suy nghĩ đạt ngưỡng (95% lần đo nhanh hơn mức quy định), tỷ lệ thắng cấp cao ≥ 75%, 1.000 ván không lỗi.
 
 ## Nguồn (đặc tả)
 
@@ -619,7 +619,7 @@ Báo cáo demo kịch bản tương ứng (video hoặc báo cáo Playwright), b
 
 ## Rủi ro / điểm chưa rõ
 
-Chất lượng máy cờ (p95, sức mạnh, ổn định) chỉ kết luận sau bài đo đầy đủ; không đạt thì ghi số thật và báo PO.
+Chất lượng máy cờ (thời gian suy nghĩ, sức mạnh, độ ổn định) chỉ kết luận sau bài đo đầy đủ; không đạt thì ghi số thật và báo PO.
 
 ## Task của Epic (liên kết dưới Epic)
 

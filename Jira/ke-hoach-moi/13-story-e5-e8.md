@@ -52,7 +52,7 @@ nước không hợp lệ → quân về chỗ cũ, ván không đổi; mất ph
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
+| Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -69,7 +69,7 @@ nước không hợp lệ → quân về chỗ cũ, ván không đổi; mất ph
 - Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
 - Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
-**Còn mở / chờ quyết định:** Yêu cầu dưới 100 ms chỉ đo được ở bài tải khi cả luồng đã nối thật.
+**Còn mở / chờ quyết định:** Yêu cầu dưới 100 ms chỉ đo được ở bài thử tải khi web và máy chủ đã nối thật.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
@@ -121,7 +121,7 @@ lỗi ghi dữ liệu thì **đóng băng cả hai đồng hồ**; quá 30 giây
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
+| Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -197,10 +197,10 @@ người xem không đầu hàng hay trả lời hoà thay người chơi đư�
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
-| Khung Đề nghị hoà | Đề nghị còn hạn, trả lời đúng tác động | Đang gửi/rút/trả lời; không dừng đồng hồ | Không còn đề nghị: gỡ khung/nút mở lại | Phản hồi lỗi: đối soát hạn/trạng thái, không hoà giả | Hết hạn/đã rút/đã kết thúc hoặc không phải người nhận |
-| Hộp xác nhận Đầu hàng | Xác nhận: RESIGN; Huỷ không đổi ván | Đợi ACK; chặn xác nhận trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Mất ACK: đối soát, không báo thua giả | Ván kết thúc/phiên cũ/không phải người chơi |
-| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả có thẩm quyền | Chưa có kết quả: đợi/đối soát, không đoán thắng | Tải kết quả lỗi: Thử lại, không cho đi thêm | Tái đấu/Replay sai chế độ, P1 ẩn |
+| Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
+| Khung Đề nghị hoà | Đề nghị còn hạn, trả lời đúng tác động | Đang gửi/rút/trả lời; không dừng đồng hồ | Không còn đề nghị: gỡ khung/nút mở lại | Phản hồi lỗi: kiểm lại hạn và trạng thái, không báo hoà sai | Hết hạn/đã rút/đã kết thúc hoặc không phải người nhận |
+| Hộp xác nhận Đầu hàng | Xác nhận: đầu hàng; Huỷ không đổi ván | Đợi máy chủ xác nhận; chặn bấm trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Không nhận được xác nhận: kiểm lại với máy chủ, không báo thua sai | Ván kết thúc, tab đã bị tab khác tiếp quản, hoặc không phải người chơi |
+| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở giai đoạn 1 |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -277,9 +277,9 @@ việc xác nhận đầu hàng chưa rõ thì không báo rời xong; lỗi ghi
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
-| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và đối soát | Đã xử lý hoặc không còn quyền điều khiển |
-| Lớp phủ Mất kết nối | Đã nối lại nhận snapshot rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
+| Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
+| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và kiểm lại với máy chủ | Đã xử lý hoặc không còn quyền điều khiển |
+| Lớp phủ Mất kết nối | Đã nối lại, nhận lại thế cờ rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -347,8 +347,8 @@ không phải chủ hoặc thiếu người mà bật khoá → từ chối; dan
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có vị trí chơi hoặc tính năng P2 chưa mở |
-| Hộp Cài đặt phòng | Host đổi riêng tư, thu hồi mã đúng | Đang thay đổi | Chưa có snapshot: hướng dẫn đợi, không chọn giá trị giả | Không còn quyền/ghi lỗi: tải trạng thái thật | Không Host; bật LOCKED chưa đủ hai ghế |
+| Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc tính năng P2 chưa mở |
+| Hộp Cài đặt phòng | Host đổi riêng tư, thu hồi mã đúng | Đang thay đổi | Chưa nhận được dữ liệu từ máy chủ: hướng dẫn đợi, không hiện giá trị giả | Không còn quyền/ghi lỗi: tải trạng thái thật | Không Host; bật LOCKED chưa đủ hai ghế |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -424,7 +424,7 @@ hết chỗ xem → từ chối; gửi trùng → không vượt sức chứa; x
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Phòng chờ | Ghế/Host/Sẵn sàng đúng trạng thái | Đang nhận snapshot/chuyển ghế | Ghế còn trống: mời bạn hoặc chia sẻ mã | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ |
+| Màn hình Phòng chờ | Ghế/Host/Sẵn sàng đúng trạng thái | Đang nhận thế cờ hiện tại hoặc chuyển ghế | Ghế còn trống: mời bạn hoặc chia sẻ mã | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ |
 | Hộp xác nhận Đuổi người xem | Chặn đến đóng phòng, người xem về Sảnh | Đang đuổi/chặn | Mục tiêu đã rời: cập nhật danh sách | Mất quyền/lỗi lệnh: không báo đã đuổi | Mục tiêu không là người xem/người gọi mất ghế |
 | Danh sách Người xem | Danh sách/số X/N đúng; Kick cho hai người | Tải/cập nhật danh sách | Chưa ai xem: giải thích; không dựng tài khoản giả | Tải/đuổi lỗi: tải lại danh sách thật | N=0/đã đủ; không ghế thì không quyền Kick |
 
@@ -432,7 +432,7 @@ hết chỗ xem → từ chối; gửi trùng → không vượt sức chứa; x
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
 |---|---|---|---|
 | `AC-ROOM-06-01` | Chỉ đổi chỗ khi phòng đang chờ hoặc đã kết thúc; khi đang đấu thì không đổi. | Thử đổi trong ván. | T-38, T-32 |
-| `AC-ROOM-06-02` | Người ngồi ghế bấm Chuyển sang người xem chỉ được khi còn chỗ xem; phòng không người xem hoặc đã đầy thì nút mờ "Phòng không còn chỗ cho người xem"; không vượt trần. | Thử ở phòng 0 người xem, đầy, còn chỗ. | T-38, T-32, T-40 |
+| `AC-ROOM-06-02` | Người ngồi ghế bấm Chuyển sang người xem chỉ được khi còn chỗ xem; phòng không người xem hoặc đã đầy thì nút mờ "Phòng không còn chỗ cho người xem"; không vượt giới hạn. | Thử ở phòng 0 người xem, đầy, còn chỗ. | T-38, T-32, T-40 |
 | `AC-ROOM-06-03` | Chủ phòng chuyển người đang ngồi ghế xuống xem (cùng điều kiện còn chỗ), hoặc mời một người xem lên ghế trống. | Chủ phòng mời lên ghế trống rồi ghế kín. | T-38, T-32, T-40 |
 | `AC-ROOM-06-04` | Người xem không tự ngồi vào ghế trống; chủ phòng không tự chuyển mình sang người xem (nút ẩn). | Thử cả hai ở máy chủ. | T-38, T-32 |
 | `AC-ROOM-06-05` | Mỗi lần đổi thành phần người ngồi ghế thì phòng về trạng thái đang chờ và "Sẵn sàng" reset. | Đổi lúc phòng đã kết thúc. | T-38, T-40 |
@@ -498,7 +498,7 @@ người xem **không thấy Kênh Riêng**, không có nút bật camera/micro,
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
+| Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 | Danh sách Người xem | Danh sách/số X/N đúng; Kick cho hai người | Tải/cập nhật danh sách | Chưa ai xem: giải thích; không dựng tài khoản giả | Tải/đuổi lỗi: tải lại danh sách thật | N=0/đã đủ; không ghế thì không quyền Kick |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
@@ -568,7 +568,7 @@ máy chủ từ chối hoặc mất phản hồi → không báo "đã gửi", k
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Khung Chat | Tin đúng quyền/kênh sau bộ lọc | Tải/gửi tin | Chưa có tin: lời nhắc viết theo kênh | Gửi lỗi: đánh dấu chưa gửi, đối soát trước thử | Vượt giới hạn, mất quyền kênh, ô trống |
+| Khung Chat | Tin đúng quyền/kênh sau bộ lọc | Tải/gửi tin | Chưa có tin: lời nhắc viết theo kênh | Gửi lỗi: đánh dấu chưa gửi, kiểm lại rồi mới cho gửi lại | Vượt giới hạn, mất quyền kênh, ô trống |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -629,7 +629,7 @@ máy chủ từ chối hoặc mất phản hồi → không báo "đã gửi", k
 
 **Các quy tắc**
 - Mức chia sẻ chọn **riêng từng người chơi**, áp **chung** cho camera và micro đang bật. **Không ghi hình, ghi âm hay lưu.**
-- Máy chủ **không cấp quyền phát** cho người xem. Đổi vai, bị đuổi, phòng đóng thì **thu hồi quyền ngay**; token cũ không lấy lại được quyền đã mất.
+- Máy chủ **không cấp quyền phát** cho người xem. Đổi vai, bị đuổi, phòng đóng thì **thu hồi quyền ngay**; mã truy cập cũ không dùng lại được để lấy quyền đã mất.
 - Lỗi camera/micro **không** làm hỏng việc đi cờ và chat.
 
 **Khi có lỗi**
@@ -638,7 +638,7 @@ từ chối quyền hoặc không có thiết bị → báo lỗi rõ, bàn cờ
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế/phiên cũ |
+| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -691,7 +691,7 @@ từ chối quyền hoặc không có thiết bị → báo lỗi rõ, bàn cờ
   - T-51 — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi
 
 **Các bước người dùng làm và hệ thống phản hồi**
-1. Mở thêm một tab vào cùng phòng: **tab mới tiếp quản**.
+1. Mở thêm một tab vào cùng phòng: **tab mới tiếp quản**, nghĩa là tab mới được điều khiển như bình thường, còn tab cũ chỉ được xem.
 2. Tab cũ hiện "Phiên này đã được mở ở tab khác", chuyển **chỉ đọc**; camera và micro của tab cũ **tự dừng**.
 3. Tab mới mặc định **tắt** camera và micro.
 
@@ -701,12 +701,12 @@ máy chủ **chặn mọi lệnh làm thay đổi** từ tab cũ; phiên hết h
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế/phiên cũ |
+| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
 |---|---|---|---|
-| `AC-MEDIA-03-01` | Mở thêm tab vào cùng phòng thì tab mới tiếp quản; tab cũ nhận "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; camera/micro tab cũ tự dừng; tab mới mặc định tắt. | Mở hai tab; tab cũ gửi nước. | T-53, T-57 |
+| `AC-MEDIA-03-01` | Mở thêm tab vào cùng phòng thì tab mới tiếp quản (tab mới điều khiển được, tab cũ không còn điều khiển); tab cũ nhận "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; camera/micro tab cũ tự dừng; tab mới mặc định tắt. | Mở hai tab; tab cũ gửi nước. | T-53, T-57 |
 
 **Điều kiện hoàn thành (PASS khi)**
 - Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
@@ -766,8 +766,8 @@ vào ghế phòng và bắt đầu ván máy cùng lúc thì chỉ một chỗ t
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Lượt máy/phiên cũ; đi lại hết lượt hoặc P1 chưa có |
-| Hộp chọn Cấp độ và Phe (đánh với máy) | Tạo ván đúng cấp/phe | Đang tạo/bốc phe | Chưa chọn đủ: hướng dẫn chọn | Tạo lỗi: đối soát, không ván kép | Đang có vị trí chơi hoặc đang gửi |
+| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Đến lượt máy hoặc tab đã bị tab khác tiếp quản; đi lại hết lượt hoặc P1 chưa có |
+| Hộp chọn Cấp độ và Phe (đánh với máy) | Tạo ván đúng cấp/phe | Đang tạo ván và chọn phe | Chưa chọn đủ: hướng dẫn chọn | Tạo lỗi: kiểm lại với máy chủ, không tạo hai ván | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc đang gửi |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -824,7 +824,7 @@ vào ghế phòng và bắt đầu ván máy cùng lúc thì chỉ một chỗ t
 
 **Các bước người dùng làm và hệ thống phản hồi**
 1. Ván kết thúc khi chiếu hết, hết nước đi, đầu hàng hoặc hoà; hiện hộp kết quả chỉ có **Rời phòng**.
-2. Đóng tab hoặc mất mạng: ván **giữ 30 phút** để vào lại cùng đường dẫn; Sảnh hiện băng "Bạn có ván đang chơi dở — Quay lại". Quá 30 phút ván là **Bỏ dở**. **Chủ động rời hoặc đăng xuất** (có xác nhận) thì **đầu hàng ngay**, không có ân hạn.
+2. Đóng tab hoặc mất mạng: ván **giữ 30 phút** để vào lại cùng đường dẫn; Sảnh hiện băng "Bạn có ván đang chơi dở — Quay lại". Quá 30 phút ván là **Bỏ dở**. **Chủ động rời hoặc đăng xuất** (có xác nhận) thì **đầu hàng ngay**, không có thời gian chờ nối lại.
 3. Nếu máy lỗi hoặc không trả lời quá 10 giây: ván thành **Bỏ dở**, báo "Máy cờ gặp sự cố" kèm nút **Thử lại**; thử lại tạo **ván mới** cùng cấp và cùng phe thực tế.
 4. Nếu máy chỉ **đang bận**: nút Thử lại chỉ yêu cầu máy tìm lại nước, **không gửi lại nước của người chơi**.
 
@@ -837,11 +837,11 @@ máy bận và máy hỏng cho hai nút Thử lại khác nhau; thất bại khi
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Lượt máy/phiên cũ; đi lại hết lượt hoặc P1 chưa có |
-| Hộp xác nhận Đầu hàng | Xác nhận: RESIGN; Huỷ không đổi ván | Đợi ACK; chặn xác nhận trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Mất ACK: đối soát, không báo thua giả | Ván kết thúc/phiên cũ/không phải người chơi |
-| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và đối soát | Đã xử lý hoặc không còn quyền điều khiển |
-| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả có thẩm quyền | Chưa có kết quả: đợi/đối soát, không đoán thắng | Tải kết quả lỗi: Thử lại, không cho đi thêm | Tái đấu/Replay sai chế độ, P1 ẩn |
-| Lớp phủ Mất kết nối | Đã nối lại nhận snapshot rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
+| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Đến lượt máy hoặc tab đã bị tab khác tiếp quản; đi lại hết lượt hoặc P1 chưa có |
+| Hộp xác nhận Đầu hàng | Xác nhận: đầu hàng; Huỷ không đổi ván | Đợi máy chủ xác nhận; chặn bấm trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Không nhận được xác nhận: kiểm lại với máy chủ, không báo thua sai | Ván kết thúc, tab đã bị tab khác tiếp quản, hoặc không phải người chơi |
+| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và kiểm lại với máy chủ | Đã xử lý hoặc không còn quyền điều khiển |
+| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở giai đoạn 1 |
+| Lớp phủ Mất kết nối | Đã nối lại, nhận lại thế cờ rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
@@ -849,7 +849,7 @@ máy bận và máy hỏng cho hai nút Thử lại khác nhau; thất bại khi
 | `AC-AI-03-01` | Ván kết thúc khi chiếu hết, hết nước đi, đầu hàng hoặc hoà theo luật; hộp kết quả chỉ có Rời phòng. | Gây từng kiểu kết thúc. | T-43, T-37, T-55 |
 | `AC-AI-03-02` | Đóng tab hoặc mất kết nối: ván giữ 30 phút để vào lại cùng đường dẫn; Sảnh hiện băng "Bạn có ván đang chơi dở — Quay lại"; quá 30 phút thì Bỏ dở. | Vào lại trước và sau 30 phút. | T-43, T-37, T-55, T-14 |
 | `AC-AI-03-03` | Đi lại và lưu lịch sử là giai đoạn sau, không hiện. | Tìm hai chức năng (không có). | T-37, T-58 |
-| `AC-AI-03-04` | Chủ động Rời ván hoặc Đăng xuất khi đang chơi với máy: xác nhận đầu hàng; đồng ý thì kết thúc, huỷ tìm kiếm, giải phóng chỗ chơi; Huỷ giữ ván; không áp ân hạn 30 phút. | Huỷ và đồng ý; kiểm chỗ chơi được giải phóng. | T-43, T-48, T-55 |
+| `AC-AI-03-04` | Chủ động Rời ván hoặc Đăng xuất khi đang chơi với máy: xác nhận đầu hàng; đồng ý thì kết thúc, huỷ tìm kiếm, giải phóng chỗ chơi; Huỷ giữ ván; không có thời gian chờ nối lại 30 phút. | Huỷ và đồng ý; kiểm chỗ chơi được giải phóng. | T-43, T-48, T-55 |
 | `AC-AI-04-01` | Máy lỗi hoặc không phản hồi quá 10 giây thì ván Bỏ dở, báo "Máy cờ gặp sự cố" kèm nút Thử lại. | Giết tiến trình máy. | T-43, T-37, T-55 |
 | `AC-AI-04-02` | Thử lại sau Bỏ dở tạo ván mới cùng cấp và phe thực tế (phe Ngẫu nhiên giữ kết quả đã bốc); không hồi sinh ván cũ; kiểm một chỗ chơi và chặn bấm trùng; thất bại không báo đã tạo. | Bấm Thử lại nhiều lần. | T-43, T-55 |
 

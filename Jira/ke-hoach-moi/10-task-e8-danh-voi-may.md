@@ -101,8 +101,8 @@ Dựng hành trình **chọn cấp, chọn phe và chơi với máy** trên màn
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Hộp chọn Cấp độ và Phe (đánh với máy) | Tạo ván đúng cấp/phe | Đang tạo/bốc phe | Chưa chọn đủ: hướng dẫn chọn | Tạo lỗi: đối soát, không ván kép | Đang có vị trí chơi hoặc đang gửi |
-| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Lượt máy/phiên cũ; đi lại hết lượt hoặc P1 chưa có |
+| Hộp chọn Cấp độ và Phe (đánh với máy) | Tạo ván đúng cấp/phe | Đang tạo ván và chọn phe | Chưa chọn đủ: hướng dẫn chọn | Tạo lỗi: kiểm lại với máy chủ, không tạo hai ván | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc đang gửi |
+| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Đến lượt máy hoặc tab đã bị tab khác tiếp quản; đi lại hết lượt hoặc P1 chưa có |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -110,7 +110,7 @@ Dựng hành trình **chọn cấp, chọn phe và chơi với máy** trên màn
 | Chọn Đen, máy đi trước | Bàn lật, lượt đúng |
 | Mở ván máy | Không có nút của chức năng chưa làm |
 | Nhận lỗi "bận" và lỗi "Bỏ dở" | Hai nút Thử lại gọi hai việc khác nhau; không tự gửi lại nước người |
-| Rời: huỷ rồi đồng ý | Huỷ không gửi gì; đồng ý chờ máy chủ |
+| Bấm Rời ván máy: lần một chọn Huỷ, lần hai chọn Đồng ý | Huỷ thì không gửi gì lên máy chủ; Đồng ý thì chờ máy chủ xác nhận mới thoát |
 | Kéo thả đúng và sai ở hai phe; về Sảnh khi có ván dở | Đúng toạ độ; chỉ một băng quay lại, cùng một ván |
 | Thắng, thua, hoà, đầu hàng | Hộp kết quả đúng, chỉ Rời phòng; không nhầm với "Bỏ dở" |
 
@@ -121,7 +121,7 @@ Chuẩn bị: dữ liệu giả cho các lỗi, kết quả, đường dẫn `/a
 | 1 | Chọn Đen | Bàn lật, máy đi đầu |
 | 2 | Mở ván máy | Không có nút ngoài phạm vi |
 | 3 | Giả lập "bận" rồi "Bỏ dở" | Đúng hai hành động |
-| 4 | Rời: huỷ rồi đồng ý | Đúng |
+| 4 | Bấm Rời ván máy: lần một chọn Huỷ, lần hai chọn Đồng ý | Huỷ thì ván tiếp tục; Đồng ý thì thoát sau khi máy chủ xác nhận |
 | 5 | Kéo thả ở hai phe; về Sảnh với ván dở | Đúng; một băng quay lại |
 | 6 | Giả lập các kết quả | Hộp đúng, chỉ Rời phòng |
 | 7 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
@@ -149,7 +149,7 @@ Quản lý **một ván với máy** trong bộ nhớ máy chủ, theo quy tắc
 Phân biệt **máy chỉ đang bận** với **máy bị hỏng**, và trả đúng loại "Thử lại". Kết quả máy tìm xong **muộn** không được áp dụng vào ván mới.
 
 **Việc cần làm (làm lần lượt)**
-1. **Bắt đầu ván:** chiếm chỗ chơi dưới khoá theo người (nếu đã có chỗ khác thì từ chối); **bốc phe ngẫu nhiên ở máy chủ**; nếu người chơi cầm Đen, **máy (Đỏ) đi trước**.
+1. **Bắt đầu ván:** chiếm chỗ chơi dưới khoá theo người (nếu đã có chỗ khác thì từ chối); **chọn phe ngẫu nhiên ở máy chủ**; nếu người chơi cầm Đen, **máy (Đỏ) đi trước**.
 2. Ván này lưu **trong bộ nhớ**, tách riêng khỏi ván online; dùng luật chung; mỗi nước máy kiểm tra mã ván, phiên bản và mã tác vụ **trước khi áp dụng**.
 3. Sau mỗi nước (của người hay của máy), xét kết thúc theo thứ tự: chiếu hết/hết nước → chiếu liên tục → lặp thế → 120 nửa nước; hoặc **đầu hàng**. **Không** có xin hoà, **không** có hết giờ của người chơi.
 4. Khi kết thúc: chốt kết quả **một lần**, huỷ việc tìm nước, chặn nước và kết quả đến muộn, gửi trạng thái kết quả cho hộp thoại. Kết thúc **không** đồng nghĩa người chơi đã rời chỗ; **rời chỗ** mới giải phóng đúng vị trí.
@@ -237,7 +237,7 @@ Chuẩn bị: máy chủ, máy cờ thật, trình duyệt, hai tài khoản th�
 |---|---|---|
 | 1 | Chỗ chơi: chiếm bằng ghế mẫu, bắt đầu ván máy, giải phóng, bắt đầu lại | Chặn rồi nhận |
 | 2 | Chạy ba cấp, ba lựa chọn phe | Đúng phe, lượt, nước hợp lệ |
-| 3 | Vào lại trước/sau 30 phút | Đúng |
+| 3 | Đóng tab giữa ván máy rồi vào lại trước 30 phút, và vào lại sau 30 phút | Trước 30 phút: vào lại đúng thế cờ cũ; sau 30 phút: ván đã bỏ dở |
 | 4 | Gây máy bận, sập; mở đường dẫn bằng người khác | Thử lại đúng; người ngoài bị chặn |
 | 5 | Gây các kiểu kết thúc thật, đầu hàng | Một kết quả; hộp đúng |
 | 6 | Gửi lại kết quả cũ | Không hồi sinh ván |

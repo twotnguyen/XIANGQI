@@ -56,8 +56,8 @@ Dựng **Sảnh** và hộp thoại **tạo phòng**, ô **nhập mã** để v�
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
 | Thanh điều hướng | Mục/menu đúng phiên/phân kỳ; badge là tổng tin đến chưa đọc từ bạn hiện tại, theo BA 5.2 | Tải thông tin/badge | Không thông báo: badge ẩn, chuông có giải thích | Tải thông báo lỗi không biến thành không có thông báo | P2 chưa mở; hành động đang xử lý |
-| Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có vị trí chơi hoặc tính năng P2 chưa mở |
-| Hộp thoại Tạo phòng | Tạo phòng đúng giá trị đã chọn | Đang tạo, chặn bấm lại | Tên trống: hướng dẫn và các mặc định | Lỗi tạo: đối soát trước thử lại tránh hai phòng | Đang chiếm vị trí chơi hoặc tên không hợp lệ |
+| Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc tính năng P2 chưa mở |
+| Hộp thoại Tạo phòng | Tạo phòng đúng giá trị đã chọn | Đang tạo, chặn bấm lại | Tên trống: hướng dẫn và các mặc định | Lỗi tạo: kiểm lại với máy chủ trước khi thử lại để không tạo hai phòng | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc tên không hợp lệ |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -85,7 +85,7 @@ Chuẩn bị: dữ liệu giả cho trạng thái chỗ chơi; chạy giao diệ
 | 5 | Mở hộp thoại; đổi giá trị; thử sai biên | Mặc định đúng; chỉ giá trị hợp lệ |
 | 6 | Giả lập đang có ghế | Thanh quay lại, nút tạo mờ có lý do |
 | 7 | Giả lập danh sách lỗi và rỗng | Hai trạng thái khác nhau, nút đúng |
-| 8 | Mở và thu Luật chơi bằng bàn phím | Đúng |
+| 8 | Mở và thu Luật chơi bằng bàn phím (Enter mở, Esc thu) | Mở và thu được, con trỏ không bị kẹt |
 | 9 | Xem chức năng chưa làm | Mờ, có chú thích |
 | 10 | Dữ liệu giả hơn 50 phòng, tạo thêm một phòng mới | Mới nhất trước, tối đa 50, tự làm mới |
 | 11 | Một phòng đã đủ người xem | Nút Vào xem mờ có chú thích |
@@ -142,7 +142,7 @@ Dựng **phòng chờ** (hai ghế, nút Sẵn sàng, đếm 3 giây, chia sẻ 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Phòng chờ | Ghế/Host/Sẵn sàng đúng trạng thái | Đang nhận snapshot/chuyển ghế | Ghế còn trống: mời bạn hoặc chia sẻ mã | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ |
+| Màn hình Phòng chờ | Ghế/Host/Sẵn sàng đúng trạng thái | Đang nhận thế cờ hiện tại hoặc chuyển ghế | Ghế còn trống: mời bạn hoặc chia sẻ mã | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ |
 | Hộp thoại Chia sẻ phòng | Mã/link hiện hành; QR P2; mời bạn Online | Tải mã/bạn hoặc sao chép | Không bạn Online: vẫn chia sẻ link/mã nếu hợp lệ | Clipboard/lời mời lỗi; báo và cho cách khác | LOCKED/mất ghế; bạn bận/offline; QR ẩn P1 |
 | Màn hình Từ chối vào phòng | Thông báo đúng nguyên nhân + về Sảnh | Đợi kết quả kiểm quyền, chưa lộ phòng | Thiếu đích/lý do: thông báo không xác định đích, về Sảnh | Kiểm quyền lỗi: không tự cấp quyền, về Sảnh | Nút đang chuyển trang bị chặn trùng |
 
@@ -204,9 +204,9 @@ Cho người dùng tạo phòng: nhận về phòng mới, mã 8 ký tự và đ
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Một người xin hai chỗ cùng lúc (phòng và ván với máy) | Chỉ một chỗ thành công |
+| Một người cùng lúc xin vào phòng người chơi và vào ván với máy | Chỉ một yêu cầu thành công; yêu cầu kia báo "đang có chỗ chơi" |
 | Bước sau lỗi sau khi đã xin chỗ | Chỗ được trả lại, không để chỗ ma |
-| Đổi người ngồi ghế | Trạng thái "Sẵn sàng" của cả hai về chưa sẵn sàng |
+| Có người mới ngồi vào ghế, hoặc hai người đổi ghế cho nhau | Cả hai người đều bị đưa về "chưa sẵn sàng" |
 | Gửi lệnh vào phòng đã đóng | Bị bỏ qua, phòng không mở lại, không lộ dữ liệu |
 | Trình duyệt khai tên người khác | Không chiếm được chỗ của người đó |
 | Dữ liệu hợp lệ | Có phòng, chủ phòng ghế Đỏ, mã 8 ký tự |
@@ -215,7 +215,7 @@ Cho người dùng tạo phòng: nhận về phòng mới, mã 8 ký tự và đ
 | Yêu cầu mới khi đã có chỗ chơi | Từ chối, không tạo phòng ma |
 | Tạo lần thứ 6 trong 10 phút | Bị chặn; hết cửa sổ thì xét lại |
 | Lỗi khi ghi | Không báo thành công giả |
-| Người ngoài xin đường dẫn mời | Không nhận được |
+| Người không ở trong phòng xin lấy đường dẫn mời | Không nhận được đường dẫn |
 | Cố sửa giờ hoặc số người xem của phòng đã tạo (qua giao diện hoặc gửi thẳng yêu cầu) | Bị từ chối; giờ và số người xem **không đổi được** sau khi tạo |
 
 **Cách tự kiểm tra**
@@ -230,7 +230,7 @@ Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng l
 | 5 | Khai tên người khác | Không chiếm được chỗ |
 | 6 | Tạo phòng với các giá trị mặc định, rồi các biên (tên 1 và 60 ký tự, giờ 5/10/15, người xem 0 và 5), tên cấm | Hợp lệ tạo được; sai bị từ chối; chủ phòng ghế Đỏ, mã 8 ký tự |
 | 7 | Tạo xong, giả vờ mất kết quả, gửi lại cùng yêu cầu | Trả đúng phòng cũ |
-| 8 | Đang có ghế, gửi yêu cầu tạo mới | Từ chối |
+| 8 | Người đang ngồi ghế ở một phòng, gửi thêm yêu cầu tạo phòng mới | Máy chủ từ chối, không tạo thêm phòng |
 | 9 | Tạo 5 lần rồi lần 6 trong 10 phút; thử lại sau hạn | Lần 6 bị chặn; sau hạn xét lại |
 | 10 | Người không ngồi ghế xin đường dẫn; gây lỗi ghi | Không nhận được; không báo thành công giả |
 
@@ -278,7 +278,7 @@ Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì
 |---|---|
 | Vào bằng mã khi còn ghế / hết ghế còn chỗ xem | Ngồi ghế / làm người xem, có thông báo |
 | Phòng đầy cả ghế và chỗ xem (hoặc số người xem là 0) | Từ chối với lỗi thật; hai người tranh chỗ cuối thì chỉ một vào được |
-| Vào từ Sảnh khi còn ghế | Vẫn làm người xem |
+| Người vào phòng từ Sảnh dù phòng còn ghế trống | Vẫn vào làm người xem (muốn ngồi phải đăng ký ghế riêng) |
 | Bị đuổi, phòng khoá hoặc đường dẫn đã thu hồi | Không có tư cách nào, không nhận dữ liệu |
 | Mất kết quả, gửi lại sau khi ghế đã kín | Không xếp thêm; không trả dữ liệu ngoài quyền |
 | Sai mã đến lần thứ 10 trong 1 phút | Chặn 5 phút, theo từng phiên; hết chặn thì xét lại |
@@ -307,7 +307,7 @@ Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì
 
 ### T-25 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được hàm tạo thế cờ ban đầu, Đỏ đi trước. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được người đã vào đúng ghế, thông tin phòng có thẩm quyền.
+**Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được hàm tạo thế cờ ban đầu, Đỏ đi trước. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được người đã vào đúng ghế, thông tin phòng chính thức từ máy chủ.
 **Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
@@ -325,8 +325,8 @@ Chủ phòng chọn ghế Đỏ/Đen, hai người bấm **Sẵn sàng**, đếm
 |---|---|
 | Hai người sẵn sàng đủ 3 giây | Đúng một ván: thế ban đầu, lượt Đỏ, mức giờ, thời điểm bắt đầu |
 | Bỏ sẵn sàng hoặc rời ngay trước hạn | Huỷ đếm, không có ván |
-| Lệnh đếm cũ chạy muộn hoặc chạy hai lần | Không có ván thứ hai |
-| Người xem bấm sẵn sàng | Từ chối |
+| Bộ hẹn giờ đếm 3-2-1 cũ chạy muộn, hoặc chạy hai lần | Không tạo ra ván thứ hai |
+| Người xem (không ngồi ghế) dùng công cụ gửi lệnh "sẵn sàng" | Máy chủ từ chối |
 | Ghi ván lỗi | Hoàn tác, không phát bắt đầu giả |
 
 **Cách tự kiểm tra**

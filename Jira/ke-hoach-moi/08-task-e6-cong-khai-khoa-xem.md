@@ -37,7 +37,7 @@ Thêm vào phòng chờ các điều khiển nâng cao: **cài đặt phòng (kh
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Hộp Cài đặt phòng | Host đổi riêng tư, thu hồi mã đúng | Đang thay đổi | Chưa có snapshot: hướng dẫn đợi, không chọn giá trị giả | Không còn quyền/ghi lỗi: tải trạng thái thật | Không Host; bật LOCKED chưa đủ hai ghế |
+| Hộp Cài đặt phòng | Host đổi riêng tư, thu hồi mã đúng | Đang thay đổi | Chưa nhận được dữ liệu từ máy chủ: hướng dẫn đợi, không hiện giá trị giả | Không còn quyền/ghi lỗi: tải trạng thái thật | Không Host; bật LOCKED chưa đủ hai ghế |
 | Hộp xác nhận Đuổi người xem | Chặn đến đóng phòng, người xem về Sảnh | Đang đuổi/chặn | Mục tiêu đã rời: cập nhật danh sách | Mất quyền/lỗi lệnh: không báo đã đuổi | Mục tiêu không là người xem/người gọi mất ghế |
 | Danh sách Người xem | Danh sách/số X/N đúng; Kick cho hai người | Tải/cập nhật danh sách | Chưa ai xem: giải thích; không dựng tài khoản giả | Tải/đuổi lỗi: tải lại danh sách thật | N=0/đã đủ; không ghế thì không quyền Kick |
 
@@ -46,7 +46,7 @@ Thêm vào phòng chờ các điều khiển nâng cao: **cài đặt phòng (kh
 |---|---|
 | Hết chỗ xem, chủ phòng tự xuống, người xem tự ngồi | Nút mờ có lý do hoặc ẩn đúng luật, không gửi lệnh |
 | Bật khoá khi thiếu ghế, rồi khi đủ ghế; bấm "Huỷ" | Chặn khi thiếu; xác nhận nói giữ người cũ; Huỷ không gửi |
-| Người xem thử đuổi | Không có nút |
+| Người xem (không phải chủ phòng) nhìn danh sách người xem | Không thấy nút Đuổi |
 | Mất quyền chủ phòng khi hộp mở; máy chủ báo lỗi; danh sách rỗng | Gỡ thao tác; không báo thành công giả; đúng 5 trạng thái |
 
 **Cách tự kiểm tra**
@@ -89,10 +89,10 @@ Thực hiện việc **khoá phòng** và hiển thị **danh sách phòng công
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Người không phải chủ, hoặc chưa đủ ghế, bật khoá | Bị chặn |
+| Người không phải chủ phòng, hoặc phòng chưa đủ 2 người ngồi ghế, bật khoá phòng | Không bật được khoá; báo lý do |
 | Chủ phòng đủ hai ghế khoá | Biến khỏi Sảnh, người đang trong phòng không bị loại |
 | Mở khoá rồi dùng mã cũ | Mã cũ vô hiệu; mã mới dùng được |
-| Một ghế trống sau khi khoá | Vẫn khoá |
+| Một người chơi rời đi nên còn ghế trống sau khi phòng đã khoá | Phòng vẫn giữ khoá, không tự mở |
 | Người vắng 59 giây / 61 giây (người xem 4:59 / 5:01) | Còn tư cách / coi như người mới |
 | Có hơn 50 phòng, lẫn phòng chỉ mã, khoá, đóng | Chỉ phòng công khai đang chờ hoặc chơi, tối đa 50 mới nhất |
 
@@ -144,13 +144,13 @@ Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Người chơi xuống xem khi số người xem là 0 hoặc đầy / còn chỗ | Từ chối / nhận |
+| Người chơi xin chuyển từ ghế xuống làm người xem: khi chỗ xem đã đầy (hoặc tối đa là 0) / khi còn chỗ | Đầy: bị từ chối, vẫn ngồi ghế / còn chỗ: được chuyển xuống xem |
 | Chủ phòng mời người xem lên ghế trống / ghế đã kín | Đúng quyền / từ chối, không chiếm ghế người khác |
-| Chủ phòng tự xuống hoặc người xem tự ngồi | Từ chối ở máy chủ |
-| Đổi trong ván | Từ chối |
+| Chủ phòng tự chuyển xuống làm người xem, hoặc người xem tự ngồi vào ghế (không được chủ phòng cho phép) | Máy chủ từ chối |
+| Xin đổi chỗ ngồi/người xem trong lúc ván đang diễn ra | Từ chối; chỉ đổi được khi phòng đang chờ |
 | Đổi lúc "Đã kết thúc", gửi lặp hoặc cùng lúc | Về "Đang chờ", xoá sẵn sàng hai bên, không vượt sức chứa |
 | Người chơi đuổi người xem; người bị đuổi vào lại | Bị ngắt và chặn; người xem tự đuổi thì từ chối |
-| Chủ phòng rời khi còn / không còn ai ngồi ghế | Chuyển quyền / đóng phòng |
+| Chủ phòng rời phòng: khi vẫn còn người ngồi ghế / khi không còn ai ngồi ghế | Còn người: chuyển quyền chủ phòng cho người đó / không còn ai: đóng phòng |
 | Rời giữa ván khi phần ván báo thành công / lỗi / không rõ | Chỉ khi xác nhận mới rời; không xử thua hai lần, không báo thành công khi chưa rõ |
 | Phòng kết thúc, đổi ghế trước 10 phút / không ai làm gì | Đồng hồ cũ vô hiệu / phòng đóng |
 
@@ -159,9 +159,9 @@ Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời 
 |---|---|---|
 | 1 | Người chơi xuống xem khi 0 / đầy / còn chỗ | Chỉ trường hợp còn chỗ được nhận |
 | 2 | Chủ phòng mời người xem lên ghế trống rồi thử ghế kín | Đúng; không chiếm ghế người khác |
-| 3 | Chủ phòng tự xuống; người xem tự ngồi | Từ chối |
-| 4 | Thử đổi giữa ván | Từ chối |
-| 5 | Đổi lúc phòng đã kết thúc, gửi hai yêu cầu cùng lúc | Về "Đang chờ", sẵn sàng xoá, không vượt trần |
+| 3 | Chủ phòng tự chuyển xuống làm người xem; người xem tự ngồi vào ghế | Máy chủ từ chối cả hai |
+| 4 | Xin đổi ghế/người xem khi ván đang diễn ra | Từ chối; chỉ đổi được khi phòng đang chờ |
+| 5 | Đổi lúc phòng đã kết thúc, gửi hai yêu cầu cùng lúc | Về "Đang chờ", sẵn sàng xoá, không vượt giới hạn |
 | 6 | Người chơi đuổi người xem; người này thử vào lại; người xem tự đuổi | Bị chặn; người xem không có quyền |
 | 7 | Chủ phòng rời khi còn ghế khác và khi không | Chuyển chủ / đóng, dù còn người xem |
 | 8 | Rời giữa ván với "kết quả giả" thành công, lỗi, mất phản hồi | Chỉ rời khi xác nhận; không báo giả |
@@ -247,17 +247,17 @@ Cho **người xem hợp lệ** nhận luồng trạng thái ván **chỉ đọc
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Người xem hợp lệ | Nhận nước và kết quả trực tiếp |
-| Người xem gửi nước đi hay đầu hàng | Bị từ chối |
+| Người xem đã được phép vào xem | Nhận nước đi và kết quả ngay khi có |
+| Người xem dùng công cụ gửi nước đi hoặc lệnh đầu hàng | Máy chủ từ chối; ván không đổi |
 | So dữ liệu người xem và người ngoài phòng | Không có chat riêng, email; người ngoài không nhận gì |
-| Bị đuổi hoặc hết hạn giữ chỗ rồi xin đồng bộ | Không nhận dữ liệu mới |
+| Người xem đã bị đuổi, hoặc hết thời gian giữ chỗ, rồi xin tải lại thế cờ | Không nhận dữ liệu mới |
 | Người xem vào giữa lượt, đồng bộ lại sau nước đi | Giờ và lượt khớp trạng thái máy chủ; chỉ để hiển thị |
 
 **Cách tự kiểm tra**
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Người xem hợp lệ xem một ván có nước đi và kết quả | Nhận trực tiếp |
-| 2 | Người xem gửi nước, đầu hàng | Từ chối |
+| 2 | Người xem dùng công cụ gửi nước đi hoặc lệnh đầu hàng | Máy chủ từ chối, ván không đổi |
 | 3 | So dữ liệu thô của người xem và người ngoài | Không lộ chat riêng, email; người ngoài không nhận |
 | 4 | Đuổi người xem rồi xin đồng bộ | Không nhận thêm |
 | 5 | Cho người xem vào giữa lượt | Giờ và lượt khớp |

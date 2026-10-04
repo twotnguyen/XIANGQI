@@ -34,7 +34,7 @@ Từ một thế cờ, liệt kê **mọi nước "thô"** mà mỗi quân có t
 | Sửa một bản sao thế cờ | Bản gốc và các bản khác không đổi |
 | Mã bị chặn chân; Tượng bị chặn mắt hoặc muốn qua sông | Không có nước đó |
 | Pháo không có ngòi / đúng một ngòi / nhiều ngòi | Không ăn / ăn được / không ăn; nước thường không nhảy quân |
-| Tướng, Sĩ sát mép cung | Không đi ra ngoài cung |
+| Tướng hoặc Sĩ đang đứng sát mép cung | Không đi ra ngoài cung |
 | Tốt trước và sau khi qua sông; Xe bị quân chắn | Tốt không lùi, qua sông mới đi ngang; Xe không nhảy qua |
 
 **Cách tự kiểm tra**
@@ -91,10 +91,10 @@ Thêm các luật kết thúc ván khác ngoài chiếu hết: **lặp thế**, 
 | Đi nước để Tướng mình bị ăn | Không nằm trong tập hợp lệ |
 | Bị chiếu và không còn nước; không bị chiếu mà hết nước | "Chiếu hết" và "hết nước", bên sắp đi **thua** cả hai |
 | Thoát chiếu bằng chắn, ăn quân chiếu, hoặc di chuyển Tướng | Nhận đúng nước thoát; Mã hay Pháo bị chặn thì không báo chiếu giả |
-| Chu kỳ một bên chiếu / hai bên chiếu / không bên nào chiếu | Bên chiếu thua / hoà / hoà |
+| Thế cờ lặp lại thành vòng: chỉ một bên liên tục chiếu / cả hai bên cùng liên tục chiếu / không bên nào chiếu | Bên liên tục chiếu bị xử thua / hoà / hoà |
 | 119 và 120 nửa nước không ăn; có ăn quân giữa chừng | 119: chưa hoà; 120: hoà (nếu chưa có kết quả ưu tiên hơn); ăn quân đưa về 0 |
 | Nước chiếu hết trùng với điều kiện hoà | Tính là chiếu hết, không hoà |
-| Cùng vị trí nhưng khác bên sắp đi | Không gộp là cùng một thế |
+| Hai thế có quân đứng giống hệt nhau nhưng lượt đi khác bên | Không tính là cùng một thế khi đếm lặp |
 
 **Cách tự kiểm tra**
 | # | Việc làm | Phải thấy |
@@ -296,7 +296,7 @@ Gom toàn bộ kiểm thử luật cờ thành một bộ chạy **tự động 
 | Cố ý làm một lỗi cản chân trong bản thử | Phát hiện ra chênh lệch; **không** sửa số mong đợi cho khớp |
 | Nguồn tham chiếu chưa kiểm chứng được | Ghi "chưa kết luận" |
 | Đếm nước độ sâu 1 đến 4 | Khớp nguồn đối chiếu; không sửa đáp án chỉ để cho đạt |
-| Thế chiếu hết và thế hết nước | Cả hai thua |
+| Bên đến lượt bị chiếu hết, hoặc hết nước đi hợp lệ | Cả hai trường hợp bên đó đều thua |
 | Lặp thế, mốc 119/120, ăn quân | Đúng như quy tắc |
 | 1.000 ván ngẫu nhiên | Không nước vi phạm; số liệu thật được lưu |
 | Ký hiệu cả hai phe; cố tình làm sai | Ký hiệu khớp; làm sai thì kiểm tra tự động **đỏ** |

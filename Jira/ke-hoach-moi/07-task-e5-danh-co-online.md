@@ -55,12 +55,12 @@ Dựng **màn hình ván** để nối với máy chủ sau: bàn cờ, đồng 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
-| Khung Đề nghị hoà | Đề nghị còn hạn, trả lời đúng tác động | Đang gửi/rút/trả lời; không dừng đồng hồ | Không còn đề nghị: gỡ khung/nút mở lại | Phản hồi lỗi: đối soát hạn/trạng thái, không hoà giả | Hết hạn/đã rút/đã kết thúc hoặc không phải người nhận |
-| Hộp xác nhận Đầu hàng | Xác nhận: RESIGN; Huỷ không đổi ván | Đợi ACK; chặn xác nhận trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Mất ACK: đối soát, không báo thua giả | Ván kết thúc/phiên cũ/không phải người chơi |
-| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và đối soát | Đã xử lý hoặc không còn quyền điều khiển |
-| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả có thẩm quyền | Chưa có kết quả: đợi/đối soát, không đoán thắng | Tải kết quả lỗi: Thử lại, không cho đi thêm | Tái đấu/Replay sai chế độ, P1 ẩn |
-| Lớp phủ Mất kết nối | Đã nối lại nhận snapshot rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
+| Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
+| Khung Đề nghị hoà | Đề nghị còn hạn, trả lời đúng tác động | Đang gửi/rút/trả lời; không dừng đồng hồ | Không còn đề nghị: gỡ khung/nút mở lại | Phản hồi lỗi: kiểm lại hạn và trạng thái, không báo hoà sai | Hết hạn/đã rút/đã kết thúc hoặc không phải người nhận |
+| Hộp xác nhận Đầu hàng | Xác nhận: đầu hàng; Huỷ không đổi ván | Đợi máy chủ xác nhận; chặn bấm trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Không nhận được xác nhận: kiểm lại với máy chủ, không báo thua sai | Ván kết thúc, tab đã bị tab khác tiếp quản, hoặc không phải người chơi |
+| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và kiểm lại với máy chủ | Đã xử lý hoặc không còn quyền điều khiển |
+| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở giai đoạn 1 |
+| Lớp phủ Mất kết nối | Đã nối lại, nhận lại thế cờ rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -182,7 +182,7 @@ Nối giao diện ván với xử lý nước đi **qua phòng thật** để ch
 | Hai người luân phiên đi bằng bấm và kéo | Cùng thế, lượt, nước vừa đi sau khi xác nhận |
 | Gửi trùng khi mất phản hồi | Chỉ một nước được lưu |
 | Nước sai hoặc phiên bản cũ | Thông báo đúng; thế trở về như máy chủ |
-| Tab chỉ đọc hoặc người ngoài gửi lệnh | Không đổi ván |
+| Tab chỉ xem (không phải tab điều khiển), hoặc người không chơi trong ván, dùng công cụ gửi lệnh đi quân | Máy chủ từ chối; ván không đổi |
 
 **Cách tự kiểm tra**
 Chuẩn bị: hai trình duyệt, máy chủ và cơ sở dữ liệu thử.
@@ -234,14 +234,14 @@ Chốt **mọi cách kết thúc** một ván Đánh Thường: chiếu hết ho
 |---|---|
 | Khởi tạo ván 5, 10, 15 phút; đi nước | Chỉ bên đang đi giảm giờ; không cộng giây |
 | Nước đến khi giờ còn đúng 0 | Hết giờ, nước đó không áp dụng |
-| Đổi lượt rồi bộ hẹn lượt trước chạy muộn | Không kết thúc nhầm |
+| Bên kia đã đi nước, nhưng bộ hẹn giờ của lượt trước chạy muộn báo hết giờ | Không xử thua nhầm; ván tiếp tục |
 | Lỗi ghi (qua T-28), hồi phục trong hạn / quá 30 giây | Cả hai đồng hồ đóng băng; chỉ ván còn tiếp tục mới chạy lại; gián đoạn thì không chạy |
 | Hết giờ trước / sau / bằng mốc mất kết nối giả lập; đảo thứ tự bộ hẹn | Hết giờ / mất kết nối / hết giờ; luôn một kết quả |
-| Ván mới bắt đầu | Chỉ Đỏ chạy trước nước đầu; chuyển lượt không khởi tạo lại giờ |
+| Ván vừa bắt đầu | Đồng hồ Đỏ chạy trước nước đầu tiên; khi chuyển lượt, đồng hồ không bị đặt lại về ban đầu |
 | Thế hết nước, chiếu liên tục, lặp lần ba, mốc 119/120 | Kết quả theo luật; ăn quân đưa bộ đếm về 0 |
 | Xin hoà: đồng ý / từ chối / rút / hết 30 giây; xin lại trước đủ 5 nước | Đúng hoà hoặc tiếp tục; bị chặn khi chưa đủ 5 nước |
 | Đầu hàng và phản hồi hoà đến cùng lúc | Một kết quả, phản hồi muộn vô hiệu |
-| Người xem trả lời đề nghị hoà hoặc đầu hàng thay người chơi | Bị từ chối, ván không đổi |
+| Người xem dùng công cụ trả lời đề nghị hoà, hoặc đầu hàng, thay người chơi | Máy chủ từ chối; ván không đổi |
 
 **Cách tự kiểm tra**
 Chuẩn bị: đồng hồ điều khiển được để rút ngắn thời gian.
@@ -257,7 +257,7 @@ Chuẩn bị: đồng hồ điều khiển được để rút ngắn thời gia
 | 7 | Chạy các thế hết nước, chiếu liên tục, lặp lần ba, 119/120 nửa nước | Kết quả đúng luật |
 | 8 | Xin hoà: đồng ý, từ chối, rút, hết 30 giây; xin lại sớm | Đúng; xin sớm bị chặn |
 | 9 | Đầu hàng đồng thời với phản hồi hoà | Một kết quả duy nhất |
-| 10 | Người xem thử đầu hàng và trả lời hoà | Từ chối |
+| 10 | Người xem dùng công cụ thử đầu hàng và trả lời đề nghị hoà | Máy chủ từ chối, ván không đổi |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Chưa** nghiệm thu mất mạng thật (T-45) và việc đồng hồ chạy đúng trên màn hình hai người (T-50). Không tự hoà vì thiếu quân, không có luật "đuổi quân" riêng.
@@ -402,7 +402,7 @@ Khi người dùng bấm đăng xuất **trong lúc đang có ván**, hệ thố
 | Đăng xuất khi đang đánh người | Thua, rời phòng, thoát; đối thủ thấy thắng |
 | Đăng xuất khi đang chơi với máy | Ván bị huỷ, thoát |
 | Từ chối ở hộp xác nhận | Không có gì thay đổi |
-| Xử thua thất bại | Không thoát, báo lỗi |
+| Ghi kết quả xử thua (khi đăng xuất giữa ván) bị lỗi | Không đăng xuất; báo lỗi để thử lại |
 
 **Cách tự kiểm tra**
 | # | Việc làm | Phải thấy |
@@ -418,7 +418,7 @@ Khi người dùng bấm đăng xuất **trong lúc đang có ván**, hệ thố
 **Không thuộc task này:** tiếp quản phiên khi mở tab mới (task về nhiều tab), đăng xuất khi đang xem (chỉ rời phòng).
 **Phục vụ (nguồn):** Story 3, 26; tiêu chí AC-AUTH-05-04, AC-AUTH-05-05, AC-AI-03-04. Thuộc Epic: Hai người đánh cờ qua mạng.
 **Kết quả (đầu ra):** Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất; ván với máy thì huỷ.
-**Bằng chứng nộp:** Kết quả thử 4 ca; đối soát bằng mã yêu cầu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Bằng chứng nộp:** Kết quả thử 4 ca; kiểm lại bằng mã yêu cầu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Bước thất bại giữa chừng không được đăng xuất nửa vời.
 **Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-24, T-38, T-39, T-43; liên quan tới (relates to) Story 3, Story 26; Epic: Hai người đánh cờ qua mạng.
 
@@ -452,7 +452,7 @@ Hoàn thiện phần ván **khó nhất**: rớt mạng và quay lại, người
 | Đợi hết giờ rồi gửi nước | Hai bên cùng thấy thua do hết giờ; nước muộn không lưu |
 | Đầu hàng: bấm huỷ / đồng ý | Huỷ không tác dụng; đồng ý cùng kết quả cả hai máy |
 | Xin hoà: đồng ý / từ chối / hết hạn / rút / xin lại sớm | Đúng trạng thái, có chú thích khi nút mờ |
-| Trả lời hoà sau chiếu hết | Không ghi đè kết quả |
+| Ván đã kết thúc do chiếu hết, rồi mới có người trả lời đề nghị hoà | Kết quả cũ giữ nguyên, không bị ghi đè |
 | Hai người Sẵn sàng đủ 3 giây | Một mã ván và thế đầu; hai màn hình cùng vào màn ván; chỉ Đỏ chạy giờ |
 | Bỏ Sẵn sàng trước hết đếm rồi Sẵn sàng lại | Đếm cũ dừng; không có ván hay đồng hồ ma |
 | Lỗi ghi dữ liệu rồi hồi phục trong hạn | Đồng hồ đóng băng; không mất giờ vì lỗi; mất phản hồi không bị tính là nước mới |

@@ -31,7 +31,7 @@ Dựng tìm kiếm, **chuông lời mời** và **danh sách bạn**. Việc **m
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Màn hình Bạn bè | Bạn/lời mời/trạng thái đúng | Tải hoặc tìm kiếm | Chưa có bạn/kết quả: hướng dẫn tìm username | Tải/gửi/nhận lỗi; giữ ý định, đối soát trước gửi lại | Đủ trần, bị từ chối hai lần; bạn không Online |
+| Màn hình Bạn bè | Bạn/lời mời/trạng thái đúng | Tải hoặc tìm kiếm | Chưa có bạn/kết quả: hướng dẫn tìm username | Tải/gửi/nhận lỗi; giữ nguyên thao tác đã làm; kiểm lại với máy chủ rồi mới gửi lại | Đã đủ số bạn tối đa, bị từ chối hai lần; bạn không Online |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -93,7 +93,7 @@ Trả **danh sách bạn** kèm trạng thái đúng với dữ liệu máy ch�
 |---|---|
 | Tìm bằng phần đầu tên, khác hoa thường | Ra thẻ đúng tên đăng nhập, không có email |
 | Gửi, thu hồi, chấp nhận, từ chối, hết 30 ngày | Đúng trạng thái; từ chối không báo người gửi |
-| 199 và 200 bạn; 49 và 50 lời mời chờ; gửi hoặc chấp nhận cùng lúc | Không vượt trần ở cả hai đầu |
+| 199 và 200 bạn; 49 và 50 lời mời chờ; gửi hoặc chấp nhận cùng lúc | Không vượt giới hạn ở cả hai đầu |
 | Gửi chéo; từ chối hai lần rồi dọn lời mời hết hạn | Một lời mời chờ, không tự thành bạn; vẫn chặn đúng chiều |
 | Người thứ ba hoặc chính người gửi tự chấp nhận/từ chối thay người nhận | Từ chối; không thành bạn; không tăng bộ đếm từ chối |
 | Người khác thu hồi lời mời của người gửi | Từ chối; người gửi vẫn thu hồi được lời mời của mình |
@@ -101,7 +101,7 @@ Trả **danh sách bạn** kèm trạng thái đúng với dữ liệu máy ch�
 | Lỗi trước khi ghi xong; sau khi ghi xong mất phản hồi rồi gửi lại | Không có tác dụng hay biên lai thành công; gửi lại sau khi ghi thì trả kết quả cũ, chỉ đếm một lần |
 | Bạn đăng nhập, bắt đầu ván, rời hoặc ngắt kết nối | Danh sách phản ánh đúng trạng thái |
 | Huỷ kết bạn khi hai bên đang mở danh sách | Hai bên không còn là bạn |
-| Đổi mã người dùng trong yêu cầu để xem danh sách người khác | Không đọc được |
+| Kẻ gian sửa mã người dùng trong yêu cầu để xem danh sách bạn của người khác | Không đọc được; máy chủ chỉ trả danh sách của người đang đăng nhập |
 | Truy vấn lỗi | Báo lỗi, không trả danh sách rỗng giả |
 | Bạn có kết nối và ngồi ghế đang chờ / đang chơi / đã kết thúc, hoặc chơi với máy | Cả bốn đều là Đang đấu, không nhận mời; ván kết thúc mà còn ghế vẫn không phải Online rảnh |
 | Giải phóng chỗ (rời ghế, rời ván máy) khi còn kết nối; rồi ngắt kết nối | Rời chỗ → Online rảnh; ngắt kết nối → không còn nhận mời như người Online |
@@ -113,14 +113,14 @@ Chuẩn bị: cơ sở dữ liệu thử, đồng hồ điều khiển được,
 |---|---|---|
 | 1 | Tìm theo phần đầu tên, khác hoa thường | Đúng thẻ, không email |
 | 2 | Chạy cả vòng đời: gửi, thu hồi, chấp nhận, từ chối, hết 30 ngày | Đúng trạng thái |
-| 3 | Kiểm các biên 199/200 bạn, 49/50 lời mời; gửi cùng lúc | Không vượt trần |
+| 3 | Kiểm các biên 199/200 bạn, 49/50 lời mời; gửi cùng lúc | Không vượt giới hạn |
 | 4 | Gửi chéo; từ chối hai lần | Một lời mời chờ; chặn đúng chiều |
-| 5 | Người ngoài trả lời hoặc thu hồi thay | Từ chối |
+| 5 | Người không liên quan dùng công cụ trả lời, hoặc thu hồi lời mời của người khác | Máy chủ từ chối, lời mời không đổi |
 | 6 | Từ chối rồi mất phản hồi, gửi lại | Một lần đếm |
 | 7 | Gây lỗi trước và sau khi ghi | Đúng như bảng trên |
 | 8 | Cho bạn đăng nhập, vào ván, rời, ngắt | Danh sách đúng từng lúc |
 | 9 | Huỷ kết bạn khi hai bên đang mở danh sách | Cả hai mất bạn |
-| 10 | Xin danh sách người khác | Từ chối |
+| 10 | Dùng công cụ xin danh sách bạn của người khác | Máy chủ từ chối, không trả danh sách |
 | 11 | Làm truy vấn lỗi | Báo lỗi |
 | 12 | Dùng dữ liệu mẫu bốn loại chỗ giữ | Cả bốn: Đang đấu, không nhận mời |
 | 13 | Giải phóng chỗ rồi ngắt kết nối | Online rảnh; rồi không nhận mời |
@@ -157,9 +157,9 @@ Người dùng bấm đường dẫn mời nhưng **chưa đăng nhập** thì s
 |---|---|
 | Mở đường dẫn phòng khi chưa đăng nhập | Đăng nhập xong vào đúng phòng |
 | Đăng ký mới từ đường dẫn mời | Hoàn tất xong vào đúng phòng |
-| Đang có ván dở | Vào lại ván |
+| Người được mời đang có một ván chưa xong | Được đưa vào lại ván đó, không vào phòng mời |
 | Phòng đã đóng hoặc đầy | Báo lý do, về sảnh |
-| Đường dẫn trỏ ra ngoài hệ thống | Bỏ qua, về sảnh |
+| Đường dẫn "quay lại" trỏ tới một trang ngoài ứng dụng (kẻ gian dùng để dẫn người dùng sang trang giả) | Bỏ qua, đưa về Sảnh |
 
 **Cách tự kiểm tra**
 Chuẩn bị: hai tài khoản thử, một phòng đang mở.
@@ -202,7 +202,7 @@ Cho người **đang ngồi ghế** mời **bạn đang online** vào phòng hi�
 | Người ngồi ghế mời bạn Online, bạn nhận | Vào ghế, hoặc vào xem nếu hợp lệ |
 | Người xem mời, hoặc người nhận bận/ngoại tuyến | Bị chặn, không gửi |
 | Chờ hết hạn, hoặc đường dẫn bị thu hồi, phòng bị khoá trước khi tham gia | Không vào được trái quyền |
-| Hai người chấp nhận chỗ cuối | Không vượt trần; phản hồi đúng tình trạng |
+| Hai người chấp nhận chỗ cuối | Không vượt giới hạn; phản hồi đúng tình trạng |
 | Gửi mời rồi phòng bị khoá, hoặc mở khoá tạo mã mới trước khi nhận | Kiểm lại quyền và mã hiện hành; lời mời không phải vé giữ chỗ |
 | Người nhận đang ngồi ghế (đang chờ/đang chơi/đã kết thúc) hoặc đang chơi với máy | Máy chủ chặn gửi ở cả bốn trường hợp, không chỉ khoá nút |
 | Gửi lúc bạn rảnh, rồi bạn chiếm chỗ khác trước khi nhận | Kiểm lại, không vào phòng thứ hai trái luật |
@@ -211,9 +211,9 @@ Cho người **đang ngồi ghế** mời **bạn đang online** vào phòng hi�
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Người ngồi ghế mời bạn Online, bạn nhận | Vào đúng chỗ |
-| 2 | Người xem mời; người nhận bận hoặc ngoại tuyến | Bị chặn |
+| 2 | Người xem bấm mời bạn vào; hoặc mời người đang bận hoặc ngoại tuyến | Không gửi được lời mời; có báo lý do |
 | 3 | Chờ hết hạn; thu hồi đường dẫn; khoá phòng rồi nhận | Không vào |
-| 4 | Hai người chấp nhận chỗ cuối | Không vượt trần |
+| 4 | Hai người chấp nhận chỗ cuối | Không vượt giới hạn |
 | 5 | Mời rồi khoá hoặc mở khoá tạo mã mới | Kiểm lại quyền |
 | 6 | Mời người đang giữ chỗ (4 loại) | Máy chủ chặn |
 | 7 | Mời lúc rảnh rồi người nhận chiếm chỗ khác | Kiểm lại, chặn |
@@ -262,7 +262,7 @@ Chuẩn bị: nhiều tài khoản thử, trình duyệt, ván với máy chạy
 |---|---|---|
 | 1 | Tìm, kết bạn, mời từ phòng rồi nhận | Quan hệ hai chiều, vào đúng phòng |
 | 2 | Quá 30 giây; huỷ bạn; khoá/thu hồi đường dẫn | Không vào, báo đúng lỗi |
-| 3 | Vượt trần; gửi chéo | Chặn ở máy chủ |
+| 3 | Vượt giới hạn; gửi chéo | Chặn ở máy chủ |
 | 4 | Bạn đang ngồi ghế | Đang đấu, không mời được |
 | 5 | Bạn chơi với máy thật; mời; rời ván; mời lại | Đang đấu rồi Online rảnh |
 | 6 | Gửi lệnh rời lặp lại | Một tác dụng |

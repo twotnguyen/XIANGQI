@@ -25,16 +25,16 @@ Trả lời: **LiveKit Cloud (dịch vụ chạy camera/micro) có cho phép quy
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Người xem gọi thẳng chức năng phát hình | Không phát được |
+| Người xem dùng công cụ gọi thẳng chức năng phát camera/micro | Dịch vụ từ chối, không phát được |
 | Chọn chia sẻ "chỉ đối thủ" | Người xem **không** nhận được hình/tiếng |
 | Người chơi bị chuyển xuống xem khi đang phát | Mất quyền phát; không nhận luồng chỉ dành cho đối thủ |
 | Người bị đuổi thử dùng lại quyền cũ | Không vào lại được |
-| Mở tab mới tiếp quản | Tab cũ mất quyền; tab mới **mặc định tắt** camera/micro |
+| Cùng tài khoản mở thêm một tab mới và tab này tiếp quản | Tab cũ mất quyền điều khiển camera/micro; tab mới **mặc định tắt** camera/micro |
 
 **Cách tự kiểm tra**
 | # | Việc làm | Phải thấy |
 |---|---|---|
-| 1 | Người xem cố tự phát hình | Bị chặn |
+| 1 | Người xem tìm cách bật camera/micro của mình để phát | Không có nút phát; nếu dùng công cụ gửi thẳng thì dịch vụ chặn |
 | 2 | Đổi lần lượt các mức chia sẻ | Người xem nhận đúng theo mức |
 | 3 | Chuyển người chơi xuống xem lúc đang phát | Quyền cũ mất ngay |
 | 4 | Dùng lại quyền cũ sau khi đuổi | Không vào được; ghi số giây còn hiệu lực nếu có |
@@ -72,7 +72,7 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Gửi tin 200 và 201 ký tự; gửi tin thứ 5 và thứ 6 trong 10 giây | 200 và tin thứ 5 nhận; 201 và tin thứ 6 bị chặn |
-| Người xem gửi hoặc đọc Kênh Riêng | Không nhận, không ghi |
+| Người xem dùng công cụ gửi tin vào, hoặc đọc tin của Kênh Riêng (kênh của hai người chơi) | Không nhận tin, không lưu tin; không đọc được |
 | Người xem mới vào, hoặc người mới xuống ghế đọc tin cũ | Không đọc được tin trước thời điểm có quyền |
 | Từ cấm có dấu, khoảng trắng, ký tự chèn, số 0 và 1 thay chữ | Bị che `***` đúng; khi phòng đóng, tin được xoá |
 | Gửi lại cùng một tin sau khi đổi ghế | Chỉ một tin đã lọc; người mới ngồi không nhận lịch sử cũ |
@@ -81,7 +81,7 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Gửi tin 200/201 ký tự; tin thứ 5 và thứ 6 trong 10 giây | Biên hợp lệ nhận, vượt bị chặn |
-| 2 | Người xem thử gửi và đọc Kênh Riêng | Không được |
+| 2 | Người xem dùng công cụ thử gửi tin vào và đọc tin của Kênh Riêng | Không gửi được, không đọc được |
 | 3 | Người xem mới vào, người mới xuống ghế đọc lịch sử | Không đọc tin trước thời điểm có quyền |
 | 4 | Gửi từ cấm với các biến thể; phát tín hiệu đóng phòng mẫu | Che `***`; tin của phòng bị xoá |
 | 5 | Gửi lại tin cũ; đổi ghế qua T-38 | Một tin; người mới ngồi không thấy lịch sử |
@@ -130,7 +130,7 @@ Nối khung chat với máy chủ thật và kiểm **quyền ở dữ liệu th
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Khung Chat | Tin đúng quyền/kênh sau bộ lọc | Tải/gửi tin | Chưa có tin: lời nhắc viết theo kênh | Gửi lỗi: đánh dấu chưa gửi, đối soát trước thử | Vượt giới hạn, mất quyền kênh, ô trống |
+| Khung Chat | Tin đúng quyền/kênh sau bộ lọc | Tải/gửi tin | Chưa có tin: lời nhắc viết theo kênh | Gửi lỗi: đánh dấu chưa gửi, kiểm lại rồi mới cho gửi lại | Vượt giới hạn, mất quyền kênh, ô trống |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -203,14 +203,14 @@ Dựng **bảng điều khiển camera/micro** cho người chơi: bật/tắt �
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
-| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế/phiên cũ |
+| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Vào phòng rồi bật riêng micro hoặc camera | Không tự bật; điều khiển độc lập |
 | Từ chối quyền hoặc không có thiết bị | Lỗi rõ; cờ và chat vẫn dùng |
-| Mở bằng vai người xem | Không có nút phát, không xin quyền |
+| Mở khung camera/micro với vai người xem | Không có nút phát hình; không hỏi xin quyền camera/micro |
 | Rời phòng hoặc nhận thông báo mất quyền | Luồng dừng, thiết bị không tiếp tục phát |
 | Dùng bàn phím; vào trạng thái không có quyền | Nhãn, focus, chú thích đúng; không tự bật thiết bị |
 
@@ -243,7 +243,7 @@ Chuẩn bị: máy có camera và micro thật; thử cả khi từ chối quy�
 **Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
-Từ **vai trò thật trong phòng**, máy chủ cấp và thay đổi quyền camera/micro ở dịch vụ LiveKit: ai được phát, ai được nghe ai. Người dùng hợp lệ giữ quyền mới; **kết nối hay token cũ không lấy lại được quyền đã mất**.
+Từ **vai trò thật trong phòng**, máy chủ cấp và thay đổi quyền camera/micro ở dịch vụ LiveKit: ai được phát, ai được nghe ai. Người dùng hợp lệ giữ quyền mới; **kết nối hay mã truy cập cũ không dùng lại được để lấy quyền đã mất**.
 
 Mỗi người chỉ **một tab điều khiển** tại một thời điểm. Khi mở tab mới cùng tài khoản và cùng phòng, tab mới **tiếp quản**; tab cũ chuyển **chỉ đọc**, dừng camera/micro, và **không gửi được lệnh** làm thay đổi ván hay phòng. Task này cũng đảm bảo đúng quy tắc đăng nhập nơi mới thì nơi cũ bị đẩy ra.
 
@@ -262,14 +262,14 @@ Mỗi người chỉ **một tab điều khiển** tại một thời điểm. K
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Người xem thử phát hoặc xin quyền khác | Bị chặn ngay tại dịch vụ |
+| Người xem dùng công cụ xin quyền phát hình hoặc quyền cao hơn | Dịch vụ camera/micro chặn ngay |
 | Đổi giữa ba mức chia sẻ với đối thủ/người xem | Đúng tập người nhận |
 | Dùng lại token cũ sau khi đổi vai hoặc bị đuổi | Không lấy lại quyền cũ; quyền mới hợp lệ vẫn hoạt động |
 | Phòng khoá; người đang có mặt còn/hết hạn giữ chỗ | Không thu quyền chỉ vì khoá; cấp lại đúng tư cách |
 | Đuổi hoặc đóng phòng khi còn luồng đang chạy | Người bị đuổi không xin được token mới; phòng đóng không còn quyền nhận/phát |
 | Hai kết nối thử cùng tài khoản, nơi sau tiếp quản | Nơi cũ nhận thông báo, mất quyền ghi và quyền phát; nơi mới mặc định tắt |
 | Nơi cũ gửi lệnh làm thay đổi | Bị từ chối **trước khi** vào xử lý, tác động bằng 0 |
-| Mở nhiều tab cùng lúc | Chỉ một tab có quyền điều khiển |
+| Cùng tài khoản mở nhiều tab cùng lúc | Chỉ một tab (tab mới nhất) có quyền điều khiển camera/micro |
 | Phiên hết hạn xin tiếp quản | Không chiếm quyền điều khiển |
 
 **Cách tự kiểm tra**
@@ -277,7 +277,7 @@ Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử); hai kết nối t
 
 | # | Việc làm | Phải thấy |
 |---|---|---|
-| 1 | Người xem thử phát, xin quyền khác | Bị chặn |
+| 1 | Người xem dùng công cụ thử phát hình hoặc xin quyền cao hơn | Dịch vụ camera/micro chặn |
 | 2 | Đổi qua lại ba mức chia sẻ | Đúng tập nhận |
 | 3 | Dùng token cũ sau khi đổi vai/đuổi | Không lấy lại quyền; quyền mới dùng được |
 | 4 | Phòng khoá, người còn/hết hạn giữ chỗ xin token | Không thu quyền vì khoá; cấp lại đúng tư cách |

@@ -71,16 +71,16 @@ Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, 
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Làm theo hướng dẫn trên máy sạch | Web và máy chủ chạy, mở được |
-| Kết nối sai thông tin đăng nhập | Bị chặn như bình thường |
+| Thử kết nối tới máy chủ trên môi trường demo bằng thông tin đăng nhập sai | Bị chặn như bình thường (môi trường demo không bỏ kiểm tra) |
 | Tải lại trang hoặc khởi động lại máy chủ | Trang không mất; có thông báo lỗi, không dữ liệu giả |
-| Tìm khoá bí mật trong web, kho mã hoặc nhật ký | Không thấy |
+| Tìm khoá bí mật trong mã web, kho mã và nhật ký vận hành | Không thấy khoá nào |
 | Mất mạng ra ngoài (Supabase, LiveKit) | Báo lỗi thật, không giả vờ chạy được |
 
 **Cách tự kiểm tra**
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Một người khác làm theo hướng dẫn trên máy khác | Chạy được trong thời gian hợp lý |
-| 2 | Mở web ở hai trình duyệt, kết nối sai thông tin | Bị chặn |
+| 2 | Mở web ở hai trình duyệt, kết nối với thông tin đăng nhập sai | Bị chặn như môi trường thật |
 | 3 | Đăng nhập thật và bật thử camera/micro | Nối được Supabase và LiveKit |
 | 4 | Tải lại trang; khởi động lại máy chủ | Không mất trang; có báo lỗi |
 | 5 | Quét kho mã và nhật ký tìm khoá bí mật | Không có |
@@ -132,9 +132,9 @@ Chuẩn bị: bản build tích hợp cùng phiên bản, nhiều trình duyệt
 |---|---|---|
 | 1 | Đối chiếu tiêu chí và ca hai chiều | Không thiếu, không trùng |
 | 2 | Chạy D1 đến D10 | Đạt hoặc có lỗi rõ ràng |
-| 3 | Chạy các nhánh quyền, đồng thời, gọi thẳng | Đúng |
-| 4 | Chạy các nhánh mới nối | Đúng |
-| 5 | Chạy ba ca liên miền (bạn bè với ván máy; camera/micro hỏng; tiếp quản) | Đúng |
+| 3 | Chạy các nhánh: sai quyền, hai người cùng làm một việc, dùng công cụ gửi lệnh trái vai | Kết quả đúng với đặc tả (bị chặn hoặc chỉ một người thành công) |
+| 4 | Chạy các nhánh vừa nối thật hai bên (web và máy chủ) | Kết quả khớp với đặc tả của từng tiêu chí |
+| 5 | Chạy ba ca nằm giữa nhiều chức năng: bạn bè với ván máy; camera/micro hỏng; tab mới tiếp quản | Kết quả khớp với đặc tả (không treo, không mất dữ liệu, đúng thông báo) |
 | 6 | Chạy D8 đầy đủ | Rời ghế thật, vào đủ ba cấp máy |
 
 **Khi nào chuyển cho người kiểm thử:** mọi tiêu chí và D1–D10 có trạng thái trung thực (đạt, không đạt, bị chặn, chưa chạy), có bằng chứng hoặc lý do thiếu; mỗi lỗi có bước tái hiện và người nhận.
@@ -190,7 +190,7 @@ Kết luận về các **yêu cầu phi chức năng đã được duyệt** d�
 | Chuẩn bị và đặt lại dữ liệu, kiểm hồ sơ, phiên, quyền | Đủ 50 kết nối hợp lệ, 10 ván thật; không quá 5 người xem mỗi phòng; không vòng qua kiểm tra |
 | Có mẫu vượt ngưỡng hoặc đứt kết nối | Giữ số thật, báo không đạt, giao miền sửa |
 | Mọi mức chia sẻ với đối thủ và người xem | Chỉ nhận đúng luồng được phép |
-| Người xem gọi thẳng công cụ phát | Không phát được gì |
+| Người xem dùng công cụ gọi thẳng chức năng phát camera/micro | Dịch vụ từ chối, không phát được gì |
 | Dùng lại token cũ; xin token mới hợp lệ | Token cũ không lấy lại quyền; token mới hoạt động đúng |
 | Rà cấu hình và sản phẩm kiểm thử | Không có ghi hình, ghi âm hay lưu |
 | Đối chiếu báo cáo mạng nội bộ và tải | p95 dưới 100 ms và dưới 300 ms, đúng môi trường |
@@ -211,13 +211,13 @@ Chuẩn bị: môi trường thử, tập lệnh tải, máy đo; nhiều tài k
 | 5 | Kiểm dữ liệu thử | Hợp lệ, không vượt 5 người xem/phòng |
 | 6 | Có mẫu lỗi | Giữ lại, báo đúng |
 | 7 | Thử mọi mức chia sẻ | Chỉ luồng được phép |
-| 8 | Người xem gọi thẳng để phát | Không phát được |
+| 8 | Người xem dùng công cụ gọi thẳng chức năng phát camera/micro | Dịch vụ từ chối, không phát được |
 | 9 | Dùng token cũ và mới | Đúng như bảng |
 | 10 | Rà cấu hình, sản phẩm | Không có chỗ ghi hay lưu |
 | 11 | Đối chiếu báo cáo mạng nội bộ, tải | Đạt ngưỡng đúng môi trường |
 | 12 | Thử giả mạo, đọc sai vai, quét phần chạy ở trình duyệt | Không tác động, không lộ |
 | 13 | Chạy bốn trình duyệt ở bốn cỡ | Không lỗi |
-| 14 | Khởi động lại giữa ván; đối chiếu máy cờ | Đúng |
+| 14 | Khởi động lại máy chủ giữa ván; đối chiếu số đo của máy cờ | Ván chuyển sang "gián đoạn" không treo; số đo máy cờ đạt theo từng cấp |
 | 15 | Kiểm các báo cáo thiếu hoặc lệch phiên bản | Không kết luận đạt |
 
 **Khi nào chuyển cho người kiểm thử:** báo cáo có quy trình tái lập, bản build, phương pháp, số thô, và kết luận từng chỉ tiêu; mọi ô của ma trận có kết quả và bằng chứng (hoặc lý do chưa kiểm), ghi rõ build và cách làm; mỗi tiêu chuẩn có phương pháp, bản build, số đo, bằng chứng và kết luận (hoặc lý do bị chặn/chưa chạy); có lỗi thì có người nhận và phạm vi đo lại.

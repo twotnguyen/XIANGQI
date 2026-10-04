@@ -104,7 +104,7 @@ Soạn một **bản mô tả thống nhất** cho phần giao diện (trình du
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Gửi lệnh thiếu mã yêu cầu | Hợp đồng quy định bị từ chối |
-| Trình duyệt tự khai "tôi là người khác" | Hợp đồng quy định bỏ qua thông tin đó; luôn dùng người đang đăng nhập |
+| Kẻ gian cố tình sửa dữ liệu gửi lên, ghi "tôi là người khác" | Hợp đồng quy định bỏ qua lời khai đó; luôn lấy người đang đăng nhập làm người gửi |
 | Gửi lại cùng một mã yêu cầu | Hợp đồng nói rõ: nhận lại kết quả cũ, không làm lần hai |
 | Lệnh về ván mang số phiên bản cũ | Hợp đồng nói rõ: bị từ chối và nhận trạng thái ván mới nhất |
 | Dữ liệu trả cho người xem hoặc người lạ | Không chứa tin chat riêng, email, mã bí mật |
@@ -213,8 +213,8 @@ Tạo **cơ sở dữ liệu** (nơi lưu thông tin lâu dài trên Supabase) g
 | Hai người cùng ngồi ghế Đỏ trong một phòng | Bị từ chối |
 | Số người xem lớn hơn mức tối đa của phòng | Bị từ chối |
 | Mã phòng có dấu gạch hoặc sai độ dài | Không lưu được; chỉ lưu dạng chuẩn 8 ký tự |
-| Trình duyệt thử ghi thẳng vào bảng phòng | Bị từ chối |
-| Trình duyệt thử đọc email của người khác | Bị từ chối |
+| Kẻ gian bỏ qua máy chủ, dùng công cụ ghi thẳng vào bảng phòng của cơ sở dữ liệu | Cơ sở dữ liệu từ chối; chỉ máy chủ mới ghi được |
+| Kẻ gian dùng công cụ đọc thẳng email của người khác từ cơ sở dữ liệu | Cơ sở dữ liệu từ chối; chỉ chủ tài khoản đọc được email của mình |
 
 **Cách tự kiểm tra**
 Chuẩn bị: cơ sở dữ liệu thử sạch, hai tài khoản thử.
@@ -262,7 +262,7 @@ Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và
 |---|---|
 | Kết nối thiếu, sai hoặc hết hạn thông tin đăng nhập | Không nhận danh tính, không nhận dữ liệu nghiệp vụ |
 | Người dùng cố tình sửa dữ liệu gửi lên (bằng công cụ lập trình), giả mạo thành người khác ("tôi là B") | Máy chủ bỏ qua lời khai "tôi là B", vẫn coi người gửi là A (danh tính chỉ lấy từ phiên đã xác thực) |
-| Chốt kiểm tra quyền bị thiếu, từ chối hoặc lỗi | Nơi xử lý **không chạy** |
+| Bước kiểm tra quyền bị thiếu, bị từ chối hoặc gặp lỗi | Phần xử lý lệnh **không được chạy** (lỗi thì chặn, không cho đi tiếp) |
 | Lệnh sai dạng | Trả lỗi, không gây tác động |
 | Gây lỗi rồi đọc nhật ký | Có mục đúng mã lỗi và mã lệnh; **không** có mật khẩu, mã OTP, token, chat |
 
@@ -316,7 +316,7 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 |---|---|
 | Mở trực tiếp một địa chỉ trang rồi tải lại | Trang vẫn hiện, không trắng |
 | Thiếu địa chỉ máy chủ trong cấu hình | Hiện thông báo thiếu cấu hình, **không** giả vờ đăng nhập |
-| Có khoá bí mật trong cấu hình công khai | Không được xảy ra |
+| Có khoá bí mật nằm trong cấu hình công khai (mọi biến bắt đầu bằng VITE_ đều ai cũng đọc được) | Không được xảy ra; kiểm tra phát hiện thì báo lỗi |
 | So màu thật với bản thiết kế | Đúng; giao diện luôn tối, không theo hệ điều hành |
 | Duyệt từng trạng thái của nút, ô nhập, khung | Bị khoá có chú thích; lỗi có phản hồi |
 | Mở và đóng hộp thoại bằng bàn phím | Focus đúng, và quay về nút đã mở hộp |
@@ -386,7 +386,7 @@ Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòn
 | Chat có từ cấm viết kiểu né (bỏ dấu, chèn ký tự, 0/1) | Che bằng *** giống nhau ở giao diện và máy chủ |
 | Tên phòng hoặc tên hiển thị có từ cấm | **Từ chối**, không lưu tên đã che |
 | Câu sạch | Không bị che, không bị từ chối nhầm |
-| Gọi thẳng máy chủ để bỏ qua giao diện | Máy chủ vẫn lọc |
+| Kẻ gian bỏ qua giao diện, gửi thẳng tin nhắn có từ cấm tới máy chủ | Máy chủ vẫn lọc từ cấm (không chỉ trông cậy vào giao diện) |
 | Cùng người, cùng mã yêu cầu gửi lại | Nhận kết quả cũ, **không** làm thêm lần nào |
 | Hai người khác nhau dùng cùng mã yêu cầu | Hai biên lai **độc lập**, không đọc được của nhau |
 | Yêu cầu chưa gắn với ván (ví dụ tạo phòng, chat ở phòng chờ) | Vẫn lưu được biên lai, không cần ván giả |
@@ -394,11 +394,11 @@ Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòn
 | Mất phản hồi sau khi đã lưu xong, rồi gửi lại | Trả kết quả cũ, không làm lần hai |
 | Gửi lại sau khi người đó đã bị đuổi hoặc đổi vai | Không phát dữ liệu ngoài quyền; việc cũ không lặp lại |
 | Sai đăng nhập lần thứ 5 trong 15 phút | Khoá 15 phút; báo lỗi chung, không lộ email; hết hạn thì xét lại |
-| Nhập sai mã phòng lần thứ 11 trong một phút | Bị chặn 5 phút |
+| Một người nhập sai mã phòng tới lần thứ 11 trong một phút | Người đó bị chặn nhập mã 5 phút |
 | Tạo phòng lần thứ 6 trong 10 phút | Từ chối; qua 10 phút tạo lại được; người khác không bị ảnh hưởng |
-| Kết nối mới lần thứ 11 trong phút | Bị từ chối |
-| Hai tài khoản cùng địa chỉ mạng | Không bị tính chung |
-| Trình duyệt tự khai mã người khác để né khoá | Không né được |
+| Một nguồn mở kết nối mới tới lần thứ 11 trong một phút | Kết nối thứ 11 bị từ chối |
+| Hai tài khoản khác nhau cùng dùng một mạng (ví dụ cùng wifi lớp học) | Mỗi tài khoản tính giới hạn riêng, người này không làm người kia bị chặn |
+| Người bị chặn cố tình khai mình là người khác để né giới hạn | Không né được; giới hạn tính theo danh tính máy chủ biết, không theo lời khai |
 
 **Cách tự kiểm tra**
 Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc mẫu đếm số lần được làm; đồng hồ giả để rút ngắn thời gian chờ.
@@ -479,7 +479,7 @@ Trả ra: "dùng được", "đã có người dùng" hoặc "không hợp lệ"
 | Người dùng kiểm tên rồi bỏ dở | Không có hồ sơ nào được tạo, tên không bị giữ |
 | Cơ sở dữ liệu lỗi khi kiểm | Báo lỗi; **không** trả "còn trống" giả |
 | Email đã có tài khoản hoàn tất | Báo đã đăng ký, không gửi |
-| Gửi lại khi chưa đủ 60 giây | Từ chối |
+| Bấm gửi lại mã khi chưa đủ 60 giây | Máy chủ từ chối, không gửi thêm thư |
 | Hai yêu cầu gửi cho cùng email cùng lúc | Chỉ xử lý lần lượt, không vượt hạn gửi lại |
 | Dịch vụ gửi thư báo hết hạn mức hoặc lỗi | Báo lỗi, bản dở còn phục hồi được |
 | Email sai dạng | Báo không hợp lệ |
@@ -542,7 +542,7 @@ Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài k
 | Mã hết hạn hoặc sai | Không có tài khoản dùng được |
 | Tên bị người khác lấy trong lúc chờ nhập mã | Báo trùng, quay về bước đầu, **không ghi đè** người khác |
 | Dừng đột ngột sau khi ghi thời điểm hoàn tất nhưng trước khi bỏ cờ | Giữ hồ sơ, vẫn chặn dùng, rồi phục hồi bỏ cờ |
-| Hoàn tất và dọn dẹp chạy cùng lúc | Không xoá hồ sơ đã hoàn tất |
+| Người dùng bấm hoàn tất đăng ký đúng lúc tác vụ dọn tài khoản dở đang chạy | Hồ sơ đã hoàn tất không bị xoá nhầm |
 | Google: hoàn tất thiết lập với tên hợp lệ | Một hồ sơ hoàn tất, tên hiển thị = tên đăng nhập, không cần OTP |
 | Google: gửi hoàn tất hai lần cùng lúc | Chỉ một tài khoản |
 | Google: tên bị người khác lấy trong lúc chờ | Báo để nhập lại, không ghi đè |
@@ -557,7 +557,7 @@ Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" qu
 | 4 | Dừng quy trình ngay sau khi ghi thời điểm hoàn tất | Giữ hồ sơ, chặn dùng, phục hồi bỏ cờ |
 | 5 | Dừng quy trình ở các điểm lỗi **trước** khi ghi thời điểm hoàn tất | Hoàn tác sạch, không tài khoản dở dang |
 | 6 | Đăng ký Google, hoàn tất thiết lập; gửi hoàn tất hai lần; tên bị chiếm giữa chừng | Một tài khoản; báo nhập lại tên; không OTP |
-| 7 | Đăng ký Google nhưng chưa hoàn tất rồi gọi thẳng chức năng của ứng dụng | Bị chặn |
+| 7 | Đăng ký Google nhưng chưa bấm Hoàn tất thiết lập, rồi dùng công cụ gửi thẳng lệnh dùng chức năng của ứng dụng | Máy chủ chặn, không có chức năng nào dùng được |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** tính việc dọn định kỳ (task sau).
@@ -607,10 +607,10 @@ Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên h
 | Phiên quá 12 giờ (không ghi nhớ) hoặc quá 30 ngày (ghi nhớ) | Bị từ chối |
 | Phiên đã bị thu hồi, dùng lại token cũ | Bị từ chối |
 | Tên mới 2–30 ký tự, sạch | Lưu thành công |
-| Tên 1 hoặc 31 ký tự | Từ chối |
+| Tên hiển thị chỉ 1 ký tự hoặc dài tới 31 ký tự | Từ chối, không lưu |
 | Tên chứa từ cấm | Từ chối, nêu lý do |
 | Yêu cầu có thêm tên đăng nhập, email | Phần thêm bị bỏ qua; không đổi |
-| Người này sửa hồ sơ người khác | Từ chối |
+| Kẻ gian dùng công cụ gửi lệnh sửa hồ sơ của người khác | Máy chủ từ chối; chỉ sửa được hồ sơ của chính mình |
 | Đăng nhập Google bằng tài khoản đã hoàn tất | Vào Sảnh (hoặc đúng phòng mời) |
 | Đăng nhập Google bằng email chưa đăng ký | Sang màn thiết lập; chưa dùng được ứng dụng |
 | Google từ chối hoặc lỗi | Không có phiên; báo lỗi |
@@ -626,9 +626,9 @@ Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 | 4 | Sai 4 lần rồi lần thứ 5 trong 15 phút; thử trước và sau thời gian khoá | Khoá từ lần thứ 5; hết hạn thì xét lại; lỗi vẫn chung |
 | 5 | Xem hồ sơ | Đúng dữ liệu của mình |
 | 6 | Sửa tên với 1, 2, 30, 31 ký tự | 2 và 30 lưu; 1 và 31 từ chối |
-| 7 | Sửa tên chứa từ cấm | Từ chối |
+| 7 | Sửa tên hiển thị thành tên chứa từ cấm | Từ chối, nêu lý do |
 | 8 | Gửi thêm email và tên đăng nhập | Không đổi |
-| 9 | Sửa hồ sơ của người khác | Từ chối |
+| 9 | Dùng công cụ gửi lệnh sửa hồ sơ của người khác | Máy chủ từ chối, hồ sơ không đổi |
 | 10 | Đăng nhập Google với tài khoản đã hoàn tất, với email mới, và khi Google từ chối | Đúng như bảng lỗi |
 | 11 | Đăng nhập bằng Google rồi bằng tên đăng nhập và mật khẩu | Cùng một tài khoản |
 
@@ -684,9 +684,9 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 | Hoàn tất đăng ký và dọn dẹp chạy cùng lúc | Không xoá nhầm hồ sơ đã hoàn tất |
 | Gọi đổi email trực tiếp mà không chặn được | Báo **không đạt**, không im lặng bỏ qua |
 | Hết hạn mức thư | Ghi **bị chặn**, không bịa số |
-| Có đăng nhập hợp lệ nhưng chưa có hồ sơ hoàn tất | Không dùng được ứng dụng |
+| Đã đăng nhập (qua Google hoặc OTP) nhưng chưa bấm hoàn tất đăng ký nên chưa có hồ sơ | Không dùng được chức năng nào của ứng dụng |
 | Có thời điểm hoàn tất nhưng còn cờ đang chờ | Bị chặn cho đến khi bỏ cờ; không xoá hồ sơ |
-| Trình duyệt tự khai "đã hoàn tất" hoặc cố ghi thẳng vào hồ sơ | Không có tác dụng |
+| Kẻ gian tự sửa dữ liệu gửi lên để khai "đã hoàn tất", hoặc ghi thẳng vào hồ sơ | Không có tác dụng; chỉ máy chủ mới đánh dấu hoàn tất |
 | Gọi thẳng chức năng đổi email của hệ thống đăng nhập | Email **không đổi**; chưa chặn được thì báo "bị chặn" |
 | Google với email đã đăng ký bằng mật khẩu | Báo "Email này đã được đăng ký"; không gộp tài khoản |
 | Google bỏ dở giữa chừng | Không có tài khoản ứng dụng dùng được; lần sau bắt đầu lại từ màn thiết lập |
@@ -701,7 +701,7 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 | 5 | Đối chiếu số liệu trong báo cáo với nhật ký thật | Khớp, không số bịa |
 | 6 | Dùng đăng nhập hợp lệ nhưng không có hồ sơ hoàn tất | Không dùng được ứng dụng |
 | 7 | Để hồ sơ có thời điểm hoàn tất nhưng còn cờ, rồi bỏ cờ | Trước khi bỏ cờ: chặn; sau: dùng được; hồ sơ không bị xoá |
-| 8 | Thử tự khai hoàn tất và thử ghi thẳng vào hồ sơ | Không nâng được quyền |
+| 8 | Dùng công cụ tự sửa dữ liệu để khai "đã hoàn tất", và thử ghi thẳng vào hồ sơ | Không có tác dụng, vẫn chưa dùng được ứng dụng |
 | 9 | Gọi thẳng đổi email bằng phiên thử | Email cũ vẫn nguyên; hoặc ghi "bị chặn" |
 | 10 | Đăng ký Google bằng email mới; bỏ dở; làm lại; hoàn tất | Bỏ dở thì không có tài khoản; hoàn tất thì có đúng một tài khoản |
 | 11 | Đăng ký Google bằng email đã đăng ký bằng mật khẩu | Báo đã được đăng ký; tài khoản cũ không đổi |
@@ -852,7 +852,7 @@ Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng k
 | Bỏ giữa chừng rồi quay lại | Phục hồi đúng như quy tắc, không kẹt email |
 | Sai mật khẩu 5 lần | Hiện thông báo bị khoá tạm |
 | Phiên hết hạn khi đang dùng | Về đăng nhập, có thông báo |
-| Chưa hoàn tất đăng ký mà vào thẳng | Bị chặn |
+| Chưa hoàn tất đăng ký mà gõ thẳng địa chỉ trang trong ứng dụng | Bị đưa về bước đăng ký, không dùng được ứng dụng |
 
 **Cách tự kiểm tra**
 Chuẩn bị: máy chủ và giao diện chạy thử, email nhóm.
@@ -955,8 +955,8 @@ Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (24
 |---|---|
 | Bấm hoặc nhấn phím vào từng lối chính chưa làm | Không mở chức năng; có chú thích "Sắp ra mắt" |
 | Mở các màn của giai đoạn 1 | Không có nút hay khay của chức năng chưa làm |
-| Kết thúc ván | Chỉ có nút Rời phòng, không có Xem lại |
-| Hệ điều hành đặt giao diện sáng | Ứng dụng vẫn tối |
+| Ván kết thúc, hiện hộp kết quả | Chỉ có nút Rời phòng; chưa có nút Xem lại (tính năng giai đoạn sau) |
+| Máy của người dùng đang đặt giao diện sáng | Ứng dụng vẫn hiện giao diện tối (chưa làm giao diện sáng) |
 | Duyệt đăng ký, đăng nhập, hồ sơ, bạn bè, kết quả, ván máy bằng bàn phím | Không lối chưa làm nào hoạt động; không ẩn nhầm chức năng của giai đoạn 1 |
 | Tải chậm; không có dữ liệu ở từng khung | Khung xương; giải thích và nút hành động đúng |
 | Từ chối, mất mạng, phụ thuộc lỗi | Thông báo tiếng Việt, nút "Thử lại" đúng việc |
