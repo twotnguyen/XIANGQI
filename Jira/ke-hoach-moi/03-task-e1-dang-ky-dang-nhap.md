@@ -261,7 +261,7 @@ Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Kết nối thiếu, sai hoặc hết hạn thông tin đăng nhập | Không nhận danh tính, không nhận dữ liệu nghiệp vụ |
-| Người A kết nối nhưng gửi kèm "tôi là B" | Vẫn là A |
+| Người dùng cố tình sửa dữ liệu gửi lên (bằng công cụ lập trình), giả mạo thành người khác ("tôi là B") | Máy chủ bỏ qua lời khai "tôi là B", vẫn coi người gửi là A (danh tính chỉ lấy từ phiên đã xác thực) |
 | Chốt kiểm tra quyền bị thiếu, từ chối hoặc lỗi | Nơi xử lý **không chạy** |
 | Lệnh sai dạng | Trả lỗi, không gây tác động |
 | Gây lỗi rồi đọc nhật ký | Có mục đúng mã lỗi và mã lệnh; **không** có mật khẩu, mã OTP, token, chat |
@@ -271,7 +271,7 @@ Chuẩn bị: thông tin đăng nhập thử.
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Kết nối thiếu/sai/hết hạn thông tin đăng nhập | Bị từ chối |
-| 2 | Kết nối bằng thông tin của A, gửi kèm "tôi là B" | Danh tính vẫn là A |
+| 2 | Kết nối bằng thông tin của A, rồi dùng công cụ gửi một lệnh có ghi người gửi là B | Máy chủ bỏ qua lời khai, ghi nhận người gửi vẫn là A; không thực hiện thay B |
 | 3 | Bỏ chốt kiểm tra quyền, hoặc cho chốt từ chối, hoặc gây lỗi trong chốt | Nơi xử lý không chạy |
 | 4 | Dùng chốt thử cho phép; gửi lệnh đúng rồi lệnh sai dạng | Đúng thì được xử lý thử; sai thì trả lỗi |
 | 5 | Gây một lỗi và đọc nhật ký; gọi điểm kiểm tra sức khoẻ; chạy tác vụ dọn nhật ký với đồng hồ giả quá 14 ngày | Nhật ký có mã lỗi đúng, không có bí mật; điểm kiểm tra trả "còn sống"; nhật ký quá 14 ngày bị dọn |
