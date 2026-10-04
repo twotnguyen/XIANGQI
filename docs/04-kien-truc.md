@@ -201,7 +201,7 @@ Hành vi kết nối lại theo vai trò (BA 8.3): người chơi đang đấu 6
 ## 10. Triển khai và quy mô
 
 * **Quy mô thiết kế:** khoảng 50 người dùng đồng thời, 10 ván cùng lúc (BA 10.1). **Một thể hiện máy chủ ứng dụng duy nhất** là đủ; vì trạng thái ván nằm trong bộ nhớ nên **chưa hỗ trợ nhiều thể hiện** (ghi là giới hạn đã biết).
-* Máy chủ ứng dụng cần giữ kết nối WebSocket dài: đặt trên dịch vụ cho phép (ví dụ nền tảng chạy container hoặc máy ảo nhỏ). Web tĩnh đặt trên dịch vụ lưu trữ tĩnh. **Chọn nền tảng cụ thể sau khi Product Owner duyệt và xác nhận chi phí/thẻ thanh toán.**
+* Máy chủ ứng dụng cần giữ kết nối WebSocket dài: đặt trên dịch vụ cho phép (ví dụ nền tảng chạy container hoặc máy ảo nhỏ). Web tĩnh đặt trên dịch vụ lưu trữ tĩnh. **PO đã chốt 04/10/2026: ưu tiên chạy máy chủ và web ở máy cục bộ (local); Render là phương án dự phòng nếu cần địa chỉ trên mạng** (BA 10.1). Chỉ khi chuyển sang Render mới cần xác nhận chi phí và thẻ thanh toán.
 * Cấu hình theo biến môi trường: địa chỉ Supabase, khoá dịch vụ, khoá/địa chỉ LiveKit, `DEMO_MODE`, giới hạn tốc độ.
 * **Sao lưu:** bản sao lưu cơ sở dữ liệu theo gói Supabase; dữ liệu trong bộ nhớ (ván đang chạy) mất khi khởi động lại và xử lý bằng `INTERRUPTED` (BA 8.3).
 
