@@ -47,7 +47,7 @@ Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều tr
 ---
 
 ### T-16 — Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** DevOps · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra hoạt động. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ chạy và nhận kết nối. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được web biên dịch được, có chỗ cấu hình địa chỉ máy chủ.
 
 **Mục tiêu**

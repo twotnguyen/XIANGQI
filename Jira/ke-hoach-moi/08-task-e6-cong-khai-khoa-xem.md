@@ -45,7 +45,7 @@ Chuẩn bị: dữ liệu giả có quyền đổi khi hộp đang mở.
 ---
 
 ### T-36 — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Room Management · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được cách xếp người vào phòng, mã và đường dẫn hiện hành.
 
 **Mục tiêu**
@@ -86,7 +86,7 @@ Chuẩn bị: dữ liệu mẫu nhiều phòng, đồng hồ giả.
 ---
 
 ### T-38 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Room Management · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được ghế, Sẵn sàng và việc huỷ đếm khi đổi người. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kiểu phòng, mã, đường dẫn và quy tắc giữ chỗ.
 
 **Mục tiêu**
@@ -158,7 +158,7 @@ Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời 
 ---
 
 ### T-40 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room Management · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được luồng tạo, vào, ghế đã chạy thật. *Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi (T-32)*: nhận được các nút và hộp xác nhận đã dựng. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được các chức năng thật ở máy chủ.
 
 **Mục tiêu**
@@ -196,7 +196,7 @@ Chuẩn bị: nhiều trình duyệt (chủ phòng, đối thủ, hai người x
 ---
 
 ### T-44 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Realtime · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được tư cách người xem đã kiểm sức chứa. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được trạng thái ván đã lưu và luồng phát. *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được giờ còn lại và mốc lượt do máy chủ tính.
 
 **Mục tiêu**

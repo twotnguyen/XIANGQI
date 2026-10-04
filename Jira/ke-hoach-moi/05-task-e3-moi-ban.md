@@ -7,7 +7,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ---
 
 ### T-33 — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng)
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Social · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kết quả đã hoàn thành của task này. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được chỗ đặt chuông lời mời và điều hướng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được phòng chờ và hộp thoại mời chia sẻ mã/đường dẫn để gắn danh sách "Mời bạn".
 
 **Mục tiêu**
@@ -49,7 +49,7 @@ Chuẩn bị: dữ liệu giả cho ba trạng thái, lỗi, giới hạn.
 ---
 
 ### T-34 — Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Social · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ, quan hệ bạn bè, đếm số lần từ chối và ràng buộc theo cặp. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách xác định người gửi và chuyển lệnh. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách nhận ra yêu cầu gửi lại. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được sổ chỗ chơi (ghế phòng, ván với máy) theo từng người.
 
 **Mục tiêu**
@@ -129,7 +129,7 @@ Chuẩn bị: cơ sở dữ liệu thử, đồng hồ điều khiển được,
 ---
 
 ### T-47 — Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room Management · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: có tài khoản và phiên thật. *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được chức năng phòng và ván để đưa người dùng tới. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được kết quả đã hoàn thành của task này.
 
 **Mục tiêu**
@@ -169,7 +169,7 @@ Chuẩn bị: hai tài khoản thử, một phòng đang mở.
 ---
 
 ### T-52 — Máy chủ: mời bạn đang online vào phòng
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Social · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được chức năng vào phòng và xếp ghế/người xem. *Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (T-34)*: nhận được quan hệ bạn bè và trạng thái đáng tin. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được quy tắc công khai/chỉ mã/khoá và mã, đường dẫn hiện hành.
 
 **Mục tiêu**
@@ -210,7 +210,7 @@ Cho người **đang ngồi ghế** mời **bạn đang online** vào phòng hi�
 ---
 
 ### T-54 — Nối web với máy chủ: bạn bè
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Social · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được tạo, vào phòng, bắt đầu ván thật. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-33)*: nhận được màn hình đã dựng. *Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (T-34)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi chỗ, khoá, đuổi, rời phòng thật. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được ván với máy chạy thật cùng việc báo chiếm và giải phóng chỗ chơi. *Máy chủ: mời bạn đang online vào phòng (T-52)*: nhận được ba chức năng ở máy chủ.
 
 **Mục tiêu**

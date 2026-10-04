@@ -7,7 +7,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ---
 
 ### T-14 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, UI/UX · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu tạo, vào, xem danh sách và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được nút, ô nhập, hộp thoại, thông báo; nhận được trang chạy được và cách chuyển trang.
 
 **Mục tiêu**
@@ -122,7 +122,7 @@ Chuẩn bị: dữ liệu giả cho ghế, đếm giờ, thu hồi, quyền.
 ---
 
 ### T-17 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room Management · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng phòng, người tham gia, ván và ràng buộc "một ghế mỗi người". *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận lệnh có xác thực người gửi. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách trả lại kết quả cũ khi gửi lại cùng một yêu cầu; nhận được hàm kiểm tên phòng; nhận được cơ chế giới hạn tạo phòng 5 lần trong 10 phút.
 
 **Mục tiêu**
@@ -209,7 +209,7 @@ Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng l
 ---
 
 ### T-21 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room Management · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách nhận ra yêu cầu gửi lại; nhận được cơ chế chặn nhập sai mã. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được phòng, mã, đường dẫn và sức chứa.
 
 **Mục tiêu**
@@ -253,7 +253,7 @@ Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì
 ---
 
 ### T-25 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room Management · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được hàm tạo thế cờ ban đầu, Đỏ đi trước. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được người đã vào đúng ghế, thông tin phòng có thẩm quyền.
 
 **Mục tiêu**
@@ -292,7 +292,7 @@ Chuẩn bị: đồng hồ giả để rút ngắn 3 giây.
 ---
 
 ### T-29 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room Management · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được màn tạo/vào đã dựng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được màn phòng chờ đã dựng. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được chức năng ghế, Sẵn sàng và một ván có mã.
 
 **Mục tiêu**

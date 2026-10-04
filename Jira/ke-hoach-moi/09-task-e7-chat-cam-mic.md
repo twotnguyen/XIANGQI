@@ -204,7 +204,7 @@ Chuẩn bị: máy có camera và micro thật; thử cả khi từ chối quy�
 ---
 
 ### T-53 — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Realtime · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Game Server · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-06)*: nhận được **báo cáo có kết luận đạt** về việc cấp quyền theo người, thu hồi khi dùng token cũ; **chỉ có báo cáo chưa đủ**, phải có kết luận đạt. Nếu không đạt hoặc chưa kết luận thì phần phụ thuộc bị chặn và báo PO. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được kiểm tra phiên và hạn, thu hồi. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được đổi vai đã ghi; nhận được thông báo đuổi, rời, đóng phòng.
 
 **Mục tiêu**

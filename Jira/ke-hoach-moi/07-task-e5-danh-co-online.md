@@ -49,7 +49,7 @@ Chuẩn bị: dữ liệu giả cho trạng thái ván, giờ, phản hồi, k�
 ---
 
 ### T-28 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Realtime, Match · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng ván, nước đi, biên lai lệnh. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm phân xử kết quả. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cơ chế biên lai. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được mã ván, hai ghế, thế ban đầu và mốc bắt đầu.
 
 **Mục tiêu**
@@ -125,7 +125,7 @@ Chuẩn bị: một ván thử có hai người chơi và một người xem.
 ---
 
 ### T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Realtime · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-26)*: nhận được màn hình ván và cách chờ xác nhận. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được chức năng đi nước và phát trạng thái đã ghi dữ liệu thật. *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được cách hai người tạo, vào phòng và bắt đầu ván thật.
 
 **Mục tiêu**
@@ -162,7 +162,7 @@ Chuẩn bị: hai trình duyệt, máy chủ và cơ sở dữ liệu thử.
 ---
 
 ### T-39 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Match · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được luồng áp dụng nước và bộ đếm luật được ghi cùng lúc.
 
 **Mục tiêu**
@@ -308,7 +308,7 @@ Viết hàm đổi một nước đi thành **ký hiệu tiếng Việt** cho b�
 ---
 
 ### T-45 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Realtime · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được đồng hồ thật và cách phân xử theo hạn tuyệt đối; nhận được kết thúc một lần và việc huỷ đề nghị hoà.
 
 **Mục tiêu**
@@ -387,7 +387,7 @@ Khi người dùng bấm đăng xuất **trong lúc đang có ván**, hệ thố
 ---
 
 ### T-50 — Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Realtime · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được đường hai người vào ván và đi nước thật (gồm cả phòng và bắt đầu ván). *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được đồng hồ thật, bên Đỏ chạy trước, hết giờ, đóng băng và hồi phục; nhận được kết thúc một lần, đầu hàng, vòng đời xin hoà. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi chỗ, khoá, đuổi, chủ phòng rời chạy thật. *Bảng nước đi: ký hiệu tiếng Việt và hiển thị (T-42)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-44)*: nhận được dữ liệu người xem đã lọc. *Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn (T-45)*: nhận được chức năng ngắt/nối thật, giữ chỗ theo vai và khởi động lại.
 
 **Mục tiêu**
