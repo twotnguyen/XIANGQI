@@ -8,14 +8,14 @@ Các task này phục vụ cả dự án nên không thuộc Epic nào; trên Ji
 
 ---
 
-### T-34 — Nghiệm thu MVP: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn
+### T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: nhận được đăng ký và đăng nhập (OTP và Google) chạy thật. *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-28)*: nhận được phòng tạo được, vào bằng mã hoặc đường dẫn, ngồi ghế, Sẵn sàng, bắt đầu ván. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được ván hai người chơi được từ đầu đến hết. *Nối web, máy chủ và máy cờ thật: ván với máy (T-33)*: nhận được ván với máy ba cấp chạy thật.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung`, `MVP`, `gate` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung`, `loi`, `gate` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 10/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 
 **Mục tiêu**
-Chốt mốc **MVP chơi được** vào cuối Sprint 2: kiểm bằng người thật trên bản chạy thật rằng **bốn việc cốt lõi** chạy trọn từ đầu đến cuối, trước khi nhóm mở rộng sang người xem, khoá phòng, chat, camera/micro, bạn bè và hoàn thiện. Không đạt thì ghi rõ chỗ nào chưa đạt để quyết định **dừng mở rộng, sửa MVP trước**.
+Chốt mốc **bản chơi được** vào cuối Sprint 2: kiểm bằng người thật trên bản chạy thật rằng **bốn việc cốt lõi** chạy trọn từ đầu đến cuối, trước khi nhóm mở rộng sang người xem, khoá phòng, chat, camera/micro, bạn bè và hoàn thiện. Không đạt thì ghi rõ chỗ nào chưa đạt để quyết định **dừng mở rộng, sửa bản chơi được trước**.
 
 **Việc cần làm (làm lần lượt)**
 1. Tự chuẩn bị tài khoản mới và dữ liệu thử trên dịch vụ thật, ghi cách tạo và đặt lại, che bí mật.
@@ -23,16 +23,16 @@ Chốt mốc **MVP chơi được** vào cuối Sprint 2: kiểm bằng người
 3. **Kịch bản M2 – Phòng và mời:** người A tạo phòng; người B vào bằng **mã phòng** và bằng **đường dẫn**; hai người ngồi hai ghế, cùng Sẵn sàng; hai màn hình cùng vào màn ván.
 4. **Kịch bản M3 – Đánh online:** hai người đi luân phiên đến khi **kết thúc ván** (chiếu hết, hoặc đầu hàng, hoặc hết giờ); thử một nước sai để xem bị từ chối và quân về chỗ cũ; hai trình duyệt luôn cùng một thế cờ và cùng kết quả; người cầm Đen thấy bàn lật.
 5. **Kịch bản M4 – Đánh với máy:** người chơi chọn cấp Dễ, Trung bình, Khó và phe, đánh hết ván với máy ở từng cấp; máy luôn đi nước hợp lệ; rời ván giải phóng chỗ chơi.
-6. Ghi **danh sách việc còn thiếu của MVP** (nếu có) kèm người nhận; lỗi mức Cao hoặc Nghiêm trọng phải sửa **trước khi** làm tiếp phần mở rộng.
-7. Ghi kết luận: **MVP đạt / chưa đạt**, ngày giờ và bản dựng.
+6. Ghi **danh sách việc còn thiếu của bản chơi được** (nếu có) kèm người nhận; lỗi mức Cao hoặc Nghiêm trọng phải sửa **trước khi** làm tiếp phần mở rộng.
+7. Ghi kết luận: **bản chơi được đạt / chưa đạt**, ngày giờ và bản dựng.
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
-| Một trong bốn kịch bản M1–M4 không chạy trọn | Ghi "MVP chưa đạt", nêu rõ bước hỏng và người nhận; chưa mở rộng cho tới khi sửa |
+| Một trong bốn kịch bản M1–M4 không chạy trọn | Ghi "bản chơi được chưa đạt", nêu rõ bước hỏng và người nhận; chưa mở rộng cho tới khi sửa |
 | Chỉ chạy được bằng dữ liệu giả hoặc môi trường khác bản chạy thật | Không tính là đạt; chạy lại trên bản chạy thật |
-| Lỗi mức Cao hoặc Nghiêm trọng còn mở | MVP chưa đạt cho tới khi sửa |
-| Tính năng mở rộng (chat, camera, người xem, bạn bè) chưa làm | Không ảnh hưởng kết luận MVP; các lối vào chưa làm hiện mờ "Sắp ra mắt" |
+| Lỗi mức Cao hoặc Nghiêm trọng còn mở | bản chơi được chưa đạt cho tới khi sửa |
+| Tính năng mở rộng (chat, camera, người xem, bạn bè) chưa làm | Không ảnh hưởng kết luận bản chơi được; các lối vào chưa làm hiện mờ "Sắp ra mắt" |
 
 **Cách tự kiểm tra**
 Chuẩn bị: bản dựng tích hợp, hai trình duyệt (hoặc hai thiết bị), email thật để nhận OTP, tài khoản Google thử.
@@ -46,13 +46,13 @@ Chuẩn bị: bản dựng tích hợp, hai trình duyệt (hoặc hai thiết b
 | 5 | Xem danh sách lỗi và việc thiếu | Có người nhận; không còn lỗi Cao hoặc Nghiêm trọng |
 
 **Khi nào chuyển cho người kiểm thử:** bốn kịch bản M1–M4 đã chạy, có bằng chứng (video hoặc ảnh) và trạng thái trung thực.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý với báo cáo; kết luận MVP đạt hoặc chưa đạt kèm lý do. Nhóm chỉ chuyển sang phần mở rộng sau khi MVP đạt (hoặc PO đồng ý chuyển với danh sách việc thiếu rõ ràng).
-**Bàn giao cho task sau:** bản MVP và danh sách lỗi cho nghiệm thu đầy đủ ở giai đoạn sau.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý với báo cáo; kết luận bản chơi được đạt hoặc chưa đạt kèm lý do. Nhóm chỉ chuyển sang phần mở rộng sau khi bản chơi được đạt (hoặc PO đồng ý chuyển với danh sách việc thiếu rõ ràng).
+**Bàn giao cho task sau:** bản chơi được và danh sách lỗi cho nghiệm thu đầy đủ ở giai đoạn sau.
 **Không thuộc task này:** nghiệm thu toàn bộ tiêu chí; tính năng mở rộng (người xem, khoá phòng, chat, camera/micro, bạn bè); bài tải; đo độ khó máy cờ đầy đủ.
-**Phục vụ (nguồn):** mốc MVP của kế hoạch; kịch bản demo D1, D2, D5, D8 (phần lõi). Task chung, không thuộc Epic nào.
-**Kết quả (đầu ra):** Báo cáo nghiệm thu MVP với kết luận đạt hoặc chưa đạt; danh sách việc còn thiếu.
+**Phục vụ (nguồn):** mốc bản chơi được của kế hoạch; kịch bản demo D1, D2, D5, D8 (phần lõi). Task chung, không thuộc Epic nào.
+**Kết quả (đầu ra):** Báo cáo nghiệm thu bản chơi được với kết luận đạt hoặc chưa đạt; danh sách việc còn thiếu.
 **Bằng chứng nộp:** Video hoặc ảnh bốn kịch bản M1–M4; báo cáo kết luận. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
-**Rủi ro / chưa rõ:** Mốc MVP dồn nhiều việc vào hai Sprint đầu; nếu sức chứa không đủ khi ước lượng giờ, phải báo PO sớm để quyết định bỏ việc nào ra khỏi MVP.
+**Rủi ro / chưa rõ:** Mốc bản chơi được dồn nhiều việc vào hai Sprint đầu; nếu sức chứa không đủ khi ước lượng giờ, phải báo PO sớm để quyết định bỏ việc nào ra khỏi phần lõi.
 **Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-25, T-28, T-32, T-33; không thuộc Epic (nhãn chung).
 
 ---
@@ -150,7 +150,7 @@ Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, 
 
 ### T-62 — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-33)*: nhận được kết quả đã hoàn thành của task này. *Nghiệm thu MVP: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn (T-34)*: nhận được kết luận MVP đạt. *Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (T-37)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (T-42)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-46)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-52)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (T-54)*: nhận được kết quả đã hoàn thành của task này. *Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (T-55)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá (T-57)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-59)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-60)*: nhận được kết quả đã hoàn thành của task này.
+**Phải xong trước:** *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-33)*: nhận được kết quả đã hoàn thành của task này. *Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn (T-34)*: nhận được kết luận bản chơi được đạt. *Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (T-37)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (T-42)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-46)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-52)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (T-54)*: nhận được kết quả đã hoàn thành của task này. *Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (T-55)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá (T-57)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-59)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-60)*: nhận được kết quả đã hoàn thành của task này.
 **Loại:** Task QA · **Nhãn:** `P1`, `mo-rong`, `QA`, `chung`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 16/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 

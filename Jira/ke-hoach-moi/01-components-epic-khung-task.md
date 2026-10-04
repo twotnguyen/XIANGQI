@@ -6,19 +6,21 @@
 
 **Mã:** Task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm trước; mỗi task chỉ cần các task có số nhỏ hơn). Story đánh số 1–26 theo Epic. Khi tạo trên Jira, mỗi mục có số `XIAN-<số>` riêng.
 
-## 0. Hướng MVP trước, mở rộng sau (PO duyệt 04/10/2026)
+## 0. Hướng làm bản chơi được trước, mở rộng sau (PO duyệt 04/10/2026)
 
-**Nguyên tắc:** làm trước các tính năng cốt lõi để có **một bản chơi được từ đầu đến cuối** (MVP) vào cuối Sprint 2 (10/10). Chỉ khi MVP đạt mới mở rộng sang các phần con và đi sâu vào các tính năng còn lại ở Sprint 3 và 4. Phạm vi giai đoạn 1 (P1) không đổi; đây là cách sắp thứ tự làm, 8 Epic vẫn đúng 8 yêu cầu được giao.
+**Nguyên tắc:** làm trước các tính năng cốt lõi để có **một bản chơi được từ đầu đến cuối** vào cuối Sprint 2 (10/10). Chỉ khi bản chơi được đạt mới mở rộng sang các phần con và đi sâu vào các tính năng còn lại ở Sprint 3 và 4. Phạm vi giai đoạn 1 (P1) không đổi; đây là cách sắp thứ tự làm, 8 Epic vẫn đúng 8 yêu cầu được giao.
 
-**MVP gồm:** (1) đăng ký/đăng nhập (OTP và Google); (2) tạo phòng; (3) mời bằng mã phòng và đường dẫn; (4) khởi tạo bàn cờ và tương tác với quân; (5) hai người đánh online từ đầu đến hết ván; (8) đánh với máy ba cấp độ.
+**Lưu ý tên gọi:** các tài liệu đặc tả (`BA-SCOPE-DECISIONS.md`, `DANH-MUC-MAN-HINH-XIANGQI.md`) dùng "MVP 2 tuần" để chỉ **toàn bộ giai đoạn 1 (P1)**. Để không trùng nghĩa, kế hoạch này gọi phần làm trước là **"bản chơi được"** và đánh nhãn `loi` (lõi); phần làm sau là `mo-rong`. Phạm vi P1 không đổi.
+
+**Phần lõi (bản chơi được) gồm:** (1) đăng ký/đăng nhập (OTP và Google); (2) tạo phòng; (3) mời bằng mã phòng và đường dẫn; (4) khởi tạo bàn cờ và tương tác với quân; (5) hai người đánh online từ đầu đến hết ván; (8) đánh với máy ba cấp độ.
 
 **Mở rộng gồm:** (6) phòng công khai, khoá phòng và người xem; (7) chat hai kênh, camera và micro; bạn bè và mời bạn online (thuộc yêu cầu 3); chuyển hướng sau đăng nhập khi bấm đường dẫn mời; rớt mạng và nối lại; bảng nước đi; đăng xuất giữa ván; đo máy cờ đầy đủ; hoàn thiện giao diện (5 trạng thái, 360 px); nghiệm thu đầy đủ và gói demo.
 
-**Cách đánh dấu:** mỗi Epic, Story và Task có nhãn `MVP` hoặc `mo-rong` (Story và Epic có cả hai nhãn khi gồm cả phần lõi và phần mở rộng, kèm dòng "Giai đoạn" nêu rõ Task nào thuộc phần nào).
+**Cách đánh dấu:** mỗi Epic, Story và Task có nhãn `loi` hoặc `mo-rong` (Story và Epic có cả hai nhãn khi gồm cả phần lõi và phần mở rộng, kèm dòng "Giai đoạn" nêu rõ Task nào thuộc phần nào).
 
-**Số Task MVP:** 34 trong tổng 64: Sprint 1 có 19 (T-01 đến T-19), Sprint 2 có 15 (T-20 đến T-34). Mốc kiểm: Task `T-34` (nghiệm thu MVP) ở cuối Sprint 2; chưa đạt thì sửa MVP trước khi mở rộng.
+**Số Task lõi:** 34 trong tổng 64: Sprint 1 có 19 (T-01 đến T-19), Sprint 2 có 15 (T-20 đến T-34). Mốc kiểm: Task `T-34` (nghiệm thu bản chơi được) ở cuối Sprint 2; chưa đạt thì sửa bản chơi được trước khi mở rộng.
 
-**Rủi ro:** dồn 34 task vào 7 ngày đầu; cần ước lượng giờ ở buổi Sprint Planning đầu tiên để kiểm sức chứa, nếu thiếu thì báo PO để quyết định bỏ việc nào ra khỏi MVP (nhiều khả năng là phần máy cờ hoặc Google).
+**Rủi ro:** dồn 34 task vào 7 ngày đầu; cần ước lượng giờ ở buổi Sprint Planning đầu tiên để kiểm sức chứa, nếu thiếu thì báo PO để quyết định bỏ việc nào ra khỏi phần lõi (nhiều khả năng là phần máy cờ hoặc Google).
 
 ## 1. Thành phần (Components) đề xuất
 
@@ -85,12 +87,12 @@ Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên modul
 
 | Sprint | Fix version | Ngày | Số ngày | Số task | Mục tiêu đề xuất |
 |---|---|---|---|---:|---|
-| 1 | `v0.1-sprint-1` | 04/10–07/10 | 4 ngày | 19 | **MVP, phần 1:** nền tảng, hợp đồng chung, luật cờ cốt lõi, đăng ký/đăng nhập phía máy chủ, khung giao diện, bàn cờ, phòng và máy cờ cơ bản. |
-| 2 | `v0.2-mvp-sprint-2` | 08/10–10/10 | 3 ngày | 15 | **MVP, phần 2 (mốc MVP chơi được):** đăng ký/đăng nhập chạy thật, tạo phòng và vào bằng mã/đường dẫn, hai người đánh online từ đầu đến hết, đánh với máy ba cấp; cuối Sprint chạy nghiệm thu MVP. |
+| 1 | `v0.1-sprint-1` | 04/10–07/10 | 4 ngày | 19 | **Bản chơi được, phần 1:** nền tảng, hợp đồng chung, luật cờ cốt lõi, đăng ký/đăng nhập phía máy chủ, khung giao diện, bàn cờ, phòng và máy cờ cơ bản. |
+| 2 | `v0.2-loi-sprint-2` | 08/10–10/10 | 3 ngày | 15 | **Bản chơi được, phần 2 (mốc bản chơi được):** đăng ký/đăng nhập chạy thật, tạo phòng và vào bằng mã/đường dẫn, hai người đánh online từ đầu đến hết, đánh với máy ba cấp; cuối Sprint chạy nghiệm thu bản chơi được. |
 | 3 | `v0.3-sprint-3` | 11/10–14/10 | 4 ngày | 17 | **Mở rộng, phần 1:** phòng công khai/khoá, người xem, đổi chỗ và đuổi, chat hai kênh, bạn bè, bảng nước đi, rớt mạng và nối lại; nền camera/micro; môi trường demo và kiểm thử tự động. |
 | 4 | `v1.0-sprint-4` | 15/10–17/10 | 3 ngày | 13 | **Mở rộng, phần 2:** camera/micro thật, mời bạn, đường dẫn mời sau đăng nhập, đăng xuất giữa ván, đo máy cờ, hoàn thiện giao diện (5 trạng thái, 360 px), nghiệm thu đầy đủ và gói demo. |
 
-**Phiên bản (Fix version):** 4 phiên bản, mỗi Sprint một phiên bản. Task gán theo Sprint của nó; Story và Epic gán theo Sprint của Task cuối (nơi việc hoàn thành). Phiên bản `v0.2-mvp-sprint-2` là bản **MVP chơi được**; `v1.0-sprint-4` là bản nộp bài.
+**Phiên bản (Fix version):** 4 phiên bản, mỗi Sprint một phiên bản. Task gán theo Sprint của nó; Story và Epic gán theo Sprint của Task cuối (nơi việc hoàn thành). Phiên bản `v0.2-loi-sprint-2` là bản **bản chơi được**; `v1.0-sprint-4` là bản nộp bài.
 
 **Nộp ngày 18/10/2026.** Chưa kiểm khả năng chứa vì chưa có ước lượng giờ.
 
@@ -104,7 +106,7 @@ Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên modul
 
 ## 5. Rủi ro lịch
 
-- **Chuỗi dài nhất:** 16 task nối tiếp; riêng phần MVP là 11 task nối tiếp trong 7 ngày (Sprint 1 và 2). Sprint 1 có nhiều task nhất (19); cần ước lượng giờ để kiểm khả năng chứa.
+- **Chuỗi dài nhất:** 16 task nối tiếp; riêng phần lõi là 11 task nối tiếp trong 7 ngày (Sprint 1 và 2). Sprint 1 có nhiều task nhất (19); cần ước lượng giờ để kiểm khả năng chứa.
 - Task gộp nhiều việc nhỏ cùng mục đích có thể to hơn một ngày công; nhóm nên chia lại khi Sprint Planning nếu cần.
 - Nơi chạy demo: **PO chốt 04/10/2026 ưu tiên chạy cục bộ, Render là dự phòng** (không còn chặn Sprint 2 vì chi phí).
 - Điểm đã chốt: số người xem mặc định 5 (đề bài gốc ghi tối đa 2; kịch bản demo chọn 2 để dễ thử); đổi cặp người ngồi ghế thì không đọc tin cũ; ván gián đoạn hiện kết quả trung tính "Ván bị gián đoạn" (PO uỷ quyền, đã chốt 04/10/2026). Đang chờ PO: nút "Đăng ký bằng Google" (mờ) ở bước 1 đăng ký và liên kết "Quên mật khẩu?" (mờ) ở màn đăng nhập.
@@ -148,7 +150,7 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 | `T-31` | Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ | 8 | `AI` | `T-14`, `T-15`, `T-27` | 2 | 09/10 | 09/10 |
 | `T-32` | Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà | 5 | `Frontend`, `Game Server` | `T-29`, `T-30` | 2 | 09/10 | 10/10 |
 | `T-33` | Nối web, máy chủ và máy cờ thật: ván với máy | 8 | `Frontend`, `AI` | `T-26`, `T-31` | 2 | 09/10 | 10/10 |
-| `T-34` | Nghiệm thu MVP: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn | — | `QA & DevOps` | `T-25`, `T-28`, `T-32`, `T-33` | 2 | 10/10 | 10/10 |
+| `T-34` | Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn | — | `QA & DevOps` | `T-25`, `T-28`, `T-32`, `T-33` | 2 | 10/10 | 10/10 |
 | `T-35` | Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền | 7 | `Communication`, `QA & DevOps` | `T-01` | 3 | 11/10 | 12/10 |
 | `T-36` | Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi | 7 | `Frontend`, `Communication` | `T-07`, `T-35` | 3 | 12/10 | 13/10 |
 | `T-37` | Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) | — | `QA & DevOps` | `T-01`, `T-07` | 3 | 11/10 | 12/10 |

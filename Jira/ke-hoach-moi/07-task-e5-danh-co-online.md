@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-24 — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được trạng thái ván, phản hồi và kết quả. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (T-20)*: nhận được bàn cờ có dấu nước vừa đi, cảnh báo chiếu, âm thanh; nhận được cách kéo thả dùng chung toạ độ và nước hợp lệ với bấm.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-BOARD-02`, `US-PLAY-01`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-BOARD-02`, `US-PLAY-01`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Mục tiêu**
@@ -100,7 +100,7 @@ Chuẩn bị: dữ liệu giả cho trạng thái ván, giờ, phản hồi, k�
 ### T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng ván, nước đi, biên lai lệnh. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-08)*: nhận được hàm phân xử kết quả. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được cơ chế biên lai. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-23)*: nhận được mã ván, hai ghế, thế ban đầu và mốc bắt đầu.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-PLAY-01`, `US-PLAY-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-PLAY-01`, `US-PLAY-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Mục tiêu**
@@ -167,7 +167,7 @@ Chuẩn bị: cơ sở dữ liệu thử, khả năng gây lỗi ghi, đồng h�
 ### T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-27)*: nhận được luồng áp dụng nước và bộ đếm luật được ghi cùng lúc.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 09/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Mục tiêu**
@@ -234,7 +234,7 @@ Chuẩn bị: đồng hồ điều khiển được để rút ngắn thời gia
 ### T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-24)*: nhận được màn hình ván và cách chờ xác nhận. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-27)*: nhận được chức năng đi nước và phát trạng thái đã ghi dữ liệu thật. *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-28)*: nhận được cách hai người tạo, vào phòng và bắt đầu ván thật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `integration`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `integration`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 09/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Mục tiêu**
@@ -278,11 +278,11 @@ Chuẩn bị: hai trình duyệt, máy chủ và cơ sở dữ liệu thử.
 ### T-32 — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-29)*: nhận được đồng hồ thật, bên Đỏ chạy trước, hết giờ, đóng băng và hồi phục; nhận được kết thúc một lần, đầu hàng, vòng đời xin hoà. *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được đường hai người vào ván và đi nước thật (gồm cả phòng và bắt đầu ván).
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `MVP`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `loi`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 09/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Mục tiêu**
-Nối **đồng hồ** và mọi cách **kết thúc ván** vào ván đã đi nước thật, và nghiệm thu luôn bước **bắt đầu ván đầy đủ** (Sẵn sàng, đếm 3…2…1 có âm thanh, chuyển sang màn ván, đồng hồ Đỏ chạy). Đây là phần giúp ván **chơi được từ đầu đến hết** trong bản MVP: kết quả cuối trên hai trình duyệt phải **khớp với máy chủ**.
+Nối **đồng hồ** và mọi cách **kết thúc ván** vào ván đã đi nước thật, và nghiệm thu luôn bước **bắt đầu ván đầy đủ** (Sẵn sàng, đếm 3…2…1 có âm thanh, chuyển sang màn ván, đồng hồ Đỏ chạy). Đây là phần giúp ván **chơi được từ đầu đến hết** trong bản chơi được: kết quả cuối trên hai trình duyệt phải **khớp với máy chủ**.
 
 Phần rớt mạng và quay lại, người xem, bảng nước đi và phòng khoá thuộc task khác ở giai đoạn mở rộng.
 
@@ -318,7 +318,7 @@ Chuẩn bị: hai trình duyệt, máy chủ thật, khả năng gây lỗi ghi.
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; dữ liệu và màn hình cùng kết quả, giờ dừng sau khi kết thúc.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Một ván hai người chơi được từ lúc Sẵn sàng đến lúc có kết quả, hai trình duyệt luôn cùng kết quả.
-**Bàn giao cho task sau:** ván chơi được từ đầu đến hết cho nghiệm thu MVP; nền cho phần rớt mạng, người xem và bảng nước đi ở giai đoạn mở rộng.
+**Bàn giao cho task sau:** ván chơi được từ đầu đến hết cho nghiệm thu bản chơi được; nền cho phần rớt mạng, người xem và bảng nước đi ở giai đoạn mở rộng.
 **Không thuộc task này:** rớt mạng và nối lại, người xem, bảng nước đi, phòng khoá (task nối mở rộng); điều kiện xin hoà của đánh hạng; tái đấu; xem lại ván.
 **Phục vụ (nguồn):** Story 7, 16, 17; tiêu chí AC-ROOM-03-02, AC-PLAY-02-02, AC-PLAY-03-02, AC-PLAY-04-01, AC-PLAY-05-01, AC-PLAY-05-02, AC-PLAY-05-04. Thuộc Epic: Hai người đánh cờ qua mạng.
 **Kết quả (đầu ra):** Bắt đầu ván, đồng hồ, kết thúc ván, đầu hàng và xin hoà chạy trọn trên web và máy chủ thật.

@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-14 — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-08)*: nhận được hàm liệt kê nước hợp lệ và nhận biết chiếu trên thế cờ chuẩn; nhận được luật hợp lệ và kết quả chiếu hết, lặp thế, 120 nửa nước.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
 
 **Mục tiêu**
@@ -75,7 +75,7 @@ Chuẩn bị: bộ thế mẫu và hạt giống cố định.
 ### T-26 — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kết quả đã hoàn thành của task này. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-10)*: nhận được khung Sảnh, chỗ đặt thẻ ván máy và băng "quay lại". *Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (T-20)*: nhận được bàn cờ có dấu nước vừa đi, âm thanh; nhận được kéo thả dùng chung nước hợp lệ với bấm.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
 
 **Mục tiêu**
@@ -143,7 +143,7 @@ Chuẩn bị: dữ liệu giả cho các lỗi, kết quả, đường dẫn `/a
 ### T-31 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-14)*: nhận được tiến độ, kết quả và tiến trình riêng. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-15)*: nhận được sổ chỗ chơi (ghế phòng và ván với máy) có khoá theo người. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-27)*: nhận được cách xử lý nước đi lần lượt và luật dùng lại được.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 09/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
 
 **Mục tiêu**
@@ -212,7 +212,7 @@ Chuẩn bị: máy chủ và máy cờ chạy thử; có thể làm treo hoặc 
 ### T-33 — Nối web, máy chủ và máy cờ thật: ván với máy
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend, AI · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-26)*: nhận được màn hình đã dựng. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-31)*: nhận được chức năng bắt đầu, đi nước, đồng bộ và quản lý chỗ chơi; nhận được hàng đợi, giới hạn thời gian và hai kiểu Thử lại.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `integration`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `integration`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 09/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
 
 **Mục tiêu**

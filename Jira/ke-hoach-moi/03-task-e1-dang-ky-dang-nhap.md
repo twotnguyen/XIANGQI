@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** không có (đây là việc đầu tiên).
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 04/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -77,7 +77,7 @@ Chuẩn bị: một nhánh thử.
 ### T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã để tạo gói dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `contract` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `contract` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -136,7 +136,7 @@ Chuẩn bị: một chương trình mẫu dùng hợp đồng ở cả hai phía
 ### T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được quy ước đặt thông tin cấu hình mà không lộ bí mật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -189,7 +189,7 @@ Chuẩn bị: dự án Supabase thử, hộp thư của thành viên nhóm.
 ### T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và nơi đặt các tệp tạo bảng dữ liệu.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -246,7 +246,7 @@ Chuẩn bị: cơ sở dữ liệu thử sạch, hai tài khoản thử.
 ### T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã build được. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách lệnh, thông tin đi kèm và nhóm lỗi. *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình đăng nhập và cách kiểm tra phiên, bí mật chỉ nằm ở máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -296,7 +296,7 @@ Chuẩn bị: thông tin đăng nhập thử.
 ### T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và lệnh biên dịch. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói hợp đồng để dùng trong giao diện.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-UI-03`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-UI-03`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -355,7 +355,7 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 ### T-09 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói chung dùng được ở cả giao diện và máy chủ, có chỗ trả kết quả lọc. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng "biên lai lệnh" và ràng buộc theo người gửi và mã yêu cầu. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được máy chủ có điểm kiểm tra khi nhận kết nối và khi chuyển lệnh, và biết ai đang gửi.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -451,7 +451,7 @@ Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc m
 ### T-13 — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình thư mã 6 số, hạn 180 giây, gửi lại 60 giây, hạn mức thư thử. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cờ đăng ký dở. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được cách nhận yêu cầu và trả kết quả.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AUTH-01`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-01`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -522,7 +522,7 @@ Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot"; 
 ### T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được dịch vụ đăng nhập thử đã cấu hình. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cách bảo vệ. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được kết quả đã hoàn thành của task này. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được cơ chế khoá khi đăng nhập sai nhiều lần; nhận được hàm kiểm từ cấm dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -596,7 +596,7 @@ Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 ### T-18 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (T-13)*: nhận được chức năng kiểm tên đúng quy tắc và không giữ chỗ; nhận được bản đăng ký dở, chức năng gửi mã và cơ chế khoá theo email dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -657,7 +657,7 @@ Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" qu
 ### T-21 — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu và lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang chạy được; nhận được ô nhập, nút, thông báo lỗi, trạng thái đang tải. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-17)*: nhận được quy tắc tên hiển thị để giao diện báo đúng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -765,7 +765,7 @@ Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản
 ### T-22 — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, QA & DevOps · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình OTP đã ghi, hộp thư nhóm và hạn mức thư thử. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-18)*: nhận được trạng thái hoàn tất và cờ đang chờ cùng quy trình hoàn tất.
-**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `MVP`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `loi`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**
@@ -841,7 +841,7 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 ### T-25 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend, Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-17)*: nhận được chức năng thật ở máy chủ. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-18)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-21)*: nhận được màn hình đã dựng. *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Mục tiêu**

@@ -197,14 +197,14 @@ Bảng này chứng minh **không sót yêu cầu**: mỗi tiêu chí của giai
 | GATE-PERFT | Đếm nước đi khớp nguồn đối chiếu độc lập (44, 1.920, 79.666, 3.290.240) | T-53 | NOT_RUN |
 | GATE-LOAD | 50 kết nối, 10 ván; camera/micro quy mô nhỏ chỉ ghi số đo | T-63 | NOT_RUN |
 
-## 4. Kịch bản MVP (M1–M4) và demo D1–D10 → Epic → Task
+## 4. Kịch bản bản chơi được (M1–M4) và demo D1–D10 → Epic → Task
 
 | Kịch bản | Nội dung | Epic | Task chạy |
 |---|---|---|---|
-| M1 (MVP) | Đăng ký ba bước bằng OTP thật, đăng nhập, đăng ký và đăng nhập bằng Google | 1 | T-34 |
-| M2 (MVP) | Tạo phòng, người thứ hai vào bằng mã và đường dẫn, hai ghế, Sẵn sàng | 2, 3 | T-34 |
-| M3 (MVP) | Hai người đánh online đến hết ván; nước sai bị từ chối | 4, 5 | T-34 |
-| M4 (MVP) | Đánh với máy ba cấp độ đến hết ván | 8 | T-34 |
+| M1 (bản chơi được) | Đăng ký ba bước bằng OTP thật, đăng nhập, đăng ký và đăng nhập bằng Google | 1 | T-34 |
+| M2 (bản chơi được) | Tạo phòng, người thứ hai vào bằng mã và đường dẫn, hai ghế, Sẵn sàng | 2, 3 | T-34 |
+| M3 (bản chơi được) | Hai người đánh online đến hết ván; nước sai bị từ chối | 4, 5 | T-34 |
+| M4 (bản chơi được) | Đánh với máy ba cấp độ đến hết ván | 8 | T-34 |
 | D1 | Đăng ký ba bước bằng OTP thật (hoặc bằng Google), vào Sảnh | 1 | T-62, T-64 |
 | D2 | Tạo phòng 10 phút công khai, chọn tối đa 2 người xem | 2 | T-62, T-64 |
 | D3 | Gửi đường dẫn/mã, mời bạn online | 3 | T-62, T-64 |

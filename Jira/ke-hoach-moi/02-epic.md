@@ -10,8 +10,8 @@
 
 # EPIC 1 — Đăng ký và đăng nhập (kèm nền tảng dự án)
 
-**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-01, T-02, T-03, T-04, T-06, T-07, T-09, T-13, T-17, T-18, T-21, T-22, T-25; phần mở rộng gồm T-42, T-60, T-61.
+**Nhãn:** `P1`, `loi`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-01, T-02, T-03, T-04, T-06, T-07, T-09, T-13, T-17, T-18, T-21, T-22, T-25; phần mở rộng gồm T-42, T-60, T-61.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -101,8 +101,8 @@ Hạn mức thư OTP (khoảng 2 thư/giờ); giới hạn nhập sai chỉ gầ
 
 # EPIC 2 — Tạo phòng chơi
 
-**Nhãn:** `P1`, `MVP` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Epic thuộc MVP.
+**Nhãn:** `P1`, `loi` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Epic thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -180,8 +180,8 @@ Hai người tranh ghế cuối; trạng thái một chỗ chơi phải nhất q
 
 # EPIC 3 — Mời bạn vào phòng chơi
 
-**Nhãn:** `P1`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi MVP đạt).
+**Nhãn:** `P1`, `loi`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi là mời bằng **mã phòng và đường dẫn**, do hộp chia sẻ phòng và việc vào phòng bằng mã/đường dẫn của Epic Tạo phòng chơi đảm nhận (xem Story 9); phần mở rộng (Task của Epic này) gồm kết bạn, danh sách bạn, mời bạn đang online và chuyển hướng sau đăng nhập khi bấm đường dẫn mời.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -258,8 +258,8 @@ Lời mời không được giữ chỗ; trạng thái Đang đấu cần sổ c
 
 # EPIC 4 — Khởi tạo bàn cờ
 
-**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-05, T-08, T-12, T-16, T-20; phần mở rộng gồm T-53.
+**Nhãn:** `P1`, `loi`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-05, T-08, T-12, T-16, T-20; phần mở rộng gồm T-53.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -335,8 +335,8 @@ Phông chữ Hán; độ đúng luật phải được kiểm bằng nguồn đ�
 
 # EPIC 5 — Hai người đánh cờ qua mạng
 
-**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-24, T-27, T-29, T-30, T-32; phần mở rộng gồm T-47, T-51, T-55, T-57.
+**Nhãn:** `P1`, `loi`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-24, T-27, T-29, T-30, T-32; phần mở rộng gồm T-47, T-51, T-55, T-57.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -418,7 +418,7 @@ Chuỗi phụ thuộc dài nhất của dự án; yêu cầu dưới 100 ms ch�
 # EPIC 6 — Phòng công khai, khoá phòng và người xem
 
 **Nhãn:** `P1`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): Medium · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -495,7 +495,7 @@ Người bị đuổi phải mất quyền thật; khoá phòng không được 
 # EPIC 7 — Chat, camera và micro
 
 **Nhãn:** `P1`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
@@ -573,8 +573,8 @@ Có thể vượt hạn mức miễn phí của dịch vụ camera/micro; quyề
 
 # EPIC 8 — Đánh với máy theo cấp độ
 
-**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-14, T-26, T-31, T-33; phần mở rộng gồm T-37, T-38, T-58, T-62, T-63, T-64.
+**Nhãn:** `P1`, `loi`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-14, T-26, T-31, T-33; phần mở rộng gồm T-37, T-38, T-58, T-62, T-63, T-64.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 17/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)

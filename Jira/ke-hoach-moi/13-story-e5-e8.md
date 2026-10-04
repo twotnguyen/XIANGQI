@@ -8,8 +8,8 @@
 
 ### Story 15 — Đi nước qua mạng và bảng nước đi
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-PLAY-01`, `US-PLAY-10` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-24, T-27, T-30; phần mở rộng gồm T-47.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-01`, `US-PLAY-10` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-24, T-27, T-30; phần mở rộng gồm T-47.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Câu chuyện:** Là người chơi, tôi muốn **đi nước và thấy đối thủ cùng người xem thấy ngay**, kèm bảng các nước đã đi.
@@ -81,8 +81,8 @@ nước không hợp lệ → quân về chỗ cũ, ván không đổi; mất ph
 
 ### Story 16 — Đồng hồ ván
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server
-**Nhãn:** `P1`, `MVP`, `US-PLAY-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-PLAY-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Câu chuyện:** Là người chơi, tôi muốn **đồng hồ chạy công bằng** và thua nếu hết giờ.
@@ -150,8 +150,8 @@ lỗi ghi dữ liệu thì **đóng băng cả hai đồng hồ**; quá 30 giây
 
 ### Story 17 — Kết thúc ván: kết quả, đầu hàng, xin hoà, lặp thế
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Engine, Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-08, T-24, T-29, T-32; phần mở rộng gồm T-53.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-08, T-24, T-29, T-32; phần mở rộng gồm T-53.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Câu chuyện:** Là người chơi hay người xem, tôi muốn **ván kết thúc đúng luật và biết kết quả**, kể cả khi đầu hàng, xin hoà hoặc đi lặp thế.
@@ -238,8 +238,8 @@ người xem không đầu hàng hay trả lời hoà thay người chơi đư�
 
 ### Story 18 — Rời phòng giữa ván, mất kết nối và kết nối lại
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-PLAY-06`, `US-PLAY-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-24; phần mở rộng gồm T-51, T-57.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-06`, `US-PLAY-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-24; phần mở rộng gồm T-51, T-57.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
 
 **Câu chuyện:** Là người chơi, khi **rời phòng hoặc rớt mạng**, tôi muốn biết rõ hậu quả và **được quay lại ván** nếu nối lại kịp.
@@ -314,8 +314,8 @@ việc xác nhận đầu hàng chưa rõ thì không báo rời xong; lỗi ghi
 
 ### Story 19 — Kiểu phòng, khoá phòng và danh sách phòng công khai
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-ROOM-07`, `US-ROOM-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-10; phần mở rộng gồm T-39, T-43, T-46.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-ROOM-07`, `US-ROOM-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-10; phần mở rộng gồm T-39, T-43, T-46.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Phòng công khai, khoá phòng và người xem»
 
 **Câu chuyện:** Là chủ phòng, tôi muốn **chọn ai được thấy và được vào phòng** (công khai, chỉ vào bằng mã, khoá); và là người chơi, tôi muốn **thấy các phòng công khai đang mở** để vào xem.
@@ -391,7 +391,7 @@ không phải chủ hoặc thiếu người mà bật khoá → từ chối; dan
 ### Story 20 — Quản lý phòng: đổi chỗ, đuổi người xem, chủ phòng rời, sau ván
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room & Social
 **Nhãn:** `P1`, `mo-rong`, `US-ROOM-06`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Phòng công khai, khoá phòng và người xem»
 
 **Câu chuyện:** Là người trong phòng, tôi muốn **đổi giữa ghế và chỗ xem, đuổi người xem gây phiền, và phòng vẫn hợp lý** khi chủ phòng rời đi hoặc sau khi ván kết thúc.
@@ -476,7 +476,7 @@ hết chỗ xem → từ chối; gửi trùng → không vượt sức chứa; x
 ### Story 21 — Người xem theo dõi trực tiếp
 **Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Game Server, Frontend
 **Nhãn:** `P1`, `mo-rong`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Phòng công khai, khoá phòng và người xem»
 
 **Câu chuyện:** Là người xem, tôi muốn **xem ván đang diễn ra** như người trong cuộc (chỉ xem).
@@ -509,6 +509,9 @@ hết chỗ xem → từ chối; gửi trùng → không vượt sức chứa; x
 **Các quy tắc**
 người xem **không thấy Kênh Riêng**, không có nút bật camera/micro, không gửi được lệnh; dữ liệu được **lọc ở máy chủ** trước khi gửi; bị đuổi hoặc hết hạn giữ chỗ thì ngừng nhận.
 
+**Khi có lỗi**
+người xem bị đuổi hoặc hết hạn giữ chỗ → ngừng nhận dữ liệu mới; người xem dùng công cụ gửi nước đi hoặc đầu hàng → máy chủ từ chối, ván không đổi; người xem mất mạng rồi nối lại trong 5 phút → được phục hồi, quá hạn thì không còn chỗ xem.
+
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
@@ -538,8 +541,8 @@ người xem **không thấy Kênh Riêng**, không có nút bật camera/micro,
 
 ### Story 22 — Chat hai kênh, giới hạn tin nhắn và lọc từ cấm
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Backend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-09; phần mở rộng gồm T-48, T-56.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-09; phần mở rộng gồm T-48, T-56.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Câu chuyện:** Là người trong phòng, tôi muốn **nhắn tin** với đối thủ (kênh riêng) hoặc với cả phòng (kênh chung), không bị quấy rối.
@@ -613,7 +616,7 @@ máy chủ từ chối hoặc mất phản hồi → không báo "đã gửi", k
 ### Story 23 — Camera và micro: người chơi bật, người xem chỉ xem
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Frontend
 **Nhãn:** `P1`, `mo-rong`, `US-MEDIA-01`, `US-MEDIA-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Câu chuyện:** Là người chơi, tôi muốn **bật camera và micro** để đối thủ thấy mặt và nghe tiếng tôi; và là người xem, tôi chỉ **xem và nghe** những gì người chơi cho phép.
@@ -685,7 +688,7 @@ từ chối quyền hoặc không có thiết bị → báo lỗi rõ, bàn cờ
 ### Story 24 — Mở nhiều tab: tab mới tiếp quản
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Game Server
 **Nhãn:** `P1`, `mo-rong`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 13/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Câu chuyện:** Là người dùng, khi **mở thêm tab** vào cùng phòng, tôi muốn **chỉ một tab điều khiển** để không bị lộn xộn.
@@ -718,6 +721,9 @@ từ chối quyền hoặc không có thiết bị → báo lỗi rõ, bàn cờ
 **Các quy tắc**
 máy chủ **chặn mọi lệnh làm thay đổi** từ tab cũ; phiên hết hạn hoặc sai thì không chiếm được quyền điều khiển.
 
+**Khi có lỗi**
+tab cũ gửi lệnh làm thay đổi ván hoặc phòng → máy chủ chặn; phiên hết hạn hoặc sai → không chiếm được quyền điều khiển; từ chối quyền camera/micro hoặc không có thiết bị → báo lỗi riêng, cờ và chat vẫn dùng được.
+
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
@@ -744,8 +750,8 @@ máy chủ **chặn mọi lệnh làm thay đổi** từ tab cũ; phiên hết h
 
 ### Story 25 — Chọn cấp độ, chọn phe và máy đi nước đúng luật
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI, Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-AI-01`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-14, T-26, T-31, T-33; phần mở rộng gồm T-58.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-AI-01`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-14, T-26, T-31, T-33; phần mở rộng gồm T-58.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
 
 **Câu chuyện:** Là người chơi, tôi muốn **chọn cấp độ và phe rồi đánh với máy**, máy đáp lại nhanh và không bao giờ đi sai luật.
@@ -818,8 +824,8 @@ vào ghế phòng và bắt đầu ván máy cùng lúc thì chỉ một chỗ t
 
 ### Story 26 — Kết thúc ván với máy, vào lại ván và sự cố máy cờ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend, AI
-**Nhãn:** `P1`, `MVP`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
 
 **Câu chuyện:** Là người chơi, tôi muốn **biết ván với máy kết thúc ra sao, quay lại nếu rớt mạng và thử lại khi máy gặp sự cố**.

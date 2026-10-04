@@ -9,7 +9,7 @@ Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-05 — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã có gói TypeScript và công cụ kiểm thử chạy được.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Mục tiêu**
@@ -68,7 +68,7 @@ Chuẩn bị: bảng vị trí quân ban đầu (viết bằng chuỗi chuẩn c
 ### T-08 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được bộ sinh nước thô cho bảy loại quân, đúng chặn đường và ô đích.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-PLAY-01`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-PLAY-01`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Mục tiêu**
@@ -125,7 +125,7 @@ Thêm các luật kết thúc ván khác ngoài chiếu hết: **lặp thế**, 
 ### T-12 — Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được thế khởi đầu, toạ độ và quân. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang chạy được, nối được gói dùng chung; nhận được màu và kiểu theme "Kỳ Đài Cổ Phong" và các khối giao diện có đủ 5 trạng thái.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Mục tiêu**
@@ -170,7 +170,7 @@ Vẽ **bàn cờ 9 cột × 10 hàng bằng SVG** cùng các quân chữ Hán, *
 ### T-16 — Giao diện: bấm chọn quân và chấm gợi ý ô đi
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-08)*: nhận được hàm liệt kê nước hợp lệ. *Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen (T-12)*: nhận được bàn vẽ được, ánh xạ giữa toạ độ gốc và hướng nhìn.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-BOARD-01`, `US-BOARD-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-BOARD-01`, `US-BOARD-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Mục tiêu**
@@ -214,7 +214,7 @@ Người có quyền đi **bấm hoặc chạm vào quân của mình** thì th�
 ### T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện: bấm chọn quân và chấm gợi ý ô đi (T-16)*: nhận được bàn cờ có trạng thái chọn và nhận được dữ liệu thế cờ và lượt.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Mục tiêu**

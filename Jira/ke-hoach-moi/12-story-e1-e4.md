@@ -8,8 +8,8 @@
 
 ### Story 1 — Đăng ký tài khoản qua ba bước hoặc bằng Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-03, T-13, T-18, T-21, T-22, T-25; phần mở rộng gồm T-42.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-03, T-13, T-18, T-21, T-22, T-25; phần mở rộng gồm T-42.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Câu chuyện:** Là người mới, tôi muốn **đăng ký tài khoản qua ba bước** (tên đăng nhập và mật khẩu, email, mã OTP) để dùng được ứng dụng.
@@ -100,8 +100,8 @@
 
 ### Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu hoặc bằng Google
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `MVP`, `US-AUTH-04`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-AUTH-04`, `US-AUTH-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Câu chuyện:** Là người đã có tài khoản, tôi muốn **đăng nhập** để vào chơi.
@@ -176,8 +176,8 @@ sai thông tin → thông báo chung; bị khoá → báo khoá tạm; phiên h�
 
 ### Story 3 — Hồ sơ cơ bản và đăng xuất
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-17, T-21, T-25; phần mở rộng gồm T-55.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-17, T-21, T-25; phần mở rộng gồm T-55.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Câu chuyện:** Là người dùng, tôi muốn **xem và đổi tên hiển thị** của mình và **đăng xuất** khi cần.
@@ -253,8 +253,8 @@ tên không hợp lệ hoặc có từ cấm → báo lý do; đăng xuất gi�
 
 ### Story 4 — Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-UI-03`, `US-UI-04`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-07; phần mở rộng gồm T-60, T-61.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-UI-03`, `US-UI-04`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-07; phần mở rộng gồm T-60, T-61.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
 
 **Câu chuyện:** Là người dùng, tôi muốn **mọi màn hình trông và hoạt động thống nhất**: luôn biết ứng dụng đang tải, trống, lỗi hay bị khoá; dùng được trên điện thoại và bằng bàn phím; và không bấm nhầm vào chức năng chưa làm.
@@ -361,8 +361,8 @@ một khung tải lỗi thì chỉ khung đó báo lỗi, không mất cả màn
 
 ### Story 5 — Tạo phòng
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `MVP`, `US-ROOM-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-ROOM-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Câu chuyện:** Là người chơi đã đăng nhập, tôi muốn **tạo một phòng cờ với thiết lập của mình** để mời bạn vào chơi.
@@ -432,8 +432,8 @@ tên sai → báo dưới ô tên, giữ thông tin đã điền; đang có ch�
 
 ### Story 6 — Thanh điều hướng và Sảnh
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend
-**Nhãn:** `P1`, `MVP`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1) · **Fix version:** v0.1-sprint-1 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1) · **Fix version:** v0.1-sprint-1 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Câu chuyện:** Là người dùng đã đăng nhập, tôi muốn **một thanh điều hướng và một trang chính (Sảnh)** để làm mọi việc: tạo phòng, vào phòng, chơi với máy, quay lại ván dở.
@@ -466,6 +466,12 @@ Luật chơi nêu rõ hết nước đi là thua và chưa có luật đuổi qu
 **Khi có lỗi**
 một chỗ trên Sảnh tải lỗi thì chỉ chỗ đó báo lỗi (có "Thử lại"), không mất cả Sảnh.
 
+**Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+| Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
+|---|---|---|---|---|---|
+| Thanh điều hướng | Mục/menu đúng phiên/phân kỳ; badge là tổng tin đến chưa đọc từ bạn hiện tại, theo BA 5.2 | Tải thông tin/badge | Không thông báo: badge ẩn, chuông có giải thích | Tải thông báo lỗi không biến thành không có thông báo | P2 chưa mở; hành động đang xử lý |
+| Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc tính năng P2 chưa mở |
+
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
 |---|---|---|---|
@@ -489,8 +495,8 @@ một chỗ trên Sảnh tải lỗi thì chỉ chỗ đó báo lỗi (có "Th�
 
 ### Story 7 — Phòng chờ, hai ghế ngồi, Sẵn sàng và bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `MVP`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Câu chuyện:** Là người chơi, tôi muốn **thấy phòng chờ với hai ghế, bấm Sẵn sàng và để ván tự bắt đầu** khi cả hai đã sẵn sàng.
@@ -567,8 +573,8 @@ hai người tranh ghế cuối thì chỉ một người được; ghi dữ li�
 
 ### Story 8 — Vào phòng bằng mã, đường dẫn hoặc từ Sảnh
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `MVP`, `US-ROOM-05`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-ROOM-05`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Câu chuyện:** Là người chơi, tôi muốn **vào một phòng** bằng mã, đường dẫn hoặc từ danh sách ở Sảnh, và nếu không vào được thì **biết rõ lý do**.
@@ -637,8 +643,8 @@ gửi lại yêu cầu vào khi mất phản hồi không xếp thêm chỗ; mà
 
 ### Story 9 — Chia sẻ phòng bằng đường dẫn và mã; người được mời đăng nhập xong vào đúng phòng
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-ROOM-04`, `US-AUTH-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-11, T-15; phần mở rộng gồm T-43, T-54.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-ROOM-04`, `US-AUTH-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-11, T-15; phần mở rộng gồm T-43, T-54.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Câu chuyện:** Là người ngồi ghế, tôi muốn **gửi đường dẫn hoặc mã phòng** cho bạn; và là người được mời, tôi muốn **bấm đường dẫn rồi đăng nhập (hoặc đăng ký) là vào đúng phòng**, không phải bấm lại.
@@ -712,7 +718,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 ### Story 10 — Kết bạn: tìm người, gửi và trả lời lời mời, giới hạn
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
 **Nhãn:** `P1`, `mo-rong`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Câu chuyện:** Là người dùng, tôi muốn **tìm người, gửi và nhận lời mời kết bạn** để có danh sách bạn.
@@ -792,7 +798,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 ### Story 11 — Danh sách bạn và trạng thái
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
 **Nhãn:** `P1`, `mo-rong`, `US-FRIEND-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Câu chuyện:** Là người dùng, tôi muốn **xem bạn nào đang online, đang đấu hay ngoại tuyến**.
@@ -832,6 +838,9 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 - Nút **Nhắn tin** và **Thách đấu** mờ "Sắp ra mắt"; **không có nút mời vào phòng** ở trang này.
 - Chưa hiển thị điểm Elo.
 
+**Khi có lỗi**
+tải danh sách bạn lỗi → báo lỗi và cho **Thử lại**, không hiện danh sách rỗng giả; huỷ kết bạn lỗi → giữ nguyên danh sách và báo lỗi; hai bên cùng đang mở danh sách mà một bên huỷ kết bạn → cả hai thấy không còn là bạn.
+
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
@@ -861,7 +870,7 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 ### Story 12 — Mời bạn đang online vào phòng
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social, Frontend
 **Nhãn:** `P1`, `mo-rong`, `US-FRIEND-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi MVP đạt).
+**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Câu chuyện:** Là người đang ngồi ghế, tôi muốn **mời một người bạn đang online** vào phòng của mình.
@@ -899,6 +908,9 @@ sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫ
 **Các quy tắc**
 lời mời **không giữ chỗ**; máy chủ **kiểm lại mọi điều kiện** khi người nhận bấm Tham gia (còn là bạn, có bận không, phòng khoá, hết chỗ…).
 
+**Khi có lỗi**
+người xem hoặc người không ngồi ghế bấm mời → không gửi được; người nhận đang bận (Đang đấu) hoặc ngoại tuyến → nút mờ, không gửi; lời mời hết 30 giây → tự tắt; người nhận bấm Tham gia khi phòng đã khoá, hết chỗ hoặc không còn là bạn → vào theo quy tắc vào phòng hoặc bị từ chối kèm lý do, không vào trái quyền.
+
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
 |---|---|---|---|---|---|
@@ -929,8 +941,8 @@ lời mời **không giữ chỗ**; máy chủ **kiểm lại mọi điều ki�
 
 ### Story 13 — Thấy bàn cờ và quân cờ
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine, Frontend
-**Nhãn:** `P1`, `MVP`, `mo-rong`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi (MVP) gồm T-05, T-12; phần mở rộng gồm T-53.
+**Nhãn:** `P1`, `loi`, `mo-rong`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi gồm T-05, T-12; phần mở rộng gồm T-53.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Câu chuyện:** Là người chơi, tôi muốn **thấy bàn cờ tướng đúng chuẩn** (khởi tạo đúng thế, đúng cho cả hai phe) để chơi và xem.
@@ -994,8 +1006,8 @@ lời mời **không giữ chỗ**; máy chủ **kiểm lại mọi điều ki�
 
 ### Story 14 — Tương tác với quân cờ: chọn, kéo thả, đánh dấu nước đi, cảnh báo chiếu, âm thanh
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend, Game Engine
-**Nhãn:** `P1`, `MVP`, `US-BOARD-02`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc MVP.
+**Nhãn:** `P1`, `loi`, `US-BOARD-02`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Story thuộc phần lõi.
 **Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Khởi tạo bàn cờ»
 
 **Câu chuyện:** Là người chơi, tôi muốn **chọn quân, kéo thả quân, thấy nước vừa đi, biết khi bị chiếu và nghe tiếng quân** như chơi cờ thật.

@@ -382,7 +382,7 @@ Quy tắc:
 | **Ước lượng** | **Bằng giờ**, do chính người làm ước lượng; không đặt hộ |
 | **Sprint** | Chưa gán khi mới tạo; gán khi lập kế hoạch Sprint |
 | **Fix version** | Tạo 4 phiên bản (mỗi Sprint một phiên bản). Task theo Sprint của nó; Story và Epic theo Sprint của Task cuối |
-| **Mức ưu tiên (Priority)** | High cho phần MVP, Medium cho phần mở rộng; không dùng để thể hiện P1/P2 (đã có nhãn) |
+| **Mức ưu tiên (Priority)** | High cho phần lõi, Medium cho phần mở rộng; không dùng để thể hiện P1/P2 (đã có nhãn) |
 
 ## 11. Trạng thái và quy trình đề xuất
 
@@ -441,10 +441,10 @@ Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm
 | Bằng chứng nộp (trạng thái ban đầu NOT_RUN) | có | có | có |
 | Rủi ro / chưa rõ / còn mở | có | có | có |
 | Liên kết Jira: Epic cha; `is blocked by`; `relates to` | có | có | có |
-| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1-sprint-1`, `v0.2-mvp-sprint-2`, `v0.3-sprint-3`, `v1.0-sprint-4`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
+| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1-sprint-1`, `v0.2-loi-sprint-2`, `v0.3-sprint-3`, `v1.0-sprint-4`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
 | Reporter (người báo cáo) | PO | PO | PO |
 | Start date, Due date | ngày bắt đầu sớm nhất và hạn muộn nhất của các Task con | như Epic | tính riêng từng Task theo chuỗi phụ thuộc trong Sprint (xem `01`, mục 6.1) |
-| Priority | High nếu có Task MVP, ngược lại Medium | như Epic | High cho Task MVP, Medium cho Task mở rộng |
+| Priority | High nếu có Task lõi, ngược lại Medium | như Epic | High cho Task lõi, Medium cho Task mở rộng |
 | Story Points | không nhập (Jira tự cộng từ Story) | để trống, nhóm ước lượng khi họp Sprint | để trống, nhóm ước lượng khi họp Sprint |
 | Parent | không có | Epic cha | Epic cha (Task chung không có) |
 | Ước lượng | không | không | nhóm điền giờ khi họp Sprint |
