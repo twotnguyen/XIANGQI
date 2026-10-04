@@ -188,7 +188,7 @@ Cách đọc:
 
 ### US-PLAY-03 · Kết thúc ván và kết quả (P1) — BA 3.3; [02] mục 3.3
 * **AC-PLAY-03-01** — Chiếu hết thua; hết nước đi (không bị chiếu) cũng thua; xử đúng thứ tự ưu tiên ở [02] mục 3.4.
-* **AC-PLAY-03-02** — `MODAL-MATCH-RESULT` hiện thắng/thua/hoà, lý do kết thúc, chỉ nút *Rời phòng* (không Tái đấu, không Xem lại ở P1). Ván `INTERRUPTED` (máy chủ tự ghi nhận sự cố/khởi động lại) hiện kết quả **trung tính** *"Ván bị gián đoạn"*: không có bên thắng/thua/hoà, không đổi Elo, chỉ nút *Rời phòng* (đề xuất 04/10/2026, chờ PO duyệt).
+* **AC-PLAY-03-02** — `MODAL-MATCH-RESULT` hiện thắng/thua/hoà, lý do kết thúc, chỉ nút *Rời phòng* (không Tái đấu, không Xem lại ở P1). Ván `INTERRUPTED` (máy chủ tự ghi nhận sự cố/khởi động lại) hiện kết quả **trung tính** *"Ván bị gián đoạn"*: không có bên thắng/thua/hoà, không đổi Elo, chỉ nút *Rời phòng* (đã chốt 04/10/2026, BA 10.1).
 * **AC-PLAY-03-03** — Ván ngừng nhận nước đi; người xem thấy kết quả.
 
 ### US-PLAY-04 · Đầu hàng (P1) — BA 3.3
@@ -343,9 +343,9 @@ Cách đọc:
 | NFR-05 | Máy cờ đạt thời gian và sức mạnh ở [02] mục 9.5 | Kiểm thử máy cờ ([05]) |
 | NFR-06 | Chỉ tiếng Việt; không ghi hình/ghi âm | Kiểm thử chấp nhận |
 | NFR-07 | Khi máy chủ khởi động lại, ván đang chạy thành `INTERRUPTED`, không treo | Kiểm thử phục hồi |
-| NFR-08 | Quan sát vận hành (đề xuất 04/10/2026, chờ PO duyệt): máy chủ ghi nhật ký có cấu trúc (thời điểm, mã lệnh/ván, mã lỗi) cho lỗi, `INTERRUPTED`, sự cố máy cờ, đăng ký bị phục hồi; có điểm kiểm tra sức khoẻ; **không ghi** mật khẩu, mã OTP, token, nội dung chat. Không thêm công cụ ngoài danh sách README | Kiểm tra nhật ký ở các ca lỗi; rà không lộ dữ liệu nhạy cảm |
-| NFR-09 | Lưu giữ dữ liệu (đề xuất 04/10/2026, chờ PO duyệt): ván **online** (người–người) và nước đi lưu bền ở quy mô đồ án; ván với máy ở P1 chỉ giữ trong bộ nhớ để vào lại 30 phút (BA 6.3), không lưu bền; chat **phòng** xoá khi phòng `CLOSED` (chat 1-1 P2 theo quy tắc bạn bè, không xoá theo phòng); chat/tên của Khách xoá khi phiên Khách hết (P2); biên lai lệnh xoá sau 24 giờ (đã có ở [03]); nhật ký vận hành giữ tối đa 14 ngày | Kiểm thử dọn dẹp ([05]) |
-| NFR-10 | An toàn hiển thị (đề xuất 04/10/2026, chờ PO duyệt): tin chat, tên hiển thị, tên phòng luôn hiển thị là **văn bản thuần**, không chạy HTML/script/URL tự kích hoạt; độ dài và tần suất theo BA 5.3 | Ca có thẻ `<script>`, thuộc tính sự kiện, URL `javascript:` ở chat/tên/tên phòng |
+| NFR-08 | Quan sát vận hành (PO đã duyệt 04/10/2026): máy chủ ghi nhật ký có cấu trúc (thời điểm, mã lệnh/ván, mã lỗi) cho lỗi, `INTERRUPTED`, sự cố máy cờ, đăng ký bị phục hồi; có điểm kiểm tra sức khoẻ; **không ghi** mật khẩu, mã OTP, token, nội dung chat. Không thêm công cụ ngoài danh sách README | Kiểm tra nhật ký ở các ca lỗi; rà không lộ dữ liệu nhạy cảm |
+| NFR-09 | Lưu giữ dữ liệu (PO đã duyệt 04/10/2026): ván **online** (người–người) và nước đi lưu bền ở quy mô đồ án; ván với máy ở P1 chỉ giữ trong bộ nhớ để vào lại 30 phút (BA 6.3), không lưu bền; chat **phòng** xoá khi phòng `CLOSED` (chat 1-1 P2 theo quy tắc bạn bè, không xoá theo phòng); chat/tên của Khách xoá khi phiên Khách hết (P2); biên lai lệnh xoá sau 24 giờ (đã có ở [03]); nhật ký vận hành giữ tối đa 14 ngày | Kiểm thử dọn dẹp ([05]) |
+| NFR-10 | An toàn hiển thị (PO đã duyệt 04/10/2026): tin chat, tên hiển thị, tên phòng luôn hiển thị là **văn bản thuần**, không chạy HTML/script/URL tự kích hoạt; độ dài và tần suất theo BA 5.3 | Ca có thẻ `<script>`, thuộc tính sự kiện, URL `javascript:` ở chat/tên/tên phòng |
 
 ---
 

@@ -1,190 +1,424 @@
-# Kế hoạch mới (bản nháp) — 00: Chuẩn viết Description chi tiết cho Epic, Story, Task
+# Cách viết Description cho Epic, Story, Task (có mẫu để điền)
 
-**Ngày:** 2026-10-04 · **Trạng thái:** ĐỀ XUẤT, chờ PO duyệt · **Chưa tạo gì trên Jira.**
-**Căn cứ:** hướng dẫn của PO (`Jira/scrum-jira-2026-10-04/Description.md`), nghiên cứu độc lập của Codex và Hermes (đã đối chiếu), tiêu chí chấm của giáo viên (BA 10.1), `08-tong-hop-nghien-cuu-3-agent.md` mục 12, `Components-guide.md`. Bốn mẫu hoàn chỉnh: `00b-mau-description-chi-tiet.md`.
+**Ngày:** 2026-10-04 · **Trạng thái:** bản chuẩn để PO duyệt. Chưa tạo gì trên Jira.
 
-## 1. Vì sao Description hiện có "chưa đủ chi tiết"
+Tài liệu này dạy cách viết mô tả cho ba loại ticket: **Epic** (nhóm chức năng lớn), **Story** (một việc người dùng cần làm được), **Task** (một phần việc cụ thể giao cho một người). Có mẫu trống để sao chép và điền. Bốn ví dụ đã điền đầy đủ nằm trong `00b-mau-description-chi-tiet.md`, kèm phần giải thích nhanh các từ như máy chủ, Sảnh, phòng chờ, cơ sở dữ liệu.
 
-So với hướng dẫn của PO, mẫu của 91 task hiện tại còn thiếu:
-- **Yêu cầu đánh số (`REQ-xx`) và luật (`BR-xx`)** nên người làm khó biết từng việc cụ thể phải làm; "Kết quả" chỉ liệt kê vài gạch đầu dòng.
-- **Hợp đồng vào/ra** (sự kiện, trường dữ liệu, bảng/cột, mã lỗi, thứ tự kiểm) chưa nêu đủ; người làm vẫn phải đoán.
-- **Bảng lỗi và trường hợp biên** có kết quả mong đợi chưa tách riêng.
-- **Danh sách Developer Self-Test** (người làm tự kiểm trước khi chuyển tester) chưa có, chỉ có "ca kiểm thử" chung chung.
-- **Mẫu ghi kết quả tự kiểm**, **điều kiện chuyển QA (Ready for QA)** và **Definition of Done** chưa có.
-- Chưa trả lời đủ **bảy câu hỏi** của người nhận việc (mục 5.4).
-- Story chưa có Description riêng; Epic mới ở mức tóm tắt.
+---
 
-## 2. Nguyên tắc chung
+## 1. Mục đích: ai đọc và đọc để làm gì
 
-1. **Một luật chỉ định nghĩa ở một nơi:** BA/`docs/` là nguồn luật. Description **trích tóm tắt có nguồn** để thi hành, không chép lại cả tài liệu; đổi luật thì sửa nguồn rồi đồng bộ ticket.
-2. **Cụ thể nhưng không bịa:** repo chưa có mã, nên **không** viết tên tệp, lệnh, đường dẫn như thể đã tồn tại. Được cụ thể bằng: hành vi từng bước, dữ liệu mẫu, kết quả mong đợi, điều kiện lỗi. Chỗ chưa chốt (tên trường, mã lỗi, payload) ghi **"đề xuất thiết kế, chờ nhóm chốt"**, kèm phần hành vi đã chắc chắn và điểm chặn.
-3. **Mã US, AC, TC, GATE giữ nguyên nguồn** (`docs/01`, `docs/05`, `docs/08`). `REQ-xx`, `BR-xx`, `ST-xx` là **nhãn cục bộ trong từng ticket**, tham chiếu đầy đủ dạng `TB-02/REQ-03`; không tạo bộ mã nghiệp vụ mới cạnh AC.
-4. **Trạng thái trung thực:** mọi ca kiểm ở trạng thái `NOT_RUN` cho tới khi chạy thật; nhánh chờ PO ghi "chờ quyết định"; P2 không lẫn vào P1.
-5. **Mock không thay sản phẩm thật:** phân biệt kiểm bằng giả lập (fixture), tích hợp thật và E2E; ca cần hiện vật của task sau phải **chuyển cho task đó** (quy tắc thứ tự của giáo viên).
-6. **Description lưu cái ổn định** (yêu cầu, luật, checklist); **comment lưu kết quả từng lần chạy**; **tệp đính kèm/đường dẫn** lưu log dài, kết quả đo, dữ liệu thử lớn.
+Một mô tả tốt phải để **người chưa biết gì về dự án** (thầy chấm điểm, nhân viên mới) đọc xong vẫn biết:
 
-## 3. Epic
+- **Việc này để làm gì?**
+- **Mình phải làm chính xác những gì?**
+- **Làm xong thì sẽ thấy gì?**
+- **Tự kiểm tra bằng cách nào trước khi nhờ người khác kiểm?**
+- **Khi nào được coi là xong?**
 
-**Epic trả lời:** xây năng lực gì, cho ai, vì sao; trong và ngoài phạm vi; gồm những Story nào; luật xuyên Story nào quan trọng; cần gì để bắt đầu; hội tụ thế nào mới coi là xong; bằng chứng gì; rủi ro/chờ quyết định.
+Nếu người nhận việc đọc xong vẫn phải hỏi lại "task này muốn em làm gì vậy?" thì mô tả còn thiếu.
 
-**Mục bắt buộc:** (1) Tên, mục tiêu, nguồn; (2) Người dùng/vai trò; (3) Phạm vi P1 và **ngoài phạm vi** (kể cả P2); (4) Danh sách Story; (5) Luật xuyên Story (quyền, trạng thái, giới hạn, vòng đời; trích nguồn); (6) Bắt đầu khi (hiện vật và quyết định bên ngoài, không "đợi cả Epic khác"); (7) Hành trình nghiệm thu xuyên Story (kịch bản demo D#) và điều kiện thành công đo được; (8) Bằng chứng; (9) Rủi ro/chờ quyết định.
+## 2. Bảy câu hỏi mà mô tả phải trả lời
 
-**Không có:** payload, tên hàm, test đơn vị. "Mọi task Done" không đủ để nghiệm thu Epic.
-
-## 4. Story
-
-**Story trả lời:** ai cần gì để làm gì; điều kiện trước; luồng chính; luật; lỗi và luồng thay thế; thế nào là chấp nhận; ngoài phạm vi; phụ thuộc.
-
-**Mục bắt buộc:** (1) Câu chuyện người dùng ("Là …, tôi muốn …, để …"), mã US, Epic, nguồn; (2) **Điều kiện trước** (phiên, vai trò, trạng thái, dữ liệu; không mặc định "đã đăng nhập" là tài khoản hoàn tất); (3) **Luồng chính** (thao tác của người dùng ↔ phản hồi hệ thống, từ điểm vào đến kết quả quan sát được); (4) **Luật nghiệp vụ** có nguồn (`BR-xx`); (5) **Lỗi và luồng thay thế** (điều kiện ⟶ phản hồi giao diện/máy chủ ⟶ dữ liệu giữ hay đổi ⟶ cách tiếp tục); (6) **Tiêu chí chấp nhận: giữ mã AC của `docs/01`**, diễn giải Given–When–Then không đổi nghĩa, không sinh AC mới; (7) Ngoài phạm vi; (8) **Task phục vụ từng nhánh AC** và thành phần; (9) Điểm chưa rõ/chờ PO.
-
-**Story mô tả hành vi, không mô tả cài đặt** (không viết `POST /rooms`; đó là việc của Task). Story chỉ Done khi hành trình thật đạt, không phải khi một Task xong.
-
-## 5. Task (quan trọng nhất)
-
-### 5.1 Mục của một Task đủ chi tiết
-
-Thứ tự đề xuất (Task đơn giản được gộp mục, nhưng không bỏ nội dung thiết yếu):
-
-| # | Mục | Trả lời |
+| Câu hỏi | Trả lời ở phần nào | Dấu hiệu viết chưa đạt |
 |---|---|---|
-| 1 | **Metadata** | Epic, thành phần, Sprint, **bắt đầu khi** (hiện vật cụ thể của từng tiền đề) |
-| 2 | **Mục tiêu và bối cảnh** | Việc này tạo ra gì, phục vụ Story/AC nào, ai dùng đầu ra (task sau) |
-| 3 | **Phạm vi / ngoài phạm vi** | Làm gì, **không** làm gì (để người làm không làm lan) |
-| 4 | **Đầu vào cần có** | Hiện vật chính xác của task trước, quyền truy cập, dữ liệu |
-| 5 | **Yêu cầu `REQ-xx`** | Từng việc phải làm, mỗi REQ một trách nhiệm quan sát được |
-| 6 | **Luật nghiệp vụ `BR-xx`** | Luật tóm tắt có nguồn (BA/docs) |
-| 7 | **Hợp đồng vào/ra** | Đầu vào, đầu ra, trường dữ liệu, mã lỗi, thứ tự kiểm, danh tính lấy từ đâu (đề xuất thiết kế nếu chưa chốt) |
-| 8 | **Kết quả mong đợi** | Hệ thống/giao diện/dữ liệu ra sao khi xong |
-| 9 | **Lỗi và trường hợp biên** | Bảng: điều kiện ⟶ kết quả mong đợi (quyền, retry, cạnh tranh, lỗi ghi, vượt giới hạn) |
-| 10 | **Tiêu chí nghiệm thu của task (GWT)** | Given–When–Then gắn REQ và AC/nhánh nguồn |
-| 11 | **Developer Self-Test `ST-xx`** | Bảng: dữ liệu/bước ⟶ kết quả phải thấy; môi trường và fixture |
-| 12 | **Ready for QA** | Điều kiện được chuyển cho tester |
-| 13 | **Definition of Done** | Điều kiện hoàn tất task |
-| 14 | **Bàn giao / bằng chứng** | Hiện vật bàn giao cho task sau; bằng chứng cần nộp; **ca giao hậu nhiệm** (task nào nhận, hiện vật nào) |
-| 15 | **Rủi ro / chờ quyết định / tham khảo** | Nhánh chờ PO, giả định, điều kiện tháo chặn, nguồn |
+| **Vì sao làm?** | Mục tiêu | Chỉ chép lại tên ticket |
+| **Làm gì?** | Việc cần làm | "Làm chức năng tạo phòng" mà không nói cụ thể từng bước |
+| **Làm ở đâu?** | Thành phần, phạm vi | Chỉ ghi "backend" hoặc "frontend" chung chung |
+| **Hệ thống phải xử sự thế nào?** | Quy tắc, thông tin vào ra | Chỉ nói trường hợp suôn sẻ |
+| **Điều gì có thể sai?** | Lỗi và trường hợp đặc biệt | "Xử lý lỗi cho phù hợp" mà không nói xử lý thế nào |
+| **Tự kiểm tra thế nào?** | Cách tự kiểm tra | "Nhớ chạy test" mà không nói test cái gì |
+| **Khi nào xong?** | Khi nào chuyển kiểm thử, khi nào xong | Coi "đã chuyển cho tester" là "đã xong" |
 
-### 5.2 Viết `REQ`, `BR` và hợp đồng cho đủ cụ thể
+## 3. Nguyên tắc viết chung
 
-- **Mỗi `REQ` nói một trách nhiệm quan sát được**: đầu vào hợp lệ là gì, kiểm cái gì, theo thứ tự nào, tác động nào, đầu ra nào. Ví dụ tốt: "xác thực danh tính ⟶ tra biên lai theo (user_id, command_id) ⟶ nếu lặp trả kết quả cũ ⟶ chỉ lệnh mới kiểm vị trí và giới hạn ⟶ ghi phòng, Host, biên lai ⟶ ACK". Ví dụ chưa đạt: "xử lý tạo phòng an toàn".
-- **Sự kiện thời gian thực (Socket.IO):** nêu tên sự kiện (đã có ở `docs/04` §4.1), danh tính lấy từ đâu (không tin `user_id` client gửi), `commandId`, các trường và miền giá trị/mặc định, ACK/snapshot, nhóm lỗi, retry, thứ tự kiểm. **Không** dùng mã HTTP (201/401) cho ACK Socket.IO.
-- **Dữ liệu:** bảng/cột đã có ở `docs/03`; khoá và ràng buộc; trạng thái ở bộ nhớ hay bền; ai đọc/ghi. Không phát minh schema như đã có.
-- **Giao diện:** màn/khung, điểm gắn vào shell, dữ liệu vào, sự kiện ra, năm trạng thái và chuyển trạng thái, bàn phím, responsive, nội dung lỗi, điều hướng; thay "khớp Figma" bằng `DESIGN.md` và `DANH-MUC`.
-- **Luật cờ/máy cờ:** mô hình vào/ra, bất biến không sửa đầu vào, toạ độ, thế mẫu cụ thể (FEN) và kết quả mong đợi **có nguồn độc lập**; không dùng chính hàm đang kiểm để sinh kết quả mong đợi.
+1. **Viết bằng tiếng Việt thường.** Không dùng mã, tên viết tắt hay từ nội bộ mà người ngoài không hiểu. Nếu buộc phải dùng một thuật ngữ, giải thích ngay hoặc dẫn tới phần giải thích nhanh.
+2. **Cụ thể thay vì chung chung.** Thay vì "kiểm tra dữ liệu hợp lệ" hãy viết "tên phòng dài từ 1 đến 60 ký tự, không có từ bị cấm". Thay vì "xử lý lỗi" hãy viết "hiện thông báo 'Bạn tạo phòng quá nhanh' và không tạo phòng".
+3. **Nói rõ cái gì KHÔNG thuộc việc này**, để người làm không làm lan sang việc khác.
+4. **Không bịa.** Chưa có mã thì không viết tên tệp hay lệnh như thể đã có. Chưa chốt thì ghi rõ: "đề xuất, chờ nhóm quyết".
+5. **Không chép tài liệu nguồn vào mô tả.** Tóm tắt luật cần cho việc này bằng lời thường. Liên kết với yêu cầu gốc dùng trường liên kết của Jira.
+6. **Mỗi ticket đứng một mình được:** đọc ticket là hiểu, không phải mở năm tài liệu khác.
+7. **Một mô tả chỉ nói về một ticket.** Việc của task sau thì để task sau lo; ở đây chỉ ghi "bàn giao gì cho task sau".
 
-### 5.3 Developer Self-Test: người làm tự chứng minh trước khi chuyển tester
+## 4. Cách đặt tên (tiêu đề) ticket
 
-- Mỗi `ST-xx` có **dữ liệu/bước cụ thể ⟶ kết quả phải thấy ⟶ gắn REQ/AC**. Chỉ ghi "đã test" hoặc "chạy test" là không đạt.
-- Bỏ mục không áp dụng bằng `N/A` kèm lý do được review; không bỏ im lặng.
-- Self-Test là **phép kiểm của người làm** (đúng build, đúng dữ liệu), **không thay** ca kiểm độc lập của tester.
+| Loại | Cách đặt tên | Ví dụ tốt | Ví dụ chưa tốt |
+|---|---|---|---|
+| Epic | Danh từ nêu chức năng lớn | "Phòng chơi: tạo phòng, mời bạn, ngồi ghế, xem" | "Epic 3" |
+| Story | Người dùng làm được gì | "Tạo phòng cờ với thiết lập của mình" | "Backend phòng" |
+| Task | Bắt đầu bằng phần việc, nêu kết quả cụ thể | "Máy chủ: nhận yêu cầu và tạo phòng thật" | "Làm API" |
 
-**Danh sách phép tự kiểm theo loại task** (chọn mục liên quan; đây là checklist đề xuất, chưa chạy):
+---
 
-| Loại | Các phép tự kiểm cần có |
-|---|---|
-| Máy chủ / sự kiện | Đầu vào đúng, sai kiểu, biên; gọi trực tiếp sai vai; **retry cùng `commandId` sau mất ACK**; lệnh mới với version cũ; hai lệnh cạnh tranh một tài nguyên; lỗi trước/sau ghi; payload thô không chứa dữ liệu trái quyền |
-| Giao diện web | Mở đúng màn; validate từng biên; **đủ năm trạng thái** kèm tooltip; bấm kép/mất ACK; không điều hướng khi lỗi; bàn phím, focus; bốn kích thước (360/390/1366/1920 px); ghi rõ dữ liệu thật hay fixture |
-| Bàn cờ / luật thuần | Thế cụ thể + bên đi; hợp lệ, bị ghim, lộ Tướng; chặn chân/ngòi; hai phe; chiếu hết/hết nước; lặp thế, 120 nửa nước nếu thuộc task; đối chiếu perft khi đã có oracle |
-| CSDL / migration | Chạy trên DB thử sạch; kiểm cột, khoá chính/ngoại, unique, not null; thao tác trái quyền bằng client; dữ liệu trước–sau; lỗi và khôi phục |
-| Máy cờ / tiến trình | Tiến trình riêng, IPC thật; nước đúng thế; hết ngân sách thì lấy độ sâu hoàn tất; crash/watchdog có/không `progress`; kết quả cũ bị bỏ; tìm tĩnh khi bị chiếu |
-| Media / LiveKit | Mặc định tắt; camera và mic độc lập; mọi mức chia sẻ; người xem gọi publish trực tiếp; đuổi/đổi vai/tab/token cũ; quyền thiết bị lỗi; không ghi media |
-| Tích hợp web ↔ máy chủ | Nêu cặp hiện vật hai phía và build; chạy qua hai phía thật; hai danh tính; mất ACK/đổi quyền/lỗi dữ liệu; đối chiếu giao diện với trạng thái bền |
-| QA / PoC / Spike | QA: chạy đủ phạm vi, ghi cả FAIL/BLOCKED; PoC: câu hỏi, timebox nhóm đặt, kết quả thô, kết luận đạt/không đạt/chưa kết luận; ghi mọi hạn chế |
-| DevOps | Cài/build/triển khai theo cơ chế khai báo; kiểm kết nối thật; gây lỗi có kiểm soát; không lộ bí mật; khởi động lại; CI bắt test cố ý sai |
+## 5. EPIC — nhóm chức năng lớn
 
-### 5.4 Bảy câu hỏi mà Task phải trả lời
+### 5.1 Epic dùng để làm gì
 
-| Câu hỏi | Tìm thấy ở mục | Dấu hiệu chưa đạt |
-|---|---|---|
-| **WHY** vì sao làm | Mục tiêu, bối cảnh | Chỉ lặp lại tên task |
-| **WHAT** làm gì | `REQ`, kết quả | "Làm API" mà không rõ tác động |
-| **WHERE** ở phần nào | Thành phần, phạm vi, hợp đồng | Bịa tên tệp, hoặc chỉ ghi "backend" |
-| **HOW BEHAVE** hệ thống ra sao | `BR`, hợp đồng, GWT | Chỉ đường thuận, bỏ quyền/retry |
-| **WHAT CAN GO WRONG** lỗi gì | Bảng lỗi và biên | "Xử lý lỗi phù hợp" không có kết quả mong đợi |
-| **HOW VERIFY** tự kiểm thế nào | `ST-xx` | "Chạy test" không nói test gì |
-| **WHEN DONE** khi nào xong | Nghiệm thu, Ready for QA, DoD | Coi Ready for QA là Done |
+Epic nói **"đang xây khả năng nào, cho ai, vì sao, đến đâu thì xong"**. Epic không nói cách làm (không có tên hàm, dữ liệu, bước kỹ thuật).
 
-### 5.5 Mẫu comment "Developer Self-Test Result" (điền khi chạy thật)
+### 5.2 Epic phải trả lời
+
+- Epic này giải quyết vấn đề gì và ai dùng?
+- Gồm những việc lớn nào, và **không** gồm những gì?
+- Có những quy tắc quan trọng nào xuyên suốt?
+- Cần xong gì trước thì mới bắt đầu được?
+- **Khi nào Epic được coi là xong?** (một kịch bản chạy trọn vẹn, dễ thấy)
+- Rủi ro hoặc điều chưa chắc chắn là gì?
+
+### 5.3 Mẫu Epic (sao chép và điền)
 
 ```text
-Developer Self-Test Result
-Task / phiên bản Description: <ID, ngày chốt hợp đồng>
-Người kiểm / thời điểm: <thực tế>
-Môi trường: <local/test, DB hoặc Cloud thử; không bí mật>
-Nhánh / commit / build: <giá trị thật; cây làm việc sạch hay có thay đổi>
-Phạm vi: <hiện vật tự kiểm; chỗ nào fixture, chỗ nào dịch vụ thật>
-Thiết lập / fixture: <cách tạo, dữ liệu vào, cách dọn>
-Cách chạy: <lệnh thật vừa chạy hoặc thao tác tay tái lập>
-Kết quả từng mục:
-- <ST-01; REQ; AC/nhánh> — PASS / FAIL / BLOCKED / NOT_RUN / N/A
-  Input / expected / actual: <ghi đủ, không chỉ "OK">
-  Bằng chứng: <log, ảnh, trace đúng build; đã che bí mật>
-Tổng hợp: <số mục theo trạng thái, đếm bằng công cụ>
-Lỗi còn lại: <lỗi, bước tái lập, ảnh hưởng, nơi theo dõi>
-Ca chưa nghiệm thu ở task này: <AC/nhánh ⟶ task nhận + hiện vật>
-Kết luận: READY FOR QA hoặc NOT READY (lý do)
+EPIC: <tên chức năng lớn>
+
+## Epic này làm gì
+<2–3 câu: khả năng nào được tạo ra, nằm ở đâu trong sản phẩm>
+
+## Ai dùng
+- <người dùng 1>
+- <người dùng 2>
+
+## Gồm những việc lớn nào (mỗi việc là một Story)
+1. <Story 1>
+2. <Story 2>
+3. ...
+
+## Không làm trong Epic này
+<liệt kê những thứ dễ bị tưởng là thuộc Epic nhưng thuộc nơi khác>
+
+## Các quy tắc quan trọng
+- <quy tắc 1, viết bằng lời thường>
+- <quy tắc 2>
+
+## Khi nào Epic được coi là xong
+Có thể chạy trọn kịch bản sau trên hai máy khác nhau mà không lỗi:
+1. <bước 1>
+2. <bước 2>
+3. <bước 3>
+
+## Cần xong trước
+<việc/Epic cần xong, nêu thứ cụ thể cần có>
+
+## Rủi ro và điều chưa chắc chắn
+<điều có thể làm chậm hoặc cần quyết định thêm>
 ```
-Khi chưa có mã, mọi mục là `NOT_RUN`; không dán ví dụ PASS vào Jira như bằng chứng. Sửa mã sau khi tự kiểm thì **kiểm lại phần bị ảnh hưởng trên build mới**.
 
-### 5.6 Phân biệt các khái niệm hay nhầm
+### 5.4 Cách viết từng mục
 
-| Khái niệm | Câu hỏi | Ai | Ở đâu |
-|---|---|---|---|
-| **Acceptance Criteria (AC)** nguồn | Hành vi nào phải đúng? | PO/nhóm | `docs/01` (giữ mã) |
-| Tiêu chí nghiệm thu của task (GWT) | Hiện vật này phải chứng minh gì? | Tác giả task | Description, gắn REQ và AC |
-| **Developer Self-Test** | Người làm đã tự kiểm gì trên build nào? | Người làm | Checklist trong Description + comment kết quả |
-| **Ca của tester (TC)** | Xác minh độc lập bằng trường hợp nào? | Tester | `docs/08`; tester mở rộng thêm |
-| **Ready for QA** | Đủ điều kiện bàn giao kiểm chưa? | Người làm | Điều kiện trong Description |
-| **Done (task)** | Đủ chất lượng để nhận chưa? | Nhóm | DoD |
-| **Done (Story/Increment)** | Hành trình thật đạt chưa? | Nhóm + PO | AC thật + DoD sản phẩm |
+- **"Khi nào Epic xong"** phải là một kịch bản **có người, có bước, có kết quả thấy được**, không viết "tất cả task đã xong". Task xong chưa chắc chức năng chạy được.
+- **"Không làm"** là mục quan trọng để chống làm lan: ghi cả những thứ gần giống nhưng thuộc Epic khác.
+- Epic **không** chứa danh sách kiểm thử hay chi tiết kỹ thuật.
 
-**Ready for QA khác Done.** Task nền có thể hoàn tất phần của mình khi Story chưa Done. Tester thiết kế ca từ AC **song song** với người làm, không đợi tự kiểm xong.
+---
 
-## 6. Quy trình Jira liên quan [CHƯA KIỂM cấu hình XIAN]
+## 6. STORY — một việc người dùng cần làm được
 
-- **Nên bắt buộc bằng chứng tự kiểm trước khi bàn giao**, không nhất thiết thêm trạng thái. Luồng đề xuất: To Do ⟶ In Progress (viết mã và tự kiểm lặp lại) ⟶ In Review ⟶ **Ready for QA** ⟶ QA ⟶ Done; QA lỗi quay về In Progress. Thêm "Dev Testing" chỉ khi cần thấy hàng đợi riêng.
-- Nếu XIAN chưa có trạng thái: giữ trạng thái hiện có, đưa mục bàn giao và comment chuẩn vào ticket; có thể dùng nhãn `ready-for-qa`, `qa-failed`. Nhãn và checklist **không tự cưỡng chế** chuyển trạng thái.
-- **Cấp bậc (cần PO chọn trước khi nhập):** Story và Task chuẩn của Jira là **cùng cấp dưới Epic**; Sub-task mới là con trực tiếp của Story. Hai cách: **(a)** Task chuẩn dưới Epic, liên kết `relates to` Story (bản kế hoạch hiện theo cách này); **(b)** việc dưới Story dùng Sub-task (cần kiểm loại này có trên XIAN). Chọn một quy ước chủ đạo.
+### 6.1 Story dùng để làm gì
 
-## 7. Độ dài và định dạng
+Story mô tả **một hành vi có giá trị với người dùng**: người dùng làm gì, hệ thống phản hồi thế nào, thế nào là chấp nhận được. Story **không** mô tả cách lập trình.
 
-- **Jira Cloud giới hạn trường Description và comment ở 32.767 ký tự** (ĐÃ ĐỌC; là ký tự, không phải từ; chưa đo cách XIAN tính độ dài khi lưu định dạng nâng cao). Không nhắm sát giới hạn.
-- **Khoảng đề xuất (tham khảo biên tập, không phải chuẩn Atlassian):** Epic 3.000–6.000 ký tự; Story 4.000–9.000; **Task 5.000–12.000** (task rủi ro cao tối đa khoảng 18.000); **cảnh báo nội bộ ở 20.000 ký tự**. Task quá dài thường là Task ôm nhiều trách nhiệm, nên xem xét tách.
-- Bảng ít cột, mỗi hàng một tình huống; ca nhiều bước dùng danh sách đánh số. Checkbox tick được không đồng nghĩa đã kiểm.
-- Nhập qua REST dùng định dạng ADF, không gửi Markdown rồi tin nó tự thành bảng: **pilot một ticket** có tiếng Việt, bảng, checkbox rồi đọc lại trước khi nhập hàng loạt.
-- Log dài, kết quả đo, bộ dữ liệu thử lớn: đính kèm hoặc dẫn đường dẫn có phiên bản, không dán vào Description.
+### 6.2 Story phải trả lời
 
-## 8. Điểm khác với `Description.md` của PO (cần điều chỉnh khi áp dụng)
+- Ai cần, cần làm gì, để làm gì?
+- Cần có điều kiện gì trước khi bắt đầu?
+- Người dùng làm từng bước nào và thấy gì?
+- Có những quy tắc nào?
+- Khi sai hoặc có trường hợp đặc biệt thì chuyện gì xảy ra?
+- Thế nào là "đạt"?
+- Việc nào không thuộc Story này?
 
-| Trong hướng dẫn mẫu | Với XIANGQI |
+### 6.3 Mẫu Story (sao chép và điền)
+
+```text
+STORY: <người dùng làm được gì>
+
+## Câu chuyện
+Là <ai>, tôi muốn <làm gì>, để <đạt được gì>.
+
+## Điều kiện để dùng được
+- <điều kiện 1: ví dụ đã đăng nhập, đang ở trang nào>
+- <điều kiện 2>
+
+## Các bước người dùng làm và hệ thống phản hồi
+1. Người dùng <làm gì>.
+2. Hệ thống <phản hồi gì>.
+3. ...
+
+## Các quy tắc
+- <quy tắc 1: con số, giới hạn, mặc định, ai được phép>
+- <quy tắc 2>
+
+## Khi có lỗi hoặc trường hợp đặc biệt
+- <tình huống>: <hệ thống phản hồi thế nào, người dùng thấy gì>
+- <tình huống>: ...
+
+## Điều kiện chấp nhận (đạt khi...)
+1. <điều kiện đo được 1>
+2. <điều kiện 2>
+3. ...
+
+## Không thuộc Story này
+<việc nằm ở Story khác>
+
+## Các việc nhỏ làm nên Story này
+- <Task 1: tên>
+- <Task 2: tên>
+- <việc ghép các phần và kiểm tra chạy thật>
+```
+
+### 6.4 Cách viết từng mục
+
+- **"Điều kiện chấp nhận"** viết dạng **khẳng định kiểm được**: "Điền đúng và bấm Tạo thì có đúng **một** phòng mới", không viết "hoạt động tốt".
+- Mỗi điều kiện chấp nhận phải có cách thử rõ ràng. Nếu không biết thử thế nào thì viết chưa đạt.
+- Nên có điều kiện về **bấm hai lần, mất mạng rồi gửi lại, và người không có quyền**, vì đây là chỗ hay sót.
+- Story chỉ được coi là xong khi **chạy trọn từ đầu đến cuối** (giao diện + máy chủ + dữ liệu), không phải khi một Task xong.
+
+---
+
+## 7. TASK — việc cụ thể giao cho một người
+
+Task là loại ticket **quan trọng nhất** và cần **chi tiết nhất**. Người nhận phải đọc xong biết chính xác việc cần làm và **tự chứng minh đã làm đúng** trước khi nhờ người khác kiểm.
+
+### 7.1 Task phải có các phần sau
+
+| # | Phần | Viết cái gì |
+|---|---|---|
+| 1 | **Mục tiêu** | Task tạo ra gì, để làm gì, ai dùng kết quả (task sau nào) |
+| 2 | **Cần xong trước khi bắt đầu** | Mỗi việc phải xong trước, và **thứ cụ thể** nhận được từ việc đó |
+| 3 | **Việc cần làm** | Các bước làm **theo thứ tự** |
+| 4 | **Thông tin vào và ra** | Nhận gì, trả gì, giá trị nào hợp lệ |
+| 5 | **Các trường hợp lỗi** | Bảng: tình huống → kết quả mong đợi |
+| 6 | **Cách tự kiểm tra** | Bảng: làm gì → phải thấy gì |
+| 7 | **Khi nào chuyển cho người kiểm thử** | Điều kiện để bàn giao |
+| 8 | **Khi nào task được coi là xong** | Điều kiện hoàn thành |
+| 9 | **Bàn giao cho task sau** | Thứ cụ thể task sau sẽ nhận |
+| 10 | **Không thuộc task này** | Việc cần tránh làm lan |
+
+### 7.2 Mẫu Task (sao chép và điền)
+
+```text
+TASK: <phần việc: kết quả cụ thể>
+(Dành cho người làm phần: <máy chủ / giao diện / luật cờ / dữ liệu / ...>)
+
+## Mục tiêu
+<2–4 câu: tạo ra gì, để làm gì, task nào sẽ dùng kết quả này>
+
+## Cần xong trước khi bắt đầu
+- <việc A đã xong>: tôi nhận được <thứ cụ thể>.
+- <việc B đã xong>: tôi nhận được <thứ cụ thể>.
+Thiếu cái nào thì báo ngay cho người quản lý, không tự nghĩ cách làm riêng.
+
+## Việc cần làm (làm lần lượt)
+1. <bước 1>
+2. <bước 2>
+3. <bước 3>
+...
+
+## Thông tin vào và ra
+Nhận vào:
+| Thông tin | Ý nghĩa | Giá trị hợp lệ |
+|---|---|---|
+| ... | ... | ... |
+
+Trả ra:
+- Khi thành công: <trả gì>
+- Khi thất bại: <lý do ngắn gọn và nhóm lỗi>
+
+## Các trường hợp lỗi và kết quả mong đợi
+| Tình huống | Kết quả mong đợi |
 |---|---|
-| `POST /api/rooms`, mã `201/401`, Bearer token | Dự án dùng **sự kiện Socket.IO** (`room.create`…) và Supabase Auth; ACK có `ok`/`error{code}`, không dùng mã HTTP cho ACK |
-| Mã phòng 6 ký tự, chủ phòng "OWNER", chỉ chủ phòng được bắt đầu ván | BA: mã phòng **8 ký tự**, Host ngồi ghế Đỏ, ván bắt đầu khi **hai người Sẵn sàng** |
-| "Khớp Figma", "coding standards" | Dùng `DESIGN.md`, `DANH-MUC`, quy ước nhóm khi có |
-| "Tester ánh xạ TC ↔ REQ" | Giữ mã TC của `docs/08`; `REQ` là nhãn cục bộ, truy vết `US ⟶ AC ⟶ REQ ⟶ ST ⟶ TC` |
-| Task là con trực tiếp của Story | Jira chuẩn: Task cùng cấp Story (xem mục 6) |
-| Ví dụ đường thuận | Bổ sung quyền, retry, cạnh tranh, giới hạn, mất kết nối theo `docs/07` |
+| <thông tin sai> | <từ chối, không làm gì cả> |
+| <người không có quyền> | ... |
+| <gửi lại cùng một yêu cầu> | ... |
+| <hai người cùng làm một lúc> | ... |
+| <bị lỗi giữa chừng> | ... |
 
-## 9. Checklist duyệt một Description (14 dòng)
+## Cách tự kiểm tra trước khi chuyển cho người kiểm thử
+Chuẩn bị: <môi trường thử, tài khoản thử, dữ liệu thử>
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | <làm gì, với dữ liệu nào> | <kết quả cụ thể> |
+| 2 | ... | ... |
 
-1. Có mục tiêu và nêu ai/việc nào dùng đầu ra.
-2. Phạm vi P1, ngoài phạm vi (kể cả P2) rõ; không tự thêm yêu cầu.
-3. Mã US/AC/TC/GATE dùng đúng và tồn tại; luật có nguồn cụ thể.
-4. Mỗi tiền đề chỉ ra **hiện vật cụ thể** task thật sự cần.
-5. Đầu vào, đầu ra và điểm tích hợp đủ rõ để bắt đầu.
-6. Mỗi `REQ` có hành vi và kết quả quan sát được; `BR` không chép sai nguồn.
-7. Quyền, biên, lỗi, retry, cạnh tranh liên quan đều có kết quả mong đợi.
-8. Payload, mã lỗi, schema đã chốt hoặc ghi rõ "đề xuất, chờ nhóm chốt" và người chốt.
-9. GWT gắn với yêu cầu nguồn, không sinh mã AC chính thức tuỳ ý.
-10. Self-Test có dữ liệu, bước, kết quả mong đợi, môi trường, bằng chứng cần thu.
-11. Phân biệt fixture, tích hợp thật và E2E; không nhận giả lập thay sản phẩm thật.
-12. Ready for QA khác Done; PASS của task chỉ dựa trên hiện vật của task và tiền đề; ca cần task sau đã chuyển sang task đó.
-13. Không bịa tệp, lệnh, build, PASS; nhánh chờ PO ghi "chờ quyết định".
-14. Đọc được, không chép cả tài liệu nguồn, đủ để người sau tái lập kết quả.
+## Khi nào chuyển cho người kiểm thử
+- Mọi dòng tự kiểm tra đạt, và có ghi kết quả thật.
+- Cách chạy kiểm tra viết rõ để người khác chạy lại được.
+- Không còn lỗi đã biết mà chưa ghi chú.
 
-## 10. Câu hỏi cho PO (cần trả lời trước khi viết lại hàng loạt)
+## Khi nào task được coi là xong
+<điều kiện hoàn thành; nêu rõ phần nào CHƯA tính ở task này>
 
-1. **Duyệt chuẩn này và bốn mẫu ở `00b`?** Nếu cần mức chi tiết khác (nhiều hơn hay ít hơn) thì nêu rõ.
-2. **Cấp bậc Jira:** (a) Task chuẩn dưới Epic liên kết Story, hay (b) Sub-task dưới Story?
-3. **Trạng thái Jira:** có tạo "Ready for QA" (và "Dev Testing") không, hay dùng nhãn và comment chuẩn?
-4. **Mức độ cụ thể của hợp đồng:** các payload/mã lỗi chưa chốt sẽ do task `T0-03` quyết; trong Description của task khác ghi "đề xuất, chờ chốt ở `T0-03`". Đồng ý?
-5. Sau khi duyệt, ưu tiên viết lại **91 Task trước**, rồi **53 Story**, rồi **10 Epic** (nhóm sẽ chéo kiểm từng lô). Đồng ý thứ tự này?
+## Bàn giao cho task sau
+<thứ cụ thể: chức năng chạy được, dữ liệu thử, tài liệu...>
+
+## Không thuộc task này
+<việc ở task khác>
+```
+
+### 7.3 Cách viết từng phần cho tốt
+
+**Mục tiêu.** Viết "xây phần máy chủ nhận yêu cầu tạo phòng và tạo phòng thật", không viết "làm API". Nêu ai dùng kết quả: "task giao diện và task vào phòng sẽ dùng".
+
+**Cần xong trước.** Mỗi dòng gồm **việc** và **thứ nhận được**. Không viết "cần xong đăng nhập" mà viết "đăng nhập đã xong: tôi nhận được cách biết ai đang gửi yêu cầu". Đây là cách bảo đảm "kết quả task trước là điểm bắt đầu task sau".
+
+**Việc cần làm.** Mỗi bước một hành động, theo **đúng thứ tự thực hiện**. Nên có thứ tự kiểm tra rõ (ví dụ: xác định người gửi, rồi xem yêu cầu đã xử lý chưa, rồi kiểm tra giới hạn, rồi kiểm tra thông tin, rồi mới lưu). Bước nào dễ làm sai thì nêu rõ vì sao.
+
+**Thông tin vào và ra.** Với mỗi thông tin: ý nghĩa bằng lời thường, và giá trị hợp lệ (độ dài, các lựa chọn, mặc định). Nếu tên chính thức của trường chưa chốt thì ghi: "Tên cụ thể do nhóm chốt; mô tả này chỉ nêu ý nghĩa và giá trị hợp lệ."
+
+**Các trường hợp lỗi.** Luôn nghĩ tới sáu loại tình huống: (1) thông tin sai, (2) chưa đăng nhập hoặc không có quyền, (3) **gửi lại cùng một yêu cầu** (mất mạng, bấm hai lần), (4) hai người cùng làm một lúc, (5) lỗi giữa chừng, (6) làm quá nhiều lần trong thời gian ngắn. Mỗi tình huống phải có **kết quả mong đợi** cụ thể.
+
+**Cách tự kiểm tra.** Mỗi dòng có **dữ liệu cụ thể** và **kết quả cụ thể**. Ví dụ tốt: "Tạo phòng tên đúng 60 ký tự → thành công; 61 ký tự → bị từ chối, không có phòng mới". Ví dụ chưa đạt: "Kiểm tra tên phòng".
+
+**Khi nào chuyển kiểm thử và khi nào xong.** Tách hai điều này:
+- **Chuyển kiểm thử** = người làm đã tự kiểm tra xong và tự tin.
+- **Xong** = người kiểm thử và người xem lại mã cũng đồng ý.
+- Task nền xong **không có nghĩa** Story chạy được. Phải nêu rõ phần nào **chưa** tính ở task này và task nào đảm nhận.
+
+### 7.4 Mỗi loại task cần chú ý điều gì
+
+| Loại task | Điều cần chú ý khi viết | Ví dụ việc tự kiểm tra |
+|---|---|---|
+| **Máy chủ** (xử lý yêu cầu, quyết định) | Thứ tự kiểm tra; gửi lại cùng yêu cầu; hai người cùng lúc; ai có quyền; lỗi giữa chừng | Gửi cùng yêu cầu hai lần chỉ có một kết quả; người không có quyền bị từ chối; gây lỗi lưu thì không báo thành công |
+| **Giao diện** (màn hình) | Từng nút, ô, câu chữ; đủ 5 trạng thái (bình thường, đang xử lý, chưa có dữ liệu, lỗi, bị vô hiệu); bàn phím; kích thước màn hình; **ghi rõ phần nào dùng dữ liệu giả** | Bấm liên tiếp nhiều lần chỉ gửi một lần; chỉ dùng bàn phím vẫn điền xong; hiển thị đúng ở 360, 390, 1366, 1920 điểm ảnh |
+| **Luật cờ** (kiểm tra nước đi) | Thế cờ cụ thể (quân nào ở đâu) và kết quả mong đợi **lấy từ nguồn độc lập**, không lấy từ chính phần mã đang kiểm | Quân bị ghim không được đi; chiếu hết, hết nước; đúng cho cả hai bên |
+| **Dữ liệu** (cơ sở dữ liệu) | Bảng nào, cột nào, ràng buộc nào; ai được đọc/ghi | Chạy trên cơ sở dữ liệu thử sạch; thử ghi dữ liệu sai bị từ chối; không mất dữ liệu cũ |
+| **Máy cờ** (đối thủ máy) | Chạy tiến trình riêng; thời gian suy nghĩ; điều gì xảy ra khi máy hết giờ hoặc bị treo | Hết giờ thì đi nước tốt nhất đã tìm được; tiến trình bị tắt thì ván báo lỗi đúng |
+| **Camera/micro** | Quyền theo từng người; mặc định tắt; điều gì xảy ra khi bị đuổi hoặc đổi vai | Người xem không phát được; người bị đuổi không nhận được hình |
+| **Tích hợp** (ghép giao diện với máy chủ) | Nêu rõ **hai phần được ghép là gì**; chạy bằng cả hai phần thật, không dùng dữ liệu giả | Hai trình duyệt thật chơi trọn một thao tác từ đầu đến cuối |
+| **Kiểm thử** | Chạy đủ phạm vi; ghi cả trường hợp **không đạt** và **bị chặn** | Báo cáo từng ca, kèm bằng chứng |
+| **Thử nghiệm kỹ thuật** (kiểm tra có làm được không) | Câu hỏi cần trả lời; thời gian tối đa do nhóm đặt; kết luận **đạt / không đạt / chưa kết luận** | Số đo thật; không "viết sẵn đạt" |
+| **Hạ tầng** | Dựng, chạy thử, gây lỗi có kiểm soát; không lộ mật khẩu | Khởi động lại vẫn chạy; thử cố ý sai thì kiểm tra tự động báo lỗi |
+
+### 7.5 Mẫu cho hai loại task đặc biệt
+
+**Task kiểm thử (tester làm)**
+
+```text
+TASK: [Kiểm thử] <luồng cần kiểm>
+
+## Mục tiêu
+<kiểm chức năng nào, để kết luận điều gì>
+
+## Bắt đầu khi
+<bản đã ghép sẵn, môi trường, dữ liệu thử nào>
+
+## Các ca kiểm thử
+| # | Việc làm | Phải thấy | Kết quả thật | Bằng chứng |
+|---|---|---|---|---|
+| 1 | ... | ... | ĐẠT / KHÔNG ĐẠT / BỊ CHẶN / CHƯA CHẠY | ... |
+
+## Điều kiện đạt
+<điều kiện đo được>
+
+## Nếu không đạt
+<ghi lỗi: bước tái hiện, mức độ ảnh hưởng, giao cho ai sửa; kiểm lại sau khi sửa>
+```
+Ghi chú: báo cáo kiểm thử **hoàn tất** vẫn có thể kết luận sản phẩm **không đạt**. Hai điều đó khác nhau.
+
+**Task thử nghiệm kỹ thuật (kiểm tra có làm được không)**
+
+```text
+TASK: [Thử nghiệm] <câu hỏi kỹ thuật cụ thể>
+
+## Câu hỏi cần trả lời
+<một câu hỏi rõ ràng; không viết sẵn đáp án>
+
+## Thời gian tối đa
+<do nhóm đặt>
+
+## Cách thử
+<môi trường, trường hợp, cách đo>
+
+## Kết quả cần nộp
+- Số đo thật và cách đo.
+- Kết luận: ĐẠT / KHÔNG ĐẠT / CHƯA KẾT LUẬN.
+- Nếu không đạt: tác động đến kế hoạch và đề xuất.
+```
+
+---
+
+## 8. Cách ghi kết quả tự kiểm tra (người làm viết vào phần bình luận của ticket)
+
+Description lưu **yêu cầu và danh sách việc cần kiểm**. Phần **bình luận** lưu **kết quả thật của từng lần chạy**.
+
+```text
+Kết quả tự kiểm tra
+Người kiểm tra / ngày giờ:
+Máy chạy thử: (máy cá nhân hay máy thử chung)
+Phiên bản mã đã kiểm tra:
+Kết quả từng dòng:
+  1. ĐẠT / KHÔNG ĐẠT — đã làm gì, thấy gì thật sự
+  2. ...
+Lỗi còn lại (nếu có): mô tả và cách tái hiện
+Kết luận: SẴN SÀNG CHUYỂN KIỂM THỬ / CHƯA SẴN SÀNG (lý do)
+```
+
+Quy tắc:
+- **Chưa chạy thì ghi "CHƯA CHẠY"**, không ghi "đạt".
+- Sửa mã sau khi tự kiểm tra thì **kiểm lại phần bị ảnh hưởng** trên bản mới.
+- Không dán mật khẩu, mã bí mật vào bình luận.
+
+## 9. Phân biệt các khái niệm hay bị lẫn
+
+| Khái niệm | Câu hỏi nó trả lời | Ai làm | Nằm ở đâu |
+|---|---|---|---|
+| **Điều kiện chấp nhận** (của Story) | Hành vi nào phải đúng? | Cả nhóm, PO | Story |
+| **Cách tự kiểm tra** (của Task) | Người làm đã tự chứng minh thế nào? | Người làm | Task và bình luận |
+| **Ca kiểm thử của người kiểm thử** | Kiểm tra độc lập bằng tình huống nào? | Người kiểm thử | Danh sách kiểm thử riêng, và có thể mở rộng thêm |
+| **Sẵn sàng chuyển kiểm thử** | Đủ điều kiện bàn giao chưa? | Người làm | Task |
+| **Task xong** | Phần việc này đạt chất lượng chưa? | Cả nhóm | Task |
+| **Story xong** | Chạy trọn từ đầu đến cuối chưa? | Cả nhóm, PO | Story |
+
+**"Chuyển kiểm thử" không phải là "xong".** Người kiểm thử nên bắt đầu nghĩ ca kiểm thử **song song** với lúc người làm viết mã, không chờ tự kiểm tra xong mới bắt đầu.
+
+## 10. Các thông tin khác khi tạo ticket trên Jira
+
+| Thông tin | Cách điền |
+|---|---|
+| **Thành phần** (Component) | Epic: để trống hoặc 1; Story: 1 (module chức năng); Task: 1, tối đa 2 nếu là việc liên module; **không bao giờ 3 trở lên** (nên tách task). Chi tiết ở tài liệu `01` |
+| **Nhãn** (Label) | `P1` hoặc `P2`; `poc` cho thử nghiệm kỹ thuật; `integration` cho task ghép; mã Story gốc để dễ tìm |
+| **Liên kết "phải xong trước"** | Mỗi dòng ở mục "Cần xong trước" tạo một liên kết `is blocked by` (nghĩa là "bị chặn bởi"). Chỉ liên kết khi **thật sự cần kết quả** của việc đó |
+| **Liên kết Story** | Task dưới Epic và liên kết `relates to` tới Story liên quan |
+| **Người nhận việc** | Để trống khi tạo; nhóm nhận việc ở buổi lập kế hoạch Sprint |
+| **Ước lượng** | **Bằng giờ**, do chính người làm ước lượng; không đặt hộ |
+| **Sprint** | Chưa gán khi mới tạo; gán khi lập kế hoạch Sprint |
+| **Mức ưu tiên (Priority)** | Không dùng để thể hiện P1/P2 (đã có nhãn) |
+
+## 11. Trạng thái và quy trình đề xuất
+
+```text
+Cần làm → Đang làm (viết mã và tự kiểm tra) → Xem lại mã → Sẵn sàng kiểm thử → Kiểm thử → Xong
+```
+Nếu kiểm thử phát hiện lỗi thì quay lại "Đang làm". **Chưa kiểm tra cấu hình thật của Jira dự án XIAN**: nếu chưa có các trạng thái này thì dùng trạng thái hiện có kèm bình luận bàn giao chuẩn.
+
+## 12. Độ dài mô tả
+
+- Trường mô tả của Jira Cloud **tối đa 32.767 ký tự** (không đổi được).
+- Gợi ý: Epic khoảng 3.000–6.000 ký tự; Story khoảng 4.000–9.000; **Task khoảng 5.000–12.000**; cảnh báo nội bộ ở **20.000 ký tự**.
+- Task quá dài thường là task ôm quá nhiều việc: **hãy tách task**, đừng cắt bớt nội dung quan trọng.
+- Nội dung rất dài (nhật ký, kết quả đo, dữ liệu thử lớn): **đính kèm tệp hoặc dán đường dẫn**, không dán vào mô tả.
+
+## 13. Danh sách kiểm tra trước khi nộp một mô tả
+
+Một mô tả đạt khi trả lời "có" cho cả 14 câu:
+
+1. Có nêu mục tiêu và ai dùng kết quả?
+2. Có nói rõ việc nào **không** thuộc ticket này?
+3. Mỗi việc phải xong trước có nêu **thứ cụ thể** nhận được?
+4. Các bước làm có đúng thứ tự thực hiện?
+5. Thông tin vào/ra có giá trị hợp lệ, độ dài, mặc định?
+6. Có bảng lỗi với **kết quả mong đợi** cho từng tình huống (kể cả gửi lại, hai người cùng lúc, không có quyền)?
+7. Cách tự kiểm tra có **dữ liệu cụ thể và kết quả cụ thể** cho từng dòng?
+8. Có phân biệt dùng dữ liệu giả và chạy thật?
+9. Có nói rõ khi nào chuyển kiểm thử và khi nào task xong?
+10. Có nêu phần nào **chưa** tính ở ticket này và ai làm?
+11. Có điều gì chưa chốt? Nếu có thì đã ghi "chờ quyết định"?
+12. Người chưa biết dự án đọc có hiểu không (không mã, không từ nội bộ)?
+13. Có chép nguyên văn tài liệu gốc không? (Không nên.)
+14. Không bịa tên tệp, lệnh, kết quả "đạt"?
+
+## 14. Hai điều đã được PO trả lời (04/10/2026)
+
+1. **Cấp bậc trên Jira:** Task đặt **dưới Epic và liên kết với Story** (không dùng Sub-task).
+2. **Trạng thái Jira:** **không** tạo thêm cột "Sẵn sàng kiểm thử"; dùng bình luận bàn giao chuẩn (mẫu ở mục tự kiểm tra).
+
+Các Epic, Story và Task đã được viết theo chuẩn này và các mẫu ở `00b-mau-description-chi-tiet.md`: 8 Epic, 26 Story, 62 Task (xem `01-components-epic-khung-task.md`).

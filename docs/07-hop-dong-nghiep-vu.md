@@ -94,7 +94,7 @@ Huỷ xác nhận không gửi lệnh. Nếu lệnh đến khi ván đã kết t
 | PLAYING | Có kết quả hợp lệ | FINISHED, dừng lệnh ván và các đề nghị |
 | FINISHED | Một người rời hoặc đổi thành phần ghế | WAITING; reset Sẵn sàng, chuyển Host nếu cần; vô hiệu hẹn giờ FINISHED cũ |
 | FINISHED | Đủ điều kiện và hai người Tái đấu (P2) | Cùng phòng, phe đổi, đếm 3 giây, Match ID mới |
-| PLAYING | Máy chủ khởi động lại (ván `INTERRUPTED`) | FINISHED, hiện kết quả trung tính "Ván bị gián đoạn"; sau đó như dòng FINISHED bên dưới (đề xuất 04/10/2026, chờ PO duyệt) |
+| PLAYING | Máy chủ khởi động lại (ván `INTERRUPTED`) | FINISHED, hiện kết quả trung tính "Ván bị gián đoạn"; sau đó như dòng FINISHED bên dưới (đã chốt 04/10/2026, BA 10.1) |
 | FINISHED | Hết 10 phút và chưa chuyển trạng thái | CLOSED; thành viên về Sảnh |
 | WAITING/FINISHED | Người ngồi ghế cuối rời | CLOSED dù còn người xem |
 | CLOSED | Lệnh trễ, link/QR/mã cũ, reconnect | Không mở lại phòng, không phát dữ liệu ván cho người không có quyền |
@@ -148,7 +148,7 @@ Kết quả tìm phải đối chiếu Match ID, phiên bản và danh tính cô
 - Lời mời bạn bè có hướng gửi/nhận nhưng cặp quan hệ không có thứ tự. Kiểm giới hạn cả hai đầu trong giao dịch; hai yêu cầu chéo giữ một PENDING, không tự ACCEPTED. Chỉ Từ chối có chủ ý tăng `friend_declines`; thu hồi/hết hạn không tính.
 - Hai trăm bạn là số quan hệ ACCEPTED, năm mươi lời mời là tổng gửi + nhận PENDING; chấp nhận cũng kiểm trần bạn cả hai đầu. Giới hạn hết hạn 30 ngày theo thời điểm máy chủ, không số ngày lịch của trình duyệt.
 - Thẻ người khác không phải trang hồ sơ công khai; chỉ dữ liệu được BA 5.5 cho phép. Không vì hai người là bạn mà cấp quyền xem Replay của nhau.
-- Kênh Riêng đọc theo phiên ngồi ghế/cặp ghế; đổi cặp không mở lịch sử trước đó. Kênh Chung chỉ từ mốc tham gia theo [03]; reconnect trong cùng tư cách không tạo quyền đọc trước mốc.
+- Kênh Riêng đọc theo phiên ngồi ghế/cặp ghế; đổi cặp không mở lịch sử trước đó (PO đã chốt 04/10/2026: người mới ngồi và cả cặp mới đều không đọc tin của cặp cũ). Kênh Chung chỉ từ mốc tham gia theo [03]; reconnect trong cùng tư cách không tạo quyền đọc trước mốc.
 - Tin nhắn có trạng thái đang gửi/thành công/lỗi; mất ACK đối soát định danh, không nhân đôi. Server lọc trước khi lưu/phát, không lưu nguyên văn từ cấm rồi chỉ che ở client. Sticker là nội dung tin, không đường vượt quyền/giới hạn tốc độ.
 - Huỷ kết bạn chặn đọc/gửi 1-1 ngay, kể cả khung chat đang mở; dữ liệu giữ nhưng ẩn. Không xoá lịch sử để thay cho kiểm quyền.
 - Badge theo BA 5.2 là số **tin đến** chưa đọc từ bạn hiện tại, không số hội thoại; chỉ đánh dấu đọc khi tin vào vùng nhìn của hội thoại ở tab hoạt động. Đồng bộ qua máy chủ giữa thiết bị, không đánh dấu vì tải nền. Huỷ/kết bạn lại chỉ thay tập hội thoại được tính, giữ nguyên trạng thái từng tin; không reset tất cả thành đã đọc/chưa đọc.

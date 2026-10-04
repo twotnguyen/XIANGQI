@@ -1,0 +1,468 @@
+# Task của Epic "Hai người đánh cờ qua mạng" (8 task)
+
+**Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
+
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+
+---
+
+### T-26 — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
+**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được trạng thái ván, phản hồi và kết quả. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (T-22)*: nhận được bàn cờ có dấu nước vừa đi, cảnh báo chiếu, âm thanh; nhận được cách kéo thả dùng chung toạ độ và nước hợp lệ với bấm.
+
+**Mục tiêu**
+Dựng **màn hình ván** để nối với máy chủ sau: bàn cờ, đồng hồ, nút đầu hàng và xin hoà, hộp kết quả, khung đề nghị hoà. Làm với dữ liệu giả; chưa phải bằng chứng ván online đã chạy.
+
+**Việc cần làm (làm lần lượt)**
+1. Dựng màn hình với 5 trạng thái và hai vai: **người chơi** và **người xem** (người xem chỉ đọc).
+2. **Chờ xác nhận:** sau khi đi, quân hiển thị **mờ** cho đến khi máy chủ xác nhận; bị từ chối thì quân về chỗ cũ và có thông báo.
+3. **Đồng hồ** hai bên theo dữ liệu máy chủ; còn **dưới 30 giây** thì cảnh báo bằng chữ và biểu tượng (không chỉ màu).
+4. **Đầu hàng:** hộp xác nhận, focus mặc định vào "Huỷ".
+5. **Xin hoà:** khung đề nghị **không phải hộp thoại chặn**; nút X hoặc Esc chỉ **thu gọn**, **không** nghĩa là từ chối; hạn vẫn chạy.
+6. **Hộp kết quả:** ở giai đoạn này chỉ có nút **Rời phòng** (chưa có tái đấu).
+7. Ghép kéo thả (T-22) vào cùng luồng ý định đi nước như bấm; kiểm thả sai và chờ xác nhận trên cả hai hướng bàn.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Đi nước, máy chủ trễ rồi từ chối | Quân mờ lúc chờ; bị từ chối thì về chỗ cũ |
+| Giờ xuống dưới 30 giây | Cảnh báo có chữ và biểu tượng |
+| Bấm Esc hoặc X trên khung xin hoà, rồi mở lại trong thời hạn | Hạn vẫn chạy, không gửi từ chối |
+| Ván kết thúc; vào bằng vai người xem | Chỉ đọc; chỉ nút Rời phòng, không có nút của giai đoạn sau |
+| Kéo hợp lệ và sai, chờ xác nhận; lặp trên bàn lật Đen | Đúng toạ độ; sai trượt về; cùng trạng thái chờ như bấm |
+
+**Cách tự kiểm tra**
+Chuẩn bị: dữ liệu giả cho trạng thái ván, giờ, phản hồi, kết quả.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Đi nước, trì hoãn rồi từ chối | Mờ rồi về chỗ cũ |
+| 2 | Cho giờ về 30 giây rồi thấp hơn | Cảnh báo chữ + biểu tượng |
+| 3 | Thu gọn khung xin hoà rồi mở lại | Hạn vẫn chạy |
+| 4 | Kết thúc ván; vào vai người xem | Chỉ đọc, chỉ Rời phòng |
+| 5 | Kéo hợp lệ và sai trên bàn lật | Đúng toạ độ, sai về chỗ cũ |
+
+**Khi nào chuyển cho người kiểm thử:** cả 5 dòng đạt, đủ 5 trạng thái, kèm ảnh.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Không** báo "ván online đã chạy" trước khi nối thật (T-30).
+**Bàn giao cho task sau:** màn hình ván cho tích hợp đi nước, tích hợp đồng hồ/kết thúc và ván với máy.
+**Không thuộc task này:** gọi máy chủ thật, tái đấu, xem lại ván, đi lại.
+
+---
+
+### T-28 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Realtime, Match · **Sprint:** 2 (08/10–10/10)
+**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng ván, nước đi, biên lai lệnh. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm phân xử kết quả. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cơ chế biên lai. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được mã ván, hai ghế, thế ban đầu và mốc bắt đầu.
+
+**Mục tiêu**
+Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
+
+*Phần 1 — Máy chủ: bộ xử lý lệnh của ván (hàng đợi, mã yêu cầu, phiên bản ván, biên lai, lỗi ghi):*
+Dựng **"đường ống" chung** để xử lý mọi lệnh của một ván: lệnh xếp hàng lần lượt, gửi lại không làm hai lần, lệnh cũ bị từ chối, và biết phải làm gì khi ghi dữ liệu thất bại. Các task đi nước, đồng hồ, kết thúc ván đều chạy trên đường ống này.
+
+*Phần 2 — Máy chủ: xử lý nước đi, cập nhật thế cờ, phát trạng thái cho mọi người:*
+Nhận lệnh **đi nước** từ người chơi, kiểm tra theo luật cờ chung, cập nhật thế cờ và **phát trạng thái mới** cho mọi người trong phòng để các trình duyệt đồng bộ. **Không bao giờ tin thế cờ do trình duyệt gửi**; chỉ nhận nước đi.
+
+**Việc cần làm (làm lần lượt)**
+*Phần 1 — Máy chủ: bộ xử lý lệnh của ván (hàng đợi, mã yêu cầu, phiên bản ván, biên lai, lỗi ghi):*
+1. Nhận lệnh, xác định người gửi, **tra biên lai** theo (người gửi, mã yêu cầu). Nếu đã xử lý, trả kết quả cũ ngay.
+2. Lệnh mới: kiểm tra quyền, trạng thái ván và **phiên bản ván** (phiên bản cũ thì từ chối).
+3. Xếp lệnh vào **hàng đợi riêng của ván**, xử lý từng cái.
+4. Ghi thay đổi ván và biên lai **trong cùng một giao dịch**; chỉ công bố trạng thái mới **sau khi** ghi thành công.
+5. **Ghi lỗi**: bỏ bản nháp, thử lại tối đa 2 lần cách 200 ms; vẫn lỗi thì báo lỗi ghi, chuyển ván sang **tạm dừng ghi**, phát tín hiệu nội bộ kèm **mốc thời gian của lỗi đầu tiên**, không phát trạng thái "thành công".
+6. **Phục hồi:** nếu tiến trình còn sống và dữ liệu hồi lại trong **30 giây** thì phát tín hiệu cho phép tiếp tục; quá 30 giây thì chuyển ván sang **gián đoạn** (không hồi sinh).
+7. Với đồng hồ thật làm ở task sau, task này dùng một **đồng hồ thử** để kiểm tín hiệu.
+
+*Phần 2 — Máy chủ: xử lý nước đi, cập nhật thế cờ, phát trạng thái cho mọi người:*
+1. Nhận lệnh đi nước (điểm đi, điểm đến theo toạ độ gốc) qua đường ống ở phần 1 của task này; kiểm tra người gửi **đúng ghế, đúng lượt**.
+2. Dùng luật chung (hàm nước hợp lệ) kiểm tra nước đi; sai thì **từ chối, thế cờ không đổi**, trả lý do và trạng thái mới nhất.
+3. Hợp lệ: tạo thế mới, cập nhật lượt, nước vừa đi, các bộ đếm lặp thế và 120 nửa nước; **ghi nước đi vào lịch sử**; giữ chỗ để task đồng hồ kiểm giờ trước khi áp dụng nước.
+4. Ghi xong mới **phát trạng thái mới** (kèm số phiên bản) theo quyền từng người.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+*Phần 1 — Máy chủ: bộ xử lý lệnh của ván (hàng đợi, mã yêu cầu, phiên bản ván, biên lai, lỗi ghi):*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Hai lệnh cùng mã yêu cầu; gửi lại sau khi phiên bản ván đã đổi | Một tác dụng; gửi lại nhận kết quả cũ trước cả kiểm phiên bản |
+| Mã yêu cầu mới nhưng phiên bản ván cũ hoặc sai quyền | Bị từ chối, dữ liệu không đổi |
+| Lỗi ghi trước khi hoàn tất | Bỏ bản nháp, tối đa 2 lần thử lại cách 200 ms, báo lỗi ghi; không phát thành công; mốc lỗi đầu tiên được ghi |
+| Hồi phục trong hạn / đúng 30 giây / quá 30 giây | Tiếp tục / (theo quy tắc hạn) / gián đoạn; ván đã gián đoạn không sống lại |
+| Ghi xong nhưng mất phản hồi; khởi động lại bộ xử lý; gửi lại cùng lệnh | Đọc biên lai đã lưu, không làm lại |
+| Đổi vai người chơi rồi đọc lại biên lai | Không tác dụng lần hai, không lộ dữ liệu ngoài quyền |
+
+*Phần 2 — Máy chủ: xử lý nước đi, cập nhật thế cờ, phát trạng thái cho mọi người:*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Nước hợp lệ của Đỏ rồi của Đen | Mỗi nước một bản ghi; lượt và phiên bản tiến đúng |
+| Người xem, người ngoài, hoặc người sai lượt gửi nước | Không đổi thế, không ghi nước |
+| Nước làm hai Tướng đối mặt hoặc tự bị chiếu | Bị từ chối, thế giữ nguyên |
+| Gửi lại cùng lệnh; lệnh mới có phiên bản cũ | Không thêm nước; hai phản hồi khác nhau, đúng |
+
+**Cách tự kiểm tra**
+*Phần 1 — Máy chủ: bộ xử lý lệnh của ván (hàng đợi, mã yêu cầu, phiên bản ván, biên lai, lỗi ghi):*
+Chuẩn bị: cơ sở dữ liệu thử, khả năng gây lỗi ghi, đồng hồ thử.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Gửi hai lệnh cùng mã; gửi lại sau khi phiên bản đổi | Một tác dụng; kết quả cũ |
+| 2 | Lệnh mã mới nhưng phiên bản cũ; lệnh sai quyền | Từ chối, dữ liệu không đổi |
+| 3 | Gây lỗi ghi trước hoàn tất | Bỏ bản nháp, 2 lần thử lại, báo lỗi, không phát thành công |
+| 4 | Cho đồng hồ thử tiến: trong hạn, đúng 30 giây, quá 30 giây | Quá hạn mới gián đoạn; gián đoạn rồi thì không sống lại |
+| 5 | Ghi xong rồi mất phản hồi, khởi động lại, gửi lại | Không làm lại |
+| 6 | Đổi vai rồi đọc lại biên lai | Không làm lần hai, không lộ dữ liệu |
+
+*Phần 2 — Máy chủ: xử lý nước đi, cập nhật thế cờ, phát trạng thái cho mọi người:*
+Chuẩn bị: một ván thử có hai người chơi và một người xem.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Đỏ đi một nước hợp lệ, Đen đi một nước | Hai nước được lưu, lượt và phiên bản tiến đúng |
+| 2 | Người xem, người ngoài, người sai lượt gửi nước | Không có gì thay đổi |
+| 3 | Gửi nước làm lộ Tướng hoặc tự chiếu | Từ chối, thế giữ nguyên |
+| 4 | Gửi lại cùng lệnh; gửi lệnh mới với phiên bản cũ | Không thêm nước; phản hồi phân biệt đúng |
+
+**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 6 dòng đạt trên cơ sở dữ liệu thật; ghi rõ phần dùng đồng hồ thử. (Phần 2) cả 4 dòng đạt, dữ liệu lưu và trạng thái phát ra khớp nhau.
+**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. **Chưa** khẳng định đồng hồ thật đã đóng băng hay khởi động lại máy chủ đã đúng (làm ở T-39 và T-45). (Phần 2) người kiểm thử và người xem lại đồng ý. Yêu cầu "xử lý nước dưới 100 ms" chỉ đo được khi cả luồng đã nối với trình duyệt (T-30) và khi chạy bài tải (T-61).
+**Bàn giao cho task sau:** (Phần 1) đường ống xử lý lệnh, tín hiệu lỗi ghi và phục hồi cho xử lý nước đi, đồng hồ, kết thúc ván. (Phần 2) xử lý nước đi cho đồng hồ, kết thúc ván, người xem, bảng nước đi và tích hợp.
+**Không thuộc task này:** (Phần 1) luật đi nước (phần 2 của task này), đồng hồ thật (T-39), tính điểm Elo, ván với máy. (Phần 2) đồng hồ, kết thúc ván, đi lại, xem lại ván.
+
+---
+
+### T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Realtime · **Sprint:** 2 (08/10–10/10)
+**Phải xong trước:** *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-26)*: nhận được màn hình ván và cách chờ xác nhận. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được chức năng đi nước và phát trạng thái đã ghi dữ liệu thật. *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được cách hai người tạo, vào phòng và bắt đầu ván thật.
+
+**Mục tiêu**
+Nối giao diện ván với xử lý nước đi **qua phòng thật** để chứng minh: hai người đánh nhau trên hai trình duyệt, **cùng nhìn một ván và cùng một phiên bản** sau mỗi nước.
+
+**Việc cần làm (làm lần lượt)**
+1. Đi từ phòng đã bắt đầu ván ở T-29, không ghép hai bản dữ liệu giả.
+2. Hai người luân phiên đi nước bằng bấm và kéo thả; kiểm thế cờ, lượt, nước vừa đi và phiên bản trên cả hai trình duyệt.
+3. Kiểm toạ độ khi người cầm Đen thấy bàn lật.
+4. Gây các tình huống: mất phản hồi rồi gửi lại, nước sai, phiên bản cũ; đối chiếu với dữ liệu đã lưu.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Hai người luân phiên đi bằng bấm và kéo | Cùng thế, lượt, nước vừa đi sau khi xác nhận |
+| Gửi trùng khi mất phản hồi | Chỉ một nước được lưu |
+| Nước sai hoặc phiên bản cũ | Thông báo đúng; thế trở về như máy chủ |
+| Tab chỉ đọc hoặc người ngoài gửi lệnh | Không đổi ván |
+
+**Cách tự kiểm tra**
+Chuẩn bị: hai trình duyệt, máy chủ và cơ sở dữ liệu thử.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Hai người luân phiên đi bằng bấm và kéo | Cùng thế, lượt, nước vừa đi |
+| 2 | Gửi trùng khi mất phản hồi | Chỉ một nước trong dữ liệu |
+| 3 | Gửi nước sai; phiên bản cũ | Thông báo đúng, thế về như máy chủ |
+| 4 | Dùng tab chỉ đọc và người ngoài gửi lệnh | Không đổi ván |
+
+**Khi nào chuyển cho người kiểm thử:** cả 4 dòng đạt trên máy chủ và dữ liệu thật; một nguồn thế cờ duy nhất, không lệch sau đồng bộ.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Đồng hồ và kết thúc ván kiểm ở T-50.
+**Bàn giao cho task sau:** chơi online đã chạy thật cho đồng hồ, kết thúc ván, chat, ván nâng cao và bạn bè.
+**Không thuộc task này:** đồng hồ, kết thúc ván, mất kết nối, người xem.
+
+---
+
+### T-39 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Match · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được luồng áp dụng nước và bộ đếm luật được ghi cùng lúc.
+
+**Mục tiêu**
+Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
+
+*Phần 1 — Máy chủ: đồng hồ ván do máy chủ tính và kết thúc khi hết giờ:*
+Để **máy chủ quyết định thời gian còn lại và việc hết giờ**. Đồng hồ trên trình duyệt chỉ để hiển thị, không bao giờ thay đổi được kết quả.
+
+*Phần 2 — Máy chủ: kết thúc ván, đầu hàng, xin hoà, lặp thế, chiếu liên tục, 120 nửa nước:*
+Chốt **mọi cách kết thúc** một ván Đánh Thường: chiếu hết hoặc hết nước đi (thua), chiếu liên tục (thua), lặp thế và 120 nửa nước (hoà), **đầu hàng**, và **xin hoà**. Một ván chỉ được kết thúc **một lần**.
+
+**Việc cần làm (làm lần lượt)**
+*Phần 1 — Máy chủ: đồng hồ ván do máy chủ tính và kết thúc khi hết giờ:*
+1. Khi ván bắt đầu, **chạy đồng hồ của bên Đỏ** từ mốc bắt đầu; mỗi bên có 5, 10 hoặc 15 phút (theo mức chọn), **không cộng giây**.
+2. Dùng đồng hồ **đơn điệu** của máy chủ (không bị ảnh hưởng nếu giờ hệ thống bị chỉnh); trừ giờ của bên đang đi **trước khi** xét nước đi.
+3. Hết giờ trước khi nước đi được áp dụng → **kết thúc ván: bên đó thua do hết giờ**, nước đó không được ghi.
+4. Đặt hạn hết giờ tuyệt đối cho lượt hiện tại; khi đổi lượt phải **huỷ bộ hẹn cũ** để không kết thúc nhầm.
+5. **Nối tín hiệu lỗi ghi** từ T-28: từ lỗi đầu tiên **đóng băng cả hai đồng hồ**; phục hồi trong 30 giây thì chạy tiếp; quá 30 giây thì ván gián đoạn và không chạy tiếp.
+6. **Phân xử khi hết giờ trùng với mất kết nối** (giả lập): hết giờ sớm hơn hoặc **bằng** hạn mất kết nối thì **hết giờ được ưu tiên**; kết quả không phụ thuộc thứ tự các bộ hẹn chạy.
+7. Gửi giờ còn lại cho trình duyệt trong trạng thái ván.
+
+*Phần 2 — Máy chủ: kết thúc ván, đầu hàng, xin hoà, lặp thế, chiếu liên tục, 120 nửa nước:*
+1. Sau mỗi nước, dùng luật chung xét theo thứ tự: chiếu hết/hết nước → chiếu liên tục → lặp thế → 120 nửa nước.
+2. **Đầu hàng**: người chơi (đã xác nhận ở giao diện) thua ngay.
+3. **Xin hoà:** người chơi gửi đề nghị; **chỉ một đề nghị cùng lúc**; đối thủ đồng ý → hoà; từ chối hoặc **30 giây không trả lời** → đề nghị hết; người xin chỉ xin lại được sau khi đi thêm **5 nước của chính mình**. Người xin được rút đề nghị.
+4. Kết thúc: ghi kết quả và lý do **một lần**, ngừng nhận nước đi, **huỷ đề nghị hoà đang chờ**, thông báo cho cả phòng.
+5. Khi đầu hàng, nước kết thúc và phản hồi hoà đến cùng lúc, chỉ **một** kết quả được chốt; phản hồi đến muộn vô hiệu.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+*Phần 1 — Máy chủ: đồng hồ ván do máy chủ tính và kết thúc khi hết giờ:*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Khởi tạo ván 5, 10, 15 phút; đi nước | Chỉ bên đang đi giảm giờ; không cộng giây |
+| Nước đến khi giờ còn đúng 0 | Hết giờ, nước đó không áp dụng |
+| Đổi lượt rồi bộ hẹn lượt trước chạy muộn | Không kết thúc nhầm |
+| Lỗi ghi (qua T-28), hồi phục trong hạn / quá 30 giây | Cả hai đồng hồ đóng băng; chỉ ván còn tiếp tục mới chạy lại; gián đoạn thì không chạy |
+| Hết giờ trước / sau / bằng mốc mất kết nối giả lập; đảo thứ tự bộ hẹn | Hết giờ / mất kết nối / hết giờ; luôn một kết quả |
+| Ván mới bắt đầu | Chỉ Đỏ chạy trước nước đầu; chuyển lượt không khởi tạo lại giờ |
+
+*Phần 2 — Máy chủ: kết thúc ván, đầu hàng, xin hoà, lặp thế, chiếu liên tục, 120 nửa nước:*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Thế hết nước, chiếu liên tục, lặp lần ba, mốc 119/120 | Kết quả theo luật; ăn quân đưa bộ đếm về 0 |
+| Xin hoà: đồng ý / từ chối / rút / hết 30 giây; xin lại trước đủ 5 nước | Đúng hoà hoặc tiếp tục; bị chặn khi chưa đủ 5 nước |
+| Đầu hàng và phản hồi hoà đến cùng lúc | Một kết quả, phản hồi muộn vô hiệu |
+| Người xem trả lời đề nghị hoà hoặc đầu hàng thay người chơi | Bị từ chối, ván không đổi |
+
+**Cách tự kiểm tra**
+*Phần 1 — Máy chủ: đồng hồ ván do máy chủ tính và kết thúc khi hết giờ:*
+Chuẩn bị: đồng hồ điều khiển được để rút ngắn thời gian.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Khởi tạo lần lượt 5, 10, 15 phút rồi đi nước | Chỉ bên đến lượt giảm, không cộng |
+| 2 | Gửi nước khi giờ đúng bằng 0 | Hết giờ, nước không áp dụng |
+| 3 | Đổi lượt, cho bộ hẹn lượt trước chạy | Không kết thúc nhầm |
+| 4 | Gây lỗi ghi qua T-28, hồi phục trong hạn rồi thử quá 30 giây | Đóng băng đúng; chạy lại hoặc gián đoạn đúng |
+| 5 | Mô phỏng hết giờ trước/sau/bằng hạn mất kết nối, đảo thứ tự | Một kết quả, hết giờ ưu tiên khi bằng |
+| 6 | Bắt đầu ván, đi nước đầu | Chỉ Đỏ chạy trước nước đầu |
+
+*Phần 2 — Máy chủ: kết thúc ván, đầu hàng, xin hoà, lặp thế, chiếu liên tục, 120 nửa nước:*
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Chạy các thế hết nước, chiếu liên tục, lặp lần ba, 119/120 nửa nước | Kết quả đúng luật |
+| 2 | Xin hoà: đồng ý, từ chối, rút, hết 30 giây; xin lại sớm | Đúng; xin sớm bị chặn |
+| 3 | Đầu hàng đồng thời với phản hồi hoà | Một kết quả duy nhất |
+| 4 | Người xem thử đầu hàng và trả lời hoà | Từ chối |
+
+**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 6 dòng đạt. (Phần 2) cả 4 dòng đạt.
+**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. **Chưa** nghiệm thu mất mạng thật (T-45) và việc đồng hồ chạy đúng trên màn hình hai người (T-50). (Phần 2) người kiểm thử và người xem lại đồng ý. Không tự hoà vì thiếu quân, không có luật "đuổi quân" riêng.
+**Bàn giao cho task sau:** (Phần 1) đồng hồ thật, kết thúc khi hết giờ và giờ còn lại trong trạng thái cho mất kết nối, người xem, tích hợp. (Phần 2) kết thúc một lần và đề nghị hoà cho mất kết nối, tích hợp đồng hồ/kết thúc, đăng xuất giữa ván, ván với máy.
+**Không thuộc task này:** (Phần 1) giờ "không giới hạn" (giai đoạn sau), hoàn giờ hoặc cộng giờ, hiển thị đồng hồ. (Phần 2) điều kiện xin hoà của đánh hạng (20 nước), tái đấu, đi lại, giao diện.
+
+---
+
+### T-42 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Engine, Frontend · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được ứng dụng web chạy được, nối được gói dùng chung. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được danh sách nước hợp lệ cùng quân, điểm đi, điểm đến và thế cờ trước nước. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được chuỗi nước đã lưu có thứ tự và phiên bản.
+
+**Mục tiêu**
+Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
+
+*Phần 1 — Bảng nước đi: ký hiệu tiếng Việt trên màn hình ván:*
+Hiện **danh sách nước đi** của ván đang diễn ra bằng ký hiệu tiếng Việt, tự cuộn tới nước mới nhất, cho cả người chơi và người xem. Danh sách **chỉ để theo dõi**, không phải chức năng xem lại ván.
+
+*Phần 2 — Luật cờ: ký hiệu nước đi bằng tiếng Việt:*
+Viết hàm đổi một nước đi thành **ký hiệu tiếng Việt** cho bảng nước đi, ví dụ "Pháo 2 bình 5", "Mã 8 tiến 7". Ký hiệu tính theo **phe người đi**, không phụ thuộc bàn đang lật hay không.
+
+**Việc cần làm (làm lần lượt)**
+*Phần 1 — Bảng nước đi: ký hiệu tiếng Việt trên màn hình ván:*
+1. Ở máy chủ: với mỗi nước đã lưu, sinh ký hiệu từ thế trước nước và bên đi (hàm ở phần 2 của task này), gửi kèm thứ tự và ký hiệu.
+2. Ở web: dựng danh sách nước đi, **tự cuộn** khi có nước mới; có trạng thái trống (ván chưa có nước) và lỗi.
+3. Sau khi nối lại hoặc đồng bộ lại: **thay danh sách theo dữ liệu mới nhất**, không thiếu, không trùng dòng.
+4. Ghép bảng nước đi vào ứng dụng web ở T-08 và kiểm cả hai phía (web và máy chủ) biên dịch và chạy.
+
+*Phần 2 — Luật cờ: ký hiệu nước đi bằng tiếng Việt:*
+1. Quy tắc cột: phe Đỏ đếm cột từ phải sang trái (**cột = 9 − x**), phe Đen đếm từ trái sang phải (**cột = x + 1**).
+2. Mô tả nước: tên quân, cột xuất phát, **tiến**/**lùi**/**bình** (đi ngang), cột hoặc số ô đích. Mã, Tượng, Sĩ **không dùng "bình"**.
+3. Khi hai quân cùng loại cùng cột thì thêm **Trước/Sau**; ba quân hoặc nhiều Tốt thì **Trước/Giữa/Sau/Thứ n** theo quy tắc.
+4. Nếu hai nước vẫn cho cùng ký hiệu thì thêm số cột để **mỗi ký hiệu chỉ ứng với một nước** trong thế đó.
+5. Viết hàm ngược (ký hiệu → nước) để kiểm tính duy nhất.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+*Phần 1 — Bảng nước đi: ký hiệu tiếng Việt trên màn hình ván:*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Đi Pháo, Mã ở hai phía của bàn lật | Cột tính theo bên đi, không theo góc màn hình |
+| Hai Xe, Pháo, Mã hoặc nhiều Tốt cùng cột | Ký hiệu duy nhất |
+| Ngắt rồi nối lại; máy chủ gửi lại toàn bộ | Không thiếu, không trùng; đúng thứ tự |
+| Ván chưa có nước; tải thất bại | Trạng thái trống / lỗi đúng, không bịa nước |
+| Mở trang trong khung web thật, nhận nước đã lưu và gửi lại | Danh sách dựng được, không trùng dòng, không dùng ký hiệu giả |
+
+*Phần 2 — Luật cờ: ký hiệu nước đi bằng tiếng Việt:*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Ví dụ "Pháo 2 bình 5", "Mã 8 tiến 7" | Khớp đúng ký hiệu và hướng của từng phe |
+| Hai Xe, Pháo hoặc Mã cùng cột; ba, bốn, năm Tốt | Trước/Sau/Giữa/Thứ n đúng, không nhập nhằng |
+| Các nước ban đầu trùng ký hiệu | Bổ sung cột để giải ra đúng một nước |
+| Phe Đen khi bàn bị lật | Ký hiệu tính theo người đi, không theo màn hình |
+
+**Cách tự kiểm tra**
+*Phần 1 — Bảng nước đi: ký hiệu tiếng Việt trên màn hình ván:*
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Đi Pháo và Mã ở cả hai phe, bàn lật | Ký hiệu theo bên đi |
+| 2 | Dùng bộ thế có quân trùng cột | Ký hiệu duy nhất |
+| 3 | Ngắt, nối lại, phát lại trạng thái | Không thiếu hay trùng dòng |
+| 4 | Xem ván chưa có nước; giả lập lỗi tải | Trống / lỗi đúng |
+| 5 | Chạy trong web thật | Danh sách đúng, không trùng |
+
+*Phần 2 — Luật cờ: ký hiệu nước đi bằng tiếng Việt:*
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Chạy các ví dụ mẫu ở cả hai phe | Khớp |
+| 2 | Các thế có hai, ba, bốn, năm quân cùng cột | Đúng Trước/Sau/Giữa/Thứ n |
+| 3 | Với mỗi nước hợp lệ của một thế, đổi sang ký hiệu rồi giải ngược | Mỗi ký hiệu ra đúng một nước |
+| 4 | Lật hiển thị, ký hiệu cùng nước | Không đổi |
+
+**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt. (Phần 2) cả 4 dòng đạt.
+**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Mỗi nước đã lưu có đúng một dòng khớp máy chủ; người xem không có thao tác nào sửa được cờ. (Phần 2) người kiểm thử và người xem lại đồng ý. Không có ký hiệu trùng trong mọi tập nước hợp lệ của các thế thử.
+**Bàn giao cho task sau:** (Phần 1) bảng nước đi cho tích hợp ván nâng cao. (Phần 2) hàm ký hiệu cho bảng nước đi trong ván (phần 1 của task này) và bộ kiểm thử luật.
+**Không thuộc task này:** (Phần 1) tua lại nước đi, xuất ván cờ, lịch sử ván. (Phần 2) bảng nước đi trên giao diện, xuất ván cờ ra tệp.
+
+---
+
+### T-45 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Realtime · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được đồng hồ thật và cách phân xử theo hạn tuyệt đối; nhận được kết thúc một lần và việc huỷ đề nghị hoà.
+
+**Mục tiêu**
+Phân biệt **rời phòng có chủ ý** (là đầu hàng) với **mất kết nối** (được giữ chỗ trong một thời gian). Người rớt mạng quay lại đúng hạn thì giữ nguyên tư cách; quá hạn thì chịu hậu quả đúng luật; không để ván đã kết thúc "sống lại".
+
+**Việc cần làm (làm lần lượt)**
+1. Ghi **mốc mất kết nối** ở máy chủ. Nối lại thì nhận ra đúng người và chỗ đang giữ, gửi lại **đầy đủ trạng thái** (thế cờ, giờ, nước đi).
+2. **Giữ chỗ:** người đang đấu **60 giây** (**giờ vẫn chạy**, quá hạn thì **thua**); người đang ngồi ghế ở phòng chờ hoặc phòng đã kết thúc **60 giây** (quá hạn chỉ **mất ghế**, không thua); người xem **5 phút** (quá hạn mất chỗ xem).
+3. **Phân xử**: hết giờ và quá hạn giữ chỗ phải ra **một** kết quả; khi cả hai bên cùng rớt và cùng quá hạn thì **bên rớt trước thua**; hết giờ sớm hơn vẫn được ưu tiên.
+4. **Rời phòng có chủ ý giữa ván** → **đầu hàng ngay**, không chờ 60 giây.
+5. **Máy chủ khởi động lại:** quét các ván đang diễn ra, chuyển sang **gián đoạn**, không ghi đè nước đã lưu, không tiếp tục chơi. (Việc này tách khỏi trường hợp phục hồi lỗi ghi khi tiến trình vẫn sống.)
+6. Việc "phòng bị khoá thì sao khi nối lại" chỉ ghép ở task tích hợp cuối (T-50).
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Nối lại trước / sau hạn (đang đấu, phòng chờ, người xem) | Trong hạn giữ tư cách; quá hạn: đang đấu thua, phòng chờ mất ghế, người xem mất chỗ |
+| Hai bên cùng rớt lệch nhau, đều quá hạn | Bên rớt trước thua; hết giờ sớm hơn vẫn ưu tiên |
+| Xác nhận rời phòng giữa ván | Đầu hàng ngay, không chờ |
+| Khởi động lại máy chủ khi có ván và nước đã lưu | Ván gián đoạn; nước cũ không bị ghi đè |
+| Rớt mạng thật lúc đang đấu, hạn hết giờ trước / sau / bằng hạn 60 giây | Một kết quả theo luật ưu tiên; giờ vẫn chạy khi mất mạng; không phụ thuộc thứ tự bộ hẹn |
+
+**Cách tự kiểm tra**
+Chuẩn bị: có thể ngắt/nối kết nối và khởi động lại máy chủ thử.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Ngắt rồi nối lại trước/sau hạn, với ba loại người | Đúng như bảng trên |
+| 2 | Hai bên rớt lệch nhau, chờ cả hai quá hạn | Bên rớt trước thua |
+| 3 | Rời phòng chủ động giữa ván | Đầu hàng ngay |
+| 4 | Khởi động lại máy chủ giữa ván | Gián đoạn; nước cũ còn nguyên |
+| 5 | Ngắt đang đấu, đặt hạn hết giờ so với hạn 60 giây, đảo thứ tự | Một kết quả, đúng ưu tiên |
+
+**Khi nào chuyển cho người kiểm thử:** cả 5 dòng đạt với đồng hồ và kết thúc ván thật.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Phần "phòng khoá" chưa nghiệm thu ở đây mà ở T-50. Ván với máy có thời hạn 30 phút riêng (Epic Đánh với máy theo cấp độ).
+**Bàn giao cho task sau:** chức năng mất kết nối và kết nối lại cho người xem, ván nâng cao và đăng xuất.
+**Không thuộc task này:** giao diện lớp phủ "đang mất kết nối", ván với máy.
+
+---
+
+### T-48 — Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Authentication · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được nút và hộp xác nhận. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được chức năng rời phòng và nhường chủ phòng. *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được chức năng xử thua. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được chức năng huỷ ván với máy.
+
+**Mục tiêu**
+Khi người dùng bấm đăng xuất **trong lúc đang có ván**, hệ thống phải xử lý trọn vẹn: không để ván treo, không để người kia đợi vô hạn, không để phiên còn sống ngầm.
+
+**Việc cần làm (làm lần lượt)**
+1. Giao diện hỏi xác nhận: "Đang trong ván, đăng xuất sẽ **xử thua**".
+2. Nếu đang trong ván với người: **xử thua** người đăng xuất, rồi **rời phòng** (nhường chủ phòng nếu cần), rồi mới đăng xuất.
+3. Nếu đang trong ván với máy: **huỷ ván**, rồi đăng xuất.
+4. Nếu chỉ đang xem hoặc chờ trong phòng: rời phòng rồi đăng xuất.
+5. Sau cùng thu hồi phiên; mọi tab của người đó đều về trang đăng nhập.
+6. Nếu một bước thất bại giữa chừng, **không đăng xuất** nửa vời: báo lỗi và cho thử lại.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Đăng xuất khi đang đánh người | Thua, rời phòng, thoát; đối thủ thấy thắng |
+| Đăng xuất khi đang chơi với máy | Ván bị huỷ, thoát |
+| Từ chối ở hộp xác nhận | Không có gì thay đổi |
+| Xử thua thất bại | Không thoát, báo lỗi |
+
+**Cách tự kiểm tra**
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Đang đánh người, bấm đăng xuất và đồng ý | Thua, đối thủ thắng, người này ra ngoài |
+| 2 | Đang chơi với máy, đăng xuất | Ván huỷ, thoát |
+| 3 | Bấm đăng xuất rồi chọn "Huỷ" | Giữ nguyên ván |
+| 4 | Giả lập lỗi ở bước xử thua | Không thoát, báo lỗi |
+
+**Khi nào chuyển cho người kiểm thử:** cả 4 dòng đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
+**Bàn giao cho task sau:** đăng xuất an toàn trong mọi tình huống.
+**Không thuộc task này:** tiếp quản phiên khi mở tab mới (task về nhiều tab), đăng xuất khi đang xem (chỉ rời phòng).
+
+---
+
+### T-50 — Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Realtime · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được đường hai người vào ván và đi nước thật (gồm cả phòng và bắt đầu ván). *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được đồng hồ thật, bên Đỏ chạy trước, hết giờ, đóng băng và hồi phục; nhận được kết thúc một lần, đầu hàng, vòng đời xin hoà. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi chỗ, khoá, đuổi, chủ phòng rời chạy thật. *Bảng nước đi: ký hiệu tiếng Việt và hiển thị (T-42)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-44)*: nhận được dữ liệu người xem đã lọc. *Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn (T-45)*: nhận được chức năng ngắt/nối thật, giữ chỗ theo vai và khởi động lại.
+
+**Mục tiêu**
+Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
+
+*Phần 1 — Nối web với máy chủ: đồng hồ, kết thúc ván, đầu hàng, xin hoà:*
+Nối **đồng hồ** và mọi cách **kết thúc ván** vào ván đã đi nước thật, và nghiệm thu luôn bước **bắt đầu ván đầy đủ** (Sẵn sàng, đếm 3…2…1 có âm thanh, chuyển sang màn ván, đồng hồ Đỏ chạy). Kết quả cuối trên hai trình duyệt phải **khớp với máy chủ**.
+
+*Phần 2 — Nối web với máy chủ: mất kết nối, kết nối lại, người xem, bảng nước đi (ván nâng cao):*
+Hoàn thiện phần ván **khó nhất**: rớt mạng và quay lại, người xem, bảng nước đi và việc giữ chỗ khi phòng bị **khoá**. Kiểm trên môi trường thật nhiều người, không dùng dữ liệu giả thay cho việc kết nối lại thật.
+
+**Việc cần làm (làm lần lượt)**
+*Phần 1 — Nối web với máy chủ: đồng hồ, kết thúc ván, đầu hàng, xin hoà:*
+1. Hai người vào phòng, cùng Sẵn sàng; theo dõi đếm **3, 2, 1** (có tiếng gỗ), chuyển màn, và đồng hồ **chỉ Đỏ chạy** trước nước đầu, Đen chưa giảm.
+2. Một bên bỏ Sẵn sàng trước khi hết đếm rồi Sẵn sàng lại: đếm cũ dừng, không có ván ma hay đồng hồ ma; đợt hợp lệ chỉ tạo **một** ván và **một** đồng hồ Đỏ.
+3. Kiểm hết giờ rồi gửi nước muộn; đầu hàng (huỷ và đồng ý); xin hoà (đồng ý, từ chối, hết hạn, rút, chờ 5 nước).
+4. Kiểm tranh chấp: trả lời hoà sau khi đã chiếu hết → không ghi đè kết quả.
+5. Gây lỗi ghi dữ liệu theo T-28 trong luồng thật rồi hồi phục trong hạn: đồng hồ đóng băng, màn hình theo trạng thái hợp lệ, **không coi mất phản hồi là nước mới**.
+
+*Phần 2 — Nối web với máy chủ: mất kết nối, kết nối lại, người xem, bảng nước đi (ván nâng cao):*
+1. **Lớp phủ "mất kết nối"** có đồng hồ giữ chỗ theo máy chủ, **không đóng được bằng Esc**; nối lại thì tắt, hiện đúng thế, giờ và phiên bản.
+2. Nối lại **nhận đủ trạng thái** và **xoá dữ liệu mà người đó không còn quyền xem**.
+3. Kiểm: rời phòng, nối lại sau khi ván kết thúc, người xem, hai người cùng rớt, quá hạn.
+4. Dùng các điều khiển phòng nâng cao ở T-40 để đổi ghế, đuổi, khoá phòng trong lúc kiểm; so quyền nhận dữ liệu trước và sau.
+5. **Phòng khoá:** người cũ trong hạn nối lại giữ tư cách; quá hạn hoặc người mới không vào được; khoá không tự mở khi một ghế trống.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+*Phần 1 — Nối web với máy chủ: đồng hồ, kết thúc ván, đầu hàng, xin hoà:*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Đợi hết giờ rồi gửi nước | Hai bên cùng thấy thua do hết giờ; nước muộn không lưu |
+| Đầu hàng: bấm huỷ / đồng ý | Huỷ không tác dụng; đồng ý cùng kết quả cả hai máy |
+| Xin hoà: đồng ý / từ chối / hết hạn / rút / xin lại sớm | Đúng trạng thái, có chú thích khi nút mờ |
+| Trả lời hoà sau chiếu hết | Không ghi đè kết quả |
+| Hai người Sẵn sàng đủ 3 giây | Một mã ván và thế đầu; hai màn hình cùng vào màn ván; chỉ Đỏ chạy giờ |
+| Bỏ Sẵn sàng trước hết đếm rồi Sẵn sàng lại | Đếm cũ dừng; không có ván hay đồng hồ ma |
+| Lỗi ghi dữ liệu rồi hồi phục trong hạn | Đồng hồ đóng băng; không mất giờ vì lỗi; mất phản hồi không bị tính là nước mới |
+
+*Phần 2 — Nối web với máy chủ: mất kết nối, kết nối lại, người xem, bảng nước đi (ván nâng cao):*
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Rớt rồi nối lại trước hạn | Đúng thế, giờ, phiên bản; lớp phủ tự tắt |
+| Quá hạn: đang đấu / phòng chờ / phòng kết thúc / người xem | Thua hoặc mất ghế hoặc mất chỗ đúng, không áp nhầm |
+| Người xem trong ván: đi nước, kết thúc, bị đuổi | Bảng nước đồng bộ; sau khi bị đuổi không nhận dữ liệu mới |
+| Máy chủ khởi động lại giữa ván | Ván gián đoạn; hộp kết quả trung tính "Ván bị gián đoạn" (không thắng thua, không đổi điểm, chỉ nút Rời phòng) |
+| Đuổi người xem rồi dùng kết nối cũ xin đồng bộ; người cũ nối lại khi phòng khoá | Người bị đuổi không nhận mới; người cũ hợp lệ được phục hồi |
+| Phòng đủ hai ghế khoá; người có ghế rớt ở ba trạng thái phòng, nối lại trước/sau hạn 60 giây | Trong hạn giữ tư cách và trạng thái; quá hạn coi như người mới, không vượt khoá; đang chơi thì thua theo đồng hồ; phòng chờ/kết thúc chỉ mất ghế |
+| Người xem cũ rớt/nối lại trước/sau 5 phút; một người mới dùng mã hoặc đường dẫn | Trong hạn người cũ phục hồi; quá hạn và người mới không vào được |
+| Khoá rồi một ghế rời; người cũ nối lại, người mới thử vào | Phòng vẫn khoá; không biến người mới thành người cũ |
+
+**Cách tự kiểm tra**
+*Phần 1 — Nối web với máy chủ: đồng hồ, kết thúc ván, đầu hàng, xin hoà:*
+Chuẩn bị: hai trình duyệt, máy chủ thật, khả năng gây lỗi ghi.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Hai người Sẵn sàng; xem đếm, tiếng gỗ, chuyển màn, đồng hồ | Một ván, chỉ Đỏ chạy giờ |
+| 2 | Bỏ rồi bật lại Sẵn sàng trước hết đếm | Không ván hay đồng hồ ma |
+| 3 | Đợi hết giờ rồi gửi nước | Cùng kết quả thua; nước muộn không lưu |
+| 4 | Đầu hàng (huỷ, đồng ý); xin hoà (các nhánh) | Đúng trạng thái và chú thích |
+| 5 | Trả lời hoà sau chiếu hết | Không ghi đè |
+| 6 | Gây lỗi ghi rồi hồi phục trong hạn | Đóng băng đúng, không mất giờ |
+
+*Phần 2 — Nối web với máy chủ: mất kết nối, kết nối lại, người xem, bảng nước đi (ván nâng cao):*
+Chuẩn bị: nhiều trình duyệt, công cụ ngắt mạng thử, khả năng khởi động lại máy chủ.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Rớt rồi nối lại trước hạn | Đúng thế, giờ; lớp phủ tắt |
+| 2 | Để quá hạn với từng loại người | Đúng hậu quả |
+| 3 | Người xem xem ván, rồi bị đuổi | Bảng đồng bộ; sau đuổi không nhận mới |
+| 4 | Khởi động lại máy chủ giữa ván | Gián đoạn |
+| 5 | Đuổi người xem, dùng kết nối cũ xin đồng bộ; khoá phòng và nối lại | Đúng quyền |
+| 6 | Khoá phòng đủ ghế, ngắt/nối người có ghế ở 3 trạng thái, người xem và người mới | Đúng như bảng trên |
+| 7 | Khoá rồi để một ghế rời, nối lại người cũ, thử người mới | Vẫn khoá |
+
+**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 6 dòng đạt trên phòng, đồng hồ và hai trình duyệt thật; dữ liệu và màn hình cùng kết quả, giờ dừng sau khi kết thúc. (Phần 2) cả 7 dòng đạt trên phòng, chính sách khoá và kết nối thật; không có dữ liệu rò rỉ.
+**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Cách hiển thị cho người dùng khi ván bị gián đoạn **chưa được duyệt**, ghi riêng, không tự chọn. (Phần 2) người kiểm thử và người xem lại đồng ý. Không thay việc kết nối lại thật bằng dữ liệu giả; không tự quyết cách hiển thị sau khi máy chủ khởi động lại.
+**Bàn giao cho task sau:** (Phần 1) ván chạy trọn vẹn từ bắt đầu tới kết thúc cho tích hợp nâng cao, nghiệm thu AC và demo. (Phần 2) ván online đã chạy trọn cho bài tải, nghiệm thu AC, demo.
+**Không thuộc task này:** (Phần 1) mất kết nối và kết nối lại (phần 2 của task này), điều kiện xin hoà của đánh hạng, tái đấu. (Phần 2) xem lại ván, công cụ giả lập mạng trong sản phẩm, tái đấu.

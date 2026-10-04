@@ -163,7 +163,7 @@ Chỉ mục: `(match_id, parent_move_id)`, `(match_id, position_key)`. **Đi l�
 | `kind` | enum `TEXT` / `STICKER` | `STICKER` ở P2 (BA 5.1) |
 | `created_at` | timestamptz | |
 
-Xoá khi phòng đóng (BA 5.3): dọn bằng tác vụ định kỳ khi `rooms.status = CLOSED`. Quyền đọc `PLAYERS_PRIVATE`: **chỉ 2 người đang ngồi ghế** và chỉ tin có `created_at ≥ room_participants.seat_since` của chính người đọc. Ví dụ: người xem vào 10:00, xuống ghế 10:10 thì **không** đọc được tin riêng 10:00–10:10 (BA 5.3).
+Xoá khi phòng đóng (BA 5.3): dọn bằng tác vụ định kỳ khi `rooms.status = CLOSED`. Quyền đọc `PLAYERS_PRIVATE`: **chỉ 2 người đang ngồi ghế** và chỉ tin có `created_at ≥` **mốc hình thành cặp ngồi ghế hiện tại**, tức giá trị **lớn hơn** trong hai `room_participants.seat_since` của hai người đang ngồi ghế (PO đã chốt 04/10/2026: đổi cặp thì tin cũ không ai đọc được). Ví dụ: người xem vào 10:00, xuống ghế 10:10 thì **không** đọc được tin riêng 10:00–10:10 (BA 5.3).
 
 ### 2.10 `friendships` (P1)
 

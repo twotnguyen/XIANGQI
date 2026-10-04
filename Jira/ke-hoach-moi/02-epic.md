@@ -1,374 +1,430 @@
-# Kế hoạch mới (bản nháp) — 02: Description của 10 Epic
+# Description của 8 Epic
 
-**Ngày:** 2026-10-04 · **Trạng thái:** ĐỀ XUẤT, chờ PO và nhóm duyệt · Chưa tạo gì trên Jira. Khung và phụ thuộc ở `01-components-epic-khung-task.md`.
+**Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mỗi Epic theo mẫu Description đủ chi tiết (mục 12.1 của tài liệu 08): mục tiêu, nguồn, kết quả, phạm vi, bắt đầu khi, Story, Task, kiểm thử Epic, điều kiện PASS, bằng chứng, rủi ro.
+**8 Epic ứng với 8 yêu cầu được giao.** Mỗi Epic: Epic này làm gì; Yêu cầu được giao; Ai dùng; Các Story; Không làm; Quy tắc quan trọng; Khi nào xong; Cần xong trước; Task. Story ở `12` và `13`; Task ở `03` đến `11`. Có thêm **5 task chung** (khung kiểm thử nhiều trình duyệt, nơi chạy demo, nghiệm thu, chuẩn bị demo và bàn giao) không thuộc Epic nào, gắn nhãn `chung`.
 
-## E0 — Nền tảng và PoC rủi ro
+---
 
-**Mục tiêu:** Dựng nền chạy được (kho, CI, hợp đồng chung, schema, khung web và máy chủ, môi trường demo) và có **bằng chứng sớm bằng số đo thật** cho bốn rủi ro lớn: OTP thật, media LiveKit Cloud, luật cờ (perft) và máy cờ. Mọi Epic sau dựa vào kết quả của Epic này.
+# EPIC 1 — Đăng ký và đăng nhập (kèm nền tảng dự án)
 
-**Thành phần Epic (Jira, 0–1):** để trống (nền kỹ thuật trải rộng)
+## Yêu cầu được giao
 
-**Yêu cầu / nguồn:** AGENTS §4.4; `docs/04` §2, §11; `docs/05` §11 (GATE-OTP, GATE-MEDIA, GATE-AI, GATE-PERFT); BA 10.1 (SMTP mặc định, LiveKit Cloud).
+Giao diện đăng ký / đăng nhập
 
-**Kết quả (đầu ra):**
-- Kho `pnpm` chạy `build`, `lint`, `test` và CI xanh.
-- Gói hợp đồng chung dùng được cho web, máy chủ, máy cờ.
-- Schema Supabase chạy bằng migration.
-- Khung web và khung máy chủ chạy trên môi trường demo.
-- Bốn báo cáo PoC (OTP, media, perft, máy cờ) có số đo thật, ghi rõ đạt/không đạt/chưa kết luận.
+## Epic này làm gì
 
-**Phạm vi / ngoài phạm vi:** **Làm:** nền kỹ thuật và PoC. **Không làm:** tính năng sản phẩm, mọi thứ P2, tối ưu sớm.
+Cho người dùng **đăng ký tài khoản qua ba bước** (tên đăng nhập và mật khẩu, email, mã OTP 6 số gửi qua email), **đăng nhập**, có **hồ sơ cơ bản**, **đăng xuất**, và dùng một **giao diện thống nhất** (đủ 5 trạng thái, dùng được trên điện thoại, đạt chuẩn trợ năng). Epic này cũng gồm **nền tảng của cả dự án** (kho mã, kiểm tra tự động, hợp đồng giữa trình duyệt và máy chủ, cơ sở dữ liệu, khung web, khung máy chủ, ba cơ chế dùng chung) vì đăng ký và đăng nhập là chức năng đầu tiên cần đến chúng.
 
-**Bắt đầu khi:** Không cần Epic nào trước. Cần **quyết định của PO về nơi chạy ứng dụng và chi phí** trước `T0-12`.
+## Ai dùng
 
-**Task của Epic:** `T0-01`, `T0-02`, `T0-03`, `T0-04`, `T0-05`, `T0-06`, `T0-07`, `T0-08`, `T0-09`, `T0-10`, `T0-11`, `T0-12`, `T0-13`, `T0-14`, `T0-15` (15 task; chi tiết ở các tệp Description task).
+Người mới (đăng ký), người đã có tài khoản (đăng nhập); nhóm làm dự án (phần nền tảng).
 
-**Kiểm thử Epic:** - CI xanh trên nhánh mẫu.
-- Mở web và máy chủ trên môi trường demo; máy chủ nhận kết nối có xác thực.
-- Mỗi PoC có báo cáo kèm cấu hình đã che bí mật và số đo.
+## Gồm những việc lớn nào (mỗi việc là một Story)
 
-**PASS khi:**
-- Mọi task của Epic đạt điều kiện PASS riêng.
-- Bốn báo cáo PoC có số đo thật. **Không hạ ngưỡng để báo đạt**; không đạt thì ghi số thật, đánh dấu `BLOCKED` và báo PO (AGENTS §4.4).
+- Story 1 — Đăng ký tài khoản qua ba bước
+- Story 2 — Đăng nhập bằng tên đăng nhập và mật khẩu
+- Story 3 — Hồ sơ cơ bản và đăng xuất
+- Story 4 — Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm
 
-**Bằng chứng nộp:** Báo cáo PoC, kết quả CI, địa chỉ môi trường demo (không chứa bí mật).
+## Không làm trong Epic này
 
-**Rủi ro / chưa rõ:** SMTP mặc định chỉ khoảng 2 thư/giờ và chỉ gửi tới email thuộc nhóm dự án; gói miễn phí LiveKit Cloud 5.000 phút/tháng; nơi chạy ứng dụng chưa chốt; đổi email trực tiếp qua Auth cần PoC.
+Đăng nhập khách, đăng nhập Google, quên mật khẩu, đổi tên đăng nhập hoặc email, ảnh đại diện tuỳ chọn, giao diện sáng (giai đoạn sau).
 
-## EA — Tài khoản và phiên
+## Các quy tắc quan trọng
 
-**Mục tiêu:** Người dùng đăng ký ba bước bằng OTP email, đăng nhập bằng username và mật khẩu, có hồ sơ cơ bản, đăng xuất, và được đưa vào đúng phòng sau khi đăng nhập. Tài khoản chưa hoàn tất không được dùng ứng dụng.
+- Tên đăng nhập 3–20 ký tự (chữ, số, gạch dưới), không phân biệt hoa thường khi kiểm trùng; mật khẩu từ 8 ký tự; tên hiển thị 2–30 ký tự.
+- Mã OTP có hiệu lực **180 giây**; gửi lại cách nhau tối thiểu **60 giây**; mặc định chỉ khoảng **2 thư mỗi giờ**.
+- Phiên đăng nhập: ghi nhớ thì **30 ngày**, không thì **12 giờ** hoặc đến khi đóng trình duyệt.
+- Đăng nhập sai chỉ báo **một lỗi chung**, không lộ email. Email và tên đăng nhập **không đổi được**.
+- Tài khoản chưa đăng ký xong thì **không được dùng**; tài khoản đã hoàn tất **không bao giờ** bị xoá nhầm.
+- Giao diện luôn tối "Kỳ Đài Cổ Phong"; **5 trạng thái** (thành công, đang tải, trống, lỗi, bị khoá có chú thích); dùng được từ **360 px**; chuẩn **WCAG 2.1 AA**; thông tin bí mật không nằm trong mã.
 
-**Thành phần Epic (Jira, 0–1):** `Authentication`
+## Khi nào Epic được coi là xong
 
-**Yêu cầu / nguồn:** `docs/01` nhóm A; BA 1.1, 1.4, 1.5, 1.8; `docs/04` §3; `docs/07` §4.1.
+Chạy trên hai trình duyệt: (1) An đăng ký đủ ba bước bằng mã OTP thật tới email thật, vào được Sảnh; (2) An đăng xuất rồi đăng nhập lại (có và không "Ghi nhớ"); (3) An sửa tên hiển thị, tên có từ cấm bị từ chối; (4) người đăng ký dở không dùng được ứng dụng và không bị kẹt email; (5) mọi màn hình hiện đúng khi tải chậm, trống, lỗi và dùng được trên điện thoại.
 
-**Kết quả (đầu ra):**
-- Đăng ký ba bước chạy thật với OTP.
-- Phục hồi/quét dọn tài khoản đăng ký dở.
-- Đăng nhập, phiên 12 giờ/30 ngày, kiểm hạn và thu hồi phía máy chủ.
-- Hồ sơ cơ bản, đăng xuất (kể cả giữa ván), chuyển hướng vào phòng sau đăng nhập.
+## Cần xong trước
 
-**Phạm vi / ngoài phạm vi:** **Làm:** đăng ký/đăng nhập tài khoản email, phiên, phục hồi. **Không làm (P2):** Khách, Google, quên mật khẩu, đổi username.
+Không cần Epic nào trước. Phần dựng môi trường demo (task chung) đã chốt: **ưu tiên chạy cục bộ, Render là dự phòng**.
 
-**Bắt đầu khi:** `E0`: hợp đồng chung, schema, cấu hình Auth, khung web/máy chủ. Đăng xuất giữa ván cần `TD-04` (đầu hàng) của Epic ED.
+## Task của Epic
 
-**Story của Epic (6 Story P1 từ `docs/01`):**
-- `US-AUTH-01` — Đăng ký bước 1: username và mật khẩu
-- `US-AUTH-02` — Đăng ký bước 2: email và gửi OTP
-- `US-AUTH-03` — Đăng ký bước 3: xác thực OTP, tạo tài khoản
-- `US-AUTH-04` — Đăng nhập bằng username và mật khẩu
-- `US-AUTH-05` — Hồ sơ cơ bản và đăng xuất
-- `US-AUTH-06` — Chuyển hướng vào phòng sau đăng nhập
+- `T-01` — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (Sprint 1)
+- `T-02` — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (Sprint 1)
+- `T-03` — Cấu hình Supabase gửi mã OTP đăng ký (Sprint 1)
+- `T-04` — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (Sprint 1)
+- `T-07` — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (Sprint 1)
+- `T-08` — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (Sprint 1)
+- `T-10` — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (Sprint 1)
+- `T-12` — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (Sprint 1)
+- `T-19` — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (Sprint 2)
+- `T-20` — Máy chủ: đăng nhập, quản lý phiên và hồ sơ (Sprint 2)
+- `T-23` — Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email (Sprint 2)
+- `T-24` — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (Sprint 2)
+- `T-27` — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (Sprint 2)
+- `T-35` — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (Sprint 3)
+- `T-58` — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (Sprint 4)
+- `T-59` — Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (Sprint 4)
 
-**Task của Epic:** `TA-01`, `TA-02`, `TA-03`, `TA-04`, `TA-05`, `TA-06`, `TA-07`, `TA-08`, `TA-09`, `TA-10`, `TA-11`, `TA-12` (12 task; chi tiết ở các tệp Description task).
+---
 
-**Kiểm thử Epic:** Demo D1: A đăng ký ba bước bằng OTP thật; B, C, D (tạo sẵn) đăng nhập; vào được `/lobby`. Ca phục hồi: giết tiến trình ở các điểm d1/d2 của bước 3 (docs/07 §4.1).
+# EPIC 2 — Tạo phòng chơi
 
-**PASS khi:**
-- Mọi AC `AC-AUTH-01-…` đến `AC-AUTH-06-…` đạt.
-- D1 đạt; người chưa hoàn tất bị chặn; lỗi giữa chừng không làm kẹt hay xoá nhầm tài khoản đã ghi `completed_at`.
+## Yêu cầu được giao
 
-**Bằng chứng nộp:** Kết quả test, bản ghi D1, log phục hồi (không chứa OTP/mật khẩu).
+Tạo phòng (room) chơi game
 
-**Rủi ro / chưa rõ:** Hạn mức thư; chặn đổi email trực tiếp qua Auth chưa chứng minh; nhánh chờ PO không đưa vào bắt buộc.
+## Epic này làm gì
 
-## EB — Phòng, mời, ghế, người xem
+Cho người chơi **tạo phòng**, **vào phòng** bằng mã hoặc từ Sảnh, **ngồi ghế**, bấm **Sẵn sàng** và **bắt đầu ván**; kèm thanh điều hướng và trang chính (Sảnh).
 
-**Mục tiêu:** Người dùng tạo phòng, mời bằng link/mã, vào phòng và được xếp ghế hoặc làm người xem; Sẵn sàng rồi bắt đầu ván; quản lý riêng tư/khoá, người xem, Host và danh sách phòng công khai.
+## Ai dùng
 
-**Thành phần Epic (Jira, 0–1):** `Room Management`
+Chủ phòng và người chơi vào phòng.
 
-**Yêu cầu / nguồn:** `docs/01` nhóm B; BA 2.x, 4.x; `docs/04` §5; `docs/07` §2, §5; `DANH-MUC` (phòng, Sảnh).
+## Gồm những việc lớn nào (mỗi việc là một Story)
 
-**Kết quả (đầu ra):**
-- Tạo phòng với mã 8 ký tự và link mời.
-- Vào phòng bằng mã/link/Sảnh, xếp vai theo sức chứa.
-- Ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván.
-- Đổi chỗ ghế ↔ người xem, riêng tư PUBLIC/CODE_ONLY/LOCKED, đuổi người xem, Host rời/chuyển quyền, quay về phòng chờ.
+- Story 5 — Tạo phòng
+- Story 6 — Thanh điều hướng và Sảnh
+- Story 7 — Phòng chờ, hai ghế ngồi, Sẵn sàng và bắt đầu ván
+- Story 8 — Vào phòng bằng mã, đường dẫn hoặc từ Sảnh
 
-**Phạm vi / ngoài phạm vi:** **Làm:** phòng CASUAL. **Không làm:** Đánh Hạng, ghép trận ngẫu nhiên, QR, đổi bên, Tái đấu (P2).
+## Không làm trong Epic này
 
-**Bắt đầu khi:** `E0` (khung, hợp đồng); danh tính lấy từ xác thực kết nối của `T0-11` (không cần đợi đăng nhập hoàn chỉnh `TA-05`); `TB-04` chỉ **khởi tạo ván** (Match ID, thế đầu, bên đi trước, mốc giờ bắt đầu); xử lý lệnh, đồng hồ chạy thật và kết thúc ván thuộc Epic ED (`TD-01`, `TD-03`); luật cờ cần `TC-01` (`TB-04`) và `TC-04` (`TD-01`).
+Mời bạn bè và gửi đường dẫn (Epic Mời bạn), kiểu phòng công khai/khoá và quản lý người xem (Epic Phòng công khai), đi quân và luật chơi, chat, camera/micro, ghép đối thủ ngẫu nhiên, đánh hạng, mã QR.
 
-**Story của Epic (12 Story P1 từ `docs/01`):**
-- `US-ROOM-01` — Tạo phòng
-- `US-ROOM-02` — Phòng chờ và ghế ngồi
-- `US-ROOM-03` — Sẵn sàng và bắt đầu ván
-- `US-ROOM-04` — Chia sẻ phòng bằng link và mã
-- `US-ROOM-05` — Vào phòng bằng mã, link hoặc Sảnh
-- `US-ROOM-06` — Đổi chỗ giữa ghế và người xem
-- `US-ROOM-07` — Chế độ riêng tư và khoá phòng
-- `US-ROOM-08` — Danh sách phòng công khai ở Sảnh
-- `US-ROOM-09` — Đuổi người xem
-- `US-ROOM-10` — Host rời, chuyển quyền, đóng phòng
-- `US-ROOM-11` — Sau ván CASUAL: quay về phòng chờ
-- `US-ROOM-12` — Màn hình từ chối truy cập
+## Các quy tắc quan trọng
 
-**Task của Epic:** `TB-01`, `TB-02`, `TB-03`, `TB-04`, `TB-05`, `TB-06`, `TB-07`, `TB-08`, `TB-09`, `TB-10`, `TB-11`, `TB-12` (12 task; chi tiết ở các tệp Description task).
+- Phòng có **2 ghế**; chủ phòng ngồi ghế Đỏ; mã phòng 8 ký tự. Giờ 5, 10 hoặc 15 phút mỗi bên (mặc định 10); giờ và số người xem **không đổi** sau khi tạo. Tên phòng 1–60 ký tự, không từ cấm.
+- **Mỗi người một chỗ chơi cùng lúc** (một ghế hoặc một ván với máy). Tạo tối đa 5 phòng/10 phút; nhập sai mã phòng 10 lần/phút thì bị chặn 5 phút.
+- Ván bắt đầu khi cả hai Sẵn sàng, đếm 3 giây; ai bỏ Sẵn sàng thì huỷ đếm.
+- Mọi quyết định do **máy chủ** làm.
 
-**Kiểm thử Epic:** Demo D2–D5: A tạo phòng; B vào bằng link/mã; C, D vào sau khi ghế kín thành người xem, người xem vượt sức chứa bị từ chối (demo chọn tối đa 2 người xem); A khoá phòng, E không vào được.
+## Khi nào Epic được coi là xong
 
-**PASS khi:**
-- Mọi AC `AC-ROOM-…` đạt, gồm nhánh phòng đầy, bị chặn, `LOCKED`, một vị trí chơi mỗi người.
-- D2–D5 đạt.
+Hai máy: An tạo phòng ngồi ghế Đỏ; Bình nhập mã vào ngồi ghế Đen; cả hai bấm Sẵn sàng, sau 3 giây ván bắt đầu với thế cờ ban đầu, lượt Đỏ; nếu Bình bỏ Sẵn sàng giữa lúc đếm thì không có ván; người đang có chỗ chơi khác không tạo được phòng; phòng đầy thì người vào bị từ chối kèm lý do.
 
-**Bằng chứng nộp:** Kết quả test, bản ghi D2–D5, ca đua (hai người vào cùng một ghế).
+## Cần xong trước
 
-**Rủi ro / chưa rõ:** Đua ghế/vào đồng thời; quyền dữ liệu theo vai (người xem không nhận dữ liệu của người chơi).
+Khung máy chủ, hợp đồng chung, cơ sở dữ liệu, đăng nhập (Epic Đăng ký và đăng nhập). Để ván bắt đầu thật cần mô hình bàn cờ (Epic Khởi tạo bàn cờ).
 
-## EC — Bàn cờ và luật cờ
+## Task của Epic
 
-**Mục tiêu:** Có gói luật cờ chính xác dùng chung cho máy chủ, máy cờ và client; bàn cờ SVG hiển thị đúng, chọn quân/gợi ý/kéo thả/đánh dấu/âm thanh.
+- `T-14` — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (Sprint 2)
+- `T-15` — Giao diện: phòng chờ và màn từ chối vào phòng (Sprint 2)
+- `T-17` — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (Sprint 2)
+- `T-21` — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (Sprint 2)
+- `T-25` — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (Sprint 2)
+- `T-29` — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (Sprint 2)
 
-**Thành phần Epic (Jira, 0–1):** để trống (trải rộng `Game Engine` và `Frontend`)
+---
 
-**Yêu cầu / nguồn:** `docs/01` nhóm C; `docs/02` mục 1–8; `docs/05` mục 3 (kiểm thử luật), GATE-PERFT; `AGENTS` §4.3 (toạ độ); `DESIGN` (bàn cờ).
+# EPIC 3 — Mời bạn vào phòng chơi
 
-**Kết quả (đầu ra):**
-- `packages/rules`: sinh nước đi, hợp lệ, chiếu/chiếu hết/hết nước, lặp thế, chiếu liên tục, 120 nửa nước không ăn, ký hiệu tiếng Việt.
-- Bộ kiểm thử luật (bộ thế, ca biên, perft oracle độc lập).
-- Bàn cờ SVG và tương tác.
+## Yêu cầu được giao
 
-**Phạm vi / ngoài phạm vi:** **Làm:** luật rút gọn đã công bố, bàn cờ. **Không làm:** luật đuổi quân riêng, đồng hồ (Epic ED).
+Mời bạn vào phòng chơi game (ngay trong game, gửi link, mã phòng…)
 
-**Bắt đầu khi:** `E0` (kho, khung web, hợp đồng). Luật là nền cho Epic ED và EG.
+## Epic này làm gì
 
-**Story của Epic (5 Story P1 từ `docs/01`):**
-- `US-BOARD-01` — Hiển thị bàn cờ
-- `US-BOARD-02` — Chọn quân và gợi ý ô đi bằng click
-- `US-BOARD-03` — Kéo thả
-- `US-BOARD-04` — Đánh dấu nước cuối và chiếu
-- `US-BOARD-05` — Âm thanh
+Cho người chơi **mời người khác vào phòng**: gửi **đường dẫn** hoặc **mã phòng**, người được mời bấm đường dẫn rồi đăng nhập là **vào đúng phòng**; và có **hệ thống bạn bè** để **mời bạn đang online** ngay trong phòng.
 
-**Task của Epic:** `TC-01`, `TC-02`, `TC-03`, `TC-04`, `TC-05`, `TC-06`, `TC-07`, `TC-08`, `TC-09`, `TC-10` (10 task; chi tiết ở các tệp Description task).
+## Ai dùng
 
-**Kiểm thử Epic:** Bộ test luật chạy trong CI; mở bàn cờ trên hai trình duyệt và thao tác click/kéo thả hợp lệ/không hợp lệ.
+Người đang ngồi ghế (mời) và người được mời.
 
-**PASS khi:**
-- Mọi AC `AC-BOARD-…` đạt.
-- Bộ test luật xanh, perft khớp oracle độc lập (không tự sửa kỳ vọng theo mã).
+## Gồm những việc lớn nào (mỗi việc là một Story)
 
-**Bằng chứng nộp:** Kết quả test luật, báo cáo perft (nguồn, phiên bản oracle), ảnh bàn cờ.
+- Story 9 — Chia sẻ phòng bằng đường dẫn và mã; người được mời đăng nhập xong vào đúng phòng
+- Story 10 — Kết bạn: tìm người, gửi và trả lời lời mời, giới hạn
+- Story 11 — Danh sách bạn và trạng thái
+- Story 12 — Mời bạn đang online vào phòng
 
-**Rủi ro / chưa rõ:** Giá trị perft tham chiếu chưa kiểm; sai luật ở gói chung lan ra mọi nơi.
+## Không làm trong Epic này
 
-## ED — Ván đấu online
+Nhắn tin 1-1, thách đấu, điểm Elo, mã QR (giai đoạn sau).
 
-**Mục tiêu:** Hai người chơi đánh hết một ván qua mạng: đi nước, đồng hồ, kết thúc, đầu hàng, xin hoà, rời/mất kết nối và kết nối lại; người xem theo dõi trực tiếp; có bảng nước đi. Máy chủ là nguồn sự thật.
+## Các quy tắc quan trọng
 
-**Thành phần Epic (Jira, 0–1):** để trống (trải rộng `Match`, `Realtime`, `Frontend`)
+- Đường dẫn và mã cho **cùng một quyền**; chỉ người đang ngồi ghế mở được hộp thoại mời. Khoá phòng thì mã và đường dẫn cũ vô hiệu.
+- Kết bạn: tìm theo tên đăng nhập (không hiện email); lời mời hết hạn sau 30 ngày; bị cùng một người từ chối 2 lần thì không gửi lại được; tối đa **200 bạn** và **50 lời mời đang chờ**.
+- Trạng thái bạn: Online, Đang đấu (đang giữ ghế hoặc chơi với máy), Ngoại tuyến. Chỉ bạn Online mới mời được.
+- Mời vào phòng **chỉ có trong hộp thoại mời của phòng**; thông báo đếm lùi **30 giây**; lời mời **không giữ chỗ**, máy chủ kiểm lại mọi điều kiện khi bấm Tham gia.
 
-**Yêu cầu / nguồn:** `docs/01` nhóm D; BA 3.x, 8.3; `docs/04` §4–6; `docs/07` §3, §5.
+## Khi nào Epic được coi là xong
 
-**Kết quả (đầu ra):**
-- Máy chủ xử lý lệnh tuần tự, chống trùng lệnh, kiểm `matchVersion`.
-- Đồng hồ phía máy chủ, mọi cách kết thúc ván đúng thứ tự ưu tiên.
-- Mất kết nối: ân hạn 60 giây, kết nối lại, `INTERRUPTED` khi khởi động lại (nhánh trung tính chờ PO).
-- Giao diện ván và tích hợp hai trình duyệt.
+An tạo phòng, gửi đường dẫn cho Bình đang chưa đăng nhập; Bình đăng nhập xong vào đúng phòng. An kết bạn với Chi, mời Chi đang online; Chi bấm Tham gia và vào đúng chỗ. Chi đang chơi với máy thì không nhận được lời mời; rời ván máy xong thì nhận được. Vượt giới hạn bạn bị chặn ở máy chủ.
 
-**Phạm vi / ngoài phạm vi:** **Làm:** ván CASUAL online. **Không làm:** Xin đi lại, Tái đấu, Đánh Hạng (P2).
+## Cần xong trước
 
-**Bắt đầu khi:** `EB` (`TB-04` bắt đầu ván), `EC` (`TC-04` luật), `E0`.
+Epic Tạo phòng chơi (phòng và vào phòng), Epic Đánh với máy theo cấp độ (để kiểm trạng thái Đang đấu thật).
 
-**Story của Epic (10 Story P1 từ `docs/01`):**
-- `US-PLAY-01` — Đi nước qua mạng
-- `US-PLAY-02` — Đồng hồ
-- `US-PLAY-03` — Kết thúc ván và kết quả
-- `US-PLAY-04` — Đầu hàng
-- `US-PLAY-05` — Xin hoà
-- `US-PLAY-06` — Rời phòng giữa ván
-- `US-PLAY-07` — Mất kết nối và kết nối lại
-- `US-PLAY-08` — Lặp thế, chiếu liên tục, không ăn quân
-- `US-PLAY-09` — Người xem theo dõi trực tiếp
-- `US-PLAY-10` — Bảng nước đi
+## Task của Epic
 
-**Task của Epic:** `TD-01`, `TD-02`, `TD-03`, `TD-04`, `TD-05`, `TD-06`, `TD-07`, `TD-08`, `TD-09`, `TD-10`, `TD-11` (11 task; chi tiết ở các tệp Description task).
+- `T-33` — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (Sprint 3)
+- `T-34` — Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (Sprint 3)
+- `T-47` — Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (Sprint 3)
+- `T-52` — Máy chủ: mời bạn đang online vào phòng (Sprint 4)
+- `T-54` — Nối web với máy chủ: bạn bè (Sprint 4)
 
-**Kiểm thử Epic:** Demo D6 (Sẵn sàng → đếm 3 giây → đi cờ đến chiếu hết, người xem thấy trực tiếp) và D9 (ngắt mạng một bên: nối lại trong 60 giây thì tiếp tục, quá 60 giây thì thua `DISCONNECT`).
+---
 
-**PASS khi:**
-- Mọi AC `AC-PLAY-…` đạt.
-- D6 và D9 đạt; hai lệnh đồng thời cho kết quả đúng thứ tự; không áp dụng nước đi hai lần khi gửi lại.
+# EPIC 4 — Khởi tạo bàn cờ
 
-**Bằng chứng nộp:** Kết quả test, bản ghi D6/D9, ca đua (nước đi và đầu hàng cùng lúc).
+## Yêu cầu được giao
 
-**Rủi ro / chưa rõ:** Hết giờ và hết ân hạn cùng lúc (ưu tiên `TIMEOUT`); nhánh `INTERRUPTED` chờ PO.
+Load bàn cờ (khởi tạo bàn cờ)
 
-## EE — Chat và camera/mic
+## Epic này làm gì
 
-**Mục tiêu:** Người chơi và người xem chat hai kênh theo quyền; người chơi bật camera/mic độc lập và chọn mức chia sẻ; người xem chỉ xem/nghe; nhiều tab chỉ một nơi điều khiển.
+**Khởi tạo và hiển thị bàn cờ**: viết **luật cờ tướng** thành một gói dùng chung (máy chủ, trình duyệt và máy cờ cùng dùng), dựng **bàn cờ trên màn hình** đúng thế khởi đầu cho cả hai phe, và cho người chơi **chọn quân, kéo thả, thấy nước vừa đi, nhận cảnh báo chiếu, nghe âm thanh**.
 
-**Thành phần Epic (Jira, 0–1):** `Communication`
+## Ai dùng
 
-**Yêu cầu / nguồn:** `docs/01` nhóm E; BA 4.1, 5.3, 5.4; `docs/04` §7; GATE-MEDIA.
+Người chơi và người xem (nhìn thấy bàn cờ); nhóm làm máy cờ và ván online (dùng gói luật).
 
-**Kết quả (đầu ra):**
-- Chat Kênh Riêng/Kênh Chung, giới hạn 5 tin/10 giây, bộ lọc từ cấm.
-- Token LiveKit theo vai, thu hồi khi đổi vai/đuổi/tiếp quản.
-- Giao diện camera/mic: bật/tắt độc lập, một mức chia sẻ chung.
-- Mở nhiều tab: tab mới tiếp quản.
+## Gồm những việc lớn nào (mỗi việc là một Story)
 
-**Phạm vi / ngoài phạm vi:** **Làm:** chat phòng, media CASUAL. **Không làm:** chat 1-1, sticker, Kênh Chung ở Đánh Hạng (P2).
+- Story 13 — Thấy bàn cờ và quân cờ
+- Story 14 — Tương tác với quân cờ: chọn, kéo thả, đánh dấu nước đi, cảnh báo chiếu, âm thanh
 
-**Bắt đầu khi:** `EB` (vai/ghế), `E0` (`T0-07` PoC LiveKit), `TA-05` (phiên) cho nhiều tab.
+## Không làm trong Epic này
 
-**Story của Epic (5 Story P1 từ `docs/01`):**
-- `US-CHAT-01` — Hai kênh chat
-- `US-CHAT-02` — Giới hạn và bộ lọc từ cấm
-- `US-MEDIA-01` — Camera và micro cho hai người chơi
-- `US-MEDIA-02` — Người xem chỉ xem/nghe
-- `US-MEDIA-03` — Mở nhiều tab
+Đi lại, gợi ý nước hay, xuất và xem lại ván, giao diện sáng (giai đoạn sau). Đồng hồ và kết thúc ván thuộc Epic Hai người đánh cờ qua mạng.
 
-**Task của Epic:** `TE-01`, `TE-02`, `TE-03`, `TE-04`, `TE-05`, `TE-06`, `TE-07` (7 task; chi tiết ở các tệp Description task).
+## Các quy tắc quan trọng
 
-**Kiểm thử Epic:** Demo D7: A và B bật camera/mic, chat Kênh Riêng; người xem chat Kênh Chung, không đọc được Kênh Riêng.
+- Đen ở trên (y=0), Đỏ ở dưới (y=9), **Đỏ đi trước**; người cầm Đen thấy bàn lật nhưng dữ liệu gốc không đổi.
+- Luật viết **một lần** dùng chung. Hết nước đi là **thua**; hoà khi lặp thế lần ba (không bên nào chiếu liên tục) hoặc 120 nửa nước không ăn quân; chiếu hết được xét trước.
+- Quân chỉ dùng **chữ Hán truyền thống**.
+- Kiểm chứng luật bằng nguồn đối chiếu độc lập: số nước đi từ thế khởi đầu ở độ sâu 1–4 là 44, 1.920, 79.666, 3.290.240.
 
-**PASS khi:**
-- Mọi AC `AC-CHAT-…` và `AC-MEDIA-…` đạt; GATE-MEDIA có bằng chứng (không nhận track trái quyền, token quyền cũ không lấy lại quyền đã mất).
-- D7 đạt.
+## Khi nào Epic được coi là xong
 
-**Bằng chứng nộp:** Kết quả test, log quyền, ghi chú thử bằng client không được phép, mức dùng hạn mức gói LiveKit.
+Từ thế khởi đầu, mọi nước đi sinh ra khớp nguồn đối chiếu độc lập; các thế chiếu hết, hết nước, lặp thế, 120 nửa nước cho kết quả đúng luật; trên trình duyệt bàn cờ đúng cho cả hai phe, bấm và kéo quân đều đi được, bị chiếu thì có cảnh báo, có âm thanh.
 
-**Rủi ro / chưa rõ:** Hạn mức gói miễn phí LiveKit; cửa sổ hiệu lực thu hồi token; cấu hình đo media chưa đủ.
+## Cần xong trước
 
-## EF — Bạn bè (tối thiểu P1)
+Khung web và khối giao diện nền (Epic Đăng ký và đăng nhập, phần nền tảng).
 
-**Mục tiêu:** Người dùng tìm người, gửi/nhận/trả lời lời mời kết bạn, xem danh sách bạn kèm trạng thái, và mời bạn online vào phòng.
+## Task của Epic
 
-**Thành phần Epic (Jira, 0–1):** `Social`
+- `T-05` — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (Sprint 1)
+- `T-09` — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (Sprint 1)
+- `T-11` — Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen (Sprint 1)
+- `T-18` — Giao diện: bấm chọn quân và chấm gợi ý ô đi (Sprint 2)
+- `T-22` — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (Sprint 2)
+- `T-46` — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (Sprint 3)
 
-**Yêu cầu / nguồn:** `docs/01` nhóm F; BA 5.5; `docs/03` (bạn bè).
+---
 
-**Kết quả (đầu ra):**
-- Tìm người, lời mời, giới hạn 200 bạn và 50 lời mời đang chờ.
-- Danh sách bạn và trạng thái online/đang đấu.
-- Mời bạn online vào phòng (pop-up 30 giây).
+# EPIC 5 — Hai người đánh cờ qua mạng
 
-**Phạm vi / ngoài phạm vi:** **Làm:** hệ thống bạn bè tối thiểu. **Không làm:** chat 1-1, thách đấu, badge chưa đọc (P2).
+## Yêu cầu được giao
 
-**Bắt đầu khi:** `E0`, `EB` (`TB-03` vào phòng).
+Hai người đánh cờ qua mạng (online)
 
-**Story của Epic (5 Story P1 từ `docs/01`):**
-- `US-FRIEND-01` — Tìm người và gửi lời mời
-- `US-FRIEND-02` — Nhận và trả lời lời mời
-- `US-FRIEND-03` — Danh sách bạn và trạng thái
-- `US-FRIEND-04` — Mời bạn bè online vào phòng
-- `US-FRIEND-05` — Giới hạn
+## Epic này làm gì
 
-**Task của Epic:** `TF-01`, `TF-02`, `TF-03`, `TF-04`, `TF-05` (5 task; chi tiết ở các tệp Description task).
+Cho hai người **đánh một ván cờ qua mạng**: đi nước (đồng bộ giữa hai trình duyệt), đồng hồ chạy, kết thúc ván (chiếu hết, hết giờ, đầu hàng, xin hoà), xử lý khi rớt mạng và nối lại, và đăng xuất giữa ván. **Máy chủ quyết định mọi thứ**.
 
-**Kiểm thử Epic:** Demo D3 (phần mời bạn): A và C là bạn; A mời C đang online; C nhận pop-up 30 giây và vào phòng.
+## Ai dùng
 
-**PASS khi:**
-- Mọi AC `AC-FRIEND-…` đạt; D3 phần mời bạn đạt.
+Hai người chơi.
 
-**Bằng chứng nộp:** Kết quả test, bản ghi D3.
+## Gồm những việc lớn nào (mỗi việc là một Story)
 
-**Rủi ro / chưa rõ:** Đua hai lời mời ngược chiều; từ chối hai lần thì chặn gửi lại.
+- Story 15 — Đi nước qua mạng và bảng nước đi
+- Story 16 — Đồng hồ ván
+- Story 17 — Kết thúc ván: kết quả, đầu hàng, xin hoà, lặp thế
+- Story 18 — Rời phòng giữa ván, mất kết nối và kết nối lại
 
-## EG — Đánh với máy
+## Không làm trong Epic này
 
-**Mục tiêu:** Người chơi chọn cấp độ (Dễ/Trung bình/Khó) và phe rồi đánh với máy; máy trả nước đúng ngân sách thời gian; có bỏ dở, vào lại trong 30 phút và xử lý sự cố máy cờ.
+Tái đấu, xem lại ván, đi lại, điều kiện xin hoà của đánh hạng, giờ "không giới hạn", Elo.
 
-**Thành phần Epic (Jira, 0–1):** `AI`
+## Các quy tắc quan trọng
 
-**Yêu cầu / nguồn:** `docs/01` nhóm G; BA 6.x; `docs/02` mục 9; `docs/04` §8; `docs/05` mục 3, GATE-AI.
+- Lệnh gửi lại cùng mã chỉ có **một tác dụng**; lệnh dựa trên bản ván cũ bị từ chối; các lệnh của một ván xử lý **lần lượt**.
+- Đồng hồ do **máy chủ** tính, không cộng giây; hết giờ thì thua. Xin hoà: một đề nghị mỗi lần, chờ 30 giây; bị từ chối phải đi thêm 5 nước mới xin lại.
+- Rời giữa ván = đầu hàng. Mất kết nối: người chơi giữ chỗ **60 giây**; máy chủ khởi động lại thì ván **gián đoạn**.
+- Hiệu năng: người xem nhận thế mới dưới **100 ms**; chịu **50 kết nối, 10 ván** cùng lúc.
 
-**Kết quả (đầu ra):**
-- Tiến trình máy cờ riêng, ba cấp, tìm sâu dần, báo `progress`.
-- Ván với máy trên máy chủ: một vị trí chơi, vào lại 30 phút.
-- Watchdog, hàng đợi, Bỏ dở, Thử lại.
-- Báo cáo đo đầy đủ.
+## Khi nào Epic được coi là xong
 
-**Phạm vi / ngoài phạm vi:** **Làm:** ván với máy P1. **Không làm:** Xin hoà với máy, đi lại với máy (P2).
+Hai trình duyệt thật: hai người đi nước luân phiên, thế cờ giống nhau ở mọi nước; đồng hồ đúng, hết giờ thì thua; đầu hàng và xin hoà đủ các nhánh; ngắt mạng một bên: nối lại trước 60 giây thì tiếp tục, quá thì thua; bảng nước đi đúng ký hiệu tiếng Việt.
 
-**Bắt đầu khi:** `EC` (luật, perft), `E0` (`T0-08` PoC máy cờ), `ED` (`TD-02` xử lý nước đi).
+## Cần xong trước
 
-**Story của Epic (4 Story P1 từ `docs/01`):**
-- `US-AI-01` — Chọn cấp độ và phe
-- `US-AI-02` — Chơi với máy
-- `US-AI-03` — Kết thúc, bỏ dở và vào lại
-- `US-AI-04` — Sự cố máy cờ
+Epic Tạo phòng chơi (ván bắt đầu từ phòng), Epic Khởi tạo bàn cờ (luật và bàn cờ).
 
-**Task của Epic:** `TG-01`, `TG-02`, `TG-03`, `TG-04`, `TG-05`, `TG-06` (6 task; chi tiết ở các tệp Description task).
+## Task của Epic
 
-**Kiểm thử Epic:** Demo D8 (đánh ba cấp, không vào ván máy khi còn ngồi ghế phòng khác) và D10 (đóng tab, vào lại trong 30 phút / sau 30 phút là Bỏ dở).
+- `T-26` — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (Sprint 2)
+- `T-28` — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (Sprint 2)
+- `T-30` — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (Sprint 2)
+- `T-39` — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (Sprint 3)
+- `T-42` — Bảng nước đi: ký hiệu tiếng Việt và hiển thị (Sprint 3)
+- `T-45` — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn (Sprint 3)
+- `T-48` — Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (Sprint 3)
+- `T-50` — Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (Sprint 3)
 
-**PASS khi:**
-- Mọi AC `AC-AI-…` đạt; D8 và D10 đạt.
-- GATE-AI: số đo thật theo `docs/05` mục 3; không hạ ngưỡng, không đạt thì ghi `BLOCKED` và báo PO.
+---
 
-**Bằng chứng nộp:** Báo cáo đo máy cờ (cấu hình máy đo, số đo), bản ghi D8/D10.
+# EPIC 6 — Phòng công khai, khoá phòng và người xem
 
-**Rủi ro / chưa rõ:** Cấp Khó có đạt độ sâu 6 trong 3 giây hay không; lỗi/treo tiến trình.
+## Yêu cầu được giao
 
-## EH — Giao diện chung
+Mở công khai cho mọi người xem hai người đánh, hoặc khoá lại không cho ai vào, hoặc khoá nhưng có mã phòng để người khác vào xem
 
-**Mục tiêu:** Toàn bộ ứng dụng có giao diện thống nhất Kỳ Đài Cổ Phong, thanh điều hướng, Sảnh; mọi màn hình đủ năm trạng thái, responsive từ 360 px và đạt trợ năng WCAG 2.1 AA.
+## Epic này làm gì
 
-**Thành phần Epic (Jira, 0–1):** `UI/UX`
+Cho chủ phòng **chọn ai được thấy và được vào phòng**: **công khai** (hiện ở Sảnh để mọi người vào xem), **chỉ vào bằng mã**, hoặc **khoá** (không ai mới vào được); cho **người xem** theo dõi ván trực tiếp (tối đa theo cài đặt phòng); và quản lý phòng: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng.
 
-**Yêu cầu / nguồn:** `docs/01` nhóm H; `DESIGN.md`; `DANH-MUC` (SCR-RULE-01, 37 thành phần); `docs/08` mục 4 (năm trạng thái); NFR-03, NFR-A11Y.
+## Ai dùng
 
-**Kết quả (đầu ra):**
-- Token và thành phần nền.
-- Thanh điều hướng, khung Sảnh.
-- Năm trạng thái (SUCCESS, LOADING, EMPTY, ERROR, DISABLED, tooltip lý do) cho mọi màn hình/khung dữ liệu.
-- Responsive và trợ năng.
-- Lối vào P2 hiển thị DISABLED kèm "Sắp ra mắt".
+Chủ phòng, người chơi và người xem.
 
-**Phạm vi / ngoài phạm vi:** **Làm:** giao diện P1. **Không làm:** Giấy Sáng và Theo hệ thống (P2).
+## Gồm những việc lớn nào (mỗi việc là một Story)
 
-**Bắt đầu khi:** `E0` (khung web); các task kiểm toàn bộ (`TH-03`…) cần màn hình của EA, EB, ED, EE, EF, EG.
+- Story 19 — Kiểu phòng, khoá phòng và danh sách phòng công khai
+- Story 20 — Quản lý phòng: đổi chỗ, đuổi người xem, chủ phòng rời, sau ván
+- Story 21 — Người xem theo dõi trực tiếp
 
-**Story của Epic (6 Story P1 từ `docs/01`):**
-- `US-UI-01` — Thanh điều hướng
-- `US-UI-02` — Sảnh
-- `US-UI-03` — Năm trạng thái cho mọi màn hình
-- `US-UI-04` — Responsive
-- `US-UI-05` — Trợ năng
-- `US-UI-06` — Tính năng P2 hiển thị đúng quy tắc
+## Không làm trong Epic này
 
-**Task của Epic:** `TH-01`, `TH-02`, `TH-03`, `TH-04`, `TH-05`, `TH-06` (6 task; chi tiết ở các tệp Description task).
+Xem lại ván, chat và camera cho người xem (Epic Chat, camera và micro).
 
-**Kiểm thử Epic:** Duyệt từng màn hình ở bốn kích thước (360/390/1366/1920 px) và kiểm bàn phím, nhãn, tương phản.
+## Các quy tắc quan trọng
 
-**PASS khi:**
-- Mọi AC `AC-UI-…` đạt; không lỗi chức năng và không cuộn ngang ở 360–1920 px; tương phản đạt WCAG 2.1 AA.
+- Phòng có **tối đa 5 người xem** (mặc định 5, chọn 0–5; cài đặt không đổi sau khi tạo). Khoá chỉ bật được khi **đủ 2 người chơi**; khoá thì phòng biến khỏi Sảnh, người mới không vào được, người đang có mặt **giữ nguyên**; mất ghế **không** tự mở khoá.
+- Người đang có mặt mất mạng vào lại được: người chơi **60 giây**, người xem **5 phút**.
+- Danh sách phòng công khai: mới nhất trước, **tối đa 50**.
+- Người xem **chỉ đọc**, không thấy kênh chat riêng; đuổi người xem thì bị chặn đến khi phòng đóng.
 
-**Bằng chứng nộp:** Ảnh chụp từng trạng thái, báo cáo trợ năng, kết quả trình duyệt.
+## Khi nào Epic được coi là xong
 
-**Rủi ro / chưa rõ:** Làm giao diện một lần ở cuối dễ bị dồn; nên làm cùng từng màn hình.
+Hai máy: An tạo phòng cho tối đa 2 người xem; Bình ngồi ghế; Chi và Dũng vào xem, người thứ ba bị từ chối; An khoá phòng, Em dùng mã không vào được; mở lại thì có mã mới, mã cũ vô hiệu; An đuổi Chi, Chi bị chặn; người xem thấy ván trực tiếp và không thấy kênh riêng.
 
-## EQ — Kiểm thử chấp nhận và Demo
+## Cần xong trước
 
-**Mục tiêu:** Chứng minh toàn bộ P1 đạt: kịch bản D1–D10, mọi AC P1, ca biên, trạng thái giao diện và các NFR đã duyệt; chuẩn bị gói demo đúng hạn mức dịch vụ.
+Epic Tạo phòng chơi (phòng và vào phòng), Epic Hai người đánh cờ qua mạng (ván để xem).
 
-**Thành phần Epic (Jira, 0–1):** `QA`
+## Task của Epic
 
-**Yêu cầu / nguồn:** `docs/05` mục 2, 5, 6; `docs/08`; BA 10.1, 11.
+- `T-32` — Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi (Sprint 3)
+- `T-36` — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (Sprint 3)
+- `T-38` — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (Sprint 3)
+- `T-40` — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (Sprint 3)
+- `T-44` — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (Sprint 3)
 
-**Kết quả (đầu ra):**
-- Khung E2E nhiều trình duyệt.
-- Kết quả PASS/FAIL cho mọi AC P1 và D1–D10.
-- Báo cáo tải và NFR (NFR-01..07, NFR-A11Y).
-- Gói demo: tài khoản dựng sẵn, dữ liệu, kịch bản, kiểm tra hạn mức.
-- Bằng chứng nghiệm thu.
+---
 
-**Phạm vi / ngoài phạm vi:** **Làm:** kiểm chứng P1. **Không làm:** nghiệm thu P2; NFR-08..10 chỉ khi PO duyệt.
+# EPIC 7 — Chat, camera và micro
 
-**Bắt đầu khi:** Gần như mọi Epic khác (đây là Epic hội tụ).
+## Yêu cầu được giao
 
-**Task của Epic:** `TQ-01`, `TQ-02`, `TQ-03`, `TQ-04`, `TQ-05`, `TQ-06`, `TQ-07` (7 task; chi tiết ở các tệp Description task).
+Hai người vừa đánh cờ vừa chat, có camera và micro; có kênh chat cho người xem tách riêng với chat của hai người đánh
 
-**Kiểm thử Epic:** Chạy D1–D10 trên môi trường demo bằng Playwright cộng thao tác tay cho camera/mic.
+## Epic này làm gì
 
-**PASS khi:**
-- D1–D10 đạt; mọi AC P1 và nhánh đã duyệt đạt; NFR đã duyệt đạt; không còn lỗi Cao/Nghiêm trọng (docs/05 mục 6).
+Cho người trong phòng **nhắn tin** (hai kênh: Riêng của hai người chơi, và Chung cho cả phòng gồm người xem) và cho hai người chơi **bật camera, micro** để thấy mặt, nghe tiếng nhau (qua dịch vụ LiveKit Cloud). Mọi thứ phải **đúng quyền**.
 
-**Bằng chứng nộp:** Báo cáo tổng hợp, kết quả CI/E2E, số đo tải, ảnh/video demo.
+## Ai dùng
 
-**Rủi ro / chưa rõ:** Dồn kiểm thử vào cuối; hạn mức SMTP/LiveKit trong lúc demo.
+Người chơi và người xem.
+
+## Gồm những việc lớn nào (mỗi việc là một Story)
+
+- Story 22 — Chat hai kênh, giới hạn tin nhắn và lọc từ cấm
+- Story 23 — Camera và micro: người chơi bật, người xem chỉ xem
+- Story 24 — Mở nhiều tab: tab mới tiếp quản
+
+## Không làm trong Epic này
+
+Nhắn tin riêng giữa bạn bè, sticker, ghi hình hay ghi âm (giai đoạn sau).
+
+## Các quy tắc quan trọng
+
+- Kênh Riêng chỉ hai người ngồi ghế; Kênh Chung cho cả phòng; **người xem chỉ thấy Kênh Chung** (kênh chat của người xem tách riêng với chat của hai người đánh).
+- Tin tối đa 200 ký tự, 5 tin/10 giây; từ cấm bị che `***` ở cả máy chủ và trình duyệt.
+- Camera và micro **mặc định tắt**, bật tắt độc lập; **3 mức chia sẻ** (không chia sẻ / chỉ đối thủ / cả đối thủ và người xem). Người xem **không bao giờ được phát**. **Không ghi hình, ghi âm.**
+- Mở tab mới thì tab mới tiếp quản, tab cũ chỉ đọc và dừng thiết bị.
+- **Đã chốt:** đổi cặp người ngồi ghế thì người mới (và cả cặp mới) **không đọc** tin cũ của cặp trước.
+
+## Khi nào Epic được coi là xong
+
+Nhiều trình duyệt: hai người chat ở cả hai kênh; người xem chỉ thấy và gửi ở Kênh Chung và không nhận byte nào của Kênh Riêng; hai người bật camera và micro thấy và nghe nhau theo mức chia sẻ; đổi vai hoặc đuổi người xem thì mất quyền thật; mở tab mới thì tab cũ chỉ đọc; camera/micro hỏng không làm hỏng việc đi cờ và chat.
+
+## Cần xong trước
+
+Epic Tạo phòng chơi (phòng), Epic Phòng công khai, khoá phòng và người xem (đổi chỗ, đuổi), Epic Hai người đánh cờ qua mạng (đi nước để kiểm khi camera hỏng).
+
+## Task của Epic
+
+- `T-06` — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (Sprint 1)
+- `T-41` — Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (Sprint 3)
+- `T-49` — Giao diện chat hai kênh và nối web với máy chủ (Sprint 3)
+- `T-51` — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi (Sprint 4)
+- `T-53` — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) (Sprint 4)
+- `T-57` — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (Sprint 4)
+
+---
+
+# EPIC 8 — Đánh với máy theo cấp độ
+
+## Yêu cầu được giao
+
+Người đánh với máy theo từng cấp độ của máy
+
+## Epic này làm gì
+
+Cho người dùng **đánh cờ với máy** theo **từng cấp độ** (**Dễ, Trung bình, Khó**), tự chọn phe Đỏ, Đen hoặc ngẫu nhiên. Máy là chương trình **chạy riêng** khỏi máy chủ.
+
+## Ai dùng
+
+Người chơi đã đăng nhập (một mình).
+
+## Gồm những việc lớn nào (mỗi việc là một Story)
+
+- Story 25 — Chọn cấp độ, chọn phe và máy đi nước đúng luật
+- Story 26 — Kết thúc ván với máy, vào lại ván và sự cố máy cờ
+
+## Không làm trong Epic này
+
+Gợi ý nước đi, đi lại, xin hoà, lưu lịch sử, tính điểm Elo (giai đoạn sau).
+
+## Các quy tắc quan trọng
+
+- Thời gian nghĩ tối đa: Dễ 300 ms, Trung bình 1.000 ms, Khó 3.000 ms. **Máy không bao giờ đi sai luật.**
+- Ván với máy **không giới hạn thời gian** cho người chơi; không có xin hoà, không gợi ý nước.
+- Đóng tab: giữ ván **30 phút**; chủ động rời hoặc đăng xuất thì đầu hàng ngay.
+- Máy lỗi quá 10 giây → ván **Bỏ dở**, có nút **Thử lại** (ván mới cùng cấp, cùng phe đã bốc).
+- Phải đạt tiêu chuẩn chất lượng máy cờ: p95 thời gian trong ngưỡng, tỷ lệ thắng cấp cao ≥ 75%, 1.000 ván không lỗi.
+
+## Khi nào Epic được coi là xong
+
+Người chơi chọn Khó và phe Đen, máy đi trước, bàn lật; đánh đến chiếu hết hoặc đầu hàng, hộp kết quả chỉ có Rời phòng; đóng tab rồi vào lại trước 30 phút thấy đúng thế, sau 30 phút là Bỏ dở; giết tiến trình máy thì báo sự cố và Thử lại tạo ván mới; báo cáo đo máy cờ đủ số liệu.
+
+## Cần xong trước
+
+Luật cờ (Epic Khởi tạo bàn cờ) và xử lý nước đi (Epic Hai người đánh cờ qua mạng).
+
+## Task của Epic
+
+- `T-31` — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (Sprint 3)
+- `T-37` — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (Sprint 3)
+- `T-43` — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (Sprint 3)
+- `T-55` — Nối web, máy chủ và máy cờ thật: ván với máy (Sprint 4)
+- `T-56` — Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (Sprint 4)
+
+---
+
+# Task chung của dự án (không thuộc Epic nào, nhãn `chung`)
+
+- `T-13` — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (Sprint 1)
+- `T-16` — Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng (Sprint 2)
+- `T-60` — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (Sprint 4)
+- `T-61` — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (Sprint 4)
+- `T-62` — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng (Sprint 4)
