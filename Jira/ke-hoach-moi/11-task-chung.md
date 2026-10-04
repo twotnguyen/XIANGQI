@@ -2,16 +2,66 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 Các task này phục vụ cả dự án nên không thuộc Epic nào; trên Jira gắn nhãn `chung`.
 
 ---
 
-### T-13 — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright)
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra chạy mỗi khi có thay đổi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang web chạy được, có cách chuyển trang.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+### T-34 — Nghiệm thu MVP: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 2 (08/10–10/10)
+**Phải xong trước:** *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: nhận được đăng ký và đăng nhập (OTP và Google) chạy thật. *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-28)*: nhận được phòng tạo được, vào bằng mã hoặc đường dẫn, ngồi ghế, Sẵn sàng, bắt đầu ván. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được ván hai người chơi được từ đầu đến hết. *Nối web, máy chủ và máy cờ thật: ván với máy (T-33)*: nhận được ván với máy ba cấp chạy thật.
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung`, `MVP`, `gate` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 10/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
+
+**Mục tiêu**
+Chốt mốc **MVP chơi được** vào cuối Sprint 2: kiểm bằng người thật trên bản chạy thật rằng **bốn việc cốt lõi** chạy trọn từ đầu đến cuối, trước khi nhóm mở rộng sang người xem, khoá phòng, chat, camera/micro, bạn bè và hoàn thiện. Không đạt thì ghi rõ chỗ nào chưa đạt để quyết định **dừng mở rộng, sửa MVP trước**.
+
+**Việc cần làm (làm lần lượt)**
+1. Tự chuẩn bị tài khoản mới và dữ liệu thử trên dịch vụ thật, ghi cách tạo và đặt lại, che bí mật.
+2. **Kịch bản M1 – Tài khoản:** đăng ký ba bước bằng mã OTP thật tới email thật và vào Sảnh; đăng xuất rồi đăng nhập lại (có và không "Ghi nhớ"); đăng ký và đăng nhập bằng Google bằng tài khoản Google thử.
+3. **Kịch bản M2 – Phòng và mời:** người A tạo phòng; người B vào bằng **mã phòng** và bằng **đường dẫn**; hai người ngồi hai ghế, cùng Sẵn sàng; hai màn hình cùng vào màn ván.
+4. **Kịch bản M3 – Đánh online:** hai người đi luân phiên đến khi **kết thúc ván** (chiếu hết, hoặc đầu hàng, hoặc hết giờ); thử một nước sai để xem bị từ chối và quân về chỗ cũ; hai trình duyệt luôn cùng một thế cờ và cùng kết quả; người cầm Đen thấy bàn lật.
+5. **Kịch bản M4 – Đánh với máy:** người chơi chọn cấp Dễ, Trung bình, Khó và phe, đánh hết ván với máy ở từng cấp; máy luôn đi nước hợp lệ; rời ván giải phóng chỗ chơi.
+6. Ghi **danh sách việc còn thiếu của MVP** (nếu có) kèm người nhận; lỗi mức Cao hoặc Nghiêm trọng phải sửa **trước khi** làm tiếp phần mở rộng.
+7. Ghi kết luận: **MVP đạt / chưa đạt**, ngày giờ và bản dựng.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Một trong bốn kịch bản M1–M4 không chạy trọn | Ghi "MVP chưa đạt", nêu rõ bước hỏng và người nhận; chưa mở rộng cho tới khi sửa |
+| Chỉ chạy được bằng dữ liệu giả hoặc môi trường khác bản chạy thật | Không tính là đạt; chạy lại trên bản chạy thật |
+| Lỗi mức Cao hoặc Nghiêm trọng còn mở | MVP chưa đạt cho tới khi sửa |
+| Tính năng mở rộng (chat, camera, người xem, bạn bè) chưa làm | Không ảnh hưởng kết luận MVP; các lối vào chưa làm hiện mờ "Sắp ra mắt" |
+
+**Cách tự kiểm tra**
+Chuẩn bị: bản dựng tích hợp, hai trình duyệt (hoặc hai thiết bị), email thật để nhận OTP, tài khoản Google thử.
+
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Chạy M1 (đăng ký OTP, đăng nhập, Google) | Vào Sảnh; đăng nhập lại được |
+| 2 | Chạy M2 (tạo phòng, vào bằng mã và đường dẫn, hai ghế, Sẵn sàng) | Cả hai vào màn ván |
+| 3 | Chạy M3 (đánh đến kết thúc; một nước sai) | Cùng thế cờ và kết quả; nước sai bị từ chối |
+| 4 | Chạy M4 (ba cấp máy) | Đánh hết ván; nước hợp lệ; giải phóng chỗ chơi |
+| 5 | Xem danh sách lỗi và việc thiếu | Có người nhận; không còn lỗi Cao hoặc Nghiêm trọng |
+
+**Khi nào chuyển cho người kiểm thử:** bốn kịch bản M1–M4 đã chạy, có bằng chứng (video hoặc ảnh) và trạng thái trung thực.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý với báo cáo; kết luận MVP đạt hoặc chưa đạt kèm lý do. Nhóm chỉ chuyển sang phần mở rộng sau khi MVP đạt (hoặc PO đồng ý chuyển với danh sách việc thiếu rõ ràng).
+**Bàn giao cho task sau:** bản MVP và danh sách lỗi cho nghiệm thu đầy đủ ở giai đoạn sau.
+**Không thuộc task này:** nghiệm thu toàn bộ tiêu chí; tính năng mở rộng (người xem, khoá phòng, chat, camera/micro, bạn bè); bài tải; đo độ khó máy cờ đầy đủ.
+**Phục vụ (nguồn):** mốc MVP của kế hoạch; kịch bản demo D1, D2, D5, D8 (phần lõi). Task chung, không thuộc Epic nào.
+**Kết quả (đầu ra):** Báo cáo nghiệm thu MVP với kết luận đạt hoặc chưa đạt; danh sách việc còn thiếu.
+**Bằng chứng nộp:** Video hoặc ảnh bốn kịch bản M1–M4; báo cáo kết luận. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Mốc MVP dồn nhiều việc vào hai Sprint đầu; nếu sức chứa không đủ khi ước lượng giờ, phải báo PO sớm để quyết định bỏ việc nào ra khỏi MVP.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-25, T-28, T-32, T-33; không thuộc Epic (nhãn chung).
+
+---
+
+### T-37 — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra chạy mỗi khi có thay đổi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang web chạy được, có cách chuyển trang.
+**Loại:** Task QA · **Nhãn:** `P1`, `mo-rong`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 
 **Mục tiêu**
 Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều trình duyệt, mỗi "người dùng" tách biệt nhau (như trên hai máy khác nhau), để các task sau có chỗ chạy kịch bản nhiều người và thu bằng chứng (video, vết thao tác).
@@ -20,7 +70,7 @@ Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều tr
 1. Cài và cấu hình công cụ kiểm thử trình duyệt; mỗi người dùng một **phiên tách biệt** (không dùng chung cookie hay dữ liệu lưu).
 2. Dùng các giá trị cấu hình **không phải bí mật**.
 3. Viết các hàm hỗ trợ: **chuẩn bị và dọn dữ liệu**, chờ theo sự kiện (không chờ giờ tuỳ tiện).
-4. Một **bài thử khói** chạy trên trang web ở T-08 để chứng minh khung hoạt động.
+4. Một **bài thử khói** chạy trên trang web ở T-07 để chứng minh khung hoạt động.
 5. Nối báo cáo và vết thao tác vào hệ thống kiểm tra tự động; **tách riêng lỗi của ứng dụng và lỗi của môi trường**.
 6. **Không** dùng giả lập mã OTP hay camera/micro làm bằng chứng thật; chưa có tài khoản hay phòng thật ở bước này.
 
@@ -41,21 +91,22 @@ Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều tr
 | 4 | Xem báo cáo trước khi lưu | Không có bí mật |
 
 **Khi nào chuyển cho người kiểm thử:** cả 4 dòng đạt; bài thử khói chạy trong kiểm tra tự động.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Không cần đăng nhập thật hay phòng thật để đạt. Chuẩn bị dữ liệu thật cho từng luồng do các task tích hợp và task nghiệm thu (T-60) tự làm.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Không cần đăng nhập thật hay phòng thật để đạt. Chuẩn bị dữ liệu thật cho từng luồng do các task tích hợp và task nghiệm thu (T-62) tự làm.
 **Bàn giao cho task sau:** khung kiểm thử nhiều trình duyệt cho tích hợp và nghiệm thu.
 **Không thuộc task này:** kiểm thử luồng nghiệp vụ, công cụ giả lập mạng trong sản phẩm.
 **Phục vụ (nguồn):** NFR-03. Task chung, không thuộc Epic nào.
 **Kết quả (đầu ra):** Khung kiểm thử nhiều trình duyệt tách biệt (Playwright), bài thử khói, báo cáo và vết thao tác.
 **Bằng chứng nộp:** Lần chạy tự động; báo cáo. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Không dùng giả lập làm bằng chứng đăng nhập thật.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-08; không thuộc Epic (nhãn chung).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-07; không thuộc Epic (nhãn chung).
 
 ---
 
-### T-16 — Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra hoạt động. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ chạy và nhận kết nối. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được web biên dịch được, có chỗ cấu hình địa chỉ máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+### T-38 — Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra hoạt động. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được máy chủ chạy và nhận kết nối. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được web biên dịch được, có chỗ cấu hình địa chỉ máy chủ.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 
 **Mục tiêu**
 Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, PO quyết định 04/10/2026): chỉ cần một vài lệnh là chạy được cả web và máy chủ trên máy dùng để trình bày, vẫn nối với Supabase và LiveKit Cloud qua mạng. Nếu sau này cần một địa chỉ ai cũng mở được trên mạng thì dùng **Render làm phương án dự phòng**, chỉ làm khi PO đồng ý chi phí.
@@ -93,20 +144,21 @@ Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, 
 **Kết quả (đầu ra):** Hướng dẫn và lệnh chạy demo cục bộ; các bước dự phòng trên Render.
 **Bằng chứng nộp:** Một người khác làm theo hướng dẫn thành công. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Nếu cần địa chỉ trên mạng thì mới dùng Render và cần PO đồng ý chi phí.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-07, T-08; không thuộc Epic (nhãn chung).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-06, T-07; không thuộc Epic (nhãn chung).
 
 ---
 
-### T-60 — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10
+### T-62 — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (T-13)*: nhận được kết quả đã hoàn thành của task này. *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (T-35)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (T-47)*: nhận được kết quả đã hoàn thành của task này. *Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (T-48)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-54)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-55)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-58)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Phải xong trước:** *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-33)*: nhận được kết quả đã hoàn thành của task này. *Nghiệm thu MVP: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn (T-34)*: nhận được kết luận MVP đạt. *Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (T-37)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (T-42)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-46)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-52)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (T-54)*: nhận được kết quả đã hoàn thành của task này. *Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (T-55)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá (T-57)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-59)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-60)*: nhận được kết quả đã hoàn thành của task này.
+**Loại:** Task QA · **Nhãn:** `P1`, `mo-rong`, `QA`, `chung`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 16/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 
 **Mục tiêu**
 **Đối chiếu từng tiêu chí** của giai đoạn 1 với sản phẩm chạy thật và chạy **kịch bản demo D1 đến D10** (xem danh sách ở đầu file). Demo "đường thuận" chỉ là một phần của nghiệm thu.
 
 **Việc cần làm (làm lần lượt)**
-1. **Tự chuẩn bị tài khoản đã hoàn tất, phòng và dữ liệu ca biên** trên dịch vụ thật, ghi cách tạo và đặt lại, che bí mật. Tách riêng khỏi tài khoản demo (T-62). D1 vẫn dùng **OTP thật**.
+1. **Tự chuẩn bị tài khoản đã hoàn tất, phòng và dữ liệu ca biên** trên dịch vụ thật, ghi cách tạo và đặt lại, che bí mật. Tách riêng khỏi tài khoản demo (T-64). D1 vẫn dùng **OTP thật**.
 2. Lập **bảng đối chiếu**: mỗi tiêu chí → ca kiểm → bằng chứng; bảo đảm không thiếu, không thừa.
 3. Chạy **D1 đến D10** đúng thứ tự (D8: rời ghế trước khi vào ván máy; D9: tạo ván online mới).
 4. Chạy từng nhánh ngoài demo: quyền, đồng thời, gọi thẳng sai vai, hết hạn; ghi riêng kết quả và liên kết lỗi.
@@ -138,21 +190,22 @@ Chuẩn bị: bản build tích hợp cùng phiên bản, nhiều trình duyệt
 | 6 | Chạy D8 đầy đủ | Rời ghế thật, vào đủ ba cấp máy |
 
 **Khi nào chuyển cho người kiểm thử:** mọi tiêu chí và D1–D10 có trạng thái trung thực (đạt, không đạt, bị chặn, chưa chạy), có bằng chứng hoặc lý do thiếu; mỗi lỗi có bước tái hiện và người nhận.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý với **báo cáo**; lỗi sản phẩm không cản việc bàn giao báo cáo đầy đủ. **Cửa phát hành giai đoạn 1 chưa đạt** nếu còn tiêu chí bắt buộc thất bại hoặc chưa kiểm, hay còn lỗi mức Cao hoặc Nghiêm trọng. Sửa theo từng phần và kiểm lại ngay khi phát hiện, không chờ T-62.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý với **báo cáo**; lỗi sản phẩm không cản việc bàn giao báo cáo đầy đủ. **Cửa phát hành giai đoạn 1 chưa đạt** nếu còn tiêu chí bắt buộc thất bại hoặc chưa kiểm, hay còn lỗi mức Cao hoặc Nghiêm trọng. Sửa theo từng phần và kiểm lại ngay khi phát hiện, không chờ T-64.
 **Bàn giao cho task sau:** bảng đối chiếu và danh sách lỗi cho nghiệm thu phi chức năng, chuẩn bị demo, bàn giao.
 **Không thuộc task này:** tính năng của giai đoạn sau, lấy "task đã xong" thay cho "tiêu chí đạt".
 **Phục vụ (nguồn):** Story 20; tiêu chí AC-ROOM-11-04; toàn bộ tiêu chí giai đoạn 1; kịch bản D1–D10. Task chung, không thuộc Epic nào.
 **Kết quả (đầu ra):** Bảng đối chiếu từng tiêu chí giai đoạn 1 với sản phẩm thật; kết quả D1–D10; danh sách lỗi có bước tái hiện.
 **Bằng chứng nộp:** Bảng tiêu chí → ca → bằng chứng; báo cáo D1–D10. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Lỗi giao ngay cho người phụ trách, không chờ cuối.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-13, T-23, T-27, T-35, T-40, T-47, T-48, T-49, T-50, T-54, T-55, T-57, T-58; liên quan tới (relates to) Story 20; không thuộc Epic (nhãn chung).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-22, T-25, T-32, T-33, T-34, T-37, T-42, T-46, T-52, T-54, T-55, T-56, T-57, T-59, T-60; liên quan tới (relates to) Story 20; không thuộc Epic (nhãn chung).
 
 ---
 
-### T-61 — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật
+### T-63 — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-46)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được ván, kết nối lại, người xem chạy thật. *Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được camera/micro chạy thật cùng đổi vai, đuổi, tiếp quản. *Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (T-59)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `chung`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-01`, `US-UI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Phải xong trước:** *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được kết quả đã hoàn thành của task này. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-53)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá (T-57)*: nhận được ván, kết nối lại, người xem chạy thật. *Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (T-58)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-59)*: nhận được camera/micro chạy thật cùng đổi vai, đuổi, tiếp quản. *Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (T-61)*: nhận được kết quả đã hoàn thành của task này.
+**Loại:** Task QA · **Nhãn:** `P1`, `mo-rong`, `QA`, `gate`, `chung`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-01`, `US-UI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 17/10/2026 · Due date (hạn): 17/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 
 **Mục tiêu**
 Đo **sức chịu tải** và **độ trễ nước đi** tại đúng điểm cần đo. Kiểm: người xem nhận thế cờ mới dưới 100 ms; 50 kết nối với 10 ván cùng lúc, nước đi p95 dưới 300 ms. Phần camera/micro (PO duyệt 04/10/2026) chạy **quy mô nhỏ, khoảng 3 phòng**, **chỉ ghi số đo** (số luồng, băng thông, mức dùng hạn mức miễn phí), **không đặt ngưỡng đạt** và không nằm trong điều kiện đạt của giai đoạn 1, để khỏi dùng hết hạn mức miễn phí trước buổi demo.
@@ -169,10 +222,10 @@ Kết luận về các **yêu cầu phi chức năng đã được duyệt** d�
 5. Theo dõi tài nguyên máy chủ (CPU, bộ nhớ) trong lúc chạy.
 6. Phần **camera/micro** chạy qua ứng dụng thật ở **quy mô nhỏ (~3 phòng)**: ghi riêng số luồng, băng thông, hạn mức; **chỉ ghi số đo, không có ngưỡng đạt/không đạt**.
 7. Báo đủ số đo và kết luận từng chỉ tiêu; có mẫu vượt ngưỡng hay đứt kết nối thì **giữ số thật**, giao miền sửa và đo lại, **không bỏ mẫu để p95 đẹp**; dọn dữ liệu thử.
-8. Chuẩn bị tài khoản và thiết bị thử từ bản build của T-57; đo **từng mức chia sẻ** độc lập ở hai người phát.
+8. Chuẩn bị tài khoản và thiết bị thử từ bản build của T-59; đo **từng mức chia sẻ** độc lập ở hai người phát.
 9. Dùng **client cố tình trái quyền** gọi thẳng vào dịch vụ để thử phát và nhận; kiểm dữ liệu và luồng nhận tại dịch vụ.
-10. Đổi vai, đuổi, tiếp quản qua luồng thật; thử token cũ và quyền mới hợp lệ; kiểm phòng khoá không tự thu quyền người đang có mặt (kết nối lại cả phòng đã kiểm ở T-50).
-11. Ghi từng quyền: đạt, không đạt, bị chặn, kèm bản build, phương pháp; **lỗi thu quyền giao ngay** cho người làm cấp quyền, rồi kiểm lại trên bản sửa, **không chờ T-62**.
+10. Đổi vai, đuổi, tiếp quản qua luồng thật; thử token cũ và quyền mới hợp lệ; kiểm phòng khoá không tự thu quyền người đang có mặt (kết nối lại cả phòng đã kiểm ở T-57).
+11. Ghi từng quyền: đạt, không đạt, bị chặn, kèm bản build, phương pháp; **lỗi thu quyền giao ngay** cho người làm cấp quyền, rồi kiểm lại trên bản sửa, **không chờ T-64**.
 12. Rà cấu hình và sản phẩm kiểm thử để chắc **không ghi hình hay lưu** nội dung camera/micro.
 13. Đọc số đo tải, responsive và trợ năng, **cùng phiên bản build**.
 14. Kiểm quyền ở máy chủ, dữ liệu trả về và **không có bí mật trong phần chạy ở trình duyệt**; khởi động lại máy chủ giữa ván.
@@ -221,21 +274,22 @@ Chuẩn bị: môi trường thử, tập lệnh tải, máy đo; nhiều tài k
 | 15 | Kiểm các báo cáo thiếu hoặc lệch phiên bản | Không kết luận đạt |
 
 **Khi nào chuyển cho người kiểm thử:** báo cáo có quy trình tái lập, bản build, phương pháp, số thô, và kết luận từng chỉ tiêu; mọi ô của ma trận có kết quả và bằng chứng (hoặc lý do chưa kiểm), ghi rõ build và cách làm; mỗi tiêu chuẩn có phương pháp, bản build, số đo, bằng chứng và kết luận (hoặc lý do bị chặn/chưa chạy); có lỗi thì có người nhận và phạm vi đo lại.
-**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý với **báo cáo**. Chỉ tiêu chưa chạy phải ghi lý do, **không** ghi "đã đo đủ". **Tiêu chuẩn sản phẩm** (dưới 100 ms, 50 kết nối/10 ván, dưới 300 ms, tài nguyên ổn định) chỉ "đạt" khi số đo đạt. Không đạt giữ trạng thái không đạt/chặn, giao sửa và đo lại ngay. **Không** đổi kết quả không đạt thành đạt. **Tiêu chuẩn sản phẩm:** mọi quyền bắt buộc đã duyệt đều đạt tại dịch vụ. Không nhận hay phát luồng trái quyền. Không lưu nội dung. Có vi phạm thì tiêu chuẩn bị chặn, sửa và kiểm lại ngay. **Tiêu chuẩn chất lượng:** mọi yêu cầu phi chức năng bắt buộc đã duyệt phải đạt đúng ngưỡng trước khi bàn giao. Sửa và đo lại ngay khi phát hiện, trước T-62. **không hạ ngưỡng**.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý với **báo cáo**. Chỉ tiêu chưa chạy phải ghi lý do, **không** ghi "đã đo đủ". **Tiêu chuẩn sản phẩm** (dưới 100 ms, 50 kết nối/10 ván, dưới 300 ms, tài nguyên ổn định) chỉ "đạt" khi số đo đạt. Không đạt giữ trạng thái không đạt/chặn, giao sửa và đo lại ngay. **Không** đổi kết quả không đạt thành đạt. **Tiêu chuẩn sản phẩm:** mọi quyền bắt buộc đã duyệt đều đạt tại dịch vụ. Không nhận hay phát luồng trái quyền. Không lưu nội dung. Có vi phạm thì tiêu chuẩn bị chặn, sửa và kiểm lại ngay. **Tiêu chuẩn chất lượng:** mọi yêu cầu phi chức năng bắt buộc đã duyệt phải đạt đúng ngưỡng trước khi bàn giao. Sửa và đo lại ngay khi phát hiện, trước T-64. **không hạ ngưỡng**.
 **Bàn giao cho task sau:** số đo tải cho nghiệm thu các yêu cầu phi chức năng; báo cáo phân quyền camera/micro cho nghiệm thu phi chức năng và bàn giao; bảng nghiệm thu phi chức năng cho chuẩn bị demo và bàn giao.
 **Không thuộc task này:** tự thêm ngưỡng cho camera/micro; nâng gói dịch vụ; ghi hình, lưu nội dung; kiểm thử kết nối lại cả phòng (đã làm ở task ván nâng cao); dọn chat Khách và tính năng của giai đoạn sau.
 **Phục vụ (nguồn):** Story 4, 15, 23; tiêu chí AC-PLAY-01-01, AC-MEDIA-01-04, AC-MEDIA-02-01, AC-MEDIA-02-02, AC-UI-04-02; NFR-01 đến NFR-10, GATE-LOAD, GATE-MEDIA, GATE-OTP. Task chung, không thuộc Epic nào.
 **Kết quả (đầu ra):** Báo cáo nghiệm thu phi chức năng: bài tải, quyền camera/micro, bốn trình duyệt, bảo mật, ba yêu cầu mới (nhật ký, lưu giữ dữ liệu, chữ thuần).
 **Bằng chứng nộp:** Bảng yêu cầu → phương pháp → số đo → kết luận. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Không hạ ngưỡng; phần camera/micro tải chỉ ghi số đo.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-23, T-46, T-49, T-50, T-56, T-57, T-59; liên quan tới (relates to) Story 4, Story 15, Story 23; không thuộc Epic (nhãn chung).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-22, T-32, T-53, T-56, T-57, T-58, T-59, T-61; liên quan tới (relates to) Story 4, Story 15, Story 23; không thuộc Epic (nhãn chung).
 
 ---
 
-### T-62 — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng
+### T-64 — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng
 **Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình đăng ký bằng mã OTP (chưa có tài khoản demo). *Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng (T-16)*: nhận được hướng dẫn chạy demo cục bộ (và các bước dự phòng trên Render). *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được số liệu thư, hạn mức để lên lịch gửi thư. *Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (T-60)*: nhận được bảng đối chiếu và lỗi có bước tái hiện. *Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (T-61)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình đăng ký bằng mã OTP (chưa có tài khoản demo). *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được số liệu thư, hạn mức để lên lịch gửi thư. *Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng (T-38)*: nhận được hướng dẫn chạy demo cục bộ (và các bước dự phòng trên Render). *Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (T-62)*: nhận được bảng đối chiếu và lỗi có bước tái hiện. *Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (T-63)*: nhận được kết quả đã hoàn thành của task này.
+**Loại:** Task QA · **Nhãn:** `P1`, `mo-rong`, `QA`, `chung` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 17/10/2026 · Due date (hạn): 17/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: không có (Task chung, không thuộc Epic nào)
 
 **Mục tiêu**
 Chuẩn bị **buổi demo nộp bài** trên môi trường và hạn mức thật: người trình bày có sẵn tài khoản, dữ liệu, thứ tự thao tác và cách xử lý khi gặp sự cố.
@@ -248,7 +302,7 @@ Chuẩn bị **buổi demo nộp bài** trên môi trường và hạn mức th�
 3. **Diễn tập D1 đến D10** trên bản build đã ghi rõ (D8 rời ghế, D9 ván online mới, D10 vào lại ván máy); ghi cách đặt lại dữ liệu và xử lý sự cố.
 4. Khi gặp lỗi: gửi ngay ca tái hiện, bằng chứng, bản build cho phần chịu trách nhiệm; **sửa ngay, không chờ đến bước bàn giao cuối**; diễn tập lại phần bị ảnh hưởng sau khi sửa, lưu kết quả trước và sau.
 5. **Bàn giao tài liệu hướng dẫn demo** (runbook) và tình trạng sẵn sàng **thật**; còn lỗi hay thiếu hạn mức thì báo PO, **không ghi "demo sẵn sàng" giả**.
-6. Nhận báo cáo ở T-60, T-61 (có thể còn không đạt) và các lỗi đã giao; **xác minh các bản sửa**.
+6. Nhận báo cáo ở T-62, T-63 (có thể còn không đạt) và các lỗi đã giao; **xác minh các bản sửa**.
 7. **Kiểm lại những luồng bị ảnh hưởng**, cập nhật bảng tiêu chí và tiêu chuẩn trên bản build cuối. Lỗi mới giao lại để sửa ngay rồi kiểm lại; **không tự đổi phạm vi hay hạ ngưỡng**.
 8. **Đóng gói bàn giao**: mã nguồn, bản build, môi trường, tài liệu hướng dẫn demo, bằng chứng. Chỉ kết luận giai đoạn 1 đạt khi các điều kiện chất lượng đã duyệt đều đạt; chưa đạt thì **báo PO phần còn bị chặn**.
 
@@ -286,10 +340,10 @@ Chuẩn bị: email thành viên nhóm, thiết bị và mạng thật.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý; tài liệu hướng dẫn demo người khác làm theo được và không lộ bí mật. Còn lỗi chức năng hoặc điều kiện demo thiếu thì **chưa đạt**; báo cáo lỗi không đồng nghĩa demo sẵn sàng.
 **Bàn giao cho task sau:** tài liệu và tình trạng demo cho bàn giao.
 **Không thuộc task này:** đổi dịch vụ gửi thư hay giả lập OTP; công cụ demo của giai đoạn sau; thêm tính năng; cắt phạm vi; nhận tính năng của giai đoạn sau vào nghiệm thu.
-**Khi nào task xong (cửa cuối giai đoạn 1):** D1 đến D10, mọi tiêu chí của giai đoạn 1, các yêu cầu phi chức năng đã duyệt và các cửa chất lượng bắt buộc đều đạt trên bản build cuối; không còn lỗi mức Cao hoặc Nghiêm trọng; kiểm thử đơn vị, tích hợp xanh; bàn giao đạt. **Báo cáo ở T-60, T-61 xong không đồng nghĩa cửa này đạt.** Còn lỗi hoặc thiếu bằng chứng thì cửa chưa đạt, sửa và kiểm lại, **không cắt phạm vi hay tự cho phép phát hành**.
+**Khi nào task xong (cửa cuối giai đoạn 1):** D1 đến D10, mọi tiêu chí của giai đoạn 1, các yêu cầu phi chức năng đã duyệt và các cửa chất lượng bắt buộc đều đạt trên bản build cuối; không còn lỗi mức Cao hoặc Nghiêm trọng; kiểm thử đơn vị, tích hợp xanh; bàn giao đạt. **Báo cáo ở T-62, T-63 xong không đồng nghĩa cửa này đạt.** Còn lỗi hoặc thiếu bằng chứng thì cửa chưa đạt, sửa và kiểm lại, **không cắt phạm vi hay tự cho phép phát hành**.
 **Bàn giao:** gói bàn giao cho PO để nộp.
 **Phục vụ (nguồn):** kịch bản D1–D10. Task chung, không thuộc Epic nào.
 **Kết quả (đầu ra):** Tài khoản và dữ liệu demo, hướng dẫn demo, gói bàn giao: mã, bản dựng, môi trường, bằng chứng.
 **Bằng chứng nộp:** Người khác diễn tập theo hướng dẫn; kiểm hạn mức thư. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Hạn mức thư; lỗi chưa hết thì ghi demo chưa đạt.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-16, T-23, T-60, T-61; không thuộc Epic (nhãn chung).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-22, T-38, T-62, T-63; không thuộc Epic (nhãn chung).

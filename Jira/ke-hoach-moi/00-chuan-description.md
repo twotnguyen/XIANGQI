@@ -382,7 +382,7 @@ Quy tắc:
 | **Ước lượng** | **Bằng giờ**, do chính người làm ước lượng; không đặt hộ |
 | **Sprint** | Chưa gán khi mới tạo; gán khi lập kế hoạch Sprint |
 | **Fix version** | Tạo 4 phiên bản (mỗi Sprint một phiên bản). Task theo Sprint của nó; Story và Epic theo Sprint của Task cuối |
-| **Mức ưu tiên (Priority)** | Không dùng để thể hiện P1/P2 (đã có nhãn) |
+| **Mức ưu tiên (Priority)** | High cho phần MVP, Medium cho phần mở rộng; không dùng để thể hiện P1/P2 (đã có nhãn) |
 
 ## 11. Trạng thái và quy trình đề xuất
 
@@ -422,7 +422,7 @@ Một mô tả đạt khi trả lời "có" cho cả 14 câu:
 1. **Cấp bậc trên Jira:** Task đặt **dưới Epic và liên kết với Story** (không dùng Sub-task).
 2. **Trạng thái Jira:** **không** tạo thêm cột "Sẵn sàng kiểm thử"; dùng bình luận bàn giao chuẩn (mẫu ở mục tự kiểm tra).
 
-Các Epic, Story và Task đã được viết theo chuẩn này và các mẫu ở `00b-mau-description-chi-tiet.md`: 8 Epic, 26 Story, 62 Task (xem `01-components-epic-khung-task.md`).
+Các Epic, Story và Task đã được viết theo chuẩn này và các mẫu ở `00b-mau-description-chi-tiet.md`: 8 Epic, 26 Story, 64 Task (xem `01-components-epic-khung-task.md`).
 
 ## 15. Thông tin quản lý đi kèm mỗi Epic, Story, Task (bổ sung 04/10/2026)
 
@@ -441,7 +441,12 @@ Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm
 | Bằng chứng nộp (trạng thái ban đầu NOT_RUN) | có | có | có |
 | Rủi ro / chưa rõ / còn mở | có | có | có |
 | Liên kết Jira: Epic cha; `is blocked by`; `relates to` | có | có | có |
-| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1-sprint-1`, `v0.2-sprint-2`, `v0.3-sprint-3`, `v1.0-sprint-4`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
+| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1-sprint-1`, `v0.2-mvp-sprint-2`, `v0.3-sprint-3`, `v1.0-sprint-4`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
+| Reporter (người báo cáo) | PO | PO | PO |
+| Start date, Due date | ngày bắt đầu sớm nhất và hạn muộn nhất của các Task con | như Epic | tính riêng từng Task theo chuỗi phụ thuộc trong Sprint (xem `01`, mục 6.1) |
+| Priority | High nếu có Task MVP, ngược lại Medium | như Epic | High cho Task MVP, Medium cho Task mở rộng |
+| Story Points | không nhập (Jira tự cộng từ Story) | để trống, nhóm ước lượng khi họp Sprint | để trống, nhóm ước lượng khi họp Sprint |
+| Parent | không có | Epic cha | Epic cha (Task chung không có) |
 | Ước lượng | không | không | nhóm điền giờ khi họp Sprint |
 
 Mã tiêu chí (`AC-…`), mã mục yêu cầu (`US-…`), yêu cầu phi chức năng (`NFR-…`) và cổng (`GATE-…`) **chỉ nằm ở các khối "Nguồn", "Phục vụ", bảng tiêu chí và nhãn**, để truy vết; phần mô tả vẫn bằng tiếng thường. Bảng đối chiếu toàn bộ nằm ở `14-bang-doi-chieu-tieu-chi.md`.

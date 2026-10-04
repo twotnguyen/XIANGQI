@@ -2,14 +2,15 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
-### T-06 — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, QA & DevOps · **Sprint:** 1 (04/10–07/10)
+### T-35 — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền
+**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, QA & DevOps · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được môi trường chạy mã và cách đặt cấu hình thử không lộ bí mật.
-**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `SPIKE`, `gate`, `US-MEDIA-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `mo-rong`, `SPIKE`, `gate`, `US-MEDIA-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Mục tiêu**
 Trả lời: **LiveKit Cloud (dịch vụ chạy camera/micro) có cho phép quy định "ai được phát, ai được nhận" theo từng người, và chặn được người đã bị đuổi hay đổi vai không?** Báo cáo mở đường cho Epic Chat, camera và microro; chưa làm tính năng thật.
@@ -52,10 +53,71 @@ Trả lời: **LiveKit Cloud (dịch vụ chạy camera/micro) có cho phép quy
 
 ---
 
-### T-41 — Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm
+### T-36 — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi
+**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang chạy được; nhận được nút, công tắc, chú thích, thông báo. *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-35)*: nhận được cách xem luồng theo từng người đã thử trên dịch vụ thật.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 12/10/2026 · Due date (hạn): 13/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
+
+**Mục tiêu**
+Dựng **bảng điều khiển camera/micro** cho người chơi: bật/tắt độc lập, chọn mức chia sẻ, thông báo khi chưa có quyền thiết bị hoặc gặp lỗi, **mà không cản việc chơi cờ**.
+
+**Việc cần làm (làm lần lượt)**
+1. Khi vào phòng, mọi thiết bị **TẮT**; chỉ **xin quyền thiết bị khi người chơi tự bấm bật**.
+2. Camera và micro **bật/tắt riêng**, nhưng dùng **chung một mức chia sẻ** (3 mức); mức "Cả đối thủ và người xem" chỉ chọn được khi phòng có người xem.
+3. Khi rời phòng, mất quyền hoặc bị tiếp quản: **dừng luồng và đóng thiết bị**.
+4. Khi từ chối quyền hoặc không có thiết bị: hiện lỗi rõ ràng; bàn cờ và chat vẫn dùng bình thường.
+5. **Người xem** không thấy nút phát, không bị hỏi quyền thiết bị.
+6. Dùng khối nền (T-07): nút, công tắc, chú thích; kiểm focus và lỗi thiết bị trên giao diện tối. Không có chức năng ghi hay lưu.
+
+**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
+*Khung Camera và Micro* (`PANEL-MEDIA`)
+- Hai video trực tiếp của hai người chơi; nút **bật/tắt camera** và **bật/tắt micro** riêng (mặc định tắt).
+- Chọn **mức chia sẻ** (không chia sẻ / chỉ đối thủ / cả đối thủ và người xem; mức ba chỉ chọn được khi phòng có người xem), áp chung cho camera và micro đang bật.
+- Người xem không có nút bật; thông báo khi chưa có quyền thiết bị hoặc gặp lỗi mà không cản việc chơi.
+
+**Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+| Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
+|---|---|---|---|---|---|
+| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Vào phòng rồi bật riêng micro hoặc camera | Không tự bật; điều khiển độc lập |
+| Từ chối quyền hoặc không có thiết bị | Lỗi rõ; cờ và chat vẫn dùng |
+| Mở khung camera/micro với vai người xem | Không có nút phát hình; không hỏi xin quyền camera/micro |
+| Rời phòng hoặc nhận thông báo mất quyền | Luồng dừng, thiết bị không tiếp tục phát |
+| Dùng bàn phím; vào trạng thái không có quyền | Nhãn, focus, chú thích đúng; không tự bật thiết bị |
+
+**Cách tự kiểm tra**
+Chuẩn bị: máy có camera và micro thật; thử cả khi từ chối quyền.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Vào phòng; bật riêng micro rồi camera | Không tự bật; độc lập |
+| 2 | Từ chối quyền; rút thiết bị | Lỗi rõ; cờ và chat dùng được |
+| 3 | Vào bằng người xem | Không nút phát |
+| 4 | Rời phòng; mô phỏng mất quyền | Luồng dừng, đèn thiết bị tắt |
+| 5 | Dùng bàn phím | Nhãn, focus đúng |
+| 6 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
+
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, đủ 5 trạng thái, không có chức năng lưu.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
+**Bàn giao cho task sau:** bảng điều khiển camera/micro cho tích hợp media.
+**Không thuộc task này:** cấp quyền ở máy chủ (T-49), tiếp quản tab (T-49), chức năng ghi.
+**Phục vụ (nguồn):** Story 21, 23; tiêu chí AC-PLAY-09-02, AC-MEDIA-01-01, AC-MEDIA-02-01. Thuộc Epic: Chat, camera và micro.
+**Kết quả (đầu ra):** Bảng camera/micro: bật tắt độc lập, 3 mức chia sẻ, thông báo quyền và lỗi; đủ 5 trạng thái.
+**Bằng chứng nộp:** Ảnh; thử thiết bị thật. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Trình duyệt hỏi quyền chỉ khi người dùng bấm bật.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-07, T-35; liên quan tới (relates to) Story 21, Story 23; Epic: Chat, camera và micro.
+
+---
+
+### T-48 — Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication · **Sprint:** 3 (11/10–14/10)
-**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng tin chat và bảng người tham gia (kèm thời điểm ngồi ghế). *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được hàm che từ cấm dùng chung, danh sách từ cấm và bộ ví dụ đối chiếu; nhận được cách nhận ra tin gửi lại. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được tư cách tham gia phòng và thời điểm vào. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được việc đổi ghế/vai đã ghi lại và thời điểm ngồi ghế được cập nhật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng tin chat và bảng người tham gia (kèm thời điểm ngồi ghế). *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được hàm che từ cấm dùng chung, danh sách từ cấm và bộ ví dụ đối chiếu; nhận được cách nhận ra tin gửi lại. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-19)*: nhận được tư cách tham gia phòng và thời điểm vào. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-44)*: nhận được việc đổi ghế/vai đã ghi lại và thời điểm ngồi ghế được cập nhật.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 13/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Mục tiêu**
 Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng người có quyền đọc ở thời điểm đó**. Tin hợp lệ được lọc, lưu và gửi đúng kênh.
@@ -63,9 +125,9 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 **Việc cần làm (làm lần lượt)**
 1. Xác định người gửi; nếu tin này đã xử lý (gửi lại), trả kết quả cũ, **không gửi tin thứ hai**.
 2. Với tin mới: kiểm tra **vai và kênh** (người xem không được dùng Kênh Riêng), độ dài tối đa 200 ký tự, và tốc độ 5 tin/10 giây.
-3. **Che từ cấm** bằng hàm dùng chung (T-10), rồi ghi tin và biên lai **cùng lúc**, sau đó mới gửi tới đúng người nhận.
+3. **Che từ cấm** bằng hàm dùng chung (T-09), rồi ghi tin và biên lai **cùng lúc**, sau đó mới gửi tới đúng người nhận.
 4. **Mốc đọc:** Kênh Chung: người vào chỉ đọc từ lúc họ vào; Kênh Riêng: chỉ người đang ngồi ghế; người đổi ghế mất quyền đọc Kênh Riêng cũ. Khi **cả cặp** ngồi ghế đổi, người mới và cả cặp mới **không đọc** tin của cặp cũ (PO đã chốt 04/10/2026).
-5. **Dọn dẹp khi phòng đóng:** xoá toàn bộ tin của phòng. Ở task này kiểm bằng "tín hiệu đóng phòng" mẫu; kiểm khi phòng đóng thật làm ở task tích hợp chat (T-49).
+5. **Dọn dẹp khi phòng đóng:** xoá toàn bộ tin của phòng. Ở task này kiểm bằng "tín hiệu đóng phòng" mẫu; kiểm khi phòng đóng thật làm ở task tích hợp chat (T-56).
 6. Xoá toàn bộ tin chat của phòng khi phòng đóng (tác vụ dọn định kỳ) và kiểm chữ thuần: máy chủ không biến đổi nội dung thành mã chạy được.
 
 **Các trường hợp lỗi và kết quả mong đợi**
@@ -84,7 +146,7 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 | 2 | Người xem dùng công cụ thử gửi tin vào và đọc tin của Kênh Riêng | Không gửi được, không đọc được |
 | 3 | Người xem mới vào, người mới xuống ghế đọc lịch sử | Không đọc tin trước thời điểm có quyền |
 | 4 | Gửi từ cấm với các biến thể; phát tín hiệu đóng phòng mẫu | Che `***`; tin của phòng bị xoá |
-| 5 | Gửi lại tin cũ; đổi ghế qua T-38 | Một tin; người mới ngồi không thấy lịch sử |
+| 5 | Gửi lại tin cũ; đổi ghế qua T-44 | Một tin; người mới ngồi không thấy lịch sử |
 | 6 | Đổi cặp: A và B chat riêng, B xuống xem, C lên ngồi; tải lại và gửi tin mới | A và C **không** thấy tin cũ của A và B; B mất quyền Kênh Riêng; A và C nhận tin mới |
 
 **Khi nào chuyển cho người kiểm thử:** dòng 1 đến 5 đạt; dòng 6 (đổi cặp) cũng phải đạt.
@@ -95,14 +157,78 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 **Kết quả (đầu ra):** Chat hai kênh ở máy chủ: quyền đọc theo mốc, 200 ký tự, 5 tin/10 giây, che từ cấm, xoá khi đóng phòng.
 **Bằng chứng nộp:** Kết quả thử 6 ca; dữ liệu thô người xem. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Đổi cặp ngồi ghế: đã chốt không đọc tin cũ.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-10, T-21, T-38; liên quan tới (relates to) Story 22; Epic: Chat, camera và micro.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-09, T-19, T-44; liên quan tới (relates to) Story 22; Epic: Chat, camera và micro.
 
 ---
 
-### T-49 — Giao diện chat hai kênh và nối web với máy chủ
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 3 (11/10–14/10)
-**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kiểu tin chat, phản hồi, lỗi, vai trò. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được nút, hộp thoại, chú thích, thông báo, 5 trạng thái. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được hàm che từ cấm dùng chung. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi ghế, riêng tư, đuổi, chủ phòng rời, đóng phòng chạy thật. *Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (T-41)*: nhận được chat lưu, lọc, giới hạn, gửi theo quyền. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-44)*: nhận được tư cách và trạng thái người xem thật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-CHAT-01`, `US-CHAT-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+### T-49 — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)
+**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Game Server · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-17)*: nhận được kiểm tra phiên và hạn, thu hồi. *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-35)*: nhận được **báo cáo có kết luận đạt** về việc cấp quyền theo người, thu hồi khi dùng token cũ; **chỉ có báo cáo chưa đủ**, phải có kết luận đạt. Nếu không đạt hoặc chưa kết luận thì phần phụ thuộc bị chặn và báo PO. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-44)*: nhận được đổi vai đã ghi; nhận được thông báo đuổi, rời, đóng phòng.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 13/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
+
+**Mục tiêu**
+Từ **vai trò thật trong phòng**, máy chủ cấp và thay đổi quyền camera/micro ở dịch vụ LiveKit: ai được phát, ai được nghe ai. Người dùng hợp lệ giữ quyền mới; **kết nối hay mã truy cập cũ không dùng lại được để lấy quyền đã mất**.
+
+Mỗi người chỉ **một tab điều khiển** tại một thời điểm. Khi mở tab mới cùng tài khoản và cùng phòng, tab mới **tiếp quản**; tab cũ chuyển **chỉ đọc**, dừng camera/micro, và **không gửi được lệnh** làm thay đổi ván hay phòng. Task này cũng đảm bảo đúng quy tắc đăng nhập nơi mới thì nơi cũ bị đẩy ra.
+
+**Việc cần làm (làm lần lượt)**
+1. Lập **bảng quyền**: ai được nhận luồng của ai theo mức chia sẻ của người phát (không chia sẻ / chỉ đối thủ / cả đối thủ và người xem).
+2. **Cấp token** (chìa truy cập) ở máy chủ: người xem **không bao giờ** có quyền phát.
+3. Khi đổi vai, đuổi hoặc tiếp quản: **cập nhật hoặc thu hồi** quyền của kết nối cũ ngay. Phòng bị khoá vẫn **giữ nguyên người đang có mặt**.
+4. Nối thông báo đuổi/rời/đóng phòng (T-44) và đổi vai (T-44) vào cùng dịch vụ quyền.
+5. Cách thu hồi cụ thể cần được duyệt và có số đo trước khi dùng; **quyền cấm phát/nhận không được là tuỳ chọn**.
+6. Khi có kết nối mới của cùng một người, chọn nó làm **kết nối điều khiển** (xử lý lần lượt theo người để tránh hai tab cùng thắng).
+7. Báo cho tab cũ: "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; **chặn ở máy chủ** mọi lệnh làm thay đổi từ kết nối cũ.
+8. **Thu quyền camera/micro cũ** qua việc cấp quyền ở các bước trên; nơi mới **mặc định tắt**.
+9. Phiên hết hạn hoặc sai thì **không** được chiếm quyền điều khiển.
+10. Task này chỉ chứng minh phía máy chủ bằng kết nối thử; việc thiết bị thật dừng và thông báo trên màn hình nghiệm thu ở T-59.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Người xem dùng công cụ xin quyền phát hình hoặc quyền cao hơn | Dịch vụ camera/micro chặn ngay |
+| Đổi giữa ba mức chia sẻ với đối thủ/người xem | Đúng tập người nhận |
+| Dùng lại token cũ sau khi đổi vai hoặc bị đuổi | Không lấy lại quyền cũ; quyền mới hợp lệ vẫn hoạt động |
+| Phòng khoá; người đang có mặt còn/hết hạn giữ chỗ | Không thu quyền chỉ vì khoá; cấp lại đúng tư cách |
+| Đuổi hoặc đóng phòng khi còn luồng đang chạy | Người bị đuổi không xin được token mới; phòng đóng không còn quyền nhận/phát |
+| Hai kết nối thử cùng tài khoản, nơi sau tiếp quản | Nơi cũ nhận thông báo, mất quyền ghi và quyền phát; nơi mới mặc định tắt |
+| Nơi cũ gửi lệnh làm thay đổi | Bị từ chối **trước khi** vào xử lý, tác động bằng 0 |
+| Cùng tài khoản mở nhiều tab cùng lúc | Chỉ một tab (tab mới nhất) có quyền điều khiển camera/micro |
+| Phiên hết hạn xin tiếp quản | Không chiếm quyền điều khiển |
+
+**Cách tự kiểm tra**
+Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử); hai kết nối thử cùng một tài khoản.
+
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Người xem dùng công cụ thử phát hình hoặc xin quyền cao hơn | Dịch vụ camera/micro chặn |
+| 2 | Đổi qua lại ba mức chia sẻ | Đúng tập nhận |
+| 3 | Dùng token cũ sau khi đổi vai/đuổi | Không lấy lại quyền; quyền mới dùng được |
+| 4 | Phòng khoá, người còn/hết hạn giữ chỗ xin token | Không thu quyền vì khoá; cấp lại đúng tư cách |
+| 5 | Đuổi hoặc đóng phòng khi còn luồng | Không có token mới; không còn quyền |
+| 6 | Mở kết nối thứ hai | Kết nối cũ nhận thông báo, mất quyền ghi và phát; mới mặc định tắt |
+| 7 | Kết nối cũ gửi lệnh thay đổi | Bị từ chối, không tác động |
+| 8 | Mở nhiều kết nối cùng lúc | Chỉ một có quyền |
+| 9 | Dùng phiên hết hạn xin tiếp quản | Không chiếm được |
+
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; không ai nhận được luồng trái quyền.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Kết nối lại cả phòng khi bị khoá kiểm ở T-57. Tiếp quản tab thật kiểm ở T-59. Thiết bị thật dừng, thông báo trên màn hình và đi nước sau tiếp quản kiểm ở T-59 và nghiệm thu cuối. **chưa** tính đủ hai yêu cầu liên quan cho đến lúc đó.
+**Bàn giao cho task sau:** dịch vụ cấp quyền cho giao diện camera/mic, tiếp quản tab, tích hợp media; tiếp quản tab cho tích hợp media.
+**Không thuộc task này:** ghi hình, ghi âm; tự dựng dịch vụ riêng; giao diện; hộp thoại chọn tab phụ (giai đoạn sau); tự bật camera ở tab mới.
+**Phục vụ (nguồn):** Story 2, 23, 24; tiêu chí AC-AUTH-04-05, AC-MEDIA-01-02, AC-MEDIA-01-04, AC-MEDIA-02-01, AC-MEDIA-02-02, AC-MEDIA-03-01. Thuộc Epic: Chat, camera và micro.
+**Kết quả (đầu ra):** Cấp quyền camera/micro theo vai, thu hồi khi đổi vai/đuổi/tiếp quản; mở nhiều tab, tab mới tiếp quản.
+**Bằng chứng nộp:** Kết quả thử 5 ca; thử token cũ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Phải có kết luận đạt từ thử nghiệm camera/micro trước khi làm.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-17, T-35, T-44; liên quan tới (relates to) Story 2, Story 23, Story 24; Epic: Chat, camera và micro.
+
+---
+
+### T-56 — Giao diện chat hai kênh và nối web với máy chủ
+**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 4 (15/10–17/10)
+**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kiểu tin chat, phản hồi, lỗi, vai trò. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang chạy được; nhận được nút, hộp thoại, chú thích, thông báo, 5 trạng thái. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được hàm che từ cấm dùng chung. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-46)*: nhận được đổi ghế, riêng tư, đuổi, chủ phòng rời, đóng phòng chạy thật. *Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (T-48)*: nhận được chat lưu, lọc, giới hạn, gửi theo quyền. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-50)*: nhận được tư cách và trạng thái người xem thật.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-CHAT-01`, `US-CHAT-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 15/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Mục tiêu**
 Dựng khung chat để người dùng **phân biệt rõ hai kênh**, biết tin nào đang gửi, tin nào lỗi, và biết quyền đọc của mình. Dùng dữ liệu giả; nối thật ở bước nối với máy chủ ngay sau đây.
@@ -118,7 +244,7 @@ Nối khung chat với máy chủ thật và kiểm **quyền ở dữ liệu th
 6. Nối kênh, phản hồi xác nhận và bộ lọc dùng chung ở cả hai phía.
 7. Chạy người chơi và người xem, **bắt dữ liệu mạng** để chắc người xem không nhận byte nào của Kênh Riêng.
 8. Đổi ghế, đuổi, đóng phòng rồi kiểm dữ liệu và lỗi.
-9. Ghép chat với các thao tác đổi ghế/đuổi/đóng phòng đã nối thật ở T-40; kiểm bộ lọc cùng phiên bản ở web và máy chủ.
+9. Ghép chat với các thao tác đổi ghế/đuổi/đóng phòng đã nối thật ở T-46; kiểm bộ lọc cùng phiên bản ở web và máy chủ.
 10. Hiển thị **chữ thuần**: nội dung do người dùng gõ (tên hiển thị, tên phòng, tin chat) luôn hiện nguyên văn như chữ, **không** chạy mã HTML, script hay đường dẫn tự kích hoạt.
 
 **Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
@@ -161,7 +287,7 @@ Chuẩn bị: dữ liệu giả có quyền và thời điểm; nhiều trình d
 | 7 | Gửi nhanh, quá dài, từ cấm biến thể | Chặn/che như quy tắc |
 | 8 | Ngắt mạng sau khi gửi, gửi lại cùng tin | Một tin duy nhất |
 | 9 | Người xem vào muộn, người mới xuống ghế, đóng phòng | Đúng mốc; tin bị xoá khi đóng |
-| 10 | Đổi ghế, đóng phòng bằng T-40 | Đúng quyền; không byte Kênh Riêng tới người xem |
+| 10 | Đổi ghế, đóng phòng bằng T-46 | Đúng quyền; không byte Kênh Riêng tới người xem |
 | 11 | Đổi cặp: A và B chat riêng, B xuống xem, C lên ngồi; tải lại và gửi tin mới | A và C **không** thấy tin cũ của A và B; B mất quyền Kênh Riêng; A và C nhận tin mới |
 | 12 | Nhập chuỗi chứa thẻ HTML, script, "javascript:" vào tin chat | Hiện nguyên văn như chữ; không có mã nào chạy, không điều hướng |
 | 13 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
@@ -174,135 +300,15 @@ Chuẩn bị: dữ liệu giả có quyền và thời điểm; nhiều trình d
 **Kết quả (đầu ra):** Khung chat hai kênh và nối thật với máy chủ; ba trạng thái tin; công tắc Kênh Chung.
 **Bằng chứng nộp:** Ảnh; dữ liệu mạng; kiểm bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Không có sticker.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08, T-10, T-40, T-41, T-44; liên quan tới (relates to) Story 21, Story 22; Epic: Chat, camera và micro.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-07, T-09, T-46, T-48, T-50; liên quan tới (relates to) Story 21, Story 22; Epic: Chat, camera và micro.
 
 ---
 
-### T-51 — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi
+### T-59 — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit)
 **Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-06)*: nhận được cách xem luồng theo từng người đã thử trên dịch vụ thật. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được nút, công tắc, chú thích, thông báo.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-MEDIA-01`, `US-MEDIA-02`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
-
-**Mục tiêu**
-Dựng **bảng điều khiển camera/micro** cho người chơi: bật/tắt độc lập, chọn mức chia sẻ, thông báo khi chưa có quyền thiết bị hoặc gặp lỗi, **mà không cản việc chơi cờ**.
-
-**Việc cần làm (làm lần lượt)**
-1. Khi vào phòng, mọi thiết bị **TẮT**; chỉ **xin quyền thiết bị khi người chơi tự bấm bật**.
-2. Camera và micro **bật/tắt riêng**, nhưng dùng **chung một mức chia sẻ** (3 mức); mức "Cả đối thủ và người xem" chỉ chọn được khi phòng có người xem.
-3. Khi rời phòng, mất quyền hoặc bị tiếp quản: **dừng luồng và đóng thiết bị**.
-4. Khi từ chối quyền hoặc không có thiết bị: hiện lỗi rõ ràng; bàn cờ và chat vẫn dùng bình thường.
-5. **Người xem** không thấy nút phát, không bị hỏi quyền thiết bị.
-6. Dùng khối nền (T-08): nút, công tắc, chú thích; kiểm focus và lỗi thiết bị trên giao diện tối. Không có chức năng ghi hay lưu.
-
-**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
-*Khung Camera và Micro* (`PANEL-MEDIA`)
-- Hai video trực tiếp của hai người chơi; nút **bật/tắt camera** và **bật/tắt micro** riêng (mặc định tắt).
-- Chọn **mức chia sẻ** (không chia sẻ / chỉ đối thủ / cả đối thủ và người xem; mức ba chỉ chọn được khi phòng có người xem), áp chung cho camera và micro đang bật.
-- Người xem không có nút bật; thông báo khi chưa có quyền thiết bị hoặc gặp lỗi mà không cản việc chơi.
-
-**Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
-| Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
-| Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
-
-**Các trường hợp lỗi và kết quả mong đợi**
-| Tình huống | Kết quả mong đợi |
-|---|---|
-| Vào phòng rồi bật riêng micro hoặc camera | Không tự bật; điều khiển độc lập |
-| Từ chối quyền hoặc không có thiết bị | Lỗi rõ; cờ và chat vẫn dùng |
-| Mở khung camera/micro với vai người xem | Không có nút phát hình; không hỏi xin quyền camera/micro |
-| Rời phòng hoặc nhận thông báo mất quyền | Luồng dừng, thiết bị không tiếp tục phát |
-| Dùng bàn phím; vào trạng thái không có quyền | Nhãn, focus, chú thích đúng; không tự bật thiết bị |
-
-**Cách tự kiểm tra**
-Chuẩn bị: máy có camera và micro thật; thử cả khi từ chối quyền.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Vào phòng; bật riêng micro rồi camera | Không tự bật; độc lập |
-| 2 | Từ chối quyền; rút thiết bị | Lỗi rõ; cờ và chat dùng được |
-| 3 | Vào bằng người xem | Không nút phát |
-| 4 | Rời phòng; mô phỏng mất quyền | Luồng dừng, đèn thiết bị tắt |
-| 5 | Dùng bàn phím | Nhãn, focus đúng |
-| 6 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
-
-**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, đủ 5 trạng thái, không có chức năng lưu.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** bảng điều khiển camera/micro cho tích hợp media.
-**Không thuộc task này:** cấp quyền ở máy chủ (T-53), tiếp quản tab (T-53), chức năng ghi.
-**Phục vụ (nguồn):** Story 21, 23; tiêu chí AC-PLAY-09-02, AC-MEDIA-01-01, AC-MEDIA-02-01. Thuộc Epic: Chat, camera và micro.
-**Kết quả (đầu ra):** Bảng camera/micro: bật tắt độc lập, 3 mức chia sẻ, thông báo quyền và lỗi; đủ 5 trạng thái.
-**Bằng chứng nộp:** Ảnh; thử thiết bị thật. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
-**Rủi ro / chưa rõ:** Trình duyệt hỏi quyền chỉ khi người dùng bấm bật.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-06, T-08; liên quan tới (relates to) Story 21, Story 23; Epic: Chat, camera và micro.
-
----
-
-### T-53 — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Game Server · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-06)*: nhận được **báo cáo có kết luận đạt** về việc cấp quyền theo người, thu hồi khi dùng token cũ; **chỉ có báo cáo chưa đủ**, phải có kết luận đạt. Nếu không đạt hoặc chưa kết luận thì phần phụ thuộc bị chặn và báo PO. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được kiểm tra phiên và hạn, thu hồi. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được đổi vai đã ghi; nhận được thông báo đuổi, rời, đóng phòng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
-
-**Mục tiêu**
-Từ **vai trò thật trong phòng**, máy chủ cấp và thay đổi quyền camera/micro ở dịch vụ LiveKit: ai được phát, ai được nghe ai. Người dùng hợp lệ giữ quyền mới; **kết nối hay mã truy cập cũ không dùng lại được để lấy quyền đã mất**.
-
-Mỗi người chỉ **một tab điều khiển** tại một thời điểm. Khi mở tab mới cùng tài khoản và cùng phòng, tab mới **tiếp quản**; tab cũ chuyển **chỉ đọc**, dừng camera/micro, và **không gửi được lệnh** làm thay đổi ván hay phòng. Task này cũng đảm bảo đúng quy tắc đăng nhập nơi mới thì nơi cũ bị đẩy ra.
-
-**Việc cần làm (làm lần lượt)**
-1. Lập **bảng quyền**: ai được nhận luồng của ai theo mức chia sẻ của người phát (không chia sẻ / chỉ đối thủ / cả đối thủ và người xem).
-2. **Cấp token** (chìa truy cập) ở máy chủ: người xem **không bao giờ** có quyền phát.
-3. Khi đổi vai, đuổi hoặc tiếp quản: **cập nhật hoặc thu hồi** quyền của kết nối cũ ngay. Phòng bị khoá vẫn **giữ nguyên người đang có mặt**.
-4. Nối thông báo đuổi/rời/đóng phòng (T-38) và đổi vai (T-38) vào cùng dịch vụ quyền.
-5. Cách thu hồi cụ thể cần được duyệt và có số đo trước khi dùng; **quyền cấm phát/nhận không được là tuỳ chọn**.
-6. Khi có kết nối mới của cùng một người, chọn nó làm **kết nối điều khiển** (xử lý lần lượt theo người để tránh hai tab cùng thắng).
-7. Báo cho tab cũ: "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; **chặn ở máy chủ** mọi lệnh làm thay đổi từ kết nối cũ.
-8. **Thu quyền camera/micro cũ** qua việc cấp quyền ở các bước trên; nơi mới **mặc định tắt**.
-9. Phiên hết hạn hoặc sai thì **không** được chiếm quyền điều khiển.
-10. Task này chỉ chứng minh phía máy chủ bằng kết nối thử; việc thiết bị thật dừng và thông báo trên màn hình nghiệm thu ở T-57.
-
-**Các trường hợp lỗi và kết quả mong đợi**
-| Tình huống | Kết quả mong đợi |
-|---|---|
-| Người xem dùng công cụ xin quyền phát hình hoặc quyền cao hơn | Dịch vụ camera/micro chặn ngay |
-| Đổi giữa ba mức chia sẻ với đối thủ/người xem | Đúng tập người nhận |
-| Dùng lại token cũ sau khi đổi vai hoặc bị đuổi | Không lấy lại quyền cũ; quyền mới hợp lệ vẫn hoạt động |
-| Phòng khoá; người đang có mặt còn/hết hạn giữ chỗ | Không thu quyền chỉ vì khoá; cấp lại đúng tư cách |
-| Đuổi hoặc đóng phòng khi còn luồng đang chạy | Người bị đuổi không xin được token mới; phòng đóng không còn quyền nhận/phát |
-| Hai kết nối thử cùng tài khoản, nơi sau tiếp quản | Nơi cũ nhận thông báo, mất quyền ghi và quyền phát; nơi mới mặc định tắt |
-| Nơi cũ gửi lệnh làm thay đổi | Bị từ chối **trước khi** vào xử lý, tác động bằng 0 |
-| Cùng tài khoản mở nhiều tab cùng lúc | Chỉ một tab (tab mới nhất) có quyền điều khiển camera/micro |
-| Phiên hết hạn xin tiếp quản | Không chiếm quyền điều khiển |
-
-**Cách tự kiểm tra**
-Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử); hai kết nối thử cùng một tài khoản.
-
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Người xem dùng công cụ thử phát hình hoặc xin quyền cao hơn | Dịch vụ camera/micro chặn |
-| 2 | Đổi qua lại ba mức chia sẻ | Đúng tập nhận |
-| 3 | Dùng token cũ sau khi đổi vai/đuổi | Không lấy lại quyền; quyền mới dùng được |
-| 4 | Phòng khoá, người còn/hết hạn giữ chỗ xin token | Không thu quyền vì khoá; cấp lại đúng tư cách |
-| 5 | Đuổi hoặc đóng phòng khi còn luồng | Không có token mới; không còn quyền |
-| 6 | Mở kết nối thứ hai | Kết nối cũ nhận thông báo, mất quyền ghi và phát; mới mặc định tắt |
-| 7 | Kết nối cũ gửi lệnh thay đổi | Bị từ chối, không tác động |
-| 8 | Mở nhiều kết nối cùng lúc | Chỉ một có quyền |
-| 9 | Dùng phiên hết hạn xin tiếp quản | Không chiếm được |
-
-**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; không ai nhận được luồng trái quyền.
-**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Kết nối lại cả phòng khi bị khoá kiểm ở T-50. Tiếp quản tab thật kiểm ở T-57. Thiết bị thật dừng, thông báo trên màn hình và đi nước sau tiếp quản kiểm ở T-57 và nghiệm thu cuối. **chưa** tính đủ hai yêu cầu liên quan cho đến lúc đó.
-**Bàn giao cho task sau:** dịch vụ cấp quyền cho giao diện camera/mic, tiếp quản tab, tích hợp media; tiếp quản tab cho tích hợp media.
-**Không thuộc task này:** ghi hình, ghi âm; tự dựng dịch vụ riêng; giao diện; hộp thoại chọn tab phụ (giai đoạn sau); tự bật camera ở tab mới.
-**Phục vụ (nguồn):** Story 2, 23, 24; tiêu chí AC-AUTH-04-05, AC-MEDIA-01-02, AC-MEDIA-01-04, AC-MEDIA-02-01, AC-MEDIA-02-02, AC-MEDIA-03-01. Thuộc Epic: Chat, camera và micro.
-**Kết quả (đầu ra):** Cấp quyền camera/micro theo vai, thu hồi khi đổi vai/đuổi/tiếp quản; mở nhiều tab, tab mới tiếp quản.
-**Bằng chứng nộp:** Kết quả thử 5 ca; thử token cũ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
-**Rủi ro / chưa rõ:** Phải có kết luận đạt từ thử nghiệm camera/micro trước khi làm.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-06, T-20, T-38; liên quan tới (relates to) Story 2, Story 23, Story 24; Epic: Chat, camera và micro.
-
----
-
-### T-57 — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit)
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Frontend, Communication · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được chat và đi nước đang chạy thật để kiểm khi camera/micro hỏng. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được thông báo thay đổi phòng. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi (T-51)*: nhận được bảng điều khiển và việc dọn thiết bị. *Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) (T-53)*: nhận được cấp quyền và thu hồi đã kiểm trên dịch vụ thật; nhận được một kết nối điều khiển và việc chặn lệnh cũ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Phải xong trước:** *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được chat và đi nước đang chạy thật để kiểm khi camera/micro hỏng. *Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi (T-36)*: nhận được bảng điều khiển và việc dọn thiết bị. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-44)*: nhận được thông báo thay đổi phòng. *Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) (T-49)*: nhận được cấp quyền và thu hồi đã kiểm trên dịch vụ thật; nhận được một kết nối điều khiển và việc chặn lệnh cũ. *Giao diện chat hai kênh và nối web với máy chủ (T-56)*: nhận được kết quả đã hoàn thành của task này.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `integration`, `US-AUTH-04`, `US-MEDIA-01`, `US-MEDIA-02`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 15/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
 
 **Mục tiêu**
 Nối giao diện, máy chủ và LiveKit Cloud thành **camera/micro chạy thật** và chứng minh: mỗi khi đổi vai, đuổi, đóng phòng hay mở tab mới thì **đúng người nhận luồng**, không rò, và **lỗi camera/micro không làm hỏng việc chơi cờ và chat**.
@@ -311,7 +317,7 @@ Nối giao diện, máy chủ và LiveKit Cloud thành **camera/micro chạy th�
 1. Chạy bản ghép chung của các task tiền đề; chuẩn bị tài khoản và thiết bị thử.
 2. Kiểm ma trận: hai người chơi với từng mức chia sẻ và có người xem (tối đa 5); đổi vai, đuổi, đóng phòng qua phòng thật.
 3. **Tiếp quản bằng tab hoặc thiết bị thật:** nơi cũ có thông báo, chỉ đọc, camera/micro dừng, lệnh bị chặn; nơi mới tắt mặc định; thử token và lệnh cũ.
-4. **Gây lỗi chỉ ở camera/micro** (từ chối quyền, ngắt luồng) trong khi vẫn kết nối ứng dụng; rồi **đi nước** (T-30) và **gửi chat** (T-49) để chắc không bị ảnh hưởng.
+4. **Gây lỗi chỉ ở camera/micro** (từ chối quyền, ngắt luồng) trong khi vẫn kết nối ứng dụng; rồi **đi nước** (T-30) và **gửi chat** (T-56) để chắc không bị ảnh hưởng.
 5. Lưu thông tin quyền và luồng làm bằng chứng; **không ghi nội dung hình ảnh hay âm thanh**.
 
 **Các trường hợp lỗi và kết quả mong đợi**
@@ -322,7 +328,7 @@ Nối giao diện, máy chủ và LiveKit Cloud thành **camera/micro chạy th�
 | Tab cũ đang phát; tab mới cùng tài khoản tiếp quản; tab cũ gửi nước | Tab cũ có thông báo, chỉ đọc, thiết bị dừng, lệnh bị chặn; tab mới điều khiển, thiết bị tắt |
 | Từ chối thiết bị hoặc ngắt riêng camera/micro; rồi đi nước và chat | Nước đi vẫn đồng bộ; chat vẫn gửi và nhận; lỗi camera/micro không khoá hai việc đó |
 | Đóng phòng khi còn luồng; xin token mới hoặc dùng token cũ | Không còn quyền nhận hay phát |
-| Phòng khoá; người đang có mặt, người mới | Không thu quyền người đang có mặt; không cấp quyền người mới (kết nối lại theo hạn ở T-50) |
+| Phòng khoá; người đang có mặt, người mới | Không thu quyền người đang có mặt; không cấp quyền người mới (kết nối lại theo hạn ở T-57) |
 
 **Cách tự kiểm tra**
 Chuẩn bị: nhiều trình duyệt, camera và micro thật, tài khoản LiveKit thử.
@@ -343,4 +349,4 @@ Chuẩn bị: nhiều trình duyệt, camera và micro thật, tài khoản Live
 **Kết quả (đầu ra):** Camera/micro chạy thật theo đối tượng nhận, đổi vai, đuổi, tiếp quản tab; lỗi camera/micro không làm hỏng cờ và chat.
 **Bằng chứng nộp:** Video; ma trận quyền; nhật ký đã che. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Không ghi nội dung hình, âm thanh.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-30, T-38, T-49, T-51, T-53; liên quan tới (relates to) Story 2, Story 23, Story 24; Epic: Chat, camera và micro.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-30, T-36, T-44, T-49, T-56; liên quan tới (relates to) Story 2, Story 23, Story 24; Epic: Chat, camera và micro.

@@ -2,14 +2,15 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
-### T-14 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu tạo, vào, xem danh sách và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được nút, ô nhập, hộp thoại, thông báo; nhận được trang chạy được và cách chuyển trang.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-03`, `US-ROOM-01`, `US-ROOM-05`, `US-ROOM-08`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+### T-10 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
+**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu tạo, vào, xem danh sách và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được nút, ô nhập, hộp thoại, thông báo; nhận được trang chạy được và cách chuyển trang.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-AI-03`, `US-ROOM-01`, `US-ROOM-05`, `US-ROOM-08`, `US-UI-01`, `US-UI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Mục tiêu**
 Dựng **thanh điều hướng** và **khung Sảnh** thống nhất để các phần khác (phòng, ván với máy, bạn bè) gắn nội dung vào đúng chỗ. Người dùng thấy mọi chức năng của giai đoạn 1 và biết đường quay lại chỗ chơi đang giữ.
@@ -93,21 +94,22 @@ Chuẩn bị: dữ liệu giả cho trạng thái chỗ chơi; chạy giao diệ
 | 13 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; dùng được bằng bàn phím; kèm ảnh các trạng thái.
-**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Dữ liệu thật của từng chỗ gắn do các task của phòng, bạn bè, ván với máy nối ở task tích hợp tương ứng. Chưa nối máy chủ thật nên **không** coi là tạo phòng thật đã đạt (nối ở T-29).
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Dữ liệu thật của từng chỗ gắn do các task của phòng, bạn bè, ván với máy nối ở task tích hợp tương ứng. Chưa nối máy chủ thật nên **không** coi là tạo phòng thật đã đạt (nối ở T-28).
 **Bàn giao cho task sau:** khung điều hướng và Sảnh cho giao diện phòng, bạn bè, ván với máy; Sảnh, hộp thoại tạo phòng và ô nhập mã cho task tích hợp.
 **Không thuộc task này:** gọi máy chủ thật (làm ở task nối web với máy chủ); ván với máy; bạn bè; trang Luật chơi riêng; chọn cấp độ máy; mã QR.
 **Phục vụ (nguồn):** Story 5, 6, 8, 19, 26; tiêu chí AC-ROOM-01-01, AC-ROOM-01-03, AC-ROOM-05-01, AC-ROOM-05-03, AC-ROOM-08-01, AC-ROOM-08-02, AC-ROOM-08-03, AC-ROOM-08-04, AC-AI-03-02, AC-UI-01-01, AC-UI-02-01, AC-UI-02-02, AC-UI-02-03. Thuộc Epic: Tạo phòng chơi.
 **Kết quả (đầu ra):** Thanh điều hướng, Sảnh, biểu mẫu tạo phòng, ô nhập mã, danh sách phòng công khai, Luật chơi, băng quay lại; đủ 5 trạng thái, dữ liệu giả.
 **Bằng chứng nộp:** Ảnh chụp trạng thái; kiểm bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Chưa nối máy chủ; không coi là tạo phòng thật.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08; liên quan tới (relates to) Story 5, Story 6, Story 8, Story 19, Story 26; Epic: Tạo phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-07; liên quan tới (relates to) Story 5, Story 6, Story 8, Story 19, Story 26; Epic: Tạo phòng chơi.
 
 ---
 
-### T-15 — Giao diện: phòng chờ và màn từ chối vào phòng
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được thông tin ghế, Sẵn sàng, đếm giờ và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được và cách chuyển trang; nhận được nút, hộp thoại, thông báo, chú thích khi mờ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-04`, `US-ROOM-05`, `US-ROOM-09`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+### T-11 — Giao diện: phòng chờ và màn từ chối vào phòng
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
+**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được thông tin ghế, Sẵn sàng, đếm giờ và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang chạy được và cách chuyển trang; nhận được nút, hộp thoại, thông báo, chú thích khi mờ.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-04`, `US-ROOM-05`, `US-ROOM-09`, `US-ROOM-12` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Mục tiêu**
 Dựng **phòng chờ** (hai ghế, nút Sẵn sàng, đếm 3 giây, chia sẻ mã và đường dẫn) và **màn từ chối vào phòng** (nêu lý do và đưa về Sảnh). Mọi thứ hiển thị đúng theo thông tin máy chủ, kể cả khi thông tin đổi lúc đang mở.
@@ -166,21 +168,22 @@ Chuẩn bị: dữ liệu giả cho ghế, đếm giờ, thu hồi, quyền.
 | 6 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, kèm ảnh.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Chưa nối máy chủ thật nên chưa chứng minh vào phòng thật (T-29).
-**Bàn giao cho task sau:** phòng chờ và màn từ chối cho cài đặt phòng (T-32), tích hợp và bạn bè.
-**Không thuộc task này:** đổi chỗ, khoá, đuổi (T-32), mã QR, xin đổi bên, mời bạn bè.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Chưa nối máy chủ thật nên chưa chứng minh vào phòng thật (T-28).
+**Bàn giao cho task sau:** phòng chờ và màn từ chối cho cài đặt phòng (T-39), tích hợp và bạn bè.
+**Không thuộc task này:** đổi chỗ, khoá, đuổi (T-39), mã QR, xin đổi bên, mời bạn bè.
 **Phục vụ (nguồn):** Story 7, 8, 9, 20; tiêu chí AC-ROOM-02-01, AC-ROOM-02-03, AC-ROOM-03-01, AC-ROOM-03-03, AC-ROOM-04-01, AC-ROOM-04-02, AC-ROOM-05-02, AC-ROOM-09-03, AC-ROOM-12-01. Thuộc Epic: Tạo phòng chơi.
 **Kết quả (đầu ra):** Phòng chờ (hai ghế, Sẵn sàng, đếm 3 giây), hộp thoại mời, màn từ chối vào phòng; đủ 5 trạng thái, dữ liệu giả.
 **Bằng chứng nộp:** Ảnh chụp; kiểm sao chép khi bị từ chối quyền. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Mã QR phải ẩn hẳn.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08; liên quan tới (relates to) Story 7, Story 8, Story 9, Story 20; Epic: Tạo phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-07; liên quan tới (relates to) Story 7, Story 8, Story 9, Story 20; Epic: Tạo phòng chơi.
 
 ---
 
-### T-17 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng phòng, người tham gia, ván và ràng buộc "một ghế mỗi người". *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận lệnh có xác thực người gửi. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách trả lại kết quả cũ khi gửi lại cùng một yêu cầu; nhận được hàm kiểm tên phòng; nhận được cơ chế giới hạn tạo phòng 5 lần trong 10 phút.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-01`, `US-ROOM-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+### T-15 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 1 (04/10–07/10)
+**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng phòng, người tham gia, ván và ràng buộc "một ghế mỗi người". *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được cách nhận lệnh có xác thực người gửi. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được cách trả lại kết quả cũ khi gửi lại cùng một yêu cầu; nhận được hàm kiểm tên phòng; nhận được cơ chế giới hạn tạo phòng 5 lần trong 10 phút.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-ROOM-01`, `US-ROOM-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Mục tiêu**
 Làm "bộ não" của phòng: phòng đang ở trạng thái nào, ai ngồi ghế nào, và đảm bảo **mỗi người chỉ có một chỗ chơi** dù nhiều yêu cầu đến cùng lúc. Các task sau (tạo phòng, vào phòng, ghế…) đều dựa vào đây.
@@ -251,14 +254,15 @@ Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng l
 **Kết quả (đầu ra):** Trạng thái phòng, sổ chỗ chơi (mỗi người một chỗ), chức năng tạo phòng có mã 8 ký tự, đường dẫn mời, chống tạo trùng.
 **Bằng chứng nộp:** Kết quả thử đồng thời; chỗ chơi trước/sau; mã không trùng. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Giới hạn tạo 5 phòng/10 phút là mức khởi đầu.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-07, T-10; liên quan tới (relates to) Story 5, Story 9; Epic: Tạo phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-06, T-09; liên quan tới (relates to) Story 5, Story 9; Epic: Tạo phòng chơi.
 
 ---
 
-### T-21 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
-**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách nhận ra yêu cầu gửi lại; nhận được cơ chế chặn nhập sai mã. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được phòng, mã, đường dẫn và sức chứa.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-05`, `US-ROOM-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+### T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
+**Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 1 (04/10–07/10)
+**Phải xong trước:** *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được cách nhận ra yêu cầu gửi lại; nhận được cơ chế chặn nhập sai mã. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-15)*: nhận được phòng, mã, đường dẫn và sức chứa.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-ROOM-02`, `US-ROOM-05`, `US-ROOM-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 07/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Mục tiêu**
 Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì ngồi ghế, hết ghế thì làm người xem, hết cả hai thì từ chối**. Mọi quyết định làm tại thời điểm nhận yêu cầu; đường dẫn không phải "vé giữ chỗ".
@@ -294,21 +298,22 @@ Cho người dùng vào phòng và xếp họ đúng chỗ: **ghế trống thì
 | 6 | Nhập sai mã 10 lần; thử phiên khác; thử sau 5 phút | Chặn riêng từng phiên; hết hạn thì xét lại |
 
 **Khi nào chuyển cho người kiểm thử:** cả 6 dòng đạt, gồm bộ giới hạn thật.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Ở đây việc "bị đuổi" và "khoá" kiểm bằng dữ liệu mẫu; chạy thật nghiệm thu ở task tích hợp phòng nâng cao (T-40).
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Ở đây việc "bị đuổi" và "khoá" kiểm bằng dữ liệu mẫu; chạy thật nghiệm thu ở task tích hợp phòng nâng cao (T-46).
 **Bàn giao cho task sau:** chức năng vào phòng cho ghế, riêng tư, chat, bạn bè.
-**Không thuộc task này:** tự xuống ghế từ vai xem (T-38), mã QR, khách.
-**Phục vụ (nguồn):** Story 7, 8, 20; tiêu chí AC-ROOM-02-02, AC-ROOM-05-01, AC-ROOM-05-02, AC-ROOM-05-03, AC-ROOM-05-04, AC-ROOM-09-03. Thuộc Epic: Tạo phòng chơi.
+**Không thuộc task này:** tự xuống ghế từ vai xem (T-44), mã QR, khách.
+**Phục vụ (nguồn):** Story 7, 8, 20; tiêu chí AC-AUTH-06-02, AC-FRIEND-04-04, AC-ROOM-02-02, AC-ROOM-05-01, AC-ROOM-05-02, AC-ROOM-05-03, AC-ROOM-05-04, AC-ROOM-09-03, AC-ROOM-11-03, AC-ROOM-12-01. Thuộc Epic: Tạo phòng chơi.
 **Kết quả (đầu ra):** Chức năng vào phòng bằng mã, đường dẫn, Sảnh: xếp ghế hoặc người xem, kiểm sức chứa, chặn sai mã.
 **Bằng chứng nộp:** Ma trận nguồn vào × vai; kết quả thử chặn 10 lần sai/phút. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Việc "bị đuổi" và "khoá" lúc này dùng dữ liệu mẫu; chạy thật ở task nối nâng cao.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-10, T-17; liên quan tới (relates to) Story 7, Story 8, Story 20; Epic: Tạo phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-09, T-15; liên quan tới (relates to) Story 7, Story 8, Story 20; Epic: Tạo phòng chơi.
 
 ---
 
-### T-25 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
+### T-23 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Room & Social · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được hàm tạo thế cờ ban đầu, Đỏ đi trước. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được người đã vào đúng ghế, thông tin phòng chính thức từ máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+**Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được hàm tạo thế cờ ban đầu, Đỏ đi trước. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-19)*: nhận được người đã vào đúng ghế, thông tin phòng chính thức từ máy chủ.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `US-ROOM-02`, `US-ROOM-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Mục tiêu**
 Chủ phòng chọn ghế Đỏ/Đen, hai người bấm **Sẵn sàng**, đếm ngược **3 giây**, rồi **bắt đầu ván**: tạo đúng một ván với thế cờ ban đầu. Nếu trong lúc đếm có ai bỏ "Sẵn sàng" hay rời đi thì **không tạo ván**.
@@ -346,14 +351,15 @@ Chuẩn bị: đồng hồ giả để rút ngắn 3 giây.
 **Kết quả (đầu ra):** Chọn ghế, Sẵn sàng, đếm 3 giây, tạo đúng một ván với thế ban đầu và lượt Đỏ; huỷ đếm khi điều kiện đổi.
 **Bằng chứng nộp:** Dòng thời gian máy chủ; mã ván; kết quả thử huỷ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Chưa chạy đồng hồ ván (làm ở task đồng hồ).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-05, T-21; liên quan tới (relates to) Story 7; Epic: Tạo phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-05, T-19; liên quan tới (relates to) Story 7; Epic: Tạo phòng chơi.
 
 ---
 
-### T-29 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
+### T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
 **Thuộc Epic:** Tạo phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được màn tạo/vào đã dựng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được màn phòng chờ đã dựng. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được chức năng ghế, Sẵn sàng và một ván có mã.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-ROOM-01`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-sprint-2
+**Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-10)*: nhận được màn tạo/vào đã dựng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-11)*: nhận được màn phòng chờ đã dựng. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-23)*: nhận được chức năng ghế, Sẵn sàng và một ván có mã.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `MVP`, `integration`, `US-ROOM-01`, `US-ROOM-02`, `US-ROOM-03`, `US-ROOM-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-mvp-sprint-2
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Tạo phòng chơi»
 
 **Mục tiêu**
 Nối giao diện với máy chủ thật để chứng minh **hai người, trên hai trình duyệt, vào cùng một phòng và bắt đầu ván**. Đây là điểm kiểm tra đầu tiên rằng web và máy chủ khớp nhau.
@@ -385,9 +391,9 @@ Chuẩn bị: máy chủ và web chạy thử, hai trình duyệt (hai tài kho�
 **Khi nào chuyển cho người kiểm thử:** cả 4 dòng đạt trên môi trường thử, kèm video.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** gồm đồng hồ chạy và nước đi (task ván), cũng chưa kiểm người dùng chưa hoàn tất đăng ký.
 **Bàn giao cho task sau:** luồng phòng cơ bản chạy thật cho task đi nước đầu tiên và các task phòng nâng cao.
-**Không thuộc task này:** khoá, đuổi, đổi chỗ (T-40), đồng hồ ván, đăng nhập thật (T-27).
-**Phục vụ (nguồn):** Story 5, 7, 8; tiêu chí AC-ROOM-01-02, AC-ROOM-02-01, AC-ROOM-03-02, AC-ROOM-03-03, AC-ROOM-05-01. Thuộc Epic: Tạo phòng chơi.
+**Không thuộc task này:** khoá, đuổi, đổi chỗ (T-46), đồng hồ ván, đăng nhập thật (T-25).
+**Phục vụ (nguồn):** Story 5, 7, 8; tiêu chí AC-ROOM-01-01, AC-ROOM-01-02, AC-ROOM-02-01, AC-ROOM-03-02, AC-ROOM-03-03, AC-ROOM-05-01. Thuộc Epic: Tạo phòng chơi.
 **Kết quả (đầu ra):** Hai người tạo phòng, vào phòng, ngồi ghế, Sẵn sàng và bắt đầu ván trên hai trình duyệt thật.
 **Bằng chứng nộp:** Video và báo cáo Playwright nhiều trình duyệt. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Dùng tài khoản thử và xác thực cô lập; không dùng cách bỏ qua kiểm tra trên sản phẩm.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-14, T-15, T-25; liên quan tới (relates to) Story 5, Story 7, Story 8; Epic: Tạo phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-10, T-11, T-23; liên quan tới (relates to) Story 5, Story 7, Story 8; Epic: Tạo phòng chơi.

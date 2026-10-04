@@ -2,24 +2,25 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
-### T-33 — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng)
+### T-40 — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng)
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 3 (11/10–14/10)
-**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kết quả đã hoàn thành của task này. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được chỗ đặt chuông lời mời và điều hướng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được phòng chờ và hộp thoại mời chia sẻ mã/đường dẫn để gắn danh sách "Mời bạn".
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-03`, `US-FRIEND-04`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kết quả đã hoàn thành của task này. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-10)*: nhận được chỗ đặt chuông lời mời và điều hướng. *Giao diện: phòng chờ và màn từ chối vào phòng (T-11)*: nhận được phòng chờ và hộp thoại mời chia sẻ mã/đường dẫn để gắn danh sách "Mời bạn".
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-03`, `US-FRIEND-04`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Mục tiêu**
-Dựng tìm kiếm, **chuông lời mời** và **danh sách bạn**. Việc **mời vào phòng** chỉ xuất hiện trong hộp thoại mời của phòng, đúng quy tắc. Dữ liệu giả; nối thật ở T-54.
+Dựng tìm kiếm, **chuông lời mời** và **danh sách bạn**. Việc **mời vào phòng** chỉ xuất hiện trong hộp thoại mời của phòng, đúng quy tắc. Dữ liệu giả; nối thật ở T-52.
 
 **Việc cần làm (làm lần lượt)**
 1. Dựng ô tìm người, chuông lời mời, trang Bạn bè (danh sách và nút huỷ kết bạn) với 5 trạng thái.
 2. Đặt nút **Mời** trong **hộp thoại mời của phòng** (chỉ hiện ở đó). Lý do bận, ngoại tuyến, hoặc đạt giới hạn hiện bằng chú thích; **Nhắn tin** và **Thách đấu** mờ với chú thích "Sắp ra mắt".
 3. Thông báo nhận lời mời có **đếm lùi 30 giây** theo thời gian máy chủ gửi về, tự tắt khi hết.
 4. Chỉ báo "thành công" **sau khi** máy chủ xác nhận; mất xác nhận thì có thông báo và nút "Thử lại".
-5. Ghép chuông vào khung đã có ở T-14 và danh sách mời vào hộp thoại ở T-15; **không dựng thêm trang hay hộp thoại thứ hai**.
+5. Ghép chuông vào khung đã có ở T-10 và danh sách mời vào hộp thoại ở T-11; **không dựng thêm trang hay hộp thoại thứ hai**.
 
 **Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
 *Màn hình Bạn bè* (`SCR-FRIENDS`)
@@ -56,21 +57,22 @@ Chuẩn bị: dữ liệu giả cho ba trạng thái, lỗi, giới hạn.
 | 7 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, đủ 5 trạng thái, kèm ảnh.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Toàn luồng thật nghiệm thu ở T-54.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Toàn luồng thật nghiệm thu ở T-52.
 **Bàn giao cho task sau:** giao diện bạn bè cho tích hợp.
 **Không thuộc task này:** gọi máy chủ thật, điểm Elo, nhắn tin 1-1, thách đấu.
 **Phục vụ (nguồn):** Story 10, 11, 12; tiêu chí AC-FRIEND-01-01, AC-FRIEND-01-02, AC-FRIEND-02-01, AC-FRIEND-03-01, AC-FRIEND-03-02, AC-FRIEND-04-01, AC-FRIEND-04-02, AC-FRIEND-04-03, AC-FRIEND-05-01. Thuộc Epic: Mời bạn vào phòng chơi.
 **Kết quả (đầu ra):** Giao diện bạn bè: tìm, lời mời, chuông, danh sách, nút Nhắn tin/Thách đấu mờ, nút Mời trong hộp thoại phòng, thông báo đếm lùi 30 giây; đủ 5 trạng thái, dữ liệu giả.
 **Bằng chứng nộp:** Ảnh chụp trạng thái; kiểm bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Chưa nối máy chủ.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08, T-14, T-15; liên quan tới (relates to) Story 10, Story 11, Story 12; Epic: Mời bạn vào phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-07, T-10, T-11; liên quan tới (relates to) Story 10, Story 11, Story 12; Epic: Mời bạn vào phòng chơi.
 
 ---
 
-### T-34 — Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái
+### T-41 — Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái
 **Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
-**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ, quan hệ bạn bè, đếm số lần từ chối và ràng buộc theo cặp. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách xác định người gửi và chuyển lệnh. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách nhận ra yêu cầu gửi lại. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được sổ chỗ chơi (ghế phòng, ván với máy) theo từng người.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-03`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ, quan hệ bạn bè, đếm số lần từ chối và ràng buộc theo cặp. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được cách xác định người gửi và chuyển lệnh. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được cách nhận ra yêu cầu gửi lại. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-15)*: nhận được sổ chỗ chơi (ghế phòng, ván với máy) theo từng người.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-FRIEND-01`, `US-FRIEND-02`, `US-FRIEND-03`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Mục tiêu**
 Làm trọn **vòng đời kết bạn** ở máy chủ: tìm người, gửi lời mời, thu hồi, chấp nhận, từ chối, hết hạn, với giới hạn đúng ở **cả hai tài khoản**, để quan hệ hai chiều luôn nhất quán.
@@ -133,14 +135,114 @@ Chuẩn bị: cơ sở dữ liệu thử, đồng hồ điều khiển được,
 **Kết quả (đầu ra):** Vòng đời kết bạn (tìm, mời, thu hồi, chấp nhận, từ chối, hết hạn), giới hạn 200 bạn/50 lời mời, danh sách bạn có trạng thái, huỷ kết bạn.
 **Bằng chứng nộp:** Kết quả thử 8 ca của bảng; thử đồng thời hai đầu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Trạng thái "đang đấu" cần sổ chỗ chơi (task phòng).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-07, T-10, T-17; liên quan tới (relates to) Story 10, Story 11; Epic: Mời bạn vào phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-06, T-09, T-15; liên quan tới (relates to) Story 10, Story 11; Epic: Mời bạn vào phòng chơi.
 
 ---
 
-### T-47 — Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 3 (11/10–14/10)
-**Phải xong trước:** *Giao diện: phòng chờ và màn từ chối vào phòng (T-15)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: có tài khoản và phiên thật. *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được chức năng phòng và ván để đưa người dùng tới. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-04`, `US-AUTH-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+### T-45 — Máy chủ: mời bạn đang online vào phòng
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social · **Sprint:** 3 (11/10–14/10)
+**Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-19)*: nhận được chức năng vào phòng và xếp ghế/người xem. *Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (T-41)*: nhận được quan hệ bạn bè và trạng thái đáng tin. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-43)*: nhận được quy tắc công khai/chỉ mã/khoá và mã, đường dẫn hiện hành.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-FRIEND-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 12/10/2026 · Due date (hạn): 13/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
+
+**Mục tiêu**
+Cho người **đang ngồi ghế** mời **bạn đang online** vào phòng hiện tại. Lời mời chỉ là **thông báo có hạn 30 giây**: **không giữ chỗ** và **không cho quyền vào phòng vượt quy tắc**.
+
+**Việc cần làm (làm lần lượt)**
+1. Kiểm: người gửi **đang ngồi ghế**; người nhận là **bạn** và **Online rảnh** (đang giữ ghế hoặc chơi với máy là "Đang đấu", không được mời).
+2. Gửi thông báo 30 giây; **không đặt chỗ** cho người nhận.
+3. Khi người nhận bấm Tham gia: **đọc lại** kiểu phòng và mã/đường dẫn hiện hành, rồi dùng chính chức năng **vào phòng** (T-19). Kiểm lại: còn là bạn không, có đang bận không, phòng có khoá, bị đuổi, hết chỗ không. **Không** dựa vào trạng thái đã nhớ lúc gửi.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Người ngồi ghế mời bạn Online, bạn nhận | Vào ghế, hoặc vào xem nếu hợp lệ |
+| Người xem mời, hoặc người nhận bận/ngoại tuyến | Bị chặn, không gửi |
+| Chờ hết hạn, hoặc đường dẫn bị thu hồi, phòng bị khoá trước khi tham gia | Không vào được trái quyền |
+| Hai người chấp nhận chỗ cuối | Không vượt giới hạn; phản hồi đúng tình trạng |
+| Gửi mời rồi phòng bị khoá, hoặc mở khoá tạo mã mới trước khi nhận | Kiểm lại quyền và mã hiện hành; lời mời không phải vé giữ chỗ |
+| Người nhận đang ngồi ghế (đang chờ/đang chơi/đã kết thúc) hoặc đang chơi với máy | Máy chủ chặn gửi ở cả bốn trường hợp, không chỉ khoá nút |
+| Gửi lúc bạn rảnh, rồi bạn chiếm chỗ khác trước khi nhận | Kiểm lại, không vào phòng thứ hai trái luật |
+
+**Cách tự kiểm tra**
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Người ngồi ghế mời bạn Online, bạn nhận | Vào đúng chỗ |
+| 2 | Người xem bấm mời bạn vào; hoặc mời người đang bận hoặc ngoại tuyến | Không gửi được lời mời; có báo lý do |
+| 3 | Chờ hết hạn; thu hồi đường dẫn; khoá phòng rồi nhận | Không vào |
+| 4 | Hai người chấp nhận chỗ cuối | Không vượt giới hạn |
+| 5 | Mời rồi khoá hoặc mở khoá tạo mã mới | Kiểm lại quyền |
+| 6 | Mời người đang giữ chỗ (4 loại) | Máy chủ chặn |
+| 7 | Mời lúc rảnh rồi người nhận chiếm chỗ khác | Kiểm lại, chặn |
+
+**Khi nào chuyển cho người kiểm thử:** cả 7 dòng đạt; hạn do máy chủ quyết định.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Không giữ chỗ, không tạo phòng khác.
+**Bàn giao cho task sau:** lời mời vào phòng cho giao diện bạn bè và tích hợp.
+**Không thuộc task này:** nút mời ở trang Bạn bè, thách đấu, giao diện.
+**Phục vụ (nguồn):** Story 12; tiêu chí AC-FRIEND-04-01, AC-FRIEND-04-02, AC-FRIEND-04-03, AC-FRIEND-04-04. Thuộc Epic: Mời bạn vào phòng chơi.
+**Kết quả (đầu ra):** Lời mời bạn online vào phòng (30 giây, không giữ chỗ), kiểm lại mọi điều kiện lúc bấm Tham gia.
+**Bằng chứng nộp:** Kết quả thử 7 ca; thử mời người đang giữ chỗ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Lời mời không phải vé giữ chỗ.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-19, T-41, T-43; liên quan tới (relates to) Story 12; Epic: Mời bạn vào phòng chơi.
+
+---
+
+### T-52 — Nối web với máy chủ: bạn bè
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 4 (15/10–17/10)
+**Phải xong trước:** *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-28)*: nhận được tạo, vào phòng, bắt đầu ván thật. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-31)*: nhận được ván với máy chạy thật cùng việc báo chiếm và giải phóng chỗ chơi. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-40)*: nhận được màn hình đã dựng. *Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (T-41)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: mời bạn đang online vào phòng (T-45)*: nhận được ba chức năng ở máy chủ. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-46)*: nhận được đổi chỗ, khoá, đuổi, rời phòng thật.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `integration`, `US-FRIEND-02`, `US-FRIEND-03`, `US-FRIEND-04`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 15/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
+
+**Mục tiêu**
+Nối toàn bộ luồng bạn bè với máy chủ và phòng thật, từ **kết bạn tới mời vào phòng**. Bạn được mời phải **vào đúng vai theo trạng thái lúc bấm Tham gia**. Phần "đang chơi với máy thì Đang đấu" kiểm bằng ván với máy **thật**, không bằng dữ liệu giả.
+
+**Việc cần làm (làm lần lượt)**
+1. Nối tìm kiếm, chuông, danh sách, chấp nhận, từ chối, thu hồi với máy chủ; kiểm cả hai đầu quan hệ và giới hạn.
+2. Mời từ hộp thoại phòng; thử đổi quyền, chỗ, khoá phòng **khi thông báo đang mở** rồi bấm Tham gia: phải kiểm tra lại.
+3. Đối chiếu: người còn ghế (đang chờ / đang chơi / đã kết thúc mà chưa rời) là **Đang đấu**. Trạng thái "đã kết thúc" có thể nạp bằng dữ liệu thử; **không** tuyên bố đã kiểm trọn luồng kết thúc ván.
+4. Bắt đầu ván với máy **thật** (T-31): bạn thành **Đang đấu**, không nhận mời; **rời ván máy** rồi còn kết nối → **Online rảnh** và mời được.
+5. Kiểm lời mời bị gửi lại, giới hạn và quyền ở **máy chủ**, không chỉ ở trạng thái nút.
+
+**Các trường hợp lỗi và kết quả mong đợi**
+| Tình huống | Kết quả mong đợi |
+|---|---|
+| Tìm, kết bạn, mời bạn Online từ phòng, bạn nhận | Quan hệ hai chiều; vào đúng phòng và vai theo sức chứa |
+| Quá 30 giây; huỷ bạn; khoá hoặc thu hồi đường dẫn trước khi nhận | Không vào trái điều kiện; giao diện báo đúng lỗi thật |
+| Vượt 200 bạn hoặc 50 lời mời chờ; gửi chéo | Máy chủ chặn ở cả hai đầu; chỉ một lời mời chờ, không tự thành bạn |
+| Bạn còn ghế (đang chờ, đang chơi thật; đã kết thúc bằng dữ liệu thử) | Đang đấu; nút và máy chủ cùng chặn mời; rời ghế mới rảnh |
+| Bạn vào ván với máy thật; thử mời; rời ván máy khi còn kết nối; thử mời lại | Lúc đang chơi: Đang đấu, không nhận mời; sau khi rời: Online rảnh, mời được |
+| Không gửi lệnh rời, rồi gửi lệnh rời đã xác nhận và gửi lại cùng mã | Không rời thì vẫn Đang đấu; rời chỉ một tác dụng, không giải phóng nhầm chỗ mới |
+| Hai ghế đã đầy; mời vào chỗ xem; khi hết chỗ | Vào đúng vai hoặc bị từ chối; không vượt tối đa 5 người xem |
+
+**Cách tự kiểm tra**
+Chuẩn bị: nhiều tài khoản thử, trình duyệt, ván với máy chạy được.
+| # | Việc làm | Phải thấy |
+|---|---|---|
+| 1 | Tìm, kết bạn, mời từ phòng rồi nhận | Quan hệ hai chiều, vào đúng phòng |
+| 2 | Quá 30 giây; huỷ bạn; khoá/thu hồi đường dẫn | Không vào, báo đúng lỗi |
+| 3 | Vượt giới hạn; gửi chéo | Chặn ở máy chủ |
+| 4 | Bạn đang ngồi ghế | Đang đấu, không mời được |
+| 5 | Bạn chơi với máy thật; mời; rời ván; mời lại | Đang đấu rồi Online rảnh |
+| 6 | Gửi lệnh rời lặp lại | Một tác dụng |
+| 7 | Phòng đầy, mời vào chỗ xem | Đúng vai hoặc từ chối |
+
+**Khi nào chuyển cho người kiểm thử:** cả 7 dòng đạt với phòng thật và ván với máy thật; trạng thái bạn và vị trí khớp.
+**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Không dùng dữ liệu giả thay cho thông báo của ván với máy. Hộp thoại ván với máy trên màn hình kiểm ở task tích hợp ván với máy (T-33).
+**Bàn giao cho task sau:** luồng bạn bè chạy thật cho nghiệm thu và demo.
+**Không thuộc task này:** thách đấu, nhắn tin 1-1, hiển thị Elo.
+**Phục vụ (nguồn):** Story 10, 11, 12; tiêu chí AC-FRIEND-01-01, AC-FRIEND-02-01, AC-FRIEND-03-03, AC-FRIEND-04-02, AC-FRIEND-04-03, AC-FRIEND-04-04, AC-FRIEND-05-02. Thuộc Epic: Mời bạn vào phòng chơi.
+**Kết quả (đầu ra):** Toàn bộ luồng bạn bè và mời vào phòng chạy thật; trạng thái Đang đấu kiểm bằng ván với máy thật.
+**Bằng chứng nộp:** Video; báo cáo; nhật ký đã che. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Phụ thuộc ván với máy thật (Epic Đánh với máy).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-28, T-31, T-40, T-41, T-45, T-46; liên quan tới (relates to) Story 10, Story 11, Story 12; Epic: Mời bạn vào phòng chơi.
+
+---
+
+### T-54 — Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng
+**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 4 (15/10–17/10)
+**Phải xong trước:** *Giao diện: phòng chờ và màn từ chối vào phòng (T-11)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-19)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: có tài khoản và phiên thật. *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được chức năng phòng và ván để đưa người dùng tới. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-43)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-44)*: nhận được kết quả đã hoàn thành của task này.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `integration`, `US-AUTH-04`, `US-AUTH-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 15/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Mời bạn vào phòng chơi»
 
 **Mục tiêu**
 Người dùng bấm đường dẫn mời nhưng **chưa đăng nhập** thì sau khi đăng nhập hoặc đăng ký xong phải **vào đúng phòng đó**, không rơi về trang chủ. Nếu đang có ván dở thì đưa vào lại ván.
@@ -179,101 +281,4 @@ Chuẩn bị: hai tài khoản thử, một phòng đang mở.
 **Kết quả (đầu ra):** Bấm đường dẫn mời khi chưa đăng nhập, đăng nhập hoặc đăng ký xong thì vào đúng phòng; vào lại ván dở; chặn chuyển hướng ra ngoài.
 **Bằng chứng nộp:** Video và báo cáo Playwright. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Phụ thuộc phòng thật và quyền vào phòng.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-15, T-21, T-27, T-30, T-36, T-38; liên quan tới (relates to) Story 2, Story 9; Epic: Mời bạn vào phòng chơi.
-
----
-
-### T-52 — Máy chủ: mời bạn đang online vào phòng
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Room & Social · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (T-21)*: nhận được chức năng vào phòng và xếp ghế/người xem. *Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (T-34)*: nhận được quan hệ bạn bè và trạng thái đáng tin. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được quy tắc công khai/chỉ mã/khoá và mã, đường dẫn hiện hành.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `US-FRIEND-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
-
-**Mục tiêu**
-Cho người **đang ngồi ghế** mời **bạn đang online** vào phòng hiện tại. Lời mời chỉ là **thông báo có hạn 30 giây**: **không giữ chỗ** và **không cho quyền vào phòng vượt quy tắc**.
-
-**Việc cần làm (làm lần lượt)**
-1. Kiểm: người gửi **đang ngồi ghế**; người nhận là **bạn** và **Online rảnh** (đang giữ ghế hoặc chơi với máy là "Đang đấu", không được mời).
-2. Gửi thông báo 30 giây; **không đặt chỗ** cho người nhận.
-3. Khi người nhận bấm Tham gia: **đọc lại** kiểu phòng và mã/đường dẫn hiện hành, rồi dùng chính chức năng **vào phòng** (T-21). Kiểm lại: còn là bạn không, có đang bận không, phòng có khoá, bị đuổi, hết chỗ không. **Không** dựa vào trạng thái đã nhớ lúc gửi.
-
-**Các trường hợp lỗi và kết quả mong đợi**
-| Tình huống | Kết quả mong đợi |
-|---|---|
-| Người ngồi ghế mời bạn Online, bạn nhận | Vào ghế, hoặc vào xem nếu hợp lệ |
-| Người xem mời, hoặc người nhận bận/ngoại tuyến | Bị chặn, không gửi |
-| Chờ hết hạn, hoặc đường dẫn bị thu hồi, phòng bị khoá trước khi tham gia | Không vào được trái quyền |
-| Hai người chấp nhận chỗ cuối | Không vượt giới hạn; phản hồi đúng tình trạng |
-| Gửi mời rồi phòng bị khoá, hoặc mở khoá tạo mã mới trước khi nhận | Kiểm lại quyền và mã hiện hành; lời mời không phải vé giữ chỗ |
-| Người nhận đang ngồi ghế (đang chờ/đang chơi/đã kết thúc) hoặc đang chơi với máy | Máy chủ chặn gửi ở cả bốn trường hợp, không chỉ khoá nút |
-| Gửi lúc bạn rảnh, rồi bạn chiếm chỗ khác trước khi nhận | Kiểm lại, không vào phòng thứ hai trái luật |
-
-**Cách tự kiểm tra**
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Người ngồi ghế mời bạn Online, bạn nhận | Vào đúng chỗ |
-| 2 | Người xem bấm mời bạn vào; hoặc mời người đang bận hoặc ngoại tuyến | Không gửi được lời mời; có báo lý do |
-| 3 | Chờ hết hạn; thu hồi đường dẫn; khoá phòng rồi nhận | Không vào |
-| 4 | Hai người chấp nhận chỗ cuối | Không vượt giới hạn |
-| 5 | Mời rồi khoá hoặc mở khoá tạo mã mới | Kiểm lại quyền |
-| 6 | Mời người đang giữ chỗ (4 loại) | Máy chủ chặn |
-| 7 | Mời lúc rảnh rồi người nhận chiếm chỗ khác | Kiểm lại, chặn |
-
-**Khi nào chuyển cho người kiểm thử:** cả 7 dòng đạt; hạn do máy chủ quyết định.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Không giữ chỗ, không tạo phòng khác.
-**Bàn giao cho task sau:** lời mời vào phòng cho giao diện bạn bè và tích hợp.
-**Không thuộc task này:** nút mời ở trang Bạn bè, thách đấu, giao diện.
-**Phục vụ (nguồn):** Story 12; tiêu chí AC-FRIEND-04-01, AC-FRIEND-04-02, AC-FRIEND-04-03, AC-FRIEND-04-04. Thuộc Epic: Mời bạn vào phòng chơi.
-**Kết quả (đầu ra):** Lời mời bạn online vào phòng (30 giây, không giữ chỗ), kiểm lại mọi điều kiện lúc bấm Tham gia.
-**Bằng chứng nộp:** Kết quả thử 7 ca; thử mời người đang giữ chỗ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
-**Rủi ro / chưa rõ:** Lời mời không phải vé giữ chỗ.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-21, T-34, T-36; liên quan tới (relates to) Story 12; Epic: Mời bạn vào phòng chơi.
-
----
-
-### T-54 — Nối web với máy chủ: bạn bè
-**Thuộc Epic:** Mời bạn vào phòng chơi · **Thành phần:** Frontend, Room & Social · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được tạo, vào phòng, bắt đầu ván thật. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-33)*: nhận được màn hình đã dựng. *Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (T-34)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi chỗ, khoá, đuổi, rời phòng thật. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được ván với máy chạy thật cùng việc báo chiếm và giải phóng chỗ chơi. *Máy chủ: mời bạn đang online vào phòng (T-52)*: nhận được ba chức năng ở máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-FRIEND-02`, `US-FRIEND-03`, `US-FRIEND-04`, `US-FRIEND-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
-
-**Mục tiêu**
-Nối toàn bộ luồng bạn bè với máy chủ và phòng thật, từ **kết bạn tới mời vào phòng**. Bạn được mời phải **vào đúng vai theo trạng thái lúc bấm Tham gia**. Phần "đang chơi với máy thì Đang đấu" kiểm bằng ván với máy **thật**, không bằng dữ liệu giả.
-
-**Việc cần làm (làm lần lượt)**
-1. Nối tìm kiếm, chuông, danh sách, chấp nhận, từ chối, thu hồi với máy chủ; kiểm cả hai đầu quan hệ và giới hạn.
-2. Mời từ hộp thoại phòng; thử đổi quyền, chỗ, khoá phòng **khi thông báo đang mở** rồi bấm Tham gia: phải kiểm tra lại.
-3. Đối chiếu: người còn ghế (đang chờ / đang chơi / đã kết thúc mà chưa rời) là **Đang đấu**. Trạng thái "đã kết thúc" có thể nạp bằng dữ liệu thử; **không** tuyên bố đã kiểm trọn luồng kết thúc ván.
-4. Bắt đầu ván với máy **thật** (T-43): bạn thành **Đang đấu**, không nhận mời; **rời ván máy** rồi còn kết nối → **Online rảnh** và mời được.
-5. Kiểm lời mời bị gửi lại, giới hạn và quyền ở **máy chủ**, không chỉ ở trạng thái nút.
-
-**Các trường hợp lỗi và kết quả mong đợi**
-| Tình huống | Kết quả mong đợi |
-|---|---|
-| Tìm, kết bạn, mời bạn Online từ phòng, bạn nhận | Quan hệ hai chiều; vào đúng phòng và vai theo sức chứa |
-| Quá 30 giây; huỷ bạn; khoá hoặc thu hồi đường dẫn trước khi nhận | Không vào trái điều kiện; giao diện báo đúng lỗi thật |
-| Vượt 200 bạn hoặc 50 lời mời chờ; gửi chéo | Máy chủ chặn ở cả hai đầu; chỉ một lời mời chờ, không tự thành bạn |
-| Bạn còn ghế (đang chờ, đang chơi thật; đã kết thúc bằng dữ liệu thử) | Đang đấu; nút và máy chủ cùng chặn mời; rời ghế mới rảnh |
-| Bạn vào ván với máy thật; thử mời; rời ván máy khi còn kết nối; thử mời lại | Lúc đang chơi: Đang đấu, không nhận mời; sau khi rời: Online rảnh, mời được |
-| Không gửi lệnh rời, rồi gửi lệnh rời đã xác nhận và gửi lại cùng mã | Không rời thì vẫn Đang đấu; rời chỉ một tác dụng, không giải phóng nhầm chỗ mới |
-| Hai ghế đã đầy; mời vào chỗ xem; khi hết chỗ | Vào đúng vai hoặc bị từ chối; không vượt tối đa 5 người xem |
-
-**Cách tự kiểm tra**
-Chuẩn bị: nhiều tài khoản thử, trình duyệt, ván với máy chạy được.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Tìm, kết bạn, mời từ phòng rồi nhận | Quan hệ hai chiều, vào đúng phòng |
-| 2 | Quá 30 giây; huỷ bạn; khoá/thu hồi đường dẫn | Không vào, báo đúng lỗi |
-| 3 | Vượt giới hạn; gửi chéo | Chặn ở máy chủ |
-| 4 | Bạn đang ngồi ghế | Đang đấu, không mời được |
-| 5 | Bạn chơi với máy thật; mời; rời ván; mời lại | Đang đấu rồi Online rảnh |
-| 6 | Gửi lệnh rời lặp lại | Một tác dụng |
-| 7 | Phòng đầy, mời vào chỗ xem | Đúng vai hoặc từ chối |
-
-**Khi nào chuyển cho người kiểm thử:** cả 7 dòng đạt với phòng thật và ván với máy thật; trạng thái bạn và vị trí khớp.
-**Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Không dùng dữ liệu giả thay cho thông báo của ván với máy. Hộp thoại ván với máy trên màn hình kiểm ở task tích hợp ván với máy (T-55).
-**Bàn giao cho task sau:** luồng bạn bè chạy thật cho nghiệm thu và demo.
-**Không thuộc task này:** thách đấu, nhắn tin 1-1, hiển thị Elo.
-**Phục vụ (nguồn):** Story 10, 11, 12; tiêu chí AC-FRIEND-02-01, AC-FRIEND-03-03, AC-FRIEND-04-02, AC-FRIEND-04-03, AC-FRIEND-04-04, AC-FRIEND-05-02. Thuộc Epic: Mời bạn vào phòng chơi.
-**Kết quả (đầu ra):** Toàn bộ luồng bạn bè và mời vào phòng chạy thật; trạng thái Đang đấu kiểm bằng ván với máy thật.
-**Bằng chứng nộp:** Video; báo cáo; nhật ký đã che. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
-**Rủi ro / chưa rõ:** Phụ thuộc ván với máy thật (Epic Đánh với máy).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-29, T-33, T-34, T-40, T-43, T-52; liên quan tới (relates to) Story 10, Story 11, Story 12; Epic: Mời bạn vào phòng chơi.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-11, T-19, T-25, T-30, T-43, T-44; liên quan tới (relates to) Story 2, Story 9; Epic: Mời bạn vào phòng chơi.

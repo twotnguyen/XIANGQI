@@ -10,7 +10,9 @@
 
 # EPIC 1 — Đăng ký và đăng nhập (kèm nền tảng dự án)
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi (MVP) gồm T-01, T-02, T-03, T-04, T-06, T-07, T-09, T-13, T-17, T-18, T-21, T-22, T-25; phần mở rộng gồm T-42, T-60, T-61.
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -82,24 +84,26 @@ Hạn mức thư OTP (khoảng 2 thư/giờ); giới hạn nhập sai chỉ gầ
 - `T-02` — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (Sprint 1)
 - `T-03` — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (Sprint 1)
 - `T-04` — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (Sprint 1)
-- `T-07` — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (Sprint 1)
-- `T-08` — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (Sprint 1)
-- `T-10` — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (Sprint 1)
-- `T-12` — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (Sprint 1)
-- `T-19` — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (Sprint 2)
-- `T-20` — Máy chủ: đăng nhập, quản lý phiên và hồ sơ (Sprint 2)
-- `T-23` — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (Sprint 2)
-- `T-24` — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (Sprint 2)
-- `T-27` — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (Sprint 2)
-- `T-35` — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (Sprint 3)
-- `T-58` — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (Sprint 4)
-- `T-59` — Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (Sprint 4)
+- `T-06` — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (Sprint 1)
+- `T-07` — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (Sprint 1)
+- `T-09` — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (Sprint 1)
+- `T-13` — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (Sprint 1)
+- `T-17` — Máy chủ: đăng nhập, quản lý phiên và hồ sơ (Sprint 1)
+- `T-18` — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (Sprint 1)
+- `T-21` — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (Sprint 2)
+- `T-22` — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (Sprint 2)
+- `T-25` — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (Sprint 2)
+- `T-42` — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (Sprint 3)
+- `T-60` — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (Sprint 4)
+- `T-61` — Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (Sprint 4)
 
 ---
 
 # EPIC 2 — Tạo phòng chơi
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.2-sprint-2 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `MVP` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.2-mvp-sprint-2 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Epic thuộc MVP.
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -165,18 +169,20 @@ Hai người tranh ghế cuối; trạng thái một chỗ chơi phải nhất q
 
 ## Task của Epic (liên kết dưới Epic)
 
-- `T-14` — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (Sprint 2)
-- `T-15` — Giao diện: phòng chờ và màn từ chối vào phòng (Sprint 2)
-- `T-17` — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (Sprint 2)
-- `T-21` — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (Sprint 2)
-- `T-25` — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (Sprint 2)
-- `T-29` — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (Sprint 2)
+- `T-10` — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (Sprint 1)
+- `T-11` — Giao diện: phòng chờ và màn từ chối vào phòng (Sprint 1)
+- `T-15` — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (Sprint 1)
+- `T-19` — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh (Sprint 1)
+- `T-23` — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (Sprint 2)
+- `T-28` — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (Sprint 2)
 
 ---
 
 # EPIC 3 — Mời bạn vào phòng chơi
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi MVP đạt).
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -242,17 +248,19 @@ Lời mời không được giữ chỗ; trạng thái Đang đấu cần sổ c
 
 ## Task của Epic (liên kết dưới Epic)
 
-- `T-33` — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (Sprint 3)
-- `T-34` — Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (Sprint 3)
-- `T-47` — Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (Sprint 3)
-- `T-52` — Máy chủ: mời bạn đang online vào phòng (Sprint 4)
-- `T-54` — Nối web với máy chủ: bạn bè (Sprint 4)
+- `T-40` — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (Sprint 3)
+- `T-41` — Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái (Sprint 3)
+- `T-45` — Máy chủ: mời bạn đang online vào phòng (Sprint 3)
+- `T-52` — Nối web với máy chủ: bạn bè (Sprint 4)
+- `T-54` — Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (Sprint 4)
 
 ---
 
 # EPIC 4 — Khởi tạo bàn cờ
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi (MVP) gồm T-05, T-08, T-12, T-16, T-20; phần mở rộng gồm T-53.
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -317,17 +325,19 @@ Phông chữ Hán; độ đúng luật phải được kiểm bằng nguồn đ�
 ## Task của Epic (liên kết dưới Epic)
 
 - `T-05` — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (Sprint 1)
-- `T-09` — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (Sprint 1)
-- `T-11` — Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen (Sprint 1)
-- `T-18` — Giao diện: bấm chọn quân và chấm gợi ý ô đi (Sprint 2)
-- `T-22` — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (Sprint 2)
-- `T-46` — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (Sprint 3)
+- `T-08` — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (Sprint 1)
+- `T-12` — Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen (Sprint 1)
+- `T-16` — Giao diện: bấm chọn quân và chấm gợi ý ô đi (Sprint 1)
+- `T-20` — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (Sprint 2)
+- `T-53` — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (Sprint 4)
 
 ---
 
 # EPIC 5 — Hai người đánh cờ qua mạng
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi (MVP) gồm T-24, T-27, T-29, T-30, T-32; phần mở rộng gồm T-47, T-51, T-55, T-57.
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -393,20 +403,23 @@ Chuỗi phụ thuộc dài nhất của dự án; yêu cầu dưới 100 ms ch�
 
 ## Task của Epic (liên kết dưới Epic)
 
-- `T-26` — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (Sprint 2)
-- `T-28` — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (Sprint 2)
+- `T-24` — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (Sprint 2)
+- `T-27` — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (Sprint 2)
+- `T-29` — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (Sprint 2)
 - `T-30` — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (Sprint 2)
-- `T-39` — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (Sprint 3)
-- `T-42` — Bảng nước đi: ký hiệu tiếng Việt và hiển thị (Sprint 3)
-- `T-45` — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn (Sprint 3)
-- `T-48` — Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (Sprint 3)
-- `T-50` — Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (Sprint 3)
+- `T-32` — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (Sprint 2)
+- `T-47` — Bảng nước đi: ký hiệu tiếng Việt và hiển thị (Sprint 3)
+- `T-51` — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn (Sprint 3)
+- `T-55` — Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (Sprint 4)
+- `T-57` — Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá (Sprint 4)
 
 ---
 
 # EPIC 6 — Phòng công khai, khoá phòng và người xem
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi MVP đạt).
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): Medium · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -471,17 +484,19 @@ Người bị đuổi phải mất quyền thật; khoá phòng không được 
 
 ## Task của Epic (liên kết dưới Epic)
 
-- `T-32` — Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi (Sprint 3)
-- `T-36` — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (Sprint 3)
-- `T-38` — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (Sprint 3)
-- `T-40` — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (Sprint 3)
-- `T-44` — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (Sprint 3)
+- `T-39` — Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi (Sprint 3)
+- `T-43` — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (Sprint 3)
+- `T-44` — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (Sprint 3)
+- `T-46` — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (Sprint 3)
+- `T-50` — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (Sprint 3)
 
 ---
 
 # EPIC 7 — Chat, camera và micro
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** toàn bộ Epic thuộc phần mở rộng (làm sau khi MVP đạt).
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -547,18 +562,20 @@ Có thể vượt hạn mức miễn phí của dịch vụ camera/micro; quyề
 
 ## Task của Epic (liên kết dưới Epic)
 
-- `T-06` — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (Sprint 1)
-- `T-41` — Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (Sprint 3)
-- `T-49` — Giao diện chat hai kênh và nối web với máy chủ (Sprint 3)
-- `T-51` — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi (Sprint 4)
-- `T-53` — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) (Sprint 4)
-- `T-57` — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (Sprint 4)
+- `T-35` — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (Sprint 3)
+- `T-36` — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi (Sprint 3)
+- `T-48` — Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (Sprint 3)
+- `T-49` — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) (Sprint 3)
+- `T-56` — Giao diện chat hai kênh và nối web với máy chủ (Sprint 4)
+- `T-59` — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (Sprint 4)
 
 ---
 
 # EPIC 8 — Đánh với máy theo cấp độ
 
-**Nhãn:** `P1` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Nhãn:** `P1`, `MVP`, `mo-rong` · **Thành phần:** để trống (Epic trải rộng nhiều khu vực) · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
+**Giai đoạn:** phần lõi (MVP) gồm T-14, T-26, T-31, T-33; phần mở rộng gồm T-37, T-38, T-58, T-62, T-63, T-64.
+**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 17/10/2026 · Priority (ưu tiên): High · Story Points: không nhập (Jira tự cộng từ các Story) · Parent: không có (Epic là cấp cao nhất)
 
 ## Mục tiêu và giá trị (Epic này làm gì)
 
@@ -623,18 +640,18 @@ Chất lượng máy cờ (thời gian suy nghĩ, sức mạnh, độ ổn đị
 
 ## Task của Epic (liên kết dưới Epic)
 
-- `T-31` — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (Sprint 3)
-- `T-37` — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (Sprint 3)
-- `T-43` — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (Sprint 3)
-- `T-55` — Nối web, máy chủ và máy cờ thật: ván với máy (Sprint 4)
-- `T-56` — Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (Sprint 4)
+- `T-14` — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (Sprint 1)
+- `T-26` — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (Sprint 2)
+- `T-31` — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (Sprint 2)
+- `T-33` — Nối web, máy chủ và máy cờ thật: ván với máy (Sprint 2)
+- `T-58` — Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (Sprint 4)
 
 ---
 
 # Task chung của dự án (không thuộc Epic nào, nhãn `chung`)
 
-- `T-13` — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (Sprint 1)
-- `T-16` — Chọn nơi chạy ứng dụng và dựng bản demo trên mạng (Sprint 2)
-- `T-60` — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (Sprint 4)
-- `T-61` — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (Sprint 4)
-- `T-62` — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng (Sprint 4)
+- `T-37` — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (Sprint 3)
+- `T-38` — Chọn nơi chạy ứng dụng và dựng bản demo trên mạng (Sprint 3)
+- `T-62` — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (Sprint 4)
+- `T-63` — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (Sprint 4)
+- `T-64` — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng (Sprint 4)
