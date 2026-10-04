@@ -59,7 +59,7 @@ Cách đọc:
 * **AC-AUTH-04-01** — Khi nhập đúng thì vào `/lobby` (hoặc vào đúng phòng nếu đến từ link mời, US-AUTH-06).
 * **AC-AUTH-04-02** — Khi sai tên hoặc mật khẩu thì báo chung *"Sai tên đăng nhập hoặc mật khẩu"* (không nói sai ô nào) và không tiết lộ email.
 * **AC-AUTH-04-03** — Tick *Ghi nhớ đăng nhập* (mặc định tick) thì phiên giữ 30 ngày; bỏ tick thì phiên hết khi đóng trình duyệt hoặc sau 12 giờ.
-* **AC-AUTH-04-04** — Nút *Guest* và *Đăng nhập bằng Google* ở màn đăng nhập, **nút *Đăng ký bằng Google* ở bước 1 của màn đăng ký** và liên kết *Quên mật khẩu?* ở màn đăng nhập hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"* (phần nút Đăng ký bằng Google và liên kết Quên mật khẩu: đề xuất 04/10/2026 để khớp `DANH-MUC` mục 3 `SCR-REGISTER`/`SCR-LOGIN`, chờ PO duyệt).
+* **AC-AUTH-04-04** — Nút *Guest* ở màn đăng nhập và liên kết *Quên mật khẩu?* hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"* (liên kết Quên mật khẩu: PO duyệt 04/10/2026). Nút *Đăng nhập bằng Google* và *Đăng ký bằng Google* **hoạt động** (US-AUTH-07; PO kéo Google lên P1 ngày 04/10/2026).
 * **AC-AUTH-04-05** — Đăng nhập khi đang đăng nhập ở tab/thiết bị khác thì phiên mới tiếp quản, nơi cũ nhận thông báo và chuyển chỉ đọc (BA 1.8).
 
 ### US-AUTH-05 · Hồ sơ cơ bản và đăng xuất (P1) — BA 1.4, 1.6
@@ -72,6 +72,13 @@ Cách đọc:
 ### US-AUTH-06 · Chuyển hướng vào phòng sau đăng nhập (P1) — BA 2.4
 * **AC-AUTH-06-01** — Khi chưa đăng nhập mà mở link mời thì thấy màn đăng nhập/đăng ký; sau khi đăng nhập hoặc đăng ký xong, **tự vào đúng phòng**, không phải bấm lại link.
 * **AC-AUTH-06-02** — Khi đã đăng nhập thì vào thẳng phòng (xem US-ROOM-05 để biết vào ghế hay xem).
+
+### US-AUTH-07 · Đăng ký và đăng nhập bằng Google (P1, PO kéo từ P2 lên P1 ngày 04/10/2026) — BA 1.2
+* **AC-AUTH-07-01** — Đăng ký bằng Google mới đi tới SCR-ONBOARDING: Username và mật khẩu hợp lệ/xác nhận, không OTP; display_name khởi tạo bằng username.
+* **AC-AUTH-07-02** — Đăng nhập Google với danh tính đã hoàn tất thì vào Sảnh hoặc phòng mời; chưa thiết lập thì vào onboarding, chưa được dùng chức năng ứng dụng.
+* **AC-AUTH-07-03** — Email thuộc tài khoản khác đã có thì báo Email này đã được đăng ký; không tự gộp tài khoản hoặc làm mất mật khẩu/username hiện có.
+* **AC-AUTH-07-04** — Bỏ dở hoặc Google từ chối/lỗi thì không có tài khoản ứng dụng hoàn tất; không tự đi tiếp vào Sảnh. Gửi hoàn tất trùng không tạo hai tài khoản; username bị chiếm trong lúc chờ phải báo để nhập lại.
+* **AC-AUTH-07-05** — Sau thiết lập thành công, cùng danh tính đăng nhập được bằng Google hoặc username/mật khẩu; dữ liệu gắn user_id, không tạo hồ sơ thứ hai.
 
 ---
 
@@ -361,13 +368,6 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 * **AC-AUTH-P2-01-03** — Khách được Đánh Thường, AI, xem, chat phòng và camera/mic khi ngồi ghế; máy chủ chặn Đánh Hạng, Elo, bạn bè và thay đổi tài khoản dù gọi trực tiếp.
 * **AC-AUTH-P2-01-04** — Mỗi Khách có tối đa một phòng đang mở do mình tạo, chịu sức chứa và giới hạn chat như tài khoản; phiên mới là danh tính mới, giới hạn né chặn bằng phiên mới được công bố ở BA 4.2.
 * **AC-AUTH-P2-01-05** — Không lịch sử/Replay phía Khách, không chuyển dữ liệu sang tài khoản mới. Đối thủ chính thức vẫn có bản ghi ván; khi phiên Khách hết thì thay tên cá nhân bằng Khách, không xoá bản ghi ván của đối thủ. Đồng thời xoá khỏi mọi phòng còn mở các tin chat do Khách đó gửi và tên hiển thị cá nhân; người còn trong phòng thấy tin đã bị gỡ, tên chung "Khách" (đề xuất 04/10/2026, chờ PO duyệt).
-
-### US-AUTH-P2-02 · Google OAuth (P2) — BA 1.2
-* **AC-AUTH-P2-02-01** — Đăng ký bằng Google mới đi tới SCR-ONBOARDING: Username và mật khẩu hợp lệ/xác nhận, không OTP; display_name khởi tạo bằng username.
-* **AC-AUTH-P2-02-02** — Đăng nhập Google với danh tính đã hoàn tất thì vào Sảnh hoặc phòng mời; chưa thiết lập thì vào onboarding, chưa được dùng chức năng ứng dụng.
-* **AC-AUTH-P2-02-03** — Email thuộc tài khoản khác đã có thì báo Email này đã được đăng ký; không tự gộp tài khoản hoặc làm mất mật khẩu/username hiện có.
-* **AC-AUTH-P2-02-04** — Bỏ dở hoặc Google từ chối/lỗi thì không có tài khoản ứng dụng hoàn tất; không tự đi tiếp vào Sảnh. Gửi hoàn tất trùng không tạo hai tài khoản; username bị chiếm trong lúc chờ phải báo để nhập lại.
-* **AC-AUTH-P2-02-05** — Sau thiết lập thành công, cùng danh tính đăng nhập được bằng Google hoặc username/mật khẩu; dữ liệu gắn user_id, không tạo hồ sơ thứ hai.
 
 ### US-AUTH-P2-03 · Quên và đặt lại mật khẩu (P2) — BA 1.7, 1.5
 * **AC-AUTH-P2-03-01** — Nhập email có/không có tài khoản đều nhận cùng thông báo Nếu email này đã đăng ký, mã khôi phục đã được gửi; không tiết lộ tồn tại tài khoản.

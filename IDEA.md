@@ -31,7 +31,7 @@ Chat/camera/mic thuộc tám mục tiêu P1 vì sản phẩm đã chọn trải 
 
 **P1:** đăng ký/đăng nhập; tạo phòng; mời link/mã và bạn bè online; bàn cờ; đánh online; phòng công khai/có mã/khoá tối đa năm người xem; chat + camera + mic; AI ba cấp. Chỉ theme Kỳ Đài Cổ Phong.
 
-**P2:** đúng danh sách BA Phần 11, gồm toàn bộ Đánh Hạng, Khách, Google, khôi phục/đổi tài khoản theo phạm vi, ghép CASUAL, các đề nghị mở rộng, chat 1-1/sticker, QR, lịch sử/Replay/xuất dữ liệu, tiện ích demo và lựa chọn Giấy Sáng/Theo hệ thống.
+**P2:** đúng danh sách BA Phần 11, gồm toàn bộ Đánh Hạng, Khách, khôi phục/đổi tài khoản theo phạm vi, ghép CASUAL, các đề nghị mở rộng, chat 1-1/sticker, QR, lịch sử/Replay/xuất dữ liệu, tiện ích demo và lựa chọn Giấy Sáng/Theo hệ thống.
 
 Hoàn thiện **đặc tả** P2 không đưa P2 vào thời hạn P1. Mốc khoảng hai tuần là mục tiêu để lập kế hoạch kiểm tra lại công suất nhóm bảy người, không phải bằng chứng khả thi.
 

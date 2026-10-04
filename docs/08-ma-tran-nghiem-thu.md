@@ -4,8 +4,8 @@
 
 ## 1. Độ phủ và cách đọc
 
-- **80 US: 53 P1 + 27 P2; 276 AC có mã duy nhất.** Mã US/AC/TC là nhãn đặc tả, không phải key Jira.
-- **37 thành phần: 23 P1 + 14 P2**, mỗi thành phần có điều kiện và kết quả năm trạng thái. Một thành phần P1 có thể có chức năng P2 bên trong; lấy phân kỳ của AC, không lấy toàn màn hình để kéo việc vào P1.
+- **80 US: 54 P1 + 26 P2; 276 AC có mã duy nhất (162 AC P1 + 114 AC P2).** Mã US/AC/TC là nhãn đặc tả, không phải key Jira.
+- **37 thành phần: 24 P1 + 13 P2**, mỗi thành phần có điều kiện và kết quả năm trạng thái. Một thành phần P1 có thể có chức năng P2 bên trong; lấy phân kỳ của AC, không lấy toàn màn hình để kéo việc vào P1.
 - `TC-…` đối ứng từng `AC-…`: nội dung AC là oracle (kết quả bắt buộc), không sao chép luật sang bảng test để tạo nguồn thứ hai. Nếu AC có nhiều nhánh, triển khai test tham số hoá cho **từng nhánh**, không lấy một ca đại diện rồi đánh dấu cả AC đạt.
 - Toàn bộ kiểm thử hiện **NOT_RUN**. Số hàng là độ phủ **đặc tả**, không phải độ phủ code hoặc số test PASS.
 - Mỗi lần chạy cần lưu: TC/AC, phiên bản mã, môi trường, fixture/đầu vào, bước, kết quả mong đợi từ AC, kết quả thực, log/ảnh/số đo, PASS/FAIL/BLOCKED. Không có bằng chứng thì không PASS.
@@ -55,6 +55,11 @@
 | US-AUTH-05 | P1 | BA 1.4, 1.6 | AC-AUTH-05-05 | TC-AUTH-05-05 | NOT_RUN |
 | US-AUTH-06 | P1 | BA 2.4 | AC-AUTH-06-01 | TC-AUTH-06-01 | NOT_RUN |
 | US-AUTH-06 | P1 | BA 2.4 | AC-AUTH-06-02 | TC-AUTH-06-02 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-01 | TC-AUTH-07-01 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-02 | TC-AUTH-07-02 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-03 | TC-AUTH-07-03 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-04 | TC-AUTH-07-04 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-05 | TC-AUTH-07-05 | NOT_RUN |
 | US-ROOM-01 | P1 | BA 2.7, 2.8 | AC-ROOM-01-01 | TC-ROOM-01-01 | NOT_RUN |
 | US-ROOM-01 | P1 | BA 2.7, 2.8 | AC-ROOM-01-02 | TC-ROOM-01-02 | NOT_RUN |
 | US-ROOM-01 | P1 | BA 2.7, 2.8 | AC-ROOM-01-03 | TC-ROOM-01-03 | NOT_RUN |
@@ -192,11 +197,6 @@
 | US-AUTH-P2-01 | P2 | BA 1.3 | AC-AUTH-P2-01-03 | TC-AUTH-P2-01-03 | NOT_RUN |
 | US-AUTH-P2-01 | P2 | BA 1.3 | AC-AUTH-P2-01-04 | TC-AUTH-P2-01-04 | NOT_RUN |
 | US-AUTH-P2-01 | P2 | BA 1.3 | AC-AUTH-P2-01-05 | TC-AUTH-P2-01-05 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-01 | TC-AUTH-P2-02-01 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-02 | TC-AUTH-P2-02-02 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-03 | TC-AUTH-P2-02-03 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-04 | TC-AUTH-P2-02-04 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-05 | TC-AUTH-P2-02-05 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-01 | TC-AUTH-P2-03-01 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-02 | TC-AUTH-P2-03-02 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-03 | TC-AUTH-P2-03-03 | NOT_RUN |
@@ -313,7 +313,7 @@ Mỗi ô dưới đây là điều kiện tạo trạng thái và phản hồi c
 
 ### UI-01 · `SCR-LOGIN` · P1
 
-US: US-AUTH-04, US-AUTH-06, US-AUTH-P2-01, US-AUTH-P2-02. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-04, US-AUTH-06, US-AUTH-07, US-AUTH-P2-01. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -321,11 +321,11 @@ US: US-AUTH-04, US-AUTH-06, US-AUTH-P2-01, US-AUTH-P2-02. Các US-UI-03/04/05/06
 | LOADING | Đang xác thực, chặn gửi trùng | TC-UISTATE-01-LOADING |
 | EMPTY | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | TC-UISTATE-01-EMPTY |
 | ERROR | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | TC-UISTATE-01-ERROR |
-| DISABLED | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt | TC-UISTATE-01-DISABLED |
+| DISABLED | Form chưa hợp lệ; Guest và Quên mật khẩu P1 Sắp ra mắt | TC-UISTATE-01-DISABLED |
 
 ### UI-02 · `SCR-REGISTER` · P1
 
-US: US-AUTH-01, US-AUTH-02, US-AUTH-03. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-01, US-AUTH-02, US-AUTH-03, US-AUTH-07. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -359,9 +359,9 @@ US: US-AUTH-P2-03. Các US-UI-03/04/05/06 áp dụng chung.
 | ERROR | OTP sai/hết hạn; không đổi mật khẩu | TC-UISTATE-04-ERROR |
 | DISABLED | Chưa xác minh hoặc mật khẩu không hợp lệ | TC-UISTATE-04-DISABLED |
 
-### UI-05 · `SCR-ONBOARDING` · P2
+### UI-05 · `SCR-ONBOARDING` · P1
 
-US: US-AUTH-P2-02. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-07. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
