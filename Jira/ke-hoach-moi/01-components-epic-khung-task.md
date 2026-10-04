@@ -20,7 +20,7 @@
 | `AI` | Máy cờ | `apps/ai-worker`, mô-đun ván với máy | Tiến trình máy cờ, ba cấp, sự cố, ván với máy | 4 |
 | `QA & DevOps` | Kiểm thử, hạ tầng và vận hành | `tests/`, Vitest, Playwright, kho mã, kiểm tra tự động, môi trường demo | Kiểm thử tự động, đo tải, nghiệm thu; kho mã, kiểm tra tự động, môi trường demo | 10 |
 
-Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên module); không task nào có 3. Hiện **44 task có 1 thành phần, 18 task có 2**. Thành phần là khu vực ổn định của hệ thống, không dùng cho người làm, mức ưu tiên hay Sprint. Chờ PO duyệt 9 thành phần (đã gộp từ 13 theo yêu cầu PO 04/10/2026).
+Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên module); không task nào có 3. Hiện **44 task có 1 thành phần, 18 task có 2**. Thành phần là khu vực ổn định của hệ thống, không dùng cho người làm, mức ưu tiên hay Sprint. **PO đã duyệt 9 thành phần này ngày 04/10/2026** (gộp từ 13 theo yêu cầu của PO; PO sẽ review lại toàn bộ kế hoạch).
 
 ## 2. Epic
 
