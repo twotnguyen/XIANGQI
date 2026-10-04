@@ -288,7 +288,7 @@ Cho người chơi **thấy** nước vừa đi, **biết** khi bị chiếu và
 ---
 
 ### T-46 — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động
-**Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine, QA · **Sprint:** 3 (11/10–14/10)
+**Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine, QA & DevOps · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống chạy kiểm thử và báo đỏ khi sai. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ cho thế cờ chuẩn; nhận được bộ luật P1 đầy đủ. *Bảng nước đi: ký hiệu tiếng Việt và hiển thị (T-42)*: nhận được hàm ký hiệu.
 
 **Mục tiêu**

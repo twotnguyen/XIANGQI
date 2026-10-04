@@ -9,7 +9,7 @@ Các task này phục vụ cả dự án nên không thuộc Epic nào; trên Ji
 ---
 
 ### T-13 — Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright)
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA · **Sprint:** 1 (04/10–07/10)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra chạy mỗi khi có thay đổi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang web chạy được, có cách chuyển trang.
 
 **Mục tiêu**
@@ -47,7 +47,7 @@ Dựng **khung kiểm thử giả lập người dùng thật** trên nhiều tr
 ---
 
 ### T-16 — Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA · **Sprint:** 2 (08/10–10/10)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống biên dịch và kiểm tra hoạt động. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ chạy và nhận kết nối. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được web biên dịch được, có chỗ cấu hình địa chỉ máy chủ.
 
 **Mục tiêu**
@@ -86,7 +86,7 @@ Dựng cách **chạy bản demo ngay trên máy cục bộ** (cách ưu tiên, 
 ---
 
 ### T-60 — Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) (T-13)*: nhận được kết quả đã hoàn thành của task này. *Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (T-35)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng (T-47)*: nhận được kết quả đã hoàn thành của task này. *Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất (T-48)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-54)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-55)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-58)*: nhận được kết quả đã hoàn thành của task này.
 
 **Mục tiêu**
@@ -132,7 +132,7 @@ Chuẩn bị: bản build tích hợp cùng phiên bản, nhiều trình duyệt
 ---
 
 ### T-61 — Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-46)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được ván, kết nối lại, người xem chạy thật. *Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định (T-56)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được camera/micro chạy thật cùng đổi vai, đuổi, tiếp quản. *Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng (T-59)*: nhận được kết quả đã hoàn thành của task này.
 
 **Mục tiêu**
@@ -237,7 +237,7 @@ Chuẩn bị: nhiều tài khoản, thiết bị thật, công cụ gọi thẳn
 ---
 
 ### T-62 — Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng
-**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** không thuộc Epic nào (task chung của dự án) · **Thành phần:** QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được cấu hình đăng ký bằng mã OTP (chưa có tài khoản demo). *Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng (T-16)*: nhận được hướng dẫn chạy demo cục bộ (và các bước dự phòng trên Render). *Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được số liệu thư, hạn mức để lên lịch gửi thư. *Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 (T-60)*: nhận được bảng đối chiếu và lỗi có bước tái hiện. *Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật (T-61)*: nhận được kết quả đã hoàn thành của task này.
 
 **Mục tiêu**

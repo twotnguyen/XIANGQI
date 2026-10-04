@@ -247,7 +247,7 @@ Chuẩn bị: máy chủ, máy cờ thật, trình duyệt, hai tài khoản th�
 ---
 
 ### T-56 — Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định
-**Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI, QA · **Sprint:** 4 (15/10–17/10)
+**Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI, QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-31)*: nhận được máy cờ thật ba cấp và công cụ đo độ sâu, số nút, thời gian, hạt giống. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được hàng đợi, giới hạn thời gian, hai nhánh "bận" và "Bỏ dở" đã kiểm. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-46)*: nhận được báo cáo đối chiếu số nước đi với nguồn độc lập; nhận được bộ thế, ca biên, đếm nước chạy trong kiểm tra tự động.
 
 **Mục tiêu**

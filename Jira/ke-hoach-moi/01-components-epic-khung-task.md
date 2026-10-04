@@ -18,7 +18,7 @@
 | `Room & Social` | Phòng, ghế, người xem và bạn bè | `apps/server` (mô-đun phòng và bạn bè), `apps/web` | Tạo/vào phòng, ghế, Sẵn sàng, khoá, đuổi, danh sách phòng; kết bạn, trạng thái bạn, mời vào phòng | 12 |
 | `Communication` | Chat và camera/micro | Máy chủ, web, LiveKit Cloud | Chat hai kênh, giới hạn và lọc, quyền camera/micro theo vai | 6 |
 | `AI` | Máy cờ | `apps/ai-worker`, mô-đun ván với máy | Tiến trình máy cờ, ba cấp, sự cố, ván với máy | 4 |
-| `QA` | Kiểm thử, hạ tầng và vận hành | `tests/`, Vitest, Playwright, kho mã, kiểm tra tự động, môi trường demo | Kiểm thử tự động, đo tải, nghiệm thu; kho mã, kiểm tra tự động, môi trường demo | 10 |
+| `QA & DevOps` | Kiểm thử, hạ tầng và vận hành | `tests/`, Vitest, Playwright, kho mã, kiểm tra tự động, môi trường demo | Kiểm thử tự động, đo tải, nghiệm thu; kho mã, kiểm tra tự động, môi trường demo | 10 |
 
 Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên module); không task nào có 3. Hiện **44 task có 1 thành phần, 18 task có 2**. Thành phần là khu vực ổn định của hệ thống, không dùng cho người làm, mức ưu tiên hay Sprint. Chờ PO duyệt 9 thành phần (đã gộp từ 13 theo yêu cầu PO 04/10/2026).
 
@@ -99,29 +99,29 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 
 | Task | Tên | Epic | Thành phần | Cần xong trước | Sprint |
 |---|---|---|---|---|---:|
-| `T-01` | Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động | 1 | `QA` | — | 1 |
+| `T-01` | Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động | 1 | `QA & DevOps` | — | 1 |
 | `T-02` | Soạn "hợp đồng chung" giữa trình duyệt và máy chủ | 1 | `Backend` | `T-01` | 1 |
 | `T-03` | Cấu hình Supabase gửi mã OTP đăng ký | 1 | `Authentication` | `T-01` | 1 |
 | `T-04` | Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập | 1 | `Backend` | `T-01` | 1 |
 | `T-05` | Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân | 4 | `Game Engine` | `T-01` | 1 |
-| `T-06` | Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền | 7 | `Communication`, `QA` | `T-01` | 1 |
+| `T-06` | Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền | 7 | `Communication`, `QA & DevOps` | `T-01` | 1 |
 | `T-07` | Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh | 1 | `Backend` | `T-01`, `T-02`, `T-03` | 1 |
 | `T-08` | Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) | 1 | `Frontend` | `T-01`, `T-02` | 1 |
 | `T-09` | Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước | 4 | `Game Engine` | `T-05` | 1 |
 | `T-10` | Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ | 1 | `Backend` | `T-02`, `T-04`, `T-07` | 1 |
 | `T-11` | Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen | 4 | `Frontend` | `T-05`, `T-08` | 1 |
 | `T-12` | Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) | 1 | `Authentication` | `T-03`, `T-04`, `T-07` | 1 |
-| `T-13` | Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) | — | `QA` | `T-01`, `T-08` | 1 |
+| `T-13` | Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) | — | `QA & DevOps` | `T-01`, `T-08` | 1 |
 | `T-14` | Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng | 2 | `Frontend` | `T-02`, `T-08` | 2 |
 | `T-15` | Giao diện: phòng chờ và màn từ chối vào phòng | 2 | `Frontend` | `T-02`, `T-08` | 2 |
-| `T-16` | Chọn nơi chạy ứng dụng và dựng bản demo trên mạng | — | `QA` | `T-01`, `T-07`, `T-08` | 2 |
+| `T-16` | Chọn nơi chạy ứng dụng và dựng bản demo trên mạng | — | `QA & DevOps` | `T-01`, `T-07`, `T-08` | 2 |
 | `T-17` | Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng | 2 | `Room & Social` | `T-04`, `T-07`, `T-10` | 2 |
 | `T-18` | Giao diện: bấm chọn quân và chấm gợi ý ô đi | 4 | `Frontend` | `T-09`, `T-11` | 2 |
 | `T-19` | Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) | 1 | `Authentication` | `T-12` | 2 |
 | `T-20` | Máy chủ: đăng nhập, quản lý phiên và hồ sơ | 1 | `Authentication` | `T-03`, `T-04`, `T-07`, `T-10` | 2 |
 | `T-21` | Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh | 2 | `Room & Social` | `T-10`, `T-17` | 2 |
 | `T-22` | Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh | 4 | `Frontend` | `T-18` | 2 |
-| `T-23` | Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email | 1 | `Authentication`, `QA` | `T-03`, `T-19` | 2 |
+| `T-23` | Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email | 1 | `Authentication`, `QA & DevOps` | `T-03`, `T-19` | 2 |
 | `T-24` | Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất | 1 | `Frontend` | `T-02`, `T-08`, `T-20` | 2 |
 | `T-25` | Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván | 2 | `Room & Social` | `T-05`, `T-21` | 2 |
 | `T-26` | Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà | 5 | `Frontend` | `T-02`, `T-08`, `T-22` | 2 |
@@ -144,7 +144,7 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 | `T-43` | Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ | 8 | `AI` | `T-17`, `T-28`, `T-31` | 3 |
 | `T-44` | Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò | 6 | `Game Server` | `T-21`, `T-28`, `T-39` | 3 |
 | `T-45` | Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn | 5 | `Game Server` | `T-39` | 3 |
-| `T-46` | Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động | 4 | `Game Engine`, `QA` | `T-01`, `T-09`, `T-42` | 3 |
+| `T-46` | Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động | 4 | `Game Engine`, `QA & DevOps` | `T-01`, `T-09`, `T-42` | 3 |
 | `T-47` | Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng | 3 | `Frontend`, `Room & Social` | `T-15`, `T-21`, `T-27`, `T-30`, `T-36`, `T-38` | 3 |
 | `T-48` | Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất | 5 | `Authentication` | `T-24`, `T-38`, `T-39`, `T-43` | 3 |
 | `T-49` | Giao diện chat hai kênh và nối web với máy chủ | 7 | `Frontend`, `Communication` | `T-02`, `T-08`, `T-10`, `T-40`, `T-41`, `T-44` | 3 |
@@ -154,13 +154,13 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 | `T-53` | Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản) | 7 | `Communication`, `Game Server` | `T-06`, `T-20`, `T-38` | 4 |
 | `T-54` | Nối web với máy chủ: bạn bè | 3 | `Frontend`, `Room & Social` | `T-29`, `T-33`, `T-34`, `T-40`, `T-43`, `T-52` | 4 |
 | `T-55` | Nối web, máy chủ và máy cờ thật: ván với máy | 8 | `Frontend`, `AI` | `T-37`, `T-43` | 4 |
-| `T-56` | Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định | 8 | `AI`, `QA` | `T-31`, `T-43`, `T-46` | 4 |
+| `T-56` | Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định | 8 | `AI`, `QA & DevOps` | `T-31`, `T-43`, `T-46` | 4 |
 | `T-57` | Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) | 7 | `Frontend`, `Communication` | `T-30`, `T-38`, `T-49`, `T-51`, `T-53` | 4 |
 | `T-58` | Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc | 1 | `Frontend` | `T-14`, `T-24`, `T-26`, `T-27`, `T-33`, `T-37`, `T-40`, `T-49`, `T-50`, `T-54`, `T-55`, `T-57` | 4 |
 | `T-59` | Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng | 1 | `Frontend` | `T-58` | 4 |
-| `T-60` | Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 | — | `QA` | `T-13`, `T-23`, `T-27`, `T-35`, `T-40`, `T-47`, `T-48`, `T-49`, `T-50`, `T-54`, `T-55`, `T-57`, `T-58` | 4 |
-| `T-61` | Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật | — | `QA` | `T-23`, `T-46`, `T-49`, `T-50`, `T-56`, `T-57`, `T-59` | 4 |
-| `T-62` | Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng | — | `QA` | `T-03`, `T-16`, `T-23`, `T-60`, `T-61` | 4 |
+| `T-60` | Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10 | — | `QA & DevOps` | `T-13`, `T-23`, `T-27`, `T-35`, `T-40`, `T-47`, `T-48`, `T-49`, `T-50`, `T-54`, `T-55`, `T-57`, `T-58` | 4 |
+| `T-61` | Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật | — | `QA & DevOps` | `T-23`, `T-46`, `T-49`, `T-50`, `T-56`, `T-57`, `T-59` | 4 |
+| `T-62` | Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng | — | `QA & DevOps` | `T-03`, `T-16`, `T-23`, `T-60`, `T-61` | 4 |
 
 ## 7. Tệp
 

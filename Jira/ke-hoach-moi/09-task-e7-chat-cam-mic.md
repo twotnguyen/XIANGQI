@@ -7,7 +7,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ---
 
 ### T-06 — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, QA · **Sprint:** 1 (04/10–07/10)
+**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được môi trường chạy mã và cách đặt cấu hình thử không lộ bí mật.
 
 **Mục tiêu**
