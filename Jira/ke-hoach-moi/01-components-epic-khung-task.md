@@ -42,7 +42,7 @@
 
 **Nhãn (Label) cho phân loại tạm thời/xuyên suốt:** `P1`, `P2`, mã US (ví dụ `US-ROOM-05`), `poc`, `contract`, `integration`, `gate`, `spike`. Nhãn không thay thành phần.
 
-**Kiểm tra bản kế hoạch này:** 90 task; **68 task có 1 thành phần, 22 task có 2 (việc liên module như tích hợp web ↔ máy chủ), không task nào có 3 trở lên.** Thành phần dùng nhiều nhất là `Frontend` (29 task); mọi thành phần còn lại không quá 13 task.
+**Kiểm tra bản kế hoạch này:** 91 task; **69 task có 1 thành phần, 22 task có 2 (việc liên module như tích hợp web ↔ máy chủ), không task nào có 3 trở lên.** Thành phần dùng nhiều nhất là `Frontend` (29 task); mọi thành phần còn lại không quá 13 task.
 
 **Quyết định thành phần (đề xuất 04/10/2026, chờ PO duyệt):** (1) tách `Match` khỏi `Game Engine` để luật cờ (gói dùng chung) và vòng đời ván (đồng hồ, kết thúc, đầu hàng, xin hoà) là hai khu vực ổn định khác nhau; (2) **không** tạo `Database` riêng vì chỉ có 1 task, gộp schema/migration vào `Backend`; (3) **chưa** tạo `Security`, `Monitoring`, `Documentation` vì NFR liên quan (quan sát vận hành, lưu giữ dữ liệu, an toàn hiển thị) còn chờ duyệt; tạo thêm khi cần, vì thành phần Jira thêm bất kỳ lúc nào.
 

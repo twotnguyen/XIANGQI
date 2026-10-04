@@ -200,7 +200,7 @@ Epic gồm **5 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, **
 | Ca 4 | Ghế còn giữ | WAITING/PLAYING thật và fixture FINISHED trên phòng thật, bạn vẫn có ghế/kết nối | Đang đấu, nút và server chặn Mời; rời ghế mới rảnh |
 | Ca 5 | AI thật | Bạn vào AI bằng TG-02; thử mời; bạn xác nhận rời AI và giữ kết nối; thử mời lại | Hook chiếm vị trí làm Đang đấu/không nhận mời; RESIGN/hủy tìm/giải phóng đúng, sau đó Online rảnh và mời được |
 | Ca 6 | Rời AI/lặp qua client thử | Client thử không gửi lệnh rời (tương ứng Huỷ), sau đó gửi lệnh rời đã xác nhận rồi retry cùng định danh | Không gửi thì vẫn Đang đấu; rời chỉ một tác động, không giải phóng nhầm vị trí mới. Modal AI thật kiểm ở TG-05 |
-| Ca 7 | Phòng đầy | Hai ghế đầy, mời vào chỗ xem rồi thử khi hết chỗ | Vào đúng vai hoặc từ chối, không vượt tối đa hai người xem |
+| Ca 7 | Phòng đầy | Hai ghế đầy, mời vào chỗ xem rồi thử khi hết chỗ | Vào đúng vai hoặc từ chối, không vượt tối đa năm người xem |
 
 **PASS khi:** Các ca bạn bè/phòng và hook AI thật đạt: người còn ghế WAITING/PLAYING/FINISHED hoặc đang AI không nhận mời; rời vị trí đúng mới có thể Online rảnh. FAIL nếu fixture thay hook AI, chỉ UI chặn mà server gửi, quan hệ/vị trí lệch hoặc trùng tác động. Ca hiện diện AI thuộc task này; TQ-04 chỉ hồi quy toàn P1, không phải đầu vào để PASS TF-05.
 

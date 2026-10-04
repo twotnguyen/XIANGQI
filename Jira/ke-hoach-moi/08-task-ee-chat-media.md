@@ -244,7 +244,7 @@ Epic gồm **7 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, **
 
 **Kết quả (đầu ra):** Adapter media thật, báo cáo ma trận quyền/track và bằng chứng không rò khi chuyển trạng thái.
 
-**Phạm vi / ngoài phạm vi:** P1 hai người chơi, tối đa hai người xem; không ghi/lưu media hoặc mở rộng P2.
+**Phạm vi / ngoài phạm vi:** P1 hai người chơi, tối đa năm người xem; không ghi/lưu media hoặc mở rộng P2.
 
 **Đầu vào cần có:** Cặp media: TE-05 quản lý track ↔ TE-04/06 token/phiên ↔ LiveKit Cloud. Cặp kiểm không gián đoạn: bảng cờ TD-09 ↔ handler nước đi TD-02, chat TE-03 ↔ dịch vụ TE-01. Quyền phòng qua TB-07 và TB-05 trong tổ tiên; dữ liệu thử/thiết bị được chuẩn bị trên build chung. Không còn dùng host fixture để nghiệm thu cờ/chat khi media hỏng.
 
@@ -260,7 +260,7 @@ Epic gồm **7 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, **
 
 | Mã ca | AC/nhánh | Bước thực hiện | Kết quả mong đợi |
 |---|---|---|---|
-| Ca 1 | Ba mức chia sẻ | Thử độc lập từng mức ở hai người phát, có tối đa hai người xem | Chỉ đúng đối thủ/người xem được nhận; người xem không publish |
+| Ca 1 | Ba mức chia sẻ | Thử độc lập từng mức ở hai người phát, có tối đa năm người xem | Chỉ đúng đối thủ/người xem được nhận; người xem không publish |
 | Ca 2 | Thu quyền thật | Đổi vai hoặc kick qua TB-07 khi đang truyền; dùng lại token cũ | Mất quyền tại LiveKit, không lấy lại quyền cũ; không coi ẩn panel là đủ |
 | Ca 3 | Tiếp quản | Tab/thiết bị cũ đang chơi/phát, nơi mới cùng tài khoản tiếp quản; cũ gửi nước | Cũ có thông báo/chỉ đọc, camera/mic dừng, lệnh bị chặn; nơi mới điều khiển và thiết bị mặc định tắt |
 | Ca 4 | Media hỏng — cờ/chat thật | Từ chối thiết bị hoặc ngắt riêng media, rồi đi nước hợp lệ và gửi chat | TD-09 vẫn đồng bộ nước ở trình duyệt kia; TE-03 vẫn ACK/phát đúng kênh; lỗi media không khóa hai luồng |

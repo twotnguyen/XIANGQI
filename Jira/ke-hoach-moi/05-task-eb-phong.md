@@ -46,7 +46,7 @@ Epic gồm **12 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, *
 
 **Mục tiêu:** Tạo phòng P1 với Host ghế Đỏ và thông tin mời. Gửi lại không tạo thêm phòng hoặc mất kết quả cũ.
 
-**Yêu cầu / nguồn:** US-ROOM-01: AC-ROOM-01-01 tên 1–60/lọc, giờ 5/10/15 mặc định 10, PUBLIC/CODE_ONLY, người xem 0–2 mặc định 2; AC-ROOM-01-02 mã tám ký tự/Host Đỏ; AC-ROOM-01-03 một vị trí; AC-ROOM-01-04 giờ/sức chứa bất biến. US-ROOM-04: AC-ROOM-04-01 chỉ người ngồi ghế chia sẻ cùng quyền; docs/07 §5.
+**Yêu cầu / nguồn:** US-ROOM-01: AC-ROOM-01-01 tên 1–60/lọc, giờ 5/10/15 mặc định 10, PUBLIC/CODE_ONLY, người xem 0–5 mặc định 5; AC-ROOM-01-02 mã tám ký tự/Host Đỏ; AC-ROOM-01-03 một vị trí; AC-ROOM-01-04 giờ/sức chứa bất biến. US-ROOM-04: AC-ROOM-04-01 chỉ người ngồi ghế chia sẻ cùng quyền; docs/07 §5.
 
 **Kết quả (đầu ra):** - Handler room.create và phản hồi phòng/membership/Host.
 - Mã chuẩn tám ký tự unique, link hiện hành và kiểm quyền đọc thông tin mời.
@@ -287,7 +287,7 @@ Epic gồm **12 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, *
 
 | Mã ca | AC/nhánh | Bước thực hiện | Kết quả mong đợi |
 |---|---|---|---|
-| TC-ROOM-01-01 | AC-ROOM-01-01 | Mở form, đổi giá trị và thử sai biên | Mặc định 10 phút/N=2, chỉ PUBLIC/CODE_ONLY và 5/10/15. |
+| TC-ROOM-01-01 | AC-ROOM-01-01 | Mở form, đổi giá trị và thử sai biên | Mặc định 10 phút/N=5, chỉ PUBLIC/CODE_ONLY và 5/10/15. |
 | TC-UI-02-02 | AC-UI-02-02 | Fixture đang có ghế/ván dở | Banner quay lại, tạo mới disabled có lý do. |
 | TC-UI-02-03 | AC-UI-02-03 | Mở/thu Luật chơi bằng bàn phím | Nội dung rút gọn đúng, không trang/modal mới. |
 | TC-UISTATE-06-ERROR | AC-UI-03-01 | Fixture tải lỗi và danh sách rỗng | Phân biệt lỗi/empty; có Thử lại/Tạo phòng đúng. |

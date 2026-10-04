@@ -8,7 +8,7 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 
 | Tệp | Nội dung | Dùng cho |
 |---|---|---|
-| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 81 US (53 P1, 28 P2), 280 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
+| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 80 US (53 P1, 27 P2), 276 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
 | [02-luat-co-tuong.md](02-luat-co-tuong.md) | Luật cờ tướng chi tiết, kết thúc ván, lặp thế, chiếu liên tục, ký hiệu nước đi, máy cờ và 3 cấp độ | Lập trình luật cờ và máy cờ |
 | [03-du-lieu.md](03-du-lieu.md) | Thực thể, cột, ràng buộc, quyền truy cập, dữ liệu tạm | Lập trình máy chủ và cơ sở dữ liệu |
 | [04-kien-truc.md](04-kien-truc.md) | Thành phần, xác thực, thời gian thực, đồng hồ, LiveKit, máy cờ, bảo mật, triển khai | Mọi lập trình viên |

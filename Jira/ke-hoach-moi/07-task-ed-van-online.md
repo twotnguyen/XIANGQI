@@ -204,7 +204,7 @@ Epic gồm **11 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, *
 
 **Kết quả (đầu ra):** Bộ lọc payload và đăng ký nhận theo phòng/vai; thông tin X/N, kết quả cho người xem.
 
-**Phạm vi / ngoài phạm vi:** CASUAL tối đa 2 người xem P1, không Replay hoặc phát media.
+**Phạm vi / ngoài phạm vi:** CASUAL tối đa 5 người xem P1, không Replay hoặc phát media.
 
 **Đầu vào cần có:** Danh sách thành viên và max_spectators, thế/lượt/giờ/nước cuối đã xác nhận; không dùng user_id client tự khai. Đầu vào mới bắt buộc: TD-03: snapshot remainingMs/mốc lượt và bộ tính đồng hồ có thẩm quyền.
 
@@ -390,7 +390,7 @@ Epic gồm **11 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, *
 
 **Kết quả (đầu ra):** Overlay theo vai, nối lại toàn trạng thái, bảng nước/người xem trong UI thật; E2E mất mạng.
 
-**Phạm vi / ngoài phạm vi:** P1 tối đa 2 người xem, không Replay hay công cụ giả lập mạng trong sản phẩm P2.
+**Phạm vi / ngoài phạm vi:** P1 tối đa 5 người xem, không Replay hay công cụ giả lập mạng trong sản phẩm P2.
 
 **Đầu vào cần có:** Overlay/bảng nước/người xem web ↔ sync/timer TD-05, snapshot TD-06, notation TD-07; TB-11/TB-06 cung cấp thao tác LOCKED/membership/mã hiện hành. Task nối policy giữ chỗ của TB-06 với runtime ân hạn TD-05, không còn chỉ kiểm hai phần bằng fixture.
 

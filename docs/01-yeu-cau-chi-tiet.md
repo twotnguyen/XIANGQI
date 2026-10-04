@@ -78,7 +78,7 @@ Cách đọc:
 ## Nhóm B — Phòng, mời, ghế, người xem
 
 ### US-ROOM-01 · Tạo phòng (P1) — BA 2.7, 2.8
-* **AC-ROOM-01-01** — Form gồm: tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ **5 / 10 / 15 phút (mặc định 10)**, chế độ `PUBLIC` hoặc `CODE_ONLY`, số người xem tối đa **Không có người xem / 1 / 2 (mặc định 2)**. `LOCKED` không chọn được lúc tạo.
+* **AC-ROOM-01-01** — Form gồm: tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ **5 / 10 / 15 phút (mặc định 10)**, chế độ `PUBLIC` hoặc `CODE_ONLY`, số người xem tối đa **Không có người xem / 1 / 2 / 3 / 4 / 5 (mặc định 5)**. `LOCKED` không chọn được lúc tạo.
 * **AC-ROOM-01-02** — Khi tạo thành công thì tạo mã 8 ký tự, người tạo là **Host** ngồi **ghế Đỏ** ở phòng chờ.
 * **AC-ROOM-01-03** — Khi đang ngồi ghế ở phòng/ván khác thì nút *Tạo phòng* `DISABLED` kèm tooltip *"Bạn đang ở trong một ván/phòng khác"* (BA 1.8).
 * **AC-ROOM-01-04** — Mức giờ và số người xem **không đổi được** sau khi tạo.
@@ -100,7 +100,7 @@ Cách đọc:
 
 ### US-ROOM-05 · Vào phòng bằng mã, link hoặc Sảnh (P1) — BA 2.6, 2.8
 * **AC-ROOM-05-01** — Nhập mã 8 ký tự ở Sảnh hoặc mở link: còn ghế trống thì **vào ghế đó**; ghế đã kín và còn chỗ xem thì vào làm **Người xem** kèm thông báo *"Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem."*
-* **AC-ROOM-05-02** — Phòng đủ (2 người chơi + số người xem tối đa của phòng, tối đa 4 người) thì từ chối kèm *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"* ở `SCR-ACCESS-DENIED`.
+* **AC-ROOM-05-02** — Phòng đủ (2 người chơi + số người xem tối đa của phòng, tối đa 7 người; nhiều lệnh vào đồng thời cũng không vượt quá sức chứa) thì từ chối kèm *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"* ở `SCR-ACCESS-DENIED`.
 * **AC-ROOM-05-03** — Vào từ danh sách phòng ở Sảnh (nút *Vào xem*) thì **luôn** vào làm Người xem.
 * **AC-ROOM-05-04** — Người bị đuổi hoặc phòng `LOCKED` thì vào bị từ chối (US-ROOM-09, US-ROOM-07).
 
@@ -481,15 +481,9 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 
 ### US-SOC-03 · Thách đấu (P2) — BA 2.7, 5.5, 2.5
 * **AC-SOC-03-01** — Chỉ tài khoản chính thức thách đấu bạn đang Online từ Bạn bè; Đang đấu/Offline có DISABLED và lý do.
-* **AC-SOC-03-02** — Mở form Tạo phòng hiện có, người gửi nhập tên; mặc định 10 phút/CODE_ONLY/2 người xem, được đổi trong phạm vi CASUAL. Xác nhận mới tạo phòng rồi gửi mời theo BA 2.5; Huỷ form không tạo/gửi gì. Không dùng thách đấu để chọn đối thủ Đánh Hạng.
+* **AC-SOC-03-02** — Mở form Tạo phòng hiện có, người gửi nhập tên; mặc định 10 phút/CODE_ONLY/5 người xem, được đổi trong phạm vi CASUAL. Xác nhận mới tạo phòng rồi gửi mời theo BA 2.5; Huỷ form không tạo/gửi gì. Không dùng thách đấu để chọn đối thủ Đánh Hạng.
 * **AC-SOC-03-03** — Người nhận có Tham gia/Từ chối và hạn 30 giây; Tham gia kiểm quyền/sức chứa/phiên bản link tại máy chủ như mọi lời mời phòng.
 * **AC-SOC-03-04** — Người gửi đang có vị trí chơi không tạo thêm phòng; bạn vừa bận hoặc lời mời bị từ chối/hết hạn thì giữ phòng đã tạo để Host quản lý, không giả định người nhận đã vào hoặc tự tạo ván.
-
-### US-SOC-04 · Mở rộng người xem (P2) — BA 4.1, Phần 11
-* **AC-SOC-04-01** — P2 mở lựa chọn sức chứa CASUAL tới năm người xem, P1 vẫn tối đa hai; giá trị N đã chọn lúc tạo không đổi trong vòng đời phòng.
-* **AC-SOC-04-02** — N=0 không nhận người xem; N=5 nhận tối đa năm, người thứ sáu bị chặn kể cả nhiều lệnh vào đồng thời; Khách tính vào N.
-* **AC-SOC-04-03** — Người xem chỉ xem/nghe theo chia sẻ và chat chung; không phát media, không đọc chat riêng, không Replay.
-* **AC-SOC-04-04** — LOCKED giữ người xem cũ và chặn mới; chỉ hai người ngồi ghế được đuổi; mở rộng sức chứa không áp dụng cho RANKED.
 
 ## Nhóm M — Lịch sử, xem lại, xuất dữ liệu (P2)
 
@@ -555,7 +549,7 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 | 3 | Mời vào phòng (link, mã, bạn bè online) | US-ROOM-04, 05; US-FRIEND-01…05 |
 | 4 | Khởi tạo bàn cờ | US-BOARD-01…05 |
 | 5 | Hai người đánh online | US-PLAY-01…10; US-ROOM-10, 11 |
-| 6 | Công khai / khoá / có mã, tối đa 2 người xem | US-ROOM-05…09, 12; US-PLAY-09 |
+| 6 | Công khai / khoá / có mã, tối đa 5 người xem | US-ROOM-05…09, 12; US-PLAY-09 |
 | 7 | Chat, camera, mic, kênh riêng cho người xem | US-CHAT-01, 02; US-MEDIA-01…03 |
 | 8 | Đánh với máy | US-AI-01…04 |
 

@@ -134,7 +134,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
      * Ô *"Vào phòng bằng mã"*: Nhập mã 8 ký tự (VD: `K7M2-XQP4`) $\rightarrow$ Tham gia tức thì.
      * *Danh sách phòng đang có (Lobby Room List):*
        * Chỉ hiển thị các phòng ở chế độ **`PUBLIC` (Công khai)**.
-       * Cột thông tin: Tên phòng, Chủ phòng, Mức giờ, Số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 4 ở P1, không quá 7 ở P2 khi sức chứa người xem tối đa 5), Nút *"Vào xem"* (luôn vào vai Người xem).
+       * Cột thông tin: Tên phòng, Chủ phòng, Mức giờ, Số người (`X/Y`, Y = 2 + số người xem tối đa của phòng, không quá 7), Nút *"Vào xem"* (luôn vào vai Người xem).
   2. **ĐÁNH HẠNG (Ranked Mode) — So tài nghiêm ngặt:**
      * Thẻ tóm tắt Rank cá nhân: Huy hiệu Rank, Điểm Elo hiện tại (VD: `1420 Elo`), Thứ hạng hiện tại, Tỷ lệ thắng.
      * Nút lớn: **"Tìm trận Xếp hạng" (Find Ranked Match)** $\rightarrow$ Mở `MODAL-MATCHMAKING`. (Khách bấm vào bị chặn nhắc đăng ký). Người chưa có ván Ranked nào thấy nhãn *"Chưa xếp hạng"*.
@@ -251,7 +251,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không modal**; các hộp còn lại áp quy tắc modal tương ứng.
 
 1. **`MODAL-GUEST-NAME` (Nhập Tên Khách Tạm Thời):** Mở từ nút Guest tại `SCR-LOGIN`. Nhập Display Name tạm (2–20 ký tự, có dấu tiếng Việt, qua bộ lọc từ cấm, không cần duy nhất). Nhắc nhở cấm đánh Ranked và không lưu lịch sử. Nút *"Vào chơi"* và *"Hủy"*.
-2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Nhập tên phòng (1–60 ký tự, qua bộ lọc từ cấm), chọn thời gian (Không giới hạn, 5p, 10p, 15p - không cộng giây; không đổi được sau khi tạo), chọn chế độ (`PUBLIC` hoặc `CODE_ONLY`; `LOCKED` không chọn được lúc tạo; ý nghĩa ở BA-SCOPE `Quyết định 2.7`), chọn **Người xem**: *Không có người xem* hoặc tối đa 1–2 ở P1, tới 5 ở P2 (**mặc định 2**, không đổi sau khi tạo).
+2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Nhập tên phòng (1–60 ký tự, qua bộ lọc từ cấm), chọn thời gian (Không giới hạn, 5p, 10p, 15p - không cộng giây; không đổi được sau khi tạo), chọn chế độ (`PUBLIC` hoặc `CODE_ONLY`; `LOCKED` không chọn được lúc tạo; ý nghĩa ở BA-SCOPE `Quyết định 2.7`), chọn **Người xem**: *Không có người xem* hoặc tối đa 1–5 (**mặc định 5**, không đổi sau khi tạo).
 3. **`MODAL-INVITE` (Chia Sẻ Phòng Đa Kênh):** Mở từ phòng chờ/thi đấu. Một lần bấm tạo đủ 3 hình thức (cùng một quyền vào phòng, không phân biệt xem/chơi); chỉ 2 người chơi thấy nút này. Gồm: Khối hiển thị Mã QR (nút tải/sao chép ảnh), Khối Link URL (Auto-Redirect sau login/guest), Khối Mã 8 ký tự monospace, Tab mời bạn bè Online.
 4. **`MODAL-ROOM-SETTINGS` (Cài Đặt Phòng Động):** Chủ phòng đổi giữa `PUBLIC`, `CODE_ONLY`, `LOCKED`; **`LOCKED` chỉ bật được khi đã đủ 2 người chơi** (trước đó nút `DISABLED` kèm tooltip), người đang có ghế/đang xem mất mạng vẫn vào lại được (người chơi 60 giây, người xem 5 phút). Đổi sang `LOCKED`: Ẩn sảnh, chặn người mới, **giữ nguyên người xem đang có trong phòng**.
 5. **`MODAL-MATCHMAKING` (Hàng Đợi Tìm Trận Ranked):** Radar quét đối thủ theo Elo ($\Delta Elo \le 100$, $\pm 50$ mỗi 10s), đồng hồ đếm giây. Nút *"Hủy tìm trận"* (hủy tự do khi chưa thấy đối thủ; khóa nút khi `MATCH_FOUND`).
@@ -273,7 +273,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân, Icon Chuông báo lời mời kết bạn, huy hiệu tổng **tin đến** chưa đọc từ bạn hiện tại (đánh dấu khi tin hiển thị trong vùng nhìn ở tab hoạt động, BA 5.2), Avatar + Tên hiển thị (`Display Name`) kèm menu con Cài đặt hồ sơ.
 2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; **phòng Đánh Hạng (P2) chỉ có `[Kênh Riêng]`, không có `[Kênh Chung]` và người xem** (BA 5.4, 7.2); `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (người đổi chỗ sau không đọc tin cũ), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. 2 tab: `[Kênh Riêng]` (chỉ 2 người chơi, mặc định mở cho người chơi) và `[Kênh Chung]` (cả người chơi và người xem, người xem chỉ thấy tab này). Công tắc ẩn Kênh Chung. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm.
 3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM`. 2 video trực tiếp SFU của 2 người chơi. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ **chung cho camera và mic đang bật**: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; Ranked chỉ có 2 mức đầu). Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Người xem tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 người chơi giao lưu.
-4. **`PANEL-SPECTATORS` (Danh Sách Người Xem Trong Phòng Thường):** Nằm ở cột phải `SCR-GAME-ROOM` (phòng Ranked cấm xem 100% nên không có). Tiêu đề: *"Người xem (X / N)"* (N = số người xem tối đa của phòng: 1–2 ở P1, tới 5 ở P2). Cả Chủ phòng và người chơi còn lại đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
+4. **`PANEL-SPECTATORS` (Danh Sách Người Xem Trong Phòng Thường):** Nằm ở cột phải `SCR-GAME-ROOM` (phòng Ranked cấm xem 100% nên không có). Tiêu đề: *"Người xem (X / N)"* (N = số người xem tối đa của phòng: 1–5). Cả Chủ phòng và người chơi còn lại đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
 
 ---
 
@@ -329,7 +329,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 31 | `PANEL-NAVBAR` | Thanh điều hướng Header toàn cục + Icon thông báo | Embedded Panel| Cố định đầu mọi trang | **P1** |
 | 32 | `PANEL-CHAT` | Khung chat 2 kênh, bộ lọc từ cấm `***`, 12 sticker | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
 | 33 | `PANEL-MEDIA` | Face cam & Mic LiveKit SFU 2 người chơi (3 mức chia sẻ) | Embedded Panel| Cột trái `SCR-GAME-ROOM` | **P1** |
-| 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa N, 1–2) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
+| 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa N, 1–5) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
 | 35 | `ALERT-INACTIVITY-BANNER`| Cảnh báo chống treo ván R17 đếm 30s không modal | System Alert | Banner nổi trên bàn cờ | P2 |
 | 36 | `OVERLAY-RECONNECTING` | Lớp phủ mất kết nối Socket.IO ân hạn 60s | System Overlay| Phủ mờ toàn màn hình | **P1** |
 | 37 | `MODAL-MEDIA-TAB-SWITCH`| Cảnh báo độc quyền thiết bị Mic/Cam đa tab | System Dialog | Nổi khi tranh chấp thiết bị | P2 |

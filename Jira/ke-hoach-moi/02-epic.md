@@ -109,7 +109,7 @@ Mỗi Epic theo mẫu Description đủ chi tiết (mục 12.1 của tài liệu
 
 **Task của Epic:** `TB-01`, `TB-02`, `TB-03`, `TB-04`, `TB-05`, `TB-06`, `TB-07`, `TB-08`, `TB-09`, `TB-10`, `TB-11`, `TB-12` (12 task; chi tiết ở các tệp Description task).
 
-**Kiểm thử Epic:** Demo D2–D5: A tạo phòng; B vào bằng link/mã; C, D vào sau khi ghế kín thành người xem, người thứ ba bị từ chối; A khoá phòng, E không vào được.
+**Kiểm thử Epic:** Demo D2–D5: A tạo phòng; B vào bằng link/mã; C, D vào sau khi ghế kín thành người xem, người xem vượt sức chứa bị từ chối (demo chọn tối đa 2 người xem); A khoá phòng, E không vào được.
 
 **PASS khi:**
 - Mọi AC `AC-ROOM-…` đạt, gồm nhánh phòng đầy, bị chặn, `LOCKED`, một vị trí chơi mỗi người.

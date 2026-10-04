@@ -58,7 +58,7 @@ Epic gồm **7 task**. Mỗi task: dòng đầu (Epic, thành phần, Sprint, **
 **Cách làm gợi ý:**
 
 1. Tự chuẩn bị/reset tài khoản và dữ liệu riêng trên môi trường thử bằng dịch vụ tiền đề; kiểm đăng nhập, hoàn tất hồ sơ, quyền và registry. Không tạo các phiên giả hoặc bỏ guard để đạt 50 kết nối.
-2. Dựng 10 ván/20 người chơi + 30 kết nối khác ở xem/Sảnh/chat; mỗi phòng tối đa 2 người xem. Ghi cách tăng kết nối phù hợp giới hạn tài khoản đã chốt.
+2. Dựng 10 ván/20 người chơi + 30 kết nối khác ở xem/Sảnh/chat; mỗi phòng tối đa 5 người xem. Ghi cách tăng kết nối phù hợp giới hạn tài khoản đã chốt.
 3. Chạy nước hợp lệ đều trong 10 phút; ghi mốc server nhận/phát và client người xem nhận, phương pháp đồng bộ giờ/sai số. Tính riêng p95 LAN và tải tổng, không chỉ lấy thời gian server.
 4. Nếu workload media đã được duyệt, chạy qua TE-07 thật theo cấu hình docs/05 §6; ghi track/băng thông/quota riêng, không lấy socket thay media.
 5. Báo đủ số đo và FAIL/BLOCKED/chưa kết luận, giao lỗi miền ngay và đo lại sau bản sửa; dọn dữ liệu thử, không chờ TQ-07 mới sửa.
