@@ -422,3 +422,24 @@ Một mô tả đạt khi trả lời "có" cho cả 14 câu:
 2. **Trạng thái Jira:** **không** tạo thêm cột "Sẵn sàng kiểm thử"; dùng bình luận bàn giao chuẩn (mẫu ở mục tự kiểm tra).
 
 Các Epic, Story và Task đã được viết theo chuẩn này và các mẫu ở `00b-mau-description-chi-tiet.md`: 8 Epic, 26 Story, 62 Task (xem `01-components-epic-khung-task.md`).
+
+## 15. Thông tin quản lý đi kèm mỗi Epic, Story, Task (bổ sung 04/10/2026)
+
+Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm các thông tin theo tài liệu nghiên cứu Scrum (mục 2 và 12 của `Jira/scrum-jira-2026-10-04/08-tong-hop-nghien-cuu-3-agent.md`):
+
+| Thông tin | Epic | Story | Task |
+|---|---|---|---|
+| Nhãn (label) `P1`, mã mục yêu cầu; loại Task (triển khai, QA, SPIKE) | có | có | có |
+| Trạng thái ban đầu To Do; người nhận để trống; Sprint | có (không gán Sprint) | có | có (đề xuất Sprint) |
+| Nguồn / Phục vụ: mã đặc tả để truy vết (BA, mục yêu cầu, tiêu chí, yêu cầu phi chức năng, cổng kiểm chứng, kịch bản demo) | Nguồn | Nguồn | Phục vụ |
+| Phạm vi có / không | có | có | "Không thuộc task này" |
+| Bắt đầu khi (phụ thuộc, kết quả cụ thể cần có) | có | có | "Phải xong trước" |
+| Kết quả (đầu ra) | "Kết quả khi Epic xong" | điều kiện hoàn thành | "Kết quả (đầu ra)" |
+| Kiểm thử | kiểm thử Epic (kịch bản demo) | **bảng tiêu chí đối chiếu từng tiêu chí đặc tả** (điều kiện đạt, cách kiểm, Task kiểm) và năm trạng thái giao diện | bảng lỗi và bảng tự kiểm tra |
+| Điều kiện hoàn thành (PASS) | có | có | "Khi nào task xong" |
+| Bằng chứng nộp (trạng thái ban đầu NOT_RUN) | có | có | có |
+| Rủi ro / chưa rõ / còn mở | có | có | có |
+| Liên kết Jira: Epic cha; `is blocked by`; `relates to` | có | có | có |
+| Ước lượng | không | không | nhóm điền giờ khi họp Sprint |
+
+Mã tiêu chí (`AC-…`), mã mục yêu cầu (`US-…`), yêu cầu phi chức năng (`NFR-…`) và cổng (`GATE-…`) **chỉ nằm ở các khối "Nguồn", "Phục vụ", bảng tiêu chí và nhãn**, để truy vết; phần mô tả vẫn bằng tiếng thường. Bảng đối chiếu toàn bộ nằm ở `14-bang-doi-chieu-tieu-chi.md`.

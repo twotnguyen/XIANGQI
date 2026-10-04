@@ -9,6 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** không có (đây là việc đầu tiên).
+**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Tạo "bộ khung" để cả nhóm cùng cài đặt, chạy và kiểm tra phần mềm theo một cách giống nhau. Mọi task sau đều dùng kho mã này. Task này **chưa làm tính năng cờ tướng nào**.
@@ -64,12 +65,18 @@ Chuẩn bị: một nhánh thử.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Không còn lỗi đã biết. Kiểm tra tự động bắt được lỗi thật.
 **Bàn giao cho task sau:** kho mã chạy được cùng hướng dẫn, để các task còn lại dùng; hệ thống kiểm tra tự động hoạt động cho mọi nhánh.
 **Không thuộc task này:** tính năng cờ tướng, giao diện, máy chủ thật; thay đổi quyền của kho mã; đặt mật khẩu bí mật; triển khai ra mạng.
+**Phục vụ (nguồn):** nền tảng chung của dự án. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
+**Bằng chứng nộp:** Đường dẫn lần chạy kiểm tra tự động (một lần xanh, một lần đỏ cố ý); hướng dẫn cài đặt. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Nhóm phải thống nhất cách đặt tên nhánh và cách chạy lệnh trước khi làm việc song song.
+**Liên kết Jira (khi được phép tạo):** không bị chặn bởi task nào; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã để tạo gói dùng chung.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `contract` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Soạn một **bản mô tả thống nhất** cho phần giao diện (trình duyệt) và phần máy chủ: mỗi bên gửi những thông tin gì, nhận lại gì, báo lỗi thế nào. Cả hai nhóm làm theo bản này nên **không phải đoán** và có thể làm song song. Đây là điều kiện để giao diện và máy chủ cùng bắt đầu từ một nơi chung.
@@ -116,12 +123,18 @@ Chuẩn bị: một chương trình mẫu dùng hợp đồng ở cả hai phía
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý; mọi điều chưa chốt đã ghi rõ ai quyết.
 **Bàn giao cho task sau:** gói hợp đồng chung đã biên dịch được, cùng ví dụ để cả hai nhóm dùng.
 **Không thuộc task này:** viết phần xử lý thật ở máy chủ, viết giao diện; các lệnh của giai đoạn sau (Đánh Hạng, đi lại, Khách...).
+**Phục vụ (nguồn):** nền tảng chung của dự án. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Gói hợp đồng chung biên dịch được, có danh sách lệnh, thông tin đi kèm, nhóm lỗi và ví dụ hợp lệ/sai dùng được ở cả giao diện và máy chủ.
+**Bằng chứng nộp:** Kết quả biên dịch cả hai phía; bộ ví dụ; biên bản nhóm giao diện và nhóm máy chủ đã đọc. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Nếu thiếu một lệnh thì hai nhóm phải dừng làm song song; cần chốt tên lệnh sớm.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-03 — Cấu hình Supabase gửi mã OTP đăng ký
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được quy ước đặt thông tin cấu hình mà không lộ bí mật.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Cấu hình dịch vụ đăng nhập **Supabase** để gửi **mã OTP 6 chữ số** qua email khi người dùng đăng ký, theo đúng quy định của dự án. Kết quả giúp task thử nghiệm OTP và phần đăng ký ở máy chủ dùng được. **Chưa** tạo tài khoản demo (làm ở task chuẩn bị demo).
@@ -157,12 +170,18 @@ Chuẩn bị: dự án Supabase thử, hộp thư của thành viên nhóm.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
 **Bàn giao cho task sau:** cấu hình đã ghi lại, danh sách email nhóm, hạn mức thư thực tế.
 **Không thuộc task này:** tạo tài khoản demo; thử nghiệm đầy đủ mã OTP (task kế tiếp); gửi thư bằng dịch vụ khác.
+**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-02-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Cấu hình Supabase gửi mã OTP 6 số, hạn 180 giây, gửi lại 60 giây, mẫu thư; danh sách email nhóm; số liệu hạn mức thư thật.
+**Bằng chứng nộp:** Ảnh chụp hoặc bản ghi cấu hình đã che bí mật; số thư gửi được mỗi giờ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Hạn mức thư mặc định chỉ khoảng 2 thư mỗi giờ; chỉ gửi tới email thành viên nhóm.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và nơi đặt các tệp tạo bảng dữ liệu.
+**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Tạo **cơ sở dữ liệu** (nơi lưu thông tin lâu dài trên Supabase) gồm các bảng cần cho giai đoạn đầu và **quy tắc ai được đọc, ai được ghi**. Các phần sau lưu và đọc dữ liệu qua đây. Task này chỉ tạo bảng và quy tắc, **không** viết xử lý nghiệp vụ.
@@ -207,12 +226,18 @@ Chuẩn bị: cơ sở dữ liệu thử sạch, hai tài khoản thử.
 **Bàn giao cho task sau:** các tệp lệnh tạo bảng và quy tắc quyền, chạy được trên cơ sở dữ liệu thử.
 **Không thuộc task này:** bảng cho Đánh Hạng, chat 1-1, đổi tên đăng nhập, lịch sử xem lại (giai đoạn sau); xử lý nghiệp vụ.
 **Lưu ý:** tên bảng và cột là đề xuất, nhóm có thể chỉnh. Hợp đồng chung và cơ sở dữ liệu giao nhau ở trạng thái, cột và biên lai: nhóm chốt từng hiện vật chung một trước khi cài đặt phần giao nhau.
+**Phục vụ (nguồn):** NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Các tệp tạo bảng và quy tắc quyền truy cập chạy được trên cơ sở dữ liệu thử; ràng buộc (một ghế mỗi người, số người xem 0–5, tên không trùng không phân biệt hoa thường).
+**Bằng chứng nộp:** Kết quả chạy tệp tạo bảng; kết quả thử ghi trái quyền bị từ chối. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Chưa kiểm số chỗ khi nhiều người cùng vào (làm ở task phòng).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-07 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã build được. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách lệnh, thông tin đi kèm và nhóm lỗi. *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được cấu hình đăng nhập và cách kiểm tra phiên, bí mật chỉ nằm ở máy chủ.
+**Loại:** Task triển khai · **Nhãn:** `P1` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và chuyển từng lệnh đến đúng nơi xử lý theo hợp đồng chung. Đây là "khung" cho tất cả phần máy chủ về sau; task này chưa chứa luật phòng hay luật ván.
@@ -225,6 +250,7 @@ Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và
 5. Để chỗ cắm cho kiểm tra hạn phiên (task đăng nhập) và giới hạn tốc độ kết nối (task giới hạn).
 6. Dùng chốt thử (cho phép hoặc từ chối) **chỉ trong bài kiểm tra**, không dùng trong sản phẩm.
 7. Không ghi bí mật vào nhật ký.
+8. Ghi **nhật ký có cấu trúc** (thời điểm, mã lệnh hoặc mã ván, mã lỗi) cho lỗi, ván gián đoạn, sự cố máy cờ và việc phục hồi đăng ký; **không ghi** mật khẩu, mã OTP, token hay nội dung chat; thêm một điểm kiểm tra "máy chủ còn sống"; nhật ký giữ tối đa **14 ngày** rồi bị dọn.
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -233,6 +259,7 @@ Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và
 | Người A kết nối nhưng gửi kèm "tôi là B" | Vẫn là A |
 | Chốt kiểm tra quyền bị thiếu, từ chối hoặc lỗi | Nơi xử lý **không chạy** |
 | Lệnh sai dạng | Trả lỗi, không gây tác động |
+| Gây lỗi rồi đọc nhật ký | Có mục đúng mã lỗi và mã lệnh; **không** có mật khẩu, mã OTP, token, chat |
 
 **Cách tự kiểm tra**
 Chuẩn bị: thông tin đăng nhập thử.
@@ -242,17 +269,24 @@ Chuẩn bị: thông tin đăng nhập thử.
 | 2 | Kết nối bằng thông tin của A, gửi kèm "tôi là B" | Danh tính vẫn là A |
 | 3 | Bỏ chốt kiểm tra quyền, hoặc cho chốt từ chối, hoặc gây lỗi trong chốt | Nơi xử lý không chạy |
 | 4 | Dùng chốt thử cho phép; gửi lệnh đúng rồi lệnh sai dạng | Đúng thì được xử lý thử; sai thì trả lỗi |
+| 5 | Gây một lỗi và đọc nhật ký; gọi điểm kiểm tra sức khoẻ; chạy tác vụ dọn nhật ký với đồng hồ giả quá 14 ngày | Nhật ký có mã lỗi đúng, không có bí mật; điểm kiểm tra trả "còn sống"; nhật ký quá 14 ngày bị dọn |
 
-**Khi nào chuyển cho người kiểm thử:** cả 4 dòng đạt, mặc định thật sự đóng.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, mặc định thật sự đóng.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** nghiệm thu việc chặn tài khoản chưa hoàn tất đăng ký (thuộc task đăng nhập).
 **Bàn giao cho task sau:** khung máy chủ, chỗ cắm chốt quyền, chỗ cắm hạn phiên và giới hạn tốc độ.
 **Không thuộc task này:** luật phòng, luật ván, kiểm tra hồ sơ đăng ký, giới hạn tốc độ chi tiết.
+**Phục vụ (nguồn):** NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Máy chủ chạy, nhận kết nối có xác thực, chuyển lệnh theo hợp đồng, có chỗ cắm chốt quyền, hạn phiên, giới hạn tốc độ; mặc định đóng (không có quyền thì không nhận).
+**Bằng chứng nộp:** Kết quả thử kết nối đúng/sai thông tin; nhật ký đã che bí mật. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Cách kiểm tra phiên phụ thuộc cấu hình đăng nhập (task cấu hình OTP).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-02, T-03; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-08 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và lệnh biên dịch. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói hợp đồng để dùng trong giao diện.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-UI-03`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Tạo "bộ khung" trang web (React và Vite): có trang, có chuyển trang, nối được với hợp đồng chung. Các màn hình ở các task sau chỉ việc gắn vào. Task này **chưa làm màn hình nào thật** và chưa nối máy chủ.
@@ -299,12 +333,18 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Trang khung **không** được coi là một luồng đã chạy thật. Việc đo trợ năng trên toàn bộ màn hình làm ở T-59.
 **Bàn giao cho task sau:** khung web để các task màn hình dùng; bộ khối nền cho mọi task giao diện khác.
 **Không thuộc task này:** làm các màn hình cụ thể; nối máy chủ thật; bộ chọn giao diện và giao diện sáng; thư viện giao diện ngoài; các chức năng giai đoạn sau.
+**Phục vụ (nguồn):** Story 4; tiêu chí AC-UI-03-01, AC-UI-05-01, AC-UI-06-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Ứng dụng web chạy được, có kiểu chữ/màu Kỳ Đài Cổ Phong, các khối nền (nút, ô nhập, hộp thoại, thông báo, chú thích, khung xương) đủ 5 trạng thái và trang kiểm tra nội bộ.
+**Bằng chứng nộp:** Ảnh chụp trang kiểm tra; kết quả biên dịch; kiểm tra bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Phông chữ Hán phải tự đặt trong ứng dụng, cần kiểm quyền sử dụng.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-02; liên quan tới (relates to) Story 4; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-10 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói chung dùng được ở cả giao diện và máy chủ, có chỗ trả kết quả lọc. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng "biên lai lệnh" và ràng buộc theo người gửi và mã yêu cầu. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ có điểm kiểm tra khi nhận kết nối và khi chuyển lệnh, và biết ai đang gửi.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Tạo **một bộ lọc từ ngữ bị cấm duy nhất** dùng cho: tên phòng, tên hiển thị của người dùng, tin nhắn chat. Giao diện và máy chủ dùng chung để cho **cùng một kết quả**; máy chủ luôn kiểm lại, không tin kết quả giao diện.
@@ -388,12 +428,18 @@ Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc m
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý, nhóm đã xác nhận bộ ví dụ. Điều cần làm rõ thêm: gửi lại **sau khi biên lai đã bị dọn** hoặc **cùng mã nhưng nội dung khác**. Nhóm cần quyết (chờ quyết định). **Chưa** nghiệm thu các nơi xử lý đăng nhập, tạo phòng, vào phòng (các task đó dùng cơ chế này và tự kiểm).
 **Bàn giao cho task sau:** bộ lọc dùng chung cho tên phòng, tên hiển thị, chat; cơ chế dùng chung cho phòng, ván, chat; ví dụ cách dùng; hàm giới hạn dùng chung, các mức đã chốt.
 **Không thuộc task này:** việc gửi chat và kiểm độ dài tên (nơi xử lý đó tự kiểm); luật cờ, đồng hồ; giới hạn gửi mã OTP và giới hạn chat riêng (đã có quy định riêng). Ván với máy ở giai đoạn đầu không lưu vào cơ sở dữ liệu nên dùng bản trong bộ nhớ.
+**Phục vụ (nguồn):** Story 3, 15, 22; tiêu chí AC-AUTH-05-01, AC-PLAY-01-03, AC-CHAT-02-02; NFR-04, NFR-10. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Bộ lọc từ cấm dùng chung, cơ chế chống làm hai lần (biên lai theo người gửi và mã yêu cầu), bộ giới hạn tốc độ với các mức đã chốt; kèm ví dụ cách dùng.
+**Bằng chứng nộp:** Kết quả chạy ví dụ ở hai phía; kết quả thử đồng thời; số liệu giới hạn. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Danh sách từ cấm do nhóm cung cấp; gửi lại sau khi biên lai bị dọn hoặc cùng mã khác nội dung cần nhóm quyết.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-04, T-07; liên quan tới (relates to) Story 3, Story 15, Story 22; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-12 — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được cấu hình thư mã 6 số, hạn 180 giây, gửi lại 60 giây, hạn mức thư thử. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cờ đăng ký dở. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận yêu cầu và trả kết quả.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Khi người dùng gõ tên đăng nhập ở bước đầu của đăng ký, máy chủ trả lời ngay "tên này **dùng được**", "**đã có người dùng**" hoặc "**không hợp lệ**". Bước này **chỉ kiểm tra**, không tạo tài khoản và không giữ chỗ tên. Giao diện đăng ký (task sau) dùng kết quả này.
@@ -452,12 +498,18 @@ Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot"; 
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
 **Bàn giao cho task sau:** chức năng kiểm tên chạy được, cho giao diện đăng ký và bước hoàn tất đăng ký; chức năng gửi mã và cách khoá theo email để bước hoàn tất và tác vụ dọn dùng chung.
 **Không thuộc task này:** giữ chỗ tên đăng nhập; đổi tên đăng nhập (giai đoạn sau); ô nhập ở giao diện; đăng nhập Google; quên mật khẩu. Việc xác minh mã và tạo tài khoản thuộc task kế tiếp.
+**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-01-02, AC-AUTH-01-04, AC-AUTH-02-01, AC-AUTH-02-02, AC-AUTH-02-03. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Chức năng kiểm tên đăng nhập và chức năng gửi mã OTP chạy đúng quy tắc, có khoá theo email dùng chung.
+**Bằng chứng nộp:** Kết quả thử từng dòng ở bảng tự kiểm tra; thư thật đã nhận (đã che). Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Hạn mức thư; dịch vụ thư có thể từ chối.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-04, T-07; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-19 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (T-12)*: nhận được chức năng kiểm tên đúng quy tắc và không giữ chỗ; nhận được bản đăng ký dở, chức năng gửi mã và cơ chế khoá theo email dùng chung.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài khoản: kiểm lại tên, đặt mật khẩu, ghi hồ sơ, đánh dấu hoàn tất và đăng nhập. Phải an toàn khi lỗi xảy ra giữa chừng: **không bao giờ để tài khoản dùng được khi chưa hoàn tất, và không xoá nhầm tài khoản đã hoàn tất**.
@@ -497,12 +549,18 @@ Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" qu
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** tính việc dọn định kỳ (task sau).
 **Bàn giao cho task sau:** tài khoản dùng được; trạng thái hoàn tất và cờ để các task chặn người chưa hoàn tất và tác vụ dọn dùng.
 **Không thuộc task này:** giao diện, dọn dẹp định kỳ, đăng nhập Google.
+**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-03-01, AC-AUTH-03-02, AC-AUTH-03-03, AC-AUTH-03-04, AC-AUTH-03-05, AC-AUTH-03-06. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Hoàn tất đăng ký an toàn khi lỗi giữa chừng: kiểm mã, kiểm lại tên, đặt mật khẩu, ghi hồ sơ, bỏ cờ chờ, trả phiên dùng được.
+**Bằng chứng nộp:** Kết quả thử dừng quy trình ở từng mốc; hồ sơ trước/sau. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Giới hạn nhập sai của dịch vụ chỉ gần đúng (đã được PO chấp nhận).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-12; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-20 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được dịch vụ đăng nhập thử đã cấu hình. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cách bảo vệ. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được kết quả đã hoàn thành của task này. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cơ chế khoá khi đăng nhập sai nhiều lần; nhận được hàm kiểm từ cấm dùng chung.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Cho người dùng đăng nhập bằng **tên đăng nhập và mật khẩu**, cấp **phiên đăng nhập**, và kiểm tra phiên mỗi lần kết nối. Không bao giờ để lộ email khi đăng nhập.
@@ -555,12 +613,18 @@ Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Chưa** nghiệm thu việc mở nhiều tab (tab mới tiếp quản), giao cho task về camera/micro và nhiều tab.
 **Bàn giao cho task sau:** chức năng đăng nhập và chốt kiểm tra phiên cho giao diện và các phần khác; chức năng hồ sơ cho giao diện hồ sơ và các nơi hiển thị tên.
 **Không thuộc task này:** giao diện đăng nhập; tiếp quản phiên khi mở tab mới; đăng nhập Google; quên mật khẩu; ảnh đại diện tải lên; đổi email hay tên đăng nhập.
+**Phục vụ (nguồn):** Story 2, 3; tiêu chí AC-AUTH-04-01, AC-AUTH-04-02, AC-AUTH-04-03, AC-AUTH-05-01, AC-AUTH-05-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên 12 giờ/30 ngày, kiểm hạn và thu hồi, xem và sửa tên hiển thị.
+**Bằng chứng nộp:** Kết quả thử từng dòng; thông báo lỗi chung. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Giới hạn đăng nhập sai (5 lần/15 phút) là mức khởi đầu, nhóm có thể chỉnh sau khi đo.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-04, T-07, T-10; liên quan tới (relates to) Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-23 — Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, QA & DevOps · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được cấu hình OTP đã ghi, hộp thư nhóm và hạn mức thư thử. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được trạng thái hoàn tất và cờ đang chờ cùng quy trình hoàn tất.
+**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Trả lời một câu hỏi: **Supabase thật có đáp ứng được cách đăng ký bằng mã OTP mà dự án cần không?** Kết quả là một báo cáo có số đo thật. Task này **không** làm tính năng đăng ký, chỉ giúp nhóm biết có làm được và làm bằng cách nào.
@@ -615,12 +679,18 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Báo cáo hoàn tất **kể cả khi kết luận là không đạt**. Nhưng chú ý: "đạt kiểm tra OTP" chỉ được ghi khi phép thử thực sự đạt. Không được dùng thư giả để thay. **Chỉ ghi "xong" khi cả việc chặn người chưa hoàn tất và việc chặn đổi email đều đạt**. Nếu cơ chế đổi email chưa có thì phần đó ghi bị chặn, không ghi xong cả task.
 **Bàn giao cho task sau:** báo cáo và phương án cho các task đăng ký ở Epic Đăng ký và đăng nhập; chốt chặn dùng chung cho mọi đường vào ứng dụng.
 **Không thuộc task này:** viết tính năng đăng ký; dọn tài khoản chính thức; dùng dịch vụ gửi thư khác; đổi tên đăng nhập; quên mật khẩu (giai đoạn sau).
+**Phục vụ (nguồn):** Story 1, 3; tiêu chí AC-AUTH-03-03, AC-AUTH-03-04, AC-AUTH-05-02; GATE-OTP, NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Báo cáo thử nghiệm OTP thật: gửi thư, hết hạn, giới hạn nhập sai, dọn tài khoản dở, chặn đổi email trực tiếp; kết luận đạt / không đạt / chưa kết luận; chốt chặn người chưa hoàn tất.
+**Bằng chứng nộp:** Báo cáo có số đo thật, cấu hình đã che; kết quả gọi thẳng chức năng đổi email. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Chưa biết hệ thống đăng nhập có cho chặn đổi email bằng cấu hình không; nếu không thì ghi "bị chặn" cho phần đó, không bỏ luật.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-19; liên quan tới (relates to) Story 1, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-24 — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu và lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được ô nhập, nút, thông báo lỗi, trạng thái đang tải. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được quy tắc tên hiển thị để giao diện báo đúng.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Màn hình đăng ký gồm **3 bước** dẫn người dùng đến tài khoản: (1) tên đăng nhập và mật khẩu, (2) email, (3) nhập mã OTP. Giao diện này làm trước với **dữ liệu giả**, chưa nối máy chủ thật (việc nối nằm ở task tích hợp T-27).
@@ -639,6 +709,35 @@ Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xu
 9. **Đăng xuất:** có nút ở nơi dễ thấy; xác nhận trước khi thoát.
 10. Mỗi màn hình có đủ 5 trạng thái.
 11. Chạy được bằng bàn phím, đạt chuẩn dễ đọc.
+12. Hiển thị **chữ thuần**: nội dung do người dùng gõ (tên hiển thị, tên phòng, tin chat) luôn hiện nguyên văn như chữ, **không** chạy mã HTML, script hay đường dẫn tự kích hoạt.
+
+**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
+*Màn hình Đăng nhập* (`SCR-LOGIN`)
+- Khung chính giữa trang trên nền giấy ấm, logo quân Tướng và tiêu đề "Kỳ Đài Đăng Nhập".
+- Ô tên đăng nhập (viết liền không dấu) và ô mật khẩu có biểu tượng ẩn/hiện mật khẩu.
+- Ô chọn "Ghi nhớ đăng nhập" (mặc định chọn: phiên 30 ngày; bỏ chọn: hết khi đóng trình duyệt hoặc sau 12 giờ) và nút **Đăng nhập**.
+- Nút Đăng nhập bằng Google và nút Guest (Chơi nhanh) **mờ**, kèm chú thích "Sắp ra mắt"; liên kết "Quên mật khẩu?" mờ "Sắp ra mắt" *(đề xuất, chờ PO duyệt)*; liên kết "Đăng ký tài khoản mới" dẫn tới màn đăng ký.
+- Đã đăng nhập thì tự chuyển về Sảnh; đến từ đường dẫn mời thì sau đăng nhập vào đúng phòng.
+
+*Màn hình Đăng ký (ba bước)* (`SCR-REGISTER`)
+- Thanh tiến trình ba bước: "1. Tài khoản" → "2. Email" → "3. Xác thực OTP".
+- **Bước 1:** ô tên đăng nhập (3–20 ký tự, kiểm trùng sau khi ngừng gõ 0,3 giây), ô mật khẩu (tối thiểu 8 ký tự), ô xác nhận mật khẩu, nút **Tiếp tục**; phía dưới có nút "Đăng ký bằng Google" **mờ** "Sắp ra mắt" *(đề xuất, chờ PO duyệt)*.
+- **Bước 2:** ô email chính chủ, nút **Xác nhận Email** (gửi mã OTP 6 số và sang bước 3), nút **Quay lại**.
+- **Bước 3:** dòng "Mã OTP 6 số đã được gửi đến email …"; **6 ô nhập mã riêng**, tự nhảy ô khi gõ; đồng hồ đếm lùi hạn mã **3 phút**; nút "Gửi lại mã OTP" kèm đếm lùi 60 giây; khi nhập sai quá giới hạn thì khoá biểu mẫu, buộc chờ hoặc gửi lại mã.
+- Chỉ tạo tài khoản khi nhập đúng mã; bỏ dở thì không có tài khoản và tên không bị giữ; email đã đăng ký thì báo "Email này đã được đăng ký".
+
+*Màn hình Cài đặt hồ sơ* (`SCR-PROFILE-SETTINGS`)
+- Ảnh đại diện là chữ cái đầu của tên hiển thị (không có tải ảnh), tên hiển thị, tên đăng nhập (@tên), email.
+- Biểu mẫu đổi **tên hiển thị** (2–30 ký tự, lọc từ cấm, đổi tự do không cần OTP) với nút "Lưu thay đổi".
+- Tên đăng nhập và email **khoá** (hiển thị nhưng không sửa); nút "Đổi Username" mờ "Sắp ra mắt".
+- Không có điểm Elo, bộ chọn giao diện hay chức năng xoá tài khoản ở giai đoạn này; có nút **Đăng xuất**.
+
+**Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+| Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
+|---|---|---|---|---|---|
+| Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt |
+| Màn hình Đăng ký (ba bước) | Hoàn tất OTP và hồ sơ mới cho vào | Gửi/xác minh/hoàn tất từng bước | Bước chưa có dữ liệu hướng dẫn nhập | Trùng tên/email, sai/hết mã hoặc phục hồi chưa xong; ở đúng bước | Chưa hợp lệ, gửi lại chưa đủ 60 giây, đang xử lý |
+| Màn hình Cài đặt hồ sơ | Lưu Display Name; P2 thêm chức năng đúng quyền | Tải/lưu hồ sơ | Ô nhập trống: hướng dẫn, không lưu rỗng | Từ cấm/lỗi lưu: giữ dữ liệu nhập và cho sửa | Email luôn khoá; đổi username P1; đang lưu |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -669,17 +768,25 @@ Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản
 | 8 | Sửa tên 1, 2, 30, 31 ký tự; tên có từ cấm | 2 và 30 lưu được; còn lại báo lỗi |
 | 9 | Thử sửa tên đăng nhập và email | Không sửa được, có chú thích |
 | 10 | Đăng xuất | Có xác nhận, rồi về trang đăng nhập |
+| 11 | Nhập chuỗi chứa thẻ HTML, script, "javascript:" vào tên hiển thị | Hiện nguyên văn như chữ; không có mã nào chạy, không điều hướng |
+| 12 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; kèm ảnh chụp 5 trạng thái.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
 **Bàn giao cho task sau:** màn hình đăng ký dùng được với dữ liệu giả để task tích hợp nối với máy chủ; màn hình đăng nhập, hồ sơ, đăng xuất dùng được với dữ liệu giả.
 **Không thuộc task này:** gọi máy chủ thật (làm ở task nối web với máy chủ); đăng nhập Google và khách (đang để "Sắp ra mắt"); xử lý đăng xuất khi đang chơi; đổi email hay tên đăng nhập.
+**Phục vụ (nguồn):** Story 1, 2, 3; tiêu chí AC-AUTH-01-01, AC-AUTH-01-02, AC-AUTH-01-03, AC-AUTH-02-01, AC-AUTH-02-03, AC-AUTH-03-02, AC-AUTH-03-03, AC-AUTH-03-06, AC-AUTH-04-01, AC-AUTH-04-02, AC-AUTH-04-03, AC-AUTH-04-04, AC-AUTH-05-01, AC-AUTH-05-02, AC-AUTH-05-03, AC-AUTH-05-04; NFR-06. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Màn hình đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất đủ 5 trạng thái, chạy với dữ liệu giả.
+**Bằng chứng nộp:** Ảnh chụp 5 trạng thái từng màn; kết quả kiểm bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Nút Đăng ký bằng Google và liên kết Quên mật khẩu đang là đề xuất chờ PO duyệt.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08, T-20; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-27 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend, Authentication · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được chức năng thật ở máy chủ. *Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-23)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được màn hình đã dựng.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng ký tới đăng nhập, sửa hồ sơ, đăng xuất** trên môi trường thử, có email thật.
@@ -715,12 +822,18 @@ Chuẩn bị: máy chủ và giao diện chạy thử, email nhóm.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
 **Bàn giao cho task sau:** tài khoản thật đăng nhập được, cho các phần phòng chơi và ván.
 **Không thuộc task này:** vào lại đúng phòng sau đăng nhập (T-47), đăng xuất khi đang chơi (T-48).
+**Phục vụ (nguồn):** Story 1, 2, 3; tiêu chí AC-AUTH-02-02, AC-AUTH-03-01, AC-AUTH-04-01, AC-AUTH-05-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Đăng ký, đăng nhập, hồ sơ, đăng xuất chạy trọn trên môi trường thử với email thật.
+**Bằng chứng nộp:** Video hoặc báo cáo Playwright; thư thật đã che. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Hạn mức thư; phụ thuộc cấu hình chung.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-19, T-20, T-23, T-24; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-35 — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được trạng thái "hoàn tất" và "đang chờ", các nhánh lỗi và cơ chế khoá theo email.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Có những người bắt đầu đăng ký rồi bỏ dở, hoặc quy trình bị dừng giữa chừng. Cần một **tác vụ chạy định kỳ** để phục hồi hoặc dọn các tài khoản dở này, **không để kẹt email** và **không bao giờ xoá nhầm tài khoản đã hoàn tất**.
@@ -735,6 +848,7 @@ Có những người bắt đầu đăng ký rồi bỏ dở, hoặc quy trình 
    - Tài khoản đăng nhập do hệ thống tạo ra mà **không có cờ** nhưng chưa hoàn tất → vẫn xét theo tuổi như trên (không vì thiếu cờ mà bỏ lọt).
 5. Nếu dịch vụ bên ngoài lỗi: ghi lỗi (đã che thông tin nhạy cảm) và **thử lại ở lần chạy sau**, không báo "đã dọn".
 6. Với dịch vụ hoạt động bình thường, một tài khoản dở được dọn trong khoảng **65 phút** (60 phút cộng tối đa một chu kỳ 5 phút). Không hứa con số này khi dịch vụ hỏng.
+7. Ghi nhật ký mỗi lần phục hồi hoặc dọn tài khoản đăng ký dở (không ghi mật khẩu hay mã OTP).
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -757,12 +871,18 @@ Chuẩn bị: đồng hồ giả để rút ngắn thời gian; khả năng gây
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
 **Bàn giao cho task sau:** tác vụ dọn chạy định kỳ; báo cáo các lần chạy.
 **Không thuộc task này:** dọn tài khoản khách (giai đoạn sau), mở rộng việc xoá dữ liệu ngoài phạm vi này.
+**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-03-04, AC-AUTH-03-05; GATE-OTP. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (mỗi 5 phút), không xoá nhầm tài khoản hoàn tất.
+**Bằng chứng nộp:** Kết quả thử với đồng hồ giả: mốc đúng 60 phút, quá 60 phút; chạy cùng hoàn tất. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Dịch vụ bên ngoài lỗi thì thử lại lần sau; thời gian dọn khoảng 65 phút.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-19; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-58 — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được kết quả đã hoàn thành của task này. *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-26)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-33)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-37)*: nhận được các màn hình của giai đoạn 1 đã dựng để kiểm quy tắc trên từng màn. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được ứng dụng chạy thật cho từng phần để kích hoạt từng trạng thái trên dữ liệu thật. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-54)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-55)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được kết quả đã hoàn thành của task này.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-03`, `US-AUTH-04`, `US-CHAT-02`, `US-FRIEND-03`, `US-ROOM-04`, `US-ROOM-08`, `US-UI-01`, `US-UI-02`, `US-UI-03`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Bảo đảm người dùng **biết có những thứ "sắp ra mắt"**, nhưng **không bấm nhầm** vào chức năng chưa làm. Đồng thời **không ẩn nhầm** những chức năng của giai đoạn 1.
@@ -771,7 +891,7 @@ Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (23
 
 **Việc cần làm (làm lần lượt)**
 1. **Làm mờ kèm "Sắp ra mắt"** các lối vào chính: Đánh Hạng, Bảng xếp hạng, Lịch sử, đăng nhập khách, đăng nhập Google, Nhắn tin, Thách đấu.
-2. **Ẩn hẳn** các chức năng nằm sâu: mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, đi lại với máy, trợ giúp của máy, bộ chọn giao diện, ghép ngẫu nhiên.
+2. **Ẩn hẳn** các chức năng nằm sâu: mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, đi lại với máy, gợi ý nước của máy, bộ chọn giao diện, ghép ngẫu nhiên.
 3. Hộp kết quả ván chỉ có **Rời phòng**; giao diện luôn tối kể cả khi hệ điều hành đặt sáng.
 4. Duyệt trên **các màn đã có** (đăng ký, đăng nhập, hồ sơ, bạn bè, ván, ván với máy), giữ Sảnh, Bạn bè và mời bạn online hoạt động bình thường.
 5. Lập **danh sách kiểm** các lối vào chưa làm để kiểm sau mỗi lần sửa giao diện.
@@ -815,12 +935,18 @@ Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và g
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
 **Bàn giao cho task sau:** danh sách kiểm này cho nghiệm thu chấp nhận; giao diện đã đủ trạng thái cho responsive, trợ năng, nghiệm thu.
 **Không thuộc task này:** làm các tính năng chưa làm; đổi mức ưu tiên của tính năng; dựng các thành phần của chức năng chưa làm.
+**Phục vụ (nguồn):** Story 2, 4, 6, 9, 11, 19, 22, 25, 26; tiêu chí AC-AUTH-04-04, AC-ROOM-04-02, AC-ROOM-08-04, AC-CHAT-02-03, AC-FRIEND-03-02, AC-AI-01-03, AC-AI-03-03, AC-UI-01-01, AC-UI-02-01, AC-UI-03-01, AC-UI-06-01, AC-UI-06-02; NFR-06. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Mọi màn hình và khung dữ liệu đủ 5 trạng thái; tính năng chưa làm mờ hoặc ẩn đúng quy tắc; danh sách kiểm các lối vào chưa làm.
+**Bằng chứng nộp:** Bảng 23 thành phần × 5 trạng thái đã kiểm; ảnh chụp. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Cần các Epic khác nối thật trước khi rà cuối.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-14, T-24, T-26, T-27, T-33, T-37, T-40, T-49, T-50, T-54, T-55, T-57; liên quan tới (relates to) Story 2, Story 4, Story 6, Story 9, Story 11, Story 19, Story 22, Story 25, Story 26; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 
 ---
 
 ### T-59 — Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-58)*: nhận được bản ứng dụng hợp nhất đủ trạng thái.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01`, `US-BOARD-03`, `US-BOARD-04`, `US-UI-04`, `US-UI-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Bảo đảm **giai đoạn 1 dùng được từ màn hình 360 px và bằng cảm ứng**: bàn cờ, chat, camera/micro và các nút chính không bị che hay tràn ngang.
@@ -869,3 +995,8 @@ Chuẩn bị: công cụ thay đổi kích thước màn hình và một điện
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Bảng màu tính sẵn không thay cho bằng chứng đo trên giao diện thật.**.
 **Bàn giao cho task sau:** giao diện đáp ứng cho nghiệm thu tiêu chí phi chức năng; giao diện đạt trợ năng cho nghiệm thu tiêu chí phi chức năng.
 **Không thuộc task này:** ứng dụng di động riêng; thiết kế cho chức năng chưa làm; đổi giao diện hay màu nguồn; thêm công cụ mới ngoài danh sách.
+**Phục vụ (nguồn):** Story 4, 13, 14; tiêu chí AC-BOARD-01-03, AC-BOARD-03-02, AC-BOARD-04-02, AC-BOARD-04-03, AC-UI-04-01, AC-UI-04-02, AC-UI-05-01, AC-UI-05-02; NFR-03. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Kết quả (đầu ra):** Giao diện dùng được từ 360 px, cảm ứng, đạt WCAG 2.1 AA; báo cáo tương phản thật.
+**Bằng chứng nộp:** Ảnh bốn cỡ; báo cáo đo tương phản; kiểm bàn phím và trình đọc màn hình. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Bàn cờ có ngoại lệ vùng chạm riêng; nếu chữ quân nhỏ trên 360 px phải thử trên máy thật.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-58; liên quan tới (relates to) Story 4, Story 13, Story 14; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).

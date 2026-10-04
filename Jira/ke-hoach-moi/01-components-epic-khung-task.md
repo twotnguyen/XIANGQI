@@ -40,32 +40,32 @@ Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên modul
 
 | Story | Tên | Epic | Task liên kết |
 |---|---|---|---|
-| Story 1 | Đăng ký tài khoản qua ba bước | 1 | `T-03`, `T-12`, `T-19`, `T-23`, `T-24`, `T-27`, `T-35`, `T-60`, `T-62` |
-| Story 2 | Đăng nhập bằng tên đăng nhập và mật khẩu | 1 | `T-20`, `T-24`, `T-27`, `T-53` |
-| Story 3 | Hồ sơ cơ bản và đăng xuất | 1 | `T-10`, `T-20`, `T-23`, `T-24`, `T-27`, `T-48` |
-| Story 4 | Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm | 1 | `T-08`, `T-11`, `T-13`, `T-14`, `T-58`, `T-59`, `T-61` |
-| Story 5 | Tạo phòng | 2 | `T-04`, `T-10`, `T-14`, `T-17`, `T-29` |
+| Story 1 | Đăng ký tài khoản qua ba bước | 1 | `T-03`, `T-12`, `T-19`, `T-23`, `T-24`, `T-27`, `T-35` |
+| Story 2 | Đăng nhập bằng tên đăng nhập và mật khẩu | 1 | `T-20`, `T-24`, `T-27` |
+| Story 3 | Hồ sơ cơ bản và đăng xuất | 1 | `T-20`, `T-24`, `T-27`, `T-48` |
+| Story 4 | Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm | 1 | `T-08`, `T-58`, `T-59` |
+| Story 5 | Tạo phòng | 2 | `T-14`, `T-17`, `T-29` |
 | Story 6 | Thanh điều hướng và Sảnh | 2 | `T-14` |
-| Story 7 | Phòng chờ, hai ghế ngồi, Sẵn sàng và bắt đầu ván | 2 | `T-15`, `T-17`, `T-25`, `T-29`, `T-50` |
-| Story 8 | Vào phòng bằng mã, đường dẫn hoặc từ Sảnh | 2 | `T-14`, `T-15`, `T-21`, `T-29`, `T-47`, `T-52` |
-| Story 9 | Chia sẻ phòng bằng đường dẫn và mã; người được mời đăng nhập xong vào đúng phòng | 3 | `T-15`, `T-17`, `T-29`, `T-36`, `T-47`, `T-60` |
+| Story 7 | Phòng chờ, hai ghế ngồi, Sẵn sàng và bắt đầu ván | 2 | `T-15`, `T-25`, `T-29`, `T-50` |
+| Story 8 | Vào phòng bằng mã, đường dẫn hoặc từ Sảnh | 2 | `T-14`, `T-15`, `T-21`, `T-29` |
+| Story 9 | Chia sẻ phòng bằng đường dẫn và mã; người được mời đăng nhập xong vào đúng phòng | 3 | `T-15`, `T-17`, `T-36`, `T-47` |
 | Story 10 | Kết bạn: tìm người, gửi và trả lời lời mời, giới hạn | 3 | `T-33`, `T-34`, `T-54` |
 | Story 11 | Danh sách bạn và trạng thái | 3 | `T-33`, `T-34`, `T-54` |
-| Story 12 | Mời bạn đang online vào phòng | 3 | `T-33`, `T-52`, `T-54`, `T-60`, `T-62` |
-| Story 13 | Thấy bàn cờ và quân cờ | 4 | `T-05`, `T-11` |
-| Story 14 | Tương tác với quân cờ: chọn, kéo thả, đánh dấu nước đi, cảnh báo chiếu, âm thanh | 4 | `T-09`, `T-11`, `T-18`, `T-22`, `T-26`, `T-37` |
-| Story 15 | Đi nước qua mạng và bảng nước đi | 5 | `T-26`, `T-28`, `T-30`, `T-42`, `T-46`, `T-50`, `T-61` |
+| Story 12 | Mời bạn đang online vào phòng | 3 | `T-33`, `T-52`, `T-54` |
+| Story 13 | Thấy bàn cờ và quân cờ | 4 | `T-05`, `T-11`, `T-46` |
+| Story 14 | Tương tác với quân cờ: chọn, kéo thả, đánh dấu nước đi, cảnh báo chiếu, âm thanh | 4 | `T-09`, `T-18`, `T-22` |
+| Story 15 | Đi nước qua mạng và bảng nước đi | 5 | `T-26`, `T-28`, `T-30`, `T-42` |
 | Story 16 | Đồng hồ ván | 5 | `T-26`, `T-39`, `T-50` |
 | Story 17 | Kết thúc ván: kết quả, đầu hàng, xin hoà, lặp thế | 5 | `T-09`, `T-26`, `T-39`, `T-46`, `T-50` |
-| Story 18 | Rời phòng giữa ván, mất kết nối và kết nối lại | 5 | `T-28`, `T-45`, `T-50` |
-| Story 19 | Kiểu phòng, khoá phòng và danh sách phòng công khai | 6 | `T-14`, `T-32`, `T-36`, `T-40`, `T-50` |
+| Story 18 | Rời phòng giữa ván, mất kết nối và kết nối lại | 5 | `T-26`, `T-45`, `T-50` |
+| Story 19 | Kiểu phòng, khoá phòng và danh sách phòng công khai | 6 | `T-14`, `T-32`, `T-36`, `T-40` |
 | Story 20 | Quản lý phòng: đổi chỗ, đuổi người xem, chủ phòng rời, sau ván | 6 | `T-32`, `T-38`, `T-40` |
 | Story 21 | Người xem theo dõi trực tiếp | 6 | `T-44`, `T-50` |
 | Story 22 | Chat hai kênh, giới hạn tin nhắn và lọc từ cấm | 7 | `T-10`, `T-41`, `T-49` |
-| Story 23 | Camera và micro: người chơi bật, người xem chỉ xem | 7 | `T-06`, `T-51`, `T-53`, `T-57`, `T-61` |
-| Story 24 | Mở nhiều tab: tab mới tiếp quản | 7 | `T-53`, `T-57`, `T-61` |
+| Story 23 | Camera và micro: người chơi bật, người xem chỉ xem | 7 | `T-06`, `T-51`, `T-53`, `T-57` |
+| Story 24 | Mở nhiều tab: tab mới tiếp quản | 7 | `T-53`, `T-57` |
 | Story 25 | Chọn cấp độ, chọn phe và máy đi nước đúng luật | 8 | `T-31`, `T-37`, `T-43`, `T-55`, `T-56` |
-| Story 26 | Kết thúc ván với máy, vào lại ván và sự cố máy cờ | 8 | `T-37`, `T-43`, `T-55`, `T-60`, `T-62` |
+| Story 26 | Kết thúc ván với máy, vào lại ván và sự cố máy cờ | 8 | `T-37`, `T-43`, `T-55` |
 
 ## 3. Nhịp Sprint
 
@@ -89,9 +89,9 @@ Quy tắc: mỗi task gắn **1 thành phần, tối đa 2** (việc liên modul
 ## 5. Rủi ro lịch
 
 - **Chuỗi dài nhất:** 16 task nối tiếp. Sprint 3 có nhiều task nhất (20); cần ước lượng giờ để kiểm khả năng chứa.
-- Task gộp nhiều phần (ghi "Phần 1, Phần 2…") có thể to hơn một ngày công; nhóm nên chia lại khi Sprint Planning nếu cần.
-- Nơi chạy demo cần **PO quyết định** (hạ tầng, chi phí) trước khi làm task chung `chọn nơi chạy`.
-- Điểm đang chờ PO: số người xem mặc định (đã chốt 5; đề bài gốc ghi tối đa 2, kịch bản demo chọn 2 để dễ thử), đổi cặp người ngồi ghế đọc tin cũ, cách hiển thị ván gián đoạn.
+- Task gộp nhiều việc nhỏ cùng mục đích có thể to hơn một ngày công; nhóm nên chia lại khi Sprint Planning nếu cần.
+- Nơi chạy demo: **PO chốt 04/10/2026 ưu tiên chạy cục bộ, Render là dự phòng** (không còn chặn Sprint 2 vì chi phí).
+- Điểm đã chốt: số người xem mặc định 5 (đề bài gốc ghi tối đa 2; kịch bản demo chọn 2 để dễ thử); đổi cặp người ngồi ghế thì không đọc tin cũ; ván gián đoạn hiện kết quả trung tính "Ván bị gián đoạn" (PO uỷ quyền, đã chốt 04/10/2026). Đang chờ PO: nút "Đăng ký bằng Google" (mờ) ở bước 1 đăng ký và liên kết "Quên mật khẩu?" (mờ) ở màn đăng nhập.
 
 ## 6. Thứ tự thực hiện và bảng task
 
@@ -114,7 +114,7 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 | `T-13` | Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) | — | `QA & DevOps` | `T-01`, `T-08` | 1 |
 | `T-14` | Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng | 2 | `Frontend` | `T-02`, `T-08` | 2 |
 | `T-15` | Giao diện: phòng chờ và màn từ chối vào phòng | 2 | `Frontend` | `T-02`, `T-08` | 2 |
-| `T-16` | Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng | — | `QA & DevOps` | `T-01`, `T-07`, `T-08` | 2 |
+| `T-16` | Chọn nơi chạy ứng dụng và dựng bản demo trên mạng | — | `QA & DevOps` | `T-01`, `T-07`, `T-08` | 2 |
 | `T-17` | Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng | 2 | `Room & Social` | `T-04`, `T-07`, `T-10` | 2 |
 | `T-18` | Giao diện: bấm chọn quân và chấm gợi ý ô đi | 4 | `Frontend` | `T-09`, `T-11` | 2 |
 | `T-19` | Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) | 1 | `Authentication` | `T-12` | 2 |
@@ -165,5 +165,5 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 ## 7. Tệp
 
 - Chuẩn: `00-chuan-description.md`; mẫu: `00b-mau-description-chi-tiet.md`.
-- 8 Epic: `02-epic.md`. 26 Story: `12-story-e1-e4.md`, `13-story-e5-e8.md`. 62 Task: `03` đến `11` (mỗi Epic một tệp, tệp `11` là task chung).
+- 8 Epic: `02-epic.md`. 26 Story: `12-story-e1-e4.md`, `13-story-e5-e8.md`. 62 Task: `03` đến `11` (mỗi Epic một tệp, tệp `11` là task chung). Bảng đối chiếu tiêu chí → Story → Task: `14-bang-doi-chieu-tieu-chi.md`.
 

@@ -9,6 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-31 — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ và nhận biết chiếu trên thế cờ chuẩn; nhận được luật hợp lệ và kết quả chiếu hết, lặp thế, 120 nửa nước.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Trả lời: **một máy cờ đơn giản chạy ở tiến trình riêng có đạt thời gian suy nghĩ quy định cho ba cấp (Dễ, Trung bình, Khó) không?** Số đo sớm giúp biết có làm được cấp Khó hay không. Đây là đo sơ bộ, **chưa** thay phép đo đầy đủ về sau.
@@ -62,12 +63,18 @@ Chuẩn bị: bộ thế mẫu và hạt giống cố định.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Báo cáo hoàn tất, kể cả khi cấp Khó chưa đạt. **Chưa tính** phép đo đầy đủ và độ ổn định (làm ở task đo máy cờ cuối). **Kết luận máy đạt tiêu chuẩn chất lượng (GATE-AI) chỉ có sau bài đo đầy đủ ở T-56**. Ở đây chỉ báo số đo ban đầu.
 **Bàn giao cho task sau:** số đo sơ bộ cho task xây máy cờ chính thức; máy cờ chạy riêng cho ván với máy, xử lý sự cố, đo đầy đủ.
 **Không thuộc task này:** giao diện chơi với máy; luật lặp thế và 120 nửa nước; đo sức mạnh đầy đủ; ván với máy ở máy chủ; gợi ý nước; đi lại.
+**Phục vụ (nguồn):** Story 25; tiêu chí AC-AI-02-01, AC-AI-02-03; NFR-05. Thuộc Epic: Đánh với máy theo cấp độ.
+**Kết quả (đầu ra):** Máy cờ chạy riêng, ba cấp (độ sâu 2/4/6; 300/1.000/3.000 ms), tìm kiếm sâu dần, tìm tĩnh; số đo sơ bộ.
+**Bằng chứng nộp:** Số đo ban đầu; kết quả thử 5 ca. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Kết luận chất lượng chỉ có sau bài đo đầy đủ.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-09; liên quan tới (relates to) Story 25; Epic: Đánh với máy theo cấp độ.
 
 ---
 
 ### T-37 — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kết quả đã hoàn thành của task này. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được khung Sảnh, chỗ đặt thẻ ván máy và băng "quay lại". *Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (T-22)*: nhận được bàn cờ có dấu nước vừa đi, âm thanh; nhận được kéo thả dùng chung nước hợp lệ với bấm.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Dựng hành trình **chọn cấp, chọn phe và chơi với máy** trên màn hình, và làm rõ cho người dùng khác biệt giữa "tiếp tục vì máy bận" với "bắt đầu ván mới sau sự cố". Làm với dữ liệu giả; nối thật ở T-55.
@@ -81,6 +88,21 @@ Dựng hành trình **chọn cấp, chọn phe và chơi với máy** trên màn
 6. **Băng "Bạn có ván đang chơi dở — Quay lại"** trên Sảnh; quay lại đúng ván cũ, không tạo ván khác.
 7. **Hộp thoại kết quả** khi thắng, thua, hoà theo luật hoặc đầu hàng: chỉ nút **Rời phòng** (không có Tái đấu, Xem lại, Xin hoà); khác hẳn với thông báo "Bỏ dở" do sự cố có nút Thử lại.
 8. Không có nút gợi ý nước, xin hoà, đi lại, lịch sử. Đủ 5 trạng thái.
+
+**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
+*Hộp chọn Cấp độ và Phe (đánh với máy)* (`MODAL-AI-SETUP`)
+- Chọn cấp **Dễ / Trung bình / Khó**; chọn phe **Đỏ (đi trước)**, **Đen (máy tự đi nước đầu)** hoặc **Ngẫu nhiên (50/50 do máy chủ bốc)**.
+
+*Màn hình Đánh với máy* (`SCR-AI-GAME`)
+- Bàn cờ lớn với thẻ người chơi và thẻ máy cờ; đường dẫn riêng cho từng ván để vào lại.
+- **Không** có đồng hồ cho người chơi, nút Xin hoà, nút gợi ý, nút đi lại; chỉ có **Đầu hàng**.
+- Trạng thái máy đang nghĩ (khoá thao tác), thông báo "máy bận" và "Máy cờ gặp sự cố" kèm nút **Thử lại**; hộp kết quả chỉ có Rời phòng; băng "quay lại" ở Sảnh khi có ván dở.
+
+**Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+| Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
+|---|---|---|---|---|---|
+| Hộp chọn Cấp độ và Phe (đánh với máy) | Tạo ván đúng cấp/phe | Đang tạo/bốc phe | Chưa chọn đủ: hướng dẫn chọn | Tạo lỗi: đối soát, không ván kép | Đang có vị trí chơi hoặc đang gửi |
+| Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Lượt máy/phiên cũ; đi lại hết lượt hoặc P1 chưa có |
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -102,17 +124,24 @@ Chuẩn bị: dữ liệu giả cho các lỗi, kết quả, đường dẫn `/a
 | 4 | Rời: huỷ rồi đồng ý | Đúng |
 | 5 | Kéo thả ở hai phe; về Sảnh với ván dở | Đúng; một băng quay lại |
 | 6 | Giả lập các kết quả | Hộp đúng, chỉ Rời phòng |
+| 7 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
 
-**Khi nào chuyển cho người kiểm thử:** cả 6 dòng đạt, đủ 5 trạng thái, kèm ảnh.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, đủ 5 trạng thái, kèm ảnh.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Không** báo máy thật đã chơi được trước khi nối thật (T-55).
 **Bàn giao cho task sau:** giao diện ván với máy cho tích hợp.
 **Không thuộc task này:** gọi máy chủ thật, gợi ý nước, xin hoà, đi lại, lưu lịch sử.
+**Phục vụ (nguồn):** Story 25, 26; tiêu chí AC-AI-01-01, AC-AI-01-02, AC-AI-01-03, AC-AI-02-02, AC-AI-02-04, AC-AI-03-01, AC-AI-03-02, AC-AI-03-03, AC-AI-04-01. Thuộc Epic: Đánh với máy theo cấp độ.
+**Kết quả (đầu ra):** Chọn cấp và phe, màn ván với máy, thông báo bận/sự cố, hộp kết quả; đủ 5 trạng thái, dữ liệu giả.
+**Bằng chứng nộp:** Ảnh; kiểm bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Chưa nối máy thật.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08, T-14, T-22; liên quan tới (relates to) Story 25, Story 26; Epic: Đánh với máy theo cấp độ.
 
 ---
 
 ### T-43 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được sổ chỗ chơi (ghế phòng và ván với máy) có khoá theo người. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được cách xử lý nước đi lần lượt và luật dùng lại được. *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-31)*: nhận được tiến độ, kết quả và tiến trình riêng.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Quản lý **một ván với máy** trong bộ nhớ máy chủ, theo quy tắc "mỗi người một chỗ chơi". Người chơi chọn phe và cấp, và **vào lại đúng ván** nếu mất kết nối.
@@ -131,6 +160,7 @@ Phân biệt **máy chỉ đang bận** với **máy bị hỏng**, và trả đ
 9. **Sập hoặc không trả lời quá 10 giây:** ván thành **Bỏ dở**, báo "Máy cờ gặp sự cố".
 10. **Thử lại:** sau "bận" thì chỉ yêu cầu máy **tìm lại nước** (cùng ván, cùng thế); sau "Bỏ dở" thì tạo **ván mới** cùng cấp, cùng phe đã bốc. Bấm trùng chỉ có **một** tác dụng.
 11. Kết quả đến muộn sau khi huỷ, rời hoặc tạo ván mới bị **bỏ**.
+12. Ghi nhật ký khi máy cờ sập, quá hạn hoặc Bỏ dở (mã lỗi, mã ván; không chứa bí mật).
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -168,12 +198,18 @@ Chuẩn bị: máy chủ và máy cờ chạy thử; có thể làm treo hoặc 
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Không lưu ván xuống cơ sở dữ liệu ở giai đoạn này. Mất mạng không bị coi là chủ động đầu hàng.
 **Bàn giao cho task sau:** ván với máy cho xử lý sự cố, giao diện, tích hợp, bạn bè (trạng thái Đang đấu), đăng xuất giữa ván; xử lý sự cố cho tích hợp ván với máy và đo máy cờ đầy đủ.
 **Không thuộc task này:** lưu lịch sử bền; đi lại; đồng hồ người chơi; giao diện; tự hạ cấp máy; hồi sinh ván Bỏ dở.
+**Phục vụ (nguồn):** Story 25, 26; tiêu chí AC-AI-01-01, AC-AI-01-02, AC-AI-02-02, AC-AI-02-04, AC-AI-03-01, AC-AI-03-02, AC-AI-03-04, AC-AI-04-01, AC-AI-04-02; NFR-05. Thuộc Epic: Đánh với máy theo cấp độ.
+**Kết quả (đầu ra):** Ván với máy ở máy chủ (cấp, phe, một chỗ chơi, vào lại 30 phút), xử lý bận/hỏng/Bỏ dở/Thử lại.
+**Bằng chứng nộp:** Kết quả thử 11 ca. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Không lưu bền ván với máy.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-17, T-28, T-31; liên quan tới (relates to) Story 25, Story 26; Epic: Đánh với máy theo cấp độ.
 
 ---
 
 ### T-55 — Nối web, máy chủ và máy cờ thật: ván với máy
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend, AI · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-37)*: nhận được màn hình đã dựng. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được chức năng bắt đầu, đi nước, đồng bộ và quản lý chỗ chơi; nhận được hàng đợi, giới hạn thời gian và hai kiểu Thử lại.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-AI-01`, `US-AI-02`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Nối màn hình ván với máy chủ và **máy cờ thật** để chứng minh trọn luồng: ba cấp, ba cách chọn phe, vào lại, rời, và phục hồi sau sự cố đều đúng luật. **Không dùng máy giả** làm bằng chứng thuật toán.
@@ -210,12 +246,18 @@ Chuẩn bị: máy chủ, máy cờ thật, trình duyệt, hai tài khoản th�
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Kết luận chất lượng máy (GATE-AI) do T-56**; luồng "ván online rồi ván máy" đầy đủ do T-60; không coi hai phần đó đạt từ kiểm này.
 **Bàn giao cho task sau:** ván với máy chạy thật cho nghiệm thu, đo, bạn bè (trạng thái Đang đấu) và demo.
 **Không thuộc task này:** đo sức mạnh và tốc độ máy (T-56), lưu lịch sử.
+**Phục vụ (nguồn):** Story 25, 26; tiêu chí AC-AI-01-01, AC-AI-02-04, AC-AI-03-01, AC-AI-03-02, AC-AI-03-04, AC-AI-04-01, AC-AI-04-02. Thuộc Epic: Đánh với máy theo cấp độ.
+**Kết quả (đầu ra):** Ván với máy chạy thật qua web, máy chủ và máy cờ thật: ba cấp, ba phe, vào lại, sự cố.
+**Bằng chứng nộp:** Video; báo cáo; ghi rõ phần dùng dữ liệu mẫu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Không dùng máy giả làm bằng chứng thuật toán.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-37, T-43; liên quan tới (relates to) Story 25, Story 26; Epic: Đánh với máy theo cấp độ.
 
 ---
 
 ### T-56 — Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định
 **Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI, QA & DevOps · **Sprint:** 4 (15/10–17/10)
 **Phải xong trước:** *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-31)*: nhận được máy cờ thật ba cấp và công cụ đo độ sâu, số nút, thời gian, hạt giống. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được hàng đợi, giới hạn thời gian, hai nhánh "bận" và "Bỏ dở" đã kiểm. *Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động (T-46)*: nhận được báo cáo đối chiếu số nước đi với nguồn độc lập; nhận được bộ thế, ca biên, đếm nước chạy trong kiểm tra tự động.
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Trả lời bằng **số đo thật**: máy cờ có đạt tiêu chuẩn chất lượng (gọi là **GATE-AI**) hay không. Nhóm tự đặt khung thời gian đo; báo "đạt", "không đạt" hoặc "chưa kết luận" kèm số liệu. **Không hạ ngưỡng và không sửa đáp án để cho đạt.**
@@ -261,3 +303,8 @@ Chuẩn bị: máy chạy đo ổn định, bộ 200 thế mỗi cấp, công c�
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý với **báo cáo**. Báo cáo xong **không** đồng nghĩa tiêu chuẩn đã đạt: GATE-AI chỉ "đạt" khi **mọi ngưỡng** trên đạt; chưa chạy đủ thì ghi "chưa đo đủ"; không đạt thì ghi số thật, báo PO. Việc sửa và đo lại không chờ đến task cuối.
 **Bàn giao cho task sau:** báo cáo GATE-AI cho nghiệm thu các tiêu chí phi chức năng.
 **Không thuộc task này:** tối ưu máy bằng cách hạ ngưỡng, sửa nguồn đối chiếu theo kết quả, giao diện.
+**Phục vụ (nguồn):** Story 25; tiêu chí AC-AI-02-01, AC-AI-02-03; GATE-AI, NFR-05. Thuộc Epic: Đánh với máy theo cấp độ.
+**Kết quả (đầu ra):** Báo cáo GATE-AI đầy đủ: p95 thời gian, độ sâu, sức mạnh ≥75%, 1.000 ván ổn định, bài chiếu hết ≥95%.
+**Bằng chứng nộp:** Báo cáo p50/p95, cấu hình máy đo, hạt giống. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Không đạt thì ghi số thật, báo PO, không hạ ngưỡng.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-31, T-43, T-46; liên quan tới (relates to) Story 25; Epic: Đánh với máy theo cấp độ.

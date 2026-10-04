@@ -9,6 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-05 — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã có gói TypeScript và công cụ kiểm thử chạy được.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Tạo "bộ nhớ" của ván cờ: các loại quân, hai phe, toạ độ ô, và **thế cờ ban đầu** đúng như bàn cờ thật. Đây là nền cho mọi phần khác (sinh nước đi, bàn cờ trên màn hình, máy cờ). Gói này **thuần mã**, không phụ thuộc giao diện hay máy chủ.
@@ -55,12 +56,18 @@ Chuẩn bị: bảng vị trí quân ban đầu (viết bằng chuỗi chuẩn c
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Tập nước này **chưa** là "nước hợp lệ" vì chưa lọc việc để Tướng bị chiếu.
 **Bàn giao cho task sau:** mô hình thế cờ, hàm tạo thế khởi đầu cho sinh nước đi, bàn cờ trên màn hình, bắt đầu ván; bộ sinh nước thô cho lọc hợp lệ, chiếu, máy cờ.
 **Không thuộc task này:** luật kết thúc; giao diện; xuất ván cờ; tự chiếu, chiếu hết, lượt đi và mạng (làm ở task luật hợp lệ).
+**Phục vụ (nguồn):** Story 13; tiêu chí AC-BOARD-01-01, AC-BOARD-01-02. Thuộc Epic: Khởi tạo bàn cờ.
+**Kết quả (đầu ra):** Gói luật cờ: kiểu quân, toạ độ, thế khởi đầu, nước đi từng loại quân, độc lập với giao diện.
+**Bằng chứng nộp:** Kết quả bộ thử từng quân; thế khởi đầu đối chiếu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Không có.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; liên quan tới (relates to) Story 13; Epic: Khởi tạo bàn cờ.
 
 ---
 
 ### T-09 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được bộ sinh nước thô cho bảy loại quân, đúng chặn đường và ô đích.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-01`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Lọc nước thô thành **nước hợp lệ**, nhận biết **chiếu**, **chiếu hết**, **hết nước đi**. Máy chủ và máy cờ dùng chung kết quả này, không mỗi nơi tự làm một kiểu.
@@ -105,12 +112,18 @@ Thêm các luật kết thúc ván khác ngoài chiếu hết: **lặp thế**, 
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Độ đúng của toàn bộ bộ sinh nước được kiểm tiếp bằng nguồn độc lập ở thử nghiệm đếm nước (T-46).
 **Bàn giao cho task sau:** hàm nước hợp lệ, chiếu, chiếu hết, hết nước cho lặp thế, ký hiệu nước, bàn cờ, máy cờ, xử lý nước đi ở máy chủ; hàm phân xử kết thúc ván cho máy chủ, máy cờ và bộ kiểm thử luật.
 **Không thuộc task này:** đồng hồ; đầu hàng, xin hoà, đi lại; các luật "đuổi quân" riêng; kiểm tra mạng.
+**Phục vụ (nguồn):** Story 14, 15, 17; tiêu chí AC-PLAY-01-02, AC-PLAY-03-01, AC-PLAY-08-01, AC-PLAY-08-02. Thuộc Epic: Khởi tạo bàn cờ.
+**Kết quả (đầu ra):** Nước hợp lệ, chiếu, chiếu hết, hết nước, hai Tướng đối mặt, lặp thế, chiếu liên tục, 120 nửa nước.
+**Bằng chứng nộp:** Kết quả bộ thế; bảng thứ tự ưu tiên. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Độ đúng toàn bộ kiểm tiếp ở bài đếm nước độc lập.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-05; liên quan tới (relates to) Story 14, Story 15, Story 17; Epic: Khởi tạo bàn cờ.
 
 ---
 
 ### T-11 — Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
 **Phải xong trước:** *Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân (T-05)*: nhận được thế khởi đầu, toạ độ và quân. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được, nối được gói dùng chung; nhận được màu và kiểu theme "Kỳ Đài Cổ Phong" và các khối giao diện có đủ 5 trạng thái.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Vẽ **bàn cờ 9 cột × 10 hàng bằng SVG** cùng các quân chữ Hán, **đúng cho cả người cầm Đỏ và Đen**. Thành phần này chỉ **nhận thế cờ để hiển thị**, không tự quyết nước đi hay kết quả.
@@ -143,12 +156,18 @@ Vẽ **bàn cờ 9 cột × 10 hàng bằng SVG** cùng các quân chữ Hán, *
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
 **Bàn giao cho task sau:** bàn cờ hiển thị được cho chọn quân, kéo thả, ván online, ván với máy.
 **Không thuộc task này:** bấm hay kéo quân, nối mạng, giao diện sáng, chữ Latin hoặc chữ Việt trên quân.
+**Phục vụ (nguồn):** Story 13; tiêu chí AC-BOARD-01-01, AC-BOARD-01-02, AC-BOARD-01-03. Thuộc Epic: Khởi tạo bàn cờ.
+**Kết quả (đầu ra):** Bàn cờ SVG: lưới, cung, sông, quân chữ Hán, lật bàn cho Đen, nhãn trình đọc màn hình, 5 trạng thái.
+**Bằng chứng nộp:** Ảnh chụp bốn cỡ; kiểm nhãn. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Phông chữ Hán.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-05, T-08; liên quan tới (relates to) Story 13; Epic: Khởi tạo bàn cờ.
 
 ---
 
 ### T-18 — Giao diện: bấm chọn quân và chấm gợi ý ô đi
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ. *Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen (T-11)*: nhận được bàn vẽ được, ánh xạ giữa toạ độ gốc và hướng nhìn.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-01`, `US-BOARD-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Người có quyền đi **bấm hoặc chạm vào quân của mình** thì thấy **các ô có thể đi**, bấm ô đích để đi. Thành phần chỉ **gửi ý định** đi nước; **không coi là xong** cho tới khi máy chủ xác nhận.
@@ -180,12 +199,18 @@ Người có quyền đi **bấm hoặc chạm vào quân của mình** thì th�
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Chưa nối máy chủ nên chưa là nước đi thật.
 **Bàn giao cho task sau:** chọn quân và ý định đi nước cho kéo thả, hiệu ứng và ván online.
 **Không thuộc task này:** kéo thả, gợi ý nước hay, nối mạng.
+**Phục vụ (nguồn):** Story 13, 14; tiêu chí AC-BOARD-01-02, AC-BOARD-02-01, AC-BOARD-02-02, AC-BOARD-02-03. Thuộc Epic: Khởi tạo bàn cờ.
+**Kết quả (đầu ra):** Chọn quân và chấm gợi ý bằng bấm; huỷ chọn; quyền theo lượt.
+**Bằng chứng nộp:** Kết quả thử bàn phím và chạm. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Chưa gửi nước thật.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-09, T-11; liên quan tới (relates to) Story 13, Story 14; Epic: Khởi tạo bàn cờ.
 
 ---
 
 ### T-22 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện: bấm chọn quân và chấm gợi ý ô đi (T-18)*: nhận được bàn cờ có trạng thái chọn và nhận được dữ liệu thế cờ và lượt.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-03`, `US-BOARD-04`, `US-BOARD-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Thêm cách đi bằng **kéo thả** song song với bấm. Kéo thả cho **cùng kết quả** như bấm; thả sai thì quân **trượt về chỗ cũ**, không đổi thế cờ.
@@ -234,12 +259,18 @@ Cho người chơi **thấy** nước vừa đi, **biết** khi bị chiếu và
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
 **Bàn giao cho task sau:** kéo thả cho giao diện ván và giao diện ván với máy; hiệu ứng và âm thanh cho giao diện ván và ván với máy.
 **Không thuộc task này:** bỏ cách bấm; nối mạng; nhạc nền; tệp âm thanh tải ngoài; gợi ý nước hay.
+**Phục vụ (nguồn):** Story 14; tiêu chí AC-BOARD-03-01, AC-BOARD-03-02, AC-BOARD-04-01, AC-BOARD-04-02, AC-BOARD-04-03, AC-BOARD-05-01, AC-BOARD-05-02. Thuộc Epic: Khởi tạo bàn cờ.
+**Kết quả (đầu ra):** Kéo thả, dấu nước vừa đi, cảnh báo chiếu, 4 âm Web Audio, nút tắt tiếng.
+**Bằng chứng nộp:** Kết quả thử; nghe thử thủ công; giảm chuyển động. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Trình duyệt có thể chặn phát âm tự động.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-18; liên quan tới (relates to) Story 14; Epic: Khởi tạo bàn cờ.
 
 ---
 
 ### T-46 — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động
 **Thuộc Epic:** Khởi tạo bàn cờ · **Thành phần:** Game Engine, QA & DevOps · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được hệ thống chạy kiểm thử và báo đỏ khi sai. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ cho thế cờ chuẩn; nhận được bộ luật P1 đầy đủ. *Bảng nước đi: ký hiệu tiếng Việt và hiển thị (T-42)*: nhận được hàm ký hiệu.
+**Loại:** Task QA · **Nhãn:** `P1`, `QA`, `gate`, `US-PLAY-03`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Phát hiện sớm nếu bộ luật cờ **đếm sai số nước đi**. Cách làm: đếm số nước đi có thể xảy ra từ thế khởi đầu ở các độ sâu 1, 2, 3, 4 (gọi là "perft"), rồi so với kết quả của **một công cụ độc lập**, không phải chính mã của chúng ta. Nếu tự lấy kết quả từ mã đang kiểm thì lỗi sẽ tự "xác nhận" chính nó.
@@ -286,3 +317,8 @@ Gom toàn bộ kiểm thử luật cờ thành một bộ chạy **tự động 
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Báo cáo hoàn tất. "Cổng kiểm chứng luật cờ đạt" chỉ khi nguồn độc lập đã xác minh **và** số liệu đối chiếu đạt. Nếu nguồn đối chiếu chưa được xác minh thì **không** được ghi đạt. Ghi "chưa chạy".
 **Bàn giao cho task sau:** bộ số đã xác minh để đưa vào bộ kiểm tra luật cờ; bộ kiểm thử luật cho đo máy cờ đầy đủ và nghiệm thu cuối.
 **Không thuộc task này:** đo sức mạnh máy cờ; biến công cụ ngoài thành máy cờ của sản phẩm; kiểm thử giao diện; đi lại; các luật giai đoạn sau.
+**Phục vụ (nguồn):** Story 13, 17; tiêu chí AC-PLAY-03-01, AC-PLAY-08-01, AC-PLAY-08-02; GATE-PERFT. Thuộc Epic: Khởi tạo bàn cờ.
+**Kết quả (đầu ra):** Bộ kiểm thử luật chạy tự động: đếm nước đi độc lập (44, 1.920, 79.666, 3.290.240), thế mẫu, 1.000 ván ngẫu nhiên, ký hiệu; báo cáo GATE-PERFT.
+**Bằng chứng nộp:** Báo cáo so với nguồn đối chiếu; số liệu 1.000 ván; lần chạy tự động. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Nếu nguồn đối chiếu chưa xác minh thì không ghi đạt.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-09, T-42; liên quan tới (relates to) Story 13, Story 17; Epic: Khởi tạo bàn cờ.

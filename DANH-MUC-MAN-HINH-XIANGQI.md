@@ -290,7 +290,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 **Ưu tiên (đã duyệt 03/10):** P1 = làm trong MVP 2 tuần (23 thành phần), P2 = làm sau (14 thành phần). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
-* **Lối vào cấp điều hướng chính** (thẻ Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, nút Khách và Google ở đăng nhập, nút Nhắn tin và Thách đấu ở Bạn bè) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
+* **Lối vào cấp điều hướng chính** (thẻ Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, nút Khách và Google ở đăng nhập, nút *Đăng ký bằng Google* ở bước 1 màn đăng ký và liên kết *Quên mật khẩu?* ở màn đăng nhập (đề xuất 04/10/2026, chờ PO duyệt), nút Nhắn tin và Thách đấu ở Bạn bè) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
 * **Chức năng nằm sâu trong màn hình P1** (Mã QR, Sticker, Xin đi lại, Xin đổi bên, Tái đấu, Xem lại ở kết quả ván, đi lại với máy, Lưu lịch sử, widget AI) **ẩn hoàn toàn** ở P1, không để nút xám.
 * Ngoại lệ duy nhất cho quy tắc "nút dẫn tới màn P2": `MODAL-MATCH-RESULT` ở P1 chỉ có *Rời phòng* (không hiện Xem lại).
 

@@ -9,6 +9,7 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 ### T-26 — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được trạng thái ván, phản hồi và kết quả. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh (T-22)*: nhận được bàn cờ có dấu nước vừa đi, cảnh báo chiếu, âm thanh; nhận được cách kéo thả dùng chung toạ độ và nước hợp lệ với bấm.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-BOARD-02`, `US-PLAY-01`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Dựng **màn hình ván** để nối với máy chủ sau: bàn cờ, đồng hồ, nút đầu hàng và xin hoà, hộp kết quả, khung đề nghị hoà. Làm với dữ liệu giả; chưa phải bằng chứng ván online đã chạy.
@@ -22,6 +23,45 @@ Dựng **màn hình ván** để nối với máy chủ sau: bàn cờ, đồng 
 6. **Hộp kết quả:** ở giai đoạn này chỉ có nút **Rời phòng** (chưa có tái đấu).
 7. Ghép kéo thả (T-22) vào cùng luồng ý định đi nước như bấm; kiểm thả sai và chờ xác nhận trên cả hai hướng bàn.
 
+**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
+*Màn hình Ván đấu* (`SCR-GAME-ROOM`)
+- Bố cục ba cột: **trái** khung camera/micro, thẻ người chơi và đồng hồ hai bên; **giữa** bàn cờ SVG, dòng trạng thái lượt đi và cụm nút; **phải** danh sách người xem và khung chat hai kênh.
+- Bàn cờ lật khi cầm quân Đen; đi bằng bấm hoặc kéo thả; chấm ô đi hợp lệ, vòng cố định quanh quân ăn được, bốn góc đánh dấu nước vừa đi, vòng cảnh báo chiếu kèm chữ "Đang bị chiếu" (không nhấp nháy).
+- Cụm nút: **tắt/bật âm thanh**, **Đầu hàng** (mở hộp xác nhận), **Xin hoà** (khi mờ có chú thích lý do). Nút Xin đi lại **ẩn**.
+- Bảng **nước đi** ký hiệu tiếng Việt tự cuộn; quân vừa đi hiển thị mờ chờ máy chủ xác nhận.
+- Đồng hồ dưới 30 giây có cảnh báo chữ và biểu tượng; ván kết thúc thì hiện hộp kết quả.
+
+*Khung Đề nghị hoà* (`MODAL-DRAW-PROMPT`)
+- Hiện ở phía người nhận với **đếm lùi 30 giây**, nút **Chấp nhận Hoà** và **Từ chối**.
+- **Không chặn** bàn cờ, không giữ focus; đồng hồ ván vẫn chạy; nút X hoặc Esc chỉ **thu gọn**, có nút mở lại, hạn vẫn chạy; chỉ Từ chối mới gửi phản hồi từ chối.
+- Phía người gửi thấy "Đang chờ đối thủ trả lời…" và nút **Rút đề nghị**.
+
+*Hộp xác nhận Đầu hàng* (`MODAL-CONFIRM-RESIGN`)
+- Nội dung: "Bạn sẽ thua ván này ngay lập tức."; focus mặc định ở nút **Huỷ**; nút Đồng ý đầu hàng.
+
+*Hộp xác nhận Rời phòng khi đang đấu* (`MODAL-CONFIRM-LEAVE`)
+- Nội dung: "Rời lúc này được tính là đầu hàng."; hai nút **Rời phòng** và **Ở lại**.
+
+*Hộp Kết quả ván* (`MODAL-MATCH-RESULT`)
+- Biểu ngữ **thắng / thua / hoà** kèm lý do (chiếu hết, hết nước, đầu hàng, hết giờ, mất kết nối, lặp thế, hoà thoả thuận, 120 nửa nước, chiếu liên tục).
+- Ván gián đoạn do máy chủ khởi động lại: kết quả trung tính "Ván bị gián đoạn" (không thắng thua hoà, không đổi điểm).
+- Chỉ có nút **Rời phòng** (không Tái đấu, không Xem lại).
+
+*Lớp phủ Mất kết nối* (`OVERLAY-RECONNECTING`)
+- Phủ mờ toàn màn hình khi đứt kết nối; **không đóng được bằng Esc**.
+- Người đang đấu: đếm lùi **60 giây**; quá hạn thì thua; đồng hồ ván vẫn chạy.
+- Người ở phòng chờ hoặc phòng kết thúc: giữ ghế 60 giây rồi mất ghế (không thua). Người xem: giữ chỗ 5 phút.
+
+**Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+| Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
+|---|---|---|---|---|---|
+| Màn hình Ván đấu | Thế/giờ/lượt đồng bộ máy chủ | Đợi snapshot hoặc ACK nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất kết nối/ghi lỗi: không phát nước giả, phục hồi theo [07] | Ngoài lượt, chỉ xem, phiên cũ hoặc ván đã kết thúc |
+| Khung Đề nghị hoà | Đề nghị còn hạn, trả lời đúng tác động | Đang gửi/rút/trả lời; không dừng đồng hồ | Không còn đề nghị: gỡ khung/nút mở lại | Phản hồi lỗi: đối soát hạn/trạng thái, không hoà giả | Hết hạn/đã rút/đã kết thúc hoặc không phải người nhận |
+| Hộp xác nhận Đầu hàng | Xác nhận: RESIGN; Huỷ không đổi ván | Đợi ACK; chặn xác nhận trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Mất ACK: đối soát, không báo thua giả | Ván kết thúc/phiên cũ/không phải người chơi |
+| Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và đối soát | Đã xử lý hoặc không còn quyền điều khiển |
+| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả có thẩm quyền | Chưa có kết quả: đợi/đối soát, không đoán thắng | Tải kết quả lỗi: Thử lại, không cho đi thêm | Tái đấu/Replay sai chế độ, P1 ẩn |
+| Lớp phủ Mất kết nối | Đã nối lại nhận snapshot rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
+
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
 |---|---|
@@ -30,6 +70,7 @@ Dựng **màn hình ván** để nối với máy chủ sau: bàn cờ, đồng 
 | Bấm Esc hoặc X trên khung xin hoà, rồi mở lại trong thời hạn | Hạn vẫn chạy, không gửi từ chối |
 | Ván kết thúc; vào bằng vai người xem | Chỉ đọc; chỉ nút Rời phòng, không có nút của giai đoạn sau |
 | Kéo hợp lệ và sai, chờ xác nhận; lặp trên bàn lật Đen | Đúng toạ độ; sai trượt về; cùng trạng thái chờ như bấm |
+| Bị từ chối hoặc hết hạn xin hoà rồi xin lại khi chưa đi đủ 5 nước của mình | Nút Xin hoà mờ kèm chú thích số nước còn phải đi |
 
 **Cách tự kiểm tra**
 Chuẩn bị: dữ liệu giả cho trạng thái ván, giờ, phản hồi, kết quả.
@@ -40,17 +81,25 @@ Chuẩn bị: dữ liệu giả cho trạng thái ván, giờ, phản hồi, k�
 | 3 | Thu gọn khung xin hoà rồi mở lại | Hạn vẫn chạy |
 | 4 | Kết thúc ván; vào vai người xem | Chỉ đọc, chỉ Rời phòng |
 | 5 | Kéo hợp lệ và sai trên bàn lật | Đúng toạ độ, sai về chỗ cũ |
+| 6 | Xin hoà bị từ chối rồi xin lại sớm hơn 5 nước của mình | Nút mờ, chú thích số nước còn lại |
+| 7 | Đối chiếu từng gạch đầu dòng ở phần "Thành phần màn hình phải có" với màn hình thật, và đủ 5 trạng thái ở bảng nghiệm thu | Không thiếu, không thừa; chức năng chưa làm mờ hoặc ẩn đúng quy tắc |
 
-**Khi nào chuyển cho người kiểm thử:** cả 5 dòng đạt, đủ 5 trạng thái, kèm ảnh.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, đủ 5 trạng thái, kèm ảnh.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Không** báo "ván online đã chạy" trước khi nối thật (T-30).
 **Bàn giao cho task sau:** màn hình ván cho tích hợp đi nước, tích hợp đồng hồ/kết thúc và ván với máy.
 **Không thuộc task này:** gọi máy chủ thật, tái đấu, xem lại ván, đi lại.
+**Phục vụ (nguồn):** Story 14, 15, 16, 17, 18; tiêu chí AC-BOARD-02-03, AC-PLAY-01-04, AC-PLAY-02-03, AC-PLAY-03-02, AC-PLAY-04-01, AC-PLAY-05-01, AC-PLAY-05-03, AC-PLAY-05-04, AC-PLAY-06-01. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Màn ván: bàn cờ, đồng hồ, nút Đầu hàng/Xin hoà, hộp kết quả, khung xin hoà, lớp phủ mất kết nối; 5 trạng thái, dữ liệu giả.
+**Bằng chứng nộp:** Ảnh chụp trạng thái; kiểm bàn phím và focus. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Chưa là bằng chứng ván online đã chạy.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-08, T-22; liên quan tới (relates to) Story 14, Story 15, Story 16, Story 17, Story 18; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-28 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng ván, nước đi, biên lai lệnh. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm phân xử kết quả. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cơ chế biên lai. *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được mã ván, hai ghế, thế ban đầu và mốc bắt đầu.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-01`, `US-PLAY-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Dựng **"đường ống" chung** để xử lý mọi lệnh của một ván: lệnh xếp hàng lần lượt, gửi lại không làm hai lần, lệnh cũ bị từ chối, và biết phải làm gì khi ghi dữ liệu thất bại. Các task đi nước, đồng hồ, kết thúc ván đều chạy trên đường ống này.
@@ -69,6 +118,7 @@ Nhận lệnh **đi nước** từ người chơi, kiểm tra theo luật cờ c
 9. Dùng luật chung (hàm nước hợp lệ) kiểm tra nước đi; sai thì **từ chối, thế cờ không đổi**, trả lý do và trạng thái mới nhất.
 10. Hợp lệ: tạo thế mới, cập nhật lượt, nước vừa đi, các bộ đếm lặp thế và 120 nửa nước; **ghi nước đi vào lịch sử**; giữ chỗ để task đồng hồ kiểm giờ trước khi áp dụng nước.
 11. Ghi xong mới **phát trạng thái mới** (kèm số phiên bản) theo quyền từng người.
+12. Ghi nhật ký (không chứa bí mật) khi ghi dữ liệu lỗi, khi ván chuyển sang gián đoạn hoặc khi tạm dừng ghi.
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -104,12 +154,18 @@ Chuẩn bị: cơ sở dữ liệu thử, khả năng gây lỗi ghi, đồng h�
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Chưa** khẳng định đồng hồ thật đã đóng băng hay khởi động lại máy chủ đã đúng (làm ở T-39 và T-45). Yêu cầu "xử lý nước dưới 100 ms" chỉ đo được khi cả luồng đã nối với trình duyệt (T-30) và khi chạy bài tải (T-61).
 **Bàn giao cho task sau:** đường ống xử lý lệnh, tín hiệu lỗi ghi và phục hồi cho xử lý nước đi, đồng hồ, kết thúc ván; xử lý nước đi cho đồng hồ, kết thúc ván, người xem, bảng nước đi và tích hợp.
 **Không thuộc task này:** đồng hồ thật; kết thúc ván; tính điểm Elo; ván với máy; đi lại; xem lại ván.
+**Phục vụ (nguồn):** Story 15, 18; tiêu chí AC-PLAY-01-01, AC-PLAY-01-02, AC-PLAY-01-03, AC-PLAY-07-04; NFR-01, NFR-04. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Bộ xử lý lệnh của ván (hàng đợi, mã yêu cầu, phiên bản, biên lai, lỗi ghi) và xử lý nước đi.
+**Bằng chứng nộp:** Kết quả thử 6+4 ca; dữ liệu và trạng thái phát khớp nhau. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Yêu cầu dưới 100 ms chỉ đo được khi đã nối web và chạy bài tải.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-04, T-09, T-10, T-25; liên quan tới (relates to) Story 15, Story 18; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server · **Sprint:** 2 (08/10–10/10)
 **Phải xong trước:** *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-26)*: nhận được màn hình ván và cách chờ xác nhận. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được chức năng đi nước và phát trạng thái đã ghi dữ liệu thật. *Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván (T-29)*: nhận được cách hai người tạo, vào phòng và bắt đầu ván thật.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Nối giao diện ván với xử lý nước đi **qua phòng thật** để chứng minh: hai người đánh nhau trên hai trình duyệt, **cùng nhìn một ván và cùng một phiên bản** sau mỗi nước.
@@ -141,12 +197,18 @@ Chuẩn bị: hai trình duyệt, máy chủ và cơ sở dữ liệu thử.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Đồng hồ và kết thúc ván kiểm ở T-50.
 **Bàn giao cho task sau:** chơi online đã chạy thật cho đồng hồ, kết thúc ván, chat, ván nâng cao và bạn bè.
 **Không thuộc task này:** đồng hồ, kết thúc ván, mất kết nối, người xem.
+**Phục vụ (nguồn):** Story 15; tiêu chí AC-PLAY-01-01, AC-PLAY-01-02, AC-PLAY-01-03; NFR-01. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Hai trình duyệt đánh nước luân phiên, cùng thế cờ và phiên bản sau mỗi nước.
+**Bằng chứng nộp:** Video; báo cáo Playwright; dữ liệu đối chiếu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Một nguồn thế cờ duy nhất.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-26, T-28, T-29; liên quan tới (relates to) Story 15; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-39 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được luồng áp dụng nước và bộ đếm luật được ghi cùng lúc.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Để **máy chủ quyết định thời gian còn lại và việc hết giờ**. Đồng hồ trên trình duyệt chỉ để hiển thị, không bao giờ thay đổi được kết quả.
@@ -201,12 +263,18 @@ Chuẩn bị: đồng hồ điều khiển được để rút ngắn thời gia
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Chưa** nghiệm thu mất mạng thật (T-45) và việc đồng hồ chạy đúng trên màn hình hai người (T-50). Không tự hoà vì thiếu quân, không có luật "đuổi quân" riêng.
 **Bàn giao cho task sau:** đồng hồ thật, kết thúc khi hết giờ và giờ còn lại trong trạng thái cho mất kết nối, người xem, tích hợp; kết thúc một lần và đề nghị hoà cho mất kết nối, tích hợp đồng hồ/kết thúc, đăng xuất giữa ván, ván với máy.
 **Không thuộc task này:** giờ "không giới hạn" (giai đoạn sau); hoàn giờ hoặc cộng giờ; hiển thị đồng hồ; điều kiện xin hoà của đánh hạng (20 nước); tái đấu; đi lại; giao diện.
+**Phục vụ (nguồn):** Story 16, 17; tiêu chí AC-PLAY-02-01, AC-PLAY-02-02, AC-PLAY-03-01, AC-PLAY-03-02, AC-PLAY-03-03, AC-PLAY-04-01, AC-PLAY-05-01, AC-PLAY-05-02, AC-PLAY-05-03, AC-PLAY-08-01, AC-PLAY-08-02. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Đồng hồ ván do máy chủ tính, hết giờ, đóng băng khi lỗi ghi; kết thúc ván, đầu hàng, xin hoà.
+**Bằng chứng nộp:** Kết quả thử bằng đồng hồ giả; kết quả một lần. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Không xử hoà vì thiếu quân.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-28; liên quan tới (relates to) Story 16, Story 17; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-42 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Engine, Frontend · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được ứng dụng web chạy được, nối được gói dùng chung. *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được danh sách nước hợp lệ cùng quân, điểm đi, điểm đến và thế cờ trước nước. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được chuỗi nước đã lưu có thứ tự và phiên bản.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-10` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Hiện **danh sách nước đi** của ván đang diễn ra bằng ký hiệu tiếng Việt, tự cuộn tới nước mới nhất, cho cả người chơi và người xem. Danh sách **chỉ để theo dõi**, không phải chức năng xem lại ván.
@@ -254,12 +322,18 @@ Viết hàm đổi một nước đi thành **ký hiệu tiếng Việt** cho b�
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Mỗi nước đã lưu có đúng một dòng khớp máy chủ. Người xem không có thao tác nào sửa được cờ. Không có ký hiệu trùng trong mọi tập nước hợp lệ của các thế thử.
 **Bàn giao cho task sau:** bảng nước đi cho tích hợp ván nâng cao; hàm ký hiệu nước đi cho bộ kiểm thử luật.
 **Không thuộc task này:** tua lại nước đi; xuất ván cờ ra tệp; lịch sử ván.
+**Phục vụ (nguồn):** Story 15; tiêu chí AC-PLAY-10-01. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Bảng nước đi ký hiệu tiếng Việt, tự cuộn, không trùng dòng khi nối lại.
+**Bằng chứng nộp:** Kết quả thử hai phe; hàm ký hiệu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Ký hiệu phải duy nhất trong mỗi thế.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-08, T-09, T-28; liên quan tới (relates to) Story 15; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-45 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được đồng hồ thật và cách phân xử theo hạn tuyệt đối; nhận được kết thúc một lần và việc huỷ đề nghị hoà.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-PLAY-03`, `US-PLAY-06`, `US-PLAY-07`, `US-ROOM-07`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Phân biệt **rời phòng có chủ ý** (là đầu hàng) với **mất kết nối** (được giữ chỗ trong một thời gian). Người rớt mạng quay lại đúng hạn thì giữ nguyên tư cách; quá hạn thì chịu hậu quả đúng luật; không để ván đã kết thúc "sống lại".
@@ -271,6 +345,7 @@ Phân biệt **rời phòng có chủ ý** (là đầu hàng) với **mất kế
 4. **Rời phòng có chủ ý giữa ván** → **đầu hàng ngay**, không chờ 60 giây.
 5. **Máy chủ khởi động lại:** quét các ván đang diễn ra, chuyển sang **gián đoạn**, không ghi đè nước đã lưu, không tiếp tục chơi. (Việc này tách khỏi trường hợp phục hồi lỗi ghi khi tiến trình vẫn sống.)
 6. Việc "phòng bị khoá thì sao khi nối lại" chỉ ghép ở task tích hợp cuối (T-50).
+7. Ghi nhật ký khi ván chuyển sang gián đoạn sau khi máy chủ khởi động lại (không chứa bí mật).
 
 **Các trường hợp lỗi và kết quả mong đợi**
 | Tình huống | Kết quả mong đợi |
@@ -280,6 +355,7 @@ Phân biệt **rời phòng có chủ ý** (là đầu hàng) với **mất kế
 | Xác nhận rời phòng giữa ván | Đầu hàng ngay, không chờ |
 | Khởi động lại máy chủ khi có ván và nước đã lưu | Ván gián đoạn; nước cũ không bị ghi đè |
 | Rớt mạng thật lúc đang đấu, hạn hết giờ trước / sau / bằng hạn 60 giây | Một kết quả theo luật ưu tiên; giờ vẫn chạy khi mất mạng; không phụ thuộc thứ tự bộ hẹn |
+| Chủ phòng mất kết nối tạm thời lúc đang đấu; chủ phòng rời hoặc bị xử thua | Không đổi chủ phòng khi chỉ mất kết nối tạm thời; rời hoặc bị xử thua thì quyền chuyển cho người còn lại (rời giữa ván là đầu hàng) |
 
 **Cách tự kiểm tra**
 Chuẩn bị: có thể ngắt/nối kết nối và khởi động lại máy chủ thử.
@@ -290,17 +366,24 @@ Chuẩn bị: có thể ngắt/nối kết nối và khởi động lại máy c
 | 3 | Rời phòng chủ động giữa ván | Đầu hàng ngay |
 | 4 | Khởi động lại máy chủ giữa ván | Gián đoạn; nước cũ còn nguyên |
 | 5 | Ngắt đang đấu, đặt hạn hết giờ so với hạn 60 giây, đảo thứ tự | Một kết quả, đúng ưu tiên |
+| 6 | Ngắt tạm thời kết nối chủ phòng lúc đang đấu; rồi cho chủ phòng rời | Không đổi chủ phòng khi chỉ ngắt tạm thời; rời thì chuyển quyền và tính đầu hàng |
 
-**Khi nào chuyển cho người kiểm thử:** cả 5 dòng đạt với đồng hồ và kết thúc ván thật.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt với đồng hồ và kết thúc ván thật.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. Phần "phòng khoá" chưa nghiệm thu ở đây mà ở T-50. Ván với máy có thời hạn 30 phút riêng (Epic Đánh với máy theo cấp độ).
 **Bàn giao cho task sau:** chức năng mất kết nối và kết nối lại cho người xem, ván nâng cao và đăng xuất.
 **Không thuộc task này:** giao diện lớp phủ "đang mất kết nối", ván với máy.
+**Phục vụ (nguồn):** Story 17, 18, 19, 20; tiêu chí AC-ROOM-07-03, AC-ROOM-10-03, AC-ROOM-11-03, AC-PLAY-03-02, AC-PLAY-06-01, AC-PLAY-07-01, AC-PLAY-07-02, AC-PLAY-07-03, AC-PLAY-07-04; NFR-07. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Rời phòng giữa ván, mất kết nối, giữ chỗ 60 giây/5 phút, kết nối lại, ván gián đoạn khi máy chủ khởi động lại.
+**Bằng chứng nộp:** Kết quả thử runtime ngắt/nối; khởi động lại thử. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Phòng khoá chỉ ghép ở task nối nâng cao.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-39; liên quan tới (relates to) Story 17, Story 18, Story 19, Story 20; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-48 — Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Authentication · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được nút và hộp xác nhận. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được chức năng rời phòng và nhường chủ phòng. *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được chức năng xử thua. *Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ (T-43)*: nhận được chức năng huỷ ván với máy.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `US-AI-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Khi người dùng bấm đăng xuất **trong lúc đang có ván**, hệ thống phải xử lý trọn vẹn: không để ván treo, không để người kia đợi vô hạn, không để phiên còn sống ngầm.
@@ -333,12 +416,18 @@ Khi người dùng bấm đăng xuất **trong lúc đang có ván**, hệ thố
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
 **Bàn giao cho task sau:** đăng xuất an toàn trong mọi tình huống.
 **Không thuộc task này:** tiếp quản phiên khi mở tab mới (task về nhiều tab), đăng xuất khi đang xem (chỉ rời phòng).
+**Phục vụ (nguồn):** Story 3, 26; tiêu chí AC-AUTH-05-04, AC-AUTH-05-05, AC-AI-03-04. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Đăng xuất giữa ván: xác nhận, đầu hàng, rời phòng rồi đăng xuất; ván với máy thì huỷ.
+**Bằng chứng nộp:** Kết quả thử 4 ca; đối soát bằng mã yêu cầu. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Bước thất bại giữa chừng không được đăng xuất nửa vời.
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-24, T-38, T-39, T-43; liên quan tới (relates to) Story 3, Story 26; Epic: Hai người đánh cờ qua mạng.
 
 ---
 
 ### T-50 — Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi
 **Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server · **Sprint:** 3 (11/10–14/10)
 **Phải xong trước:** *Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt (T-30)*: nhận được đường hai người vào ván và đi nước thật (gồm cả phòng và bắt đầu ván). *Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà (T-39)*: nhận được đồng hồ thật, bên Đỏ chạy trước, hết giờ, đóng băng và hồi phục; nhận được kết thúc một lần, đầu hàng, vòng đời xin hoà. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi chỗ, khoá, đuổi, chủ phòng rời chạy thật. *Bảng nước đi: ký hiệu tiếng Việt và hiển thị (T-42)*: nhận được kết quả đã hoàn thành của task này. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-44)*: nhận được dữ liệu người xem đã lọc. *Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn (T-45)*: nhận được chức năng ngắt/nối thật, giữ chỗ theo vai và khởi động lại.
+**Loại:** Task triển khai · **Nhãn:** `P1`, `integration`, `US-PLAY-02`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-06`, `US-PLAY-07`, `US-PLAY-09`, `US-PLAY-10`, `US-ROOM-03`, `US-ROOM-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint
 
 **Mục tiêu**
 Nối **đồng hồ** và mọi cách **kết thúc ván** vào ván đã đi nước thật, và nghiệm thu luôn bước **bắt đầu ván đầy đủ** (Sẵn sàng, đếm 3…2…1 có âm thanh, chuyển sang màn ván, đồng hồ Đỏ chạy). Kết quả cuối trên hai trình duyệt phải **khớp với máy chủ**.
@@ -399,3 +488,8 @@ Chuẩn bị: hai trình duyệt, máy chủ thật, khả năng gây lỗi ghi;
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Hộp kết quả "Ván bị gián đoạn" (đã chốt) phải hiển thị đúng sau khi máy chủ khởi động lại. Không thay việc kết nối lại thật bằng dữ liệu giả.
 **Bàn giao cho task sau:** ván chạy trọn vẹn từ bắt đầu tới kết thúc cho tích hợp nâng cao, nghiệm thu AC và demo; ván online đã chạy trọn cho bài tải, nghiệm thu AC, demo.
 **Không thuộc task này:** điều kiện xin hoà của đánh hạng; tái đấu; xem lại ván; công cụ giả lập mạng trong sản phẩm.
+**Phục vụ (nguồn):** Story 7, 15, 16, 17, 18, 19, 21; tiêu chí AC-ROOM-03-02, AC-ROOM-07-03, AC-ROOM-07-05, AC-PLAY-02-02, AC-PLAY-03-02, AC-PLAY-04-01, AC-PLAY-05-01, AC-PLAY-05-02, AC-PLAY-05-04, AC-PLAY-06-01, AC-PLAY-07-01, AC-PLAY-07-02, AC-PLAY-07-04, AC-PLAY-09-01, AC-PLAY-10-01. Thuộc Epic: Hai người đánh cờ qua mạng.
+**Kết quả (đầu ra):** Mất kết nối, kết nối lại, người xem, bảng nước đi, đồng hồ, kết thúc ván chạy trọn trên web và máy chủ thật.
+**Bằng chứng nộp:** Video; báo cáo; trạng thái trước/sau. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
+**Rủi ro / chưa rõ:** Cách hiển thị ván gián đoạn đã chốt (kết quả trung tính).
+**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-30, T-39, T-40, T-42, T-44, T-45; liên quan tới (relates to) Story 7, Story 15, Story 16, Story 17, Story 18, Story 19, Story 21; Epic: Hai người đánh cờ qua mạng.
