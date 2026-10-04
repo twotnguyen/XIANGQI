@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
@@ -53,30 +53,22 @@ Chuẩn bị: dữ liệu giả cho ba trạng thái, lỗi, giới hạn.
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ, quan hệ bạn bè, đếm số lần từ chối và ràng buộc theo cặp. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách xác định người gửi và chuyển lệnh. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách nhận ra yêu cầu gửi lại. *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được sổ chỗ chơi (ghế phòng, ván với máy) theo từng người.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: tìm người, gửi và nhận lời mời kết bạn, giới hạn bạn bè:*
 Làm trọn **vòng đời kết bạn** ở máy chủ: tìm người, gửi lời mời, thu hồi, chấp nhận, từ chối, hết hạn, với giới hạn đúng ở **cả hai tài khoản**, để quan hệ hai chiều luôn nhất quán.
 
-*Phần 2 — Máy chủ: danh sách bạn và trạng thái online / đang đấu:*
 Trả **danh sách bạn** kèm trạng thái đúng với dữ liệu máy chủ, để người dùng biết bạn nào đang rảnh để mời. Hỗ trợ **huỷ kết bạn** (hai bên không còn là bạn).
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: tìm người, gửi và nhận lời mời kết bạn, giới hạn bạn bè:*
 1. **Tìm người:** theo phần đầu tên đăng nhập, không phân biệt hoa thường; chỉ trả thông tin công khai; không tự gửi lời mời.
 2. Với mỗi lệnh thay đổi: xác định người gửi, **tra biên lai** (nếu đã xử lý thì trả kết quả cũ), rồi mới kiểm quyền, giới hạn, trạng thái. **Chỉ người nhận được trả lời; chỉ người gửi được thu hồi.**
 3. Xử lý **lần lượt theo từng cặp người**; ghi quan hệ, số lần từ chối và biên lai **cùng lúc**; chỉ báo thành công sau khi ghi xong.
 4. Kiểm giới hạn **200 bạn và 50 lời mời chờ** ở cả hai đầu khi gửi và khi chấp nhận. Gửi chéo cùng lúc thì chỉ giữ một lời mời chờ.
 5. **Từ chối**: tăng bộ đếm đúng chiều **một lần** (gửi lại yêu cầu từ chối không tăng thêm). **Thu hồi và hết hạn 30 ngày** không tăng và không xoá lịch sử từ chối. Dọn các lời mời hết hạn định kỳ.
-
-*Phần 2 — Máy chủ: danh sách bạn và trạng thái online / đang đấu:*
-1. Trả danh sách bạn **của chính người hỏi**, chỉ các trường được phép (avatar, tên hiển thị, tên đăng nhập, trạng thái).
-2. Xác định trạng thái từ dữ liệu máy chủ (không tin màu hay trạng thái do trình duyệt báo): **Đang đấu** nếu bạn đang có kết nối **và** còn chỗ chơi (ghế phòng ở trạng thái đang chờ, đang chơi **hoặc đã kết thúc mà chưa rời**, hoặc đang chơi với máy); **Online** chỉ khi có kết nối và **không** giữ chỗ chơi nào; còn lại **Ngoại tuyến**.
-3. Mất kết nối **không** biến thành "Online rảnh", dù chỗ vẫn đang được giữ.
-4. **Huỷ kết bạn** ở một bước: cả hai chiều cùng mất; báo cập nhật cho hai bên.
+6. Trả danh sách bạn **của chính người hỏi**, chỉ các trường được phép (avatar, tên hiển thị, tên đăng nhập, trạng thái).
+7. Xác định trạng thái từ dữ liệu máy chủ (không tin màu hay trạng thái do trình duyệt báo): **Đang đấu** nếu bạn đang có kết nối **và** còn chỗ chơi (ghế phòng ở trạng thái đang chờ, đang chơi **hoặc đã kết thúc mà chưa rời**, hoặc đang chơi với máy); **Online** chỉ khi có kết nối và **không** giữ chỗ chơi nào; còn lại **Ngoại tuyến**.
+8. Mất kết nối **không** biến thành "Online rảnh", dù chỗ vẫn đang được giữ.
+9. **Huỷ kết bạn** ở một bước: cả hai chiều cùng mất; báo cập nhật cho hai bên.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: tìm người, gửi và nhận lời mời kết bạn, giới hạn bạn bè:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Tìm bằng phần đầu tên, khác hoa thường | Ra thẻ đúng tên đăng nhập, không có email |
@@ -87,10 +79,6 @@ Trả **danh sách bạn** kèm trạng thái đúng với dữ liệu máy ch�
 | Người khác thu hồi lời mời của người gửi | Từ chối; người gửi vẫn thu hồi được lời mời của mình |
 | Từ chối, mất phản hồi, gửi lại (cũng hai bản cùng lúc) | Trả kết quả cũ; bộ đếm chỉ tăng một lần; người gửi không bị báo |
 | Lỗi trước khi ghi xong; sau khi ghi xong mất phản hồi rồi gửi lại | Không có tác dụng hay biên lai thành công; gửi lại sau khi ghi thì trả kết quả cũ, chỉ đếm một lần |
-
-*Phần 2 — Máy chủ: danh sách bạn và trạng thái online / đang đấu:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Bạn đăng nhập, bắt đầu ván, rời hoặc ngắt kết nối | Danh sách phản ánh đúng trạng thái |
 | Huỷ kết bạn khi hai bên đang mở danh sách | Hai bên không còn là bạn |
 | Đổi mã người dùng trong yêu cầu để xem danh sách người khác | Không đọc được |
@@ -99,8 +87,8 @@ Trả **danh sách bạn** kèm trạng thái đúng với dữ liệu máy ch�
 | Giải phóng chỗ (rời ghế, rời ván máy) khi còn kết nối; rồi ngắt kết nối | Rời chỗ → Online rảnh; ngắt kết nối → không còn nhận mời như người Online |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: tìm người, gửi và nhận lời mời kết bạn, giới hạn bạn bè:*
 Chuẩn bị: cơ sở dữ liệu thử, đồng hồ điều khiển được, nhiều tài khoản thử.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Tìm theo phần đầu tên, khác hoa thường | Đúng thẻ, không email |
@@ -110,21 +98,17 @@ Chuẩn bị: cơ sở dữ liệu thử, đồng hồ điều khiển được,
 | 5 | Người ngoài trả lời hoặc thu hồi thay | Từ chối |
 | 6 | Từ chối rồi mất phản hồi, gửi lại | Một lần đếm |
 | 7 | Gây lỗi trước và sau khi ghi | Đúng như bảng trên |
+| 8 | Cho bạn đăng nhập, vào ván, rời, ngắt | Danh sách đúng từng lúc |
+| 9 | Huỷ kết bạn khi hai bên đang mở danh sách | Cả hai mất bạn |
+| 10 | Xin danh sách người khác | Từ chối |
+| 11 | Làm truy vấn lỗi | Báo lỗi |
+| 12 | Dùng dữ liệu mẫu bốn loại chỗ giữ | Cả bốn: Đang đấu, không nhận mời |
+| 13 | Giải phóng chỗ rồi ngắt kết nối | Online rảnh; rồi không nhận mời |
 
-*Phần 2 — Máy chủ: danh sách bạn và trạng thái online / đang đấu:*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Cho bạn đăng nhập, vào ván, rời, ngắt | Danh sách đúng từng lúc |
-| 2 | Huỷ kết bạn khi hai bên đang mở danh sách | Cả hai mất bạn |
-| 3 | Xin danh sách người khác | Từ chối |
-| 4 | Làm truy vấn lỗi | Báo lỗi |
-| 5 | Dùng dữ liệu mẫu bốn loại chỗ giữ | Cả bốn: Đang đấu, không nhận mời |
-| 6 | Giải phóng chỗ rồi ngắt kết nối | Online rảnh; rồi không nhận mời |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 7 dòng đạt với cơ sở dữ liệu và cơ chế chống làm hai lần thật. (Phần 2) cả 6 dòng đạt, dữ liệu trả về chỉ gồm các trường được phép.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Không cần giao diện để đạt. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) vòng đời bạn bè cho danh sách bạn, mời vào phòng, giao diện, tích hợp. (Phần 2) danh sách bạn và trạng thái cho mời vào phòng, giao diện bạn bè, tích hợp.
-**Không thuộc task này:** (Phần 1) nhắn tin 1-1, thách đấu, điểm Elo, khách. (Phần 2) hiển thị Elo, lịch sử đấu của bạn, giao diện.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Không cần giao diện để đạt.
+**Bàn giao cho task sau:** vòng đời bạn bè cho danh sách bạn, mời vào phòng, giao diện, tích hợp; danh sách bạn và trạng thái cho mời vào phòng, giao diện bạn bè, tích hợp.
+**Không thuộc task này:** nhắn tin 1-1; thách đấu; điểm Elo; khách; lịch sử đấu của bạn; giao diện.
 
 ---
 

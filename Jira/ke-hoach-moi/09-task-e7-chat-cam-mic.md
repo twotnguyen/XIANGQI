@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
@@ -91,30 +91,22 @@ Cho người dùng nhắn tin trong phòng, **mỗi tin chỉ tới đúng ngư�
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được kiểu tin chat, phản hồi, lỗi, vai trò. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được nút, hộp thoại, chú thích, thông báo, 5 trạng thái. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được hàm che từ cấm dùng chung. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được đổi ghế, riêng tư, đuổi, chủ phòng rời, đóng phòng chạy thật. *Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm (T-41)*: nhận được chat lưu, lọc, giới hạn, gửi theo quyền. *Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò (T-44)*: nhận được tư cách và trạng thái người xem thật.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
+Dựng khung chat để người dùng **phân biệt rõ hai kênh**, biết tin nào đang gửi, tin nào lỗi, và biết quyền đọc của mình. Dùng dữ liệu giả; nối thật ở bước nối với máy chủ ngay sau đây.
 
-*Phần 1 — Giao diện: khung chat hai kênh, ẩn/hiện Kênh Chung:*
-Dựng khung chat để người dùng **phân biệt rõ hai kênh**, biết tin nào đang gửi, tin nào lỗi, và biết quyền đọc của mình. Dùng dữ liệu giả; nối thật ở phần 2 của task này.
-
-*Phần 2 — Nối web với máy chủ: chat:*
 Nối khung chat với máy chủ thật và kiểm **quyền ở dữ liệu thật gửi qua mạng**, chứ không chỉ nhìn tab bị ẩn.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Giao diện: khung chat hai kênh, ẩn/hiện Kênh Chung:*
 1. **Hai kênh** theo vai: người chơi mặc định mở Kênh Riêng, có công tắc ẩn/hiện Kênh Chung (chỉ đổi cách hiển thị); người xem chỉ thấy Kênh Chung.
 2. Ô nhập tin, nút gửi; hiện **"đang gửi"** đến khi nhận xác nhận. Gửi lỗi giữ lại nội dung (không nhạy cảm) để thử lại, **không tạo tin mới mù quáng**.
 3. Dùng **hàm che từ cấm chung** ngay trên giao diện để người dùng thấy trước kết quả, nhưng **máy chủ mới là nơi quyết định**.
 4. Khi đổi ghế (người chơi thành người xem), **gỡ khỏi màn hình** lịch sử Kênh Riêng không còn quyền.
 5. Đủ 5 trạng thái: không có tin, đang tải, lỗi, không được gửi (có lý do). Khay sticker **ẩn**. Dùng được bằng bàn phím.
-
-*Phần 2 — Nối web với máy chủ: chat:*
-1. Nối kênh, phản hồi xác nhận và bộ lọc dùng chung ở cả hai phía.
-2. Chạy người chơi và người xem, **bắt dữ liệu mạng** để chắc người xem không nhận byte nào của Kênh Riêng.
-3. Đổi ghế, đuổi, đóng phòng rồi kiểm dữ liệu và lỗi.
-4. Ghép chat với các thao tác đổi ghế/đuổi/đóng phòng đã nối thật ở T-40; kiểm bộ lọc cùng phiên bản ở web và máy chủ.
+6. Nối kênh, phản hồi xác nhận và bộ lọc dùng chung ở cả hai phía.
+7. Chạy người chơi và người xem, **bắt dữ liệu mạng** để chắc người xem không nhận byte nào của Kênh Riêng.
+8. Đổi ghế, đuổi, đóng phòng rồi kiểm dữ liệu và lỗi.
+9. Ghép chat với các thao tác đổi ghế/đuổi/đóng phòng đã nối thật ở T-40; kiểm bộ lọc cùng phiên bản ở web và máy chủ.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Giao diện: khung chat hai kênh, ẩn/hiện Kênh Chung:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Vào bằng hai vai; ẩn/hiện Kênh Chung | Đúng kênh mặc định; người xem không có Kênh Riêng |
@@ -122,10 +114,6 @@ Nối khung chat với máy chủ thật và kiểm **quyền ở dữ liệu th
 | Người chơi chuyển thành người xem | Không còn dữ liệu Kênh Riêng trên màn hình |
 | Không có tin, tải chậm, lỗi, không được gửi | Đủ trạng thái và lý do |
 | Nhập các biến thể từ cấm, nút gửi bị mờ | Kết quả che thống nhất; chú thích dùng khối nền |
-
-*Phần 2 — Nối web với máy chủ: chat:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Hai người chơi gửi ở từng kênh; người xem gửi ở Kênh Chung | Nhận đúng tập người |
 | Gửi quá nhanh, quá dài, từ cấm biến thể | Bị chặn hoặc che giống quy tắc |
 | Ngắt sau khi máy chủ đã nhận rồi gửi lại cùng tin | Một tin; giao diện khớp trạng thái thật |
@@ -134,8 +122,8 @@ Nối khung chat với máy chủ thật và kiểm **quyền ở dữ liệu th
 | Đổi cặp người ngồi ghế (A và B chat, B xuống xem, C lên ngồi) | A và C **không** đọc tin cũ của cặp trước; B mất quyền Kênh Riêng; A và C nhận tin mới |
 
 **Cách tự kiểm tra**
-*Phần 1 — Giao diện: khung chat hai kênh, ẩn/hiện Kênh Chung:*
-Chuẩn bị: dữ liệu giả có quyền và thời điểm.
+Chuẩn bị: dữ liệu giả có quyền và thời điểm; nhiều trình duyệt (hai người chơi, người xem), công cụ xem dữ liệu mạng.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Vào bằng hai vai, ẩn/hiện Kênh Chung | Đúng kênh mặc định |
@@ -143,22 +131,17 @@ Chuẩn bị: dữ liệu giả có quyền và thời điểm.
 | 3 | Chuyển người chơi thành người xem | Mất dữ liệu Kênh Riêng |
 | 4 | Xem 5 trạng thái | Đủ, có lý do |
 | 5 | Nhập từ cấm biến thể | Che đúng; nút gửi mờ có chú thích |
+| 6 | Gửi ở từng kênh từ hai người chơi và người xem | Đúng người nhận |
+| 7 | Gửi nhanh, quá dài, từ cấm biến thể | Chặn/che như quy tắc |
+| 8 | Ngắt mạng sau khi gửi, gửi lại cùng tin | Một tin duy nhất |
+| 9 | Người xem vào muộn, người mới xuống ghế, đóng phòng | Đúng mốc; tin bị xoá khi đóng |
+| 10 | Đổi ghế, đóng phòng bằng T-40 | Đúng quyền; không byte Kênh Riêng tới người xem |
+| 11 | Đổi cặp: A và B chat riêng, B xuống xem, C lên ngồi; tải lại và gửi tin mới | A và C **không** thấy tin cũ của A và B; B mất quyền Kênh Riêng; A và C nhận tin mới |
 
-*Phần 2 — Nối web với máy chủ: chat:*
-Chuẩn bị: nhiều trình duyệt (hai người chơi, người xem), công cụ xem dữ liệu mạng.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Gửi ở từng kênh từ hai người chơi và người xem | Đúng người nhận |
-| 2 | Gửi nhanh, quá dài, từ cấm biến thể | Chặn/che như quy tắc |
-| 3 | Ngắt mạng sau khi gửi, gửi lại cùng tin | Một tin duy nhất |
-| 4 | Người xem vào muộn, người mới xuống ghế, đóng phòng | Đúng mốc; tin bị xoá khi đóng |
-| 5 | Đổi ghế, đóng phòng bằng T-40 | Đúng quyền; không byte Kênh Riêng tới người xem |
-| 6 | Đổi cặp: A và B chat riêng, B xuống xem, C lên ngồi; tải lại và gửi tin mới | A và C **không** thấy tin cũ của A và B; B mất quyền Kênh Riêng; A và C nhận tin mới |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt, thao tác được bằng bàn phím, kèm ảnh. (Phần 2) dòng 1 đến 5 đạt, không tin trùng, phòng đóng thật được dọn.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. **Chưa** coi chat thật đã chạy (phần 2 của task này). (Phần 2) người kiểm thử và người xem lại đồng ý. Dòng 6 (đổi cặp) bắt buộc đạt theo quyết định đã chốt.
-**Bàn giao cho task sau:** (Phần 1) khung chat cho tích hợp chat. (Phần 2) chat thật cho tích hợp camera/micro, nghiệm thu, bài tải.
-**Không thuộc task này:** (Phần 1) gọi máy chủ thật, nhắn tin bạn bè, sticker. (Phần 2) nhắn tin giữa bạn bè, sticker.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Chat chỉ được coi là chạy thật sau khi đã nối với máy chủ ở các bước trên. Dòng 6 (đổi cặp) bắt buộc đạt theo quyết định đã chốt.
+**Bàn giao cho task sau:** khung chat cho tích hợp chat; chat thật cho tích hợp camera/micro, nghiệm thu, bài tải.
+**Không thuộc task này:** nhắn tin giữa bạn bè; sticker.
 
 ---
 
@@ -208,31 +191,23 @@ Chuẩn bị: máy có camera và micro thật; thử cả khi từ chối quy�
 **Phải xong trước:** *Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền (T-06)*: nhận được **báo cáo có kết luận đạt** về việc cấp quyền theo người, thu hồi khi dùng token cũ; **chỉ có báo cáo chưa đủ**, phải có kết luận đạt. Nếu không đạt hoặc chưa kết luận thì phần phụ thuộc bị chặn và báo PO. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được kiểm tra phiên và hạn, thu hồi. *Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng (T-38)*: nhận được đổi vai đã ghi; nhận được thông báo đuổi, rời, đóng phòng.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: cấp quyền camera/micro theo vai và thu hồi khi đổi vai, đuổi, tiếp quản:*
 Từ **vai trò thật trong phòng**, máy chủ cấp và thay đổi quyền camera/micro ở dịch vụ LiveKit: ai được phát, ai được nghe ai. Người dùng hợp lệ giữ quyền mới; **kết nối hay token cũ không lấy lại được quyền đã mất**.
 
-*Phần 2 — Máy chủ: mở nhiều tab (tab mới tiếp quản, loại kết nối cũ):*
 Mỗi người chỉ **một tab điều khiển** tại một thời điểm. Khi mở tab mới cùng tài khoản và cùng phòng, tab mới **tiếp quản**; tab cũ chuyển **chỉ đọc**, dừng camera/micro, và **không gửi được lệnh** làm thay đổi ván hay phòng. Task này cũng đảm bảo đúng quy tắc đăng nhập nơi mới thì nơi cũ bị đẩy ra.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: cấp quyền camera/micro theo vai và thu hồi khi đổi vai, đuổi, tiếp quản:*
 1. Lập **bảng quyền**: ai được nhận luồng của ai theo mức chia sẻ của người phát (không chia sẻ / chỉ đối thủ / cả đối thủ và người xem).
 2. **Cấp token** (chìa truy cập) ở máy chủ: người xem **không bao giờ** có quyền phát.
 3. Khi đổi vai, đuổi hoặc tiếp quản: **cập nhật hoặc thu hồi** quyền của kết nối cũ ngay. Phòng bị khoá vẫn **giữ nguyên người đang có mặt**.
 4. Nối thông báo đuổi/rời/đóng phòng (T-38) và đổi vai (T-38) vào cùng dịch vụ quyền.
 5. Cách thu hồi cụ thể cần được duyệt và có số đo trước khi dùng; **quyền cấm phát/nhận không được là tuỳ chọn**.
-
-*Phần 2 — Máy chủ: mở nhiều tab (tab mới tiếp quản, loại kết nối cũ):*
-1. Khi có kết nối mới của cùng một người, chọn nó làm **kết nối điều khiển** (xử lý lần lượt theo người để tránh hai tab cùng thắng).
-2. Báo cho tab cũ: "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; **chặn ở máy chủ** mọi lệnh làm thay đổi từ kết nối cũ.
-3. **Thu quyền camera/micro cũ** qua phần 1 của task này; nơi mới **mặc định tắt**.
-4. Phiên hết hạn hoặc sai thì **không** được chiếm quyền điều khiển.
-5. Task này chỉ chứng minh phía máy chủ bằng kết nối thử; việc thiết bị thật dừng và thông báo trên màn hình nghiệm thu ở T-57.
+6. Khi có kết nối mới của cùng một người, chọn nó làm **kết nối điều khiển** (xử lý lần lượt theo người để tránh hai tab cùng thắng).
+7. Báo cho tab cũ: "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; **chặn ở máy chủ** mọi lệnh làm thay đổi từ kết nối cũ.
+8. **Thu quyền camera/micro cũ** qua việc cấp quyền ở các bước trên; nơi mới **mặc định tắt**.
+9. Phiên hết hạn hoặc sai thì **không** được chiếm quyền điều khiển.
+10. Task này chỉ chứng minh phía máy chủ bằng kết nối thử; việc thiết bị thật dừng và thông báo trên màn hình nghiệm thu ở T-57.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: cấp quyền camera/micro theo vai và thu hồi khi đổi vai, đuổi, tiếp quản:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Người xem thử phát hoặc xin quyền khác | Bị chặn ngay tại dịch vụ |
@@ -240,18 +215,14 @@ Mỗi người chỉ **một tab điều khiển** tại một thời điểm. K
 | Dùng lại token cũ sau khi đổi vai hoặc bị đuổi | Không lấy lại quyền cũ; quyền mới hợp lệ vẫn hoạt động |
 | Phòng khoá; người đang có mặt còn/hết hạn giữ chỗ | Không thu quyền chỉ vì khoá; cấp lại đúng tư cách |
 | Đuổi hoặc đóng phòng khi còn luồng đang chạy | Người bị đuổi không xin được token mới; phòng đóng không còn quyền nhận/phát |
-
-*Phần 2 — Máy chủ: mở nhiều tab (tab mới tiếp quản, loại kết nối cũ):*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Hai kết nối thử cùng tài khoản, nơi sau tiếp quản | Nơi cũ nhận thông báo, mất quyền ghi và quyền phát; nơi mới mặc định tắt |
 | Nơi cũ gửi lệnh làm thay đổi | Bị từ chối **trước khi** vào xử lý, tác động bằng 0 |
 | Mở nhiều tab cùng lúc | Chỉ một tab có quyền điều khiển |
 | Phiên hết hạn xin tiếp quản | Không chiếm quyền điều khiển |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: cấp quyền camera/micro theo vai và thu hồi khi đổi vai, đuổi, tiếp quản:*
-Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử).
+Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử); hai kết nối thử cùng một tài khoản.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Người xem thử phát, xin quyền khác | Bị chặn |
@@ -259,20 +230,15 @@ Chuẩn bị: dịch vụ LiveKit thật (tài khoản thử).
 | 3 | Dùng token cũ sau khi đổi vai/đuổi | Không lấy lại quyền; quyền mới dùng được |
 | 4 | Phòng khoá, người còn/hết hạn giữ chỗ xin token | Không thu quyền vì khoá; cấp lại đúng tư cách |
 | 5 | Đuổi hoặc đóng phòng khi còn luồng | Không có token mới; không còn quyền |
+| 6 | Mở kết nối thứ hai | Kết nối cũ nhận thông báo, mất quyền ghi và phát; mới mặc định tắt |
+| 7 | Kết nối cũ gửi lệnh thay đổi | Bị từ chối, không tác động |
+| 8 | Mở nhiều kết nối cùng lúc | Chỉ một có quyền |
+| 9 | Dùng phiên hết hạn xin tiếp quản | Không chiếm được |
 
-*Phần 2 — Máy chủ: mở nhiều tab (tab mới tiếp quản, loại kết nối cũ):*
-Chuẩn bị: hai kết nối thử cùng một tài khoản.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Mở kết nối thứ hai | Kết nối cũ nhận thông báo, mất quyền ghi và phát; mới mặc định tắt |
-| 2 | Kết nối cũ gửi lệnh thay đổi | Bị từ chối, không tác động |
-| 3 | Mở nhiều kết nối cùng lúc | Chỉ một có quyền |
-| 4 | Dùng phiên hết hạn xin tiếp quản | Không chiếm được |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt trên dịch vụ thật; không ai nhận được luồng trái quyền. (Phần 2) cả 4 dòng đạt.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Kết nối lại cả phòng khi bị khoá kiểm ở T-50; tiếp quản tab thật kiểm ở T-57. (Phần 2) người kiểm thử và người xem lại đồng ý. Thiết bị thật dừng, thông báo trên màn hình và đi nước sau tiếp quản kiểm ở T-57 và nghiệm thu cuối; **chưa** tính đủ hai yêu cầu liên quan cho đến lúc đó.
-**Bàn giao cho task sau:** (Phần 1) dịch vụ cấp quyền cho giao diện camera/mic, tiếp quản tab, tích hợp media. (Phần 2) tiếp quản tab cho tích hợp media.
-**Không thuộc task này:** (Phần 1) ghi hình/ghi âm, tự dựng dịch vụ riêng, giao diện. (Phần 2) hộp thoại chọn tab phụ (giai đoạn sau), tự bật camera ở tab mới, màn hình.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; không ai nhận được luồng trái quyền.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Kết nối lại cả phòng khi bị khoá kiểm ở T-50. Tiếp quản tab thật kiểm ở T-57. Thiết bị thật dừng, thông báo trên màn hình và đi nước sau tiếp quản kiểm ở T-57 và nghiệm thu cuối. **chưa** tính đủ hai yêu cầu liên quan cho đến lúc đó.
+**Bàn giao cho task sau:** dịch vụ cấp quyền cho giao diện camera/mic, tiếp quản tab, tích hợp media; tiếp quản tab cho tích hợp media.
+**Không thuộc task này:** ghi hình, ghi âm; tự dựng dịch vụ riêng; giao diện; hộp thoại chọn tab phụ (giai đoạn sau); tự bật camera ở tab mới.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
@@ -11,49 +11,37 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 **Phải xong trước:** không có (đây là việc đầu tiên).
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Dựng kho mã chung và các lệnh cài đặt, kiểm tra:*
 Tạo "bộ khung" để cả nhóm cùng cài đặt, chạy và kiểm tra phần mềm theo một cách giống nhau. Mọi task sau đều dùng kho mã này. Task này **chưa làm tính năng cờ tướng nào**.
 
-*Phần 2 — Thiết lập kiểm tra tự động mỗi khi có thay đổi mã:*
 Mỗi lần ai đó đẩy thay đổi mã lên, hệ thống **tự động** biên dịch, kiểm tra cách viết mã và chạy các bài kiểm tra, rồi báo xanh hoặc đỏ. Nhờ vậy lỗi bị phát hiện sớm và không ai vô tình làm hỏng phần của người khác.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Dựng kho mã chung và các lệnh cài đặt, kiểm tra:*
 1. Cùng nhóm chốt phiên bản công cụ chạy mã (Node) và công cụ quản lý thư viện (pnpm); ghi vào tệp mô tả để ai cũng dùng đúng.
 2. Tạo **một kho mã duy nhất** chứa các phần: ứng dụng web, máy chủ, máy cờ (chạy riêng), gói luật cờ, gói hợp đồng chung.
 3. Cấu hình ngôn ngữ TypeScript dùng chung cho các phần.
 4. Tạo các lệnh: **cài đặt**, **biên dịch** (build), **kiểm tra cách viết mã**, **chạy bài kiểm tra tự động**.
 5. Thêm một bài kiểm tra mẫu đơn giản để chứng minh lệnh kiểm tra chạy thật.
 6. Viết hướng dẫn ngắn: cách cài, cách chạy, cách đọc lỗi.
-
-*Phần 2 — Thiết lập kiểm tra tự động mỗi khi có thay đổi mã:*
-1. Tạo cấu hình kiểm tra tự động trên GitHub, dùng **đúng các lệnh đã có ở task dựng kho mã**.
-2. Cho chạy ở **mọi nhánh** và mỗi lần có yêu cầu gộp mã.
-3. Lưu kết quả và phiên bản mã kèm theo để xem lại.
-4. Không in mật khẩu hay khoá bí mật ra nhật ký.
-5. Viết hướng dẫn ngắn: cách đọc lỗi, cách chạy lại.
+7. Tạo cấu hình kiểm tra tự động trên GitHub, dùng **đúng các lệnh đã có ở task dựng kho mã**.
+8. Cho chạy ở **mọi nhánh** và mỗi lần có yêu cầu gộp mã.
+9. Lưu kết quả và phiên bản mã kèm theo để xem lại.
+10. Không in mật khẩu hay khoá bí mật ra nhật ký.
+11. Viết hướng dẫn ngắn: cách đọc lỗi, cách chạy lại.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Dựng kho mã chung và các lệnh cài đặt, kiểm tra:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Máy chưa cài thư viện nào | Làm theo hướng dẫn là cài được, không cần cài thêm thứ gì ngoài công cụ đã ghi |
 | Cố ý viết một lỗi vào mã | Lệnh biên dịch hoặc kiểm tra **báo lỗi**, không báo xanh |
 | Cố ý làm một bài kiểm tra sai | Lệnh chạy kiểm tra **báo thất bại** |
 | Có mật khẩu hoặc khoá bí mật nằm trong kho | Không được xảy ra; bí mật không nằm trong kho mã |
-
-*Phần 2 — Thiết lập kiểm tra tự động mỗi khi có thay đổi mã:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Có một bài kiểm tra sai | Kiểm tra tự động **đỏ**; không có cách nào che lỗi để thành xanh |
 | Thiếu một cấu hình cần cho bài kiểm tra có dịch vụ ngoài | Báo "thiếu cấu hình", **không** báo đạt |
 | Ai đó thử bỏ qua kiểm tra | Không cho phép; quy trình của dự án không cho gộp mã khi còn đỏ |
 
 **Cách tự kiểm tra trước khi chuyển cho người kiểm thử**
-*Phần 1 — Dựng kho mã chung và các lệnh cài đặt, kiểm tra:*
 Chuẩn bị: một máy hoặc thư mục sạch, chưa cài gì của dự án.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Làm đúng theo hướng dẫn để cài đặt | Cài thành công, không thiếu thư viện |
@@ -63,8 +51,8 @@ Chuẩn bị: một máy hoặc thư mục sạch, chưa cài gì của dự án
 | 5 | Tìm trong kho các chuỗi giống mật khẩu | Không thấy |
 
 **Cách tự kiểm tra**
-*Phần 2 — Thiết lập kiểm tra tự động mỗi khi có thay đổi mã:*
 Chuẩn bị: một nhánh thử.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Đẩy một thay đổi hợp lệ lên nhánh thử | Kiểm tra tự động chạy và **xanh**, có nhật ký và phiên bản mã |
@@ -72,10 +60,10 @@ Chuẩn bị: một nhánh thử.
 | 3 | Sửa lại cho đúng rồi đẩy lên | Chuyển sang xanh |
 | 4 | Xem nhật ký | Không có mật khẩu, mã bí mật |
 
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt, đã ghi lại lệnh thực tế đã dùng, và người khác làm theo hướng dẫn trên máy khác cũng chạy được. (Phần 2) cả 4 dòng đạt và có đường dẫn tới các lần chạy làm bằng chứng.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại mã đồng ý; không còn lỗi đã biết. (Phần 2) người kiểm thử và người xem lại mã đồng ý; kiểm tra tự động bắt được lỗi thật.
-**Bàn giao cho task sau:** (Phần 1) kho mã chạy được cùng hướng dẫn, để các task còn lại dùng. (Phần 2) hệ thống kiểm tra tự động hoạt động cho mọi nhánh.
-**Không thuộc task này:** (Phần 1) tính năng cờ tướng, giao diện, máy chủ thật, kiểm tra tự động trên mạng (task kế tiếp). (Phần 2) thay đổi quyền của kho mã, đặt mật khẩu bí mật, triển khai ra mạng (task khác).
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Không còn lỗi đã biết. Kiểm tra tự động bắt được lỗi thật.
+**Bàn giao cho task sau:** kho mã chạy được cùng hướng dẫn, để các task còn lại dùng; hệ thống kiểm tra tự động hoạt động cho mọi nhánh.
+**Không thuộc task này:** tính năng cờ tướng, giao diện, máy chủ thật; thay đổi quyền của kho mã; đặt mật khẩu bí mật; triển khai ra mạng.
 
 ---
 
@@ -267,67 +255,50 @@ Chuẩn bị: thông tin đăng nhập thử.
 **Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và lệnh biên dịch. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói hợp đồng để dùng trong giao diện.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Dựng khung ứng dụng web:*
 Tạo "bộ khung" trang web (React và Vite): có trang, có chuyển trang, nối được với hợp đồng chung. Các màn hình ở các task sau chỉ việc gắn vào. Task này **chưa làm màn hình nào thật** và chưa nối máy chủ.
 
-*Phần 2 — Giao diện: màu và kiểu "Kỳ Đài Cổ Phong" cùng các khối nền (nút, hộp thoại, thông báo):*
 Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **khối giao diện dùng chung**, để mọi màn hình sau có cùng cách nút bấm, viền focus, trạng thái và thông báo, thay vì mỗi người tự làm một kiểu.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Dựng khung ứng dụng web:*
 1. Dựng ứng dụng web và **bộ chuyển trang** theo danh sách trang giai đoạn đầu (đăng nhập, đăng ký, Sảnh, phòng, ván, bạn bè, ván với máy...).
 2. Nối **gói hợp đồng chung** để giao diện dùng cùng kiểu dữ liệu với máy chủ.
 3. Đọc cấu hình từ biến môi trường **công khai** (địa chỉ máy chủ...). Tuyệt đối không để khoá bí mật trong giao diện, vì mọi thứ trong giao diện đều công khai.
 4. Dựng một trang khung có **báo lỗi** khi tải lỗi hoặc thiếu cấu hình.
 5. Chỉ dùng giao diện **Kỳ Đài Cổ Phong** (một giao diện tối); không có chỗ chọn giao diện khác ở giai đoạn đầu.
 6. Không thêm thư viện giao diện dựng sẵn hay Tailwind.
-
-*Phần 2 — Giao diện: màu và kiểu "Kỳ Đài Cổ Phong" cùng các khối nền (nút, hộp thoại, thông báo):*
-1. Chuyển bộ màu đã chốt (giao diện tối) và màu bàn cờ sang dạng biến dùng chung; **không đổi mã màu đã chốt**.
-2. Dựng các khối nền: **nút, ô nhập, hộp thoại, thông báo, chú thích (tooltip), khung xương đang tải**. Mỗi khối có nhãn, viền focus và **đủ 5 trạng thái**.
-3. Quy tắc focus: hộp xác nhận nguy hiểm (ví dụ đầu hàng) để focus vào "Huỷ"; khung xin hoà **không** giữ focus.
-4. Làm một **trang kiểm tra nội bộ** liệt kê mọi khối ở mọi trạng thái để người kiểm thử duyệt.
-5. Tôn trọng "giảm chuyển động". Không thêm thư viện giao diện dựng sẵn hay Tailwind.
+7. Chuyển bộ màu đã chốt (giao diện tối) và màu bàn cờ sang dạng biến dùng chung; **không đổi mã màu đã chốt**.
+8. Dựng các khối nền: **nút, ô nhập, hộp thoại, thông báo, chú thích (tooltip), khung xương đang tải**. Mỗi khối có nhãn, viền focus và **đủ 5 trạng thái**.
+9. Quy tắc focus: hộp xác nhận nguy hiểm (ví dụ đầu hàng) để focus vào "Huỷ"; khung xin hoà **không** giữ focus.
+10. Làm một **trang kiểm tra nội bộ** liệt kê mọi khối ở mọi trạng thái để người kiểm thử duyệt.
+11. Tôn trọng "giảm chuyển động". Không thêm thư viện giao diện dựng sẵn hay Tailwind.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Dựng khung ứng dụng web:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Mở trực tiếp một địa chỉ trang rồi tải lại | Trang vẫn hiện, không trắng |
 | Thiếu địa chỉ máy chủ trong cấu hình | Hiện thông báo thiếu cấu hình, **không** giả vờ đăng nhập |
 | Có khoá bí mật trong cấu hình công khai | Không được xảy ra |
-
-*Phần 2 — Giao diện: màu và kiểu "Kỳ Đài Cổ Phong" cùng các khối nền (nút, hộp thoại, thông báo):*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | So màu thật với bản thiết kế | Đúng; giao diện luôn tối, không theo hệ điều hành |
 | Duyệt từng trạng thái của nút, ô nhập, khung | Bị khoá có chú thích; lỗi có phản hồi |
 | Mở và đóng hộp thoại bằng bàn phím | Focus đúng, và quay về nút đã mở hộp |
 | Bật "giảm chuyển động" | Chuyển động tắt theo đặc tả |
 
 **Cách tự kiểm tra**
-*Phần 1 — Dựng khung ứng dụng web:*
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Cài, biên dịch, mở ứng dụng | Trang khung hiện, không lỗi khi nối hợp đồng chung |
 | 2 | Tải lại một địa chỉ trang bất kỳ | Không bị trang trắng |
 | 3 | Bỏ địa chỉ máy chủ khỏi cấu hình | Có thông báo thiếu cấu hình |
 | 4 | Tìm khoá bí mật trong sản phẩm đã biên dịch | Không thấy |
+| 5 | So màu thực tế với bản thiết kế | Khớp |
+| 6 | Duyệt đủ 5 trạng thái các khối trên trang kiểm tra | Chú thích cho khối bị khoá; có phản hồi khi lỗi |
+| 7 | Mở/đóng hộp thoại bằng bàn phím | Focus đúng |
+| 8 | Bật giảm chuyển động | Tắt chuyển động |
 
-*Phần 2 — Giao diện: màu và kiểu "Kỳ Đài Cổ Phong" cùng các khối nền (nút, hộp thoại, thông báo):*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | So màu thực tế với bản thiết kế | Khớp |
-| 2 | Duyệt đủ 5 trạng thái các khối trên trang kiểm tra | Chú thích cho khối bị khoá; có phản hồi khi lỗi |
-| 3 | Mở/đóng hộp thoại bằng bàn phím | Focus đúng |
-| 4 | Bật giảm chuyển động | Tắt chuyển động |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 4 dòng đạt, có ảnh chụp trang khung. (Phần 2) cả 4 dòng đạt, kèm ảnh chụp trang kiểm tra.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Trang khung **không** được coi là một luồng đã chạy thật. (Phần 2) người kiểm thử và người xem lại đồng ý. Việc đo trợ năng trên toàn bộ màn hình làm ở T-59.
-**Bàn giao cho task sau:** (Phần 1) khung web để các task màn hình dùng. (Phần 2) bộ khối nền cho mọi task giao diện khác.
-**Không thuộc task này:** (Phần 1) làm các màn hình cụ thể; nối máy chủ thật; các chức năng giai đoạn sau. (Phần 2) bộ chọn giao diện, giao diện sáng, thư viện ngoài, từng màn hình cụ thể.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Trang khung **không** được coi là một luồng đã chạy thật. Việc đo trợ năng trên toàn bộ màn hình làm ở T-59.
+**Bàn giao cho task sau:** khung web để các task màn hình dùng; bộ khối nền cho mọi task giao diện khác.
+**Không thuộc task này:** làm các màn hình cụ thể; nối máy chủ thật; bộ chọn giao diện và giao diện sáng; thư viện giao diện ngoài; các chức năng giai đoạn sau.
 
 ---
 
@@ -336,66 +307,47 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói chung dùng được ở cả giao diện và máy chủ, có chỗ trả kết quả lọc. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng "biên lai lệnh" và ràng buộc theo người gửi và mã yêu cầu. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được máy chủ có điểm kiểm tra khi nhận kết nối và khi chuyển lệnh, và biết ai đang gửi.
 
 **Mục tiêu**
-Task này gồm **3 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Bộ lọc từ ngữ bị cấm dùng chung cho giao diện và máy chủ:*
 Tạo **một bộ lọc từ ngữ bị cấm duy nhất** dùng cho: tên phòng, tên hiển thị của người dùng, tin nhắn chat. Giao diện và máy chủ dùng chung để cho **cùng một kết quả**; máy chủ luôn kiểm lại, không tin kết quả giao diện.
 
-*Phần 2 — Cơ chế chống làm hai lần khi gửi lại cùng một yêu cầu:*
 Khi mạng chập chờn, trình duyệt có thể **gửi lại cùng một yêu cầu** (hoặc người dùng bấm hai lần). Máy chủ phải **chỉ làm một lần** và trả lại đúng kết quả cũ cho lần gửi lại. Task này tạo **cơ chế chung** cho tạo phòng, vào phòng, đi nước, chat... để khỏi mỗi nơi tự làm một kiểu.
 
-*Phần 3 — Cơ chế giới hạn tốc độ dùng chung (chống thử đoán và làm quá nhiều lần):*
 Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòng liên tục** và mở kết nối quá nhiều. Tạo **một cơ chế giới hạn dùng chung** và gắn việc giới hạn số lần kết nối vào máy chủ. Các nơi xử lý khác (đăng nhập, vào phòng, tạo phòng) sẽ dùng cơ chế này.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Bộ lọc từ ngữ bị cấm dùng chung cho giao diện và máy chủ:*
 1. Nhận **danh sách từ cấm** (tiếng Việt và tiếng Anh) do nhóm cung cấp, có số phiên bản. **Không tự bịa danh sách.**
 2. Viết hàm **chuẩn hoá** để nhận ra cả các cách "né": bỏ dấu, hoa thường, thêm khoảng trắng hoặc ký tự chèn, thay chữ số 0 bằng o, số 1 bằng i.
 3. Với **chat**: từ cấm được **thay bằng ***** rồi vẫn gửi đi.
 4. Với **tên phòng và tên hiển thị**: nếu có từ cấm thì **từ chối**, không che bằng *** rồi lưu.
 5. Cho giao diện và máy chủ dùng chung hàm và danh sách; máy chủ luôn lọc lại kể cả khi giao diện đã lọc.
 6. Chuẩn bị bộ ví dụ gồm câu có từ cấm (nhiều cách né) và câu sạch (kể cả từ ghép dễ nhầm; nhóm xác nhận mong đợi).
-
-*Phần 2 — Cơ chế chống làm hai lần khi gửi lại cùng một yêu cầu:*
-1. Khi nhận yêu cầu: **xác định người gửi** rồi **tra "biên lai"** theo cặp *(người gửi, mã yêu cầu)* **trước** mọi kiểm tra điều kiện khác (như đến lượt chưa, phiên bản ván).
-2. Nếu đã có biên lai: **trả lại kết quả cũ và dừng**, không làm lại.
-3. Nếu là yêu cầu mới: thực hiện việc, **lưu kết quả thay đổi và biên lai trong cùng một lần lưu** (hoặc cả hai thành công, hoặc không gì cả).
-4. **Chỉ sau khi lưu thành công** mới báo thành công và phát cho các bên khác. Nếu lưu lỗi thì không phát và không lưu biên lai "thành công" giả.
-5. Khi trả lại kết quả cũ, **lọc lại dữ liệu theo quyền hiện tại** của người gửi (ví dụ đã bị đuổi thì không nhận dữ liệu phòng). Cách trả tối thiểu cần PO review.
-6. Viết tác vụ **dọn biên lai quá 24 giờ** (không xoá ván hay nước đi).
-7. Không gọi dịch vụ bên ngoài khi đang khoá cơ sở dữ liệu.
-
-*Phần 3 — Cơ chế giới hạn tốc độ dùng chung (chống thử đoán và làm quá nhiều lần):*
-1. Làm cơ chế đếm theo từng loại giới hạn ở trên, **dùng đồng hồ của máy chủ** (không dùng giờ trình duyệt).
-2. Đếm **chính xác** khi nhiều yêu cầu đến cùng lúc (không để vượt giới hạn vì chạy song song).
-3. Hết thời gian giới hạn thì **mở lại**, không khoá vĩnh viễn.
-4. Chốt "khoá" lấy từ **tài khoản đã xác định** hoặc *(tên đăng nhập, địa chỉ mạng)* do máy chủ biết; **không** lấy từ thông tin trình duyệt tự khai.
-5. Gắn giới hạn kết nối mới vào cổng kết nối của máy chủ.
-6. Cung cấp **hàm dùng chung** cho các nơi xử lý: "kiểm tra", "ghi nhận một lần", "đọc thời gian còn bị khoá".
-7. Chuẩn bị bộ giả lập để kiểm tra khi các nơi xử lý thật chưa có.
+7. Khi nhận yêu cầu: **xác định người gửi** rồi **tra "biên lai"** theo cặp *(người gửi, mã yêu cầu)* **trước** mọi kiểm tra điều kiện khác (như đến lượt chưa, phiên bản ván).
+8. Nếu đã có biên lai: **trả lại kết quả cũ và dừng**, không làm lại.
+9. Nếu là yêu cầu mới: thực hiện việc, **lưu kết quả thay đổi và biên lai trong cùng một lần lưu** (hoặc cả hai thành công, hoặc không gì cả).
+10. **Chỉ sau khi lưu thành công** mới báo thành công và phát cho các bên khác. Nếu lưu lỗi thì không phát và không lưu biên lai "thành công" giả.
+11. Khi trả lại kết quả cũ, **lọc lại dữ liệu theo quyền hiện tại** của người gửi (ví dụ đã bị đuổi thì không nhận dữ liệu phòng). Cách trả tối thiểu cần PO review.
+12. Viết tác vụ **dọn biên lai quá 24 giờ** (không xoá ván hay nước đi).
+13. Không gọi dịch vụ bên ngoài khi đang khoá cơ sở dữ liệu.
+14. Làm cơ chế đếm theo từng loại giới hạn ở trên, **dùng đồng hồ của máy chủ** (không dùng giờ trình duyệt).
+15. Đếm **chính xác** khi nhiều yêu cầu đến cùng lúc (không để vượt giới hạn vì chạy song song).
+16. Hết thời gian giới hạn thì **mở lại**, không khoá vĩnh viễn.
+17. Chốt "khoá" lấy từ **tài khoản đã xác định** hoặc *(tên đăng nhập, địa chỉ mạng)* do máy chủ biết; **không** lấy từ thông tin trình duyệt tự khai.
+18. Gắn giới hạn kết nối mới vào cổng kết nối của máy chủ.
+19. Cung cấp **hàm dùng chung** cho các nơi xử lý: "kiểm tra", "ghi nhận một lần", "đọc thời gian còn bị khoá".
+20. Chuẩn bị bộ giả lập để kiểm tra khi các nơi xử lý thật chưa có.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Bộ lọc từ ngữ bị cấm dùng chung cho giao diện và máy chủ:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Chat có từ cấm viết kiểu né (bỏ dấu, chèn ký tự, 0/1) | Che bằng *** giống nhau ở giao diện và máy chủ |
 | Tên phòng hoặc tên hiển thị có từ cấm | **Từ chối**, không lưu tên đã che |
 | Câu sạch | Không bị che, không bị từ chối nhầm |
 | Gọi thẳng máy chủ để bỏ qua giao diện | Máy chủ vẫn lọc |
-
-*Phần 2 — Cơ chế chống làm hai lần khi gửi lại cùng một yêu cầu:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Cùng người, cùng mã yêu cầu gửi lại | Nhận kết quả cũ, **không** làm thêm lần nào |
 | Hai người khác nhau dùng cùng mã yêu cầu | Hai biên lai **độc lập**, không đọc được của nhau |
 | Yêu cầu chưa gắn với ván (ví dụ tạo phòng, chat ở phòng chờ) | Vẫn lưu được biên lai, không cần ván giả |
 | Lỗi lưu trước khi hoàn tất | Không báo thành công, không phát |
 | Mất phản hồi sau khi đã lưu xong, rồi gửi lại | Trả kết quả cũ, không làm lần hai |
 | Gửi lại sau khi người đó đã bị đuổi hoặc đổi vai | Không phát dữ liệu ngoài quyền; việc cũ không lặp lại |
-
-*Phần 3 — Cơ chế giới hạn tốc độ dùng chung (chống thử đoán và làm quá nhiều lần):*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Sai đăng nhập lần thứ 5 trong 15 phút | Khoá 15 phút; báo lỗi chung, không lộ email; hết hạn thì xét lại |
 | Nhập sai mã phòng lần thứ 11 trong một phút | Bị chặn 5 phút |
 | Tạo phòng lần thứ 6 trong 10 phút | Từ chối; qua 10 phút tạo lại được; người khác không bị ảnh hưởng |
@@ -404,37 +356,27 @@ Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòn
 | Trình duyệt tự khai mã người khác để né khoá | Không né được |
 
 **Cách tự kiểm tra**
-*Phần 1 — Bộ lọc từ ngữ bị cấm dùng chung cho giao diện và máy chủ:*
+Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc mẫu đếm số lần được làm; đồng hồ giả để rút ngắn thời gian chờ.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Chạy bộ ví dụ trên giao diện và trên máy chủ | Kết quả giống hệt nhau |
 | 2 | Đưa từ cấm vào tên phòng, tên hiển thị | Bị từ chối |
 | 3 | Chạy các câu sạch | Không bị che sai |
 | 4 | Gọi thẳng máy chủ với từ cấm | Vẫn bị lọc |
-
-*Phần 2 — Cơ chế chống làm hai lần khi gửi lại cùng một yêu cầu:*
-Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc mẫu đếm số lần được làm.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Gửi cùng yêu cầu đồng thời nhiều lần, rồi gửi lại với số phiên bản ván cũ | Việc mẫu chỉ làm **1 lần**; kết quả cũ được trả lại |
-| 2 | Hai tài khoản dùng cùng mã yêu cầu | Biên lai riêng, không đọc chéo |
-| 3 | Dùng việc mẫu chưa gắn ván | Lưu và đọc được biên lai |
-| 4 | Gây lỗi trước khi lưu, và gây mất phản hồi sau khi lưu | Trước lưu: không phát. Sau lưu: gửi lại không làm lần hai |
-| 5 | Gửi lại sau khi bị đuổi hoặc đổi vai | Không có dữ liệu ngoài quyền |
-| 6 | Chạy tác vụ dọn | Chỉ biên lai quá 24 giờ bị xoá |
-
-*Phần 3 — Cơ chế giới hạn tốc độ dùng chung (chống thử đoán và làm quá nhiều lần):*
-Chuẩn bị: đồng hồ giả để rút ngắn thời gian chờ.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Báo sai đăng nhập 4 lần rồi lần thứ 5; thử trước và sau thời gian khoá | Khoá từ lần thứ 5; hết hạn thì xét lại |
-| 2 | Báo sai mã phòng tới lần 10 rồi lần 11, chờ 5 phút | Bị chặn đúng; không kéo dài do giờ trình duyệt |
-| 3 | Yêu cầu tạo phòng lần 5 và 6 trong 10 phút, rồi ngoài khoảng đó | Không vượt 5; hết khoảng thì tạo lại; người khác độc lập |
-| 4 | Kết nối mới lần 10 và 11 trong một phút | Tối đa 10, vượt bị từ chối |
-| 5 | Hai tài khoản cùng mạng; thử đổi mã người dùng để né; gửi đồng thời ở sát ngưỡng | Không tính chung; không né được; không vượt giới hạn |
+| 5 | Gửi cùng yêu cầu đồng thời nhiều lần, rồi gửi lại với số phiên bản ván cũ | Việc mẫu chỉ làm **1 lần**; kết quả cũ được trả lại |
+| 6 | Hai tài khoản dùng cùng mã yêu cầu | Biên lai riêng, không đọc chéo |
+| 7 | Dùng việc mẫu chưa gắn ván | Lưu và đọc được biên lai |
+| 8 | Gây lỗi trước khi lưu, và gây mất phản hồi sau khi lưu | Trước lưu: không phát. Sau lưu: gửi lại không làm lần hai |
+| 9 | Gửi lại sau khi bị đuổi hoặc đổi vai | Không có dữ liệu ngoài quyền |
+| 10 | Chạy tác vụ dọn | Chỉ biên lai quá 24 giờ bị xoá |
+| 11 | Báo sai đăng nhập 4 lần rồi lần thứ 5; thử trước và sau thời gian khoá | Khoá từ lần thứ 5; hết hạn thì xét lại |
+| 12 | Báo sai mã phòng tới lần 10 rồi lần 11, chờ 5 phút | Bị chặn đúng; không kéo dài do giờ trình duyệt |
+| 13 | Yêu cầu tạo phòng lần 5 và 6 trong 10 phút, rồi ngoài khoảng đó | Không vượt 5; hết khoảng thì tạo lại; người khác độc lập |
+| 14 | Kết nối mới lần 10 và 11 trong một phút | Tối đa 10, vượt bị từ chối |
+| 15 | Hai tài khoản cùng mạng; thử đổi mã người dùng để né; gửi đồng thời ở sát ngưỡng | Không tính chung; không né được; không vượt giới hạn |
 
 **Các mức giới hạn (mức khởi đầu, do PO ủy quyền chốt ngày 04/10/2026; nhóm có thể chỉnh sau khi đo)**
-*Phần 3 — Cơ chế giới hạn tốc độ dùng chung (chống thử đoán và làm quá nhiều lần):*
 | Việc | Giới hạn |
 |---|---|
 | Đăng nhập sai | Sai **5 lần trong 15 phút** (tính theo tên đăng nhập và địa chỉ mạng) thì **khoá 15 phút**, tính từ lần sai thứ 5; luôn báo lỗi chung |
@@ -442,10 +384,10 @@ Chuẩn bị: đồng hồ giả để rút ngắn thời gian chờ.
 | Tạo phòng | **5 lần trong 10 phút** cho mỗi người |
 | Kết nối mới | **10 lần mỗi phút** cho mỗi tài khoản; **không** giới hạn riêng theo địa chỉ mạng cho tài khoản đã đăng nhập (vì buổi demo dùng chung mạng) |
 
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 4 dòng đạt; nếu chưa có danh sách thật từ nhóm thì **ghi bị chặn**, không dùng danh sách tự đặt để báo đạt. (Phần 2) cả 6 dòng đạt, có số lần thực hiện được ghi. (Phần 3) cả 5 dòng đạt.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý, nhóm đã xác nhận bộ ví dụ. (Phần 2) người kiểm thử và người xem lại đồng ý. Điều cần làm rõ thêm: gửi lại **sau khi biên lai đã bị dọn** hoặc **cùng mã nhưng nội dung khác**; nhóm cần quyết (chờ quyết định). (Phần 3) người kiểm thử và người xem lại đồng ý. **Chưa** nghiệm thu các nơi xử lý đăng nhập, tạo phòng, vào phòng (các task đó dùng cơ chế này và tự kiểm).
-**Bàn giao cho task sau:** (Phần 1) bộ lọc dùng chung cho tên phòng, tên hiển thị, chat. (Phần 2) cơ chế dùng chung cho phòng, ván, chat; ví dụ cách dùng. (Phần 3) hàm giới hạn dùng chung, các mức đã chốt.
-**Không thuộc task này:** (Phần 1) gửi chat, giới hạn tốc độ, kiểm tra độ dài tên (nơi xử lý kiểm). (Phần 2) luật cờ, giới hạn tốc độ, đồng hồ. Ván với máy ở giai đoạn đầu không lưu vào cơ sở dữ liệu nên dùng bản trong bộ nhớ. (Phần 3) giới hạn gửi mã OTP và giới hạn chat (đã có quy định riêng).
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; nếu chưa có danh sách thật từ nhóm thì **ghi bị chặn**, không dùng danh sách tự đặt để báo đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý, nhóm đã xác nhận bộ ví dụ. Điều cần làm rõ thêm: gửi lại **sau khi biên lai đã bị dọn** hoặc **cùng mã nhưng nội dung khác**. Nhóm cần quyết (chờ quyết định). **Chưa** nghiệm thu các nơi xử lý đăng nhập, tạo phòng, vào phòng (các task đó dùng cơ chế này và tự kiểm).
+**Bàn giao cho task sau:** bộ lọc dùng chung cho tên phòng, tên hiển thị, chat; cơ chế dùng chung cho phòng, ván, chat; ví dụ cách dùng; hàm giới hạn dùng chung, các mức đã chốt.
+**Không thuộc task này:** việc gửi chat và kiểm độ dài tên (nơi xử lý đó tự kiểm); luật cờ, đồng hồ; giới hạn gửi mã OTP và giới hạn chat riêng (đã có quy định riêng). Ván với máy ở giai đoạn đầu không lưu vào cơ sở dữ liệu nên dùng bản trong bộ nhớ.
 
 ---
 
@@ -454,49 +396,37 @@ Chuẩn bị: đồng hồ giả để rút ngắn thời gian chờ.
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được cấu hình thư mã 6 số, hạn 180 giây, gửi lại 60 giây, hạn mức thư thử. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cờ đăng ký dở. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận yêu cầu và trả kết quả.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: kiểm tra tên đăng nhập (hợp lệ, chưa trùng):*
 Khi người dùng gõ tên đăng nhập ở bước đầu của đăng ký, máy chủ trả lời ngay "tên này **dùng được**", "**đã có người dùng**" hoặc "**không hợp lệ**". Bước này **chỉ kiểm tra**, không tạo tài khoản và không giữ chỗ tên. Giao diện đăng ký (task sau) dùng kết quả này.
 
-*Phần 2 — Máy chủ: đăng ký bước 2, gửi mã OTP qua email:*
 Ở bước 2 của đăng ký, người dùng nhập email; máy chủ **gửi mã OTP 6 số** tới email đó. Phải làm sao cho hai yêu cầu cùng lúc không phá nhau, không tạo ra tài khoản dùng được trước khi nhập đúng mã, và không báo "đã gửi" khi thực tế chưa gửi.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: kiểm tra tên đăng nhập (hợp lệ, chưa trùng):*
 1. Kiểm tra tên có hợp lệ không: **3 đến 20 ký tự**, chỉ gồm chữ cái không dấu, chữ số và dấu gạch dưới.
 2. Nếu hợp lệ, so xem có ai đang dùng chưa, **không phân biệt hoa thường** (đã có "Twot" thì "twot" cũng báo trùng).
 3. Trả kết quả theo hợp đồng chung. **Không** tạo hồ sơ, **không** giữ chỗ tên.
 4. Lưu ý: tên được báo "còn trống" ở bước này **chưa chắc còn trống** khi hoàn tất đăng ký, vì người khác có thể lấy mất; bước hoàn tất phải kiểm lại.
-
-*Phần 2 — Máy chủ: đăng ký bước 2, gửi mã OTP qua email:*
-1. Kiểm tra email có đúng dạng.
-2. **Khoá theo email**: tại một thời điểm chỉ xử lý một yêu cầu cho cùng một email (cơ chế khoá này dùng chung với bước hoàn tất và tác vụ dọn dẹp).
-3. Xem trạng thái email: (a) **đã có tài khoản hoàn tất** → báo "Email này đã được đăng ký", **không gửi**; (b) **email mới hoặc đã có bản đăng ký dở** → gửi mã.
-4. Với bản đăng ký dở: dùng lại bản cũ, không xoá bản của người đang đăng ký thật.
-5. Gửi mã qua dịch vụ Supabase. **Gửi lại** chỉ được sau tối thiểu **60 giây**.
-6. Nếu dịch vụ từ chối (hết hạn mức, lỗi): trả lỗi thật, **không** báo "đã gửi", và bản đăng ký dở vẫn còn đường phục hồi.
-7. Không giữ khoá cơ sở dữ liệu trong lúc chờ dịch vụ bên ngoài.
+5. Kiểm tra email có đúng dạng.
+6. **Khoá theo email**: tại một thời điểm chỉ xử lý một yêu cầu cho cùng một email (cơ chế khoá này dùng chung với bước hoàn tất và tác vụ dọn dẹp).
+7. Xem trạng thái email: (a) **đã có tài khoản hoàn tất** → báo "Email này đã được đăng ký", **không gửi**; (b) **email mới hoặc đã có bản đăng ký dở** → gửi mã.
+8. Với bản đăng ký dở: dùng lại bản cũ, không xoá bản của người đang đăng ký thật.
+9. Gửi mã qua dịch vụ Supabase. **Gửi lại** chỉ được sau tối thiểu **60 giây**.
+10. Nếu dịch vụ từ chối (hết hạn mức, lỗi): trả lỗi thật, **không** báo "đã gửi", và bản đăng ký dở vẫn còn đường phục hồi.
+11. Không giữ khoá cơ sở dữ liệu trong lúc chờ dịch vụ bên ngoài.
 
 **Thông tin vào và ra**
-*Phần 1 — Máy chủ: kiểm tra tên đăng nhập (hợp lệ, chưa trùng):*
+Trả ra: "dùng được", "đã có người dùng" hoặc "không hợp lệ" kèm lý do.
+
 | Nhận vào | Ý nghĩa | Giá trị hợp lệ |
 |---|---|---|
 | Tên đăng nhập | Tên người dùng muốn dùng | 3–20 ký tự; chữ, số, gạch dưới |
-Trả ra: "dùng được", "đã có người dùng" hoặc "không hợp lệ" kèm lý do.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: kiểm tra tên đăng nhập (hợp lệ, chưa trùng):*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Tên 2 ký tự hoặc 21 ký tự, hoặc có ký tự lạ (dấu cách, dấu tiếng Việt) | Báo "không hợp lệ" |
 | Tên chỉ khác hoa thường với tên đã có | Báo "đã có người dùng" |
 | Người dùng kiểm tên rồi bỏ dở | Không có hồ sơ nào được tạo, tên không bị giữ |
 | Cơ sở dữ liệu lỗi khi kiểm | Báo lỗi; **không** trả "còn trống" giả |
-
-*Phần 2 — Máy chủ: đăng ký bước 2, gửi mã OTP qua email:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Email đã có tài khoản hoàn tất | Báo đã đăng ký, không gửi |
 | Gửi lại khi chưa đủ 60 giây | Từ chối |
 | Hai yêu cầu gửi cho cùng email cùng lúc | Chỉ xử lý lần lượt, không vượt hạn gửi lại |
@@ -504,29 +434,24 @@ Trả ra: "dùng được", "đã có người dùng" hoặc "không hợp lệ"
 | Email sai dạng | Báo không hợp lệ |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: kiểm tra tên đăng nhập (hợp lệ, chưa trùng):*
-Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot".
+Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot"; dự án Supabase thử, email thành viên nhóm, một tài khoản đã hoàn tất mẫu.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Kiểm các tên đúng 3 và đúng 20 ký tự, rồi 2 ký tự, 21 ký tự, tên có dấu cách, tên có dấu tiếng Việt | Hai tên đầu hợp lệ; các tên còn lại báo không hợp lệ |
 | 2 | Kiểm tên "twot" | Báo đã có người dùng |
 | 3 | Kiểm một tên mới rồi dừng | Không có hồ sơ mới trong cơ sở dữ liệu |
 | 4 | Làm cơ sở dữ liệu lỗi rồi kiểm | Báo lỗi, không báo "còn trống" |
+| 5 | Gửi mã cho email đã có tài khoản hoàn tất | Báo đã đăng ký; không có thư |
+| 6 | Gửi mã cho email mới, rồi gửi lại ngay, rồi gửi lại sau 60 giây | Lần 1 nhận thư; lần 2 bị từ chối; lần 3 nhận thư |
+| 7 | Gửi hai yêu cầu cho cùng email cùng lúc | Không vượt hạn gửi lại |
+| 8 | Giả lập dịch vụ từ chối | Báo lỗi thật; bản dở vẫn còn |
+| 9 | Nhập email sai dạng | Báo không hợp lệ |
 
-*Phần 2 — Máy chủ: đăng ký bước 2, gửi mã OTP qua email:*
-Chuẩn bị: dự án Supabase thử, email thành viên nhóm, một tài khoản đã hoàn tất mẫu.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Gửi mã cho email đã có tài khoản hoàn tất | Báo đã đăng ký; không có thư |
-| 2 | Gửi mã cho email mới, rồi gửi lại ngay, rồi gửi lại sau 60 giây | Lần 1 nhận thư; lần 2 bị từ chối; lần 3 nhận thư |
-| 3 | Gửi hai yêu cầu cho cùng email cùng lúc | Không vượt hạn gửi lại |
-| 4 | Giả lập dịch vụ từ chối | Báo lỗi thật; bản dở vẫn còn |
-| 5 | Nhập email sai dạng | Báo không hợp lệ |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 4 dòng đạt, có ghi kết quả thật. (Phần 2) cả 5 dòng đạt; thư thật kiểm tách riêng khỏi thư giả lập; lưu ý hạn mức thư khoảng 2 thư mỗi giờ.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại mã đồng ý. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) chức năng kiểm tên chạy được, cho giao diện đăng ký và bước hoàn tất đăng ký. (Phần 2) chức năng gửi mã và cách khoá theo email để bước hoàn tất và tác vụ dọn dùng chung.
-**Không thuộc task này:** (Phần 1) giữ chỗ tên, đổi tên đăng nhập (giai đoạn sau), ô nhập ở giao diện. (Phần 2) xác minh mã, tạo tài khoản, đăng nhập Google, quên mật khẩu.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; thư thật kiểm tách riêng khỏi thư giả lập; lưu ý hạn mức thư khoảng 2 thư mỗi giờ.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
+**Bàn giao cho task sau:** chức năng kiểm tên chạy được, cho giao diện đăng ký và bước hoàn tất đăng ký; chức năng gửi mã và cách khoá theo email để bước hoàn tất và tác vụ dọn dùng chung.
+**Không thuộc task này:** giữ chỗ tên đăng nhập; đổi tên đăng nhập (giai đoạn sau); ô nhập ở giao diện; đăng nhập Google; quên mật khẩu. Việc xác minh mã và tạo tài khoản thuộc task kế tiếp.
 
 ---
 
@@ -580,32 +505,24 @@ Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" qu
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được dịch vụ đăng nhập thử đã cấu hình. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cách bảo vệ. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được kết quả đã hoàn thành của task này. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cơ chế khoá khi đăng nhập sai nhiều lần; nhận được hàm kiểm từ cấm dùng chung.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên:*
 Cho người dùng đăng nhập bằng **tên đăng nhập và mật khẩu**, cấp **phiên đăng nhập**, và kiểm tra phiên mỗi lần kết nối. Không bao giờ để lộ email khi đăng nhập.
 
-*Phần 2 — Máy chủ: xem và sửa hồ sơ (tên hiển thị):*
 Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên hiển thị**. Mọi thứ khác (tên đăng nhập, email, thời điểm hoàn tất) phải **không sửa được** dù ai đó cố gửi thêm dữ liệu.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên:*
 1. Kiểm tra xem người này có đang bị khoá vì đăng nhập sai nhiều lần không (dùng cơ chế giới hạn).
 2. **Tra email** nội bộ từ tên đăng nhập (không phân biệt hoa thường) rồi nhờ dịch vụ đăng nhập xác thực mật khẩu. **Email không bao giờ được trả về** trình duyệt.
 3. Đăng nhập sai thì chỉ báo **một thông báo chung**: "Sai tên đăng nhập hoặc mật khẩu" (không nói sai cái nào), và ghi một lần sai cho cặp *(tên đăng nhập, địa chỉ mạng)*.
 4. Cấp phiên: nếu người dùng chọn **"Ghi nhớ"** (mặc định) thì phiên kéo dài **30 ngày**; nếu không chọn thì hết khi **đóng trình duyệt** hoặc sau **12 giờ**, cái nào đến trước.
 5. Mỗi lần kết nối: kiểm tra phiên còn hạn và **chưa bị thu hồi**. Hết hạn hoặc bị thu hồi thì từ chối và báo "hết phiên".
 6. Việc đang chơi dở khi hết phiên được xử theo quy tắc mất kết nối (không tự xử thua ngay).
-
-*Phần 2 — Máy chủ: xem và sửa hồ sơ (tên hiển thị):*
-1. **Xem hồ sơ:** trả tên hiển thị, tên đăng nhập, email của **chính người đó**.
-2. **Sửa tên hiển thị:** 2 đến 30 ký tự, qua bộ lọc từ cấm dùng chung; sai thì từ chối và nêu lý do.
-3. **Bỏ qua mọi trường khác** trong yêu cầu sửa; không báo lỗi lạ, chỉ không áp dụng.
-4. Người chưa hoàn tất đăng ký bị chốt chặn ở T-23, không tới đây.
-5. Ghi nhận cho mọi lần sửa: ai, lúc nào.
+7. **Xem hồ sơ:** trả tên hiển thị, tên đăng nhập, email của **chính người đó**.
+8. **Sửa tên hiển thị:** 2 đến 30 ký tự, qua bộ lọc từ cấm dùng chung; sai thì từ chối và nêu lý do.
+9. **Bỏ qua mọi trường khác** trong yêu cầu sửa; không báo lỗi lạ, chỉ không áp dụng.
+10. Người chưa hoàn tất đăng ký bị chốt chặn ở T-23, không tới đây.
+11. Ghi nhận cho mọi lần sửa: ai, lúc nào.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Đúng tên (khác hoa thường) và đúng mật khẩu | Cấp phiên |
@@ -613,10 +530,6 @@ Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên h
 | Sai 5 lần trong 15 phút | Khoá 15 phút từ lần thứ 5; hết hạn thì thử lại được; vẫn báo lỗi chung |
 | Phiên quá 12 giờ (không ghi nhớ) hoặc quá 30 ngày (ghi nhớ) | Bị từ chối |
 | Phiên đã bị thu hồi, dùng lại token cũ | Bị từ chối |
-
-*Phần 2 — Máy chủ: xem và sửa hồ sơ (tên hiển thị):*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Tên mới 2–30 ký tự, sạch | Lưu thành công |
 | Tên 1 hoặc 31 ký tự | Từ chối |
 | Tên chứa từ cấm | Từ chối, nêu lý do |
@@ -624,28 +537,24 @@ Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên h
 | Người này sửa hồ sơ người khác | Từ chối |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên:*
 Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Đăng nhập đúng (viết hoa thường khác); đăng nhập sai tên; sai mật khẩu | Đúng thì có phiên; hai trường hợp sai cùng một thông báo, không có email |
 | 2 | Đăng nhập chọn và không chọn "Ghi nhớ"; mô phỏng vượt 12 giờ và 30 ngày | Hạn đúng; không ghi nhớ thì không khôi phục sau khi đóng |
 | 3 | Thu hồi một phiên rồi dùng lại token cũ | Bị từ chối |
 | 4 | Sai 4 lần rồi lần thứ 5 trong 15 phút; thử trước và sau thời gian khoá | Khoá từ lần thứ 5; hết hạn thì xét lại; lỗi vẫn chung |
+| 5 | Xem hồ sơ | Đúng dữ liệu của mình |
+| 6 | Sửa tên với 1, 2, 30, 31 ký tự | 2 và 30 lưu; 1 và 31 từ chối |
+| 7 | Sửa tên chứa từ cấm | Từ chối |
+| 8 | Gửi thêm email và tên đăng nhập | Không đổi |
+| 9 | Sửa hồ sơ của người khác | Từ chối |
 
-*Phần 2 — Máy chủ: xem và sửa hồ sơ (tên hiển thị):*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Xem hồ sơ | Đúng dữ liệu của mình |
-| 2 | Sửa tên với 1, 2, 30, 31 ký tự | 2 và 30 lưu; 1 và 31 từ chối |
-| 3 | Sửa tên chứa từ cấm | Từ chối |
-| 4 | Gửi thêm email và tên đăng nhập | Không đổi |
-| 5 | Sửa hồ sơ của người khác | Từ chối |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 4 dòng đạt. (Phần 2) cả 5 dòng đạt.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. **Chưa** nghiệm thu việc mở nhiều tab (tab mới tiếp quản), giao cho task về camera/micro và nhiều tab. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) chức năng đăng nhập và chốt kiểm tra phiên cho giao diện và các phần khác. (Phần 2) chức năng hồ sơ cho giao diện hồ sơ và các nơi hiển thị tên.
-**Không thuộc task này:** (Phần 1) giao diện đăng nhập, tiếp quản phiên khi mở tab mới, đăng nhập Google, quên mật khẩu. (Phần 2) ảnh đại diện tải lên, đổi email hay tên đăng nhập, giao diện.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Chưa** nghiệm thu việc mở nhiều tab (tab mới tiếp quản), giao cho task về camera/micro và nhiều tab.
+**Bàn giao cho task sau:** chức năng đăng nhập và chốt kiểm tra phiên cho giao diện và các phần khác; chức năng hồ sơ cho giao diện hồ sơ và các nơi hiển thị tên.
+**Không thuộc task này:** giao diện đăng nhập; tiếp quản phiên khi mở tab mới; đăng nhập Google; quên mật khẩu; ảnh đại diện tải lên; đổi email hay tên đăng nhập.
 
 ---
 
@@ -654,38 +563,29 @@ Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 **Phải xong trước:** *Cấu hình Supabase gửi mã OTP đăng ký (T-03)*: nhận được cấu hình OTP đã ghi, hộp thư nhóm và hạn mức thư thử. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-19)*: nhận được trạng thái hoàn tất và cờ đang chờ cùng quy trình hoàn tất.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Thử nghiệm mã OTP thật: gửi thư, hết hạn, dọn tài khoản dở:*
 Trả lời một câu hỏi: **Supabase thật có đáp ứng được cách đăng ký bằng mã OTP mà dự án cần không?** Kết quả là một báo cáo có số đo thật. Task này **không** làm tính năng đăng ký, chỉ giúp nhóm biết có làm được và làm bằng cách nào.
 
-*Phần 2 — Máy chủ: chặn người chưa hoàn tất đăng ký và chặn đổi email:*
 Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất đăng ký thì không được dùng ứng dụng**; (2) **email không bao giờ đổi được**, kể cả khi ai đó gọi thẳng vào hệ thống đăng nhập (không qua giao diện). Chỉ khoá ô email ở giao diện là **chưa đủ**.
 
 **Câu hỏi cần trả lời**
-*Phần 1 — Thử nghiệm mã OTP thật: gửi thư, hết hạn, dọn tài khoản dở:*
 - Thư mã thật gửi tới có đúng hạn 180 giây và gửi lại sau 60 giây không?
 - Giới hạn nhập sai thực tế là bao nhiêu?
 - Nếu quá trình đăng ký bị gián đoạn giữa chừng thì tài khoản dở có bị kẹt không, và dọn thế nào?
 - Một người đã đăng nhập có thể **tự đổi email** qua đường tắt (không qua ứng dụng) không? (Quy định: không được đổi email.)
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Thử nghiệm mã OTP thật: gửi thư, hết hạn, dọn tài khoản dở:*
 1. Lập bảng các câu hỏi trên và ngưỡng cần đạt.
 2. Gửi thư thật tới email nhóm; ghi giờ gửi, giờ nhận, giờ mã hết hạn.
 3. Thử nhập sai nhiều lần từ một địa chỉ mạng, ghi số lần thực sự bị chặn.
 4. Dựng thử nghiệm đăng ký ba bước; **cố ý làm gián đoạn** ở các mốc khác nhau (trước khi ghi xong hồ sơ, sau khi ghi xong nhưng còn cờ "đang chờ"), rồi xem phục hồi và dọn.
 5. Dùng tài khoản thử và khoá công khai, **thử gọi chức năng đổi email trực tiếp** của hệ thống đăng nhập; ghi email trước và sau.
 6. Viết báo cáo: từng câu hỏi **đạt / không đạt / chưa kết luận**, kèm số đo thật, cấu hình và đề xuất phương án.
-
-*Phần 2 — Máy chủ: chặn người chưa hoàn tất đăng ký và chặn đổi email:*
-1. Đọc báo cáo thử nghiệm OTP thật: phần nào đã chứng minh, phần nào cơ chế chặn đổi email còn chờ quyết định.
-2. Dựng **chốt chặn dùng chung** ở mọi đường vào và mọi lệnh: chỉ cho qua khi hồ sơ có thời điểm hoàn tất **và** không còn cờ đang chờ. Dữ liệu hồ sơ lấy từ máy chủ, **không tin** trình duyệt tự khai "tôi đã hoàn tất".
-3. Áp dụng cơ chế chặn đổi email **đã được duyệt** ở chính hệ thống đăng nhập (cấu hình hoặc cơ chế chặn), rồi **thử bằng cách gọi thẳng** vào hệ thống đăng nhập với phiên thử.
-4. Nếu chưa có cơ chế chặn email nào được duyệt, **ghi rõ "bị chặn"** phần email; luật "email không đổi" vẫn bắt buộc và không được bỏ.
+7. Đọc báo cáo thử nghiệm OTP thật: phần nào đã chứng minh, phần nào cách chặn đổi email chưa biết có làm được không (kết quả thử nghiệm sẽ cho biết).
+8. Dựng **chốt chặn dùng chung** ở mọi đường vào và mọi lệnh: chỉ cho qua khi hồ sơ có thời điểm hoàn tất **và** không còn cờ đang chờ. Dữ liệu hồ sơ lấy từ máy chủ, **không tin** trình duyệt tự khai "tôi đã hoàn tất".
+9. Áp dụng cơ chế chặn đổi email **đã được duyệt** ở chính hệ thống đăng nhập (cấu hình hoặc cơ chế chặn), rồi **thử bằng cách gọi thẳng** vào hệ thống đăng nhập với phiên thử.
+10. Nếu chưa có cơ chế chặn email nào được duyệt, **ghi rõ "bị chặn"** phần email; luật "email không đổi" vẫn bắt buộc và không được bỏ.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Thử nghiệm mã OTP thật: gửi thư, hết hạn, dọn tài khoản dở:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Dùng mã quá 180 giây | Không hoàn tất đăng ký |
@@ -693,17 +593,12 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 | Hoàn tất đăng ký và dọn dẹp chạy cùng lúc | Không xoá nhầm hồ sơ đã hoàn tất |
 | Gọi đổi email trực tiếp mà không chặn được | Báo **không đạt**, không im lặng bỏ qua |
 | Hết hạn mức thư | Ghi **bị chặn**, không bịa số |
-
-*Phần 2 — Máy chủ: chặn người chưa hoàn tất đăng ký và chặn đổi email:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Có đăng nhập hợp lệ nhưng chưa có hồ sơ hoàn tất | Không dùng được ứng dụng |
 | Có thời điểm hoàn tất nhưng còn cờ đang chờ | Bị chặn cho đến khi bỏ cờ; không xoá hồ sơ |
 | Trình duyệt tự khai "đã hoàn tất" hoặc cố ghi thẳng vào hồ sơ | Không có tác dụng |
 | Gọi thẳng chức năng đổi email của hệ thống đăng nhập | Email **không đổi**; chưa chặn được thì báo "bị chặn" |
 
 **Cách tự kiểm tra**
-*Phần 1 — Thử nghiệm mã OTP thật: gửi thư, hết hạn, dọn tài khoản dở:*
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Dùng mã quá 180 giây | Đăng ký không hoàn tất |
@@ -711,19 +606,15 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 | 3 | Chạy hoàn tất và dọn dẹp cùng lúc | Hồ sơ hoàn tất không bị xoá |
 | 4 | Gọi đổi email trực tiếp bằng phiên thử | Báo cáo ghi rõ có đổi được hay không |
 | 5 | Đối chiếu số liệu trong báo cáo với nhật ký thật | Khớp, không số bịa |
+| 6 | Dùng đăng nhập hợp lệ nhưng không có hồ sơ hoàn tất | Không dùng được ứng dụng |
+| 7 | Để hồ sơ có thời điểm hoàn tất nhưng còn cờ, rồi bỏ cờ | Trước khi bỏ cờ: chặn; sau: dùng được; hồ sơ không bị xoá |
+| 8 | Thử tự khai hoàn tất và thử ghi thẳng vào hồ sơ | Không nâng được quyền |
+| 9 | Gọi thẳng đổi email bằng phiên thử | Email cũ vẫn nguyên; hoặc ghi "bị chặn" |
 
-*Phần 2 — Máy chủ: chặn người chưa hoàn tất đăng ký và chặn đổi email:*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Dùng đăng nhập hợp lệ nhưng không có hồ sơ hoàn tất | Không dùng được ứng dụng |
-| 2 | Để hồ sơ có thời điểm hoàn tất nhưng còn cờ, rồi bỏ cờ | Trước khi bỏ cờ: chặn; sau: dùng được; hồ sơ không bị xoá |
-| 3 | Thử tự khai hoàn tất và thử ghi thẳng vào hồ sơ | Không nâng được quyền |
-| 4 | Gọi thẳng đổi email bằng phiên thử | Email cũ vẫn nguyên; hoặc ghi "bị chặn" |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) báo cáo đủ, người khác làm lại theo báo cáo ra cùng kết quả. (Phần 2) cả 4 dòng đạt.
-**Khi nào task xong:** (Phần 1) báo cáo hoàn tất **kể cả khi kết luận là không đạt**. Nhưng chú ý: "đạt kiểm tra OTP" chỉ được ghi khi phép thử thực sự đạt; không được dùng thư giả để thay. (Phần 2) người kiểm thử và người xem lại đồng ý. **Chỉ ghi "xong" khi cả việc chặn người chưa hoàn tất và việc chặn đổi email đều đạt**; nếu cơ chế đổi email chưa có thì phần đó ghi bị chặn, không ghi xong cả task.
-**Bàn giao cho task sau:** (Phần 1) báo cáo và phương án cho các task đăng ký ở Epic Đăng ký và đăng nhập. (Phần 2) chốt chặn dùng chung cho mọi đường vào ứng dụng.
-**Không thuộc task này:** (Phần 1) viết tính năng đăng ký, dọn tài khoản chính thức, dùng dịch vụ gửi thư khác. (Phần 2) đổi tên đăng nhập, quên mật khẩu (giai đoạn sau).
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; báo cáo đủ, người khác làm lại theo báo cáo ra cùng kết quả.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Báo cáo hoàn tất **kể cả khi kết luận là không đạt**. Nhưng chú ý: "đạt kiểm tra OTP" chỉ được ghi khi phép thử thực sự đạt. Không được dùng thư giả để thay. **Chỉ ghi "xong" khi cả việc chặn người chưa hoàn tất và việc chặn đổi email đều đạt**. Nếu cơ chế đổi email chưa có thì phần đó ghi bị chặn, không ghi xong cả task.
+**Bàn giao cho task sau:** báo cáo và phương án cho các task đăng ký ở Epic Đăng ký và đăng nhập; chốt chặn dùng chung cho mọi đường vào ứng dụng.
+**Không thuộc task này:** viết tính năng đăng ký; dọn tài khoản chính thức; dùng dịch vụ gửi thư khác; đổi tên đăng nhập; quên mật khẩu (giai đoạn sau).
 
 ---
 
@@ -732,32 +623,24 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu và lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được trang chạy được; nhận được ô nhập, nút, thông báo lỗi, trạng thái đang tải. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-20)*: nhận được quy tắc tên hiển thị để giao diện báo đúng.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Giao diện: đăng ký ba bước:*
 Màn hình đăng ký gồm **3 bước** dẫn người dùng đến tài khoản: (1) tên đăng nhập và mật khẩu, (2) email, (3) nhập mã OTP. Giao diện này làm trước với **dữ liệu giả**, chưa nối máy chủ thật (việc nối nằm ở task tích hợp T-27).
 
-*Phần 2 — Giao diện: đăng nhập, hồ sơ cá nhân, đăng xuất:*
 Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xuất. Cũng làm với dữ liệu giả; nối thật ở T-27.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Giao diện: đăng ký ba bước:*
 1. **Bước 1:** ô tên đăng nhập (kiểm lại sau khi ngừng gõ khoảng 0,3 giây, báo "dùng được / đã có người dùng / không hợp lệ"), ô mật khẩu, ô nhập lại mật khẩu. Mật khẩu từ **8 ký tự** và hai ô phải giống nhau mới cho bấm "Tiếp tục".
 2. **Bước 2:** ô email; sai dạng thì báo ngay và không cho tiếp tục.
 3. **Bước 3:** nhập mã 6 số. Hiện **đếm ngược 180 giây** cho hạn mã, và nút "Gửi lại" **bị mờ** (kèm giải thích) trong 60 giây đầu.
 4. Nếu máy chủ báo **tên đã bị lấy** ở bước cuối, đưa người dùng **về bước 1** và giữ lại những gì đã nhập (trừ mật khẩu).
 5. Mỗi bước có đủ 5 trạng thái: bình thường, đang chờ, trống, lỗi, bị khoá (có lời giải thích khi bị khoá).
 6. Chạy được bằng bàn phím; chữ lỗi đọc được với trình đọc màn hình.
-
-*Phần 2 — Giao diện: đăng nhập, hồ sơ cá nhân, đăng xuất:*
-1. **Màn hình đăng nhập:** tên đăng nhập, mật khẩu, ô "Ghi nhớ" (mặc định bật). Sai thì chỉ hiện **một thông báo chung**, không nói sai cái nào. Nút "Đăng nhập khách" và "Đăng nhập Google" **mờ**, có chú thích "Sắp ra mắt".
-2. **Màn hình hồ sơ:** hiện tên hiển thị (sửa được, **2 đến 30 ký tự**, bị lọc từ cấm), tên đăng nhập và email **hiện nhưng khoá, không sửa**. Ảnh đại diện là chữ cái đầu của tên.
-3. **Đăng xuất:** có nút ở nơi dễ thấy; xác nhận trước khi thoát.
-4. Mỗi màn hình có đủ 5 trạng thái.
-5. Chạy được bằng bàn phím, đạt chuẩn dễ đọc.
+7. **Màn hình đăng nhập:** tên đăng nhập, mật khẩu, ô "Ghi nhớ" (mặc định bật). Sai thì chỉ hiện **một thông báo chung**, không nói sai cái nào. Nút "Đăng nhập khách" và "Đăng nhập Google" **mờ**, có chú thích "Sắp ra mắt".
+8. **Màn hình hồ sơ:** hiện tên hiển thị (sửa được, **2 đến 30 ký tự**, bị lọc từ cấm), tên đăng nhập và email **hiện nhưng khoá, không sửa**. Ảnh đại diện là chữ cái đầu của tên.
+9. **Đăng xuất:** có nút ở nơi dễ thấy; xác nhận trước khi thoát.
+10. Mỗi màn hình có đủ 5 trạng thái.
+11. Chạy được bằng bàn phím, đạt chuẩn dễ đọc.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Giao diện: đăng ký ba bước:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Mật khẩu 7 ký tự hoặc hai ô khác nhau | Không cho tiếp tục, nêu rõ lý do |
@@ -765,10 +648,6 @@ Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xu
 | Bấm "Gửi lại" khi chưa đủ 60 giây | Nút mờ, có tooltip giải thích |
 | Máy chủ báo tên bị lấy | Về bước 1, báo rõ |
 | Máy chủ lỗi hoặc mất mạng | Báo lỗi, giữ nguyên dữ liệu đã nhập, cho thử lại |
-
-*Phần 2 — Giao diện: đăng nhập, hồ sơ cá nhân, đăng xuất:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Sai thông tin đăng nhập | Một thông báo chung |
 | Tên hiển thị 1 hoặc 31 ký tự | Không lưu, báo lý do |
 | Tên hiển thị chứa từ cấm | Không lưu, báo lý do |
@@ -776,8 +655,8 @@ Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xu
 | Mất mạng khi lưu | Báo lỗi, giữ nội dung đang sửa |
 
 **Cách tự kiểm tra**
-*Phần 1 — Giao diện: đăng ký ba bước:*
 Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Nhập mật khẩu 7 ký tự; hai ô khác nhau | Không qua bước 2, có lý do |
@@ -785,20 +664,16 @@ Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản
 | 3 | Ở bước 3 quan sát đồng hồ | Đếm ngược 180 giây; "Gửi lại" mờ 60 giây đầu rồi sáng |
 | 4 | Giả lập "tên bị lấy" | Về bước 1, dữ liệu còn giữ |
 | 5 | Dùng bàn phím đi hết 3 bước | Làm được không cần chuột |
+| 6 | Đăng nhập sai bằng dữ liệu giả | Thông báo chung duy nhất |
+| 7 | Xem nút khách và Google | Mờ, chú thích "Sắp ra mắt" |
+| 8 | Sửa tên 1, 2, 30, 31 ký tự; tên có từ cấm | 2 và 30 lưu được; còn lại báo lỗi |
+| 9 | Thử sửa tên đăng nhập và email | Không sửa được, có chú thích |
+| 10 | Đăng xuất | Có xác nhận, rồi về trang đăng nhập |
 
-*Phần 2 — Giao diện: đăng nhập, hồ sơ cá nhân, đăng xuất:*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Đăng nhập sai bằng dữ liệu giả | Thông báo chung duy nhất |
-| 2 | Xem nút khách và Google | Mờ, chú thích "Sắp ra mắt" |
-| 3 | Sửa tên 1, 2, 30, 31 ký tự; tên có từ cấm | 2 và 30 lưu được; còn lại báo lỗi |
-| 4 | Thử sửa tên đăng nhập và email | Không sửa được, có chú thích |
-| 5 | Đăng xuất | Có xác nhận, rồi về trang đăng nhập |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt; kèm ảnh chụp 5 trạng thái. (Phần 2) cả 5 dòng đạt, có ảnh 5 trạng thái.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) màn hình đăng ký dùng được với dữ liệu giả để task tích hợp nối với máy chủ. (Phần 2) màn hình đăng nhập, hồ sơ, đăng xuất dùng được với dữ liệu giả.
-**Không thuộc task này:** (Phần 1) gọi máy chủ thật, đăng nhập, hồ sơ, đăng nhập Google và khách (đang để "Sắp ra mắt"). (Phần 2) gọi máy chủ thật, xử lý đăng xuất khi đang chơi (T-48), đổi email hay tên đăng nhập.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; kèm ảnh chụp 5 trạng thái.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
+**Bàn giao cho task sau:** màn hình đăng ký dùng được với dữ liệu giả để task tích hợp nối với máy chủ; màn hình đăng nhập, hồ sơ, đăng xuất dùng được với dữ liệu giả.
+**Không thuộc task này:** gọi máy chủ thật (làm ở task nối web với máy chủ); đăng nhập Google và khách (đang để "Sắp ra mắt"); xử lý đăng xuất khi đang chơi; đổi email hay tên đăng nhập.
 
 ---
 
@@ -890,31 +765,23 @@ Chuẩn bị: đồng hồ giả để rút ngắn thời gian; khả năng gây
 **Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-14)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-24)*: nhận được kết quả đã hoàn thành của task này. *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-26)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-27)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-33)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-37)*: nhận được các màn hình của giai đoạn 1 đã dựng để kiểm quy tắc trên từng màn. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-40)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-49)*: nhận được ứng dụng chạy thật cho từng phần để kích hoạt từng trạng thái trên dữ liệu thật. *Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi (T-50)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-54)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-55)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-57)*: nhận được kết quả đã hoàn thành của task này.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Giao diện: tính năng chưa làm hiển thị đúng quy tắc (mờ kèm "Sắp ra mắt" hoặc ẩn hẳn):*
 Bảo đảm người dùng **biết có những thứ "sắp ra mắt"**, nhưng **không bấm nhầm** vào chức năng chưa làm. Đồng thời **không ẩn nhầm** những chức năng của giai đoạn 1.
 
-*Phần 2 — Giao diện: đủ 5 trạng thái cho mọi màn hình và khung dữ liệu:*
 Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (23 thành phần theo danh mục) trên ứng dụng đã nối thật, bảo đảm người dùng **luôn biết** đang tải, trống, lỗi hay bị khoá và **biết làm gì tiếp**.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Giao diện: tính năng chưa làm hiển thị đúng quy tắc (mờ kèm "Sắp ra mắt" hoặc ẩn hẳn):*
 1. **Làm mờ kèm "Sắp ra mắt"** các lối vào chính: Đánh Hạng, Bảng xếp hạng, Lịch sử, đăng nhập khách, đăng nhập Google, Nhắn tin, Thách đấu.
 2. **Ẩn hẳn** các chức năng nằm sâu: mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, đi lại với máy, trợ giúp của máy, bộ chọn giao diện, ghép ngẫu nhiên.
 3. Hộp kết quả ván chỉ có **Rời phòng**; giao diện luôn tối kể cả khi hệ điều hành đặt sáng.
 4. Duyệt trên **các màn đã có** (đăng ký, đăng nhập, hồ sơ, bạn bè, ván, ván với máy), giữ Sảnh, Bạn bè và mời bạn online hoạt động bình thường.
 5. Lập **danh sách kiểm** các lối vào chưa làm để kiểm sau mỗi lần sửa giao diện.
-
-*Phần 2 — Giao diện: đủ 5 trạng thái cho mọi màn hình và khung dữ liệu:*
-1. Lập danh sách đúng các thành phần của giai đoạn 1 và các ca kiểm tương ứng.
-2. Trên ứng dụng thật, **tạo từng tình huống**: tải chậm, không có dữ liệu, lỗi (từ chối, mất mạng, phụ thuộc hỏng), thiếu quyền, đạt giới hạn, đã kết thúc.
-3. Sửa phản hồi, nút "Thử lại" và chú thích; kiểm không giật bố cục và **không báo thành công giả**.
-4. **Chat thật:** kiểm tải, trống, lỗi gửi, thiếu quyền, nhận tin thành công, mất xác nhận, vượt giới hạn, đổi vai; chắc chắn **dữ liệu riêng không còn trên màn hình** sau khi đổi vai (đối chiếu dữ liệu, không chỉ nhìn hình).
-5. Những trạng thái không hiện (ví dụ khung không có ý nghĩa "trống") ghi theo ma trận, **không mặc định "trống" luôn là một màn hình trắng**.
+6. Lập danh sách đúng các thành phần của giai đoạn 1 và các ca kiểm tương ứng.
+7. Trên ứng dụng thật, **tạo từng tình huống**: tải chậm, không có dữ liệu, lỗi (từ chối, mất mạng, phụ thuộc hỏng), thiếu quyền, đạt giới hạn, đã kết thúc.
+8. Sửa phản hồi, nút "Thử lại" và chú thích; kiểm không giật bố cục và **không báo thành công giả**.
+9. **Chat thật:** kiểm tải, trống, lỗi gửi, thiếu quyền, nhận tin thành công, mất xác nhận, vượt giới hạn, đổi vai; chắc chắn **dữ liệu riêng không còn trên màn hình** sau khi đổi vai (đối chiếu dữ liệu, không chỉ nhìn hình).
+10. Những trạng thái không hiện (ví dụ khung không có ý nghĩa "trống") ghi theo ma trận, **không mặc định "trống" luôn là một màn hình trắng**.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Giao diện: tính năng chưa làm hiển thị đúng quy tắc (mờ kèm "Sắp ra mắt" hoặc ẩn hẳn):*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Bấm hoặc nhấn phím vào từng lối chính chưa làm | Không mở chức năng; có chú thích "Sắp ra mắt" |
@@ -922,10 +789,6 @@ Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (23
 | Kết thúc ván | Chỉ có nút Rời phòng, không có Xem lại |
 | Hệ điều hành đặt giao diện sáng | Ứng dụng vẫn tối |
 | Duyệt đăng ký, đăng nhập, hồ sơ, bạn bè, kết quả, ván máy bằng bàn phím | Không lối chưa làm nào hoạt động; không ẩn nhầm chức năng của giai đoạn 1 |
-
-*Phần 2 — Giao diện: đủ 5 trạng thái cho mọi màn hình và khung dữ liệu:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Tải chậm; không có dữ liệu ở từng khung | Khung xương; giải thích và nút hành động đúng |
 | Từ chối, mất mạng, phụ thuộc lỗi | Thông báo tiếng Việt, nút "Thử lại" đúng việc |
 | Thiếu quyền, đạt giới hạn, đã kết thúc | Chú thích đúng; máy chủ vẫn chặn |
@@ -933,7 +796,8 @@ Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (23
 | Chat thật: tải, trống, lỗi, thiếu quyền, nhận tin | Đủ 5 trạng thái; không báo gửi giả; không còn dữ liệu riêng sau đổi vai |
 
 **Cách tự kiểm tra**
-*Phần 1 — Giao diện: tính năng chưa làm hiển thị đúng quy tắc (mờ kèm "Sắp ra mắt" hoặc ẩn hẳn):*
+Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và giả lập lỗi.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Bấm và dùng bàn phím vào từng mục chưa làm | Không mở; có chú thích |
@@ -941,21 +805,16 @@ Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (23
 | 3 | Kết thúc một ván | Chỉ Rời phòng |
 | 4 | Đổi hệ điều hành sang giao diện sáng | Vẫn tối |
 | 5 | Duyệt các màn bằng bàn phím | Không ẩn nhầm Bạn bè, mời bạn online |
+| 6 | Làm chậm, làm trống từng khung | Khung xương; giải thích và nút đúng |
+| 7 | Từ chối, mất mạng, hỏng phụ thuộc | Thông báo và "Thử lại" đúng |
+| 8 | Thiếu quyền, đạt giới hạn, đã kết thúc | Chú thích đúng, máy chủ chặn |
+| 9 | Mở các hộp thoại và lớp phủ | Esc, focus đúng |
+| 10 | Chat thật ở các tình huống trên | Đủ 5 trạng thái, không dữ liệu riêng sót lại |
 
-*Phần 2 — Giao diện: đủ 5 trạng thái cho mọi màn hình và khung dữ liệu:*
-Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và giả lập lỗi.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Làm chậm, làm trống từng khung | Khung xương; giải thích và nút đúng |
-| 2 | Từ chối, mất mạng, hỏng phụ thuộc | Thông báo và "Thử lại" đúng |
-| 3 | Thiếu quyền, đạt giới hạn, đã kết thúc | Chú thích đúng, máy chủ chặn |
-| 4 | Mở các hộp thoại và lớp phủ | Esc, focus đúng |
-| 5 | Chat thật ở các tình huống trên | Đủ 5 trạng thái, không dữ liệu riêng sót lại |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt. (Phần 2) mỗi ô trạng thái áp dụng có bằng chứng đạt.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) danh sách kiểm này cho nghiệm thu chấp nhận. (Phần 2) giao diện đã đủ trạng thái cho responsive, trợ năng, nghiệm thu.
-**Không thuộc task này:** (Phần 1) làm các tính năng chưa làm, đổi mức ưu tiên của tính năng. (Phần 2) dựng các thành phần của chức năng chưa làm.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; mỗi ô trạng thái áp dụng có bằng chứng đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
+**Bàn giao cho task sau:** danh sách kiểm này cho nghiệm thu chấp nhận; giao diện đã đủ trạng thái cho responsive, trợ năng, nghiệm thu.
+**Không thuộc task này:** làm các tính năng chưa làm; đổi mức ưu tiên của tính năng; dựng các thành phần của chức năng chưa làm.
 
 ---
 
@@ -964,66 +823,49 @@ Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và g
 **Phải xong trước:** *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-58)*: nhận được bản ứng dụng hợp nhất đủ trạng thái.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Giao diện: dùng được từ 360 px và bằng cảm ứng:*
 Bảo đảm **giai đoạn 1 dùng được từ màn hình 360 px và bằng cảm ứng**: bàn cờ, chat, camera/micro và các nút chính không bị che hay tràn ngang.
 
-*Phần 2 — Giao diện: trợ năng (WCAG 2.1 AA, bàn phím, nhãn, độ tương phản):*
 Kiểm và sửa **trợ năng** trên giao diện thật, để người dùng chỉ có bàn phím, người dùng giảm chuyển động hay người đọc màn hình vẫn nhận đủ thông tin.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Giao diện: dùng được từ 360 px và bằng cảm ứng:*
 1. Duyệt ở bốn cỡ: **360×800, 390×844, 1366×768, 1920×1080**, đủ các trạng thái.
 2. Ở màn nhỏ, xếp lại các bảng theo thiết kế (chat và camera/micro thu thành thẻ), giữ **bàn cờ và các nút quan trọng luôn thao tác được**.
 3. Kiểm cảm ứng: chạm chọn quân và ô đích, kéo thả, với cả hai phe (bàn lật), khi có hộp thoại hoặc lỗi đang mở.
 4. Đo vùng chạm của nút, thẻ, ô nhập: tối thiểu **44 px** (bàn cờ theo ngoại lệ riêng của thiết kế).
 5. Sửa các chỗ vỡ bố cục; **không sửa bằng cách giấu chức năng** hoặc khoá cuộn làm mất nội dung.
-
-*Phần 2 — Giao diện: trợ năng (WCAG 2.1 AA, bàn phím, nhãn, độ tương phản):*
-1. **Đo tương phản** của từng cặp chữ/nền và thành phần giao diện ở từng trạng thái (kể cả khi rê chuột, bị khoá, có độ trong suốt): chữ thường ≥ 4,5:1; chữ lớn và thành phần ≥ 3:1.
-2. **Duyệt bằng bàn phím** toàn bộ màn hình, hộp thoại và bàn cờ: viền focus nhìn rõ; **không bị kẹt** ở khung xin hoà.
-3. Kiểm **nhãn** cho nút chỉ có biểu tượng, trạng thái quân và đồng hồ; có **dấu hiệu ngoài màu**.
-4. Bật "giảm chuyển động" và cảnh báo chiếu: **không nhấp nháy, không rung**; thông báo quan trọng không đọc từng giây của đếm lùi.
-5. Sửa lỗi và kiểm lại; **không tự đổi màu nguồn** hay thêm công cụ ngoài danh sách đã chọn.
+6. **Đo tương phản** của từng cặp chữ/nền và thành phần giao diện ở từng trạng thái (kể cả khi rê chuột, bị khoá, có độ trong suốt): chữ thường ≥ 4,5:1; chữ lớn và thành phần ≥ 3:1.
+7. **Duyệt bằng bàn phím** toàn bộ màn hình, hộp thoại và bàn cờ: viền focus nhìn rõ; **không bị kẹt** ở khung xin hoà.
+8. Kiểm **nhãn** cho nút chỉ có biểu tượng, trạng thái quân và đồng hồ; có **dấu hiệu ngoài màu**.
+9. Bật "giảm chuyển động" và cảnh báo chiếu: **không nhấp nháy, không rung**; thông báo quan trọng không đọc từng giây của đếm lùi.
+10. Sửa lỗi và kiểm lại; **không tự đổi màu nguồn** hay thêm công cụ ngoài danh sách đã chọn.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Giao diện: dùng được từ 360 px và bằng cảm ứng:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Duyệt giai đoạn 1 ở bốn cỡ, đủ trạng thái | Không cuộn ngang, không che điều khiển |
 | Chạm chọn và kéo thả với bàn Đen lật | Đúng giao điểm, thao tác được |
 | Đo nút, thẻ, ô nhập | ≥ 44 px |
 | Mở chat, camera/micro, hộp thoại ở 360 px | Không mất thao tác bàn cờ cần thiết |
-
-*Phần 2 — Giao diện: trợ năng (WCAG 2.1 AA, bàn phím, nhãn, độ tương phản):*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Đo màu trên nền thực | Chữ thường ≥ 4,5:1; chữ lớn và thành phần ≥ 3:1 |
 | Duyệt màn, hộp thoại, bàn cờ bằng bàn phím | Focus thấy rõ; không kẹt |
 | Nút chỉ có biểu tượng; trạng thái quân và giờ | Có nhãn và dấu ngoài màu |
 | Bật giảm chuyển động và cảnh báo chiếu | Không nhấp nháy hay rung; thông báo không đọc từng giây |
 
 **Cách tự kiểm tra**
-*Phần 1 — Giao diện: dùng được từ 360 px và bằng cảm ứng:*
-Chuẩn bị: công cụ thay đổi kích thước màn hình và một điện thoại cảm ứng thật.
+Chuẩn bị: công cụ thay đổi kích thước màn hình và một điện thoại cảm ứng thật; công cụ đo tương phản, trình đọc màn hình.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Duyệt bốn cỡ, đủ trạng thái | Không tràn ngang |
 | 2 | Chạm và kéo thả ở cả hai phe | Đúng, thao tác được |
 | 3 | Đo vùng chạm | ≥ 44 px |
 | 4 | Mở chat, camera/micro, hộp thoại ở 360 px | Dùng được |
+| 5 | Đo tương phản từng cặp màu thật | Đạt ngưỡng |
+| 6 | Duyệt toàn bộ bằng bàn phím | Focus rõ, không kẹt |
+| 7 | Kiểm nhãn bằng trình đọc màn hình | Đủ nhãn và dấu ngoài màu |
+| 8 | Bật giảm chuyển động | Không nhấp nháy; thông báo đúng |
 
-*Phần 2 — Giao diện: trợ năng (WCAG 2.1 AA, bàn phím, nhãn, độ tương phản):*
-Chuẩn bị: công cụ đo tương phản, trình đọc màn hình.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Đo tương phản từng cặp màu thật | Đạt ngưỡng |
-| 2 | Duyệt toàn bộ bằng bàn phím | Focus rõ, không kẹt |
-| 3 | Kiểm nhãn bằng trình đọc màn hình | Đủ nhãn và dấu ngoài màu |
-| 4 | Bật giảm chuyển động | Không nhấp nháy; thông báo đúng |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 4 dòng đạt, kèm ảnh bốn cỡ. (Phần 2) cả 4 dòng đạt; có báo cáo đo thật.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. (Phần 2) người kiểm thử và người xem lại đồng ý. **Bảng màu tính sẵn không thay cho bằng chứng đo trên giao diện thật.**
-**Bàn giao cho task sau:** (Phần 1) giao diện đáp ứng cho nghiệm thu tiêu chí phi chức năng. (Phần 2) giao diện đạt trợ năng cho nghiệm thu tiêu chí phi chức năng.
-**Không thuộc task này:** (Phần 1) ứng dụng di động riêng, thiết kế cho chức năng chưa làm. (Phần 2) đổi giao diện hay màu nguồn, thêm công cụ mới ngoài danh sách.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; có báo cáo đo thật.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Bảng màu tính sẵn không thay cho bằng chứng đo trên giao diện thật.**.
+**Bàn giao cho task sau:** giao diện đáp ứng cho nghiệm thu tiêu chí phi chức năng; giao diện đạt trợ năng cho nghiệm thu tiêu chí phi chức năng.
+**Không thuộc task này:** ứng dụng di động riêng; thiết kế cho chức năng chưa làm; đổi giao diện hay màu nguồn; thêm công cụ mới ngoài danh sách.

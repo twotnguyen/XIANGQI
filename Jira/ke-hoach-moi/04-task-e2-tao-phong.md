@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
@@ -11,73 +11,56 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 **Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu tạo, vào, xem danh sách và các lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-08)*: nhận được nút, ô nhập, hộp thoại, thông báo; nhận được trang chạy được và cách chuyển trang.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Giao diện: thanh điều hướng và khung Sảnh:*
 Dựng **thanh điều hướng** và **khung Sảnh** thống nhất để các phần khác (phòng, ván với máy, bạn bè) gắn nội dung vào đúng chỗ. Người dùng thấy mọi chức năng của giai đoạn 1 và biết đường quay lại chỗ chơi đang giữ.
 
-*Phần 2 — Giao diện: Sảnh, hộp thoại tạo phòng, nhập mã vào phòng:*
 Dựng **Sảnh** và hộp thoại **tạo phòng**, ô **nhập mã** để vào phòng. Giao diện chỉ gửi ý định; **không tự cấp ghế hay tạo phòng**.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Giao diện: thanh điều hướng và khung Sảnh:*
 1. Thanh điều hướng đăng nhập: logo, Sảnh, Bạn bè, **chỗ gắn chuông lời mời**, ảnh đại diện và tên với menu Hồ sơ/Đăng xuất. Bảng xếp hạng và Lịch sử **mờ kèm "Sắp ra mắt"**.
 2. Khung Sảnh có **chỗ gắn**: phòng (tạo/vào/danh sách), ba thẻ Đánh với máy, **băng "quay lại"**. Thẻ Đánh Hạng mờ kèm "Sắp ra mắt"; Ghép ngẫu nhiên ẩn.
 3. Nếu người dùng **đang ngồi ghế phòng hoặc có ván dở**: hiện băng quay lại; các nút tạo mới bị mờ có chú thích lý do (không cho tạo chỗ chơi thứ hai).
 4. Mục **Luật chơi** thu gọn/mở rộng bằng chuột và bàn phím, nêu: hết nước đi là thua, không có luật đuổi quân riêng; viết theo tài liệu luật cờ; **không** thêm trang hay hộp thoại mới.
 5. Khung bị lỗi tải một chỗ thì chỉ chỗ đó báo lỗi, **không mất cả khung**.
-
-*Phần 2 — Giao diện: Sảnh, hộp thoại tạo phòng, nhập mã vào phòng:*
-1. Gắn nội dung phòng vào khung Sảnh có sẵn (không dựng thanh điều hướng thứ hai).
-2. **Hộp thoại tạo phòng:** tên phòng (1–60 ký tự), giờ **5/10/15 phút** (mặc định 10), kiểu phòng (công khai hoặc chỉ mã), số người xem **0–5 (mặc định 5)**. Kiểm trước khi gửi, giữ lại dữ liệu khi lỗi.
-3. **Ô nhập mã** vào phòng.
-4. **Danh sách phòng**: trạng thái đang tải, trống, lỗi (có nút "Thử lại").
-5. Nếu người dùng **đang có ghế hoặc ván dở**: hiện thanh "Quay lại phòng/ván" và nút tạo mới bị mờ có giải thích.
-6. Mục **Luật chơi** thu gọn được bằng bàn phím, ngay trong Sảnh.
-7. Các chức năng chưa làm (ghép ngẫu nhiên, đánh hạng, khách…) **mờ có chú thích**, không bấm được.
-8. Đủ 5 trạng thái cho từng khung.
+6. Gắn nội dung phòng vào khung Sảnh có sẵn (không dựng thanh điều hướng thứ hai).
+7. **Hộp thoại tạo phòng:** tên phòng (1–60 ký tự), giờ **5/10/15 phút** (mặc định 10), kiểu phòng (công khai hoặc chỉ mã), số người xem **0–5 (mặc định 5)**. Kiểm trước khi gửi, giữ lại dữ liệu khi lỗi.
+8. **Ô nhập mã** vào phòng.
+9. **Danh sách phòng**: trạng thái đang tải, trống, lỗi (có nút "Thử lại").
+10. Nếu người dùng **đang có ghế hoặc ván dở**: hiện thanh "Quay lại phòng/ván" và nút tạo mới bị mờ có giải thích.
+11. Mục **Luật chơi** thu gọn được bằng bàn phím, ngay trong Sảnh.
+12. Các chức năng chưa làm (ghép ngẫu nhiên, đánh hạng, khách…) **mờ có chú thích**, không bấm được.
+13. Đủ 5 trạng thái cho từng khung.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Giao diện: thanh điều hướng và khung Sảnh:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Mở Sảnh, Bạn bè, Hồ sơ | Đúng trang; chức năng chưa làm không kích hoạt được |
 | Dữ liệu mẫu: còn ghế/ván máy và không có | Đúng băng quay lại / nút mờ có lý do |
 | Mở và thu Luật chơi bằng chuột và bàn phím | Đúng nội dung, không mở trang mới |
 | Một chỗ gắn tải lỗi | Báo lỗi rõ chỗ đó, không mất cả khung |
-
-*Phần 2 — Giao diện: Sảnh, hộp thoại tạo phòng, nhập mã vào phòng:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Mở hộp thoại tạo phòng | Mặc định 10 phút, 5 người xem; chỉ có kiểu công khai/chỉ mã; chỉ giờ 5/10/15 |
 | Đang có ghế hoặc ván dở | Thanh quay lại hiện; nút tạo mới mờ, có lý do |
 | Danh sách tải lỗi / rỗng | Hai trạng thái khác nhau; có "Thử lại" / "Tạo phòng" đúng |
 | Mở/thu Luật chơi bằng bàn phím | Gọn, đúng nội dung, không mở trang mới |
 
 **Cách tự kiểm tra**
-*Phần 1 — Giao diện: thanh điều hướng và khung Sảnh:*
-Chuẩn bị: dữ liệu giả cho trạng thái chỗ chơi.
+Chuẩn bị: dữ liệu giả cho trạng thái chỗ chơi; chạy giao diện với dữ liệu giả.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Mở Sảnh, Bạn bè, Hồ sơ | Đúng trang; mục chưa làm mờ |
 | 2 | Dữ liệu mẫu có và không có chỗ chơi | Băng quay lại; nút mờ có lý do |
 | 3 | Mở/thu Luật chơi | Đúng nội dung |
 | 4 | Làm một chỗ gắn lỗi | Chỉ chỗ đó báo lỗi |
+| 5 | Mở hộp thoại; đổi giá trị; thử sai biên | Mặc định đúng; chỉ giá trị hợp lệ |
+| 6 | Giả lập đang có ghế | Thanh quay lại, nút tạo mờ có lý do |
+| 7 | Giả lập danh sách lỗi và rỗng | Hai trạng thái khác nhau, nút đúng |
+| 8 | Mở và thu Luật chơi bằng bàn phím | Đúng |
+| 9 | Xem chức năng chưa làm | Mờ, có chú thích |
 
-*Phần 2 — Giao diện: Sảnh, hộp thoại tạo phòng, nhập mã vào phòng:*
-Chuẩn bị: chạy giao diện với dữ liệu giả.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Mở hộp thoại; đổi giá trị; thử sai biên | Mặc định đúng; chỉ giá trị hợp lệ |
-| 2 | Giả lập đang có ghế | Thanh quay lại, nút tạo mờ có lý do |
-| 3 | Giả lập danh sách lỗi và rỗng | Hai trạng thái khác nhau, nút đúng |
-| 4 | Mở và thu Luật chơi bằng bàn phím | Đúng |
-| 5 | Xem chức năng chưa làm | Mờ, có chú thích |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 4 dòng đạt; dùng được bằng bàn phím. (Phần 2) cả 5 dòng đạt; kèm ảnh các trạng thái.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Dữ liệu thật của từng chỗ gắn do các task của phòng, bạn bè, ván với máy nối ở task tích hợp tương ứng. (Phần 2) người kiểm thử và người xem lại đồng ý. Chưa nối máy chủ thật nên **không** coi là tạo phòng thật đã đạt (nối ở T-29).
-**Bàn giao cho task sau:** (Phần 1) khung điều hướng và Sảnh cho giao diện phòng, bạn bè, ván với máy. (Phần 2) Sảnh, hộp thoại tạo phòng và ô nhập mã cho task tích hợp.
-**Không thuộc task này:** (Phần 1) biểu mẫu tạo phòng (phần 2 của task này), ván với máy, bạn bè, trang Luật chơi riêng. (Phần 2) gọi máy chủ thật, chọn cấp độ máy (Epic Đánh với máy theo cấp độ), mã QR.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; dùng được bằng bàn phím; kèm ảnh các trạng thái.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Dữ liệu thật của từng chỗ gắn do các task của phòng, bạn bè, ván với máy nối ở task tích hợp tương ứng. Chưa nối máy chủ thật nên **không** coi là tạo phòng thật đã đạt (nối ở T-29).
+**Bàn giao cho task sau:** khung điều hướng và Sảnh cho giao diện phòng, bạn bè, ván với máy; Sảnh, hộp thoại tạo phòng và ô nhập mã cho task tích hợp.
+**Không thuộc task này:** gọi máy chủ thật (làm ở task nối web với máy chủ); ván với máy; bạn bè; trang Luật chơi riêng; chọn cấp độ máy; mã QR.
 
 ---
 
@@ -126,33 +109,25 @@ Chuẩn bị: dữ liệu giả cho ghế, đếm giờ, thu hồi, quyền.
 **Phải xong trước:** *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng phòng, người tham gia, ván và ràng buộc "một ghế mỗi người". *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-07)*: nhận được cách nhận lệnh có xác thực người gửi. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-10)*: nhận được cách trả lại kết quả cũ khi gửi lại cùng một yêu cầu; nhận được hàm kiểm tên phòng; nhận được cơ chế giới hạn tạo phòng 5 lần trong 10 phút.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: trạng thái phòng và quy tắc "mỗi người một chỗ chơi":*
 Làm "bộ não" của phòng: phòng đang ở trạng thái nào, ai ngồi ghế nào, và đảm bảo **mỗi người chỉ có một chỗ chơi** dù nhiều yêu cầu đến cùng lúc. Các task sau (tạo phòng, vào phòng, ghế…) đều dựa vào đây.
 
-*Phần 2 — Máy chủ: tạo phòng, mã 8 ký tự, đường dẫn mời:*
 Cho người dùng tạo phòng: nhận về phòng mới, mã 8 ký tự và đường dẫn mời, mình là chủ phòng ngồi ghế Đỏ. Nếu mạng chập chờn và người dùng gửi lại cùng yêu cầu, **không được tạo thêm phòng** mà phải trả lại phòng cũ.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: trạng thái phòng và quy tắc "mỗi người một chỗ chơi":*
 1. Định nghĩa các trạng thái của phòng: **Đang chờ**, **Đang chơi**, **Đã kết thúc**, **Đã đóng**; và kiểu riêng tư (công khai, chỉ mã, khoá) tách riêng khỏi trạng thái.
 2. Làm "sổ chỗ chơi": ghi mỗi người đang giữ chỗ nào (ghế trong phòng hoặc ván với máy). Xin chỗ và trả chỗ đều dưới khoá theo người, nên hai yêu cầu cùng lúc không thể cùng thành công.
 3. Xử lý các thay đổi phòng **lần lượt từng cái một**, không chồng nhau.
 4. Nếu bước sau thất bại, **trả lại chỗ đã xin** để không còn "chỗ ma".
 5. Phòng đã đóng thì **không mở lại**, lệnh đến trễ bị bỏ qua.
 6. Danh tính người gửi lấy từ phiên đăng nhập, **không tin** thông tin trình duyệt tự khai.
-
-*Phần 2 — Máy chủ: tạo phòng, mã 8 ký tự, đường dẫn mời:*
-1. Xác định người gửi; xem yêu cầu này đã được xử lý chưa (nếu rồi, trả kết quả cũ, kết thúc).
-2. Với yêu cầu mới: kiểm tra giới hạn **5 lần trong 10 phút**.
-3. Kiểm tra dữ liệu: tên 1–60 ký tự và không chứa từ cấm; giờ 5/10/15 (mặc định 10); kiểu công khai hoặc chỉ mã; số người xem 0–5 (mặc định 5).
-4. Kiểm tra người này **chưa có chỗ chơi nào** khác.
-5. Ghi phòng, chủ phòng ngồi ghế Đỏ, mã 8 ký tự không trùng và biên lai, **cùng lúc**; chỉ sau khi ghi xong mới trả kết quả.
-6. Trả phòng, mã và đường dẫn mời; chỉ người **đang ngồi ghế** mới đọc được đường dẫn mời và mã.
+7. Xác định người gửi; xem yêu cầu này đã được xử lý chưa (nếu rồi, trả kết quả cũ, kết thúc).
+8. Với yêu cầu mới: kiểm tra giới hạn **5 lần trong 10 phút**.
+9. Kiểm tra dữ liệu: tên 1–60 ký tự và không chứa từ cấm; giờ 5/10/15 (mặc định 10); kiểu công khai hoặc chỉ mã; số người xem 0–5 (mặc định 5).
+10. Kiểm tra người này **chưa có chỗ chơi nào** khác.
+11. Ghi phòng, chủ phòng ngồi ghế Đỏ, mã 8 ký tự không trùng và biên lai, **cùng lúc**; chỉ sau khi ghi xong mới trả kết quả.
+12. Trả phòng, mã và đường dẫn mời; chỉ người **đang ngồi ghế** mới đọc được đường dẫn mời và mã.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: trạng thái phòng và quy tắc "mỗi người một chỗ chơi":*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Một người xin hai chỗ cùng lúc (phòng và ván với máy) | Chỉ một chỗ thành công |
@@ -160,10 +135,6 @@ Cho người dùng tạo phòng: nhận về phòng mới, mã 8 ký tự và đ
 | Đổi người ngồi ghế | Trạng thái "Sẵn sàng" của cả hai về chưa sẵn sàng |
 | Gửi lệnh vào phòng đã đóng | Bị bỏ qua, phòng không mở lại, không lộ dữ liệu |
 | Trình duyệt khai tên người khác | Không chiếm được chỗ của người đó |
-
-*Phần 2 — Máy chủ: tạo phòng, mã 8 ký tự, đường dẫn mời:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Dữ liệu hợp lệ | Có phòng, chủ phòng ghế Đỏ, mã 8 ký tự |
 | Tên chứa từ cấm hoặc giờ ngoài 5/10/15 | Từ chối, nêu lý do |
 | Mất kết quả, gửi lại cùng yêu cầu (dù đã có ghế) | Trả lại đúng phòng đã tạo, không báo "đang có chỗ" như yêu cầu mới |
@@ -173,8 +144,8 @@ Cho người dùng tạo phòng: nhận về phòng mới, mã 8 ký tự và đ
 | Người ngoài xin đường dẫn mời | Không nhận được |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: trạng thái phòng và quy tắc "mỗi người một chỗ chơi":*
 Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng lúc.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Một người xin chỗ phòng và chỗ ván với máy cùng lúc | Đúng một chỗ |
@@ -182,18 +153,13 @@ Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng l
 | 3 | Đổi người ngồi ghế | Cả hai về chưa sẵn sàng |
 | 4 | Gửi lệnh vào phòng đã đóng | Không mở lại, không dữ liệu trái quyền |
 | 5 | Khai tên người khác | Không chiếm được chỗ |
-
-*Phần 2 — Máy chủ: tạo phòng, mã 8 ký tự, đường dẫn mời:*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Tạo phòng với các giá trị mặc định, rồi các biên (tên 1 và 60 ký tự, giờ 5/10/15, người xem 0 và 5), tên cấm | Hợp lệ tạo được; sai bị từ chối; chủ phòng ghế Đỏ, mã 8 ký tự |
-| 2 | Tạo xong, giả vờ mất kết quả, gửi lại cùng yêu cầu | Trả đúng phòng cũ |
-| 3 | Đang có ghế, gửi yêu cầu tạo mới | Từ chối |
-| 4 | Tạo 5 lần rồi lần 6 trong 10 phút; thử lại sau hạn | Lần 6 bị chặn; sau hạn xét lại |
-| 5 | Người không ngồi ghế xin đường dẫn; gây lỗi ghi | Không nhận được; không báo thành công giả |
+| 6 | Tạo phòng với các giá trị mặc định, rồi các biên (tên 1 và 60 ký tự, giờ 5/10/15, người xem 0 và 5), tên cấm | Hợp lệ tạo được; sai bị từ chối; chủ phòng ghế Đỏ, mã 8 ký tự |
+| 7 | Tạo xong, giả vờ mất kết quả, gửi lại cùng yêu cầu | Trả đúng phòng cũ |
+| 8 | Đang có ghế, gửi yêu cầu tạo mới | Từ chối |
+| 9 | Tạo 5 lần rồi lần 6 trong 10 phút; thử lại sau hạn | Lần 6 bị chặn; sau hạn xét lại |
+| 10 | Người không ngồi ghế xin đường dẫn; gây lỗi ghi | Không nhận được; không báo thành công giả |
 
 **Thông tin vào**
-*Phần 2 — Máy chủ: tạo phòng, mã 8 ký tự, đường dẫn mời:*
 | Thông tin | Giá trị hợp lệ |
 |---|---|
 | Tên phòng | 1–60 ký tự, không từ cấm |
@@ -201,10 +167,10 @@ Chuẩn bị: bài thử tự động có thể gửi nhiều yêu cầu cùng l
 | Kiểu phòng | Công khai hoặc chỉ mã |
 | Số người xem tối đa | 0–5 (mặc định 5) |
 
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt. (Phần 2) cả 5 dòng đạt.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Bài thử với ván máy thật chỉ chạy được sau khi có ván với máy; ở đây kiểm bằng sổ chỗ chơi. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) trạng thái phòng và sổ chỗ chơi cho tạo phòng, vào phòng, ván với máy, bạn bè. (Phần 2) phòng, mã và đường dẫn mời cho vào phòng, riêng tư và giao diện.
-**Không thuộc task này:** (Phần 1) tạo hay vào phòng, ghế và Sẵn sàng, đánh hạng. (Phần 2) mã QR, giờ "không giới hạn", đánh hạng. Thu hồi đường dẫn khi khoá phòng làm ở task riêng tư (T-36).
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Bài thử với ván máy thật chỉ chạy được sau khi có ván với máy. Ở đây kiểm bằng sổ chỗ chơi.
+**Bàn giao cho task sau:** trạng thái phòng và sổ chỗ chơi cho tạo phòng, vào phòng, ván với máy, bạn bè; phòng, mã và đường dẫn mời cho vào phòng, riêng tư và giao diện.
+**Không thuộc task này:** vào phòng, ghế và Sẵn sàng (các task kế tiếp); đánh hạng; mã QR; giờ "không giới hạn". Thu hồi đường dẫn khi khoá phòng làm ở task kiểu phòng.
 
 ---
 

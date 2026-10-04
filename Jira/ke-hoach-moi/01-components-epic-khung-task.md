@@ -114,7 +114,7 @@ Xếp theo thứ tự làm: Sprint, rồi việc không cần gì hoặc chỉ c
 | `T-13` | Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright) | — | `QA & DevOps` | `T-01`, `T-08` | 1 |
 | `T-14` | Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng | 2 | `Frontend` | `T-02`, `T-08` | 2 |
 | `T-15` | Giao diện: phòng chờ và màn từ chối vào phòng | 2 | `Frontend` | `T-02`, `T-08` | 2 |
-| `T-16` | Chọn nơi chạy ứng dụng và dựng bản demo trên mạng | — | `QA & DevOps` | `T-01`, `T-07`, `T-08` | 2 |
+| `T-16` | Dựng môi trường demo: chạy cục bộ trước, Render làm dự phòng | — | `QA & DevOps` | `T-01`, `T-07`, `T-08` | 2 |
 | `T-17` | Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng | 2 | `Room & Social` | `T-04`, `T-07`, `T-10` | 2 |
 | `T-18` | Giao diện: bấm chọn quân và chấm gợi ý ô đi | 4 | `Frontend` | `T-09`, `T-11` | 2 |
 | `T-19` | Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) | 1 | `Authentication` | `T-12` | 2 |

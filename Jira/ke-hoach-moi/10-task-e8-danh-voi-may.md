@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
@@ -11,16 +11,11 @@ Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm t
 **Phải xong trước:** *Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước (T-09)*: nhận được hàm liệt kê nước hợp lệ và nhận biết chiếu trên thế cờ chuẩn; nhận được luật hợp lệ và kết quả chiếu hết, lặp thế, 120 nửa nước.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Thử nghiệm máy cờ sơ bộ: đo tốc độ và độ sâu suy nghĩ:*
 Trả lời: **một máy cờ đơn giản chạy ở tiến trình riêng có đạt thời gian suy nghĩ quy định cho ba cấp (Dễ, Trung bình, Khó) không?** Số đo sớm giúp biết có làm được cấp Khó hay không. Đây là đo sơ bộ, **chưa** thay phép đo đầy đủ về sau.
 
-*Phần 2 — Máy cờ: chương trình chạy riêng, ba cấp độ, tìm kiếm có cắt tỉa:*
 Làm chương trình **máy cờ** tự viết, chạy ở **tiến trình riêng**, nhận một thế cờ và cấp độ, trả về **nước tốt nhất trong thời gian cho phép**. Đây là phần thuật toán của máy; **không** phải tính năng gợi ý cho người chơi.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Thử nghiệm máy cờ sơ bộ: đo tốc độ và độ sâu suy nghĩ:*
 1. Dựng một máy cờ thử **chạy ở tiến trình riêng**, tìm nước theo kiểu "nghĩ dần từng độ sâu" (negamax kèm cắt tỉa), dùng luật cơ bản đã có.
 2. Đo ba cấp với **độ sâu mục tiêu 2, 4, 6** và **thời gian cho phép 300, 1000, 3000 mili giây**.
 3. Dùng một bộ thế cờ có nguồn rõ ràng (đầu ván, giữa ván, tàn cuộc); ghi cấu hình máy đo.
@@ -28,27 +23,20 @@ Làm chương trình **máy cờ** tự viết, chạy ở **tiến trình riên
 5. Thử khi hết thời gian giữa chừng: máy phải trả **nước tốt nhất đã tìm được** ở độ sâu hoàn tất gần nhất.
 6. Thử khi tiến trình bị tắt giữa lúc tìm: ghi lại kết quả.
 7. Viết báo cáo: **đạt / không đạt / chưa kết luận** cho từng cấp; số đo thật; hạn chế còn lại.
-
-*Phần 2 — Máy cờ: chương trình chạy riêng, ba cấp độ, tìm kiếm có cắt tỉa:*
-1. Dựng chương trình riêng, nhận việc từ máy chủ (thế cờ, lịch sử, cấp độ, thời gian tối đa, **mã tác vụ**) và gửi lại **tiến độ** và **kết quả** có mã tác vụ.
-2. Dùng **luật chung** của dự án để sinh và kiểm tra nước đi (không viết luật riêng).
-3. Thuật toán: tìm kiếm **sâu dần**, cắt tỉa, sắp xếp nước, lượng giá thế cờ; giữ kết quả của **độ sâu đã hoàn tất**.
-4. Ba cấp: độ sâu 2, 4, 6 với thời gian 300, 1.000, 3.000 ms; cấp Dễ và Trung bình có yếu tố ngẫu nhiên có kiểm soát; cấp Khó thêm bảng nhớ thế đã tính.
-5. **Tìm kiếm tĩnh:** khi đang bị chiếu phải xét **mọi nước thoát**, không được "dừng lại lấy điểm tĩnh"; hết nước đi thì luôn trả **điểm thua**.
-6. Gắn công cụ kiểm tra **từng nút** của phần tìm kiếm tĩnh và lưu vết cùng hạt giống ngẫu nhiên cho bài đo sau.
+8. Dựng chương trình riêng, nhận việc từ máy chủ (thế cờ, lịch sử, cấp độ, thời gian tối đa, **mã tác vụ**) và gửi lại **tiến độ** và **kết quả** có mã tác vụ.
+9. Dùng **luật chung** của dự án để sinh và kiểm tra nước đi (không viết luật riêng).
+10. Thuật toán: tìm kiếm **sâu dần**, cắt tỉa, sắp xếp nước, lượng giá thế cờ; giữ kết quả của **độ sâu đã hoàn tất**.
+11. Ba cấp: độ sâu 2, 4, 6 với thời gian 300, 1.000, 3.000 ms; cấp Dễ và Trung bình có yếu tố ngẫu nhiên có kiểm soát; cấp Khó thêm bảng nhớ thế đã tính.
+12. **Tìm kiếm tĩnh:** khi đang bị chiếu phải xét **mọi nước thoát**, không được "dừng lại lấy điểm tĩnh"; hết nước đi thì luôn trả **điểm thua**.
+13. Gắn công cụ kiểm tra **từng nút** của phần tìm kiếm tĩnh và lưu vết cùng hạt giống ngẫu nhiên cho bài đo sau.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Thử nghiệm máy cờ sơ bộ: đo tốc độ và độ sâu suy nghĩ:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Máy trả nước | Nước **luôn hợp lệ**, không tự chiếu tướng mình |
 | Hết thời gian giữa chừng | Trả nước ở độ sâu đã hoàn tất, ghi đúng độ sâu |
 | Tiến trình bị tắt | Báo lỗi hoặc không đạt; không coi là thành công |
 | Không đạt thời gian | Ghi số thật, **không hạ ngưỡng** |
-
-*Phần 2 — Máy cờ: chương trình chạy riêng, ba cấp độ, tìm kiếm có cắt tỉa:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Tìm trên cùng bộ thế (cấp ngẫu nhiên dùng hạt giống cố định) | Nước hợp lệ; thời gian và độ sâu thực tế được ghi |
 | Thế bị chiếu mà chỉ thoát được bằng nước không ăn quân | Chọn nước thoát, không đứng yên |
 | Thế chiếu hết hoặc hết nước ở độ sâu tận cùng | Điểm thua, không dùng lượng giá thường |
@@ -56,28 +44,24 @@ Làm chương trình **máy cờ** tự viết, chạy ở **tiến trình riên
 | Kiểm từng nút tìm kiếm tĩnh trên bộ thế bị chiếu | Không nút đang chiếu dùng điểm tĩnh làm cận dưới; xét cả nước thoát không ăn; hết nước trả thua |
 
 **Cách tự kiểm tra**
-*Phần 1 — Thử nghiệm máy cờ sơ bộ: đo tốc độ và độ sâu suy nghĩ:*
+Chuẩn bị: bộ thế mẫu và hạt giống cố định.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Chạy cùng bộ thế cho ba cấp | Có số đo thời gian và độ sâu thật cho từng cấp |
 | 2 | Kiểm tra mọi nước trả về bằng hàm luật cờ | Không có nước sai luật |
 | 3 | Buộc hết thời gian | Nhận nước của độ sâu hoàn tất |
 | 4 | Tắt tiến trình lúc đang tìm | Có kết quả lỗi, không treo |
+| 5 | Chạy ba cấp trên cùng bộ thế | Nước hợp lệ; thời gian, độ sâu được ghi thật |
+| 6 | Thế bị chiếu chỉ thoát bằng nước không ăn | Chọn nước thoát |
+| 7 | Thế chiếu hết, hết nước ở độ sâu cuối | Trả điểm thua |
+| 8 | Huỷ việc rồi nhận kết quả cũ | Mã tác vụ phân biệt được |
+| 9 | Chạy công cụ kiểm từng nút trên bộ thế bị chiếu | Không nút vi phạm |
 
-*Phần 2 — Máy cờ: chương trình chạy riêng, ba cấp độ, tìm kiếm có cắt tỉa:*
-Chuẩn bị: bộ thế mẫu và hạt giống cố định.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Chạy ba cấp trên cùng bộ thế | Nước hợp lệ; thời gian, độ sâu được ghi thật |
-| 2 | Thế bị chiếu chỉ thoát bằng nước không ăn | Chọn nước thoát |
-| 3 | Thế chiếu hết, hết nước ở độ sâu cuối | Trả điểm thua |
-| 4 | Huỷ việc rồi nhận kết quả cũ | Mã tác vụ phân biệt được |
-| 5 | Chạy công cụ kiểm từng nút trên bộ thế bị chiếu | Không nút vi phạm |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) báo cáo đủ số đo và cách làm lại. (Phần 2) cả 5 dòng đạt; ghi số đo ban đầu.
-**Khi nào task xong:** (Phần 1) báo cáo hoàn tất, kể cả khi cấp Khó chưa đạt. **Chưa tính** phép đo đầy đủ và độ ổn định (làm ở task đo máy cờ cuối). (Phần 2) người kiểm thử và người xem lại đồng ý. **Kết luận máy đạt tiêu chuẩn chất lượng (GATE-AI) chỉ có sau bài đo đầy đủ ở T-56**; ở đây chỉ báo số đo ban đầu.
-**Bàn giao cho task sau:** (Phần 1) số đo sơ bộ cho task xây máy cờ chính thức. (Phần 2) máy cờ chạy riêng cho ván với máy, xử lý sự cố, đo đầy đủ.
-**Không thuộc task này:** (Phần 1) giao diện chơi với máy, luật lặp thế/120 nửa nước, đo sức mạnh đầy đủ. (Phần 2) ván với máy ở máy chủ, giao diện, gợi ý nước, đi lại.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; báo cáo đủ số đo và cách làm lại; ghi số đo ban đầu.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Báo cáo hoàn tất, kể cả khi cấp Khó chưa đạt. **Chưa tính** phép đo đầy đủ và độ ổn định (làm ở task đo máy cờ cuối). **Kết luận máy đạt tiêu chuẩn chất lượng (GATE-AI) chỉ có sau bài đo đầy đủ ở T-56**. Ở đây chỉ báo số đo ban đầu.
+**Bàn giao cho task sau:** số đo sơ bộ cho task xây máy cờ chính thức; máy cờ chạy riêng cho ván với máy, xử lý sự cố, đo đầy đủ.
+**Không thuộc task này:** giao diện chơi với máy; luật lặp thế và 120 nửa nước; đo sức mạnh đầy đủ; ván với máy ở máy chủ; gợi ý nước; đi lại.
 
 ---
 
@@ -131,32 +115,24 @@ Chuẩn bị: dữ liệu giả cho các lỗi, kết quả, đường dẫn `/a
 **Phải xong trước:** *Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng (T-17)*: nhận được sổ chỗ chơi (ghế phòng và ván với máy) có khoá theo người. *Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi (T-28)*: nhận được cách xử lý nước đi lần lượt và luật dùng lại được. *Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ (T-31)*: nhận được tiến độ, kết quả và tiến trình riêng.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: ván với máy (chọn cấp, chọn phe, một chỗ chơi, vào lại trong 30 phút):*
 Quản lý **một ván với máy** trong bộ nhớ máy chủ, theo quy tắc "mỗi người một chỗ chơi". Người chơi chọn phe và cấp, và **vào lại đúng ván** nếu mất kết nối.
 
-*Phần 2 — Máy chủ: sự cố máy cờ (bận, treo, Bỏ dở, Thử lại):*
 Phân biệt **máy chỉ đang bận** với **máy bị hỏng**, và trả đúng loại "Thử lại". Kết quả máy tìm xong **muộn** không được áp dụng vào ván mới.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: ván với máy (chọn cấp, chọn phe, một chỗ chơi, vào lại trong 30 phút):*
 1. **Bắt đầu ván:** chiếm chỗ chơi dưới khoá theo người (nếu đã có chỗ khác thì từ chối); **bốc phe ngẫu nhiên ở máy chủ**; nếu người chơi cầm Đen, **máy (Đỏ) đi trước**.
 2. Ván này lưu **trong bộ nhớ**, tách riêng khỏi ván online; dùng luật chung; mỗi nước máy kiểm tra mã ván, phiên bản và mã tác vụ **trước khi áp dụng**.
 3. Sau mỗi nước (của người hay của máy), xét kết thúc theo thứ tự: chiếu hết/hết nước → chiếu liên tục → lặp thế → 120 nửa nước; hoặc **đầu hàng**. **Không** có xin hoà, **không** có hết giờ của người chơi.
 4. Khi kết thúc: chốt kết quả **một lần**, huỷ việc tìm nước, chặn nước và kết quả đến muộn, gửi trạng thái kết quả cho hộp thoại. Kết thúc **không** đồng nghĩa người chơi đã rời chỗ; **rời chỗ** mới giải phóng đúng vị trí.
 5. **Mất mạng:** giữ ván **30 phút** (vào lại cùng đường dẫn thì thấy đúng thế cờ; quá 30 phút thành "Bỏ dở"). **Chủ động rời hoặc đăng xuất đã xác nhận** thì **đầu hàng ngay**, huỷ tìm, giải phóng chỗ.
 6. Báo cho các phần khác (danh sách bạn) việc **chiếm và giải phóng** chỗ chơi; **không** báo "rảnh" khi chỗ chưa được giải phóng.
-
-*Phần 2 — Máy chủ: sự cố máy cờ (bận, treo, Bỏ dở, Thử lại):*
-1. **Hàng đợi:** nếu mọi tiến trình máy đang bận, chờ tối đa **3 giây**; quá thì trả "máy bận" **mà không đi lại nước của người chơi**.
-2. **Giới hạn cứng:** thời gian nghĩ của cấp cộng thêm 2 giây; quá thì dừng tiến trình; **nếu đã có tiến độ thì dùng nước tốt nhất tìm được**, chưa có thì báo lỗi.
-3. **Sập hoặc không trả lời quá 10 giây:** ván thành **Bỏ dở**, báo "Máy cờ gặp sự cố".
-4. **Thử lại:** sau "bận" thì chỉ yêu cầu máy **tìm lại nước** (cùng ván, cùng thế); sau "Bỏ dở" thì tạo **ván mới** cùng cấp, cùng phe đã bốc. Bấm trùng chỉ có **một** tác dụng.
-5. Kết quả đến muộn sau khi huỷ, rời hoặc tạo ván mới bị **bỏ**.
+7. **Hàng đợi:** nếu mọi tiến trình máy đang bận, chờ tối đa **3 giây**; quá thì trả "máy bận" **mà không đi lại nước của người chơi**.
+8. **Giới hạn cứng:** thời gian nghĩ của cấp cộng thêm 2 giây; quá thì dừng tiến trình; **nếu đã có tiến độ thì dùng nước tốt nhất tìm được**, chưa có thì báo lỗi.
+9. **Sập hoặc không trả lời quá 10 giây:** ván thành **Bỏ dở**, báo "Máy cờ gặp sự cố".
+10. **Thử lại:** sau "bận" thì chỉ yêu cầu máy **tìm lại nước** (cùng ván, cùng thế); sau "Bỏ dở" thì tạo **ván mới** cùng cấp, cùng phe đã bốc. Bấm trùng chỉ có **một** tác dụng.
+11. Kết quả đến muộn sau khi huỷ, rời hoặc tạo ván mới bị **bỏ**.
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: ván với máy (chọn cấp, chọn phe, một chỗ chơi, vào lại trong 30 phút):*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Ba cấp với phe Đỏ / Đen / Ngẫu nhiên | Phe lưu đúng; máy Đỏ đi trước khi người chơi cầm Đen |
@@ -166,18 +142,14 @@ Phân biệt **máy chỉ đang bận** với **máy bị hỏng**, và trả đ
 | Cùng người vào ghế phòng và ván máy đồng thời; sau đó rời ván đã xác nhận | Chỉ một chỗ; rời giải phóng đúng, không xoá chỗ khác |
 | Thế gây chiếu hết, hết nước, chiếu liên tục, lặp, 120 nửa nước; nước cuối của người và của máy | Đúng luật, hết nước là thua, chiếu hết ưu tiên hơn hoà; kết quả chốt một lần |
 | Sau khi kết thúc: gửi nước, kết quả của tác vụ cũ, đầu hàng lặp | Không có nước hay việc tìm thêm; kết quả không bị ghi đè; gửi lại không nhân đôi kết thúc |
-
-*Phần 2 — Máy chủ: sự cố máy cờ (bận, treo, Bỏ dở, Thử lại):*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Mọi tiến trình bận quá 3 giây rồi Thử lại | Cùng ván, cùng thế; chỉ xếp lại việc tìm |
 | Vượt giới hạn cứng, có và không có tiến độ | Có: dùng nước hoàn tất gần nhất; không: Bỏ dở |
 | Giết tiến trình rồi bấm Thử lại nhiều lần | Một ván mới, đúng phe đã bốc |
 | Kết quả đến sau khi huỷ, rời, hoặc tạo ván mới | Bị bỏ, thế không đổi |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: ván với máy (chọn cấp, chọn phe, một chỗ chơi, vào lại trong 30 phút):*
-Chuẩn bị: máy chủ và máy cờ chạy thử.
+Chuẩn bị: máy chủ và máy cờ chạy thử; có thể làm treo hoặc giết tiến trình máy; đồng hồ điều khiển được.
+
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Chạy ba cấp với ba lựa chọn phe | Phe và lượt đúng |
@@ -187,20 +159,15 @@ Chuẩn bị: máy chủ và máy cờ chạy thử.
 | 5 | Rời ván đã xác nhận | Giải phóng đúng chỗ |
 | 6 | Các thế kết thúc theo luật, nước cuối của người và máy | Đúng luật và thứ tự ưu tiên |
 | 7 | Sau kết thúc, gửi nước, kết quả cũ, đầu hàng lặp | Không thay đổi, không nhân đôi |
+| 8 | Giữ mọi tiến trình bận quá 3 giây, bấm Thử lại | Cùng ván, chỉ xếp lại việc tìm |
+| 9 | Cho vượt giới hạn cứng, có và không có tiến độ | Dùng nước có sẵn / Bỏ dở |
+| 10 | Giết tiến trình, bấm Thử lại trùng | Một ván mới, đúng phe |
+| 11 | Gửi kết quả muộn sau huỷ, rời, ván mới | Bị bỏ |
 
-*Phần 2 — Máy chủ: sự cố máy cờ (bận, treo, Bỏ dở, Thử lại):*
-Chuẩn bị: có thể làm treo hoặc giết tiến trình máy; đồng hồ điều khiển được.
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Giữ mọi tiến trình bận quá 3 giây, bấm Thử lại | Cùng ván, chỉ xếp lại việc tìm |
-| 2 | Cho vượt giới hạn cứng, có và không có tiến độ | Dùng nước có sẵn / Bỏ dở |
-| 3 | Giết tiến trình, bấm Thử lại trùng | Một ván mới, đúng phe |
-| 4 | Gửi kết quả muộn sau huỷ, rời, ván mới | Bị bỏ |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 7 dòng đạt. (Phần 2) cả 4 dòng đạt; không có nước trùng, ván trùng hay nước trái luật từ máy.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Không lưu ván xuống cơ sở dữ liệu ở giai đoạn này; mất mạng không bị coi là chủ động đầu hàng. (Phần 2) người kiểm thử và người xem lại đồng ý.
-**Bàn giao cho task sau:** (Phần 1) ván với máy cho xử lý sự cố, giao diện, tích hợp, bạn bè (trạng thái Đang đấu), đăng xuất giữa ván. (Phần 2) xử lý sự cố cho tích hợp ván với máy và đo máy cờ đầy đủ.
-**Không thuộc task này:** (Phần 1) lưu lịch sử bền, đi lại, đồng hồ người chơi, giao diện. (Phần 2) tự hạ cấp máy, hồi sinh ván Bỏ dở, giao diện.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; không có nước trùng, ván trùng hay nước trái luật từ máy.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Không lưu ván xuống cơ sở dữ liệu ở giai đoạn này. Mất mạng không bị coi là chủ động đầu hàng.
+**Bàn giao cho task sau:** ván với máy cho xử lý sự cố, giao diện, tích hợp, bạn bè (trạng thái Đang đấu), đăng xuất giữa ván; xử lý sự cố cho tích hợp ván với máy và đo máy cờ đầy đủ.
+**Không thuộc task này:** lưu lịch sử bền; đi lại; đồng hồ người chơi; giao diện; tự hạ cấp máy; hồi sinh ván Bỏ dở.
 
 ---
 

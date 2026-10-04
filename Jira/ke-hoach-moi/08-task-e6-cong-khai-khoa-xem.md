@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Task gộp nhiều phần được ghi "Phần 1, Phần 2…". Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
+Mã task `T-01` đến `T-62` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
@@ -90,32 +90,24 @@ Chuẩn bị: dữ liệu mẫu nhiều phòng, đồng hồ giả.
 **Phải xong trước:** *Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván (T-25)*: nhận được ghế, Sẵn sàng và việc huỷ đếm khi đổi người. *Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh (T-36)*: nhận được kiểu phòng, mã, đường dẫn và quy tắc giữ chỗ.
 
 **Mục tiêu**
-Task này gồm **2 phần** làm liền nhau vì cùng một mục đích và nên do cùng một người hoặc một cặp làm.
-
-*Phần 1 — Máy chủ: đổi chỗ giữa ghế và người xem, mời xuống ghế:*
 Cho người chơi và người xem **đổi chỗ** theo luật và theo sức chứa. Mỗi lần đổi **xoá trạng thái "Sẵn sàng"** và báo cho các phần khác biết người đó đổi quyền (để chat và camera/mic đổi theo).
 
-*Phần 2 — Máy chủ: đuổi người xem, chủ phòng rời, chuyển quyền chủ, đóng phòng:*
 Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời đi**, **chuyển quyền chủ phòng**, **đóng phòng**, và trở về phòng chờ sau ván. Người bị đuổi phải **mất mọi quyền ngay** và không vào lại được.
 
 **Việc cần làm (làm lần lượt)**
-*Phần 1 — Máy chủ: đổi chỗ giữa ghế và người xem, mời xuống ghế:*
 1. Chỉ cho đổi khi phòng ở **Đang chờ** hoặc **Đã kết thúc** (không đổi giữa ván).
 2. **Người chơi tự xuống xem:** chỉ khi còn chỗ cho người xem.
 3. **Chủ phòng chuyển đối thủ xuống xem**, hoặc **mời một người xem lên ghế trống**.
 4. Người xem **không tự ngồi** vào ghế; chủ phòng **không tự xuống** làm người xem.
 5. Mỗi lần đổi cập nhật sổ chỗ, thời điểm ngồi ghế và xoá "Sẵn sàng" của cả hai; phát thông báo quyền mới **sau khi** ghi xong.
 6. Sau khi ván kết thúc, đổi thành phần ghế thì phòng về "Đang chờ".
-
-*Phần 2 — Máy chủ: đuổi người xem, chủ phòng rời, chuyển quyền chủ, đóng phòng:*
-1. **Đuổi người xem:** do một trong hai người chơi thực hiện, có xác nhận. Người bị đuổi bị ngắt khỏi phòng, **bị chặn** vào lại, mã hay đường dẫn cũ cũng vô hiệu với họ. Người xem **không** có quyền đuổi.
-2. **Chủ phòng rời:** nếu còn người ngồi ghế thì **quyền chủ phòng chuyển** cho người đó; nếu không còn ai ngồi ghế thì **đóng phòng** dù còn người xem.
-3. **Rời giữa ván:** chỉ hoàn tất việc rời khi phần ván đã **xác nhận xử thua**; task này không tự tính kết quả ván.
-4. **Sau khi ván kết thúc:** phòng ở "Đã kết thúc" nếu không ai làm gì thì **đóng sau 10 phút**; ai đổi thành phần ghế thì về "Đang chờ" (và huỷ đồng hồ 10 phút cũ). Người chơi giữ ghế **60 giây** khi mất mạng.
-5. Mỗi khi đuổi hay đóng, **phát thông báo** để chat và camera/mic thu quyền (phần thu thật làm ở Epic khác).
+7. **Đuổi người xem:** do một trong hai người chơi thực hiện, có xác nhận. Người bị đuổi bị ngắt khỏi phòng, **bị chặn** vào lại, mã hay đường dẫn cũ cũng vô hiệu với họ. Người xem **không** có quyền đuổi.
+8. **Chủ phòng rời:** nếu còn người ngồi ghế thì **quyền chủ phòng chuyển** cho người đó; nếu không còn ai ngồi ghế thì **đóng phòng** dù còn người xem.
+9. **Rời giữa ván:** chỉ hoàn tất việc rời khi phần ván đã **xác nhận xử thua**; task này không tự tính kết quả ván.
+10. **Sau khi ván kết thúc:** phòng ở "Đã kết thúc" nếu không ai làm gì thì **đóng sau 10 phút**; ai đổi thành phần ghế thì về "Đang chờ" (và huỷ đồng hồ 10 phút cũ). Người chơi giữ ghế **60 giây** khi mất mạng.
+11. Mỗi khi đuổi hay đóng, **phát thông báo** để chat và camera/mic thu quyền (phần thu thật làm ở Epic khác).
 
 **Các trường hợp lỗi và kết quả mong đợi**
-*Phần 1 — Máy chủ: đổi chỗ giữa ghế và người xem, mời xuống ghế:*
 | Tình huống | Kết quả mong đợi |
 |---|---|
 | Người chơi xuống xem khi số người xem là 0 hoặc đầy / còn chỗ | Từ chối / nhận |
@@ -123,17 +115,12 @@ Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời 
 | Chủ phòng tự xuống hoặc người xem tự ngồi | Từ chối ở máy chủ |
 | Đổi trong ván | Từ chối |
 | Đổi lúc "Đã kết thúc", gửi lặp hoặc cùng lúc | Về "Đang chờ", xoá sẵn sàng hai bên, không vượt sức chứa |
-
-*Phần 2 — Máy chủ: đuổi người xem, chủ phòng rời, chuyển quyền chủ, đóng phòng:*
-| Tình huống | Kết quả mong đợi |
-|---|---|
 | Người chơi đuổi người xem; người bị đuổi vào lại | Bị ngắt và chặn; người xem tự đuổi thì từ chối |
 | Chủ phòng rời khi còn / không còn ai ngồi ghế | Chuyển quyền / đóng phòng |
 | Rời giữa ván khi phần ván báo thành công / lỗi / không rõ | Chỉ khi xác nhận mới rời; không xử thua hai lần, không báo thành công khi chưa rõ |
 | Phòng kết thúc, đổi ghế trước 10 phút / không ai làm gì | Đồng hồ cũ vô hiệu / phòng đóng |
 
 **Cách tự kiểm tra**
-*Phần 1 — Máy chủ: đổi chỗ giữa ghế và người xem, mời xuống ghế:*
 | # | Việc làm | Phải thấy |
 |---|---|---|
 | 1 | Người chơi xuống xem khi 0 / đầy / còn chỗ | Chỉ trường hợp còn chỗ được nhận |
@@ -141,19 +128,15 @@ Xử lý trọn vòng đời phòng: **đuổi người xem**, **người rời 
 | 3 | Chủ phòng tự xuống; người xem tự ngồi | Từ chối |
 | 4 | Thử đổi giữa ván | Từ chối |
 | 5 | Đổi lúc phòng đã kết thúc, gửi hai yêu cầu cùng lúc | Về "Đang chờ", sẵn sàng xoá, không vượt trần |
+| 6 | Người chơi đuổi người xem; người này thử vào lại; người xem tự đuổi | Bị chặn; người xem không có quyền |
+| 7 | Chủ phòng rời khi còn ghế khác và khi không | Chuyển chủ / đóng, dù còn người xem |
+| 8 | Rời giữa ván với "kết quả giả" thành công, lỗi, mất phản hồi | Chỉ rời khi xác nhận; không báo giả |
+| 9 | Phòng kết thúc rồi đổi ghế trước 10 phút; để quá 10 phút | Đồng hồ cũ không đóng phòng; quá hạn đóng |
 
-*Phần 2 — Máy chủ: đuổi người xem, chủ phòng rời, chuyển quyền chủ, đóng phòng:*
-| # | Việc làm | Phải thấy |
-|---|---|---|
-| 1 | Người chơi đuổi người xem; người này thử vào lại; người xem tự đuổi | Bị chặn; người xem không có quyền |
-| 2 | Chủ phòng rời khi còn ghế khác và khi không | Chuyển chủ / đóng, dù còn người xem |
-| 3 | Rời giữa ván với "kết quả giả" thành công, lỗi, mất phản hồi | Chỉ rời khi xác nhận; không báo giả |
-| 4 | Phòng kết thúc rồi đổi ghế trước 10 phút; để quá 10 phút | Đồng hồ cũ không đóng phòng; quá hạn đóng |
-
-**Khi nào chuyển cho người kiểm thử:** (Phần 1) cả 5 dòng đạt. (Phần 2) cả 4 dòng đạt.
-**Khi nào task xong:** (Phần 1) người kiểm thử và người xem lại đồng ý. Việc đổi quyền camera/mic thật làm ở Epic Chat, camera và micro; ở đây chỉ chứng minh đã phát thông báo. (Phần 2) người kiểm thử và người xem lại đồng ý. Việc thu camera/mic, dọn chat thật và xử thua thật do các task khác kiểm khi tích hợp.
-**Bàn giao cho task sau:** (Phần 1) chức năng đổi chỗ và thông báo quyền mới cho riêng tư, đuổi, chat, camera/mic. (Phần 2) đuổi, chủ phòng, đóng phòng và thông báo quyền, cho giao diện, chat, camera/mic, ván.
-**Không thuộc task này:** (Phần 1) xin đổi bên, hoán đổi trực tiếp hai người, giao diện. (Phần 2) tái đấu, tự ghi kết quả ván, giao diện.
+**Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
+**Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Việc đổi quyền camera/mic thật làm ở Epic Chat, camera và micro. Ở đây chỉ chứng minh đã phát thông báo. Việc thu camera/mic, dọn chat thật và xử thua thật do các task khác kiểm khi tích hợp.
+**Bàn giao cho task sau:** chức năng đổi chỗ và thông báo quyền mới cho riêng tư, đuổi, chat, camera/mic; đuổi, chủ phòng, đóng phòng và thông báo quyền, cho giao diện, chat, camera/mic, ván.
+**Không thuộc task này:** xin đổi bên; hoán đổi trực tiếp hai người; tái đấu; tự ghi kết quả ván; giao diện.
 
 ---
 

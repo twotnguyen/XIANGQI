@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
-**Cách đọc:** mỗi Story là một việc người dùng muốn làm. Story gộp nhiều việc nhỏ cùng một trải nghiệm được ghi "Phần 1, Phần 2…". Phần "Các việc nhỏ làm nên Story" liệt kê các Task được **liên kết** với Story (quan hệ "liên quan"; Task nằm dưới Epic).
+**Cách đọc:** mỗi Story là một việc người dùng muốn làm. Mỗi Story gộp các việc nhỏ cùng một trải nghiệm người dùng thành một mạch liền. Phần "Các việc nhỏ làm nên Story" liệt kê các Task được **liên kết** với Story (quan hệ "liên quan"; Task nằm dưới Epic).
 
 ---
 
@@ -11,82 +11,41 @@
 
 **Câu chuyện:** Là người mới, tôi muốn **đăng ký tài khoản qua ba bước** (tên đăng nhập và mật khẩu, email, mã OTP) để dùng được ứng dụng.
 
-**Gồm những việc người dùng làm**
-1. Đăng ký bước 1: chọn tên đăng nhập và mật khẩu
-2. Đăng ký bước 2: nhập email và nhận mã OTP
-3. Đăng ký bước 3: nhập mã OTP và hoàn tất tài khoản
-
-**Điều kiện để dùng:**
-- *Phần 1:* chưa đăng nhập; đang ở màn hình đăng ký.
-- *Phần 2:* đã qua bước 1.
-- *Phần 3:* đã nhận mã ở bước 2.
-
-**Không thuộc Story này:**
-- *Phần 1:* gửi mã OTP, tạo tài khoản, đổi tên đăng nhập sau này.
-- *Phần 2:* nhập mã, đăng nhập bằng Google, quên mật khẩu.
-- *Phần 3:* đăng nhập thường ngày (Story 2), đổi email.
+**Điều kiện để dùng:** chưa đăng nhập; đang ở màn hình đăng ký.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-*Phần 1:*
-1. Người dùng gõ tên đăng nhập. Sau khi ngừng gõ khoảng 0,3 giây, hệ thống kiểm tra và báo "dùng được", "đã có người dùng" hoặc "không hợp lệ".
-2. Người dùng gõ mật khẩu và gõ lại mật khẩu ở ô xác nhận.
-3. Khi mọi thứ hợp lệ, nút **Tiếp tục** sáng; bấm thì sang bước 2.
-*Phần 2:*
-1. Người dùng nhập email, bấm gửi mã.
-2. Hệ thống gửi **mã OTP 6 chữ số** tới email và chuyển sang bước 3.
-3. Nếu chưa nhận được thư, người dùng bấm **Gửi lại mã** sau khi hết đếm ngược.
-*Phần 3:*
-1. Người dùng nhập mã 6 số trong vòng 3 phút.
-2. Hệ thống kiểm tra mã, kiểm lại tên đăng nhập, tạo tài khoản, đặt tên hiển thị bằng tên đăng nhập.
-3. Người dùng được tự đăng nhập và vào Sảnh.
+1. **Chọn tên đăng nhập và mật khẩu.** Người dùng gõ tên đăng nhập; sau khi ngừng gõ khoảng 0,3 giây, hệ thống báo "dùng được", "đã có người dùng" hoặc "không hợp lệ". Người dùng gõ mật khẩu và gõ lại ở ô xác nhận. Khi cả hai hợp lệ, nút **Tiếp tục** sáng; bấm thì sang bước tiếp theo.
+2. **Nhập email.** Người dùng nhập email và bấm gửi mã. Hệ thống gửi **mã OTP 6 chữ số** tới email đó rồi chuyển sang bước nhập mã. Nếu chưa nhận được thư, người dùng bấm **Gửi lại mã** khi hết đếm ngược.
+3. **Nhập mã OTP.** Người dùng nhập mã 6 số trong vòng 3 phút. Hệ thống kiểm tra mã, kiểm lại tên đăng nhập, tạo tài khoản (tên hiển thị mặc định bằng tên đăng nhập), tự đăng nhập và đưa vào Sảnh.
 
 **Các quy tắc**
-*Phần 1:*
-- Tên đăng nhập 3 đến 20 ký tự, chỉ gồm chữ không dấu, chữ số và dấu gạch dưới. Kiểm trùng **không phân biệt hoa thường** ("Twot" và "twot" là một).
-- Mật khẩu từ 8 ký tự trở lên; ô xác nhận phải giống.
-- Ở bước này **chưa tạo tài khoản nào** và **chưa giữ chỗ** tên đăng nhập.
-*Phần 2:*
-- Nếu email **đã có tài khoản hoàn tất** thì báo "Email này đã được đăng ký" và **không gửi** mã.
-- Email mới, hoặc chỉ có bản đăng ký dở trước đó, thì được gửi mã.
-- Nút **Gửi lại mã** mờ trong **60 giây** sau mỗi lần gửi, có đếm ngược và chú thích lý do.
-- Hai yêu cầu gửi mã cho cùng một email cùng lúc phải xử lý **lần lượt**.
-*Phần 3:*
-- Mã hết hạn sau **180 giây**; hết hạn thì phải gửi lại.
-- Nhập sai nhiều lần thì bị chặn (mức giới hạn của dịch vụ xác thực chỉ **gần đúng**, không đếm chính xác từng mã), phải chờ hoặc gửi lại mã.
-- **Tài khoản chưa hoàn tất đăng ký thì không được dùng ứng dụng.** Nếu quy trình bị dừng giữa chừng sau khi đã ghi hồ sơ, tài khoản vẫn bị chặn cho đến khi được phục hồi; hồ sơ đã hoàn tất không bao giờ bị xoá nhầm.
-- Tài khoản đăng ký dở bị dọn định kỳ (mỗi 5 phút, tài khoản chưa hoàn tất quá 60 phút bị xoá).
-- Việc gửi lại, hoàn tất và dọn dẹp cùng một người được xử lý **lần lượt**.
+- Tên đăng nhập 3 đến 20 ký tự, chỉ gồm chữ không dấu, chữ số và dấu gạch dưới; kiểm trùng **không phân biệt hoa thường** ("Twot" và "twot" là một). Mật khẩu từ 8 ký tự trở lên và ô xác nhận phải giống.
+- Hai bước đầu **chưa tạo tài khoản nào** và **chưa giữ chỗ** tên đăng nhập; tên báo "dùng được" ở bước 1 vẫn được kiểm lại ở bước cuối vì người khác có thể lấy mất.
+- Email đã có tài khoản hoàn tất thì báo "Email này đã được đăng ký" và **không gửi** mã. Email mới, hoặc chỉ có bản đăng ký dở trước đó, thì được gửi mã.
+- Nút **Gửi lại mã** mờ trong **60 giây** sau mỗi lần gửi, có đếm ngược và chú thích lý do. Mã OTP hết hạn sau **180 giây**.
+- Nhập sai nhiều lần thì bị chặn (mức giới hạn của dịch vụ xác thực chỉ **gần đúng**, không đếm chính xác từng mã); người dùng phải chờ hoặc gửi lại mã.
+- **Tài khoản chưa hoàn tất đăng ký thì không được dùng ứng dụng.** Nếu quy trình bị dừng giữa chừng sau khi đã ghi hồ sơ, tài khoản vẫn bị chặn cho đến khi được phục hồi; tài khoản đã hoàn tất không bao giờ bị xoá nhầm.
+- Tài khoản đăng ký dở bị dọn định kỳ (mỗi 5 phút; chưa hoàn tất quá 60 phút thì bị xoá). Việc gửi lại, hoàn tất và dọn dẹp của cùng một người được xử lý **lần lượt**.
 
 **Khi có lỗi**
-*Phần 1:*
-- Tên đã có người dùng hoặc không hợp lệ: báo ngay tại ô, không cho tiếp tục.
+- Tên đã có người dùng hoặc không hợp lệ: báo ngay tại ô, không cho tiếp tục. Máy chủ lỗi khi kiểm tên: báo lỗi, **không** báo "dùng được" giả.
 - Mật khẩu dưới 8 ký tự hoặc hai ô khác nhau: báo lỗi ở ô, nút Tiếp tục mờ.
-- Máy chủ lỗi khi kiểm tên: báo lỗi, **không** báo "dùng được" giả.
-*Phần 2:*
-- Email sai dạng: báo ngay, không gửi.
-- Dịch vụ gửi thư hết hạn mức hoặc lỗi: báo lỗi thật, **không** báo "đã gửi".
-*Phần 3:*
-- Mã sai: báo sai. Mã hết hạn: báo hết hạn, mời gửi lại.
-- Tên đăng nhập vừa bị người khác lấy trong lúc chờ: báo lỗi và **quay về bước 1**.
-- Dừng đột ngột: tài khoản dở không dùng được; gửi lại cùng email thì dùng lại bản dở; không để kẹt email.
+- Email sai dạng: báo ngay, không gửi. Dịch vụ gửi thư hết hạn mức hoặc lỗi: báo lỗi thật, **không** báo "đã gửi".
+- Mã sai: báo sai. Mã hết hạn: báo hết hạn và mời gửi lại.
+- Tên đăng nhập vừa bị người khác lấy trong lúc chờ nhập mã: báo lỗi và **quay về bước chọn tên**.
+- Quy trình dừng đột ngột: tài khoản dở không dùng được; gửi lại cùng email thì dùng lại bản dở; không để kẹt email.
 
 **Điều kiện chấp nhận**
-*Phần 1:*
-1. Tên 3 và 20 ký tự hợp lệ; 2 và 21 ký tự, có dấu cách hay dấu tiếng Việt thì báo không hợp lệ.
-2. Tên chỉ khác hoa thường với tên đã có thì báo trùng và không cho tiếp tục.
-3. Mật khẩu sai quy tắc thì không sang được bước 2.
-4. Bỏ dở ở bước này thì không có bản ghi nào trong hệ thống.
-*Phần 2:*
-1. Email đã đăng ký thì không có thư nào được gửi và có thông báo đúng.
-2. Email hợp lệ thì thư mã 6 chữ số đến hộp thư và màn hình sang bước 3.
-3. Gửi lại sớm hơn 60 giây bị từ chối cả ở giao diện lẫn ở máy chủ.
-4. Dịch vụ thư từ chối thì người dùng thấy lỗi thật.
-*Phần 3:*
-1. Nhập đúng mã thì có đúng một tài khoản hoàn tất, tên hiển thị = tên đăng nhập, đã đăng nhập và đang ở Sảnh.
-2. Mã quá 180 giây hoặc sai thì không có tài khoản dùng được.
-3. Bỏ dở trước khi xác minh thì không có hồ sơ dùng được và tên đăng nhập không bị giữ.
-4. Hoàn tất và dọn dẹp chạy cùng lúc không xoá tài khoản vừa hoàn tất.
-5. Người đã xác thực nhưng chưa hoàn tất, hoặc cố đổi email bằng cách gọi thẳng hệ thống đăng nhập, đều bị chặn.
+1. Tên 3 và 20 ký tự hợp lệ; 2 và 21 ký tự, có dấu cách hay dấu tiếng Việt thì báo không hợp lệ. Tên chỉ khác hoa thường với tên đã có thì báo trùng và không cho tiếp tục.
+2. Mật khẩu sai quy tắc thì không sang được bước sau. Bỏ dở ở hai bước đầu thì không có bản ghi nào trong hệ thống.
+3. Email đã đăng ký thì không có thư nào được gửi và có thông báo đúng; email hợp lệ thì thư mã 6 chữ số đến hộp thư.
+4. Gửi lại sớm hơn 60 giây bị từ chối cả ở giao diện lẫn ở máy chủ; dịch vụ thư từ chối thì người dùng thấy lỗi thật.
+5. Nhập đúng mã thì có đúng một tài khoản hoàn tất, tên hiển thị = tên đăng nhập, đã đăng nhập và đang ở Sảnh. Mã quá 180 giây hoặc sai thì không có tài khoản dùng được.
+6. Bỏ dở trước khi xác minh thì không có hồ sơ dùng được và tên đăng nhập không bị giữ.
+7. Hoàn tất và dọn dẹp chạy cùng lúc không xoá tài khoản vừa hoàn tất.
+8. Người có đăng nhập hợp lệ nhưng chưa hoàn tất đăng ký, hoặc cố đổi email bằng cách gọi thẳng hệ thống đăng nhập, đều bị chặn.
+
+**Không thuộc Story này:** đăng nhập thường ngày (Story 2); quên mật khẩu; đăng nhập bằng Google; đổi tên đăng nhập hoặc email sau này.
 
 **Các việc nhỏ làm nên Story:** T-03 (Cấu hình Supabase gửi mã OTP đăng ký); T-12 (Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)); T-19 (Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)); T-23 (Thử nghiệm OTP thật; chặn người chưa hoàn tất đăng ký và chặn đổi email); T-24 (Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất); T-27 (Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ); T-35 (Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở); T-60 (Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10); T-62 (Chuẩn bị demo, sửa lỗi cuối, kiểm lại và bàn giao bằng chứng).
 
@@ -160,25 +119,32 @@
 ### Story 4 — Giao diện nhất quán: đủ 5 trạng thái, dùng được trên điện thoại, trợ năng, tính năng chưa làm
 **Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án)
 
-**Câu chuyện:** Là người dùng, tôi muốn **mọi màn hình trông và hoạt động thống nhất**: luôn biết đang tải, trống, lỗi hay bị khoá; dùng được trên điện thoại và bằng bàn phím; và không bấm nhầm vào chức năng chưa làm.
+**Câu chuyện:** Là người dùng, tôi muốn **mọi màn hình trông và hoạt động thống nhất**: luôn biết ứng dụng đang tải, trống, lỗi hay bị khoá; dùng được trên điện thoại và bằng bàn phím; và không bấm nhầm vào chức năng chưa làm.
 
-**Gồm những việc người dùng làm**
-1. Đủ 5 trạng thái cho mọi màn hình
-2. Dùng được trên màn hình nhỏ và cảm ứng
-3. Trợ năng
-4. Tính năng chưa làm hiển thị đúng quy tắc
+**Điều kiện để dùng:** mọi màn hình và khung dữ liệu của giai đoạn 1.
 
-**Quy tắc:**
-- *Phần 1:* mỗi màn hình và khung dữ liệu có đủ **Thành công; Đang tải** (khung xương, không để trắng, không giật bố cục); **Trống** (giải thích và nút hành động); **Lỗi** (tiếng Việt dễ hiểu, nút "Thử lại"); **Bị khoá** (luôn có chú thích lý do).
-- *Phần 2:* không cuộn ngang; bàn cờ chơi được bằng cảm ứng; vùng chạm tối thiểu 44 px; camera và chat có thể thu thành thẻ; kiểm ở 360×800, 390×844, 1366×768, 1920×1080.
-- *Phần 3:* đạt WCAG 2.1 AA: tương phản chữ thường ≥ 4,5:1, chữ lớn và thành phần ≥ 3:1; điều khiển bằng bàn phím có viền focus; nhãn cho nút chỉ có biểu tượng; "giảm chuyển động" tắt hiệu ứng; thông báo quan trọng dùng vùng đọc tự động, không đọc từng giây của đếm lùi; **không truyền thông tin chỉ bằng màu**.
-- *Phần 4:* lối vào chính của tính năng chưa làm **mờ kèm "Sắp ra mắt"** (Đánh Hạng, Bảng xếp hạng, Lịch sử, khách, Google, Nhắn tin, Thách đấu); chức năng nằm sâu **ẩn hẳn** (mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, trợ giúp của máy, bộ chọn giao diện); giao diện luôn tối "Kỳ Đài Cổ Phong", không tự theo hệ điều hành.
+**Các bước người dùng làm và hệ thống phản hồi**
+1. Khi mở một màn hình hay khung dữ liệu, người dùng thấy **khung xương** trong lúc đang tải; có dữ liệu thì hiện bình thường; không có dữ liệu thì thấy lời giải thích kèm nút hành động; lỗi thì thấy thông báo tiếng Việt kèm nút **Thử lại**.
+2. Nút hay chức năng không dùng được thì **mờ** kèm chú thích nêu lý do.
+3. Trên điện thoại (từ 360 px), mọi thứ vẫn dùng được: bàn cờ chơi được bằng cảm ứng; chat và camera thu thành thẻ.
+4. Người dùng chỉ bàn phím, người dùng giảm chuyển động hay dùng trình đọc màn hình vẫn nhận đủ thông tin.
+5. Lối vào của tính năng chưa làm (Đánh Hạng, Bảng xếp hạng, Lịch sử, đăng nhập khách, đăng nhập Google, Nhắn tin, Thách đấu) **mờ kèm "Sắp ra mắt"**; chức năng nằm sâu (mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, trợ giúp của máy, bộ chọn giao diện, ghép ngẫu nhiên) **ẩn hẳn**.
 
-**Điều kiện chấp nhận:**
-- *Phần 1:* tải chậm, không dữ liệu, lỗi, thiếu quyền, đạt giới hạn, đã kết thúc đều hiện đúng; không báo thành công giả; các hộp thoại và lớp phủ đúng quy tắc phím Esc và focus.
-- *Phần 2:* duyệt đủ trạng thái ở bốn cỡ không tràn ngang, không che điều khiển; chạm và kéo thả đúng ở cả hai phe.
-- *Phần 3:* đo tương phản thật đạt; duyệt bàn phím không kẹt; có nhãn và dấu ngoài màu.
-- *Phần 4:* bấm hay dùng bàn phím vào mục chưa làm không mở được gì; các màn của giai đoạn 1 không có nút của chức năng chưa làm; Bạn bè và mời bạn online vẫn hoạt động.
+**Các quy tắc**
+- Mỗi màn hình và khung dữ liệu có đủ **5 trạng thái**: thành công; đang tải (khung xương, không để trắng, không giật bố cục); trống (giải thích và nút hành động); lỗi (tiếng Việt dễ hiểu, nút "Thử lại"); bị khoá (luôn có chú thích lý do).
+- Giao diện luôn **tối** theo phong cách "Kỳ Đài Cổ Phong", không tự theo cài đặt sáng/tối của hệ điều hành.
+- Dùng được từ **360 px**, không cuộn ngang; vùng chạm tối thiểu **44 px**; kiểm ở 360×800, 390×844, 1366×768, 1920×1080.
+- Đạt **WCAG 2.1 AA**: chữ thường tương phản ≥ 4,5:1, chữ lớn và thành phần giao diện ≥ 3:1; điều khiển được bằng bàn phím với viền focus nhìn thấy; nút chỉ có biểu tượng có nhãn; "giảm chuyển động" tắt hiệu ứng; thông báo quan trọng dùng vùng đọc tự động, không đọc từng giây của đếm lùi; **không truyền thông tin chỉ bằng màu**.
+
+**Khi có lỗi:** một khung tải lỗi thì chỉ khung đó báo lỗi, không mất cả màn hình; không bao giờ báo "thành công" giả.
+
+**Điều kiện chấp nhận**
+1. Tải chậm, không dữ liệu, lỗi, thiếu quyền, đạt giới hạn, đã kết thúc đều hiện đúng trạng thái; các hộp thoại và lớp phủ đúng quy tắc phím Esc và focus.
+2. Duyệt đủ trạng thái ở bốn cỡ màn hình không tràn ngang, không che điều khiển; chạm và kéo thả đúng ở cả hai phe; vùng chạm ≥ 44 px.
+3. Đo tương phản thật đạt ngưỡng; duyệt toàn bộ bằng bàn phím không bị kẹt; có nhãn và dấu hiệu ngoài màu.
+4. Bấm hay dùng bàn phím vào mục chưa làm không mở được gì; các màn của giai đoạn 1 không có nút của chức năng chưa làm; Bạn bè và mời bạn online vẫn hoạt động.
+
+**Không thuộc Story này:** giao diện sáng và bộ chọn giao diện; ứng dụng di động riêng; làm các tính năng chưa làm.
 
 **Các việc nhỏ làm nên Story:** T-08 (Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)); T-11 (Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen); T-13 (Dựng khung kiểm thử tự động trên nhiều trình duyệt (Playwright)); T-14 (Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng); T-58 (Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc); T-59 (Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng); T-61 (Nghiệm thu phi chức năng: bài tải, quyền camera/micro, trình duyệt, bảo mật).
 
@@ -223,20 +189,25 @@
 
 **Câu chuyện:** Là người dùng đã đăng nhập, tôi muốn **một thanh điều hướng và một trang chính (Sảnh)** để làm mọi việc: tạo phòng, vào phòng, chơi với máy, quay lại ván dở.
 
-**Gồm những việc người dùng làm**
-1. Thanh điều hướng
-2. Sảnh
+**Điều kiện để dùng:** đã đăng nhập.
 
-**Các bước và phản hồi:**
-- *Phần 1:* thanh cố định đầu trang có logo, Sảnh, Bạn bè, chuông lời mời, ảnh đại diện và tên với menu Hồ sơ và Đăng xuất. Bảng xếp hạng và Lịch sử **mờ** kèm "Sắp ra mắt".
-- *Phần 2:* Sảnh có Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, ba thẻ Đánh với máy; thẻ Đánh Hạng mờ "Sắp ra mắt"; ghép ngẫu nhiên ẩn. Có ván hoặc phòng dở thì hiện băng quay lại và các nút tạo mờ có chú thích. Có mục **Luật chơi** thu gọn được.
+**Các bước người dùng làm và hệ thống phản hồi**
+1. Ở đầu mọi trang có thanh điều hướng cố định: logo, **Sảnh**, **Bạn bè**, chuông lời mời, ảnh đại diện và tên với menu **Hồ sơ** và **Đăng xuất**. Bảng xếp hạng và Lịch sử **mờ** kèm "Sắp ra mắt".
+2. Ở Sảnh người dùng thấy: **Tạo phòng**, **Vào phòng bằng mã**, **danh sách phòng công khai**, ba thẻ **Đánh với máy**. Thẻ Đánh Hạng mờ "Sắp ra mắt"; ghép ngẫu nhiên ẩn.
+3. Nếu người dùng đang ngồi ghế hoặc có ván dở, Sảnh hiện băng "quay lại" và các nút tạo mới mờ có chú thích lý do.
+4. Mục **Luật chơi** thu gọn và mở rộng được bằng chuột và bàn phím.
 
-**Điều kiện chấp nhận:**
-- *Phần 1:* mở Sảnh, Bạn bè, Hồ sơ đúng trang; mục chưa làm không kích hoạt được; dùng được bằng bàn phím.
-- *Phần 2:* đủ các chức năng trên; băng quay lại và nút mờ đúng; mở và thu Luật chơi bằng bàn phím được.
+**Các quy tắc:** Luật chơi nêu rõ hết nước đi là thua và chưa có luật đuổi quân riêng; không thêm trang hay hộp thoại mới; mỗi người một chỗ chơi nên không cho tạo chỗ thứ hai.
 
-**Quy tắc:**
-- *Phần 2:* Luật chơi nêu hết nước đi là thua và chưa có luật đuổi quân riêng; không thêm trang hay hộp thoại mới.
+**Khi có lỗi:** một chỗ trên Sảnh tải lỗi thì chỉ chỗ đó báo lỗi (có "Thử lại"), không mất cả Sảnh.
+
+**Điều kiện chấp nhận**
+1. Mở Sảnh, Bạn bè, Hồ sơ đúng trang; mục chưa làm mờ và không kích hoạt được; dùng được bằng bàn phím.
+2. Có chỗ chơi hoặc ván dở thì có băng quay lại và nút tạo mờ có lý do; không có thì không.
+3. Mở và thu Luật chơi bằng chuột và bàn phím được, không mở trang mới.
+4. Một chỗ tải lỗi không làm mất cả Sảnh.
+
+**Không thuộc Story này:** biểu mẫu tạo phòng (Story 5); chơi với máy (Epic Đánh với máy theo cấp độ); bạn bè (Epic Mời bạn vào phòng chơi).
 
 **Các việc nhỏ làm nên Story:** T-14 (Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng).
 
@@ -247,46 +218,30 @@
 
 **Câu chuyện:** Là người chơi, tôi muốn **thấy phòng chờ với hai ghế, bấm Sẵn sàng và để ván tự bắt đầu** khi cả hai đã sẵn sàng.
 
-**Gồm những việc người dùng làm**
-1. Phòng chờ và hai ghế ngồi
-2. Bấm Sẵn sàng và bắt đầu ván
-
-**Điều kiện để dùng:**
-- *Phần 1:* đã ở trong một phòng.
-- *Phần 2:* phòng đủ hai người ngồi ghế.
-
-**Các quy tắc:**
-- *Phần 1:* mỗi ghế chỉ một người; mọi quyết định do máy chủ làm.
-- *Phần 2:* nếu ai bỏ Sẵn sàng hoặc rời đi trong lúc đếm thì **huỷ đếm**, không tạo ván; đồng hồ do máy chủ tính; một lần chỉ tạo một ván.
-
-**Khi có lỗi:**
-- *Phần 1:* hai người tranh ghế cuối → chỉ một người được.
-- *Phần 2:* ghi dữ liệu lỗi → không báo "bắt đầu" giả, hoàn tác.
-
-**Không thuộc Story này:**
-- *Phần 1:* bắt đầu ván (B3), đổi chỗ giữa ghế và chỗ xem (B6).
-- *Phần 2:* đi nước và luật cờ (Epic Hai người đánh cờ qua mạng), xin đổi bên, tái đấu.
+**Điều kiện để dùng:** đã ở trong một phòng.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-*Phần 1:*
-1. Chủ phòng mặc định ngồi ghế Đỏ. Khi còn **một mình**, chủ phòng đổi sang ghế Đen hoặc đổi lại bao nhiêu lần cũng được.
+1. Phòng chờ hiện hai ghế (Đỏ và Đen) với tên người ngồi và chủ phòng. Chủ phòng mặc định ngồi ghế Đỏ; khi còn **một mình**, chủ phòng đổi sang ghế Đen hoặc đổi lại bao nhiêu lần cũng được.
 2. Người thứ hai vào phòng thì tự xếp vào **ghế còn trống**.
-3. Khi người ngồi ghế thay đổi, trạng thái "Sẵn sàng" của cả hai **về chưa sẵn sàng**.
-*Phần 2:*
-1. Mỗi người bật hoặc tắt **Sẵn sàng** tuỳ ý.
-2. Khi cả hai cùng sẵn sàng: đếm ngược **3, 2, 1** (có tiếng gỗ).
-3. Hết đếm: tạo ván mới, hai người chuyển sang màn hình ván; **đồng hồ của bên Đỏ bắt đầu chạy**.
+3. Mỗi người ngồi ghế bật hoặc tắt **Sẵn sàng** tuỳ ý. Khi người ngồi ghế thay đổi, "Sẵn sàng" của cả hai **về chưa sẵn sàng**.
+4. Khi cả hai cùng sẵn sàng, màn hình **đếm ngược 3, 2, 1** (có tiếng gỗ).
+5. Hết đếm, hệ thống tạo ván mới, hai người chuyển sang màn hình ván và **đồng hồ của bên Đỏ bắt đầu chạy**.
+
+**Các quy tắc**
+- Mỗi ghế chỉ một người; mọi quyết định do máy chủ làm, giao diện không tự cấp ghế.
+- Nếu ai bỏ Sẵn sàng hoặc rời đi trong lúc đếm thì **huỷ đếm**, không tạo ván; một lần chỉ tạo **một** ván; đồng hồ do máy chủ tính.
+- Người xem không bấm được Sẵn sàng.
+
+**Khi có lỗi:** hai người tranh ghế cuối thì chỉ một người được; ghi dữ liệu lỗi lúc bắt đầu ván thì hoàn tác, không báo "bắt đầu" giả.
 
 **Điều kiện chấp nhận**
-*Phần 1:*
-1. Hai ghế hiển thị đúng người, đúng phe, đúng chủ phòng.
-2. Chủ phòng đổi ghế khi một mình được; khi có người thứ hai thì không đổi một mình.
-3. Thay người ngồi ghế thì hai bên về chưa sẵn sàng.
-*Phần 2:*
-1. Hai người sẵn sàng đủ 3 giây thì có một ván, thế cờ ban đầu, lượt Đỏ, hai màn hình cùng vào màn ván.
-2. Chỉ đồng hồ Đỏ chạy trước nước đầu; Đen chưa giảm.
-3. Bỏ Sẵn sàng trước hết đếm thì không có ván và không có đồng hồ ma.
-4. Người xem không bấm được Sẵn sàng.
+1. Hai ghế hiển thị đúng người, đúng phe, đúng chủ phòng; chủ phòng đổi ghế được khi một mình, không đổi một mình khi đã có người thứ hai.
+2. Thay người ngồi ghế thì hai bên về chưa sẵn sàng.
+3. Hai người sẵn sàng đủ 3 giây thì có đúng một ván với thế cờ ban đầu, lượt Đỏ; hai màn hình cùng vào màn ván.
+4. Chỉ đồng hồ Đỏ chạy trước nước đầu; Đen chưa giảm.
+5. Bỏ Sẵn sàng trước khi hết đếm thì không có ván và không có đồng hồ ma; người xem không bấm được Sẵn sàng.
+
+**Không thuộc Story này:** đi nước và luật cờ (Epic Hai người đánh cờ qua mạng); xin đổi bên; tái đấu; đổi chỗ giữa ghế và chỗ xem (Story 20).
 
 **Các việc nhỏ làm nên Story:** T-15 (Giao diện: phòng chờ và màn từ chối vào phòng); T-17 (Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng); T-25 (Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván); T-29 (Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván); T-50 (Nối web với máy chủ: đồng hồ, kết thúc ván, mất kết nối, người xem, bảng nước đi).
 
@@ -297,49 +252,28 @@
 
 **Câu chuyện:** Là người chơi, tôi muốn **vào một phòng** bằng mã, đường dẫn hoặc từ danh sách ở Sảnh, và nếu không vào được thì **biết rõ lý do**.
 
-**Gồm những việc người dùng làm**
-1. Vào phòng bằng mã, đường dẫn hoặc từ Sảnh
-2. Màn hình "không vào được phòng"
-
-**Điều kiện để dùng:**
-- *Phần 1:* đã đăng nhập và chưa có chỗ chơi khác.
-- *Phần 2:* vào phòng thất bại.
-
-**Khi có lỗi:**
-- *Phần 1:* phòng đầy → màn "không vào được" với lý do; mã không có → báo không tìm thấy, **không** tự sửa sang phòng khác.
-
-**Không thuộc Story này:**
-- *Phần 1:* tự xuống ghế từ vai xem (B6), mã QR, khách.
-- *Phần 2:* vào phòng thành công.
-
-**Các quy tắc:**
-- *Phần 2:* nội dung thông báo theo từng lý do; không lộ thông tin phòng cho người không có quyền.
+**Điều kiện để dùng:** đã đăng nhập và chưa có chỗ chơi khác.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-*Phần 1:*
-1. Nhập mã 8 ký tự ở Sảnh hoặc mở đường dẫn.
-2. Còn ghế trống thì **vào ngồi ghế**; hết ghế mà còn chỗ xem thì vào **làm người xem** kèm thông báo.
-3. Vào từ **danh sách phòng ở Sảnh** (nút "Vào xem") thì **luôn là người xem**.
-*Phần 2:*
-1. Màn hình hiện lý do: phòng đầy ("Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"), bị đuổi, phòng khoá.
-2. Chỉ có **một nút**: Quay về Sảnh.
+1. Người dùng nhập mã 8 ký tự ở Sảnh, hoặc mở đường dẫn, hoặc bấm **Vào xem** ở danh sách phòng.
+2. Vào bằng mã hoặc đường dẫn: còn ghế trống thì **vào ngồi ghế**; hết ghế mà còn chỗ xem thì vào **làm người xem** kèm thông báo "Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem."
+3. Vào từ **danh sách ở Sảnh** thì **luôn là người xem**, kể cả khi còn ghế.
+4. Nếu bị từ chối, người dùng thấy màn hình "không vào được phòng" nêu đúng lý do (phòng đầy: "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"; bị đuổi; phòng khoá) và **một nút** "Quay về Sảnh".
 
 **Các quy tắc**
-*Phần 1:*
 - Sức chứa = 2 người chơi + số người xem tối đa của phòng (tối đa 7 người); nhiều yêu cầu cùng lúc cũng không vượt.
-- Nhập sai mã 10 lần trong 1 phút thì bị chặn 5 phút.
-- Người bị đuổi hoặc phòng khoá thì bị từ chối.
+- Nhập sai mã 10 lần trong 1 phút thì bị chặn 5 phút (đếm theo từng phiên). Mã không có thì báo không tìm thấy, **không** tự sửa sang phòng khác.
+- Người bị đuổi hoặc phòng đã khoá thì bị từ chối; màn từ chối không lộ thông tin phòng cho người không có quyền.
+
+**Khi có lỗi:** gửi lại yêu cầu vào khi mất phản hồi không xếp thêm chỗ; màn từ chối có đủ 5 trạng thái và dùng được bằng bàn phím.
 
 **Điều kiện chấp nhận**
-*Phần 1:*
-1. Còn ghế → vào ghế; hết ghế còn chỗ xem → người xem có thông báo.
-2. Phòng đầy hoặc số người xem là 0 → từ chối; hai người tranh chỗ cuối thì chỉ một người vào.
-3. Vào từ Sảnh khi còn ghế vẫn là người xem.
-4. Bị đuổi hoặc phòng khoá thì không vào được.
-5. Gửi lại yêu cầu vào khi mất phản hồi không xếp thêm chỗ.
-*Phần 2:*
-1. Mỗi lý do có đúng một thông báo và một nút.
-2. Đủ 5 trạng thái, dùng được bằng bàn phím.
+1. Còn ghế thì vào ghế; hết ghế còn chỗ xem thì thành người xem có thông báo; vào từ Sảnh khi còn ghế vẫn là người xem.
+2. Phòng đầy (kể cả số người xem là 0) thì từ chối; hai người tranh chỗ cuối thì chỉ một người vào.
+3. Bị đuổi hoặc phòng khoá thì không vào được và thấy đúng lý do với một nút về Sảnh.
+4. Gửi lại yêu cầu vào không xếp thêm chỗ; sai mã đến lần thứ 10 trong 1 phút thì bị chặn.
+
+**Không thuộc Story này:** tự xuống ghế từ vai xem (Story 20); mã QR; đăng nhập khách.
 
 **Các việc nhỏ làm nên Story:** T-14 (Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng); T-15 (Giao diện: phòng chờ và màn từ chối vào phòng); T-21 (Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh); T-29 (Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván); T-47 (Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng); T-52 (Máy chủ: mời bạn đang online vào phòng).
 
@@ -348,54 +282,29 @@
 ### Story 9 — Chia sẻ phòng bằng đường dẫn và mã; người được mời đăng nhập xong vào đúng phòng
 **Thuộc Epic:** Mời bạn vào phòng chơi
 
-**Câu chuyện:** Là người ngồi ghế, tôi muốn **gửi đường dẫn hoặc mã phòng** cho bạn; và là người được mời, tôi muốn **bấm đường dẫn, đăng nhập (hoặc đăng ký) xong là vào đúng phòng**.
+**Câu chuyện:** Là người ngồi ghế, tôi muốn **gửi đường dẫn hoặc mã phòng** cho bạn; và là người được mời, tôi muốn **bấm đường dẫn rồi đăng nhập (hoặc đăng ký) là vào đúng phòng**, không phải bấm lại.
 
-**Gồm những việc người dùng làm**
-1. Chia sẻ phòng bằng đường dẫn và mã
-2. Đăng nhập xong thì vào đúng phòng được mời
-
-**Điều kiện để dùng:**
-- *Phần 1:* đang ngồi ghế trong phòng.
-- *Phần 2:* có đường dẫn mời của một phòng.
-
-**Khi có lỗi:**
-- *Phần 1:* sao chép bị từ chối quyền → không báo "đã sao chép" giả, vẫn có cách dùng thủ công.
-- *Phần 2:* phòng đã đóng, đầy hoặc khoá → báo lý do rõ và về Sảnh.
-
-**Không thuộc Story này:**
-- *Phần 1:* mời bạn bè đang online (Epic Mời bạn vào phòng chơi), vào phòng (B5).
-- *Phần 2:* tạo phòng, các quy tắc vào phòng.
+**Điều kiện để dùng:** người mời đang ngồi ghế trong phòng; người được mời có đường dẫn hoặc mã.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-*Phần 1:*
-1. Bấm nút mời; hiện hộp thoại có **đường dẫn** và **mã 8 ký tự**, kèm nút sao chép.
-2. Người dùng sao chép và gửi cho bạn.
-*Phần 2:*
-1. Chưa đăng nhập mà mở đường dẫn: thấy màn đăng nhập hoặc đăng ký (hệ thống nhớ phòng cần vào).
-2. Đăng nhập hoặc đăng ký xong: tự vào đúng phòng.
-3. Đã đăng nhập sẵn thì vào thẳng phòng.
+1. Người ngồi ghế bấm nút mời; hiện hộp thoại có **đường dẫn** và **mã 8 ký tự** kèm nút sao chép. Người dùng sao chép và gửi cho bạn.
+2. Người được mời mở đường dẫn. Nếu **chưa đăng nhập**, họ thấy màn đăng nhập hoặc đăng ký; hệ thống nhớ phòng cần vào.
+3. Đăng nhập hoặc đăng ký xong thì **tự vào đúng phòng**. Nếu đã đăng nhập sẵn thì vào thẳng. Vào ghế hay chỗ xem do quy tắc vào phòng quyết định (Story 8). Nếu người đó đang có ván dở thì được đưa vào lại ván thay vì phòng mới.
 
 **Các quy tắc**
-*Phần 1:*
-- **Chỉ người đang ngồi ghế** mở được hộp thoại mời. Đường dẫn và mã cho **cùng một quyền**, không có đường dẫn riêng "xem" hay "chơi".
-- Không có mã QR ở giai đoạn này (ẩn hẳn).
+- **Chỉ người đang ngồi ghế** mở được hộp thoại mời. Đường dẫn và mã cho **cùng một quyền**, không có đường dẫn riêng "xem" hay "chơi". Không có mã QR ở giai đoạn này.
 - Khi phòng bị **khoá**, đường dẫn và mã chưa dùng hết hiệu lực; mở khoá thì có **mã và đường dẫn mới**.
-*Phần 2:*
-- Vào ghế hay chỗ xem do quy tắc vào phòng quyết định (xem Story 8).
 - Chỉ chuyển tới **phòng trong hệ thống**, không chuyển tới địa chỉ lạ.
-- Đang có ván dở thì đưa vào lại ván thay vì phòng mới.
+
+**Khi có lỗi:** sao chép bị từ chối quyền thì không báo "đã sao chép" giả, vẫn có cách dùng thủ công; phòng đã đóng, đầy hoặc khoá thì báo lý do rõ và đưa về Sảnh.
 
 **Điều kiện chấp nhận**
-*Phần 1:*
-1. Người ngồi ghế thấy đường dẫn và mã; người xem và người ngoài không thấy.
-2. Mất ghế khi hộp đang mở thì phần mời biến mất.
-3. Khoá phòng rồi mở lại thì mã cũ vô hiệu, mã mới dùng được.
-4. Không có nút mã QR.
-*Phần 2:*
-1. Mở đường dẫn khi chưa đăng nhập, đăng nhập xong thì vào đúng phòng.
-2. Đăng ký mới từ đường dẫn mời thì hoàn tất xong cũng vào đúng phòng.
-3. Có ván dở thì vào lại ván.
-4. Phòng không còn hoặc đường dẫn trỏ ra ngoài hệ thống thì không chuyển đi và về Sảnh.
+1. Người ngồi ghế thấy đường dẫn và mã; người xem và người ngoài không thấy; mất ghế khi hộp đang mở thì phần mời biến mất.
+2. Khoá phòng rồi mở lại thì mã cũ vô hiệu, mã mới dùng được; không có nút mã QR.
+3. Mở đường dẫn khi chưa đăng nhập, đăng nhập xong thì vào đúng phòng; đăng ký mới từ đường dẫn mời cũng vào đúng phòng.
+4. Có ván dở thì vào lại ván; phòng không còn hoặc đường dẫn trỏ ra ngoài hệ thống thì không chuyển đi và về Sảnh.
+
+**Không thuộc Story này:** mời bạn bè đang online (Story 12); các quy tắc vào phòng (Story 8); tạo phòng (Story 5).
 
 **Các việc nhỏ làm nên Story:** T-15 (Giao diện: phòng chờ và màn từ chối vào phòng); T-17 (Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng); T-29 (Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván); T-36 (Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh); T-47 (Nối web với máy chủ: bấm đường dẫn mời, đăng nhập rồi vào đúng phòng); T-60 (Nghiệm thu từng tiêu chí giai đoạn 1 và chạy kịch bản demo D1–D10).
 
@@ -406,52 +315,28 @@
 
 **Câu chuyện:** Là người dùng, tôi muốn **tìm người, gửi và nhận lời mời kết bạn** để có danh sách bạn.
 
-**Gồm những việc người dùng làm**
-1. Tìm người và gửi lời mời kết bạn
-2. Nhận và trả lời lời mời kết bạn
-3. Giới hạn bạn bè
-
-**Điều kiện để dùng:**
-- *Phần 1:* đã đăng nhập.
-- *Phần 2:* đang có lời mời chờ.
-- *Phần 3:* đang kết bạn.
-
-**Các quy tắc:**
-- *Phần 1:* tìm **không phân biệt hoa thường**; **không hiện email**; lời mời tự **hết hạn sau 30 ngày**.
-- *Phần 2:* bị **cùng một người từ chối 2 lần** thì người đó không gửi lại được; **thu hồi hoặc hết hạn không tính là từ chối**; hai lời mời ngược chiều cùng lúc chỉ giữ **một** lời mời chờ, **không tự thành bạn**.
-- *Phần 3:* máy chủ kiểm tra **cả hai tài khoản** khi gửi và khi chấp nhận để hai yêu cầu cùng lúc không vượt trần; hai lời mời ngược chiều cùng lúc chỉ giữ một.
-
-**Khi có lỗi:**
-- *Phần 1:* đã đủ giới hạn bạn hoặc lời mời → nút mờ có chú thích; máy chủ cũng chặn.
-
-**Không thuộc Story này:**
-- *Phần 1:* nhắn tin 1-1.
-- *Phần 2:* chặn người dùng.
-- *Phần 3:* tăng giới hạn theo cấp độ.
+**Điều kiện để dùng:** đã đăng nhập.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-*Phần 1:*
-1. Gõ phần đầu tên đăng nhập; kết quả hiện thẻ (ảnh đại diện, tên hiển thị, tên đăng nhập) và nút **Kết bạn**.
-2. Bấm Kết bạn: gửi lời mời. Có thể **thu hồi** lời mời đã gửi.
-*Phần 2:*
-1. Chuông ở thanh điều hướng liệt kê lời mời đang chờ.
-2. **Chấp nhận** → thành bạn **hai chiều**. **Từ chối** → **không báo** cho người gửi.
-*Phần 3:*
-1. Mỗi người tối đa **200 bạn** và **50 lời mời đang chờ** (cộng cả gửi và nhận).
-2. Vượt giới hạn thì nút gửi mờ có chú thích; máy chủ cũng chặn.
+1. Người dùng gõ phần đầu tên đăng nhập; kết quả hiện thẻ (ảnh đại diện, tên hiển thị, tên đăng nhập) và nút **Kết bạn**.
+2. Bấm Kết bạn thì gửi lời mời; người gửi có thể **thu hồi** lời mời đã gửi.
+3. Người nhận thấy lời mời ở **chuông** trên thanh điều hướng; **Chấp nhận** thì thành bạn **hai chiều**; **Từ chối** thì **không báo** cho người gửi.
+
+**Các quy tắc**
+- Tìm **không phân biệt hoa thường** và **không hiện email**. Lời mời tự **hết hạn sau 30 ngày**.
+- Bị **cùng một người từ chối 2 lần** thì không gửi lại được cho người đó; thu hồi hoặc hết hạn **không tính** là một lần từ chối.
+- Hai lời mời ngược chiều cùng lúc chỉ giữ **một** lời mời chờ, **không tự thành bạn**.
+- Mỗi người tối đa **200 bạn** và **50 lời mời đang chờ** (cộng cả gửi và nhận). Máy chủ kiểm tra **cả hai tài khoản** khi gửi và khi chấp nhận để hai yêu cầu cùng lúc không vượt trần.
+
+**Khi có lỗi:** đã đủ giới hạn thì nút mờ có chú thích và máy chủ cũng chặn; người khác không trả lời hay thu hồi thay được.
 
 **Điều kiện chấp nhận**
-*Phần 1:*
-1. Tìm theo phần đầu, khác hoa thường, ra đúng thẻ, không có email.
-2. Gửi, thu hồi, hết hạn đúng trạng thái.
-3. Người khác không thu hồi được lời mời của mình.
-*Phần 2:*
-1. Chấp nhận thì cả hai thấy nhau trong danh sách bạn.
-2. Từ chối hai lần thì chặn gửi tiếp đúng chiều.
-3. Người ngoài không trả lời thay được; gửi lại yêu cầu từ chối chỉ đếm một lần.
-*Phần 3:*
-1. 199 và 200 bạn, 49 và 50 lời mời: không vượt trần ở cả hai đầu dù gửi hay chấp nhận cùng lúc.
-2. Gửi chéo chỉ còn một lời mời chờ, không tự thành bạn.
+1. Tìm theo phần đầu tên, khác hoa thường, ra đúng thẻ và không có email; gửi, thu hồi, hết hạn đúng trạng thái.
+2. Chấp nhận thì cả hai thấy nhau trong danh sách bạn; từ chối không báo người gửi; từ chối hai lần thì chặn gửi tiếp đúng chiều.
+3. Người ngoài không trả lời hay thu hồi thay được; gửi lại yêu cầu từ chối chỉ đếm một lần.
+4. 199 và 200 bạn, 49 và 50 lời mời: không vượt trần ở cả hai đầu dù gửi hay chấp nhận cùng lúc; gửi chéo chỉ còn một lời mời chờ.
+
+**Không thuộc Story này:** nhắn tin 1-1; chặn người dùng; tăng giới hạn theo cấp độ.
 
 **Các việc nhỏ làm nên Story:** T-33 (Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng)); T-34 (Máy chủ: kết bạn, lời mời và danh sách bạn có trạng thái); T-54 (Nối web với máy chủ: bạn bè).
 
@@ -546,65 +431,30 @@
 
 **Câu chuyện:** Là người chơi, tôi muốn **chọn quân, kéo thả quân, thấy nước vừa đi, biết khi bị chiếu và nghe tiếng quân** như chơi cờ thật.
 
-**Gồm những việc người dùng làm**
-1. Bấm chọn quân và xem gợi ý ô đi
-2. Kéo thả quân
-3. Đánh dấu nước vừa đi và cảnh báo chiếu
-4. Âm thanh và nút tắt tiếng
-
-**Điều kiện để dùng:**
-- *Phần 1:* đến lượt mình trong ván.
-- *Phần 2:* đến lượt mình.
-- *Phần 3:* có ít nhất một nước đã đi.
-- *Phần 4:* đang ở màn hình ván.
-
-**Các quy tắc:**
-- *Phần 1:* chỉ chọn được quân của mình và chỉ khi đến lượt mình; người xem và ván đã kết thúc là chỉ đọc (có giải thích); các nước đi sẽ làm lộ Tướng không hiện chấm.
-- *Phần 2:* kéo thả và bấm dùng song song, cho cùng kết quả; dùng được bằng cảm ứng; bật "giảm chuyển động" thì quân về ngay, không hiệu ứng.
-- *Phần 3:* cảnh báo **không nhấp nháy, không rung** (tối đa một nhịp sáng khi vừa bị chiếu; tắt khi bật giảm chuyển động); **không chỉ truyền thông tin bằng màu**.
-- *Phần 4:* âm tạo bằng Web Audio, **không tải tệp âm thanh**; nhận lại cùng thế cờ thì không phát lại; trình duyệt chưa cho phát âm thì xử lý êm, không làm lỗi ván.
-
-**Khi có lỗi:**
-- *Phần 1:* thế cờ mới đến giữa chừng thì bỏ lựa chọn cũ.
-- *Phần 2:* đang kéo thì mất lượt hoặc mất quyền → huỷ kéo, không gửi gì.
-- *Phần 3:* nhận lại cùng một thế cờ thì không chồng hiệu ứng.
-
-**Không thuộc Story này:**
-- *Phần 1:* kéo thả (C3), gợi ý nước hay.
-- *Phần 2:* nối mạng.
-- *Phần 3:* âm thanh (C5).
-- *Phần 4:* nhạc nền.
+**Điều kiện để dùng:** đang ở màn hình ván; đến lượt mình thì mới đi được.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-*Phần 1:*
-1. Bấm quân mình: quân được khoanh, các ô hợp lệ hiện **chấm**; quân đối phương ăn được có vòng cố định (không nhấp nháy).
-2. Bấm ô hợp lệ: đi nước đó.
-3. Muốn huỷ: bấm lại quân, bấm ô không hợp lệ hoặc nhấn Esc.
-*Phần 2:*
-1. Giữ chuột (hoặc ngón tay) trên quân, kéo; quân bay theo con trỏ.
-2. Thả vào ô hợp lệ thì đi; thả sai thì quân **trượt về chỗ cũ**.
-*Phần 3:*
-1. Nước vừa đi được đánh dấu bằng **bốn góc ở cả ô đi lẫn ô đến**.
-2. Khi bị chiếu: vòng cảnh báo quanh Tướng kèm chữ "Đang bị chiếu" và biểu tượng.
-*Phần 4:*
-1. Có bốn âm: đi quân, ăn quân, chiếu, kết thúc ván.
-2. Nút loa ở góc bàn bật/tắt bằng một lần chạm; trạng thái **nhớ trong phiên**.
+1. Người dùng **bấm quân của mình**: quân được khoanh, các ô đi hợp lệ hiện **chấm**, quân đối phương ăn được có vòng cố định (không nhấp nháy). Bấm ô hợp lệ thì đi nước đó. Muốn huỷ thì bấm lại quân, bấm ô không hợp lệ hoặc nhấn Esc.
+2. Hoặc người dùng **giữ chuột (hay ngón tay) kéo quân**, thả vào ô hợp lệ thì đi, thả sai thì quân **trượt về chỗ cũ**. Bấm và kéo dùng song song, cho cùng kết quả.
+3. Nước vừa đi được đánh dấu bằng **bốn góc ở cả ô đi lẫn ô đến**.
+4. Khi Tướng bị chiếu, hiện vòng cảnh báo quanh Tướng kèm chữ "Đang bị chiếu" và biểu tượng.
+5. Mỗi sự kiện có âm thanh: đi quân, ăn quân, chiếu, kết thúc ván. Nút loa ở góc bàn bật/tắt tiếng bằng một lần chạm; trạng thái **nhớ trong phiên**.
+
+**Các quy tắc**
+- Chỉ chọn được quân của mình và chỉ khi đến lượt mình; người xem và ván đã kết thúc là chỉ đọc (có giải thích). Nước làm lộ Tướng không hiện chấm.
+- Cảnh báo chiếu **không nhấp nháy, không rung** (tối đa một nhịp sáng khi vừa bị chiếu) và **không chỉ dùng màu**; bật "giảm chuyển động" thì quân về ngay, không hiệu ứng.
+- Âm thanh tạo bằng Web Audio, **không tải tệp âm thanh**; nhận lại cùng một thế cờ thì không phát lại âm hay chồng hiệu ứng.
+- Khi nhận thế cờ mới thì bỏ lựa chọn cũ.
+
+**Khi có lỗi:** đang kéo thì mất lượt hoặc mất quyền → huỷ kéo, không gửi gì; trình duyệt chưa cho phát âm → xử lý êm, không làm lỗi ván.
 
 **Điều kiện chấp nhận**
-*Phần 1:*
-1. Chọn quân bị chặn hay bị "ghim" chỉ hiện ô hợp lệ.
-2. Bấm đích đi đúng nước; huỷ chọn đúng cách.
-3. Quân đối phương, ngoài lượt, người xem, ván kết thúc: không chọn được.
-*Phần 2:*
-1. Kéo vào ô hợp lệ gửi nước; ô sai hoặc ngoài bàn thì quân về chỗ cũ.
-2. Đi cùng một nước bằng bấm và bằng kéo cho cùng kết quả ở cả hai hướng bàn.
-3. Mất quyền giữa lúc kéo thì không gửi nước.
-*Phần 3:*
-1. Nước mới đánh dấu đúng hai ô.
-2. Cảnh báo chiếu rõ ràng, không nhấp nháy.
-3. Có chữ hoặc biểu tượng, không chỉ màu.
-*Phần 4:*
-1. Đúng bốn âm cho bốn sự kiện, không có yêu cầu tải tệp.
-2. Tắt tiếng giữ nguyên khi đổi trạng thái trong phiên.
+1. Chọn quân bị chặn hay bị "ghim" chỉ hiện ô hợp lệ; bấm đích đi đúng nước, huỷ chọn đúng cách.
+2. Quân đối phương, ngoài lượt, người xem, ván kết thúc: không chọn được.
+3. Kéo vào ô hợp lệ gửi nước; ô sai hoặc ngoài bàn thì quân về chỗ cũ; đi cùng một nước bằng bấm và kéo cho cùng kết quả ở cả hai hướng bàn.
+4. Nước mới đánh dấu đúng hai ô; cảnh báo chiếu rõ ràng, có chữ hoặc biểu tượng, không nhấp nháy.
+5. Đúng bốn âm cho bốn sự kiện, không có yêu cầu tải tệp; tắt tiếng giữ nguyên khi đổi trạng thái trong phiên.
+
+**Không thuộc Story này:** gợi ý nước hay; nối mạng (Epic Hai người đánh cờ qua mạng); nhạc nền.
 
 **Các việc nhỏ làm nên Story:** T-09 (Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước); T-11 (Giao diện: bàn cờ SVG, quân chữ Hán, lật bàn cho phe Đen); T-18 (Giao diện: bấm chọn quân và chấm gợi ý ô đi); T-22 (Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh); T-26 (Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà); T-37 (Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố).
