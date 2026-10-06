@@ -1,6 +1,6 @@
 # Cách viết Description cho Epic, Story, Task (có mẫu để điền)
 
-**Ngày:** 2026-10-04 · **Trạng thái:** bản chuẩn để PO duyệt. Chưa tạo gì trên Jira.
+**Ngày cập nhật:** 2026-10-05 · **Trạng thái:** bản chuẩn để PO duyệt. Đã tạo 98 mục trên XIAN (05/10/2026; Key và phân công ở tệp 01 mục 6).
 
 Tài liệu này dạy cách viết mô tả cho ba loại ticket: **Epic** (nhóm chức năng lớn), **Story** (một việc người dùng cần làm được), **Task** (một phần việc cụ thể giao cho một người). Có mẫu trống để sao chép và điền. Bốn ví dụ đã điền đầy đủ nằm trong `00b-mau-description-chi-tiet.md`, kèm phần giải thích nhanh các từ như máy chủ, Sảnh, phòng chờ, cơ sở dữ liệu.
 
@@ -106,7 +106,7 @@ Có thể chạy trọn kịch bản sau trên hai máy khác nhau mà không l�
 
 - **"Khi nào Epic xong"** phải là một kịch bản **có người, có bước, có kết quả thấy được**, không viết "tất cả task đã xong". Task xong chưa chắc chức năng chạy được.
 - **"Không làm"** là mục quan trọng để chống làm lan: ghi cả những thứ gần giống nhưng thuộc Epic khác.
-- Epic **không** chứa danh sách kiểm thử hay chi tiết kỹ thuật.
+- Epic chỉ nêu kịch bản nghiệm thu tổng thể; ca kiểm chi tiết và cách triển khai đặt ở Story/Task.
 
 ---
 
@@ -374,22 +374,25 @@ Quy tắc:
 
 | Thông tin | Cách điền |
 |---|---|
-| **Thành phần** (Component) | Epic: để trống hoặc 1; Story: 1 (module chức năng); Task: 1, tối đa 2 nếu là việc liên module; **không bao giờ 3 trở lên** (nên tách task). Chi tiết ở tài liệu `01` |
+| **Thành phần** (Component) | Epic: để trống như metadata hiện hành; Story theo phạm vi các module liên quan; Task: 1, tối đa 2 theo quy ước 9 Components PO đã duyệt. Không tách Story chỉ để ép số Components. Chi tiết ở tài liệu `01` |
 | **Nhãn** (Label) | `P1` hoặc `P2`; `poc` cho thử nghiệm kỹ thuật; `integration` cho task ghép; mã Story gốc để dễ tìm |
 | **Liên kết "phải xong trước"** | Mỗi dòng ở mục "Cần xong trước" tạo một liên kết `is blocked by` (nghĩa là "bị chặn bởi"). Chỉ liên kết khi **thật sự cần kết quả** của việc đó |
 | **Liên kết Story** | Task dưới Epic và liên kết `relates to` tới Story liên quan |
-| **Người nhận việc** | Để trống khi tạo; nhóm nhận việc ở buổi lập kế hoạch Sprint |
+| **Người nhận việc** | Đã gán cả 98 mục theo phân vai PO duyệt |
 | **Ước lượng** | **Bằng giờ**, do chính người làm ước lượng; không đặt hộ |
 | **Sprint** | Chưa gán khi mới tạo; gán khi lập kế hoạch Sprint |
-| **Fix version** | Tạo 4 phiên bản (mỗi Sprint một phiên bản). Task theo Sprint của nó; Story và Epic theo Sprint của Task cuối |
+| **Fix version** | Tạo 4 phiên bản (mỗi Sprint một phiên bản). Task theo Sprint của nó; Story và Epic theo Sprint dự kiến hoàn tất toàn bộ phạm vi và Task kiểm liên kết |
 | **Mức ưu tiên (Priority)** | High cho phần lõi, Medium cho phần mở rộng; không dùng để thể hiện P1/P2 (đã có nhãn) |
 
-## 11. Trạng thái và quy trình đề xuất
+## 11. Trạng thái và quy trình trên XIAN
+
+Đã kiểm 05/10/2026, dùng các trạng thái sẵn có:
 
 ```text
-Cần làm → Đang làm (viết mã và tự kiểm tra) → Xem lại mã → Sẵn sàng kiểm thử → Kiểm thử → Xong
+To Do → Ready for Code → In Progress → Ready for Test → Done
 ```
-Nếu kiểm thử phát hiện lỗi thì quay lại "Đang làm". **Chưa kiểm tra cấu hình thật của Jira dự án XIAN**: nếu chưa có các trạng thái này thì dùng trạng thái hiện có kèm bình luận bàn giao chuẩn.
+
+Ready for Code: đầu vào của Task đã được bàn giao, người nhận hiểu Description. In Progress: làm và tự kiểm; review là hoạt động của nhóm, không yêu cầu thêm cột. Ready for Test: bàn giao bằng bình luận chuẩn và bằng chứng để kiểm độc lập, **chưa xong**. Done: đạt điều kiện hoàn thành và có review/kiểm; với Task báo cáo phải giữ rõ kết luận của Gate, không suy báo cáo Done thành sản phẩm đạt. Lỗi trả lại In Progress và kiểm lại phần ảnh hưởng. Không tạo thêm trạng thái cho kế hoạch này.
 
 ## 12. Độ dài mô tả
 
@@ -420,18 +423,18 @@ Một mô tả đạt khi trả lời "có" cho cả 14 câu:
 ## 14. Hai điều đã được PO trả lời (04/10/2026)
 
 1. **Cấp bậc trên Jira:** Task đặt **dưới Epic và liên kết với Story** (không dùng Sub-task).
-2. **Trạng thái Jira:** **không** tạo thêm cột "Sẵn sàng kiểm thử"; dùng bình luận bàn giao chuẩn (mẫu ở mục tự kiểm tra).
+2. **Trạng thái Jira:** không tạo thêm cột; dùng bình luận bàn giao chuẩn. Kiểm tra trực tiếp 05/10 cho thấy XIAN đã có **Ready for Test**: dùng trạng thái có sẵn để bàn giao, rồi Done sau kiểm thử/review. Không coi Ready for Test là hoàn thành.
 
 Các Epic, Story và Task đã được viết theo chuẩn này và các mẫu ở `00b-mau-description-chi-tiet.md`: 8 Epic, 26 Story, 64 Task (xem `01-components-epic-khung-task.md`).
 
 ## 15. Thông tin quản lý đi kèm mỗi Epic, Story, Task (bổ sung 04/10/2026)
 
-Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm các thông tin theo tài liệu nghiên cứu Scrum (mục 2 và 12 của `Jira/scrum-jira-2026-10-04/08-tong-hop-nghien-cuu-3-agent.md`):
+Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm các thông tin theo quy ước PO đã chốt và đối chiếu XIAN thật tại mục 16; cẩm nang Scrum/Jira chỉ là tham khảo phương pháp:
 
 | Thông tin | Epic | Story | Task |
 |---|---|---|---|
 | Nhãn (label) `P1`, mã mục yêu cầu; loại Task (triển khai, QA, SPIKE) | có | có | có |
-| Trạng thái ban đầu To Do; người nhận để trống; Sprint | có (không gán Sprint) | có | có (đề xuất Sprint) |
+| Trạng thái và Sprint hiện hành | To Do; Sprint 4 | To Do; Sprint hoàn tất Task liên quan | To Do; Sprint và Assignee đã gán theo lịch 01/15 |
 | Nguồn / Phục vụ: mã đặc tả để truy vết (BA, mục yêu cầu, tiêu chí, yêu cầu phi chức năng, cổng kiểm chứng, kịch bản demo) | Nguồn | Nguồn | Phục vụ |
 | Phạm vi có / không | có | có | "Không thuộc task này" |
 | Bắt đầu khi (phụ thuộc, kết quả cụ thể cần có) | có | có | "Phải xong trước" |
@@ -441,12 +444,47 @@ Ngoài phần mô tả bằng tiếng thường ở trên, mỗi mục có thêm
 | Bằng chứng nộp (trạng thái ban đầu NOT_RUN) | có | có | có |
 | Rủi ro / chưa rõ / còn mở | có | có | có |
 | Liên kết Jira: Epic cha; `is blocked by`; `relates to` | có | có | có |
-| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1-sprint-1`, `v0.2-loi-sprint-2`, `v0.3-sprint-3`, `v1.0-sprint-4`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
+| Fix version (phiên bản phát hành, mỗi Sprint một phiên bản: `v0.1`, `v0.2`, `v0.3`, `v1.0`) | có (theo Sprint của Task cuối) | có (theo Sprint của Task cuối) | có (theo Sprint của Task) |
 | Reporter (người báo cáo) | PO | PO | PO |
-| Start date, Due date | ngày bắt đầu sớm nhất và hạn muộn nhất của các Task con | như Epic | tính riêng từng Task theo chuỗi phụ thuộc trong Sprint (xem `01`, mục 6.1) |
+| Start date, Due date | khoảng ngày của Task trực tiếp và các Story thuộc Epic | khoảng ngày của Task liên kết triển khai/kiểm | tính riêng từng Task theo chuỗi phụ thuộc trong Sprint (xem `01`, mục 6.1) |
 | Priority | High nếu có Task lõi, ngược lại Medium | như Epic | High cho Task lõi, Medium cho Task mở rộng |
-| Story Points | không nhập (Jira tự cộng từ Story) | để trống, nhóm ước lượng khi họp Sprint | để trống, nhóm ước lượng khi họp Sprint |
+| Story Points | không nhập (không mặc định cộng điểm Story và Task) | để trống, nhóm ước lượng khi họp Sprint | để trống, nhóm ước lượng khi họp Sprint |
 | Parent | không có | Epic cha | Epic cha (Task chung không có) |
 | Ước lượng | không | không | nhóm điền giờ khi họp Sprint |
 
 Mã tiêu chí (`AC-…`), mã mục yêu cầu (`US-…`), yêu cầu phi chức năng (`NFR-…`) và cổng (`GATE-…`) **chỉ nằm ở các khối "Nguồn", "Phục vụ", bảng tiêu chí và nhãn**, để truy vết; phần mô tả vẫn bằng tiếng thường. Bảng đối chiếu toàn bộ nằm ở `14-bang-doi-chieu-tieu-chi.md`.
+
+
+## 16. Đối chiếu Jira XIAN thật — kiểm tra 05/10/2026
+
+**Đã kiểm qua kết nối Jira và biểu mẫu tạo Epic/Story/Task**, không tạo mục thử. Site: [xiangqi-web](https://xiangqi-web.atlassian.net), project XIAN kiểu company-managed, board Scrum **XIAN board (38)**. Hiện **98 work item**, **9 Components** (đã tạo, kiểm tra ngày 05/10/2026; ID ở tệp 01 mục 1), **4 Versions** và **4 Sprint tương lai**, có ngày dự kiến và mục tiêu (ID ở tệp 01 mục 6). Chín Components trong kế hoạch đã tồn tại trên Jira, Component lead để trống và Default assignee = Unassigned. Bốn Sprint và bốn Versions trong kế hoạch đã tồn tại; các Sprint chưa khởi động, Versions chưa phát hành. PO đã yêu cầu gán Assignee/Sprint/Fix version cho 98 mục; Epic gán Sprint 4 là mốc nghiệm thu cuối, Task con giữ Sprint 1–4. Task có giờ ước lượng theo uỷ quyền PO và ngày riêng; Story Points để trống.
+
+| Nhóm thông tin | Epic | Story | Task | XIAN thật và cách điền |
+|---|---|---|---|---|
+| Bắt buộc để tạo bằng API | Project, Issue type, Summary | Như Epic | Như Epic | Ba trường required; chọn XIAN và đúng loại, Summary có tên công việc rõ ràng |
+| Description | Bắt buộc theo tiêu chí bài chấm | Như Epic | Đặc biệt phải rõ việc, đầu vào/đầu ra, lỗi, tự kiểm/PASS | API để optional; nhóm vẫn phải điền đầy đủ. AC, Self-Test và Done là các phần **trong Description**, không phải trường riêng đã xác minh |
+| Parent | Không có | Epic tương ứng | Epic tương ứng; Task chung để trống | Story và Task ngang cấp; dùng relates to giữa Task–Story. Không đặt Parent của Task = Story |
+| Assignee | Người điều phối đã gán | Người nghiệm thu đã gán | Người triển khai đã gán | Theo bảng phân vai PO duyệt; không giao khác vai trò |
+| Priority | High nếu có phần lõi, Medium nếu chỉ phần sau | Như Epic | High lõi, Medium phần sau | Priority có sẵn, mặc định Medium; cần đặt lại phần lõi |
+| Sprint | Sprint 4 theo yêu cầu PO | Sprint hoàn tất toàn bộ Task liên quan | Sprint theo lịch Task 01/15 | Story không gán Sprint đầu chỉ vì một Task nền nằm ở đó |
+| Components, Fix versions, Labels | Theo metadata từng mục | Như Epic | Như Epic | Trường có sẵn nhưng Components/Versions chưa có giá trị trên site; chỉ cấu hình khi PO cho phép |
+| Start date, Due date | Khoảng ngày tổng hợp | Khoảng ngày của Task liên kết | Ngày dự kiến riêng + thứ tự bàn giao | Ngày cùng nhau vẫn phải chờ đầu vào PASS; không dùng ngày quá khứ làm bằng chứng đã thực hiện |
+| Linked Issues | Khi cần quan hệ phụ thuộc thật | relates to các Task | is blocked by tiền đề; relates to Story | Hai loại liên kết đã có. Chỉ điền Key thực do Jira trả về, không đoán XIAN-<số> |
+| Reporter | Mong muốn PO | Như Epic | Như Epic | Không thấy trên create metadata/full form đã kiểm; cần kiểm khả năng chỉnh trên work item thật sau khi được phép tạo. Không khẳng định đã đặt được Reporter |
+| Story Points | Không nhập, không giả định tự cộng | Để trống cho nhóm | Để trống; chỉ dùng nếu nhóm chọn ước lượng Task | Board dùng **Story Points (customfield_10040)**; chưa thấy trên create form. Không cộng Story và Task cùng phạm vi vào tổng điểm/velocity |
+| Ước lượng giờ | Không cộng giờ riêng | Không cộng giờ riêng | Đã nhập Original/Remaining Estimate mục tiêu theo uỷ quyền PO | API chỉnh Time tracking đã xác minh; giờ gồm tự kiểm/sửa lỗi/review/hỗ trợ, không ghi worklog |
+| Trường optional khác | Attachment, Team | Như Epic | Như Epic | Team không thay thế Assignee; Attachment dùng bằng chứng khi có; Status ban đầu To Do trên UI |
+
+Create metadata trả **16 trường** cho mỗi loại (3 bắt buộc, 13 optional): project, issuetype, summary, assignee, attachment, components, Team, Start date, Sprint, description, duedate, fixVersions, issuelinks, labels, parent, priority. UI còn hiển thị Status. Các trường không xuất hiện ở biểu mẫu tạo không có nghĩa Jira không hỗ trợ ở màn hình khác.
+
+**Workflow đã có:** To Do → Ready for Code → In Progress → Ready for Test → Done. Ready for Test là trạng thái đang thực hiện; Done ở cột cuối. Không thêm cột để phục vụ kế hoạch này. Bình luận bàn giao gồm người nhận kiểm, tự kiểm, bản dựng/môi trường, bằng chứng và lỗi còn lại.
+
+Căn cứ phương pháp: [Atlassian — các loại work item](https://support.atlassian.com/jira-cloud-administration/docs/what-are-issue-types/) xác nhận Story/Task là các loại công việc chuẩn, Sub-task là loại con; [Atlassian — ước lượng](https://support.atlassian.com/jira-software-cloud/docs/estimate-an-issue/) phân biệt ước lượng và theo dõi thời gian; [Scrum Guide](https://scrumguides.org/scrum-guide.html) giao việc sizing cho Developers và yêu cầu Increment đạt Definition of Done. Cấu hình cụ thể ở bảng trên dựa trên kiểm tra **XIAN thật**, không suy từ ví dụ hướng dẫn.
+
+## Cập nhật lịch hiện hành 05/10/2026
+
+PO xác nhận ngày 05/10/2026: **8 giờ/người/ngày, kể cả cuối tuần; hạn cuối bắt buộc 05/11/2026**. PO giao agent ước lượng Task và xếp ngày riêng. Giờ là ước lượng mục tiêu ban đầu theo hạn PO, chưa được kiểm chứng bằng năng suất thực tế; không phải cam kết chắc chắn đủ giờ đạt AC. Giữ nguyên tám yêu cầu MVP, phân vai, 98 mục và đồ thị phụ thuộc. Story Points để nhóm quyết định.
+
+Lịch làm 09–12, 13–18 (UTC+7), 8 giờ gồm tự kiểm và phối hợp trong Task; ngày đầu 05/10 chỉ từ 14:00. Tối đa **3 Task đang hoạt động**, gồm triển khai, chờ review và review. Một người không làm/review/hỗ trợ hai việc cùng lúc. Người chính không mở Task mới khi Task trước còn mở. Tiền đề phải được kiểm/PASS rồi mới bắt đầu Task phụ thuộc; có thể bàn giao tuần tự **trong cùng ngày theo giờ**. Start/Due date Jira chỉ có ngày, nên thanh giao nhau cùng ngày không chứng minh ca trùng. Mục tiêu T-64 PASS 05/11 lúc 15:30, còn 2,5 giờ trong ngày cho đệm/bàn giao. Không kéo hạn. Khoảng 82% thời gian triển khai có 1–2 Task. Sprint 3 kết thúc 27/10 lúc 14:00, Sprint 4 bắt đầu ngay sau đó; cùng ngày nhưng không trùng ca. Ngày và giờ là mục tiêu, chưa ghi worklog.
+
+Lịch và ước lượng ở [tệp 15](15-bang-chuan-bi-sprint-planning.md), dữ liệu Jira ở [tệp 01 mục 6](01-components-epic-khung-task.md#6-đối-chiếu-jira-thực--tạo-và-phân-công-ngày-05102026). Release: v0.1, v0.2, v0.3, v1.0; mốc v1.0 dự kiến 05/11/2026. Mẫu trống trong tài liệu là biểu mẫu tham khảo; giờ Task đã được điền theo uỷ quyền mới. Giữ nguyên 54 US, 167 AC P1; trạng thái kiểm sản phẩm vẫn NOT_RUN.

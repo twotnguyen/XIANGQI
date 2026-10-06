@@ -1,5 +1,7 @@
 # 05 · Chiến lược kiểm thử và tiêu chí hoàn thành
 
+> **Đồng bộ 05/10/2026:** theo các quyết định nghiệp vụ đã chốt trong BA; bản viết/thiết kế kỹ thuật còn cần review, các thử nghiệm vẫn NOT_RUN.
+
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
 **Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Công cụ theo README: **Vitest** (đơn vị, tích hợp) và **Playwright** (đầu-cuối). Không thêm công cụ ngoài danh sách khi chưa được đồng ý (AGENTS §8). Nguyên tắc AGENTS §4.4: **không hạ ngưỡng đo để báo đạt**; không đạt thì ghi **số thật** và trạng thái `BLOCKED`.
@@ -17,17 +19,17 @@ Kịch bản demo chuẩn D1–D10 (dùng làm bài kiểm thử chấp nhận P
 | Bước | Mục tiêu | Thao tác | Kết quả phải thấy |
 |---|---|---|---|
 | D1 | 1 | Người dùng A đăng ký 3 bước với **OTP thật** bằng email thành viên nhóm; B, C, D là tài khoản **tạo sẵn trước** (SMTP mặc định chỉ khoảng 2 thư/giờ, BA 10.1), đăng nhập được. Không dùng mock OTP làm bằng chứng đã gửi thư thật (PO đã duyệt 04/10/2026) | Vào được `/lobby` |
-| D2 | 2 | A tạo phòng (10 phút, `PUBLIC`, chọn tối đa **2** người xem để dễ chạy thử đầy chỗ; mặc định của biểu mẫu là 5) | A ngồi ghế Đỏ ở phòng chờ |
+| D2 | 2 | A tạo phòng (10 phút, `CODE_ONLY`, chọn tối đa **2** người xem để demo đầy chỗ; mặc định biểu mẫu là 5, cho chọn 0–5) | A ngồi ghế Đỏ ở phòng chờ |
 | D3 | 3 | A gửi **link/mã** cho B; A **mời bạn bè online** C (sau khi A và C là bạn) | B vào được phòng; C nhận pop-up 30 giây |
-| D4 | 6 | C và D vào sau khi ghế đã kín | Họ thành **Người xem**; người xem thứ 3 bị từ chối |
-| D5 | 6 | A thấy phòng đủ, **khoá** phòng; E dùng mã/link | E **không vào được** |
-| D6 | 4, 5 | A (Đỏ) và B (Đen) bấm Sẵn sàng; đếm 3 giây; hai bên đi cờ qua mạng đến khi chiếu hết | Bàn cờ khởi tạo đúng thế; mọi nước đồng bộ; kết quả hiện đúng; người xem thấy trực tiếp |
-| D7 | 7 | A và B bật camera/mic; chat ở Kênh Riêng; người xem chat ở Kênh Chung | Hai người thấy/nghe nhau; Kênh Riêng người xem không đọc được |
+| D4 | 6 | A mở PUBLIC, C vào xem từ danh sách Sảnh và D qua mã/link sau khi ghế đã kín | Họ thành **Người xem**; người xem thứ 3 bị từ chối vì phòng demo đã chọn N=2 |
+| D5 | 6 | A chuyển CODE_ONLY: mục biến mất ở Sảnh, E không vào từ mục cũ; D rời để thử E vào bằng mã, C vẫn ở phòng. E rời phòng; A khoá phòng, rồi E thử vào mới bằng mã/link hoặc mục Sảnh cũ | CODE_ONLY chỉ nhận qua mã/link; LOCKED chặn mọi người mới dù còn chỗ; người xem hiện có giữ quyền |
+| D6 | 4, 5 | A (Đỏ) và B (Đen) bấm Sẵn sàng; đếm 3 giây; hai bên bắt đầu đi cờ qua mạng; tiếp tục sang D7 khi ván vẫn đang diễn ra | Bàn cờ khởi tạo đúng thế; mọi nước đồng bộ; người xem thấy trực tiếp |
+| D7 | 7 | Ngay trong ván D6, A và B bật camera/mic với mức chọn sẵn Chỉ đối thủ; chat ở Kênh Riêng; người xem chat ở Kênh Chung. Thử chủ động chia sẻ cả người xem, sau đó tiếp tục đánh đến chiếu hết | Hai người vừa đánh vừa thấy/nghe/chat với nhau; người xem không đọc Kênh Riêng, chỉ thấy/nghe media khi người phát cho phép; kết quả ván hiện đúng |
 | D8 | 8 | Ván kết thúc rồi A **bấm Rời phòng (rời ghế)**; trước khi rời ghế, thử bắt đầu ván với máy phải bị từ chối; sau khi rời thì đánh với máy ở cả 3 cấp độ | Không vào được ván với máy khi vẫn đang ngồi ghế phòng khác; máy trả lời đúng thời hạn, không đi sai luật |
-| D9 | 5 | A và B **bắt đầu lại một ván online mới**, rồi ngắt mạng một bên giữa ván | Overlay đếm 60 giây; nối lại trong 60 giây thì tiếp tục; quá 60 giây thì bên mất kết nối thua `DISCONNECT` |
-| D10 | 8 | Đóng tab giữa ván với máy rồi mở lại `/ai/:id` trong 30 phút và sau 30 phút | Trong 30 phút vào lại đúng thế cờ; sau 30 phút ván là *Bỏ dở* |
+| D9 | 5 | A kết thúc/rời ván AI ở D8; A và B rời mọi vị trí chơi cũ trước khi tạo/tham gia phòng và **bắt đầu một ván online mới**, rồi ngắt mạng một bên giữa ván | Overlay đếm 60 giây; nối lại trong 60 giây thì tiếp tục; quá 60 giây thì bên mất kết nối thua `DISCONNECT` |
+| D10 | 8 | Sau D9, kết thúc/rời ván online và rời ghế rồi tạo ván AI mới; đóng tab giữa ván với máy rồi mở lại `/ai/:id` trong 30 phút và sau 30 phút | Trong 30 phút vào lại đúng thế cờ; sau 30 phút ván là *Bỏ dở* |
 
-D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR **đã duyệt** thuộc P1 (NFR-01–10, gồm NFR-08–10 do PO duyệt 04/10/2026, và NFR-A11Y) đều đạt; kết quả trung tính `INTERRUPTED` ở `AC-PLAY-03-02` đã chốt và bắt buộc đạt (không thắng/thua/hoà, không đổi Elo); riêng dọn chat Khách (P2) vẫn chờ PO; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
+D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngoại lệ và yêu cầu an toàn của P1. P1 chỉ hoàn thành khi D1–D10, AC P1 và trạng thái/ca biên áp dụng trong [08](08-ma-tran-nghiem-thu.md), cùng các NFR **đã duyệt** thuộc P1 (NFR-01–10, gồm NFR-08–10 do PO duyệt 04/10/2026, và NFR-A11Y) đều đạt; kết quả trung tính `INTERRUPTED` ở `AC-PLAY-03-02` đã chốt và bắt buộc đạt (không thắng/thua/hoà, không đổi Elo); dọn chat Khách theo BA 1.3 thuộc P2, chi tiết triển khai cần review; không có lỗi Cao/Nghiêm trọng còn mở. Không tính AC P2 vào P1.
 
 ---
 
@@ -67,7 +69,7 @@ D1–D10 là kịch bản demo tối thiểu, **không thay thế** các AC/ngo�
 | Thời gian người chơi chờ | Cùng bộ thế, qua tiến trình riêng, không có hàng đợi và có 2–3 ván đồng thời | Ghi p95; hàng đợi ≤ 3 giây; vượt thì báo *Thử lại* |
 | Độ sâu thực tế cấp Khó | Ghi độ sâu hoàn tất mỗi lần | Trung vị ≥ 6 (khởi đầu) và ≥ 5 (trung cuộc) |
 | Phân cấp sức mạnh | Đấu máy với máy ≥ 40 ván, đổi bên đều | Khó thắng TB ≥ 75%; TB thắng Dễ ≥ 75% |
-| Chiếu hết ngắn | Bộ thế "chiếu hết 1 nước" và "2 nước" do nhóm biên soạn **kèm ghi nguồn** | Tìm đúng ≥ 95% |
+| Chiếu hết ngắn | Chạy **cấp Khó** trên bộ thế "chiếu hết 1 nước" và "2 nước" do nhóm biên soạn **kèm ghi nguồn** | Tìm đúng 100% bộ bắt buộc đã xác minh đáp án (BA 6.1, PO làm rõ 05/10); bộ mở rộng báo tỷ lệ riêng. Không áp ngưỡng 100% này cho Dễ/Trung bình; vẫn kiểm nước hợp lệ, thời gian và phân cấp sức mạnh của cả ba cấp |
 | Tìm tĩnh khi bị chiếu | Bộ thế bị chiếu chỉ thoát được bằng nước **không ăn quân**; thế hết nước đi ở biên độ sâu (bất biến đã bắt buộc ở [02] mục tìm tĩnh; riêng bộ fixture cụ thể là đề xuất, không cần PO duyệt từng thế) | Máy chọn đúng nước thoát chiếu; assertion nội bộ: không nút nào dùng điểm tĩnh làm cận dưới khi bị chiếu, hết nước ở biên sâu trả điểm thua ([02] mục tìm tĩnh) |
 | Độ ổn định | 1 000 ván đấu máy, 0 treo, 0 lỗi tiến trình | 0 |
 | Lỗi tiến trình / watchdog | (a) Giết tiến trình giữa lúc tìm kiếm (crash); (b) tìm vượt `budgetMs + 2000` khi **đã có** `progress` (đi nước độ sâu hoàn tất gần nhất, không phải lỗi) và khi **chưa có** (Bỏ dở); trả kết quả tác vụ cũ sau huỷ | Ván `Bỏ dở` khi lỗi hoặc quá hạn phản hồi 10 giây theo BA 6.1; Thử lại tạo ván mới, không hồi sinh ván cũ; bỏ kết quả tìm lỗi thời |
@@ -83,11 +85,12 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 | Nhóm | Tình huống bắt buộc |
 |---|---|
 | A (Tài khoản) | Đăng ký đúng; OTP hết hạn; **giới hạn nhập sai** (gần đúng, mục tiêu 5 lần); gửi lại trong 60 giây bị chặn; username trùng khác hoa/thường; email đã đăng ký; bỏ dở không tạo tài khoản; đăng nhập sai thông báo chung; ghi nhớ 30 ngày/12 giờ; mở link mời khi chưa đăng nhập rồi tự vào phòng |
-| B (Phòng) | Tạo phòng đủ tuỳ chọn; Host ngồi Đỏ; đổi ghế khi một mình; người thứ hai vào ghế trống; **người thứ ba thành người xem**; hết chỗ xem bị từ chối; không có người xem thì người thứ ba bị từ chối; chuyển sang người xem **không vượt trần**; nút bị vô hiệu đúng khi không còn chỗ; đổi người ngồi ghế reset Sẵn sàng và về `WAITING`; khoá phòng chỉ khi đủ 2 người; sau khoá không ai mới vào dù có link/mã; người đang có ghế/đang xem vào lại trong hạn; đuổi người xem và chặn đến khi đóng; Host rời chuyển quyền; Host rời giữa ván là đầu hàng; ví dụ nghiệm thu A–B–C–D–E (BA 2.8) chạy hết |
+| B (Phòng) | Tạo phòng đủ tuỳ chọn; Host ngồi Đỏ; đổi ghế khi một mình; vào bằng mã/link khi còn ghế thì tự vào ghế; khi ghế kín thì thành người xem; Vào xem từ Sảnh không chiếm ghế; hết chỗ xem bị từ chối; phòng N=5 nhận đủ năm người xem và chặn người xem thứ sáu, kể cả nhiều lệnh vào đồng thời; không có người xem thì người thứ ba bị từ chối; chuyển sang người xem **không vượt trần**; nút bị vô hiệu đúng khi không còn chỗ; đổi người ngồi ghế reset Sẵn sàng và về `WAITING`; mời xuống ghế cần Chấp nhận, Từ chối giữ vai trò xem, không giữ ghế và kiểm lại khi chấp nhận; mất mạng trong đếm bắt đầu ván tự tạo huỷ đếm/reset Sẵn sàng cả hai, giữ ghế 60 giây, chưa tạo ván không xử thua; khoá phòng chỉ khi đủ 2 người; sau khoá không ai mới vào dù có link/mã; người đang có ghế/đang xem vào lại trong hạn; đuổi người xem và chặn đến khi đóng; Host rời chuyển quyền; Host rời giữa ván là đầu hàng; ví dụ nghiệm thu A–B–C–D–E (BA 2.8) chạy hết |
 | C (Bàn cờ) | Click và kéo thả; hủy chọn bằng `Esc`; không chọn được quân đối phương; bàn lật cho Đen; âm thanh và tắt tiếng; nhãn đọc màn hình |
 | D (Ván) | Nước hợp lệ/không hợp lệ; lệnh trùng và lệnh `matchVersion` cũ; hết giờ; kết thúc mọi lý do ở [02] mục 3.3; đầu hàng; xin hoà (đồng ý, từ chối, hết hạn, rút lại, chờ 5 nước); rời phòng giữa ván; kết nối lại đúng ảnh chụp; **cả hai cùng rớt mạng**; **khởi động lại máy chủ giữa ván → `INTERRUPTED`**; người xem chỉ đọc; thứ tự xử lý (hết giờ trước nước đi) |
-| E (Chat, media) | Kênh Riêng không lọt tới người xem; người đổi chỗ sau không đọc tin cũ; 5 tin/10 giây; 200 ký tự; từ cấm các biến thể; camera/mic mặc định tắt; 3 mức chia sẻ đúng người nhận; người xem không phát được; nhiều tab thì tab cũ dừng media |
+| E (Chat, media) | Kênh Riêng không lọt tới người xem; cặp mới không đọc tin cũ, cùng cặp Đổi bên/Tái đấu trong cùng phòng giữ chat (P2); 5 tin/10 giây; 200 ký tự; từ cấm các biến thể; camera/mic mặc định tắt, phòng tự tạo chọn sẵn Chỉ đối thủ; 3 mức chia sẻ đúng người nhận; người xem không phát được; nhiều tab thì tab cũ dừng media |
 | F (Bạn bè) | Tìm không phân biệt hoa/thường; gửi, thu hồi, chấp nhận, từ chối; bị từ chối 2 lần không gửi lại được; giới hạn 200/50; mời bạn online; bạn đang đấu hoặc offline không mời được; pop-up hết 30 giây |
+| P2 (Khôi phục tài khoản) | Email có/không có tài khoản nhận thông báo chung; OTP đúng/sai/hết hạn/thiếu ngữ cảnh; chỉ sau xác minh mới trả Username hiện tại; chỉ quên Username giữ mật khẩu, về Đăng nhập; quên cả mật khẩu đặt lại/thu hồi phiên khác; OTP không tự đăng nhập hoặc dùng API/Socket ứng dụng |
 | G (Với máy) | 3 cấp × cầm Đỏ/Đen/Ngẫu nhiên; máy đi trước khi cầm Đen; vào lại trong 30 phút; sự cố máy cờ; không có Xin hoà |
 | H (Giao diện) | 5 trạng thái mỗi màn; 4 kích thước 360/390/1366/1920 không cuộn ngang; điều hướng bằng bàn phím; giảm chuyển động; tooltip cho mọi `DISABLED` |
 
@@ -99,7 +102,7 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 |---|---|
 | Client không quyết định | Gửi nước đi giả/ván đã kết thúc/ngoài lượt: máy chủ từ chối |
 | Quyền theo vai trò | Người xem gửi `match.move`, `chat.send` vào Kênh Riêng, bật phát LiveKit: bị từ chối |
-| Không lộ dữ liệu | Người ngoài phòng không nhận `room.state`; Kênh Riêng không gửi tới người xem; email không bao giờ trả về trong đăng nhập |
+| Không lộ dữ liệu | Người ngoài phòng không nhận `room.state`; Kênh Riêng không gửi tới người xem; không tiết lộ email người khác khi tra username; email chính chủ theo hồ sơ/phiên đã xác thực |
 | Khoá bí mật | Quét kho và gói client: không có khoá dịch vụ; `VITE_*` chỉ giá trị công khai |
 | Giới hạn tốc độ | Chat, gửi OTP, tạo phòng, kết nối, đăng nhập sai, nhập mã phòng sai: vượt ngưỡng ở [04] mục giới hạn tốc độ thì bị chặn theo đúng thời gian khoá của từng loại rồi mở lại; báo lỗi chung (ngưỡng theo [04], PO uỷ quyền agent chốt 04/10/2026) |
 | Nhập liệu | Tham số sai kiểu/quá dài/có ký tự điều khiển bị từ chối |
@@ -116,18 +119,18 @@ Mỗi **AC** ở [01] có mục kiểm đối ứng trong [08](08-ma-tran-nghiem
 | NFR-02 | **50 kết nối đồng thời = 10 ván chạy (20 người chơi) + 30 kết nối khác (người xem, Sảnh, chat)**, mỗi ván đi nước đều đặn trong 10 phút | 0 lỗi mất kết nối ngoài ý muốn; độ trễ nước đi p95 < 300 ms; bộ nhớ và CPU của máy chủ ổn định (không tăng liên tục) |
 | NFR-03 | Ma trận trình duyệt: Chrome, Edge, Firefox, Safari bản mới; màn 360/390/1366/1920 | Không lỗi chức năng, không cuộn ngang |
 | NFR-A11Y | Tương phản các cặp màu ở DESIGN §2 (đã tính lại bằng công thức), bàn phím, nhãn, giảm chuyển động | Đạt WCAG 2.1 AA ở các trạng thái chính; tương phản của **từng trạng thái** (hover, vô hiệu, trong suốt) phải đo thêm khi dựng thật |
-| NFR-07 | Khởi động lại máy chủ khi có ván | Ván thành `INTERRUPTED`, không treo, không mất dữ liệu đã lưu; người chơi thấy kết quả trung tính "Ván bị gián đoạn" (đã chốt 04/10/2026) |
+| NFR-07 | Khởi động lại khi có ván online và AI P1 | Online INTERRUPTED từ dữ liệu đã lưu, kết quả trung tính; AI P1 thông báo không còn trạng thái, về Sảnh/chủ động tạo mới; không dựng bản ghi giả |
 | NFR-08 | Gây lỗi (máy cờ sập, ghi cơ sở dữ liệu lỗi, khởi động lại) rồi đọc nhật ký (PO đã duyệt 04/10/2026) | Có mục nhật ký đúng mã; không có mật khẩu/OTP/token/chat |
 | NFR-09 | Chạy tác vụ dọn: chat phòng `CLOSED`, phiên Khách hết (P2), biên lai > 24 giờ, nhật ký > 14 ngày (PO đã duyệt 04/10/2026) | Dữ liệu đúng loại đã xoá; ván online và nước đi còn nguyên; ván AI P1 không có bản ghi bền; chat 1-1 không bị xoá theo phòng |
 | NFR-10 | Gửi chuỗi chứa HTML/script/`javascript:` vào chat, tên hiển thị, tên phòng (PO đã duyệt 04/10/2026) | Hiện nguyên văn như chữ; không script chạy, không điều hướng |
 
-Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem (mỗi phòng cho phép tối đa 5; phân bổ không nhất thiết đủ) ở Sảnh và gửi chat; thêm một phòng đầy 5 người xem để kiểm quyền và đồng bộ, ở Sảnh và gửi chat. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem. **Phần media của GATE-LOAD** (PO duyệt 04/10/2026, theo hướng nhẹ): chạy ở **quy mô nhỏ, khoảng 3 phòng** (6 người chơi bật camera và mic ở mức *Đối thủ và người xem*, mỗi phòng 1 người xem media; mỗi ván đi 1 nước/5 giây, 1 tin chat/10 giây); **chỉ ghi số đo** (số luồng, băng thông, mức dùng hạn mức gói miễn phí) tách khỏi bài tải socket, **không đặt ngưỡng đạt** và **không nằm trong điều kiện đạt của P1**; lý do: tránh dùng hết hạn mức miễn phí của LiveKit trước buổi demo. Không chạy cấu hình 10 ván (20 người phát, 40 luồng).
+Phương pháp tải: tập lệnh tạo 50 kết nối thử (tài khoản kiểm thử, không dùng email thật): **10 cặp** vào 10 phòng và mỗi cặp đánh một ván ngẫu nhiên hợp lệ (20 kết nối); **30 kết nối còn lại** làm người xem qua link/mã/lời mời phòng tự tạo (mỗi phòng tối đa 5, không nhất thiết đủ), hoặc ở Sảnh; gửi chat ở phòng khi có quyền. Bố trí một phòng chọn N=5 và đủ 5 người xem để kiểm quyền/đồng bộ; thử cả Vào xem từ PUBLIC và mã/link. 30 kết nối khác phân bổ người xem và Sảnh, không vượt trần đã chọn, tối đa 5 người xem/phòng. Ghi thời gian máy chủ nhận lệnh/phát và độ trễ nhận ở client người xem. **Phần media của GATE-LOAD** (PO duyệt 04/10/2026, theo hướng nhẹ): chạy ở **quy mô nhỏ, khoảng 3 phòng** (6 người chơi bật camera và mic ở mức *Đối thủ và người xem*, mỗi phòng 1 người xem media; mỗi ván đi 1 nước/5 giây, 1 tin chat/10 giây); **chỉ ghi số đo** (số luồng, băng thông, mức dùng hạn mức gói miễn phí) tách khỏi bài tải socket, **không đặt ngưỡng đạt** và **không nằm trong điều kiện đạt của P1**; lý do: tránh dùng hết hạn mức miễn phí của LiveKit trước buổi demo. Không chạy cấu hình 10 ván (20 người phát, 40 luồng).
 
 ---
 
 ## 7. Dữ liệu, môi trường, quy trình
 
-* **Môi trường:** (1) máy nhà phát triển, (2) dự án Supabase **thử nghiệm** riêng, (3) LiveKit thử nghiệm; **không dùng khoá/dữ liệu thật** để kiểm thử. Email OTP khi thử dùng hộp thư thử hoặc cơ chế bắt thư của Supabase.
+* **Môi trường:** máy nhà phát triển, dự án Supabase/LiveKit thử nghiệm riêng; không dùng bí mật hoặc dữ liệu production. Kiểm thử đơn vị có thể giả OTP; nghiệm thu gửi thư dùng OTP thật đến email thành viên nhóm theo BA 10.1, không dùng giả lập làm bằng chứng.
 * **Dữ liệu thử:** bộ người dùng giả (có tên tiếng Việt), bộ thế cờ kiểm thử (FEN) có ghi nguồn, bộ từ cấm thử nghiệm (không đưa danh sách thật vào kho công khai).
 * **Cổng chất lượng khi hợp nhất:** kiểm thử đơn vị và tích hợp xanh; không có lỗi mức Cao/Nghiêm trọng mở; kiểm `git diff --check`; không commit khoá bí mật.
 * **Mức độ lỗi:** *Nghiêm trọng* (sai luật/mất ván/lộ dữ liệu/không vào được ván), *Cao* (chức năng P1 hỏng), *Trung bình* (sai hiển thị, có cách vượt), *Thấp* (câu chữ, thẩm mỹ).
@@ -164,16 +167,22 @@ Mọi thay đổi con số phải được Product Owner duyệt và ghi lại �
 | H, NFR | Playwright (kích thước, bàn phím), kiểm tay trợ năng, tải |
 
 
+### Bổ sung kiểm P1 theo quyết định 05/10/2026
+
+- Google: thử tuổi bản tạm trước/sau 60 phút, chu kỳ 5 phút khi phụ thuộc hoạt động; hoàn tất cạnh tranh với dọn, tiến trình lỗi rồi phục hồi, tài khoản cũ/đã hoàn tất không bị xoá. Không tự liên kết email trùng.
+- Phiên: thử mốc hạn cố định không trượt theo hoạt động/refresh/chuyển tab; tab cũ tự reconnect vẫn chỉ đọc; đăng nhập thiết bị khác giữa ván online/AI xử thua ngay, thiết bị cũ mất API/Socket/media, thiết bị mới về Sảnh. Thử phiên OTP trực tiếp tài khoản hoàn tất bị từ chối ở ứng dụng. Hết hạn đăng nhập 12 giờ/30 ngày trong online/AI, mất quyền điều khiển và đăng nhập lại đúng tài khoản trên cùng thiết bị trước/sau hạn; thiết bị khác vẫn xử thua theo BA 1.8. Online vẫn trừ giờ nên có thể hết đồng hồ trước khi hết 60 giây; token truy cập được làm mới không tự ngắt ván. Đăng xuất chủ động vẫn xác nhận đầu hàng.
+- UI: bốn lựa chọn Sảnh đúng P1/P2; danh sách PUBLIC/Vào xem hoạt động; CODE_ONLY/LOCKED không hiện và không vào được qua mục cũ. Máy tính phòng tự tạo mặc định chỉ Kênh Riêng, mở cả hai/đóng bớt một; điện thoại hai tab; người xem chỉ Kênh Chung. Phông theo bốn token DESIGN §3.1, không đổi quyền theo bố cục.
+
 ## 10. Nghiệm thu P2 và hồi quy
 
 Nguồn AC chi tiết: Nhóm I–N trong [01], toàn bộ mục kiểm đối ứng tại [08](08-ma-tran-nghiem-thu.md). Không dùng tóm tắt P2 cũ để chia việc bỏ sót nhánh.
 
 | Miền | Tình huống tối thiểu ngoài happy path |
 |---|---|
-| Tài khoản P2 | Guest đến hạn khi còn ghế và sau rời; đối thủ giữ lịch sử ẩn danh; Google cùng email không tự liên kết, onboarding dở bị chặn; OTP đúng mục đích; đổi username cạnh tranh và giữ tên 30 ngày; dữ liệu UUID không đổi |
+| Tài khoản P2 | Guest đến hạn khi còn ghế và sau rời; đối thủ giữ lịch sử ẩn danh; OTP đúng mục đích; đổi username cạnh tranh và giữ tên 30 ngày; dữ liệu UUID không đổi |
 | Đánh Hạng | Cấm người xem/Khách/đi lại/Tái đấu ở API; biên hàng đợi, Huỷ đua MATCH_FOUND; mất mạng hàng đợi 30 giây; giới hạn cặp trượt 24 giờ tính INTERRUPTED; Elo ván 30/31, sàn, làm tròn, cập nhật trùng; Top 50 và thứ tự đồng hạng; FINISHED không quay về WAITING, rời mới tìm trận khác |
-| CASUAL mở rộng | Cùng mức giờ, phe ngẫu nhiên; đi lại một/hai nửa nước, không hoàn giờ; đề nghị trễ, rút, cooldown; đổi bên reset Sẵn sàng; Tái đấu giữ phòng/chặn; hết FINISHED; chống treo lần thứ ba; QR bị thu hồi |
-| Xã hội | Huỷ bạn khi đang mở chat; quyền đọc trực tiếp; unread đếm tin đến, chỉ đọc khi vào vùng nhìn tab hoạt động; tải nền không đọc; huỷ/kết bạn lại giữ trạng thái và đồng bộ thiết bị; sticker đủ 12 và chịu rate limit; Thách đấu mở form đúng mặc định, huỷ không tạo, lỗi mời giữ phòng; không thành ghép Ranked; người xem thứ sáu bị chặn |
+| CASUAL mở rộng | Ghép ngẫu nhiên cố định 15 phút/bên, không cộng giây, phe ngẫu nhiên; API chặn xem/mời/chia sẻ/Kênh Chung. Xin đi lại và Tái đấu có ở cả phòng tự tạo/ghép ngẫu nhiên, không hoàn giờ; Tái đấu ghép ngẫu nhiên reset 15 phút. Một người rời sau ván vẫn FINISHED, không người mới, hạn 10 phút không reset. Đổi bên, không giới hạn/chống treo và QR chỉ phòng tự tạo; đề nghị trễ/rút/cooldown, giữ phòng/chặn và QR bị thu hồi |
+| Xã hội | Huỷ bạn khi đang mở chat; quyền đọc trực tiếp; unread đếm tin đến, chỉ đọc khi vào vùng nhìn tab hoạt động; tải nền không đọc; huỷ/kết bạn lại giữ trạng thái và đồng bộ thiết bị; sticker đủ 12 và chịu rate limit; Thách đấu mở form đúng mặc định, huỷ không tạo, lỗi mời giữ phòng; không thành ghép Ranked; người xem vượt trần phòng hiện hành bị chặn |
 | Lịch sử/xuất | Quyền chính chủ, ván 0 nước và INTERRUPTED/ABANDONED; nhánh đã undo không phát lại; FEN theo con trỏ; PGN nhập thật vào công cụ ngoài |
 | Tiện ích/giao diện | DEMO_MODE tắt vẫn chặn API; thông số máy là số thật; nhiều tab chỉ một nơi phát; Giấy Sáng/Theo hệ thống kiểm mọi trạng thái, không biến thành P1 |
 
@@ -189,7 +198,8 @@ P2 cần đạt AC P2, hồi quy AC P1 còn áp dụng, bảo mật/trợ năng/
 | GATE-MEDIA | P1 | LiveKit publish/subscribe theo từng người, thu quyền khi đổi ghế/chia sẻ/tiếp quản; token mang quyền cũ không lấy lại được quyền đã mất (đuổi/đổi vai/tiếp quản), trong khi quyền mới hợp lệ vẫn dùng được; dùng LiveKit Cloud (PO chọn 04/10/2026); ghi cửa sổ hiệu lực thực tế của thu hồi và mức dùng hạn mức gói miễn phí (phút người tham gia, GB, kết nối đồng thời), chỉ ghi số đo thật, không đặt ngưỡng đạt (PO đã duyệt 04/10/2026) | Log quyền và thử bằng client không được phép; không nhận track trái quyền, không chỉ ẩn UI |
 | GATE-AI | P1 | Máy cờ tự viết đạt thời gian/sức mạnh/độ sâu và ổn định | Cấu hình máy, seed/bộ thế, số đo tại mục 3.2; không giảm ngưỡng để đạt |
 | GATE-PERFT | P1 | Bộ số perft làm oracle có đúng không | Bộ sinh nước độc lập, phiên bản/nguồn, kết quả so sánh; không tự sửa kỳ vọng theo code đang kiểm |
-| GATE-GOOGLE | P1 (PO kéo từ P2 lên 04/10/2026) | Google onboarding và đăng nhập kép không tự liên kết email trái BA 1.2 | Thử email mới/cùng email/danh tính cũ, bỏ dở và hoàn tất; chứng minh tài khoản ứng dụng bị chặn trước hoàn tất |
+| GATE-GOOGLE | P1 (PO kéo từ P2 lên 04/10/2026) | Google onboarding và đăng nhập kép không tự liên kết email trái BA 1.2 | Thử email mới/cùng email/danh tính cũ, bỏ dở và hoàn tất; gọi trực tiếp Auth để kiểm không tự liên kết. Dọn bản Google mới chưa hoàn tất sau 60 phút, chu kỳ 5 phút khi dịch vụ hoạt động; cạnh tranh hoàn tất/dọn, phục hồi lỗi, bảo vệ tài khoản cũ/đã hoàn tất; chứng minh chưa hoàn tất không dùng ứng dụng (TC-X-26) |
+| GATE-SESSION | P1 (hồi quy P2) | Hạn phiên chính thức 12 giờ/30 ngày có được cưỡng chế ở máy chủ đúng BA 1.8, tách khỏi hạn token truy cập? | Thử ở API/Socket đang mở, token cũ và đăng nhập lại đúng/sai tài khoản; online ân hạn 60 giây, đồng hồ vẫn chạy; AI giữ 30 phút; quá hạn theo luật hiện có. Ghi mốc thời gian và quyền thực tế, không chỉ ảnh UI (TC-X-27) |
 | GATE-PGN | P2 | Tệp xuất được công cụ ngoài đọc đúng | Chính tệp xuất, tên/phiên bản công cụ, số nước/thế cuối/kết quả tái dựng khớp; FEN được parse độc lập |
 | GATE-LOAD | Theo đợt phát hành | Quy mô và độ trễ theo NFR, cả người xem và media | Bài tải, môi trường, số kết nối/ván, p95 thực, lỗi và CPU/RAM; tách số đo máy chủ và client |
 

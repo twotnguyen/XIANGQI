@@ -1,64 +1,81 @@
 # Story của các Epic: "Hai người đánh cờ qua mạng"; "Phòng công khai, khoá phòng và người xem"; "Chat, camera và micro"; "Đánh với máy theo cấp độ" (12 Story)
 
-**Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
+**Ngày cập nhật:** 2026-10-05 · **Trạng thái:** đã được PO cho phép tạo và phân công ngày 05/10/2026 · Đã tạo Epic/Story/Task trên XIAN · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
 **Cách đọc:** mỗi Story là một việc người dùng muốn làm, viết theo mẫu Story đầy đủ: câu chuyện; nguồn (mã đặc tả); phạm vi có/không; điều kiện để dùng; bắt đầu khi; các bước; quy tắc; khi có lỗi; năm trạng thái giao diện; **bảng tiêu chí chấp nhận đối chiếu từng tiêu chí của đặc tả (có cách kiểm và Task kiểm)**; điều kiện hoàn thành; điểm còn mở; bằng chứng; liên kết. Task nằm dưới Epic và được liên kết với Story bằng quan hệ "liên quan". Mã `AC-…`, `US-…` chỉ là mã đặc tả để truy vết, không phải số Jira.
 
 ---
 
 ### Story 15 — Đi nước qua mạng và bảng nước đi
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server
-**Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-01`, `US-PLAY-10` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi gồm T-24, T-27, T-30; phần mở rộng gồm T-47.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
+
+**Jira thực:** [XIAN-23](https://xiangqi-web.atlassian.net/browse/XIAN-23) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Frontend, Game Server · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-01`, `US-PLAY-10`, `xiangqi-mvp-20261005`, `s-15`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-06 · **Due date:** 2026-11-04 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Components:** Frontend, Game Server
+**Giai đoạn:** Phần lõi liên kết T-08, T-09, T-24, T-27, T-30. Phần làm sau/kiểm đầy đủ liên kết T-47, T-57, T-63. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi, tôi muốn **đi nước và thấy đối thủ cùng người xem thấy ngay**, kèm bảng các nước đã đi.
 
 **Nguồn (đặc tả)**
-- US-PLAY-01 — Đi nước qua mạng (BA 3.3; [04] mục 4)
-- US-PLAY-10 — Bảng nước đi ([02] mục 7)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-01-01, AC-PLAY-01-02, AC-PLAY-01-03, AC-PLAY-01-04, AC-PLAY-10-01.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`).
+
+* US-PLAY-01 — Đi nước qua mạng (BA 3.3; \[04\] mục 4)
+* US-PLAY-10 — Bảng nước đi (\[02\] mục 7)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-01-01, AC-PLAY-01-02, AC-PLAY-01-03, AC-PLAY-01-04, AC-PLAY-10-01.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Đi nước qua mạng; Bảng nước đi.
-- **Không:** đồng hồ (Story 16); kết thúc ván (Story 17); tua lại nước đi; xuất ván cờ.
+
+* **Có:** Đi nước qua mạng; Bảng nước đi.
+* **Không:** đồng hồ (Story 16); kết thúc ván (Story 17); tua lại nước đi; xuất ván cờ.
 
 **Điều kiện để dùng:** ván đã bắt đầu; đến lượt mình.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-08 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước
-  - T-09 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
-  - T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
-  - T-23 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
-  - T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-08 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước**.
+* **T-09 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ**.
+* **T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh**.
+* **T-23 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván**.
+* **T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Người chơi đi một nước (bấm hoặc kéo); quân hiển thị **mờ** chờ xác nhận.
 2. Máy chủ kiểm tra: đúng ghế, đúng lượt, nước hợp lệ.
 3. Máy chủ xác nhận và phát thế cờ mới cho cả phòng; quân hết mờ.
 4. **Bảng nước đi** thêm một dòng bằng **ký hiệu tiếng Việt** (ví dụ "Pháo 2 bình 5", "Mã 8 tiến 7") và tự cuộn tới nước mới nhất.
 
 **Các quy tắc**
-- **Máy chủ quyết định**, không tin thế cờ do trình duyệt gửi. Người xem nhận thế mới trong **dưới 100 ms** trên mạng nội bộ.
-- Lệnh gửi trùng (cùng mã yêu cầu) chỉ có một tác dụng; lệnh dựa trên bản ván cũ bị từ chối kèm thế mới.
-- Ký hiệu tính theo **phe người đi**, không theo bàn đang lật; mỗi nước một dòng, không thiếu không trùng khi nối lại.
+
+* **Máy chủ quyết định**, không tin thế cờ do trình duyệt gửi. Người xem nhận thế mới trong **dưới 100 ms** trên mạng nội bộ.
+* Lệnh gửi trùng (cùng mã yêu cầu) chỉ có một tác dụng; lệnh dựa trên bản ván cũ bị từ chối kèm thế mới.
+* Ký hiệu tính theo **phe người đi**, không theo bàn đang lật; mỗi nước một dòng, không thiếu không trùng khi nối lại.
 
 **Khi có lỗi**
 nước không hợp lệ → quân về chỗ cũ, ván không đổi; mất phản hồi → gửi lại không đi hai nước; lỗi ghi dữ liệu → thử lại, vẫn lỗi thì tạm dừng ghi và đóng băng đồng hồ; ván chưa có nước → bảng hiện trạng thái trống đúng.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-PLAY-01-01` | Chỉ người ngồi ghế, đúng lượt, gửi được nước đi; máy chủ kiểm hợp lệ và phát thế mới cho cả phòng (người chơi và người xem) trong dưới 100 ms trên mạng nội bộ. | Hai trình duyệt luân phiên đi; người xem và người sai lượt thử; đo ở bài tải. | T-27, T-30, T-63 |
 | `AC-PLAY-01-02` | Nước không hợp lệ bị từ chối và quân về chỗ cũ; trạng thái ván không đổi. | Gửi nước tự chiếu, lộ Tướng. | T-08, T-27, T-30 |
 | `AC-PLAY-01-03` | Lệnh gửi trùng (cùng mã yêu cầu) không làm đi hai lần; lệnh dựa trên bản ván cũ bị từ chối kèm thế mới. | Gửi trùng khi mất phản hồi; gửi với phiên bản cũ. | T-09, T-27, T-30 |
@@ -66,51 +83,95 @@ nước không hợp lệ → quân về chỗ cũ, ván không đổi; mất ph
 | `AC-PLAY-10-01` | Hiển thị danh sách nước đi theo ký hiệu tiếng Việt (ví dụ Pháo 2 bình 5), tự cuộn tới nước mới nhất. | Hai phe, quân trùng cột, nối lại. | T-47, T-57 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Yêu cầu dưới 100 ms chỉ đo được ở bài thử tải khi web và máy chủ đã nối thật.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Hai người đánh cờ qua mạng; liên quan tới (relates to) các Task: T-24 (Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà); T-27 (Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi); T-30 (Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt); T-47 (Bảng nước đi: ký hiệu tiếng Việt và hiển thị).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Hai người đánh cờ qua mạng»; relates to: T-08, T-09, T-24, T-27, T-30, T-47, T-57, T-63. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-06**; Due date **2026-11-04**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-15.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-5](https://xiangqi-web.atlassian.net/browse/XIAN-5).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-08 — XIAN-42](https://xiangqi-web.atlassian.net/browse/XIAN-42)
+* [T-09 — XIAN-43](https://xiangqi-web.atlassian.net/browse/XIAN-43)
+* [T-24 — XIAN-58](https://xiangqi-web.atlassian.net/browse/XIAN-58)
+* [T-27 — XIAN-61](https://xiangqi-web.atlassian.net/browse/XIAN-61)
+* [T-30 — XIAN-64](https://xiangqi-web.atlassian.net/browse/XIAN-64)
+* [T-47 — XIAN-81](https://xiangqi-web.atlassian.net/browse/XIAN-81)
+* [T-57 — XIAN-91](https://xiangqi-web.atlassian.net/browse/XIAN-91)
+* [T-63 — XIAN-97](https://xiangqi-web.atlassian.net/browse/XIAN-97)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-08, T-09, T-24, T-27, T-30, T-47, T-57, T-63. Tổng giờ công tham chiếu **78**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 16 — Đồng hồ ván
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server
-**Nhãn:** `P1`, `loi`, `US-PLAY-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần lõi.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
+
+**Jira thực:** [XIAN-24](https://xiangqi-web.atlassian.net/browse/XIAN-24) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 3 · **Fix version:** v0.3
+**Components:** Frontend, Game Server · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-02`, `xiangqi-mvp-20261005`, `s-16`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-13 · **Due date:** 2026-10-27 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Components:** Frontend, Game Server
+**Giai đoạn:** Phần lõi liên kết T-24, T-29, T-32. Phần làm sau/kiểm đầy đủ liên kết T-57. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi, tôi muốn **đồng hồ chạy công bằng** và thua nếu hết giờ.
 
 **Nguồn (đặc tả)**
-- US-PLAY-02 — Đồng hồ (BA 2.1, 3.3)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-02-01, AC-PLAY-02-02, AC-PLAY-02-03.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`).
+
+* US-PLAY-02 — Đồng hồ (BA 2.1, 3.3)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-02-01, AC-PLAY-02-02, AC-PLAY-02-03.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Đồng hồ.
-- **Không:** giờ "không giới hạn", hoàn hay cộng giờ.
+
+* **Có:** Đồng hồ.
+* **Không:** giờ "không giới hạn", hoàn hay cộng giờ.
 
 **Điều kiện để dùng:** ván đang diễn ra.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
-  - T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
-  - T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-  - T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
-  - T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị
-  - T-50 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò
-  - T-51 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh**.
+* **T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi**.
+* **T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Mỗi bên có 5, 10 hoặc 15 phút (theo phòng); **không cộng giây**.
 2. Đồng hồ của bên đang đi chạy, bên kia dừng.
 3. Còn dưới **30 giây** thì hiện cảnh báo (chữ, biểu tượng và đổi màu).
@@ -123,94 +184,140 @@ nước không hợp lệ → quân về chỗ cũ, ván không đổi; mất ph
 lỗi ghi dữ liệu thì **đóng băng cả hai đồng hồ**; quá 30 giây không hồi phục thì ván gián đoạn.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-PLAY-02-01` | Mỗi bên có 5/10/15 phút, không cộng giây; đồng hồ bên tới lượt chạy, bên kia dừng. | Khởi tạo ba mức; đi nước. | T-29 |
 | `AC-PLAY-02-02` | Hết giờ thì ván kết thúc do hết giờ và bên đó thua; máy chủ tính giờ trước khi xét nước đi. | Gửi nước khi giờ còn đúng 0. | T-29, T-32 |
 | `AC-PLAY-02-03` | Dưới 30 giây đồng hồ hiện biểu tượng cảnh báo và đổi màu kèm chữ hoặc biểu tượng. | Cho giờ xuống dưới 30 giây. | T-24, T-57 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Không có điểm chờ quyết định.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Hai người đánh cờ qua mạng; liên quan tới (relates to) các Task: T-24 (Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà); T-29 (Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà); T-32 (Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Hai người đánh cờ qua mạng»; relates to: T-24, T-29, T-32, T-57. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 3**; Fix version **v0.3**; Start date **2026-10-13**; Due date **2026-10-27**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-16.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-5](https://xiangqi-web.atlassian.net/browse/XIAN-5).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-24 — XIAN-58](https://xiangqi-web.atlassian.net/browse/XIAN-58)
+* [T-29 — XIAN-63](https://xiangqi-web.atlassian.net/browse/XIAN-63)
+* [T-32 — XIAN-66](https://xiangqi-web.atlassian.net/browse/XIAN-66)
+* [T-57 — XIAN-91](https://xiangqi-web.atlassian.net/browse/XIAN-91)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-24, T-29, T-32, T-57. Tổng giờ công tham chiếu **37**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 17 — Kết thúc ván: kết quả, đầu hàng, xin hoà, lặp thế
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Game Engine, Frontend
-**Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi gồm T-08, T-24, T-29, T-32; phần mở rộng gồm T-53.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
+
+**Jira thực:** [XIAN-25](https://xiangqi-web.atlassian.net/browse/XIAN-25) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Game Engine, Frontend · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-03`, `US-PLAY-04`, `US-PLAY-05`, `US-PLAY-08`, `xiangqi-mvp-20261005`, `s-17`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-06 · **Due date:** 2026-10-29 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Components:** Game Engine, Frontend
+**Giai đoạn:** Phần lõi liên kết T-08, T-24, T-29, T-32. Phần làm sau/kiểm đầy đủ liên kết T-50, T-51, T-53. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi hay người xem, tôi muốn **ván kết thúc đúng luật và biết kết quả**, kể cả khi đầu hàng, xin hoà hoặc đi lặp thế.
 
 **Nguồn (đặc tả)**
-- US-PLAY-03 — Kết thúc ván và kết quả (BA 3.3; [02] mục 3.3)
-- US-PLAY-04 — Đầu hàng (BA 3.3)
-- US-PLAY-05 — Xin hoà (BA 3.3, 3.5, 3.6)
-- US-PLAY-08 — Lặp thế, chiếu liên tục, không ăn quân (BA 3.5; [02] mục 4, 5)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-03-01, AC-PLAY-03-02, AC-PLAY-03-03, AC-PLAY-04-01, AC-PLAY-05-01, AC-PLAY-05-02, AC-PLAY-05-03, AC-PLAY-05-04, AC-PLAY-08-01, AC-PLAY-08-02.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`), Khung Đề nghị hoà (`MODAL-DRAW-PROMPT`), Hộp xác nhận Đầu hàng (`MODAL-CONFIRM-RESIGN`), Hộp Kết quả ván (`MODAL-MATCH-RESULT`).
+
+* US-PLAY-03 — Kết thúc ván và kết quả (BA 3.3; \[02\] mục 3.3)
+* US-PLAY-04 — Đầu hàng (BA 3.3)
+* US-PLAY-05 — Xin hoà (BA 3.3, 3.5, 3.6)
+* US-PLAY-08 — Lặp thế, chiếu liên tục, không ăn quân (BA 3.5; \[02\] mục 4, 5)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-03-01, AC-PLAY-03-02, AC-PLAY-03-03, AC-PLAY-04-01, AC-PLAY-05-01, AC-PLAY-05-02, AC-PLAY-05-03, AC-PLAY-05-04, AC-PLAY-08-01, AC-PLAY-08-02.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`), Khung Đề nghị hoà (`MODAL-DRAW-PROMPT`), Hộp xác nhận Đầu hàng (`MODAL-CONFIRM-RESIGN`), Hộp Kết quả ván (`MODAL-MATCH-RESULT`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Kết thúc ván và kết quả; Đầu hàng; Xin hoà; Lặp thế, chiếu liên tục, không ăn quân.
-- **Không:** tái đấu; xem lại ván; đầu hàng khi đăng xuất hoặc rời phòng (Story 3, Story 18); điều kiện đi tối thiểu 20 nước của đánh hạng; luật đuổi quân riêng; hoà do thiếu quân.
+
+* **Có:** Kết thúc ván và kết quả; Đầu hàng; Xin hoà; Lặp thế, chiếu liên tục, không ăn quân.
+* **Không:** tái đấu; xem lại ván; đầu hàng khi đăng xuất hoặc rời phòng (Story 3, Story 18); điều kiện đi tối thiểu 20 nước của đánh hạng; luật đuổi quân riêng; hoà do thiếu quân.
 
 **Điều kiện để dùng:** ván đang diễn ra.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-05 — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
-  - T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
-  - T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-  - T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
-  - T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị
-  - T-50 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò
-  - T-51 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**.
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-05 — Luật cờ: mô hình bàn cờ, thế khởi đầu, nước đi của từng loại quân**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh**.
+* **T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi**.
+* **T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt**.
+* **T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Khi chiếu hết, hết nước đi, hết giờ, đầu hàng hay hoà, ván **ngừng nhận nước**; hiện hộp kết quả (thắng, thua hoặc hoà, kèm lý do) chỉ có nút **Rời phòng**; người xem cũng thấy kết quả.
 2. **Đầu hàng:** người chơi bấm **Đầu hàng**; hiện xác nhận "Bạn sẽ thua ván này ngay lập tức." (focus mặc định ở **Huỷ**); đồng ý thì thua ngay, đối thủ thắng.
 3. **Xin hoà:** người chơi bấm xin hoà; đối thủ thấy khung đề nghị **đếm lùi 30 giây**; người xin thấy "Đang chờ đối thủ trả lời…" và nút **Rút đề nghị**. Đồng ý → hoà; từ chối hoặc hết hạn → ván tiếp tục.
 4. Ván đi vòng vòng cũng được kết thúc: thế cờ lặp lần thứ ba, hoặc 120 nửa nước liên tiếp không ăn quân.
 
 **Các quy tắc**
-- Chiếu hết là thua; **hết nước đi cũng là thua** (không có "hoà vì hết nước"). Thứ tự xét: chiếu hết/hết nước → chiếu liên tục → lặp thế → 120 nửa nước; **chiếu hết luôn được xét trước** các kết quả hoà.
-- Thế cờ lặp lần ba: nếu một bên chiếu liên tục thì bên đó **thua**, còn lại **hoà**. 120 nửa nước không ăn quân thì **hoà**; mỗi lần ăn quân đưa bộ đếm về 0. Thế cờ tính cả bên sắp đi.
-- Xin hoà: mỗi người chỉ **một đề nghị đang chờ**; sau khi bị từ chối hoặc hết hạn, phải **đi thêm 5 nước của mình** mới xin lại (nút mờ có chú thích số nước còn lại). Khung đề nghị **không chặn bàn cờ**, không giữ focus; Esc hoặc nút X chỉ **thu gọn** (không phải từ chối), có nút mở lại, hạn vẫn chạy.
-- Ván kết thúc thì đề nghị hoà hết hiệu lực. Kết quả chỉ chốt **một lần**.
-- Ván bị gián đoạn do máy chủ khởi động lại hiện kết quả trung tính "Ván bị gián đoạn": không thắng, thua hay hoà; không đổi điểm; chỉ nút Rời phòng (đã chốt 04/10/2026).
+
+* Chiếu hết là thua; **hết nước đi cũng là thua** (không có "hoà vì hết nước"). Thứ tự xét: chiếu hết/hết nước → chiếu liên tục → lặp thế → 120 nửa nước; **chiếu hết luôn được xét trước** các kết quả hoà.
+* Thế cờ lặp lần ba: nếu một bên chiếu liên tục thì bên đó **thua**, còn lại **hoà**. 120 nửa nước không ăn quân thì **hoà**; mỗi lần ăn quân đưa bộ đếm về 0. Thế cờ tính cả bên sắp đi.
+* Xin hoà: mỗi người chỉ **một đề nghị đang chờ**; sau khi bị từ chối hoặc hết hạn, phải **đi thêm 5 nước của mình** mới xin lại (nút mờ có chú thích số nước còn lại). Khung đề nghị **không chặn bàn cờ**, không giữ focus; Esc hoặc nút X chỉ **thu gọn** (không phải từ chối), có nút mở lại, hạn vẫn chạy.
+* Ván kết thúc thì đề nghị hoà hết hiệu lực. Kết quả chỉ chốt **một lần**.
+* Ván bị gián đoạn do máy chủ khởi động lại hiện kết quả trung tính "Ván bị gián đoạn": không thắng, thua hay hoà; không đổi điểm; chỉ nút Rời phòng (đã chốt 04/10/2026).
 
 **Khi có lỗi**
 người xem không đầu hàng hay trả lời hoà thay người chơi được; đầu hàng cùng lúc với phản hồi hoà chỉ có một kết quả; trả lời hoà đến muộn không ghi đè kết quả.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 | Khung Đề nghị hoà | Đề nghị còn hạn, trả lời đúng tác động | Đang gửi/rút/trả lời; không dừng đồng hồ | Không còn đề nghị: gỡ khung/nút mở lại | Phản hồi lỗi: kiểm lại hạn và trạng thái, không báo hoà sai | Hết hạn/đã rút/đã kết thúc hoặc không phải người nhận |
 | Hộp xác nhận Đầu hàng | Xác nhận: đầu hàng; Huỷ không đổi ván | Đợi máy chủ xác nhận; chặn bấm trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Không nhận được xác nhận: kiểm lại với máy chủ, không báo thua sai | Ván kết thúc, tab đã bị tab khác tiếp quản, hoặc không phải người chơi |
-| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở giai đoạn 1 |
+| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở P1 (MVP) |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-PLAY-03-01` | Chiếu hết thua; hết nước đi (không bị chiếu) cũng thua; xử đúng thứ tự ưu tiên của luật. | Thế chiếu hết, hết nước. | T-08, T-29, T-53 |
 | `AC-PLAY-03-02` | Hộp kết quả hiện thắng/thua/hoà, lý do, chỉ nút Rời phòng (không Tái đấu, không Xem lại). Ván gián đoạn do máy chủ khởi động lại hiện kết quả trung tính "Ván bị gián đoạn": không thắng thua hoà, không đổi điểm, chỉ nút Rời phòng (đã chốt 04/10/2026). | Kết thúc bằng từng cách; khởi động lại máy chủ giữa ván. | T-24, T-29, T-32, T-51 |
 | `AC-PLAY-03-03` | Ván ngừng nhận nước; người xem thấy kết quả. | Gửi nước sau khi kết thúc; xem bên người xem. | T-29, T-50 |
@@ -223,51 +330,104 @@ người xem không đầu hàng hay trả lời hoà thay người chơi đư�
 | `AC-PLAY-08-02` | Chiếu hết luôn ưu tiên hơn các kết quả hoà. | Nước chiếu hết trùng điều kiện hoà. | T-08, T-29, T-53 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Cách hiển thị ván gián đoạn đã chốt (kết quả trung tính).
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Hai người đánh cờ qua mạng; liên quan tới (relates to) các Task: T-08 (Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước); T-24 (Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà); T-29 (Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà); T-32 (Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà).; T-53 (Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động)
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Hai người đánh cờ qua mạng»; relates to: T-08, T-24, T-29, T-32, T-50, T-51, T-53. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-06**; Due date **2026-10-29**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-17.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-5](https://xiangqi-web.atlassian.net/browse/XIAN-5).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-08 — XIAN-42](https://xiangqi-web.atlassian.net/browse/XIAN-42)
+* [T-24 — XIAN-58](https://xiangqi-web.atlassian.net/browse/XIAN-58)
+* [T-29 — XIAN-63](https://xiangqi-web.atlassian.net/browse/XIAN-63)
+* [T-32 — XIAN-66](https://xiangqi-web.atlassian.net/browse/XIAN-66)
+* [T-50 — XIAN-84](https://xiangqi-web.atlassian.net/browse/XIAN-84)
+* [T-51 — XIAN-85](https://xiangqi-web.atlassian.net/browse/XIAN-85)
+* [T-53 — XIAN-87](https://xiangqi-web.atlassian.net/browse/XIAN-87)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-08, T-24, T-29, T-32, T-50, T-51, T-53. Tổng giờ công tham chiếu **67.5**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 18 — Rời phòng giữa ván, mất kết nối và kết nối lại
-**Thuộc Epic:** Hai người đánh cờ qua mạng · **Thành phần:** Frontend, Game Server
-**Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-06`, `US-PLAY-07` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi gồm T-24; phần mở rộng gồm T-51, T-57.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Hai người đánh cờ qua mạng»
+
+**Jira thực:** [XIAN-26](https://xiangqi-web.atlassian.net/browse/XIAN-26) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 3 · **Fix version:** v0.3
+**Components:** Frontend, Game Server · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-PLAY-06`, `US-PLAY-07`, `xiangqi-mvp-20261005`, `s-18`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-13 · **Due date:** 2026-10-27 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Hai người đánh cờ qua mạng · **Components:** Frontend, Game Server
+**Giai đoạn:** Phần lõi liên kết T-24, T-27. Phần làm sau/kiểm đầy đủ liên kết T-51, T-57. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi, khi **rời phòng hoặc rớt mạng**, tôi muốn biết rõ hậu quả và **được quay lại ván** nếu nối lại kịp.
 
 **Nguồn (đặc tả)**
-- US-PLAY-06 — Rời phòng giữa ván (BA 2.3, DANH-MUC modal 13)
-- US-PLAY-07 — Mất kết nối và kết nối lại (BA 8.3; DANH-MUC overlay 2)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-06-01, AC-PLAY-07-01, AC-PLAY-07-02, AC-PLAY-07-03, AC-PLAY-07-04.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`), Hộp xác nhận Rời phòng khi đang đấu (`MODAL-CONFIRM-LEAVE`), Lớp phủ Mất kết nối (`OVERLAY-RECONNECTING`).
+
+* US-PLAY-06 — Rời phòng giữa ván (BA 2.3, DANH-MUC modal 13)
+* US-PLAY-07 — Mất kết nối và kết nối lại (BA 8.3; DANH-MUC overlay 2)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-06-01, AC-PLAY-07-01, AC-PLAY-07-02, AC-PLAY-07-03, AC-PLAY-07-04.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`), Hộp xác nhận Rời phòng khi đang đấu (`MODAL-CONFIRM-LEAVE`), Lớp phủ Mất kết nối (`OVERLAY-RECONNECTING`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Rời phòng giữa ván; Mất kết nối và kết nối lại.
-- **Không:** ván với máy (có thời hạn 30 phút riêng, Story 26).
+
+* **Có:** Rời phòng giữa ván; Mất kết nối và kết nối lại.
+* **Không:** ván với máy (có thời hạn 30 phút riêng, Story 26).
 
 **Điều kiện để dùng:** đang trong phòng hoặc ván.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
-  - T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
-  - T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-  - T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
-  - T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị
-  - T-50 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**.
+* **T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh**.
+* **T-25 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ**.
+* **T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà**.
+* **T-31 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ**.
+* **T-32 — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà**.
+* **T-33 — Nối web, máy chủ và máy cờ thật: ván với máy**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời**.
+* **T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị**.
+* **T-49 — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)**.
+* **T-50 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. **Rời phòng có chủ ý giữa ván:** người dùng bấm **Rời phòng**; hiện xác nhận "Rời lúc này được tính là đầu hàng."; đồng ý thì thua ngay và rời phòng (không chờ 60 giây); huỷ thì giữ nguyên.
 2. **Mất kết nối:** xuất hiện lớp phủ **không tắt được bằng Esc** với đồng hồ giữ chỗ do máy chủ tính.
 3. Người **đang đấu**: đếm lùi **60 giây**; nối lại thì tự tắt; quá hạn thì thua; **đồng hồ ván vẫn chạy** (hết giờ trước thì thua do hết giờ).
@@ -275,23 +435,26 @@ người xem không đầu hàng hay trả lời hoà thay người chơi đư�
 5. **Nối lại thành công:** nhận **đủ thế cờ và đồng hồ chính xác**; dữ liệu mà người đó không còn quyền xem bị xoá.
 
 **Các quy tắc**
-- **Rời có chủ ý** khác hẳn **mất kết nối**: rời có xác nhận xử ngay.
-- Nếu **cả hai** cùng rớt và cùng quá hạn thì **bên rớt trước thua**; hết giờ sớm hơn vẫn được ưu tiên. Mỗi tình huống chỉ ra **một** kết quả, không phụ thuộc thứ tự các bộ hẹn giờ.
-- Máy chủ khởi động lại thì ván thành **gián đoạn** (không thắng thua), nước đã lưu không bị ghi đè.
+
+* **Rời có chủ ý** khác hẳn **mất kết nối**: rời có xác nhận xử ngay.
+* Nếu **cả hai** cùng rớt và cùng quá hạn thì **bên rớt trước thua**; hết giờ sớm hơn vẫn được ưu tiên. Mỗi tình huống chỉ ra **một** kết quả, không phụ thuộc thứ tự các bộ hẹn giờ.
+* Máy chủ khởi động lại thì ván thành **gián đoạn** (không thắng thua), nước đã lưu không bị ghi đè.
 
 **Khi có lỗi**
 việc xác nhận đầu hàng chưa rõ thì không báo rời xong; lỗi ghi dữ liệu thì đóng băng đồng hồ, không mất giờ vì lỗi.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 | Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và kiểm lại với máy chủ | Đã xử lý hoặc không còn quyền điều khiển |
 | Lớp phủ Mất kết nối | Đã nối lại, nhận lại thế cờ rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-PLAY-06-01` | Bấm Rời phòng khi đang đấu hiện xác nhận "Rời lúc này được tính là đầu hàng."; đồng ý thì thua ngay. | Huỷ rồi đồng ý. | T-24, T-51, T-57 |
 | `AC-PLAY-07-01` | Mất kết nối: lớp phủ không đóng bằng Esc. Người đang đấu: đếm lùi 60 giây, nối lại thì tự tắt, quá hạn thì thua, đồng hồ ván vẫn chạy (hết giờ trước thì thua do hết giờ). Người ở phòng chờ hoặc phòng kết thúc: giữ ghế 60 giây rồi mất ghế (không thua). Người xem: giữ chỗ 5 phút. | Ngắt mạng ba loại người ở các mốc trước và sau hạn. | T-51, T-57 |
 | `AC-PLAY-07-02` | Nối lại thành công nhận lại thế cờ đầy đủ và đồng hồ chính xác. | Nối lại và so với máy chủ. | T-51, T-57 |
@@ -299,210 +462,365 @@ việc xác nhận đầu hàng chưa rõ thì không báo rời xong; lỗi ghi
 | `AC-PLAY-07-04` | Máy chủ tự ghi nhận sự cố của chính nó (khởi động lại) thì ván thành gián đoạn. | Khởi động lại máy chủ giữa ván. | T-27, T-51, T-57 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Cách hiển thị ván gián đoạn đã chốt (kết quả trung tính).
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Hai người đánh cờ qua mạng; liên quan tới (relates to) các Task: T-24 (Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà); T-51 (Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn); T-57 (Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Hai người đánh cờ qua mạng»; relates to: T-24, T-27, T-51, T-57. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 3**; Fix version **v0.3**; Start date **2026-10-13**; Due date **2026-10-27**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-18.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-5](https://xiangqi-web.atlassian.net/browse/XIAN-5).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-24 — XIAN-58](https://xiangqi-web.atlassian.net/browse/XIAN-58)
+* [T-27 — XIAN-61](https://xiangqi-web.atlassian.net/browse/XIAN-61)
+* [T-51 — XIAN-85](https://xiangqi-web.atlassian.net/browse/XIAN-85)
+* [T-57 — XIAN-91](https://xiangqi-web.atlassian.net/browse/XIAN-91)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-24, T-27, T-51, T-57. Tổng giờ công tham chiếu **45**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 19 — Kiểu phòng, khoá phòng và danh sách phòng công khai
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `loi`, `mo-rong`, `US-ROOM-07`, `US-ROOM-08` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi gồm T-10; phần mở rộng gồm T-39, T-43, T-46.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Phòng công khai, khoá phòng và người xem»
+
+**Jira thực:** [XIAN-27](https://xiangqi-web.atlassian.net/browse/XIAN-27) · **Loại:** Story · **Assignee:** nguyenhoangtungtuyhoa · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Frontend, Room & Social · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-ROOM-07`, `US-ROOM-08`, `xiangqi-mvp-20261005`, `s-19`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-08 · **Due date:** 2026-10-31 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Components:** Frontend, Room & Social
+**Giai đoạn:** Phần lõi liên kết T-10. Phần làm sau/kiểm đầy đủ liên kết T-39, T-43, T-46, T-51, T-57, T-60. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là chủ phòng, tôi muốn **chọn ai được thấy và được vào phòng** (công khai, chỉ vào bằng mã, khoá); và là người chơi, tôi muốn **thấy các phòng công khai đang mở** để vào xem.
 
 **Nguồn (đặc tả)**
-- US-ROOM-07 — Chế độ riêng tư và khoá phòng (BA 2.7, 4.3)
-- US-ROOM-08 — Danh sách phòng công khai ở Sảnh (BA 2.0, 2.7)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-ROOM-07-01, AC-ROOM-07-02, AC-ROOM-07-03, AC-ROOM-07-04, AC-ROOM-07-05, AC-ROOM-07-06, AC-ROOM-08-01, AC-ROOM-08-02, AC-ROOM-08-03, AC-ROOM-08-04.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Sảnh (`SCR-LOBBY`), Hộp Cài đặt phòng (`MODAL-ROOM-SETTINGS`).
+
+* US-ROOM-07 — Chế độ riêng tư và khoá phòng (BA 2.7, 4.3)
+* US-ROOM-08 — Danh sách phòng công khai ở Sảnh (BA 2.0, 2.7)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-ROOM-07-01, AC-ROOM-07-02, AC-ROOM-07-03, AC-ROOM-07-04, AC-ROOM-07-05, AC-ROOM-07-06, AC-ROOM-08-01, AC-ROOM-08-02, AC-ROOM-08-03, AC-ROOM-08-04.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Sảnh (`SCR-LOBBY`), Hộp Cài đặt phòng (`MODAL-ROOM-SETTINGS`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Chế độ riêng tư và khoá phòng; Danh sách phòng công khai ở Sảnh.
-- **Không:** đuổi người xem (Story 20); đánh hạng; lọc và tìm kiếm phòng.
+
+* **Có:** Chế độ riêng tư và khoá phòng; Danh sách phòng công khai ở Sảnh.
+* **Không:** đuổi người xem (Story 20); đánh hạng; lọc và tìm kiếm phòng.
 
 **Điều kiện để dùng:** là chủ phòng (khi đổi kiểu phòng); đã đăng nhập (khi xem danh sách).
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-11 — Giao diện: phòng chờ và màn từ chối vào phòng
-  - T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
-  - T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
-  - T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-11 — Giao diện: phòng chờ và màn từ chối vào phòng**.
+* **T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh**.
+* **T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván**.
+* **T-32 — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Chủ phòng đổi giữa **công khai**, **chỉ vào bằng mã** và **khoá**, kể cả khi đang đấu. Khi bật khoá hiện xác nhận "Người mới sẽ không vào được. Người xem đang có vẫn được giữ lại."
 2. Ở Sảnh, danh sách hiện các phòng công khai đang chờ hoặc đang chơi; mỗi dòng: tên phòng, chủ phòng, mức giờ, số người (X/Y), nút **Vào xem**. Danh sách tự làm mới.
 
 **Các quy tắc**
-- **Khoá** chỉ bật được khi **đủ 2 người chơi**; chưa đủ thì nút mờ "Chỉ khoá được khi đã đủ 2 người chơi".
-- Phòng khoá: biến khỏi Sảnh, **không ai mới vào được** dù có mã hay đường dẫn; người đang có ghế hoặc đang xem **giữ nguyên**. Phòng khoá mà một người rời đi **vẫn giữ khoá**; chủ phòng mở lại hoặc mời người xem xuống ghế, phòng không tự mở.
-- Người đang có mặt mất mạng vẫn vào lại được: người chơi trong **60 giây**, người xem trong **5 phút**; quá hạn coi như người mới.
-- Phòng chỉ-mã không hiện ở Sảnh. Danh sách: mới nhất trước, **tối đa 50 phòng**; phòng đã đủ người xem thì nút Vào xem mờ có chú thích.
+
+* **Khoá** chỉ bật được khi **đủ 2 người chơi**; chưa đủ thì nút mờ "Chỉ khoá được khi đã đủ 2 người chơi".
+* Phòng khoá: biến khỏi Sảnh, **không ai mới vào được** dù có mã hay đường dẫn; người đang có ghế hoặc đang xem **giữ nguyên**. Phòng khoá mà một người rời đi **vẫn giữ khoá**; chủ phòng mở lại hoặc mời người xem xuống ghế, phòng không tự mở.
+* Người đang có mặt mất mạng vẫn vào lại được: người chơi trong **60 giây**, người xem trong **5 phút**; quá hạn coi như người mới.
+* Phòng chỉ-mã không hiện ở Sảnh. Danh sách: mới nhất trước, **tối đa 50 phòng**; phòng đã đủ người xem thì nút Vào xem mờ có chú thích.
 
 **Khi có lỗi**
 không phải chủ hoặc thiếu người mà bật khoá → từ chối; danh sách rỗng → giải thích và nút "Tạo phòng"; tải lỗi → thông báo và "Thử lại".
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Sảnh | Danh sách và hành động đúng phân kỳ, có Luật chơi | Tải phòng/bạn/phiên, khung xương từng vùng | Chưa có phòng: giải thích + Tạo phòng | Không tải danh sách: Thử lại, không giả danh sách rỗng | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc tính năng P2 chưa mở |
 | Hộp Cài đặt phòng | Host đổi riêng tư, thu hồi mã đúng | Đang thay đổi | Chưa nhận được dữ liệu từ máy chủ: hướng dẫn đợi, không hiện giá trị giả | Không còn quyền/ghi lỗi: tải trạng thái thật | Không Host; bật LOCKED chưa đủ hai ghế |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-ROOM-07-01` | Chủ phòng đổi giữa công khai, chỉ-mã, khoá bất kỳ lúc nào (kể cả khi đang đấu); riêng khoá chỉ bật được khi đủ 2 người chơi (chưa đủ thì nút mờ "Chỉ khoá được khi đã đủ 2 người chơi"). | Bật khoá khi thiếu người, khi đủ người, bằng người không phải chủ. | T-39, T-43, T-46 |
 | `AC-ROOM-07-02` | Khoá: phòng biến mất khỏi Sảnh; không ai mới vào được dù có đường dẫn hay mã; người đang có ghế hoặc đang xem giữ nguyên và vẫn xem được. | Khoá rồi người mới thử vào; người cũ vẫn xem. | T-43, T-46 |
 | `AC-ROOM-07-03` | Người đang có ghế hoặc đang xem mất mạng vẫn vào lại được (người chơi 60 giây, người xem 5 phút); quá hạn coi như người mới. | Ngắt và nối lại ở các mốc 59/61 giây và 4:59/5:01. | T-43, T-51, T-57 |
 | `AC-ROOM-07-04` | Phòng chỉ-mã không hiện ở Sảnh; vào bằng mã hoặc đường dẫn. | Đặt chỉ-mã; xem Sảnh; vào bằng mã. | T-43 |
 | `AC-ROOM-07-05` | Phòng đã khoá mà một người ngồi ghế rời thì vẫn giữ khoá; chủ phòng mở lại hoặc mời người xem xuống ghế, không tự mở vì mất ghế. | Khoá, một ghế rời, người mới thử vào. | T-43, T-46, T-57 |
 | `AC-ROOM-07-06` | Hộp xác nhận khi bật khoá nói rõ: "Người mới sẽ không vào được. Người xem đang có vẫn được giữ lại." | Bật khoá; đọc hộp xác nhận; bấm Huỷ. | T-39 |
-| `AC-ROOM-08-01` | Danh sách Sảnh chỉ hiện phòng công khai đang chờ hoặc đang chơi; mỗi dòng có tên phòng, chủ phòng, mức giờ, số người X/Y, nút Vào xem. | Dữ liệu mẫu đủ loại phòng. | T-10, T-43 |
-| `AC-ROOM-08-02` | Mới nhất lên đầu, tối đa 50 phòng, tự làm mới. | Dữ liệu hơn 50 phòng; tạo phòng mới. | T-10, T-43 |
-| `AC-ROOM-08-03` | Phòng đã đủ người xem thì nút Vào xem mờ kèm chú thích lý do. | Phòng đầy người xem. | T-10, T-46 |
-| `AC-ROOM-08-04` | Danh sách trống thì hiện lời giải thích và nút Tạo phòng. | Không có phòng nào. | T-10, T-60 |
+| `AC-ROOM-08-01` | Sảnh có danh sách phòng tự tạo `PUBLIC` còn mở để vào xem; `CODE_ONLY`, `LOCKED`, phòng ghép ngẫu nhiên và RANKED không xuất hiện. | Tạo CODE_ONLY, đổi PUBLIC ở WAITING/PLAYING/FINISHED còn mở; đóng/đổi lại thì biến khỏi Sảnh; các phòng P2 không xuất hiện. | T-10, T-43, T-46 |
+| `AC-ROOM-08-02` | Mỗi mục có tên phòng, hai ghế/người chơi, trạng thái và số người xem hiện tại/trần; không tiết lộ mã mời, token hoặc Kênh Riêng qua danh sách. | Đọc dữ liệu mạng và từng mục Sảnh: đúng ghế/trạng thái/số người xem; không có mã/token/Kênh Riêng. | T-10, T-43, T-46 |
+| `AC-ROOM-08-03` | Nút Vào xem theo AC-ROOM-05-03; phòng không có chỗ xem thì DISABLED kèm lý do, máy chủ vẫn chặn lời gọi trực tiếp. | Vào xem khi còn ghế trống và khi đủ người xem; gọi thẳng khi nút bị khoá: chỉ SPECTATOR hoặc bị từ chối đúng quyền. | T-10, T-43, T-46 |
+| `AC-ROOM-08-04` | Phòng chuyển khỏi PUBLIC hoặc đóng thì được bỏ khỏi danh sách; lệnh vào từ mục cũ kiểm lại quyền/sức chứa hiện tại, không vào được phòng đã khóa. | Giữ mục Sảnh cũ; Host đổi CODE_ONLY/LOCKED hoặc đóng rồi người khác bấm Vào xem: bị từ chối, danh sách bỏ mục. | T-10, T-43, T-46, T-60 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Không có điểm chờ quyết định.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Phòng công khai, khoá phòng và người xem; liên quan tới (relates to) các Task: T-10 (Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng); T-39 (Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi); T-43 (Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh); T-46 (Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Phòng công khai, khoá phòng và người xem»; relates to: T-10, T-39, T-43, T-46, T-51, T-57, T-60. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **nguyenhoangtungtuyhoa**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-08**; Due date **2026-10-31**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-19.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **nguyenhoangtungtuyhoa**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-6](https://xiangqi-web.atlassian.net/browse/XIAN-6).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-10 — XIAN-44](https://xiangqi-web.atlassian.net/browse/XIAN-44)
+* [T-39 — XIAN-73](https://xiangqi-web.atlassian.net/browse/XIAN-73)
+* [T-43 — XIAN-77](https://xiangqi-web.atlassian.net/browse/XIAN-77)
+* [T-46 — XIAN-80](https://xiangqi-web.atlassian.net/browse/XIAN-80)
+* [T-51 — XIAN-85](https://xiangqi-web.atlassian.net/browse/XIAN-85)
+* [T-57 — XIAN-91](https://xiangqi-web.atlassian.net/browse/XIAN-91)
+* [T-60 — XIAN-94](https://xiangqi-web.atlassian.net/browse/XIAN-94)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-10, T-39, T-43, T-46, T-51, T-57, T-60. Tổng giờ công tham chiếu **57**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 20 — Quản lý phòng: đổi chỗ, đuổi người xem, chủ phòng rời, sau ván
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Frontend, Room & Social
-**Nhãn:** `P1`, `mo-rong`, `US-ROOM-06`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3) · **Fix version:** v0.3-sprint-3 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 14/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Phòng công khai, khoá phòng và người xem»
+
+**Jira thực:** [XIAN-28](https://xiangqi-web.atlassian.net/browse/XIAN-28) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Frontend, Room & Social · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-ROOM-06`, `US-ROOM-09`, `US-ROOM-10`, `US-ROOM-11`, `xiangqi-mvp-20261005`, `s-20`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-08 · **Due date:** 2026-11-02 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Components:** Frontend, Room & Social
+**Giai đoạn:** Phần lõi liên kết T-11, T-19. Phần làm sau/kiểm đầy đủ liên kết T-39, T-44, T-46, T-51, T-62. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người trong phòng, tôi muốn **đổi giữa ghế và chỗ xem, đuổi người xem gây phiền, và phòng vẫn hợp lý** khi chủ phòng rời đi hoặc sau khi ván kết thúc.
 
 **Nguồn (đặc tả)**
-- US-ROOM-06 — Đổi chỗ giữa ghế và người xem (BA 2.8)
-- US-ROOM-09 — Đuổi người xem (BA 4.2)
-- US-ROOM-10 — Host rời, chuyển quyền, đóng phòng (BA 2.3)
-- US-ROOM-11 — Sau ván CASUAL: quay về phòng chờ (BA 2.3 mục 8)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-ROOM-06-01, AC-ROOM-06-02, AC-ROOM-06-03, AC-ROOM-06-04, AC-ROOM-06-05, AC-ROOM-09-01, AC-ROOM-09-02, AC-ROOM-09-03, AC-ROOM-10-01, AC-ROOM-10-02, AC-ROOM-10-03, AC-ROOM-11-01, AC-ROOM-11-02, AC-ROOM-11-03, AC-ROOM-11-04.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Phòng chờ (`SCR-WAITING-ROOM`), Hộp xác nhận Đuổi người xem (`MODAL-CONFIRM-KICK`), Danh sách Người xem (`PANEL-SPECTATORS`).
+
+* US-ROOM-06 — Đổi chỗ giữa ghế và người xem (BA 2.8)
+* US-ROOM-09 — Đuổi người xem (BA 4.2)
+* US-ROOM-10 — Host rời, chuyển quyền, đóng phòng (BA 2.3)
+* US-ROOM-11 — Sau ván CASUAL: quay về phòng chờ (BA 2.3 mục 8)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-ROOM-06-01, AC-ROOM-06-02, AC-ROOM-06-03, AC-ROOM-06-04, AC-ROOM-06-05, AC-ROOM-09-01, AC-ROOM-09-02, AC-ROOM-09-03, AC-ROOM-10-01, AC-ROOM-10-02, AC-ROOM-10-03, AC-ROOM-11-01, AC-ROOM-11-02, AC-ROOM-11-03, AC-ROOM-11-04.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Phòng chờ (`SCR-WAITING-ROOM`), Hộp xác nhận Đuổi người xem (`MODAL-CONFIRM-KICK`), Danh sách Người xem (`PANEL-SPECTATORS`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Đổi chỗ giữa ghế và người xem; Đuổi người xem; Host rời, chuyển quyền, đóng phòng; Sau ván CASUAL: quay về phòng chờ.
-- **Không:** xin đổi bên (Đỏ/Đen); hoán đổi trực tiếp hai người; chặn người dùng toàn hệ thống; nút Tái đấu.
+
+* **Có:** Đổi chỗ giữa ghế và người xem; Đuổi người xem; Host rời, chuyển quyền, đóng phòng; Sau ván CASUAL: quay về phòng chờ.
+* **Không:** xin đổi bên (Đỏ/Đen); hoán đổi trực tiếp hai người; chặn người dùng toàn hệ thống; nút Tái đấu.
 
 **Điều kiện để dùng:** đang ở trong phòng.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-11 — Giao diện: phòng chờ và màn từ chối vào phòng
-  - T-23 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván
-  - T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván
-  - T-43 — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-11 — Giao diện: phòng chờ và màn từ chối vào phòng**.
+* **T-23 — Máy chủ: chọn ghế, Sẵn sàng, đếm 3 giây, bắt đầu ván**.
+* **T-28 — Nối web với máy chủ: tạo phòng, vào phòng, ghế, Sẵn sàng, bắt đầu ván**.
+* **T-32 — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-43 — Máy chủ: kiểu phòng (công khai, chỉ mã, khoá) và danh sách phòng ở Sảnh**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. **Đổi chỗ** (khi phòng "đang chờ" hoặc "đã kết thúc"): người ngồi ghế bấm "Chuyển sang người xem"; hoặc chủ phòng chuyển người còn lại xuống xem, hoặc **mời một người xem lên ghế trống**. Phòng về "Đang chờ", "Sẵn sàng" của cả hai về chưa sẵn sàng.
 2. **Đuổi người xem:** cả chủ phòng và người chơi còn lại thấy nút **Đuổi** cạnh mỗi người xem; bấm thì hiện xác nhận "Người này sẽ không vào lại được phòng này."; sau xác nhận người xem bị ngắt, đưa ra Sảnh với thông báo "Bạn đã bị đuổi khỏi phòng thi đấu".
 3. **Chủ phòng rời** khi phòng đang chờ: nếu còn người ngồi ghế thì người đó thành chủ phòng; không còn ai ngồi ghế thì **đóng phòng** dù còn người xem. Đang đấu: rời giữa ván là **đầu hàng**; chủ phòng mất kết nối tạm thời không đổi chủ phòng.
 4. **Sau ván:** phòng ở "đã kết thúc" tối đa **10 phút** rồi đóng; ai đổi thành phần ghế thì phòng về "đang chờ", người còn lại giữ ghế (và quyền chủ phòng); người mới vào theo quy tắc vào phòng; mất kết nối ở phòng chờ giữ ghế **60 giây**.
 
 **Các quy tắc**
-- Không đổi chỗ khi đang đấu. Chuyển xuống xem chỉ được khi **còn chỗ xem** (hết chỗ thì nút mờ "Phòng không còn chỗ cho người xem"). Người xem **không tự ngồi** vào ghế trống; chủ phòng **không tự xuống** làm người xem.
-- Người bị đuổi bị chặn **đến khi phòng đóng**; vào lại bằng mã hay đường dẫn thì thấy "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"; người xem không có quyền đuổi.
-- Đồng hồ 10 phút của phòng đã kết thúc bị huỷ khi phòng về "đang chờ" (không đóng nhầm phòng mới).
+
+* Mời người xem xuống ghế phải được họ Chấp nhận; không giữ ghế, kiểm lại điều kiện lúc nhận. Từ chối hoặc ghế kín vẫn làm người xem; thành công vẫn phải Sẵn sàng.
+* Không đổi chỗ khi đang đấu. Chuyển xuống xem chỉ được khi **còn chỗ xem** (hết chỗ thì nút mờ "Phòng không còn chỗ cho người xem"). Người xem **không tự ngồi** vào ghế trống; chủ phòng **không tự xuống** làm người xem.
+* Người bị đuổi bị chặn **đến khi phòng đóng**; vào lại bằng mã hay đường dẫn thì thấy "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"; người xem không có quyền đuổi.
+* Đồng hồ 10 phút của phòng đã kết thúc bị huỷ khi phòng về "đang chờ" (không đóng nhầm phòng mới).
 
 **Khi có lỗi**
 hết chỗ xem → từ chối; gửi trùng → không vượt sức chứa; xác nhận đầu hàng chưa rõ → không báo rời xong.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Phòng chờ | Ghế/Host/Sẵn sàng đúng trạng thái | Đang nhận thế cờ hiện tại hoặc chuyển ghế | Ghế còn trống: mời bạn hoặc chia sẻ mã | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ |
 | Hộp xác nhận Đuổi người xem | Chặn đến đóng phòng, người xem về Sảnh | Đang đuổi/chặn | Mục tiêu đã rời: cập nhật danh sách | Mất quyền/lỗi lệnh: không báo đã đuổi | Mục tiêu không là người xem/người gọi mất ghế |
 | Danh sách Người xem | Danh sách/số X/N đúng; Kick cho hai người | Tải/cập nhật danh sách | Chưa ai xem: giải thích; không dựng tài khoản giả | Tải/đuổi lỗi: tải lại danh sách thật | N=0/đã đủ; không ghế thì không quyền Kick |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-ROOM-06-01` | Chỉ đổi chỗ khi phòng đang chờ hoặc đã kết thúc; khi đang đấu thì không đổi. | Thử đổi trong ván. | T-39, T-44 |
 | `AC-ROOM-06-02` | Người ngồi ghế bấm Chuyển sang người xem chỉ được khi còn chỗ xem; phòng không người xem hoặc đã đầy thì nút mờ "Phòng không còn chỗ cho người xem"; không vượt giới hạn. | Thử ở phòng 0 người xem, đầy, còn chỗ. | T-39, T-44, T-46 |
-| `AC-ROOM-06-03` | Chủ phòng chuyển người đang ngồi ghế xuống xem (cùng điều kiện còn chỗ), hoặc mời một người xem lên ghế trống. | Chủ phòng mời lên ghế trống rồi ghế kín. | T-39, T-44, T-46 |
+| `AC-ROOM-06-03` | Host bấm _Chuyển sang người xem_ cho người đang ngồi ghế (cùng điều kiện còn chỗ), hoặc gửi _Mời xuống ghế_ cho người xem khi còn ghế trống. Người xem phải Chấp nhận mới xuống ghế; Từ chối thì tiếp tục xem. Lời mời không giữ ghế; khi chấp nhận kiểm lại trạng thái phòng/quyền/vị trí chơi/ghế trống. Nếu ghế đã có người thì thông báo, giữ người đó ở vai trò Người xem; xuống ghế thành công vẫn phải bấm Sẵn sàng (BA 2.8, PO duyệt 05/10). | Mời người xem rồi Chấp nhận/Từ chối; người khác chiếm ghế trước lúc nhận; kiểm lại vị trí và quyền, thành công còn phải Sẵn sàng. | T-39, T-44, T-46 |
 | `AC-ROOM-06-04` | Người xem không tự ngồi vào ghế trống; chủ phòng không tự chuyển mình sang người xem (nút ẩn). | Thử cả hai ở máy chủ. | T-39, T-44 |
 | `AC-ROOM-06-05` | Mỗi lần đổi thành phần người ngồi ghế thì phòng về trạng thái đang chờ và "Sẵn sàng" reset. | Đổi lúc phòng đã kết thúc. | T-44, T-46 |
 | `AC-ROOM-09-01` | Chủ phòng và người chơi còn lại đều thấy nút Đuổi cạnh mỗi người xem; bấm thì hiện xác nhận "Người này sẽ không vào lại được phòng này." | Người chơi đuổi; người xem tìm nút (không có). | T-39, T-46 |
 | `AC-ROOM-09-02` | Sau xác nhận người xem bị ngắt kết nối, đưa ra Sảnh kèm "Bạn đã bị đuổi khỏi phòng thi đấu", bị chặn đến khi phòng đóng. | Đuổi; người bị đuổi gửi lệnh bằng kết nối cũ. | T-44, T-46 |
 | `AC-ROOM-09-03` | Người bị đuổi quay lại bằng đường dẫn hoặc mã thì thấy "Bạn đã bị đuổi và chặn tham gia phòng cờ này!" | Vào lại bằng mã cũ. | T-11, T-19 |
 | `AC-ROOM-10-01` | Chủ phòng rời khi phòng đang chờ: nếu còn người chơi thứ hai thì họ thành chủ phòng, phòng vẫn mở. | Chủ phòng rời khi có người thứ hai. | T-44, T-46 |
-| `AC-ROOM-10-02` | Không còn người ngồi ghế sau khi chủ phòng rời thì đóng phòng dù còn người xem; họ về Sảnh. Phòng cũng đóng khi hết hạn ở trạng thái đã kết thúc. | Chủ phòng rời khi còn người xem. | T-44, T-46 |
-| `AC-ROOM-10-03` | Đang đấu: chủ phòng mất kết nối tạm thời không đổi chủ phòng; chủ phòng rời hoặc bị xử thua thì quyền chuyển cho người còn lại; rời giữa ván là đầu hàng. | Ngắt mạng chủ phòng; rời giữa ván. | T-44, T-51 |
+| `AC-ROOM-10-02` | Khi không còn người ngồi ghế sau khi Host rời, đóng phòng dù còn người xem; họ về Sảnh. Ngoài ra phòng còn đóng khi hết hạn `FINISHED` theo US-ROOM-11, không gọi điều kiện hết ghế là nguyên nhân đóng duy nhất. | Chủ phòng rời khi còn người xem. | T-44, T-46 |
+| `AC-ROOM-10-03` | Đang đấu (`PLAYING`): Host mất kết nối tạm thời **không** đổi Host; Host rời hoặc bị xử thua vì quá ân hạn mất kết nối thì quyền Host chuyển cho người chơi còn lại; rời giữa ván tính là **Đầu hàng**. Host thua do chiếu hết/hết giờ nhưng vẫn ở phòng giữ nguyên quyền Host. | Ngắt mạng chủ phòng; rời giữa ván. | T-44, T-51 |
 | `AC-ROOM-11-01` | Ván kết thúc thì phòng ở trạng thái đã kết thúc tối đa 10 phút; hết hạn mà vẫn vậy thì đóng và đưa mọi người về Sảnh. Đã về trạng thái đang chờ thì hẹn giờ cũ không đóng phòng. | Đồng hồ giả: để hết 10 phút; đổi ghế trước hạn. | T-44, T-46 |
 | `AC-ROOM-11-02` | Một người ngồi ghế rời, hoặc thành phần ngồi ghế đổi, thì phòng về đang chờ; người còn lại giữ ghế và quyền chủ phòng (nếu người rời là chủ thì chuyển quyền). | Người rời là chủ và không phải chủ. | T-44 |
 | `AC-ROOM-11-03` | Người mới vào theo quy tắc vào phòng; mất kết nối ở phòng chờ giữ ghế 60 giây. | Ngắt kết nối ở phòng chờ. | T-19, T-51 |
 | `AC-ROOM-11-04` | Ví dụ nghiệm thu: A và C đánh xong, A rời, C thành chủ phòng, C mời B xuống ghế, B và C bấm Sẵn sàng thì đếm ngược và đấu tiếp. | Chạy đúng kịch bản trên ba trình duyệt. | T-46, T-62 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Không có điểm chờ quyết định.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Phòng công khai, khoá phòng và người xem; liên quan tới (relates to) các Task: T-39 (Giao diện: cài đặt phòng, đổi chỗ ghế/xem, danh sách người xem, xác nhận đuổi); T-44 (Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng); T-46 (Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Phòng công khai, khoá phòng và người xem»; relates to: T-11, T-19, T-39, T-44, T-46, T-51, T-62. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-08**; Due date **2026-11-02**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-20.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-6](https://xiangqi-web.atlassian.net/browse/XIAN-6).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-11 — XIAN-45](https://xiangqi-web.atlassian.net/browse/XIAN-45)
+* [T-19 — XIAN-53](https://xiangqi-web.atlassian.net/browse/XIAN-53)
+* [T-39 — XIAN-73](https://xiangqi-web.atlassian.net/browse/XIAN-73)
+* [T-44 — XIAN-78](https://xiangqi-web.atlassian.net/browse/XIAN-78)
+* [T-46 — XIAN-80](https://xiangqi-web.atlassian.net/browse/XIAN-80)
+* [T-51 — XIAN-85](https://xiangqi-web.atlassian.net/browse/XIAN-85)
+* [T-62 — XIAN-96](https://xiangqi-web.atlassian.net/browse/XIAN-96)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-11, T-19, T-39, T-44, T-46, T-51, T-62. Tổng giờ công tham chiếu **53**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 21 — Người xem theo dõi trực tiếp
-**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Thành phần:** Game Server, Frontend
-**Nhãn:** `P1`, `mo-rong`, `US-PLAY-09` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Phòng công khai, khoá phòng và người xem»
+
+**Jira thực:** [XIAN-29](https://xiangqi-web.atlassian.net/browse/XIAN-29) · **Loại:** Story · **Assignee:** nguyenhoangtungtuyhoa · **Sprint:** XIAN Sprint 3 · **Fix version:** v0.3
+**Components:** Game Server, Frontend · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-PLAY-09`, `xiangqi-mvp-20261005`, `s-21`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-20 · **Due date:** 2026-10-27 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Phòng công khai, khoá phòng và người xem · **Components:** Game Server, Frontend
+**Giai đoạn:** Phần làm sau/kiểm đầy đủ liên kết T-36, T-39, T-50, T-56, T-57. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người xem, tôi muốn **xem ván đang diễn ra** như người trong cuộc (chỉ xem).
 
 **Nguồn (đặc tả)**
-- US-PLAY-09 — Người xem theo dõi trực tiếp (BA 4.1, 4.3)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-09-01, AC-PLAY-09-02, AC-PLAY-09-03.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`), Danh sách Người xem (`PANEL-SPECTATORS`).
+
+* US-PLAY-09 — Người xem theo dõi trực tiếp (BA 4.1, 4.3)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-PLAY-09-01, AC-PLAY-09-02, AC-PLAY-09-03.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Ván đấu (`SCR-GAME-ROOM`), Danh sách Người xem (`PANEL-SPECTATORS`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Người xem theo dõi trực tiếp.
-- **Không:** xem lại ván, phát camera cho người xem.
+
+* **Có:** Người xem theo dõi trực tiếp.
+* **Không:** xem lại ván, phát camera cho người xem.
 
 **Điều kiện để dùng:** đã vào phòng làm người xem.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
-  - T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
-  - T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà
-  - T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-  - T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
-  - T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị
-  - T-51 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh**.
+* **T-25 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ**.
+* **T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi**.
+* **T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà**.
+* **T-31 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ**.
+* **T-32 — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà**.
+* **T-33 — Nối web, máy chủ và máy cờ thật: ván với máy**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng**.
+* **T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời**.
+* **T-47 — Bảng nước đi: ký hiệu tiếng Việt và hiển thị**.
+* **T-49 — Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)**.
+* **T-51 — Máy chủ: rời phòng giữa ván, mất kết nối, giữ chỗ, kết nối lại, ván gián đoạn**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Người xem thấy bàn cờ, đồng hồ, nước đi **theo thời gian thực** (không chậm cố ý), **chỉ đọc**.
 2. Thấy số người xem hiện tại và tối đa (ví dụ 3/5).
 
@@ -513,293 +831,494 @@ người xem **không thấy Kênh Riêng**, không có nút bật camera/micro,
 người xem bị đuổi hoặc hết hạn giữ chỗ → ngừng nhận dữ liệu mới; người xem dùng công cụ gửi nước đi hoặc đầu hàng → máy chủ từ chối, ván không đổi; người xem mất mạng rồi nối lại trong 5 phút → được phục hồi, quá hạn thì không còn chỗ xem.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Ván đấu | Thế cờ, giờ và lượt đi khớp với máy chủ | Đợi máy chủ gửi thế cờ hoặc xác nhận nước đi | Chưa có nước: thế đầu và hướng dẫn, không bàn trắng | Mất mạng hoặc ghi lỗi: không hiện nước đi sai; tự nối lại theo quy tắc rớt mạng | Chưa đến lượt, chỉ được xem, tab này đã bị tab khác tiếp quản, hoặc ván đã kết thúc |
 | Danh sách Người xem | Danh sách/số X/N đúng; Kick cho hai người | Tải/cập nhật danh sách | Chưa ai xem: giải thích; không dựng tài khoản giả | Tải/đuổi lỗi: tải lại danh sách thật | N=0/đã đủ; không ghế thì không quyền Kick |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-PLAY-09-01` | Người xem thấy bàn cờ, đồng hồ, nước đi theo thời gian thực (không trễ cố ý), chỉ đọc. | Người xem xem một ván có nước và kết quả; gửi lệnh bị từ chối. | T-50, T-57 |
 | `AC-PLAY-09-02` | Người xem không thấy Kênh Riêng; không có nút bật camera hay micro. | So dữ liệu người xem với người ngoài. | T-36, T-50, T-56 |
 | `AC-PLAY-09-03` | Ngoài danh sách chung, người xem thấy số người xem hiện tại (X/N). | Thêm và bớt người xem. | T-39, T-50 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Độ trễ người xem đo ở bài tải (nghiệm thu phi chức năng).
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Phòng công khai, khoá phòng và người xem; liên quan tới (relates to) các Task: T-50 (Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò); T-57 (Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Phòng công khai, khoá phòng và người xem»; relates to: T-36, T-39, T-50, T-56, T-57. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **nguyenhoangtungtuyhoa**; Sprint **XIAN Sprint 3**; Fix version **v0.3**; Start date **2026-10-20**; Due date **2026-10-27**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-21.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **nguyenhoangtungtuyhoa**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-6](https://xiangqi-web.atlassian.net/browse/XIAN-6).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-36 — XIAN-70](https://xiangqi-web.atlassian.net/browse/XIAN-70)
+* [T-39 — XIAN-73](https://xiangqi-web.atlassian.net/browse/XIAN-73)
+* [T-50 — XIAN-84](https://xiangqi-web.atlassian.net/browse/XIAN-84)
+* [T-56 — XIAN-90](https://xiangqi-web.atlassian.net/browse/XIAN-90)
+* [T-57 — XIAN-91](https://xiangqi-web.atlassian.net/browse/XIAN-91)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-36, T-39, T-50, T-56, T-57. Tổng giờ công tham chiếu **33**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 22 — Chat hai kênh, giới hạn tin nhắn và lọc từ cấm
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Backend
-**Nhãn:** `P1`, `loi`, `mo-rong`, `US-CHAT-01`, `US-CHAT-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi gồm T-09; phần mở rộng gồm T-48, T-56.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
+
+**Jira thực:** [XIAN-30](https://xiangqi-web.atlassian.net/browse/XIAN-30) · **Loại:** Story · **Assignee:** Nguyễn Minh Thư · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Communication, Backend · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-CHAT-01`, `US-CHAT-02`, `xiangqi-mvp-20261005`, `s-22`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-08 · **Due date:** 2026-10-31 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Chat, camera và micro · **Components:** Communication, Backend
+**Giai đoạn:** Phần lõi liên kết T-09. Phần làm sau/kiểm đầy đủ liên kết T-48, T-56, T-60. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người trong phòng, tôi muốn **nhắn tin** với đối thủ (kênh riêng) hoặc với cả phòng (kênh chung), không bị quấy rối.
 
 **Nguồn (đặc tả)**
-- US-CHAT-01 — Hai kênh chat (BA 5.3)
-- US-CHAT-02 — Giới hạn và bộ lọc từ cấm (BA 5.3)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-CHAT-01-01, AC-CHAT-01-02, AC-CHAT-01-03, AC-CHAT-02-01, AC-CHAT-02-02, AC-CHAT-02-03.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Khung Chat (`PANEL-CHAT`).
+
+* US-CHAT-01 — Hai kênh chat (BA 5.3)
+* US-CHAT-02 — Giới hạn và bộ lọc từ cấm (BA 5.3)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-CHAT-01-01, AC-CHAT-01-02, AC-CHAT-01-03, AC-CHAT-02-01, AC-CHAT-02-02, AC-CHAT-02-03.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Khung Chat (`PANEL-CHAT`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Hai kênh chat; Giới hạn và bộ lọc từ cấm.
-- **Không:** nhắn tin riêng giữa bạn bè; sticker; báo cáo vi phạm; cấm người dùng.
+
+* **Có:** Hai kênh chat; Giới hạn và bộ lọc từ cấm.
+* **Không:** nhắn tin riêng giữa bạn bè; sticker; báo cáo vi phạm; cấm người dùng.
 
 **Điều kiện để dùng:** đang ở trong phòng.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
-  - T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh
-  - T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
-  - T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời
-  - T-50 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập**.
+* **T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-19 — Máy chủ: vào phòng bằng mã, đường dẫn hoặc từ Sảnh**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng**.
+* **T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời**.
+* **T-50 — Máy chủ: người xem theo dõi trực tiếp, lọc dữ liệu theo vai trò**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-1. **Người chơi** thấy cả **Kênh Riêng** (mặc định mở, chỉ hai người ngồi ghế) và **Kênh Chung** (cả phòng), có công tắc ẩn Kênh Chung. **Người xem** chỉ thấy **Kênh Chung**.
+
+1. **Người chơi** trên máy tính mặc định chỉ mở Kênh Riêng, có thể mở thêm Kênh Chung để thấy hai khung cùng lúc hoặc đóng bớt; điện thoại dùng hai tab mặc định Kênh Riêng. Giữ công tắc ẩn Chung. **Người xem** chỉ có Kênh Chung.
 2. Người dùng gõ tin và bấm gửi; tin hiện "đang gửi" cho đến khi máy chủ xác nhận.
 3. Tin quá dài hoặc gửi quá nhanh bị chặn kèm thông báo "Bạn gửi quá nhanh". Từ cấm được che bằng `***`.
 
 **Các quy tắc**
-- Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; **người đổi chỗ sau không đọc được tin cũ**; người xem mới vào chỉ thấy tin Kênh Chung **từ lúc họ vào**. Khi **cả cặp** ngồi ghế đổi (A và B chat riêng, B xuống xem, C lên ngồi), người mới và cả cặp mới **không đọc** tin của cặp cũ (PO chốt 04/10/2026).
-- Tin chat của phòng **xoá khi phòng đóng**.
-- Mỗi tin tối đa **200 ký tự**; mỗi người tối đa **5 tin trong 10 giây**.
-- Từ cấm (tiếng Việt, tiếng Anh) bị che **ở cả máy chủ và trình duyệt**, có xử lý bỏ dấu, khoảng trắng, ký tự chèn thêm, ký tự thay thế (số 0 thay chữ o, số 1 thay chữ i). Máy chủ là nơi quyết định; việc che ở trình duyệt chỉ để người dùng thấy trước. Không có sticker (khay ẩn).
+
+* Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; **người đổi chỗ sau không đọc được tin cũ**; người xem mới vào chỉ thấy tin Kênh Chung **từ lúc họ vào**. Khi **cả cặp** ngồi ghế đổi (A và B chat riêng, B xuống xem, C lên ngồi), người mới và cả cặp mới **không đọc** tin của cặp cũ (PO chốt 04/10/2026).
+* Tin chat của phòng **xoá khi phòng đóng**.
+* Mỗi tin tối đa **200 ký tự**; mỗi người tối đa **5 tin trong 10 giây**.
+* Từ cấm (tiếng Việt, tiếng Anh) bị che **ở cả máy chủ và trình duyệt**, có xử lý bỏ dấu, khoảng trắng, ký tự chèn thêm, ký tự thay thế (số 0 thay chữ o, số 1 thay chữ i). Máy chủ là nơi quyết định; việc che ở trình duyệt chỉ để người dùng thấy trước. Không có sticker (khay ẩn).
 
 **Khi có lỗi**
 máy chủ từ chối hoặc mất phản hồi → không báo "đã gửi", không tự tạo tin mới; mất ghế → gỡ ngay dữ liệu kênh riêng khỏi màn hình.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Khung Chat | Tin đúng quyền/kênh sau bộ lọc | Tải/gửi tin | Chưa có tin: lời nhắc viết theo kênh | Gửi lỗi: đánh dấu chưa gửi, kiểm lại rồi mới cho gửi lại | Vượt giới hạn, mất quyền kênh, ô trống |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
-| `AC-CHAT-01-01` | Người chơi thấy cả Kênh Riêng (mặc định mở) và Kênh Chung, có công tắc ẩn Kênh Chung. Người xem chỉ thấy Kênh Chung. | Vào bằng hai vai; ẩn và hiện Kênh Chung. | T-48, T-56 |
-| `AC-CHAT-01-02` | Tin ở Kênh Riêng chỉ hai người đang ngồi ghế nhận; người đổi chỗ sau không đọc tin cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào. Đổi cặp ngồi ghế thì người mới (và cả cặp mới) không đọc tin của cặp cũ. | Người xem vào muộn; người xuống ghế; đổi cặp A/B thành A/C. | T-48, T-56 |
+| --- | --- | --- | --- |
+| `AC-CHAT-01-01` | **Người chơi phòng tự tạo:** máy tính mặc định chỉ mở Kênh Riêng, có thể mở thêm Kênh Chung để xem đồng thời hoặc đóng bớt một khung; điện thoại dùng hai tab, mặc định Kênh Riêng. Giữ công tắc ẩn Kênh Chung. **Người xem:** chỉ Kênh Chung. Ghép ngẫu nhiên/RANKED chỉ có Kênh Riêng; đổi bố cục không đổi quyền đọc/gửi. | Desktop mở thêm Kênh Chung để thấy hai khung, đóng bớt; mobile đổi hai tab; người xem chỉ thấy Chung; đổi bố cục không đổi quyền. | T-48, T-56 |
+| `AC-CHAT-01-02` | Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; cặp người chơi mới không đọc tin của cặp cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào. | Người xem vào muộn; người xuống ghế; đổi cặp A/B thành A/C. | T-48, T-56 |
 | `AC-CHAT-01-03` | Tin chat của phòng bị xoá khi phòng đóng. | Đóng phòng; kiểm dữ liệu. | T-48, T-56 |
 | `AC-CHAT-02-01` | Mỗi tin tối đa 200 ký tự; mỗi người tối đa 5 tin trong 10 giây; vượt thì báo "Bạn gửi quá nhanh". | Gửi 200 và 201 ký tự; 5 và 6 tin trong 10 giây. | T-09, T-48 |
-| `AC-CHAT-02-02` | Từ cấm (tiếng Việt, tiếng Anh) bị che bằng *** ở máy chủ và trình duyệt, có xử lý bỏ dấu, khoảng trắng, ký tự chèn, ký tự thay thế (0 thành o, 1 thành i). | Chạy bộ ví dụ ở hai phía; so kết quả. | T-09, T-48, T-56 |
+| `AC-CHAT-02-02` | Từ cấm (tiếng Việt, tiếng Anh) bị che bằng \*\*\* ở máy chủ và trình duyệt, có xử lý bỏ dấu, khoảng trắng, ký tự chèn, ký tự thay thế (0 thành o, 1 thành i). | Chạy bộ ví dụ ở hai phía; so kết quả. | T-09, T-48, T-56 |
 | `AC-CHAT-02-03` | Sticker chưa có ở giai đoạn này (khay ẩn). | Tìm khay sticker (không có). | T-56, T-60 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Đã chốt: đổi cặp ngồi ghế thì không đọc tin cũ (04/10/2026). Danh sách từ cấm do nhóm cung cấp.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Chat, camera và micro; liên quan tới (relates to) các Task: T-09 (Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ); T-48 (Máy chủ: chat hai kênh, quyền đọc, giới hạn tin, lọc từ cấm); T-56 (Giao diện chat hai kênh và nối web với máy chủ).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Chat, camera và micro»; relates to: T-09, T-48, T-56, T-60. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Nguyễn Minh Thư**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-08**; Due date **2026-10-31**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-22.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Nguyễn Minh Thư**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-7](https://xiangqi-web.atlassian.net/browse/XIAN-7).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-09 — XIAN-43](https://xiangqi-web.atlassian.net/browse/XIAN-43)
+* [T-48 — XIAN-82](https://xiangqi-web.atlassian.net/browse/XIAN-82)
+* [T-56 — XIAN-90](https://xiangqi-web.atlassian.net/browse/XIAN-90)
+* [T-60 — XIAN-94](https://xiangqi-web.atlassian.net/browse/XIAN-94)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-09, T-48, T-56, T-60. Tổng giờ công tham chiếu **31**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 23 — Camera và micro: người chơi bật, người xem chỉ xem
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Frontend
-**Nhãn:** `P1`, `mo-rong`, `US-MEDIA-01`, `US-MEDIA-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
+
+**Jira thực:** [XIAN-31](https://xiangqi-web.atlassian.net/browse/XIAN-31) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Communication, Frontend · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-MEDIA-01`, `US-MEDIA-02`, `xiangqi-mvp-20261005`, `s-23`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-20 · **Due date:** 2026-11-04 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Chat, camera và micro · **Components:** Communication, Frontend
+**Giai đoạn:** Phần làm sau/kiểm đầy đủ liên kết T-35, T-36, T-49, T-59, T-63. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi, tôi muốn **bật camera và micro** để đối thủ thấy mặt và nghe tiếng tôi; và là người xem, tôi chỉ **xem và nghe** những gì người chơi cho phép.
 
 **Nguồn (đặc tả)**
-- US-MEDIA-01 — Camera và micro cho hai người chơi (BA 4.1, 5.4)
-- US-MEDIA-02 — Người xem chỉ xem/nghe (BA 4.1)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-MEDIA-01-01, AC-MEDIA-01-02, AC-MEDIA-01-03, AC-MEDIA-01-04, AC-MEDIA-02-01, AC-MEDIA-02-02.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Khung Camera và Micro (`PANEL-MEDIA`).
+
+* US-MEDIA-01 — Camera và micro cho hai người chơi (BA 4.1, 5.4)
+* US-MEDIA-02 — Người xem chỉ xem/nghe (BA 4.1)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-MEDIA-01-01, AC-MEDIA-01-02, AC-MEDIA-01-03, AC-MEDIA-01-04, AC-MEDIA-02-01, AC-MEDIA-02-02.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Khung Camera và Micro (`PANEL-MEDIA`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Camera và micro cho hai người chơi; Người xem chỉ xem/nghe.
-- **Không:** mở nhiều tab (Story 24); chat (Story 22).
+
+* **Có:** Camera và micro cho hai người chơi; Người xem chỉ xem/nghe.
+* **Không:** mở nhiều tab (Story 24); chat (Story 22).
 
 **Điều kiện để dùng:** đang trong phòng (ngồi ghế để phát, hoặc làm người xem để xem).
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ
-  - T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-  - T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
-  - T-56 — Giao diện chat hai kênh và nối web với máy chủ
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**.
+* **T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà**.
+* **T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt**.
+* **T-31 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng**.
+* **T-56 — Giao diện chat hai kênh và nối web với máy chủ**.
+* **T-57 — Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
-1. Khi vào phòng, camera và micro **TẮT**. Người chơi tự bật từng thiết bị (độc lập nhau); lúc đó trình duyệt mới hỏi quyền.
-2. Người chơi chọn **mức chia sẻ**: *Không chia sẻ*, *Chỉ đối thủ*, hoặc *Cả đối thủ và người xem* (mức ba chỉ chọn được khi phòng có người xem).
+
+1. Khi vào phòng, camera và micro **TẮT**, mức chia sẻ chọn sẵn **Chỉ đối thủ**. Người chơi tự bật từng thiết bị (độc lập nhau); lúc đó trình duyệt mới hỏi quyền.
+2. Người chơi chọn **mức chia sẻ**: _Không chia sẻ_, _Chỉ đối thủ_, hoặc _Cả đối thủ và người xem_ (mức ba chỉ chọn được khi phòng có người xem).
 3. Khi cả hai bật và chọn từ "Chỉ đối thủ" trở lên thì thấy mặt và nghe tiếng nhau.
 4. **Người xem** không có nút bật camera hay micro và không bị hỏi quyền thiết bị; chỉ thấy và nghe luồng của người chơi chọn "Cả đối thủ và người xem".
 
 **Các quy tắc**
-- Mức chia sẻ chọn **riêng từng người chơi**, áp **chung** cho camera và micro đang bật. **Không ghi hình, ghi âm hay lưu.**
-- Máy chủ **không cấp quyền phát** cho người xem. Đổi vai, bị đuổi, phòng đóng thì **thu hồi quyền ngay**; mã truy cập cũ không dùng lại được để lấy quyền đã mất.
-- Lỗi camera/micro **không** làm hỏng việc đi cờ và chat.
+
+* Mức chia sẻ chọn **riêng từng người chơi**, áp **chung** cho camera và micro đang bật. **Không ghi hình, ghi âm hay lưu.**
+* Máy chủ **không cấp quyền phát** cho người xem. Đổi vai, bị đuổi, phòng đóng thì **thu hồi quyền ngay**; mã truy cập cũ không dùng lại được để lấy quyền đã mất.
+* Lỗi camera/micro **không** làm hỏng việc đi cờ và chat.
 
 **Khi có lỗi**
 từ chối quyền hoặc không có thiết bị → báo lỗi rõ, bàn cờ và chat vẫn dùng.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-MEDIA-01-01` | Mỗi người chơi bật/tắt camera và micro độc lập; mặc định TẮT khi vào phòng. | Vào phòng rồi bật riêng từng thiết bị. | T-36, T-59 |
-| `AC-MEDIA-01-02` | Có 3 mức chia sẻ chọn riêng từng người chơi, áp chung cho camera và micro đang bật: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem (mức ba chỉ chọn được khi phòng có người xem). | Thử từng mức với đối thủ và người xem. | T-35, T-49, T-59 |
-| `AC-MEDIA-01-03` | Hai người chơi thấy mặt và nghe tiếng nhau khi cả hai bật ở mức từ 2 trở lên. | Hai người bật camera và micro. | T-59 |
+| `AC-MEDIA-01-02` | Có 3 mức chia sẻ chọn riêng từng người chơi, áp chung cho camera và micro đang bật: _Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem_ (mức 3 chỉ cho khi phòng có người xem). Phòng tự tạo chọn sẵn **Chỉ đối thủ**, camera/mic vẫn mặc định Tắt; người chơi chủ động chọn mức 3 mới cho người xem thấy/nghe (BA 4.1, PO duyệt 05/10). | Vào phòng thấy Chỉ đối thủ chọn sẵn và thiết bị Tắt; bật rồi người xem không nhận cho đến khi chủ động chọn mức 3. | T-35, T-49, T-59 |
+| `AC-MEDIA-01-03` | Quyền nhận theo mức chia sẻ và thiết bị đang bật của **người phát**, không bắt người nhận phải bật camera/mic hoặc chia sẻ ngược lại. Khi cả hai cùng bật mức ≥ 2 thì mỗi bên thấy/nghe đối thủ. | Chỉ một người bật/chia sẻ, người nhận để thiết bị Tắt: vẫn nhận đúng luồng; không bắt chia sẻ ngược. | T-59 |
 | `AC-MEDIA-01-04` | Không ghi hình, ghi âm hay lưu trữ. | Rà cấu hình và sản phẩm kiểm thử; không có ghi hay lưu. | T-49, T-63 |
 | `AC-MEDIA-02-01` | Người xem không có nút bật camera hay micro; máy chủ không cấp quyền phát. | Người xem gọi thẳng công cụ phát. | T-36, T-49, T-63 |
 | `AC-MEDIA-02-02` | Người xem chỉ thấy/nghe luồng của người chơi chọn mức Cả đối thủ và người xem. | Đổi mức chia sẻ; xem bên người xem. | T-49, T-59, T-63 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Có thể vượt hạn mức miễn phí của dịch vụ camera/micro nếu chạy tải lớn; phần tải chỉ ghi số đo.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Chat, camera và micro; liên quan tới (relates to) các Task: T-35 (Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền); T-36 (Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi); T-49 (Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)); T-59 (Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit)).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Chat, camera và micro»; relates to: T-35, T-36, T-49, T-59, T-63. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-20**; Due date **2026-11-04**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-23.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-7](https://xiangqi-web.atlassian.net/browse/XIAN-7).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-35 — XIAN-69](https://xiangqi-web.atlassian.net/browse/XIAN-69)
+* [T-36 — XIAN-70](https://xiangqi-web.atlassian.net/browse/XIAN-70)
+* [T-49 — XIAN-83](https://xiangqi-web.atlassian.net/browse/XIAN-83)
+* [T-59 — XIAN-93](https://xiangqi-web.atlassian.net/browse/XIAN-93)
+* [T-63 — XIAN-97](https://xiangqi-web.atlassian.net/browse/XIAN-97)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-35, T-36, T-49, T-59, T-63. Tổng giờ công tham chiếu **60.5**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 24 — Mở nhiều tab: tab mới tiếp quản
-**Thuộc Epic:** Chat, camera và micro · **Thành phần:** Communication, Game Server
-**Nhãn:** `P1`, `mo-rong`, `US-MEDIA-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 3 (Sprint bắt đầu; Task của Story nằm ở Sprint 3, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần mở rộng (làm sau khi bản chơi được đạt).
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 13/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Chat, camera và micro»
+
+**Jira thực:** [XIAN-32](https://xiangqi-web.atlassian.net/browse/XIAN-32) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Communication, Game Server · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-MEDIA-03`, `xiangqi-mvp-20261005`, `s-24`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-23 · **Due date:** 2026-10-29 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Chat, camera và micro · **Components:** Communication, Game Server
+**Giai đoạn:** Phần làm sau/kiểm đầy đủ liên kết T-49, T-59. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người dùng, khi **mở thêm tab** vào cùng phòng, tôi muốn **chỉ một tab điều khiển** để không bị lộn xộn.
 
 **Nguồn (đặc tả)**
-- US-MEDIA-03 — Mở nhiều tab (BA 1.8)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-MEDIA-03-01.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Khung Camera và Micro (`PANEL-MEDIA`).
+
+* US-MEDIA-03 — Mở nhiều tab (BA 1.8)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-MEDIA-03-01.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Khung Camera và Micro (`PANEL-MEDIA`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Mở nhiều tab.
-- **Không:** hộp thoại chọn tab phụ (giai đoạn sau).
+
+* **Có:** Mở nhiều tab.
+* **Không:** hộp thoại chọn tab phụ (P2).
 
 **Điều kiện để dùng:** đang ở trong phòng ở một tab.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ
-  - T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt
-  - T-35 — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền
-  - T-36 — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi
-  - T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng
-  - T-56 — Giao diện chat hai kênh và nối web với máy chủ
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**.
+* **T-29 — Máy chủ: đồng hồ ván, kết thúc ván, đầu hàng, xin hoà**.
+* **T-30 — Nối web với máy chủ: đi nước, đồng bộ thế cờ giữa hai trình duyệt**.
+* **T-31 — Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ**.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**.
+* **T-35 — Thử nghiệm LiveKit Cloud: camera/micro theo từng người, thu hồi quyền**.
+* **T-36 — Giao diện: camera/micro, bật tắt độc lập, mức chia sẻ, thông báo quyền và lỗi**.
+* **T-44 — Máy chủ: đổi chỗ ghế/xem, đuổi người xem, chủ phòng rời, đóng phòng**.
+* **T-56 — Giao diện chat hai kênh và nối web với máy chủ**.
+* **T-57 — Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Mở thêm một tab vào cùng phòng: **tab mới tiếp quản**, nghĩa là tab mới được điều khiển như bình thường, còn tab cũ chỉ được xem.
 2. Tab cũ hiện "Phiên này đã được mở ở tab khác", chuyển **chỉ đọc**; camera và micro của tab cũ **tự dừng**.
 3. Tab mới mặc định **tắt** camera và micro.
 
 **Các quy tắc**
-máy chủ **chặn mọi lệnh làm thay đổi** từ tab cũ; phiên hết hạn hoặc sai thì không chiếm được quyền điều khiển.
+
+* Chỉ tiếp quản tab trên cùng thiết bị; tab cũ tự reconnect vẫn chỉ đọc, chỉ chủ động tiếp quản mới lấy quyền lại. Khác thiết bị đang chơi xử thua theo Story 2, không tiếp tục ván.
+  máy chủ **chặn mọi lệnh làm thay đổi** từ tab cũ; phiên hết hạn hoặc sai thì không chiếm được quyền điều khiển.
 
 **Khi có lỗi**
 tab cũ gửi lệnh làm thay đổi ván hoặc phòng → máy chủ chặn; phiên hết hạn hoặc sai → không chiếm được quyền điều khiển; từ chối quyền camera/micro hoặc không có thiết bị → báo lỗi riêng, cờ và chat vẫn dùng được.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Khung Camera và Micro | Luồng chỉ người được phép nhận | Xin quyền thiết bị/kết nối media | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | Người xem không phát; mất ghế hoặc tab đã bị tab khác tiếp quản |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
-| `AC-MEDIA-03-01` | Mở thêm tab vào cùng phòng thì tab mới tiếp quản (tab mới điều khiển được, tab cũ không còn điều khiển); tab cũ nhận "Phiên này đã được mở ở tab khác", chuyển chỉ đọc; camera/micro tab cũ tự dừng; tab mới mặc định tắt. | Mở hai tab; tab cũ gửi nước. | T-49, T-59 |
+| --- | --- | --- | --- |
+| `AC-MEDIA-03-01` | Mở thêm tab vào cùng phòng thì tab mới **tiếp quản**; tab cũ nhận _"Phiên này đã được mở ở tab khác"_, chuyển chỉ đọc; camera/mic của tab cũ **tự dừng**, tab mới mặc định tắt. Tab cũ tự reconnect vẫn chỉ đọc, chỉ chủ động tiếp quản mới lấy lại quyền; không tự giành quyền qua lại. | Mở tab mới cùng thiết bị, tab cũ tự reconnect rồi thử lệnh: vẫn chỉ đọc; chủ động tiếp quản lại mới có quyền; camera/mic cũ dừng. | T-49, T-59 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Không có điểm chờ quyết định.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Chat, camera và micro; liên quan tới (relates to) các Task: T-49 (Máy chủ: cấp quyền camera/micro theo vai và mở nhiều tab (tab mới tiếp quản)); T-59 (Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit)).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Chat, camera và micro»; relates to: T-49, T-59. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-23**; Due date **2026-10-29**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-24.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-7](https://xiangqi-web.atlassian.net/browse/XIAN-7).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-49 — XIAN-83](https://xiangqi-web.atlassian.net/browse/XIAN-83)
+* [T-59 — XIAN-93](https://xiangqi-web.atlassian.net/browse/XIAN-93)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-49, T-59. Tổng giờ công tham chiếu **28.5**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 25 — Chọn cấp độ, chọn phe và máy đi nước đúng luật
-**Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** AI, Frontend
-**Nhãn:** `P1`, `loi`, `mo-rong`, `US-AI-01`, `US-AI-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 1 (Sprint bắt đầu; Task của Story nằm ở Sprint 1, 2, 4) · **Fix version:** v1.0-sprint-4 (theo Sprint của Task cuối)
-**Giai đoạn:** phần lõi gồm T-14, T-26, T-31, T-33; phần mở rộng gồm T-58.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 15/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
+
+**Jira thực:** [XIAN-33](https://xiangqi-web.atlassian.net/browse/XIAN-33) · **Loại:** Story · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** AI, Frontend · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-AI-01`, `US-AI-02`, `xiangqi-mvp-20261005`, `s-25`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-12 · **Due date:** 2026-10-31 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đánh với máy theo cấp độ · **Components:** AI, Frontend
+**Giai đoạn:** Phần lõi liên kết T-14, T-26, T-31, T-33. Phần làm sau/kiểm đầy đủ liên kết T-58, T-60. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi, tôi muốn **chọn cấp độ và phe rồi đánh với máy**, máy đáp lại nhanh và không bao giờ đi sai luật.
 
 **Nguồn (đặc tả)**
-- US-AI-01 — Chọn cấp độ và phe (BA 6.1, 6.3)
-- US-AI-02 — Chơi với máy (BA 6.1, 6.3; [02] mục 9)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-AI-01-01, AC-AI-01-02, AC-AI-01-03, AC-AI-02-01, AC-AI-02-02, AC-AI-02-03, AC-AI-02-04.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Đánh với máy (`SCR-AI-GAME`), Hộp chọn Cấp độ và Phe (đánh với máy) (`MODAL-AI-SETUP`).
+
+* US-AI-01 — Chọn cấp độ và phe (BA 6.1, 6.3)
+* US-AI-02 — Chơi với máy (BA 6.1, 6.3; \[02\] mục 9)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-AI-01-01, AC-AI-01-02, AC-AI-01-03, AC-AI-02-01, AC-AI-02-02, AC-AI-02-03, AC-AI-02-04.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Đánh với máy (`SCR-AI-GAME`), Hộp chọn Cấp độ và Phe (đánh với máy) (`MODAL-AI-SETUP`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Chọn cấp độ và phe; Chơi với máy.
-- **Không:** kết thúc và vào lại ván (Story 26); gợi ý nước; đi lại.
+
+* **Có:** Chọn cấp độ và phe; Chơi với máy.
+* **Không:** kết thúc và vào lại ván (Story 26); gợi ý nước; đi lại.
 
 **Điều kiện để dùng:** đã đăng nhập, chưa có chỗ chơi khác.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-08 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước
-  - T-10 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng
-  - T-15 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng
-  - T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
-  - T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
-  - T-53 — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-08 — Luật cờ: nước hợp lệ, chiếu, chiếu hết, hết nước, lặp thế, 120 nửa nước**.
+* **T-10 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng**.
+* **T-15 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng**.
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**.
+* **T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh**.
+* **T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi**.
+* **T-53 — Kiểm thử luật cờ: đếm nước đi độc lập và bộ kiểm thử chạy tự động**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Ở Sảnh có ba thẻ **Dễ**, **Trung bình**, **Khó**; bấm một thẻ thì chọn phe **Đỏ**, **Đen** hoặc **Ngẫu nhiên** (máy chủ bốc 50/50).
 2. Nếu người chơi cầm Đen thì **máy (Đỏ) tự đi nước đầu** và bàn lật cho Đen ở dưới.
 3. Người chơi đi, máy tìm nước trong thời gian của cấp: **Dễ 300 ms, Trung bình 1.000 ms, Khó 3.000 ms**; hết thời gian thì đi nước tốt nhất đã tìm được. Nếu máy đang bận, chờ tối đa 3 giây (không tính vào thời gian nghĩ), quá thì báo "Thử lại".
 
 **Các quy tắc**
-- Mỗi người một chỗ chơi cùng lúc; phe do máy chủ bốc và lưu.
-- Ván với máy **không giới hạn thời gian** cho người chơi, không tính Elo, **không có nút xin hoà** (chỉ có Đầu hàng), **không có nút gợi ý nước**; **máy không bao giờ đi nước không hợp lệ**; máy bận thì giữ nguyên ván và lượt.
+
+* Mỗi người một chỗ chơi cùng lúc; phe do máy chủ bốc và lưu.
+* Ván với máy **không giới hạn thời gian** cho người chơi, không tính Elo, **không có nút xin hoà** (chỉ có Đầu hàng), **không có nút gợi ý nước**; **máy không bao giờ đi nước không hợp lệ**; máy bận thì giữ nguyên ván và lượt.
 
 **Khi có lỗi**
 vào ghế phòng và bắt đầu ván máy cùng lúc thì chỉ một chỗ thành công.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Đến lượt máy hoặc tab đã bị tab khác tiếp quản; đi lại hết lượt hoặc P1 chưa có |
 | Hộp chọn Cấp độ và Phe (đánh với máy) | Tạo ván đúng cấp/phe | Đang tạo ván và chọn phe | Chưa chọn đủ: hướng dẫn chọn | Tạo lỗi: kiểm lại với máy chủ, không tạo hai ván | Đang có chỗ chơi (đang ngồi ghế hoặc đang trong ván) hoặc đang gửi |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-AI-01-01` | Ở Sảnh có 3 thẻ Dễ / Trung bình / Khó; bấm mở hộp chọn phe Đỏ / Đen / Ngẫu nhiên (máy chủ bốc 50/50). | Bắt đầu với từng tổ hợp; kiểm phe được lưu. | T-26, T-31, T-33 |
 | `AC-AI-01-02` | Cầm Đen thì máy (cầm Đỏ) tự đi nước đầu và bàn cờ lật cho Đen ở dưới. | Chọn Đen. | T-26, T-31 |
 | `AC-AI-01-03` | Không có nút gợi ý nước đi. | Tìm nút gợi ý (không có). | T-26, T-60 |
@@ -809,88 +1328,175 @@ vào ghế phòng và bắt đầu ván máy cùng lúc thì chỉ một chỗ t
 | `AC-AI-02-04` | Máy bận: giữ cùng ván, thế và lượt; Thử lại chỉ yêu cầu tìm nước, không gửi lại nước của người chơi; kết quả tác vụ cũ bị bỏ. | Giữ máy bận quá 3 giây rồi Thử lại; gửi kết quả cũ. | T-26, T-31, T-33 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Chất lượng máy cờ chỉ kết luận sau bài đo đầy đủ (cổng GATE-AI); không đạt thì ghi số thật và báo PO.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Đánh với máy theo cấp độ; liên quan tới (relates to) các Task: T-14 (Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ); T-26 (Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố); T-31 (Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ); T-33 (Nối web, máy chủ và máy cờ thật: ván với máy); T-58 (Đo máy cờ đầy đủ (GATE-AI): tốc độ, độ sâu, sức mạnh, độ ổn định).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Đánh với máy theo cấp độ»; relates to: T-14, T-26, T-31, T-33, T-58, T-60. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-12**; Due date **2026-10-31**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-25.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-8](https://xiangqi-web.atlassian.net/browse/XIAN-8).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-14 — XIAN-48](https://xiangqi-web.atlassian.net/browse/XIAN-48)
+* [T-26 — XIAN-60](https://xiangqi-web.atlassian.net/browse/XIAN-60)
+* [T-31 — XIAN-65](https://xiangqi-web.atlassian.net/browse/XIAN-65)
+* [T-33 — XIAN-67](https://xiangqi-web.atlassian.net/browse/XIAN-67)
+* [T-58 — XIAN-92](https://xiangqi-web.atlassian.net/browse/XIAN-92)
+* [T-60 — XIAN-94](https://xiangqi-web.atlassian.net/browse/XIAN-94)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-14, T-26, T-31, T-33, T-58, T-60. Tổng giờ công tham chiếu **58**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
 
 ---
 
 ### Story 26 — Kết thúc ván với máy, vào lại ván và sự cố máy cờ
-**Thuộc Epic:** Đánh với máy theo cấp độ · **Thành phần:** Frontend, AI
-**Nhãn:** `P1`, `loi`, `US-AI-03`, `US-AI-04` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống (nhóm tự nhận khi kéo việc) · **Sprint:** Sprint 2 (Sprint bắt đầu; Task của Story nằm ở Sprint 2) · **Fix version:** v0.2-loi-sprint-2 (theo Sprint của Task cuối)
-**Giai đoạn:** toàn bộ Story thuộc phần lõi.
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 10/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đánh với máy theo cấp độ»
+
+**Jira thực:** [XIAN-34](https://xiangqi-web.atlassian.net/browse/XIAN-34) · **Loại:** Story · **Assignee:** Nguyễn Minh Thư · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Frontend, AI · **Priority:** High · **Nhãn:** `P1`, `loi`, `mo-rong`, `US-AI-03`, `US-AI-04`, `xiangqi-mvp-20261005`, `s-26`
+**Ước lượng:** không cộng giờ riêng; tổng Task liên quan chỉ để tham chiếu · **Story Points:** để trống · **Start date:** 2026-10-08 · **Due date:** 2026-10-31 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đánh với máy theo cấp độ · **Components:** Frontend, AI
+**Giai đoạn:** Phần lõi liên kết T-10, T-26, T-31, T-33. Phần làm sau/kiểm đầy đủ liên kết T-55, T-60. Cả hai đều P1; nhãn không đổi phạm vi MVP.
 
 **Câu chuyện:** Là người chơi, tôi muốn **biết ván với máy kết thúc ra sao, quay lại nếu rớt mạng và thử lại khi máy gặp sự cố**.
 
 **Nguồn (đặc tả)**
-- US-AI-03 — Kết thúc, bỏ dở và vào lại (BA 6.3)
-- US-AI-04 — Sự cố máy cờ (BA 6.1)
-- Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-AI-03-01, AC-AI-03-02, AC-AI-03-03, AC-AI-03-04, AC-AI-04-01, AC-AI-04-02.
-- Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Đánh với máy (`SCR-AI-GAME`), Hộp xác nhận Đầu hàng (`MODAL-CONFIRM-RESIGN`), Hộp xác nhận Rời phòng khi đang đấu (`MODAL-CONFIRM-LEAVE`), Hộp Kết quả ván (`MODAL-MATCH-RESULT`), Lớp phủ Mất kết nối (`OVERLAY-RECONNECTING`).
+
+* US-AI-03 — Kết thúc, bỏ dở và vào lại (BA 6.3)
+* US-AI-04 — Sự cố máy cờ (BA 6.1)
+* Tiêu chí gốc ở `docs/01-yeu-cau-chi-tiet.md`: AC-AI-03-01, AC-AI-03-02, AC-AI-03-03, AC-AI-03-04, AC-AI-04-01, AC-AI-04-02, AC-AI-03-05.
+* Màn hình và thành phần giao diện (`DANH-MUC-MAN-HINH-XIANGQI.md`): Màn hình Đánh với máy (`SCR-AI-GAME`), Hộp xác nhận Đầu hàng (`MODAL-CONFIRM-RESIGN`), Hộp xác nhận Rời phòng khi đang đấu (`MODAL-CONFIRM-LEAVE`), Hộp Kết quả ván (`MODAL-MATCH-RESULT`), Lớp phủ Mất kết nối (`OVERLAY-RECONNECTING`).
 
 **Nhu cầu và phạm vi**
-- **Có:** Kết thúc, bỏ dở và vào lại; Sự cố máy cờ.
-- **Không:** lưu lịch sử bền; tự hạ cấp máy.
+
+* **Có:** Kết thúc, bỏ dở và vào lại; Sự cố máy cờ.
+* **Không:** lưu lịch sử bền; tự hạ cấp máy.
 
 **Điều kiện để dùng:** đang chơi với máy.
 
 **Bắt đầu khi (phụ thuộc)**
-- Cần có kết quả của các Task sau (nằm ngoài Story này), vì chúng cho ra đầu vào của các Task của Story:
-  - T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-  - T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-  - T-10 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng
-  - T-14 — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ
-  - T-15 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng
-  - T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh
-  - T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi
+Bắt đầu từng Task khi đầu vào của **chính Task đó** đã bàn giao; không chờ toàn bộ Epic khác hoàn tất. Các phần triển khai chính nhận:
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**.
+* **T-10 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng**.
+* **T-14 — Máy cờ: chương trình chạy riêng, ba cấp độ, thử nghiệm sơ bộ tốc độ**.
+* **T-15 — Máy chủ: trạng thái phòng, mỗi người một chỗ chơi và tạo phòng**.
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**.
+* **T-20 — Giao diện: kéo thả quân, đánh dấu nước vừa đi, cảnh báo chiếu, âm thanh**.
+* **T-27 — Máy chủ: bộ xử lý lệnh của ván và xử lý nước đi**.
+
+Các Task triển khai/kiểm bổ sung ở bảng tiêu chí có tiền đề riêng tại Description của Task và bảng 01. Ready for Test chưa phải Done; Task đo/báo cáo Done nhưng kết luận không đạt không làm Story đạt.
 
 **Các bước người dùng làm và hệ thống phản hồi**
+
 1. Ván kết thúc khi chiếu hết, hết nước đi, đầu hàng hoặc hoà; hiện hộp kết quả chỉ có **Rời phòng**.
 2. Đóng tab hoặc mất mạng: ván **giữ 30 phút** để vào lại cùng đường dẫn; Sảnh hiện băng "Bạn có ván đang chơi dở — Quay lại". Quá 30 phút ván là **Bỏ dở**. **Chủ động rời hoặc đăng xuất** (có xác nhận) thì **đầu hàng ngay**, không có thời gian chờ nối lại.
 3. Nếu máy lỗi hoặc không trả lời quá 10 giây: ván thành **Bỏ dở**, báo "Máy cờ gặp sự cố" kèm nút **Thử lại**; thử lại tạo **ván mới** cùng cấp và cùng phe thực tế.
 4. Nếu máy chỉ **đang bận**: nút Thử lại chỉ yêu cầu máy tìm lại nước, **không gửi lại nước của người chơi**.
 
 **Các quy tắc**
-không có đi lại và lịch sử ở giai đoạn này; bấm Thử lại trùng chỉ có một tác dụng; kết quả đến muộn bị bỏ, không đổi thế cờ.
+
+* Máy chủ khởi động lại làm mất ván AI trong bộ nhớ: đường ván cũ báo không còn trạng thái, về Sảnh/tạo mới chủ động; không tự tạo kết quả/lịch sử. Đăng xuất đã xác nhận là đầu hàng, không phải Bỏ dở.
+  không có đi lại và lịch sử ở giai đoạn này; bấm Thử lại trùng chỉ có một tác dụng; kết quả đến muộn bị bỏ, không đổi thế cờ.
 
 **Khi có lỗi**
 máy bận và máy hỏng cho hai nút Thử lại khác nhau; thất bại khi tạo ván mới thì không thông báo "đã tạo".
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Đánh với máy | Máy đi hợp lệ, đúng cấp/phe | Đang tìm/đợi tiến trình | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | Đến lượt máy hoặc tab đã bị tab khác tiếp quản; đi lại hết lượt hoặc P1 chưa có |
 | Hộp xác nhận Đầu hàng | Xác nhận: đầu hàng; Huỷ không đổi ván | Đợi máy chủ xác nhận; chặn bấm trùng | Không còn ván đang chơi: đóng, hiện kết quả thật | Không nhận được xác nhận: kiểm lại với máy chủ, không báo thua sai | Ván kết thúc, tab đã bị tab khác tiếp quản, hoặc không phải người chơi |
 | Hộp xác nhận Rời phòng khi đang đấu | Rời/Đăng xuất giữa ván xác nhận hậu quả | Đợi xử lý rời/đầu hàng | Không còn mục tiêu: đóng, về trạng thái hiện tại | Lỗi xử lý: giữ thông báo và kiểm lại với máy chủ | Đã xử lý hoặc không còn quyền điều khiển |
-| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở giai đoạn 1 |
+| Hộp Kết quả ván | Kết quả/lý do đúng; nút theo phân kỳ | Đợi kết quả chính thức từ máy chủ | Chưa có kết quả: đợi và kiểm lại với máy chủ, không tự đoán thắng thua | Tải kết quả lỗi: Thử lại, không cho đi thêm | Nút Tái đấu và Xem lại ẩn ở P1 (MVP) |
 | Lớp phủ Mất kết nối | Đã nối lại, nhận lại thế cờ rồi tự tắt | Nối lại kèm thời hạn đúng vai trò | Không mất kết nối: overlay không hiện | Quá hạn: kết quả/mất ghế/về Sảnh đúng loại | Không Esc/bấm ngoài; chặn lệnh cần kết nối |
 
 **Tiêu chí chấp nhận và cách kiểm (đối chiếu từng tiêu chí của đặc tả)**
+
 | Mã tiêu chí | Điều kiện đạt | Cách kiểm | Task kiểm |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `AC-AI-03-01` | Ván kết thúc khi chiếu hết, hết nước đi, đầu hàng hoặc hoà theo luật; hộp kết quả chỉ có Rời phòng. | Gây từng kiểu kết thúc. | T-26, T-31, T-33 |
 | `AC-AI-03-02` | Đóng tab hoặc mất kết nối: ván giữ 30 phút để vào lại cùng đường dẫn; Sảnh hiện băng "Bạn có ván đang chơi dở — Quay lại"; quá 30 phút thì Bỏ dở. | Vào lại trước và sau 30 phút. | T-10, T-26, T-31, T-33 |
-| `AC-AI-03-03` | Đi lại và lưu lịch sử là giai đoạn sau, không hiện. | Tìm hai chức năng (không có). | T-26, T-60 |
-| `AC-AI-03-04` | Chủ động Rời ván hoặc Đăng xuất khi đang chơi với máy: xác nhận đầu hàng; đồng ý thì kết thúc, huỷ tìm kiếm, giải phóng chỗ chơi; Huỷ giữ ván; không có thời gian chờ nối lại 30 phút. | Huỷ và đồng ý; kiểm chỗ chơi được giải phóng. | T-31, T-33, T-55 |
+| `AC-AI-03-03` | Đi lại và lưu lịch sử là P2, không hiện. | Tìm hai chức năng (không có). | T-26, T-60 |
+| `AC-AI-03-04` | Chủ động Rời ván/Đăng xuất AI đang chơi: xác nhận đầu hàng; đồng ý kết thúc `RESIGN`, huỷ tìm kiếm và giải phóng vị trí chơi; Huỷ giữ ván. Không áp dụng ân hạn 30 phút cho hành động đã xác nhận này (BA 6.3). | Huỷ và đồng ý; kiểm chỗ chơi được giải phóng. | T-31, T-33, T-55 |
+| `AC-AI-03-05` | Máy chủ khởi động lại làm mất ván AI P1: truy cập đường ván cũ thông báo không còn trạng thái; về Sảnh hoặc chủ động tạo mới; không tự dựng kết quả/lịch sử/khôi phục ván. | Khởi động lại máy chủ trong ván AI rồi mở /ai/:id cũ; kiểm thông báo, về Sảnh/tạo mới chủ động, không kết quả/lịch sử giả. | T-31, T-33 |
 | `AC-AI-04-01` | Máy lỗi hoặc không phản hồi quá 10 giây thì ván Bỏ dở, báo "Máy cờ gặp sự cố" kèm nút Thử lại. | Giết tiến trình máy. | T-26, T-31, T-33 |
 | `AC-AI-04-02` | Thử lại sau Bỏ dở tạo ván mới cùng cấp và phe thực tế (phe Ngẫu nhiên giữ kết quả đã bốc); không hồi sinh ván cũ; kiểm một chỗ chơi và chặn bấm trùng; thất bại không báo đã tạo. | Bấm Thử lại nhiều lần. | T-31, T-33 |
 
 **Điều kiện hoàn thành (PASS khi)**
-- Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
-- Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
-- Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
-- Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
+
+* Mọi dòng trong bảng tiêu chí ở trên đều **đạt**, có bằng chứng; dòng nào không đạt thì Story chưa xong.
+* Mọi màn hình ở bảng 5 trạng thái đều hiện đúng cả 5 trạng thái (thành công, đang tải, trống, lỗi, bị khoá có chú thích).
+* Các Task liên kết đều đã xong và đã được người kiểm thử và người xem lại mã đồng ý; các điều kiện chấp nhận được kiểm ở máy chủ, không chỉ ở giao diện.
+* Không có lỗi mức Cao hoặc Nghiêm trọng còn mở thuộc Story này.
 
 **Còn mở / chờ quyết định:** Không có điểm chờ quyết định.
 
 **Bằng chứng nộp:** trạng thái ban đầu là NOT_RUN (chưa chạy). Khi chạy, ghi bản dựng, môi trường, kết quả từng dòng (đạt / không đạt / bị chặn), ảnh hoặc nhật ký đã che bí mật.
 
-**Liên kết Jira (khi được phép tạo):** Epic: Đánh với máy theo cấp độ; liên quan tới (relates to) các Task: T-26 (Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố); T-31 (Máy chủ: ván với máy (cấp, phe, một chỗ chơi, vào lại 30 phút) và xử lý sự cố máy cờ); T-33 (Nối web, máy chủ và máy cờ thật: ván với máy).
+**Quan hệ cần đối chiếu trên Jira:** Parent = Epic «Đánh với máy theo cấp độ»; relates to: T-10, T-26, T-31, T-33, T-55, T-60. Các Task có thể thuộc Epic khác; đây là liên kết triển khai/kiểm, không phải quan hệ cha–con với Story.
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Nguyễn Minh Thư**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-08**; Due date **2026-10-31**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/13-story-e5-e8.md` — S-26.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Nguyễn Minh Thư**.
+* Assignee Story phối hợp các Task và kiểm đủ tiêu chí chấp nhận. Story gán Sprint dự kiến hoàn tất toàn bộ phạm vi, không kéo sớm chỉ vì một Task con đã xong; không cộng trùng điểm Story và Task.
+* Epic: [XIAN-8](https://xiangqi-web.atlassian.net/browse/XIAN-8).
+
+**Task triển khai/kiểm liên quan:**
+
+* [T-10 — XIAN-44](https://xiangqi-web.atlassian.net/browse/XIAN-44)
+* [T-26 — XIAN-60](https://xiangqi-web.atlassian.net/browse/XIAN-60)
+* [T-31 — XIAN-65](https://xiangqi-web.atlassian.net/browse/XIAN-65)
+* [T-33 — XIAN-67](https://xiangqi-web.atlassian.net/browse/XIAN-67)
+* [T-55 — XIAN-89](https://xiangqi-web.atlassian.net/browse/XIAN-89)
+* [T-60 — XIAN-94](https://xiangqi-web.atlassian.net/browse/XIAN-94)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+Phạm vi liên quan: T-10, T-26, T-31, T-33, T-55, T-60. Tổng giờ công tham chiếu **44.5**; mỗi Task chỉ cộng một lần trong phạm vi này. Không nhập giờ riêng cho Story. Các tiêu chí nghiệm thu phải được kiểm thật, hiện vẫn NOT_RUN.
+
+---

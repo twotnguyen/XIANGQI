@@ -1,16 +1,25 @@
 # Task của Epic "Đăng ký và đăng nhập (kèm nền tảng dự án)" (16 task)
 
-**Ngày:** 2026-10-04 · **Trạng thái:** đề xuất, chờ PO duyệt · Chưa tạo gì trên Jira · Viết theo `00-chuan-description.md` và mẫu `00b`.
+**Ngày cập nhật:** 2026-10-05 · **Trạng thái:** đã được PO cho phép tạo và phân công ngày 05/10/2026 · Đã tạo Epic/Story/Task trên XIAN · Viết theo `00-chuan-description.md` và mẫu `00b`.
 
 Mã task `T-01` đến `T-64` đánh theo **thứ tự làm** (số nhỏ làm trước, mỗi task chỉ cần các task có số nhỏ hơn). Một số task gộp nhiều việc nhỏ cùng mục đích thành một task. Ngày Sprint: 1 = 04/10–07/10, 2 = 08/10–10/10, 3 = 11/10–14/10, 4 = 15/10–17/10.
 
 ---
 
 ### T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** QA & DevOps · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** không có (đây là việc đầu tiên).
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 04/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-35](https://xiangqi-web.atlassian.net/browse/XIAN-35) · **Loại:** Task · **Assignee:** Gia Kỳ · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** QA & DevOps · **Priority:** High · **Nhãn:** `P1`, `loi`, `xiangqi-mvp-20261005`, `t-01`
+**Ước lượng:** 3 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-05 · **Due date:** 2026-10-05 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** QA & DevOps
+**Phải xong trước:** không cần Task khác; cần kho mã dự án và quyền truy cập do nhóm cung cấp.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Tạo "bộ khung" để cả nhóm cùng cài đặt, chạy và kiểm tra phần mềm theo một cách giống nhau. Mọi task sau đều dùng kho mã này. Task này **chưa làm tính năng cờ tướng nào**.
@@ -18,6 +27,7 @@ Tạo "bộ khung" để cả nhóm cùng cài đặt, chạy và kiểm tra ph�
 Mỗi lần ai đó đẩy thay đổi mã lên, hệ thống **tự động** biên dịch, kiểm tra cách viết mã và chạy các bài kiểm tra, rồi báo xanh hoặc đỏ. Nhờ vậy lỗi bị phát hiện sớm và không ai vô tình làm hỏng phần của người khác.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Cùng nhóm chốt phiên bản công cụ chạy mã (Node) và công cụ quản lý thư viện (pnpm); ghi vào tệp mô tả để ai cũng dùng đúng.
 2. Tạo **một kho mã duy nhất** chứa các phần: ứng dụng web, máy chủ, máy cờ (chạy riêng), gói luật cờ, gói hợp đồng chung.
 3. Cấu hình ngôn ngữ TypeScript dùng chung cho các phần.
@@ -31,8 +41,9 @@ Mỗi lần ai đó đẩy thay đổi mã lên, hệ thống **tự động** b
 11. Viết hướng dẫn ngắn: cách đọc lỗi, cách chạy lại.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Máy chưa cài thư viện nào | Làm theo hướng dẫn là cài được, không cần cài thêm thứ gì ngoài công cụ đã ghi |
 | Cố ý viết một lỗi vào mã | Lệnh biên dịch hoặc kiểm tra **báo lỗi**, không báo xanh |
 | Cố ý làm một bài kiểm tra sai | Lệnh chạy kiểm tra **báo thất bại** |
@@ -45,7 +56,7 @@ Mỗi lần ai đó đẩy thay đổi mã lên, hệ thống **tự động** b
 Chuẩn bị: một máy hoặc thư mục sạch, chưa cài gì của dự án.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Làm đúng theo hướng dẫn để cài đặt | Cài thành công, không thiếu thư viện |
 | 2 | Chạy lệnh biên dịch, kiểm tra mã, kiểm tra tự động | Cả ba chạy xong và báo kết quả đúng |
 | 3 | Cố ý thêm một lỗi mã rồi chạy lại | Có báo lỗi rõ ràng |
@@ -56,7 +67,7 @@ Chuẩn bị: một máy hoặc thư mục sạch, chưa cài gì của dự án
 Chuẩn bị: một nhánh thử.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Đẩy một thay đổi hợp lệ lên nhánh thử | Kiểm tra tự động chạy và **xanh**, có nhật ký và phiên bản mã |
 | 2 | Cố ý làm một bài kiểm tra sai rồi đẩy lên | Kiểm tra tự động **đỏ** |
 | 3 | Sửa lại cho đúng rồi đẩy lên | Chuyển sang xanh |
@@ -64,47 +75,95 @@ Chuẩn bị: một nhánh thử.
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Không còn lỗi đã biết. Kiểm tra tự động bắt được lỗi thật.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** kho mã chạy được cùng hướng dẫn, để các task còn lại dùng; hệ thống kiểm tra tự động hoạt động cho mọi nhánh.
 **Không thuộc task này:** tính năng cờ tướng, giao diện, máy chủ thật; thay đổi quyền của kho mã; đặt mật khẩu bí mật; triển khai ra mạng.
 **Phục vụ (nguồn):** nền tảng chung của dự án. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
 **Bằng chứng nộp:** Đường dẫn lần chạy kiểm tra tự động (một lần xanh, một lần đỏ cố ý); hướng dẫn cài đặt. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Nhóm phải thống nhất cách đặt tên nhánh và cách chạy lệnh trước khi làm việc song song.
-**Liên kết Jira (khi được phép tạo):** không bị chặn bởi task nào; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** không bị chặn bởi task nào; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Gia Kỳ**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-05**; Due date **2026-10-05**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-01.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Gia Kỳ**.
+* Review/kiểm độc lập dự kiến: **TÌNH 4851_NGUYỄN NGỌC**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Story phục vụ:**
+
+* Công việc nền tảng/kiểm chung theo phạm vi mô tả.
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 2 | Gia Kỳ |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 0.5 | Gia Kỳ |
+| Review độc lập | 0.5 | TÌNH 4851_NGUYỄN NGỌC |
+| Tổng Original/Remaining Estimate ban đầu | 3 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-05 14:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-05 16:30 |
+| Bắt đầu review | 2026-10-05 16:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-05 17:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã để tạo gói dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `contract` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-36](https://xiangqi-web.atlassian.net/browse/XIAN-36) · **Loại:** Task · **Assignee:** Tưởng Lê khoa Cường-4572 · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Backend · **Priority:** High · **Nhãn:** `P1`, `loi`, `contract`, `xiangqi-mvp-20261005`, `t-02`
+**Ước lượng:** 5.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-06 · **Due date:** 2026-10-06 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Backend
+**Phải xong trước:**
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**: Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Soạn một **bản mô tả thống nhất** cho phần giao diện (trình duyệt) và phần máy chủ: mỗi bên gửi những thông tin gì, nhận lại gì, báo lỗi thế nào. Cả hai nhóm làm theo bản này nên **không phải đoán** và có thể làm song song. Đây là điều kiện để giao diện và máy chủ cùng bắt đầu từ một nơi chung.
 
 **Việc cần làm (làm lần lượt)**
-1. Liệt kê các **tin nhắn từ trình duyệt gửi lên** ở giai đoạn đầu và thông tin đi kèm. Tên dưới đây là tên tạm, nhóm chốt tên cuối.
-   | Việc người dùng muốn làm | Tên tạm |
-   |---|---|
-   | Tạo phòng, vào phòng, rời phòng, đổi kiểu phòng, đuổi người xem | tạo phòng; vào phòng; rời phòng; đổi kiểu phòng; đuổi người xem |
-   | Chuyển sang ghế hoặc sang chỗ xem, mời người xem xuống ghế | đổi chỗ; mời xuống ghế |
-   | Bấm Sẵn sàng | sẵn sàng |
-   | Đi một nước cờ; đầu hàng; xin hoà và trả lời | đi nước; đầu hàng; xin hoà; trả lời xin hoà |
-   | Gửi tin nhắn chat | gửi chat |
-   | Tìm bạn, gửi lời mời kết bạn, trả lời lời mời, mời bạn vào phòng | các lệnh bạn bè |
-   | Bắt đầu và đi nước với máy | bắt đầu ván với máy; đi nước với máy |
-2. Liệt kê **tin nhắn máy chủ trả về**: trạng thái phòng; trạng thái ván (thế cờ, lượt, đồng hồ, số phiên bản, nước vừa đi); ván kết thúc (kết quả, lý do); tin chat mới; lời mời mới; cập nhật bạn bè; báo lỗi.
-3. Với **mọi lệnh gửi lên** quy định: mỗi lần bấm có một **mã yêu cầu duy nhất** (để gửi lại không bị làm hai lần); lệnh về ván có thêm **số phiên bản ván** (để phát hiện lệnh cũ).
-4. Máy chủ xác nhận mỗi lệnh bằng **"thành công" hoặc "lỗi kèm nhóm lỗi"**. Các nhóm lỗi: hết phiên hoặc bị đăng nhập nơi khác; không có quyền; phòng đã đóng hoặc không tồn tại; hết ghế hoặc hết chỗ xem; bị đuổi; mã hoặc đường dẫn đã bị thu hồi; số phiên bản cũ; lệnh không hợp lệ; lời đề nghị hết hạn; làm quá nhiều lần; hệ thống bận hoặc lỗi.
-5. Mỗi lệnh ghi: **ai được gửi**, **thông tin nào hợp lệ**, **thông tin nào máy chủ tự lấy** (người gửi lấy từ tài khoản đang đăng nhập, **không** tin thông tin "tôi là ai" do trình duyệt gửi).
-6. Mỗi lệnh có **ví dụ hợp lệ và ví dụ sai**.
-7. Đặt số phiên bản cho bản hợp đồng để hai bên biết đang dùng bản nào.
-8. Thông tin chưa quyết được thì **ghi rõ "chờ nhóm quyết"**, không tự đặt như đã chốt.
+
+1. Liệt kê **tin nhắn máy chủ trả về**: trạng thái phòng; trạng thái ván (thế cờ, lượt, đồng hồ, số phiên bản, nước vừa đi); ván kết thúc (kết quả, lý do); tin chat mới; lời mời mới; cập nhật bạn bè; báo lỗi.
+2. Với **mọi lệnh gửi lên** quy định: mỗi lần bấm có một **mã yêu cầu duy nhất** (để gửi lại không bị làm hai lần); lệnh về ván có thêm **số phiên bản ván** (để phát hiện lệnh cũ).
+3. Máy chủ xác nhận mỗi lệnh bằng **"thành công" hoặc "lỗi kèm nhóm lỗi"**. Các nhóm lỗi: hết phiên hoặc bị đăng nhập nơi khác; không có quyền; phòng đã đóng hoặc không tồn tại; hết ghế hoặc hết chỗ xem; bị đuổi; mã hoặc đường dẫn đã bị thu hồi; số phiên bản cũ; lệnh không hợp lệ; lời đề nghị hết hạn; làm quá nhiều lần; hệ thống bận hoặc lỗi.
+4. Mỗi lệnh ghi: **ai được gửi**, **thông tin nào hợp lệ**, **thông tin nào máy chủ tự lấy** (người gửi lấy từ tài khoản đang đăng nhập, **không** tin thông tin "tôi là ai" do trình duyệt gửi).
+5. Mỗi lệnh có **ví dụ hợp lệ và ví dụ sai**.
+6. Đặt số phiên bản cho bản hợp đồng để hai bên biết đang dùng bản nào.
+7. Thông tin chưa quyết được thì **ghi rõ "chờ nhóm quyết"**, không tự đặt như đã chốt.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Gửi lệnh thiếu mã yêu cầu | Hợp đồng quy định bị từ chối |
 | Kẻ gian cố tình sửa dữ liệu gửi lên, ghi "tôi là người khác" | Hợp đồng quy định bỏ qua lời khai đó; luôn lấy người đang đăng nhập làm người gửi |
 | Gửi lại cùng một mã yêu cầu | Hợp đồng nói rõ: nhận lại kết quả cũ, không làm lần hai |
@@ -113,38 +172,100 @@ Soạn một **bản mô tả thống nhất** cho phần giao diện (trình du
 
 **Cách tự kiểm tra**
 Chuẩn bị: một chương trình mẫu dùng hợp đồng ở cả hai phía.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Biên dịch cả phần giao diện và phần máy chủ dùng hợp đồng | Không lỗi kiểu dữ liệu |
 | 2 | Với mỗi lệnh, kiểm tra ví dụ hợp lệ | Được chấp nhận |
 | 3 | Với mỗi lệnh, kiểm tra ví dụ sai | Bị từ chối |
-| 4 | Đối chiếu danh sách lệnh với danh sách yêu cầu giai đoạn đầu | Không thiếu lệnh nào, không có lệnh giai đoạn sau |
+| 4 | Đối chiếu danh sách lệnh với danh sách yêu cầu P1 (MVP) | Không thiếu lệnh nào, không có lệnh P2 |
 | 5 | Xem dữ liệu trả cho người xem | Không có thông tin không được phép |
 
 **Khi nào chuyển cho người kiểm thử:** cả 5 dòng đạt; nhóm giao diện và nhóm máy chủ đã đọc và không còn câu hỏi "chỗ này là gì".
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý; mọi điều chưa chốt đã ghi rõ ai quyết.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** gói hợp đồng chung đã biên dịch được, cùng ví dụ để cả hai nhóm dùng.
-**Không thuộc task này:** viết phần xử lý thật ở máy chủ, viết giao diện; các lệnh của giai đoạn sau (Đánh Hạng, đi lại, Khách...).
+**Không thuộc task này:** viết phần xử lý thật ở máy chủ, viết giao diện; các lệnh của P2 (Đánh Hạng, đi lại, Khách...).
 **Phục vụ (nguồn):** nền tảng chung của dự án. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Gói hợp đồng chung biên dịch được, có danh sách lệnh, thông tin đi kèm, nhóm lỗi và ví dụ hợp lệ/sai dùng được ở cả giao diện và máy chủ.
 **Bằng chứng nộp:** Kết quả biên dịch cả hai phía; bộ ví dụ; biên bản nhóm giao diện và nhóm máy chủ đã đọc. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Nếu thiếu một lệnh thì hai nhóm phải dừng làm song song; cần chốt tên lệnh sớm.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-01; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Tưởng Lê khoa Cường-4572**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-06**; Due date **2026-10-06**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-02.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Tưởng Lê khoa Cường-4572**.
+* Review/kiểm độc lập dự kiến: **nguyenhoangtungtuyhoa**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-01 — XIAN-35](https://xiangqi-web.atlassian.net/browse/XIAN-35)
+
+**Story phục vụ:**
+
+* Công việc nền tảng/kiểm chung theo phạm vi mô tả.
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 3.5 | Tưởng Lê khoa Cường-4572 |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | Tưởng Lê khoa Cường-4572 |
+| Review độc lập | 1 | nguyenhoangtungtuyhoa |
+| Tổng Original/Remaining Estimate ban đầu | 5.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-06 10:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-06 16:00 |
+| Bắt đầu review | 2026-10-06 16:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-06 17:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được quy ước đặt thông tin cấu hình mà không lộ bí mật.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-37](https://xiangqi-web.atlassian.net/browse/XIAN-37) · **Loại:** Task · **Assignee:** Tưởng Lê khoa Cường-4572 · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Authentication · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-AUTH-02`, `xiangqi-mvp-20261005`, `t-03`
+**Ước lượng:** 2.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-05 · **Due date:** 2026-10-06 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Authentication
+**Phải xong trước:**
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**: Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Cấu hình dịch vụ đăng nhập **Supabase** để gửi **mã OTP 6 chữ số** qua email khi người dùng đăng ký, theo đúng quy định của dự án. Kết quả giúp task thử nghiệm OTP và phần đăng ký ở máy chủ dùng được. **Chưa** tạo tài khoản demo (làm ở task chuẩn bị demo).
 
-**Bổ sung (04/10/2026):** bật thêm nhà cung cấp đăng nhập **Google** cho dự án (đăng ký và đăng nhập bằng Google chạy thật ở giai đoạn 1).
+**Bổ sung (04/10/2026):** bật thêm nhà cung cấp đăng nhập **Google** cho dự án (đăng ký và đăng nhập bằng Google chạy thật ở P1 (MVP)).
 
 **Việc cần làm (làm lần lượt)**
+
 1. Đặt **mã OTP có hiệu lực 180 giây** (3 phút).
 2. Đặt **thời gian chờ giữa hai lần gửi lại mã là 60 giây**.
 3. Đặt **giới hạn số lần xác minh sai** ở mức thấp (mục tiêu khoảng 5 lần trong vài phút); ghi lại hành vi thật, vì dịch vụ chỉ giới hạn gần đúng.
@@ -156,8 +277,9 @@ Cấu hình dịch vụ đăng nhập **Supabase** để gửi **mã OTP 6 chữ
 9. Ghi chú các tài khoản Google thử mà nhóm dùng (màn chấp thuận ở chế độ thử chỉ cho phép các email thử).
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Gửi lại mã trước 60 giây | Không gửi |
 | Nhập mã sau 180 giây | Mã hết hạn, không dùng được |
 | Nhập sai liên tiếp nhiều lần | Bị chặn theo giới hạn thật của dịch vụ; ghi lại số liệu thực |
@@ -165,8 +287,9 @@ Cấu hình dịch vụ đăng nhập **Supabase** để gửi **mã OTP 6 chữ
 
 **Cách tự kiểm tra**
 Chuẩn bị: dự án Supabase thử, hộp thư của thành viên nhóm.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Đọc lại cấu hình | Khớp 180 giây, 60 giây, mã 6 chữ số |
 | 2 | Gửi mã rồi gửi lại trước và đúng 60 giây | Không gửi quá sớm; gửi được sau 60 giây |
 | 3 | Dùng mã trước rồi sau 180 giây | Mã còn hạn dùng được; mã hết hạn không dùng được |
@@ -176,43 +299,107 @@ Chuẩn bị: dự án Supabase thử, hộp thư của thành viên nhóm.
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, có ảnh chụp hoặc bản ghi cấu hình (đã che bí mật).
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** cấu hình đã ghi lại, danh sách email nhóm, hạn mức thư thực tế.
 **Không thuộc task này:** tạo tài khoản demo; thử nghiệm đầy đủ mã OTP (task kế tiếp); gửi thư bằng dịch vụ khác.
 **Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-02-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Cấu hình Supabase gửi mã OTP 6 số, hạn 180 giây, gửi lại 60 giây, mẫu thư; danh sách email nhóm; số liệu hạn mức thư thật. Có thêm cấu hình nhà cung cấp Google đã che bí mật và hướng dẫn tạo khoá.
 **Bằng chứng nộp:** Ảnh chụp hoặc bản ghi cấu hình đã che bí mật; số thư gửi được mỗi giờ. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Hạn mức thư mặc định chỉ khoảng 2 thư mỗi giờ; chỉ gửi tới email thành viên nhóm. Cần tài khoản Google Cloud do nhóm tạo; màn chấp thuận ở chế độ thử chỉ cho phép email thử; nếu muốn công khai cần xác minh với Google (ngoài phạm vi đồ án).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-01; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Tưởng Lê khoa Cường-4572**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-05**; Due date **2026-10-06**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-03.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Tưởng Lê khoa Cường-4572**.
+* Review/kiểm độc lập dự kiến: **Gia Kỳ**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-01 — XIAN-35](https://xiangqi-web.atlassian.net/browse/XIAN-35)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 1.5 | Tưởng Lê khoa Cường-4572 |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 0.5 | Tưởng Lê khoa Cường-4572 |
+| Review độc lập | 0.5 | Gia Kỳ |
+| Tổng Original/Remaining Estimate ban đầu | 2.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-05 17:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-06 10:00 |
+| Bắt đầu review | 2026-10-06 10:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-06 10:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và nơi đặt các tệp tạo bảng dữ liệu.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 04/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-38](https://xiangqi-web.atlassian.net/browse/XIAN-38) · **Loại:** Task · **Assignee:** nguyenhoangtungtuyhoa · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Backend · **Priority:** High · **Nhãn:** `P1`, `loi`, `xiangqi-mvp-20261005`, `t-04`
+**Ước lượng:** 6 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-05 · **Due date:** 2026-10-06 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Backend
+**Phải xong trước:**
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**: Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
-Tạo **cơ sở dữ liệu** (nơi lưu thông tin lâu dài trên Supabase) gồm các bảng cần cho giai đoạn đầu và **quy tắc ai được đọc, ai được ghi**. Các phần sau lưu và đọc dữ liệu qua đây. Task này chỉ tạo bảng và quy tắc, **không** viết xử lý nghiệp vụ.
+Tạo **cơ sở dữ liệu** (nơi lưu thông tin lâu dài trên Supabase) gồm các bảng cần cho P1 (MVP) và **quy tắc ai được đọc, ai được ghi**. Các phần sau lưu và đọc dữ liệu qua đây. Task này chỉ tạo bảng và quy tắc, **không** viết xử lý nghiệp vụ.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Tạo các bảng sau bằng tệp lệnh SQL (không dùng công cụ tạo bảng tự động khác):
-   - **Hồ sơ người dùng:** tên đăng nhập, tên hiển thị, thời điểm hoàn tất đăng ký, cờ "đang chờ hoàn tất". Email lấy từ hệ thống đăng nhập, không lưu công khai.
-   - **Phòng:** tên, mã phòng 8 ký tự, trạng thái (đang chờ, đang chơi, đã kết thúc, đã đóng), kiểu phòng (công khai, chỉ vào bằng mã, khoá), thời gian mỗi bên, **số người xem tối đa (0 đến 5)**, chủ phòng.
-   - **Người trong phòng:** ai ngồi ghế Đỏ, ghế Đen, hoặc làm người xem; đã Sẵn sàng chưa; lúc vào, lúc ngồi ghế, lúc rời.
-   - **Người bị đuổi khỏi phòng.**
-   - **Ván cờ** và **nước đi** từng ván (có nước cha để sau này hỗ trợ quay lại nước).
-   - **Biên lai lệnh** (ghi nhớ mã yêu cầu đã xử lý, để không làm hai lần).
-   - **Tin nhắn chat của phòng.**
-   - **Quan hệ bạn bè** và **lịch sử bị từ chối kết bạn**.
+
+    * **Hồ sơ người dùng:** tên đăng nhập, tên hiển thị, thời điểm hoàn tất đăng ký, cờ "đang chờ hoàn tất". Email lấy từ hệ thống đăng nhập, không lưu công khai.
+    * **Phòng:** tên, mã phòng 8 ký tự, trạng thái (đang chờ, đang chơi, đã kết thúc, đã đóng), kiểu phòng (công khai, chỉ vào bằng mã, khoá), thời gian mỗi bên, **số người xem tối đa (0 đến 5)**, chủ phòng.
+    * **Người trong phòng:** ai ngồi ghế Đỏ, ghế Đen, hoặc làm người xem; đã Sẵn sàng chưa; lúc vào, lúc ngồi ghế, lúc rời.
+    * **Người bị đuổi khỏi phòng.**
+    * **Ván cờ** và **nước đi** từng ván (có nước cha để sau này hỗ trợ quay lại nước).
+    * **Biên lai lệnh** (ghi nhớ mã yêu cầu đã xử lý, để không làm hai lần).
+    * **Tin nhắn chat của phòng.**
+    * **Quan hệ bạn bè** và **lịch sử bị từ chối kết bạn**.
+
 2. Đặt các **ràng buộc**: tên đăng nhập không trùng (không phân biệt hoa thường); mỗi phòng tối đa 1 người ngồi ghế Đỏ và 1 người ghế Đen chưa rời; số người xem không vượt số tối đa của phòng; mã phòng duy nhất; một người chỉ ngồi ghế ở **một nơi** tại một thời điểm.
 3. Đặt **quy tắc quyền**: trình duyệt **không được ghi trực tiếp** vào các bảng quan trọng; không đọc được email hay cột bí mật của người khác.
-4. Ván với máy ở giai đoạn đầu **chỉ giữ trong bộ nhớ**, không tạo bảng lưu.
+4. Ván với máy ở P1 (MVP) **chỉ giữ trong bộ nhớ**, không tạo bảng lưu.
 5. Chạy thử toàn bộ các tệp lệnh trên một cơ sở dữ liệu thử sạch.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Hai người dùng cùng tên đăng nhập chỉ khác hoa thường | Bị từ chối vì trùng |
 | Hai người cùng ngồi ghế Đỏ trong một phòng | Bị từ chối |
 | Số người xem lớn hơn mức tối đa của phòng | Bị từ chối |
@@ -222,8 +409,9 @@ Tạo **cơ sở dữ liệu** (nơi lưu thông tin lâu dài trên Supabase) g
 
 **Cách tự kiểm tra**
 Chuẩn bị: cơ sở dữ liệu thử sạch, hai tài khoản thử.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Chạy tất cả tệp lệnh tạo bảng | Chạy xong, đủ bảng và cột |
 | 2 | Tạo một hồ sơ, một phòng, một ván, vài nước đi theo đúng quan hệ | Lưu đúng, các liên kết khớp |
 | 3 | Thử các trường hợp lỗi ở bảng trên | Mỗi trường hợp bị từ chối đúng |
@@ -232,27 +420,90 @@ Chuẩn bị: cơ sở dữ liệu thử sạch, hai tài khoản thử.
 
 **Khi nào chuyển cho người kiểm thử:** cả 5 dòng đạt, có ghi kết quả thật.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** kiểm số chỗ thực tế khi nhiều người vào cùng lúc (thuộc Epic Tạo phòng chơi).
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** các tệp lệnh tạo bảng và quy tắc quyền, chạy được trên cơ sở dữ liệu thử.
-**Không thuộc task này:** bảng cho Đánh Hạng, chat 1-1, đổi tên đăng nhập, lịch sử xem lại (giai đoạn sau); xử lý nghiệp vụ.
+**Không thuộc task này:** bảng cho Đánh Hạng, chat 1-1, đổi tên đăng nhập, lịch sử xem lại (P2); xử lý nghiệp vụ.
 **Lưu ý:** tên bảng và cột là đề xuất, nhóm có thể chỉnh. Hợp đồng chung và cơ sở dữ liệu giao nhau ở trạng thái, cột và biên lai: nhóm chốt từng hiện vật chung một trước khi cài đặt phần giao nhau.
 **Phục vụ (nguồn):** NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Các tệp tạo bảng và quy tắc quyền truy cập chạy được trên cơ sở dữ liệu thử; ràng buộc (một ghế mỗi người, số người xem 0–5, tên không trùng không phân biệt hoa thường).
 **Bằng chứng nộp:** Kết quả chạy tệp tạo bảng; kết quả thử ghi trái quyền bị từ chối. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Chưa kiểm số chỗ khi nhiều người cùng vào (làm ở task phòng).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-01; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **nguyenhoangtungtuyhoa**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-05**; Due date **2026-10-06**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-04.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **nguyenhoangtungtuyhoa**.
+* Review/kiểm độc lập dự kiến: **Tưởng Lê khoa Cường-4572**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-01 — XIAN-35](https://xiangqi-web.atlassian.net/browse/XIAN-35)
+
+**Story phục vụ:**
+
+* Công việc nền tảng/kiểm chung theo phạm vi mô tả.
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 4 | nguyenhoangtungtuyhoa |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | nguyenhoangtungtuyhoa |
+| Review độc lập | 1 | Tưởng Lê khoa Cường-4572 |
+| Tổng Original/Remaining Estimate ban đầu | 6 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-05 17:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-06 14:00 |
+| Bắt đầu review | 2026-10-06 16:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-06 17:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã build được. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách lệnh, thông tin đi kèm và nhóm lỗi. *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình đăng nhập và cách kiểm tra phiên, bí mật chỉ nằm ở máy chủ.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-40](https://xiangqi-web.atlassian.net/browse/XIAN-40) · **Loại:** Task · **Assignee:** nguyenhoangtungtuyhoa · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Backend · **Priority:** High · **Nhãn:** `P1`, `loi`, `xiangqi-mvp-20261005`, `t-06`
+**Ước lượng:** 4.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-06 · **Due date:** 2026-10-07 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Backend
+**Phải xong trước:**
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**: Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**: Gói hợp đồng chung biên dịch được, có danh sách lệnh, thông tin đi kèm, nhóm lỗi và ví dụ hợp lệ/sai dùng được ở cả giao diện và máy chủ.
+* **T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google**: Cấu hình Supabase gửi mã OTP 6 số, hạn 180 giây, gửi lại 60 giây, mẫu thư; danh sách email nhóm; số liệu hạn mức thư thật. Có thêm cấu hình nhà cung cấp Google đã che bí mật và hướng dẫn tạo khoá.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và chuyển từng lệnh đến đúng nơi xử lý theo hợp đồng chung. Đây là "khung" cho tất cả phần máy chủ về sau; task này chưa chứa luật phòng hay luật ván.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Dựng máy chủ và đường kết nối thời gian thực.
 2. Khi trình duyệt kết nối, **kiểm tra thông tin đăng nhập** (token do dịch vụ đăng nhập cấp). Danh tính của người gửi **luôn lấy từ kết quả kiểm tra này**, không tin thông tin trình duyệt tự khai.
 3. Dựng **bộ chuyển lệnh**: nhận lệnh, kiểm tra đúng dạng theo hợp đồng chung, gọi nơi xử lý, trả "thành công" hoặc "lỗi" theo hợp đồng.
@@ -263,8 +514,9 @@ Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và
 8. Ghi **nhật ký có cấu trúc** (thời điểm, mã lệnh hoặc mã ván, mã lỗi) cho lỗi, ván gián đoạn, sự cố máy cờ và việc phục hồi đăng ký; **không ghi** mật khẩu, mã OTP, token hay nội dung chat; thêm một điểm kiểm tra "máy chủ còn sống"; nhật ký giữ tối đa **14 ngày** rồi bị dọn.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Kết nối thiếu, sai hoặc hết hạn thông tin đăng nhập | Không nhận danh tính, không nhận dữ liệu nghiệp vụ |
 | Người dùng cố tình sửa dữ liệu gửi lên (bằng công cụ lập trình), giả mạo thành người khác ("tôi là B") | Máy chủ bỏ qua lời khai "tôi là B", vẫn coi người gửi là A (danh tính chỉ lấy từ phiên đã xác thực) |
 | Bước kiểm tra quyền bị thiếu, bị từ chối hoặc gặp lỗi | Phần xử lý lệnh **không được chạy** (lỗi thì chặn, không cho đi tiếp) |
@@ -273,8 +525,9 @@ Dựng **máy chủ** (NestJS và Socket.IO) biết **ai đang kết nối** và
 
 **Cách tự kiểm tra**
 Chuẩn bị: thông tin đăng nhập thử.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Kết nối thiếu/sai/hết hạn thông tin đăng nhập | Bị từ chối |
 | 2 | Kết nối bằng thông tin của A, rồi dùng công cụ gửi một lệnh có ghi người gửi là B | Máy chủ bỏ qua lời khai, ghi nhận người gửi vẫn là A; không thực hiện thay B |
 | 3 | Bỏ chốt kiểm tra quyền, hoặc cho chốt từ chối, hoặc gây lỗi trong chốt | Nơi xử lý không chạy |
@@ -283,21 +536,84 @@ Chuẩn bị: thông tin đăng nhập thử.
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt, mặc định thật sự đóng.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** nghiệm thu việc chặn tài khoản chưa hoàn tất đăng ký (thuộc task đăng nhập).
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** khung máy chủ, chỗ cắm chốt quyền, chỗ cắm hạn phiên và giới hạn tốc độ.
 **Không thuộc task này:** luật phòng, luật ván, kiểm tra hồ sơ đăng ký, giới hạn tốc độ chi tiết.
 **Phục vụ (nguồn):** NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Máy chủ chạy, nhận kết nối có xác thực, chuyển lệnh theo hợp đồng, có chỗ cắm chốt quyền, hạn phiên, giới hạn tốc độ; mặc định đóng (không có quyền thì không nhận).
 **Bằng chứng nộp:** Kết quả thử kết nối đúng/sai thông tin; nhật ký đã che bí mật. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Cách kiểm tra phiên phụ thuộc cấu hình đăng nhập (task cấu hình OTP).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-02, T-03; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-01, T-02, T-03; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **nguyenhoangtungtuyhoa**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-06**; Due date **2026-10-07**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-06.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **nguyenhoangtungtuyhoa**.
+* Review/kiểm độc lập dự kiến: **Tưởng Lê khoa Cường-4572**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-01 — XIAN-35](https://xiangqi-web.atlassian.net/browse/XIAN-35)
+* [T-02 — XIAN-36](https://xiangqi-web.atlassian.net/browse/XIAN-36)
+* [T-03 — XIAN-37](https://xiangqi-web.atlassian.net/browse/XIAN-37)
+
+**Story phục vụ:**
+
+* Công việc nền tảng/kiểm chung theo phạm vi mô tả.
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 3 | nguyenhoangtungtuyhoa |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | nguyenhoangtungtuyhoa |
+| Review độc lập | 0.5 | Tưởng Lê khoa Cường-4572 |
+| Tổng Original/Remaining Estimate ban đầu | 4.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-06 17:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-07 12:00 |
+| Bắt đầu review | 2026-10-07 13:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-07 13:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động (T-01)*: nhận được kho mã và lệnh biên dịch. *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói hợp đồng để dùng trong giao diện.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-UI-03`, `US-UI-05`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 05/10/2026 · Due date (hạn): 05/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-41](https://xiangqi-web.atlassian.net/browse/XIAN-41) · **Loại:** Task · **Assignee:** 4841_Lê Thị Xuân Nhạn · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Frontend · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-UI-03`, `US-UI-05`, `US-UI-06`, `xiangqi-mvp-20261005`, `t-07`
+**Ước lượng:** 6 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-06 · **Due date:** 2026-10-07 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Frontend
+**Phải xong trước:**
+
+* **T-01 — Dựng kho mã chung, các lệnh cài đặt, kiểm tra và kiểm tra tự động**: Kho mã cài đặt sạch được; có lệnh biên dịch, kiểm tra cách viết mã, chạy bài kiểm tra; hệ thống kiểm tra tự động báo xanh/đỏ đúng trên mọi nhánh.
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**: Gói hợp đồng chung biên dịch được, có danh sách lệnh, thông tin đi kèm, nhóm lỗi và ví dụ hợp lệ/sai dùng được ở cả giao diện và máy chủ.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Tạo "bộ khung" trang web (React và Vite): có trang, có chuyển trang, nối được với hợp đồng chung. Các màn hình ở các task sau chỉ việc gắn vào. Task này **chưa làm màn hình nào thật** và chưa nối máy chủ.
@@ -305,11 +621,12 @@ Tạo "bộ khung" trang web (React và Vite): có trang, có chuyển trang, n�
 Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **khối giao diện dùng chung**, để mọi màn hình sau có cùng cách nút bấm, viền focus, trạng thái và thông báo, thay vì mỗi người tự làm một kiểu.
 
 **Việc cần làm (làm lần lượt)**
-1. Dựng ứng dụng web và **bộ chuyển trang** theo danh sách trang giai đoạn đầu (đăng nhập, đăng ký, Sảnh, phòng, ván, bạn bè, ván với máy...).
+
+1. Dựng ứng dụng web và **bộ chuyển trang** theo danh sách trang P1 (MVP) (đăng nhập, đăng ký, Sảnh, phòng, ván, bạn bè, ván với máy...).
 2. Nối **gói hợp đồng chung** để giao diện dùng cùng kiểu dữ liệu với máy chủ.
 3. Đọc cấu hình từ biến môi trường **công khai** (địa chỉ máy chủ...). Tuyệt đối không để khoá bí mật trong giao diện, vì mọi thứ trong giao diện đều công khai.
 4. Dựng một trang khung có **báo lỗi** khi tải lỗi hoặc thiếu cấu hình.
-5. Chỉ dùng giao diện **Kỳ Đài Cổ Phong** (một giao diện tối); không có chỗ chọn giao diện khác ở giai đoạn đầu.
+5. Chỉ dùng giao diện **Kỳ Đài Cổ Phong** (một giao diện tối); không có chỗ chọn giao diện khác ở P1 (MVP).
 6. Không thêm thư viện giao diện dựng sẵn hay Tailwind.
 7. Chuyển bộ màu đã chốt (giao diện tối) và màu bàn cờ sang dạng biến dùng chung; **không đổi mã màu đã chốt**.
 8. Dựng các khối nền: **nút, ô nhập, hộp thoại, thông báo, chú thích (tooltip), khung xương đang tải**. Mỗi khối có nhãn, viền focus và **đủ 5 trạng thái**.
@@ -318,19 +635,21 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 11. Tôn trọng "giảm chuyển động". Không thêm thư viện giao diện dựng sẵn hay Tailwind.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Mở trực tiếp một địa chỉ trang rồi tải lại | Trang vẫn hiện, không trắng |
 | Thiếu địa chỉ máy chủ trong cấu hình | Hiện thông báo thiếu cấu hình, **không** giả vờ đăng nhập |
-| Có khoá bí mật nằm trong cấu hình công khai (mọi biến bắt đầu bằng VITE_ đều ai cũng đọc được) | Không được xảy ra; kiểm tra phát hiện thì báo lỗi |
+| Có khoá bí mật nằm trong cấu hình công khai (mọi biến bắt đầu bằng VITE\_ đều ai cũng đọc được) | Không được xảy ra; kiểm tra phát hiện thì báo lỗi |
 | So màu thật với bản thiết kế | Đúng; giao diện luôn tối, không theo hệ điều hành |
 | Duyệt từng trạng thái của nút, ô nhập, khung | Bị khoá có chú thích; lỗi có phản hồi |
 | Mở và đóng hộp thoại bằng bàn phím | Focus đúng, và quay về nút đã mở hộp |
 | Bật "giảm chuyển động" | Chuyển động tắt theo đặc tả |
 
 **Cách tự kiểm tra**
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Cài, biên dịch, mở ứng dụng | Trang khung hiện, không lỗi khi nối hợp đồng chung |
 | 2 | Tải lại một địa chỉ trang bất kỳ | Không bị trang trắng |
 | 3 | Bỏ địa chỉ máy chủ khỏi cấu hình | Có thông báo thiếu cấu hình |
@@ -342,21 +661,84 @@ Chuyển bộ màu, kiểu chữ, khoảng cách của thiết kế thành **kh�
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Trang khung **không** được coi là một luồng đã chạy thật. Việc đo trợ năng trên toàn bộ màn hình làm ở T-61.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** khung web để các task màn hình dùng; bộ khối nền cho mọi task giao diện khác.
-**Không thuộc task này:** làm các màn hình cụ thể; nối máy chủ thật; bộ chọn giao diện và giao diện sáng; thư viện giao diện ngoài; các chức năng giai đoạn sau.
-**Phục vụ (nguồn):** Story 4; tiêu chí AC-UI-03-01, AC-UI-05-01, AC-UI-06-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Không thuộc task này:** làm các màn hình cụ thể; nối máy chủ thật; bộ chọn giao diện và giao diện sáng; thư viện giao diện ngoài; các chức năng P2.
+**Phục vụ (nguồn):** Story 4; tiêu chí AC-UI-03-01, AC-UI-05-01, AC-UI-06-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-UI-04-03.
 **Kết quả (đầu ra):** Ứng dụng web chạy được, có kiểu chữ/màu Kỳ Đài Cổ Phong, các khối nền (nút, ô nhập, hộp thoại, thông báo, chú thích, khung xương) đủ 5 trạng thái và trang kiểm tra nội bộ.
 **Bằng chứng nộp:** Ảnh chụp trang kiểm tra; kết quả biên dịch; kiểm tra bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Phông chữ Hán phải tự đặt trong ứng dụng, cần kiểm quyền sử dụng.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-01, T-02; liên quan tới (relates to) Story 4; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-01, T-02; liên quan tới (relates to) Story 4; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **4841_Lê Thị Xuân Nhạn**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-06**; Due date **2026-10-07**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-07.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **4841_Lê Thị Xuân Nhạn**.
+* Review/kiểm độc lập dự kiến: **Nguyễn Minh Thư**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-01 — XIAN-35](https://xiangqi-web.atlassian.net/browse/XIAN-35)
+* [T-02 — XIAN-36](https://xiangqi-web.atlassian.net/browse/XIAN-36)
+
+**Story phục vụ:**
+
+* [Story 4 — XIAN-12](https://xiangqi-web.atlassian.net/browse/XIAN-12)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 4 | 4841_Lê Thị Xuân Nhạn |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | 4841_Lê Thị Xuân Nhạn |
+| Review độc lập | 1 | Nguyễn Minh Thư |
+| Tổng Original/Remaining Estimate ban đầu | 6 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-06 17:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-07 14:00 |
+| Bắt đầu review | 2026-10-07 14:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-07 15:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-09 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Backend · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được gói chung dùng được ở cả giao diện và máy chủ, có chỗ trả kết quả lọc. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng "biên lai lệnh" và ràng buộc theo người gửi và mã yêu cầu. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được máy chủ có điểm kiểm tra khi nhận kết nối và khi chuyển lệnh, và biết ai đang gửi.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-43](https://xiangqi-web.atlassian.net/browse/XIAN-43) · **Loại:** Task · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Backend · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-AUTH-05`, `US-CHAT-02`, `US-PLAY-01`, `xiangqi-mvp-20261005`, `t-09`
+**Ước lượng:** 7 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-08 · **Due date:** 2026-10-09 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Backend
+**Phải xong trước:**
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**: Gói hợp đồng chung biên dịch được, có danh sách lệnh, thông tin đi kèm, nhóm lỗi và ví dụ hợp lệ/sai dùng được ở cả giao diện và máy chủ.
+* **T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập**: Các tệp tạo bảng và quy tắc quyền truy cập chạy được trên cơ sở dữ liệu thử; ràng buộc (một ghế mỗi người, số người xem 0–5, tên không trùng không phân biệt hoa thường).
+* **T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh**: Máy chủ chạy, nhận kết nối có xác thực, chuyển lệnh theo hợp đồng, có chỗ cắm chốt quyền, hạn phiên, giới hạn tốc độ; mặc định đóng (không có quyền thì không nhận).
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Tạo **một bộ lọc từ ngữ bị cấm duy nhất** dùng cho: tên phòng, tên hiển thị của người dùng, tin nhắn chat. Giao diện và máy chủ dùng chung để cho **cùng một kết quả**; máy chủ luôn kiểm lại, không tin kết quả giao diện.
@@ -366,13 +748,14 @@ Khi mạng chập chờn, trình duyệt có thể **gửi lại cùng một yê
 Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòng liên tục** và mở kết nối quá nhiều. Tạo **một cơ chế giới hạn dùng chung** và gắn việc giới hạn số lần kết nối vào máy chủ. Các nơi xử lý khác (đăng nhập, vào phòng, tạo phòng) sẽ dùng cơ chế này.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Nhận **danh sách từ cấm** (tiếng Việt và tiếng Anh) do nhóm cung cấp, có số phiên bản. **Không tự bịa danh sách.**
 2. Viết hàm **chuẩn hoá** để nhận ra cả các cách "né": bỏ dấu, hoa thường, thêm khoảng trắng hoặc ký tự chèn, thay chữ số 0 bằng o, số 1 bằng i.
-3. Với **chat**: từ cấm được **thay bằng ***** rồi vẫn gửi đi.
-4. Với **tên phòng và tên hiển thị**: nếu có từ cấm thì **từ chối**, không che bằng *** rồi lưu.
+3. Với **chat**: từ cấm được \*\*thay bằng \*\*\*\*\* rồi vẫn gửi đi.
+4. Với **tên phòng và tên hiển thị**: nếu có từ cấm thì **từ chối**, không che bằng \*\*\* rồi lưu.
 5. Cho giao diện và máy chủ dùng chung hàm và danh sách; máy chủ luôn lọc lại kể cả khi giao diện đã lọc.
 6. Chuẩn bị bộ ví dụ gồm câu có từ cấm (nhiều cách né) và câu sạch (kể cả từ ghép dễ nhầm; nhóm xác nhận mong đợi).
-7. Khi nhận yêu cầu: **xác định người gửi** rồi **tra "biên lai"** theo cặp *(người gửi, mã yêu cầu)* **trước** mọi kiểm tra điều kiện khác (như đến lượt chưa, phiên bản ván).
+7. Khi nhận yêu cầu: **xác định người gửi** rồi **tra "biên lai"** theo cặp _(người gửi, mã yêu cầu)_ **trước** mọi kiểm tra điều kiện khác (như đến lượt chưa, phiên bản ván).
 8. Nếu đã có biên lai: **trả lại kết quả cũ và dừng**, không làm lại.
 9. Nếu là yêu cầu mới: thực hiện việc, **lưu kết quả thay đổi và biên lai trong cùng một lần lưu** (hoặc cả hai thành công, hoặc không gì cả).
 10. **Chỉ sau khi lưu thành công** mới báo thành công và phát cho các bên khác. Nếu lưu lỗi thì không phát và không lưu biên lai "thành công" giả.
@@ -382,15 +765,16 @@ Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòn
 14. Làm cơ chế đếm theo từng loại giới hạn ở trên, **dùng đồng hồ của máy chủ** (không dùng giờ trình duyệt).
 15. Đếm **chính xác** khi nhiều yêu cầu đến cùng lúc (không để vượt giới hạn vì chạy song song).
 16. Hết thời gian giới hạn thì **mở lại**, không khoá vĩnh viễn.
-17. Chốt "khoá" lấy từ **tài khoản đã xác định** hoặc *(tên đăng nhập, địa chỉ mạng)* do máy chủ biết; **không** lấy từ thông tin trình duyệt tự khai.
+17. Chốt "khoá" lấy từ **tài khoản đã xác định** hoặc _(tên đăng nhập, địa chỉ mạng)_ do máy chủ biết; **không** lấy từ thông tin trình duyệt tự khai.
 18. Gắn giới hạn kết nối mới vào cổng kết nối của máy chủ.
 19. Cung cấp **hàm dùng chung** cho các nơi xử lý: "kiểm tra", "ghi nhận một lần", "đọc thời gian còn bị khoá".
 20. Chuẩn bị bộ giả lập để kiểm tra khi các nơi xử lý thật chưa có.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
-| Chat có từ cấm viết kiểu né (bỏ dấu, chèn ký tự, 0/1) | Che bằng *** giống nhau ở giao diện và máy chủ |
+| --- | --- |
+| Chat có từ cấm viết kiểu né (bỏ dấu, chèn ký tự, 0/1) | Che bằng \*\*\* giống nhau ở giao diện và máy chủ |
 | Tên phòng hoặc tên hiển thị có từ cấm | **Từ chối**, không lưu tên đã che |
 | Câu sạch | Không bị che, không bị từ chối nhầm |
 | Kẻ gian bỏ qua giao diện, gửi thẳng tin nhắn có từ cấm tới máy chủ | Máy chủ vẫn lọc từ cấm (không chỉ trông cậy vào giao diện) |
@@ -411,7 +795,7 @@ Chống việc **thử đoán mật khẩu, thử đoán mã phòng, tạo phòn
 Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc mẫu đếm số lần được làm; đồng hồ giả để rút ngắn thời gian chờ.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Chạy bộ ví dụ trên giao diện và trên máy chủ | Kết quả giống hệt nhau |
 | 2 | Đưa từ cấm vào tên phòng, tên hiển thị | Bị từ chối |
 | 3 | Chạy các câu sạch | Không bị che sai |
@@ -429,8 +813,9 @@ Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc m
 | 15 | Hai tài khoản cùng mạng; thử đổi mã người dùng để né; gửi đồng thời ở sát ngưỡng | Không tính chung; không né được; không vượt giới hạn |
 
 **Các mức giới hạn (mức khởi đầu, do PO ủy quyền chốt ngày 04/10/2026; nhóm có thể chỉnh sau khi đo)**
+
 | Việc | Giới hạn |
-|---|---|
+| --- | --- |
 | Đăng nhập sai | Sai **5 lần trong 15 phút** (tính theo tên đăng nhập và địa chỉ mạng) thì **khoá 15 phút**, tính từ lần sai thứ 5; luôn báo lỗi chung |
 | Nhập sai mã phòng | **10 lần mỗi phút** cho mỗi phiên; vượt thì **chặn 5 phút** |
 | Tạo phòng | **5 lần trong 10 phút** cho mỗi người |
@@ -438,21 +823,91 @@ Chuẩn bị: cơ sở dữ liệu thử, hai tài khoản thử, một việc m
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; nếu chưa có danh sách thật từ nhóm thì **ghi bị chặn**, không dùng danh sách tự đặt để báo đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý, nhóm đã xác nhận bộ ví dụ. Điều cần làm rõ thêm: gửi lại **sau khi biên lai đã bị dọn** hoặc **cùng mã nhưng nội dung khác**. Nhóm cần quyết (chờ quyết định). **Chưa** nghiệm thu các nơi xử lý đăng nhập, tạo phòng, vào phòng (các task đó dùng cơ chế này và tự kiểm).
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** bộ lọc dùng chung cho tên phòng, tên hiển thị, chat; cơ chế dùng chung cho phòng, ván, chat; ví dụ cách dùng; hàm giới hạn dùng chung, các mức đã chốt.
-**Không thuộc task này:** việc gửi chat và kiểm độ dài tên (nơi xử lý đó tự kiểm); luật cờ, đồng hồ; giới hạn gửi mã OTP và giới hạn chat riêng (đã có quy định riêng). Ván với máy ở giai đoạn đầu không lưu vào cơ sở dữ liệu nên dùng bản trong bộ nhớ.
+**Không thuộc task này:** việc gửi chat và kiểm độ dài tên (nơi xử lý đó tự kiểm); luật cờ, đồng hồ; giới hạn gửi mã OTP và giới hạn chat riêng (đã có quy định riêng). Ván với máy ở P1 (MVP) không lưu vào cơ sở dữ liệu nên dùng bản trong bộ nhớ.
 **Phục vụ (nguồn):** Story 3, 15, 22; tiêu chí AC-AUTH-05-01, AC-CHAT-02-01, AC-CHAT-02-02, AC-PLAY-01-03; NFR-04, NFR-10. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Bộ lọc từ cấm dùng chung, cơ chế chống làm hai lần (biên lai theo người gửi và mã yêu cầu), bộ giới hạn tốc độ với các mức đã chốt; kèm ví dụ cách dùng.
 **Bằng chứng nộp:** Kết quả chạy ví dụ ở hai phía; kết quả thử đồng thời; số liệu giới hạn. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Danh sách từ cấm do nhóm cung cấp; gửi lại sau khi biên lai bị dọn hoặc cùng mã khác nội dung cần nhóm quyết.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-04, T-06; liên quan tới (relates to) Story 3, Story 15, Story 22; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-02, T-04, T-06; liên quan tới (relates to) Story 3, Story 15, Story 22; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-08**; Due date **2026-10-09**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-09.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Đầu vào cần chốt khi nhận Task
+
+Danh sách từ cấm và bộ ví dụ phải do nhóm cung cấp/xác nhận. Người thực hiện lập bảng xử lý cho ba trường hợp chưa chốt: cùng commandId nhưng nội dung khác, gửi lại sau khi biên lai đã dọn, và phản hồi tối thiểu khi người gửi đã mất quyền đọc. Ghi rõ phương án, tác động chống thực hiện hai lần và cách kiểm; trình PO/nhóm chốt trước khi đóng Task. Đây là việc cần làm trong Task, không phải luật mới đã được duyệt.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Review/kiểm độc lập dự kiến: **Tưởng Lê khoa Cường-4572**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-02 — XIAN-36](https://xiangqi-web.atlassian.net/browse/XIAN-36)
+* [T-04 — XIAN-38](https://xiangqi-web.atlassian.net/browse/XIAN-38)
+* [T-06 — XIAN-40](https://xiangqi-web.atlassian.net/browse/XIAN-40)
+
+**Story phục vụ:**
+
+* [Story 3 — XIAN-11](https://xiangqi-web.atlassian.net/browse/XIAN-11)
+* [Story 15 — XIAN-23](https://xiangqi-web.atlassian.net/browse/XIAN-23)
+* [Story 22 — XIAN-30](https://xiangqi-web.atlassian.net/browse/XIAN-30)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 5 | TÌNH 4851_NGUYỄN NGỌC |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | TÌNH 4851_NGUYỄN NGỌC |
+| Review độc lập | 1 | Tưởng Lê khoa Cường-4572 |
+| Tổng Original/Remaining Estimate ban đầu | 7 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc có luật nghiệp vụ, xử lý trạng thái, tích hợp hoặc kiểm định chất lượng: dành ca dài hơn và dự phòng sửa lỗi. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-08 15:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-09 13:30 |
+| Bắt đầu review | 2026-10-09 13:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-09 14:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-13 — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình thư mã 6 số, hạn 180 giây, gửi lại 60 giây, hạn mức thư thử. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cờ đăng ký dở. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được cách nhận yêu cầu và trả kết quả.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-01`, `US-AUTH-02` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 06/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-47](https://xiangqi-web.atlassian.net/browse/XIAN-47) · **Loại:** Task · **Assignee:** Tưởng Lê khoa Cường-4572 · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Authentication · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-AUTH-01`, `US-AUTH-02`, `xiangqi-mvp-20261005`, `t-13`
+**Ước lượng:** 4.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-07 · **Due date:** 2026-10-07 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Authentication
+**Phải xong trước:**
+
+* **T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google**: Cấu hình Supabase gửi mã OTP 6 số, hạn 180 giây, gửi lại 60 giây, mẫu thư; danh sách email nhóm; số liệu hạn mức thư thật. Có thêm cấu hình nhà cung cấp Google đã che bí mật và hướng dẫn tạo khoá.
+* **T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập**: Các tệp tạo bảng và quy tắc quyền truy cập chạy được trên cơ sở dữ liệu thử; ràng buộc (một ghế mỗi người, số người xem 0–5, tên không trùng không phân biệt hoa thường).
+* **T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh**: Máy chủ chạy, nhận kết nối có xác thực, chuyển lệnh theo hợp đồng, có chỗ cắm chốt quyền, hạn phiên, giới hạn tốc độ; mặc định đóng (không có quyền thì không nhận).
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Khi người dùng gõ tên đăng nhập ở bước đầu của đăng ký, máy chủ trả lời ngay "tên này **dùng được**", "**đã có người dùng**" hoặc "**không hợp lệ**". Bước này **chỉ kiểm tra**, không tạo tài khoản và không giữ chỗ tên. Giao diện đăng ký (task sau) dùng kết quả này.
@@ -460,6 +915,7 @@ Khi người dùng gõ tên đăng nhập ở bước đầu của đăng ký, m
 Ở bước 2 của đăng ký, người dùng nhập email; máy chủ **gửi mã OTP 6 số** tới email đó. Phải làm sao cho hai yêu cầu cùng lúc không phá nhau, không tạo ra tài khoản dùng được trước khi nhập đúng mã, và không báo "đã gửi" khi thực tế chưa gửi.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Kiểm tra tên có hợp lệ không: **3 đến 20 ký tự**, chỉ gồm chữ cái không dấu, chữ số và dấu gạch dưới.
 2. Nếu hợp lệ, so xem có ai đang dùng chưa, **không phân biệt hoa thường** (đã có "Twot" thì "twot" cũng báo trùng).
 3. Trả kết quả theo hợp đồng chung. **Không** tạo hồ sơ, **không** giữ chỗ tên.
@@ -476,12 +932,13 @@ Khi người dùng gõ tên đăng nhập ở bước đầu của đăng ký, m
 Trả ra: "dùng được", "đã có người dùng" hoặc "không hợp lệ" kèm lý do.
 
 | Nhận vào | Ý nghĩa | Giá trị hợp lệ |
-|---|---|---|
+| --- | --- | --- |
 | Tên đăng nhập | Tên người dùng muốn dùng | 3–20 ký tự; chữ, số, gạch dưới |
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Tên 2 ký tự hoặc 21 ký tự, hoặc có ký tự lạ (dấu cách, dấu tiếng Việt) | Báo "không hợp lệ" |
 | Tên chỉ khác hoa thường với tên đã có | Báo "đã có người dùng" |
 | Người dùng kiểm tên rồi bỏ dở | Không có hồ sơ nào được tạo, tên không bị giữ |
@@ -496,7 +953,7 @@ Trả ra: "dùng được", "đã có người dùng" hoặc "không hợp lệ"
 Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot"; dự án Supabase thử, email thành viên nhóm, một tài khoản đã hoàn tất mẫu.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Kiểm các tên đúng 3 và đúng 20 ký tự, rồi 2 ký tự, 21 ký tự, tên có dấu cách, tên có dấu tiếng Việt | Hai tên đầu hợp lệ; các tên còn lại báo không hợp lệ |
 | 2 | Kiểm tên "twot" | Báo đã có người dùng |
 | 3 | Kiểm một tên mới rồi dừng | Không có hồ sơ mới trong cơ sở dữ liệu |
@@ -509,21 +966,86 @@ Chuẩn bị: cơ sở dữ liệu thử, một tài khoản mẫu tên "Twot"; 
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; thư thật kiểm tách riêng khỏi thư giả lập; lưu ý hạn mức thư khoảng 2 thư mỗi giờ.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** chức năng kiểm tên chạy được, cho giao diện đăng ký và bước hoàn tất đăng ký; chức năng gửi mã và cách khoá theo email để bước hoàn tất và tác vụ dọn dùng chung.
-**Không thuộc task này:** giữ chỗ tên đăng nhập; đổi tên đăng nhập (giai đoạn sau); ô nhập ở giao diện; quên mật khẩu. Việc xác minh mã và tạo tài khoản thuộc task kế tiếp.
+**Không thuộc task này:** giữ chỗ tên đăng nhập; đổi tên đăng nhập (P2); ô nhập ở giao diện; quên mật khẩu. Việc xác minh mã và tạo tài khoản thuộc task kế tiếp.
 **Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-01-01, AC-AUTH-01-02, AC-AUTH-01-04, AC-AUTH-02-01, AC-AUTH-02-02, AC-AUTH-02-03. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Chức năng kiểm tên đăng nhập và chức năng gửi mã OTP chạy đúng quy tắc, có khoá theo email dùng chung.
 **Bằng chứng nộp:** Kết quả thử từng dòng ở bảng tự kiểm tra; thư thật đã nhận (đã che). Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Hạn mức thư; dịch vụ thư có thể từ chối.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-04, T-06; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-03, T-04, T-06; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Tưởng Lê khoa Cường-4572**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-07**; Due date **2026-10-07**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-13.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Tưởng Lê khoa Cường-4572**.
+* Review/kiểm độc lập dự kiến: **Võ Thành Đông**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-03 — XIAN-37](https://xiangqi-web.atlassian.net/browse/XIAN-37)
+* [T-04 — XIAN-38](https://xiangqi-web.atlassian.net/browse/XIAN-38)
+* [T-06 — XIAN-40](https://xiangqi-web.atlassian.net/browse/XIAN-40)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 3 | Tưởng Lê khoa Cường-4572 |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | Tưởng Lê khoa Cường-4572 |
+| Review độc lập | 0.5 | Võ Thành Đông |
+| Tổng Original/Remaining Estimate ban đầu | 4.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-07 13:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-07 17:30 |
+| Bắt đầu review | 2026-10-07 17:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-07 18:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được dịch vụ đăng nhập thử đã cấu hình. *Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập (T-04)*: nhận được bảng hồ sơ và cách bảo vệ. *Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh (T-06)*: nhận được kết quả đã hoàn thành của task này. *Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ (T-09)*: nhận được cơ chế khoá khi đăng nhập sai nhiều lần; nhận được hàm kiểm từ cấm dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-51](https://xiangqi-web.atlassian.net/browse/XIAN-51) · **Loại:** Task · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Authentication · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-AUTH-04`, `US-AUTH-05`, `xiangqi-mvp-20261005`, `t-17`
+**Ước lượng:** 12 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-10 · **Due date:** 2026-10-11 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Authentication
+**Phải xong trước:**
+
+* **T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google**: Cấu hình Supabase gửi mã OTP 6 số, hạn 180 giây, gửi lại 60 giây, mẫu thư; danh sách email nhóm; số liệu hạn mức thư thật. Có thêm cấu hình nhà cung cấp Google đã che bí mật và hướng dẫn tạo khoá.
+* **T-04 — Dựng cơ sở dữ liệu: các bảng và quy tắc quyền truy cập**: Các tệp tạo bảng và quy tắc quyền truy cập chạy được trên cơ sở dữ liệu thử; ràng buộc (một ghế mỗi người, số người xem 0–5, tên không trùng không phân biệt hoa thường).
+* **T-06 — Dựng khung máy chủ: nhận kết nối có xác thực và chuyển lệnh**: Máy chủ chạy, nhận kết nối có xác thực, chuyển lệnh theo hợp đồng, có chỗ cắm chốt quyền, hạn phiên, giới hạn tốc độ; mặc định đóng (không có quyền thì không nhận).
+* **T-09 — Ba cơ chế dùng chung ở máy chủ: lọc từ cấm, chống làm hai lần, giới hạn tốc độ**: Bộ lọc từ cấm dùng chung, cơ chế chống làm hai lần (biên lai theo người gửi và mã yêu cầu), bộ giới hạn tốc độ với các mức đã chốt; kèm ví dụ cách dùng.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Cho người dùng đăng nhập bằng **tên đăng nhập và mật khẩu**, cấp **phiên đăng nhập**, và kiểm tra phiên mỗi lần kết nối. Không bao giờ để lộ email khi đăng nhập.
@@ -533,12 +1055,13 @@ Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên h
 **Bổ sung (04/10/2026):** thêm **đăng nhập bằng Google**.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Kiểm tra xem người này có đang bị khoá vì đăng nhập sai nhiều lần không (dùng cơ chế giới hạn).
 2. **Tra email** nội bộ từ tên đăng nhập (không phân biệt hoa thường) rồi nhờ dịch vụ đăng nhập xác thực mật khẩu. **Email không bao giờ được trả về** trình duyệt.
-3. Đăng nhập sai thì chỉ báo **một thông báo chung**: "Sai tên đăng nhập hoặc mật khẩu" (không nói sai cái nào), và ghi một lần sai cho cặp *(tên đăng nhập, địa chỉ mạng)*.
-4. Cấp phiên: nếu người dùng chọn **"Ghi nhớ"** (mặc định) thì phiên kéo dài **30 ngày**; nếu không chọn thì hết khi **đóng trình duyệt** hoặc sau **12 giờ**, cái nào đến trước.
+3. Đăng nhập sai thì chỉ báo **một thông báo chung**: "Sai tên đăng nhập hoặc mật khẩu" (không nói sai cái nào), và ghi một lần sai cho cặp _(tên đăng nhập, địa chỉ mạng)_.
+4. Cấp phiên: nếu người dùng chọn **"Ghi nhớ"** (mặc định) thì phiên kéo dài **30 ngày**; nếu không chọn thì hết khi **đóng trình duyệt** hoặc sau **12 giờ**, cái nào đến trước. Hạn cố định từ đăng nhập thành công (đăng ký mới: từ hoàn tất); thao tác, chuyển tab và làm mới token không gia hạn. Đóng một tab riêng chỉ là mất kết nối.
 5. Mỗi lần kết nối: kiểm tra phiên còn hạn và **chưa bị thu hồi**. Hết hạn hoặc bị thu hồi thì từ chối và báo "hết phiên".
-6. Việc đang chơi dở khi hết phiên được xử theo quy tắc mất kết nối (không tự xử thua ngay).
+6. Hết phiên chính thức trong ván: ngắt quyền điều khiển; online giữ ghế 60 giây, đồng hồ vẫn chạy; AI giữ ván 30 phút. Đăng nhập lại đúng tài khoản trên cùng thiết bị trong hạn được tiếp tục; khác thiết bị áp dụng xử thua ngay. Ở task này bàn giao tín hiệu và danh tính phiên; xử lý ván online/AI lần lượt ở T-51/T-31, kiểm luồng thật ở T-57.
 7. **Xem hồ sơ:** trả tên hiển thị, tên đăng nhập, email của **chính người đó**.
 8. **Sửa tên hiển thị:** 2 đến 30 ký tự, qua bộ lọc từ cấm dùng chung; sai thì từ chối và nêu lý do.
 9. **Bỏ qua mọi trường khác** trong yêu cầu sửa; không báo lỗi lạ, chỉ không áp dụng.
@@ -546,10 +1069,13 @@ Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên h
 11. Ghi nhận cho mọi lần sửa: ai, lúc nào.
 12. **Đăng nhập Google:** tài khoản đã hoàn tất → vào Sảnh (hoặc đúng phòng nếu đến từ đường dẫn mời); email chưa có tài khoản hoặc chưa thiết lập xong → chuyển sang màn thiết lập, **chưa được dùng chức năng ứng dụng**. Sau khi thiết lập, **cùng một tài khoản** đăng nhập được bằng Google hoặc bằng tên đăng nhập và mật khẩu (một mã người dùng, không tạo hồ sơ thứ hai).
 13. Google từ chối hoặc lỗi → không có phiên, không tự vào Sảnh; báo lỗi rõ.
+14. Phân biệt **mở tab cùng thiết bị** với **đăng nhập thành công trên thiết bị khác**. Trường hợp thiết bị khác khi đang chơi phải phát yêu cầu kết thúc online/AI theo luật xử thua ngay, rời vị trí, thu hồi phiên cũ; nơi mới về Sảnh. Ngoài ván không tạo kết quả thua. Cơ chế nhận diện thiết bị/phiên cần PoC theo docs/04 mục 7, vẫn là thiết kế đề xuất; không tin deviceId do trình duyệt tự khai. T-49 nối quyền media/tab, T-57 kiểm luồng thật.
+15. Kiểm loại phiên: **OTP email trực tiếp của tài khoản hoàn tất không đủ quyền đăng nhập ứng dụng**. Phiên đăng ký chỉ được vào sau hoàn tất đúng luồng; không triển khai khôi phục P2. Bàn giao dữ liệu xác minh loại phiên cho chốt chặn ở T-22; không chỉ kiểm chữ ký token.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Đúng tên (khác hoa thường) và đúng mật khẩu | Cấp phiên |
 | Sai tên hoặc sai mật khẩu | Cùng một thông báo chung, không lộ email |
 | Sai 5 lần trong 15 phút | Khoá 15 phút từ lần thứ 5; hết hạn thì thử lại được; vẫn báo lỗi chung |
@@ -568,7 +1094,7 @@ Cho người dùng đọc hồ sơ của mình và **chỉ sửa được tên h
 Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Đăng nhập đúng (viết hoa thường khác); đăng nhập sai tên; sai mật khẩu | Đúng thì có phiên; hai trường hợp sai cùng một thông báo, không có email |
 | 2 | Đăng nhập chọn và không chọn "Ghi nhớ"; mô phỏng vượt 12 giờ và 30 ngày | Hạn đúng; không ghi nhớ thì không khôi phục sau khi đóng |
 | 3 | Thu hồi một phiên rồi dùng lại token cũ | Bị từ chối |
@@ -580,24 +1106,90 @@ Chuẩn bị: tài khoản thử đã hoàn tất, đồng hồ giả.
 | 9 | Dùng công cụ gửi lệnh sửa hồ sơ của người khác | Máy chủ từ chối, hồ sơ không đổi |
 | 10 | Đăng nhập Google với tài khoản đã hoàn tất, với email mới, và khi Google từ chối | Đúng như bảng lỗi |
 | 11 | Đăng nhập bằng Google rồi bằng tên đăng nhập và mật khẩu | Cùng một tài khoản |
+| 12 | Đăng nhập rồi hoạt động, đổi tab, làm mới token ở sát mốc 12 giờ/30 ngày | Hạn không trượt; token được làm mới không tự ngắt ván khi phiên chính thức còn hạn |
+| 13 | Mô phỏng tín hiệu hết phiên và đăng nhập thiết bị khác; thử OTP email trực tiếp | Đúng loại tín hiệu, thu hồi phiên cũ, chặn OTP trực tiếp; chưa dùng mô phỏng để tuyên bố đã xử lý ván thật |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Chưa** nghiệm thu việc mở nhiều tab (tab mới tiếp quản), giao cho task về camera/micro và nhiều tab.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** chức năng đăng nhập và chốt kiểm tra phiên cho giao diện và các phần khác; chức năng hồ sơ cho giao diện hồ sơ và các nơi hiển thị tên.
 **Không thuộc task này:** giao diện đăng nhập; tiếp quản phiên khi mở tab mới; quên mật khẩu; ảnh đại diện tải lên; đổi email hay tên đăng nhập.
-**Phục vụ (nguồn):** Story 2, 3; tiêu chí AC-AUTH-04-01, AC-AUTH-04-02, AC-AUTH-04-03, AC-AUTH-05-01, AC-AUTH-05-02, AC-AUTH-07-02, AC-AUTH-07-05. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
-**Kết quả (đầu ra):** Đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên 12 giờ/30 ngày, kiểm hạn và thu hồi, xem và sửa tên hiển thị. Đăng nhập Google chạy được.
+**Phục vụ (nguồn):** Story 2, 3; tiêu chí AC-AUTH-04-01, AC-AUTH-04-02, AC-AUTH-04-03, AC-AUTH-05-01, AC-AUTH-05-02, AC-AUTH-07-02, AC-AUTH-07-05. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-AUTH-04-06. Bổ sung tiêu chí AC-AUTH-04-07. Bổ sung AC-AUTH-04-05 (thiết bị khác).
+**Kết quả (đầu ra):** Đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên 12 giờ/30 ngày, kiểm hạn và thu hồi, xem và sửa tên hiển thị. Đăng nhập Google chạy được. Kèm hạn phiên cố định, phân biệt tab/thiết bị, dữ liệu loại phiên và tín hiệu hết phiên/thay thiết bị cho các mô-đun ván.
 **Bằng chứng nộp:** Kết quả thử từng dòng; thông báo lỗi chung. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Giới hạn đăng nhập sai (5 lần/15 phút) là mức khởi đầu, nhóm có thể chỉnh sau khi đo.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-04, T-06, T-09; liên quan tới (relates to) Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-03, T-04, T-06, T-09; liên quan tới (relates to) Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-10**; Due date **2026-10-11**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-17.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Review/kiểm độc lập dự kiến: **Tưởng Lê khoa Cường-4572**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-03 — XIAN-37](https://xiangqi-web.atlassian.net/browse/XIAN-37)
+* [T-04 — XIAN-38](https://xiangqi-web.atlassian.net/browse/XIAN-38)
+* [T-06 — XIAN-40](https://xiangqi-web.atlassian.net/browse/XIAN-40)
+* [T-09 — XIAN-43](https://xiangqi-web.atlassian.net/browse/XIAN-43)
+
+**Story phục vụ:**
+
+* [Story 2 — XIAN-10](https://xiangqi-web.atlassian.net/browse/XIAN-10)
+* [Story 3 — XIAN-11](https://xiangqi-web.atlassian.net/browse/XIAN-11)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 8 | TÌNH 4851_NGUYỄN NGỌC |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 2 | TÌNH 4851_NGUYỄN NGỌC |
+| Review độc lập | 2 | Tưởng Lê khoa Cường-4572 |
+| Tổng Original/Remaining Estimate ban đầu | 12 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc có luật nghiệp vụ, xử lý trạng thái, tích hợp hoặc kiểm định chất lượng: dành ca dài hơn và dự phòng sửa lỗi. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-10 11:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-11 14:30 |
+| Bắt đầu review | 2026-10-11 14:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-11 16:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-18 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 1 (04/10–07/10)
-**Phải xong trước:** *Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP) (T-13)*: nhận được chức năng kiểm tên đúng quy tắc và không giữ chỗ; nhận được bản đăng ký dở, chức năng gửi mã và cơ chế khoá theo email dùng chung.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.1-sprint-1
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 06/10/2026 · Due date (hạn): 07/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-52](https://xiangqi-web.atlassian.net/browse/XIAN-52) · **Loại:** Task · **Assignee:** TÌNH 4851_NGUYỄN NGỌC · **Sprint:** XIAN Sprint 1 · **Fix version:** v0.1
+**Components:** Authentication · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-AUTH-03`, `xiangqi-mvp-20261005`, `t-18`
+**Ước lượng:** 6 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-09 · **Due date:** 2026-10-10 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Authentication
+**Phải xong trước:**
+
+* **T-13 — Máy chủ: đăng ký bước 1 và 2 (kiểm tra tên đăng nhập, gửi mã OTP)**: Chức năng kiểm tên đăng nhập và chức năng gửi mã OTP chạy đúng quy tắc, có khoá theo email dùng chung.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài khoản: kiểm lại tên, đặt mật khẩu, ghi hồ sơ, đánh dấu hoàn tất và đăng nhập. Phải an toàn khi lỗi xảy ra giữa chừng: **không bao giờ để tài khoản dùng được khi chưa hoàn tất, và không xoá nhầm tài khoản đã hoàn tất**.
@@ -605,6 +1197,7 @@ Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài k
 **Bổ sung (04/10/2026):** hoàn tất **đăng ký bằng Google** (không cần OTP, tạo hồ sơ khi người dùng bấm Hoàn tất thiết lập).
 
 **Việc cần làm (làm lần lượt, dưới khoá theo email)**
+
 1. **Xác minh mã OTP.** Mã quá 180 giây hoặc sai thì từ chối. Nhập sai nhiều lần thì bị chặn (giới hạn của dịch vụ chỉ gần đúng, không đếm chính xác từng mã).
 2. **Kiểm lại tên đăng nhập** (có thể đã bị người khác lấy trong lúc chờ).
 3. **Đặt mật khẩu.**
@@ -612,15 +1205,18 @@ Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài k
 5. **Bỏ cờ "đang chờ hoàn tất".**
 6. Chỉ trả về **phiên đăng nhập dùng được** khi **cả hai** điều kiện đã đạt: có thời điểm hoàn tất **và** không còn cờ đang chờ.
 7. **Xử lý lỗi giữa chừng:**
-   - Lỗi **trước khi** ghi thời điểm hoàn tất: hoàn tác (xoá hồ sơ rồi tài khoản đăng nhập, thử lại có giãn cách).
-   - Lỗi **sau khi** đã ghi thời điểm hoàn tất mà còn cờ: **giữ tài khoản**, chỉ bỏ cờ sau; trong lúc đó vẫn chặn không cho dùng.
+
+    * Lỗi **trước khi** ghi thời điểm hoàn tất: hoàn tác (xoá hồ sơ rồi tài khoản đăng nhập, thử lại có giãn cách).
+    * Lỗi **sau khi** đã ghi thời điểm hoàn tất mà còn cờ: **giữ tài khoản**, chỉ bỏ cờ sau; trong lúc đó vẫn chặn không cho dùng.
+
 8. Không giữ khoá cơ sở dữ liệu khi gọi dịch vụ đăng nhập bên ngoài.
 9. **Đăng ký Google:** sau khi Google xác thực danh tính, chỉ khi người dùng bấm **Hoàn tất thiết lập** mới tạo hồ sơ: kiểm lại tên đăng nhập (3–20 ký tự, không trùng), đặt mật khẩu (từ 8 ký tự), tên hiển thị = tên đăng nhập (**không** dùng họ tên Google). **Không** yêu cầu mã OTP.
 10. Email Google đã thuộc tài khoản khác → báo "Email này đã được đăng ký", không tự gộp. Gửi hoàn tất trùng không tạo hai tài khoản; tên bị chiếm trong lúc chờ → báo để nhập lại. Chưa hoàn tất thì **chặn dùng ứng dụng** (cùng chốt chặn với đăng ký thường).
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Mã đúng, tên còn trống | Có **đúng một** hồ sơ hoàn tất, tên hiển thị = tên đăng nhập, nhận phiên đăng nhập |
 | Mã hết hạn hoặc sai | Không có tài khoản dùng được |
 | Tên bị người khác lấy trong lúc chờ nhập mã | Báo trùng, quay về bước đầu, **không ghi đè** người khác |
@@ -632,8 +1228,9 @@ Chỉ khi người dùng nhập **đúng mã OTP** thì mới hoàn tất tài k
 
 **Cách tự kiểm tra**
 Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" quy trình tại từng bước.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Nhập đúng mã, tên còn trống | Một hồ sơ hoàn tất, tên hiển thị = tên đăng nhập, có phiên đăng nhập |
 | 2 | Dùng mã quá 180 giây; dùng mã sai | Không có tài khoản dùng được |
 | 3 | Để người khác lấy tên trong lúc chờ rồi nhập mã | Báo trùng, quay bước đầu |
@@ -644,21 +1241,83 @@ Chuẩn bị: dự án Supabase thử, email nhóm, khả năng "làm dừng" qu
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý. **Chưa** tính việc dọn định kỳ (task sau).
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** tài khoản dùng được; trạng thái hoàn tất và cờ để các task chặn người chưa hoàn tất và tác vụ dọn dùng.
 **Không thuộc task này:** giao diện, dọn dẹp định kỳ.
-**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-03-01, AC-AUTH-03-02, AC-AUTH-03-03, AC-AUTH-03-04, AC-AUTH-03-05, AC-AUTH-03-06, AC-AUTH-07-01, AC-AUTH-07-03, AC-AUTH-07-04, AC-AUTH-07-05. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-03-01, AC-AUTH-03-02, AC-AUTH-03-03, AC-AUTH-03-04, AC-AUTH-03-05, AC-AUTH-03-06, AC-AUTH-07-01, AC-AUTH-07-03, AC-AUTH-07-04, AC-AUTH-07-05. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-AUTH-07-06.
 **Kết quả (đầu ra):** Hoàn tất đăng ký an toàn khi lỗi giữa chừng: kiểm mã, kiểm lại tên, đặt mật khẩu, ghi hồ sơ, bỏ cờ chờ, trả phiên dùng được. Hoàn tất đăng ký Google an toàn cùng chốt chặn.
 **Bằng chứng nộp:** Kết quả thử dừng quy trình ở từng mốc; hồ sơ trước/sau. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Giới hạn nhập sai của dịch vụ chỉ gần đúng (đã được PO chấp nhận).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-13; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-13; liên quan tới (relates to) Story 1, Story 2; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **TÌNH 4851_NGUYỄN NGỌC**; Sprint **XIAN Sprint 1**; Fix version **v0.1**; Start date **2026-10-09**; Due date **2026-10-10**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-18.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **TÌNH 4851_NGUYỄN NGỌC**.
+* Review/kiểm độc lập dự kiến: **Gia Kỳ**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-13 — XIAN-47](https://xiangqi-web.atlassian.net/browse/XIAN-47)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+* [Story 2 — XIAN-10](https://xiangqi-web.atlassian.net/browse/XIAN-10)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 4 | TÌNH 4851_NGUYỄN NGỌC |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | TÌNH 4851_NGUYỄN NGỌC |
+| Review độc lập | 1 | Gia Kỳ |
+| Tổng Original/Remaining Estimate ban đầu | 6 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-09 14:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-10 10:30 |
+| Bắt đầu review | 2026-10-10 10:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-10 11:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-21 — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Soạn "hợp đồng chung" giữa trình duyệt và máy chủ (T-02)*: nhận được danh sách yêu cầu và lỗi. *Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo) (T-07)*: nhận được trang chạy được; nhận được ô nhập, nút, thông báo lỗi, trạng thái đang tải. *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-17)*: nhận được quy tắc tên hiển thị để giao diện báo đúng.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-55](https://xiangqi-web.atlassian.net/browse/XIAN-55) · **Loại:** Task · **Assignee:** 4841_Lê Thị Xuân Nhạn · **Sprint:** XIAN Sprint 2 · **Fix version:** v0.2
+**Components:** Frontend · **Priority:** High · **Nhãn:** `P1`, `loi`, `US-AUTH-01`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05`, `xiangqi-mvp-20261005`, `t-21`
+**Ước lượng:** 8.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-12 · **Due date:** 2026-10-13 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Frontend
+**Phải xong trước:**
+
+* **T-02 — Soạn "hợp đồng chung" giữa trình duyệt và máy chủ**: Gói hợp đồng chung biên dịch được, có danh sách lệnh, thông tin đi kèm, nhóm lỗi và ví dụ hợp lệ/sai dùng được ở cả giao diện và máy chủ.
+* **T-07 — Dựng khung ứng dụng web và các khối giao diện nền (nút, hộp thoại, thông báo)**: Ứng dụng web chạy được, có kiểu chữ/màu Kỳ Đài Cổ Phong, các khối nền (nút, ô nhập, hộp thoại, thông báo, chú thích, khung xương) đủ 5 trạng thái và trang kiểm tra nội bộ.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Màn hình đăng ký gồm **3 bước** dẫn người dùng đến tài khoản: (1) tên đăng nhập và mật khẩu, (2) email, (3) nhập mã OTP. Giao diện này làm trước với **dữ liệu giả**, chưa nối máy chủ thật (việc nối nằm ở task tích hợp T-25).
@@ -668,6 +1327,7 @@ Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xu
 **Bổ sung (04/10/2026):** nút **Đăng nhập bằng Google** và **Đăng ký bằng Google** hoạt động; thêm màn **Thiết lập tài khoản Google**.
 
 **Việc cần làm (làm lần lượt)**
+
 1. **Bước 1:** ô tên đăng nhập (kiểm lại sau khi ngừng gõ khoảng 0,3 giây, báo "dùng được / đã có người dùng / không hợp lệ"), ô mật khẩu, ô nhập lại mật khẩu. Mật khẩu từ **8 ký tự** và hai ô phải giống nhau mới cho bấm "Tiếp tục".
 2. **Bước 2:** ô email; sai dạng thì báo ngay và không cho tiếp tục.
 3. **Bước 3:** nhập mã 6 số. Hiện **đếm ngược 180 giây** cho hạn mã, và nút "Gửi lại" **bị mờ** (kèm giải thích) trong 60 giây đầu.
@@ -676,49 +1336,55 @@ Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xu
 6. Chạy được bằng bàn phím; chữ lỗi đọc được với trình đọc màn hình.
 7. **Màn hình đăng nhập:** tên đăng nhập, mật khẩu, ô "Ghi nhớ" (mặc định bật). Sai thì chỉ hiện **một thông báo chung**, không nói sai cái nào. Nút "Đăng nhập khách" **mờ** kèm "Sắp ra mắt"; nút **"Đăng nhập bằng Google"** bấm được (chuyển sang Google rồi quay lại).
 8. **Màn hình hồ sơ:** hiện tên hiển thị (sửa được, **2 đến 30 ký tự**, bị lọc từ cấm), tên đăng nhập và email **hiện nhưng khoá, không sửa**. Ảnh đại diện là chữ cái đầu của tên.
-9. **Đăng xuất:** có nút ở nơi dễ thấy; xác nhận trước khi thoát.
+9. **Đăng xuất:** có nút ở nơi dễ thấy. Trong ván online/AI hỏi xác nhận hậu quả đầu hàng; Huỷ giữ nguyên. Ngoài ván thực hiện rời phòng nếu cần rồi xoá phiên, không thêm hộp xác nhận mới. Nối thật luồng giữa ván ở T-55.
 10. Mỗi màn hình có đủ 5 trạng thái.
 11. Chạy được bằng bàn phím, đạt chuẩn dễ đọc.
 12. Hiển thị **chữ thuần**: nội dung do người dùng gõ (tên hiển thị, tên phòng, tin chat) luôn hiện nguyên văn như chữ, **không** chạy mã HTML, script hay đường dẫn tự kích hoạt.
 13. Nút **Đăng nhập bằng Google** (màn đăng nhập) và **Đăng ký bằng Google** (bước 1 đăng ký) bấm được; sau khi Google xác thực, dẫn tới **màn thiết lập tài khoản**: nhập tên đăng nhập và mật khẩu, bấm **Hoàn tất thiết lập** (không có OTP, không có nút đóng); đủ 5 trạng thái.
 
-**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần giai đoạn 1)**
-*Màn hình Đăng nhập* (`SCR-LOGIN`)
-- Khung chính giữa trang trên nền giấy ấm, logo quân Tướng và tiêu đề "Kỳ Đài Đăng Nhập".
-- Ô tên đăng nhập (viết liền không dấu) và ô mật khẩu có biểu tượng ẩn/hiện mật khẩu.
-- Ô chọn "Ghi nhớ đăng nhập" (mặc định chọn: phiên 30 ngày; bỏ chọn: hết khi đóng trình duyệt hoặc sau 12 giờ) và nút **Đăng nhập**.
-- Nút **Đăng nhập bằng Google** (Google OAuth một chạm) **hoạt động**; nút Guest (Chơi nhanh) **mờ** kèm "Sắp ra mắt" và ghi chú "Chế độ Khách không được đánh Xếp hạng và không lưu lịch sử ván"; liên kết "Quên mật khẩu?" **mờ** "Sắp ra mắt" (PO duyệt 04/10/2026); liên kết "Đăng ký tài khoản mới" dẫn tới màn đăng ký.
-- Đã đăng nhập thì tự chuyển về Sảnh; đến từ đường dẫn mời thì sau đăng nhập vào đúng phòng.
+**Thành phần màn hình phải có (theo danh mục màn hình, chỉ phần P1 (MVP))**
+_Màn hình Đăng nhập_ (`SCR-LOGIN`)
 
-*Màn hình Đăng ký (ba bước)* (`SCR-REGISTER`)
-- Thanh tiến trình ba bước: "1. Tài khoản" → "2. Email" → "3. Xác thực OTP".
-- **Bước 1:** ô tên đăng nhập (3–20 ký tự, kiểm trùng sau khi ngừng gõ 0,3 giây), ô mật khẩu (tối thiểu 8 ký tự), ô xác nhận mật khẩu, nút **Tiếp tục**; phía dưới có nút **"Đăng ký bằng Google"** (hoạt động, dẫn tới màn thiết lập tài khoản).
-- **Bước 2:** ô email chính chủ, nút **Xác nhận Email** (gửi mã OTP 6 số và sang bước 3), nút **Quay lại**.
-- **Bước 3:** dòng "Mã OTP 6 số đã được gửi đến email …"; **6 ô nhập mã riêng**, tự nhảy ô khi gõ; đồng hồ đếm lùi hạn mã **3 phút**; nút "Gửi lại mã OTP" kèm đếm lùi 60 giây; khi nhập sai quá giới hạn thì khoá biểu mẫu, buộc chờ hoặc gửi lại mã.
-- Chỉ tạo tài khoản khi nhập đúng mã; bỏ dở thì không có tài khoản và tên không bị giữ; email đã đăng ký thì báo "Email này đã được đăng ký".
+* Khung chính giữa trang trên nền giấy ấm, logo quân Tướng và tiêu đề "Kỳ Đài Đăng Nhập".
+* Ô tên đăng nhập (viết liền không dấu) và ô mật khẩu có biểu tượng ẩn/hiện mật khẩu.
+* Ô chọn "Ghi nhớ đăng nhập" (mặc định chọn: phiên 30 ngày; bỏ chọn: hết khi đóng trình duyệt hoặc sau 12 giờ) và nút **Đăng nhập**.
+* Nút **Đăng nhập bằng Google** (Google OAuth một chạm) **hoạt động**; nút Guest (Chơi nhanh) **mờ** kèm "Sắp ra mắt" và ghi chú "Chế độ Khách không được đánh Xếp hạng và không lưu lịch sử ván"; liên kết "Quên mật khẩu?" **mờ** "Sắp ra mắt" (PO duyệt 04/10/2026); liên kết "Đăng ký tài khoản mới" dẫn tới màn đăng ký.
+* Đã đăng nhập thì tự chuyển về Sảnh; đến từ đường dẫn mời thì sau đăng nhập vào đúng phòng.
 
-*Màn hình Thiết lập tài khoản Google* (`SCR-ONBOARDING`)
-- Hiện ảnh và email Google (chỉ đọc); ô **tên đăng nhập** (bắt buộc, duy nhất, 3–20 ký tự không dấu); ô **mật khẩu** (từ 8 ký tự) và ô xác nhận để sau này đăng nhập được bằng tên và mật khẩu.
-- **Không có mã OTP** (Google đã xác thực email). Nút **Hoàn tất thiết lập** → tên hiển thị = tên đăng nhập (không dùng họ tên Google) → vào thẳng Sảnh.
-- **Không có nút đóng (X)**; thoát giữa chừng thì chưa có tài khoản, lần sau bắt đầu lại từ màn này. Email đã có tài khoản thì báo "Email này đã được đăng ký" kèm hướng dẫn quay lại đăng nhập.
+_Màn hình Đăng ký (ba bước)_ (`SCR-REGISTER`)
 
-*Màn hình Cài đặt hồ sơ* (`SCR-PROFILE-SETTINGS`)
-- Ảnh đại diện là chữ cái đầu của tên hiển thị (không có tải ảnh), tên hiển thị, tên đăng nhập (@tên), email.
-- Biểu mẫu đổi **tên hiển thị** (2–30 ký tự, lọc từ cấm, đổi tự do không cần OTP) với nút "Lưu thay đổi".
-- Tên đăng nhập và email **khoá** (hiển thị nhưng không sửa); nút "Đổi Username" mờ "Sắp ra mắt".
-- Không có điểm Elo, bộ chọn giao diện hay chức năng xoá tài khoản ở giai đoạn này; có nút **Đăng xuất**.
+* Thanh tiến trình ba bước: "1. Tài khoản" → "2. Email" → "3. Xác thực OTP".
+* **Bước 1:** ô tên đăng nhập (3–20 ký tự, kiểm trùng sau khi ngừng gõ 0,3 giây), ô mật khẩu (tối thiểu 8 ký tự), ô xác nhận mật khẩu, nút **Tiếp tục**; phía dưới có nút **"Đăng ký bằng Google"** (hoạt động, dẫn tới màn thiết lập tài khoản).
+* **Bước 2:** ô email chính chủ, nút **Xác nhận Email** (gửi mã OTP 6 số và sang bước 3), nút **Quay lại**.
+* **Bước 3:** dòng "Mã OTP 6 số đã được gửi đến email …"; **6 ô nhập mã riêng**, tự nhảy ô khi gõ; đồng hồ đếm lùi hạn mã **3 phút**; nút "Gửi lại mã OTP" kèm đếm lùi 60 giây; khi nhập sai quá giới hạn thì khoá biểu mẫu, buộc chờ hoặc gửi lại mã.
+* Chỉ tạo tài khoản khi nhập đúng mã; bỏ dở thì không có tài khoản và tên không bị giữ; email đã đăng ký thì báo "Email này đã được đăng ký".
+
+_Màn hình Thiết lập tài khoản Google_ (`SCR-ONBOARDING`)
+
+* Hiện ảnh và email Google (chỉ đọc); ô **tên đăng nhập** (bắt buộc, duy nhất, 3–20 ký tự không dấu); ô **mật khẩu** (từ 8 ký tự) và ô xác nhận để sau này đăng nhập được bằng tên và mật khẩu.
+* **Không có mã OTP** (Google đã xác thực email). Nút **Hoàn tất thiết lập** → tên hiển thị = tên đăng nhập (không dùng họ tên Google) → vào thẳng Sảnh.
+* **Không có nút đóng (X)**; thoát giữa chừng thì chưa có tài khoản, lần sau bắt đầu lại từ màn này. Email đã có tài khoản thì báo "Email này đã được đăng ký" kèm hướng dẫn quay lại đăng nhập.
+
+_Màn hình Cài đặt hồ sơ_ (`SCR-PROFILE-SETTINGS`)
+
+* Ảnh đại diện là chữ cái đầu của tên hiển thị (không có tải ảnh), tên hiển thị, tên đăng nhập (@tên), email.
+* Biểu mẫu đổi **tên hiển thị** (2–30 ký tự, lọc từ cấm, đổi tự do không cần OTP) với nút "Lưu thay đổi".
+* Tên đăng nhập và email **khoá** (hiển thị nhưng không sửa); nút "Đổi Username" mờ "Sắp ra mắt".
+* Không có điểm Elo, bộ chọn giao diện hay chức năng xoá tài khoản ở giai đoạn này; có nút **Đăng xuất**.
 
 **Năm trạng thái cần nghiệm thu (theo ma trận nghiệm thu)**
+
 | Màn hình / thành phần | Thành công | Đang tải | Trống | Lỗi | Bị khoá |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Màn hình Đăng nhập | Phiên hợp lệ vào Sảnh/đích mời | Đang xác thực, chặn gửi trùng | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt |
 | Màn hình Đăng ký (ba bước) | Hoàn tất OTP và hồ sơ mới cho vào | Gửi/xác minh/hoàn tất từng bước | Bước chưa có dữ liệu hướng dẫn nhập | Trùng tên/email, sai/hết mã hoặc phục hồi chưa xong; ở đúng bước | Chưa hợp lệ, gửi lại chưa đủ 60 giây, đang xử lý |
 | Màn hình Thiết lập tài khoản Google | Google đã xác minh và hồ sơ hoàn tất | Đang lấy danh tính hoặc ghi hồ sơ | Chưa có tên hoặc mật khẩu: hướng dẫn thiết lập | Email đã có tài khoản hoặc tên bị lấy; không gộp | Chưa hợp lệ hoặc đang xử lý; không đóng tuỳ ý |
 | Màn hình Cài đặt hồ sơ | Lưu Display Name; P2 thêm chức năng đúng quyền | Tải/lưu hồ sơ | Ô nhập trống: hướng dẫn, không lưu rỗng | Từ cấm/lỗi lưu: giữ dữ liệu nhập và cho sửa | Email luôn khoá; đổi username P1; đang lưu |
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Mật khẩu 7 ký tự hoặc hai ô khác nhau | Không cho tiếp tục, nêu rõ lý do |
 | Mã hết hạn (180 giây) | Báo hết hạn, mời gửi lại |
 | Bấm "Gửi lại" khi chưa đủ 60 giây | Nút mờ, có tooltip giải thích |
@@ -734,7 +1400,7 @@ Người dùng đăng nhập, xem và sửa **tên hiển thị**, và đăng xu
 Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Nhập mật khẩu 7 ký tự; hai ô khác nhau | Không qua bước 2, có lý do |
 | 2 | Nhập email sai dạng | Báo ngay, không tiếp tục |
 | 3 | Ở bước 3 quan sát đồng hồ | Đếm ngược 180 giây; "Gửi lại" mờ 60 giây đầu rồi sáng |
@@ -752,36 +1418,103 @@ Chuẩn bị: chạy giao diện với dữ liệu giả cho từng kịch bản
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; kèm ảnh chụp 5 trạng thái.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** màn hình đăng ký dùng được với dữ liệu giả để task tích hợp nối với máy chủ; màn hình đăng nhập, hồ sơ, đăng xuất dùng được với dữ liệu giả.
 **Không thuộc task này:** gọi máy chủ thật (làm ở task nối web với máy chủ); đăng nhập khách (đang để "Sắp ra mắt"); xử lý đăng xuất khi đang chơi; đổi email hay tên đăng nhập.
 **Phục vụ (nguồn):** Story 1, 2, 3; tiêu chí AC-AUTH-01-01, AC-AUTH-01-02, AC-AUTH-01-03, AC-AUTH-01-04, AC-AUTH-02-01, AC-AUTH-02-03, AC-AUTH-03-02, AC-AUTH-03-03, AC-AUTH-03-06, AC-AUTH-04-01, AC-AUTH-04-02, AC-AUTH-04-03, AC-AUTH-04-04, AC-AUTH-05-01, AC-AUTH-05-02, AC-AUTH-05-03, AC-AUTH-05-04, AC-AUTH-07-01, AC-AUTH-07-02, AC-AUTH-07-04; NFR-06. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Màn hình đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất đủ 5 trạng thái, chạy với dữ liệu giả. Có thêm màn thiết lập tài khoản Google và hai nút Google.
 **Bằng chứng nộp:** Ảnh chụp 5 trạng thái từng màn; kết quả kiểm bàn phím. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Màn thiết lập Google chỉ đóng được khi hoàn tất (không có nút X); chưa nối máy chủ nên chưa chạy Google thật (làm ở task nối web).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-02, T-07, T-17; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-02, T-07; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **4841_Lê Thị Xuân Nhạn**; Sprint **XIAN Sprint 2**; Fix version **v0.2**; Start date **2026-10-12**; Due date **2026-10-13**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-21.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **4841_Lê Thị Xuân Nhạn**.
+* Review/kiểm độc lập dự kiến: **Nguyễn Minh Thư**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-02 — XIAN-36](https://xiangqi-web.atlassian.net/browse/XIAN-36)
+* [T-07 — XIAN-41](https://xiangqi-web.atlassian.net/browse/XIAN-41)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+* [Story 2 — XIAN-10](https://xiangqi-web.atlassian.net/browse/XIAN-10)
+* [Story 3 — XIAN-11](https://xiangqi-web.atlassian.net/browse/XIAN-11)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 6 | 4841_Lê Thị Xuân Nhạn |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1.5 | 4841_Lê Thị Xuân Nhạn |
+| Review độc lập | 1 | Nguyễn Minh Thư |
+| Tổng Original/Remaining Estimate ban đầu | 8.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc có luật nghiệp vụ, xử lý trạng thái, tích hợp hoặc kiểm định chất lượng: dành ca dài hơn và dự phòng sửa lỗi. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-12 09:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-12 17:30 |
+| Bắt đầu review | 2026-10-12 17:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-13 09:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-22 — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication, QA & DevOps · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google (T-03)*: nhận được cấu hình OTP đã ghi, hộp thư nhóm và hạn mức thư thử. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-18)*: nhận được trạng thái hoàn tất và cờ đang chờ cùng quy trình hoàn tất.
-**Loại:** SPIKE (thử nghiệm kỹ thuật) · **Nhãn:** `P1`, `loi`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 08/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-56](https://xiangqi-web.atlassian.net/browse/XIAN-56) · **Loại:** Task · **Assignee:** Gia Kỳ · **Sprint:** XIAN Sprint 2 · **Fix version:** v0.2
+**Components:** Authentication, QA & DevOps · **Priority:** High · **Nhãn:** `P1`, `loi`, `SPIKE`, `gate`, `US-AUTH-03`, `US-AUTH-05`, `xiangqi-mvp-20261005`, `t-22`
+**Ước lượng:** 4.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-13 · **Due date:** 2026-10-14 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Authentication, QA & DevOps
+**Phải xong trước:**
+
+* **T-03 — Cấu hình Supabase: gửi mã OTP đăng ký và đăng nhập Google**: Cấu hình Supabase gửi mã OTP 6 số, hạn 180 giây, gửi lại 60 giây, mẫu thư; danh sách email nhóm; số liệu hạn mức thư thật. Có thêm cấu hình nhà cung cấp Google đã che bí mật và hướng dẫn tạo khoá.
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**: Đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên 12 giờ/30 ngày, kiểm hạn và thu hồi, xem và sửa tên hiển thị. Đăng nhập Google chạy được. Kèm hạn phiên cố định, phân biệt tab/thiết bị, dữ liệu loại phiên và tín hiệu hết phiên/thay thiết bị cho các mô-đun ván.
+* **T-18 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)**: Hoàn tất đăng ký an toàn khi lỗi giữa chừng: kiểm mã, kiểm lại tên, đặt mật khẩu, ghi hồ sơ, bỏ cờ chờ, trả phiên dùng được. Hoàn tất đăng ký Google an toàn cùng chốt chặn.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
-Trả lời một câu hỏi: **Supabase thật có đáp ứng được cách đăng ký bằng mã OTP mà dự án cần không?** Kết quả là một báo cáo có số đo thật. Task này **không** làm tính năng đăng ký, chỉ giúp nhóm biết có làm được và làm bằng cách nào.
+Trả lời một câu hỏi: **Supabase thật có đáp ứng được cách đăng ký bằng mã OTP mà dự án cần không?** Kết quả là một báo cáo có số đo thật. Task này kiểm chứng dịch vụ thật và triển khai chốt chặn truy cập dùng chung; màn hình đăng ký ở T-21 và luồng tài khoản ở T-13/T-18. Báo cáo thử nghiệm và chốt chặn là hai đầu ra riêng, phải ghi rõ trạng thái mỗi đầu ra.
 
 Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất đăng ký thì không được dùng ứng dụng**; (2) **email không bao giờ đổi được**, kể cả khi ai đó gọi thẳng vào hệ thống đăng nhập (không qua giao diện). Chỉ khoá ô email ở giao diện là **chưa đủ**.
 
 **Câu hỏi cần trả lời**
-- Thư mã thật gửi tới có đúng hạn 180 giây và gửi lại sau 60 giây không?
-- Giới hạn nhập sai thực tế là bao nhiêu?
-- Nếu quá trình đăng ký bị gián đoạn giữa chừng thì tài khoản dở có bị kẹt không, và dọn thế nào?
-- Một người đã đăng nhập có thể **tự đổi email** qua đường tắt (không qua ứng dụng) không? (Quy định: không được đổi email.)
+
+* Thư mã thật gửi tới có đúng hạn 180 giây và gửi lại sau 60 giây không?
+* Giới hạn nhập sai thực tế là bao nhiêu?
+* Nếu quá trình đăng ký bị gián đoạn giữa chừng thì tài khoản dở có bị kẹt không, và dọn thế nào?
+* Một người đã đăng nhập có thể **tự đổi email** qua đường tắt (không qua ứng dụng) không? (Quy định: không được đổi email.)
 
 **Bổ sung (04/10/2026):** thử nghiệm thêm luồng **Google**: cổng GATE-GOOGLE (Google không tự liên kết cùng email, tài khoản bỏ dở không dùng được).
 
 **Việc cần làm (làm lần lượt)**
+
 1. Lập bảng các câu hỏi trên và ngưỡng cần đạt.
 2. Gửi thư thật tới email nhóm; ghi giờ gửi, giờ nhận, giờ mã hết hạn.
 3. Thử nhập sai nhiều lần từ một địa chỉ mạng, ghi số lần thực sự bị chặn.
@@ -794,10 +1527,12 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 10. Nếu chưa có cơ chế chặn email nào được duyệt, **ghi rõ "bị chặn"** phần email; luật "email không đổi" vẫn bắt buộc và không được bỏ.
 11. Thử nghiệm **Google** với tài khoản Google thử: (a) email chưa đăng ký → sang màn thiết lập tên đăng nhập và mật khẩu, không có mã OTP; (b) email trùng với tài khoản đã đăng ký bằng mật khẩu → báo "Email này đã được đăng ký", **không tự gộp** tài khoản, không làm mất mật khẩu hay tên đăng nhập hiện có; (c) bỏ dở giữa chừng hoặc Google từ chối → không có tài khoản dùng được; (d) hoàn tất rồi đăng nhập được cả bằng Google lẫn bằng tên đăng nhập và mật khẩu.
 12. Ghi kết luận GATE-GOOGLE: đạt / không đạt / chưa kết luận. Nếu hệ thống đăng nhập **tự liên kết** cùng email thì ghi **bị chặn** và báo PO, không tự gộp.
+13. Nối dữ liệu loại phiên do T-17 cung cấp vào chốt chặn API/Socket: OTP email trực tiếp của tài khoản đã hoàn tất **không** đăng nhập ứng dụng; đăng ký hợp lệ hoàn tất, username/mật khẩu và Google hợp lệ vẫn được dùng. Không xây luồng Quên mật khẩu P2. Kiểm gọi thẳng thay vì chỉ ẩn nút.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Dùng mã quá 180 giây | Không hoàn tất đăng ký |
 | Đã ghi hồ sơ xong nhưng còn cờ "đang chờ", chạy phục hồi nhiều lần | Giữ nguyên tài khoản, chỉ bỏ cờ rồi mới cho dùng |
 | Hoàn tất đăng ký và dọn dẹp chạy cùng lúc | Không xoá nhầm hồ sơ đã hoàn tất |
@@ -811,8 +1546,9 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 | Google bỏ dở giữa chừng | Không có tài khoản ứng dụng dùng được; lần sau bắt đầu lại từ màn thiết lập |
 
 **Cách tự kiểm tra**
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Dùng mã quá 180 giây | Đăng ký không hoàn tất |
 | 2 | Làm gián đoạn đăng ký sau khi ghi hồ sơ, rồi chạy phục hồi hai lần | Tài khoản còn, cờ được bỏ đúng một lần |
 | 3 | Chạy hoàn tất và dọn dẹp cùng lúc | Hồ sơ hoàn tất không bị xoá |
@@ -822,27 +1558,95 @@ Hai việc: (1) **người có đăng nhập hợp lệ nhưng chưa hoàn tất
 | 7 | Để hồ sơ có thời điểm hoàn tất nhưng còn cờ, rồi bỏ cờ | Trước khi bỏ cờ: chặn; sau: dùng được; hồ sơ không bị xoá |
 | 8 | Dùng công cụ tự sửa dữ liệu để khai "đã hoàn tất", và thử ghi thẳng vào hồ sơ | Không có tác dụng, vẫn chưa dùng được ứng dụng |
 | 9 | Gọi thẳng đổi email bằng phiên thử | Email cũ vẫn nguyên; hoặc ghi "bị chặn" |
-| 10 | Đăng ký Google bằng email mới; bỏ dở; làm lại; hoàn tất | Bỏ dở thì không có tài khoản; hoàn tất thì có đúng một tài khoản |
+| 10 | Đăng ký Google bằng email mới; bỏ dở; làm lại; hoàn tất | Bỏ dở chưa có tài khoản ứng dụng dùng được; bản Auth tạm có thể còn trước hạn dọn. Hoàn tất có đúng một tài khoản |
 | 11 | Đăng ký Google bằng email đã đăng ký bằng mật khẩu | Báo đã được đăng ký; tài khoản cũ không đổi |
 | 12 | Sau khi hoàn tất, đăng nhập bằng Google rồi bằng tên đăng nhập và mật khẩu | Cả hai vào cùng một tài khoản, không có hồ sơ thứ hai |
+| 13 | Lấy phiên OTP email trực tiếp của tài khoản đã hoàn tất rồi gọi API và Socket; thử lại bằng đăng nhập hợp lệ | OTP trực tiếp bị chặn, phiên hợp lệ được qua; không rò dữ liệu phòng/hồ sơ từ phiên sai loại |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; báo cáo đủ, người khác làm lại theo báo cáo ra cùng kết quả.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. Báo cáo hoàn tất **kể cả khi kết luận là không đạt**. Nhưng chú ý: "đạt kiểm tra OTP" chỉ được ghi khi phép thử thực sự đạt. Không được dùng thư giả để thay. **Chỉ ghi "xong" khi cả việc chặn người chưa hoàn tất và việc chặn đổi email đều đạt**. Nếu cơ chế đổi email chưa có thì phần đó ghi bị chặn, không ghi xong cả task.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** báo cáo và phương án cho các task đăng ký ở Epic Đăng ký và đăng nhập; chốt chặn dùng chung cho mọi đường vào ứng dụng.
-**Không thuộc task này:** viết tính năng đăng ký; dọn tài khoản chính thức; dùng dịch vụ gửi thư khác; đổi tên đăng nhập; quên mật khẩu (giai đoạn sau).
-**Phục vụ (nguồn):** Story 1, 3; tiêu chí AC-AUTH-03-03, AC-AUTH-03-04, AC-AUTH-05-02, AC-AUTH-07-01, AC-AUTH-07-02, AC-AUTH-07-03, AC-AUTH-07-05; GATE-OTP, NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
-**Kết quả (đầu ra):** Báo cáo thử nghiệm OTP thật: gửi thư, hết hạn, giới hạn nhập sai, dọn tài khoản dở, chặn đổi email trực tiếp; kết luận đạt / không đạt / chưa kết luận; chốt chặn người chưa hoàn tất. Có thêm kết luận GATE-GOOGLE kèm bằng chứng.
+**Không thuộc task này:** viết tính năng đăng ký; dọn tài khoản chính thức; dùng dịch vụ gửi thư khác; đổi tên đăng nhập; quên mật khẩu (P2).
+**Phục vụ (nguồn):** Story 1, 3; tiêu chí AC-AUTH-03-03, AC-AUTH-03-04, AC-AUTH-05-02, AC-AUTH-07-01, AC-AUTH-07-02, AC-AUTH-07-03, AC-AUTH-07-05; GATE-OTP, NFR-04. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-AUTH-04-07.
+**Kết quả (đầu ra):** Báo cáo thử nghiệm OTP thật: gửi thư, hết hạn, giới hạn nhập sai, dọn tài khoản dở, chặn đổi email trực tiếp; kết luận đạt / không đạt / chưa kết luận; chốt chặn người chưa hoàn tất. Có thêm kết luận GATE-GOOGLE kèm bằng chứng. Có chốt API/Socket từ chối OTP email trực tiếp của tài khoản hoàn tất, kèm bằng chứng dịch vụ thật.
 **Bằng chứng nộp:** Báo cáo có số đo thật, cấu hình đã che; kết quả gọi thẳng chức năng đổi email. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Chưa biết hệ thống đăng nhập có cho chặn đổi email bằng cấu hình không; nếu không thì ghi "bị chặn" cho phần đó, không bỏ luật. Nếu hệ thống đăng nhập tự liên kết cùng email thì luồng Google bị chặn cho đến khi PO quyết (không tự gộp).
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-03, T-18; liên quan tới (relates to) Story 1, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-03, T-17, T-18; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Gia Kỳ**; Sprint **XIAN Sprint 2**; Fix version **v0.2**; Start date **2026-10-13**; Due date **2026-10-14**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-22.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Gia Kỳ**.
+* Review/kiểm độc lập dự kiến: **Tưởng Lê khoa Cường-4572**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-03 — XIAN-37](https://xiangqi-web.atlassian.net/browse/XIAN-37)
+* [T-17 — XIAN-51](https://xiangqi-web.atlassian.net/browse/XIAN-51)
+* [T-18 — XIAN-52](https://xiangqi-web.atlassian.net/browse/XIAN-52)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+* [Story 2 — XIAN-10](https://xiangqi-web.atlassian.net/browse/XIAN-10)
+* [Story 3 — XIAN-11](https://xiangqi-web.atlassian.net/browse/XIAN-11)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 3 | Gia Kỳ |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | Gia Kỳ |
+| Review độc lập | 0.5 | Tưởng Lê khoa Cường-4572 |
+| Tổng Original/Remaining Estimate ban đầu | 4.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-13 14:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-13 18:00 |
+| Bắt đầu review | 2026-10-14 09:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-14 09:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-25 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend, Authentication · **Sprint:** 2 (08/10–10/10)
-**Phải xong trước:** *Máy chủ: đăng nhập, quản lý phiên và hồ sơ (T-17)*: nhận được chức năng thật ở máy chủ. *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-18)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-21)*: nhận được màn hình đã dựng. *Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email (T-22)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `loi`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.2-loi-sprint-2
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 08/10/2026 · Due date (hạn): 09/10/2026 · Priority (ưu tiên): High · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-59](https://xiangqi-web.atlassian.net/browse/XIAN-59) · **Loại:** Task · **Assignee:** 4841_Lê Thị Xuân Nhạn · **Sprint:** XIAN Sprint 2 · **Fix version:** v0.2
+**Components:** Frontend, Authentication · **Priority:** High · **Nhãn:** `P1`, `loi`, `integration`, `US-AUTH-02`, `US-AUTH-03`, `US-AUTH-04`, `US-AUTH-05`, `xiangqi-mvp-20261005`, `t-25`
+**Ước lượng:** 4.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-14 · **Due date:** 2026-10-14 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Frontend, Authentication
+**Phải xong trước:**
+
+* **T-17 — Máy chủ: đăng nhập, quản lý phiên và hồ sơ**: Đăng nhập bằng tên đăng nhập và mật khẩu, quản lý phiên 12 giờ/30 ngày, kiểm hạn và thu hồi, xem và sửa tên hiển thị. Đăng nhập Google chạy được. Kèm hạn phiên cố định, phân biệt tab/thiết bị, dữ liệu loại phiên và tín hiệu hết phiên/thay thiết bị cho các mô-đun ván.
+* **T-18 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)**: Hoàn tất đăng ký an toàn khi lỗi giữa chừng: kiểm mã, kiểm lại tên, đặt mật khẩu, ghi hồ sơ, bỏ cờ chờ, trả phiên dùng được. Hoàn tất đăng ký Google an toàn cùng chốt chặn.
+* **T-21 — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất**: Màn hình đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất đủ 5 trạng thái, chạy với dữ liệu giả. Có thêm màn thiết lập tài khoản Google và hai nút Google.
+* **T-22 — Thử nghiệm OTP thật và đăng nhập Google; chặn người chưa hoàn tất đăng ký và chặn đổi email**: Báo cáo thử nghiệm OTP thật: gửi thư, hết hạn, giới hạn nhập sai, dọn tài khoản dở, chặn đổi email trực tiếp; kết luận đạt / không đạt / chưa kết luận; chốt chặn người chưa hoàn tất. Có thêm kết luận GATE-GOOGLE kèm bằng chứng. Có chốt API/Socket từ chối OTP email trực tiếp của tài khoản hoàn tất, kèm bằng chứng dịch vụ thật.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng ký tới đăng nhập, sửa hồ sơ, đăng xuất** trên môi trường thử, có email thật.
@@ -850,6 +1654,7 @@ Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng k
 **Bổ sung (04/10/2026):** kiểm cả **đăng ký và đăng nhập bằng Google** trên môi trường thử.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Nối ba bước đăng ký với máy chủ thật: kiểm tên, gửi mã, xác minh mã và hoàn tất.
 2. Nối đăng nhập, giữ phiên theo lựa chọn "Ghi nhớ", và khôi phục phiên khi mở lại.
 3. Nối hồ sơ: đọc, sửa tên hiển thị.
@@ -859,8 +1664,9 @@ Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng k
 7. Chạy luồng Google với tài khoản Google thử: đăng ký bằng Google (không OTP) → thiết lập tên và mật khẩu → vào Sảnh; đăng xuất rồi đăng nhập bằng Google; đăng nhập bằng tên và mật khẩu; email đã đăng ký bằng mật khẩu thì báo đã được đăng ký.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Đăng ký đủ ba bước với email thật | Có tài khoản, vào được ứng dụng |
 | Bỏ giữa chừng rồi quay lại | Phục hồi đúng như quy tắc, không kẹt email |
 | Sai mật khẩu 5 lần | Hiện thông báo bị khoá tạm |
@@ -869,8 +1675,9 @@ Thay dữ liệu giả bằng máy chủ thật để **đi trọn từ đăng k
 
 **Cách tự kiểm tra**
 Chuẩn bị: máy chủ và giao diện chạy thử, email nhóm.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Đăng ký trọn ba bước bằng email thật | Nhận thư, nhập mã, có tài khoản, tên hiển thị = tên đăng nhập |
 | 2 | Đăng xuất rồi đăng nhập có và không "Ghi nhớ" | Đóng và mở lại: có ghi nhớ thì còn phiên, không thì hết |
 | 3 | Sửa tên hiển thị; thử tên có từ cấm | Hợp lệ lưu được; sai báo lỗi |
@@ -880,41 +1687,112 @@ Chuẩn bị: máy chủ và giao diện chạy thử, email nhóm.
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt trên môi trường thử.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** tài khoản thật đăng nhập được, cho các phần phòng chơi và ván.
 **Không thuộc task này:** vào lại đúng phòng sau đăng nhập (T-54), đăng xuất khi đang chơi (T-55).
-**Phục vụ (nguồn):** Story 1, 2, 3; tiêu chí AC-AUTH-01-01, AC-AUTH-01-02, AC-AUTH-01-04, AC-AUTH-02-01, AC-AUTH-02-02, AC-AUTH-03-01, AC-AUTH-04-01, AC-AUTH-05-04, AC-AUTH-07-01, AC-AUTH-07-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Phục vụ (nguồn):** Story 1, 2, 3; tiêu chí AC-AUTH-01-01, AC-AUTH-01-02, AC-AUTH-01-04, AC-AUTH-02-01, AC-AUTH-02-02, AC-AUTH-03-01, AC-AUTH-04-01, AC-AUTH-05-04, AC-AUTH-07-01, AC-AUTH-07-02. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-AUTH-04-07.
 **Kết quả (đầu ra):** Đăng ký, đăng nhập, hồ sơ, đăng xuất chạy trọn trên môi trường thử với email thật. Luồng Google chạy trọn.
 **Bằng chứng nộp:** Video hoặc báo cáo Playwright; thư thật đã che. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Hạn mức thư; phụ thuộc cấu hình chung.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-17, T-18, T-21, T-22; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-17, T-18, T-21, T-22; liên quan tới (relates to) Story 1, Story 2, Story 3; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **4841_Lê Thị Xuân Nhạn**; Sprint **XIAN Sprint 2**; Fix version **v0.2**; Start date **2026-10-14**; Due date **2026-10-14**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-25.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **4841_Lê Thị Xuân Nhạn**.
+* Review/kiểm độc lập dự kiến: **Nguyễn Minh Thư**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-17 — XIAN-51](https://xiangqi-web.atlassian.net/browse/XIAN-51)
+* [T-18 — XIAN-52](https://xiangqi-web.atlassian.net/browse/XIAN-52)
+* [T-21 — XIAN-55](https://xiangqi-web.atlassian.net/browse/XIAN-55)
+* [T-22 — XIAN-56](https://xiangqi-web.atlassian.net/browse/XIAN-56)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+* [Story 2 — XIAN-10](https://xiangqi-web.atlassian.net/browse/XIAN-10)
+* [Story 3 — XIAN-11](https://xiangqi-web.atlassian.net/browse/XIAN-11)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 3 | 4841_Lê Thị Xuân Nhạn |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1 | 4841_Lê Thị Xuân Nhạn |
+| Review độc lập | 0.5 | Nguyễn Minh Thư |
+| Tổng Original/Remaining Estimate ban đầu | 4.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-14 09:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-14 14:30 |
+| Bắt đầu review | 2026-10-14 14:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-14 15:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-42 — Máy chủ: tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Authentication · **Sprint:** 3 (11/10–14/10)
-**Phải xong trước:** *Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản) (T-18)*: nhận được trạng thái "hoàn tất" và "đang chờ", các nhánh lỗi và cơ chế khoá theo email.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-AUTH-03` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v0.3-sprint-3
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 11/10/2026 · Due date (hạn): 12/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-76](https://xiangqi-web.atlassian.net/browse/XIAN-76) · **Loại:** Task · **Assignee:** Tưởng Lê khoa Cường-4572 · **Sprint:** XIAN Sprint 3 · **Fix version:** v0.3
+**Components:** Authentication · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-AUTH-03`, `xiangqi-mvp-20261005`, `t-42`
+**Ước lượng:** 3.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-20 · **Due date:** 2026-10-20 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Authentication
+**Phải xong trước:**
+
+* **T-18 — Máy chủ: đăng ký bước 3 (xác minh mã, hoàn tất tài khoản)**: Hoàn tất đăng ký an toàn khi lỗi giữa chừng: kiểm mã, kiểm lại tên, đặt mật khẩu, ghi hồ sơ, bỏ cờ chờ, trả phiên dùng được. Hoàn tất đăng ký Google an toàn cùng chốt chặn.
+* **T-34 — Nghiệm thu bản chơi được: đăng ký, tạo phòng, mời, đánh online và đánh với máy chạy trọn**: Bản chơi được đã PASS M1–M4 trên bản chạy thật; báo cáo hoàn tất nhưng chưa đạt không mở phần làm sau, trừ PO cho phép rõ ràng.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
 Có những người bắt đầu đăng ký rồi bỏ dở, hoặc quy trình bị dừng giữa chừng. Cần một **tác vụ chạy định kỳ** để phục hồi hoặc dọn các tài khoản dở này, **không để kẹt email** và **không bao giờ xoá nhầm tài khoản đã hoàn tất**.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Cho tác vụ chạy **khi máy chủ khởi động** và **mỗi 5 phút**.
 2. Dùng **cùng cơ chế khoá theo email** với bước gửi mã và bước hoàn tất, để không đụng nhau.
 3. Trước mỗi thay đổi, **đọc lại trạng thái** ngay lúc đó.
 4. Phân loại:
-   - Có thời điểm hoàn tất mà **còn cờ đang chờ** → **chỉ bỏ cờ**, không xoá gì.
-   - **Chưa** có thời điểm hoàn tất và **quá 60 phút** → dọn: xoá hồ sơ dở rồi xoá tài khoản đăng nhập.
-   - Tài khoản đăng nhập do hệ thống tạo ra mà **không có cờ** nhưng chưa hoàn tất → vẫn xét theo tuổi như trên (không vì thiếu cờ mà bỏ lọt).
+
+    * Có thời điểm hoàn tất mà **còn cờ đang chờ** → **chỉ bỏ cờ**, không xoá gì.
+    * **Chưa** có thời điểm hoàn tất và **quá 60 phút** → dọn: xoá hồ sơ dở rồi xoá tài khoản đăng nhập.
+    * Tài khoản đăng nhập do hệ thống tạo ra mà **không có cờ** nhưng chưa hoàn tất → vẫn xét theo tuổi như trên (không vì thiếu cờ mà bỏ lọt).
+
 5. Nếu dịch vụ bên ngoài lỗi: ghi lỗi (đã che thông tin nhạy cảm) và **thử lại ở lần chạy sau**, không báo "đã dọn".
 6. Với dịch vụ hoạt động bình thường, một tài khoản dở được dọn trong khoảng **65 phút** (60 phút cộng tối đa một chu kỳ 5 phút). Không hứa con số này khi dịch vụ hỏng.
 7. Ghi nhật ký mỗi lần phục hồi hoặc dọn tài khoản đăng ký dở (không ghi mật khẩu hay mã OTP).
 8. Tài khoản Google đã xác thực nhưng chưa bấm Hoàn tất thiết lập: không tạo hồ sơ dùng được; bản ghi xác thực tạm (nếu có) được dọn như tài khoản đăng ký dở, không dùng thiếu cờ để vượt kiểm tra.
+9. Dọn **bản xác thực Google mới chưa hoàn tất thiết lập** sau 60 phút, quét mỗi 5 phút khi dịch vụ hoạt động. Thử hoàn tất và dọn đồng thời; bảo vệ tài khoản đã hoàn tất và tài khoản cũ. Dịch vụ phụ thuộc lỗi thì ghi chưa dọn/thử lại, không báo thành công giả.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Chạy hai lần liên tiếp với hồ sơ đã hoàn tất còn cờ | Không xoá tài khoản; chỉ bỏ cờ một lần |
 | Quét trong lúc có người vừa hoàn tất đăng ký | Không xoá tài khoản vừa hoàn tất |
 | Hồ sơ dở đúng 60 phút và hơn 60 phút | Đúng 60: giữ lại; hơn 60: đủ điều kiện dọn |
@@ -922,57 +1800,134 @@ Có những người bắt đầu đăng ký rồi bỏ dở, hoặc quy trình 
 
 **Cách tự kiểm tra**
 Chuẩn bị: đồng hồ giả để rút ngắn thời gian; khả năng gây lỗi giả.
+
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Chạy hai lần với hồ sơ đã hoàn tất còn cờ | Không xoá; bỏ cờ đúng một lần; tên và mật khẩu không đổi |
 | 2 | Chạy khi cùng lúc có yêu cầu hoàn tất | Tài khoản vừa hoàn tất vẫn còn |
 | 3 | Hồ sơ dở tại đúng 60 phút và quá 60 phút | Đúng 60: giữ; quá: dọn trong chu kỳ kế tiếp |
 | 4 | Tài khoản đăng nhập không có cờ và lỗi dịch vụ | Vẫn xét tuổi; lỗi thì thử lại, không báo đã dọn |
 | 5 | Có tài khoản Google đã xác thực nhưng chưa hoàn tất thiết lập; chạy tác vụ dọn | Không có hồ sơ dùng được; bản ghi tạm bị dọn đúng hạn; tài khoản đã hoàn tất không bị xoá |
+| 6 | Google mới bỏ dở quá 60 phút; hoàn tất đồng thời lúc dọn; gây lỗi phụ thuộc | Bản mới dở bị dọn; tài khoản hoàn tất/cũ còn nguyên; thất bại ghi đúng và phục hồi/thử lại |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại đồng ý.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** tác vụ dọn chạy định kỳ; báo cáo các lần chạy.
-**Không thuộc task này:** dọn tài khoản khách (giai đoạn sau), mở rộng việc xoá dữ liệu ngoài phạm vi này.
-**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-03-04, AC-AUTH-03-05, AC-AUTH-07-04; GATE-OTP. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
-**Kết quả (đầu ra):** Tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (mỗi 5 phút), không xoá nhầm tài khoản hoàn tất.
+**Không thuộc task này:** dọn tài khoản khách (P2), mở rộng việc xoá dữ liệu ngoài phạm vi này.
+**Phục vụ (nguồn):** Story 1; tiêu chí AC-AUTH-03-04, AC-AUTH-03-05, AC-AUTH-07-04; GATE-OTP. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-AUTH-07-06.
+**Kết quả (đầu ra):** Tác vụ định kỳ dọn và phục hồi tài khoản đăng ký dở (mỗi 5 phút), không xoá nhầm tài khoản hoàn tất. Gồm dọn Google mới chưa hoàn tất sau 60 phút, quét 5 phút, không xoá tài khoản cũ/hoàn tất.
 **Bằng chứng nộp:** Kết quả thử với đồng hồ giả: mốc đúng 60 phút, quá 60 phút; chạy cùng hoàn tất. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Dịch vụ bên ngoài lỗi thì thử lại lần sau; thời gian dọn khoảng 65 phút.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-18; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-18, T-34; liên quan tới (relates to) Story 1; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Tưởng Lê khoa Cường-4572**; Sprint **XIAN Sprint 3**; Fix version **v0.3**; Start date **2026-10-20**; Due date **2026-10-20**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-42.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Tưởng Lê khoa Cường-4572**.
+* Review/kiểm độc lập dự kiến: **Gia Kỳ**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-18 — XIAN-52](https://xiangqi-web.atlassian.net/browse/XIAN-52)
+* [T-34 — XIAN-68](https://xiangqi-web.atlassian.net/browse/XIAN-68)
+
+**Story phục vụ:**
+
+* [Story 1 — XIAN-9](https://xiangqi-web.atlassian.net/browse/XIAN-9)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 2.5 | Tưởng Lê khoa Cường-4572 |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 0.5 | Tưởng Lê khoa Cường-4572 |
+| Review độc lập | 0.5 | Gia Kỳ |
+| Tổng Original/Remaining Estimate ban đầu | 3.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc phạm vi hẹp/cấu hình/giao diện hoặc nối chức năng đã có đầu vào: ca thực hiện ngắn, kiểm và review riêng. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-20 09:00 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-20 12:00 |
+| Bắt đầu review | 2026-10-20 13:00 |
+| Review PASS và bàn giao mục tiêu | 2026-10-20 13:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-60 — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng (T-10)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất (T-21)*: nhận được kết quả đã hoàn thành của task này. *Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà (T-24)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ (T-25)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố (T-26)*: nhận được các màn hình của giai đoạn 1 đã dựng để kiểm quy tắc trên từng màn. *Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà (T-32)*: nhận được kết quả đã hoàn thành của task này. *Nối web, máy chủ và máy cờ thật: ván với máy (T-33)*: nhận được kết quả đã hoàn thành của task này. *Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng) (T-40)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời (T-46)*: nhận được kết quả đã hoàn thành của task này. *Nối web với máy chủ: bạn bè (T-52)*: nhận được kết quả đã hoàn thành của task này. *Giao diện chat hai kênh và nối web với máy chủ (T-56)*: nhận được ứng dụng chạy thật cho từng phần để kích hoạt từng trạng thái trên dữ liệu thật. *Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá (T-57)*: nhận được kết quả đã hoàn thành của task này. *Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit) (T-59)*: nhận được kết quả đã hoàn thành của task này.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-AI-01`, `US-AI-03`, `US-AUTH-04`, `US-CHAT-02`, `US-FRIEND-03`, `US-ROOM-04`, `US-ROOM-08`, `US-UI-01`, `US-UI-02`, `US-UI-03`, `US-UI-06` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 16/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-94](https://xiangqi-web.atlassian.net/browse/XIAN-94) · **Loại:** Task · **Assignee:** 4841_Lê Thị Xuân Nhạn · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Frontend · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-AI-01`, `US-AI-03`, `US-AUTH-04`, `US-CHAT-02`, `US-FRIEND-03`, `US-ROOM-04`, `US-ROOM-08`, `US-UI-01`, `US-UI-02`, `US-UI-03`, `US-UI-06`, `xiangqi-mvp-20261005`, `t-60`
+**Ước lượng:** 12 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-29 · **Due date:** 2026-10-31 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Frontend
+**Phải xong trước:**
+
+* **T-10 — Giao diện: thanh điều hướng, Sảnh, tạo phòng và nhập mã vào phòng**: Thanh điều hướng, Sảnh, biểu mẫu tạo phòng, ô nhập mã, danh sách phòng công khai, Luật chơi, băng quay lại; đủ 5 trạng thái, dữ liệu giả.
+* **T-21 — Giao diện: đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất**: Màn hình đăng ký ba bước, đăng nhập, hồ sơ, đăng xuất đủ 5 trạng thái, chạy với dữ liệu giả. Có thêm màn thiết lập tài khoản Google và hai nút Google.
+* **T-24 — Giao diện ván: bàn cờ nối mạng, đồng hồ, nút, hộp kết quả, khung xin hoà**: Màn ván: bàn cờ, đồng hồ, nút Đầu hàng/Xin hoà, hộp kết quả, khung xin hoà, lớp phủ mất kết nối; 5 trạng thái, dữ liệu giả.
+* **T-25 — Nối web với máy chủ: đăng ký, đăng nhập, hồ sơ**: Đăng ký, đăng nhập, hồ sơ, đăng xuất chạy trọn trên môi trường thử với email thật. Luồng Google chạy trọn.
+* **T-26 — Giao diện: chọn cấp và phe, màn ván với máy, thông báo sự cố**: Chọn cấp và phe, màn ván với máy, thông báo bận/sự cố, hộp kết quả; đủ 5 trạng thái, dữ liệu giả.
+* **T-32 — Nối web với máy chủ: bắt đầu ván đầy đủ, đồng hồ, kết thúc ván, đầu hàng, xin hoà**: Bắt đầu ván, đồng hồ, kết thúc ván, đầu hàng và xin hoà chạy trọn trên web và máy chủ thật.
+* **T-33 — Nối web, máy chủ và máy cờ thật: ván với máy**: Ván với máy chạy thật qua web, máy chủ và máy cờ thật: ba cấp, ba phe, vào lại, sự cố.
+* **T-40 — Giao diện: bạn bè (tìm, lời mời, danh sách, mời vào phòng)**: Giao diện bạn bè: tìm, lời mời, chuông, danh sách, nút Nhắn tin/Thách đấu mờ, nút Mời trong hộp thoại phòng, thông báo đếm lùi 30 giây; đủ 5 trạng thái, dữ liệu giả.
+* **T-46 — Nối web với máy chủ: đổi chỗ, khoá phòng, danh sách công khai, đuổi, chủ phòng rời**: Điều khiển phòng nâng cao chạy thật trên web và máy chủ: đổi chỗ, khoá, danh sách, đuổi, chủ phòng rời.
+* **T-52 — Nối web với máy chủ: bạn bè**: Toàn bộ luồng bạn bè và mời vào phòng chạy thật; trạng thái Đang đấu kiểm bằng ván với máy thật.
+* **T-56 — Giao diện chat hai kênh và nối web với máy chủ**: Khung chat hai kênh và nối thật với máy chủ; ba trạng thái tin; công tắc Kênh Chung. Desktop mở Riêng mặc định, có thể mở đồng thời Chung hoặc đóng bớt; mobile hai tab mặc định Riêng.
+* **T-57 — Nối web với máy chủ: mất kết nối, người xem, bảng nước đi, phòng khoá**: Mất kết nối, kết nối lại, người xem, bảng nước đi, phòng khoá chạy trọn trên web và máy chủ thật. Gồm hết phiên và đăng nhập lại cùng thiết bị, đăng nhập khác thiết bị giữa online/AI trên bản chạy thật.
+* **T-59 — Nối camera/micro thật: theo đối tượng nhận, đổi vai, đuổi, tab (web, máy chủ, LiveKit)**: Camera/micro chạy thật theo đối tượng nhận, đổi vai, đuổi, tiếp quản tab; lỗi camera/micro không làm hỏng cờ và chat.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
-Bảo đảm người dùng **biết có những thứ "sắp ra mắt"**, nhưng **không bấm nhầm** vào chức năng chưa làm. Đồng thời **không ẩn nhầm** những chức năng của giai đoạn 1.
+Bảo đảm người dùng **biết có những thứ "sắp ra mắt"**, nhưng **không bấm nhầm** vào chức năng chưa làm. Đồng thời **không ẩn nhầm** những chức năng của P1 (MVP).
 
-Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (24 thành phần theo danh mục) trên ứng dụng đã nối thật, bảo đảm người dùng **luôn biết** đang tải, trống, lỗi hay bị khoá và **biết làm gì tiếp**.
+Rà lại **toàn bộ các thành phần giao diện của P1 (MVP)** (24 thành phần theo danh mục) trên ứng dụng đã nối thật, bảo đảm người dùng **luôn biết** đang tải, trống, lỗi hay bị khoá và **biết làm gì tiếp**.
 
 **Việc cần làm (làm lần lượt)**
+
 1. **Làm mờ kèm "Sắp ra mắt"** các lối vào chính: Đánh Hạng, Bảng xếp hạng, Lịch sử, đăng nhập khách, Quên mật khẩu, Nhắn tin, Thách đấu.
 2. **Ẩn hẳn** các chức năng nằm sâu: mã QR, sticker, xin đi lại, xin đổi bên, tái đấu, xem lại ván, đi lại với máy, gợi ý nước của máy, bộ chọn giao diện, ghép ngẫu nhiên.
 3. Hộp kết quả ván chỉ có **Rời phòng**; giao diện luôn tối kể cả khi hệ điều hành đặt sáng.
 4. Duyệt trên **các màn đã có** (đăng ký, đăng nhập, hồ sơ, bạn bè, ván, ván với máy), giữ Sảnh, Bạn bè và mời bạn online hoạt động bình thường.
 5. Lập **danh sách kiểm** các lối vào chưa làm để kiểm sau mỗi lần sửa giao diện.
-6. Lập danh sách đúng các thành phần của giai đoạn 1 và các ca kiểm tương ứng.
+6. Lập danh sách đúng các thành phần của P1 (MVP) và các ca kiểm tương ứng.
 7. Trên ứng dụng thật, **tạo từng tình huống**: tải chậm, không có dữ liệu, lỗi (từ chối, mất mạng, phụ thuộc hỏng), thiếu quyền, đạt giới hạn, đã kết thúc.
 8. Sửa phản hồi, nút "Thử lại" và chú thích; kiểm không giật bố cục và **không báo thành công giả**.
 9. **Chat thật:** kiểm tải, trống, lỗi gửi, thiếu quyền, nhận tin thành công, mất xác nhận, vượt giới hạn, đổi vai; chắc chắn **dữ liệu riêng không còn trên màn hình** sau khi đổi vai (đối chiếu dữ liệu, không chỉ nhìn hình).
 10. Những trạng thái không hiện (ví dụ khung không có ý nghĩa "trống") ghi theo ma trận, **không mặc định "trống" luôn là một màn hình trắng**.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
+| --- | --- |
 | Bấm hoặc nhấn phím vào từng lối chính chưa làm | Không mở chức năng; có chú thích "Sắp ra mắt" |
-| Mở các màn của giai đoạn 1 | Không có nút hay khay của chức năng chưa làm |
-| Ván kết thúc, hiện hộp kết quả | Chỉ có nút Rời phòng; chưa có nút Xem lại (tính năng giai đoạn sau) |
+| Mở các màn của P1 (MVP) | Không có nút hay khay của chức năng chưa làm |
+| Ván kết thúc, hiện hộp kết quả | Chỉ có nút Rời phòng; chưa có nút Xem lại (tính năng P2) |
 | Máy của người dùng đang đặt giao diện sáng | Ứng dụng vẫn hiện giao diện tối (chưa làm giao diện sáng) |
-| Duyệt đăng ký, đăng nhập, hồ sơ, bạn bè, kết quả, ván máy bằng bàn phím | Không lối chưa làm nào hoạt động; không ẩn nhầm chức năng của giai đoạn 1 |
+| Duyệt đăng ký, đăng nhập, hồ sơ, bạn bè, kết quả, ván máy bằng bàn phím | Không lối chưa làm nào hoạt động; không ẩn nhầm chức năng của P1 (MVP) |
 | Tải chậm; không có dữ liệu ở từng khung | Khung xương; giải thích và nút hành động đúng |
 | Từ chối, mất mạng, phụ thuộc lỗi | Thông báo tiếng Việt, nút "Thử lại" đúng việc |
 | Thiếu quyền, đạt giới hạn, đã kết thúc | Chú thích đúng; máy chủ vẫn chặn |
@@ -983,9 +1938,9 @@ Rà lại **toàn bộ các thành phần giao diện của giai đoạn 1** (24
 Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và giả lập lỗi.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Bấm và dùng bàn phím vào từng mục chưa làm | Không mở; có chú thích |
-| 2 | Duyệt các màn giai đoạn 1 | Không nút/khay chưa làm |
+| 2 | Duyệt các màn P1 (MVP) | Không nút/khay chưa làm |
 | 3 | Kết thúc một ván | Chỉ Rời phòng |
 | 4 | Đổi hệ điều hành sang giao diện sáng | Vẫn tối |
 | 5 | Duyệt các màn bằng bàn phím | Không ẩn nhầm Bạn bè, mời bạn online |
@@ -997,28 +1952,109 @@ Chuẩn bị: ứng dụng chạy thật có công cụ làm chậm mạng và g
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; mỗi ô trạng thái áp dụng có bằng chứng đạt.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** danh sách kiểm này cho nghiệm thu chấp nhận; giao diện đã đủ trạng thái cho responsive, trợ năng, nghiệm thu.
 **Không thuộc task này:** làm các tính năng chưa làm; đổi mức ưu tiên của tính năng; dựng các thành phần của chức năng chưa làm.
 **Phục vụ (nguồn):** Story 2, 4, 6, 9, 11, 19, 22, 25, 26; tiêu chí AC-AUTH-04-04, AC-ROOM-04-02, AC-ROOM-08-04, AC-CHAT-02-03, AC-FRIEND-03-02, AC-AI-01-03, AC-AI-03-03, AC-UI-01-01, AC-UI-02-01, AC-UI-03-01, AC-UI-06-01, AC-UI-06-02; NFR-06. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
 **Kết quả (đầu ra):** Mọi màn hình và khung dữ liệu đủ 5 trạng thái; tính năng chưa làm mờ hoặc ẩn đúng quy tắc; danh sách kiểm các lối vào chưa làm.
 **Bằng chứng nộp:** Bảng 24 thành phần × 5 trạng thái đã kiểm; ảnh chụp. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Cần các Epic khác nối thật trước khi rà cuối.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-10, T-21, T-24, T-25, T-26, T-32, T-33, T-40, T-46, T-52, T-56, T-57, T-59; liên quan tới (relates to) Story 2, Story 4, Story 6, Story 9, Story 11, Story 19, Story 22, Story 25, Story 26; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-10, T-21, T-24, T-25, T-26, T-32, T-33, T-40, T-46, T-52, T-56, T-57, T-59; liên quan tới (relates to) Story 2, Story 4, Story 6, Story 9, Story 11, Story 19, Story 22, Story 25, Story 26; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **4841_Lê Thị Xuân Nhạn**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-29**; Due date **2026-10-31**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-60.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **4841_Lê Thị Xuân Nhạn**.
+* Review/kiểm độc lập dự kiến: **Nguyễn Minh Thư**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-10 — XIAN-44](https://xiangqi-web.atlassian.net/browse/XIAN-44)
+* [T-21 — XIAN-55](https://xiangqi-web.atlassian.net/browse/XIAN-55)
+* [T-24 — XIAN-58](https://xiangqi-web.atlassian.net/browse/XIAN-58)
+* [T-25 — XIAN-59](https://xiangqi-web.atlassian.net/browse/XIAN-59)
+* [T-26 — XIAN-60](https://xiangqi-web.atlassian.net/browse/XIAN-60)
+* [T-32 — XIAN-66](https://xiangqi-web.atlassian.net/browse/XIAN-66)
+* [T-33 — XIAN-67](https://xiangqi-web.atlassian.net/browse/XIAN-67)
+* [T-40 — XIAN-74](https://xiangqi-web.atlassian.net/browse/XIAN-74)
+* [T-46 — XIAN-80](https://xiangqi-web.atlassian.net/browse/XIAN-80)
+* [T-52 — XIAN-86](https://xiangqi-web.atlassian.net/browse/XIAN-86)
+* [T-56 — XIAN-90](https://xiangqi-web.atlassian.net/browse/XIAN-90)
+* [T-57 — XIAN-91](https://xiangqi-web.atlassian.net/browse/XIAN-91)
+* [T-59 — XIAN-93](https://xiangqi-web.atlassian.net/browse/XIAN-93)
+
+**Story phục vụ:**
+
+* [Story 2 — XIAN-10](https://xiangqi-web.atlassian.net/browse/XIAN-10)
+* [Story 4 — XIAN-12](https://xiangqi-web.atlassian.net/browse/XIAN-12)
+* [Story 6 — XIAN-14](https://xiangqi-web.atlassian.net/browse/XIAN-14)
+* [Story 9 — XIAN-17](https://xiangqi-web.atlassian.net/browse/XIAN-17)
+* [Story 11 — XIAN-19](https://xiangqi-web.atlassian.net/browse/XIAN-19)
+* [Story 19 — XIAN-27](https://xiangqi-web.atlassian.net/browse/XIAN-27)
+* [Story 22 — XIAN-30](https://xiangqi-web.atlassian.net/browse/XIAN-30)
+* [Story 25 — XIAN-33](https://xiangqi-web.atlassian.net/browse/XIAN-33)
+* [Story 26 — XIAN-34](https://xiangqi-web.atlassian.net/browse/XIAN-34)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 8 | 4841_Lê Thị Xuân Nhạn |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 2 | 4841_Lê Thị Xuân Nhạn |
+| Review độc lập | 2 | Nguyễn Minh Thư |
+| Tổng Original/Remaining Estimate ban đầu | 12 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc có luật nghiệp vụ, xử lý trạng thái, tích hợp hoặc kiểm định chất lượng: dành ca dài hơn và dự phòng sửa lỗi. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-29 14:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-30 16:30 |
+| Bắt đầu review | 2026-10-30 16:30 |
+| Review PASS và bàn giao mục tiêu | 2026-10-31 09:30 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
 
 ---
 
 ### T-61 — Giao diện: dùng được từ 360 px và bằng cảm ứng; trợ năng
-**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Thành phần:** Frontend · **Sprint:** 4 (15/10–17/10)
-**Phải xong trước:** *Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc (T-60)*: nhận được bản ứng dụng hợp nhất đủ trạng thái.
-**Loại:** Task triển khai · **Nhãn:** `P1`, `mo-rong`, `US-BOARD-01`, `US-BOARD-03`, `US-BOARD-04`, `US-UI-04`, `US-UI-05` · **Trạng thái ban đầu:** To Do · **Người nhận:** để trống · **Ước lượng (giờ):** nhóm điền khi họp Sprint · **Fix version:** v1.0-sprint-4
-**Thông tin Jira:** Reporter (người báo cáo): PO · Start date (ngày bắt đầu): 16/10/2026 · Due date (hạn): 16/10/2026 · Priority (ưu tiên): Medium · Story Points: để trống, nhóm ước lượng khi họp Sprint · Parent: Epic «Đăng ký và đăng nhập (kèm nền tảng dự án)»
+
+**Jira thực:** [XIAN-95](https://xiangqi-web.atlassian.net/browse/XIAN-95) · **Loại:** Task · **Assignee:** Nguyễn Minh Thư · **Sprint:** XIAN Sprint 4 · **Fix version:** v1.0
+**Components:** Frontend · **Priority:** Medium · **Nhãn:** `P1`, `mo-rong`, `US-BOARD-01`, `US-BOARD-03`, `US-BOARD-04`, `US-UI-04`, `US-UI-05`, `xiangqi-mvp-20261005`, `t-61`
+**Ước lượng:** 8.5 giờ công (gồm review/hỗ trợ) · **Story Points:** để trống · **Start date:** 2026-10-31 · **Due date:** 2026-11-01 · **Reporter:** PO · **Trạng thái:** To Do.
+
+## Bối cảnh và vị trí công việc
+
+Dự án Cờ Tướng Online cho phép người dùng đăng ký/đăng nhập, tự tạo phòng và mời bằng mã/đường dẫn hoặc bạn bè online, chơi cờ tướng qua mạng; phòng có tối đa hai người chơi và năm người xem, chat riêng/chung, camera/micro; có chế độ đấu với máy ba cấp độ. Mục này thuộc MVP P1. Đánh Hạng, ghép ngẫu nhiên, tài khoản khách và các tính năng được ghi P2 không phải đầu ra của mục này.
+
+**Thuộc Epic:** Đăng ký và đăng nhập (kèm nền tảng dự án) · **Components:** Frontend
+**Phải xong trước:**
+
+* **T-60 — Giao diện: đủ 5 trạng thái cho mọi màn hình; tính năng chưa làm hiển thị đúng quy tắc**: Mọi màn hình và khung dữ liệu đủ 5 trạng thái; tính năng chưa làm mờ hoặc ẩn đúng quy tắc; danh sách kiểm các lối vào chưa làm.
+
+**Điều kiện nhận việc:** các đầu vào trên phải được bàn giao và đủ điều kiện sử dụng trước khi bắt đầu phần phụ thuộc; ngày trùng nhau không cho phép chạy song song với Task tiền đề. Khi đầu vào bị chặn, chọn việc độc lập ở bảng 15. Báo cáo thử nghiệm hoàn tất nhưng kết luận không đạt không tự mở quyền triển khai dựa trên phương án chưa đạt/chưa duyệt.
 
 **Mục tiêu**
-Bảo đảm **giai đoạn 1 dùng được từ màn hình 360 px và bằng cảm ứng**: bàn cờ, chat, camera/micro và các nút chính không bị che hay tràn ngang.
+Bảo đảm **P1 (MVP) dùng được từ màn hình 360 px và bằng cảm ứng**: bàn cờ, chat, camera/micro và các nút chính không bị che hay tràn ngang.
 
 Kiểm và sửa **trợ năng** trên giao diện thật, để người dùng chỉ có bàn phím, người dùng giảm chuyển động hay người đọc màn hình vẫn nhận đủ thông tin.
 
 **Việc cần làm (làm lần lượt)**
+
 1. Duyệt ở bốn cỡ: **360×800, 390×844, 1366×768, 1920×1080**, đủ các trạng thái.
 2. Ở màn nhỏ, xếp lại các bảng theo thiết kế (chat và camera/micro thu thành thẻ), giữ **bàn cờ và các nút quan trọng luôn thao tác được**.
 3. Kiểm cảm ứng: chạm chọn quân và ô đích, kéo thả, với cả hai phe (bàn lật), khi có hộp thoại hoặc lỗi đang mở.
@@ -1029,11 +2065,13 @@ Kiểm và sửa **trợ năng** trên giao diện thật, để người dùng 
 8. Kiểm **nhãn** cho nút chỉ có biểu tượng, trạng thái quân và đồng hồ; có **dấu hiệu ngoài màu**.
 9. Bật "giảm chuyển động" và cảnh báo chiếu: **không nhấp nháy, không rung**; thông báo quan trọng không đọc từng giây của đếm lùi.
 10. Sửa lỗi và kiểm lại; **không tự đổi màu nguồn** hay thêm công cụ ngoài danh sách đã chọn.
+11. Kiểm phông theo DESIGN §3.1 ở màn lớn/nhỏ: Plus Jakarta Sans cho giao diện, Playfair Display trang trí, token --font-han cho mặt quân, monospace cho đồng hồ/mã. Quân giữ chữ Hán truyền thống. Lựa chọn cắt Noto Serif TC vẫn là đề xuất trong DESIGN; không coi là quyết định đã duyệt.
 
 **Các trường hợp lỗi và kết quả mong đợi**
+
 | Tình huống | Kết quả mong đợi |
-|---|---|
-| Duyệt giai đoạn 1 ở bốn cỡ, đủ trạng thái | Không cuộn ngang, không che điều khiển |
+| --- | --- |
+| Duyệt P1 (MVP) ở bốn cỡ, đủ trạng thái | Không cuộn ngang, không che điều khiển |
 | Chạm chọn và kéo thả với bàn Đen lật | Đúng giao điểm, thao tác được |
 | Đo nút, thẻ, ô nhập | ≥ 44 px |
 | Mở chat, camera/micro, hộp thoại ở 360 px | Không mất thao tác bàn cờ cần thiết |
@@ -1046,7 +2084,7 @@ Kiểm và sửa **trợ năng** trên giao diện thật, để người dùng 
 Chuẩn bị: công cụ thay đổi kích thước màn hình và một điện thoại cảm ứng thật; công cụ đo tương phản, trình đọc màn hình.
 
 | # | Việc làm | Phải thấy |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Duyệt bốn cỡ, đủ trạng thái | Không tràn ngang |
 | 2 | Chạm và kéo thả ở cả hai phe | Đúng, thao tác được |
 | 3 | Đo vùng chạm | ≥ 44 px |
@@ -1055,13 +2093,67 @@ Chuẩn bị: công cụ thay đổi kích thước màn hình và một điện
 | 6 | Duyệt toàn bộ bằng bàn phím | Focus rõ, không kẹt |
 | 7 | Kiểm nhãn bằng trình đọc màn hình | Đủ nhãn và dấu ngoài màu |
 | 8 | Bật giảm chuyển động | Không nhấp nháy; thông báo đúng |
+| 9 | So phông thực tế ở 360/390/1366/1920 px cho chữ giao diện, trang trí, quân, đồng hồ và mã | Đúng nhóm phông/tokens của DESIGN, không lỗi thiếu chữ Hán; không tự chốt phương án phông còn đề xuất |
 
 **Khi nào chuyển cho người kiểm thử:** tất cả các dòng ở bảng tự kiểm tra đều đạt; có báo cáo đo thật.
 **Khi nào task xong:** người kiểm thử và người xem lại mã đồng ý. **Bảng màu tính sẵn không thay cho bằng chứng đo trên giao diện thật.**.
+
+**Kiểm tra trước khi đóng:** đối chiếu đầu ra với toàn bộ việc cần làm, bảng lỗi và bảng tự kiểm ở trên; người kiểm thử kiểm độc lập và có bằng chứng trên cùng bản dựng/môi trường. Ready for Test là bàn giao, chưa phải Done. Với Task báo cáo/đo thử, có thể hoàn tất báo cáo khi sản phẩm chưa đạt nhưng phải giữ rõ kết luận không đạt/chưa đo, không đánh dấu Story/Epic đạt theo.
 **Bàn giao cho task sau:** giao diện đáp ứng cho nghiệm thu tiêu chí phi chức năng; giao diện đạt trợ năng cho nghiệm thu tiêu chí phi chức năng.
 **Không thuộc task này:** ứng dụng di động riêng; thiết kế cho chức năng chưa làm; đổi giao diện hay màu nguồn; thêm công cụ mới ngoài danh sách.
-**Phục vụ (nguồn):** Story 4, 13, 14; tiêu chí AC-BOARD-01-03, AC-BOARD-03-02, AC-BOARD-04-02, AC-BOARD-04-03, AC-UI-04-01, AC-UI-04-02, AC-UI-05-01, AC-UI-05-02; NFR-03. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
-**Kết quả (đầu ra):** Giao diện dùng được từ 360 px, cảm ứng, đạt WCAG 2.1 AA; báo cáo tương phản thật.
+**Phục vụ (nguồn):** Story 4, 13, 14; tiêu chí AC-BOARD-01-03, AC-BOARD-03-02, AC-BOARD-04-02, AC-BOARD-04-03, AC-UI-04-01, AC-UI-04-02, AC-UI-05-01, AC-UI-05-02; NFR-03. Thuộc Epic: Đăng ký và đăng nhập (kèm nền tảng dự án). Bổ sung tiêu chí AC-UI-04-03.
+**Kết quả (đầu ra):** Giao diện dùng được từ 360 px, cảm ứng, đạt WCAG 2.1 AA; báo cáo tương phản thật. Kèm phông theo DESIGN ở màn lớn/nhỏ, chữ Hán truyền thống và ghi rõ lựa chọn phông chưa duyệt.
 **Bằng chứng nộp:** Ảnh bốn cỡ; báo cáo đo tương phản; kiểm bàn phím và trình đọc màn hình. Trạng thái ban đầu NOT_RUN; khi chạy ghi bản dựng và môi trường, che bí mật (mật khẩu, mã OTP, chìa khoá).
 **Rủi ro / chưa rõ:** Bàn cờ có ngoại lệ vùng chạm riêng; nếu chữ quân nhỏ trên 360 px phải thử trên máy thật.
-**Liên kết Jira (khi được phép tạo):** bị chặn bởi (is blocked by) T-60; liên quan tới (relates to) Story 4, Story 13, Story 14; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+**Quan hệ cần đối chiếu trên Jira:** bị chặn bởi (is blocked by) T-60; liên quan tới (relates to) Story 4, Story 13, Story 14; Epic: Đăng ký và đăng nhập (kèm nền tảng dự án).
+
+## Trạng thái lập kế hoạch và cách bàn giao
+
+- Assignee: **Nguyễn Minh Thư**; Sprint **XIAN Sprint 4**; Fix version **v1.0**; Start date **2026-10-31**; Due date **2026-11-01**.
+- Đây là công việc dự kiến; To Do, Sprint future và Release unreleased. Story Points để nhóm thống nhất; Task có ước lượng mục tiêu ban đầu theo uỷ quyền PO, không ghi worklog khi chưa làm.
+- Tiền đề phải PASS trước phần phụ thuộc. Ready for Test chưa phải Done; kết luận FAIL/BLOCKED không được dùng để nghiệm thu Story/Epic.
+
+## Nguồn đối chiếu
+
+* Bản kế hoạch: `Jira/ke-hoach-moi/03-task-e1-dang-ky-dang-nhap.md` — T-61.
+* Luật phạm vi: `BA-SCOPE-DECISIONS.md`; yêu cầu chi tiết và tiêu chí: `docs/01-yeu-cau-chi-tiet.md`. Các mã AC/US dùng để đối chiếu; các bước, đầu ra và cách kiểm cần làm đã được viết trong Description này.
+
+## Phân công, Sprint và liên kết thực trên XIAN
+
+* Người chịu trách nhiệm: **Nguyễn Minh Thư**.
+* Review/kiểm độc lập dự kiến: **4841_Lê Thị Xuân Nhạn**, khác người làm. Cường kiêm T-53/T-58 QA đã được PO duyệt 05/10/2026; các thành viên khác giữ vai trò theo bảng phân công.
+* Epic: [XIAN-1](https://xiangqi-web.atlassian.net/browse/XIAN-1).
+
+**Phải hoàn tất trước:**
+
+* [T-60 — XIAN-94](https://xiangqi-web.atlassian.net/browse/XIAN-94)
+
+**Story phục vụ:**
+
+* [Story 4 — XIAN-12](https://xiangqi-web.atlassian.net/browse/XIAN-12)
+* [Story 13 — XIAN-21](https://xiangqi-web.atlassian.net/browse/XIAN-21)
+* [Story 14 — XIAN-22](https://xiangqi-web.atlassian.net/browse/XIAN-22)
+
+## Ước lượng mục tiêu và lịch bàn giao — hạn nộp 05/11/2026
+
+Nhóm có 8 giờ/người/ngày kể cả cuối tuần; hạn cuối 05/11/2026. Ước lượng ban đầu theo độ phức tạp của từng việc, chưa hiệu chỉnh bằng năng suất thực tế. Lịch 09–12 và 13–18 (UTC+7); ngày 05/10 bắt đầu 14:00. Tối đa **3 Task đang mở**, tính cả triển khai, chờ review và review; khoảng **82% thời gian triển khai có 1–2 Task**. Mỗi người chỉ triển khai/hỗ trợ/review một việc tại một thời điểm. Người chính không mở Task mới khi Task trước chưa đóng. Tiền đề phải review/PASS trước khi mở phần phụ thuộc. Jira chỉ hiển thị ngày, nên các ca nối tiếp trong cùng ngày có thể có thanh giao nhau. Sprint 3 bàn giao chiều 27/10; Sprint 4 bắt đầu ngay sau bàn giao, không chạy đồng thời. Mục tiêu T-64 PASS 05/11 lúc 15:30; còn 2,5 giờ trong ngày để bàn giao/đệm. Khi vượt giờ hoặc FAIL phải cập nhật lịch, không giảm AC hay đóng Task để khớp ngày.
+
+| Khoản ước lượng | Giờ công | Người thực hiện |
+|---|---:|---|
+| Thực hiện và tự kiểm | 6 | Nguyễn Minh Thư |
+| Sửa lỗi dự phòng (20%, làm tròn 0,5 giờ) | 1.5 | Nguyễn Minh Thư |
+| Review độc lập | 1 | 4841_Lê Thị Xuân Nhạn |
+| Tổng Original/Remaining Estimate ban đầu | 8.5 | Không cộng giờ riêng ở Story/Epic |
+
+**Cơ sở:** Việc có luật nghiệp vụ, xử lý trạng thái, tích hợp hoặc kiểm định chất lượng: dành ca dài hơn và dự phòng sửa lỗi. Ước lượng bao phủ toàn bộ Description, không bỏ đầu ra. Đây là dự báo; người nhận phải kiểm lại trước triển khai.
+
+| Mốc dự kiến UTC+7 | Thời điểm |
+|---|---|
+| Bắt đầu thực hiện | 2026-10-31 09:30 |
+| Kết thúc thực hiện/tự kiểm/dự phòng | 2026-10-31 18:00 |
+| Bắt đầu review | 2026-11-01 09:00 |
+| Review PASS và bàn giao mục tiêu | 2026-11-01 10:00 |
+
+Chỉ bàn giao khi kiểm thật đạt; các ca dự kiến không phải bằng chứng PASS.
+
+---

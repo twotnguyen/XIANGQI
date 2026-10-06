@@ -9,7 +9,7 @@
 ## 0. Tóm tắt
 
 ```
-① Kho CHƯA CÓ MÃ NGUỒN và CHƯA CÓ JIRA. Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2 và kế hoạch Giai đoạn 3), Jira/scrum-jira-2026-10-04/ (cẩm nang Scrum/Jira tham khảo; các bản nháp Epic/Story/Task cũ đã bị PO xoá 04/10/2026 để lập kế hoạch lại từ đầu; CHƯA tạo gì trên Jira thật)
+① Kho CHƯA CÓ MÃ NGUỒN. Jira XIAN đã có 8 Epic, 26 Story, 64 Task, 9 Components, 4 Sprint tương lai và 4 Releases chưa phát hành (PO yêu cầu 05/10/2026; Key/ID thực ở Jira/ke-hoach-moi/01 mục 6). Hiện có: BA-SCOPE-DECISIONS.md, DANH-MUC-MAN-HINH-XIANGQI.md, DESIGN.md, mockups/, docs/ (tài liệu phân tích Giai đoạn 2 và kế hoạch Giai đoạn 3), Jira/ke-hoach-moi/ (kế hoạch Jira mới lập 04/10/2026: 8 Epic, 26 Story, 64 Task, bảng chuẩn bị Sprint Planning; đã được PO cho phép tạo/phân công, giờ Task và lịch nguồn lực đã được lập theo uỷ quyền mới, Story Points chưa chốt), Jira/scrum-jira-2026-10-04/ (cẩm nang Scrum/Jira tham khảo; các bản nháp Epic/Story/Task cũ đã bị PO xoá 04/10/2026 để lập kế hoạch lại từ đầu; bản nháp cũ không phải backlog XIAN hiện tại)
 ② Đang ở GIAI ĐOẠN 3: phân vai và lập kế hoạch Jira (Epic/Story/Task, ước lượng). Chưa viết mã. Chỉ tạo trên Jira thật khi người dùng cung cấp dự án/khoá và đồng ý; ⛔ không đoán số Key
 ③ Nguồn luật phạm vi = BA-SCOPE-DECISIONS.md. Thấy mâu thuẫn hoặc chỗ mơ hồ ⇒ DỪNG, báo người dùng. Không tự chọn
 ④ Không tự phát minh yêu cầu. Không có trong nguồn luật ⇒ HỎI
@@ -28,7 +28,16 @@
 | **3. Phân vai và lập kế hoạch Jira** (hiện tại) | Chia việc theo vai trò, tạo Epic / Story / Task, ước lượng | Lập kế hoạch bằng tài liệu trong `docs/`; đề xuất vai trò, ước lượng, lịch; chỉ tạo trên Jira thật khi người dùng cung cấp dự án/khoá và đồng ý | Viết mã ứng dụng; đoán số Key Jira; tạo trên Jira thật khi chưa được đồng ý |
 | 4. Xây dựng | Code, test, review, phát hành | Sau khi người dùng cho phép | |
 
-Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm trước (không tạo thư mục `apps/`, `packages/`, `Jira/`… khi chưa được yêu cầu). Từ Giai đoạn 2, thư mục `docs/` **mới** (không phải `docs/` cũ đã xoá) chứa tài liệu phân tích.
+Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm trước (không tạo thư mục `apps/`, `packages/`… khi chưa được yêu cầu; `Jira/ke-hoach-moi/` đã được PO yêu cầu ở Giai đoạn 3). Từ Giai đoạn 2, thư mục `docs/` **mới** (không phải `docs/` cũ đã xoá) chứa tài liệu phân tích.
+
+
+### Kế hoạch Jira hiện hành (`Jira/ke-hoach-moi/`, đã tạo trên XIAN ngày 05/10/2026)
+
+- **Cấu trúc:** 8 Epic đúng 8 yêu cầu PO được giao; 26 Story; 64 Task đánh `T-01` đến `T-64` theo thứ tự làm. Đã tạo đủ 98 mục trên Jira dự án XIAN (PO cho phép 05/10/2026); **giữ đúng khoá Jira thật, không tạo lại, không đoán số**. Bảng khoá và ngày ở `Jira/ke-hoach-moi/01` mục 6.
+- **Bản chơi được trước, hoàn thiện sau:** Sprint 1–2 làm phần lõi (đăng ký/đăng nhập, tạo phòng, mời bằng mã/đường dẫn, bàn cờ, đánh online, đánh với máy); Sprint 3–4 hoàn thiện người xem, khoá phòng, chat, camera/micro, bạn bè, chất lượng và nghiệm thu đủ tám mục tiêu. ⚠ **Không nhầm** "bản chơi được" với "MVP" trong đặc tả (chỉ toàn bộ P1). Phạm vi P1/P2 không đổi.
+- **Lịch hiện hành (PO xác nhận 05/10/2026):** 8 giờ mỗi người mỗi ngày, kể cả cuối tuần; **hạn cuối bắt buộc 05/11/2026**; tối đa 3 Task đang hoạt động. Sprint 1: 05–11/10; Sprint 2: 12–19/10; Sprint 3: 20–27/10; Sprint 4: 27/10–05/11. Bốn Release `v0.1`, `v0.2`, `v0.3`, `v1.0` (chưa phát hành). Các lịch 04–18/10 trong bản nháp cũ không còn hiệu lực.
+- **Trường Jira:** Assignee đã gán theo phân vai PO chốt; Start/Due date riêng từng mục theo chuỗi phụ thuộc; Task có Original/Remaining Estimate ban đầu (ước lượng mục tiêu theo hạn PO, chưa kiểm chứng bằng năng suất thực); **Story Points để nhóm quyết định**, agent không đặt hộ.
+- **Sửa kế hoạch:** chỉ khi người dùng yêu cầu. Đổi thứ tự hoặc thêm Task thì cập nhật cùng lúc `01`, Epic/Story/Task liên quan, `14` (đối chiếu tiêu chí) và `15` (ước lượng, lịch), và đối chiếu lại Jira thật. Không tự thay đổi phạm vi P1/P2.
 
 ---
 
@@ -44,7 +53,7 @@ Khi người dùng chưa nói bắt đầu giai đoạn sau, **không** làm tr�
 | 5 | [DESIGN.md](DESIGN.md) · `mockups/` | Hệ thống thiết kế và mẫu giao diện |
 
 - Hai nguồn mâu thuẫn ⇒ **dừng**, báo người dùng: trích hai chỗ, nêu tác động. Không tự chọn bên.
-- `docs/` và `Jira/` của lần thiết kế trước **đã bị xoá** vì xây trên phạm vi cũ (không Khách, không Elo, không chat 1-1…). Không khôi phục và không dùng làm căn cứ. Nếu cần tra, đọc từ lịch sử git (`git show develop:docs/<đường-dẫn>`) và coi là **tham khảo**, không phải luật.
+- `docs/` và `Jira/` của lần thiết kế trước (kể cả các bản nháp cũ trong cẩm nang) **đã bị xoá** vì xây trên phạm vi cũ (không Khách, không Elo, không chat 1-1…); kế hoạch hiện hành là `Jira/ke-hoach-moi/`. Không khôi phục và không dùng làm căn cứ. Nếu cần tra, đọc từ lịch sử git (`git show develop:docs/<đường-dẫn>`) và coi là **tham khảo**, không phải luật.
 - `site/` dựng từ `docs/` cũ nên đã lỗi thời. Không chạy `site/build.mjs` và không dựa vào nó.
 - Mỗi luật chỉ định nghĩa ở **một** chỗ. Thấy cùng một luật ghi khác nhau ở hai nơi ⇒ báo.
 - Các mã như `R06`, `R17`, `ARCH-xx`, `DEC-xxx`, `TK…`, `DT-xx` còn sót trong tài liệu là **nhãn kế thừa** từ bộ cũ đã xoá, không tra được. Luật tương ứng đã viết bằng chữ ngay tại chỗ; nếu thiếu thì hỏi, đừng đoán từ mã.
@@ -88,17 +97,20 @@ Các mâu thuẫn và câu hỏi chưa chốt của giai đoạn 1 nằm trong [
 
 > Đã thống nhất theo bảng này trong toàn bộ tài liệu và mockup (người dùng yêu cầu ngày 03/10/2026). Cấp bậc Elo thấp nhất đổi tên thành "Người mới".
 
-### 4.2 Ba chế độ chơi (đã chốt)
+### 4.2 Bốn lựa chọn chơi (PO làm rõ 05/10/2026; luật ở BA 2.0, 2.7)
 
 | Chế độ | Ghép trận | Đi lại | Người xem | Đồng hồ | Khách |
 |---|---|---|---|---|---|
-| `CASUAL` | Ngẫu nhiên hoặc tạo phòng | Tối đa 3 lần/bên/ván, đối thủ đồng ý | Có (tối đa 5) | 4 mức | Được |
+| Đánh Thường ghép ngẫu nhiên (`CASUAL`, P2) | Ngẫu nhiên, không Elo | P2: cùng luật Xin đi lại tại BA 3.2/3.6 | Không | Cố định 15 phút/bên | Được ở P2 |
+| Tự tạo phòng (`CASUAL`, P1) | Mời bạn bè online hoặc link/mã, không bắt buộc kết bạn | P2: tối đa 3 lần/bên/ván khi đối thủ chấp nhận | Tối đa 5; PUBLIC ở Sảnh, CODE_ONLY qua mã/link, LOCKED chặn người mới | P1: 5/10/15 phút; P2 thêm Không giới hạn | Được ở P2 |
 | `RANKED` | Ngẫu nhiên 100% theo Elo | ⛔ Cấm hoàn toàn | ⛔ Cấm hoàn toàn | Cố định 10 phút/bên | ⛔ Cấm |
 | `AI` | Chọn cấp Dễ / Trung bình / Khó | Tối đa 3 lần, lùi 1 cặp nước | Không | Không giới hạn | Được |
 
-> Bổ sung (đã duyệt 03/10): `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2). `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của `CASUAL`.
+> Bổ sung (đã duyệt 03/10): `RANKED` không có Tái đấu, chỉ xin hòa được khi mỗi bên đã đi ≥ 20 nước (BA-SCOPE 7.2). `AI` không có nút Xin hòa và không tính Elo. Mức giờ 4 lựa chọn chỉ của phòng tự tạo (BA 2.1). Xin đi lại/Tái đấu ở ghép ngẫu nhiên đã được PO duyệt 05/10 (BA 2.0, 2.3, 3.2, 3.6); quy tắc sau ván và không nhận người mới theo BA 2.0. Khách và Đi lại với máy vẫn là P2.
 >
-> **Phân kỳ (đã duyệt 03/10):** nhóm 7 người, khoảng 2 tuần, nên **P1 chỉ gồm 8 mục tiêu cốt lõi** (đăng ký/đăng nhập, tạo phòng, mời bằng link/mã và bạn bè online, bàn cờ, đánh online, phòng công khai/khoá tối đa 5 người xem, chat + camera + mic, đánh với máy). `RANKED` và mọi thứ ngoài 8 mục đó là **P2**: vẫn là luật đã chốt, nhưng làm sau (BA-SCOPE `Phần 11`).
+> **Phân kỳ (đã duyệt 03/10, đồng bộ PO 05/10):** nhóm 7 người, khoảng 2 tuần, nên **P1 chỉ gồm 8 mục tiêu cốt lõi** (đăng ký/đăng nhập, tạo phòng, mời bằng link/mã và bạn bè online, bàn cờ, đánh online, phòng tự tạo công khai ở Sảnh hoặc qua mã/link, khoá phòng, tối đa 5 người xem, chat + camera + mic, đánh với máy). Đánh Thường ghép ngẫu nhiên, `RANKED` và mọi thứ ngoài 8 mục đó là **P2**: vẫn là luật đã chốt, nhưng làm sau (BA-SCOPE `Phần 11`).
+
+**Lượt hiện tại:** tập trung đặc tả và nghiệm thu tám mục tiêu MVP. Hạn phiên cố định từ đăng nhập; khác thiết bị xử thua ván đang chơi/đăng xuất thiết bị cũ, thiết bị mới về Sảnh; mở tab cùng thiết bị theo BA 1.8. P2 chỉ ghi quyết định đã trả lời, chưa triển khai. Kế hoạch đã đối soát các quyết định MVP hiện hành khi PO yêu cầu tạo/phân công Jira ngày 05/10/2026. Dữ liệu thực và Key ở Jira/ke-hoach-moi/01 mục 6; không tạo lại hoặc suy trạng thái sản phẩm từ việc đã tạo backlog.
 
 ### 4.3 Hệ toạ độ bàn cờ (kế thừa, xác nhận lại ở GĐ2)
 

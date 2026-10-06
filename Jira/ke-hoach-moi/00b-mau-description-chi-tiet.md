@@ -1,6 +1,6 @@
 # Bốn mẫu Description viết cho người chưa biết dự án
 
-**Ngày:** 2026-10-04 · **Trạng thái:** bản mẫu để PO duyệt. Chưa tạo gì trên Jira.
+**Ngày cập nhật:** 2026-10-05 · **Trạng thái:** bản mẫu để PO duyệt. Đã tạo 98 mục trên XIAN (05/10/2026; Key và phân công ở tệp 01 mục 6).
 
 ## Cách đọc
 
@@ -9,6 +9,8 @@ Mỗi mô tả dưới đây viết để một người **chưa từng nghe v�
 > **Đã chốt (PO, 04/10/2026):** mỗi phòng có 2 người chơi và **tối đa 5 người xem, mặc định 5**.
 
 ## Giải thích nhanh về sản phẩm
+
+**Đây là mẫu minh hoạ cách viết, không thêm Epic thứ 9 hoặc thay danh sách 8 Epic ở tệp 02.**
 
 Dự án là một **trang web chơi Cờ tướng trực tuyến**. Hai người chơi đối đầu: **bên Đỏ đi trước, bên Đen đi sau**. Người khác có thể vào **xem**. Người chơi tạo một **phòng**, mời bạn bằng **mã phòng** hoặc đường dẫn; khi cả hai bấm **Sẵn sàng** thì ván bắt đầu.
 
@@ -94,7 +96,7 @@ Khung chạy của ứng dụng, đăng nhập, và luật cờ cơ bản (để
 ## Các bước người dùng làm và hệ thống phản hồi
 
 1. Người dùng bấm **Tạo phòng**; một biểu mẫu hiện ra.
-2. Người dùng điền: **tên phòng**; **thời gian mỗi bên** (5, 10 hoặc 15 phút; mặc định 10 phút); **kiểu phòng** (Công khai: hiện trong danh sách; hoặc Chỉ vào bằng mã); **số người xem tối đa** (không có, 1, 2, 3, 4 hoặc 5; mặc định 5).
+2. Người dùng điền: **tên phòng**; **thời gian mỗi bên** (5, 10 hoặc 15 phút; mặc định 10 phút); **riêng tư cố định Chỉ vào bằng mã (CODE_ONLY)** khi tạo; mở công khai sau trong Cài đặt phòng; **số người xem tối đa** (không có, 1, 2, 3, 4 hoặc 5; mặc định 5).
 3. Người dùng bấm **Tạo**.
 4. Hệ thống tạo phòng, người dùng trở thành chủ phòng và ngồi bên Đỏ.
 5. Màn hình chuyển vào **phòng chờ**, hiện **mã phòng 8 ký tự** để chia sẻ.
@@ -329,3 +331,11 @@ Các màn hình và biểu mẫu sẵn sàng để nối với máy chủ, cùng
 ## Không thuộc task này
 
 Tạo phòng thật trên máy chủ (Mẫu 3), vào phòng, danh sách phòng công khai, khung điều hướng chung.
+
+## Cập nhật lịch hiện hành 05/10/2026
+
+PO xác nhận ngày 05/10/2026: **8 giờ/người/ngày, kể cả cuối tuần; hạn cuối bắt buộc 05/11/2026**. PO giao agent ước lượng Task và xếp ngày riêng. Giờ là ước lượng mục tiêu ban đầu theo hạn PO, chưa được kiểm chứng bằng năng suất thực tế; không phải cam kết chắc chắn đủ giờ đạt AC. Giữ nguyên tám yêu cầu MVP, phân vai, 98 mục và đồ thị phụ thuộc. Story Points để nhóm quyết định.
+
+Lịch làm 09–12, 13–18 (UTC+7), 8 giờ gồm tự kiểm và phối hợp trong Task; ngày đầu 05/10 chỉ từ 14:00. Tối đa **3 Task đang hoạt động**, gồm triển khai, chờ review và review. Một người không làm/review/hỗ trợ hai việc cùng lúc. Người chính không mở Task mới khi Task trước còn mở. Tiền đề phải được kiểm/PASS rồi mới bắt đầu Task phụ thuộc; có thể bàn giao tuần tự **trong cùng ngày theo giờ**. Start/Due date Jira chỉ có ngày, nên thanh giao nhau cùng ngày không chứng minh ca trùng. Mục tiêu T-64 PASS 05/11 lúc 15:30, còn 2,5 giờ trong ngày cho đệm/bàn giao. Không kéo hạn. Khoảng 82% thời gian triển khai có 1–2 Task. Sprint 3 kết thúc 27/10 lúc 14:00, Sprint 4 bắt đầu ngay sau đó; cùng ngày nhưng không trùng ca. Ngày và giờ là mục tiêu, chưa ghi worklog.
+
+Lịch và ước lượng ở [tệp 15](15-bang-chuan-bi-sprint-planning.md), dữ liệu Jira ở [tệp 01 mục 6](01-components-epic-khung-task.md#6-đối-chiếu-jira-thực--tạo-và-phân-công-ngày-05102026). Release: v0.1, v0.2, v0.3, v1.0; mốc v1.0 dự kiến 05/11/2026. Mẫu trống trong tài liệu là biểu mẫu tham khảo; giờ Task đã được điền theo uỷ quyền mới. Giữ nguyên 54 US, 167 AC P1; trạng thái kiểm sản phẩm vẫn NOT_RUN.

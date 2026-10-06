@@ -739,8 +739,8 @@
             <span class="r-badge playing">Đang đánh</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 15 phút · Người xem: 2/2</span>
-            <span class="btn-join-room btn-join-watch" style="opacity: 0.5; cursor: not-allowed;" title="Phòng đã đủ 2 người xem">👁️ Đã đầy (2/2)</span>
+            <span>⏱️ 15 phút · Người xem: 5/5</span>
+            <span class="btn-join-room btn-join-watch" style="opacity: 0.5; cursor: not-allowed;" title="Phòng đã đủ 5 người xem">👁️ Đã đầy (5/5)</span>
           </div>
         </div>
 
@@ -769,8 +769,8 @@
             <span class="r-badge playing">Đang đánh</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 10 phút · Người xem: 1/2</span>
-            <a href="SCR-GAME-ROOM.html?room=112&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (1/2)</a>
+            <span>⏱️ 10 phút · Người xem: 1/5</span>
+            <a href="SCR-GAME-ROOM.html?room=112&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (1/5)</a>
           </div>
         </div>
       </div>
@@ -804,16 +804,18 @@
 
           <div class="form-group">
             <label class="form-lbl" for="cr-privacy">Chế độ phòng (Quyền riêng tư)</label>
-            <select class="form-ctrl" id="cr-privacy">
-              <option value="PUBLIC">PUBLIC — Công khai trên sảnh cho mọi người vào</option>
-              <option value="CODE_ONLY">CODE_ONLY — Chỉ người có Mã/Link mới vào được</option>
+            <select class="form-ctrl" id="cr-privacy" disabled title="Phòng mới dùng mã/link; chủ phòng có thể mở công khai trong Cài đặt phòng.">
+              <option value="CODE_ONLY" selected>CODE_ONLY — Vào bằng mã/link</option>
             </select>
-            <div style="font-size: 11px; color: #C8B6A2; margin-top: 4px;">Khoá phòng (LOCKED) chỉ bật được trong phòng sau khi đã đủ 2 người chơi.</div>
+            <div style="font-size: 11px; color: #C8B6A2; margin-top: 4px;">Chủ phòng có thể mở công khai (PUBLIC) trong Cài đặt phòng. Khoá phòng (LOCKED) chỉ bật được sau khi đã đủ 2 người chơi.</div>
           </div>
           <div class="form-group">
             <label class="form-lbl" for="cr-spectators">Người xem</label>
             <select class="form-ctrl" id="cr-spectators">
-              <option value="2" selected>Tối đa 2 người xem (mặc định)</option>
+              <option value="5" selected>Tối đa 5 người xem (mặc định)</option>
+              <option value="4">Tối đa 4 người xem</option>
+              <option value="3">Tối đa 3 người xem</option>
+              <option value="2">Tối đa 2 người xem</option>
               <option value="1">Tối đa 1 người xem</option>
               <option value="0">Không có người xem</option>
             </select>
