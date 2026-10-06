@@ -1,5 +1,7 @@
 # 04 · Kiến trúc hệ thống
 
+> **Đồng bộ 05/10/2026:** áp dụng các quyết định nghiệp vụ đã chốt tại BA; cơ chế kỹ thuật mới vẫn là đề xuất, chưa kiểm chứng. Bản viết chi tiết còn cần review.
+
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
 **Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Căn cứ: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md), nguyên tắc kỹ thuật ở AGENTS §4.4 và danh sách công nghệ dự kiến ở README. **Không thêm công nghệ ngoài danh sách README khi chưa được đồng ý** (AGENTS §8); các điểm cần đồng ý ghi ở mục 11.
@@ -66,24 +68,32 @@ Product Owner chọn **Phương án B**: dùng mã OTP gốc của Supabase Auth
 3. Bước 3: client gửi `{ email, otp, username, password }` (mật khẩu chỉ nằm trong bộ nhớ của trình hướng dẫn). Máy chủ gọi `verifyOtp`; nếu đúng thì theo thứ tự: (a) kiểm tra lại username; (b) đặt mật khẩu (khoá dịch vụ); (c) tạo `profiles` với `completed_at = NULL`; (d1) đặt `completed_at = now()`; (d2) xoá cờ `PENDING`; rồi trả phiên đăng nhập. Tài khoản chỉ **hoàn tất** khi cả (d1) và (d2) đã xong.
 4. **Chặn dùng tài khoản chưa hoàn tất:** máy chủ ứng dụng **từ chối** mọi kết nối/lệnh của người dùng không có `profiles`, hoặc có `completed_at IS NULL`, hoặc còn cờ `PENDING`, **kể cả khi họ có phiên Supabase hợp lệ**. Client **không ghi trực tiếp** vào `profiles` (RLS).
 5. **Phục hồi khi lỗi (BA 1.1, duyệt 04/10):** giữ khoá cùng danh tính xuyên suốt kiểm tra và thay đổi. Trước khi `completed_at` được ghi, lỗi (a)–(c)/(d1) được hoàn tác: xoá `profiles` rồi người dùng Auth, thử lại có lùi dần (tối đa 5 lần trong 1 phút); báo *"Đăng ký chưa hoàn tất, hãy thử lại"*. Nếu `completed_at` **đã được ghi**, không xoá hồ sơ/Auth: thử hoàn tất xoá `PENDING` theo cơ chế idempotent. Khi chưa xoá được cờ vẫn chặn dùng, không báo đăng ký thành công.
-6. **Tác vụ phục hồi và quét dọn:** chạy mỗi 5 phút và lúc khởi động, dùng cùng cơ chế khoá theo email/danh tính với đăng ký và gửi lại; đọc lại trạng thái ngay trước khi thay đổi. Với nhà cung cấp email: (a) có `completed_at` và còn `PENDING` → chỉ hoàn tất xoá `PENDING`, giữ nguyên tài khoản, username và mật khẩu; (b) có `completed_at`, không `PENDING` → không đổi; (c) chưa có `completed_at` và tuổi ≤ 60 phút → giữ chặn, chưa dọn; (d) chưa có `completed_at`, tuổi > 60 phút → xoá hồ sơ dở trước rồi Auth, bất kể có cờ `PENDING` hay không. Khi dịch vụ hoạt động, độ trễ dọn tối đa khoảng 65 phút. Lỗi dịch vụ thì ghi nhận để thử lại, không hứa dọn đúng hạn khi phụ thuộc đang hỏng. Không quét tài khoản Google bằng tác vụ email này. Tài khoản tạo trực tiếp bằng API công khai cũng xét cùng điều kiện; `PENDING` do máy chủ quản lý, không tin metadata do client tự khai.
+6. **Tác vụ phục hồi và quét dọn:** chạy mỗi 5 phút và lúc khởi động, dùng cùng cơ chế khoá theo email/danh tính với đăng ký và gửi lại; đọc lại trạng thái ngay trước khi thay đổi. Với nhà cung cấp email: (a) có `completed_at` và còn `PENDING` → chỉ hoàn tất xoá `PENDING`, giữ nguyên tài khoản, username và mật khẩu; (b) có `completed_at`, không `PENDING` → không đổi; (c) chưa có `completed_at` và tuổi ≤ 60 phút → giữ chặn, chưa dọn; (d) chưa có `completed_at`, tuổi > 60 phút → xoá hồ sơ dở trước rồi Auth, bất kể có cờ `PENDING` hay không. Khi dịch vụ hoạt động, độ trễ dọn tối đa khoảng 65 phút. Lỗi dịch vụ thì ghi nhận để thử lại, không hứa dọn đúng hạn khi phụ thuộc đang hỏng. Không quét tài khoản Google bằng tác vụ email này; Google có tác vụ riêng ở §3.4 theo BA 1.2 (PO chọn A 05/10). Tài khoản tạo trực tiếp bằng API công khai cũng xét cùng điều kiện; `PENDING` do máy chủ quản lý, không tin metadata do client tự khai.
 
 **Cấu hình Supabase cần đặt (và kiểm bằng PoC, mục 11):** hạn mã OTP **180 giây** (BA 1.5); tối thiểu **60 giây** giữa hai lần gửi; **giới hạn tốc độ xác minh thấp** (mục tiêu: tối đa 5 lần xác minh mỗi 5 phút cho mỗi IP); mẫu thư gửi **mã 6 số** (không chỉ liên kết).
 
-**Sai khác so với bản BA gốc, đã được Product Owner chấp nhận** (BA 1.1 và 1.5 đã sửa lời):
+**Sai khác đã được chấp nhận (điểm 1–2) và yêu cầu kiểm chứng (điểm 3–4)** (BA 1.1 và 1.5 đã sửa lời):
 1. Supabase có thể giữ **tạm** một bản ghi xác thực chưa xác nhận sau khi gửi mã (không có hồ sơ, không dùng được, dọn sau 60 phút cộng tối đa một chu kỳ 5 phút khi dịch vụ hoạt động).
 2. "Huỷ mã ở lần sai thứ 5" chỉ là **mục tiêu gần đúng** nhờ giới hạn tốc độ xác minh, **không đếm chính xác từng mã**; kẻ tấn công đổi IP có thể thử nhiều hơn. Rủi ro đã biết, giảm nhẹ bằng hạn mã 180 giây và mã 6 số.
-3. Đăng ký công khai của Supabase **không tắt** (vì `signInWithOtp` cần tạo người dùng); người dùng nào cũng có thể gọi API xác thực trực tiếp, nhưng **không dùng được ứng dụng** nếu chưa hoàn tất (mục 4). Đăng nhập bằng mã email gốc cho người dùng **đã hoàn tất** là một đường vào ngoài đặc tả (họ đã chứng minh sở hữu email); ghi nhận là rủi ro đã biết.
+3. Đăng ký công khai Supabase còn cần cho luồng đăng ký bằng OTP, nhưng **PO không chấp nhận đăng nhập OTP trực tiếp** cho tài khoản đã hoàn tất (BA 1.7, 05/10). Máy chủ ứng dụng phải phân biệt phiên đăng ký hợp lệ, phiên đăng nhập bằng mật khẩu/Google và phiên OTP ngoài luồng; phiên OTP khôi phục P2 chỉ được xem Username sau xác minh và đặt lại mật khẩu nếu cần rồi về Đăng nhập; không cấp quyền API/Socket ứng dụng (BA 1.7, PO chốt 05/10). **Cơ chế chặn chưa được chứng minh**: PoC phải gọi trực tiếp Auth và thử API/Socket ứng dụng. Không chặn được thì ghi BLOCKED/báo PO, không coi OTP trực tiếp là sai khác đã được chấp nhận.
 4. **Không đổi email phải được cưỡng chế tại nguồn danh tính** (đề xuất 04/10/2026, chờ PO duyệt): chặn ở cấu hình/hook của Supabase Auth, không chỉ khoá ở giao diện hay ở NestJS. Cơ chế khả dụng (cấu hình Auth hay hook) **chưa được chứng minh**: Supabase hỗ trợ `updateUser` đổi email nên phải PoC; không chặn được thì báo PO, không coi là đã giải quyết. Ca kiểm bắt buộc: dùng phiên hợp lệ và khoá công khai gọi trực tiếp API đổi email của Auth; email trong Auth và `profiles` phải không đổi.
 
 ### 3.2 Đăng nhập bằng username
-Supabase đăng nhập bằng email, nên: client gửi `{ username, password }` → máy chủ tra email theo `username` bằng khoá dịch vụ → gọi `signInWithPassword` → trả phiên. **Email không bao giờ trả về client** trong luồng này (tránh lộ email theo username). Báo lỗi chung *"Sai tên đăng nhập hoặc mật khẩu"* (không phân biệt nguyên nhân).
+Supabase đăng nhập bằng email, nên: client gửi `{ username, password }` → máy chủ tra email theo `username` bằng khoá dịch vụ → gọi `signInWithPassword` → trả phiên. Không tiết lộ email người khác qua tra username; thông tin email chính chủ được trả trong phiên/hồ sơ đã xác thực theo docs/03. Báo lỗi chung *"Sai tên đăng nhập hoặc mật khẩu"* (không phân biệt nguyên nhân).
 
 ### 3.3 Phiên
-Token truy cập và làm mới do Supabase cấp. *Ghi nhớ đăng nhập* tick: lưu phiên 30 ngày; không tick: phiên kết thúc khi đóng trình duyệt hoặc sau 12 giờ (BA 1.8). Kết nối Socket.IO xác thực bằng token trong bước bắt tay; máy chủ **kiểm tra lại token** khi hết hạn. **Cưỡng chế phía máy chủ** (đề xuất 04/10/2026, chờ PO duyệt): kiểm hạn phiên (12 giờ/30 ngày) và thu hồi tự động (đổi mật khẩu) khi bắt tay và định kỳ/mỗi lệnh; hết hạn hoặc bị thu hồi thì ngắt kết nối và không nhận lại bằng token cũ. Việc xử ván lúc đó theo **bảng ân hạn theo vai trò ở BA 8.3** (đấu online 60 giây, ván với máy 30 phút, v.v.), không xử thua ngay. **Đăng xuất chủ động** là luồng khác: theo BA 1.8 (xác nhận, `RESIGN`, rời phòng rồi mới đăng xuất), không coi là mất mạng.
+Token truy cập và làm mới do Supabase cấp. Ghi nhớ đăng nhập: 30 ngày; không ghi nhớ: đóng trình duyệt hoặc 12 giờ, cái nào đến trước (BA 1.8). **Luật PO duyệt 05/10, phương án A:** phiên đăng nhập chính thức hết hạn trong ván thì ngắt quyền điều khiển; online giữ 60 giây và đồng hồ vẫn chạy, AI giữ ván 30 phút. Đăng nhập lại đúng tài khoản trên cùng thiết bị trong hạn được tiếp tục; thiết bị khác áp dụng luật xử thua ở BA 1.8; quá hạn theo BA 8.3/6.3. Hết token truy cập có thể làm mới không đồng nghĩa phiên đăng nhập đã hết. Khách có ngoại lệ riêng BA 1.3. **PO chốt:** hạn cố định từ đăng nhập thành công (đăng ký mới từ hoàn tất); hoạt động, chuyển tab/refresh token không gia hạn. Đăng nhập lại thực sự tạo hạn mới. Đóng riêng một tab theo mất kết nối, không phải đóng trình duyệt.
 
-### 3.4 P2
-Google OAuth dùng đăng nhập của Supabase (không OTP) và tạo hồ sơ qua luồng thiết lập của máy chủ (`SCR-ONBOARDING`). Quên mật khẩu dùng OTP khôi phục gốc của Supabase (`resetPasswordForEmail`) với cùng cấu hình hạn mã và giới hạn tốc độ, luôn trả thông báo chung (BA 1.7), thu hồi mọi phiên khi đổi xong. Đổi username (BA 1.6) cần chứng minh sở hữu email: gửi OTP tới email của chính tài khoản và chỉ cho đổi khi máy chủ xác nhận mã vừa được xác minh. Cả hai là **P2, cần PoC** ở Giai đoạn 4. Khách (P2): máy chủ cấp **mã phiên Khách** ngẫu nhiên, không có người dùng Supabase.
+**Đề xuất cơ chế kỹ thuật, chưa duyệt/chưa kiểm chứng:** máy chủ kiểm hạn phiên và trạng thái thu hồi khi bắt tay, trước lệnh và bằng tác vụ hạn giờ; không chỉ dựa vào UI hoặc JWT còn hợp lệ. Token cũ không được lấy lại quyền sau khi phiên hết. Cần chứng minh hiệu lực với Socket.IO, API và quyền media. Theo [tài liệu phiên Supabase](https://supabase.com/docs/guides/auth/sessions), các giới hạn phiên được kiểm ở lần làm mới, nên không tự coi cấu hình Auth đã đáp ứng mốc ngắt quyền của ứng dụng.
+
+**Đăng xuất chủ động** theo BA 1.8: xác nhận RESIGN, rời phòng rồi đăng xuất; không coi là mất mạng/hết phiên.
+
+### 3.4 Google P1 và tài khoản mở rộng P2
+**Google (P1):** xác thực nhà cung cấp, thiết lập Username + Mật khẩu qua máy chủ tại SCR-ONBOARDING, không OTP. Chưa hoàn tất không được dùng ứng dụng. **Dọn Google — PO chọn A 05/10:** bản Google mới chưa hoàn tất sau 60 phút được dọn, kiểm mỗi 5 phút khi dịch vụ hoạt động; không xoá tài khoản cũ/đã hoàn tất. Cơ chế đề xuất: tuần tự với hoàn tất theo cùng danh tính, kiểm lại trước xoá; lỗi phụ thuộc thì ghi nhận và thử lại, không báo dọn thành công giả. Không dùng tác vụ email để xoá nhầm Google.
+
+**Rủi ro chưa kiểm chứng:** [Supabase Identity Linking](https://supabase.com/docs/guides/auth/auth-identity-linking) mô tả tự liên kết danh tính cùng email. Cần PoC chứng minh luồng Google không liên kết trái BA 1.2, kể cả lời gọi trực tiếp; kiểm trước ở UI chưa đủ. GATE-GOOGLE vẫn NOT_RUN; nếu không đáp ứng thì BLOCKED và báo PO, không tự đổi luật.
+
+**P2:** Khôi phục Username/mật khẩu dùng OTP khôi phục gốc của Supabase với cùng hạn mã/giới hạn tốc độ, thông báo chung BA 1.7. Máy chủ chỉ trả Username hiện tại sau OTP hợp lệ cho đúng email/mục đích; chỉ quên Username thì giữ mật khẩu và về Đăng nhập, cần đổi mật khẩu thì thu hồi các phiên khác khi đổi xong. Phiên khôi phục không tự đăng nhập ứng dụng (PO duyệt 05/10). Đổi username BA 1.6 cần OTP đúng tài khoản/mục đích. Cơ chế còn cần PoC ở Giai đoạn 4. Khách: máy chủ cấp mã phiên tạm, không tạo người dùng Supabase.
 
 ---
 
@@ -97,8 +107,8 @@ Mọi lệnh từ client mang `commandId` (uuid) và, với lệnh về ván, `m
 
 | Hướng | Sự kiện | Nội dung chính | P |
 |---|---|---|---|
-| C→S | `room.create` | tên, mức giờ, riêng tư, số người xem | P1 |
-| C→S | `room.join` | `code` hoặc `inviteToken` hoặc `roomId` (từ Sảnh) | P1 |
+| C→S | `room.create` | phòng tự tạo: tên, mức giờ, CODE_ONLY khi tạo, số người xem 0/1/2/3/4/5 | P1 |
+| C→S | `room.join` | Vào mới phòng tự tạo bằng `code`/`inviteToken`; Vào xem từ Sảnh dùng roomId/ý định SPECTATOR: kiểm PUBLIC và chỗ xem; phục hồi thành viên cũ kiểm danh tính/hạn giữ chỗ, không dùng UUID để vượt quyền | P1 |
 | C→S | `room.leave`, `room.setPrivacy`, `room.kick` | | P1 |
 | C→S | `seat.toSpectator`, `seat.invitePlayerDown` | đổi chỗ ghế/người xem | P1 |
 | C→S | `player.ready` | bật/tắt Sẵn sàng | P1 |
@@ -117,16 +127,18 @@ Mọi lệnh từ client mang `commandId` (uuid) và, với lệnh về ván, `m
 
 ### 4.2 Đồng bộ và phục hồi
 * Máy chủ giữ **một nguồn sự thật** cho từng ván (trong bộ nhớ). Mỗi thay đổi tăng `version`; client chỉ gửi lệnh mới với `version` mới nhất, lệnh mới mang version cũ bị từ chối kèm ảnh chụp mới. Lệnh gửi lại đã có biên lai thì được trả kết quả cũ, không bị từ chối vì version.
-* **Kết nối lại:** client gửi `room.join`/`match.sync`; máy chủ trả `room.state` và `match.state` đầy đủ (không phát lại từng sự kiện).
+* **Kết nối lại:** client gửi `room.join`/`match.sync`; tab từng bị tiếp quản vẫn chỉ đọc khi tự reconnect, không tự giành quyền. Máy chủ trả `room.state` và `match.state` đầy đủ (không phát lại từng sự kiện).
 * Đồng hồ: xem mục 6.
 * Chống trùng lệnh: bảng `command_receipts` ([03](03-du-lieu.md) mục 2.8).
 * **Tuần tự hoá lệnh (mô hình "một người ghi" cho mỗi phòng/ván):** mọi lệnh của một phòng hoặc một ván được xếp **hàng đợi tuần tự** và xử lý lần lượt; hai lệnh đồng thời (ví dụ hai nước đi, hoặc nước đi và đầu hàng) được xử lý theo thứ tự nhận, lệnh sau thấy trạng thái sau lệnh trước. Thứ tự xử lý một lệnh: (0) xác thực danh tính và **tra biên lai** theo `commandId`: đã có thì trả kết quả cũ và dừng, các bước sau chỉ áp dụng cho lệnh mới; (1) kiểm quyền, `matchVersion`; (2) tính đồng hồ; (3) áp dụng vào bộ nhớ ở dạng *bản nháp*; (4) **ghi cơ sở dữ liệu và biên lai trong một giao dịch**; (5) nếu ghi thành công thì xác nhận (`ack`), tăng `version` và phát cho phòng; (6) nếu ghi lỗi thì **bỏ bản nháp**, thử lại tối đa 2 lần cách nhau 200 ms, vẫn lỗi thì trả `error PERSIST_FAILED` cho người gửi và **không phát gì**. **Khi ghi lỗi (đã duyệt 03/10, docs/README quyết định 11):** ván ở trạng thái *tạm dừng ghi*, **đồng hồ của cả hai bên đóng băng** từ lúc lỗi đầu tiên đến khi ghi lại được, để không ai mất giờ vì lỗi hạ tầng. Lỗi kéo dài **quá 30 giây** thì ván chuyển `INTERRUPTED` (không có người thắng, không đổi Elo, BA 8.3). **Hai tình huống khác nhau:** (1) *Cơ sở dữ liệu hồi phục khi tiến trình máy chủ còn sống*: ván lỗi **chưa quá 30 giây** tiếp tục bình thường (mở lại đồng hồ); chỉ các ván **đã bị đánh dấu `INTERRUPTED` do quá 30 giây** mới được **ghi bù** vào cơ sở dữ liệu. (2) *Máy chủ khởi động lại*: quét mọi ván còn `ONGOING` sót lại và chuyển thành `INTERRUPTED` (BA 8.3).
 * **Ngoại lệ ván với máy (P1, chỉ trong bộ nhớ, [03](03-du-lieu.md) mục 2.13):** vẫn tuần tự hoá lệnh theo ván nhưng **không ghi cơ sở dữ liệu**; chống trùng lệnh bằng **bảng biên lai trong bộ nhớ** gắn vòng đời ván; nên không có `PERSIST_FAILED` và không có quy tắc 30 giây.
-* **Một vị trí chơi cho mỗi người dùng (BA 1.8):** máy chủ giữ sổ `vị trí chơi đang dùng` theo `user_id` (loại `ROOM` hoặc `AI`), **xin và trả có khoá theo từng người dùng** nên không thể đồng thời ngồi ghế một phòng và đang chơi ván với máy. Ràng buộc trong cơ sở dữ liệu ([03](03-du-lieu.md) mục 2.4) chỉ bảo vệ phần phòng; sổ này là cơ chế chung.
+* **Một vị trí chơi cho mỗi người dùng (BA 1.8):** máy chủ giữ sổ `vị trí chơi đang dùng` theo `user_id` (loại `ROOM` hoặc `AI`; đề xuất mở rộng `QUEUE` cho hàng đợi P2 theo BA 1.8), **xin và trả có khoá theo từng người dùng** nên không thể đồng thời ngồi ghế một phòng và đang chơi ván với máy. Ràng buộc trong cơ sở dữ liệu ([03](03-du-lieu.md) mục 2.4) chỉ bảo vệ phần phòng; sổ này là cơ chế chung.
 
 ---
 
 ## 5. Máy trạng thái phòng và ván
+
+Nhánh quay về WAITING trong sơ đồ áp dụng phòng tự tạo; ghép ngẫu nhiên và RANKED có vòng đời sau ván riêng. INTERRUPTED sau khởi động lại chỉ kết quả trung tính/Rời phòng, không tự Tái đấu (BA 10.1).
 
 ```
 Phòng:   WAITING ──(đủ 2 người + cả hai Sẵn sàng + đếm 3s)──▶ PLAYING
@@ -135,10 +147,11 @@ Phòng:   WAITING ──(đủ 2 người + cả hai Sẵn sàng + đếm 3s)─
          └────────(người ngồi ghế đổi/rời)───────────────── FINISHED
 ```
 
-* `WAITING → PLAYING`: tạo `matches` mới, khởi động đồng hồ cho **bên Đỏ** (BA 2.3).
+* `WAITING → PLAYING`: kiểm lại hai ghế, Sẵn sàng và kết nối sau đếm 3 giây rồi tạo `matches` mới, khởi động đồng hồ cho **bên Đỏ** (BA 2.3). Phòng tự tạo mất mạng trong đếm bắt đầu ván: huỷ đếm, reset `ready` cả hai, giữ ghế 60 giây theo phòng chờ; nối lại không tự bắt đầu, cả hai phải Sẵn sàng lại, chưa có ván thì không ghi kết quả thua (PO duyệt 05/10).
 * `PLAYING → FINISHED`: khi ván kết thúc (kết quả theo [02](02-luat-co-tuong.md) mục 3.3).
-* **CASUAL:** `FINISHED → WAITING`: khi thành phần người ngồi ghế đổi hoặc một người ngồi ghế rời; reset `ready` (BA 2.8, mục 8). `FINISHED` giữ tối đa 10 phút rồi → `CLOSED`, đưa thành viên còn lại về Sảnh (BA 3.3, duyệt 04/10). Bộ hẹn giờ chỉ có hiệu lực nếu phòng vẫn ở `FINISHED`; nếu đã chuyển `WAITING` thì không đóng bởi hẹn giờ cũ.
-* **RANKED (BA 7.2):** không có FINISHED → WAITING. Mỗi người Rời phòng giải phóng ghế của mình mới được tìm trận khác; người còn lại giữ kết quả FINISHED. Đóng khi cả hai rời hoặc hết 10 phút từ kết thúc, không reset hẹn giờ khi một người rời; không nhận người mới hoặc Sẵn sàng/Tái đấu. Sơ đồ phòng chờ phía trên chỉ mô tả CASUAL.
+* **Phòng tự tạo CASUAL:** `FINISHED → WAITING`: khi thành phần người ngồi ghế đổi hoặc một người ngồi ghế rời; reset `ready` (BA 2.8, mục 8). `FINISHED` giữ tối đa 10 phút rồi → `CLOSED`, đưa thành viên còn lại về Sảnh (BA 3.3, duyệt 04/10). Bộ hẹn giờ chỉ có hiệu lực nếu phòng vẫn ở `FINISHED`; nếu đã chuyển `WAITING` thì không đóng bởi hẹn giờ cũ.
+* **Ghép ngẫu nhiên CASUAL (P2, BA 2.0):** sau ván một người rời vẫn FINISHED; không WAITING, không người mới. Đóng khi cả hai rời hoặc đủ 10 phút từ kết thúc, không đặt lại hạn. Hai người còn ghế có thể đồng ý Tái đấu: Match ID mới, đổi phe, đếm 3 giây, reset 15 phút/bên. Nhận đủ hai xác nhận Tái đấu hợp lệ trước hạn 10 phút huỷ hẹn giờ cũ trước đếm 3 giây; xác nhận đến sau hạn bị từ chối (BA 2.3, P2).
+* **RANKED (BA 7.2):** không có FINISHED → WAITING. Mỗi người Rời phòng giải phóng ghế của mình mới được tìm trận khác; người còn lại giữ kết quả FINISHED. Đóng khi cả hai rời hoặc hết 10 phút từ kết thúc, không reset hẹn giờ khi một người rời; không nhận người mới hoặc Sẵn sàng/Tái đấu. Sơ đồ FINISHED → WAITING phía trên chỉ mô tả phòng tự tạo.
 * Mọi chuyển trạng thái do **máy chủ** thực hiện và ghi cơ sở dữ liệu ở mốc: bắt đầu ván, mỗi nước đi, kết thúc ván.
 
 ---
@@ -159,12 +172,13 @@ Hành vi kết nối lại theo vai trò (BA 8.3): người chơi đang đấu 6
 
 * Mỗi phòng cờ ứng với **một phòng LiveKit** (tên theo `roomId`).
 * **Máy chủ ứng dụng cấp token** ngắn hạn (vài phút, làm mới khi cần): người ngồi ghế có quyền phát; người xem **chỉ đăng ký nhận** (`canPublish=false`, `canPublishData=false`, BA 4.1).
-* **Mức chia sẻ** (BA 4.1; một mức chung cho camera và mic đang bật, bật/tắt từng thiết bị độc lập): (1) Không chia sẻ, (2) Chỉ đối thủ, (3) Cả đối thủ và người xem. Thực hiện bằng **quyền đăng ký track** của LiveKit (cho phép hoặc không cho phép từng người nhận). *Cần PoC sớm* để xác nhận cách điều khiển quyền đăng ký đủ chi tiết theo từng người.
+* **Mức chia sẻ của phòng tự tạo** (BA 4.1; một mức chung cho camera và mic đang bật, bật/tắt từng thiết bị độc lập): (1) Không chia sẻ, (2) Chỉ đối thủ, (3) Cả đối thủ và người xem. Phòng tự tạo chọn sẵn **Chỉ đối thủ**, camera/mic vẫn mặc định Tắt; người chơi chủ động chọn mức (3) mới cho người xem nhận (BA 4.1, PO duyệt 05/10). Thực hiện bằng **quyền đăng ký track** của LiveKit (cho phép hoặc không cho phép từng người nhận). *Cần PoC sớm* để xác nhận cách điều khiển quyền đăng ký đủ chi tiết theo từng người.
+* **Ghép ngẫu nhiên/RANKED (P2):** chỉ Không chia sẻ/Chỉ đối thủ, không có người xem hoặc mức chia sẻ thứ ba (BA 2.0/5.4). Quyền nhận phụ thuộc người phát cho phép, không đòi người nhận phát ngược lại.
 * **Đuổi người xem** hoặc **đổi vai trò** (ngồi ghế ↔ người xem): máy chủ **cập nhật quyền** hoặc **loại** người đó khỏi phòng LiveKit. Quyền phát/đăng ký phải được đặt **trước khi publish** và cập nhật khi đổi vai trò.
 * **Thu hồi quyền media theo phiên/quyền cũ, không cấm danh tính hợp lệ** (đề xuất 04/10/2026, chờ PO duyệt): **đuổi** thì loại khỏi phòng LiveKit và ngừng cấp token cho danh tính bị chặn; **đổi vai/tiếp quản** thì loại kết nối LiveKit cũ rồi cấp token **mới** với quyền mới cho danh tính còn hợp lệ (người xuống xem vẫn nhận được track được chia sẻ, tab mới tiếp quản vẫn bật lại được media). Token mang quyền cũ không được dùng lại để lấy lại quyền đã mất. **PO chọn LiveKit Cloud (04/10/2026)**: dùng thu hồi của Cloud khi đuổi/đổi vai/tiếp quản (theo tài liệu LiveKit, thu hồi token chỉ có trên Cloud và có đệm khoảng 1 phút nếu không đặt mốc thu hồi; PoC phải đo cửa sổ hiệu lực thực tế và dùng mốc thu hồi cụ thể để khép cửa sổ đó). Không tự dựng LiveKit. **Gói miễn phí** (theo trang giá LiveKit lúc 04/10/2026: 5.000 phút người tham gia/tháng, 50 GB tải xuống, 100 kết nối đồng thời, không cần thẻ) là ràng buộc rủi ro: tắt media khi test, theo dõi hạn mức; vượt thì báo PO (đổi gói trả phí hoặc phương án khác). Chưa tuyên bố an toàn khi chưa chứng minh bằng PoC.
 * **Khoá phòng (`LOCKED`) không thu hồi token và không loại ai** đang ở trong phòng: người hiện tại giữ quyền xem/nghe (BA 4.3). Máy chủ chỉ **ngừng cấp token mới cho người mới**; người đang có ghế/đang xem vẫn được cấp lại token khi kết nối lại (trong hạn 60 giây/5 phút).
 * Mặc định camera/mic của mình **Tắt**; ở Ranked, hình/tiếng đối thủ mặc định ẩn ở phía người nhận (BA 5.4, P2).
-* **Nhiều tab (P1):** khi tab mới tiếp quản, máy chủ loại kết nối LiveKit của tab cũ (BA 1.8).
+* **Nhiều tab cùng thiết bị (P1):** tab mới tiếp quản; tab cũ mất quyền điều khiển và dừng media, tự reconnect vẫn chỉ đọc. **Đăng nhập thiết bị khác** khi đang chơi xử thua ngay/rời vị trí cũ, thu quyền API/Socket/media và đăng xuất thiết bị cũ; thiết bị mới ở Sảnh (BA 1.8). Cơ chế nhận diện phiên/thiết bị và cưỡng chế thu hồi là thiết kế cần PoC, không tin deviceId do client tự khai.
 * Không ghi hình, không ghi âm.
 
 ---
@@ -201,9 +215,9 @@ Hành vi kết nối lại theo vai trò (BA 8.3): người chơi đang đấu 6
 ## 10. Triển khai và quy mô
 
 * **Quy mô thiết kế:** khoảng 50 người dùng đồng thời, 10 ván cùng lúc (BA 10.1). **Một thể hiện máy chủ ứng dụng duy nhất** là đủ; vì trạng thái ván nằm trong bộ nhớ nên **chưa hỗ trợ nhiều thể hiện** (ghi là giới hạn đã biết).
-* Máy chủ ứng dụng cần giữ kết nối WebSocket dài: đặt trên dịch vụ cho phép (ví dụ nền tảng chạy container hoặc máy ảo nhỏ). Web tĩnh đặt trên dịch vụ lưu trữ tĩnh. **Chọn nền tảng cụ thể sau khi Product Owner duyệt và xác nhận chi phí/thẻ thanh toán.**
+* Máy chủ ứng dụng cần giữ kết nối WebSocket dài: đặt trên dịch vụ cho phép (ví dụ nền tảng chạy container hoặc máy ảo nhỏ). Web tĩnh đặt trên dịch vụ lưu trữ tĩnh. **PO đã chốt 04/10/2026: ưu tiên chạy máy chủ và web ở máy cục bộ (local); Render là phương án dự phòng nếu cần địa chỉ trên mạng** (BA 10.1). Chỉ khi chuyển sang Render mới cần xác nhận chi phí và thẻ thanh toán.
 * Cấu hình theo biến môi trường: địa chỉ Supabase, khoá dịch vụ, khoá/địa chỉ LiveKit, `DEMO_MODE`, giới hạn tốc độ.
-* **Sao lưu:** bản sao lưu cơ sở dữ liệu theo gói Supabase; dữ liệu trong bộ nhớ (ván đang chạy) mất khi khởi động lại và xử lý bằng `INTERRUPTED` (BA 8.3).
+* **Sao lưu:** theo gói Supabase; ván online khởi động lại xử INTERRUPTED từ dữ liệu đã lưu. AI P1 chỉ ở bộ nhớ nên mất trạng thái, thông báo không thể tiếp tục/về Sảnh hoặc chủ động tạo mới (BA 6.3).
 
 ---
 
@@ -213,7 +227,7 @@ Hành vi kết nối lại theo vai trò (BA 8.3): người chơi đang đấu 6
 |---|---|---|
 | 1 | Xác nhận danh sách công nghệ ở README (TypeScript, Node.js, pnpm, React, Vite, NestJS, Socket.IO, Supabase, LiveKit, Vitest, Playwright) | Chưa có thay đổi so với danh sách kế thừa |
 | 2 | Thư viện **ngoài** danh sách README: (a) tạo Mã QR (P2), (b) bộ biểu tượng. **Máy chủ ứng dụng không cần tích hợp gửi thư** (Phương án B), và dùng **SMTP mặc định của Supabase** (PO duyệt 04/10/2026, BA 10.1): khoảng 2 thư/giờ, chỉ tới địa chỉ thuộc nhóm dự án, demo chỉ dùng email thành viên nhóm | AGENTS §8 cấm thêm khi chưa được đồng ý. QR chọn trước khi dựng P2; biểu tượng chọn khi bắt đầu Giai đoạn 4; đây là lựa chọn triển khai, không đổi yêu cầu nghiệp vụ |
-| 3 | Một thể hiện máy chủ, trạng thái ván trong bộ nhớ | Đơn giản nhất; giới hạn mở rộng và mất ván khi khởi động lại (xử lý `INTERRUPTED`) |
+| 3 | Một thể hiện máy chủ, trạng thái ván trong bộ nhớ | Đơn giản nhất; giới hạn mở rộng và mất ván khi khởi động lại (online: INTERRUPTED; AI P1: thông báo mất trạng thái) |
 | 4 | **OTP: Phương án B (OTP gốc Supabase) — Product Owner đã chọn 03/10/2026**; BA 1.1, 1.5 đã sửa lời; sai khác ghi ở mục 3.1 | Đã duyệt. Rủi ro: "huỷ ở lần sai thứ 5" chỉ gần đúng; cần PoC cấu hình hạn 180 giây và giới hạn tốc độ |
 | 5 | Mọi ghi vào bảng trạng thái ván/phòng qua máy chủ; client chỉ đọc trực tiếp cột công khai của `profiles` | An toàn hơn; xem [03](03-du-lieu.md) mục 5 |
 | 6 | Chạy **PoC 3 việc rủi ro cao trong 2 ngày đầu Giai đoạn 4**: (a) LiveKit đăng ký track theo từng người, (b) cấu hình OTP của Supabase (hạn 180 giây, gửi lại 60 giây, giới hạn tốc độ xác minh, mẫu thư mã 6 số) và quét dọn bản ghi chưa hoàn tất, (c) tiến trình máy cờ đạt độ sâu 5–6 trong ngân sách | Tập trung rủi ro vào đầu để còn thời gian xử lý |

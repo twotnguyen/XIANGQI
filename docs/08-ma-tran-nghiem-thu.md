@@ -1,11 +1,13 @@
 # 08 · Ma trận truy vết và nghiệm thu P1/P2
 
+> **Đồng bộ 05/10/2026:** theo các quyết định nghiệp vụ đã chốt trong BA; bản viết/thiết kế kỹ thuật còn cần review, các thử nghiệm vẫn NOT_RUN.
+
 **Bản đặc tả 04/10/2026 — chờ review bản viết; không phải báo cáo test đã chạy.** Nguồn luật [BA](../BA-SCOPE-DECISIONS.md), AC chuẩn ở [01](01-yeu-cau-chi-tiet.md), hợp đồng dùng chung ở [07](07-hop-dong-nghiep-vu.md), phương pháp ở [05](05-kiem-thu.md).
 
 ## 1. Độ phủ và cách đọc
 
-- **81 US: 53 P1 + 28 P2; 280 AC có mã duy nhất.** Mã US/AC/TC là nhãn đặc tả, không phải key Jira.
-- **37 thành phần: 23 P1 + 14 P2**, mỗi thành phần có điều kiện và kết quả năm trạng thái. Một thành phần P1 có thể có chức năng P2 bên trong; lấy phân kỳ của AC, không lấy toàn màn hình để kéo việc vào P1.
+- **80 US: 54 P1 + 26 P2; 283 AC có mã duy nhất (167 AC P1 + 116 AC P2).** Mã US/AC/TC là nhãn đặc tả, không phải key Jira.
+- **37 thành phần: 24 P1 + 13 P2**, mỗi thành phần có điều kiện và kết quả năm trạng thái. Một thành phần P1 có thể có chức năng P2 bên trong; lấy phân kỳ của AC, không lấy toàn màn hình để kéo việc vào P1.
 - `TC-…` đối ứng từng `AC-…`: nội dung AC là oracle (kết quả bắt buộc), không sao chép luật sang bảng test để tạo nguồn thứ hai. Nếu AC có nhiều nhánh, triển khai test tham số hoá cho **từng nhánh**, không lấy một ca đại diện rồi đánh dấu cả AC đạt.
 - Toàn bộ kiểm thử hiện **NOT_RUN**. Số hàng là độ phủ **đặc tả**, không phải độ phủ code hoặc số test PASS.
 - Mỗi lần chạy cần lưu: TC/AC, phiên bản mã, môi trường, fixture/đầu vào, bước, kết quả mong đợi từ AC, kết quả thực, log/ảnh/số đo, PASS/FAIL/BLOCKED. Không có bằng chứng thì không PASS.
@@ -15,7 +17,7 @@
 | Nhóm | Fixture và thao tác bắt buộc | Tầng |
 |---|---|---|
 | AUTH | Tài khoản mới/dở/đã hoàn tất; OTP đúng/sai/hết hạn; gián đoạn từng bước; hai phiên và hai yêu cầu đồng thời; nhập ngoài biên tên/mật khẩu | Tích hợp + E2E; nhà cung cấp thật ở cổng [05] |
-| ROOM/FRIEND | A/B ngồi ghế, C/D xem, E thử vào; phòng N=0/1/2 và P2 N=5; đổi vai/quyền trong lúc lệnh đang chờ; trần 200/50 và yêu cầu chéo | Tích hợp nhiều client + E2E |
+| ROOM/FRIEND | A/B ngồi ghế, C/D xem, E thử vào; phòng N=0/1/2/3/4/5 (đầy), PUBLIC/CODE_ONLY/LOCKED; đổi vai/quyền trong lúc lệnh đang chờ; trần 200/50 và yêu cầu chéo | Tích hợp nhiều client + E2E |
 | BOARD/PLAY | Thế đầu, từng thế kết thúc [02], lệnh trùng/cũ/ngoài lượt; điều khiển thời gian ở trước/tại/sau hạn, kết nối lại và lỗi CSDL | Đơn vị + tích hợp + E2E |
 | CHAT/MEDIA/SOC | Cặp ghế cũ/mới, người xem, bạn/cựu bạn; gửi vượt 200 ký tự/5 tin; cấp/từ chối thiết bị, đổi chia sẻ, nhận track bằng người không có quyền | Tích hợp + E2E + kiểm tay thiết bị |
 | AI | Mỗi cấp × phe, hàng đợi bận, giết tiến trình, kết quả tìm cũ, Thử lại từng loại lỗi, mất kết nối trước/sau 30 phút | Đơn vị + tích hợp + đo thật |
@@ -27,6 +29,8 @@
 Đầu vào không hợp lệ hoặc thiếu quyền phải kiểm ở máy chủ, không chỉ xác nhận nút bị ẩn. Với thao tác có tác động: luôn thử gửi hai lần và mất ACK theo [07] §3. Không thử OTP/mật khẩu thật hoặc môi trường người dùng đang dùng.
 
 ## 3. Từng US/AC → mục kiểm
+
+US-ROOM-08 và AC-ROOM-05-03 được khôi phục đúng chức năng theo PO chốt lại MVP 05/10. Không dùng mã này cho chức năng khác.
 
 | US | P | Nguồn | AC | TC đối ứng | Trạng thái |
 |---|---|---|---|---|---|
@@ -48,6 +52,8 @@
 | US-AUTH-04 | P1 | BA 1.4, 1.8 | AC-AUTH-04-03 | TC-AUTH-04-03 | NOT_RUN |
 | US-AUTH-04 | P1 | BA 1.4, 1.8 | AC-AUTH-04-04 | TC-AUTH-04-04 | NOT_RUN |
 | US-AUTH-04 | P1 | BA 1.4, 1.8 | AC-AUTH-04-05 | TC-AUTH-04-05 | NOT_RUN |
+| US-AUTH-04 | P1 | BA 1.4, 1.8 | AC-AUTH-04-06 | TC-AUTH-04-06 | NOT_RUN |
+| US-AUTH-04 | P1 | BA 1.4, 1.8 | AC-AUTH-04-07 | TC-AUTH-04-07 | NOT_RUN |
 | US-AUTH-05 | P1 | BA 1.4, 1.6 | AC-AUTH-05-01 | TC-AUTH-05-01 | NOT_RUN |
 | US-AUTH-05 | P1 | BA 1.4, 1.6 | AC-AUTH-05-02 | TC-AUTH-05-02 | NOT_RUN |
 | US-AUTH-05 | P1 | BA 1.4, 1.6 | AC-AUTH-05-03 | TC-AUTH-05-03 | NOT_RUN |
@@ -55,6 +61,12 @@
 | US-AUTH-05 | P1 | BA 1.4, 1.6 | AC-AUTH-05-05 | TC-AUTH-05-05 | NOT_RUN |
 | US-AUTH-06 | P1 | BA 2.4 | AC-AUTH-06-01 | TC-AUTH-06-01 | NOT_RUN |
 | US-AUTH-06 | P1 | BA 2.4 | AC-AUTH-06-02 | TC-AUTH-06-02 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-01 | TC-AUTH-07-01 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-02 | TC-AUTH-07-02 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-03 | TC-AUTH-07-03 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-04 | TC-AUTH-07-04 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-05 | TC-AUTH-07-05 | NOT_RUN |
+| US-AUTH-07 | P1 | BA 1.2 | AC-AUTH-07-06 | TC-AUTH-07-06 | NOT_RUN |
 | US-ROOM-01 | P1 | BA 2.7, 2.8 | AC-ROOM-01-01 | TC-ROOM-01-01 | NOT_RUN |
 | US-ROOM-01 | P1 | BA 2.7, 2.8 | AC-ROOM-01-02 | TC-ROOM-01-02 | NOT_RUN |
 | US-ROOM-01 | P1 | BA 2.7, 2.8 | AC-ROOM-01-03 | TC-ROOM-01-03 | NOT_RUN |
@@ -83,10 +95,10 @@
 | US-ROOM-07 | P1 | BA 2.7, 4.3 | AC-ROOM-07-04 | TC-ROOM-07-04 | NOT_RUN |
 | US-ROOM-07 | P1 | BA 2.7, 4.3 | AC-ROOM-07-05 | TC-ROOM-07-05 | NOT_RUN |
 | US-ROOM-07 | P1 | BA 2.7, 4.3 | AC-ROOM-07-06 | TC-ROOM-07-06 | NOT_RUN |
-| US-ROOM-08 | P1 | BA 2.0, 2.7 | AC-ROOM-08-01 | TC-ROOM-08-01 | NOT_RUN |
-| US-ROOM-08 | P1 | BA 2.0, 2.7 | AC-ROOM-08-02 | TC-ROOM-08-02 | NOT_RUN |
-| US-ROOM-08 | P1 | BA 2.0, 2.7 | AC-ROOM-08-03 | TC-ROOM-08-03 | NOT_RUN |
-| US-ROOM-08 | P1 | BA 2.0, 2.7 | AC-ROOM-08-04 | TC-ROOM-08-04 | NOT_RUN |
+| US-ROOM-08 | P1 | BA 2.7, 4.3 | AC-ROOM-08-01 | TC-ROOM-08-01 | NOT_RUN |
+| US-ROOM-08 | P1 | BA 2.7, 4.3 | AC-ROOM-08-02 | TC-ROOM-08-02 | NOT_RUN |
+| US-ROOM-08 | P1 | BA 2.7, 4.3 | AC-ROOM-08-03 | TC-ROOM-08-03 | NOT_RUN |
+| US-ROOM-08 | P1 | BA 2.7, 4.3 | AC-ROOM-08-04 | TC-ROOM-08-04 | NOT_RUN |
 | US-ROOM-09 | P1 | BA 4.2 | AC-ROOM-09-01 | TC-ROOM-09-01 | NOT_RUN |
 | US-ROOM-09 | P1 | BA 4.2 | AC-ROOM-09-02 | TC-ROOM-09-02 | NOT_RUN |
 | US-ROOM-09 | P1 | BA 4.2 | AC-ROOM-09-03 | TC-ROOM-09-03 | NOT_RUN |
@@ -174,6 +186,7 @@
 | US-AI-03 | P1 | BA 6.3 | AC-AI-03-02 | TC-AI-03-02 | NOT_RUN |
 | US-AI-03 | P1 | BA 6.3 | AC-AI-03-03 | TC-AI-03-03 | NOT_RUN |
 | US-AI-03 | P1 | BA 6.3 | AC-AI-03-04 | TC-AI-03-04 | NOT_RUN |
+| US-AI-03 | P1 | BA 6.3 | AC-AI-03-05 | TC-AI-03-05 | NOT_RUN |
 | US-AI-04 | P1 | BA 6.1 | AC-AI-04-01 | TC-AI-04-01 | NOT_RUN |
 | US-AI-04 | P1 | BA 6.1 | AC-AI-04-02 | TC-AI-04-02 | NOT_RUN |
 | US-UI-01 | P1 | DANH-MUC panel 1 | AC-UI-01-01 | TC-UI-01-01 | NOT_RUN |
@@ -183,6 +196,7 @@
 | US-UI-03 | P1 | DANH-MUC §2 | AC-UI-03-01 | TC-UI-03-01 | NOT_RUN |
 | US-UI-04 | P1 | BA 10.1 | AC-UI-04-01 | TC-UI-04-01 | NOT_RUN |
 | US-UI-04 | P1 | BA 10.1 | AC-UI-04-02 | TC-UI-04-02 | NOT_RUN |
+| US-UI-04 | P1 | BA 10.1 | AC-UI-04-03 | TC-UI-04-03 | NOT_RUN |
 | US-UI-05 | P1 | AGENTS §6; DESIGN | AC-UI-05-01 | TC-UI-05-01 | NOT_RUN |
 | US-UI-05 | P1 | AGENTS §6; DESIGN | AC-UI-05-02 | TC-UI-05-02 | NOT_RUN |
 | US-UI-06 | P1 | DANH-MUC §7 | AC-UI-06-01 | TC-UI-06-01 | NOT_RUN |
@@ -192,16 +206,12 @@
 | US-AUTH-P2-01 | P2 | BA 1.3 | AC-AUTH-P2-01-03 | TC-AUTH-P2-01-03 | NOT_RUN |
 | US-AUTH-P2-01 | P2 | BA 1.3 | AC-AUTH-P2-01-04 | TC-AUTH-P2-01-04 | NOT_RUN |
 | US-AUTH-P2-01 | P2 | BA 1.3 | AC-AUTH-P2-01-05 | TC-AUTH-P2-01-05 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-01 | TC-AUTH-P2-02-01 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-02 | TC-AUTH-P2-02-02 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-03 | TC-AUTH-P2-02-03 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-04 | TC-AUTH-P2-02-04 | NOT_RUN |
-| US-AUTH-P2-02 | P2 | BA 1.2 | AC-AUTH-P2-02-05 | TC-AUTH-P2-02-05 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-01 | TC-AUTH-P2-03-01 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-02 | TC-AUTH-P2-03-02 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-03 | TC-AUTH-P2-03-03 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-04 | TC-AUTH-P2-03-04 | NOT_RUN |
 | US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-05 | TC-AUTH-P2-03-05 | NOT_RUN |
+| US-AUTH-P2-03 | P2 | BA 1.7, 1.5 | AC-AUTH-P2-03-06 | TC-AUTH-P2-03-06 | NOT_RUN |
 | US-AUTH-P2-04 | P2 | BA 1.6, 1.4 | AC-AUTH-P2-04-01 | TC-AUTH-P2-04-01 | NOT_RUN |
 | US-AUTH-P2-04 | P2 | BA 1.6, 1.4 | AC-AUTH-P2-04-02 | TC-AUTH-P2-04-02 | NOT_RUN |
 | US-AUTH-P2-04 | P2 | BA 1.6, 1.4 | AC-AUTH-P2-04-03 | TC-AUTH-P2-04-03 | NOT_RUN |
@@ -239,6 +249,7 @@
 | US-CAS-01 | P2 | BA 2.0, 2.1 | AC-CAS-01-02 | TC-CAS-01-02 | NOT_RUN |
 | US-CAS-01 | P2 | BA 2.0, 2.1 | AC-CAS-01-03 | TC-CAS-01-03 | NOT_RUN |
 | US-CAS-01 | P2 | BA 2.0, 2.1 | AC-CAS-01-04 | TC-CAS-01-04 | NOT_RUN |
+| US-CAS-01 | P2 | BA 2.0, 2.1 | AC-CAS-01-05 | TC-CAS-01-05 | NOT_RUN |
 | US-CAS-02 | P2 | BA 3.2, 3.6 | AC-CAS-02-01 | TC-CAS-02-01 | NOT_RUN |
 | US-CAS-02 | P2 | BA 3.2, 3.6 | AC-CAS-02-02 | TC-CAS-02-02 | NOT_RUN |
 | US-CAS-02 | P2 | BA 3.2, 3.6 | AC-CAS-02-03 | TC-CAS-02-03 | NOT_RUN |
@@ -273,10 +284,6 @@
 | US-SOC-03 | P2 | BA 2.7, 5.5, 2.5 | AC-SOC-03-02 | TC-SOC-03-02 | NOT_RUN |
 | US-SOC-03 | P2 | BA 2.7, 5.5, 2.5 | AC-SOC-03-03 | TC-SOC-03-03 | NOT_RUN |
 | US-SOC-03 | P2 | BA 2.7, 5.5, 2.5 | AC-SOC-03-04 | TC-SOC-03-04 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-01 | TC-SOC-04-01 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-02 | TC-SOC-04-02 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-03 | TC-SOC-04-03 | NOT_RUN |
-| US-SOC-04 | P2 | BA 4.1, Phần 11 | AC-SOC-04-04 | TC-SOC-04-04 | NOT_RUN |
 | US-HIS-01 | P2 | BA 6.2, 7.3, 1.3 | AC-HIS-01-01 | TC-HIS-01-01 | NOT_RUN |
 | US-HIS-01 | P2 | BA 6.2, 7.3, 1.3 | AC-HIS-01-02 | TC-HIS-01-02 | NOT_RUN |
 | US-HIS-01 | P2 | BA 6.2, 7.3, 1.3 | AC-HIS-01-03 | TC-HIS-01-03 | NOT_RUN |
@@ -317,7 +324,7 @@ Mỗi ô dưới đây là điều kiện tạo trạng thái và phản hồi c
 
 ### UI-01 · `SCR-LOGIN` · P1
 
-US: US-AUTH-04, US-AUTH-06, US-AUTH-P2-01, US-AUTH-P2-02. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-04, US-AUTH-06, US-AUTH-07, US-AUTH-P2-01. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -325,11 +332,11 @@ US: US-AUTH-04, US-AUTH-06, US-AUTH-P2-01, US-AUTH-P2-02. Các US-UI-03/04/05/06
 | LOADING | Đang xác thực, chặn gửi trùng | TC-UISTATE-01-LOADING |
 | EMPTY | Form chưa nhập có hướng dẫn đăng nhập/đăng ký | TC-UISTATE-01-EMPTY |
 | ERROR | Sai thông tin chung hoặc lỗi dịch vụ; cho sửa/thử lại | TC-UISTATE-01-ERROR |
-| DISABLED | Form chưa hợp lệ; Guest/Google P1 Sắp ra mắt | TC-UISTATE-01-DISABLED |
+| DISABLED | Form chưa hợp lệ; Guest và Quên mật khẩu P1 Sắp ra mắt | TC-UISTATE-01-DISABLED |
 
 ### UI-02 · `SCR-REGISTER` · P1
 
-US: US-AUTH-01, US-AUTH-02, US-AUTH-03. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-01, US-AUTH-02, US-AUTH-03, US-AUTH-07. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -357,15 +364,15 @@ US: US-AUTH-P2-03. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
-| SUCCESS | Mật khẩu mới được nhận và phiên khác thu hồi | TC-UISTATE-04-SUCCESS |
+| SUCCESS | OTP hợp lệ mới hiện Username; chỉ quên Username về Đăng nhập/giữ mật khẩu, hoặc đặt mật khẩu mới thành công/thu hồi phiên khác rồi về Đăng nhập | TC-UISTATE-04-SUCCESS |
 | LOADING | Xác minh/đổi mật khẩu | TC-UISTATE-04-LOADING |
 | EMPTY | Thiếu ngữ cảnh khôi phục: về yêu cầu mã | TC-UISTATE-04-EMPTY |
-| ERROR | OTP sai/hết hạn; không đổi mật khẩu | TC-UISTATE-04-ERROR |
-| DISABLED | Chưa xác minh hoặc mật khẩu không hợp lệ | TC-UISTATE-04-DISABLED |
+| ERROR | OTP sai/hết hạn: không hiện Username hoặc đổi mật khẩu | TC-UISTATE-04-ERROR |
+| DISABLED | Chưa xác minh thì không cho xem Username/đổi mật khẩu; mật khẩu không hợp lệ chỉ vô hiệu xác nhận đổi, không buộc nhánh chỉ quên Username nhập mật khẩu mới | TC-UISTATE-04-DISABLED |
 
-### UI-05 · `SCR-ONBOARDING` · P2
+### UI-05 · `SCR-ONBOARDING` · P1
 
-US: US-AUTH-P2-02. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-07. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -381,21 +388,21 @@ US: US-UI-02, US-ROOM-08, US-RANK-01, US-CAS-01. Các US-UI-03/04/05/06 áp dụ
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
-| SUCCESS | Danh sách và hành động đúng phân kỳ, có Luật chơi | TC-UISTATE-06-SUCCESS |
-| LOADING | Tải phòng/bạn/phiên, khung xương từng vùng | TC-UISTATE-06-LOADING |
-| EMPTY | Chưa có phòng: giải thích + Tạo phòng | TC-UISTATE-06-EMPTY |
-| ERROR | Không tải danh sách: Thử lại, không giả danh sách rỗng | TC-UISTATE-06-ERROR |
+| SUCCESS | Bốn lựa chọn đúng phân kỳ, vào bằng mã/Luật chơi; danh sách PUBLIC và Vào xem, không hiện CODE_ONLY/LOCKED | TC-UISTATE-06-SUCCESS |
+| LOADING | Tải trạng thái ván dở/bạn/phiên, khung xương từng vùng | TC-UISTATE-06-LOADING |
+| EMPTY | Chưa có ván/phòng đang tham gia: vẫn có bốn lựa chọn chơi đúng phân kỳ | TC-UISTATE-06-EMPTY |
+| ERROR | Không tải trạng thái: Thử lại, không giả trạng thái rỗng | TC-UISTATE-06-ERROR |
 | DISABLED | Đang có vị trí chơi hoặc tính năng P2 chưa mở | TC-UISTATE-06-DISABLED |
 
 ### UI-07 · `SCR-WAITING-ROOM` · P1
 
-US: US-ROOM-02, US-ROOM-03, US-ROOM-06, US-ROOM-10, US-ROOM-11, US-CAS-03. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-ROOM-02, US-ROOM-03, US-ROOM-06, US-ROOM-10, US-ROOM-11, US-CAS-01, US-CAS-03. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
-| SUCCESS | Ghế/Host/Sẵn sàng đúng trạng thái | TC-UISTATE-07-SUCCESS |
+| SUCCESS | Ghế/Host/Sẵn sàng đúng trạng thái; mời xuống ghế chỉ chuyển khi người xem chấp nhận và ghế còn trống | TC-UISTATE-07-SUCCESS |
 | LOADING | Đang nhận snapshot/chuyển ghế | TC-UISTATE-07-LOADING |
-| EMPTY | Ghế còn trống: mời bạn hoặc chia sẻ mã | TC-UISTATE-07-EMPTY |
+| EMPTY | Phòng tự tạo: ghế trống mời/chia sẻ mã; ghép ngẫu nhiên: xác nhận 10 giây theo BA 2.0, không có mời/mã | TC-UISTATE-07-EMPTY |
 | ERROR | Lệnh lỗi/phiên bản cũ: nhận lại trạng thái | TC-UISTATE-07-ERROR |
 | DISABLED | Chưa đủ hai ghế; khoá/chuyển vai không hợp lệ | TC-UISTATE-07-DISABLED |
 
@@ -420,7 +427,7 @@ US: US-AI-01, US-AI-02, US-AI-03, US-AI-04, US-HIS-03, US-DEMO-01. Các US-UI-03
 | SUCCESS | Máy đi hợp lệ, đúng cấp/phe | TC-UISTATE-09-SUCCESS |
 | LOADING | Đang tìm/đợi tiến trình | TC-UISTATE-09-LOADING |
 | EMPTY | Chưa có nước: thế đầu, máy khai cuộc nếu người cầm Đen | TC-UISTATE-09-EMPTY |
-| ERROR | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới | TC-UISTATE-09-ERROR |
+| ERROR | ENGINE_BUSY thử cùng ván; ABANDONED tạo ván mới; AI P1 sau máy chủ khởi động lại thông báo mất trạng thái, về Sảnh/chủ động tạo mới | TC-UISTATE-09-ERROR |
 | DISABLED | Lượt máy/phiên cũ; đi lại hết lượt hoặc P1 chưa có | TC-UISTATE-09-DISABLED |
 
 ### UI-10 · `SCR-LEADERBOARD` · P2
@@ -509,7 +516,7 @@ US: US-AUTH-P2-01. Các US-UI-03/04/05/06 áp dụng chung.
 
 ### UI-17 · `MODAL-CREATE-ROOM` · P1
 
-US: US-ROOM-01, US-SOC-04, US-SOC-03. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-ROOM-01, US-SOC-03. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -551,7 +558,7 @@ US: US-RANK-01, US-CAS-01. Các US-UI-03/04/05/06 áp dụng chung.
 |---|---|---|
 | SUCCESS | MATCH_FOUND chỉ một ván | TC-UISTATE-20-SUCCESS |
 | LOADING | Đang tìm có thời gian/biên độ | TC-UISTATE-20-LOADING |
-| EMPTY | Hết 60 giây chưa đối thủ: thử lại theo chế độ | TC-UISTATE-20-EMPTY |
+| EMPTY | CASUAL hết 3 phút: báo không có đối thủ/về Sảnh; xác nhận 10 giây theo BA 2.0. RANKED giữ trần 60 giây riêng | TC-UISTATE-20-EMPTY |
 | ERROR | Hàng đợi bị huỷ/lỗi kết nối; không vé ma | TC-UISTATE-20-ERROR |
 | DISABLED | Huỷ vô hiệu khi MATCH_FOUND; đang có vị trí khác | TC-UISTATE-20-DISABLED |
 
@@ -693,7 +700,7 @@ US: US-CHAT-01, US-CHAT-02, US-SOC-02. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
-| SUCCESS | Tin đúng quyền/kênh sau bộ lọc | TC-UISTATE-32-SUCCESS |
+| SUCCESS | Tin đúng quyền/kênh sau bộ lọc; máy tính mặc định riêng, mở thêm chung/đóng bớt khung; điện thoại hai tab; ghép ngẫu nhiên/RANKED chỉ riêng | TC-UISTATE-32-SUCCESS |
 | LOADING | Tải/gửi tin | TC-UISTATE-32-LOADING |
 | EMPTY | Chưa có tin: lời nhắc viết theo kênh | TC-UISTATE-32-EMPTY |
 | ERROR | Gửi lỗi: đánh dấu chưa gửi, đối soát trước thử | TC-UISTATE-32-ERROR |
@@ -705,7 +712,7 @@ US: US-MEDIA-01, US-MEDIA-02, US-MEDIA-03, US-RANK-06. Các US-UI-03/04/05/06 á
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
-| SUCCESS | Luồng chỉ người được phép nhận | TC-UISTATE-33-SUCCESS |
+| SUCCESS | Luồng chỉ người được phép nhận; phòng tự tạo chọn sẵn Chỉ đối thủ, người xem chỉ nhận khi người phát chủ động cho phép | TC-UISTATE-33-SUCCESS |
 | LOADING | Xin quyền thiết bị/kết nối media | TC-UISTATE-33-LOADING |
 | EMPTY | Mặc định tắt/chưa chia sẻ: placeholder không bịa video | TC-UISTATE-33-EMPTY |
 | ERROR | Từ chối quyền/lỗi thiết bị: hướng dẫn cấp quyền/thử lại | TC-UISTATE-33-ERROR |
@@ -713,7 +720,7 @@ US: US-MEDIA-01, US-MEDIA-02, US-MEDIA-03, US-RANK-06. Các US-UI-03/04/05/06 á
 
 ### UI-34 · `PANEL-SPECTATORS` · P1
 
-US: US-ROOM-09, US-PLAY-09, US-SOC-04. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-ROOM-09, US-PLAY-09. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -737,7 +744,7 @@ US: US-CAS-05. Các US-UI-03/04/05/06 áp dụng chung.
 
 ### UI-36 · `OVERLAY-RECONNECTING` · P1
 
-US: US-PLAY-07, US-AI-03, US-RANK-05, US-DEMO-02. Các US-UI-03/04/05/06 áp dụng chung.
+US: US-AUTH-04, US-PLAY-07, US-AI-03, US-RANK-05, US-DEMO-02. Các US-UI-03/04/05/06 áp dụng chung.
 
 | Trạng thái | Điều kiện / phản hồi bắt buộc | Mục kiểm |
 |---|---|---|
@@ -770,9 +777,9 @@ US: US-DEMO-03. Các US-UI-03/04/05/06 áp dụng chung.
 | TC-X-05 | Ván AI ABANDONED, phe gốc Ngẫu nhiên đã thành Đen; Thử lại | Match ID mới, giữ Đen/cấp, máy khai cuộc, ván cũ kết thúc | BA 6.1 |
 | TC-X-06 | Thu gọn/mở lại đề nghị và dùng bàn phím đi quân | Hạn/đồng hồ không dừng; không giữ focus; không gửi từ chối vì X/Esc | BA 3.6 |
 | TC-X-07 | Trả lời đề nghị sau ván kết thúc/hết hạn | Không đổi kết quả, không trừ lượt, nhận trạng thái thật | BA 3.6; [02] |
-| TC-X-08 | CASUAL: FINISHED → WAITING ở phút 9 rồi đến hạn cũ phút 10 | Phòng WAITING không bị đóng bởi hẹn giờ cũ | BA 3.3 |
+| TC-X-08 | Phòng tự tạo: FINISHED → WAITING ở phút 9 rồi đến hạn cũ phút 10 | Phòng WAITING không bị đóng bởi hẹn giờ cũ | BA 3.3 |
 | TC-X-09 | FINISHED giữ nguyên quá 10 phút | CLOSED, mọi thành viên về Sảnh | BA 3.3 |
-| TC-X-10 | LOCKED, một ghế rời; người mới dùng mã cũ và Host mời người xem cũ xuống | Giữ khoá; chặn người mới; cho đổi ghế cũ khi hợp lệ | BA 2.8 |
+| TC-X-10 | LOCKED, một ghế rời; người mới dùng mã cũ; Host mời người xem cũ xuống, thử Chấp nhận/Từ chối; ở phòng mở thử ghế bị người khác chiếm trước khi chấp nhận | Giữ khoá/chặn người mới khi LOCKED; chỉ chuyển vai khi chấp nhận và còn ghế hợp lệ, không giữ chỗ; từ chối/hết ghế giữ vai trò xem; thành công reset Sẵn sàng cả hai và phải bấm Sẵn sàng | BA 2.8; AC-ROOM-06-03 |
 | TC-X-11 | Hai người cùng chiếm ghế cuối/chỗ xem cuối | Không vượt sức chứa; một thành công, bên kia nhận tình trạng thực | BA 2.8 |
 | TC-X-12 | Một người vừa vào phòng vừa bắt đầu AI/tìm trận | Chỉ một vị trí chơi, không ghế/AI/vé mồ côi | BA 1.8 |
 | TC-X-13 | A/B gửi kết bạn chéo đồng thời; tổng PENDING 49/50/51 | Một yêu cầu chờ, không tự bạn; không vượt 50 cả hai đầu | BA 5.5 |
@@ -785,13 +792,26 @@ US: US-DEMO-03. Các US-UI-03/04/05/06 áp dụng chung.
 | TC-X-20 | Khách hết phiên sau ván với tài khoản chính thức | Không lịch sử phía Khách; bản ghi đối thủ giữ và tên cá nhân thành Khách | BA 1.3 |
 | TC-X-21 | Khách rời phòng lúc phiên chưa đủ 12 giờ; sau đó thử đến hạn trong lúc còn ghế rồi rời | Trước hạn vẫn cùng danh tính; đến hạn khi có ghế không hết, rời sau hạn mới hết phiên | BA 1.3 |
 | TC-X-22 | RANKED kết thúc; A rời, B ở lại; A tìm mới, B thử tìm trước khi rời; đợi hạn 10 phút | A được tìm, B bị chặn do còn ghế; phòng không WAITING; không reset hạn; tới hạn đóng | BA 7.2 |
-| TC-X-23 | Thách đấu mở form rồi Huỷ; mở lại xác nhận; người nhận vừa bận/từ chối/hết hạn | Huỷ không tạo phòng; mặc định 10 phút/CODE_ONLY/N=2; xác nhận chỉ một phòng, lỗi mời không xoá phòng | BA 2.7 |
+| TC-X-23 | Thách đấu mở form rồi Huỷ; mở lại xác nhận; người nhận vừa bận/từ chối/hết hạn | Huỷ không tạo phòng; mặc định 10 phút/CODE_ONLY/N=5; xác nhận chỉ một phòng, lỗi mời không xoá phòng | BA 2.7 |
 | TC-X-24 | Có hai hội thoại, nhiều tin đến và tin mình gửi; tải ở tab nền rồi xem một phần; huỷ/kết bạn lại | Badge đếm tin đến chưa đọc của bạn hiện tại; chỉ tin vào vùng nhìn tab hoạt động thành đã đọc; đồng bộ thiết bị, không reset read_at | BA 5.2 |
+| TC-X-25 | Ghép ngẫu nhiên xong ván; A rời, B thử mời/nhận người mới; chờ hạn ban đầu | Vẫn FINISHED, không WAITING/người mới; đủ 10 phút từ kết thúc hoặc cả hai rời thì đóng, không reset hạn | BA 2.0 |
+| TC-X-26 | Google mới bỏ dở: trước/sau 60 phút, chạy quét mỗi 5 phút khi dịch vụ hoạt động; đồng thời hoàn tất/dọn; lỗi rồi phục hồi; tài khoản cũ/đã hoàn tất | Dọn chỉ bản Google mới chưa hoàn tất, không xoá tài khoản cũ/hoàn tất; chưa hoàn tất không dùng ứng dụng; phụ thuộc lỗi không báo dọn thành công giả | BA 1.2; AC-AUTH-07-06 |
+| TC-X-27 | Thử hoạt động/refresh/chuyển tab không gia hạn; phiên chính thức chạm hạn 12 giờ/30 ngày trong online/AI; đăng nhập lại đúng/sai tài khoản trước/sau hạn; chỉ refresh token | Ngắt điều khiển khi hết phiên; online giữ 60 giây, giờ chạy; AI 30 phút; đúng tài khoản trên cùng thiết bị trong hạn tiếp tục, thiết bị khác xử thua theo BA 1.8, quá hạn theo luật; refresh token không tự coi là hết phiên | BA 1.8; AC-AUTH-04-06 |
+| TC-X-28 | Ghép ngẫu nhiên gọi trực tiếp API xem/mời/chia sẻ/đổi giờ, rồi xin đi lại/Tái đấu | Chặn quyền ngoài hai người; giờ 15 phút cố định; đi lại cần đối thủ chấp nhận, Tái đấu đổi phe/Match ID, reset 15 phút | BA 2.0/3.2; US-CAS-01/02/04 |
+| TC-X-29 | Máy tính phòng tự tạo: mặc định, mở hai kênh, đóng một; điện thoại đổi tab; người xem/ghép ngẫu nhiên thử kênh khác; bật camera/mic lần đầu rồi đổi chia sẻ cả người xem | Bố cục đúng AC-CHAT-01-01, quyền không đổi và không nhận dữ liệu trái quyền; camera/mic mặc định Tắt, mức chọn sẵn Chỉ đối thủ, người xem chỉ nhận sau chủ động cho phép | BA 4.1/5.3; AC-CHAT-01-01; AC-MEDIA-01-01/02 |
+| TC-X-30 | Mọi nút Xem lại; chính chủ và người xem/người ngoài thử truy cập | Chỉ `/history/:id`; cùng quyền chính chủ, không mở chia sẻ hay đường thay thế | BA 6.2; AC-HIS-02-01 |
+| TC-X-31 | Kiểm phông UI/trang trí/quân cờ/đồng hồ/mã ở màn lớn và nhỏ | Dùng bốn token theo DESIGN §3.1, lựa chọn font chữ Hán cắt vẫn là đề xuất, chữ mặt quân truyền thống | BA 10.3; AC-UI-04-03 |
+| TC-X-32 | Người E thấy phòng PUBLIC rồi Host đổi CODE_ONLY/LOCKED; E bấm mục cũ, gửi lại lệnh vào; sáu người cạnh tranh năm chỗ xem | Máy chủ kiểm lại quyền và trần năm người xem; CODE_ONLY chỉ mã/link, LOCKED chặn mới; Vào xem không chiếm ghế, không lộ mã/token | BA 2.7/2.8/4.3; US-ROOM-05/07/08 |
+| TC-X-33 | Tab cũ tự reconnect sau tiếp quản; đăng nhập đúng tài khoản ở thiết bị khác khi online/AI đang chạy, kể cả đến từ link mời; thử lệnh/token/media cũ; cùng thiết bị hết phiên rồi đăng nhập lại trong ân hạn từ link mời | Tab cũ chỉ đọc, không tự giành quyền; thiết bị khác xử thua ván đang chạy ngay, giải phóng vị trí và đăng xuất cũ, thiết bị mới ở Sảnh; cùng thiết bị trong ân hạn tiếp tục ván cũ, không chuyển vào phòng mời khác | BA 1.8/2.4; AC-AUTH-04-05/06; AC-AUTH-06-01; AC-MEDIA-03-01 |
+| TC-X-34 | Tài khoản hoàn tất gọi OTP trực tiếp rồi mở API/Socket; đối chiếu phiên đăng ký hợp lệ và OTP khôi phục P2 | OTP trực tiếp không được đăng nhập ứng dụng; đăng ký chỉ vào sau hoàn tất; khôi phục chỉ xem Username sau xác minh/đặt mật khẩu nếu cần rồi về Đăng nhập, không cấp quyền dùng ứng dụng | BA 1.1/1.7; AC-AUTH-04-07 |
+| TC-X-35 | Phòng tự tạo đang đếm bắt đầu ván 3 giây: ngắt mạng một bên; cho hẹn giờ cũ chạy hết; nối lại trước/sau 60 giây và thử Sẵn sàng lại | Huỷ đếm/reset Sẵn sàng cả hai, giữ ghế người mất mạng 60 giây; hẹn giờ cũ không tạo ván, chưa có ván không ghi thua; nối lại trong hạn cả hai Sẵn sàng để đếm lại, quá hạn mất ghế theo luật phòng chờ | BA 2.3; AC-ROOM-03-03 |
+| TC-X-36 | P2: A/B có chat riêng, đổi Đỏ/Đen rồi Tái đấu trong cùng phòng; thay B bằng C; đóng phòng | A/B giữ chat và mốc cặp khi chỉ đổi màu/Tái đấu; cặp A/C không đọc tin cũ, chỉ đọc từ mốc cặp mới; CLOSED xoá chat | BA 5.3; AC-CAS-03-02; AC-CAS-04-03 |
+| TC-X-37 | P2: khôi phục bằng email/OTP đúng/sai/hết hạn/thiếu ngữ cảnh, chỉ quên Username và quên cả mật khẩu; thử API/Socket bằng phiên OTP | Trước xác minh không trả Username; sau OTP hợp lệ hiện Username hiện tại đúng tài khoản; nhánh chỉ Username giữ mật khẩu, nhánh đặt lại theo luật thu hồi phiên; cả hai về Đăng nhập, không tự cấp quyền dùng ứng dụng | BA 1.7; AC-AUTH-P2-03-01/03/04/05/06 |
 
 ## 6. Cổng nghiệm thu
 
-- P1: D1–D10, mọi AC P1, trạng thái UI P1 áp dụng, ca biên P1 và các NFR đã duyệt ở [05] (NFR-08–10 và các nhánh AC còn chờ PO — `INTERRUPTED` trung tính ở AC-PLAY-03-02, dọn chat Khách ở AC-AUTH-P2-01-05 — chỉ bắt buộc khi PO duyệt). Không đưa AC P2 vào điều kiện P1.
-- P2: mọi AC P2 (trừ nhánh còn chờ PO, ví dụ dọn chat Khách ở AC-AUTH-P2-01-05, cho đến khi PO duyệt), hồi quy AC P1 còn áp dụng, trạng thái UI mở rộng và các cổng kỹ thuật P2 ở [05]. Không coi P2 đã nghiệm thu vì đã liệt kê US.
+- P1: D1–D10, mọi AC P1, trạng thái UI P1 áp dụng, ca biên P1 và các NFR đã duyệt ở [05] (NFR-01–10, trong đó NFR-08–10 được PO duyệt 04/10/2026; dọn chat Khách ở AC-AUTH-P2-01-05 thuộc P2 theo BA 1.3). Không đưa AC P2 vào điều kiện P1.
+- P2: mọi AC P2 theo nguồn luật đã chốt (thiết kế triển khai chưa duyệt vẫn cần review), hồi quy AC P1 còn áp dụng, trạng thái UI mở rộng và các cổng kỹ thuật P2 ở [05]. Không coi P2 đã nghiệm thu vì đã liệt kê US.
 - Không có ứng dụng trong đợt tài liệu này; toàn bộ mục kiểm bên trên đang **NOT_RUN**. Kiểm định tài liệu chỉ chứng minh số lượng/mã/liên kết, không chứng minh hành vi thực.
 
 [01]: 01-yeu-cau-chi-tiet.md

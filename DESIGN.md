@@ -1,6 +1,6 @@
 # DESIGN.md — Hệ thống thiết kế Cờ Tướng Online
 
-**Cập nhật:** 2026-10-03 (Đồng bộ BA Scope Decisions & Bộ Mockup 37 thành phần) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
+**Cập nhật:** 2026-10-05 (Đồng bộ bốn lựa chọn chơi và bố cục chat; mockup chưa cập nhật) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
 **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · chuẩn WCAG 2.1 AA
 
 > Các mã `DT-xx`, `DEC-xxx`, `GR-COORD`, `SCR-RULE-xx` trong file này là nhãn kế thừa từ bộ tài liệu cũ đã xoá. Nội dung luật đã được viết ngay tại chỗ dùng nó; không cần và không thể tra ở nơi khác. Các mã `TK…` (task Jira cũ) đã được gỡ khỏi file này.
@@ -135,13 +135,13 @@ Viền tiêu điểm **trên bàn cờ** luôn dùng `#155E75` (3,54 trên gỗ)
 | Token CSS | Giá trị | Ghi chú |
 |---|---|---|
 | `--font-ui` | `"Plus Jakarta Sans", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif` | **Chốt:** font giao diện tiếng Việt chuẩn có dấu, tự host hoặc dự phòng hệ thống |
-| `--font-serif` | `"Playfair Display", Georgia, serif` | 🟡 Tiêu đề Kỳ Đài, banner chào mừng, tỷ số ván đấu |
+| `--font-serif` | `"Playfair Display", Georgia, serif` | **Chốt 05/10:** tiêu đề Kỳ Đài, banner chào mừng, tỷ số ván đấu |
 | `--font-han` | `"XQ Han", "Noto Serif TC", "Songti TC", "SimSun", serif` | **Chốt:** font chữ Hán **tự host**, dự phòng serif. 🟡 Đề xuất dùng **Noto Serif TC** (giấy phép SIL OFL 1.1), cắt chỉ 16 ký tự cần dùng, đặt tên `XQ Han`, lưu file giấy phép cạnh font |
-| `--font-mono` | `ui-monospace, "SF Mono", Consolas, monospace` | 🟡 Đồng hồ đếm ngược, mã phòng, mã lỗi, điểm Elo |
+| `--font-mono` | `ui-monospace, "SF Mono", Consolas, monospace` | **Chốt 05/10:** đồng hồ đếm ngược, mã phòng, mã lỗi, điểm Elo |
 
 - **`DT-02` (chốt):** ⛔ Không tải font từ dịch vụ ngoài (Google Fonts…). Bản chạy local phải hoạt động **không cần mạng**.
 - **`DT-03` (chốt):** Quân cờ chỉ dùng chữ Hán, **không** có tuỳ chọn chữ Việt.
-- Trong Figma: mô phỏng font giao diện bằng **Inter** hoặc **Roboto**; ghi chú cho FE là `system-ui`.
+- **Đồng bộ phông (PO chốt 05/10/2026):** trong Figma và bản triển khai dùng đúng bảng trên: Plus Jakarta Sans cho giao diện, Playfair Display cho tiêu đề trang trí, phông chữ Hán cho quân cờ và monospace cho đồng hồ/mã phòng. Bàn giao theo bốn token tương ứng; phông hệ thống chỉ dùng làm dự phòng theo từng token.
 
 ### 3.2 Thang cỡ chữ — 🟡
 
@@ -274,6 +274,8 @@ Kích thước: cao ≥ 44 px, đệm ngang 16 px, chữ `--text-md` 600, bo `--
 
 ### 6.2 Ô nhập, checkbox, radio, công tắc
 
+**P2 — PO duyệt 05/10:** Khôi phục Username/mật khẩu dùng hai màn hình Auth hiện có: sau OTP hợp lệ mới hiện Username, có lựa chọn về Đăng nhập để giữ mật khẩu hoặc tiếp tục đặt lại; OTP không tự đăng nhập (BA 1.7).
+
 - Ô nhập: nền `--color-surface-sunken`, viền `--color-border`, cao ≥ 44 px, **nhãn chữ luôn hiện** (không chỉ placeholder).
 - Lỗi: viền `--color-danger` **+ biểu tượng `circle-alert` + câu lỗi tiếng Việt** dưới ô, nói cách sửa (`DT-10`). Giữ dữ liệu người dùng đã nhập (trừ mật khẩu).
 - Ô có giới hạn độ dài: đếm ký tự "12/40".
@@ -325,13 +327,15 @@ Câu bắt buộc (chốt):
 
 - **Cảnh báo treo ván** (`SCR-RULE-07`): vùng cảnh báo **không modal** (`--z-banner`), nền `--color-warning-bg`, không che bàn và nút Đầu hàng, **không có X**, không bẫy focus; "Bạn còn trong ván đấu không?" + nút **"Tôi còn đây"** + đếm ngược. Trình đọc màn hình **không** đọc từng giây.
 - **Mất kết nối:** lớp phủ `--z-overlay-blocking`, "Đang kết nối lại…" + thời gian giữ ván theo máy chủ; đối thủ thấy "Đối thủ mất kết nối — còn 00:45".
-- **Kết quả:** "🏆 Bạn thắng!" · "Bạn thua" · "Hoà" · "Ván bị gián đoạn — không có người thắng" (người xem: "Đỏ thắng"…), lý do bằng chữ, "Phòng đóng sau mm:ss", [Xem lại] [Tái đấu] [Rời phòng].
+- **Kết quả:** "🏆 Bạn thắng!" · "Bạn thua" · "Hoà" · "Ván bị gián đoạn — không có người thắng" (người xem: "Đỏ thắng"…), lý do bằng chữ, "Phòng đóng sau mm:ss", [Xem lại] [Tái đấu] [Rời phòng] theo chế độ và phân kỳ; P1 chỉ [Rời phòng]; P2 phòng tự tạo/ghép ngẫu nhiên có Tái đấu khi cả hai vẫn ở phòng và cùng đồng ý, Ranked không có (BA 2.0, 2.3, 7.2). Sau ván ghép ngẫu nhiên, một người rời thì người còn lại giữ màn kết quả; không nhận người mới, đóng khi cả hai rời hoặc hết 10 phút từ kết thúc ván (BA 2.0).
 
 ### 6.9 Chat và camera/mic
 
-- **Phòng Đánh Hạng (P2) chỉ có Kênh riêng**, không có Kênh chung (BA 5.4, 7.2). Phòng Đánh Thường: người chơi thấy **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"** (công tắc Ẩn/Hiện kênh chung); người xem thấy 1 khung. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
+**P2 — PO duyệt 05/10:** cùng hai người Đổi bên/Tái đấu trong cùng phòng giữ chat riêng; thay người trong cặp thì chỉ đọc từ mốc cặp mới, phòng đóng xoá chat (BA 5.3).
+
+- **Ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có Kênh riêng**, không Kênh Chung/người xem (BA 2.0, 5.4, 7.2). **Bố cục chat theo BA 5.3 (PO chốt 05/10/2026):** ở phòng có hai kênh, trên máy tính **mặc định chỉ mở Kênh Riêng**; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"**, hoặc ẩn bớt một trong hai rồi mở lại; trên điện thoại dùng hai tab trong một khung, mặc định chọn Kênh Riêng. Người xem chỉ thấy Kênh Chung. Ẩn khung không thay đổi quyền đọc/gửi. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
 - Trạng thái tin: đang gửi · đã gửi · gửi lỗi + "Thử lại".
-- Camera/mic: bật/tắt **độc lập từng thiết bị**; **một mức chia sẻ chung** cho cả camera và mic đang bật: **Không chia sẻ · Chỉ đối thủ · Đối thủ và người xem** (mặc định Tắt; BA 4.1; AC-MEDIA-01-02; PO làm rõ 04/10/2026); trạng thái tách rõ: xin quyền · đang kết nối · đang áp dụng · đã áp dụng · bị từ chối · lỗi. Ghi chú "Chỉ trực tiếp — không ghi âm, không ghi hình".
+- Camera/mic: bật/tắt **độc lập từng thiết bị**; **một mức chia sẻ chung** cho cả camera và mic đang bật. Phòng tự tạo có **Không chia sẻ · Chỉ đối thủ · Đối thủ và người xem**; ghép ngẫu nhiên/Đánh Hạng chỉ có hai mức đầu vì không người xem (BA 2.0, 4.1). Camera/mic mặc định Tắt; phòng tự tạo chọn sẵn **Chỉ đối thủ**, muốn người xem thấy/nghe phải chủ động đổi mức chia sẻ (BA 4.1, PO duyệt 05/10); trạng thái tách rõ: xin quyền · đang kết nối · đang áp dụng · đã áp dụng · bị từ chối · lỗi. Ghi chú "Chỉ trực tiếp — không ghi âm, không ghi hình".
 
 ---
 
@@ -413,14 +417,15 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 │                                ├─────────────────────────┤
 │  [Hệ tọa độ GR-COORD 9x10]     │ 💬 Chat (Kênh Riêng/Chung)│
 │                                ├─────────────────────────┤
-│                                │ 👥 Người xem (Tối đa 2–5)│
+│                                │ 👥 Người xem (Tối đa 5)│
 ├────────────────────────────────┴─────────────────────────┤
 │ [Đầu hàng]  [Xin hoà]  [Xin đi lại*]                     │
 └──────────────────────────────────────────────────────────┘
 ```
 
 **Quy tắc động thích ứng theo Chế độ chơi (Chốt, `BA-SCOPE`):**
-- **Ván Đánh Thường (Casual):** Hiển thị đầy đủ nút `[Xin đi lại]` (tối đa 3 lần) và `[Panel Người xem]` (người tạo phòng chọn không có người xem hoặc tối đa 1–2 ở P1 (tới 5 ở P2), mặc định 2; xem BA-SCOPE `Quyết định 2.8`).
+- **Phòng tự tạo (CASUAL):** có `[Panel Người xem]`; P2 thêm `[Xin đi lại]` (tối đa 3 lần khi đối thủ chấp nhận) (người tạo phòng chọn không có người xem hoặc tối đa 1–5, mặc định 5; xem BA-SCOPE `Quyết định 2.8`).
+- **Đánh Thường ghép ngẫu nhiên (P2):** cố định 15 phút mỗi bên; không người xem/chia sẻ phòng, chỉ chat/camera/mic giữa hai người. Có Xin đi lại/Tái đấu theo BA 2.0, 2.3, 3.2 và 3.6; Tái đấu đặt lại 15 phút/bên.
 - **Ván Đánh Xếp Hạng (Ranked Elo FIDE):** 
   - ⛔ **ẨN HOÀN TOÀN** nút `[Xin đi lại]` (Cấm Undo 100%).
   - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm người xem 100% để chống phím cờ).
@@ -496,9 +501,9 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 | `01 · Bàn giao token` | Bảng tên token CSS → giá trị (khớp §12, hỗ trợ 2 theme Sáng/Tối) |
 | `02 · Bàn cờ` | Bàn SVG 3 cỡ × 2 hướng, quân chữ Hán, trạng thái §7.4 (GR-COORD) |
 | `10 · Tài khoản & Auth` | `SCR-LOGIN`, `MODAL-GUEST-NAME`, `SCR-REGISTER` (3 bước), `SCR-FORGOT-PASSWORD`, `SCR-RESET-PASSWORD`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS`, `MODAL-OTP-USERNAME` |
-| `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (3 chế độ), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
+| `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (4 lựa chọn theo BA 2.0; danh sách phòng PUBLIC và nút Vào xem), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
 | `12 · Phòng thi đấu` | `SCR-GAME-ROOM` (Casual vs Ranked), đồng hồ, đề nghị hòa/undo, cờ treo, mất kết nối, `MODAL-MATCH-RESULT`, `SCR-ACCESS-DENIED` |
-| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 người chơi), `PANEL-CHAT` (Tab Riêng/Chung, 12 sticker, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
+| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 người chơi), `PANEL-CHAT` (máy tính mặc định Kênh Riêng, mở thêm Kênh Chung hoặc ẩn bớt một; điện thoại dùng tab Riêng/Chung; 12 sticker P2, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
 | `14 · Xếp hạng & Xã hội` | `SCR-LEADERBOARD` (Top 50 + Sticky User Row), `SCR-FRIENDS`, `MODAL-DIRECT-CHAT` (chat 1-1 bạn bè) |
 | `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ, đi lại tối đa 3 lần không cần máy đồng ý), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) |
 
@@ -663,7 +668,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
 ## 13. Hướng dẫn cho AI agent khi dựng giao diện
 
 1. Đọc §1–§9 của file này, đối chiếu chi tiết với [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) (đủ 37 thành phần và 5 trạng thái bắt buộc).
-2. **Chỉ dùng token** (`var(--…)`); ⛔ không mã màu, không số px ngoài thang, không font ngoài `--font-ui` / `--font-han`.
+2. **Chỉ dùng token** (`var(--…)`); ⛔ không mã màu, không số px ngoài thang, phông chỉ lấy từ `--font-ui` / `--font-serif` / `--font-han` / `--font-mono` theo vai trò ở §3.1 (PO chốt 05/10).
 3. Dựng **đủ 5 trạng thái** của màn và mọi trạng thái của thành phần; vô hiệu luôn có câu giải thích.
 4. Dùng câu chữ đã chốt nguyên văn; không tự đặt câu cho các hộp xác nhận ở §6.3.
 5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §6`). Thư viện icon và toast chưa chốt (chọn khi bắt đầu Giai đoạn 4, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).

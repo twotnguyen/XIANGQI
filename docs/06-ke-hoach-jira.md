@@ -1,10 +1,14 @@
 # 06 · Kế hoạch phân vai và cấu trúc Jira (Giai đoạn 3)
 
-**Giai đoạn 3 · Trạng thái: Đề xuất (chờ Product Owner duyệt)** · Căn cứ: [01](01-yeu-cau-chi-tiet.md) (US/AC), [02](02-luat-co-tuong.md), [03](03-du-lieu.md), [04](04-kien-truc.md), [05](05-kiem-thu.md), [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) Phần 11. **Chưa tạo gì trên Jira thật**: cần Product Owner cung cấp site/dự án/khoá (AGENTS §1, §5: không đoán số Key). Tệp này là bản kế hoạch dùng để tạo Jira. Bảng ở mục 6 và 8 được **sinh bằng chương trình** từ dữ liệu việc nên các tổng khớp nhau.
+**KẾ HOẠCH LỊCH SỬ — KHÔNG DÙNG ĐỂ TẠO JIRA HIỆN HÀNH (đối soát 05/10/2026).** Giữ nội dung phía dưới làm dấu vết phương án cũ; số lượng, ước lượng, phân kỳ Google/người xem và các luật phòng công khai trong bản này không phải baseline hiện tại. Kế hoạch hiện hành ở [Jira/ke-hoach-moi](../Jira/ke-hoach-moi/01-components-epic-khung-task.md), theo [AGENTS](../AGENTS.md) §1. Không dùng ước lượng ở đây để điền giờ/Story Points cho nhóm. Chưa tạo gì trên Jira thật; chỉ tạo khi được PO đồng ý.
+
+**Phần dưới là nội dung lịch sử, chưa đồng bộ phạm vi 05/10.** Bản ước lượng của agent chưa được nhóm xác nhận; không suy từ tên tệp rằng đây là kế hoạch hiện hành.
+
+> **Ghi chú 04/10/2026:** PO xoá các bản nháp `Jira/` và muốn lập kế hoạch lại từ đầu. Tài liệu này là **bản kế hoạch cũ, chỉ để tham khảo**, chưa phải kế hoạch hiện hành; các con số (128 người-ngày, lịch 38,4 ngày, các Mức) là ước lượng của agent, chưa nhóm nào xác nhận.
 
 ## 1. Quyết định của Product Owner và kết luận về hạn 2 tuần
 
-**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); **đính chính 04/10/2026: PO không cho phép dừng bớt phần; yêu cầu đẩy nhanh tiến độ để đủ 14 ngày** **và chốt giữ đủ P1 trong 14 ngày với 7 người, PO chấp nhận rủi ro rất cao và nhận nhóm làm được** (BA 10.1); các mức ở mục 1a và thứ tự dừng ở mục 1b chỉ là phương án tham khảo, không phải quyết định; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** review các tệp `.md` ở [`Jira/`](../Jira/README.md); (3) hệ số hiệu dụng giữ **0,8**; (4) thứ tự dừng phần (mục 1b) và mốc kiểm soát (mục 1c) từng được duyệt 03/10 nhưng **đã bị quyết định giữ đủ P1 trong 14 ngày (04/10) thay thế**; chỉ còn là lịch sử và dữ liệu theo dõi, không có hiệu lực cắt phạm vi; (5) **chưa gán tên người** (Assignee để trống, nhãn R1–R7 vẫn có để lọc); (6) **chưa cho tạo lên Jira**, cần review thêm.
+**Quyết định của Product Owner (03/10/2026):** (1) **hạn 2 tuần là cố định** (khoảng 14 ngày, **làm cả cuối tuần**); **đính chính 04/10/2026: PO không cho phép dừng bớt phần; yêu cầu đẩy nhanh tiến độ để đủ 14 ngày** **và chốt giữ đủ P1 trong 14 ngày với 7 người, PO chấp nhận rủi ro rất cao và nhận nhóm làm được** (BA 10.1); các mức ở mục 1a và thứ tự dừng ở mục 1b chỉ là phương án tham khảo, không phải quyết định; (2) tạo Epic/Story/Task vào dự án Jira **XIAN** (site `xiangqi-web`) **sau khi** PO review kế hoạch mới (các tệp `Jira/` cũ đã bị xoá 04/10/2026); (3) hệ số hiệu dụng giữ **0,8**; (4) thứ tự dừng phần (mục 1b) và mốc kiểm soát (mục 1c) từng được duyệt 03/10 nhưng **đã bị quyết định giữ đủ P1 trong 14 ngày (04/10) thay thế**; chỉ còn là lịch sử và dữ liệu theo dõi, không có hiệu lực cắt phạm vi; (5) **chưa gán tên người** (Assignee để trống, nhãn R1–R7 vẫn có để lọc); (6) **chưa cho tạo lên Jira**, cần review thêm.
 
 **Công suất 2 tuần:** 14 ngày × 7 người × 0,8 = **78,4 ngày công**. Phạm vi P1 ước lượng **128 ngày công** (78 việc, 53 US) nên theo ước lượng cơ sở của agent **không đủ P1 trong 2 tuần**. PO đã quyết giữ đủ P1 và nhận rủi ro (BA 10.1); mục 1b chỉ còn là tham khảo nếu nhóm trễ.
 
@@ -63,7 +67,7 @@ Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ
 ## 2. Giả định lập kế hoạch
 
 * **Nhóm 7 người**; tên và vai trò do Product Owner gán (mục 3).
-* **Thời hạn cố định:** 2 tuần kể từ 03/10/2026 (đến khoảng 17/10/2026), **làm cả cuối tuần** (14 ngày).
+* **Thời hạn cố định:** 2 tuần, **bắt đầu 04/10/2026, nộp 18/10/2026** (PO cập nhật 04/10; mốc cũ 03/10 → 17/10), **làm cả cuối tuần** (14 ngày). *Bản kế hoạch cũ, chỉ để tham khảo.*
 * **Hệ số hiệu dụng 0,8**; một ngày công = một người làm trọn một ngày; 7 ngày/tuần.
 * Ước lượng thô (±30%) dựa trên đặc tả ở `docs/`; chưa tính học công nghệ mới và sửa lỗi do PoC thất bại.
 * Thứ tự phụ thuộc ở mục 6 là **phán đoán của người lập kế hoạch**, cần người trong nhóm xác nhận.
@@ -84,12 +88,12 @@ Mốc dựa trên lịch xếp theo lớp mức ở **độ nhạy (−30%, hệ
 
 ## 4. Cấu trúc Jira đề xuất
 
-* **Epic** = một dòng ở mục 6 (E0, EA…EQ) và các Epic P2 ở mục 10. Mỗi Epic, Story, Task có **một tệp `.md`** trong [`Jira/`](../Jira/README.md) để review trước khi tạo.
+* **Epic** = một dòng ở mục 6 (E0, EA…EQ) và các Epic P2 ở mục 10. Các tệp `.md` cho Epic/Story/Task từng nằm ở `Jira/` **đã bị PO xoá 04/10/2026 để lập kế hoạch lại từ đầu**; kế hoạch mới sẽ được soạn lại và PO review trước khi tạo.
 * **Story** = một US ở [01](01-yeu-cau-chi-tiet.md) (53 US P1); AC chép vào mô tả. Ma trận US → việc ở mục 9.
 * **Task** = một mục việc ở mục 6, gắn với Story bằng liên kết *relates to* (một việc có thể phục vụ nhiều Story). Cột "Tiền đề" thành liên kết *is blocked by*.
 * **Nhãn:** `P1`/`P2`, đợt `T1`/`T2`/`T3`, vai trò `R1`…`R7`, thành phần `FE`/`BE`/`ENGINE`/`MEDIA`/`QA`/`DEVOPS`.
 * **Ước lượng:** *Original estimate* bằng **ngày**. **Trạng thái:** To Do → In Progress → In Review → Done (Done theo mục 11).
-* **Tên nhánh/commit/PR (AGENTS §5):** khi có khoá Jira thật thêm `[XW-<số>]`; ⛔ không đoán số.
+* **Tên nhánh/commit/PR (AGENTS §5):** khi có khoá Jira thật thêm `[XIAN-<số>]` (dự án XIAN); ⛔ không đoán số.
 * Mã tạm (`T0-01`, `US-ROOM-05`) **giữ trong tiêu đề** Jira để đối chiếu tài liệu.
 
 ## 5. Ý nghĩa các đợt
@@ -353,7 +357,7 @@ Một việc hoặc Story chỉ **Done** khi: (1) đạt toàn bộ AC ở [01];
 
 ## 13. Việc còn lại của Product Owner
 
-1. **Review các tệp ở [`Jira/`](../Jira/README.md)** và cho phép tạo lên Jira dự án **XIAN** (hiện **chưa cho tạo**, cần review thêm). Chưa tạo gì.
+1. **Lập lại kế hoạch từ đầu** (bản nháp `Jira/` cũ đã bị PO xoá 04/10/2026), review rồi cho phép tạo lên Jira dự án **XIAN** (hiện **chưa cho tạo**). Chưa tạo gì.
 2. Gán tên 7 người vào R1–R7 khi sẵn sàng (hiện để trống).
 3. Tiêu chí chấm của buổi nộp ngoài kịch bản demo D1–D10 (nếu có).
 

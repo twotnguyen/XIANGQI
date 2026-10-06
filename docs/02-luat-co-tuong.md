@@ -1,5 +1,7 @@
 # 02 · Luật cờ tướng và máy cờ
 
+> **Đồng bộ 05/10/2026:** theo các quyết định nghiệp vụ đã chốt trong BA; bản viết/thiết kế kỹ thuật còn cần review, các thử nghiệm vẫn NOT_RUN.
+
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
 **Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật phạm vi: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (Quyết định 3.1, 3.3, 3.4, 3.5, 6.1, 6.3). Tài liệu này chi tiết hoá, không được mâu thuẫn BA-SCOPE.
@@ -85,6 +87,7 @@ Một Tướng bị **chiếu** khi có quân đối phương có thể ăn Tư�
 | `CHECKMATE` | Bên sắp đi **bị chiếu** và **không có nước hợp lệ** | Bên đó **thua** |
 | `STALEMATE` | Bên sắp đi **không bị chiếu** nhưng **không có nước hợp lệ** | Bên đó **thua** (khác cờ vua) |
 | `RESIGN` | Một bên đầu hàng | Bên đầu hàng thua ngay |
+| `SESSION_REPLACED` (mã kỹ thuật đề xuất) | Đăng nhập phiên mới trên thiết bị khác khi đang trong ván (BA 1.8, PO chốt 05/10) | Người có tài khoản đó thua ngay; thiết bị cũ đăng xuất, thiết bị mới về Sảnh |
 | `TIMEOUT` | Đồng hồ của bên tới lượt về 0 | Bên đó thua |
 | `DISCONNECT` | Quá ân hạn mất kết nối (BA 8.3) | Bên mất kết nối thua |
 | `INACTIVITY` | Hết 30 giây sau cảnh báo chống treo ván (BA 3.3 mục 5, **P2**) | Bên đó thua |
@@ -93,7 +96,7 @@ Một Tướng bị **chiếu** khi có quân đối phương có thể ăn Tư�
 | `DRAW_NO_CAPTURE` | Đủ 120 nửa nước không ăn quân (mục 5) | Hoà |
 | `PERPETUAL_CHECK` | Chiếu liên tục khi lặp thế (mục 4) | Bên chiếu liên tục thua |
 | `INTERRUPTED` | Máy chủ sập hoặc mất kết nối cơ sở dữ liệu (BA 8.3) | Không có người thắng, không phải hoà, không đổi Elo |
-| `ABANDONED` | Ván với máy bỏ dở quá 30 phút (BA 6.3) | Không tính thắng/thua/hoà |
+| `ABANDONED` | Ván AI quá hạn giữ 30 phút, hoặc sự cố máy cờ theo BA 6.1/6.3 | Không tính thắng/thua/hoà |
 
 ### 3.4 Thứ tự xử lý khi máy chủ nhận một nước đi
 
@@ -148,7 +151,7 @@ Không có luật hoà do "không đủ quân" ở bản này (không áp dụng
 ## 6. Đi lại (Undo)
 
 * Dùng **cây nước đi**: lùi con trỏ `current_move_id` về nút đích; không xoá nút bị bỏ (xem [03-du-lieu.md](03-du-lieu.md)). Xem lại ván hiển thị chuỗi nước **hiệu lực** (BA 6.2).
-* **Đánh Thường (P2):** lùi về trước nước gần nhất của người xin (1 hoặc 2 nước) theo BA 3.6.
+* **CASUAL — Xin đi lại P2:** áp dụng cả phòng tự tạo và Đánh Thường ghép ngẫu nhiên. Đối thủ được chấp nhận hoặc từ chối; chỉ chấp nhận mới lùi về trước nước gần nhất của người xin (1 hoặc 2 nước), tối đa 3 lần thành công/bên/ván, không hoàn giờ (BA 3.2/3.6).
 * **Với máy (P2):** lùi 1 cặp nước theo BA 6.3; nếu máy đang nghĩ thì huỷ tìm kiếm.
 * Sau undo: khoá thế, bộ đếm 120 và danh sách chiếu liên tục tính lại **từ nhánh hiệu lực**. Đồng hồ **không hoàn lại**.
 
@@ -263,7 +266,7 @@ Giá trị trên là **điểm xuất phát**, tinh chỉnh bằng chạy máy �
 | Thời gian người chơi chờ khi không có hàng đợi (p95) | Bằng thời gian tính cộng truyền; hàng đợi tối đa 3 giây chỉ khi máy bận |
 | Độ sâu thực tế của cấp Khó | Trung vị ≥ 6 ở thế khởi đầu và ≥ 5 ở thế trung cuộc; nếu không đạt thì **ghi số thật** và báo Product Owner (AGENTS §4.4), không hạ ngưỡng để báo đạt |
 | Phân cấp sức mạnh | Khó thắng Trung bình ≥ 75% và Trung bình thắng Dễ ≥ 75% trên ≥ 40 ván, đổi bên đều nhau |
-| Chiếu hết ngắn | Tìm được chiếu hết trong 1 nước và 2 nước trên bộ thế cờ kiểm thử |
+| Chiếu hết ngắn | **Cấp Khó** giải đúng 100% bộ thế chiếu hết 1 và 2 nước bắt buộc, đã xác minh đáp án (BA 6.1, PO làm rõ 05/10); bộ mở rộng báo tỷ lệ riêng. Ngưỡng 100% không áp cho Dễ/Trung bình; hai cấp đó vẫn đạt tiêu chí nước hợp lệ, thời gian và phân cấp sức mạnh |
 | Không có nước sai luật | 0 nước không hợp lệ trên ≥ 1 000 ván máy đấu máy ngẫu nhiên |
 
 ### 9.6 Phương án dự phòng nếu không đạt thời gian (giảm độ sâu cần Product Owner đồng ý lại khi xảy ra)

@@ -121,7 +121,7 @@
     <h2 class="denied-title" id="denied-heading">Không Thể Truy Cập Phòng</h2>
     
     <div class="denied-desc" id="denied-reason-text">
-      Phòng thi đấu hiện đã đầy tối đa <strong>4 người</strong> (2 người chơi + tối đa 2 người xem) hoặc đây là ván cờ Xếp Hạng cấm tuyệt đối người xem vào xem.
+      Phòng thi đấu hiện đã đầy tối đa <strong>7 người</strong> (2 người chơi + tối đa 5 người xem) hoặc đây là ván cờ Xếp Hạng cấm tuyệt đối người xem vào xem.
     </div>
 
     <a href="SCR-LOBBY.html" class="btn-action-home">
@@ -141,7 +141,7 @@
       document.getElementById('denied-reason-text').innerHTML = 'Bạn đã bị người chơi trong phòng thi đấu sử dụng quyền <strong>Kick</strong> để mời ra khỏi phòng.';
     } else if (reason === 'full') {
       document.getElementById('denied-heading').textContent = 'Phòng Đã Đủ Người';
-      document.getElementById('denied-reason-text').innerHTML = 'Phòng cờ đã đủ tối đa <strong>2 người chơi và 2 người xem</strong>.';
+      document.getElementById('denied-reason-text').innerHTML = 'Phòng cờ đã đủ tối đa <strong>2 người chơi và 5 người xem</strong>.';
     }
   </script>
 </body>
