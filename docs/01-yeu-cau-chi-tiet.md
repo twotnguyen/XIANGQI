@@ -4,6 +4,8 @@
 
 **Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Nguồn luật: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) (số "BA x.y" là số Quyết định) và [DANH-MUC-MAN-HINH-XIANGQI.md](../DANH-MUC-MAN-HINH-XIANGQI.md). Tài liệu này **không thêm yêu cầu mới**; chỉ chi tiết hoá thành các câu chuyện người dùng (US) có tiêu chí nghiệm thu (AC) kiểm thử được. **Chưa phải Jira**: mã nhóm và mã US chỉ là nhãn tham chiếu, việc chia Epic/Story/Task là Giai đoạn 3.
 
+**Đồng bộ nghiệp vụ 05/10/2026:** các lựa chọn đã được PO chốt ghi theo BA; bản viết và thiết kế kỹ thuật vẫn chờ review. `CASUAL` gồm hai luồng khác nhau: phòng tự tạo P1 và ghép ngẫu nhiên P2. Trong nhóm ROOM, người xem, Kênh Chung, chia sẻ/mời và cài đặt riêng tư chỉ áp dụng **phòng tự tạo**. Ghép ngẫu nhiên có quy tắc riêng ở US-CAS-01.
+
 Cách đọc:
 * **P1** = tám mục tiêu ưu tiên của MVP; mục tiêu khoảng hai tuần phải được kiểm tra công suất ở bước lập kế hoạch, không phải cam kết của đặc tả. **P2** = làm sau (BA Phần 11). Cả hai được đặc tả trong tài liệu này; không đổi phân kỳ.
 * AC viết theo dạng "Khi … thì …". Mỗi AC phải kiểm được bằng thao tác cụ thể hoặc kiểm thử tự động ([05-kiem-thu.md](05-kiem-thu.md)).
@@ -58,9 +60,12 @@ Cách đọc:
 ### US-AUTH-04 · Đăng nhập bằng username và mật khẩu (P1) — BA 1.4, 1.8
 * **AC-AUTH-04-01** — Khi nhập đúng thì vào `/lobby` (hoặc vào đúng phòng nếu đến từ link mời, US-AUTH-06).
 * **AC-AUTH-04-02** — Khi sai tên hoặc mật khẩu thì báo chung *"Sai tên đăng nhập hoặc mật khẩu"* (không nói sai ô nào) và không tiết lộ email.
-* **AC-AUTH-04-03** — Tick *Ghi nhớ đăng nhập* (mặc định tick) thì phiên giữ 30 ngày; bỏ tick thì phiên hết khi đóng trình duyệt hoặc sau 12 giờ.
+* **AC-AUTH-04-03** — Ghi nhớ (mặc định tick): 30 ngày; không ghi nhớ: đóng trình duyệt hoặc 12 giờ, cái nào trước. Hạn tính cố định từ đăng nhập thành công (đăng ký mới: hoàn tất đăng ký); hoạt động, chuyển tab và refresh token không gia hạn; đăng nhập lại thực sự tạo hạn mới. Đóng riêng một tab chỉ theo mất kết nối.
 * **AC-AUTH-04-04** — Nút *Guest* ở màn đăng nhập và liên kết *Quên mật khẩu?* hiện ở trạng thái `DISABLED` kèm tooltip *"Sắp ra mắt"* (liên kết Quên mật khẩu: PO duyệt 04/10/2026). Nút *Đăng nhập bằng Google* và *Đăng ký bằng Google* **hoạt động** (US-AUTH-07; PO kéo Google lên P1 ngày 04/10/2026).
-* **AC-AUTH-04-05** — Đăng nhập khi đang đăng nhập ở tab/thiết bị khác thì phiên mới tiếp quản, nơi cũ nhận thông báo và chuyển chỉ đọc (BA 1.8).
+* **AC-AUTH-04-05** — Đăng nhập thành công ở phiên mới trên thiết bị khác khi tài khoản đang chơi: xử thua ngay ván online/AI đang chạy, kết thúc và rời vị trí chơi, đăng xuất thiết bị cũ; thiết bị mới vào Sảnh, không tiếp tục ván và không chờ ân hạn. Ngoài ván không tạo kết quả thua. Mở tab trên cùng thiết bị theo US-MEDIA-03, không dùng luật thiết bị khác.
+* **AC-AUTH-04-06** — Phiên đăng nhập chính thức hết hạn 12 giờ/30 ngày trong ván thì ngắt quyền điều khiển: online giữ 60 giây, đồng hồ vẫn chạy; AI giữ 30 phút. Đăng nhập lại đúng tài khoản trên cùng thiết bị trong hạn được tiếp tục; thiết bị khác áp dụng AC-AUTH-04-05; quá hạn theo BA 8.3/6.3. Làm mới token truy cập không tự coi là hết phiên; Đăng xuất chủ động vẫn theo BA 1.8.
+
+* **AC-AUTH-04-07** — Phiên OTP email trực tiếp của tài khoản đã hoàn tất không được dùng để đăng nhập ứng dụng; phiên đăng ký chỉ được vào sau hoàn tất luồng đăng ký hợp lệ; OTP khôi phục P2 chỉ cho xem Username sau xác minh và đặt lại mật khẩu nếu cần rồi về Đăng nhập, không tự cấp quyền dùng ứng dụng (BA 1.7, PO chốt 05/10).
 
 ### US-AUTH-05 · Hồ sơ cơ bản và đăng xuất (P1) — BA 1.4, 1.6
 * **AC-AUTH-05-01** — Ở `/settings` đổi *Tên hiển thị* (2–30 ký tự, có dấu, có khoảng trắng); chứa từ cấm thì **từ chối lưu** kèm thông báo.
@@ -70,67 +75,70 @@ Cách đọc:
 * **AC-AUTH-05-05** — Nếu lệnh Đăng xuất giữa ván lỗi hoặc chưa rõ đã nhận, giữ trạng thái chờ/lỗi và đối soát ván bằng cùng định danh lệnh; không tạo hai kết quả. Đóng tab/mất mạng vẫn theo ân hạn, không phải chủ động đầu hàng.
 
 ### US-AUTH-06 · Chuyển hướng vào phòng sau đăng nhập (P1) — BA 2.4
-* **AC-AUTH-06-01** — Khi chưa đăng nhập mà mở link mời thì thấy màn đăng nhập/đăng ký; sau khi đăng nhập hoặc đăng ký xong, **tự vào đúng phòng**, không phải bấm lại link.
-* **AC-AUTH-06-02** — Khi đã đăng nhập thì vào thẳng phòng (xem US-ROOM-05 để biết vào ghế hay xem).
+* **AC-AUTH-06-01** — Khi chưa đăng nhập mà mở link mời thì thấy màn đăng nhập/đăng ký; sau khi đăng nhập hoặc đăng ký xong, **tự vào đúng phòng**, không phải bấm lại link, nếu không bị ràng buộc bởi vị trí chơi khác. Kiểm luật phiên BA 1.8 trước chuyển hướng: đăng nhập thiết bị khác khi đang chơi thì xử thua và về Sảnh; đăng nhập lại cùng thiết bị trong ân hạn thì tiếp tục ván cũ. Kiểm quyền/sức chứa theo US-ROOM-05 (BA 2.4, đồng bộ 05/10).
+* **AC-AUTH-06-02** — Khi đã đăng nhập và không có vị trí chơi khác ngăn cản theo BA 1.8 thì vào thẳng phòng; máy chủ vẫn kiểm quyền/sức chứa (xem US-ROOM-05 để biết vào ghế hay xem).
 
 ### US-AUTH-07 · Đăng ký và đăng nhập bằng Google (P1, PO kéo từ P2 lên P1 ngày 04/10/2026) — BA 1.2
 * **AC-AUTH-07-01** — Đăng ký bằng Google mới đi tới SCR-ONBOARDING: Username và mật khẩu hợp lệ/xác nhận, không OTP; display_name khởi tạo bằng username.
-* **AC-AUTH-07-02** — Đăng nhập Google với danh tính đã hoàn tất thì vào Sảnh hoặc phòng mời; chưa thiết lập thì vào onboarding, chưa được dùng chức năng ứng dụng.
+* **AC-AUTH-07-02** — Đăng nhập Google với danh tính đã hoàn tất thì vào Sảnh hoặc phòng mời theo ưu tiên phiên/vị trí chơi ở US-AUTH-06 và BA 1.8/2.4; chưa thiết lập thì vào onboarding, chưa được dùng chức năng ứng dụng.
 * **AC-AUTH-07-03** — Email thuộc tài khoản khác đã có thì báo Email này đã được đăng ký; không tự gộp tài khoản hoặc làm mất mật khẩu/username hiện có.
 * **AC-AUTH-07-04** — Bỏ dở hoặc Google từ chối/lỗi thì không có tài khoản ứng dụng hoàn tất; không tự đi tiếp vào Sảnh. Gửi hoàn tất trùng không tạo hai tài khoản; username bị chiếm trong lúc chờ phải báo để nhập lại.
 * **AC-AUTH-07-05** — Sau thiết lập thành công, cùng danh tính đăng nhập được bằng Google hoặc username/mật khẩu; dữ liệu gắn user_id, không tạo hồ sơ thứ hai.
+* **AC-AUTH-07-06** — Bản xác thực Google mới chưa hoàn tất onboarding bị dọn sau 60 phút, quét mỗi 5 phút khi dịch vụ hoạt động; chưa hoàn tất không được dùng ứng dụng. Hoàn tất và dọn đồng thời không xoá nhầm tài khoản đã hoàn tất hoặc tài khoản cũ; lỗi phụ thuộc phải phục hồi/thử lại, không báo đã dọn khi chưa thành công (BA 1.2, PO chọn A 05/10).
 
 ---
 
 ## Nhóm B — Phòng, mời, ghế, người xem
 
 ### US-ROOM-01 · Tạo phòng (P1) — BA 2.7, 2.8
-* **AC-ROOM-01-01** — Form gồm: tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ **5 / 10 / 15 phút (mặc định 10)**, chế độ `PUBLIC` hoặc `CODE_ONLY`, số người xem tối đa **Không có người xem / 1 / 2 / 3 / 4 / 5 (mặc định 5)**. `LOCKED` không chọn được lúc tạo.
+* **AC-ROOM-01-01** — Form gồm: tên phòng (1–60 ký tự, qua bộ lọc từ cấm), mức giờ **5 / 10 / 15 phút (mặc định 10)**, riêng tư cố định `CODE_ONLY` khi tạo, số người xem tối đa **Không có người xem / 1 / 2 / 3 / 4 / 5 (mặc định 5)**. `LOCKED` không chọn được lúc tạo.
 * **AC-ROOM-01-02** — Khi tạo thành công thì tạo mã 8 ký tự, người tạo là **Host** ngồi **ghế Đỏ** ở phòng chờ.
 * **AC-ROOM-01-03** — Khi đang ngồi ghế ở phòng/ván khác thì nút *Tạo phòng* `DISABLED` kèm tooltip *"Bạn đang ở trong một ván/phòng khác"* (BA 1.8).
 * **AC-ROOM-01-04** — Mức giờ và số người xem **không đổi được** sau khi tạo.
 
 ### US-ROOM-02 · Phòng chờ và ghế ngồi (P1) — BA 2.3
 * **AC-ROOM-02-01** — Host mặc định ghế Đỏ; khi chỉ có một mình, Host đổi sang ghế Đen hoặc đổi lại không giới hạn số lần.
-* **AC-ROOM-02-02** — Người thứ hai vào phòng thì tự xếp vào **ghế còn trống**.
+* **AC-ROOM-02-02** — Người vào bằng mã/link hoặc lời mời khi còn ghế trống thì tự xếp vào **ghế còn trống**; Vào xem từ Sảnh theo AC-ROOM-05-03.
 * **AC-ROOM-02-03** — Khi thành phần người ngồi ghế thay đổi thì trạng thái *Sẵn sàng* của cả hai **reset về chưa sẵn sàng** (BA 2.8).
 
 ### US-ROOM-03 · Sẵn sàng và bắt đầu ván (P1) — BA 2.3
 * **AC-ROOM-03-01** — Mỗi người ngồi ghế bật/tắt *Sẵn sàng* tuỳ ý trước khi đối thủ vào.
 * **AC-ROOM-03-02** — Khi **cả hai** ngồi ghế và cùng Sẵn sàng thì đếm ngược **3… 2… 1…** (có âm thanh gỗ), rồi tạo ván mới và chuyển sang `SCR-GAME-ROOM`; đồng hồ chạy cho **bên Đỏ**.
-* **AC-ROOM-03-03** — Khi một bên bỏ Sẵn sàng trong lúc đếm thì **dừng đếm**.
+* **AC-ROOM-03-03** — Khi một bên bỏ Sẵn sàng trong lúc đếm thì **dừng đếm**. Phòng tự tạo: mất mạng trong lúc đếm bắt đầu ván thì huỷ đếm, reset Sẵn sàng của cả hai, giữ ghế người mất mạng 60 giây theo BA 2.3; khi nối lại cả hai phải bấm Sẵn sàng để đếm lại. Máy chủ kiểm lại ghế/Sẵn sàng/kết nối khi hết đếm; chưa tạo ván thì không ghi kết quả thua (PO duyệt 05/10).
 
 ### US-ROOM-04 · Chia sẻ phòng bằng link và mã (P1) — BA 2.2, 2.8; QR là P2
 * **AC-ROOM-04-01** — `MODAL-INVITE` do **chỉ người đang ngồi ghế** mở; hiện **link** và **mã 8 ký tự** (nút sao chép). Link và mã cho **cùng một quyền**; không có link riêng "xem/chơi".
 * **AC-ROOM-04-02** — Nút Mã QR không xuất hiện ở P1 (ẩn, không để nút xám).
 * **AC-ROOM-04-03** — Khi phòng chuyển `LOCKED` thì link và mã chưa dùng **hết hiệu lực**; khi mở lại thì sinh **link và mã mới** (BA 4.3).
 
-### US-ROOM-05 · Vào phòng bằng mã, link hoặc Sảnh (P1) — BA 2.6, 2.8
+### US-ROOM-05 · Vào phòng tự tạo bằng mã, link hoặc lời mời (P1) — BA 2.6, 2.8
 * **AC-ROOM-05-01** — Nhập mã 8 ký tự ở Sảnh hoặc mở link: còn ghế trống thì **vào ghế đó**; ghế đã kín và còn chỗ xem thì vào làm **Người xem** kèm thông báo *"Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem."*
 * **AC-ROOM-05-02** — Phòng đủ (2 người chơi + số người xem tối đa của phòng, tối đa 7 người; nhiều lệnh vào đồng thời cũng không vượt quá sức chứa) thì từ chối kèm *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"* ở `SCR-ACCESS-DENIED`.
-* **AC-ROOM-05-03** — Vào từ danh sách phòng ở Sảnh (nút *Vào xem*) thì **luôn** vào làm Người xem.
+* **AC-ROOM-05-03** — Bấm Vào xem từ Sảnh: máy chủ kiểm phòng PUBLIC còn mở, phiên hợp lệ, không bị chặn và còn chỗ xem; vào với vai trò SPECTATOR, không tự chiếm ghế trống. Đổi sang CODE_ONLY/LOCKED hoặc hết chỗ trước khi xử lý thì từ chối.
 * **AC-ROOM-05-04** — Người bị đuổi hoặc phòng `LOCKED` thì vào bị từ chối (US-ROOM-09, US-ROOM-07).
 
 ### US-ROOM-06 · Đổi chỗ giữa ghế và người xem (P1) — BA 2.8
 * **AC-ROOM-06-01** — Chỉ khi phòng `WAITING` hoặc `FINISHED`; khi đang đấu thì không đổi chỗ.
 * **AC-ROOM-06-02** — Người ngồi ghế bấm *Chuyển sang người xem*: thực hiện được khi **còn chỗ xem**; phòng không có người xem hoặc đã đủ người xem thì nút `DISABLED` kèm tooltip *"Phòng không còn chỗ cho người xem"*. Không bao giờ vượt số người xem tối đa.
-* **AC-ROOM-06-03** — Host bấm *Chuyển sang người xem* cho người đang ngồi ghế (cùng điều kiện còn chỗ), hoặc *Mời xuống ghế* cho người xem khi còn ghế trống.
+* **AC-ROOM-06-03** — Host bấm *Chuyển sang người xem* cho người đang ngồi ghế (cùng điều kiện còn chỗ), hoặc gửi *Mời xuống ghế* cho người xem khi còn ghế trống. Người xem phải Chấp nhận mới xuống ghế; Từ chối thì tiếp tục xem. Lời mời không giữ ghế; khi chấp nhận kiểm lại trạng thái phòng/quyền/vị trí chơi/ghế trống. Nếu ghế đã có người thì thông báo, giữ người đó ở vai trò Người xem; xuống ghế thành công vẫn phải bấm Sẵn sàng (BA 2.8, PO duyệt 05/10).
 * **AC-ROOM-06-04** — Người xem **không tự ngồi** vào ghế trống. Host không tự chuyển mình sang người xem (nút ẩn).
 * **AC-ROOM-06-05** — Mỗi lần đổi thành phần người ngồi ghế thì phòng về `WAITING` và reset Sẵn sàng.
 
 ### US-ROOM-07 · Chế độ riêng tư và khoá phòng (P1) — BA 2.7, 4.3
-* **AC-ROOM-07-01** — Host đổi giữa `PUBLIC`, `CODE_ONLY`, `LOCKED` bất kỳ lúc nào (kể cả đang đấu); riêng `LOCKED` chỉ bật được khi **đã đủ 2 người chơi** (nếu chưa thì nút `DISABLED` kèm tooltip *"Chỉ khoá được khi đã đủ 2 người chơi"*).
-* **AC-ROOM-07-02** — `LOCKED`: phòng biến mất khỏi Sảnh; **không ai mới vào được** dù có link, mã hay QR; người đang có ghế hoặc đang xem **giữ nguyên** và vẫn xem được.
+* **AC-ROOM-07-01** — Host phòng tự tạo đổi giữa `PUBLIC`, `CODE_ONLY` và `LOCKED` bất kỳ lúc nào (kể cả đang đấu); riêng `LOCKED` chỉ bật được khi **đã đủ 2 người chơi** (nếu chưa thì nút `DISABLED` kèm tooltip *"Chỉ khoá được khi đã đủ 2 người chơi"*).
+* **AC-ROOM-07-02** — `LOCKED`: **không ai mới vào được** dù có link, mã hay QR; người đang có ghế hoặc đang xem **giữ nguyên** và vẫn xem được.
 * **AC-ROOM-07-03** — Người đang có ghế/đang xem mất mạng vẫn vào lại được (người chơi trong 60 giây, người xem trong 5 phút); quá hạn coi như người mới.
 * **AC-ROOM-07-04** — `CODE_ONLY`: không hiện ở Sảnh; vào bằng mã hoặc link.
 * **AC-ROOM-07-05** — Phòng đã `LOCKED` khi một người rời vẫn giữ khoá; Host mở lại hoặc mời người xem đang có xuống ghế, không tự mở khoá do mất ghế (BA 2.8).
 * **AC-ROOM-07-06** — Xác nhận khi chuyển `LOCKED`: *"Người mới sẽ không vào được. Người xem đang có vẫn được giữ lại."*
 
-### US-ROOM-08 · Danh sách phòng công khai ở Sảnh (P1) — BA 2.0, 2.7
-* **AC-ROOM-08-01** — Chỉ hiện phòng `PUBLIC` đang `WAITING`/`PLAYING`; mỗi dòng: tên phòng, Host, mức giờ, số người `X/Y`, nút *Vào xem*.
-* **AC-ROOM-08-02** — Sắp mới nhất lên đầu, tối đa 50 phòng, tự làm mới.
-* **AC-ROOM-08-03** — Phòng đã đủ người xem thì nút *Vào xem* `DISABLED` kèm tooltip nêu lý do.
-* **AC-ROOM-08-04** — `EMPTY`: hiện giải thích và nút *Tạo phòng*.
+### US-ROOM-08 · Danh sách phòng công khai tại Sảnh (P1) — BA 2.7, 4.3
+* **AC-ROOM-08-01** — Sảnh có danh sách phòng tự tạo `PUBLIC` còn mở để vào xem; `CODE_ONLY`, `LOCKED`, phòng ghép ngẫu nhiên và RANKED không xuất hiện.
+* **AC-ROOM-08-02** — Mỗi mục có tên phòng, hai ghế/người chơi, trạng thái và số người xem hiện tại/trần; không tiết lộ mã mời, token hoặc Kênh Riêng qua danh sách.
+* **AC-ROOM-08-03** — Nút Vào xem theo AC-ROOM-05-03; phòng không có chỗ xem thì DISABLED kèm lý do, máy chủ vẫn chặn lời gọi trực tiếp.
+* **AC-ROOM-08-04** — Phòng chuyển khỏi PUBLIC hoặc đóng thì được bỏ khỏi danh sách; lệnh vào từ mục cũ kiểm lại quyền/sức chứa hiện tại, không vào được phòng đã khóa.
+
+**Khôi phục cùng chức năng (PO chốt lại MVP 05/10):** US-ROOM-08, AC-ROOM-08-01…04 và AC-ROOM-05-03 hoạt động trở lại. Không dùng các mã này cho chức năng khác.
 
 ### US-ROOM-09 · Đuổi người xem (P1) — BA 4.2
 * **AC-ROOM-09-01** — Cả Host và người chơi còn lại đều thấy nút *Kick* cạnh mỗi người xem; bấm thì hiện xác nhận *"Người này sẽ không vào lại được phòng này."*
@@ -140,13 +148,13 @@ Cách đọc:
 ### US-ROOM-10 · Host rời, chuyển quyền, đóng phòng (P1) — BA 2.3
 * **AC-ROOM-10-01** — Host rời lúc phòng `WAITING`: nếu còn người chơi thứ hai thì họ thành Host, phòng vẫn mở.
 * **AC-ROOM-10-02** — Khi không còn người ngồi ghế sau khi Host rời, đóng phòng dù còn người xem; họ về Sảnh. Ngoài ra phòng còn đóng khi hết hạn `FINISHED` theo US-ROOM-11, không gọi điều kiện hết ghế là nguyên nhân đóng duy nhất.
-* **AC-ROOM-10-03** — Đang đấu (`PLAYING`): Host mất kết nối tạm thời **không** đổi Host; Host rời hoặc bị xử thua thì quyền Host chuyển cho người chơi còn lại; rời giữa ván tính là **Đầu hàng**.
+* **AC-ROOM-10-03** — Đang đấu (`PLAYING`): Host mất kết nối tạm thời **không** đổi Host; Host rời hoặc bị xử thua vì quá ân hạn mất kết nối thì quyền Host chuyển cho người chơi còn lại; rời giữa ván tính là **Đầu hàng**. Host thua do chiếu hết/hết giờ nhưng vẫn ở phòng giữ nguyên quyền Host.
 
-### US-ROOM-11 · Sau ván CASUAL: quay về phòng chờ (P1) — BA 2.3 mục 8
+### US-ROOM-11 · Sau ván phòng tự tạo: quay về phòng chờ (P1) — BA 2.3 mục 8
 * **AC-ROOM-11-01** — Khi ván kết thúc phòng ở `FINISHED` tối đa 10 phút; hết hạn nếu vẫn `FINISHED` thì đóng và đưa thành viên còn lại về Sảnh. Đã trở lại `WAITING` thì hẹn giờ FINISHED cũ không được đóng phòng.
 * **AC-ROOM-11-02** — Một người ngồi ghế rời, hoặc thành phần người ngồi ghế đổi, thì phòng về `WAITING`, người còn lại giữ ghế và quyền Host (nếu người rời là Host thì chuyển quyền).
 * **AC-ROOM-11-03** — Người mới vào theo US-ROOM-05; mất kết nối ở `WAITING` giữ ghế 60 giây.
-* **AC-ROOM-11-04** — Ví dụ nghiệm thu (BA 2.8): A và C đánh xong, A rời, C thành Host, C mời B xuống ghế, B và C bấm Sẵn sàng thì đếm ngược và đấu tiếp.
+* **AC-ROOM-11-04** — Ví dụ nghiệm thu (BA 2.8): A và C đánh xong, A rời, C thành Host, C mời B xuống ghế, B chấp nhận rồi B và C bấm Sẵn sàng thì đếm ngược và đấu tiếp.
 
 ### US-ROOM-12 · Màn hình từ chối truy cập (P1) — DANH-MUC mục 14
 * **AC-ROOM-12-01** — Hiện đúng thông báo theo lý do: phòng đầy, bị đuổi, phòng `LOCKED` (nội dung theo BA 4.3); chỉ có một nút *Quay về Sảnh*.
@@ -236,8 +244,8 @@ Cách đọc:
 ## Nhóm E — Chat và camera/mic
 
 ### US-CHAT-01 · Hai kênh chat (P1) — BA 5.3
-* **AC-CHAT-01-01** — **Người chơi:** thấy cả `[Kênh Riêng]` (mặc định mở) và `[Kênh Chung]`, có công tắc ẩn Kênh Chung. **Người xem:** chỉ thấy `[Kênh Chung]`.
-* **AC-CHAT-01-02** — Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; người đổi chỗ sau không đọc tin cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào.
+* **AC-CHAT-01-01** — **Người chơi phòng tự tạo:** máy tính mặc định chỉ mở Kênh Riêng, có thể mở thêm Kênh Chung để xem đồng thời hoặc đóng bớt một khung; điện thoại dùng hai tab, mặc định Kênh Riêng. Giữ công tắc ẩn Kênh Chung. **Người xem:** chỉ Kênh Chung. Ghép ngẫu nhiên/RANKED chỉ có Kênh Riêng; đổi bố cục không đổi quyền đọc/gửi.
+* **AC-CHAT-01-02** — Tin ở Kênh Riêng chỉ hai người **đang ngồi ghế** nhận; cặp người chơi mới không đọc tin của cặp cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào.
 * **AC-CHAT-01-03** — Chat phòng xoá khi phòng đóng.
 
 ### US-CHAT-02 · Giới hạn và bộ lọc từ cấm (P1) — BA 5.3
@@ -247,8 +255,8 @@ Cách đọc:
 
 ### US-MEDIA-01 · Camera và micro cho hai người chơi (P1) — BA 4.1, 5.4
 * **AC-MEDIA-01-01** — Mỗi người chơi bật/tắt camera và micro độc lập; **mặc định Tắt** khi vào phòng.
-* **AC-MEDIA-01-02** — Có 3 mức chia sẻ chọn riêng từng người chơi, áp chung cho camera và micro đang bật: *Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem* (mức 3 chỉ cho khi phòng có người xem).
-* **AC-MEDIA-01-03** — Hai người chơi thấy mặt và nghe tiếng nhau khi cả hai bật mức ≥ 2.
+* **AC-MEDIA-01-02** — Có 3 mức chia sẻ chọn riêng từng người chơi, áp chung cho camera và micro đang bật: *Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem* (mức 3 chỉ cho khi phòng có người xem). Phòng tự tạo chọn sẵn **Chỉ đối thủ**, camera/mic vẫn mặc định Tắt; người chơi chủ động chọn mức 3 mới cho người xem thấy/nghe (BA 4.1, PO duyệt 05/10).
+* **AC-MEDIA-01-03** — Quyền nhận theo mức chia sẻ và thiết bị đang bật của **người phát**, không bắt người nhận phải bật camera/mic hoặc chia sẻ ngược lại. Khi cả hai cùng bật mức ≥ 2 thì mỗi bên thấy/nghe đối thủ.
 * **AC-MEDIA-01-04** — Không ghi hình, ghi âm hoặc lưu.
 
 ### US-MEDIA-02 · Người xem chỉ xem/nghe (P1) — BA 4.1
@@ -256,7 +264,7 @@ Cách đọc:
 * **AC-MEDIA-02-02** — Người xem chỉ thấy/nghe luồng của người chơi chọn mức *Cả đối thủ và người xem*.
 
 ### US-MEDIA-03 · Mở nhiều tab (P1) — BA 1.8
-* **AC-MEDIA-03-01** — Mở thêm tab vào cùng phòng thì tab mới **tiếp quản**; tab cũ nhận *"Phiên này đã được mở ở tab khác"*, chuyển chỉ đọc; camera/mic của tab cũ **tự dừng**, tab mới mặc định tắt.
+* **AC-MEDIA-03-01** — Mở thêm tab vào cùng phòng thì tab mới **tiếp quản**; tab cũ nhận *"Phiên này đã được mở ở tab khác"*, chuyển chỉ đọc; camera/mic của tab cũ **tự dừng**, tab mới mặc định tắt. Tab cũ tự reconnect vẫn chỉ đọc, chỉ chủ động tiếp quản mới lấy lại quyền; không tự giành quyền qua lại.
 
 ---
 
@@ -306,6 +314,8 @@ Cách đọc:
 * **AC-AI-03-03** — Đi lại và lưu Lịch sử là P2, **không hiện** ở P1.
 * **AC-AI-03-04** — Chủ động Rời ván/Đăng xuất AI đang chơi: xác nhận đầu hàng; đồng ý kết thúc `RESIGN`, huỷ tìm kiếm và giải phóng vị trí chơi; Huỷ giữ ván. Không áp dụng ân hạn 30 phút cho hành động đã xác nhận này (BA 6.3).
 
+* **AC-AI-03-05** — Máy chủ khởi động lại làm mất ván AI P1: truy cập đường ván cũ thông báo không còn trạng thái; về Sảnh hoặc chủ động tạo mới; không tự dựng kết quả/lịch sử/khôi phục ván.
+
 ### US-AI-04 · Sự cố máy cờ (P1) — BA 6.1
 * **AC-AI-04-01** — Nếu tiến trình máy cờ lỗi hoặc không phản hồi quá hạn 10 giây thì ván chuyển *Bỏ dở*, báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*.
 * **AC-AI-04-02** — Thử lại sau `ABANDONED`: tạo Match ID mới, cùng cấp độ và phe thực tế, không hồi sinh ván cũ; nếu phe cũ Ngẫu nhiên thì giữ kết quả đã bốc. Kiểm một vị trí chơi và chặn bấm trùng; thất bại không thông báo đã tạo ván (BA 6.1).
@@ -318,16 +328,17 @@ Cách đọc:
 * **AC-UI-01-01** — Cố định đầu mọi trang đã đăng nhập: logo, Sảnh, Bạn bè (P1); *Bảng xếp hạng* và *Lịch sử* hiện `DISABLED` kèm *"Sắp ra mắt"*; chuông lời mời; avatar và tên hiển thị với menu *Hồ sơ* / *Đăng xuất*.
 
 ### US-UI-02 · Sảnh (P1) — BA 2.0, Phần 11
-* **AC-UI-02-01** — Có: Tạo phòng, Vào phòng bằng mã, Danh sách phòng công khai, 3 thẻ Đánh với máy. Thẻ **Đánh Hạng** hiện `DISABLED` + *"Sắp ra mắt"*; *Ghép ngẫu nhiên* **ẩn** ở P1.
+* **AC-UI-02-01** — Có bốn lựa chọn: **Đánh Thường**, **Đánh Hạng**, **Tự tạo phòng**, **Đánh với máy**, cùng Vào phòng bằng mã. P1: Tự tạo phòng và ba cấp AI hoạt động; Đánh Thường ghép ngẫu nhiên và Đánh Hạng hiện `DISABLED` + tooltip *"Sắp ra mắt"*. Có danh sách phòng PUBLIC để vào xem theo US-ROOM-08.
 * **AC-UI-02-02** — Có ván/phòng dở thì hiện banner quay lại; đang ngồi ghế ở phòng thì các nút tạo/ghép `DISABLED` kèm tooltip.
 * **AC-UI-02-03** — Sảnh có phần Luật chơi mở rộng/thu gọn bằng chuột/bàn phím, nêu kết thúc ván và khác biệt rút gọn theo BA 10.4 và [02]; không thêm trang/modal hoặc tính vào thành phần thứ 38.
 
 ### US-UI-03 · Năm trạng thái cho mọi màn hình (P1) — DANH-MUC §2
 * **AC-UI-03-01** — Mỗi màn hình và khung dữ liệu có đủ `SUCCESS`, `LOADING` (khung xương, không để trắng, không giật bố cục), `EMPTY` (giải thích + nút hành động), `ERROR` (tiếng Việt dễ hiểu + nút *Thử lại*), `DISABLED` (luôn có tooltip lý do).
 
-### US-UI-04 · Responsive (P1) — BA 10.1
+### US-UI-04 · Responsive và phông chữ (P1) — BA 10.1
 * **AC-UI-04-01** — Dùng được ở **360 px** trở lên, không cuộn ngang; bàn cờ chơi được bằng cảm ứng; ở màn nhỏ camera/chat có thể thu thành tab.
 * **AC-UI-04-02** — Kiểm ở 360, 390, 1366, 1920 px (DESIGN §13).
+* **AC-UI-04-03** — Dùng đúng phông theo DESIGN §3.1: Plus Jakarta Sans cho UI, Playfair Display cho trang trí, token `--font-han` cho chữ Hán (lựa chọn cắt Noto Serif TC vẫn là đề xuất trong DESIGN), monospace cho đồng hồ/mã; kiểm cả màn lớn và nhỏ. Không đổi chữ Hán truyền thống trên mặt quân.
 
 ### US-UI-05 · Trợ năng (P1) — AGENTS §6; DESIGN
 * **AC-UI-05-01** — Tuân WCAG 2.1 AA: tương phản theo DESIGN §2, điều khiển bằng bàn phím (có vòng tiêu điểm), nhãn cho mọi nút chỉ có biểu tượng, `prefers-reduced-motion` tắt chuyển động, đếm lùi không đọc từng giây (dùng `aria-live` cho thông báo quan trọng).
@@ -349,7 +360,7 @@ Cách đọc:
 | NFR-04 | Bảo mật: client không quyết định kết quả; không lộ dữ liệu không có quyền xem; khoá bí mật không ở client | Kiểm thử bảo mật ([05]) |
 | NFR-05 | Máy cờ đạt thời gian và sức mạnh ở [02] mục 9.5 | Kiểm thử máy cờ ([05]) |
 | NFR-06 | Chỉ tiếng Việt; không ghi hình/ghi âm | Kiểm thử chấp nhận |
-| NFR-07 | Khi máy chủ khởi động lại, ván đang chạy thành `INTERRUPTED`, không treo | Kiểm thử phục hồi |
+| NFR-07 | Máy chủ khởi động lại: ván online thành INTERRUPTED; AI P1 mất trạng thái bộ nhớ thì thông báo không thể tiếp tục, cho về Sảnh/chủ động tạo mới, không tạo lịch sử hoặc khôi phục giả (BA 6.3) | Kiểm thử phục hồi |
 | NFR-08 | Quan sát vận hành (PO đã duyệt 04/10/2026): máy chủ ghi nhật ký có cấu trúc (thời điểm, mã lệnh/ván, mã lỗi) cho lỗi, `INTERRUPTED`, sự cố máy cờ, đăng ký bị phục hồi; có điểm kiểm tra sức khoẻ; **không ghi** mật khẩu, mã OTP, token, nội dung chat. Không thêm công cụ ngoài danh sách README | Kiểm tra nhật ký ở các ca lỗi; rà không lộ dữ liệu nhạy cảm |
 | NFR-09 | Lưu giữ dữ liệu (PO đã duyệt 04/10/2026): ván **online** (người–người) và nước đi lưu bền ở quy mô đồ án; ván với máy ở P1 chỉ giữ trong bộ nhớ để vào lại 30 phút (BA 6.3), không lưu bền; chat **phòng** xoá khi phòng `CLOSED` (chat 1-1 P2 theo quy tắc bạn bè, không xoá theo phòng); chat/tên của Khách xoá khi phiên Khách hết (P2); biên lai lệnh xoá sau 24 giờ (đã có ở [03]); nhật ký vận hành giữ tối đa 14 ngày | Kiểm thử dọn dẹp ([05]) |
 | NFR-10 | An toàn hiển thị (PO đã duyệt 04/10/2026): tin chat, tên hiển thị, tên phòng luôn hiển thị là **văn bản thuần**, không chạy HTML/script/URL tự kích hoạt; độ dài và tần suất theo BA 5.3 | Ca có thẻ `<script>`, thuộc tính sự kiện, URL `javascript:` ở chat/tên/tên phòng |
@@ -367,14 +378,15 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 * **AC-AUTH-P2-01-02** — Phiên chỉ trong trình duyệt hiện tại, thời hạn 12 giờ; nếu đến hạn khi đang ngồi ghế/đang đấu thì gia hạn tới lúc rời. Rời phòng trước hạn vẫn giữ cùng phiên; Đăng xuất chủ động kết thúc phiên. Đăng xuất giữa ván theo quy tắc xác nhận đầu hàng ở BA 1.8/6.3.
 * **AC-AUTH-P2-01-03** — Khách được Đánh Thường, AI, xem, chat phòng và camera/mic khi ngồi ghế; máy chủ chặn Đánh Hạng, Elo, bạn bè và thay đổi tài khoản dù gọi trực tiếp.
 * **AC-AUTH-P2-01-04** — Mỗi Khách có tối đa một phòng đang mở do mình tạo, chịu sức chứa và giới hạn chat như tài khoản; phiên mới là danh tính mới, giới hạn né chặn bằng phiên mới được công bố ở BA 4.2.
-* **AC-AUTH-P2-01-05** — Không lịch sử/Replay phía Khách, không chuyển dữ liệu sang tài khoản mới. Đối thủ chính thức vẫn có bản ghi ván; khi phiên Khách hết thì thay tên cá nhân bằng Khách, không xoá bản ghi ván của đối thủ. Đồng thời xoá khỏi mọi phòng còn mở các tin chat do Khách đó gửi và tên hiển thị cá nhân; người còn trong phòng thấy tin đã bị gỡ, tên chung "Khách" (đề xuất 04/10/2026, chờ PO duyệt).
+* **AC-AUTH-P2-01-05** — Không lịch sử/Replay phía Khách, không chuyển dữ liệu sang tài khoản mới. Đối thủ chính thức vẫn có bản ghi ván; khi phiên Khách hết thì thay tên cá nhân bằng Khách, không xoá bản ghi ván của đối thủ. Đồng thời xoá khỏi mọi phòng còn mở các tin chat do Khách đó gửi và tên hiển thị cá nhân; người còn trong phòng thấy tin đã bị gỡ, tên chung "Khách" (luật xoá dữ liệu cá nhân theo BA 1.3; chi tiết triển khai cần review).
 
-### US-AUTH-P2-03 · Quên và đặt lại mật khẩu (P2) — BA 1.7, 1.5
+### US-AUTH-P2-03 · Khôi phục Username và đặt lại mật khẩu (P2) — BA 1.7, 1.5
 * **AC-AUTH-P2-03-01** — Nhập email có/không có tài khoản đều nhận cùng thông báo Nếu email này đã đăng ký, mã khôi phục đã được gửi; không tiết lộ tồn tại tài khoản.
 * **AC-AUTH-P2-03-02** — OTP tuân BA 1.5: 6 số, 180 giây, gửi lại 60 giây, giới hạn sai gần đúng; email truyền qua trạng thái ứng dụng, không nằm trên URL.
 * **AC-AUTH-P2-03-03** — Chỉ OTP hợp lệ cho đúng email/mục đích mới cho đặt mật khẩu đạt tối thiểu 8 ký tự và xác nhận khớp; OTP sai/hết hạn không đổi mật khẩu.
 * **AC-AUTH-P2-03-04** — Đổi thành công thu hồi mọi phiên khác theo BA 1.7; mật khẩu cũ không đăng nhập được, mật khẩu mới được. Yêu cầu trùng hoặc lỗi không báo thành công giả.
-* **AC-AUTH-P2-03-05** — Khi thiếu trạng thái khôi phục (mở URL trực tiếp/tải lại mất ngữ cảnh), không hiện email đoán hay cho đổi mật khẩu; cho trở về bước yêu cầu mã.
+* **AC-AUTH-P2-03-05** — Khi thiếu trạng thái khôi phục (mở URL trực tiếp/tải lại mất ngữ cảnh), không hiện email/Username đoán hay cho đổi mật khẩu; cho trở về bước yêu cầu mã.
+* **AC-AUTH-P2-03-06** — Dùng hai màn hình khôi phục hiện có: sau OTP hợp lệ cho đúng email/mục đích mới hiện Username hiện tại. OTP sai/hết hạn/chưa xác minh không trả Username qua UI hoặc API khôi phục. Chỉ quên Username thì về Đăng nhập, giữ mật khẩu hiện tại; quên cả mật khẩu thì tiếp tục AC-AUTH-P2-03-03/04 rồi về Đăng nhập. Cả hai nhánh không tự đăng nhập hay được gọi API/Socket ứng dụng bằng phiên OTP khôi phục (BA 1.7, PO duyệt 05/10).
 
 ### US-AUTH-P2-04 · Đổi username (P2) — BA 1.6, 1.4
 * **AC-AUTH-P2-04-01** — Chính chủ thực hiện bốn bước: yêu cầu đổi → OTP email hiện tại → xác minh → nhập username mới; chưa OTP hợp lệ không được giữ/đổi tên.
@@ -428,38 +440,40 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 ## Nhóm K — Đánh Thường mở rộng (P2)
 
 ### US-CAS-01 · Ghép ngẫu nhiên Đánh Thường (P2) — BA 2.0, 2.1
-* **AC-CAS-01-01** — Chọn Không giới hạn/5/10/15 phút; chỉ ghép cùng mức, không thêm tiêu chí Elo hoặc chuyển sang Đánh Hạng.
-* **AC-CAS-01-02** — Chờ tối đa 60 giây, được Huỷ trước khi tìm thấy; hết hạn không ghép AI. Kiểm một vị trí chơi và chống ghép trùng như hợp đồng hàng đợi [07].
-* **AC-CAS-01-03** — Người vào hàng đợi trước là Host; ghép thành công vào phòng chờ, hai bên Sẵn sàng, đếm 3 giây; bỏ Sẵn sàng dừng đếm.
-* **AC-CAS-01-04** — Phòng mặc định PUBLIC có ghi chú cho người tìm; dùng quy tắc CASUAL và sức chứa phòng, không mở quyền xem cho RANKED.
+* **AC-CAS-01-01** — Ghép ngẫu nhiên hai người, cố định **15 phút/bên**, không cộng giây và không có bộ chọn giờ; không dùng Elo hoặc chuyển sang Đánh Hạng.
+* **AC-CAS-01-02** — Mỗi lượt tìm tối đa 3 phút, có nút Huỷ trong lúc tìm; quá hạn không có đối thủ báo không tìm được và về Sảnh, không ghép AI/không phạt. Kiểm một vị trí chơi và chống ghép trùng theo [07].
+* **AC-CAS-01-03** — Người vào hàng đợi trước là Host, phe ngẫu nhiên. Ghép được: xác nhận Sẵn sàng trong 10 giây; cả hai xác nhận thì đếm 3…2…1… và vào ván. Hết hạn: người chưa xác nhận về Sảnh; người đã xác nhận tự tiếp tục tìm; không ai xác nhận thì cả hai về Sảnh. Chưa bắt đầu ván không xử thua.
+* **AC-CAS-01-04** — Chỉ hai người chơi; không người xem, Kênh Chung, danh sách phòng công khai, chia sẻ link/mã/QR hay mời người khác. Chỉ Kênh Riêng và camera/mic giữa hai đối thủ; không có cài đặt mở quyền xem/mời.
+
+* **AC-CAS-01-05** — Sau ván, một người rời thì người còn lại giữ kết quả FINISHED, không chuyển WAITING, không nhận người mới. Đóng khi cả hai rời hoặc hết 10 phút từ lúc kết thúc, không đặt lại hạn khi một người rời; không còn đủ hai người thì không Tái đấu (BA 2.0).
 
 ### US-CAS-02 · Xin đi lại (P2) — BA 3.2, 3.6
-* **AC-CAS-02-01** — Chỉ ván CASUAL đang chơi, người xin đã đi ít nhất một nước, còn lượt và không có đề nghị của mình đang chờ; RANKED cấm.
+* **AC-CAS-02-01** — Áp dụng cả phòng tự tạo và ghép ngẫu nhiên CASUAL đang chơi; đối thủ được chọn chấp nhận hoặc từ chối, chỉ chấp nhận mới thực hiện đi lại. Người xin đã đi ít nhất một nước, còn lượt và không có đề nghị của mình đang chờ; RANKED cấm.
 * **AC-CAS-02-02** — Đồng ý trong hạn lùi về trước nước gần nhất của người xin: một nửa nước nếu đối thủ chưa đáp, hai nếu đã đáp; huỷ các nước sau con trỏ, phục hồi bộ đếm lặp/không ăn quân của nhánh hiệu lực.
 * **AC-CAS-02-03** — Không trả lại thời gian đã trôi; chỉ thành công trừ một lượt, tối đa ba mỗi bên mỗi ván; gửi trùng không lùi hoặc trừ hai lần.
 * **AC-CAS-02-04** — Khung không modal theo BA 3.6: X/Esc thu gọn; người xin không đi được khi chờ, đối thủ vẫn có quyền đi; hạn 30 giây, từ chối/hết hạn không trừ lượt, chờ ba nước của mình mới xin lại cùng loại.
 * **AC-CAS-02-05** — Ván đã kết thúc hoặc đề nghị đã rút/hết hạn thì trả lời muộn không thay thế, đồng hồ hay kết quả; báo trạng thái mới nhất.
 
 ### US-CAS-03 · Xin đổi bên (P2) — BA 2.3, 3.6
-* **AC-CAS-03-01** — Chỉ hai người ngồi ghế ở phòng chờ; Host một mình dùng đổi ghế trực tiếp, không gửi đề nghị tới người chưa có.
-* **AC-CAS-03-02** — Đề nghị hạn 30 giây, tuân một đề nghị/người; đồng ý khi còn hợp lệ hoán hai ghế và reset Sẵn sàng, giữ Host.
+* **AC-CAS-03-01** — Chỉ phòng tự tạo có hai người ngồi ghế ở phòng chờ; Host một mình dùng đổi ghế trực tiếp, không gửi đề nghị tới người chưa có.
+* **AC-CAS-03-02** — Đề nghị hạn 30 giây, tuân một đề nghị/người; đồng ý khi còn hợp lệ hoán hai ghế và reset Sẵn sàng, giữ Host. Cùng cặp chỉ đổi màu quân trong cùng phòng thì giữ chat riêng và mốc hình thành cặp theo BA 5.3 (PO duyệt P2 05/10).
 * **AC-CAS-03-03** — Từ chối/hết hạn không đổi ghế; chờ 60 giây trước khi gửi lại; rút lại không đổi ghế.
 * **AC-CAS-03-04** — Khi một người rời/đổi vai hoặc ván đã bắt đầu, yêu cầu cũ không còn điều kiện áp dụng; không hoán ghế của ván đang chơi.
 
 ### US-CAS-04 · Tái đấu (P2) — BA 3.3, 2.3
-* **AC-CAS-04-01** — Chỉ hai người của ván CASUAL vừa kết thúc khi vẫn còn ghế trong cùng phòng FINISHED; RANKED không có Tái đấu.
-* **AC-CAS-04-02** — Hai bên đồng ý thì tự hoán phe, đếm 3 giây và bắt đầu Match ID mới, không cần Sẵn sàng lần nữa.
-* **AC-CAS-04-03** — Giữ Room ID, chế độ riêng tư, người xem và danh sách chặn; ván cũ/kết quả không bị ghi đè, reset đồng hồ và bộ đếm của ván mới.
-* **AC-CAS-04-04** — Một người rời/đổi ghế hoặc phòng hết 10 phút thì đề nghị cũ không thể tạo ván; bấm đồng thời/trùng không tạo hai Match ID.
+* **AC-CAS-04-01** — Áp dụng cả phòng tự tạo và ghép ngẫu nhiên: chỉ hai người của ván CASUAL vừa kết thúc khi vẫn còn ghế trong cùng phòng FINISHED; RANKED không có Tái đấu. Ván INTERRUPTED sau khởi động lại chỉ có Rời phòng theo BA 10.1.
+* **AC-CAS-04-02** — Nhận đủ hai xác nhận hợp lệ trước hạn đóng phòng thì huỷ hẹn giờ cũ; tự hoán phe, đếm 3 giây và bắt đầu Match ID mới, không cần Sẵn sàng lần nữa.
+* **AC-CAS-04-03** — Giữ Room ID; phòng tự tạo giữ riêng tư, người xem và danh sách chặn. Cùng hai người Tái đấu trong cùng phòng giữ chat riêng và mốc hình thành cặp theo BA 5.3 (PO duyệt P2 05/10). Ván cũ/kết quả không bị ghi đè, reset bộ đếm ván mới và đồng hồ theo cấu hình phòng; ghép ngẫu nhiên reset đúng **15 phút/bên**, không thêm người xem/mời.
+* **AC-CAS-04-04** — Một người rời/đổi ghế hoặc xác nhận đến sau hạn đóng phòng 10 phút thì đề nghị cũ không thể tạo ván; hai xác nhận hợp lệ đã nhận trước hạn theo AC-CAS-04-02; bấm đồng thời/trùng không tạo hai Match ID.
 
 ### US-CAS-05 · Không giới hạn giờ và chống treo (P2) — BA 2.1, 3.3
-* **AC-CAS-05-01** — Không giới hạn là lựa chọn thứ tư chỉ của CASUAL; RANKED cố định 10 phút, AI không áp dụng chống treo này.
+* **AC-CAS-05-01** — Không giới hạn là lựa chọn thứ tư chỉ của **phòng tự tạo**; ghép ngẫu nhiên cố định 15 phút; RANKED cố định 10 phút, AI không áp dụng chống treo này.
 * **AC-CAS-05-02** — Bên tới lượt không đi 3 phút thì banner không modal đếm 30 giây; không giữ focus/che bàn hay nút Đầu hàng.
 * **AC-CAS-05-03** — Tôi còn đây đặt lại 3 phút, tối đa hai lần liên tiếp khi chưa có nước mới; lần cảnh báo thứ ba không có nút đó.
 * **AC-CAS-05-04** — Hết hạn không có nước hoặc xác nhận hợp lệ thì INACTIVITY thua; nước hợp lệ mới đặt lại chu kỳ. Lệnh đến sau kết thúc không hồi sinh ván.
 
 ### US-CAS-06 · Chia sẻ bằng QR (P2) — BA 2.2, 4.3
-* **AC-CAS-06-01** — MODAL-INVITE có QR của đúng link hiện hành, cùng quyền như mã/link; chỉ người ngồi ghế được mở.
+* **AC-CAS-06-01** — Chỉ phòng tự tạo: MODAL-INVITE có QR của đúng link hiện hành, cùng quyền như mã/link; chỉ người ngồi ghế được mở.
 * **AC-CAS-06-02** — Tải ảnh QR tạo ảnh quét được về đúng link; Sao chép QR báo thành công chỉ khi clipboard nhận ảnh, lỗi quyền/hỗ trợ thì báo lỗi và vẫn dùng Tải ảnh hoặc Sao chép link.
 * **AC-CAS-06-03** — LOCKED/thu hồi làm QR cũ vô hiệu như mã/link; mở lại tạo QR cho link mới, không tái sử dụng bản cũ.
 * **AC-CAS-06-04** — Người quét chưa đăng nhập hoàn tất đăng nhập/Guest rồi tự tới phòng; kiểm lại khoá, chặn, sức chứa ở thời điểm thực sự vào.
@@ -481,7 +495,7 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 
 ### US-SOC-03 · Thách đấu (P2) — BA 2.7, 5.5, 2.5
 * **AC-SOC-03-01** — Chỉ tài khoản chính thức thách đấu bạn đang Online từ Bạn bè; Đang đấu/Offline có DISABLED và lý do.
-* **AC-SOC-03-02** — Mở form Tạo phòng hiện có, người gửi nhập tên; mặc định 10 phút/CODE_ONLY/5 người xem, được đổi trong phạm vi CASUAL. Xác nhận mới tạo phòng rồi gửi mời theo BA 2.5; Huỷ form không tạo/gửi gì. Không dùng thách đấu để chọn đối thủ Đánh Hạng.
+* **AC-SOC-03-02** — Mở form Tạo phòng hiện có, người gửi nhập tên; mặc định 10 phút/CODE_ONLY/5 người xem, được đổi trong phạm vi phòng tự tạo. Xác nhận mới tạo phòng rồi gửi mời theo BA 2.5; Huỷ form không tạo/gửi gì. Không dùng thách đấu để chọn đối thủ Đánh Hạng.
 * **AC-SOC-03-03** — Người nhận có Tham gia/Từ chối và hạn 30 giây; Tham gia kiểm quyền/sức chứa/phiên bản link tại máy chủ như mọi lời mời phòng.
 * **AC-SOC-03-04** — Người gửi đang có vị trí chơi không tạo thêm phòng; bạn vừa bận hoặc lời mời bị từ chối/hết hạn thì giữ phòng đã tạo để Host quản lý, không giả định người nhận đã vào hoặc tự tạo ván.
 
@@ -495,7 +509,7 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 * **AC-HIS-01-05** — Bộ lọc không có kết quả hiện EMPTY và cho đổi bộ lọc; lỗi tải có Thử lại, không hiện lịch sử rỗng như thể chưa chơi.
 
 ### US-HIS-02 · Xem lại (P2) — BA 6.2
-* **AC-HIS-02-01** — Chỉ người chơi của ván đọc Replay từ Lịch sử; người xem/người ngoài không có link chia sẻ hay dữ liệu, kể cả RANKED.
+* **AC-HIS-02-01** — Mọi nút Xem lại dùng duy nhất `/history/:id`, không có đường dẫn thay thế trong phòng. Chỉ người chơi của ván đọc Replay từ Lịch sử; người xem/người ngoài không có link chia sẻ hay dữ liệu, kể cả RANKED.
 * **AC-HIS-02-02** — Tái dựng từ thế đầu và chuỗi nước hiệu lực tới current_move_id; không phát các nhánh đã đi lại hoặc nước chưa lưu.
 * **AC-HIS-02-03** — Các nút đầu/trước/sau/cuối, nhấp dòng nước nhảy đúng thế; đầu/cuối vô hiệu nút vượt biên kèm lý do.
 * **AC-HIS-02-04** — Tự phát 1,5 giây/nước, dừng ở cuối; không có nước thì hiện thế đầu và trạng thái chưa có nước, không lỗi chỉ số.
@@ -544,12 +558,12 @@ Các US sau là đặc tả kiểm thử được, không phải công việc Ji
 
 | # | Mục tiêu | US tương ứng |
 |---|---|---|
-| 1 | Đăng ký / đăng nhập | US-AUTH-01…06 |
+| 1 | Đăng ký / đăng nhập | US-AUTH-01…07 |
 | 2 | Tạo phòng | US-ROOM-01, 02, 03 |
 | 3 | Mời vào phòng (link, mã, bạn bè online) | US-ROOM-04, 05; US-FRIEND-01…05 |
 | 4 | Khởi tạo bàn cờ | US-BOARD-01…05 |
 | 5 | Hai người đánh online | US-PLAY-01…10; US-ROOM-10, 11 |
-| 6 | Công khai / khoá / có mã, tối đa 5 người xem | US-ROOM-05…09, 12; US-PLAY-09 |
+| 6 | Phòng PUBLIC ở Sảnh, CODE_ONLY qua mã/link hoặc LOCKED, tối đa 5 người xem | US-ROOM-05…09, 12; US-PLAY-09 |
 | 7 | Chat, camera, mic, kênh riêng cho người xem | US-CHAT-01, 02; US-MEDIA-01…03 |
 | 8 | Đánh với máy | US-AI-01…04 |
 

@@ -8,12 +8,12 @@ Thứ tự ưu tiên khi có mâu thuẫn (AGENTS §2): yêu cầu trực tiếp
 
 | Tệp | Nội dung | Dùng cho |
 |---|---|---|
-| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 80 US (54 P1, 26 P2), 276 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
+| [01-yeu-cau-chi-tiet.md](01-yeu-cau-chi-tiet.md) | 80 US (54 P1, 26 P2), 283 AC có mã; yêu cầu phi chức năng | Người chia việc, người kiểm thử |
 | [02-luat-co-tuong.md](02-luat-co-tuong.md) | Luật cờ tướng chi tiết, kết thúc ván, lặp thế, chiếu liên tục, ký hiệu nước đi, máy cờ và 3 cấp độ | Lập trình luật cờ và máy cờ |
 | [03-du-lieu.md](03-du-lieu.md) | Thực thể, cột, ràng buộc, quyền truy cập, dữ liệu tạm | Lập trình máy chủ và cơ sở dữ liệu |
 | [04-kien-truc.md](04-kien-truc.md) | Thành phần, xác thực, thời gian thực, đồng hồ, LiveKit, máy cờ, bảo mật, triển khai | Mọi lập trình viên |
 | [05-kiem-thu.md](05-kiem-thu.md) | Chiến lược kiểm thử, kịch bản demo (tiêu chí hoàn thành P1), tình huống bắt buộc, con số cần đo | Người kiểm thử, người làm hiệu năng |
-| [06-ke-hoach-jira.md](06-ke-hoach-jira.md) | **Giai đoạn 3:** vai trò, Epic/Story/Task, ước lượng, công suất, lịch, cấu trúc Jira | Product Owner, người chia việc |
+| [06-ke-hoach-jira.md](06-ke-hoach-jira.md) | **Kế hoạch lịch sử**, không phải kế hoạch hiện hành | Tham khảo lịch sử; kế hoạch hiện hành theo AGENTS §1 |
 | [07-hop-dong-nghiep-vu.md](07-hop-dong-nghiep-vu.md) | Quyền, vòng đời, tiền/hậu điều kiện, đồng thời, lỗi và phục hồi P1/P2 | Product Owner, người thiết kế/kiểm thử |
 | [08-ma-tran-nghiem-thu.md](08-ma-tran-nghiem-thu.md) | Mọi AC → TC; năm trạng thái của 37 thành phần; ca biên xuyên luồng | Người review và kiểm thử |
 
@@ -23,7 +23,24 @@ Product Owner đã duyệt các quyết định bổ sung trong BA (nhật ký c
 
 Đọc theo thứ tự: [IDEA](../IDEA.md) → BA → [01] → [07](07-hop-dong-nghiep-vu.md) → [08](08-ma-tran-nghiem-thu.md); [02]–[05] cung cấp chi tiết chuyên môn. Các con số là độ phủ đặc tả, không phải test PASS.
 
-Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợt này. Kế hoạch/US ở các bản nháp cũ chưa được đối soát với baseline mới, **không coi là đã đồng bộ**; khi lập kế hoạch phải làm bước đối soát riêng sau review. Mockup lệch đặc tả chỉ tham khảo.
+Đợt 05/10 đã đọc đủ chín tệp `docs/`, đồng bộ các quyết định nghiệp vụ đã chốt. `06-ke-hoach-jira.md` được đánh dấu lịch sử, không dùng làm kế hoạch hiện hành. Không sửa `Jira/`. Lần chốt lại MVP chỉ đồng bộ lựa chọn riêng tư trong ba mockup Sảnh/phòng chờ/phòng chơi; các phần mockup còn lại và kế hoạch Jira cần đối soát riêng. Bản viết chi tiết/thiết kế kỹ thuật vẫn chờ review, các cổng kỹ thuật vẫn NOT_RUN.
+
+## MVP hiện hành — tám yêu cầu PO chốt lại 05/10/2026
+
+Đọc và nghiệm thu P1 trước: đăng ký/đăng nhập → tạo phòng → mời trong game/link/mã → bàn cờ → hai người chơi online → PUBLIC/CODE_ONLY/LOCKED với tối đa năm người xem → chat riêng/chung, camera/mic → AI ba cấp. Tám mục và nguồn luật nằm ở BA Phần 11. Không kéo ghép ngẫu nhiên, Đánh Hạng, Quên mật khẩu, Tái đấu hoặc các mở rộng P2 vào MVP vì đã trả lời luật cho chúng.
+
+**Đính chính mới nhất của PO:** tối đa 5 người xem, tổng cộng 7 người/phòng; khôi phục mặc định 5 đã duyệt trước đó.
+
+## Đồng bộ quyết định PO 05/10/2026
+
+- Phòng tự tạo PUBLIC ở Sảnh, CODE_ONLY qua mã/link/lời mời hoặc LOCKED chặn người mới; trần 0/1/2/3/4/5, mặc định 5, tối đa bảy người trong phòng. Ghép ngẫu nhiên P2 cố định 15 phút, chỉ hai người, quyền và sau ván theo BA 2.0.
+- Xin đi lại/Tái đấu P2 áp dụng cả hai luồng CASUAL; Thách đấu P2 tạo phòng thủ công mặc định 10 phút/CODE_ONLY/5 người xem. Chat, phông và Replay theo BA 5.3/10.3/6.2.
+- Hai câu hỏi rà soát docs được PO chọn A: dọn bản Google mới chưa hoàn tất theo BA 1.2; hết hạn phiên chính thức trong ván theo BA 1.8. Các chi tiết kiến trúc mới vẫn là đề xuất, không tự coi đã được duyệt hoặc kiểm chứng.
+- US-ROOM-08 và năm AC danh sách/Vào xem công khai được khôi phục đúng chức năng theo MVP vừa duyệt; thêm AC chặn đăng nhập OTP trực tiếp và AI P1 mất trạng thái. Hạn phiên cố định; khác thiết bị xử thua ván đang chơi/đăng xuất thiết bị cũ, thiết bị mới về Sảnh; cùng thiết bị mở tab vẫn theo luật tiếp quản. Số US/AC ở chỉ mục và [08] được đếm lại; 37 thành phần và 185 trạng thái vẫn giữ nguyên.
+
+## Chốt review MVP 05/10/2026
+
+PO đã duyệt bốn điểm review: mất mạng trong đếm bắt đầu ván tự tạo theo BA 2.3; mời xuống ghế cần người xem chấp nhận, không giữ chỗ theo BA 2.8; mức chia sẻ chọn sẵn Chỉ đối thủ, camera/mic vẫn Tắt theo BA 4.1; nghiệm thu chiếu hết ngắn 100% ở cấp Khó theo BA 6.1. Đã sửa câu cũ về Vào xem từ Sảnh, ngoại lệ chuyển hướng theo BA 1.8/2.4 và demo chat/media ngay trong ván. Bổ sung TC-X-35, cập nhật ca kiểm đổi vai/chia sẻ/chuyển hướng; tại thời điểm chốt bốn điểm có 80 US, 282 AC và 37 thành phần UI; số hiện hành sau bổ sung P2 ở mục dưới. Hai điểm P2 được chốt ở mục dưới; các đề xuất/cổng kỹ thuật chưa được duyệt/kiểm chứng giữ nguyên trạng thái.
 
 ## Các con số tạm của Giai đoạn 1 (đã duyệt)
 
@@ -60,6 +77,7 @@ Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợ
 |---|---|
 | `SCR-LOGIN` | AUTH-04 |
 | `SCR-REGISTER` | AUTH-01, 02, 03 |
+| `SCR-ONBOARDING` | AUTH-07 |
 | `SCR-LOBBY` | UI-02, ROOM-08 |
 | `SCR-WAITING-ROOM` | ROOM-02, 03, 06, 10, 11 |
 | `SCR-GAME-ROOM` | BOARD-01…05, PLAY-01…10 |
@@ -83,6 +101,8 @@ Không đọc/sửa `Jira/`, `06-ke-hoach-jira.md` hoặc `mockups/` trong đợ
 | `OVERLAY-RECONNECTING` | PLAY-07 |
 
 Đủ 24 thành phần P1 và 13 P2, không thêm màn hình do có phần Luật chơi/bộ chọn giao diện. Ánh xạ đầy đủ hai phân kỳ và 185 trường hợp trạng thái nằm ở [08](08-ma-tran-nghiem-thu.md). Nhãn `MODAL-DRAW-PROMPT` giữ để tham chiếu nhưng hành vi không modal theo BA 3.6.
+
+**Hai điểm P2 đã chốt 05/10:** cùng cặp Đổi bên/Tái đấu trong cùng phòng giữ chat riêng, thay người thì đặt mốc chat mới (BA 5.3); khôi phục Username bằng email + OTP trong luồng hiện có, chỉ quên Username giữ mật khẩu, quên cả mật khẩu thì đặt lại rồi về Đăng nhập (BA 1.7). Đã bổ sung AC-AUTH-P2-03-06 và TC-X-36/37: 80 US, 283 AC (167 P1/116 P2), 283 TC đối ứng, 37 thành phần/185 trạng thái và 37 ca biên. Các quyết định này vẫn P2. Cơ chế kỹ thuật mới giữ nhãn đề xuất, các cổng vẫn NOT_RUN; kế hoạch Jira và mockup cần đối soát riêng khi khác baseline.
 
 ## Chưa làm (có chủ ý)
 

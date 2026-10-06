@@ -1,6 +1,8 @@
 # 06 · Kế hoạch phân vai và cấu trúc Jira (Giai đoạn 3)
 
-**Giai đoạn 3 · Trạng thái: Đề xuất (chờ Product Owner duyệt)** · Căn cứ: [01](01-yeu-cau-chi-tiet.md) (US/AC), [02](02-luat-co-tuong.md), [03](03-du-lieu.md), [04](04-kien-truc.md), [05](05-kiem-thu.md), [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md) Phần 11. **Chưa tạo gì trên Jira thật**: cần Product Owner cung cấp site/dự án/khoá (AGENTS §1, §5: không đoán số Key). Tệp này là bản kế hoạch dùng để tạo Jira. Bảng ở mục 6 và 8 được **sinh bằng chương trình** từ dữ liệu việc nên các tổng khớp nhau.
+**KẾ HOẠCH LỊCH SỬ — KHÔNG DÙNG ĐỂ TẠO JIRA HIỆN HÀNH (đối soát 05/10/2026).** Giữ nội dung phía dưới làm dấu vết phương án cũ; số lượng, ước lượng, phân kỳ Google/người xem và các luật phòng công khai trong bản này không phải baseline hiện tại. Kế hoạch hiện hành ở [Jira/ke-hoach-moi](../Jira/ke-hoach-moi/01-components-epic-khung-task.md), theo [AGENTS](../AGENTS.md) §1. Không dùng ước lượng ở đây để điền giờ/Story Points cho nhóm. Chưa tạo gì trên Jira thật; chỉ tạo khi được PO đồng ý.
+
+**Phần dưới là nội dung lịch sử, chưa đồng bộ phạm vi 05/10.** Bản ước lượng của agent chưa được nhóm xác nhận; không suy từ tên tệp rằng đây là kế hoạch hiện hành.
 
 > **Ghi chú 04/10/2026:** PO xoá các bản nháp `Jira/` và muốn lập kế hoạch lại từ đầu. Tài liệu này là **bản kế hoạch cũ, chỉ để tham khảo**, chưa phải kế hoạch hiện hành; các con số (128 người-ngày, lịch 38,4 ngày, các Mức) là ước lượng của agent, chưa nhóm nào xác nhận.
 

@@ -1,5 +1,7 @@
 # 03 · Mô hình dữ liệu
 
+> **Đồng bộ 05/10/2026:** áp dụng các quyết định nghiệp vụ đã chốt tại BA; cơ chế kỹ thuật mới vẫn là đề xuất, chưa kiểm chứng. Bản viết chi tiết còn cần review.
+
 > **Bản hoàn thiện 04/10/2026, chờ Product Owner review bản viết.** Nền tảng đã duyệt 03/10 và các quyết định bổ sung đã duyệt 04/10 được giữ nguyên. Nhãn đã duyệt bên dưới ghi lịch sử nền, không có nghĩa toàn bộ câu chữ/thiết kế mới đã được review; không có mã nguồn hay test ứng dụng được chạy trong đợt tài liệu này.
 
 **Giai đoạn 2 · Trạng thái: **nền tảng đã duyệt 03/10/2026; bản viết 04/10/2026 chờ Product Owner review** (các giả định kỹ thuật chưa đo vẫn cần thử nghiệm ở đầu Giai đoạn 4)** · Căn cứ: [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Tên bảng và cột là **đề xuất**; công nghệ lưu trữ là PostgreSQL qua Supabase (README, danh sách dự kiến). Thay đổi cấu trúc bằng **tệp SQL migration**, không dùng `prisma migrate` (AGENTS §4.4). Cột "P" cho biết bảng cần ở P1 hay P2.
@@ -28,7 +30,7 @@ Nguyên tắc chung:
 | 10 | `friendships`, `friend_declines` | Quan hệ bạn bè và lịch sử từ chối có hướng | P1 |
 | 11 | `user_stats` | Elo, thắng/thua/hoà (Ranked) | P2 |
 | 12 | `direct_conversations`, `direct_messages` | Chat 1-1 giữa bạn bè | P2 |
-| 13 | `ai_games` | Thông tin riêng của ván với máy | P1 |
+| 13 | `ai_games` | Thông tin riêng của ván với máy; P1 là cấu trúc bộ nhớ, P2 mới lưu CSDL | P1/P2 |
 
 Khách (`GUEST`, P2) **không có dòng trong `profiles`**; danh tính Khách chỉ tồn tại trong phiên (xem 4.1).
 
@@ -46,9 +48,11 @@ Khách (`GUEST`, P2) **không có dòng trong `profiles`**; danh tính Khách ch
 | `email` | text | Chỉ đọc, lấy từ Auth; **không đổi** (BA 1.6); cưỡng chế tại Auth, không chỉ ở giao diện ([04] §3.1) |
 | `created_at` | timestamptz | |
 | `last_seen_at` | timestamptz | Cập nhật khi kết nối; dùng cho trạng thái online (có thể lấy từ bộ nhớ) |
-| `completed_at` | timestamptz NULL | Mốc hoàn tất ghi hồ sơ. Quyền dùng cần cả giá trị này và không còn `PENDING`. Nếu đã có mốc nhưng còn cờ thì **phục hồi xoá cờ, không xoá tài khoản**; chỉ tài khoản email chưa có mốc, quá thời hạn, mới bị dọn. Nguồn: BA 1.1 và [04] mục 3.1 (duyệt 04/10) |
+| `completed_at` | timestamptz NULL | Mốc hoàn tất ghi hồ sơ. Quyền dùng cần cả giá trị này và không còn `PENDING`. Có mốc nhưng còn cờ thì phục hồi xoá cờ, không xoá tài khoản. Email dở theo BA 1.1; bản Google mới chưa hoàn tất theo BA 1.2 (PO chọn A 05/10); không dọn tài khoản cũ/đã hoàn tất |
 
-Chỉ mục: `username` (unique). Hồ sơ **chỉ được tạo sau khi OTP đúng** (BA 1.1) và tài khoản chỉ được dùng khi `completed_at` có giá trị **đồng thời không còn PENDING**; trước đó Supabase Auth có thể giữ tạm một bản ghi xác thực chưa xác nhận (Phương án B, [04](04-kien-truc.md) mục 3.1).
+Chỉ mục: `username` (unique). Hồ sơ email **chỉ được tạo sau khi OTP đúng** (BA 1.1); Google theo onboarding BA 1.2 và tài khoản chỉ được dùng khi `completed_at` có giá trị **đồng thời không còn PENDING**; trước đó Supabase Auth có thể giữ tạm một bản ghi xác thực chưa xác nhận (Phương án B, [04](04-kien-truc.md) mục 3.1).
+
+**Đề xuất kỹ thuật cần review:** lưu dấu nhận diện bản Google tạm mới, mốc tạo và trạng thái hoàn tất ở nguồn máy chủ tin cậy; không suy từ metadata client. Tác vụ dọn Google đọc lại trạng thái dưới cùng cơ chế tuần tự với hoàn tất onboarding. Tài khoản cũ và hồ sơ có mốc hoàn tất luôn được bảo vệ (BA 1.2).
 
 ### 2.2 `username_reservations` (P2)
 
@@ -65,18 +69,22 @@ Kiểm tra trùng username phải xét cả `profiles` và bảng này (chưa h�
 | Cột | Kiểu | Ràng buộc / ghi chú |
 |---|---|---|
 | `room_id` | uuid PK | |
-| `code` | char(8) | Mã gốc có đúng 8 ký tự, **UNIQUE** khi phòng chưa đóng. Ví dụ lưu `K7M2XQP4`; hiển thị nhóm `K7M2-XQP4` có dấu phân cách, không lưu dấu gạch trong cột `char(8)`. Hợp đồng nhập/lưu thống nhất ở [07] |
+| `code` | char(8) NULL (đề xuất) | Chỉ phòng tự tạo có mã; ghép ngẫu nhiên/RANKED không phát mã mời. Mã gốc có đúng 8 ký tự, **UNIQUE** khi phòng chưa đóng. Ví dụ lưu `K7M2XQP4`; hiển thị nhóm `K7M2-XQP4` có dấu phân cách, không lưu dấu gạch trong cột `char(8)`. Hợp đồng nhập/lưu thống nhất ở [07] |
 | `name` | text | 1–60 ký tự |
 | `host_id` | uuid FK `profiles` | Chủ phòng; luôn là người đang ngồi ghế (BA 2.8) |
 | `kind` | enum `CASUAL` / `RANKED` | P1 chỉ `CASUAL`; `RANKED` ở P2 |
-| `privacy` | enum `PUBLIC` / `CODE_ONLY` / `LOCKED` | CASUAL bật LOCKED cần đủ hai người; đã khoá thì giữ khi mất ghế. RANKED luôn riêng giữa hai người, không có API mở công khai |
-| `clock_seconds` | int NULL | 300 / 600 / 900; `NULL` = không giới hạn (P2) |
-| `max_spectators` | smallint | **0–5 (mặc định 5)** từ P1 (PO 04/10/2026), không đổi sau khi tạo (BA 2.8) |
+| `privacy` | enum `PUBLIC` / `CODE_ONLY` / `LOCKED`, NULL ngoài phòng tự tạo (đề xuất) | Phòng tự tạo bắt đầu CODE_ONLY; bật LOCKED cần đủ hai người, giữ khoá khi mất ghế. Ghép ngẫu nhiên/RANKED không cho tham gia bằng mời và không có API đổi riêng tư |
+| `clock_seconds` | int NULL | Phòng tự tạo: 300/600/900 (mặc định 600), NULL = không giới hạn P2; ghép ngẫu nhiên luôn 900; RANKED luôn 600. Không cộng giây |
+| `max_spectators` | smallint | Phòng tự tạo: **0–5 (mặc định 5)** từ P1, không đổi sau khi tạo; ghép ngẫu nhiên/RANKED luôn 0 (BA 2.8) |
 | `status` | enum `WAITING` / `PLAYING` / `FINISHED` / `CLOSED` | |
-| `invite_token` | text | Token trong link/QR; **đổi mới** khi khoá hoặc mở lại (BA 4.3) |
+| `invite_token` | text NULL (đề xuất) | Chỉ phòng tự tạo có token; ghép ngẫu nhiên/RANKED không phát link mời. Token trong link/QR; **đổi mới** khi khoá hoặc mở lại (BA 4.3) |
 | `created_at`, `closed_at` | timestamptz | |
 
-Chỉ mục: `code` (unique, phần chưa đóng), `(privacy, status)` cho danh sách Sảnh. Quy tắc nghiệp vụ: phòng `PUBLIC` ở `WAITING`/`PLAYING` mới hiện ở Sảnh.
+Chỉ mục `code` duy nhất cho mã của phòng tự tạo chưa đóng; chỉ mục phục vụ lọc phòng PUBLIC còn mở ở Sảnh là thiết kế kỹ thuật cần review. Danh sách không gửi mã/token mời hoặc chat riêng.
+
+**Đề xuất thiết kế dữ liệu 05/10, chưa duyệt:** thêm trường `creation_mode` (`MANUAL`/`QUICK_MATCH`/`RANKED`) để phân biệt luồng tạo; giữ `kind` cho loại ván CASUAL/RANKED. Kiểm ràng buộc giữa luồng, giờ, số người xem và khả năng mời như BA 2.0/2.7. Tên enum/cột và cách biểu diễn NULL là đề xuất kỹ thuật; luật nghiệp vụ đã chốt. Chỉ `kind = CASUAL` không đủ quyết định quyền người xem hoặc FINISHED → WAITING.
+
+**P2 Khách — mô hình chưa hoàn tất:** các FK chỉ trỏ `profiles` bên dưới là nền P1. Trước triển khai P2 cần thiết kế định danh ACCOUNT/GUEST/AI cho Host, thành viên, chặn, bên chơi và chat theo [07] §4.2; không tạo profiles giả cho Khách. Đây là phần thiết kế còn phải review, không phải schema P2 đã đủ.
 
 ### 2.4 `room_participants` (P1)
 
@@ -85,9 +93,9 @@ Chỉ mục: `code` (unique, phần chưa đóng), `(privacy, status)` cho danh 
 | `room_id` | uuid FK | PK ghép với `user_id` |
 | `user_id` | uuid FK | |
 | `role` | enum `RED` / `BLACK` / `SPECTATOR` | Ghế đỏ, ghế đen hoặc người xem |
-| `ready` | boolean | Sẵn sàng; **reset về false** khi thành phần người ngồi ghế đổi (BA 2.8) |
+| `ready` | boolean | Sẵn sàng; **reset về false** khi thành phần người ngồi ghế đổi (BA 2.8); reset cả hai khi mất mạng trong đếm bắt đầu ván tự tạo (BA 2.3, PO duyệt 05/10) |
 | `joined_at` | timestamptz | Lúc vào phòng (**không** dùng để lọc chat riêng) |
-| `seat_since` | timestamptz NULL | Lúc người này **bắt đầu ngồi ghế hiện tại** (đặt lại mỗi khi đổi vai trò; NULL nếu là người xem). Dùng cho quyền đọc Kênh Riêng |
+| `seat_since` | timestamptz NULL | Lúc người này **bắt đầu ngồi ghế hiện tại** (đặt lại mỗi khi đổi vai trò; NULL nếu là người xem). Không dùng riêng mốc đổi ghế/màu quân này để lọc Kênh Riêng; quyền chat theo mốc hình thành cặp ở §2.9 |
 | `left_at` | timestamptz NULL | |
 
 Ràng buộc: tại mọi thời điểm mỗi phòng tối đa **1 dòng `RED`**, **1 dòng `BLACK`** chưa rời, và số `SPECTATOR` chưa rời **≤ `rooms.max_spectators`**. Một `user_id` chỉ có **một dòng ngồi ghế chưa rời** trong các phòng (ràng buộc duy nhất cục bộ). Quy tắc "một vị trí chơi" của BA 1.8 còn gồm cả **ván với máy (không có `room_id`)**, nên máy chủ phải dùng thêm **sổ vị trí chơi đang dùng có khoá theo người dùng** ([04](04-kien-truc.md) mục 4.2); cần kiểm thử vào phòng và bắt đầu ván với máy cùng lúc.
@@ -112,7 +120,7 @@ Ràng buộc: tại mọi thời điểm mỗi phòng tối đa **1 dòng `RED`*
 | `clock_seconds` | int NULL | |
 | `status` | enum `ONGOING` / `FINISHED` / `INTERRUPTED` / `ABANDONED` | |
 | `result` | enum `RED_WIN` / `BLACK_WIN` / `DRAW` / `NONE` | `NONE` cho `INTERRUPTED`, `ABANDONED` |
-| `end_reason` | enum | `CHECKMATE`, `STALEMATE`, `RESIGN`, `TIMEOUT`, `DISCONNECT`, `INACTIVITY`, `DRAW_AGREEMENT`, `DRAW_REPETITION`, `DRAW_NO_CAPTURE`, `PERPETUAL_CHECK`, `INTERRUPTED`, `ABANDONED` ([02](02-luat-co-tuong.md) mục 3.3) |
+| `end_reason` | enum | `CHECKMATE`, `STALEMATE`, `RESIGN`, `TIMEOUT`, `DISCONNECT`, `INACTIVITY`, `DRAW_AGREEMENT`, `DRAW_REPETITION`, `DRAW_NO_CAPTURE`, `PERPETUAL_CHECK`, `INTERRUPTED`, `ABANDONED`; đề xuất mã `SESSION_REPLACED` cho xử thua do đăng nhập thiết bị khác ([02](02-luat-co-tuong.md) mục 3.3) |
 | `current_move_id` | uuid NULL | Con trỏ nước đi hiệu lực hiện tại |
 | `version` | int | Tăng mỗi lần trạng thái đổi; dùng làm `matchVersion` |
 | `red_remaining_ms`, `black_remaining_ms` | int NULL | Giá trị chốt tại nước đi gần nhất |
@@ -163,7 +171,9 @@ Chỉ mục: `(match_id, parent_move_id)`, `(match_id, position_key)`. **Đi l�
 | `kind` | enum `TEXT` / `STICKER` | `STICKER` ở P2 (BA 5.1) |
 | `created_at` | timestamptz | |
 
-Xoá khi phòng đóng (BA 5.3): dọn bằng tác vụ định kỳ khi `rooms.status = CLOSED`. Quyền đọc `PLAYERS_PRIVATE`: **chỉ 2 người đang ngồi ghế** và chỉ tin có `created_at ≥` **mốc hình thành cặp ngồi ghế hiện tại**, tức giá trị **lớn hơn** trong hai `room_participants.seat_since` của hai người đang ngồi ghế (PO đã chốt 04/10/2026: đổi cặp thì tin cũ không ai đọc được). Ví dụ: người xem vào 10:00, xuống ghế 10:10 thì **không** đọc được tin riêng 10:00–10:10 (BA 5.3).
+Xoá khi phòng đóng (BA 5.3): dọn bằng tác vụ định kỳ khi `rooms.status = CLOSED`. Quyền đọc `PLAYERS_PRIVATE`: **chỉ 2 người đang ngồi ghế** và chỉ tin có `created_at ≥` **mốc hình thành cặp người chơi hiện tại**, độc lập với mốc đổi màu quân/ghế. **PO chốt P2 05/10:** cùng hai người Đổi bên/Tái đấu trong cùng phòng giữ mốc cặp và chat cũ; thay một người thì đặt mốc cặp mới, cả cặp mới không đọc được chat của cặp cũ. Không lấy giá trị lớn hơn của hai `seat_since` làm mốc chat vì đổi màu quân có thể đặt lại các mốc đó. Ví dụ: người xem vào 10:00, xuống ghế 10:10 thì **không** đọc được tin riêng 10:00–10:10 (BA 5.3).
+
+**Đề xuất biểu diễn kỹ thuật, chưa duyệt:** lưu mốc hình thành cặp riêng với định danh của hai người chơi, không phụ thuộc thứ tự Đỏ/Đen. Tên trường/cách lưu cần review khi triển khai; luật giữ/đổi mốc và quyền đọc ở BA 5.3 đã chốt.
 
 ### 2.10 `friendships` (P1)
 
@@ -203,7 +213,7 @@ Giới hạn: theo BA 5.5, tối đa 200 bạn và 50 lời mời đang chờ **
 
 Cuộc hội thoại gắn với một **cặp bạn bè** (`user_a < user_b`); tin nhắn `body` ≤ 200 ký tự, có `read_at` để tính chưa đọc. Hiện hay ẩn theo trạng thái `friendships` (huỷ kết bạn thì ẩn, kết bạn lại thì hiện, BA 5.5). RLS: chỉ hai người trong cặp đọc/ghi **và chỉ khi** `friendships.status = ACCEPTED` giữa họ; khi huỷ kết bạn thì không còn đọc hay gửi được (dữ liệu giữ nhưng ẩn, hiện lại khi kết bạn lại). Trạng thái đọc của tin đến chỉ cập nhật khi hiển thị trong vùng nhìn ở tab hoạt động theo BA 5.2; cập nhật idempotent và chỉ người nhận được đánh dấu tin của mình đã đọc. Badge đếm tin đến chưa đọc thuộc quan hệ ACCEPTED hiện tại, không xoá read_at khi huỷ bạn.
 
-### 2.13 `ai_games` (P1)
+### 2.13 `ai_games` (cấu trúc bộ nhớ P1; lưu CSDL P2)
 
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
@@ -212,7 +222,7 @@ Cuộc hội thoại gắn với một **cặp bạn bè** (`user_a < user_b`); 
 | `player_side` | enum `RED` / `BLACK` | Kết quả sau khi bốc thăm nếu chọn ngẫu nhiên |
 | `undo_used` | smallint | Số lần đi lại đã dùng (P2) |
 
-Ván với máy ở **P1 không lưu Lịch sử** (BA Phần 11): chỉ giữ trạng thái để **vào lại trong 30 phút** sau mất kết nối (BA 6.3), **lưu trong bộ nhớ máy chủ** theo quyết định ở mục 5; đây không phải hạn tối đa của một ván vẫn đang kết nối. Ở P2 lưu đầy đủ để Lịch sử/Replay.
+Ván với máy ở **P1 không lưu Lịch sử** (BA Phần 11): chỉ giữ trạng thái để **vào lại trong 30 phút** sau mất kết nối (BA 6.3), **lưu trong bộ nhớ máy chủ** theo quyết định ở mục 5; đây không phải hạn tối đa của một ván vẫn đang kết nối. Máy chủ khởi động lại mất trạng thái AI P1: thông báo không thể tiếp tục, về Sảnh/chủ động tạo mới; không có bản ghi bền để giả lập khôi phục. Ở P2 lưu đầy đủ để Lịch sử/Replay.
 
 ---
 
@@ -221,7 +231,7 @@ Ván với máy ở **P1 không lưu Lịch sử** (BA Phần 11): chỉ giữ t
 | Bảng | Đọc | Ghi |
 |---|---|---|
 | `profiles` | Client chỉ đọc trực tiếp cột công khai (`username`, `display_name`); email chính chủ qua máy chủ đã xác thực | Máy chủ ghi; chính chủ yêu cầu đổi `display_name` qua máy chủ để lọc từ cấm; username qua OTP ở P2. Client không ghi trực tiếp (theo [04] mục 3.1) |
-| `rooms` | Người trong phòng; ai cũng đọc được phòng `PUBLIC` ở Sảnh (cột công khai) | Chỉ máy chủ |
+| `rooms` | Qua máy chủ: danh sách PUBLIC chỉ trả dữ liệu công khai; chi tiết phòng theo quyền tham gia. CODE_ONLY/LOCKED không hiện ở Sảnh | Chỉ máy chủ |
 | `room_participants`, `room_blocks` | Người trong phòng | Chỉ máy chủ |
 | `matches`, `match_moves` | Hai người chơi của ván; người xem đang ở phòng thấy ván đang diễn ra | Chỉ máy chủ |
 | `chat_messages` | Theo kênh và thời điểm (mục 2.9) | Chỉ máy chủ (sau lọc từ cấm) |
@@ -234,13 +244,13 @@ Nguyên tắc: **mọi ghi vào bảng trạng thái ván/phòng đi qua máy ch
 ## 4. Dữ liệu tạm và vòng đời
 
 ### 4.1 Khách (P2)
-Danh tính Khách (tên hiển thị tạm, mã phiên) chỉ nằm trong bộ nhớ/phiên. Phiên hết sau 12 giờ hoặc khi **Đăng xuất**; nếu đến hạn trong lúc đang ngồi ghế/đang đấu thì gia hạn tới khi rời. **Rời phòng trước hạn không kết thúc phiên**: Khách về Sảnh vẫn cùng danh tính (BA 1.3). Khi phiên thực sự hết, bản ghi ván giữ cho đối thủ chính thức với tên chung "Khách"; đồng thời máy chủ xoá `chat_messages` do Khách đó gửi và tên hiển thị cá nhân ở mọi phòng còn mở (không chờ phòng `CLOSED`) (đề xuất 04/10/2026, chờ PO duyệt).
+Danh tính Khách (tên hiển thị tạm, mã phiên) chỉ nằm trong bộ nhớ/phiên. Phiên hết sau 12 giờ hoặc khi **Đăng xuất**; nếu đến hạn trong lúc đang ngồi ghế/đang đấu thì gia hạn tới khi rời. **Rời phòng trước hạn không kết thúc phiên**: Khách về Sảnh vẫn cùng danh tính (BA 1.3). Khi phiên thực sự hết, bản ghi ván giữ cho đối thủ chính thức với tên chung "Khách"; đồng thời máy chủ xoá `chat_messages` do Khách đó gửi và tên hiển thị cá nhân ở mọi phòng còn mở (không chờ phòng `CLOSED`) (luật xoá dữ liệu cá nhân đã chốt ở BA 1.3; chi tiết triển khai cần review).
 
 ### 4.2 Trong bộ nhớ máy chủ (không lưu cơ sở dữ liệu)
-Hàng đợi ghép trận (P2, mất khi khởi động lại, BA 7.2), bộ đếm đồng hồ đang chạy, đề nghị đang chờ (xin hoà/đi lại/đổi bên), lời mời bạn bè 30 giây, trạng thái kết nối. **Khi máy chủ khởi động lại:** các ván `ONGOING` được chuyển `INTERRUPTED` lúc khởi động (BA 8.3), phòng đang `PLAYING` được đưa về `FINISHED` với ván `INTERRUPTED` (người chơi kết nối lại thấy kết quả trung tính "Ván bị gián đoạn"), rồi theo luật `FINISHED` thông thường: CASUAL tối đa 10 phút thì `CLOSED`; RANKED theo BA 7.2. Không đóng phòng ngay lúc khởi động (đề xuất 04/10/2026, chờ PO duyệt).
+Hàng đợi ghép trận (P2, mất khi khởi động lại, BA 7.2), bộ đếm đồng hồ đang chạy, đề nghị đang chờ (xin hoà/đi lại/đổi bên), lời mời bạn bè 30 giây, trạng thái kết nối. **Khi máy chủ khởi động lại:** các ván online `ONGOING` đã lưu được chuyển `INTERRUPTED` lúc khởi động (BA 8.3), phòng đang `PLAYING` được đưa về `FINISHED` với ván `INTERRUPTED` (người chơi kết nối lại thấy kết quả trung tính "Ván bị gián đoạn"), rồi theo luật `FINISHED` thông thường: phòng tự tạo theo BA 2.3, ghép ngẫu nhiên theo BA 2.0, RANKED theo BA 7.2. Ván INTERRUPTED chỉ hiện kết quả trung tính và Rời phòng, không tự Tái đấu sau khởi động lại (BA 10.1 đã chốt).
 
 ### 4.3 Dọn dẹp
-* Phiên Khách hết → xoá `chat_messages` do Khách đó gửi ở phòng còn mở (P2) (đề xuất 04/10/2026, chờ PO duyệt).
+* Phiên Khách hết → xoá `chat_messages` do Khách đó gửi ở phòng còn mở (P2, theo BA 1.3; chi tiết triển khai cần review).
 * Phòng `CLOSED` → xoá `chat_messages` của phòng đó; giữ `matches`/`match_moves` theo quy tắc từng chế độ.
 * `command_receipts` > 24 giờ → xoá.
 * Lời mời kết bạn hết hạn 30 ngày → xoá (**không** xoá `friend_declines`).
