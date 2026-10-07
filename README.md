@@ -74,7 +74,6 @@ Phạm vi đã chốt trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (27 h
 
 ```
 .
-├── AGENTS.md                      Luật làm việc cho người và AI agent
 ├── BA-SCOPE-DECISIONS.md          Quyết định chốt phạm vi sản phẩm (nguồn luật chính)
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   Danh mục 37 thành phần giao diện và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
@@ -127,7 +126,6 @@ Ngày 03/10/2026 Product Owner đã duyệt toàn bộ quyết định Giai đo�
 - Commit: `<loại>(<phạm vi>): <mô tả>`, loại gồm `feat`, `fix`, `test`, `docs`, `chore`, `refactor`.
 - Khi Jira đã được tạo (Giai đoạn 3), thêm Key `[XIAN-<số>]` vào tên nhánh, commit và tiêu đề PR.
 
-Chi tiết: [AGENTS.md §5](AGENTS.md).
 
 ## Tài liệu
 
@@ -139,7 +137,6 @@ Chi tiết: [AGENTS.md §5](AGENTS.md).
 | Danh mục màn hình, 5 trạng thái | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
 | Màu, chữ, thành phần, bàn cờ | [DESIGN.md](DESIGN.md) |
 | Mockup | [mockups/index.html](mockups/index.html) |
-| Luật làm việc cho người và AI agent | [AGENTS.md](AGENTS.md) |
 
 ## Bảo mật
 
