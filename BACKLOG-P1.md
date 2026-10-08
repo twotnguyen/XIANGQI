@@ -28,8 +28,8 @@
 
 | Ký hiệu | Ý nghĩa | Lên Jira thành |
 |---|---|---|
-| `EP-xx` | Epic. EP-01 → EP-08 = yêu cầu YC1 → YC8 của khách hàng; EP-00 = nền tảng | Epic; **phần việc BA**, xong 07–08/10 |
-| `US-xx.y` | User Story (xx = số Epic) | Story; AC dán vào Description. **Story là phần việc BA**: Done khi đặc tả + AC được PO duyệt (07–08/10, Sprint 0) |
+| `EP-xx` | Epic. EP-01 → EP-08 = yêu cầu YC1 → YC8 của khách hàng; EP-00 = nền tảng | Epic; **phần việc BA**, bắt đầu 07/10, xong khi Story muộn nhất của nó xong |
+| `US-xx.y` | User Story (xx = số Epic) | Story; AC dán vào Description. **Story là phần việc BA**: Done khi đặc tả + AC được PO duyệt; bắt đầu 07/10, hạn = ngày Task đầu tiên của Story bắt đầu (ngoại lệ US-08.3, US-00.5: hạn = Task cuối, vì AC chờ kết quả đo GATE-ENGINE/GATE-REALTIME); không đặt vào Sprint (quy tắc R1, KE-HOACH-JIRA.md mục 4) |
 | `AC-xx.y.z` | Tiêu chí nghiệm thu dạng **Given / When / Then** | Checklist trong Story |
 | `TC-xx.y.z` | Ca kiểm thử **1-1** với AC cùng số | Tester viết bước chi tiết trong Task kiểm thử |
 | `Txx` | Task: việc thi công của một người (4–32 giờ) | **Task** (cha là Epic, liên kết *relates to* tới Story), có Sprint, người làm, hạn riêng |
@@ -716,7 +716,7 @@ Mọi Story tính năng ─> US-00.5 (nghiệm thu tổng, đóng gói, demo)
 
 | Sprint | Thời gian | Story được **thi công** (bằng Task) | Increment / Release |
 |---|---|---|---|
-| S0 | 07–08/10 | BA đặc tả toàn bộ 9 Epic, 27 Story theo thứ tự EP-00 → EP-08; PO duyệt; lập kế hoạch Task | Backlog được PO duyệt (Epic/Story Done) |
+| Đặc tả (ngoài Sprint) | 07/10 → hạn từng Story | BA đặc tả 9 Epic, 27 Story; Story nào có Task sớm thì duyệt trước (quy tắc R1) | Story được PO duyệt trước khi Task đầu tiên của nó bắt đầu |
 | S1 | 08–14/10 | US-00.1, US-00.2, US-00.3, US-00.4, US-01.1, US-01.2, US-04.1, US-04.2 | **v0.1 · Nền tảng kỹ thuật, đăng ký/đăng nhập thật, bàn cờ đúng luật trên một máy** |
 | S2 | 15–21/10 | US-02.1, US-03.1, US-04.3, US-05.1, US-08.2 | **v0.2 · Tạo phòng, vào bằng link/mã, hai người đánh trọn ván online có đồng hồ; máy cờ chạy được** |
 | S3 | 22–28/10 | US-01.3, US-02.2, US-03.2, US-05.2, US-07.1, US-07.2, US-08.1 | **v0.3 · Google/Khách, Xin đổi bên và ở lại phòng, đầu hàng/xin hoà, bạn bè và mời online, chat, camera/mic, đánh với máy** |

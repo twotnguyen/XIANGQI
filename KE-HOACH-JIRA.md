@@ -1,8 +1,8 @@
 # KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)
 
 > **Phiên bản:** 1.0 · **Ngày lập:** 07/10/2026 · **Nguồn yêu cầu:** [BACKLOG-P1.md](BACKLOG-P1.md) (Story, AC) và [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (luật).
-> **Tệp nhập Jira:** [`jira/xian-import.csv`](jira/xian-import.csv) — Epic, Story (phần việc BA, xong 07–08/10) và Task (phần việc thi công) kèm người làm, giờ, Sprint, ngày bắt đầu/kết thúc.
-> **Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là **sản phẩm của BA** — xong khi đã đặc tả và PO duyệt (07/10 → 08/10, Sprint 0). Task là **việc thi công** do đội chia, có Sprint, người làm và hạn riêng. Nghiệm thu chức năng của từng Story nằm ở Task kiểm thử của Story đó.
+> **Tệp nhập Jira:** [`jira/xian-import.csv`](jira/xian-import.csv) — Epic, Story (phần việc BA, có hạn riêng theo quy tắc R1) và Task (phần việc thi công) kèm người làm, giờ, Sprint, ngày bắt đầu/kết thúc.
+> **Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là **sản phẩm của BA** — bắt đầu 07/10 (ngày BA bắt đầu đặc tả), xong khi đặc tả và AC được PO duyệt; hạn xong theo **quy tắc R1** ở mục 4. Task là **việc thi công** do đội chia, có Sprint, người làm và hạn riêng. Nghiệm thu chức năng của từng Story nằm ở Task kiểm thử của Story đó.
 > **Lịch được kiểm bằng máy:** script lập lịch kiểm tự động mọi ràng buộc ở mục 1; mọi ngày giờ dưới đây là kết quả đã qua kiểm tra.
 
 ## Mục lục
@@ -26,7 +26,7 @@
 | 2 | Task B cần kết quả Task A thì **B chỉ bắt đầu khi A xong**, không chạy song song | Đạt: 169 quan hệ phụ thuộc đều đúng thứ tự |
 | 3 | Trong lúc chờ, người rảnh nhận Task **không liên quan** đến Task đang chờ | Đạt: lịch xếp tự động theo phụ thuộc |
 | 4 | Tối đa 7 Task song song, mỗi Task một người; **càng ít Task song song càng tốt** | **Tối đa 5 Task song song** (thấp nhất có thể để kịp hạn 05/11, đã chứng minh bằng bộ giải), trung bình 4.0 |
-| 5 | Epic và Story (việc BA) xong **trước** Task đầu tiên; không có Epic/Story nào chạy song song với giai đoạn thi công | Đạt: 9 Epic và 27 Story xong 07–08/10, Task đầu tiên bắt đầu 08/10 |
+| 5 | Story (việc BA) xong **chậm nhất** ở Task cuối cùng của nó; mặc định xong trước khi Task đầu tiên của Story bắt đầu (quy tắc R1) | Đạt: 25/27 Story có hạn = ngày Task đầu tiên; 2 ngoại lệ (US-08.3, US-00.5) có hạn = ngày Task cuối; Epic xong theo Story muộn nhất |
 | 5b | Các Task cùng một Story được xếp gọn trong một Sprint để Sprint Goal rõ ràng | Đạt |
 | 6 | Người kiểm thử không kiểm Story do chính mình làm | Đạt |
 | 7 | Tình nhận phần khó và quan trọng, làm nhiều giờ nhất; phần còn lại chia đều, đúng chuyên môn | Tình 212 giờ; 6 người còn lại 100–124 giờ |
@@ -40,10 +40,10 @@
 
 | Loại Jira | Số lượng | Ghi chú |
 |---|---|---|
-| Epic | 9 | EP-00 Nền tảng + EP-01 → EP-08 khớp 8 yêu cầu khách hàng (YC1 → YC8); việc BA, xong 07–08/10 |
-| Story | 27 | Mỗi Story có AC Given/When/Then trong BACKLOG-P1.md; việc BA, xong 07–08/10, nằm trong Sprint 0 |
+| Epic | 9 | EP-00 Nền tảng + EP-01 → EP-08 khớp 8 yêu cầu khách hàng (YC1 → YC8); việc BA, bắt đầu 07/10, xong theo Story muộn nhất (mục 4) |
+| Story | 27 | Mỗi Story có AC Given/When/Then trong BACKLOG-P1.md; việc BA, bắt đầu 07/10, hạn theo quy tắc R1, **không thuộc Sprint** (nằm ở backlog) |
 | Task (loại Task, cha là Epic, liên kết tới Story) | 71 | 20 Task kiểm thử + 51 Task phát triển/kỹ thuật |
-| Sprint | 5 | Sprint 0 (07–08/10): BA đặc tả Epic/Story, PO duyệt, lập kế hoạch. Sprint 1–4: mỗi Sprint 7 ngày, chứa Task |
+| Sprint | 4 | Sprint 1–4, mỗi Sprint 7 ngày, chỉ chứa Task. Epic/Story không đặt vào Sprint |
 | Release (Fix version) | 4 | v0.1, v0.2, v0.3, v1.0 |
 | Tổng giờ kế hoạch | 892 | Trên khả năng 7 người × 8 giờ × 28 ngày = 1.568 giờ |
 
@@ -67,21 +67,27 @@
 
 ## 4. Sprint
 
-### XIAN Sprint 0 · 07/10 – 08/10 · Đặc tả và lập kế hoạch
+### Ngày của Epic và Story (việc BA) — quy tắc R1
 
-**Sprint Goal:** BA hoàn tất 9 Epic và 27 Story (AC Given/When/Then), PO duyệt; lập kế hoạch Task. Epic/Story được đặc tả theo thứ tự EP-00 → EP-08.
+- **Bắt đầu** của mọi Epic/Story = **07/10**, ngày BA bắt đầu đặc tả.
+- **Kết thúc mặc định của Story** = ngày Task đầu tiên của Story đó bắt đầu: đội chỉ kéo Task vào làm khi Story đã được PO duyệt (Definition of Ready).
+- **Ngoại lệ:** Story có AC phụ thuộc kết quả đo kỹ thuật thì kéo dài tới **Task cuối cùng** của nó: US-08.3 (GATE-ENGINE: cấp Khó phải đo thời gian nghĩ trên máy demo mới chốt được AC); US-00.5 (GATE-REALTIME: ngưỡng NFR chỉ chốt được sau khi đo tải thật).
+- **Kết thúc của Epic** = ngày kết thúc muộn nhất trong các Story của nó.
+- Trên Jira, Epic/Story nhập với trạng thái **To Do**; BA chuyển sang **Done** khi PO duyệt, không muộn hơn hạn dưới đây. Story không đặt vào Sprint nào.
 
-| Epic | Story | Bắt đầu → Xong (việc BA) |
-|---|---|---|
-| EP-00 Nền tảng kỹ thuật và chất lượng | US-00.1, US-00.2, US-00.3, US-00.4, US-00.5 | 07/10 → 08/10 |
-| EP-01 Đăng ký và đăng nhập | US-01.1, US-01.2, US-01.3, US-01.4 | 07/10 → 08/10 |
-| EP-02 Tạo phòng | US-02.1, US-02.2 | 07/10 → 08/10 |
-| EP-03 Mời vào phòng | US-03.1, US-03.2 | 07/10 → 08/10 |
-| EP-04 Khởi tạo bàn cờ | US-04.1, US-04.2, US-04.3 | 07/10 → 08/10 |
-| EP-05 Hai người đánh cờ online | US-05.1, US-05.2, US-05.3 | 07/10 → 08/10 |
-| EP-06 Chế độ phòng và người xem | US-06.1, US-06.2, US-06.3 | 07/10 → 08/10 |
-| EP-07 Chat, camera và mic | US-07.1, US-07.2 | 07/10 → 08/10 |
-| EP-08 Đánh với máy theo cấp độ | US-08.1, US-08.2, US-08.3 | 07/10 → 08/10 |
+| Epic | Bắt đầu | Hạn xong | Story (hạn xong · Task đầu → Task cuối) |
+|---|---|---|---|
+| EP-04 Khởi tạo bàn cờ | 07/10 | **15/10** | US-04.1 **09/10** · 09/10 → 11/10<br>US-04.2 **11/10** · 11/10 → 13/10<br>US-04.3 **15/10** · 15/10 → 20/10 |
+| EP-03 Mời vào phòng | 07/10 | **22/10** | US-03.1 **18/10** · 18/10 → 21/10<br>US-03.2 **22/10** · 22/10 → 28/10 |
+| EP-07 Chat, camera và mic | 07/10 | **24/10** | US-07.2 **22/10** · 22/10 → 27/10<br>US-07.1 **24/10** · 24/10 → 28/10 |
+| EP-02 Tạo phòng | 07/10 | **26/10** | US-02.1 **15/10** · 15/10 → 21/10<br>US-02.2 **26/10** · 26/10 → 28/10 |
+| EP-05 Hai người đánh cờ online | 07/10 | **29/10** | US-05.1 **15/10** · 15/10 → 21/10<br>US-05.2 **22/10** · 22/10 → 25/10<br>US-05.3 **29/10** · 29/10 → 01/11 |
+| EP-06 Chế độ phòng và người xem | 07/10 | **29/10** | US-06.1 **29/10** · 29/10 → 01/11<br>US-06.2 **29/10** · 29/10 → 03/11<br>US-06.3 **29/10** · 29/10 → 02/11 |
+| EP-01 Đăng ký và đăng nhập | 07/10 | **30/10** | US-01.1 **09/10** · 09/10 → 12/10<br>US-01.2 **11/10** · 11/10 → 14/10<br>US-01.3 **23/10** · 23/10 → 28/10<br>US-01.4 **30/10** · 30/10 → 03/11 |
+| EP-08 Đánh với máy theo cấp độ | 07/10 | **03/11** | US-08.2 **18/10** · 18/10 → 21/10<br>US-08.1 **22/10** · 22/10 → 26/10<br>US-08.3 **03/11** ⚠ · 31/10 → 03/11 |
+| EP-00 Nền tảng kỹ thuật và chất lượng | 07/10 | **04/11** | US-00.1 **08/10** · 08/10 → 10/10<br>US-00.4 **08/10** · 08/10 → 11/10<br>US-00.3 **12/10** · 12/10 → 14/10<br>US-00.2 **13/10** · 13/10 → 14/10<br>US-00.5 **04/11** ⚠ · 29/10 → 04/11 |
+
+⚠ = ngoại lệ, hạn xong là ngày Task cuối cùng.
 
 Sprint 1–4 bên dưới chứa **Task**. Cột "Story" chỉ để biết Task thực hiện Story nào.
 
@@ -1263,12 +1269,12 @@ Mỗi mục dưới đây là **Description** dán vào Jira (đã có sẵn tro
 ## 9. Cách nhập lên Jira
 
 1. **Xoá 98 mục cũ** trên XIAN (BA Phần 0 mục 0.1): lọc `project = XIAN`, Bulk change → Delete.
-2. **Tạo 5 Sprint** trên board với đúng tên `XIAN Sprint 0` … `XIAN Sprint 4` và ngày ở mục 4; tạo 4 **Fix version** `v0.1`, `v0.2`, `v0.3`, `v1.0`.
+2. **Tạo 4 Sprint** trên board với đúng tên `XIAN Sprint 1` … `XIAN Sprint 4` và ngày ở mục 4; tạo 4 **Fix version** `v0.1`, `v0.2`, `v0.3`, `v1.0`.
 3. **Mời đủ 7 thành viên** vào dự án; sửa cột `Assignee` trong CSV thành email Atlassian của từng người (CSV đang để tên tiếng Việt để dễ đọc).
 4. Jira → **Settings → System → External system import → CSV** (hoặc *Import issues* trong dự án), chọn `jira/xian-import.csv`, mã hoá UTF-8, định dạng ngày `dd/MM/yyyy`.
 5. Ghép cột: `Issue Id` → Issue Id · `Parent Id` → Parent Id · `Issue Type` · `Summary` · `Description` · `Assignee` · `Sprint` · `Fix Version` · `Original Estimate` (giây) · `Start date` · `Due date` · `Labels` (2 cột) · `Priority` · `Status` · cột `Story` → liên kết *relates to* · các cột `Blocked by` → liên kết *is blocked by* (giá trị là `Issue Id` của dòng tương ứng trong CSV).
 6. Sau khi nhập: kiểm tra Story và Task nằm dưới đúng Epic (cột `Parent Id`), mỗi Task có liên kết *relates to* tới Story của nó. Nếu Jira của nhóm không nhận Epic qua `Parent Id`, chọn các mục rồi Bulk change → Parent.
-6b. Epic và Story được nhập với `Status` = **Done** (đặc tả xong). Nếu quy trình Jira không cho nhập trạng thái, kéo chúng sang Done sau khi nhập. Task để **To Do**.
-7. Nếu cột `Sprint` không tự gán (tuỳ cấu hình Jira), lọc theo nhãn `sprint-0` … `sprint-4` rồi Bulk change → Sprint.
+6b. Epic, Story và Task đều nhập với `Status` = **To Do**. Epic/Story **không có Sprint** (nằm ở backlog), chỉ có `Start date` 07/10 và `Due date` theo quy tắc R1 (mục 4). BA chuyển Story sang **Done** khi PO duyệt đặc tả, không muộn hơn `Due date`; Epic sang Done khi Story cuối cùng của nó Done.
+7. Nếu cột `Sprint` không tự gán (tuỳ cấu hình Jira), lọc theo nhãn `sprint-1` … `sprint-4` rồi Bulk change → Sprint.
 
 > Nguồn hướng dẫn CSV: tài liệu Atlassian "Importing data from CSV" (thời gian ước lượng tính bằng **giây**; quan hệ cha–con tạo bằng `Issue Id`/`Parent Id`).

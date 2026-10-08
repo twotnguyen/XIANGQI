@@ -27,7 +27,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ### 0.1 Lịch, nguồn lực và Jira
 * **Hạn cuối: 05/11/2026** (nộp + demo). Thay toàn bộ lịch cũ (hạn 17–18/10, 4 Sprint 04/10–17/10) ở Quyết định 10.1 và README.
-* **Sprint:** Sprint 0 = 07/10 (chốt tài liệu, dựng Jira, chuẩn bị môi trường) · **S1 08–14/10 · S2 15–21/10 · S3 22–28/10 · S4 29/10–04/11** · 05/11 nộp và demo. Làm cả cuối tuần.
+* **Sprint:** 07/10 = ngày chuẩn bị (chốt tài liệu, dựng Jira, chuẩn bị môi trường; không tạo Sprint trên Jira) · **S1 08–14/10 · S2 15–21/10 · S3 22–28/10 · S4 29/10–04/11** · 05/11 nộp và demo. Làm cả cuối tuần.
 * **Công suất lập kế hoạch:** 8 giờ/người/ngày; phần 8 → 12 giờ là **dự phòng**, không đưa vào kế hoạch gốc.
 * **Nhóm 7 người:**
 
@@ -42,7 +42,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | Thư | Tester | Phụ trách kiểm thử chính |
 
 * **Nguyên tắc phân công:** phần còn lại chia đều, đúng chuyên môn; 1–2 người được kiêm thêm vai trò khi một mảng quá tải (ví dụ Kỳ hoặc Nhạn kiểm thử cùng Thư). Bảng phân công chi tiết nằm trong kế hoạch Jira.
-* **Jira XIAN:** xoá 98 mục cũ, **lập lại từ đầu** theo [BACKLOG-P1.md](BACKLOG-P1.md). **Jira chỉ chứa việc phát triển** (gồm cả kiểm thử, cấu hình, triển khai); không đưa hoạt động quản lý dự án (họp, báo cáo) vào Jira. P1 chi tiết tới Story/Task; P2 chỉ ở mức Epic. **Cấu trúc chốt 07/10:** 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 Story; Epic và Story là phần việc BA, xong khi đặc tả được PO duyệt (07–08/10, Sprint 0) — theo hướng dẫn của giảng viên, Epic/Story có thể xong trước các Task bên trong; Task là loại Task thường (cha là Epic, liên kết tới Story) có Sprint, người làm và hạn riêng; mỗi người một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, hạn chế tối đa số Task chạy song song (tối đa 7, mỗi Task một người). Kế hoạch: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
+* **Jira XIAN:** xoá 98 mục cũ, **lập lại từ đầu** theo [BACKLOG-P1.md](BACKLOG-P1.md). **Jira chỉ chứa việc phát triển** (gồm cả kiểm thử, cấu hình, triển khai); không đưa hoạt động quản lý dự án (họp, báo cáo) vào Jira. P1 chi tiết tới Story/Task; P2 chỉ ở mức Epic. **Cấu trúc chốt 07/10:** 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 Story; Epic và Story là phần việc BA, xong khi đặc tả được PO duyệt — theo hướng dẫn của giảng viên, Epic/Story có thể xong trước các Task bên trong, chậm nhất ở Task cuối cùng. **Quy tắc R1:** mọi Epic/Story bắt đầu 07/10; Story xong trước khi Task đầu tiên của nó bắt đầu, ngoại lệ US-08.3 (GATE-ENGINE) và US-00.5 (GATE-REALTIME) xong ở Task cuối; Epic xong theo Story muộn nhất; Epic/Story không đặt vào Sprint, nhập Jira ở trạng thái To Do; Task là loại Task thường (cha là Epic, liên kết tới Story) có Sprint, người làm và hạn riêng; mỗi người một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, hạn chế tối đa số Task chạy song song (tối đa 7, mỗi Task một người). Kế hoạch: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
 
 ### 0.2 Đăng nhập và đăng ký (P1)
 * **Ba cách vào ứng dụng ở `SCR-LOGIN`:** (1) Username + Mật khẩu; (2) Đăng nhập bằng Google; (3) **Khách** (xem 0.3).

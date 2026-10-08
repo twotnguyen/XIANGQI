@@ -1,31 +1,31 @@
 ﻿Issue Id,Parent Id,Issue Type,Summary,Description,Assignee,Sprint,Fix Version,Original Estimate,Start date,Due date,Labels,Labels,Priority,Status,Story,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by,Blocked by
 1,,Epic,EP-00 · Nền tảng kỹ thuật và chất lượng,"Việc kỹ thuật và kiểm thử chung mà 8 yêu cầu cùng dựa vào: khung dự án, CI, cơ sở dữ liệu, khung realtime, kế hoạch kiểm thử, nghiệm thu tổng và đóng gói demo.
 
-Yêu cầu khách hàng: Hỗ trợ tất cả. Story: US-00.1, US-00.2, US-00.3, US-00.4, US-00.5.",,,v1.0,,07/10/2026,08/10/2026,EP-00,dac-ta,High,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: Hỗ trợ tất cả. Story: US-00.1, US-00.2, US-00.3, US-00.4, US-00.5.",,,v1.0,,07/10/2026,04/11/2026,EP-00,dac-ta,High,To Do,,,,,,,,,,,,,,,,
 2,,Epic,EP-01 · Đăng ký và đăng nhập,"Đăng ký bằng username + mật khẩu + OTP email hoặc Google; đăng nhập bằng username + mật khẩu (khoá thử sai), Google hoặc Khách; quản lý phiên và hồ sơ.
 
-Yêu cầu khách hàng: YC1. Story: US-01.1, US-01.2, US-01.3, US-01.4.",,,v1.0,,07/10/2026,08/10/2026,EP-01,dac-ta,Medium,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC1. Story: US-01.1, US-01.2, US-01.3, US-01.4.",,,v1.0,,07/10/2026,30/10/2026,EP-01,dac-ta,Medium,To Do,,,,,,,,,,,,,,,,
 3,,Epic,EP-02 · Tạo phòng,"Tạo phòng, ghế Đỏ/Đen, Đổi ghế/Xin đổi bên, Sẵn sàng và đếm ngược, chuyển Host, ở lại phòng sau ván.
 
-Yêu cầu khách hàng: YC2. Story: US-02.1, US-02.2.",,,v0.3,,07/10/2026,08/10/2026,EP-02,dac-ta,Medium,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC2. Story: US-02.1, US-02.2.",,,v0.3,,07/10/2026,26/10/2026,EP-02,dac-ta,Medium,To Do,,,,,,,,,,,,,,,,
 4,,Epic,EP-03 · Mời vào phòng,"Mời bằng link/mã 8 ký tự cho người chưa kết bạn; kết bạn và mời bạn đang online ngay trong game.
 
-Yêu cầu khách hàng: YC3. Story: US-03.1, US-03.2.",,,v0.3,,07/10/2026,08/10/2026,EP-03,dac-ta,Medium,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC3. Story: US-03.1, US-03.2.",,,v0.3,,07/10/2026,22/10/2026,EP-03,dac-ta,Medium,To Do,,,,,,,,,,,,,,,,
 5,,Epic,EP-04 · Khởi tạo bàn cờ,"Lõi luật cờ dùng chung, bàn cờ SVG quân chữ Hán, đi cờ bằng click/kéo thả, âm thanh.
 
-Yêu cầu khách hàng: YC4. Story: US-04.1, US-04.2, US-04.3.",,,v0.2,,07/10/2026,08/10/2026,EP-04,dac-ta,High,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC4. Story: US-04.1, US-04.2, US-04.3.",,,v0.2,,07/10/2026,15/10/2026,EP-04,dac-ta,High,To Do,,,,,,,,,,,,,,,,
 6,,Epic,EP-05 · Hai người đánh cờ online,"Máy chủ phân xử nước đi, đồng hồ, kết thúc ván, đầu hàng, xin hoà, mất kết nối và nối lại.
 
-Yêu cầu khách hàng: YC5. Story: US-05.1, US-05.2, US-05.3.",,,v1.0,,07/10/2026,08/10/2026,EP-05,dac-ta,High,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC5. Story: US-05.1, US-05.2, US-05.3.",,,v1.0,,07/10/2026,29/10/2026,EP-05,dac-ta,High,To Do,,,,,,,,,,,,,,,,
 7,,Epic,EP-06 · Chế độ phòng và người xem,"PUBLIC / CODE_ONLY / LOCKED, danh sách phòng ở Sảnh, tối đa 5 người xem (7 người/phòng), đuổi người xem.
 
-Yêu cầu khách hàng: YC6. Story: US-06.1, US-06.2, US-06.3.",,,v1.0,,07/10/2026,08/10/2026,EP-06,dac-ta,Medium,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC6. Story: US-06.1, US-06.2, US-06.3.",,,v1.0,,07/10/2026,29/10/2026,EP-06,dac-ta,Medium,To Do,,,,,,,,,,,,,,,,
 8,,Epic,"EP-07 · Chat, camera và mic","Kênh Riêng cho hai người chơi, Kênh Chung cho người xem, bộ lọc từ cấm; camera/mic qua LiveKit với ba mức chia sẻ.
 
-Yêu cầu khách hàng: YC7. Story: US-07.1, US-07.2.",,,v0.3,,07/10/2026,08/10/2026,EP-07,dac-ta,Medium,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC7. Story: US-07.1, US-07.2.",,,v0.3,,07/10/2026,24/10/2026,EP-07,dac-ta,Medium,To Do,,,,,,,,,,,,,,,,
 9,,Epic,EP-08 · Đánh với máy theo cấp độ,"Máy cờ ba cấp Dễ/Trung bình/Khó, chọn phe, Ván mới, ổn định ván với máy.
 
-Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.",,,v1.0,,07/10/2026,08/10/2026,EP-08,dac-ta,Medium,Done,,,,,,,,,,,,,,,,
+Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.",,,v1.0,,07/10/2026,03/11/2026,EP-08,dac-ta,Medium,To Do,,,,,,,,,,,,,,,,
 10,1,Story,"US-00.1 · Khung dự án, CI và nhật ký vận hành","*Là* nhóm phát triển, *tôi muốn* một monorepo có sẵn khung ứng dụng, CI, nhật ký và điểm kiểm tra sức khoẻ, *để* mọi người code trên cùng một nền và tìm lỗi nhanh.
 *Nguồn:* README (Công nghệ, Quy trình Git), BA 10.1. *Ghi chú:* cấu trúc gợi ý {{apps/web}} (React + Vite), {{apps/server}} (NestJS + Socket.IO), {{packages/xiangqi-core}} (luật cờ dùng chung), {{packages/shared}} (kiểu dữ liệu, hằng số), {{packages/engine}} (máy cờ).
 *Nguồn:* BA 10.1 (NFR-08, NFR-09).
@@ -39,7 +39,7 @@ Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.",,,v1.0,,07/10/2
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; *không* chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-00,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 08/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,08/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,
 11,1,Story,US-00.2 · Cơ sở dữ liệu và phân quyền P1,"*Là* nhóm phát triển, *tôi muốn* lược đồ dữ liệu P1 có migration và RLS, *để* dữ liệu nhất quán và client không ghi trái phép.
 *Nguồn:* BA 1.x, 2.x, 4.2, 5.5, 10.1 (dữ liệu cá nhân). *Ghi chú:* tối thiểu {{profiles}}, {{friendships}}/{{friend_requests}}, {{rooms}}, {{room_blocks}}, {{matches}}, {{match_moves}}, {{login_attempts}}; tên bảng do nhóm chốt.
 *Sprint:* S1.
@@ -49,7 +49,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-00.2.2 | Người dùng đăng nhập bằng khoá công khai ở client | Đọc/ghi dữ liệu người khác hoặc bảng ván/phòng | Bị RLS từ chối; chỉ máy chủ (khoá service) ghi được dữ liệu ván, phòng, kết quả | I |
 | AC-00.2.3 | Username lưu theo chữ người dùng gõ | Kiểm tra trùng | Ràng buộc duy nhất so sánh theo chữ thường ({{Twot}} = {{twot}}) | U |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-00,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 13/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,13/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,
 12,1,Story,US-00.3 · Khung realtime,"*Là* nhóm phát triển, *tôi muốn* cổng Socket.IO có xác thực, lệnh chống trùng và đồng bộ lại khi nối lại, *để* phòng, ván và chat dùng chung một cách.
 *Nguồn:* BA 3.3 mục 1, 8.3, 1.8 (nhiều tab).
 *Hợp đồng sự kiện:* Task của Story này công bố kiểu dữ liệu sự kiện phòng/ván trong {{packages/shared}} để Story phòng và Story ván làm độc lập với nhau.
@@ -62,7 +62,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-00.3.4 | Client mất kết nối rồi nối lại | Kết nối thành công | Nhận ảnh chụp đầy đủ (phòng, ván, đồng hồ, vai trò) và giao diện khớp máy chủ | I |
 | AC-00.3.5 | Cùng tài khoản mở tab thứ hai vào cùng phòng | Tab mới kết nối | Tab mới tiếp quản; tab cũ nhận *""Phiên này đã được mở ở tab khác""* và chỉ đọc; tab cũ tự nối lại vẫn chỉ đọc | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-00,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 12/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,12/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,
 13,1,Story,US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm,"*Là* nhóm, *tôi muốn* có kế hoạch kiểm thử và kiểm chứng sớm rủi ro media, *để* nghiệm thu có bằng chứng và phát hiện sớm điểm không khả thi.
 *Kèm:* spike GATE-MEDIA (LiveKit Cloud) ở Sprint 1.
 *Sprint:* S1.
@@ -72,7 +72,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-00.4.2 | Mỗi AC | Viết TC | TC cùng số có tiền điều kiện, bước, kết quả mong đợi; truy vết 100% AC | M |
 | AC-00.4.3 | Cuối mỗi Sprint | Chạy hồi quy | Báo cáo PASS/FAIL/BLOCKED theo TC, lỗi mở được ghi Jira | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-00,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 08/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,08/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,
 14,1,Story,"US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo","*Là* PO, *tôi muốn* đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, *để* chứng minh 8 yêu cầu cốt lõi với khách hàng.
 *Sprint:* S4.
 
@@ -84,7 +84,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-00.5.5 | Máy sạch, có Node + pnpm, có file {{.env}} được cấp | Làm theo README | Chạy được toàn bộ ứng dụng trong ≤ 15 phút | M |
 | AC-00.5.6 | Trước buổi demo | Chuẩn bị | Có tài khoản demo, phòng mẫu và kịch bản dự phòng (Render) nếu mạng local lỗi | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-00,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 04/11 (ngoại lệ R1 — GATE-REALTIME: ngưỡng NFR chỉ chốt được sau khi đo tải thật). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,04/11/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,
 15,2,Story,US-01.1 · Đăng ký bằng Username + Mật khẩu + OTP email,"*Là* khách truy cập, *tôi muốn* đăng ký bằng username, mật khẩu và email có mã OTP gửi tới hộp thư thật, *để* có tài khoản chính thức.
 *Nguồn:* BA 1.1, 1.4, 1.5. *Màn hình:* {{SCR-REGISTER}}.
 *Nguồn:* BA 0.4. *Ghi chú:* gắn vào Custom SMTP của Supabase Auth; khoá SMTP chỉ lưu phía máy chủ/Supabase.
@@ -105,7 +105,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-01.1.12 | Đăng ký liên tiếp 5 lần trong 1 giờ bằng 5 email khác nhau | Gửi OTP | Cả 5 thư đều gửi được (không còn giới hạn 2 thư/giờ của SMTP mặc định) | M |
 | AC-01.1.13 | Dịch vụ SMTP lỗi hoặc hết hạn mức | Gửi OTP | Giao diện báo lỗi thật *""Không gửi được mã, vui lòng thử lại sau""*; tài khoản không bị kẹt | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-01,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 09/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,09/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,
 16,2,Story,US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai,"*Là* người dùng, *tôi muốn* đăng nhập bằng username và mật khẩu an toàn, *để* vào ứng dụng mà tài khoản không bị dò mật khẩu.
 *Nguồn:* BA 0.2, 1.8. *Màn hình:* {{SCR-LOGIN}}. *Ghi chú kỹ thuật:* Supabase Auth đăng nhập bằng email, nên máy chủ tra email từ username rồi xác thực; không trả email hay sự tồn tại của username về client.
 *Sprint:* S1.
@@ -121,7 +121,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-01.2.8 | Đã đăng nhập | Mở {{/login}} hoặc {{/register}} | Tự chuyển về {{/lobby}} | E2E |
 | AC-01.2.9 | Username đang bị chặn do sai mật khẩu 5 lần | Chủ tài khoản đăng nhập thành công bằng Google | Vẫn vào được bằng Google; bộ đếm sai mật khẩu *không* bị xoá, đăng nhập bằng mật khẩu vẫn bị chặn tới hết 15 phút (BA 0.15) | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-01,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 11/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,11/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,
 17,2,Story,US-01.3 · Đăng ký/đăng nhập bằng Google và chế độ Khách,"*Là* người dùng mới, *tôi muốn* vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), *để* không mất thời gian đăng ký.
 *Nguồn:* BA 1.2, 1.4, 0.2. *Màn hình:* {{SCR-LOGIN}}, {{SCR-REGISTER}}, {{SCR-ONBOARDING}}.
 *Nguồn:* BA 0.3, 1.3, 1.4 mục 4, 2.4. *Màn hình:* {{SCR-LOGIN}}, {{MODAL-GUEST-NAME}}. *Ghi chú kỹ thuật:* có thể dùng đăng nhập ẩn danh của Supabase; cần spike xác nhận.
@@ -144,7 +144,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-01.3.14 | Username đang bị chặn | Đăng nhập bằng Google của chính tài khoản đó | Vẫn đăng nhập được (bộ đếm không áp cho Google) | M |
 | AC-01.3.15 | Chưa đăng nhập, mở link mời phòng | Chọn ""Guest"", nhập tên hợp lệ | Tự vào đúng phòng (ghế trống hoặc người xem theo sức chứa), không phải mở link lần hai | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-01,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 23/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,23/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,
 18,2,Story,"US-01.4 · Phiên đăng nhập, hồ sơ và Đăng xuất","*Là* người chơi, *tôi muốn* phiên và vị trí chơi được quản lý rõ ràng và tự đặt tên hiển thị, *để* không chơi hai nơi cùng lúc và đối thủ nhận ra tôi.
 *Nguồn:* BA 1.8, 2.4, 6.3 mục 4. *Ghi chú kỹ thuật:* Supabase cho phép nhiều phiên song song; cần bảng phiên/vị trí chơi phía máy chủ để thực thi luật ""thiết bị khác"" (spike S1).
 *Nguồn:* BA 1.4, 1.6 (email chỉ đọc), Phần 11. *Màn hình:* {{SCR-PROFILE-SETTINGS}}, {{PANEL-NAVBAR}}.
@@ -169,7 +169,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-01.4.16 | Đang trong ván ở nơi khác | Mở link mời | Luật 1.8 được kiểm trước; không tự vào phòng mới để ngồi ghế | I |
 | AC-01.4.17 | Đang ngồi ghế phòng online | Bấm ""Đánh với máy"" | {{DISABLED}} theo AC-01.4.6 | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-01,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 30/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,30/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,
 19,3,Story,"US-02.1 · Tạo phòng, ghế và bắt đầu ván","*Là* người dùng hoặc Khách, *tôi muốn* tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, *để* so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* {{MODAL-CREATE-ROOM}}, {{SCR-WAITING-ROOM}}.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* {{SCR-WAITING-ROOM}}.
@@ -190,7 +190,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-02.1.12 | Không còn người ngồi ghế (Host rời khi chỉ một mình, hoặc người cuối mất ghế sau 60 giây) | Hệ thống | Phòng {{CLOSED}}; người xem về Sảnh với thông báo *""Phòng đã đóng""*; chat phòng bị xoá | I, E2E |
 | AC-02.1.13 | Host chỉ ngồi một mình rất lâu | Không ai vào | Phòng *không* tự đóng do chờ lâu (BA 0.10) | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,XIAN Sprint 0,v0.2,,07/10/2026,08/10/2026,sprint-0,EP-02,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-02,High,To Do,,,,,,,,,,,,,,,,
 20,3,Story,US-02.2 · Xin đổi bên và ở lại phòng sau ván,"*Là* người chơi, *tôi muốn* đề nghị đổi Đỏ/Đen và ở lại phòng để đánh tiếp sau mỗi ván, *để* chọn tiếp tục hay đổi phe mà không phải tạo phòng mới.
 *Nguồn:* BA 0.6, 2.3 mục 2, 3.6. *Màn hình:* {{SCR-WAITING-ROOM}}, {{MODAL-SIDE-SWAP-PROMPT}}.
 *Nguồn:* BA 0.7. *Màn hình:* {{MODAL-MATCH-RESULT}}, {{SCR-WAITING-ROOM}}.
@@ -212,7 +212,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-02.2.13 | Người thứ hai vừa ngồi vào ghế còn lại | Xem cụm nút | Nút ""Đổi ghế"" biến mất, chỉ còn ""Xin đổi bên"" (US-02.2); người thứ hai rời ghế thì ""Đổi ghế"" xuất hiện lại | E2E |
 | AC-02.2.14 | Hộp kết quả | Nút | Chỉ có ""Ở lại phòng"" và ""Rời phòng"" (không Tái đấu, không Xem lại) | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-02,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 26/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,26/10/2026,dac-ta,EP-02,High,To Do,,,,,,,,,,,,,,,,
 21,4,Story,US-03.1 · Mời bằng link/mã và vào phòng,"*Là* người được mời (kể cả chưa kết bạn), *tôi muốn* vào phòng bằng link hoặc mã, *để* chơi hoặc xem ngay.
 *Nguồn:* BA 2.4, 2.6, 2.7, 2.8, 4.2, 0.3. *Màn hình:* {{MODAL-INVITE}}, {{SCR-LOBBY}}, {{SCR-LOGIN}}, {{SCR-ACCESS-DENIED}}.
 *Sprint:* S2.
@@ -226,7 +226,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-03.1.6 | Vào phòng | Phòng đã đủ sức chứa (hoặc ""Không có người xem"" và đủ 2 ghế) | {{SCR-ACCESS-DENIED}}: *""Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!""* + nút ""Quay về Sảnh chính"" | E2E |
 | AC-03.1.7 | Mã sai hoặc phòng đã đóng | Nhập mã | Báo *""Mã phòng không tồn tại hoặc phòng đã đóng""* | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,XIAN Sprint 0,v0.2,,07/10/2026,08/10/2026,sprint-0,EP-03,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 18/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,,v0.2,,07/10/2026,18/10/2026,dac-ta,EP-03,High,To Do,,,,,,,,,,,,,,,,
 22,4,Story,US-03.2 · Bạn bè và mời bạn online,"*Là* người dùng, *tôi muốn* kết bạn, biết bạn nào đang online và mời họ vào phòng ngay trong game, *để* rủ bạn chơi chỉ với một chạm.
 *Nguồn:* BA 5.5, Phần 11 (Bạn bè P1 tối thiểu). *Màn hình:* {{SCR-FRIENDS}}.
 *Nguồn:* BA 5.5 mục 4–5, 1.8 (hàng đợi). *Màn hình:* {{SCR-FRIENDS}}, {{PANEL-NAVBAR}}.
@@ -256,7 +256,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-03.2.20 | Lời mời đã gửi, sau đó phòng chuyển {{LOCKED}} | Người nhận bấm Tham gia | Bị từ chối (lời mời chưa dùng đã bị thu hồi) | I |
 | AC-03.2.21 | Người được mời đang ngồi ghế phòng khác | Bấm Tham gia | Không được ngồi ghế thứ hai; thông báo theo AC-01.4.6 | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-03,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-03,High,To Do,,,,,,,,,,,,,,,,
 23,5,Story,US-04.1 · Lõi luật cờ dùng chung,"*Là* hệ thống, *tôi cần* một thư viện luật cờ duy nhất dùng cho máy chủ, client và máy cờ, *để* mọi nơi phân xử giống nhau.
 *Nguồn:* BA 3.3 mục 1–2, 3.5. *Ghi chú:* {{packages/xiangqi-core}}, phủ unit test cao (mục tiêu ≥ 90% dòng).
 *Sprint:* S1.
@@ -274,7 +274,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-04.1.10 | Hai thế có cùng vị trí mọi quân nhưng khác bên tới lượt | Kiểm lặp thế | Không tính là cùng một thế (BA 0.12) | U |
 | AC-04.1.11 | Một thế xuất hiện lần thứ 3 trên nhánh nước hiệu lực | Xác định chu kỳ để xét chiếu liên tục | Chu kỳ gồm mọi nước từ lần xuất hiện thứ 1 đến lần thứ 3 của thế đó; bên chiếu ở *mọi* nước của mình trong chu kỳ là chiếu liên tục (BA 0.12) | U |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-04,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 09/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,09/10/2026,dac-ta,EP-04,High,To Do,,,,,,,,,,,,,,,,
 24,5,Story,US-04.2 · Khởi tạo và hiển thị bàn cờ,"*Là* người chơi, *tôi muốn* thấy bàn cờ chuẩn với quân chữ Hán, *để* chơi quen thuộc như cờ thật.
 *Nguồn:* BA 3.1, 6.3 mục 1, DESIGN §7. *Màn hình:* {{SCR-GAME-ROOM}}, {{SCR-AI-GAME}}.
 *Sprint:* S1.
@@ -285,7 +285,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-04.2.3 | Màn hình 360 px và màn hình máy tính | Xem bàn cờ | Toàn bộ bàn cờ hiển thị không cuộn ngang, quân đủ lớn để chạm | M |
 | AC-04.2.4 | Trình đọc màn hình / người mù màu | Tương tác | Quân có viền phân biệt bên; có nhãn văn bản cho quân và trạng thái lượt (WCAG 2.1 AA) | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,XIAN Sprint 0,v0.1,,07/10/2026,08/10/2026,sprint-0,EP-04,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 11/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",,,v0.1,,07/10/2026,11/10/2026,dac-ta,EP-04,High,To Do,,,,,,,,,,,,,,,,
 25,5,Story,US-04.3 · Đi cờ bằng click/kéo thả và âm thanh,"*Là* người chơi, *tôi muốn* đi quân bằng click hoặc kéo thả kèm gợi ý ô hợp lệ và tiếng gõ cờ, *để* đi nhanh, không nhầm và có cảm giác như cờ thật.
 *Nguồn:* BA 3.4 mục 1–2, DESIGN §4, §7.4.
 *Nguồn:* BA 3.4 mục 3.
@@ -303,7 +303,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-04.3.9 | Âm thanh bật | Đi quân / ăn quân / chiếu / kết thúc ván | Phát đúng 4 âm khác nhau tạo bằng Web Audio API (không tải file âm thanh) | M |
 | AC-04.3.10 | Góc trên bàn cờ | Bấm biểu tượng loa | Tắt/bật tất cả âm thanh bàn cờ ngay; lựa chọn giữ khi chuyển ván trong cùng phiên trình duyệt | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,XIAN Sprint 0,v0.2,,07/10/2026,08/10/2026,sprint-0,EP-04,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-04,High,To Do,,,,,,,,,,,,,,,,
 26,6,Story,"US-05.1 · Ván online: đi cờ, đồng hồ và kết thúc ván","*Là* người chơi, *tôi muốn* nước đi được máy chủ phân xử và đồng bộ ngay, đồng hồ chính xác và kết quả rõ ràng, *để* ván đấu công bằng.
 *Nguồn:* BA 3.3 mục 1, 4.3 mục 2. *Phụ thuộc:* US-00.3, US-05.1.
 *Nguồn:* BA 2.1, 3.3 mục 3.
@@ -325,7 +325,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-05.1.12 | Ván kết thúc | Dữ liệu | Kết quả, lý do, thời điểm lưu bền ở {{matches}} | I |
 | AC-05.1.13 | Người xem | Mở phòng | Thấy bàn cờ cùng hướng Đỏ ở dưới, không thao tác được quân | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,XIAN Sprint 0,v0.2,,07/10/2026,08/10/2026,sprint-0,EP-05,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-05,High,To Do,,,,,,,,,,,,,,,,
 27,6,Story,US-05.2 · Đầu hàng và xin hoà,"*Là* người chơi, *tôi muốn* đầu hàng có xác nhận và đề nghị hoà mà không chặn bàn cờ, *để* kết thúc ván văn minh, không bấm nhầm.
 *Nguồn:* BA 2.3 mục 5, 3.3 mục 2. *Màn hình:* {{MODAL-CONFIRM-RESIGN}}, {{MODAL-CONFIRM-LEAVE}}.
 *Nguồn:* BA 3.3 mục 2, 3.5 mục 4, 3.6 mục 2, 5. *Màn hình:* {{MODAL-DRAW-PROMPT}}.
@@ -342,7 +342,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-05.2.8 | A có đề nghị đang chờ | A bấm ""Rút đề nghị"" | Đề nghị bị huỷ ở phía B | E2E |
 | AC-05.2.9 | Đề nghị đang chờ | Ván kết thúc vì lý do khác | Đề nghị đóng; phản hồi đến sau không đổi kết quả | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-05,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-05,High,To Do,,,,,,,,,,,,,,,,
 28,6,Story,US-05.3 · Mất kết nối và nối lại,"*Là* người chơi, *tôi muốn* có 60 giây để quay lại khi rớt mạng, *để* không thua oan vì sự cố ngắn.
 *Nguồn:* BA 3.3 mục 4, 8.3, 10.1 (ván gián đoạn). *Màn hình:* {{OVERLAY-RECONNECTING}}.
 *Sprint:* S4.
@@ -355,7 +355,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-05.3.5 | Cả hai cùng mất kết nối, máy chủ vẫn chạy | Cả hai quá ân hạn | Bên mất kết nối *trước* thua {{DISCONNECT}} | I |
 | AC-05.3.6 | Máy chủ khởi động lại giữa ván | Người chơi nối lại | Hộp kết quả trung tính *""Ván bị gián đoạn""*: không thắng/thua/hoà, chỉ có nút Rời phòng | I, M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-05,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-05,High,To Do,,,,,,,,,,,,,,,,
 29,7,Story,US-06.1 · Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED,"*Là* Host, *tôi muốn* mở công khai, chỉ cho vào bằng mã, hoặc khoá phòng, *để* kiểm soát ai được vào.
 *Nguồn:* BA 2.7 mục 2, 2.8 mục 5–6, 4.3. *Màn hình:* {{MODAL-ROOM-SETTINGS}}.
 *Sprint:* S4.
@@ -369,7 +369,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-06.1.6 | Phòng {{LOCKED}} | Một người ngồi ghế rời đi | Phòng vẫn {{LOCKED}} cho đến khi Host tự mở | I |
 | AC-06.1.7 | Phòng {{LOCKED}} | Người mới mở link/mã | Bị từ chối dù có link/mã | I, E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-06,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,,,,,,,,,,,,,,,,
 30,7,Story,US-06.2 · Sảnh và danh sách phòng công khai,"*Là* người dùng hoặc Khách, *tôi muốn* Sảnh rõ ràng các lựa chọn, luật chơi và danh sách phòng công khai để vào chơi hoặc xem, *để* tìm trận mà không cần mã.
 *Nguồn:* BA 0.5, 2.7. *Màn hình:* {{SCR-LOBBY}}.
 *Nguồn:* BA 2.0, 10.4, Phần 11, DANH-MUC §7. *Màn hình:* {{SCR-LOBBY}}, {{PANEL-NAVBAR}}.
@@ -393,7 +393,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-06.2.15 | Host | Chuyển sang {{PUBLIC}} | Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây | E2E |
 | AC-06.2.16 | Phòng {{PUBLIC}} | Host chuyển sang {{CODE_ONLY}} hoặc {{LOCKED}} | Phòng biến khỏi danh sách Sảnh; yêu cầu vào từ danh sách cũ bị máy chủ từ chối | I, E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-06,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,,,,,,,,,,,,,,,,
 31,7,Story,US-06.3 · Người xem và đuổi người xem,"*Là* Host hoặc người chơi, *tôi muốn* sắp xếp người giữa ghế và hàng người xem và đuổi người xem quấy rối, *để* giữ không gian thi đấu tập trung.
 *Nguồn:* BA 2.6, 2.8 mục 3–4, 8.3. *Màn hình:* {{SCR-WAITING-ROOM}}, {{PANEL-SPECTATORS}}.
 *Nguồn:* BA 4.2, 4.1. *Màn hình:* {{PANEL-SPECTATORS}}, {{MODAL-CONFIRM-KICK}}.
@@ -415,7 +415,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-06.3.13 | Người đã bị đuổi | Vào lại bằng link/mã mới, lời mời hoặc từ Sảnh | Bị chặn đến khi phòng {{CLOSED}} | I |
 | AC-06.3.14 | Người đã bị đuổi khỏi phòng | Vào lại bằng bất kỳ cách nào | {{SCR-ACCESS-DENIED}}: *""Bạn đã bị đuổi và chặn tham gia phòng cờ này!""* | I, E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-06,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,,,,,,,,,,,,,,,,
 32,8,Story,US-07.1 · Hai kênh chat và bộ lọc,"*Là* người chơi, *tôi muốn* một kênh riêng với đối thủ tách khỏi kênh của người xem, có lọc lời thô tục và chống spam, *để* trò chuyện văn minh và riêng tư.
 *Nguồn:* BA 5.3 mục 1, 10.1 (chat khi đổi người), 4.1. *Màn hình:* {{PANEL-CHAT}}.
 *Nguồn:* BA 5.3 mục 2.
@@ -437,7 +437,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-07.1.13 | Nhóm cần thêm từ cấm | Sửa tệp cấu hình danh sách | Áp dụng sau khi khởi động lại server, không sửa CSDL | M |
 | AC-07.1.14 | Phòng đang ở trạng thái chờ ({{WAITING}}) | Người chơi và người xem mở khung chat | Có hai kênh theo vai trò như trong ván: người chơi có Kênh Riêng và Kênh Chung, người xem chỉ Kênh Chung; tin nhắn giữ nguyên khi chuyển sang ván (BA 0.13) | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-07,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 24/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,24/10/2026,dac-ta,EP-07,High,To Do,,,,,,,,,,,,,,,,
 33,8,Story,"US-07.2 · Camera, mic và mức chia sẻ","*Là* người chơi, *tôi muốn* bật camera và mic và chọn ai được thấy/nghe mình, *để* giao lưu như ngồi cùng bàn mà vẫn chủ động quyền riêng tư.
 *Nguồn:* BA 4.1, 1.8 (nhiều tab), 10.1 (LiveKit Cloud, không ghi). *Màn hình:* {{PANEL-MEDIA}}. *Phụ thuộc:* spike GATE-MEDIA.
 *Nguồn:* BA 4.1, 4.2.
@@ -458,7 +458,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-07.2.12 | Hai người chơi đang ở phòng chờ | Bật camera/mic | Đối thủ (và người xem nếu chọn mức ""Cả đối thủ và người xem"") thấy/nghe ngay trong phòng chờ; khi bắt đầu ván, hình và tiếng không bị ngắt (BA 0.13) | E2E, M |
 | AC-07.2.13 | Dịch vụ camera/mic lỗi, mất kết nối hoặc hết hạn mức | Đang ở phòng chờ hoặc đang ván | Ván tiếp tục bình thường, chat vẫn hoạt động, khung media hiện *""Camera/mic tạm thời không dùng được""*, không xử ai thua (BA 0.14) | I, M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-07,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-07,High,To Do,,,,,,,,,,,,,,,,
 34,9,Story,US-08.1 · Thiết lập và chơi ván với máy,"*Là* người chơi, *tôi muốn* chọn cấp độ và phe rồi chơi với máy không giới hạn thời gian, *để* luyện tập.
 *Nguồn:* BA 2.0 mục 4, 6.3, 0.9. *Màn hình:* {{MODAL-AI-SETUP}}, {{SCR-AI-GAME}}.
 *Sprint:* S3.
@@ -472,7 +472,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-08.1.6 | Ván AI kết thúc (kể cả đầu hàng) | Hộp kết quả | Có ""Ván mới"" và ""Về Sảnh"" | E2E |
 | AC-08.1.7 | Bấm ""Ván mới"" | Hệ thống | Mở {{MODAL-AI-SETUP}} điền sẵn cấp độ và lựa chọn phe ván trước; người chơi đổi phe/cấp rồi Bắt đầu → ván mới có ID mới | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,XIAN Sprint 0,v0.3,,07/10/2026,08/10/2026,sprint-0,EP-08,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-08,High,To Do,,,,,,,,,,,,,,,,
 35,9,Story,US-08.2 · Máy cờ ba cấp độ,"*Là* người chơi, *tôi muốn* ba cấp độ khác biệt rõ rệt, *để* luyện từ dễ đến khó.
 *Nguồn:* BA 6.1 (kèm tiêu chí bổ sung 05/10), 6.3 mục 3. *Ghi chú:* negamax + alpha-beta, tìm sâu dần, chạy ở tiến trình/worker riêng; dùng {{xiangqi-core}}.
 *Sprint:* S2.
@@ -482,7 +482,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-08.2.2 | Hết ngân sách thời gian khi chưa đạt độ sâu mục tiêu | Máy chọn nước | Đi nước tốt nhất đã tìm được đến lúc đó | U |
 | AC-08.2.3 | Máy đang suy nghĩ | Server chính xử lý các phòng khác | Phòng online không bị chậm vì máy cờ (chạy ở tiến trình riêng) | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,XIAN Sprint 0,v0.2,,07/10/2026,08/10/2026,sprint-0,EP-08,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 18/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",,,v0.2,,07/10/2026,18/10/2026,dac-ta,EP-08,High,To Do,,,,,,,,,,,,,,,,
 36,9,Story,US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó,"*Là* người chơi, *tôi muốn* ván với máy không mất vô lý khi rớt mạng hoặc máy cờ lỗi, và cấp Khó đạt chất lượng đã cam kết, *để* yên tâm luyện tập.
 *Nguồn:* BA 6.1 (Thử lại), 6.3 mục 4, 1.8.
 *Sprint:* S4.
@@ -498,7 +498,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07�
 | AC-08.3.8 | Bộ thế chiếu hết 1 nước và 2 nước bắt buộc (đáp án đã xác minh) | Cấp Khó giải | Đúng *100%* | U |
 | AC-08.3.9 | Đấu máy với máy 20 ván mỗi cặp cấp | Ghi kết quả | Khó thắng Trung bình và Trung bình thắng Dễ ở đa số ván (báo cáo tỷ lệ) | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt (07–08/10). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,XIAN Sprint 0,v1.0,,07/10/2026,08/10/2026,sprint-0,EP-08,High,Done,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 03/11 (ngoại lệ R1 — GATE-ENGINE: cấp Khó phải đo thời gian nghĩ trên máy demo mới chốt được AC). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",,,v1.0,,07/10/2026,03/11/2026,dac-ta,EP-08,High,To Do,,,,,,,,,,,,,,,,
 37,1,Task,"T01 · Dựng monorepo, CI, nhật ký và /health","*Mục tiêu:* Dựng monorepo, CI, nhật ký và /health — phục vụ US-00.1 Khung dự án, CI và nhật ký vận hành (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* Không có.
 *Việc cần làm:*
