@@ -28,11 +28,11 @@
 
 | Ký hiệu | Ý nghĩa | Lên Jira thành |
 |---|---|---|
-| `EP-xx` | Epic. EP-01 → EP-08 = yêu cầu YC1 → YC8 của khách hàng; EP-00 = nền tảng | Epic |
-| `US-xx.y` | User Story (xx = số Epic) | Story; AC dán vào Description |
+| `EP-xx` | Epic. EP-01 → EP-08 = yêu cầu YC1 → YC8 của khách hàng; EP-00 = nền tảng | Epic; **phần việc BA**, xong 07–08/10 |
+| `US-xx.y` | User Story (xx = số Epic) | Story; AC dán vào Description. **Story là phần việc BA**: Done khi đặc tả + AC được PO duyệt (07–08/10, Sprint 0) |
 | `AC-xx.y.z` | Tiêu chí nghiệm thu dạng **Given / When / Then** | Checklist trong Story |
 | `TC-xx.y.z` | Ca kiểm thử **1-1** với AC cùng số | Tester viết bước chi tiết trong Task kiểm thử |
-| `XIAN-Txx` | Task (một người, 4–32 giờ) | **Sub-task** của Story, cùng Sprint với Story |
+| `Txx` | Task: việc thi công của một người (4–32 giờ) | **Task** (cha là Epic, liên kết *relates to* tới Story), có Sprint, người làm, hạn riêng |
 | `NFR-xx`, `GATE-xx` | Yêu cầu phi chức năng, cổng kiểm chứng | AC của Story EP-00 hoặc Task kỹ thuật |
 | `Dx` | Kịch bản demo đầu-cuối | Story US-00.5 |
 
@@ -40,20 +40,22 @@
 
 **Yêu cầu (YC) của khách hàng:** YC1 Đăng ký/đăng nhập · YC2 Tạo phòng · YC3 Mời vào phòng · YC4 Khởi tạo bàn cờ · YC5 Hai người đánh online · YC6 Chế độ phòng và người xem (tối đa 5 xem / 7 người) · YC7 Chat + camera + mic, kênh người xem riêng · YC8 Đánh với máy theo cấp độ.
 
+**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA nên xong trước khi thi công; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi Task kiểm thử của Story đó đạt Definition of Done (mục 2.2).
+
 **Câu chữ giao diện** trong ngoặc kép là văn bản bắt buộc hiển thị đúng (có thể chỉnh dấu câu, không đổi nghĩa).
 
 ---
 
 ## 2. Definition of Ready và Definition of Done
 
-### 2.1 Definition of Ready (Story được kéo vào Sprint khi)
-- [ ] Có câu chuyện người dùng, AC Given/When/Then và quyết định BA nguồn.
+### 2.1 Definition of Ready (Task được kéo vào Sprint khi)
+- [ ] Story của Task đã được đặc tả (câu chuyện, AC Given/When/Then, quyết định BA nguồn) và PO duyệt.
 - [ ] Các Story/Task phụ thuộc đã xong hoặc có giao diện giả (mock/contract) đã thống nhất.
 - [ ] Đã tách Task (BE/FE/kiểm thử), có người nhận, ước lượng giờ và ngày bắt đầu theo KE-HOACH-JIRA.md.
 - [ ] Màn hình liên quan có trong DANH-MUC (mockup chỉ tham khảo).
 - [ ] Không còn câu hỏi mở chặn việc làm (nếu có thì ghi rõ và PO đã trả lời).
 
-### 2.2 Definition of Done (Story chỉ được đóng khi)
+### 2.2 Definition of Done (chức năng của một Story được nghiệm thu khi — kiểm ở Task kiểm thử của Story)
 - [ ] Mọi AC đạt; mỗi AC có TC tương ứng **PASS** và được ghi kết quả trong Jira.
 - [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), merge vào `develop` qua PR, CI xanh (lint, typecheck, unit test).
 - [ ] Luật nghiệp vụ kiểm ở **máy chủ**, không tin dữ liệu client gửi.
@@ -675,7 +677,7 @@ Các cổng nên chạy dưới dạng **Task spike ở Sprint 1** để phát h
 | GATE-AUTH-USERNAME | Đăng nhập bằng username trên nền Supabase | Tra email theo username phía máy chủ + khoá thử sai | Không lộ email/sự tồn tại username; độ trễ đăng nhập |
 | GATE-SESSION | Một vị trí chơi, thiết bị khác xử thua | Đăng nhập 2 trình duyệt khác nhau giữa ván | Ván xử thua đúng, thiết bị cũ bị đăng xuất |
 | GATE-GUEST | Khách bằng đăng nhập ẩn danh | Tạo/huỷ phiên Khách, kiểm hạn 12 giờ | Phương án kỹ thuật chốt, giới hạn |
-| GATE-MEDIA | LiveKit Cloud: quyền phát, thu hồi khi đuổi, hạn mức miễn phí | 1 phòng 2 người chơi + 5 người xem; đuổi 1 người | Thời gian thu hồi quyền thực tế, phút sử dụng/tháng, **không đặt ngưỡng đạt** |
+| GATE-MEDIA | LiveKit tự chạy (Docker) và LiveKit Cloud: quyền phát, thu hồi khi đuổi, chuyển môi trường bằng biến, HTTPS cho demo LAN (BA 0.16) | 1 phòng 2 người chơi + 5 người xem trên các máy khác nhau trong LAN; đuổi 1 người; đổi sang Cloud | CPU/RAM LiveKit tự chạy, thời gian thu hồi quyền, phút Cloud đã dùng, **không đặt ngưỡng đạt** |
 | GATE-ENGINE | Độ sâu/thời gian máy cờ bằng TypeScript | Chạy bộ 50 thế giữa ván ở mỗi cấp trên máy demo | p95 thời gian, độ sâu đạt được, kết quả bộ chiếu hết |
 | GATE-REALTIME | Tải Socket.IO | Kịch bản 50 client / 10 ván | p95 độ trễ, lỗi, tài nguyên |
 
@@ -712,9 +714,9 @@ Mọi Story tính năng ─> US-00.5 (nghiệm thu tổng, đóng gói, demo)
 
 ### 9.2 Phân bổ Sprint
 
-| Sprint | Thời gian | Story | Increment / Release |
+| Sprint | Thời gian | Story được **thi công** (bằng Task) | Increment / Release |
 |---|---|---|---|
-| S0 | 07/10 | Chốt tài liệu, dựng Jira, chuẩn bị tài khoản dịch vụ | Backlog được PO duyệt |
+| S0 | 07–08/10 | BA đặc tả toàn bộ 9 Epic, 27 Story theo thứ tự EP-00 → EP-08; PO duyệt; lập kế hoạch Task | Backlog được PO duyệt (Epic/Story Done) |
 | S1 | 08–14/10 | US-00.1, US-00.2, US-00.3, US-00.4, US-01.1, US-01.2, US-04.1, US-04.2 | **v0.1 · Nền tảng kỹ thuật, đăng ký/đăng nhập thật, bàn cờ đúng luật trên một máy** |
 | S2 | 15–21/10 | US-02.1, US-03.1, US-04.3, US-05.1, US-08.2 | **v0.2 · Tạo phòng, vào bằng link/mã, hai người đánh trọn ván online có đồng hồ; máy cờ chạy được** |
 | S3 | 22–28/10 | US-01.3, US-02.2, US-03.2, US-05.2, US-07.1, US-07.2, US-08.1 | **v0.3 · Google/Khách, Xin đổi bên và ở lại phòng, đầu hàng/xin hoà, bạn bè và mời online, chat, camera/mic, đánh với máy** |
@@ -764,7 +766,7 @@ Ngày bắt đầu/kết thúc, người làm và giờ của từng Task: [KE-H
 | Epic P1 / P2 | 9 / 7 |
 | User Story P1 | 27 (EP-00: 5, EP-01 → EP-08: 22) |
 | Tiêu chí nghiệm thu P1 | 268 (= số TC) |
-| Task (Sub-task) | xem KE-HOACH-JIRA.md |
+| Task | 71, xem KE-HOACH-JIRA.md |
 | NFR / Cổng kiểm chứng / Kịch bản demo | 12 / 9 / 10 |
 
 ---

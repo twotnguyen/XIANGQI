@@ -103,7 +103,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── BA-SCOPE-DECISIONS.md          Quyết định nghiệp vụ và phạm vi (nguồn luật; Phần 0 ưu tiên cao nhất)
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
 ├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc, mô tả chi tiết, mức song song
-├── jira/xian-import.csv           Tệp nhập Jira (Epic, Story, Sub-task)
+├── jira/xian-import.csv           Tệp nhập Jira (Epic, Story, Task)
 ├── IDEA.md                        Giới thiệu sản phẩm ngắn gọn
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   37 thành phần giao diện (26 P1, 11 P2) và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
