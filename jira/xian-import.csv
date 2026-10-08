@@ -29,7 +29,7 @@ Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.",Tình,Tình,,v1
 10,1,Story,"US-00.1 · Khung dự án, CI và nhật ký vận hành","*Là* nhóm phát triển, *tôi muốn* một monorepo có sẵn khung ứng dụng, CI, nhật ký và điểm kiểm tra sức khoẻ, *để* mọi người code trên cùng một nền và tìm lỗi nhanh.
 *Nguồn:* README (Công nghệ, Quy trình Git), BA 10.1. *Ghi chú:* cấu trúc gợi ý {{apps/web}} (React + Vite), {{apps/server}} (NestJS + Socket.IO), {{packages/xiangqi-core}} (luật cờ dùng chung), {{packages/shared}} (kiểu dữ liệu, hằng số), {{packages/engine}} (máy cờ).
 *Nguồn:* BA 10.1 (NFR-08, NFR-09).
-*Sprint:* S1. *Story Points:* *3* (tổng 24 giờ Task).
+*Sprint:* S1. *Story Points:* *5* (tổng điểm 2 Task, 24 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-00.1.1 | Máy dev mới clone repo, có Node + pnpm | Chạy {{pnpm install}} rồi {{pnpm dev}} | Web và server cùng chạy; {{GET /health}} trả 200 | M |
@@ -39,21 +39,21 @@ Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.",Tình,Tình,,v1
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; *không* chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 08/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,08/10/2026,dac-ta,EP-00,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 08/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,08/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,,
 11,1,Story,US-00.2 · Cơ sở dữ liệu và phân quyền P1,"*Là* nhóm phát triển, *tôi muốn* lược đồ dữ liệu P1 có migration và RLS, *để* dữ liệu nhất quán và client không ghi trái phép.
 *Nguồn:* BA 1.x, 2.x, 4.2, 5.5, 10.1 (dữ liệu cá nhân). *Ghi chú:* tối thiểu {{profiles}}, {{friendships}}/{{friend_requests}}, {{rooms}}, {{room_blocks}}, {{matches}}, {{match_moves}}, {{login_attempts}}; tên bảng do nhóm chốt.
-*Sprint:* S1. *Story Points:* *2* (tổng 16 giờ Task).
+*Sprint:* S1. *Story Points:* *3* (tổng điểm 1 Task, 16 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-00.2.1 | Cơ sở dữ liệu trống | Chạy toàn bộ migration | Tạo đủ bảng, khoá ngoại, chỉ mục; chạy lại từ đầu không lỗi | I |
 | AC-00.2.2 | Người dùng đăng nhập bằng khoá công khai ở client | Đọc/ghi dữ liệu người khác hoặc bảng ván/phòng | Bị RLS từ chối; chỉ máy chủ (khoá service) ghi được dữ liệu ván, phòng, kết quả | I |
 | AC-00.2.3 | Username lưu theo chữ người dùng gõ | Kiểm tra trùng | Ràng buộc duy nhất so sánh theo chữ thường ({{Twot}} = {{twot}}) | U |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 13/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,13/10/2026,dac-ta,EP-00,High,To Do,2,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 13/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,13/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,,
 12,1,Story,US-00.3 · Khung realtime,"*Là* nhóm phát triển, *tôi muốn* cổng Socket.IO có xác thực, lệnh chống trùng và đồng bộ lại khi nối lại, *để* phòng, ván và chat dùng chung một cách.
 *Nguồn:* BA 3.3 mục 1, 8.3, 1.8 (nhiều tab).
 *Hợp đồng sự kiện:* Task của Story này công bố kiểu dữ liệu sự kiện phòng/ván trong {{packages/shared}} để Story phòng và Story ván làm độc lập với nhau.
-*Sprint:* S1. *Story Points:* *3* (tổng 24 giờ Task).
+*Sprint:* S1. *Story Points:* *5* (tổng điểm 1 Task, 24 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-00.3.1 | Kết nối không có token hợp lệ (người dùng hoặc Khách) | Mở socket | Bị từ chối kết nối | I |
@@ -62,19 +62,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-00.3.4 | Client mất kết nối rồi nối lại | Kết nối thành công | Nhận ảnh chụp đầy đủ (phòng, ván, đồng hồ, vai trò) và giao diện khớp máy chủ | I |
 | AC-00.3.5 | Cùng tài khoản mở tab thứ hai vào cùng phòng | Tab mới kết nối | Tab mới tiếp quản; tab cũ nhận *""Phiên này đã được mở ở tab khác""* và chỉ đọc; tab cũ tự nối lại vẫn chỉ đọc | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 12/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,12/10/2026,dac-ta,EP-00,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 12/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,12/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,,
 13,1,Story,US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm,"*Là* nhóm, *tôi muốn* có kế hoạch kiểm thử và kiểm chứng sớm rủi ro media, *để* nghiệm thu có bằng chứng và phát hiện sớm điểm không khả thi.
 *Kèm:* spike GATE-MEDIA (LiveKit Cloud) ở Sprint 1.
-*Sprint:* S1. *Story Points:* *5* (tổng 32 giờ Task).
+*Sprint:* S1. *Story Points:* *6* (tổng điểm 2 Task, 32 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-00.4.1 | Backlog P1 | Viết kế hoạch kiểm thử | Có phạm vi, môi trường, dữ liệu thử, tiêu chí vào/ra, quy trình báo lỗi trên Jira (mức độ: Nghiêm trọng/Cao/Trung bình/Thấp) | M |
 | AC-00.4.2 | Mỗi AC | Viết TC | TC cùng số có tiền điều kiện, bước, kết quả mong đợi; truy vết 100% AC | M |
 | AC-00.4.3 | Cuối mỗi Sprint | Chạy hồi quy | Báo cáo PASS/FAIL/BLOCKED theo TC, lỗi mở được ghi Jira | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 08/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,08/10/2026,dac-ta,EP-00,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 08/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,08/10/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,,
 14,1,Story,"US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo","*Là* PO, *tôi muốn* đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, *để* chứng minh 8 yêu cầu cốt lõi với khách hàng.
-*Sprint:* S4. *Story Points:* *8* (tổng 48 giờ Task).
+*Sprint:* S4. *Story Points:* *10* (tổng điểm 4 Task, 48 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-00.5.1 | Môi trường demo local | Chạy D1–D10 (mục 8) | Tất cả PASS; kịch bản tự động hoá được thì có test Playwright | E2E, M |
@@ -84,11 +84,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-00.5.5 | Máy sạch, có Node + pnpm, có file {{.env}} được cấp | Làm theo README | Chạy được toàn bộ ứng dụng trong ≤ 15 phút | M |
 | AC-00.5.6 | Trước buổi demo | Chuẩn bị | Có tài khoản demo, phòng mẫu và kịch bản dự phòng (Render) nếu mạng local lỗi | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 04/11 (ngoại lệ R1 — GATE-REALTIME: ngưỡng NFR chỉ chốt được sau khi đo tải thật). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,04/11/2026,dac-ta,EP-00,High,To Do,8,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 04/11 (ngoại lệ R1 — GATE-REALTIME: ngưỡng NFR chỉ chốt được sau khi đo tải thật). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,04/11/2026,dac-ta,EP-00,High,To Do,,,,,,,,,,,,,,,,,
 15,2,Story,US-01.1 · Đăng ký bằng Username + Mật khẩu + OTP email,"*Là* khách truy cập, *tôi muốn* đăng ký bằng username, mật khẩu và email có mã OTP gửi tới hộp thư thật, *để* có tài khoản chính thức.
 *Nguồn:* BA 1.1, 1.4, 1.5. *Màn hình:* {{SCR-REGISTER}}.
 *Nguồn:* BA 0.4. *Ghi chú:* gắn vào Custom SMTP của Supabase Auth; khoá SMTP chỉ lưu phía máy chủ/Supabase.
-*Sprint:* S1. *Story Points:* *5* (tổng 32 giờ Task).
+*Sprint:* S1. *Story Points:* *7* (tổng điểm 3 Task, 32 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-01.1.1 | Bước 1 | Nhập username sai định dạng (không khớp {{^[a-zA-Z0-9_]{3,20}$}}) | Báo lỗi tại ô, không sang bước 2 | U, E2E |
@@ -105,10 +105,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-01.1.12 | Đăng ký liên tiếp 5 lần trong 1 giờ bằng 5 email khác nhau | Gửi OTP | Cả 5 thư đều gửi được (không còn giới hạn 2 thư/giờ của SMTP mặc định) | M |
 | AC-01.1.13 | Dịch vụ SMTP lỗi hoặc hết hạn mức | Gửi OTP | Giao diện báo lỗi thật *""Không gửi được mã, vui lòng thử lại sau""*; tài khoản không bị kẹt | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 09/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,09/10/2026,dac-ta,EP-01,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 09/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,09/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,,
 16,2,Story,US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai,"*Là* người dùng, *tôi muốn* đăng nhập bằng username và mật khẩu an toàn, *để* vào ứng dụng mà tài khoản không bị dò mật khẩu.
 *Nguồn:* BA 0.2, 1.8. *Màn hình:* {{SCR-LOGIN}}. *Ghi chú kỹ thuật:* Supabase Auth đăng nhập bằng email, nên máy chủ tra email từ username rồi xác thực; không trả email hay sự tồn tại của username về client.
-*Sprint:* S1. *Story Points:* *5* (tổng 28 giờ Task).
+*Sprint:* S1. *Story Points:* *6* (tổng điểm 3 Task, 28 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-01.2.1 | Tài khoản {{twot}} tồn tại | Đăng nhập bằng {{TWOT}} + mật khẩu đúng | Thành công, vào Sảnh (hoặc phòng mời đang chờ) | E2E |
@@ -121,11 +121,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-01.2.8 | Đã đăng nhập | Mở {{/login}} hoặc {{/register}} | Tự chuyển về {{/lobby}} | E2E |
 | AC-01.2.9 | Username đang bị chặn do sai mật khẩu 5 lần | Chủ tài khoản đăng nhập thành công bằng Google | Vẫn vào được bằng Google; bộ đếm sai mật khẩu *không* bị xoá, đăng nhập bằng mật khẩu vẫn bị chặn tới hết 15 phút (BA 0.15) | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 11/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,11/10/2026,dac-ta,EP-01,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 11/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,11/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,,
 17,2,Story,US-01.3 · Đăng ký/đăng nhập bằng Google và chế độ Khách,"*Là* người dùng mới, *tôi muốn* vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), *để* không mất thời gian đăng ký.
 *Nguồn:* BA 1.2, 1.4, 0.2. *Màn hình:* {{SCR-LOGIN}}, {{SCR-REGISTER}}, {{SCR-ONBOARDING}}.
 *Nguồn:* BA 0.3, 1.3, 1.4 mục 4, 2.4. *Màn hình:* {{SCR-LOGIN}}, {{MODAL-GUEST-NAME}}. *Ghi chú kỹ thuật:* có thể dùng đăng nhập ẩn danh của Supabase; cần spike xác nhận.
-*Sprint:* S3. *Story Points:* *8* (tổng 44 giờ Task).
+*Sprint:* S3. *Story Points:* *10* (tổng điểm 3 Task, 44 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-01.3.1 | Email Google chưa có tài khoản | Bấm ""Đăng ký bằng Google"" hoặc ""Đăng nhập bằng Google"" | Chuyển tới {{/onboarding}}: email chỉ đọc, ô Username và Mật khẩu; không yêu cầu OTP | E2E, M |
@@ -144,11 +144,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-01.3.14 | Username đang bị chặn | Đăng nhập bằng Google của chính tài khoản đó | Vẫn đăng nhập được (bộ đếm không áp cho Google) | M |
 | AC-01.3.15 | Chưa đăng nhập, mở link mời phòng | Chọn ""Guest"", nhập tên hợp lệ | Tự vào đúng phòng (ghế trống hoặc người xem theo sức chứa), không phải mở link lần hai | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 23/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,23/10/2026,dac-ta,EP-01,High,To Do,8,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 23/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,23/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,,
 18,2,Story,"US-01.4 · Phiên đăng nhập, hồ sơ và Đăng xuất","*Là* người chơi, *tôi muốn* phiên và vị trí chơi được quản lý rõ ràng và tự đặt tên hiển thị, *để* không chơi hai nơi cùng lúc và đối thủ nhận ra tôi.
 *Nguồn:* BA 1.8, 2.4, 6.3 mục 4. *Ghi chú kỹ thuật:* Supabase cho phép nhiều phiên song song; cần bảng phiên/vị trí chơi phía máy chủ để thực thi luật ""thiết bị khác"" (spike S1).
 *Nguồn:* BA 1.4, 1.6 (email chỉ đọc), Phần 11. *Màn hình:* {{SCR-PROFILE-SETTINGS}}, {{PANEL-NAVBAR}}.
-*Sprint:* S4. *Story Points:* *5* (tổng 36 giờ Task).
+*Sprint:* S4. *Story Points:* *8* (tổng điểm 3 Task, 36 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-01.4.1 | Đang đăng nhập | Dùng ứng dụng liên tục, làm mới token | Hạn phiên *không* được gia hạn; chỉ đăng nhập lại mới tạo hạn mới | I |
@@ -169,11 +169,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-01.4.16 | Đang trong ván ở nơi khác | Mở link mời | Luật 1.8 được kiểm trước; không tự vào phòng mới để ngồi ghế | I |
 | AC-01.4.17 | Đang ngồi ghế phòng online | Bấm ""Đánh với máy"" | {{DISABLED}} theo AC-01.4.6 | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 30/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,30/10/2026,dac-ta,EP-01,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 30/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,30/10/2026,dac-ta,EP-01,High,To Do,,,,,,,,,,,,,,,,,
 19,3,Story,"US-02.1 · Tạo phòng, ghế và bắt đầu ván","*Là* người dùng hoặc Khách, *tôi muốn* tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, *để* so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* {{MODAL-CREATE-ROOM}}, {{SCR-WAITING-ROOM}}.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* {{SCR-WAITING-ROOM}}.
-*Sprint:* S2. *Story Points:* *8* (tổng 48 giờ Task).
+*Sprint:* S2. *Story Points:* *10* (tổng điểm 3 Task, 48 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-02.1.1 | Ở Sảnh, không ngồi ghế nơi khác | Bấm ""Tạo phòng"" | Mở form: Tên phòng (1–60 ký tự), Mức giờ 5/10/15 phút (*mặc định 10*), Người xem *Không có người xem* hoặc 1–5 (*mặc định 5*) | E2E |
@@ -190,11 +190,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-02.1.12 | Không còn người ngồi ghế (Host rời khi chỉ một mình, hoặc người cuối mất ghế sau 60 giây) | Hệ thống | Phòng {{CLOSED}}; người xem về Sảnh với thông báo *""Phòng đã đóng""*; chat phòng bị xoá | I, E2E |
 | AC-02.1.13 | Host chỉ ngồi một mình rất lâu | Không ai vào | Phòng *không* tự đóng do chờ lâu (BA 0.10) | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-02,High,To Do,8,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-02,High,To Do,,,,,,,,,,,,,,,,,
 20,3,Story,US-02.2 · Xin đổi bên và ở lại phòng sau ván,"*Là* người chơi, *tôi muốn* đề nghị đổi Đỏ/Đen và ở lại phòng để đánh tiếp sau mỗi ván, *để* chọn tiếp tục hay đổi phe mà không phải tạo phòng mới.
 *Nguồn:* BA 0.6, 2.3 mục 2, 3.6. *Màn hình:* {{SCR-WAITING-ROOM}}, {{MODAL-SIDE-SWAP-PROMPT}}.
 *Nguồn:* BA 0.7. *Màn hình:* {{MODAL-MATCH-RESULT}}, {{SCR-WAITING-ROOM}}.
-*Sprint:* S3. *Story Points:* *3* (tổng 24 giờ Task).
+*Sprint:* S3. *Story Points:* *6* (tổng điểm 3 Task, 24 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-02.2.1 | Phòng {{WAITING}} đủ hai người (vừa vào hoặc sau ván) | Xem cụm nút | Cả hai người chơi có nút ""Xin đổi bên""; người xem không có | E2E |
@@ -212,10 +212,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-02.2.13 | Người thứ hai vừa ngồi vào ghế còn lại | Xem cụm nút | Nút ""Đổi ghế"" biến mất, chỉ còn ""Xin đổi bên"" (US-02.2); người thứ hai rời ghế thì ""Đổi ghế"" xuất hiện lại | E2E |
 | AC-02.2.14 | Hộp kết quả | Nút | Chỉ có ""Ở lại phòng"" và ""Rời phòng"" (không Tái đấu, không Xem lại) | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 26/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,26/10/2026,dac-ta,EP-02,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 26/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,26/10/2026,dac-ta,EP-02,High,To Do,,,,,,,,,,,,,,,,,
 21,4,Story,US-03.1 · Mời bằng link/mã và vào phòng,"*Là* người được mời (kể cả chưa kết bạn), *tôi muốn* vào phòng bằng link hoặc mã, *để* chơi hoặc xem ngay.
 *Nguồn:* BA 2.4, 2.6, 2.7, 2.8, 4.2, 0.3. *Màn hình:* {{MODAL-INVITE}}, {{SCR-LOBBY}}, {{SCR-LOGIN}}, {{SCR-ACCESS-DENIED}}.
-*Sprint:* S2. *Story Points:* *5* (tổng 32 giờ Task).
+*Sprint:* S2. *Story Points:* *7* (tổng điểm 3 Task, 32 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-03.1.1 | Người chơi trong phòng | Mở ""Chia sẻ phòng"" | Thấy link và mã 8 ký tự (chữ monospace) với nút Sao chép; P1 không có QR | E2E |
@@ -226,12 +226,12 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-03.1.6 | Vào phòng | Phòng đã đủ sức chứa (hoặc ""Không có người xem"" và đủ 2 ghế) | {{SCR-ACCESS-DENIED}}: *""Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!""* + nút ""Quay về Sảnh chính"" | E2E |
 | AC-03.1.7 | Mã sai hoặc phòng đã đóng | Nhập mã | Báo *""Mã phòng không tồn tại hoặc phòng đã đóng""* | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 18/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,18/10/2026,dac-ta,EP-03,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 18/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,18/10/2026,dac-ta,EP-03,High,To Do,,,,,,,,,,,,,,,,,
 22,4,Story,US-03.2 · Bạn bè và mời bạn online,"*Là* người dùng, *tôi muốn* kết bạn, biết bạn nào đang online và mời họ vào phòng ngay trong game, *để* rủ bạn chơi chỉ với một chạm.
 *Nguồn:* BA 5.5, Phần 11 (Bạn bè P1 tối thiểu). *Màn hình:* {{SCR-FRIENDS}}.
 *Nguồn:* BA 5.5 mục 4–5, 1.8 (hàng đợi). *Màn hình:* {{SCR-FRIENDS}}, {{PANEL-NAVBAR}}.
 *Nguồn:* BA 2.5, 2.7 mục 3, 2.8, 4.3. *Màn hình:* {{MODAL-INVITE}}.
-*Sprint:* S3. *Story Points:* *8* (tổng 48 giờ Task).
+*Sprint:* S3. *Story Points:* *10* (tổng điểm 3 Task, 48 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-03.2.1 | Ở {{SCR-FRIENDS}} | Gõ tiền tố username (không phân biệt hoa thường) | Hiện kết quả gồm avatar, Display Name, {{@username}}, nút ""Kết bạn""; không hiện Khách | E2E |
@@ -256,10 +256,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-03.2.20 | Lời mời đã gửi, sau đó phòng chuyển {{LOCKED}} | Người nhận bấm Tham gia | Bị từ chối (lời mời chưa dùng đã bị thu hồi) | I |
 | AC-03.2.21 | Người được mời đang ngồi ghế phòng khác | Bấm Tham gia | Không được ngồi ghế thứ hai; thông báo theo AC-01.4.6 | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-03,High,To Do,8,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-03,High,To Do,,,,,,,,,,,,,,,,,
 23,5,Story,US-04.1 · Lõi luật cờ dùng chung,"*Là* hệ thống, *tôi cần* một thư viện luật cờ duy nhất dùng cho máy chủ, client và máy cờ, *để* mọi nơi phân xử giống nhau.
 *Nguồn:* BA 3.3 mục 1–2, 3.5. *Ghi chú:* {{packages/xiangqi-core}}, phủ unit test cao (mục tiêu ≥ 90% dòng).
-*Sprint:* S1. *Story Points:* *3* (tổng 24 giờ Task).
+*Sprint:* S1. *Story Points:* *6* (tổng điểm 3 Task, 24 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-04.1.1 | Thế khai cuộc | Sinh nước hợp lệ | Đúng 44 nước; perft độ sâu 2 = 1.920, độ sâu 3 = 79.666 (đối chiếu số perft công bố trước khi dùng làm chuẩn) | U |
@@ -274,10 +274,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-04.1.10 | Hai thế có cùng vị trí mọi quân nhưng khác bên tới lượt | Kiểm lặp thế | Không tính là cùng một thế (BA 0.12) | U |
 | AC-04.1.11 | Một thế xuất hiện lần thứ 3 trên nhánh nước hiệu lực | Xác định chu kỳ để xét chiếu liên tục | Chu kỳ gồm mọi nước từ lần xuất hiện thứ 1 đến lần thứ 3 của thế đó; bên chiếu ở *mọi* nước của mình trong chu kỳ là chiếu liên tục (BA 0.12) | U |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 09/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,09/10/2026,dac-ta,EP-04,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 09/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,09/10/2026,dac-ta,EP-04,High,To Do,,,,,,,,,,,,,,,,,
 24,5,Story,US-04.2 · Khởi tạo và hiển thị bàn cờ,"*Là* người chơi, *tôi muốn* thấy bàn cờ chuẩn với quân chữ Hán, *để* chơi quen thuộc như cờ thật.
 *Nguồn:* BA 3.1, 6.3 mục 1, DESIGN §7. *Màn hình:* {{SCR-GAME-ROOM}}, {{SCR-AI-GAME}}.
-*Sprint:* S1. *Story Points:* *3* (tổng 20 giờ Task).
+*Sprint:* S1. *Story Points:* *4* (tổng điểm 2 Task, 20 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-04.2.1 | Ván mới | Bàn cờ hiện | SVG 9×10 giao điểm, sông, hai cung; 32 quân đúng vị trí; chữ Hán Đỏ 帥仕相俥傌炮兵, Đen 將士象車馬砲卒 | E2E, M |
@@ -285,11 +285,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-04.2.3 | Màn hình 360 px và màn hình máy tính | Xem bàn cờ | Toàn bộ bàn cờ hiển thị không cuộn ngang, quân đủ lớn để chạm | M |
 | AC-04.2.4 | Trình đọc màn hình / người mù màu | Tương tác | Quân có viền phân biệt bên; có nhãn văn bản cho quân và trạng thái lượt (WCAG 2.1 AA) | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 11/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,11/10/2026,dac-ta,EP-04,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 11/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 1.",Tình,Tình,,v0.1,,07/10/2026,11/10/2026,dac-ta,EP-04,High,To Do,,,,,,,,,,,,,,,,,
 25,5,Story,US-04.3 · Đi cờ bằng click/kéo thả và âm thanh,"*Là* người chơi, *tôi muốn* đi quân bằng click hoặc kéo thả kèm gợi ý ô hợp lệ và tiếng gõ cờ, *để* đi nhanh, không nhầm và có cảm giác như cờ thật.
 *Nguồn:* BA 3.4 mục 1–2, DESIGN §4, §7.4.
 *Nguồn:* BA 3.4 mục 3.
-*Sprint:* S2. *Story Points:* *5* (tổng 28 giờ Task).
+*Sprint:* S2. *Story Points:* *6* (tổng điểm 2 Task, 28 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-04.3.1 | Tới lượt mình | Click/chạm vào quân mình | Quân có vòng chọn; chấm tròn ở mọi ô được đi; vòng cố định (không nhấp nháy) quanh quân đối phương ăn được | E2E |
@@ -303,12 +303,12 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-04.3.9 | Âm thanh bật | Đi quân / ăn quân / chiếu / kết thúc ván | Phát đúng 4 âm khác nhau tạo bằng Web Audio API (không tải file âm thanh) | M |
 | AC-04.3.10 | Góc trên bàn cờ | Bấm biểu tượng loa | Tắt/bật tất cả âm thanh bàn cờ ngay; lựa chọn giữ khi chuyển ván trong cùng phiên trình duyệt | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-04,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-04,High,To Do,,,,,,,,,,,,,,,,,
 26,6,Story,"US-05.1 · Ván online: đi cờ, đồng hồ và kết thúc ván","*Là* người chơi, *tôi muốn* nước đi được máy chủ phân xử và đồng bộ ngay, đồng hồ chính xác và kết quả rõ ràng, *để* ván đấu công bằng.
 *Nguồn:* BA 3.3 mục 1, 4.3 mục 2. *Phụ thuộc:* US-00.3, US-05.1.
 *Nguồn:* BA 2.1, 3.3 mục 3.
 *Nguồn:* BA 3.3, 3.5 mục 5, 0.7. *Màn hình:* {{MODAL-MATCH-RESULT}}.
-*Sprint:* S2. *Story Points:* *8* (tổng 56 giờ Task).
+*Sprint:* S2. *Story Points:* *12* (tổng điểm 4 Task, 56 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-05.1.1 | Tới lượt A | A đi nước hợp lệ | Máy chủ chấp nhận; B và mọi người xem thấy nước đi (mục tiêu < 100 ms trong môi trường demo, NFR-01) | I, E2E |
@@ -325,11 +325,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-05.1.12 | Ván kết thúc | Dữ liệu | Kết quả, lý do, thời điểm lưu bền ở {{matches}} | I |
 | AC-05.1.13 | Người xem | Mở phòng | Thấy bàn cờ cùng hướng Đỏ ở dưới, không thao tác được quân | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-05,High,To Do,8,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 15/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,15/10/2026,dac-ta,EP-05,High,To Do,,,,,,,,,,,,,,,,,
 27,6,Story,US-05.2 · Đầu hàng và xin hoà,"*Là* người chơi, *tôi muốn* đầu hàng có xác nhận và đề nghị hoà mà không chặn bàn cờ, *để* kết thúc ván văn minh, không bấm nhầm.
 *Nguồn:* BA 2.3 mục 5, 3.3 mục 2. *Màn hình:* {{MODAL-CONFIRM-RESIGN}}, {{MODAL-CONFIRM-LEAVE}}.
 *Nguồn:* BA 3.3 mục 2, 3.5 mục 4, 3.6 mục 2, 5. *Màn hình:* {{MODAL-DRAW-PROMPT}}.
-*Sprint:* S3. *Story Points:* *3* (tổng 24 giờ Task).
+*Sprint:* S3. *Story Points:* *6* (tổng điểm 3 Task, 24 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-05.2.1 | Đang ván | Bấm ""Đầu hàng"" | Xác nhận *""Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức…""*, focus ở Huỷ; Đồng ý → {{RESIGN}}, đối thủ thắng | E2E |
@@ -342,10 +342,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-05.2.8 | A có đề nghị đang chờ | A bấm ""Rút đề nghị"" | Đề nghị bị huỷ ở phía B | E2E |
 | AC-05.2.9 | Đề nghị đang chờ | Ván kết thúc vì lý do khác | Đề nghị đóng; phản hồi đến sau không đổi kết quả | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-05,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-05,High,To Do,,,,,,,,,,,,,,,,,
 28,6,Story,US-05.3 · Mất kết nối và nối lại,"*Là* người chơi, *tôi muốn* có 60 giây để quay lại khi rớt mạng, *để* không thua oan vì sự cố ngắn.
 *Nguồn:* BA 3.3 mục 4, 8.3, 10.1 (ván gián đoạn). *Màn hình:* {{OVERLAY-RECONNECTING}}.
-*Sprint:* S4. *Story Points:* *3* (tổng 20 giờ Task).
+*Sprint:* S4. *Story Points:* *4* (tổng điểm 2 Task, 20 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-05.3.1 | A mất kết nối trong ván | Hệ thống | A thấy lớp phủ đếm 60 giây (không đóng bằng Esc); B thấy *""Đối thủ đang mất kết nối, thời gian chờ: 60s""*; đồng hồ ván vẫn chạy | E2E |
@@ -355,10 +355,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-05.3.5 | Cả hai cùng mất kết nối, máy chủ vẫn chạy | Cả hai quá ân hạn | Bên mất kết nối *trước* thua {{DISCONNECT}} | I |
 | AC-05.3.6 | Máy chủ khởi động lại giữa ván | Người chơi nối lại | Hộp kết quả trung tính *""Ván bị gián đoạn""*: không thắng/thua/hoà, chỉ có nút Rời phòng | I, M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-05,High,To Do,3,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-05,High,To Do,,,,,,,,,,,,,,,,,
 29,7,Story,US-06.1 · Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED,"*Là* Host, *tôi muốn* mở công khai, chỉ cho vào bằng mã, hoặc khoá phòng, *để* kiểm soát ai được vào.
 *Nguồn:* BA 2.7 mục 2, 2.8 mục 5–6, 4.3. *Màn hình:* {{MODAL-ROOM-SETTINGS}}.
-*Sprint:* S4. *Story Points:* *5* (tổng 28 giờ Task).
+*Sprint:* S4. *Story Points:* *6* (tổng điểm 3 Task, 28 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-06.1.1 | Trong phòng | Người không phải Host | Không thấy nút ""Cài đặt phòng"" | E2E |
@@ -369,11 +369,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-06.1.6 | Phòng {{LOCKED}} | Một người ngồi ghế rời đi | Phòng vẫn {{LOCKED}} cho đến khi Host tự mở | I |
 | AC-06.1.7 | Phòng {{LOCKED}} | Người mới mở link/mã | Bị từ chối dù có link/mã | I, E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,,,,,,,,,,,,,,,,,
 30,7,Story,US-06.2 · Sảnh và danh sách phòng công khai,"*Là* người dùng hoặc Khách, *tôi muốn* Sảnh rõ ràng các lựa chọn, luật chơi và danh sách phòng công khai để vào chơi hoặc xem, *để* tìm trận mà không cần mã.
 *Nguồn:* BA 0.5, 2.7. *Màn hình:* {{SCR-LOBBY}}.
 *Nguồn:* BA 2.0, 10.4, Phần 11, DANH-MUC §7. *Màn hình:* {{SCR-LOBBY}}, {{PANEL-NAVBAR}}.
-*Sprint:* S4. *Story Points:* *5* (tổng 36 giờ Task).
+*Sprint:* S4. *Story Points:* *8* (tổng điểm 3 Task, 36 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-06.2.1 | Có phòng {{PUBLIC}} | Mở Sảnh | Mỗi dòng hiện Tên phòng · Host (kèm ""(Khách)"" nếu có) · Mức giờ · Trạng thái *Đang chờ*/*Đang đấu* · Người xem *x/N* (N = 0 hiện *""Không cho xem""*) | E2E |
@@ -393,11 +393,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-06.2.15 | Host | Chuyển sang {{PUBLIC}} | Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây | E2E |
 | AC-06.2.16 | Phòng {{PUBLIC}} | Host chuyển sang {{CODE_ONLY}} hoặc {{LOCKED}} | Phòng biến khỏi danh sách Sảnh; yêu cầu vào từ danh sách cũ bị máy chủ từ chối | I, E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,,,,,,,,,,,,,,,,,
 31,7,Story,US-06.3 · Người xem và đuổi người xem,"*Là* Host hoặc người chơi, *tôi muốn* sắp xếp người giữa ghế và hàng người xem và đuổi người xem quấy rối, *để* giữ không gian thi đấu tập trung.
 *Nguồn:* BA 2.6, 2.8 mục 3–4, 8.3. *Màn hình:* {{SCR-WAITING-ROOM}}, {{PANEL-SPECTATORS}}.
 *Nguồn:* BA 4.2, 4.1. *Màn hình:* {{PANEL-SPECTATORS}}, {{MODAL-CONFIRM-KICK}}.
-*Sprint:* S4. *Story Points:* *5* (tổng 36 giờ Task).
+*Sprint:* S4. *Story Points:* *8* (tổng điểm 3 Task, 36 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-06.3.1 | Phòng có người xem | Xem {{PANEL-SPECTATORS}} | Tiêu đề *""Người xem (X / N)""*, danh sách tên cập nhật realtime | E2E |
@@ -415,11 +415,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-06.3.13 | Người đã bị đuổi | Vào lại bằng link/mã mới, lời mời hoặc từ Sảnh | Bị chặn đến khi phòng {{CLOSED}} | I |
 | AC-06.3.14 | Người đã bị đuổi khỏi phòng | Vào lại bằng bất kỳ cách nào | {{SCR-ACCESS-DENIED}}: *""Bạn đã bị đuổi và chặn tham gia phòng cờ này!""* | I, E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 29/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,29/10/2026,dac-ta,EP-06,High,To Do,,,,,,,,,,,,,,,,,
 32,8,Story,US-07.1 · Hai kênh chat và bộ lọc,"*Là* người chơi, *tôi muốn* một kênh riêng với đối thủ tách khỏi kênh của người xem, có lọc lời thô tục và chống spam, *để* trò chuyện văn minh và riêng tư.
 *Nguồn:* BA 5.3 mục 1, 10.1 (chat khi đổi người), 4.1. *Màn hình:* {{PANEL-CHAT}}.
 *Nguồn:* BA 5.3 mục 2.
-*Sprint:* S3. *Story Points:* *5* (tổng 36 giờ Task).
+*Sprint:* S3. *Story Points:* *8* (tổng điểm 3 Task, 36 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-07.1.1 | Người chơi trên máy tính vào phòng | Khung chat | Mặc định chỉ mở *Kênh Riêng*; có thể mở thêm Kênh Chung để xem song song, ẩn/hiện từng khung | E2E |
@@ -437,11 +437,11 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-07.1.13 | Nhóm cần thêm từ cấm | Sửa tệp cấu hình danh sách | Áp dụng sau khi khởi động lại server, không sửa CSDL | M |
 | AC-07.1.14 | Phòng đang ở trạng thái chờ ({{WAITING}}) | Người chơi và người xem mở khung chat | Có hai kênh theo vai trò như trong ván: người chơi có Kênh Riêng và Kênh Chung, người xem chỉ Kênh Chung; tin nhắn giữ nguyên khi chuyển sang ván (BA 0.13) | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 24/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,24/10/2026,dac-ta,EP-07,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 24/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,24/10/2026,dac-ta,EP-07,High,To Do,,,,,,,,,,,,,,,,,
 33,8,Story,"US-07.2 · Camera, mic và mức chia sẻ","*Là* người chơi, *tôi muốn* bật camera và mic và chọn ai được thấy/nghe mình, *để* giao lưu như ngồi cùng bàn mà vẫn chủ động quyền riêng tư.
 *Nguồn:* BA 4.1, 1.8 (nhiều tab), 10.1 (LiveKit Cloud, không ghi). *Màn hình:* {{PANEL-MEDIA}}. *Phụ thuộc:* spike GATE-MEDIA.
 *Nguồn:* BA 4.1, 4.2.
-*Sprint:* S3. *Story Points:* *5* (tổng 40 giờ Task).
+*Sprint:* S3. *Story Points:* *10* (tổng điểm 2 Task, 40 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-07.2.1 | Người chơi vào phòng | Khung media | Camera và mic mặc định *Tắt* | E2E |
@@ -458,10 +458,10 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-07.2.12 | Hai người chơi đang ở phòng chờ | Bật camera/mic | Đối thủ (và người xem nếu chọn mức ""Cả đối thủ và người xem"") thấy/nghe ngay trong phòng chờ; khi bắt đầu ván, hình và tiếng không bị ngắt (BA 0.13) | E2E, M |
 | AC-07.2.13 | Dịch vụ camera/mic lỗi, mất kết nối hoặc hết hạn mức | Đang ở phòng chờ hoặc đang ván | Ván tiếp tục bình thường, chat vẫn hoạt động, khung media hiện *""Camera/mic tạm thời không dùng được""*, không xử ai thua (BA 0.14) | I, M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-07,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-07,High,To Do,,,,,,,,,,,,,,,,,
 34,9,Story,US-08.1 · Thiết lập và chơi ván với máy,"*Là* người chơi, *tôi muốn* chọn cấp độ và phe rồi chơi với máy không giới hạn thời gian, *để* luyện tập.
 *Nguồn:* BA 2.0 mục 4, 6.3, 0.9. *Màn hình:* {{MODAL-AI-SETUP}}, {{SCR-AI-GAME}}.
-*Sprint:* S3. *Story Points:* *5* (tổng 36 giờ Task).
+*Sprint:* S3. *Story Points:* *8* (tổng điểm 3 Task, 36 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-08.1.1 | Ở Sảnh | Bấm ""Đánh với máy"" | Mở hộp chọn cấp *Dễ / Trung bình / Khó* và phe *Đỏ / Đen / Ngẫu nhiên* | E2E |
@@ -472,20 +472,20 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-08.1.6 | Ván AI kết thúc (kể cả đầu hàng) | Hộp kết quả | Có ""Ván mới"" và ""Về Sảnh"" | E2E |
 | AC-08.1.7 | Bấm ""Ván mới"" | Hệ thống | Mở {{MODAL-AI-SETUP}} điền sẵn cấp độ và lựa chọn phe ván trước; người chơi đổi phe/cấp rồi Bắt đầu → ván mới có ID mới | E2E |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-08,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 22/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 3.",Tình,Tình,,v0.3,,07/10/2026,22/10/2026,dac-ta,EP-08,High,To Do,,,,,,,,,,,,,,,,,
 35,9,Story,US-08.2 · Máy cờ ba cấp độ,"*Là* người chơi, *tôi muốn* ba cấp độ khác biệt rõ rệt, *để* luyện từ dễ đến khó.
 *Nguồn:* BA 6.1 (kèm tiêu chí bổ sung 05/10), 6.3 mục 3. *Ghi chú:* negamax + alpha-beta, tìm sâu dần, chạy ở tiến trình/worker riêng; dùng {{xiangqi-core}}.
-*Sprint:* S2. *Story Points:* *5* (tổng 32 giờ Task).
+*Sprint:* S2. *Story Points:* *8* (tổng điểm 1 Task, 32 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-08.2.1 | Mọi cấp, mọi thế | Máy chọn nước | Luôn là nước hợp lệ theo {{xiangqi-core}} | U |
 | AC-08.2.2 | Hết ngân sách thời gian khi chưa đạt độ sâu mục tiêu | Máy chọn nước | Đi nước tốt nhất đã tìm được đến lúc đó | U |
 | AC-08.2.3 | Máy đang suy nghĩ | Server chính xử lý các phòng khác | Phòng online không bị chậm vì máy cờ (chạy ở tiến trình riêng) | I |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 18/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,18/10/2026,dac-ta,EP-08,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 18/10 (trước khi Task đầu tiên bắt đầu). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 2.",Tình,Tình,,v0.2,,07/10/2026,18/10/2026,dac-ta,EP-08,High,To Do,,,,,,,,,,,,,,,,,
 36,9,Story,US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó,"*Là* người chơi, *tôi muốn* ván với máy không mất vô lý khi rớt mạng hoặc máy cờ lỗi, và cấp Khó đạt chất lượng đã cam kết, *để* yên tâm luyện tập.
 *Nguồn:* BA 6.1 (Thử lại), 6.3 mục 4, 1.8.
-*Sprint:* S4. *Story Points:* *5* (tổng 40 giờ Task).
+*Sprint:* S4. *Story Points:* *10* (tổng điểm 3 Task, 40 giờ).
 
 ||AC||Given||When||Then||Kiểm||
 | AC-08.3.1 | Đang ván AI | Đóng tab hoặc mất mạng, quay lại trong 30 phút | Vào lại {{/ai/:id}} (hoặc banner ở Sảnh) và chơi tiếp đúng thế cũ | E2E |
@@ -498,7 +498,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | AC-08.3.8 | Bộ thế chiếu hết 1 nước và 2 nước bắt buộc (đáp án đã xác minh) | Cấp Khó giải | Đúng *100%* | U |
 | AC-08.3.9 | Đấu máy với máy 20 ván mỗi cặp cấp | Ghi kết quả | Khó thắng Trung bình và Trung bình thắng Dễ ở đa số ván (báo cáo tỷ lệ) | M |
 
-Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 03/11 (ngoại lệ R1 — GATE-ENGINE: cấp Khó phải đo thời gian nghĩ trên máy demo mới chốt được AC). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,03/11/2026,dac-ta,EP-08,High,To Do,5,,,,,,,,,,,,,,,,
+Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, hạn 03/11 (ngoại lệ R1 — GATE-ENGINE: cấp Khó phải đo thời gian nghĩ trên máy demo mới chốt được AC). Nghiệm thu chức năng: Task kiểm thử của Story, theo Definition of Done ở BACKLOG-P1.md mục 2.2. Thi công trong XIAN Sprint 4.",Tình,Tình,,v1.0,,07/10/2026,03/11/2026,dac-ta,EP-08,High,To Do,,,,,,,,,,,,,,,,,
 37,1,Task,"T01 · Dựng monorepo, CI, nhật ký và /health","*Mục tiêu:* Dựng monorepo, CI, nhật ký và /health — phục vụ US-00.1 Khung dự án, CI và nhật ký vận hành (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* Không có.
 *Việc cần làm:*
@@ -507,8 +507,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Server: logger JSON (thời gian, mức, mã sự kiện, lọc mật khẩu/OTP/token/chat), endpoint {{/health}}; {{.env.example}} đủ biến (gồm {{LIVEKIT_URL}}, {{LIVEKIT_API_KEY}}, {{LIVEKIT_API_SECRET}} để chuyển giữa LiveKit tự chạy và LiveKit Cloud)
 *Đầu ra:* Repo chạy được bằng {{pnpm dev}}, CI xanh trên PR mẫu, README mục ""Chạy dự án"".
 *Cách kiểm và điều kiện PASS:* AC-00.1.1 → AC-00.1.6. PASS khi: clone mới chạy được web + server, {{/health}} trả 200, PR cố ý lỗi lint bị CI chặn, log không chứa dữ liệu nhạy cảm.
-*Lịch:* Tình · 8 giờ · 08/10 sáng → 08/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,08/10/2026,08/10/2026,sprint-1,phat-trien,High,To Do,,10,,,,,,,,,,,,,,,
+*Lịch:* Tình · 8 giờ · 2 Story Points · 08/10 sáng → 08/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,08/10/2026,08/10/2026,sprint-1,phat-trien,High,To Do,2,10,,,,,,,,,,,,,,,
 38,1,Task,"T02 · Kế hoạch kiểm thử, mẫu TC, quy trình lỗi, TC Sprint 1","*Mục tiêu:* Kế hoạch kiểm thử, mẫu TC, quy trình lỗi, TC Sprint 1 — phục vụ US-00.4 Kế hoạch kiểm thử và kiểm chứng sớm (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* Không có.
 *Việc cần làm:*
@@ -517,8 +517,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Thống nhất với nhóm cách đặt mã TC trùng số AC
 *Đầu ra:* Tài liệu kế hoạch kiểm thử + bộ TC Sprint 1 trên Jira/Confluence hoặc repo.
 *Cách kiểm và điều kiện PASS:* AC-00.4.1, AC-00.4.2. PASS khi: PO duyệt kế hoạch; 100% AC của Story S1 có TC tương ứng.
-*Lịch:* Thư · 16 giờ · 08/10 sáng → 09/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.4; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,57600,08/10/2026,09/10/2026,sprint-1,phat-trien,Medium,To Do,,13,,,,,,,,,,,,,,,
+*Lịch:* Thư · 16 giờ · 3 Story Points · 08/10 sáng → 09/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.4; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,57600,08/10/2026,09/10/2026,sprint-1,phat-trien,Medium,To Do,3,13,,,,,,,,,,,,,,,
 39,1,Task,"T03 · Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái","*Mục tiêu:* Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái — phục vụ US-00.1 Khung dự án, CI và nhật ký vận hành (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -527,8 +527,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Thanh điều hướng {{PANEL-NAVBAR}} khung (mục chưa làm hiện ""Sắp ra mắt"")
 *Đầu ra:* Bộ thành phần giao diện và khung trang để các Task FE sau dùng lại.
 *Cách kiểm và điều kiện PASS:* PASS khi: mỗi thành phần có trang demo đủ 5 trạng thái; hiển thị đúng ở 360 px và 1440 px; tương phản đạt WCAG AA (kiểm bằng công cụ trình duyệt).
-*Lịch:* Nhạn · 16 giờ · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 1,v0.1,57600,09/10/2026,10/10/2026,sprint-1,phat-trien,Medium,To Do,,10,37,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 16 giờ · 3 Story Points · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 1,v0.1,57600,09/10/2026,10/10/2026,sprint-1,phat-trien,Medium,To Do,3,10,37,,,,,,,,,,,,,,
 40,2,Task,"T04 · BE đăng ký 3 bước, OTP qua SMTP ngoài, dọn bản tạm","*Mục tiêu:* BE đăng ký 3 bước, OTP qua SMTP ngoài, dọn bản tạm — phục vụ US-01.1 Đăng ký bằng Username + Mật khẩu + OTP email (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -537,8 +537,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Migration bảng {{profiles}}; hoàn tất: tạo hồ sơ {{display_name = username}}, tự đăng nhập; kiểm lại trùng ở bước cuối; tác vụ dọn bản tạm sau ~60 phút; GATE-SMTP, GATE-EMAIL
 *Đầu ra:* API đăng ký + cấu hình SMTP + báo cáo GATE-SMTP.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-01.1 (định dạng, trùng username/email, OTP, bỏ dở, tranh chấp username, lỗi SMTP). PASS khi test tích hợp xanh và gửi được OTP tới 3 Gmail ngoài nhóm.
-*Lịch:* Đông · 16 giờ · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 1,v0.1,57600,09/10/2026,10/10/2026,sprint-1,phat-trien,Medium,To Do,,15,37,,,,,,,,,,,,,,
+*Lịch:* Đông · 16 giờ · 3 Story Points · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 1,v0.1,57600,09/10/2026,10/10/2026,sprint-1,phat-trien,Medium,To Do,3,15,37,,,,,,,,,,,,,,
 41,5,Task,"T05 · Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân","*Mục tiêu:* Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân — phục vụ US-04.1 Lõi luật cờ dùng chung (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -547,8 +547,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Unit test riêng cho từng loại quân, mỗi loại ít nhất một thế bị chặn và một thế ăn quân
 *Đầu ra:* Hàm sinh nước giả hợp lệ (chưa xét tự chiếu) cho 7 loại quân trong {{packages/xiangqi-core}}.
 *Cách kiểm và điều kiện PASS:* AC-04.1.2, AC-04.1.9 và phần ""thế khai cuộc có đúng 44 nước"" của AC-04.1.1. PASS khi unit test của cả 7 loại quân và test tuần tự hoá xanh trong CI.
-*Lịch:* Tình · 8 giờ · 09/10 sáng → 09/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,09/10/2026,09/10/2026,sprint-1,phat-trien,High,To Do,,23,37,,,,,,,,,,,,,,
+*Lịch:* Tình · 8 giờ · 2 Story Points · 09/10 sáng → 09/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,09/10/2026,09/10/2026,sprint-1,phat-trien,High,To Do,2,23,37,,,,,,,,,,,,,,
 42,1,Task,"T06 · Spike media: LiveKit tự chạy + LiveKit Cloud, HTTPS demo LAN (GATE-MEDIA)","*Mục tiêu:* Spike media: LiveKit tự chạy + LiveKit Cloud, HTTPS demo LAN (GATE-MEDIA) — phục vụ US-00.4 Kế hoạch kiểm thử và kiểm chứng sớm (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -558,8 +558,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Ghi số đo: CPU/RAM của LiveKit tự chạy, thời gian thu hồi quyền, phút sử dụng LiveKit Cloud
 *Đầu ra:* Báo cáo GATE-MEDIA (1–2 trang), {{docker-compose}} chạy LiveKit, hướng dẫn HTTPS cho demo LAN, đoạn code mẫu cho US-07.2.
 *Cách kiểm và điều kiện PASS:* PASS khi: 2 máy khác nhau trong LAN thấy/nghe nhau qua HTTPS với LiveKit tự chạy, đổi sang LiveKit Cloud chỉ bằng biến môi trường; báo cáo đủ số đo (không đặt ngưỡng đạt, theo BA 10.1).
-*Lịch:* Cường · 16 giờ · 10/10 sáng → 11/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.4; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 1,v0.1,57600,10/10/2026,11/10/2026,sprint-1,phat-trien,Medium,To Do,,13,37,,,,,,,,,,,,,,
+*Lịch:* Cường · 16 giờ · 3 Story Points · 10/10 sáng → 11/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.4; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 1,v0.1,57600,10/10/2026,11/10/2026,sprint-1,phat-trien,Medium,To Do,3,13,37,,,,,,,,,,,,,,
 43,5,Task,"T07 · Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước","*Mục tiêu:* Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước — phục vụ US-04.1 Lõi luật cờ dùng chung (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T05 (Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân).
 *Việc cần làm:*
@@ -568,8 +568,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * API công khai {{legalMoves(position)}}, {{isCheck(position)}}, {{applyMove(position, move)}} để giao diện, máy chủ và máy cờ dùng chung
 *Đầu ra:* Bộ sinh nước hợp lệ hoàn chỉnh và nhận biết chiếu/chiếu hết/hết nước.
 *Cách kiểm và điều kiện PASS:* AC-04.1.3, AC-04.1.4, AC-04.1.5. PASS khi unit test các thế Tướng đối mặt, tự chiếu, chiếu hết và hết nước xanh trong CI.
-*Lịch:* Tình · 8 giờ · 10/10 sáng → 10/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,10/10/2026,10/10/2026,sprint-1,phat-trien,High,To Do,,23,41,,,,,,,,,,,,,,
+*Lịch:* Tình · 8 giờ · 2 Story Points · 10/10 sáng → 10/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,10/10/2026,10/10/2026,sprint-1,phat-trien,High,To Do,2,23,41,,,,,,,,,,,,,,
 44,2,Task,T08 · FE màn Đăng ký 3 bước,"*Mục tiêu:* FE màn Đăng ký 3 bước — phục vụ US-01.1 Đăng ký bằng Username + Mật khẩu + OTP email (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T03 (Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái), T04 (BE đăng ký 3 bước, OTP qua SMTP ngoài, dọn bản tạm).
 *Việc cần làm:*
@@ -577,8 +577,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hiển thị lỗi tại ô, đủ 5 trạng thái; chuyển vào Sảnh hoặc phòng mời đang chờ sau khi xong
 *Đầu ra:* Màn Đăng ký hoạt động với API thật.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-01.1. PASS khi Playwright chạy được luồng đăng ký thành công và các luồng lỗi chính.
-*Lịch:* Nhạn · 12 giờ · 11/10 sáng → 12/10 sáng · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 1,v0.1,43200,11/10/2026,12/10/2026,sprint-1,phat-trien,Medium,To Do,,15,39,40,,,,,,,,,,,,,
+*Lịch:* Nhạn · 12 giờ · 3 Story Points · 11/10 sáng → 12/10 sáng · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 1,v0.1,43200,11/10/2026,12/10/2026,sprint-1,phat-trien,Medium,To Do,3,15,39,40,,,,,,,,,,,,,
 45,2,Task,"T09 · BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập","*Mục tiêu:* BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập — phục vụ US-01.2 Đăng nhập bằng Username + Mật khẩu và khoá thử sai (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T04 (BE đăng ký 3 bước, OTP qua SMTP ngoài, dọn bản tạm).
 *Việc cần làm:*
@@ -587,8 +587,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Ghi nhớ đăng nhập: 30 ngày hoặc phiên trình duyệt/12 giờ; GATE-AUTH-USERNAME
 *Đầu ra:* API đăng nhập + bảng {{login_attempts}} + báo cáo GATE-AUTH-USERNAME.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-01.2. PASS khi test tích hợp chứng minh khoá đúng, không lộ username tồn tại, đúng câu thông báo.
-*Lịch:* Đông · 16 giờ · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 1,v0.1,57600,11/10/2026,12/10/2026,sprint-1,phat-trien,Medium,To Do,,16,40,,,,,,,,,,,,,,
+*Lịch:* Đông · 16 giờ · 3 Story Points · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 1,v0.1,57600,11/10/2026,12/10/2026,sprint-1,phat-trien,Medium,To Do,3,16,40,,,,,,,,,,,,,,
 46,5,Task,"T10 · Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử","*Mục tiêu:* Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử — phục vụ US-04.1 Lõi luật cờ dùng chung (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T07 (Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước).
 *Việc cần làm:*
@@ -597,8 +597,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Viết tài liệu ngắn cho API; đo độ phủ unit test của cả gói
 *Đầu ra:* Gói {{packages/xiangqi-core}} hoàn chỉnh, có tài liệu và độ phủ ≥ 90%.
 *Cách kiểm và điều kiện PASS:* AC-04.1.6, AC-04.1.7, AC-04.1.8 và phần perft của AC-04.1.1. PASS khi toàn bộ unit test xanh, perft khớp số công bố, độ phủ dòng ≥ 90%.
-*Lịch:* Tình · 8 giờ · 11/10 sáng → 11/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,11/10/2026,11/10/2026,sprint-1,phat-trien,High,To Do,,23,43,,,,,,,,,,,,,,
+*Lịch:* Tình · 8 giờ · 2 Story Points · 11/10 sáng → 11/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,28800,11/10/2026,11/10/2026,sprint-1,phat-trien,High,To Do,2,23,43,,,,,,,,,,,,,,
 47,5,Task,"T11 · FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng","*Mục tiêu:* FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng — phục vụ US-04.2 Khởi tạo và hiển thị bàn cờ (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -606,8 +606,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Co giãn từ 360 px, quân đủ lớn để chạm; nhãn trợ năng cho quân và lượt đi
 *Đầu ra:* Component {{<Board>}} hiển thị từ một thế cờ cho trước.
 *Cách kiểm và điều kiện PASS:* AC E2E/M của US-04.2. PASS khi: ảnh chụp đúng 32 quân đúng vị trí, lật đúng khi cầm Đen, hiển thị trọn ở 360 px.
-*Lịch:* Kỳ · 16 giờ · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.2; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 1,v0.1,57600,11/10/2026,12/10/2026,sprint-1,phat-trien,Medium,To Do,,24,37,,,,,,,,,,,,,,
+*Lịch:* Kỳ · 16 giờ · 3 Story Points · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.2; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 1,v0.1,57600,11/10/2026,12/10/2026,sprint-1,phat-trien,Medium,To Do,3,24,37,,,,,,,,,,,,,,
 48,1,Task,T12 · Khung realtime Socket.IO,"*Mục tiêu:* Khung realtime Socket.IO — phục vụ US-00.3 Khung realtime (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -616,16 +616,16 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Tiếp quản tab: tab mới giành quyền, tab cũ chỉ đọc; *công bố hợp đồng sự kiện phòng/ván trong {{packages/shared}}*
 *Đầu ra:* Khung realtime + tài liệu hợp đồng sự kiện để Story phòng và Story ván làm độc lập.
 *Cách kiểm và điều kiện PASS:* AC-00.3.1 → AC-00.3.5. PASS khi: test tích hợp socket xanh (từ chối token sai, lệnh trùng chỉ áp một lần, nối lại nhận ảnh chụp, tab cũ thành chỉ đọc).
-*Lịch:* Tình · 24 giờ · 12/10 sáng → 14/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.3; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,86400,12/10/2026,14/10/2026,sprint-1,phat-trien,High,To Do,,12,37,,,,,,,,,,,,,,
+*Lịch:* Tình · 24 giờ · 5 Story Points · 12/10 sáng → 14/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.3; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 1,v0.1,86400,12/10/2026,14/10/2026,sprint-1,phat-trien,High,To Do,5,12,37,,,,,,,,,,,,,,
 49,2,Task,T13 · Kiểm thử US-01.1,"*Mục tiêu:* Kiểm thử US-01.1 — phục vụ US-01.1 Đăng ký bằng Username + Mật khẩu + OTP email (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T08 (FE màn Đăng ký 3 bước).
 *Việc cần làm:*
 * Chạy TC của US-01.1, gồm đăng ký bằng Gmail thật ngoài nhóm
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-01.1 đạt.
-*Lịch:* Thư · 4 giờ · 12/10 chiều → 12/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,14400,12/10/2026,12/10/2026,sprint-1,kiem-thu,Medium,To Do,,15,44,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 12/10 chiều → 12/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,14400,12/10/2026,12/10/2026,sprint-1,kiem-thu,Medium,To Do,1,15,44,,,,,,,,,,,,,,
 50,1,Task,"T14 · Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu","*Mục tiêu:* Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu — phục vụ US-00.2 Cơ sở dữ liệu và phân quyền P1 (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* T01 (Dựng monorepo, CI, nhật ký và /health).
 *Việc cần làm:*
@@ -634,8 +634,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Chỉ mục duy nhất username theo chữ thường; script dữ liệu mẫu (tài khoản demo)
 *Đầu ra:* Migration chạy lại được từ đầu, sơ đồ dữ liệu (ảnh/markdown) trong repo.
 *Cách kiểm và điều kiện PASS:* AC-00.2.1 → AC-00.2.3. PASS khi: test tích hợp chứng minh RLS chặn đọc/ghi trái phép và trùng {{Twot}}/{{twot}} bị từ chối.
-*Lịch:* Tùng · 16 giờ · 13/10 sáng → 14/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.2; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 1,v0.1,57600,13/10/2026,14/10/2026,sprint-1,phat-trien,Medium,To Do,,11,37,,,,,,,,,,,,,,
+*Lịch:* Tùng · 16 giờ · 3 Story Points · 13/10 sáng → 14/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.2; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 1,v0.1,57600,13/10/2026,14/10/2026,sprint-1,phat-trien,Medium,To Do,3,11,37,,,,,,,,,,,,,,
 51,2,Task,T15 · FE màn Đăng nhập,"*Mục tiêu:* FE màn Đăng nhập — phục vụ US-01.2 Đăng nhập bằng Username + Mật khẩu và khoá thử sai (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T03 (Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái), T09 (BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập).
 *Việc cần làm:*
@@ -643,24 +643,24 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hiện thông báo khoá thử sai; đã đăng nhập vào {{/login}} thì về Sảnh
 *Đầu ra:* Màn Đăng nhập hoạt động với API thật.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-01.2. PASS khi Playwright đăng nhập {{TWOT}} thành công và thấy câu khoá sau 5 lần sai.
-*Lịch:* Nhạn · 8 giờ · 13/10 sáng → 13/10 chiều · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 1,v0.1,28800,13/10/2026,13/10/2026,sprint-1,phat-trien,Medium,To Do,,16,39,45,,,,,,,,,,,,,
+*Lịch:* Nhạn · 8 giờ · 2 Story Points · 13/10 sáng → 13/10 chiều · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 1,v0.1,28800,13/10/2026,13/10/2026,sprint-1,phat-trien,Medium,To Do,2,16,39,45,,,,,,,,,,,,,
 52,5,Task,T16 · Kiểm thử US-04.2,"*Mục tiêu:* Kiểm thử US-04.2 — phục vụ US-04.2 Khởi tạo và hiển thị bàn cờ (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T11 (FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng).
 *Việc cần làm:*
 * Viết và chạy TC của US-04.2 trên Chrome, Firefox, Safari và một điện thoại thật
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-04.2 đạt, không còn lỗi Nghiêm trọng/Cao.
-*Lịch:* Thư · 4 giờ · 13/10 sáng → 13/10 sáng · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,14400,13/10/2026,13/10/2026,sprint-1,kiem-thu,Medium,To Do,,24,47,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 13/10 sáng → 13/10 sáng · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,14400,13/10/2026,13/10/2026,sprint-1,kiem-thu,Medium,To Do,1,24,47,,,,,,,,,,,,,,
 53,2,Task,T17 · Kiểm thử US-01.2,"*Mục tiêu:* Kiểm thử US-01.2 — phục vụ US-01.2 Đăng nhập bằng Username + Mật khẩu và khoá thử sai (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T15 (FE màn Đăng nhập).
 *Việc cần làm:*
 * Chạy TC của US-01.2
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-01.2 đạt.
-*Lịch:* Thư · 4 giờ · 14/10 sáng → 14/10 sáng · XIAN Sprint 1.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,14400,14/10/2026,14/10/2026,sprint-1,kiem-thu,Medium,To Do,,16,51,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 14/10 sáng → 14/10 sáng · XIAN Sprint 1.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 1,v0.1,14400,14/10/2026,14/10/2026,sprint-1,kiem-thu,Medium,To Do,1,16,51,,,,,,,,,,,,,,
 54,3,Task,"T18 · BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host","*Mục tiêu:* BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host — phục vụ US-02.1 Tạo phòng, ghế và bắt đầu ván (EP-02 Tạo phòng).
 *Đầu vào (phải xong trước):* T12 (Khung realtime Socket.IO), T14 (Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu).
 *Việc cần làm:*
@@ -669,8 +669,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Chuyển Host, đóng phòng khi không còn người ngồi ghế, giới hạn 1 phòng cho Khách
 *Đầu ra:* Dịch vụ phòng + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-02.1. PASS khi test tích hợp xanh cho tạo phòng, Sẵn sàng/đếm, mất kết nối khi đếm, chuyển Host, đóng phòng.
-*Lịch:* Cường · 24 giờ · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 2,v0.2,86400,15/10/2026,17/10/2026,sprint-2,phat-trien,Medium,To Do,,19,48,50,,,,,,,,,,,,,
+*Lịch:* Cường · 24 giờ · 5 Story Points · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 2,v0.2,86400,15/10/2026,17/10/2026,sprint-2,phat-trien,Medium,To Do,5,19,48,50,,,,,,,,,,,,,
 55,5,Task,"T19 · FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh","*Mục tiêu:* FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh — phục vụ US-04.3 Đi cờ bằng click/kéo thả và âm thanh (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T10 (Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử), T11 (FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng).
 *Việc cần làm:*
@@ -679,8 +679,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * 4 âm thanh Web Audio API + nút tắt tiếng giữ trong phiên
 *Đầu ra:* Bàn cờ chơi được hai bên trên một máy (chế độ thử).
 *Cách kiểm và điều kiện PASS:* AC E2E của US-04.3. PASS khi Playwright đi được nước bằng click và kéo thả, nước sai bị từ chối.
-*Lịch:* Kỳ · 24 giờ · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 2,v0.2,86400,15/10/2026,17/10/2026,sprint-2,phat-trien,Medium,To Do,,25,46,47,,,,,,,,,,,,,
+*Lịch:* Kỳ · 24 giờ · 5 Story Points · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 2,v0.2,86400,15/10/2026,17/10/2026,sprint-2,phat-trien,Medium,To Do,5,25,46,47,,,,,,,,,,,,,
 56,6,Task,"T20 · BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván","*Mục tiêu:* BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván — phục vụ US-05.1 Ván online: đi cờ, đồng hồ và kết thúc ván (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T10 (Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử), T12 (Khung realtime Socket.IO).
 *Việc cần làm:*
@@ -689,8 +689,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Từ chối nước sai luật/không đúng lượt, đồng bộ lại client
 *Đầu ra:* Dịch vụ ván online có API socket và test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-05.1 (trừ đồng hồ). PASS khi test tích hợp xanh và độ trễ phát nước đi đo được trong môi trường demo.
-*Lịch:* Tình · 24 giờ · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 2,v0.2,86400,15/10/2026,17/10/2026,sprint-2,phat-trien,High,To Do,,26,46,48,,,,,,,,,,,,,
+*Lịch:* Tình · 24 giờ · 5 Story Points · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 2,v0.2,86400,15/10/2026,17/10/2026,sprint-2,phat-trien,High,To Do,5,26,46,48,,,,,,,,,,,,,
 57,3,Task,"T21 · FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược","*Mục tiêu:* FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược — phục vụ US-02.1 Tạo phòng, ghế và bắt đầu ván (EP-02 Tạo phòng).
 *Đầu vào (phải xong trước):* T03 (Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái), T18 (BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host).
 *Việc cần làm:*
@@ -698,8 +698,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hiển thị Host, trạng thái realtime, đủ 5 trạng thái
 *Đầu ra:* Màn Tạo phòng và phòng chờ nối với API thật.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-02.1. PASS khi Playwright tạo phòng và hai trình duyệt cùng Sẵn sàng để vào ván.
-*Lịch:* Nhạn · 16 giờ · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 2,v0.2,57600,18/10/2026,19/10/2026,sprint-2,phat-trien,Medium,To Do,,19,39,54,,,,,,,,,,,,,
+*Lịch:* Nhạn · 16 giờ · 3 Story Points · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 2,v0.2,57600,18/10/2026,19/10/2026,sprint-2,phat-trien,Medium,To Do,3,19,39,54,,,,,,,,,,,,,
 58,4,Task,"T22 · BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập","*Mục tiêu:* BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập — phục vụ US-03.1 Mời bằng link/mã và vào phòng (EP-03 Mời vào phòng).
 *Đầu vào (phải xong trước):* T18 (BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host).
 *Việc cần làm:*
@@ -707,8 +707,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Lưu đích chuyển hướng khi chưa đăng nhập để tự vào phòng sau đăng nhập/đăng ký
 *Đầu ra:* API vào phòng + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-03.1. PASS khi test tích hợp xanh cho ghế trống, người xem, phòng đầy, mã sai.
-*Lịch:* Tùng · 16 giờ · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 2,v0.2,57600,18/10/2026,19/10/2026,sprint-2,phat-trien,Medium,To Do,,21,54,,,,,,,,,,,,,,
+*Lịch:* Tùng · 16 giờ · 3 Story Points · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 2,v0.2,57600,18/10/2026,19/10/2026,sprint-2,phat-trien,Medium,To Do,3,21,54,,,,,,,,,,,,,,
 59,6,Task,T23 · BE đồng hồ thi đấu và hết giờ,"*Mục tiêu:* BE đồng hồ thi đấu và hết giờ — phục vụ US-05.1 Ván online: đi cờ, đồng hồ và kết thúc ván (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T20 (BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván).
 *Việc cần làm:*
@@ -716,8 +716,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hết giờ → kết thúc {{TIMEOUT}}; gửi thời gian còn lại trong ảnh chụp
 *Đầu ra:* Đồng hồ tích hợp trong dịch vụ ván.
 *Cách kiểm và điều kiện PASS:* AC U/I về đồng hồ của US-05.1. PASS khi test tích hợp xanh cho hết giờ và nước đến muộn.
-*Lịch:* Đông · 8 giờ · 18/10 sáng → 18/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 2,v0.2,28800,18/10/2026,18/10/2026,sprint-2,phat-trien,Medium,To Do,,26,56,,,,,,,,,,,,,,
+*Lịch:* Đông · 8 giờ · 2 Story Points · 18/10 sáng → 18/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 2,v0.2,28800,18/10/2026,18/10/2026,sprint-2,phat-trien,Medium,To Do,2,26,56,,,,,,,,,,,,,,
 60,9,Task,"T24 · Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng","*Mục tiêu:* Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng — phục vụ US-08.2 Máy cờ ba cấp độ (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T10 (Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử).
 *Việc cần làm:*
@@ -725,8 +725,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Chạy ở tiến trình/worker riêng; ngân sách 300 / 1.000 / 3.000 ms theo cấp; luôn trả nước hợp lệ tốt nhất đã tìm được
 *Đầu ra:* Gói {{packages/engine}} + tiến trình máy cờ gọi được từ server.
 *Cách kiểm và điều kiện PASS:* AC-08.2.1 → AC-08.2.3. PASS khi unit test xanh và chạy 100 thế ngẫu nhiên không trả nước sai luật.
-*Lịch:* Tình · 32 giờ · 18/10 sáng → 21/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.2; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 2,v0.2,115200,18/10/2026,21/10/2026,sprint-2,phat-trien,High,To Do,,35,46,,,,,,,,,,,,,,
+*Lịch:* Tình · 32 giờ · 8 Story Points · 18/10 sáng → 21/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.2; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 2,v0.2,115200,18/10/2026,21/10/2026,sprint-2,phat-trien,High,To Do,8,35,46,,,,,,,,,,,,,,
 61,6,Task,"T25 · FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả","*Mục tiêu:* FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả — phục vụ US-05.1 Ván online: đi cờ, đồng hồ và kết thúc ván (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T19 (FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh), T23 (BE đồng hồ thi đấu và hết giờ).
 *Việc cần làm:*
@@ -735,8 +735,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hộp kết quả với lý do tiếng Việt
 *Đầu ra:* Màn phòng thi đấu chơi được trọn ván giữa hai trình duyệt.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-05.1. PASS khi Playwright đánh trọn một ván chiếu hết giữa hai trình duyệt và người xem thấy cùng bàn cờ.
-*Lịch:* Kỳ · 16 giờ · 19/10 sáng → 20/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 2,v0.2,57600,19/10/2026,20/10/2026,sprint-2,phat-trien,Medium,To Do,,26,55,59,,,,,,,,,,,,,
+*Lịch:* Kỳ · 16 giờ · 3 Story Points · 19/10 sáng → 20/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 2,v0.2,57600,19/10/2026,20/10/2026,sprint-2,phat-trien,Medium,To Do,3,26,55,59,,,,,,,,,,,,,
 62,4,Task,"T26 · FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập","*Mục tiêu:* FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập — phục vụ US-03.1 Mời bằng link/mã và vào phòng (EP-03 Mời vào phòng).
 *Đầu vào (phải xong trước):* T21 (FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược), T22 (BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập).
 *Việc cần làm:*
@@ -744,40 +744,40 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * {{SCR-ACCESS-DENIED}} cho phòng đầy/mã sai
 *Đầu ra:* Luồng mời bằng link/mã chạy với API thật.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-03.1. PASS khi Playwright: người thứ hai vào bằng mã, người thứ ba thành người xem, phòng đầy bị từ chối.
-*Lịch:* Nhạn · 8 giờ · 20/10 sáng → 20/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,20/10/2026,20/10/2026,sprint-2,phat-trien,Medium,To Do,,21,57,58,,,,,,,,,,,,,
+*Lịch:* Nhạn · 8 giờ · 2 Story Points · 20/10 sáng → 20/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,20/10/2026,20/10/2026,sprint-2,phat-trien,Medium,To Do,2,21,57,58,,,,,,,,,,,,,
 63,5,Task,T27 · Kiểm thử US-04.3,"*Mục tiêu:* Kiểm thử US-04.3 — phục vụ US-04.3 Đi cờ bằng click/kéo thả và âm thanh (EP-04 Khởi tạo bàn cờ).
 *Đầu vào (phải xong trước):* T19 (FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh).
 *Việc cần làm:*
 * Chạy TC của US-04.3 trên máy tính và điện thoại
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-04.3 đạt.
-*Lịch:* Thư · 4 giờ · 20/10 sáng → 20/10 sáng · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 2,v0.2,14400,20/10/2026,20/10/2026,sprint-2,kiem-thu,Medium,To Do,,25,55,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 20/10 sáng → 20/10 sáng · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 2,v0.2,14400,20/10/2026,20/10/2026,sprint-2,kiem-thu,Medium,To Do,1,25,55,,,,,,,,,,,,,,
 64,3,Task,T28 · Kiểm thử US-02.1,"*Mục tiêu:* Kiểm thử US-02.1 — phục vụ US-02.1 Tạo phòng, ghế và bắt đầu ván (EP-02 Tạo phòng).
 *Đầu vào (phải xong trước):* T26 (FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập).
 *Việc cần làm:*
 * Chạy TC của US-02.1 với hai trình duyệt
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-02.1 đạt.
-*Lịch:* Kỳ · 8 giờ · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 2,v0.2,28800,21/10/2026,21/10/2026,sprint-2,kiem-thu,Medium,To Do,,19,62,,,,,,,,,,,,,,
+*Lịch:* Kỳ · 8 giờ · 2 Story Points · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 2,v0.2,28800,21/10/2026,21/10/2026,sprint-2,kiem-thu,Medium,To Do,2,19,62,,,,,,,,,,,,,,
 65,4,Task,T29 · Kiểm thử US-03.1,"*Mục tiêu:* Kiểm thử US-03.1 — phục vụ US-03.1 Mời bằng link/mã và vào phòng (EP-03 Mời vào phòng).
 *Đầu vào (phải xong trước):* T26 (FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập).
 *Việc cần làm:*
 * Chạy TC của US-03.1 (đăng nhập, chưa đăng nhập, phòng đầy)
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-03.1 đạt.
-*Lịch:* Thư · 8 giờ · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 2,v0.2,28800,21/10/2026,21/10/2026,sprint-2,kiem-thu,Medium,To Do,,21,62,,,,,,,,,,,,,,
+*Lịch:* Thư · 8 giờ · 2 Story Points · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 2,v0.2,28800,21/10/2026,21/10/2026,sprint-2,kiem-thu,Medium,To Do,2,21,62,,,,,,,,,,,,,,
 66,6,Task,T30 · Kiểm thử US-05.1,"*Mục tiêu:* Kiểm thử US-05.1 — phục vụ US-05.1 Ván online: đi cờ, đồng hồ và kết thúc ván (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T25 (FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả), T26 (FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập).
 *Việc cần làm:*
 * Chạy TC của US-05.1 với 2 người chơi + 1 người xem
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-05.1 đạt.
-*Lịch:* Nhạn · 8 giờ · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,21/10/2026,21/10/2026,sprint-2,kiem-thu,Medium,To Do,,26,61,62,,,,,,,,,,,,,
+*Lịch:* Nhạn · 8 giờ · 2 Story Points · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,21/10/2026,21/10/2026,sprint-2,kiem-thu,Medium,To Do,2,26,61,62,,,,,,,,,,,,,
 67,4,Task,"T31 · BE bạn bè, trạng thái online, mời bạn online vào phòng","*Mục tiêu:* BE bạn bè, trạng thái online, mời bạn online vào phòng — phục vụ US-03.2 Bạn bè và mời bạn online (EP-03 Mời vào phòng).
 *Đầu vào (phải xong trước):* T22 (BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập).
 *Việc cần làm:*
@@ -786,8 +786,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Mời bạn online vào phòng: pop-up 30 giây, Tham gia dùng API vào phòng, thu hồi khi phòng khoá
 *Đầu ra:* API bạn bè, trạng thái, lời mời vào phòng + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-03.2. PASS khi test tích hợp xanh.
-*Lịch:* Tùng · 24 giờ · 22/10 sáng → 24/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 3,v0.3,86400,22/10/2026,24/10/2026,sprint-3,phat-trien,Medium,To Do,,22,58,,,,,,,,,,,,,,
+*Lịch:* Tùng · 24 giờ · 5 Story Points · 22/10 sáng → 24/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 3,v0.3,86400,22/10/2026,24/10/2026,sprint-3,phat-trien,Medium,To Do,5,22,58,,,,,,,,,,,,,,
 68,6,Task,"T32 · BE đầu hàng, rời phòng giữa ván, xin hoà","*Mục tiêu:* BE đầu hàng, rời phòng giữa ván, xin hoà — phục vụ US-05.2 Đầu hàng và xin hoà (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T20 (BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván).
 *Việc cần làm:*
@@ -795,8 +795,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Xin hoà: đề nghị 30 giây, chấp nhận → {{DRAW_AGREEMENT}}, từ chối/hết hạn → chờ 5 nước, rút đề nghị, đóng khi ván kết thúc
 *Đầu ra:* API đề nghị trong ván + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-05.2. PASS khi test tích hợp xanh cho đầu hàng, hoà, thời gian chờ 5 nước.
-*Lịch:* Đông · 12 giờ · 22/10 sáng → 23/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 3,v0.3,43200,22/10/2026,23/10/2026,sprint-3,phat-trien,Medium,To Do,,27,56,,,,,,,,,,,,,,
+*Lịch:* Đông · 12 giờ · 3 Story Points · 22/10 sáng → 23/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 3,v0.3,43200,22/10/2026,23/10/2026,sprint-3,phat-trien,Medium,To Do,3,27,56,,,,,,,,,,,,,,
 69,8,Task,"T33 · Camera/mic LiveKit: token, quyền phát, mức chia sẻ, khung media (BE + FE)","*Mục tiêu:* Camera/mic LiveKit: token, quyền phát, mức chia sẻ, khung media (BE + FE) — phục vụ US-07.2 Camera, mic và mức chia sẻ (EP-07 Chat, camera và mic).
 *Đầu vào (phải xong trước):* T06 (Spike media: LiveKit tự chạy + LiveKit Cloud, HTTPS demo LAN (GATE-MEDIA)), T22 (BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập), T25 (FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả).
 *Việc cần làm:*
@@ -805,8 +805,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Lỗi dịch vụ media/hết hạn mức: ván và chat tiếp tục, khung media hiện ""Camera/mic tạm thời không dùng được"" (BA 0.14)
 *Đầu ra:* Camera/mic hoạt động giữa hai người chơi và người xem.
 *Cách kiểm và điều kiện PASS:* AC của US-07.2. PASS khi test tích hợp token xanh và thử thật trên 2 máy + 1 người xem đúng theo mức chia sẻ.
-*Lịch:* Tình · 32 giờ · 22/10 sáng → 25/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.2; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 3,v0.3,115200,22/10/2026,25/10/2026,sprint-3,phat-trien,High,To Do,,33,42,58,61,,,,,,,,,,,,
+*Lịch:* Tình · 32 giờ · 8 Story Points · 22/10 sáng → 25/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.2; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 3,v0.3,115200,22/10/2026,25/10/2026,sprint-3,phat-trien,High,To Do,8,33,42,58,61,,,,,,,,,,,,
 70,9,Task,"T34 · BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới","*Mục tiêu:* BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới — phục vụ US-08.1 Thiết lập và chơi ván với máy (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T20 (BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván), T24 (Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng).
 *Việc cần làm:*
@@ -814,8 +814,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Đầu hàng, kết thúc, Ván mới (giữ cấp/phe để điền sẵn), không đồng hồ, không xin hoà
 *Đầu ra:* Dịch vụ ván với máy + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-08.1. PASS khi test tích hợp xanh, tỷ lệ phe Ngẫu nhiên xấp xỉ 50/50 trên 200 lần.
-*Lịch:* Cường · 16 giờ · 22/10 sáng → 23/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 3,v0.3,57600,22/10/2026,23/10/2026,sprint-3,phat-trien,Medium,To Do,,34,56,60,,,,,,,,,,,,,
+*Lịch:* Cường · 16 giờ · 3 Story Points · 22/10 sáng → 23/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 3,v0.3,57600,22/10/2026,23/10/2026,sprint-3,phat-trien,Medium,To Do,3,34,56,60,,,,,,,,,,,,,
 71,2,Task,"T35 · BE đăng ký/đăng nhập Google, onboarding, phiên Khách","*Mục tiêu:* BE đăng ký/đăng nhập Google, onboarding, phiên Khách — phục vụ US-01.3 Đăng ký/đăng nhập bằng Google và chế độ Khách (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T09 (BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập), T14 (Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu).
 *Việc cần làm:*
@@ -823,8 +823,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Phiên Khách (đăng nhập ẩn danh, GATE-GUEST): tên tạm qua bộ lọc, nhãn ""(Khách)"", hạn 12 giờ (không hết khi đang ngồi ghế), xoá dữ liệu khi hết hạn; khoá thử sai không áp cho Google
 *Đầu ra:* API Google + Khách + báo cáo GATE-GOOGLE, GATE-GUEST.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-01.3. PASS khi test tích hợp xanh và GATE-GOOGLE xác nhận không gộp tài khoản.
-*Lịch:* Đông · 24 giờ · 23/10 chiều → 26/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 3,v0.3,86400,23/10/2026,26/10/2026,sprint-3,phat-trien,Medium,To Do,,17,45,50,,,,,,,,,,,,,
+*Lịch:* Đông · 24 giờ · 5 Story Points · 23/10 chiều → 26/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 3,v0.3,86400,23/10/2026,26/10/2026,sprint-3,phat-trien,Medium,To Do,5,17,45,50,,,,,,,,,,,,,
 72,6,Task,"T36 · FE nút Đầu hàng, Xin hoà và khung đề nghị","*Mục tiêu:* FE nút Đầu hàng, Xin hoà và khung đề nghị — phục vụ US-05.2 Đầu hàng và xin hoà (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T25 (FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả), T32 (BE đầu hàng, rời phòng giữa ván, xin hoà).
 *Việc cần làm:*
@@ -832,8 +832,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Khung Xin hoà không modal (thu gọn, mở lại, đếm 30 giây), nút {{DISABLED}} có tooltip số nước còn chờ
 *Đầu ra:* Giao diện đầu hàng và xin hoà.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-05.2. PASS khi Playwright đầu hàng và xin hoà được giữa hai trình duyệt.
-*Lịch:* Kỳ · 8 giờ · 23/10 chiều → 24/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,23/10/2026,24/10/2026,sprint-3,phat-trien,Medium,To Do,,27,61,68,,,,,,,,,,,,,
+*Lịch:* Kỳ · 8 giờ · 2 Story Points · 23/10 chiều → 24/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,23/10/2026,24/10/2026,sprint-3,phat-trien,Medium,To Do,2,27,61,68,,,,,,,,,,,,,
 73,8,Task,"T37 · BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ","*Mục tiêu:* BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ — phục vụ US-07.1 Hai kênh chat và bộ lọc (EP-07 Chat, camera và mic).
 *Đầu vào (phải xong trước):* T18 (BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host).
 *Việc cần làm:*
@@ -841,24 +841,24 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Bộ lọc từ cấm (chuẩn hoá dấu, hoa/thường, ký tự chèn, {{0→o}}, {{1→i}}), tệp cấu hình danh sách; 200 ký tự, 5 tin/10 giây
 *Đầu ra:* Dịch vụ chat + test.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-07.1. PASS khi unit test bộ lọc và test tích hợp quyền kênh xanh.
-*Lịch:* Cường · 16 giờ · 24/10 sáng → 25/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 3,v0.3,57600,24/10/2026,25/10/2026,sprint-3,phat-trien,Medium,To Do,,32,54,,,,,,,,,,,,,,
+*Lịch:* Cường · 16 giờ · 3 Story Points · 24/10 sáng → 25/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 3,v0.3,57600,24/10/2026,25/10/2026,sprint-3,phat-trien,Medium,To Do,3,32,54,,,,,,,,,,,,,,
 74,9,Task,T38 · FE hộp chọn cấp/phe và màn đánh với máy,"*Mục tiêu:* FE hộp chọn cấp/phe và màn đánh với máy — phục vụ US-08.1 Thiết lập và chơi ván với máy (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T19 (FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh), T34 (BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới).
 *Việc cần làm:*
 * {{MODAL-AI-SETUP}} (cấp, phe), màn {{SCR-AI-GAME}} dùng lại {{<Board>}}, hộp kết quả Ván mới / Về Sảnh
 *Đầu ra:* Giao diện đánh với máy.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-08.1. PASS khi Playwright đánh với máy ở cả ba cấp và bấm Ván mới đổi phe.
-*Lịch:* Kỳ · 12 giờ · 24/10 chiều → 25/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,43200,24/10/2026,25/10/2026,sprint-3,phat-trien,Medium,To Do,,34,55,70,,,,,,,,,,,,,
+*Lịch:* Kỳ · 12 giờ · 3 Story Points · 24/10 chiều → 25/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,43200,24/10/2026,25/10/2026,sprint-3,phat-trien,Medium,To Do,3,34,55,70,,,,,,,,,,,,,
 75,6,Task,T39 · Kiểm thử US-05.2,"*Mục tiêu:* Kiểm thử US-05.2 — phục vụ US-05.2 Đầu hàng và xin hoà (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T36 (FE nút Đầu hàng, Xin hoà và khung đề nghị).
 *Việc cần làm:*
 * Chạy TC của US-05.2
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-05.2 đạt.
-*Lịch:* Thư · 4 giờ · 25/10 sáng → 25/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,14400,25/10/2026,25/10/2026,sprint-3,kiem-thu,Medium,To Do,,27,72,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 25/10 sáng → 25/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,14400,25/10/2026,25/10/2026,sprint-3,kiem-thu,Medium,To Do,1,27,72,,,,,,,,,,,,,,
 76,4,Task,"T40 · FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời","*Mục tiêu:* FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời — phục vụ US-03.2 Bạn bè và mời bạn online (EP-03 Mời vào phòng).
 *Đầu vào (phải xong trước):* T31 (BE bạn bè, trạng thái online, mời bạn online vào phòng).
 *Việc cần làm:*
@@ -866,8 +866,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Tab mời bạn bè trong {{MODAL-INVITE}} theo trạng thái, pop-up lời mời phía người nhận; ẩn với Khách
 *Đầu ra:* Giao diện bạn bè và mời online.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-03.2. PASS khi Playwright kết bạn và mời bạn online vào phòng thành công.
-*Lịch:* Nhạn · 16 giờ · 25/10 chiều → 27/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 3,v0.3,57600,25/10/2026,27/10/2026,sprint-3,phat-trien,Medium,To Do,,22,67,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 16 giờ · 3 Story Points · 25/10 chiều → 27/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 3,v0.3,57600,25/10/2026,27/10/2026,sprint-3,phat-trien,Medium,To Do,3,22,67,,,,,,,,,,,,,,
 77,3,Task,T41 · BE Xin đổi bên và phòng về chờ sau ván,"*Mục tiêu:* BE Xin đổi bên và phòng về chờ sau ván — phục vụ US-02.2 Xin đổi bên và ở lại phòng sau ván (EP-02 Tạo phòng).
 *Đầu vào (phải xong trước):* T18 (BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host), T20 (BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván).
 *Việc cần làm:*
@@ -875,24 +875,24 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Sau ván: phòng về WAITING ngay, giữ ghế/người xem/chế độ/mức giờ, không hạn đóng 10 phút
 *Đầu ra:* API đổi bên và vòng đời sau ván + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-02.2. PASS khi test tích hợp xanh.
-*Lịch:* Tùng · 12 giờ · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,Medium,To Do,,20,54,56,,,,,,,,,,,,,
+*Lịch:* Tùng · 12 giờ · 3 Story Points · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,Medium,To Do,3,20,54,56,,,,,,,,,,,,,
 78,8,Task,T42 · FE khung chat hai kênh,"*Mục tiêu:* FE khung chat hai kênh — phục vụ US-07.1 Hai kênh chat và bộ lọc (EP-07 Chat, camera và mic).
 *Đầu vào (phải xong trước):* T25 (FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả), T37 (BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ).
 *Việc cần làm:*
 * {{PANEL-CHAT}} dùng chung cho phòng chờ và phòng thi đấu: máy tính mặc định chỉ Kênh Riêng, mở thêm Kênh Chung; điện thoại dùng tab; người xem chỉ Kênh Chung; hiển thị văn bản thuần
 *Đầu ra:* Khung chat hai kênh.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-07.1. PASS khi Playwright: người xem không thấy Kênh Riêng, tin thô tục bị che {{***}}.
-*Lịch:* Tình · 12 giờ · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,High,To Do,,32,61,73,,,,,,,,,,,,,
+*Lịch:* Tình · 12 giờ · 3 Story Points · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,High,To Do,3,32,61,73,,,,,,,,,,,,,
 79,9,Task,T43 · Kiểm thử US-08.1,"*Mục tiêu:* Kiểm thử US-08.1 — phục vụ US-08.1 Thiết lập và chơi ván với máy (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T38 (FE hộp chọn cấp/phe và màn đánh với máy).
 *Việc cần làm:*
 * Chạy TC của US-08.1
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-08.1 đạt.
-*Lịch:* Thư · 8 giờ · 26/10 sáng → 26/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,28800,26/10/2026,26/10/2026,sprint-3,kiem-thu,Medium,To Do,,34,74,,,,,,,,,,,,,,
+*Lịch:* Thư · 8 giờ · 2 Story Points · 26/10 sáng → 26/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,28800,26/10/2026,26/10/2026,sprint-3,kiem-thu,Medium,To Do,2,34,74,,,,,,,,,,,,,,
 80,2,Task,"T44 · FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách","*Mục tiêu:* FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách — phục vụ US-01.3 Đăng ký/đăng nhập bằng Google và chế độ Khách (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T15 (FE màn Đăng nhập), T35 (BE đăng ký/đăng nhập Google, onboarding, phiên Khách).
 *Việc cần làm:*
@@ -900,16 +900,16 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Nút Guest + {{MODAL-GUEST-NAME}}, nhãn ""(Khách)"", vào phòng từ link mời bằng Khách
 *Đầu ra:* Luồng Google và Khách hoạt động trên giao diện.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-01.3. PASS khi Playwright vào bằng Khách từ link mời và tự vào phòng.
-*Lịch:* Kỳ · 12 giờ · 26/10 chiều → 27/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,Medium,To Do,,17,51,71,,,,,,,,,,,,,
+*Lịch:* Kỳ · 12 giờ · 3 Story Points · 26/10 chiều → 27/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,Medium,To Do,3,17,51,71,,,,,,,,,,,,,
 81,8,Task,T45 · Kiểm thử US-07.2,"*Mục tiêu:* Kiểm thử US-07.2 — phục vụ US-07.2 Camera, mic và mức chia sẻ (EP-07 Chat, camera và mic).
 *Đầu vào (phải xong trước):* T33 (Camera/mic LiveKit: token, quyền phát, mức chia sẻ, khung media (BE + FE)).
 *Việc cần làm:*
 * Chạy TC của US-07.2 trên hai máy thật và một điện thoại
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-07.2 đạt.
-*Lịch:* Thư · 8 giờ · 27/10 sáng → 27/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,27/10/2026,sprint-3,kiem-thu,Medium,To Do,,33,69,,,,,,,,,,,,,,
+*Lịch:* Thư · 8 giờ · 2 Story Points · 27/10 sáng → 27/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,27/10/2026,sprint-3,kiem-thu,Medium,To Do,2,33,69,,,,,,,,,,,,,,
 82,3,Task,"T46 · FE hộp Xin đổi bên, Ở lại phòng / Rời phòng","*Mục tiêu:* FE hộp Xin đổi bên, Ở lại phòng / Rời phòng — phục vụ US-02.2 Xin đổi bên và ở lại phòng sau ván (EP-02 Tạo phòng).
 *Đầu vào (phải xong trước):* T25 (FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả), T41 (BE Xin đổi bên và phòng về chờ sau ván).
 *Việc cần làm:*
@@ -917,40 +917,40 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hộp kết quả: Ở lại phòng / Rời phòng
 *Đầu ra:* Giao diện đổi bên và sau ván.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-02.2. PASS khi Playwright đổi bên thành công và đánh ván thứ hai trong cùng phòng.
-*Lịch:* Tình · 8 giờ · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,28/10/2026,sprint-3,phat-trien,High,To Do,,20,61,77,,,,,,,,,,,,,
+*Lịch:* Tình · 8 giờ · 2 Story Points · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,28/10/2026,sprint-3,phat-trien,High,To Do,2,20,61,77,,,,,,,,,,,,,
 83,8,Task,T47 · Kiểm thử US-07.1,"*Mục tiêu:* Kiểm thử US-07.1 — phục vụ US-07.1 Hai kênh chat và bộ lọc (EP-07 Chat, camera và mic).
 *Đầu vào (phải xong trước):* T42 (FE khung chat hai kênh).
 *Việc cần làm:*
 * Chạy TC của US-07.1
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-07.1 đạt.
-*Lịch:* Nhạn · 8 giờ · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,,32,78,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 8 giờ · 2 Story Points · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,2,32,78,,,,,,,,,,,,,,
 84,2,Task,T48 · Kiểm thử US-01.3,"*Mục tiêu:* Kiểm thử US-01.3 — phục vụ US-01.3 Đăng ký/đăng nhập bằng Google và chế độ Khách (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T44 (FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách).
 *Việc cần làm:*
 * Chạy TC của US-01.3 với tài khoản Google thật
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-01.3 đạt.
-*Lịch:* Thư · 8 giờ · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,,17,80,,,,,,,,,,,,,,
+*Lịch:* Thư · 8 giờ · 2 Story Points · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,2,17,80,,,,,,,,,,,,,,
 85,4,Task,T49 · Kiểm thử US-03.2,"*Mục tiêu:* Kiểm thử US-03.2 — phục vụ US-03.2 Bạn bè và mời bạn online (EP-03 Mời vào phòng).
 *Đầu vào (phải xong trước):* T40 (FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời).
 *Việc cần làm:*
 * Chạy TC của US-03.2 với 3 tài khoản
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-03.2 đạt.
-*Lịch:* Kỳ · 8 giờ · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,,22,76,,,,,,,,,,,,,,
+*Lịch:* Kỳ · 8 giờ · 2 Story Points · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,2,22,76,,,,,,,,,,,,,,
 86,3,Task,T50 · Kiểm thử US-02.2,"*Mục tiêu:* Kiểm thử US-02.2 — phục vụ US-02.2 Xin đổi bên và ở lại phòng sau ván (EP-02 Tạo phòng).
 *Đầu vào (phải xong trước):* T46 (FE hộp Xin đổi bên, Ở lại phòng / Rời phòng).
 *Việc cần làm:*
 * Chạy TC của US-02.2
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-02.2 đạt.
-*Lịch:* Nhạn · 4 giờ · 28/10 chiều → 28/10 chiều · XIAN Sprint 3.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 3,v0.3,14400,28/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,,20,82,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 4 giờ · 1 Story Points · 28/10 chiều → 28/10 chiều · XIAN Sprint 3.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 3,v0.3,14400,28/10/2026,28/10/2026,sprint-3,kiem-thu,Medium,To Do,1,20,82,,,,,,,,,,,,,,
 87,1,Task,T51 · Hồi quy toàn bộ và chạy D1–D10 vòng 1,"*Mục tiêu:* Hồi quy toàn bộ và chạy D1–D10 vòng 1 — phục vụ US-00.5 Nghiệm thu tổng, NFR và đóng gói demo (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* toàn bộ Task tính năng Sprint 1–3 (15 Task cuối, xem liên kết trên Jira).
 *Việc cần làm:*
@@ -958,8 +958,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Ghi lỗi lên Jira, xác nhận lại lỗi đã sửa
 *Đầu ra:* Báo cáo hồi quy vòng 1.
 *Cách kiểm và điều kiện PASS:* AC-00.5.1. PASS khi không còn lỗi Nghiêm trọng/Cao mở của Story S1–S3.
-*Lịch:* Thư · 24 giờ · 29/10 sáng → 31/10 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,86400,29/10/2026,31/10/2026,sprint-4,phat-trien,Medium,To Do,,14,38,49,52,53,63,64,65,66,75,79,81,83,84,85,86
+*Lịch:* Thư · 24 giờ · 5 Story Points · 29/10 sáng → 31/10 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,86400,29/10/2026,31/10/2026,sprint-4,phat-trien,Medium,To Do,5,14,38,49,52,53,63,64,65,66,75,79,81,83,84,85,86
 88,6,Task,"T52 · Mất kết nối: ân hạn 60 giây, nối lại, ván bị gián đoạn, lớp phủ (BE + FE)","*Mục tiêu:* Mất kết nối: ân hạn 60 giây, nối lại, ván bị gián đoạn, lớp phủ (BE + FE) — phục vụ US-05.3 Mất kết nối và nối lại (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T25 (FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả).
 *Việc cần làm:*
@@ -967,8 +967,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Client: {{OVERLAY-RECONNECTING}} theo vai trò, tự nối lại và đồng bộ ảnh chụp
 *Đầu ra:* Xử lý mất kết nối đầu-cuối.
 *Cách kiểm và điều kiện PASS:* AC của US-05.3 mức U/I/E2E. PASS khi test tích hợp xanh và Playwright mô phỏng rớt mạng 30 giây rồi nối lại thành công.
-*Lịch:* Tình · 16 giờ · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.3; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,57600,29/10/2026,30/10/2026,sprint-4,phat-trien,High,To Do,,28,61,,,,,,,,,,,,,,
+*Lịch:* Tình · 16 giờ · 3 Story Points · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.3; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,57600,29/10/2026,30/10/2026,sprint-4,phat-trien,High,To Do,3,28,61,,,,,,,,,,,,,,
 89,7,Task,"T53 · BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã","*Mục tiêu:* BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã — phục vụ US-06.1 Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T22 (BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập).
 *Việc cần làm:*
@@ -976,8 +976,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Khoá: chặn người mới, vô hiệu link/mã/lời mời chưa dùng; mở lại sinh mã/link mới; người đang trong phòng giữ quyền nối lại
 *Đầu ra:* API chế độ phòng + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-06.1. PASS khi test tích hợp xanh cho khoá, thu hồi mã và mở lại.
-*Lịch:* Đông · 16 giờ · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 4,v1.0,57600,29/10/2026,30/10/2026,sprint-4,phat-trien,Medium,To Do,,29,58,,,,,,,,,,,,,,
+*Lịch:* Đông · 16 giờ · 3 Story Points · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 4,v1.0,57600,29/10/2026,30/10/2026,sprint-4,phat-trien,Medium,To Do,3,29,58,,,,,,,,,,,,,,
 90,7,Task,"T54 · BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem","*Mục tiêu:* BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem — phục vụ US-06.2 Sảnh và danh sách phòng công khai (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T22 (BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập).
 *Việc cần làm:*
@@ -985,8 +985,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * ""Vào chơi"" (ghế vừa hết → người xem nếu còn chỗ) và ""Vào xem""; Khách được dùng
 *Đầu ra:* API danh sách Sảnh + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-06.2. PASS khi test tích hợp xanh và danh sách cập nhật ≤ 2 giây.
-*Lịch:* Cường · 12 giờ · 29/10 sáng → 30/10 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 4,v1.0,43200,29/10/2026,30/10/2026,sprint-4,phat-trien,Medium,To Do,,30,58,,,,,,,,,,,,,,
+*Lịch:* Cường · 12 giờ · 3 Story Points · 29/10 sáng → 30/10 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 4,v1.0,43200,29/10/2026,30/10/2026,sprint-4,phat-trien,Medium,To Do,3,30,58,,,,,,,,,,,,,,
 91,7,Task,"T55 · BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn","*Mục tiêu:* BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn — phục vụ US-06.3 Người xem và đuổi người xem (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T22 (BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập).
 *Việc cần làm:*
@@ -995,8 +995,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Đuổi người xem (cả hai người chơi), chặn đến khi phòng đóng, phát sự kiện đuổi cho Task media
 *Đầu ra:* API người xem + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-06.3. PASS khi test tích hợp xanh cho sức chứa, mời xuống ghế, đuổi và chặn.
-*Lịch:* Tùng · 16 giờ · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 4,v1.0,57600,29/10/2026,30/10/2026,sprint-4,phat-trien,Medium,To Do,,31,58,,,,,,,,,,,,,,
+*Lịch:* Tùng · 16 giờ · 3 Story Points · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 4,v1.0,57600,29/10/2026,30/10/2026,sprint-4,phat-trien,Medium,To Do,3,31,58,,,,,,,,,,,,,,
 92,2,Task,"T56 · BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất","*Mục tiêu:* BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất — phục vụ US-01.4 Phiên đăng nhập, hồ sơ và Đăng xuất (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T18 (BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host), T20 (BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván), T35 (BE đăng ký/đăng nhập Google, onboarding, phiên Khách).
 *Việc cần làm:*
@@ -1006,16 +1006,16 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Giới hạn của Khách: không xuất hiện trong tìm kiếm bạn bè, không nhận lời mời bạn bè
 *Đầu ra:* Quản lý phiên phía máy chủ + test tích hợp + báo cáo GATE-SESSION.
 *Cách kiểm và điều kiện PASS:* AC U/I của US-01.4. PASS khi test tích hợp xanh cho cả hai thiết bị.
-*Lịch:* Cường · 24 giờ · 30/10 chiều → 02/11 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 4,v1.0,86400,30/10/2026,02/11/2026,sprint-4,phat-trien,Medium,To Do,,18,54,56,71,,,,,,,,,,,,
+*Lịch:* Cường · 24 giờ · 5 Story Points · 30/10 chiều → 02/11 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.",Cường,Tình,XIAN Sprint 4,v1.0,86400,30/10/2026,02/11/2026,sprint-4,phat-trien,Medium,To Do,5,18,54,56,71,,,,,,,,,,,,
 93,7,Task,T57 · FE Cài đặt phòng,"*Mục tiêu:* FE Cài đặt phòng — phục vụ US-06.1 Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T53 (BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã).
 *Việc cần làm:*
 * {{MODAL-ROOM-SETTINGS}} (chỉ Host), LOCKED {{DISABLED}} khi chưa đủ 2 người chơi, hiển thị mã/link mới sau khi mở lại
 *Đầu ra:* Giao diện Cài đặt phòng.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-06.1. PASS khi Playwright khoá phòng và người có mã cũ bị từ chối.
-*Lịch:* Nhạn · 8 giờ · 31/10 sáng → 31/10 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 4,v1.0,28800,31/10/2026,31/10/2026,sprint-4,phat-trien,Medium,To Do,,29,89,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 8 giờ · 2 Story Points · 31/10 sáng → 31/10 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 4,v1.0,28800,31/10/2026,31/10/2026,sprint-4,phat-trien,Medium,To Do,2,29,89,,,,,,,,,,,,,,
 94,7,Task,"T58 · FE danh sách người xem, nút Kick, thao tác ghế","*Mục tiêu:* FE danh sách người xem, nút Kick, thao tác ghế — phục vụ US-06.3 Người xem và đuổi người xem (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T55 (BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn).
 *Việc cần làm:*
@@ -1023,8 +1023,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Nút Chuyển sang người xem / Mời xuống ghế, tooltip khi không còn chỗ
 *Đầu ra:* Giao diện quản lý người xem.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-06.3. PASS khi Playwright đuổi một người xem và người đó không vào lại được.
-*Lịch:* Kỳ · 12 giờ · 31/10 sáng → 01/11 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 4,v1.0,43200,31/10/2026,01/11/2026,sprint-4,phat-trien,Medium,To Do,,31,91,,,,,,,,,,,,,,
+*Lịch:* Kỳ · 12 giờ · 3 Story Points · 31/10 sáng → 01/11 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 4,v1.0,43200,31/10/2026,01/11/2026,sprint-4,phat-trien,Medium,To Do,3,31,91,,,,,,,,,,,,,,
 95,9,Task,"T59 · Tinh chỉnh cấp Khó, bộ thế chiếu hết, GATE-ENGINE, giao diện sự cố máy cờ","*Mục tiêu:* Tinh chỉnh cấp Khó, bộ thế chiếu hết, GATE-ENGINE, giao diện sự cố máy cờ — phục vụ US-08.3 Ổn định ván với máy và hoàn thiện cấp Khó (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T24 (Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng).
 *Việc cần làm:*
@@ -1033,16 +1033,16 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Giao diện ""Máy cờ gặp sự cố"" + Thử lại trên {{SCR-AI-GAME}}
 *Đầu ra:* Máy cờ hoàn thiện + báo cáo GATE-ENGINE.
 *Cách kiểm và điều kiện PASS:* AC về thời gian, chiếu hết và phân cấp sức mạnh của US-08.3. PASS khi đạt ngưỡng; không đạt thì ghi BLOCKED và báo PO, không tự hạ ngưỡng.
-*Lịch:* Tình · 20 giờ · 31/10 sáng → 02/11 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,72000,31/10/2026,02/11/2026,sprint-4,phat-trien,High,To Do,,36,60,,,,,,,,,,,,,,
+*Lịch:* Tình · 20 giờ · 5 Story Points · 31/10 sáng → 02/11 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,72000,31/10/2026,02/11/2026,sprint-4,phat-trien,High,To Do,5,36,60,,,,,,,,,,,,,,
 96,6,Task,T60 · Kiểm thử US-05.3,"*Mục tiêu:* Kiểm thử US-05.3 — phục vụ US-05.3 Mất kết nối và nối lại (EP-05 Hai người đánh cờ online).
 *Đầu vào (phải xong trước):* T52 (Mất kết nối: ân hạn 60 giây, nối lại, ván bị gián đoạn, lớp phủ (BE + FE)).
 *Việc cần làm:*
 * Chạy TC của US-05.3 (rút mạng thật trên thiết bị)
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-05.3 đạt.
-*Lịch:* Thư · 4 giờ · 01/11 sáng → 01/11 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,14400,01/11/2026,01/11/2026,sprint-4,kiem-thu,Medium,To Do,,28,88,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 01/11 sáng → 01/11 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,14400,01/11/2026,01/11/2026,sprint-4,kiem-thu,Medium,To Do,1,28,88,,,,,,,,,,,,,,
 97,7,Task,"T61 · FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng","*Mục tiêu:* FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng — phục vụ US-06.2 Sảnh và danh sách phòng công khai (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T54 (BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem).
 *Việc cần làm:*
@@ -1050,16 +1050,16 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Hoàn thiện thanh điều hướng theo AC
 *Đầu ra:* Màn Sảnh hoàn chỉnh.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-06.2. PASS khi Playwright thấy phòng PUBLIC mới xuất hiện và vào xem được.
-*Lịch:* Nhạn · 16 giờ · 01/11 sáng → 02/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 4,v1.0,57600,01/11/2026,02/11/2026,sprint-4,phat-trien,Medium,To Do,,30,90,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 16 giờ · 3 Story Points · 01/11 sáng → 02/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 4,v1.0,57600,01/11/2026,02/11/2026,sprint-4,phat-trien,Medium,To Do,3,30,90,,,,,,,,,,,,,,
 98,7,Task,T62 · Kiểm thử US-06.1,"*Mục tiêu:* Kiểm thử US-06.1 — phục vụ US-06.1 Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T57 (FE Cài đặt phòng).
 *Việc cần làm:*
 * Chạy TC của US-06.1
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-06.1 đạt.
-*Lịch:* Thư · 4 giờ · 01/11 chiều → 01/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,14400,01/11/2026,01/11/2026,sprint-4,kiem-thu,Medium,To Do,,29,93,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 01/11 chiều → 01/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,14400,01/11/2026,01/11/2026,sprint-4,kiem-thu,Medium,To Do,1,29,93,,,,,,,,,,,,,,
 99,9,Task,"T63 · BE giữ ván AI 30 phút, Thử lại, khởi động lại","*Mục tiêu:* BE giữ ván AI 30 phút, Thử lại, khởi động lại — phục vụ US-08.3 Ổn định ván với máy và hoàn thiện cấp Khó (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T34 (BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới).
 *Việc cần làm:*
@@ -1067,16 +1067,16 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Máy cờ không trả lời quá 10 giây: Thử lại (cùng thế hoặc ván mới theo BA 6.1), chặn bấm trùng; khởi động lại máy chủ → thông báo không tiếp tục được; Rời ván/Đăng xuất = đầu hàng có xác nhận
 *Đầu ra:* Xử lý ổn định ván AI + test tích hợp.
 *Cách kiểm và điều kiện PASS:* AC U/I về ổn định của US-08.3. PASS khi test tích hợp xanh.
-*Lịch:* Đông · 12 giờ · 01/11 chiều → 02/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 4,v1.0,43200,01/11/2026,02/11/2026,sprint-4,phat-trien,Medium,To Do,,36,70,,,,,,,,,,,,,,
+*Lịch:* Đông · 12 giờ · 3 Story Points · 01/11 chiều → 02/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.",Đông,Tình,XIAN Sprint 4,v1.0,43200,01/11/2026,02/11/2026,sprint-4,phat-trien,Medium,To Do,3,36,70,,,,,,,,,,,,,,
 100,7,Task,T64 · Kiểm thử US-06.3,"*Mục tiêu:* Kiểm thử US-06.3 — phục vụ US-06.3 Người xem và đuổi người xem (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T33 (Camera/mic LiveKit: token, quyền phát, mức chia sẻ, khung media (BE + FE)), T58 (FE danh sách người xem, nút Kick, thao tác ghế).
 *Việc cần làm:*
 * Chạy TC của US-06.3, gồm kiểm mất hình/tiếng ngay khi bị đuổi
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-06.3 đạt.
-*Lịch:* Thư · 8 giờ · 02/11 sáng → 02/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,02/11/2026,sprint-4,kiem-thu,Medium,To Do,,31,69,94,,,,,,,,,,,,,
+*Lịch:* Thư · 8 giờ · 2 Story Points · 02/11 sáng → 02/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,02/11/2026,sprint-4,kiem-thu,Medium,To Do,2,31,69,94,,,,,,,,,,,,,
 101,2,Task,"T65 · FE Cài đặt hồ sơ, Đăng xuất, banner ván dở","*Mục tiêu:* FE Cài đặt hồ sơ, Đăng xuất, banner ván dở — phục vụ US-01.4 Phiên đăng nhập, hồ sơ và Đăng xuất (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T56 (BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất).
 *Việc cần làm:*
@@ -1085,8 +1085,8 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Với Khách: mục Bạn bè {{DISABLED}}, tab mời bạn bè ẩn, Cài đặt chỉ có Đăng xuất
 *Đầu ra:* Giao diện hồ sơ và phiên.
 *Cách kiểm và điều kiện PASS:* AC E2E của US-01.4. PASS khi Playwright đổi Display Name và thấy banner ván dở.
-*Lịch:* Tình · 8 giờ · 02/11 chiều → 03/11 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,03/11/2026,sprint-4,phat-trien,High,To Do,,18,92,,,,,,,,,,,,,,
+*Lịch:* Tình · 8 giờ · 2 Story Points · 02/11 chiều → 03/11 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,03/11/2026,sprint-4,phat-trien,High,To Do,2,18,92,,,,,,,,,,,,,,
 102,1,Task,T66 · Kịch bản tải và đo NFR (GATE-REALTIME),"*Mục tiêu:* Kịch bản tải và đo NFR (GATE-REALTIME) — phục vụ US-00.5 Nghiệm thu tổng, NFR và đóng gói demo (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* T33 (Camera/mic LiveKit: token, quyền phát, mức chia sẻ, khung media (BE + FE)), T37 (BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ), T52 (Mất kết nối: ân hạn 60 giây, nối lại, ván bị gián đoạn, lớp phủ (BE + FE)), T55 (BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn).
 *Việc cần làm:*
@@ -1094,45 +1094,45 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 * Đo p95 độ trễ nước đi, lỗi, CPU/RAM; đo nhẹ camera/mic ~3 phòng, chỉ ghi số (GATE-REALTIME, NFR-01, NFR-02)
 *Đầu ra:* Kịch bản tải trong repo + báo cáo số đo.
 *Cách kiểm và điều kiện PASS:* AC-00.5.3, AC-00.5.4. PASS khi báo cáo đủ số đo; chỉ số không đạt được ghi BLOCKED kèm lý do.
-*Lịch:* Tùng · 16 giờ · 03/11 sáng → 04/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 4,v1.0,57600,03/11/2026,04/11/2026,sprint-4,phat-trien,Medium,To Do,,14,69,73,88,91,,,,,,,,,,,
+*Lịch:* Tùng · 16 giờ · 3 Story Points · 03/11 sáng → 04/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Tùng,Tình,XIAN Sprint 4,v1.0,57600,03/11/2026,04/11/2026,sprint-4,phat-trien,Medium,To Do,3,14,69,73,88,91,,,,,,,,,,,
 103,7,Task,T67 · Kiểm thử US-06.2,"*Mục tiêu:* Kiểm thử US-06.2 — phục vụ US-06.2 Sảnh và danh sách phòng công khai (EP-06 Chế độ phòng và người xem).
 *Đầu vào (phải xong trước):* T61 (FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng).
 *Việc cần làm:*
 * Chạy TC của US-06.2, đối chiếu nội dung Luật chơi với BA 3.3/3.5/10.4
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-06.2 đạt.
-*Lịch:* Thư · 8 giờ · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,28800,03/11/2026,03/11/2026,sprint-4,kiem-thu,Medium,To Do,,30,97,,,,,,,,,,,,,,
+*Lịch:* Thư · 8 giờ · 2 Story Points · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,28800,03/11/2026,03/11/2026,sprint-4,kiem-thu,Medium,To Do,2,30,97,,,,,,,,,,,,,,
 104,9,Task,T68 · Kiểm thử US-08.3,"*Mục tiêu:* Kiểm thử US-08.3 — phục vụ US-08.3 Ổn định ván với máy và hoàn thiện cấp Khó (EP-08 Đánh với máy theo cấp độ).
 *Đầu vào (phải xong trước):* T59 (Tinh chỉnh cấp Khó, bộ thế chiếu hết, GATE-ENGINE, giao diện sự cố máy cờ), T63 (BE giữ ván AI 30 phút, Thử lại, khởi động lại).
 *Việc cần làm:*
 * Chạy TC của US-08.3, đối chiếu báo cáo GATE-ENGINE
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-08.3 đạt hoặc có ghi BLOCKED được PO xác nhận.
-*Lịch:* Kỳ · 8 giờ · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 4,v1.0,28800,03/11/2026,03/11/2026,sprint-4,kiem-thu,Medium,To Do,,36,95,99,,,,,,,,,,,,,
+*Lịch:* Kỳ · 8 giờ · 2 Story Points · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.",Kỳ,Tình,XIAN Sprint 4,v1.0,28800,03/11/2026,03/11/2026,sprint-4,kiem-thu,Medium,To Do,2,36,95,99,,,,,,,,,,,,,
 105,2,Task,T69 · Kiểm thử US-01.4,"*Mục tiêu:* Kiểm thử US-01.4 — phục vụ US-01.4 Phiên đăng nhập, hồ sơ và Đăng xuất (EP-01 Đăng ký và đăng nhập).
 *Đầu vào (phải xong trước):* T65 (FE Cài đặt hồ sơ, Đăng xuất, banner ván dở).
 *Việc cần làm:*
 * Chạy TC của US-01.4, gồm đăng nhập trên hai thiết bị thật
 *Đầu ra:* Kết quả TC trên Jira.
 *Cách kiểm và điều kiện PASS:* PASS khi 100% TC của US-01.4 đạt.
-*Lịch:* Nhạn · 4 giờ · 03/11 chiều → 03/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 4,v1.0,14400,03/11/2026,03/11/2026,sprint-4,kiem-thu,Medium,To Do,,18,101,,,,,,,,,,,,,,
+*Lịch:* Nhạn · 4 giờ · 1 Story Points · 03/11 chiều → 03/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.",Nhạn,Tình,XIAN Sprint 4,v1.0,14400,03/11/2026,03/11/2026,sprint-4,kiem-thu,Medium,To Do,1,18,101,,,,,,,,,,,,,,
 106,1,Task,"T70 · Đóng gói demo, hướng dẫn chạy, dữ liệu demo","*Mục tiêu:* Đóng gói demo, hướng dẫn chạy, dữ liệu demo — phục vụ US-00.5 Nghiệm thu tổng, NFR và đóng gói demo (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* toàn bộ Task tính năng Sprint 4 (7 Task cuối, xem liên kết trên Jira).
 *Việc cần làm:*
 * Đóng gói chạy demo local (hướng dẫn trong README, ≤ 15 phút): web + server + LiveKit tự chạy qua Docker, HTTPS cho máy khác trong LAN; tài khoản và phòng mẫu; phương án dự phòng: web + server trên Render, camera/mic qua LiveKit Cloud miễn phí
 *Đầu ra:* Bản phát hành v1.0 và hướng dẫn chạy.
 *Cách kiểm và điều kiện PASS:* AC-00.5.5, AC-00.5.6. PASS khi một thành viên không tham gia đóng gói chạy được theo README.
-*Lịch:* Tình · 4 giờ · 04/11 sáng → 04/11 sáng · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,14400,04/11/2026,04/11/2026,sprint-4,phat-trien,High,To Do,,14,87,96,98,100,103,104,105,,,,,,,,
+*Lịch:* Tình · 4 giờ · 1 Story Points · 04/11 sáng → 04/11 sáng · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Tình,Tình,XIAN Sprint 4,v1.0,14400,04/11/2026,04/11/2026,sprint-4,phat-trien,High,To Do,1,14,87,96,98,100,103,104,105,,,,,,,,
 107,1,Task,"T71 · Chạy D1–D10 vòng cuối trên máy demo, ghi hình","*Mục tiêu:* Chạy D1–D10 vòng cuối trên máy demo, ghi hình — phục vụ US-00.5 Nghiệm thu tổng, NFR và đóng gói demo (EP-00 Nền tảng kỹ thuật và chất lượng).
 *Đầu vào (phải xong trước):* T70 (Đóng gói demo, hướng dẫn chạy, dữ liệu demo).
 *Việc cần làm:*
 * Chạy D1–D10 lần cuối trên máy demo, ghi hình làm bằng chứng
 *Đầu ra:* Video và báo cáo D1–D10.
 *Cách kiểm và điều kiện PASS:* AC-00.5.2. PASS khi 10/10 kịch bản đạt.
-*Lịch:* Thư · 4 giờ · 04/11 chiều → 04/11 chiều · XIAN Sprint 4.
-*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,14400,04/11/2026,04/11/2026,sprint-4,phat-trien,Medium,To Do,,14,106,,,,,,,,,,,,,,
+*Lịch:* Thư · 4 giờ · 1 Story Points · 04/11 chiều → 04/11 chiều · XIAN Sprint 4.
+*Tham chiếu:* AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.",Thư,Tình,XIAN Sprint 4,v1.0,14400,04/11/2026,04/11/2026,sprint-4,phat-trien,Medium,To Do,1,14,106,,,,,,,,,,,,,,

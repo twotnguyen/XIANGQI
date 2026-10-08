@@ -12,7 +12,7 @@
 | Start → Due | 07/10 → Story muộn nhất | 07/10 → hạn R1 | Theo lịch Task |
 | Sprint | Không | Không (backlog, R1) | Sprint 1–4 |
 | Original Estimate | — | — | Giờ của Task |
-| Story Points | — | Quy đổi từ giờ Task (≤8h = 1 · ≤16h = 2 · ≤24h = 3 · ≤40h = 5 · ≤64h = 8 · >64h = 13) | — |
+| Story Points (trường Jira) | — (Description ghi tổng điểm Task) | — (Description ghi tổng điểm Task) | Quy đổi từ giờ Task (≤4h = 1 · ≤8h = 2 · ≤16h = 3 · ≤24h = 5 · ≤40h = 8 · >40h = 13) |
 | Liên kết | Chứa các Story | Được các Task *relates to* | *relates to* Story; *is blocked by* Task phải xong trước |
 | Status khi nhập | To Do | To Do (BA chuyển Done khi PO duyệt, không muộn hơn Due date) | To Do |
 
@@ -54,7 +54,7 @@
 | Yêu cầu khách hàng | Hỗ trợ tất cả |
 | Story con | US-00.1, US-00.2, US-00.3, US-00.4, US-00.5 |
 | Số Task / tổng giờ | 10 Task · 144 giờ |
-| Story Points (cộng các Story) | 21 |
+| Tổng điểm các Task | 29 |
 
 **Description**
 
@@ -78,18 +78,19 @@ Yêu cầu khách hàng: Hỗ trợ tất cả. Story: US-00.1, US-00.2, US-00.3
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-00` |
 | Hạn theo R1 | 08/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 08/10 → Task cuối 10/10 |
 | Task thực hiện | T01, T03 (2 Task · 24 giờ) |
+| Tổng điểm các Task | 5 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** nhóm phát triển, **tôi muốn** một monorepo có sẵn khung ứng dụng, CI, nhật ký và điểm kiểm tra sức khoẻ, **để** mọi người code trên cùng một nền và tìm lỗi nhanh.
 *Nguồn:* README (Công nghệ, Quy trình Git), BA 10.1. *Ghi chú:* cấu trúc gợi ý `apps/web` (React + Vite), `apps/server` (NestJS + Socket.IO), `packages/xiangqi-core` (luật cờ dùng chung), `packages/shared` (kiểu dữ liệu, hằng số), `packages/engine` (máy cờ).
 *Nguồn:* BA 10.1 (NFR-08, NFR-09).
-*Sprint:* S1. *Story Points:* **3** (tổng 24 giờ Task).
+*Sprint:* S1. *Story Points:* **5** (tổng điểm 2 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -118,7 +119,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-00.1 |
 | Is blocked by | — |
@@ -133,7 +134,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Server: logger JSON (thời gian, mức, mã sự kiện, lọc mật khẩu/OTP/token/chat), endpoint `/health`; `.env.example` đủ biến (gồm `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` để chuyển giữa LiveKit tự chạy và LiveKit Cloud)
 **Đầu ra:** Repo chạy được bằng `pnpm dev`, CI xanh trên PR mẫu, README mục "Chạy dự án".
 **Cách kiểm và điều kiện PASS:** AC-00.1.1 → AC-00.1.6. PASS khi: clone mới chạy được web + server, `/health` trả 200, PR cố ý lỗi lint bị CI chặn, log không chứa dữ liệu nhạy cảm.
-**Lịch:** Tình · 8 giờ · 08/10 sáng → 08/10 chiều · XIAN Sprint 1.
+**Lịch:** Tình · 8 giờ · 2 Story Points · 08/10 sáng → 08/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T03 · Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái
@@ -152,7 +153,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-00.1 |
 | Is blocked by | T01 |
@@ -167,7 +168,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Thanh điều hướng `PANEL-NAVBAR` khung (mục chưa làm hiện "Sắp ra mắt")
 **Đầu ra:** Bộ thành phần giao diện và khung trang để các Task FE sau dùng lại.
 **Cách kiểm và điều kiện PASS:** PASS khi: mỗi thành phần có trang demo đủ 5 trạng thái; hiển thị đúng ở 360 px và 1440 px; tương phản đạt WCAG AA (kiểm bằng công cụ trình duyệt).
-**Lịch:** Nhạn · 16 giờ · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
+**Lịch:** Nhạn · 16 giờ · 3 Story Points · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-00.2 · Cơ sở dữ liệu và phân quyền P1
@@ -186,17 +187,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 2 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-00` |
 | Hạn theo R1 | 13/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 13/10 → Task cuối 14/10 |
 | Task thực hiện | T14 (1 Task · 16 giờ) |
+| Tổng điểm các Task | 3 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.
 *Nguồn:* BA 1.x, 2.x, 4.2, 5.5, 10.1 (dữ liệu cá nhân). *Ghi chú:* tối thiểu `profiles`, `friendships`/`friend_requests`, `rooms`, `room_blocks`, `matches`, `match_moves`, `login_attempts`; tên bảng do nhóm chốt.
-*Sprint:* S1. *Story Points:* **2** (tổng 16 giờ Task).
+*Sprint:* S1. *Story Points:* **3** (tổng điểm 1 Task, 16 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -222,7 +224,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-00.2 |
 | Is blocked by | T01 |
@@ -237,7 +239,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chỉ mục duy nhất username theo chữ thường; script dữ liệu mẫu (tài khoản demo)
 **Đầu ra:** Migration chạy lại được từ đầu, sơ đồ dữ liệu (ảnh/markdown) trong repo.
 **Cách kiểm và điều kiện PASS:** AC-00.2.1 → AC-00.2.3. PASS khi: test tích hợp chứng minh RLS chặn đọc/ghi trái phép và trùng `Twot`/`twot` bị từ chối.
-**Lịch:** Tùng · 16 giờ · 13/10 sáng → 14/10 chiều · XIAN Sprint 1.
+**Lịch:** Tùng · 16 giờ · 3 Story Points · 13/10 sáng → 14/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-00.3 · Khung realtime
@@ -256,18 +258,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-00` |
 | Hạn theo R1 | 12/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 12/10 → Task cuối 14/10 |
 | Task thực hiện | T12 (1 Task · 24 giờ) |
+| Tổng điểm các Task | 5 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** nhóm phát triển, **tôi muốn** cổng Socket.IO có xác thực, lệnh chống trùng và đồng bộ lại khi nối lại, **để** phòng, ván và chat dùng chung một cách.
 *Nguồn:* BA 3.3 mục 1, 8.3, 1.8 (nhiều tab).
 *Hợp đồng sự kiện:* Task của Story này công bố kiểu dữ liệu sự kiện phòng/ván trong `packages/shared` để Story phòng và Story ván làm độc lập với nhau.
-*Sprint:* S1. *Story Points:* **3** (tổng 24 giờ Task).
+*Sprint:* S1. *Story Points:* **5** (tổng điểm 1 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -295,7 +298,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-00.3 |
 | Is blocked by | T01 |
@@ -310,7 +313,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Tiếp quản tab: tab mới giành quyền, tab cũ chỉ đọc; **công bố hợp đồng sự kiện phòng/ván trong `packages/shared`**
 **Đầu ra:** Khung realtime + tài liệu hợp đồng sự kiện để Story phòng và Story ván làm độc lập.
 **Cách kiểm và điều kiện PASS:** AC-00.3.1 → AC-00.3.5. PASS khi: test tích hợp socket xanh (từ chối token sai, lệnh trùng chỉ áp một lần, nối lại nhận ảnh chụp, tab cũ thành chỉ đọc).
-**Lịch:** Tình · 24 giờ · 12/10 sáng → 14/10 chiều · XIAN Sprint 1.
+**Lịch:** Tình · 24 giờ · 5 Story Points · 12/10 sáng → 14/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.3; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm
@@ -329,17 +332,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-00` |
 | Hạn theo R1 | 08/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 08/10 → Task cuối 11/10 |
 | Task thực hiện | T02, T06 (2 Task · 32 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** nhóm, **tôi muốn** có kế hoạch kiểm thử và kiểm chứng sớm rủi ro media, **để** nghiệm thu có bằng chứng và phát hiện sớm điểm không khả thi.
 *Kèm:* spike GATE-MEDIA (LiveKit Cloud) ở Sprint 1.
-*Sprint:* S1. *Story Points:* **5** (tổng 32 giờ Task).
+*Sprint:* S1. *Story Points:* **6** (tổng điểm 2 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -365,7 +369,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-00.4 |
 | Is blocked by | — |
@@ -380,7 +384,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Thống nhất với nhóm cách đặt mã TC trùng số AC
 **Đầu ra:** Tài liệu kế hoạch kiểm thử + bộ TC Sprint 1 trên Jira/Confluence hoặc repo.
 **Cách kiểm và điều kiện PASS:** AC-00.4.1, AC-00.4.2. PASS khi: PO duyệt kế hoạch; 100% AC của Story S1 có TC tương ứng.
-**Lịch:** Thư · 16 giờ · 08/10 sáng → 09/10 chiều · XIAN Sprint 1.
+**Lịch:** Thư · 16 giờ · 3 Story Points · 08/10 sáng → 09/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.4; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T06 · Spike media: LiveKit tự chạy + LiveKit Cloud, HTTPS demo LAN (GATE-MEDIA)
@@ -399,7 +403,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-00.4 |
 | Is blocked by | T01 |
@@ -415,7 +419,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Ghi số đo: CPU/RAM của LiveKit tự chạy, thời gian thu hồi quyền, phút sử dụng LiveKit Cloud
 **Đầu ra:** Báo cáo GATE-MEDIA (1–2 trang), `docker-compose` chạy LiveKit, hướng dẫn HTTPS cho demo LAN, đoạn code mẫu cho US-07.2.
 **Cách kiểm và điều kiện PASS:** PASS khi: 2 máy khác nhau trong LAN thấy/nghe nhau qua HTTPS với LiveKit tự chạy, đổi sang LiveKit Cloud chỉ bằng biến môi trường; báo cáo đủ số đo (không đặt ngưỡng đạt, theo BA 10.1).
-**Lịch:** Cường · 16 giờ · 10/10 sáng → 11/10 chiều · XIAN Sprint 1.
+**Lịch:** Cường · 16 giờ · 3 Story Points · 10/10 sáng → 11/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.4; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo
@@ -434,16 +438,17 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 8 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-00` |
 | Hạn theo R1 | 04/11 (ngoại lệ: GATE-REALTIME: ngưỡng NFR chỉ chốt được sau khi đo tải thật) |
 | Thi công | XIAN Sprint 4 · Task đầu 29/10 → Task cuối 04/11 |
 | Task thực hiện | T51, T66, T70, T71 (4 Task · 48 giờ) |
+| Tổng điểm các Task | 10 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** PO, **tôi muốn** đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, **để** chứng minh 8 yêu cầu cốt lõi với khách hàng.
-*Sprint:* S4. *Story Points:* **8** (tổng 48 giờ Task).
+*Sprint:* S4. *Story Points:* **10** (tổng điểm 4 Task, 48 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -472,7 +477,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T02, T13, T16, T17, T27, T28, T29, T30, T39, T43, T45, T47, T48, T49, T50 |
@@ -486,7 +491,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Ghi lỗi lên Jira, xác nhận lại lỗi đã sửa
 **Đầu ra:** Báo cáo hồi quy vòng 1.
 **Cách kiểm và điều kiện PASS:** AC-00.5.1. PASS khi không còn lỗi Nghiêm trọng/Cao mở của Story S1–S3.
-**Lịch:** Thư · 24 giờ · 29/10 sáng → 31/10 chiều · XIAN Sprint 4.
+**Lịch:** Thư · 24 giờ · 5 Story Points · 29/10 sáng → 31/10 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T66 · Kịch bản tải và đo NFR (GATE-REALTIME)
@@ -505,7 +510,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T33, T37, T52, T55 |
@@ -519,7 +524,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Đo p95 độ trễ nước đi, lỗi, CPU/RAM; đo nhẹ camera/mic ~3 phòng, chỉ ghi số (GATE-REALTIME, NFR-01, NFR-02)
 **Đầu ra:** Kịch bản tải trong repo + báo cáo số đo.
 **Cách kiểm và điều kiện PASS:** AC-00.5.3, AC-00.5.4. PASS khi báo cáo đủ số đo; chỉ số không đạt được ghi BLOCKED kèm lý do.
-**Lịch:** Tùng · 16 giờ · 03/11 sáng → 04/11 chiều · XIAN Sprint 4.
+**Lịch:** Tùng · 16 giờ · 3 Story Points · 03/11 sáng → 04/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T70 · Đóng gói demo, hướng dẫn chạy, dữ liệu demo
@@ -538,7 +543,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T51, T60, T62, T64, T67, T68, T69 |
@@ -551,7 +556,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Đóng gói chạy demo local (hướng dẫn trong README, ≤ 15 phút): web + server + LiveKit tự chạy qua Docker, HTTPS cho máy khác trong LAN; tài khoản và phòng mẫu; phương án dự phòng: web + server trên Render, camera/mic qua LiveKit Cloud miễn phí
 **Đầu ra:** Bản phát hành v1.0 và hướng dẫn chạy.
 **Cách kiểm và điều kiện PASS:** AC-00.5.5, AC-00.5.6. PASS khi một thành viên không tham gia đóng gói chạy được theo README.
-**Lịch:** Tình · 4 giờ · 04/11 sáng → 04/11 sáng · XIAN Sprint 4.
+**Lịch:** Tình · 4 giờ · 1 Story Points · 04/11 sáng → 04/11 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T71 · Chạy D1–D10 vòng cuối trên máy demo, ghi hình
@@ -570,7 +575,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T70 |
@@ -583,7 +588,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy D1–D10 lần cuối trên máy demo, ghi hình làm bằng chứng
 **Đầu ra:** Video và báo cáo D1–D10.
 **Cách kiểm và điều kiện PASS:** AC-00.5.2. PASS khi 10/10 kịch bản đạt.
-**Lịch:** Thư · 4 giờ · 04/11 chiều → 04/11 chiều · XIAN Sprint 4.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 04/11 chiều → 04/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-00.5; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -610,7 +615,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC1 |
 | Story con | US-01.1, US-01.2, US-01.3, US-01.4 |
 | Số Task / tổng giờ | 12 Task · 140 giờ |
-| Story Points (cộng các Story) | 23 |
+| Tổng điểm các Task | 31 |
 
 **Description**
 
@@ -634,18 +639,19 @@ Yêu cầu khách hàng: YC1. Story: US-01.1, US-01.2, US-01.3, US-01.4.
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-01` |
 | Hạn theo R1 | 09/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 09/10 → Task cuối 12/10 |
 | Task thực hiện | T04, T08, T13 (3 Task · 32 giờ) |
+| Tổng điểm các Task | 7 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** khách truy cập, **tôi muốn** đăng ký bằng username, mật khẩu và email có mã OTP gửi tới hộp thư thật, **để** có tài khoản chính thức.
 *Nguồn:* BA 1.1, 1.4, 1.5. *Màn hình:* `SCR-REGISTER`.
 *Nguồn:* BA 0.4. *Ghi chú:* gắn vào Custom SMTP của Supabase Auth; khoá SMTP chỉ lưu phía máy chủ/Supabase.
-*Sprint:* S1. *Story Points:* **5** (tổng 32 giờ Task).
+*Sprint:* S1. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -681,7 +687,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T01 |
@@ -696,7 +702,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Migration bảng `profiles`; hoàn tất: tạo hồ sơ `display_name = username`, tự đăng nhập; kiểm lại trùng ở bước cuối; tác vụ dọn bản tạm sau ~60 phút; GATE-SMTP, GATE-EMAIL
 **Đầu ra:** API đăng ký + cấu hình SMTP + báo cáo GATE-SMTP.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-01.1 (định dạng, trùng username/email, OTP, bỏ dở, tranh chấp username, lỗi SMTP). PASS khi test tích hợp xanh và gửi được OTP tới 3 Gmail ngoài nhóm.
-**Lịch:** Đông · 16 giờ · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
+**Lịch:** Đông · 16 giờ · 3 Story Points · 09/10 sáng → 10/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T08 · FE màn Đăng ký 3 bước
@@ -715,7 +721,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T03, T04 |
@@ -729,7 +735,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hiển thị lỗi tại ô, đủ 5 trạng thái; chuyển vào Sảnh hoặc phòng mời đang chờ sau khi xong
 **Đầu ra:** Màn Đăng ký hoạt động với API thật.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-01.1. PASS khi Playwright chạy được luồng đăng ký thành công và các luồng lỗi chính.
-**Lịch:** Nhạn · 12 giờ · 11/10 sáng → 12/10 sáng · XIAN Sprint 1.
+**Lịch:** Nhạn · 12 giờ · 3 Story Points · 11/10 sáng → 12/10 sáng · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T13 · Kiểm thử US-01.1
@@ -748,7 +754,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-1`, `kiem-thu` |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T08 |
@@ -761,7 +767,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-01.1, gồm đăng ký bằng Gmail thật ngoài nhóm
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-01.1 đạt.
-**Lịch:** Thư · 4 giờ · 12/10 chiều → 12/10 chiều · XIAN Sprint 1.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 12/10 chiều → 12/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai
@@ -780,17 +786,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-01` |
 | Hạn theo R1 | 11/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 11/10 → Task cuối 14/10 |
 | Task thực hiện | T09, T15, T17 (3 Task · 28 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người dùng, **tôi muốn** đăng nhập bằng username và mật khẩu an toàn, **để** vào ứng dụng mà tài khoản không bị dò mật khẩu.
 *Nguồn:* BA 0.2, 1.8. *Màn hình:* `SCR-LOGIN`. *Ghi chú kỹ thuật:* Supabase Auth đăng nhập bằng email, nên máy chủ tra email từ username rồi xác thực; không trả email hay sự tồn tại của username về client.
-*Sprint:* S1. *Story Points:* **5** (tổng 28 giờ Task).
+*Sprint:* S1. *Story Points:* **6** (tổng điểm 3 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -822,7 +829,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-01.2 |
 | Is blocked by | T04 |
@@ -837,7 +844,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Ghi nhớ đăng nhập: 30 ngày hoặc phiên trình duyệt/12 giờ; GATE-AUTH-USERNAME
 **Đầu ra:** API đăng nhập + bảng `login_attempts` + báo cáo GATE-AUTH-USERNAME.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-01.2. PASS khi test tích hợp chứng minh khoá đúng, không lộ username tồn tại, đúng câu thông báo.
-**Lịch:** Đông · 16 giờ · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
+**Lịch:** Đông · 16 giờ · 3 Story Points · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T15 · FE màn Đăng nhập
@@ -856,7 +863,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-01.2 |
 | Is blocked by | T03, T09 |
@@ -870,7 +877,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hiện thông báo khoá thử sai; đã đăng nhập vào `/login` thì về Sảnh
 **Đầu ra:** Màn Đăng nhập hoạt động với API thật.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-01.2. PASS khi Playwright đăng nhập `TWOT` thành công và thấy câu khoá sau 5 lần sai.
-**Lịch:** Nhạn · 8 giờ · 13/10 sáng → 13/10 chiều · XIAN Sprint 1.
+**Lịch:** Nhạn · 8 giờ · 2 Story Points · 13/10 sáng → 13/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T17 · Kiểm thử US-01.2
@@ -889,7 +896,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-1`, `kiem-thu` |
 | Story (relates to) | US-01.2 |
 | Is blocked by | T15 |
@@ -902,7 +909,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-01.2
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-01.2 đạt.
-**Lịch:** Thư · 4 giờ · 14/10 sáng → 14/10 sáng · XIAN Sprint 1.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 14/10 sáng → 14/10 sáng · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-01.3 · Đăng ký/đăng nhập bằng Google và chế độ Khách
@@ -921,18 +928,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 8 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-01` |
 | Hạn theo R1 | 23/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 23/10 → Task cuối 28/10 |
 | Task thực hiện | T35, T44, T48 (3 Task · 44 giờ) |
+| Tổng điểm các Task | 10 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người dùng mới, **tôi muốn** vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), **để** không mất thời gian đăng ký.
 *Nguồn:* BA 1.2, 1.4, 0.2. *Màn hình:* `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`.
 *Nguồn:* BA 0.3, 1.3, 1.4 mục 4, 2.4. *Màn hình:* `SCR-LOGIN`, `MODAL-GUEST-NAME`. *Ghi chú kỹ thuật:* có thể dùng đăng nhập ẩn danh của Supabase; cần spike xác nhận.
-*Sprint:* S3. *Story Points:* **8** (tổng 44 giờ Task).
+*Sprint:* S3. *Story Points:* **10** (tổng điểm 3 Task, 44 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -970,7 +978,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-01.3 |
 | Is blocked by | T09, T14 |
@@ -984,7 +992,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Phiên Khách (đăng nhập ẩn danh, GATE-GUEST): tên tạm qua bộ lọc, nhãn "(Khách)", hạn 12 giờ (không hết khi đang ngồi ghế), xoá dữ liệu khi hết hạn; khoá thử sai không áp cho Google
 **Đầu ra:** API Google + Khách + báo cáo GATE-GOOGLE, GATE-GUEST.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-01.3. PASS khi test tích hợp xanh và GATE-GOOGLE xác nhận không gộp tài khoản.
-**Lịch:** Đông · 24 giờ · 23/10 chiều → 26/10 sáng · XIAN Sprint 3.
+**Lịch:** Đông · 24 giờ · 5 Story Points · 23/10 chiều → 26/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T44 · FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách
@@ -1003,7 +1011,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-01.3 |
 | Is blocked by | T15, T35 |
@@ -1017,7 +1025,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Nút Guest + `MODAL-GUEST-NAME`, nhãn "(Khách)", vào phòng từ link mời bằng Khách
 **Đầu ra:** Luồng Google và Khách hoạt động trên giao diện.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-01.3. PASS khi Playwright vào bằng Khách từ link mời và tự vào phòng.
-**Lịch:** Kỳ · 12 giờ · 26/10 chiều → 27/10 chiều · XIAN Sprint 3.
+**Lịch:** Kỳ · 12 giờ · 3 Story Points · 26/10 chiều → 27/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T48 · Kiểm thử US-01.3
@@ -1036,7 +1044,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-01.3 |
 | Is blocked by | T44 |
@@ -1049,7 +1057,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-01.3 với tài khoản Google thật
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-01.3 đạt.
-**Lịch:** Thư · 8 giờ · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
+**Lịch:** Thư · 8 giờ · 2 Story Points · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.3; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-01.4 · Phiên đăng nhập, hồ sơ và Đăng xuất
@@ -1068,18 +1076,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-01` |
 | Hạn theo R1 | 30/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 4 · Task đầu 30/10 → Task cuối 03/11 |
 | Task thực hiện | T56, T65, T69 (3 Task · 36 giờ) |
+| Tổng điểm các Task | 8 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** phiên và vị trí chơi được quản lý rõ ràng và tự đặt tên hiển thị, **để** không chơi hai nơi cùng lúc và đối thủ nhận ra tôi.
 *Nguồn:* BA 1.8, 2.4, 6.3 mục 4. *Ghi chú kỹ thuật:* Supabase cho phép nhiều phiên song song; cần bảng phiên/vị trí chơi phía máy chủ để thực thi luật "thiết bị khác" (spike S1).
 *Nguồn:* BA 1.4, 1.6 (email chỉ đọc), Phần 11. *Màn hình:* `SCR-PROFILE-SETTINGS`, `PANEL-NAVBAR`.
-*Sprint:* S4. *Story Points:* **5** (tổng 36 giờ Task).
+*Sprint:* S4. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1119,7 +1128,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-01.4 |
 | Is blocked by | T18, T20, T35 |
@@ -1135,7 +1144,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Giới hạn của Khách: không xuất hiện trong tìm kiếm bạn bè, không nhận lời mời bạn bè
 **Đầu ra:** Quản lý phiên phía máy chủ + test tích hợp + báo cáo GATE-SESSION.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-01.4. PASS khi test tích hợp xanh cho cả hai thiết bị.
-**Lịch:** Cường · 24 giờ · 30/10 chiều → 02/11 sáng · XIAN Sprint 4.
+**Lịch:** Cường · 24 giờ · 5 Story Points · 30/10 chiều → 02/11 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T65 · FE Cài đặt hồ sơ, Đăng xuất, banner ván dở
@@ -1154,7 +1163,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-01.4 |
 | Is blocked by | T56 |
@@ -1169,7 +1178,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Với Khách: mục Bạn bè `DISABLED`, tab mời bạn bè ẩn, Cài đặt chỉ có Đăng xuất
 **Đầu ra:** Giao diện hồ sơ và phiên.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-01.4. PASS khi Playwright đổi Display Name và thấy banner ván dở.
-**Lịch:** Tình · 8 giờ · 02/11 chiều → 03/11 sáng · XIAN Sprint 4.
+**Lịch:** Tình · 8 giờ · 2 Story Points · 02/11 chiều → 03/11 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T69 · Kiểm thử US-01.4
@@ -1188,7 +1197,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-4`, `kiem-thu` |
 | Story (relates to) | US-01.4 |
 | Is blocked by | T65 |
@@ -1201,7 +1210,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-01.4, gồm đăng nhập trên hai thiết bị thật
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-01.4 đạt.
-**Lịch:** Nhạn · 4 giờ · 03/11 chiều → 03/11 chiều · XIAN Sprint 4.
+**Lịch:** Nhạn · 4 giờ · 1 Story Points · 03/11 chiều → 03/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-01.4; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -1228,7 +1237,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC2 |
 | Story con | US-02.1, US-02.2 |
 | Số Task / tổng giờ | 6 Task · 72 giờ |
-| Story Points (cộng các Story) | 11 |
+| Tổng điểm các Task | 16 |
 
 **Description**
 
@@ -1252,18 +1261,19 @@ Yêu cầu khách hàng: YC2. Story: US-02.1, US-02.2.
 | Sprint | — |
 | Fix version | v0.2 |
 | Original Estimate | — |
-| Story Points | 8 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-02` |
 | Hạn theo R1 | 15/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 2 · Task đầu 15/10 → Task cuối 21/10 |
 | Task thực hiện | T18, T21, T28 (3 Task · 48 giờ) |
+| Tổng điểm các Task | 10 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người dùng hoặc Khách, **tôi muốn** tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, **để** so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* `SCR-WAITING-ROOM`.
-*Sprint:* S2. *Story Points:* **8** (tổng 48 giờ Task).
+*Sprint:* S2. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1299,7 +1309,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-02.1 |
 | Is blocked by | T12, T14 |
@@ -1314,7 +1324,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chuyển Host, đóng phòng khi không còn người ngồi ghế, giới hạn 1 phòng cho Khách
 **Đầu ra:** Dịch vụ phòng + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-02.1. PASS khi test tích hợp xanh cho tạo phòng, Sẵn sàng/đếm, mất kết nối khi đếm, chuyển Host, đóng phòng.
-**Lịch:** Cường · 24 giờ · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
+**Lịch:** Cường · 24 giờ · 5 Story Points · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T21 · FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược
@@ -1333,7 +1343,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-02.1 |
 | Is blocked by | T03, T18 |
@@ -1347,7 +1357,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hiển thị Host, trạng thái realtime, đủ 5 trạng thái
 **Đầu ra:** Màn Tạo phòng và phòng chờ nối với API thật.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-02.1. PASS khi Playwright tạo phòng và hai trình duyệt cùng Sẵn sàng để vào ván.
-**Lịch:** Nhạn · 16 giờ · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
+**Lịch:** Nhạn · 16 giờ · 3 Story Points · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T28 · Kiểm thử US-02.1
@@ -1366,7 +1376,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-2`, `kiem-thu` |
 | Story (relates to) | US-02.1 |
 | Is blocked by | T26 |
@@ -1379,7 +1389,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-02.1 với hai trình duyệt
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-02.1 đạt.
-**Lịch:** Kỳ · 8 giờ · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
+**Lịch:** Kỳ · 8 giờ · 2 Story Points · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-02.2 · Xin đổi bên và ở lại phòng sau ván
@@ -1398,18 +1408,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-02` |
 | Hạn theo R1 | 26/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 26/10 → Task cuối 28/10 |
 | Task thực hiện | T41, T46, T50 (3 Task · 24 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** đề nghị đổi Đỏ/Đen và ở lại phòng để đánh tiếp sau mỗi ván, **để** chọn tiếp tục hay đổi phe mà không phải tạo phòng mới.
 *Nguồn:* BA 0.6, 2.3 mục 2, 3.6. *Màn hình:* `SCR-WAITING-ROOM`, `MODAL-SIDE-SWAP-PROMPT`.
 *Nguồn:* BA 0.7. *Màn hình:* `MODAL-MATCH-RESULT`, `SCR-WAITING-ROOM`.
-*Sprint:* S3. *Story Points:* **3** (tổng 24 giờ Task).
+*Sprint:* S3. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1446,7 +1457,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-02.2 |
 | Is blocked by | T18, T20 |
@@ -1460,7 +1471,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Sau ván: phòng về WAITING ngay, giữ ghế/người xem/chế độ/mức giờ, không hạn đóng 10 phút
 **Đầu ra:** API đổi bên và vòng đời sau ván + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-02.2. PASS khi test tích hợp xanh.
-**Lịch:** Tùng · 12 giờ · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
+**Lịch:** Tùng · 12 giờ · 3 Story Points · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T46 · FE hộp Xin đổi bên, Ở lại phòng / Rời phòng
@@ -1479,7 +1490,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-02.2 |
 | Is blocked by | T25, T41 |
@@ -1493,7 +1504,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hộp kết quả: Ở lại phòng / Rời phòng
 **Đầu ra:** Giao diện đổi bên và sau ván.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-02.2. PASS khi Playwright đổi bên thành công và đánh ván thứ hai trong cùng phòng.
-**Lịch:** Tình · 8 giờ · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
+**Lịch:** Tình · 8 giờ · 2 Story Points · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T50 · Kiểm thử US-02.2
@@ -1512,7 +1523,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-02.2 |
 | Is blocked by | T46 |
@@ -1525,7 +1536,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-02.2
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-02.2 đạt.
-**Lịch:** Nhạn · 4 giờ · 28/10 chiều → 28/10 chiều · XIAN Sprint 3.
+**Lịch:** Nhạn · 4 giờ · 1 Story Points · 28/10 chiều → 28/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-02.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -1552,7 +1563,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC3 |
 | Story con | US-03.1, US-03.2 |
 | Số Task / tổng giờ | 6 Task · 80 giờ |
-| Story Points (cộng các Story) | 13 |
+| Tổng điểm các Task | 17 |
 
 **Description**
 
@@ -1576,17 +1587,18 @@ Yêu cầu khách hàng: YC3. Story: US-03.1, US-03.2.
 | Sprint | — |
 | Fix version | v0.2 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-03` |
 | Hạn theo R1 | 18/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 2 · Task đầu 18/10 → Task cuối 21/10 |
 | Task thực hiện | T22, T26, T29 (3 Task · 32 giờ) |
+| Tổng điểm các Task | 7 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người được mời (kể cả chưa kết bạn), **tôi muốn** vào phòng bằng link hoặc mã, **để** chơi hoặc xem ngay.
 *Nguồn:* BA 2.4, 2.6, 2.7, 2.8, 4.2, 0.3. *Màn hình:* `MODAL-INVITE`, `SCR-LOBBY`, `SCR-LOGIN`, `SCR-ACCESS-DENIED`.
-*Sprint:* S2. *Story Points:* **5** (tổng 32 giờ Task).
+*Sprint:* S2. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1616,7 +1628,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-03.1 |
 | Is blocked by | T18 |
@@ -1630,7 +1642,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Lưu đích chuyển hướng khi chưa đăng nhập để tự vào phòng sau đăng nhập/đăng ký
 **Đầu ra:** API vào phòng + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-03.1. PASS khi test tích hợp xanh cho ghế trống, người xem, phòng đầy, mã sai.
-**Lịch:** Tùng · 16 giờ · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
+**Lịch:** Tùng · 16 giờ · 3 Story Points · 18/10 sáng → 19/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T26 · FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập
@@ -1649,7 +1661,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-03.1 |
 | Is blocked by | T21, T22 |
@@ -1663,7 +1675,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - `SCR-ACCESS-DENIED` cho phòng đầy/mã sai
 **Đầu ra:** Luồng mời bằng link/mã chạy với API thật.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-03.1. PASS khi Playwright: người thứ hai vào bằng mã, người thứ ba thành người xem, phòng đầy bị từ chối.
-**Lịch:** Nhạn · 8 giờ · 20/10 sáng → 20/10 chiều · XIAN Sprint 2.
+**Lịch:** Nhạn · 8 giờ · 2 Story Points · 20/10 sáng → 20/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T29 · Kiểm thử US-03.1
@@ -1682,7 +1694,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-2`, `kiem-thu` |
 | Story (relates to) | US-03.1 |
 | Is blocked by | T26 |
@@ -1695,7 +1707,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-03.1 (đăng nhập, chưa đăng nhập, phòng đầy)
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-03.1 đạt.
-**Lịch:** Thư · 8 giờ · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
+**Lịch:** Thư · 8 giờ · 2 Story Points · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-03.2 · Bạn bè và mời bạn online
@@ -1714,11 +1726,12 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 8 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-03` |
 | Hạn theo R1 | 22/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 22/10 → Task cuối 28/10 |
 | Task thực hiện | T31, T40, T49 (3 Task · 48 giờ) |
+| Tổng điểm các Task | 10 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
@@ -1726,7 +1739,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 *Nguồn:* BA 5.5, Phần 11 (Bạn bè P1 tối thiểu). *Màn hình:* `SCR-FRIENDS`.
 *Nguồn:* BA 5.5 mục 4–5, 1.8 (hàng đợi). *Màn hình:* `SCR-FRIENDS`, `PANEL-NAVBAR`.
 *Nguồn:* BA 2.5, 2.7 mục 3, 2.8, 4.3. *Màn hình:* `MODAL-INVITE`.
-*Sprint:* S3. *Story Points:* **8** (tổng 48 giờ Task).
+*Sprint:* S3. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1770,7 +1783,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T22 |
@@ -1785,7 +1798,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Mời bạn online vào phòng: pop-up 30 giây, Tham gia dùng API vào phòng, thu hồi khi phòng khoá
 **Đầu ra:** API bạn bè, trạng thái, lời mời vào phòng + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-03.2. PASS khi test tích hợp xanh.
-**Lịch:** Tùng · 24 giờ · 22/10 sáng → 24/10 chiều · XIAN Sprint 3.
+**Lịch:** Tùng · 24 giờ · 5 Story Points · 22/10 sáng → 24/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T40 · FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời
@@ -1804,7 +1817,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T31 |
@@ -1818,7 +1831,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Tab mời bạn bè trong `MODAL-INVITE` theo trạng thái, pop-up lời mời phía người nhận; ẩn với Khách
 **Đầu ra:** Giao diện bạn bè và mời online.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-03.2. PASS khi Playwright kết bạn và mời bạn online vào phòng thành công.
-**Lịch:** Nhạn · 16 giờ · 25/10 chiều → 27/10 sáng · XIAN Sprint 3.
+**Lịch:** Nhạn · 16 giờ · 3 Story Points · 25/10 chiều → 27/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T49 · Kiểm thử US-03.2
@@ -1837,7 +1850,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T40 |
@@ -1850,7 +1863,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-03.2 với 3 tài khoản
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-03.2 đạt.
-**Lịch:** Kỳ · 8 giờ · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
+**Lịch:** Kỳ · 8 giờ · 2 Story Points · 28/10 sáng → 28/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-03.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -1877,7 +1890,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC4 |
 | Story con | US-04.1, US-04.2, US-04.3 |
 | Số Task / tổng giờ | 7 Task · 72 giờ |
-| Story Points (cộng các Story) | 11 |
+| Tổng điểm các Task | 16 |
 
 **Description**
 
@@ -1901,17 +1914,18 @@ Yêu cầu khách hàng: YC4. Story: US-04.1, US-04.2, US-04.3.
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-04` |
 | Hạn theo R1 | 09/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 09/10 → Task cuối 11/10 |
 | Task thực hiện | T05, T07, T10 (3 Task · 24 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** hệ thống, **tôi cần** một thư viện luật cờ duy nhất dùng cho máy chủ, client và máy cờ, **để** mọi nơi phân xử giống nhau.
 *Nguồn:* BA 3.3 mục 1–2, 3.5. *Ghi chú:* `packages/xiangqi-core`, phủ unit test cao (mục tiêu ≥ 90% dòng).
-*Sprint:* S1. *Story Points:* **3** (tổng 24 giờ Task).
+*Sprint:* S1. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1945,7 +1959,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-04.1 |
 | Is blocked by | T01 |
@@ -1960,7 +1974,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Unit test riêng cho từng loại quân, mỗi loại ít nhất một thế bị chặn và một thế ăn quân
 **Đầu ra:** Hàm sinh nước giả hợp lệ (chưa xét tự chiếu) cho 7 loại quân trong `packages/xiangqi-core`.
 **Cách kiểm và điều kiện PASS:** AC-04.1.2, AC-04.1.9 và phần "thế khai cuộc có đúng 44 nước" của AC-04.1.1. PASS khi unit test của cả 7 loại quân và test tuần tự hoá xanh trong CI.
-**Lịch:** Tình · 8 giờ · 09/10 sáng → 09/10 chiều · XIAN Sprint 1.
+**Lịch:** Tình · 8 giờ · 2 Story Points · 09/10 sáng → 09/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T07 · Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước
@@ -1979,7 +1993,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-04.1 |
 | Is blocked by | T05 |
@@ -1994,7 +2008,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - API công khai `legalMoves(position)`, `isCheck(position)`, `applyMove(position, move)` để giao diện, máy chủ và máy cờ dùng chung
 **Đầu ra:** Bộ sinh nước hợp lệ hoàn chỉnh và nhận biết chiếu/chiếu hết/hết nước.
 **Cách kiểm và điều kiện PASS:** AC-04.1.3, AC-04.1.4, AC-04.1.5. PASS khi unit test các thế Tướng đối mặt, tự chiếu, chiếu hết và hết nước xanh trong CI.
-**Lịch:** Tình · 8 giờ · 10/10 sáng → 10/10 chiều · XIAN Sprint 1.
+**Lịch:** Tình · 8 giờ · 2 Story Points · 10/10 sáng → 10/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T10 · Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử
@@ -2013,7 +2027,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-04.1 |
 | Is blocked by | T07 |
@@ -2028,7 +2042,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Viết tài liệu ngắn cho API; đo độ phủ unit test của cả gói
 **Đầu ra:** Gói `packages/xiangqi-core` hoàn chỉnh, có tài liệu và độ phủ ≥ 90%.
 **Cách kiểm và điều kiện PASS:** AC-04.1.6, AC-04.1.7, AC-04.1.8 và phần perft của AC-04.1.1. PASS khi toàn bộ unit test xanh, perft khớp số công bố, độ phủ dòng ≥ 90%.
-**Lịch:** Tình · 8 giờ · 11/10 sáng → 11/10 chiều · XIAN Sprint 1.
+**Lịch:** Tình · 8 giờ · 2 Story Points · 11/10 sáng → 11/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-04.2 · Khởi tạo và hiển thị bàn cờ
@@ -2047,17 +2061,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-04` |
 | Hạn theo R1 | 11/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 1 · Task đầu 11/10 → Task cuối 13/10 |
 | Task thực hiện | T11, T16 (2 Task · 20 giờ) |
+| Tổng điểm các Task | 4 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** thấy bàn cờ chuẩn với quân chữ Hán, **để** chơi quen thuộc như cờ thật.
 *Nguồn:* BA 3.1, 6.3 mục 1, DESIGN §7. *Màn hình:* `SCR-GAME-ROOM`, `SCR-AI-GAME`.
-*Sprint:* S1. *Story Points:* **3** (tổng 20 giờ Task).
+*Sprint:* S1. *Story Points:* **4** (tổng điểm 2 Task, 20 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2084,7 +2099,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-1`, `phat-trien` |
 | Story (relates to) | US-04.2 |
 | Is blocked by | T01 |
@@ -2098,7 +2113,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Co giãn từ 360 px, quân đủ lớn để chạm; nhãn trợ năng cho quân và lượt đi
 **Đầu ra:** Component `<Board>` hiển thị từ một thế cờ cho trước.
 **Cách kiểm và điều kiện PASS:** AC E2E/M của US-04.2. PASS khi: ảnh chụp đúng 32 quân đúng vị trí, lật đúng khi cầm Đen, hiển thị trọn ở 360 px.
-**Lịch:** Kỳ · 16 giờ · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
+**Lịch:** Kỳ · 16 giờ · 3 Story Points · 11/10 sáng → 12/10 chiều · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T16 · Kiểm thử US-04.2
@@ -2117,7 +2132,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-1`, `kiem-thu` |
 | Story (relates to) | US-04.2 |
 | Is blocked by | T11 |
@@ -2130,7 +2145,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Viết và chạy TC của US-04.2 trên Chrome, Firefox, Safari và một điện thoại thật
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-04.2 đạt, không còn lỗi Nghiêm trọng/Cao.
-**Lịch:** Thư · 4 giờ · 13/10 sáng → 13/10 sáng · XIAN Sprint 1.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 13/10 sáng → 13/10 sáng · XIAN Sprint 1.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-04.3 · Đi cờ bằng click/kéo thả và âm thanh
@@ -2149,18 +2164,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.2 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-04` |
 | Hạn theo R1 | 15/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 2 · Task đầu 15/10 → Task cuối 20/10 |
 | Task thực hiện | T19, T27 (2 Task · 28 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** đi quân bằng click hoặc kéo thả kèm gợi ý ô hợp lệ và tiếng gõ cờ, **để** đi nhanh, không nhầm và có cảm giác như cờ thật.
 *Nguồn:* BA 3.4 mục 1–2, DESIGN §4, §7.4.
 *Nguồn:* BA 3.4 mục 3.
-*Sprint:* S2. *Story Points:* **5** (tổng 28 giờ Task).
+*Sprint:* S2. *Story Points:* **6** (tổng điểm 2 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2193,7 +2209,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-04.3 |
 | Is blocked by | T10, T11 |
@@ -2208,7 +2224,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - 4 âm thanh Web Audio API + nút tắt tiếng giữ trong phiên
 **Đầu ra:** Bàn cờ chơi được hai bên trên một máy (chế độ thử).
 **Cách kiểm và điều kiện PASS:** AC E2E của US-04.3. PASS khi Playwright đi được nước bằng click và kéo thả, nước sai bị từ chối.
-**Lịch:** Kỳ · 24 giờ · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
+**Lịch:** Kỳ · 24 giờ · 5 Story Points · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T27 · Kiểm thử US-04.3
@@ -2227,7 +2243,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-2`, `kiem-thu` |
 | Story (relates to) | US-04.3 |
 | Is blocked by | T19 |
@@ -2240,7 +2256,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-04.3 trên máy tính và điện thoại
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-04.3 đạt.
-**Lịch:** Thư · 4 giờ · 20/10 sáng → 20/10 sáng · XIAN Sprint 2.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 20/10 sáng → 20/10 sáng · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-04.3; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -2267,7 +2283,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC5 |
 | Story con | US-05.1, US-05.2, US-05.3 |
 | Số Task / tổng giờ | 9 Task · 100 giờ |
-| Story Points (cộng các Story) | 14 |
+| Tổng điểm các Task | 22 |
 
 **Description**
 
@@ -2291,11 +2307,12 @@ Yêu cầu khách hàng: YC5. Story: US-05.1, US-05.2, US-05.3.
 | Sprint | — |
 | Fix version | v0.2 |
 | Original Estimate | — |
-| Story Points | 8 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-05` |
 | Hạn theo R1 | 15/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 2 · Task đầu 15/10 → Task cuối 21/10 |
 | Task thực hiện | T20, T23, T25, T30 (4 Task · 56 giờ) |
+| Tổng điểm các Task | 12 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
@@ -2303,7 +2320,7 @@ Yêu cầu khách hàng: YC5. Story: US-05.1, US-05.2, US-05.3.
 *Nguồn:* BA 3.3 mục 1, 4.3 mục 2. *Phụ thuộc:* US-00.3, US-05.1.
 *Nguồn:* BA 2.1, 3.3 mục 3.
 *Nguồn:* BA 3.3, 3.5 mục 5, 0.7. *Màn hình:* `MODAL-MATCH-RESULT`.
-*Sprint:* S2. *Story Points:* **8** (tổng 56 giờ Task).
+*Sprint:* S2. *Story Points:* **12** (tổng điểm 4 Task, 56 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2339,7 +2356,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T10, T12 |
@@ -2354,7 +2371,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Từ chối nước sai luật/không đúng lượt, đồng bộ lại client
 **Đầu ra:** Dịch vụ ván online có API socket và test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-05.1 (trừ đồng hồ). PASS khi test tích hợp xanh và độ trễ phát nước đi đo được trong môi trường demo.
-**Lịch:** Tình · 24 giờ · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
+**Lịch:** Tình · 24 giờ · 5 Story Points · 15/10 sáng → 17/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T23 · BE đồng hồ thi đấu và hết giờ
@@ -2373,7 +2390,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T20 |
@@ -2387,7 +2404,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hết giờ → kết thúc `TIMEOUT`; gửi thời gian còn lại trong ảnh chụp
 **Đầu ra:** Đồng hồ tích hợp trong dịch vụ ván.
 **Cách kiểm và điều kiện PASS:** AC U/I về đồng hồ của US-05.1. PASS khi test tích hợp xanh cho hết giờ và nước đến muộn.
-**Lịch:** Đông · 8 giờ · 18/10 sáng → 18/10 chiều · XIAN Sprint 2.
+**Lịch:** Đông · 8 giờ · 2 Story Points · 18/10 sáng → 18/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T25 · FE phòng thi đấu: nối nước đi, đồng hồ, hộp kết quả
@@ -2406,7 +2423,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T19, T23 |
@@ -2421,7 +2438,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hộp kết quả với lý do tiếng Việt
 **Đầu ra:** Màn phòng thi đấu chơi được trọn ván giữa hai trình duyệt.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-05.1. PASS khi Playwright đánh trọn một ván chiếu hết giữa hai trình duyệt và người xem thấy cùng bàn cờ.
-**Lịch:** Kỳ · 16 giờ · 19/10 sáng → 20/10 chiều · XIAN Sprint 2.
+**Lịch:** Kỳ · 16 giờ · 3 Story Points · 19/10 sáng → 20/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T30 · Kiểm thử US-05.1
@@ -2440,7 +2457,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-2`, `kiem-thu` |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T25, T26 |
@@ -2453,7 +2470,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-05.1 với 2 người chơi + 1 người xem
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-05.1 đạt.
-**Lịch:** Nhạn · 8 giờ · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
+**Lịch:** Nhạn · 8 giờ · 2 Story Points · 21/10 sáng → 21/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-05.2 · Đầu hàng và xin hoà
@@ -2472,18 +2489,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-05` |
 | Hạn theo R1 | 22/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 22/10 → Task cuối 25/10 |
 | Task thực hiện | T32, T36, T39 (3 Task · 24 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** đầu hàng có xác nhận và đề nghị hoà mà không chặn bàn cờ, **để** kết thúc ván văn minh, không bấm nhầm.
 *Nguồn:* BA 2.3 mục 5, 3.3 mục 2. *Màn hình:* `MODAL-CONFIRM-RESIGN`, `MODAL-CONFIRM-LEAVE`.
 *Nguồn:* BA 3.3 mục 2, 3.5 mục 4, 3.6 mục 2, 5. *Màn hình:* `MODAL-DRAW-PROMPT`.
-*Sprint:* S3. *Story Points:* **3** (tổng 24 giờ Task).
+*Sprint:* S3. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2515,7 +2533,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-05.2 |
 | Is blocked by | T20 |
@@ -2529,7 +2547,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Xin hoà: đề nghị 30 giây, chấp nhận → `DRAW_AGREEMENT`, từ chối/hết hạn → chờ 5 nước, rút đề nghị, đóng khi ván kết thúc
 **Đầu ra:** API đề nghị trong ván + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-05.2. PASS khi test tích hợp xanh cho đầu hàng, hoà, thời gian chờ 5 nước.
-**Lịch:** Đông · 12 giờ · 22/10 sáng → 23/10 sáng · XIAN Sprint 3.
+**Lịch:** Đông · 12 giờ · 3 Story Points · 22/10 sáng → 23/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T36 · FE nút Đầu hàng, Xin hoà và khung đề nghị
@@ -2548,7 +2566,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-05.2 |
 | Is blocked by | T25, T32 |
@@ -2562,7 +2580,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Khung Xin hoà không modal (thu gọn, mở lại, đếm 30 giây), nút `DISABLED` có tooltip số nước còn chờ
 **Đầu ra:** Giao diện đầu hàng và xin hoà.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-05.2. PASS khi Playwright đầu hàng và xin hoà được giữa hai trình duyệt.
-**Lịch:** Kỳ · 8 giờ · 23/10 chiều → 24/10 sáng · XIAN Sprint 3.
+**Lịch:** Kỳ · 8 giờ · 2 Story Points · 23/10 chiều → 24/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T39 · Kiểm thử US-05.2
@@ -2581,7 +2599,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-05.2 |
 | Is blocked by | T36 |
@@ -2594,7 +2612,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-05.2
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-05.2 đạt.
-**Lịch:** Thư · 4 giờ · 25/10 sáng → 25/10 sáng · XIAN Sprint 3.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 25/10 sáng → 25/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-05.3 · Mất kết nối và nối lại
@@ -2613,17 +2631,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 3 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-05` |
 | Hạn theo R1 | 29/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 4 · Task đầu 29/10 → Task cuối 01/11 |
 | Task thực hiện | T52, T60 (2 Task · 20 giờ) |
+| Tổng điểm các Task | 4 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** có 60 giây để quay lại khi rớt mạng, **để** không thua oan vì sự cố ngắn.
 *Nguồn:* BA 3.3 mục 4, 8.3, 10.1 (ván gián đoạn). *Màn hình:* `OVERLAY-RECONNECTING`.
-*Sprint:* S4. *Story Points:* **3** (tổng 20 giờ Task).
+*Sprint:* S4. *Story Points:* **4** (tổng điểm 2 Task, 20 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2652,7 +2671,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-05.3 |
 | Is blocked by | T25 |
@@ -2666,7 +2685,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Client: `OVERLAY-RECONNECTING` theo vai trò, tự nối lại và đồng bộ ảnh chụp
 **Đầu ra:** Xử lý mất kết nối đầu-cuối.
 **Cách kiểm và điều kiện PASS:** AC của US-05.3 mức U/I/E2E. PASS khi test tích hợp xanh và Playwright mô phỏng rớt mạng 30 giây rồi nối lại thành công.
-**Lịch:** Tình · 16 giờ · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
+**Lịch:** Tình · 16 giờ · 3 Story Points · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T60 · Kiểm thử US-05.3
@@ -2685,7 +2704,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-4`, `kiem-thu` |
 | Story (relates to) | US-05.3 |
 | Is blocked by | T52 |
@@ -2698,7 +2717,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-05.3 (rút mạng thật trên thiết bị)
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-05.3 đạt.
-**Lịch:** Thư · 4 giờ · 01/11 sáng → 01/11 sáng · XIAN Sprint 4.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 01/11 sáng → 01/11 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-05.3; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -2725,7 +2744,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC6 |
 | Story con | US-06.1, US-06.2, US-06.3 |
 | Số Task / tổng giờ | 9 Task · 100 giờ |
-| Story Points (cộng các Story) | 15 |
+| Tổng điểm các Task | 22 |
 
 **Description**
 
@@ -2749,17 +2768,18 @@ Yêu cầu khách hàng: YC6. Story: US-06.1, US-06.2, US-06.3.
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-06` |
 | Hạn theo R1 | 29/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 4 · Task đầu 29/10 → Task cuối 01/11 |
 | Task thực hiện | T53, T57, T62 (3 Task · 28 giờ) |
+| Tổng điểm các Task | 6 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** Host, **tôi muốn** mở công khai, chỉ cho vào bằng mã, hoặc khoá phòng, **để** kiểm soát ai được vào.
 *Nguồn:* BA 2.7 mục 2, 2.8 mục 5–6, 4.3. *Màn hình:* `MODAL-ROOM-SETTINGS`.
-*Sprint:* S4. *Story Points:* **5** (tổng 28 giờ Task).
+*Sprint:* S4. *Story Points:* **6** (tổng điểm 3 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2789,7 +2809,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T22 |
@@ -2803,7 +2823,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Khoá: chặn người mới, vô hiệu link/mã/lời mời chưa dùng; mở lại sinh mã/link mới; người đang trong phòng giữ quyền nối lại
 **Đầu ra:** API chế độ phòng + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-06.1. PASS khi test tích hợp xanh cho khoá, thu hồi mã và mở lại.
-**Lịch:** Đông · 16 giờ · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
+**Lịch:** Đông · 16 giờ · 3 Story Points · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T57 · FE Cài đặt phòng
@@ -2822,7 +2842,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T53 |
@@ -2835,7 +2855,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - `MODAL-ROOM-SETTINGS` (chỉ Host), LOCKED `DISABLED` khi chưa đủ 2 người chơi, hiển thị mã/link mới sau khi mở lại
 **Đầu ra:** Giao diện Cài đặt phòng.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-06.1. PASS khi Playwright khoá phòng và người có mã cũ bị từ chối.
-**Lịch:** Nhạn · 8 giờ · 31/10 sáng → 31/10 chiều · XIAN Sprint 4.
+**Lịch:** Nhạn · 8 giờ · 2 Story Points · 31/10 sáng → 31/10 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T62 · Kiểm thử US-06.1
@@ -2854,7 +2874,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
-| Story Points | — |
+| Story Points | 1 |
 | Labels | `sprint-4`, `kiem-thu` |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T57 |
@@ -2867,7 +2887,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-06.1
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-06.1 đạt.
-**Lịch:** Thư · 4 giờ · 01/11 chiều → 01/11 chiều · XIAN Sprint 4.
+**Lịch:** Thư · 4 giờ · 1 Story Points · 01/11 chiều → 01/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-06.2 · Sảnh và danh sách phòng công khai
@@ -2886,18 +2906,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-06` |
 | Hạn theo R1 | 29/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 4 · Task đầu 29/10 → Task cuối 03/11 |
 | Task thực hiện | T54, T61, T67 (3 Task · 36 giờ) |
+| Tổng điểm các Task | 8 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người dùng hoặc Khách, **tôi muốn** Sảnh rõ ràng các lựa chọn, luật chơi và danh sách phòng công khai để vào chơi hoặc xem, **để** tìm trận mà không cần mã.
 *Nguồn:* BA 0.5, 2.7. *Màn hình:* `SCR-LOBBY`.
 *Nguồn:* BA 2.0, 10.4, Phần 11, DANH-MUC §7. *Màn hình:* `SCR-LOBBY`, `PANEL-NAVBAR`.
-*Sprint:* S4. *Story Points:* **5** (tổng 36 giờ Task).
+*Sprint:* S4. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2936,7 +2957,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T22 |
@@ -2950,7 +2971,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - "Vào chơi" (ghế vừa hết → người xem nếu còn chỗ) và "Vào xem"; Khách được dùng
 **Đầu ra:** API danh sách Sảnh + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-06.2. PASS khi test tích hợp xanh và danh sách cập nhật ≤ 2 giây.
-**Lịch:** Cường · 12 giờ · 29/10 sáng → 30/10 sáng · XIAN Sprint 4.
+**Lịch:** Cường · 12 giờ · 3 Story Points · 29/10 sáng → 30/10 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T61 · FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng
@@ -2969,7 +2990,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T54 |
@@ -2983,7 +3004,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Hoàn thiện thanh điều hướng theo AC
 **Đầu ra:** Màn Sảnh hoàn chỉnh.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-06.2. PASS khi Playwright thấy phòng PUBLIC mới xuất hiện và vào xem được.
-**Lịch:** Nhạn · 16 giờ · 01/11 sáng → 02/11 chiều · XIAN Sprint 4.
+**Lịch:** Nhạn · 16 giờ · 3 Story Points · 01/11 sáng → 02/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T67 · Kiểm thử US-06.2
@@ -3002,7 +3023,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-4`, `kiem-thu` |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T61 |
@@ -3015,7 +3036,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-06.2, đối chiếu nội dung Luật chơi với BA 3.3/3.5/10.4
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-06.2 đạt.
-**Lịch:** Thư · 8 giờ · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
+**Lịch:** Thư · 8 giờ · 2 Story Points · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-06.3 · Người xem và đuổi người xem
@@ -3034,18 +3055,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-06` |
 | Hạn theo R1 | 29/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 4 · Task đầu 29/10 → Task cuối 02/11 |
 | Task thực hiện | T55, T58, T64 (3 Task · 36 giờ) |
+| Tổng điểm các Task | 8 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** Host hoặc người chơi, **tôi muốn** sắp xếp người giữa ghế và hàng người xem và đuổi người xem quấy rối, **để** giữ không gian thi đấu tập trung.
 *Nguồn:* BA 2.6, 2.8 mục 3–4, 8.3. *Màn hình:* `SCR-WAITING-ROOM`, `PANEL-SPECTATORS`.
 *Nguồn:* BA 4.2, 4.1. *Màn hình:* `PANEL-SPECTATORS`, `MODAL-CONFIRM-KICK`.
-*Sprint:* S4. *Story Points:* **5** (tổng 36 giờ Task).
+*Sprint:* S4. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3082,7 +3104,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-06.3 |
 | Is blocked by | T22 |
@@ -3097,7 +3119,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Đuổi người xem (cả hai người chơi), chặn đến khi phòng đóng, phát sự kiện đuổi cho Task media
 **Đầu ra:** API người xem + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-06.3. PASS khi test tích hợp xanh cho sức chứa, mời xuống ghế, đuổi và chặn.
-**Lịch:** Tùng · 16 giờ · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
+**Lịch:** Tùng · 16 giờ · 3 Story Points · 29/10 sáng → 30/10 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T58 · FE danh sách người xem, nút Kick, thao tác ghế
@@ -3116,7 +3138,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-06.3 |
 | Is blocked by | T55 |
@@ -3130,7 +3152,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Nút Chuyển sang người xem / Mời xuống ghế, tooltip khi không còn chỗ
 **Đầu ra:** Giao diện quản lý người xem.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-06.3. PASS khi Playwright đuổi một người xem và người đó không vào lại được.
-**Lịch:** Kỳ · 12 giờ · 31/10 sáng → 01/11 sáng · XIAN Sprint 4.
+**Lịch:** Kỳ · 12 giờ · 3 Story Points · 31/10 sáng → 01/11 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T64 · Kiểm thử US-06.3
@@ -3149,7 +3171,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-4`, `kiem-thu` |
 | Story (relates to) | US-06.3 |
 | Is blocked by | T33, T58 |
@@ -3162,7 +3184,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-06.3, gồm kiểm mất hình/tiếng ngay khi bị đuổi
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-06.3 đạt.
-**Lịch:** Thư · 8 giờ · 02/11 sáng → 02/11 chiều · XIAN Sprint 4.
+**Lịch:** Thư · 8 giờ · 2 Story Points · 02/11 sáng → 02/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-06.3; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -3189,7 +3211,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC7 |
 | Story con | US-07.1, US-07.2 |
 | Số Task / tổng giờ | 5 Task · 76 giờ |
-| Story Points (cộng các Story) | 10 |
+| Tổng điểm các Task | 18 |
 
 **Description**
 
@@ -3213,18 +3235,19 @@ Yêu cầu khách hàng: YC7. Story: US-07.1, US-07.2.
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-07` |
 | Hạn theo R1 | 24/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 24/10 → Task cuối 28/10 |
 | Task thực hiện | T37, T42, T47 (3 Task · 36 giờ) |
+| Tổng điểm các Task | 8 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** một kênh riêng với đối thủ tách khỏi kênh của người xem, có lọc lời thô tục và chống spam, **để** trò chuyện văn minh và riêng tư.
 *Nguồn:* BA 5.3 mục 1, 10.1 (chat khi đổi người), 4.1. *Màn hình:* `PANEL-CHAT`.
 *Nguồn:* BA 5.3 mục 2.
-*Sprint:* S3. *Story Points:* **5** (tổng 36 giờ Task).
+*Sprint:* S3. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3261,7 +3284,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-07.1 |
 | Is blocked by | T18 |
@@ -3275,7 +3298,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Bộ lọc từ cấm (chuẩn hoá dấu, hoa/thường, ký tự chèn, `0→o`, `1→i`), tệp cấu hình danh sách; 200 ký tự, 5 tin/10 giây
 **Đầu ra:** Dịch vụ chat + test.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-07.1. PASS khi unit test bộ lọc và test tích hợp quyền kênh xanh.
-**Lịch:** Cường · 16 giờ · 24/10 sáng → 25/10 chiều · XIAN Sprint 3.
+**Lịch:** Cường · 16 giờ · 3 Story Points · 24/10 sáng → 25/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T42 · FE khung chat hai kênh
@@ -3294,7 +3317,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-07.1 |
 | Is blocked by | T25, T37 |
@@ -3307,7 +3330,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - `PANEL-CHAT` dùng chung cho phòng chờ và phòng thi đấu: máy tính mặc định chỉ Kênh Riêng, mở thêm Kênh Chung; điện thoại dùng tab; người xem chỉ Kênh Chung; hiển thị văn bản thuần
 **Đầu ra:** Khung chat hai kênh.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-07.1. PASS khi Playwright: người xem không thấy Kênh Riêng, tin thô tục bị che `***`.
-**Lịch:** Tình · 12 giờ · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
+**Lịch:** Tình · 12 giờ · 3 Story Points · 26/10 sáng → 27/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T47 · Kiểm thử US-07.1
@@ -3326,7 +3349,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-07.1 |
 | Is blocked by | T42 |
@@ -3339,7 +3362,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-07.1
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-07.1 đạt.
-**Lịch:** Nhạn · 8 giờ · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
+**Lịch:** Nhạn · 8 giờ · 2 Story Points · 27/10 chiều → 28/10 sáng · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-07.2 · Camera, mic và mức chia sẻ
@@ -3358,18 +3381,19 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-07` |
 | Hạn theo R1 | 22/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 22/10 → Task cuối 27/10 |
 | Task thực hiện | T33, T45 (2 Task · 40 giờ) |
+| Tổng điểm các Task | 10 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** bật camera và mic và chọn ai được thấy/nghe mình, **để** giao lưu như ngồi cùng bàn mà vẫn chủ động quyền riêng tư.
 *Nguồn:* BA 4.1, 1.8 (nhiều tab), 10.1 (LiveKit Cloud, không ghi). *Màn hình:* `PANEL-MEDIA`. *Phụ thuộc:* spike GATE-MEDIA.
 *Nguồn:* BA 4.1, 4.2.
-*Sprint:* S3. *Story Points:* **5** (tổng 40 giờ Task).
+*Sprint:* S3. *Story Points:* **10** (tổng điểm 2 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3405,7 +3429,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 32 giờ |
-| Story Points | — |
+| Story Points | 8 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-07.2 |
 | Is blocked by | T06, T22, T25 |
@@ -3420,7 +3444,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Lỗi dịch vụ media/hết hạn mức: ván và chat tiếp tục, khung media hiện "Camera/mic tạm thời không dùng được" (BA 0.14)
 **Đầu ra:** Camera/mic hoạt động giữa hai người chơi và người xem.
 **Cách kiểm và điều kiện PASS:** AC của US-07.2. PASS khi test tích hợp token xanh và thử thật trên 2 máy + 1 người xem đúng theo mức chia sẻ.
-**Lịch:** Tình · 32 giờ · 22/10 sáng → 25/10 chiều · XIAN Sprint 3.
+**Lịch:** Tình · 32 giờ · 8 Story Points · 22/10 sáng → 25/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.2; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T45 · Kiểm thử US-07.2
@@ -3439,7 +3463,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-07.2 |
 | Is blocked by | T33 |
@@ -3452,7 +3476,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-07.2 trên hai máy thật và một điện thoại
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-07.2 đạt.
-**Lịch:** Thư · 8 giờ · 27/10 sáng → 27/10 chiều · XIAN Sprint 3.
+**Lịch:** Thư · 8 giờ · 2 Story Points · 27/10 sáng → 27/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-07.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ---
@@ -3479,7 +3503,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Yêu cầu khách hàng | YC8 |
 | Story con | US-08.1, US-08.2, US-08.3 |
 | Số Task / tổng giờ | 7 Task · 108 giờ |
-| Story Points (cộng các Story) | 15 |
+| Tổng điểm các Task | 26 |
 
 **Description**
 
@@ -3503,17 +3527,18 @@ Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-08` |
 | Hạn theo R1 | 22/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 3 · Task đầu 22/10 → Task cuối 26/10 |
 | Task thực hiện | T34, T38, T43 (3 Task · 36 giờ) |
+| Tổng điểm các Task | 8 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** chọn cấp độ và phe rồi chơi với máy không giới hạn thời gian, **để** luyện tập.
 *Nguồn:* BA 2.0 mục 4, 6.3, 0.9. *Màn hình:* `MODAL-AI-SETUP`, `SCR-AI-GAME`.
-*Sprint:* S3. *Story Points:* **5** (tổng 36 giờ Task).
+*Sprint:* S3. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3543,7 +3568,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 16 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T20, T24 |
@@ -3557,7 +3582,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Đầu hàng, kết thúc, Ván mới (giữ cấp/phe để điền sẵn), không đồng hồ, không xin hoà
 **Đầu ra:** Dịch vụ ván với máy + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I của US-08.1. PASS khi test tích hợp xanh, tỷ lệ phe Ngẫu nhiên xấp xỉ 50/50 trên 200 lần.
-**Lịch:** Cường · 16 giờ · 22/10 sáng → 23/10 chiều · XIAN Sprint 3.
+**Lịch:** Cường · 16 giờ · 3 Story Points · 22/10 sáng → 23/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T38 · FE hộp chọn cấp/phe và màn đánh với máy
@@ -3576,7 +3601,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-3`, `phat-trien` |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T19, T34 |
@@ -3589,7 +3614,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - `MODAL-AI-SETUP` (cấp, phe), màn `SCR-AI-GAME` dùng lại `<Board>`, hộp kết quả Ván mới / Về Sảnh
 **Đầu ra:** Giao diện đánh với máy.
 **Cách kiểm và điều kiện PASS:** AC E2E của US-08.1. PASS khi Playwright đánh với máy ở cả ba cấp và bấm Ván mới đổi phe.
-**Lịch:** Kỳ · 12 giờ · 24/10 chiều → 25/10 chiều · XIAN Sprint 3.
+**Lịch:** Kỳ · 12 giờ · 3 Story Points · 24/10 chiều → 25/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T43 · Kiểm thử US-08.1
@@ -3608,7 +3633,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-3`, `kiem-thu` |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T38 |
@@ -3621,7 +3646,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-08.1
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-08.1 đạt.
-**Lịch:** Thư · 8 giờ · 26/10 sáng → 26/10 chiều · XIAN Sprint 3.
+**Lịch:** Thư · 8 giờ · 2 Story Points · 26/10 sáng → 26/10 chiều · XIAN Sprint 3.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.1; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-08.2 · Máy cờ ba cấp độ
@@ -3640,17 +3665,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v0.2 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-08` |
 | Hạn theo R1 | 18/10 (ngày Task đầu tiên bắt đầu) |
 | Thi công | XIAN Sprint 2 · Task đầu 18/10 → Task cuối 21/10 |
 | Task thực hiện | T24 (1 Task · 32 giờ) |
+| Tổng điểm các Task | 8 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** ba cấp độ khác biệt rõ rệt, **để** luyện từ dễ đến khó.
 *Nguồn:* BA 6.1 (kèm tiêu chí bổ sung 05/10), 6.3 mục 3. *Ghi chú:* negamax + alpha-beta, tìm sâu dần, chạy ở tiến trình/worker riêng; dùng `xiangqi-core`.
-*Sprint:* S2. *Story Points:* **5** (tổng 32 giờ Task).
+*Sprint:* S2. *Story Points:* **8** (tổng điểm 1 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3676,7 +3702,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 32 giờ |
-| Story Points | — |
+| Story Points | 8 |
 | Labels | `sprint-2`, `phat-trien` |
 | Story (relates to) | US-08.2 |
 | Is blocked by | T10 |
@@ -3690,7 +3716,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy ở tiến trình/worker riêng; ngân sách 300 / 1.000 / 3.000 ms theo cấp; luôn trả nước hợp lệ tốt nhất đã tìm được
 **Đầu ra:** Gói `packages/engine` + tiến trình máy cờ gọi được từ server.
 **Cách kiểm và điều kiện PASS:** AC-08.2.1 → AC-08.2.3. PASS khi unit test xanh và chạy 100 thế ngẫu nhiên không trả nước sai luật.
-**Lịch:** Tình · 32 giờ · 18/10 sáng → 21/10 chiều · XIAN Sprint 2.
+**Lịch:** Tình · 32 giờ · 8 Story Points · 18/10 sáng → 21/10 chiều · XIAN Sprint 2.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.2; luật ở BA-SCOPE-DECISIONS.md.
 
 ### US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó
@@ -3709,17 +3735,18 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
-| Story Points | 5 |
+| Story Points | — |
 | Labels | `dac-ta`, `EP-08` |
 | Hạn theo R1 | 03/11 (ngoại lệ: GATE-ENGINE: cấp Khó phải đo thời gian nghĩ trên máy demo mới chốt được AC) |
 | Thi công | XIAN Sprint 4 · Task đầu 31/10 → Task cuối 03/11 |
 | Task thực hiện | T59, T63, T68 (3 Task · 40 giờ) |
+| Tổng điểm các Task | 10 (chỉ ghi trong Description, không nhập trường Story Points) |
 
 **Description (User Story + AC)**
 
 **Là** người chơi, **tôi muốn** ván với máy không mất vô lý khi rớt mạng hoặc máy cờ lỗi, và cấp Khó đạt chất lượng đã cam kết, **để** yên tâm luyện tập.
 *Nguồn:* BA 6.1 (Thử lại), 6.3 mục 4, 1.8.
-*Sprint:* S4. *Story Points:* **5** (tổng 40 giờ Task).
+*Sprint:* S4. *Story Points:* **10** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3751,7 +3778,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 20 giờ |
-| Story Points | — |
+| Story Points | 5 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-08.3 |
 | Is blocked by | T24 |
@@ -3766,7 +3793,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Giao diện "Máy cờ gặp sự cố" + Thử lại trên `SCR-AI-GAME`
 **Đầu ra:** Máy cờ hoàn thiện + báo cáo GATE-ENGINE.
 **Cách kiểm và điều kiện PASS:** AC về thời gian, chiếu hết và phân cấp sức mạnh của US-08.3. PASS khi đạt ngưỡng; không đạt thì ghi BLOCKED và báo PO, không tự hạ ngưỡng.
-**Lịch:** Tình · 20 giờ · 31/10 sáng → 02/11 sáng · XIAN Sprint 4.
+**Lịch:** Tình · 20 giờ · 5 Story Points · 31/10 sáng → 02/11 sáng · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T63 · BE giữ ván AI 30 phút, Thử lại, khởi động lại
@@ -3785,7 +3812,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 12 giờ |
-| Story Points | — |
+| Story Points | 3 |
 | Labels | `sprint-4`, `phat-trien` |
 | Story (relates to) | US-08.3 |
 | Is blocked by | T34 |
@@ -3799,7 +3826,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Máy cờ không trả lời quá 10 giây: Thử lại (cùng thế hoặc ván mới theo BA 6.1), chặn bấm trùng; khởi động lại máy chủ → thông báo không tiếp tục được; Rời ván/Đăng xuất = đầu hàng có xác nhận
 **Đầu ra:** Xử lý ổn định ván AI + test tích hợp.
 **Cách kiểm và điều kiện PASS:** AC U/I về ổn định của US-08.3. PASS khi test tích hợp xanh.
-**Lịch:** Đông · 12 giờ · 01/11 chiều → 02/11 chiều · XIAN Sprint 4.
+**Lịch:** Đông · 12 giờ · 3 Story Points · 01/11 chiều → 02/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.
 
 #### T68 · Kiểm thử US-08.3
@@ -3818,7 +3845,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
-| Story Points | — |
+| Story Points | 2 |
 | Labels | `sprint-4`, `kiem-thu` |
 | Story (relates to) | US-08.3 |
 | Is blocked by | T59, T63 |
@@ -3831,6 +3858,6 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 - Chạy TC của US-08.3, đối chiếu báo cáo GATE-ENGINE
 **Đầu ra:** Kết quả TC trên Jira.
 **Cách kiểm và điều kiện PASS:** PASS khi 100% TC của US-08.3 đạt hoặc có ghi BLOCKED được PO xác nhận.
-**Lịch:** Kỳ · 8 giờ · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
+**Lịch:** Kỳ · 8 giờ · 2 Story Points · 03/11 sáng → 03/11 chiều · XIAN Sprint 4.
 **Tham chiếu:** AC và TC đầy đủ ở BACKLOG-P1.md mục US-08.3; luật ở BA-SCOPE-DECISIONS.md.
 
