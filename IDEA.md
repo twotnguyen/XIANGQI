@@ -1,54 +1,48 @@
 # Cờ Tướng Online · Ý tưởng sản phẩm
 
-**Bản tổng quan phục vụ review đặc tả P1/P2 · đồng bộ PO 05/10/2026.** Tài liệu này tóm tắt các quyết định đã duyệt, không tạo nguồn luật thứ hai. Nguồn chuẩn: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md).
+**Bản tổng quan, đồng bộ quyết định PO ngày 07/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
 
 ## 1. Sản phẩm và mục đích
 
-Web cờ tướng tiếng Việt cho người chơi giao lưu qua phòng online và luyện tập với máy. Trải nghiệm kết hợp bàn cờ đúng luật rút gọn của dự án với chat, camera và mic tự chọn. Dự án phục vụ đồ án nhóm; thành công P1 được đánh giá bằng tám mục tiêu chạy từ đầu đến cuối, không bằng số màn mockup hoặc số tài liệu.
+Web cờ tướng tiếng Việt để giao lưu qua phòng online và luyện tập với máy. Trải nghiệm kết hợp bàn cờ đúng bộ luật rút gọn của dự án với chat, camera và mic tự chọn. Đây là đồ án môn Quản trị Dự án CNTT mô phỏng làm việc với khách hàng; thành công P1 được đo bằng **tám mục tiêu của khách hàng chạy từ đầu đến cuối** (kịch bản D1–D10), không bằng số màn hình hay số tài liệu.
 
 ## 2. Ai dùng và để làm gì?
 
-| Vai trò | Nhu cầu trong phạm vi đã duyệt |
+| Vai trò | Nhu cầu trong phạm vi P1 |
 |---|---|
-| Người chơi có tài khoản | Tạo/vào phòng, mời bạn bằng link/mã, đánh online và giao lưu; luyện với máy |
-| Host | Quản lý phòng, ghế và quyền vào; không có quyền sửa luật hay kết quả |
-| Người xem | Vào xem phòng PUBLIC từ Sảnh hoặc vào phòng bằng lời mời/link/mã, theo dõi và chat chung; không bắt buộc kết bạn, chỉ nhận media khi người chơi cho phép |
-| Khách (P2) | Chơi nhanh không đăng ký, nhưng không Đánh Hạng/bạn bè/lịch sử cá nhân |
+| Người dùng có tài khoản | Đăng ký/đăng nhập (username + mật khẩu hoặc Google), tạo/vào phòng, mời bạn bằng lời mời trong game hoặc link/mã, đánh online, chat, camera/mic, luyện với máy |
+| Khách | Vào nhanh bằng tên tạm: tạo 1 phòng, vào phòng bằng link/mã hoặc từ Sảnh, chơi, xem, đánh với máy; không kết bạn |
+| Host | Quản lý phòng: chế độ PUBLIC/CODE_ONLY/LOCKED, sắp xếp ghế và người xem; không sửa luật hay kết quả |
+| Người xem | Vào phòng PUBLIC từ Sảnh hoặc bằng link/mã, xem ván realtime, chat Kênh Chung; chỉ nhận hình/tiếng khi người chơi cho phép |
 
-Đây là vai trò từ phạm vi, không phải kết luận đã nghiên cứu thị trường hay chân dung người dùng đã kiểm chứng.
+Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghiên cứu thị trường.
 
 ## 3. Trải nghiệm trọng tâm
 
-1. Đăng ký/đăng nhập → Sảnh → tạo phòng hoặc nhận lời mời.
-2. Hai người ngồi ghế, cùng Sẵn sàng → chơi đúng luật với trạng thái do máy chủ quyết định.
-3. Có thể trò chuyện, bật camera/mic; mặc định tắt, không ghi âm/ghi hình. Người xem không phát media hoặc đọc Kênh Riêng.
-4. Xem kết quả/rời phòng; hoặc từ Sảnh chọn một trong ba cấp AI và phe để luyện tập.
-5. Sảnh có bốn lựa chọn: Đánh Thường ghép ngẫu nhiên, Đánh Hạng, Tự tạo phòng và Đánh với máy. Hai lựa chọn ghép ngẫu nhiên/Đánh Hạng thuộc P2; P2 còn có tiện ích xã hội, lịch sử/Replay và các mở rộng đã chốt.
-
-Chat/camera/mic thuộc tám mục tiêu P1 vì sản phẩm đã chọn trải nghiệm giao lưu trong phòng; không phải tính năng quản trị hay mạng xã hội đầy đủ. Luật rút gọn được công bố trong Sảnh; không quảng bá là áp dụng mọi luật giải đấu chính thức.
+1. Đăng ký/đăng nhập (hoặc vào Khách) → Sảnh.
+2. Tạo phòng hoặc nhận lời mời/link/mã; ở Sảnh có danh sách phòng PUBLIC với **Vào chơi** và **Vào xem**.
+3. Hai người ngồi ghế, có thể **Xin đổi bên**, cùng Sẵn sàng → đếm 3-2-1 → chơi; máy chủ quyết định mọi luật.
+4. Trò chuyện ở Kênh Riêng, bật camera/mic (mặc định tắt, không ghi). Người xem chat Kênh Chung, không phát media, không đọc Kênh Riêng.
+5. Hết ván: **Ở lại phòng** để đánh tiếp (giữ người xem), đổi bên nếu muốn; hoặc rời phòng.
+6. Từ Sảnh chọn **Đánh với máy**: ba cấp độ, chọn phe, hết ván bấm Ván mới để đổi phe/cấp.
 
 ## 4. Phạm vi và ưu tiên
 
-**P1:** đăng ký/đăng nhập; tạo phòng; mời link/mã và bạn bè online; bàn cờ; đánh online; phòng tự tạo mời qua bạn bè hoặc link/mã (không bắt buộc kết bạn), có PUBLIC tại Sảnh, CODE_ONLY qua mã/link và LOCKED chặn người mới, tối đa năm người xem; chat + camera + mic; AI ba cấp. Chỉ theme Kỳ Đài Cổ Phong.
+**P1 (hạn 05/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, chế độ phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic với kênh người xem riêng, đánh với máy theo cấp độ. Chỉ giao diện Kỳ Đài Cổ Phong.
 
-**P2:** đúng danh sách BA Phần 11, gồm toàn bộ Đánh Hạng, Khách, khôi phục/đổi tài khoản theo phạm vi, Đánh Thường ghép ngẫu nhiên cố định 15 phút mỗi bên, không người xem, có Xin đi lại/Tái đấu theo BA 2.0, 3.2, 3.6, các đề nghị mở rộng, chat 1-1/sticker, QR, lịch sử/Replay/xuất dữ liệu, tiện ích demo và lựa chọn Giấy Sáng/Theo hệ thống.
+**P2:** Đánh Hạng/Elo, ghép ngẫu nhiên, Tái đấu có chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, QR, khôi phục mật khẩu/Username, đổi Username, tiện ích demo, giao diện bổ sung (BA Phần 11).
 
-Hoàn thiện **đặc tả** P2 không đưa P2 vào thời hạn P1. Mốc khoảng hai tuần là mục tiêu để lập kế hoạch kiểm tra lại công suất nhóm bảy người, không phải bằng chứng khả thi.
-
-**Không làm:** xem BA 10.2; không tự thêm giải đấu, gợi ý nước cho người chơi, cộng giây, quản trị/báo cáo vi phạm hoặc công nghệ ngoài danh sách duyệt.
+**Không làm:** xem BA 10.2.
 
 ## 5. Thành công được chứng minh thế nào?
 
-- Tám mục tiêu có kịch bản D1–D10 và AC chi tiết; quyền, lỗi, biên và trợ năng có tình huống kiểm.
-- Luật cờ được kiểm độc lập; không tin kết quả do client gửi.
-- Các ngưỡng máy cờ, đồng bộ và quy mô phải đo thật. Không đạt thì ghi BLOCKED, không giảm ngưỡng ngầm.
-- "Đặc tả đã viết" ≠ "Product Owner đã review bản viết" ≠ "chạy thử đạt" ≠ "kế hoạch khả thi".
+- 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 User Story, 268 tiêu chí nghiệm thu, mỗi tiêu chí có một ca kiểm thử; 71 Task trong 4 Sprint ([KE-HOACH-JIRA.md](KE-HOACH-JIRA.md)).
+- Kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
+- Luật cờ kiểm độc lập ở máy chủ; không tin kết quả client gửi.
+- Ngưỡng máy cờ, đồng bộ và quy mô phải đo thật; không đạt ghi BLOCKED, không hạ ngưỡng ngầm.
 
 ## 6. Đọc tiếp
 
-1. [Nguồn luật và phân kỳ](BA-SCOPE-DECISIONS.md).
-2. [Chỉ mục đặc tả](docs/README.md): yêu cầu, luật, dữ liệu, kiến trúc và kiểm thử.
-3. [Hợp đồng nghiệp vụ](docs/07-hop-dong-nghiep-vu.md): tiền điều kiện, trạng thái, lỗi và phục hồi.
-4. [Ma trận nghiệm thu](docs/08-ma-tran-nghiem-thu.md): US/AC → kiểm thử; năm trạng thái của 37 thành phần.
-
-Không lấy Jira hoặc mockup làm nguồn bổ sung yêu cầu. Đợt hoàn thiện này không sửa Jira hoặc kế hoạch hiện có; lần chốt lại MVP chỉ đồng bộ lựa chọn riêng tư trong ba mockup Sảnh/phòng chờ/phòng chơi; mockup khác đặc tả chỉ là tham khảo.
+1. [Quyết định nghiệp vụ và phân kỳ](BA-SCOPE-DECISIONS.md)
+2. [Backlog P1: Epic, User Story, AC, TC](BACKLOG-P1.md) · [Kế hoạch Jira](KE-HOACH-JIRA.md)
+3. [Danh mục màn hình](DANH-MUC-MAN-HINH-XIANGQI.md) · [Hệ thống thiết kế](DESIGN.md)

@@ -3,7 +3,7 @@
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  
-> **Cập nhật lần cuối:** 05/10/2026 (PO chốt lại MVP tám yêu cầu: phòng công khai ở Sảnh, tối đa năm người xem, hạn phiên cố định và câu trả lời review)
+> **Cập nhật lần cuối:** 07/10/2026 (PO chốt sau review BA: lịch đến 05/11, Khách và Xin đổi bên lên P1, quy tắc đăng nhập, Sảnh PUBLIC có "Vào chơi", luật sau ván, SMTP ngoài. Xem **Phần 0**)  
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
@@ -11,13 +11,120 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 > **Ghi chú rà soát 03/10/2026.** Product Owner uỷ quyền cho agent tự xử lý mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Các quyết định thêm hoặc sửa trong đợt này đã được Product Owner **duyệt toàn bộ ngày 03/10/2026** (gồm nhóm 1–8 và loạt trả lời nhóm B). Riêng các con số tạm (120 nửa nước không ăn quân, luật đuổi quân liên tục, quy mô 50 người dùng đồng thời) được xác nhận lại ở Giai đoạn 2.
 >
-> **Giai đoạn 2 (từ 03/10/2026):** chi tiết hoá yêu cầu, luật cờ, dữ liệu, kiến trúc và kiểm thử nằm ở thư mục [`docs/`](docs/README.md). `docs/` **không thay đổi phạm vi** ở tài liệu này; hai nơi mâu thuẫn thì tài liệu này thắng và phải báo người dùng.
+> **Tài liệu chi tiết (cập nhật 07/10/2026):** thư mục `docs/` cũ đã bị xoá ngày 07/10/2026 (commit `c4cf29d`, chỉ còn trong lịch sử git). User Story, tiêu chí nghiệm thu (AC), ca kiểm thử (TC), NFR và cổng kiểm chứng của P1 nay nằm ở [BACKLOG-P1.md](BACKLOG-P1.md). Thứ tự ưu tiên khi mâu thuẫn: **Phần 0 của tài liệu này → phần còn lại của tài liệu này → BACKLOG-P1.md → DANH-MUC → DESIGN → mockup**; phát hiện mâu thuẫn phải báo PO.
 >
 > **Bổ sung 04/10/2026:** hoàn thiện chi tiết cả P1 và P2, giữ nguyên thứ tự ưu tiên. BA là nguồn luật duy nhất; `IDEA.md` chỉ giới thiệu sản phẩm. Không sửa Jira, kế hoạch hiện có hoặc mockup trong đợt này; mockup chỉ tham khảo khi khác đặc tả. Hoàn thiện đặc tả không có nghĩa khả thi kỹ thuật đã được kiểm chứng hay cam kết hoàn thành toàn bộ P1 trong hạn.
 >
 > **Hai quy ước đọc tài liệu:**
 > 1. Các mã như `R06`, `R17`, `DEC-019`, `ARCH-04`, `GR-END-01`, `EC-0x`, `DT-21`… là **nhãn kế thừa** từ bộ tài liệu cũ đã xoá. Chúng không còn là nguồn tra cứu; luật tương ứng đã được viết đầy đủ bằng chữ trong chính mục chứa nhãn.
-> 2. Tên công nghệ, tên bảng, tên trường dữ liệu (Socket.IO, LiveKit, Supabase, `room_blocks`, `commandId`…) chỉ là **minh hoạ kế thừa**, không phải quyết định công nghệ. Công nghệ chốt ở Giai đoạn 2.
+> 2. Tên công nghệ, tên bảng, tên trường dữ liệu (Socket.IO, LiveKit, Supabase, `room_blocks`, `commandId`…) chỉ là **minh hoạ kế thừa** trong phần mô tả nghiệp vụ. Danh sách công nghệ đã được PO xác nhận 03/10/2026 (README mục Công nghệ); thiết kế dữ liệu/API cụ thể do nhóm chốt khi làm Task.
+
+---
+
+## PHẦN 0: QUYẾT ĐỊNH CHỐT 07/10/2026 — ƯU TIÊN CAO NHẤT
+
+> Product Owner (Twot) duyệt ngày 07/10/2026 (mục 0.1–0.11) và 08/10/2026 (mục 0.12–0.16) sau đợt review BA (Q1–Q10, F1–F5 và câu hỏi bổ sung về đổi bên/đấu lại). Khi phần nào khác trong tài liệu, nhật ký cũ, DANH-MUC, README hoặc mockup mâu thuẫn với Phần 0 thì **Phần 0 thắng**. Các mục bị ảnh hưởng đã được sửa trực tiếp và gắn nhãn **(07/10)**.
+
+### 0.1 Lịch, nguồn lực và Jira
+* **Hạn cuối: 05/11/2026** (nộp + demo). Thay toàn bộ lịch cũ (hạn 17–18/10, 4 Sprint 04/10–17/10) ở Quyết định 10.1 và README.
+* **Sprint:** Sprint 0 = 07/10 (chốt tài liệu, dựng Jira, chuẩn bị môi trường) · **S1 08–14/10 · S2 15–21/10 · S3 22–28/10 · S4 29/10–04/11** · 05/11 nộp và demo. Làm cả cuối tuần.
+* **Công suất lập kế hoạch:** 8 giờ/người/ngày; phần 8 → 12 giờ là **dự phòng**, không đưa vào kế hoạch gốc.
+* **Nhóm 7 người:**
+
+| Thành viên | Chuyên môn chính | Ghi chú phân vai |
+|---|---|---|
+| Tình (Twot) | Full-stack (FE, BE, DevOps, AI) | Scrum Master + PO; nhận **toàn bộ phần khó và quan trọng**, là người làm nhiều việc nhất, tính 100% công suất cho việc kỹ thuật (PO quyết định, không giảm trừ cho vai trò SM) |
+| Đông | Backend | |
+| Tùng | Backend | |
+| Cường | Backend | |
+| Nhạn | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
+| Kỳ | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
+| Thư | Tester | Phụ trách kiểm thử chính |
+
+* **Nguyên tắc phân công:** phần còn lại chia đều, đúng chuyên môn; 1–2 người được kiêm thêm vai trò khi một mảng quá tải (ví dụ Kỳ hoặc Nhạn kiểm thử cùng Thư). Bảng phân công chi tiết nằm trong kế hoạch Jira.
+* **Jira XIAN:** xoá 98 mục cũ, **lập lại từ đầu** theo [BACKLOG-P1.md](BACKLOG-P1.md). **Jira chỉ chứa việc phát triển** (gồm cả kiểm thử, cấu hình, triển khai); không đưa hoạt động quản lý dự án (họp, báo cáo) vào Jira. P1 chi tiết tới Story/Task; P2 chỉ ở mức Epic. **Cấu trúc chốt 07/10:** 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 Story; Task là Sub-task của Story, mỗi người một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, hạn chế tối đa số Task chạy song song (tối đa 7, mỗi Task một người). Kế hoạch: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
+
+### 0.2 Đăng nhập và đăng ký (P1)
+* **Ba cách vào ứng dụng ở `SCR-LOGIN`:** (1) Username + Mật khẩu; (2) Đăng nhập bằng Google; (3) **Khách** (xem 0.3).
+* **Hai cách đăng ký:** (a) Username + Mật khẩu → Email → OTP email (1.1); (b) Google → đặt Username + Mật khẩu ở `SCR-ONBOARDING`, **không OTP** (1.2). Sau khi đăng ký, người dùng đăng nhập bằng Username + Mật khẩu **hoặc** bấm Đăng nhập bằng Google (tài khoản Google đã đăng ký).
+* **Đăng nhập Username + Mật khẩu:** chỉ dùng username (không dùng email làm tên đăng nhập), **không phân biệt hoa thường**. Sai username hoặc mật khẩu luôn báo một câu chung: *"Sai tên đăng nhập hoặc mật khẩu"*.
+* **Khoá thử sai:** đếm theo username đã chuẩn hoá chữ thường, **kể cả username không tồn tại**. Sai **5 lần trong 15 phút** → chặn đăng nhập bằng mật khẩu cho username đó **15 phút** tính từ lần sai thứ 5. Trong thời gian chặn, mọi lần thử (kể cả đúng mật khẩu) đều báo: *"Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút"*. Đăng nhập thành công đặt lại bộ đếm. Đăng nhập Google **không** tính vào và không bị chặn bởi bộ đếm này.
+
+### 0.3 Chế độ Khách lên P1
+* Khách thuộc **P1**, áp dụng **đúng Quyết định 1.3** cho các tính năng có ở P1: nhập tên tạm qua `MODAL-GUEST-NAME` (2–20 ký tự, qua bộ lọc từ cấm), phiên tối đa 12 giờ (không hết khi đang ngồi ghế/trong ván), nhãn **"(Khách)"** cạnh tên, tối đa **1 phòng đang mở** do mình tạo.
+* **Khách được:** tạo phòng; vào phòng bằng mã/link; "Vào chơi"/"Vào xem" từ Sảnh; ngồi ghế đánh online; làm người xem; đánh với máy (không lưu); chat theo vai trò; bật camera/mic khi ngồi ghế.
+* **Khách không được:** kết bạn, nhận/gửi lời mời bạn bè (vẫn chia sẻ được link/mã), mở `SCR-FRIENDS`, đổi hồ sơ (`SCR-PROFILE-SETTINGS` chỉ có Đăng xuất), các tính năng P2 (Đánh Hạng…).
+* **Link mời khi chưa đăng nhập (2.4):** người dùng có thể chọn Đăng nhập, Đăng ký hoặc **Khách**; xong thì tự vào đúng phòng.
+* Giới hạn đã chấp nhận (4.2): người bị đuổi có thể quay lại bằng phiên Khách mới nếu phòng chưa `LOCKED`.
+
+### 0.4 Gửi email OTP qua SMTP ngoài
+* Thay quyết định "SMTP mặc định của Supabase" ở 10.1. Lý do: dịch vụ mặc định **chỉ gửi tới địa chỉ đã cấp phép trước (thành viên team Supabase)**, hạn mức **2 thư/giờ**, không cam kết giao thư → người ngoài nhóm (giảng viên, "khách hàng") không đăng ký được.
+* Gắn một dịch vụ SMTP có gói miễn phí vào **Custom SMTP** của Supabase Auth. Tiêu chí chọn: gửi được tới Gmail bất kỳ; không bắt buộc tên miền riêng; hạn mức miễn phí đủ cho phát triển và demo. Nhà cung cấp cụ thể chốt trong Task cấu hình (kiểm tra hạn mức tại thời điểm làm). Điều chỉnh giới hạn tốc độ gửi email của Supabase Auth cho phù hợp.
+
+### 0.5 Danh sách phòng PUBLIC tại Sảnh
+* **Cột hiển thị:** Tên phòng · Host (Display Name, kèm "(Khách)" nếu là Khách) · Mức giờ · Trạng thái (*Đang chờ* / *Đang đấu*) · Người xem **x/N** (N = trần đã chọn; phòng "Không có người xem" hiện *"Không cho xem"*).
+* **Nút:** còn ghế trống → **"Vào chơi"** (vào ghế trống) và **"Vào xem"** (nếu còn chỗ xem); đủ hai ghế → chỉ **"Vào xem"**; hết chỗ xem hoặc N = 0 → không có nút Vào xem.
+* **Sắp xếp:** phòng mới mở PUBLIC gần nhất lên đầu. **Cập nhật realtime** (thêm, bớt, đổi trạng thái/số người không cần tải lại). P1 hiển thị tối đa 50 phòng.
+* **Kiểm tra tại máy chủ khi bấm:** "Vào chơi" mà ghế vừa có người → nếu còn chỗ xem thì vào làm Người xem kèm thông báo *"Ghế vừa có người, bạn đang xem trận"* (giống 2.6), hết chỗ thì báo phòng đầy. Phòng vừa chuyển khỏi PUBLIC → từ chối và làm mới danh sách.
+* `CODE_ONLY`/`LOCKED` không hiện. Thay câu "Vào xem từ Sảnh luôn là Người xem, không vào ghế" ở 2.3/2.8 bằng: **"Vào xem" luôn là Người xem; "Vào chơi" vào ghế trống**.
+
+### 0.6 Xin đổi bên lên P1 (phòng tự tạo)
+* Khi phòng ở `WAITING` và **đủ hai người ngồi ghế** — ngay khi người thứ hai vừa vào hoặc sau một ván — cả hai đều có nút **"Xin đổi bên"**.
+* Người nhận thấy `MODAL-SIDE-SWAP-PROMPT` (30 giây) với **Đồng ý / Từ chối**. Đồng ý → hoán đổi Đỏ ↔ Đen, **Sẵn sàng của cả hai reset về chưa sẵn sàng**. Từ chối/hết hạn → người gửi chờ **60 giây** mới gửi lại; mỗi người tối đa 1 đề nghị đang chờ, được Rút (3.6).
+* Không có nút khi đang đếm 3‑2‑1 hoặc khi ván đang diễn ra. Đề nghị đang chờ tự huỷ khi bắt đầu đếm ngược hoặc khi thành phần ghế thay đổi.
+* **Một người ngồi ghế (PO bổ sung 07/10):** khi phòng chỉ có **một người ngồi ghế** (Host), người đó bấm **"Đổi ghế"** để chuyển Đỏ ↔ Đen **tùy thích, không cần ai duyệt** (2.3 mục 1). Ngay khi người thứ hai ngồi vào ghế còn lại, nút "Đổi ghế" biến mất và **bắt buộc dùng "Xin đổi bên"**. Nếu người thứ hai rời ghế và chỉ còn một người ngồi ghế, nút "Đổi ghế" tự do xuất hiện lại. Ghép ngẫu nhiên và Đánh Hạng (P2) không có Xin đổi bên vì không có phòng chờ; dùng lựa chọn phe khi Tái đấu (0.8).
+
+### 0.7 Sau ván trong phòng tự tạo (P1)
+1. Ván kết thúc → `MODAL-MATCH-RESULT` với hai nút **"Ở lại phòng"** và **"Rời phòng"**.
+2. Ngay khi ván kết thúc, phòng chuyển về **`WAITING`**; Sẵn sàng của cả hai = chưa sẵn sàng. Hộp kết quả chỉ là lớp hiển thị.
+3. **Giữ nguyên:** ghế Đỏ/Đen của ván trước, người xem, chế độ PUBLIC/CODE_ONLY/LOCKED, mức giờ (đồng hồ đặt lại đủ cho ván mới), Host, Kênh Riêng (cùng cặp) và Kênh Chung.
+4. Muốn đổi phe → **Xin đổi bên** (0.6). Hai người bấm Sẵn sàng → đếm 3‑2‑1 → ván mới, Match ID mới.
+5. Một người chơi rời → ghế trống, phòng vẫn `WAITING`, quyền Host chuyển cho người còn lại nếu cần; phòng `LOCKED` vẫn giữ khoá (2.8 mục 6). Người mới vào theo 2.8 và 0.5.
+6. **Phòng tự tạo không còn hạn đóng 10 phút sau ván.** Phòng chỉ đóng khi không còn người ngồi ghế; người xem còn lại được đưa về Sảnh kèm thông báo *"Phòng đã đóng"*. Mất kết nối ở `WAITING` giữ ghế 60 giây (8.3).
+7. Thay 2.3 mục 8 và phần "giữ FINISHED tối đa 10 phút" của 3.3 mục 7 đối với phòng tự tạo.
+
+### 0.8 Tái đấu có chọn phe (P2 — ghi nhận để không phải hỏi lại)
+* **Phòng tự tạo:** thêm nút **Tái đấu** trong `MODAL-MATCH-RESULT`. Người đề nghị chọn **"Giữ phe"** hoặc **"Đổi phe"** (mặc định *Đổi phe*). Người nhận thấy rõ lựa chọn, Đồng ý/Từ chối trong 30 giây. Đồng ý → đếm 3 giây, vào ván mới **không cần Sẵn sàng**. Không dùng Tái đấu thì vẫn theo 0.7 (Sẵn sàng + Xin đổi bên).
+* **Đánh Thường ghép ngẫu nhiên:** cùng cơ chế chọn Giữ phe/Đổi phe; mỗi bên đặt lại 15 phút; các luật `FINISHED` khác giữ theo 2.0 (không về `WAITING`, không nhận người mới, đóng khi cả hai rời hoặc sau 10 phút).
+* **Đánh Hạng:** không có Tái đấu (7.2).
+* Hai đề nghị Tái đấu gửi gần như cùng lúc: máy chủ giữ đề nghị đến trước, đề nghị sau bị huỷ và người gửi sau thấy đề nghị của đối thủ.
+* Thay câu "tự động hoán đổi bên" ở 2.0, 2.3 mục 7 và 3.3 mục 7.
+
+### 0.9 Đánh với máy — Ván mới (P1)
+* Hộp kết quả ván AI có **"Ván mới"** và **"Về Sảnh"**. "Ván mới" mở `MODAL-AI-SETUP` **điền sẵn cấp độ và lựa chọn phe của ván vừa rồi**; người chơi đổi phe (Đỏ/Đen/Ngẫu nhiên) hoặc cấp độ rồi bấm Bắt đầu. Ván cũ đã kết thúc, ván mới có ID mới.
+* Áp dụng cả khi ván kết thúc do Đầu hàng. Ván "Bỏ dở" do sự cố vẫn theo nút *Thử lại* ở 6.1.
+
+### 0.10 Phòng chỉ có Host ngồi chờ
+* **Không giới hạn thời gian chờ.** Phòng chỉ đóng theo 2.3 mục 4 (Host rời khi không còn người chơi khác) hoặc Host mất kết nối quá 60 giây (mất ghế → không còn người ngồi ghế → đóng theo 0.7 mục 6).
+
+### 0.11 Hệ quả phân kỳ
+* **Lên P1:** Chế độ Khách (1.3, `MODAL-GUEST-NAME`), Xin đổi bên trong phòng tự tạo (`MODAL-SIDE-SWAP-PROMPT`), khoá thử sai đăng nhập, SMTP ngoài, nút "Vào chơi" ở Sảnh, "Ván mới" ở ván AI, "Ở lại phòng" ở hộp kết quả.
+* **Thành phần giao diện:** P1 = **26**, P2 = **11** (tổng 37 không đổi).
+* **Vẫn P2:** Đánh Hạng, ghép ngẫu nhiên, Tái đấu, Xin đi lại, Quên mật khẩu/khôi phục Username, đổi Username, chat 1-1, Thách đấu, sticker, QR, Lịch sử/Replay/FEN/PGN, mức giờ Không giới hạn + chống treo ván, widget AI, công cụ demo, `MODAL-MEDIA-TAB-SWITCH`, giao diện Giấy Sáng/Theo hệ thống.
+
+### 0.12 Lặp thế và chu kỳ lặp (PO chốt 08/10)
+* **Hai thế cờ giống nhau** khi vị trí của mọi quân giống hệt **và** cùng một bên tới lượt đi.
+* Chỉ đếm trên **nhánh nước hiệu lực** (nước đã bị đi lại ở P2 không tính).
+* Khi một thế xuất hiện **lần thứ 3**: **chu kỳ** = mọi nước từ lần xuất hiện thứ 1 đến lần thứ 3 của thế đó. Bên nào có **mọi** nước của mình trong chu kỳ là nước chiếu thì là chiếu liên tục → bên đó thua (`PERPETUAL_CHECK`); cả hai bên cùng chiếu liên tục → hoà; còn lại → hoà `DRAW_REPETITION`. Chiếu hết luôn được ưu tiên hơn mọi kết quả hoà.
+* Thay câu "Giai đoạn 2 chốt chu kỳ lặp" ở 3.5.
+
+### 0.13 Chat và camera/mic ở phòng chờ (PO chốt 08/10)
+* Phòng chờ có **hai kênh chat theo vai trò** như trong ván: người chơi có Kênh Riêng và Kênh Chung, người xem chỉ có Kênh Chung. Tin nhắn giữ nguyên khi chuyển từ phòng chờ sang ván và ngược lại (vẫn theo luật mốc cặp người chơi ở 5.3).
+* **Camera/mic bật được ngay trong phòng chờ**, cùng luật như trong ván: mặc định tắt, bật/tắt độc lập, ba mức chia sẻ (chọn sẵn Chỉ đối thủ), người xem chỉ nhận. Khi bắt đầu ván, hình và tiếng **không bị ngắt**.
+
+### 0.14 Lỗi camera/mic hoặc hết hạn mức dịch vụ media (PO chốt 08/10)
+* Ván và chat **tiếp tục bình thường**; khung media hiện *"Camera/mic tạm thời không dùng được"*; không xử ai thua, không dừng đồng hồ.
+
+### 0.15 Khoá thử sai và đăng nhập Google (PO chốt 08/10)
+* Đăng nhập Google thành công **không** xoá bộ đếm sai mật khẩu. Bộ đếm chỉ áp cho đăng nhập bằng mật khẩu và tự hết sau 15 phút; chỉ đăng nhập **bằng mật khẩu** đúng mới đặt lại bộ đếm.
+
+### 0.16 Hạ tầng camera/mic (PO chốt 08/10)
+* Dùng **LiveKit mã nguồn mở tự chạy** (Docker) khi dev và khi demo trên cùng mạng LAN: miễn phí, không giới hạn phút.
+* Dùng **LiveKit Cloud gói miễn phí** (5.000 phút người tham gia/tháng) khi cần demo qua Internet hoặc làm dự phòng; web + máy chủ ứng dụng khi đó chạy trên Render.
+* **Không chạy LiveKit trên Render**: LiveKit cần cổng UDP (50000–60000 hoặc 7882) và TCP 7881, Render chỉ mở một cổng HTTP/HTTPS.
+* Code không đổi giữa các môi trường; chỉ đổi `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`.
+* Demo LAN phải chạy web qua **HTTPS** (ví dụ chứng chỉ nội bộ mkcert) vì trình duyệt chỉ cho bật camera/mic trên HTTPS hoặc `localhost`.
+* Thay quyết định "LiveKit Cloud, không tự dựng LiveKit" ở 10.1. Kiểm chứng ở GATE-MEDIA (Sprint 1).
 
 ---
 
@@ -61,6 +168,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ---
 
 ### Quyết định 1.3: Chế độ Khách (Guest Mode) & Cơ chế Nâng cấp tài khoản
+* **Phân kỳ (07/10):** Khách thuộc **P1** theo Phần 0 mục 0.3.
 * **Lựa chọn đã chốt:** **[GUEST-FLOW] Nút "Guest" riêng biệt tại màn hình Đăng nhập kèm cảnh báo cấm Ranked; Nâng cấp bằng cách Đăng xuất**
 * **Mô tả nghiệp vụ:**
   * Tại màn hình Đăng nhập (`SCR-LOGIN`), hệ thống bố trí một nút riêng biệt nổi bật: **"Guest"** (hoặc *"Chơi nhanh với tư cách Khách"*).
@@ -168,7 +276,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
        * **Tìm tối đa 3 phút — PO trả lời 05/10:** trong lúc tìm có nút Huỷ tìm trận để huỷ bất kỳ lúc nào. Tìm quá 3 phút không có đối thủ thì báo không tìm được và về Sảnh, không ghép máy, không phạt. Hết 10 giây xác nhận: người chưa Sẵn sàng về Sảnh; người đã Sẵn sàng được tự tiếp tục tìm; cả hai chưa xác nhận thì cả hai về Sảnh. Chưa bắt đầu ván không ghi kết quả thua.
        * **Quyền trong ván:** Chỉ hai người đã ghép; không nhận người xem, không chia sẻ phòng để người khác vào, không có Kênh Chung. Chat, camera và mic chỉ giữa hai người chơi. Không có quyền đổi cài đặt phòng để mở người xem. Phòng không được công khai tại Sảnh.
        * **Xin đi lại (PO chốt 05/10, phương án 1A):** Có ở P2; áp dụng cùng luật phòng tự tạo tại `Quyết định 3.2` và `3.6`.
-       * **Tái đấu (PO chốt 05/10, phương án 2A):** Có ở P2; khi cả hai còn ở phòng và cùng đồng ý, tạo ván mới trong cùng phòng, tự đổi bên Đỏ/Đen và đặt lại **15 phút mỗi bên**.
+       * **Tái đấu (PO chốt 05/10, phương án 2A; sửa 07/10):** Có ở P2; khi cả hai còn ở phòng và cùng đồng ý, tạo ván mới trong cùng phòng, đặt lại **15 phút mỗi bên**. Người đề nghị chọn **Giữ phe** hoặc **Đổi phe** (mặc định Đổi phe) theo Phần 0 mục 0.8.
        * **Sau ván (PO chốt 05/10, phương án 3A):** Khi một người rời, phòng vẫn ở `FINISHED` để người còn lại xem kết quả; không chuyển về `WAITING`, không ghép thêm người và không nhận người mới qua lời mời/link/mã. Đóng khi cả hai đã rời hoặc hết **10 phút tính từ kết thúc ván**, không đặt lại hạn khi một người rời. Muốn tìm đối thủ mới thì rời về Sảnh.
 
   2. **ĐÁNH HẠNG (P2) — So tài theo Elo:**
@@ -179,7 +287,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
   3. **TỰ TẠO PHÒNG (P1) — Mời người vào chơi/xem:**
      * Người dùng tự tạo phòng, chọn mức giờ theo `Quyết định 2.1`, rồi mời nhanh bạn bè online trong danh sách hoặc chia sẻ link/mã 8 ký tự. Người chưa kết bạn, kể cả hai người xa lạ muốn so tài, được vào bằng link/mã; **không bắt buộc kết bạn trước**. Chi tiết quyền và khóa phòng ở `Quyết định 2.7`, vai trò sau khi vào ở `Quyết định 2.8`.
-     * Chỉ luồng này có người xem (tối đa 5), Kênh Chung và chia sẻ media cho người xem. Phòng `PUBLIC` xuất hiện trong danh sách tại Sảnh để mọi người vào xem; `CODE_ONLY` và `LOCKED` không xuất hiện. Không thêm kênh chat thế giới. QR vẫn là P2.
+     * Chỉ luồng này có người xem (tối đa 5), Kênh Chung và chia sẻ media cho người xem. Phòng `PUBLIC` xuất hiện trong danh sách tại Sảnh với nút **Vào chơi** (khi còn ghế) và **Vào xem** (07/10, Phần 0 mục 0.5); `CODE_ONLY` và `LOCKED` không xuất hiện. Không thêm kênh chat thế giới. QR vẫn là P2.
 
   4. **ĐÁNH VỚI MÁY (P1) — Rèn luyện:**
      * Người chơi chọn thi đấu theo từng cấp độ khó: **Dễ (Easy)**, **Trung bình (Medium)**, **Khó (Hard)**.
@@ -220,8 +328,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   1. **Quy tắc Ghế ngồi khi Tạo phòng:**
      * Khi tạo phòng thành công, Chủ phòng (Host) mặc định tự động ngồi vào **ghế ĐỎ** (cầm quân Đỏ, bên đi trước).
      * **Đổi ghế tự do khi một mình:** Trong thời gian chờ người thứ 2 vào phòng, Chủ phòng có toàn quyền bấm chuyển sang ghế Đen hoặc bấm đổi qua lại giữa 2 ghế Đỏ $\leftrightarrow$ Đen bao nhiêu lần tùy thích.
-     * **Người vào bằng mã/link hoặc lời mời khi còn ghế trống:** Hệ thống tự động xếp vào **ghế còn trống** (nếu Host đang ngồi Đỏ thì vào Đen; nếu Host đang ngồi Đen thì vào Đỏ). Nút Vào xem từ Sảnh luôn đưa vào vai trò Người xem theo 2.8, không tự chiếm ghế.
-  2. **Cơ chế Xin đổi bên khi đã đủ 2 người (Side Swap):**
+     * **Người vào bằng mã/link hoặc lời mời khi còn ghế trống:** Hệ thống tự động xếp vào **ghế còn trống** (nếu Host đang ngồi Đỏ thì vào Đen; nếu Host đang ngồi Đen thì vào Đỏ). Nút Vào xem từ Sảnh luôn đưa vào vai trò Người xem; nút **Vào chơi** ở Sảnh vào ghế trống (07/10, Phần 0 mục 0.5).
+  2. **Cơ chế Xin đổi bên khi đã đủ 2 người (Side Swap) — P1 từ 07/10:** áp dụng mọi lúc phòng ở `WAITING` có đủ hai người, kể cả sau ván; chi tiết và chống spam ở Phần 0 mục 0.6.
      * Khi cả 2 ghế đã có người, bất kỳ người chơi nào cũng có thể bấm nút **"Xin đổi bên"**.
      * Hệ thống gửi thông báo xác nhận đến đối thủ với thời hạn chờ 30 giây.
      * Nếu đối thủ đồng ý: Hai người chơi hoán đổi ghế Đỏ $\leftrightarrow$ Đen cho nhau.
@@ -238,8 +346,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
      * *Khi nào phòng mới đóng?* Chỉ khi trong phòng không còn người chơi nào khác (hoặc chỉ còn người xem) mà Host rời đi thì phòng mới tự động đóng (`status = CLOSED`).
   5. **Host khi ván đang diễn ra (`status = PLAYING`):** Vai trò Host chỉ liên quan Cài đặt phòng, nên Host mất kết nối tạm thời **không** làm đổi Host. Nếu Host rời phòng hoặc bị xử thua vì quá ân hạn (`Quyết định 8.3`), quyền Host chuyển cho người chơi còn lại. Host rời giữa ván được tính **Đầu hàng** như mọi người chơi.
   6. **Đổi chỗ giữa ghế và người xem (đã duyệt 03/10):** xem `Quyết định 2.8`.
-  7. **Tái đấu giữ phòng (P2):** Trong phòng tự tạo hoặc ghép ngẫu nhiên, Tái đấu (`R14`) tạo `Match ID` mới **trong cùng phòng**. Phòng tự tạo giữ nguyên danh sách chặn (`room_blocks`), danh sách người xem và chế độ phòng; ghép ngẫu nhiên giữ quyền và thời gian theo 2.0. Ranked không có Tái đấu (`Quyết định 7.2`). **Đã duyệt 03/10:** cả hai bấm Tái đấu thì vào thẳng ván mới sau 3 giây, không cần bấm Sẵn sàng. **PO duyệt 05/10:** nhận đủ hai xác nhận hợp lệ trước hạn đóng phòng 10 phút thì huỷ hẹn giờ cũ và đếm Tái đấu; xác nhận đến sau hạn bị từ chối.
-  8. **Sau ván trong phòng tự tạo (đã duyệt 03/10; ngoại lệ RANKED ở 7.2):** Khi một người ngồi ghế rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (nếu người rời là Host thì quyền Host chuyển cho người còn lại); người mới vào theo `Quyết định 2.8`. Mất kết nối ở `WAITING`: giữ ghế 60 giây. Phòng ghép ngẫu nhiên không nhận người khác qua lời mời/link/mã (2.0).
+  7. **Tái đấu giữ phòng (P2):** Trong phòng tự tạo hoặc ghép ngẫu nhiên, Tái đấu (`R14`) tạo `Match ID` mới **trong cùng phòng**, phe theo lựa chọn Giữ phe/Đổi phe của đề nghị (07/10, Phần 0 mục 0.8). Phòng tự tạo giữ nguyên danh sách chặn (`room_blocks`), danh sách người xem và chế độ phòng; ghép ngẫu nhiên giữ quyền và thời gian theo 2.0. Ranked không có Tái đấu (`Quyết định 7.2`). **Đã duyệt 03/10:** cả hai bấm Tái đấu thì vào thẳng ván mới sau 3 giây, không cần bấm Sẵn sàng. **PO duyệt 05/10:** nhận đủ hai xác nhận hợp lệ trước hạn đóng phòng 10 phút thì huỷ hẹn giờ cũ và đếm Tái đấu; xác nhận đến sau hạn bị từ chối.
+  8. **Sau ván trong phòng tự tạo — ĐÃ THAY bởi Phần 0 mục 0.7 (07/10):** phòng về `WAITING` ngay khi ván kết thúc, không hạn đóng 10 phút. Nội dung cũ giữ để tra cứu: **(đã duyệt 03/10; ngoại lệ RANKED ở 7.2):** Khi một người ngồi ghế rời lúc phòng `FINISHED`, phòng quay về `WAITING`; người còn lại giữ ghế và quyền Host (nếu người rời là Host thì quyền Host chuyển cho người còn lại); người mới vào theo `Quyết định 2.8`. Mất kết nối ở `WAITING`: giữ ghế 60 giây. Phòng ghép ngẫu nhiên không nhận người khác qua lời mời/link/mã (2.0).
 
 ---
 
@@ -248,7 +356,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Mô tả nghiệp vụ:**
   * Khi người dùng nhấp vào Link mời hoặc quét Mã QR trên thiết bị:
     * **Trường hợp 1 (Đã đăng nhập):** Hệ thống lập tức đưa thẳng người dùng vào phòng thi đấu (vào ghế chơi nếu phòng còn chỗ, hoặc vào làm người xem theo dõi).
-    * **Trường hợp 2 (Chưa đăng nhập):** Hệ thống hiển thị màn hình Đăng nhập / Đăng ký kèm nút **"Guest" (Chơi nhanh)**.
+    * **Trường hợp 2 (Chưa đăng nhập):** Hệ thống hiển thị màn hình Đăng nhập / Đăng ký kèm nút **"Guest" (Chơi nhanh)** — nút Khách hoạt động ở P1 (07/10).
     * **Tự động chuyển tiếp (Auto-Redirect):** Ngay sau khi người dùng đăng nhập thành công (hoặc bấm chọn chơi nhanh bằng Guest) $\rightarrow$ Hệ thống tự động điều hướng thẳng vào đúng phòng cờ mục tiêu ban đầu, **tuyệt đối không bắt người dùng phải bấm link hoặc quét lại mã QR lần thứ 2**.
     * **Ưu tiên phiên/vị trí chơi (đồng bộ PO 05/10):** luật 1.8 được kiểm trước chuyển hướng phòng mời. Đăng nhập thiết bị khác khi đang chơi thì xử thua và về Sảnh; đăng nhập lại cùng thiết bị trong ân hạn tiếp tục ván cũ. Tự vào phòng mời chỉ khi không bị ràng buộc bởi vị trí chơi khác, và vẫn kiểm quyền/sức chứa theo 2.8.
 
@@ -287,11 +395,11 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 | Chế độ | Hiện ở Sảnh | Người mới vào bằng | Ghi chú |
 |---|:---:|---|---|
-| `PUBLIC` | Có | Nút **Vào xem** tại Sảnh, hoặc mã/link/lời mời | Chỉ phòng tự tạo; kiểm trạng thái, quyền và số chỗ xem tại máy chủ |
+| `PUBLIC` | Có | Nút **Vào chơi** (còn ghế) / **Vào xem** tại Sảnh (07/10), hoặc mã/link/lời mời | Chỉ phòng tự tạo; kiểm trạng thái, quyền và số chỗ xem tại máy chủ |
 | `CODE_ONLY` | Không | Mã 8 ký tự, link/QR, lời mời bạn bè | Không bắt buộc kết bạn; QR là P2 |
 | `LOCKED` | Không | **Không ai mới vào được**, kể cả có mã/link/QR | Chỉ bật được khi đã đủ 2 người chơi; người đang trong phòng giữ nguyên (`Quyết định 4.3`) |
 
-  3. **Hai cách mời (PO chốt 05/10):** (a) mời nhanh bạn bè đang online qua `MODAL-INVITE` trong phòng (`Quyết định 2.5`); (b) gửi link hoặc mã cho bất kỳ người nào muốn chơi/xem, không kiểm tra quan hệ bạn bè khi vào bằng link/mã. **PO chốt lại MVP:** phòng `PUBLIC` được tìm ở danh sách Sảnh và vào xem; `CODE_ONLY` chỉ qua mã/link/lời mời. Không yêu cầu kết bạn để xem phòng công khai hoặc vào bằng mã/link. Mọi cách vào vẫn phải kiểm tra phiên, khóa phòng, danh sách chặn và sức chứa; P1 chưa có Khách nên người chưa đăng nhập phải đăng nhập/đăng ký rồi tự chuyển vào phòng (`Quyết định 2.4`).
+  3. **Hai cách mời (PO chốt 05/10):** (a) mời nhanh bạn bè đang online qua `MODAL-INVITE` trong phòng (`Quyết định 2.5`); (b) gửi link hoặc mã cho bất kỳ người nào muốn chơi/xem, không kiểm tra quan hệ bạn bè khi vào bằng link/mã. **PO chốt lại MVP:** phòng `PUBLIC` được tìm ở danh sách Sảnh và vào xem; `CODE_ONLY` chỉ qua mã/link/lời mời. Không yêu cầu kết bạn để xem phòng công khai hoặc vào bằng mã/link. Mọi cách vào vẫn phải kiểm tra phiên, khóa phòng, danh sách chặn và sức chứa; người chưa đăng nhập chọn Đăng nhập/Đăng ký hoặc **Khách** (P1 từ 07/10) rồi tự chuyển vào phòng (`Quyết định 2.4`).
   4. **Thách đấu bạn bè (P2, duyệt 04/10):** Từ `SCR-FRIENDS` mở lại `MODAL-CREATE-ROOM`; người gửi nhập tên, mặc định **10 phút / CODE_ONLY / 5 người xem**, được đổi trong phạm vi phòng tự tạo của phân kỳ. **Theo biểu mẫu phòng hiện hành:** mặc định đồng nhất với phòng tự tạo; không tạo thêm mức người xem ngoài trần mới. Chỉ khi xác nhận mới tạo phòng rồi gửi lời mời theo 2.5. Huỷ form không tạo phòng/không gửi mời. Nếu bạn vừa bận hoặc từ chối/hết hạn, phòng đã tạo **vẫn tồn tại** để Host tự quản lý; không tự đóng hoặc chuyển sang ván với máy.
 
 ---
@@ -301,7 +409,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Mô tả nghiệp vụ:**
   1. **Thiết lập khi tạo phòng — MVP chốt lại 05/10:** chọn *Không có người xem* hoặc tối đa 1–5 người xem (**mặc định 5**). Sức chứa phòng = 2 + số này (tối đa 7). Không đổi sau khi tạo.
   2. **Mời người vào:** Bấm "Chia sẻ phòng" tạo cùng lúc **3 hình thức**: Link, Mã 8 ký tự, Mã QR. Cả ba cho **cùng một quyền**, không phân biệt xem/chơi. Chỉ 2 người chơi thấy nút Chia sẻ.
-  3. **Người mới vào đâu:** Trong **phòng tự tạo**, người có link/mã hoặc lời mời được vào theo `Quyết định 2.7`, không bắt buộc kết bạn. Ghế đấu còn trống thì vào **ngay ghế đó**. Hai ghế đã kín thì vào làm **Người xem** nếu còn chỗ (`Quyết định 2.6`); hết chỗ thì báo phòng đầy. Nút **Vào xem** tại Sảnh cho vào với vai trò Người xem ở phòng `PUBLIC`; máy chủ không tự xếp người bấm nút này vào ghế chơi. Ghép ngẫu nhiên, Đánh Hạng và AI không nhận người xem.
+  3. **Người mới vào đâu:** Trong **phòng tự tạo**, người có link/mã hoặc lời mời được vào theo `Quyết định 2.7`, không bắt buộc kết bạn. Ghế đấu còn trống thì vào **ngay ghế đó**. Hai ghế đã kín thì vào làm **Người xem** nếu còn chỗ (`Quyết định 2.6`); hết chỗ thì báo phòng đầy. Nút **Vào xem** tại Sảnh cho vào với vai trò Người xem ở phòng `PUBLIC`; máy chủ không tự xếp người bấm nút này vào ghế chơi. Nút **Vào chơi** (07/10) xếp vào ghế trống, ghế vừa hết thì xử lý theo Phần 0 mục 0.5. Ghép ngẫu nhiên, Đánh Hạng và AI không nhận người xem.
   4. **Đổi chỗ giữa ghế và người xem trong phòng tự tạo** (chỉ khi phòng `WAITING` hoặc `FINISHED`, **không đổi chỗ khi ván đang diễn ra**):
      * Người ngồi ghế tự bấm *"Chuyển sang người xem"*. **Điều kiện (rà soát cuối):** chỉ khi phòng còn chỗ xem (số người xem hiện tại thấp hơn số người xem tối đa của phòng). Phòng "Không có người xem" hoặc đã đủ người xem thì nút `DISABLED` kèm tooltip *"Phòng không còn chỗ cho người xem"*; không bao giờ vượt trần. Không có thao tác hoán đổi trực tiếp.
      * Host bấm *"Chuyển sang người xem"* cho một người đang ngồi ghế (cùng điều kiện còn chỗ xem), hoặc gửi *"Mời xuống ghế"* cho một người xem khi còn ghế trống. **PO duyệt 05/10:** lời mời xuống ghế cần người xem **Chấp nhận**; Từ chối thì tiếp tục xem. Lời mời không giữ ghế: khi chấp nhận, máy chủ kiểm lại trạng thái phòng, quyền, vị trí chơi và ghế trống; nếu ghế đã có người thì thông báo và giữ vai trò Người xem. Xuống ghế thành công vẫn phải bấm Sẵn sàng theo 2.3.
@@ -354,7 +462,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   4. **Mất kết nối & Xử lý Rage Quit (`R09` / `EC-03`):** Ân hạn 60s. Quá 60s xử thua (`DISCONNECT`). Trong ván Ranked bị phạt trừ Elo bình thường, đối thủ được cộng Elo. Lỗi sập server toàn cục: ván `INTERRUPTED` (**không có người thắng và không phải hòa**) giữ nguyên Elo (`ARCH-10`; xem `Quyết định 7.3`).
   5. **Chống treo ván (`R17`):** Ván không giới hạn giờ, sau 3 phút không đi cờ $\rightarrow$ hiện prompt hỏi $\rightarrow$ đếm lùi 30 giây $\rightarrow$ xử thua nếu im lặng (`INACTIVITY`). **Đã chốt (rà soát cuối):** mục tiêu là phát hiện người bỏ đi, nên áp dụng cho **bên đang tới lượt**. Bấm *"Tôi còn đây"* đặt lại bộ đếm 3 phút, nhưng **tối đa 2 lần liên tiếp mà chưa có nước đi mới**; lần thứ 3 không còn nút, hết 30 giây là xử thua.
   6. **Thao tác trong ván & Undo (`R13` / `EC-01`):** Ván Ranked **tuyệt đối cấm Undo**. Phòng tự tạo và ghép ngẫu nhiên có Xin đi lại P2 theo 3.2 và 3.6. Dùng cây nước đi `match_moves` lùi con trỏ `current_move_id`, không hoàn lại thời gian đã trôi.
-  7. **Tái đấu đổi bên (`R14`):** Kết thúc ván, phòng giữ trạng thái `FINISHED` tối đa 10 phút; hết hạn mà vẫn ở `FINISHED` thì đóng phòng và đưa người còn lại về Sảnh (duyệt 04/10). Trong phòng tự tạo và ghép ngẫu nhiên, cả hai cùng đồng ý Tái đấu (P2) $\rightarrow$ tạo ván mới (`new Match ID`) và tự động hoán đổi bên Đỏ $\leftrightarrow$ Đen theo 2.3. Phòng Đánh Hạng không có Tái đấu (`Quyết định 7.2`); quy tắc sau ván ghép ngẫu nhiên theo 2.0.
+  7. **Tái đấu (`R14`) — sửa 07/10:** phòng tự tạo về `WAITING` ngay sau ván theo Phần 0 mục 0.7; Tái đấu P2 có lựa chọn Giữ phe/Đổi phe theo 0.8. Nội dung cũ dưới đây chỉ còn áp cho ghép ngẫu nhiên và Đánh Hạng: Kết thúc ván, phòng giữ trạng thái `FINISHED` tối đa 10 phút; hết hạn mà vẫn ở `FINISHED` thì đóng phòng và đưa người còn lại về Sảnh (duyệt 04/10). Trong phòng tự tạo và ghép ngẫu nhiên, cả hai cùng đồng ý Tái đấu (P2) $\rightarrow$ tạo ván mới (`new Match ID`) và tự động hoán đổi bên Đỏ $\leftrightarrow$ Đen theo 2.3. Phòng Đánh Hạng không có Tái đấu (`Quyết định 7.2`); quy tắc sau ván ghép ngẫu nhiên theo 2.0.
 
 ---
 
@@ -386,7 +494,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ---
 
 ### Quyết định 3.5 (đã duyệt 03/10): Luật bổ sung — chiếu liên tục, không ăn quân, giới hạn xin hòa
-* **Phạm vi bộ luật:** Dự án dùng **bộ luật rút gọn** do chính tài liệu này định nghĩa (luật di chuyển chuẩn cờ tướng + các luật kết thúc ván ở `Quyết định 3.3` và 3.5). Giai đoạn 2 đối chiếu với luật cờ tướng chính thức, ghi lại mọi điểm khác biệt, và chốt chu kỳ lặp cùng thứ tự ưu tiên khi nhiều kết quả xảy ra cùng lúc (chiếu hết thắng mọi kết quả hòa).
+* **Phạm vi bộ luật:** Dự án dùng **bộ luật rút gọn** do chính tài liệu này định nghĩa (luật di chuyển chuẩn cờ tướng + các luật kết thúc ván ở `Quyết định 3.3` và 3.5). Định nghĩa lặp thế, chu kỳ lặp và thứ tự ưu tiên kết quả chốt ở **Phần 0 mục 0.12** (08/10); chiếu hết thắng mọi kết quả hòa. Điểm khác với luật thi đấu chính thức được công bố ở mục Luật chơi (10.4).
 * **Lựa chọn đã chốt:** **[RULES-EXTRA] Chiếu liên tục xử thua bên chiếu; hòa khi 120 nửa nước không ăn quân; hạn chế xin hòa lặp**
 * **Mô tả nghiệp vụ:**
   1. **Chiếu liên tục (perpetual check):** Khi một thế cờ lặp lần thứ 3 mà **mọi nước đi của một bên trong chu kỳ lặp đều là nước chiếu** (bên kia không chiếu) thì **bên chiếu liên tục bị xử THUA** (lý do `PERPETUAL_CHECK`). Nếu **cả hai bên** cùng chiếu liên tục thì xử Hòa.
@@ -531,14 +639,14 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * *Dễ (Easy):* Depth 2, thời gian phản hồi $\le 300$ ms.
     * *Trung bình (Medium):* Depth 4, thời gian phản hồi $\le 1000$ ms.
     * *Khó (Hard):* Depth 6, thời gian phản hồi $\le 3000$ ms.
-  * **Lý do:** Giữ kiến trúc giao diện đơn giản, tập trung toàn lực cho AI vượt qua cổng kiểm định chất lượng (tiêu chí đo cụ thể chốt ở Giai đoạn 2) và chạy ở tiến trình tách biệt khỏi máy chủ chính.
-  * **Mục tiêu cảm nhận (không ràng buộc, đo ở Giai đoạn 2):** Dễ — người mới học cờ thắng được; Trung bình — người chơi phổ thông thắng khoảng một nửa số ván; Khó — người chơi phổ thông hiếm khi thắng.
-  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). Nếu tiến trình máy cờ **lỗi hoặc không phản hồi sau 10 giây**: ván chuyển "Bỏ dở", báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*. Con số đo thực tế theo cổng kiểm chứng trong `docs/05`.
+  * **Lý do:** Giữ kiến trúc giao diện đơn giản, tập trung toàn lực cho AI vượt qua cổng kiểm định chất lượng (cách đo: GATE-ENGINE, US-08.3 trong BACKLOG-P1.md) và chạy ở tiến trình tách biệt khỏi máy chủ chính.
+  * **Mục tiêu cảm nhận (không ràng buộc, đo bằng đấu máy với máy ở US-08.3):** Dễ — người mới học cờ thắng được; Trung bình — người chơi phổ thông thắng khoảng một nửa số ván; Khó — người chơi phổ thông hiếm khi thắng.
+  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). Nếu tiến trình máy cờ **lỗi hoặc không phản hồi sau 10 giây**: ván chuyển "Bỏ dở", báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*. Con số đo thực tế theo cổng kiểm chứng GATE-ENGINE ở [BACKLOG-P1.md](BACKLOG-P1.md).
   * **Thử lại (duyệt 04/10):** Nếu chỉ hết thời gian chờ tiến trình (`ENGINE_BUSY`), Thử lại yêu cầu máy tìm nước trên **cùng ván và thế hiện tại**, không gửi lại nước của người chơi. Nếu ván đã `ABANDONED` do sự cố, Thử lại tạo **ván mới, Match ID mới**, cùng cấp độ và phe thực tế của ván cũ (phe Ngẫu nhiên đã bốc không bốc lại); không hồi sinh ván kết thúc. Mỗi lần bấm đang xử lý bị chặn trùng; kiểm lại quyền và một vị trí chơi trước khi tạo ván mới.
 
 ---
 
-**Tiêu chí máy cờ bổ sung — PO duyệt và làm rõ 05/10:** **cấp Khó** phải giải đúng **100%** bộ thế chiếu hết 1 và 2 nước bắt buộc, đã xác minh đáp án; bộ mở rộng báo tỷ lệ riêng. Ngưỡng 100% này không áp cho cấp Dễ/Trung bình; hai cấp đó vẫn phải đạt nước đi hợp lệ, thời gian phản hồi và phân cấp sức mạnh đã chốt. Chi tiết cách đo ở docs/02 và docs/05.
+**Tiêu chí máy cờ bổ sung — PO duyệt và làm rõ 05/10:** **cấp Khó** phải giải đúng **100%** bộ thế chiếu hết 1 và 2 nước bắt buộc, đã xác minh đáp án; bộ mở rộng báo tỷ lệ riêng. Ngưỡng 100% này không áp cho cấp Dễ/Trung bình; hai cấp đó vẫn phải đạt nước đi hợp lệ, thời gian phản hồi và phân cấp sức mạnh đã chốt. Cách đo: GATE-ENGINE ở [BACKLOG-P1.md](BACKLOG-P1.md).
 
 ### Quyết định 6.2: Lưu trữ đầy đủ các ván đấu với AI vào Lịch sử người dùng
 * **Lựa chọn đã chốt:** **[11B] Lưu ván đấu AI vào Lịch sử & Hỗ trợ Replay xem lại**
@@ -723,22 +831,22 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ### Quyết định 10.1: Ràng buộc chung của sản phẩm
 * **Lựa chọn đã chốt:** **[GLOBAL-CONSTRAINTS] Quy mô đồ án, web responsive, tiếng Việt, không lưu media**
 * **Mô tả:**
-  * **Nguồn lực và hạn chót (Product Owner cung cấp 03/10/2026):** nhóm **7 người**, hạn nộp/demo khoảng **2 tuần** (đến khoảng 17/10/2026). Vì vậy phạm vi làm trước được giới hạn ở P1 theo `Phần 11`.
-  * **Nhóm và thời gian (PO trả lời 04/10/2026):** Product Owner **nằm trong nhóm 7 người**; **Scrum Master là người đại diện PO (Twot)**; mọi thành viên làm **toàn thời gian** cho dự án và nhóm có **đủ các kỹ năng** cần thiết; **bắt đầu ngay 04/10/2026, hoàn thành sau 2 tuần (nộp 18/10/2026; ngày làm việc D1 = 04/10, D14 = 17/10)**; ước lượng bằng **giờ**. Cách đọc "đủ kỹ năng" và "toàn thời gian" là lời của PO, chưa có bảng giờ từng người; con số 17/10 ở dòng trên là theo mốc bắt đầu cũ 03/10, nay lấy mốc 04/10.
+  * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Nguồn lực và hạn chót (Product Owner cung cấp 03/10/2026):** nhóm **7 người**, hạn nộp/demo khoảng **2 tuần** (đến khoảng 17/10/2026). Vì vậy phạm vi làm trước được giới hạn ở P1 theo `Phần 11`.
+  * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Nhóm và thời gian (PO trả lời 04/10/2026):** Product Owner **nằm trong nhóm 7 người**; **Scrum Master là người đại diện PO (Twot)**; mọi thành viên làm **toàn thời gian** cho dự án và nhóm có **đủ các kỹ năng** cần thiết; **bắt đầu ngay 04/10/2026, hoàn thành sau 2 tuần (nộp 18/10/2026; ngày làm việc D1 = 04/10, D14 = 17/10)**; ước lượng bằng **giờ**. Cách đọc "đủ kỹ năng" và "toàn thời gian" là lời của PO, chưa có bảng giờ từng người; con số 17/10 ở dòng trên là theo mốc bắt đầu cũ 03/10, nay lấy mốc 04/10.
   * **Tiêu chí chấm kế hoạch Jira của giáo viên (PO cung cấp 04/10/2026; đồ án môn học):** kế hoạch phải **hợp lý và cụ thể**; **Description** của từng Epic, Story, Task phải đủ chi tiết để người làm hiểu yêu cầu, mục tiêu và kết quả, **cách kiểm thử và điều kiện PASS**; **thứ tự sắp xếp hợp lý**: kết quả của việc này là điểm bắt đầu của việc kia, **tránh hai việc A và B chạy song song trong khi B cần kết quả của A** (lãng phí thời gian). Giáo viên chưa nêu số Sprint tối thiểu.
   * **Số người xem — PO chốt lại MVP 05/10/2026:** phòng tự tạo có **hai người chơi và tối đa năm người xem**, biểu mẫu chọn 0/1/2/3/4/5 (mặc định 5), sức chứa tối đa 7. PO đính chính lại mức năm người xem; bài tải và media theo trần này. Không có mục nâng trần riêng ở P2.
-  * **Nhịp Sprint (PO chọn 04/10/2026):** **4 Sprint** theo độ dài 4 + 3 + 4 + 3 ngày: Sprint 1 từ 04/10 đến 07/10, Sprint 2 từ 08/10 đến 10/10, Sprint 3 từ 11/10 đến 14/10, Sprint 4 từ 15/10 đến 17/10; nộp 18/10/2026. Mỗi Sprint phải có Sprint Goal và một Increment dùng được; số Sprint không làm thay đổi phạm vi P1.
-  * **Nơi chạy demo (PO quyết định 04/10/2026):** **ưu tiên chạy trên máy cục bộ (local)**; chỉ dùng Render làm phương án dự phòng nếu cần có địa chỉ trên mạng. Hệ quả: không bắt buộc dịch vụ trả phí hay thẻ thanh toán cho phần máy chủ ứng dụng; vẫn dùng Supabase và LiveKit Cloud đã chọn (cần mạng). Kịch bản demo D1–D10 phải chạy được ở môi trường cục bộ.
+  * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Nhịp Sprint (PO chọn 04/10/2026):** **4 Sprint** theo độ dài 4 + 3 + 4 + 3 ngày: Sprint 1 từ 04/10 đến 07/10, Sprint 2 từ 08/10 đến 10/10, Sprint 3 từ 11/10 đến 14/10, Sprint 4 từ 15/10 đến 17/10; nộp 18/10/2026. Mỗi Sprint phải có Sprint Goal và một Increment dùng được; số Sprint không làm thay đổi phạm vi P1.
+  * **Nơi chạy demo (PO quyết định 04/10/2026; hạn demo nay là 05/11/2026; bố trí media xem Phần 0 mục 0.16):** **ưu tiên chạy trên máy cục bộ (local)**; chỉ dùng Render làm phương án dự phòng nếu cần có địa chỉ trên mạng. Hệ quả: không bắt buộc dịch vụ trả phí hay thẻ thanh toán cho phần máy chủ ứng dụng; vẫn dùng Supabase và LiveKit Cloud đã chọn (cần mạng). Kịch bản demo D1–D10 phải chạy được ở môi trường cục bộ.
   * **Chat Kênh Riêng khi đổi người ngồi ghế (PO quyết định 04/10/2026):** khi cặp người ngồi ghế thay đổi (ví dụ A và B đang chat riêng, B xuống xem, C lên ngồi), **người mới ngồi không đọc được tin cũ**, và **không ai** trong cặp mới đọc được tin của cặp cũ. Kênh Riêng chỉ hiển thị tin tạo từ lúc **cặp ngồi ghế hiện tại hình thành** (mốc muộn hơn trong hai mốc bắt đầu ngồi ghế). Người rời ghế mất quyền đọc Kênh Riêng.
   * **Ván bị gián đoạn khi máy chủ khởi động lại (PO uỷ quyền agent quyết định 04/10/2026, đã chốt):** hiện hộp kết quả trung tính **"Ván bị gián đoạn"**: không có bên thắng, thua hay hoà; không đổi điểm Elo; chỉ có nút *Rời phòng*; không tự hiện nút Tái đấu. Lý do chọn: người chơi không bị phạt vì lỗi hệ thống và không cần thêm màn hình mới.
-  * **Yêu cầu phi chức năng NFR-08, NFR-09, NFR-10 (PO duyệt 04/10/2026):** (08) nhật ký vận hành có cấu trúc, điểm kiểm tra sức khoẻ, không ghi mật khẩu/OTP/token/nội dung chat; (09) lưu giữ dữ liệu: ván online và nước đi lưu bền, ván với máy chỉ ở bộ nhớ, chat phòng xoá khi phòng đóng, biên lai lệnh xoá sau 24 giờ, nhật ký giữ tối đa 14 ngày; (10) tin chat, tên hiển thị, tên phòng hiển thị như văn bản thuần. Chi tiết ở `docs/01` (bảng NFR) và cách kiểm ở `docs/05`. Từ nay là điều kiện bắt buộc của nghiệm thu P1.
-  * **Cổng kiểm chứng ở `docs/05` (PO duyệt 04/10/2026, theo khuyến nghị):** (a) demo đăng ký phải dùng **OTP thật** tới email thành viên nhóm, không dùng giả lập làm bằng chứng; (b) GATE-OTP: gọi thẳng chức năng đổi email của hệ thống đăng nhập phải không đổi được (nếu cấu hình không chặn được thì ghi "bị chặn" cho phần đó), và email ngoài nhóm hoặc vượt hạn mức thì báo lỗi thật, không để tài khoản kẹt; (c) GATE-MEDIA: ghi thời gian thu hồi quyền thực tế và mức dùng hạn mức miễn phí của LiveKit, **không đặt ngưỡng đạt**; (d) phần camera/micro của bài tải chạy **quy mô nhỏ (~3 phòng)**, **chỉ ghi số đo**, không nằm trong điều kiện đạt P1.
-  * **Google OAuth vào P1 (PO quyết định 04/10/2026):** **đăng ký và đăng nhập bằng Google chạy thật ở P1** (`Quyết định 1.2`, `SCR-ONBOARDING`, mục yêu cầu US-AUTH-07 với 5 tiêu chí; phân kỳ P1 từ 53 lên **54 mục yêu cầu, 157 lên 162 tiêu chí**). Giữ nguyên: nút *Guest* (Khách) và liên kết *Quên mật khẩu?* hiện mờ "Sắp ra mắt". Hệ quả: cần dịch vụ Google OAuth (khoá do nhóm tạo trên Google), thử nghiệm **không tự liên kết cùng email** của Supabase (cổng GATE-GOOGLE chuyển P1) và thêm công việc vào Epic 1.
-  * **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
-  * **Hạ tầng media (PO chốt 04/10/2026):** dùng **LiveKit Cloud** (gói miễn phí lúc bắt đầu, không tự dựng LiveKit); hạn mức, chi phí và việc thu hồi quyền theo `docs/04` mục media.
-  * **Quy mô thiết kế:** Hướng tới tối đa khoảng **50 người dùng đồng thời và 10 phòng/ván cùng lúc**. Con số đo được chốt ở Giai đoạn 2.
+  * **Yêu cầu phi chức năng NFR-08, NFR-09, NFR-10 (PO duyệt 04/10/2026):** (08) nhật ký vận hành có cấu trúc, điểm kiểm tra sức khoẻ, không ghi mật khẩu/OTP/token/nội dung chat; (09) lưu giữ dữ liệu: ván online và nước đi lưu bền, ván với máy chỉ ở bộ nhớ, chat phòng xoá khi phòng đóng, biên lai lệnh xoá sau 24 giờ, nhật ký giữ tối đa 14 ngày; (10) tin chat, tên hiển thị, tên phòng hiển thị như văn bản thuần. Chi tiết và cách kiểm ở mục NFR của [BACKLOG-P1.md](BACKLOG-P1.md). Từ nay là điều kiện bắt buộc của nghiệm thu P1.
+  * **Cổng kiểm chứng (PO duyệt 04/10/2026; chi tiết nay ở mục Cổng kiểm chứng của BACKLOG-P1.md; (a) sửa 07/10 theo SMTP ngoài):** (a) demo đăng ký phải dùng **OTP thật** tới email thật (kể cả email ngoài nhóm), không dùng giả lập làm bằng chứng; (b) GATE-OTP: gọi thẳng chức năng đổi email của hệ thống đăng nhập phải không đổi được (nếu cấu hình không chặn được thì ghi "bị chặn" cho phần đó), và email ngoài nhóm hoặc vượt hạn mức thì báo lỗi thật, không để tài khoản kẹt; (c) GATE-MEDIA: ghi thời gian thu hồi quyền thực tế và mức dùng hạn mức miễn phí của LiveKit, **không đặt ngưỡng đạt**; (d) phần camera/micro của bài tải chạy **quy mô nhỏ (~3 phòng)**, **chỉ ghi số đo**, không nằm trong điều kiện đạt P1.
+  * **Google OAuth vào P1 (PO quyết định 04/10/2026):** **đăng ký và đăng nhập bằng Google chạy thật ở P1** (`Quyết định 1.2`, `SCR-ONBOARDING`, tiêu chí hiện hành ở US-01.3 trong BACKLOG-P1.md). Liên kết *Quên mật khẩu?* hiện mờ "Sắp ra mắt"; nút *Guest* (Khách) **hoạt động ở P1 từ 07/10** (Phần 0 mục 0.3). Hệ quả: cần dịch vụ Google OAuth (khoá do nhóm tạo trên Google), thử nghiệm **không tự liên kết cùng email** của Supabase (cổng GATE-GOOGLE chuyển P1) và thêm công việc vào Epic 1.
+  * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
+  * ~~ĐÃ THAY bởi Phần 0 mục 0.16 (08/10): LiveKit tự chạy + LiveKit Cloud dự phòng~~ **Hạ tầng media (PO chốt 04/10/2026):** dùng **LiveKit Cloud** (gói miễn phí lúc bắt đầu, không tự dựng LiveKit); hạn mức, chi phí và việc thu hồi quyền kiểm theo GATE-MEDIA ở BACKLOG-P1.md.
+  * **Quy mô thiết kế:** Hướng tới tối đa khoảng **50 người dùng đồng thời và 10 phòng/ván cùng lúc**. Đo bằng GATE-REALTIME (US-00.5, BACKLOG-P1.md).
   * **Thiết bị:** Ứng dụng web chạy trên bản mới của Chrome, Edge, Firefox, Safari. Giao diện **responsive từ 360 px** (vì Mã QR hướng tới điện thoại); bàn cờ chơi được bằng cảm ứng.
-  * **Gửi email OTP (duyệt 04/10/2026):** dùng **SMTP mặc định của Supabase**, không thêm dịch vụ gửi thư. Hệ quả đã được Product Owner chấp nhận: hạn mức khoảng 2 thư/giờ và chỉ gửi được tới địa chỉ thuộc nhóm dự án Supabase (theo tài liệu Supabase), không dành cho production. Vì vậy buổi demo đăng ký bằng email OTP chỉ dùng email của thành viên nhóm và ít lượt đăng ký; chuẩn bị tài khoản demo trước. Muốn mở cho người ngoài nhóm thì phải đổi quyết định này (gắn SMTP bên ngoài).
+  * ~~ĐÃ THAY bởi Phần 0 mục 0.4 (07/10): dùng SMTP ngoài~~ **Gửi email OTP (duyệt 04/10/2026):** dùng **SMTP mặc định của Supabase**, không thêm dịch vụ gửi thư. Hệ quả đã được Product Owner chấp nhận: hạn mức khoảng 2 thư/giờ và chỉ gửi được tới địa chỉ thuộc nhóm dự án Supabase (theo tài liệu Supabase), không dành cho production. Vì vậy buổi demo đăng ký bằng email OTP chỉ dùng email của thành viên nhóm và ít lượt đăng ký; chuẩn bị tài khoản demo trước. Muốn mở cho người ngoài nhóm thì phải đổi quyết định này (gắn SMTP bên ngoài).
   * **Ngôn ngữ:** Chỉ tiếng Việt.
   * **Dữ liệu cá nhân:** Chỉ lưu email, username, Display Name, mật khẩu (băm), Elo, lịch sử ván, bạn bè, tin nhắn. Camera/mic **không ghi, không lưu**. Không hỏi tuổi.
 
@@ -755,38 +863,40 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Phông chữ (PO chốt 05/10, câu 6):** đồng bộ thiết kế, hướng dẫn Figma/bàn giao và checklist theo bảng phông hiện tại ở `DESIGN.md` §3.1. Bảng này định nghĩa phông giao diện, tiêu đề trang trí, chữ Hán trên quân cờ và monospace cho đồng hồ/mã phòng; không dùng hướng dẫn Inter/Roboto thay cho phông giao diện đã chốt.
 
 ### Quyết định 10.4: Công bố luật rút gọn (duyệt 04/10/2026)
-* **P1:** phần **Luật chơi** mở rộng/thu gọn trong Sảnh hiện có; không tạo trang hoặc modal mới. Nêu cách kết thúc ván, hết nước đi là thua, chiếu liên tục, lặp thế và không ăn quân; thông báo rõ đuổi quân liên tục không xử riêng. Nội dung dẫn từ `docs/02`, không tuyên bố tuân thủ toàn bộ luật thi đấu chính thức.
+* **P1:** phần **Luật chơi** mở rộng/thu gọn trong Sảnh hiện có; không tạo trang hoặc modal mới. Nêu cách kết thúc ván, hết nước đi là thua, chiếu liên tục, lặp thế và không ăn quân; thông báo rõ đuổi quân liên tục không xử riêng. Nội dung theo AC của Story Sảnh trong BACKLOG-P1.md, không tuyên bố tuân thủ toàn bộ luật thi đấu chính thức.
 
-## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP 2 TUẦN) VÀ P2 (LÀM SAU)
+## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP, HẠN 05/11/2026) VÀ P2 (LÀM SAU)
+
+> **Cập nhật 07/10:** Khách, Xin đổi bên, khoá thử sai đăng nhập, nút "Vào chơi" ở Sảnh, "Ở lại phòng"/"Ván mới" sau ván đã lên P1 (Phần 0). Bảng và danh sách dưới đây đã đồng bộ.
 
 > Danh sách P1/P2 do agent đề xuất theo uỷ quyền của Product Owner ngày 03/10/2026 và **đã được Product Owner duyệt cùng ngày**, với một điều chỉnh: **mời bạn bè đang online vào phòng phải có ở P1** (nên hệ thống bạn bè tối thiểu thuộc P1). Product Owner có thể kéo bất kỳ mục nào từ P2 lên P1.
 >
 > **Tiêu chí hoàn thành P1 (Product Owner, 03/10/2026):** demo chạy được **8 mục tiêu cốt lõi từ đầu đến cuối** (end-to-end).
 
-* **Căn cứ:** Product Owner (03/10/2026) xác định 8 mục tiêu cốt lõi cho nhóm 7 người trong khoảng 2 tuần, và cho phép agent tự chuyển các mục còn lại xuống P2. **P1** = những gì cần để 8 mục tiêu chạy được trọn vẹn. **P2** = mọi thứ còn lại; vẫn là đặc tả đã duyệt, **các luật P2 giữ nguyên hiệu lực khi được làm**, chỉ chưa làm trong 2 tuần này.
+* **Căn cứ:** Product Owner (03/10/2026) xác định 8 mục tiêu cốt lõi cho nhóm 7 người (lúc đó dự kiến khoảng 2 tuần; hạn hiện hành là 05/11/2026 theo Phần 0), và cho phép agent tự chuyển các mục còn lại xuống P2. **P1** = những gì cần để 8 mục tiêu chạy được trọn vẹn. **P2** = mọi thứ còn lại; vẫn là đặc tả đã duyệt, **các luật P2 giữ nguyên hiệu lực khi được làm**, chỉ chưa làm trong 2 tuần này.
 * **8 mục tiêu cốt lõi (nguyên văn ý Product Owner) và nơi định nghĩa:**
 
 | # | Mục tiêu cốt lõi | Quyết định / thành phần phục vụ |
 |---|---|---|
-| 1 | Giao diện đăng ký / đăng nhập | 1.1 (đăng ký 3 bước OTP), **1.2 (đăng ký và đăng nhập bằng Google, PO kéo lên P1 ngày 04/10/2026)**, đăng nhập Username + Mật khẩu, 1.8 (phiên); `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS` (chỉ Display Name và Đăng xuất) |
-| 2 | Tạo phòng chơi game | 2.7, 2.8; `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM` |
+| 1 | Giao diện đăng ký / đăng nhập | 1.1 (đăng ký 3 bước OTP), **1.2 (đăng ký và đăng nhập bằng Google, PO kéo lên P1 ngày 04/10/2026)**, đăng nhập Username + Mật khẩu và khoá thử sai (0.2), **Khách (1.3, 0.3 — lên P1 07/10)**, SMTP ngoài (0.4), 1.8 (phiên); `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`, `MODAL-GUEST-NAME`, `SCR-PROFILE-SETTINGS` (chỉ Display Name và Đăng xuất) |
+| 2 | Tạo phòng chơi game | 2.3, 2.7, 2.8, Xin đổi bên (0.6), sau ván (0.7); `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`, `MODAL-SIDE-SWAP-PROMPT` |
 | 3 | Mời bạn vào phòng (ngay trong game, gửi link, mã phòng) | 2.2 (Link + Mã 8 ký tự), 2.4 (tự chuyển vào phòng sau đăng nhập), 2.5 (**mời bạn bè đang online**), 5.5 (hệ thống bạn bè tối thiểu: tìm theo username, kết bạn hai chiều, trạng thái online/đang đấu, chuông lời mời kết bạn); `MODAL-INVITE`, `SCR-FRIENDS`. Nhắn tin 1-1 và Thách đấu là P2 |
 | 4 | Khởi tạo bàn cờ | 3.1, 3.4 (bàn cờ SVG, quân chữ Hán, click/kéo thả, âm thanh) |
-| 5 | Hai người đánh cờ qua mạng | 3.3, 3.5, 8.3 (phần mất kết nối), đồng hồ 5/10/15 phút (mặc định 10), Đầu hàng, Xin hòa; `SCR-GAME-ROOM`, `OVERLAY-RECONNECTING`, `MODAL-MATCH-RESULT` |
-| 6 | Phòng tự tạo mời qua bạn bè online hoặc link/mã, **tối đa 5 người xem**; công khai ở Sảnh, chỉ qua mã/link hoặc khóa chặn người mới (PO chốt lại MVP 05/10) | 2.7 (`PUBLIC` ở Sảnh; `CODE_ONLY` qua mã/link; `LOCKED` chặn người mới), 2.8, 4.2 (đuổi), 4.3; `PANEL-SPECTATORS`, `SCR-ACCESS-DENIED` |
-| 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1, 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 5.4 (3 mức chia sẻ); `PANEL-CHAT`, `PANEL-MEDIA` |
-| 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
+| 5 | Hai người đánh cờ qua mạng | 3.3, 3.5, 0.12 (lặp thế, chiếu liên tục), 8.3 (phần mất kết nối), đồng hồ 5/10/15 phút (mặc định 10), Đầu hàng, Xin hòa; `SCR-GAME-ROOM`, `OVERLAY-RECONNECTING`, `MODAL-MATCH-RESULT` |
+| 6 | Phòng tự tạo mời qua bạn bè online hoặc link/mã, **tối đa 5 người xem**; công khai ở Sảnh, chỉ qua mã/link hoặc khóa chặn người mới (PO chốt lại MVP 05/10) | 2.7 (`PUBLIC` ở Sảnh với Vào chơi/Vào xem theo 0.5; `CODE_ONLY` qua mã/link; `LOCKED` chặn người mới), 2.8, 4.2 (đuổi), 4.3; `PANEL-SPECTATORS`, `SCR-ACCESS-DENIED` |
+| 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1 (3 mức chia sẻ, người xem chỉ nhận), 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 0.13 (chat và camera/mic ở cả phòng chờ), 0.14 (lỗi media không ảnh hưởng ván), 0.16 (hạ tầng LiveKit); `PANEL-CHAT`, `PANEL-MEDIA` |
+| 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe), Ván mới (0.9); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
 
-* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · chế độ Khách (1.3) · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Xin đổi bên · Tái đấu · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · lựa chọn Giấy Sáng/Theo hệ thống (10.3).
+* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Tái đấu (có chọn phe, 0.8) · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · lựa chọn Giấy Sáng/Theo hệ thống (10.3).
 * **Quy tắc hiển thị tính năng P2 trong màn hình P1:** xem `DANH-MUC` §7 (lối vào điều hướng chính `DISABLED` + "Sắp ra mắt"; chức năng nằm sâu thì ẩn hẳn).
 * **Hệ quả cho P1:**
-  * Sảnh có bốn lựa chọn theo 2.0: Tự tạo phòng và Đánh với máy hoạt động ở P1; Đánh Thường ghép ngẫu nhiên và Đánh Hạng hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*. Có Vào phòng bằng mã và Luật chơi mở rộng/thu gọn (10.4); có danh sách phòng `PUBLIC` và nút Vào xem.
-  * Đăng nhập bằng Username + Mật khẩu hoặc bằng Google (`Quyết định 1.2`); người dùng chưa có tài khoản vào link mời phải đăng ký trước (không có Khách ở P1).
+  * Sảnh có bốn lựa chọn theo 2.0: Tự tạo phòng và Đánh với máy hoạt động ở P1; Đánh Thường ghép ngẫu nhiên và Đánh Hạng hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*. Có Vào phòng bằng mã và Luật chơi mở rộng/thu gọn (10.4); có danh sách phòng `PUBLIC` với nút Vào chơi/Vào xem (0.5).
+  * Đăng nhập bằng Username + Mật khẩu, bằng Google (`Quyết định 1.2`) hoặc **Khách** (0.3); người chưa đăng nhập vào link mời được chọn một trong ba cách rồi tự vào phòng.
   * Ván Đánh Thường **không có Elo** và ván có tài khoản **chưa lưu Lịch sử** ở P1; màn hình Lịch sử, Replay, Bảng xếp hạng chưa làm (màn hình Bạn bè **có** ở P1).
-  * `MODAL-MATCH-RESULT` ở P1 chỉ có *Rời phòng* (không Tái đấu, không Xem lại).
+  * `MODAL-MATCH-RESULT` ở P1: ván online có *Ở lại phòng* và *Rời phòng* (0.7); ván AI có *Ván mới* và *Về Sảnh* (0.9). Không Tái đấu, không Xem lại.
 * **Bạn bè ở P1 (tối thiểu):** `SCR-FRIENDS` có tìm kiếm, gửi/nhận lời mời, danh sách bạn kèm trạng thái. **Không có nút mời trên trang này**: ở P1 chỉ mời bạn bè online **trong một phòng**, qua `MODAL-INVITE` do người đang ngồi ghế của phòng đó thực hiện (không tự tạo phòng, vì tạo phòng rồi mời là Thách đấu, P2). Nút "Nhắn tin" và "Thách đấu" `DISABLED` kèm tooltip *"Sắp ra mắt"*; huy hiệu tin chưa đọc chưa có.
-* **Ưu tiên theo thành phần:** xem cột "Ưu tiên" ở `DANH-MUC` §7 (24 thành phần P1, 13 thành phần P2).
-* **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người trong 2 tuần nên chạy song song các nhóm việc từ đầu và có phương án dự phòng (ví dụ máy cờ chỉ làm cấp Dễ trước).
+* **Ưu tiên theo thành phần:** xem cột "Ưu tiên" ở `DANH-MUC` §7 (**26 thành phần P1, 11 thành phần P2** từ 07/10).
+* **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người đến hạn 05/11/2026 (Phần 0) nên chạy song song các nhóm việc từ đầu và có phương án dự phòng (ví dụ máy cờ chỉ làm cấp Dễ trước).
 
 ---
 
@@ -794,19 +904,19 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 | STT | Nghiệp Vụ Cốt Lõi | Quyết Định Đã Chốt | Phân Loại & Thứ Tự Ưu Tiên |
 |:---:|---|---|:---:|
-| 1 | **Chế độ Khách (Guest Mode)** | **[1B] Nút "Guest" nổi bật tại Login kèm ghi chú cấm tham gia Ranked Elo** | **P2 — làm sau MVP** |
-| 2 | Kích hoạt Email | **[2B] Tài khoản chỉ được tạo/kích hoạt sau khi xác thực OTP email lúc đăng ký** (không có bước kích hoạt thứ hai; Email cũng dùng cho OTP đổi Username và quên mật khẩu) | **P1 — MVP 2 tuần** |
+| 1 | **Chế độ Khách (Guest Mode)** | **[1B] Nút "Guest" nổi bật tại Login kèm ghi chú cấm tham gia Ranked Elo** | **P1 (lên P1 07/10, Phần 0 mục 0.3)** |
+| 2 | Kích hoạt Email | **[2B] Tài khoản chỉ được tạo/kích hoạt sau khi xác thực OTP email lúc đăng ký** (không có bước kích hoạt thứ hai; Email cũng dùng cho OTP đổi Username và quên mật khẩu) | **P1 — MVP** |
 | 3 | **Đổi Username / Cố định Email** | **[1C] Đổi Username không giới hạn tần suất (Quy trình 4 bước qua OTP Supabase); Cấm đổi Email** | **P2 — làm sau MVP** |
-| 4 | **Google OAuth Onboarding** | **[1D] Tạo tài khoản qua Google OAuth kết hợp thiết lập Username + Password**; dọn bản Google mới chưa hoàn tất sau 60 phút, kiểm mỗi 5 phút khi dịch vụ hoạt động (1.2) | **P1 — MVP 2 tuần (PO kéo lên 04/10/2026)** |
+| 4 | **Google OAuth Onboarding** | **[1D] Tạo tài khoản qua Google OAuth kết hợp thiết lập Username + Password**; dọn bản Google mới chưa hoàn tất sau 60 phút, kiểm mỗi 5 phút khi dịch vụ hoạt động (1.2) | **P1 — MVP (PO kéo lên 04/10/2026)** |
 | 5 | Đồng hồ thi đấu | **[3A] Phòng tự tạo chọn 4 mức giờ; ghép ngẫu nhiên Đánh Thường cố định 15 phút; Ranked cố định 10 phút**, không cộng giây (2.0, 2.1) | **P1** (phòng tự tạo 5/10/15 phút); **P2** ("Không giới hạn", ghép ngẫu nhiên, Ranked) |
 | 6 | Chia sẻ phòng đấu | **[4B] Thêm Mã QR (QR Code)** trực quan bên cạnh Link mời và Mã 8 ký tự | **P1** (Link + Mã); **P2** (Mã QR) |
-| 7 | Chữ trên quân cờ | **[5A] Giữ nguyên 100% quân chữ Hán** cổ điển, kết hợp viền trợ năng DT-21 | **P1 — MVP 2 tuần** |
+| 7 | Chữ trên quân cờ | **[5A] Giữ nguyên 100% quân chữ Hán** cổ điển, kết hợp viền trợ năng DT-21 | **P1 — MVP** |
 | 8 | Giới hạn Xin đi lại phòng tự tạo và ghép ngẫu nhiên | **[6B] Tối đa 3 lần thành công / bên / ván khi đối thủ chấp nhận** (3.2, 3.6; PO chốt 05/10) | **P2 — làm sau MVP** |
-| 9 | Quyền Người xem | **[7A] Chỉ trong phòng tự tạo, tối đa năm người xem, vào từ danh sách PUBLIC hoặc cách mời ở 2.7; chỉ Xem/Nghe + Chat Kênh Chung**, không phát Mic/Cam; CODE_ONLY/LOCKED không hiện ở Sảnh | **P1 — MVP 2 tuần** |
-| 10 | Đuổi người xem | **[8B] Cả hai người chơi đều được đuổi; chặn cho đến khi phòng đóng** (`status = CLOSED`) (đồng bộ với `Quyết định 4.2`) | **P1 — MVP 2 tuần** |
+| 9 | Quyền Người xem | **[7A] Chỉ trong phòng tự tạo, tối đa năm người xem, vào từ danh sách PUBLIC hoặc cách mời ở 2.7; chỉ Xem/Nghe + Chat Kênh Chung**, không phát Mic/Cam; CODE_ONLY/LOCKED không hiện ở Sảnh | **P1 — MVP** |
+| 10 | Đuổi người xem | **[8B] Cả hai người chơi đều được đuổi; chặn cho đến khi phòng đóng** (`status = CLOSED`) (đồng bộ với `Quyết định 4.2`) | **P1 — MVP** |
 | 11 | Tương tác Chat | **[9B] Bổ sung khay 12 Sticker cảm xúc nhanh** (vỗ tay 👏, uống trà 🍵, cạn lời 🤐...) | **P2 — làm sau MVP** |
 | 12 | **Chat riêng ngoài phòng** | **[9C / EC-02] Nhắn tin 1-1 chỉ giữa những người ĐÃ LÀ BẠN BÈ**, lưu lịch sử, unread badge | **P2 — làm sau MVP** |
-| 13 | Gợi ý nước khi đấu AI| **[10A] Không làm gợi ý nước đi (No Hint)**, tập trung chất lượng AI 3 cấp; nghiệm thu cấp Khó giải đúng 100% bộ chiếu hết ngắn bắt buộc (6.1, PO làm rõ 05/10) | **P1 — MVP 2 tuần** |
+| 13 | Gợi ý nước khi đấu AI| **[10A] Không làm gợi ý nước đi (No Hint)**, tập trung chất lượng AI 3 cấp; nghiệm thu cấp Khó giải đúng 100% bộ chiếu hết ngắn bắt buộc (6.1, PO làm rõ 05/10) | **P1 — MVP** |
 | 14 | Lưu lịch sử ván AI | **[11B] Lưu đầy đủ ván AI vào Hồ sơ**, hỗ trợ xem lại (Replay) từng nước cờ | **P2 — làm sau MVP** |
 | 15 | **Hệ thống Xếp hạng Elo** | **[12C] Điểm Elo chuẩn FIDE, Bảng xếp hạng Top 50 (đồng bộ với `Quyết định 7.1`), Ghép trận tự động Matchmaking** | **P2 — làm sau MVP** |
 | 16 | **Quy tắc ván Ranked** | **[EC-01] Ghép ngẫu nhiên 100%; CẤM XEM (No Spectators); CẤM UNDO; Khách không được đấu; 10 phút Rapid** | **P2 — làm sau MVP** |
@@ -817,10 +927,13 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 21 | **Khôi phục Username / đặt lại mật khẩu & Phiên đăng nhập** | **[PWD-RESET]**: sau OTP hợp lệ hiện Username, chỉ quên Username thì giữ mật khẩu; cần thì đặt mật khẩu mới, về Đăng nhập (1.7, PO chốt 05/10). **[SESSION]** `Quyết định 1.7, 1.8`; hạn phiên cố định từ đăng nhập; hết phiên trong ván theo ân hạn; đăng nhập thiết bị khác xử thua ván đang chạy, đăng xuất thiết bị cũ, thiết bị mới về Sảnh | **P1** (phiên); **P2** (khôi phục Username/mật khẩu) |
 | 22 | **Hệ thống Bạn bè & Thông báo** | **[FRIENDS]** `Quyết định 5.5` (nền cho chat 1-1, mời vào phòng, Thách đấu) | **P1** (kết bạn, trạng thái, mời bạn bè online); **P2** (chat 1-1, Thách đấu) |
 | 23 | **Luật cờ bổ sung & Hàng đợi/chống gian lận Ranked** (đã duyệt) | **[RULES-EXTRA] + [RANKED-GUARD] + [ROOM-SPEC]** `Quyết định 3.5, 7.2, 2.7` | **P1** (3.5, 2.7); **P2** (7.2) |
-| 24 | **Ràng buộc chung & Danh sách loại trừ** (đã duyệt) | **[GLOBAL-CONSTRAINTS] + [OUT-OF-SCOPE]** `Quyết định 10.1, 10.2` | **P1 — MVP 2 tuần** |
-| 25 | **Vào phòng, ghế/người xem, đề nghị trong ván, kết quả ván** (đã duyệt 03/10; bổ sung PO 05/10) | Mất mạng khi đếm bắt đầu ván tự tạo: huỷ/reset Sẵn sàng, giữ ghế 60 giây (2.3); mời xuống ghế cần chấp nhận, không giữ ghế (2.8); camera/mic tắt, chọn sẵn Chỉ đối thủ (4.1). **[ROOM-ACCESS] + [PROPOSALS] + [RESULT-TYPES]** `Quyết định 2.0, 2.3, 2.8, 3.6, 7.3` (sau ván/Tái đấu ghép ngẫu nhiên chốt 05/10; chat riêng giữ khi cùng cặp Đổi bên/Tái đấu trong cùng phòng, thay người thì đặt mốc mới theo 5.3, vẫn P2; kèm sửa 1.2, 1.3, 1.4, 2.3, 4.3, 5.3, 6.2) | **P1** (2.8; Xin hòa trong 3.6); **P2** (ghép ngẫu nhiên, Tái đấu, 7.3, Xin đi lại, Đổi bên) |
+| 24 | **Ràng buộc chung & Danh sách loại trừ** (đã duyệt) | **[GLOBAL-CONSTRAINTS] + [OUT-OF-SCOPE]** `Quyết định 10.1, 10.2` | **P1 — MVP** |
+| 25 | **Vào phòng, ghế/người xem, đề nghị trong ván, kết quả ván** (đã duyệt 03/10; bổ sung PO 05/10) | Mất mạng khi đếm bắt đầu ván tự tạo: huỷ/reset Sẵn sàng, giữ ghế 60 giây (2.3); mời xuống ghế cần chấp nhận, không giữ ghế (2.8); camera/mic tắt, chọn sẵn Chỉ đối thủ (4.1). **[ROOM-ACCESS] + [PROPOSALS] + [RESULT-TYPES]** `Quyết định 2.0, 2.3, 2.8, 3.6, 7.3` (sau ván/Tái đấu ghép ngẫu nhiên chốt 05/10; chat riêng giữ khi cùng cặp Đổi bên/Tái đấu trong cùng phòng, thay người thì đặt mốc mới theo 5.3, vẫn P2; kèm sửa 1.2, 1.3, 1.4, 2.3, 4.3, 5.3, 6.2) | **P1** (2.8; Xin hòa và **Xin đổi bên** trong 3.6 — Xin đổi bên lên P1 ngày 07/10, Phần 0 mục 0.6); **P2** (ghép ngẫu nhiên, Tái đấu, 7.3, Xin đi lại) |
 | 26 | **Giao diện theo phân kỳ** | Quyết định 10.3: Kỳ Đài Cổ Phong mặc định; đồng bộ phông theo DESIGN §3.1 (PO chốt 05/10); bộ chọn Giấy Sáng/Theo hệ thống | **P1** (giao diện mặc định); **P2** (bộ chọn) |
 | 27 | **Công bố luật rút gọn** | Quyết định 10.4: Luật chơi mở rộng/thu gọn trong Sảnh, không thêm màn hình | **P1** |
+| 28 | **Chốt 07/10/2026** | Phần 0: lịch đến 05/11, đăng nhập + khoá thử sai, Khách P1, SMTP ngoài, Sảnh PUBLIC Vào chơi/Vào xem, Xin đổi bên P1, sau ván về WAITING, Tái đấu chọn phe (P2), Ván mới AI, Jira lập lại | **P1** (trừ Tái đấu: P2) |
+
+> **Lưu ý đọc nhật ký (07/10):** các nhật ký dưới đây là lịch sử. Mọi tham chiếu `docs/...` trỏ tới bộ tài liệu đã xoá 07/10 (xem trong git tại `c4cf29d^`). Câu "không mở danh sách phòng công khai" ở nhật ký đồng bộ 05/10 đã bị thay bởi lần chốt lại MVP cùng ngày và Phần 0. Các số đếm US/AC trong nhật ký không còn hiệu lực; số hiện hành ở BACKLOG-P1.md.
 
 ## Nhật ký hoàn thiện 04/10/2026
 
@@ -859,3 +972,11 @@ PO chốt theo các đề xuất: huỷ đếm bắt đầu ván khi mất mạn
 PO trả lời "1 đồng ý, 2 đồng ý": cùng hai người Đổi bên/Tái đấu trong cùng phòng giữ chat riêng, thay người trong cặp thì đặt mốc chat mới (5.3); dùng luồng email + OTP khôi phục hiện có để cung cấp Username hiện tại, chỉ quên Username không bắt buộc đổi mật khẩu, quên cả mật khẩu thì tiếp tục đặt lại rồi về Đăng nhập (1.7). Cả hai vẫn P2, không mở rộng MVP. Hai ghi chú còn mở trong nhật ký trước đã được quyết định này thay thế; thiết kế kỹ thuật mới và cổng thử nghiệm vẫn cần review/kiểm chứng.
 
 Độ phủ sau bổ sung P2: 80 US (54 P1/26 P2), 283 AC (167 P1/116 P2), 283 TC đối ứng; 37 thành phần/185 trạng thái và 37 ca biên. Đây là độ phủ đặc tả, kiểm thử ứng dụng/cổng kỹ thuật vẫn chưa chạy.
+
+## Nhật ký chốt 08/10/2026
+
+PO trả lời Q1A, Q2A (kèm camera/mic bật được ở phòng chờ), Q3A, Q4A: ghi ở Phần 0 mục 0.12–0.15; đồng ý bố trí LiveKit tự chạy + LiveKit Cloud dự phòng (0.16); dọn các câu còn trỏ tới "Giai đoạn 2" và số đếm cũ.
+
+## Nhật ký chốt 07/10/2026
+
+Sau review BA, PO trả lời Q1–Q10, F1–F5 và câu hỏi bổ sung về đổi bên/đấu lại. Toàn bộ quyết định ghi ở **Phần 0**; các mục 1.3, 2.0, 2.3, 2.4, 2.7, 2.8, 3.3, 6.1, 10.1, 10.4, Phần 11 và ma trận đã sửa kèm nhãn (07/10). Bộ US/AC/TC P1 mới viết lại ở `BACKLOG-P1.md`, thay `docs/` đã xoá.
