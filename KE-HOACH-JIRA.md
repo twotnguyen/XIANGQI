@@ -45,6 +45,7 @@
 | Task (loại Task, cha là Epic, liên kết tới Story) | 71 | 20 Task kiểm thử + 51 Task phát triển/kỹ thuật |
 | Sprint | 4 | Sprint 1–4, mỗi Sprint 7 ngày, chỉ chứa Task. Epic/Story không đặt vào Sprint |
 | Release (Fix version) | 4 | v0.1, v0.2, v0.3, v1.0 |
+| Story Points | 133 điểm | Chỉ gắn cho Story, quy đổi từ tổng giờ các Task của Story theo thang Fibonacci (≤8h = 1 · ≤16h = 2 · ≤24h = 3 · ≤40h = 5 · ≤64h = 8 · >64h = 13); Task không có Story Points để không ước lượng hai lần |
 | Tổng giờ kế hoạch | 892 | Trên khả năng 7 người × 8 giờ × 28 ngày = 1.568 giờ |
 
 ---
@@ -89,62 +90,68 @@
 
 ⚠ = ngoại lệ, hạn xong là ngày Task cuối cùng.
 
+**Story Points:** quy đổi từ tổng giờ Task của Story (≤8h = 1 · ≤16h = 2 · ≤24h = 3 · ≤40h = 5 · ≤64h = 8 · >64h = 13). Story không nằm trong Sprint (R1) nên biểu đồ Velocity của Jira không tự tính; "điểm kế hoạch" của mỗi Sprint ở bảng dưới là tổng Story Points của các Story **thi công** trong Sprint đó, cuối Sprint so với số điểm của Story có Task kiểm thử PASS để ra velocity thực tế. Burndown trong Sprint dùng giờ (Original Time Estimate).
+
 Sprint 1–4 bên dưới chứa **Task**. Cột "Story" chỉ để biết Task thực hiện Story nào.
 
 ### XIAN Sprint 1 · 08/10 – 14/10 · Release v0.1
 
 **Sprint Goal:** Có nền tảng kỹ thuật, đăng ký/đăng nhập thật và bàn cờ đúng luật trên một máy.
 
-| Story được thực hiện | Epic | Số Task | Giờ |
-|---|---|---|---|
-| US-00.1 Khung dự án, CI và nhật ký vận hành | EP-00 | 2 | 24 |
-| US-00.2 Cơ sở dữ liệu và phân quyền P1 | EP-00 | 1 | 16 |
-| US-00.3 Khung realtime | EP-00 | 1 | 24 |
-| US-00.4 Kế hoạch kiểm thử và kiểm chứng sớm | EP-00 | 2 | 32 |
-| US-01.1 Đăng ký bằng Username + Mật khẩu + OTP email | EP-01 | 3 | 32 |
-| US-01.2 Đăng nhập bằng Username + Mật khẩu và khoá thử sai | EP-01 | 3 | 28 |
-| US-04.1 Lõi luật cờ dùng chung | EP-04 | 3 | 24 |
-| US-04.2 Khởi tạo và hiển thị bàn cờ | EP-04 | 2 | 20 |
+| Story được thực hiện | Epic | Số Task | Giờ | Story Points |
+|---|---|---|---|---|
+| US-00.1 Khung dự án, CI và nhật ký vận hành | EP-00 | 2 | 24 | 3 |
+| US-00.2 Cơ sở dữ liệu và phân quyền P1 | EP-00 | 1 | 16 | 2 |
+| US-00.3 Khung realtime | EP-00 | 1 | 24 | 3 |
+| US-00.4 Kế hoạch kiểm thử và kiểm chứng sớm | EP-00 | 2 | 32 | 5 |
+| US-01.1 Đăng ký bằng Username + Mật khẩu + OTP email | EP-01 | 3 | 32 | 5 |
+| US-01.2 Đăng nhập bằng Username + Mật khẩu và khoá thử sai | EP-01 | 3 | 28 | 5 |
+| US-04.1 Lõi luật cờ dùng chung | EP-04 | 3 | 24 | 3 |
+| US-04.2 Khởi tạo và hiển thị bàn cờ | EP-04 | 2 | 20 | 3 |
+| **Cộng** | | 17 | 200 | **29** |
 
 ### XIAN Sprint 2 · 15/10 – 21/10 · Release v0.2
 
 **Sprint Goal:** Hai người tạo phòng, vào bằng link/mã và đánh trọn một ván online có đồng hồ; máy cờ chạy được.
 
-| Story được thực hiện | Epic | Số Task | Giờ |
-|---|---|---|---|
-| US-02.1 Tạo phòng, ghế và bắt đầu ván | EP-02 | 3 | 48 |
-| US-03.1 Mời bằng link/mã và vào phòng | EP-03 | 3 | 32 |
-| US-04.3 Đi cờ bằng click/kéo thả và âm thanh | EP-04 | 2 | 28 |
-| US-05.1 Ván online: đi cờ, đồng hồ và kết thúc ván | EP-05 | 4 | 56 |
-| US-08.2 Máy cờ ba cấp độ | EP-08 | 1 | 32 |
+| Story được thực hiện | Epic | Số Task | Giờ | Story Points |
+|---|---|---|---|---|
+| US-02.1 Tạo phòng, ghế và bắt đầu ván | EP-02 | 3 | 48 | 8 |
+| US-03.1 Mời bằng link/mã và vào phòng | EP-03 | 3 | 32 | 5 |
+| US-04.3 Đi cờ bằng click/kéo thả và âm thanh | EP-04 | 2 | 28 | 5 |
+| US-05.1 Ván online: đi cờ, đồng hồ và kết thúc ván | EP-05 | 4 | 56 | 8 |
+| US-08.2 Máy cờ ba cấp độ | EP-08 | 1 | 32 | 5 |
+| **Cộng** | | 13 | 196 | **31** |
 
 ### XIAN Sprint 3 · 22/10 – 28/10 · Release v0.3
 
 **Sprint Goal:** Google/Khách, Xin đổi bên và ở lại phòng, đầu hàng/xin hoà, bạn bè và mời online, chat, camera/mic, đánh với máy.
 
-| Story được thực hiện | Epic | Số Task | Giờ |
-|---|---|---|---|
-| US-01.3 Đăng ký/đăng nhập bằng Google và chế độ Khách | EP-01 | 3 | 44 |
-| US-02.2 Xin đổi bên và ở lại phòng sau ván | EP-02 | 3 | 24 |
-| US-03.2 Bạn bè và mời bạn online | EP-03 | 3 | 48 |
-| US-05.2 Đầu hàng và xin hoà | EP-05 | 3 | 24 |
-| US-07.1 Hai kênh chat và bộ lọc | EP-07 | 3 | 36 |
-| US-07.2 Camera, mic và mức chia sẻ | EP-07 | 2 | 40 |
-| US-08.1 Thiết lập và chơi ván với máy | EP-08 | 3 | 36 |
+| Story được thực hiện | Epic | Số Task | Giờ | Story Points |
+|---|---|---|---|---|
+| US-01.3 Đăng ký/đăng nhập bằng Google và chế độ Khách | EP-01 | 3 | 44 | 8 |
+| US-02.2 Xin đổi bên và ở lại phòng sau ván | EP-02 | 3 | 24 | 3 |
+| US-03.2 Bạn bè và mời bạn online | EP-03 | 3 | 48 | 8 |
+| US-05.2 Đầu hàng và xin hoà | EP-05 | 3 | 24 | 3 |
+| US-07.1 Hai kênh chat và bộ lọc | EP-07 | 3 | 36 | 5 |
+| US-07.2 Camera, mic và mức chia sẻ | EP-07 | 2 | 40 | 5 |
+| US-08.1 Thiết lập và chơi ván với máy | EP-08 | 3 | 36 | 5 |
+| **Cộng** | | 20 | 252 | **37** |
 
 ### XIAN Sprint 4 · 29/10 – 04/11 · Release v1.0
 
 **Sprint Goal:** Phiên và hồ sơ, chế độ phòng, Sảnh công khai, người xem, mất kết nối, hoàn thiện máy cờ; nghiệm thu D1–D10 và đóng gói demo.
 
-| Story được thực hiện | Epic | Số Task | Giờ |
-|---|---|---|---|
-| US-00.5 Nghiệm thu tổng, NFR và đóng gói demo | EP-00 | 4 | 48 |
-| US-01.4 Phiên đăng nhập, hồ sơ và Đăng xuất | EP-01 | 3 | 36 |
-| US-05.3 Mất kết nối và nối lại | EP-05 | 2 | 20 |
-| US-06.1 Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED | EP-06 | 3 | 28 |
-| US-06.2 Sảnh và danh sách phòng công khai | EP-06 | 3 | 36 |
-| US-06.3 Người xem và đuổi người xem | EP-06 | 3 | 36 |
-| US-08.3 Ổn định ván với máy và hoàn thiện cấp Khó | EP-08 | 3 | 40 |
+| Story được thực hiện | Epic | Số Task | Giờ | Story Points |
+|---|---|---|---|---|
+| US-00.5 Nghiệm thu tổng, NFR và đóng gói demo | EP-00 | 4 | 48 | 8 |
+| US-01.4 Phiên đăng nhập, hồ sơ và Đăng xuất | EP-01 | 3 | 36 | 5 |
+| US-05.3 Mất kết nối và nối lại | EP-05 | 2 | 20 | 3 |
+| US-06.1 Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED | EP-06 | 3 | 28 | 5 |
+| US-06.2 Sảnh và danh sách phòng công khai | EP-06 | 3 | 36 | 5 |
+| US-06.3 Người xem và đuổi người xem | EP-06 | 3 | 36 | 5 |
+| US-08.3 Ổn định ván với máy và hoàn thiện cấp Khó | EP-08 | 3 | 40 | 5 |
+| **Cộng** | | 21 | 244 | **36** |
 
 ---
 
@@ -1271,8 +1278,9 @@ Mỗi mục dưới đây là **Description** dán vào Jira (đã có sẵn tro
 1. **Xoá 98 mục cũ** trên XIAN (BA Phần 0 mục 0.1): lọc `project = XIAN`, Bulk change → Delete.
 2. **Tạo 4 Sprint** trên board với đúng tên `XIAN Sprint 1` … `XIAN Sprint 4` và ngày ở mục 4; tạo 4 **Fix version** `v0.1`, `v0.2`, `v0.3`, `v1.0`.
 3. **Mời đủ 7 thành viên** vào dự án; sửa cột `Assignee` và `Reporter` trong CSV thành email Atlassian của từng người (CSV đang để tên tiếng Việt để dễ đọc). `Assignee` của 9 Epic và 27 Story là Tình (BA/PO); `Reporter` của cả 107 mục là Tình (PO). Người nhập cần quyền *Modify Reporter*, nếu không Jira tự đặt Reporter là người nhập.
-4. Jira → **Settings → System → External system import → CSV** (hoặc *Import issues* trong dự án), chọn `jira/xian-import.csv`, mã hoá UTF-8, định dạng ngày `dd/MM/yyyy`.
-5. Ghép cột: `Issue Id` → Issue Id · `Parent Id` → Parent Id · `Issue Type` · `Summary` · `Description` · `Assignee` · `Reporter` · `Sprint` · `Fix Version` · `Original Estimate` (giây) · `Start date` · `Due date` · `Labels` (2 cột) · `Priority` · `Status` · cột `Story` → liên kết *relates to* · các cột `Blocked by` → liên kết *is blocked by* (giá trị là `Issue Id` của dòng tương ứng trong CSV).
+4. **Trước khi nhập, bật 2 trường trên màn hình tạo mục của XIAN** (hiện chưa có): **Time tracking** cho Task (để nhận `Original Estimate`) và **Story Points** cho Story (Project settings → Issue types / Screens). Board settings → Estimation: chọn **Original Time Estimate** để burndown tính theo giờ.
+4b. Jira → **Settings → System → External system import → CSV** (hoặc *Import issues* trong dự án), chọn `jira/xian-import.csv`, mã hoá UTF-8, định dạng ngày `dd/MM/yyyy`.
+5. Ghép cột: `Issue Id` → Issue Id · `Parent Id` → Parent Id · `Issue Type` · `Summary` · `Description` · `Assignee` · `Reporter` · `Sprint` · `Fix Version` · `Original Estimate` (giây) · `Start date` · `Due date` · `Labels` (2 cột) · `Priority` · `Status` · `Story Points` · cột `Story` → liên kết *relates to* · các cột `Blocked by` → liên kết *is blocked by* (giá trị là `Issue Id` của dòng tương ứng trong CSV).
 6. Sau khi nhập: kiểm tra Story và Task nằm dưới đúng Epic (cột `Parent Id`), mỗi Task có liên kết *relates to* tới Story của nó. Nếu Jira của nhóm không nhận Epic qua `Parent Id`, chọn các mục rồi Bulk change → Parent.
 6b. Epic, Story và Task đều nhập với `Status` = **To Do**. Epic/Story **không có Sprint** (nằm ở backlog), chỉ có `Start date` 07/10 và `Due date` theo quy tắc R1 (mục 4). BA chuyển Story sang **Done** khi PO duyệt đặc tả, không muộn hơn `Due date`; Epic sang Done khi Story cuối cùng của nó Done.
 7. Nếu cột `Sprint` không tự gán (tuỳ cấu hình Jira), lọc theo nhãn `sprint-1` … `sprint-4` rồi Bulk change → Sprint.
