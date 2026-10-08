@@ -89,7 +89,7 @@ Yêu cầu khách hàng: Hỗ trợ tất cả. Story: US-00.1, US-00.2, US-00.3
 **Là** nhóm phát triển, **tôi muốn** một monorepo có sẵn khung ứng dụng, CI, nhật ký và điểm kiểm tra sức khoẻ, **để** mọi người code trên cùng một nền và tìm lỗi nhanh.
 *Nguồn:* README (Công nghệ, Quy trình Git), BA 10.1. *Ghi chú:* cấu trúc gợi ý `apps/web` (React + Vite), `apps/server` (NestJS + Socket.IO), `packages/xiangqi-core` (luật cờ dùng chung), `packages/shared` (kiểu dữ liệu, hằng số), `packages/engine` (máy cờ).
 *Nguồn:* BA 10.1 (NFR-08, NFR-09).
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **3** (tổng 24 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -196,7 +196,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.
 *Nguồn:* BA 1.x, 2.x, 4.2, 5.5, 10.1 (dữ liệu cá nhân). *Ghi chú:* tối thiểu `profiles`, `friendships`/`friend_requests`, `rooms`, `room_blocks`, `matches`, `match_moves`, `login_attempts`; tên bảng do nhóm chốt.
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **2** (tổng 16 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -267,7 +267,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** nhóm phát triển, **tôi muốn** cổng Socket.IO có xác thực, lệnh chống trùng và đồng bộ lại khi nối lại, **để** phòng, ván và chat dùng chung một cách.
 *Nguồn:* BA 3.3 mục 1, 8.3, 1.8 (nhiều tab).
 *Hợp đồng sự kiện:* Task của Story này công bố kiểu dữ liệu sự kiện phòng/ván trong `packages/shared` để Story phòng và Story ván làm độc lập với nhau.
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **3** (tổng 24 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -339,7 +339,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** nhóm, **tôi muốn** có kế hoạch kiểm thử và kiểm chứng sớm rủi ro media, **để** nghiệm thu có bằng chứng và phát hiện sớm điểm không khả thi.
 *Kèm:* spike GATE-MEDIA (LiveKit Cloud) ở Sprint 1.
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **5** (tổng 32 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -443,7 +443,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Description (User Story + AC)**
 
 **Là** PO, **tôi muốn** đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, **để** chứng minh 8 yêu cầu cốt lõi với khách hàng.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **8** (tổng 48 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -645,7 +645,7 @@ Yêu cầu khách hàng: YC1. Story: US-01.1, US-01.2, US-01.3, US-01.4.
 **Là** khách truy cập, **tôi muốn** đăng ký bằng username, mật khẩu và email có mã OTP gửi tới hộp thư thật, **để** có tài khoản chính thức.
 *Nguồn:* BA 1.1, 1.4, 1.5. *Màn hình:* `SCR-REGISTER`.
 *Nguồn:* BA 0.4. *Ghi chú:* gắn vào Custom SMTP của Supabase Auth; khoá SMTP chỉ lưu phía máy chủ/Supabase.
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **5** (tổng 32 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -790,7 +790,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** người dùng, **tôi muốn** đăng nhập bằng username và mật khẩu an toàn, **để** vào ứng dụng mà tài khoản không bị dò mật khẩu.
 *Nguồn:* BA 0.2, 1.8. *Màn hình:* `SCR-LOGIN`. *Ghi chú kỹ thuật:* Supabase Auth đăng nhập bằng email, nên máy chủ tra email từ username rồi xác thực; không trả email hay sự tồn tại của username về client.
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **5** (tổng 28 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -932,7 +932,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người dùng mới, **tôi muốn** vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), **để** không mất thời gian đăng ký.
 *Nguồn:* BA 1.2, 1.4, 0.2. *Màn hình:* `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`.
 *Nguồn:* BA 0.3, 1.3, 1.4 mục 4, 2.4. *Màn hình:* `SCR-LOGIN`, `MODAL-GUEST-NAME`. *Ghi chú kỹ thuật:* có thể dùng đăng nhập ẩn danh của Supabase; cần spike xác nhận.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **8** (tổng 44 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1079,7 +1079,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người chơi, **tôi muốn** phiên và vị trí chơi được quản lý rõ ràng và tự đặt tên hiển thị, **để** không chơi hai nơi cùng lúc và đối thủ nhận ra tôi.
 *Nguồn:* BA 1.8, 2.4, 6.3 mục 4. *Ghi chú kỹ thuật:* Supabase cho phép nhiều phiên song song; cần bảng phiên/vị trí chơi phía máy chủ để thực thi luật "thiết bị khác" (spike S1).
 *Nguồn:* BA 1.4, 1.6 (email chỉ đọc), Phần 11. *Màn hình:* `SCR-PROFILE-SETTINGS`, `PANEL-NAVBAR`.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **5** (tổng 36 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1263,7 +1263,7 @@ Yêu cầu khách hàng: YC2. Story: US-02.1, US-02.2.
 **Là** người dùng hoặc Khách, **tôi muốn** tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, **để** so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* `SCR-WAITING-ROOM`.
-*Sprint:* S2.
+*Sprint:* S2. *Story Points:* **8** (tổng 48 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1409,7 +1409,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người chơi, **tôi muốn** đề nghị đổi Đỏ/Đen và ở lại phòng để đánh tiếp sau mỗi ván, **để** chọn tiếp tục hay đổi phe mà không phải tạo phòng mới.
 *Nguồn:* BA 0.6, 2.3 mục 2, 3.6. *Màn hình:* `SCR-WAITING-ROOM`, `MODAL-SIDE-SWAP-PROMPT`.
 *Nguồn:* BA 0.7. *Màn hình:* `MODAL-MATCH-RESULT`, `SCR-WAITING-ROOM`.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **3** (tổng 24 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1586,7 +1586,7 @@ Yêu cầu khách hàng: YC3. Story: US-03.1, US-03.2.
 
 **Là** người được mời (kể cả chưa kết bạn), **tôi muốn** vào phòng bằng link hoặc mã, **để** chơi hoặc xem ngay.
 *Nguồn:* BA 2.4, 2.6, 2.7, 2.8, 4.2, 0.3. *Màn hình:* `MODAL-INVITE`, `SCR-LOBBY`, `SCR-LOGIN`, `SCR-ACCESS-DENIED`.
-*Sprint:* S2.
+*Sprint:* S2. *Story Points:* **5** (tổng 32 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1726,7 +1726,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 *Nguồn:* BA 5.5, Phần 11 (Bạn bè P1 tối thiểu). *Màn hình:* `SCR-FRIENDS`.
 *Nguồn:* BA 5.5 mục 4–5, 1.8 (hàng đợi). *Màn hình:* `SCR-FRIENDS`, `PANEL-NAVBAR`.
 *Nguồn:* BA 2.5, 2.7 mục 3, 2.8, 4.3. *Màn hình:* `MODAL-INVITE`.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **8** (tổng 48 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -1911,7 +1911,7 @@ Yêu cầu khách hàng: YC4. Story: US-04.1, US-04.2, US-04.3.
 
 **Là** hệ thống, **tôi cần** một thư viện luật cờ duy nhất dùng cho máy chủ, client và máy cờ, **để** mọi nơi phân xử giống nhau.
 *Nguồn:* BA 3.3 mục 1–2, 3.5. *Ghi chú:* `packages/xiangqi-core`, phủ unit test cao (mục tiêu ≥ 90% dòng).
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **3** (tổng 24 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2057,7 +2057,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** người chơi, **tôi muốn** thấy bàn cờ chuẩn với quân chữ Hán, **để** chơi quen thuộc như cờ thật.
 *Nguồn:* BA 3.1, 6.3 mục 1, DESIGN §7. *Màn hình:* `SCR-GAME-ROOM`, `SCR-AI-GAME`.
-*Sprint:* S1.
+*Sprint:* S1. *Story Points:* **3** (tổng 20 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2160,7 +2160,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người chơi, **tôi muốn** đi quân bằng click hoặc kéo thả kèm gợi ý ô hợp lệ và tiếng gõ cờ, **để** đi nhanh, không nhầm và có cảm giác như cờ thật.
 *Nguồn:* BA 3.4 mục 1–2, DESIGN §4, §7.4.
 *Nguồn:* BA 3.4 mục 3.
-*Sprint:* S2.
+*Sprint:* S2. *Story Points:* **5** (tổng 28 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2303,7 +2303,7 @@ Yêu cầu khách hàng: YC5. Story: US-05.1, US-05.2, US-05.3.
 *Nguồn:* BA 3.3 mục 1, 4.3 mục 2. *Phụ thuộc:* US-00.3, US-05.1.
 *Nguồn:* BA 2.1, 3.3 mục 3.
 *Nguồn:* BA 3.3, 3.5 mục 5, 0.7. *Màn hình:* `MODAL-MATCH-RESULT`.
-*Sprint:* S2.
+*Sprint:* S2. *Story Points:* **8** (tổng 56 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2483,7 +2483,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người chơi, **tôi muốn** đầu hàng có xác nhận và đề nghị hoà mà không chặn bàn cờ, **để** kết thúc ván văn minh, không bấm nhầm.
 *Nguồn:* BA 2.3 mục 5, 3.3 mục 2. *Màn hình:* `MODAL-CONFIRM-RESIGN`, `MODAL-CONFIRM-LEAVE`.
 *Nguồn:* BA 3.3 mục 2, 3.5 mục 4, 3.6 mục 2, 5. *Màn hình:* `MODAL-DRAW-PROMPT`.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **3** (tổng 24 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2623,7 +2623,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** người chơi, **tôi muốn** có 60 giây để quay lại khi rớt mạng, **để** không thua oan vì sự cố ngắn.
 *Nguồn:* BA 3.3 mục 4, 8.3, 10.1 (ván gián đoạn). *Màn hình:* `OVERLAY-RECONNECTING`.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **3** (tổng 20 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2759,7 +2759,7 @@ Yêu cầu khách hàng: YC6. Story: US-06.1, US-06.2, US-06.3.
 
 **Là** Host, **tôi muốn** mở công khai, chỉ cho vào bằng mã, hoặc khoá phòng, **để** kiểm soát ai được vào.
 *Nguồn:* BA 2.7 mục 2, 2.8 mục 5–6, 4.3. *Màn hình:* `MODAL-ROOM-SETTINGS`.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **5** (tổng 28 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -2897,7 +2897,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người dùng hoặc Khách, **tôi muốn** Sảnh rõ ràng các lựa chọn, luật chơi và danh sách phòng công khai để vào chơi hoặc xem, **để** tìm trận mà không cần mã.
 *Nguồn:* BA 0.5, 2.7. *Màn hình:* `SCR-LOBBY`.
 *Nguồn:* BA 2.0, 10.4, Phần 11, DANH-MUC §7. *Màn hình:* `SCR-LOBBY`, `PANEL-NAVBAR`.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **5** (tổng 36 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3045,7 +3045,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** Host hoặc người chơi, **tôi muốn** sắp xếp người giữa ghế và hàng người xem và đuổi người xem quấy rối, **để** giữ không gian thi đấu tập trung.
 *Nguồn:* BA 2.6, 2.8 mục 3–4, 8.3. *Màn hình:* `SCR-WAITING-ROOM`, `PANEL-SPECTATORS`.
 *Nguồn:* BA 4.2, 4.1. *Màn hình:* `PANEL-SPECTATORS`, `MODAL-CONFIRM-KICK`.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **5** (tổng 36 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3224,7 +3224,7 @@ Yêu cầu khách hàng: YC7. Story: US-07.1, US-07.2.
 **Là** người chơi, **tôi muốn** một kênh riêng với đối thủ tách khỏi kênh của người xem, có lọc lời thô tục và chống spam, **để** trò chuyện văn minh và riêng tư.
 *Nguồn:* BA 5.3 mục 1, 10.1 (chat khi đổi người), 4.1. *Màn hình:* `PANEL-CHAT`.
 *Nguồn:* BA 5.3 mục 2.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **5** (tổng 36 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3369,7 +3369,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 **Là** người chơi, **tôi muốn** bật camera và mic và chọn ai được thấy/nghe mình, **để** giao lưu như ngồi cùng bàn mà vẫn chủ động quyền riêng tư.
 *Nguồn:* BA 4.1, 1.8 (nhiều tab), 10.1 (LiveKit Cloud, không ghi). *Màn hình:* `PANEL-MEDIA`. *Phụ thuộc:* spike GATE-MEDIA.
 *Nguồn:* BA 4.1, 4.2.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **5** (tổng 40 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3513,7 +3513,7 @@ Yêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3.
 
 **Là** người chơi, **tôi muốn** chọn cấp độ và phe rồi chơi với máy không giới hạn thời gian, **để** luyện tập.
 *Nguồn:* BA 2.0 mục 4, 6.3, 0.9. *Màn hình:* `MODAL-AI-SETUP`, `SCR-AI-GAME`.
-*Sprint:* S3.
+*Sprint:* S3. *Story Points:* **5** (tổng 36 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3650,7 +3650,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** người chơi, **tôi muốn** ba cấp độ khác biệt rõ rệt, **để** luyện từ dễ đến khó.
 *Nguồn:* BA 6.1 (kèm tiêu chí bổ sung 05/10), 6.3 mục 3. *Ghi chú:* negamax + alpha-beta, tìm sâu dần, chạy ở tiến trình/worker riêng; dùng `xiangqi-core`.
-*Sprint:* S2.
+*Sprint:* S2. *Story Points:* **5** (tổng 32 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -3719,7 +3719,7 @@ Story là phần việc BA: Done khi đặc tả và AC được PO duyệt, h�
 
 **Là** người chơi, **tôi muốn** ván với máy không mất vô lý khi rớt mạng hoặc máy cờ lỗi, và cấp Khó đạt chất lượng đã cam kết, **để** yên tâm luyện tập.
 *Nguồn:* BA 6.1 (Thử lại), 6.3 mục 4, 1.8.
-*Sprint:* S4.
+*Sprint:* S4. *Story Points:* **5** (tổng 40 giờ Task).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
