@@ -28,7 +28,7 @@ Component chính được ghi rõ trong dữ liệu kế hoạch và bảng dư�
 ## Quy ước Labels
 
 - `p1`: thuộc bản bàn giao đầu tiên.
-- `sprint-1` đến `sprint-4`: đợt thực hiện Task.
+- `sprint-1` đến `sprint-4`: Sprint bắt đầu của Task; xem ngày kết thúc khi Task kéo sang Sprint sau.
 - `chinh-fe`, `chinh-be`, `chinh-qa-devops`: đúng một nhãn nhóm chính trên mỗi Task.
 - `dac-ta`: công việc đặc tả ở Epic/Story; mã `EP-xx` giữ liên hệ nhóm yêu cầu.
 - `phat-trien`, `kiem-thu`: triển khai tính năng hoặc kiểm thử chuyên đề. Các công việc đặc thù dùng `ha-tang`, `chuan-bi-kiem-thu`, `thu-nghiem-ky-thuat`, `kiem-thu-tich-hop`, `do-chat-luong`, `dong-goi-phat-hanh`, `tong-duyet`.
@@ -101,59 +101,59 @@ Bản xuất dùng nhãn để nhận biết nhóm chính, không yêu cầu th�
 | T10 | Task | BE | BE, Luật cờ | sprint-1, phat-trien, p1, chinh-be, luat-co |
 | T11 | Task | FE | FE, Bàn cờ | sprint-1, phat-trien, p1, chinh-fe, ban-co |
 | T12 | Task | BE | BE, Nền tảng, Ván trực tuyến | sprint-1, phat-trien, p1, chinh-be, nen-tang, van-truc-tuyen |
-| T13 | Task | QA & DevOps | QA & DevOps, Tài khoản | sprint-1, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| T13 | Task | QA & DevOps | QA & DevOps, Tài khoản | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
 | T14 | Task | BE | BE, Nền tảng | sprint-1, phat-trien, p1, chinh-be, nen-tang |
 | T15 | Task | FE | FE, Tài khoản | sprint-1, phat-trien, p1, chinh-fe, tai-khoan |
 | T16 | Task | QA & DevOps | QA & DevOps, Bàn cờ | sprint-1, kiem-thu, p1, chinh-qa-devops, ban-co |
-| T17 | Task | QA & DevOps | QA & DevOps, Tài khoản | sprint-1, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| T17 | Task | QA & DevOps | QA & DevOps, Tài khoản | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
 | T18 | Task | BE | BE, Phòng chơi | sprint-2, phat-trien, p1, chinh-be, phong-choi |
-| T19 | Task | FE | FE, Bàn cờ | sprint-2, phat-trien, p1, chinh-fe, ban-co |
-| T20 | Task | BE | BE, Luật cờ, Ván trực tuyến | sprint-2, phat-trien, p1, chinh-be, luat-co, van-truc-tuyen |
+| T19 | Task | FE | FE, Bàn cờ | sprint-1, phat-trien, p1, chinh-fe, ban-co |
+| T20 | Task | BE | BE, Luật cờ, Ván trực tuyến | sprint-1, phat-trien, p1, chinh-be, luat-co, van-truc-tuyen |
 | T21 | Task | FE | FE, Phòng chơi | sprint-2, phat-trien, p1, chinh-fe, phong-choi |
 | T22 | Task | BE | BE, Phòng chơi | sprint-2, phat-trien, p1, chinh-be, phong-choi |
 | T23 | Task | BE | BE, Ván trực tuyến | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
-| T24 | Task | BE | BE, Luật cờ, Máy cờ | sprint-2, phat-trien, p1, chinh-be, luat-co, may-co |
+| T24 | Task | BE | BE, Luật cờ, Máy cờ | sprint-1, phat-trien, p1, chinh-be, luat-co, may-co |
 | T25 | Task | FE | FE, Bàn cờ, Ván trực tuyến | sprint-2, phat-trien, p1, chinh-fe, ban-co, van-truc-tuyen |
 | T26 | Task | FE | FE, Phòng chơi | sprint-2, phat-trien, p1, chinh-fe, phong-choi |
-| T27 | Task | QA & DevOps | QA & DevOps, Bàn cờ | sprint-2, kiem-thu, p1, chinh-qa-devops, ban-co |
-| T28 | Task | QA & DevOps | QA & DevOps, Phòng chơi | sprint-2, kiem-thu, p1, chinh-qa-devops, phong-choi |
-| T29 | Task | QA & DevOps | QA & DevOps, Phòng chơi | sprint-2, kiem-thu, p1, chinh-qa-devops, phong-choi |
-| T30 | Task | QA & DevOps | QA & DevOps, Luật cờ, Ván trực tuyến | sprint-2, kiem-thu, p1, chinh-qa-devops, luat-co, van-truc-tuyen |
+| T27 | Task | QA & DevOps | QA & DevOps, Bàn cờ | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-co |
+| T28 | Task | QA & DevOps | QA & DevOps, Phòng chơi | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| T29 | Task | QA & DevOps | QA & DevOps, Phòng chơi | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| T30 | Task | QA & DevOps | QA & DevOps, Luật cờ, Ván trực tuyến | sprint-3, kiem-thu, p1, chinh-qa-devops, luat-co, van-truc-tuyen |
 | T31 | Task | BE | BE, Bạn bè | sprint-3, phat-trien, p1, chinh-be, ban-be |
-| T32 | Task | BE | BE, Ván trực tuyến | sprint-3, phat-trien, p1, chinh-be, van-truc-tuyen |
+| T32 | Task | BE | BE, Ván trực tuyến | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
 | T33 | Task | BE | BE, Camera và mic | sprint-3, phat-trien, p1, chinh-be, camera-va-mic |
-| T34 | Task | BE | BE, Máy cờ | sprint-3, phat-trien, p1, chinh-be, may-co |
-| T35 | Task | BE | BE, Tài khoản | sprint-3, phat-trien, p1, chinh-be, tai-khoan |
+| T34 | Task | BE | BE, Máy cờ | sprint-2, phat-trien, p1, chinh-be, may-co |
+| T35 | Task | BE | BE, Tài khoản | sprint-2, phat-trien, p1, chinh-be, tai-khoan |
 | T36 | Task | FE | FE, Ván trực tuyến | sprint-3, phat-trien, p1, chinh-fe, van-truc-tuyen |
-| T37 | Task | BE | BE, Trò chuyện | sprint-3, phat-trien, p1, chinh-be, tro-chuyen |
+| T37 | Task | BE | BE, Trò chuyện | sprint-2, phat-trien, p1, chinh-be, tro-chuyen |
 | T38 | Task | FE | FE, Bàn cờ, Máy cờ | sprint-3, phat-trien, p1, chinh-fe, ban-co, may-co |
 | T39 | Task | QA & DevOps | QA & DevOps, Ván trực tuyến | sprint-3, kiem-thu, p1, chinh-qa-devops, van-truc-tuyen |
 | T40 | Task | FE | FE, Bạn bè | sprint-3, phat-trien, p1, chinh-fe, ban-be |
 | T41 | Task | BE | BE, Phòng chơi, Ván trực tuyến | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
 | T42 | Task | FE | FE, Trò chuyện | sprint-3, phat-trien, p1, chinh-fe, tro-chuyen |
 | T43 | Task | QA & DevOps | QA & DevOps, Bàn cờ, Máy cờ | sprint-3, kiem-thu, p1, chinh-qa-devops, ban-co, may-co |
-| T44 | Task | FE | FE, Tài khoản | sprint-3, phat-trien, p1, chinh-fe, tai-khoan |
+| T44 | Task | FE | FE, Tài khoản | sprint-2, phat-trien, p1, chinh-fe, tai-khoan |
 | T45 | Task | QA & DevOps | QA & DevOps, Camera và mic | sprint-3, kiem-thu, p1, chinh-qa-devops, camera-va-mic |
 | T46 | Task | FE | FE, Phòng chơi, Ván trực tuyến | sprint-3, phat-trien, p1, chinh-fe, phong-choi, van-truc-tuyen |
 | T47 | Task | QA & DevOps | QA & DevOps, Trò chuyện | sprint-3, kiem-thu, p1, chinh-qa-devops, tro-chuyen |
 | T48 | Task | QA & DevOps | QA & DevOps, Tài khoản | sprint-3, kiem-thu, p1, chinh-qa-devops, tai-khoan |
-| T49 | Task | QA & DevOps | QA & DevOps, Bạn bè | sprint-3, kiem-thu, p1, chinh-qa-devops, ban-be |
+| T49 | Task | QA & DevOps | QA & DevOps, Bạn bè | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-be |
 | T50 | Task | QA & DevOps | QA & DevOps, Phòng chơi, Ván trực tuyến | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi, van-truc-tuyen |
 | T51 | Task | QA & DevOps | QA & DevOps, Nền tảng | sprint-4, kiem-thu-tich-hop, p1, chinh-qa-devops, nen-tang |
-| T52 | Task | BE | BE, Phòng chơi, Ván trực tuyến | sprint-4, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
-| T53 | Task | BE | BE, Phòng chơi | sprint-4, phat-trien, p1, chinh-be, phong-choi |
-| T54 | Task | BE | BE, Phòng chơi | sprint-4, phat-trien, p1, chinh-be, phong-choi |
-| T55 | Task | BE | BE, Phòng chơi | sprint-4, phat-trien, p1, chinh-be, phong-choi |
-| T56 | Task | BE | BE, Tài khoản, Ván trực tuyến | sprint-4, phat-trien, p1, chinh-be, tai-khoan, van-truc-tuyen |
-| T57 | Task | FE | FE, Phòng chơi | sprint-4, phat-trien, p1, chinh-fe, phong-choi |
-| T58 | Task | FE | FE, Phòng chơi, Camera và mic | sprint-4, phat-trien, p1, chinh-fe, phong-choi, camera-va-mic |
-| T59 | Task | BE | BE, Luật cờ, Máy cờ | sprint-4, phat-trien, p1, chinh-be, luat-co, may-co |
+| T52 | Task | BE | BE, Phòng chơi, Ván trực tuyến | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
+| T53 | Task | BE | BE, Phòng chơi | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| T54 | Task | BE | BE, Phòng chơi | sprint-3, phat-trien, p1, chinh-be, phong-choi |
+| T55 | Task | BE | BE, Phòng chơi | sprint-3, phat-trien, p1, chinh-be, phong-choi |
+| T56 | Task | BE | BE, Tài khoản, Ván trực tuyến | sprint-3, phat-trien, p1, chinh-be, tai-khoan, van-truc-tuyen |
+| T57 | Task | FE | FE, Phòng chơi | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
+| T58 | Task | FE | FE, Phòng chơi, Camera và mic | sprint-3, phat-trien, p1, chinh-fe, phong-choi, camera-va-mic |
+| T59 | Task | BE | BE, Luật cờ, Máy cờ | sprint-2, phat-trien, p1, chinh-be, luat-co, may-co |
 | T60 | Task | QA & DevOps | QA & DevOps, Phòng chơi, Ván trực tuyến | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi, van-truc-tuyen |
-| T61 | Task | FE | FE, Phòng chơi | sprint-4, phat-trien, p1, chinh-fe, phong-choi |
+| T61 | Task | FE | FE, Phòng chơi | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
 | T62 | Task | QA & DevOps | QA & DevOps, Phòng chơi | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi |
-| T63 | Task | BE | BE, Máy cờ | sprint-4, phat-trien, p1, chinh-be, may-co |
+| T63 | Task | BE | BE, Máy cờ | sprint-3, phat-trien, p1, chinh-be, may-co |
 | T64 | Task | QA & DevOps | QA & DevOps, Phòng chơi, Camera và mic | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi, camera-va-mic |
-| T65 | Task | FE | FE, Tài khoản | sprint-4, phat-trien, p1, chinh-fe, tai-khoan |
+| T65 | Task | FE | FE, Tài khoản | sprint-3, phat-trien, p1, chinh-fe, tai-khoan |
 | T66 | Task | QA & DevOps | QA & DevOps, Nền tảng | sprint-4, do-chat-luong, p1, chinh-qa-devops, nen-tang |
 | T67 | Task | QA & DevOps | QA & DevOps, Phòng chơi | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi |
 | T68 | Task | QA & DevOps | QA & DevOps, Luật cờ, Máy cờ | sprint-4, kiem-thu, p1, chinh-qa-devops, luat-co, may-co |

@@ -997,7 +997,7 @@
     "requirements": [
       "Bối cảnh: Đang ván với máy. Thao tác hoặc sự kiện: Đóng thẻ trình duyệt hoặc mất mạng, quay lại trong 30 phút. Kết quả cần có: Vào lại trang ván với máy đang chơi (hoặc thông báo cố định ở Sảnh) và chơi tiếp đúng thế cũ.",
       "Bối cảnh: Quá 30 phút. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Bỏ trạng thái ván trong bộ nhớ; không lưu lịch sử (bản bàn giao đầu tiên).",
-      "Bối cảnh: Máy cờ không trả lời quá 10 giây hoặc lỗi. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Báo \"Máy cờ gặp sự cố\" kèm \"Thử lại\"; nếu chỉ quá thời gian chờ thì Thử lại tìm nước trên cùng thế; nếu ván đã Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế.",
+      "Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.",
       "Bối cảnh: Bấm \"Thử lại\" nhiều lần liên tiếp. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Chỉ xử lý một lần (chặn bấm trùng).",
       "Bối cảnh: Máy chủ khởi động lại. Thao tác hoặc sự kiện: Người chơi quay lại. Kết quả cần có: \"Ván không còn trạng thái để tiếp tục\", về Sảnh hoặc tạo ván mới; không khôi phục giả.",
       "Bối cảnh: Đang ván với máy. Thao tác hoặc sự kiện: Chủ động Rời ván hoặc Đăng xuất. Kết quả cần có: Xác nhận đầu hàng; Đồng ý → đầu hàng, huỷ tác vụ máy, giải phóng vị trí chơi; Huỷ → giữ nguyên.",
@@ -1439,7 +1439,7 @@
     "context": "Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng không được tự ghi kết quả ván hoặc đọc dữ liệu riêng của người khác. Supabase cung cấp cơ sở dữ liệu PostgreSQL; quyền truy cập cần được kiểm cả khi gọi trực tiếp, không chỉ qua giao diện.",
     "requirements": [
       "Tạo dữ liệu lời mời kết bạn, quan hệ bạn bè, phòng, thành viên phòng, danh sách người bị chặn, ván và nước đi.",
-      "Tích hợp với bảng hồ sơ, bộ đếm đăng nhập và biên lai lệnh đã được phần đăng ký/thời gian thực tạo, không tạo bản trùng khác cấu trúc.",
+      "Tích hợp theo cấu trúc thống nhất với bảng hồ sơ, bộ đếm đăng nhập và biên lai lệnh của các phần đăng ký, đăng nhập và kết nối. Ghép các tệp tạo bảng đã bàn giao; bảng chưa bàn giao phải ghi rõ phần phụ thuộc, không tự tạo bản trùng khác cấu trúc.",
       "Dùng khoá tham chiếu và ràng buộc để tránh người tham gia hoặc nước đi trỏ tới bản ghi không hợp lệ.",
       "Tên tài khoản lưu đúng chữ người nhập nhưng ràng buộc duy nhất so sánh không phân biệt hoa thường.",
       "Phân quyền theo từng dòng dữ liệu: trình duyệt chỉ đọc dữ liệu được phép; máy chủ có quyền dịch vụ mới ghi dữ liệu phòng, ván và kết quả.",
@@ -1459,12 +1459,12 @@
       "Dữ liệu mẫu cùng kết quả kiểm quyền trực tiếp."
     ],
     "acceptance": [
-      "Tạo mới từ cơ sở dữ liệu trống không lỗi; đủ bảng và quan hệ cần thiết.",
+      "Tạo mới từ cơ sở dữ liệu trống không lỗi đối với các bảng do công việc này sở hữu và các tệp đã bàn giao; đủ quan hệ trong phạm vi đó. Việc dựng lại toàn bộ cấu trúc và kiểm quyền tất cả bảng được xác minh khi hồi quy bản tích hợp đầy đủ.",
       "Không tạo đồng thời được hai tên như Twot và twot.",
       "Người dùng không tự sửa phòng/ván/kết quả qua quyền công khai của trình duyệt.",
       "Máy chủ ghi được dữ liệu hợp lệ; truy cập ngoài quyền bị từ chối."
     ],
-    "boundary": "Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai ngồi ghế hay có thể kết bạn vẫn nằm trong chức năng nghiệp vụ của máy chủ."
+    "boundary": "Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai ngồi ghế hay có thể kết bạn vẫn nằm trong chức năng nghiệp vụ của máy chủ. Bằng chứng cục bộ không xác nhận các tệp tạo bảng chưa bàn giao; bàn giao danh sách tệp và phạm vi kiểm cho người hồi quy toàn hệ thống."
   },
   "T15": {
     "goal": "Xây dựng màn đăng nhập để người có tài khoản vào ứng dụng bằng tên tài khoản và mật khẩu, hiểu rõ lỗi hoặc thời gian bị chặn.",
@@ -2105,7 +2105,7 @@
       "Hộp thiết lập có Dễ/Trung bình/Khó và Đỏ/Đen/Ngẫu nhiên. Cầm Đỏ thì người đi trước; cầm Đen thì máy đi đầu và bàn cờ lật để Đen ở dưới.",
       "Màn chơi không có đồng hồ thi đấu, Xin hoà, gợi ý nước hay Đi lại. Có Đầu hàng; khi máy suy nghĩ hoặc chưa tới lượt người thì không cho đi quân.",
       "Kết thúc ván, kể cả đầu hàng, hiện Ván mới và Về Sảnh. Ván mới mở thiết lập điền lại cấp độ và lựa chọn phe trước đó, cho phép đổi rồi bắt đầu ván có mã mới.",
-      "Khi máy cờ lỗi hoặc không trả lời quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại. Nếu máy chủ báo chỉ hết thời gian chờ, Thử lại tìm nước trên cùng ván/thế; nếu ván đã bỏ dở, tạo ván mới cùng cấp và phe thực tế đã bốc.",
+      "Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.",
       "Không gửi lại nước của người chơi khi thử lại. Chặn bấm trùng lúc đang xử lý. Khi máy chủ khởi động lại làm mất trạng thái ván, hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc chủ động tạo ván mới."
     ],
     "steps": [
@@ -2437,7 +2437,9 @@
       "Mở thêm thẻ cùng tài khoản: thẻ mới tiếp quản, thẻ cũ chỉ đọc kể cả khi tự nối lại. Nối lại phải nhận đủ phòng, ván, đồng hồ và vai trò; không được thao tác bằng quyền cũ.",
       "Khách đủ 12 giờ khi còn ngồi ghế không bị ngắt giữa ván; sau khi rời và hết phiên thì dữ liệu cá nhân bị xoá. Mất mạng khi đang đếm bắt đầu phải huỷ đếm, giữ ghế 60 giây, không tạo ván hoặc xử thua.",
       "Người ngồi ghế cuối rời thì phòng đóng, người xem về Sảnh và chat bị xoá. Sau ván giữ đúng ghế, người xem, chế độ, mức giờ và chat; đổi người trong cặp chat riêng không làm người mới đọc được nội dung cũ. Rời ghế thu hồi quyền phát hình tiếng.",
-      "Hộp kết quả có đúng lý do: chiếu hết, hết nước, đầu hàng, hết giờ, mất mạng, lặp thế, thoả thuận hoà, 120 nửa nước không ăn quân, chiếu liên tục hoặc bị gián đoạn. Gián đoạn không ghi thắng, thua hay hoà."
+      "Hộp kết quả có đúng lý do: chiếu hết, hết nước, đầu hàng, hết giờ, mất mạng, lặp thế, thoả thuận hoà, 120 nửa nước không ăn quân, chiếu liên tục hoặc bị gián đoạn. Gián đoạn không ghi thắng, thua hay hoà.",
+      "Dựng cơ sở dữ liệu thử từ trống bằng toàn bộ tệp tạo/cập nhật đã tích hợp, gồm hồ sơ, bộ đếm đăng nhập và biên lai lệnh; kiểm đủ bảng, quan hệ, chỉ mục và quyền bằng yêu cầu trực tiếp. Người dùng không đọc hoặc ghi dữ liệu ngoài quyền; chỉ máy chủ ghi phòng, ván và kết quả.",
+      "Kiểm riêng hai đường kết thúc phiên Khách: hết hạn khi không còn giữ vị trí và chủ động Đăng xuất. Cả hai phải về màn Đăng nhập, xoá tên/dữ liệu cá nhân Khách; vào lại tạo danh tính mới. Kiểm không xoá nhầm dữ liệu của người khác."
     ],
     "steps": [
       "Chuẩn bị tài khoản, phòng và thế cờ cho từng luồng; ghi phiên bản bản dựng và môi trường. Chạy từ giao diện thật, quan sát đồng thời ở người chơi và người xem, không thay luồng thật bằng dữ liệu giả.",
@@ -2560,19 +2562,22 @@
       "Hết phiên trong ván online: mất quyền điều khiển, yêu cầu đăng nhập lại và giữ ván 60 giây trong khi đồng hồ vẫn chạy. Ván với máy được giữ 30 phút để cùng thiết bị quay lại.",
       "Đăng nhập từ thiết bị khác khi đang đấu làm ván hiện tại bị xử thua, thiết bị cũ bị đăng xuất, thiết bị mới vào Sảnh. Nếu chỉ ngồi phòng chờ thì rời ghế theo vòng đời phòng, không ghi kết quả thua.",
       "Chặn ngồi ghế hoặc mở ván với máy thứ hai; mở lời mời không được vượt kiểm tra này. Đăng xuất khi đang đấu phải xác nhận đầu hàng, còn ở phòng chờ thì rời phòng rồi đăng xuất.",
-      "Khách không xuất hiện trong tìm kiếm bạn bè và không nhận lời mời kết bạn. Hồ sơ chính thức cho đổi Tên hiển thị dài 2–30 ký tự, từ chối từ cấm; email chỉ đọc. Hồ sơ Khách chỉ có Đăng xuất."
+      "Khách không xuất hiện trong tìm kiếm bạn bè và không nhận lời mời kết bạn. Hồ sơ chính thức cho đổi Tên hiển thị dài 2–30 ký tự, từ chối từ cấm; email chỉ đọc. Hồ sơ Khách chỉ có Đăng xuất.",
+      "Phiên Khách có hạn tối đa 12 giờ nhưng không kết thúc tự động khi còn ngồi ghế hoặc trong ván. Khi đủ điều kiện hết phiên hoặc Khách chủ động Đăng xuất, điều phối rời vị trí/kết thúc ván theo quy tắc hiện có, thu hồi phiên, xoá tên và dữ liệu cá nhân Khách, trả thông tin để về màn Đăng nhập. Vào Khách lần sau tạo danh tính mới; không khôi phục danh tính cũ."
     ],
     "steps": [
       "Lưu mốc hết hạn, thiết bị và vị trí chơi đang giữ; xử lý đăng nhập, hết hạn, rời ghế và kết thúc ván nhất quán.",
       "Cung cấp trạng thái ván đang dở và lý do không được vào chỗ mới để giao diện hiển thị; cập nhật Tên hiển thị phải kiểm lại dữ liệu ở máy chủ.",
-      "Viết kiểm thử thời hạn cố định, đổi thiết bị khi chờ hoặc đang đấu, vào chỗ thứ hai và sửa hồ sơ bằng yêu cầu gửi trực tiếp."
+      "Viết kiểm thử thời hạn cố định, đổi thiết bị khi chờ hoặc đang đấu, vào chỗ thứ hai và sửa hồ sơ bằng yêu cầu gửi trực tiếp.",
+      "Nối sự kiện kết thúc phiên Khách với quản lý phòng, ván với máy và chat; kiểm dọn dữ liệu sau hết hạn lẫn đăng xuất chủ động, không xoá nhầm dữ liệu người khác hoặc làm mất kết quả ván online phải lưu."
     ],
     "deliverables": [
       "Dịch vụ quản lý phiên, vị trí chơi và cập nhật hồ sơ; kiểm thử tự động và kết quả thử hai thiết bị."
     ],
     "acceptance": [
       "Không có hai vị trí chơi có quyền điều khiển đồng thời; kết quả thua chỉ phát sinh đúng trường hợp đã quy định.",
-      "Hạn phiên không trượt theo hoạt động; dữ liệu hồ sơ sai bị từ chối cả khi bỏ qua giao diện."
+      "Hạn phiên không trượt theo hoạt động; dữ liệu hồ sơ sai bị từ chối cả khi bỏ qua giao diện.",
+      "Khách hết hạn nhưng còn ngồi ghế/trong ván không bị ngắt giữa chừng; khi phiên thực sự kết thúc, cả hết hạn và đăng xuất đều xoá tên/dữ liệu cá nhân theo phạm vi đã chốt và lần vào sau dùng danh tính mới."
     ],
     "boundary": "Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn hồ sơ được giao cho phần giao diện; phần giữ trạng thái ván phối hợp với xử lý nối lại và ván với máy."
   },
@@ -2733,7 +2738,7 @@
     "context": "Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ, không tạo lịch sử ván ở phiên bản này. Người chơi cần biết trường hợp nào còn tiếp tục được và trường hợp nào phải bắt đầu ván mới.",
     "requirements": [
       "Sau khi mất kết nối hoặc đóng thẻ, giữ ván tối đa 30 phút để người chơi quay lại đúng đường dẫn và thế cờ. Quá hạn thì bỏ trạng thái khỏi bộ nhớ.",
-      "Bộ máy tính nước không phản hồi quá 10 giây hoặc báo lỗi phải trả thông tin sự cố cùng khả năng Thử lại. Nếu chỉ quá thời gian chờ thì tìm lại trên cùng thế; nếu ván đã bị đánh dấu bỏ dở thì tạo ván mới cùng cấp và phe thực tế.",
+      "Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.",
       "Bấm Thử lại liên tiếp chỉ được xử lý một lần; không khởi chạy nhiều lượt tính nước hoặc áp hai nước cho cùng lượt.",
       "Sau khi máy chủ khởi động lại, nếu trạng thái không còn thì báo “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới; không giả khôi phục.",
       "Chủ động Rời ván hoặc Đăng xuất cần xác nhận đầu hàng. Đồng ý thì kết thúc, huỷ việc tính nước và giải phóng vị trí chơi; Huỷ thì giữ nguyên."
@@ -2741,7 +2746,8 @@
     "steps": [
       "Quản lý thời hạn giữ ván và tác vụ tính nước cùng danh tính người chơi. Kiểm quyền mỗi yêu cầu tiếp tục hoặc thử lại, không chỉ kiểm đường dẫn ván.",
       "Phân biệt quá thời gian chờ, lỗi tác vụ và ván đã bỏ dở để trả kết quả đủ cho giao diện báo đúng hậu quả.",
-      "Viết kiểm thử ngắt mạng trước, trong và sau lượt máy; quay lại trong hoặc quá hạn; gửi thử lại trùng; rời ván lúc máy đang nghĩ; máy chủ khởi động lại."
+      "Viết kiểm thử ngắt mạng trước, trong và sau lượt máy; quay lại trong hoặc quá hạn; gửi thử lại trùng; rời ván lúc máy đang nghĩ; máy chủ khởi động lại.",
+      "Khi Thử lại sau quá 10 giây, huỷ hoặc vô hiệu kết quả tác vụ cũ; kết quả cũ đến muộn không được áp thêm nước sau tác vụ mới. Kiểm nhiều lần Thử lại vẫn chỉ có một nước máy được chấp nhận."
     ],
     "deliverables": [
       "Xử lý phía máy chủ về giữ ván, thử lại, huỷ tác vụ và giải phóng chỗ chơi.",
@@ -2872,7 +2878,7 @@
     "context": "Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu hết một hoặc hai nước đã có đáp án kiểm chứng. Chuẩn bị cách ngắt mạng, gây lỗi hoặc trì hoãn bộ máy tính nước, khởi động lại máy chủ; ghi cấu hình máy và bản phần mềm khi đo.",
     "requirements": [
       "Đóng thẻ trình duyệt/mất mạng rồi về trong 30 phút: mở đúng ván hoặc nút Quay lại ở Sảnh và tiếp tục thế cũ. Quá hạn xoá trạng thái bộ nhớ, không lưu lịch sử.",
-      "Máy cờ lỗi hoặc không trả lời quá 10 giây hiện “Máy cờ gặp sự cố” và Thử lại. Chỉ quá thời gian chờ thì tìm nước trên cùng thế; ván đã Bỏ dở thì tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.",
+      "Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.",
       "Bấm Thử lại liên tiếp chỉ xử lý một lần. Khởi động lại máy chủ thì hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới, không khôi phục giả.",
       "Rời ván/Đăng xuất chủ động phải xác nhận đầu hàng; Đồng ý kết thúc, huỷ tác vụ máy và giải phóng vị trí; Huỷ giữ nguyên.",
       "Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; thời gian tại mốc 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.",
@@ -2883,7 +2889,8 @@
       "Kiểm mất mạng trước/trong/sau lượt máy, quay lại trước/sau 30 phút; gây lỗi tìm nước và thử bấm Thử lại nhiều lần.",
       "Khởi động lại máy chủ, rời hoặc đăng xuất khi máy đang nghĩ; kiểm không áp nước cũ hay giữ vị trí sau đầu hàng.",
       "Chạy 50 thế mỗi cấp, lưu từng thời gian và độ sâu; tính mốc 95%, kiểm chiếu hết bắt buộc và 20 ván mỗi cặp cấp.",
-      "Ghi từng ca là Đạt, Không đạt hoặc Chưa kiểm được cùng dữ liệu, thời điểm và bằng chứng đã che bí mật. Báo lỗi có cách tái hiện; sau sửa chạy lại ca lỗi và các nhánh liên quan."
+      "Ghi từng ca là Đạt, Không đạt hoặc Chưa kiểm được cùng dữ liệu, thời điểm và bằng chứng đã che bí mật. Báo lỗi có cách tái hiện; sau sửa chạy lại ca lỗi và các nhánh liên quan.",
+      "Cố ý trì hoãn máy quá 10 giây rồi Thử lại: đối chiếu mã ván, thế, lượt và phe không đổi trước nước máy mới; cho kết quả tác vụ cũ về muộn để kiểm không đi hai lần."
     ],
     "deliverables": [
       "Bộ ca kiểm có bước chạy, dữ liệu và kết quả mong đợi để thành viên khác thực hiện lại được.",

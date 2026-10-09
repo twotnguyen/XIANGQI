@@ -341,7 +341,7 @@ Câu bắt buộc (chốt):
 
 ## 7. Bàn cờ
 
-### 7.1 Hệ toạ độ (chốt, xem [AGENTS.md §4](AGENTS.md))
+### 7.1 Hệ toạ độ (quy ước chốt trong mục này)
 
 Đen ở trên (`y = 0`), Đỏ ở dưới (`y = 9`). Người cầm Đen thấy bàn **lật 180°** — **chỉ hiển thị**; toạ độ gửi máy chủ không đổi (`DT-18`, `GR-COORD-01`).
 
@@ -471,7 +471,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - Toàn bộ giao diện **tiếng Việt**, kể cả lỗi và nhãn trợ năng (`DT` §11).
 - Câu ngắn, xưng "bạn", nói **việc cần làm tiếp**. Lỗi theo mẫu *điều gì xảy ra + cách sửa*: "Mã phòng không đúng. Kiểm tra lại 8 ký tự rồi thử lại."
 - ⛔ Không lộ chi tiết kỹ thuật (mã HTTP, stack), không tiết lộ dữ liệu vượt quyền (ví dụ "email đã tồn tại" ở màn quên mật khẩu).
-- Thuật ngữ theo [AGENTS.md §4.1](AGENTS.md): **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
+- Thuật ngữ dùng thống nhất: **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
 - Thời gian: `mm:ss` cho đồng hồ và đếm ngược; ngày giờ dạng `27/09/2026 14:05`.
 - Các câu đã chốt trong §6.3 phải dùng **đúng chữ**.
 
@@ -671,7 +671,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
 2. **Chỉ dùng token** (`var(--…)`); ⛔ không mã màu, không số px ngoài thang, phông chỉ lấy từ `--font-ui` / `--font-serif` / `--font-han` / `--font-mono` theo vai trò ở §3.1 (PO chốt 05/10).
 3. Dựng **đủ 5 trạng thái** của màn và mọi trạng thái của thành phần; vô hiệu luôn có câu giải thích.
 4. Dùng câu chữ đã chốt nguyên văn; không tự đặt câu cho các hộp xác nhận ở §6.3.
-5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §6`). Thư viện icon và toast chưa chốt (chọn khi bắt đầu Giai đoạn 4, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
+5. Không thêm thư viện giao diện dựng sẵn hay Tailwind. Thư viện icon và toast chưa chốt (chọn khi bắt đầu Giai đoạn 4, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
 6. Kiểm trước khi mở PR: 4 kích thước (360, 390, 1366, 1920) không cuộn ngang; điều hướng hết bằng bàn phím; bật giảm chuyển động; giả lập mù màu cho bàn cờ.
 7. Cần giá trị chưa có trong file này ⇒ **hỏi** hoặc đề xuất 🟡 (kèm tỉ lệ tương phản đã tính) và cập nhật file này trong cùng PR — ⛔ không tự đặt giá trị rồi dùng lặng lẽ.
 8. Áp dụng chuẩn Theme Kỳ Đài Cổ Phong (Dark Tea-Room) theo định hướng thẩm mỹ Á Đông cao cấp, đảm bảo tương phản WCAG 2.1 AA.

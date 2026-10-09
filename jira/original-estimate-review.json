@@ -1,0 +1,725 @@
+{
+  "date": "2026-10-09",
+  "status": "applied_to_local_plan_not_uploaded_to_jira",
+  "supersedes": {
+    "total_hours": [
+      1840,
+      1000
+    ],
+    "reason": "User wants a reduction from 920 hours. Reassessed selective savings in code generation and reuse; no uniform speedup factor."
+  },
+  "basis": "Selective reductions where AI-assisted repetitive implementation and reuse can plausibly shorten work, without removing acceptance or independent testing. Provisional, not measured team productivity.",
+  "items": [
+    {
+      "task": "T01",
+      "title": "Dựng monorepo, CI, nhật ký và /health",
+      "owner": "Tình",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng dụng Cờ Tướng Online theo một cách thống nhất. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "4f84446d7b44b33dd91e63a1bf92c36ab2921ead1dc780fba5415821188291b1"
+    },
+    {
+      "task": "T02",
+      "title": "Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ",
+      "owner": "Thư",
+      "current_hours": 20,
+      "proposed_hours": 20,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Chuẩn bị cách kiểm thử và dữ liệu chuẩn để cả nhóm đánh giá ứng dụng bằng kết quả quan sát được. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "5ae29044935942869ad241ddfd057ce53702ed8397dc692b2c750cef73b385f0"
+    },
+    {
+      "task": "T03",
+      "title": "Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái",
+      "owner": "Kỳ",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "AI dựng bộ thành phần và các trạng thái theo thiết kế đã chốt; tái dùng thành phần do nhóm dựng theo DESIGN; không thêm thư viện giao diện dựng sẵn. Phần giảm là viết giao diện lặp, vẫn giữ kiểm bàn phím, tương phản và màn hình nhỏ.",
+      "description_sha256": "d932ab636fa98f07e6fcce8a94039eddacb51f4fb194a3ffc49b380a20523f93"
+    },
+    {
+      "task": "T04",
+      "title": "BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm",
+      "owner": "Đông",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xây dựng xử lý đăng ký bằng tên tài khoản, mật khẩu và mã xác minh email để người ngoài nhóm cũng đăng ký được tài khoản dùng thật. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "7ea25c5cc8c8eef546711d8487a8e51ea5e231eca084f78155c9dc786263f291"
+    },
+    {
+      "task": "T05",
+      "title": "Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân",
+      "owner": "Tùng",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Biểu diễn bàn cờ và sinh nước đi cơ bản của cả bảy loại quân để làm nền cho bộ luật của máy chủ và máy cờ. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "bce75b11156613e475f6537d1308b41820cb987597c5f3fb63e946f51b1202e2"
+    },
+    {
+      "task": "T06",
+      "title": "Spike media LAN/Cloud/HTTPS và thử mô hình phiên",
+      "owner": "Cường",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Thử sớm hạ tầng camera/mic và cơ chế phiên đăng nhập để xác định cách triển khai được trên máy phát triển, mạng nội bộ và Internet. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "0b9bb87e23926aafaeb68bc5eb824d543dbc11ef61647bada12977485e3fda5a"
+    },
+    {
+      "task": "T07",
+      "title": "Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước",
+      "owner": "Tùng",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Hoàn thiện nước đi hợp lệ và phát hiện chiếu, chiếu hết, hết nước đi để bộ luật quyết định đúng việc một bên có được đi hay đã thua. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f5738a50736783201c554e2161bf1e75ae7a2144f9e00522f57e180aa6f877cd"
+    },
+    {
+      "task": "T08",
+      "title": "FE màn Đăng ký 3 bước",
+      "owner": "Kỳ",
+      "current_hours": 12,
+      "proposed_hours": 8,
+      "decision": "reduce",
+      "reason": "Dùng lại biểu mẫu T03 và bộ kiểm tên; AI dựng ba bước, nhập mã và thông báo. Giữ thử đăng ký thật và lỗi; chỉ khả thi khi dịch vụ đã bàn giao ổn.",
+      "description_sha256": "e2683e986eefe59b9e788968b4ba73462c03176ac08b6711e3cb2acda6d2b7b8"
+    },
+    {
+      "task": "T09",
+      "title": "BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập",
+      "owner": "Tùng",
+      "current_hours": 16,
+      "proposed_hours": 16,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Cho người có tài khoản đăng nhập bằng tên tài khoản và mật khẩu, đồng thời kiểm soát thử sai và thời hạn phiên. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "feaf383c3c22e7b58599f061b8033309d191045ee8c573cedd5c8bf8e344b038"
+    },
+    {
+      "task": "T10",
+      "title": "Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử",
+      "owner": "Tùng",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Hoàn chỉnh bộ luật kết thúc ván và kiểm chứng bộ sinh nước để máy chủ và máy cờ dùng được một nguồn luật thống nhất. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "113ad2ba53308c293df2d0fa7717be8e7cc3588dd7fb0a18c52ae056b7ebce40"
+    },
+    {
+      "task": "T11",
+      "title": "FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng",
+      "owner": "Nhạn",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "AI hỗ trợ SVG, vị trí quân và phép xoay trên quy ước toạ độ rõ. Vẫn kiểm 32 quân, chữ Hán, hai hướng, kích thước và nhãn trợ năng.",
+      "description_sha256": "2e333997e76b57b420892527990c1b4ee9a1243342edc2642fb38d079d88b89e"
+    },
+    {
+      "task": "T12",
+      "title": "Khung realtime Socket.IO",
+      "owner": "Tình",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Tạo đường kết nối thời gian thực đáng tin cậy giữa trình duyệt và máy chủ để phòng, nước đi và quyền điều khiển luôn thống nhất. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "9bed7a3251fe598098e7e7717bc2ea096e2aac7ee414fc13a0842f4194c4b067"
+    },
+    {
+      "task": "T13",
+      "title": "Kiểm thử US-01.1",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng người dùng đăng ký bằng email thật được, đồng thời các lỗi nhập liệu, gửi thư và phục hồi tài khoản không tạo dữ liệu sai. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "6dc0a98858be0ed0ccf54ba1ffa6ca399be89e1b5dd89f67e9893c59c738a2e5"
+    },
+    {
+      "task": "T14",
+      "title": "Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu",
+      "owner": "Đông",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "AI soạn lược đồ, tệp tạo bảng và dữ liệu mẫu từ mô hình chốt; ghép bảng đã có thay vì làm lại. Không bỏ kiểm quyền trực tiếp hoặc dựng từ dữ liệu trống.",
+      "description_sha256": "4150d6897e43196de26c22972e7e55802ed56590b108f1fb209bef0886a0c40b"
+    },
+    {
+      "task": "T15",
+      "title": "FE màn Đăng nhập",
+      "owner": "Kỳ",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xây dựng màn đăng nhập để người có tài khoản vào ứng dụng bằng tên tài khoản và mật khẩu, hiểu rõ lỗi hoặc thời gian bị chặn. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "d9fce67e900ced2cd92f3c0afc9b255f0497d91a5e6f9b21cb95af04c00a0177"
+    },
+    {
+      "task": "T16",
+      "title": "Kiểm thử US-04.2",
+      "owner": "Tình",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng bàn cờ được vẽ đúng, xoay đúng phe và đọc được trên điện thoại cũng như với công cụ trợ năng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "0ba1786fcd29bb40a0f51bcf710f99abb5d59f207f08689de77f6daefb3f2e6a"
+    },
+    {
+      "task": "T17",
+      "title": "Kiểm thử US-01.2",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng đăng nhập bằng mật khẩu, giới hạn thử sai và hạn phiên để người dùng vào đúng tài khoản mà không vượt được các ràng buộc đăng nhập. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "0eecb2d58f41552aae9575acd7fa85d3628c0b21ff5080e3a5572f971a7ed65c"
+    },
+    {
+      "task": "T18",
+      "title": "BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host",
+      "owner": "Tùng",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xây dựng xử lý phòng chờ để người dùng tạo phòng, chọn ghế, cùng sẵn sàng và bắt đầu một ván mới một cách nhất quán. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "e2b2c32782d0f188a12e3e8d4438e6ce228f4d132798ab1c1972dd23165013df"
+    },
+    {
+      "task": "T19",
+      "title": "FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh",
+      "owner": "Nhạn",
+      "current_hours": 24,
+      "proposed_hours": 20,
+      "decision": "reduce",
+      "reason": "Tái dùng bàn T11 và luật, AI hỗ trợ thao tác con trỏ, dấu nước và âm thanh. Giảm công viết mã lặp; giữ kiểm chuột/cảm ứng, hướng Đen và giảm chuyển động.",
+      "description_sha256": "f73728df306de8854fe400e66b2d6c0758b77dde0560971dfb2bcac3f2c75177"
+    },
+    {
+      "task": "T20",
+      "title": "BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván",
+      "owner": "Tình",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xây dựng xử lý một ván online để máy chủ nhận nước đi, phân xử đúng luật, phát trạng thái và lưu diễn biến cùng kết quả. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "176bbe4203bfb0648ed43141b1041980f46f0fa260647cd1b35fc458fc8ac310"
+    },
+    {
+      "task": "T21",
+      "title": "FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược",
+      "owner": "Nhạn",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "AI dựng form và trạng thái ghế từ thành phần chung, nối hợp đồng phòng đã có. Giữ thử hai phía và huỷ đếm; không xây chat/media trong Task này.",
+      "description_sha256": "bc832cc6312b93d06e7de7acca98df7765fdbad95980994135f27cb58461bf66"
+    },
+    {
+      "task": "T22",
+      "title": "BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập",
+      "owner": "Tùng",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "Tái dùng kiểm quyền, vị trí chơi và xếp chỗ của phòng; AI hỗ trợ tra mã, giữ đích và ca tranh ghế. Giữ kiểm đồng thời, không chỉ kiểm đường thành công.",
+      "description_sha256": "e11998adeb1b005285b09051a11ff3df73e1650c532d4772f77aed8b251eca17"
+    },
+    {
+      "task": "T23",
+      "title": "BE đồng hồ thi đấu và hết giờ",
+      "owner": "Cường",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Quản lý đồng hồ trên máy chủ để ván online xử thua đúng người hết giờ, kể cả khi trình duyệt chậm hoặc mất mạng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "c13fe8c8576b760b5a51eaeae324d64b95bbbafff6d066e93883c56c13a8044b"
+    },
+    {
+      "task": "T24",
+      "title": "Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng",
+      "owner": "Tình",
+      "current_hours": 32,
+      "proposed_hours": 32,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xây dựng máy cờ ba cấp có thể trả nước hợp lệ trong ngân sách thời gian và chạy tách khỏi máy chủ phục vụ người chơi online. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "d713cf57c6ccfd02482e4ca77fa3c9f9c707f3eba50855f001a5423776694e35"
+    },
+    {
+      "task": "T25",
+      "title": "FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại",
+      "owner": "Kỳ",
+      "current_hours": 20,
+      "proposed_hours": 16,
+      "decision": "reduce",
+      "reason": "Ghép bàn tương tác đã có với hợp đồng trạng thái chung; AI hỗ trợ lớp phủ, đồng hồ và nhãn kết quả. T46 làm thao tác sau ván, tránh dựng trùng; vẫn kiểm đồng bộ thật.",
+      "description_sha256": "6793b71f02315efc605b6440a5d2f344a0e17aac5196ff356064dcf0235abf60"
+    },
+    {
+      "task": "T26",
+      "title": "FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập",
+      "owner": "Cường",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Cho người dùng chia sẻ phòng bằng đường dẫn hoặc mã và vào đúng phòng sau đăng nhập. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "48f0fe74d5741127f4906927319b7057591024ef18e9e0c6a57d54002effc064"
+    },
+    {
+      "task": "T27",
+      "title": "Kiểm thử US-04.3",
+      "owner": "Tình",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng người chơi đi cờ bằng chuột hoặc cảm ứng đúng quyền, dễ nhận biết và có âm thanh phù hợp. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "d6a30a6c4484d313e376879fc3ec52292efddf89f07a062157f47aa976f89a42"
+    },
+    {
+      "task": "T28",
+      "title": "Kiểm thử US-02.1",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng tạo phòng, chọn ghế và bắt đầu ván đúng quy tắc trước khi người dùng chơi trực tuyến. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "1577809855f0c33cd90f2d314dc0d95346dd8817a7c1d47885b1af93dd73ce47"
+    },
+    {
+      "task": "T29",
+      "title": "Kiểm thử US-03.1",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng lời mời bằng đường dẫn hoặc mã đưa người dùng vào đúng phòng, đúng vai trò. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "4c46c0f8b5dbe8ec41952aeaedc46e4596b7ab84b02ea1670386aeeb5c9251af"
+    },
+    {
+      "task": "T30",
+      "title": "Kiểm thử US-05.1",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng ván trực tuyến được máy chủ phân xử, tính giờ và lưu kết quả chính xác. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "5e777f1838dc29323ad5c7096cb7cf078ea90917e22f478f21aa5be2fdf47e7e"
+    },
+    {
+      "task": "T31",
+      "title": "BE bạn bè, trạng thái online, mời bạn online vào phòng",
+      "owner": "Tùng",
+      "current_hours": 24,
+      "proposed_hours": 20,
+      "decision": "reduce",
+      "reason": "AI hỗ trợ thao tác dữ liệu bạn bè, sinh dữ liệu biên và ca gửi chéo; dùng kết nối và quyền phòng chung. Vẫn kiểm thời hạn, giới hạn và lời mời hai phía.",
+      "description_sha256": "7e16812fe2a06d5509d3ba8e014b58f6754572e96dd30300f858789f24c0aa7c"
+    },
+    {
+      "task": "T32",
+      "title": "BE đầu hàng, rời phòng giữa ván, xin hoà",
+      "owner": "Cường",
+      "current_hours": 12,
+      "proposed_hours": 12,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xử lý đầu hàng, rời phòng giữa ván và đề nghị hoà trên máy chủ. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "426b881f50e725214e85ae6097fd0b1c749a543d35d4d6970fa1ade34c6e5dc3"
+    },
+    {
+      "task": "T33",
+      "title": "BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ",
+      "owner": "Tình",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Bảo đảm camera và micro chỉ truyền cho đúng người được phép, và thu hồi quyền khi người dùng mất vai trò. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "b534ea8f1ad4dedccb199503d00f5d2e532775b3735a402b981d2e5ea35902b0"
+    },
+    {
+      "task": "T34",
+      "title": "BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới",
+      "owner": "Đông",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "Luật và máy tìm nước đã có; AI hỗ trợ ghép dịch vụ ván, lựa chọn phe và ca tự kiểm. Phục hồi/sự cố ở T63, không tính lại; giữ kiểm kết quả máy đến muộn.",
+      "description_sha256": "9bf0cd92a1891ad065e002b294e53b74e03797774c4cc86b5fbc2cb8b1af64fa"
+    },
+    {
+      "task": "T35",
+      "title": "BE đăng ký/đăng nhập Google, onboarding, phiên Khách",
+      "owner": "Cường",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Cho phép đăng ký, đăng nhập bằng Google và tạo phiên chơi Khách có quyền hạn rõ ràng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f9d5aa54940cf2a60788ffe6ad4be8c70fa7f9f41e952a85953e5c8a1a2c7281"
+    },
+    {
+      "task": "T36",
+      "title": "FE nút Đầu hàng, Xin hoà và khung đề nghị",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Dựng thao tác đầu hàng và xin hoà rõ hậu quả, không gây bấm nhầm hoặc che bàn cờ. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "4a4d5926c3cc41e58669917fe261d83e6e0884d44017a825a8fc6d522c5f568f"
+    },
+    {
+      "task": "T37",
+      "title": "BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ",
+      "owner": "Đông",
+      "current_hours": 16,
+      "proposed_hours": 16,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xây chat phòng có kênh riêng cho hai người chơi và kênh chung, bảo vệ nội dung theo vai trò. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "6adc2817867f67a94fd76efec33fcea4fb38be0207db87bb34f43490608f4cba"
+    },
+    {
+      "task": "T38",
+      "title": "FE thiết lập/chơi AI và giao diện sự cố máy cờ",
+      "owner": "Kỳ",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "Dùng lại bàn, hộp chọn và khung kết quả; AI dựng các trạng thái lượt máy/lỗi. Giữ thử máy thật và chống gửi nước trùng, không viết thuật toán trong FE.",
+      "description_sha256": "e6adcd3e1fcc481aba98efd4ac82718ff0a10cc6b138073c674913fa021b6213"
+    },
+    {
+      "task": "T39",
+      "title": "Kiểm thử US-05.2",
+      "owner": "Kỳ",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng đầu hàng, rời phòng và xin hoà đúng ý người chơi, không làm thay đổi kết quả ngoài ý muốn. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "1e67fc4336e8fba601f16989f1aa3d69bf1da387cbceb3d9ed0ba96dc14b5acb"
+    },
+    {
+      "task": "T40",
+      "title": "FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời",
+      "owner": "Cường",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "AI dựng danh sách, tìm kiếm và chuông bằng thành phần chung; dùng cùng kiểu đề nghị. Giữ kiểm hai phía/hết hạn; giả định người làm đã sử dụng được nền FE.",
+      "description_sha256": "363e51ff959f9223e1d14d3bddf2675d1e1527691577ff0b1487d5dd70099375"
+    },
+    {
+      "task": "T41",
+      "title": "BE Xin đổi bên và phòng về chờ sau ván",
+      "owner": "Cường",
+      "current_hours": 12,
+      "proposed_hours": 12,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xử lý xin đổi bên và vòng đời phòng sau ván để hai người có thể tiếp tục chơi mà không tạo phòng mới. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "d4d65f2b848136e8046e50c5ca9b6191a2b2ce101a3d23337e23a334721f3d8e"
+    },
+    {
+      "task": "T42",
+      "title": "FE khung chat hai kênh",
+      "owner": "Kỳ",
+      "current_hours": 12,
+      "proposed_hours": 8,
+      "decision": "reduce",
+      "reason": "AI dựng hai bố cục chat và trạng thái gửi trên cùng thành phần; máy chủ cấp tập tin đúng quyền. Giữ kiểm không chạy mã và không giữ tin cặp cũ.",
+      "description_sha256": "1fae4ed3c5bc1576f22669e7b9f59f146f505097c3db31d1ad122cb632410edd"
+    },
+    {
+      "task": "T43",
+      "title": "Kiểm thử US-08.1",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng người dùng chọn cấp độ, chọn phe và chơi ván mới với máy đúng lựa chọn. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f6f3e4055321497dcb6377d24ee2eb7627b58b191be8065b186f4eaa4a9e3a30"
+    },
+    {
+      "task": "T44",
+      "title": "FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách",
+      "owner": "Kỳ",
+      "current_hours": 12,
+      "proposed_hours": 8,
+      "decision": "reduce",
+      "reason": "Tái dùng biểu mẫu T08/T15 và chuyển hướng T26; AI dựng màn thiết lập và hộp Khách. Giữ Google thật, email trùng, thiết lập bắt buộc và ẩn chức năng đúng quyền.",
+      "description_sha256": "a84492744b4849e545821bee90d2a62b0ba6ef7c6d888f783249a6c2447761c0"
+    },
+    {
+      "task": "T45",
+      "title": "Kiểm thử US-07.2",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng camera và micro hoạt động đúng quyền, đúng mức chia sẻ và không gây gián đoạn ván. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f5e7cc3e3e2eabf276524ee912a4dbb8369f3c5f15884ab46a4dd8148472249b"
+    },
+    {
+      "task": "T46",
+      "title": "FE hộp Xin đổi bên, Ở lại phòng / Rời phòng",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Dựng thao tác Xin đổi bên và lựa chọn sau ván để người chơi tiếp tục trong cùng phòng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f626f4cec391a75ef54da79b7db9f74528ad906061ab48357f7190154e16dd88"
+    },
+    {
+      "task": "T47",
+      "title": "Kiểm thử US-07.1",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng chat đúng kênh, đúng nội dung được phép và có giới hạn chống gửi quá nhanh. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "e993b7d2bf92ce3d6dae22783d0bd9a1aa8348250ade815e2aa5749b86164478"
+    },
+    {
+      "task": "T48",
+      "title": "Kiểm thử US-01.3",
+      "owner": "Thư",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng đăng ký/đăng nhập Google và chơi Khách thật, bao gồm giới hạn tên và khoá thử sai mật khẩu. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f704a1e2afde48851a8f0c5adb461ea8db82958de4eb61d9444f6bf68a60adef"
+    },
+    {
+      "task": "T49",
+      "title": "Kiểm thử US-03.2",
+      "owner": "Kỳ",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng việc kết bạn, trạng thái hoạt động và mời bạn vào phòng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "3233ba77322ae25a84cadee2b45fa5ea26c846f331d66372543e5c9377afe430"
+    },
+    {
+      "task": "T50",
+      "title": "Kiểm thử US-02.2",
+      "owner": "Kỳ",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng xin đổi phe và bắt đầu ván tiếp theo trong cùng phòng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "3dd24689e3a27cd87d06834a886f482ae07bc932e3942344d386ec2fa79c503d"
+    },
+    {
+      "task": "T51",
+      "title": "Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ",
+      "owner": "Thư",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm tra toàn bộ sản phẩm sau khi ghép các chức năng để phát hiện lỗi xuất hiện giữa các phần. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "e7972404cb155154c36d517574df87a925cbf52d59fd2d48cc039b90179320b7"
+    },
+    {
+      "task": "T52",
+      "title": "BE mất kết nối, ân hạn, đồng bộ lại và server restart",
+      "owner": "Đông",
+      "current_hours": 12,
+      "proposed_hours": 12,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Xử lý mất kết nối ở máy chủ để người chơi có cơ hội quay lại và ván kết thúc đúng lý do. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "24fd61ad3206db5cc51adfb6072281a03c85cc0ed6cbbf5a2ea71d359deb0a7a"
+    },
+    {
+      "task": "T53",
+      "title": "BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã",
+      "owner": "Tùng",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "Tái dùng kiểm tham gia và giữ chỗ chung; AI hỗ trợ ba chế độ, hiệu lực mã và ca quyền. Vẫn kiểm mã cũ, lời mời cũ và tranh chấp lúc khoá.",
+      "description_sha256": "495668382818091616bcd878d0a704b4d6651c6c0ed37b18aa514f66fa9705f2"
+    },
+    {
+      "task": "T54",
+      "title": "BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem",
+      "owner": "Tùng",
+      "current_hours": 12,
+      "proposed_hours": 8,
+      "decision": "reduce",
+      "reason": "AI dựng truy vấn/dữ liệu danh sách và phát thay đổi, tái dùng xếp chỗ T22. Giữ kiểm tối đa 50 phòng, dữ liệu cũ, tranh ghế và đo cập nhật.",
+      "description_sha256": "edacb5b0cebf988bebfa44704275dd54e261795a20551ceefa326a57be5b2b66"
+    },
+    {
+      "task": "T55",
+      "title": "BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn",
+      "owner": "Đông",
+      "current_hours": 16,
+      "proposed_hours": 16,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Quản lý người xem và chuyển chỗ an toàn, đồng thời cho người chơi đuổi người xem gây phiền. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f66127327f1676daf2655bb5d12510a73f8b2c83a3da8efccc2588fa2393e749"
+    },
+    {
+      "task": "T56",
+      "title": "BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất",
+      "owner": "Đông",
+      "current_hours": 24,
+      "proposed_hours": 24,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Thực thi thời hạn đăng nhập, một vị trí chơi và việc cập nhật hồ sơ tại máy chủ. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "776a66a46d4f3af34832b25265a1c6428c8e17df50543d2edbac014c53e564af"
+    },
+    {
+      "task": "T57",
+      "title": "FE Cài đặt phòng",
+      "owner": "Cường",
+      "current_hours": 8,
+      "proposed_hours": 4,
+      "decision": "reduce",
+      "reason": "Một hộp chọn dùng lại thành phần, dịch vụ chế độ và dữ liệu chia sẻ đã có; AI dựng nhanh các trạng thái. Vẫn kiểm quyền chủ, thiếu ghế, lỗi và mã mới.",
+      "description_sha256": "1bd1b8bf3bbe3035bdccf9f58fc5bbe602ab24537e6c55faef548bb0d13cbf15"
+    },
+    {
+      "task": "T58",
+      "title": "FE danh sách người xem, thao tác ghế và khung camera/mic",
+      "owner": "Tình",
+      "current_hours": 20,
+      "proposed_hours": 20,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Hoàn thiện giao diện người xem và camera, mic trong cả phòng chờ lẫn phòng đang đấu. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "684b30601a42a6e24e1e51e00efae9e70ce2f93f53282c120f5005315e3458ce"
+    },
+    {
+      "task": "T59",
+      "title": "Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh",
+      "owner": "Tình",
+      "current_hours": 12,
+      "proposed_hours": 12,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Tinh chỉnh sức chơi và đo tốc độ máy cờ để ba cấp có chất lượng kiểm chứng được. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "bebe3964fc6bd229c03f754c5b740ad83000d2aae844e1087130fb18da22b662"
+    },
+    {
+      "task": "T60",
+      "title": "Kiểm thử US-05.3",
+      "owner": "Tình",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng cách xử lý mất mạng và gián đoạn để kết quả ván không sai. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "a6ebfe6e98327914647de67c7c4bbdccc1f3a89f220d25b7a7bbfca581ac4b7d"
+    },
+    {
+      "task": "T61",
+      "title": "FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng",
+      "owner": "Kỳ",
+      "current_hours": 16,
+      "proposed_hours": 12,
+      "decision": "reduce",
+      "reason": "Ghép các lối vào và thanh điều hướng đã có; AI hỗ trợ danh sách và trình bày luật từ nội dung chốt. Không làm lại chuông/hồ sơ; vẫn rà luật, điện thoại và quyền Khách.",
+      "description_sha256": "e4e0aed822ad6e9976abb3e55edf4a20d7662e8ddbca8b2f5534a8c3c89ad670"
+    },
+    {
+      "task": "T62",
+      "title": "Kiểm thử US-06.1",
+      "owner": "Nhạn",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng ba chế độ vào phòng và hiệu lực của mã mời. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "3fc3ef0cad5c7b29ae4d6a5453250831c4850efa9024d171c43bb2a31712792b"
+    },
+    {
+      "task": "T63",
+      "title": "BE giữ ván AI 30 phút, Thử lại, khởi động lại",
+      "owner": "Cường",
+      "current_hours": 12,
+      "proposed_hours": 12,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Giữ và phục hồi trạng thái ván với máy khi người chơi mất kết nối hoặc bộ máy tính nước gặp sự cố. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "a2ff89ce9800547e52a01639b3c11d5110c3b7a6a93c40945d4b732221e14ad2"
+    },
+    {
+      "task": "T64",
+      "title": "Kiểm thử US-06.3",
+      "owner": "Kỳ",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng chuyển vai trò người xem, đuổi người xem và thu hồi hình tiếng. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "85a57c065aeb5fab4fe6110ba7ee8abc91b8fb54566a77101fb6021b2765267d"
+    },
+    {
+      "task": "T65",
+      "title": "FE Cài đặt hồ sơ, Đăng xuất, banner ván dở",
+      "owner": "Cường",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Tạo màn hồ sơ, thao tác đăng xuất và lối quay lại ván đang dở. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "3478948242c99bd8e913792a4ef4b77f3cc77965ac70872ff6c8e6c3fc930a2c"
+    },
+    {
+      "task": "T66",
+      "title": "Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật",
+      "owner": "Tình",
+      "current_hours": 16,
+      "proposed_hours": 16,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Đo chất lượng vận hành và kiểm chứng các ràng buộc kỹ thuật trên bản tích hợp trước khi phát hành. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "8ce971e5ee24beb642397d4bb838214451a10f4f48e7c23b043d41bbab8cf087"
+    },
+    {
+      "task": "T67",
+      "title": "Kiểm thử US-06.2",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng Sảnh, danh sách phòng công khai và các lối vào chơi. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "7a16acd36777c92249c9da0b752c812ea90bbf8b1c16fb034f43f0b130dafc36"
+    },
+    {
+      "task": "T68",
+      "title": "Kiểm thử US-08.3",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng phục hồi ván với máy và chất lượng ba mức chơi. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "d9dd3ec5977a8ee238623c52be0480ba6840de7f0f31cd5aea228711d85e6ff4"
+    },
+    {
+      "task": "T69",
+      "title": "Kiểm thử US-01.4",
+      "owner": "Nhạn",
+      "current_hours": 8,
+      "proposed_hours": 8,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm chứng phiên đăng nhập, giới hạn một vị trí chơi và hồ sơ cá nhân. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "9bff70ebae70b113faa27b7688b831e73483a5a69b04e5124f5bec5b99ded957"
+    },
+    {
+      "task": "T70",
+      "title": "Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo",
+      "owner": "Tình",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Kiểm điều kiện phát hành và chuẩn bị bộ chạy trình diễn mà thành viên khác có thể tự khởi động. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "92a6ea036810f5bb388540472840d6060bc91628eeff68ee011233e815f887bd"
+    },
+    {
+      "task": "T71",
+      "title": "Tổng duyệt D1–D10 trên bản phát hành và ghi hình",
+      "owner": "Thư",
+      "current_hours": 4,
+      "proposed_hours": 4,
+      "decision": "retain",
+      "reason": "Giữ mức hiện tại; chưa có cơ sở giảm thêm chỉ vì có AI. Tổng duyệt đủ mười luồng sử dụng trên bản phát hành và ghi hình làm bằng chứng bàn giao. Thời gian vẫn cần bao gồm tự kiểm hoặc kiểm chứng độc lập theo Description.",
+      "description_sha256": "f3d6f721efa95eeafde7377ff6b0ecbb396b7bb282e6d11c00f2aa8f2922d116"
+    }
+  ],
+  "description_hash_basis": "Hashes capture Description at estimate review; later clarifications must be reviewed separately. Current source is descriptions.json."
+}

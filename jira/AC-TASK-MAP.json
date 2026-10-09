@@ -105,11 +105,14 @@
     "ac": "AC-00.2.1",
     "story": "US-00.2",
     "implementation_tasks": [
+      "T04",
+      "T09",
+      "T12",
       "T14"
     ],
-    "verification_task": "T14",
-    "stage": "task",
-    "notes": "T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51.",
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T14 kiểm cục bộ các bảng/tệp đã bàn giao. T51 dựng mới bằng toàn bộ tệp của đăng ký, đăng nhập, kết nối và dữ liệu, rồi kiểm quyền đầy đủ; không nghiệm thu trước khi T09 hoàn tất.",
     "criterion": {
       "given": "Cơ sở dữ liệu trống",
       "when": "Chạy toàn bộ migration",
@@ -121,11 +124,14 @@
     "ac": "AC-00.2.2",
     "story": "US-00.2",
     "implementation_tasks": [
+      "T04",
+      "T09",
+      "T12",
       "T14"
     ],
-    "verification_task": "T14",
-    "stage": "task",
-    "notes": "T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51.",
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T14 kiểm cục bộ các bảng/tệp đã bàn giao. T51 dựng mới bằng toàn bộ tệp của đăng ký, đăng nhập, kết nối và dữ liệu, rồi kiểm quyền đầy đủ; không nghiệm thu trước khi T09 hoàn tất.",
     "criterion": {
       "given": "Người dùng đăng nhập bằng khoá công khai ở client",
       "when": "Đọc/ghi dữ liệu người khác hoặc bảng ván/phòng",
@@ -4640,7 +4646,7 @@
     "criterion": {
       "given": "Máy cờ không trả lời quá 10 giây hoặc lỗi",
       "when": "Hệ thống",
-      "then": "Báo *\"Máy cờ gặp sự cố\"* kèm \"Thử lại\"; nếu chỉ quá thời gian chờ thì Thử lại tìm nước trên cùng thế; nếu ván đã Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế",
+      "then": "Báo *\"Máy cờ gặp sự cố\"* kèm \"Thử lại\"; chỉ không phản hồi quá 10 giây thì giữ nguyên ván/thế, Thử lại tính nước trên cùng thế, không gửi lại nước người; nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế",
       "test_level": "I, M"
     }
   },

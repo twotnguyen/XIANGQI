@@ -19,8 +19,8 @@ Task được nghiệm thu theo đúng AC giao trong bảng. Các AC chưa đủ
 
 | AC | Task triển khai/đầu vào | Nghiệm thu tại | Mức | Ghi chú |
 |---|---|---|---|---|
-| AC-00.2.1 | T14 | T14 | Task | T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51. |
-| AC-00.2.2 | T14 | T14 | Task | T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51. |
+| AC-00.2.1 | T04, T09, T12, T14 | T51 | Tích hợp/đối soát | T14 kiểm cục bộ các bảng/tệp đã bàn giao. T51 dựng mới bằng toàn bộ tệp của đăng ký, đăng nhập, kết nối và dữ liệu, rồi kiểm quyền đầy đủ; không nghiệm thu trước khi T09 hoàn tất. |
+| AC-00.2.2 | T04, T09, T12, T14 | T51 | Tích hợp/đối soát | T14 kiểm cục bộ các bảng/tệp đã bàn giao. T51 dựng mới bằng toàn bộ tệp của đăng ký, đăng nhập, kết nối và dữ liệu, rồi kiểm quyền đầy đủ; không nghiệm thu trước khi T09 hoàn tất. |
 | AC-00.2.3 | T14 | T14 | Task | T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51. |
 
 ## US-00.3 · Khung realtime

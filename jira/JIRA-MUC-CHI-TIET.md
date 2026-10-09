@@ -1,6 +1,6 @@
 # Danh sách mục Jira XIAN — kế hoạch lập lại 09/10/2026
 
-> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; mọi mục nhập To Do. Ngày 09/10 lập kế hoạch, thi công 10/10–03/11; 04/11 dự phòng, demo 05/11.
+> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; mọi mục nhập To Do. Ngày 09/10 lập kế hoạch, thi công từ 10/10 đến sáng 04/11; chiều 04/11 dự phòng, demo 05/11.
 
 Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. R1 mặc định hạn Story là ngày Task đầu bắt đầu; US-08.3/US-00.5 giữ ngoại lệ hạn Task cuối để đóng hồ sơ bằng chứng, không tự thay ngưỡng AC.
 
@@ -16,7 +16,7 @@ Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. 
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 03/11/2026 |
+| Due date | 04/11/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -215,7 +215,7 @@ Bàn giao bộ khung cho các chức năng đăng nhập, phòng và bàn cờ. 
 | Due date | 12/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-00.1 |
 | Is blocked by | T01 |
@@ -347,7 +347,7 @@ Không mở rộng sang bảng xếp hạng, tính điểm hay giao diện xem l
 | Due date | 15/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-00.2 |
 | Is blocked by | T04 |
@@ -369,7 +369,7 @@ Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng 
 **Yêu cầu cần đáp ứng**
 
 - Tạo dữ liệu lời mời kết bạn, quan hệ bạn bè, phòng, thành viên phòng, danh sách người bị chặn, ván và nước đi.
-- Tích hợp với bảng hồ sơ, bộ đếm đăng nhập và biên lai lệnh đã được phần đăng ký/thời gian thực tạo, không tạo bản trùng khác cấu trúc.
+- Tích hợp theo cấu trúc thống nhất với bảng hồ sơ, bộ đếm đăng nhập và biên lai lệnh của các phần đăng ký, đăng nhập và kết nối. Ghép các tệp tạo bảng đã bàn giao; bảng chưa bàn giao phải ghi rõ phần phụ thuộc, không tự tạo bản trùng khác cấu trúc.
 - Dùng khoá tham chiếu và ràng buộc để tránh người tham gia hoặc nước đi trỏ tới bản ghi không hợp lệ.
 - Tên tài khoản lưu đúng chữ người nhập nhưng ràng buộc duy nhất so sánh không phân biệt hoa thường.
 - Phân quyền theo từng dòng dữ liệu: trình duyệt chỉ đọc dữ liệu được phép; máy chủ có quyền dịch vụ mới ghi dữ liệu phòng, ván và kết quả.
@@ -392,14 +392,14 @@ Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng 
 
 **Điều kiện hoàn thành**
 
-- Tạo mới từ cơ sở dữ liệu trống không lỗi; đủ bảng và quan hệ cần thiết.
+- Tạo mới từ cơ sở dữ liệu trống không lỗi đối với các bảng do công việc này sở hữu và các tệp đã bàn giao; đủ quan hệ trong phạm vi đó. Việc dựng lại toàn bộ cấu trúc và kiểm quyền tất cả bảng được xác minh khi hồi quy bản tích hợp đầy đủ.
 - Không tạo đồng thời được hai tên như Twot và twot.
 - Người dùng không tự sửa phòng/ván/kết quả qua quyền công khai của trình duyệt.
 - Máy chủ ghi được dữ liệu hợp lệ; truy cập ngoài quyền bị từ chối.
 
 **Phạm vi và phối hợp**
 
-Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai ngồi ghế hay có thể kết bạn vẫn nằm trong chức năng nghiệp vụ của máy chủ.
+Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai ngồi ghế hay có thể kết bạn vẫn nằm trong chức năng nghiệp vụ của máy chủ. Bằng chứng cục bộ không xác nhận các tệp tạo bảng chưa bàn giao; bàn giao danh sách tệp và phạm vi kiểm cho người hồi quy toàn hệ thống.
 
 ---
 
@@ -415,7 +415,7 @@ Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai n
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 14/10/2026 |
+| Due date | 11/10/2026 |
 | Sprint | — |
 | Fix version | v0.1 |
 | Original Estimate | — |
@@ -478,8 +478,8 @@ Chỉ đặc tả cơ chế dùng chung; luật đi cờ, vòng đời phòng v�
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 14/10/2026 |
-| Due date | 16/10/2026 |
+| Start date | 11/10/2026 |
+| Due date | 13/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 24 giờ |
@@ -753,7 +753,7 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 03/11/2026 |
+| Due date | 04/11/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -823,7 +823,7 @@ Không tự giảm ngưỡng hay cắt tính năng để ghi đạt; đóng hồ
 | Priority | Medium |
 | Status | To Do |
 | Start date | 31/10/2026 |
-| Due date | 02/11/2026 |
+| Due date | 03/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 24 giờ |
@@ -862,6 +862,8 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 - Khách đủ 12 giờ khi còn ngồi ghế không bị ngắt giữa ván; sau khi rời và hết phiên thì dữ liệu cá nhân bị xoá. Mất mạng khi đang đếm bắt đầu phải huỷ đếm, giữ ghế 60 giây, không tạo ván hoặc xử thua.
 - Người ngồi ghế cuối rời thì phòng đóng, người xem về Sảnh và chat bị xoá. Sau ván giữ đúng ghế, người xem, chế độ, mức giờ và chat; đổi người trong cặp chat riêng không làm người mới đọc được nội dung cũ. Rời ghế thu hồi quyền phát hình tiếng.
 - Hộp kết quả có đúng lý do: chiếu hết, hết nước, đầu hàng, hết giờ, mất mạng, lặp thế, thoả thuận hoà, 120 nửa nước không ăn quân, chiếu liên tục hoặc bị gián đoạn. Gián đoạn không ghi thắng, thua hay hoà.
+- Dựng cơ sở dữ liệu thử từ trống bằng toàn bộ tệp tạo/cập nhật đã tích hợp, gồm hồ sơ, bộ đếm đăng nhập và biên lai lệnh; kiểm đủ bảng, quan hệ, chỉ mục và quyền bằng yêu cầu trực tiếp. Người dùng không đọc hoặc ghi dữ liệu ngoài quyền; chỉ máy chủ ghi phòng, ván và kết quả.
+- Kiểm riêng hai đường kết thúc phiên Khách: hết hạn khi không còn giữ vị trí và chủ động Đăng xuất. Cả hai phải về màn Đăng nhập, xoá tên/dữ liệu cá nhân Khách; vào lại tạo danh tính mới. Kiểm không xoá nhầm dữ liệu của người khác.
 
 **Việc cần làm**
 
@@ -892,12 +894,12 @@ Không thay báo cáo đo tải hoặc kiểm chứng máy cờ bằng việc ch
 | Issue Id | 102 |
 | Issue Type | Task |
 | Parent | EP-00 |
-| Assignee | Tùng |
+| Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 31/10/2026 |
-| Due date | 01/11/2026 |
+| Start date | 01/11/2026 |
+| Due date | 02/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
@@ -1039,8 +1041,8 @@ Công việc này đóng gói và xác nhận điều kiện phát hành. Tổng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 03/11/2026 |
-| Due date | 03/11/2026 |
+| Start date | 04/11/2026 |
+| Due date | 04/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
@@ -1109,7 +1111,7 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 | Priority | Medium |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -1172,11 +1174,11 @@ Không làm quên mật khẩu, đổi tên đăng nhập, đổi email hay đá
 | Start date | 09/10/2026 |
 | Due date | 11/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version | v0.2 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T04, T08, T13 |
-| Sprint thi công | S1 |
+| Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản |
 | Labels | dac-ta, EP-01, p1, tai-khoan |
@@ -1314,11 +1316,11 @@ Bàn giao cho màn đăng ký; Google và Khách đầy đủ triển khai riên
 | Priority | Medium |
 | Status | To Do |
 | Start date | 14/10/2026 |
-| Due date | 15/10/2026 |
+| Due date | 14/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 12 giờ |
-| Story Points | 3 |
+| Original Estimate | 8 giờ |
+| Story Points | 2 |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T03, T04 |
 | Component chính | FE |
@@ -1384,17 +1386,17 @@ Bàn giao màn đăng ký. Luồng mở đường dẫn mời rồi đăng ký c
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 15/10/2026 |
-| Due date | 16/10/2026 |
-| Sprint | XIAN Sprint 1 |
-| Fix version | v0.1 |
+| Start date | 17/10/2026 |
+| Due date | 17/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T08 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
-| Labels | sprint-1, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
 
 
 **Description**
@@ -1675,7 +1677,7 @@ Bàn giao giao diện đăng nhập mật khẩu và vị trí nối Google/Khá
 | Is blocked by | T15 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
-| Labels | sprint-1, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
 
 
 **Description**
@@ -1740,11 +1742,11 @@ Việc Google vẫn vào được mà không xoá bộ đếm và việc đăng 
 | Start date | 09/10/2026 |
 | Due date | 17/10/2026 |
 | Sprint | — |
-| Fix version | v0.2 |
+| Fix version | v0.3 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T35, T44, T48 |
-| Sprint thi công | S2 |
+| Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản |
 | Labels | dac-ta, EP-01, p1, tai-khoan |
@@ -1821,7 +1823,7 @@ Không tự gộp tài khoản trùng email và không triển khai xếp hạng
 | Is blocked by | T09, T14 |
 | Component chính | BE |
 | Components | BE, Tài khoản |
-| Labels | sprint-3, phat-trien, p1, chinh-be, tai-khoan |
+| Labels | sprint-2, phat-trien, p1, chinh-be, tai-khoan |
 
 
 **Description**
@@ -1875,16 +1877,16 @@ Việc gia hạn ngoại lệ khi đang chơi và xoá dữ liệu khi phiên Kh
 | Priority | Medium |
 | Status | To Do |
 | Start date | 20/10/2026 |
-| Due date | 21/10/2026 |
+| Due date | 20/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
-| Original Estimate | 12 giờ |
-| Story Points | 3 |
+| Original Estimate | 8 giờ |
+| Story Points | 2 |
 | Story (relates to) | US-01.3 |
 | Is blocked by | T15, T35 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, tai-khoan |
+| Labels | sprint-2, phat-trien, p1, chinh-fe, tai-khoan |
 
 
 **Description**
@@ -1933,14 +1935,14 @@ Phần này không quyết định thời hạn phiên hoặc quyền trên máy
 | Issue Id | 84 |
 | Issue Type | Task |
 | Parent | EP-01 |
-| Assignee | Nhạn |
+| Assignee | Thư |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 23/10/2026 |
-| Due date | 23/10/2026 |
-| Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Start date | 26/10/2026 |
+| Due date | 26/10/2026 |
+| Sprint | XIAN Sprint 3 |
+| Fix version | v0.3 |
 | Original Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.3 |
@@ -2001,7 +2003,7 @@ Ngoại lệ giữ phiên Khách khi đang chơi và xoá dữ liệu khi phiên
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -2076,8 +2078,8 @@ Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 26/10/2026 |
+| Start date | 27/10/2026 |
+| Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 24 giờ |
@@ -2086,7 +2088,7 @@ Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao
 | Is blocked by | T18, T20, T35 |
 | Component chính | BE |
 | Components | BE, Tài khoản, Ván trực tuyến |
-| Labels | sprint-4, phat-trien, p1, chinh-be, tai-khoan, van-truc-tuyen |
+| Labels | sprint-3, phat-trien, p1, chinh-be, tai-khoan, van-truc-tuyen |
 
 
 **Description**
@@ -2106,12 +2108,14 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 - Đăng nhập từ thiết bị khác khi đang đấu làm ván hiện tại bị xử thua, thiết bị cũ bị đăng xuất, thiết bị mới vào Sảnh. Nếu chỉ ngồi phòng chờ thì rời ghế theo vòng đời phòng, không ghi kết quả thua.
 - Chặn ngồi ghế hoặc mở ván với máy thứ hai; mở lời mời không được vượt kiểm tra này. Đăng xuất khi đang đấu phải xác nhận đầu hàng, còn ở phòng chờ thì rời phòng rồi đăng xuất.
 - Khách không xuất hiện trong tìm kiếm bạn bè và không nhận lời mời kết bạn. Hồ sơ chính thức cho đổi Tên hiển thị dài 2–30 ký tự, từ chối từ cấm; email chỉ đọc. Hồ sơ Khách chỉ có Đăng xuất.
+- Phiên Khách có hạn tối đa 12 giờ nhưng không kết thúc tự động khi còn ngồi ghế hoặc trong ván. Khi đủ điều kiện hết phiên hoặc Khách chủ động Đăng xuất, điều phối rời vị trí/kết thúc ván theo quy tắc hiện có, thu hồi phiên, xoá tên và dữ liệu cá nhân Khách, trả thông tin để về màn Đăng nhập. Vào Khách lần sau tạo danh tính mới; không khôi phục danh tính cũ.
 
 **Việc cần làm**
 
 - Lưu mốc hết hạn, thiết bị và vị trí chơi đang giữ; xử lý đăng nhập, hết hạn, rời ghế và kết thúc ván nhất quán.
 - Cung cấp trạng thái ván đang dở và lý do không được vào chỗ mới để giao diện hiển thị; cập nhật Tên hiển thị phải kiểm lại dữ liệu ở máy chủ.
 - Viết kiểm thử thời hạn cố định, đổi thiết bị khi chờ hoặc đang đấu, vào chỗ thứ hai và sửa hồ sơ bằng yêu cầu gửi trực tiếp.
+- Nối sự kiện kết thúc phiên Khách với quản lý phòng, ván với máy và chat; kiểm dọn dữ liệu sau hết hạn lẫn đăng xuất chủ động, không xoá nhầm dữ liệu người khác hoặc làm mất kết quả ván online phải lưu.
 
 **Kết quả bàn giao**
 
@@ -2121,6 +2125,7 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 
 - Không có hai vị trí chơi có quyền điều khiển đồng thời; kết quả thua chỉ phát sinh đúng trường hợp đã quy định.
 - Hạn phiên không trượt theo hoạt động; dữ liệu hồ sơ sai bị từ chối cả khi bỏ qua giao diện.
+- Khách hết hạn nhưng còn ngồi ghế/trong ván không bị ngắt giữa chừng; khi phiên thực sự kết thúc, cả hết hạn và đăng xuất đều xoá tên/dữ liệu cá nhân theo phạm vi đã chốt và lần vào sau dùng danh tính mới.
 
 **Phạm vi và phối hợp**
 
@@ -2135,12 +2140,12 @@ Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn 
 | Issue Id | 101 |
 | Issue Type | Task |
 | Parent | EP-01 |
-| Assignee | Kỳ |
+| Assignee | Cường |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 28/10/2026 |
-| Due date | 28/10/2026 |
+| Start date | 30/10/2026 |
+| Due date | 30/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
@@ -2149,7 +2154,7 @@ Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn 
 | Is blocked by | T56, T63 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | sprint-4, phat-trien, p1, chinh-fe, tai-khoan |
+| Labels | sprint-3, phat-trien, p1, chinh-fe, tai-khoan |
 
 
 **Description**
@@ -2203,7 +2208,7 @@ Máy chủ vẫn kiểm quyền, dữ liệu và thời hạn phiên; giao diệ
 | Priority | Medium |
 | Status | To Do |
 | Start date | 02/11/2026 |
-| Due date | 02/11/2026 |
+| Due date | 03/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
@@ -2271,7 +2276,7 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Priority | Medium |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 22/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -2330,7 +2335,7 @@ Không thêm đổi cấu hình mức giờ/sức chứa sau tạo, tái đấu 
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 17/10/2026 |
+| Due date | 19/10/2026 |
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
@@ -2401,8 +2406,8 @@ Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đ�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 17/10/2026 |
-| Due date | 19/10/2026 |
+| Start date | 19/10/2026 |
+| Due date | 21/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
@@ -2472,11 +2477,11 @@ Bàn giao phòng chờ và tín hiệu bắt đầu ván. Xin đổi bên hai ng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 21/10/2026 |
+| Start date | 22/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-02.1 |
 | Is blocked by | T03, T18 |
@@ -2544,7 +2549,7 @@ Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
+| Start date | 25/10/2026 |
 | Due date | 25/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
@@ -2554,7 +2559,7 @@ Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung 
 | Is blocked by | T26, T37, T25 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi |
-| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
 
 
 **Description**
@@ -2607,13 +2612,13 @@ Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiể
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 22/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T41, T46, T50 |
-| Sprint thi công | S2, S3 |
+| Sprint thi công | S3 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | dac-ta, EP-02, p1, phong-choi, van-truc-tuyen |
@@ -2679,10 +2684,10 @@ Không thêm nút tái đấu trực tiếp hoặc xem lại ván; không đóng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 22/10/2026 |
-| Due date | 23/10/2026 |
-| Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Start date | 24/10/2026 |
+| Due date | 25/10/2026 |
+| Sprint | XIAN Sprint 3 |
+| Fix version | v0.3 |
 | Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-02.2 |
@@ -2738,12 +2743,12 @@ Không thêm nút tái đấu nhanh; người chơi dùng Sẵn sàng và Xin đ
 | Issue Id | 82 |
 | Issue Type | Task |
 | Parent | EP-02 |
-| Assignee | Kỳ |
+| Assignee | Nhạn |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 25/10/2026 |
-| Due date | 25/10/2026 |
+| Start date | 26/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
@@ -2801,12 +2806,12 @@ Phần này không tạo cơ chế tái đấu mới và không tự xử thời
 | Issue Id | 86 |
 | Issue Type | Task |
 | Parent | EP-02 |
-| Assignee | Thư |
+| Assignee | Kỳ |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 26/10/2026 |
+| Start date | 27/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 4 giờ |
@@ -2932,13 +2937,13 @@ Không làm nhắn tin riêng, thách đấu hoặc mời qua mã ảnh để qu
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 20/10/2026 |
+| Due date | 22/10/2026 |
 | Sprint | — |
-| Fix version | v0.2 |
+| Fix version | v0.3 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T22, T26, T29 |
-| Sprint thi công | S2 |
+| Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi |
 | Labels | dac-ta, EP-03, p1, phong-choi |
@@ -2997,11 +3002,11 @@ Không tạo mã ảnh để quét; quyền vào vẫn phụ thuộc trạng th�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 21/10/2026 |
+| Start date | 22/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-03.1 |
 | Is blocked by | T18, T09 |
@@ -3065,14 +3070,14 @@ Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. C
 | Issue Id | 62 |
 | Issue Type | Task |
 | Parent | EP-03 |
-| Assignee | Nhạn |
+| Assignee | Cường |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 22/10/2026 |
-| Due date | 22/10/2026 |
+| Start date | 23/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Fix version | v0.3 |
 | Original Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-03.1 |
@@ -3126,21 +3131,21 @@ Phần này phụ trách giao diện đường dẫn và mã; danh sách bạn b
 | Issue Id | 65 |
 | Issue Type | Task |
 | Parent | EP-03 |
-| Assignee | Thư |
+| Assignee | Nhạn |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 23/10/2026 |
-| Due date | 23/10/2026 |
-| Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Start date | 25/10/2026 |
+| Due date | 25/10/2026 |
+| Sprint | XIAN Sprint 3 |
+| Fix version | v0.3 |
 | Original Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-03.1 |
 | Is blocked by | T26, T35, T08, T15 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi |
-| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
 
 
 **Description**
@@ -3268,15 +3273,15 @@ Không làm nhắn tin riêng hay thách đấu; không cho Khách tham gia quan
 | Issue Id | 67 |
 | Issue Type | Task |
 | Parent | EP-03 |
-| Assignee | Cường |
+| Assignee | Tùng |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
 | Start date | 25/10/2026 |
-| Due date | 28/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 24 giờ |
+| Original Estimate | 20 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T22, T35 |
@@ -3330,15 +3335,15 @@ Không làm nhắn tin riêng giữa bạn bè hoặc thách đấu từ màn B�
 | Issue Id | 76 |
 | Issue Type | Task |
 | Parent | EP-03 |
-| Assignee | Kỳ |
+| Assignee | Cường |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 29/10/2026 |
-| Due date | 30/10/2026 |
+| Start date | 28/10/2026 |
+| Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T31 |
@@ -3393,7 +3398,7 @@ Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu;
 | Issue Id | 85 |
 | Issue Type | Task |
 | Parent | EP-03 |
-| Assignee | Nhạn |
+| Assignee | Kỳ |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
@@ -3407,7 +3412,7 @@ Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu;
 | Is blocked by | T40, T53, T56, T34 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Bạn bè |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, ban-be |
+| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-be |
 
 
 **Description**
@@ -3592,7 +3597,7 @@ Không bổ sung luật xử riêng việc đuổi quân liên tục; không tuy
 | Issue Id | 41 |
 | Issue Type | Task |
 | Parent | EP-04 |
-| Assignee | Tình |
+| Assignee | Tùng |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
@@ -3663,7 +3668,7 @@ Kết quả là nước cơ bản theo cách đi của quân, chưa được g�
 | Issue Id | 43 |
 | Issue Type | Task |
 | Parent | EP-04 |
-| Assignee | Tình |
+| Assignee | Tùng |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
@@ -3734,7 +3739,7 @@ Bàn giao phân xử từng thế cờ. Lặp thế, 120 nửa nước không ă
 | Issue Id | 46 |
 | Issue Type | Task |
 | Parent | EP-04 |
-| Assignee | Tình |
+| Assignee | Tùng |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
@@ -3876,7 +3881,7 @@ Chỉ đặc tả hiển thị; thao tác đi quân và phân xử luật nằm 
 | Due date | 12/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-04.2 |
 | Is blocked by | T01 |
@@ -3940,12 +3945,12 @@ Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, �
 | Issue Id | 52 |
 | Issue Type | Task |
 | Parent | EP-04 |
-| Assignee | Thư |
+| Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 13/10/2026 |
-| Due date | 13/10/2026 |
+| Start date | 14/10/2026 |
+| Due date | 14/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 4 giờ |
@@ -4020,11 +4025,11 @@ Không dùng kết quả này để kết luận bấm chuột, kéo thả, nư�
 | Start date | 09/10/2026 |
 | Due date | 14/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version | v1.0 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T19, T27 |
-| Sprint thi công | S1, S3 |
+| Sprint thi công | S1, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, QA & DevOps, Bàn cờ |
 | Labels | dac-ta, EP-04, p1, ban-co |
@@ -4090,13 +4095,13 @@ Không thêm chức năng gợi ý chiến thuật hoặc chọn nước tốt n
 | Due date | 16/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 24 giờ |
+| Original Estimate | 20 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-04.3 |
 | Is blocked by | T10, T11 |
 | Component chính | FE |
 | Components | FE, Bàn cờ |
-| Labels | sprint-2, phat-trien, p1, chinh-fe, ban-co |
+| Labels | sprint-1, phat-trien, p1, chinh-fe, ban-co |
 
 
 **Description**
@@ -4154,21 +4159,21 @@ Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ 
 | Issue Id | 63 |
 | Issue Type | Task |
 | Parent | EP-04 |
-| Assignee | Thư |
+| Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 24/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Start date | 31/10/2026 |
+| Due date | 31/10/2026 |
+| Sprint | XIAN Sprint 4 |
+| Fix version | v1.0 |
 | Original Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-04.3 |
 | Is blocked by | T25, T22 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Bàn cờ |
-| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, ban-co |
+| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-co |
 
 
 **Description**
@@ -4221,7 +4226,7 @@ Kiểm cách tương tác và hiển thị; không thay việc chứng minh toà
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 28/10/2026 |
+| Due date | 30/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -4281,13 +4286,13 @@ Không cộng thời gian sau nước đi, xin đi lại hoặc khôi phục gi�
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 17/10/2026 |
+| Due date | 16/10/2026 |
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T20, T23, T25, T30 |
-| Sprint thi công | S2, S3 |
+| Sprint thi công | S1, S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ, Ván trực tuyến |
 | Labels | dac-ta, EP-05, p1, luat-co, ban-co, van-truc-tuyen |
@@ -4348,13 +4353,13 @@ Không cộng thêm thời gian sau nước đi và không triển khai giao di�
 | Issue Id | 56 |
 | Issue Type | Task |
 | Parent | EP-05 |
-| Assignee | Tình |
+| Assignee | Tùng |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 17/10/2026 |
-| Due date | 19/10/2026 |
-| Sprint | XIAN Sprint 2 |
+| Start date | 16/10/2026 |
+| Due date | 18/10/2026 |
+| Sprint | XIAN Sprint 1 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
 | Story Points | 5 |
@@ -4362,7 +4367,7 @@ Không cộng thêm thời gian sau nước đi và không triển khai giao di�
 | Is blocked by | T10, T12, T14 |
 | Component chính | BE |
 | Components | BE, Luật cờ, Ván trực tuyến |
-| Labels | sprint-2, phat-trien, p1, chinh-be, luat-co, van-truc-tuyen |
+| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co, van-truc-tuyen |
 
 
 **Description**
@@ -4501,8 +4506,8 @@ Bàn giao thời gian và kết quả hết giờ cho giao diện và xử lý m
 | Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
-| Original Estimate | 20 giờ |
-| Story Points | 5 |
+| Original Estimate | 16 giờ |
+| Story Points | 3 |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T19, T23 |
 | Component chính | FE |
@@ -4559,7 +4564,7 @@ Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 27/10/2026 |
+| Start date | 28/10/2026 |
 | Due date | 28/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
@@ -4569,7 +4574,7 @@ Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất
 | Is blocked by | T25, T26 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Luật cờ, Ván trực tuyến |
-| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, luat-co, van-truc-tuyen |
+| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, luat-co, van-truc-tuyen |
 
 
 **Description**
@@ -4700,7 +4705,7 @@ Không thêm xin đi lại; phản hồi đề nghị cũ không được thay �
 | Is blocked by | T20 |
 | Component chính | BE |
 | Components | BE, Ván trực tuyến |
-| Labels | sprint-3, phat-trien, p1, chinh-be, van-truc-tuyen |
+| Labels | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
 
 
 **Description**
@@ -4748,7 +4753,7 @@ Phần này không dựng hộp xác nhận hay khung đề nghị trên màn h�
 | Issue Id | 72 |
 | Issue Type | Task |
 | Parent | EP-05 |
-| Assignee | Kỳ |
+| Assignee | Nhạn |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
@@ -4811,7 +4816,7 @@ Máy chủ quyết định kết quả, hạn và quyền; phần giao diện kh
 | Issue Id | 75 |
 | Issue Type | Task |
 | Parent | EP-05 |
-| Assignee | Thư |
+| Assignee | Kỳ |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
@@ -4879,13 +4884,13 @@ Không kiểm xin đi lại, tái đấu hoặc luật riêng của chế độ 
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 28/10/2026 |
+| Due date | 30/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version | v1.0 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T52, T60 |
-| Sprint thi công | S3 |
+| Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | dac-ta, EP-05, p1, phong-choi, van-truc-tuyen |
@@ -4939,21 +4944,21 @@ Không tạo thắng/thua/hòa cho ván bị gián đoạn do máy chủ khởi 
 | Issue Id | 88 |
 | Issue Type | Task |
 | Parent | EP-05 |
-| Assignee | Tình |
+| Assignee | Đông |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 28/10/2026 |
-| Due date | 29/10/2026 |
+| Start date | 30/10/2026 |
+| Due date | 31/10/2026 |
 | Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Fix version | v1.0 |
 | Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-05.3 |
 | Is blocked by | T56 |
 | Component chính | BE |
 | Components | BE, Phòng chơi, Ván trực tuyến |
-| Labels | sprint-4, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
+| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
 
 
 **Description**
@@ -5002,14 +5007,14 @@ Chỉ thực hiện xử lý phía máy chủ và dữ liệu đồng bộ. Khô
 | Issue Id | 96 |
 | Issue Type | Task |
 | Parent | EP-05 |
-| Assignee | Thư |
+| Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 30/10/2026 |
-| Due date | 30/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Start date | 31/10/2026 |
+| Due date | 31/10/2026 |
+| Sprint | XIAN Sprint 4 |
+| Fix version | v1.0 |
 | Original Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-05.3 |
@@ -5072,7 +5077,7 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Priority | Medium |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -5132,7 +5137,7 @@ Không để người xem tự chiếm ghế hoặc phát camera/mic; không tri
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 22/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -5197,17 +5202,17 @@ Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 22/10/2026 |
-| Due date | 23/10/2026 |
+| Start date | 23/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
-| Original Estimate | 16 giờ |
+| Fix version | v0.3 |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T22 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-4, phat-trien, p1, chinh-be, phong-choi |
+| Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
 
 
 **Description**
@@ -5256,21 +5261,21 @@ Phần này thực thi quy tắc phía máy chủ; hộp cài đặt và danh s�
 | Issue Id | 93 |
 | Issue Type | Task |
 | Parent | EP-06 |
-| Assignee | Nhạn |
+| Assignee | Cường |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 24/10/2026 |
+| Start date | 26/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 8 giờ |
-| Story Points | 2 |
+| Original Estimate | 4 giờ |
+| Story Points | 1 |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T53 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | sprint-4, phat-trien, p1, chinh-fe, phong-choi |
+| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
 
 
 **Description**
@@ -5320,12 +5325,12 @@ Phần giao diện không tự sinh mã, thu hồi lời mời hoặc quyết đ
 | Issue Id | 98 |
 | Issue Type | Task |
 | Parent | EP-06 |
-| Assignee | Kỳ |
+| Assignee | Nhạn |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 31/10/2026 |
-| Due date | 31/10/2026 |
+| Start date | 01/11/2026 |
+| Due date | 01/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
@@ -5392,7 +5397,7 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -5462,21 +5467,21 @@ Các mục chưa phát triển chỉ hiển thị Sắp ra mắt và không bấ
 | Issue Id | 90 |
 | Issue Type | Task |
 | Parent | EP-06 |
-| Assignee | Cường |
+| Assignee | Đông |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 25/10/2026 |
+| Start date | 26/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 12 giờ |
-| Story Points | 3 |
+| Original Estimate | 8 giờ |
+| Story Points | 2 |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T53 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-4, phat-trien, p1, chinh-be, phong-choi |
+| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi |
 
 
 **Description**
@@ -5530,17 +5535,17 @@ Không xây trang Sảnh trong công việc này. Kết quả là dữ liệu, s
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 27/10/2026 |
+| Start date | 28/10/2026 |
+| Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T54, T57 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | sprint-4, phat-trien, p1, chinh-fe, phong-choi |
+| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
 
 
 **Description**
@@ -5664,13 +5669,13 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 22/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T55, T58, T64 |
-| Sprint thi công | S2, S3, S4 |
+| Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Camera và mic |
 | Labels | dac-ta, EP-06, p1, phong-choi, camera-va-mic |
@@ -5736,17 +5741,17 @@ Người xem không được tự chiếm ghế; chủ phòng không tự xuốn
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 22/10/2026 |
-| Due date | 23/10/2026 |
-| Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Start date | 24/10/2026 |
+| Due date | 25/10/2026 |
+| Sprint | XIAN Sprint 3 |
+| Fix version | v0.3 |
 | Original Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-06.3 |
 | Is blocked by | T22 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-4, phat-trien, p1, chinh-be, phong-choi |
+| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi |
 
 
 **Description**
@@ -5796,12 +5801,12 @@ Không xây khung danh sách người xem trong phần việc này. Giới hạn
 | Issue Id | 94 |
 | Issue Type | Task |
 | Parent | EP-06 |
-| Assignee | Nhạn |
+| Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 28/10/2026 |
-| Due date | 30/10/2026 |
+| Start date | 27/10/2026 |
+| Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 20 giờ |
@@ -5810,7 +5815,7 @@ Không xây khung danh sách người xem trong phần việc này. Giới hạn
 | Is blocked by | T55, T33 |
 | Component chính | FE |
 | Components | FE, Phòng chơi, Camera và mic |
-| Labels | sprint-4, phat-trien, p1, chinh-fe, phong-choi, camera-va-mic |
+| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi, camera-va-mic |
 
 
 **Description**
@@ -5864,7 +5869,7 @@ Không viết lại dịch vụ cấp quyền camera, mic hay quy tắc xếp ch
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 01/11/2026 |
+| Start date | 02/11/2026 |
 | Due date | 02/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
@@ -5934,7 +5939,7 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Priority | Medium |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 25/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -5993,7 +5998,7 @@ Không ghi/lưu hình tiếng, không lưu trò chuyện sau khi phòng đóng v
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 20/10/2026 |
+| Due date | 22/10/2026 |
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
@@ -6065,8 +6070,8 @@ Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuy�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 21/10/2026 |
+| Start date | 22/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 16 giờ |
@@ -6075,7 +6080,7 @@ Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuy�
 | Is blocked by | T18, T35 |
 | Component chính | BE |
 | Components | BE, Trò chuyện |
-| Labels | sprint-3, phat-trien, p1, chinh-be, tro-chuyen |
+| Labels | sprint-2, phat-trien, p1, chinh-be, tro-chuyen |
 
 
 **Description**
@@ -6124,16 +6129,16 @@ Không làm chat riêng giữa bạn bè hay nhãn dán; khung hiển thị chat
 | Issue Id | 78 |
 | Issue Type | Task |
 | Parent | EP-07 |
-| Assignee | Nhạn |
+| Assignee | Kỳ |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 25/10/2026 |
-| Due date | 26/10/2026 |
+| Start date | 24/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 12 giờ |
-| Story Points | 3 |
+| Original Estimate | 8 giờ |
+| Story Points | 2 |
 | Story (relates to) | US-07.1 |
 | Is blocked by | T25, T37 |
 | Component chính | FE |
@@ -6191,7 +6196,7 @@ Không làm nhãn dán hay chat riêng giữa bạn bè; lọc từ cấm và gi
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
+| Start date | 27/10/2026 |
 | Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
@@ -6255,13 +6260,13 @@ Nhánh đổi người từ ghế xuống xem và đưa người khác lên gh�
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 25/10/2026 |
+| Due date | 24/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version | v0.3 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T33, T45 |
-| Sprint thi công | S3, S4 |
+| Sprint thi công | S3 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, QA & DevOps, Camera và mic |
 | Labels | dac-ta, EP-07, p1, camera-va-mic |
@@ -6326,8 +6331,8 @@ Không ghi hình, ghi âm hoặc lưu nội dung truyền; người xem chỉ nh
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 25/10/2026 |
-| Due date | 28/10/2026 |
+| Start date | 24/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 24 giờ |
@@ -6385,14 +6390,14 @@ Không dựng khung video hoặc nút giao diện. Thử đầu-cuối trên mà
 | Issue Id | 81 |
 | Issue Type | Task |
 | Parent | EP-07 |
-| Assignee | Kỳ |
+| Assignee | Thư |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 31/10/2026 |
-| Due date | 01/11/2026 |
-| Sprint | XIAN Sprint 4 |
-| Fix version | v1.0 |
+| Start date | 30/10/2026 |
+| Due date | 30/10/2026 |
+| Sprint | XIAN Sprint 3 |
+| Fix version | v0.3 |
 | Original Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-07.2 |
@@ -6453,7 +6458,7 @@ Thu hồi luồng khi bị đuổi hoặc đổi từ ghế xuống xem được
 | Priority | Medium |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 30/10/2026 |
+| Due date | 02/11/2026 |
 | Sprint | — |
 | Fix version | v1.0 |
 | Original Estimate | — |
@@ -6513,13 +6518,13 @@ Không thêm xin hòa, đi lại, gợi ý nước, lịch sử ván với máy 
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Due date | 19/10/2026 |
 | Sprint | — |
 | Fix version | v0.3 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T34, T38, T43 |
-| Sprint thi công | S3 |
+| Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Bàn cờ, Máy cờ |
 | Labels | dac-ta, EP-08, p1, ban-co, may-co |
@@ -6574,21 +6579,21 @@ Không thêm xin hòa, đi lại, gợi ý nước đi hoặc lưu lịch sử v
 | Issue Id | 70 |
 | Issue Type | Task |
 | Parent | EP-08 |
-| Assignee | Tùng |
+| Assignee | Đông |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 25/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
-| Original Estimate | 16 giờ |
+| Start date | 19/10/2026 |
+| Due date | 20/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T20, T24 |
 | Component chính | BE |
 | Components | BE, Máy cờ |
-| Labels | sprint-3, phat-trien, p1, chinh-be, may-co |
+| Labels | sprint-2, phat-trien, p1, chinh-be, may-co |
 
 
 **Description**
@@ -6636,15 +6641,15 @@ Giữ ván khi mất mạng và xử lý Thử lại sau lỗi máy được th�
 | Issue Id | 74 |
 | Issue Type | Task |
 | Parent | EP-08 |
-| Assignee | Nhạn |
+| Assignee | Kỳ |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
 | Start date | 26/10/2026 |
-| Due date | 28/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
-| Original Estimate | 16 giờ |
+| Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T19, T34 |
@@ -6668,7 +6673,7 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 - Hộp thiết lập có Dễ/Trung bình/Khó và Đỏ/Đen/Ngẫu nhiên. Cầm Đỏ thì người đi trước; cầm Đen thì máy đi đầu và bàn cờ lật để Đen ở dưới.
 - Màn chơi không có đồng hồ thi đấu, Xin hoà, gợi ý nước hay Đi lại. Có Đầu hàng; khi máy suy nghĩ hoặc chưa tới lượt người thì không cho đi quân.
 - Kết thúc ván, kể cả đầu hàng, hiện Ván mới và Về Sảnh. Ván mới mở thiết lập điền lại cấp độ và lựa chọn phe trước đó, cho phép đổi rồi bắt đầu ván có mã mới.
-- Khi máy cờ lỗi hoặc không trả lời quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại. Nếu máy chủ báo chỉ hết thời gian chờ, Thử lại tìm nước trên cùng ván/thế; nếu ván đã bỏ dở, tạo ván mới cùng cấp và phe thực tế đã bốc.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Không gửi lại nước của người chơi khi thử lại. Chặn bấm trùng lúc đang xử lý. Khi máy chủ khởi động lại làm mất trạng thái ván, hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc chủ động tạo ván mới.
 
 **Việc cần làm**
@@ -6702,7 +6707,7 @@ Giao diện không tự quyết định phục hồi ván. Hành vi sự cố th
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 28/10/2026 |
+| Start date | 29/10/2026 |
 | Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
@@ -6766,13 +6771,13 @@ Không dùng kết quả này để khẳng định máy cấp Khó đủ mạnh
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 20/10/2026 |
+| Due date | 15/10/2026 |
 | Sprint | — |
 | Fix version | v0.2 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T24 |
-| Sprint thi công | S2 |
+| Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Luật cờ, Máy cờ |
 | Labels | dac-ta, EP-08, p1, luat-co, may-co |
@@ -6828,9 +6833,9 @@ Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác 
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 23/10/2026 |
-| Sprint | XIAN Sprint 2 |
+| Start date | 15/10/2026 |
+| Due date | 18/10/2026 |
+| Sprint | XIAN Sprint 1 |
 | Fix version | v0.2 |
 | Original Estimate | 32 giờ |
 | Story Points | 8 |
@@ -6838,7 +6843,7 @@ Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác 
 | Is blocked by | T10 |
 | Component chính | BE |
 | Components | BE, Luật cờ, Máy cờ |
-| Labels | sprint-2, phat-trien, p1, chinh-be, luat-co, may-co |
+| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co, may-co |
 
 
 **Description**
@@ -6900,13 +6905,13 @@ Bàn giao máy cờ và số đo đầu cho phần tích hợp, tối ưu và ki
 | Priority | High |
 | Status | To Do |
 | Start date | 09/10/2026 |
-| Due date | 30/10/2026 |
+| Due date | 02/11/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version | v1.0 |
 | Original Estimate | — |
 | Story Points | — |
 | Task thực hiện | T59, T63, T68 |
-| Sprint thi công | S3 |
+| Sprint thi công | S2, S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, QA & DevOps, Luật cờ, Máy cờ |
 | Labels | dac-ta, EP-08, p1, luat-co, may-co |
@@ -6926,7 +6931,7 @@ Trạng thái ván với máy chỉ giữ trong bộ nhớ. Việc chờ máy qu
 
 - Bối cảnh: Đang ván với máy. Thao tác hoặc sự kiện: Đóng thẻ trình duyệt hoặc mất mạng, quay lại trong 30 phút. Kết quả cần có: Vào lại trang ván với máy đang chơi (hoặc thông báo cố định ở Sảnh) và chơi tiếp đúng thế cũ.
 - Bối cảnh: Quá 30 phút. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Bỏ trạng thái ván trong bộ nhớ; không lưu lịch sử (bản bàn giao đầu tiên).
-- Bối cảnh: Máy cờ không trả lời quá 10 giây hoặc lỗi. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Báo "Máy cờ gặp sự cố" kèm "Thử lại"; nếu chỉ quá thời gian chờ thì Thử lại tìm nước trên cùng thế; nếu ván đã Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bối cảnh: Bấm "Thử lại" nhiều lần liên tiếp. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Chỉ xử lý một lần (chặn bấm trùng).
 - Bối cảnh: Máy chủ khởi động lại. Thao tác hoặc sự kiện: Người chơi quay lại. Kết quả cần có: "Ván không còn trạng thái để tiếp tục", về Sảnh hoặc tạo ván mới; không khôi phục giả.
 - Bối cảnh: Đang ván với máy. Thao tác hoặc sự kiện: Chủ động Rời ván hoặc Đăng xuất. Kết quả cần có: Xác nhận đầu hàng; Đồng ý → đầu hàng, huỷ tác vụ máy, giải phóng vị trí chơi; Huỷ → giữ nguyên.
@@ -6963,21 +6968,21 @@ Không khôi phục giả sau máy chủ khởi động lại và không dùng t
 | Issue Id | 95 |
 | Issue Type | Task |
 | Parent | EP-08 |
-| Assignee | Tình |
+| Assignee | Đông |
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 25/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Start date | 20/10/2026 |
+| Due date | 21/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.3 |
 | Is blocked by | T24, T02 |
 | Component chính | BE |
 | Components | BE, Luật cờ, Máy cờ |
-| Labels | sprint-4, phat-trien, p1, chinh-be, luat-co, may-co |
+| Labels | sprint-2, phat-trien, p1, chinh-be, luat-co, may-co |
 
 
 **Description**
@@ -7025,7 +7030,7 @@ Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chí
 | Issue Id | 99 |
 | Issue Type | Task |
 | Parent | EP-08 |
-| Assignee | Tùng |
+| Assignee | Cường |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
@@ -7039,7 +7044,7 @@ Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chí
 | Is blocked by | T34, T35 |
 | Component chính | BE |
 | Components | BE, Máy cờ |
-| Labels | sprint-4, phat-trien, p1, chinh-be, may-co |
+| Labels | sprint-3, phat-trien, p1, chinh-be, may-co |
 
 
 **Description**
@@ -7055,7 +7060,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 **Yêu cầu cần đáp ứng**
 
 - Sau khi mất kết nối hoặc đóng thẻ, giữ ván tối đa 30 phút để người chơi quay lại đúng đường dẫn và thế cờ. Quá hạn thì bỏ trạng thái khỏi bộ nhớ.
-- Bộ máy tính nước không phản hồi quá 10 giây hoặc báo lỗi phải trả thông tin sự cố cùng khả năng Thử lại. Nếu chỉ quá thời gian chờ thì tìm lại trên cùng thế; nếu ván đã bị đánh dấu bỏ dở thì tạo ván mới cùng cấp và phe thực tế.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bấm Thử lại liên tiếp chỉ được xử lý một lần; không khởi chạy nhiều lượt tính nước hoặc áp hai nước cho cùng lượt.
 - Sau khi máy chủ khởi động lại, nếu trạng thái không còn thì báo “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới; không giả khôi phục.
 - Chủ động Rời ván hoặc Đăng xuất cần xác nhận đầu hàng. Đồng ý thì kết thúc, huỷ việc tính nước và giải phóng vị trí chơi; Huỷ thì giữ nguyên.
@@ -7065,6 +7070,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 - Quản lý thời hạn giữ ván và tác vụ tính nước cùng danh tính người chơi. Kiểm quyền mỗi yêu cầu tiếp tục hoặc thử lại, không chỉ kiểm đường dẫn ván.
 - Phân biệt quá thời gian chờ, lỗi tác vụ và ván đã bỏ dở để trả kết quả đủ cho giao diện báo đúng hậu quả.
 - Viết kiểm thử ngắt mạng trước, trong và sau lượt máy; quay lại trong hoặc quá hạn; gửi thử lại trùng; rời ván lúc máy đang nghĩ; máy chủ khởi động lại.
+- Khi Thử lại sau quá 10 giây, huỷ hoặc vô hiệu kết quả tác vụ cũ; kết quả cũ đến muộn không được áp thêm nước sau tác vụ mới. Kiểm nhiều lần Thử lại vẫn chỉ có một nước máy được chấp nhận.
 
 **Kết quả bàn giao**
 
@@ -7089,14 +7095,14 @@ Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi c�
 | Issue Id | 104 |
 | Issue Type | Task |
 | Parent | EP-08 |
-| Assignee | Thư |
+| Assignee | Nhạn |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 29/10/2026 |
-| Due date | 30/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Start date | 01/11/2026 |
+| Due date | 02/11/2026 |
+| Sprint | XIAN Sprint 4 |
+| Fix version | v1.0 |
 | Original Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-08.3 |
@@ -7119,7 +7125,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 **Yêu cầu cần đáp ứng**
 
 - Đóng thẻ trình duyệt/mất mạng rồi về trong 30 phút: mở đúng ván hoặc nút Quay lại ở Sảnh và tiếp tục thế cũ. Quá hạn xoá trạng thái bộ nhớ, không lưu lịch sử.
-- Máy cờ lỗi hoặc không trả lời quá 10 giây hiện “Máy cờ gặp sự cố” và Thử lại. Chỉ quá thời gian chờ thì tìm nước trên cùng thế; ván đã Bỏ dở thì tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bấm Thử lại liên tiếp chỉ xử lý một lần. Khởi động lại máy chủ thì hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới, không khôi phục giả.
 - Rời ván/Đăng xuất chủ động phải xác nhận đầu hàng; Đồng ý kết thúc, huỷ tác vụ máy và giải phóng vị trí; Huỷ giữ nguyên.
 - Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; thời gian tại mốc 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.
@@ -7132,6 +7138,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 - Khởi động lại máy chủ, rời hoặc đăng xuất khi máy đang nghĩ; kiểm không áp nước cũ hay giữ vị trí sau đầu hàng.
 - Chạy 50 thế mỗi cấp, lưu từng thời gian và độ sâu; tính mốc 95%, kiểm chiếu hết bắt buộc và 20 ván mỗi cặp cấp.
 - Ghi từng ca là Đạt, Không đạt hoặc Chưa kiểm được cùng dữ liệu, thời điểm và bằng chứng đã che bí mật. Báo lỗi có cách tái hiện; sau sửa chạy lại ca lỗi và các nhánh liên quan.
+- Cố ý trì hoãn máy quá 10 giây rồi Thử lại: đối chiếu mã ván, thế, lượt và phe không đổi trước nước máy mới; cho kết quả tác vụ cũ về muộn để kiểm không đi hai lần.
 
 **Kết quả bàn giao**
 

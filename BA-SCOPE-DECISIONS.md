@@ -34,7 +34,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 | Thành viên | Chuyên môn chính | Ghi chú phân vai |
 |---|---|---|
-| Tình (Twot) | Full-stack (FE, BE, DevOps, AI) | Scrum Master + PO; nhận **toàn bộ phần khó và quan trọng**, là người làm nhiều việc nhất, tính 100% công suất cho việc kỹ thuật (PO quyết định, không giảm trừ cho vai trò SM) |
+| Tình (Twot) | Full-stack (FE, BE, DevOps, AI) | Scrum Master + PO; nhận phần khó và quan trọng, là người có tổng giờ Task cao nhất theo phân công đã điều chỉnh 09/10, tính 100% công suất cho việc kỹ thuật (PO quyết định, không giảm trừ cho vai trò SM) |
 | Đông | Backend | |
 | Tùng | Backend | |
 | Cường | Backend | |
@@ -42,7 +42,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | Kỳ | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
 | Thư | Tester | Phụ trách kiểm thử chính |
 
-* **Nguyên tắc phân công:** phần còn lại chia đều, đúng chuyên môn; 1–2 người được kiêm thêm vai trò khi một mảng quá tải (ví dụ Kỳ hoặc Nhạn kiểm thử cùng Thư). Bảng phân công chi tiết nằm trong kế hoạch Jira.
+* **Nguyên tắc phân công (cập nhật theo yêu cầu 09/10):** Tùng phụ trách lõi luật và ván online; Đông nhận thêm danh sách phòng và tinh chỉnh máy cờ; Tình giữ xây máy cờ, kết nối, media và điều phối. Cường được hỗ trợ FE khi giảm tương ứng công BE; Nhạn/Kỳ hỗ trợ Thư kiểm thử. Tình 140 giờ, Đông 136, Tùng 132, Cường 124, Nhạn 104, Kỳ 108, Thư 104; tổng 848 giờ, T49 giữ Kỳ. Phần còn lại cân theo nội dung và đúng chuyên môn; 1–2 người được kiêm thêm vai trò khi một mảng quá tải (ví dụ Kỳ hoặc Nhạn kiểm thử cùng Thư). Bảng phân công chi tiết nằm trong kế hoạch Jira.
 * **Jira XIAN:** xoá 98 mục cũ, **lập lại từ đầu** theo [BACKLOG-P1.md](BACKLOG-P1.md). **Jira chỉ chứa việc phát triển** (gồm cả kiểm thử, cấu hình, triển khai); không đưa hoạt động quản lý dự án (họp, báo cáo) vào Jira. P1 chi tiết tới Story/Task; P2 chỉ ở mức Epic. **Cấu trúc chốt 07/10:** 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 Story; Epic và Story là phần việc BA, xong khi đặc tả được PO duyệt — theo hướng dẫn của giảng viên, Epic/Story có thể xong trước các Task bên trong, chậm nhất ở Task cuối cùng. **Quy tắc R1:** mọi Epic/Story bắt đầu 09/10 (thay mốc 07/10 theo yêu cầu lập lại kế hoạch); Story xong trước khi Task đầu tiên của nó bắt đầu, ngoại lệ US-08.3 (GATE-ENGINE) và US-00.5 (GATE-REALTIME) đóng hồ sơ bằng chứng ở Task cuối; các ngưỡng AC vẫn được duyệt trước thi công, không chờ số đo để hạ tiêu chuẩn; Epic xong theo Story muộn nhất; Epic/Story không đặt vào Sprint, nhập Jira ở trạng thái To Do; Task là loại Task thường (cha là Epic, liên kết tới Story) có Sprint, người làm và hạn riêng; mỗi người một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, hạn chế tối đa số Task chạy song song (tối đa 7, mỗi Task một người). Kế hoạch: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
 
 ### 0.2 Đăng nhập và đăng ký (P1)
@@ -132,6 +132,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 1. **Username và từ cấm:** từ chối username chứa từ cấm ngay tại bước nhập username trong đăng ký thường và Google onboarding, dùng bộ lọc 5.3; máy chủ kiểm lại trước khi hoàn tất. Giữ `display_name = username`, không tự sinh tên thay thế.
 2. **Ưu tiên kết quả:** chiếu hết vẫn ưu tiên cao nhất khi xét kết quả từ một nước hợp lệ. Nếu cùng nước chạm 120 nửa nước không ăn quân, kết quả thắng/thua do hết nước đi (`STALEMATE`) hoặc chiếu liên tục (`PERPETUAL_CHECK`) được ưu tiên trước hoà `DRAW_NO_CAPTURE`. Giữ nguyên định nghĩa lặp thế và các ngưỡng đã duyệt; đồng hồ vẫn được kiểm trước khi duyệt nước đi theo 3.3.
 3. **Server khởi động lại:** ván online đang chạy kết thúc `INTERRUPTED`, không có người thắng/thua/hoà. Với **phòng tự tạo**, phòng về `WAITING`, Sẵn sàng reset, hiện **Ở lại phòng / Rời phòng**, không hạn đóng 10 phút; áp dụng vòng đời 0.7. Phòng ghép ngẫu nhiên và Ranked (P2) vẫn theo luật `FINISHED` riêng của từng chế độ. Ván AI P1 vẫn theo 6.3: không còn trạng thái sau restart, không tự khôi phục.
+
+**Bổ sung review trước nhập Jira — PO chốt 09/10:** máy cờ không phản hồi quá 10 giây thì giữ nguyên ván/thế; Thử lại yêu cầu tính nước trên cùng thế. Không chuyển Bỏ dở chỉ vì hết thời gian chờ. Không đổi quy tắc mất trạng thái sau máy chủ khởi động lại; xem 6.1.
 
 Ba câu hỏi của lượt review đã được giải quyết; không còn điều kiện chờ PO cho ba điểm này. Đồng bộ vào AC/TC và Task hiện có, giữ **9 Epic / 27 Story / 71 Task**.
 
@@ -651,8 +653,8 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
     * *Khó (Hard):* Depth 6, thời gian phản hồi $\le 3000$ ms.
   * **Lý do:** Giữ kiến trúc giao diện đơn giản, tập trung toàn lực cho AI vượt qua cổng kiểm định chất lượng (cách đo: GATE-ENGINE, US-08.3 trong BACKLOG-P1.md) và chạy ở tiến trình tách biệt khỏi máy chủ chính.
   * **Mục tiêu cảm nhận (không ràng buộc, đo bằng đấu máy với máy ở US-08.3):** Dễ — người mới học cờ thắng được; Trung bình — người chơi phổ thông thắng khoảng một nửa số ván; Khó — người chơi phổ thông hiếm khi thắng.
-  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). Nếu tiến trình máy cờ **lỗi hoặc không phản hồi sau 10 giây**: ván chuyển "Bỏ dở", báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*. Con số đo thực tế theo cổng kiểm chứng GATE-ENGINE ở [BACKLOG-P1.md](BACKLOG-P1.md).
-  * **Thử lại (duyệt 04/10):** Nếu chỉ hết thời gian chờ tiến trình (`ENGINE_BUSY`), Thử lại yêu cầu máy tìm nước trên **cùng ván và thế hiện tại**, không gửi lại nước của người chơi. Nếu ván đã `ABANDONED` do sự cố, Thử lại tạo **ván mới, Match ID mới**, cùng cấp độ và phe thực tế của ván cũ (phe Ngẫu nhiên đã bốc không bốc lại); không hồi sinh ván kết thúc. Mỗi lần bấm đang xử lý bị chặn trùng; kiểm lại quyền và một vị trí chơi trước khi tạo ván mới.
+  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). **PO chốt lại 09/10:** nếu tiến trình máy cờ **không phản hồi quá 10 giây**, giữ nguyên ván và thế cờ, báo *"Máy cờ gặp sự cố"* kèm *Thử lại*; bấm Thử lại tính nước trên cùng thế, không gửi lại nước người, không tự chuyển Bỏ dở vì hết thời gian chờ. Nếu tiến trình báo lỗi thực sự làm ván chuyển Bỏ dở, áp dụng nhánh tạo ván mới bên dưới. Con số đo thực tế theo cổng kiểm chứng GATE-ENGINE ở [BACKLOG-P1.md](BACKLOG-P1.md).
+  * **Thử lại (duyệt 04/10):** Nếu chỉ hết thời gian chờ tiến trình quá 10 giây (`ENGINE_BUSY`, giữ ván theo chốt 09/10), Thử lại yêu cầu máy tìm nước trên **cùng ván và thế hiện tại**, không gửi lại nước của người chơi. Nếu ván đã `ABANDONED` do sự cố, Thử lại tạo **ván mới, Match ID mới**, cùng cấp độ và phe thực tế của ván cũ (phe Ngẫu nhiên đã bốc không bốc lại); không hồi sinh ván kết thúc. Mỗi lần bấm đang xử lý bị chặn trùng; kiểm lại quyền và một vị trí chơi trước khi tạo ván mới.
 
 ---
 

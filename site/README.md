@@ -1,3 +1,5 @@
+> **Tài liệu công cụ cũ — không dùng làm nguồn nhập Jira hiện hành (rà soát 09/10/2026).** Trang và bộ build này còn tham chiếu thư mục `docs/` đã bị xoá. Hướng dẫn, số lượng tài liệu và báo cáo trong `_analysis/` bên dưới là lịch sử, không chứng minh bộ đặc tả hiện tại đã được xuất lên trang. Nguồn hiện hành là các Markdown ở thư mục gốc và `jira/`; xem [kế hoạch](../KE-HOACH-JIRA.md). Việc sửa công cụ website không thuộc đợt chuẩn bị nhập Jira này.
+
 # TRANG TÀI LIỆU — HƯỚNG DẪN
 
 Trang web tĩnh trình bày toàn bộ tài liệu dự án Cờ Tướng Online.

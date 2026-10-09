@@ -877,9 +877,9 @@
       ],
       "story": "US-00.1",
       "owner": "Kỳ",
-      "hours": 16,
+      "hours": 12,
       "start_slot": 2,
-      "end_slot": 6,
+      "end_slot": 5,
       "sprint": 1,
       "deps": [
         "T01"
@@ -947,7 +947,7 @@
         "luat-co"
       ],
       "story": "US-04.1",
-      "owner": "Tình",
+      "owner": "Tùng",
       "hours": 8,
       "start_slot": 2,
       "end_slot": 4,
@@ -1019,7 +1019,7 @@
         "luat-co"
       ],
       "story": "US-04.1",
-      "owner": "Tình",
+      "owner": "Tùng",
       "hours": 8,
       "start_slot": 4,
       "end_slot": 6,
@@ -1055,9 +1055,9 @@
       ],
       "story": "US-01.1",
       "owner": "Kỳ",
-      "hours": 12,
+      "hours": 8,
       "start_slot": 8,
-      "end_slot": 11,
+      "end_slot": 10,
       "sprint": 1,
       "deps": [
         "T03",
@@ -1124,7 +1124,7 @@
         "luat-co"
       ],
       "story": "US-04.1",
-      "owner": "Tình",
+      "owner": "Tùng",
       "hours": 8,
       "start_slot": 6,
       "end_slot": 8,
@@ -1161,9 +1161,9 @@
       ],
       "story": "US-04.2",
       "owner": "Nhạn",
-      "hours": 16,
+      "hours": 12,
       "start_slot": 2,
-      "end_slot": 6,
+      "end_slot": 5,
       "sprint": 1,
       "deps": [
         "T01"
@@ -1197,8 +1197,8 @@
       "story": "US-00.3",
       "owner": "Tình",
       "hours": 24,
-      "start_slot": 8,
-      "end_slot": 14,
+      "start_slot": 2,
+      "end_slot": 8,
       "sprint": 1,
       "deps": [
         "T01"
@@ -1225,7 +1225,7 @@
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
-        "sprint-1",
+        "sprint-2",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
@@ -1234,9 +1234,9 @@
       "story": "US-01.1",
       "owner": "Thư",
       "hours": 8,
-      "start_slot": 11,
-      "end_slot": 13,
-      "sprint": 1,
+      "start_slot": 14,
+      "end_slot": 16,
+      "sprint": 2,
       "deps": [
         "T08"
       ],
@@ -1267,9 +1267,9 @@
       ],
       "story": "US-00.2",
       "owner": "Đông",
-      "hours": 16,
+      "hours": 12,
       "start_slot": 8,
-      "end_slot": 12,
+      "end_slot": 11,
       "sprint": 1,
       "deps": [
         "T04"
@@ -1336,10 +1336,10 @@
         "ban-co"
       ],
       "story": "US-04.2",
-      "owner": "Thư",
+      "owner": "Tình",
       "hours": 4,
-      "start_slot": 6,
-      "end_slot": 7,
+      "start_slot": 8,
+      "end_slot": 9,
       "sprint": 1,
       "deps": [
         "T11"
@@ -1363,7 +1363,7 @@
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
-        "sprint-1",
+        "sprint-2",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
@@ -1406,8 +1406,8 @@
       "story": "US-02.1",
       "owner": "Tùng",
       "hours": 24,
-      "start_slot": 14,
-      "end_slot": 20,
+      "start_slot": 18,
+      "end_slot": 24,
       "sprint": 2,
       "deps": [
         "T12",
@@ -1433,7 +1433,7 @@
       "parent": "EP-04",
       "priority": "Medium",
       "labels": [
-        "sprint-2",
+        "sprint-1",
         "phat-trien",
         "p1",
         "chinh-fe",
@@ -1441,9 +1441,9 @@
       ],
       "story": "US-04.3",
       "owner": "Nhạn",
-      "hours": 24,
+      "hours": 20,
       "start_slot": 8,
-      "end_slot": 14,
+      "end_slot": 13,
       "sprint": 1,
       "deps": [
         "T10",
@@ -1469,7 +1469,7 @@
       "parent": "EP-05",
       "priority": "High",
       "labels": [
-        "sprint-2",
+        "sprint-1",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -1477,11 +1477,11 @@
         "van-truc-tuyen"
       ],
       "story": "US-05.1",
-      "owner": "Tình",
+      "owner": "Tùng",
       "hours": 24,
-      "start_slot": 14,
-      "end_slot": 20,
-      "sprint": 2,
+      "start_slot": 12,
+      "end_slot": 18,
+      "sprint": 1,
       "deps": [
         "T10",
         "T12",
@@ -1516,9 +1516,9 @@
       ],
       "story": "US-02.1",
       "owner": "Nhạn",
-      "hours": 16,
-      "start_slot": 20,
-      "end_slot": 24,
+      "hours": 12,
+      "start_slot": 24,
+      "end_slot": 27,
       "sprint": 2,
       "deps": [
         "T03",
@@ -1551,9 +1551,9 @@
       ],
       "story": "US-03.1",
       "owner": "Tùng",
-      "hours": 16,
-      "start_slot": 20,
-      "end_slot": 24,
+      "hours": 12,
+      "start_slot": 24,
+      "end_slot": 27,
       "sprint": 2,
       "deps": [
         "T18",
@@ -1612,7 +1612,7 @@
       "parent": "EP-08",
       "priority": "High",
       "labels": [
-        "sprint-2",
+        "sprint-1",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -1622,9 +1622,9 @@
       "story": "US-08.2",
       "owner": "Tình",
       "hours": 32,
-      "start_slot": 20,
-      "end_slot": 28,
-      "sprint": 2,
+      "start_slot": 10,
+      "end_slot": 18,
+      "sprint": 1,
       "deps": [
         "T10"
       ],
@@ -1658,9 +1658,9 @@
       ],
       "story": "US-05.1",
       "owner": "Kỳ",
-      "hours": 20,
+      "hours": 16,
       "start_slot": 23,
-      "end_slot": 28,
+      "end_slot": 27,
       "sprint": 2,
       "deps": [
         "T19",
@@ -1694,10 +1694,10 @@
         "phong-choi"
       ],
       "story": "US-03.1",
-      "owner": "Nhạn",
+      "owner": "Cường",
       "hours": 8,
-      "start_slot": 24,
-      "end_slot": 26,
+      "start_slot": 27,
+      "end_slot": 29,
       "sprint": 2,
       "deps": [
         "T21",
@@ -1722,18 +1722,18 @@
       "parent": "EP-04",
       "priority": "Medium",
       "labels": [
-        "sprint-2",
+        "sprint-4",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
         "ban-co"
       ],
       "story": "US-04.3",
-      "owner": "Thư",
+      "owner": "Tình",
       "hours": 4,
-      "start_slot": 28,
-      "end_slot": 29,
-      "sprint": 3,
+      "start_slot": 42,
+      "end_slot": 43,
+      "sprint": 4,
       "deps": [
         "T25",
         "T22"
@@ -1757,7 +1757,7 @@
       "parent": "EP-02",
       "priority": "Medium",
       "labels": [
-        "sprint-2",
+        "sprint-3",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
@@ -1766,8 +1766,8 @@
       "story": "US-02.1",
       "owner": "Thư",
       "hours": 8,
-      "start_slot": 29,
-      "end_slot": 31,
+      "start_slot": 30,
+      "end_slot": 32,
       "sprint": 3,
       "deps": [
         "T26",
@@ -1793,18 +1793,18 @@
       "parent": "EP-03",
       "priority": "Medium",
       "labels": [
-        "sprint-2",
+        "sprint-3",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
         "phong-choi"
       ],
       "story": "US-03.1",
-      "owner": "Thư",
+      "owner": "Nhạn",
       "hours": 8,
-      "start_slot": 26,
-      "end_slot": 28,
-      "sprint": 2,
+      "start_slot": 30,
+      "end_slot": 32,
+      "sprint": 3,
       "deps": [
         "T26",
         "T35",
@@ -1830,7 +1830,7 @@
       "parent": "EP-05",
       "priority": "Medium",
       "labels": [
-        "sprint-2",
+        "sprint-3",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
@@ -1840,8 +1840,8 @@
       "story": "US-05.1",
       "owner": "Thư",
       "hours": 8,
-      "start_slot": 35,
-      "end_slot": 37,
+      "start_slot": 36,
+      "end_slot": 38,
       "sprint": 3,
       "deps": [
         "T25",
@@ -1874,10 +1874,10 @@
         "ban-be"
       ],
       "story": "US-03.2",
-      "owner": "Cường",
-      "hours": 24,
-      "start_slot": 31,
-      "end_slot": 37,
+      "owner": "Tùng",
+      "hours": 20,
+      "start_slot": 30,
+      "end_slot": 35,
       "sprint": 3,
       "deps": [
         "T22",
@@ -1903,7 +1903,7 @@
       "parent": "EP-05",
       "priority": "Medium",
       "labels": [
-        "sprint-3",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -1946,8 +1946,8 @@
       "story": "US-07.2",
       "owner": "Tình",
       "hours": 24,
-      "start_slot": 31,
-      "end_slot": 37,
+      "start_slot": 28,
+      "end_slot": 34,
       "sprint": 3,
       "deps": [
         "T06",
@@ -1974,18 +1974,18 @@
       "parent": "EP-08",
       "priority": "Medium",
       "labels": [
-        "sprint-3",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-be",
         "may-co"
       ],
       "story": "US-08.1",
-      "owner": "Tùng",
-      "hours": 16,
-      "start_slot": 28,
-      "end_slot": 32,
-      "sprint": 3,
+      "owner": "Đông",
+      "hours": 12,
+      "start_slot": 18,
+      "end_slot": 21,
+      "sprint": 2,
       "deps": [
         "T20",
         "T24"
@@ -2009,7 +2009,7 @@
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
-        "sprint-3",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2052,7 +2052,7 @@
         "van-truc-tuyen"
       ],
       "story": "US-05.2",
-      "owner": "Kỳ",
+      "owner": "Nhạn",
       "hours": 8,
       "start_slot": 28,
       "end_slot": 30,
@@ -2080,7 +2080,7 @@
       "parent": "EP-07",
       "priority": "Medium",
       "labels": [
-        "sprint-3",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2089,8 +2089,8 @@
       "story": "US-07.1",
       "owner": "Đông",
       "hours": 16,
-      "start_slot": 20,
-      "end_slot": 24,
+      "start_slot": 24,
+      "end_slot": 28,
       "sprint": 2,
       "deps": [
         "T18",
@@ -2123,10 +2123,10 @@
         "may-co"
       ],
       "story": "US-08.1",
-      "owner": "Nhạn",
-      "hours": 16,
-      "start_slot": 33,
-      "end_slot": 37,
+      "owner": "Kỳ",
+      "hours": 12,
+      "start_slot": 32,
+      "end_slot": 35,
       "sprint": 3,
       "deps": [
         "T19",
@@ -2160,7 +2160,7 @@
         "van-truc-tuyen"
       ],
       "story": "US-05.2",
-      "owner": "Thư",
+      "owner": "Kỳ",
       "hours": 4,
       "start_slot": 31,
       "end_slot": 32,
@@ -2195,10 +2195,10 @@
         "ban-be"
       ],
       "story": "US-03.2",
-      "owner": "Kỳ",
-      "hours": 16,
-      "start_slot": 38,
-      "end_slot": 42,
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 36,
+      "end_slot": 39,
       "sprint": 3,
       "deps": [
         "T31"
@@ -2232,9 +2232,9 @@
       "story": "US-02.2",
       "owner": "Cường",
       "hours": 12,
-      "start_slot": 25,
-      "end_slot": 28,
-      "sprint": 2,
+      "start_slot": 29,
+      "end_slot": 32,
+      "sprint": 3,
       "deps": [
         "T20",
         "T37"
@@ -2266,10 +2266,10 @@
         "tro-chuyen"
       ],
       "story": "US-07.1",
-      "owner": "Nhạn",
-      "hours": 12,
-      "start_slot": 30,
-      "end_slot": 33,
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 28,
+      "end_slot": 30,
       "sprint": 3,
       "deps": [
         "T25",
@@ -2303,8 +2303,8 @@
       "story": "US-08.1",
       "owner": "Thư",
       "hours": 8,
-      "start_slot": 37,
-      "end_slot": 39,
+      "start_slot": 38,
+      "end_slot": 40,
       "sprint": 3,
       "deps": [
         "T38",
@@ -2330,7 +2330,7 @@
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
-        "sprint-3",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-fe",
@@ -2338,9 +2338,9 @@
       ],
       "story": "US-01.3",
       "owner": "Kỳ",
-      "hours": 12,
+      "hours": 8,
       "start_slot": 20,
-      "end_slot": 23,
+      "end_slot": 22,
       "sprint": 2,
       "deps": [
         "T15",
@@ -2372,11 +2372,11 @@
         "camera-va-mic"
       ],
       "story": "US-07.2",
-      "owner": "Kỳ",
+      "owner": "Thư",
       "hours": 8,
-      "start_slot": 43,
-      "end_slot": 45,
-      "sprint": 4,
+      "start_slot": 40,
+      "end_slot": 42,
+      "sprint": 3,
       "deps": [
         "T58",
         "T21",
@@ -2409,10 +2409,10 @@
         "van-truc-tuyen"
       ],
       "story": "US-02.2",
-      "owner": "Kỳ",
+      "owner": "Nhạn",
       "hours": 8,
-      "start_slot": 30,
-      "end_slot": 32,
+      "start_slot": 32,
+      "end_slot": 34,
       "sprint": 3,
       "deps": [
         "T25",
@@ -2447,8 +2447,8 @@
       "story": "US-07.1",
       "owner": "Thư",
       "hours": 8,
-      "start_slot": 33,
-      "end_slot": 35,
+      "start_slot": 34,
+      "end_slot": 36,
       "sprint": 3,
       "deps": [
         "T42",
@@ -2481,11 +2481,11 @@
         "tai-khoan"
       ],
       "story": "US-01.3",
-      "owner": "Nhạn",
+      "owner": "Thư",
       "hours": 8,
-      "start_slot": 26,
-      "end_slot": 28,
-      "sprint": 2,
+      "start_slot": 32,
+      "end_slot": 34,
+      "sprint": 3,
       "deps": [
         "T44",
         "T37",
@@ -2510,14 +2510,14 @@
       "parent": "EP-03",
       "priority": "Medium",
       "labels": [
-        "sprint-3",
+        "sprint-4",
         "kiem-thu",
         "p1",
         "chinh-qa-devops",
         "ban-be"
       ],
       "story": "US-03.2",
-      "owner": "Nhạn",
+      "owner": "Kỳ",
       "hours": 8,
       "start_slot": 44,
       "end_slot": 46,
@@ -2555,10 +2555,10 @@
         "van-truc-tuyen"
       ],
       "story": "US-02.2",
-      "owner": "Thư",
+      "owner": "Kỳ",
       "hours": 4,
-      "start_slot": 32,
-      "end_slot": 33,
+      "start_slot": 35,
+      "end_slot": 36,
       "sprint": 3,
       "deps": [
         "T46"
@@ -2592,8 +2592,8 @@
       "story": "US-00.5",
       "owner": "Thư",
       "hours": 24,
-      "start_slot": 42,
-      "end_slot": 48,
+      "start_slot": 43,
+      "end_slot": 49,
       "sprint": 4,
       "deps": [
         "T08",
@@ -2630,7 +2630,7 @@
       "parent": "EP-05",
       "priority": "High",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2638,10 +2638,10 @@
         "van-truc-tuyen"
       ],
       "story": "US-05.3",
-      "owner": "Tình",
+      "owner": "Đông",
       "hours": 12,
-      "start_slot": 37,
-      "end_slot": 40,
+      "start_slot": 40,
+      "end_slot": 43,
       "sprint": 3,
       "deps": [
         "T56"
@@ -2667,7 +2667,7 @@
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2675,9 +2675,9 @@
       ],
       "story": "US-06.1",
       "owner": "Tùng",
-      "hours": 16,
-      "start_slot": 24,
-      "end_slot": 28,
+      "hours": 12,
+      "start_slot": 27,
+      "end_slot": 30,
       "sprint": 2,
       "deps": [
         "T22"
@@ -2701,17 +2701,17 @@
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-be",
         "phong-choi"
       ],
       "story": "US-06.2",
-      "owner": "Cường",
-      "hours": 12,
-      "start_slot": 28,
-      "end_slot": 31,
+      "owner": "Đông",
+      "hours": 8,
+      "start_slot": 32,
+      "end_slot": 34,
       "sprint": 3,
       "deps": [
         "T53"
@@ -2735,7 +2735,7 @@
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2744,9 +2744,9 @@
       "story": "US-06.3",
       "owner": "Đông",
       "hours": 16,
-      "start_slot": 24,
-      "end_slot": 28,
-      "sprint": 2,
+      "start_slot": 28,
+      "end_slot": 32,
+      "sprint": 3,
       "deps": [
         "T22"
       ],
@@ -2770,7 +2770,7 @@
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2780,8 +2780,8 @@
       "story": "US-01.4",
       "owner": "Đông",
       "hours": 24,
-      "start_slot": 28,
-      "end_slot": 34,
+      "start_slot": 34,
+      "end_slot": 40,
       "sprint": 3,
       "deps": [
         "T18",
@@ -2811,17 +2811,17 @@
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-fe",
         "phong-choi"
       ],
       "story": "US-06.1",
-      "owner": "Nhạn",
-      "hours": 8,
-      "start_slot": 28,
-      "end_slot": 30,
+      "owner": "Cường",
+      "hours": 4,
+      "start_slot": 32,
+      "end_slot": 33,
       "sprint": 3,
       "deps": [
         "T53"
@@ -2844,7 +2844,7 @@
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-fe",
@@ -2852,10 +2852,10 @@
         "camera-va-mic"
       ],
       "story": "US-06.3",
-      "owner": "Nhạn",
+      "owner": "Tình",
       "hours": 20,
-      "start_slot": 37,
-      "end_slot": 42,
+      "start_slot": 34,
+      "end_slot": 39,
       "sprint": 3,
       "deps": [
         "T55",
@@ -2882,7 +2882,7 @@
       "parent": "EP-08",
       "priority": "High",
       "labels": [
-        "sprint-4",
+        "sprint-2",
         "phat-trien",
         "p1",
         "chinh-be",
@@ -2890,11 +2890,11 @@
         "may-co"
       ],
       "story": "US-08.3",
-      "owner": "Tình",
+      "owner": "Đông",
       "hours": 12,
-      "start_slot": 28,
-      "end_slot": 31,
-      "sprint": 3,
+      "start_slot": 21,
+      "end_slot": 24,
+      "sprint": 2,
       "deps": [
         "T24",
         "T02"
@@ -2928,11 +2928,11 @@
         "van-truc-tuyen"
       ],
       "story": "US-05.3",
-      "owner": "Thư",
+      "owner": "Tình",
       "hours": 4,
-      "start_slot": 41,
-      "end_slot": 42,
-      "sprint": 3,
+      "start_slot": 43,
+      "end_slot": 44,
+      "sprint": 4,
       "deps": [
         "T52",
         "T25"
@@ -2957,7 +2957,7 @@
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-fe",
@@ -2965,9 +2965,9 @@
       ],
       "story": "US-06.2",
       "owner": "Kỳ",
-      "hours": 16,
-      "start_slot": 32,
-      "end_slot": 36,
+      "hours": 12,
+      "start_slot": 37,
+      "end_slot": 40,
       "sprint": 3,
       "deps": [
         "T54",
@@ -2999,10 +2999,10 @@
         "phong-choi"
       ],
       "story": "US-06.1",
-      "owner": "Kỳ",
+      "owner": "Nhạn",
       "hours": 4,
-      "start_slot": 42,
-      "end_slot": 43,
+      "start_slot": 44,
+      "end_slot": 45,
       "sprint": 4,
       "deps": [
         "T57",
@@ -3030,17 +3030,17 @@
       "parent": "EP-08",
       "priority": "Medium",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-be",
         "may-co"
       ],
       "story": "US-08.3",
-      "owner": "Tùng",
+      "owner": "Cường",
       "hours": 12,
-      "start_slot": 32,
-      "end_slot": 35,
+      "start_slot": 33,
+      "end_slot": 36,
       "sprint": 3,
       "deps": [
         "T34",
@@ -3075,8 +3075,8 @@
       "story": "US-06.3",
       "owner": "Kỳ",
       "hours": 8,
-      "start_slot": 45,
-      "end_slot": 47,
+      "start_slot": 46,
+      "end_slot": 48,
       "sprint": 4,
       "deps": [
         "T58",
@@ -3104,17 +3104,17 @@
       "parent": "EP-01",
       "priority": "High",
       "labels": [
-        "sprint-4",
+        "sprint-3",
         "phat-trien",
         "p1",
         "chinh-fe",
         "tai-khoan"
       ],
       "story": "US-01.4",
-      "owner": "Kỳ",
+      "owner": "Cường",
       "hours": 8,
-      "start_slot": 36,
-      "end_slot": 38,
+      "start_slot": 40,
+      "end_slot": 42,
       "sprint": 3,
       "deps": [
         "T56",
@@ -3147,10 +3147,10 @@
         "nen-tang"
       ],
       "story": "US-00.5",
-      "owner": "Tùng",
+      "owner": "Tình",
       "hours": 16,
-      "start_slot": 42,
-      "end_slot": 46,
+      "start_slot": 44,
+      "end_slot": 48,
       "sprint": 4,
       "deps": [
         "T08",
@@ -3235,11 +3235,11 @@
         "may-co"
       ],
       "story": "US-08.3",
-      "owner": "Thư",
+      "owner": "Nhạn",
       "hours": 8,
-      "start_slot": 39,
-      "end_slot": 41,
-      "sprint": 3,
+      "start_slot": 45,
+      "end_slot": 47,
+      "sprint": 4,
       "deps": [
         "T59",
         "T38",
@@ -3276,8 +3276,8 @@
       "story": "US-01.4",
       "owner": "Nhạn",
       "hours": 8,
-      "start_slot": 46,
-      "end_slot": 48,
+      "start_slot": 47,
+      "end_slot": 49,
       "sprint": 4,
       "deps": [
         "T65",
@@ -3320,8 +3320,8 @@
       "story": "US-00.5",
       "owner": "Tình",
       "hours": 4,
-      "start_slot": 48,
-      "end_slot": 49,
+      "start_slot": 49,
+      "end_slot": 50,
       "sprint": 4,
       "deps": [
         "T51",
@@ -3376,8 +3376,8 @@
       "story": "US-00.5",
       "owner": "Thư",
       "hours": 4,
-      "start_slot": 49,
-      "end_slot": 50,
+      "start_slot": 50,
+      "end_slot": 51,
       "sprint": 4,
       "deps": [
         "T70"
@@ -3408,5 +3408,457 @@
     "Trò chuyện": "Hai kênh tin nhắn, lọc từ và giới hạn gửi.",
     "Camera và mic": "Truyền hình/tiếng và quyền phát/nhận.",
     "Máy cờ": "Ván luyện tập, thuật toán chọn nước và xử lý sự cố máy cờ."
+  },
+  "allocation_revision": {
+    "date": "2026-10-09",
+    "method": "approved_ai_assisted_848",
+    "changes": [
+      {
+        "task": "T03",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 16,
+          "start_slot": 2,
+          "end_slot": 6,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T08",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 12,
+          "start_slot": 8,
+          "end_slot": 11,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T11",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 16,
+          "start_slot": 2,
+          "end_slot": 6,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T12",
+        "before": {
+          "owner": "Tình",
+          "hours": 24,
+          "start_slot": 8,
+          "end_slot": 14,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T14",
+        "before": {
+          "owner": "Đông",
+          "hours": 16,
+          "start_slot": 8,
+          "end_slot": 12,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T16",
+        "before": {
+          "owner": "Tình",
+          "hours": 4,
+          "start_slot": 6,
+          "end_slot": 7,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T18",
+        "before": {
+          "owner": "Tùng",
+          "hours": 24,
+          "start_slot": 14,
+          "end_slot": 20,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T19",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 24,
+          "start_slot": 8,
+          "end_slot": 14,
+          "sprint": 1
+        }
+      },
+      {
+        "task": "T20",
+        "before": {
+          "owner": "Tình",
+          "hours": 24,
+          "start_slot": 14,
+          "end_slot": 20,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T21",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 16,
+          "start_slot": 20,
+          "end_slot": 24,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T22",
+        "before": {
+          "owner": "Tùng",
+          "hours": 16,
+          "start_slot": 20,
+          "end_slot": 24,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T24",
+        "before": {
+          "owner": "Tình",
+          "hours": 32,
+          "start_slot": 20,
+          "end_slot": 28,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T25",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 20,
+          "start_slot": 23,
+          "end_slot": 28,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T26",
+        "before": {
+          "owner": "Cường",
+          "hours": 8,
+          "start_slot": 28,
+          "end_slot": 30,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T29",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 8,
+          "start_slot": 32,
+          "end_slot": 34,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T31",
+        "before": {
+          "owner": "Tùng",
+          "hours": 24,
+          "start_slot": 28,
+          "end_slot": 34,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T34",
+        "before": {
+          "owner": "Đông",
+          "hours": 16,
+          "start_slot": 28,
+          "end_slot": 32,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T37",
+        "before": {
+          "owner": "Đông",
+          "hours": 16,
+          "start_slot": 20,
+          "end_slot": 24,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T38",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 16,
+          "start_slot": 33,
+          "end_slot": 37,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T40",
+        "before": {
+          "owner": "Cường",
+          "hours": 16,
+          "start_slot": 36,
+          "end_slot": 40,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T41",
+        "before": {
+          "owner": "Cường",
+          "hours": 12,
+          "start_slot": 25,
+          "end_slot": 28,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T42",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 12,
+          "start_slot": 28,
+          "end_slot": 31,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T44",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 12,
+          "start_slot": 20,
+          "end_slot": 23,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T46",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 8,
+          "start_slot": 30,
+          "end_slot": 32,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T50",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 4,
+          "start_slot": 32,
+          "end_slot": 33,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T51",
+        "before": {
+          "owner": "Thư",
+          "hours": 24,
+          "start_slot": 42,
+          "end_slot": 48,
+          "sprint": 4
+        }
+      },
+      {
+        "task": "T52",
+        "before": {
+          "owner": "Đông",
+          "hours": 12,
+          "start_slot": 38,
+          "end_slot": 41,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T53",
+        "before": {
+          "owner": "Tùng",
+          "hours": 16,
+          "start_slot": 24,
+          "end_slot": 28,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T54",
+        "before": {
+          "owner": "Tùng",
+          "hours": 12,
+          "start_slot": 34,
+          "end_slot": 37,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T55",
+        "before": {
+          "owner": "Đông",
+          "hours": 16,
+          "start_slot": 24,
+          "end_slot": 28,
+          "sprint": 2
+        }
+      },
+      {
+        "task": "T56",
+        "before": {
+          "owner": "Đông",
+          "hours": 24,
+          "start_slot": 32,
+          "end_slot": 38,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T57",
+        "before": {
+          "owner": "Cường",
+          "hours": 8,
+          "start_slot": 30,
+          "end_slot": 32,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T59",
+        "before": {
+          "owner": "Tình",
+          "hours": 12,
+          "start_slot": 39,
+          "end_slot": 42,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T61",
+        "before": {
+          "owner": "Kỳ",
+          "hours": 16,
+          "start_slot": 37,
+          "end_slot": 41,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T62",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 4,
+          "start_slot": 41,
+          "end_slot": 42,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T63",
+        "before": {
+          "owner": "Cường",
+          "hours": 12,
+          "start_slot": 32,
+          "end_slot": 35,
+          "sprint": 3
+        }
+      },
+      {
+        "task": "T68",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 8,
+          "start_slot": 44,
+          "end_slot": 46,
+          "sprint": 4
+        }
+      },
+      {
+        "task": "T69",
+        "before": {
+          "owner": "Nhạn",
+          "hours": 8,
+          "start_slot": 46,
+          "end_slot": 48,
+          "sprint": 4
+        }
+      },
+      {
+        "task": "T70",
+        "before": {
+          "owner": "Tình",
+          "hours": 4,
+          "start_slot": 48,
+          "end_slot": 49,
+          "sprint": 4
+        }
+      },
+      {
+        "task": "T71",
+        "before": {
+          "owner": "Thư",
+          "hours": 4,
+          "start_slot": 49,
+          "end_slot": 50,
+          "sprint": 4
+        }
+      }
+    ],
+    "note": "Áp dụng 848 giờ; T20 sang Tùng, T54/T59 sang Đông; T49 giữ Kỳ.",
+    "roles": {
+      "Tình": "Full-stack, kỹ thuật khó, điều phối và phụ trách sản phẩm; nhận việc ở các khâu để cân tải.",
+      "Đông": "BE; không giao kiểm thử chuyên đề hoặc FE.",
+      "Tùng": "BE; sở hữu trọn chuỗi luật cờ, không giao kiểm thử chuyên đề hoặc FE.",
+      "Cường": "BE và thử tính khả thi kỹ thuật; hỗ trợ FE trong phạm vi đã chọn, giảm BE tương ứng; không giao kiểm thử chuyên đề.",
+      "Nhạn": "FE bàn cờ và phòng; hỗ trợ kiểm thử độc lập.",
+      "Kỳ": "FE nền và tài khoản/màn đấu; hỗ trợ kiểm thử độc lập.",
+      "Thư": "Tester chính; phương pháp/dữ liệu kiểm thử, kiểm chức năng, hồi quy toàn hệ thống và tổng duyệt."
+    },
+    "cuong_fe_allowed": [
+      "T26",
+      "T36",
+      "T40",
+      "T42",
+      "T46",
+      "T57",
+      "T65"
+    ],
+    "cuong_be_before_hours": 92,
+    "cuong_fe_max_hours": 40,
+    "frontend_qa_max_hours": 48,
+    "rationale": {
+      "Tình": "Giữ nền kết nối, xây máy cờ, quyền và giao diện camera/mic, đo chất lượng và phát hành. Chuyển ván online cho Tùng, tinh chỉnh máy cờ cho Đông; giữ ba kiểm chuyên đề độc lập T16/T27/T60.",
+      "Đông": "Nhận T54 danh sách phòng gắn với quản lý người xem; nhận T59 tinh chỉnh máy cờ gắn với dịch vụ ván máy. Tình bàn giao từ T24 bộ máy, cấu hình, dữ liệu đo và cách chạy; không đổi người kiểm độc lập T68.",
+      "Tùng": "Giữ trọn lõi luật và nhận T20 ván online để nối luật với phân xử/lưu ván; tiếp tục phòng, đăng nhập và bạn bè. T54 chuyển Đông.",
+      "Cường": "Giữ thử nguyên mẫu, Google/Khách, đồng hồ, đề nghị trong ván và vòng đời phòng; nhận phục hồi ván máy. Chỉ nhận các màn dùng lại thành phần chung: chia sẻ, bạn bè, cài đặt phòng, hồ sơ; không nhận bàn cờ/kéo thả hay nhiệm vụ Tester. BE giảm 24 giờ so với phân công đúng vai trò ban đầu.",
+      "Nhạn": "Giữ cả vẽ bàn và kéo thả để không chia tọa độ/tương tác cho nhiều người. Giữ phòng chờ, đầu hàng/đổi bên; giảm phần media/chat để có thời gian kiểm các luồng tài khoản/Sảnh/máy cờ không do mình triển khai.",
+      "Kỳ": "Giữ khung giao diện và bộ đăng ký/đăng nhập/Google nhất quán; tiếp tục màn đấu, chat, chơi máy và Sảnh. Chỉ hỗ trợ kiểm các phần không tự viết, không chịu trách nhiệm hạ tầng phát hành.",
+      "Thư": "Giữ dữ liệu có đáp án độc lập, đăng ký thật, phòng/ván/chat/Google, camera, hồi quy tổng và tổng duyệt. Chuyển một số kiểm chuyên đề cho Nhạn/Kỳ/Tình; giữ kiểm đăng ký vào Sprint 2 để tránh dồn toàn bộ kiểm chức năng tới cuối."
+    },
+    "targets": {
+      "Tình": 140,
+      "Đông": 136,
+      "Tùng": 132,
+      "Cường": 124,
+      "Nhạn": 104,
+      "Kỳ": 108,
+      "Thư": 104
+    }
+  },
+  "schedule_notes": {
+    "task_sprint_policy": "Sprint denotes start; tasks may carry over, dates show full interval. Person sprint hours count actual overlap.",
+    "completion": "2026-11-04 morning",
+    "buffer": "2026-11-04 afternoon",
+    "reason": "Fixed approved owners and dependency order require carry-over and morning 04 Nov rehearsal at 8 hours/person/day."
   }
 }

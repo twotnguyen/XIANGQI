@@ -33,7 +33,7 @@ Các tính năng tài khoản, phòng, ván, trò chuyện và máy cờ phải 
 
 **Phạm vi và phối hợp**
 
-Không coi chạy nguyên mẫu hoặc hoàn thành tài liệu là bằng chứng phần mềm đã nghiệm thu.",Tình,Tình,,v1.0,,09/10/2026,03/11/2026,EP-00,dac-ta,p1,nen-tang,luat-co,van-truc-tuyen,camera-va-mic,may-co,FE,BE,QA & DevOps,Nền tảng,Luật cờ,Ván trực tuyến,Camera và mic,Máy cờ,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không coi chạy nguyên mẫu hoặc hoàn thành tài liệu là bằng chứng phần mềm đã nghiệm thu.",Tình,Tình,,v1.0,,09/10/2026,04/11/2026,EP-00,dac-ta,p1,nen-tang,luat-co,van-truc-tuyen,camera-va-mic,may-co,FE,BE,QA & DevOps,Nền tảng,Luật cờ,Ván trực tuyến,Camera và mic,Máy cờ,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 2,,Epic,EP-01 · Đăng ký và đăng nhập,"**Mục tiêu**
 
 Thống nhất cách người dùng tạo tài khoản, đăng nhập, dùng chế độ Khách và quản lý quyền chơi của mình.
@@ -67,7 +67,7 @@ Bản đầu có đăng ký bằng tên/mật khẩu/email xác minh, tài kho�
 
 **Phạm vi và phối hợp**
 
-Không làm quên mật khẩu, đổi tên đăng nhập, đổi email hay đánh hạng.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,EP-01,dac-ta,p1,tai-khoan,van-truc-tuyen,,,,FE,BE,QA & DevOps,Tài khoản,Ván trực tuyến,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không làm quên mật khẩu, đổi tên đăng nhập, đổi email hay đánh hạng.",Tình,Tình,,v1.0,,09/10/2026,27/10/2026,EP-01,dac-ta,p1,tai-khoan,van-truc-tuyen,,,,FE,BE,QA & DevOps,Tài khoản,Ván trực tuyến,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 3,,Epic,EP-02 · Tạo phòng,"**Mục tiêu**
 
 Thống nhất vòng đời phòng tự tạo để hai người bắt đầu và chơi tiếp nhiều ván mà không nhầm ghế hoặc quyền chủ phòng.
@@ -99,7 +99,7 @@ Phòng và ván là hai đối tượng khác nhau: phòng có thể còn tồn 
 
 **Phạm vi và phối hợp**
 
-Không thêm đổi cấu hình mức giờ/sức chứa sau tạo, tái đấu trực tiếp hay đóng phòng vì chờ lâu.",Tình,Tình,,v1.0,,09/10/2026,22/10/2026,EP-02,dac-ta,p1,phong-choi,van-truc-tuyen,,,,FE,BE,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm đổi cấu hình mức giờ/sức chứa sau tạo, tái đấu trực tiếp hay đóng phòng vì chờ lâu.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,EP-02,dac-ta,p1,phong-choi,van-truc-tuyen,,,,FE,BE,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 4,,Epic,EP-03 · Mời vào phòng,"**Mục tiêu**
 
 Thống nhất cách mời người khác vào phòng bằng đường dẫn, mã hoặc danh sách bạn bè.
@@ -197,7 +197,7 @@ Máy chủ là nơi quyết định luật, giờ, quyền điều khiển và k
 
 **Phạm vi và phối hợp**
 
-Không cộng thời gian sau nước đi, xin đi lại hoặc khôi phục giả ván bị gián đoạn do khởi động lại máy chủ.",Tình,Tình,,v1.0,,09/10/2026,28/10/2026,EP-05,dac-ta,p1,phong-choi,luat-co,ban-co,van-truc-tuyen,,FE,BE,QA & DevOps,Phòng chơi,Luật cờ,Bàn cờ,Ván trực tuyến,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không cộng thời gian sau nước đi, xin đi lại hoặc khôi phục giả ván bị gián đoạn do khởi động lại máy chủ.",Tình,Tình,,v1.0,,09/10/2026,30/10/2026,EP-05,dac-ta,p1,phong-choi,luat-co,ban-co,van-truc-tuyen,,FE,BE,QA & DevOps,Phòng chơi,Luật cờ,Bàn cờ,Ván trực tuyến,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 7,,Epic,EP-06 · Chế độ phòng và người xem,"**Mục tiêu**
 
 Thống nhất quyền vào phòng, tìm phòng công khai và quản lý người xem để chủ phòng kiểm soát người tham gia.
@@ -230,7 +230,7 @@ Có ba chế độ: Công khai, Chỉ vào bằng mã và Khóa phòng. Mỗi ph
 
 **Phạm vi và phối hợp**
 
-Không để người xem tự chiếm ghế hoặc phát camera/mic; không triển khai ghép trận và bảng xếp hạng.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,EP-06,dac-ta,p1,phong-choi,camera-va-mic,,,,FE,BE,QA & DevOps,Phòng chơi,Camera và mic,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không để người xem tự chiếm ghế hoặc phát camera/mic; không triển khai ghép trận và bảng xếp hạng.",Tình,Tình,,v1.0,,09/10/2026,26/10/2026,EP-06,dac-ta,p1,phong-choi,camera-va-mic,,,,FE,BE,QA & DevOps,Phòng chơi,Camera và mic,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 8,,Epic,"EP-07 · Chat, camera và mic","**Mục tiêu**
 
 Thống nhất giao tiếp bằng chữ, hình và tiếng theo đúng người nhận và quyền riêng tư.
@@ -262,7 +262,7 @@ Hai người chơi có kênh trò chuyện riêng; cả phòng có kênh chung. 
 
 **Phạm vi và phối hợp**
 
-Không ghi/lưu hình tiếng, không lưu trò chuyện sau khi phòng đóng và không mở tin nhắn ngoài phòng.",Tình,Tình,,v1.0,,09/10/2026,25/10/2026,EP-07,dac-ta,p1,tro-chuyen,camera-va-mic,,,,FE,BE,QA & DevOps,Trò chuyện,Camera và mic,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không ghi/lưu hình tiếng, không lưu trò chuyện sau khi phòng đóng và không mở tin nhắn ngoài phòng.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,EP-07,dac-ta,p1,tro-chuyen,camera-va-mic,,,,FE,BE,QA & DevOps,Trò chuyện,Camera và mic,,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 9,,Epic,EP-08 · Đánh với máy theo cấp độ,"**Mục tiêu**
 
 Thống nhất chế độ luyện tập với máy ở ba mức Dễ, Trung bình, Khó và tiêu chí chứng minh máy hoạt động đúng.
@@ -295,7 +295,7 @@ Người chơi chọn phe Đỏ, Đen hoặc Ngẫu nhiên; ván không có đ�
 
 **Phạm vi và phối hợp**
 
-Không thêm xin hòa, đi lại, gợi ý nước, lịch sử ván với máy hoặc khôi phục sau khi bộ nhớ máy chủ đã mất.",Tình,Tình,,v1.0,,09/10/2026,30/10/2026,EP-08,dac-ta,p1,luat-co,ban-co,may-co,,,FE,BE,QA & DevOps,Luật cờ,Bàn cờ,Máy cờ,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm xin hòa, đi lại, gợi ý nước, lịch sử ván với máy hoặc khôi phục sau khi bộ nhớ máy chủ đã mất.",Tình,Tình,,v1.0,,09/10/2026,02/11/2026,EP-08,dac-ta,p1,luat-co,ban-co,may-co,,,FE,BE,QA & DevOps,Luật cờ,Bàn cờ,Máy cờ,,,Medium,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 10,1,Story,"US-00.1 · Khung dự án, CI và nhật ký vận hành","**Mục tiêu**
 
 Thống nhất nền tảng để thành viên mới có thể chạy ứng dụng cờ tướng, gửi thay đổi mã nguồn và tìm nguyên nhân sự cố theo cùng một cách.
@@ -399,7 +399,7 @@ Phòng, ván đấu và trò chuyện cùng dùng một cơ chế kết nối. M
 
 **Phạm vi và phối hợp**
 
-Chỉ đặc tả cơ chế dùng chung; luật đi cờ, vòng đời phòng và nội dung trò chuyện được triển khai ở các công việc tính năng tương ứng.",Tình,Tình,,v0.1,,09/10/2026,14/10/2026,dac-ta,EP-00,p1,nen-tang,van-truc-tuyen,,,,BE,Nền tảng,Ván trực tuyến,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Chỉ đặc tả cơ chế dùng chung; luật đi cờ, vòng đời phòng và nội dung trò chuyện được triển khai ở các công việc tính năng tương ứng.",Tình,Tình,,v0.1,,09/10/2026,11/10/2026,dac-ta,EP-00,p1,nen-tang,van-truc-tuyen,,,,BE,Nền tảng,Ván trực tuyến,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 13,1,Story,US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm,"**Mục tiêu**
 
 Lập kế hoạch kiểm thử có thể thực hiện và đối chiếu bằng chứng cho toàn bộ yêu cầu của bản bàn giao đầu tiên.
@@ -473,7 +473,7 @@ Xác định và đối soát điều kiện để bản cờ tướng cuối c�
 
 **Phạm vi và phối hợp**
 
-Không tự giảm ngưỡng hay cắt tính năng để ghi đạt; đóng hồ sơ đặc tả không đồng nghĩa phần mềm đã qua nghiệm thu.",Tình,Tình,,v1.0,,09/10/2026,03/11/2026,dac-ta,EP-00,p1,nen-tang,,,,,QA & DevOps,Nền tảng,,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không tự giảm ngưỡng hay cắt tính năng để ghi đạt; đóng hồ sơ đặc tả không đồng nghĩa phần mềm đã qua nghiệm thu.",Tình,Tình,,v1.0,,09/10/2026,04/11/2026,dac-ta,EP-00,p1,nen-tang,,,,,QA & DevOps,Nền tảng,,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 15,2,Story,US-01.1 · Đăng ký bằng Username + Mật khẩu + OTP email,"**Mục tiêu**
 
 Đặc tả việc tạo tài khoản bằng tên đăng nhập, mật khẩu và mã xác minh gửi tới email thật.
@@ -516,7 +516,7 @@ Người chưa có tài khoản đi qua ba bước: nhập thông tin đăng nh�
 
 **Phạm vi và phối hợp**
 
-Không bổ sung chức năng quên mật khẩu hoặc thay đổi email.",Tình,Tình,,v0.1,,09/10/2026,11/10/2026,dac-ta,EP-01,p1,tai-khoan,,,,,FE,BE,QA & DevOps,Tài khoản,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không bổ sung chức năng quên mật khẩu hoặc thay đổi email.",Tình,Tình,,v0.2,,09/10/2026,11/10/2026,dac-ta,EP-01,p1,tai-khoan,,,,,FE,BE,QA & DevOps,Tài khoản,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 16,2,Story,US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai,"**Mục tiêu**
 
 Đặc tả đăng nhập bằng tên và mật khẩu, bao gồm chống đoán mật khẩu và thời hạn đăng nhập rõ ràng.
@@ -600,7 +600,7 @@ Tài khoản Google mới vẫn phải chọn tên đăng nhập và mật khẩ
 
 **Phạm vi và phối hợp**
 
-Không tự gộp tài khoản trùng email và không triển khai xếp hạng hay lịch sử cho Khách.",Tình,Tình,,v0.2,,09/10/2026,17/10/2026,dac-ta,EP-01,p1,tai-khoan,,,,,FE,BE,QA & DevOps,Tài khoản,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không tự gộp tài khoản trùng email và không triển khai xếp hạng hay lịch sử cho Khách.",Tình,Tình,,v0.3,,09/10/2026,17/10/2026,dac-ta,EP-01,p1,tai-khoan,,,,,FE,BE,QA & DevOps,Tài khoản,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 18,2,Story,"US-01.4 · Phiên đăng nhập, hồ sơ và Đăng xuất","**Mục tiêu**
 
 Đặc tả quản lý phiên, một vị trí chơi tại một thời điểm, hồ sơ cá nhân và đăng xuất để tránh chiếm nhiều ghế hoặc xử lý kết quả không nhất quán.
@@ -647,7 +647,7 @@ Một vị trí chơi là ghế đang ngồi trong phòng hoặc một ván vớ
 
 **Phạm vi và phối hợp**
 
-Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao diện.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,dac-ta,EP-01,p1,tai-khoan,van-truc-tuyen,,,,FE,BE,QA & DevOps,Tài khoản,Ván trực tuyến,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao diện.",Tình,Tình,,v1.0,,09/10/2026,27/10/2026,dac-ta,EP-01,p1,tai-khoan,van-truc-tuyen,,,,FE,BE,QA & DevOps,Tài khoản,Ván trực tuyến,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 19,3,Story,"US-02.1 · Tạo phòng, ghế và bắt đầu ván","**Mục tiêu**
 
 Đặc tả cách tạo phòng, bố trí hai ghế và bắt đầu ván khi cả hai người chơi thực sự sẵn sàng.
@@ -690,7 +690,7 @@ Mỗi phòng có chủ phòng, ghế Đỏ, ghế Đen và số chỗ xem đã c
 
 **Phạm vi và phối hợp**
 
-Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đã tạo phòng.",Tình,Tình,,v0.3,,09/10/2026,17/10/2026,dac-ta,EP-02,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đã tạo phòng.",Tình,Tình,,v0.3,,09/10/2026,19/10/2026,dac-ta,EP-02,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 20,3,Story,US-02.2 · Xin đổi bên và ở lại phòng sau ván,"**Mục tiêu**
 
 Đặc tả việc xin đổi phe khi có hai người và tiếp tục dùng cùng phòng sau khi một ván kết thúc.
@@ -734,7 +734,7 @@ Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đ�
 
 **Phạm vi và phối hợp**
 
-Không thêm nút tái đấu trực tiếp hoặc xem lại ván; không đóng phòng chỉ vì chờ lâu.",Tình,Tình,,v0.3,,09/10/2026,22/10/2026,dac-ta,EP-02,p1,phong-choi,van-truc-tuyen,,,,FE,BE,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm nút tái đấu trực tiếp hoặc xem lại ván; không đóng phòng chỉ vì chờ lâu.",Tình,Tình,,v0.3,,09/10/2026,24/10/2026,dac-ta,EP-02,p1,phong-choi,van-truc-tuyen,,,,FE,BE,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 21,4,Story,US-03.1 · Mời bằng link/mã và vào phòng,"**Mục tiêu**
 
 Đặc tả cách chia sẻ và vào phòng bằng đường dẫn hoặc mã để người chưa kết bạn vẫn có thể tham gia.
@@ -771,7 +771,7 @@ Người vào phòng được xếp ghế còn trống hoặc làm người xem 
 
 **Phạm vi và phối hợp**
 
-Không tạo mã ảnh để quét; quyền vào vẫn phụ thuộc trạng thái phòng và vị trí chơi hiện tại.",Tình,Tình,,v0.2,,09/10/2026,20/10/2026,dac-ta,EP-03,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không tạo mã ảnh để quét; quyền vào vẫn phụ thuộc trạng thái phòng và vị trí chơi hiện tại.",Tình,Tình,,v0.3,,09/10/2026,22/10/2026,dac-ta,EP-03,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 22,4,Story,US-03.2 · Bạn bè và mời bạn online,"**Mục tiêu**
 
 Đặc tả kết bạn và mời bạn đang trực tuyến vào phòng, với giới hạn rõ ràng và trạng thái cập nhật tự động.
@@ -937,7 +937,7 @@ Người tới lượt mới được chọn quân. Gợi ý chỉ thể hiện 
 
 **Phạm vi và phối hợp**
 
-Không thêm chức năng gợi ý chiến thuật hoặc chọn nước tốt nhất cho người chơi.",Tình,Tình,,v0.3,,09/10/2026,14/10/2026,dac-ta,EP-04,p1,ban-co,,,,,FE,QA & DevOps,Bàn cờ,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm chức năng gợi ý chiến thuật hoặc chọn nước tốt nhất cho người chơi.",Tình,Tình,,v1.0,,09/10/2026,14/10/2026,dac-ta,EP-04,p1,ban-co,,,,,FE,QA & DevOps,Bàn cờ,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 26,6,Story,"US-05.1 · Ván online: đi cờ, đồng hồ và kết thúc ván","**Mục tiêu**
 
 Đặc tả ván giữa hai người qua mạng với máy chủ phân xử nước đi, đồng hồ và kết quả cuối cùng.
@@ -980,7 +980,7 @@ Trình duyệt gửi yêu cầu đi quân; máy chủ kiểm tra giờ và luậ
 
 **Phạm vi và phối hợp**
 
-Không cộng thêm thời gian sau nước đi và không triển khai giao diện lịch sử ván.",Tình,Tình,,v0.3,,09/10/2026,17/10/2026,dac-ta,EP-05,p1,luat-co,ban-co,van-truc-tuyen,,,FE,BE,QA & DevOps,Luật cờ,Bàn cờ,Ván trực tuyến,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không cộng thêm thời gian sau nước đi và không triển khai giao diện lịch sử ván.",Tình,Tình,,v0.3,,09/10/2026,16/10/2026,dac-ta,EP-05,p1,luat-co,ban-co,van-truc-tuyen,,,FE,BE,QA & DevOps,Luật cờ,Bàn cờ,Ván trực tuyến,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 27,6,Story,US-05.2 · Đầu hàng và xin hoà,"**Mục tiêu**
 
 Đặc tả đầu hàng, rời phòng giữa ván và xin hòa để người chơi biết rõ hậu quả trước khi xác nhận.
@@ -1055,7 +1055,7 @@ Người chơi có 60 giây để nối lại, nhưng đồng hồ ván vẫn ch
 
 **Phạm vi và phối hợp**
 
-Không tạo thắng/thua/hòa cho ván bị gián đoạn do máy chủ khởi động lại.",Tình,Tình,,v0.3,,09/10/2026,28/10/2026,dac-ta,EP-05,p1,phong-choi,van-truc-tuyen,,,,BE,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không tạo thắng/thua/hòa cho ván bị gián đoạn do máy chủ khởi động lại.",Tình,Tình,,v1.0,,09/10/2026,30/10/2026,dac-ta,EP-05,p1,phong-choi,van-truc-tuyen,,,,BE,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 29,7,Story,US-06.1 · Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED,"**Mục tiêu**
 
 Đặc tả quyền của chủ phòng khi cho phép vào công khai, chỉ vào bằng mã hoặc khóa người mới.
@@ -1092,7 +1092,7 @@ Phòng công khai xuất hiện ở Sảnh; phòng chỉ vào bằng mã không 
 
 **Phạm vi và phối hợp**
 
-Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.",Tình,Tình,,v1.0,,09/10/2026,22/10/2026,dac-ta,EP-06,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.",Tình,Tình,,v1.0,,09/10/2026,23/10/2026,dac-ta,EP-06,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 30,7,Story,US-06.2 · Sảnh và danh sách phòng công khai,"**Mục tiêu**
 
 Đặc tả Sảnh để người chơi tìm phòng công khai, vào chơi hoặc xem, đọc luật và đi đến các chức năng đã có.
@@ -1138,7 +1138,7 @@ Sảnh là trang chính sau đăng nhập. Danh sách phòng cần phản ánh t
 
 **Phạm vi và phối hợp**
 
-Các mục chưa phát triển chỉ hiển thị Sắp ra mắt và không bấm được; không triển khai ghép trận hay đánh hạng.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,dac-ta,EP-06,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Các mục chưa phát triển chỉ hiển thị Sắp ra mắt và không bấm được; không triển khai ghép trận hay đánh hạng.",Tình,Tình,,v1.0,,09/10/2026,26/10/2026,dac-ta,EP-06,p1,phong-choi,,,,,FE,BE,QA & DevOps,Phòng chơi,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 31,7,Story,US-06.3 · Người xem và đuổi người xem,"**Mục tiêu**
 
 Đặc tả quyền của người xem, chuyển giữa ghế và chỗ xem, cùng việc đuổi người xem gây rối.
@@ -1182,7 +1182,7 @@ Mỗi phòng có tối đa hai người chơi và năm người xem. Chuyển ch
 
 **Phạm vi và phối hợp**
 
-Người xem không được tự chiếm ghế; chủ phòng không tự xuống xem; không chuyển vai trò giữa ván.",Tình,Tình,,v1.0,,09/10/2026,22/10/2026,dac-ta,EP-06,p1,phong-choi,camera-va-mic,,,,FE,BE,QA & DevOps,Phòng chơi,Camera và mic,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Người xem không được tự chiếm ghế; chủ phòng không tự xuống xem; không chuyển vai trò giữa ván.",Tình,Tình,,v1.0,,09/10/2026,24/10/2026,dac-ta,EP-06,p1,phong-choi,camera-va-mic,,,,FE,BE,QA & DevOps,Phòng chơi,Camera và mic,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 32,8,Story,US-07.1 · Hai kênh chat và bộ lọc,"**Mục tiêu**
 
 Đặc tả trò chuyện đúng đối tượng, có lọc từ cấm và chống gửi quá nhanh.
@@ -1226,7 +1226,7 @@ Kênh Riêng dành cho cặp người đang ngồi hai ghế; Kênh Chung có ng
 
 **Phạm vi và phối hợp**
 
-Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuyện sau khi phòng đóng.",Tình,Tình,,v0.3,,09/10/2026,20/10/2026,dac-ta,EP-07,p1,tro-chuyen,,,,,FE,BE,QA & DevOps,Trò chuyện,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuyện sau khi phòng đóng.",Tình,Tình,,v0.3,,09/10/2026,22/10/2026,dac-ta,EP-07,p1,tro-chuyen,,,,,FE,BE,QA & DevOps,Trò chuyện,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 33,8,Story,"US-07.2 · Camera, mic và mức chia sẻ","**Mục tiêu**
 
 Đặc tả camera và mic do người chơi chủ động bật, chọn đối tượng nhận và có thể thu hồi quyền thực sự.
@@ -1269,7 +1269,7 @@ Hình và tiếng dùng chung mức chia sẻ nhưng có nút bật/tắt độc
 
 **Phạm vi và phối hợp**
 
-Không ghi hình, ghi âm hoặc lưu nội dung truyền; người xem chỉ nhận, không phát camera/mic.",Tình,Tình,,v1.0,,09/10/2026,25/10/2026,dac-ta,EP-07,p1,camera-va-mic,,,,,BE,QA & DevOps,Camera và mic,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không ghi hình, ghi âm hoặc lưu nội dung truyền; người xem chỉ nhận, không phát camera/mic.",Tình,Tình,,v0.3,,09/10/2026,24/10/2026,dac-ta,EP-07,p1,camera-va-mic,,,,,BE,QA & DevOps,Camera và mic,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 34,9,Story,US-08.1 · Thiết lập và chơi ván với máy,"**Mục tiêu**
 
 Đặc tả thiết lập và thao tác ván luyện tập với máy ở ba cấp độ, có lựa chọn phe.
@@ -1306,7 +1306,7 @@ Ván với máy không giới hạn thời gian. Đỏ đi trước; người ch
 
 **Phạm vi và phối hợp**
 
-Không thêm xin hòa, đi lại, gợi ý nước đi hoặc lưu lịch sử ván với máy.",Tình,Tình,,v0.3,,09/10/2026,24/10/2026,dac-ta,EP-08,p1,ban-co,may-co,,,,FE,BE,QA & DevOps,Bàn cờ,Máy cờ,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không thêm xin hòa, đi lại, gợi ý nước đi hoặc lưu lịch sử ván với máy.",Tình,Tình,,v0.3,,09/10/2026,19/10/2026,dac-ta,EP-08,p1,ban-co,may-co,,,,FE,BE,QA & DevOps,Bàn cờ,Máy cờ,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 35,9,Story,US-08.2 · Máy cờ ba cấp độ,"**Mục tiêu**
 
 Đặc tả máy cờ ba mức khó luôn chọn nước hợp lệ và không làm chậm các ván giữa người với người.
@@ -1340,7 +1340,7 @@ Máy dùng cùng thư viện luật cờ với hệ thống, tăng dần độ s
 
 **Phạm vi và phối hợp**
 
-Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác nhận trong phần việc ổn định ván với máy.",Tình,Tình,,v0.2,,09/10/2026,20/10/2026,dac-ta,EP-08,p1,luat-co,may-co,,,,BE,Luật cờ,Máy cờ,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác nhận trong phần việc ổn định ván với máy.",Tình,Tình,,v0.2,,09/10/2026,15/10/2026,dac-ta,EP-08,p1,luat-co,may-co,,,,BE,Luật cờ,Máy cờ,,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 36,9,Story,US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó,"**Mục tiêu**
 
 Đặc tả việc tiếp tục ván với máy sau mất kết nối, xử lý máy cờ lỗi và chứng minh khác biệt chất lượng ba cấp.
@@ -1353,7 +1353,7 @@ Trạng thái ván với máy chỉ giữ trong bộ nhớ. Việc chờ máy qu
 
 - Bối cảnh: Đang ván với máy. Thao tác hoặc sự kiện: Đóng thẻ trình duyệt hoặc mất mạng, quay lại trong 30 phút. Kết quả cần có: Vào lại trang ván với máy đang chơi (hoặc thông báo cố định ở Sảnh) và chơi tiếp đúng thế cũ.
 - Bối cảnh: Quá 30 phút. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Bỏ trạng thái ván trong bộ nhớ; không lưu lịch sử (bản bàn giao đầu tiên).
-- Bối cảnh: Máy cờ không trả lời quá 10 giây hoặc lỗi. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Báo ""Máy cờ gặp sự cố"" kèm ""Thử lại""; nếu chỉ quá thời gian chờ thì Thử lại tìm nước trên cùng thế; nếu ván đã Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bối cảnh: Bấm ""Thử lại"" nhiều lần liên tiếp. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Chỉ xử lý một lần (chặn bấm trùng).
 - Bối cảnh: Máy chủ khởi động lại. Thao tác hoặc sự kiện: Người chơi quay lại. Kết quả cần có: ""Ván không còn trạng thái để tiếp tục"", về Sảnh hoặc tạo ván mới; không khôi phục giả.
 - Bối cảnh: Đang ván với máy. Thao tác hoặc sự kiện: Chủ động Rời ván hoặc Đăng xuất. Kết quả cần có: Xác nhận đầu hàng; Đồng ý → đầu hàng, huỷ tác vụ máy, giải phóng vị trí chơi; Huỷ → giữ nguyên.
@@ -1379,7 +1379,7 @@ Trạng thái ván với máy chỉ giữ trong bộ nhớ. Việc chờ máy qu
 
 **Phạm vi và phối hợp**
 
-Không khôi phục giả sau máy chủ khởi động lại và không dùng tự nhận xét “máy mạnh” thay cho số đo hoặc đáp án đã xác minh.",Tình,Tình,,v0.3,,09/10/2026,30/10/2026,dac-ta,EP-08,p1,luat-co,may-co,,,,BE,QA & DevOps,Luật cờ,Máy cờ,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
+Không khôi phục giả sau máy chủ khởi động lại và không dùng tự nhận xét “máy mạnh” thay cho số đo hoặc đáp án đã xác minh.",Tình,Tình,,v1.0,,09/10/2026,02/11/2026,dac-ta,EP-08,p1,luat-co,may-co,,,,BE,QA & DevOps,Luật cờ,Máy cờ,,,,,High,To Do,,,,,,,,,,,,,,,,,,,,,,,,
 37,1,Task,"T01 · Dựng monorepo, CI, nhật ký và /health","**Mục tiêu**
 
 Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng dụng Cờ Tướng Online theo một cách thống nhất.
@@ -1501,7 +1501,7 @@ Người dùng bắt đầu từ màn đăng nhập hoặc Sảnh, rồi chuyể
 
 **Phạm vi và phối hợp**
 
-Bàn giao phần trình bày chung. Luồng đăng ký, quản lý phòng, danh sách phòng và ván với máy sẽ được nối với máy chủ trong phần việc tương ứng.",Kỳ,Tình,XIAN Sprint 1,v0.1,57600,11/10/2026,12/10/2026,sprint-1,phat-trien,p1,chinh-fe,nen-tang,,,,FE,Nền tảng,,,,,,,Medium,To Do,3,10,37,,,,,,,,,,,,,,,,,,,,,
+Bàn giao phần trình bày chung. Luồng đăng ký, quản lý phòng, danh sách phòng và ván với máy sẽ được nối với máy chủ trong phần việc tương ứng.",Kỳ,Tình,XIAN Sprint 1,v0.1,43200,11/10/2026,12/10/2026,sprint-1,phat-trien,p1,chinh-fe,nen-tang,,,,FE,Nền tảng,,,,,,,Medium,To Do,3,10,37,,,,,,,,,,,,,,,,,,,,,
 40,2,Task,"T04 · BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm","**Mục tiêu**
 
 Xây dựng xử lý đăng ký bằng tên tài khoản, mật khẩu và mã xác minh email để người ngoài nhóm cũng đăng ký được tài khoản dùng thật.
@@ -1586,7 +1586,7 @@ Bàn cờ tướng có 9 cột, 10 hàng giao điểm và hai bên Đỏ/Đen. B
 
 **Phạm vi và phối hợp**
 
-Kết quả là nước cơ bản theo cách đi của quân, chưa được gọi là toàn bộ nước hợp lệ cho ván thật cho đến khi có bước kiểm tự chiếu và hai Tướng đối mặt.",Tình,Tình,XIAN Sprint 1,v0.1,28800,11/10/2026,11/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,,,,BE,Luật cờ,,,,,,,High,To Do,2,23,37,,,,,,,,,,,,,,,,,,,,,
+Kết quả là nước cơ bản theo cách đi của quân, chưa được gọi là toàn bộ nước hợp lệ cho ván thật cho đến khi có bước kiểm tự chiếu và hai Tướng đối mặt.",Tùng,Tình,XIAN Sprint 1,v0.1,28800,11/10/2026,11/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,,,,BE,Luật cờ,,,,,,,High,To Do,2,23,37,,,,,,,,,,,,,,,,,,,,,
 42,1,Task,T06 · Spike media LAN/Cloud/HTTPS và thử mô hình phiên,"**Mục tiêu**
 
 Thử sớm hạ tầng camera/mic và cơ chế phiên đăng nhập để xác định cách triển khai được trên máy phát triển, mạng nội bộ và Internet.
@@ -1670,7 +1670,7 @@ Biết cách đi của từng quân chưa đủ: một nước nhìn đúng hìn
 
 **Phạm vi và phối hợp**
 
-Bàn giao phân xử từng thế cờ. Lặp thế, 120 nửa nước không ăn quân và ưu tiên các kết quả được ghép ở phần hoàn thiện luật kết thúc ván. Một nửa nước là một lần đi của một bên; hai bên mỗi bên đi một lần tương đương hai nửa nước.",Tình,Tình,XIAN Sprint 1,v0.1,28800,12/10/2026,12/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,,,,BE,Luật cờ,,,,,,,High,To Do,2,23,41,,,,,,,,,,,,,,,,,,,,,
+Bàn giao phân xử từng thế cờ. Lặp thế, 120 nửa nước không ăn quân và ưu tiên các kết quả được ghép ở phần hoàn thiện luật kết thúc ván. Một nửa nước là một lần đi của một bên; hai bên mỗi bên đi một lần tương đương hai nửa nước.",Tùng,Tình,XIAN Sprint 1,v0.1,28800,12/10/2026,12/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,,,,BE,Luật cờ,,,,,,,High,To Do,2,23,41,,,,,,,,,,,,,,,,,,,,,
 44,2,Task,T08 · FE màn Đăng ký 3 bước,"**Mục tiêu**
 
 Xây dựng màn đăng ký ba bước để người mới tạo tài khoản bằng email thật mà hiểu rõ mình đang ở bước nào và cần sửa lỗi gì.
@@ -1712,7 +1712,7 @@ Người dùng nhập tên tài khoản và mật khẩu, sau đó email, cuối
 
 **Phạm vi và phối hợp**
 
-Bàn giao màn đăng ký. Luồng mở đường dẫn mời rồi đăng ký cần được kiểm lại cùng chức năng chuyển hướng vào phòng khi chức năng đó hoàn tất.",Kỳ,Tình,XIAN Sprint 1,v0.1,43200,14/10/2026,15/10/2026,sprint-1,phat-trien,p1,chinh-fe,tai-khoan,,,,FE,Tài khoản,,,,,,,Medium,To Do,3,15,39,40,,,,,,,,,,,,,,,,,,,,
+Bàn giao màn đăng ký. Luồng mở đường dẫn mời rồi đăng ký cần được kiểm lại cùng chức năng chuyển hướng vào phòng khi chức năng đó hoàn tất.",Kỳ,Tình,XIAN Sprint 1,v0.1,28800,14/10/2026,14/10/2026,sprint-1,phat-trien,p1,chinh-fe,tai-khoan,,,,FE,Tài khoản,,,,,,,Medium,To Do,2,15,39,40,,,,,,,,,,,,,,,,,,,,
 45,2,Task,"T09 · BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập","**Mục tiêu**
 
 Cho người có tài khoản đăng nhập bằng tên tài khoản và mật khẩu, đồng thời kiểm soát thử sai và thời hạn phiên.
@@ -1796,7 +1796,7 @@ Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặ
 
 **Phạm vi và phối hợp**
 
-Bộ luật phân xử một nước hợp lệ. Máy chủ vẫn phải kiểm đồng hồ trước khi chấp nhận nước; công việc này không thay thế xử lý hết giờ và mạng.",Tình,Tình,XIAN Sprint 1,v0.1,28800,13/10/2026,13/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,,,,BE,Luật cờ,,,,,,,High,To Do,2,23,43,,,,,,,,,,,,,,,,,,,,,
+Bộ luật phân xử một nước hợp lệ. Máy chủ vẫn phải kiểm đồng hồ trước khi chấp nhận nước; công việc này không thay thế xử lý hết giờ và mạng.",Tùng,Tình,XIAN Sprint 1,v0.1,28800,13/10/2026,13/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,,,,BE,Luật cờ,,,,,,,High,To Do,2,23,43,,,,,,,,,,,,,,,,,,,,,
 47,5,Task,"T11 · FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng","**Mục tiêu**
 
 Vẽ bàn cờ rõ ràng, đúng quân và tự xoay theo phe để người chơi dùng được trên máy tính và điện thoại.
@@ -1839,7 +1839,7 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 
 **Phạm vi và phối hợp**
 
-Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, âm thanh và giao tiếp máy chủ được bổ sung trong các phần thao tác bàn cờ và ván online.",Nhạn,Tình,XIAN Sprint 1,v0.1,57600,11/10/2026,12/10/2026,sprint-1,phat-trien,p1,chinh-fe,ban-co,,,,FE,Bàn cờ,,,,,,,Medium,To Do,3,24,37,,,,,,,,,,,,,,,,,,,,,
+Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, âm thanh và giao tiếp máy chủ được bổ sung trong các phần thao tác bàn cờ và ván online.",Nhạn,Tình,XIAN Sprint 1,v0.1,43200,11/10/2026,12/10/2026,sprint-1,phat-trien,p1,chinh-fe,ban-co,,,,FE,Bàn cờ,,,,,,,Medium,To Do,3,24,37,,,,,,,,,,,,,,,,,,,,,
 48,1,Task,T12 · Khung realtime Socket.IO,"**Mục tiêu**
 
 Tạo đường kết nối thời gian thực đáng tin cậy giữa trình duyệt và máy chủ để phòng, nước đi và quyền điều khiển luôn thống nhất.
@@ -1881,7 +1881,7 @@ Khi mạng chập chờn, cùng một thao tác có thể gửi lại hoặc đ�
 
 **Phạm vi và phối hợp**
 
-Bàn giao hợp đồng giao tiếp cho phòng, ván, phiên và hình tiếng. Số đo kết nối mẫu không thay phép đo ứng dụng thật khi đồng thời có ván online, máy cờ và người xem.",Tình,Tình,XIAN Sprint 1,v0.1,86400,14/10/2026,16/10/2026,sprint-1,phat-trien,p1,chinh-be,nen-tang,van-truc-tuyen,,,BE,Nền tảng,Ván trực tuyến,,,,,,High,To Do,5,12,37,,,,,,,,,,,,,,,,,,,,,
+Bàn giao hợp đồng giao tiếp cho phòng, ván, phiên và hình tiếng. Số đo kết nối mẫu không thay phép đo ứng dụng thật khi đồng thời có ván online, máy cờ và người xem.",Tình,Tình,XIAN Sprint 1,v0.1,86400,11/10/2026,13/10/2026,sprint-1,phat-trien,p1,chinh-be,nen-tang,van-truc-tuyen,,,BE,Nền tảng,Ván trực tuyến,,,,,,High,To Do,5,12,37,,,,,,,,,,,,,,,,,,,,,
 49,2,Task,T13 · Kiểm thử US-01.1,"**Mục tiêu**
 
 Kiểm chứng người dùng đăng ký bằng email thật được, đồng thời các lỗi nhập liệu, gửi thư và phục hồi tài khoản không tạo dữ liệu sai.
@@ -1923,7 +1923,7 @@ Kiểm đăng ký qua giao diện và máy chủ thật; dùng kiểm dữ liệ
 
 **Phạm vi và phối hợp**
 
-Tự vào phòng mời sau đăng ký được kiểm khi chức năng tham gia phòng hoàn tất; kết quả cục bộ không thay bằng chứng tích hợp.",Thư,Tình,XIAN Sprint 1,v0.1,28800,15/10/2026,16/10/2026,sprint-1,kiem-thu,p1,chinh-qa-devops,tai-khoan,,,,QA & DevOps,Tài khoản,,,,,,,Medium,To Do,2,15,44,,,,,,,,,,,,,,,,,,,,,
+Tự vào phòng mời sau đăng ký được kiểm khi chức năng tham gia phòng hoàn tất; kết quả cục bộ không thay bằng chứng tích hợp.",Thư,Tình,XIAN Sprint 2,v0.2,28800,17/10/2026,17/10/2026,sprint-2,kiem-thu,p1,chinh-qa-devops,tai-khoan,,,,QA & DevOps,Tài khoản,,,,,,,Medium,To Do,2,15,44,,,,,,,,,,,,,,,,,,,,,
 50,1,Task,"T14 · Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu","**Mục tiêu**
 
 Tạo cấu trúc dữ liệu và quyền truy cập để lưu phòng, người tham gia, ván cờ và quan hệ bạn bè một cách nhất quán.
@@ -1935,7 +1935,7 @@ Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng 
 **Yêu cầu cần đáp ứng**
 
 - Tạo dữ liệu lời mời kết bạn, quan hệ bạn bè, phòng, thành viên phòng, danh sách người bị chặn, ván và nước đi.
-- Tích hợp với bảng hồ sơ, bộ đếm đăng nhập và biên lai lệnh đã được phần đăng ký/thời gian thực tạo, không tạo bản trùng khác cấu trúc.
+- Tích hợp theo cấu trúc thống nhất với bảng hồ sơ, bộ đếm đăng nhập và biên lai lệnh của các phần đăng ký, đăng nhập và kết nối. Ghép các tệp tạo bảng đã bàn giao; bảng chưa bàn giao phải ghi rõ phần phụ thuộc, không tự tạo bản trùng khác cấu trúc.
 - Dùng khoá tham chiếu và ràng buộc để tránh người tham gia hoặc nước đi trỏ tới bản ghi không hợp lệ.
 - Tên tài khoản lưu đúng chữ người nhập nhưng ràng buộc duy nhất so sánh không phân biệt hoa thường.
 - Phân quyền theo từng dòng dữ liệu: trình duyệt chỉ đọc dữ liệu được phép; máy chủ có quyền dịch vụ mới ghi dữ liệu phòng, ván và kết quả.
@@ -1958,14 +1958,14 @@ Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng 
 
 **Điều kiện hoàn thành**
 
-- Tạo mới từ cơ sở dữ liệu trống không lỗi; đủ bảng và quan hệ cần thiết.
+- Tạo mới từ cơ sở dữ liệu trống không lỗi đối với các bảng do công việc này sở hữu và các tệp đã bàn giao; đủ quan hệ trong phạm vi đó. Việc dựng lại toàn bộ cấu trúc và kiểm quyền tất cả bảng được xác minh khi hồi quy bản tích hợp đầy đủ.
 - Không tạo đồng thời được hai tên như Twot và twot.
 - Người dùng không tự sửa phòng/ván/kết quả qua quyền công khai của trình duyệt.
 - Máy chủ ghi được dữ liệu hợp lệ; truy cập ngoài quyền bị từ chối.
 
 **Phạm vi và phối hợp**
 
-Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai ngồi ghế hay có thể kết bạn vẫn nằm trong chức năng nghiệp vụ của máy chủ.",Đông,Tình,XIAN Sprint 1,v0.1,57600,14/10/2026,15/10/2026,sprint-1,phat-trien,p1,chinh-be,nen-tang,,,,BE,Nền tảng,,,,,,,Medium,To Do,3,11,40,,,,,,,,,,,,,,,,,,,,,
+Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai ngồi ghế hay có thể kết bạn vẫn nằm trong chức năng nghiệp vụ của máy chủ. Bằng chứng cục bộ không xác nhận các tệp tạo bảng chưa bàn giao; bàn giao danh sách tệp và phạm vi kiểm cho người hồi quy toàn hệ thống.",Đông,Tình,XIAN Sprint 1,v0.1,43200,14/10/2026,15/10/2026,sprint-1,phat-trien,p1,chinh-be,nen-tang,,,,BE,Nền tảng,,,,,,,Medium,To Do,3,11,40,,,,,,,,,,,,,,,,,,,,,
 51,2,Task,T15 · FE màn Đăng nhập,"**Mục tiêu**
 
 Xây dựng màn đăng nhập để người có tài khoản vào ứng dụng bằng tên tài khoản và mật khẩu, hiểu rõ lỗi hoặc thời gian bị chặn.
@@ -2051,7 +2051,7 @@ Kiểm chứng bàn cờ được vẽ đúng, xoay đúng phe và đọc đư�
 
 **Phạm vi và phối hợp**
 
-Không dùng kết quả này để kết luận bấm chuột, kéo thả, nước hợp lệ hoặc đồng bộ mạng đã đúng; những hành vi đó có phần kiểm riêng.",Thư,Tình,XIAN Sprint 1,v0.1,14400,13/10/2026,13/10/2026,sprint-1,kiem-thu,p1,chinh-qa-devops,ban-co,,,,QA & DevOps,Bàn cờ,,,,,,,Medium,To Do,1,24,47,,,,,,,,,,,,,,,,,,,,,
+Không dùng kết quả này để kết luận bấm chuột, kéo thả, nước hợp lệ hoặc đồng bộ mạng đã đúng; những hành vi đó có phần kiểm riêng.",Tình,Tình,XIAN Sprint 1,v0.1,14400,14/10/2026,14/10/2026,sprint-1,kiem-thu,p1,chinh-qa-devops,ban-co,,,,QA & DevOps,Bàn cờ,,,,,,,Medium,To Do,1,24,47,,,,,,,,,,,,,,,,,,,,,
 53,2,Task,T17 · Kiểm thử US-01.2,"**Mục tiêu**
 
 Kiểm chứng đăng nhập bằng mật khẩu, giới hạn thử sai và hạn phiên để người dùng vào đúng tài khoản mà không vượt được các ràng buộc đăng nhập.
@@ -2094,7 +2094,7 @@ Chạy qua giao diện thật và xử lý máy chủ, đồng thời kiểm cá
 
 **Phạm vi và phối hợp**
 
-Việc Google vẫn vào được mà không xoá bộ đếm và việc đăng nhập xong tự vào phòng mời được kiểm bổ sung khi các luồng liên quan đã tích hợp.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,17/10/2026,17/10/2026,sprint-1,kiem-thu,p1,chinh-qa-devops,tai-khoan,,,,QA & DevOps,Tài khoản,,,,,,,Medium,To Do,2,16,51,,,,,,,,,,,,,,,,,,,,,
+Việc Google vẫn vào được mà không xoá bộ đếm và việc đăng nhập xong tự vào phòng mời được kiểm bổ sung khi các luồng liên quan đã tích hợp.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,17/10/2026,17/10/2026,sprint-2,kiem-thu,p1,chinh-qa-devops,tai-khoan,,,,QA & DevOps,Tài khoản,,,,,,,Medium,To Do,2,16,51,,,,,,,,,,,,,,,,,,,,,
 54,3,Task,"T18 · BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host","**Mục tiêu**
 
 Xây dựng xử lý phòng chờ để người dùng tạo phòng, chọn ghế, cùng sẵn sàng và bắt đầu một ván mới một cách nhất quán.
@@ -2136,7 +2136,7 @@ Phòng gồm hai ghế và tối đa năm người xem. Người tạo là chủ
 
 **Phạm vi và phối hợp**
 
-Bàn giao phòng chờ và tín hiệu bắt đầu ván. Xin đổi bên hai người, chế độ công khai/khóa, chat và hình tiếng dùng sự kiện này để bổ sung hành vi của mình.",Tùng,Tình,XIAN Sprint 2,v0.2,86400,17/10/2026,19/10/2026,sprint-2,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,5,19,48,50,,,,,,,,,,,,,,,,,,,,
+Bàn giao phòng chờ và tín hiệu bắt đầu ván. Xin đổi bên hai người, chế độ công khai/khóa, chat và hình tiếng dùng sự kiện này để bổ sung hành vi của mình.",Tùng,Tình,XIAN Sprint 2,v0.2,86400,19/10/2026,21/10/2026,sprint-2,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,5,19,48,50,,,,,,,,,,,,,,,,,,,,
 55,5,Task,"T19 · FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh","**Mục tiêu**
 
 Cho người chơi chọn quân và đi bằng bấm chuột/chạm hoặc kéo thả, đồng thời thấy nước hợp lệ và các dấu hiệu diễn biến ván.
@@ -2179,7 +2179,7 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 
 **Phạm vi và phối hợp**
 
-Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ từ chối phải được đồng bộ lại, không coi thao tác cục bộ là nước đã được chấp nhận.",Nhạn,Tình,XIAN Sprint 1,v0.1,86400,14/10/2026,16/10/2026,sprint-2,phat-trien,p1,chinh-fe,ban-co,,,,FE,Bàn cờ,,,,,,,Medium,To Do,5,25,46,47,,,,,,,,,,,,,,,,,,,,
+Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ từ chối phải được đồng bộ lại, không coi thao tác cục bộ là nước đã được chấp nhận.",Nhạn,Tình,XIAN Sprint 1,v0.1,72000,14/10/2026,16/10/2026,sprint-1,phat-trien,p1,chinh-fe,ban-co,,,,FE,Bàn cờ,,,,,,,Medium,To Do,5,25,46,47,,,,,,,,,,,,,,,,,,,,
 56,6,Task,"T20 · BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván","**Mục tiêu**
 
 Xây dựng xử lý một ván online để máy chủ nhận nước đi, phân xử đúng luật, phát trạng thái và lưu diễn biến cùng kết quả.
@@ -2223,7 +2223,7 @@ Khi hai người trong phòng đã sẵn sàng, phòng gửi tín hiệu bắt �
 
 **Phạm vi và phối hợp**
 
-Bàn giao lõi ván để nối đồng hồ, các nút đề nghị và phục hồi mạng. Độ trễ thực tế và toàn bộ lý do kết thúc phải được kiểm lại trên ứng dụng đủ các phần này.",Tình,Tình,XIAN Sprint 2,v0.2,86400,17/10/2026,19/10/2026,sprint-2,phat-trien,p1,chinh-be,luat-co,van-truc-tuyen,,,BE,Luật cờ,Ván trực tuyến,,,,,,High,To Do,5,26,46,48,50,,,,,,,,,,,,,,,,,,,
+Bàn giao lõi ván để nối đồng hồ, các nút đề nghị và phục hồi mạng. Độ trễ thực tế và toàn bộ lý do kết thúc phải được kiểm lại trên ứng dụng đủ các phần này.",Tùng,Tình,XIAN Sprint 1,v0.2,86400,16/10/2026,18/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,van-truc-tuyen,,,BE,Luật cờ,Ván trực tuyến,,,,,,High,To Do,5,26,46,48,50,,,,,,,,,,,,,,,,,,,
 57,3,Task,"T21 · FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược","**Mục tiêu**
 
 Tạo hộp tạo phòng và màn phòng chờ để người chơi hiểu ai đang ngồi ghế, chọn phe khi một mình và cùng xác nhận bắt đầu.
@@ -2266,7 +2266,7 @@ Phòng chờ dùng chung địa chỉ phòng với lúc thi đấu nhưng có tr
 
 **Phạm vi và phối hợp**
 
-Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung chat/hình tiếng và điều khiển người xem được nối ở phần chức năng tương ứng, không dựng giả để coi đã hoàn tất.",Nhạn,Tình,XIAN Sprint 2,v0.2,57600,20/10/2026,21/10/2026,sprint-2,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,3,19,39,54,,,,,,,,,,,,,,,,,,,,
+Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung chat/hình tiếng và điều khiển người xem được nối ở phần chức năng tương ứng, không dựng giả để coi đã hoàn tất.",Nhạn,Tình,XIAN Sprint 2,v0.2,43200,22/10/2026,23/10/2026,sprint-2,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,3,19,39,54,,,,,,,,,,,,,,,,,,,,
 58,4,Task,"T22 · BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập","**Mục tiêu**
 
 Cho người dùng vào đúng phòng bằng mã hoặc đường dẫn và tự tiếp tục sau đăng nhập, đồng thời máy chủ xếp vai trò theo chỗ còn trống.
@@ -2309,7 +2309,7 @@ Người nhận đường dẫn không cần kết bạn với chủ. Giữ đí
 
 **Phạm vi và phối hợp**
 
-Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. Công khai, khóa và chặn người xem có phần triển khai riêng nhưng phải dùng cùng kiểm quyền tham gia.",Tùng,Tình,XIAN Sprint 2,v0.2,57600,20/10/2026,21/10/2026,sprint-2,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,21,54,45,,,,,,,,,,,,,,,,,,,,
+Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. Công khai, khóa và chặn người xem có phần triển khai riêng nhưng phải dùng cùng kiểm quyền tham gia.",Tùng,Tình,XIAN Sprint 2,v0.2,43200,22/10/2026,23/10/2026,sprint-2,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,21,54,45,,,,,,,,,,,,,,,,,,,,
 59,6,Task,T23 · BE đồng hồ thi đấu và hết giờ,"**Mục tiêu**
 
 Quản lý đồng hồ trên máy chủ để ván online xử thua đúng người hết giờ, kể cả khi trình duyệt chậm hoặc mất mạng.
@@ -2394,7 +2394,7 @@ Máy cờ tự viết dùng chung bộ luật với online. Tìm kiếm chạy r
 
 **Phạm vi và phối hợp**
 
-Bàn giao máy cờ và số đo đầu cho phần tích hợp, tối ưu và kiểm độc lập. Sức mạnh cấp Khó và ảnh hưởng dưới tải cần được đo đầy đủ sau đó.",Tình,Tình,XIAN Sprint 2,v0.2,115200,20/10/2026,23/10/2026,sprint-2,phat-trien,p1,chinh-be,luat-co,may-co,,,BE,Luật cờ,Máy cờ,,,,,,High,To Do,8,35,46,,,,,,,,,,,,,,,,,,,,,
+Bàn giao máy cờ và số đo đầu cho phần tích hợp, tối ưu và kiểm độc lập. Sức mạnh cấp Khó và ảnh hưởng dưới tải cần được đo đầy đủ sau đó.",Tình,Tình,XIAN Sprint 1,v0.2,115200,15/10/2026,18/10/2026,sprint-1,phat-trien,p1,chinh-be,luat-co,may-co,,,BE,Luật cờ,Máy cờ,,,,,,High,To Do,8,35,46,,,,,,,,,,,,,,,,,,,,,
 61,6,Task,"T25 · FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại","**Mục tiêu**
 
 Hoàn thiện màn hình thi đấu để hai người chơi và người xem nhìn cùng một thế cờ, đồng hồ và kết quả.
@@ -2427,7 +2427,7 @@ Người chơi ngồi ghế Đỏ hoặc Đen; người xem chỉ theo dõi. Má
 
 **Phạm vi và phối hợp**
 
-Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất mạng và phục hồi kết nối được kiểm bằng tình huống mất mạng thật trong công việc kiểm thử kết nối.",Kỳ,Tình,XIAN Sprint 2,v0.2,72000,21/10/2026,23/10/2026,sprint-2,phat-trien,p1,chinh-fe,ban-co,van-truc-tuyen,,,FE,Bàn cờ,Ván trực tuyến,,,,,,Medium,To Do,5,26,55,59,,,,,,,,,,,,,,,,,,,,
+Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất mạng và phục hồi kết nối được kiểm bằng tình huống mất mạng thật trong công việc kiểm thử kết nối.",Kỳ,Tình,XIAN Sprint 2,v0.2,57600,21/10/2026,23/10/2026,sprint-2,phat-trien,p1,chinh-fe,ban-co,van-truc-tuyen,,,FE,Bàn cờ,Ván trực tuyến,,,,,,Medium,To Do,3,26,55,59,,,,,,,,,,,,,,,,,,,,
 62,4,Task,"T26 · FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập","**Mục tiêu**
 
 Cho người dùng chia sẻ phòng bằng đường dẫn hoặc mã và vào đúng phòng sau đăng nhập.
@@ -2459,7 +2459,7 @@ Người được mời không bắt buộc là bạn của chủ phòng. Hai ng
 
 **Phạm vi và phối hợp**
 
-Phần này phụ trách giao diện đường dẫn và mã; danh sách bạn bè để gửi lời mời trong ứng dụng là phần việc riêng.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,22/10/2026,22/10/2026,sprint-2,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,2,21,57,58,,,,,,,,,,,,,,,,,,,,
+Phần này phụ trách giao diện đường dẫn và mã; danh sách bạn bè để gửi lời mời trong ứng dụng là phần việc riêng.",Cường,Tình,XIAN Sprint 2,v0.3,28800,23/10/2026,24/10/2026,sprint-2,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,2,21,57,58,,,,,,,,,,,,,,,,,,,,
 63,5,Task,T27 · Kiểm thử US-04.3,"**Mục tiêu**
 
 Kiểm chứng người chơi đi cờ bằng chuột hoặc cảm ứng đúng quyền, dễ nhận biết và có âm thanh phù hợp.
@@ -2492,7 +2492,7 @@ Chuẩn bị hai người chơi và ít nhất một người xem trong phòng t
 
 **Phạm vi và phối hợp**
 
-Kiểm cách tương tác và hiển thị; không thay việc chứng minh toàn bộ luật đi của bảy loại quân trong thư viện luật cờ.",Thư,Tình,XIAN Sprint 3,v0.3,14400,24/10/2026,24/10/2026,sprint-2,kiem-thu,p1,chinh-qa-devops,ban-co,,,,QA & DevOps,Bàn cờ,,,,,,,Medium,To Do,1,25,61,58,,,,,,,,,,,,,,,,,,,,
+Kiểm cách tương tác và hiển thị; không thay việc chứng minh toàn bộ luật đi của bảy loại quân trong thư viện luật cờ.",Tình,Tình,XIAN Sprint 4,v1.0,14400,31/10/2026,31/10/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,ban-co,,,,QA & DevOps,Bàn cờ,,,,,,,Medium,To Do,1,25,61,58,,,,,,,,,,,,,,,,,,,,
 64,3,Task,T28 · Kiểm thử US-02.1,"**Mục tiêu**
 
 Kiểm chứng tạo phòng, chọn ghế và bắt đầu ván đúng quy tắc trước khi người dùng chơi trực tuyến.
@@ -2525,7 +2525,7 @@ Chuẩn bị người tạo phòng, người chơi thứ hai và người xem. T
 
 **Phạm vi và phối hợp**
 
-Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiểm hoàn chỉnh trong đợt hồi quy sau khi chức năng kết nối và chat sẵn sàng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,24/10/2026,25/10/2026,sprint-2,kiem-thu,p1,chinh-qa-devops,phong-choi,,,,QA & DevOps,Phòng chơi,,,,,,,Medium,To Do,2,19,62,73,61,,,,,,,,,,,,,,,,,,,
+Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiểm hoàn chỉnh trong đợt hồi quy sau khi chức năng kết nối và chat sẵn sàng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,25/10/2026,25/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,phong-choi,,,,QA & DevOps,Phòng chơi,,,,,,,Medium,To Do,2,19,62,73,61,,,,,,,,,,,,,,,,,,,
 65,4,Task,T29 · Kiểm thử US-03.1,"**Mục tiêu**
 
 Kiểm chứng lời mời bằng đường dẫn hoặc mã đưa người dùng vào đúng phòng, đúng vai trò.
@@ -2558,7 +2558,7 @@ Dùng ít nhất hai tài khoản chưa kết bạn và nhiều cửa sổ trìn
 
 **Phạm vi và phối hợp**
 
-Luồng chọn chế độ Khách từ lời mời được kiểm chuyên biệt trong phần kiểm Google và Khách; kiểm lời mời bạn bè trong ứng dụng là phần riêng.",Thư,Tình,XIAN Sprint 2,v0.2,28800,23/10/2026,23/10/2026,sprint-2,kiem-thu,p1,chinh-qa-devops,phong-choi,,,,QA & DevOps,Phòng chơi,,,,,,,Medium,To Do,2,21,62,71,44,51,,,,,,,,,,,,,,,,,,
+Luồng chọn chế độ Khách từ lời mời được kiểm chuyên biệt trong phần kiểm Google và Khách; kiểm lời mời bạn bè trong ứng dụng là phần riêng.",Nhạn,Tình,XIAN Sprint 3,v0.3,28800,25/10/2026,25/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,phong-choi,,,,QA & DevOps,Phòng chơi,,,,,,,Medium,To Do,2,21,62,71,44,51,,,,,,,,,,,,,,,,,,
 66,6,Task,T30 · Kiểm thử US-05.1,"**Mục tiêu**
 
 Kiểm chứng ván trực tuyến được máy chủ phân xử, tính giờ và lưu kết quả chính xác.
@@ -2592,7 +2592,7 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 
 **Phạm vi và phối hợp**
 
-Đo độ trễ dưới tải và kiểm đủ mọi lý do do mất mạng, đầu hàng, xin hoà thuộc các đợt kiểm chuyên biệt và hồi quy tổng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,28/10/2026,sprint-2,kiem-thu,p1,chinh-qa-devops,luat-co,van-truc-tuyen,,,QA & DevOps,Luật cờ,Ván trực tuyến,,,,,,Medium,To Do,2,26,61,62,,,,,,,,,,,,,,,,,,,,
+Đo độ trễ dưới tải và kiểm đủ mọi lý do do mất mạng, đầu hàng, xin hoà thuộc các đợt kiểm chuyên biệt và hồi quy tổng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,28/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,luat-co,van-truc-tuyen,,,QA & DevOps,Luật cờ,Ván trực tuyến,,,,,,Medium,To Do,2,26,61,62,,,,,,,,,,,,,,,,,,,,
 67,4,Task,"T31 · BE bạn bè, trạng thái online, mời bạn online vào phòng","**Mục tiêu**
 
 Xây dựng xử lý phía máy chủ cho kết bạn, trạng thái hoạt động và mời bạn vào phòng.
@@ -2625,7 +2625,7 @@ Tài khoản chính thức có tên đăng nhập để tìm nhau; Khách không
 
 **Phạm vi và phối hợp**
 
-Không làm nhắn tin riêng giữa bạn bè hoặc thách đấu từ màn Bạn bè trong phiên bản này; giao diện do phần việc khác thực hiện.",Cường,Tình,XIAN Sprint 3,v0.3,86400,25/10/2026,28/10/2026,sprint-3,phat-trien,p1,chinh-be,ban-be,,,,BE,Bạn bè,,,,,,,Medium,To Do,5,22,58,71,,,,,,,,,,,,,,,,,,,,
+Không làm nhắn tin riêng giữa bạn bè hoặc thách đấu từ màn Bạn bè trong phiên bản này; giao diện do phần việc khác thực hiện.",Tùng,Tình,XIAN Sprint 3,v0.3,72000,25/10/2026,27/10/2026,sprint-3,phat-trien,p1,chinh-be,ban-be,,,,BE,Bạn bè,,,,,,,Medium,To Do,5,22,58,71,,,,,,,,,,,,,,,,,,,,
 68,6,Task,"T32 · BE đầu hàng, rời phòng giữa ván, xin hoà","**Mục tiêu**
 
 Xử lý đầu hàng, rời phòng giữa ván và đề nghị hoà trên máy chủ.
@@ -2658,7 +2658,7 @@ Máy chủ là nơi quyết định kết quả cuối cùng. Người chơi có
 
 **Phạm vi và phối hợp**
 
-Phần này không dựng hộp xác nhận hay khung đề nghị trên màn hình; không thêm xin đi lại hoặc tái đấu.",Cường,Tình,XIAN Sprint 2,v0.2,43200,21/10/2026,22/10/2026,sprint-3,phat-trien,p1,chinh-be,van-truc-tuyen,,,,BE,Ván trực tuyến,,,,,,,Medium,To Do,3,27,56,,,,,,,,,,,,,,,,,,,,,
+Phần này không dựng hộp xác nhận hay khung đề nghị trên màn hình; không thêm xin đi lại hoặc tái đấu.",Cường,Tình,XIAN Sprint 2,v0.2,43200,21/10/2026,22/10/2026,sprint-2,phat-trien,p1,chinh-be,van-truc-tuyen,,,,BE,Ván trực tuyến,,,,,,,Medium,To Do,3,27,56,,,,,,,,,,,,,,,,,,,,,
 69,8,Task,"T33 · BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ","**Mục tiêu**
 
 Bảo đảm camera và micro chỉ truyền cho đúng người được phép, và thu hồi quyền khi người dùng mất vai trò.
@@ -2692,7 +2692,7 @@ LiveKit là dịch vụ chuyển âm thanh và hình ảnh trực tiếp giữa 
 
 **Phạm vi và phối hợp**
 
-Không dựng khung video hoặc nút giao diện. Thử đầu-cuối trên màn hình thật được thực hiện sau khi phần giao diện hoàn tất.",Tình,Tình,XIAN Sprint 3,v0.3,86400,25/10/2026,28/10/2026,sprint-3,phat-trien,p1,chinh-be,camera-va-mic,,,,BE,Camera và mic,,,,,,,High,To Do,5,33,42,58,71,,,,,,,,,,,,,,,,,,,
+Không dựng khung video hoặc nút giao diện. Thử đầu-cuối trên màn hình thật được thực hiện sau khi phần giao diện hoàn tất.",Tình,Tình,XIAN Sprint 3,v0.3,86400,24/10/2026,26/10/2026,sprint-3,phat-trien,p1,chinh-be,camera-va-mic,,,,BE,Camera và mic,,,,,,,High,To Do,5,33,42,58,71,,,,,,,,,,,,,,,,,,,
 70,9,Task,"T34 · BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới","**Mục tiêu**
 
 Xây dựng quản lý ván đấu với máy để người dùng chọn cấp độ, chọn phe và bắt đầu ván mới.
@@ -2725,7 +2725,7 @@ Người dùng luyện cờ một mình với máy. Thư viện luật và bộ 
 
 **Phạm vi và phối hợp**
 
-Giữ ván khi mất mạng và xử lý Thử lại sau lỗi máy được thực hiện trong phần ổn định ván đấu với máy; không bổ sung đi lại hoặc gợi ý nước.",Tùng,Tình,XIAN Sprint 3,v0.3,57600,24/10/2026,25/10/2026,sprint-3,phat-trien,p1,chinh-be,may-co,,,,BE,Máy cờ,,,,,,,Medium,To Do,3,34,56,60,,,,,,,,,,,,,,,,,,,,
+Giữ ván khi mất mạng và xử lý Thử lại sau lỗi máy được thực hiện trong phần ổn định ván đấu với máy; không bổ sung đi lại hoặc gợi ý nước.",Đông,Tình,XIAN Sprint 2,v0.2,43200,19/10/2026,20/10/2026,sprint-2,phat-trien,p1,chinh-be,may-co,,,,BE,Máy cờ,,,,,,,Medium,To Do,3,34,56,60,,,,,,,,,,,,,,,,,,,,
 71,2,Task,"T35 · BE đăng ký/đăng nhập Google, onboarding, phiên Khách","**Mục tiêu**
 
 Cho phép đăng ký, đăng nhập bằng Google và tạo phiên chơi Khách có quyền hạn rõ ràng.
@@ -2759,7 +2759,7 @@ Supabase là dịch vụ quản lý đăng nhập của dự án. Xác thực Go
 
 **Phạm vi và phối hợp**
 
-Việc gia hạn ngoại lệ khi đang chơi và xoá dữ liệu khi phiên Khách kết thúc cần phối hợp quản lý phiên, phòng và chat; giao diện được làm riêng.",Cường,Tình,XIAN Sprint 2,v0.2,86400,17/10/2026,19/10/2026,sprint-3,phat-trien,p1,chinh-be,tai-khoan,,,,BE,Tài khoản,,,,,,,Medium,To Do,5,17,45,50,,,,,,,,,,,,,,,,,,,,
+Việc gia hạn ngoại lệ khi đang chơi và xoá dữ liệu khi phiên Khách kết thúc cần phối hợp quản lý phiên, phòng và chat; giao diện được làm riêng.",Cường,Tình,XIAN Sprint 2,v0.2,86400,17/10/2026,19/10/2026,sprint-2,phat-trien,p1,chinh-be,tai-khoan,,,,BE,Tài khoản,,,,,,,Medium,To Do,5,17,45,50,,,,,,,,,,,,,,,,,,,,
 72,6,Task,"T36 · FE nút Đầu hàng, Xin hoà và khung đề nghị","**Mục tiêu**
 
 Dựng thao tác đầu hàng và xin hoà rõ hậu quả, không gây bấm nhầm hoặc che bàn cờ.
@@ -2793,7 +2793,7 @@ Người chơi cần xác nhận trước khi tự nhận thua. Đề nghị ho�
 
 **Phạm vi và phối hợp**
 
-Máy chủ quyết định kết quả, hạn và quyền; phần giao diện không tự xử hoà hoặc tự thay đổi bộ đếm nước.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,24/10/2026,24/10/2026,sprint-3,phat-trien,p1,chinh-fe,van-truc-tuyen,,,,FE,Ván trực tuyến,,,,,,,Medium,To Do,2,27,61,68,,,,,,,,,,,,,,,,,,,,
+Máy chủ quyết định kết quả, hạn và quyền; phần giao diện không tự xử hoà hoặc tự thay đổi bộ đếm nước.",Nhạn,Tình,XIAN Sprint 3,v0.3,28800,24/10/2026,24/10/2026,sprint-3,phat-trien,p1,chinh-fe,van-truc-tuyen,,,,FE,Ván trực tuyến,,,,,,,Medium,To Do,2,27,61,68,,,,,,,,,,,,,,,,,,,,
 73,8,Task,"T37 · BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ","**Mục tiêu**
 
 Xây chat phòng có kênh riêng cho hai người chơi và kênh chung, bảo vệ nội dung theo vai trò.
@@ -2827,7 +2827,7 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 
 **Phạm vi và phối hợp**
 
-Không làm chat riêng giữa bạn bè hay nhãn dán; khung hiển thị chat được thực hiện trong phần giao diện.",Đông,Tình,XIAN Sprint 2,v0.2,57600,20/10/2026,21/10/2026,sprint-3,phat-trien,p1,chinh-be,tro-chuyen,,,,BE,Trò chuyện,,,,,,,Medium,To Do,3,32,54,71,,,,,,,,,,,,,,,,,,,,
+Không làm chat riêng giữa bạn bè hay nhãn dán; khung hiển thị chat được thực hiện trong phần giao diện.",Đông,Tình,XIAN Sprint 2,v0.2,57600,22/10/2026,23/10/2026,sprint-2,phat-trien,p1,chinh-be,tro-chuyen,,,,BE,Trò chuyện,,,,,,,Medium,To Do,3,32,54,71,,,,,,,,,,,,,,,,,,,,
 74,9,Task,T38 · FE thiết lập/chơi AI và giao diện sự cố máy cờ,"**Mục tiêu**
 
 Dựng giao diện chọn cấp độ, chọn phe và chơi với máy, gồm cách xử lý khi máy cờ gặp sự cố.
@@ -2841,7 +2841,7 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 - Hộp thiết lập có Dễ/Trung bình/Khó và Đỏ/Đen/Ngẫu nhiên. Cầm Đỏ thì người đi trước; cầm Đen thì máy đi đầu và bàn cờ lật để Đen ở dưới.
 - Màn chơi không có đồng hồ thi đấu, Xin hoà, gợi ý nước hay Đi lại. Có Đầu hàng; khi máy suy nghĩ hoặc chưa tới lượt người thì không cho đi quân.
 - Kết thúc ván, kể cả đầu hàng, hiện Ván mới và Về Sảnh. Ván mới mở thiết lập điền lại cấp độ và lựa chọn phe trước đó, cho phép đổi rồi bắt đầu ván có mã mới.
-- Khi máy cờ lỗi hoặc không trả lời quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại. Nếu máy chủ báo chỉ hết thời gian chờ, Thử lại tìm nước trên cùng ván/thế; nếu ván đã bỏ dở, tạo ván mới cùng cấp và phe thực tế đã bốc.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Không gửi lại nước của người chơi khi thử lại. Chặn bấm trùng lúc đang xử lý. Khi máy chủ khởi động lại làm mất trạng thái ván, hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc chủ động tạo ván mới.
 
 **Việc cần làm**
@@ -2860,7 +2860,7 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 
 **Phạm vi và phối hợp**
 
-Giao diện không tự quyết định phục hồi ván. Hành vi sự cố thật được nghiệm thu sau khi phần giữ ván và xử lý lỗi phía máy chủ hoàn tất.",Nhạn,Tình,XIAN Sprint 3,v0.3,57600,26/10/2026,28/10/2026,sprint-3,phat-trien,p1,chinh-fe,ban-co,may-co,,,FE,Bàn cờ,Máy cờ,,,,,,Medium,To Do,3,34,55,70,,,,,,,,,,,,,,,,,,,,
+Giao diện không tự quyết định phục hồi ván. Hành vi sự cố thật được nghiệm thu sau khi phần giữ ván và xử lý lỗi phía máy chủ hoàn tất.",Kỳ,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,p1,chinh-fe,ban-co,may-co,,,FE,Bàn cờ,Máy cờ,,,,,,Medium,To Do,3,34,55,70,,,,,,,,,,,,,,,,,,,,
 75,6,Task,T39 · Kiểm thử US-05.2,"**Mục tiêu**
 
 Kiểm chứng đầu hàng, rời phòng và xin hoà đúng ý người chơi, không làm thay đổi kết quả ngoài ý muốn.
@@ -2894,7 +2894,7 @@ Dùng hai người đang đấu và một người xem; chuẩn bị ván gần 
 
 **Phạm vi và phối hợp**
 
-Không kiểm xin đi lại, tái đấu hoặc luật riêng của chế độ xếp hạng vì chưa thuộc phiên bản đang làm.",Thư,Tình,XIAN Sprint 3,v0.3,14400,25/10/2026,25/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,van-truc-tuyen,,,,QA & DevOps,Ván trực tuyến,,,,,,,Medium,To Do,1,27,72,54,,,,,,,,,,,,,,,,,,,,
+Không kiểm xin đi lại, tái đấu hoặc luật riêng của chế độ xếp hạng vì chưa thuộc phiên bản đang làm.",Kỳ,Tình,XIAN Sprint 3,v0.3,14400,25/10/2026,25/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,van-truc-tuyen,,,,QA & DevOps,Ván trực tuyến,,,,,,,Medium,To Do,1,27,72,54,,,,,,,,,,,,,,,,,,,,
 76,4,Task,"T40 · FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời","**Mục tiêu**
 
 Dựng màn Bạn bè và lời mời phòng để người dùng tìm bạn, thấy trạng thái và rủ bạn vào chơi.
@@ -2928,7 +2928,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 
 **Phạm vi và phối hợp**
 
-Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu; các quyết định quyền và sức chứa lấy từ máy chủ.",Kỳ,Tình,XIAN Sprint 3,v0.3,57600,29/10/2026,30/10/2026,sprint-3,phat-trien,p1,chinh-fe,ban-be,,,,FE,Bạn bè,,,,,,,Medium,To Do,3,22,67,,,,,,,,,,,,,,,,,,,,,
+Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu; các quyết định quyền và sức chứa lấy từ máy chủ.",Cường,Tình,XIAN Sprint 3,v0.3,43200,28/10/2026,29/10/2026,sprint-3,phat-trien,p1,chinh-fe,ban-be,,,,FE,Bạn bè,,,,,,,Medium,To Do,3,22,67,,,,,,,,,,,,,,,,,,,,,
 77,3,Task,T41 · BE Xin đổi bên và phòng về chờ sau ván,"**Mục tiêu**
 
 Xử lý xin đổi bên và vòng đời phòng sau ván để hai người có thể tiếp tục chơi mà không tạo phòng mới.
@@ -2962,7 +2962,7 @@ Phòng tự tạo có chủ phòng và hai ghế Đỏ/Đen. Khi ván đã kết
 
 **Phạm vi và phối hợp**
 
-Không thêm nút tái đấu nhanh; người chơi dùng Sẵn sàng và Xin đổi bên để bắt đầu ván tiếp theo.",Cường,Tình,XIAN Sprint 2,v0.2,43200,22/10/2026,23/10/2026,sprint-3,phat-trien,p1,chinh-be,phong-choi,van-truc-tuyen,,,BE,Phòng chơi,Ván trực tuyến,,,,,,Medium,To Do,3,20,56,73,,,,,,,,,,,,,,,,,,,,
+Không thêm nút tái đấu nhanh; người chơi dùng Sẵn sàng và Xin đổi bên để bắt đầu ván tiếp theo.",Cường,Tình,XIAN Sprint 3,v0.3,43200,24/10/2026,25/10/2026,sprint-3,phat-trien,p1,chinh-be,phong-choi,van-truc-tuyen,,,BE,Phòng chơi,Ván trực tuyến,,,,,,Medium,To Do,3,20,56,73,,,,,,,,,,,,,,,,,,,,
 78,8,Task,T42 · FE khung chat hai kênh,"**Mục tiêu**
 
 Dựng khung chat để người chơi phân biệt rõ kênh riêng và kênh chung, người xem chỉ thấy phần được phép.
@@ -2996,7 +2996,7 @@ Cùng một khung chức năng được dùng ở phòng chờ và phòng đang 
 
 **Phạm vi và phối hợp**
 
-Không làm nhãn dán hay chat riêng giữa bạn bè; lọc từ cấm và giới hạn gửi cuối cùng vẫn được máy chủ thực thi.",Nhạn,Tình,XIAN Sprint 3,v0.3,43200,25/10/2026,26/10/2026,sprint-3,phat-trien,p1,chinh-fe,tro-chuyen,,,,FE,Trò chuyện,,,,,,,High,To Do,3,32,61,73,,,,,,,,,,,,,,,,,,,,
+Không làm nhãn dán hay chat riêng giữa bạn bè; lọc từ cấm và giới hạn gửi cuối cùng vẫn được máy chủ thực thi.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,24/10/2026,24/10/2026,sprint-3,phat-trien,p1,chinh-fe,tro-chuyen,,,,FE,Trò chuyện,,,,,,,High,To Do,2,32,61,73,,,,,,,,,,,,,,,,,,,,
 79,9,Task,T43 · Kiểm thử US-08.1,"**Mục tiêu**
 
 Kiểm chứng người dùng chọn cấp độ, chọn phe và chơi ván mới với máy đúng lựa chọn.
@@ -3030,7 +3030,7 @@ Chuẩn bị tài khoản chính thức và phiên Khách, dùng máy cờ thậ
 
 **Phạm vi và phối hợp**
 
-Không dùng kết quả này để khẳng định máy cấp Khó đủ mạnh hoặc đủ nhanh; chất lượng tìm nước và khôi phục sau sự cố có phần kiểm riêng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,29/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,ban-co,may-co,,,QA & DevOps,Bàn cờ,Máy cờ,,,,,,Medium,To Do,2,34,74,99,,,,,,,,,,,,,,,,,,,,
+Không dùng kết quả này để khẳng định máy cấp Khó đủ mạnh hoặc đủ nhanh; chất lượng tìm nước và khôi phục sau sự cố có phần kiểm riêng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,29/10/2026,29/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,ban-co,may-co,,,QA & DevOps,Bàn cờ,Máy cờ,,,,,,Medium,To Do,2,34,74,99,,,,,,,,,,,,,,,,,,,,
 80,2,Task,"T44 · FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách","**Mục tiêu**
 
 Dựng luồng đăng nhập Google và chơi Khách để người mới hoàn tất thiết lập hoặc vào chơi nhanh.
@@ -3064,7 +3064,7 @@ Người chọn Google lần đầu vẫn cần đặt tên đăng nhập và m�
 
 **Phạm vi và phối hợp**
 
-Phần này không quyết định thời hạn phiên hoặc quyền trên máy chủ; không làm nâng cấp Khách trực tiếp thành tài khoản chính thức.",Kỳ,Tình,XIAN Sprint 2,v0.2,43200,20/10/2026,21/10/2026,sprint-3,phat-trien,p1,chinh-fe,tai-khoan,,,,FE,Tài khoản,,,,,,,Medium,To Do,3,17,51,71,,,,,,,,,,,,,,,,,,,,
+Phần này không quyết định thời hạn phiên hoặc quyền trên máy chủ; không làm nâng cấp Khách trực tiếp thành tài khoản chính thức.",Kỳ,Tình,XIAN Sprint 2,v0.2,28800,20/10/2026,20/10/2026,sprint-2,phat-trien,p1,chinh-fe,tai-khoan,,,,FE,Tài khoản,,,,,,,Medium,To Do,2,17,51,71,,,,,,,,,,,,,,,,,,,,
 81,8,Task,T45 · Kiểm thử US-07.2,"**Mục tiêu**
 
 Kiểm chứng camera và micro hoạt động đúng quyền, đúng mức chia sẻ và không gây gián đoạn ván.
@@ -3098,7 +3098,7 @@ Dùng hai máy cho hai người chơi và thêm điện thoại hoặc máy khá
 
 **Phạm vi và phối hợp**
 
-Thu hồi luồng khi bị đuổi hoặc đổi từ ghế xuống xem được kiểm thêm cùng chức năng quản lý người xem và hồi quy tổng.",Kỳ,Tình,XIAN Sprint 4,v1.0,28800,31/10/2026,01/11/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,camera-va-mic,,,,QA & DevOps,Camera và mic,,,,,,,Medium,To Do,2,33,94,57,78,,,,,,,,,,,,,,,,,,,
+Thu hồi luồng khi bị đuổi hoặc đổi từ ghế xuống xem được kiểm thêm cùng chức năng quản lý người xem và hồi quy tổng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,30/10/2026,30/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,camera-va-mic,,,,QA & DevOps,Camera và mic,,,,,,,Medium,To Do,2,33,94,57,78,,,,,,,,,,,,,,,,,,,
 82,3,Task,"T46 · FE hộp Xin đổi bên, Ở lại phòng / Rời phòng","**Mục tiêu**
 
 Dựng thao tác Xin đổi bên và lựa chọn sau ván để người chơi tiếp tục trong cùng phòng.
@@ -3132,7 +3132,7 @@ Phòng đang chờ có thể có một hoặc hai người ngồi ghế. Sau khi
 
 **Phạm vi và phối hợp**
 
-Phần này không tạo cơ chế tái đấu mới và không tự xử thời hạn; máy chủ quản lý đổi ghế, mã ván và vòng đời phòng.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,25/10/2026,25/10/2026,sprint-3,phat-trien,p1,chinh-fe,phong-choi,van-truc-tuyen,,,FE,Phòng chơi,Ván trực tuyến,,,,,,High,To Do,2,20,61,77,,,,,,,,,,,,,,,,,,,,
+Phần này không tạo cơ chế tái đấu mới và không tự xử thời hạn; máy chủ quản lý đổi ghế, mã ván và vòng đời phòng.",Nhạn,Tình,XIAN Sprint 3,v0.3,28800,26/10/2026,26/10/2026,sprint-3,phat-trien,p1,chinh-fe,phong-choi,van-truc-tuyen,,,FE,Phòng chơi,Ván trực tuyến,,,,,,High,To Do,2,20,61,77,,,,,,,,,,,,,,,,,,,,
 83,8,Task,T47 · Kiểm thử US-07.1,"**Mục tiêu**
 
 Kiểm chứng chat đúng kênh, đúng nội dung được phép và có giới hạn chống gửi quá nhanh.
@@ -3166,7 +3166,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 
 **Phạm vi và phối hợp**
 
-Nhánh đổi người từ ghế xuống xem và đưa người khác lên ghế được kiểm đầy đủ khi chức năng đổi vai trò hoàn tất trong hồi quy tổng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,26/10/2026,27/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,tro-chuyen,,,,QA & DevOps,Trò chuyện,,,,,,,Medium,To Do,2,32,78,82,57,,,,,,,,,,,,,,,,,,,
+Nhánh đổi người từ ghế xuống xem và đưa người khác lên ghế được kiểm đầy đủ khi chức năng đổi vai trò hoàn tất trong hồi quy tổng.",Thư,Tình,XIAN Sprint 3,v0.3,28800,27/10/2026,27/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,tro-chuyen,,,,QA & DevOps,Trò chuyện,,,,,,,Medium,To Do,2,32,78,82,57,,,,,,,,,,,,,,,,,,,
 84,2,Task,T48 · Kiểm thử US-01.3,"**Mục tiêu**
 
 Kiểm chứng đăng ký/đăng nhập Google và chơi Khách thật, bao gồm giới hạn tên và khoá thử sai mật khẩu.
@@ -3200,7 +3200,7 @@ Chuẩn bị Google chưa đăng ký, Google đã hoàn tất và email đã t�
 
 **Phạm vi và phối hợp**
 
-Ngoại lệ giữ phiên Khách khi đang chơi và xoá dữ liệu khi phiên kết thúc được nghiệm thu sau khi quản lý phiên, phòng và chat tích hợp đầy đủ.",Nhạn,Tình,XIAN Sprint 2,v0.2,28800,23/10/2026,23/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,tai-khoan,,,,QA & DevOps,Tài khoản,,,,,,,Medium,To Do,2,17,80,73,62,,,,,,,,,,,,,,,,,,,
+Ngoại lệ giữ phiên Khách khi đang chơi và xoá dữ liệu khi phiên kết thúc được nghiệm thu sau khi quản lý phiên, phòng và chat tích hợp đầy đủ.",Thư,Tình,XIAN Sprint 3,v0.3,28800,26/10/2026,26/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,tai-khoan,,,,QA & DevOps,Tài khoản,,,,,,,Medium,To Do,2,17,80,73,62,,,,,,,,,,,,,,,,,,,
 85,4,Task,T49 · Kiểm thử US-03.2,"**Mục tiêu**
 
 Kiểm chứng việc kết bạn, trạng thái hoạt động và mời bạn vào phòng.
@@ -3240,7 +3240,7 @@ Chuẩn bị ít nhất ba tài khoản chính thức, một phiên Khách, phò
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Nhạn,Tình,XIAN Sprint 4,v1.0,28800,01/11/2026,01/11/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,ban-be,,,,QA & DevOps,Bạn bè,,,,,,,Medium,To Do,2,22,76,89,92,70,,,,,,,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Kỳ,Tình,XIAN Sprint 4,v1.0,28800,01/11/2026,01/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,ban-be,,,,QA & DevOps,Bạn bè,,,,,,,Medium,To Do,2,22,76,89,92,70,,,,,,,,,,,,,,,,,,
 86,3,Task,T50 · Kiểm thử US-02.2,"**Mục tiêu**
 
 Kiểm chứng xin đổi phe và bắt đầu ván tiếp theo trong cùng phòng.
@@ -3278,7 +3278,7 @@ Chuẩn bị hai người chơi cùng một người xem trong phòng tự tạo
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Thư,Tình,XIAN Sprint 3,v0.3,14400,26/10/2026,26/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,phong-choi,van-truc-tuyen,,,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,,,Medium,To Do,1,20,82,,,,,,,,,,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Kỳ,Tình,XIAN Sprint 3,v0.3,14400,27/10/2026,27/10/2026,sprint-3,kiem-thu,p1,chinh-qa-devops,phong-choi,van-truc-tuyen,,,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,,,Medium,To Do,1,20,82,,,,,,,,,,,,,,,,,,,,,
 87,1,Task,T51 · Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ,"**Mục tiêu**
 
 Kiểm tra toàn bộ sản phẩm sau khi ghép các chức năng để phát hiện lỗi xuất hiện giữa các phần.
@@ -3304,6 +3304,8 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 - Khách đủ 12 giờ khi còn ngồi ghế không bị ngắt giữa ván; sau khi rời và hết phiên thì dữ liệu cá nhân bị xoá. Mất mạng khi đang đếm bắt đầu phải huỷ đếm, giữ ghế 60 giây, không tạo ván hoặc xử thua.
 - Người ngồi ghế cuối rời thì phòng đóng, người xem về Sảnh và chat bị xoá. Sau ván giữ đúng ghế, người xem, chế độ, mức giờ và chat; đổi người trong cặp chat riêng không làm người mới đọc được nội dung cũ. Rời ghế thu hồi quyền phát hình tiếng.
 - Hộp kết quả có đúng lý do: chiếu hết, hết nước, đầu hàng, hết giờ, mất mạng, lặp thế, thoả thuận hoà, 120 nửa nước không ăn quân, chiếu liên tục hoặc bị gián đoạn. Gián đoạn không ghi thắng, thua hay hoà.
+- Dựng cơ sở dữ liệu thử từ trống bằng toàn bộ tệp tạo/cập nhật đã tích hợp, gồm hồ sơ, bộ đếm đăng nhập và biên lai lệnh; kiểm đủ bảng, quan hệ, chỉ mục và quyền bằng yêu cầu trực tiếp. Người dùng không đọc hoặc ghi dữ liệu ngoài quyền; chỉ máy chủ ghi phòng, ván và kết quả.
+- Kiểm riêng hai đường kết thúc phiên Khách: hết hạn khi không còn giữ vị trí và chủ động Đăng xuất. Cả hai phải về màn Đăng nhập, xoá tên/dữ liệu cá nhân Khách; vào lại tạo danh tính mới. Kiểm không xoá nhầm dữ liệu của người khác.
 
 **Việc cần làm**
 
@@ -3323,7 +3325,7 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 
 **Phạm vi và phối hợp**
 
-Không thay báo cáo đo tải hoặc kiểm chứng máy cờ bằng việc chơi thử thành công. Hoàn tất công việc này chưa tự cho phép phát hành nếu các kiểm tra chuyên đề hoặc đo chất lượng còn chưa đạt.",Thư,Tình,XIAN Sprint 4,v1.0,86400,31/10/2026,02/11/2026,sprint-4,kiem-thu-tich-hop,p1,chinh-qa-devops,nen-tang,,,,QA & DevOps,Nền tảng,,,,,,,Medium,To Do,5,14,44,62,72,74,76,78,80,82,88,94,95,97,101,,,,,,,,,
+Không thay báo cáo đo tải hoặc kiểm chứng máy cờ bằng việc chơi thử thành công. Hoàn tất công việc này chưa tự cho phép phát hành nếu các kiểm tra chuyên đề hoặc đo chất lượng còn chưa đạt.",Thư,Tình,XIAN Sprint 4,v1.0,86400,31/10/2026,03/11/2026,sprint-4,kiem-thu-tich-hop,p1,chinh-qa-devops,nen-tang,,,,QA & DevOps,Nền tảng,,,,,,,Medium,To Do,5,14,44,62,72,74,76,78,80,82,88,94,95,97,101,,,,,,,,,
 88,6,Task,"T52 · BE mất kết nối, ân hạn, đồng bộ lại và server restart","**Mục tiêu**
 
 Xử lý mất kết nối ở máy chủ để người chơi có cơ hội quay lại và ván kết thúc đúng lý do.
@@ -3357,7 +3359,7 @@ Máy chủ giữ trạng thái ván và là nơi quyết định thời gian, l�
 
 **Phạm vi và phối hợp**
 
-Chỉ thực hiện xử lý phía máy chủ và dữ liệu đồng bộ. Không xây lại lớp phủ thông báo mất mạng; kiểm nghiệm đầu-cuối trên giao diện thật được thực hiện ở công việc kiểm thử mất kết nối.",Tình,Tình,XIAN Sprint 3,v0.3,43200,28/10/2026,29/10/2026,sprint-4,phat-trien,p1,chinh-be,phong-choi,van-truc-tuyen,,,BE,Phòng chơi,Ván trực tuyến,,,,,,High,To Do,3,28,92,,,,,,,,,,,,,,,,,,,,,
+Chỉ thực hiện xử lý phía máy chủ và dữ liệu đồng bộ. Không xây lại lớp phủ thông báo mất mạng; kiểm nghiệm đầu-cuối trên giao diện thật được thực hiện ở công việc kiểm thử mất kết nối.",Đông,Tình,XIAN Sprint 3,v1.0,43200,30/10/2026,31/10/2026,sprint-3,phat-trien,p1,chinh-be,phong-choi,van-truc-tuyen,,,BE,Phòng chơi,Ván trực tuyến,,,,,,High,To Do,3,28,92,,,,,,,,,,,,,,,,,,,,,
 89,7,Task,"T53 · BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã","**Mục tiêu**
 
 Cho chủ phòng kiểm soát người mới vào bằng ba chế độ và bảo đảm mã mời cũ mất hiệu lực khi cần.
@@ -3391,7 +3393,7 @@ Phòng có thể Công khai để xuất hiện ở Sảnh, Chỉ vào bằng m�
 
 **Phạm vi và phối hợp**
 
-Phần này thực thi quy tắc phía máy chủ; hộp cài đặt và danh sách Sảnh do các công việc giao diện sử dụng kết quả bàn giao.",Tùng,Tình,XIAN Sprint 2,v0.2,57600,22/10/2026,23/10/2026,sprint-4,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,29,58,,,,,,,,,,,,,,,,,,,,,
+Phần này thực thi quy tắc phía máy chủ; hộp cài đặt và danh sách Sảnh do các công việc giao diện sử dụng kết quả bàn giao.",Tùng,Tình,XIAN Sprint 2,v0.3,43200,23/10/2026,24/10/2026,sprint-2,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,29,58,,,,,,,,,,,,,,,,,,,,,
 90,7,Task,"T54 · BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem","**Mục tiêu**
 
 Cung cấp danh sách phòng công khai và quyết định đúng vai trò khi người dùng vào từ Sảnh.
@@ -3426,7 +3428,7 @@ Sảnh giúp người chưa được mời tìm phòng để chơi hoặc xem. D
 
 **Phạm vi và phối hợp**
 
-Không xây trang Sảnh trong công việc này. Kết quả là dữ liệu, sự kiện và xử lý vào phòng để giao diện dùng.",Cường,Tình,XIAN Sprint 3,v0.3,43200,24/10/2026,25/10/2026,sprint-4,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,30,89,,,,,,,,,,,,,,,,,,,,,
+Không xây trang Sảnh trong công việc này. Kết quả là dữ liệu, sự kiện và xử lý vào phòng để giao diện dùng.",Đông,Tình,XIAN Sprint 3,v0.3,28800,26/10/2026,26/10/2026,sprint-3,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,2,30,89,,,,,,,,,,,,,,,,,,,,,
 91,7,Task,"T55 · BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn","**Mục tiêu**
 
 Quản lý người xem và chuyển chỗ an toàn, đồng thời cho người chơi đuổi người xem gây phiền.
@@ -3461,7 +3463,7 @@ Một phòng có hai ghế chơi và số chỗ xem đã chọn khi tạo, tối
 
 **Phạm vi và phối hợp**
 
-Không xây khung danh sách người xem trong phần việc này. Giới hạn đã chấp nhận: một phiên Khách mới là danh tính mới, nên không cam kết chặn tuyệt đối người dùng tạo lại phiên Khách.",Đông,Tình,XIAN Sprint 2,v0.2,57600,22/10/2026,23/10/2026,sprint-4,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,31,58,,,,,,,,,,,,,,,,,,,,,
+Không xây khung danh sách người xem trong phần việc này. Giới hạn đã chấp nhận: một phiên Khách mới là danh tính mới, nên không cam kết chặn tuyệt đối người dùng tạo lại phiên Khách.",Đông,Tình,XIAN Sprint 3,v0.3,57600,24/10/2026,25/10/2026,sprint-3,phat-trien,p1,chinh-be,phong-choi,,,,BE,Phòng chơi,,,,,,,Medium,To Do,3,31,58,,,,,,,,,,,,,,,,,,,,,
 92,2,Task,"T56 · BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất","**Mục tiêu**
 
 Thực thi thời hạn đăng nhập, một vị trí chơi và việc cập nhật hồ sơ tại máy chủ.
@@ -3477,12 +3479,14 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 - Đăng nhập từ thiết bị khác khi đang đấu làm ván hiện tại bị xử thua, thiết bị cũ bị đăng xuất, thiết bị mới vào Sảnh. Nếu chỉ ngồi phòng chờ thì rời ghế theo vòng đời phòng, không ghi kết quả thua.
 - Chặn ngồi ghế hoặc mở ván với máy thứ hai; mở lời mời không được vượt kiểm tra này. Đăng xuất khi đang đấu phải xác nhận đầu hàng, còn ở phòng chờ thì rời phòng rồi đăng xuất.
 - Khách không xuất hiện trong tìm kiếm bạn bè và không nhận lời mời kết bạn. Hồ sơ chính thức cho đổi Tên hiển thị dài 2–30 ký tự, từ chối từ cấm; email chỉ đọc. Hồ sơ Khách chỉ có Đăng xuất.
+- Phiên Khách có hạn tối đa 12 giờ nhưng không kết thúc tự động khi còn ngồi ghế hoặc trong ván. Khi đủ điều kiện hết phiên hoặc Khách chủ động Đăng xuất, điều phối rời vị trí/kết thúc ván theo quy tắc hiện có, thu hồi phiên, xoá tên và dữ liệu cá nhân Khách, trả thông tin để về màn Đăng nhập. Vào Khách lần sau tạo danh tính mới; không khôi phục danh tính cũ.
 
 **Việc cần làm**
 
 - Lưu mốc hết hạn, thiết bị và vị trí chơi đang giữ; xử lý đăng nhập, hết hạn, rời ghế và kết thúc ván nhất quán.
 - Cung cấp trạng thái ván đang dở và lý do không được vào chỗ mới để giao diện hiển thị; cập nhật Tên hiển thị phải kiểm lại dữ liệu ở máy chủ.
 - Viết kiểm thử thời hạn cố định, đổi thiết bị khi chờ hoặc đang đấu, vào chỗ thứ hai và sửa hồ sơ bằng yêu cầu gửi trực tiếp.
+- Nối sự kiện kết thúc phiên Khách với quản lý phòng, ván với máy và chat; kiểm dọn dữ liệu sau hết hạn lẫn đăng xuất chủ động, không xoá nhầm dữ liệu người khác hoặc làm mất kết quả ván online phải lưu.
 
 **Kết quả bàn giao**
 
@@ -3492,10 +3496,11 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 
 - Không có hai vị trí chơi có quyền điều khiển đồng thời; kết quả thua chỉ phát sinh đúng trường hợp đã quy định.
 - Hạn phiên không trượt theo hoạt động; dữ liệu hồ sơ sai bị từ chối cả khi bỏ qua giao diện.
+- Khách hết hạn nhưng còn ngồi ghế/trong ván không bị ngắt giữa chừng; khi phiên thực sự kết thúc, cả hết hạn và đăng xuất đều xoá tên/dữ liệu cá nhân theo phạm vi đã chốt và lần vào sau dùng danh tính mới.
 
 **Phạm vi và phối hợp**
 
-Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn hồ sơ được giao cho phần giao diện; phần giữ trạng thái ván phối hợp với xử lý nối lại và ván với máy.",Đông,Tình,XIAN Sprint 3,v0.3,86400,24/10/2026,26/10/2026,sprint-4,phat-trien,p1,chinh-be,tai-khoan,van-truc-tuyen,,,BE,Tài khoản,Ván trực tuyến,,,,,,Medium,To Do,5,18,54,56,71,,,,,,,,,,,,,,,,,,,
+Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn hồ sơ được giao cho phần giao diện; phần giữ trạng thái ván phối hợp với xử lý nối lại và ván với máy.",Đông,Tình,XIAN Sprint 3,v0.3,86400,27/10/2026,29/10/2026,sprint-3,phat-trien,p1,chinh-be,tai-khoan,van-truc-tuyen,,,BE,Tài khoản,Ván trực tuyến,,,,,,Medium,To Do,5,18,54,56,71,,,,,,,,,,,,,,,,,,,
 93,7,Task,T57 · FE Cài đặt phòng,"**Mục tiêu**
 
 Tạo hộp Cài đặt phòng để chủ phòng chọn cách cho người khác tham gia.
@@ -3530,7 +3535,7 @@ Người chủ cần hiểu khác nhau giữa công khai, mời bằng mã và k
 
 **Phạm vi và phối hợp**
 
-Phần giao diện không tự sinh mã, thu hồi lời mời hoặc quyết định quyền vào phòng. Những việc đó do máy chủ thực thi.",Nhạn,Tình,XIAN Sprint 3,v0.3,28800,24/10/2026,24/10/2026,sprint-4,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,2,29,89,,,,,,,,,,,,,,,,,,,,,
+Phần giao diện không tự sinh mã, thu hồi lời mời hoặc quyết định quyền vào phòng. Những việc đó do máy chủ thực thi.",Cường,Tình,XIAN Sprint 3,v0.3,14400,26/10/2026,26/10/2026,sprint-3,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,1,29,89,,,,,,,,,,,,,,,,,,,,,
 94,7,Task,"T58 · FE danh sách người xem, thao tác ghế và khung camera/mic","**Mục tiêu**
 
 Hoàn thiện giao diện người xem và camera, mic trong cả phòng chờ lẫn phòng đang đấu.
@@ -3565,7 +3570,7 @@ Màn phòng dùng chung thông tin ghế, danh sách người xem và phần hì
 
 **Phạm vi và phối hợp**
 
-Không viết lại dịch vụ cấp quyền camera, mic hay quy tắc xếp chỗ. Phần việc này kết nối và hiển thị các dịch vụ đã bàn giao.",Nhạn,Tình,XIAN Sprint 3,v0.3,72000,28/10/2026,30/10/2026,sprint-4,phat-trien,p1,chinh-fe,phong-choi,camera-va-mic,,,FE,Phòng chơi,Camera và mic,,,,,,Medium,To Do,5,31,91,69,,,,,,,,,,,,,,,,,,,,
+Không viết lại dịch vụ cấp quyền camera, mic hay quy tắc xếp chỗ. Phần việc này kết nối và hiển thị các dịch vụ đã bàn giao.",Tình,Tình,XIAN Sprint 3,v0.3,72000,27/10/2026,29/10/2026,sprint-3,phat-trien,p1,chinh-fe,phong-choi,camera-va-mic,,,FE,Phòng chơi,Camera và mic,,,,,,Medium,To Do,5,31,91,69,,,,,,,,,,,,,,,,,,,,
 95,9,Task,T59 · Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh,"**Mục tiêu**
 
 Tinh chỉnh sức chơi và đo tốc độ máy cờ để ba cấp có chất lượng kiểm chứng được.
@@ -3598,7 +3603,7 @@ Bộ máy chọn nước đã có; bộ 50 thế giữa ván và bộ chiếu h�
 
 **Phạm vi và phối hợp**
 
-Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chính mình. Dùng bộ dữ liệu đã chuẩn bị, bàn giao số đo cho kiểm thử độc lập.",Tình,Tình,XIAN Sprint 3,v0.3,43200,24/10/2026,25/10/2026,sprint-4,phat-trien,p1,chinh-be,luat-co,may-co,,,BE,Luật cờ,Máy cờ,,,,,,High,To Do,3,36,60,38,,,,,,,,,,,,,,,,,,,,
+Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chính mình. Dùng bộ dữ liệu đã chuẩn bị, bàn giao số đo cho kiểm thử độc lập.",Đông,Tình,XIAN Sprint 2,v0.2,43200,20/10/2026,21/10/2026,sprint-2,phat-trien,p1,chinh-be,luat-co,may-co,,,BE,Luật cờ,Máy cờ,,,,,,High,To Do,3,36,60,38,,,,,,,,,,,,,,,,,,,,
 96,6,Task,T60 · Kiểm thử US-05.3,"**Mục tiêu**
 
 Kiểm chứng cách xử lý mất mạng và gián đoạn để kết quả ván không sai.
@@ -3634,7 +3639,7 @@ Dùng hai thiết bị chơi một ván có đồng hồ và ít nhất một ng
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Thư,Tình,XIAN Sprint 3,v0.3,14400,30/10/2026,30/10/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,phong-choi,van-truc-tuyen,,,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,,,Medium,To Do,1,28,88,61,,,,,,,,,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Tình,Tình,XIAN Sprint 4,v1.0,14400,31/10/2026,31/10/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,phong-choi,van-truc-tuyen,,,QA & DevOps,Phòng chơi,Ván trực tuyến,,,,,,Medium,To Do,1,28,88,61,,,,,,,,,,,,,,,,,,,,
 97,7,Task,"T61 · FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng","**Mục tiêu**
 
 Hoàn thiện Sảnh để người dùng hiểu cách bắt đầu chơi, tìm phòng và xem luật.
@@ -3669,7 +3674,7 @@ Sảnh là màn hình sau đăng nhập và nơi người chơi trở về từ 
 
 **Phạm vi và phối hợp**
 
-Không triển khai ghép ngẫu nhiên, xếp hạng, lịch sử hoặc bảng xếp hạng trong phần việc này.",Kỳ,Tình,XIAN Sprint 3,v0.3,57600,26/10/2026,27/10/2026,sprint-4,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,3,30,90,93,,,,,,,,,,,,,,,,,,,,
+Không triển khai ghép ngẫu nhiên, xếp hạng, lịch sử hoặc bảng xếp hạng trong phần việc này.",Kỳ,Tình,XIAN Sprint 3,v0.3,43200,28/10/2026,29/10/2026,sprint-3,phat-trien,p1,chinh-fe,phong-choi,,,,FE,Phòng chơi,,,,,,,Medium,To Do,3,30,90,93,,,,,,,,,,,,,,,,,,,,
 98,7,Task,T62 · Kiểm thử US-06.1,"**Mục tiêu**
 
 Kiểm chứng ba chế độ vào phòng và hiệu lực của mã mời.
@@ -3707,7 +3712,7 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Kỳ,Tình,XIAN Sprint 4,v1.0,14400,31/10/2026,31/10/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,phong-choi,,,,QA & DevOps,Phòng chơi,,,,,,,Medium,To Do,1,29,93,67,69,88,91,,,,,,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Nhạn,Tình,XIAN Sprint 4,v1.0,14400,01/11/2026,01/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,phong-choi,,,,QA & DevOps,Phòng chơi,,,,,,,Medium,To Do,1,29,93,67,69,88,91,,,,,,,,,,,,,,,,,
 99,9,Task,"T63 · BE giữ ván AI 30 phút, Thử lại, khởi động lại","**Mục tiêu**
 
 Giữ và phục hồi trạng thái ván với máy khi người chơi mất kết nối hoặc bộ máy tính nước gặp sự cố.
@@ -3719,7 +3724,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 **Yêu cầu cần đáp ứng**
 
 - Sau khi mất kết nối hoặc đóng thẻ, giữ ván tối đa 30 phút để người chơi quay lại đúng đường dẫn và thế cờ. Quá hạn thì bỏ trạng thái khỏi bộ nhớ.
-- Bộ máy tính nước không phản hồi quá 10 giây hoặc báo lỗi phải trả thông tin sự cố cùng khả năng Thử lại. Nếu chỉ quá thời gian chờ thì tìm lại trên cùng thế; nếu ván đã bị đánh dấu bỏ dở thì tạo ván mới cùng cấp và phe thực tế.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bấm Thử lại liên tiếp chỉ được xử lý một lần; không khởi chạy nhiều lượt tính nước hoặc áp hai nước cho cùng lượt.
 - Sau khi máy chủ khởi động lại, nếu trạng thái không còn thì báo “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới; không giả khôi phục.
 - Chủ động Rời ván hoặc Đăng xuất cần xác nhận đầu hàng. Đồng ý thì kết thúc, huỷ việc tính nước và giải phóng vị trí chơi; Huỷ thì giữ nguyên.
@@ -3729,6 +3734,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 - Quản lý thời hạn giữ ván và tác vụ tính nước cùng danh tính người chơi. Kiểm quyền mỗi yêu cầu tiếp tục hoặc thử lại, không chỉ kiểm đường dẫn ván.
 - Phân biệt quá thời gian chờ, lỗi tác vụ và ván đã bỏ dở để trả kết quả đủ cho giao diện báo đúng hậu quả.
 - Viết kiểm thử ngắt mạng trước, trong và sau lượt máy; quay lại trong hoặc quá hạn; gửi thử lại trùng; rời ván lúc máy đang nghĩ; máy chủ khởi động lại.
+- Khi Thử lại sau quá 10 giây, huỷ hoặc vô hiệu kết quả tác vụ cũ; kết quả cũ đến muộn không được áp thêm nước sau tác vụ mới. Kiểm nhiều lần Thử lại vẫn chỉ có một nước máy được chấp nhận.
 
 **Kết quả bàn giao**
 
@@ -3742,7 +3748,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 
 **Phạm vi và phối hợp**
 
-Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi của máy cờ. Công việc này quản lý vòng đời ván và tác vụ phía máy chủ.",Tùng,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-4,phat-trien,p1,chinh-be,may-co,,,,BE,Máy cờ,,,,,,,Medium,To Do,3,36,70,71,,,,,,,,,,,,,,,,,,,,
+Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi của máy cờ. Công việc này quản lý vòng đời ván và tác vụ phía máy chủ.",Cường,Tình,XIAN Sprint 3,v0.3,43200,26/10/2026,27/10/2026,sprint-3,phat-trien,p1,chinh-be,may-co,,,,BE,Máy cờ,,,,,,,Medium,To Do,3,36,70,71,,,,,,,,,,,,,,,,,,,,
 100,7,Task,T64 · Kiểm thử US-06.3,"**Mục tiêu**
 
 Kiểm chứng chuyển vai trò người xem, đuổi người xem và thu hồi hình tiếng.
@@ -3782,7 +3788,7 @@ Chuẩn bị phòng có hai người chơi cùng những người xem, gồm m�
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Kỳ,Tình,XIAN Sprint 4,v1.0,28800,01/11/2026,02/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,phong-choi,camera-va-mic,,,QA & DevOps,Phòng chơi,Camera và mic,,,,,,Medium,To Do,2,31,94,88,67,90,,,,,,,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Kỳ,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,02/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,phong-choi,camera-va-mic,,,QA & DevOps,Phòng chơi,Camera và mic,,,,,,Medium,To Do,2,31,94,88,67,90,,,,,,,,,,,,,,,,,,
 101,2,Task,"T65 · FE Cài đặt hồ sơ, Đăng xuất, banner ván dở","**Mục tiêu**
 
 Tạo màn hồ sơ, thao tác đăng xuất và lối quay lại ván đang dở.
@@ -3816,7 +3822,7 @@ Người dùng cần phân biệt Tên đăng nhập dùng để vào tài kho�
 
 **Phạm vi và phối hợp**
 
-Máy chủ vẫn kiểm quyền, dữ liệu và thời hạn phiên; giao diện không tự quyết định đầu hàng hay giải phóng vị trí chơi.",Kỳ,Tình,XIAN Sprint 3,v0.3,28800,28/10/2026,28/10/2026,sprint-4,phat-trien,p1,chinh-fe,tai-khoan,,,,FE,Tài khoản,,,,,,,High,To Do,2,18,92,99,,,,,,,,,,,,,,,,,,,,
+Máy chủ vẫn kiểm quyền, dữ liệu và thời hạn phiên; giao diện không tự quyết định đầu hàng hay giải phóng vị trí chơi.",Cường,Tình,XIAN Sprint 3,v0.3,28800,30/10/2026,30/10/2026,sprint-3,phat-trien,p1,chinh-fe,tai-khoan,,,,FE,Tài khoản,,,,,,,High,To Do,2,18,92,99,,,,,,,,,,,,,,,,,,,,
 102,1,Task,"T66 · Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật","**Mục tiêu**
 
 Đo chất lượng vận hành và kiểm chứng các ràng buộc kỹ thuật trên bản tích hợp trước khi phát hành.
@@ -3856,7 +3862,7 @@ Mỗi kết quả phải gắn với máy, mạng, trình duyệt, bản phần 
 
 **Phạm vi và phối hợp**
 
-Không tuyên bố hệ thống đạt chỉ vì đã viết xong báo cáo. Đây là đo và xác minh; phần sửa lỗi vẫn do công việc sở hữu chức năng thực hiện.",Tùng,Tình,XIAN Sprint 4,v1.0,57600,31/10/2026,01/11/2026,sprint-4,do-chat-luong,p1,chinh-qa-devops,nen-tang,,,,QA & DevOps,Nền tảng,,,,,,,Medium,To Do,3,14,44,62,72,74,76,78,80,82,88,94,95,97,101,,,,,,,,,
+Không tuyên bố hệ thống đạt chỉ vì đã viết xong báo cáo. Đây là đo và xác minh; phần sửa lỗi vẫn do công việc sở hữu chức năng thực hiện.",Tình,Tình,XIAN Sprint 4,v1.0,57600,01/11/2026,02/11/2026,sprint-4,do-chat-luong,p1,chinh-qa-devops,nen-tang,,,,QA & DevOps,Nền tảng,,,,,,,Medium,To Do,3,14,44,62,72,74,76,78,80,82,88,94,95,97,101,,,,,,,,,
 103,7,Task,T67 · Kiểm thử US-06.2,"**Mục tiêu**
 
 Kiểm chứng Sảnh, danh sách phòng công khai và các lối vào chơi.
@@ -3908,7 +3914,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 **Yêu cầu cần đáp ứng**
 
 - Đóng thẻ trình duyệt/mất mạng rồi về trong 30 phút: mở đúng ván hoặc nút Quay lại ở Sảnh và tiếp tục thế cũ. Quá hạn xoá trạng thái bộ nhớ, không lưu lịch sử.
-- Máy cờ lỗi hoặc không trả lời quá 10 giây hiện “Máy cờ gặp sự cố” và Thử lại. Chỉ quá thời gian chờ thì tìm nước trên cùng thế; ván đã Bỏ dở thì tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
+- Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bấm Thử lại liên tiếp chỉ xử lý một lần. Khởi động lại máy chủ thì hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới, không khôi phục giả.
 - Rời ván/Đăng xuất chủ động phải xác nhận đầu hàng; Đồng ý kết thúc, huỷ tác vụ máy và giải phóng vị trí; Huỷ giữ nguyên.
 - Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; thời gian tại mốc 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.
@@ -3921,6 +3927,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 - Khởi động lại máy chủ, rời hoặc đăng xuất khi máy đang nghĩ; kiểm không áp nước cũ hay giữ vị trí sau đầu hàng.
 - Chạy 50 thế mỗi cấp, lưu từng thời gian và độ sâu; tính mốc 95%, kiểm chiếu hết bắt buộc và 20 ván mỗi cặp cấp.
 - Ghi từng ca là Đạt, Không đạt hoặc Chưa kiểm được cùng dữ liệu, thời điểm và bằng chứng đã che bí mật. Báo lỗi có cách tái hiện; sau sửa chạy lại ca lỗi và các nhánh liên quan.
+- Cố ý trì hoãn máy quá 10 giây rồi Thử lại: đối chiếu mã ván, thế, lượt và phe không đổi trước nước máy mới; cho kết quả tác vụ cũ về muộn để kiểm không đi hai lần.
 
 **Kết quả bàn giao**
 
@@ -3934,7 +3941,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Thư,Tình,XIAN Sprint 3,v0.3,28800,29/10/2026,30/10/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,luat-co,may-co,,,QA & DevOps,Luật cờ,Máy cờ,,,,,,Medium,To Do,2,36,95,74,101,,,,,,,,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Nhạn,Tình,XIAN Sprint 4,v1.0,28800,01/11/2026,02/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,luat-co,may-co,,,QA & DevOps,Luật cờ,Máy cờ,,,,,,Medium,To Do,2,36,95,74,101,,,,,,,,,,,,,,,,,,,
 105,2,Task,T69 · Kiểm thử US-01.4,"**Mục tiêu**
 
 Kiểm chứng phiên đăng nhập, giới hạn một vị trí chơi và hồ sơ cá nhân.
@@ -3973,7 +3980,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 **Phạm vi và phối hợp**
 
-Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Nhạn,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,02/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,tai-khoan,van-truc-tuyen,,,QA & DevOps,Tài khoản,Ván trực tuyến,,,,,,Medium,To Do,2,18,101,88,59,74,97,68,73,80,76,62,,,,,,,,,,,,
+Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.",Nhạn,Tình,XIAN Sprint 4,v1.0,28800,02/11/2026,03/11/2026,sprint-4,kiem-thu,p1,chinh-qa-devops,tai-khoan,van-truc-tuyen,,,QA & DevOps,Tài khoản,Ván trực tuyến,,,,,,Medium,To Do,2,18,101,88,59,74,97,68,73,80,76,62,,,,,,,,,,,,
 106,1,Task,"T70 · Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo","**Mục tiêu**
 
 Kiểm điều kiện phát hành và chuẩn bị bộ chạy trình diễn mà thành viên khác có thể tự khởi động.
@@ -4058,4 +4065,4 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 **Phạm vi và phối hợp**
 
-Đây là tổng duyệt và ghi bằng chứng trên bản phát hành. Không thay các phép đo tải, kiểm bảo mật hay kiểm sức chơi bằng việc video trình diễn chạy thành công.",Thư,Tình,XIAN Sprint 4,v1.0,14400,03/11/2026,03/11/2026,sprint-4,tong-duyet,p1,chinh-qa-devops,nen-tang,,,,QA & DevOps,Nền tảng,,,,,,,Medium,To Do,1,14,106,,,,,,,,,,,,,,,,,,,,,
+Đây là tổng duyệt và ghi bằng chứng trên bản phát hành. Không thay các phép đo tải, kiểm bảo mật hay kiểm sức chơi bằng việc video trình diễn chạy thành công.",Thư,Tình,XIAN Sprint 4,v1.0,14400,04/11/2026,04/11/2026,sprint-4,tong-duyet,p1,chinh-qa-devops,nen-tang,,,,QA & DevOps,Nền tảng,,,,,,,Medium,To Do,1,14,106,,,,,,,,,,,,,,,,,,,,,
