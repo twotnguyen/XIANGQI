@@ -1,0 +1,4754 @@
+[
+  {
+    "ac": "AC-00.1.1",
+    "story": "US-00.1",
+    "implementation_tasks": [
+      "T01"
+    ],
+    "verification_task": "T01",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Máy dev mới clone repo, có Node + pnpm",
+      "when": "Chạy `pnpm install` rồi `pnpm dev`",
+      "then": "Web và server cùng chạy; `GET /health` trả 200",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.1.2",
+    "story": "US-00.1",
+    "implementation_tasks": [
+      "T01"
+    ],
+    "verification_task": "T01",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Một PR vào `develop`",
+      "when": "CI chạy",
+      "then": "Chạy lint, typecheck, unit test; bất kỳ bước nào lỗi thì PR không merge được (bảo vệ nhánh)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.1.3",
+    "story": "US-00.1",
+    "implementation_tasks": [
+      "T01"
+    ],
+    "verification_task": "T01",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Repo",
+      "when": "Kiểm tra file môi trường",
+      "then": "Có `.env.example` liệt kê mọi biến; không có khoá bí mật trong git; biến `VITE_*` không chứa bí mật",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.1.4",
+    "story": "US-00.1",
+    "implementation_tasks": [
+      "T01",
+      "T14",
+      "T24"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "/health của máy cờ và CSDL cần các module thật; T01 kiểm khung endpoint sớm.",
+    "criterion": {
+      "given": "Server chạy",
+      "when": "Gọi `/health`",
+      "then": "Trả trạng thái server, kết nối CSDL và máy cờ",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.1.5",
+    "story": "US-00.1",
+    "implementation_tasks": [
+      "T01",
+      "T04",
+      "T09",
+      "T37"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "Kiểm log trong luồng đăng nhập, OTP và chat thật sau tích hợp; không kết luận PASS toàn AC từ logger giả.",
+    "criterion": {
+      "given": "Có đăng nhập, gửi OTP, chat",
+      "when": "Đọc log",
+      "then": "Log dạng JSON có thời gian, mức, mã sự kiện; **không** chứa mật khẩu, OTP, token, nội dung chat",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.1.6",
+    "story": "US-00.1",
+    "implementation_tasks": [
+      "T01",
+      "T12"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T01 cấu hình hạn log, T12 tạo/lưu/dọn biên lai; dùng đồng hồ kiểm thử để xác minh 24 giờ và 14 ngày.",
+    "criterion": {
+      "given": "Log và biên lai lệnh",
+      "when": "Quá hạn lưu giữ",
+      "then": "Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.2.1",
+    "story": "US-00.2",
+    "implementation_tasks": [
+      "T14"
+    ],
+    "verification_task": "T14",
+    "stage": "task",
+    "notes": "T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Cơ sở dữ liệu trống",
+      "when": "Chạy toàn bộ migration",
+      "then": "Tạo đủ bảng, khoá ngoại, chỉ mục; chạy lại từ đầu không lỗi",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.2.2",
+    "story": "US-00.2",
+    "implementation_tasks": [
+      "T14"
+    ],
+    "verification_task": "T14",
+    "stage": "task",
+    "notes": "T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Người dùng đăng nhập bằng khoá công khai ở client",
+      "when": "Đọc/ghi dữ liệu người khác hoặc bảng ván/phòng",
+      "then": "Bị RLS từ chối; chỉ máy chủ (khoá service) ghi được dữ liệu ván, phòng, kết quả",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.2.3",
+    "story": "US-00.2",
+    "implementation_tasks": [
+      "T14"
+    ],
+    "verification_task": "T14",
+    "stage": "task",
+    "notes": "T14 nghiệm thu migration, ràng buộc và RLS bằng test trực tiếp CSDL; kiểm schema/phân quyền tích hợp lại ở T51. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Username lưu theo chữ người dùng gõ",
+      "when": "Kiểm tra trùng",
+      "then": "Ràng buộc duy nhất so sánh theo chữ thường (`Twot` = `twot`)",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-00.3.1",
+    "story": "US-00.3",
+    "implementation_tasks": [
+      "T12"
+    ],
+    "verification_task": "T12",
+    "stage": "task",
+    "notes": "T12 kiểm hợp đồng socket với token/fixture hợp lệ và không hợp lệ; xác minh lại trong các luồng thật tại T51. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Kết nối không có token hợp lệ (người dùng hoặc Khách)",
+      "when": "Mở socket",
+      "then": "Bị từ chối kết nối",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.3.2",
+    "story": "US-00.3",
+    "implementation_tasks": [
+      "T12"
+    ],
+    "verification_task": "T12",
+    "stage": "task",
+    "notes": "T12 kiểm hợp đồng socket với token/fixture hợp lệ và không hợp lệ; xác minh lại trong các luồng thật tại T51. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Client gửi cùng một `commandId` hai lần",
+      "when": "Máy chủ xử lý",
+      "then": "Lệnh chỉ có hiệu lực một lần; lần hai trả lại kết quả cũ",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.3.3",
+    "story": "US-00.3",
+    "implementation_tasks": [
+      "T12"
+    ],
+    "verification_task": "T12",
+    "stage": "task",
+    "notes": "T12 kiểm hợp đồng socket với token/fixture hợp lệ và không hợp lệ; xác minh lại trong các luồng thật tại T51. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Client gửi lệnh với phiên bản trạng thái cũ",
+      "when": "Máy chủ nhận",
+      "then": "Từ chối và gửi ảnh chụp trạng thái mới nhất",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.3.4",
+    "story": "US-00.3",
+    "implementation_tasks": [
+      "T12",
+      "T18",
+      "T20",
+      "T23",
+      "T25",
+      "T52"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T12 kiểm contract snapshot sớm; ảnh chụp đầy đủ phòng/ván/đồng hồ/vai trò và nối lại trên giao diện cần tích hợp tính năng.",
+    "criterion": {
+      "given": "Client mất kết nối rồi nối lại",
+      "when": "Kết nối thành công",
+      "then": "Nhận ảnh chụp đầy đủ (phòng, ván, đồng hồ, vai trò) và giao diện khớp máy chủ",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.3.5",
+    "story": "US-00.3",
+    "implementation_tasks": [
+      "T12",
+      "T21",
+      "T25"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T12 kiểm quyền tiếp quản tab ở mức socket; E2E hai tab cùng phòng cần giao diện/phòng/ván thật, kể cả tab cũ tự reconnect.",
+    "criterion": {
+      "given": "Cùng tài khoản mở tab thứ hai vào cùng phòng",
+      "when": "Tab mới kết nối",
+      "then": "Tab mới tiếp quản; tab cũ nhận *\"Phiên này đã được mở ở tab khác\"* và chỉ đọc; tab cũ tự nối lại vẫn chỉ đọc",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-00.4.1",
+    "story": "US-00.4",
+    "implementation_tasks": [
+      "T02"
+    ],
+    "verification_task": "T02",
+    "stage": "task",
+    "notes": "T02 lập và duyệt kế hoạch kiểm thử, môi trường, mẫu TC, quy trình lỗi. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Backlog P1",
+      "when": "Viết kế hoạch kiểm thử",
+      "then": "Có phạm vi, môi trường, dữ liệu thử, tiêu chí vào/ra, quy trình báo lỗi trên Jira (mức độ: Nghiêm trọng/Cao/Trung bình/Thấp)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.4.2",
+    "story": "US-00.4",
+    "implementation_tasks": [
+      "T02",
+      "T13",
+      "T16",
+      "T17",
+      "T27",
+      "T28",
+      "T29",
+      "T30",
+      "T39",
+      "T43",
+      "T45",
+      "T47",
+      "T48",
+      "T49",
+      "T50",
+      "T60",
+      "T62",
+      "T64",
+      "T67",
+      "T68",
+      "T69"
+    ],
+    "verification_task": "T70",
+    "stage": "integration",
+    "notes": "T02 đặt mẫu/quy trình; từng Task viết và chạy TC, lưu báo cáo hồi quy theo Sprint. T70 đối soát đủ báo cáo sau khi mọi QA xong; không yêu cầu T51 chờ các QA song song.",
+    "criterion": {
+      "given": "Mỗi AC",
+      "when": "Viết TC",
+      "then": "TC cùng số có tiền điều kiện, bước, dữ liệu và kết quả mong đợi; một AC nhiều nhánh có các biến thể TC; truy vết 100% AC",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.4.3",
+    "story": "US-00.4",
+    "implementation_tasks": [
+      "T02",
+      "T13",
+      "T16",
+      "T17",
+      "T27",
+      "T28",
+      "T29",
+      "T30",
+      "T39",
+      "T43",
+      "T45",
+      "T47",
+      "T48",
+      "T49",
+      "T50",
+      "T60",
+      "T62",
+      "T64",
+      "T67",
+      "T68",
+      "T69",
+      "T51"
+    ],
+    "verification_task": "T70",
+    "stage": "integration",
+    "notes": "T02 đặt mẫu/quy trình; từng Task viết và chạy TC, lưu báo cáo hồi quy theo Sprint. T70 đối soát đủ báo cáo sau khi mọi QA xong; không yêu cầu T51 chờ các QA song song.",
+    "criterion": {
+      "given": "Cuối mỗi Sprint",
+      "when": "Chạy hồi quy",
+      "then": "Báo cáo PASS/FAIL/BLOCKED theo TC, lỗi mở được ghi Jira",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.5.1",
+    "story": "US-00.5",
+    "implementation_tasks": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T14",
+      "T15",
+      "T18",
+      "T19",
+      "T20",
+      "T21",
+      "T22",
+      "T23",
+      "T24",
+      "T25",
+      "T26",
+      "T31",
+      "T32",
+      "T33",
+      "T34",
+      "T35",
+      "T36",
+      "T37",
+      "T38",
+      "T40",
+      "T41",
+      "T42",
+      "T44",
+      "T46",
+      "T52",
+      "T53",
+      "T54",
+      "T55",
+      "T56",
+      "T57",
+      "T58",
+      "T59",
+      "T61",
+      "T63",
+      "T65"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T51 chạy D1–D10 đầy đủ sau toàn bộ triển khai, song song QA chuyên đề; T70 chờ mọi QA và NFR trước phát hành.",
+    "criterion": {
+      "given": "Môi trường demo local",
+      "when": "Chạy D1–D10 (mục 8)",
+      "then": "Tất cả PASS; kịch bản tự động hoá được thì có test Playwright",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-00.5.2",
+    "story": "US-00.5",
+    "implementation_tasks": [
+      "T71"
+    ],
+    "verification_task": "T71",
+    "stage": "integration",
+    "notes": "T71 chạy lại D1–D10 trên bản đóng gói và máy demo thật, ghi hình. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Bản phát hành v1.0",
+      "when": "Chạy lại D1–D10 trên máy demo thật",
+      "then": "Tất cả PASS, có ghi hình làm bằng chứng",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.5.3",
+    "story": "US-00.5",
+    "implementation_tasks": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T14",
+      "T15",
+      "T18",
+      "T19",
+      "T20",
+      "T21",
+      "T22",
+      "T23",
+      "T24",
+      "T25",
+      "T26",
+      "T31",
+      "T32",
+      "T33",
+      "T34",
+      "T35",
+      "T36",
+      "T37",
+      "T38",
+      "T40",
+      "T41",
+      "T42",
+      "T44",
+      "T46",
+      "T52",
+      "T53",
+      "T54",
+      "T55",
+      "T56",
+      "T57",
+      "T58",
+      "T59",
+      "T61",
+      "T63",
+      "T65"
+    ],
+    "verification_task": "T66",
+    "stage": "integration",
+    "notes": "Đo/đối soát 12 NFR và 9 gate sau toàn bộ triển khai, gồm UI media/Sảnh. QA chức năng chạy song song; T70 chờ tất cả kết quả.",
+    "criterion": {
+      "given": "Mục 6 và 7",
+      "when": "Đo",
+      "then": "Mỗi NFR/GATE có số đo, ngày đo, người đo; không đạt thì ghi **BLOCKED** kèm lý do, không tự hạ ngưỡng",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.5.4",
+    "story": "US-00.5",
+    "implementation_tasks": [
+      "T66"
+    ],
+    "verification_task": "T66",
+    "stage": "integration",
+    "notes": "T66 kiểm tải 50 người/10 ván trên bản tính năng đầy đủ và ghi p95, lỗi, CPU/RAM. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Bài tải",
+      "when": "Chạy kịch bản 50 người dùng / 10 ván đồng thời",
+      "then": "Báo cáo độ trễ nước đi p95, lỗi, CPU/RAM",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-00.5.5",
+    "story": "US-00.5",
+    "implementation_tasks": [
+      "T70"
+    ],
+    "verification_task": "T70",
+    "stage": "integration",
+    "notes": "T70 kiểm chạy theo README trên máy sạch, dữ liệu/tài khoản demo và phương án Render; T71 xác nhận bản đóng gói thực tế. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Máy sạch, có Node + pnpm, có file `.env` được cấp",
+      "when": "Làm theo README",
+      "then": "Chạy được toàn bộ ứng dụng trong ≤ 15 phút",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-00.5.6",
+    "story": "US-00.5",
+    "implementation_tasks": [
+      "T70"
+    ],
+    "verification_task": "T70",
+    "stage": "integration",
+    "notes": "T70 kiểm chạy theo README trên máy sạch, dữ liệu/tài khoản demo và phương án Render; T71 xác nhận bản đóng gói thực tế. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Trước buổi demo",
+      "when": "Chuẩn bị",
+      "then": "Có tài khoản demo, phòng mẫu và kịch bản dự phòng (Render) nếu mạng local lỗi",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-01.1.1",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bước 1",
+      "when": "Nhập username sai định dạng (không khớp `^[a-zA-Z0-9_]{3,20}$`) hoặc chứa từ cấm",
+      "then": "Báo lỗi tại ô ngay bước nhập, không sang bước 2; máy chủ kiểm lại trước khi hoàn tất (BA 0.17)",
+      "test_level": "U, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.1.2",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bước 1",
+      "when": "Nhập username đã tồn tại (không phân biệt hoa thường)",
+      "then": "Báo *\"Username đã có người dùng\"*",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.1.3",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bước 1",
+      "when": "Mật khẩu < 8 ký tự hoặc ô xác nhận không khớp",
+      "then": "Báo lỗi, không sang bước 2",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-01.1.4",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bước 2",
+      "when": "Nhập email đã có tài khoản",
+      "then": "Báo *\"Email này đã được đăng ký\"*, **không** gửi OTP",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.1.5",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bước 2, email hợp lệ bất kỳ (kể cả Gmail ngoài nhóm)",
+      "when": "Bấm \"Xác nhận Email\"",
+      "then": "Gửi OTP 6 số qua SMTP ngoài; hiện ô nhập OTP và đồng hồ 3 phút",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-01.1.6",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08",
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T13 kiểm ACTIVE, tên mặc định và đăng nhập; nhánh link mời phải kiểm sau T22/T26, nên nghiệm thu đầy đủ tại T51.",
+    "criterion": {
+      "given": "Bước 3",
+      "when": "Nhập đúng OTP trong 3 phút",
+      "then": "Tài khoản `ACTIVE`, `display_name = username`, tự đăng nhập và vào Sảnh (hoặc phòng mời đang chờ)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.1.7",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bước 3",
+      "when": "Nhập sai, mã hết hạn, hoặc bị giới hạn số lần thử",
+      "then": "Báo lỗi rõ ràng và hướng dẫn gửi mã mới",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.1.8",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Vừa gửi mã",
+      "when": "Muốn gửi lại",
+      "then": "Nút \"Gửi lại mã OTP\" khoá và đếm lùi 60 giây",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.1.9",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đăng ký chưa hoàn tất hoặc lỗi giữa ghi hồ sơ và xoá cờ PENDING",
+      "when": "Dọn/phục hồi bản tạm cùng danh tính",
+      "then": "Chưa có hồ sơ hoàn tất: không giữ username, dọn trong khoảng 60–65 phút; đã ghi hoàn tất: phục hồi, không xoá nhầm, chặn sử dụng tới khi phục hồi xong; các thao tác được tuần tự hoá (BA 1.1)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.1.10",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Username bị người khác lấy trong lúc chờ OTP",
+      "when": "Xác nhận OTP đúng",
+      "then": "Báo lỗi và quay về Bước 1, không tạo tài khoản trùng",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.1.11",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "SMTP ngoài đã cấu hình",
+      "when": "Đăng ký bằng Gmail không thuộc nhóm",
+      "then": "Thư OTP tới hộp thư (mục tiêu ≤ 1 phút), tên người gửi \"Cờ Tướng Online\", nội dung tiếng Việt",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-01.1.12",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đăng ký liên tiếp 5 lần trong 1 giờ bằng 5 email khác nhau",
+      "when": "Gửi OTP",
+      "then": "Cả 5 thư đều gửi được (không còn giới hạn 2 thư/giờ của SMTP mặc định)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-01.1.13",
+    "story": "US-01.1",
+    "implementation_tasks": [
+      "T04",
+      "T08"
+    ],
+    "verification_task": "T13",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Dịch vụ SMTP lỗi hoặc hết hạn mức",
+      "when": "Gửi OTP",
+      "then": "Giao diện báo lỗi thật *\"Không gửi được mã, vui lòng thử lại sau\"*; tài khoản không bị kẹt",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.2.1",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15",
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T17 kiểm username không phân biệt hoa thường và vào Sảnh; nhánh quay vào phòng mời kiểm sau tích hợp T22/T26.",
+    "criterion": {
+      "given": "Tài khoản `twot` tồn tại",
+      "when": "Đăng nhập bằng `TWOT` + mật khẩu đúng",
+      "then": "Thành công, vào Sảnh (hoặc phòng mời đang chờ)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.2.2",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bất kỳ",
+      "when": "Sai mật khẩu **hoặc** username không tồn tại",
+      "then": "Cùng một câu *\"Sai tên đăng nhập hoặc mật khẩu\"*, thời gian phản hồi không lộ khác biệt rõ rệt",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.2.3",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Cùng username đã sai 4 lần trong 15 phút",
+      "when": "Sai lần thứ 5",
+      "then": "Username bị chặn đăng nhập mật khẩu 15 phút tính từ lần sai thứ 5",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.2.4",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Username đang bị chặn",
+      "when": "Thử đăng nhập, **kể cả đúng mật khẩu**",
+      "then": "Báo *\"Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút\"*, không đăng nhập",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.2.5",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Username **không tồn tại** sai 5 lần",
+      "when": "Thử lần 6",
+      "then": "Hành vi giống hệt username có thật (cũng bị chặn, cùng câu báo)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.2.6",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã sai 3 lần",
+      "when": "Đăng nhập đúng",
+      "then": "Thành công, bộ đếm về 0",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.2.7",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ô \"Ghi nhớ đăng nhập\" mặc định tick",
+      "when": "Đăng nhập",
+      "then": "Phiên hết hạn cố định sau 30 ngày; bỏ tick thì hết khi đóng trình duyệt hoặc sau 12 giờ, tuỳ cái nào trước",
+      "test_level": "I, M"
+    }
+  },
+  {
+    "ac": "AC-01.2.8",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T15",
+      "T03"
+    ],
+    "verification_task": "T17",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã đăng nhập",
+      "when": "Mở `/login` hoặc `/register`",
+      "then": "Tự chuyển về `/lobby`",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.2.9",
+    "story": "US-01.2",
+    "implementation_tasks": [
+      "T09",
+      "T35",
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "integration",
+    "notes": "AC Google không xoá khoá mật khẩu không thuộc nghiệm thu cục bộ T17; T48 kiểm sau Google/Onboarding thật. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Username đang bị chặn do sai mật khẩu 5 lần",
+      "when": "Chủ tài khoản đăng nhập thành công bằng Google",
+      "then": "Vẫn vào được bằng Google; bộ đếm sai mật khẩu **không** bị xoá, đăng nhập bằng mật khẩu vẫn bị chặn tới hết 15 phút (BA 0.15)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.3.1",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Email Google chưa có tài khoản",
+      "when": "Bấm \"Đăng ký bằng Google\" hoặc \"Đăng nhập bằng Google\"",
+      "then": "Chuyển tới `/onboarding`: email chỉ đọc, ô Username và Mật khẩu; không yêu cầu OTP",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-01.3.2",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44",
+      "T04"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang ở `/onboarding`",
+      "when": "Nhập username/mật khẩu và bấm \"Hoàn tất thiết lập\"",
+      "then": "Username chứa từ cấm bị từ chối ngay bước nhập; dữ liệu hợp lệ tạo tài khoản với `display_name = username` (không lấy họ tên Google), vào Sảnh; máy chủ kiểm lại (BA 0.17)",
+      "test_level": "U, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.3",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Email Google đã thuộc tài khoản Username + Mật khẩu",
+      "when": "Bấm đăng ký/đăng nhập Google",
+      "then": "Báo *\"Email này đã được đăng ký\"*, **không** tự liên kết hai tài khoản",
+      "test_level": "I, M"
+    }
+  },
+  {
+    "ac": "AC-01.3.4",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tài khoản tạo bằng Google đã hoàn tất",
+      "when": "Bấm \"Đăng nhập bằng Google\"",
+      "then": "Vào Sảnh ngay",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.5",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tài khoản tạo bằng Google đã hoàn tất",
+      "when": "Đăng nhập bằng username + mật khẩu đã đặt",
+      "then": "Đăng nhập thành công",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.6",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ở `/onboarding`",
+      "when": "Thử đóng/thoát hoặc vào URL khác của ứng dụng",
+      "then": "Không có nút X; chưa hoàn tất thì không dùng được ứng dụng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.7",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bản Google tạm chưa hoàn tất quá 60 phút",
+      "when": "Tác vụ dọn chạy (mỗi 5 phút)",
+      "then": "Bản tạm bị xoá; tài khoản đã hoàn tất hoặc vừa hoàn tất không bị xoá",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.3.8",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T44"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ở `SCR-LOGIN`",
+      "when": "Nhìn dưới nút \"Guest\"",
+      "then": "Có ghi chú *\"Lưu ý: Chế độ Khách (Guest) không được tham gia đánh Xếp hạng để tính điểm Elo và không lưu lịch sử ván cờ.\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.9",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44",
+      "T37"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Tên Khách dùng bộ lọc chung T37; T48 kiểm tên hợp lệ, bị cấm, độ dài và nhãn Khách trên giao diện đã tích hợp. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Bấm \"Guest\"",
+      "when": "Nhập tên 2–20 ký tự (có dấu), không chứa từ cấm, bấm \"Vào chơi\"",
+      "then": "Vào Sảnh; tên hiển thị kèm **\"(Khách)\"** ở mọi nơi",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.10",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44",
+      "T37"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Tên Khách dùng bộ lọc chung T37; T48 kiểm tên hợp lệ, bị cấm, độ dài và nhãn Khách trên giao diện đã tích hợp. Hồi quy tại T51.",
+    "criterion": {
+      "given": "`MODAL-GUEST-NAME`",
+      "when": "Tên < 2, > 20 ký tự hoặc chứa từ cấm",
+      "then": "Từ chối với thông báo lỗi tại ô",
+      "test_level": "U, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.3.11",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T18"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "T48 kiểm giới hạn một phòng Khách bằng thao tác tạo phòng thật; API T18 phải thực thi giới hạn danh tính Khách từ T35. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Khách đang có 1 phòng mở do mình tạo",
+      "when": "Tạo phòng thứ hai",
+      "then": "Bị chặn kèm tooltip *\"Khách chỉ được mở 1 phòng cùng lúc\"*",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.3.12",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T56",
+      "T18",
+      "T34",
+      "T37"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "Hạn/xoá phiên Khách phải phối hợp vị trí chơi online/AI và dọn dữ liệu chat; T48 chỉ kiểm phần phiên cục bộ, T51 nghiệm thu toàn nhánh.",
+    "criterion": {
+      "given": "Phiên Khách đủ 12 giờ khi đang ngồi ghế hoặc trong ván",
+      "when": "Hết 12 giờ",
+      "then": "Phiên chưa hết cho đến khi Khách rời ghế/ván",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.3.13",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T56",
+      "T18",
+      "T34",
+      "T37"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "Hạn/xoá phiên Khách phải phối hợp vị trí chơi online/AI và dọn dữ liệu chat; T48 chỉ kiểm phần phiên cục bộ, T51 nghiệm thu toàn nhánh.",
+    "criterion": {
+      "given": "Phiên Khách hết hạn hoặc Khách bấm Đăng xuất",
+      "when": "Hệ thống xử lý",
+      "then": "Về `SCR-LOGIN`; tên và dữ liệu cá nhân của Khách bị xoá; vào lại là danh tính Khách mới",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.3.14",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T09"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Username đang bị chặn",
+      "when": "Đăng nhập bằng Google của chính tài khoản đó",
+      "then": "Vẫn đăng nhập được (bộ đếm không áp cho Google)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-01.3.15",
+    "story": "US-01.3",
+    "implementation_tasks": [
+      "T35",
+      "T44",
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T48",
+    "stage": "task",
+    "notes": "T48 cần luồng link/mã T22/T26 để kiểm tự vào phòng sau tạo phiên Khách. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Chưa đăng nhập, mở link mời phòng",
+      "when": "Chọn \"Guest\", nhập tên hợp lệ",
+      "then": "Tự vào đúng phòng (ghế trống hoặc người xem theo sức chứa), không phải mở link lần hai",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.1",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang đăng nhập",
+      "when": "Dùng ứng dụng liên tục, làm mới token",
+      "then": "Hạn phiên **không** được gia hạn; chỉ đăng nhập lại mới tạo hạn mới",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.4.2",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T52",
+      "T23"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 cần hết hạn phiên, ân hạn/nối lại và đồng hồ thật; không dùng mock T52 để kết luận toàn AC PASS. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Phiên chính thức hết hạn khi đang trong ván online",
+      "when": "Hết hạn",
+      "then": "Mất quyền điều khiển, yêu cầu đăng nhập lại; ván giữ ân hạn 60 giây, đồng hồ vẫn chạy; đăng nhập lại cùng thiết bị trong hạn thì tiếp tục",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.3",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T63"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 cần giữ ván AI 30 phút T63; bao gồm đăng nhập lại cùng thiết bị. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Phiên hết hạn khi đang đánh với máy",
+      "when": "Hết hạn",
+      "then": "Ván AI được giữ 30 phút; đăng nhập lại cùng thiết bị trong hạn thì tiếp tục",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.4.4",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T20",
+      "T34"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 kiểm cả online và AI trên hai thiết bị, kết quả ván và phiên cũ bị thu hồi. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Tài khoản đang trong ván (online hoặc AI) ở thiết bị A",
+      "when": "Đăng nhập thành công ở thiết bị B",
+      "then": "Ván bị **xử thua ngay** và kết thúc; thiết bị A bị đăng xuất; thiết bị B vào **Sảnh**",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.5",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T18",
+      "T65"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tài khoản đang ngồi ghế ở phòng `WAITING` (không có ván) ở thiết bị A",
+      "when": "Đăng nhập ở thiết bị B",
+      "then": "Không tạo kết quả thua; A bị đăng xuất, rời ghế theo vòng đời phòng; B vào Sảnh",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.4.6",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T18",
+      "T22",
+      "T34",
+      "T38",
+      "T61"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 kiểm máy chủ từ chối và trạng thái nút trên mọi lối vào phòng/AI; cần T61 và T38 hoàn tất. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đang ngồi ghế ở một phòng hoặc đang trong ván AI",
+      "when": "Bấm Tạo phòng / Vào chơi / Đánh với máy / mở mã phòng khác để ngồi ghế",
+      "then": "Nút `DISABLED` kèm tooltip *\"Bạn đang ở trong một ván/phòng khác\"*; máy chủ cũng từ chối",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.7",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T63"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 kiểm banner trỏ đúng phòng online và ván AI được giữ; cần dữ liệu trạng thái thật. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Có phòng/ván đang dở",
+      "when": "Vào Sảnh",
+      "then": "Hiện banner *\"Bạn có ván đang chơi dở — Quay lại\"* dẫn về đúng phòng/ván",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.8",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T32"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 dùng xác nhận/đầu hàng T32; kiểm Đồng ý và Huỷ. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đang trong ván online",
+      "when": "Bấm Đăng xuất",
+      "then": "Hiện xác nhận hậu quả đầu hàng; Đồng ý → ván kết thúc `RESIGN`, rời phòng, đăng xuất; Huỷ → giữ nguyên",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.9",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T18",
+      "T65"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang ở phòng `WAITING`",
+      "when": "Bấm Đăng xuất",
+      "then": "Rời phòng theo 2.3 (không xử thua) rồi đăng xuất",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.10",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T37"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T56/T65 nhận cả API và giao diện cập nhật Display Name; tái sử dụng lọc từ cấm T37. Đây là phân bổ trong Task hiện có, không thêm yêu cầu BA. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Ở Cài đặt hồ sơ",
+      "when": "Nhập Display Name 2–30 ký tự hợp lệ, bấm \"Lưu thay đổi\"",
+      "then": "Lưu ngay, không cần OTP; tên mới hiện ở thanh điều hướng và trong phòng ở lần cập nhật kế tiếp",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.11",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T37"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T56/T65 nhận cả API và giao diện cập nhật Display Name; tái sử dụng lọc từ cấm T37. Đây là phân bổ trong Task hiện có, không thêm yêu cầu BA. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Ở Cài đặt hồ sơ",
+      "when": "Display Name chứa từ cấm hoặc sai độ dài",
+      "then": "Từ chối lưu (không che `***`), báo lỗi tại ô",
+      "test_level": "U, E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.12",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T65"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ở Cài đặt hồ sơ",
+      "when": "Xem thông tin",
+      "then": "Thấy avatar chữ cái đầu, `@username`, email **chỉ đọc**; không có nút đổi Username (P2), không có bộ chọn giao diện",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.13",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T32",
+      "T18"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ở Cài đặt hồ sơ",
+      "when": "Bấm \"Đăng xuất\"",
+      "then": "Đăng xuất theo AC-01.4.8/AC-01.4.9",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.14",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T35",
+      "T44",
+      "T40",
+      "T61",
+      "T65"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 kiểm hạn chế Khách ở navbar, tab mời và hồ sơ sau khi các giao diện đều xong. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Khách",
+      "when": "Mở mục Bạn bè, tab mời bạn bè trong `MODAL-INVITE`, hoặc Cài đặt hồ sơ",
+      "then": "Bạn bè ở thanh điều hướng `DISABLED` kèm tooltip *\"Đăng ký tài khoản để kết bạn\"*; tab mời bạn bè ẩn (vẫn có link/mã); Cài đặt chỉ có Đăng xuất",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-01.4.15",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T31",
+      "T35"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Khách",
+      "when": "Người dùng khác tìm username hoặc mời Khách",
+      "then": "Khách không xuất hiện trong tìm kiếm bạn bè, không nhận được lời mời bạn bè",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.4.16",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang trong ván ở nơi khác",
+      "when": "Mở link mời",
+      "then": "Luật 1.8 được kiểm trước; không tự vào phòng mới để ngồi ghế",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-01.4.17",
+    "story": "US-01.4",
+    "implementation_tasks": [
+      "T56",
+      "T65",
+      "T18",
+      "T22",
+      "T34",
+      "T38",
+      "T61"
+    ],
+    "verification_task": "T69",
+    "stage": "task",
+    "notes": "T69 kiểm máy chủ từ chối và trạng thái nút trên mọi lối vào phòng/AI; cần T61 và T38 hoàn tất. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đang ngồi ghế phòng online",
+      "when": "Bấm \"Đánh với máy\"",
+      "then": "`DISABLED` theo AC-01.4.6",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.1",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21",
+      "T37"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "T28 kiểm form và API tên phòng, gồm bộ lọc từ cấm T37; phải có bộ lọc thật trước khi nghiệm thu nhánh từ cấm. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Ở Sảnh, không ngồi ghế nơi khác",
+      "when": "Bấm \"Tạo phòng\"",
+      "then": "Mở form: Tên phòng (1–60 ký tự), Mức giờ 5/10/15 phút (**mặc định 10**), Người xem *Không có người xem* hoặc 1–5 (**mặc định 5**)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.2",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21",
+      "T37"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "T28 kiểm form và API tên phòng, gồm bộ lọc từ cấm T37; phải có bộ lọc thật trước khi nghiệm thu nhánh từ cấm. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Form",
+      "when": "Tên phòng rỗng, > 60 ký tự hoặc chứa từ cấm",
+      "then": "Từ chối, báo lỗi tại ô",
+      "test_level": "U, E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.3",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Form hợp lệ",
+      "when": "Bấm Tạo",
+      "then": "Phòng tạo ở `CODE_ONLY`, có mã 8 ký tự do máy chủ sinh và link mời; người tạo là Host, ngồi **ghế Đỏ**; vào `/rooms/:id` trạng thái `WAITING`",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.4",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng đã tạo",
+      "when": "Tìm cách đổi mức giờ hoặc số người xem",
+      "then": "Không có chức năng đổi",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-02.1.5",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Sức chứa",
+      "when": "Kiểm tra",
+      "then": "= 2 + số người xem đã chọn (tối đa 7)",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-02.1.6",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chỉ có một người ngồi ghế (Host)",
+      "when": "Bấm \"Đổi ghế\"",
+      "then": "Chuyển Đỏ ↔ Đen tùy thích, không cần ai duyệt",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.7",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đủ hai người",
+      "when": "Mỗi người bấm \"Sẵn sàng\"/huỷ Sẵn sàng",
+      "then": "Trạng thái hiển thị realtime cho cả phòng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.8",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21",
+      "T20",
+      "T23",
+      "T25"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "T28 chỉ PASS bắt đầu ván khi đã có tạo Match, chuyển màn và đồng hồ Đỏ T20/T23/T25. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Cả hai Sẵn sàng",
+      "when": "Hệ thống",
+      "then": "Đếm **3… 2… 1…** kèm âm thanh; hết đếm, máy chủ kiểm lại hai ghế, Sẵn sàng và kết nối rồi tạo ván (Match ID mới), chuyển `SCR-GAME-ROOM`, đồng hồ Đỏ chạy",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.9",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21",
+      "T52"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T28 kiểm huỷ đếm/reset sẵn sàng cục bộ; giữ ghế 60 giây và reconnect đúng phải có T52, nghiệm thu toàn AC tại T51.",
+    "criterion": {
+      "given": "Đang đếm",
+      "when": "Một người mất kết nối",
+      "then": "Huỷ đếm, Sẵn sàng của cả hai về chưa sẵn sàng, giữ ghế người mất kết nối 60 giây; không tạo ván, không xử thua",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.10",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `WAITING`",
+      "when": "Thành phần người ngồi ghế thay đổi",
+      "then": "Sẵn sàng của cả hai reset",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-02.1.11",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Host rời phòng `WAITING` khi còn người chơi thứ hai",
+      "when": "Host rời",
+      "then": "Quyền Host chuyển cho người chơi còn lại",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.12",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21",
+      "T52",
+      "T37"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "Đóng phòng do mất ghế sau 60 giây và xoá chat cần T52/T37, không kết luận PASS đầy đủ tại T28 sớm.",
+    "criterion": {
+      "given": "Không còn người ngồi ghế (Host rời khi chỉ một mình, hoặc người cuối mất ghế sau 60 giây)",
+      "when": "Hệ thống",
+      "then": "Phòng `CLOSED`; người xem về Sảnh với thông báo *\"Phòng đã đóng\"*; chat phòng bị xoá",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-02.1.13",
+    "story": "US-02.1",
+    "implementation_tasks": [
+      "T18",
+      "T21"
+    ],
+    "verification_task": "T28",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Host chỉ ngồi một mình rất lâu",
+      "when": "Không ai vào",
+      "then": "Phòng **không** tự đóng do chờ lâu (BA 0.10)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-02.2.1",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `WAITING` đủ hai người (vừa vào hoặc sau ván)",
+      "when": "Xem cụm nút",
+      "then": "Cả hai người chơi có nút \"Xin đổi bên\"; người xem không có",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.2",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A bấm \"Xin đổi bên\"",
+      "when": "B nhận",
+      "then": "B thấy `MODAL-SIDE-SWAP-PROMPT` đếm 30 giây với \"Đồng ý\"/\"Từ chối\"; A thấy trạng thái chờ và nút \"Rút đề nghị\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.3",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "B bấm \"Đồng ý\"",
+      "when": "Hệ thống",
+      "then": "Hai người hoán đổi Đỏ ↔ Đen; Sẵn sàng của cả hai về chưa sẵn sàng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.4",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "B từ chối hoặc hết 30 giây",
+      "when": "A muốn gửi lại",
+      "then": "Nút của A `DISABLED` 60 giây kèm tooltip đếm giây còn lại",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.5",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A đang có đề nghị chờ",
+      "when": "A bấm lại",
+      "then": "Không gửi được đề nghị thứ hai (tối đa 1 đề nghị chờ)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-02.2.6",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đề nghị đang chờ",
+      "when": "Cả hai Sẵn sàng và bắt đầu đếm, hoặc một người rời ghế",
+      "then": "Đề nghị tự huỷ",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-02.2.7",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang đếm 3-2-1 hoặc đang ván",
+      "when": "Xem cụm nút",
+      "then": "Không có nút \"Xin đổi bên\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.8",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván vừa kết thúc",
+      "when": "Hệ thống",
+      "then": "Hộp kết quả có \"Ở lại phòng\" và \"Rời phòng\"; phòng đã ở `WAITING`, Sẵn sàng của cả hai = chưa",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.9",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46",
+      "T37",
+      "T42",
+      "T53",
+      "T55"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "Ở lại phải giữ chat hai kênh, người xem, chế độ phòng thật; T50 kiểm vòng đời cục bộ, T51 kiểm bảo toàn toàn bộ trạng thái.",
+    "criterion": {
+      "given": "Bấm \"Ở lại phòng\"",
+      "when": "Hệ thống",
+      "then": "Về phòng chờ; giữ nguyên ghế/phe, người xem, chế độ phòng, mức giờ, Host, Kênh Riêng và Kênh Chung",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.10",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Cả hai Sẵn sàng",
+      "when": "Hệ thống",
+      "then": "Ván mới với Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.11",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46",
+      "T18",
+      "T53"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "Nhánh LOCKED vẫn khoá khi người chơi rời cần T53; T50 kiểm chuyển Host/rỗng ghế, T51 kiểm toàn AC.",
+    "criterion": {
+      "given": "Một người chơi bấm \"Rời phòng\"",
+      "when": "Hệ thống",
+      "then": "Ghế đó trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn khoá",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.12",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Sau ván, không ai rời",
+      "when": "10 phút trôi qua",
+      "then": "Phòng **không** tự đóng",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-02.2.13",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người thứ hai vừa ngồi vào ghế còn lại",
+      "when": "Xem cụm nút",
+      "then": "Nút \"Đổi ghế\" biến mất, chỉ còn \"Xin đổi bên\" (US-02.2); người thứ hai rời ghế thì \"Đổi ghế\" xuất hiện lại",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-02.2.14",
+    "story": "US-02.2",
+    "implementation_tasks": [
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T50",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Hộp kết quả",
+      "when": "Nút",
+      "then": "Chỉ có \"Ở lại phòng\" và \"Rời phòng\" (không Tái đấu, không Xem lại)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.1",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi trong phòng",
+      "when": "Mở \"Chia sẻ phòng\"",
+      "then": "Thấy link và mã 8 ký tự (chữ monospace) với nút Sao chép; P1 không có QR",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.2",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã đăng nhập",
+      "when": "Mở link mời hoặc nhập mã ở Sảnh",
+      "then": "Vào phòng ngay, không cần kết bạn với Host",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.3",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26",
+      "T04",
+      "T08",
+      "T09",
+      "T15"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "T29 kiểm quay lại link mời sau đăng nhập/đăng ký email; đường Khách có AC-01.3.15 tại T48. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Chưa đăng nhập",
+      "when": "Mở link mời",
+      "then": "Thấy màn Đăng nhập/Đăng ký; sau khi đăng nhập hoặc đăng ký xong thì **tự vào đúng phòng** (đường vào bằng Khách: xem US-01.3), không phải mở link lần hai",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.4",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Vào phòng",
+      "when": "Còn ghế trống",
+      "then": "Được xếp vào ghế trống (Host Đỏ → vào Đen và ngược lại)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.5",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Vào phòng",
+      "when": "Hai ghế đã kín, còn chỗ xem",
+      "then": "Vào làm Người xem, thông báo *\"Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem.\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.6",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Vào phòng",
+      "when": "Phòng đã đủ sức chứa (hoặc \"Không có người xem\" và đủ 2 ghế)",
+      "then": "`SCR-ACCESS-DENIED`: *\"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!\"* + nút \"Quay về Sảnh chính\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.1.7",
+    "story": "US-03.1",
+    "implementation_tasks": [
+      "T22",
+      "T26"
+    ],
+    "verification_task": "T29",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Mã sai hoặc phòng đã đóng",
+      "when": "Nhập mã",
+      "then": "Báo *\"Mã phòng không tồn tại hoặc phòng đã đóng\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.1",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40",
+      "T35"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "T49 cần danh tính Khách để kiểm không hiện trong tìm username. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Ở `SCR-FRIENDS`",
+      "when": "Gõ tiền tố username (không phân biệt hoa thường)",
+      "then": "Hiện kết quả gồm avatar, Display Name, `@username`, nút \"Kết bạn\"; không hiện Khách",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.2",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chưa là bạn",
+      "when": "Bấm \"Kết bạn\"",
+      "then": "Bên kia thấy lời mời ở tab \"Lời mời kết bạn đang chờ\" và ở chuông",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.3",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Có lời mời đến",
+      "when": "Bấm \"Chấp nhận\" / \"Từ chối\"",
+      "then": "Chấp nhận → cả hai thấy nhau trong danh sách bạn; Từ chối → lời mời biến mất",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.4",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã gửi lời mời",
+      "when": "Bấm thu hồi",
+      "then": "Lời mời bị huỷ ở cả hai phía",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-03.2.5",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Lời mời chờ quá 30 ngày",
+      "when": "Hệ thống kiểm",
+      "then": "Lời mời tự hết hạn",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-03.2.6",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã có 200 bạn **hoặc** tổng lời mời chờ (gửi + nhận) = 50",
+      "when": "Gửi lời mời mới",
+      "then": "Bị chặn kèm lý do",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-03.2.7",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A đã bị B từ chối 2 lần",
+      "when": "A gửi lại cho B",
+      "then": "Không gửi được",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-03.2.8",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A và B gửi lời mời cho nhau gần như cùng lúc",
+      "when": "Máy chủ xử lý",
+      "then": "Chỉ giữ **một** lời mời, không tự thành bạn; bên nhận phải Chấp nhận",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-03.2.9",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Danh sách bạn",
+      "when": "Bấm \"Huỷ kết bạn\"",
+      "then": "Hai bên không còn trong danh sách của nhau",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.10",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bạn B mở ứng dụng (có kết nối)",
+      "when": "A xem danh sách",
+      "then": "B hiện 🟢 Online trong ≤ 5 giây, không cần tải lại",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.11",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T18",
+      "T34"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "T49 cần vị trí phòng/ván thật để kiểm trạng thái Đang đấu, kể cả AI theo luật vị trí chơi. Hồi quy tại T51.",
+    "criterion": {
+      "given": "B ngồi ghế trong một phòng",
+      "when": "A xem danh sách",
+      "then": "B hiện 🟠 Đang đấu",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.12",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "B đóng mọi tab",
+      "when": "A xem danh sách",
+      "then": "B chuyển ⚫ Offline (sau khi hết thời gian nhận biết mất kết nối)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.13",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Có lời mời kết bạn đang chờ",
+      "when": "Bấm chuông ở thanh điều hướng",
+      "then": "Liệt kê lời mời, có số đếm",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.14",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ở `SCR-FRIENDS`",
+      "when": "Nhìn nút \"Nhắn tin\", \"Thách đấu\"",
+      "then": "`DISABLED` kèm tooltip *\"Sắp ra mắt\"*; trang không có nút mời vào phòng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.15",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người dùng đang ngồi ghế phòng tự tạo",
+      "when": "Mở \"Chia sẻ phòng\"",
+      "then": "Có tab bạn bè; người xem không thấy nút Chia sẻ",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.16",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40",
+      "T56"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "T49 cần trạng thái Online/Offline/Đang đấu và vị trí chơi T56; sửa phụ thuộc Task kiểm thử, không kiểm bằng mock để PASS. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Danh sách bạn trong tab",
+      "when": "Xem nút \"Mời\"",
+      "then": "🟢 bấm được; ⚫ `DISABLED` nhãn *\"Ngoại tuyến\"*; 🟠 `DISABLED` tooltip *\"Bạn bè đang trong ván khác\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.17",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Gửi mời cho bạn 🟢",
+      "when": "Bạn nhận",
+      "then": "Pop-up góc màn hình *\"Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]\"* với [Tham gia] [Từ chối], đếm lùi 30 giây",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.18",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Pop-up đang hiện",
+      "when": "Bấm \"Tham gia\"",
+      "then": "Vào phòng theo 2.8: ghế trống → ghế; hết ghế → người xem nếu còn chỗ; đầy → `SCR-ACCESS-DENIED`",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.19",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Pop-up",
+      "when": "Không bấm trong 30 giây hoặc bấm \"Từ chối\"",
+      "then": "Pop-up biến mất, lời mời hết hiệu lực; không lưu vào chuông",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-03.2.20",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40",
+      "T53"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "T49 cần LOCKED/thu hồi lời mời T53 trước khi chạy AC này; không chỉ phụ thuộc T40. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Lời mời đã gửi, sau đó phòng chuyển `LOCKED`",
+      "when": "Người nhận bấm Tham gia",
+      "then": "Bị từ chối (lời mời chưa dùng đã bị thu hồi)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-03.2.21",
+    "story": "US-03.2",
+    "implementation_tasks": [
+      "T31",
+      "T40",
+      "T56",
+      "T22"
+    ],
+    "verification_task": "T49",
+    "stage": "task",
+    "notes": "T49 cần một vị trí chơi T56 và vào phòng T22; nghiệm thu sau khi phụ thuộc đầy đủ. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Người được mời đang ngồi ghế phòng khác",
+      "when": "Bấm Tham gia",
+      "then": "Không được ngồi ghế thứ hai; thông báo theo AC-01.4.6",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-04.1.1",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T05",
+      "T07",
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "T10 xác minh nguồn perft trước khi dùng chuẩn; chạy perft trên lõi hoàn chỉnh. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Thế khai cuộc",
+      "when": "Sinh nước hợp lệ",
+      "then": "Đúng 44 nước; perft độ sâu 2 = 1.920, độ sâu 3 = 79.666 (đối chiếu số perft công bố trước khi dùng làm chuẩn)",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.2",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T05",
+      "T07"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bộ thế kiểm thử",
+      "when": "Sinh nước",
+      "then": "Đúng luật: cản chân Mã, chặn mắt Tượng, Tượng không qua sông, Sĩ/Tướng trong cung, Pháo cần đúng một ngòi khi ăn, Tốt qua sông được đi ngang và không lùi",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.3",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T07"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Nước làm hai Tướng đối mặt không có quân chắn, hoặc để Tướng mình bị chiếu",
+      "when": "Kiểm tra",
+      "then": "Bị loại khỏi nước hợp lệ",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.4",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T07"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bên tới lượt bị chiếu và không còn nước hợp lệ",
+      "when": "Kiểm kết thúc",
+      "then": "`CHECKMATE` — bên đó thua",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.5",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T07"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bên tới lượt **không** bị chiếu nhưng hết nước",
+      "when": "Kiểm kết thúc",
+      "then": "`STALEMATE` — bên đó **thua**",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.6",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Một thế lặp lần thứ 3 trên nhánh nước hiệu lực",
+      "when": "Kiểm kết thúc",
+      "then": "`DRAW_REPETITION`, trừ khi mọi nước của một bên trong chu kỳ đều là nước chiếu → `PERPETUAL_CHECK`, bên chiếu thua; cả hai cùng chiếu liên tục → hoà",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.7",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "120 nửa nước liên tiếp không ăn quân",
+      "when": "Kiểm kết thúc",
+      "then": "`DRAW_NO_CAPTURE`",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.8",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Nước hợp lệ cuối đồng thời thoả điều kiện thắng/thua và hoà 120 nửa nước",
+      "when": "Kiểm kết thúc",
+      "then": "Chiếu hết ưu tiên cao nhất; hết nước đi và chiếu liên tục ưu tiên trước hoà 120 nửa nước. Đồng hồ được kiểm trước khi duyệt nước (BA 0.17)",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.9",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bất kỳ thế cờ",
+      "when": "Tuần tự hoá rồi đọc lại (chuỗi kiểu FEN nội bộ)",
+      "then": "Thu được đúng thế cờ, lượt đi và bộ đếm",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.10",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Hai thế có cùng vị trí mọi quân nhưng khác bên tới lượt",
+      "when": "Kiểm lặp thế",
+      "then": "Không tính là cùng một thế (BA 0.12)",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.1.11",
+    "story": "US-04.1",
+    "implementation_tasks": [
+      "T10"
+    ],
+    "verification_task": "T10",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Một thế xuất hiện lần thứ 3 trên nhánh nước hiệu lực",
+      "when": "Xác định chu kỳ để xét chiếu liên tục",
+      "then": "Chu kỳ gồm mọi nước từ lần xuất hiện thứ 1 đến lần thứ 3 của thế đó; bên chiếu ở **mọi** nước của mình trong chu kỳ là chiếu liên tục (BA 0.12)",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-04.2.1",
+    "story": "US-04.2",
+    "implementation_tasks": [
+      "T11"
+    ],
+    "verification_task": "T16",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván mới",
+      "when": "Bàn cờ hiện",
+      "then": "SVG 9×10 giao điểm, sông, hai cung; 32 quân đúng vị trí; chữ Hán Đỏ 帥仕相俥傌炮兵, Đen 將士象車馬砲卒",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-04.2.2",
+    "story": "US-04.2",
+    "implementation_tasks": [
+      "T11"
+    ],
+    "verification_task": "T16",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi cầm Đen",
+      "when": "Bàn cờ hiện",
+      "then": "Tự lật để Đen ở phía dưới",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.2.3",
+    "story": "US-04.2",
+    "implementation_tasks": [
+      "T11"
+    ],
+    "verification_task": "T16",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Màn hình 360 px và màn hình máy tính",
+      "when": "Xem bàn cờ",
+      "then": "Toàn bộ bàn cờ hiển thị không cuộn ngang, quân đủ lớn để chạm",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-04.2.4",
+    "story": "US-04.2",
+    "implementation_tasks": [
+      "T11"
+    ],
+    "verification_task": "T16",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Trình đọc màn hình / người mù màu",
+      "when": "Tương tác",
+      "then": "Quân có viền phân biệt bên; có nhãn văn bản cho quân và trạng thái lượt (WCAG 2.1 AA)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-04.3.1",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tới lượt mình",
+      "when": "Click/chạm vào quân mình",
+      "then": "Quân có vòng chọn; chấm tròn ở mọi ô được đi; vòng cố định (không nhấp nháy) quanh quân đối phương ăn được",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.2",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã chọn quân",
+      "when": "Click ô hợp lệ",
+      "then": "Quân đi tới ô đó",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.3",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã chọn quân",
+      "when": "Click lại quân, click ô không hợp lệ, hoặc nhấn `Esc`",
+      "then": "Huỷ chọn",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.4",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tới lượt mình",
+      "when": "Kéo thả (chuột hoặc chạm giữ) vào ô hợp lệ",
+      "then": "Hạ quân thành công",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.5",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Kéo thả",
+      "when": "Thả vào ô không hợp lệ",
+      "then": "Quân trượt mượt về chỗ cũ",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.6",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19",
+      "T25",
+      "T22"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "T27 kiểm cả đối thủ/người xem và nước gần nhất ở nhiều client; cần phòng/ván/người xem thật T22/T25. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Không phải lượt mình, hoặc là người xem",
+      "when": "Bấm/kéo quân",
+      "then": "Không chọn được quân",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.7",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19",
+      "T25",
+      "T22"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "T27 kiểm cả đối thủ/người xem và nước gần nhất ở nhiều client; cần phòng/ván/người xem thật T22/T25. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Vừa có nước đi",
+      "when": "Bàn cờ",
+      "then": "4 góc vuông đánh dấu ô đi và ô đến của nước gần nhất (cả người chơi lẫn người xem thấy)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-04.3.8",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Một bên bị chiếu",
+      "when": "Bàn cờ",
+      "then": "Vòng cảnh báo quanh Tướng + chữ *\"Đang bị chiếu\"* + biểu tượng; tối đa một nhịp sáng, không nhấp nháy/rung; bật giảm chuyển động thì không có hiệu ứng",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-04.3.9",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Âm thanh bật",
+      "when": "Đi quân / ăn quân / chiếu / kết thúc ván",
+      "then": "Phát đúng 4 âm khác nhau tạo bằng Web Audio API (không tải file âm thanh)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-04.3.10",
+    "story": "US-04.3",
+    "implementation_tasks": [
+      "T19"
+    ],
+    "verification_task": "T27",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Góc trên bàn cờ",
+      "when": "Bấm biểu tượng loa",
+      "then": "Tắt/bật tất cả âm thanh bàn cờ ngay; lựa chọn giữ khi chuyển ván trong cùng phiên trình duyệt",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.1",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20",
+      "T25",
+      "T22",
+      "T66"
+    ],
+    "verification_task": "T66",
+    "stage": "integration",
+    "notes": "T30 kiểm nước đi đồng bộ chức năng; T66 đo p95 <100 ms theo NFR-01 với người chơi/người xem thật trên môi trường demo. Không kết luận đạt độ trễ chỉ từ E2E chức năng. Hồi quy chức năng tại T51.",
+    "criterion": {
+      "given": "Tới lượt A",
+      "when": "A đi nước hợp lệ",
+      "then": "Máy chủ chấp nhận; B và mọi người xem thấy nước đi (mục tiêu < 100 ms trong môi trường demo, NFR-01)",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.2",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Client bị sửa để gửi nước sai luật hoặc đi khi không tới lượt",
+      "when": "Máy chủ nhận",
+      "then": "Từ chối; bàn cờ client đồng bộ lại theo máy chủ",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.1.3",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Mạng chập chờn gửi trùng lệnh",
+      "when": "Máy chủ nhận",
+      "then": "Nước đi chỉ áp dụng một lần (AC-00.3.2)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.1.4",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván đang diễn ra",
+      "when": "Mỗi nước",
+      "then": "Nước đi được lưu bền (`match_moves`) theo NFR-09",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.1.5",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T23",
+      "T25"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván bắt đầu",
+      "when": "Hệ thống",
+      "then": "Hai đồng hồ theo mức giờ phòng (5/10/15 phút), chỉ đồng hồ bên tới lượt chạy, không cộng giây",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.6",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T23",
+      "T25"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đồng hồ một bên về 0",
+      "when": "Máy chủ",
+      "then": "Kết thúc ván, bên đó thua `TIMEOUT`",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.7",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T23",
+      "T25"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Nước đi tới máy chủ khi đồng hồ người đi đã về 0",
+      "when": "Máy chủ xử lý",
+      "then": "Tính giờ trước: xử `TIMEOUT`, không chấp nhận nước",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.1.8",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T23",
+      "T25"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Client bị lệch đồng hồ hoặc tab bị ẩn",
+      "when": "Quay lại",
+      "then": "Đồng hồ hiển thị khớp máy chủ (sai số ≤ 1 giây)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.9",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Một điều kiện kết thúc xảy ra (US-04.1)",
+      "when": "Máy chủ",
+      "then": "Tự kết thúc ván, không cần ai bấm",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.1.10",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20",
+      "T25",
+      "T32",
+      "T52"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T30 kiểm các kết quả đã có trong lõi; toàn bộ lý do (đầu hàng/hoà/mất mạng/gián đoạn) cần T32/T52, T51 nghiệm thu đủ nhãn.",
+    "criterion": {
+      "given": "Ván kết thúc",
+      "when": "Hai người chơi",
+      "then": "Hộp kết quả: Thắng/Thua/Hoà + lý do tiếng Việt cho mọi lý do P1: chiếu hết, hết nước đi, đầu hàng, hết giờ, mất kết nối, lặp thế, thoả thuận hoà, không ăn quân 120 nửa nước, chiếu liên tục, bị gián đoạn",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.11",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T25",
+      "T22"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván kết thúc",
+      "when": "Người xem",
+      "then": "Thấy kết quả và lý do (không có nút của người chơi)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.1.12",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T20"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván kết thúc",
+      "when": "Dữ liệu",
+      "then": "Kết quả, lý do, thời điểm lưu bền ở `matches`",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.1.13",
+    "story": "US-05.1",
+    "implementation_tasks": [
+      "T25",
+      "T22"
+    ],
+    "verification_task": "T30",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người xem",
+      "when": "Mở phòng",
+      "then": "Thấy bàn cờ cùng hướng Đỏ ở dưới, không thao tác được quân",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.1",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang ván",
+      "when": "Bấm \"Đầu hàng\"",
+      "then": "Xác nhận *\"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức…\"*, focus ở Huỷ; Đồng ý → `RESIGN`, đối thủ thắng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.2",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang ván",
+      "when": "Bấm \"Rời phòng\"",
+      "then": "Cảnh báo rời phòng = đầu hàng; \"Rời phòng\" → thua `RESIGN` rồi rời; \"Ở lại\" → giữ nguyên",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.3",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T18"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Host rời giữa ván",
+      "when": "Hệ thống",
+      "then": "Host thua `RESIGN`, quyền Host chuyển cho người còn lại",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.2.4",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Có toast/thông báo đang hiện",
+      "when": "Nhìn nút Đầu hàng",
+      "then": "Toast không che nút Đầu hàng",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-05.2.5",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang ván",
+      "when": "A bấm \"Xin hoà\"",
+      "then": "B thấy khung **không modal** đếm 30 giây \"Chấp nhận Hoà\"/\"Từ chối\"; bàn cờ và đồng hồ vẫn chạy; X/Esc chỉ thu gọn và có nút mở lại",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.6",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "B bấm \"Chấp nhận Hoà\"",
+      "when": "Hệ thống",
+      "then": "Ván kết thúc `DRAW_AGREEMENT`",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.7",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "B từ chối hoặc hết 30 giây",
+      "when": "A muốn xin lại",
+      "then": "Nút `DISABLED` cho tới khi A đi thêm **5 nước**, tooltip nêu số nước còn chờ",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.8",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T36"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A có đề nghị đang chờ",
+      "when": "A bấm \"Rút đề nghị\"",
+      "then": "Đề nghị bị huỷ ở phía B",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.2.9",
+    "story": "US-05.2",
+    "implementation_tasks": [
+      "T32",
+      "T20"
+    ],
+    "verification_task": "T39",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đề nghị đang chờ",
+      "when": "Ván kết thúc vì lý do khác",
+      "then": "Đề nghị đóng; phản hồi đến sau không đổi kết quả",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.3.1",
+    "story": "US-05.3",
+    "implementation_tasks": [
+      "T52",
+      "T25"
+    ],
+    "verification_task": "T60",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A mất kết nối trong ván",
+      "when": "Hệ thống",
+      "then": "A thấy lớp phủ đếm 60 giây (không đóng bằng Esc); B thấy *\"Đối thủ đang mất kết nối, thời gian chờ: 60s\"*; đồng hồ ván vẫn chạy",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.3.2",
+    "story": "US-05.3",
+    "implementation_tasks": [
+      "T52",
+      "T25"
+    ],
+    "verification_task": "T60",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A nối lại trong 60 giây",
+      "when": "Hệ thống",
+      "then": "Lớp phủ tắt, bàn cờ/đồng hồ/chat đồng bộ lại, ván tiếp tục",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-05.3.3",
+    "story": "US-05.3",
+    "implementation_tasks": [
+      "T52"
+    ],
+    "verification_task": "T60",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Quá 60 giây",
+      "when": "Máy chủ",
+      "then": "A thua `DISCONNECT`",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-05.3.4",
+    "story": "US-05.3",
+    "implementation_tasks": [
+      "T52",
+      "T23"
+    ],
+    "verification_task": "T60",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "A mất kết nối khi tới lượt A, đồng hồ A về 0 trước khi hết ân hạn",
+      "when": "Máy chủ",
+      "then": "Xử `TIMEOUT`",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.3.5",
+    "story": "US-05.3",
+    "implementation_tasks": [
+      "T52"
+    ],
+    "verification_task": "T60",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Cả hai cùng mất kết nối, máy chủ vẫn chạy",
+      "when": "Cả hai quá ân hạn",
+      "then": "Bên mất kết nối **trước** thua `DISCONNECT`",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-05.3.6",
+    "story": "US-05.3",
+    "implementation_tasks": [
+      "T52"
+    ],
+    "verification_task": "T60",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Máy chủ khởi động lại giữa ván online trong phòng tự tạo",
+      "when": "Người chơi nối lại",
+      "then": "Ván INTERRUPTED, không thắng/thua/hoà; phòng WAITING, reset Sẵn sàng; hộp \"Ván bị gián đoạn\" có Ở lại phòng / Rời phòng, không hạn đóng 10 phút (BA 0.17)",
+      "test_level": "I, M"
+    }
+  },
+  {
+    "ac": "AC-06.1.1",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Trong phòng",
+      "when": "Người không phải Host",
+      "then": "Không thấy nút \"Cài đặt phòng\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.1.2",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chưa đủ hai người chơi",
+      "when": "Host mở Cài đặt",
+      "then": "Lựa chọn `LOCKED` `DISABLED` kèm tooltip *\"Chỉ khoá được khi đã đủ 2 người chơi\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.1.3",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T57",
+      "T31",
+      "T33"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "T62 cần thu hồi lời mời T31 và media T33 để chứng minh LOCKED không cắt hình/tiếng của người đang trong phòng. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đủ hai người chơi",
+      "when": "Host chọn `LOCKED` (kể cả đang ván)",
+      "then": "Không ai mới vào được; mọi link/mã/lời mời chưa dùng bị vô hiệu; người xem hiện có vẫn ở lại, không mất hình/tiếng",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-06.1.4",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T52",
+      "T55"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "T62 cần reconnect người chơi 60 giây và giữ chỗ xem 5 phút; phải có T52/T55 trước nghiệm thu. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Phòng `LOCKED`",
+      "when": "Người chơi mất mạng rồi nối lại trong 60 giây, người xem trong 5 phút",
+      "then": "Vào lại được; quá hạn thì bị coi là người mới (bị chặn)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.1.5",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `LOCKED`",
+      "when": "Host mở lại `CODE_ONLY` hoặc `PUBLIC`",
+      "then": "Sinh **mã và link mới**; mã/link cũ không dùng được",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.1.6",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `LOCKED`",
+      "when": "Một người ngồi ghế rời đi",
+      "then": "Phòng vẫn `LOCKED` cho đến khi Host tự mở",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.1.7",
+    "story": "US-06.1",
+    "implementation_tasks": [
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T62",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `LOCKED`",
+      "when": "Người mới mở link/mã",
+      "then": "Bị từ chối dù có link/mã",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.1",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61",
+      "T35"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Có phòng `PUBLIC`",
+      "when": "Mở Sảnh",
+      "then": "Mỗi dòng hiện Tên phòng · Host (kèm \"(Khách)\" nếu có) · Mức giờ · Trạng thái *Đang chờ*/*Đang đấu* · Người xem *x/N* (N = 0 hiện *\"Không cho xem\"*)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.2",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Danh sách",
+      "when": "Sắp xếp",
+      "then": "Phòng mở PUBLIC gần nhất lên đầu; tối đa 50 phòng",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.2.3",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang mở Sảnh",
+      "when": "Phòng mới mở PUBLIC, đổi trạng thái, đổi số người, đóng hoặc rời PUBLIC",
+      "then": "Danh sách tự cập nhật trong ≤ 2 giây, không cần tải lại",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.4",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng còn ghế trống",
+      "when": "Xem dòng",
+      "then": "Có nút \"Vào chơi\"; có thêm \"Vào xem\" nếu còn chỗ xem",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.5",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng đủ hai ghế",
+      "when": "Xem dòng",
+      "then": "Chỉ có \"Vào xem\" (nếu còn chỗ xem); hết chỗ hoặc N = 0 thì không có nút vào",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.6",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bấm \"Vào chơi\"",
+      "when": "Ghế vừa bị người khác lấy",
+      "then": "Còn chỗ xem → vào làm Người xem kèm *\"Ghế vừa có người, bạn đang xem trận\"*; hết chỗ → báo phòng đầy",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.2.7",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bấm \"Vào xem\"",
+      "when": "Còn chỗ",
+      "then": "Vào làm Người xem, không tự chiếm ghế dù ghế trống",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.8",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Không có phòng PUBLIC",
+      "when": "Mở Sảnh",
+      "then": "Trạng thái `EMPTY` có lời giải thích và nút \"Tạo phòng\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.9",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `CODE_ONLY`/`LOCKED`",
+      "when": "Mở Sảnh",
+      "then": "Không xuất hiện",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.2.10",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T61",
+      "T18",
+      "T34",
+      "T38",
+      "T26"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Mở Sảnh",
+      "when": "Xem bốn lựa chọn",
+      "then": "\"Đánh Thường – Ghép ngẫu nhiên\" và \"Đánh Hạng\" `DISABLED` kèm *\"Sắp ra mắt\"*; \"Tự tạo phòng\" và \"Đánh với máy\" hoạt động; có ô \"Vào phòng bằng mã\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.11",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Mở Sảnh",
+      "when": "Mở mục \"Luật chơi\"",
+      "then": "Mở rộng/thu gọn tại chỗ (không trang/modal mới), dùng được bằng bàn phím; nội dung nêu: cách đi của 7 loại quân; chiếu hết = thua; **hết nước đi = thua**; lặp thế 3 lần = hoà; **chiếu liên tục = bên chiếu thua** (cả hai cùng chiếu = hoà); **120 nửa nước không ăn quân = hoà**; xin hoà, đầu hàng, hết giờ, mất kết nối 60 giây; **đuổi quân liên tục không xử riêng (xử hoà theo lặp thế)**; câu *\"Đây là bộ luật rút gọn của ứng dụng, không phải toàn bộ luật thi đấu chính thức\"*",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-06.2.12",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T61",
+      "T40",
+      "T44",
+      "T65"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "T67 kiểm navbar bằng dữ liệu bạn bè, trạng thái Khách và menu hồ sơ thật; cần T40/T44/T65. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Thanh điều hướng",
+      "when": "Xem mục",
+      "then": "Sảnh, Bạn bè hoạt động (Khách: Bạn bè `DISABLED`); Lịch sử, Bảng xếp hạng `DISABLED` *\"Sắp ra mắt\"*; chuông lời mời kết bạn; avatar + Display Name mở menu Cài đặt hồ sơ",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.13",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T15",
+      "T61"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Màn hình `SCR-LOGIN`",
+      "when": "Xem liên kết \"Quên mật khẩu?\"",
+      "then": "`DISABLED` kèm *\"Sắp ra mắt\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.14",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T35",
+      "T44",
+      "T22",
+      "T26",
+      "T54",
+      "T61",
+      "T34",
+      "T38"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "T67 kiểm đủ mọi lối vào của Khách với phòng/AI thật, gồm điều kiện sức chứa/quyền. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Khách",
+      "when": "Vào phòng bằng mã/link, Vào chơi/Vào xem ở Sảnh, Đánh với máy",
+      "then": "Đều được phép theo luật phòng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.15",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61",
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Host",
+      "when": "Chuyển sang `PUBLIC`",
+      "then": "Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.2.16",
+    "story": "US-06.2",
+    "implementation_tasks": [
+      "T54",
+      "T61",
+      "T53",
+      "T57"
+    ],
+    "verification_task": "T67",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `PUBLIC`",
+      "when": "Host chuyển sang `CODE_ONLY` hoặc `LOCKED`",
+      "then": "Phòng biến khỏi danh sách Sảnh; yêu cầu vào từ danh sách cũ bị máy chủ từ chối",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.1",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng có người xem",
+      "when": "Xem `PANEL-SPECTATORS`",
+      "then": "Tiêu đề *\"Người xem (X / N)\"*, danh sách tên cập nhật realtime",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.2",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng `WAITING`/sau ván, còn chỗ xem",
+      "when": "Người chơi bấm \"Chuyển sang người xem\"",
+      "then": "Rời ghế thành Người xem; Sẵn sàng reset",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.3",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Không còn chỗ xem hoặc phòng \"Không có người xem\"",
+      "when": "Xem nút \"Chuyển sang người xem\"",
+      "then": "`DISABLED` kèm tooltip *\"Phòng không còn chỗ cho người xem\"*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.4",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Host",
+      "when": "Bấm \"Chuyển sang người xem\" cho người chơi kia (còn chỗ xem)",
+      "then": "Người đó thành Người xem",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.5",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58",
+      "T56"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "T64 cần một vị trí chơi T56 để kiểm lại quyền khi chấp nhận xuống ghế, ngoài nhánh ghế bị người khác lấy. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Host, còn ghế trống",
+      "when": "Gửi \"Mời xuống ghế\" cho một người xem",
+      "then": "Người xem thấy lời mời Chấp nhận/Từ chối; Chấp nhận → máy chủ kiểm lại ghế trống, quyền, vị trí chơi rồi xếp vào ghế (vẫn phải Sẵn sàng); ghế đã có người → thông báo và giữ vai trò xem; Từ chối → tiếp tục xem",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.6",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người xem",
+      "when": "Tìm cách tự ngồi vào ghế trống",
+      "then": "Không có thao tác này",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-06.3.7",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Host",
+      "when": "Tìm nút tự chuyển mình sang người xem",
+      "then": "Nút bị ẩn",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.8",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván đang diễn ra",
+      "when": "Mọi thao tác đổi chỗ ghế ↔ xem",
+      "then": "Không khả dụng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.9",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T52"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người xem mất kết nối",
+      "when": "Nối lại trong 5 phút",
+      "then": "Giữ chỗ xem; quá 5 phút mất chỗ (không xử phạt)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.3.10",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng có người xem",
+      "when": "Bất kỳ người chơi nào xem danh sách",
+      "then": "Có nút \"Kick\" cạnh từng người xem; người xem không có nút này",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.11",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bấm Kick",
+      "when": "Hệ thống",
+      "then": "Mở xác nhận *\"Bạn có chắc chắn muốn đuổi người xem [Tên] ra khỏi phòng thi đấu không?\"*, focus mặc định ở Huỷ",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-06.3.12",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T58",
+      "T33"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "T64 đo thu hồi media khi kick, liên kết bằng chứng GATE-MEDIA; không tự thêm ngưỡng số khi BA không chốt. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Xác nhận",
+      "when": "Hệ thống",
+      "then": "Người bị đuổi rời phòng về Sảnh với *\"Bạn đã bị đuổi khỏi phòng thi đấu\"*; mất quyền nhận hình/tiếng ngay (GATE-MEDIA ghi thời gian)",
+      "test_level": "E2E, I"
+    }
+  },
+  {
+    "ac": "AC-06.3.13",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T22",
+      "T31",
+      "T54",
+      "T53"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "T64 kiểm chặn bằng mã/link mới, lời mời và Sảnh; cần cả T31/T53/T54, không chỉ API kick. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Người đã bị đuổi",
+      "when": "Vào lại bằng link/mã mới, lời mời hoặc từ Sảnh",
+      "then": "Bị chặn đến khi phòng `CLOSED`",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-06.3.14",
+    "story": "US-06.3",
+    "implementation_tasks": [
+      "T55",
+      "T22",
+      "T31",
+      "T54",
+      "T53"
+    ],
+    "verification_task": "T64",
+    "stage": "task",
+    "notes": "T64 kiểm chặn bằng mã/link mới, lời mời và Sảnh; cần cả T31/T53/T54, không chỉ API kick. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Người đã bị đuổi khỏi phòng",
+      "when": "Vào lại bằng bất kỳ cách nào",
+      "then": "`SCR-ACCESS-DENIED`: *\"Bạn đã bị đuổi và chặn tham gia phòng cờ này!\"*",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-07.1.1",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi trên máy tính vào phòng",
+      "when": "Khung chat",
+      "then": "Mặc định chỉ mở **Kênh Riêng**; có thể mở thêm Kênh Chung để xem song song, ẩn/hiện từng khung",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-07.1.2",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi trên điện thoại",
+      "when": "Khung chat",
+      "then": "Hai kênh trong một khung, chuyển bằng tab, mặc định *Kênh Riêng*",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-07.1.3",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người xem",
+      "when": "Khung chat",
+      "then": "Chỉ có tab Kênh Chung; máy chủ từ chối mọi yêu cầu đọc/gửi Kênh Riêng từ người xem",
+      "test_level": "E2E, I"
+    }
+  },
+  {
+    "ac": "AC-07.1.4",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42",
+      "T55",
+      "T58"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T47 kiểm phân quyền/mốc cặp ở mức module; đổi vai B xuống xem/C lên ghế thật cần T55/T58, toàn nhánh tại T51.",
+    "criterion": {
+      "given": "A–B đang chat riêng; B xuống xem, C lên ghế",
+      "when": "C và A mở Kênh Riêng",
+      "then": "Chỉ thấy tin từ khi cặp A–C hình thành; B mất quyền đọc Kênh Riêng",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-07.1.5",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người xem mới vào",
+      "when": "Mở Kênh Chung",
+      "then": "Chỉ thấy tin từ lúc mình vào",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-07.1.6",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42",
+      "T41",
+      "T46"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "T47 cần đổi bên/ở lại/ván tiếp T41/T46 để kiểm chat cặp được giữ; không chỉ kiểm bằng fixture. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Cùng cặp A–B Xin đổi bên hoặc đánh ván tiếp",
+      "when": "Mở Kênh Riêng",
+      "then": "Vẫn thấy tin cũ của cặp",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-07.1.7",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Phòng đóng",
+      "when": "Dữ liệu",
+      "then": "Toàn bộ chat phòng bị xoá",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-07.1.8",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tin có thẻ HTML/script",
+      "when": "Hiển thị",
+      "then": "Hiện như văn bản thuần (NFR-10)",
+      "test_level": "U, E2E"
+    }
+  },
+  {
+    "ac": "AC-07.1.9",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tin chứa từ trong danh sách cấm",
+      "when": "Gửi",
+      "then": "Máy chủ thay từ đó bằng `***` trước khi phát cho mọi người",
+      "test_level": "U, I"
+    }
+  },
+  {
+    "ac": "AC-07.1.10",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Biến thể né lọc (có dấu/không dấu, hoa/thường, chèn khoảng trắng hoặc ký tự đặc biệt, `0`→`o`, `1`→`i`)",
+      "when": "Gửi",
+      "then": "Vẫn bị che",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-07.1.11",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tin > 200 ký tự",
+      "when": "Gửi",
+      "then": "Bị chặn ở client và máy chủ",
+      "test_level": "U, I"
+    }
+  },
+  {
+    "ac": "AC-07.1.12",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đã gửi 5 tin trong 10 giây",
+      "when": "Gửi tin thứ 6",
+      "then": "Báo *\"Bạn gửi quá nhanh\"*, tin không được gửi",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-07.1.13",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Nhóm cần thêm từ cấm",
+      "when": "Sửa tệp cấu hình danh sách",
+      "then": "Áp dụng sau khi khởi động lại server, không sửa CSDL",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.1.14",
+    "story": "US-07.1",
+    "implementation_tasks": [
+      "T37",
+      "T42",
+      "T18",
+      "T21",
+      "T20",
+      "T25"
+    ],
+    "verification_task": "T47",
+    "stage": "task",
+    "notes": "T47 kiểm chat trước và sau chuyển WAITING→PLAYING trên phòng thật. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Phòng đang ở trạng thái chờ (`WAITING`)",
+      "when": "Người chơi và người xem mở khung chat",
+      "then": "Có hai kênh theo vai trò như trong ván: người chơi có Kênh Riêng và Kênh Chung, người xem chỉ Kênh Chung; tin nhắn giữ nguyên khi chuyển sang ván (BA 0.13)",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-07.2.1",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi vào phòng",
+      "when": "Khung media",
+      "then": "Camera và mic mặc định **Tắt**",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-07.2.2",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi",
+      "when": "Bật/tắt camera, bật/tắt mic",
+      "then": "Hai nút độc lập; đối thủ thấy/nghe hoặc ngừng thấy/nghe trong ≤ 2 giây",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.3",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Trình duyệt bị từ chối quyền camera/mic hoặc không có thiết bị",
+      "when": "Bấm bật",
+      "then": "Báo lỗi tiếng Việt dễ hiểu kèm cách cấp quyền; ván không bị ảnh hưởng",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.4",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T12",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Tab mới tiếp quản phiên",
+      "when": "Hệ thống",
+      "then": "Camera/mic ở tab cũ tự dừng; tab mới mặc định tắt",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.5",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bất kỳ",
+      "when": "Kiểm tra cấu hình",
+      "then": "Không bật ghi hình/ghi âm; không lưu media",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.6",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T55",
+      "T58",
+      "T18"
+    ],
+    "verification_task": "T51",
+    "stage": "integration",
+    "notes": "T45 kiểm rời phòng; thu hồi phát khi chuyển ghế→xem cần T55/T58, nghiệm thu toàn AC ở T51.",
+    "criterion": {
+      "given": "Người chơi rời ghế/rời phòng",
+      "when": "Hệ thống",
+      "then": "Luồng media của người đó dừng, quyền phát bị thu hồi",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-07.2.7",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người chơi trong phòng tự tạo",
+      "when": "Xem mức chia sẻ",
+      "then": "Ba mức: *Không chia sẻ* · *Chỉ đối thủ* · *Cả đối thủ và người xem*; chọn sẵn **Chỉ đối thủ**; một mức áp chung cho camera và mic đang bật",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-07.2.8",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chọn \"Cả đối thủ và người xem\"",
+      "when": "Người xem",
+      "then": "Thấy hình/nghe tiếng của người chơi đó",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.9",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chọn \"Chỉ đối thủ\" hoặc \"Không chia sẻ\"",
+      "when": "Người xem / đối thủ",
+      "then": "Người xem không nhận; \"Không chia sẻ\" thì đối thủ cũng không nhận",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.10",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Người xem",
+      "when": "Giao diện và token",
+      "then": "Không có nút bật camera/mic; token không có quyền phát (`canPublish = false`, `canPublishData = false`)",
+      "test_level": "I, E2E"
+    }
+  },
+  {
+    "ac": "AC-07.2.11",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đổi mức chia sẻ giữa ván",
+      "when": "Hệ thống",
+      "then": "Có hiệu lực ngay (≤ 2 giây)",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-07.2.12",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T18",
+      "T21",
+      "T20",
+      "T25",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Hai người chơi đang ở phòng chờ",
+      "when": "Bật camera/mic",
+      "then": "Đối thủ (và người xem nếu chọn mức \"Cả đối thủ và người xem\") thấy/nghe ngay trong phòng chờ; khi bắt đầu ván, hình và tiếng không bị ngắt (BA 0.13)",
+      "test_level": "E2E, M"
+    }
+  },
+  {
+    "ac": "AC-07.2.13",
+    "story": "US-07.2",
+    "implementation_tasks": [
+      "T33",
+      "T37",
+      "T42",
+      "T20",
+      "T23",
+      "T58"
+    ],
+    "verification_task": "T45",
+    "stage": "task",
+    "notes": "T45 chỉ PASS khi chat và ván/đồng hồ thật tiếp tục qua lỗi dịch vụ media; cần T37/T42. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Dịch vụ camera/mic lỗi, mất kết nối hoặc hết hạn mức",
+      "when": "Đang ở phòng chờ hoặc đang ván",
+      "then": "Ván tiếp tục bình thường, chat vẫn hoạt động, khung media hiện *\"Camera/mic tạm thời không dùng được\"*, không xử ai thua (BA 0.14)",
+      "test_level": "I, M"
+    }
+  },
+  {
+    "ac": "AC-08.1.1",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34",
+      "T38"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ở Sảnh",
+      "when": "Bấm \"Đánh với máy\"",
+      "then": "Mở hộp chọn cấp **Dễ / Trung bình / Khó** và phe **Đỏ / Đen / Ngẫu nhiên**",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.1.2",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34",
+      "T38",
+      "T24",
+      "T11"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chọn Đỏ",
+      "when": "Bắt đầu",
+      "then": "Vào `/ai/:id`, người chơi đi trước",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.1.3",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34",
+      "T38",
+      "T24",
+      "T11"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Chọn Đen",
+      "when": "Bắt đầu",
+      "then": "Máy đi nước đầu ngay; bàn cờ lật để Đen ở dưới",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.1.4",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "T43 kiểm phép bốc phe phía máy chủ; ghi rõ số lần thử/seed và dung sai trước khi đo, không tự đổi yêu cầu xấp xỉ 50/50. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Chọn Ngẫu nhiên",
+      "when": "Bắt đầu (lặp nhiều lần)",
+      "then": "Máy chủ bốc phe; tỷ lệ xấp xỉ 50/50",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-08.1.5",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34",
+      "T38"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Đang ván AI",
+      "when": "Màn hình",
+      "then": "Không có đồng hồ, không có nút Xin hoà, không gợi ý nước đi, không có nút Đi lại (P2); có nút Đầu hàng",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.1.6",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34",
+      "T38"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Ván AI kết thúc (kể cả đầu hàng)",
+      "when": "Hộp kết quả",
+      "then": "Có \"Ván mới\" và \"Về Sảnh\"",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.1.7",
+    "story": "US-08.1",
+    "implementation_tasks": [
+      "T34",
+      "T38"
+    ],
+    "verification_task": "T43",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bấm \"Ván mới\"",
+      "when": "Hệ thống",
+      "then": "Mở `MODAL-AI-SETUP` điền sẵn cấp độ và lựa chọn phe ván trước; người chơi đổi phe/cấp rồi Bắt đầu → ván mới có ID mới",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.2.1",
+    "story": "US-08.2",
+    "implementation_tasks": [
+      "T24"
+    ],
+    "verification_task": "T24",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Mọi cấp, mọi thế",
+      "when": "Máy chọn nước",
+      "then": "Luôn là nước hợp lệ theo `xiangqi-core`",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-08.2.2",
+    "story": "US-08.2",
+    "implementation_tasks": [
+      "T24"
+    ],
+    "verification_task": "T24",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Hết ngân sách thời gian khi chưa đạt độ sâu mục tiêu",
+      "when": "Máy chọn nước",
+      "then": "Đi nước tốt nhất đã tìm được đến lúc đó",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-08.2.3",
+    "story": "US-08.2",
+    "implementation_tasks": [
+      "T24",
+      "T20",
+      "T23",
+      "T25"
+    ],
+    "verification_task": "T66",
+    "stage": "integration",
+    "notes": "T24 kiểm tiến trình tách riêng; T66 đo ảnh hưởng dưới tải online và AI đồng thời, đối chiếu NFR có sẵn, không tự thêm ngưỡng. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Máy đang suy nghĩ",
+      "when": "Server chính xử lý các phòng khác",
+      "then": "Phòng online không bị chậm vì máy cờ (chạy ở tiến trình riêng)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-08.3.1",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T63",
+      "T38",
+      "T65"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "T68 kiểm quay lại URL lẫn banner Sảnh; cần FE banner T65. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đang ván AI",
+      "when": "Đóng tab hoặc mất mạng, quay lại trong 30 phút",
+      "then": "Vào lại `/ai/:id` (hoặc banner ở Sảnh) và chơi tiếp đúng thế cũ",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.3.2",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T63"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Quá 30 phút",
+      "when": "Hệ thống",
+      "then": "Bỏ trạng thái ván trong bộ nhớ; không lưu lịch sử (P1)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-08.3.3",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T59",
+      "T63",
+      "T38"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Máy cờ không trả lời quá 10 giây hoặc lỗi",
+      "when": "Hệ thống",
+      "then": "Báo *\"Máy cờ gặp sự cố\"* kèm \"Thử lại\"; nếu chỉ quá thời gian chờ thì Thử lại tìm nước trên cùng thế; nếu ván đã Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế",
+      "test_level": "I, M"
+    }
+  },
+  {
+    "ac": "AC-08.3.4",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T59",
+      "T63",
+      "T38"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Bấm \"Thử lại\" nhiều lần liên tiếp",
+      "when": "Hệ thống",
+      "then": "Chỉ xử lý một lần (chặn bấm trùng)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-08.3.5",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T59",
+      "T63"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
+    "criterion": {
+      "given": "Máy chủ khởi động lại",
+      "when": "Người chơi quay lại",
+      "then": "*\"Ván không còn trạng thái để tiếp tục\"*, về Sảnh hoặc tạo ván mới; không khôi phục giả",
+      "test_level": "M"
+    }
+  },
+  {
+    "ac": "AC-08.3.6",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T63",
+      "T34",
+      "T38",
+      "T56",
+      "T65"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "T68 kiểm rời ván/đăng xuất, huỷ worker và giải phóng vị trí; cần đăng xuất T56/T65. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đang ván AI",
+      "when": "Chủ động Rời ván hoặc Đăng xuất",
+      "then": "Xác nhận đầu hàng; Đồng ý → `RESIGN`, huỷ tác vụ máy, giải phóng vị trí chơi; Huỷ → giữ nguyên",
+      "test_level": "E2E"
+    }
+  },
+  {
+    "ac": "AC-08.3.7",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T59",
+      "T24"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "T68 xác minh báo cáo GATE-ENGINE, bộ thế có đáp án và đấu cặp cấp; T66 audit bằng chứng, không tự hạ ngưỡng BA. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Cấp Dễ / Trung bình / Khó",
+      "when": "Máy suy nghĩ",
+      "then": "Mục tiêu độ sâu 2 / 4 / 6; thời gian phản hồi ≤ 300 / 1.000 / 3.000 ms (đo p95 trên máy demo, GATE-ENGINE)",
+      "test_level": "I"
+    }
+  },
+  {
+    "ac": "AC-08.3.8",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T59",
+      "T24",
+      "T02"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "T68 xác minh báo cáo GATE-ENGINE, bộ thế có đáp án và đấu cặp cấp; T66 audit bằng chứng, không tự hạ ngưỡng BA. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Bộ thế chiếu hết 1 nước và 2 nước bắt buộc (đáp án đã xác minh)",
+      "when": "Cấp Khó giải",
+      "then": "Đúng **100%**",
+      "test_level": "U"
+    }
+  },
+  {
+    "ac": "AC-08.3.9",
+    "story": "US-08.3",
+    "implementation_tasks": [
+      "T59",
+      "T24"
+    ],
+    "verification_task": "T68",
+    "stage": "task",
+    "notes": "T68 xác minh báo cáo GATE-ENGINE, bộ thế có đáp án và đấu cặp cấp; T66 audit bằng chứng, không tự hạ ngưỡng BA. Hồi quy tại T51.",
+    "criterion": {
+      "given": "Đấu máy với máy 20 ván mỗi cặp cấp",
+      "when": "Ghi kết quả",
+      "then": "Khó thắng Trung bình và Trung bình thắng Dễ ở đa số ván (báo cáo tỷ lệ)",
+      "test_level": "M"
+    }
+  }
+]

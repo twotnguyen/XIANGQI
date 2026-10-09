@@ -2,7 +2,7 @@
 
 Ứng dụng web chơi cờ tướng trực tuyến tiếng Việt: tự tạo phòng mời bạn so tài, người xem, chat, camera/mic, đánh với máy theo cấp độ. Đồ án môn **Quản trị Dự án Công nghệ Thông tin**: mô phỏng toàn bộ quy trình làm dự án với khách hàng, từ phỏng vấn yêu cầu, lập kế hoạch trên Jira đến bàn giao.
 
-> **Trạng thái (07/10/2026):** **Giai đoạn 3 — lập kế hoạch Jira.** Đặc tả đã được PO chốt lại ngày 07/10 sau review BA ([BA Phần 0](BA-SCOPE-DECISIONS.md#phần-0-quyết-định-chốt-07102026--ưu-tiên-cao-nhất)); backlog P1 ở [BACKLOG-P1.md](BACKLOG-P1.md) (9 Epic, 27 Story, 268 tiêu chí nghiệm thu) và kế hoạch Task ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md) (71 Task có người làm, giờ, ngày; tệp nhập [`jira/xian-import.csv`](jira/xian-import.csv)) đang chờ PO duyệt. Jira XIAN sẽ được **xoá 98 mục cũ và nhập lại từ tệp này**. Chưa có mã nguồn. **Hạn cuối: 05/11/2026.**
+> **Trạng thái (09/10/2026):** **Giai đoạn 3 — lập lại kế hoạch Jira, chưa triển khai sản phẩm.** Quyết định nghiệp vụ cập nhật đến 09/10 ở [BA Phần 0](BA-SCOPE-DECISIONS.md); backlog có **9 Epic, 27 Story, 268 tiêu chí nghiệm thu**. [Kế hoạch mới](KE-HOACH-JIRA.md) giữ **71 Task, 920 giờ**, đã kiểm các ràng buộc lịch và truy vết; đây là bản kế hoạch để review, không phải kết quả thực thi hoặc bằng chứng gate đã đạt. Ngày 09/10 làm BA/kế hoạch, ngày phát triển đầy đủ đầu tiên 10/10. Đã chuẩn bị [tệp nhập Jira](jira/xian-import.csv), **chưa xoá hoặc nhập dữ liệu Jira**. Repo có công cụ lập kế hoạch, chưa có mã nguồn sản phẩm. **Demo: 05/11/2026.**
 
 ---
 
@@ -27,9 +27,9 @@
 | Giai đoạn | Việc | Trạng thái |
 |---|---|---|
 | 1. Ý tưởng và chức năng tổng quan | Phỏng vấn khách hàng, chốt phạm vi, danh mục màn hình | Xong 03/10/2026 |
-| 2. Phân tích chi tiết | Quyết định nghiệp vụ, review BA, backlog P1 (US/AC/TC, NFR, cổng kiểm chứng) | Chốt lại 07/10/2026; backlog chờ PO duyệt |
+| 2. Phân tích chi tiết | Quyết định nghiệp vụ, review BA, backlog P1 (US/AC/TC, NFR, cổng kiểm chứng) | Quyết định BA cập nhật đến 09/10; AC/TC đã đặc tả, chưa chạy kiểm thử |
 | **3. Lập kế hoạch Jira** | Tách Task, ước lượng giờ, phân công 7 người, xếp Sprint, tạo lên XIAN | **Đang làm** |
-| 4. Xây dựng và nghiệm thu | Code, test, demo D1–D10, bàn giao | S1–S4 (08/10 – 04/11), demo 05/11 |
+| 4. Xây dựng và nghiệm thu | Code, test, demo D1–D10, bàn giao | Dự kiến S1–S4 (10/10 – 04/11), demo 05/11 |
 
 Chỉ chuyển giai đoạn khi PO xác nhận giai đoạn trước đã ổn.
 
@@ -37,14 +37,14 @@ Chỉ chuyển giai đoạn khi PO xác nhận giai đoạn trước đã ổn.
 
 | Sprint | Thời gian | Mục tiêu | Release |
 |---|---|---|---|
-| S0 | 07/10 | Chốt tài liệu, dựng Jira, chuẩn bị dịch vụ | — |
-| S1 | 08/10 – 14/10 | Nền tảng kỹ thuật, đăng ký/đăng nhập thật, bàn cờ đúng luật trên một máy | v0.1 |
-| S2 | 15/10 – 21/10 | Tạo phòng, vào bằng link/mã, hai người đánh trọn ván online có đồng hồ; máy cờ chạy được | v0.2 |
-| S3 | 22/10 – 28/10 | Google/Khách, Xin đổi bên, đầu hàng/xin hoà, bạn bè và mời online, chat, camera/mic, đánh với máy | v0.3 |
-| S4 | 29/10 – 04/11 | Phiên và hồ sơ, chế độ phòng, Sảnh công khai, người xem, mất kết nối, hoàn thiện máy cờ; nghiệm thu D1–D10 | v1.0 |
+| BA/kế hoạch | 09/10 | Lập lại kế hoạch và chuẩn bị tệp Jira; không phải Sprint phát triển | — |
+| S1 | 10/10 – 16/10 | Khung ứng dụng, đăng ký OTP, lõi luật/bàn cờ; thử nghiệm sớm media, xác thực và phiên | v0.1 |
+| S2 | 17/10 – 23/10 | Tạo/vào phòng, ván online cơ bản, Google/Khách, bản máy cờ đầu tiên để đo | v0.2 |
+| S3 | 24/10 – 30/10 | Hoàn tất triển khai P1: bạn bè, chat/media, AI, phiên, Sảnh/người xem, phục hồi; kiểm thử chuyên đề | v0.3 |
+| S4 | 31/10 – 04/11 | Kiểm thử tích hợp, đo ngưỡng cuối và demo D1–D10; lịch cơ sở xong chiều 03/11, 04/11 dự phòng | v1.0 |
 | Demo | **05/11** | Nộp và demo | |
 
-Làm cả cuối tuần. Lập kế hoạch theo **8 giờ/người/ngày**; phần 8 → 12 giờ là dự phòng. Mỗi người chỉ làm một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, **tối đa 5 Task chạy song song** (chi tiết: KE-HOACH-JIRA.md mục 1 và 6).
+Làm cả cuối tuần. Lập kế hoạch theo **8 giờ/người/ngày**; phần 8 → 12 giờ là dự phòng. Mỗi người chỉ làm một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, **cao nhất 7 Task chạy song song trong lịch mới** (chi tiết: KE-HOACH-JIRA.md). Đây là lịch dự kiến đã kiểm ràng buộc; công suất trống không tự bảo đảm mọi việc sẽ đúng ước lượng.
 
 ## Nhóm
 
@@ -83,7 +83,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 
 ## Công nghệ
 
-> PO xác nhận 03/10/2026. Khả năng đáp ứng của SMTP, Google OAuth, LiveKit, máy cờ và đăng nhập bằng username trên Supabase được kiểm bằng các cổng kiểm chứng ở BACKLOG-P1 mục 7 ngay Sprint 1.
+> Công nghệ được PO xác nhận 03/10/2026, hạ tầng media cập nhật theo BA 0.16. Các cổng kiểm chứng ở BACKLOG-P1 mục 7: S1 thử sớm xác thực/media/phiên bằng bản thử nghiệm; S2 đo bản máy cờ đầu tiên; S3 tối ưu và tích hợp; S4 đo ngưỡng cuối trên ứng dụng đầy đủ. Thử sớm không thay thế nghiệm thu cuối.
 
 | Lớp | Công nghệ |
 |---|---|
@@ -103,7 +103,14 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── BA-SCOPE-DECISIONS.md          Quyết định nghiệp vụ và phạm vi (nguồn luật; Phần 0 ưu tiên cao nhất)
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
 ├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc, mô tả chi tiết, mức song song
-├── jira/xian-import.csv           Tệp nhập Jira (Epic, Story, Task)
+├── jira/                         Dữ liệu, công cụ và kết quả lập kế hoạch
+│   ├── plan-data.json            Nguồn dữ liệu lịch/Task
+│   ├── build_plan.py             Sinh và kiểm tra kế hoạch
+│   ├── xian-import.csv           Tệp nhập 107 mục Epic/Story/Task
+│   ├── AC-TASK-MAP.json          Ánh xạ AC tới Task triển khai/kiểm thử
+│   ├── TRUY-VET-AC.md            Bản đồ nghiệm thu
+│   ├── JIRA-MUC-CHI-TIET.md       Mô tả đầy đủ các mục Jira
+│   └── KIEM-TRA-KE-HOACH.md       Kết quả kiểm ràng buộc kế hoạch
 ├── IDEA.md                        Giới thiệu sản phẩm ngắn gọn
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   37 thành phần giao diện (26 P1, 11 P2) và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
@@ -112,7 +119,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 └── .github/                       CODEOWNERS
 ```
 
-Mã nguồn (`apps/`, `packages/`, `supabase/`, `tests/`) tạo ở Sprint 1. Thư mục `docs/` và `Jira/` cũ đã bị xoá (commit `c4cf29d`), nội dung chỉ còn trong lịch sử git và **không còn hiệu lực**.
+Mã nguồn sản phẩm (`apps/`, `packages/`, `supabase/`, `tests/`) dự kiến tạo ở Sprint 1; công cụ trong `jira/` chỉ phục vụ lập kế hoạch. Thư mục `docs/` và `Jira/` cũ đã bị xoá (commit `c4cf29d`), nội dung chỉ còn trong lịch sử git và **không còn hiệu lực**.
 
 ## Tài liệu
 
@@ -132,11 +139,11 @@ Thứ tự ưu tiên khi mâu thuẫn: **BA Phần 0 → BA → BACKLOG-P1 → D
 
 | Rủi ro | Ứng phó |
 |---|---|
-| Khối lượng P1 lớn so với 4 tuần (884 giờ kế hoạch) | Làm "bản chơi được" trước (v0.2 cuối S2); S4 nhiều việc, chỉ còn 03–04/11 dự phòng nên dùng 8 → 12 giờ/ngày khi trễ; theo dõi burndown, báo PO sớm |
+| Khối lượng P1 lớn (920 giờ kế hoạch) | Có ván online cơ bản ở S2, triển khai xong S3; lịch cơ sở kết thúc chiều 03/11, giữ 04/11 dự phòng. Không đưa 8 → 12 giờ/ngày vào lịch cơ sở; báo PO sớm nếu lệch ước lượng |
 | Phần khó (lõi luật, realtime, máy cờ, LiveKit, CI) tập trung vào một người | Lõi luật và khung realtime làm đầu S1, công bố giao diện sớm để người khác làm song song bằng mock |
-| Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo | GATE-ENGINE ở S1; không đạt thì báo PO, không tự hạ ngưỡng |
-| Socket.IO và LiveKit chạy đồng thời, hạn mức LiveKit Cloud miễn phí | GATE-MEDIA, GATE-REALTIME ở S1 |
-| Supabase đăng nhập bằng email, nhiều phiên song song | GATE-AUTH-USERNAME, GATE-SESSION ở S1 |
+| Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo | S1 chuẩn bị bộ thế/đáp án, S2 đo bản đầu tiên, S3 tối ưu, S4 kiểm GATE-ENGINE cuối; không đạt thì báo PO, không tự hạ ngưỡng |
+| Socket.IO và LiveKit chạy đồng thời, hạn mức LiveKit Cloud miễn phí | S1 thử media LAN/Cloud/HTTPS; S3 tích hợp; S4 đo realtime/tải và ghi bằng chứng đầy đủ |
+| Supabase đăng nhập bằng email, nhiều phiên song song | S1 thử sớm cơ chế username/phiên; kiểm lại luồng tích hợp khi đủ tính năng, không coi bản thử là đã nghiệm thu |
 | Một Tester cho toàn bộ TC | Nhạn/Kỳ kiêm kiểm thử; dev tự viết unit test |
 
 ## Quy trình Git

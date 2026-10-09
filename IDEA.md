@@ -1,6 +1,6 @@
 # Cờ Tướng Online · Ý tưởng sản phẩm
 
-**Bản tổng quan, đồng bộ quyết định PO ngày 07/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
+**Bản tổng quan, đồng bộ quyết định PO đến ngày 09/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
 
 ## 1. Sản phẩm và mục đích
 
@@ -36,8 +36,9 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 ## 5. Thành công được chứng minh thế nào?
 
-- 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 User Story, 268 tiêu chí nghiệm thu, mỗi tiêu chí có một ca kiểm thử; 71 Task trong 4 Sprint ([KE-HOACH-JIRA.md](KE-HOACH-JIRA.md)).
-- Kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
+- 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 User Story, 268 tiêu chí nghiệm thu có ca kiểm thử đối ứng; 71 Task, 920 giờ trong 4 Sprint ([KE-HOACH-JIRA.md](KE-HOACH-JIRA.md)).
+- Kế hoạch dự kiến: 09/10 làm BA/kế hoạch, phát triển từ 10/10; hoàn tất cơ sở chiều 03/11, 04/11 dự phòng, demo 05/11. Chưa triển khai sản phẩm; số AC/TC là độ phủ đặc tả, không phải số ca đã kiểm đạt.
+- Điều kiện nghiệm thu: kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
 - Luật cờ kiểm độc lập ở máy chủ; không tin kết quả client gửi.
 - Ngưỡng máy cờ, đồng bộ và quy mô phải đo thật; không đạt ghi BLOCKED, không hạ ngưỡng ngầm.
 

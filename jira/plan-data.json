@@ -1,0 +1,2461 @@
+{
+  "version": "2.0",
+  "planning_date": "2026-10-09",
+  "start_date": "2026-10-10",
+  "deadline": "2026-11-05",
+  "buffer_date": "2026-11-04",
+  "sprints": [
+    [
+      0,
+      14
+    ],
+    [
+      14,
+      28
+    ],
+    [
+      28,
+      42
+    ],
+    [
+      42,
+      52
+    ]
+  ],
+  "max_parallel": 7,
+  "issues": [
+    {
+      "id": "EP-00",
+      "issue_id": "1",
+      "type": "Epic",
+      "title": "Nền tảng kỹ thuật và chất lượng",
+      "parent": null,
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "dac-ta"
+      ],
+      "description": "Việc kỹ thuật và kiểm thử chung mà 8 yêu cầu cùng dựa vào: khung dự án, CI, cơ sở dữ liệu, khung realtime, kế hoạch kiểm thử, nghiệm thu tổng và đóng gói demo.\n\nYêu cầu khách hàng: Hỗ trợ tất cả. Story: US-00.1, US-00.2, US-00.3, US-00.4, US-00.5."
+    },
+    {
+      "id": "EP-01",
+      "issue_id": "2",
+      "type": "Epic",
+      "title": "Đăng ký và đăng nhập",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-01",
+        "dac-ta"
+      ],
+      "description": "Đăng ký bằng username + mật khẩu + OTP email hoặc Google; đăng nhập bằng username + mật khẩu (khoá thử sai), Google hoặc Khách; quản lý phiên và hồ sơ.\n\nYêu cầu khách hàng: YC1. Story: US-01.1, US-01.2, US-01.3, US-01.4."
+    },
+    {
+      "id": "EP-02",
+      "issue_id": "3",
+      "type": "Epic",
+      "title": "Tạo phòng",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-02",
+        "dac-ta"
+      ],
+      "description": "Tạo phòng, ghế Đỏ/Đen, Đổi ghế/Xin đổi bên, Sẵn sàng và đếm ngược, chuyển Host, ở lại phòng sau ván.\n\nYêu cầu khách hàng: YC2. Story: US-02.1, US-02.2."
+    },
+    {
+      "id": "EP-03",
+      "issue_id": "4",
+      "type": "Epic",
+      "title": "Mời vào phòng",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-03",
+        "dac-ta"
+      ],
+      "description": "Mời bằng link/mã 8 ký tự cho người chưa kết bạn; kết bạn và mời bạn đang online ngay trong game.\n\nYêu cầu khách hàng: YC3. Story: US-03.1, US-03.2."
+    },
+    {
+      "id": "EP-04",
+      "issue_id": "5",
+      "type": "Epic",
+      "title": "Khởi tạo bàn cờ",
+      "parent": null,
+      "priority": "High",
+      "labels": [
+        "EP-04",
+        "dac-ta"
+      ],
+      "description": "Lõi luật cờ dùng chung, bàn cờ SVG quân chữ Hán, đi cờ bằng click/kéo thả, âm thanh.\n\nYêu cầu khách hàng: YC4. Story: US-04.1, US-04.2, US-04.3."
+    },
+    {
+      "id": "EP-05",
+      "issue_id": "6",
+      "type": "Epic",
+      "title": "Hai người đánh cờ online",
+      "parent": null,
+      "priority": "High",
+      "labels": [
+        "EP-05",
+        "dac-ta"
+      ],
+      "description": "Máy chủ phân xử nước đi, đồng hồ, kết thúc ván, đầu hàng, xin hoà, mất kết nối và nối lại.\n\nYêu cầu khách hàng: YC5. Story: US-05.1, US-05.2, US-05.3."
+    },
+    {
+      "id": "EP-06",
+      "issue_id": "7",
+      "type": "Epic",
+      "title": "Chế độ phòng và người xem",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-06",
+        "dac-ta"
+      ],
+      "description": "PUBLIC / CODE_ONLY / LOCKED, danh sách phòng ở Sảnh, tối đa 5 người xem (7 người/phòng), đuổi người xem.\n\nYêu cầu khách hàng: YC6. Story: US-06.1, US-06.2, US-06.3."
+    },
+    {
+      "id": "EP-07",
+      "issue_id": "8",
+      "type": "Epic",
+      "title": "Chat, camera và mic",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-07",
+        "dac-ta"
+      ],
+      "description": "Kênh Riêng cho hai người chơi, Kênh Chung cho người xem, bộ lọc từ cấm; camera/mic qua LiveKit với ba mức chia sẻ.\n\nYêu cầu khách hàng: YC7. Story: US-07.1, US-07.2."
+    },
+    {
+      "id": "EP-08",
+      "issue_id": "9",
+      "type": "Epic",
+      "title": "Đánh với máy theo cấp độ",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-08",
+        "dac-ta"
+      ],
+      "description": "Máy cờ ba cấp Dễ/Trung bình/Khó, chọn phe, Ván mới, ổn định ván với máy.\n\nYêu cầu khách hàng: YC8. Story: US-08.1, US-08.2, US-08.3."
+    },
+    {
+      "id": "US-00.1",
+      "issue_id": "10",
+      "type": "Story",
+      "title": "Khung dự án, CI và nhật ký vận hành",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-00"
+      ]
+    },
+    {
+      "id": "US-00.2",
+      "issue_id": "11",
+      "type": "Story",
+      "title": "Cơ sở dữ liệu và phân quyền P1",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-00"
+      ]
+    },
+    {
+      "id": "US-00.3",
+      "issue_id": "12",
+      "type": "Story",
+      "title": "Khung realtime",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-00"
+      ]
+    },
+    {
+      "id": "US-00.4",
+      "issue_id": "13",
+      "type": "Story",
+      "title": "Kế hoạch kiểm thử và kiểm chứng sớm",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-00"
+      ]
+    },
+    {
+      "id": "US-00.5",
+      "issue_id": "14",
+      "type": "Story",
+      "title": "Nghiệm thu tổng, NFR và đóng gói demo",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-00"
+      ]
+    },
+    {
+      "id": "US-01.1",
+      "issue_id": "15",
+      "type": "Story",
+      "title": "Đăng ký bằng Username + Mật khẩu + OTP email",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-01"
+      ]
+    },
+    {
+      "id": "US-01.2",
+      "issue_id": "16",
+      "type": "Story",
+      "title": "Đăng nhập bằng Username + Mật khẩu và khoá thử sai",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-01"
+      ]
+    },
+    {
+      "id": "US-01.3",
+      "issue_id": "17",
+      "type": "Story",
+      "title": "Đăng ký/đăng nhập bằng Google và chế độ Khách",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-01"
+      ]
+    },
+    {
+      "id": "US-01.4",
+      "issue_id": "18",
+      "type": "Story",
+      "title": "Phiên đăng nhập, hồ sơ và Đăng xuất",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-01"
+      ]
+    },
+    {
+      "id": "US-02.1",
+      "issue_id": "19",
+      "type": "Story",
+      "title": "Tạo phòng, ghế và bắt đầu ván",
+      "parent": "EP-02",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-02"
+      ]
+    },
+    {
+      "id": "US-02.2",
+      "issue_id": "20",
+      "type": "Story",
+      "title": "Xin đổi bên và ở lại phòng sau ván",
+      "parent": "EP-02",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-02"
+      ]
+    },
+    {
+      "id": "US-03.1",
+      "issue_id": "21",
+      "type": "Story",
+      "title": "Mời bằng link/mã và vào phòng",
+      "parent": "EP-03",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-03"
+      ]
+    },
+    {
+      "id": "US-03.2",
+      "issue_id": "22",
+      "type": "Story",
+      "title": "Bạn bè và mời bạn online",
+      "parent": "EP-03",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-03"
+      ]
+    },
+    {
+      "id": "US-04.1",
+      "issue_id": "23",
+      "type": "Story",
+      "title": "Lõi luật cờ dùng chung",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-04"
+      ]
+    },
+    {
+      "id": "US-04.2",
+      "issue_id": "24",
+      "type": "Story",
+      "title": "Khởi tạo và hiển thị bàn cờ",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-04"
+      ]
+    },
+    {
+      "id": "US-04.3",
+      "issue_id": "25",
+      "type": "Story",
+      "title": "Đi cờ bằng click/kéo thả và âm thanh",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-04"
+      ]
+    },
+    {
+      "id": "US-05.1",
+      "issue_id": "26",
+      "type": "Story",
+      "title": "Ván online: đi cờ, đồng hồ và kết thúc ván",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-05"
+      ]
+    },
+    {
+      "id": "US-05.2",
+      "issue_id": "27",
+      "type": "Story",
+      "title": "Đầu hàng và xin hoà",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-05"
+      ]
+    },
+    {
+      "id": "US-05.3",
+      "issue_id": "28",
+      "type": "Story",
+      "title": "Mất kết nối và nối lại",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-05"
+      ]
+    },
+    {
+      "id": "US-06.1",
+      "issue_id": "29",
+      "type": "Story",
+      "title": "Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED",
+      "parent": "EP-06",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-06"
+      ]
+    },
+    {
+      "id": "US-06.2",
+      "issue_id": "30",
+      "type": "Story",
+      "title": "Sảnh và danh sách phòng công khai",
+      "parent": "EP-06",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-06"
+      ]
+    },
+    {
+      "id": "US-06.3",
+      "issue_id": "31",
+      "type": "Story",
+      "title": "Người xem và đuổi người xem",
+      "parent": "EP-06",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-06"
+      ]
+    },
+    {
+      "id": "US-07.1",
+      "issue_id": "32",
+      "type": "Story",
+      "title": "Hai kênh chat và bộ lọc",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-07"
+      ]
+    },
+    {
+      "id": "US-07.2",
+      "issue_id": "33",
+      "type": "Story",
+      "title": "Camera, mic và mức chia sẻ",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-07"
+      ]
+    },
+    {
+      "id": "US-08.1",
+      "issue_id": "34",
+      "type": "Story",
+      "title": "Thiết lập và chơi ván với máy",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-08"
+      ]
+    },
+    {
+      "id": "US-08.2",
+      "issue_id": "35",
+      "type": "Story",
+      "title": "Máy cờ ba cấp độ",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-08"
+      ]
+    },
+    {
+      "id": "US-08.3",
+      "issue_id": "36",
+      "type": "Story",
+      "title": "Ổn định ván với máy và hoàn thiện cấp Khó",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "dac-ta",
+        "EP-08"
+      ]
+    },
+    {
+      "id": "T01",
+      "issue_id": "37",
+      "type": "Task",
+      "title": "Dựng monorepo, CI, nhật ký và /health",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-00.1",
+      "owner": "Tình",
+      "hours": 8,
+      "start_slot": 0,
+      "end_slot": 2,
+      "sprint": 1,
+      "deps": [],
+      "steps": [
+        "Tạo pnpm workspace: {{apps/web}} (React + Vite + TS), {{apps/server}} (NestJS), {{packages/shared}}, {{packages/xiangqi-core}}, {{packages/engine}}",
+        "Cấu hình ESLint, Prettier, TypeScript strict, Vitest; GitHub Actions chạy lint + typecheck + test cho mọi PR vào {{develop}}; bật bảo vệ nhánh",
+        "Server: logger JSON (thời gian, mức, mã sự kiện, lọc mật khẩu/OTP/token/chat), endpoint {{/health}}; {{.env.example}} đủ biến (gồm {{LIVEKIT_URL}}, {{LIVEKIT_API_KEY}}, {{LIVEKIT_API_SECRET}} để chuyển giữa LiveKit tự chạy và LiveKit Cloud)"
+      ],
+      "output": "Repo chạy được bằng {{pnpm dev}}, CI xanh trên PR mẫu, README mục \"Chạy dự án\"."
+    },
+    {
+      "id": "T02",
+      "issue_id": "38",
+      "type": "Task",
+      "title": "Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-00.4",
+      "owner": "Thư",
+      "hours": 20,
+      "start_slot": 0,
+      "end_slot": 5,
+      "sprint": 1,
+      "deps": [],
+      "steps": [
+        "Viết kế hoạch kiểm thử, mẫu TC có bước/dữ liệu/kết quả mong đợi và biến thể cho AC nhiều nhánh; xác định môi trường, mức lỗi, nơi ghi bằng chứng.",
+        "Viết TC cho phần nền tảng; chuẩn bị bộ thế luật và bộ chiếu hết 1–2 nước có đáp án xác minh độc lập, tập 50 thế giữa ván. Phần chuẩn bị dữ liệu 4 giờ chuyển từ T59, không giao người viết engine tự làm đáp án.",
+        "Từng QA Task viết tiếp TC cho AC được giao; chưa coi 268 AC là 268 TC đã thực thi."
+      ],
+      "output": "Kế hoạch kiểm thử, mẫu TC, TC nền tảng và bộ dữ liệu luật/chiếu hết có nguồn đáp án."
+    },
+    {
+      "id": "T03",
+      "issue_id": "39",
+      "type": "Task",
+      "title": "Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-00.1",
+      "owner": "Kỳ",
+      "hours": 16,
+      "start_slot": 2,
+      "end_slot": 6,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "steps": [
+        "Áp design token Kỳ Đài Cổ Phong (DESIGN.md) thành biến CSS; layout chung, router các trang P1, trang Sảnh khung (nút Tạo phòng, Vào phòng bằng mã, Đánh với máy)",
+        "Thành phần dùng chung: Button, Input, Modal, Toast, Tooltip, Skeleton, EmptyState, ErrorState với đủ 5 trạng thái",
+        "Thanh điều hướng {{PANEL-NAVBAR}} khung (mục chưa làm hiện \"Sắp ra mắt\")"
+      ],
+      "output": "Bộ thành phần giao diện và khung trang để các Task FE sau dùng lại."
+    },
+    {
+      "id": "T04",
+      "issue_id": "40",
+      "type": "Task",
+      "title": "BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-01.1",
+      "owner": "Đông",
+      "hours": 24,
+      "start_slot": 2,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "steps": [
+        "API đăng ký 3 bước; kiểm username duy nhất không phân biệt hoa thường và từ cấm ngay bước nhập, email trùng, mật khẩu; tạo bộ lọc dùng chung cho onboarding/tên phòng/tên Khách/chat.",
+        "Cấu hình SMTP ngoài; OTP 6 số/3 phút, gửi lại sau 60 giây; đo email ngoài nhóm và 5 thư/giờ. GATE-EMAIL gọi API trực tiếp; chặn UI đơn thuần không đạt.",
+        "Migration profiles; kiểm trùng lại bước cuối; tự đăng nhập. Tuần tự hoá hoàn tất/phục hồi/dọn: hồ sơ đã hoàn tất không bị xoá nhầm do còn PENDING; bản chưa hoàn tất dọn khoảng 60–65 phút.",
+        "Dùng 8 giờ bổ sung thử cấu hình Google không tự gộp email và phiên ẩn danh trên tài khoản thử; ghi giới hạn/phương án vào báo cáo. Đây là thử nền tảng, GATE-GOOGLE/GUEST đầy đủ vẫn nghiệm thu T35/T48."
+      ],
+      "output": "API đăng ký, migration profiles, SMTP thật, báo cáo SMTP/EMAIL và thử cấu hình Google/Khách."
+    },
+    {
+      "id": "T05",
+      "issue_id": "41",
+      "type": "Task",
+      "title": "Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-04.1",
+      "owner": "Tình",
+      "hours": 8,
+      "start_slot": 2,
+      "end_slot": 4,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "steps": [
+        "Biểu diễn bàn cờ 9×10 và thế cờ; tuần tự hoá/đọc lại thế cờ (chuỗi kiểu FEN nội bộ)",
+        "Sinh nước đi và ăn quân cho từng loại quân: Tướng và Sĩ (trong cung), Tượng (đi chéo 2 ô, bị chặn mắt, không qua sông), Xe (đi thẳng), Mã (bị cản chân), Pháo (đi như Xe, *ăn phải nhảy qua đúng một ngòi*), Tốt (chưa qua sông chỉ tiến, qua sông được đi ngang, không lùi)",
+        "Unit test riêng cho từng loại quân, mỗi loại ít nhất một thế bị chặn và một thế ăn quân"
+      ],
+      "output": "Hàm sinh nước giả hợp lệ (chưa xét tự chiếu) cho 7 loại quân trong {{packages/xiangqi-core}}."
+    },
+    {
+      "id": "T06",
+      "issue_id": "42",
+      "type": "Task",
+      "title": "Spike media LAN/Cloud/HTTPS và thử mô hình phiên",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-00.4",
+      "owner": "Cường",
+      "hours": 24,
+      "start_slot": 2,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "steps": [
+        "Dành 16 giờ cho LiveKit Docker và Cloud: hai người phát, năm người chỉ nhận; thử thu hồi quyền, đổi môi trường bằng biến, HTTPS trên nhiều máy LAN; ghi CPU/RAM, thời gian thu hồi, hạn mức.",
+        "Dành 8 giờ kiểm mô hình hạn phiên cố định, Khách và thu hồi phiên trên hai trình duyệt bằng dữ liệu thử. Ghi khả năng/giới hạn để T12/T56 dùng; chưa coi là PASS ca xử thua ván thật.",
+        "Bàn giao docker-compose, hướng dẫn HTTPS, mẫu cấu hình không chứa bí mật và báo cáo spike."
+      ],
+      "output": "docker-compose, hướng dẫn HTTPS/LAN/Cloud và báo cáo thử media/phiên."
+    },
+    {
+      "id": "T07",
+      "issue_id": "43",
+      "type": "Task",
+      "title": "Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-04.1",
+      "owner": "Tình",
+      "hours": 8,
+      "start_slot": 4,
+      "end_slot": 6,
+      "sprint": 1,
+      "deps": [
+        "T05"
+      ],
+      "steps": [
+        "Lọc nước giả hợp lệ: loại nước làm hai Tướng đối mặt không có quân chắn và nước để Tướng mình bị chiếu",
+        "Hàm kiểm tra đang bị chiếu; xác định chiếu hết ({{CHECKMATE}}) và hết nước không bị chiếu ({{STALEMATE}} — bên hết nước thua)",
+        "API công khai {{legalMoves(position)}}, {{isCheck(position)}}, {{applyMove(position, move)}} để giao diện, máy chủ và máy cờ dùng chung"
+      ],
+      "output": "Bộ sinh nước hợp lệ hoàn chỉnh và nhận biết chiếu/chiếu hết/hết nước."
+    },
+    {
+      "id": "T08",
+      "issue_id": "44",
+      "type": "Task",
+      "title": "FE màn Đăng ký 3 bước",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-01.1",
+      "owner": "Kỳ",
+      "hours": 12,
+      "start_slot": 8,
+      "end_slot": 11,
+      "sprint": 1,
+      "deps": [
+        "T03",
+        "T04"
+      ],
+      "steps": [
+        "Màn {{SCR-REGISTER}} 3 bước: username/mật khẩu → email → 6 ô OTP có đếm 3 phút và nút Gửi lại (đếm 60 giây)",
+        "Hiển thị lỗi tại ô, đủ 5 trạng thái; chuyển vào Sảnh hoặc phòng mời đang chờ sau khi xong"
+      ],
+      "output": "Màn Đăng ký hoạt động với API thật."
+    },
+    {
+      "id": "T09",
+      "issue_id": "45",
+      "type": "Task",
+      "title": "BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-01.2",
+      "owner": "Tùng",
+      "hours": 16,
+      "start_slot": 8,
+      "end_slot": 12,
+      "sprint": 1,
+      "deps": [
+        "T04"
+      ],
+      "steps": [
+        "API đăng nhập bằng username (tra email phía máy chủ, không trả về client), không phân biệt hoa thường, câu báo lỗi chung",
+        "Migration bảng {{login_attempts}}; bộ đếm thử sai theo username chuẩn hoá (kể cả username không tồn tại): 5 lần/15 phút → chặn 15 phút; đăng nhập mật khẩu đúng thì đặt lại, đăng nhập Google *không* đặt lại (BA 0.15)",
+        "Ghi nhớ đăng nhập: 30 ngày hoặc phiên trình duyệt/12 giờ; GATE-AUTH-USERNAME"
+      ],
+      "output": "API đăng nhập + bảng {{login_attempts}} + báo cáo GATE-AUTH-USERNAME."
+    },
+    {
+      "id": "T10",
+      "issue_id": "46",
+      "type": "Task",
+      "title": "Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-04.1",
+      "owner": "Tình",
+      "hours": 8,
+      "start_slot": 6,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T07"
+      ],
+      "steps": [
+        "Lịch sử thế cờ trên nhánh nước hiệu lực (thế giống nhau = cùng vị trí mọi quân *và* cùng bên tới lượt; chu kỳ = các nước từ lần xuất hiện thứ 1 đến lần thứ 3 — BA 0.12): lặp 3 lần → hoà, chiếu liên tục → bên chiếu thua (cả hai cùng chiếu → hoà), 120 nửa nước không ăn quân → hoà, chiếu hết được ưu tiên hơn mọi kết quả hoà",
+        "Perft độ sâu 2 và 3 từ thế khai cuộc, đối chiếu số đã công bố",
+        "Viết tài liệu ngắn cho API; đo độ phủ unit test của cả gói",
+        "Bổ sung ca BA 0.17: chiếu hết ưu tiên cao nhất; STALEMATE/PERPETUAL_CHECK trước DRAW_NO_CAPTURE. Xác minh chuẩn perft và lưu nguồn đáp án trước khi dùng."
+      ],
+      "output": "Gói {{packages/xiangqi-core}} hoàn chỉnh, có tài liệu và độ phủ ≥ 90%."
+    },
+    {
+      "id": "T11",
+      "issue_id": "47",
+      "type": "Task",
+      "title": "FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-04.2",
+      "owner": "Nhạn",
+      "hours": 16,
+      "start_slot": 2,
+      "end_slot": 6,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "steps": [
+        "Vẽ bàn cờ SVG 9×10, sông, cung; 32 quân chữ Hán theo DESIGN.md §7; lật bàn khi cầm Đen",
+        "Co giãn từ 360 px, quân đủ lớn để chạm; nhãn trợ năng cho quân và lượt đi"
+      ],
+      "output": "Component {{<Board>}} hiển thị từ một thế cờ cho trước."
+    },
+    {
+      "id": "T12",
+      "issue_id": "48",
+      "type": "Task",
+      "title": "Khung realtime Socket.IO",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-00.3",
+      "owner": "Tình",
+      "hours": 24,
+      "start_slot": 8,
+      "end_slot": 14,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "steps": [
+        "Cổng Socket.IO trong NestJS: xác thực JWT Supabase (người dùng và Khách), room theo {{roomId}}",
+        "Phong bì lệnh có {{commandId}} + phiên bản trạng thái; lưu biên lai chống trùng (migration bảng {{command_receipts}} trong Task này); gửi ảnh chụp trạng thái khi nối lại",
+        "Tiếp quản tab: tab mới giành quyền, tab cũ chỉ đọc; *công bố hợp đồng sự kiện phòng/ván trong {{packages/shared}}*",
+        "Bàn giao hợp đồng realtime cho phòng/ván, phiên, media và lỗi AI trong packages/shared. Thử tải socket sơ bộ 50 kết nối để phát hiện lỗi kiến trúc; số đo này không thay GATE-REALTIME đầy đủ T66."
+      ],
+      "output": "Khung realtime + tài liệu hợp đồng sự kiện để Story phòng và Story ván làm độc lập."
+    },
+    {
+      "id": "T13",
+      "issue_id": "49",
+      "type": "Task",
+      "title": "Kiểm thử US-01.1",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "kiem-thu"
+      ],
+      "story": "US-01.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 11,
+      "end_slot": 13,
+      "sprint": 1,
+      "deps": [
+        "T08"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T14",
+      "issue_id": "50",
+      "type": "Task",
+      "title": "Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-00.2",
+      "owner": "Đông",
+      "hours": 16,
+      "start_slot": 8,
+      "end_slot": 12,
+      "sprint": 1,
+      "deps": [
+        "T04"
+      ],
+      "steps": [
+        "Thiết kế các bảng P1 còn lại: {{friend_requests}}, {{friendships}}, {{rooms}}, {{room_members}}, {{room_blocks}}, {{matches}}, {{match_moves}} (bảng {{profiles}}, {{login_attempts}} do Task đăng ký/đăng nhập tạo; {{command_receipts}} do Task realtime tạo)",
+        "Viết migration Supabase + RLS: client chỉ đọc dữ liệu được phép; ván/phòng/kết quả chỉ máy chủ ghi",
+        "Chỉ mục duy nhất username theo chữ thường; script dữ liệu mẫu (tài khoản demo)"
+      ],
+      "output": "Migration chạy lại được từ đầu, sơ đồ dữ liệu (ảnh/markdown) trong repo."
+    },
+    {
+      "id": "T15",
+      "issue_id": "51",
+      "type": "Task",
+      "title": "FE màn Đăng nhập",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "phat-trien"
+      ],
+      "story": "US-01.2",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 12,
+      "end_slot": 14,
+      "sprint": 1,
+      "deps": [
+        "T03",
+        "T09"
+      ],
+      "steps": [
+        "Màn {{SCR-LOGIN}}: username, mật khẩu, Ghi nhớ đăng nhập (mặc định tick), nút Google và Guest hiển thị (hoạt động ở US-01.3), \"Quên mật khẩu?\" {{DISABLED}}",
+        "Hiện thông báo khoá thử sai; đã đăng nhập vào {{/login}} thì về Sảnh"
+      ],
+      "output": "Màn Đăng nhập hoạt động với API thật."
+    },
+    {
+      "id": "T16",
+      "issue_id": "52",
+      "type": "Task",
+      "title": "Kiểm thử US-04.2",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "kiem-thu"
+      ],
+      "story": "US-04.2",
+      "owner": "Thư",
+      "hours": 4,
+      "start_slot": 6,
+      "end_slot": 7,
+      "sprint": 1,
+      "deps": [
+        "T11"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T17",
+      "issue_id": "53",
+      "type": "Task",
+      "title": "Kiểm thử US-01.2",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-1",
+        "kiem-thu"
+      ],
+      "story": "US-01.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 14,
+      "end_slot": 16,
+      "sprint": 2,
+      "deps": [
+        "T15"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T18",
+      "issue_id": "54",
+      "type": "Task",
+      "title": "BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-02.1",
+      "owner": "Tùng",
+      "hours": 24,
+      "start_slot": 14,
+      "end_slot": 20,
+      "sprint": 2,
+      "deps": [
+        "T12",
+        "T14"
+      ],
+      "steps": [
+        "API tạo phòng (tên, mức giờ 5/10/15, số người xem 0–5), mã 8 ký tự, link mời; Host ngồi Đỏ; phòng mặc định CODE_ONLY",
+        "Ghế, Đổi ghế tự do khi một người ngồi ghế, Sẵn sàng, đếm 3-2-1 (huỷ khi mất kết nối), phát sự kiện bắt đầu ván theo hợp đồng",
+        "Chuyển Host, đóng phòng khi không còn người ngồi ghế, giới hạn 1 phòng cho Khách"
+      ],
+      "output": "Dịch vụ phòng + test tích hợp."
+    },
+    {
+      "id": "T19",
+      "issue_id": "55",
+      "type": "Task",
+      "title": "FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-04.3",
+      "owner": "Nhạn",
+      "hours": 24,
+      "start_slot": 8,
+      "end_slot": 14,
+      "sprint": 1,
+      "deps": [
+        "T10",
+        "T11"
+      ],
+      "steps": [
+        "Chọn quân bằng click/chạm, kéo thả chuột và cảm ứng, trượt về khi thả sai; chấm ô hợp lệ, vòng quân ăn được (lấy từ {{xiangqi-core}})",
+        "Đánh dấu nước vừa đi (4 góc), cảnh báo chiếu không nhấp nháy, tôn trọng giảm chuyển động",
+        "4 âm thanh Web Audio API + nút tắt tiếng giữ trong phiên"
+      ],
+      "output": "Bàn cờ chơi được hai bên trên một máy (chế độ thử)."
+    },
+    {
+      "id": "T20",
+      "issue_id": "56",
+      "type": "Task",
+      "title": "BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-05.1",
+      "owner": "Tình",
+      "hours": 24,
+      "start_slot": 14,
+      "end_slot": 20,
+      "sprint": 2,
+      "deps": [
+        "T10",
+        "T12",
+        "T14"
+      ],
+      "steps": [
+        "Dịch vụ ván: tạo ván từ sự kiện phòng (theo hợp đồng ở US-00.3), giữ trạng thái, nhận ý định đi cờ, phân xử bằng {{xiangqi-core}}",
+        "Phát nước đi tới hai người chơi và người xem; tự kết thúc ván theo luật; lưu {{matches}}, {{match_moves}}",
+        "Từ chối nước sai luật/không đúng lượt, đồng bộ lại client"
+      ],
+      "output": "Dịch vụ ván online có API socket và test tích hợp."
+    },
+    {
+      "id": "T21",
+      "issue_id": "57",
+      "type": "Task",
+      "title": "FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-02.1",
+      "owner": "Nhạn",
+      "hours": 16,
+      "start_slot": 20,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T03",
+        "T18"
+      ],
+      "steps": [
+        "{{MODAL-CREATE-ROOM}} (kiểm tra trường), trang phòng chờ: hai ghế, Đổi ghế (khi một người), Sẵn sàng, đếm 3-2-1 có âm thanh",
+        "Hiển thị Host, trạng thái realtime, đủ 5 trạng thái"
+      ],
+      "output": "Màn Tạo phòng và phòng chờ nối với API thật."
+    },
+    {
+      "id": "T22",
+      "issue_id": "58",
+      "type": "Task",
+      "title": "BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-03.1",
+      "owner": "Tùng",
+      "hours": 16,
+      "start_slot": 20,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T18",
+        "T09"
+      ],
+      "steps": [
+        "API vào phòng bằng mã/link: xếp ghế trống, hết ghế làm người xem nếu còn chỗ, đầy thì từ chối",
+        "Lưu đích chuyển hướng khi chưa đăng nhập để tự vào phòng sau đăng nhập/đăng ký"
+      ],
+      "output": "API vào phòng + test tích hợp."
+    },
+    {
+      "id": "T23",
+      "issue_id": "59",
+      "type": "Task",
+      "title": "BE đồng hồ thi đấu và hết giờ",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-05.1",
+      "owner": "Cường",
+      "hours": 8,
+      "start_slot": 20,
+      "end_slot": 22,
+      "sprint": 2,
+      "deps": [
+        "T20"
+      ],
+      "steps": [
+        "Đồng hồ máy chủ theo mức giờ phòng, chỉ chạy bên tới lượt, không cộng giây; tính giờ trước khi xét nước",
+        "Hết giờ → kết thúc {{TIMEOUT}}; gửi thời gian còn lại trong ảnh chụp"
+      ],
+      "output": "Đồng hồ tích hợp trong dịch vụ ván."
+    },
+    {
+      "id": "T24",
+      "issue_id": "60",
+      "type": "Task",
+      "title": "Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-08.2",
+      "owner": "Tình",
+      "hours": 32,
+      "start_slot": 20,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T10"
+      ],
+      "steps": [
+        "Negamax + alpha-beta, tìm sâu dần, bảng chuyển vị đơn giản, sắp xếp nước; hàm lượng giá vật chất + vị trí",
+        "Chạy ở tiến trình/worker riêng; ngân sách 300 / 1.000 / 3.000 ms theo cấp; luôn trả nước hợp lệ tốt nhất đã tìm được",
+        "Đo lần đầu thời gian/độ sâu trên bộ dữ liệu T02 ngay S2; ghi baseline và báo PO nếu có nguy cơ không đạt. T59 tinh chỉnh, T68 kiểm độc lập; không đợi S4 mới thử engine."
+      ],
+      "output": "Gói {{packages/engine}} + tiến trình máy cờ gọi được từ server."
+    },
+    {
+      "id": "T25",
+      "issue_id": "61",
+      "type": "Task",
+      "title": "FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-05.1",
+      "owner": "Kỳ",
+      "hours": 20,
+      "start_slot": 23,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T19",
+        "T23"
+      ],
+      "steps": [
+        "Nối bàn cờ, đồng hồ máy chủ, nước đi, kết quả và lý do tiếng Việt với API/sự kiện đã có.",
+        "Thêm lớp phủ nối lại và thông báo đối thủ mất kết nối theo hợp đồng T12 (4 giờ UI chuyển từ T52). Mô phỏng chỉ để xây UI; ca mất mạng thật nghiệm thu tại T60 sau T52.",
+        "Kết quả phòng tự tạo có Ở lại phòng/Rời phòng, kể cả INTERRUPTED theo BA 0.17; người xem không có nút của người chơi."
+      ],
+      "output": "Giao diện phòng đấu và lớp phủ nối lại; nghiệm thu mất mạng thật ở T60."
+    },
+    {
+      "id": "T26",
+      "issue_id": "62",
+      "type": "Task",
+      "title": "FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "phat-trien"
+      ],
+      "story": "US-03.1",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 24,
+      "end_slot": 26,
+      "sprint": 2,
+      "deps": [
+        "T21",
+        "T22"
+      ],
+      "steps": [
+        "{{MODAL-INVITE}} phần link + mã (Sao chép), ô nhập mã ở Sảnh, tự chuyển vào phòng sau đăng nhập",
+        "{{SCR-ACCESS-DENIED}} cho phòng đầy/mã sai"
+      ],
+      "output": "Luồng mời bằng link/mã chạy với API thật."
+    },
+    {
+      "id": "T27",
+      "issue_id": "63",
+      "type": "Task",
+      "title": "Kiểm thử US-04.3",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "kiem-thu"
+      ],
+      "story": "US-04.3",
+      "owner": "Thư",
+      "hours": 4,
+      "start_slot": 28,
+      "end_slot": 29,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T22"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T28",
+      "issue_id": "64",
+      "type": "Task",
+      "title": "Kiểm thử US-02.1",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "kiem-thu"
+      ],
+      "story": "US-02.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 29,
+      "end_slot": 31,
+      "sprint": 3,
+      "deps": [
+        "T26",
+        "T37",
+        "T25"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T29",
+      "issue_id": "65",
+      "type": "Task",
+      "title": "Kiểm thử US-03.1",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "kiem-thu"
+      ],
+      "story": "US-03.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 26,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T26",
+        "T35",
+        "T08",
+        "T15"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T30",
+      "issue_id": "66",
+      "type": "Task",
+      "title": "Kiểm thử US-05.1",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-2",
+        "kiem-thu"
+      ],
+      "story": "US-05.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 35,
+      "end_slot": 37,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T26"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T31",
+      "issue_id": "67",
+      "type": "Task",
+      "title": "BE bạn bè, trạng thái online, mời bạn online vào phòng",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-03.2",
+      "owner": "Cường",
+      "hours": 24,
+      "start_slot": 31,
+      "end_slot": 37,
+      "sprint": 3,
+      "deps": [
+        "T22",
+        "T35"
+      ],
+      "steps": [
+        "Tìm theo tiền tố username, lời mời kết bạn (gửi, nhận, thu hồi, hết hạn 30 ngày, giới hạn 200/50, bị từ chối 2 lần), huỷ kết bạn; Khách bị loại",
+        "Trạng thái Online/Đang đấu/Offline realtime, chuông lời mời",
+        "Mời bạn online vào phòng: pop-up 30 giây, Tham gia dùng API vào phòng, thu hồi khi phòng khoá"
+      ],
+      "output": "API bạn bè, trạng thái, lời mời vào phòng + test tích hợp."
+    },
+    {
+      "id": "T32",
+      "issue_id": "68",
+      "type": "Task",
+      "title": "BE đầu hàng, rời phòng giữa ván, xin hoà",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-05.2",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 22,
+      "end_slot": 25,
+      "sprint": 2,
+      "deps": [
+        "T20"
+      ],
+      "steps": [
+        "Đầu hàng ({{RESIGN}}), rời phòng giữa ván = đầu hàng, chuyển Host",
+        "Xin hoà: đề nghị 30 giây, chấp nhận → {{DRAW_AGREEMENT}}, từ chối/hết hạn → chờ 5 nước, rút đề nghị, đóng khi ván kết thúc"
+      ],
+      "output": "API đề nghị trong ván + test tích hợp."
+    },
+    {
+      "id": "T33",
+      "issue_id": "69",
+      "type": "Task",
+      "title": "BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-07.2",
+      "owner": "Tình",
+      "hours": 24,
+      "start_slot": 31,
+      "end_slot": 37,
+      "sprint": 3,
+      "deps": [
+        "T06",
+        "T22",
+        "T35"
+      ],
+      "steps": [
+        "Tích hợp LiveKit, cấp token theo vai trò, bật/tắt và ba mức chia sẻ, camera/mic mặc định tắt; không ghi/lưu media.",
+        "Thu hồi quyền khi đổi vai trò, bị đuổi hoặc tab khác tiếp quản; lỗi media không tác động ván/đồng hồ/chat. Hợp đồng từ T12 cho phép làm độc lập FE phòng đấu.",
+        "Bàn giao API/adapter và kiểm thử quyền media; 8 giờ khung giao diện chuyển sang T58. Ca đầu-cuối có giao diện thật nghiệm thu T45."
+      ],
+      "output": "API/adapter media, quyền token và bằng chứng kiểm quyền; UI do T58 bàn giao."
+    },
+    {
+      "id": "T34",
+      "issue_id": "70",
+      "type": "Task",
+      "title": "BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-08.1",
+      "owner": "Tùng",
+      "hours": 16,
+      "start_slot": 28,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T20",
+        "T24"
+      ],
+      "steps": [
+        "API ván với máy: tạo ván {{/ai/:id}} theo cấp và phe (Ngẫu nhiên do máy chủ bốc), máy đi trước khi người cầm Đen",
+        "Đầu hàng, kết thúc, Ván mới (giữ cấp/phe để điền sẵn), không đồng hồ, không xin hoà"
+      ],
+      "output": "Dịch vụ ván với máy + test tích hợp."
+    },
+    {
+      "id": "T35",
+      "issue_id": "71",
+      "type": "Task",
+      "title": "BE đăng ký/đăng nhập Google, onboarding, phiên Khách",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-01.3",
+      "owner": "Cường",
+      "hours": 24,
+      "start_slot": 14,
+      "end_slot": 20,
+      "sprint": 2,
+      "deps": [
+        "T09",
+        "T14"
+      ],
+      "steps": [
+        "Google OAuth trên Supabase: email chưa có → onboarding đặt username + mật khẩu; email đã có → báo trùng, không tự liên kết (GATE-GOOGLE); dọn bản tạm 60 phút",
+        "Phiên Khách (đăng nhập ẩn danh, GATE-GUEST): tên tạm qua bộ lọc, nhãn \"(Khách)\", hạn 12 giờ (không hết khi đang ngồi ghế), xoá dữ liệu khi hết hạn; khoá thử sai không áp cho Google",
+        "Dùng bộ lọc chung T04 để từ chối username chứa từ cấm tại onboarding; GATE-GOOGLE/GUEST chạy thật, không coi spike cấu hình là nghiệm thu tính năng."
+      ],
+      "output": "API Google + Khách + báo cáo GATE-GOOGLE, GATE-GUEST."
+    },
+    {
+      "id": "T36",
+      "issue_id": "72",
+      "type": "Task",
+      "title": "FE nút Đầu hàng, Xin hoà và khung đề nghị",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-05.2",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 28,
+      "end_slot": 30,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T32"
+      ],
+      "steps": [
+        "{{MODAL-CONFIRM-RESIGN}}, {{MODAL-CONFIRM-LEAVE}} (focus ở Huỷ)",
+        "Khung Xin hoà không modal (thu gọn, mở lại, đếm 30 giây), nút {{DISABLED}} có tooltip số nước còn chờ"
+      ],
+      "output": "Giao diện đầu hàng và xin hoà."
+    },
+    {
+      "id": "T37",
+      "issue_id": "73",
+      "type": "Task",
+      "title": "BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ",
+      "parent": "EP-07",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-07.1",
+      "owner": "Đông",
+      "hours": 16,
+      "start_slot": 20,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T18",
+        "T35"
+      ],
+      "steps": [
+        "Kênh Riêng (chỉ hai người chơi, mốc theo cặp) và Kênh Chung (người xem thấy từ lúc vào); hoạt động cả ở phòng chờ lẫn trong ván (BA 0.13); xoá chat khi phòng đóng",
+        "Bộ lọc từ cấm (chuẩn hoá dấu, hoa/thường, ký tự chèn, {{0→o}}, {{1→i}}), tệp cấu hình danh sách; 200 ký tự, 5 tin/10 giây"
+      ],
+      "output": "Dịch vụ chat + test."
+    },
+    {
+      "id": "T38",
+      "issue_id": "74",
+      "type": "Task",
+      "title": "FE thiết lập/chơi AI và giao diện sự cố máy cờ",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-08.1",
+      "owner": "Nhạn",
+      "hours": 16,
+      "start_slot": 33,
+      "end_slot": 37,
+      "sprint": 3,
+      "deps": [
+        "T19",
+        "T34"
+      ],
+      "steps": [
+        "Hộp chọn cấp/phe, màn chơi với máy, máy đi trước khi người cầm Đen, đầu hàng và Ván mới điền lại cấp/phe đã chọn.",
+        "Thêm giao diện Máy cờ gặp sự cố/Thử lại và phân biệt cùng ván với tạo ván mới theo BA 6.1 (4 giờ UI chuyển từ T59). T68 kiểm hành vi lỗi/phục hồi thật sau T63.",
+        "Kiểm trạng thái chờ/tắt thao tác khi máy nghĩ; không thêm Undo/Hint P2."
+      ],
+      "output": "Giao diện AI đầy đủ, gồm sự cố/Thử lại, kết nối backend thật."
+    },
+    {
+      "id": "T39",
+      "issue_id": "75",
+      "type": "Task",
+      "title": "Kiểm thử US-05.2",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-05.2",
+      "owner": "Thư",
+      "hours": 4,
+      "start_slot": 31,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T36",
+        "T18"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T40",
+      "issue_id": "76",
+      "type": "Task",
+      "title": "FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-03.2",
+      "owner": "Kỳ",
+      "hours": 16,
+      "start_slot": 38,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T31"
+      ],
+      "steps": [
+        "{{SCR-FRIENDS}} (tìm kiếm, hai tab, Nhắn tin/Thách đấu {{DISABLED}}), chuông ở thanh điều hướng",
+        "Tab mời bạn bè trong {{MODAL-INVITE}} theo trạng thái, pop-up lời mời phía người nhận; ẩn với Khách"
+      ],
+      "output": "Giao diện bạn bè và mời online."
+    },
+    {
+      "id": "T41",
+      "issue_id": "77",
+      "type": "Task",
+      "title": "BE Xin đổi bên và phòng về chờ sau ván",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-02.2",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 25,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T20",
+        "T37"
+      ],
+      "steps": [
+        "Xin đổi bên khi phòng chờ có đủ 2 người: 30 giây, đồng ý → hoán đổi + reset Sẵn sàng, từ chối → chờ 60 giây, 1 đề nghị chờ, tự huỷ khi đếm hoặc đổi ghế",
+        "Sau ván: phòng về WAITING ngay, giữ ghế/người xem/chế độ/mức giờ, không hạn đóng 10 phút"
+      ],
+      "output": "API đổi bên và vòng đời sau ván + test tích hợp."
+    },
+    {
+      "id": "T42",
+      "issue_id": "78",
+      "type": "Task",
+      "title": "FE khung chat hai kênh",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-07.1",
+      "owner": "Nhạn",
+      "hours": 12,
+      "start_slot": 30,
+      "end_slot": 33,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T37"
+      ],
+      "steps": [
+        "{{PANEL-CHAT}} dùng chung cho phòng chờ và phòng thi đấu: máy tính mặc định chỉ Kênh Riêng, mở thêm Kênh Chung; điện thoại dùng tab; người xem chỉ Kênh Chung; hiển thị văn bản thuần"
+      ],
+      "output": "Khung chat hai kênh."
+    },
+    {
+      "id": "T43",
+      "issue_id": "79",
+      "type": "Task",
+      "title": "Kiểm thử US-08.1",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-08.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 37,
+      "end_slot": 39,
+      "sprint": 3,
+      "deps": [
+        "T38",
+        "T63"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T44",
+      "issue_id": "80",
+      "type": "Task",
+      "title": "FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-01.3",
+      "owner": "Kỳ",
+      "hours": 12,
+      "start_slot": 20,
+      "end_slot": 23,
+      "sprint": 2,
+      "deps": [
+        "T15",
+        "T35"
+      ],
+      "steps": [
+        "Nút Google ở Đăng nhập/Đăng ký, màn {{SCR-ONBOARDING}} (không có nút X)",
+        "Nút Guest + {{MODAL-GUEST-NAME}}, nhãn \"(Khách)\", vào phòng từ link mời bằng Khách"
+      ],
+      "output": "Luồng Google và Khách hoạt động trên giao diện."
+    },
+    {
+      "id": "T45",
+      "issue_id": "81",
+      "type": "Task",
+      "title": "Kiểm thử US-07.2",
+      "parent": "EP-07",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-07.2",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 43,
+      "end_slot": 45,
+      "sprint": 4,
+      "deps": [
+        "T58",
+        "T21",
+        "T42"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T46",
+      "issue_id": "82",
+      "type": "Task",
+      "title": "FE hộp Xin đổi bên, Ở lại phòng / Rời phòng",
+      "parent": "EP-02",
+      "priority": "High",
+      "labels": [
+        "sprint-3",
+        "phat-trien"
+      ],
+      "story": "US-02.2",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 30,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T41"
+      ],
+      "steps": [
+        "Nút Xin đổi bên, {{MODAL-SIDE-SWAP-PROMPT}}, trạng thái chờ + Rút đề nghị, nút Đổi ghế ẩn khi đủ 2 người",
+        "Hộp kết quả: Ở lại phòng / Rời phòng"
+      ],
+      "output": "Giao diện đổi bên và sau ván."
+    },
+    {
+      "id": "T47",
+      "issue_id": "83",
+      "type": "Task",
+      "title": "Kiểm thử US-07.1",
+      "parent": "EP-07",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-07.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 33,
+      "end_slot": 35,
+      "sprint": 3,
+      "deps": [
+        "T42",
+        "T46",
+        "T21"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T48",
+      "issue_id": "84",
+      "type": "Task",
+      "title": "Kiểm thử US-01.3",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-01.3",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 26,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T44",
+        "T37",
+        "T26"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T49",
+      "issue_id": "85",
+      "type": "Task",
+      "title": "Kiểm thử US-03.2",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-03.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 44,
+      "end_slot": 46,
+      "sprint": 4,
+      "deps": [
+        "T40",
+        "T53",
+        "T56",
+        "T34"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T50",
+      "issue_id": "86",
+      "type": "Task",
+      "title": "Kiểm thử US-02.2",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "sprint-3",
+        "kiem-thu"
+      ],
+      "story": "US-02.2",
+      "owner": "Thư",
+      "hours": 4,
+      "start_slot": 32,
+      "end_slot": 33,
+      "sprint": 3,
+      "deps": [
+        "T46"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T51",
+      "issue_id": "87",
+      "type": "Task",
+      "title": "Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-00.5",
+      "owner": "Thư",
+      "hours": 24,
+      "start_slot": 42,
+      "end_slot": 48,
+      "sprint": 4,
+      "deps": [
+        "T08",
+        "T26",
+        "T36",
+        "T38",
+        "T40",
+        "T42",
+        "T44",
+        "T46",
+        "T52",
+        "T58",
+        "T59",
+        "T61",
+        "T65"
+      ],
+      "steps": [
+        "Chỉ bắt đầu sau khi mọi Task triển khai hoàn tất trên một bản tích hợp. Chạy các luồng D1–D10 đầy đủ và hồi quy các AC chức năng, đặc biệt những AC được hoãn từ kiểm cục bộ.",
+        "Có thể chạy song song QA chuyên đề cuối trên các tài khoản/phòng thử riêng; không phụ thuộc các QA đó phải xong trước khi bắt đầu. T70 vẫn phải chờ tất cả QA và T66 đạt.",
+        "Lưu kết quả theo từng AC/biến thể TC, ghi lỗi và kiểm lại; bằng chứng NFR/đóng gói/demo cuối được bổ sung từ T66/T70/T71. Không gọi phần chưa đo là PASS."
+      ],
+      "output": "Báo cáo hồi quy chức năng/D1–D10 đầy đủ, bằng chứng các AC tích hợp được giao."
+    },
+    {
+      "id": "T52",
+      "issue_id": "88",
+      "type": "Task",
+      "title": "BE mất kết nối, ân hạn, đồng bộ lại và server restart",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-05.3",
+      "owner": "Tình",
+      "hours": 12,
+      "start_slot": 37,
+      "end_slot": 40,
+      "sprint": 3,
+      "deps": [
+        "T56"
+      ],
+      "steps": [
+        "Ân hạn 60 giây người chơi, đồng hồ tiếp tục; ưu tiên TIMEOUT nếu hết giờ trước, DISCONNECT khi hết ân hạn; hai bên rớt mạng xử bên mất trước.",
+        "Nối lại gửi snapshot đầy đủ và phối hợp quản lý phiên T56; giữ chỗ người xem theo BA. UI lớp phủ đã giao T25 theo contract T12.",
+        "Server restart: ván online INTERRUPTED trung tính, phòng tự tạo WAITING/reset Sẵn sàng, Ở lại/Rời theo BA 0.17; không dùng lại FINISHED 10 phút cho phòng tự tạo."
+      ],
+      "output": "Backend nối lại/gián đoạn và snapshot, kết nối UI T25."
+    },
+    {
+      "id": "T53",
+      "issue_id": "89",
+      "type": "Task",
+      "title": "BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-06.1",
+      "owner": "Tùng",
+      "hours": 16,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T22"
+      ],
+      "steps": [
+        "Chuyển PUBLIC / CODE_ONLY / LOCKED (chỉ Host); LOCKED chỉ bật khi đủ 2 người chơi và giữ khoá khi thiếu ghế",
+        "Khoá: chặn người mới, vô hiệu link/mã/lời mời chưa dùng; mở lại sinh mã/link mới; người đang trong phòng giữ quyền nối lại"
+      ],
+      "output": "API chế độ phòng + test tích hợp."
+    },
+    {
+      "id": "T54",
+      "issue_id": "90",
+      "type": "Task",
+      "title": "BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-06.2",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 28,
+      "end_slot": 31,
+      "sprint": 3,
+      "deps": [
+        "T53"
+      ],
+      "steps": [
+        "Danh sách phòng PUBLIC: cột theo BA 0.5, mới nhất trước, tối đa 50, đẩy cập nhật realtime khi phòng đổi trạng thái/số người/chế độ",
+        "\"Vào chơi\" (ghế vừa hết → người xem nếu còn chỗ) và \"Vào xem\"; Khách được dùng"
+      ],
+      "output": "API danh sách Sảnh + test tích hợp."
+    },
+    {
+      "id": "T55",
+      "issue_id": "91",
+      "type": "Task",
+      "title": "BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-06.3",
+      "owner": "Đông",
+      "hours": 16,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T22"
+      ],
+      "steps": [
+        "Vai trò người xem, sức chứa X/N, giữ chỗ 5 phút khi mất kết nối",
+        "Chuyển ghế ↔ người xem, Host mời xuống ghế (chấp nhận/từ chối, không giữ ghế), không đổi chỗ khi đang ván",
+        "Đuổi người xem (cả hai người chơi), chặn đến khi phòng đóng, phát sự kiện đuổi cho Task media"
+      ],
+      "output": "API người xem + test tích hợp."
+    },
+    {
+      "id": "T56",
+      "issue_id": "92",
+      "type": "Task",
+      "title": "BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-01.4",
+      "owner": "Đông",
+      "hours": 24,
+      "start_slot": 28,
+      "end_slot": 34,
+      "sprint": 3,
+      "deps": [
+        "T18",
+        "T20",
+        "T35"
+      ],
+      "steps": [
+        "Hạn phiên cố định (không gia hạn khi làm mới token), hết hạn trong ván: ân hạn 60 giây / ván AI 30 phút",
+        "Một vị trí chơi: chặn ngồi ghế/ván thứ hai; đăng nhập thiết bị khác khi đang ván → xử thua, đăng xuất thiết bị cũ (GATE-SESSION)",
+        "Đăng xuất chủ động: đang ván → đầu hàng có xác nhận; ở phòng chờ → rời phòng; banner ván dở",
+        "Giới hạn của Khách: không xuất hiện trong tìm kiếm bạn bè, không nhận lời mời bạn bè",
+        "API cập nhật Display Name 2–30 ký tự qua bộ lọc, email chỉ đọc; hồ sơ Khách chỉ Đăng xuất. Phối hợp T65 và kiểm API trực tiếp."
+      ],
+      "output": "Quản lý phiên phía máy chủ + test tích hợp + báo cáo GATE-SESSION."
+    },
+    {
+      "id": "T57",
+      "issue_id": "93",
+      "type": "Task",
+      "title": "FE Cài đặt phòng",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-06.1",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 28,
+      "end_slot": 30,
+      "sprint": 3,
+      "deps": [
+        "T53"
+      ],
+      "steps": [
+        "{{MODAL-ROOM-SETTINGS}} (chỉ Host), LOCKED {{DISABLED}} khi chưa đủ 2 người chơi, hiển thị mã/link mới sau khi mở lại"
+      ],
+      "output": "Giao diện Cài đặt phòng."
+    },
+    {
+      "id": "T58",
+      "issue_id": "94",
+      "type": "Task",
+      "title": "FE danh sách người xem, thao tác ghế và khung camera/mic",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-06.3",
+      "owner": "Nhạn",
+      "hours": 20,
+      "start_slot": 37,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T55",
+        "T33"
+      ],
+      "steps": [
+        "Danh sách người xem, ngồi ghế/xuống xem, mời xuống ghế, đuổi và thông báo quyền theo API T55.",
+        "Nhận 8 giờ giao diện từ T33: PANEL-MEDIA dùng ở phòng chờ và phòng đấu, hai nút camera/mic độc lập, ba mức chia sẻ, lỗi quyền/thiết bị/dịch vụ và chế độ chỉ nhận của người xem.",
+        "Không ngắt media khi bắt đầu ván; nối API/adapter T33 thật. Task thuộc US-06.3 và hỗ trợ AC US-07.2; T45 nghiệm thu media, T64 nghiệm thu người xem."
+      ],
+      "output": "PANEL-SPECTATORS và PANEL-MEDIA tích hợp thật."
+    },
+    {
+      "id": "T59",
+      "issue_id": "95",
+      "type": "Task",
+      "title": "Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-08.3",
+      "owner": "Tình",
+      "hours": 12,
+      "start_slot": 28,
+      "end_slot": 31,
+      "sprint": 3,
+      "deps": [
+        "T24",
+        "T02"
+      ],
+      "steps": [
+        "Tinh chỉnh lượng giá/cắt tỉa và đo p95 ngân sách 300/1.000/3.000 ms trên máy demo; độ sâu mục tiêu 2/4/6, hết ngân sách dùng nước tốt nhất đã tìm.",
+        "Dùng bộ dữ liệu T02: cấp Khó giải 100% thế chiếu hết bắt buộc; đấu máy với máy 20 ván/cặp, báo tỷ lệ và điều kiện đo.",
+        "Chỉ còn 12 giờ kỹ thuật engine: 4 giờ chuẩn bị đáp án chuyển T02, 4 giờ UI lỗi chuyển T38. Không giảm yêu cầu; không đạt thì BLOCKED, không tự hạ ngưỡng."
+      ],
+      "output": "Engine tinh chỉnh và báo cáo GATE-ENGINE trên bộ dữ liệu T02."
+    },
+    {
+      "id": "T60",
+      "issue_id": "96",
+      "type": "Task",
+      "title": "Kiểm thử US-05.3",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "kiem-thu"
+      ],
+      "story": "US-05.3",
+      "owner": "Thư",
+      "hours": 4,
+      "start_slot": 41,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T52",
+        "T25"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T61",
+      "issue_id": "97",
+      "type": "Task",
+      "title": "FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-06.2",
+      "owner": "Kỳ",
+      "hours": 16,
+      "start_slot": 32,
+      "end_slot": 36,
+      "sprint": 3,
+      "deps": [
+        "T54",
+        "T57"
+      ],
+      "steps": [
+        "Sảnh đầy đủ: bốn lựa chọn (hai lựa chọn P2 {{DISABLED}} \"Sắp ra mắt\"), mục Luật chơi mở rộng/thu gọn theo AC, danh sách phòng PUBLIC với nút Vào chơi/Vào xem, trạng thái EMPTY",
+        "Hoàn thiện thanh điều hướng theo AC"
+      ],
+      "output": "Màn Sảnh hoàn chỉnh."
+    },
+    {
+      "id": "T62",
+      "issue_id": "98",
+      "type": "Task",
+      "title": "Kiểm thử US-06.1",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "kiem-thu"
+      ],
+      "story": "US-06.1",
+      "owner": "Kỳ",
+      "hours": 4,
+      "start_slot": 42,
+      "end_slot": 43,
+      "sprint": 4,
+      "deps": [
+        "T57",
+        "T31",
+        "T33",
+        "T52",
+        "T55"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T63",
+      "issue_id": "99",
+      "type": "Task",
+      "title": "BE giữ ván AI 30 phút, Thử lại, khởi động lại",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-08.3",
+      "owner": "Tùng",
+      "hours": 12,
+      "start_slot": 32,
+      "end_slot": 35,
+      "sprint": 3,
+      "deps": [
+        "T34",
+        "T35"
+      ],
+      "steps": [
+        "Giữ ván AI 30 phút khi mất kết nối, vào lại {{/ai/:id}}",
+        "Máy cờ không trả lời quá 10 giây: Thử lại (cùng thế hoặc ván mới theo BA 6.1), chặn bấm trùng; khởi động lại máy chủ → thông báo không tiếp tục được; Rời ván/Đăng xuất = đầu hàng có xác nhận"
+      ],
+      "output": "Xử lý ổn định ván AI + test tích hợp."
+    },
+    {
+      "id": "T64",
+      "issue_id": "100",
+      "type": "Task",
+      "title": "Kiểm thử US-06.3",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "kiem-thu"
+      ],
+      "story": "US-06.3",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 45,
+      "end_slot": 47,
+      "sprint": 4,
+      "deps": [
+        "T58",
+        "T52",
+        "T31",
+        "T54"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T65",
+      "issue_id": "101",
+      "type": "Task",
+      "title": "FE Cài đặt hồ sơ, Đăng xuất, banner ván dở",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-01.4",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 36,
+      "end_slot": 38,
+      "sprint": 3,
+      "deps": [
+        "T56",
+        "T63"
+      ],
+      "steps": [
+        "{{SCR-PROFILE-SETTINGS}}: Display Name (2–30, lọc từ cấm), email chỉ đọc, avatar chữ cái, Đăng xuất có xác nhận",
+        "Banner \"Bạn có ván đang chơi dở — Quay lại\", tooltip nút bị khoá do đang ở ván khác",
+        "Với Khách: mục Bạn bè {{DISABLED}}, tab mời bạn bè ẩn, Cài đặt chỉ có Đăng xuất"
+      ],
+      "output": "Giao diện hồ sơ và phiên."
+    },
+    {
+      "id": "T66",
+      "issue_id": "102",
+      "type": "Task",
+      "title": "Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-00.5",
+      "owner": "Tùng",
+      "hours": 16,
+      "start_slot": 42,
+      "end_slot": 46,
+      "sprint": 4,
+      "deps": [
+        "T08",
+        "T26",
+        "T36",
+        "T38",
+        "T40",
+        "T42",
+        "T44",
+        "T46",
+        "T52",
+        "T58",
+        "T59",
+        "T61",
+        "T65"
+      ],
+      "steps": [
+        "Chạy 50 client/10 ván trên bản tích hợp; ghi p95 độ trễ, lỗi, CPU/RAM. Media ~3 phòng chỉ ghi số đo theo BA, không tự thêm ngưỡng đạt.",
+        "Kiểm đủ 12 NFR và 9 gate với ngày đo, cấu hình máy, bộ dữ liệu, số lượt, người đo và đường dẫn bằng chứng; bổ sung thiếu sót từ báo cáo T04/T06/T09/T12/T24/T35/T56/T59.",
+        "Bất kỳ tiêu chí bắt buộc chưa đạt giữ FAIL/BLOCKED và chặn T70; việc hoàn tất báo cáo không biến số đo thất bại thành PASS."
+      ],
+      "output": "Báo cáo 12 NFR/9 gate kèm số đo thật và trạng thái PASS/FAIL/BLOCKED."
+    },
+    {
+      "id": "T67",
+      "issue_id": "103",
+      "type": "Task",
+      "title": "Kiểm thử US-06.2",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "kiem-thu"
+      ],
+      "story": "US-06.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 42,
+      "end_slot": 44,
+      "sprint": 4,
+      "deps": [
+        "T61",
+        "T55",
+        "T38",
+        "T26",
+        "T40",
+        "T44",
+        "T65"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T68",
+      "issue_id": "104",
+      "type": "Task",
+      "title": "Kiểm thử US-08.3",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "kiem-thu"
+      ],
+      "story": "US-08.3",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 39,
+      "end_slot": 41,
+      "sprint": 3,
+      "deps": [
+        "T59",
+        "T38",
+        "T65"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa.",
+        "Đối chiếu số đo GATE-ENGINE; BLOCKED không phải PASS và chặn phát hành."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T69",
+      "issue_id": "105",
+      "type": "Task",
+      "title": "Kiểm thử US-01.4",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "kiem-thu"
+      ],
+      "story": "US-01.4",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 46,
+      "end_slot": 48,
+      "sprint": 4,
+      "deps": [
+        "T65",
+        "T52",
+        "T23",
+        "T38",
+        "T61",
+        "T32",
+        "T37",
+        "T44",
+        "T40",
+        "T26"
+      ],
+      "steps": [
+        "Viết tiền điều kiện, bước, dữ liệu và kết quả mong đợi cho từng AC được giao trong bản đồ nghiệm thu; mỗi nhánh lỗi/biên có biến thể TC.",
+        "Chạy toàn bộ TC được giao trên tích hợp thật, lưu PASS/FAIL/BLOCKED và bằng chứng; sửa lỗi thuộc Task triển khai, kiểm lại sau sửa."
+      ],
+      "output": "Kết quả TC trên Jira."
+    },
+    {
+      "id": "T70",
+      "issue_id": "106",
+      "type": "Task",
+      "title": "Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-00.5",
+      "owner": "Tình",
+      "hours": 4,
+      "start_slot": 48,
+      "end_slot": 49,
+      "sprint": 4,
+      "deps": [
+        "T51",
+        "T66",
+        "T13",
+        "T16",
+        "T17",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T39",
+        "T43",
+        "T45",
+        "T47",
+        "T48",
+        "T49",
+        "T50",
+        "T60",
+        "T62",
+        "T64",
+        "T67",
+        "T68",
+        "T69"
+      ],
+      "steps": [
+        "Chỉ bắt đầu khi T51, T66 và toàn bộ QA chuyên đề đã hoàn tất và các tiêu chí bắt buộc PASS; không còn lỗi Nghiêm trọng/Cao.",
+        "Đóng gói local: web/server, Docker LiveKit, HTTPS LAN; tài khoản/phòng mẫu, cấu hình Render + LiveKit Cloud dự phòng; không chứa bí mật.",
+        "Người không tham gia đóng gói làm theo README chạy được trong 15 phút. Nếu cổng chưa đạt, giữ BLOCKED và dùng 04/11 sửa/kiểm lại; không tự phát hành."
+      ],
+      "output": "Bản v1.0 qua mọi cổng, hồ sơ nghiệm thu, hướng dẫn khởi chạy và phương án demo dự phòng."
+    },
+    {
+      "id": "T71",
+      "issue_id": "107",
+      "type": "Task",
+      "title": "Tổng duyệt D1–D10 trên bản phát hành và ghi hình",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "sprint-4",
+        "phat-trien"
+      ],
+      "story": "US-00.5",
+      "owner": "Thư",
+      "hours": 4,
+      "start_slot": 49,
+      "end_slot": 50,
+      "sprint": 4,
+      "deps": [
+        "T70"
+      ],
+      "steps": [
+        "Chạy đủ D1–D10 trên máy demo thật, bản đã qua T70; ghi hình và báo cáo 10/10 kịch bản.",
+        "Nếu lỗi, ghi vào Task sở hữu và dùng ngày 04/11 để sửa/kiểm lại. Không đổi FAIL/BLOCKED thành PASS để giữ lịch."
+      ],
+      "output": "Video tổng duyệt và kết quả D1–D10 trên bản phát hành."
+    }
+  ]
+}

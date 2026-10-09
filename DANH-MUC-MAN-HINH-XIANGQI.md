@@ -2,7 +2,7 @@
 
 **Tài liệu:** Kiến trúc Giao diện & Bản đồ Màn hình Chuẩn hóa (UI/UX Screen Inventory)  
 **Dự án:** Cờ Tướng Trực Tuyến (`XIANGQI`)  
-**Ngày cập nhật:** 07/10/2026 · **Phiên bản:** v1.2.0 (đồng bộ BA Phần 0: Khách và Xin đổi bên lên P1, Sảnh PUBLIC có Vào chơi, sau ván về phòng chờ, Ván mới AI, khoá thử sai đăng nhập)
+**Ngày cập nhật:** 09/10/2026 · **Phiên bản:** v1.2.1 (đồng bộ BA Phần 0, gồm từ chối username chứa từ cấm và phòng tự tạo về WAITING sau server khởi động lại; giữ 26 thành phần P1 / 11 P2)
 **Căn cứ pháp lý:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
 
 ---
@@ -82,7 +82,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Bố cục (Layout):** Card trung tâm kèm thanh tiến trình stepper `1. Tài khoản` $\rightarrow$ `2. Email` $\rightarrow$ `3. Xác thực OTP`.
 * **Chi tiết 3 bước:**
   * **Bước 1 (Username & Mật khẩu):**
-    * Ô `Username:` (3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, kiểm tra trùng lặp debounce 300ms).
+    * Ô `Username:` (3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, kiểm tra trùng lặp debounce 300ms; từ chối username chứa từ cấm ngay bước nhập theo BA 0.17).
     * Ô `Mật khẩu:` (tối thiểu 8 ký tự) + Ô `Xác nhận mật khẩu`.
     * Nút *"Tiếp tục"* $\rightarrow$ Chuyển Bước 2. Phía dưới có nút *"Đăng ký bằng Google"*.
   * **Bước 2 (Nhập Email):**
@@ -115,7 +115,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **URL:** `/onboarding` | **Quyền:** Người dùng vừa bấm Đăng ký qua Google OAuth lần đầu.
 * **Thành phần:**
   * Hiển thị Avatar & Email Google (Readonly).
-  * Ô `Username:` (bắt buộc đặt tên duy nhất, 3–20 ký tự không dấu).
+  * Ô `Username:` (bắt buộc đặt tên duy nhất, 3–20 ký tự không dấu; từ chối từ cấm ngay bước nhập, máy chủ kiểm lại trước khi hoàn tất theo BA 0.17).
   * Ô `Mật khẩu dự phòng:` (để sau này có thể đăng nhập bằng `Username + Password` nếu không muốn dùng Google).
   * Miễn mã OTP (vì Google đã xác thực email an toàn).
   * Nút `Hoàn tất thiết lập` $\rightarrow$ Tự động gán `display_name = username` (không dùng Họ tên Google) $\rightarrow$ Chuyển thẳng vào `/lobby`. Màn hình không có nút X; thoát giữa chừng thì chưa có tài khoản ứng dụng hoàn tất, dù có thể tồn tại bản xác thực Google tạm. Dọn bản Google mới chưa hoàn tất theo BA 1.2 (PO chọn A 05/10); chưa hoàn tất không được vào ứng dụng.
@@ -160,7 +160,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ---
 
 ### 8. `SCR-GAME-ROOM` — Trang Thi Đấu Cờ Tướng Trực Tiếp
-* **URL:** `/rooms/:id` (khi phòng `status = PLAYING` hoặc `FINISHED`).
+* **URL:** `/rooms/:id` (khi phòng `status = PLAYING`; `FINISHED` dành cho ghép ngẫu nhiên/Ranked P2. Phòng tự tạo kết thúc về `WAITING`, hộp kết quả hiển thị trên phòng chờ theo BA 0.7/0.17).
 * **RANKED sau ván:** giữ màn kết quả; Rời phòng mới giải phóng vị trí để tìm trận khác. Một người rời không mở phòng chờ cho người còn lại; không Sẵn sàng/Tái đấu/nhận người mới. Hết 10 phút hoặc cả hai rời thì đóng (BA 7.2).
 * **Đánh Thường ghép ngẫu nhiên sau ván (P2):** giữ màn kết quả cho người còn lại nếu một người rời; không chuyển về phòng chờ hoặc nhận người mới. Đóng khi cả hai rời hoặc hết 10 phút tính từ kết thúc ván; không đặt lại hạn khi một người rời. Tái đấu chỉ khi cả hai vẫn ở phòng và cùng đồng ý (BA 2.0).
 * **Bố cục (Layout 3 cột):**
@@ -266,7 +266,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua; ở Đánh Hạng còn trừ điểm Elo, Đánh Thường và Đánh với máy không đổi Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc người chơi còn lại bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
-15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). Cụm nút P1 (07/10): ván online phòng tự tạo có 🏠 *Ở lại phòng* (phòng đã về `WAITING`, BA 0.7) và 🚪 *Rời phòng*; ván AI có *Ván mới* và *Về Sảnh* (BA 0.9). P2: 🔄 *Tái đấu* (phòng tự tạo và ghép ngẫu nhiên, người đề nghị chọn Giữ phe/Đổi phe, đối thủ đồng ý trong 30 giây; ghép ngẫu nhiên đặt lại 15 phút/bên; Ranked cấm; BA 0.8), 📜 *Xem lại (Replay)*.
+15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). **Gián đoạn do server khởi động lại (BA 0.17, PO duyệt 09/10):** kết quả trung tính, không có người thắng/thua/hoà; phòng tự tạo về `WAITING`, reset Sẵn sàng, vẫn có *Ở lại phòng* / *Rời phòng*, không hạn đóng 10 phút. Cụm nút P1: ván online phòng tự tạo có 🏠 *Ở lại phòng* (phòng đã về `WAITING`, BA 0.7) và 🚪 *Rời phòng*; ván AI có *Ván mới* và *Về Sảnh* (BA 0.9). P2: 🔄 *Tái đấu* (phòng tự tạo và ghép ngẫu nhiên, người đề nghị chọn Giữ phe/Đổi phe, đối thủ đồng ý trong 30 giây; ghép ngẫu nhiên đặt lại 15 phút/bên; Ranked cấm; BA 0.8), 📜 *Xem lại (Replay)*.
 
 ---
 
@@ -344,5 +344,5 @@ Ma trận điều kiện và kết quả **năm trạng thái của từng thàn
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
-4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP; Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
+4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
 5. Số lượng: 15 màn hình + 15 modal + 4 khung nhúng + 3 lớp phủ = **37**; `/rooms/:id` dùng chung cho `SCR-WAITING-ROOM` và `SCR-GAME-ROOM` nên chỉ có **14 URL** phân biệt.
