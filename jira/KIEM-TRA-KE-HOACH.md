@@ -3,6 +3,9 @@
 | Kiểm tra dữ liệu kế hoạch | Kết quả |
 |---|---|
 | Danh tính/membership Jira | 9 Epic, 27 Story, 71 Task; 107 ID duy nhất |
+| Description độc lập | 107/107; đủ mục tiêu, bối cảnh, yêu cầu, việc làm, bàn giao, điều kiện hoàn thành và phạm vi |
+| Mã kế hoạch không giải thích trong Description | 0; kiểm riêng nội dung mô tả, giữ mã liên kết ở các trường quản lý |
+| Components / Labels | 107/107; mỗi Task đúng một nhóm chính và nhãn tương ứng |
 | Giờ | 920 |
 | Điểm | 205 |
 | QA chuyên đề | 20 |

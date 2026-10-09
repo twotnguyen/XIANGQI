@@ -104,7 +104,9 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
 ├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc, mô tả chi tiết, mức song song
 ├── jira/                         Dữ liệu, công cụ và kết quả lập kế hoạch
-│   ├── plan-data.json            Nguồn dữ liệu lịch/Task
+│   ├── plan-data.json            Nguồn dữ liệu lịch, phân công và phạm vi Task
+│   ├── COMPONENTS-LABELS.md      Danh mục và phân loại Components/Labels của 107 mục
+│   ├── descriptions.json         Nội dung Description độc lập cho 107 mục Jira
 │   ├── build_plan.py             Sinh và kiểm tra kế hoạch
 │   ├── xian-import.csv           Tệp nhập 107 mục Epic/Story/Task
 │   ├── AC-TASK-MAP.json          Ánh xạ AC tới Task triển khai/kiểm thử
