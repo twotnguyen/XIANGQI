@@ -128,7 +128,7 @@ mkdirSync(OUT, { recursive: true });
 const docsAll   = walk(join(ROOT, 'docs'));
 const mainPaths = docsAll.filter(p => !p.includes(`${sep}99-archive${sep}`));
 const archPaths = docsAll.filter(p =>  p.includes(`${sep}99-archive${sep}`));
-for (const f of ['README.md', 'AGENTS.md']) {
+for (const f of ['README.md']) {
   try { statSync(join(ROOT, f)); mainPaths.unshift(join(ROOT, f)); } catch {}
 }
 

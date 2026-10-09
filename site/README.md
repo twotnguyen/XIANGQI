@@ -35,7 +35,7 @@ Rồi mở `http://127.0.0.1:8777`.
 node site/build.mjs
 ```
 
-Lệnh này quét `docs/` + `README.md` + `AGENTS.md`, sinh lại 2 file:
+Lệnh này quét `docs/` + `README.md`, sinh lại 2 file:
 
 | File | Nội dung |
 |---|---|
