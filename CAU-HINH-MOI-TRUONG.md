@@ -6,22 +6,29 @@ Quyết định nghiệp vụ vẫn theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISI
 
 ## 1. Các file và cách điền
 
-| File mẫu trên GitHub | File riêng trên máy | Mục đích |
-|---|---|---|
-| [.env.example](.env.example) | `.env` tại gốc | Phiếu chuẩn bị Google, SMTP, cấu hình Auth và công cụ quản trị; **không tự động được app đọc** |
-| [apps/web/.env.example](apps/web/.env.example) | `apps/web/.env` | Cấu hình công khai dự kiến cho Vite |
-| [apps/server/.env.example](apps/server/.env.example) | `apps/server/.env` | Cấu hình NestJS, khóa Supabase và LiveKit chỉ ở server |
+Chỉ có một mẫu chung: [.env.example](.env.example). File `.env` ở gốc là bản tổng hợp để bạn điền toàn bộ thông tin. `apps/web/.env` và `apps/server/.env` là bản sao đầy đủ của file gốc, đều được Git bỏ qua.
 
-Trên máy đã tạo bộ file riêng thì điền trực tiếp, không chép đè. Thành viên mới có thể tạo bằng lệnh dưới đây từ gốc repo (chỉ sao chép nếu chưa tồn tại):
+Nhập hoặc cập nhật khóa ở `.env` gốc trước. Với thành viên mới:
 
 ```sh
 umask 077
 [ -e .env ] || cp .env.example .env
-[ -e apps/web/.env ] || cp apps/web/.env.example apps/web/.env
-[ -e apps/server/.env ] || cp apps/server/.env.example apps/server/.env
+mkdir -p apps/web apps/server
 ```
 
-Giá trị trống nghĩa là chưa chuẩn bị, không phải giá trị hợp lệ để chạy. Nếu giá trị chứa khoảng trắng hoặc `#`, dùng chuỗi có dấu nháy phù hợp với bộ nạp dotenv; không chạy `source .env`. Khi đưa lên hosting, nhập biến server vào phần Environment/Secrets và biến Vite vào môi trường build. Không tải phiếu `.env` gốc lên frontend. Sau khi thay biến Vite phải khởi động lại dev server hoặc build lại.
+Sau khi điền xong, sao chép bản gốc vào hai thư mục (lệnh này thay thế các bản sao; nếu từng sửa riêng thì đối chiếu và đưa giá trị cần giữ về bản gốc trước):
+
+```sh
+cp .env apps/web/.env
+cp .env apps/server/.env
+chmod 600 .env apps/web/.env apps/server/.env
+```
+
+Ba file không tự đồng bộ sau mỗi lần sửa: lặp lại bước sao chép khi cập nhật bản gốc. Không tạo thêm mẫu riêng cho web/server.
+
+Dù file trong thư mục web có đủ biến, trình duyệt chỉ được nhận các biến `VITE_*`. Không import file `.env` vào mã web, không mở rộng `envPrefix`, không đưa toàn bộ `process.env` vào `define` hay thư mục public. Khi triển khai frontend trên hosting chỉ cấp nhóm biến `VITE_*`; bộ đầy đủ chỉ giữ trong môi trường riêng được kiểm soát. Google/SMTP/CLI vẫn là thông tin nhập dashboard hoặc dùng công cụ, không tự có tác dụng vì nằm trong file.
+
+Giá trị trống nghĩa là chưa chuẩn bị, không phải giá trị hợp lệ để chạy. Nếu giá trị chứa khoảng trắng hoặc `#`, dùng chuỗi có dấu nháy phù hợp với bộ nạp dotenv; không chạy `source .env`. Khi đưa lên hosting, nhập biến server vào phần Environment/Secrets và biến Vite vào môi trường build. Không tải file `.env` tổng hợp lên dịch vụ lưu trữ tĩnh. Sau khi thay biến Vite phải khởi động lại dev server hoặc build lại.
 
 ## 2. Danh mục biến
 
@@ -104,8 +111,8 @@ Theo BA, nhóm chuẩn bị LiveKit mã nguồn mở bằng Docker ở công vi�
 
 ## 7. Bàn giao và kiểm tra
 
-- [ ] Điền các URL/khóa vào đúng file riêng; các `.example` vẫn chỉ có giá trị trống hoặc mẫu công khai.
-- [ ] T01 triển khai loader, kiểm biến bắt buộc và lỗi cấu hình không in bí mật. Không nạp `.env` gốc vào Vite hoặc mở rộng tiền tố Vite cho secret.
+- [ ] Điền các URL/khóa vào đúng file riêng; `.env.example` vẫn chỉ có giá trị trống hoặc mẫu công khai.
+- [ ] T01 triển khai loader, kiểm biến bắt buộc và lỗi cấu hình không in bí mật. Chỉ công khai nhóm `VITE_*`; không mở rộng tiền tố Vite cho secret.
 - [ ] Supabase Auth, Google, SMTP và LiveKit được thử thật bằng các luồng trong BA/AC; hiện **chưa kiểm kết nối thực tế** bằng bộ mẫu này.
 - [ ] Kiểm URL local/LAN/Internet, CORS, callback, TLS và quyền camera/mic trên thiết bị demo.
 - [ ] Bằng chứng kiểm thử chỉ ghi kết quả và định danh môi trường; không đính kèm secret, token hoặc file `.env`.

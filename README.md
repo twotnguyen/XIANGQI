@@ -105,8 +105,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
 ├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc và liên kết mô tả chi tiết
 ├── CAU-HINH-MOI-TRUONG.md        Hướng dẫn Supabase, LiveKit, Google OAuth, SMTP
-├── .env.example                  Phiếu chuẩn bị dịch vụ (bản .env thật giữ riêng)
-├── apps/                         Hiện chỉ có web/.env.example và server/.env.example
+├── .env.example                  Mẫu tổng hợp web/server và thông tin dịch vụ
 ├── jira/                         Kế hoạch Jira; bắt đầu ở jira/README.md
 │   ├── reports/                 Tài liệu và báo cáo cho nhóm
 │   ├── data/                    Dữ liệu nguồn và snapshot hiện hành
@@ -120,7 +119,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 └── .github/                       CODEOWNERS
 ```
 
-Hiện `apps/` chỉ chứa cấu hình mẫu để chuẩn bị; mã nguồn sản phẩm (`apps/`, `packages/`, `supabase/`, `tests/`) dự kiến triển khai ở Sprint 1; công cụ trong `jira/` chỉ phục vụ lập kế hoạch. Thư mục `docs/` và `Jira/` cũ đã bị xoá (commit `c4cf29d`), nội dung chỉ còn trong lịch sử git và **không còn hiệu lực**.
+`.env.example` là mẫu tổng hợp duy nhất; các bản `.env` trong `apps/web` và `apps/server` chỉ giữ trên máy, xem hướng dẫn môi trường. Mã nguồn sản phẩm (`apps/`, `packages/`, `supabase/`, `tests/`) dự kiến triển khai ở Sprint 1; công cụ trong `jira/` chỉ phục vụ lập kế hoạch. Thư mục `docs/` và `Jira/` cũ đã bị xoá (commit `c4cf29d`), nội dung chỉ còn trong lịch sử git và **không còn hiệu lực**.
 
 ## Tài liệu
 
