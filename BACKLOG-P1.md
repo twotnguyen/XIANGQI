@@ -1,7 +1,7 @@
 # BACKLOG P1 — Cờ Tướng Online (XIANGQI)
 
 > **Phiên bản:** 3.0 · **Ngày:** 09/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
-> **Phạm vi:** P1 (MVP, hạn **05/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
+> **Phạm vi:** P1 (MVP, hạn **04/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
 > **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 09/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
 > **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
 > **Cấu trúc:** **EP-01 → EP-08 khớp đúng 8 yêu cầu của khách hàng (YC1 → YC8)**; EP-00 là Epic nền tảng phục vụ chung.
@@ -118,7 +118,7 @@
 **Là** nhóm phát triển, **tôi muốn** một monorepo có sẵn khung ứng dụng, CI, nhật ký và điểm kiểm tra sức khoẻ, **để** mọi người code trên cùng một nền và tìm lỗi nhanh.
 *Nguồn:* README (Công nghệ, Quy trình Git), BA 10.1. *Ghi chú:* cấu trúc gợi ý `apps/web` (React + Vite), `apps/server` (NestJS + Socket.IO), `packages/xiangqi-core` (luật cờ dùng chung), `packages/shared` (kiểu dữ liệu, hằng số), `packages/engine` (máy cờ).
 *Nguồn:* BA 10.1 (NFR-08, NFR-09).
-*Sprint thi công:* S1. *Story Points:* **5** (tổng điểm 2 Task, 20 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **5** (tổng điểm 2 Task, 20 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -157,7 +157,7 @@
 #### US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm
 **Là** nhóm, **tôi muốn** có kế hoạch kiểm thử và kiểm chứng sớm rủi ro media, **để** nghiệm thu có bằng chứng và phát hiện sớm điểm không khả thi.
 *Kèm:* T06 kiểm chứng media tự chạy/Cloud/HTTPS và thử mô hình phiên sớm; T02 chuẩn bị bộ dữ liệu luật/máy cờ có đáp án độc lập.
-*Sprint thi công:* S1. *Story Points:* **10** (tổng điểm 2 Task, 44 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **10** (tổng điểm 2 Task, 56 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -167,7 +167,7 @@
 
 #### US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo
 **Là** PO, **tôi muốn** đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, **để** chứng minh 8 yêu cầu cốt lõi với khách hàng.
-*Sprint thi công:* S4. *Story Points:* **10** (tổng điểm 4 Task, 48 giờ).
+*Sprint thi công:* S4. *Story Points:* **10** (tổng điểm 4 Task, 52 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -225,7 +225,7 @@
 **Là** người dùng mới, **tôi muốn** vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), **để** không mất thời gian đăng ký.
 *Nguồn:* BA 1.2, 1.4, 0.2. *Màn hình:* `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`.
 *Nguồn:* BA 0.3, 1.3, 1.4 mục 4, 2.4. *Màn hình:* `SCR-LOGIN`, `MODAL-GUEST-NAME`. *Ghi chú kỹ thuật:* có thể dùng đăng nhập ẩn danh của Supabase; cần spike xác nhận.
-*Sprint thi công:* S2, S3. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
+*Sprint thi công:* S1, S2, S3. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -249,7 +249,7 @@
 **Là** người chơi, **tôi muốn** phiên và vị trí chơi được quản lý rõ ràng và tự đặt tên hiển thị, **để** không chơi hai nơi cùng lúc và đối thủ nhận ra tôi.
 *Nguồn:* BA 1.8, 2.4, 6.3 mục 4. *Ghi chú kỹ thuật:* Supabase cho phép nhiều phiên song song; cần bảng phiên/vị trí chơi phía máy chủ để thực thi luật "thiết bị khác" (spike S1).
 *Nguồn:* BA 1.4, 1.6 (email chỉ đọc), Phần 11. *Màn hình:* `SCR-PROFILE-SETTINGS`, `PANEL-NAVBAR`.
-*Sprint thi công:* S3, S4. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
+*Sprint thi công:* S2, S3, S4. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -279,7 +279,7 @@
 **Là** người dùng hoặc Khách, **tôi muốn** tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, **để** so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* `SCR-WAITING-ROOM`.
-*Sprint thi công:* S2, S3. *Story Points:* **10** (tổng điểm 3 Task, 44 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -301,7 +301,7 @@
 **Là** người chơi, **tôi muốn** đề nghị đổi Đỏ/Đen và ở lại phòng để đánh tiếp sau mỗi ván, **để** chọn tiếp tục hay đổi phe mà không phải tạo phòng mới.
 *Nguồn:* BA 0.6, 2.3 mục 2, 3.6. *Màn hình:* `SCR-WAITING-ROOM`, `MODAL-SIDE-SWAP-PROMPT`.
 *Nguồn:* BA 0.7. *Màn hình:* `MODAL-MATCH-RESULT`, `SCR-WAITING-ROOM`.
-*Sprint thi công:* S3. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -396,7 +396,7 @@
 #### US-04.2 · Khởi tạo và hiển thị bàn cờ
 **Là** người chơi, **tôi muốn** thấy bàn cờ chuẩn với quân chữ Hán, **để** chơi quen thuộc như cờ thật.
 *Nguồn:* BA 3.1, 6.3 mục 1, DESIGN §7. *Màn hình:* `SCR-GAME-ROOM`, `SCR-AI-GAME`.
-*Sprint thi công:* S1. *Story Points:* **4** (tổng điểm 2 Task, 16 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **4** (tổng điểm 2 Task, 20 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -409,7 +409,7 @@
 **Là** người chơi, **tôi muốn** đi quân bằng click hoặc kéo thả kèm gợi ý ô hợp lệ và tiếng gõ cờ, **để** đi nhanh, không nhầm và có cảm giác như cờ thật.
 *Nguồn:* BA 3.4 mục 1–2, DESIGN §4, §7.4.
 *Nguồn:* BA 3.4 mục 3.
-*Sprint thi công:* S1, S4. *Story Points:* **6** (tổng điểm 2 Task, 24 giờ).
+*Sprint thi công:* S1, S3. *Story Points:* **6** (tổng điểm 2 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -490,7 +490,7 @@
 #### US-06.1 · Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED
 **Là** Host, **tôi muốn** mở công khai, chỉ cho vào bằng mã, hoặc khoá phòng, **để** kiểm soát ai được vào.
 *Nguồn:* BA 2.7 mục 2, 2.8 mục 5–6, 4.3. *Màn hình:* `MODAL-ROOM-SETTINGS`.
-*Sprint thi công:* S2, S3, S4. *Story Points:* **5** (tổng điểm 3 Task, 20 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **5** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -632,7 +632,7 @@
 #### US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó
 **Là** người chơi, **tôi muốn** ván với máy không mất vô lý khi rớt mạng hoặc máy cờ lỗi, và cấp Khó đạt chất lượng đã cam kết, **để** yên tâm luyện tập.
 *Nguồn:* BA 6.1 (Thử lại), 6.3 mục 4, 1.8.
-*Sprint thi công:* S2, S3, S4. *Story Points:* **8** (tổng điểm 3 Task, 32 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **8** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -715,16 +715,16 @@ Mọi Story tính năng ─> US-00.5 (nghiệm thu tổng, đóng gói, demo)
 
 ### 9.2 Phân bổ Sprint
 
-Ngày 09/10 lập lại BA/kế hoạch; chưa có Task đã triển khai. Thi công từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.
+Đồng bộ Jira ngày 10/10: 36 Epic/Story BA Done, 71 Task To Do; cả bốn Sprint chưa bắt đầu. Thi công dự kiến từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.
 
 | Sprint | Ngày | Task | Giờ | Điểm | Kết quả dự kiến |
 |---|---|---|---|---|---|
-| S1 | 10/10–16/10 | 18 | 272 | 63 | Khung ứng dụng, đăng ký OTP, lõi luật và bàn cờ tương tác; thử media/xác thực/phiên sớm. Chưa tuyên bố nghiệm thu toàn bộ đăng nhập có Google. |
-| S2 | 17/10–23/10 | 15 | 192 | 44 | Tạo/vào phòng, ván online cơ bản, Google/Khách, máy cờ có baseline; hoàn thiện các backend phòng/chat. Một số AC liên chức năng chờ S3–S4. |
-| S3 | 24/10–30/10 | 26 | 284 | 68 | Hoàn tất phần lớn triển khai P1; T52 nối lại hoàn tất đầu S4. Chạy QA chuyên đề đã đủ đầu vào. |
-| S4 | 31/10–04/11 | 12 | 100 | 23 | Hồi quy đầy đủ và QA còn lại trên bản tích hợp, đo NFR/gate, đóng gói và tổng duyệt sáng 04/11; chiều 04/11 dự phòng. |
+| S1 | 10/10–16/10 | 15 | 284 | 60 | Nền tảng máy chủ, xác thực, lõi luật, bàn cờ tương tác, thử media và khởi động kế hoạch kiểm thử. Task gắn Sprint theo ngày bắt đầu; có Task hoàn tất trong Sprint kế tiếp. |
+| S2 | 17/10–23/10 | 17 | 212 | 48 | Khung giao diện, xác thực, phòng và ván cơ bản, máy cờ; triển khai chat và quản lý phiên theo lịch cân ngày. Task gắn Sprint theo ngày bắt đầu. |
+| S3 | 24/10–30/10 | 28 | 284 | 69 | Hoàn thiện bạn bè, chat/media, phòng/người xem, Sảnh, hồ sơ, nối lại và kiểm thử chuyên đề. Các phần triển khai hoàn tất chậm nhất 30/10 để hồi quy từ 31/10. |
+| S4 | 31/10–04/11 | 11 | 100 | 21 | Hồi quy 31/10–02/11, kiểm chất lượng 31/10–01/11, đóng gói 03/11 và tổng duyệt 04/11. Tối đa 7 Task/ngày, mỗi người một Task/ngày; phụ thuộc đầu-cuối không trùng ngày. Giữ nguyên thời lượng Task. |
 
-Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 848 giờ; chiều 04/11 dự phòng, demo 05/11.
+Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.
 
 ---
 

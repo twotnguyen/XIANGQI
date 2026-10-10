@@ -1,12 +1,12 @@
-# Danh sách mục Jira XIAN — kế hoạch lập lại 09/10/2026
+# Danh sách mục Jira XIAN — đồng bộ 10/10/2026
 
-> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; mọi mục nhập To Do. Ngày 09/10 lập kế hoạch, thi công từ 10/10 đến sáng 04/11; chiều 04/11 dự phòng, demo 05/11.
+> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; đồng bộ snapshot Jira hiện tại: 36 mục BA Done, 71 Task To Do, 880 giờ, hạn 04/11; cả bốn Sprint chưa bắt đầu.
 
-Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. R1 mặc định hạn Story là ngày Task đầu bắt đầu; US-08.3/US-00.5 giữ ngoại lệ hạn Task cuối để đóng hồ sơ bằng chứng, không tự thay ngưỡng AC.
+Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. Ngày Epic/Story lấy nguyên giá trị Jira; Epic bắt đầu trước Story, Story trước Task. BA Done nghĩa là đặc tả đã chốt, không phải phần mềm đã nghiệm thu. BA không gắn Release triển khai.
 
 **Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.
 
-Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](description-source-audit.json). Đợt rà soát nội dung này giữ nguyên dữ liệu lịch và phân công của bản kế hoạch 09/10/2026 ở trên.
+Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](description-source-audit.json). Lịch, phân công, giờ, điểm và trạng thái lấy từ current-jira-snapshot.json; nhãn sprint cũ không thay thế trường Sprint.
 
 ## EP-00 · Nền tảng kỹ thuật và chất lượng
 
@@ -18,16 +18,19 @@ Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 04/11/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-1 |
+| Start date | 06/10/2026 |
+| Due date | 13/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Nền tảng, Luật cờ, Ván trực tuyến, Camera và mic, Máy cờ |
-| Labels | EP-00, dac-ta, p1, nen-tang, luat-co, van-truc-tuyen, camera-va-mic, may-co |
+| Components | BE, Camera và mic, FE, Luật cờ, Máy cờ, Nền tảng, QA & DevOps, Ván trực tuyến |
+| Labels | EP-00, camera-va-mic, dac-ta, luat-co, may-co, nen-tang, p1, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.1, 0.4, 0.16, 10.1, 11 |
 
 
@@ -79,18 +82,21 @@ Không coi chạy nguyên mẫu hoặc hoàn thành tài liệu là bằng chứ
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 10/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-10 |
+| Start date | 08/10/2026 |
+| Due date | 11/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T01, T03 |
-| Sprint thi công | S1 |
+| Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, QA & DevOps, Nền tảng |
-| Labels | dac-ta, EP-00, p1, nen-tang |
+| Components | FE, Nền tảng, QA & DevOps |
+| Labels | EP-00, dac-ta, nen-tang, p1 |
 | Nguồn đặc tả (BA / AC) | 10.1 |
 
 
@@ -108,7 +114,7 @@ Bàn giao đặc tả khung dự án, kiểm tra mã tự động và nhật ký
 
 - Trên máy phát triển mới sao chép kho mã nguồn, đã có Node.js (môi trường chạy ứng dụng) và pnpm (công cụ cài thư viện), chạy pnpm install để cài các thư viện rồi pnpm dev để khởi động. Giao diện web và máy chủ phải cùng chạy; địa chỉ /health dùng để kiểm tình trạng máy chủ phải trả mã 200, nghĩa là yêu cầu được xử lý thành công.
 - Khi có đề nghị đưa thay đổi mã nguồn vào nhánh develop, tức nhánh mã dùng chung của nhóm, hệ thống tự kiểm quy tắc viết mã, kiểu dữ liệu và các phần xử lý nhỏ. Nếu bất kỳ bước nào lỗi, không cho gộp thay đổi vào nhánh chung.
-- Kho mã nguồn phải có .env.example, là tệp mẫu liệt kê toàn bộ cấu hình môi trường cần cấp. Không lưu khoá bí mật trong lịch sử mã nguồn; các biến bắt đầu bằng VITE_ được đưa tới trình duyệt nên không được chứa bí mật.
+- Kho mã nguồn phải có .env.example, là tệp mẫu liệt kê toàn bộ cấu hình môi trường cần cấp. Không lưu khoá bí mật trong lịch sử mã nguồn; các biến bắt đầu bằng VITE\_ được đưa tới trình duyệt nên không được chứa bí mật.
 - Khi máy chủ hoạt động, gọi /health, là địa chỉ kiểm tra tình trạng hệ thống, phải nhận được trạng thái máy chủ, kết nối cơ sở dữ liệu và máy cờ.
 - Sau khi chạy đăng nhập, gửi mã email và chat, kiểm nhật ký vận hành. Mỗi bản ghi dùng JSON, một dạng dữ liệu chia thành các trường rõ ràng, gồm thời gian, mức độ và mã sự kiện. Không ghi mật khẩu, mã xác minh, thông tin chứng minh quyền truy cập hoặc nội dung chat.
 - Biên lai lệnh, tức bản ghi giúp nhận ra một yêu cầu đã được xử lý, phải bị xoá sau 24 giờ. Nhật ký vận hành được giữ tối đa 14 ngày; khi quá hạn phải được dọn.
@@ -146,17 +152,20 @@ Không làm các màn hình nghiệp vụ hay triển khai luật cờ trong ph�
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-37 |
 | Start date | 10/10/2026 |
 | Due date | 10/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-00.1 |
 | Is blocked by | — |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng |
-| Labels | sprint-1, ha-tang, p1, chinh-qa-devops, nen-tang |
+| Components | Nền tảng, QA & DevOps |
+| Labels | chinh-qa-devops, ha-tang, nen-tang, p1, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 10.1, 0.16 |
 
 
@@ -177,7 +186,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 - Mỗi đề nghị gộp mã vào nhánh develop phải tự kiểm quy cách mã, kiểu dữ liệu và kiểm thử; một bước lỗi thì không được gộp.
 - Nhật ký máy chủ có thời gian, mức lỗi và tên sự kiện, không ghi mật khẩu, mã xác minh email, khoá phiên hoặc nội dung chat. Giữ nhật ký tối đa 14 ngày. Nhật ký dùng dạng JSON, tức bản ghi có các trường tên và giá trị để máy và người có thể tra cứu thống nhất.
 - Có địa chỉ /health để kiểm tra tình trạng máy chủ; chuẩn bị chỗ bổ sung trạng thái cơ sở dữ liệu và máy cờ khi chúng được nối vào.
-- Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE_ vì trình duyệt đọc được chúng.
+- Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE\_ vì trình duyệt đọc được chúng.
 
 **Việc cần làm**
 
@@ -218,17 +227,20 @@ Bàn giao bộ khung cho các chức năng đăng nhập, phòng và bàn cờ. 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 11/10/2026 |
-| Due date | 12/10/2026 |
-| Sprint | XIAN Sprint 1 |
-| Fix version | v0.1 |
+| Resolution | — |
+| Jira Key | XIAN-39 |
+| Start date | 18/10/2026 |
+| Due date | 19/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-00.1 |
 | Is blocked by | T01 |
 | Component chính | FE |
 | Components | FE, Nền tảng |
-| Labels | sprint-1, phat-trien, p1, chinh-fe, nen-tang |
+| Labels | chinh-fe, nen-tang, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 10.1, 10.3, 0.3, 0.5 |
 
 
@@ -290,18 +302,21 @@ Bàn giao phần trình bày chung. Luồng đăng ký, quản lý phòng, danh 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 14/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-11 |
+| Start date | 12/10/2026 |
+| Due date | 15/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T14 |
 | Sprint thi công | S1 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Nền tảng |
-| Labels | dac-ta, EP-00, p1, nen-tang |
+| Labels | EP-00, dac-ta, nen-tang, p1 |
 | Nguồn đặc tả (BA / AC) | 0.2, 1.4, 10.1 |
 
 
@@ -354,17 +369,20 @@ Không mở rộng sang bảng xếp hạng, tính điểm hay giao diện xem l
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-50 |
 | Start date | 14/10/2026 |
 | Due date | 15/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-00.2 |
 | Is blocked by | T04 |
 | Component chính | BE |
 | Components | BE, Nền tảng |
-| Labels | sprint-1, phat-trien, p1, chinh-be, nen-tang |
+| Labels | chinh-be, nen-tang, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 1.4, 3.3, 5.5, 10.1 |
 
 
@@ -427,18 +445,21 @@ Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai n
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-12 |
 | Start date | 09/10/2026 |
-| Due date | 11/10/2026 |
+| Due date | 12/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T12 |
 | Sprint thi công | S1 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Nền tảng, Ván trực tuyến |
-| Labels | dac-ta, EP-00, p1, nen-tang, van-truc-tuyen |
+| Labels | EP-00, dac-ta, nen-tang, p1, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 1.8, 3.3, 8.3, 10.1 |
 
 
@@ -493,17 +514,20 @@ Chỉ đặc tả cơ chế dùng chung; luật đi cờ, vòng đời phòng v�
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-48 |
 | Start date | 11/10/2026 |
 | Due date | 13/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-00.3 |
 | Is blocked by | T01 |
 | Component chính | BE |
 | Components | BE, Nền tảng, Ván trực tuyến |
-| Labels | sprint-1, phat-trien, p1, chinh-be, nen-tang, van-truc-tuyen |
+| Labels | chinh-be, nen-tang, p1, phat-trien, sprint-1, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 1.8, 3.3, 10.1 |
 
 
@@ -567,18 +591,21 @@ Bàn giao hợp đồng giao tiếp cho phòng, ván, phiên và hình tiếng. 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-13 |
 | Start date | 09/10/2026 |
-| Due date | 10/10/2026 |
+| Due date | 12/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T02, T06 |
-| Sprint thi công | S1 |
+| Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | QA & DevOps, Nền tảng, Luật cờ, Camera và mic, Máy cờ |
-| Labels | dac-ta, EP-00, p1, nen-tang, luat-co, camera-va-mic, may-co |
+| Components | Camera và mic, Luật cờ, Máy cờ, Nền tảng, QA & DevOps |
+| Labels | EP-00, camera-va-mic, dac-ta, luat-co, may-co, nen-tang, p1 |
 | Nguồn đặc tả (BA / AC) | 0.1, 0.4, 0.16, 10.1 |
 
 
@@ -631,17 +658,20 @@ Không ghi đạt trước khi thực hiện; không dùng kết quả nguyên m
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 10/10/2026 |
-| Due date | 12/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-38 |
+| Start date | 14/10/2026 |
+| Due date | 17/10/2026 |
 | Sprint | XIAN Sprint 1 |
-| Fix version | v0.1 |
-| Original Estimate | 20 giờ |
+| Fix version | v0.2 |
+| Original Estimate | 32 giờ |
+| Remaining Estimate | 32 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-00.4 |
 | Is blocked by | — |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng, Luật cờ, Máy cờ |
-| Labels | sprint-1, chuan-bi-kiem-thu, p1, chinh-qa-devops, nen-tang, luat-co, may-co |
+| Components | Luật cờ, Máy cờ, Nền tảng, QA & DevOps |
+| Labels | chinh-qa-devops, chuan-bi-kiem-thu, luat-co, may-co, nen-tang, p1, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.5, 6.1, 10.1 |
 
 
@@ -690,6 +720,8 @@ Người kiểm thử cần dữ liệu, thao tác và kết quả đúng. Riên
 
 **Phạm vi và phối hợp**
 
+Ước lượng lại 32 giờ: kế hoạch và mẫu ca/lỗi 8 giờ; chuẩn bị và xác minh bộ thế luật/máy cờ 16 giờ; đối chiếu yêu cầu, hướng dẫn và bàn giao dữ liệu 8 giờ. Đây là công việc chuẩn bị/kiểm chứng kỹ thuật theo đặc tả đã duyệt.
+
 Công việc này chuẩn bị phương pháp và dữ liệu. Người phụ trách từng nhóm chức năng tiếp tục viết biến thể, chạy thử và lưu bằng chứng của nhóm đó.
 
 ---
@@ -705,17 +737,20 @@ Công việc này chuẩn bị phương pháp và dữ liệu. Người phụ tr
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-42 |
 | Start date | 11/10/2026 |
 | Due date | 13/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-00.4 |
 | Is blocked by | T01 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng, Camera và mic |
-| Labels | sprint-1, thu-nghiem-ky-thuat, p1, chinh-qa-devops, nen-tang, camera-va-mic |
+| Components | Camera và mic, Nền tảng, QA & DevOps |
+| Labels | camera-va-mic, chinh-qa-devops, nen-tang, p1, sprint-1, thu-nghiem-ky-thuat |
 | Nguồn đặc tả (BA / AC) | 0.14, 0.16, 1.8, 4.1 |
 
 
@@ -778,18 +813,21 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 04/11/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-14 |
+| Start date | 29/10/2026 |
+| Due date | 01/11/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T51, T66, T70, T71 |
 | Sprint thi công | S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | QA & DevOps, Nền tảng |
-| Labels | dac-ta, EP-00, p1, nen-tang |
+| Components | Nền tảng, QA & DevOps |
+| Labels | EP-00, dac-ta, nen-tang, p1 |
 | Nguồn đặc tả (BA / AC) | 0.1, 0.4, 0.16, 10.1, 11 |
 
 
@@ -852,17 +890,20 @@ Không tự giảm ngưỡng hay cắt tính năng để ghi đạt; đóng hồ
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-87 |
 | Start date | 31/10/2026 |
-| Due date | 03/11/2026 |
+| Due date | 02/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T08, T26, T36, T38, T40, T42, T44, T46, T52, T58, T59, T61, T65 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng |
-| Labels | sprint-4, kiem-thu-tich-hop, p1, chinh-qa-devops, nen-tang |
+| Components | Nền tảng, QA & DevOps |
+| Labels | chinh-qa-devops, kiem-thu-tich-hop, nen-tang, p1, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.12, 0.13, 0.14, 0.17, 10.1, BACKLOG-P1.md §8 |
 
 
@@ -931,17 +972,20 @@ Không thay báo cáo đo tải hoặc kiểm chứng máy cờ bằng việc ch
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 01/11/2026 |
-| Due date | 02/11/2026 |
+| Resolution | — |
+| Jira Key | XIAN-102 |
+| Start date | 31/10/2026 |
+| Due date | 01/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T08, T26, T36, T38, T40, T42, T44, T46, T52, T58, T59, T61, T65 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng |
-| Labels | sprint-4, do-chat-luong, p1, chinh-qa-devops, nen-tang |
+| Components | Nền tảng, QA & DevOps |
+| Labels | chinh-qa-devops, do-chat-luong, nen-tang, p1, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.4, 0.15, 0.16, 0.17, 6.1, 10.1, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 
@@ -1003,17 +1047,20 @@ Không tuyên bố hệ thống đạt chỉ vì đã viết xong báo cáo. Đ�
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-106 |
 | Start date | 03/11/2026 |
 | Due date | 03/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-00.5 |
-| Is blocked by | T51, T66, T13, T16, T17, T27, T28, T29, T30, T39, T43, T45, T47, T48, T49, T50, T60, T62, T64, T67, T68, T69 |
+| Is blocked by | T13, T16, T17, T27, T28, T29, T30, T39, T43, T45, T47, T48, T49, T50, T51, T60, T62, T64, T66, T67, T68, T69 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng |
-| Labels | sprint-4, dong-goi-phat-hanh, p1, chinh-qa-devops, nen-tang |
+| Components | Nền tảng, QA & DevOps |
+| Labels | chinh-qa-devops, dong-goi-phat-hanh, nen-tang, p1, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.4, 0.16, 10.1, BACKLOG-P1.md §8 |
 
 
@@ -1080,17 +1127,20 @@ Công việc này đóng gói và xác nhận điều kiện phát hành. Tổng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-107 |
 | Start date | 04/11/2026 |
 | Due date | 04/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
-| Original Estimate | 4 giờ |
+| Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-00.5 |
 | Is blocked by | T70 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Nền tảng |
-| Labels | sprint-4, tong-duyet, p1, chinh-qa-devops, nen-tang |
+| Components | Nền tảng, QA & DevOps |
+| Labels | chinh-qa-devops, nen-tang, p1, sprint-4, tong-duyet |
 | Nguồn đặc tả (BA / AC) | 0.4, 0.6, 0.7, 0.9, 0.15, 0.16, 10.1, BACKLOG-P1.md §8 |
 
 
@@ -1137,6 +1187,8 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 **Phạm vi và phối hợp**
 
+Ước lượng lại 8 giờ cho tổng duyệt D1–D10, chuẩn bị/reset dữ liệu giữa các lượt, ghi hình và kiểm tra đầy đủ bằng chứng bàn giao theo phạm vi hiện có.
+
 Đây là tổng duyệt và ghi bằng chứng trên bản phát hành. Không thay các phép đo tải, kiểm bảo mật hay kiểm sức chơi bằng việc video trình diễn chạy thành công.
 
 ---
@@ -1151,15 +1203,18 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 27/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-2 |
+| Start date | 07/10/2026 |
+| Due date | 14/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Tài khoản, Ván trực tuyến |
+| Components | BE, FE, QA & DevOps, Tài khoản, Ván trực tuyến |
 | Labels | EP-01, dac-ta, p1, tai-khoan, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.4, 0.15, 0.17, 1.1, 1.2, 1.3, 1.4, 1.5, 1.8 |
 
@@ -1212,18 +1267,21 @@ Không làm quên mật khẩu, đổi tên đăng nhập, đổi email hay đá
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-15 |
 | Start date | 09/10/2026 |
-| Due date | 11/10/2026 |
+| Due date | 12/10/2026 |
 | Sprint | — |
-| Fix version | v0.2 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T04, T08, T13 |
 | Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Tài khoản |
-| Labels | dac-ta, EP-01, p1, tai-khoan |
+| Components | BE, FE, QA & DevOps, Tài khoản |
+| Labels | EP-01, dac-ta, p1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.4, 0.17, 1.1, 1.4, 1.5 |
 
 
@@ -1287,17 +1345,20 @@ Không bổ sung chức năng quên mật khẩu hoặc thay đổi email.
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-40 |
 | Start date | 11/10/2026 |
 | Due date | 13/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T01 |
 | Component chính | BE |
 | Components | BE, Tài khoản |
-| Labels | sprint-1, phat-trien, p1, chinh-be, tai-khoan |
+| Labels | chinh-be, p1, phat-trien, sprint-1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.4, 0.17, 1.1, 1.4, 1.5, 1.6, 5.3 |
 
 
@@ -1363,17 +1424,20 @@ Bàn giao cho màn đăng ký; Google và Khách đầy đủ triển khai riên
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 14/10/2026 |
-| Due date | 14/10/2026 |
-| Sprint | XIAN Sprint 1 |
-| Fix version | v0.1 |
+| Resolution | — |
+| Jira Key | XIAN-44 |
+| Start date | 21/10/2026 |
+| Due date | 21/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T03, T04 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | sprint-1, phat-trien, p1, chinh-fe, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.17, 1.1, 1.5, 5.3 |
 
 
@@ -1437,17 +1501,20 @@ Bàn giao màn đăng ký. Luồng mở đường dẫn mời rồi đăng ký c
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 17/10/2026 |
-| Due date | 17/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-49 |
+| Start date | 22/10/2026 |
+| Due date | 22/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.1 |
 | Is blocked by | T08 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
-| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Labels | chinh-qa-devops, kiem-thu, p1, sprint-2, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.4, 0.17, 1.1, 1.5, 1.6, 5.3 |
 
 
@@ -1510,18 +1577,21 @@ Tự vào phòng mời sau đăng ký được kiểm khi chức năng tham gia 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 14/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-16 |
+| Start date | 12/10/2026 |
+| Due date | 15/10/2026 |
 | Sprint | — |
-| Fix version | v0.2 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T09, T15, T17 |
 | Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Tài khoản |
-| Labels | dac-ta, EP-01, p1, tai-khoan |
+| Components | BE, FE, QA & DevOps, Tài khoản |
+| Labels | EP-01, dac-ta, p1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.15, 1.8 |
 
 
@@ -1580,17 +1650,20 @@ Không bổ sung chức năng khôi phục mật khẩu; không áp dụng bộ 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-45 |
 | Start date | 14/10/2026 |
 | Due date | 15/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-01.2 |
 | Is blocked by | T04 |
 | Component chính | BE |
 | Components | BE, Tài khoản |
-| Labels | sprint-1, phat-trien, p1, chinh-be, tai-khoan |
+| Labels | chinh-be, p1, phat-trien, sprint-1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.15, 1.8 |
 
 
@@ -1654,17 +1727,20 @@ Bàn giao đăng nhập mật khẩu cho giao diện; kiểm chung với Google 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 16/10/2026 |
-| Due date | 16/10/2026 |
-| Sprint | XIAN Sprint 1 |
-| Fix version | v0.1 |
+| Resolution | — |
+| Jira Key | XIAN-51 |
+| Start date | 20/10/2026 |
+| Due date | 20/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.2 |
 | Is blocked by | T03, T09 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | sprint-1, phat-trien, p1, chinh-fe, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 1.8 |
 
 
@@ -1728,17 +1804,20 @@ Bàn giao giao diện đăng nhập mật khẩu và vị trí nối Google/Khá
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 17/10/2026 |
-| Due date | 17/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-53 |
+| Start date | 21/10/2026 |
+| Due date | 21/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.2 |
 | Is blocked by | T15 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
-| Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Labels | chinh-qa-devops, kiem-thu, p1, sprint-2, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.15, 1.8 |
 
 
@@ -1802,18 +1881,21 @@ Việc Google vẫn vào được mà không xoá bộ đếm và việc đăng 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-17 |
+| Start date | 14/10/2026 |
 | Due date | 17/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T35, T44, T48 |
-| Sprint thi công | S2, S3 |
+| Sprint thi công | S1, S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Tài khoản |
-| Labels | dac-ta, EP-01, p1, tai-khoan |
+| Components | BE, FE, QA & DevOps, Tài khoản |
+| Labels | EP-01, dac-ta, p1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 0.17, 1.2, 1.3, 1.4 |
 
 
@@ -1879,17 +1961,20 @@ Không tự gộp tài khoản trùng email và không triển khai xếp hạng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 17/10/2026 |
-| Due date | 19/10/2026 |
-| Sprint | XIAN Sprint 2 |
+| Resolution | — |
+| Jira Key | XIAN-71 |
+| Start date | 16/10/2026 |
+| Due date | 18/10/2026 |
+| Sprint | XIAN Sprint 1 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-01.3 |
 | Is blocked by | T09, T14 |
 | Component chính | BE |
 | Components | BE, Tài khoản |
-| Labels | sprint-2, phat-trien, p1, chinh-be, tai-khoan |
+| Labels | chinh-be, p1, phat-trien, sprint-2, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.15, 0.17, 1.1, 1.2, 1.3, 5.3 |
 
 
@@ -1947,17 +2032,20 @@ Bàn giao xác thực, dữ liệu hạn và quyền Khách; quản lý phiên, 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 20/10/2026 |
-| Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Resolution | — |
+| Jira Key | XIAN-80 |
+| Start date | 24/10/2026 |
+| Due date | 24/10/2026 |
+| Sprint | XIAN Sprint 3 |
+| Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.3 |
 | Is blocked by | T15, T35 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | sprint-2, phat-trien, p1, chinh-fe, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-2, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.17, 1.2, 1.3 |
 
 
@@ -2014,17 +2102,20 @@ Phần này không quyết định thời hạn phiên hoặc quyền trên máy
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-84 |
 | Start date | 26/10/2026 |
 | Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.3 |
-| Is blocked by | T44, T37, T26 |
+| Is blocked by | T26, T37, T44 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Labels | chinh-qa-devops, kiem-thu, p1, sprint-3, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 0.17, 1.2, 1.3 |
 
 
@@ -2079,18 +2170,21 @@ Ngoại lệ giữ phiên Khách khi đang chơi và xoá dữ liệu khi phiên
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 27/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-18 |
+| Start date | 20/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T56, T65, T69 |
-| Sprint thi công | S3, S4 |
+| Sprint thi công | S2, S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Tài khoản, Ván trực tuyến |
-| Labels | dac-ta, EP-01, p1, tai-khoan, van-truc-tuyen |
+| Components | BE, FE, QA & DevOps, Tài khoản, Ván trực tuyến |
+| Labels | EP-01, dac-ta, p1, tai-khoan, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.7, 1.4, 1.8, 6.3 |
 
 
@@ -2116,7 +2210,7 @@ Một vị trí chơi là ghế đang ngồi trong phòng hoặc một ván vớ
 - Bối cảnh: Đang trong ván qua mạng. Thao tác hoặc sự kiện: Bấm Đăng xuất. Kết quả cần có: Hiện xác nhận hậu quả đầu hàng; Đồng ý → ván kết thúc đầu hàng, rời phòng, đăng xuất; Huỷ → giữ nguyên.
 - Ở phòng chờ, bấm Đăng xuất sẽ rời ghế rồi đăng xuất, không xử thua. Nếu chủ phòng rời thì chuyển quyền cho người ngồi ghế còn lại; không còn ai ngồi ghế thì đóng phòng và đưa người xem về Sảnh.
 - Bối cảnh: Ở Cài đặt hồ sơ. Thao tác hoặc sự kiện: Nhập tên hiển thị 2–30 ký tự hợp lệ, bấm "Lưu thay đổi". Kết quả cần có: Lưu ngay, không cần mã xác minh; tên mới hiện ở thanh điều hướng và trong phòng ở lần cập nhật kế tiếp.
-- Trong Cài đặt hồ sơ, tên hiển thị chứa từ cấm hoặc sai độ dài phải bị từ chối lưu và báo lỗi tại ô. Không thay từ cấm bằng ba dấu sao (***) rồi lưu như cách xử lý tin chat.
+- Trong Cài đặt hồ sơ, tên hiển thị chứa từ cấm hoặc sai độ dài phải bị từ chối lưu và báo lỗi tại ô. Không thay từ cấm bằng ba dấu sao (\*\*\*) rồi lưu như cách xử lý tin chat.
 - Bối cảnh: Ở Cài đặt hồ sơ. Thao tác hoặc sự kiện: Xem thông tin. Kết quả cần có: Thấy ảnh đại diện chữ cái đầu, @tên đăng nhập, email chỉ đọc; không có nút đổi tên đăng nhập (giai đoạn sau), không có bộ chọn giao diện.
 - Nút Đăng xuất trong Cài đặt hồ sơ phải dùng cùng quy tắc: trong ván trực tuyến cần xác nhận đầu hàng; ở phòng chờ thì rời phòng không xử thua; trong ván với máy cần xác nhận đầu hàng và hủy tác vụ máy cờ.
 - Bối cảnh: Khách. Thao tác hoặc sự kiện: Mở mục Bạn bè, thẻ mời bạn bè trong hộp Chia sẻ phòng, hoặc Cài đặt hồ sơ. Kết quả cần có: Bạn bè ở thanh điều hướng không bấm được kèm chú thích "Đăng ký tài khoản để kết bạn"; thẻ mời bạn bè ẩn (vẫn có đường dẫn/mã); Cài đặt chỉ có Đăng xuất.
@@ -2157,17 +2251,20 @@ Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 27/10/2026 |
-| Due date | 29/10/2026 |
-| Sprint | XIAN Sprint 3 |
+| Resolution | — |
+| Jira Key | XIAN-92 |
+| Start date | 22/10/2026 |
+| Due date | 24/10/2026 |
+| Sprint | XIAN Sprint 2 |
 | Fix version | v0.3 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-01.4 |
 | Is blocked by | T18, T20, T35 |
 | Component chính | BE |
 | Components | BE, Tài khoản, Ván trực tuyến |
-| Labels | sprint-3, phat-trien, p1, chinh-be, tai-khoan, van-truc-tuyen |
+| Labels | chinh-be, p1, phat-trien, sprint-3, tai-khoan, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.3, 1.4, 1.8 |
 
 
@@ -2227,17 +2324,20 @@ Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn 
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 30/10/2026 |
-| Due date | 30/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-101 |
+| Start date | 28/10/2026 |
+| Due date | 28/10/2026 |
 | Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Fix version | v1.0 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.4 |
 | Is blocked by | T56, T63 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-3, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.4, 1.8, 6.3 |
 
 
@@ -2294,17 +2394,20 @@ Máy chủ vẫn kiểm quyền, dữ liệu và thời hạn phiên; giao diệ
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 02/11/2026 |
-| Due date | 03/11/2026 |
+| Resolution | — |
+| Jira Key | XIAN-105 |
+| Start date | 01/11/2026 |
+| Due date | 01/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-01.4 |
-| Is blocked by | T65, T52, T23, T38, T61, T32, T37, T44, T40, T26 |
+| Is blocked by | T23, T26, T32, T37, T38, T40, T44, T52, T61, T65 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản, Ván trực tuyến |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, tai-khoan, van-truc-tuyen |
+| Labels | chinh-qa-devops, kiem-thu, p1, sprint-4, tai-khoan, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.3, 1.4, 1.8, 6.3 |
 
 
@@ -2364,15 +2467,18 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-3 |
+| Start date | 15/10/2026 |
+| Due date | 22/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
+| Components | BE, FE, Phòng chơi, QA & DevOps, Ván trực tuyến |
 | Labels | EP-02, dac-ta, p1, phong-choi, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 2.1, 2.3, 2.7, 3.6 |
 
@@ -2425,18 +2531,21 @@ Không thêm đổi cấu hình mức giờ/sức chứa sau tạo, tái đấu 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 19/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-19 |
+| Start date | 17/10/2026 |
+| Due date | 20/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T18, T21, T28 |
 | Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi |
-| Labels | dac-ta, EP-02, p1, phong-choi |
+| Components | BE, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-02, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 2.1, 2.3, 2.7 |
 
 
@@ -2499,17 +2608,20 @@ Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đ�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-54 |
 | Start date | 19/10/2026 |
 | Due date | 21/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-02.1 |
 | Is blocked by | T12, T14 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 2.1, 2.3, 2.7, 2.8, 8.3, 5.3 |
 
 
@@ -2574,17 +2686,20 @@ Bàn giao phòng chờ và tín hiệu bắt đầu ván. Xin đổi bên hai ng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-57 |
 | Start date | 22/10/2026 |
 | Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
-| Original Estimate | 12 giờ |
+| Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-02.1 |
 | Is blocked by | T03, T18 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | sprint-2, phat-trien, p1, chinh-fe, phong-choi |
+| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.10, 0.13, 2.1, 2.3, 2.7, 5.3 |
 
 
@@ -2634,6 +2749,8 @@ Phòng chờ dùng chung địa chỉ phòng với lúc thi đấu nhưng có tr
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho kiểm tra đồng bộ ghế, Sẵn sàng và đếm ngược trên nhiều phiên theo yêu cầu hiện có.
+
 Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung chat/hình tiếng và điều khiển người xem được nối ở phần chức năng tương ứng, không dựng giả để coi đã hoàn tất.
 
 ---
@@ -2649,17 +2766,20 @@ Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-64 |
 | Start date | 25/10/2026 |
 | Due date | 25/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-02.1 |
-| Is blocked by | T26, T37, T25 |
+| Is blocked by | T25, T26, T37 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Components | Phòng chơi, QA & DevOps |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.10, 2.1, 2.3, 2.7, 2.8, 5.3 |
 
 
@@ -2714,18 +2834,21 @@ Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiể
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-20 |
+| Start date | 23/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T41, T46, T50 |
-| Sprint thi công | S3 |
+| Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
-| Labels | dac-ta, EP-02, p1, phong-choi, van-truc-tuyen |
+| Components | BE, FE, Phòng chơi, QA & DevOps, Ván trực tuyến |
+| Labels | EP-02, dac-ta, p1, phong-choi, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 2.3, 3.6 |
 
 
@@ -2789,17 +2912,20 @@ Không thêm nút tái đấu trực tiếp hoặc xem lại ván; không đóng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 25/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-77 |
+| Start date | 25/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-02.2 |
 | Is blocked by | T20, T37 |
 | Component chính | BE |
 | Components | BE, Phòng chơi, Ván trực tuyến |
-| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 0.17, 3.6 |
 
 
@@ -2856,17 +2982,20 @@ Không thêm nút tái đấu nhanh; người chơi dùng Sẵn sàng và Xin đ
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 26/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-82 |
+| Start date | 27/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-02.2 |
 | Is blocked by | T25, T41 |
 | Component chính | FE |
 | Components | FE, Phòng chơi, Ván trực tuyến |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi, van-truc-tuyen |
+| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.17 |
 
 
@@ -2923,17 +3052,20 @@ Phần này không tạo cơ chế tái đấu mới và không tự xử thời
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 27/10/2026 |
-| Due date | 27/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Resolution | — |
+| Jira Key | XIAN-86 |
+| Start date | 31/10/2026 |
+| Due date | 31/10/2026 |
+| Sprint | XIAN Sprint 4 |
+| Fix version | v1.0 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-02.2 |
 | Is blocked by | T46 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi, Ván trực tuyến |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi, van-truc-tuyen |
+| Components | Phòng chơi, QA & DevOps, Ván trực tuyến |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 0.17 |
 
 
@@ -2992,16 +3124,19 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
-| Status | To Do |
-| Start date | 09/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-4 |
+| Start date | 18/10/2026 |
 | Due date | 25/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi, Bạn bè |
-| Labels | EP-03, dac-ta, p1, phong-choi, ban-be |
+| Components | Bạn bè, BE, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-03, ban-be, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.2, 2.4, 2.5, 2.6, 2.7, 2.8, 5.5, 11 |
 
 
@@ -3053,18 +3188,21 @@ Không làm nhắn tin riêng, thách đấu hoặc mời qua mã ảnh để qu
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 22/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-21 |
+| Start date | 20/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T22, T26, T29 |
 | Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi |
-| Labels | dac-ta, EP-03, p1, phong-choi |
+| Components | BE, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-03, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.2, 2.4, 2.6, 2.8 |
 
 
@@ -3121,17 +3259,20 @@ Không tạo mã ảnh để quét; quyền vào vẫn phụ thuộc trạng th�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-58 |
 | Start date | 22/10/2026 |
 | Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-03.1 |
-| Is blocked by | T18, T09 |
+| Is blocked by | T09, T18 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.8, 2.4, 2.6, 2.7, 2.8 |
 
 
@@ -3196,17 +3337,20 @@ Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. C
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 23/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-62 |
+| Start date | 24/10/2026 |
 | Due date | 24/10/2026 |
-| Sprint | XIAN Sprint 2 |
+| Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-03.1 |
 | Is blocked by | T21, T22 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | sprint-2, phat-trien, p1, chinh-fe, phong-choi |
+| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.4, 2.6, 2.7, 2.8 |
 
 
@@ -3261,17 +3405,20 @@ Phần này phụ trách giao diện đường dẫn và mã; danh sách bạn b
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-65 |
 | Start date | 25/10/2026 |
 | Due date | 25/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-03.1 |
-| Is blocked by | T26, T35, T08, T15 |
+| Is blocked by | T08, T15, T26, T35 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Components | Phòng chơi, QA & DevOps |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.8, 2.4, 2.6, 2.7, 2.8 |
 
 
@@ -3326,18 +3473,21 @@ Luồng chọn chế độ Khách từ lời mời được kiểm chuyên biệ
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 25/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-22 |
+| Start date | 24/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T31, T40, T49 |
 | Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Bạn bè |
-| Labels | dac-ta, EP-03, p1, ban-be |
+| Components | Bạn bè, BE, FE, QA & DevOps |
+| Labels | EP-03, ban-be, dac-ta, p1 |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.5, 2.7, 5.5, 11 |
 
 
@@ -3369,7 +3519,7 @@ Kết bạn là quan hệ lâu dài; lời mời vào phòng chỉ có hiệu l�
 - Bối cảnh: Ở trang Bạn bè. Thao tác hoặc sự kiện: Nhìn nút "Nhắn tin", "Thách đấu". Kết quả cần có: không bấm được kèm chú thích "Sắp ra mắt"; trang không có nút mời vào phòng.
 - Bối cảnh: Người dùng đang ngồi ghế phòng tự tạo. Thao tác hoặc sự kiện: Mở "Chia sẻ phòng". Kết quả cần có: Có thẻ bạn bè; người xem không thấy nút Chia sẻ.
 - Bối cảnh: Danh sách bạn trong thẻ. Thao tác hoặc sự kiện: Xem nút "Mời". Kết quả cần có: 🟢 bấm được; ⚫ không bấm được nhãn "Ngoại tuyến"; 🟠 không bấm được chú thích "Bạn bè đang trong ván khác".
-- Bối cảnh: Gửi mời cho bạn 🟢. Thao tác hoặc sự kiện: Bạn nhận. Kết quả cần có: thông báo nổi góc màn hình "Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]" với [Tham gia] [Từ chối], đếm lùi 30 giây.
+- Bối cảnh: Gửi mời cho bạn 🟢. Thao tác hoặc sự kiện: Bạn nhận. Kết quả cần có: thông báo nổi góc màn hình "Người chơi \[Tên\] mời bạn tham gia phòng cờ \[Tên phòng\]" với \[Tham gia\] \[Từ chối\], đếm lùi 30 giây.
 - Người nhận bấm Tham gia trong thời hạn lời mời: máy chủ kiểm lại quyền vào và sức chứa; nhận ghế trống, hoặc làm người xem nếu hai ghế đã kín mà còn chỗ xem; nếu đầy thì hiện màn hình từ chối vào phòng.
 - Bối cảnh: thông báo nổi. Thao tác hoặc sự kiện: Không bấm trong 30 giây hoặc bấm "Từ chối". Kết quả cần có: thông báo nổi biến mất, lời mời hết hiệu lực; không lưu vào chuông.
 - Bối cảnh: Lời mời đã gửi, sau đó phòng chuyển sang khoá. Thao tác hoặc sự kiện: Người nhận bấm Tham gia. Kết quả cần có: Bị từ chối (lời mời chưa dùng đã bị thu hồi).
@@ -3408,17 +3558,20 @@ Không làm nhắn tin riêng hay thách đấu; không cho Khách tham gia quan
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 25/10/2026 |
-| Due date | 27/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-67 |
+| Start date | 26/10/2026 |
+| Due date | 28/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 20 giờ |
+| Remaining Estimate | 20 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T22, T35 |
 | Component chính | BE |
-| Components | BE, Bạn bè |
-| Labels | sprint-3, phat-trien, p1, chinh-be, ban-be |
+| Components | Bạn bè, BE |
+| Labels | ban-be, chinh-be, p1, phat-trien, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.8, 2.5, 2.7, 2.8, 5.5 |
 
 
@@ -3475,17 +3628,20 @@ Không làm nhắn tin riêng giữa bạn bè hoặc thách đấu từ màn B�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 28/10/2026 |
-| Due date | 29/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-76 |
+| Start date | 29/10/2026 |
+| Due date | 30/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-03.2 |
 | Is blocked by | T31 |
 | Component chính | FE |
-| Components | FE, Bạn bè |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, ban-be |
+| Components | Bạn bè, FE |
+| Labels | ban-be, chinh-fe, p1, phat-trien, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.5, 5.5 |
 
 
@@ -3505,7 +3661,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 - Danh sách bạn hiện Trực tuyến, Đang đấu hoặc Ngoại tuyến bằng cả chữ và dấu nhận biết. Có huỷ kết bạn; thẻ Lời mời đang chờ có Chấp nhận/Từ chối. Chuông điều hướng hiển thị lời mời kết bạn và số đếm.
 - Nhắn tin và Thách đấu hiện vô hiệu, giải thích “Sắp ra mắt”. Màn Bạn bè không có nút mời vào phòng.
 - Trong hộp Chia sẻ phòng, thẻ Bạn bè chỉ dành cho tài khoản chính thức ngồi ghế. Bạn Trực tuyến có nút Mời; Ngoại tuyến không bấm được và ghi “Ngoại tuyến”; Đang đấu không bấm được, giải thích “Bạn bè đang trong ván khác”.
-- Người nhận thấy thông báo “Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]” với Tham gia/Từ chối và đếm 30 giây. Hết hạn hoặc từ chối thì thông báo biến mất, không lưu vào chuông.
+- Người nhận thấy thông báo “Người chơi \[Tên\] mời bạn tham gia phòng cờ \[Tên phòng\]” với Tham gia/Từ chối và đếm 30 giây. Hết hạn hoặc từ chối thì thông báo biến mất, không lưu vào chuông.
 - Bấm Tham gia phải dùng kết quả kiểm phòng hiện tại của máy chủ; hiện thông báo phù hợp khi phòng đầy, bị khoá hoặc người nhận đang chơi nơi khác.
 
 **Việc cần làm**
@@ -3542,17 +3698,20 @@ Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu;
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-85 |
 | Start date | 01/11/2026 |
 | Due date | 01/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-03.2 |
-| Is blocked by | T40, T53, T56, T34 |
+| Is blocked by | T34, T40, T53, T56 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Bạn bè |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-be |
+| Components | Bạn bè, QA & DevOps |
+| Labels | ban-be, chinh-qa-devops, kiem-thu, p1, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.5, 5.5 |
 
 
@@ -3613,16 +3772,19 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-5 |
+| Start date | 07/10/2026 |
 | Due date | 14/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ |
-| Labels | EP-04, dac-ta, p1, luat-co, ban-co |
+| Components | Bàn cờ, BE, FE, Luật cờ, QA & DevOps |
+| Labels | EP-04, ban-co, dac-ta, luat-co, p1 |
 | Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.1, 3.4, 3.5, 10.1, 10.3 |
 
 
@@ -3674,18 +3836,21 @@ Dùng luật rút gọn của ứng dụng, không bổ sung toàn bộ luật g
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-23 |
 | Start date | 09/10/2026 |
-| Due date | 11/10/2026 |
+| Due date | 12/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T05, T07, T10 |
 | Sprint thi công | S1 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Luật cờ |
-| Labels | dac-ta, EP-04, p1, luat-co |
+| Labels | EP-04, dac-ta, luat-co, p1 |
 | Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.1, 3.3, 3.5 |
 
 
@@ -3746,17 +3911,20 @@ Không bổ sung luật xử riêng việc đuổi quân liên tục; không tuy
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-41 |
 | Start date | 11/10/2026 |
 | Due date | 11/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-04.1 |
 | Is blocked by | T01 |
 | Component chính | BE |
 | Components | BE, Luật cờ |
-| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co |
+| Labels | chinh-be, luat-co, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 3.1, 3.4, 3.5 |
 
 
@@ -3820,17 +3988,20 @@ Kết quả là nước cơ bản theo cách đi của quân, chưa được g�
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-43 |
 | Start date | 12/10/2026 |
 | Due date | 12/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-04.1 |
 | Is blocked by | T05 |
 | Component chính | BE |
 | Components | BE, Luật cờ |
-| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co |
+| Labels | chinh-be, luat-co, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 3.4, 3.5 |
 
 
@@ -3894,17 +4065,20 @@ Bàn giao phân xử từng thế cờ. Lặp thế, 120 nửa nước không ă
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-46 |
 | Start date | 13/10/2026 |
 | Due date | 13/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-04.1 |
 | Is blocked by | T07 |
 | Component chính | BE |
 | Components | BE, Luật cờ |
-| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co |
+| Labels | chinh-be, luat-co, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.5 |
 
 
@@ -3967,18 +4141,21 @@ Bộ luật phân xử một nước hợp lệ. Máy chủ vẫn phải kiểm 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-24 |
 | Start date | 09/10/2026 |
-| Due date | 11/10/2026 |
+| Due date | 12/10/2026 |
 | Sprint | — |
-| Fix version | v0.1 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T11, T16 |
-| Sprint thi công | S1 |
+| Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, QA & DevOps, Bàn cờ |
-| Labels | dac-ta, EP-04, p1, ban-co |
+| Components | Bàn cờ, FE, QA & DevOps |
+| Labels | EP-04, ban-co, dac-ta, p1 |
 | Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1, 10.3 |
 
 
@@ -4032,17 +4209,20 @@ Chỉ đặc tả hiển thị; thao tác đi quân và phân xử luật nằm 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-47 |
 | Start date | 11/10/2026 |
 | Due date | 12/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 12 giờ |
+| Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-04.2 |
 | Is blocked by | T01 |
 | Component chính | FE |
-| Components | FE, Bàn cờ |
-| Labels | sprint-1, phat-trien, p1, chinh-fe, ban-co |
+| Components | Bàn cờ, FE |
+| Labels | ban-co, chinh-fe, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1 |
 
 
@@ -4092,6 +4272,8 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho kiểm tra SVG, lật bàn, kích thước màn hình và nhãn trợ năng theo các yêu cầu hiện có.
+
 Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, âm thanh và giao tiếp máy chủ được bổ sung trong các phần thao tác bàn cờ và ván online.
 
 ---
@@ -4107,17 +4289,20 @@ Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, �
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 14/10/2026 |
-| Due date | 14/10/2026 |
-| Sprint | XIAN Sprint 1 |
-| Fix version | v0.1 |
+| Resolution | — |
+| Jira Key | XIAN-52 |
+| Start date | 20/10/2026 |
+| Due date | 20/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-04.2 |
 | Is blocked by | T11 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Bàn cờ |
-| Labels | sprint-1, kiem-thu, p1, chinh-qa-devops, ban-co |
+| Components | Bàn cờ, QA & DevOps |
+| Labels | ban-co, chinh-qa-devops, kiem-thu, p1, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1 |
 
 
@@ -4182,18 +4367,21 @@ Không dùng kết quả này để kết luận bấm chuột, kéo thả, nư�
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 14/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-25 |
+| Start date | 12/10/2026 |
+| Due date | 15/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T19, T27 |
-| Sprint thi công | S1, S4 |
+| Sprint thi công | S1, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, QA & DevOps, Bàn cờ |
-| Labels | dac-ta, EP-04, p1, ban-co |
+| Components | Bàn cờ, FE, QA & DevOps |
+| Labels | EP-04, ban-co, dac-ta, p1 |
 | Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
@@ -4253,17 +4441,20 @@ Không thêm chức năng gợi ý chiến thuật hoặc chọn nước tốt n
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-55 |
 | Start date | 14/10/2026 |
 | Due date | 16/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.1 |
-| Original Estimate | 20 giờ |
+| Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-04.3 |
 | Is blocked by | T10, T11 |
 | Component chính | FE |
-| Components | FE, Bàn cờ |
-| Labels | sprint-1, phat-trien, p1, chinh-fe, ban-co |
+| Components | Bàn cờ, FE |
+| Labels | ban-co, chinh-fe, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
@@ -4313,6 +4504,8 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho đối chiếu click/kéo thả, gợi ý ô, đánh dấu và âm thanh ở các nhánh thao tác đã đặc tả.
+
 Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ từ chối phải được đồng bộ lại, không coi thao tác cục bộ là nước đã được chấp nhận.
 
 ---
@@ -4328,17 +4521,20 @@ Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 31/10/2026 |
-| Due date | 31/10/2026 |
-| Sprint | XIAN Sprint 4 |
+| Resolution | — |
+| Jira Key | XIAN-63 |
+| Start date | 30/10/2026 |
+| Due date | 30/10/2026 |
+| Sprint | XIAN Sprint 3 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-04.3 |
-| Is blocked by | T25, T22 |
+| Is blocked by | T22, T25 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Bàn cờ |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-co |
+| Components | Bàn cờ, QA & DevOps |
+| Labels | ban-co, chinh-qa-devops, kiem-thu, p1, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
@@ -4393,16 +4589,19 @@ Kiểm cách tương tác và hiển thị; không thay việc chứng minh toà
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 30/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-6 |
+| Start date | 12/10/2026 |
+| Due date | 19/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi, Luật cờ, Bàn cờ, Ván trực tuyến |
-| Labels | EP-05, dac-ta, p1, phong-choi, luat-co, ban-co, van-truc-tuyen |
+| Components | Bàn cờ, BE, FE, Luật cờ, Phòng chơi, QA & DevOps, Ván trực tuyến |
+| Labels | EP-05, ban-co, dac-ta, luat-co, p1, phong-choi, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.12, 0.17, 2.1, 3.3, 3.5, 3.6, 8.3 |
 
 
@@ -4454,18 +4653,21 @@ Không cộng thời gian sau nước đi, xin đi lại hoặc khôi phục gi�
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 16/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-26 |
+| Start date | 14/10/2026 |
+| Due date | 17/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T20, T23, T25, T30 |
 | Sprint thi công | S1, S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ, Ván trực tuyến |
-| Labels | dac-ta, EP-05, p1, luat-co, ban-co, van-truc-tuyen |
+| Components | Bàn cờ, BE, FE, Luật cờ, QA & DevOps, Ván trực tuyến |
+| Labels | EP-05, ban-co, dac-ta, luat-co, p1, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.12, 0.17, 2.1, 3.3, 3.5, 10.1 |
 
 
@@ -4528,17 +4730,20 @@ Không cộng thêm thời gian sau nước đi và không triển khai giao di�
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-56 |
 | Start date | 16/10/2026 |
 | Due date | 18/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.2 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T10, T12, T14 |
 | Component chính | BE |
 | Components | BE, Luật cờ, Ván trực tuyến |
-| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co, van-truc-tuyen |
+| Labels | chinh-be, luat-co, p1, phat-trien, sprint-1, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.12, 0.17, 3.3, 3.5 |
 
 
@@ -4605,17 +4810,20 @@ Bàn giao lõi ván để nối đồng hồ, các nút đề nghị và phục 
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 20/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-59 |
+| Start date | 19/10/2026 |
+| Due date | 19/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T20 |
 | Component chính | BE |
 | Components | BE, Ván trực tuyến |
-| Labels | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
+| Labels | chinh-be, p1, phat-trien, sprint-2, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.17, 2.1, 3.3, 8.3 |
 
 
@@ -4680,17 +4888,20 @@ Bàn giao thời gian và kết quả hết giờ cho giao diện và xử lý m
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 21/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-61 |
+| Start date | 22/10/2026 |
 | Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T19, T23 |
 | Component chính | FE |
-| Components | FE, Bàn cờ, Ván trực tuyến |
-| Labels | sprint-2, phat-trien, p1, chinh-fe, ban-co, van-truc-tuyen |
+| Components | Bàn cờ, FE, Ván trực tuyến |
+| Labels | ban-co, chinh-fe, p1, phat-trien, sprint-2, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.17, 3.3, 8.3 |
 
 
@@ -4747,17 +4958,20 @@ Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 28/10/2026 |
-| Due date | 28/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-66 |
+| Start date | 27/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-05.1 |
 | Is blocked by | T25, T26 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Luật cờ, Ván trực tuyến |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, luat-co, van-truc-tuyen |
+| Components | Luật cờ, QA & DevOps, Ván trực tuyến |
+| Labels | chinh-qa-devops, kiem-thu, luat-co, p1, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.12, 0.17, 2.1, 3.3, 3.5 |
 
 
@@ -4813,18 +5027,21 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-27 |
+| Start date | 18/10/2026 |
 | Due date | 21/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T32, T36, T39 |
 | Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Ván trực tuyến |
-| Labels | dac-ta, EP-05, p1, van-truc-tuyen |
+| Components | BE, FE, QA & DevOps, Ván trực tuyến |
+| Labels | EP-05, dac-ta, p1, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 2.3, 3.3, 3.5, 3.6 |
 
 
@@ -4883,17 +5100,20 @@ Không thêm xin đi lại; phản hồi đề nghị cũ không được thay �
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 21/10/2026 |
-| Due date | 22/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-68 |
+| Start date | 20/10/2026 |
+| Due date | 21/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-05.2 |
 | Is blocked by | T20 |
 | Component chính | BE |
 | Components | BE, Ván trực tuyến |
-| Labels | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
+| Labels | chinh-be, p1, phat-trien, sprint-2, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 3.3, 3.5, 3.6 |
 
 
@@ -4950,17 +5170,20 @@ Phần này không dựng hộp xác nhận hay khung đề nghị trên màn h�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-72 |
 | Start date | 24/10/2026 |
 | Due date | 24/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-05.2 |
 | Is blocked by | T25, T32 |
 | Component chính | FE |
 | Components | FE, Ván trực tuyến |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, van-truc-tuyen |
+| Labels | chinh-fe, p1, phat-trien, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 3.3, 3.5, 3.6 |
 
 
@@ -5017,17 +5240,20 @@ Máy chủ quyết định kết quả, hạn và quyền; phần giao diện kh
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-75 |
 | Start date | 25/10/2026 |
 | Due date | 25/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-05.2 |
-| Is blocked by | T36, T18 |
+| Is blocked by | T18, T36 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Ván trực tuyến |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, van-truc-tuyen |
+| Labels | chinh-qa-devops, kiem-thu, p1, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 3.3, 3.5, 3.6 |
 
 
@@ -5082,18 +5308,21 @@ Không kiểm xin đi lại, tái đấu hoặc luật riêng của chế độ 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-28 |
+| Start date | 27/10/2026 |
 | Due date | 30/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T52, T60 |
 | Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
-| Labels | dac-ta, EP-05, p1, phong-choi, van-truc-tuyen |
+| Components | BE, Phòng chơi, QA & DevOps, Ván trực tuyến |
+| Labels | EP-05, dac-ta, p1, phong-choi, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.17, 3.3, 8.3 |
 
 
@@ -5149,17 +5378,20 @@ Không tạo thắng/thua/hòa cho ván bị gián đoạn do máy chủ khởi 
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 30/10/2026 |
-| Due date | 31/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-88 |
+| Start date | 29/10/2026 |
+| Due date | 30/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v1.0 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-05.3 |
 | Is blocked by | T56 |
 | Component chính | BE |
 | Components | BE, Phòng chơi, Ván trực tuyến |
-| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-3, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.10, 0.17, 2.8, 3.3, 8.3 |
 
 
@@ -5216,17 +5448,20 @@ Chỉ thực hiện xử lý phía máy chủ và dữ liệu đồng bộ. Khô
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 31/10/2026 |
-| Due date | 31/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-96 |
+| Start date | 02/11/2026 |
+| Due date | 02/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-05.3 |
-| Is blocked by | T52, T25 |
+| Is blocked by | T25, T52 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi, Ván trực tuyến |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi, van-truc-tuyen |
+| Components | Phòng chơi, QA & DevOps, Ván trực tuyến |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-4, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.7, 0.10, 0.17, 2.8, 3.3, 8.3 |
 
 
@@ -5283,16 +5518,19 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 26/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-7 |
+| Start date | 20/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi, Camera và mic |
-| Labels | EP-06, dac-ta, p1, phong-choi, camera-va-mic |
+| Components | BE, Camera và mic, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-06, camera-va-mic, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.7, 2.7, 2.8, 4.1, 4.2, 4.3, 10.4, 11 |
 
 
@@ -5344,18 +5582,21 @@ Không để người xem tự chiếm ghế hoặc phát camera/mic; không tri
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 23/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-29 |
+| Start date | 22/10/2026 |
+| Due date | 25/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T53, T57, T62 |
-| Sprint thi công | S2, S3, S4 |
+| Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi |
-| Labels | dac-ta, EP-06, p1, phong-choi |
+| Components | BE, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-06, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.7, 2.8, 4.3 |
 
 
@@ -5412,17 +5653,20 @@ Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 23/10/2026 |
-| Due date | 24/10/2026 |
-| Sprint | XIAN Sprint 2 |
+| Resolution | — |
+| Jira Key | XIAN-89 |
+| Start date | 24/10/2026 |
+| Due date | 25/10/2026 |
+| Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T22 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.8, 4.3 |
 
 
@@ -5478,17 +5722,20 @@ Phần này thực thi quy tắc phía máy chủ; hộp cài đặt và danh s�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 26/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-93 |
+| Start date | 27/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 4 giờ |
+| Remaining Estimate | 4 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-06.1 |
 | Is blocked by | T53 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
+| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.7, 2.8, 4.3 |
 
 
@@ -5545,17 +5792,20 @@ Phần giao diện không tự sinh mã, thu hồi lời mời hoặc quyết đ
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 01/11/2026 |
-| Due date | 01/11/2026 |
+| Resolution | — |
+| Jira Key | XIAN-98 |
+| Start date | 02/11/2026 |
+| Due date | 02/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
-| Original Estimate | 4 giờ |
+| Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 1 |
 | Story (relates to) | US-06.1 |
-| Is blocked by | T57, T31, T33, T52, T55 |
+| Is blocked by | T31, T33, T52, T55, T57 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Components | Phòng chơi, QA & DevOps |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.8, 4.3 |
 
 
@@ -5600,6 +5850,8 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho ma trận quyền vào phòng PUBLIC/CODE_ONLY/LOCKED, kiểm lại và lưu bằng chứng theo phạm vi đã đặc tả.
+
 Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.
 
 ---
@@ -5614,18 +5866,21 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 26/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-30 |
+| Start date | 25/10/2026 |
+| Due date | 28/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T54, T61, T67 |
 | Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi |
-| Labels | dac-ta, EP-06, p1, phong-choi |
+| Components | BE, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-06, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.11, 0.12, 0.17, 2.0, 10.4, 11 |
 
 
@@ -5692,17 +5947,20 @@ Lối vào điều hướng chính của tính năng để sau hiển thị Sắ
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 26/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-90 |
+| Start date | 27/10/2026 |
+| Due date | 27/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T53 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.5, 2.8 |
 
 
@@ -5759,17 +6017,20 @@ Không xây trang Sảnh trong công việc này. Kết quả là dữ liệu, s
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 28/10/2026 |
-| Due date | 29/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-97 |
+| Start date | 29/10/2026 |
+| Due date | 30/10/2026 |
 | Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Fix version | v1.0 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-06.2 |
 | Is blocked by | T54, T57 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
+| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.12, 0.17, 2.0, 10.4 |
 
 
@@ -5827,17 +6088,20 @@ Không triển khai ghép ngẫu nhiên, xếp hạng, lịch sử hoặc bảng
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-103 |
 | Start date | 31/10/2026 |
 | Due date | 31/10/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-06.2 |
-| Is blocked by | T61, T55, T38, T26, T40, T44, T65 |
+| Is blocked by | T26, T38, T40, T44, T55, T61, T65 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Components | Phòng chơi, QA & DevOps |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.12, 0.17, 10.4 |
 
 
@@ -5898,18 +6162,21 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-31 |
+| Start date | 23/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T55, T58, T64 |
 | Sprint thi công | S3, S4 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Phòng chơi, Camera và mic |
-| Labels | dac-ta, EP-06, p1, phong-choi, camera-va-mic |
+| Components | BE, Camera và mic, FE, Phòng chơi, QA & DevOps |
+| Labels | EP-06, camera-va-mic, dac-ta, p1, phong-choi |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.7, 2.8, 4.1, 4.2 |
 
 
@@ -5935,7 +6202,7 @@ Mỗi phòng có tối đa hai người chơi và năm người xem. Chuyển ch
 - Bối cảnh: Ván đang diễn ra. Thao tác hoặc sự kiện: Mọi thao tác đổi chỗ ghế ↔ xem. Kết quả cần có: Không khả dụng.
 - Bối cảnh: Người xem mất kết nối. Thao tác hoặc sự kiện: Nối lại trong 5 phút. Kết quả cần có: Giữ chỗ xem; quá 5 phút mất chỗ (không xử phạt).
 - Cả hai người chơi đều thấy nút Kick, nghĩa là đuổi khỏi phòng, cạnh từng người xem. Người xem không có nút này.
-- Bấm Kick để đuổi một người xem phải mở xác nhận “Bạn có chắc chắn muốn đuổi người xem [Tên] ra khỏi phòng thi đấu không?”. Vị trí chọn ban đầu của bàn phím đặt ở Huỷ.
+- Bấm Kick để đuổi một người xem phải mở xác nhận “Bạn có chắc chắn muốn đuổi người xem \[Tên\] ra khỏi phòng thi đấu không?”. Vị trí chọn ban đầu của bàn phím đặt ở Huỷ.
 - Khi xác nhận đuổi người xem, đưa người đó về Sảnh với thông báo “Bạn đã bị đuổi khỏi phòng thi đấu”, thu hồi ngay quyền nhận hình và tiếng. Ghi lại thời gian thu hồi thực tế trong phép kiểm truyền hình/tiếng.
 - Bối cảnh: Người đã bị đuổi. Thao tác hoặc sự kiện: Vào lại bằng đường dẫn/mã mới, lời mời hoặc từ Sảnh. Kết quả cần có: Bị chặn đến khi phòng đã đóng.
 - Bối cảnh: Người đã bị đuổi khỏi phòng. Thao tác hoặc sự kiện: Vào lại bằng bất kỳ cách nào. Kết quả cần có: màn hình thông báo không được vào phòng: "Bạn đã bị đuổi và chặn tham gia phòng cờ này!".
@@ -5974,17 +6241,20 @@ Người xem không được tự chiếm ghế; chủ phòng không tự xuốn
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 25/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-91 |
+| Start date | 25/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-06.3 |
 | Is blocked by | T22 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 2.8, 4.1, 4.2, 5.3 |
 
 
@@ -6042,17 +6312,20 @@ Không xây khung danh sách người xem trong phần việc này. Giới hạn
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-94 |
 | Start date | 27/10/2026 |
 | Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 20 giờ |
+| Remaining Estimate | 20 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-06.3 |
-| Is blocked by | T55, T33 |
+| Is blocked by | T33, T55 |
 | Component chính | FE |
-| Components | FE, Phòng chơi, Camera và mic |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi, camera-va-mic |
+| Components | Camera và mic, FE, Phòng chơi |
+| Labels | camera-va-mic, chinh-fe, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.13, 0.14, 1.8, 2.8, 4.1, 4.2 |
 
 
@@ -6109,17 +6382,20 @@ Không viết lại dịch vụ cấp quyền camera, mic hay quy tắc xếp ch
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-100 |
 | Start date | 02/11/2026 |
 | Due date | 02/11/2026 |
 | Sprint | XIAN Sprint 4 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-06.3 |
-| Is blocked by | T58, T52, T31, T54 |
+| Is blocked by | T31, T52, T54, T58 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Phòng chơi, Camera và mic |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi, camera-va-mic |
+| Components | Camera và mic, Phòng chơi, QA & DevOps |
+| Labels | camera-va-mic, chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.8, 4.1, 4.2, 5.3 |
 
 
@@ -6180,16 +6456,19 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-8 |
+| Start date | 18/10/2026 |
+| Due date | 25/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Trò chuyện, Camera và mic |
-| Labels | EP-07, dac-ta, p1, tro-chuyen, camera-va-mic |
+| Components | BE, Camera và mic, FE, QA & DevOps, Trò chuyện |
+| Labels | EP-07, camera-va-mic, dac-ta, p1, tro-chuyen |
 | Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 4.1, 4.2, 5.3 |
 
 
@@ -6241,18 +6520,21 @@ Không ghi/lưu hình tiếng, không lưu trò chuyện sau khi phòng đóng v
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 22/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-32 |
+| Start date | 20/10/2026 |
+| Due date | 23/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T37, T42, T47 |
 | Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Trò chuyện |
-| Labels | dac-ta, EP-07, p1, tro-chuyen |
+| Components | BE, FE, QA & DevOps, Trò chuyện |
+| Labels | EP-07, dac-ta, p1, tro-chuyen |
 | Nguồn đặc tả (BA / AC) | 0.13, 5.3 |
 
 
@@ -6276,8 +6558,8 @@ Kênh Riêng dành cho cặp người đang ngồi hai ghế; Kênh Chung có ng
 - Bối cảnh: Cùng cặp A–B Xin đổi bên hoặc đánh ván tiếp. Thao tác hoặc sự kiện: Mở Kênh Riêng. Kết quả cần có: Vẫn thấy tin cũ của cặp.
 - Bối cảnh: Phòng đóng. Thao tác hoặc sự kiện: Dữ liệu. Kết quả cần có: Toàn bộ chat phòng bị xoá.
 - Bối cảnh: Tin có thẻ mã đánh dấu hoặc mã lệnh có thể thực thi. Thao tác hoặc sự kiện: Hiển thị. Kết quả cần có: Hiện như văn bản thuần.
-- Tin chứa từ trong danh sách cấm phải được máy chủ thay từ đó bằng ba dấu sao (***) trước khi gửi tới mọi người.
-- Bộ lọc vẫn phải che từ cấm bằng ba dấu sao (***) khi người gửi dùng biến thể có dấu/không dấu, hoa/thường, chèn khoảng trắng hoặc ký tự đặc biệt, dùng số 0 thay chữ o hoặc số 1 thay chữ i.
+- Tin chứa từ trong danh sách cấm phải được máy chủ thay từ đó bằng ba dấu sao (\*\*\*) trước khi gửi tới mọi người.
+- Bộ lọc vẫn phải che từ cấm bằng ba dấu sao (\*\*\*) khi người gửi dùng biến thể có dấu/không dấu, hoa/thường, chèn khoảng trắng hoặc ký tự đặc biệt, dùng số 0 thay chữ o hoặc số 1 thay chữ i.
 - Bối cảnh: Tin > 200 ký tự. Thao tác hoặc sự kiện: Gửi. Kết quả cần có: Bị chặn ở trình duyệt và máy chủ.
 - Bối cảnh: Đã gửi 5 tin trong 10 giây. Thao tác hoặc sự kiện: Gửi tin thứ 6. Kết quả cần có: Báo "Bạn gửi quá nhanh", tin không được gửi.
 - Bối cảnh: Nhóm cần thêm từ cấm. Thao tác hoặc sự kiện: Sửa tệp cấu hình danh sách. Kết quả cần có: Áp dụng sau khi khởi động lại máy chủ, không sửa cơ sở dữ liệu.
@@ -6312,21 +6594,24 @@ Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuy�
 | Issue Id | 73 |
 | Issue Type | Task |
 | Parent | EP-07 |
-| Assignee | Đông |
+| Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-73 |
 | Start date | 22/10/2026 |
 | Due date | 23/10/2026 |
 | Sprint | XIAN Sprint 2 |
-| Fix version | v0.2 |
+| Fix version | v0.3 |
 | Original Estimate | 16 giờ |
+| Remaining Estimate | 16 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-07.1 |
 | Is blocked by | T18, T35 |
 | Component chính | BE |
 | Components | BE, Trò chuyện |
-| Labels | sprint-2, phat-trien, p1, chinh-be, tro-chuyen |
+| Labels | chinh-be, p1, phat-trien, sprint-2, tro-chuyen |
 | Nguồn đặc tả (BA / AC) | 0.13, 5.3, 10.1 |
 
 
@@ -6346,9 +6631,9 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 - Khi thay một người trong cặp ngồi ghế, cả cặp mới chỉ thấy tin riêng từ khi cặp đó hình thành; người rời ghế mất quyền đọc. Cùng hai người đổi phe hoặc chơi ván tiếp vẫn giữ tin riêng.
 - Người xem mới vào chỉ thấy tin Kênh Chung từ lúc vào. Chuyển giữa phòng chờ và ván không xoá tin; đóng phòng thì xoá toàn bộ chat phòng.
 - Tin nhắn dài tối đa 200 ký tự. Mỗi người gửi tối đa 5 tin trong 10 giây; tin thứ 6 bị chặn với thông báo “Bạn gửi quá nhanh”.
-- Thay từ cấm bằng *** trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.
+- Thay từ cấm bằng \*\*\* trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.
 - Nội dung phải được hiển thị như văn bản thường, không chạy đoạn mã do người gửi chèn; không ghi nội dung chat vào nhật ký vận hành.
-- Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng *** rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký.
+- Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng \*\*\* rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký.
 
 **Việc cần làm**
 
@@ -6384,17 +6669,20 @@ Không làm chat riêng giữa bạn bè hay nhãn dán; khung hiển thị chat
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 24/10/2026 |
-| Due date | 24/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-78 |
+| Start date | 26/10/2026 |
+| Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-07.1 |
 | Is blocked by | T25, T37 |
 | Component chính | FE |
 | Components | FE, Trò chuyện |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, tro-chuyen |
+| Labels | chinh-fe, p1, phat-trien, sprint-3, tro-chuyen |
 | Nguồn đặc tả (BA / AC) | 0.13, 5.3, 10.1 |
 
 
@@ -6451,17 +6739,20 @@ Không làm nhãn dán hay chat riêng giữa bạn bè; lọc từ cấm và gi
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 27/10/2026 |
-| Due date | 27/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-83 |
+| Start date | 28/10/2026 |
+| Due date | 28/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-07.1 |
-| Is blocked by | T42, T46, T21 |
+| Is blocked by | T21, T42, T46 |
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Trò chuyện |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, tro-chuyen |
+| Labels | chinh-qa-devops, kiem-thu, p1, sprint-3, tro-chuyen |
 | Nguồn đặc tả (BA / AC) | 0.13, 5.3, 10.1 |
 
 
@@ -6480,7 +6771,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 - Máy tính của người chơi mặc định chỉ Kênh Riêng, mở thêm được Kênh Chung song song và ẩn/hiện từng khung. Điện thoại dùng hai thẻ chọn kênh, mặc định Riêng. Người xem chỉ có Chung; gửi yêu cầu trực tiếp tới kênh riêng cũng phải bị từ chối.
 - Người xem mới vào không đọc được tin chung gửi trước lúc vào. Cùng cặp đổi bên hoặc chơi ván tiếp vẫn đọc tin riêng cũ; chuyển giữa chờ và đấu giữ tin và quyền kênh.
 - Đóng phòng phải xoá chat phòng. Thử nội dung chứa thẻ hoặc đoạn mã; trên màn hình chỉ là chữ, không được chạy.
-- Tin chứa từ cấm bị thay bằng *** trước khi phát. Thử chữ hoa/thường, có dấu/không dấu, chèn khoảng trắng/ký tự và thay 0 cho o, 1 cho i để tránh bỏ sót biến thể.
+- Tin chứa từ cấm bị thay bằng \*\*\* trước khi phát. Thử chữ hoa/thường, có dấu/không dấu, chèn khoảng trắng/ký tự và thay 0 cho o, 1 cho i để tránh bỏ sót biến thể.
 - Tin đúng 200 ký tự được xử lý; trên 200 bị chặn cả ở giao diện và máy chủ. Gửi 5 tin trong 10 giây rồi gửi tin thứ 6 phải báo “Bạn gửi quá nhanh” và không phát tin đó.
 - Thêm từ vào tệp cấu hình rồi khởi động lại dịch vụ để kiểm áp dụng danh sách mới, không cần sửa cơ sở dữ liệu.
 
@@ -6516,18 +6807,21 @@ Nhánh đổi người từ ghế xuống xem và đưa người khác lên gh�
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 24/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-33 |
+| Start date | 22/10/2026 |
+| Due date | 25/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T33, T45 |
 | Sprint thi công | S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | BE, QA & DevOps, Camera và mic |
-| Labels | dac-ta, EP-07, p1, camera-va-mic |
+| Components | BE, Camera và mic, QA & DevOps |
+| Labels | EP-07, camera-va-mic, dac-ta, p1 |
 | Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 4.1, 4.2 |
 
 
@@ -6591,17 +6885,20 @@ Không ghi hình, ghi âm hoặc lưu nội dung truyền; người xem chỉ nh
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-69 |
 | Start date | 24/10/2026 |
 | Due date | 26/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 24 giờ |
+| Remaining Estimate | 24 giờ |
 | Story Points | 5 |
 | Story (relates to) | US-07.2 |
 | Is blocked by | T06, T22, T35 |
 | Component chính | BE |
 | Components | BE, Camera và mic |
-| Labels | sprint-3, phat-trien, p1, chinh-be, camera-va-mic |
+| Labels | camera-va-mic, chinh-be, p1, phat-trien, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 1.8, 4.1, 4.2 |
 
 
@@ -6659,17 +6956,20 @@ Không dựng khung video hoặc nút giao diện. Thử đầu-cuối trên mà
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-81 |
 | Start date | 30/10/2026 |
 | Due date | 30/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-07.2 |
-| Is blocked by | T58, T21, T42 |
+| Is blocked by | T21, T42, T58 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Camera và mic |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, camera-va-mic |
+| Components | Camera và mic, QA & DevOps |
+| Labels | camera-va-mic, chinh-qa-devops, kiem-thu, p1, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 1.8, 4.1 |
 
 
@@ -6724,16 +7024,19 @@ Thu hồi luồng khi bị đuổi hoặc đổi từ ghế xuống xem được
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | Medium |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 02/11/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-9 |
+| Start date | 10/10/2026 |
+| Due date | 17/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ, Máy cờ |
-| Labels | EP-08, dac-ta, p1, luat-co, ban-co, may-co |
+| Components | Bàn cờ, BE, FE, Luật cờ, Máy cờ, QA & DevOps |
+| Labels | EP-08, ban-co, dac-ta, luat-co, may-co, p1 |
 | Nguồn đặc tả (BA / AC) | 0.1, 0.9, 0.17, 6.1, 6.3, 10.1 |
 
 
@@ -6785,18 +7088,21 @@ Không thêm xin hòa, đi lại, gợi ý nước, lịch sử ván với máy 
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 19/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-34 |
+| Start date | 18/10/2026 |
+| Due date | 21/10/2026 |
 | Sprint | — |
-| Fix version | v0.3 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T34, T38, T43 |
 | Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | FE, BE, QA & DevOps, Bàn cờ, Máy cờ |
-| Labels | dac-ta, EP-08, p1, ban-co, may-co |
+| Components | Bàn cờ, BE, FE, Máy cờ, QA & DevOps |
+| Labels | EP-08, ban-co, dac-ta, may-co, p1 |
 | Nguồn đặc tả (BA / AC) | 0.9, 6.1, 6.3 |
 
 
@@ -6853,17 +7159,20 @@ Không thêm xin hòa, đi lại, gợi ý nước đi hoặc lưu lịch sử v
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 19/10/2026 |
-| Due date | 20/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-70 |
+| Start date | 20/10/2026 |
+| Due date | 21/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T20, T24 |
 | Component chính | BE |
 | Components | BE, Máy cờ |
-| Labels | sprint-2, phat-trien, p1, chinh-be, may-co |
+| Labels | chinh-be, may-co, p1, phat-trien, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.9, 0.11, 1.8, 6.1, 6.3, 10.1 |
 
 
@@ -6920,17 +7229,20 @@ Giữ ván khi mất mạng và xử lý Thử lại sau lỗi máy được th�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 27/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-74 |
+| Start date | 27/10/2026 |
+| Due date | 28/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T19, T34 |
 | Component chính | FE |
-| Components | FE, Bàn cờ, Máy cờ |
-| Labels | sprint-3, phat-trien, p1, chinh-fe, ban-co, may-co |
+| Components | Bàn cờ, FE, Máy cờ |
+| Labels | ban-co, chinh-fe, may-co, p1, phat-trien, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3 |
 
 
@@ -6986,17 +7298,20 @@ Giao diện không tự quyết định phục hồi ván. Hành vi sự cố th
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
+| Resolution | — |
+| Jira Key | XIAN-79 |
 | Start date | 29/10/2026 |
 | Due date | 29/10/2026 |
 | Sprint | XIAN Sprint 3 |
 | Fix version | v0.3 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-08.1 |
 | Is blocked by | T38, T63 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Bàn cờ, Máy cờ |
-| Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, ban-co, may-co |
+| Components | Bàn cờ, Máy cờ, QA & DevOps |
+| Labels | ban-co, chinh-qa-devops, kiem-thu, may-co, p1, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.9, 6.1, 6.3 |
 
 
@@ -7051,18 +7366,21 @@ Không dùng kết quả này để khẳng định máy cấp Khó đủ mạnh
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-35 |
+| Start date | 12/10/2026 |
 | Due date | 15/10/2026 |
 | Sprint | — |
-| Fix version | v0.2 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T24 |
 | Sprint thi công | S1, S2 |
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Luật cờ, Máy cờ |
-| Labels | dac-ta, EP-08, p1, luat-co, may-co |
+| Labels | EP-08, dac-ta, luat-co, may-co, p1 |
 | Nguồn đặc tả (BA / AC) | 6.1, 6.3, 10.1 |
 
 
@@ -7116,17 +7434,20 @@ Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác 
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 15/10/2026 |
-| Due date | 18/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-60 |
+| Start date | 14/10/2026 |
+| Due date | 17/10/2026 |
 | Sprint | XIAN Sprint 1 |
 | Fix version | v0.2 |
 | Original Estimate | 32 giờ |
+| Remaining Estimate | 32 giờ |
 | Story Points | 8 |
 | Story (relates to) | US-08.2 |
 | Is blocked by | T10 |
 | Component chính | BE |
 | Components | BE, Luật cờ, Máy cờ |
-| Labels | sprint-1, phat-trien, p1, chinh-be, luat-co, may-co |
+| Labels | chinh-be, luat-co, may-co, p1, phat-trien, sprint-1 |
 | Nguồn đặc tả (BA / AC) | 6.1, 6.3, 10.1 |
 
 
@@ -7189,18 +7510,21 @@ Bàn giao máy cờ và số đo đầu cho phần tích hợp, tối ưu và ki
 | Assignee | Tình |
 | Reporter | Tình |
 | Priority | High |
-| Status | To Do |
-| Start date | 09/10/2026 |
-| Due date | 02/11/2026 |
+| Status | Done |
+| Resolution | Done |
+| Jira Key | XIAN-36 |
+| Start date | 16/10/2026 |
+| Due date | 19/10/2026 |
 | Sprint | — |
-| Fix version | v1.0 |
+| Fix version |  |
 | Original Estimate | — |
+| Remaining Estimate | — |
 | Story Points | — |
 | Task thực hiện | T59, T63, T68 |
-| Sprint thi công | S2, S3, S4 |
+| Sprint thi công | S2, S3 |
 | Component chính | Tổng hợp phạm vi các Task |
-| Components | BE, QA & DevOps, Luật cờ, Máy cờ |
-| Labels | dac-ta, EP-08, p1, luat-co, may-co |
+| Components | BE, Luật cờ, Máy cờ, QA & DevOps |
+| Labels | EP-08, dac-ta, luat-co, may-co, p1 |
 | Nguồn đặc tả (BA / AC) | 0.1, 0.17, 6.1, 6.3 |
 
 
@@ -7261,17 +7585,20 @@ Không khôi phục giả sau máy chủ khởi động lại và không dùng t
 | Reporter | Tình |
 | Priority | High |
 | Status | To Do |
-| Start date | 20/10/2026 |
-| Due date | 21/10/2026 |
+| Resolution | — |
+| Jira Key | XIAN-95 |
+| Start date | 18/10/2026 |
+| Due date | 19/10/2026 |
 | Sprint | XIAN Sprint 2 |
 | Fix version | v0.2 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.3 |
-| Is blocked by | T24, T02 |
+| Is blocked by | T02, T24 |
 | Component chính | BE |
 | Components | BE, Luật cờ, Máy cờ |
-| Labels | sprint-2, phat-trien, p1, chinh-be, luat-co, may-co |
+| Labels | chinh-be, luat-co, may-co, p1, phat-trien, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 6.1, 6.3, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 
@@ -7326,17 +7653,20 @@ Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chí
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 26/10/2026 |
-| Due date | 27/10/2026 |
-| Sprint | XIAN Sprint 3 |
-| Fix version | v0.3 |
+| Resolution | — |
+| Jira Key | XIAN-99 |
+| Start date | 22/10/2026 |
+| Due date | 23/10/2026 |
+| Sprint | XIAN Sprint 2 |
+| Fix version | v0.2 |
 | Original Estimate | 12 giờ |
+| Remaining Estimate | 12 giờ |
 | Story Points | 3 |
 | Story (relates to) | US-08.3 |
 | Is blocked by | T34, T35 |
 | Component chính | BE |
 | Components | BE, Máy cờ |
-| Labels | sprint-3, phat-trien, p1, chinh-be, may-co |
+| Labels | chinh-be, may-co, p1, phat-trien, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3 |
 
 
@@ -7395,17 +7725,20 @@ Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi c�
 | Reporter | Tình |
 | Priority | Medium |
 | Status | To Do |
-| Start date | 01/11/2026 |
-| Due date | 02/11/2026 |
-| Sprint | XIAN Sprint 4 |
+| Resolution | — |
+| Jira Key | XIAN-104 |
+| Start date | 30/10/2026 |
+| Due date | 30/10/2026 |
+| Sprint | XIAN Sprint 3 |
 | Fix version | v1.0 |
 | Original Estimate | 8 giờ |
+| Remaining Estimate | 8 giờ |
 | Story Points | 2 |
 | Story (relates to) | US-08.3 |
-| Is blocked by | T59, T38, T65 |
+| Is blocked by | T38, T59, T65 |
 | Component chính | QA & DevOps |
-| Components | QA & DevOps, Luật cờ, Máy cờ |
-| Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, luat-co, may-co |
+| Components | Luật cờ, Máy cờ, QA & DevOps |
+| Labels | chinh-qa-devops, kiem-thu, luat-co, may-co, p1, sprint-4 |
 | Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 

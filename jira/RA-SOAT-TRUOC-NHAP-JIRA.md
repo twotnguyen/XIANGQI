@@ -1,3 +1,5 @@
+> **Hồ sơ lịch sử — không dùng làm kế hoạch hiện hành.** Các số 848 giờ, lịch cũ và trạng thái trong tài liệu này mô tả đợt trước. Kế hoạch hiện tại đã đồng bộ Jira: **880 giờ, hạn 04/11/2026**, BA Done/Task To Do, Sprint chưa bắt đầu. Xem [CURRENT-JIRA-STATE.md](CURRENT-JIRA-STATE.md), [PHAN-CONG-CAN-BANG.md](PHAN-CONG-CAN-BANG.md) và [KIEM-TRA-KE-HOACH.md](KIEM-TRA-KE-HOACH.md).
+
 # Rà soát trước khi cập nhật Jira — 09/10/2026
 
 > **Cập nhật sau đợt rà soát:** Jira đã được cập nhật và xác minh đủ XIAN-1–XIAN-107 theo ánh xạ tuyến tính. Xem [Kết quả cập nhật Jira](KET-QUA-CAP-NHAT-JIRA.md). Các phần bên dưới ghi lại trạng thái lịch sử trước khi cập nhật, không phải trạng thái Jira hiện tại.

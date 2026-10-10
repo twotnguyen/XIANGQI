@@ -212,7 +212,7 @@
     "requirements": [
       "Trên máy phát triển mới sao chép kho mã nguồn, đã có Node.js (môi trường chạy ứng dụng) và pnpm (công cụ cài thư viện), chạy pnpm install để cài các thư viện rồi pnpm dev để khởi động. Giao diện web và máy chủ phải cùng chạy; địa chỉ /health dùng để kiểm tình trạng máy chủ phải trả mã 200, nghĩa là yêu cầu được xử lý thành công.",
       "Khi có đề nghị đưa thay đổi mã nguồn vào nhánh develop, tức nhánh mã dùng chung của nhóm, hệ thống tự kiểm quy tắc viết mã, kiểu dữ liệu và các phần xử lý nhỏ. Nếu bất kỳ bước nào lỗi, không cho gộp thay đổi vào nhánh chung.",
-      "Kho mã nguồn phải có .env.example, là tệp mẫu liệt kê toàn bộ cấu hình môi trường cần cấp. Không lưu khoá bí mật trong lịch sử mã nguồn; các biến bắt đầu bằng VITE_ được đưa tới trình duyệt nên không được chứa bí mật.",
+      "Kho mã nguồn phải có .env.example, là tệp mẫu liệt kê toàn bộ cấu hình môi trường cần cấp. Không lưu khoá bí mật trong lịch sử mã nguồn; các biến bắt đầu bằng VITE\\_ được đưa tới trình duyệt nên không được chứa bí mật.",
       "Khi máy chủ hoạt động, gọi /health, là địa chỉ kiểm tra tình trạng hệ thống, phải nhận được trạng thái máy chủ, kết nối cơ sở dữ liệu và máy cờ.",
       "Sau khi chạy đăng nhập, gửi mã email và chat, kiểm nhật ký vận hành. Mỗi bản ghi dùng JSON, một dạng dữ liệu chia thành các trường rõ ràng, gồm thời gian, mức độ và mã sự kiện. Không ghi mật khẩu, mã xác minh, thông tin chứng minh quyền truy cập hoặc nội dung chat.",
       "Biên lai lệnh, tức bản ghi giúp nhận ra một yêu cầu đã được xử lý, phải bị xoá sau 24 giờ. Nhật ký vận hành được giữ tối đa 14 ngày; khi quá hạn phải được dọn."
@@ -449,7 +449,7 @@
       "Bối cảnh: Đang trong ván qua mạng. Thao tác hoặc sự kiện: Bấm Đăng xuất. Kết quả cần có: Hiện xác nhận hậu quả đầu hàng; Đồng ý → ván kết thúc đầu hàng, rời phòng, đăng xuất; Huỷ → giữ nguyên.",
       "Ở phòng chờ, bấm Đăng xuất sẽ rời ghế rồi đăng xuất, không xử thua. Nếu chủ phòng rời thì chuyển quyền cho người ngồi ghế còn lại; không còn ai ngồi ghế thì đóng phòng và đưa người xem về Sảnh.",
       "Bối cảnh: Ở Cài đặt hồ sơ. Thao tác hoặc sự kiện: Nhập tên hiển thị 2–30 ký tự hợp lệ, bấm \"Lưu thay đổi\". Kết quả cần có: Lưu ngay, không cần mã xác minh; tên mới hiện ở thanh điều hướng và trong phòng ở lần cập nhật kế tiếp.",
-      "Trong Cài đặt hồ sơ, tên hiển thị chứa từ cấm hoặc sai độ dài phải bị từ chối lưu và báo lỗi tại ô. Không thay từ cấm bằng ba dấu sao (***) rồi lưu như cách xử lý tin chat.",
+      "Trong Cài đặt hồ sơ, tên hiển thị chứa từ cấm hoặc sai độ dài phải bị từ chối lưu và báo lỗi tại ô. Không thay từ cấm bằng ba dấu sao (\\*\\*\\*) rồi lưu như cách xử lý tin chat.",
       "Bối cảnh: Ở Cài đặt hồ sơ. Thao tác hoặc sự kiện: Xem thông tin. Kết quả cần có: Thấy ảnh đại diện chữ cái đầu, @tên đăng nhập, email chỉ đọc; không có nút đổi tên đăng nhập (giai đoạn sau), không có bộ chọn giao diện.",
       "Nút Đăng xuất trong Cài đặt hồ sơ phải dùng cùng quy tắc: trong ván trực tuyến cần xác nhận đầu hàng; ở phòng chờ thì rời phòng không xử thua; trong ván với máy cần xác nhận đầu hàng và hủy tác vụ máy cờ.",
       "Bối cảnh: Khách. Thao tác hoặc sự kiện: Mở mục Bạn bè, thẻ mời bạn bè trong hộp Chia sẻ phòng, hoặc Cài đặt hồ sơ. Kết quả cần có: Bạn bè ở thanh điều hướng không bấm được kèm chú thích \"Đăng ký tài khoản để kết bạn\"; thẻ mời bạn bè ẩn (vẫn có đường dẫn/mã); Cài đặt chỉ có Đăng xuất.",
@@ -586,7 +586,7 @@
       "Bối cảnh: Ở trang Bạn bè. Thao tác hoặc sự kiện: Nhìn nút \"Nhắn tin\", \"Thách đấu\". Kết quả cần có: không bấm được kèm chú thích \"Sắp ra mắt\"; trang không có nút mời vào phòng.",
       "Bối cảnh: Người dùng đang ngồi ghế phòng tự tạo. Thao tác hoặc sự kiện: Mở \"Chia sẻ phòng\". Kết quả cần có: Có thẻ bạn bè; người xem không thấy nút Chia sẻ.",
       "Bối cảnh: Danh sách bạn trong thẻ. Thao tác hoặc sự kiện: Xem nút \"Mời\". Kết quả cần có: 🟢 bấm được; ⚫ không bấm được nhãn \"Ngoại tuyến\"; 🟠 không bấm được chú thích \"Bạn bè đang trong ván khác\".",
-      "Bối cảnh: Gửi mời cho bạn 🟢. Thao tác hoặc sự kiện: Bạn nhận. Kết quả cần có: thông báo nổi góc màn hình \"Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]\" với [Tham gia] [Từ chối], đếm lùi 30 giây.",
+      "Bối cảnh: Gửi mời cho bạn 🟢. Thao tác hoặc sự kiện: Bạn nhận. Kết quả cần có: thông báo nổi góc màn hình \"Người chơi \\[Tên\\] mời bạn tham gia phòng cờ \\[Tên phòng\\]\" với \\[Tham gia\\] \\[Từ chối\\], đếm lùi 30 giây.",
       "Người nhận bấm Tham gia trong thời hạn lời mời: máy chủ kiểm lại quyền vào và sức chứa; nhận ghế trống, hoặc làm người xem nếu hai ghế đã kín mà còn chỗ xem; nếu đầy thì hiện màn hình từ chối vào phòng.",
       "Bối cảnh: thông báo nổi. Thao tác hoặc sự kiện: Không bấm trong 30 giây hoặc bấm \"Từ chối\". Kết quả cần có: thông báo nổi biến mất, lời mời hết hiệu lực; không lưu vào chuông.",
       "Bối cảnh: Lời mời đã gửi, sau đó phòng chuyển sang khoá. Thao tác hoặc sự kiện: Người nhận bấm Tham gia. Kết quả cần có: Bị từ chối (lời mời chưa dùng đã bị thu hồi).",
@@ -858,7 +858,7 @@
       "Bối cảnh: Ván đang diễn ra. Thao tác hoặc sự kiện: Mọi thao tác đổi chỗ ghế ↔ xem. Kết quả cần có: Không khả dụng.",
       "Bối cảnh: Người xem mất kết nối. Thao tác hoặc sự kiện: Nối lại trong 5 phút. Kết quả cần có: Giữ chỗ xem; quá 5 phút mất chỗ (không xử phạt).",
       "Cả hai người chơi đều thấy nút Kick, nghĩa là đuổi khỏi phòng, cạnh từng người xem. Người xem không có nút này.",
-      "Bấm Kick để đuổi một người xem phải mở xác nhận “Bạn có chắc chắn muốn đuổi người xem [Tên] ra khỏi phòng thi đấu không?”. Vị trí chọn ban đầu của bàn phím đặt ở Huỷ.",
+      "Bấm Kick để đuổi một người xem phải mở xác nhận “Bạn có chắc chắn muốn đuổi người xem \\[Tên\\] ra khỏi phòng thi đấu không?”. Vị trí chọn ban đầu của bàn phím đặt ở Huỷ.",
       "Khi xác nhận đuổi người xem, đưa người đó về Sảnh với thông báo “Bạn đã bị đuổi khỏi phòng thi đấu”, thu hồi ngay quyền nhận hình và tiếng. Ghi lại thời gian thu hồi thực tế trong phép kiểm truyền hình/tiếng.",
       "Bối cảnh: Người đã bị đuổi. Thao tác hoặc sự kiện: Vào lại bằng đường dẫn/mã mới, lời mời hoặc từ Sảnh. Kết quả cần có: Bị chặn đến khi phòng đã đóng.",
       "Bối cảnh: Người đã bị đuổi khỏi phòng. Thao tác hoặc sự kiện: Vào lại bằng bất kỳ cách nào. Kết quả cần có: màn hình thông báo không được vào phòng: \"Bạn đã bị đuổi và chặn tham gia phòng cờ này!\".",
@@ -891,8 +891,8 @@
       "Bối cảnh: Cùng cặp A–B Xin đổi bên hoặc đánh ván tiếp. Thao tác hoặc sự kiện: Mở Kênh Riêng. Kết quả cần có: Vẫn thấy tin cũ của cặp.",
       "Bối cảnh: Phòng đóng. Thao tác hoặc sự kiện: Dữ liệu. Kết quả cần có: Toàn bộ chat phòng bị xoá.",
       "Bối cảnh: Tin có thẻ mã đánh dấu hoặc mã lệnh có thể thực thi. Thao tác hoặc sự kiện: Hiển thị. Kết quả cần có: Hiện như văn bản thuần.",
-      "Tin chứa từ trong danh sách cấm phải được máy chủ thay từ đó bằng ba dấu sao (***) trước khi gửi tới mọi người.",
-      "Bộ lọc vẫn phải che từ cấm bằng ba dấu sao (***) khi người gửi dùng biến thể có dấu/không dấu, hoa/thường, chèn khoảng trắng hoặc ký tự đặc biệt, dùng số 0 thay chữ o hoặc số 1 thay chữ i.",
+      "Tin chứa từ trong danh sách cấm phải được máy chủ thay từ đó bằng ba dấu sao (\\*\\*\\*) trước khi gửi tới mọi người.",
+      "Bộ lọc vẫn phải che từ cấm bằng ba dấu sao (\\*\\*\\*) khi người gửi dùng biến thể có dấu/không dấu, hoa/thường, chèn khoảng trắng hoặc ký tự đặc biệt, dùng số 0 thay chữ o hoặc số 1 thay chữ i.",
       "Bối cảnh: Tin > 200 ký tự. Thao tác hoặc sự kiện: Gửi. Kết quả cần có: Bị chặn ở trình duyệt và máy chủ.",
       "Bối cảnh: Đã gửi 5 tin trong 10 giây. Thao tác hoặc sự kiện: Gửi tin thứ 6. Kết quả cần có: Báo \"Bạn gửi quá nhanh\", tin không được gửi.",
       "Bối cảnh: Nhóm cần thêm từ cấm. Thao tác hoặc sự kiện: Sửa tệp cấu hình danh sách. Kết quả cần có: Áp dụng sau khi khởi động lại máy chủ, không sửa cơ sở dữ liệu.",
@@ -1038,7 +1038,7 @@
       "Mỗi đề nghị gộp mã vào nhánh develop phải tự kiểm quy cách mã, kiểu dữ liệu và kiểm thử; một bước lỗi thì không được gộp.",
       "Nhật ký máy chủ có thời gian, mức lỗi và tên sự kiện, không ghi mật khẩu, mã xác minh email, khoá phiên hoặc nội dung chat. Giữ nhật ký tối đa 14 ngày. Nhật ký dùng dạng JSON, tức bản ghi có các trường tên và giá trị để máy và người có thể tra cứu thống nhất.",
       "Có địa chỉ /health để kiểm tra tình trạng máy chủ; chuẩn bị chỗ bổ sung trạng thái cơ sở dữ liệu và máy cờ khi chúng được nối vào.",
-      "Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE_ vì trình duyệt đọc được chúng."
+      "Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE\\_ vì trình duyệt đọc được chúng."
     ],
     "steps": [
       "Tạo cấu trúc thư mục và lệnh chạy đồng thời giao diện với máy chủ.",
@@ -1093,7 +1093,7 @@
       "Mỗi thế chiếu hết bắt buộc có lời giải kiểm lại được và không dùng kết quả máy cờ đang phát triển làm đáp án duy nhất.",
       "Báo cáo không ghi đạt cho ca chưa thực hiện."
     ],
-    "boundary": "Công việc này chuẩn bị phương pháp và dữ liệu. Người phụ trách từng nhóm chức năng tiếp tục viết biến thể, chạy thử và lưu bằng chứng của nhóm đó."
+    "boundary": "Ước lượng lại 32 giờ: kế hoạch và mẫu ca/lỗi 8 giờ; chuẩn bị và xác minh bộ thế luật/máy cờ 16 giờ; đối chiếu yêu cầu, hướng dẫn và bàn giao dữ liệu 8 giờ. Đây là công việc chuẩn bị/kiểm chứng kỹ thuật theo đặc tả đã duyệt.\n\nCông việc này chuẩn bị phương pháp và dữ liệu. Người phụ trách từng nhóm chức năng tiếp tục viết biến thể, chạy thử và lưu bằng chứng của nhóm đó."
   },
   "T03": {
     "goal": "Tạo bộ khung giao diện tiếng Việt và các thành phần dùng chung để mọi màn hình có hình thức, cách báo lỗi và cách thao tác nhất quán.",
@@ -1401,7 +1401,7 @@
       "Trình đọc màn hình đọc được phe/tên quân và trạng thái lượt; không chỉ dựa màu đỏ/đen.",
       "Đầu vào dành cho người xem hiển thị Đỏ ở dưới; đổi từ khai cuộc sang thế giữa ván cập nhật đúng quân mà không giữ quân đã bị ăn."
     ],
-    "boundary": "Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, âm thanh và giao tiếp máy chủ được bổ sung trong các phần thao tác bàn cờ và ván online."
+    "boundary": "Bổ sung 4 giờ trong ước lượng cho kiểm tra SVG, lật bàn, kích thước màn hình và nhãn trợ năng theo các yêu cầu hiện có.\n\nBàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, âm thanh và giao tiếp máy chủ được bổ sung trong các phần thao tác bàn cờ và ván online."
   },
   "T12": {
     "goal": "Tạo đường kết nối thời gian thực đáng tin cậy giữa trình duyệt và máy chủ để phòng, nước đi và quyền điều khiển luôn thống nhất.",
@@ -1679,7 +1679,7 @@
       "Tắt loa ngừng toàn bộ âm bàn cờ và chuyển ván trong cùng phiên vẫn giữ lựa chọn.",
       "Cùng một nước được chọn bằng chuột hoặc chạm ở hướng Đỏ/Đen tạo cùng toạ độ thế cờ; kéo ngoài bàn không tạo nước."
     ],
-    "boundary": "Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ từ chối phải được đồng bộ lại, không coi thao tác cục bộ là nước đã được chấp nhận."
+    "boundary": "Bổ sung 4 giờ trong ước lượng cho đối chiếu click/kéo thả, gợi ý ô, đánh dấu và âm thanh ở các nhánh thao tác đã đặc tả.\n\nBàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ từ chối phải được đồng bộ lại, không coi thao tác cục bộ là nước đã được chấp nhận."
   },
   "T20": {
     "goal": "Xây dựng xử lý một ván online để máy chủ nhận nước đi, phân xử đúng luật, phát trạng thái và lưu diễn biến cùng kết quả.",
@@ -1751,7 +1751,7 @@
       "Người xem thấy ghế và sẵn sàng nhưng không có quyền đổi ghế hoặc bật sẵn sàng; chuyển chủ theo dữ liệu máy chủ không cần tải lại.",
       "Ghế thay người hoặc mất mạng trong đếm xoá hiển thị đếm cũ, trở về chưa sẵn sàng; không điều hướng theo bộ đếm cục bộ."
     ],
-    "boundary": "Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung chat/hình tiếng và điều khiển người xem được nối ở phần chức năng tương ứng, không dựng giả để coi đã hoàn tất."
+    "boundary": "Bổ sung 4 giờ trong ước lượng cho kiểm tra đồng bộ ghế, Sẵn sàng và đếm ngược trên nhiều phiên theo yêu cầu hiện có.\n\nBàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung chat/hình tiếng và điều khiển người xem được nối ở phần chức năng tương ứng, không dựng giả để coi đã hoàn tất."
   },
   "T22": {
     "goal": "Cho người dùng vào đúng phòng bằng mã hoặc đường dẫn và tự tiếp tục sau đăng nhập, đồng thời máy chủ xếp vai trò theo chỗ còn trống.",
@@ -2186,9 +2186,9 @@
       "Khi thay một người trong cặp ngồi ghế, cả cặp mới chỉ thấy tin riêng từ khi cặp đó hình thành; người rời ghế mất quyền đọc. Cùng hai người đổi phe hoặc chơi ván tiếp vẫn giữ tin riêng.",
       "Người xem mới vào chỉ thấy tin Kênh Chung từ lúc vào. Chuyển giữa phòng chờ và ván không xoá tin; đóng phòng thì xoá toàn bộ chat phòng.",
       "Tin nhắn dài tối đa 200 ký tự. Mỗi người gửi tối đa 5 tin trong 10 giây; tin thứ 6 bị chặn với thông báo “Bạn gửi quá nhanh”.",
-      "Thay từ cấm bằng *** trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.",
+      "Thay từ cấm bằng \\*\\*\\* trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.",
       "Nội dung phải được hiển thị như văn bản thường, không chạy đoạn mã do người gửi chèn; không ghi nội dung chat vào nhật ký vận hành.",
-      "Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng *** rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký."
+      "Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng \\*\\*\\* rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký."
     ],
     "steps": [
       "Nhận danh tính người gửi từ phiên đã xác thực; mỗi lệnh gửi/đọc mang phòng và kênh. Kiểm người còn ở phòng, vai trò hiện tại và mốc được đọc trước khi lấy hoặc phát tin; trả nội dung đã lọc hoặc lỗi quyền/độ dài/tốc độ để giao diện xử lý.",
@@ -2266,7 +2266,7 @@
       "Danh sách bạn hiện Trực tuyến, Đang đấu hoặc Ngoại tuyến bằng cả chữ và dấu nhận biết. Có huỷ kết bạn; thẻ Lời mời đang chờ có Chấp nhận/Từ chối. Chuông điều hướng hiển thị lời mời kết bạn và số đếm.",
       "Nhắn tin và Thách đấu hiện vô hiệu, giải thích “Sắp ra mắt”. Màn Bạn bè không có nút mời vào phòng.",
       "Trong hộp Chia sẻ phòng, thẻ Bạn bè chỉ dành cho tài khoản chính thức ngồi ghế. Bạn Trực tuyến có nút Mời; Ngoại tuyến không bấm được và ghi “Ngoại tuyến”; Đang đấu không bấm được, giải thích “Bạn bè đang trong ván khác”.",
-      "Người nhận thấy thông báo “Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]” với Tham gia/Từ chối và đếm 30 giây. Hết hạn hoặc từ chối thì thông báo biến mất, không lưu vào chuông.",
+      "Người nhận thấy thông báo “Người chơi \\[Tên\\] mời bạn tham gia phòng cờ \\[Tên phòng\\]” với Tham gia/Từ chối và đếm 30 giây. Hết hạn hoặc từ chối thì thông báo biến mất, không lưu vào chuông.",
       "Bấm Tham gia phải dùng kết quả kiểm phòng hiện tại của máy chủ; hiện thông báo phù hợp khi phòng đầy, bị khoá hoặc người nhận đang chơi nơi khác."
     ],
     "steps": [
@@ -2452,7 +2452,7 @@
       "Máy tính của người chơi mặc định chỉ Kênh Riêng, mở thêm được Kênh Chung song song và ẩn/hiện từng khung. Điện thoại dùng hai thẻ chọn kênh, mặc định Riêng. Người xem chỉ có Chung; gửi yêu cầu trực tiếp tới kênh riêng cũng phải bị từ chối.",
       "Người xem mới vào không đọc được tin chung gửi trước lúc vào. Cùng cặp đổi bên hoặc chơi ván tiếp vẫn đọc tin riêng cũ; chuyển giữa chờ và đấu giữ tin và quyền kênh.",
       "Đóng phòng phải xoá chat phòng. Thử nội dung chứa thẻ hoặc đoạn mã; trên màn hình chỉ là chữ, không được chạy.",
-      "Tin chứa từ cấm bị thay bằng *** trước khi phát. Thử chữ hoa/thường, có dấu/không dấu, chèn khoảng trắng/ký tự và thay 0 cho o, 1 cho i để tránh bỏ sót biến thể.",
+      "Tin chứa từ cấm bị thay bằng \\*\\*\\* trước khi phát. Thử chữ hoa/thường, có dấu/không dấu, chèn khoảng trắng/ký tự và thay 0 cho o, 1 cho i để tránh bỏ sót biến thể.",
       "Tin đúng 200 ký tự được xử lý; trên 200 bị chặn cả ở giao diện và máy chủ. Gửi 5 tin trong 10 giây rồi gửi tin thứ 6 phải báo “Bạn gửi quá nhanh” và không phát tin đó.",
       "Thêm từ vào tệp cấu hình rồi khởi động lại dịch vụ để kiểm áp dụng danh sách mới, không cần sửa cơ sở dữ liệu."
     ],
@@ -2899,7 +2899,7 @@
       "Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.",
       "Mở khoá ở cả hai chế độ đều sinh mã/link mới, mọi bản cũ bị từ chối. Thay đổi chế độ phản ánh trên Sảnh nhưng không đẩy người xem hiện hữu ra khỏi phòng hoặc cắt media của họ."
     ],
-    "boundary": "Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm."
+    "boundary": "Bổ sung 4 giờ trong ước lượng cho ma trận quyền vào phòng PUBLIC/CODE_ONLY/LOCKED, kiểm lại và lưu bằng chứng theo phạm vi đã đặc tả.\n\nCông việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm."
   },
   "T63": {
     "goal": "Giữ và phục hồi trạng thái ván với máy khi người chơi mất kết nối hoặc bộ máy tính nước gặp sự cố.",
@@ -3182,6 +3182,6 @@
       "Luồng không chạy được vì lỗi, thiếu thiết bị hoặc dịch vụ ngoài phải được ghi Không đạt hoặc Chưa kiểm được, không đổi thành Đạt để kịp bàn giao.",
       "Mỗi luồng có mốc video và kết quả cuối của các phía liên quan; lỗi được sửa phải quay lại đoạn có đủ bước gây lỗi và kết quả mới trên bản sửa. Video không lộ bí mật hay mã xác minh còn hiệu lực."
     ],
-    "boundary": "Đây là tổng duyệt và ghi bằng chứng trên bản phát hành. Không thay các phép đo tải, kiểm bảo mật hay kiểm sức chơi bằng việc video trình diễn chạy thành công."
+    "boundary": "Ước lượng lại 8 giờ cho tổng duyệt D1–D10, chuẩn bị/reset dữ liệu giữa các lượt, ghi hình và kiểm tra đầy đủ bằng chứng bàn giao theo phạm vi hiện có.\n\nĐây là tổng duyệt và ghi bằng chứng trên bản phát hành. Không thay các phép đo tải, kiểm bảo mật hay kiểm sức chơi bằng việc video trình diễn chạy thành công."
   }
 }

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-09",
-  "status": "applied_to_local_plan_not_uploaded_to_jira",
+  "status": "historical_superseded_by_live_880_plan",
   "supersedes": {
     "total_hours": [
       1840,
@@ -721,5 +721,7 @@
       "description_sha256": "f3d6f721efa95eeafde7377ff6b0ecbb396b7bb282e6d11c00f2aa8f2922d116"
     }
   ],
-  "description_hash_basis": "Hashes capture Description at estimate review; later clarifications must be reviewed separately. Current source is descriptions.json."
+  "description_hash_basis": "Hashes capture Description at estimate review; later clarifications must be reviewed separately. Current source is descriptions.json.",
+  "current_plan": "plan-data.json",
+  "historical_note": "Preserved dated proposal, not current hours or assignments. Current snapshot: current-jira-snapshot.json."
 }

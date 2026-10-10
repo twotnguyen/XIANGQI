@@ -1,5 +1,5 @@
 {
-  "status": "applied_to_local_plan_not_uploaded_to_jira",
+  "status": "historical_superseded_by_live_880_plan",
   "basis": "848-hour draft: T20 Tình to Tùng; T54 Tùng to Đông; swap T33 back to Tình and T59 to Đông so Tình has the highest estimated hours.",
   "changes": [
     {
@@ -379,5 +379,7 @@
     "Tình owns T24 engine construction and supplies calling interface, configuration, baseline measurements and runnable benchmark to Đông for T59 tuning. Independent acceptance remains with T68 assignee.",
     "Tình owns both T33 media permissions and T58 media UI.",
     "Lịch đã được tính lại trong plan-data.json; cần chạy kiểm tra trước khi xuất và nhập Jira."
-  ]
+  ],
+  "current_plan": "plan-data.json",
+  "historical_note": "Preserved dated proposal, not current hours or assignments. Current snapshot: current-jira-snapshot.json."
 }

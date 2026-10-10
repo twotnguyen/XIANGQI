@@ -1,3 +1,5 @@
+> **Hồ sơ lịch sử — không dùng làm kế hoạch hiện hành.** Các số 848 giờ, lịch cũ và trạng thái trong tài liệu này mô tả đợt trước. Kế hoạch hiện tại đã đồng bộ Jira: **880 giờ, hạn 04/11/2026**, BA Done/Task To Do, Sprint chưa bắt đầu. Xem [CURRENT-JIRA-STATE.md](CURRENT-JIRA-STATE.md), [PHAN-CONG-CAN-BANG.md](PHAN-CONG-CAN-BANG.md) và [KIEM-TRA-KE-HOACH.md](KIEM-TRA-KE-HOACH.md).
+
 > **Đã áp dụng vào kế hoạch local.** Phần dưới lưu cơ sở đánh giá lúc đề xuất; bảng phân công hiện hành và lịch là [PHAN-CONG-CAN-BANG.md](PHAN-CONG-CAN-BANG.md). Tổng 848 giờ; T49 giữ Kỳ.
 
 # Đề xuất giảm Original Estimate với AI agent — 09/10/2026

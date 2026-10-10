@@ -1,365 +1,350 @@
 # KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)
 
-> **Phiên bản 2.0 · Lập lại 09/10/2026.** Nhóm xác nhận chưa triển khai. Ngày 09/10 dành cho BA/kế hoạch; ngày công đầu tiên 10/10. **Giữ 9 Epic, 27 Story, 71 Task; hạn demo 05/11.** Lịch là ước lượng có điều kiện kiểm chứng, không phải cam kết các gate đã đạt.
+> **Đồng bộ Jira ngày 10/10/2026 · phiên bản 3.0.** 9 Epic + 27 Story BA đã Done; 71 Task triển khai To Do, **880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả bốn Sprint chưa bắt đầu.
 
-> Nguồn: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [bản đồ nghiệm thu](jira/TRUY-VET-AC.md). Tệp nhập: [xian-import.csv](jira/xian-import.csv); bản đầy đủ: [JIRA-MUC-CHI-TIET](jira/JIRA-MUC-CHI-TIET.md). Chưa nhập hoặc xoá dữ liệu Jira.
+Nguồn dữ liệu: [snapshot Jira](jira/current-jira-snapshot.json), [kế hoạch](jira/plan-data.json), [Description](jira/descriptions.json). Nghiệp vụ: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [truy vết 268 AC](jira/TRUY-VET-AC.md). [Danh sách 107 mục](jira/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/xian-import.csv) được sinh từ cùng nguồn.
 
-## 1. Nguyên tắc và thay đổi so với kế hoạch cũ
+## 1. Quy tắc lịch và cách đọc
 
-- 8 giờ/người/ngày, làm cả cuối tuần; một Task một người, không làm hai Task cùng thời điểm; 4 giờ/nửa ngày. Không đưa 8→12 giờ vào lịch cơ sở.
-- Epic/Story là sản phẩm BA theo hướng dẫn giảng viên; Task thường cùng có cha Epic, liên kết Story. Không đổi thành Sub-task, không thêm Epic P2 vào 107 mục nhập.
-- Task gắn Sprint bắt đầu; một số Task kéo dài sang Sprint kế tiếp, ngày bắt đầu/kết thúc thể hiện đầy đủ. Một Story có thể trải nhiều Sprint để có đủ phần triển khai và kiểm tích hợp; thay quy tắc cũ ép toàn bộ Task của Story vào cùng Sprint.
-- Tùng sở hữu trọn lõi luật cờ. Tùng nhận T20 ván trực tuyến; Đông nhận T54 danh sách phòng và T59 tinh chỉnh máy cờ. Tình giữ kết nối thời gian thực, xây máy cờ và hình/tiếng; nhận việc ở các khâu để cân tải. Đông và Tùng chỉ làm BE; Cường hỗ trợ FE khi đã giảm BE; Nhạn/Kỳ hỗ trợ Thư kiểm thử.
-- T33 không phải chờ FE T25; T52 không phải chờ FE T25; T59 không phải chờ FE T38: hợp đồng bàn giao ở T12, đầu-cuối được kiểm tại T45/T60/T68. Những phụ thuộc thực còn lại vẫn phải hoàn tất trước khi bắt đầu.
-- T51 chạy **đầy đủ** sau tất cả triển khai, song song QA chuyên đề bằng tài khoản/phòng thử riêng. T70 phải chờ T51, T66 và toàn bộ 20 QA, mọi tiêu chí bắt buộc PASS.
-- Lỗi sửa và kiểm lại trong Task sở hữu; sáng 04/11 tổng duyệt, chiều 04/11 dự phòng. Giữ đúng số Epic/Story/Task; không tạo thêm issue loại này để chứa TC hoặc công việc quản lý.
+- Lịch theo **ngày**, tính cả ngày bắt đầu và ngày kết thúc, kể cả cuối tuần. Mỗi người tối đa một Task/ngày; toàn nhóm tối đa bảy Task/ngày. Task phụ thuộc chỉ bắt đầu từ ngày sau khi đầu vào kết thúc.
+- Ước lượng giờ độc lập với độ dài thanh lịch. Một Task 4 giờ vẫn chiếm một ngày trong ràng buộc một Task/người/ngày; không suy ra giờ làm bằng số ngày × 8. Mỗi Task không vượt 8 giờ/ngày nếu phân bổ đều trong khoảng lịch.
+- Epic và Story là hồ sơ BA đã chốt; Done của BA không đại diện cho phần mềm đã hoàn thành. Story và Task cùng thuộc Epic, liên kết với nhau bằng relates to. Ngày BA giữ nguyên giá trị Jira, có thể kết thúc trước Task cuối.
+- Task gắn Sprint theo ngày bắt đầu, có thể kéo qua Sprint sau. **Trường Sprint** là nguồn chính; một số nhãn sprint cũ đang lệch và được liệt kê ở báo cáo kiểm tra.
+- Story Points lấy nguyên Jira, không tự tính lại từ giờ mới. Các bảng chia giờ theo Sprint phân bổ đều ước lượng trên số ngày lịch, chỉ là cách trình bày kế hoạch, không phải giờ đã làm.
+- Tổng duyệt T71 chiếm ngày 04/11 (8 giờ); **không còn cam kết chiều 04/11 dự phòng**. Mốc demo 05/11 trong hồ sơ cũ là lịch sử; hạn kế hoạch hiện tại là 04/11.
 
-| Chỉ số kiểm trên dữ liệu | Kết quả |
+| Chỉ số | Kết quả |
 |---|---|
 | Epic / Story / Task | 9 / 27 / 71 |
-| Giờ / điểm | 848 giờ / 198 điểm |
-| Task QA chuyên đề / Task khác | 20 / 51 |
-| AC / NFR / Gate / Demo | 268 / 12 / 9 / 10 |
-| Phụ thuộc trực tiếp sau bỏ cạnh bắc cầu | 186 |
-| Task chạy đồng thời cao nhất | 7 |
-| Trùng người / sai thứ tự / thiếu tham chiếu | 0 / 0 / 0 |
-| Hoàn tất cơ sở | 04/11 sáng |
-| Dự phòng | 04/11 buổi chiều |
-| Demo | 05/11/2026 |
+| Giờ / Story Points | 880 / 198 |
+| Phụ thuộc trực tiếp | 186 |
+| Song song tối đa | 7 |
+| Hạn hoàn thành | 2026-11-04 |
+| Trạng thái Sprint | 4 future; chưa bắt đầu |
 
 
-Các kiểm tra trên chỉ chứng minh lịch đáp ứng các ràng buộc đã mô hình hoá. Chúng không chứng minh ước lượng hoặc giải pháp kỹ thuật chắc chắn đúng. Chọn mức song song 7 theo trần BA; không giữ tuyên bố cũ tối đa 5.
+## 2. Phân công
 
-## 2. Cấu trúc và nguồn lực
-
-| Epic | Nội dung | Story | Task |
-|---|---|---|---|
-| EP-00 | Nền tảng kỹ thuật và chất lượng | 5 | 10 |
-| EP-01 | Đăng ký và đăng nhập | 4 | 12 |
-| EP-02 | Tạo phòng | 2 | 6 |
-| EP-03 | Mời vào phòng | 2 | 6 |
-| EP-04 | Khởi tạo bàn cờ | 3 | 7 |
-| EP-05 | Hai người đánh cờ online | 3 | 9 |
-| EP-06 | Chế độ phòng và người xem | 3 | 9 |
-| EP-07 | Chat, camera và mic | 2 | 5 |
-| EP-08 | Đánh với máy theo cấp độ | 3 | 7 |
-
-
-| Người | S1 giờ | S2 giờ | S3 giờ | S4 giờ | Tổng | Còn trong công suất 208h |
+| Người | Task | Giờ | S1 giờ phân bổ | S2 | S3 | S4 |
 |---|---|---|---|---|---|---|
-| Tình | 52 | 16 | 44 | 28 | 140 | 68 |
-| Đông | 36 | 40 | 56 | 4 | 136 | 72 |
-| Tùng | 48 | 56 | 28 | 0 | 132 | 76 |
-| Cường | 24 | 48 | 52 | 0 | 124 | 84 |
-| Nhạn | 32 | 20 | 24 | 28 | 104 | 104 |
-| Kỳ | 28 | 24 | 40 | 16 | 108 | 100 |
-| Thư | 20 | 8 | 48 | 28 | 104 | 104 |
+| Tình | 11 | 156 | 56.0 | 28.0 | 48.0 | 24.0 |
+| Đông | 8 | 120 | 36.0 | 40.0 | 44.0 | 0.0 |
+| Tùng | 9 | 132 | 48.0 | 52.0 | 32.0 | 0.0 |
+| Cường | 10 | 124 | 32.0 | 48.0 | 44.0 | 0.0 |
+| Nhạn | 11 | 120 | 40.0 | 24.0 | 32.0 | 24.0 |
+| Kỳ | 12 | 108 | 0.0 | 44.0 | 44.0 | 20.0 |
+| Thư | 10 | 120 | 24.0 | 16.0 | 48.0 | 32.0 |
 
 
-Công suất 10/10–04/11 là 26 ngày × 8 giờ = 208 giờ/người, toàn nhóm 1.456 giờ. Phân công ưu tiên đúng vai trò và đánh giá nội dung từng Task: Tình 140 giờ; giờ của các thành viên khác khác nhau theo tính chất công việc. Đánh giá tải xét phạm vi, độ khó, tích hợp và kiểm chứng, độc lập với giờ dự kiến và Story Points. Xem [đánh giá đủ 71 Task](jira/DANH-GIA-KHOI-LUONG.md). Epic/Story và điều phối của Tình chưa có giờ ước lượng riêng trong 848 giờ. Giờ trống phục vụ review, sửa lỗi và kiểm lại; không phải toàn bộ đều chuyển được sang đường công việc của người khác. Chi tiết chuyển việc và lịch: [PHAN-CONG-CAN-BANG](jira/PHAN-CONG-CAN-BANG.md).
+Nhạn và Thư mỗi người tăng từ 104 lên 120 giờ; T37 thuộc Tình. Tổng giờ là 880, chưa bao gồm giờ BA/điều phối riêng. Phân công không bằng nhau tuyệt đối; xem [cơ sở phân công](jira/PHAN-CONG-CAN-BANG.md) và [đánh giá nội dung](jira/DANH-GIA-KHOI-LUONG.md).
 
-## 3. Sprint và kết quả bàn giao
+## 3. Sprint
 
-### XIAN Sprint 1 · 10/10–16/10 · v0.1
+### XIAN Sprint 1 · 10/10–16/10 · chưa bắt đầu
 
-Khung ứng dụng, đăng ký OTP, lõi luật và bàn cờ tương tác; thử media/xác thực/phiên sớm. Chưa tuyên bố nghiệm thu toàn bộ đăng nhập có Google.
+Nền tảng máy chủ, xác thực, lõi luật, bàn cờ tương tác, thử media và khởi động kế hoạch kiểm thử. Task gắn Sprint theo ngày bắt đầu; có Task hoàn tất trong Sprint kế tiếp.
 
-**18 Task · 272 giờ · 63 điểm.**
+15 Task · 284 giờ ước lượng của các Task gắn Sprint.
 
-| Task | Tên | Story | Người | Giờ | Điểm | Bắt đầu | Kết thúc | Phụ thuộc |
+| Task / Jira | Tên | Story | Người | Giờ | Điểm Jira | Bắt đầu | Kết thúc | Phụ thuộc |
 |---|---|---|---|---|---|---|---|---|
-| T01 | Dựng monorepo, CI, nhật ký và /health | US-00.1 | Tình | 8 | 2 | 10/10 sáng | 10/10 chiều | — |
-| T02 | Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ | US-00.4 | Thư | 20 | 5 | 10/10 sáng | 12/10 sáng | — |
-| T03 | Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái | US-00.1 | Kỳ | 12 | 3 | 11/10 sáng | 12/10 sáng | T01 |
-| T04 | BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm | US-01.1 | Đông | 24 | 5 | 11/10 sáng | 13/10 chiều | T01 |
-| T05 | Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân | US-04.1 | Tùng | 8 | 2 | 11/10 sáng | 11/10 chiều | T01 |
-| T06 | Spike media LAN/Cloud/HTTPS và thử mô hình phiên | US-00.4 | Cường | 24 | 5 | 11/10 sáng | 13/10 chiều | T01 |
-| T11 | FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng | US-04.2 | Nhạn | 12 | 3 | 11/10 sáng | 12/10 sáng | T01 |
-| T12 | Khung realtime Socket.IO | US-00.3 | Tình | 24 | 5 | 11/10 sáng | 13/10 chiều | T01 |
-| T07 | Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước | US-04.1 | Tùng | 8 | 2 | 12/10 sáng | 12/10 chiều | T05 |
-| T10 | Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử | US-04.1 | Tùng | 8 | 2 | 13/10 sáng | 13/10 chiều | T07 |
-| T08 | FE màn Đăng ký 3 bước | US-01.1 | Kỳ | 8 | 2 | 14/10 sáng | 14/10 chiều | T03, T04 |
-| T09 | BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập | US-01.2 | Tùng | 16 | 3 | 14/10 sáng | 15/10 chiều | T04 |
-| T14 | Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu | US-00.2 | Đông | 12 | 3 | 14/10 sáng | 15/10 sáng | T04 |
-| T16 | Kiểm thử US-04.2 | US-04.2 | Tình | 4 | 1 | 14/10 sáng | 14/10 sáng | T11 |
-| T19 | FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh | US-04.3 | Nhạn | 20 | 5 | 14/10 sáng | 16/10 sáng | T10, T11 |
-| T24 | Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng | US-08.2 | Tình | 32 | 8 | 15/10 sáng | 18/10 chiều | T10 |
-| T15 | FE màn Đăng nhập | US-01.2 | Kỳ | 8 | 2 | 16/10 sáng | 16/10 chiều | T03, T09 |
-| T20 | BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván | US-05.1 | Tùng | 24 | 5 | 16/10 sáng | 18/10 chiều | T10, T12, T14 |
+| T01 / XIAN-37 | Dựng monorepo, CI, nhật ký và /health | US-00.1 | Tình | 8 | 2 | 10/10 | 10/10 | — |
+| T04 / XIAN-40 | BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm | US-01.1 | Đông | 24 | 5 | 11/10 | 13/10 | T01 |
+| T05 / XIAN-41 | Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân | US-04.1 | Tùng | 8 | 2 | 11/10 | 11/10 | T01 |
+| T06 / XIAN-42 | Spike media LAN/Cloud/HTTPS và thử mô hình phiên | US-00.4 | Cường | 24 | 5 | 11/10 | 13/10 | T01 |
+| T11 / XIAN-47 | FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng | US-04.2 | Nhạn | 16 | 3 | 11/10 | 12/10 | T01 |
+| T12 / XIAN-48 | Khung realtime Socket.IO | US-00.3 | Tình | 24 | 5 | 11/10 | 13/10 | T01 |
+| T07 / XIAN-43 | Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước | US-04.1 | Tùng | 8 | 2 | 12/10 | 12/10 | T05 |
+| T10 / XIAN-46 | Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử | US-04.1 | Tùng | 8 | 2 | 13/10 | 13/10 | T07 |
+| T02 / XIAN-38 | Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ | US-00.4 | Thư | 32 | 5 | 14/10 | 17/10 | — |
+| T09 / XIAN-45 | BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập | US-01.2 | Tùng | 16 | 3 | 14/10 | 15/10 | T04 |
+| T14 / XIAN-50 | Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu | US-00.2 | Đông | 12 | 3 | 14/10 | 15/10 | T04 |
+| T19 / XIAN-55 | FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh | US-04.3 | Nhạn | 24 | 5 | 14/10 | 16/10 | T10, T11 |
+| T24 / XIAN-60 | Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng | US-08.2 | Tình | 32 | 8 | 14/10 | 17/10 | T10 |
+| T20 / XIAN-56 | BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván | US-05.1 | Tùng | 24 | 5 | 16/10 | 18/10 | T10, T12, T14 |
+| T35 / XIAN-71 | BE đăng ký/đăng nhập Google, onboarding, phiên Khách | US-01.3 | Cường | 24 | 5 | 16/10 | 18/10 | T09, T14 |
 
-### XIAN Sprint 2 · 17/10–23/10 · v0.2
+### XIAN Sprint 2 · 17/10–23/10 · chưa bắt đầu
 
-Tạo/vào phòng, ván online cơ bản, Google/Khách, máy cờ có baseline; hoàn thiện các backend phòng/chat. Một số AC liên chức năng chờ S3–S4.
+Khung giao diện, xác thực, phòng và ván cơ bản, máy cờ; triển khai chat và quản lý phiên theo lịch cân ngày. Task gắn Sprint theo ngày bắt đầu.
 
-**15 Task · 192 giờ · 44 điểm.**
+17 Task · 212 giờ ước lượng của các Task gắn Sprint.
 
-| Task | Tên | Story | Người | Giờ | Điểm | Bắt đầu | Kết thúc | Phụ thuộc |
+| Task / Jira | Tên | Story | Người | Giờ | Điểm Jira | Bắt đầu | Kết thúc | Phụ thuộc |
 |---|---|---|---|---|---|---|---|---|
-| T13 | Kiểm thử US-01.1 | US-01.1 | Thư | 8 | 2 | 17/10 sáng | 17/10 chiều | T08 |
-| T17 | Kiểm thử US-01.2 | US-01.2 | Nhạn | 8 | 2 | 17/10 sáng | 17/10 chiều | T15 |
-| T35 | BE đăng ký/đăng nhập Google, onboarding, phiên Khách | US-01.3 | Cường | 24 | 5 | 17/10 sáng | 19/10 chiều | T09, T14 |
-| T18 | BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host | US-02.1 | Tùng | 24 | 5 | 19/10 sáng | 21/10 chiều | T12, T14 |
-| T34 | BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới | US-08.1 | Đông | 12 | 3 | 19/10 sáng | 20/10 sáng | T20, T24 |
-| T23 | BE đồng hồ thi đấu và hết giờ | US-05.1 | Cường | 8 | 2 | 20/10 sáng | 20/10 chiều | T20 |
-| T44 | FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách | US-01.3 | Kỳ | 8 | 2 | 20/10 sáng | 20/10 chiều | T15, T35 |
-| T59 | Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh | US-08.3 | Đông | 12 | 3 | 20/10 chiều | 21/10 chiều | T24, T02 |
-| T32 | BE đầu hàng, rời phòng giữa ván, xin hoà | US-05.2 | Cường | 12 | 3 | 21/10 sáng | 22/10 sáng | T20 |
-| T25 | FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại | US-05.1 | Kỳ | 16 | 3 | 21/10 chiều | 23/10 sáng | T19, T23 |
-| T21 | FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược | US-02.1 | Nhạn | 12 | 3 | 22/10 sáng | 23/10 sáng | T03, T18 |
-| T22 | BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập | US-03.1 | Tùng | 12 | 3 | 22/10 sáng | 23/10 sáng | T18, T09 |
-| T37 | BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ | US-07.1 | Đông | 16 | 3 | 22/10 sáng | 23/10 chiều | T18, T35 |
-| T26 | FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập | US-03.1 | Cường | 8 | 2 | 23/10 chiều | 24/10 sáng | T21, T22 |
-| T53 | BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã | US-06.1 | Tùng | 12 | 3 | 23/10 chiều | 24/10 chiều | T22 |
+| T03 / XIAN-39 | Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái | US-00.1 | Kỳ | 12 | 3 | 18/10 | 19/10 | T01 |
+| T59 / XIAN-95 | Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh | US-08.3 | Đông | 12 | 3 | 18/10 | 19/10 | T02, T24 |
+| T18 / XIAN-54 | BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host | US-02.1 | Tùng | 24 | 5 | 19/10 | 21/10 | T12, T14 |
+| T23 / XIAN-59 | BE đồng hồ thi đấu và hết giờ | US-05.1 | Cường | 8 | 2 | 19/10 | 19/10 | T20 |
+| T15 / XIAN-51 | FE màn Đăng nhập | US-01.2 | Kỳ | 8 | 2 | 20/10 | 20/10 | T03, T09 |
+| T16 / XIAN-52 | Kiểm thử US-04.2 | US-04.2 | Tình | 4 | 1 | 20/10 | 20/10 | T11 |
+| T32 / XIAN-68 | BE đầu hàng, rời phòng giữa ván, xin hoà | US-05.2 | Cường | 12 | 3 | 20/10 | 21/10 | T20 |
+| T34 / XIAN-70 | BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới | US-08.1 | Đông | 12 | 3 | 20/10 | 21/10 | T20, T24 |
+| T08 / XIAN-44 | FE màn Đăng ký 3 bước | US-01.1 | Kỳ | 8 | 2 | 21/10 | 21/10 | T03, T04 |
+| T17 / XIAN-53 | Kiểm thử US-01.2 | US-01.2 | Nhạn | 8 | 2 | 21/10 | 21/10 | T15 |
+| T13 / XIAN-49 | Kiểm thử US-01.1 | US-01.1 | Thư | 8 | 2 | 22/10 | 22/10 | T08 |
+| T21 / XIAN-57 | FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược | US-02.1 | Nhạn | 16 | 3 | 22/10 | 23/10 | T03, T18 |
+| T22 / XIAN-58 | BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập | US-03.1 | Tùng | 12 | 3 | 22/10 | 23/10 | T09, T18 |
+| T25 / XIAN-61 | FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại | US-05.1 | Kỳ | 16 | 3 | 22/10 | 23/10 | T19, T23 |
+| T37 / XIAN-73 | BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ | US-07.1 | Tình | 16 | 3 | 22/10 | 23/10 | T18, T35 |
+| T56 / XIAN-92 | BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất | US-01.4 | Đông | 24 | 5 | 22/10 | 24/10 | T18, T20, T35 |
+| T63 / XIAN-99 | BE giữ ván AI 30 phút, Thử lại, khởi động lại | US-08.3 | Cường | 12 | 3 | 22/10 | 23/10 | T34, T35 |
 
-### XIAN Sprint 3 · 24/10–30/10 · v0.3
+### XIAN Sprint 3 · 24/10–30/10 · chưa bắt đầu
 
-Hoàn tất phần lớn triển khai P1; T52 nối lại hoàn tất đầu S4. Chạy QA chuyên đề đã đủ đầu vào.
+Hoàn thiện bạn bè, chat/media, phòng/người xem, Sảnh, hồ sơ, nối lại và kiểm thử chuyên đề. Các phần triển khai hoàn tất chậm nhất 30/10 để hồi quy từ 31/10.
 
-**26 Task · 284 giờ · 68 điểm.**
+28 Task · 284 giờ ước lượng của các Task gắn Sprint.
 
-| Task | Tên | Story | Người | Giờ | Điểm | Bắt đầu | Kết thúc | Phụ thuộc |
+| Task / Jira | Tên | Story | Người | Giờ | Điểm Jira | Bắt đầu | Kết thúc | Phụ thuộc |
 |---|---|---|---|---|---|---|---|---|
-| T33 | BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ | US-07.2 | Tình | 24 | 5 | 24/10 sáng | 26/10 chiều | T06, T22, T35 |
-| T36 | FE nút Đầu hàng, Xin hoà và khung đề nghị | US-05.2 | Nhạn | 8 | 2 | 24/10 sáng | 24/10 chiều | T25, T32 |
-| T42 | FE khung chat hai kênh | US-07.1 | Kỳ | 8 | 2 | 24/10 sáng | 24/10 chiều | T25, T37 |
-| T55 | BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn | US-06.3 | Đông | 16 | 3 | 24/10 sáng | 25/10 chiều | T22 |
-| T41 | BE Xin đổi bên và phòng về chờ sau ván | US-02.2 | Cường | 12 | 3 | 24/10 chiều | 25/10 chiều | T20, T37 |
-| T28 | Kiểm thử US-02.1 | US-02.1 | Thư | 8 | 2 | 25/10 sáng | 25/10 chiều | T26, T37, T25 |
-| T29 | Kiểm thử US-03.1 | US-03.1 | Nhạn | 8 | 2 | 25/10 sáng | 25/10 chiều | T26, T35, T08, T15 |
-| T31 | BE bạn bè, trạng thái online, mời bạn online vào phòng | US-03.2 | Tùng | 20 | 5 | 25/10 sáng | 27/10 sáng | T22, T35 |
-| T39 | Kiểm thử US-05.2 | US-05.2 | Kỳ | 4 | 1 | 25/10 chiều | 25/10 chiều | T36, T18 |
-| T38 | FE thiết lập/chơi AI và giao diện sự cố máy cờ | US-08.1 | Kỳ | 12 | 3 | 26/10 sáng | 27/10 sáng | T19, T34 |
-| T46 | FE hộp Xin đổi bên, Ở lại phòng / Rời phòng | US-02.2 | Nhạn | 8 | 2 | 26/10 sáng | 26/10 chiều | T25, T41 |
-| T48 | Kiểm thử US-01.3 | US-01.3 | Thư | 8 | 2 | 26/10 sáng | 26/10 chiều | T44, T37, T26 |
-| T54 | BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem | US-06.2 | Đông | 8 | 2 | 26/10 sáng | 26/10 chiều | T53 |
-| T57 | FE Cài đặt phòng | US-06.1 | Cường | 4 | 1 | 26/10 sáng | 26/10 sáng | T53 |
-| T63 | BE giữ ván AI 30 phút, Thử lại, khởi động lại | US-08.3 | Cường | 12 | 3 | 26/10 chiều | 27/10 chiều | T34, T35 |
-| T47 | Kiểm thử US-07.1 | US-07.1 | Thư | 8 | 2 | 27/10 sáng | 27/10 chiều | T42, T46, T21 |
-| T56 | BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất | US-01.4 | Đông | 24 | 5 | 27/10 sáng | 29/10 chiều | T18, T20, T35 |
-| T58 | FE danh sách người xem, thao tác ghế và khung camera/mic | US-06.3 | Tình | 20 | 5 | 27/10 sáng | 29/10 sáng | T55, T33 |
-| T50 | Kiểm thử US-02.2 | US-02.2 | Kỳ | 4 | 1 | 27/10 chiều | 27/10 chiều | T46 |
-| T30 | Kiểm thử US-05.1 | US-05.1 | Thư | 8 | 2 | 28/10 sáng | 28/10 chiều | T25, T26 |
-| T40 | FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời | US-03.2 | Cường | 12 | 3 | 28/10 sáng | 29/10 sáng | T31 |
-| T61 | FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng | US-06.2 | Kỳ | 12 | 3 | 28/10 chiều | 29/10 chiều | T54, T57 |
-| T43 | Kiểm thử US-08.1 | US-08.1 | Thư | 8 | 2 | 29/10 sáng | 29/10 chiều | T38, T63 |
-| T45 | Kiểm thử US-07.2 | US-07.2 | Thư | 8 | 2 | 30/10 sáng | 30/10 chiều | T58, T21, T42 |
-| T52 | BE mất kết nối, ân hạn, đồng bộ lại và server restart | US-05.3 | Đông | 12 | 3 | 30/10 sáng | 31/10 sáng | T56 |
-| T65 | FE Cài đặt hồ sơ, Đăng xuất, banner ván dở | US-01.4 | Cường | 8 | 2 | 30/10 sáng | 30/10 chiều | T56, T63 |
+| T26 / XIAN-62 | FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập | US-03.1 | Cường | 8 | 2 | 24/10 | 24/10 | T21, T22 |
+| T33 / XIAN-69 | BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ | US-07.2 | Tình | 24 | 5 | 24/10 | 26/10 | T06, T22, T35 |
+| T36 / XIAN-72 | FE nút Đầu hàng, Xin hoà và khung đề nghị | US-05.2 | Nhạn | 8 | 2 | 24/10 | 24/10 | T25, T32 |
+| T44 / XIAN-80 | FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách | US-01.3 | Kỳ | 8 | 2 | 24/10 | 24/10 | T15, T35 |
+| T53 / XIAN-89 | BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã | US-06.1 | Tùng | 12 | 3 | 24/10 | 25/10 | T22 |
+| T28 / XIAN-64 | Kiểm thử US-02.1 | US-02.1 | Thư | 8 | 2 | 25/10 | 25/10 | T25, T26, T37 |
+| T29 / XIAN-65 | Kiểm thử US-03.1 | US-03.1 | Nhạn | 8 | 2 | 25/10 | 25/10 | T08, T15, T26, T35 |
+| T39 / XIAN-75 | Kiểm thử US-05.2 | US-05.2 | Kỳ | 4 | 1 | 25/10 | 25/10 | T18, T36 |
+| T41 / XIAN-77 | BE Xin đổi bên và phòng về chờ sau ván | US-02.2 | Cường | 12 | 3 | 25/10 | 26/10 | T20, T37 |
+| T55 / XIAN-91 | BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn | US-06.3 | Đông | 16 | 3 | 25/10 | 26/10 | T22 |
+| T31 / XIAN-67 | BE bạn bè, trạng thái online, mời bạn online vào phòng | US-03.2 | Tùng | 20 | 5 | 26/10 | 28/10 | T22, T35 |
+| T42 / XIAN-78 | FE khung chat hai kênh | US-07.1 | Kỳ | 8 | 2 | 26/10 | 26/10 | T25, T37 |
+| T48 / XIAN-84 | Kiểm thử US-01.3 | US-01.3 | Thư | 8 | 2 | 26/10 | 26/10 | T26, T37, T44 |
+| T30 / XIAN-66 | Kiểm thử US-05.1 | US-05.1 | Thư | 8 | 2 | 27/10 | 27/10 | T25, T26 |
+| T38 / XIAN-74 | FE thiết lập/chơi AI và giao diện sự cố máy cờ | US-08.1 | Kỳ | 12 | 3 | 27/10 | 28/10 | T19, T34 |
+| T46 / XIAN-82 | FE hộp Xin đổi bên, Ở lại phòng / Rời phòng | US-02.2 | Nhạn | 8 | 2 | 27/10 | 27/10 | T25, T41 |
+| T54 / XIAN-90 | BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem | US-06.2 | Đông | 8 | 2 | 27/10 | 27/10 | T53 |
+| T57 / XIAN-93 | FE Cài đặt phòng | US-06.1 | Cường | 4 | 1 | 27/10 | 27/10 | T53 |
+| T58 / XIAN-94 | FE danh sách người xem, thao tác ghế và khung camera/mic | US-06.3 | Tình | 20 | 5 | 27/10 | 29/10 | T33, T55 |
+| T47 / XIAN-83 | Kiểm thử US-07.1 | US-07.1 | Thư | 8 | 2 | 28/10 | 28/10 | T21, T42, T46 |
+| T65 / XIAN-101 | FE Cài đặt hồ sơ, Đăng xuất, banner ván dở | US-01.4 | Cường | 8 | 2 | 28/10 | 28/10 | T56, T63 |
+| T40 / XIAN-76 | FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời | US-03.2 | Cường | 12 | 3 | 29/10 | 30/10 | T31 |
+| T43 / XIAN-79 | Kiểm thử US-08.1 | US-08.1 | Thư | 8 | 2 | 29/10 | 29/10 | T38, T63 |
+| T52 / XIAN-88 | BE mất kết nối, ân hạn, đồng bộ lại và server restart | US-05.3 | Đông | 12 | 3 | 29/10 | 30/10 | T56 |
+| T61 / XIAN-97 | FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng | US-06.2 | Kỳ | 12 | 3 | 29/10 | 30/10 | T54, T57 |
+| T27 / XIAN-63 | Kiểm thử US-04.3 | US-04.3 | Tình | 4 | 1 | 30/10 | 30/10 | T22, T25 |
+| T45 / XIAN-81 | Kiểm thử US-07.2 | US-07.2 | Thư | 8 | 2 | 30/10 | 30/10 | T21, T42, T58 |
+| T68 / XIAN-104 | Kiểm thử US-08.3 | US-08.3 | Nhạn | 8 | 2 | 30/10 | 30/10 | T38, T59, T65 |
 
-### XIAN Sprint 4 · 31/10–04/11 · v1.0
+### XIAN Sprint 4 · 31/10–04/11 · chưa bắt đầu
 
-Hồi quy đầy đủ và QA còn lại trên bản tích hợp, đo NFR/gate, đóng gói và tổng duyệt sáng 04/11; chiều 04/11 dự phòng.
+Hồi quy 31/10–02/11, kiểm chất lượng 31/10–01/11, đóng gói 03/11 và tổng duyệt 04/11. Tối đa 7 Task/ngày, mỗi người một Task/ngày; phụ thuộc đầu-cuối không trùng ngày. Giữ nguyên thời lượng Task.
 
-**12 Task · 100 giờ · 23 điểm.**
+11 Task · 100 giờ ước lượng của các Task gắn Sprint.
 
-| Task | Tên | Story | Người | Giờ | Điểm | Bắt đầu | Kết thúc | Phụ thuộc |
+| Task / Jira | Tên | Story | Người | Giờ | Điểm Jira | Bắt đầu | Kết thúc | Phụ thuộc |
 |---|---|---|---|---|---|---|---|---|
-| T27 | Kiểm thử US-04.3 | US-04.3 | Tình | 4 | 1 | 31/10 sáng | 31/10 sáng | T25, T22 |
-| T67 | Kiểm thử US-06.2 | US-06.2 | Nhạn | 8 | 2 | 31/10 sáng | 31/10 chiều | T61, T55, T38, T26, T40, T44, T65 |
-| T51 | Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ | US-00.5 | Thư | 24 | 5 | 31/10 chiều | 03/11 sáng | T08, T26, T36, T38, T40, T42, T44, T46, T52, T58, T59, T61, T65 |
-| T60 | Kiểm thử US-05.3 | US-05.3 | Tình | 4 | 1 | 31/10 chiều | 31/10 chiều | T52, T25 |
-| T49 | Kiểm thử US-03.2 | US-03.2 | Kỳ | 8 | 2 | 01/11 sáng | 01/11 chiều | T40, T53, T56, T34 |
-| T62 | Kiểm thử US-06.1 | US-06.1 | Nhạn | 4 | 1 | 01/11 sáng | 01/11 sáng | T57, T31, T33, T52, T55 |
-| T66 | Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật | US-00.5 | Tình | 16 | 3 | 01/11 sáng | 02/11 chiều | T08, T26, T36, T38, T40, T42, T44, T46, T52, T58, T59, T61, T65 |
-| T68 | Kiểm thử US-08.3 | US-08.3 | Nhạn | 8 | 2 | 01/11 chiều | 02/11 sáng | T59, T38, T65 |
-| T64 | Kiểm thử US-06.3 | US-06.3 | Kỳ | 8 | 2 | 02/11 sáng | 02/11 chiều | T58, T52, T31, T54 |
-| T69 | Kiểm thử US-01.4 | US-01.4 | Nhạn | 8 | 2 | 02/11 chiều | 03/11 sáng | T65, T52, T23, T38, T61, T32, T37, T44, T40, T26 |
-| T70 | Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo | US-00.5 | Tình | 4 | 1 | 03/11 chiều | 03/11 chiều | T51, T66, T13, T16, T17, T27, T28, T29, T30, T39, T43, T45, T47, T48, T49, T50, T60, T62, T64, T67, T68, T69 |
-| T71 | Tổng duyệt D1–D10 trên bản phát hành và ghi hình | US-00.5 | Thư | 4 | 1 | 04/11 sáng | 04/11 sáng | T70 |
+| T50 / XIAN-86 | Kiểm thử US-02.2 | US-02.2 | Kỳ | 4 | 1 | 31/10 | 31/10 | T46 |
+| T51 / XIAN-87 | Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ | US-00.5 | Thư | 24 | 5 | 31/10 | 02/11 | T08, T26, T36, T38, T40, T42, T44, T46, T52, T58, T59, T61, T65 |
+| T66 / XIAN-102 | Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật | US-00.5 | Tình | 16 | 3 | 31/10 | 01/11 | T08, T26, T36, T38, T40, T42, T44, T46, T52, T58, T59, T61, T65 |
+| T67 / XIAN-103 | Kiểm thử US-06.2 | US-06.2 | Nhạn | 8 | 2 | 31/10 | 31/10 | T26, T38, T40, T44, T55, T61, T65 |
+| T49 / XIAN-85 | Kiểm thử US-03.2 | US-03.2 | Kỳ | 8 | 2 | 01/11 | 01/11 | T34, T40, T53, T56 |
+| T69 / XIAN-105 | Kiểm thử US-01.4 | US-01.4 | Nhạn | 8 | 2 | 01/11 | 01/11 | T23, T26, T32, T37, T38, T40, T44, T52, T61, T65 |
+| T60 / XIAN-96 | Kiểm thử US-05.3 | US-05.3 | Tình | 4 | 1 | 02/11 | 02/11 | T25, T52 |
+| T62 / XIAN-98 | Kiểm thử US-06.1 | US-06.1 | Nhạn | 8 | 1 | 02/11 | 02/11 | T31, T33, T52, T55, T57 |
+| T64 / XIAN-100 | Kiểm thử US-06.3 | US-06.3 | Kỳ | 8 | 2 | 02/11 | 02/11 | T31, T52, T54, T58 |
+| T70 / XIAN-106 | Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo | US-00.5 | Tình | 4 | 1 | 03/11 | 03/11 | T13, T16, T17, T27, T28, T29, T30, T39, T43, T45, T47, T48, T49, T50, T51, T60, T62, T64, T66, T67, T68, T69 |
+| T71 / XIAN-107 | Tổng duyệt D1–D10 trên bản phát hành và ghi hình | US-00.5 | Thư | 8 | 1 | 04/11 | 04/11 | T70 |
 
 
-## 4. R1 — ngày Epic/Story và nghiệm thu sản phẩm
+## 4. Lịch BA và trạng thái
 
-Mọi Epic/Story bắt đầu **09/10**. Story mặc định có hạn ngày Task đầu tiên bắt đầu và phải được PO duyệt trước giờ bắt đầu Task đó; US-08.3 và US-00.5 giữ ngoại lệ tới ngày Task cuối để đóng hồ sơ kiểm chứng. **Các ngưỡng AC đã chốt trước thi công, không chờ số đo để hạ tiêu chuẩn.** Epic có hạn theo Story muộn nhất. Mọi mục nhập To Do; không tự đánh dấu Done dựa trên ngày kế hoạch.
-
-| Story | Hạn BA theo R1 | Thi công | Sprint có Task |
-|---|---|---|---|
-| US-00.1 | 10/10 | 10/10 → 12/10 | S1 |
-| US-00.2 | 14/10 | 14/10 → 15/10 | S1 |
-| US-00.3 | 11/10 | 11/10 → 13/10 | S1 |
-| US-00.4 | 10/10 | 10/10 → 13/10 | S1 |
-| US-00.5 | 04/11 | 31/10 → 04/11 | S4 |
-| US-01.1 | 11/10 | 11/10 → 17/10 | S1, S2 |
-| US-01.2 | 14/10 | 14/10 → 17/10 | S1, S2 |
-| US-01.3 | 17/10 | 17/10 → 26/10 | S2, S3 |
-| US-01.4 | 27/10 | 27/10 → 03/11 | S3, S4 |
-| US-02.1 | 19/10 | 19/10 → 25/10 | S2, S3 |
-| US-02.2 | 24/10 | 24/10 → 27/10 | S3 |
-| US-03.1 | 22/10 | 22/10 → 25/10 | S2, S3 |
-| US-03.2 | 25/10 | 25/10 → 01/11 | S3, S4 |
-| US-04.1 | 11/10 | 11/10 → 13/10 | S1 |
-| US-04.2 | 11/10 | 11/10 → 14/10 | S1 |
-| US-04.3 | 14/10 | 14/10 → 31/10 | S1, S4 |
-| US-05.1 | 16/10 | 16/10 → 28/10 | S1, S2, S3 |
-| US-05.2 | 21/10 | 21/10 → 25/10 | S2, S3 |
-| US-05.3 | 30/10 | 30/10 → 31/10 | S3, S4 |
-| US-06.1 | 23/10 | 23/10 → 01/11 | S2, S3, S4 |
-| US-06.2 | 26/10 | 26/10 → 31/10 | S3, S4 |
-| US-06.3 | 24/10 | 24/10 → 02/11 | S3, S4 |
-| US-07.1 | 22/10 | 22/10 → 27/10 | S2, S3 |
-| US-07.2 | 24/10 | 24/10 → 30/10 | S3 |
-| US-08.1 | 19/10 | 19/10 → 29/10 | S2, S3 |
-| US-08.2 | 15/10 | 15/10 → 18/10 | S1, S2 |
-| US-08.3 | 02/11 | 20/10 → 02/11 | S2, S3, S4 |
-
-
-Story BA Done không được dùng làm chỉ số chức năng hoàn thành. Chức năng chỉ được nghiệm thu khi mọi AC trong bản đồ đã PASS; QA Task sớm chỉ chịu phần được giao. Story Points chỉ nhập vào Task, tiếp tục quy đổi từ giờ theo thang cũ; không nhập tổng điểm vào Story/Epic.
-
-## 5. Cổng kỹ thuật và thứ tự nghiệm thu
-
-| Gate | Thử/đo sớm | Nghiệm thu thật / đối soát |
-|---|---|---|
-| SMTP | T04 · 13/10 | T13: email ngoài nhóm, 5 thư/giờ, lỗi dịch vụ; T66 đối soát |
-| EMAIL | T04 · 13/10 | Gọi API trực tiếp; đổi được email thì BLOCKED; T66 đối soát |
-| AUTH-USERNAME | T09 · 15/10 | T17: đăng nhập/khoá mật khẩu; nhánh Google tại T48 |
-| GOOGLE / GUEST | T04 thử cấu hình · 13/10 | T35 triển khai thật; T48 nghiệm thu; các nhánh ghế/phiên ở T51/T69 |
-| SESSION | T06 thử mô hình · 13/10 | T56 trên ván thật, T69 kiểm phiên/đăng xuất; không dùng mô phỏng thay PASS |
-| MEDIA | T06 LAN/Cloud/HTTPS · 13/10 | T33 + T58, T45 và T64 nghiệm thu quyền thật |
-| ENGINE | T24 baseline · 18/10 | T59 tinh chỉnh/đo 21/10; T68 kiểm độc lập |
-| REALTIME | T12 thử socket nền · 13/10 | T66: 50 người/10 ván tích hợp thật; không đạt chặn T70 |
+| Mã | Jira | Bắt đầu | Kết thúc dự kiến | Status | Resolution |
+|---|---|---|---|---|---|
+| EP-00 | XIAN-1 | 2026-10-06 | 2026-10-13 | Done | Done |
+| EP-01 | XIAN-2 | 2026-10-07 | 2026-10-14 | Done | Done |
+| EP-02 | XIAN-3 | 2026-10-15 | 2026-10-22 | Done | Done |
+| EP-03 | XIAN-4 | 2026-10-18 | 2026-10-25 | Done | Done |
+| EP-04 | XIAN-5 | 2026-10-07 | 2026-10-14 | Done | Done |
+| EP-05 | XIAN-6 | 2026-10-12 | 2026-10-19 | Done | Done |
+| EP-06 | XIAN-7 | 2026-10-20 | 2026-10-27 | Done | Done |
+| EP-07 | XIAN-8 | 2026-10-18 | 2026-10-25 | Done | Done |
+| EP-08 | XIAN-9 | 2026-10-10 | 2026-10-17 | Done | Done |
+| US-00.1 | XIAN-10 | 2026-10-08 | 2026-10-11 | Done | Done |
+| US-00.2 | XIAN-11 | 2026-10-12 | 2026-10-15 | Done | Done |
+| US-00.3 | XIAN-12 | 2026-10-09 | 2026-10-12 | Done | Done |
+| US-00.4 | XIAN-13 | 2026-10-09 | 2026-10-12 | Done | Done |
+| US-00.5 | XIAN-14 | 2026-10-29 | 2026-11-01 | Done | Done |
+| US-01.1 | XIAN-15 | 2026-10-09 | 2026-10-12 | Done | Done |
+| US-01.2 | XIAN-16 | 2026-10-12 | 2026-10-15 | Done | Done |
+| US-01.3 | XIAN-17 | 2026-10-14 | 2026-10-17 | Done | Done |
+| US-01.4 | XIAN-18 | 2026-10-20 | 2026-10-23 | Done | Done |
+| US-02.1 | XIAN-19 | 2026-10-17 | 2026-10-20 | Done | Done |
+| US-02.2 | XIAN-20 | 2026-10-23 | 2026-10-26 | Done | Done |
+| US-03.1 | XIAN-21 | 2026-10-20 | 2026-10-23 | Done | Done |
+| US-03.2 | XIAN-22 | 2026-10-24 | 2026-10-27 | Done | Done |
+| US-04.1 | XIAN-23 | 2026-10-09 | 2026-10-12 | Done | Done |
+| US-04.2 | XIAN-24 | 2026-10-09 | 2026-10-12 | Done | Done |
+| US-04.3 | XIAN-25 | 2026-10-12 | 2026-10-15 | Done | Done |
+| US-05.1 | XIAN-26 | 2026-10-14 | 2026-10-17 | Done | Done |
+| US-05.2 | XIAN-27 | 2026-10-18 | 2026-10-21 | Done | Done |
+| US-05.3 | XIAN-28 | 2026-10-27 | 2026-10-30 | Done | Done |
+| US-06.1 | XIAN-29 | 2026-10-22 | 2026-10-25 | Done | Done |
+| US-06.2 | XIAN-30 | 2026-10-25 | 2026-10-28 | Done | Done |
+| US-06.3 | XIAN-31 | 2026-10-23 | 2026-10-26 | Done | Done |
+| US-07.1 | XIAN-32 | 2026-10-20 | 2026-10-23 | Done | Done |
+| US-07.2 | XIAN-33 | 2026-10-22 | 2026-10-25 | Done | Done |
+| US-08.1 | XIAN-34 | 2026-10-18 | 2026-10-21 | Done | Done |
+| US-08.2 | XIAN-35 | 2026-10-12 | 2026-10-15 | Done | Done |
+| US-08.3 | XIAN-36 | 2026-10-16 | 2026-10-19 | Done | Done |
 
 
-Ba quyết định PO ngày 09/10 đã ghi vào AC hiện có: username từ cấm ở bước nhập; thắng/thua ưu tiên trước hoà 120; server restart phòng tự tạo về WAITING. Giữ 268 mã AC; các biến thể TC bổ sung không tạo issue Jira mới.
+Các ngày trên là trường kế hoạch, không phải ngày hoàn tất thực tế. 36 mục BA đã Done và không gắn Fix version. Tiến độ sản phẩm được tính từ Task và bằng chứng nghiệm thu.
 
-## 6. Lịch từng người và mức song song
+## 5. Release và workflow
+
+| Release | Bắt đầu | Hạn | Trạng thái | Task |
+|---|---|---|---|---|
+| v0.1 | 2026-10-10 | 2026-10-16 | Unreleased | 11 |
+| v0.2 | 2026-10-17 | 2026-10-23 | Unreleased | 19 |
+| v0.3 | 2026-10-24 | 2026-10-30 | Unreleased | 25 |
+| v1.0 | 2026-10-31 | 2026-11-04 | Unreleased | 16 |
+
+
+Release chỉ chứa Task triển khai, hiện 0% hoàn thành. T50 / XIAN-86 kết thúc 31/10 và thuộc v1.0.
+
+Workflow XIAN: To Do → Ready for Code → In Progress → Ready For Test → Done. Transition 5 đặt Resolution = Done; Mở lại (transition 9) đưa Done → To Do và xóa Resolution. Đã lưu và đọc lại cấu hình; chưa chuyển thử Task thật. Workflow dùng chung cho các loại công việc trong XIAN.
+
+## 6. Lịch từng người và số Task mỗi ngày
 
 ### Tình
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T01 | 8 | 10/10 sáng | 10/10 chiều |
-| T12 | 24 | 11/10 sáng | 13/10 chiều |
-| T16 | 4 | 14/10 sáng | 14/10 sáng |
-| T24 | 32 | 15/10 sáng | 18/10 chiều |
-| T33 | 24 | 24/10 sáng | 26/10 chiều |
-| T58 | 20 | 27/10 sáng | 29/10 sáng |
-| T27 | 4 | 31/10 sáng | 31/10 sáng |
-| T60 | 4 | 31/10 chiều | 31/10 chiều |
-| T66 | 16 | 01/11 sáng | 02/11 chiều |
-| T70 | 4 | 03/11 chiều | 03/11 chiều |
+| T01 | 8 | 10/10 | 10/10 |
+| T12 | 24 | 11/10 | 13/10 |
+| T24 | 32 | 14/10 | 17/10 |
+| T16 | 4 | 20/10 | 20/10 |
+| T37 | 16 | 22/10 | 23/10 |
+| T33 | 24 | 24/10 | 26/10 |
+| T58 | 20 | 27/10 | 29/10 |
+| T27 | 4 | 30/10 | 30/10 |
+| T66 | 16 | 31/10 | 01/11 |
+| T60 | 4 | 02/11 | 02/11 |
+| T70 | 4 | 03/11 | 03/11 |
 
 ### Đông
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T04 | 24 | 11/10 sáng | 13/10 chiều |
-| T14 | 12 | 14/10 sáng | 15/10 sáng |
-| T34 | 12 | 19/10 sáng | 20/10 sáng |
-| T59 | 12 | 20/10 chiều | 21/10 chiều |
-| T37 | 16 | 22/10 sáng | 23/10 chiều |
-| T55 | 16 | 24/10 sáng | 25/10 chiều |
-| T54 | 8 | 26/10 sáng | 26/10 chiều |
-| T56 | 24 | 27/10 sáng | 29/10 chiều |
-| T52 | 12 | 30/10 sáng | 31/10 sáng |
+| T04 | 24 | 11/10 | 13/10 |
+| T14 | 12 | 14/10 | 15/10 |
+| T59 | 12 | 18/10 | 19/10 |
+| T34 | 12 | 20/10 | 21/10 |
+| T56 | 24 | 22/10 | 24/10 |
+| T55 | 16 | 25/10 | 26/10 |
+| T54 | 8 | 27/10 | 27/10 |
+| T52 | 12 | 29/10 | 30/10 |
 
 ### Tùng
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T05 | 8 | 11/10 sáng | 11/10 chiều |
-| T07 | 8 | 12/10 sáng | 12/10 chiều |
-| T10 | 8 | 13/10 sáng | 13/10 chiều |
-| T09 | 16 | 14/10 sáng | 15/10 chiều |
-| T20 | 24 | 16/10 sáng | 18/10 chiều |
-| T18 | 24 | 19/10 sáng | 21/10 chiều |
-| T22 | 12 | 22/10 sáng | 23/10 sáng |
-| T53 | 12 | 23/10 chiều | 24/10 chiều |
-| T31 | 20 | 25/10 sáng | 27/10 sáng |
+| T05 | 8 | 11/10 | 11/10 |
+| T07 | 8 | 12/10 | 12/10 |
+| T10 | 8 | 13/10 | 13/10 |
+| T09 | 16 | 14/10 | 15/10 |
+| T20 | 24 | 16/10 | 18/10 |
+| T18 | 24 | 19/10 | 21/10 |
+| T22 | 12 | 22/10 | 23/10 |
+| T53 | 12 | 24/10 | 25/10 |
+| T31 | 20 | 26/10 | 28/10 |
 
 ### Cường
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T06 | 24 | 11/10 sáng | 13/10 chiều |
-| T35 | 24 | 17/10 sáng | 19/10 chiều |
-| T23 | 8 | 20/10 sáng | 20/10 chiều |
-| T32 | 12 | 21/10 sáng | 22/10 sáng |
-| T26 | 8 | 23/10 chiều | 24/10 sáng |
-| T41 | 12 | 24/10 chiều | 25/10 chiều |
-| T57 | 4 | 26/10 sáng | 26/10 sáng |
-| T63 | 12 | 26/10 chiều | 27/10 chiều |
-| T40 | 12 | 28/10 sáng | 29/10 sáng |
-| T65 | 8 | 30/10 sáng | 30/10 chiều |
+| T06 | 24 | 11/10 | 13/10 |
+| T35 | 24 | 16/10 | 18/10 |
+| T23 | 8 | 19/10 | 19/10 |
+| T32 | 12 | 20/10 | 21/10 |
+| T63 | 12 | 22/10 | 23/10 |
+| T26 | 8 | 24/10 | 24/10 |
+| T41 | 12 | 25/10 | 26/10 |
+| T57 | 4 | 27/10 | 27/10 |
+| T65 | 8 | 28/10 | 28/10 |
+| T40 | 12 | 29/10 | 30/10 |
 
 ### Nhạn
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T11 | 12 | 11/10 sáng | 12/10 sáng |
-| T19 | 20 | 14/10 sáng | 16/10 sáng |
-| T17 | 8 | 17/10 sáng | 17/10 chiều |
-| T21 | 12 | 22/10 sáng | 23/10 sáng |
-| T36 | 8 | 24/10 sáng | 24/10 chiều |
-| T29 | 8 | 25/10 sáng | 25/10 chiều |
-| T46 | 8 | 26/10 sáng | 26/10 chiều |
-| T67 | 8 | 31/10 sáng | 31/10 chiều |
-| T62 | 4 | 01/11 sáng | 01/11 sáng |
-| T68 | 8 | 01/11 chiều | 02/11 sáng |
-| T69 | 8 | 02/11 chiều | 03/11 sáng |
+| T11 | 16 | 11/10 | 12/10 |
+| T19 | 24 | 14/10 | 16/10 |
+| T17 | 8 | 21/10 | 21/10 |
+| T21 | 16 | 22/10 | 23/10 |
+| T36 | 8 | 24/10 | 24/10 |
+| T29 | 8 | 25/10 | 25/10 |
+| T46 | 8 | 27/10 | 27/10 |
+| T68 | 8 | 30/10 | 30/10 |
+| T67 | 8 | 31/10 | 31/10 |
+| T69 | 8 | 01/11 | 01/11 |
+| T62 | 8 | 02/11 | 02/11 |
 
 ### Kỳ
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T03 | 12 | 11/10 sáng | 12/10 sáng |
-| T08 | 8 | 14/10 sáng | 14/10 chiều |
-| T15 | 8 | 16/10 sáng | 16/10 chiều |
-| T44 | 8 | 20/10 sáng | 20/10 chiều |
-| T25 | 16 | 21/10 chiều | 23/10 sáng |
-| T42 | 8 | 24/10 sáng | 24/10 chiều |
-| T39 | 4 | 25/10 chiều | 25/10 chiều |
-| T38 | 12 | 26/10 sáng | 27/10 sáng |
-| T50 | 4 | 27/10 chiều | 27/10 chiều |
-| T61 | 12 | 28/10 chiều | 29/10 chiều |
-| T49 | 8 | 01/11 sáng | 01/11 chiều |
-| T64 | 8 | 02/11 sáng | 02/11 chiều |
+| T03 | 12 | 18/10 | 19/10 |
+| T15 | 8 | 20/10 | 20/10 |
+| T08 | 8 | 21/10 | 21/10 |
+| T25 | 16 | 22/10 | 23/10 |
+| T44 | 8 | 24/10 | 24/10 |
+| T39 | 4 | 25/10 | 25/10 |
+| T42 | 8 | 26/10 | 26/10 |
+| T38 | 12 | 27/10 | 28/10 |
+| T61 | 12 | 29/10 | 30/10 |
+| T50 | 4 | 31/10 | 31/10 |
+| T49 | 8 | 01/11 | 01/11 |
+| T64 | 8 | 02/11 | 02/11 |
 
 ### Thư
 
 | Task | Giờ | Bắt đầu | Kết thúc |
 |---|---|---|---|
-| T02 | 20 | 10/10 sáng | 12/10 sáng |
-| T13 | 8 | 17/10 sáng | 17/10 chiều |
-| T28 | 8 | 25/10 sáng | 25/10 chiều |
-| T48 | 8 | 26/10 sáng | 26/10 chiều |
-| T47 | 8 | 27/10 sáng | 27/10 chiều |
-| T30 | 8 | 28/10 sáng | 28/10 chiều |
-| T43 | 8 | 29/10 sáng | 29/10 chiều |
-| T45 | 8 | 30/10 sáng | 30/10 chiều |
-| T51 | 24 | 31/10 chiều | 03/11 sáng |
-| T71 | 4 | 04/11 sáng | 04/11 sáng |
+| T02 | 32 | 14/10 | 17/10 |
+| T13 | 8 | 22/10 | 22/10 |
+| T28 | 8 | 25/10 | 25/10 |
+| T48 | 8 | 26/10 | 26/10 |
+| T30 | 8 | 27/10 | 27/10 |
+| T47 | 8 | 28/10 | 28/10 |
+| T43 | 8 | 29/10 | 29/10 |
+| T45 | 8 | 30/10 | 30/10 |
+| T51 | 24 | 31/10 | 02/11 |
+| T71 | 8 | 04/11 | 04/11 |
 
-| Ngày | Sáng | Chiều |
-|---|---|---|
-| 10/10 | 2 | 2 |
-| 11/10 | 7 | 7 |
-| 12/10 | 7 | 4 |
-| 13/10 | 4 | 4 |
-| 14/10 | 5 | 4 |
-| 15/10 | 4 | 3 |
-| 16/10 | 4 | 3 |
-| 17/10 | 5 | 5 |
-| 18/10 | 3 | 3 |
-| 19/10 | 3 | 3 |
-| 20/10 | 4 | 4 |
-| 21/10 | 3 | 4 |
-| 22/10 | 5 | 4 |
-| 23/10 | 4 | 3 |
-| 24/10 | 6 | 6 |
-| 25/10 | 6 | 7 |
-| 26/10 | 7 | 7 |
-| 27/10 | 6 | 5 |
-| 28/10 | 4 | 5 |
-| 29/10 | 5 | 3 |
-| 30/10 | 3 | 3 |
-| 31/10 | 3 | 3 |
-| 01/11 | 4 | 4 |
-| 02/11 | 4 | 4 |
-| 03/11 | 2 | 1 |
-| 04/11 | 1 | 0 |
+| Ngày | Task theo kế hoạch |
+|---|---|
+| 10/10 | 1 |
+| 11/10 | 5 |
+| 12/10 | 5 |
+| 13/10 | 4 |
+| 14/10 | 5 |
+| 15/10 | 5 |
+| 16/10 | 5 |
+| 17/10 | 4 |
+| 18/10 | 4 |
+| 19/10 | 4 |
+| 20/10 | 5 |
+| 21/10 | 5 |
+| 22/10 | 7 |
+| 23/10 | 6 |
+| 24/10 | 6 |
+| 25/10 | 7 |
+| 26/10 | 6 |
+| 27/10 | 7 |
+| 28/10 | 5 |
+| 29/10 | 5 |
+| 30/10 | 6 |
+| 31/10 | 4 |
+| 01/11 | 4 |
+| 02/11 | 4 |
+| 03/11 | 1 |
+| 04/11 | 1 |
 
 
-## 7. Mô tả từng Task
+## 7. Description từng Task
 
 ### EP-00 · Nền tảng kỹ thuật và chất lượng
 
@@ -380,7 +365,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 - Mỗi đề nghị gộp mã vào nhánh develop phải tự kiểm quy cách mã, kiểu dữ liệu và kiểm thử; một bước lỗi thì không được gộp.
 - Nhật ký máy chủ có thời gian, mức lỗi và tên sự kiện, không ghi mật khẩu, mã xác minh email, khoá phiên hoặc nội dung chat. Giữ nhật ký tối đa 14 ngày. Nhật ký dùng dạng JSON, tức bản ghi có các trường tên và giá trị để máy và người có thể tra cứu thống nhất.
 - Có địa chỉ /health để kiểm tra tình trạng máy chủ; chuẩn bị chỗ bổ sung trạng thái cơ sở dữ liệu và máy cờ khi chúng được nối vào.
-- Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE_ vì trình duyệt đọc được chúng.
+- Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE\_ vì trình duyệt đọc được chúng.
 
 **Việc cần làm**
 
@@ -452,6 +437,8 @@ Người kiểm thử cần dữ liệu, thao tác và kết quả đúng. Riên
 - Báo cáo không ghi đạt cho ca chưa thực hiện.
 
 **Phạm vi và phối hợp**
+
+Ước lượng lại 32 giờ: kế hoạch và mẫu ca/lỗi 8 giờ; chuẩn bị và xác minh bộ thế luật/máy cờ 16 giờ; đối chiếu yêu cầu, hướng dẫn và bàn giao dữ liệu 8 giờ. Đây là công việc chuẩn bị/kiểm chứng kỹ thuật theo đặc tả đã duyệt.
 
 Công việc này chuẩn bị phương pháp và dữ liệu. Người phụ trách từng nhóm chức năng tiếp tục viết biến thể, chạy thử và lưu bằng chứng của nhóm đó.
 
@@ -832,6 +819,8 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 - Mỗi luồng có mốc video và kết quả cuối của các phía liên quan; lỗi được sửa phải quay lại đoạn có đủ bước gây lỗi và kết quả mới trên bản sửa. Video không lộ bí mật hay mã xác minh còn hiệu lực.
 
 **Phạm vi và phối hợp**
+
+Ước lượng lại 8 giờ cho tổng duyệt D1–D10, chuẩn bị/reset dữ liệu giữa các lượt, ghi hình và kiểm tra đầy đủ bằng chứng bàn giao theo phạm vi hiện có.
 
 Đây là tổng duyệt và ghi bằng chứng trên bản phát hành. Không thay các phép đo tải, kiểm bảo mật hay kiểm sức chơi bằng việc video trình diễn chạy thành công.
 
@@ -1465,6 +1454,8 @@ Phòng chờ dùng chung địa chỉ phòng với lúc thi đấu nhưng có tr
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho kiểm tra đồng bộ ghế, Sẵn sàng và đếm ngược trên nhiều phiên theo yêu cầu hiện có.
+
 Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung chat/hình tiếng và điều khiển người xem được nối ở phần chức năng tương ứng, không dựng giả để coi đã hoàn tất.
 
 #### T28 · Kiểm thử US-02.1
@@ -1812,7 +1803,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 - Danh sách bạn hiện Trực tuyến, Đang đấu hoặc Ngoại tuyến bằng cả chữ và dấu nhận biết. Có huỷ kết bạn; thẻ Lời mời đang chờ có Chấp nhận/Từ chối. Chuông điều hướng hiển thị lời mời kết bạn và số đếm.
 - Nhắn tin và Thách đấu hiện vô hiệu, giải thích “Sắp ra mắt”. Màn Bạn bè không có nút mời vào phòng.
 - Trong hộp Chia sẻ phòng, thẻ Bạn bè chỉ dành cho tài khoản chính thức ngồi ghế. Bạn Trực tuyến có nút Mời; Ngoại tuyến không bấm được và ghi “Ngoại tuyến”; Đang đấu không bấm được, giải thích “Bạn bè đang trong ván khác”.
-- Người nhận thấy thông báo “Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]” với Tham gia/Từ chối và đếm 30 giây. Hết hạn hoặc từ chối thì thông báo biến mất, không lưu vào chuông.
+- Người nhận thấy thông báo “Người chơi \[Tên\] mời bạn tham gia phòng cờ \[Tên phòng\]” với Tham gia/Từ chối và đếm 30 giây. Hết hạn hoặc từ chối thì thông báo biến mất, không lưu vào chuông.
 - Bấm Tham gia phải dùng kết quả kiểm phòng hiện tại của máy chủ; hiện thông báo phù hợp khi phòng đầy, bị khoá hoặc người nhận đang chơi nơi khác.
 
 **Việc cần làm**
@@ -2070,6 +2061,8 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho kiểm tra SVG, lật bàn, kích thước màn hình và nhãn trợ năng theo các yêu cầu hiện có.
+
 Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, âm thanh và giao tiếp máy chủ được bổ sung trong các phần thao tác bàn cờ và ván online.
 
 #### T16 · Kiểm thử US-04.2
@@ -2166,6 +2159,8 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 - Cùng một nước được chọn bằng chuột hoặc chạm ở hướng Đỏ/Đen tạo cùng toạ độ thế cờ; kéo ngoài bàn không tạo nước.
 
 **Phạm vi và phối hợp**
+
+Bổ sung 4 giờ trong ước lượng cho đối chiếu click/kéo thả, gợi ý ô, đánh dấu và âm thanh ở các nhánh thao tác đã đặc tả.
 
 Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ từ chối phải được đồng bộ lại, không coi thao tác cục bộ là nước đã được chấp nhận.
 
@@ -2872,6 +2867,8 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 **Phạm vi và phối hợp**
 
+Bổ sung 4 giờ trong ước lượng cho ma trận quyền vào phòng PUBLIC/CODE_ONLY/LOCKED, kiểm lại và lưu bằng chứng theo phạm vi đã đặc tả.
+
 Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.
 
 #### T64 · Kiểm thử US-06.3
@@ -3023,9 +3020,9 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 - Khi thay một người trong cặp ngồi ghế, cả cặp mới chỉ thấy tin riêng từ khi cặp đó hình thành; người rời ghế mất quyền đọc. Cùng hai người đổi phe hoặc chơi ván tiếp vẫn giữ tin riêng.
 - Người xem mới vào chỉ thấy tin Kênh Chung từ lúc vào. Chuyển giữa phòng chờ và ván không xoá tin; đóng phòng thì xoá toàn bộ chat phòng.
 - Tin nhắn dài tối đa 200 ký tự. Mỗi người gửi tối đa 5 tin trong 10 giây; tin thứ 6 bị chặn với thông báo “Bạn gửi quá nhanh”.
-- Thay từ cấm bằng *** trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.
+- Thay từ cấm bằng \*\*\* trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.
 - Nội dung phải được hiển thị như văn bản thường, không chạy đoạn mã do người gửi chèn; không ghi nội dung chat vào nhật ký vận hành.
-- Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng *** rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký.
+- Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng \*\*\* rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký.
 
 **Việc cần làm**
 
@@ -3142,7 +3139,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 - Máy tính của người chơi mặc định chỉ Kênh Riêng, mở thêm được Kênh Chung song song và ẩn/hiện từng khung. Điện thoại dùng hai thẻ chọn kênh, mặc định Riêng. Người xem chỉ có Chung; gửi yêu cầu trực tiếp tới kênh riêng cũng phải bị từ chối.
 - Người xem mới vào không đọc được tin chung gửi trước lúc vào. Cùng cặp đổi bên hoặc chơi ván tiếp vẫn đọc tin riêng cũ; chuyển giữa chờ và đấu giữ tin và quyền kênh.
 - Đóng phòng phải xoá chat phòng. Thử nội dung chứa thẻ hoặc đoạn mã; trên màn hình chỉ là chữ, không được chạy.
-- Tin chứa từ cấm bị thay bằng *** trước khi phát. Thử chữ hoa/thường, có dấu/không dấu, chèn khoảng trắng/ký tự và thay 0 cho o, 1 cho i để tránh bỏ sót biến thể.
+- Tin chứa từ cấm bị thay bằng \*\*\* trước khi phát. Thử chữ hoa/thường, có dấu/không dấu, chèn khoảng trắng/ký tự và thay 0 cho o, 1 cho i để tránh bỏ sót biến thể.
 - Tin đúng 200 ký tự được xử lý; trên 200 bị chặn cả ở giao diện và máy chủ. Gửi 5 tin trong 10 giây rồi gửi tin thứ 6 phải báo “Bạn gửi quá nhanh” và không phát tin đó.
 - Thêm từ vào tệp cấu hình rồi khởi động lại dịch vụ để kiểm áp dụng danh sách mới, không cần sửa cơ sở dữ liệu.
 
@@ -3458,24 +3455,12 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.
 
 
-## 8. Dự phòng và điều kiện đổi kế hoạch
+## 8. Kiểm chứng và sử dụng dữ liệu
 
-Sáng 04/11 tổng duyệt; chỉ còn chiều 04/11 dự phòng. Nếu điều kiện bắt buộc chưa đạt, báo người phụ trách và cập nhật lịch; không tự cắt phạm vi hoặc hạ ngưỡng. Bảng giờ từng Sprint tính theo phần thời gian thực nằm trong Sprint; bảng nhóm Task theo Sprint bắt đầu.
+T51 hồi quy sau triển khai; T70 chờ T51, T66 và toàn bộ QA chuyên đề; T71 tổng duyệt bản phát hành. Mọi tiêu chí bắt buộc cần bằng chứng thực tế. Nếu đầu vào trễ hoặc ước lượng không đủ, cập nhật lịch thay vì tự hạ ngưỡng hoặc ghi PASS cho ca chưa chạy.
 
-Áp dụng 18 điều chỉnh giảm giờ theo khả năng AI hỗ trợ và tái sử dụng, tổng 920 xuống 848 giờ; xem jira/DANH-GIA-ORIGINAL-ESTIMATE.md. Giữ nguyên Description và tiêu chí nghiệm thu.
+CSV là bản xuất đối chiếu **các mục đã tồn tại**, gồm Issue Key, Resolution và định danh tài khoản. Không nhập như các mục mới; không dùng import CSV để ép chuyển trạng thái. Script local không ghi lên Jira.
 
-## 9. Chuẩn bị nhập Jira
+Để cập nhật nguồn, lấy snapshot Jira mới vào `jira/current-jira-snapshot.json`, chạy `python3 jira/sync_plan_from_snapshot.py`, `python3 jira/build_plan.py`, rồi `python3 jira/build_plan.py --check`. Bộ kiểm đối chiếu dữ liệu với snapshot, 268 AC, phụ thuộc, giới hạn ngày, người kiểm độc lập và các đầu ra. Đây là kiểm dữ liệu kế hoạch, chưa phải kiểm phần mềm.
 
-Components và Labels của 107 mục đã khai báo trong dữ liệu nguồn và CSV. Xem [danh mục và phân loại đầy đủ](jira/COMPONENTS-LABELS.md); tạo/đối chiếu Components trước khi nhập, ánh xạ đủ các cột Components/Labels lặp tên. Nhãn chinh-fe/chinh-be/chinh-qa-devops xác định nhóm chính của Task.
-
-**Chưa dùng CSV này để cập nhật trực tiếp Jira khi cần giữ XIAN-1–XIAN-107.** Issue Id là mã tham chiếu nội bộ, không phải khóa XIAN hoặc ID hệ thống Jira. CSV chưa có cột khóa cập nhật và định danh tài khoản thật. Xem [rà soát trước nhập](jira/RA-SOAT-TRUOC-NHAP-JIRA.md).
-
-1. Lưu/export bản Jira hiện có và xác định chính xác tập mục cũ cần thay. Tệp này không tự xoá hay nhập dữ liệu.
-2. Đối chiếu bốn Sprint và bốn Fix version trước khi tạo để tránh trùng. Epic/Story không gán Sprint. Fix version của Task theo Sprint hoàn tất; Sprint/nhãn của Task là Sprint bắt đầu. Khi đóng Sprint, chuyển việc chưa hoàn thành sang Sprint kế tiếp và giữ lịch sử.
-3. Ánh xạ bảy tên Assignee/Reporter sang tài khoản Jira thực tế; kiểm quyền và các trường Time tracking/Story Points dành cho Task. CSV hiện giữ tên người để PO kiểm, chưa có định danh tài khoản Jira.
-4. Thử nhập và kiểm trên cấu hình Jira thực tế: UTF-8, ngày dd/MM/yyyy, Original Estimate tính bằng giây; Issue Id/Parent Id ánh xạ quan hệ, Story ánh xạ relates to, các cột Blocked by ánh xạ is blocked by. Không giả định mọi giao diện nhập đều nhận các trường giống nhau.
-5. Sau thử nhập, đếm 9/27/71, kiểm cha Epic, liên kết Story/phụ thuộc, người làm, Sprint/ngày/điểm/giờ và trạng thái To Do. Nếu trình nhập không nhận liên kết bằng ID nội bộ, lập bảng ID→issue key sau nhập rồi tạo liên kết theo bảng đó.
-
-## 10. Tái tạo và kiểm tra
-
-Nguồn lịch, phân công và phạm vi: `jira/plan-data.json`. Nguồn Description của toàn bộ 107 mục: `jira/descriptions.json`; sửa tệp này rồi sinh lại, không sửa riêng CSV hoặc bản Markdown. Nguồn luật/AC: BA và BACKLOG-P1. Bản đồ nghiệm thu: `jira/AC-TASK-MAP.json`. Chạy `python3 jira/build_plan.py` để sinh lại tệp; `python3 jira/build_plan.py --check` kiểm số lượng, lịch, phụ thuộc, người kiểm độc lập, đầu vào268AC và độ đồng bộ các đầu ra. Không cần thư viện ngoài. Báo cáo: [KIEM-TRA-KE-HOACH](jira/KIEM-TRA-KE-HOACH.md).
+[Báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md) · [Trạng thái hiện hành](jira/CURRENT-JIRA-STATE.md).

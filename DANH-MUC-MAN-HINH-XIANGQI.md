@@ -289,7 +289,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 ## 7. BẢNG MA TRẬN 37 THÀNH PHẦN TOÀN DIỆN
 
-**Ưu tiên (đã duyệt 03/10, cập nhật 07/10):** P1 = MVP hạn 05/11/2026 (**26 thành phần**, gồm `SCR-ONBOARDING` do PO kéo lên 04/10/2026, `MODAL-GUEST-NAME` và `MODAL-SIDE-SWAP-PROMPT` lên P1 ngày 07/10), P2 = làm sau (**11 thành phần**). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
+**Ưu tiên (đã duyệt 03/10, cập nhật 07/10):** P1 = MVP hạn kế hoạch hiện hành 04/11/2026 (đồng bộ Jira ngày 10/10; mốc gốc 05/11) (**26 thành phần**, gồm `SCR-ONBOARDING` do PO kéo lên 04/10/2026, `MODAL-GUEST-NAME` và `MODAL-SIDE-SWAP-PROMPT` lên P1 ngày 07/10), P2 = làm sau (**11 thành phần**). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
 * **Lối vào cấp điều hướng chính** (thẻ Đánh Thường ghép ngẫu nhiên và Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, liên kết *Quên mật khẩu?* ở màn đăng nhập (PO duyệt 04/10/2026; nút Khách hoạt động ở P1 từ 07/10), nút Nhắn tin và Thách đấu ở Bạn bè; **nút Đăng nhập/Đăng ký bằng Google hoạt động ở P1**, PO quyết định 04/10/2026) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.

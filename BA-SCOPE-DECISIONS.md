@@ -1,5 +1,7 @@
 # BIÊN BẢN CHỐT YÊU CẦU NGHIỆP VỤ & PHẠM VI SẢN PHẨM (BA SCOPE FREEZE)
 
+> **Lịch triển khai hiện hành (10/10/2026):** Jira và repo đã đồng bộ 880 giờ, hạn hoàn thành/Release v1.0 04/11/2026; 36 mục BA Done, 71 Task To Do, chưa bắt đầu Sprint. Các mốc 05/11 trong quyết định có ngày bên dưới được giữ như lịch sử; lịch thực hiện hiện tại xem [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Không thay đổi phạm vi hoặc tiêu chí nghiệp vụ đã chốt.
+
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  

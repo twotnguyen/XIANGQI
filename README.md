@@ -2,7 +2,7 @@
 
 Ứng dụng web chơi cờ tướng trực tuyến tiếng Việt: tự tạo phòng mời bạn so tài, người xem, chat, camera/mic, đánh với máy theo cấp độ. Đồ án môn **Quản trị Dự án Công nghệ Thông tin**: mô phỏng toàn bộ quy trình làm dự án với khách hàng, từ phỏng vấn yêu cầu, lập kế hoạch trên Jira đến bàn giao.
 
-> **Trạng thái (09/10/2026):** **Giai đoạn 3 — lập lại kế hoạch Jira, chưa triển khai sản phẩm.** Quyết định nghiệp vụ cập nhật đến 09/10 ở [BA Phần 0](BA-SCOPE-DECISIONS.md); backlog có **9 Epic, 27 Story, 268 tiêu chí nghiệm thu**. [Kế hoạch mới](KE-HOACH-JIRA.md) giữ **71 Task, 848 giờ**, đã kiểm các ràng buộc lịch và truy vết; đây là bản kế hoạch để review, không phải kết quả thực thi hoặc bằng chứng gate đã đạt. Ngày 09/10 làm BA/kế hoạch, ngày phát triển đầy đủ đầu tiên 10/10. Đã chuẩn bị [tệp nhập Jira](jira/xian-import.csv), **chưa xoá hoặc nhập dữ liệu Jira**. Repo có công cụ lập kế hoạch, chưa có mã nguồn sản phẩm. **Demo: 05/11/2026.**
+> **Trạng thái (10/10/2026):** kế hoạch repo đã đồng bộ Jira XIAN: **9 Epic + 27 Story BA Done, 71 Task To Do, 880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả **4 Sprint chưa bắt đầu**. [Kế hoạch](KE-HOACH-JIRA.md), [trạng thái hiện hành](jira/CURRENT-JIRA-STATE.md), [bản kiểm tra](jira/KIEM-TRA-KE-HOACH.md) và [CSV đối chiếu](jira/xian-import.csv) cùng dùng snapshot Jira; không phải bằng chứng phần mềm đã được nghiệm thu.
 
 ---
 
@@ -28,8 +28,8 @@
 |---|---|---|
 | 1. Ý tưởng và chức năng tổng quan | Phỏng vấn khách hàng, chốt phạm vi, danh mục màn hình | Xong 03/10/2026 |
 | 2. Phân tích chi tiết | Quyết định nghiệp vụ, review BA, backlog P1 (US/AC/TC, NFR, cổng kiểm chứng) | Quyết định BA cập nhật đến 09/10; AC/TC đã đặc tả, chưa chạy kiểm thử |
-| **3. Lập kế hoạch Jira** | Tách Task, ước lượng giờ, phân công 7 người, xếp Sprint, tạo lên XIAN | **Đang làm** |
-| 4. Xây dựng và nghiệm thu | Code, test, demo D1–D10, bàn giao | Dự kiến S1–S4 (10/10 – 04/11), demo 05/11 |
+| **3. Lập kế hoạch Jira** | Tách Task, ước lượng giờ, phân công 7 người, xếp Sprint, tạo lên XIAN | **Đã đồng bộ Jira, chưa bắt đầu Sprint** |
+| 4. Xây dựng và nghiệm thu | Code, test, demo D1–D10, bàn giao | Dự kiến S1–S4 (10/10 – 04/11), tổng duyệt và hạn hoàn thành 04/11 |
 
 Chỉ chuyển giai đoạn khi PO xác nhận giai đoạn trước đã ổn.
 
@@ -37,16 +37,15 @@ Chỉ chuyển giai đoạn khi PO xác nhận giai đoạn trước đã ổn.
 
 | Sprint | Thời gian | Mục tiêu | Release |
 |---|---|---|---|
-| BA/kế hoạch | 09/10 | Lập lại kế hoạch và chuẩn bị tệp Jira; không phải Sprint phát triển | — |
+| BA/kế hoạch | Đã chốt | 36 Epic/Story Done; không phải Sprint triển khai | — |
 | S1 | 10/10 – 16/10 | Khung ứng dụng, đăng ký OTP, lõi luật/bàn cờ; thử nghiệm sớm media, xác thực và phiên | v0.1 |
 | S2 | 17/10 – 23/10 | Tạo/vào phòng, ván online cơ bản, Google/Khách, bản máy cờ đầu tiên để đo | v0.2 |
 | S3 | 24/10 – 30/10 | Hoàn tất triển khai P1: bạn bè, chat/media, AI, phiên, Sảnh/người xem, phục hồi; kiểm thử chuyên đề | v0.3 |
-| S4 | 31/10 – 04/11 | Kiểm thử tích hợp, đo ngưỡng cuối và demo D1–D10; lịch cơ sở xong sáng 04/11, chiều 04/11 dự phòng | v1.0 |
-| Demo | **05/11** | Nộp và demo | |
+| S4 | 31/10 – 04/11 | Hồi quy, đo ngưỡng cuối, đóng gói 03/11 và tổng duyệt D1–D10 ngày 04/11 (8 giờ) | v1.0 |
 
-Làm cả cuối tuần. Lập kế hoạch theo **8 giờ/người/ngày**; phần 8 → 12 giờ là dự phòng. Mỗi người chỉ làm một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, **cao nhất 7 Task chạy song song trong lịch mới** (chi tiết: KE-HOACH-JIRA.md). Đây là lịch dự kiến đã kiểm ràng buộc; công suất trống không tự bảo đảm mọi việc sẽ đúng ước lượng.
+Làm cả cuối tuần. Lập kế hoạch tối đa **8 giờ/người/ngày**, mỗi người một Task/ngày. Task phụ thuộc bắt đầu từ ngày sau khi Task trước kết thúc; **cao nhất 7 Task chạy song song trong lịch mới** (chi tiết: KE-HOACH-JIRA.md). Đây là lịch dự kiến đã kiểm ràng buộc; công suất trống không tự bảo đảm mọi việc sẽ đúng ước lượng.
 
-> Rà soát trước nhập: [RA-SOAT-TRUOC-NHAP-JIRA.md](jira/RA-SOAT-TRUOC-NHAP-JIRA.md). Bộ local đã đồng bộ; còn phải ánh xạ khóa XIAN và tài khoản thật trước khi cập nhật Jira.
+> Trường Sprint là nguồn lịch chính. Có 13 nhãn sprint lịch sử trên Jira chưa khớp trường Sprint; danh sách ở [báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md). Không dùng nhãn cũ để lọc lịch.
 
 ## Nhóm
 
@@ -60,11 +59,11 @@ Làm cả cuối tuần. Lập kế hoạch theo **8 giờ/người/ngày**; ph�
 | Kỳ | Frontend | Developer, kiêm kiểm thử khi cần |
 | Thư | Tester | Kiểm thử chính |
 
-Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md) mục 3 và 7.
+Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md) mục 2, 3 và 6.
 
 ## Phạm vi
 
-### P1 — MVP, hạn 05/11/2026 (8 mục tiêu cốt lõi của khách hàng)
+### P1 — MVP, hạn 04/11/2026 (8 mục tiêu cốt lõi của khách hàng)
 
 | # | Mục tiêu | Nội dung P1 |
 |---|---|---|
@@ -146,7 +145,7 @@ Thứ tự ưu tiên khi mâu thuẫn: **BA Phần 0 → BA → BACKLOG-P1 → D
 
 | Rủi ro | Ứng phó |
 |---|---|
-| Khối lượng P1 lớn (848 giờ kế hoạch) | Có ván online cơ bản ở S2, triển khai xong đầu S4; lịch cơ sở kết thúc sáng 04/11, giữ chiều 04/11 dự phòng. Không đưa 8 → 12 giờ/ngày vào lịch cơ sở; báo PO sớm nếu lệch ước lượng |
+| Khối lượng P1 lớn (880 giờ kế hoạch) | Có ván online cơ bản ở S2, triển khai xong đầu S4; tổng duyệt chiếm ngày 04/11, không còn nửa ngày dự phòng cố định. Không đưa 8 → 12 giờ/ngày vào lịch cơ sở; báo PO sớm nếu lệch ước lượng |
 | Phần khó về realtime, máy cờ, LiveKit và CI vẫn tập trung ở Tình | Tùng sở hữu lõi luật; công bố giao diện kết nối đầu S1 để làm song song; theo dõi tải điều phối chưa có giờ riêng |
 | Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo | S1 chuẩn bị bộ thế/đáp án, S2 đo bản đầu tiên, S3 tối ưu, S4 kiểm GATE-ENGINE cuối; không đạt thì báo PO, không tự hạ ngưỡng |
 | Socket.IO và LiveKit chạy đồng thời, hạn mức LiveKit Cloud miễn phí | S1 thử media LAN/Cloud/HTTPS; S3 tích hợp; S4 đo realtime/tải và ghi bằng chứng đầy đủ |

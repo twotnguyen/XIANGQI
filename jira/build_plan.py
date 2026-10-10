@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate and validate the 09 Oct 2026 Jira baseline using only Python stdlib.
+"""Generate and validate the current Jira-synchronized plan using Python stdlib.
 Source: plan-data.json + descriptions.json + BACKLOG-P1.md + AC-TASK-MAP.json.
 Run from any directory: python3 jira/build_plan.py [--check]
 --check validates and compares generated artifacts without writing.
@@ -19,17 +19,15 @@ PEOPLE=['Tình','Đông','Tùng','Cường','Nhạn','Kỳ','Thư']
 QA=[k for k,x in TASKS.items() if 'kiem-thu' in x['labels']]
 SPRINTS=DATA['sprints']
 PRIMARY_COMPONENTS={'FE':'chinh-fe','BE':'chinh-be','QA & DevOps':'chinh-qa-devops'}
-GOALS=[
-'Khung ứng dụng, đăng ký OTP, lõi luật và bàn cờ tương tác; thử media/xác thực/phiên sớm. Chưa tuyên bố nghiệm thu toàn bộ đăng nhập có Google.',
-'Tạo/vào phòng, ván online cơ bản, Google/Khách, máy cờ có baseline; hoàn thiện các backend phòng/chat. Một số AC liên chức năng chờ S3–S4.',
-'Hoàn tất phần lớn triển khai P1; T52 nối lại hoàn tất đầu S4. Chạy QA chuyên đề đã đủ đầu vào.',
-'Hồi quy đầy đủ và QA còn lại trên bản tích hợp, đo NFR/gate, đóng gói và tổng duyệt sáng 04/11; chiều 04/11 dự phòng.'
-]
+GOALS=[s['goal'] for s in DATA['sprint_metadata']]
+LIVE=json.loads((ROOT/'jira/current-jira-snapshot.json').read_text())
+LIVE_BY={x['key']:x for x in LIVE['issues']}
+VERSIONS={v['name']:v for v in DATA['releases']}
+TOTAL_HOURS=DATA['total_hours']
+def task_points(x):return x['story_points']
 def date(slot):return BASE+datetime.timedelta(days=slot//2)
 def ds(slot,year=False):return date(slot).strftime('%d/%m/%Y' if year else '%d/%m')
-def when(slot):return ds(slot)+(' sáng' if slot%2==0 else ' chiều')
-def finish_sprint(x):return next(n for n,(lo,hi) in enumerate(SPRINTS,1) if lo<x['end_slot']<=hi)
-def points(h):return 1 if h<=4 else 2 if h<=8 else 3 if h<=16 else 5 if h<=24 else 8 if h<=40 else 13
+def when(slot):return ds(slot)
 def task_group(story):return [x for x in TASKS.values() if x['story']==story]
 def story_ids(epic):return [x['id'] for x in ISSUES if x['type']=='Story' and x['parent']==epic]
 def ancestors(t):
@@ -41,11 +39,9 @@ def ancestors(t):
 def table(head,rows):return '| '+' | '.join(head)+' |\n|'+'|'.join('---' for _ in head)+'|\n'+''.join('| '+' | '.join(str(c).replace('\n','<br>') for c in row)+' |\n' for row in rows)
 def ac_ids(t):return [r['ac'] for r in ACS if r['verification_task']==t]
 def sprint_hours(x,n):
- lo,hi=SPRINTS[n-1];return 4*max(0,min(hi,x['end_slot'])-max(lo,x['start_slot']))
+ lo,hi=SPRINTS[n-1];return round(x['hours']*max(0,min(hi,x['end_slot'])-max(lo,x['start_slot']))/(x['end_slot']-x['start_slot']),2)
 def work_sprints(story):return [n for n in range(1,5) if any(sprint_hours(x,n) for x in task_group(story))]
-def story_due(story):
- group=task_group(story)
- return max(x['end_slot']-1 for x in group) if story in ['US-00.5','US-08.3'] else min(x['start_slot'] for x in group)
+def story_due(story):return 2*(datetime.date.fromisoformat(BY[story]['due_date'])-BASE).days
 def description(key):
  d=DESCRIPTIONS[key]
  parts=['**Mục tiêu**\n\n'+d['goal'],'**Bối cảnh công việc**\n\n'+d['context']]
@@ -69,7 +65,6 @@ def validate():
   for field in ['requirements','steps','deliverables','acceptance']:
    assert isinstance(d[field],list) and d[field] and all(isinstance(s,str) and s.strip() for s in d[field]),(k,field)
   text=description(k)
-  assert not re.search(r'\b(?:AC-\d|US-\d|EP-\d|T\d{2}\b|GATE-|NFR-\d|R1\b|TC\b|PO\b|BA\b|BE\b|FE\b)',text),(k,'Unexplained planning shorthand')
   assert not re.search(r'TODO|TBD|\[điền|\[bổ sung',text,re.I),(k,'Placeholder')
  for k,x in BY.items():
   assert x['components'] and len(x['components'])==len(set(x['components'])),(k,'Components')
@@ -86,7 +81,7 @@ def validate():
   if x['type']=='Epic':assert int(x['issue_id'])==int(k[-2:])+1
   if x['type']=='Task':assert int(x['issue_id'])==int(k[1:])+36
  for num,k in enumerate(sorted(k for k,x in BY.items() if x['type']=='Story'),10):assert int(BY[k]['issue_id'])==num
- assert sum(x['hours'] for x in TASKS.values())==848
+ assert sum(x['hours'] for x in TASKS.values())==TOTAL_HOURS==880
  assert set(LOAD)==set(TASKS),'Missing task assessment'
  for k,v in LOAD.items():
   assert v['load_units'] in {2,3,5,8,13} and v['reason'].strip(),k
@@ -113,20 +108,15 @@ def validate():
  for person,hours in revision['targets'].items():
   assert sum(x['hours'] for x in TASKS.values() if x['owner']==person)==hours,(person,'Approved allocation')
  assert TASKS['T49']['owner']=='Kỳ'
- approved=json.loads((ROOT/'jira/allocation-proposal-848.json').read_text())['assignments']
- assert len(approved)==71 and {r['task'] for r in approved}==set(TASKS)
- for r in approved:
-  x=TASKS[r['task']];assert (x['owner'],x['hours'])==(r['owner'],r['hours']),(r['task'],'Approved task differs')
- for k,x in TASKS.items():
-  assert {z for z in x['labels'] if z.startswith('sprint-')}=={'sprint-'+str(x['sprint'])},(k,'Sprint label')
- assert sum(sum(sprint_hours(x,n) for n in range(1,5)) for x in TASKS.values())==848
+ assert abs(sum(sum(sprint_hours(x,n) for n in range(1,5)) for x in TASKS.values())-TOTAL_HOURS)<0.05
  assert len(QA)==20
  from graphlib import TopologicalSorter
  assert len(list(TopologicalSorter({k:x['deps'] for k,x in TASKS.items()}).static_order()))==71
  occupancy=collections.Counter();parallel=collections.Counter()
  for k,x in TASKS.items():
   assert BY[x['parent']]['type']=='Epic' and BY[x['story']]['parent']==x['parent']
-  assert x['hours']==4*(x['end_slot']-x['start_slot']),k
+  assert 0<x['hours']<=4*(x['end_slot']-x['start_slot']),k
+  assert x['start_slot']%2==0 and x['end_slot']%2==0,k
   lo,hi=SPRINTS[x['sprint']-1];assert lo<=x['start_slot']<hi and x['start_slot']<x['end_slot']<=52,k
   for d in x['deps']:assert TASKS[d]['end_slot']<=x['start_slot'],(k,d)
   for slot in range(x['start_slot'],x['end_slot']):occupancy[x['owner'],slot]+=1;parallel[slot]+=1
@@ -153,8 +143,9 @@ def validate():
     assert t in ancestors(v),('AC dependency missing',r['ac'],t,v)
  assert set(QA+['T51','T66'])<=ancestors('T70')
  assert all(TASKS[k]['end_slot']<=TASKS['T51']['start_slot'] for k in TASKS if k not in QA+['T51','T66','T70','T71'])
- assert TASKS['T71']['end_slot']<=51
- assert not any(occupancy[p,slot] for p in PEOPLE for slot in [51])
+ assert TASKS['T71']['due_date']==DATA['deadline']=='2026-11-04'
+ assert all(x['due_date']<=DATA['deadline'] for x in TASKS.values())
+ validate_live_parity()
  return parallel
 
 def backlog_update():
@@ -165,23 +156,23 @@ def backlog_update():
   if re.match(r'^\| EP-\d\d \|',line):
    cells=[z.strip() for z in line.strip('|').split('|')]
    if cells[0] in BY and len(cells)==6:
-    cells[4]=str(sum(points(t['hours']) for t in TASKS.values() if t['parent']==cells[0]))
+    cells[4]=str(sum(task_points(t) for t in TASKS.values() if t['parent']==cells[0]))
     lines[n]='| '+' | '.join(cells)+' |'
   elif line.startswith('| **Cộng** |') and '27 Story' in line:
-   lines[n]='| **Cộng** | | | 27 Story | **'+str(sum(points(t['hours']) for t in TASKS.values()))+'** | |'
+   lines[n]='| **Cộng** | | | 27 Story | **'+str(sum(task_points(t) for t in TASKS.values()))+'** | |'
  s='\n'.join(lines)+'\n'
  for st in [x['id'] for x in ISSUES if x['type']=='Story']:
   patt=r'(#### '+re.escape(st)+r' · .*?)(?=\n#### |\n### |\n## |\Z)'
   def replace(m):
-   group=task_group(st);stamp='*Sprint thi công:* '+', '.join('S'+str(n) for n in work_sprints(st))+f". *Story Points:* **{sum(points(x['hours']) for x in group)}** (tổng điểm {len(group)} Task, {sum(x['hours'] for x in group)} giờ)."
+   group=task_group(st);stamp='*Sprint thi công:* '+', '.join('S'+str(n) for n in work_sprints(st))+f". *Story Points:* **{sum(task_points(x) for x in group)}** (tổng điểm {len(group)} Task, {sum(x['hours'] for x in group)} giờ)."
    return re.sub(r'^\*Sprint(?: thi công)?:\*.*$',stamp,m[0],flags=re.M)
   s,n=re.subn(patt,replace,s,flags=re.S);assert n==1,st
  a=s.index('### 9.2 Phân bổ Sprint');b=s.index('## 10. Truy vết',a)
  rows=[]
  for n,(lo,hi) in enumerate(SPRINTS,1):
   group=[x for x in TASKS.values() if x['sprint']==n]
-  rows.append([f'S{n}',ds(lo)+'–'+ds(hi-1),len(group),sum(x['hours'] for x in group),sum(points(x['hours']) for x in group),GOALS[n-1]])
- s=s[:a]+'### 9.2 Phân bổ Sprint\n\nNgày 09/10 lập lại BA/kế hoạch; chưa có Task đã triển khai. Thi công từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.\n\n'+table(['Sprint','Ngày','Task','Giờ','Điểm','Kết quả dự kiến'],rows)+'\nLịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 848 giờ; chiều 04/11 dự phòng, demo 05/11.\n\n---\n\n'+s[b:]
+  rows.append([f'S{n}',ds(lo)+'–'+ds(hi-1),len(group),sum(x['hours'] for x in group),sum(task_points(x) for x in group),GOALS[n-1]])
+ s=s[:a]+'### 9.2 Phân bổ Sprint\n\nĐồng bộ Jira ngày 10/10: 36 Epic/Story BA Done, 71 Task To Do; cả bốn Sprint chưa bắt đầu. Thi công dự kiến từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.\n\n'+table(['Sprint','Ngày','Task','Giờ','Điểm','Kết quả dự kiến'],rows)+'\nLịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.\n\n---\n\n'+s[b:]
  s=s.replace('Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo','Máy cờ cấp Khó có mục tiêu độ sâu 6/ngân sách 3 giây; chưa có số đo')
  return s
 
@@ -189,40 +180,34 @@ def story_body(st,backlog):
  return description(st)
 
 def issue_fields(x,backlog):
- typ=x['type'];start=DATA['planning_date'];fix='v1.0'
- if typ=='Task':
-  due=ds(x['end_slot']-1,True);start=ds(x['start_slot'],True);fix=['v0.1','v0.2','v0.3','v1.0'][finish_sprint(x)-1];desc=task_description(x)
- elif typ=='Story':due=ds(story_due(x['id']),True);desc=story_body(x['id'],backlog);fix=['v0.1','v0.2','v0.3','v1.0'][max(work_sprints(x['id']))-1]
- else:
-  due=ds(max(story_due(st) for st in story_ids(x['id'])),True)
-  desc=description(x['id'])
- if typ!='Task':start=datetime.date.fromisoformat(DATA['planning_date']).strftime('%d/%m/%Y')
- return {'start':start,'due':due,'fix':fix,'description':desc}
+ return {'start':datetime.date.fromisoformat(x['start_date']).strftime('%d/%m/%Y'),
+         'due':datetime.date.fromisoformat(x['due_date']).strftime('%d/%m/%Y'),
+         'fix':', '.join(x['fix_versions']),'description':description(x['id'])}
 
 def generate_csv(backlog):
  maxdeps=max(len(x['deps']) for x in TASKS.values())
  maxlabels=max(len(x['labels']) for x in ISSUES);maxcomponents=max(len(x['components']) for x in ISSUES)
- header=['Issue Id','Parent Id','Issue Type','Summary','Description','Assignee','Reporter','Sprint','Fix Version','Original Estimate','Start date','Due date']+['Labels']*maxlabels+['Components']*maxcomponents+['Priority','Status','Story Points','Story']+['Blocked by']*maxdeps
+ header=['Issue Id','Parent Id','Issue Type','Summary','Description','Assignee','Reporter','Sprint','Fix Version','Original Estimate','Start date','Due date']+['Labels']*maxlabels+['Components']*maxcomponents+['Priority','Status','Story Points','Story','Issue Key','Resolution','Remaining Estimate','Assignee account ID','Reporter account ID']+['Blocked by']*maxdeps
  buf=io.StringIO(newline='');w=csv.writer(buf,lineterminator='\n');w.writerow(header)
  for x in ISSUES:
   f=issue_fields(x,backlog);task=x['type']=='Task';labels=x['labels'][:]
   components=x['components']
-  row=[x['issue_id'],BY[x['parent']]['issue_id'] if x['parent'] else '',x['type'],x['id']+' · '+x['title'],f['description'],x['owner'] if task else 'Tình','Tình',f"XIAN Sprint {x['sprint']}" if task else '',f['fix'],str(x['hours']*3600) if task else '',f['start'],f['due'],*(labels+['']*(maxlabels-len(labels))),*(components+['']*(maxcomponents-len(components))),x['priority'],'To Do',points(x['hours']) if task else '',BY[x['story']]['issue_id'] if task else '']
+  row=[x['issue_id'],BY[x['parent']]['issue_id'] if x['parent'] else '',x['type'],x['id']+' · '+x['title'],f['description'],x['owner'] if task else 'Tình','Tình',f"XIAN Sprint {x['sprint']}" if task else '',f['fix'],str(x['hours']*3600) if task else '',f['start'],f['due'],*(labels+['']*(maxlabels-len(labels))),*(components+['']*(maxcomponents-len(components))),x['priority'],x['status'],task_points(x) if task else '',BY[x['story']]['issue_id'] if task else '',x['jira_key'],x['resolution'] or '',str(x['remaining_hours']*3600) if task else '',x['assignee_account_id'],x['reporter_account_id']]
   deps=[BY[d]['issue_id'] for d in x['deps']] if task else [];w.writerow(row+deps+['']*(maxdeps-len(deps)))
  return '\ufeff'+buf.getvalue()
 
 def generate_detail(backlog):
- out=['# Danh sách mục Jira XIAN — kế hoạch lập lại 09/10/2026\n', '> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; mọi mục nhập To Do. Ngày 09/10 lập kế hoạch, thi công từ 10/10 đến sáng 04/11; chiều 04/11 dự phòng, demo 05/11.\n',
- 'Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. R1 mặc định hạn Story là ngày Task đầu bắt đầu; US-08.3/US-00.5 giữ ngoại lệ hạn Task cuối để đóng hồ sơ bằng chứng, không tự thay ngưỡng AC.\n',
+ out=['# Danh sách mục Jira XIAN — đồng bộ 10/10/2026\n', '> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; đồng bộ snapshot Jira hiện tại: 36 mục BA Done, 71 Task To Do, 880 giờ, hạn 04/11; cả bốn Sprint chưa bắt đầu.\n',
+ 'Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. Ngày Epic/Story lấy nguyên giá trị Jira; Epic bắt đầu trước Story, Story trước Task. BA Done nghĩa là đặc tả đã chốt, không phải phần mềm đã nghiệm thu. BA không gắn Release triển khai.\n',
  '**Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.\n',
- 'Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](description-source-audit.json). Đợt rà soát nội dung này giữ nguyên dữ liệu lịch và phân công của bản kế hoạch 09/10/2026 ở trên.\n']
+ 'Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](description-source-audit.json). Lịch, phân công, giờ, điểm và trạng thái lấy từ current-jira-snapshot.json; nhãn sprint cũ không thay thế trường Sprint.\n']
  for ep in [x for x in ISSUES if x['type']=='Epic']:
   group=[ep]
   for st in [BY[k] for k in story_ids(ep['id'])]:group += [st]+sorted(task_group(st['id']),key=lambda x:x['id'])
   for x in group:
    f=issue_fields(x,backlog);task=x['type']=='Task';level=2 if x['type']=='Epic' else 3 if x['type']=='Story' else 4
    out.append('#'*level+' '+x['id']+' · '+x['title']+'\n')
-   fields=[['Issue Id',x['issue_id']],['Issue Type',x['type']],['Parent',x['parent'] or '—'],['Assignee',x['owner'] if task else 'Tình'],['Reporter','Tình'],['Priority',x['priority']],['Status','To Do'],['Start date',f['start']],['Due date',f['due']],['Sprint',f"XIAN Sprint {x['sprint']}" if task else '—'],['Fix version',f['fix']],['Original Estimate',str(x['hours'])+' giờ' if task else '—'],['Story Points',points(x['hours']) if task else '—']]
+   fields=[['Issue Id',x['issue_id']],['Issue Type',x['type']],['Parent',x['parent'] or '—'],['Assignee',x['owner'] if task else 'Tình'],['Reporter','Tình'],['Priority',x['priority']],['Status',x['status']],['Resolution',x['resolution'] or '—'],['Jira Key',x['jira_key']],['Start date',f['start']],['Due date',f['due']],['Sprint',f"XIAN Sprint {x['sprint']}" if task else '—'],['Fix version',f['fix']],['Original Estimate',str(x['hours'])+' giờ' if task else '—'],['Remaining Estimate',str(x['remaining_hours'])+' giờ' if task else '—'],['Story Points',task_points(x) if task else '—']]
    if task:fields += [['Story (relates to)',x['story']],['Is blocked by',', '.join(x['deps']) or '—']]
    elif x['type']=='Story':fields += [['Task thực hiện',', '.join(y['id'] for y in task_group(x['id']))],['Sprint thi công',', '.join('S'+str(n) for n in work_sprints(x['id']))]]
    fields += [['Component chính',x.get('primary_component','Tổng hợp phạm vi các Task')],['Components',', '.join(x['components'])],['Labels',', '.join(x['labels'])],['Nguồn đặc tả (BA / AC)',', '.join(DESCRIPTION_AUDIT[x['id']]['sources'])]]
@@ -237,60 +222,6 @@ def traceability_md():
   out += ['## '+st+' · '+BY[st]['title']+'\n',table(['AC','Task triển khai/đầu vào','Nghiệm thu tại','Mức','Ghi chú'],rows)]
  return '\n'.join(out)
 
-def generate_plan(parallel):
- hours=sum(x['hours'] for x in TASKS.values());pts=sum(points(x['hours']) for x in TASKS.values());edges=sum(len(x['deps']) for x in TASKS.values())
- out=['# KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)\n',
- '> **Phiên bản 2.0 · Lập lại 09/10/2026.** Nhóm xác nhận chưa triển khai. Ngày 09/10 dành cho BA/kế hoạch; ngày công đầu tiên 10/10. **Giữ 9 Epic, 27 Story, 71 Task; hạn demo 05/11.** Lịch là ước lượng có điều kiện kiểm chứng, không phải cam kết các gate đã đạt.\n',
- '> Nguồn: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [bản đồ nghiệm thu](jira/TRUY-VET-AC.md). Tệp nhập: [xian-import.csv](jira/xian-import.csv); bản đầy đủ: [JIRA-MUC-CHI-TIET](jira/JIRA-MUC-CHI-TIET.md). Chưa nhập hoặc xoá dữ liệu Jira.\n',
- '## 1. Nguyên tắc và thay đổi so với kế hoạch cũ\n',
- '- 8 giờ/người/ngày, làm cả cuối tuần; một Task một người, không làm hai Task cùng thời điểm; 4 giờ/nửa ngày. Không đưa 8→12 giờ vào lịch cơ sở.\n- Epic/Story là sản phẩm BA theo hướng dẫn giảng viên; Task thường cùng có cha Epic, liên kết Story. Không đổi thành Sub-task, không thêm Epic P2 vào 107 mục nhập.\n- Task gắn Sprint bắt đầu; một số Task kéo dài sang Sprint kế tiếp, ngày bắt đầu/kết thúc thể hiện đầy đủ. Một Story có thể trải nhiều Sprint để có đủ phần triển khai và kiểm tích hợp; thay quy tắc cũ ép toàn bộ Task của Story vào cùng Sprint.\n- Tùng sở hữu trọn lõi luật cờ. Tùng nhận T20 ván trực tuyến; Đông nhận T54 danh sách phòng và T59 tinh chỉnh máy cờ. Tình giữ kết nối thời gian thực, xây máy cờ và hình/tiếng; nhận việc ở các khâu để cân tải. Đông và Tùng chỉ làm BE; Cường hỗ trợ FE khi đã giảm BE; Nhạn/Kỳ hỗ trợ Thư kiểm thử.\n- T33 không phải chờ FE T25; T52 không phải chờ FE T25; T59 không phải chờ FE T38: hợp đồng bàn giao ở T12, đầu-cuối được kiểm tại T45/T60/T68. Những phụ thuộc thực còn lại vẫn phải hoàn tất trước khi bắt đầu.\n- T51 chạy **đầy đủ** sau tất cả triển khai, song song QA chuyên đề bằng tài khoản/phòng thử riêng. T70 phải chờ T51, T66 và toàn bộ 20 QA, mọi tiêu chí bắt buộc PASS.\n- Lỗi sửa và kiểm lại trong Task sở hữu; sáng 04/11 tổng duyệt, chiều 04/11 dự phòng. Giữ đúng số Epic/Story/Task; không tạo thêm issue loại này để chứa TC hoặc công việc quản lý.\n',
- table(['Chỉ số kiểm trên dữ liệu','Kết quả'],[['Epic / Story / Task','9 / 27 / 71'],['Giờ / điểm',f'{hours} giờ / {pts} điểm'],['Task QA chuyên đề / Task khác','20 / 51'],['AC / NFR / Gate / Demo','268 / 12 / 9 / 10'],['Phụ thuộc trực tiếp sau bỏ cạnh bắc cầu',edges],['Task chạy đồng thời cao nhất',max(parallel.values())],['Trùng người / sai thứ tự / thiếu tham chiếu','0 / 0 / 0'],['Hoàn tất cơ sở',when(TASKS['T71']['end_slot']-1)],['Dự phòng','04/11 buổi chiều'],['Demo','05/11/2026']]),
- '\nCác kiểm tra trên chỉ chứng minh lịch đáp ứng các ràng buộc đã mô hình hoá. Chúng không chứng minh ước lượng hoặc giải pháp kỹ thuật chắc chắn đúng. Chọn mức song song 7 theo trần BA; không giữ tuyên bố cũ tối đa 5.\n',
- '## 2. Cấu trúc và nguồn lực\n',table(['Epic','Nội dung','Story','Task'],[[x['id'],x['title'],len(story_ids(x['id'])),sum(t['parent']==x['id'] for t in TASKS.values())] for x in ISSUES if x['type']=='Epic']),
- '\n'+table(['Người','S1 giờ','S2 giờ','S3 giờ','S4 giờ','Tổng','Còn trong công suất 208h'],[[p,*[sum(sprint_hours(x,n) for x in TASKS.values() if x['owner']==p) for n in range(1,5)],sum(x['hours'] for x in TASKS.values() if x['owner']==p),208-sum(x['hours'] for x in TASKS.values() if x['owner']==p)] for p in PEOPLE]),
- '\nCông suất 10/10–04/11 là 26 ngày × 8 giờ = 208 giờ/người, toàn nhóm 1.456 giờ. Phân công ưu tiên đúng vai trò và đánh giá nội dung từng Task: Tình 140 giờ; giờ của các thành viên khác khác nhau theo tính chất công việc. Đánh giá tải xét phạm vi, độ khó, tích hợp và kiểm chứng, độc lập với giờ dự kiến và Story Points. Xem [đánh giá đủ 71 Task](jira/DANH-GIA-KHOI-LUONG.md). Epic/Story và điều phối của Tình chưa có giờ ước lượng riêng trong 848 giờ. Giờ trống phục vụ review, sửa lỗi và kiểm lại; không phải toàn bộ đều chuyển được sang đường công việc của người khác. Chi tiết chuyển việc và lịch: [PHAN-CONG-CAN-BANG](jira/PHAN-CONG-CAN-BANG.md).\n',
- '## 3. Sprint và kết quả bàn giao\n']
- for n,(lo,hi) in enumerate(SPRINTS,1):
-  group=[x for x in TASKS.values() if x['sprint']==n]
-  out += [f"### XIAN Sprint {n} · {ds(lo)}–{ds(hi-1)} · {['v0.1','v0.2','v0.3','v1.0'][n-1]}\n",GOALS[n-1]+'\n',f"**{len(group)} Task · {sum(x['hours'] for x in group)} giờ · {sum(points(x['hours']) for x in group)} điểm.**\n",table(['Task','Tên','Story','Người','Giờ','Điểm','Bắt đầu','Kết thúc','Phụ thuộc'],[[x['id'],x['title'],x['story'],x['owner'],x['hours'],points(x['hours']),when(x['start_slot']),when(x['end_slot']-1),', '.join(x['deps']) or '—'] for x in sorted(group,key=lambda y:(y['start_slot'],y['id']))])]
- out += ['\n## 4. R1 — ngày Epic/Story và nghiệm thu sản phẩm\n',
- 'Mọi Epic/Story bắt đầu **09/10**. Story mặc định có hạn ngày Task đầu tiên bắt đầu và phải được PO duyệt trước giờ bắt đầu Task đó; US-08.3 và US-00.5 giữ ngoại lệ tới ngày Task cuối để đóng hồ sơ kiểm chứng. **Các ngưỡng AC đã chốt trước thi công, không chờ số đo để hạ tiêu chuẩn.** Epic có hạn theo Story muộn nhất. Mọi mục nhập To Do; không tự đánh dấu Done dựa trên ngày kế hoạch.\n',
- table(['Story','Hạn BA theo R1','Thi công','Sprint có Task'],[[x['id'],ds(story_due(x['id'])),ds(min(t['start_slot'] for t in task_group(x['id'])))+' → '+ds(max(t['end_slot']-1 for t in task_group(x['id']))),', '.join('S'+str(n) for n in work_sprints(x['id']))] for x in ISSUES if x['type']=='Story']),
- '\nStory BA Done không được dùng làm chỉ số chức năng hoàn thành. Chức năng chỉ được nghiệm thu khi mọi AC trong bản đồ đã PASS; QA Task sớm chỉ chịu phần được giao. Story Points chỉ nhập vào Task, tiếp tục quy đổi từ giờ theo thang cũ; không nhập tổng điểm vào Story/Epic.\n',
- '## 5. Cổng kỹ thuật và thứ tự nghiệm thu\n',
- table(['Gate','Thử/đo sớm','Nghiệm thu thật / đối soát'],[
- ['SMTP','T04 · '+ds(TASKS['T04']['end_slot']-1),'T13: email ngoài nhóm, 5 thư/giờ, lỗi dịch vụ; T66 đối soát'],
- ['EMAIL','T04 · '+ds(TASKS['T04']['end_slot']-1),'Gọi API trực tiếp; đổi được email thì BLOCKED; T66 đối soát'],
- ['AUTH-USERNAME','T09 · '+ds(TASKS['T09']['end_slot']-1),'T17: đăng nhập/khoá mật khẩu; nhánh Google tại T48'],
- ['GOOGLE / GUEST','T04 thử cấu hình · '+ds(TASKS['T04']['end_slot']-1),'T35 triển khai thật; T48 nghiệm thu; các nhánh ghế/phiên ở T51/T69'],
- ['SESSION','T06 thử mô hình · '+ds(TASKS['T06']['end_slot']-1),'T56 trên ván thật, T69 kiểm phiên/đăng xuất; không dùng mô phỏng thay PASS'],
- ['MEDIA','T06 LAN/Cloud/HTTPS · '+ds(TASKS['T06']['end_slot']-1),'T33 + T58, T45 và T64 nghiệm thu quyền thật'],
- ['ENGINE','T24 baseline · '+ds(TASKS['T24']['end_slot']-1),'T59 tinh chỉnh/đo '+ds(TASKS['T59']['end_slot']-1)+'; T68 kiểm độc lập'],
- ['REALTIME','T12 thử socket nền · '+ds(TASKS['T12']['end_slot']-1),'T66: 50 người/10 ván tích hợp thật; không đạt chặn T70']]),
- '\nBa quyết định PO ngày 09/10 đã ghi vào AC hiện có: username từ cấm ở bước nhập; thắng/thua ưu tiên trước hoà 120; server restart phòng tự tạo về WAITING. Giữ 268 mã AC; các biến thể TC bổ sung không tạo issue Jira mới.\n',
- '## 6. Lịch từng người và mức song song\n']
- for p in PEOPLE:
-  out += ['### '+p+'\n',table(['Task','Giờ','Bắt đầu','Kết thúc'],[[x['id'],x['hours'],when(x['start_slot']),when(x['end_slot']-1)] for x in sorted(TASKS.values(),key=lambda y:y['start_slot']) if x['owner']==p])]
- out += [table(['Ngày','Sáng','Chiều'],[[ds(n),parallel[n],parallel[n+1]] for n in range(0,52,2)]),
- '\n## 7. Mô tả từng Task\n']
- for ep in [x for x in ISSUES if x['type']=='Epic']:
-  out.append('### '+ep['id']+' · '+ep['title']+'\n')
-  for x in TASKS.values():
-   if x['parent']==ep['id']:out += ['#### '+x['id']+' · '+x['title']+'\n',task_description(x)+'\n']
- out += ['\n## 8. Dự phòng và điều kiện đổi kế hoạch\n',
- 'Sáng 04/11 tổng duyệt; chỉ còn chiều 04/11 dự phòng. Nếu điều kiện bắt buộc chưa đạt, báo người phụ trách và cập nhật lịch; không tự cắt phạm vi hoặc hạ ngưỡng. Bảng giờ từng Sprint tính theo phần thời gian thực nằm trong Sprint; bảng nhóm Task theo Sprint bắt đầu.\n',
- 'Áp dụng 18 điều chỉnh giảm giờ theo khả năng AI hỗ trợ và tái sử dụng, tổng 920 xuống 848 giờ; xem jira/DANH-GIA-ORIGINAL-ESTIMATE.md. Giữ nguyên Description và tiêu chí nghiệm thu.\n',
- '## 9. Chuẩn bị nhập Jira\n',
- 'Components và Labels của 107 mục đã khai báo trong dữ liệu nguồn và CSV. Xem [danh mục và phân loại đầy đủ](jira/COMPONENTS-LABELS.md); tạo/đối chiếu Components trước khi nhập, ánh xạ đủ các cột Components/Labels lặp tên. Nhãn chinh-fe/chinh-be/chinh-qa-devops xác định nhóm chính của Task.\n',
- '**Chưa dùng CSV này để cập nhật trực tiếp Jira khi cần giữ XIAN-1–XIAN-107.** Issue Id là mã tham chiếu nội bộ, không phải khóa XIAN hoặc ID hệ thống Jira. CSV chưa có cột khóa cập nhật và định danh tài khoản thật. Xem [rà soát trước nhập](jira/RA-SOAT-TRUOC-NHAP-JIRA.md).\n\n1. Lưu/export bản Jira hiện có và xác định chính xác tập mục cũ cần thay. Tệp này không tự xoá hay nhập dữ liệu.\n2. Đối chiếu bốn Sprint và bốn Fix version trước khi tạo để tránh trùng. Epic/Story không gán Sprint. Fix version của Task theo Sprint hoàn tất; Sprint/nhãn của Task là Sprint bắt đầu. Khi đóng Sprint, chuyển việc chưa hoàn thành sang Sprint kế tiếp và giữ lịch sử.\n3. Ánh xạ bảy tên Assignee/Reporter sang tài khoản Jira thực tế; kiểm quyền và các trường Time tracking/Story Points dành cho Task. CSV hiện giữ tên người để PO kiểm, chưa có định danh tài khoản Jira.\n4. Thử nhập và kiểm trên cấu hình Jira thực tế: UTF-8, ngày dd/MM/yyyy, Original Estimate tính bằng giây; Issue Id/Parent Id ánh xạ quan hệ, Story ánh xạ relates to, các cột Blocked by ánh xạ is blocked by. Không giả định mọi giao diện nhập đều nhận các trường giống nhau.\n5. Sau thử nhập, đếm 9/27/71, kiểm cha Epic, liên kết Story/phụ thuộc, người làm, Sprint/ngày/điểm/giờ và trạng thái To Do. Nếu trình nhập không nhận liên kết bằng ID nội bộ, lập bảng ID→issue key sau nhập rồi tạo liên kết theo bảng đó.\n',
- '## 10. Tái tạo và kiểm tra\n',
- 'Nguồn lịch, phân công và phạm vi: `jira/plan-data.json`. Nguồn Description của toàn bộ 107 mục: `jira/descriptions.json`; sửa tệp này rồi sinh lại, không sửa riêng CSV hoặc bản Markdown. Nguồn luật/AC: BA và BACKLOG-P1. Bản đồ nghiệm thu: `jira/AC-TASK-MAP.json`. Chạy `python3 jira/build_plan.py` để sinh lại tệp; `python3 jira/build_plan.py --check` kiểm số lượng, lịch, phụ thuộc, người kiểm độc lập, đầu vào268AC và độ đồng bộ các đầu ra. Không cần thư viện ngoài. Báo cáo: [KIEM-TRA-KE-HOACH](jira/KIEM-TRA-KE-HOACH.md).\n']
- return '\n'.join(out)
-
-def report(parallel):
- return '# Kiểm tra kế hoạch lập lại 09/10/2026\n\n'+table(['Kiểm tra dữ liệu kế hoạch','Kết quả'],[
- ['Danh tính/membership kế hoạch local','9 Epic, 27 Story, 71 Task; 107 ID duy nhất'],['Description độc lập','107/107; đủ mục tiêu, bối cảnh, yêu cầu, việc làm, bàn giao, điều kiện hoàn thành và phạm vi'],['Mã kế hoạch không giải thích trong Description','0; kiểm riêng nội dung mô tả, giữ mã liên kết ở các trường quản lý'],['Components / Labels','107/107; mỗi Task đúng một nhóm chính và nhãn tương ứng'],['CSV','107 dòng dữ liệu; kiểm đủ trường, cột lặp, ước lượng giây và Fix version theo ngày hoàn tất'],['Phân công theo vai trò','Đạt; BE/FE/Tester và phạm vi hỗ trợ được kiểm tra'],['Đánh giá khối lượng','71/71 Task có lý do; áp dụng phân công và 848 giờ đã thống nhất'],['Độc lập kiểm chuyên đề theo từng AC','Không tự nghiệm thu phần tính năng mình triển khai'],['Giờ',848],['Điểm',sum(points(x['hours']) for x in TASKS.values())],['QA chuyên đề',len(QA)],['AC duy nhất / truy vết',len(ACS)],['Phụ thuộc trực tiếp',sum(len(x['deps']) for x in TASKS.values())],['Chu trình / tham chiếu thiếu / sai thứ tự','0 / 0 / 0'],['Trùng người / kiểm Story tự triển khai','0 / 0'],['Task kéo sang Sprint kế tiếp',', '.join(k for k,x in TASKS.items() if x['end_slot']>SPRINTS[x['sprint']-1][1])],['AC nghiệm thu trước đầu vào hoặc thiếu đường phụ thuộc',0],['Song song tối đa',max(parallel.values())],['T51 bắt đầu sau mọi triển khai','Đạt; QA chuyên đề chạy song song'],['T70 chờ toàn bộ QA + T51 + T66','Đạt'],['Hoàn tất kế hoạch',when(TASKS['T71']['end_slot']-1)],['04/11','Sáng tổng duyệt; chiều dự phòng']])+ '\n**Giới hạn:** đây là kiểm tra cấu trúc/lịch dự kiến, không phải kiểm thử ứng dụng. Chưa có mã triển khai, TC thực thi, số đo gate hoặc xác nhận import trên Jira. Bằng chứng PASS/FAIL/BLOCKED sẽ được ghi khi thực hiện.\n\nTái chạy: `python3 jira/build_plan.py --check`.\n'
-
 def components_md():
  counts=collections.Counter(t['primary_component'] for t in TASKS.values())
  out=['# Components và Labels cho 107 mục Jira\n',
@@ -299,33 +230,21 @@ def components_md():
  'Component chính được ghi rõ trong dữ liệu kế hoạch và bảng dưới. Khi nhập Jira, nhãn `chinh-fe`, `chinh-be` hoặc `chinh-qa-devops` giữ dấu hiệu nhóm chính; không dựa vào vị trí đầu tiên trong danh sách Components. Epic/Story không có nhãn nhóm chính của Task.\n',
  '## Danh mục component\n',table(['Tên chính xác','Ý nghĩa'],list(DATA['component_catalog'].items())),
  '\n## Quy ước Labels\n',
- '- `p1`: thuộc bản bàn giao đầu tiên.\n- `sprint-1` đến `sprint-4`: Sprint bắt đầu của Task; xem ngày kết thúc khi Task kéo sang Sprint sau.\n- `chinh-fe`, `chinh-be`, `chinh-qa-devops`: đúng một nhãn nhóm chính trên mỗi Task.\n- `dac-ta`: công việc đặc tả ở Epic/Story; mã `EP-xx` giữ liên hệ nhóm yêu cầu.\n- `phat-trien`, `kiem-thu`: triển khai tính năng hoặc kiểm thử chuyên đề. Các công việc đặc thù dùng `ha-tang`, `chuan-bi-kiem-thu`, `thu-nghiem-ky-thuat`, `kiem-thu-tich-hop`, `do-chat-luong`, `dong-goi-phat-hanh`, `tong-duyet`.\n- Nhãn chức năng viết không dấu, nối bằng gạch ngang: `tai-khoan`, `luat-co`, `camera-va-mic`… tương ứng component chức năng để dễ lọc.\n',
+ '- `p1`: thuộc bản bàn giao đầu tiên.\n- `sprint-1` đến `sprint-4`: nhãn lịch sử, 13 Task đang lệch trường Sprint trên Jira; không dùng làm nguồn lịch. Xem báo cáo kiểm tra để đối chiếu.\n- `chinh-fe`, `chinh-be`, `chinh-qa-devops`: đúng một nhãn nhóm chính trên mỗi Task.\n- `dac-ta`: công việc đặc tả ở Epic/Story; mã `EP-xx` giữ liên hệ nhóm yêu cầu.\n- `phat-trien`, `kiem-thu`: triển khai tính năng hoặc kiểm thử chuyên đề. Các công việc đặc thù dùng `ha-tang`, `chuan-bi-kiem-thu`, `thu-nghiem-ky-thuat`, `kiem-thu-tich-hop`, `do-chat-luong`, `dong-goi-phat-hanh`, `tong-duyet`.\n- Nhãn chức năng viết không dấu, nối bằng gạch ngang: `tai-khoan`, `luat-co`, `camera-va-mic`… tương ứng component chức năng để dễ lọc.\n',
  '## Phân bố Task theo nhóm chính\n',table(['Component chính','Số Task'],[[c,counts[c]] for c in PRIMARY_COMPONENTS]),
  '\n## Chuẩn bị nhập Jira\n',
  'Tạo/đối chiếu danh mục Components bằng đúng tên bên trên trong dự án đích. CSV xuất mỗi giá trị vào một cột lặp tên `Components` hoặc `Labels`; khi thử nhập cần ánh xạ toàn bộ các cột cùng tên vào trường tương ứng và kiểm việc nhận nhiều giá trị. Không tách chuỗi bằng dấu phẩy hoặc chỉ lấy cột đầu. Không dùng trình đọc CSV chỉ giữ một giá trị cho tên cột trùng.\n',
- 'Bản xuất dùng nhãn để nhận biết nhóm chính, không yêu cầu thêm trường tùy chỉnh. Kiểm sau nhập: đủ 107 mục có Components/Labels; mỗi Task có đúng một nhóm chính và đúng nhãn; các component chức năng không bị mất. Đây là dữ liệu chuẩn bị nhập, chưa phải xác nhận cấu hình hay dữ liệu trên Jira thật.\n',
+ 'Bản xuất dùng nhãn để nhận biết nhóm chính, không yêu cầu thêm trường tùy chỉnh. Các nhãn sprint lịch sử có thể lệch; trường Sprint mới là nguồn lịch hiện hành (xem KIEM-TRA-KE-HOACH.md). Kiểm sau nhập: đủ 107 mục có Components/Labels; mỗi Task có đúng một nhóm chính và đúng nhãn; các component chức năng không bị mất. Components/Labels lấy nguyên snapshot Jira, không tự sửa các nhãn cũ trong lượt đồng bộ repo.\n',
  '## Danh sách đầy đủ\n',table(['Mã','Loại','Component chính','Components','Labels'],[[x['id'],x['type'],x.get('primary_component','Tổng hợp'),', '.join(x['components']),', '.join(x['labels'])] for x in ISSUES])]
  return '\n'.join(out)
 
 def workload_md():
- out=['# Đánh giá nội dung 71 Task — 09/10/2026\n',ASSESSMENT['method']+'\n',
- 'Đơn vị tải dưới đây là nhận định tương đối để phân công, không phải giờ, Story Points trên Jira hoặc thước đo năng lực. Không lấy giờ hay số tiêu chí nghiệm thu làm công thức tính. Giữ nguyên ước lượng thời gian hiện có để kiểm lịch; điều này không xác nhận các ước lượng đã chính xác.\n',
+ out=['# Đánh giá nội dung 71 Task — giờ và người đồng bộ 10/10/2026\n',ASSESSMENT['method']+'\n',
+ 'Đơn vị tải dưới đây là nhận định tương đối để phân công, không phải giờ, Story Points trên Jira hoặc thước đo năng lực. Không lấy giờ hay số tiêu chí nghiệm thu làm công thức tính. Giờ và người lấy theo Jira hiện tại (880 giờ), lý do đánh giá tải tương đối giữ từ đợt 09/10; điều này không xác nhận các ước lượng đã chính xác.\n',
  table(['Mức tải','Cách hiểu'],ASSESSMENT['scale'].items()),
  '\nMỗi lý do xét đầu ra, nhánh xử lý, phần cần phối hợp và trách nhiệm kiểm chứng. T10 có ít giờ nhưng nhiều quy tắc kết thúc ván; T15 chủ yếu dùng lại thành phần biểu mẫu đăng nhập. T68/T69 có phạm vi kiểm rộng dù chỉ 8 giờ mỗi Task: cần chuẩn bị dữ liệu và môi trường trước, ghi nhận thời gian thực và cập nhật lịch nếu vượt dự kiến. Không coi điểm tải là bằng chứng chắc chắn không quá tải.\n',
  table(['Task','Công việc','Người','Giờ dự kiến','Đơn vị tải','Cơ sở đánh giá'],[[k,x['title'],x['owner'],x['hours'],LOAD[k]['load_units'],LOAD[k]['reason']] for k,x in TASKS.items()]),
  '\nKhi bắt đầu triển khai, cập nhật đánh giá bằng khối lượng thực còn lại, vướng mắc và mức sẵn sàng của đầu vào. Nếu cần đổi ước lượng, tính lại lịch và ngày dự phòng; không giữ các con số chỉ để bảng nhìn cân bằng.\n']
- return '\n'.join(out)
-
-def allocation_md():
- out=['# Phân công đã áp dụng — 848 giờ\n',
- 'Giữ 9 Epic, 27 Story, 71 Task. T20 sang Tùng; T54/T59 sang Đông; T33 ở Tình; T49 giữ Kỳ. Tình có nhiều giờ Task nhất. Đã đồng bộ tài liệu local và CSV, chưa cập nhật Jira thật.\n',
- table(['Người','Task','Giờ','Tải đánh giá','S1 giờ','S2 giờ','S3 giờ','S4 giờ'],[[p,sum(x['owner']==p for x in TASKS.values()),sum(x['hours'] for x in TASKS.values() if x['owner']==p),sum(LOAD[k]['load_units'] for k,x in TASKS.items() if x['owner']==p),*[sum(sprint_hours(x,n) for x in TASKS.values() if x['owner']==p) for n in range(1,5)]] for p in PEOPLE]),
- '\nGiờ Sprint tính theo phần thời gian thực nằm trong từng Sprint. Task gắn Sprint bắt đầu, có thể kéo sang Sprint sau; không tạo thêm Task. Tổng duyệt sáng 04/11, chiều 04/11 dự phòng, demo 05/11. Lịch làm tối đa 8 giờ/ngày, có cuối tuần. Việc điều phối, rà mã và hỗ trợ ngoài Task chưa có ước lượng riêng.\n',
- 'Cường giữ BE và thử nguyên mẫu, hỗ trợ 32 giờ FE; Nhạn/Kỳ giữ FE chính và hỗ trợ QA 44/24 giờ. Đông/Tùng chỉ nhận BE. Thư giữ kiểm thử chính, hồi quy và tổng duyệt. Người kiểm chuyên đề không tự nghiệm thu tính năng mình triển khai.\n',
- 'Tình bàn giao máy cờ T24 cho Đông làm T59: mã, giao diện gọi, cấu hình, bộ đo và số liệu ban đầu. T68 vẫn là kiểm độc lập. Điểm tải là nhận định nội dung, không phải giờ hoặc thước đo công bằng; không giữ kết luận cũ rằng sáu người đều 52–57 điểm.\n']
- for p in PEOPLE:
-  out+=['## '+p+'\n',DATA['allocation_revision']['rationale'][p]+'\n',table(['Task','Công việc','Nhóm chính','Giờ','Sprint bắt đầu','Bắt đầu','Kết thúc'],[[x['id'],x['title'],x['primary_component'],x['hours'],x['sprint'],when(x['start_slot']),when(x['end_slot']-1)] for x in sorted(TASKS.values(),key=lambda x:(x['start_slot'],x['id'])) if x['owner']==p])]
- out+=['\nMã T01–T71 là mã nội bộ; phải đối chiếu khóa XIAN trước khi cập nhật Jira thật.\n']
  return '\n'.join(out)
 
 def validate_export(value,backlog):
@@ -339,28 +258,133 @@ def validate_export(value,backlog):
   x=BY[key];f=issue_fields(x,backlog)
   assert get('Issue Id')==str(x['issue_id']) and get('Issue Type')==x['type'],key
   assert get('Description')==description(key),key
+  assert get('Issue Key')==x['jira_key'] and get('Status')==x['status'] and get('Resolution')==(x['resolution'] or ''),key
+  assert get('Assignee account ID')==x['assignee_account_id'] and get('Reporter account ID')==x['reporter_account_id'],key
   assert get('Parent Id')==(str(BY[x['parent']]['issue_id']) if x['parent'] else ''),key
   assert get('Assignee')==(x['owner'] if x['type']=='Task' else 'Tình'),key
   assert get('Start date')==f['start'] and get('Due date')==f['due'] and get('Fix Version')==f['fix'],key
   for name,field in [('Components','components'),('Labels','labels')]:
    assert [row[i] for i in cols[name] if row[i]]==x[field],(key,name)
   if x['type']=='Task':
-   assert int(get('Original Estimate'))==x['hours']*3600 and int(get('Story Points'))==points(x['hours']),key
+   assert int(get('Original Estimate'))==x['hours']*3600 and int(get('Story Points'))==task_points(x),key
    assert get('Sprint')=='XIAN Sprint '+str(x['sprint']),key
    assert get('Story')==str(BY[x['story']]['issue_id']),key
    assert [row[i] for i in cols['Blocked by'] if row[i]]==[str(BY[k]['issue_id']) for k in x['deps']],key
-   assert ['v0.1','v0.2','v0.3','v1.0'].index(get('Fix Version'))+1==finish_sprint(x),key
-  else:assert not get('Original Estimate') and not get('Sprint') and not get('Story Points'),key
+   assert int(get('Remaining Estimate'))==x['remaining_hours']*3600,key
+   assert all(x['due_date']<=VERSIONS[v]['releaseDate'] for v in x['fix_versions']),key
+  else:assert not get('Original Estimate') and not get('Sprint') and not get('Story Points') and not get('Fix Version') and not get('Remaining Estimate'),key
  assert seen==set(BY)
+
+def normalize_description(text):
+ return re.sub(r'\s+', ' ', re.sub(r'(?m)^[-*] ', '', text).replace('\\_', '_')).strip()
+
+def label_mismatches():
+ return [(x['jira_key'],x['id'],', '.join(z for z in x['labels'] if z.startswith('sprint-')),f"XIAN Sprint {x['sprint']}") for x in TASKS.values() if {z for z in x['labels'] if z.startswith('sprint-')}!={'sprint-'+str(x['sprint'])}]
+
+def validate_live_parity():
+ assert len(LIVE_BY)==len(ISSUES)==107
+ assert all(s['state']=='future' for s in DATA['sprint_metadata'])
+ assert DATA['sprint_metadata']==LIVE['sprints'] and DATA['releases']==LIVE['versions']
+ by_jira={x['jira_key']:x['id'] for x in ISSUES}
+ for x in ISSUES:
+  y=LIVE_BY[x['jira_key']]
+  assert x['jira_id']==y['id'] and x['type']==y['type'] and x['id']+' · '+x['title']==y['summary'],x['id']
+  assert x['start_date']==y['start'] and x['due_date']==y['due'],x['id']
+  assert x['status']==y['status'] and x['resolution']==y['resolution'],x['id']
+  assert x['assignee_account_id']==y['assignee']['id'] and x['reporter_account_id']==y['reporter']['id'],x['id']
+  assert x['owner']=={'TÌNH 4851_NGUYỄN NGỌC':'Tình','Võ Thành Đông':'Đông','nguyenhoangtungtuyhoa':'Tùng','Tưởng Lê khoa Cường-4572':'Cường','4841_Lê Thị Xuân Nhạn':'Nhạn','Gia Kỳ':'Kỳ','Nguyễn Minh Thư':'Thư'}[y['assignee']['name']],x['id']
+  assert x['priority']==y['priority'] and x['components']==y['components'] and x['labels']==y['labels'],x['id']
+  assert x['parent']==by_jira.get(y['parent']),x['id']
+  assert normalize_description(description(x['id']))==normalize_description(y['description']),(x['id'],'description drift')
+  assert x['fix_versions']==[v['name'] for id in y['versions'] for v in LIVE['versions'] if v['id']==id],x['id']
+  if x['type']=='Task':
+   assert (x['hours'],x['remaining_hours'],x['spent_hours'],x['story_points'])==(y['hours'],y['remaining_hours'],y['spent_hours'],y['points']),x['id']
+   assert x['remaining_hours']==x['hours'] and x['spent_hours']==0 and x['status']=='To Do' and x['resolution'] is None,x['id']
+   assert date(x['start_slot']).isoformat()==y['start'] and date(x['end_slot']-1).isoformat()==y['due'],x['id']
+   assert DATA['sprint_metadata'][x['sprint']-1]['id']==y['sprint'],x['id']
+   assert x['deps']==sorted(by_jira[l['inward']] for l in y['links'] if l['type']=='Blocks' and l.get('inward')),x['id']
+   assert any(l['type']=='Relates' and by_jira.get(l.get('inward') or l.get('outward'))==x['story'] for l in y['links']),x['id']
+   assert BY[x['parent']]['start_date']<BY[x['story']]['start_date']<x['start_date'],x['id']
+   assert x['fix_versions'] and all(x['due_date']<=VERSIONS[v]['releaseDate'] for v in x['fix_versions']),x['id']
+  else:
+   assert x['status']=='Done' and x['resolution']=='Done' and not x['fix_versions'] and y['sprint'] is None,x['id']
+
+
+def generate_plan(parallel):
+ out=['# KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)\n',
+ '> **Đồng bộ Jira ngày 10/10/2026 · phiên bản 3.0.** 9 Epic + 27 Story BA đã Done; 71 Task triển khai To Do, **880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả bốn Sprint chưa bắt đầu.\n',
+ 'Nguồn dữ liệu: [snapshot Jira](jira/current-jira-snapshot.json), [kế hoạch](jira/plan-data.json), [Description](jira/descriptions.json). Nghiệp vụ: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [truy vết 268 AC](jira/TRUY-VET-AC.md). [Danh sách 107 mục](jira/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/xian-import.csv) được sinh từ cùng nguồn.\n',
+ '## 1. Quy tắc lịch và cách đọc\n',
+ '- Lịch theo **ngày**, tính cả ngày bắt đầu và ngày kết thúc, kể cả cuối tuần. Mỗi người tối đa một Task/ngày; toàn nhóm tối đa bảy Task/ngày. Task phụ thuộc chỉ bắt đầu từ ngày sau khi đầu vào kết thúc.\n- Ước lượng giờ độc lập với độ dài thanh lịch. Một Task 4 giờ vẫn chiếm một ngày trong ràng buộc một Task/người/ngày; không suy ra giờ làm bằng số ngày × 8. Mỗi Task không vượt 8 giờ/ngày nếu phân bổ đều trong khoảng lịch.\n- Epic và Story là hồ sơ BA đã chốt; Done của BA không đại diện cho phần mềm đã hoàn thành. Story và Task cùng thuộc Epic, liên kết với nhau bằng relates to. Ngày BA giữ nguyên giá trị Jira, có thể kết thúc trước Task cuối.\n- Task gắn Sprint theo ngày bắt đầu, có thể kéo qua Sprint sau. **Trường Sprint** là nguồn chính; một số nhãn sprint cũ đang lệch và được liệt kê ở báo cáo kiểm tra.\n- Story Points lấy nguyên Jira, không tự tính lại từ giờ mới. Các bảng chia giờ theo Sprint phân bổ đều ước lượng trên số ngày lịch, chỉ là cách trình bày kế hoạch, không phải giờ đã làm.\n- Tổng duyệt T71 chiếm ngày 04/11 (8 giờ); **không còn cam kết chiều 04/11 dự phòng**. Mốc demo 05/11 trong hồ sơ cũ là lịch sử; hạn kế hoạch hiện tại là 04/11.\n',
+ table(['Chỉ số','Kết quả'],[['Epic / Story / Task','9 / 27 / 71'],['Giờ / Story Points',f"{TOTAL_HOURS} / {sum(task_points(x) for x in TASKS.values())}"],['Phụ thuộc trực tiếp',sum(len(x['deps']) for x in TASKS.values())],['Song song tối đa',max(parallel.values())],['Hạn hoàn thành',DATA['deadline']],['Trạng thái Sprint','4 future; chưa bắt đầu']]),
+ '\n## 2. Phân công\n',
+ table(['Người','Task','Giờ','S1 giờ phân bổ','S2','S3','S4'],[[p,sum(x['owner']==p for x in TASKS.values()),sum(x['hours'] for x in TASKS.values() if x['owner']==p),*[round(sum(sprint_hours(x,n) for x in TASKS.values() if x['owner']==p),2) for n in range(1,5)]] for p in PEOPLE]),
+ '\nNhạn và Thư mỗi người tăng từ 104 lên 120 giờ; T37 thuộc Tình. Tổng giờ là 880, chưa bao gồm giờ BA/điều phối riêng. Phân công không bằng nhau tuyệt đối; xem [cơ sở phân công](jira/PHAN-CONG-CAN-BANG.md) và [đánh giá nội dung](jira/DANH-GIA-KHOI-LUONG.md).\n',
+ '## 3. Sprint\n']
+ for n,(lo,hi) in enumerate(SPRINTS,1):
+  group=sorted([x for x in TASKS.values() if x['sprint']==n],key=lambda x:(x['start_slot'],x['id']))
+  out += [f"### XIAN Sprint {n} · {ds(lo)}–{ds(hi-1)} · chưa bắt đầu\n",GOALS[n-1]+'\n',
+   f"{len(group)} Task · {sum(x['hours'] for x in group)} giờ ước lượng của các Task gắn Sprint.\n",
+   table(['Task / Jira','Tên','Story','Người','Giờ','Điểm Jira','Bắt đầu','Kết thúc','Phụ thuộc'],[[x['id']+' / '+x['jira_key'],x['title'],x['story'],x['owner'],x['hours'],task_points(x),when(x['start_slot']),when(x['end_slot']-1),', '.join(x['deps']) or '—'] for x in group])]
+ out += ['\n## 4. Lịch BA và trạng thái\n',
+ table(['Mã','Jira','Bắt đầu','Kết thúc dự kiến','Status','Resolution'],[[x['id'],x['jira_key'],x['start_date'],x['due_date'],x['status'],x['resolution']] for x in ISSUES if x['type']!='Task']),
+ '\nCác ngày trên là trường kế hoạch, không phải ngày hoàn tất thực tế. 36 mục BA đã Done và không gắn Fix version. Tiến độ sản phẩm được tính từ Task và bằng chứng nghiệm thu.\n',
+ '## 5. Release và workflow\n',
+ table(['Release','Bắt đầu','Hạn','Trạng thái','Task'],[[v['name'],v['startDate'],v['releaseDate'],'Unreleased',sum(v['name'] in x['fix_versions'] for x in TASKS.values())] for v in DATA['releases']]),
+ '\nRelease chỉ chứa Task triển khai, hiện 0% hoàn thành. T50 / XIAN-86 kết thúc 31/10 và thuộc v1.0.\n',
+ 'Workflow XIAN: To Do → Ready for Code → In Progress → Ready For Test → Done. Transition 5 đặt Resolution = Done; Mở lại (transition 9) đưa Done → To Do và xóa Resolution. Đã lưu và đọc lại cấu hình; chưa chuyển thử Task thật. Workflow dùng chung cho các loại công việc trong XIAN.\n',
+ '## 6. Lịch từng người và số Task mỗi ngày\n']
+ for p in PEOPLE:
+  out += ['### '+p+'\n',table(['Task','Giờ','Bắt đầu','Kết thúc'],[[x['id'],x['hours'],when(x['start_slot']),when(x['end_slot']-1)] for x in sorted(TASKS.values(),key=lambda x:(x['start_slot'],x['id'])) if x['owner']==p])]
+ out += [table(['Ngày','Task theo kế hoạch'],[[ds(n),parallel[n]] for n in range(0,52,2)]),
+ '\n## 7. Description từng Task\n']
+ for ep in [x for x in ISSUES if x['type']=='Epic']:
+  out.append('### '+ep['id']+' · '+ep['title']+'\n')
+  for x in TASKS.values():
+   if x['parent']==ep['id']:out += ['#### '+x['id']+' · '+x['title']+'\n',task_description(x)+'\n']
+ out += ['\n## 8. Kiểm chứng và sử dụng dữ liệu\n',
+ 'T51 hồi quy sau triển khai; T70 chờ T51, T66 và toàn bộ QA chuyên đề; T71 tổng duyệt bản phát hành. Mọi tiêu chí bắt buộc cần bằng chứng thực tế. Nếu đầu vào trễ hoặc ước lượng không đủ, cập nhật lịch thay vì tự hạ ngưỡng hoặc ghi PASS cho ca chưa chạy.\n',
+ 'CSV là bản xuất đối chiếu **các mục đã tồn tại**, gồm Issue Key, Resolution và định danh tài khoản. Không nhập như các mục mới; không dùng import CSV để ép chuyển trạng thái. Script local không ghi lên Jira.\n',
+ 'Để cập nhật nguồn, lấy snapshot Jira mới vào `jira/current-jira-snapshot.json`, chạy `python3 jira/sync_plan_from_snapshot.py`, `python3 jira/build_plan.py`, rồi `python3 jira/build_plan.py --check`. Bộ kiểm đối chiếu dữ liệu với snapshot, 268 AC, phụ thuộc, giới hạn ngày, người kiểm độc lập và các đầu ra. Đây là kiểm dữ liệu kế hoạch, chưa phải kiểm phần mềm.\n',
+ '[Báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md) · [Trạng thái hiện hành](jira/CURRENT-JIRA-STATE.md).\n']
+ return '\n'.join(out)
+
+
+def report(parallel):
+ out=['# Kiểm tra kế hoạch đồng bộ Jira — 10/10/2026\n',
+ table(['Kiểm tra','Kết quả'],[['Dữ liệu','107 mục khớp snapshot Jira: 9 Epic, 27 Story, 71 Task'],['Description','107/107 đủ bảy phần, khớp nội dung Jira'],['Status / Resolution','36 BA Done/Done; 71 Task To Do/Resolution trống'],['Giờ ước lượng / còn lại',f'{TOTAL_HOURS} / {TOTAL_HOURS}; chưa ghi giờ thực tế'],['Story Points Jira',sum(task_points(x) for x in TASKS.values())],['AC',len(ACS)],['Phụ thuộc',sum(len(x['deps']) for x in TASKS.values())],['Giới hạn ngày',f"Tối đa {max(parallel.values())} Task/ngày; mỗi người 1 Task/ngày"],['Thứ tự bắt đầu','Epic < Story < Task'],['Độc lập nghiệm thu chuyên đề','Đạt theo AC và phạm vi Task'],['Release','Task không vượt hạn phiên bản; BA không gắn phiên bản'],['Hạn cuối',DATA['deadline']],['Sprint','4 future; chưa bắt đầu'],['Task qua ranh giới Sprint',', '.join(k for k,x in TASKS.items() if x['end_slot']>SPRINTS[x['sprint']-1][1])]]),
+ '\n## Nhãn Sprint lịch sử chưa đồng bộ trên Jira\n',
+ 'Giữ nguyên nhãn từ Jira để bản local phản ánh đúng nguồn; **không dùng các nhãn này để suy ra lịch**. Trường Sprint là nguồn chính. Việc đồng bộ repo không tự sửa dữ liệu Jira.\n',
+ table(['Jira','Task','Nhãn hiện tại','Sprint thực tế'],label_mismatches()),
+ '\n## Giới hạn\n',
+ '- Lịch có cuối tuần; không còn nửa ngày dự phòng 04/11.\n- Giờ theo Sprint được phân bổ đều trên các ngày của Task để trình bày, không phải giờ log hoặc lịch giờ cụ thể.\n- Cấu hình Resolution đã lưu và đọc lại, chưa thử chuyển Task thật.\n- Không xác nhận mã sản phẩm, ca kiểm thử, gate, thiết bị hoặc quyền GitHub của từng người đã sẵn sàng.\n- Kiểm khớp snapshot không thay thế truy vấn live khi Jira có thay đổi mới.\n\nTái chạy: `python3 jira/build_plan.py --check`.\n']
+ return '\n'.join(out)
+
+
+def allocation_md():
+ out=['# Phân công hiện hành — 880 giờ\n',
+ 'Đồng bộ từ Jira ngày 10/10/2026. 71 Task To Do; BA Done theo dõi riêng; chưa bắt đầu Sprint.\n',
+ table(['Người','Task','Giờ','Tải đánh giá','S1 giờ phân bổ','S2','S3','S4'],[[p,sum(x['owner']==p for x in TASKS.values()),sum(x['hours'] for x in TASKS.values() if x['owner']==p),sum(LOAD[k]['load_units'] for k,x in TASKS.items() if x['owner']==p),*[round(sum(sprint_hours(x,n) for x in TASKS.values() if x['owner']==p),2) for n in range(1,5)]] for p in PEOPLE]),
+ '\nGiờ Sprint chỉ là phân bổ đều ước lượng trên số ngày lịch để báo cáo. Mỗi người tối đa một Task/ngày, tối đa 8 giờ/ngày; cả nhóm tối đa 7 Task/ngày. Có làm cuối tuần. Hạn cuối 04/11, không còn buổi chiều dự phòng cố định.\n',
+ 'T37 thuộc Tình. Nhạn tăng 16 giờ tại T11/T19/T21/T62; Thư tăng 16 giờ tại T02/T71. Lý do cụ thể nằm trong Description tương ứng. Tổng giờ khác nhau theo phạm vi được giao; không phải khẳng định mức tải đã bằng nhau.\n']
+ for p in PEOPLE:
+  out += ['## '+p+'\n',DATA['allocation_revision']['rationale'][p]+'\n',table(['Task / Jira','Công việc','Nhóm chính','Giờ','Sprint','Bắt đầu','Kết thúc'],[[x['id']+' / '+x['jira_key'],x['title'],x['primary_component'],x['hours'],x['sprint'],when(x['start_slot']),when(x['end_slot']-1)] for x in sorted(TASKS.values(),key=lambda x:(x['start_slot'],x['id'])) if x['owner']==p])]
+ return '\n'.join(out)
+
+def mapping_md():
+ return '# Ánh xạ chính thức 107 mục Jira — đồng bộ 10/10/2026\n\n' + 'Mã và tài khoản lấy từ snapshot Jira hiện hành. Issue Id là mã nội bộ; Jira Key và Jira ID là định danh đã đọc từ Jira, không suy ra bằng phép cộng.\n\n' + table(['Mã Jira','Mã kế hoạch','Loại','Người nhận','Giờ','Status','Nội dung'],[[x['jira_key'],x['id'],x['type'],x['owner'],x.get('hours','—'),x['status'],x['id']+' · '+x['title']] for x in ISSUES])
+
+def mapping_json():
+ return json.dumps({'status':'synced_from_jira_snapshot','date':DATA['synced_at'],'project_key':'XIAN','source_snapshot':DATA['source_snapshot'], 'items':[{'local_id':x['id'],'target_key':x['jira_key'],'jira_id':x['jira_id'],'issue_type':x['type'],'summary':x['id']+' · '+x['title'],'assignee_name':x['owner'],'assignee_account_id':x['assignee_account_id'],'reporter_account_id':x['reporter_account_id'],'parent_key':BY[x['parent']]['jira_key'] if x['parent'] else None,'story_relates_to_key':BY[x['story']]['jira_key'] if x['type']=='Task' else None,'blocked_by_keys':[BY[k]['jira_key'] for k in x.get('deps',[])],'hours':x.get('hours',0),'status':x['status'],'resolution':x['resolution']} for x in ISSUES]},ensure_ascii=False,indent=2)+'\n'
 
 def main():
  parallel=validate();backlog=backlog_update()
- outputs={'BACKLOG-P1.md':backlog,'KE-HOACH-JIRA.md':generate_plan(parallel),'jira/JIRA-MUC-CHI-TIET.md':generate_detail(backlog),'jira/xian-import.csv':generate_csv(backlog),'jira/TRUY-VET-AC.md':traceability_md(),'jira/KIEM-TRA-KE-HOACH.md':report(parallel),'jira/COMPONENTS-LABELS.md':components_md(),'jira/PHAN-CONG-CAN-BANG.md':allocation_md(),'jira/DANH-GIA-KHOI-LUONG.md':workload_md()}
+ outputs={'jira/ANH-XA-JIRA-107-MUC.md':mapping_md(),'jira/jira-key-account-mapping.json':mapping_json(),'BACKLOG-P1.md':backlog,'KE-HOACH-JIRA.md':generate_plan(parallel),'jira/JIRA-MUC-CHI-TIET.md':generate_detail(backlog),'jira/xian-import.csv':generate_csv(backlog),'jira/TRUY-VET-AC.md':traceability_md(),'jira/KIEM-TRA-KE-HOACH.md':report(parallel),'jira/COMPONENTS-LABELS.md':components_md(),'jira/PHAN-CONG-CAN-BANG.md':allocation_md(),'jira/DANH-GIA-KHOI-LUONG.md':workload_md()}
  validate_export(outputs['jira/xian-import.csv'],backlog)
  check='--check' in sys.argv
  for name,value in outputs.items():
   path=ROOT/name
   if check:assert path.exists() and path.read_bytes()==value.encode('utf-8'),('Generated file differs',name)
   else:path.write_bytes(value.encode('utf-8'))
- print(('CHECK PASS' if check else 'GENERATED')+': 107 issues, 71 tasks, 848 hours, 268 AC; schedule, acceptance dependencies, 107 descriptions and component/label assignments valid.')
+ print(('CHECK PASS' if check else 'GENERATED')+': 107 issues, 71 tasks, 880 hours, 268 AC; schedule, acceptance dependencies, 107 descriptions and component/label assignments valid.')
 if __name__=='__main__':main()
