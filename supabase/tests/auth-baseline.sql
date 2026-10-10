@@ -18,7 +18,7 @@ DROP SCHEMA IF EXISTS auth CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
 CREATE SCHEMA auth;
 CREATE TABLE auth.users(id uuid PRIMARY KEY, email text UNIQUE, email_change text DEFAULT '', email_confirmed_at timestamptz, raw_user_meta_data jsonb DEFAULT '{}', raw_app_meta_data jsonb DEFAULT '{}', created_at timestamptz DEFAULT now());
-CREATE TABLE public.profiles(user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON UPDATE RESTRICT ON DELETE RESTRICT, id uuid, username text CONSTRAINT profiles_username_unique UNIQUE CHECK(username IS NULL OR username ~ '^[a-z0-9_]{3,24}$'), display_name text NOT NULL CONSTRAINT profiles_display_name_check CHECK(char_length(display_name) BETWEEN 1 AND 40 AND display_name=btrim(display_name) AND display_name<>''), created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE public.profiles(user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON UPDATE RESTRICT ON DELETE RESTRICT, id uuid GENERATED ALWAYS AS (user_id) STORED, username text CONSTRAINT profiles_username_unique UNIQUE CHECK(username IS NULL OR username ~ '^[a-z0-9_]{3,24}$'), display_name text NOT NULL CONSTRAINT profiles_display_name_check CHECK(char_length(display_name) BETWEEN 1 AND 40 AND display_name=btrim(display_name) AND display_name<>''), created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
 CREATE INDEX profiles_username_pattern_idx ON public.profiles(username text_pattern_ops);
 CREATE OR REPLACE FUNCTION public.guard_profile_updates()
  RETURNS trigger

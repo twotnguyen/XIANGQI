@@ -172,7 +172,11 @@ export class RegistrationService {
       return times(draft);
     });
   }
-  async verify(input: { registrationToken: string; otp: string }) {
+  async verify(input: {
+    registrationToken: string;
+    otp: string;
+    password?: string;
+  }) {
     const initial = await this.getDraft(input.registrationToken);
     return this.store.withLocks(
       [`email:${initial.email}`, `username:${initial.username.toLowerCase()}`],
@@ -187,11 +191,12 @@ export class RegistrationService {
           );
         validateUsername(draft.username);
         const account = await store.accountById(draft.userId);
-        if (!account || account.completedAt)
+        if (!account)
           throw new RegistrationError(
-            "REGISTRATION_RECOVERING",
-            "Đăng ký đang được phục hồi, vui lòng thử đăng nhập sau",
-            503,
+            "REGISTRATION_INVALID",
+            "Phiên đăng ký không hợp lệ, vui lòng bắt đầu lại",
+            400,
+            1,
           );
         if (await store.usernameTaken(draft.username, draft.userId))
           throw new RegistrationError(
@@ -200,17 +205,34 @@ export class RegistrationService {
             409,
             1,
           );
-        if (this.now().getTime() - draft.lastSentAt.getTime() >= 180000)
+        if (
+          !account.verified &&
+          this.now().getTime() - draft.lastSentAt.getTime() >= 180000
+        )
           throw new RegistrationError(
             "OTP_EXPIRED",
             "Mã xác minh đã hết hạn, vui lòng gửi mã mới",
           );
-        if (typeof input.otp !== "string" || !/^\d{6}$/.test(input.otp))
+        if (
+          !account.verified &&
+          (typeof input.otp !== "string" || !/^\d{6}$/.test(input.otp))
+        )
           throw new RegistrationError(
             "OTP_INVALID",
             "Mã xác minh cần 6 chữ số",
           );
-        const session = await this.auth.verify(draft.email, input.otp);
+        if (
+          account.verified &&
+          (typeof input.password !== "string" || input.password.length < 8)
+        )
+          throw new RegistrationError(
+            "RECOVERY_PASSWORD_INVALID",
+            "Vui lòng xác thực lại mật khẩu để hoàn tất đăng ký",
+            401,
+          );
+        const session = account.verified
+          ? await this.auth.signInPassword(draft.email, input.password!)
+          : await this.auth.verify(draft.email, input.otp);
         if (
           session.user.id !== draft.userId ||
           !session.user.email_confirmed_at ||
@@ -220,13 +242,18 @@ export class RegistrationService {
             "OTP_INVALID",
             "Mã xác minh không hợp lệ",
           );
-        await store.complete(draft.userId, draft.username, this.now());
         try {
+          await store.complete(draft.userId, draft.username, this.now());
           await this.auth.clearPending(draft.userId);
           await store.clearPending(draft.userId);
           await store.removeDraft(draft.userId);
           await store.removeIntent(draft.email);
-        } catch {
+        } catch (error) {
+          if (
+            error instanceof RegistrationError &&
+            error.code === "USERNAME_TAKEN"
+          )
+            throw error;
           throw new RegistrationError(
             "REGISTRATION_RECOVERING",
             "Đăng ký đang được phục hồi, vui lòng thử đăng nhập sau",

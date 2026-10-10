@@ -148,8 +148,8 @@ export class PostgresRegistrationStore implements RegistrationStore {
   async complete(userId: string, username: string, time: Date) {
     try {
       const result = await this.query(
-        `INSERT INTO public.profiles(user_id,id,username,display_name,completed_at,registration_pending)
-        SELECT id,id,$2,$2,$3,true FROM xiangqi_auth.accounts WHERE id=$1 AND email_confirmed_at IS NOT NULL
+        `INSERT INTO public.profiles(user_id,username,display_name,completed_at,registration_pending)
+        SELECT id,$2,$2,$3,true FROM xiangqi_auth.accounts WHERE id=$1 AND email_confirmed_at IS NOT NULL
         ON CONFLICT(user_id) DO NOTHING`,
         [userId, username, time],
       );

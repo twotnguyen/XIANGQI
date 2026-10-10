@@ -363,15 +363,157 @@ describe.skipIf(!url)(
       expect(session.access_token).not.toBe("");
       expect(await service.requireActive(session.access_token)).toBeTruthy();
       const { rows } = await pool.query(
-        "SELECT username,display_name,registration_pending,completed_at IS NOT NULL AS complete FROM public.profiles WHERE username=$1",
+        "SELECT id,user_id,username,display_name,registration_pending,completed_at IS NOT NULL AS complete FROM public.profiles WHERE username=$1",
         [input.username],
       );
+      expect(rows[0].id).toBe(rows[0].user_id);
       expect(rows[0]).toEqual({
+        id: rows[0].user_id,
+        user_id: rows[0].user_id,
         username: input.username,
         display_name: input.username,
         registration_pending: false,
         complete: true,
       });
+    });
+    async function consumedVerificationRegistration() {
+      const input = credentials();
+      const address = email();
+      const registration = await service.email({ ...input, email: address });
+      await pool.query(
+        `CREATE FUNCTION public.fail_recovery_profile() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'fixture profile failure'; END $$; CREATE TRIGGER fail_recovery_profile BEFORE INSERT ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.fail_recovery_profile()`,
+      );
+      try {
+        await expect(
+          service.verify({
+            registrationToken: registration.registrationToken,
+            otp: "123456",
+          }),
+        ).rejects.toThrow();
+      } finally {
+        await pool.query(
+          "DROP TRIGGER fail_recovery_profile ON public.profiles; DROP FUNCTION public.fail_recovery_profile()",
+        );
+      }
+      const state = (
+        await pool.query(
+          "SELECT u.email_confirmed_at IS NOT NULL AS verified,p.user_id FROM auth.users u LEFT JOIN public.profiles p ON p.user_id=u.id WHERE u.email=$1",
+          [address],
+        )
+      ).rows[0];
+      expect(state).toEqual({ verified: true, user_id: null });
+      return { registration, input, address };
+    }
+    it("recovers a consumed OTP after profile failure using password proof and returns an active session", async () => {
+      const { registration, input, address } =
+        await consumedVerificationRegistration();
+      const provider = new SupabaseAuth(
+        fixture.url,
+        "fake-public-key",
+        "fake-server-key",
+      );
+      await expect(provider.verify(address, "123456")).rejects.toMatchObject({
+        code: "OTP_INVALID",
+      });
+      const session = await service.verify({
+        registrationToken: registration.registrationToken,
+        password: input.password,
+      });
+      expect(await service.requireActive(session.access_token)).toBeTruthy();
+      expect(
+        (
+          await pool.query(
+            "SELECT id=user_id AS generated,registration_pending FROM public.profiles WHERE username=$1",
+            [input.username],
+          )
+        ).rows[0],
+      ).toEqual({ generated: true, registration_pending: false });
+    });
+    it("recovers when the provider consumed OTP but returned an unknown-outcome failure", async () => {
+      const input = credentials();
+      const address = email();
+      const registration = await service.email({ ...input, email: address });
+      fixture.state.failVerifyAfterConfirm = true;
+      try {
+        await expect(
+          service.verify({
+            registrationToken: registration.registrationToken,
+            otp: "123456",
+          }),
+        ).rejects.toMatchObject({ code: "AUTH_PROVIDER_ERROR", status: 503 });
+      } finally {
+        fixture.state.failVerifyAfterConfirm = false;
+      }
+      expect(
+        (
+          await pool.query(
+            "SELECT u.email_confirmed_at IS NOT NULL AS verified,p.user_id FROM auth.users u LEFT JOIN public.profiles p ON p.user_id=u.id WHERE u.email=$1",
+            [address],
+          )
+        ).rows[0],
+      ).toEqual({ verified: true, user_id: null });
+      // Recovery must remain available after the original OTP deadline.
+      clock = new Date(clock.getTime() + 180001);
+      const session = await service.verify({
+        registrationToken: registration.registrationToken,
+        password: input.password,
+      });
+      expect(await service.requireActive(session.access_token)).toBeTruthy();
+    });
+    it("rejects wrong recovery credentials without creating a profile or consuming the draft", async () => {
+      const { registration, input } = await consumedVerificationRegistration();
+      await expect(
+        service.verify({
+          registrationToken: registration.registrationToken,
+          password: "wrong-password",
+        }),
+      ).rejects.toMatchObject({
+        code: "RECOVERY_PASSWORD_INVALID",
+        status: 401,
+      });
+      expect(
+        (
+          await pool.query("SELECT 1 FROM public.profiles WHERE username=$1", [
+            input.username,
+          ])
+        ).rowCount,
+      ).toBe(0);
+      expect(
+        (
+          await pool.query(
+            "SELECT 1 FROM xiangqi_auth.registration_drafts WHERE username=$1",
+            [input.username],
+          )
+        ).rowCount,
+      ).toBe(1);
+    });
+    it("retries a completed pending profile with password proof before allowing active use", async () => {
+      const input = credentials();
+      const registration = await service.email({ ...input, email: email() });
+      fixture.state.failClear = true;
+      try {
+        await expect(
+          service.verify({
+            registrationToken: registration.registrationToken,
+            otp: "123456",
+          }),
+        ).rejects.toMatchObject({ code: "REGISTRATION_RECOVERING" });
+      } finally {
+        fixture.state.failClear = false;
+      }
+      const session = await service.verify({
+        registrationToken: registration.registrationToken,
+        password: input.password,
+      });
+      expect(await service.requireActive(session.access_token)).toBeTruthy();
+      expect(
+        (
+          await pool.query(
+            "SELECT registration_pending FROM public.profiles WHERE username=$1",
+            [input.username],
+          )
+        ).rows[0].registration_pending,
+      ).toBe(false);
     });
     it("enforces resend cooldown and OTP expiry, exposes provider rate limits without its payload", async () => {
       const registration = await service.email({
@@ -687,7 +829,7 @@ describe.skipIf(!url)(
         ).toBe(403);
         const verified = await post("/auth/register/verify", {
           registrationToken: registration.registrationToken,
-          otp: "123456",
+          password: input.password,
         });
         expect(verified.status).toBe(200);
         const session = (await verified.json()) as { access_token: string };
