@@ -28,7 +28,7 @@ Ba file không tự đồng bộ sau mỗi lần sửa: lặp lại bước sao 
 
 Dù file trong thư mục web có đủ biến, trình duyệt chỉ được nhận các biến `VITE_*`. Không import file `.env` vào mã web, không mở rộng `envPrefix`, không đưa toàn bộ `process.env` vào `define` hay thư mục public. Khi triển khai frontend trên hosting chỉ cấp nhóm biến `VITE_*`; bộ đầy đủ chỉ giữ trong môi trường riêng được kiểm soát. Google/SMTP/CLI vẫn là thông tin nhập dashboard hoặc dùng công cụ, không tự có tác dụng vì nằm trong file.
 
-Giá trị trống nghĩa là chưa chuẩn bị, không phải giá trị hợp lệ để chạy. Nếu giá trị chứa khoảng trắng hoặc `#`, dùng chuỗi có dấu nháy phù hợp với bộ nạp dotenv; không chạy `source .env`. Khi đưa lên hosting, nhập biến server vào phần Environment/Secrets và biến Vite vào môi trường build. Không tải file `.env` tổng hợp lên dịch vụ lưu trữ tĩnh. Sau khi thay biến Vite phải khởi động lại dev server hoặc build lại.
+Biến bắt buộc còn trống nghĩa là chưa đủ để chạy chức năng tương ứng. Các biến được ghi tùy chọn có thể để trống khi công cụ hoặc ứng dụng không sử dụng. Nếu giá trị chứa khoảng trắng hoặc `#`, dùng chuỗi có dấu nháy phù hợp với bộ nạp dotenv; không chạy `source .env`. Khi đưa lên hosting, nhập biến server vào phần Environment/Secrets và biến Vite vào môi trường build. Không tải file `.env` tổng hợp lên dịch vụ lưu trữ tĩnh. Sau khi thay biến Vite phải khởi động lại dev server hoặc build lại.
 
 ## 2. Danh mục biến
 
@@ -40,10 +40,13 @@ Giá trị trống nghĩa là chưa chuẩn bị, không phải giá trị hợp
 | `CORS_ORIGINS` | Danh sách origin web cho phép, quy ước phân cách bằng dấu phẩy khi triển khai loader; không dùng wildcard với phiên đăng nhập |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Cùng project với web; truy cập thông thường cần token người dùng và chính sách RLS |
 | `SUPABASE_SECRET_KEY` | Khóa đặc quyền chỉ ở server, dành cho các luồng quản trị đã kiểm quyền |
+| `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Bộ legacy dự phòng; service role chỉ dùng phía server. Ưu tiên bộ publishable/secret cho tích hợp mới |
+| `SUPABASE_JWT_SECRET` | Secret ký JWT legacy lấy từ Supabase, chỉ phía server; tùy chọn, không cần nếu dùng phương thức xác thực Auth/JWKS phù hợp |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Biến công khai dự phòng cho Next.js; không được Vite tự nạp, không đổi stack React/Vite đã chốt |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | Một bộ cùng project Cloud hoặc cùng máy chủ LiveKit tự chạy |
 | `SUPABASE_PROJECT_REF` | Mã project; dùng để đối chiếu dashboard/CLI |
 | `SUPABASE_ACCESS_TOKEN` | Tùy chọn cho CLI/API quản trị; không dùng thay API key của ứng dụng |
-| `SUPABASE_DB_PASSWORD`, `DATABASE_URL` | Tùy chọn khi liên kết CLI, migration hoặc kết nối Postgres trực tiếp; không cần chỉ để gọi Supabase SDK |
+| `SUPABASE_DB_PASSWORD`, `DATABASE_URL`, `DIRECT_URL` | Mật khẩu riêng cho công cụ và hai URL SQL: transaction pooler 6543 cho runtime, session pooler 5432 cho migration khi công cụ hỗ trợ; không cần chỉ để gọi Supabase SDK |
 | `AUTH_SITE_URL`, `AUTH_REDIRECT_URLS` | Phiếu ghi cấu hình nhập thủ công ở Supabase Auth; route callback phải được nhóm triển khai |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_AUTH_REDIRECT_URI` | Phiếu Google OAuth; nhập Client ID/Secret vào Supabase, callback vào Google |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Thông tin nhà cung cấp SMTP; nhập ở Supabase Auth |
@@ -55,11 +58,11 @@ Không cần API trả phí cho máy cờ TypeScript tự viết, Socket.IO, Rea
 
 1. Mở project XIANGQI trong Supabase; đợi database hoạt động và mục Connect/API Keys khả dụng. Lấy URL thực từ dashboard, không suy đoán project đã hoạt động từ tên hoặc mã project.
 2. Sao chép Project URL vào web và server. Lấy publishable key cho các trường tương ứng. Lấy secret key vào **server** (chỉ máy chủ).
-3. Nếu project còn dùng khóa cũ `anon`/`service_role`, thống nhất với người làm T01 về tên biến và SDK trước khi dùng. Bộ mẫu này chọn publishable/secret; không điền cả hai hệ khóa hoặc đổi tên tùy ý mà không sửa code.
+3. Bộ tích hợp ưu tiên `SUPABASE_PUBLISHABLE_KEY`/`SUPABASE_SECRET_KEY`. Phiếu riêng có thể lưu thêm `anon`/`service_role` và JWT secret legacy để chuẩn bị tương thích; sự có mặt của chúng không có nghĩa ứng dụng dùng cả hai bộ. T01 phải chọn rõ bộ khóa và phương thức xác thực theo SDK; không tự fallback sang khóa đặc quyền khi gặp lỗi. `SUPABASE_JWT_SECRET` không thay thế API key và không phải khóa JWT mới do nhóm tự tạo.
 4. Trong Authentication → URL Configuration, đặt Site URL là địa chỉ web. Cho phép redirect chính xác, ví dụ `http://localhost:5173/auth/callback`; thêm URL HTTPS của môi trường demo khi có. Đây là route dự kiến, chưa có trong repo.
 5. Bật luồng Email theo đặc tả và cấu hình SMTP ngoài ở mục 5. Không tắt xác nhận email để né bước OTP.
 6. Khi tạo schema, bật và kiểm RLS cho bảng được truy cập qua API. Server phải xác thực người dùng trước khi dùng khóa đặc quyền; không dùng khóa này để thay thế kiểm quyền dữ liệu.
-7. Nếu cần kết nối SQL/migration, lấy connection string trong Connect; chọn kiểu direct/pooler theo công cụ và mạng. Lưu ở phiếu riêng, URL-encode ký tự đặc biệt trong mật khẩu. Không đưa mật khẩu database vào web.
+7. Nếu cần kết nối SQL/migration, lấy connection string trong Connect; chọn kiểu direct/pooler theo công cụ và mạng. Lưu ở phiếu riêng, URL-encode ký tự đặc biệt trong mật khẩu. Không đưa mật khẩu database vào mã trình duyệt. `DIRECT_URL` đang dành cho session pooler, không phải endpoint direct IPv6. T01 phải nối các URL vào cấu hình ORM đúng phiên bản; tên biến không tự có tác dụng. `SUPABASE_DB_PASSWORD` không tự cập nhật mật khẩu nằm trong URL: khi đổi mật khẩu phải cập nhật cả hai URL, rồi đồng bộ ba file. `SUPABASE_ACCESS_TOKEN` chỉ tùy chọn cho công cụ quản trị, không cần cho kết nối SQL.
 
 Publishable key công khai được; secret key có thể bỏ qua RLS nên phải giữ ở máy chủ. Xem [API keys](https://supabase.com/docs/guides/getting-started/api-keys).
 
@@ -93,7 +96,7 @@ Supabase SMTP mặc định giới hạn người nhận, nên không thay thế
 ### Cloud — demo Internet / dự phòng
 
 1. Đăng ký tại [LiveKit Cloud](https://cloud.livekit.io/), tạo project XIANGQI. Bắt đầu với gói miễn phí nếu còn đáp ứng nhu cầu; xem hạn mức connection minutes, truyền dữ liệu và kết nối đồng thời trong dashboard/[bảng giá](https://livekit.com/pricing), không chỉ nhìn số phút đã ghi trong kế hoạch cũ.
-2. Lấy Project URL `wss://...`, API Key và API Secret từ cài đặt project; điền vào `apps/server/.env`.
+2. Lấy Project URL `wss://...`, API Key và API Secret từ cài đặt project; điền vào `.env` tổng rồi đồng bộ hai bản web/server theo mục 1. Chỉ server sử dụng khóa bí mật.
 3. Khi triển khai, NestJS cấp token ngắn hạn theo danh tính và phòng sau khi xác thực quyền. Gửi URL và token người tham gia cho web; không gửi API Secret. Không dùng token mẫu cố định cho cả nhóm.
 4. Người chơi được phát theo quyền chia sẻ đã chốt; người xem phải có `canPublish: false`, `canPublishData: false`. Quyền nhận phải khớp ba mức chia sẻ, không cấp nghe/xem mọi luồng mặc định cho mọi người. Camera/mic mặc định tắt; không ghi hình.
 5. Việc đuổi người xem/đổi quyền phải thu hồi phiên media đang hoạt động và chặn cấp lại token trái phép; chỉ đợi token hết hạn không đủ. Kiểm thử hai người chơi + tối đa năm người xem và các quyền theo BA.
@@ -111,9 +114,23 @@ Xem [kết nối phòng](https://docs.livekit.io/intro/basics/connect/). Đây l
 
 ## 7. Bàn giao và kiểm tra
 
+### Bằng chứng chuẩn bị đã có — 10/10/2026
+
+| Hạng mục | Kết quả đã kiểm chứng | Chưa chứng minh |
+|---|---|---|
+| Supabase database | Hai URL pooler 6543/5432 kết nối và chạy truy vấn chỉ đọc thành công | Schema/migration, RLS và phân quyền nghiệp vụ |
+| Gmail SMTP / OTP | Xác thực SMTP thành công; Supabase nhận yêu cầu OTP và chủ dự án xác nhận đã nhận thư thật | Nhập/xác minh OTP trong ứng dụng, mã sai/hết hạn, gửi lại, email ngoài nhóm và giới hạn gửi |
+| LiveKit Docker | Container khởi động; API liệt kê phòng xác thực bằng khóa local trả HTTP 200 | Camera/mic hai chiều, quyền người xem, thu hồi phiên và LAN nhiều thiết bị |
+| Chuyển local/Cloud | Kiểm tra bằng dữ liệu giả: chuẩn bị lặp lại, đồng bộ ba file, khôi phục Cloud và giữ khóa Cloud vừa đổi | Kết nối lại phòng thực giữa hai môi trường |
+| Google OAuth / LiveKit Cloud | Đã chuẩn bị cấu hình và khóa riêng; Cloud vẫn là bộ đang chọn trong `.env` | Đăng nhập Google xuyên suốt ứng dụng và cuộc gọi Cloud thật |
+
+Bằng chứng trên thuộc máy chuẩn bị của chủ dự án, không bảo đảm máy thành viên đã cấu hình. Khóa thật không đi kèm repo: mỗi thành viên cần nhận qua kênh riêng hoặc dùng dịch vụ riêng, điền bản tổng rồi đồng bộ. Repo chưa có bộ khung web/server, loader hoặc workflow CI; đây vẫn là công việc triển khai T01. HTTPS/WSS và kiểm thử LAN thuộc T06/GATE-MEDIA. Không coi các kiểm tra hạ tầng này là nghiệm thu BA/AC hoặc hoàn thành Task.
+
+### Checklist khi triển khai
+
 - [ ] Điền các URL/khóa vào đúng file riêng; `.env.example` vẫn chỉ có giá trị trống hoặc mẫu công khai.
 - [ ] T01 triển khai loader, kiểm biến bắt buộc và lỗi cấu hình không in bí mật. Chỉ công khai nhóm `VITE_*`; không mở rộng tiền tố Vite cho secret.
-- [ ] Supabase Auth, Google, SMTP và LiveKit được thử thật bằng các luồng trong BA/AC; hiện **chưa kiểm kết nối thực tế** bằng bộ mẫu này.
+- [ ] Kiểm thử Supabase Auth, Google, SMTP và LiveKit xuyên suốt ứng dụng theo BA/AC; dùng kết quả chuẩn bị phía trên làm điểm xuất phát, không thay thế nghiệm thu.
 - [ ] Kiểm URL local/LAN/Internet, CORS, callback, TLS và quyền camera/mic trên thiết bị demo.
 - [ ] Bằng chứng kiểm thử chỉ ghi kết quả và định danh môi trường; không đính kèm secret, token hoặc file `.env`.
 
