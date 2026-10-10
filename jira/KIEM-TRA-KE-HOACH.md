@@ -20,7 +20,7 @@
 
 ## Đối chiếu nhãn Sprint trên Jira
 
-Đã đối chiếu 71 Task; số nhãn lệch trường Sprint: **0**. Trường Sprint là nguồn chính. Lịch sử sửa 13 nhãn: [sprint-label-sync-2026-10-10.json](sprint-label-sync-2026-10-10.json).
+Đã đối chiếu 71 Task; số nhãn lệch trường Sprint: **0**. Trường Sprint là nguồn chính. Lịch sử sửa 13 nhãn: [sprint-label-sync-2026-10-10.json](https://github.com/twotnguyen/XIANGQI/blob/a586f372549561d8c2f0f508bc7ab10d431d5ef7/jira/sprint-label-sync-2026-10-10.json).
 
 Toàn bộ nhãn `sprint-*` khớp Sprint thực tế.
 

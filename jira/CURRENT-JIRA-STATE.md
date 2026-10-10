@@ -29,7 +29,7 @@ python3 -m unittest discover -s jira/tests -v
 
 Ước lượng giờ độc lập với khoảng ngày. Khi trình bày giờ theo Sprint, bộ sinh chia đều ước lượng trên số ngày lịch; đây không phải giờ đã log. Các ngày Epic/Story là ngày kế hoạch được giữ nguyên từ Jira, không phải ngày hoàn thành thực tế.
 
-**Nhãn Sprint:** đã sửa 13 nhãn `sprint-*` trên Jira và đọc lại đủ 107 mục; 71/71 Task khớp Sprint thực tế. Các trường khác không đổi; bốn Sprint vẫn `future`. Chi tiết trước/sau: [sprint-label-sync-2026-10-10.json](sprint-label-sync-2026-10-10.json).
+**Nhãn Sprint:** đã sửa 13 nhãn `sprint-*` trên Jira và đọc lại đủ 107 mục; 71/71 Task khớp Sprint thực tế. Các trường khác không đổi; bốn Sprint vẫn `future`. Chi tiết trước/sau: [sprint-label-sync-2026-10-10.json](https://github.com/twotnguyen/XIANGQI/blob/a586f372549561d8c2f0f508bc7ab10d431d5ef7/jira/sprint-label-sync-2026-10-10.json).
 
 ## Hồ sơ lịch sử
 

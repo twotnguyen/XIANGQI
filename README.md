@@ -163,6 +163,12 @@ Thứ tự ưu tiên khi mâu thuẫn: **BA Phần 0 → BA → BACKLOG-P1 → D
 - Commit: `<loại>(<phạm vi>): <mô tả>`, loại gồm `feat`, `fix`, `test`, `docs`, `chore`, `refactor`.
 - Khi Jira đã tạo, thêm Key `[XIAN-<số>]` vào tên nhánh, commit và tiêu đề PR.
 
+## Tệp dùng chung và tệp cá nhân
+
+GitHub giữ tài liệu BA/thiết kế, mockup, dữ liệu và công cụ kiểm tra kế hoạch, mã nguồn, test và cấu hình dùng chung. Giữ các tệp cấu hình mẫu và lockfile để nhóm có thể cài đặt nhất quán.
+
+Ghi chú riêng, ảnh chụp thao tác và bản xuất thủ công đặt trong `.local/` (đã được bỏ qua bởi Git). Thư viện, cache, kết quả build/test, cấu hình IDE cá nhân và bí mật môi trường cũng chỉ nằm trên máy. Nhật ký sửa nhãn Sprint cũ được giữ trên máy; tài liệu dẫn đến bản lịch sử trên GitHub khi cần đối chiếu.
+
 ## Bảo mật
 
 - Không commit khoá bí mật; `.env` nằm trong `.gitignore`, chỉ commit `.env.example` với giá trị mẫu.
