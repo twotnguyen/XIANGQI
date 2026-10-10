@@ -36,7 +36,11 @@ export interface AuthProvider {
   updatePendingPassword(userId: string, password: string): Promise<void>;
   resend(email: string): Promise<void>;
   verify(email: string, otp: string): Promise<Session>;
-  signInPassword(email: string, password: string): Promise<Session>;
+  signInPassword(
+    email: string,
+    password: string,
+    signal?: AbortSignal,
+  ): Promise<Session>;
   clearPending(userId: string): Promise<void>;
   deletePending(userId: string): Promise<void>;
   getUser(accessToken: string): Promise<Session["user"]>;

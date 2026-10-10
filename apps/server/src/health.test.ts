@@ -47,3 +47,28 @@ it("reports the live database probe and a later outage accurately", async () => 
     await app.close();
   }
 });
+
+it("allows credentials for the configured UI and rejects foreign-origin mutations", async () => {
+  const app = await createApp(["http://localhost:5173"]);
+  try {
+    await app.listen(0, "127.0.0.1");
+    const base = await app.getUrl();
+    const allowed = await fetch(`${base}/health`, {
+      headers: { Origin: "http://localhost:5173" },
+    });
+    expect(allowed.headers.get("access-control-allow-origin")).toBe(
+      "http://localhost:5173",
+    );
+    expect(allowed.headers.get("access-control-allow-credentials")).toBe(
+      "true",
+    );
+    const rejected = await fetch(`${base}/auth/refresh`, {
+      method: "POST",
+      headers: { Origin: "https://foreign.example.invalid" },
+    });
+    expect(rejected.status).toBe(403);
+    expect(await rejected.json()).toMatchObject({ code: "ORIGIN_DENIED" });
+  } finally {
+    await app.close();
+  }
+});
