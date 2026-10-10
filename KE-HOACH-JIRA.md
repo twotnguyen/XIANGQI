@@ -9,7 +9,7 @@ Nguồn dữ liệu: [snapshot Jira](jira/current-jira-snapshot.json), [kế ho�
 - Lịch theo **ngày**, tính cả ngày bắt đầu và ngày kết thúc, kể cả cuối tuần. Mỗi người tối đa một Task/ngày; toàn nhóm tối đa bảy Task/ngày. Task phụ thuộc chỉ bắt đầu từ ngày sau khi đầu vào kết thúc.
 - Ước lượng giờ độc lập với độ dài thanh lịch. Một Task 4 giờ vẫn chiếm một ngày trong ràng buộc một Task/người/ngày; không suy ra giờ làm bằng số ngày × 8. Mỗi Task không vượt 8 giờ/ngày nếu phân bổ đều trong khoảng lịch.
 - Epic và Story là hồ sơ BA đã chốt; Done của BA không đại diện cho phần mềm đã hoàn thành. Story và Task cùng thuộc Epic, liên kết với nhau bằng relates to. Ngày BA giữ nguyên giá trị Jira, có thể kết thúc trước Task cuối.
-- Task gắn Sprint theo ngày bắt đầu, có thể kéo qua Sprint sau. **Trường Sprint** là nguồn chính; một số nhãn sprint cũ đang lệch và được liệt kê ở báo cáo kiểm tra.
+- Task gắn Sprint theo ngày bắt đầu, có thể kéo qua Sprint sau. **Trường Sprint** là nguồn chính; 71/71 nhãn sprint đã khớp trường Sprint sau đợt sửa 13 nhãn cũ.
 - Story Points lấy nguyên Jira, không tự tính lại từ giờ mới. Các bảng chia giờ theo Sprint phân bổ đều ước lượng trên số ngày lịch, chỉ là cách trình bày kế hoạch, không phải giờ đã làm.
 - Tổng duyệt T71 chiếm ngày 04/11 (8 giờ); **không còn cam kết chiều 04/11 dự phòng**. Mốc demo 05/11 trong hồ sơ cũ là lịch sử; hạn kế hoạch hiện tại là 04/11.
 

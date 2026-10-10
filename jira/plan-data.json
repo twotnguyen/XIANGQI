@@ -1240,7 +1240,7 @@
         "nen-tang",
         "p1",
         "phat-trien",
-        "sprint-1"
+        "sprint-2"
       ],
       "story": "US-00.1",
       "owner": "Kỳ",
@@ -1456,7 +1456,7 @@
         "chinh-fe",
         "p1",
         "phat-trien",
-        "sprint-1",
+        "sprint-2",
         "tai-khoan"
       ],
       "story": "US-01.1",
@@ -1760,7 +1760,7 @@
         "chinh-fe",
         "p1",
         "phat-trien",
-        "sprint-1",
+        "sprint-2",
         "tai-khoan"
       ],
       "story": "US-01.2",
@@ -1805,7 +1805,7 @@
         "chinh-qa-devops",
         "kiem-thu",
         "p1",
-        "sprint-1"
+        "sprint-2"
       ],
       "story": "US-04.2",
       "owner": "Tình",
@@ -2248,7 +2248,7 @@
         "p1",
         "phat-trien",
         "phong-choi",
-        "sprint-2"
+        "sprint-3"
       ],
       "story": "US-03.1",
       "owner": "Cường",
@@ -2292,7 +2292,7 @@
         "chinh-qa-devops",
         "kiem-thu",
         "p1",
-        "sprint-4"
+        "sprint-3"
       ],
       "story": "US-04.3",
       "owner": "Tình",
@@ -2648,7 +2648,7 @@
         "chinh-be",
         "p1",
         "phat-trien",
-        "sprint-2",
+        "sprint-1",
         "tai-khoan"
       ],
       "story": "US-01.3",
@@ -3049,7 +3049,7 @@
         "chinh-fe",
         "p1",
         "phat-trien",
-        "sprint-2",
+        "sprint-3",
         "tai-khoan"
       ],
       "story": "US-01.3",
@@ -3321,7 +3321,7 @@
         "kiem-thu",
         "p1",
         "phong-choi",
-        "sprint-3",
+        "sprint-4",
         "van-truc-tuyen"
       ],
       "story": "US-02.2",
@@ -3466,7 +3466,7 @@
         "p1",
         "phat-trien",
         "phong-choi",
-        "sprint-2"
+        "sprint-3"
       ],
       "story": "US-06.1",
       "owner": "Tùng",
@@ -3594,7 +3594,7 @@
         "chinh-be",
         "p1",
         "phat-trien",
-        "sprint-3",
+        "sprint-2",
         "tai-khoan",
         "van-truc-tuyen"
       ],
@@ -3914,7 +3914,7 @@
         "may-co",
         "p1",
         "phat-trien",
-        "sprint-3"
+        "sprint-2"
       ],
       "story": "US-08.3",
       "owner": "Cường",
@@ -4155,7 +4155,7 @@
         "luat-co",
         "may-co",
         "p1",
-        "sprint-4"
+        "sprint-3"
       ],
       "story": "US-08.3",
       "owner": "Nhạn",
@@ -4412,7 +4412,7 @@
   },
   "schedule_notes": {
     "date_precision": "day; inclusive start and due; slots encode date boundaries only",
-    "task_sprint_policy": "Actual Jira Sprint field denotes start. Historical sprint labels may differ.",
+    "task_sprint_policy": "Actual Jira Sprint field denotes start. Sprint labels are synchronized to the actual Sprint field.",
     "completion": "2026-11-04",
     "buffer": null,
     "hours_distribution": "For reporting only, distribute task estimate uniformly over its calendar dates; not logged work."

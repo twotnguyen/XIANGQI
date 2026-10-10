@@ -240,7 +240,7 @@ Bàn giao bộ khung cho các chức năng đăng nhập, phòng và bàn cờ. 
 | Is blocked by | T01 |
 | Component chính | FE |
 | Components | FE, Nền tảng |
-| Labels | chinh-fe, nen-tang, p1, phat-trien, sprint-1 |
+| Labels | chinh-fe, nen-tang, p1, phat-trien, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 10.1, 10.3, 0.3, 0.5 |
 
 
@@ -1437,7 +1437,7 @@ Bàn giao cho màn đăng ký; Google và Khách đầy đủ triển khai riên
 | Is blocked by | T03, T04 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | chinh-fe, p1, phat-trien, sprint-1, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-2, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.17, 1.1, 1.5, 5.3 |
 
 
@@ -1740,7 +1740,7 @@ Bàn giao đăng nhập mật khẩu cho giao diện; kiểm chung với Google 
 | Is blocked by | T03, T09 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | chinh-fe, p1, phat-trien, sprint-1, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-2, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 1.8 |
 
 
@@ -1974,7 +1974,7 @@ Không tự gộp tài khoản trùng email và không triển khai xếp hạng
 | Is blocked by | T09, T14 |
 | Component chính | BE |
 | Components | BE, Tài khoản |
-| Labels | chinh-be, p1, phat-trien, sprint-2, tai-khoan |
+| Labels | chinh-be, p1, phat-trien, sprint-1, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.3, 0.15, 0.17, 1.1, 1.2, 1.3, 5.3 |
 
 
@@ -2045,7 +2045,7 @@ Bàn giao xác thực, dữ liệu hạn và quyền Khách; quản lý phiên, 
 | Is blocked by | T15, T35 |
 | Component chính | FE |
 | Components | FE, Tài khoản |
-| Labels | chinh-fe, p1, phat-trien, sprint-2, tai-khoan |
+| Labels | chinh-fe, p1, phat-trien, sprint-3, tai-khoan |
 | Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.17, 1.2, 1.3 |
 
 
@@ -2264,7 +2264,7 @@ Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao
 | Is blocked by | T18, T20, T35 |
 | Component chính | BE |
 | Components | BE, Tài khoản, Ván trực tuyến |
-| Labels | chinh-be, p1, phat-trien, sprint-3, tai-khoan, van-truc-tuyen |
+| Labels | chinh-be, p1, phat-trien, sprint-2, tai-khoan, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.3, 1.3, 1.4, 1.8 |
 
 
@@ -3065,7 +3065,7 @@ Phần này không tạo cơ chế tái đấu mới và không tự xử thời
 | Is blocked by | T46 |
 | Component chính | QA & DevOps |
 | Components | Phòng chơi, QA & DevOps, Ván trực tuyến |
-| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-3, van-truc-tuyen |
+| Labels | chinh-qa-devops, kiem-thu, p1, phong-choi, sprint-4, van-truc-tuyen |
 | Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 0.17 |
 
 
@@ -3350,7 +3350,7 @@ Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. C
 | Is blocked by | T21, T22 |
 | Component chính | FE |
 | Components | FE, Phòng chơi |
-| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-2 |
+| Labels | chinh-fe, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.3, 2.4, 2.6, 2.7, 2.8 |
 
 
@@ -4302,7 +4302,7 @@ Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, �
 | Is blocked by | T11 |
 | Component chính | QA & DevOps |
 | Components | Bàn cờ, QA & DevOps |
-| Labels | ban-co, chinh-qa-devops, kiem-thu, p1, sprint-1 |
+| Labels | ban-co, chinh-qa-devops, kiem-thu, p1, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1 |
 
 
@@ -4534,7 +4534,7 @@ Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ 
 | Is blocked by | T22, T25 |
 | Component chính | QA & DevOps |
 | Components | Bàn cờ, QA & DevOps |
-| Labels | ban-co, chinh-qa-devops, kiem-thu, p1, sprint-4 |
+| Labels | ban-co, chinh-qa-devops, kiem-thu, p1, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
@@ -5666,7 +5666,7 @@ Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.
 | Is blocked by | T22 |
 | Component chính | BE |
 | Components | BE, Phòng chơi |
-| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-2 |
+| Labels | chinh-be, p1, phat-trien, phong-choi, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.8, 4.3 |
 
 
@@ -7666,7 +7666,7 @@ Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chí
 | Is blocked by | T34, T35 |
 | Component chính | BE |
 | Components | BE, Máy cờ |
-| Labels | chinh-be, may-co, p1, phat-trien, sprint-3 |
+| Labels | chinh-be, may-co, p1, phat-trien, sprint-2 |
 | Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3 |
 
 
@@ -7738,7 +7738,7 @@ Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi c�
 | Is blocked by | T38, T59, T65 |
 | Component chính | QA & DevOps |
 | Components | Luật cờ, Máy cờ, QA & DevOps |
-| Labels | chinh-qa-devops, kiem-thu, luat-co, may-co, p1, sprint-4 |
+| Labels | chinh-qa-devops, kiem-thu, luat-co, may-co, p1, sprint-3 |
 | Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 

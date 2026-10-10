@@ -16,7 +16,7 @@ Nguồn hiện hành: [current-jira-snapshot.json](current-jira-snapshot.json), 
 
 `plan-data.json`, `descriptions.json`, `xian-import.csv`, `JIRA-MUC-CHI-TIET.md`, `ANH-XA-JIRA-107-MUC.md`, `jira-key-account-mapping.json`, `PHAN-CONG-CAN-BANG.md`, `DANH-GIA-KHOI-LUONG.md`, `COMPONENTS-LABELS.md`, `KIEM-TRA-KE-HOACH.md`, `../KE-HOACH-JIRA.md` và phần kế hoạch trong `../BACKLOG-P1.md` cùng phản ánh snapshot hiện hành.
 
-CSV có Jira Key, Resolution, Remaining Estimate và account ID; đây là bản đối chiếu các mục đã tồn tại, không nhập như backlog mới hoặc dùng để ép chuyển trạng thái. Việc đồng bộ repo không ghi dữ liệu lên Jira.
+CSV có Jira Key, Resolution, Remaining Estimate và account ID; đây là bản đối chiếu các mục đã tồn tại, không nhập như backlog mới hoặc dùng để ép chuyển trạng thái. Bộ sinh local không ghi dữ liệu lên Jira; đợt sửa nhãn được thực hiện riêng qua Atlassian rồi đọc lại.
 
 ## Kiểm tra và sinh lại
 
@@ -29,7 +29,7 @@ python3 -m unittest discover -s jira/tests -v
 
 Ước lượng giờ độc lập với khoảng ngày. Khi trình bày giờ theo Sprint, bộ sinh chia đều ước lượng trên số ngày lịch; đây không phải giờ đã log. Các ngày Epic/Story là ngày kế hoạch được giữ nguyên từ Jira, không phải ngày hoàn thành thực tế.
 
-**Lưu ý nguồn Jira:** 13 nhãn `sprint-*` vẫn lệch trường Sprint. Repo giữ nguyên nhãn để phản ánh nguồn, còn lịch và báo cáo dùng trường Sprint. Danh sách đầy đủ nằm ở [KIEM-TRA-KE-HOACH.md](KIEM-TRA-KE-HOACH.md). Không tự sửa Jira trong lượt đồng bộ này.
+**Nhãn Sprint:** đã sửa 13 nhãn `sprint-*` trên Jira và đọc lại đủ 107 mục; 71/71 Task khớp Sprint thực tế. Các trường khác không đổi; bốn Sprint vẫn `future`. Chi tiết trước/sau: [sprint-label-sync-2026-10-10.json](sprint-label-sync-2026-10-10.json).
 
 ## Hồ sơ lịch sử
 

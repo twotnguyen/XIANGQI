@@ -72,13 +72,15 @@ class CurrentPlanTests(unittest.TestCase):
                 with self.assertRaises(AssertionError):
                     plan.validate_live_parity()
 
-    def test_sprint_report_uses_dates_and_preserves_stale_label_warning(self):
+    def test_sprint_report_uses_dates_and_detects_label_drift(self):
         task = {'hours': 12, 'start_slot': 12, 'end_slot': 16}
         self.assertEqual(plan.sprint_hours(task, 1), 6)
         self.assertEqual(plan.sprint_hours(task, 2), 6)
-        self.assertEqual(len(plan.label_mismatches()), 13)
+        self.assertEqual(plan.label_mismatches(), [])
         self.assertEqual(plan.TASKS['T03']['sprint'], 2)
-        self.assertIn('sprint-1', plan.TASKS['T03']['labels'])
+        self.assertIn('sprint-2', plan.TASKS['T03']['labels'])
+        with patch.dict(plan.TASKS['T03'], {'labels': ['sprint-1']}):
+            self.assertEqual(len(plan.label_mismatches()), 1)
 
 
 if __name__ == '__main__':

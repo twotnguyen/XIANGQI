@@ -45,7 +45,7 @@ Chỉ chuyển giai đoạn khi PO xác nhận giai đoạn trước đã ổn.
 
 Làm cả cuối tuần. Lập kế hoạch tối đa **8 giờ/người/ngày**, mỗi người một Task/ngày. Task phụ thuộc bắt đầu từ ngày sau khi Task trước kết thúc; **cao nhất 7 Task chạy song song trong lịch mới** (chi tiết: KE-HOACH-JIRA.md). Đây là lịch dự kiến đã kiểm ràng buộc; công suất trống không tự bảo đảm mọi việc sẽ đúng ước lượng.
 
-> Trường Sprint là nguồn lịch chính. Có 13 nhãn sprint lịch sử trên Jira chưa khớp trường Sprint; danh sách ở [báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md). Không dùng nhãn cũ để lọc lịch.
+> Trường Sprint là nguồn lịch chính. Đã sửa 13 nhãn sprint trên Jira; 71/71 Task có nhãn khớp Sprint thực tế. Kết quả ở [báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md).
 
 ## Nhóm
 

@@ -68,7 +68,7 @@ def main():
                 sprints=[[2*(datetime.date.fromisoformat(s['startDate'][:10])-base).days,
                           2*((datetime.date.fromisoformat(s['endDate'][:10])-base).days+1)] for s in source['sprints']],
                 schedule_notes={'date_precision': 'day; inclusive start and due; slots encode date boundaries only',
-                                'task_sprint_policy': 'Actual Jira Sprint field denotes start. Historical sprint labels may differ.',
+                                'task_sprint_policy': 'Actual Jira Sprint field denotes start. Sprint labels are synchronized to the actual Sprint field.',
                                 'completion': '2026-11-04', 'buffer': None,
                                 'hours_distribution': 'For reporting only, distribute task estimate uniformly over its calendar dates; not logged work.'})
     revision = data['allocation_revision']

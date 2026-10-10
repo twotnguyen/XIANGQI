@@ -18,25 +18,11 @@
 | Task qua ranh giới Sprint | T02, T20, T24, T35, T56 |
 
 
-## Nhãn Sprint lịch sử chưa đồng bộ trên Jira
+## Đối chiếu nhãn Sprint trên Jira
 
-Giữ nguyên nhãn từ Jira để bản local phản ánh đúng nguồn; **không dùng các nhãn này để suy ra lịch**. Trường Sprint là nguồn chính. Việc đồng bộ repo không tự sửa dữ liệu Jira.
+Đã đối chiếu 71 Task; số nhãn lệch trường Sprint: **0**. Trường Sprint là nguồn chính. Lịch sử sửa 13 nhãn: [sprint-label-sync-2026-10-10.json](sprint-label-sync-2026-10-10.json).
 
-| Jira | Task | Nhãn hiện tại | Sprint thực tế |
-|---|---|---|---|
-| XIAN-39 | T03 | sprint-1 | XIAN Sprint 2 |
-| XIAN-44 | T08 | sprint-1 | XIAN Sprint 2 |
-| XIAN-51 | T15 | sprint-1 | XIAN Sprint 2 |
-| XIAN-52 | T16 | sprint-1 | XIAN Sprint 2 |
-| XIAN-62 | T26 | sprint-2 | XIAN Sprint 3 |
-| XIAN-63 | T27 | sprint-4 | XIAN Sprint 3 |
-| XIAN-71 | T35 | sprint-2 | XIAN Sprint 1 |
-| XIAN-80 | T44 | sprint-2 | XIAN Sprint 3 |
-| XIAN-86 | T50 | sprint-3 | XIAN Sprint 4 |
-| XIAN-89 | T53 | sprint-2 | XIAN Sprint 3 |
-| XIAN-92 | T56 | sprint-3 | XIAN Sprint 2 |
-| XIAN-99 | T63 | sprint-3 | XIAN Sprint 2 |
-| XIAN-104 | T68 | sprint-4 | XIAN Sprint 3 |
+Toàn bộ nhãn `sprint-*` khớp Sprint thực tế.
 
 
 ## Giới hạn
