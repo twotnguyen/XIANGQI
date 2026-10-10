@@ -68,6 +68,9 @@ importers:
       '@xiangqi/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@xiangqi/xiangqi-core':
+        specifier: workspace:*
+        version: link:../../packages/xiangqi-core
       react:
         specifier: 19.2.8
         version: 19.2.8

@@ -25,3 +25,13 @@ section {
   border: 1px solid #dad5c9;
   border-radius: 8px;
 }
+
+html:has(.board-preview-page),
+body:has(.board-preview-page) {
+  background: #120d0a;
+}
+.board-preview-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 0;
+}
