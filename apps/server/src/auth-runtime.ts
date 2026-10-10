@@ -170,6 +170,8 @@ export async function createRegistrationRuntime(
   return {
     module,
     sessions,
+    auth,
+    pool,
     checkDatabase: async () => {
       await pool.query("SELECT 1");
       await sessionPool?.query("SELECT 1");

@@ -15,6 +15,7 @@
     "@nestjs/platform-express": "11.2.7",
     "@xiangqi/shared": "workspace:*",
     "dotenv": "18.0.7",
+    "jose": "6.2.12",
     "pg": "8.16.3",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
