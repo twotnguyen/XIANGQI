@@ -1,0 +1,2278 @@
+{
+  "version": "1.0",
+  "created_at": "2026-10-11",
+  "source_inventory": "../reports/PHAM-VI-P1-P2.md",
+  "baseline_p1": {
+    "hours": 880,
+    "deadline": "2026-11-04",
+    "epics": 9,
+    "stories": 27,
+    "tasks": 71,
+    "acs": 268
+  },
+  "planning_status": "Ước lượng kỹ thuật Codex đề xuất, chưa là lịch/giờ Jira hiện hữu hoặc cam kết deadline. Không có Sprint/assignee/release/date mới.",
+  "p2_hours": 768,
+  "epics": [
+    {
+      "id": "EP-P2-01",
+      "jira_key": "XIAN-108",
+      "status": "To Do"
+    },
+    {
+      "id": "EP-P2-02",
+      "jira_key": "XIAN-109",
+      "status": "To Do"
+    },
+    {
+      "id": "EP-P2-03",
+      "jira_key": "XIAN-110",
+      "status": "To Do"
+    },
+    {
+      "id": "EP-P2-04",
+      "jira_key": "XIAN-111",
+      "status": "To Do"
+    },
+    {
+      "id": "EP-P2-05",
+      "jira_key": "XIAN-112",
+      "status": "To Do"
+    },
+    {
+      "id": "EP-P2-06",
+      "jira_key": "XIAN-113",
+      "status": "To Do"
+    },
+    {
+      "id": "EP-P2-07",
+      "jira_key": "XIAN-114",
+      "status": "To Do"
+    }
+  ],
+  "stories": [
+    {
+      "id": "US-P2-01",
+      "requirement_id": "P2-01",
+      "epic": "EP-P2-01",
+      "epic_jira_key": "XIAN-108",
+      "jira_key": "XIAN-115",
+      "title": "Tính Elo và số ván Ranked",
+      "source": "7.1;703",
+      "requirements": "Elo1200; FIDE expected score và S=1/.5/0; K32 ván1–30, K16 từ31 tính completed trước ván, independent sides; round nearest .5up rồi floor100; không ép zero-sum; chỉ Ranked hoàn tất tăng count/Elo",
+      "verification": "P1 kết quả bền/idempotence/auth; TC bảng đáp án tính độc lập K khác nhau/sàn/.5/ván30–31/duplicate; Casual/AI/INTERRUPTED không đổi",
+      "dependencies": [
+        "T14",
+        "T20"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-01.1",
+          "tc": "TC-P2-01.1",
+          "given": "Hai người có Elo và số ván trước trận",
+          "when": "Kết thúc Ranked",
+          "then": "Expected score theo BA 7.1; S = 1/0/0.5; K = 32 ở ván 1–30, K = 16 từ ván 31. Tính độc lập từng bên từ Elo và số ván hoàn tất trước trận.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1;703",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-01.2",
+          "tc": "TC-P2-01.2",
+          "given": "Elo tính được có phần .5 hoặc dưới 100",
+          "when": "Làm tròn và lưu",
+          "then": "Làm tròn tới số nguyên gần nhất, .5 lên, rồi áp sàn 100. Không ép tổng biến động bằng 0 khi K khác nhau hoặc chạm sàn.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1;703",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-01.3",
+          "tc": "TC-P2-01.3",
+          "given": "Casual, AI, INTERRUPTED hoặc kết quả gửi trùng",
+          "when": "Hoàn tất giao dịch",
+          "then": "Casual, AI, INTERRUPTED không đổi Elo/count. Mỗi Ranked hoàn tất chỉ cập nhật một lần; resign ngay nước đầu vẫn tính bình thường.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1;703",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-01-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T14",
+            "T20"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-140",
+          "dependency_jira_keys": [
+            "XIAN-50",
+            "XIAN-56"
+          ]
+        },
+        {
+          "id": "T-P2-01-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-01-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-141",
+          "dependency_jira_keys": [
+            "XIAN-140"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-50",
+        "XIAN-56"
+      ]
+    },
+    {
+      "id": "US-P2-02",
+      "requirement_id": "P2-02",
+      "epic": "EP-P2-01",
+      "epic_jira_key": "XIAN-108",
+      "jira_key": "XIAN-116",
+      "title": "Hàng đợi Ranked",
+      "source": "7.1–7.2;703/743",
+      "requirements": "Ranked queue ±100 +50/10s, biên lớn hơn hai người, cuối60s thử±400 trước timeout; cancel tự do trước MATCH_FOUND, sau found khóa; random phe/10p/vào ngay; không bot; queue memory restart báo hủy; disconnect30s rút",
+      "verification": "Elo/auth/socket/single-position; fake-clock tests tại10/59.999/60s, race cancel-found/restart/disconnect",
+      "dependencies": [
+        "T12",
+        "T56",
+        "P2-01",
+        "P2-03"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-02.1",
+          "tc": "TC-P2-02.1",
+          "given": "Tài khoản chính thức chưa có vị trí chơi",
+          "when": "Tìm Ranked",
+          "then": "Biên ±100 mở thêm 50 mỗi 10 giây, dùng biên lớn hơn của hai người. Đúng 60 giây thử ±400 lần cuối rồi mới timeout; không phạt hoặc ghép bot.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1–7.2;703/743",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-02.2",
+          "tc": "TC-P2-02.2",
+          "given": "Hai đối thủ vừa ghép",
+          "when": "MATCH_FOUND hoặc hủy đồng thời",
+          "then": "Ghép nguyên tử, phe ngẫu nhiên, 10 phút/bên, vào ván ngay. Chỉ hủy được trước MATCH_FOUND; sau đó nút bị khóa.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1–7.2;703/743",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-02.3",
+          "tc": "TC-P2-02.3",
+          "given": "Người đang trong hàng đợi",
+          "when": "Mất mạng hoặc server restart",
+          "then": "Quá 30 giây mất mạng thì rút queue. Restart mất queue và báo Hàng đợi đã bị huỷ, hãy tìm lại. Không phạt; người queued không nhận invite/challenge.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1–7.2;703/743",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-02-I",
+          "type": "implementation",
+          "hours": 32,
+          "dependencies": [
+            "T12",
+            "T56",
+            "P2-01",
+            "P2-03"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-142",
+          "dependency_jira_keys": [
+            "XIAN-48",
+            "XIAN-92",
+            "XIAN-140",
+            "XIAN-144"
+          ]
+        },
+        {
+          "id": "T-P2-02-Q",
+          "type": "verification",
+          "hours": 12,
+          "dependencies": [
+            "T-P2-02-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-143",
+          "dependency_jira_keys": [
+            "XIAN-142"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-48",
+        "XIAN-92",
+        "XIAN-140",
+        "XIAN-144"
+      ]
+    },
+    {
+      "id": "US-P2-03",
+      "requirement_id": "P2-03",
+      "epic": "EP-P2-01",
+      "epic_jira_key": "XIAN-108",
+      "jira_key": "XIAN-117",
+      "title": "Giới hạn cặp Ranked trong 24 giờ",
+      "source": "7.2;743",
+      "requirements": "Một cặp max3 ván24h từ started_at, gồm INTERRUPTED; sliding started>t−24h và≤t; bỏ qua kín tiếp tìm; không chặn IP/thiết bị",
+      "verification": "Lưu match start + queue; TC ván4 và biên chính xác24h/cùng mạng; race ghép đôi không vượt3",
+      "dependencies": [
+        "T14",
+        "T20"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-03.1",
+          "tc": "TC-P2-03.1",
+          "given": "Một cặp đã bắt đầu 3 ván trong cửa sổ",
+          "when": "Tìm ván thứ tư",
+          "then": "Bỏ qua cặp này âm thầm, tiếp tục tìm đối thủ khác. Tính cả INTERRUPTED; không chặn theo IP hoặc thiết bị.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.2;743",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-03.2",
+          "tc": "TC-P2-03.2",
+          "given": "Thời điểm kiểm t",
+          "when": "Đếm ván tại biên 24 giờ",
+          "then": "Chỉ đếm started_at > t − 24 giờ và ≤ t. Ván đúng t − 24 giờ đã ra khỏi cửa sổ.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.2;743",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-03.3",
+          "tc": "TC-P2-03.3",
+          "given": "Hai lượt ghép đồng thời",
+          "when": "Ghi thời điểm bắt đầu",
+          "then": "Không vượt 3 ván/cặp/24 giờ; không tự ghép cùng tài khoản.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.2;743",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-03-I",
+          "type": "implementation",
+          "hours": 16,
+          "dependencies": [
+            "T14",
+            "T20"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-144",
+          "dependency_jira_keys": [
+            "XIAN-50",
+            "XIAN-56"
+          ]
+        },
+        {
+          "id": "T-P2-03-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-03-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-145",
+          "dependency_jira_keys": [
+            "XIAN-144"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-50",
+        "XIAN-56"
+      ]
+    },
+    {
+      "id": "US-P2-04",
+      "requirement_id": "P2-04",
+      "epic": "EP-P2-01",
+      "epic_jira_key": "XIAN-108",
+      "jira_key": "XIAN-118",
+      "title": "Phân quyền và vòng đời ván Ranked",
+      "source": "2.0,7.2,8.1,8.3;275/743/770/791",
+      "requirements": "Chỉ tài khoản chính thức, no spectators/invite/share/undo/side-swap/rematch, no PUBLIC;10p/no increment; xin hoà sau≥20 nước **mỗi bên**, cooldown5 nước; resign/ragequit Elo bình thường; lỗi server không Elo; FINISHED giữ vị trí tới leave/10m, không nhận mới",
+      "verification": "P1 online/core/clock/roles + Elo; forged direct requests cấm các quyền; TC19/20 bên, timeout vs grace/cả hai rớt/restart/end race; E2E result",
+      "dependencies": [
+        "T23",
+        "T32",
+        "T52",
+        "P2-01",
+        "P2-02"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-04.1",
+          "tc": "TC-P2-04.1",
+          "given": "Khách hoặc người ngoài ván Ranked",
+          "when": "Gọi lệnh phòng bị cấm",
+          "then": "Server từ chối tham gia/xem/mời/chia sẻ/undo/đổi ghế/tái đấu. Chỉ hai tài khoản được ghép có quyền; phòng không PUBLIC và không nhận người mới.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.0,7.2,8.1,8.3;275/743/770/791",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-04.2",
+          "tc": "TC-P2-04.2",
+          "given": "Ranked 10 phút không cộng giây",
+          "when": "Xin hòa, resign, rời hoặc mất mạng",
+          "then": "Chỉ xin hòa sau mỗi bên ≥20 nước; hạn 30 giây, cooldown 5 nước mình. Resign/DISCONNECT tính Elo; TIMEOUT trước grace được ưu tiên; server INTERRUPTED không đổi Elo.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.0,7.2,8.1,8.3;275/743/770/791",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-04.3",
+          "tc": "TC-P2-04.3",
+          "given": "Ranked đã kết thúc",
+          "when": "Một bên rời hoặc đủ 10 phút",
+          "then": "Giữ FINISHED cho bên còn lại; không WAITING/Ready/Tái đấu. Đóng khi cả hai rời hoặc 10 phút từ kết thúc, không đặt lại hạn.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.0,7.2,8.1,8.3;275/743/770/791",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-04-I",
+          "type": "implementation",
+          "hours": 32,
+          "dependencies": [
+            "T23",
+            "T32",
+            "T52",
+            "P2-01",
+            "P2-02"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-146",
+          "dependency_jira_keys": [
+            "XIAN-59",
+            "XIAN-68",
+            "XIAN-88",
+            "XIAN-140",
+            "XIAN-142"
+          ]
+        },
+        {
+          "id": "T-P2-04-Q",
+          "type": "verification",
+          "hours": 12,
+          "dependencies": [
+            "T-P2-04-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-147",
+          "dependency_jira_keys": [
+            "XIAN-146"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-59",
+        "XIAN-68",
+        "XIAN-88",
+        "XIAN-140",
+        "XIAN-142"
+      ]
+    },
+    {
+      "id": "US-P2-05",
+      "requirement_id": "P2-05",
+      "epic": "EP-P2-01",
+      "epic_jira_key": "XIAN-108",
+      "jira_key": "XIAN-119",
+      "title": "Quyền nhận media Ranked",
+      "source": "5.4,4.1;617/526",
+      "requirements": "Ranked text/stickers/mic/cam riêng2 người, default devices off; mức Không chia sẻ/Chỉ đối thủ; **receiver mặc định ẩn hình+tiếng đối thủ**, chủ động Hiện/Tắt ngay; không ghi/lưu",
+      "verification": "P1 media/chat + sticker; actual subscribed audio/video stop/start ở receiver; default hidden qua reconnect",
+      "dependencies": [
+        "T33",
+        "T58",
+        "P2-04",
+        "P2-17"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-05.1",
+          "tc": "TC-P2-05.1",
+          "given": "Hai người vừa vào Ranked",
+          "when": "Mở media và chat",
+          "then": "Camera/mic mặc định Tắt; chỉ Kênh Riêng và hai mức Không chia sẻ/Chỉ đối thủ. Người nhận mặc định ẨN hình và tiếng đối thủ.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.4,4.1;617/526",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-05.2",
+          "tc": "TC-P2-05.2",
+          "given": "Đối thủ đang phát media",
+          "when": "Bấm Hiện hình/tiếng hoặc Tắt ngay",
+          "then": "Chỉ nhận khi chủ động Hiện; Tắt ngay dừng nhận hình/tiếng. Không ghi âm, ghi hình hoặc cấp quyền người xem.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.4,4.1;617/526",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-05.3",
+          "tc": "TC-P2-05.3",
+          "given": "Ranked có chat và sticker",
+          "when": "Gửi hoặc reconnect",
+          "then": "Giữ quyền đúng hai người, bộ lọc và giới hạn tốc độ. Không cấp quyền media cho người ngoài hoặc tự hiện media đã ẩn.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.4,4.1;617/526",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-05-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T33",
+            "T58",
+            "P2-04",
+            "P2-17"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-148",
+          "dependency_jira_keys": [
+            "XIAN-69",
+            "XIAN-94",
+            "XIAN-146",
+            "XIAN-172"
+          ]
+        },
+        {
+          "id": "T-P2-05-Q",
+          "type": "verification",
+          "hours": 12,
+          "dependencies": [
+            "T-P2-05-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-149",
+          "dependency_jira_keys": [
+            "XIAN-148"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-69",
+        "XIAN-94",
+        "XIAN-146",
+        "XIAN-172"
+      ]
+    },
+    {
+      "id": "US-P2-06",
+      "requirement_id": "P2-06",
+      "epic": "EP-P2-01",
+      "epic_jira_key": "XIAN-108",
+      "jira_key": "XIAN-120",
+      "title": "Bảng xếp hạng và thẻ tóm tắt",
+      "source": "7.1,7.3,5.5;703/754/629",
+      "requirements": "Top50 + sticky cá nhân; chỉ≥5 completed Ranked; thiếu ghi số ván; sort Elo↓wins↓time đạt Elo↑user_id↑; tiers <1200,1200–1399,1400–1599,1600–1799,1800–1999,≥2000; zero Ranked Chưa xếp hạng; stats/winrate chỉ Ranked; summary card không public profile, friend/DM theo quyền",
+      "verification": "Elo/history/friends; TC ties/4→5/zero/floor/tiers/outside50/guest; leaderboard E2E loading/empty/error",
+      "dependencies": [
+        "T40",
+        "P2-01",
+        "P2-11"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-06.1",
+          "tc": "TC-P2-06.1",
+          "given": "Danh sách tài khoản",
+          "when": "Xem Top 50 và dòng ghim",
+          "then": "Chỉ tài khoản ≥5 Ranked hoàn tất được xếp hạng. Có dòng cá nhân cả khi ngoài Top 50; chưa đủ ghi Chưa xếp hạng — cần thêm X ván. Khách không có bảng.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1,7.3,5.5;703/754/629",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-06.2",
+          "tc": "TC-P2-06.2",
+          "given": "Nhiều tài khoản đồng Elo",
+          "when": "Sắp xếp",
+          "then": "Elo giảm, wins giảm, thời điểm đạt Elo tăng, user_id tăng. Không reset mùa. Stats/winrate chỉ Ranked; INTERRUPTED/Bỏ dở không tính.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1,7.3,5.5;703/754/629",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-06.3",
+          "tc": "TC-P2-06.3",
+          "given": "Elo tại các biên tier",
+          "when": "Hiển thị tier và thẻ tóm tắt",
+          "then": "Đúng sáu tier BA 7.1; chưa đấu Ranked ghi Chưa xếp hạng. Thẻ có avatar, Display Name, @username, Elo, tier, W/D/L; không trang hồ sơ công khai, DM chỉ bạn accepted.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "7.1,7.3,5.5;703/754/629",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-06-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T40",
+            "P2-01",
+            "P2-11"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-150",
+          "dependency_jira_keys": [
+            "XIAN-76",
+            "XIAN-140",
+            "XIAN-160"
+          ]
+        },
+        {
+          "id": "T-P2-06-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-06-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-151",
+          "dependency_jira_keys": [
+            "XIAN-150"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-76",
+        "XIAN-140",
+        "XIAN-160"
+      ]
+    },
+    {
+      "id": "US-P2-07",
+      "requirement_id": "P2-07",
+      "epic": "EP-P2-02",
+      "epic_jira_key": "XIAN-109",
+      "jira_key": "XIAN-121",
+      "title": "Ghép ngẫu nhiên Casual",
+      "source": "2.0,1.8;275/259",
+      "requirements": "Casual random queue3m/cancel/không phạt/bot; phe random, trước queue Host,15p/no increment; found confirm10s mỗi bên Ready, đủ→3s; chưa ready về Sảnh/ready auto-requeue; không bắt đầu không thua; disconnect30s rút queue; no PUBLIC/spectators/share/chung; chỉ private media/chat; undo/rematch; FINISHED tới bothleave/10m, không WAITING/người mới",
+      "verification": "P1 room/match/session + P2-08/09; tests races ready/timeout/disconnect/cancel, both/unilateral confirm, fixed clocks, no privilege reopening",
+      "dependencies": [
+        "T18",
+        "T20",
+        "T23",
+        "T52",
+        "T56"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-07.1",
+          "tc": "TC-P2-07.1",
+          "given": "Tài khoản chưa có vị trí chơi",
+          "when": "Tìm hoặc hủy Casual",
+          "then": "Tìm tối đa 3 phút; hủy trong lúc tìm không phạt. Timeout về Sảnh, không bot; mất mạng quá 30 giây rút queue. Khách bị từ chối theo BA 0.3.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.0,1.8;275/259",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-07.2",
+          "tc": "TC-P2-07.2",
+          "given": "Casual vừa ghép",
+          "when": "Xác nhận trong 10 giây",
+          "then": "Người queued trước là Host, phe ngẫu nhiên, 15 phút/bên không cộng giây. Cả hai Ready mới đếm 3 giây; chưa Ready về Sảnh, đã Ready tự tìm tiếp. Cả hai chưa Ready cùng về Sảnh; chưa bắt đầu không xử thua.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.0,1.8;275/259",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-07.3",
+          "tc": "TC-P2-07.3",
+          "given": "Phòng Casual random",
+          "when": "Gọi quyền phòng hoặc kết thúc",
+          "then": "Không Elo/PUBLIC/người xem/chia sẻ/Kênh Chung hoặc mở settings người xem. Có private chat/media. FINISHED tới cả hai rời hoặc 10 phút từ end, không WAITING/người mới; undo/rematch theo P2-08/09.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.0,1.8;275/259",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-07-I",
+          "type": "implementation",
+          "hours": 32,
+          "dependencies": [
+            "T18",
+            "T20",
+            "T23",
+            "T52",
+            "T56"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-152",
+          "dependency_jira_keys": [
+            "XIAN-54",
+            "XIAN-56",
+            "XIAN-59",
+            "XIAN-88",
+            "XIAN-92"
+          ]
+        },
+        {
+          "id": "T-P2-07-Q",
+          "type": "verification",
+          "hours": 12,
+          "dependencies": [
+            "T-P2-07-I",
+            "T-P2-08-I",
+            "T-P2-09-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-153",
+          "dependency_jira_keys": [
+            "XIAN-152",
+            "XIAN-154",
+            "XIAN-156"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-54",
+        "XIAN-56",
+        "XIAN-59",
+        "XIAN-88",
+        "XIAN-92"
+      ]
+    },
+    {
+      "id": "US-P2-08",
+      "requirement_id": "P2-08",
+      "epic": "EP-P2-03",
+      "epic_jira_key": "XIAN-110",
+      "jira_key": "XIAN-122",
+      "title": "Xin đi lại online",
+      "source": "3.2,3.6,0.12;443/513/101",
+      "requirements": "Online undo custom+random: only after own move, opponent accept30s; lùi trước own nearest move1 hoặc2plies; requester không move khi pending; tối đa3 **thành công/bên/ván**, reject/expiry không trừ; cooldown3 own moves, rút/một pending; nonmodal shrink/reopen clock chạy, không hoàn time; nhánh undone không repetition/no-capture/replay",
+      "verification": "Core move tree/receipts/proposals/clock; TC one/two plies,3→4,stale accept/end race/clock preservation/repetition branches, Ranked denied",
+      "dependencies": [
+        "T10",
+        "T32",
+        "P2-07"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-08.1",
+          "tc": "TC-P2-08.1",
+          "given": "Người đã đi ít nhất một nước ở custom/Casual",
+          "when": "Xin đi lại",
+          "then": "Một pending mỗi người, hạn 30 giây, rút được. Người xin không đi nước mới. Đối thủ đồng ý thì lùi trước nước mình gần nhất, 1 hoặc 2 plies. Ranked và Khách bị từ chối.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "3.2,3.6,0.12;443/513/101",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-08.2",
+          "tc": "TC-P2-08.2",
+          "given": "Đề nghị đồng ý, từ chối hoặc hết hạn",
+          "when": "Cập nhật quota và đồng hồ",
+          "then": "Chỉ thành công trừ lượt, tối đa 3/bên/ván. Từ chối/hết hạn chờ 3 nước mình. Đồng hồ tiếp tục và không hoàn thời gian.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "3.2,3.6,0.12;443/513/101",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-08.3",
+          "tc": "TC-P2-08.3",
+          "given": "Đã undo hoặc ván kết thúc",
+          "when": "Xét lặp, không ăn quân, Replay hoặc accept muộn",
+          "then": "Chỉ nhánh hiệu lực được tính. Khung nonmodal; X/Esc thu gọn, không từ chối. Accept muộn không đổi kết quả; phiên bản trạng thái cũ bị từ chối.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "3.2,3.6,0.12;443/513/101",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-08-I",
+          "type": "implementation",
+          "hours": 32,
+          "dependencies": [
+            "T10",
+            "T32",
+            "P2-07"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-154",
+          "dependency_jira_keys": [
+            "XIAN-46",
+            "XIAN-68",
+            "XIAN-152"
+          ]
+        },
+        {
+          "id": "T-P2-08-Q",
+          "type": "verification",
+          "hours": 12,
+          "dependencies": [
+            "T-P2-08-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-155",
+          "dependency_jira_keys": [
+            "XIAN-154"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-46",
+        "XIAN-68",
+        "XIAN-152"
+      ]
+    },
+    {
+      "id": "US-P2-09",
+      "requirement_id": "P2-09",
+      "epic": "EP-P2-03",
+      "epic_jira_key": "XIAN-110",
+      "jira_key": "XIAN-123",
+      "title": "Tái đấu có chọn phe",
+      "source": "0.8,2.3,5.3;82/331/601",
+      "requirements": "Rematch custom+random result: Giữ/Đổi phe defaultĐổi, accept30s→3s không Ready/ID mới, same room/blocks/privacy/spectators/private chat giữ; random reset15p; first concurrent proposal wins; random accept đủ trước10m hủy close timer, sau hạn reject; Ranked none; custom vẫn Ready/sideswap nếu không dùng",
+      "verification": "Room/online/proposals; TC both side choices/concurrent offers/change seats/expiry/10m edge; chat isolation vẫn đúng",
+      "dependencies": [
+        "T41",
+        "T46",
+        "P2-07"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-09.1",
+          "tc": "TC-P2-09.1",
+          "given": "Custom/Casual vừa kết thúc",
+          "when": "Xin Tái đấu",
+          "then": "Chọn Giữ phe/Đổi phe, mặc định Đổi. Người nhận thấy lựa chọn; chấp nhận trong 30 giây thì đếm 3 giây không cần Ready, Match ID mới. Ranked/Khách không có quyền.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "0.8,2.3,5.3;82/331/601",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-09.2",
+          "tc": "TC-P2-09.2",
+          "given": "Tái đấu thành công",
+          "when": "Khởi tạo ván mới",
+          "then": "Giữ room, blocks, privacy, spectators và chat cùng cặp. Casual đặt lại 15 phút/bên; custom không dùng Tái đấu vẫn Ready/Xin đổi bên theo BA 0.7.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "0.8,2.3,5.3;82/331/601",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-09.3",
+          "tc": "TC-P2-09.3",
+          "given": "Hai đề nghị đồng thời hoặc hết hạn phòng",
+          "when": "Server nhận phản hồi",
+          "then": "Giữ offer tới trước, hủy offer sau và hiện offer đối thủ. Casual accept trước 10 phút mới hủy timer đóng; sau hạn bị từ chối. Thay ghế/kết quả cũ không hồi sinh ván.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "0.8,2.3,5.3;82/331/601",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-09-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T41",
+            "T46",
+            "P2-07"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-156",
+          "dependency_jira_keys": [
+            "XIAN-77",
+            "XIAN-82",
+            "XIAN-152"
+          ]
+        },
+        {
+          "id": "T-P2-09-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-09-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-157",
+          "dependency_jira_keys": [
+            "XIAN-156"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-77",
+        "XIAN-82",
+        "XIAN-152"
+      ]
+    },
+    {
+      "id": "US-P2-10",
+      "requirement_id": "P2-10",
+      "epic": "EP-P2-03",
+      "epic_jira_key": "XIAN-110",
+      "jira_key": "XIAN-124",
+      "title": "Không giới hạn giờ và chống treo ván",
+      "source": "2.1,3.3 mục5;305/458",
+      "requirements": "Custom Không giới hạn, mặc định theo luật4 mức; bên **tới lượt** 3m chưa move → nonmodal30s, còn đây reset3m tối đa2 lần liên tiếp không nước mới; lần3 không nút, expiry INACTIVITY; không che board/resign/focus; AI không áp",
+      "verification": "Clock/proposals/UI; fake time thresholds, own move reset chain, inactive side no warning, no-respond result",
+      "dependencies": [
+        "T18",
+        "T23",
+        "T25"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-10.1",
+          "tc": "TC-P2-10.1",
+          "given": "Form custom có bốn mức giờ",
+          "when": "Chọn Không giới hạn",
+          "then": "Không giới hạn là mặc định P2; 5/10/15 phút vẫn hoạt động, không cộng giây. Khách không chọn mức P2; AI không áp inactivity.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.1,3.3 mục5;305/458",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-10.2",
+          "tc": "TC-P2-10.2",
+          "given": "Bên tới lượt không đi 3 phút",
+          "when": "Hiện cảnh báo",
+          "then": "Banner 30 giây không modal, không che bàn cờ/Đầu hàng và không trap focus. Chỉ bên tới lượt bị hỏi; im lặng hết hạn thua INACTIVITY.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.1,3.3 mục5;305/458",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-10.3",
+          "tc": "TC-P2-10.3",
+          "given": "Chưa có nước mới",
+          "when": "Bấm Tôi còn đây liên tiếp",
+          "then": "Đặt lại 3 phút tối đa hai lần liên tiếp. Lần thứ ba không có nút; hết 30 giây thua. Đi nước mới đặt lại chuỗi nhắc.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.1,3.3 mục5;305/458",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-10-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T18",
+            "T23",
+            "T25"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-158",
+          "dependency_jira_keys": [
+            "XIAN-54",
+            "XIAN-59",
+            "XIAN-61"
+          ]
+        },
+        {
+          "id": "T-P2-10-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-10-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-159",
+          "dependency_jira_keys": [
+            "XIAN-158"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-54",
+        "XIAN-59",
+        "XIAN-61"
+      ]
+    },
+    {
+      "id": "US-P2-11",
+      "requirement_id": "P2-11",
+      "epic": "EP-P2-04",
+      "epic_jira_key": "XIAN-111",
+      "jira_key": "XIAN-125",
+      "title": "Lịch sử cá nhân và phân loại kết quả",
+      "source": "6.2,7.3,1.3;658/754/176",
+      "requirements": "History account tất cả/Ranked/Casual/AI; phe/opponent/type/result reason/Elo delta; AI difficulty labels; INTERRUPTED/Bỏ dở không stats/Elo/count; guest không history/replay, chính thức đối thủ guest vẫn lưu, guest hết phiên tên chung Khách",
+      "verification": "Persistent online/AI records/auth/Elo; direct ownership/RLS tests; filter/result matrix/guest anonymization",
+      "dependencies": [
+        "T14",
+        "T20",
+        "T56"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-11.1",
+          "tc": "TC-P2-11.1",
+          "given": "Tài khoản chính thức",
+          "when": "Mở và lọc Lịch sử",
+          "then": "Hiện tất cả/Ranked/Casual/AI, phe, đối thủ, loại, kết quả/lý do, Elo delta; AI có nhãn cấp độ. Thống kê chỉ Ranked hoàn tất.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2,7.3,1.3;658/754/176",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-11.2",
+          "tc": "TC-P2-11.2",
+          "given": "INTERRUPTED hoặc AI Bỏ dở",
+          "when": "Hiện lịch sử và thống kê",
+          "then": "Có History/Replay nhưng không tính W/D/L, winrate, Elo hoặc count. Khách không History/Replay; đối thủ chính thức vẫn lưu ván với Khách.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2,7.3,1.3;658/754/176",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-11.3",
+          "tc": "TC-P2-11.3",
+          "given": "Khách hết phiên hoặc người ngoài sở hữu",
+          "when": "Đọc dữ liệu lịch sử",
+          "then": "Sau hết phiên, tên Khách thành tên chung Khách. API/RLS chỉ đúng người chơi đọc; người xem và người ngoài bị từ chối.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2,7.3,1.3;658/754/176",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-11-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T14",
+            "T20",
+            "T56"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-160",
+          "dependency_jira_keys": [
+            "XIAN-50",
+            "XIAN-56",
+            "XIAN-92"
+          ]
+        },
+        {
+          "id": "T-P2-11-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-11-I",
+            "T-P2-12-I",
+            "T-P2-14-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-161",
+          "dependency_jira_keys": [
+            "XIAN-160",
+            "XIAN-162",
+            "XIAN-166"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-50",
+        "XIAN-56",
+        "XIAN-92"
+      ]
+    },
+    {
+      "id": "US-P2-12",
+      "requirement_id": "P2-12",
+      "epic": "EP-P2-04",
+      "epic_jira_key": "XIAN-111",
+      "jira_key": "XIAN-126",
+      "title": "Lưu ván AI và Bỏ dở",
+      "source": "6.2,6.3;658/675",
+      "requirements": "Lưu AI chính thức khi win/lose/draw/resign, moves/type/difficulty; mất kết nối>30m lưu Bỏ dở không stats; guest không lưu; retry ERROR thật và restart không giả khôi phục",
+      "verification": "P1 AI + persistence; integration finalization/expiry/worker failure/duplicate/restart; kiểm bản ghi và replay",
+      "dependencies": [
+        "T63",
+        "P2-11"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-12.1",
+          "tc": "TC-P2-12.1",
+          "given": "Tài khoản chơi AI",
+          "when": "Ván kết thúc thắng/thua/hòa/resign",
+          "then": "Lưu matches/match_moves với type AI và EASY/MEDIUM/HARD, chỉ nhánh hiệu lực. Hoàn tất chống ghi trùng.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2,6.3;658/675",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-12.2",
+          "tc": "TC-P2-12.2",
+          "given": "AI đóng tab hoặc mất kết nối",
+          "when": "Quá 30 phút",
+          "then": "Tài khoản có bản Bỏ dở, không W/D/L/Elo; Khách không lưu. Trong hạn, giữ cùng URL theo P1.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2,6.3;658/675",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-12.3",
+          "tc": "TC-P2-12.3",
+          "given": "Engine timeout, lỗi hoặc restart",
+          "when": "Thử lại và lưu kết quả",
+          "then": "Timeout >10 giây giữ thế, không tự Bỏ dở. Lỗi ABANDONED thật lưu record; Retry tạo Match ID mới theo BA 6.1. Restart không giả khôi phục trạng thái P1 đã mất.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2,6.3;658/675",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-12-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T63",
+            "P2-11"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-162",
+          "dependency_jira_keys": [
+            "XIAN-99",
+            "XIAN-160"
+          ]
+        },
+        {
+          "id": "T-P2-12-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-12-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-163",
+          "dependency_jira_keys": [
+            "XIAN-162"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-99",
+        "XIAN-160"
+      ]
+    },
+    {
+      "id": "US-P2-13",
+      "requirement_id": "P2-13",
+      "epic": "EP-P2-04",
+      "epic_jira_key": "XIAN-111",
+      "jira_key": "XIAN-127",
+      "title": "Replay riêng tư",
+      "source": "6.2;658 + DANH-MUC §3 SCR-REPLAY;219",
+      "requirements": "Replay duy nhất /history/:id, chỉ hai players, no spectators/share; chỉ effective branch; first/prev/next/last/nhảy dòng, autoplay1.5s/move, biên bản notation tiếng Việt",
+      "verification": "History/core/tree/auth; ownership tampering/API/RLS; golden positions từng move, no undone branch/autoplay timer",
+      "dependencies": [
+        "T11",
+        "T10",
+        "P2-11"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-13.1",
+          "tc": "TC-P2-13.1",
+          "given": "Người chơi sở hữu ván",
+          "when": "Mở /history/:id",
+          "then": "Chỉ người chơi xem, gồm chủ ván AI; không spectator/share/route thay thế. Chỉ nhánh hiệu lực, không nước đã undo.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2;658 + DANH-MUC §3 SCR-REPLAY;219",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-13.2",
+          "tc": "TC-P2-13.2",
+          "given": "Replay có danh sách nước",
+          "when": "Đầu/trước/sau/cuối/nhảy dòng",
+          "then": "Thế và lượt đúng từng mốc; biên bản tiếng Việt. Controls ở biên không vượt danh sách nước.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2;658 + DANH-MUC §3 SCR-REPLAY;219",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-13.3",
+          "tc": "TC-P2-13.3",
+          "given": "Replay đang tự chạy",
+          "when": "Thời gian trôi",
+          "then": "1,5 giây mỗi nước, đúng trình tự, dừng ở cuối. Replay chỉ đọc, không phát lệnh đi nước vào ván live.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.2;658 + DANH-MUC §3 SCR-REPLAY;219",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-13-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T11",
+            "T10",
+            "P2-11"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-164",
+          "dependency_jira_keys": [
+            "XIAN-47",
+            "XIAN-46",
+            "XIAN-160"
+          ]
+        },
+        {
+          "id": "T-P2-13-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-13-I",
+            "T-P2-08-I",
+            "T-P2-14-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-165",
+          "dependency_jira_keys": [
+            "XIAN-164",
+            "XIAN-154",
+            "XIAN-166"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-47",
+        "XIAN-46",
+        "XIAN-160"
+      ]
+    },
+    {
+      "id": "US-P2-14",
+      "requirement_id": "P2-14",
+      "epic": "EP-P2-04",
+      "epic_jira_key": "XIAN-111",
+      "jira_key": "XIAN-128",
+      "title": "Đi lại với máy",
+      "source": "6.3;675",
+      "requirements": "AI undo max3 successful: pair2plies, đang think cancel và lùi own1, chưa own move/ended disabled; counter; tác vụ cũ không được apply sau undo, returned turn own",
+      "verification": "Engine cancellation/core/move tree; TC black machine-only opening/pending thought/stale worker/end/4th, history hiệu lực",
+      "dependencies": [
+        "T24",
+        "T34",
+        "T63"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-14.1",
+          "tc": "TC-P2-14.1",
+          "given": "AI đã có nước của người chơi",
+          "when": "Undo",
+          "then": "Lùi hai plies trả lượt người; nếu máy đang nghĩ, hủy worker và lùi một nước người. Không cần máy chấp nhận; Khách bị từ chối theo BA 0.3.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.3;675",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-14.2",
+          "tc": "TC-P2-14.2",
+          "given": "Chưa có nước mình, ván ended hoặc đủ ba Undo",
+          "when": "Bấm Undo",
+          "then": "Từ chối/disabled có tooltip; chỉ thành công trừ một lượt, bộ đếm X/3. Người cầm Đen chỉ có nước mở đầu của máy chưa được Undo.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.3;675",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-14.3",
+          "tc": "TC-P2-14.3",
+          "given": "Worker cũ trả sau Undo",
+          "when": "Nhận nước máy",
+          "then": "Không áp stale result. History/Replay/lặp thế chỉ nhánh hiệu lực.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "6.3;675",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-14-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T24",
+            "T34",
+            "T63"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-166",
+          "dependency_jira_keys": [
+            "XIAN-60",
+            "XIAN-70",
+            "XIAN-99"
+          ]
+        },
+        {
+          "id": "T-P2-14-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-14-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-167",
+          "dependency_jira_keys": [
+            "XIAN-166"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-60",
+        "XIAN-70",
+        "XIAN-99"
+      ]
+    },
+    {
+      "id": "US-P2-15",
+      "requirement_id": "P2-15",
+      "epic": "EP-P2-04",
+      "epic_jira_key": "XIAN-111",
+      "jira_key": "XIAN-129",
+      "title": "Copy FEN và tải PGN",
+      "source": "9.1;807",
+      "requirements": "Stretch vẫn trong goal: Copy FEN **thế hiện tại** Replay, download .pgn biên bản ván; xuất nhánh hiệu lực và chỉ người có quyền Replay",
+      "verification": "P2-13/core notation; golden FEN roundtrip/PGN đọc lại, clipboard/download E2E, permission denied",
+      "dependencies": [
+        "P2-13"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-15.1",
+          "tc": "TC-P2-15.1",
+          "given": "Người có quyền Replay ở một mốc nước",
+          "when": "Copy FEN",
+          "then": "Chuỗi thế hiện tại chính xác; đọc lại đúng quân và lượt. Không xuất nhánh đã undo.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.1;807",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-15.2",
+          "tc": "TC-P2-15.2",
+          "given": "Người có quyền Replay",
+          "when": "Download PGN",
+          "then": "Tệp .pgn có biên bản nhánh hiệu lực đúng ván; đọc lại đúng thế/kết quả. Không gọi dịch vụ cờ ngoài.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.1;807",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-15.3",
+          "tc": "TC-P2-15.3",
+          "given": "Người ngoài, Khách hoặc người xem không quyền",
+          "when": "Gọi API xuất",
+          "then": "Bị từ chối theo quyền Replay kể cả đoán Match ID.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.1;807",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-15-I",
+          "type": "implementation",
+          "hours": 16,
+          "dependencies": [
+            "P2-13"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-168",
+          "dependency_jira_keys": [
+            "XIAN-164"
+          ]
+        },
+        {
+          "id": "T-P2-15-Q",
+          "type": "verification",
+          "hours": 4,
+          "dependencies": [
+            "T-P2-15-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-169",
+          "dependency_jira_keys": [
+            "XIAN-168"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-164"
+      ]
+    },
+    {
+      "id": "US-P2-16",
+      "requirement_id": "P2-16",
+      "epic": "EP-P2-05",
+      "epic_jira_key": "XIAN-112",
+      "jira_key": "XIAN-130",
+      "title": "QR mời phòng",
+      "source": "2.2,2.4,4.3;320/361/554",
+      "requirements": "QR trong waiting/invite encode **cùng link quyền** với code8 ký tự, tải hoặc sao chép ảnh; login/signup/guest tự join; LOCKED revoke, reopen QR/link/code mới; không QR spectate-specific",
+      "verification": "P1 link/access/permissions; decode golden QR→đúng URL, scan điện thoại thật→join, oldQR rejected",
+      "dependencies": [
+        "T26",
+        "T53"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-16.1",
+          "tc": "TC-P2-16.1",
+          "given": "Phòng custom đang mở",
+          "when": "Hiện QR ở waiting/invite",
+          "then": "QR chứa cùng link token với mã tám ký tự, không quyền chơi/xem riêng. Có tải ảnh hoặc copy QR; Khách không sử dụng chức năng P2.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.2,2.4,4.3;320/361/554",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-16.2",
+          "tc": "TC-P2-16.2",
+          "given": "Người quét QR chưa đăng nhập",
+          "when": "Login/signup sau quét",
+          "then": "Giữ đích và tự join theo quyền/sức chứa hiện tại. Quét điện thoại thật mở đúng URL; không cấp QR cho Khách theo BA 0.3.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.2,2.4,4.3;320/361/554",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-16.3",
+          "tc": "TC-P2-16.3",
+          "given": "Host khóa rồi mở lại",
+          "when": "Dùng QR cũ hoặc mới",
+          "then": "LOCKED thu hồi QR/link/mã chưa dùng. Mở lại sinh QR/link/code mới; QR cũ bị từ chối.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.2,2.4,4.3;320/361/554",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-16-I",
+          "type": "implementation",
+          "hours": 12,
+          "dependencies": [
+            "T26",
+            "T53"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-170",
+          "dependency_jira_keys": [
+            "XIAN-62",
+            "XIAN-89"
+          ]
+        },
+        {
+          "id": "T-P2-16-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-16-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-171",
+          "dependency_jira_keys": [
+            "XIAN-170"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-62",
+        "XIAN-89"
+      ]
+    },
+    {
+      "id": "US-P2-17",
+      "requirement_id": "P2-17",
+      "epic": "EP-P2-05",
+      "epic_jira_key": "XIAN-112",
+      "jira_key": "XIAN-131",
+      "title": "Bộ 12 sticker",
+      "source": "5.1,5.3,5.4;570/601/617",
+      "requirements": "Bộ đúng12 sticker (clap,heart,think,sweat,cry,tea,lightning,silent,thumbsup,handshake,flag,fire), cả private/public/direct theo role; shortcode lưu/render icon, một chạm; filter/rate/length/quyền không bypass",
+      "verification": "P1 chat + P2-18; schema/unknown shortcode validation, E2E picker/role/channels, rate tests",
+      "dependencies": [
+        "T37",
+        "T42",
+        "P2-18"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-17.1",
+          "tc": "TC-P2-17.1",
+          "given": "Người đúng vai trò/kênh",
+          "when": "Mở khay và gửi sticker",
+          "then": "Đủ 12: clap, heart, think, sweat, cry, tea, lightning, silent, thumbsup, handshake, flag, fire. Một chạm gửi; lưu shortcode, hiển thị SVG.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.1,5.3,5.4;570/601/617",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-17.2",
+          "tc": "TC-P2-17.2",
+          "given": "Player, spectator hoặc accepted friend",
+          "when": "Gửi private/public/direct",
+          "then": "Quyền như chat text: spectator chỉ public, DM chỉ accepted friend, Ranked chỉ private. Không bypass filter/rate/length; Khách không gửi sticker P2.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.1,5.3,5.4;570/601/617",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-17.3",
+          "tc": "TC-P2-17.3",
+          "given": "Shortcode không hợp lệ hoặc quyền giả",
+          "when": "Gọi API/socket",
+          "then": "Server kiểm allowlist và quyền, không XSS hoặc ghi HTML tùy ý.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.1,5.3,5.4;570/601/617",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-17-I",
+          "type": "implementation",
+          "hours": 16,
+          "dependencies": [
+            "T37",
+            "T42",
+            "P2-18"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-172",
+          "dependency_jira_keys": [
+            "XIAN-73",
+            "XIAN-78",
+            "XIAN-174"
+          ]
+        },
+        {
+          "id": "T-P2-17-Q",
+          "type": "verification",
+          "hours": 4,
+          "dependencies": [
+            "T-P2-17-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-173",
+          "dependency_jira_keys": [
+            "XIAN-172"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-73",
+        "XIAN-78",
+        "XIAN-174"
+      ]
+    },
+    {
+      "id": "US-P2-18",
+      "requirement_id": "P2-18",
+      "epic": "EP-P2-05",
+      "epic_jira_key": "XIAN-112",
+      "jira_key": "XIAN-132",
+      "title": "Chat trực tiếp và tin chưa đọc",
+      "source": "5.2,5.5,8.2;592/629/782",
+      "requirements": "DM chỉ accepted friends, persistent history, RLS hai thành viên; unfriend revoke ngay/ẩn history, refriend hiện; badge tổng incoming unread bạn hiện tại, không own messages; read chỉ visible viewport ở active tab, server sync thiết bị; unfriend giữ read state/refriend tính lại unread",
+      "verification": "P1 friends/auth/chat/filter; forged API/socket/RLS third party; E2E background/hidden/viewport/tab active/multi-device/unfriend races",
+      "dependencies": [
+        "T14",
+        "T31",
+        "T37",
+        "T40"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-18.1",
+          "tc": "TC-P2-18.1",
+          "given": "Hai tài khoản là accepted friends",
+          "when": "Đọc/gửi DM",
+          "then": "History bền; API/socket/RLS chỉ hai thành viên. Stranger/Khách bị từ chối. Unfriend thu hồi ngay và ẩn history; refriend hiện lại.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.2,5.5,8.2;592/629/782",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-18.2",
+          "tc": "TC-P2-18.2",
+          "given": "Tin đến chưa đọc từ bạn hiện tại",
+          "when": "Tính badge và read",
+          "then": "Badge tổng incoming unread, không tin mình gửi. Chỉ read khi visible viewport ở active tab; tải ngầm/background không read. Server đồng bộ thiết bị.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.2,5.5,8.2;592/629/782",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-18.3",
+          "tc": "TC-P2-18.3",
+          "given": "Unfriend rồi refriend",
+          "when": "Tính lại unread",
+          "then": "Unfriend bỏ hội thoại khỏi badge nhưng giữ trạng thái đọc. Refriend chỉ tin vẫn chưa đọc tính lại, không tự read hoặc biến read thành unread.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "5.2,5.5,8.2;592/629/782",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-18-I",
+          "type": "implementation",
+          "hours": 32,
+          "dependencies": [
+            "T14",
+            "T31",
+            "T37",
+            "T40"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-174",
+          "dependency_jira_keys": [
+            "XIAN-50",
+            "XIAN-67",
+            "XIAN-73",
+            "XIAN-76"
+          ]
+        },
+        {
+          "id": "T-P2-18-Q",
+          "type": "verification",
+          "hours": 12,
+          "dependencies": [
+            "T-P2-18-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-175",
+          "dependency_jira_keys": [
+            "XIAN-174"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-50",
+        "XIAN-67",
+        "XIAN-73",
+        "XIAN-76"
+      ]
+    },
+    {
+      "id": "US-P2-19",
+      "requirement_id": "P2-19",
+      "epic": "EP-P2-05",
+      "epic_jira_key": "XIAN-112",
+      "jira_key": "XIAN-133",
+      "title": "Thách đấu bạn bè",
+      "source": "2.7 mục4;397",
+      "requirements": "Thách đấu friends chỉonline; reuse create form name/default10p/CODE_ONLY/5view chỉnh hợp lệ; confirm mới create+invite; cancel none; friend busy/reject/expiry vẫn giữ phòng, không AI/close tự động",
+      "verification": "P1 friends/create/invite + unlimited nếu enabled; E2E cancel/confirm/race busy/reject; one-position server",
+      "dependencies": [
+        "T18",
+        "T31",
+        "T40"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-19.1",
+          "tc": "TC-P2-19.1",
+          "given": "Bạn accepted đang Online",
+          "when": "Mở Thách đấu",
+          "then": "Dùng form Create: tên, mặc định 10 phút/CODE_ONLY/5 người xem, chỉnh hợp lệ. Hủy không tạo phòng hoặc gửi lời mời.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.7 mục4;397",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-19.2",
+          "tc": "TC-P2-19.2",
+          "given": "Đã xác nhận form",
+          "when": "Tạo phòng và mời",
+          "then": "Chỉ confirm mới tạo/gửi. Server kiểm một vị trí chơi và recheck bạn online; không mời bạn bận/offline. Khách không có quyền.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.7 mục4;397",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-19.3",
+          "tc": "TC-P2-19.3",
+          "given": "Bạn vừa bận, từ chối hoặc hết hạn",
+          "when": "Sau khi phòng đã tạo",
+          "then": "Phòng vẫn tồn tại cho Host quản lý; không tự đóng, chuyển sang AI hoặc ghi đã chấp nhận.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "2.7 mục4;397",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-19-I",
+          "type": "implementation",
+          "hours": 16,
+          "dependencies": [
+            "T18",
+            "T31",
+            "T40"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-176",
+          "dependency_jira_keys": [
+            "XIAN-54",
+            "XIAN-67",
+            "XIAN-76"
+          ]
+        },
+        {
+          "id": "T-P2-19-Q",
+          "type": "verification",
+          "hours": 4,
+          "dependencies": [
+            "T-P2-19-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-177",
+          "dependency_jira_keys": [
+            "XIAN-176"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-54",
+        "XIAN-67",
+        "XIAN-76"
+      ]
+    },
+    {
+      "id": "US-P2-20",
+      "requirement_id": "P2-20",
+      "epic": "EP-P2-06",
+      "epic_jira_key": "XIAN-113",
+      "jira_key": "XIAN-134",
+      "title": "Đổi username qua OTP",
+      "source": "1.4,1.6;195/235",
+      "requirements": "Đổi username4 bước OTP email6digits180s/resend60s/rate theo Supabase; unlock sau verify rồi unique3–20 case-insensitive; frequency unlimited; oldname reserved30d chỉ oldowner dùng lại; bảo toàn UUID/friends/messages/matches/Elo; email readonly/bất biến directAPI",
+      "verification": "Auth/SMTP/name reservation + all persistent features; TC rename collisions/owner reclaim/30d boundary/OTP invalid/directAPI, data integrity before-after",
+      "dependencies": [
+        "T04",
+        "T09",
+        "T56",
+        "T65"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-20.1",
+          "tc": "TC-P2-20.1",
+          "given": "Tài khoản muốn đổi username",
+          "when": "Thực hiện bốn bước OTP",
+          "then": "Email OTP sáu số/180 giây, resend 60 giây, giới hạn gần đúng năm sai theo BA 1.5. Valid OTP mới mở username mới 3–20, unique không phân biệt hoa thường; không cooldown đổi tên.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.4,1.6;195/235",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-20.2",
+          "tc": "TC-P2-20.2",
+          "given": "Username cũ đã đổi",
+          "when": "Đăng ký hoặc đổi lại trong 30 ngày",
+          "then": "Tên cũ giữ 30 ngày chỉ chủ cũ lấy lại. Người khác thấy đã có người dùng; đúng 30 ngày hết giữ chỗ.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.4,1.6;195/235",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-20.3",
+          "tc": "TC-P2-20.3",
+          "given": "Đổi username thành công hoặc cố đổi email",
+          "when": "Kiểm bản ghi và API",
+          "then": "Giữ UUID, friends, messages, matches và Elo; email readonly và server bất biến. Không tự đổi Display Name.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.4,1.6;195/235",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-20-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T04",
+            "T09",
+            "T56",
+            "T65"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-178",
+          "dependency_jira_keys": [
+            "XIAN-40",
+            "XIAN-45",
+            "XIAN-92",
+            "XIAN-101"
+          ]
+        },
+        {
+          "id": "T-P2-20-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-20-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-179",
+          "dependency_jira_keys": [
+            "XIAN-178"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-40",
+        "XIAN-45",
+        "XIAN-92",
+        "XIAN-101"
+      ]
+    },
+    {
+      "id": "US-P2-21",
+      "requirement_id": "P2-21",
+      "epic": "EP-P2-06",
+      "epic_jira_key": "XIAN-113",
+      "jira_key": "XIAN-135",
+      "title": "Khôi phục username và mật khẩu",
+      "source": "1.7,1.5;247/226",
+      "requirements": "Email recover luôn câu chung; OTP3m/60s/giới hạn; **sau valid mới username hiện tại**; chỉ quên tên về login không đổi password; reset≥8+confirm→logout other sessions/về login; Google account dùng được; OTP recovery không cấp app login; email state không URL",
+      "verification": "Auth/SMTP/session; enumeration/no-app-access assertions/direct session refresh; real OTP được phép + mock automated",
+      "dependencies": [
+        "T04",
+        "T09",
+        "T56"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-21.1",
+          "tc": "TC-P2-21.1",
+          "given": "Email có hoặc không tài khoản",
+          "when": "Yêu cầu khôi phục",
+          "then": "Cùng thông báo Nếu email này đã đăng ký, mã khôi phục đã được gửi. Không lộ Username/presence trước OTP valid; email nằm trong state, không URL.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.7,1.5;247/226",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-21.2",
+          "tc": "TC-P2-21.2",
+          "given": "OTP sáu số/180 giây, resend 60 giây",
+          "when": "Xác minh đúng hoặc sai",
+          "then": "Chỉ valid mới hiện username hiện tại; OTP không cấp quyền ứng dụng. Chỉ quên username thì về Login với mật khẩu cũ; tài khoản Google cũng dùng được.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.7,1.5;247/226",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-21.3",
+          "tc": "TC-P2-21.3",
+          "given": "Muốn đặt lại mật khẩu",
+          "when": "Nhập ít nhất tám ký tự và xác nhận",
+          "then": "Đăng xuất mọi phiên khác, về Login và bắt đăng nhập mới. Mismatch/invalid OTP không reset, không tự đăng nhập.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.7,1.5;247/226",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-21-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T04",
+            "T09",
+            "T56"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-180",
+          "dependency_jira_keys": [
+            "XIAN-40",
+            "XIAN-45",
+            "XIAN-92"
+          ]
+        },
+        {
+          "id": "T-P2-21-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-21-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-181",
+          "dependency_jira_keys": [
+            "XIAN-180"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-40",
+        "XIAN-45",
+        "XIAN-92"
+      ]
+    },
+    {
+      "id": "US-P2-22",
+      "requirement_id": "P2-22",
+      "epic": "EP-P2-07",
+      "epic_jira_key": "XIAN-114",
+      "jira_key": "XIAN-136",
+      "title": "Widget thông số AI",
+      "source": "9.2;813",
+      "requirements": "Stretch AI widget live nodes/depth/compute latency/**PV** (không bỏ PV vì matrix chỉ ghi3 metrics); số liệu từ thuật toán tự viết, không giả; no human-side hint",
+      "verification": "Engine telemetry/UI; compare worker metrics với widget, trace actual depth/budget, board no-hint remains",
+      "dependencies": [
+        "T24",
+        "T59",
+        "T38"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-22.1",
+          "tc": "TC-P2-22.1",
+          "given": "AI đang tính",
+          "when": "Widget cập nhật",
+          "then": "Nodes, depth, latency và PV từ worker thật, không giả số; không dịch vụ cờ ngoài.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.2;813",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-22.2",
+          "tc": "TC-P2-22.2",
+          "given": "Worker hoàn tất hoặc hết budget",
+          "when": "Đối chiếu telemetry",
+          "then": "Widget khớp trace actual depth/time/nodes/best PV đúng ván; giữ ngưỡng P1. Worker đã hủy không cập nhật nhầm widget.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.2;813",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-22.3",
+          "tc": "TC-P2-22.3",
+          "given": "Người đang tới lượt",
+          "when": "Dùng widget",
+          "then": "Không tính hint cho bên người; PV là đầu ra máy đang tính. Giữ No Hint theo BA 6.1.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.2;813",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-22-I",
+          "type": "implementation",
+          "hours": 12,
+          "dependencies": [
+            "T24",
+            "T59",
+            "T38"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-182",
+          "dependency_jira_keys": [
+            "XIAN-60",
+            "XIAN-95",
+            "XIAN-74"
+          ]
+        },
+        {
+          "id": "T-P2-22-Q",
+          "type": "verification",
+          "hours": 4,
+          "dependencies": [
+            "T-P2-22-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-183",
+          "dependency_jira_keys": [
+            "XIAN-182"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-60",
+        "XIAN-95",
+        "XIAN-74"
+      ]
+    },
+    {
+      "id": "US-P2-23",
+      "requirement_id": "P2-23",
+      "epic": "EP-P2-07",
+      "epic_jira_key": "XIAN-114",
+      "jira_key": "XIAN-137",
+      "title": "Công cụ demo mạng",
+      "source": "9.3;825",
+      "requirements": "Stretch demo controls disconnect player1/reconnect snapshot; **không role Admin**; chỉ flag demo; production UI absent và **server từ chối lệnh giả lập**",
+      "verification": "Socket/demo config; positive demo grace60s/snapshot, negative production direct socket/API, không coi simulation là LAN thật",
+      "dependencies": [
+        "T12",
+        "T52"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-23.1",
+          "tc": "TC-P2-23.1",
+          "given": "Môi trường bật demo flag",
+          "when": "Giả lập player 1 mất mạng",
+          "then": "Socket ngắt, player 2 thấy grace 60 giây và dùng cơ chế online thật. Không có vai trò Admin.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.3;825",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-23.2",
+          "tc": "TC-P2-23.2",
+          "given": "Demo đang trong grace",
+          "when": "Reconnect tức thì",
+          "then": "Snapshot bàn cờ, đồng hồ, vai trò đúng server. Không coi mô phỏng là kiểm LAN thiết bị thật.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.3;825",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-23.3",
+          "tc": "TC-P2-23.3",
+          "given": "Môi trường chính thức tắt demo flag",
+          "when": "Gọi trực tiếp lệnh giả lập",
+          "then": "UI không hiện, server từ chối API/socket giả lập. Không mở quyền cho người ngoài phòng.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "9.3;825",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-23-I",
+          "type": "implementation",
+          "hours": 12,
+          "dependencies": [
+            "T12",
+            "T52"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-184",
+          "dependency_jira_keys": [
+            "XIAN-48",
+            "XIAN-88"
+          ]
+        },
+        {
+          "id": "T-P2-23-Q",
+          "type": "verification",
+          "hours": 4,
+          "dependencies": [
+            "T-P2-23-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-185",
+          "dependency_jira_keys": [
+            "XIAN-184"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-48",
+        "XIAN-88"
+      ]
+    },
+    {
+      "id": "US-P2-24",
+      "requirement_id": "P2-24",
+      "epic": "EP-P2-07",
+      "epic_jira_key": "XIAN-114",
+      "jira_key": "XIAN-138",
+      "title": "Chuyển thiết bị media giữa các tab",
+      "source": "1.8;259 + DANH-MUC §6;292",
+      "requirements": "MODAL-MEDIA-TAB-SWITCH khi tab2 bật thiết bị: Chuyển sang tab này thu hồi cũ/Hủy; vẫn P1 control takeover rule/tab cũ readonly/stop cũ/default tab mới off; không tự giành khi reconnect",
+      "verification": "Session/media ownership; E2E2tab accepted/cancel/reconnect + real track stop/publish permissions",
+      "dependencies": [
+        "T33",
+        "T56",
+        "T58"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-24.1",
+          "tc": "TC-P2-24.1",
+          "given": "Hai tab cùng thiết bị",
+          "when": "Tab thứ hai bật camera/mic tranh thiết bị",
+          "then": "Hiện MODAL-MEDIA-TAB-SWITCH với Chuyển thiết bị sang tab này và Hủy bỏ.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.8;259 + DANH-MUC §6;292",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-24.2",
+          "tc": "TC-P2-24.2",
+          "given": "Người chọn Chuyển",
+          "when": "Trao thiết bị",
+          "then": "Thu hồi/dừng track và quyền phát cũ, tab cũ chỉ đọc. Tab mới bật theo quyền; hành vi P1 tiếp quản với mặc định Tắt vẫn đúng.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.8;259 + DANH-MUC §6;292",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-24.3",
+          "tc": "TC-P2-24.3",
+          "given": "Hủy hoặc tab cũ reconnect",
+          "when": "Xử lý quyền",
+          "then": "Hủy không tự lấy thiết bị; reconnect không tự giành control/media. Chỉ thao tác chủ động có quyền mới chuyển.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "1.8;259 + DANH-MUC §6;292",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-24-I",
+          "type": "implementation",
+          "hours": 16,
+          "dependencies": [
+            "T33",
+            "T56",
+            "T58"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-186",
+          "dependency_jira_keys": [
+            "XIAN-69",
+            "XIAN-92",
+            "XIAN-94"
+          ]
+        },
+        {
+          "id": "T-P2-24-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-24-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-187",
+          "dependency_jira_keys": [
+            "XIAN-186"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-69",
+        "XIAN-92",
+        "XIAN-94"
+      ]
+    },
+    {
+      "id": "US-P2-25",
+      "requirement_id": "P2-25",
+      "epic": "EP-P2-07",
+      "epic_jira_key": "XIAN-114",
+      "jira_key": "XIAN-139",
+      "title": "Giấy Sáng và Theo hệ thống",
+      "source": "10.3;866 + DESIGN §2.3;90",
+      "requirements": "Theme Kỳ Đài mặc định + Giấy Sáng + Theo hệ thống, chọn settings; **board không đổi**; font đúng4roles tựhost; contrast/keyboard/reduced-motion mọi theme; lựa chọn system phản ứng OS",
+      "verification": "P1 tokens/settings/board; compare board tokens, contrast mọi trạng thái, E2E OS dark/light/explicit theme/4sizes",
+      "dependencies": [
+        "T03",
+        "T65"
+      ],
+      "acs": [
+        {
+          "id": "AC-P2-25.1",
+          "tc": "TC-P2-25.1",
+          "given": "Người chưa chọn theme",
+          "when": "Mở ứng dụng",
+          "then": "Kỳ Đài Cổ Phong mặc định; Giấy Sáng/Theo hệ thống có trong settings. Phông theo DESIGN 3.1; Khách không chọn P2 theo BA 0.3.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "10.3;866 + DESIGN §2.3;90",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-25.2",
+          "tc": "TC-P2-25.2",
+          "given": "Đã chọn Theo hệ thống hoặc theme rõ ràng",
+          "when": "OS đổi dark/light",
+          "then": "Theo hệ thống phản ứng OS, theme rõ ràng giữ lựa chọn. Màu bàn cờ không đổi giữa các theme.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "10.3;866 + DESIGN §2.3;90",
+          "tc_status": "NOT RUN"
+        },
+        {
+          "id": "AC-P2-25.3",
+          "tc": "TC-P2-25.3",
+          "given": "Mọi theme tại bốn kích thước",
+          "when": "Kiểm states và trợ năng",
+          "then": "Giữ DESIGN: keyboard, contrast, reduced motion, không cuộn ngang, không che bàn cờ/Đầu hàng/đồng hồ. SUCCESS/LOADING/EMPTY/ERROR/DISABLED có đủ giải thích.",
+          "test_level": "U/I/E2E; M khi cần dịch vụ/thiết bị thật",
+          "source": "10.3;866 + DESIGN §2.3;90",
+          "tc_status": "NOT RUN"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-P2-25-I",
+          "type": "implementation",
+          "hours": 24,
+          "dependencies": [
+            "T03",
+            "T65"
+          ],
+          "description": "Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold.",
+          "jira_key": "XIAN-188",
+          "dependency_jira_keys": [
+            "XIAN-39",
+            "XIAN-101"
+          ]
+        },
+        {
+          "id": "T-P2-25-Q",
+          "type": "verification",
+          "hours": 8,
+          "dependencies": [
+            "T-P2-25-I"
+          ],
+          "description": "Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan.",
+          "jira_key": "XIAN-189",
+          "dependency_jira_keys": [
+            "XIAN-188"
+          ]
+        }
+      ],
+      "status": "To Do",
+      "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
+      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "dependency_jira_keys": [
+        "XIAN-39",
+        "XIAN-101"
+      ]
+    }
+  ],
+  "global_verification": [
+    "Giữ nguyên 12 NFR và 9 gate P1.",
+    "Chạy hồi quy D1–D10 sau P2.",
+    "Ghi rõ điều kiện thiết bị/media/Google/OTP/RLS thật; không dùng mock hoặc HTTP 200 thay thế.",
+    "Bản P1+P2 bật tính năng theo quyền; không sửa baseline assertion chỉ để báo PASS."
+  ],
+  "out_of_scope": "Theo BA 10.2 và 3.5: không giải đấu, hint, increment, đổi email, xóa tài khoản, report/admin/ban, chặn riêng, upload avatar, public profile, đa ngôn ngữ, chase riêng, đổi mật khẩu khi đã đăng nhập hoặc xếp hạng mùa.",
+  "tc_method": [
+    "Thiết lập Given bằng dữ liệu thử cô lập và thời gian kiểm thử nếu có.",
+    "Thực hiện When qua API/socket/UI theo quyền.",
+    "Đối chiếu toàn bộ Then và các biến thể của Story; lưu PASS/FAIL/BLOCKED cùng bản dựng, môi trường, dữ liệu và ngày."
+  ]
+}

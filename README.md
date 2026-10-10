@@ -99,7 +99,8 @@ Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event
 |---|---|
 | Mục đích, người dùng và trải nghiệm | [IDEA.md](IDEA.md) |
 | Quyết định nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
-| User Story, tiêu chí nghiệm thu và kiểm thử | [BACKLOG-P1.md](BACKLOG-P1.md) |
+| User Story, tiêu chí nghiệm thu và kiểm thử | [P1](BACKLOG-P1.md), [P2](BACKLOG-P2.md) |
+| Phạm vi P1/P2 và tiến độ triển khai | [Danh mục](jira/reports/PHAM-VI-P1-P2.md), [Kế hoạch triển khai](jira/reports/KE-HOACH-TRIEN-KHAI-P1-P2.md) |
 | Màn hình và thiết kế | [Danh mục màn hình](DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](DESIGN.md) |
 | Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md) |
 | Dữ liệu, báo cáo và công cụ Jira | [jira/README.md](jira/README.md) |
