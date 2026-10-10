@@ -9,6 +9,10 @@ import {
 import { NestFactory } from "@nestjs/core";
 import type { HealthStatus } from "@xiangqi/shared";
 import { Server } from "socket.io";
+import {
+  attachRealtime,
+  type RealtimeDependencies,
+} from "./realtime/gateway.js";
 
 @Controller()
 class HealthController {
@@ -38,21 +42,40 @@ export async function createApp(
   corsOrigins = ["http://localhost:5173"],
   imports: DynamicModule[] = [],
   checkDatabase: (() => Promise<void>) | null = null,
+  realtime: Omit<RealtimeDependencies, "corsOrigins"> | null = null,
 ) {
+  let closeSockets: () => Promise<void> = async () => {};
   const app = await NestFactory.create(
     {
       module: AppModule,
       imports,
-      providers: [{ provide: "DATABASE_CHECK", useValue: checkDatabase }],
+      providers: [
+        { provide: "DATABASE_CHECK", useValue: checkDatabase },
+        {
+          provide: "SOCKET_LIFECYCLE",
+          useValue: { onModuleDestroy: () => closeSockets() },
+        },
+      ],
     },
     { logger: false },
   );
   app.enableCors({ origin: corsOrigins });
-  // Authentication and game events belong to T12. Deny sockets until then.
-  new Server(app.getHttpServer(), {
-    cors: { origin: corsOrigins },
-    allowRequest: (_request, callback) =>
-      callback("Authentication not integrated", false),
-  });
+  if (realtime) {
+    closeSockets = attachRealtime(app.getHttpServer(), {
+      ...realtime,
+      corsOrigins,
+    }).close;
+  } else {
+    const io = new Server(app.getHttpServer(), {
+      cors: { origin: corsOrigins },
+      allowRequest: (_request, callback) =>
+        callback("Authentication not integrated", false),
+    });
+    let closing: Promise<void> | undefined;
+    closeSockets = () =>
+      (closing ??= new Promise<void>((resolve, reject) =>
+        io.close((error) => (error ? reject(error) : resolve())),
+      ));
+  }
   return app;
 }
