@@ -25,9 +25,9 @@
     "stage": "task",
     "notes": "Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS.",
     "criterion": {
-      "given": "Một PR vào `develop`",
-      "when": "CI chạy",
-      "then": "Chạy lint, typecheck, unit test; bất kỳ bước nào lỗi thì PR không merge được (bảo vệ nhánh)",
+      "given": "Push vào `main`/`develop` hoặc PR hướng vào một trong hai nhánh",
+      "when": "CI tự chạy",
+      "then": "Chạy lint, typecheck, unit test; tất cả đạt thì CI thành công, bất kỳ bước nào lỗi thì CI thất bại; không cấu hình bảo vệ nhánh hoặc bắt buộc CI đạt để GitHub cho phép gộp",
       "test_level": "I"
     }
   },

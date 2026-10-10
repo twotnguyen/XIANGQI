@@ -6,7 +6,7 @@ Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. 
 
 **Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../../BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.
 
-Lưu ý cấu hình GitHub mới: chỉ main/develop, main mặc định, không bảo vệ nhánh. Description T01 bên dưới giữ nguyên snapshot Jira nên còn yêu cầu cũ về bảo vệ/CI; không coi đó là cấu hình đã bật hoặc bằng chứng PASS. Đối soát trước khi làm T01, không tự bật lại. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
+Lưu ý cấu hình GitHub mới: chỉ main/develop, main mặc định, không bảo vệ nhánh. T01 và AC-00.1.2 yêu cầu CI tự chạy khi push/PR và báo kết quả lint/typecheck/unit test; không cấu hình CI thành điều kiện bắt buộc để GitHub cho phép gộp. Đặc tả này chưa phải bằng chứng CI đã triển khai hoặc PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
 
 Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](../data/description-source-audit.json). Lịch, phân công, giờ, điểm và trạng thái lấy từ current-jira-snapshot.json; nhãn sprint cũ không thay thế trường Sprint.
 
@@ -119,7 +119,7 @@ Bàn giao đặc tả khung dự án, kiểm tra mã tự động và nhật ký
 **Yêu cầu cần đáp ứng**
 
 - Trên máy phát triển mới sao chép kho mã nguồn, đã có Node.js (môi trường chạy ứng dụng) và pnpm (công cụ cài thư viện), chạy pnpm install để cài các thư viện rồi pnpm dev để khởi động. Giao diện web và máy chủ phải cùng chạy; địa chỉ /health dùng để kiểm tình trạng máy chủ phải trả mã 200, nghĩa là yêu cầu được xử lý thành công.
-- Khi có đề nghị đưa thay đổi mã nguồn vào nhánh develop, tức nhánh mã dùng chung của nhóm, hệ thống tự kiểm quy tắc viết mã, kiểu dữ liệu và các phần xử lý nhỏ. Nếu bất kỳ bước nào lỗi, không cho gộp thay đổi vào nhánh chung.
+- AC-00.1.2: Khi push vào main/develop hoặc tạo PR hướng vào một trong hai nhánh, CI tự chạy lint, typecheck và unit test; bất kỳ bước nào lỗi thì lượt CI báo thất bại. Repo chỉ có main và develop, main là mặc định; không cấu hình bảo vệ nhánh, không bắt buộc PR/Approve hoặc CI đạt để GitHub cho phép gộp.
 - Kho mã nguồn phải có .env.example, là tệp mẫu liệt kê toàn bộ cấu hình môi trường cần cấp. Không lưu khoá bí mật trong lịch sử mã nguồn; các biến bắt đầu bằng VITE\_ được đưa tới trình duyệt nên không được chứa bí mật.
 - Khi máy chủ hoạt động, gọi /health, là địa chỉ kiểm tra tình trạng hệ thống, phải nhận được trạng thái máy chủ, kết nối cơ sở dữ liệu và máy cờ.
 - Sau khi chạy đăng nhập, gửi mã email và chat, kiểm nhật ký vận hành. Mỗi bản ghi dùng JSON, một dạng dữ liệu chia thành các trường rõ ràng, gồm thời gian, mức độ và mã sự kiện. Không ghi mật khẩu, mã xác minh, thông tin chứng minh quyền truy cập hoặc nội dung chat.
@@ -133,12 +133,12 @@ Bàn giao đặc tả khung dự án, kiểm tra mã tự động và nhật ký
 
 **Kết quả bàn giao**
 
-- Hồ sơ đối soát khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Hồ sơ đối soát khởi chạy các thành phần, kiểm tra mã tự động khi push hoặc tạo PR, bảo vệ bí mật và thời hạn lưu nhật ký bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
 - Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Hồ sơ phản ánh đầy đủ khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Hồ sơ phản ánh đầy đủ khởi chạy các thành phần, kiểm tra mã tự động khi push hoặc tạo PR, bảo vệ bí mật và thời hạn lưu nhật ký; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
 - Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
@@ -191,7 +191,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 
 - Tổ chức một kho mã dùng pnpm, công cụ quản lý các gói phụ thuộc và chạy nhiều phần trong cùng dự án. Các thư mục gồm apps/web cho giao diện, apps/server cho máy chủ, packages/shared cho dữ liệu dùng chung, packages/xiangqi-core cho luật cờ và packages/engine cho máy chọn nước.
 - Giao diện dùng React để tạo thành phần màn hình, Vite để chạy và đóng gói giao diện, TypeScript để kiểm tra kiểu dữ liệu; máy chủ dùng NestJS để tổ chức xử lý các yêu cầu. Bật kiểm tra kiểu nghiêm ngặt để phát hiện dữ liệu dùng sai.
-- Mỗi đề nghị gộp mã vào nhánh develop phải tự kiểm quy cách mã, kiểu dữ liệu và kiểm thử; một bước lỗi thì không được gộp.
+- AC-00.1.2: Khi push vào main/develop hoặc tạo PR hướng vào một trong hai nhánh, CI tự chạy lint, typecheck và unit test; bất kỳ bước nào lỗi thì lượt CI báo thất bại. Repo chỉ có main và develop, main là mặc định; không cấu hình bảo vệ nhánh, không bắt buộc PR/Approve hoặc CI đạt để GitHub cho phép gộp.
 - Nhật ký máy chủ có thời gian, mức lỗi và tên sự kiện, không ghi mật khẩu, mã xác minh email, khoá phiên hoặc nội dung chat. Giữ nhật ký tối đa 14 ngày. Nhật ký dùng dạng JSON, tức bản ghi có các trường tên và giá trị để máy và người có thể tra cứu thống nhất.
 - Có địa chỉ /health để kiểm tra tình trạng máy chủ; chuẩn bị chỗ bổ sung trạng thái cơ sở dữ liệu và máy cờ khi chúng được nối vào.
 - Tệp .env.example chỉ liệt kê biến cấu hình mẫu; khoá bí mật không vào kho mã, không đưa vào biến bắt đầu bằng VITE\_ vì trình duyệt đọc được chúng.
@@ -200,7 +200,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 
 - Tạo cấu trúc thư mục và lệnh chạy đồng thời giao diện với máy chủ.
 - Cấu hình ESLint để kiểm quy cách mã, Prettier để định dạng, bộ kiểm kiểu TypeScript và Vitest để chạy kiểm thử tự động.
-- Cấu hình GitHub Actions, dịch vụ tự chạy các bước kiểm khi gửi đề nghị gộp mã, và quy tắc bảo vệ nhánh; thử một thay đổi đúng và một thay đổi cố ý gây lỗi.
+- Cấu hình GitHub Actions chạy lint, typecheck và unit test khi push vào main/develop hoặc khi có PR hướng vào hai nhánh này. Thử thay đổi hợp lệ và thay đổi cố ý gây lỗi trên bản kiểm thử riêng; ghi kết quả CI, không bật bảo vệ nhánh hay yêu cầu kiểm tra bắt buộc.
 - Tạo nhật ký có bộ lọc dữ liệu nhạy cảm và địa chỉ kiểm tra sức khoẻ.
 - Viết hướng dẫn cài đặt, chạy dự án và khai báo cấu hình camera/mic giữa môi trường tự chạy và dịch vụ đám mây.
 - Ghi rõ phản hồi kiểm sức khoẻ cho máy chủ đang chạy và trạng thái các dịch vụ chưa kết nối; chỉ bổ sung kiểm cơ sở dữ liệu/máy cờ khi có kết nối thật.
@@ -209,13 +209,13 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 
 - Kho mã khởi động được bằng pnpm dev.
 - Hướng dẫn cho người mới và tệp cấu hình mẫu.
-- Bằng chứng bước kiểm tự động chấp nhận mã đúng, chặn mã lỗi.
+- Bằng chứng CI đạt với mã hợp lệ và báo thất bại khi lint, typecheck hoặc unit test có lỗi; ghi rõ sự kiện push/PR đã kiểm.
 
 **Điều kiện hoàn thành**
 
 - Từ bản sao mới, pnpm install rồi pnpm dev khởi động được hai phần ứng dụng; gọi /health nhận phản hồi thành công.
 - Thử đưa bí mật giả vào dữ liệu ghi nhật ký: không xuất hiện nguyên giá trị trong bản ghi.
-- Không có khoá thật trong tệp được theo dõi; lỗi kiểm kiểu làm bước kiểm tự động thất bại.
+- Không có khoá thật trong tệp được theo dõi; CI tự chạy đúng các sự kiện push/PR đã nêu, đạt với mã hợp lệ và báo thất bại khi bất kỳ bước lint, typecheck hoặc unit test nào lỗi. Kết quả CI không được cấu hình thành điều kiện bắt buộc để GitHub cho phép gộp.
 - Cấu hình trình duyệt và gói giao diện đã đóng gói không chứa khoá dịch vụ; hướng dẫn nêu cách đổi địa chỉ/khoá camera và mic giữa mạng nội bộ với đám mây.
 
 **Phạm vi và phối hợp**

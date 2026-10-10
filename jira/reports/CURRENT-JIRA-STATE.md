@@ -14,7 +14,7 @@ Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot
 
 ## Cấu hình GitHub hiện hành
 
-Chỉ có `main` và `develop`; `main` là mặc định. Không còn bộ quy tắc bảo vệ nhánh, bắt buộc PR/Approve/Code Owner hay CI. Đây là cấu hình GitHub, không thay đổi trạng thái Jira. AC-00.1.2 và Description T01 còn giữ yêu cầu bảo vệ cũ trong snapshot; đối soát trước khi làm, không tự bật lại. Xem [README](../../README.md#quy-trình-git).
+Chỉ có `main` và `develop`; `main` là mặc định. Không còn bộ quy tắc bảo vệ nhánh, bắt buộc PR/Approve/Code Owner hay CI. Đây là cấu hình GitHub, không thay đổi trạng thái Jira. AC-00.1.2, Story US-00.1 và Description T01 đã đồng bộ: CI tự chạy khi push/PR, báo kết quả lint/typecheck/unit test; không dùng bảo vệ nhánh để chặn gộp. Đây là yêu cầu triển khai, chưa phải bằng chứng CI đã chạy đạt. Xem [README](../../README.md#quy-trình-git).
 
 ## Dữ liệu đã đồng bộ
 

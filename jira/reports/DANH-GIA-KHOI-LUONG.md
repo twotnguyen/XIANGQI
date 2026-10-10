@@ -17,7 +17,7 @@ Mỗi lý do xét đầu ra, nhánh xử lý, phần cần phối hợp và trá
 
 | Task | Công việc | Người | Giờ dự kiến | Đơn vị tải | Cơ sở đánh giá |
 |---|---|---|---|---|---|
-| T01 | Dựng monorepo, CI, nhật ký và /health | Tình | 8 | 5 | Hạ tầng chung, chạy nhiều phần và chặn mã lỗi; cần bàn giao cách chạy ổn định cho cả nhóm. |
+| T01 | Dựng monorepo, CI, nhật ký và /health | Tình | 8 | 5 | Hạ tầng chung, chạy nhiều phần và phát hiện mã lỗi; cần bàn giao cách chạy ổn định cho cả nhóm. |
 | T02 | Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ | Thư | 32 | 8 | Không chỉ viết mẫu kiểm thử: phải xác minh đáp án luật, bộ chiếu hết và 50 thế, làm nền cho mọi đợt nghiệm thu. |
 | T03 | Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái | Kỳ | 12 | 5 | Nhiều thành phần giao diện dùng lại, năm trạng thái, màn hình nhỏ và trợ năng; sai nền gây sửa nhiều màn. |
 | T04 | BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm | Đông | 24 | 8 | Ba bước xác thực, thư ngoài, giành tên đồng thời, dọn/phục hồi an toàn và thử trực tiếp dịch vụ tài khoản. |

@@ -146,7 +146,8 @@
     ],
     "changes": [
       "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
-      "Rà riêng khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+      "Rà riêng khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai.",
+      "Đồng bộ quyết định cấu hình GitHub 10/10/2026: chỉ main/develop, main mặc định, không bảo vệ nhánh; AC-00.1.2 yêu cầu CI báo kết quả khi push/PR, không bắt buộc PR/Approve hoặc CI đạt để GitHub cho phép gộp."
     ]
   },
   "US-00.2": {
@@ -487,7 +488,8 @@
       "0.16"
     ],
     "changes": [
-      "Làm rõ đầu ra kiểm sức khoẻ và kiểm bí mật của bộ khung."
+      "Làm rõ đầu ra kiểm sức khoẻ và kiểm bí mật của bộ khung.",
+      "Đồng bộ quyết định cấu hình GitHub 10/10/2026: chỉ main/develop, main mặc định, không bảo vệ nhánh; AC-00.1.2 yêu cầu CI báo kết quả khi push/PR, không bắt buộc PR/Approve hoặc CI đạt để GitHub cho phép gộp."
     ]
   },
   "T02": {

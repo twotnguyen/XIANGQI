@@ -124,13 +124,13 @@
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-00.1.1 | Máy dev mới clone repo, có Node + pnpm | Chạy `pnpm install` rồi `pnpm dev` | Web và server cùng chạy; `GET /health` trả 200 | M |
-| AC-00.1.2 | Một PR vào `develop` | CI chạy | Chạy lint, typecheck, unit test; bất kỳ bước nào lỗi thì PR không merge được (bảo vệ nhánh) | I |
+| AC-00.1.2 | Push vào `main`/`develop` hoặc PR hướng vào một trong hai nhánh | CI tự chạy | Chạy lint, typecheck, unit test; tất cả đạt thì CI thành công, bất kỳ bước nào lỗi thì CI thất bại; không cấu hình bảo vệ nhánh hoặc bắt buộc CI đạt để GitHub cho phép gộp | I |
 | AC-00.1.3 | Repo | Kiểm tra file môi trường | Có `.env.example` liệt kê mọi biến; không có khoá bí mật trong git; biến `VITE_*` không chứa bí mật | M |
 | AC-00.1.4 | Server chạy | Gọi `/health` | Trả trạng thái server, kết nối CSDL và máy cờ | I |
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; **không** chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
 
-> **Cấu hình nhánh cập nhật 10/10:** AC-00.1.2 ở trên và Description T01 trong snapshot Jira còn ghi yêu cầu bảo vệ nhánh của bản đặc tả trước. Cấu hình hiện hành theo quyết định mới: chỉ `main`/`develop`, mặc định `main`, không bắt buộc PR/Approve/CI. Giữ nguyên nội dung AC để bảo toàn đối chiếu snapshot trong lượt chỉ sửa tài liệu này; phần “PR không merge được” không mô tả trạng thái GitHub hiện tại và không được ghi PASS. Đối soát yêu cầu này trước khi thực hiện T01; không tự bật lại bảo vệ nhánh. Xem [quy trình Git hiện hành](README.md#quy-trình-git).
+> **Cấu hình nhánh cập nhật 10/10:** chỉ `main`/`develop`, mặc định `main`, không bảo vệ nhánh và không bắt buộc PR/Approve. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](README.md#quy-trình-git).
 
 #### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.

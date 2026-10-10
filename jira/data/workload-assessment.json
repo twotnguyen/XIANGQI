@@ -10,7 +10,7 @@
   "items": {
     "T01": {
       "load_units": 5,
-      "reason": "Hạ tầng chung, chạy nhiều phần và chặn mã lỗi; cần bàn giao cách chạy ổn định cho cả nhóm."
+      "reason": "Hạ tầng chung, chạy nhiều phần và phát hiện mã lỗi; cần bàn giao cách chạy ổn định cho cả nhóm."
     },
     "T02": {
       "load_units": 8,
