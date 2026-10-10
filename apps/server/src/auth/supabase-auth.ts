@@ -29,6 +29,7 @@ export class SupabaseAuth implements AuthProvider {
         `${this.url.replace(/\/$/, "")}/auth/v1/${path}`,
         {
           method,
+          redirect: "error",
           headers,
           ...(body === undefined ? {} : { body: JSON.stringify(body) }),
           signal: signal
@@ -151,6 +152,22 @@ export class SupabaseAuth implements AuthProvider {
     return this.session("token?grant_type=refresh_token", {
       refresh_token: refreshToken,
     });
+  }
+  async exchangeIDToken(
+    credential: string,
+    rawNonce: string,
+  ): Promise<Session> {
+    return this.session("token?grant_type=id_token", {
+      provider: "google",
+      id_token: credential,
+      nonce: rawNonce,
+    });
+  }
+  async setPassword(userId: string, password: string) {
+    await this.updatePendingPassword(userId, password);
+  }
+  async deleteTemporary(userId: string) {
+    await this.deletePending(userId);
   }
   private async session(
     path: string,
