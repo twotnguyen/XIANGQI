@@ -1,0 +1,42 @@
+{
+  "checked_date": "2026-10-09",
+  "project": "XIAN",
+  "source": "listJiraIssueAssignableUsers",
+  "users": [
+    {
+      "accountId": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "displayName": "TÌNH 4851_NGUYỄN NGỌC",
+      "active": true
+    },
+    {
+      "accountId": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "displayName": "4841_Lê Thị Xuân Nhạn",
+      "active": true
+    },
+    {
+      "accountId": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "displayName": "Tưởng Lê khoa Cường-4572",
+      "active": true
+    },
+    {
+      "accountId": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "displayName": "Nguyễn Minh Thư",
+      "active": true
+    },
+    {
+      "accountId": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "displayName": "Võ Thành Đông",
+      "active": true
+    },
+    {
+      "accountId": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "displayName": "nguyenhoangtungtuyhoa",
+      "active": true
+    },
+    {
+      "accountId": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "displayName": "Gia Kỳ",
+      "active": true
+    }
+  ]
+}

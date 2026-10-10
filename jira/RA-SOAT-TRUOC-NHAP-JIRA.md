@@ -1,5 +1,7 @@
 # Rà soát trước khi cập nhật Jira — 09/10/2026
 
+> **Cập nhật sau đợt rà soát:** Jira đã được cập nhật và xác minh đủ XIAN-1–XIAN-107 theo ánh xạ tuyến tính. Xem [Kết quả cập nhật Jira](KET-QUA-CAP-NHAT-JIRA.md). Các phần bên dưới ghi lại trạng thái lịch sử trước khi cập nhật, không phải trạng thái Jira hiện tại.
+
 **Kết luận: bộ kế hoạch local đã được rà và đồng bộ; CSV chưa đủ điều kiện cập nhật trực tiếp lên dự án thật nếu phải giữ XIAN-1–XIAN-107.** Không có thao tác sửa, tạo, xoá hoặc chuyển trạng thái Jira trong đợt rà soát này.
 
 ## Phạm vi
