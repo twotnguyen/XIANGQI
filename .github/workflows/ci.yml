@@ -9,6 +9,10 @@ permissions:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [lint, typecheck, test]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -17,6 +21,15 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Inject intentional negative fixture
+        env:
+          PROBE_GATE: ${{ matrix.gate }}
+        run: |
+          case "$PROBE_GATE" in
+            lint) echo 'const unusedProbe = 1;' > apps/server/src/ci-probe.ts ;;
+            typecheck) echo 'export const typeProbe: string = 1;' > apps/server/src/ci-probe.ts ;;
+            test) echo 'import { expect, it } from "vitest"; it("intentional CI failure probe", () => expect(1).toBe(2));' > apps/server/src/ci-probe.test.ts ;;
+          esac
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
