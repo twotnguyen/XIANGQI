@@ -6,6 +6,8 @@ import type { Pool } from "pg";
 export async function startAuthFixture(pool: Pool, now: () => Date) {
   const state = {
     sent: 0,
+    refreshRequests: 0,
+    failRefresh: false,
     failMail: false,
     failMailAfterCreate: false,
     foreignSignupId: undefined as string | undefined,
@@ -15,6 +17,19 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
   };
   const sessions = new Map<string, string>();
   const passwords = new Map<string, string>();
+  const refreshTokens = new Map<string, string>();
+  function issueSession(user: { id: string }) {
+    const access = randomUUID();
+    const refresh = randomUUID();
+    sessions.set(access, user.id);
+    refreshTokens.set(refresh, user.id);
+    return {
+      access_token: access,
+      refresh_token: refresh,
+      expires_in: 3600,
+      user,
+    };
+  }
   let verifyGate: { started: () => void; wait: Promise<void> } | undefined;
   const server = createServer(async (request, response) => {
     const respond = (status: number, body: unknown) => {
@@ -68,14 +83,26 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
             error_code: "invalid_credentials",
             msg: "fake-sensitive-fixture",
           });
-        const access = randomUUID();
-        sessions.set(access, user.id);
-        return respond(200, {
-          access_token: access,
-          refresh_token: randomUUID(),
-          expires_in: 3600,
-          user,
-        });
+        return respond(200, issueSession(user));
+      }
+      if (path === "/auth/v1/token?grant_type=refresh_token") {
+        state.refreshRequests++;
+        if (state.failRefresh)
+          return respond(503, { msg: "fake-sensitive-fixture" });
+        const id =
+          typeof body.refresh_token === "string" &&
+          refreshTokens.get(body.refresh_token);
+        const { rows } = await pool.query(
+          "SELECT id,email,email_confirmed_at,raw_app_meta_data AS app_metadata FROM auth.users WHERE id=$1",
+          [id || null],
+        );
+        if (!rows[0]?.email_confirmed_at)
+          return respond(400, {
+            error_code: "refresh_token_not_found",
+            msg: "fake-sensitive-fixture",
+          });
+        refreshTokens.delete(body.refresh_token);
+        return respond(200, issueSession(rows[0]));
       }
       if (path === "/auth/v1/verify") {
         if (verifyGate) {
@@ -106,14 +133,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
           });
         if (state.failVerifyAfterConfirm)
           return respond(500, { msg: "fake-sensitive-fixture" });
-        const access = randomUUID();
-        sessions.set(access, user.id);
-        return respond(200, {
-          access_token: access,
-          refresh_token: randomUUID(),
-          expires_in: 3600,
-          user,
-        });
+        return respond(200, issueSession(user));
       }
       if (path === "/auth/v1/user") {
         const token = request.headers.authorization?.replace("Bearer ", "");

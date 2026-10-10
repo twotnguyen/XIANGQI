@@ -1,7 +1,15 @@
 name: CI
 on:
   push:
-    branches: [main, develop, "feat/XIAN-**", "fix/XIAN-**", "chore/XIAN-**"]
+    branches:
+      [
+        main,
+        develop,
+        "feat/XIAN-**",
+        "fix/XIAN-**",
+        "chore/XIAN-**",
+        "test/XIAN-**",
+      ]
   pull_request:
     branches: [main, develop]
 permissions:
