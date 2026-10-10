@@ -1,8 +1,8 @@
 # BACKLOG P1 — Cờ Tướng Online (XIANGQI)
 
-> **Phiên bản:** 3.0 · **Ngày:** 09/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
+> **Phiên bản:** 3.0 · **Ngày:** 10/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
 > **Phạm vi:** P1 (MVP, hạn **04/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
-> **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 09/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
+> **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 10/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
 > **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
 > **Cấu trúc:** **EP-01 → EP-08 khớp đúng 8 yêu cầu của khách hàng (YC1 → YC8)**; EP-00 là Epic nền tảng phục vụ chung.
 
@@ -28,8 +28,8 @@
 
 | Ký hiệu | Ý nghĩa | Lên Jira thành |
 |---|---|---|
-| `EP-xx` | Epic. EP-01 → EP-08 = yêu cầu YC1 → YC8 của khách hàng; EP-00 = nền tảng | Epic; **phần việc BA**, bắt đầu 09/10, xong khi Story muộn nhất của nó xong |
-| `US-xx.y` | User Story (xx = số Epic) | Story; AC dán vào Description. **Story là phần việc BA**: Done khi đặc tả + AC được PO duyệt; bắt đầu 09/10, hạn = ngày Task đầu tiên của Story bắt đầu (ngoại lệ US-08.3, US-00.5: hạn = Task cuối, để đóng hồ sơ kiểm chứng GATE-ENGINE/GATE-REALTIME; ngưỡng AC vẫn phải duyệt trước thi công); không đặt vào Sprint (quy tắc R1, KE-HOACH-JIRA.md mục 4). **Story Points** gắn cho **Task** (quy đổi từ giờ Task: ≤4h = 1 · ≤8h = 2 · ≤16h = 3 · ≤24h = 5 · ≤40h = 8 · >40h = 13) để Jira tự vẽ Velocity/Burndown theo Sprint; điểm của Story = tổng điểm các Task, chỉ ghi để tham khảo |
+| `EP-xx` | Epic. EP-01 → EP-08 khớp YC1 → YC8; EP-00 nền tảng | Công việc BA; bắt đầu trước Story đầu tiên, hoàn tất đặc tả theo BA 0.1; lịch cụ thể ở KE-HOACH-JIRA mục 4 |
+| `US-xx.y` | User Story (xx = số Epic) | Công việc BA; Done khi đặc tả + AC đã được duyệt. Bắt đầu trước Task đầu; kết thúc BA có thể trước hoặc sau Task đầu một khoảng ngắn theo lịch hiện hành, không mặc định chờ Task cuối. Không gắn Sprint/Release triển khai. Story Points thuộc Task, giữ theo Jira; tổng điểm Task của Story chỉ để tham khảo, không tự quy đổi lại từ giờ |
 | `AC-xx.y.z` | Tiêu chí nghiệm thu dạng **Given / When / Then** | Checklist trong Story |
 | `TC-xx.y.z` | Mã ca kiểm thử theo AC cùng số; thêm hậu tố cho các biến thể | Tester viết bước chi tiết trong Task kiểm thử; hiện chưa có bộ TC đã thực thi |
 | `Txx` | Task: việc thi công của một người (4–32 giờ) | **Task** (cha là Epic, liên kết *relates to* tới Story), có Sprint, người làm, hạn riêng |
@@ -40,7 +40,7 @@
 
 **Yêu cầu (YC) của khách hàng:** YC1 Đăng ký/đăng nhập · YC2 Tạo phòng · YC3 Mời vào phòng · YC4 Khởi tạo bàn cờ · YC5 Hai người đánh online · YC6 Chế độ phòng và người xem (tối đa 5 xem / 7 người) · YC7 Chat + camera + mic, kênh người xem riêng · YC8 Đánh với máy theo cấp độ.
 
-**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA nên xong trước khi thi công; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](jira/reports/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
+**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA; đặc tả đã chốt, tiến độ BA tách khỏi triển khai. Khoảng ngày BA có thể chồng với các Task đầu theo BA 0.1; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](jira/reports/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
 
 **Câu chữ giao diện** trong ngoặc kép là văn bản bắt buộc hiển thị đúng (có thể chỉnh dấu câu, không đổi nghĩa).
 
@@ -48,9 +48,10 @@
 
 ## 2. Definition of Ready và Definition of Done
 
-### 2.1 Definition of Ready (Task được kéo vào Sprint khi)
+### 2.1 Điều kiện lập kế hoạch và bắt đầu Task
 - [ ] Story của Task đã được đặc tả (câu chuyện, AC Given/When/Then, quyết định BA nguồn) và PO duyệt.
-- [ ] Mọi Task trong cột phụ thuộc đã xong. Khi BE/FE làm độc lập, hợp đồng chung phải được bàn giao bởi Task tiền nhiệm; nghiệm thu tích hợp vẫn dùng hệ thống thật.
+- [ ] Khi lập kế hoạch vào Sprint: phụ thuộc đã xác định và có lịch bàn giao trước ngày bắt đầu Task. Task tiền nhiệm và kế tiếp có thể cùng một Sprint.
+- [ ] Khi bắt đầu thực hiện: mọi Task tiền nhiệm đã hoàn thành và đầu vào đã bàn giao; bắt đầu sớm nhất từ ngày sau ngày kết thúc tiền nhiệm. Khi BE/FE làm độc lập, hợp đồng chung phải được bàn giao; nghiệm thu tích hợp vẫn dùng hệ thống thật.
 - [ ] Đã tách Task (BE/FE/kiểm thử), có người nhận, ước lượng giờ và ngày bắt đầu theo KE-HOACH-JIRA.md.
 - [ ] Màn hình liên quan có trong DANH-MUC (mockup chỉ tham khảo).
 - [ ] Không còn câu hỏi mở chặn việc làm (nếu có thì ghi rõ và PO đã trả lời).
@@ -668,7 +669,7 @@
 
 ## 7. Cổng kiểm chứng kỹ thuật
 
-Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp thật**. Lịch/đầu ra/người chịu trách nhiệm từng cổng ở KE-HOACH-JIRA mục 5; nguyên mẫu không được dùng thay bằng chứng PASS. Máy cờ có lần đo đầu ở S2 (T24), tinh chỉnh ở S3 (T59); không tuyên bố mọi gate đã xong trong S1.
+Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp thật**. Lịch và người nhận ở [kế hoạch Sprint](KE-HOACH-JIRA.md#3-sprint); đầu ra/điều kiện hoàn thành ở [Description chi tiết](jira/reports/JIRA-MUC-CHI-TIET.md); nguyên mẫu không được dùng thay bằng chứng PASS. T24 dựng máy cờ từ 14–17/10 (S1 kéo sang S2), T59 tinh chỉnh/đo 18–19/10 (S2); không tuyên bố mọi gate đã xong trong S1.
 
 | Mã | Nội dung | Cách làm | Kết quả cần ghi |
 |---|---|---|---|
@@ -730,7 +731,7 @@ Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA
 
 ## 10. Truy vết
 
-Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [jira/TRUY-VET-AC.md](jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
+Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [bản đồ truy vết AC](jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
 
 ### 10.1 Yêu cầu khách hàng → Epic → Story
 
@@ -783,4 +784,4 @@ Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** 
 | 2 | Câu chữ *"Khách chỉ được mở 1 phòng cùng lúc"*, *"Đăng ký tài khoản để kết bạn"*, *"Mã phòng không tồn tại hoặc phòng đã đóng"*, *"Không gửi được mã, vui lòng thử lại sau"*, *"Phòng đã đóng"* là đề xuất của BA | Đã chốt | **PO đồng ý 07/10** |
 | 3 | Tùng sở hữu lõi luật và ván online; Tình giữ khung realtime, xây máy cờ, LiveKit và CI/DevOps; Đông tinh chỉnh máy cờ. Các phần sau phụ thuộc nền này | Rủi ro tiến độ | Kế hoạch Jira: Tùng làm lõi luật và Tình làm khung realtime ngay **S1** và công bố hợp đồng sự kiện trong US-00.3 để Story phòng và Story ván không phải chờ nhau |
 | 4 | Thư là Tester chính cho phạm vi 268 AC và các biến thể TC | Rủi ro | Nhạn/Kỳ kiêm kiểm thử Story mà mình không làm (phân trong KE-HOACH-JIRA.md); dev tự viết unit test |
-| 5 | Máy cờ cấp Khó có mục tiêu độ sâu 6/ngân sách 3 giây; chưa có số đo | Rủi ro kỹ thuật | Máy cờ và lần đo đầu ở S2 (T24), tinh chỉnh/đo ở S3 (T59), kiểm độc lập T68; không đạt thì báo PO, **không tự hạ ngưỡng** |
+| 5 | Máy cờ cấp Khó có mục tiêu độ sâu 6/ngân sách 3 giây; chưa có số đo | Rủi ro kỹ thuật | T24 từ 14–17/10 (S1–S2), T59 tinh chỉnh/đo 18–19/10 (S2), T68 kiểm độc lập 30/10 (S3); không đạt thì báo PO, **không tự hạ ngưỡng** |

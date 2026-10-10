@@ -8,6 +8,8 @@ Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. 
 
 Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](../data/description-source-audit.json). Lịch, phân công, giờ, điểm và trạng thái lấy từ current-jira-snapshot.json; nhãn sprint cũ không thay thế trường Sprint.
 
+<a id="ep-00"></a>
+
 ## EP-00 · Nền tảng kỹ thuật và chất lượng
 
 | Trường | Giá trị |
@@ -71,6 +73,8 @@ Các tính năng tài khoản, phòng, ván, trò chuyện và máy cờ phải 
 Không coi chạy nguyên mẫu hoặc hoàn thành tài liệu là bằng chứng phần mềm đã nghiệm thu.
 
 ---
+
+<a id="us-00.1"></a>
 
 ### US-00.1 · Khung dự án, CI và nhật ký vận hành
 
@@ -140,6 +144,8 @@ Bàn giao đặc tả khung dự án, kiểm tra mã tự động và nhật ký
 Không làm các màn hình nghiệp vụ hay triển khai luật cờ trong phần việc đặc tả nền tảng.
 
 ---
+
+<a id="t01"></a>
 
 #### T01 · Dựng monorepo, CI, nhật ký và /health
 
@@ -215,6 +221,8 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 Bàn giao bộ khung cho các chức năng đăng nhập, phòng và bàn cờ. Kết quả kiểm sức khoẻ đầy đủ cần được kiểm lại sau khi nối cơ sở dữ liệu và máy cờ thật.
 
 ---
+
+<a id="t03"></a>
 
 #### T03 · Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái
 
@@ -292,6 +300,8 @@ Bàn giao phần trình bày chung. Luồng đăng ký, quản lý phòng, danh 
 
 ---
 
+<a id="us-00.2"></a>
+
 ### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 
 | Trường | Giá trị |
@@ -357,6 +367,8 @@ Dữ liệu gồm hồ sơ tài khoản, quan hệ và lời mời bạn bè, ph
 Không mở rộng sang bảng xếp hạng, tính điểm hay giao diện xem lịch sử ván.
 
 ---
+
+<a id="t14"></a>
 
 #### T14 · Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu
 
@@ -435,6 +447,8 @@ Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai n
 
 ---
 
+<a id="us-00.3"></a>
+
 ### US-00.3 · Khung realtime
 
 | Trường | Giá trị |
@@ -502,6 +516,8 @@ Phòng, ván đấu và trò chuyện cùng dùng một cơ chế kết nối. M
 Chỉ đặc tả cơ chế dùng chung; luật đi cờ, vòng đời phòng và nội dung trò chuyện được triển khai ở các công việc tính năng tương ứng.
 
 ---
+
+<a id="t12"></a>
 
 #### T12 · Khung realtime Socket.IO
 
@@ -581,6 +597,8 @@ Bàn giao hợp đồng giao tiếp cho phòng, ván, phiên và hình tiếng. 
 
 ---
 
+<a id="us-00.4"></a>
+
 ### US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm
 
 | Trường | Giá trị |
@@ -646,6 +664,8 @@ Một yêu cầu có thể có nhiều nhánh đúng, sai và biên. Thử nguy�
 Không ghi đạt trước khi thực hiện; không dùng kết quả nguyên mẫu để kết luận bản tích hợp đã đạt.
 
 ---
+
+<a id="t02"></a>
 
 #### T02 · Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ
 
@@ -726,6 +746,8 @@ Công việc này chuẩn bị phương pháp và dữ liệu. Người phụ tr
 
 ---
 
+<a id="t06"></a>
+
 #### T06 · Spike media LAN/Cloud/HTTPS và thử mô hình phiên
 
 | Trường | Giá trị |
@@ -803,6 +825,8 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 
 ---
 
+<a id="us-00.5"></a>
+
 ### US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo
 
 | Trường | Giá trị |
@@ -878,6 +902,8 @@ Hồ sơ nghiệm thu tổng sử dụng các ngưỡng chất lượng đã duy
 Không tự giảm ngưỡng hay cắt tính năng để ghi đạt; đóng hồ sơ đặc tả không đồng nghĩa phần mềm đã qua nghiệm thu.
 
 ---
+
+<a id="t51"></a>
 
 #### T51 · Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ
 
@@ -961,6 +987,8 @@ Không thay báo cáo đo tải hoặc kiểm chứng máy cờ bằng việc ch
 
 ---
 
+<a id="t66"></a>
+
 #### T66 · Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật
 
 | Trường | Giá trị |
@@ -1035,6 +1063,8 @@ Mỗi kết quả phải gắn với máy, mạng, trình duyệt, bản phần 
 Không tuyên bố hệ thống đạt chỉ vì đã viết xong báo cáo. Đây là đo và xác minh; phần sửa lỗi vẫn do công việc sở hữu chức năng thực hiện.
 
 ---
+
+<a id="t70"></a>
 
 #### T70 · Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo
 
@@ -1116,6 +1146,8 @@ Công việc này đóng gói và xác nhận điều kiện phát hành. Tổng
 
 ---
 
+<a id="t71"></a>
+
 #### T71 · Tổng duyệt D1–D10 trên bản phát hành và ghi hình
 
 | Trường | Giá trị |
@@ -1193,6 +1225,8 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 ---
 
+<a id="ep-01"></a>
+
 ## EP-01 · Đăng ký và đăng nhập
 
 | Trường | Giá trị |
@@ -1256,6 +1290,8 @@ Bản đầu có đăng ký bằng tên/mật khẩu/email xác minh, tài kho�
 Không làm quên mật khẩu, đổi tên đăng nhập, đổi email hay đánh hạng.
 
 ---
+
+<a id="us-01.1"></a>
 
 ### US-01.1 · Đăng ký bằng Username + Mật khẩu + OTP email
 
@@ -1333,6 +1369,8 @@ Người chưa có tài khoản đi qua ba bước: nhập thông tin đăng nh�
 Không bổ sung chức năng quên mật khẩu hoặc thay đổi email.
 
 ---
+
+<a id="t04"></a>
 
 #### T04 · BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm
 
@@ -1413,6 +1451,8 @@ Bàn giao cho màn đăng ký; Google và Khách đầy đủ triển khai riên
 
 ---
 
+<a id="t08"></a>
+
 #### T08 · FE màn Đăng ký 3 bước
 
 | Trường | Giá trị |
@@ -1489,6 +1529,8 @@ Người dùng nhập tên tài khoản và mật khẩu, sau đó email, cuối
 Bàn giao màn đăng ký. Luồng mở đường dẫn mời rồi đăng ký cần được kiểm lại cùng chức năng chuyển hướng vào phòng khi chức năng đó hoàn tất.
 
 ---
+
+<a id="t13"></a>
 
 #### T13 · Kiểm thử US-01.1
 
@@ -1567,6 +1609,8 @@ Tự vào phòng mời sau đăng ký được kiểm khi chức năng tham gia 
 
 ---
 
+<a id="us-01.2"></a>
+
 ### US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai
 
 | Trường | Giá trị |
@@ -1638,6 +1682,8 @@ Người dùng nhập tên đăng nhập; việc tra email cần cho dịch vụ
 Không bổ sung chức năng khôi phục mật khẩu; không áp dụng bộ đếm sai mật khẩu cho phương thức Google.
 
 ---
+
+<a id="t09"></a>
 
 #### T09 · BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập
 
@@ -1716,6 +1762,8 @@ Bàn giao đăng nhập mật khẩu cho giao diện; kiểm chung với Google 
 
 ---
 
+<a id="t15"></a>
+
 #### T15 · FE màn Đăng nhập
 
 | Trường | Giá trị |
@@ -1792,6 +1840,8 @@ Màn này cũng là cửa vào cho người mở đường dẫn mời nhưng ch
 Bàn giao giao diện đăng nhập mật khẩu và vị trí nối Google/Khách. Hoạt động đầy đủ của hai lối vào đó được hoàn thiện ở phần xác thực tương ứng.
 
 ---
+
+<a id="t17"></a>
 
 #### T17 · Kiểm thử US-01.2
 
@@ -1870,6 +1920,8 @@ Chạy qua giao diện thật và xử lý máy chủ, đồng thời kiểm cá
 Việc Google vẫn vào được mà không xoá bộ đếm và việc đăng nhập xong tự vào phòng mời được kiểm bổ sung khi các luồng liên quan đã tích hợp.
 
 ---
+
+<a id="us-01.3"></a>
 
 ### US-01.3 · Đăng ký/đăng nhập bằng Google và chế độ Khách
 
@@ -1950,6 +2002,8 @@ Không tự gộp tài khoản trùng email và không triển khai xếp hạng
 
 ---
 
+<a id="t35"></a>
+
 #### T35 · BE đăng ký/đăng nhập Google, onboarding, phiên Khách
 
 | Trường | Giá trị |
@@ -2021,6 +2075,8 @@ Bàn giao xác thực, dữ liệu hạn và quyền Khách; quản lý phiên, 
 
 ---
 
+<a id="t44"></a>
+
 #### T44 · FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách
 
 | Trường | Giá trị |
@@ -2091,6 +2147,8 @@ Phần này không quyết định thời hạn phiên hoặc quyền trên máy
 
 ---
 
+<a id="t48"></a>
+
 #### T48 · Kiểm thử US-01.3
 
 | Trường | Giá trị |
@@ -2159,6 +2217,8 @@ Chuẩn bị Google chưa đăng ký, Google đã hoàn tất và email đã t�
 Ngoại lệ giữ phiên Khách khi đang chơi và xoá dữ liệu khi phiên kết thúc được nghiệm thu sau khi quản lý phiên, phòng và chat tích hợp đầy đủ.
 
 ---
+
+<a id="us-01.4"></a>
 
 ### US-01.4 · Phiên đăng nhập, hồ sơ và Đăng xuất
 
@@ -2240,6 +2300,8 @@ Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao
 
 ---
 
+<a id="t56"></a>
+
 #### T56 · BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất
 
 | Trường | Giá trị |
@@ -2313,6 +2375,8 @@ Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn 
 
 ---
 
+<a id="t65"></a>
+
 #### T65 · FE Cài đặt hồ sơ, Đăng xuất, banner ván dở
 
 | Trường | Giá trị |
@@ -2382,6 +2446,8 @@ Người dùng cần phân biệt Tên đăng nhập dùng để vào tài kho�
 Máy chủ vẫn kiểm quyền, dữ liệu và thời hạn phiên; giao diện không tự quyết định đầu hàng hay giải phóng vị trí chơi.
 
 ---
+
+<a id="t69"></a>
 
 #### T69 · Kiểm thử US-01.4
 
@@ -2457,6 +2523,8 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 
 ---
 
+<a id="ep-02"></a>
+
 ## EP-02 · Tạo phòng
 
 | Trường | Giá trị |
@@ -2520,6 +2588,8 @@ Phòng và ván là hai đối tượng khác nhau: phòng có thể còn tồn 
 Không thêm đổi cấu hình mức giờ/sức chứa sau tạo, tái đấu trực tiếp hay đóng phòng vì chờ lâu.
 
 ---
+
+<a id="us-02.1"></a>
 
 ### US-02.1 · Tạo phòng, ghế và bắt đầu ván
 
@@ -2596,6 +2666,8 @@ Mỗi phòng có chủ phòng, ghế Đỏ, ghế Đen và số chỗ xem đã c
 Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đã tạo phòng.
 
 ---
+
+<a id="t18"></a>
 
 #### T18 · BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host
 
@@ -2674,6 +2746,8 @@ Phòng gồm hai ghế và tối đa năm người xem. Người tạo là chủ
 Bàn giao phòng chờ và tín hiệu bắt đầu ván. Xin đổi bên hai người, chế độ công khai/khóa, chat và hình tiếng dùng sự kiện này để bổ sung hành vi của mình.
 
 ---
+
+<a id="t21"></a>
 
 #### T21 · FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược
 
@@ -2755,6 +2829,8 @@ Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung 
 
 ---
 
+<a id="t28"></a>
+
 #### T28 · Kiểm thử US-02.1
 
 | Trường | Giá trị |
@@ -2823,6 +2899,8 @@ Chuẩn bị người tạo phòng, người chơi thứ hai và người xem. T
 Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiểm hoàn chỉnh trong đợt hồi quy sau khi chức năng kết nối và chat sẵn sàng.
 
 ---
+
+<a id="us-02.2"></a>
 
 ### US-02.2 · Xin đổi bên và ở lại phòng sau ván
 
@@ -2901,6 +2979,8 @@ Không thêm nút tái đấu trực tiếp hoặc xem lại ván; không đóng
 
 ---
 
+<a id="t41"></a>
+
 #### T41 · BE Xin đổi bên và phòng về chờ sau ván
 
 | Trường | Giá trị |
@@ -2971,6 +3051,8 @@ Không thêm nút tái đấu nhanh; người chơi dùng Sẵn sàng và Xin đ
 
 ---
 
+<a id="t46"></a>
+
 #### T46 · FE hộp Xin đổi bên, Ở lại phòng / Rời phòng
 
 | Trường | Giá trị |
@@ -3040,6 +3122,8 @@ Phòng đang chờ có thể có một hoặc hai người ngồi ghế. Sau khi
 Phần này không tạo cơ chế tái đấu mới và không tự xử thời hạn; máy chủ quản lý đổi ghế, mã ván và vòng đời phòng.
 
 ---
+
+<a id="t50"></a>
 
 #### T50 · Kiểm thử US-02.2
 
@@ -3114,6 +3198,8 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 
 ---
 
+<a id="ep-03"></a>
+
 ## EP-03 · Mời vào phòng
 
 | Trường | Giá trị |
@@ -3177,6 +3263,8 @@ Người được mời không cần kết bạn nếu dùng mã/đường dẫn
 Không làm nhắn tin riêng, thách đấu hoặc mời qua mã ảnh để quét.
 
 ---
+
+<a id="us-03.1"></a>
 
 ### US-03.1 · Mời bằng link/mã và vào phòng
 
@@ -3247,6 +3335,8 @@ Người vào phòng được xếp ghế còn trống hoặc làm người xem 
 Không tạo mã ảnh để quét; quyền vào vẫn phụ thuộc trạng thái phòng và vị trí chơi hiện tại.
 
 ---
+
+<a id="t22"></a>
 
 #### T22 · BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập
 
@@ -3326,6 +3416,8 @@ Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. C
 
 ---
 
+<a id="t26"></a>
+
 #### T26 · FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập
 
 | Trường | Giá trị |
@@ -3393,6 +3485,8 @@ Người được mời không bắt buộc là bạn của chủ phòng. Hai ng
 Phần này phụ trách giao diện đường dẫn và mã; danh sách bạn bè để gửi lời mời trong ứng dụng là phần việc riêng.
 
 ---
+
+<a id="t29"></a>
 
 #### T29 · Kiểm thử US-03.1
 
@@ -3462,6 +3556,8 @@ Dùng ít nhất hai tài khoản chưa kết bạn và nhiều cửa sổ trìn
 Luồng chọn chế độ Khách từ lời mời được kiểm chuyên biệt trong phần kiểm Google và Khách; kiểm lời mời bạn bè trong ứng dụng là phần riêng.
 
 ---
+
+<a id="us-03.2"></a>
 
 ### US-03.2 · Bạn bè và mời bạn online
 
@@ -3547,6 +3643,8 @@ Không làm nhắn tin riêng hay thách đấu; không cho Khách tham gia quan
 
 ---
 
+<a id="t31"></a>
+
 #### T31 · BE bạn bè, trạng thái online, mời bạn online vào phòng
 
 | Trường | Giá trị |
@@ -3617,6 +3715,8 @@ Không làm nhắn tin riêng giữa bạn bè hoặc thách đấu từ màn B�
 
 ---
 
+<a id="t40"></a>
+
 #### T40 · FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời
 
 | Trường | Giá trị |
@@ -3686,6 +3786,8 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu; các quyết định quyền và sức chứa lấy từ máy chủ.
 
 ---
+
+<a id="t49"></a>
 
 #### T49 · Kiểm thử US-03.2
 
@@ -3762,6 +3864,8 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 
 ---
 
+<a id="ep-04"></a>
+
 ## EP-04 · Khởi tạo bàn cờ
 
 | Trường | Giá trị |
@@ -3825,6 +3929,8 @@ Bộ luật dùng chung quyết định nước hợp lệ; giao diện biểu d
 Dùng luật rút gọn của ứng dụng, không bổ sung toàn bộ luật giải đấu hoặc gợi ý chiến thuật.
 
 ---
+
+<a id="us-04.1"></a>
 
 ### US-04.1 · Lõi luật cờ dùng chung
 
@@ -3899,6 +4005,8 @@ Bàn giao đặc tả một bộ luật cờ tướng dùng chung để máy ch�
 Không bổ sung luật xử riêng việc đuổi quân liên tục; không tuyên bố đây là toàn bộ luật thi đấu chính thức.
 
 ---
+
+<a id="t05"></a>
 
 #### T05 · Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân
 
@@ -3977,6 +4085,8 @@ Kết quả là nước cơ bản theo cách đi của quân, chưa được g�
 
 ---
 
+<a id="t07"></a>
+
 #### T07 · Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước
 
 | Trường | Giá trị |
@@ -4053,6 +4163,8 @@ Biết cách đi của từng quân chưa đủ: một nước nhìn đúng hìn
 Bàn giao phân xử từng thế cờ. Lặp thế, 120 nửa nước không ăn quân và ưu tiên các kết quả được ghép ở phần hoàn thiện luật kết thúc ván. Một nửa nước là một lần đi của một bên; hai bên mỗi bên đi một lần tương đương hai nửa nước.
 
 ---
+
+<a id="t10"></a>
 
 #### T10 · Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử
 
@@ -4131,6 +4243,8 @@ Bộ luật phân xử một nước hợp lệ. Máy chủ vẫn phải kiểm 
 
 ---
 
+<a id="us-04.2"></a>
+
 ### US-04.2 · Khởi tạo và hiển thị bàn cờ
 
 | Trường | Giá trị |
@@ -4197,6 +4311,8 @@ Bàn cờ có 9 cột và 10 hàng giao điểm, 32 quân, sông và hai cung. H
 Chỉ đặc tả hiển thị; thao tác đi quân và phân xử luật nằm ở phần việc riêng.
 
 ---
+
+<a id="t11"></a>
 
 #### T11 · FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng
 
@@ -4278,6 +4394,8 @@ Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, �
 
 ---
 
+<a id="t16"></a>
+
 #### T16 · Kiểm thử US-04.2
 
 | Trường | Giá trị |
@@ -4357,6 +4475,8 @@ Không dùng kết quả này để kết luận bấm chuột, kéo thả, nư�
 
 ---
 
+<a id="us-04.3"></a>
+
 ### US-04.3 · Đi cờ bằng click/kéo thả và âm thanh
 
 | Trường | Giá trị |
@@ -4429,6 +4549,8 @@ Người tới lượt mới được chọn quân. Gợi ý chỉ thể hiện 
 Không thêm chức năng gợi ý chiến thuật hoặc chọn nước tốt nhất cho người chơi.
 
 ---
+
+<a id="t19"></a>
 
 #### T19 · FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh
 
@@ -4510,6 +4632,8 @@ Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ 
 
 ---
 
+<a id="t27"></a>
+
 #### T27 · Kiểm thử US-04.3
 
 | Trường | Giá trị |
@@ -4579,6 +4703,8 @@ Kiểm cách tương tác và hiển thị; không thay việc chứng minh toà
 
 ---
 
+<a id="ep-05"></a>
+
 ## EP-05 · Hai người đánh cờ online
 
 | Trường | Giá trị |
@@ -4642,6 +4768,8 @@ Máy chủ là nơi quyết định luật, giờ, quyền điều khiển và k
 Không cộng thời gian sau nước đi, xin đi lại hoặc khôi phục giả ván bị gián đoạn do khởi động lại máy chủ.
 
 ---
+
+<a id="us-05.1"></a>
 
 ### US-05.1 · Ván online: đi cờ, đồng hồ và kết thúc ván
 
@@ -4718,6 +4846,8 @@ Trình duyệt gửi yêu cầu đi quân; máy chủ kiểm tra giờ và luậ
 Không cộng thêm thời gian sau nước đi và không triển khai giao diện lịch sử ván.
 
 ---
+
+<a id="t20"></a>
 
 #### T20 · BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván
 
@@ -4799,6 +4929,8 @@ Bàn giao lõi ván để nối đồng hồ, các nút đề nghị và phục 
 
 ---
 
+<a id="t23"></a>
+
 #### T23 · BE đồng hồ thi đấu và hết giờ
 
 | Trường | Giá trị |
@@ -4877,6 +5009,8 @@ Bàn giao thời gian và kết quả hết giờ cho giao diện và xử lý m
 
 ---
 
+<a id="t25"></a>
+
 #### T25 · FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại
 
 | Trường | Giá trị |
@@ -4947,6 +5081,8 @@ Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất
 
 ---
 
+<a id="t30"></a>
+
 #### T30 · Kiểm thử US-05.1
 
 | Trường | Giá trị |
@@ -5016,6 +5152,8 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 Đo độ trễ dưới tải và kiểm đủ mọi lý do do mất mạng, đầu hàng, xin hoà thuộc các đợt kiểm chuyên biệt và hồi quy tổng.
 
 ---
+
+<a id="us-05.2"></a>
 
 ### US-05.2 · Đầu hàng và xin hoà
 
@@ -5089,6 +5227,8 @@ Không thêm xin đi lại; phản hồi đề nghị cũ không được thay �
 
 ---
 
+<a id="t32"></a>
+
 #### T32 · BE đầu hàng, rời phòng giữa ván, xin hoà
 
 | Trường | Giá trị |
@@ -5158,6 +5298,8 @@ Máy chủ là nơi quyết định kết quả cuối cùng. Người chơi có
 Phần này không dựng hộp xác nhận hay khung đề nghị trên màn hình; không thêm xin đi lại hoặc tái đấu.
 
 ---
+
+<a id="t36"></a>
 
 #### T36 · FE nút Đầu hàng, Xin hoà và khung đề nghị
 
@@ -5229,6 +5371,8 @@ Máy chủ quyết định kết quả, hạn và quyền; phần giao diện kh
 
 ---
 
+<a id="t39"></a>
+
 #### T39 · Kiểm thử US-05.2
 
 | Trường | Giá trị |
@@ -5297,6 +5441,8 @@ Dùng hai người đang đấu và một người xem; chuẩn bị ván gần 
 Không kiểm xin đi lại, tái đấu hoặc luật riêng của chế độ xếp hạng vì chưa thuộc phiên bản đang làm.
 
 ---
+
+<a id="us-05.3"></a>
 
 ### US-05.3 · Mất kết nối và nối lại
 
@@ -5367,6 +5513,8 @@ Không tạo thắng/thua/hòa cho ván bị gián đoạn do máy chủ khởi 
 
 ---
 
+<a id="t52"></a>
+
 #### T52 · BE mất kết nối, ân hạn, đồng bộ lại và server restart
 
 | Trường | Giá trị |
@@ -5436,6 +5584,8 @@ Máy chủ giữ trạng thái ván và là nơi quyết định thời gian, l�
 Chỉ thực hiện xử lý phía máy chủ và dữ liệu đồng bộ. Không xây lại lớp phủ thông báo mất mạng; kiểm nghiệm đầu-cuối trên giao diện thật được thực hiện ở công việc kiểm thử mất kết nối.
 
 ---
+
+<a id="t60"></a>
 
 #### T60 · Kiểm thử US-05.3
 
@@ -5508,6 +5658,8 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 
 ---
 
+<a id="ep-06"></a>
+
 ## EP-06 · Chế độ phòng và người xem
 
 | Trường | Giá trị |
@@ -5571,6 +5723,8 @@ Có ba chế độ: Công khai, Chỉ vào bằng mã và Khóa phòng. Mỗi ph
 Không để người xem tự chiếm ghế hoặc phát camera/mic; không triển khai ghép trận và bảng xếp hạng.
 
 ---
+
+<a id="us-06.1"></a>
 
 ### US-06.1 · Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED
 
@@ -5642,6 +5796,8 @@ Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.
 
 ---
 
+<a id="t53"></a>
+
 #### T53 · BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã
 
 | Trường | Giá trị |
@@ -5710,6 +5866,8 @@ Phòng có thể Công khai để xuất hiện ở Sảnh, Chỉ vào bằng m�
 Phần này thực thi quy tắc phía máy chủ; hộp cài đặt và danh sách Sảnh do các công việc giao diện sử dụng kết quả bàn giao.
 
 ---
+
+<a id="t57"></a>
 
 #### T57 · FE Cài đặt phòng
 
@@ -5780,6 +5938,8 @@ Người chủ cần hiểu khác nhau giữa công khai, mời bằng mã và k
 Phần giao diện không tự sinh mã, thu hồi lời mời hoặc quyết định quyền vào phòng. Những việc đó do máy chủ thực thi.
 
 ---
+
+<a id="t62"></a>
 
 #### T62 · Kiểm thử US-06.1
 
@@ -5855,6 +6015,8 @@ Bổ sung 4 giờ trong ước lượng cho ma trận quyền vào phòng PUBLIC
 Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.
 
 ---
+
+<a id="us-06.2"></a>
 
 ### US-06.2 · Sảnh và danh sách phòng công khai
 
@@ -5936,6 +6098,8 @@ Lối vào điều hướng chính của tính năng để sau hiển thị Sắ
 
 ---
 
+<a id="t54"></a>
+
 #### T54 · BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem
 
 | Trường | Giá trị |
@@ -6005,6 +6169,8 @@ Sảnh giúp người chưa được mời tìm phòng để chơi hoặc xem. D
 Không xây trang Sảnh trong công việc này. Kết quả là dữ liệu, sự kiện và xử lý vào phòng để giao diện dùng.
 
 ---
+
+<a id="t61"></a>
 
 #### T61 · FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng
 
@@ -6076,6 +6242,8 @@ Sảnh là màn hình sau đăng nhập và nơi người chơi trở về từ 
 Không triển khai ghép ngẫu nhiên, xếp hạng, lịch sử hoặc bảng xếp hạng trong phần việc này.
 
 ---
+
+<a id="t67"></a>
 
 #### T67 · Kiểm thử US-06.2
 
@@ -6151,6 +6319,8 @@ Chuẩn bị tài khoản chính thức, phiên Khách và các phòng công kha
 Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trên. Người triển khai chức năng chịu trách nhiệm sửa lỗi; kết quả kiểm cục bộ không thay thế việc nghiệm thu toàn bộ sản phẩm.
 
 ---
+
+<a id="us-06.3"></a>
 
 ### US-06.3 · Người xem và đuổi người xem
 
@@ -6230,6 +6400,8 @@ Người xem không được tự chiếm ghế; chủ phòng không tự xuốn
 
 ---
 
+<a id="t55"></a>
+
 #### T55 · BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn
 
 | Trường | Giá trị |
@@ -6301,6 +6473,8 @@ Không xây khung danh sách người xem trong phần việc này. Giới hạn
 
 ---
 
+<a id="t58"></a>
+
 #### T58 · FE danh sách người xem, thao tác ghế và khung camera/mic
 
 | Trường | Giá trị |
@@ -6370,6 +6544,8 @@ Màn phòng dùng chung thông tin ghế, danh sách người xem và phần hì
 Không viết lại dịch vụ cấp quyền camera, mic hay quy tắc xếp chỗ. Phần việc này kết nối và hiển thị các dịch vụ đã bàn giao.
 
 ---
+
+<a id="t64"></a>
 
 #### T64 · Kiểm thử US-06.3
 
@@ -6446,6 +6622,8 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 
 ---
 
+<a id="ep-07"></a>
+
 ## EP-07 · Chat, camera và mic
 
 | Trường | Giá trị |
@@ -6509,6 +6687,8 @@ Hai người chơi có kênh trò chuyện riêng; cả phòng có kênh chung. 
 Không ghi/lưu hình tiếng, không lưu trò chuyện sau khi phòng đóng và không mở tin nhắn ngoài phòng.
 
 ---
+
+<a id="us-07.1"></a>
 
 ### US-07.1 · Hai kênh chat và bộ lọc
 
@@ -6587,6 +6767,8 @@ Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuy�
 
 ---
 
+<a id="t37"></a>
+
 #### T37 · BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ
 
 | Trường | Giá trị |
@@ -6658,6 +6840,8 @@ Không làm chat riêng giữa bạn bè hay nhãn dán; khung hiển thị chat
 
 ---
 
+<a id="t42"></a>
+
 #### T42 · FE khung chat hai kênh
 
 | Trường | Giá trị |
@@ -6728,6 +6912,8 @@ Không làm nhãn dán hay chat riêng giữa bạn bè; lọc từ cấm và gi
 
 ---
 
+<a id="t47"></a>
+
 #### T47 · Kiểm thử US-07.1
 
 | Trường | Giá trị |
@@ -6796,6 +6982,8 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 Nhánh đổi người từ ghế xuống xem và đưa người khác lên ghế được kiểm đầy đủ khi chức năng đổi vai trò hoàn tất trong hồi quy tổng.
 
 ---
+
+<a id="us-07.2"></a>
 
 ### US-07.2 · Camera, mic và mức chia sẻ
 
@@ -6874,6 +7062,8 @@ Không ghi hình, ghi âm hoặc lưu nội dung truyền; người xem chỉ nh
 
 ---
 
+<a id="t33"></a>
+
 #### T33 · BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ
 
 | Trường | Giá trị |
@@ -6945,6 +7135,8 @@ Không dựng khung video hoặc nút giao diện. Thử đầu-cuối trên mà
 
 ---
 
+<a id="t45"></a>
+
 #### T45 · Kiểm thử US-07.2
 
 | Trường | Giá trị |
@@ -7014,6 +7206,8 @@ Thu hồi luồng khi bị đuổi hoặc đổi từ ghế xuống xem được
 
 ---
 
+<a id="ep-08"></a>
+
 ## EP-08 · Đánh với máy theo cấp độ
 
 | Trường | Giá trị |
@@ -7077,6 +7271,8 @@ Người chơi chọn phe Đỏ, Đen hoặc Ngẫu nhiên; ván không có đ�
 Không thêm xin hòa, đi lại, gợi ý nước, lịch sử ván với máy hoặc khôi phục sau khi bộ nhớ máy chủ đã mất.
 
 ---
+
+<a id="us-08.1"></a>
 
 ### US-08.1 · Thiết lập và chơi ván với máy
 
@@ -7148,6 +7344,8 @@ Không thêm xin hòa, đi lại, gợi ý nước đi hoặc lưu lịch sử v
 
 ---
 
+<a id="t34"></a>
+
 #### T34 · BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới
 
 | Trường | Giá trị |
@@ -7218,6 +7416,8 @@ Giữ ván khi mất mạng và xử lý Thử lại sau lỗi máy được th�
 
 ---
 
+<a id="t38"></a>
+
 #### T38 · FE thiết lập/chơi AI và giao diện sự cố máy cờ
 
 | Trường | Giá trị |
@@ -7286,6 +7486,8 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 Giao diện không tự quyết định phục hồi ván. Hành vi sự cố thật được nghiệm thu sau khi phần giữ ván và xử lý lỗi phía máy chủ hoàn tất.
 
 ---
+
+<a id="t43"></a>
 
 #### T43 · Kiểm thử US-08.1
 
@@ -7356,6 +7558,8 @@ Không dùng kết quả này để khẳng định máy cấp Khó đủ mạnh
 
 ---
 
+<a id="us-08.2"></a>
+
 ### US-08.2 · Máy cờ ba cấp độ
 
 | Trường | Giá trị |
@@ -7422,6 +7626,8 @@ Máy dùng cùng thư viện luật cờ với hệ thống, tăng dần độ s
 Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác nhận trong phần việc ổn định ván với máy.
 
 ---
+
+<a id="t24"></a>
 
 #### T24 · Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng
 
@@ -7500,6 +7706,8 @@ Bàn giao máy cờ và số đo đầu cho phần tích hợp, tối ưu và ki
 
 ---
 
+<a id="us-08.3"></a>
+
 ### US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó
 
 | Trường | Giá trị |
@@ -7574,6 +7782,8 @@ Không khôi phục giả sau máy chủ khởi động lại và không dùng t
 
 ---
 
+<a id="t59"></a>
+
 #### T59 · Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh
 
 | Trường | Giá trị |
@@ -7641,6 +7851,8 @@ Bộ máy chọn nước đã có; bộ 50 thế giữa ván và bộ chiếu h�
 Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chính mình. Dùng bộ dữ liệu đã chuẩn bị, bàn giao số đo cho kiểm thử độc lập.
 
 ---
+
+<a id="t63"></a>
 
 #### T63 · BE giữ ván AI 30 phút, Thử lại, khởi động lại
 
@@ -7713,6 +7925,8 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi của máy cờ. Công việc này quản lý vòng đời ván và tác vụ phía máy chủ.
 
 ---
+
+<a id="t68"></a>
 
 #### T68 · Kiểm thử US-08.3
 

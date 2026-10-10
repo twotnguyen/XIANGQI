@@ -5,7 +5,7 @@
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  
-> **Cập nhật lần cuối:** 09/10/2026 (lập lại kế hoạch từ 09/10 theo yêu cầu PO; giữ quyết định sản phẩm 07–08/10. PO chốt sau review BA: lịch đến 05/11, Khách và Xin đổi bên lên P1, quy tắc đăng nhập, Sảnh PUBLIC có "Vào chơi", luật sau ván, SMTP ngoài. Xem **Phần 0**)
+> **Cập nhật lần cuối:** 10/10/2026 — thống nhất mục 0.1 với kế hoạch Jira 880 giờ, hạn 04/11; giữ các quyết định nghiệp vụ đã duyệt.
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
@@ -23,29 +23,22 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ---
 
-## PHẦN 0: QUYẾT ĐỊNH CHỐT 07/10/2026 — ƯU TIÊN CAO NHẤT
+## PHẦN 0: QUYẾT ĐỊNH HIỆN HÀNH (07–10/10/2026) — ƯU TIÊN CAO NHẤT
 
 > Product Owner (Twot) duyệt ngày 07/10/2026 (mục 0.1–0.11) và 08/10/2026 (mục 0.12–0.16) sau đợt review BA (Q1–Q10, F1–F5 và câu hỏi bổ sung về đổi bên/đấu lại). Khi phần nào khác trong tài liệu, nhật ký cũ, DANH-MUC, README hoặc mockup mâu thuẫn với Phần 0 thì **Phần 0 thắng**. Các mục bị ảnh hưởng đã được sửa trực tiếp và gắn nhãn **(07/10)**.
 
-### 0.1 Lịch, nguồn lực và Jira
-* **Lập lại kế hoạch — PO yêu cầu 09/10/2026:** chưa có tiến độ triển khai; kế hoạch mới bắt đầu **09/10/2026**, không ghi nhận công việc triển khai đã hoàn thành trong 07–08/10. Giữ hạn demo **05/11/2026** và **9 Epic / 27 Story / 71 Task**. Mọi Epic/Story trong kế hoạch mới bắt đầu **09/10**; mốc này thay mốc 07/10 của R1, các quy tắc R1 còn lại giữ nguyên. Ngày **09/10 chỉ dành cho BA/lập kế hoạch**, không tính một ngày phát triển đủ 8 giờ; ngày phát triển đầy đủ đầu tiên là **10/10**. Lịch từng Task theo [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Ba điểm review nghiệp vụ đã được PO duyệt riêng tại mục 0.17.
-* **Hạn cuối: 05/11/2026** (nộp + demo). Thay toàn bộ lịch cũ (hạn 17–18/10, 4 Sprint 04/10–17/10) ở Quyết định 10.1 và README.
-* **Sprint hiện hành (lập lại 09/10):** **S1 10–16/10 · S2 17–23/10 · S3 24–30/10 · S4 31/10–04/11** · 05/11 nộp và demo. Ngày 09/10 là BA/lập kế hoạch, không tạo Sprint riêng; làm cả cuối tuần. Lịch này thay lịch bắt đầu 08/10 trước đó.
-* **Công suất lập kế hoạch:** 8 giờ/người/ngày; phần 8 → 12 giờ là **dự phòng**, không đưa vào kế hoạch gốc.
-* **Nhóm 7 người:**
+### 0.1 Lịch, nguồn lực và Jira — hiện hành, đồng bộ 10/10/2026
 
-| Thành viên | Chuyên môn chính | Ghi chú phân vai |
-|---|---|---|
-| Tình (Twot) | Full-stack (FE, BE, DevOps, AI) | Scrum Master + PO; nhận phần khó và quan trọng, là người có tổng giờ Task cao nhất theo phân công đã điều chỉnh 09/10, tính 100% công suất cho việc kỹ thuật (PO quyết định, không giảm trừ cho vai trò SM) |
-| Đông | Backend | |
-| Tùng | Backend | |
-| Cường | Backend | |
-| Nhạn | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
-| Kỳ | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
-| Thư | Tester | Phụ trách kiểm thử chính |
+* **Hạn hoàn thành và Release v1.0: 04/11/2026**, gồm tổng duyệt 8 giờ ngày 04/11; không còn buổi chiều dự phòng cố định. Tổng kế hoạch **880 giờ**, 9 Epic / 27 Story / 71 Task. Ngày phát triển dự kiến đầu tiên là 10/10; chưa ghi nhận Task triển khai đã bắt đầu.
+* **Sprint:** S1 10–16/10 · S2 17–23/10 · S3 24–30/10 · S4 31/10–04/11. Cả bốn Sprint chưa bắt đầu. Lịch tính cả cuối tuần, tối đa 8 giờ/người/ngày; không tính tăng ca vào công suất cơ sở.
+* **Phân công hiện hành:** Tình 156 giờ; Đông 120; Tùng 132; Cường 124; Nhạn 120; Kỳ 108; Thư 120. Tình full-stack, PO/SM, giữ nền realtime, xây máy cờ, media/DevOps và T37 chat; Tùng sở hữu lõi luật/ván online; Đông làm BE và tinh chỉnh máy cờ; Cường làm BE, hỗ trợ FE theo phân công; Nhạn/Kỳ làm FE và kiểm thử độc lập; Thư là Tester chính. T49 giữ Kỳ. Giờ BA/điều phối chưa có ước lượng riêng; tổng giờ không phải khẳng định mức tải bằng nhau.
+* **Giới hạn lịch:** tối đa 7 Task/ngày, mỗi người tối đa 1 Task/ngày, tính cả ngày bắt đầu và ngày kết thúc. Task phụ thuộc chỉ bắt đầu từ ngày sau khi Task tiền nhiệm kết thúc. Sprint của Task là Sprint bắt đầu; Task có thể kết thúc ở Sprint kế tiếp.
+* **BA và triển khai:** Epic bắt đầu trước Story đầu tiên; Story bắt đầu trước Task đầu tiên của nó. Epic/Story là công việc BA, có thể kết thúc trước hoặc sau Task đầu vài ngày, có thể sau Task thứ hai/thứ ba, chậm nhất không vượt Task cuối trong phạm vi; không mặc định kéo đến Task cuối hay lấy ngày kết thúc Story muộn nhất làm ngày kết thúc Epic. Ngày cụ thể giữ theo [lịch BA hiện hành](KE-HOACH-JIRA.md#4-lịch-ba-và-trạng-thái); không tự đặt lại tất cả về 09/10. Đây là ngày kế hoạch, không phải ngày hoàn thành thực tế.
+* **Trạng thái:** 9 Epic + 27 Story BA **Done**, Resolution = Done vì đặc tả đã chốt; không gắn Sprint hoặc Release triển khai. 71 Task **To Do**, Resolution trống, chưa ghi giờ thực tế. Bằng chứng nghiệm thu phần mềm được bổ sung tại Task kiểm thử/tích hợp, không đợi số đo mới đóng đặc tả BA; giữ nguyên ngưỡng đã duyệt.
+* **Cấu trúc:** Task là loại Task thường, cha là Epic, liên kết `relates to` tới Story. Không đưa họp/báo cáo quản lý thành Task triển khai. P2 chỉ ghi ở mức Epic trong Backlog, chưa đưa vào kế hoạch P1 trên Jira. Các mục hiện có được cập nhật theo Jira Key, không xoá và nhập lại.
+* **Story Points:** giữ giá trị đã có trên Jira, tổng 198 điểm; độc lập với cập nhật giờ ước lượng, không tự quy đổi lại từ giờ. Bảng giờ/người/ngày và mô tả công việc ở [kế hoạch Jira](KE-HOACH-JIRA.md) và [danh sách chi tiết](jira/reports/JIRA-MUC-CHI-TIET.md).
 
-* **Nguyên tắc phân công (cập nhật theo yêu cầu 09/10):** Tùng phụ trách lõi luật và ván online; Đông nhận thêm danh sách phòng và tinh chỉnh máy cờ; Tình giữ xây máy cờ, kết nối, media và điều phối. Cường được hỗ trợ FE khi giảm tương ứng công BE; Nhạn/Kỳ hỗ trợ Thư kiểm thử. Tình 140 giờ, Đông 136, Tùng 132, Cường 124, Nhạn 104, Kỳ 108, Thư 104; tổng 848 giờ, T49 giữ Kỳ. Phần còn lại cân theo nội dung và đúng chuyên môn; 1–2 người được kiêm thêm vai trò khi một mảng quá tải (ví dụ Kỳ hoặc Nhạn kiểm thử cùng Thư). Bảng phân công chi tiết nằm trong kế hoạch Jira.
-* **Jira XIAN:** xoá 98 mục cũ, **lập lại từ đầu** theo [BACKLOG-P1.md](BACKLOG-P1.md). **Jira chỉ chứa việc phát triển** (gồm cả kiểm thử, cấu hình, triển khai); không đưa hoạt động quản lý dự án (họp, báo cáo) vào Jira. P1 chi tiết tới Story/Task; P2 chỉ ở mức Epic. **Cấu trúc chốt 07/10:** 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 Story; Epic và Story là phần việc BA, xong khi đặc tả được PO duyệt — theo hướng dẫn của giảng viên, Epic/Story có thể xong trước các Task bên trong, chậm nhất ở Task cuối cùng. **Quy tắc R1:** mọi Epic/Story bắt đầu 09/10 (thay mốc 07/10 theo yêu cầu lập lại kế hoạch); Story xong trước khi Task đầu tiên của nó bắt đầu, ngoại lệ US-08.3 (GATE-ENGINE) và US-00.5 (GATE-REALTIME) đóng hồ sơ bằng chứng ở Task cuối; các ngưỡng AC vẫn được duyệt trước thi công, không chờ số đo để hạ tiêu chuẩn; Epic xong theo Story muộn nhất; Epic/Story không đặt vào Sprint, nhập Jira ở trạng thái To Do; Task là loại Task thường (cha là Epic, liên kết tới Story) có Sprint, người làm và hạn riêng; mỗi người một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, hạn chế tối đa số Task chạy song song (tối đa 7, mỗi Task một người). Kế hoạch: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
+> **Đã thay thế:** quy tắc R1 cũ (mọi BA bắt đầu 09/10, các ngoại lệ đợi Task cuối), phương án 848 giờ, hạn 05/11 và yêu cầu xoá 98 mục/nhập lại là lịch sử. Không dùng để điều chỉnh kế hoạch hiện hành. Phạm vi nghiệp vụ và 268 tiêu chí nghiệm thu không thay đổi.
 
 ### 0.2 Đăng nhập và đăng ký (P1)
 * **Ba cách vào ứng dụng ở `SCR-LOGIN`:** (1) Username + Mật khẩu; (2) Đăng nhập bằng Google; (3) **Khách** (xem 0.3).
@@ -879,7 +872,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 ### Quyết định 10.4: Công bố luật rút gọn (duyệt 04/10/2026)
 * **P1:** phần **Luật chơi** mở rộng/thu gọn trong Sảnh hiện có; không tạo trang hoặc modal mới. Nêu cách kết thúc ván, hết nước đi là thua, chiếu liên tục, lặp thế và không ăn quân; thông báo rõ đuổi quân liên tục không xử riêng. Nội dung theo AC của Story Sảnh trong BACKLOG-P1.md, không tuyên bố tuân thủ toàn bộ luật thi đấu chính thức.
 
-## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP, HẠN 05/11/2026) VÀ P2 (LÀM SAU)
+## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP, HẠN 04/11/2026) VÀ P2 (LÀM SAU)
 
 > **Cập nhật 07/10:** Khách, Xin đổi bên, khoá thử sai đăng nhập, nút "Vào chơi" ở Sảnh, "Ở lại phòng"/"Ván mới" sau ván đã lên P1 (Phần 0). Bảng và danh sách dưới đây đã đồng bộ.
 
@@ -887,7 +880,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 >
 > **Tiêu chí hoàn thành P1 (Product Owner, 03/10/2026):** demo chạy được **8 mục tiêu cốt lõi từ đầu đến cuối** (end-to-end).
 
-* **Căn cứ:** Product Owner (03/10/2026) xác định 8 mục tiêu cốt lõi cho nhóm 7 người (lúc đó dự kiến khoảng 2 tuần; hạn hiện hành là 05/11/2026 theo Phần 0), và cho phép agent tự chuyển các mục còn lại xuống P2. **P1** = những gì cần để 8 mục tiêu chạy được trọn vẹn. **P2** = mọi thứ còn lại; vẫn là đặc tả đã duyệt, **các luật P2 giữ nguyên hiệu lực khi được làm**, chỉ chưa làm trong 2 tuần này.
+* **Căn cứ:** Product Owner (03/10/2026) xác định 8 mục tiêu cốt lõi cho nhóm 7 người (lúc đó dự kiến khoảng 2 tuần; hạn hiện hành là 04/11/2026 theo Phần 0), và cho phép agent tự chuyển các mục còn lại xuống P2. **P1** = những gì cần để 8 mục tiêu chạy được trọn vẹn. **P2** = mọi thứ còn lại; vẫn là đặc tả đã duyệt, **các luật P2 giữ nguyên hiệu lực khi được làm**, chưa đưa vào đợt P1 hiện hành.
 * **8 mục tiêu cốt lõi (nguyên văn ý Product Owner) và nơi định nghĩa:**
 
 | # | Mục tiêu cốt lõi | Quyết định / thành phần phục vụ |
@@ -910,7 +903,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
   * `MODAL-MATCH-RESULT` ở P1: ván online có *Ở lại phòng* và *Rời phòng* (0.7); ván AI có *Ván mới* và *Về Sảnh* (0.9). Không Tái đấu, không Xem lại.
 * **Bạn bè ở P1 (tối thiểu):** `SCR-FRIENDS` có tìm kiếm, gửi/nhận lời mời, danh sách bạn kèm trạng thái. **Không có nút mời trên trang này**: ở P1 chỉ mời bạn bè online **trong một phòng**, qua `MODAL-INVITE` do người đang ngồi ghế của phòng đó thực hiện (không tự tạo phòng, vì tạo phòng rồi mời là Thách đấu, P2). Nút "Nhắn tin" và "Thách đấu" `DISABLED` kèm tooltip *"Sắp ra mắt"*; huy hiệu tin chưa đọc chưa có.
 * **Ưu tiên theo thành phần:** xem cột "Ưu tiên" ở `DANH-MUC` §7 (**26 thành phần P1, 11 thành phần P2** từ 07/10).
-* **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người đến hạn 05/11/2026 (Phần 0) nên chạy song song các nhóm việc từ đầu và có phương án dự phòng (ví dụ máy cờ chỉ làm cấp Dễ trước).
+* **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người đến hạn 04/11/2026, thực hiện theo lịch phụ thuộc ở kế hoạch Jira. Có thể triển khai cấp Dễ trước như bước trung gian, nhưng P1 vẫn phải nghiệm thu đủ ba cấp; không tự giảm phạm vi để giữ hạn.
 
 ---
 
@@ -945,8 +938,8 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 | 25 | **Vào phòng, ghế/người xem, đề nghị trong ván, kết quả ván** (đã duyệt 03/10; bổ sung PO 05/10) | Mất mạng khi đếm bắt đầu ván tự tạo: huỷ/reset Sẵn sàng, giữ ghế 60 giây (2.3); mời xuống ghế cần chấp nhận, không giữ ghế (2.8); camera/mic tắt, chọn sẵn Chỉ đối thủ (4.1). **[ROOM-ACCESS] + [PROPOSALS] + [RESULT-TYPES]** `Quyết định 2.0, 2.3, 2.8, 3.6, 7.3` (sau ván/Tái đấu ghép ngẫu nhiên chốt 05/10; chat riêng giữ khi cùng cặp Đổi bên/chơi tiếp trong cùng phòng ở P1, Tái đấu ở P2; thay người thì đặt mốc mới theo 5.3; kèm sửa 1.2, 1.3, 1.4, 2.3, 4.3, 5.3, 6.2) | **P1** (2.8; Xin hòa và **Xin đổi bên** trong 3.6 — Xin đổi bên lên P1 ngày 07/10, Phần 0 mục 0.6); **P2** (ghép ngẫu nhiên, Tái đấu, 7.3, Xin đi lại) |
 | 26 | **Giao diện theo phân kỳ** | Quyết định 10.3: Kỳ Đài Cổ Phong mặc định; đồng bộ phông theo DESIGN §3.1 (PO chốt 05/10); bộ chọn Giấy Sáng/Theo hệ thống | **P1** (giao diện mặc định); **P2** (bộ chọn) |
 | 27 | **Công bố luật rút gọn** | Quyết định 10.4: Luật chơi mở rộng/thu gọn trong Sảnh, không thêm màn hình | **P1** |
-| 28 | **Chốt 07/10/2026** | Phần 0: lịch đến 05/11, đăng nhập + khoá thử sai, Khách P1, SMTP ngoài, Sảnh PUBLIC Vào chơi/Vào xem, Xin đổi bên P1, sau ván về WAITING, Tái đấu chọn phe (P2), Ván mới AI, Jira lập lại | **P1** (trừ Tái đấu: P2) |
-| 29 | **Chốt review và lập lại kế hoạch 09/10/2026** | 0.1: BA/lập kế hoạch 09/10, phát triển từ 10/10, giữ hạn 05/11 và 9/27/71. 0.17: từ chối username chứa từ cấm ngay bước nhập; thắng/thua ưu tiên hơn hoà 120 nửa nước, chiếu hết cao nhất; restart phòng tự tạo về WAITING, Ở lại/Rời | **P1** |
+| 28 | **Chốt 07/10/2026** | Phần 0: lịch gốc đến 05/11 (đã thay bởi mục 0.1 hiện hành), đăng nhập + khoá thử sai, Khách P1, SMTP ngoài, Sảnh PUBLIC Vào chơi/Vào xem, Xin đổi bên P1, sau ván về WAITING, Tái đấu chọn phe (P2), Ván mới AI, Jira lập lại | **P1** (trừ Tái đấu: P2) |
+| 29 | **Chốt review và lập lại kế hoạch 09/10/2026** | 0.1: BA/lập kế hoạch 09/10, phát triển từ 10/10, hạn gốc 05/11 (đã thay bởi mục 0.1 hiện hành), giữ 9/27/71. 0.17: từ chối username chứa từ cấm ngay bước nhập; thắng/thua ưu tiên hơn hoà 120 nửa nước, chiếu hết cao nhất; restart phòng tự tạo về WAITING, Ở lại/Rời | **P1** |
 
 > **Lưu ý đọc nhật ký (07/10):** các nhật ký dưới đây là lịch sử. Mọi tham chiếu `docs/...` trỏ tới bộ tài liệu đã xoá 07/10 (xem trong git tại `c4cf29d^`). Câu "không mở danh sách phòng công khai" ở nhật ký đồng bộ 05/10 đã bị thay bởi lần chốt lại MVP cùng ngày và Phần 0. Các số đếm US/AC trong nhật ký không còn hiệu lực; số hiện hành ở BACKLOG-P1.md.
 

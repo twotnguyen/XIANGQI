@@ -84,7 +84,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 
 ## Công nghệ
 
-> Công nghệ được PO xác nhận 03/10/2026, hạ tầng media cập nhật theo BA 0.16. Các cổng kiểm chứng ở BACKLOG-P1 mục 7: S1 thử sớm xác thực/media/phiên bằng bản thử nghiệm; S2 đo bản máy cờ đầu tiên; S3 tối ưu và tích hợp; S4 đo ngưỡng cuối trên ứng dụng đầy đủ. Thử sớm không thay thế nghiệm thu cuối.
+> Công nghệ được PO xác nhận 03/10/2026, hạ tầng media cập nhật theo BA 0.16. Các cổng kiểm chứng ở BACKLOG-P1 mục 7: S1 thử sớm xác thực/media/phiên bằng bản thử nghiệm; S1–S2 dựng máy cờ, S2 tinh chỉnh/đo; S3 tích hợp và kiểm độc lập; S4 đo ngưỡng cuối trên ứng dụng đầy đủ. Thử sớm không thay thế nghiệm thu cuối.
 
 | Lớp | Công nghệ |
 |---|---|
@@ -103,7 +103,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 .
 ├── BA-SCOPE-DECISIONS.md          Quyết định nghiệp vụ và phạm vi (nguồn luật; Phần 0 ưu tiên cao nhất)
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
-├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc, mô tả chi tiết, mức song song
+├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc và liên kết mô tả chi tiết
 ├── jira/                         Kế hoạch Jira; bắt đầu ở jira/README.md
 │   ├── reports/                 Tài liệu và báo cáo cho nhóm
 │   ├── data/                    Dữ liệu nguồn và snapshot hiện hành
@@ -139,7 +139,7 @@ Thứ tự ưu tiên khi mâu thuẫn: **BA Phần 0 → BA → BACKLOG-P1 → D
 |---|---|
 | Khối lượng P1 lớn (880 giờ kế hoạch) | Có ván online cơ bản ở S2, triển khai xong đầu S4; tổng duyệt chiếm ngày 04/11, không còn nửa ngày dự phòng cố định. Không đưa 8 → 12 giờ/ngày vào lịch cơ sở; báo PO sớm nếu lệch ước lượng |
 | Phần khó về realtime, máy cờ, LiveKit và CI vẫn tập trung ở Tình | Tùng sở hữu lõi luật; công bố giao diện kết nối đầu S1 để làm song song; theo dõi tải điều phối chưa có giờ riêng |
-| Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo | S1 chuẩn bị bộ thế/đáp án, S2 đo bản đầu tiên, S3 tối ưu, S4 kiểm GATE-ENGINE cuối; không đạt thì báo PO, không tự hạ ngưỡng |
+| Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo | T24 dựng máy 14–17/10, T59 tinh chỉnh/đo 18–19/10, T68 kiểm độc lập 30/10, S4 hồi quy; không đạt thì báo PO, không tự hạ ngưỡng |
 | Socket.IO và LiveKit chạy đồng thời, hạn mức LiveKit Cloud miễn phí | S1 thử media LAN/Cloud/HTTPS; S3 tích hợp; S4 đo realtime/tải và ghi bằng chứng đầy đủ |
 | Supabase đăng nhập bằng email, nhiều phiên song song | S1 thử sớm cơ chế username/phiên; kiểm lại luồng tích hợp khi đủ tính năng, không coi bản thử là đã nghiệm thu |
 | Một Tester cho toàn bộ TC | Nhạn/Kỳ/Tình hỗ trợ kiểm thử độc lập; Thư giữ hồi quy và tổng duyệt; dev tự viết unit test |

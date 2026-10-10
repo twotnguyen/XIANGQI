@@ -15,6 +15,16 @@ spec.loader.exec_module(plan)
 
 
 class CurrentPlanTests(unittest.TestCase):
+    def test_plan_links_to_complete_descriptions_without_copying_them(self):
+        schedule = plan.generate_plan(plan.validate())
+        details = plan.generate_detail('')
+        for key in plan.TASKS:
+            self.assertIn(f'(jira/reports/JIRA-MUC-CHI-TIET.md#{key.lower()})', schedule)
+            self.assertIn(f'<a id="{key.lower()}"></a>', details)
+            self.assertIn(plan.description(key), details)
+            self.assertNotIn(plan.description(key), schedule)
+
+
     def test_daily_capacity_includes_both_endpoints(self):
         days = collections.defaultdict(list)
         for task in plan.LIVE['issues']:
