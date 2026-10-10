@@ -4,6 +4,8 @@
 
 **Mục tiêu:** ứng dụng chạy được theo toàn bộ BA, có truy vết, kiểm chứng thật và bản bàn giao trên main/develop. Scaffold hoặc Task Done không thay thế nghiệm thu.
 
+**Ưu tiên giao diện (PO bổ sung 11/10):** hoàn thiện desktop/laptop trước ở 1280×720, 1366×768, 1440×900, 1536×864 và 1920×1080; sau đó hoàn thiện mobile 360/390 px. Giữ nguyên AC responsive và trợ năng, không bỏ phạm vi mobile.
+
 **Kiến trúc:** pnpm workspace với React/Vite, TypeScript strict, NestJS + Socket.IO, Supabase PostgreSQL/Auth, LiveKit và máy cờ TypeScript chạy trong tiến trình riêng. Máy chủ xác thực danh tính/vị trí chơi và phân xử lệnh, thời gian, quyền phòng/chat/media. Lõi luật thuần dùng chung cho trình duyệt, server và engine.
 
 **Nguồn:** [BA](../../BA-SCOPE-DECISIONS.md), [AC P1](../../BACKLOG-P1.md), [truy vết P1](TRUY-VET-AC.md), [danh mục P1/P2](PHAM-VI-P1-P2.md). Kế hoạch này quyết định trình tự kỹ thuật; không đổi luật, lịch Jira hoặc AC đã duyệt.
