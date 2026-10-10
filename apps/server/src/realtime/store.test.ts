@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { randomUUID } from "node:crypto";
+import { randomUUID, randomBytes } from "node:crypto";
 import { beforeAll, afterAll, describe, expect, it } from "vitest";
 import { RealtimeStore } from "./store.js";
 import { createApp } from "../app.js";
@@ -334,6 +334,7 @@ describe.skipIf(!realtimeTestUrl)(
     let base: string;
     const httpServer = createServer();
     const identities = new Map<string, RealtimeIdentity>();
+    const capabilities = new Map<string, string>();
     const clients: ClientSocket[] = [];
     beforeAll(async () => {
       fixture = await prepareFixture();
@@ -341,9 +342,13 @@ describe.skipIf(!realtimeTestUrl)(
         store: new RealtimeStore(fixture.runtime, fixture.rooms),
         corsOrigins: ["http://localhost:5173"],
         identities: {
-          resolve: async (token) => {
+          resolve: async (token, appSession) => {
             const identity = identities.get(token);
-            if (!identity)
+            if (
+              !identity ||
+              !appSession ||
+              capabilities.get(token) !== appSession
+            )
               throw new RealtimeError(
                 "AUTH_REQUIRED",
                 "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
@@ -373,14 +378,16 @@ describe.skipIf(!realtimeTestUrl)(
     ) {
       const token = randomUUID();
       identities.set(token, { userId, kind });
+      const appSession = randomBytes(32).toString("base64url");
+      capabilities.set(token, appSession);
       const client = io(base, {
         autoConnect: false,
         reconnection: false,
         transports: ["websocket"],
-        auth: { accessToken: token, roomId, tabId },
+        auth: { accessToken: token, appSession, roomId, tabId },
       });
       clients.push(client);
-      return { client, token, tabId };
+      return { client, token, tabId, appSession };
     }
     function event<T>(client: ClientSocket, name: string): Promise<T> {
       return new Promise((resolve, reject) => {
@@ -429,6 +436,28 @@ describe.skipIf(!realtimeTestUrl)(
       expect((await error).data).toEqual({ code: "AUTH_REQUIRED" });
       expect(snapshots).toEqual([]);
     });
+    it.each([undefined, "x".repeat(43)])(
+      "rejects a valid bearer paired with wrong or missing capability %s",
+      async (appSession) => {
+        const room = await addRoom(fixture.admin);
+        const peer = socket(room.roomId, room.members[0]!);
+        peer.client.auth = {
+          accessToken: peer.token,
+          appSession,
+          roomId: room.roomId,
+          tabId: peer.tabId,
+        };
+        const snapshots: unknown[] = [];
+        peer.client.on("room.snapshot", (value) => snapshots.push(value));
+        const denied = event<Error & { data?: { code: string } }>(
+          peer.client,
+          "connect_error",
+        );
+        peer.client.connect();
+        expect((await denied).data).toEqual({ code: "AUTH_REQUIRED" });
+        expect(snapshots).toEqual([]);
+      },
+    );
     it("refuses authenticated outsiders without broadcasting any room data", async () => {
       const room = await addRoom(fixture.admin);
       const outsider = randomUUID();
@@ -598,6 +627,65 @@ describe.skipIf(!realtimeTestUrl)(
       });
       expect(snapshots).toEqual([]);
     });
+    it("revokes capability independently of bearer before replay, command, publication and takeover", async () => {
+      const room = await addRoom(fixture.admin);
+      const red = socket(room.roomId, room.members[0]!);
+      const black = socket(room.roomId, room.members[1]!);
+      await connect(red.client);
+      await connect(black.client);
+      const request = readyCommand(room.roomId);
+      expect(await command(red.client, request)).toMatchObject({
+        status: "ok",
+      });
+      capabilities.delete(red.token);
+      expect(identities.has(red.token)).toBe(true);
+      for (const input of [request, readyCommand(room.roomId, 1)])
+        expect(await command(red.client, input)).toMatchObject({
+          status: "error",
+          error: { code: "AUTH_REQUIRED" },
+        });
+      const takeover = await new Promise<CommandAcknowledgement>((resolve) =>
+        red.client.emit("session.takeover", resolve),
+      );
+      expect(takeover).toMatchObject({
+        status: "error",
+        error: { code: "AUTH_REQUIRED" },
+      });
+      const snapshots: unknown[] = [];
+      red.client.on("room.snapshot", (value) => snapshots.push(value));
+      expect(
+        await command(black.client, readyCommand(room.roomId, 1)),
+      ).toMatchObject({ status: "ok" });
+      await gateway.publishSnapshots(room.roomId);
+      await command(red.client, request);
+      expect(snapshots).toEqual([]);
+      expect(
+        (
+          await fixture.admin.query(
+            "SELECT version FROM public.rooms WHERE id=$1",
+            [room.roomId],
+          )
+        ).rows[0].version,
+      ).toBe(2);
+    });
+    it("does not allow a superseded read-only tab with revoked capability to retake control", async () => {
+      const room = await addRoom(fixture.admin);
+      const old = socket(room.roomId, room.members[0]!);
+      await connect(old.client);
+      const fresh = socket(room.roomId, room.members[0]!);
+      await connect(fresh.client);
+      capabilities.delete(old.token);
+      const denied = await new Promise<CommandAcknowledgement>((resolve) =>
+        old.client.emit("session.takeover", resolve),
+      );
+      expect(denied).toMatchObject({
+        status: "error",
+        error: { code: "AUTH_REQUIRED" },
+      });
+      expect(
+        await command(fresh.client, readyCommand(room.roomId)),
+      ).toMatchObject({ status: "ok" });
+    });
     it("checks outbound room membership and does not send another room's snapshots", async () => {
       const room = await addRoom(fixture.admin);
       const otherRoom = await addRoom(fixture.admin);
@@ -696,14 +784,19 @@ describe.skipIf(!realtimeTestUrl)("Nest realtime lifecycle integration", () => {
   let base: string;
   const clients: ClientSocket[] = [];
   const identities = new Map<string, RealtimeIdentity>();
+  const capabilities = new Map<string, string>();
   beforeAll(async () => {
     fixture = await prepareFixture();
     app = await createApp(["http://localhost:5173"], [], null, {
       store: new RealtimeStore(fixture.runtime, fixture.rooms),
       identities: {
-        resolve: async (token) => {
+        resolve: async (token, appSession) => {
           const identity = identities.get(token);
-          if (!identity)
+          if (
+            !identity ||
+            !appSession ||
+            capabilities.get(token) !== appSession
+          )
             throw new RealtimeError("AUTH_REQUIRED", "Fixture session invalid");
           return identity;
         },
@@ -720,11 +813,13 @@ describe.skipIf(!realtimeTestUrl)("Nest realtime lifecycle integration", () => {
   function socket(roomId: string, identity?: RealtimeIdentity) {
     const token = randomUUID();
     if (identity) identities.set(token, identity);
+    const appSession = randomBytes(32).toString("base64url");
+    capabilities.set(token, appSession);
     const client = io(base, {
       autoConnect: false,
       reconnection: false,
       transports: ["websocket"],
-      auth: { accessToken: token, roomId, tabId: randomUUID() },
+      auth: { accessToken: token, appSession, roomId, tabId: randomUUID() },
     });
     clients.push(client);
     return client;
