@@ -49,7 +49,21 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      schema-postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_DB: xiangqi_schema_test
+          POSTGRES_USER: schema_test_admin
+          POSTGRES_PASSWORD: isolated-schema-ci-test
+        ports:
+          - 55443:5432
+        options: >-
+          --health-cmd "pg_isready -U schema_test_admin -d xiangqi_schema_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
+      SCHEMA_TEST_DATABASE_URL: postgresql://schema_test_admin:isolated-schema-ci-test@127.0.0.1:55443/xiangqi_schema_test
       LOGIN_TEST_DATABASE_URL: postgresql://login_test_admin:isolated-login-ci-test@localhost:5434/xiangqi_login_test
       AUTH_TEST_DATABASE_URL: postgresql://auth_test_admin:isolated-ci-test@localhost:5432/xiangqi_auth_test
       REALTIME_TEST_DATABASE_URL: postgresql://realtime_test_admin:isolated-realtime-ci-test@localhost:5433/xiangqi_realtime_test
