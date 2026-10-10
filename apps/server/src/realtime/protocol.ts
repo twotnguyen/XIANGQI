@@ -25,7 +25,9 @@ export function parseHandshake(value: unknown): RealtimeHandshake {
   if (
     typeof input.accessToken !== "string" ||
     !input.accessToken ||
-    input.accessToken.length > 8192
+    input.accessToken.length > 8192 ||
+    typeof input.appSession !== "string" ||
+    !/^[A-Za-z0-9_-]{43}$/.test(input.appSession)
   )
     throw new RealtimeError(
       "AUTH_REQUIRED",
@@ -33,6 +35,7 @@ export function parseHandshake(value: unknown): RealtimeHandshake {
     );
   return {
     accessToken: input.accessToken,
+    appSession: input.appSession,
     roomId: uuid(input.roomId),
     tabId: uuid(input.tabId),
   };
