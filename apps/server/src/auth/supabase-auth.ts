@@ -16,6 +16,7 @@ export class SupabaseAuth implements AuthProvider {
     admin = false,
     token?: string,
     method = "POST",
+    signal?: AbortSignal,
   ): Promise<Record<string, unknown>> {
     try {
       const key = admin ? this.secret : this.publishable;
@@ -30,7 +31,9 @@ export class SupabaseAuth implements AuthProvider {
           method,
           headers,
           ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-          signal: AbortSignal.timeout(10000),
+          signal: signal
+            ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
+            : AbortSignal.timeout(10000),
         },
       );
       if (response.status === 429)
@@ -43,6 +46,16 @@ export class SupabaseAuth implements AuthProvider {
         throw new RegistrationError(
           "OTP_INVALID",
           "Mã xác minh không đúng hoặc đã hết hạn, vui lòng gửi mã mới",
+        );
+      if (
+        (path === "user" && [401, 403].includes(response.status)) ||
+        (path === "token?grant_type=refresh_token" &&
+          [400, 401, 403].includes(response.status))
+      )
+        throw new RegistrationError(
+          "SESSION_INVALID",
+          "Phiên đăng nhập không hợp lệ",
+          401,
         );
       if (
         path === "token?grant_type=password" &&
@@ -117,12 +130,42 @@ export class SupabaseAuth implements AuthProvider {
   async verify(email: string, otp: string): Promise<Session> {
     return this.session("verify", { email, token: otp, type: "email" });
   }
-  async signInPassword(email: string, password: string): Promise<Session> {
-    return this.session("token?grant_type=password", { email, password });
+  async signInPassword(
+    email: string,
+    password: string,
+    signal?: AbortSignal,
+  ): Promise<Session> {
+    return this.session(
+      "token?grant_type=password",
+      { email, password },
+      signal,
+    );
   }
-  private async session(path: string, body: object): Promise<Session> {
+  async refreshSession(refreshToken: unknown): Promise<Session> {
+    if (typeof refreshToken !== "string" || !refreshToken)
+      throw new RegistrationError(
+        "SESSION_INVALID",
+        "Phiên đăng nhập không hợp lệ",
+        401,
+      );
+    return this.session("token?grant_type=refresh_token", {
+      refresh_token: refreshToken,
+    });
+  }
+  private async session(
+    path: string,
+    body: object,
+    signal?: AbortSignal,
+  ): Promise<Session> {
     try {
-      const session = await this.request(path, body);
+      const session = await this.request(
+        path,
+        body,
+        false,
+        undefined,
+        "POST",
+        signal,
+      );
       const user = session.user;
       if (
         !user ||
