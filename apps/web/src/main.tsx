@@ -2,6 +2,12 @@ import { StrictMode, Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
 import "./style.css";
+import { SessionProvider } from "./auth/SessionProvider.js";
+const AppRouter = lazy(() =>
+  import("./routing/AppRouter.js").then((module) => ({
+    default: module.AppRouter,
+  })),
+);
 import { BoardPreview } from "./components/BoardPreview.js";
 import {
   RegistrationPage,
@@ -18,6 +24,25 @@ const LobbyPreview = lazy(() =>
     default: module.LobbyPreview,
   })),
 );
+const LoginPage = lazy(() =>
+  import("./auth/LoginPage.js").then((module) => ({
+    default: module.LoginPage,
+  })),
+);
+function LoginPreview() {
+  const [received, setReceived] = useState(false);
+  return (
+    <>
+      <LoginPage onLoggedIn={() => setReceived(true)} />
+      {received && (
+        <p className="registration-session-status" role="status">
+          Phiên đăng nhập đã được nhận.
+        </p>
+      )}
+    </>
+  );
+}
+
 function RegistrationPreview() {
   const [session, setSession] = useState<RegistrationSession | null>(null);
   return (
@@ -32,7 +57,7 @@ function RegistrationPreview() {
   );
 }
 
-function App() {
+function HealthPreview() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -86,12 +111,20 @@ function App() {
   );
 }
 
-const previewBoard = window.location.pathname === "/dev/board";
-const previewRegistration = window.location.pathname === "/dev/register";
-const previewUi = window.location.pathname === "/dev/ui";
-const previewLobby = window.location.pathname === "/dev/lobby";
+const previewHealth =
+  import.meta.env.DEV && window.location.pathname === "/dev/health";
+const previewBoard =
+  import.meta.env.DEV && window.location.pathname === "/dev/board";
+const previewRegistration =
+  import.meta.env.DEV && window.location.pathname === "/dev/register";
+const previewUi = import.meta.env.DEV && window.location.pathname === "/dev/ui";
+const previewLobby =
+  import.meta.env.DEV && window.location.pathname === "/dev/lobby";
+const previewLogin =
+  import.meta.env.DEV && window.location.pathname === "/dev/login";
 if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
 if (previewRegistration) document.title = "Cờ Tướng Online · Đăng ký";
+if (previewLogin) document.title = "Cờ Tướng Online · Đăng nhập";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -101,12 +134,24 @@ createRoot(document.getElementById("root")!).render(
       </main>
     ) : previewRegistration ? (
       <RegistrationPreview />
-    ) : previewUi || previewLobby ? (
+    ) : previewUi || previewLobby || previewLogin ? (
       <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
-        {previewUi ? <ComponentGallery /> : <LobbyPreview />}
+        {previewUi ? (
+          <ComponentGallery />
+        ) : previewLogin ? (
+          <LoginPreview />
+        ) : (
+          <LobbyPreview />
+        )}
       </Suspense>
+    ) : previewHealth ? (
+      <HealthPreview />
     ) : (
-      <App />
+      <SessionProvider>
+        <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
+          <AppRouter />
+        </Suspense>
+      </SessionProvider>
     )}
   </StrictMode>,
 );
