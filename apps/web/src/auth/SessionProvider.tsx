@@ -305,7 +305,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
   useEffect(() => {
     mounted.current = true;
-    void refresh();
+    const lifecycleEpoch = epoch.current;
+    queueMicrotask(() => {
+      if (mounted.current && epoch.current === lifecycleEpoch) void refresh();
+    });
     return () => {
       mounted.current = false;
       invalidateRequest();
