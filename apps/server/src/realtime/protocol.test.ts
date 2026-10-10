@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { parseCommand } from "./protocol.js";
+import { parseCommand, parseHandshake } from "./protocol.js";
 
 function sharingCommand(sharing: unknown) {
   return {
@@ -31,4 +31,30 @@ describe("media sharing protocol", () => {
       });
     },
   );
+});
+
+describe("application session capability handshake", () => {
+  const base = {
+    accessToken: "fixture-bearer",
+    roomId: randomUUID(),
+    tabId: randomUUID(),
+  };
+  it.each([
+    { appSession: undefined },
+    { appSession: null },
+    { appSession: true },
+    { appSession: 43 },
+    { appSession: [] },
+    { appSession: "a".repeat(42) },
+    { appSession: "a".repeat(44) },
+    { appSession: "!".repeat(43) },
+  ])("rejects missing or malformed capability %j", ({ appSession }) => {
+    expect(() => parseHandshake({ ...base, appSession })).toThrow(
+      "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+    );
+  });
+  it("retains both valid proofs for the identity resolver", () => {
+    const handshake = { ...base, appSession: "Ab_9-".repeat(8) + "abc" };
+    expect(parseHandshake(handshake)).toEqual(handshake);
+  });
 });
