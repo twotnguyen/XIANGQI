@@ -3,6 +3,24 @@ import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
 import "./style.css";
 import { BoardPreview } from "./components/BoardPreview.js";
+import {
+  RegistrationPage,
+  type RegistrationSession,
+} from "./auth/RegistrationPage.js";
+
+function RegistrationPreview() {
+  const [session, setSession] = useState<RegistrationSession | null>(null);
+  return (
+    <>
+      <RegistrationPage onRegistered={setSession} />
+      {session && (
+        <p className="registration-session-status" role="status">
+          Phiên đăng nhập đã được nhận.
+        </p>
+      )}
+    </>
+  );
+}
 
 function App() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
@@ -38,7 +56,14 @@ function App() {
               Máy chủ:{" "}
               {health.server === "ok" ? "Đang hoạt động" : "Chưa xác minh"}
             </li>
-            <li>Cơ sở dữ liệu: Chưa kết nối</li>
+            <li>
+              Cơ sở dữ liệu:{" "}
+              {health.database === "ok"
+                ? "Đang hoạt động"
+                : health.database === "error"
+                  ? "Chưa thể kết nối"
+                  : "Chưa kết nối"}
+            </li>
             <li>Máy cờ: Chưa tích hợp</li>
           </ul>
         ) : (
@@ -52,7 +77,9 @@ function App() {
 }
 
 const previewBoard = window.location.pathname === "/dev/board";
+const previewRegistration = window.location.pathname === "/dev/register";
 if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
+if (previewRegistration) document.title = "Cờ Tướng Online · Đăng ký";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -60,6 +87,8 @@ createRoot(document.getElementById("root")!).render(
       <main className="board-preview-page">
         <BoardPreview />
       </main>
+    ) : previewRegistration ? (
+      <RegistrationPreview />
     ) : (
       <App />
     )}

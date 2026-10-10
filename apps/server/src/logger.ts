@@ -3,6 +3,7 @@ const events = [
   "server_started",
   "server_start_failed",
   "server_stopped",
+  "registration_maintenance_failed",
   "unknown_event",
 ];
 

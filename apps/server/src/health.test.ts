@@ -29,3 +29,21 @@ it("denies Socket.IO handshake until realtime authentication is integrated", asy
     await app.close();
   }
 });
+
+it("reports the live database probe and a later outage accurately", async () => {
+  let available = true;
+  const app = await createApp(undefined, [], async () => {
+    if (!available) throw new Error("fake-private-error");
+  });
+  try {
+    await app.listen(0, "127.0.0.1");
+    const url = `${await app.getUrl()}/health`;
+    expect((await (await fetch(url)).json()).database).toBe("ok");
+    available = false;
+    const body = await (await fetch(url)).json();
+    expect(body.database).toBe("error");
+    expect(JSON.stringify(body)).not.toContain("fake-private-error");
+  } finally {
+    await app.close();
+  }
+});
