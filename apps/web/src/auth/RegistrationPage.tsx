@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { NavigationLink } from "../routing/NavigationLink.js";
 import { containsForbiddenName } from "@xiangqi/shared";
 import "./RegistrationPage.css";
 
@@ -6,6 +7,10 @@ export interface RegistrationSession {
   access_token: string;
   refresh_token: string;
   expires_in: number;
+  appSession?: string;
+  expiresAt?: string;
+  userId?: string;
+  username?: string;
 }
 interface Deadline {
   expiresAt: string;
@@ -32,6 +37,7 @@ const messages: Record<string, string> = {
   REGISTRATION_CHANGED: "Thông tin đăng ký đã thay đổi. Vui lòng thử lại.",
   REGISTRATION_RECOVERING: "Đăng ký đang được xử lý. Vui lòng thử lại sau.",
   RECOVERY_PASSWORD_INVALID: "Vui lòng đăng nhập lại để hoàn tất tài khoản.",
+  RECOVERY_RATE_LIMIT: "Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút",
 };
 async function post<T>(
   path: string,
@@ -43,6 +49,8 @@ async function post<T>(
   ).replace(/\/$/, "");
   const response = await fetch(`${base}/auth/register/${path}`, {
     method: "POST",
+    credentials: "include",
+    redirect: "error",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
     signal,
@@ -295,7 +303,7 @@ export function RegistrationPage({
   return (
     <main className="registration-page">
       <div className="registration-shell">
-        <a
+        <NavigationLink
           className="registration-brand"
           href="/"
           aria-label="Cờ Tướng Online — Trang chủ"
@@ -304,7 +312,7 @@ export function RegistrationPage({
           <strong>
             Cờ Tướng <em>Online</em>
           </strong>
-        </a>
+        </NavigationLink>
         <section
           className="registration-card"
           aria-labelledby="registration-title"
