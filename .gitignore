@@ -30,7 +30,7 @@ coverage/
 /blob-report/
 *.log
 
-# Dữ liệu trang tài liệu — sinh tự động bởi site/build.mjs, không commit
+# Dữ liệu sinh cục bộ còn sót của trang tài liệu đã bỏ; không commit
 /site/data/
 
 # Supabase local state

@@ -121,7 +121,6 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   37 thành phần giao diện (26 P1, 11 P2) và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
 ├── mockups/                       Mockup HTML tham khảo (mở mockups/index.html)
-├── site/                          Trang đọc tài liệu cũ, đã lỗi thời, sẽ xoá
 └── .github/                       CODEOWNERS
 ```
 

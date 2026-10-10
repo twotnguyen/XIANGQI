@@ -33,6 +33,6 @@ python3 -m unittest discover -s jira/tests -v
 
 ## Hồ sơ lịch sử
 
-Các snapshot trong `rebalance-2026-10-10/`, `deadline-2026-11-04/`, `description-update-2026-10-10/`; các file `live-before-*`, `live-after-*`, `migration-*`, `allocation-proposal-848.json`, `original-estimate-review.json`, các audit có ngày và ảnh chụp cũ là bằng chứng từng thời điểm. Chúng không phải nguồn lịch hiện hành. Bảng ánh xạ của đợt nhập cũ được giữ tại `history/2026-10-09/`.
+Các snapshot, báo cáo nhập/chuyển đổi Jira, phương án 848 giờ và ảnh chụp thao tác cũ đã được bỏ khỏi cây thư mục hiện hành. Khi cần minh chứng, xem [bản lưu trong lịch sử Git](https://github.com/twotnguyen/XIANGQI/tree/a586f372549561d8c2f0f508bc7ab10d431d5ef7/jira); không dùng các bản cũ để ghi đè kế hoạch hiện tại.
 
-Các báo cáo trước đây ghi 848 giờ hoặc “chưa nhập Jira” giữ ý nghĩa lịch sử; không dùng chúng để ghi đè kế hoạch hiện tại. Các quyết định nghiệp vụ và 268 tiêu chí nghiệm thu được giữ nguyên.
+Snapshot hiện hành, dữ liệu kế hoạch 880 giờ, nhật ký đối chiếu đặc tả, lịch sử sửa nhãn Sprint và 268 tiêu chí nghiệm thu vẫn được giữ lại.
