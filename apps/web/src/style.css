@@ -27,8 +27,18 @@ section {
 }
 
 html:has(.board-preview-page),
-body:has(.board-preview-page) {
+body:has(.board-preview-page),
+html:has(.registration-page),
+body:has(.registration-page) {
   background: #120d0a;
+}
+main.registration-page {
+  max-width: none;
+  margin: 0;
+}
+.registration-session-status {
+  color: #fff5df;
+  text-align: center;
 }
 .board-preview-page {
   max-width: 720px;

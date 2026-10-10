@@ -1,5 +1,7 @@
 export interface HealthStatus {
   server: "ok";
-  database: "not_connected";
+  database: "ok" | "error" | "not_connected";
   engine: "not_connected";
 }
+
+export { containsForbiddenName, normalizeName } from "./auth-filter.js";

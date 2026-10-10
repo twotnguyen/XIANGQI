@@ -1,0 +1,23 @@
+// Team-maintained configuration. Avoid short ambiguous fragments such as "lon" in "Long".
+export const forbiddenNames = [
+  "fuck",
+  "shit",
+  "bullshit",
+  "motherfucker",
+  "asshole",
+  "bitch",
+  "bastard",
+  "cunt",
+  "dickhead",
+  "shithead",
+  "fuckface",
+  "fuckoff",
+  "damnyou",
+  "screwyou",
+  "đụ má",
+  "địt mẹ",
+  "địt má",
+  "đụ mẹ",
+  "con cặc",
+  "con lồn",
+];
