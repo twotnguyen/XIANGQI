@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import {
   Controller,
   Get,
@@ -59,7 +60,30 @@ export async function createApp(
     },
     { logger: false },
   );
-  app.enableCors({ origin: corsOrigins });
+  app.use(
+    (request: IncomingMessage, response: ServerResponse, next: () => void) => {
+      const origin = request.headers.origin;
+      if (
+        origin &&
+        !corsOrigins.includes(origin) &&
+        !["GET", "HEAD", "OPTIONS"].includes(request.method ?? "")
+      ) {
+        response.writeHead(403, {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+        });
+        response.end(
+          JSON.stringify({
+            code: "ORIGIN_DENIED",
+            message: "Nguồn yêu cầu không được phép",
+          }),
+        );
+        return;
+      }
+      next();
+    },
+  );
+  app.enableCors({ origin: corsOrigins, credentials: true });
   if (realtime) {
     closeSockets = attachRealtime(app.getHttpServer(), {
       ...realtime,

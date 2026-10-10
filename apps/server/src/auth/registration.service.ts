@@ -6,6 +6,7 @@ import {
   type AuthProvider,
   type RegistrationStore,
   type Draft,
+  type Session,
 } from "./contracts.js";
 import { validateCredentials, validateUsername } from "./name-filter.js";
 
@@ -40,6 +41,15 @@ export class RegistrationService {
     public readonly store: RegistrationStore,
     public readonly auth: AuthProvider,
     public readonly now = () => new Date(),
+    private readonly issueApplicationSession:
+      | ((userId: string) => Promise<{ appSession: string; expiresAt: string }>)
+      | null = null,
+    private readonly authenticateRecovery:
+      | ((
+          account: { userId: string; email: string; username: string },
+          password: string,
+        ) => Promise<Session>)
+      | null = null,
   ) {}
   async check(input: unknown) {
     const credentials = validateCredentials(input);
@@ -231,7 +241,16 @@ export class RegistrationService {
             401,
           );
         const session = account.verified
-          ? await this.auth.signInPassword(draft.email, input.password!)
+          ? await (this.authenticateRecovery
+              ? this.authenticateRecovery(
+                  {
+                    userId: draft.userId,
+                    email: draft.email,
+                    username: draft.username,
+                  },
+                  input.password!,
+                )
+              : this.auth.signInPassword(draft.email, input.password!))
           : await this.auth.verify(draft.email, input.otp);
         if (
           session.user.id !== draft.userId ||
@@ -242,10 +261,15 @@ export class RegistrationService {
             "OTP_INVALID",
             "Mã xác minh không hợp lệ",
           );
+        let applicationSession:
+          { appSession: string; expiresAt: string } | undefined;
         try {
           await store.complete(draft.userId, draft.username, this.now());
           await this.auth.clearPending(draft.userId);
           await store.clearPending(draft.userId);
+          applicationSession = await this.issueApplicationSession?.(
+            draft.userId,
+          );
           await store.removeDraft(draft.userId);
           await store.removeIntent(draft.email);
         } catch (error) {
@@ -264,6 +288,13 @@ export class RegistrationService {
           access_token: session.access_token,
           refresh_token: session.refresh_token,
           expires_in: session.expires_in,
+          ...(applicationSession
+            ? {
+                ...applicationSession,
+                userId: draft.userId,
+                username: draft.username,
+              }
+            : {}),
         };
       },
     );
