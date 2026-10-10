@@ -10,7 +10,7 @@ export interface RealtimeIdentity {
   kind: "member" | "guest";
 }
 export interface IdentityResolver {
-  resolve(accessToken: string): Promise<RealtimeIdentity>;
+  resolve(accessToken: string, appSession: string): Promise<RealtimeIdentity>;
 }
 export interface RoomCollaborator {
   authorize(
