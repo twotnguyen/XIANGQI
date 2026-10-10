@@ -1,0 +1,22 @@
+name: xiangqi-media
+services:
+  livekit:
+    image: livekit/livekit-server:v1.13.9
+    command: ["--config", "/etc/livekit.yaml"]
+    restart: "no"
+    ports:
+      - "${LIVEKIT_BIND_IP:-127.0.0.1}:7880:7880/tcp"
+      - "${LIVEKIT_BIND_IP:-127.0.0.1}:7881:7881/tcp"
+      - "${LIVEKIT_BIND_IP:-127.0.0.1}:7882:7882/udp"
+    volumes:
+      - type: bind
+        source: ../../.local/livekit/livekit.yaml
+        target: /etc/livekit.yaml
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "2"

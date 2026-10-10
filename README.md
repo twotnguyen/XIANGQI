@@ -92,7 +92,7 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 | Giao diện | React, Vite, bàn cờ vẽ bằng SVG |
 | Máy chủ | NestJS, Socket.IO |
 | Dữ liệu và xác thực | Supabase (PostgreSQL, Auth), SMTP ngoài gói miễn phí cho email OTP |
-| Camera / mic | LiveKit: tự chạy bằng Docker khi dev và demo LAN; LiveKit Cloud gói miễn phí khi demo qua Internet (không chạy được trên Render vì cần UDP) |
+| Camera / mic | LiveKit: [tự chạy bằng Docker khi dev và demo LAN](infra/livekit/README.md); LiveKit Cloud gói miễn phí khi demo qua Internet (không chạy được trên Render vì cần UDP) |
 | Máy cờ | TypeScript tự viết (negamax + alpha-beta), tiến trình riêng |
 | Kiểm thử | Vitest, Playwright |
 | Chạy demo | Máy local qua HTTPS (ưu tiên); dự phòng: web + server trên Render, camera/mic qua LiveKit Cloud |

@@ -102,7 +102,7 @@ Xem [kết nối phòng](https://docs.livekit.io/intro/basics/connect/). Đây l
 
 ### Tự chạy — phát triển và demo LAN
 
-Theo BA, nhóm chuẩn bị LiveKit mã nguồn mở bằng Docker ở công việc media. Không cần đăng ký Cloud cho riêng môi trường này. Chọn phiên bản/image và cấu hình mạng khi triển khai theo [hướng dẫn tự chạy](https://docs.livekit.io/transport/self-hosting/local/).
+Đã có [bộ Docker và hướng dẫn chuyển local/Cloud](infra/livekit/README.md), cùng công cụ `python3 scripts/livekit-env.py prepare|local|cloud`. `prepare` lưu riêng bộ Cloud hiện tại và tạo khóa local; không đổi môi trường đang dùng. Theo BA, nhóm kiểm chứng LiveKit mã nguồn mở bằng Docker ở công việc media. Không cần đăng ký Cloud cho riêng môi trường này; phần HTTPS và kết nối nhiều thiết bị LAN vẫn phải chuẩn bị, kiểm thử theo hướng dẫn.
 
 - Thay bộ ba biến LiveKit bằng địa chỉ và khóa của máy chủ tự chạy. `ws://localhost:7880` chỉ phù hợp thử cùng máy; mọi thiết bị phải truy cập được địa chỉ media thực.
 - LAN nhiều thiết bị cần HTTPS tin cậy cho web và WSS phù hợp cho media; thiết bị nhận phải tin chứng chỉ. HTTP qua IP LAN không tương đương ngoại lệ localhost cho camera/mic.
