@@ -13,7 +13,8 @@
     "format:check": "prettier --check apps packages package.json pnpm-workspace.yaml tsconfig.base.json eslint.config.js vitest.config.ts .github/workflows/ci.yml",
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "test:core": "vitest run packages/xiangqi-core/test --coverage"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -22,7 +23,8 @@
     "prettier": "3.9.10",
     "typescript": "5.9.3",
     "typescript-eslint": "8.71.1",
-    "vitest": "3.2.7"
+    "vitest": "3.2.7",
+    "@vitest/coverage-v8": "3.2.7"
   },
   "type": "module"
 }
