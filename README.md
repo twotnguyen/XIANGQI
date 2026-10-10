@@ -146,15 +146,18 @@ Thứ tự ưu tiên khi mâu thuẫn: **BA Phần 0 → BA → BACKLOG-P1 → D
 
 ## Quy trình Git
 
+**Cấu hình GitHub hiện hành (10/10/2026):** chỉ có hai nhánh `main` và `develop`; `main` là nhánh mặc định. Cả hai không có quy tắc bảo vệ nhánh.
+
 | Nhánh | Vai trò |
 |---|---|
-| `main` | Ổn định nhất; chỉ nhận PR từ `develop` (phát hành) |
-| `develop` | Nhánh làm việc chung |
-| `feature/…` `fix/…` `docs/…` `chore/…` | Một thay đổi; tạo từ `develop`, PR ngược về `develop` |
+| `main` | Nhánh mặc định, chứa bản dùng chung khi mở hoặc clone repo |
+| `develop` | Nhánh làm việc và tích hợp của nhóm |
 
-- Cấm push thẳng và force push lên `main` / `develop`.
-- Commit: `<loại>(<phạm vi>): <mô tả>`, loại gồm `feat`, `fix`, `test`, `docs`, `chore`, `refactor`.
-- Khi Jira đã tạo, thêm Key `[XIAN-<số>]` vào tên nhánh, commit và tiêu đề PR.
+- GitHub không bắt buộc PR, số lượt Approve, Code Owner hoặc các kiểm tra CI trước khi gộp. Người có quyền ghi có thể push trực tiếp; không còn quy tắc bảo vệ chặn force push/xóa nhánh.
+- PR vẫn có thể dùng để trao đổi/review giữa `develop` và `main`; đây là lựa chọn làm việc, không phải yêu cầu cưỡng chế của GitHub. Không tạo thêm nhánh lâu dài theo cấu hình hai nhánh hiện tại.
+- Kiểm tra thay đổi trước khi push và phối hợp với nhóm trước khi ghi đè lịch sử. Yêu cầu chất lượng của sản phẩm vẫn cần thực hiện; bỏ bảo vệ nhánh không có nghĩa kiểm thử đã đạt.
+- `.github/CODEOWNERS` giữ thông tin người phụ trách để yêu cầu review khi dùng PR, không giới hạn ai được Approve hay bắt buộc phê duyệt.
+- Commit: `<loại>(<phạm vi>): <mô tả>`, loại gồm `feat`, `fix`, `test`, `docs`, `chore`, `refactor`. Với công việc triển khai, thêm Key `XIAN-<số>` vào commit và tiêu đề PR nếu dùng PR.
 
 ## Tệp dùng chung và tệp cá nhân
 

@@ -58,7 +58,7 @@
 
 ### 2.2 Definition of Done (chức năng của một Story được nghiệm thu khi — kiểm tại các Task được giao trong bản đồ nghiệm thu)
 - [ ] Mọi AC đạt; mỗi AC có TC tương ứng **PASS** và được ghi kết quả trong Jira.
-- [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), merge vào `develop` qua PR, CI xanh (lint, typecheck, unit test).
+- [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), tích hợp vào `develop`, kiểm tra lint/typecheck/unit test đạt. Đây là tiêu chuẩn chất lượng của nhóm; GitHub hiện không cưỡng chế PR, Approve hoặc CI, PR là lựa chọn khi phối hợp.
 - [ ] Luật nghiệp vụ kiểm ở **máy chủ**, không tin dữ liệu client gửi.
 - [ ] Màn hình đủ **5 trạng thái** (`SUCCESS`, `LOADING`, `EMPTY`, `ERROR`, `DISABLED` có tooltip) theo DANH-MUC §2 và đúng `DESIGN.md`.
 - [ ] Chạy được ở môi trường demo local; responsive từ 360 px; tiếng Việt.
@@ -129,6 +129,8 @@
 | AC-00.1.4 | Server chạy | Gọi `/health` | Trả trạng thái server, kết nối CSDL và máy cờ | I |
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; **không** chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
+
+> **Cấu hình nhánh cập nhật 10/10:** AC-00.1.2 ở trên và Description T01 trong snapshot Jira còn ghi yêu cầu bảo vệ nhánh của bản đặc tả trước. Cấu hình hiện hành theo quyết định mới: chỉ `main`/`develop`, mặc định `main`, không bắt buộc PR/Approve/CI. Giữ nguyên nội dung AC để bảo toàn đối chiếu snapshot trong lượt chỉ sửa tài liệu này; phần “PR không merge được” không mô tả trạng thái GitHub hiện tại và không được ghi PASS. Đối soát yêu cầu này trước khi thực hiện T01; không tự bật lại bảo vệ nhánh. Xem [quy trình Git hiện hành](README.md#quy-trình-git).
 
 #### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.

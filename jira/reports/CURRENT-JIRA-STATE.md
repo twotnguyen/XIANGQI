@@ -12,6 +12,10 @@ Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot
 - Workflow đã lưu: transition 5 đặt Resolution = Done; transition 9 “Mở lại” đưa Done → To Do và xóa Resolution. Đã đọc lại cấu hình, chưa chuyển thử Task thật.
 - Story Points giữ theo Jira (198 điểm), không tự quy đổi lại từ 880 giờ.
 
+## Cấu hình GitHub hiện hành
+
+Chỉ có `main` và `develop`; `main` là mặc định. Không còn bộ quy tắc bảo vệ nhánh, bắt buộc PR/Approve/Code Owner hay CI. Đây là cấu hình GitHub, không thay đổi trạng thái Jira. AC-00.1.2 và Description T01 còn giữ yêu cầu bảo vệ cũ trong snapshot; đối soát trước khi làm, không tự bật lại. Xem [README](../../README.md#quy-trình-git).
+
 ## Dữ liệu đã đồng bộ
 
 `../data/plan-data.json`, `../data/descriptions.json`, `../exports/xian-import.csv`, `JIRA-MUC-CHI-TIET.md`, `ANH-XA-JIRA-107-MUC.md`, `../exports/jira-key-account-mapping.json`, `PHAN-CONG-CAN-BANG.md`, `DANH-GIA-KHOI-LUONG.md`, `COMPONENTS-LABELS.md`, `KIEM-TRA-KE-HOACH.md`, `../../KE-HOACH-JIRA.md` và phần kế hoạch trong `../../BACKLOG-P1.md` cùng phản ánh snapshot hiện hành.
