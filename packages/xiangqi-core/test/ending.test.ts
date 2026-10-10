@@ -184,24 +184,38 @@ describe("repetition on the supplied effective branch (BA 0.12, T10)", () => {
   });
 
   it("gives a draw when both sides check on every own move in the cycle", () => {
-    // Adjudication-only snapshots: the dual-check reduction is tested independently
-    // of move legality, which playMove verifies in the legal-cycle tests above.
-    const first = fixture([
-      ["black", "king", 5, 0],
-      ["red", "king", 3, 9],
-      ["black", "rook", 3, 5],
-      ["red", "rook", 5, 5],
+    // N leaves file 5: removes Black C's screen, becomes Red C's screen on file 3.
+    // Black C enters file 3: second screen shields its K, reveals R's check on file 5.
+    // N returns: blocks R's check, leaves Black C as Red C's sole screen on file 3.
+    // Black C returns: removes Red C's screen, checks Red K using N as its screen.
+    const initial = fixture([
+      ["black", "king", 3, 0],
+      ["black", "rook", 5, 2],
+      ["black", "cannon", 5, 5],
+      ["red", "king", 5, 9],
+      ["red", "horse", 5, 6],
+      ["red", "cannon", 3, 9],
     ]);
-    const afterRed = fixture(
-      [
-        ["black", "king", 5, 0],
-        ["red", "king", 3, 9],
-        ["black", "rook", 3, 5],
-        ["red", "rook", 5, 4],
-      ],
-      "black",
-    );
-    expect(ending([first, afterRed, first, afterRed, first])).toEqual({
+    const cycle: [number, number][] = [
+      [59, 66],
+      [50, 48],
+      [66, 59],
+      [48, 50],
+    ];
+    const history = historyAfter(initial, [...cycle, ...cycle]);
+    for (const [index, position] of history.entries()) {
+      const mover = position.turn === "red" ? "black" : "red";
+      expect(isInCheck(position, position.turn)).toBe(true);
+      expect(isInCheck(position, mover)).toBe(false);
+      expect(legalMoves(position).length).toBeGreaterThan(0);
+      if (index < 8) expect(ending(history.slice(0, index + 1))).toBeNull();
+    }
+    expect(history[4]?.board).toEqual(initial.board);
+    expect(history[8]?.board).toEqual(initial.board);
+    expect(history[4]?.turn).toBe("red");
+    expect(history[8]?.turn).toBe("red");
+    expect(history[8]?.halfmove).toBe(8);
+    expect(ending(history)).toEqual({
       reason: "PERPETUAL_CHECK",
       winner: null,
     });
