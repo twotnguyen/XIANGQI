@@ -104,6 +104,9 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── BA-SCOPE-DECISIONS.md          Quyết định nghiệp vụ và phạm vi (nguồn luật; Phần 0 ưu tiên cao nhất)
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
 ├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc và liên kết mô tả chi tiết
+├── CAU-HINH-MOI-TRUONG.md        Hướng dẫn Supabase, LiveKit, Google OAuth, SMTP
+├── .env.example                  Phiếu chuẩn bị dịch vụ (bản .env thật giữ riêng)
+├── apps/                         Hiện chỉ có web/.env.example và server/.env.example
 ├── jira/                         Kế hoạch Jira; bắt đầu ở jira/README.md
 │   ├── reports/                 Tài liệu và báo cáo cho nhóm
 │   ├── data/                    Dữ liệu nguồn và snapshot hiện hành
@@ -117,12 +120,13 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 └── .github/                       CODEOWNERS
 ```
 
-Mã nguồn sản phẩm (`apps/`, `packages/`, `supabase/`, `tests/`) dự kiến tạo ở Sprint 1; công cụ trong `jira/` chỉ phục vụ lập kế hoạch. Thư mục `docs/` và `Jira/` cũ đã bị xoá (commit `c4cf29d`), nội dung chỉ còn trong lịch sử git và **không còn hiệu lực**.
+Hiện `apps/` chỉ chứa cấu hình mẫu để chuẩn bị; mã nguồn sản phẩm (`apps/`, `packages/`, `supabase/`, `tests/`) dự kiến triển khai ở Sprint 1; công cụ trong `jira/` chỉ phục vụ lập kế hoạch. Thư mục `docs/` và `Jira/` cũ đã bị xoá (commit `c4cf29d`), nội dung chỉ còn trong lịch sử git và **không còn hiệu lực**.
 
 ## Tài liệu
 
 | Cần | Xem |
 |---|---|
+| Chuẩn bị môi trường, khóa API và dịch vụ | [CAU-HINH-MOI-TRUONG.md](CAU-HINH-MOI-TRUONG.md) |
 | Sản phẩm là gì, cho ai | [IDEA.md](IDEA.md) |
 | Luật nghiệp vụ, phạm vi P1/P2 | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
 | User Story, tiêu chí nghiệm thu, kiểm thử P1 | [BACKLOG-P1.md](BACKLOG-P1.md) |
