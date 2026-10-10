@@ -52,7 +52,9 @@ export class RegistrationController {
   }
   @Post("verify")
   @HttpCode(200)
-  verify(@Body() body: { registrationToken: string; otp: string }) {
+  verify(
+    @Body() body: { registrationToken: string; otp: string; password?: string },
+  ) {
     return this.respond(() => this.registration.verify(body));
   }
   @Post("resend")

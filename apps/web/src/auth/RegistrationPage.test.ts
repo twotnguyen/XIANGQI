@@ -65,6 +65,14 @@ it("registers in three steps, sends the exact backend payload and hands the acti
     passwordConfirmation: "password123",
     email: "player@example.test",
   });
+  const verifyCall = request.mock.calls.find(([url]) =>
+    url.endsWith("/verify"),
+  )!;
+  expect(JSON.parse(verifyCall[1]!.body as string)).toEqual({
+    registrationToken: "test-draft",
+    otp: "123456",
+    password: "password123",
+  });
 });
 
 function reply(body: object, status = 200) {
@@ -275,6 +283,147 @@ it("expires the OTP at three minutes without calling verify", async () => {
   expect(request.mock.calls.some(([url]) => url.endsWith("/verify"))).toBe(
     false,
   );
+});
+it("retries confirmed registration after a completion failure without requiring another OTP", async () => {
+  let verified = false;
+  const session = {
+    access_token: "recovered-access",
+    refresh_token: "recovered-refresh",
+    expires_in: 3600,
+  };
+  const request = vi.fn(async (url: string) => {
+    if (url.endsWith("/verify")) {
+      if (verified) return reply(session);
+      verified = true;
+      return reply({ code: "REGISTRATION_RECOVERING" }, 503);
+    }
+    return reply(url.endsWith("/check") ? { step: 2 } : draft());
+  });
+  vi.stubGlobal("fetch", request);
+  const user = userEvent.setup();
+  const onRegistered = vi.fn();
+  render(createElement(RegistrationPage, { onRegistered }));
+  await enterAccount(user);
+  await enterEmail(user);
+  await user.click(screen.getByLabelText("Chữ số OTP 1"));
+  await user.paste("123456");
+  await user.click(
+    screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
+  );
+  expect(onRegistered).not.toHaveBeenCalled();
+  expect(screen.queryByRole("button", { name: /Gửi lại mã/ })).toBeNull();
+  vi.spyOn(Date, "now").mockReturnValue(Date.now() + 181000);
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+  });
+  await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
+  await vi.waitFor(() => expect(onRegistered).toHaveBeenCalledWith(session));
+});
+it.each(["AUTH_PROVIDER_ERROR", "REGISTRATION_UNAVAILABLE"])(
+  "checks an uncertain %s verification result after the OTP deadline",
+  async (code) => {
+    let calls = 0;
+    const callback = vi.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (url.endsWith("/verify"))
+          return ++calls === 1
+            ? reply({ code }, 503)
+            : reply({
+                access_token: "recovered",
+                refresh_token: "refresh",
+                expires_in: 3600,
+              });
+        return reply(url.endsWith("/check") ? { step: 2 } : draft());
+      }),
+    );
+    const user = userEvent.setup();
+    render(createElement(RegistrationPage, { onRegistered: callback }));
+    await enterAccount(user);
+    await enterEmail(user);
+    await user.click(screen.getByLabelText("Chữ số OTP 1"));
+    await user.paste("123456");
+    await user.click(
+      screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
+    );
+    vi.spyOn(Date, "now").mockReturnValue(Date.now() + 181000);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+    });
+    expect(screen.queryByText(/Email đã được xác minh/)).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Kiểm tra đăng ký" }));
+    await vi.waitFor(() => expect(callback).toHaveBeenCalledOnce());
+  },
+);
+it("resets recovery when an expired draft starts a new registration", async () => {
+  let calls = 0;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      if (url.endsWith("/verify")) {
+        calls++;
+        return reply(
+          calls === 1
+            ? { code: "REGISTRATION_RECOVERING" }
+            : { code: "REGISTRATION_EXPIRED", step: 1 },
+          calls === 1 ? 503 : 400,
+        );
+      }
+      return reply(url.endsWith("/check") ? { step: 2 } : draft());
+    }),
+  );
+  const user = userEvent.setup();
+  render(createElement(RegistrationPage, { onRegistered: vi.fn() }));
+  await enterAccount(user);
+  await enterEmail(user);
+  await user.click(screen.getByLabelText("Chữ số OTP 1"));
+  await user.paste("123456");
+  await user.click(
+    screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
+  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  expect(await screen.findByLabelText("Chữ số OTP 1")).toBeTruthy();
+  expect(screen.getByRole("button", { name: /Gửi lại mã/ })).toBeTruthy();
+});
+it("keeps confirmed recovery after a rate-limited password retry", async () => {
+  let calls = 0;
+  const callback = vi.fn();
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      if (url.endsWith("/verify")) {
+        calls++;
+        if (calls === 1) return reply({ code: "REGISTRATION_RECOVERING" }, 503);
+        if (calls === 2) return reply({ code: "OTP_RATE_LIMIT" }, 429);
+        return reply({
+          access_token: "recovered",
+          refresh_token: "refresh",
+          expires_in: 3600,
+        });
+      }
+      return reply(url.endsWith("/check") ? { step: 2 } : draft());
+    }),
+  );
+  const user = userEvent.setup();
+  render(createElement(RegistrationPage, { onRegistered: callback }));
+  await enterAccount(user);
+  await enterEmail(user);
+  await user.click(screen.getByLabelText("Chữ số OTP 1"));
+  await user.paste("123456");
+  await user.click(
+    screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
+  vi.spyOn(Date, "now").mockReturnValue(Date.now() + 181000);
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+  });
+  expect(screen.queryByRole("button", { name: /Gửi lại mã/ })).toBeNull();
+  await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
+  await vi.waitFor(() => expect(callback).toHaveBeenCalledOnce());
 });
 it("returns a last-moment username collision to step one and preserves the draft for retry", async () => {
   const request = vi.fn<

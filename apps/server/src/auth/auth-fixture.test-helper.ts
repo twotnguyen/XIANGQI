@@ -10,9 +10,11 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
     failMailAfterCreate: false,
     foreignSignupId: undefined as string | undefined,
     failClear: false,
+    failVerifyAfterConfirm: false,
     limited: false,
   };
   const sessions = new Map<string, string>();
+  const passwords = new Map<string, string>();
   let verifyGate: { started: () => void; wait: Promise<void> } | undefined;
   const server = createServer(async (request, response) => {
     const respond = (status: number, body: unknown) => {
@@ -40,6 +42,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
             now(),
           ],
         );
+        passwords.set(id, body.password);
         if (state.failMailAfterCreate)
           return respond(500, { msg: "fake-sensitive-fixture" });
         state.sent++;
@@ -50,6 +53,29 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
           return respond(500, { msg: "fake-sensitive-fixture" });
         state.sent++;
         return respond(200, {});
+      }
+      if (path === "/auth/v1/token?grant_type=password") {
+        const { rows } = await pool.query(
+          "SELECT id,email,email_confirmed_at,raw_app_meta_data AS app_metadata FROM auth.users WHERE email=$1",
+          [body.email],
+        );
+        const user = rows[0];
+        if (
+          !user?.email_confirmed_at ||
+          passwords.get(user.id) !== body.password
+        )
+          return respond(400, {
+            error_code: "invalid_credentials",
+            msg: "fake-sensitive-fixture",
+          });
+        const access = randomUUID();
+        sessions.set(access, user.id);
+        return respond(200, {
+          access_token: access,
+          refresh_token: randomUUID(),
+          expires_in: 3600,
+          user,
+        });
       }
       if (path === "/auth/v1/verify") {
         if (verifyGate) {
@@ -69,10 +95,17 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
             msg: "fake-sensitive-fixture",
           });
         const { rows } = await pool.query(
-          "UPDATE auth.users SET email_confirmed_at=$2 WHERE email=$1 RETURNING id,email,email_confirmed_at,raw_app_meta_data AS app_metadata",
+          "UPDATE auth.users SET email_confirmed_at=$2 WHERE email=$1 AND email_confirmed_at IS NULL RETURNING id,email,email_confirmed_at,raw_app_meta_data AS app_metadata",
           [body.email, now()],
         );
         const user = rows[0];
+        if (!user)
+          return respond(403, {
+            error_code: "otp_expired",
+            msg: "fake-sensitive-fixture",
+          });
+        if (state.failVerifyAfterConfirm)
+          return respond(500, { msg: "fake-sensitive-fixture" });
         const access = randomUUID();
         sessions.set(access, user.id);
         return respond(200, {
@@ -97,6 +130,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
           await pool.query("DELETE FROM auth.users WHERE id=$1", [id]);
           return respond(200, {});
         }
+        if (body.password && id) passwords.set(id, body.password);
         if (state.failClear && body.app_metadata)
           return respond(500, { msg: "fake-sensitive-fixture" });
         if (body.app_metadata)

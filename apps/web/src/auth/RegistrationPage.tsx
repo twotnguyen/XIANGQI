@@ -31,6 +31,7 @@ const messages: Record<string, string> = {
     "Phiên đăng ký đã hết hiệu lực. Vui lòng nhập lại thông tin.",
   REGISTRATION_CHANGED: "Thông tin đăng ký đã thay đổi. Vui lòng thử lại.",
   REGISTRATION_RECOVERING: "Đăng ký đang được xử lý. Vui lòng thử lại sau.",
+  RECOVERY_PASSWORD_INVALID: "Vui lòng đăng nhập lại để hoàn tất tài khoản.",
 };
 async function post<T>(
   path: string,
@@ -72,10 +73,15 @@ export function RegistrationPage({
   const [attempted, setAttempted] = useState(false);
   const [availability, setAvailability] = useState("");
   const [rateLimited, setRateLimited] = useState(false);
+  const [recovery, setRecovery] = useState<"confirmed" | "uncertain" | null>(
+    null,
+  );
+  const recovering = recovery !== null;
   const [complete, setComplete] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const focusAfterResend = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const submitButton = useRef<HTMLButtonElement>(null);
   const forbidden = username.length > 0 && containsForbiddenName(username);
   const usernameInvalid =
     username.length > 0 && !/^[a-zA-Z0-9_]{3,20}$/.test(username);
@@ -92,6 +98,9 @@ export function RegistrationPage({
   const resendSeconds = deadline ? secondsUntil(deadline.resendAt, now) : 0;
   const expirySeconds = deadline ? secondsUntil(deadline.expiresAt, now) : 0;
 
+  useEffect(() => {
+    if (recovering && !busy) submitButton.current?.focus();
+  }, [recovering, busy]);
   useEffect(() => {
     if (step === 3) inputs.current[0]?.focus();
     else heading.current?.focus();
@@ -146,8 +155,26 @@ export function RegistrationPage({
           ? "Có quá nhiều yêu cầu. Vui lòng thử lại sau."
           : "Dịch vụ đăng ký chưa thể xử lý yêu cầu, vui lòng thử lại sau"),
     );
-    if (failure.code === "OTP_RATE_LIMIT") setRateLimited(true);
+    if (failure.code === "OTP_RATE_LIMIT") {
+      setRateLimited(true);
+      if (recovering)
+        setError(
+          "Bạn đã thử quá nhiều lần. Vui lòng chờ rồi thử hoàn tất đăng ký lại.",
+        );
+    }
+    if (failure.code === "REGISTRATION_RECOVERING") setRecovery("confirmed");
+    else if (
+      step === 3 &&
+      (!failure.code ||
+        ["AUTH_PROVIDER_ERROR", "REGISTRATION_UNAVAILABLE"].includes(
+          failure.code,
+        ))
+    )
+      setRecovery("uncertain");
+    else if (["OTP_INVALID", "OTP_EXPIRED"].includes(failure.code ?? ""))
+      setRecovery(null);
     if (failure.step === 1 || failure.step === 2) {
+      setRecovery(null);
       setStep(failure.step);
       setOtp(Array(6).fill(""));
       setAttempted(false);
@@ -171,6 +198,7 @@ export function RegistrationPage({
     }
     if (
       step === 3 &&
+      !recovering &&
       (otp.join("").length !== 6 || expirySeconds === 0 || rateLimited)
     ) {
       setError(
@@ -202,12 +230,14 @@ export function RegistrationPage({
         setDeadline(result);
         setNow(Date.now());
         setRateLimited(false);
+        setRecovery(null);
         setStep(3);
         setAttempted(false);
       } else {
         const session = await post<RegistrationSession>("verify", {
           registrationToken,
           otp: otp.join(""),
+          password,
         });
         setComplete(true);
         setPassword("");
@@ -403,7 +433,7 @@ export function RegistrationPage({
                   </p>
                 </>
               )}
-              {step === 3 && (
+              {step === 3 && !recovering && (
                 <>
                   <h2>Kiểm tra hộp thư của bạn</h2>
                   <p className="registration-copy">
@@ -465,6 +495,13 @@ export function RegistrationPage({
                   </button>
                 </>
               )}
+              {step === 3 && recovering && (
+                <p className="registration-help">
+                  {recovery === "confirmed"
+                    ? "Email đã được xác minh. Nhấn Hoàn tất đăng ký để thử phục hồi tài khoản; không cần gửi mã mới."
+                    : "Chưa xác định được kết quả xác minh. Nhấn Kiểm tra đăng ký để thử lại an toàn."}
+                </p>
+              )}
               <div
                 id="registration-error"
                 className="registration-error"
@@ -473,6 +510,7 @@ export function RegistrationPage({
                 {shownError}
               </div>
               <button
+                ref={submitButton}
                 className="registration-primary"
                 type="submit"
                 disabled={
@@ -480,7 +518,9 @@ export function RegistrationPage({
                   (step === 2 &&
                     Boolean(registrationToken) &&
                     resendSeconds > 0) ||
-                  (step === 3 && (rateLimited || expirySeconds === 0))
+                  (step === 3 &&
+                    !recovering &&
+                    (rateLimited || expirySeconds === 0))
                 }
               >
                 {busy
@@ -489,14 +529,18 @@ export function RegistrationPage({
                     ? "Tiếp tục"
                     : step === 2
                       ? "Xác nhận Email"
-                      : "Xác thực và vào Sảnh"}
+                      : recovering
+                        ? recovery === "confirmed"
+                          ? "Hoàn tất đăng ký"
+                          : "Kiểm tra đăng ký"
+                        : "Xác thực và vào Sảnh"}
               </button>
               {step === 2 && registrationToken && resendSeconds > 0 && (
                 <p className="registration-help">
                   Có thể gửi mã mới sau {resendSeconds}s.
                 </p>
               )}
-              {step > 1 && (
+              {step > 1 && !recovering && (
                 <button
                   className="registration-back"
                   type="button"

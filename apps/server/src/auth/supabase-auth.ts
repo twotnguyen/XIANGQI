@@ -44,6 +44,15 @@ export class SupabaseAuth implements AuthProvider {
           "OTP_INVALID",
           "Mã xác minh không đúng hoặc đã hết hạn, vui lòng gửi mã mới",
         );
+      if (
+        path === "token?grant_type=password" &&
+        [400, 401, 403].includes(response.status)
+      )
+        throw new RegistrationError(
+          "RECOVERY_PASSWORD_INVALID",
+          "Mật khẩu không đúng, vui lòng xác thực lại",
+          401,
+        );
       if (!response.ok)
         throw new RegistrationError(
           "AUTH_PROVIDER_ERROR",
@@ -106,12 +115,14 @@ export class SupabaseAuth implements AuthProvider {
     }
   }
   async verify(email: string, otp: string): Promise<Session> {
+    return this.session("verify", { email, token: otp, type: "email" });
+  }
+  async signInPassword(email: string, password: string): Promise<Session> {
+    return this.session("token?grant_type=password", { email, password });
+  }
+  private async session(path: string, body: object): Promise<Session> {
     try {
-      const session = await this.request("verify", {
-        email,
-        token: otp,
-        type: "email",
-      });
+      const session = await this.request(path, body);
       const user = session.user;
       if (
         !user ||

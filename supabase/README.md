@@ -27,6 +27,8 @@ Trên PostgreSQL 17, nếu login `postgres` chưa được `SET ROLE app_server`
 
 Rollback trong `rollback/20261011000001_email_registration.sql` khôi phục các function/constraint đã audit và chỉ cho phép trước khi có đăng ký mới. Sau khi nhận đăng ký, script từ chối nếu việc bỏ cột/schema có thể làm mất trạng thái; cần review bản sao lưu và lập phương án bảo toàn dữ liệu mới. Không xóa ledger hoặc profile để làm rollback qua.
 
+`profiles.id` là cột tự sinh từ `user_id`; câu INSERT chỉ ghi `user_id`, fixture giữ đúng định nghĩa generated của database đã audit. Nếu OTP đã xác minh nhưng ghi profile/hoàn tất bị lỗi, retry cùng capability đăng ký phải xác thực lại mật khẩu bằng Supabase và đối chiếu đúng danh tính/email đã xác minh trước khi phục hồi. Token phiên chỉ trả sau khi profile và cờ pending đã hoàn tất. Phản hồi xác minh không rõ kết quả có đường kiểm tra lại, kể cả khi hạn OTP đã qua; tài khoản chưa xác minh vẫn phải dùng OTP đúng hạn. Mật khẩu chỉ nằm trong bộ nhớ giao diện/yêu cầu xác thực, không lưu vào ledger.
+
 Luồng bảo trì chạy khi server khởi động và mỗi 5 phút. Đăng ký tạm do server sở hữu đủ 60 phút được thu hồi; profile đã hoàn tất nhưng còn cờ pending được phục hồi, luôn giữ profile. Thất bại Auth API được thử lại ở lần bảo trì sau.
 
 ## Mẫu email xác thực
