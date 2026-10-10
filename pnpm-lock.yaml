@@ -62,6 +62,9 @@ importers:
       '@xiangqi/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@xiangqi/xiangqi-core':
+        specifier: workspace:*
+        version: link:../../packages/xiangqi-core
       dotenv:
         specifier: 18.0.7
         version: 18.0.7

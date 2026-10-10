@@ -88,7 +88,21 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      match-postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_DB: xiangqi_match_test
+          POSTGRES_USER: match_test_admin
+          POSTGRES_PASSWORD: isolated-match-ci-test
+        ports:
+          - 55447:5432
+        options: >-
+          --health-cmd "pg_isready -U match_test_admin -d xiangqi_match_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
+      MATCH_TEST_DATABASE_URL: postgresql://match_test_admin:isolated-match-ci-test@127.0.0.1:55447/xiangqi_match_test
       ROOM_TEST_DATABASE_URL: postgresql://room_test_admin:isolated-room-ci-test@127.0.0.1:55446/xiangqi_room_test
       GOOGLE_GUEST_TEST_DATABASE_URL: postgresql://google_guest_test_admin:isolated-google-guest-ci-test@127.0.0.1:55445/google_guest_test
       SCHEMA_TEST_DATABASE_URL: postgresql://schema_test_admin:isolated-schema-ci-test@127.0.0.1:55443/xiangqi_schema_test
