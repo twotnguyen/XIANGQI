@@ -5,15 +5,22 @@ import {
   HttpException,
   Inject,
   Post,
+  Optional,
+  Res,
+  Header,
 } from "@nestjs/common";
 import { RegistrationService } from "./registration.service.js";
 import { RegistrationError, type Credentials } from "./contracts.js";
+
+import type { ServerResponse } from "node:http";
+import { writeSessionCookies } from "../session/cookies.js";
 
 @Controller("auth/register")
 export class RegistrationController {
   constructor(
     @Inject(RegistrationService)
     private readonly registration: RegistrationService,
+    @Optional() @Inject("SESSION_COOKIE_SECURE") private readonly secure = true,
   ) {}
   private async respond<T>(work: () => Promise<T>): Promise<T> {
     try {
@@ -50,12 +57,28 @@ export class RegistrationController {
   ) {
     return this.respond(() => this.registration.email(body));
   }
+  @Header("Cache-Control", "no-store")
   @Post("verify")
   @HttpCode(200)
   verify(
     @Body() body: { registrationToken: string; otp: string; password?: string },
+    @Res({ passthrough: true }) response: ServerResponse,
   ) {
-    return this.respond(() => this.registration.verify(body));
+    return this.respond(async () => {
+      const session = await this.registration.verify(body);
+      if (session.appSession && session.expiresAt)
+        writeSessionCookies(
+          response,
+          {
+            ...session,
+            appSession: session.appSession,
+            expiresAt: session.expiresAt,
+            remember: true,
+          },
+          this.secure,
+        );
+      return session;
+    });
   }
   @Post("resend")
   @HttpCode(200)

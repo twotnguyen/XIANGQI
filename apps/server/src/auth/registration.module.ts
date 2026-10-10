@@ -6,7 +6,7 @@ import {
   type OnApplicationBootstrap,
   type OnModuleDestroy,
 } from "@nestjs/common";
-import type { AuthProvider, RegistrationStore } from "./contracts.js";
+import type { AuthProvider, RegistrationStore, Session } from "./contracts.js";
 import { RegistrationService } from "./registration.service.js";
 import { RegistrationController } from "./registration.controller.js";
 import { AccountActiveGuard } from "./account-active.guard.js";
@@ -48,14 +48,33 @@ class RegistrationMaintenance
 
 @Module({})
 export class RegistrationModule {
-  static forRoot(store: RegistrationStore, auth: AuthProvider): DynamicModule {
+  static forRoot(
+    store: RegistrationStore,
+    auth: AuthProvider,
+    issueApplicationSession:
+      | ((userId: string) => Promise<{ appSession: string; expiresAt: string }>)
+      | null = null,
+    authenticateRecovery:
+      | ((
+          account: { userId: string; email: string; username: string },
+          password: string,
+        ) => Promise<Session>)
+      | null = null,
+  ): DynamicModule {
     return {
       module: RegistrationModule,
       controllers: [RegistrationController],
       providers: [
         {
           provide: RegistrationService,
-          useFactory: () => new RegistrationService(store, auth),
+          useFactory: () =>
+            new RegistrationService(
+              store,
+              auth,
+              undefined,
+              issueApplicationSession,
+              authenticateRecovery,
+            ),
         },
         AccountActiveGuard,
         RegistrationMaintenance,
