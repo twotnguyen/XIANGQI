@@ -15,7 +15,7 @@
 - Auth resolver được root nối với Supabase/session/account thật; test dùng identity fixture riêng, không tuyên bố GATE-AUTH đạt.
 - Room collaborator kiểm membership và quyền từng lệnh, cung cấp snapshot theo người nhận, thực thi state mutation trong cùng SQL transaction. Chưa triển khai phòng, đồng hồ, chat, luật, AI hoặc media.
 - Schema mới `xiangqi_realtime`; không đổi schema T04 hoặc bảng legacy room_command_receipts. Tham chiếu auth.users/public.rooms đã tồn tại; không chạy migration live.
-- Socket.IO dùng tên sự kiện `room.command`, `room.snapshot`, `session.takeover`, `session.read_only`. Handshake: accessToken, roomId, tabId. UUID tabId ổn định qua reconnect và khác ở tab mới; frontend lưu sessionStorage, không dùng localStorage chung giữa tab.
+- Socket.IO dùng tên sự kiện `room.command`, `room.snapshot`, `session.takeover`, `session.read_only`. Handshake: accessToken, appSession, roomId, tabId. appSession là capability 43 ký tự base64url; thiếu hoặc sai bị từ chối. UUID tabId ổn định qua reconnect và khác ở tab mới; frontend lưu sessionStorage, không dùng localStorage chung giữa tab.
 - Identity có userId và kind member/guest; room authorization được kiểm lại trước snapshot/receipt replay/mutation. Collaborator chịu trách nhiệm quyền vai trò và policy phiên chính thức; socket không tin userId/role từ client.
 - Receipt key: actorId+roomId+commandId. Request fingerprint bao gồm type/payload/expectedVersion; cùng ID đổi payload trả COMMAND_ID_REUSED, không ghi đè kết quả.
 - Tab đã biết chỉ reconnect vào quyền hiện có; tabId mới tiếp quản. `session.takeover` là hành động chủ động. ConnectionId fencing vô hiệu hóa socket cũ ngay cả khi dùng cùng tabId. Control persisted theo actor+room, generation tăng, tab cũ reconnect sau restart vẫn readonly.
@@ -24,7 +24,7 @@
 
 ## Hợp đồng
 
-`IdentityResolver.resolve(accessToken: string): Promise<RealtimeIdentity>` từ root.
+`IdentityResolver.resolve(accessToken: string, appSession: string): Promise<RealtimeIdentity>` từ root.
 
 `RoomCollaborator.authorize(client, identity, roomId): Promise<RoomAccess>`; `snapshot(client, identity, roomId): Promise<RoomStateSnapshot>`; `execute(client, identity, command): Promise<RoomStateSnapshot>`. `RoomAccess` có canControl; quyền spectator/command chi tiết được collaborator thực thi. Snapshot có roomId/version, room/match/clocks/role rõ ràng; frontend chỉ vẽ từ trạng thái chính thức.
 
@@ -69,7 +69,7 @@ Files: `gateway.ts`, shared `realtime.ts`; Socket.IO tests nằm chung `store.te
 
 ## Ví dụ tích hợp
 
-Frontend tạo `tabId=crypto.randomUUID()` một lần trong sessionStorage của tab, mở Socket.IO với `auth: { accessToken, roomId, tabId }`. Khi token đổi, reconnect với token mới; server xác minh identity qua resolver trước từng lệnh, replay và phát snapshot. Resolver phải dùng xác thực Supabase có kiểm tra token còn hạn, account active và phiên chính thức; không chỉ decode JWT hay tin metadata client. Pool runtime dùng TLS kiểm chứng CA, login NOINHERIT/NOBYPASSRLS và quyền SET ROLE app_server tương tự T04.
+Frontend tạo `tabId=crypto.randomUUID()` một lần trong sessionStorage của tab, mở Socket.IO với `auth: { accessToken, appSession, roomId, tabId }`. Khi token đổi, reconnect với token mới; server xác minh identity qua resolver trước từng lệnh, replay và phát snapshot. Resolver phải dùng xác thực Supabase có kiểm tra token còn hạn, account active và phiên chính thức; không chỉ decode JWT hay tin metadata client. Pool runtime dùng TLS kiểm chứng CA, login NOINHERIT/NOBYPASSRLS và quyền SET ROLE app_server tương tự T04.
 
 ```ts
 socket.emit(
@@ -103,3 +103,7 @@ REALTIME_TEST_DATABASE_URL=postgresql://twot@127.0.0.1:55441/xiangqi_realtime_te
 Test chỉ chấp nhận database name `xiangqi_realtime_test` trên host local hoặc service postgres CI; reset schema trong database này. Không dùng auth test DB hay URL Supabase live.
 
 Kiểm tra tích hợp từ develop sau PR #95: 179/179 kiểm thử toàn bộ đạt, gồm 27 auth SQL và 25 realtime SQL/Socket.IO/Nest; core 53/53, độ phủ lines 100% và branches 99.41%. Nest createApp nhận dependencies tùy chọn ở đối số thứ tư; khi thiếu collaborator thật, kết nối vẫn bị từ chối. app.close ngắt client và giải phóng cổng HTTP. CI dùng hai dịch vụ PostgreSQL 17.6 riêng để các fixture không sửa role chung của nhau. Chưa áp dụng migration realtime lên Supabase và chưa nghiệm thu danh tính thường/Khách thật.
+
+## Bổ sung phiên XIAN-48
+
+Resolver nhận bearer và capability ở handshake, command, replay, phát snapshot và tiếp quản. Capability chỉ giữ trong bộ nhớ; thu hồi capability phải từ chối dù bearer còn hợp lệ. Test dùng fixture độc lập; adapter SessionService production và danh tính Khách còn cần tích hợp phòng. Kết quả CI nhánh bổ sung cần xác minh sau push.
