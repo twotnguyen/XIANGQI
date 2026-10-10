@@ -389,6 +389,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 - Cấu hình GitHub Actions, dịch vụ tự chạy các bước kiểm khi gửi đề nghị gộp mã, và quy tắc bảo vệ nhánh; thử một thay đổi đúng và một thay đổi cố ý gây lỗi.
 - Tạo nhật ký có bộ lọc dữ liệu nhạy cảm và địa chỉ kiểm tra sức khoẻ.
 - Viết hướng dẫn cài đặt, chạy dự án và khai báo cấu hình camera/mic giữa môi trường tự chạy và dịch vụ đám mây.
+- Ghi rõ phản hồi kiểm sức khoẻ cho máy chủ đang chạy và trạng thái các dịch vụ chưa kết nối; chỉ bổ sung kiểm cơ sở dữ liệu/máy cờ khi có kết nối thật.
 
 **Kết quả bàn giao**
 
@@ -401,6 +402,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 - Từ bản sao mới, pnpm install rồi pnpm dev khởi động được hai phần ứng dụng; gọi /health nhận phản hồi thành công.
 - Thử đưa bí mật giả vào dữ liệu ghi nhật ký: không xuất hiện nguyên giá trị trong bản ghi.
 - Không có khoá thật trong tệp được theo dõi; lỗi kiểm kiểu làm bước kiểm tự động thất bại.
+- Cấu hình trình duyệt và gói giao diện đã đóng gói không chứa khoá dịch vụ; hướng dẫn nêu cách đổi địa chỉ/khoá camera và mic giữa mạng nội bộ với đám mây.
 
 **Phạm vi và phối hợp**
 
@@ -424,6 +426,7 @@ Người kiểm thử cần dữ liệu, thao tác và kết quả đúng. Riên
 - Chuẩn bị thế cờ bao phủ luật bảy loại quân, chiếu, chiếu hết, hết nước đi, lặp thế và không ăn quân.
 - Chuẩn bị bộ chiếu hết một và hai nước bắt buộc có đáp án được xác minh riêng, cùng 50 thế giữa ván phục vụ đo máy cờ.
 - Phân biệt ca đã viết với ca đã chạy; kết quả được ghi là đạt, không đạt hoặc bị chặn kèm lý do.
+- Bộ thế phải có cùng vị trí nhưng khác lượt, lần lặp thứ ba, một bên/cả hai bên chiếu liên tục và nước thứ 120 đồng thời chiếu hết hoặc gây hết nước đi.
 
 **Việc cần làm**
 
@@ -433,12 +436,14 @@ Người kiểm thử cần dữ liệu, thao tác và kết quả đúng. Riên
 - Tạo tệp thế cờ, lời giải và nguồn đối chiếu; nhờ người kiểm tra độc lập rà lại các đáp án bắt buộc.
 - Xác định cách ghi môi trường và số đo để người khác lặp lại phép thử.
 - Bàn giao dữ liệu và hướng dẫn cho người viết máy cờ và các phần kiểm thử chức năng.
+- Chuyển từng yêu cầu đã duyệt thành các ca có đầu vào và kết quả cố định; không yêu cầu duyệt lại luật hoặc thay ngưỡng theo số đo triển khai.
 
 **Kết quả bàn giao**
 
 - Kế hoạch kiểm thử và mẫu ca/mẫu lỗi.
 - Bộ ca nền tảng.
 - Bộ thế luật, chiếu hết và thế giữa ván có đáp án, nguồn và hướng dẫn sử dụng.
+- Bảng đối chiếu yêu cầu với tên ca, tệp dữ liệu và nơi ghi kết quả; tách bằng chứng chuẩn bị dữ liệu khỏi bằng chứng chạy trên ứng dụng.
 
 **Điều kiện hoàn thành**
 
@@ -468,6 +473,7 @@ Người dùng bắt đầu từ màn đăng nhập hoặc Sảnh, rồi chuyể
 - Thành phần thể hiện được trạng thái bình thường, đang tải, trống, lỗi và bị vô hiệu khi phù hợp.
 - Sảnh có vị trí cho Tự tạo phòng, Vào phòng bằng mã và Đánh với máy; chức năng làm sau được thể hiện đúng bằng “Sắp ra mắt” hoặc ẩn ở thao tác sâu.
 - Các thao tác có nhãn rõ ràng, sử dụng bàn phím được và không chỉ dùng màu để truyền đạt trạng thái. Kiểm tương phản và khả năng truy cập theo mức AA cơ bản của chuẩn trợ năng cho web, tức chữ dễ phân biệt với nền, trường nhập có nhãn và thông tin vẫn hiểu được khi không phân biệt màu.
+- Khung điều hướng dành chỗ cho danh sách phòng công khai với Vào chơi/Vào xem và nhãn Khách; đây là vị trí tích hợp, chưa coi dữ liệu mẫu là danh sách phòng trực tiếp.
 
 **Việc cần làm**
 
@@ -489,6 +495,7 @@ Người dùng bắt đầu từ màn đăng nhập hoặc Sảnh, rồi chuyể
 - Nút bị vô hiệu không thực hiện hành động, kèm lời giải thích thích hợp.
 - Lỗi tải có lời báo và cách thử lại; dữ liệu trống không giống một màn hình bị hỏng.
 - Các màn hình mẫu dùng cùng thành phần thay vì tự tạo nhiều kiểu nút và hộp thoại khác nhau.
+- Mỗi thành phần có ví dụ để kiểm trạng thái đang tải, trống, lỗi và vô hiệu nếu có áp dụng; thao tác bằng bàn phím mở/đóng được hộp thoại và xác định được nút đang được chọn.
 
 **Phạm vi và phối hợp**
 
@@ -521,6 +528,7 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 - Theo dõi tài nguyên và hạn mức trong một phiên thử có ghi thời lượng.
 - Tạo tài khoản thử, kiểm hạn phiên cố định và việc đăng nhập/thu hồi trên hai trình duyệt.
 - Tổng hợp giới hạn, lỗi cấu hình và hướng xử lý để nhóm thời gian thực và phiên dùng được.
+- Lập bảng thử mạng nội bộ/đám mây gồm địa chỉ kết nối, cách cấp HTTPS, vai trò từng trình duyệt và kết quả phát/nhận; thử cấu hình thiếu hoặc sai khoá để có hướng dẫn chẩn đoán.
 
 **Kết quả bàn giao**
 
@@ -534,6 +542,7 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 - Người xem bị từ chối phát; thu hồi quyền có bằng chứng thời gian thực tế.
 - Đổi hoạt động hoặc làm mới khoá phiên không tự dời hạn đăng nhập.
 - Báo cáo phân biệt thử kỹ thuật với luồng chưa có ván thật.
+- Báo cáo ghi riêng kết quả hai người phát/năm người nhận cho môi trường đã chạy; môi trường chưa chạy ghi bị chặn, không suy từ mạng nội bộ rằng Internet đã đạt.
 
 **Phạm vi và phối hợp**
 
@@ -572,6 +581,7 @@ Khi mạng chập chờn, cùng một thao tác có thể gửi lại hoặc đ�
 - Khung kết nối thời gian thực có xác thực và chống lệnh trùng.
 - Tài liệu sự kiện và mẫu dữ liệu.
 - Kiểm thử kết nối, thẻ trình duyệt, biên lai và báo cáo thử tải sơ bộ.
+- Ví dụ dữ liệu lệnh mới, gửi lại, phiên bản cũ và nối lại; phản hồi nêu kết quả xử lý, phiên bản và trạng thái chính thức để các chức năng ghép đúng.
 
 **Điều kiện hoàn thành**
 
@@ -579,6 +589,8 @@ Khi mạng chập chờn, cùng một thao tác có thể gửi lại hoặc đ�
 - Gửi một lệnh hai lần chỉ thay đổi trạng thái một lần.
 - Lệnh cũ nhận lại trạng thái mới, không ghi đè dữ liệu hiện tại.
 - Tab mất quyền tự nối lại vẫn không điều khiển được; biên lai quá hạn được dọn.
+- Danh tính hợp lệ nhưng không thuộc phòng không nhận sự kiện riêng của phòng; tab đã mất quyền gửi trực tiếp lệnh thay đổi vẫn bị từ chối.
+- Hai yêu cầu trùng đến đồng thời nhận cùng kết quả, chỉ có một thay đổi và một biên lai có hiệu lực.
 
 **Phạm vi và phối hợp**
 
@@ -611,12 +623,14 @@ Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng 
 - Tạo dữ liệu mẫu có phòng, hai người chơi và người xem để dùng kiểm quyền.
 - Dựng lại cơ sở dữ liệu thử từ đầu, kiểm các quan hệ và tên khác hoa thường.
 - Gọi trực tiếp bằng quyền trình duyệt để thử ghi kết quả và đọc dữ liệu không thuộc quyền.
+- Lập bảng cho từng loại dữ liệu: chủ sở hữu, ai đọc, ai ghi, ràng buộc và nơi kiểm nghiệp vụ; ghi rõ quyền của tài khoản, Khách, người ngoài phòng và quyền dịch vụ.
 
 **Kết quả bàn giao**
 
 - Tệp tạo/cập nhật cơ sở dữ liệu dùng được từ đầu.
 - Sơ đồ dữ liệu và mô tả quyền.
 - Dữ liệu mẫu cùng kết quả kiểm quyền trực tiếp.
+- Bộ lệnh kiểm quyền trực tiếp cùng dữ liệu đầu vào và kết quả cho phép/từ chối; danh sách tệp cấu trúc dữ liệu đã tích hợp và phần còn phụ thuộc.
 
 **Điều kiện hoàn thành**
 
@@ -661,6 +675,7 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 
 **Việc cần làm**
 
+- Lập bảng nối mỗi luồng tích hợp với dữ liệu ban đầu, các phía quan sát và bằng chứng kết thúc; chuẩn bị riêng bộ thế lặp có cùng vị trí nhưng khác lượt, chu kỳ chiếu liên tục và nước chạm mốc 120 nửa nước để kiểm kết quả thống nhất từ luật đến hộp kết quả.
 - Chuẩn bị tài khoản, phòng và thế cờ cho từng luồng; ghi phiên bản bản dựng và môi trường. Chạy từ giao diện thật, quan sát đồng thời ở người chơi và người xem, không thay luồng thật bằng dữ liệu giả.
 - Tự động hoá những đoạn lặp được bằng công cụ điều khiển trình duyệt; các đoạn cần email, thiết bị, camera hoặc thao tác mạng thật ghi rõ cách thực hiện thủ công.
 - Lưu kết quả từng bước, ghi lỗi với cách tái hiện và ảnh hoặc video. Sau khi sửa, chạy lại tình huống lỗi và luồng liên quan; tránh trộn kết quả từ hai bản phần mềm mà không ghi chú.
@@ -674,6 +689,7 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 
 - Mười luồng và các tình huống tích hợp được giao đều có kết quả đạt, không còn lỗi Nghiêm trọng hoặc Cao mở trong phạm vi kiểm.
 - Báo cáo phân biệt Đạt, Không đạt và Chưa kiểm được; dữ liệu đo chất lượng, bản đóng gói và lần tổng duyệt cuối vẫn cần kết quả riêng.
+- Nước hợp lệ gây chiếu hết phải kết thúc thắng/thua trước hòa; hết nước hoặc chiếu liên tục gây thắng/thua phải ưu tiên trước hòa 120 nửa nước. Lỗi media không đổi kết quả hoặc dừng đồng hồ.
 
 **Phạm vi và phối hợp**
 
@@ -702,6 +718,7 @@ Mỗi kết quả phải gắn với máy, mạng, trình duyệt, bản phần 
 
 **Việc cần làm**
 
+- Chuẩn bị bộ lệnh đo và nơi lưu mẫu gốc trước khi chạy; tách bảng điều kiện bắt buộc khỏi bảng số đo media chỉ ghi nhận. Ghi mốc nhận nước đi ở máy chủ, đối thủ và người xem để phép đo độ trễ có điểm bắt đầu/kết thúc rõ ràng.
 - Ghi máy, mạng, trình duyệt, bản phần mềm, người đo, ngày đo và số lượt; kiểm đủ 12 nhóm chất lượng vận hành và 9 nhóm thử khả thi nêu trong các yêu cầu trên.
 - Chạy 50 kết nối/10 ván; lưu thời gian từng nước tới đối thủ và người xem, lỗi, tài nguyên. Tính mốc 95% từ dữ liệu thô, không thay bằng trung bình.
 - Đối chiếu bộ 50 thế mỗi cấp, chiếu hết và đấu máy; kiểm độc lập báo cáo gửi thư, Google, đổi email trực tiếp, tên đăng nhập, phiên/Khách và media trên môi trường thật.
@@ -717,6 +734,7 @@ Mỗi kết quả phải gắn với máy, mạng, trình duyệt, bản phần 
 
 - Mọi nhóm yêu cầu có bằng chứng đúng phạm vi; tiêu chí bắt buộc chưa đạt phải giữ trạng thái chưa đạt và chặn phát hành.
 - Các phép đo chỉ yêu cầu ghi số liệu được báo đầy đủ, không tự biến thành ngưỡng cam kết mới.
+- Đăng nhập Google trong lúc khoá không xoá bộ đếm mật khẩu; thử sai cả username không tồn tại. Báo cáo thư ghi kết quả thực tế tới Gmail ngoài nhóm; báo cáo media ghi cấu hình chuyển môi trường và số đo mà không tự đặt ngưỡng thu hồi.
 
 **Phạm vi và phối hợp**
 
@@ -735,13 +753,14 @@ Chỉ bắt đầu khi kiểm tích hợp, kiểm chuyên đề và đo chất l
 **Yêu cầu cần đáp ứng**
 
 - Kiểm đủ danh sách điều kiện nghiệm thu và các ca kiểm có tiền điều kiện, thao tác, dữ liệu, kết quả mong đợi; tiêu chí có nhiều nhánh phải có trường hợp tương ứng. Có báo cáo kiểm lại cuối từng đợt phát triển và danh sách lỗi còn mở.
-- Bộ chạy tại máy trình diễn gồm giao diện web, máy chủ ứng dụng và LiveKit, dịch vụ camera, mic, được chạy bằng Docker là công cụ khởi động dịch vụ từ cấu hình có sẵn. Các máy trong cùng mạng truy cập qua kết nối web được mã hoá để trình duyệt cho dùng camera và mic.
+- Bộ chạy tại máy trình diễn gồm giao diện web, máy chủ ứng dụng và LiveKit tự chạy bằng Docker (công cụ khởi động dịch vụ theo cấu hình). Hướng dẫn ghi rõ cách khởi động từng thành phần. Các máy trong cùng mạng truy cập web qua HTTPS, kết nối được mã hoá với chứng chỉ hợp lệ trên thiết bị thử, để trình duyệt cho dùng camera và mic.
 - Viết hướng dẫn cho máy đã có Node, môi trường chạy ứng dụng, và pnpm, công cụ cài các gói phụ thuộc, cùng tệp cấu hình được cấp riêng. Người không tham gia đóng gói phải chạy toàn bộ ứng dụng trong không quá 15 phút.
 - Chuẩn bị tài khoản chính thức, tài khoản Google, email nhận mã thật, phiên Khách, phòng mẫu và thế cờ phục vụ trình diễn. Có đường chạy dự phòng: giao diện và máy chủ ứng dụng trên Render, dịch vụ lưu trữ ứng dụng; camera và mic trên LiveKit Cloud, dịch vụ hình tiếng đám mây.
 - Hướng dẫn nêu cách chọn môi trường, khởi động, mở địa chỉ truy cập, kiểm dịch vụ chạy và dừng. Không để khoá bí mật hoặc mật khẩu thật trong mã nguồn, ảnh chụp hoặc tài liệu phát công khai.
 
 **Việc cần làm**
 
+- Khoá danh sách phiên bản mã nguồn, gói phụ thuộc, cấu hình và dữ liệu trình diễn đúng với báo cáo đạt; lập bảng nơi lấy từng bí mật qua kênh riêng. Kiểm máy chạy, Node, pnpm, Docker và chứng chỉ đã đủ trước khi bấm giờ khởi động.
 - Đối chiếu báo cáo chức năng, kiểm thử và số đo; thiếu bằng chứng hoặc còn điều kiện chưa đạt thì giữ việc phát hành ở trạng thái Chưa thể thực hiện và nêu rõ nguyên nhân.
 - Đóng gói đúng bản đã kiểm, ghi phiên bản và cấu hình; tạo dữ liệu mẫu có thể lập lại. Đưa hướng dẫn cho thành viên khác thao tác trên máy sạch đủ điều kiện và bấm giờ, ghi lại chỗ phải hỏi thêm để sửa tài liệu.
 - Thử cấu hình dự phòng và chuẩn bị trình tự minh hoạ mười luồng dưới đây để người chạy cuối không phải tra mã kịch bản.
@@ -765,6 +784,7 @@ Chỉ bắt đầu khi kiểm tích hợp, kiểm chuyên đề và đo chất l
 
 - Mọi điều kiện bắt buộc đã đạt; bản đóng gói khớp bản đã kiểm và người thử độc lập khởi động thành công trong thời gian yêu cầu.
 - Có dữ liệu cho mười luồng: đăng ký email thật và sửa tên; đăng ký Google rồi đăng nhập hai cách; khoá mật khẩu; tạo phòng và mời bạn hoặc Khách; đổi bên, chơi, chat, camera; công khai, khoá và đuổi người xem; chơi ván tiếp; rớt mạng; chơi với máy và đổi phe; đăng nhập thiết bị khác.
+- Gói dự phòng chỉ đổi cấu hình LiveKit giữa tự chạy và Cloud, không đặt LiveKit trên Render. Hướng dẫn có cách nhận biết ứng dụng/dữ liệu/media sẵn sàng và dừng dịch vụ; bản đã sửa sau nghiệm thu phải được kiểm lại phần bị ảnh hưởng trước bàn giao.
 
 **Phạm vi và phối hợp**
 
@@ -795,6 +815,7 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 **Việc cần làm**
 
+- Lập danh sách mười luồng với tài khoản/thiết bị tham gia và trạng thái phòng cần có; kiểm dữ liệu mẫu trước ghi hình, giữ nguyên số phiên bản bản phát hành trong tên báo cáo và thông tin video.
 - Kiểm môi trường, thiết bị thu hình tiếng và cách ghi màn hình trước khi chạy. Dùng dữ liệu trình diễn thay cho tài khoản cá nhân; tránh quay khoá bí mật, mật khẩu hoặc mã xác minh còn hiệu lực.
 - Chạy từng luồng từ bước đầu đến kết quả cuối, quan sát các phía liên quan chứ không chỉ máy của chủ phòng. Ghi hình đủ thao tác và trạng thái kết quả để giảng viên hoặc thành viên mới hiểu điều được chứng minh.
 - Ghi bảng kết quả từng luồng, thời điểm tương ứng trong video và điểm còn thiếu. Nếu gặp lỗi, ghi cách tái hiện, chuyển cho người phụ trách phần đó sửa, rồi kiểm lại trên bản đã sửa; ghi rõ video nào đã được thay thế.
@@ -808,6 +829,7 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 - Cả mười luồng phải chạy đạt và có bằng chứng xem được; không dùng video cũ để chứng minh một bản mới chưa chạy.
 - Luồng không chạy được vì lỗi, thiếu thiết bị hoặc dịch vụ ngoài phải được ghi Không đạt hoặc Chưa kiểm được, không đổi thành Đạt để kịp bàn giao.
+- Mỗi luồng có mốc video và kết quả cuối của các phía liên quan; lỗi được sửa phải quay lại đoạn có đủ bước gây lỗi và kết quả mới trên bản sửa. Video không lộ bí mật hay mã xác minh còn hiệu lực.
 
 **Phạm vi và phối hợp**
 
@@ -842,6 +864,8 @@ Chỉ tài khoản đã xác minh email và hoàn tất hồ sơ mới được 
 - Thử thư tới ba địa chỉ Gmail không thuộc nhóm phát triển và thử gửi năm thư tới năm email khác nhau trong một giờ; lưu thời gian nhận, việc vào thư rác và hạn mức dịch vụ.
 - Thử lỗi dịch vụ thư và gọi trực tiếp chức năng đổi email để kiểm quyền ở máy chủ.
 - Ghi kết quả thử Google/Khách và giới hạn; chưa coi là nghiệm thu toàn bộ luồng.
+- So sánh hạn mức tại thời điểm cấu hình rồi chọn dịch vụ thư miễn phí gửi được tới Gmail bất kỳ, không bắt buộc tên miền riêng; ghi lựa chọn, hạn mức và cấu hình gửi của Supabase phù hợp.
+- Thử tranh chấp tên ở bước cuối và lỗi giữa ghi hồ sơ hoàn tất với xoá cờ chờ; kiểm lại quyền sử dụng và dữ liệu sau khi tác vụ phục hồi/dọn chạy.
 
 **Kết quả bàn giao**
 
@@ -856,6 +880,7 @@ Chỉ tài khoản đã xác minh email và hoàn tất hồ sơ mới được 
 - Lỗi gửi thư báo “Không gửi được mã, vui lòng thử lại sau”; thử lại không làm tài khoản bị kẹt.
 - Chạy đồng thời hoàn tất và dọn không xoá hồ sơ đã hoàn tất.
 - Email không đổi được kể cả khi người dùng gửi yêu cầu trực tiếp đến dịch vụ xác thực. Nếu chỉ chặn được ở màn hình mà đường gọi trực tiếp vẫn đổi email, ghi Chưa đạt và nêu giới hạn, không coi là hoàn tất.
+- Tên bị chiếm trong lúc chờ mã trả người dùng về bước đầu; dọn bản chưa hoàn tất giải phóng email nhưng không giữ chỗ tên và không xoá hồ sơ đã ghi hoàn tất.
 
 **Phạm vi và phối hợp**
 
@@ -901,6 +926,8 @@ Người dùng nhập tên tài khoản và mật khẩu, sau đó email, cuối
 - Không thể gửi lại trước 60 giây bằng cách bấm nhanh trên giao diện.
 - Mã hợp lệ hoàn tất tài khoản và vào Sảnh; mã sai không được coi là đăng nhập.
 - Mất dịch vụ thư không hiện thông báo thành công giả, người dùng có đường thử lại.
+- Dán đủ sáu chữ số vào ô mã dùng được; hết hạn mã hoặc đang trong 60 giây chờ gửi lại hiển thị đúng mốc máy chủ, không đặt lại chỉ vì chuyển bước.
+- Tên vừa bị chiếm sau khi nhập mã đúng được báo và quay về bước đầu; giao diện không điều hướng vào ứng dụng trước khi máy chủ xác nhận hoàn tất hồ sơ.
 
 **Phạm vi và phối hợp**
 
@@ -939,6 +966,7 @@ Người dùng đăng nhập bằng tên. Máy chủ tra email nội bộ, khôn
 - Xử lý đăng nhập và dữ liệu bộ đếm thử sai.
 - Cách quản lý hạn phiên.
 - Kiểm thử chứng minh tra tên và khoá thử sai đúng.
+- Hợp đồng đăng nhập nêu dữ liệu tên/mật khẩu/lựa chọn ghi nhớ, phản hồi thành công cùng hạn phiên và phản hồi sai hoặc bị chặn; không trả email tra cứu nội bộ.
 
 **Điều kiện hoàn thành**
 
@@ -946,6 +974,7 @@ Người dùng đăng nhập bằng tên. Máy chủ tra email nội bộ, khôn
 - Lần sai thứ năm kích hoạt chặn; lần thứ sáu với tên giả có hành vi giống tên thật.
 - Đăng nhập đúng sau ba lần sai xoá số lần sai.
 - Hoạt động trong ứng dụng không làm hạn 12 giờ/30 ngày trôi về sau.
+- Các yêu cầu đồng thời với cùng tên khác hoa/thường dùng chung bộ đếm; hạn chặn tính từ lần sai thứ năm, không bị kéo dài bởi thử thêm trong lúc đang bị chặn.
 
 **Phạm vi và phối hợp**
 
@@ -978,6 +1007,7 @@ Kiểm đăng ký qua giao diện và máy chủ thật; dùng kiểm dữ liệ
 - Dùng môi trường thử để tạo lỗi giữa ghi hồ sơ và dọn/phục hồi, kiểm không xoá nhầm.
 - Ghi đạt/không đạt/bị chặn cùng ảnh, thư nhận và dữ liệu đã che bí mật.
 - Gửi lỗi cho người triển khai, kiểm lại đúng nhánh lỗi sau sửa.
+- Chạy riêng lỗi sau khi ghi dấu hoàn tất, tác vụ dọn chạy gần lúc xác nhận mã và tên bị người khác lấy khi đang chờ; chụp trạng thái hồ sơ đã che dữ liệu nhạy cảm trước/sau.
 
 **Kết quả bàn giao**
 
@@ -991,6 +1021,7 @@ Kiểm đăng ký qua giao diện và máy chủ thật; dùng kiểm dữ liệ
 - Không có tài khoản trùng tên/email hoặc tài khoản chưa xác minh sử dụng được.
 - Lỗi gửi thư được báo thật, gửi lại có thể phục hồi; tài khoản hoàn tất không bị xoá.
 - Không đánh dấu đạt nếu không nhận được thư thật hoặc không kiểm được nhánh bắt buộc.
+- Yêu cầu đổi email trực tiếp không thành công; nếu đường dịch vụ vẫn cho đổi thì báo không đạt dù màn hình đã khoá trường email.
 
 **Phạm vi và phối hợp**
 
@@ -1036,6 +1067,8 @@ Màn này cũng là cửa vào cho người mở đường dẫn mời nhưng ch
 - Bị chặn thì giao diện không tự coi đăng nhập thành công.
 - Ô ghi nhớ mặc định được chọn và gửi đúng lựa chọn khi bỏ chọn.
 - Quên mật khẩu không mở chức năng chưa làm; người đã đăng nhập không mắc ở màn đăng nhập.
+- Mất kết nối trong lúc gửi có báo lỗi và cho thử lại; không tự tạo trạng thái đăng nhập thành công khi chưa nhận xác nhận.
+- Đích phòng mời được giữ qua thao tác nhập sai rồi đăng nhập lại đúng; điều hướng sau đó vẫn nhận kết quả kiểm phòng từ máy chủ.
 
 **Phạm vi và phối hợp**
 
@@ -1060,6 +1093,7 @@ Chạy qua giao diện thật và xử lý máy chủ, đồng thời kiểm cá
 - Đăng nhập đúng sau ba lần sai đặt bộ đếm về không; hết thời gian chặn thì có thể đăng nhập đúng.
 - Ghi nhớ mặc định chọn: hạn cố định 30 ngày. Bỏ chọn: hết khi đóng trình duyệt hoặc 12 giờ; hoạt động không kéo dài hạn.
 - Người đã có phiên mở trang đăng nhập hoặc đăng ký được về Sảnh.
+- Gửi gần đồng thời các lần thử sai với tên khác hoa/thường; đếm chung và không vượt khoá. Thử thêm trong lúc khoá không làm đổi mốc hết chặn vốn tính từ lần sai thứ năm.
 
 **Việc cần làm**
 
@@ -1075,6 +1109,7 @@ Chạy qua giao diện thật và xử lý máy chủ, đồng thời kiểm cá
 - Bộ ca đăng nhập, khoá thử sai và hạn phiên.
 - Báo cáo có thời điểm thử và kết quả thực tế.
 - Lỗi có cách tái hiện và kết quả kiểm lại.
+- Bảng mốc thời gian thử, phản hồi, bộ đếm và hạn phiên đã che thông tin nhạy cảm để kiểm lại ranh giới ngay trước/bằng/sau hạn.
 
 **Điều kiện hoàn thành**
 
@@ -1105,24 +1140,28 @@ Supabase là dịch vụ quản lý đăng nhập của dự án. Xác thực Go
 - Bản Google tạm chưa hoàn tất quá 60 phút được dọn bằng kiểm tra mỗi 5 phút; không xoá tài khoản cũ, đã hoàn tất hoặc vừa hoàn tất. Chưa hoàn tất phải bị chặn sử dụng ứng dụng.
 - Khách nhập tên 2–20 ký tự có dấu, không cần duy nhất, không chứa từ cấm; luôn có nhãn “(Khách)”. Phiên kéo dài tối đa 12 giờ nhưng không hết trong lúc đang ngồi ghế hoặc trong ván; chỉ được tạo một phòng đang mở.
 - Google không bị chặn bởi khoá thử sai mật khẩu và đăng nhập Google thành công không xoá bộ đếm đó. Khách không có quyền kết bạn, nhận/gửi lời mời bạn bè hoặc sửa hồ sơ.
+- Khách được tạo/vào phòng, ngồi ghế hoặc xem, đánh máy, chat theo vai trò và dùng camera/mic khi ngồi ghế. Khi hết phiên hoặc đăng xuất phải xoá tên, chat và dữ liệu cá nhân; giữ bản ghi ván cho đối thủ chính thức với tên chung Khách.
 
 **Việc cần làm**
 
 - Tích hợp Google thật và tạo phiên Khách; kiểm quyền tại máy chủ, dùng bộ lọc tên chung.
 - Xây bước hoàn tất tài khoản, dọn bản tạm an toàn và dữ liệu hạn phiên Khách.
 - Viết kiểm thử email trùng, tài khoản chưa hoàn tất, thời hạn dọn, tên cấm, đăng nhập kép và bộ đếm sai mật khẩu.
+- Thử tài khoản Google vừa hoàn tất trong cùng lượt tác vụ dọn và lỗi giữa các bước hoàn tất; xác minh hồ sơ đã hoàn tất được giữ/phục hồi còn hồ sơ tạm vẫn bị chặn.
 
 **Kết quả bàn giao**
 
 - Dịch vụ Google/Khách và bằng chứng thử với tài khoản thật.
+- Dữ liệu hạn phiên và sự kiện kết thúc phiên Khách cho quản lý phòng/chat xử lý xoá dữ liệu; bảng quyền Khách để các chức năng kiểm thống nhất.
 
 **Điều kiện hoàn thành**
 
 - Không gộp tài khoản trùng email; Google không xoá khoá mật khẩu; tài khoản chưa hoàn tất không dùng ứng dụng được.
+- Danh tính Khách trả đúng hạn 12 giờ và thông tin ngoại lệ để quản lý phiên không làm hết phiên khi đang ngồi ghế/trong ván; kiểm tích hợp áp hết hạn sau khi rời. Phiên mới là danh tính mới và chỉ được có một phòng tự tạo đang mở.
 
 **Phạm vi và phối hợp**
 
-Việc gia hạn ngoại lệ khi đang chơi và xoá dữ liệu khi phiên Khách kết thúc cần phối hợp quản lý phiên, phòng và chat; giao diện được làm riêng.
+Bàn giao xác thực, dữ liệu hạn và quyền Khách; quản lý phiên, phòng và chat dùng các dữ liệu/sự kiện này để thực hiện ngoại lệ khi đang chơi và xoá dữ liệu khi kết thúc phiên. Kiểm tích hợp các nhánh đó khi chức năng liên quan sẵn sàng; giao diện được làm riêng.
 
 #### T44 · FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách
 
@@ -1145,6 +1184,7 @@ Người chọn Google lần đầu vẫn cần đặt tên đăng nhập và m�
 
 **Việc cần làm**
 
+- Tích hợp riêng ba kết quả Google: đã có tài khoản, cần hoàn tất thiết lập, email trùng tài khoản mật khẩu; lưu đích phòng đang chờ qua các màn xác thực và chỉ chuyển tiếp sau khi máy chủ xác nhận hoàn tất.
 - Dựng nút Google, màn hoàn tất thiết lập và hộp tên Khách, gồm trạng thái xử lý và lỗi.
 - Nối phản hồi xác thực, điều hướng tới Sảnh hoặc phòng đang chờ và quy tắc ẩn chức năng theo vai trò.
 - Thử tên biên, từ cấm, email trùng, đóng giữa thiết lập và mở lời mời trước đăng nhập.
@@ -1152,10 +1192,12 @@ Người chọn Google lần đầu vẫn cần đặt tên đăng nhập và m�
 **Kết quả bàn giao**
 
 - Giao diện Google và Khách nối dịch vụ xác thực thật.
+- Bằng chứng Google thật cho tài khoản mới/cũ/trùng email và Khách đi qua link mời.
 
 **Điều kiện hoàn thành**
 
 - Không bỏ qua thiết lập Google; Khách có nhãn đúng và vào phòng mời không cần mở lại đường dẫn.
+- Lỗi từ cấm phải được báo trước khi gửi hoàn tất và vẫn hiển thị khi máy chủ từ chối; tên hiển thị sau Google đúng tên đăng nhập đã chọn. Huỷ hộp tên Khách không tạo phiên chơi thành công trên giao diện.
 
 **Phạm vi và phối hợp**
 
@@ -1182,6 +1224,7 @@ Chuẩn bị Google chưa đăng ký, Google đã hoàn tất và email đã t�
 
 **Việc cần làm**
 
+- Lưu trạng thái tài khoản và bộ đếm sai trước mỗi lần đăng nhập; chuẩn bị Google trùng email bằng mật khẩu và hồ sơ thiết lập dở gần 60 phút để kiểm không tự gộp và dọn bản tạm đúng đối tượng.
 - Viết tình huống với dữ liệu email/tên rõ ràng và kết quả mong đợi; không dùng xác thực Google giả làm bằng chứng.
 - Chạy luồng thật, kiểm bản tạm và thử yêu cầu vượt giao diện; dùng thời gian kiểm soát được cho bài hết hạn.
 - Ghi bằng chứng, lỗi và kết quả kiểm lại sau sửa.
@@ -1193,6 +1236,7 @@ Chuẩn bị Google chưa đăng ký, Google đã hoàn tất và email đã t�
 **Điều kiện hoàn thành**
 
 - Không tự gộp tài khoản; không vượt bước thiết lập; Google không xoá khoá mật khẩu; tên cấm bị máy chủ chặn.
+- Trong cùng khoảng khoá, đăng nhập Google xong rồi dùng mật khẩu đúng vẫn bị từ chối; chỉ sau hết hạn mới đăng nhập bằng mật khẩu được. Tài khoản vừa hoàn tất không bị đợt dọn hồ sơ tạm xoá nhầm.
 
 **Phạm vi và phối hợp**
 
@@ -1210,7 +1254,7 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 
 **Yêu cầu cần đáp ứng**
 
-- Phiên có Ghi nhớ đăng nhập hết hạn cố định sau 30 ngày; không ghi nhớ thì khi đóng trình duyệt hoặc sau 12 giờ, tuỳ điều kiện nào đến trước. Làm mới thông tin xác thực không gia hạn mốc đã tạo.
+- Phiên có Ghi nhớ đăng nhập hết hạn cố định sau 30 ngày; không ghi nhớ thì khi đóng trình duyệt hoặc sau 12 giờ, tuỳ điều kiện nào đến trước. Mốc tính từ đăng nhập thành công hoặc hoàn tất đăng ký mới. Làm mới thông tin xác thực không gia hạn mốc đã tạo.
 - Hết phiên trong ván online: mất quyền điều khiển, yêu cầu đăng nhập lại và giữ ván 60 giây trong khi đồng hồ vẫn chạy. Ván với máy được giữ 30 phút để cùng thiết bị quay lại.
 - Đăng nhập từ thiết bị khác khi đang đấu làm ván hiện tại bị xử thua, thiết bị cũ bị đăng xuất, thiết bị mới vào Sảnh. Nếu chỉ ngồi phòng chờ thì rời ghế theo vòng đời phòng, không ghi kết quả thua.
 - Chặn ngồi ghế hoặc mở ván với máy thứ hai; mở lời mời không được vượt kiểm tra này. Đăng xuất khi đang đấu phải xác nhận đầu hàng, còn ở phòng chờ thì rời phòng rồi đăng xuất.
@@ -1219,6 +1263,7 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 
 **Việc cần làm**
 
+- Phân biệt đăng nhập thật, làm mới thông tin xác thực, mở thẻ cùng thiết bị và đăng nhập thiết bị khác bằng dữ liệu phiên; mốc hạn lấy từ lúc đăng nhập thành công hoặc hoàn tất đăng ký, không từ lần hoạt động cuối.
 - Lưu mốc hết hạn, thiết bị và vị trí chơi đang giữ; xử lý đăng nhập, hết hạn, rời ghế và kết thúc ván nhất quán.
 - Cung cấp trạng thái ván đang dở và lý do không được vào chỗ mới để giao diện hiển thị; cập nhật Tên hiển thị phải kiểm lại dữ liệu ở máy chủ.
 - Viết kiểm thử thời hạn cố định, đổi thiết bị khi chờ hoặc đang đấu, vào chỗ thứ hai và sửa hồ sơ bằng yêu cầu gửi trực tiếp.
@@ -1227,12 +1272,14 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 **Kết quả bàn giao**
 
 - Dịch vụ quản lý phiên, vị trí chơi và cập nhật hồ sơ; kiểm thử tự động và kết quả thử hai thiết bị.
+- Dữ liệu mốc phiên, thiết bị và vị trí chơi bàn giao cho giao diện; bằng chứng dọn riêng dữ liệu Khách.
 
 **Điều kiện hoàn thành**
 
 - Không có hai vị trí chơi có quyền điều khiển đồng thời; kết quả thua chỉ phát sinh đúng trường hợp đã quy định.
 - Hạn phiên không trượt theo hoạt động; dữ liệu hồ sơ sai bị từ chối cả khi bỏ qua giao diện.
 - Khách hết hạn nhưng còn ngồi ghế/trong ván không bị ngắt giữa chừng; khi phiên thực sự kết thúc, cả hết hạn và đăng xuất đều xoá tên/dữ liệu cá nhân theo phạm vi đã chốt và lần vào sau dùng danh tính mới.
+- Mở thẻ cùng thiết bị không xử thua: thẻ mới tiếp quản, thẻ cũ chỉ đọc kể cả tự nối lại; camera/mic thẻ cũ dừng, thẻ mới mặc định tắt. Đóng riêng một thẻ không bị coi là đóng cả trình duyệt.
 
 **Phạm vi và phối hợp**
 
@@ -1258,6 +1305,7 @@ Người dùng cần phân biệt Tên đăng nhập dùng để vào tài kho�
 
 **Việc cần làm**
 
+- Lấy hồ sơ, vị trí đang giữ và đường dẫn quay lại từ máy chủ; phân biệt đang chờ, đang đấu online, đang đấu với máy và không giữ chỗ để gửi đúng thao tác đăng xuất sau xác nhận.
 - Xây màn hồ sơ và thông báo ván dở, gồm trạng thái đang tải, đang lưu, thành công và thất bại. Không ghi tên mới như đã lưu nếu máy chủ từ chối.
 - Nối thao tác lưu, quay lại và đăng xuất với máy chủ; giữ đúng đường dẫn ván thay vì mở một ván mới.
 - Kiểm tên có dấu, độ dài biên, tên bị cấm, lỗi mạng lúc lưu và các hoàn cảnh đăng xuất bằng tài khoản chính thức lẫn Khách.
@@ -1265,11 +1313,13 @@ Người dùng cần phân biệt Tên đăng nhập dùng để vào tài kho�
 **Kết quả bàn giao**
 
 - Màn Cài đặt hồ sơ, thông báo quay lại ván và hộp xác nhận đăng xuất tích hợp thật.
+- Bằng chứng lưu tên thành công/thất bại và đăng xuất khi chờ, đấu online, đấu máy.
 
 **Điều kiện hoàn thành**
 
 - Tên hợp lệ được lưu và hiển thị nhất quán; tên không hợp lệ có thông báo rõ, email không sửa được.
 - Quay lại đúng ván; huỷ đăng xuất không làm thay đổi kết quả hoặc mất chỗ chơi.
+- Đăng xuất trong ván với máy cũng có xác nhận đầu hàng; khi máy chủ báo hết phiên, giao diện yêu cầu đăng nhập lại và không tiếp tục gửi nước đi bằng phiên cũ. Lưu tên lỗi không ghi đè tên đã được xác nhận.
 
 **Phạm vi và phối hợp**
 
@@ -1287,7 +1337,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 **Yêu cầu cần đáp ứng**
 
-- Hoạt động hoặc làm mới khoá phiên không gia hạn đăng nhập. Hết phiên khi online ngắt quyền, yêu cầu đăng nhập lại, giữ 60 giây và đồng hồ chạy; với máy giữ 30 phút. Đăng nhập lại cùng thiết bị trong hạn tiếp tục được.
+- Có Ghi nhớ: hạn cố định 30 ngày; không Ghi nhớ: đóng cả trình duyệt hoặc đủ 12 giờ, điều kiện nào đến trước. Hoạt động hoặc làm mới khoá phiên không gia hạn đăng nhập. Hết phiên khi online ngắt quyền, yêu cầu đăng nhập lại, giữ 60 giây và đồng hồ chạy; với máy giữ 30 phút. Đăng nhập lại cùng thiết bị trong hạn tiếp tục được.
 - Đăng nhập thiết bị khác trong ván online hoặc với máy: xử thua ngay, thiết bị cũ đăng xuất, thiết bị mới vào Sảnh. Đang phòng chờ thì rời ghế/chuyển chủ theo vòng đời, không tạo thua.
 - Đang giữ ghế hoặc ván với máy thì không mở thêm vị trí; Tạo phòng/Vào chơi/Đánh với máy/mã/link khác đều bị máy chủ kiểm. Nút bị vô hiệu báo “Bạn đang ở trong một ván/phòng khác”.
 - Sảnh có “Bạn có ván đang chơi dở — Quay lại”, dẫn đúng phòng/ván. Đăng xuất trong ván online có xác nhận đầu hàng: đồng ý kết thúc/rời/đăng xuất, huỷ giữ nguyên; phòng chờ rời rồi đăng xuất, không xử thua.
@@ -1297,6 +1347,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 **Việc cần làm**
 
+- Tạo riêng phiên có Ghi nhớ và không Ghi nhớ; ghi mốc đăng nhập hoặc hoàn tất đăng ký, rồi mô phỏng hoạt động/làm mới thông tin xác thực sát hạn để kiểm mốc cố định 30 ngày hoặc 12 giờ.
 - Chuẩn bị tài khoản trên hai thiết bị, đối thủ và ván với máy; đặt hạn phiên thử gần hết để kiểm các mốc có thể lặp lại.
 - Thử hoạt động/làm mới khoá phiên và hết hạn ở online/với máy; đăng nhập lại cùng thiết bị rồi thử thiết bị khác.
 - Thử mở vị trí thứ hai bằng mọi đường vào; từ Sảnh bấm Quay lại và kiểm đăng xuất đồng ý/huỷ ở phòng chờ và trong ván.
@@ -1312,6 +1363,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Không Ghi nhớ kết thúc khi đóng cả trình duyệt hoặc đủ 12 giờ, điều kiện nào đến trước; đóng một thẻ không đồng nghĩa đóng trình duyệt. Cùng thiết bị đăng nhập lại trong hạn giữ ván được tiếp tục, thiết bị khác xử thua đúng quy tắc.
 
 **Phạm vi và phối hợp**
 
@@ -1352,6 +1404,7 @@ Phòng gồm hai ghế và tối đa năm người xem. Người tạo là chủ
 
 - Dịch vụ phòng chờ và sự kiện thay đổi trạng thái.
 - Kiểm thử tích hợp các nhánh ghế, đếm và đóng phòng.
+- Mẫu trạng thái phòng gồm chủ, hai ghế, sẵn sàng, thông số cố định, giai đoạn đếm và danh tính ván mới; sự kiện rời/đóng để chat và quyền camera/mic xử lý.
 
 **Điều kiện hoàn thành**
 
@@ -1359,6 +1412,8 @@ Phòng gồm hai ghế và tối đa năm người xem. Người tạo là chủ
 - Không tạo ván khi thiếu người hoặc mất kết nối trong đếm.
 - Chuyển chủ đúng, phòng cuối cùng không còn người chơi được đóng.
 - Yêu cầu tạo thêm vị trí chơi hoặc phòng Khách trái giới hạn bị từ chối.
+- Hai người cùng bấm sẵn sàng hoặc gửi lại lệnh không sinh hai ván; đổi thành phần ghế trong lúc đếm huỷ lượt bắt đầu cũ và đặt lại sẵn sàng.
+- Người xem nhận Phòng đã đóng và về Sảnh khi ghế cuối mất; giữ phòng chờ không đặt hạn đóng vì chủ chờ lâu.
 
 **Phạm vi và phối hợp**
 
@@ -1405,6 +1460,8 @@ Phòng chờ dùng chung địa chỉ phòng với lúc thi đấu nhưng có tr
 - Hai người thấy cùng ghế và trạng thái sẵn sàng.
 - Chủ ở một mình đổi được phe, có người thứ hai thì không còn nút đổi tự do.
 - Huỷ đếm không tạo màn ván giả; chuyển chủ hiện đúng sau khi chủ cũ rời.
+- Người xem thấy ghế và sẵn sàng nhưng không có quyền đổi ghế hoặc bật sẵn sàng; chuyển chủ theo dữ liệu máy chủ không cần tải lại.
+- Ghế thay người hoặc mất mạng trong đếm xoá hiển thị đếm cũ, trở về chưa sẵn sàng; không điều hướng theo bộ đếm cục bộ.
 
 **Phạm vi và phối hợp**
 
@@ -1427,12 +1484,14 @@ Chuẩn bị người tạo phòng, người chơi thứ hai và người xem. T
 - Khi chỉ chủ phòng ngồi ghế, đổi Đỏ/Đen tự do. Khi đủ hai người, trạng thái Sẵn sàng hoặc huỷ Sẵn sàng phải cập nhật cho cả phòng; thay người ngồi ghế làm cả hai trở về chưa sẵn sàng.
 - Cả hai sẵn sàng thì đếm 3…2…1 kèm âm thanh. Máy chủ kiểm lại ghế, kết nối và trạng thái sẵn sàng rồi mới tạo ván mới; giao diện chuyển sang bàn đấu và đồng hồ Đỏ bắt đầu.
 - Chủ phòng rời lúc còn người chơi thứ hai thì người đó nhận quyền chủ phòng. Chủ phòng ngồi chờ lâu một mình không bị tự đóng phòng.
+- Người thứ hai rời ghế khi đang chờ thì người còn lại thấy Đổi ghế tự do trở lại; người xem không được bấm Sẵn sàng hoặc Đổi ghế.
 
 **Việc cần làm**
 
 - Viết tình huống tại các ranh giới độ dài tên, số chỗ xem và hai trường hợp đổi ghế.
 - Chạy tạo phòng và bắt đầu ván nhiều lần; đối chiếu mã ván mới và đồng hồ.
 - Ghi lỗi cùng dữ liệu tái hiện; kiểm lại sau sửa và phân biệt rõ trường hợp chưa có điều kiện kiểm.
+- Gửi gần đồng thời Sẵn sàng, huỷ Sẵn sàng và rời ghế; ghi thứ tự máy chủ nhận, trạng thái cuối và số ván được tạo.
 
 **Kết quả bàn giao**
 
@@ -1441,6 +1500,7 @@ Chuẩn bị người tạo phòng, người chơi thứ hai và người xem. T
 **Điều kiện hoàn thành**
 
 - Các nhánh nêu trên đạt với máy chủ và giao diện thật, gồm kiểm tên bằng bộ lọc chung.
+- Một lượt bắt đầu hợp lệ chỉ tạo một mã ván mới; dữ liệu giờ/trần người xem không bị sửa qua yêu cầu trực tiếp sau tạo.
 
 **Phạm vi và phối hợp**
 
@@ -1467,6 +1527,7 @@ Phòng tự tạo có chủ phòng và hai ghế Đỏ/Đen. Khi ván đã kết
 
 **Việc cần làm**
 
+- Mỗi đề nghị lưu người gửi, người nhận, phòng, hạn trả lời và trạng thái xử lý; khi nhận Đồng ý, kiểm lại đúng đề nghị còn hạn, phòng đang chờ và vẫn cùng hai người ngồi ghế rồi mới hoán đổi ghế và phát trạng thái mới.
 - Xây các thao tác gửi/rút/trả lời đổi bên và bộ đếm thời hạn phía máy chủ.
 - Kết nối sự kiện kết thúc ván với trạng thái phòng chờ, bảo toàn dữ liệu cần giữ.
 - Kiểm đề nghị quá hạn, đổi ghế, đếm bắt đầu, người rời và hai ván liên tiếp.
@@ -1474,10 +1535,12 @@ Phòng tự tạo có chủ phòng và hai ghế Đỏ/Đen. Khi ván đã kết
 **Kết quả bàn giao**
 
 - Xử lý đổi bên và phòng sau ván, kèm kiểm thử vòng đời.
+- Mẫu sự kiện đề nghị và trạng thái phòng sau kết thúc, đủ cho giao diện cập nhật ghế/sẵn sàng.
 
 **Điều kiện hoàn thành**
 
 - Không còn đề nghị cũ sau đổi thành phần ghế; ván tiếp theo có mã mới; phòng không tự đóng khi còn người chơi.
+- Phản hồi trùng, đến muộn hoặc gửi sau đổi người không hoán đổi thêm lần nữa. Kết thúc ván không xoá chat của cùng cặp và không tạo ván tiếp trước khi cả hai sẵn sàng.
 
 **Phạm vi và phối hợp**
 
@@ -1504,6 +1567,7 @@ Phòng đang chờ có thể có một hoặc hai người ngồi ghế. Sau khi
 
 **Việc cần làm**
 
+- Dùng trạng thái phòng, thành phần ghế, người gửi/nhận và thời hạn từ máy chủ để dựng nút và hộp đổi bên; tính phần thời gian còn lại từ hạn đã nhận, không bắt đầu lại 30 hoặc 60 giây khi đóng/mở giao diện.
 - Dựng nút theo số người, hộp nhận đề nghị, trạng thái phía gửi và đồng hồ chờ.
 - Nối kết quả đổi bên và lựa chọn sau ván; xử lý cập nhật máy chủ đến trong khi hộp đang mở.
 - Thử bằng hai trình duyệt: đồng ý, từ chối, hết hạn, rút, bắt đầu đếm và một người rời.
@@ -1511,10 +1575,12 @@ Phòng đang chờ có thể có một hoặc hai người ngồi ghế. Sau khi
 **Kết quả bàn giao**
 
 - Giao diện đổi bên và kết quả sau ván tích hợp với phòng chờ.
+- Bằng chứng hộp kết quả gián đoạn, bộ đếm đề nghị và dữ liệu ghế sau Đồng ý/Từ chối.
 
 **Điều kiện hoàn thành**
 
 - Hai bên thấy cùng trạng thái ghế/sẵn sàng; không còn đề nghị cũ khi máy chủ đã huỷ; lựa chọn sau ván đúng.
+- Ở lại phòng chỉ đóng lớp kết quả để thấy phòng đang chờ; không gửi tạo ván hoặc đổi phe. Ván bị gián đoạn có nội dung trung tính, không gán thắng/thua/hoà cho người chơi.
 
 **Phạm vi và phối hợp**
 
@@ -1541,6 +1607,7 @@ Chuẩn bị hai người chơi cùng một người xem trong phòng tự tạo
 
 **Việc cần làm**
 
+- Chụp trạng thái hai ghế, chủ phòng, người xem, chế độ, mức giờ và tin hai kênh trước khi kết thúc ván; dùng cùng phòng để kiểm giữ dữ liệu qua kết quả, đổi bên và ván kế tiếp.
 - Tạo phòng có hai người chơi, một người xem; thử trạng thái một ghế rồi đủ hai ghế để đối chiếu hai nút đổi phe.
 - Chạy riêng đồng ý, từ chối, hết hạn, rút và bấm trùng; ghi thời điểm 30 giây và 60 giây cùng trạng thái sẵn sàng.
 - Gửi đề nghị rồi bắt đầu đếm hoặc cho một người rời, kiểm đề nghị bị huỷ cả hai phía.
@@ -1556,6 +1623,7 @@ Chuẩn bị hai người chơi cùng một người xem trong phòng tự tạo
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Sau ván và sau đổi bên cùng cặp, chat riêng còn nguyên; thay người thì tin cặp cũ không xuất hiện. Một người rời chuyển chủ nếu cần, người cuối rời đóng phòng và đưa người xem về Sảnh.
 
 **Phạm vi và phối hợp**
 
@@ -1597,6 +1665,7 @@ Người nhận đường dẫn không cần kết bạn với chủ. Giữ đí
 - Xử lý tham gia bằng mã/đường dẫn.
 - Cơ chế giữ đích sau xác thực.
 - Kiểm tích hợp phân vai và sức chứa.
+- Hợp đồng tham gia nhận mã/đích phòng và danh tính đã xác thực, trả ghế/phe hoặc vai trò xem, trạng thái mới và lý do từ chối; không dùng dữ liệu đích chờ để cấp quyền.
 
 **Điều kiện hoàn thành**
 
@@ -1604,6 +1673,7 @@ Người nhận đường dẫn không cần kết bạn với chủ. Giữ đí
 - Chỉ một người nhận ghế cuối khi yêu cầu gần nhau; người còn lại được xếp xem hoặc từ chối đúng sức chứa.
 - Hoàn tất đăng nhập quay lại đúng phòng nhưng vẫn kiểm lại phòng/quyền hiện thời.
 - Luật phiên được ưu tiên: đăng nhập thiết bị khác đang có ván không bị chuyển thẳng vào phòng mời bỏ qua xử lý ván cũ.
+- Phòng chuyển khoá hoặc đóng trong lúc xác thực không được vào theo dữ liệu cũ; phòng đầy khi quay lại báo đầy thay vì giữ ghế ảo.
 
 **Phạm vi và phối hợp**
 
@@ -1625,6 +1695,7 @@ Người được mời không bắt buộc là bạn của chủ phòng. Hai ng
 - Sảnh có ô nhập mã. Khi mở đường dẫn lúc chưa đăng nhập, giữ lại đích đến trong quá trình đăng nhập hoặc đăng ký để tự vào phòng, không bắt mở lời mời lần nữa.
 - Dùng kết quả phân chỗ từ máy chủ: còn ghế thì ngồi ghế trống; đủ hai ghế và còn chỗ xem thì vào xem; phòng đầy thì từ chối. Không tự quyết định vai trò dựa vào thông tin cũ trên trình duyệt.
 - Khi chuyển sang người xem, báo “Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem.” Phòng đầy báo “Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!” và có nút “Quay về Sảnh chính”. Mã sai hoặc phòng đóng báo “Mã phòng không tồn tại hoặc phòng đã đóng”.
+- Người mở lời mời chưa đăng nhập có thể chọn Khách rồi tự tiếp tục vào phòng; giữ cùng đích chờ cho cả đăng nhập, đăng ký và Khách.
 
 **Việc cần làm**
 
@@ -1639,6 +1710,8 @@ Người được mời không bắt buộc là bạn của chủ phòng. Hai ng
 **Điều kiện hoàn thành**
 
 - Người chưa kết bạn vào được bằng mã hoặc đường dẫn hợp lệ; vai trò và thông báo khớp sức chứa thực tế.
+- Thử sao chép thành công và khi trình duyệt từ chối; lỗi không báo đã sao chép.
+- Sau đăng ký hoặc vào Khách, không phải mở lại lời mời; máy chủ báo đầy/đóng thì hiện đúng thông báo và đường về Sảnh.
 
 **Phạm vi và phối hợp**
 
@@ -1667,6 +1740,8 @@ Dùng ít nhất hai tài khoản chưa kết bạn và nhiều cửa sổ trìn
 - Ghi tiền điều kiện, cách tạo phòng và sức chứa cho từng trường hợp để người khác chạy lại được.
 - Thử vào bằng cả đường dẫn và mã, gồm việc phòng đổi số người trong lúc người được mời đang đăng nhập.
 - Lưu kết quả, ảnh thông báo và lỗi chuyển hướng; kiểm lại mọi lỗi đã sửa.
+- Cho hai người cùng vào ghế cuối bằng mã và đường dẫn; đối chiếu người nhận ghế, người được xếp xem hoặc báo đầy, không chấp nhận kết quả chỉ nhìn ở một trình duyệt.
+- Kiểm phòng đóng hoặc chuyển khoá trong lúc người nhận xác thực; xác minh đích chờ không bỏ qua trạng thái mới.
 
 **Kết quả bàn giao**
 
@@ -1675,6 +1750,7 @@ Dùng ít nhất hai tài khoản chưa kết bạn và nhiều cửa sổ trìn
 **Điều kiện hoàn thành**
 
 - Không cần mở lời mời lần hai sau xác thực; máy chủ quyết định ghế hoặc chỗ xem theo trạng thái hiện tại.
+- Mã sai, phòng đóng, đầy ghế còn chỗ xem và đầy toàn phòng có đúng vai trò/thông báo đã nêu; lưu bằng chứng riêng từng nhánh.
 
 **Phạm vi và phối hợp**
 
@@ -1707,10 +1783,14 @@ Tài khoản chính thức có tên đăng nhập để tìm nhau; Khách không
 **Kết quả bàn giao**
 
 - Dịch vụ bạn bè, trạng thái hoạt động và lời mời phòng; kiểm thử tự động kèm dữ liệu mẫu.
+- Hợp đồng tìm kiếm, lời mời kết bạn và lời mời phòng: dữ liệu vào/ra, quyền gọi, thời điểm hết hạn, phản hồi bị giới hạn; mẫu sự kiện để danh sách, chuông và hộp mời cập nhật.
 
 **Điều kiện hoàn thành**
 
 - Không thể gửi lời mời trái quyền qua yêu cầu trực tiếp; trạng thái hai phía và thời hạn nhất quán.
+- Gửi chéo chỉ có một lời mời chờ; từ chối hai lần, hết 30 ngày và giới hạn 200 bạn/50 lời mời được kiểm tại máy chủ.
+- Lời mời phòng hết 30 giây hoặc bị thu hồi do khoá không dùng được; không lưu lời mời phòng đã hết hạn vào chuông.
+- Một bạn vừa kết nối hiện Trực tuyến trong không quá 5 giây; ngồi ghế chuyển Đang đấu, đóng hết tab mới chuyển Ngoại tuyến sau nhận biết mất kết nối.
 
 **Phạm vi và phối hợp**
 
@@ -1728,7 +1808,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 
 **Yêu cầu cần đáp ứng**
 
-- Màn Bạn bè có tìm theo phần đầu tên đăng nhập; kết quả hiện ảnh đại diện chữ cái, tên hiển thị và tên đăng nhập để phân biệt người trùng tên. Có thao tác gửi lời mời và thu hồi lời mời đã gửi.
+- Màn Bạn bè có tìm theo phần đầu tên đăng nhập, không phân biệt hoa thường; kết quả hiện ảnh đại diện chữ cái, tên hiển thị và tên đăng nhập để phân biệt người trùng tên. Có thao tác gửi lời mời và thu hồi lời mời đã gửi.
 - Danh sách bạn hiện Trực tuyến, Đang đấu hoặc Ngoại tuyến bằng cả chữ và dấu nhận biết. Có huỷ kết bạn; thẻ Lời mời đang chờ có Chấp nhận/Từ chối. Chuông điều hướng hiển thị lời mời kết bạn và số đếm.
 - Nhắn tin và Thách đấu hiện vô hiệu, giải thích “Sắp ra mắt”. Màn Bạn bè không có nút mời vào phòng.
 - Trong hộp Chia sẻ phòng, thẻ Bạn bè chỉ dành cho tài khoản chính thức ngồi ghế. Bạn Trực tuyến có nút Mời; Ngoại tuyến không bấm được và ghi “Ngoại tuyến”; Đang đấu không bấm được, giải thích “Bạn bè đang trong ván khác”.
@@ -1737,6 +1817,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 
 **Việc cần làm**
 
+- Ánh xạ dữ liệu bạn bè, lời mời kết bạn, trạng thái hoạt động và lời mời phòng vào các vùng hiển thị riêng; dùng hạn trả lời do máy chủ cung cấp cho thông báo phòng, cập nhật danh sách và chuông sau mỗi phản hồi thành công.
 - Dựng danh sách, tìm kiếm, các thao tác và trạng thái tải/rỗng/lỗi; cập nhật khi nhận thay đổi từ máy chủ.
 - Nối chuông, thẻ Mời vào phòng và thông báo phía người nhận; ẩn phần bạn bè không dành cho Khách.
 - Kiểm hai tài khoản thao tác qua lại, lời mời hết hạn và trạng thái nút theo bạn bè.
@@ -1744,10 +1825,12 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 **Kết quả bàn giao**
 
 - Giao diện quản lý bạn bè, chuông và mời bạn vào phòng.
+- Bằng chứng giới hạn kết bạn, thông báo hết hạn và cập nhật đồng thời hai tài khoản.
 
 **Điều kiện hoàn thành**
 
 - Hai bên thấy kết quả nhất quán, lời mời phòng tự hết sau 30 giây, không có nút hoạt động sai quyền.
+- Lỗi đạt 200 bạn, tổng 50 lời mời đang chờ hoặc đã bị cùng người từ chối hai lần phải hiện lý do từ máy chủ; không thêm bạn hay tăng số chuông trước khi thao tác được chấp nhận.
 
 **Phạm vi và phối hợp**
 
@@ -1776,6 +1859,7 @@ Chuẩn bị ít nhất ba tài khoản chính thức, một phiên Khách, phò
 
 **Việc cần làm**
 
+- Ghi trạng thái quan hệ và số bạn/lời mời của cả hai bên trước ca biên; tách lời mời kết bạn có hạn 30 ngày khỏi thông báo mời phòng có hạn 30 giây trong dữ liệu và báo cáo.
 - Tạo dữ liệu 199/200 bạn và 49/50 lời mời tổng gửi/nhận, cùng lời mời gần hạn 30 ngày; ghi trạng thái ban đầu để thử đúng biên.
 - Dùng hai trình duyệt lần lượt gửi, nhận, từ chối hai lần, thu hồi, gửi ngược chiều đồng thời và huỷ bạn; kiểm dữ liệu cả hai phía.
 - Đo đổi trạng thái bạn; từ phòng gửi lời mời rồi chấp nhận, từ chối, để hết 30 giây và thử dùng sau khi khoá phòng.
@@ -1791,6 +1875,7 @@ Chuẩn bị ít nhất ba tài khoản chính thức, một phiên Khách, phò
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Hai yêu cầu kết bạn ngược chiều không tự tạo quan hệ; ca tổng 50 lời mời phải tính cả gửi và nhận. Thông báo phòng hết hạn không làm tăng số lời mời trong chuông.
 
 **Phạm vi và phối hợp**
 
@@ -1825,6 +1910,7 @@ Bàn cờ tướng có 9 cột, 10 hàng giao điểm và hai bên Đỏ/Đen. B
 - Chuẩn bị thế trống, thế bị chắn và thế ăn quân cho từng loại.
 - Kiểm quân ở sát biên, sát sông và mép cung để phát hiện sai hướng.
 - Bàn giao danh sách nước cơ bản cùng mô tả đầu vào/đầu ra cho phần kiểm Tướng an toàn.
+- Ghi kiểu dữ liệu đầu vào/đầu ra cho thế cờ và nước đi, cách báo dữ liệu thế không hợp lệ; phân biệt hàm sinh nước cơ bản với hàm kiểm an toàn Tướng để nơi gọi không dùng nhầm.
 
 **Kết quả bàn giao**
 
@@ -1838,6 +1924,7 @@ Bàn cờ tướng có 9 cột, 10 hàng giao điểm và hai bên Đỏ/Đen. B
 - Pháo có không ngòi hoặc hai ngòi không ăn được; Mã bị chặn chân và Tượng bị chặn mắt không đi xuyên.
 - Đọc lại thế đã ghi khôi phục đúng quân và lượt đi.
 - Không sinh nước ra ngoài 90 giao điểm hoặc ăn quân cùng bên.
+- Ghi rồi đọc lại một thế giữa ván giữ đủ quân, bên tới lượt và bộ đếm; việc sinh nước không thay đổi thế đầu vào.
 
 **Phạm vi và phối hợp**
 
@@ -1870,6 +1957,7 @@ Biết cách đi của từng quân chưa đủ: một nước nhìn đúng hìn
 - Kết hợp tình trạng chiếu và số nước hợp lệ để phân biệt chiếu hết với hết nước đi.
 - Viết các thế kiểm: bỏ quân chắn trước Tướng, chặn chiếu, ăn quân chiếu, Tướng thoát chiếu và không có lối thoát.
 - Mô tả cách gọi legalMoves để lấy nước hợp lệ, isCheck để hỏi bên tới lượt có bị chiếu không, applyMove để áp dụng nước vào thế cờ, cùng đầu vào và dữ liệu trả về.
+- Chạy cùng thế qua hàm lấy nước hợp lệ và hàm áp dụng nước; đối chiếu kết quả trước/sau để chứng minh nước bị từ chối không làm mất quân hoặc đổi lượt.
 
 **Kết quả bàn giao**
 
@@ -1883,6 +1971,7 @@ Biết cách đi của từng quân chưa đủ: một nước nhìn đúng hìn
 - Quân bị ghim không được đi để lộ Tướng bị chiếu; nước chặn hoặc ăn quân chiếu được chấp nhận nếu Tướng an toàn.
 - Hai thế hết nước đi có và không có chiếu đều cho kết quả thua, với lý do khác nhau.
 - Áp dụng một nước không làm sai vị trí các quân còn lại.
+- Một nước thuộc danh sách hợp lệ áp dụng được với cùng đầu vào; nước tự chiếu hoặc làm hai Tướng đối mặt bị từ chối và giữ nguyên thế.
 
 **Phạm vi và phối hợp**
 
@@ -1896,7 +1985,7 @@ Hoàn chỉnh bộ luật kết thúc ván và kiểm chứng bộ sinh nước 
 
 **Bối cảnh công việc**
 
-Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặp thế có ngoại lệ chiếu liên tục, và đủ 120 nửa nước không ăn quân có thể hoà. Cần xác định rõ khi nhiều điều kiện xuất hiện cùng lúc. Một nửa nước là một lần đi của một bên; 120 nửa nước tương đương 60 lượt mà mỗi bên đều đã đi một lần. Chiếu là Tướng bị đe doạ ăn; chiếu liên tục là một bên thực hiện nước chiếu trong mọi lần đi của mình thuộc chu kỳ xét.
+Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặp thế có ngoại lệ chiếu liên tục, và đủ 120 nửa nước không ăn quân có thể hoà. Áp dụng thứ tự ưu tiên đã chốt khi nhiều điều kiện xuất hiện cùng lúc. Một nửa nước là một lần đi của một bên; 120 nửa nước tương đương 60 lượt mà mỗi bên đều đã đi một lần. Chiếu là Tướng bị đe doạ ăn; chiếu liên tục là một bên thực hiện nước chiếu trong mọi lần đi của mình thuộc chu kỳ xét.
 
 **Yêu cầu cần đáp ứng**
 
@@ -1928,6 +2017,8 @@ Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặ
 - Chu kỳ có một nước không chiếu không bị gán là chiếu liên tục của bên đó.
 - Ca nửa nước thứ 120 gây hết nước đi cho kết quả thua, không bị ghi hoà.
 - Số nhánh khớp chuẩn đã xác minh và độ phủ các dòng mã được kiểm thử thực thi đạt ít nhất 90%.
+- Hai bên cùng chiếu ở mọi nước của mình trong chu kỳ cho kết quả hoà; ăn quân đặt lại số nửa nước không ăn quân và mốc 119 chưa tự gây hoà.
+- Bộ dữ liệu kiểm riêng một bên chiếu liên tục gây thua cùng lúc chạm mốc 120; kết quả thắng/thua không bị thay bằng hoà không ăn quân.
 
 **Phạm vi và phối hợp**
 
@@ -1961,6 +2052,7 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 - Áp dụng phông chữ Hán, màu và viền theo giao diện chung.
 - Thêm tên quân, phe và lượt đi dưới dạng nhãn trợ năng.
 - Kiểm khai cuộc và một thế giữa ván trên màn hình nhỏ và lớn.
+- Nhận thế, lượt và hướng nhìn qua dữ liệu thành phần; dùng cùng phép chuyển toạ độ cho quân, nhãn và vị trí bàn ở hai hướng, không xoay dữ liệu gốc.
 
 **Kết quả bàn giao**
 
@@ -1974,6 +2066,7 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 - Đổi hướng nhìn không đổi thế cờ gốc; quân Đen ở dưới khi chọn phe Đen.
 - Độ rộng 360 pixel hiển thị trọn bàn; phông quân tải được.
 - Trình đọc màn hình đọc được phe/tên quân và trạng thái lượt; không chỉ dựa màu đỏ/đen.
+- Đầu vào dành cho người xem hiển thị Đỏ ở dưới; đổi từ khai cuộc sang thế giữa ván cập nhật đúng quân mà không giữ quân đã bị ăn.
 
 **Phạm vi và phối hợp**
 
@@ -2008,12 +2101,14 @@ Kiểm chứng bàn cờ được vẽ đúng, xoay đúng phe và đọc đư�
 - Dùng trình đọc màn hình để duyệt tên quân, phe và lượt đi; xem khi không phân biệt được màu.
 - Ghi lỗi sai chữ, sai vị trí, sai hướng hoặc thiếu nhãn kèm thế đầu vào và kích thước.
 - Sau sửa, chạy lại ca lỗi và cả hai hướng nhìn để tránh sửa một phe làm hỏng phe kia.
+- Kiểm thêm hướng nhìn người xem luôn Đỏ phía dưới; lưu thế đầu vào cùng ảnh mỗi hướng để đối chiếu đúng giao điểm thay vì chỉ nhận xét hình thức.
 
 **Kết quả bàn giao**
 
 - Bộ ca kiểm hiển thị bàn cờ.
 - Ảnh và ghi nhận kiểm trợ năng.
 - Báo cáo đạt/không đạt/bị chặn, lỗi và kiểm lại.
+- Bảng trình duyệt/thiết bị/hướng nhìn/thế đã chạy, kết quả và đường dẫn bằng chứng; nêu rõ môi trường còn thiếu.
 
 **Điều kiện hoàn thành**
 
@@ -2054,6 +2149,7 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 - Vẽ dấu nước gần nhất và cảnh báo chiếu với lựa chọn giảm chuyển động.
 - Tạo bốn âm bằng Web Audio, là công cụ âm thanh có sẵn trong trình duyệt, và điều khiển loa.
 - Dựng chế độ thử hai bên trên một máy, kiểm chuột/cảm ứng và hướng bàn Đen.
+- Đối chiếu điểm bấm/kéo trên bàn hướng Đen với toạ độ gửi đi; phân biệt quân đang được kéo và nước đã được chấp nhận để có thể trả về trạng thái máy chủ khi tích hợp.
 
 **Kết quả bàn giao**
 
@@ -2067,6 +2163,7 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 - Thả ngoài ô hợp lệ không làm đổi quân; Escape huỷ chọn.
 - Bật giảm chuyển động loại hiệu ứng chiếu, không mất chữ cảnh báo.
 - Tắt loa ngừng toàn bộ âm bàn cờ và chuyển ván trong cùng phiên vẫn giữ lựa chọn.
+- Cùng một nước được chọn bằng chuột hoặc chạm ở hướng Đỏ/Đen tạo cùng toạ độ thế cờ; kéo ngoài bàn không tạo nước.
 
 **Phạm vi và phối hợp**
 
@@ -2095,6 +2192,8 @@ Chuẩn bị hai người chơi và ít nhất một người xem trong phòng t
 - Viết từng tình huống thử với thế cờ ban đầu, người đang tới lượt, thao tác và kết quả mong đợi; tách thao tác chuột và cảm ứng.
 - Chạy trên màn hình nhỏ và máy tính, đồng thời quan sát trình duyệt đối thủ và người xem.
 - Ghi kết quả đạt, không đạt hoặc chưa thể kiểm; lưu ảnh hoặc video lỗi và kiểm lại sau khi sửa.
+- Lặp ca bấm và kéo trên cả hướng Đỏ phía dưới và Đen phía dưới; ghi toạ độ nước mong đợi để phát hiện lỗi xoay bàn.
+- Kiểm riêng bốn âm, tắt loa rồi sang ván khác trong cùng phiên; kiểm giảm chuyển động vẫn giữ chữ và biểu tượng cảnh báo.
 
 **Kết quả bàn giao**
 
@@ -2103,6 +2202,7 @@ Chuẩn bị hai người chơi và ít nhất một người xem trong phòng t
 **Điều kiện hoàn thành**
 
 - Tất cả tình huống được giao đạt trên phòng tích hợp thật; không bỏ qua nhánh sai quyền hoặc thiết bị cảm ứng.
+- Gửi thao tác sai hoặc ngoài lượt giữ nguyên thế ở người chơi, đối thủ và người xem; không chỉ kiểm rằng nút đã bị ẩn.
 
 **Phạm vi và phối hợp**
 
@@ -2139,6 +2239,8 @@ Khi hai người trong phòng đã sẵn sàng, phòng gửi tín hiệu bắt �
 - Nối xét kết thúc tự động và chỗ ghép đồng hồ, đầu hàng, xin hoà, mất kết nối.
 - Viết kiểm tích hợp hai người và người xem, gồm gửi nước giả và gửi lặp.
 - Đối chiếu dữ liệu lưu với trạng thái đã phát, kiểm ván kết thúc không nhận nước mới.
+- Khi ghép đồng hồ, đặt kiểm thời gian trước hàm áp dụng nước; sau nước hợp lệ mới xét kết thúc theo ưu tiên, lưu nước/kết quả rồi phát trạng thái chính thức.
+- Mô tả đường báo lỗi ghi dữ liệu và kiểm đối chiếu để không phát một kết quả thành công không có bản ghi bền tương ứng.
 
 **Kết quả bàn giao**
 
@@ -2152,6 +2254,7 @@ Khi hai người trong phòng đã sẵn sàng, phòng gửi tín hiệu bắt �
 - Sửa trình duyệt để đi sai hoặc đi hộ đối thủ bị từ chối.
 - Gửi cùng lệnh hai lần chỉ có một nước lưu.
 - Thế chiếu hết/hết nước tự kết thúc, lý do đúng và không nhận nước tiếp.
+- Lặp thế, chiếu liên tục và mốc 120 được kiểm bằng lịch sử nước thật; lý do lưu bền trùng lý do phát cho cả phòng.
 
 **Phạm vi và phối hợp**
 
@@ -2198,6 +2301,8 @@ Mỗi phòng chọn 5, 10 hoặc 15 phút cho mỗi bên và không cộng giây
 - Nước đến khi thời gian còn lại đã bằng không hoặc âm phải bị từ chối; chỉ tạo một kết quả thua do hết giờ.
 - Đồng hồ tiếp tục giảm khi người tới lượt mất mạng.
 - Giao diện tích hợp lấy lại mốc máy chủ sau thẻ trình duyệt ẩn/nối lại; kiểm sai số hiển thị không quá một giây khi phần giao diện được nối.
+- Nước sai luật, ngoài lượt hoặc gửi trùng không chuyển đồng hồ sang đối thủ và không hoàn lại thời gian đã trôi.
+- Hết giờ và yêu cầu đầu hàng/hoà gần nhau chỉ chốt một kết quả; phép thử ghi mốc sự kiện và kết quả từ máy chủ để đối chiếu.
 
 **Phạm vi và phối hợp**
 
@@ -2226,6 +2331,7 @@ Người chơi ngồi ghế Đỏ hoặc Đen; người xem chỉ theo dõi. Má
 - Nối dữ liệu nước đi, lượt, đồng hồ và kết quả từ máy chủ; xử lý cập nhật mới thay cho trạng thái cũ.
 - Dựng lớp phủ nối lại theo thời gian máy chủ cung cấp; phân biệt đang đấu, đang chờ và người xem.
 - Kiểm trên màn hình điện thoại rộng 360 điểm ảnh và máy tính; bảo đảm bàn cờ không cuộn ngang, thông báo không che nút Đầu hàng.
+- Tạo dữ liệu thử cho từng lý do kết thúc, ngắt kết nối rồi nối lại và khởi động lại máy chủ; đối chiếu bảng cờ, đồng hồ, vai trò và nút theo trạng thái chính thức.
 
 **Kết quả bàn giao**
 
@@ -2234,6 +2340,9 @@ Người chơi ngồi ghế Đỏ hoặc Đen; người xem chỉ theo dõi. Má
 **Điều kiện hoàn thành**
 
 - Hai trình duyệt thấy cùng thế cờ và lượt; người xem không đi được quân; nhãn kết quả đúng với dữ liệu máy chủ.
+- Trở lại tab ẩn hoặc nối lại hiển thị giờ lệch không quá một giây; trong khi chờ 60 giây đồng hồ vẫn chạy, Escape không bỏ lớp phủ.
+- Ở lại phòng chỉ đóng lớp kết quả và trở về phòng chờ đã reset sẵn sàng; giữ ghế/phe và không khởi tạo ván mới trước khi cả hai sẵn sàng.
+- Ván bị gián đoạn không được ghi nhãn Thắng, Thua hay Hoà; có đúng lựa chọn Ở lại phòng/Rời phòng, không đếm đóng sau 10 phút.
 
 **Phạm vi và phối hợp**
 
@@ -2263,6 +2372,8 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 - Tạo bộ thế và dữ liệu đồng hồ xác định, ghi rõ kết quả mong đợi trước khi chạy.
 - Đối chiếu ba trình duyệt, phản hồi máy chủ và bản ghi nước đi/kết quả.
 - Ghi bằng chứng cho lỗi luật, sai thời điểm hoặc dữ liệu thiếu; kiểm lại sau sửa.
+- Lặp cùng vị trí khác lượt, lặp lần thứ ba với một bên/cả hai bên luôn chiếu và chu kỳ có nước không chiếu; đối chiếu kết quả với đáp án đã xác minh độc lập.
+- Truy vấn bản ghi ván/nước sau khi nhận kết quả, kiểm lý do và thời điểm thay vì chỉ chụp hộp kết quả.
 
 **Kết quả bàn giao**
 
@@ -2271,6 +2382,7 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 **Điều kiện hoàn thành**
 
 - Tất cả tình huống được giao đạt và không có kết quả trùng hoặc nước đi sau hết giờ.
+- Mốc 120 đồng thời hết nước hoặc một bên chiếu liên tục tạo kết quả thắng/thua; đồng thời chiếu hết vẫn là chiếu hết. Nước đến khi giờ bằng không bị từ chối trước khi xét các lý do này.
 
 **Phạm vi và phối hợp**
 
@@ -2293,12 +2405,14 @@ Máy chủ là nơi quyết định kết quả cuối cùng. Người chơi có
 - Chấp nhận hợp lệ kết thúc ván với lý do thoả thuận hoà. Từ chối hoặc hết hạn buộc người gửi đi thêm 5 nước của chính mình mới được đề nghị lại; cung cấp số nước còn chờ cho giao diện.
 - Người gửi được rút đề nghị đang chờ; phía nhận phải nhận thông báo đóng đề nghị. Nếu ván đã kết thúc vì lý do khác, đề nghị tự đóng và phản hồi đến sau không được sửa kết quả.
 - Chỉ người đang chơi trong ván có quyền đầu hàng hoặc gửi, rút, trả lời đề nghị tương ứng; người xem không được thực hiện các thao tác này.
+- Mỗi người chỉ có một đề nghị đang chờ; gửi thêm khi đã có đề nghị chưa xử lý bị từ chối, không tạo nhiều hạn trả lời độc lập.
 
 **Việc cần làm**
 
 - Tạo các thao tác máy chủ và sự kiện phản hồi cho đầu hàng, rời phòng, gửi/rút/trả lời đề nghị hoà.
 - Dùng cùng cơ chế kết thúc và lưu ván hiện có; xử lý tuần tự khi hết giờ, nước kết thúc ván và chấp nhận hoà đến gần nhau.
 - Viết kiểm thử từ chối, hết 30 giây, đếm 5 nước, rút đề nghị, quyền người xem và phản hồi sau khi ván đã kết thúc.
+- Lưu người gửi/nhận, hạn 30 giây và mốc số nước người gửi sau từ chối/hết hạn; chỉ tăng số nước đã đi khi máy chủ chấp nhận nước của chính người đó.
 
 **Kết quả bàn giao**
 
@@ -2307,6 +2421,8 @@ Máy chủ là nơi quyết định kết quả cuối cùng. Người chơi có
 **Điều kiện hoàn thành**
 
 - Rời giữa ván có kết quả thua đúng; đề nghị không dừng đồng hồ; yêu cầu muộn không thay đổi kết quả.
+- Bốn nước của người gửi chưa mở lại Xin hoà, nước thứ năm mở lại; nước đối thủ và lệnh gửi trùng không làm giảm số nước phải chờ.
+- Chấp nhận sau hạn, người xem trả lời hoặc người không phải bên nhận đều không tạo hoà; đầu hàng lặp chỉ lưu một kết quả.
 
 **Phạm vi và phối hợp**
 
@@ -2344,6 +2460,9 @@ Người chơi cần xác nhận trước khi tự nhận thua. Đề nghị ho�
 **Điều kiện hoàn thành**
 
 - Không đầu hàng khi Huỷ; đề nghị không làm ngừng ván; hai bên thấy cùng kết quả xử lý.
+- Thu gọn rồi mở lại giữ nguyên hạn 30 giây, không tạo đề nghị mới; đối thủ vẫn đi được quân và đồng hồ tiếp tục.
+- Từ chối/hết hạn hiển thị số nước còn chờ từ máy chủ; nước đối thủ không làm nút Xin hoà mở sớm.
+- Lỗi gửi lệnh giữ thông báo lỗi và cho thử lại theo trạng thái máy chủ; bấm nhanh không tạo nhiều đề nghị hoặc tự hiện kết quả khi chưa được chấp nhận.
 
 **Phạm vi và phối hợp**
 
@@ -2370,6 +2489,7 @@ Dùng hai người đang đấu và một người xem; chuẩn bị ván gần 
 
 **Việc cần làm**
 
+- Ghi mã ván, kết quả và số nước của người gửi trước từng ca; chuẩn bị đề nghị gần hết 30 giây và ván gần hết giờ để kiểm phản hồi đến sau kết thúc mà không nhầm với một ván mới.
 - Viết từng trường hợp Đồng ý/Huỷ/Từ chối/hết hạn/rút với kết quả mong đợi.
 - Thử bằng chuột và bàn phím, quan sát cả hai trình duyệt và kết quả máy chủ.
 - Lưu bằng chứng cho thời hạn, số nước chờ và phản hồi muộn; lập lỗi và kiểm lại khi sửa.
@@ -2381,6 +2501,7 @@ Dùng hai người đang đấu và một người xem; chuẩn bị ván gần 
 **Điều kiện hoàn thành**
 
 - Mọi nhánh được giao đạt; không có xử thua khi huỷ hoặc sửa kết quả sau khi ván đã kết thúc.
+- Đếm đủ năm nước tiếp theo của chính người gửi sau từ chối/hết hạn mới cho xin hoà lại; nước đối thủ không giảm số chờ. Rút/thu gọn đề nghị không được bị xử lý thành chấp nhận hoà.
 
 **Phạm vi và phối hợp**
 
@@ -2405,6 +2526,7 @@ Máy chủ giữ trạng thái ván và là nơi quyết định thời gian, l�
 
 **Việc cần làm**
 
+- Phân biệt mất kết nối của người đang đấu, người ngồi phòng chờ và người xem; lưu hạn giữ chỗ tương ứng. Khi nối lại, tra danh tính, ghế giữ và trạng thái ván hiện tại trước khi cấp quyền hoặc trả kết quả đã kết thúc.
 - Lưu thời điểm mất kết nối, hạn giữ ghế và thời gian còn lại từ cùng nguồn thời gian phía máy chủ. Xử lý đồng hồ hết giờ và sự kiện nối lại theo thứ tự xác định để không kết thúc một ván hai lần.
 - Kiểm danh tính và quyền trước khi khôi phục quyền điều khiển; gửi lại toàn bộ trạng thái cần thiết, không chỉ những nước đi bị thiếu. Phối hợp với giới hạn phiên để người đã hết quyền không tiếp tục điều khiển.
 - Tạo kiểm thử tự động cho mất mạng ngắn, quá hạn, hết giờ trước, cả hai cùng mất mạng và khởi động lại; lưu kết quả để nhóm kiểm thử chạy lại với thiết bị thật.
@@ -2413,11 +2535,13 @@ Máy chủ giữ trạng thái ván và là nơi quyết định thời gian, l�
 
 - Mã xử lý mất kết nối, nối lại và gián đoạn phía máy chủ; mô tả dữ liệu bàn giao cho giao diện.
 - Các kiểm thử tự động và bằng chứng về thứ tự xử lý thời gian, quyền điều khiển, kết quả ván.
+- Bảng chuyển trạng thái theo người đang đấu, phòng chờ, người xem; dữ liệu đồng bộ lại và kết quả sau restart.
 
 **Điều kiện hoàn thành**
 
 - Chạy thử các tình huống trên cho kết quả duy nhất, đúng hạn và đồng nhất ở mọi người tham gia; không có nước đi được chấp nhận từ người đã mất quyền.
 - Dữ liệu nối lại đủ để giao diện tiếp tục ván; gián đoạn máy chủ không bị biến thành chiến thắng hoặc khôi phục một thế cờ không còn lưu.
+- Mất mạng trong đếm bắt đầu huỷ đếm và giữ ghế 60 giây, không tạo ván hay ghi thua. Người cuối mất ghế ở phòng chờ làm đóng phòng; nếu còn người ngồi thì chuyển chủ khi cần.
 
 **Phạm vi và phối hợp**
 
@@ -2442,6 +2566,7 @@ Dùng hai thiết bị chơi một ván có đồng hồ và ít nhất một ng
 
 **Việc cần làm**
 
+- Chuẩn bị thêm phòng chỉ có chủ và phòng đang đếm vào ván; lưu mốc mất mạng, hết giờ, hết giữ ghế và nối lại để xác định nguyên nhân kết thúc bằng dữ liệu máy chủ, không chỉ theo đồng hồ màn hình.
 - Tạo ván có đủ thời gian; ngắt mạng một người 30 giây rồi nối lại, đối chiếu trạng thái trước và sau.
 - Lặp với hơn 60 giây; tạo ván khác có đồng hồ sắp hết để kiểm hết giờ trước ân hạn.
 - Ngắt hai người ở hai mốc khác nhau trong khi máy chủ vẫn hoạt động, kiểm chỉ bên mất trước bị xử thua.
@@ -2457,6 +2582,7 @@ Dùng hai thiết bị chơi một ván có đồng hồ và ít nhất một ng
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Mất mạng lúc chờ/đếm không ghi thua; hết 60 giây mất ghế, đóng phòng nếu không còn ai ngồi và báo người xem. Người xem nối lại trước/sau 5 phút được xử lý đúng chỗ giữ.
 
 **Phạm vi và phối hợp**
 
@@ -2483,6 +2609,7 @@ Phòng có thể Công khai để xuất hiện ở Sảnh, Chỉ vào bằng m�
 
 **Việc cần làm**
 
+- Nhận lệnh đổi chế độ kèm phòng và danh tính đã xác thực; trả chế độ thực tế, mã/link còn hiệu lực và lỗi nếu không đủ quyền/ghế. Cập nhật hiệu lực lời mời cùng chế độ trước khi chấp nhận lượt vào kế tiếp.
 - Xây thao tác đổi chế độ có kiểm quyền chủ phòng và kiểm lại số người ngồi ghế ngay khi xử lý; không dựa riêng vào điều kiện đã kiểm ở giao diện.
 - Cập nhật trạng thái phòng, hiệu lực thông tin mời và thông báo thay đổi cho người trong phòng cùng danh sách Sảnh. Giữ nhất quán khi có người vào cùng lúc với thao tác khoá.
 - Viết kiểm thử cho người không có quyền, thiếu ghế, khoá giữa ván, mở lại, dùng mã cũ và nối lại trong hoặc quá hạn.
@@ -2496,6 +2623,7 @@ Phòng có thể Công khai để xuất hiện ở Sảnh, Chỉ vào bằng m�
 
 - Người mới không thể vượt khoá bằng mã, đường dẫn hoặc lời mời cũ; người có quyền nối lại không bị nhầm thành người mới.
 - Mở khoá sinh thông tin mời mới và không làm mất trạng thái người đang chơi, đang xem.
+- Hai đường Công khai và Chỉ vào bằng mã đều nhận mã mới khi mở khoá; đổi chế độ không ngắt người xem cũ hoặc thay đổi mức chia sẻ media đã chọn.
 
 **Phạm vi và phối hợp**
 
@@ -2521,6 +2649,7 @@ Sảnh giúp người chưa được mời tìm phòng để chơi hoặc xem. D
 
 **Việc cần làm**
 
+- Dùng mốc mở Công khai để lấy tối đa 50 phòng gần nhất; trả đủ dữ liệu ghế/chỗ xem cho hai nút và nhãn Không cho xem. Khi một phòng rời danh sách, tính lại tập hiển thị để phòng hợp lệ kế tiếp có thể xuất hiện.
 - Tạo dữ liệu danh sách và sự kiện cập nhật dùng chung cho các trình duyệt đang mở Sảnh; chỉ trả dữ liệu cần hiển thị.
 - Xử lý yêu cầu vào phòng bằng cách kiểm lại quyền và sức chứa cùng lúc xếp chỗ, tránh hai yêu cầu cùng chiếm ghế hoặc vượt số người xem.
 - Viết kiểm thử danh sách rỗng, đủ 50 phòng, đổi chế độ, phòng đóng và tranh chấp ghế; đo thời gian cập nhật trong môi trường trình diễn.
@@ -2534,6 +2663,7 @@ Sảnh giúp người chưa được mời tìm phòng để chơi hoặc xem. D
 
 - Danh sách không lộ phòng riêng hoặc phòng khoá; thứ tự và các cột đúng với trạng thái thật.
 - Không vượt sức chứa khi người dùng bấm trên dữ liệu cũ; thông báo và vai trò cuối đúng từng nhánh.
+- Ca có 51 phòng công khai vẫn chỉ trả 50 phòng đúng thứ tự; ghế và chỗ xem được kiểm lại trước xếp vai trò. Yêu cầu từ dòng đã chuyển riêng bị từ chối và yêu cầu làm mới danh sách.
 
 **Phạm vi và phối hợp**
 
@@ -2559,6 +2689,7 @@ Một phòng có hai ghế chơi và số chỗ xem đã chọn khi tạo, tối
 
 **Việc cần làm**
 
+- Với mỗi thao tác, nhận phòng, người thao tác và người được chuyển/mời/đuổi; kiểm trạng thái chờ, quyền, ghế/chỗ xem hiện tại rồi mới cập nhật vai trò. Sau đổi ghế, gửi sự kiện để chat đổi mốc cặp, media đổi quyền và đề nghị đổi bên cũ bị huỷ.
 - Xây thao tác đổi vai trò, mời xuống ghế và đuổi có kiểm quyền tại máy chủ. Kiểm sức chứa ngay lúc xử lý, không chỉ lúc tạo lời mời.
 - Phát thay đổi danh sách, ghế và quyền cho những phần xử lý chat, camera và mic; gửi thông báo đưa người bị đuổi về Sảnh.
 - Kiểm thử phòng đầy, không cho xem, ghế bị lấy trước khi nhận lời, đổi vai trò giữa ván và vào lại sau khi bị đuổi.
@@ -2567,11 +2698,13 @@ Một phòng có hai ghế chơi và số chỗ xem đã chọn khi tạo, tối
 
 - Chức năng người xem phía máy chủ cùng dữ liệu thông báo cho giao diện và phần camera, mic.
 - Kiểm thử tự động về sức chứa, quyền thao tác và hiệu lực chặn.
+- Bảng quyền theo vai trò cùng dữ liệu đổi ghế/đuổi để chat và media cập nhật quyền.
 
 **Điều kiện hoàn thành**
 
 - Không có thao tác làm vượt số chỗ, tự chiếm ghế hoặc đổi vai trò trái phép; dữ liệu mọi người nhìn thấy thống nhất.
 - Người bị đuổi không vào lại bằng mã, đường dẫn, lời mời hoặc Sảnh trong cùng danh tính khi phòng chưa đóng.
+- Người rời ghế không còn quyền phát media hoặc đọc kênh riêng; xuống ghế thành công vẫn chưa sẵn sàng. Đuổi thu hồi cả kết nối nhận media hiện hữu, không chỉ ngừng cấp giấy phép mới.
 
 **Phạm vi và phối hợp**
 
@@ -2596,6 +2729,7 @@ Người chủ cần hiểu khác nhau giữa công khai, mời bằng mã và k
 
 **Việc cần làm**
 
+- Nhận chế độ hiện tại, chủ phòng và số ghế từ trạng thái phòng; cập nhật hộp đang mở khi chủ chuyển hoặc ghế thay đổi, để thao tác gửi đi luôn được máy chủ kiểm trên dữ liệu mới.
 - Xây hộp chọn với tên và giải thích ngắn bằng tiếng Việt. Hiển thị lựa chọn hiện tại, trạng thái đang gửi, thành công và lỗi; tránh thao tác lặp khi chưa có phản hồi.
 - Nối thao tác chọn với dịch vụ đổi chế độ. Khi bị từ chối do quyền hoặc số ghế vừa thay đổi, giữ trạng thái máy chủ xác nhận và hiển thị lý do.
 - Cập nhật thông tin chia sẻ phòng từ phản hồi mới. Kiểm sử dụng bằng chuột, bàn phím và màn hình điện thoại, gồm mở, đóng và vị trí chọn trong hộp.
@@ -2610,6 +2744,7 @@ Người chủ cần hiểu khác nhau giữa công khai, mời bằng mã và k
 
 - Chỉ đúng người có quyền thấy thao tác; chế độ hiển thị luôn khớp phản hồi máy chủ, không báo thành công giả.
 - Có thể thao tác trên điện thoại và bằng bàn phím; chú thích giải thích rõ lý do lựa chọn bị khoá.
+- Hộp đang mở không tiếp tục cho người đã mất quyền chủ đổi chế độ; khi khoá/mở khoá thất bại, cả nhãn chế độ và thông tin chia sẻ vẫn phản ánh trạng thái được xác nhận.
 
 **Phạm vi và phối hợp**
 
@@ -2635,6 +2770,7 @@ Màn phòng dùng chung thông tin ghế, danh sách người xem và phần hì
 
 **Việc cần làm**
 
+- Lập trạng thái thao tác theo chủ phòng/người chơi còn lại/người xem và phòng chờ/đang đấu; nối phản hồi ghế đã có người hoặc hết chỗ xem vào đúng lời mời/nút đang xử lý, giữ vai trò cũ nếu bị từ chối.
 - Nối danh sách, thao tác ghế và hộp xác nhận với dịch vụ người xem thật; cập nhật theo phản hồi thay vì tự nhận thao tác đã thành công.
 - Nối khung camera, mic với bộ xử lý hình tiếng đã có. Dùng chung khung cho phòng chờ và đang đấu để chuyển màn không cắt luồng.
 - Kiểm hai máy phát cùng người xem: đổi mức chia sẻ, tắt riêng mic, đổi vai trò, bị đuổi, mở thẻ khác và làm dịch vụ lỗi; quan sát trạng thái mỗi phía.
@@ -2648,6 +2784,7 @@ Màn phòng dùng chung thông tin ghế, danh sách người xem và phần hì
 
 - Giao diện không cung cấp thao tác trái quyền; lỗi được thông báo thật, không làm mất ván hoặc chat.
 - Người xem nhận đúng phạm vi chia sẻ; hình tiếng không bị ngắt chỉ vì bắt đầu ván.
+- Khi dịch vụ media lỗi hoặc hết hạn mức phải hiện “Camera/mic tạm thời không dùng được”; đổi thẻ dừng thiết bị ở thẻ cũ, thẻ mới không tự bật. Chuyển người chơi xuống xem phải bỏ các nút phát.
 
 **Phạm vi và phối hợp**
 
@@ -2674,6 +2811,7 @@ Sảnh là màn hình sau đăng nhập và nơi người chơi trở về từ 
 
 **Việc cần làm**
 
+- Dùng danh sách máy chủ đã sắp theo mốc mở Công khai; duy trì tối đa 50 dòng khi nhận thêm/bớt/đổi phòng. Nối phản hồi chuyển sang xem với thông báo “Ghế vừa có người, bạn đang xem trận” và cập nhật lại danh sách khi phòng vừa chuyển riêng.
 - Xây danh sách và trạng thái chờ, trống, lỗi; nối các lối tạo phòng, nhập mã, vào chơi, vào xem và chơi với máy.
 - Xử lý phản hồi khi ghế vừa bị lấy, phòng đầy hoặc không còn công khai; không dựa vào dòng cũ để khẳng định đã vào được.
 - Kiểm giao diện điện thoại, bàn phím, tài khoản chính thức và Khách; đối chiếu nội dung luật bằng từng tình huống minh hoạ.
@@ -2681,11 +2819,13 @@ Sảnh là màn hình sau đăng nhập và nơi người chơi trở về từ 
 **Kết quả bàn giao**
 
 - Sảnh và thanh điều hướng hoàn chỉnh, kết nối dữ liệu thật và phần luật đọc được ngay tại màn hình.
+- Bằng chứng danh sách giới hạn 50 phòng, phản hồi dòng cũ và nội dung Luật chơi đã đối chiếu.
 
 **Điều kiện hoàn thành**
 
 - Mọi lối vào đang hỗ trợ dẫn đúng chức năng; phần chưa làm được ghi rõ, không cho thao tác giả.
 - Danh sách, quyền vào và thông báo khớp phản hồi máy chủ; nội dung luật không đánh đồng hết nước với hoà.
+- Phần Luật chơi giải thích lặp thế phải cùng vị trí quân và cùng bên đến lượt; chu kỳ tính từ lần xuất hiện thứ nhất đến thứ ba, mỗi nước của bên chiếu trong chu kỳ đều phải là nước chiếu. Nêu chiếu hết ưu tiên cao nhất, hết nước/chiếu liên tục gây thắng thua trước hòa 120 nửa nước.
 
 **Phạm vi và phối hợp**
 
@@ -2712,6 +2852,7 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 **Việc cần làm**
 
+- Lập bảng các lối vào mã, đường dẫn, thông báo mời và nút Sảnh; thử khi đang mở, sau khoá và sau mở khoá. Ghi vai trò và chỗ giữ để phân biệt người mới với người nối lại.
 - Ghi mã/link ban đầu và vai trò từng người; thử gọi đổi chế độ bằng người không phải chủ.
 - Thử khoá lúc thiếu ghế, đủ ghế và đang ván; dùng thông tin mời cũ từ trình duyệt ngoài phòng.
 - Trong phòng khoá, thử nối lại trước/sau hạn 60 giây và 5 phút với đúng vai trò.
@@ -2727,6 +2868,7 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Mở khoá ở cả hai chế độ đều sinh mã/link mới, mọi bản cũ bị từ chối. Thay đổi chế độ phản ánh trên Sảnh nhưng không đẩy người xem hiện hữu ra khỏi phòng hoặc cắt media của họ.
 
 **Phạm vi và phối hợp**
 
@@ -2755,6 +2897,7 @@ Chuẩn bị phòng có hai người chơi cùng những người xem, gồm m�
 
 **Việc cần làm**
 
+- Chuẩn bị tin riêng của cặp ban đầu và bật camera/mic trước khi chuyển người chơi xuống xem; đối chiếu ghế, Sẵn sàng, quyền đọc chat và quyền media sau cùng một thao tác đổi vai trò.
 - Tạo phòng còn chỗ, đầy chỗ và không cho xem; kiểm chuyển ghế/xem theo từng vai trò.
 - Mời người xem xuống ghế, thử đồng ý/từ chối và cho người khác lấy ghế trước khi đồng ý; kiểm không vượt sức chứa.
 - Trong ván gửi yêu cầu đổi chỗ trực tiếp; thử người xem tự ngồi hoặc tự đuổi để kiểm máy chủ chặn.
@@ -2770,6 +2913,7 @@ Chuẩn bị phòng có hai người chơi cùng những người xem, gồm m�
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Cặp mới không đọc tin riêng cặp cũ; người xuống xem mất quyền phát. Phiên Khách mới có danh tính mới chỉ bị chặn bởi khoá/quyền vào hiện tại, không ghi thành lỗi vì không chặn tuyệt đối theo người thật.
 
 **Phạm vi và phối hợp**
 
@@ -2798,6 +2942,7 @@ Chuẩn bị tài khoản chính thức, phiên Khách và các phòng công kha
 
 **Việc cần làm**
 
+- Ghi danh sách phòng và mốc mở Công khai trước từng lần đổi; dùng phòng đã tồn tại rồi mới mở công khai để kiểm thứ tự dựa trên lần mở công khai, không nhầm với ngày tạo phòng.
 - Chuẩn bị các loại phòng, gồm không cho xem, đầy ghế, đầy người xem; kiểm từng cột và nút trên Sảnh của tài khoản thường và Khách.
 - Mở 51 phòng mẫu để kiểm giới hạn và thứ tự; đổi công khai, đóng và thay số người, đo cập nhật trên trình duyệt khác.
 - Cho hai người tranh ghế cuối; bấm Vào xem lúc ghế trống và dùng dòng cũ sau khi phòng chuyển riêng, kiểm vai trò cuối.
@@ -2813,6 +2958,7 @@ Chuẩn bị tài khoản chính thức, phiên Khách và các phòng công kha
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Bài đọc Luật chơi phải đối chiếu định nghĩa cùng vị trí/cùng lượt và chu kỳ lần thứ nhất đến thứ ba; nội dung không được tuyên bố hoà 120 nửa nước nếu cùng nước đã gây chiếu hết, hết nước hoặc chiếu liên tục xử thua.
 
 **Phạm vi và phối hợp**
 
@@ -2844,6 +2990,7 @@ LiveKit là dịch vụ chuyển âm thanh và hình ảnh trực tiếp giữa 
 - Tích hợp cấp giấy phép theo tài khoản, phòng và vai trò hiện tại; kiểm quyền lại khi trạng thái thay đổi.
 - Cung cấp thao tác cho giao diện bật/tắt, đổi chia sẻ và nhận lỗi rõ ràng.
 - Kiểm máy chủ bằng người chơi/người xem thật, gồm giả yêu cầu phát trái quyền, rời phòng, đổi vai và đổi thẻ trình duyệt.
+- Lập và chạy bảng người phát/người nhận cho ba mức chia sẻ, hai thiết bị bật/tắt độc lập và vai trò trước/sau rời ghế; đo từ thao tác tới khi phía nhận thực sự đổi luồng.
 
 **Kết quả bàn giao**
 
@@ -2852,6 +2999,9 @@ LiveKit là dịch vụ chuyển âm thanh và hình ảnh trực tiếp giữa 
 **Điều kiện hoàn thành**
 
 - Người không được phép không nhận hoặc phát được luồng; lỗi truyền hình/tiếng không kết thúc ván.
+- Không chia sẻ chặn cả đối thủ và người xem; Chỉ đối thủ chặn người xem; Cả đối thủ và người xem nhận được đúng người chơi đã bật thiết bị.
+- Chuyển mức chia sẻ và bật/tắt có hiệu lực không quá 2 giây; chuyển từ phòng chờ vào ván không ngắt luồng đang hợp lệ.
+- Dịch vụ lỗi trả trạng thái Camera/mic tạm thời không dùng được cho giao diện, trong khi nước đi, đồng hồ và chat vẫn hoạt động.
 
 **Phạm vi và phối hợp**
 
@@ -2875,9 +3025,11 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 - Tin nhắn dài tối đa 200 ký tự. Mỗi người gửi tối đa 5 tin trong 10 giây; tin thứ 6 bị chặn với thông báo “Bạn gửi quá nhanh”.
 - Thay từ cấm bằng *** trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.
 - Nội dung phải được hiển thị như văn bản thường, không chạy đoạn mã do người gửi chèn; không ghi nội dung chat vào nhật ký vận hành.
+- Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng *** rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký.
 
 **Việc cần làm**
 
+- Nhận danh tính người gửi từ phiên đã xác thực; mỗi lệnh gửi/đọc mang phòng và kênh. Kiểm người còn ở phòng, vai trò hiện tại và mốc được đọc trước khi lấy hoặc phát tin; trả nội dung đã lọc hoặc lỗi quyền/độ dài/tốc độ để giao diện xử lý.
 - Tạo lưu trữ tin theo phòng, kênh và mốc cặp người chơi; cập nhật quyền khi đổi vai trò.
 - Tích hợp bộ lọc chung, kiểm độ dài và giới hạn gửi tại máy chủ.
 - Viết kiểm thử giả yêu cầu trái quyền, thay người, đổi phe, đóng phòng và các biến thể né bộ lọc.
@@ -2885,10 +3037,12 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 **Kết quả bàn giao**
 
 - Dịch vụ hai kênh chat, bộ lọc và kiểm thử tự động.
+- Hợp đồng gửi/đọc tin và lỗi quyền, độ dài, tốc độ; dữ liệu mẫu trước/sau đổi cặp.
 
 **Điều kiện hoàn thành**
 
 - Người xem không đọc tin riêng; cặp mới không đọc tin cũ; tin quá dài hoặc quá nhanh bị chặn.
+- Đổi cặp phải cắt quyền đọc của người rời ghế và tin cặp cũ của cả hai người trong cặp mới; bộ lọc dùng chung che tin chat nhưng từ chối tên chứa từ cấm.
 
 **Phạm vi và phối hợp**
 
@@ -2915,6 +3069,7 @@ Cùng một khung chức năng được dùng ở phòng chờ và phòng đang 
 
 **Việc cần làm**
 
+- Dùng dữ liệu quyền/kênh/mốc cặp từ máy chủ làm nguồn hiển thị; khi đổi vai trò hoặc đổi cặp, xoá phần tin không còn quyền khỏi trạng thái giao diện trước khi nạp tập tin được phép.
 - Dựng bố cục hai khung ở máy tính và hai thẻ chọn kênh trên điện thoại, với trạng thái tải, rỗng và lỗi.
 - Nối gửi/nhận tin, quyền theo vai trò và việc thay tập tin khi đổi phòng hoặc đổi cặp.
 - Thử bằng người chơi và người xem, tin chứa thẻ mã, gửi lỗi rồi thử lại và chuyển trạng thái phòng.
@@ -2922,10 +3077,12 @@ Cùng một khung chức năng được dùng ở phòng chờ và phòng đang 
 **Kết quả bàn giao**
 
 - Khung chat dùng chung trong phòng chờ và bàn đấu, nối máy chủ thật.
+- Bằng chứng giao diện đổi cặp, đổi vai trò và gửi lỗi/Thử lại trên máy tính lẫn điện thoại.
 
 **Điều kiện hoàn thành**
 
 - Người xem không thấy kênh riêng; bố cục mặc định đúng thiết bị; nội dung không chạy mã và không rò tin cặp cũ.
+- Thử lại tin lỗi không hiện hai bản tin đã gửi thành công; tin của cặp cũ biến mất ở cả người ở lại lẫn người mới, không chỉ ẩn thẻ Kênh Riêng.
 
 **Phạm vi và phối hợp**
 
@@ -2952,6 +3109,7 @@ Dùng hai máy cho hai người chơi và thêm điện thoại hoặc máy khá
 
 **Việc cần làm**
 
+- Lập bảng cho mỗi người phát, trạng thái camera/mic và ba mức chia sẻ; ghi người phải nhận/không được nhận cùng thời điểm thao tác và thời điểm bên nhận đổi trạng thái để đo trên hai phía.
 - Viết tình huống cho từng người nhận, mức chia sẻ và trạng thái thiết bị; ghi mốc đổi để đo thời gian.
 - Thử giao diện thật và kiểm quyền phía máy chủ; lưu ảnh/video cùng số đo.
 - Ghi rõ môi trường, thiết bị và trường hợp chưa thể thử; kiểm lại lỗi sau sửa.
@@ -2963,6 +3121,7 @@ Dùng hai máy cho hai người chơi và thêm điện thoại hoặc máy khá
 **Điều kiện hoàn thành**
 
 - Các nhánh được giao đều đạt; không đánh dấu đạt nếu chỉ thử một người chơi hoặc chỉ kiểm nút giao diện.
+- Có bằng chứng riêng cho từng nút camera/mic và đổi mức chia sẻ trong 2 giây; lỗi hoặc hết hạn mức media giữ nguyên kết quả ván, đồng hồ và chat. Không dùng ngưỡng 2 giây này làm ngưỡng thu hồi sau đuổi.
 
 **Phạm vi và phối hợp**
 
@@ -2989,6 +3148,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 
 **Việc cần làm**
 
+- Ghi thời điểm tham gia phòng và mốc cặp ngồi ghế cho bộ tin mẫu; tạo tin trước/sau từng mốc để đối chiếu cả dữ liệu máy chủ trả về lẫn nội dung trên màn hình.
 - Viết bộ dữ liệu tin nhắn hợp lệ, biên, từ cấm và nội dung có thể gây chạy mã; xác định người được đọc cho từng tin.
 - Chạy đa trình duyệt, thử yêu cầu vượt quyền và đối chiếu dữ liệu sau đóng phòng.
 - Lưu kết quả theo từng biến thể, bằng chứng và lỗi; kiểm lại sau khi sửa.
@@ -3000,6 +3160,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 **Điều kiện hoàn thành**
 
 - Không rò kênh riêng, không chạy mã từ tin nhắn, không phát tin vượt giới hạn.
+- Tin thứ sáu trong 10 giây không tới bất kỳ người nhận nào; sau đóng phòng, truy vấn bằng quyền cũ không lấy lại được chat. Báo tách những nhánh đổi vai trò đang chờ kiểm tích hợp, không ghi đã đạt.
 
 **Phạm vi và phối hợp**
 
@@ -3040,6 +3201,7 @@ Máy cờ tự viết dùng chung bộ luật với online. Tìm kiếm chạy r
 - Gói máy cờ trong packages/engine gọi được từ máy chủ.
 - Bộ kiểm nước hợp lệ và giới hạn thời gian.
 - Báo cáo đo đầu tiên phục vụ tối ưu.
+- Bảng từng thế/cấp với nước hợp lệ, độ sâu hoàn tất, thời gian phản hồi; tổng hợp thời gian mà 95% lượt đo không vượt quá, đối chiếu mục tiêu 300/1.000/3.000 mili giây.
 
 **Điều kiện hoàn thành**
 
@@ -3047,6 +3209,7 @@ Máy cờ tự viết dùng chung bộ luật với online. Tìm kiếm chạy r
 - Ép ngân sách ngắn vẫn lấy được nước hợp lệ tốt nhất đã lưu khi có nước để đi.
 - Tìm kiếm chạy riêng, không khóa đường xử lý chính.
 - Báo cáo có thời gian và độ sâu thực, không ghi đạt chỉ vì đã cấu hình độ sâu 6.
+- Thế đã kết thúc hoặc không có nước hợp lệ trả trạng thái kết thúc rõ ràng thay vì nước giả; lỗi tác vụ được trả cho máy chủ để luồng ván xử lý.
 
 **Phạm vi và phối hợp**
 
@@ -3069,12 +3232,14 @@ Người dùng luyện cờ một mình với máy. Thư viện luật và bộ 
 - Không áp đồng hồ thi đấu cho người chơi và không có chức năng xin hoà. Có đầu hàng; đầu hàng kết thúc ván với người chơi thua. Điều kiện kết thúc theo luật cờ chung vẫn được áp dụng.
 - Khi ván kết thúc, cung cấp dữ liệu để giao diện hiện Ván mới hoặc Về Sảnh. Ván mới mở lại lựa chọn cấp độ và lựa chọn phe trước đó, cho phép đổi trước khi bắt đầu; tạo mã ván mới, không hồi sinh ván đã xong.
 - Giữ riêng lựa chọn Ngẫu nhiên ban đầu và phe thực tế đã bốc để điền đúng khi tạo ván tiếp theo. Trạng thái ván đấu với máy trong phiên bản này chỉ giữ trong bộ nhớ máy chủ, không có lịch sử ván dành cho người dùng.
+- Trước tạo ván kiểm danh tính và vị trí chơi hiện có, không cho người đang ngồi ghế online hoặc có ván máy khác tạo vị trí thứ hai.
 
 **Việc cần làm**
 
 - Tạo thao tác bắt đầu ván, nhận nước người, yêu cầu máy tìm nước và chốt kết quả.
 - Kết nối việc đầu hàng và tạo ván mới, bảo đảm không gửi nước máy vào ván đã kết thúc.
 - Viết kiểm thử cả ba lựa chọn phe, nước đầu của máy, kết thúc và tạo lại ván có mã khác.
+- Gắn kết quả tìm nước với đúng ván và trạng thái đang chờ máy; huỷ tác vụ khi đầu hàng, bỏ kết quả đến muộn để không áp nước vào ván đã kết thúc hoặc ván mới.
 
 **Kết quả bàn giao**
 
@@ -3083,6 +3248,8 @@ Người dùng luyện cờ một mình với máy. Thư viện luật và bộ 
 **Điều kiện hoàn thành**
 
 - Đúng lượt đầu theo phe; ván mới có danh tính mới; người dùng không thể điều khiển ván của người khác.
+- Đầu hàng khi máy đang tính cho người chơi thua, giải phóng vị trí chơi và không nhận nước máy muộn.
+- Lựa chọn Ngẫu nhiên được giữ để điền thiết lập ván tiếp theo dù phe thực tế ván trước là Đỏ hoặc Đen; bắt đầu lại tạo mã mới.
 
 **Phạm vi và phối hợp**
 
@@ -3108,6 +3275,7 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 
 **Việc cần làm**
 
+- Nhận dữ liệu cấp độ, lựa chọn phe, phe thực tế, mã ván, lượt, trạng thái và lỗi từ dịch vụ ván máy; lưu riêng lựa chọn Ngẫu nhiên để điền lại khi bấm Ván mới, không suy ngược lựa chọn từ phe đã bốc.
 - Dựng hộp chọn và màn bàn cờ tinh gọn, nối thao tác người chơi với dịch vụ ván máy.
 - Dựng các trạng thái đang nghĩ, lỗi, thử lại, kết quả và quay về Sảnh; giữ nhãn lượt và thao tác rõ trên điện thoại.
 - Kiểm luồng bình thường bằng máy cờ thật; kiểm hình thức trạng thái lỗi theo dữ liệu phản hồi trước khi thử sự cố thật.
@@ -3115,10 +3283,12 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 **Kết quả bàn giao**
 
 - Giao diện đấu máy đầy đủ, gồm kết quả và sự cố/Thử lại.
+- Bảng ánh xạ phản hồi ván máy sang trạng thái giao diện và bằng chứng ba nhánh sự cố.
 
 **Điều kiện hoàn thành**
 
 - Đúng người đi đầu và hướng bàn; ván mới dùng lựa chọn được xác nhận; thử lại không nhân đôi nước người.
+- Cùng một ca quá 10 giây phải giữ mã ván/thế/lượt khi Thử lại; ca đã Bỏ dở phải tạo mã mới và giữ phe thực tế. Máy chủ mất trạng thái phải hiện đúng thông báo, không dựng lại ván từ màn hình cũ.
 
 **Phạm vi và phối hợp**
 
@@ -3145,6 +3315,7 @@ Chuẩn bị tài khoản chính thức và phiên Khách, dùng máy cờ thậ
 
 **Việc cần làm**
 
+- Lập bảng chín tổ hợp cấp độ và lựa chọn phe, kèm mã ván, phe thực tế, lượt đầu và hướng bàn; tách ca Ván mới sau đầu hàng khỏi ca Thử lại sau lỗi để dùng đúng kỳ vọng.
 - Viết các tình huống cho cả ba cấp và ba lựa chọn phe, thêm kết thúc do đầu hàng và kết thúc theo luật.
 - Quan sát giao diện và phản hồi máy chủ để xác minh lượt, phe và mã ván; ghi dữ liệu các lần bốc ngẫu nhiên.
 - Lưu bằng chứng, phân loại đạt/không đạt/chưa thể kiểm và kiểm lại lỗi sau sửa.
@@ -3156,6 +3327,7 @@ Chuẩn bị tài khoản chính thức và phiên Khách, dùng máy cờ thậ
 **Điều kiện hoàn thành**
 
 - Đúng lượt đầu, hướng bàn và giá trị điền lại; mỗi ván mới có danh tính riêng.
+- Giá trị Ngẫu nhiên vẫn được điền lại là Ngẫu nhiên sau ván, không thành Đỏ/Đen theo kết quả bốc trước. Báo số lần thử và phân bố phe thực tế, không tự đặt ngưỡng thống kê mới ngoài yêu cầu 50/50.
 
 **Phạm vi và phối hợp**
 
@@ -3179,6 +3351,7 @@ Bộ máy chọn nước đã có; bộ 50 thế giữa ván và bộ chiếu h�
 
 **Việc cần làm**
 
+- Đọc kết quả đo nền và cấu hình bộ máy hiện có; chạy lại cùng bộ thế trước khi chỉnh để xác định thế chậm/sai. Gắn mỗi thay đổi với kết quả trước/sau trên cùng dữ liệu và máy, giữ đáp án độc lập của bộ chiếu hết.
 - Điều chỉnh cách chấm điểm thế cờ, thứ tự thử nước và loại nhánh không cần thiết; giữ các kiểm thử luật để việc tăng tốc không làm sai nước.
 - Chạy cùng bộ 50 thế ở mỗi cấp trên máy trình diễn. Lưu thời gian từng lần, độ sâu đạt được, nước trả về, cấu hình máy và phiên bản phần mềm.
 - Tính mốc thời gian mà ít nhất 95% lượt đo không vượt quá, đối chiếu lần lượt 300, 1.000 và 3.000 mili giây. Chạy lại bộ chiếu hết và các cặp đấu máy, giữ dữ liệu thô để người kiểm thử đối chiếu.
@@ -3192,6 +3365,7 @@ Bộ máy chọn nước đã có; bộ 50 thế giữa ván và bộ chiếu h�
 
 - Ngưỡng thời gian, tính hợp lệ, bộ chiếu hết và phân biệt sức chơi có bằng chứng đáp ứng; không chỉ nêu “cảm giác nhanh hơn”.
 - Nếu chưa đạt, ghi đúng điểm chưa đạt và tác động để người phụ trách sản phẩm xử lý, không tự hạ mục tiêu hoặc tuyên bố hoàn tất.
+- Báo cáo liệt kê riêng số thế chiếu hết bắt buộc đúng/tổng và bộ mở rộng nếu có; không áp yêu cầu 100% chiếu hết của cấp Khó cho cấp Dễ/Trung bình.
 
 **Phạm vi và phối hợp**
 
@@ -3217,6 +3391,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 
 **Việc cần làm**
 
+- Lưu mã ván, cấp độ, lựa chọn phe, phe thực tế, thế/lượt và mã tác vụ máy trong bộ nhớ; khi nhận tiếp tục/Thử lại, trả trạng thái đủ để giao diện phân biệt còn ván, đang tính, quá thời gian chờ, đã Bỏ dở hoặc mất trạng thái.
 - Quản lý thời hạn giữ ván và tác vụ tính nước cùng danh tính người chơi. Kiểm quyền mỗi yêu cầu tiếp tục hoặc thử lại, không chỉ kiểm đường dẫn ván.
 - Phân biệt quá thời gian chờ, lỗi tác vụ và ván đã bỏ dở để trả kết quả đủ cho giao diện báo đúng hậu quả.
 - Viết kiểm thử ngắt mạng trước, trong và sau lượt máy; quay lại trong hoặc quá hạn; gửi thử lại trùng; rời ván lúc máy đang nghĩ; máy chủ khởi động lại.
@@ -3226,11 +3401,13 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 
 - Xử lý phía máy chủ về giữ ván, thử lại, huỷ tác vụ và giải phóng chỗ chơi.
 - Bộ kiểm thử cùng dữ liệu phản hồi cho giao diện sự cố.
+- Dữ liệu mẫu ba nhánh sự cố và bằng chứng kết quả tác vụ cũ đến muộn bị bỏ qua.
 
 **Điều kiện hoàn thành**
 
 - Ván còn hạn được tiếp tục đúng thế; ván mất trạng thái không được tiếp tục bằng dữ liệu đoán.
 - Không áp nước trùng, không giữ vị trí chơi sau khi đã đầu hàng; thông báo thử lại phân biệt đúng tiếp tục ván cũ và tạo ván mới.
+- Thử lại ván đã Bỏ dở kiểm lại quyền và một vị trí chơi trước tạo mã mới; không bốc lại phe thực tế. Về Sảnh hoặc tạo ván mới sau restart không tự tạo lịch sử ván với máy.
 
 **Phạm vi và phối hợp**
 
@@ -3252,11 +3429,12 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 - Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bấm Thử lại liên tiếp chỉ xử lý một lần. Khởi động lại máy chủ thì hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới, không khôi phục giả.
 - Rời ván/Đăng xuất chủ động phải xác nhận đầu hàng; Đồng ý kết thúc, huỷ tác vụ máy và giải phóng vị trí; Huỷ giữ nguyên.
-- Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; thời gian tại mốc 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.
+- Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; mốc thời gian mà ít nhất 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.
 - Cấp Khó giải đúng 100% bộ chiếu hết một và hai nước bắt buộc có đáp án độc lập. Đấu 20 ván mỗi cặp cấp liền nhau: Khó thắng Trung bình và Trung bình thắng Dễ ở đa số ván, ghi thắng/hoà/thua.
 
 **Việc cần làm**
 
+- Lập bảng ba lỗi độc lập: quá 10 giây nhưng còn ván, lỗi thực sự đã Bỏ dở và máy chủ khởi động lại mất ván; ghi mã ván/cấp/phe/thế/lượt trước và sau Thử lại, đồng thời cho tác vụ cũ trả kết quả muộn.
 - Chuẩn bị máy demo và bộ thế có đáp án độc lập; ghi bản phần mềm, thiết bị và cấu hình cho mọi phép đo.
 - Kiểm mất mạng trước/trong/sau lượt máy, quay lại trước/sau 30 phút; gây lỗi tìm nước và thử bấm Thử lại nhiều lần.
 - Khởi động lại máy chủ, rời hoặc đăng xuất khi máy đang nghĩ; kiểm không áp nước cũ hay giữ vị trí sau đầu hàng.
@@ -3273,6 +3451,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Không đổi ván khi chỉ quá thời gian chờ; tạo mã mới giữ phe thực tế khi đã Bỏ dở; restart không khôi phục giả. Báo đủ thời gian từng mẫu và độ sâu thực, kết quả chiếu hết bắt buộc cùng số thắng/hoà/thua của 20 ván mỗi cặp.
 
 **Phạm vi và phối hợp**
 

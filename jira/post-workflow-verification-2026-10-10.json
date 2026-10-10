@@ -1,0 +1,47 @@
+{
+  "items": 107,
+  "isLast": true,
+  "counts": {
+    "Epic / Done": 9,
+    "Story / Done": 27,
+    "Task / To Do": 71
+  },
+  "people": {
+    "TÌNH 4851_NGUYỄN NGỌC": 156,
+    "Nguyễn Minh Thư": 120,
+    "Gia Kỳ": 108,
+    "Võ Thành Đông": 120,
+    "nguyenhoangtungtuyhoa": 132,
+    "Tưởng Lê khoa Cường-4572": 124,
+    "4841_Lê Thị Xuân Nhạn": 120
+  },
+  "totalHours": 880,
+  "errors": [],
+  "maxDaily": 7,
+  "dependencies": 186,
+  "crossSprint": [
+    "XIAN-38",
+    "XIAN-56",
+    "XIAN-60",
+    "XIAN-71",
+    "XIAN-92"
+  ],
+  "end": "2026-11-04",
+  "sprintsFuture": true,
+  "workflow": {
+    "done": {
+      "transitionId": "5",
+      "resolution": "Done"
+    },
+    "reopen": {
+      "transitionId": "9",
+      "name": "Mở lại",
+      "from": "Done",
+      "to": "To Do",
+      "clearResolution": true
+    },
+    "savedAndReadBack": true,
+    "liveTaskTransitionTested": false
+  },
+  "note": "Verified through Atlassian and Jira UI on 2026-10-10. No sprint started."
+}

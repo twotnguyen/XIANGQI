@@ -11,6 +11,7 @@ DATA=json.loads((ROOT/'jira/plan-data.json').read_text())
 ISSUES=DATA['issues'];BY={x['id']:x for x in ISSUES};TASKS={k:x for k,x in BY.items() if x['type']=='Task'}
 ACS=json.loads((ROOT/'jira/AC-TASK-MAP.json').read_text())
 DESCRIPTIONS=json.loads((ROOT/'jira/descriptions.json').read_text())
+DESCRIPTION_AUDIT=json.loads((ROOT/'jira/description-source-audit.json').read_text())
 ASSESSMENT=json.loads((ROOT/'jira/workload-assessment.json').read_text())
 LOAD=ASSESSMENT['items']
 BASE=datetime.date.fromisoformat(DATA['start_date'])
@@ -57,6 +58,10 @@ def validate():
  assert collections.Counter(x['type'] for x in ISSUES)=={'Epic':9,'Story':27,'Task':71}
  assert len(BY)==107 and len({x['issue_id'] for x in ISSUES})==107
  assert set(DESCRIPTIONS)==set(BY),'Description membership differs'
+ assert set(DESCRIPTION_AUDIT)==set(BY),'Description source audit membership differs'
+ for key,audit in DESCRIPTION_AUDIT.items():
+  assert audit['sources'] and all(isinstance(s,str) and s.strip() for s in audit['sources']),f'{key}: missing BA sources'
+  assert audit['changes'] and all(isinstance(s,str) and s.strip() for s in audit['changes']),f'{key}: missing review record'
  assert len({description(k) for k in BY})==107,'Duplicate Description'
  for k,d in DESCRIPTIONS.items():
   assert set(d)=={'goal','context','requirements','steps','deliverables','acceptance','boundary'},k
@@ -208,7 +213,9 @@ def generate_csv(backlog):
 
 def generate_detail(backlog):
  out=['# Danh sách mục Jira XIAN — kế hoạch lập lại 09/10/2026\n', '> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; mọi mục nhập To Do. Ngày 09/10 lập kế hoạch, thi công từ 10/10 đến sáng 04/11; chiều 04/11 dự phòng, demo 05/11.\n',
- 'Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. R1 mặc định hạn Story là ngày Task đầu bắt đầu; US-08.3/US-00.5 giữ ngoại lệ hạn Task cuối để đóng hồ sơ bằng chứng, không tự thay ngưỡng AC.\n']
+ 'Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. R1 mặc định hạn Story là ngày Task đầu bắt đầu; US-08.3/US-00.5 giữ ngoại lệ hạn Task cuối để đóng hồ sơ bằng chứng, không tự thay ngưỡng AC.\n',
+ '**Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.\n',
+ 'Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](description-source-audit.json). Đợt rà soát nội dung này giữ nguyên dữ liệu lịch và phân công của bản kế hoạch 09/10/2026 ở trên.\n']
  for ep in [x for x in ISSUES if x['type']=='Epic']:
   group=[ep]
   for st in [BY[k] for k in story_ids(ep['id'])]:group += [st]+sorted(task_group(st['id']),key=lambda x:x['id'])
@@ -218,7 +225,7 @@ def generate_detail(backlog):
    fields=[['Issue Id',x['issue_id']],['Issue Type',x['type']],['Parent',x['parent'] or '—'],['Assignee',x['owner'] if task else 'Tình'],['Reporter','Tình'],['Priority',x['priority']],['Status','To Do'],['Start date',f['start']],['Due date',f['due']],['Sprint',f"XIAN Sprint {x['sprint']}" if task else '—'],['Fix version',f['fix']],['Original Estimate',str(x['hours'])+' giờ' if task else '—'],['Story Points',points(x['hours']) if task else '—']]
    if task:fields += [['Story (relates to)',x['story']],['Is blocked by',', '.join(x['deps']) or '—']]
    elif x['type']=='Story':fields += [['Task thực hiện',', '.join(y['id'] for y in task_group(x['id']))],['Sprint thi công',', '.join('S'+str(n) for n in work_sprints(x['id']))]]
-   fields += [['Component chính',x.get('primary_component','Tổng hợp phạm vi các Task')],['Components',', '.join(x['components'])],['Labels',', '.join(x['labels'])]]
+   fields += [['Component chính',x.get('primary_component','Tổng hợp phạm vi các Task')],['Components',', '.join(x['components'])],['Labels',', '.join(x['labels'])],['Nguồn đặc tả (BA / AC)',', '.join(DESCRIPTION_AUDIT[x['id']]['sources'])]]
    out += [table(['Trường','Giá trị'],fields),'\n**Description**\n\n'+f['description']+'\n\n---\n']
  return '\n'.join(out)
 

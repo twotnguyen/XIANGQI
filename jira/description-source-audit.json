@@ -1,0 +1,1307 @@
+{
+  "EP-00": {
+    "sources": [
+      "0.1",
+      "0.4",
+      "0.16",
+      "10.1",
+      "11"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho nền tảng, quyền dữ liệu, truyền tin và bằng chứng chất lượng bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-01": {
+    "sources": [
+      "0.2",
+      "0.3",
+      "0.4",
+      "0.15",
+      "0.17",
+      "1.1",
+      "1.2",
+      "1.3",
+      "1.4",
+      "1.5",
+      "1.8"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho đăng ký, đăng nhập, Khách và phiên bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-02": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.10",
+      "2.1",
+      "2.3",
+      "2.7",
+      "3.6"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho tạo phòng, sẵn sàng, đổi bên và chơi tiếp bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-03": {
+    "sources": [
+      "0.3",
+      "2.2",
+      "2.4",
+      "2.5",
+      "2.6",
+      "2.7",
+      "2.8",
+      "5.5",
+      "11"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho lời mời phòng và quan hệ bạn bè bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-04": {
+    "sources": [
+      "0.12",
+      "0.17",
+      "3.1",
+      "3.4",
+      "3.5",
+      "10.1",
+      "10.3"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho luật cờ dùng chung và thao tác bàn cờ bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-05": {
+    "sources": [
+      "0.7",
+      "0.12",
+      "0.17",
+      "2.1",
+      "3.3",
+      "3.5",
+      "3.6",
+      "8.3"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho ván online, đồng hồ, kết quả và mất kết nối bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-06": {
+    "sources": [
+      "0.3",
+      "0.5",
+      "0.7",
+      "2.7",
+      "2.8",
+      "4.1",
+      "4.2",
+      "4.3",
+      "10.4",
+      "11"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho chế độ phòng, Sảnh và người xem bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-07": {
+    "sources": [
+      "0.13",
+      "0.14",
+      "0.16",
+      "4.1",
+      "4.2",
+      "5.3"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho hai kênh chat, camera/mic và quyền riêng tư bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "EP-08": {
+    "sources": [
+      "0.1",
+      "0.9",
+      "0.17",
+      "6.1",
+      "6.3",
+      "10.1"
+    ],
+    "changes": [
+      "Thay toàn bộ quy trình chốt phạm vi/duyệt lại bằng đối soát và truy vết.",
+      "Viết lại yêu cầu tổng hợp riêng cho ván với máy, ba cấp độ và hồ sơ chất lượng bằng các quyết định đã duyệt, giữ ranh giới phạm vi và phân biệt hồ sơ với bằng chứng thực thi."
+    ]
+  },
+  "US-00.1": {
+    "sources": [
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-00.2": {
+    "sources": [
+      "0.2",
+      "1.4",
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng quyền đọc/ghi dữ liệu, tính duy nhất của tên đăng nhập và dữ liệu phòng/ván; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-00.3": {
+    "sources": [
+      "1.8",
+      "3.3",
+      "8.3",
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng xác thực kết nối, lệnh trùng, trạng thái cũ, nối lại và tiếp quản thẻ trình duyệt; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-00.4": {
+    "sources": [
+      "0.1",
+      "0.4",
+      "0.16",
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng độ phủ yêu cầu, dữ liệu thử, đáp án độc lập và kiểm chứng rủi ro sớm; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-00.5": {
+    "sources": [
+      "0.1",
+      "0.4",
+      "0.16",
+      "10.1",
+      "11"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng mười chuỗi trình diễn, tải 50 người/10 ván, tốc độ nước đi và hồ sơ bàn giao; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-01.1": {
+    "sources": [
+      "0.2",
+      "0.4",
+      "0.17",
+      "1.1",
+      "1.4",
+      "1.5"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng đăng ký ba bước, từ chối tên cấm, thư xác minh thật và phục hồi đăng ký dở dang; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai.",
+      "Bổ sung làm rõ theo nguồn ưu tiên: Giới hạn nhập sai mã xác minh có mục tiêu năm lần mỗi lần gửi, thực thi gần đúng qua giới hạn của hệ thống xác thực; không hứa bộ đếm chính xác từng mã. Nhà cung cấp gửi email cụ thể được lựa chọn và kiểm hạn mức trong công việc cấu hình, theo yêu cầu gửi được tới Gmail ngoài nhóm."
+    ]
+  },
+  "US-01.2": {
+    "sources": [
+      "0.2",
+      "0.15",
+      "1.8"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng đăng nhập bằng tên, khóa thử sai, thời hạn phiên và bộ đếm độc lập với Google; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-01.3": {
+    "sources": [
+      "0.2",
+      "0.3",
+      "0.15",
+      "0.17",
+      "1.2",
+      "1.3",
+      "1.4"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng Google mới/cũ/trùng email, thiết lập bắt buộc và quyền của Khách; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai.",
+      "Bổ sung làm rõ theo nguồn ưu tiên: Khách chỉ dùng các chức năng của bản bàn giao đầu tiên: tạo/vào phòng, chơi hoặc xem, chơi với máy, chat theo vai trò và camera/mic khi ngồi ghế; không kết bạn hoặc nhận/gửi lời mời bạn bè. Khi danh tính Khách hết hạn, giữ bản ghi ván của đối thủ chính thức với tên chung “Khách”, nhưng chưa cung cấp giao diện Lịch sử ở bản đầu."
+    ]
+  },
+  "US-01.4": {
+    "sources": [
+      "0.3",
+      "0.7",
+      "1.4",
+      "1.8",
+      "6.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng một vị trí chơi, hết phiên, chuyển thiết bị, hồ sơ và đăng xuất; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-02.1": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.10",
+      "2.1",
+      "2.3",
+      "2.7"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng mặc định tạo phòng, đổi ghế khi một người, sẵn sàng, đếm ngược và chuyển chủ; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-02.2": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "2.3",
+      "3.6"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng xin đổi bên 30 giây, chờ gửi lại 60 giây và ở lại phòng sau ván; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-03.1": {
+    "sources": [
+      "0.3",
+      "2.2",
+      "2.4",
+      "2.6",
+      "2.8"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng mã tám ký tự, đường dẫn mời, quay lại sau xác thực và xếp ghế theo sức chứa; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-03.2": {
+    "sources": [
+      "0.3",
+      "2.5",
+      "2.7",
+      "5.5",
+      "11"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng quan hệ bạn bè, giới hạn lời mời, trạng thái trực tuyến và mời vào phòng 30 giây; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-04.1": {
+    "sources": [
+      "0.12",
+      "0.17",
+      "3.1",
+      "3.3",
+      "3.5"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng nước hợp lệ, chiếu hết, hết nước đi, chu kỳ lặp và ưu tiên kết quả; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-04.2": {
+    "sources": [
+      "3.1",
+      "3.4",
+      "10.1",
+      "10.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng bàn 9×10, quân chữ Hán, hướng Đen và khả năng đọc/chạm; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-04.3": {
+    "sources": [
+      "3.4",
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng bấm/kéo quân, giới hạn theo lượt/vai trò, cảnh báo và âm thanh; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-05.1": {
+    "sources": [
+      "0.7",
+      "0.12",
+      "0.17",
+      "2.1",
+      "3.3",
+      "3.5",
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng máy chủ phân xử nước, đồng hồ, lưu bền và kết quả; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-05.2": {
+    "sources": [
+      "2.3",
+      "3.3",
+      "3.5",
+      "3.6"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng đầu hàng, rời phòng và đề nghị hòa không chặn bàn cờ; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-05.3": {
+    "sources": [
+      "0.7",
+      "0.17",
+      "3.3",
+      "8.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng ân hạn mất kết nối, đồng hồ tiếp tục và khởi động lại máy chủ; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-06.1": {
+    "sources": [
+      "0.5",
+      "0.7",
+      "2.7",
+      "2.8",
+      "4.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng ba chế độ phòng, khóa người mới, nối lại và thay mã khi mở khóa; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-06.2": {
+    "sources": [
+      "0.3",
+      "0.5",
+      "0.11",
+      "0.12",
+      "0.17",
+      "2.0",
+      "10.4",
+      "11"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng danh sách công khai, Vào chơi/Vào xem, luật rút gọn và điều hướng theo phạm vi; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai.",
+      "Bổ sung làm rõ theo nguồn ưu tiên: Nội dung luật rút gọn phải nhất quán với ưu tiên kết quả: kiểm đồng hồ trước khi duyệt nước, chiếu hết cao nhất, hết nước đi hoặc chiếu liên tục ưu tiên trước hòa 120 nửa nước.",
+      "Sửa ranh giới hiển thị tính năng để sau: chỉ lối vào điều hướng chính bị vô hiệu, chức năng nằm sâu ẩn theo Phần 11."
+    ]
+  },
+  "US-06.3": {
+    "sources": [
+      "0.3",
+      "0.7",
+      "2.8",
+      "4.1",
+      "4.2"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng quyền người xem, mời xuống ghế, giữ chỗ và đuổi/chặn; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai.",
+      "Bổ sung làm rõ theo nguồn ưu tiên: Giới hạn đã được chấp nhận: người bị đuổi có thể quay lại bằng một danh tính Khách mới nếu phòng chưa khóa; không hứa chặn được người thật qua mọi phiên Khách."
+    ]
+  },
+  "US-07.1": {
+    "sources": [
+      "0.13",
+      "5.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng hai kênh theo vai trò, mốc lịch sử chat, lọc từ và giới hạn gửi; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-07.2": {
+    "sources": [
+      "0.13",
+      "0.14",
+      "0.16",
+      "4.1",
+      "4.2"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng camera/mic mặc định tắt, ba mức chia sẻ, thu hồi quyền và lỗi độc lập; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai.",
+      "Bổ sung làm rõ theo nguồn ưu tiên: Hạ tầng đã chọn: LiveKit mã nguồn mở tự chạy bằng Docker cho phát triển và trình diễn cùng mạng; LiveKit Cloud gói miễn phí dự phòng khi trình diễn qua Internet, web và máy chủ ứng dụng chạy Render. Không chạy LiveKit trên Render; trình diễn cùng mạng cần web qua HTTPS, đổi môi trường bằng cấu hình và kiểm chứng thực tế."
+    ]
+  },
+  "US-08.1": {
+    "sources": [
+      "0.9",
+      "6.1",
+      "6.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng ba cấp, chọn phe, không đồng hồ và Ván mới sau kết thúc; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-08.2": {
+    "sources": [
+      "6.1",
+      "6.3",
+      "10.1"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng máy đi hợp lệ, độ sâu/ngân sách ba cấp và tách xử lý khỏi ván online; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "US-08.3": {
+    "sources": [
+      "0.1",
+      "0.17",
+      "6.1",
+      "6.3"
+    ],
+    "changes": [
+      "Thay yêu cầu hoàn thiện/thống nhất/duyệt lại đặc tả bằng đối soát và truy vết đặc tả đã duyệt.",
+      "Rà riêng giữ ván 30 phút, Thử lại cùng thế, lỗi mất trạng thái và chất lượng cấp Khó; giữ các yêu cầu và ngưỡng cụ thể làm đầu vào triển khai."
+    ]
+  },
+  "T01": {
+    "sources": [
+      "10.1",
+      "0.16"
+    ],
+    "changes": [
+      "Làm rõ đầu ra kiểm sức khoẻ và kiểm bí mật của bộ khung."
+    ]
+  },
+  "T02": {
+    "sources": [
+      "0.12",
+      "0.17",
+      "3.5",
+      "6.1",
+      "10.1"
+    ],
+    "changes": [
+      "Chuyển nội dung lập kế hoạch sang chuẩn bị bộ ca từ yêu cầu đã duyệt; thêm dữ liệu ưu tiên kết quả."
+    ]
+  },
+  "T03": {
+    "sources": [
+      "10.1",
+      "10.3",
+      "0.3",
+      "0.5"
+    ],
+    "changes": [
+      "Cụ thể hoá trạng thái và giao diện Sảnh trong phạm vi đã chốt."
+    ]
+  },
+  "T04": {
+    "sources": [
+      "0.2",
+      "0.4",
+      "0.17",
+      "1.1",
+      "1.4",
+      "1.5",
+      "1.6",
+      "5.3"
+    ],
+    "changes": [
+      "Giữ lựa chọn nhà cung cấp thư là quyết định kỹ thuật; cụ thể hoá thứ tự hoàn tất, lỗi và kiểm phục hồi."
+    ]
+  },
+  "T05": {
+    "sources": [
+      "3.1",
+      "3.4",
+      "3.5"
+    ],
+    "changes": [
+      "Làm rõ hợp đồng dữ liệu lõi và kiểm đầu vào/đọc ghi không chỉ khai cuộc."
+    ]
+  },
+  "T06": {
+    "sources": [
+      "0.14",
+      "0.16",
+      "1.8",
+      "4.1"
+    ],
+    "changes": [
+      "Làm rõ ma trận thử hạ tầng và giới hạn bằng chứng, không tái chọn kiến trúc đã chốt."
+    ]
+  },
+  "T07": {
+    "sources": [
+      "3.4",
+      "3.5"
+    ],
+    "changes": [
+      "Bổ sung kiểm không đột biến thế và từ chối nước sai cho giao diện hàm dùng chung."
+    ]
+  },
+  "T08": {
+    "sources": [
+      "0.17",
+      "1.1",
+      "1.5",
+      "5.3"
+    ],
+    "changes": [
+      "Làm rõ nhánh tranh chấp tên và bộ đếm theo máy chủ ở giao diện đăng ký."
+    ]
+  },
+  "T09": {
+    "sources": [
+      "0.2",
+      "0.15",
+      "1.8"
+    ],
+    "changes": [
+      "Bổ sung kiểm cửa sổ khoá đồng thời và đầu ra phục vụ màn đăng nhập."
+    ]
+  },
+  "T10": {
+    "sources": [
+      "0.12",
+      "0.17",
+      "3.5"
+    ],
+    "changes": [
+      "Loại lời văn gợi ý còn phải quyết định ưu tiên; thêm mốc không ăn quân và trường hợp hai bên chiếu."
+    ]
+  },
+  "T11": {
+    "sources": [
+      "3.1",
+      "3.4",
+      "10.1"
+    ],
+    "changes": [
+      "Cụ thể hoá đầu vào thành phần và kiểm hướng nhìn người xem."
+    ]
+  },
+  "T12": {
+    "sources": [
+      "1.8",
+      "3.3",
+      "10.1"
+    ],
+    "changes": [
+      "Cụ thể hoá hợp đồng kết nối và kiểm quyền bằng lệnh trực tiếp."
+    ]
+  },
+  "T13": {
+    "sources": [
+      "0.4",
+      "0.17",
+      "1.1",
+      "1.5",
+      "1.6",
+      "5.3"
+    ],
+    "changes": [
+      "Thêm kiểm bảo vệ email và cạnh tranh hoàn tất/dọn với bằng chứng rõ."
+    ]
+  },
+  "T14": {
+    "sources": [
+      "1.4",
+      "3.3",
+      "5.5",
+      "10.1"
+    ],
+    "changes": [
+      "Cụ thể hoá ma trận quyền và nguồn bàn giao dữ liệu, giữ quyền thiết kế kỹ thuật."
+    ]
+  },
+  "T15": {
+    "sources": [
+      "0.2",
+      "0.3",
+      "0.15",
+      "1.8"
+    ],
+    "changes": [
+      "Làm rõ lỗi mạng không tạo phiên và giữ đích mời cho bước tích hợp."
+    ]
+  },
+  "T16": {
+    "sources": [
+      "3.1",
+      "3.4",
+      "10.1"
+    ],
+    "changes": [
+      "Bổ sung kiểm người xem và dữ liệu đối chiếu theo trình duyệt."
+    ]
+  },
+  "T17": {
+    "sources": [
+      "0.2",
+      "0.15",
+      "1.8"
+    ],
+    "changes": [
+      "Thêm ca bắn đồng thời và đối chiếu hết chặn từ lần sai thứ năm."
+    ]
+  },
+  "T18": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.10",
+      "2.1",
+      "2.3",
+      "2.7",
+      "2.8",
+      "8.3",
+      "5.3"
+    ],
+    "changes": [
+      "Cụ thể hoá hợp đồng bắt đầu ván, huỷ đếm và đóng phòng."
+    ]
+  },
+  "T19": {
+    "sources": [
+      "3.4",
+      "10.1"
+    ],
+    "changes": [
+      "Thêm kiểm chuyển toạ độ hướng Đen và thao tác gửi nước đang chờ."
+    ]
+  },
+  "T20": {
+    "sources": [
+      "0.7",
+      "0.12",
+      "0.17",
+      "3.3",
+      "3.5"
+    ],
+    "changes": [
+      "Làm rõ trình tự duyệt nước, ghi bền/phát và ưu tiên đồng hồ đã chốt."
+    ]
+  },
+  "T21": {
+    "sources": [
+      "0.6",
+      "0.10",
+      "0.13",
+      "2.1",
+      "2.3",
+      "2.7",
+      "5.3"
+    ],
+    "changes": [
+      "Cụ thể hoá nhận sự kiện phòng chờ và quyền thao tác người xem."
+    ]
+  },
+  "T22": {
+    "sources": [
+      "0.3",
+      "1.8",
+      "2.4",
+      "2.6",
+      "2.7",
+      "2.8"
+    ],
+    "changes": [
+      "Làm rõ trả trạng thái tham gia và kiểm quyền sau xác thực."
+    ]
+  },
+  "T23": {
+    "sources": [
+      "0.7",
+      "0.17",
+      "2.1",
+      "3.3",
+      "8.3"
+    ],
+    "changes": [
+      "Cụ thể hoá nước bị từ chối không đổi lượt hoặc đặt lại mốc giờ."
+    ]
+  },
+  "T24": {
+    "sources": [
+      "6.1",
+      "6.3",
+      "10.1"
+    ],
+    "changes": [
+      "Làm rõ đo thời gian phản hồi theo chỉ số đã duyệt và lỗi tác vụ máy."
+    ]
+  },
+  "T25": {
+    "sources": [
+      "0.7",
+      "0.17",
+      "3.3",
+      "8.3"
+    ],
+    "changes": [
+      "Bổ sung đầu ra nghiệm thu cụ thể cho đồng hồ, lớp phủ và sau ván."
+    ]
+  },
+  "T26": {
+    "sources": [
+      "0.3",
+      "2.4",
+      "2.6",
+      "2.7",
+      "2.8"
+    ],
+    "changes": [
+      "Bổ sung rõ lối Khách đã lên phạm vi đầu tiên, lỗi sao chép và kiểm đích sau xác thực."
+    ]
+  },
+  "T27": {
+    "sources": [
+      "3.4",
+      "10.1"
+    ],
+    "changes": [
+      "Làm rõ ma trận chuột/cảm ứng/hướng nhìn và bằng chứng âm thanh."
+    ]
+  },
+  "T28": {
+    "sources": [
+      "0.6",
+      "0.10",
+      "2.1",
+      "2.3",
+      "2.7",
+      "2.8",
+      "5.3"
+    ],
+    "changes": [
+      "Bổ sung ca tranh chấp bắt đầu và đổi ghế sau người thứ hai rời."
+    ]
+  },
+  "T29": {
+    "sources": [
+      "0.3",
+      "1.8",
+      "2.4",
+      "2.6",
+      "2.7",
+      "2.8"
+    ],
+    "changes": [
+      "Cụ thể hoá kiểm ghế cuối đồng thời, đích phòng sau xác thực và phạm vi Khách."
+    ]
+  },
+  "T30": {
+    "sources": [
+      "0.12",
+      "0.17",
+      "2.1",
+      "3.3",
+      "3.5"
+    ],
+    "changes": [
+      "Cụ thể hoá ca lặp thế và đối chiếu bền thay tiêu chí nghiệm thu chung chung."
+    ]
+  },
+  "T31": {
+    "sources": [
+      "0.3",
+      "1.8",
+      "2.5",
+      "2.7",
+      "2.8",
+      "5.5"
+    ],
+    "changes": [
+      "Cụ thể hoá phản hồi giới hạn, trạng thái và vòng đời hai loại lời mời."
+    ]
+  },
+  "T32": {
+    "sources": [
+      "0.7",
+      "3.3",
+      "3.5",
+      "3.6"
+    ],
+    "changes": [
+      "Làm rõ đếm nước người gửi và kết quả đề nghị đồng thời."
+    ]
+  },
+  "T33": {
+    "sources": [
+      "0.13",
+      "0.14",
+      "0.16",
+      "1.8",
+      "4.1",
+      "4.2"
+    ],
+    "changes": [
+      "Cụ thể hoá ma trận quyền ba mức chia sẻ, thu hồi và không gián đoạn phòng."
+    ]
+  },
+  "T34": {
+    "sources": [
+      "0.9",
+      "0.11",
+      "1.8",
+      "6.1",
+      "6.3",
+      "10.1"
+    ],
+    "changes": [
+      "Làm rõ quyền một vị trí chơi, đầu hàng huỷ tác vụ và ván mới điền lựa chọn ban đầu."
+    ]
+  },
+  "T35": {
+    "sources": [
+      "0.3",
+      "0.15",
+      "0.17",
+      "1.1",
+      "1.2",
+      "1.3",
+      "5.3"
+    ],
+    "changes": [
+      "Cụ thể hoá quyền Khách, an toàn hoàn tất/dọn và bàn giao hết phiên."
+    ]
+  },
+  "T36": {
+    "sources": [
+      "3.3",
+      "3.5",
+      "3.6"
+    ],
+    "changes": [
+      "Cụ thể hoá khung không chặn bàn cờ và ranh giới số nước/hạn đề nghị."
+    ]
+  },
+  "T37": {
+    "sources": [
+      "0.13",
+      "5.3",
+      "10.1"
+    ],
+    "changes": [
+      "Cụ thể đầu vào, thứ tự kiểm quyền và dữ liệu trả về; phân biệt lọc chat với từ chối tên."
+    ]
+  },
+  "T38": {
+    "sources": [
+      "0.9",
+      "0.17",
+      "6.1",
+      "6.3"
+    ],
+    "changes": [
+      "Tách lựa chọn phe khỏi phe thực tế; bổ sung nghiệm thu ba nhánh sự cố."
+    ]
+  },
+  "T39": {
+    "sources": [
+      "3.3",
+      "3.5",
+      "3.6"
+    ],
+    "changes": [
+      "Làm rõ dữ liệu kiểm và cách đếm thời gian chờ theo nước của người gửi."
+    ]
+  },
+  "T40": {
+    "sources": [
+      "0.3",
+      "2.5",
+      "5.5"
+    ],
+    "changes": [
+      "Bổ sung dữ liệu tích hợp, các giới hạn bạn bè và lỗi cần hiển thị."
+    ]
+  },
+  "T41": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.10",
+      "0.17",
+      "3.6"
+    ],
+    "changes": [
+      "Cụ thể hoá dữ liệu đề nghị, kiểm trạng thái tại thời điểm chấp nhận và chống áp phản hồi cũ."
+    ]
+  },
+  "T42": {
+    "sources": [
+      "0.13",
+      "5.3",
+      "10.1"
+    ],
+    "changes": [
+      "Làm rõ cập nhật dữ liệu chat khi đổi quyền và đối chiếu tin sau Thử lại."
+    ]
+  },
+  "T43": {
+    "sources": [
+      "0.9",
+      "6.1",
+      "6.3"
+    ],
+    "changes": [
+      "Cụ thể ma trận kiểm và giữ ranh giới giữa Ván mới, Thử lại và kiểm ngẫu nhiên."
+    ]
+  },
+  "T44": {
+    "sources": [
+      "0.2",
+      "0.3",
+      "0.17",
+      "1.2",
+      "1.3"
+    ],
+    "changes": [
+      "Bổ sung ba nhánh phản hồi xác thực và nghiệm thu tên/huỷ tạo Khách."
+    ]
+  },
+  "T45": {
+    "sources": [
+      "0.13",
+      "0.14",
+      "0.16",
+      "1.8",
+      "4.1"
+    ],
+    "changes": [
+      "Cụ thể cách đo quyền nhận và phân biệt thời gian bật/tắt với phép đo thu hồi quyền."
+    ]
+  },
+  "T46": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.17"
+    ],
+    "changes": [
+      "Làm rõ thời hạn hiển thị và hành vi của lớp kết quả sau ván."
+    ]
+  },
+  "T47": {
+    "sources": [
+      "0.13",
+      "5.3",
+      "10.1"
+    ],
+    "changes": [
+      "Cụ thể chứng cứ kiểm mốc đọc chat, giới hạn phát tin và ranh giới tích hợp."
+    ]
+  },
+  "T48": {
+    "sources": [
+      "0.2",
+      "0.3",
+      "0.15",
+      "0.17",
+      "1.2",
+      "1.3"
+    ],
+    "changes": [
+      "Cụ thể dữ liệu kiểm khóa độc lập Google và đua giữa hoàn tất/dọn hồ sơ tạm."
+    ]
+  },
+  "T49": {
+    "sources": [
+      "0.3",
+      "2.5",
+      "5.5"
+    ],
+    "changes": [
+      "Làm rõ hai loại lời mời và điều kiện nghiệm thu giới hạn tổng."
+    ]
+  },
+  "T50": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.10",
+      "0.17"
+    ],
+    "changes": [
+      "Bổ sung kiểm bảo toàn dữ liệu sau ván và đóng phòng theo ghế."
+    ]
+  },
+  "T51": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "0.12",
+      "0.13",
+      "0.14",
+      "0.17",
+      "10.1",
+      "BACKLOG-P1.md §8"
+    ],
+    "changes": [
+      "Bổ sung hồi quy xuyên suốt ưu tiên kết quả mới và sự cố media."
+    ]
+  },
+  "T52": {
+    "sources": [
+      "0.7",
+      "0.10",
+      "0.17",
+      "2.8",
+      "3.3",
+      "8.3"
+    ],
+    "changes": [
+      "Bổ sung nhánh đếm bắt đầu, phòng chờ và hệ quả vòng đời khi hết giữ ghế."
+    ]
+  },
+  "T53": {
+    "sources": [
+      "0.5",
+      "0.7",
+      "2.8",
+      "4.3"
+    ],
+    "changes": [
+      "Cụ thể dữ liệu đổi chế độ và kiểm hiệu lực mã với cả hai cách mở khoá."
+    ]
+  },
+  "T54": {
+    "sources": [
+      "0.3",
+      "0.5",
+      "2.8"
+    ],
+    "changes": [
+      "Làm rõ truy vấn giới hạn, bù danh sách và kết quả từ dòng cũ."
+    ]
+  },
+  "T55": {
+    "sources": [
+      "0.6",
+      "0.7",
+      "2.8",
+      "4.1",
+      "4.2",
+      "5.3"
+    ],
+    "changes": [
+      "Cụ thể thứ tự kiểm và bàn giao sự kiện đổi vai trò tới chat/media/đề nghị."
+    ]
+  },
+  "T56": {
+    "sources": [
+      "0.3",
+      "1.3",
+      "1.4",
+      "1.8"
+    ],
+    "changes": [
+      "Bổ sung định nghĩa mốc phiên và phân biệt thẻ mới với thiết bị mới."
+    ]
+  },
+  "T57": {
+    "sources": [
+      "0.7",
+      "2.8",
+      "4.3"
+    ],
+    "changes": [
+      "Cụ thể nhánh quyền/ghế thay đổi trong lúc mở hộp."
+    ]
+  },
+  "T58": {
+    "sources": [
+      "0.13",
+      "0.14",
+      "1.8",
+      "2.8",
+      "4.1",
+      "4.2"
+    ],
+    "changes": [
+      "Cụ thể phản hồi đổi vai trò, thông báo media và chuyển thẻ."
+    ]
+  },
+  "T59": {
+    "sources": [
+      "6.1",
+      "6.3",
+      "BACKLOG-P1.md §6",
+      "BACKLOG-P1.md §7"
+    ],
+    "changes": [
+      "Bổ sung số đo nền để tinh chỉnh có đối chứng và tách phạm vi ngưỡng chiếu hết."
+    ]
+  },
+  "T60": {
+    "sources": [
+      "0.7",
+      "0.10",
+      "0.17",
+      "2.8",
+      "3.3",
+      "8.3"
+    ],
+    "changes": [
+      "Mở rộng kiểm mất mạng theo trạng thái phòng và vai trò, giữ ngưỡng đã chốt."
+    ]
+  },
+  "T61": {
+    "sources": [
+      "0.3",
+      "0.5",
+      "0.12",
+      "0.17",
+      "2.0",
+      "10.4"
+    ],
+    "changes": [
+      "Cụ thể cập nhật danh sách và sửa nội dung luật theo định nghĩa/ưu tiên mới."
+    ]
+  },
+  "T62": {
+    "sources": [
+      "0.5",
+      "0.7",
+      "2.8",
+      "4.3"
+    ],
+    "changes": [
+      "Bổ sung ma trận đường vào và chứng cứ liên thông Sảnh/media."
+    ]
+  },
+  "T63": {
+    "sources": [
+      "0.9",
+      "0.17",
+      "6.1",
+      "6.3"
+    ],
+    "changes": [
+      "Làm rõ dữ liệu vòng đời, lỗi phản hồi và kiểm quyền trước tạo lại ván."
+    ]
+  },
+  "T64": {
+    "sources": [
+      "0.3",
+      "2.8",
+      "4.1",
+      "4.2",
+      "5.3"
+    ],
+    "changes": [
+      "Bổ sung kiểm thu hồi quyền khi đổi vai trò và giới hạn chặn Khách đã chấp nhận."
+    ]
+  },
+  "T65": {
+    "sources": [
+      "0.3",
+      "1.4",
+      "1.8",
+      "6.3"
+    ],
+    "changes": [
+      "Cụ thể xử lý hồ sơ/phiên và bổ sung nhánh đăng xuất khi đấu máy."
+    ]
+  },
+  "T66": {
+    "sources": [
+      "0.2",
+      "0.3",
+      "0.4",
+      "0.15",
+      "0.16",
+      "0.17",
+      "6.1",
+      "10.1",
+      "BACKLOG-P1.md §6",
+      "BACKLOG-P1.md §7"
+    ],
+    "changes": [
+      "Cụ thể phép đo, phân loại điều kiện bắt buộc và kiểm độc lập khóa Google."
+    ]
+  },
+  "T67": {
+    "sources": [
+      "0.3",
+      "0.5",
+      "0.12",
+      "0.17",
+      "10.4"
+    ],
+    "changes": [
+      "Cụ thể nguồn sắp xếp và kiểm nội dung luật theo quyết định mới."
+    ]
+  },
+  "T68": {
+    "sources": [
+      "0.9",
+      "0.17",
+      "6.1",
+      "6.3",
+      "BACKLOG-P1.md §6",
+      "BACKLOG-P1.md §7"
+    ],
+    "changes": [
+      "Cụ thể bảng sự cố và chứng cứ định lượng cho chất lượng máy cờ."
+    ]
+  },
+  "T69": {
+    "sources": [
+      "0.3",
+      "1.3",
+      "1.4",
+      "1.8",
+      "6.3"
+    ],
+    "changes": [
+      "Bổ sung thời hạn cụ thể còn thiếu và phân biệt đóng thẻ/đóng trình duyệt."
+    ]
+  },
+  "T70": {
+    "sources": [
+      "0.4",
+      "0.16",
+      "10.1",
+      "BACKLOG-P1.md §8"
+    ],
+    "changes": [
+      "Cụ thể đầu vào đóng gói, điều kiện đo 15 phút và phân bố hạ tầng đã chốt."
+    ]
+  },
+  "T71": {
+    "sources": [
+      "0.4",
+      "0.6",
+      "0.7",
+      "0.9",
+      "0.15",
+      "0.16",
+      "10.1",
+      "BACKLOG-P1.md §8"
+    ],
+    "changes": [
+      "Cụ thể chuẩn bị dữ liệu, đối chiếu video và bằng chứng chạy lại theo bản phát hành."
+    ]
+  }
+}

@@ -1,0 +1,694 @@
+{
+  "checkedAt": "2026-10-10 06:26:51 UTC",
+  "site": "https://xiangqi-web.atlassian.net",
+  "rule": "Tính cả ngày bắt đầu và ngày kết thúc; Task phụ thuộc phải bắt đầu từ ngày sau ngày kết thúc Task trước.",
+  "counts": {
+    "total": 107,
+    "tasks": 71,
+    "stories": 27,
+    "epics": 9,
+    "taskParentChecks": 142,
+    "dependencies": 186
+  },
+  "missing": [],
+  "taskStartsBeforeParent": [],
+  "taskStartsSameDayParent": [],
+  "personDayOverlap": [],
+  "dependencyViolations": [],
+  "storyNotStrictlyAfterEpic": [],
+  "maxDaily": 7,
+  "over7": [],
+  "lastTaskDate": "2026-11-06",
+  "afterNov4": [
+    {
+      "key": "XIAN-106",
+      "summary": "T70 · Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo",
+      "start": "2026-11-05",
+      "end": "2026-11-05"
+    },
+    {
+      "key": "XIAN-107",
+      "summary": "T71 · Tổng duyệt D1–D10 trên bản phát hành và ghi hình",
+      "start": "2026-11-06",
+      "end": "2026-11-06"
+    }
+  ],
+  "daily": {
+    "2026-10-10": [
+      {
+        "key": "XIAN-37",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-17": [
+      {
+        "key": "XIAN-38",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-56",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-60",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-71",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      }
+    ],
+    "2026-10-18": [
+      {
+        "key": "XIAN-38",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-39",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-56",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-60",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-71",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      }
+    ],
+    "2026-10-19": [
+      {
+        "key": "XIAN-38",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-39",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-54",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-59",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-70",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      }
+    ],
+    "2026-10-11": [
+      {
+        "key": "XIAN-40",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-41",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-42",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-47",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      }
+    ],
+    "2026-10-12": [
+      {
+        "key": "XIAN-40",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-42",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-43",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-47",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-48",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-13": [
+      {
+        "key": "XIAN-40",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-42",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-46",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-48",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-21": [
+      {
+        "key": "XIAN-44",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-53",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-54",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-68",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-95",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      }
+    ],
+    "2026-10-14": [
+      {
+        "key": "XIAN-45",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-48",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-50",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-55",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      }
+    ],
+    "2026-10-15": [
+      {
+        "key": "XIAN-45",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-50",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-55",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-60",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-22": [
+      {
+        "key": "XIAN-49",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-57",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-58",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-61",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-95",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-99",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      }
+    ],
+    "2026-10-20": [
+      {
+        "key": "XIAN-51",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-52",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-54",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-68",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-70",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      }
+    ],
+    "2026-10-16": [
+      {
+        "key": "XIAN-55",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-56",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-60",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-71",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      }
+    ],
+    "2026-10-23": [
+      {
+        "key": "XIAN-57",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-58",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-61",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-73",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-99",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      }
+    ],
+    "2026-10-24": [
+      {
+        "key": "XIAN-62",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-69",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-72",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-73",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-80",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-89",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      }
+    ],
+    "2026-10-31": [
+      {
+        "key": "XIAN-63",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-88",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-97",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-101",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      }
+    ],
+    "2026-10-25": [
+      {
+        "key": "XIAN-64",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-65",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-69",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-75",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-77",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-89",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-91",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      }
+    ],
+    "2026-10-27": [
+      {
+        "key": "XIAN-66",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-67",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-74",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-82",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-90",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-93",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-94",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-26": [
+      {
+        "key": "XIAN-67",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-69",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-77",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-78",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-84",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-91",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      }
+    ],
+    "2026-10-28": [
+      {
+        "key": "XIAN-67",
+        "person": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+        "name": "nguyenhoangtungtuyhoa"
+      },
+      {
+        "key": "XIAN-74",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-83",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-92",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-94",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-29": [
+      {
+        "key": "XIAN-76",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-79",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-86",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-92",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-94",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-10-30": [
+      {
+        "key": "XIAN-76",
+        "person": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+        "name": "Tưởng Lê khoa Cường-4572"
+      },
+      {
+        "key": "XIAN-81",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-92",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-97",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      }
+    ],
+    "2026-11-01": [
+      {
+        "key": "XIAN-85",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      },
+      {
+        "key": "XIAN-88",
+        "person": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+        "name": "Võ Thành Đông"
+      },
+      {
+        "key": "XIAN-104",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      }
+    ],
+    "2026-11-02": [
+      {
+        "key": "XIAN-87",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-96",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-98",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      },
+      {
+        "key": "XIAN-100",
+        "person": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+        "name": "Gia Kỳ"
+      }
+    ],
+    "2026-11-03": [
+      {
+        "key": "XIAN-87",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-102",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-105",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      }
+    ],
+    "2026-11-04": [
+      {
+        "key": "XIAN-87",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      },
+      {
+        "key": "XIAN-102",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      },
+      {
+        "key": "XIAN-103",
+        "person": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+        "name": "4841_Lê Thị Xuân Nhạn"
+      }
+    ],
+    "2026-11-05": [
+      {
+        "key": "XIAN-106",
+        "person": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+        "name": "TÌNH 4851_NGUYỄN NGỌC"
+      }
+    ],
+    "2026-11-06": [
+      {
+        "key": "XIAN-107",
+        "person": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+        "name": "Nguyễn Minh Thư"
+      }
+    ]
+  }
+}

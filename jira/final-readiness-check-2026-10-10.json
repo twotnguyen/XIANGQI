@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-10",
+  "items": 107,
+  "tasks": 71,
+  "baDone": 36,
+  "people": {
+    "TÌNH 4851_NGUYỄN NGỌC": {
+      "tasks": 11,
+      "hours": 156
+    },
+    "Nguyễn Minh Thư": {
+      "tasks": 10,
+      "hours": 120
+    },
+    "Gia Kỳ": {
+      "tasks": 12,
+      "hours": 108
+    },
+    "Võ Thành Đông": {
+      "tasks": 8,
+      "hours": 120
+    },
+    "nguyenhoangtungtuyhoa": {
+      "tasks": 9,
+      "hours": 132
+    },
+    "Tưởng Lê khoa Cường-4572": {
+      "tasks": 10,
+      "hours": 124
+    },
+    "4841_Lê Thị Xuân Nhạn": {
+      "tasks": 11,
+      "hours": 120
+    }
+  },
+  "totalHours": 880,
+  "errors": [],
+  "maxDaily": 7,
+  "dependencies": 186,
+  "crossSprint": [
+    "XIAN-38",
+    "XIAN-56",
+    "XIAN-60",
+    "XIAN-71",
+    "XIAN-92"
+  ],
+  "finish": "2026-11-04",
+  "sprintsFuture": true,
+  "boards": [
+    38
+  ],
+  "today": [
+    "XIAN-37"
+  ],
+  "weekends": [
+    "2026-10-10",
+    "2026-10-17",
+    "2026-10-18",
+    "2026-10-11",
+    "2026-10-24",
+    "2026-10-25",
+    "2026-11-01",
+    "2026-10-31"
+  ],
+  "limitations": [
+    "Read-only audit: workflow automatic setting/clearing of Resolution has not been verified; existing 36 BA resolutions were manually corrected.",
+    "Plan uses weekends and 5 cross-sprint tasks.",
+    "Task belongs to Epic; related Story uses Relates link rather than native parent hierarchy.",
+    "Jira readiness does not verify every team member's repository access or local development environment."
+  ]
+}

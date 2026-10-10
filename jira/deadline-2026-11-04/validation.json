@@ -1,0 +1,9 @@
+{
+  "tasks": 71,
+  "dependencies": 186,
+  "strictEpicStoryTaskChecks": 71,
+  "maxDaily": 7,
+  "end": "2026-11-04",
+  "durationsUnchanged": true,
+  "violations": 0
+}

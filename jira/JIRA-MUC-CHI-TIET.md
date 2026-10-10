@@ -4,6 +4,10 @@
 
 Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. R1 mặc định hạn Story là ngày Task đầu bắt đầu; US-08.3/US-00.5 giữ ngoại lệ hạn Task cuối để đóng hồ sơ bằng chứng, không tự thay ngưỡng AC.
 
+**Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.
+
+Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](description-source-audit.json). Đợt rà soát nội dung này giữ nguyên dữ liệu lịch và phân công của bản kế hoạch 09/10/2026 ở trên.
+
 ## EP-00 · Nền tảng kỹ thuật và chất lượng
 
 | Trường | Giá trị |
@@ -24,41 +28,40 @@ Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Nền tảng, Luật cờ, Ván trực tuyến, Camera và mic, Máy cờ |
 | Labels | EP-00, dac-ta, p1, nen-tang, luat-co, van-truc-tuyen, camera-va-mic, may-co |
+| Nguồn đặc tả (BA / AC) | 0.1, 0.4, 0.16, 10.1, 11 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất nền tảng kỹ thuật, dữ liệu và cách chứng minh chất lượng cho toàn bộ ứng dụng cờ tướng.
+Bàn giao bộ đặc tả đã duyệt về nền tảng, quyền dữ liệu, truyền tin và bằng chứng chất lượng; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Các tính năng tài khoản, phòng, ván, trò chuyện và máy cờ phải dùng chung một nền, không tự xây những quy tắc hạ tầng khác nhau. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Các tính năng tài khoản, phòng, ván, trò chuyện và máy cờ phải dùng chung một nền, không tự xây những quy tắc hạ tầng khác nhau. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Thống nhất nền tảng để thành viên mới có thể chạy ứng dụng cờ tướng, gửi thay đổi mã nguồn và tìm nguyên nhân sự cố theo cùng một cách.
-- Thống nhất dữ liệu cần lưu và quyền truy cập để người dùng không sửa được phòng, nước đi hoặc kết quả trái phép.
-- Thống nhất cách truyền thay đổi tức thời giữa máy chủ và các trình duyệt để cả phòng nhìn thấy cùng một trạng thái.
-- Lập kế hoạch kiểm thử có thể thực hiện và đối chiếu bằng chứng cho toàn bộ yêu cầu của bản bàn giao đầu tiên.
-- Xác định và đối soát điều kiện để bản cờ tướng cuối cùng có thể trình diễn trên máy thật với bằng chứng chức năng và chất lượng đầy đủ.
+- Dùng chung nền tảng cho tài khoản, phòng, ván, chat và máy cờ; máy chủ thực thi quyền, luật, giờ và kết quả; cấu hình bí mật không lộ trên trình duyệt.
+- Đối soát kế hoạch kiểm thử và chỉ tiêu đã duyệt: tải 50 người dùng/10 ván, truyền nước dưới 100 mili giây ở phân vị 95, thời gian máy cờ theo cấp và mười chuỗi trình diễn.
+- Giữ lựa chọn email qua dịch vụ ngoài, LiveKit tự chạy cho mạng nội bộ và LiveKit Cloud dự phòng; nhà cung cấp email, dữ liệu/giao diện lập trình chi tiết và bằng chứng khả thi thuộc công việc kỹ thuật.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về nền tảng, quyền dữ liệu, truyền tin và bằng chứng chất lượng với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát nền tảng, quyền dữ liệu, truyền tin và bằng chứng chất lượng, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng nền tảng, quyền dữ liệu, truyền tin và bằng chứng chất lượng theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -88,17 +91,18 @@ Không coi chạy nguyên mẫu hoặc hoàn thành tài liệu là bằng chứ
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, QA & DevOps, Nền tảng |
 | Labels | dac-ta, EP-00, p1, nen-tang |
+| Nguồn đặc tả (BA / AC) | 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất nền tảng để thành viên mới có thể chạy ứng dụng cờ tướng, gửi thay đổi mã nguồn và tìm nguyên nhân sự cố theo cùng một cách.
+Bàn giao đặc tả khung dự án, kiểm tra mã tự động và nhật ký vận hành theo các ràng buộc đã duyệt.
 
 **Bối cảnh công việc**
 
-Ứng dụng gồm giao diện trên trình duyệt, máy chủ điều phối phòng và ván đấu, thư viện luật cờ dùng chung và chương trình chọn nước đi cho máy. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Ứng dụng gồm giao diện trên trình duyệt, máy chủ điều phối phòng và ván đấu, thư viện luật cờ dùng chung và chương trình chọn nước đi cho máy. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -111,19 +115,19 @@ Thống nhất nền tảng để thành viên mới có thể chạy ứng dụ
 
 **Việc cần làm**
 
-- Mô tả cách khởi chạy từng thành phần, cấu hình cần cấp, kiểm tra tự động trước khi nhận mã và dữ liệu được phép ghi vào nhật ký.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát hướng dẫn khởi chạy, cấu hình mẫu, kiểm tra tự động và dữ liệu nhật ký với các ràng buộc vận hành đã có.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ khởi chạy các thành phần, kiểm tra trước khi gộp mã, bảo vệ bí mật và thời hạn lưu nhật ký; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -153,6 +157,7 @@ Không làm các màn hình nghiệp vụ hay triển khai luật cờ trong ph�
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng |
 | Labels | sprint-1, ha-tang, p1, chinh-qa-devops, nen-tang |
+| Nguồn đặc tả (BA / AC) | 10.1, 0.16 |
 
 
 **Description**
@@ -181,6 +186,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 - Cấu hình GitHub Actions, dịch vụ tự chạy các bước kiểm khi gửi đề nghị gộp mã, và quy tắc bảo vệ nhánh; thử một thay đổi đúng và một thay đổi cố ý gây lỗi.
 - Tạo nhật ký có bộ lọc dữ liệu nhạy cảm và địa chỉ kiểm tra sức khoẻ.
 - Viết hướng dẫn cài đặt, chạy dự án và khai báo cấu hình camera/mic giữa môi trường tự chạy và dịch vụ đám mây.
+- Ghi rõ phản hồi kiểm sức khoẻ cho máy chủ đang chạy và trạng thái các dịch vụ chưa kết nối; chỉ bổ sung kiểm cơ sở dữ liệu/máy cờ khi có kết nối thật.
 
 **Kết quả bàn giao**
 
@@ -193,6 +199,7 @@ Dựng bộ khung để nhóm cùng phát triển, chạy và kiểm tra ứng d
 - Từ bản sao mới, pnpm install rồi pnpm dev khởi động được hai phần ứng dụng; gọi /health nhận phản hồi thành công.
 - Thử đưa bí mật giả vào dữ liệu ghi nhật ký: không xuất hiện nguyên giá trị trong bản ghi.
 - Không có khoá thật trong tệp được theo dõi; lỗi kiểm kiểu làm bước kiểm tự động thất bại.
+- Cấu hình trình duyệt và gói giao diện đã đóng gói không chứa khoá dịch vụ; hướng dẫn nêu cách đổi địa chỉ/khoá camera và mic giữa mạng nội bộ với đám mây.
 
 **Phạm vi và phối hợp**
 
@@ -222,6 +229,7 @@ Bàn giao bộ khung cho các chức năng đăng nhập, phòng và bàn cờ. 
 | Component chính | FE |
 | Components | FE, Nền tảng |
 | Labels | sprint-1, phat-trien, p1, chinh-fe, nen-tang |
+| Nguồn đặc tả (BA / AC) | 10.1, 10.3, 0.3, 0.5 |
 
 
 **Description**
@@ -242,6 +250,7 @@ Người dùng bắt đầu từ màn đăng nhập hoặc Sảnh, rồi chuyể
 - Thành phần thể hiện được trạng thái bình thường, đang tải, trống, lỗi và bị vô hiệu khi phù hợp.
 - Sảnh có vị trí cho Tự tạo phòng, Vào phòng bằng mã và Đánh với máy; chức năng làm sau được thể hiện đúng bằng “Sắp ra mắt” hoặc ẩn ở thao tác sâu.
 - Các thao tác có nhãn rõ ràng, sử dụng bàn phím được và không chỉ dùng màu để truyền đạt trạng thái. Kiểm tương phản và khả năng truy cập theo mức AA cơ bản của chuẩn trợ năng cho web, tức chữ dễ phân biệt với nền, trường nhập có nhãn và thông tin vẫn hiểu được khi không phân biệt màu.
+- Khung điều hướng dành chỗ cho danh sách phòng công khai với Vào chơi/Vào xem và nhãn Khách; đây là vị trí tích hợp, chưa coi dữ liệu mẫu là danh sách phòng trực tiếp.
 
 **Việc cần làm**
 
@@ -263,6 +272,7 @@ Người dùng bắt đầu từ màn đăng nhập hoặc Sảnh, rồi chuyể
 - Nút bị vô hiệu không thực hiện hành động, kèm lời giải thích thích hợp.
 - Lỗi tải có lời báo và cách thử lại; dữ liệu trống không giống một màn hình bị hỏng.
 - Các màn hình mẫu dùng cùng thành phần thay vì tự tạo nhiều kiểu nút và hộp thoại khác nhau.
+- Mỗi thành phần có ví dụ để kiểm trạng thái đang tải, trống, lỗi và vô hiệu nếu có áp dụng; thao tác bằng bàn phím mở/đóng được hộp thoại và xác định được nút đang được chọn.
 
 **Phạm vi và phối hợp**
 
@@ -292,17 +302,18 @@ Bàn giao phần trình bày chung. Luồng đăng ký, quản lý phòng, danh 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Nền tảng |
 | Labels | dac-ta, EP-00, p1, nen-tang |
+| Nguồn đặc tả (BA / AC) | 0.2, 1.4, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất dữ liệu cần lưu và quyền truy cập để người dùng không sửa được phòng, nước đi hoặc kết quả trái phép.
+Bàn giao đặc tả dữ liệu và quyền truy cập của bản đầu theo quy tắc tài khoản, phòng và ván đã duyệt.
 
 **Bối cảnh công việc**
 
-Dữ liệu gồm hồ sơ tài khoản, quan hệ và lời mời bạn bè, phòng, danh sách bị chặn khỏi phòng, ván đấu, nước đi và lần đăng nhập sai. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Dữ liệu gồm hồ sơ tài khoản, quan hệ và lời mời bạn bè, phòng, danh sách bị chặn khỏi phòng, ván đấu, nước đi và lần đăng nhập sai. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -312,19 +323,19 @@ Dữ liệu gồm hồ sơ tài khoản, quan hệ và lời mời bạn bè, ph
 
 **Việc cần làm**
 
-- Lập danh mục dữ liệu, mối liên hệ, quy tắc duy nhất của tên đăng nhập và bảng ai được đọc hoặc thay đổi từng loại dữ liệu.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu danh mục dữ liệu và ma trận quyền với quy tắc tài khoản, phòng và ván; thiết kế bảng, chỉ mục và lệnh nâng cấp thuộc công việc kỹ thuật.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát quyền đọc/ghi dữ liệu, tính duy nhất của tên đăng nhập và dữ liệu phòng/ván bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ quyền đọc/ghi dữ liệu, tính duy nhất của tên đăng nhập và dữ liệu phòng/ván; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -354,6 +365,7 @@ Không mở rộng sang bảng xếp hạng, tính điểm hay giao diện xem l
 | Component chính | BE |
 | Components | BE, Nền tảng |
 | Labels | sprint-1, phat-trien, p1, chinh-be, nen-tang |
+| Nguồn đặc tả (BA / AC) | 1.4, 3.3, 5.5, 10.1 |
 
 
 **Description**
@@ -383,12 +395,14 @@ Dữ liệu trên trình duyệt có thể bị sửa, vì vậy người dùng 
 - Tạo dữ liệu mẫu có phòng, hai người chơi và người xem để dùng kiểm quyền.
 - Dựng lại cơ sở dữ liệu thử từ đầu, kiểm các quan hệ và tên khác hoa thường.
 - Gọi trực tiếp bằng quyền trình duyệt để thử ghi kết quả và đọc dữ liệu không thuộc quyền.
+- Lập bảng cho từng loại dữ liệu: chủ sở hữu, ai đọc, ai ghi, ràng buộc và nơi kiểm nghiệp vụ; ghi rõ quyền của tài khoản, Khách, người ngoài phòng và quyền dịch vụ.
 
 **Kết quả bàn giao**
 
 - Tệp tạo/cập nhật cơ sở dữ liệu dùng được từ đầu.
 - Sơ đồ dữ liệu và mô tả quyền.
 - Dữ liệu mẫu cùng kết quả kiểm quyền trực tiếp.
+- Bộ lệnh kiểm quyền trực tiếp cùng dữ liệu đầu vào và kết quả cho phép/từ chối; danh sách tệp cấu trúc dữ liệu đã tích hợp và phần còn phụ thuộc.
 
 **Điều kiện hoàn thành**
 
@@ -425,17 +439,18 @@ Bàn giao nơi lưu và bảo vệ dữ liệu. Quyết định ai thắng, ai n
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Nền tảng, Ván trực tuyến |
 | Labels | dac-ta, EP-00, p1, nen-tang, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 1.8, 3.3, 8.3, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất cách truyền thay đổi tức thời giữa máy chủ và các trình duyệt để cả phòng nhìn thấy cùng một trạng thái.
+Bàn giao đặc tả kết nối và đồng bộ trạng thái dùng chung theo quy tắc phiên và điều khiển đã duyệt.
 
 **Bối cảnh công việc**
 
-Phòng, ván đấu và trò chuyện cùng dùng một cơ chế kết nối. Máy chủ giữ trạng thái đúng; trình duyệt phải đồng bộ theo trạng thái đó khi gửi trùng hoặc nối lại. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Phòng, ván đấu và trò chuyện cùng dùng một cơ chế kết nối. Máy chủ giữ trạng thái đúng; trình duyệt phải đồng bộ theo trạng thái đó khi gửi trùng hoặc nối lại. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -447,19 +462,19 @@ Phòng, ván đấu và trò chuyện cùng dùng một cơ chế kết nối. M
 
 **Việc cần làm**
 
-- Mô tả dữ liệu gửi/nhận, xác thực kết nối, phản hồi lỗi, chống xử lý trùng, cập nhật phiên bản trạng thái và quyền điều khiển giữa nhiều thẻ trình duyệt.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát hợp đồng truyền tin với quy tắc một vị trí chơi, quyền điều khiển và trạng thái máy chủ; cách tổ chức thông điệp cụ thể thuộc công việc triển khai.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát xác thực kết nối, lệnh trùng, trạng thái cũ, nối lại và tiếp quản thẻ trình duyệt bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ xác thực kết nối, lệnh trùng, trạng thái cũ, nối lại và tiếp quản thẻ trình duyệt; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -489,6 +504,7 @@ Chỉ đặc tả cơ chế dùng chung; luật đi cờ, vòng đời phòng v�
 | Component chính | BE |
 | Components | BE, Nền tảng, Ván trực tuyến |
 | Labels | sprint-1, phat-trien, p1, chinh-be, nen-tang, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 1.8, 3.3, 10.1 |
 
 
 **Description**
@@ -524,6 +540,7 @@ Khi mạng chập chờn, cùng một thao tác có thể gửi lại hoặc đ�
 - Khung kết nối thời gian thực có xác thực và chống lệnh trùng.
 - Tài liệu sự kiện và mẫu dữ liệu.
 - Kiểm thử kết nối, thẻ trình duyệt, biên lai và báo cáo thử tải sơ bộ.
+- Ví dụ dữ liệu lệnh mới, gửi lại, phiên bản cũ và nối lại; phản hồi nêu kết quả xử lý, phiên bản và trạng thái chính thức để các chức năng ghép đúng.
 
 **Điều kiện hoàn thành**
 
@@ -531,6 +548,8 @@ Khi mạng chập chờn, cùng một thao tác có thể gửi lại hoặc đ�
 - Gửi một lệnh hai lần chỉ thay đổi trạng thái một lần.
 - Lệnh cũ nhận lại trạng thái mới, không ghi đè dữ liệu hiện tại.
 - Tab mất quyền tự nối lại vẫn không điều khiển được; biên lai quá hạn được dọn.
+- Danh tính hợp lệ nhưng không thuộc phòng không nhận sự kiện riêng của phòng; tab đã mất quyền gửi trực tiếp lệnh thay đổi vẫn bị từ chối.
+- Hai yêu cầu trùng đến đồng thời nhận cùng kết quả, chỉ có một thay đổi và một biên lai có hiệu lực.
 
 **Phạm vi và phối hợp**
 
@@ -560,17 +579,18 @@ Bàn giao hợp đồng giao tiếp cho phòng, ván, phiên và hình tiếng. 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | QA & DevOps, Nền tảng, Luật cờ, Camera và mic, Máy cờ |
 | Labels | dac-ta, EP-00, p1, nen-tang, luat-co, camera-va-mic, may-co |
+| Nguồn đặc tả (BA / AC) | 0.1, 0.4, 0.16, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Lập kế hoạch kiểm thử có thể thực hiện và đối chiếu bằng chứng cho toàn bộ yêu cầu của bản bàn giao đầu tiên.
+Bàn giao kế hoạch kiểm thử có đủ tình huống, dữ liệu và kết quả mong đợi cho các yêu cầu đã duyệt.
 
 **Bối cảnh công việc**
 
-Một yêu cầu có thể có nhiều nhánh đúng, sai và biên. Thử nguyên mẫu để phát hiện rủi ro sớm không thay cho kiểm thử tính năng thật sau tích hợp. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Một yêu cầu có thể có nhiều nhánh đúng, sai và biên. Thử nguyên mẫu để phát hiện rủi ro sớm không thay cho kiểm thử tính năng thật sau tích hợp. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -580,19 +600,19 @@ Một yêu cầu có thể có nhiều nhánh đúng, sai và biên. Thử nguy�
 
 **Việc cần làm**
 
-- Xác định môi trường, dữ liệu và người kiểm; chia mỗi yêu cầu thành tình huống có bước tái hiện; chuẩn bị đáp án luật cờ độc lập và nội dung thử sớm về tài khoản, phiên, camera và mic.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu kế hoạch kiểm thử với từng nhánh yêu cầu đã duyệt; chuẩn bị dữ liệu tài khoản, phiên, luật cờ, camera và mic cùng kết quả mong đợi.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát độ phủ yêu cầu, dữ liệu thử, đáp án độc lập và kiểm chứng rủi ro sớm bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ độ phủ yêu cầu, dữ liệu thử, đáp án độc lập và kiểm chứng rủi ro sớm; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -622,6 +642,7 @@ Không ghi đạt trước khi thực hiện; không dùng kết quả nguyên m
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng, Luật cờ, Máy cờ |
 | Labels | sprint-1, chuan-bi-kiem-thu, p1, chinh-qa-devops, nen-tang, luat-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.5, 6.1, 10.1 |
 
 
 **Description**
@@ -642,6 +663,7 @@ Người kiểm thử cần dữ liệu, thao tác và kết quả đúng. Riên
 - Chuẩn bị thế cờ bao phủ luật bảy loại quân, chiếu, chiếu hết, hết nước đi, lặp thế và không ăn quân.
 - Chuẩn bị bộ chiếu hết một và hai nước bắt buộc có đáp án được xác minh riêng, cùng 50 thế giữa ván phục vụ đo máy cờ.
 - Phân biệt ca đã viết với ca đã chạy; kết quả được ghi là đạt, không đạt hoặc bị chặn kèm lý do.
+- Bộ thế phải có cùng vị trí nhưng khác lượt, lần lặp thứ ba, một bên/cả hai bên chiếu liên tục và nước thứ 120 đồng thời chiếu hết hoặc gây hết nước đi.
 
 **Việc cần làm**
 
@@ -651,12 +673,14 @@ Người kiểm thử cần dữ liệu, thao tác và kết quả đúng. Riên
 - Tạo tệp thế cờ, lời giải và nguồn đối chiếu; nhờ người kiểm tra độc lập rà lại các đáp án bắt buộc.
 - Xác định cách ghi môi trường và số đo để người khác lặp lại phép thử.
 - Bàn giao dữ liệu và hướng dẫn cho người viết máy cờ và các phần kiểm thử chức năng.
+- Chuyển từng yêu cầu đã duyệt thành các ca có đầu vào và kết quả cố định; không yêu cầu duyệt lại luật hoặc thay ngưỡng theo số đo triển khai.
 
 **Kết quả bàn giao**
 
 - Kế hoạch kiểm thử và mẫu ca/mẫu lỗi.
 - Bộ ca nền tảng.
 - Bộ thế luật, chiếu hết và thế giữa ván có đáp án, nguồn và hướng dẫn sử dụng.
+- Bảng đối chiếu yêu cầu với tên ca, tệp dữ liệu và nơi ghi kết quả; tách bằng chứng chuẩn bị dữ liệu khỏi bằng chứng chạy trên ứng dụng.
 
 **Điều kiện hoàn thành**
 
@@ -692,6 +716,7 @@ Công việc này chuẩn bị phương pháp và dữ liệu. Người phụ tr
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng, Camera và mic |
 | Labels | sprint-1, thu-nghiem-ky-thuat, p1, chinh-qa-devops, nen-tang, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.14, 0.16, 1.8, 4.1 |
 
 
 **Description**
@@ -721,6 +746,7 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 - Theo dõi tài nguyên và hạn mức trong một phiên thử có ghi thời lượng.
 - Tạo tài khoản thử, kiểm hạn phiên cố định và việc đăng nhập/thu hồi trên hai trình duyệt.
 - Tổng hợp giới hạn, lỗi cấu hình và hướng xử lý để nhóm thời gian thực và phiên dùng được.
+- Lập bảng thử mạng nội bộ/đám mây gồm địa chỉ kết nối, cách cấp HTTPS, vai trò từng trình duyệt và kết quả phát/nhận; thử cấu hình thiếu hoặc sai khoá để có hướng dẫn chẩn đoán.
 
 **Kết quả bàn giao**
 
@@ -734,6 +760,7 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 - Người xem bị từ chối phát; thu hồi quyền có bằng chứng thời gian thực tế.
 - Đổi hoạt động hoặc làm mới khoá phiên không tự dời hạn đăng nhập.
 - Báo cáo phân biệt thử kỹ thuật với luồng chưa có ván thật.
+- Báo cáo ghi riêng kết quả hai người phát/năm người nhận cho môi trường đã chạy; môi trường chưa chạy ghi bị chặn, không suy từ mạng nội bộ rằng Internet đã đạt.
 
 **Phạm vi và phối hợp**
 
@@ -763,17 +790,18 @@ Camera/mic dùng LiveKit, một dịch vụ chuyển tiếp hình và tiếng gi
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | QA & DevOps, Nền tảng |
 | Labels | dac-ta, EP-00, p1, nen-tang |
+| Nguồn đặc tả (BA / AC) | 0.1, 0.4, 0.16, 10.1, 11 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Xác định và đối soát điều kiện để bản cờ tướng cuối cùng có thể trình diễn trên máy thật với bằng chứng chức năng và chất lượng đầy đủ.
+Bàn giao hồ sơ nghiệm thu tổng và trình diễn theo chỉ tiêu đã duyệt; bổ sung bằng chứng từ công việc kiểm chứng thực tế.
 
 **Bối cảnh công việc**
 
-Đây là hồ sơ nghiệm thu tổng: nhóm phải chốt cách đo trước khi triển khai, sau đó bổ sung kết quả thực đo, lỗi còn mở và hướng dẫn chạy bản bàn giao. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Hồ sơ nghiệm thu tổng sử dụng các ngưỡng chất lượng đã duyệt; phương pháp đo cần được chuẩn bị trước triển khai, kết quả thực đo và lỗi còn mở được bổ sung từ công việc kiểm chứng và bàn giao. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -791,19 +819,21 @@ Xác định và đối soát điều kiện để bản cờ tướng cuối c�
 
 **Việc cần làm**
 
-- Viết kịch bản trình diễn liên tục, bảng chỉ tiêu chất lượng và cách đo, danh sách kiểm tra máy trình diễn, dữ liệu mẫu và phương án chạy dự phòng.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát kịch bản trình diễn, chỉ tiêu đã duyệt và phương pháp đo; sau triển khai tổng hợp bằng chứng thực đo, lỗi còn mở và hướng dẫn chạy bản bàn giao.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát mười chuỗi trình diễn, tải 50 người/10 ván, tốc độ nước đi và hồ sơ bàn giao bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
+- Hồ sơ bằng chứng được bổ sung từ công việc kiểm chứng cuối cùng: môi trường, ngày đo, người đo, kết quả thực tế, lỗi và các chỉ tiêu chưa đạt.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ mười chuỗi trình diễn, tải 50 người/10 ván, tốc độ nước đi và hồ sơ bàn giao; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
+- Ngưỡng nghiệm thu giữ nguyên trước thi công; hồ sơ bằng chứng chỉ đóng khi công việc kiểm chứng cuối cùng cung cấp đủ kết quả, chỉ tiêu chưa đạt ghi rõ Chưa thể nghiệm thu, không hạ ngưỡng để đóng hồ sơ.
 
 **Phạm vi và phối hợp**
 
@@ -833,6 +863,7 @@ Không tự giảm ngưỡng hay cắt tính năng để ghi đạt; đóng hồ
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng |
 | Labels | sprint-4, kiem-thu-tich-hop, p1, chinh-qa-devops, nen-tang |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.12, 0.13, 0.14, 0.17, 10.1, BACKLOG-P1.md §8 |
 
 
 **Description**
@@ -867,6 +898,7 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 
 **Việc cần làm**
 
+- Lập bảng nối mỗi luồng tích hợp với dữ liệu ban đầu, các phía quan sát và bằng chứng kết thúc; chuẩn bị riêng bộ thế lặp có cùng vị trí nhưng khác lượt, chu kỳ chiếu liên tục và nước chạm mốc 120 nửa nước để kiểm kết quả thống nhất từ luật đến hộp kết quả.
 - Chuẩn bị tài khoản, phòng và thế cờ cho từng luồng; ghi phiên bản bản dựng và môi trường. Chạy từ giao diện thật, quan sát đồng thời ở người chơi và người xem, không thay luồng thật bằng dữ liệu giả.
 - Tự động hoá những đoạn lặp được bằng công cụ điều khiển trình duyệt; các đoạn cần email, thiết bị, camera hoặc thao tác mạng thật ghi rõ cách thực hiện thủ công.
 - Lưu kết quả từng bước, ghi lỗi với cách tái hiện và ảnh hoặc video. Sau khi sửa, chạy lại tình huống lỗi và luồng liên quan; tránh trộn kết quả từ hai bản phần mềm mà không ghi chú.
@@ -880,6 +912,7 @@ Chỉ dùng bản đã hoàn tất mọi phần triển khai. Việc kiểm chuy
 
 - Mười luồng và các tình huống tích hợp được giao đều có kết quả đạt, không còn lỗi Nghiêm trọng hoặc Cao mở trong phạm vi kiểm.
 - Báo cáo phân biệt Đạt, Không đạt và Chưa kiểm được; dữ liệu đo chất lượng, bản đóng gói và lần tổng duyệt cuối vẫn cần kết quả riêng.
+- Nước hợp lệ gây chiếu hết phải kết thúc thắng/thua trước hòa; hết nước hoặc chiếu liên tục gây thắng/thua phải ưu tiên trước hòa 120 nửa nước. Lỗi media không đổi kết quả hoặc dừng đồng hồ.
 
 **Phạm vi và phối hợp**
 
@@ -909,6 +942,7 @@ Không thay báo cáo đo tải hoặc kiểm chứng máy cờ bằng việc ch
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng |
 | Labels | sprint-4, do-chat-luong, p1, chinh-qa-devops, nen-tang |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.4, 0.15, 0.16, 0.17, 6.1, 10.1, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 
 **Description**
@@ -934,6 +968,7 @@ Mỗi kết quả phải gắn với máy, mạng, trình duyệt, bản phần 
 
 **Việc cần làm**
 
+- Chuẩn bị bộ lệnh đo và nơi lưu mẫu gốc trước khi chạy; tách bảng điều kiện bắt buộc khỏi bảng số đo media chỉ ghi nhận. Ghi mốc nhận nước đi ở máy chủ, đối thủ và người xem để phép đo độ trễ có điểm bắt đầu/kết thúc rõ ràng.
 - Ghi máy, mạng, trình duyệt, bản phần mềm, người đo, ngày đo và số lượt; kiểm đủ 12 nhóm chất lượng vận hành và 9 nhóm thử khả thi nêu trong các yêu cầu trên.
 - Chạy 50 kết nối/10 ván; lưu thời gian từng nước tới đối thủ và người xem, lỗi, tài nguyên. Tính mốc 95% từ dữ liệu thô, không thay bằng trung bình.
 - Đối chiếu bộ 50 thế mỗi cấp, chiếu hết và đấu máy; kiểm độc lập báo cáo gửi thư, Google, đổi email trực tiếp, tên đăng nhập, phiên/Khách và media trên môi trường thật.
@@ -949,6 +984,7 @@ Mỗi kết quả phải gắn với máy, mạng, trình duyệt, bản phần 
 
 - Mọi nhóm yêu cầu có bằng chứng đúng phạm vi; tiêu chí bắt buộc chưa đạt phải giữ trạng thái chưa đạt và chặn phát hành.
 - Các phép đo chỉ yêu cầu ghi số liệu được báo đầy đủ, không tự biến thành ngưỡng cam kết mới.
+- Đăng nhập Google trong lúc khoá không xoá bộ đếm mật khẩu; thử sai cả username không tồn tại. Báo cáo thư ghi kết quả thực tế tới Gmail ngoài nhóm; báo cáo media ghi cấu hình chuyển môi trường và số đo mà không tự đặt ngưỡng thu hồi.
 
 **Phạm vi và phối hợp**
 
@@ -978,6 +1014,7 @@ Không tuyên bố hệ thống đạt chỉ vì đã viết xong báo cáo. Đ�
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng |
 | Labels | sprint-4, dong-goi-phat-hanh, p1, chinh-qa-devops, nen-tang |
+| Nguồn đặc tả (BA / AC) | 0.4, 0.16, 10.1, BACKLOG-P1.md §8 |
 
 
 **Description**
@@ -993,13 +1030,14 @@ Chỉ bắt đầu khi kiểm tích hợp, kiểm chuyên đề và đo chất l
 **Yêu cầu cần đáp ứng**
 
 - Kiểm đủ danh sách điều kiện nghiệm thu và các ca kiểm có tiền điều kiện, thao tác, dữ liệu, kết quả mong đợi; tiêu chí có nhiều nhánh phải có trường hợp tương ứng. Có báo cáo kiểm lại cuối từng đợt phát triển và danh sách lỗi còn mở.
-- Bộ chạy tại máy trình diễn gồm giao diện web, máy chủ ứng dụng và LiveKit, dịch vụ camera, mic, được chạy bằng Docker là công cụ khởi động dịch vụ từ cấu hình có sẵn. Các máy trong cùng mạng truy cập qua kết nối web được mã hoá để trình duyệt cho dùng camera và mic.
+- Bộ chạy tại máy trình diễn gồm giao diện web, máy chủ ứng dụng và LiveKit tự chạy bằng Docker (công cụ khởi động dịch vụ theo cấu hình). Hướng dẫn ghi rõ cách khởi động từng thành phần. Các máy trong cùng mạng truy cập web qua HTTPS, kết nối được mã hoá với chứng chỉ hợp lệ trên thiết bị thử, để trình duyệt cho dùng camera và mic.
 - Viết hướng dẫn cho máy đã có Node, môi trường chạy ứng dụng, và pnpm, công cụ cài các gói phụ thuộc, cùng tệp cấu hình được cấp riêng. Người không tham gia đóng gói phải chạy toàn bộ ứng dụng trong không quá 15 phút.
 - Chuẩn bị tài khoản chính thức, tài khoản Google, email nhận mã thật, phiên Khách, phòng mẫu và thế cờ phục vụ trình diễn. Có đường chạy dự phòng: giao diện và máy chủ ứng dụng trên Render, dịch vụ lưu trữ ứng dụng; camera và mic trên LiveKit Cloud, dịch vụ hình tiếng đám mây.
 - Hướng dẫn nêu cách chọn môi trường, khởi động, mở địa chỉ truy cập, kiểm dịch vụ chạy và dừng. Không để khoá bí mật hoặc mật khẩu thật trong mã nguồn, ảnh chụp hoặc tài liệu phát công khai.
 
 **Việc cần làm**
 
+- Khoá danh sách phiên bản mã nguồn, gói phụ thuộc, cấu hình và dữ liệu trình diễn đúng với báo cáo đạt; lập bảng nơi lấy từng bí mật qua kênh riêng. Kiểm máy chạy, Node, pnpm, Docker và chứng chỉ đã đủ trước khi bấm giờ khởi động.
 - Đối chiếu báo cáo chức năng, kiểm thử và số đo; thiếu bằng chứng hoặc còn điều kiện chưa đạt thì giữ việc phát hành ở trạng thái Chưa thể thực hiện và nêu rõ nguyên nhân.
 - Đóng gói đúng bản đã kiểm, ghi phiên bản và cấu hình; tạo dữ liệu mẫu có thể lập lại. Đưa hướng dẫn cho thành viên khác thao tác trên máy sạch đủ điều kiện và bấm giờ, ghi lại chỗ phải hỏi thêm để sửa tài liệu.
 - Thử cấu hình dự phòng và chuẩn bị trình tự minh hoạ mười luồng dưới đây để người chạy cuối không phải tra mã kịch bản.
@@ -1023,6 +1061,7 @@ Chỉ bắt đầu khi kiểm tích hợp, kiểm chuyên đề và đo chất l
 
 - Mọi điều kiện bắt buộc đã đạt; bản đóng gói khớp bản đã kiểm và người thử độc lập khởi động thành công trong thời gian yêu cầu.
 - Có dữ liệu cho mười luồng: đăng ký email thật và sửa tên; đăng ký Google rồi đăng nhập hai cách; khoá mật khẩu; tạo phòng và mời bạn hoặc Khách; đổi bên, chơi, chat, camera; công khai, khoá và đuổi người xem; chơi ván tiếp; rớt mạng; chơi với máy và đổi phe; đăng nhập thiết bị khác.
+- Gói dự phòng chỉ đổi cấu hình LiveKit giữa tự chạy và Cloud, không đặt LiveKit trên Render. Hướng dẫn có cách nhận biết ứng dụng/dữ liệu/media sẵn sàng và dừng dịch vụ; bản đã sửa sau nghiệm thu phải được kiểm lại phần bị ảnh hưởng trước bàn giao.
 
 **Phạm vi và phối hợp**
 
@@ -1052,6 +1091,7 @@ Công việc này đóng gói và xác nhận điều kiện phát hành. Tổng
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Nền tảng |
 | Labels | sprint-4, tong-duyet, p1, chinh-qa-devops, nen-tang |
+| Nguồn đặc tả (BA / AC) | 0.4, 0.6, 0.7, 0.9, 0.15, 0.16, 10.1, BACKLOG-P1.md §8 |
 
 
 **Description**
@@ -1079,6 +1119,7 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 **Việc cần làm**
 
+- Lập danh sách mười luồng với tài khoản/thiết bị tham gia và trạng thái phòng cần có; kiểm dữ liệu mẫu trước ghi hình, giữ nguyên số phiên bản bản phát hành trong tên báo cáo và thông tin video.
 - Kiểm môi trường, thiết bị thu hình tiếng và cách ghi màn hình trước khi chạy. Dùng dữ liệu trình diễn thay cho tài khoản cá nhân; tránh quay khoá bí mật, mật khẩu hoặc mã xác minh còn hiệu lực.
 - Chạy từng luồng từ bước đầu đến kết quả cuối, quan sát các phía liên quan chứ không chỉ máy của chủ phòng. Ghi hình đủ thao tác và trạng thái kết quả để giảng viên hoặc thành viên mới hiểu điều được chứng minh.
 - Ghi bảng kết quả từng luồng, thời điểm tương ứng trong video và điểm còn thiếu. Nếu gặp lỗi, ghi cách tái hiện, chuyển cho người phụ trách phần đó sửa, rồi kiểm lại trên bản đã sửa; ghi rõ video nào đã được thay thế.
@@ -1092,6 +1133,7 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 
 - Cả mười luồng phải chạy đạt và có bằng chứng xem được; không dùng video cũ để chứng minh một bản mới chưa chạy.
 - Luồng không chạy được vì lỗi, thiếu thiết bị hoặc dịch vụ ngoài phải được ghi Không đạt hoặc Chưa kiểm được, không đổi thành Đạt để kịp bàn giao.
+- Mỗi luồng có mốc video và kết quả cuối của các phía liên quan; lỗi được sửa phải quay lại đoạn có đủ bước gây lỗi và kết quả mới trên bản sửa. Video không lộ bí mật hay mã xác minh còn hiệu lực.
 
 **Phạm vi và phối hợp**
 
@@ -1119,40 +1161,40 @@ Sử dụng đúng máy, mạng và bản phần mềm dự kiến trình diễn
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản, Ván trực tuyến |
 | Labels | EP-01, dac-ta, p1, tai-khoan, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.4, 0.15, 0.17, 1.1, 1.2, 1.3, 1.4, 1.5, 1.8 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất cách người dùng tạo tài khoản, đăng nhập, dùng chế độ Khách và quản lý quyền chơi của mình.
+Bàn giao bộ đặc tả đã duyệt về đăng ký, đăng nhập, Khách và phiên; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Bản đầu có đăng ký bằng tên/mật khẩu/email xác minh, tài khoản Google và Khách. Phiên đăng nhập phải kiểm soát một vị trí chơi và hậu quả khi chuyển thiết bị. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Bản đầu có đăng ký bằng tên/mật khẩu/email xác minh, tài khoản Google và Khách. Phiên đăng nhập phải kiểm soát một vị trí chơi và hậu quả khi chuyển thiết bị. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả việc tạo tài khoản bằng tên đăng nhập, mật khẩu và mã xác minh gửi tới email thật.
-- Đặc tả đăng nhập bằng tên và mật khẩu, bao gồm chống đoán mật khẩu và thời hạn đăng nhập rõ ràng.
-- Đặc tả hai cách vào ứng dụng nhanh: tài khoản Google và danh tính Khách dùng tạm.
-- Đặc tả quản lý phiên, một vị trí chơi tại một thời điểm, hồ sơ cá nhân và đăng xuất để tránh chiếm nhiều ghế hoặc xử lý kết quả không nhất quán.
+- Đăng ký thường gồm tên/mật khẩu, email và mã xác minh; tên cấm bị từ chối ngay khi nhập, tên hiển thị mặc định bằng tên đăng nhập. Google mới phải đặt tên/mật khẩu, không mã xác minh và không tự gộp tài khoản trùng email.
+- Đăng nhập chỉ bằng tên không phân biệt hoa thường; sai năm lần trong 15 phút chặn mật khẩu 15 phút kể cả tên không tồn tại. Google không bị chặn và đăng nhập Google thành công không đặt lại bộ đếm.
+- Khách thuộc bản đầu, phiên hết sau 12 giờ kể từ lúc vào; nếu đang ngồi ghế/trong ván thì chỉ hoãn hết hạn đến khi rời, không tạo thêm một hạn 12 giờ. Khách tối đa một phòng mở, không có chức năng bạn bè. Giữ một vị trí chơi, hậu quả chuyển thiết bị, tên hiển thị và đăng xuất theo trạng thái.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về đăng ký, đăng nhập, Khách và phiên với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát đăng ký, đăng nhập, Khách và phiên, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng đăng ký, đăng nhập, Khách và phiên theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -1182,17 +1224,18 @@ Không làm quên mật khẩu, đổi tên đăng nhập, đổi email hay đá
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản |
 | Labels | dac-ta, EP-01, p1, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.4, 0.17, 1.1, 1.4, 1.5 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả việc tạo tài khoản bằng tên đăng nhập, mật khẩu và mã xác minh gửi tới email thật.
+Bàn giao đặc tả việc tạo tài khoản bằng tên đăng nhập, mật khẩu và mã xác minh gửi tới email thật theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Người chưa có tài khoản đi qua ba bước: nhập thông tin đăng nhập, cung cấp email, xác nhận mã sáu chữ số. Tên hiển thị ban đầu bằng tên đăng nhập. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Người chưa có tài khoản đi qua ba bước: nhập thông tin đăng nhập, cung cấp email, xác nhận mã sáu chữ số. Tên hiển thị ban đầu bằng tên đăng nhập. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -1209,22 +1252,23 @@ Người chưa có tài khoản đi qua ba bước: nhập thông tin đăng nh�
 - Khi đã cấu hình dịch vụ gửi email ngoài, đăng ký bằng Gmail không thuộc nhóm vẫn phải nhận thư xác minh thật, mục tiêu trong không quá 1 phút. Tên người gửi là “Cờ Tướng Online”, nội dung thư bằng tiếng Việt.
 - Bối cảnh: Đăng ký liên tiếp 5 lần trong 1 giờ bằng 5 email khác nhau. Thao tác hoặc sự kiện: Gửi mã xác minh. Kết quả cần có: Cả 5 thư đều gửi được (không còn giới hạn 2 thư/giờ của dịch vụ gửi email mặc định).
 - Bối cảnh: Dịch vụ gửi email lỗi hoặc hết hạn mức. Thao tác hoặc sự kiện: Gửi mã xác minh. Kết quả cần có: Giao diện báo lỗi thật "Không gửi được mã, vui lòng thử lại sau"; tài khoản không bị kẹt.
+- Giới hạn nhập sai mã xác minh có mục tiêu năm lần mỗi lần gửi, thực thi gần đúng qua giới hạn của hệ thống xác thực; không hứa bộ đếm chính xác từng mã. Nhà cung cấp gửi email cụ thể được lựa chọn và kiểm hạn mức trong công việc cấu hình, theo yêu cầu gửi được tới Gmail ngoài nhóm.
 
 **Việc cần làm**
 
-- Mô tả từng bước, kiểm tra dữ liệu, trạng thái chờ xác minh, gửi lại mã, lỗi gửi thư và xử lý hồ sơ đăng ký dở dang.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát từng bước nhập tên/mật khẩu, email và mã xác minh; giữ đúng kiểm trùng, hạn mã, gửi lại, dọn bản tạm và phục hồi hồ sơ đã hoàn tất.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát đăng ký ba bước, từ chối tên cấm, thư xác minh thật và phục hồi đăng ký dở dang bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ đăng ký ba bước, từ chối tên cấm, thư xác minh thật và phục hồi đăng ký dở dang; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -1254,6 +1298,7 @@ Không bổ sung chức năng quên mật khẩu hoặc thay đổi email.
 | Component chính | BE |
 | Components | BE, Tài khoản |
 | Labels | sprint-1, phat-trien, p1, chinh-be, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.4, 0.17, 1.1, 1.4, 1.5, 1.6, 5.3 |
 
 
 **Description**
@@ -1283,6 +1328,8 @@ Chỉ tài khoản đã xác minh email và hoàn tất hồ sơ mới được 
 - Thử thư tới ba địa chỉ Gmail không thuộc nhóm phát triển và thử gửi năm thư tới năm email khác nhau trong một giờ; lưu thời gian nhận, việc vào thư rác và hạn mức dịch vụ.
 - Thử lỗi dịch vụ thư và gọi trực tiếp chức năng đổi email để kiểm quyền ở máy chủ.
 - Ghi kết quả thử Google/Khách và giới hạn; chưa coi là nghiệm thu toàn bộ luồng.
+- So sánh hạn mức tại thời điểm cấu hình rồi chọn dịch vụ thư miễn phí gửi được tới Gmail bất kỳ, không bắt buộc tên miền riêng; ghi lựa chọn, hạn mức và cấu hình gửi của Supabase phù hợp.
+- Thử tranh chấp tên ở bước cuối và lỗi giữa ghi hồ sơ hoàn tất với xoá cờ chờ; kiểm lại quyền sử dụng và dữ liệu sau khi tác vụ phục hồi/dọn chạy.
 
 **Kết quả bàn giao**
 
@@ -1297,6 +1344,7 @@ Chỉ tài khoản đã xác minh email và hoàn tất hồ sơ mới được 
 - Lỗi gửi thư báo “Không gửi được mã, vui lòng thử lại sau”; thử lại không làm tài khoản bị kẹt.
 - Chạy đồng thời hoàn tất và dọn không xoá hồ sơ đã hoàn tất.
 - Email không đổi được kể cả khi người dùng gửi yêu cầu trực tiếp đến dịch vụ xác thực. Nếu chỉ chặn được ở màn hình mà đường gọi trực tiếp vẫn đổi email, ghi Chưa đạt và nêu giới hạn, không coi là hoàn tất.
+- Tên bị chiếm trong lúc chờ mã trả người dùng về bước đầu; dọn bản chưa hoàn tất giải phóng email nhưng không giữ chỗ tên và không xoá hồ sơ đã ghi hoàn tất.
 
 **Phạm vi và phối hợp**
 
@@ -1326,6 +1374,7 @@ Bàn giao cho màn đăng ký; Google và Khách đầy đủ triển khai riên
 | Component chính | FE |
 | Components | FE, Tài khoản |
 | Labels | sprint-1, phat-trien, p1, chinh-fe, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.17, 1.1, 1.5, 5.3 |
 
 
 **Description**
@@ -1368,6 +1417,8 @@ Người dùng nhập tên tài khoản và mật khẩu, sau đó email, cuối
 - Không thể gửi lại trước 60 giây bằng cách bấm nhanh trên giao diện.
 - Mã hợp lệ hoàn tất tài khoản và vào Sảnh; mã sai không được coi là đăng nhập.
 - Mất dịch vụ thư không hiện thông báo thành công giả, người dùng có đường thử lại.
+- Dán đủ sáu chữ số vào ô mã dùng được; hết hạn mã hoặc đang trong 60 giây chờ gửi lại hiển thị đúng mốc máy chủ, không đặt lại chỉ vì chuyển bước.
+- Tên vừa bị chiếm sau khi nhập mã đúng được báo và quay về bước đầu; giao diện không điều hướng vào ứng dụng trước khi máy chủ xác nhận hoàn tất hồ sơ.
 
 **Phạm vi và phối hợp**
 
@@ -1397,6 +1448,7 @@ Bàn giao màn đăng ký. Luồng mở đường dẫn mời rồi đăng ký c
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
 | Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.4, 0.17, 1.1, 1.5, 1.6, 5.3 |
 
 
 **Description**
@@ -1426,6 +1478,7 @@ Kiểm đăng ký qua giao diện và máy chủ thật; dùng kiểm dữ liệ
 - Dùng môi trường thử để tạo lỗi giữa ghi hồ sơ và dọn/phục hồi, kiểm không xoá nhầm.
 - Ghi đạt/không đạt/bị chặn cùng ảnh, thư nhận và dữ liệu đã che bí mật.
 - Gửi lỗi cho người triển khai, kiểm lại đúng nhánh lỗi sau sửa.
+- Chạy riêng lỗi sau khi ghi dấu hoàn tất, tác vụ dọn chạy gần lúc xác nhận mã và tên bị người khác lấy khi đang chờ; chụp trạng thái hồ sơ đã che dữ liệu nhạy cảm trước/sau.
 
 **Kết quả bàn giao**
 
@@ -1439,6 +1492,7 @@ Kiểm đăng ký qua giao diện và máy chủ thật; dùng kiểm dữ liệ
 - Không có tài khoản trùng tên/email hoặc tài khoản chưa xác minh sử dụng được.
 - Lỗi gửi thư được báo thật, gửi lại có thể phục hồi; tài khoản hoàn tất không bị xoá.
 - Không đánh dấu đạt nếu không nhận được thư thật hoặc không kiểm được nhánh bắt buộc.
+- Yêu cầu đổi email trực tiếp không thành công; nếu đường dịch vụ vẫn cho đổi thì báo không đạt dù màn hình đã khoá trường email.
 
 **Phạm vi và phối hợp**
 
@@ -1468,17 +1522,18 @@ Tự vào phòng mời sau đăng ký được kiểm khi chức năng tham gia 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản |
 | Labels | dac-ta, EP-01, p1, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.15, 1.8 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả đăng nhập bằng tên và mật khẩu, bao gồm chống đoán mật khẩu và thời hạn đăng nhập rõ ràng.
+Bàn giao đặc tả đăng nhập bằng tên và mật khẩu, bao gồm chống đoán mật khẩu và thời hạn đăng nhập rõ ràng theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Người dùng nhập tên đăng nhập; việc tra email cần cho dịch vụ xác thực diễn ra ở máy chủ, không tiết lộ email hoặc tài khoản có tồn tại hay không cho người thử sai. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Người dùng nhập tên đăng nhập; việc tra email cần cho dịch vụ xác thực diễn ra ở máy chủ, không tiết lộ email hoặc tài khoản có tồn tại hay không cho người thử sai. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -1494,19 +1549,19 @@ Người dùng nhập tên đăng nhập; việc tra email cần cho dịch vụ
 
 **Việc cần làm**
 
-- Mô tả luồng thành công, lỗi, giới hạn thử sai, ghi nhớ đăng nhập và hành vi khi tài khoản đã bị chặn mật khẩu nhưng đăng nhập bằng Google.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu lỗi đăng nhập chung, cửa sổ đếm và thời hạn chặn với luồng Google; giữ bộ đếm khi Google đăng nhập thành công và chỉ đặt lại khi mật khẩu đúng.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát đăng nhập bằng tên, khóa thử sai, thời hạn phiên và bộ đếm độc lập với Google bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ đăng nhập bằng tên, khóa thử sai, thời hạn phiên và bộ đếm độc lập với Google; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -1536,6 +1591,7 @@ Không bổ sung chức năng khôi phục mật khẩu; không áp dụng bộ 
 | Component chính | BE |
 | Components | BE, Tài khoản |
 | Labels | sprint-1, phat-trien, p1, chinh-be, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.15, 1.8 |
 
 
 **Description**
@@ -1571,6 +1627,7 @@ Người dùng đăng nhập bằng tên. Máy chủ tra email nội bộ, khôn
 - Xử lý đăng nhập và dữ liệu bộ đếm thử sai.
 - Cách quản lý hạn phiên.
 - Kiểm thử chứng minh tra tên và khoá thử sai đúng.
+- Hợp đồng đăng nhập nêu dữ liệu tên/mật khẩu/lựa chọn ghi nhớ, phản hồi thành công cùng hạn phiên và phản hồi sai hoặc bị chặn; không trả email tra cứu nội bộ.
 
 **Điều kiện hoàn thành**
 
@@ -1578,6 +1635,7 @@ Người dùng đăng nhập bằng tên. Máy chủ tra email nội bộ, khôn
 - Lần sai thứ năm kích hoạt chặn; lần thứ sáu với tên giả có hành vi giống tên thật.
 - Đăng nhập đúng sau ba lần sai xoá số lần sai.
 - Hoạt động trong ứng dụng không làm hạn 12 giờ/30 ngày trôi về sau.
+- Các yêu cầu đồng thời với cùng tên khác hoa/thường dùng chung bộ đếm; hạn chặn tính từ lần sai thứ năm, không bị kéo dài bởi thử thêm trong lúc đang bị chặn.
 
 **Phạm vi và phối hợp**
 
@@ -1607,6 +1665,7 @@ Bàn giao đăng nhập mật khẩu cho giao diện; kiểm chung với Google 
 | Component chính | FE |
 | Components | FE, Tài khoản |
 | Labels | sprint-1, phat-trien, p1, chinh-fe, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 1.8 |
 
 
 **Description**
@@ -1649,6 +1708,8 @@ Màn này cũng là cửa vào cho người mở đường dẫn mời nhưng ch
 - Bị chặn thì giao diện không tự coi đăng nhập thành công.
 - Ô ghi nhớ mặc định được chọn và gửi đúng lựa chọn khi bỏ chọn.
 - Quên mật khẩu không mở chức năng chưa làm; người đã đăng nhập không mắc ở màn đăng nhập.
+- Mất kết nối trong lúc gửi có báo lỗi và cho thử lại; không tự tạo trạng thái đăng nhập thành công khi chưa nhận xác nhận.
+- Đích phòng mời được giữ qua thao tác nhập sai rồi đăng nhập lại đúng; điều hướng sau đó vẫn nhận kết quả kiểm phòng từ máy chủ.
 
 **Phạm vi và phối hợp**
 
@@ -1678,6 +1739,7 @@ Bàn giao giao diện đăng nhập mật khẩu và vị trí nối Google/Khá
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
 | Labels | sprint-2, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.15, 1.8 |
 
 
 **Description**
@@ -1699,6 +1761,7 @@ Chạy qua giao diện thật và xử lý máy chủ, đồng thời kiểm cá
 - Đăng nhập đúng sau ba lần sai đặt bộ đếm về không; hết thời gian chặn thì có thể đăng nhập đúng.
 - Ghi nhớ mặc định chọn: hạn cố định 30 ngày. Bỏ chọn: hết khi đóng trình duyệt hoặc 12 giờ; hoạt động không kéo dài hạn.
 - Người đã có phiên mở trang đăng nhập hoặc đăng ký được về Sảnh.
+- Gửi gần đồng thời các lần thử sai với tên khác hoa/thường; đếm chung và không vượt khoá. Thử thêm trong lúc khoá không làm đổi mốc hết chặn vốn tính từ lần sai thứ năm.
 
 **Việc cần làm**
 
@@ -1714,6 +1777,7 @@ Chạy qua giao diện thật và xử lý máy chủ, đồng thời kiểm cá
 - Bộ ca đăng nhập, khoá thử sai và hạn phiên.
 - Báo cáo có thời điểm thử và kết quả thực tế.
 - Lỗi có cách tái hiện và kết quả kiểm lại.
+- Bảng mốc thời gian thử, phản hồi, bộ đếm và hạn phiên đã che thông tin nhạy cảm để kiểm lại ranh giới ngay trước/bằng/sau hạn.
 
 **Điều kiện hoàn thành**
 
@@ -1750,17 +1814,18 @@ Việc Google vẫn vào được mà không xoá bộ đếm và việc đăng 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản |
 | Labels | dac-ta, EP-01, p1, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 0.17, 1.2, 1.3, 1.4 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả hai cách vào ứng dụng nhanh: tài khoản Google và danh tính Khách dùng tạm.
+Bàn giao đặc tả hai cách vào ứng dụng nhanh: tài khoản Google và danh tính Khách dùng tạm theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Tài khoản Google mới vẫn phải chọn tên đăng nhập và mật khẩu. Khách chỉ nhập tên tạm, được chơi hoặc xem nhưng không có chức năng bạn bè và hồ sơ như tài khoản chính thức. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Tài khoản Google mới vẫn phải chọn tên đăng nhập và mật khẩu. Khách chỉ nhập tên tạm, được chơi hoặc xem nhưng không có chức năng bạn bè và hồ sơ như tài khoản chính thức. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -1779,22 +1844,23 @@ Tài khoản Google mới vẫn phải chọn tên đăng nhập và mật khẩ
 - Bối cảnh: Phiên Khách hết hạn hoặc Khách bấm Đăng xuất. Thao tác hoặc sự kiện: Hệ thống xử lý. Kết quả cần có: Về màn hình Đăng nhập; tên và dữ liệu cá nhân của Khách bị xoá; vào lại là danh tính Khách mới.
 - Bối cảnh: tên đăng nhập đang bị chặn. Thao tác hoặc sự kiện: Đăng nhập bằng Google của chính tài khoản đó. Kết quả cần có: Vẫn đăng nhập được (bộ đếm không áp cho Google).
 - Bối cảnh: Chưa đăng nhập, mở đường dẫn mời phòng. Thao tác hoặc sự kiện: Chọn "Guest", nhập tên hợp lệ. Kết quả cần có: Tự vào đúng phòng (ghế trống hoặc người xem theo sức chứa), không phải mở đường dẫn lần hai.
+- Khách chỉ dùng các chức năng của bản bàn giao đầu tiên: tạo/vào phòng, chơi hoặc xem, chơi với máy, chat theo vai trò và camera/mic khi ngồi ghế; không kết bạn hoặc nhận/gửi lời mời bạn bè. Khi danh tính Khách hết hạn, giữ bản ghi ván của đối thủ chính thức với tên chung “Khách”, nhưng chưa cung cấp giao diện Lịch sử ở bản đầu.
 
 **Việc cần làm**
 
-- Vẽ đầy đủ nhánh Google mới/cũ/trùng email, hoàn tất thiết lập bắt buộc, tạo và hết hạn danh tính Khách, và quay lại phòng từ lời mời.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát các nhánh Google, dọn bản tạm và tên mặc định; kiểm tính nhất quán của phiên Khách, nhãn tên, giới hạn phòng và đường dẫn mời đang chờ.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát Google mới/cũ/trùng email, thiết lập bắt buộc và quyền của Khách bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ Google mới/cũ/trùng email, thiết lập bắt buộc và quyền của Khách; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -1824,6 +1890,7 @@ Không tự gộp tài khoản trùng email và không triển khai xếp hạng
 | Component chính | BE |
 | Components | BE, Tài khoản |
 | Labels | sprint-2, phat-trien, p1, chinh-be, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.15, 0.17, 1.1, 1.2, 1.3, 5.3 |
 
 
 **Description**
@@ -1844,24 +1911,28 @@ Supabase là dịch vụ quản lý đăng nhập của dự án. Xác thực Go
 - Bản Google tạm chưa hoàn tất quá 60 phút được dọn bằng kiểm tra mỗi 5 phút; không xoá tài khoản cũ, đã hoàn tất hoặc vừa hoàn tất. Chưa hoàn tất phải bị chặn sử dụng ứng dụng.
 - Khách nhập tên 2–20 ký tự có dấu, không cần duy nhất, không chứa từ cấm; luôn có nhãn “(Khách)”. Phiên kéo dài tối đa 12 giờ nhưng không hết trong lúc đang ngồi ghế hoặc trong ván; chỉ được tạo một phòng đang mở.
 - Google không bị chặn bởi khoá thử sai mật khẩu và đăng nhập Google thành công không xoá bộ đếm đó. Khách không có quyền kết bạn, nhận/gửi lời mời bạn bè hoặc sửa hồ sơ.
+- Khách được tạo/vào phòng, ngồi ghế hoặc xem, đánh máy, chat theo vai trò và dùng camera/mic khi ngồi ghế. Khi hết phiên hoặc đăng xuất phải xoá tên, chat và dữ liệu cá nhân; giữ bản ghi ván cho đối thủ chính thức với tên chung Khách.
 
 **Việc cần làm**
 
 - Tích hợp Google thật và tạo phiên Khách; kiểm quyền tại máy chủ, dùng bộ lọc tên chung.
 - Xây bước hoàn tất tài khoản, dọn bản tạm an toàn và dữ liệu hạn phiên Khách.
 - Viết kiểm thử email trùng, tài khoản chưa hoàn tất, thời hạn dọn, tên cấm, đăng nhập kép và bộ đếm sai mật khẩu.
+- Thử tài khoản Google vừa hoàn tất trong cùng lượt tác vụ dọn và lỗi giữa các bước hoàn tất; xác minh hồ sơ đã hoàn tất được giữ/phục hồi còn hồ sơ tạm vẫn bị chặn.
 
 **Kết quả bàn giao**
 
 - Dịch vụ Google/Khách và bằng chứng thử với tài khoản thật.
+- Dữ liệu hạn phiên và sự kiện kết thúc phiên Khách cho quản lý phòng/chat xử lý xoá dữ liệu; bảng quyền Khách để các chức năng kiểm thống nhất.
 
 **Điều kiện hoàn thành**
 
 - Không gộp tài khoản trùng email; Google không xoá khoá mật khẩu; tài khoản chưa hoàn tất không dùng ứng dụng được.
+- Danh tính Khách trả đúng hạn 12 giờ và thông tin ngoại lệ để quản lý phiên không làm hết phiên khi đang ngồi ghế/trong ván; kiểm tích hợp áp hết hạn sau khi rời. Phiên mới là danh tính mới và chỉ được có một phòng tự tạo đang mở.
 
 **Phạm vi và phối hợp**
 
-Việc gia hạn ngoại lệ khi đang chơi và xoá dữ liệu khi phiên Khách kết thúc cần phối hợp quản lý phiên, phòng và chat; giao diện được làm riêng.
+Bàn giao xác thực, dữ liệu hạn và quyền Khách; quản lý phiên, phòng và chat dùng các dữ liệu/sự kiện này để thực hiện ngoại lệ khi đang chơi và xoá dữ liệu khi kết thúc phiên. Kiểm tích hợp các nhánh đó khi chức năng liên quan sẵn sàng; giao diện được làm riêng.
 
 ---
 
@@ -1887,6 +1958,7 @@ Việc gia hạn ngoại lệ khi đang chơi và xoá dữ liệu khi phiên Kh
 | Component chính | FE |
 | Components | FE, Tài khoản |
 | Labels | sprint-2, phat-trien, p1, chinh-fe, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.17, 1.2, 1.3 |
 
 
 **Description**
@@ -1910,6 +1982,7 @@ Người chọn Google lần đầu vẫn cần đặt tên đăng nhập và m�
 
 **Việc cần làm**
 
+- Tích hợp riêng ba kết quả Google: đã có tài khoản, cần hoàn tất thiết lập, email trùng tài khoản mật khẩu; lưu đích phòng đang chờ qua các màn xác thực và chỉ chuyển tiếp sau khi máy chủ xác nhận hoàn tất.
 - Dựng nút Google, màn hoàn tất thiết lập và hộp tên Khách, gồm trạng thái xử lý và lỗi.
 - Nối phản hồi xác thực, điều hướng tới Sảnh hoặc phòng đang chờ và quy tắc ẩn chức năng theo vai trò.
 - Thử tên biên, từ cấm, email trùng, đóng giữa thiết lập và mở lời mời trước đăng nhập.
@@ -1917,10 +1990,12 @@ Người chọn Google lần đầu vẫn cần đặt tên đăng nhập và m�
 **Kết quả bàn giao**
 
 - Giao diện Google và Khách nối dịch vụ xác thực thật.
+- Bằng chứng Google thật cho tài khoản mới/cũ/trùng email và Khách đi qua link mời.
 
 **Điều kiện hoàn thành**
 
 - Không bỏ qua thiết lập Google; Khách có nhãn đúng và vào phòng mời không cần mở lại đường dẫn.
+- Lỗi từ cấm phải được báo trước khi gửi hoàn tất và vẫn hiển thị khi máy chủ từ chối; tên hiển thị sau Google đúng tên đăng nhập đã chọn. Huỷ hộp tên Khách không tạo phiên chơi thành công trên giao diện.
 
 **Phạm vi và phối hợp**
 
@@ -1950,6 +2025,7 @@ Phần này không quyết định thời hạn phiên hoặc quyền trên máy
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.2, 0.3, 0.15, 0.17, 1.2, 1.3 |
 
 
 **Description**
@@ -1973,6 +2049,7 @@ Chuẩn bị Google chưa đăng ký, Google đã hoàn tất và email đã t�
 
 **Việc cần làm**
 
+- Lưu trạng thái tài khoản và bộ đếm sai trước mỗi lần đăng nhập; chuẩn bị Google trùng email bằng mật khẩu và hồ sơ thiết lập dở gần 60 phút để kiểm không tự gộp và dọn bản tạm đúng đối tượng.
 - Viết tình huống với dữ liệu email/tên rõ ràng và kết quả mong đợi; không dùng xác thực Google giả làm bằng chứng.
 - Chạy luồng thật, kiểm bản tạm và thử yêu cầu vượt giao diện; dùng thời gian kiểm soát được cho bài hết hạn.
 - Ghi bằng chứng, lỗi và kết quả kiểm lại sau sửa.
@@ -1984,6 +2061,7 @@ Chuẩn bị Google chưa đăng ký, Google đã hoàn tất và email đã t�
 **Điều kiện hoàn thành**
 
 - Không tự gộp tài khoản; không vượt bước thiết lập; Google không xoá khoá mật khẩu; tên cấm bị máy chủ chặn.
+- Trong cùng khoảng khoá, đăng nhập Google xong rồi dùng mật khẩu đúng vẫn bị từ chối; chỉ sau hết hạn mới đăng nhập bằng mật khẩu được. Tài khoản vừa hoàn tất không bị đợt dọn hồ sơ tạm xoá nhầm.
 
 **Phạm vi và phối hợp**
 
@@ -2013,17 +2091,18 @@ Ngoại lệ giữ phiên Khách khi đang chơi và xoá dữ liệu khi phiên
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Tài khoản, Ván trực tuyến |
 | Labels | dac-ta, EP-01, p1, tai-khoan, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.7, 1.4, 1.8, 6.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả quản lý phiên, một vị trí chơi tại một thời điểm, hồ sơ cá nhân và đăng xuất để tránh chiếm nhiều ghế hoặc xử lý kết quả không nhất quán.
+Bàn giao đặc tả quản lý phiên, một vị trí chơi tại một thời điểm, hồ sơ cá nhân và đăng xuất để tránh chiếm nhiều ghế hoặc xử lý kết quả không nhất quán theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Một vị trí chơi là ghế đang ngồi trong phòng hoặc một ván với máy. Đăng nhập ở thiết bị khác có hậu quả khác với mở thêm thẻ trên cùng trình duyệt. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Một vị trí chơi là ghế đang ngồi trong phòng hoặc một ván với máy. Đăng nhập ở thiết bị khác có hậu quả khác với mở thêm thẻ trên cùng trình duyệt. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -2047,19 +2126,19 @@ Một vị trí chơi là ghế đang ngồi trong phòng hoặc một ván vớ
 
 **Việc cần làm**
 
-- Lập bảng tình huống theo tài khoản/Khách, thiết bị cũ/mới, đang chờ/đang chơi, hết hạn/chủ động đăng xuất; ghi rõ hậu quả với ghế, ván và màn hình.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát hậu quả đối với ghế, ván và màn hình theo tài khoản/Khách, thiết bị cũ/mới, phòng chờ/ván đang chơi và hết phiên/đăng xuất.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát một vị trí chơi, hết phiên, chuyển thiết bị, hồ sơ và đăng xuất bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ một vị trí chơi, hết phiên, chuyển thiết bị, hồ sơ và đăng xuất; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -2089,6 +2168,7 @@ Không triển khai đổi tên đăng nhập, đổi email hay bộ chọn giao
 | Component chính | BE |
 | Components | BE, Tài khoản, Ván trực tuyến |
 | Labels | sprint-3, phat-trien, p1, chinh-be, tai-khoan, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.3, 1.3, 1.4, 1.8 |
 
 
 **Description**
@@ -2103,7 +2183,7 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 
 **Yêu cầu cần đáp ứng**
 
-- Phiên có Ghi nhớ đăng nhập hết hạn cố định sau 30 ngày; không ghi nhớ thì khi đóng trình duyệt hoặc sau 12 giờ, tuỳ điều kiện nào đến trước. Làm mới thông tin xác thực không gia hạn mốc đã tạo.
+- Phiên có Ghi nhớ đăng nhập hết hạn cố định sau 30 ngày; không ghi nhớ thì khi đóng trình duyệt hoặc sau 12 giờ, tuỳ điều kiện nào đến trước. Mốc tính từ đăng nhập thành công hoặc hoàn tất đăng ký mới. Làm mới thông tin xác thực không gia hạn mốc đã tạo.
 - Hết phiên trong ván online: mất quyền điều khiển, yêu cầu đăng nhập lại và giữ ván 60 giây trong khi đồng hồ vẫn chạy. Ván với máy được giữ 30 phút để cùng thiết bị quay lại.
 - Đăng nhập từ thiết bị khác khi đang đấu làm ván hiện tại bị xử thua, thiết bị cũ bị đăng xuất, thiết bị mới vào Sảnh. Nếu chỉ ngồi phòng chờ thì rời ghế theo vòng đời phòng, không ghi kết quả thua.
 - Chặn ngồi ghế hoặc mở ván với máy thứ hai; mở lời mời không được vượt kiểm tra này. Đăng xuất khi đang đấu phải xác nhận đầu hàng, còn ở phòng chờ thì rời phòng rồi đăng xuất.
@@ -2112,6 +2192,7 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 
 **Việc cần làm**
 
+- Phân biệt đăng nhập thật, làm mới thông tin xác thực, mở thẻ cùng thiết bị và đăng nhập thiết bị khác bằng dữ liệu phiên; mốc hạn lấy từ lúc đăng nhập thành công hoặc hoàn tất đăng ký, không từ lần hoạt động cuối.
 - Lưu mốc hết hạn, thiết bị và vị trí chơi đang giữ; xử lý đăng nhập, hết hạn, rời ghế và kết thúc ván nhất quán.
 - Cung cấp trạng thái ván đang dở và lý do không được vào chỗ mới để giao diện hiển thị; cập nhật Tên hiển thị phải kiểm lại dữ liệu ở máy chủ.
 - Viết kiểm thử thời hạn cố định, đổi thiết bị khi chờ hoặc đang đấu, vào chỗ thứ hai và sửa hồ sơ bằng yêu cầu gửi trực tiếp.
@@ -2120,12 +2201,14 @@ Một tài khoản có thể có nhiều cửa sổ hiển thị nhưng chỉ đ
 **Kết quả bàn giao**
 
 - Dịch vụ quản lý phiên, vị trí chơi và cập nhật hồ sơ; kiểm thử tự động và kết quả thử hai thiết bị.
+- Dữ liệu mốc phiên, thiết bị và vị trí chơi bàn giao cho giao diện; bằng chứng dọn riêng dữ liệu Khách.
 
 **Điều kiện hoàn thành**
 
 - Không có hai vị trí chơi có quyền điều khiển đồng thời; kết quả thua chỉ phát sinh đúng trường hợp đã quy định.
 - Hạn phiên không trượt theo hoạt động; dữ liệu hồ sơ sai bị từ chối cả khi bỏ qua giao diện.
 - Khách hết hạn nhưng còn ngồi ghế/trong ván không bị ngắt giữa chừng; khi phiên thực sự kết thúc, cả hết hạn và đăng xuất đều xoá tên/dữ liệu cá nhân theo phạm vi đã chốt và lần vào sau dùng danh tính mới.
+- Mở thẻ cùng thiết bị không xử thua: thẻ mới tiếp quản, thẻ cũ chỉ đọc kể cả tự nối lại; camera/mic thẻ cũ dừng, thẻ mới mặc định tắt. Đóng riêng một thẻ không bị coi là đóng cả trình duyệt.
 
 **Phạm vi và phối hợp**
 
@@ -2155,6 +2238,7 @@ Công việc xử lý phía máy chủ. Thông báo, hộp xác nhận và màn 
 | Component chính | FE |
 | Components | FE, Tài khoản |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, tai-khoan |
+| Nguồn đặc tả (BA / AC) | 0.3, 1.4, 1.8, 6.3 |
 
 
 **Description**
@@ -2177,6 +2261,7 @@ Người dùng cần phân biệt Tên đăng nhập dùng để vào tài kho�
 
 **Việc cần làm**
 
+- Lấy hồ sơ, vị trí đang giữ và đường dẫn quay lại từ máy chủ; phân biệt đang chờ, đang đấu online, đang đấu với máy và không giữ chỗ để gửi đúng thao tác đăng xuất sau xác nhận.
 - Xây màn hồ sơ và thông báo ván dở, gồm trạng thái đang tải, đang lưu, thành công và thất bại. Không ghi tên mới như đã lưu nếu máy chủ từ chối.
 - Nối thao tác lưu, quay lại và đăng xuất với máy chủ; giữ đúng đường dẫn ván thay vì mở một ván mới.
 - Kiểm tên có dấu, độ dài biên, tên bị cấm, lỗi mạng lúc lưu và các hoàn cảnh đăng xuất bằng tài khoản chính thức lẫn Khách.
@@ -2184,11 +2269,13 @@ Người dùng cần phân biệt Tên đăng nhập dùng để vào tài kho�
 **Kết quả bàn giao**
 
 - Màn Cài đặt hồ sơ, thông báo quay lại ván và hộp xác nhận đăng xuất tích hợp thật.
+- Bằng chứng lưu tên thành công/thất bại và đăng xuất khi chờ, đấu online, đấu máy.
 
 **Điều kiện hoàn thành**
 
 - Tên hợp lệ được lưu và hiển thị nhất quán; tên không hợp lệ có thông báo rõ, email không sửa được.
 - Quay lại đúng ván; huỷ đăng xuất không làm thay đổi kết quả hoặc mất chỗ chơi.
+- Đăng xuất trong ván với máy cũng có xác nhận đầu hàng; khi máy chủ báo hết phiên, giao diện yêu cầu đăng nhập lại và không tiếp tục gửi nước đi bằng phiên cũ. Lưu tên lỗi không ghi đè tên đã được xác nhận.
 
 **Phạm vi và phối hợp**
 
@@ -2218,6 +2305,7 @@ Máy chủ vẫn kiểm quyền, dữ liệu và thời hạn phiên; giao diệ
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Tài khoản, Ván trực tuyến |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, tai-khoan, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.3, 1.3, 1.4, 1.8, 6.3 |
 
 
 **Description**
@@ -2232,7 +2320,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 **Yêu cầu cần đáp ứng**
 
-- Hoạt động hoặc làm mới khoá phiên không gia hạn đăng nhập. Hết phiên khi online ngắt quyền, yêu cầu đăng nhập lại, giữ 60 giây và đồng hồ chạy; với máy giữ 30 phút. Đăng nhập lại cùng thiết bị trong hạn tiếp tục được.
+- Có Ghi nhớ: hạn cố định 30 ngày; không Ghi nhớ: đóng cả trình duyệt hoặc đủ 12 giờ, điều kiện nào đến trước. Hoạt động hoặc làm mới khoá phiên không gia hạn đăng nhập. Hết phiên khi online ngắt quyền, yêu cầu đăng nhập lại, giữ 60 giây và đồng hồ chạy; với máy giữ 30 phút. Đăng nhập lại cùng thiết bị trong hạn tiếp tục được.
 - Đăng nhập thiết bị khác trong ván online hoặc với máy: xử thua ngay, thiết bị cũ đăng xuất, thiết bị mới vào Sảnh. Đang phòng chờ thì rời ghế/chuyển chủ theo vòng đời, không tạo thua.
 - Đang giữ ghế hoặc ván với máy thì không mở thêm vị trí; Tạo phòng/Vào chơi/Đánh với máy/mã/link khác đều bị máy chủ kiểm. Nút bị vô hiệu báo “Bạn đang ở trong một ván/phòng khác”.
 - Sảnh có “Bạn có ván đang chơi dở — Quay lại”, dẫn đúng phòng/ván. Đăng xuất trong ván online có xác nhận đầu hàng: đồng ý kết thúc/rời/đăng xuất, huỷ giữ nguyên; phòng chờ rời rồi đăng xuất, không xử thua.
@@ -2242,6 +2330,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 **Việc cần làm**
 
+- Tạo riêng phiên có Ghi nhớ và không Ghi nhớ; ghi mốc đăng nhập hoặc hoàn tất đăng ký, rồi mô phỏng hoạt động/làm mới thông tin xác thực sát hạn để kiểm mốc cố định 30 ngày hoặc 12 giờ.
 - Chuẩn bị tài khoản trên hai thiết bị, đối thủ và ván với máy; đặt hạn phiên thử gần hết để kiểm các mốc có thể lặp lại.
 - Thử hoạt động/làm mới khoá phiên và hết hạn ở online/với máy; đăng nhập lại cùng thiết bị rồi thử thiết bị khác.
 - Thử mở vị trí thứ hai bằng mọi đường vào; từ Sảnh bấm Quay lại và kiểm đăng xuất đồng ý/huỷ ở phòng chờ và trong ván.
@@ -2257,6 +2346,7 @@ Chuẩn bị cùng một tài khoản trên hai thiết bị, tài khoản đố
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Không Ghi nhớ kết thúc khi đóng cả trình duyệt hoặc đủ 12 giờ, điều kiện nào đến trước; đóng một thẻ không đồng nghĩa đóng trình duyệt. Cùng thiết bị đăng nhập lại trong hạn giữ ván được tiếp tục, thiết bị khác xử thua đúng quy tắc.
 
 **Phạm vi và phối hợp**
 
@@ -2284,38 +2374,40 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | EP-02, dac-ta, p1, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 2.1, 2.3, 2.7, 3.6 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất vòng đời phòng tự tạo để hai người bắt đầu và chơi tiếp nhiều ván mà không nhầm ghế hoặc quyền chủ phòng.
+Bàn giao bộ đặc tả đã duyệt về tạo phòng, sẵn sàng, đổi bên và chơi tiếp; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Phòng và ván là hai đối tượng khác nhau: phòng có thể còn tồn tại khi một ván kết thúc; ván mới có mã định danh và đồng hồ mới. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Phòng và ván là hai đối tượng khác nhau: phòng có thể còn tồn tại khi một ván kết thúc; ván mới có mã định danh và đồng hồ mới. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả cách tạo phòng, bố trí hai ghế và bắt đầu ván khi cả hai người chơi thực sự sẵn sàng.
-- Đặc tả việc xin đổi phe khi có hai người và tiếp tục dùng cùng phòng sau khi một ván kết thúc.
+- Phòng mới mặc định chỉ vào bằng mã, chủ phòng ngồi Đỏ; chọn 5/10/15 phút mặc định 10, chỗ xem 0–5 mặc định 5, không đổi mức giờ hoặc sức chứa sau tạo.
+- Một người ngồi ghế được đổi ghế tự do; đủ hai người dùng Xin đổi bên, hạn trả lời 30 giây, từ chối/hết hạn thì chờ 60 giây. Cả hai Sẵn sàng mới đếm 3–2–1 và tạo ván.
+- Sau ván phòng về chờ, đặt lại Sẵn sàng, giữ ghế/chế độ/chủ phòng/chat, hiển thị Ở lại phòng/Rời phòng. Chơi tiếp tạo mã ván mới và đồng hồ đầy; không đóng vì chờ lâu, chỉ đóng khi không còn người ngồi ghế.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về tạo phòng, sẵn sàng, đổi bên và chơi tiếp với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát tạo phòng, sẵn sàng, đổi bên và chơi tiếp, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng tạo phòng, sẵn sàng, đổi bên và chơi tiếp theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -2345,17 +2437,18 @@ Không thêm đổi cấu hình mức giờ/sức chứa sau tạo, tái đấu 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi |
 | Labels | dac-ta, EP-02, p1, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 2.1, 2.3, 2.7 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả cách tạo phòng, bố trí hai ghế và bắt đầu ván khi cả hai người chơi thực sự sẵn sàng.
+Bàn giao đặc tả cách tạo phòng, bố trí hai ghế và bắt đầu ván khi cả hai người chơi thực sự sẵn sàng theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Mỗi phòng có chủ phòng, ghế Đỏ, ghế Đen và số chỗ xem đã chọn. Phòng chờ chưa phải ván đang diễn ra; rời phòng chờ không gây thua. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Mỗi phòng có chủ phòng, ghế Đỏ, ghế Đen và số chỗ xem đã chọn. Phòng chờ chưa phải ván đang diễn ra; rời phòng chờ không gây thua. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -2375,19 +2468,19 @@ Mỗi phòng có chủ phòng, ghế Đỏ, ghế Đen và số chỗ xem đã c
 
 **Việc cần làm**
 
-- Mô tả biểu mẫu tạo phòng, giá trị mặc định, đổi ghế khi ngồi một mình, sẵn sàng, đếm ngược, mất mạng, chuyển chủ và đóng phòng.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu biểu mẫu và vòng đời phòng với mức giờ, sức chứa đã duyệt; kiểm nhánh mất mạng khi đếm, chuyển chủ, đóng khi hết ghế và không đóng do chờ lâu.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát mặc định tạo phòng, đổi ghế khi một người, sẵn sàng, đếm ngược và chuyển chủ bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ mặc định tạo phòng, đổi ghế khi một người, sẵn sàng, đếm ngược và chuyển chủ; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -2417,6 +2510,7 @@ Không thêm khả năng thay đổi mức giờ hoặc sức chứa sau khi đ�
 | Component chính | BE |
 | Components | BE, Phòng chơi |
 | Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 2.1, 2.3, 2.7, 2.8, 8.3, 5.3 |
 
 
 **Description**
@@ -2452,6 +2546,7 @@ Phòng gồm hai ghế và tối đa năm người xem. Người tạo là chủ
 
 - Dịch vụ phòng chờ và sự kiện thay đổi trạng thái.
 - Kiểm thử tích hợp các nhánh ghế, đếm và đóng phòng.
+- Mẫu trạng thái phòng gồm chủ, hai ghế, sẵn sàng, thông số cố định, giai đoạn đếm và danh tính ván mới; sự kiện rời/đóng để chat và quyền camera/mic xử lý.
 
 **Điều kiện hoàn thành**
 
@@ -2459,6 +2554,8 @@ Phòng gồm hai ghế và tối đa năm người xem. Người tạo là chủ
 - Không tạo ván khi thiếu người hoặc mất kết nối trong đếm.
 - Chuyển chủ đúng, phòng cuối cùng không còn người chơi được đóng.
 - Yêu cầu tạo thêm vị trí chơi hoặc phòng Khách trái giới hạn bị từ chối.
+- Hai người cùng bấm sẵn sàng hoặc gửi lại lệnh không sinh hai ván; đổi thành phần ghế trong lúc đếm huỷ lượt bắt đầu cũ và đặt lại sẵn sàng.
+- Người xem nhận Phòng đã đóng và về Sảnh khi ghế cuối mất; giữ phòng chờ không đặt hạn đóng vì chủ chờ lâu.
 
 **Phạm vi và phối hợp**
 
@@ -2488,6 +2585,7 @@ Bàn giao phòng chờ và tín hiệu bắt đầu ván. Xin đổi bên hai ng
 | Component chính | FE |
 | Components | FE, Phòng chơi |
 | Labels | sprint-2, phat-trien, p1, chinh-fe, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.10, 0.13, 2.1, 2.3, 2.7, 5.3 |
 
 
 **Description**
@@ -2531,6 +2629,8 @@ Phòng chờ dùng chung địa chỉ phòng với lúc thi đấu nhưng có tr
 - Hai người thấy cùng ghế và trạng thái sẵn sàng.
 - Chủ ở một mình đổi được phe, có người thứ hai thì không còn nút đổi tự do.
 - Huỷ đếm không tạo màn ván giả; chuyển chủ hiện đúng sau khi chủ cũ rời.
+- Người xem thấy ghế và sẵn sàng nhưng không có quyền đổi ghế hoặc bật sẵn sàng; chuyển chủ theo dữ liệu máy chủ không cần tải lại.
+- Ghế thay người hoặc mất mạng trong đếm xoá hiển thị đếm cũ, trở về chưa sẵn sàng; không điều hướng theo bộ đếm cục bộ.
 
 **Phạm vi và phối hợp**
 
@@ -2560,6 +2660,7 @@ Bàn giao giao diện nền của phòng chờ. Đề nghị đổi bên, khung 
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.10, 2.1, 2.3, 2.7, 2.8, 5.3 |
 
 
 **Description**
@@ -2579,12 +2680,14 @@ Chuẩn bị người tạo phòng, người chơi thứ hai và người xem. T
 - Khi chỉ chủ phòng ngồi ghế, đổi Đỏ/Đen tự do. Khi đủ hai người, trạng thái Sẵn sàng hoặc huỷ Sẵn sàng phải cập nhật cho cả phòng; thay người ngồi ghế làm cả hai trở về chưa sẵn sàng.
 - Cả hai sẵn sàng thì đếm 3…2…1 kèm âm thanh. Máy chủ kiểm lại ghế, kết nối và trạng thái sẵn sàng rồi mới tạo ván mới; giao diện chuyển sang bàn đấu và đồng hồ Đỏ bắt đầu.
 - Chủ phòng rời lúc còn người chơi thứ hai thì người đó nhận quyền chủ phòng. Chủ phòng ngồi chờ lâu một mình không bị tự đóng phòng.
+- Người thứ hai rời ghế khi đang chờ thì người còn lại thấy Đổi ghế tự do trở lại; người xem không được bấm Sẵn sàng hoặc Đổi ghế.
 
 **Việc cần làm**
 
 - Viết tình huống tại các ranh giới độ dài tên, số chỗ xem và hai trường hợp đổi ghế.
 - Chạy tạo phòng và bắt đầu ván nhiều lần; đối chiếu mã ván mới và đồng hồ.
 - Ghi lỗi cùng dữ liệu tái hiện; kiểm lại sau sửa và phân biệt rõ trường hợp chưa có điều kiện kiểm.
+- Gửi gần đồng thời Sẵn sàng, huỷ Sẵn sàng và rời ghế; ghi thứ tự máy chủ nhận, trạng thái cuối và số ván được tạo.
 
 **Kết quả bàn giao**
 
@@ -2593,6 +2696,7 @@ Chuẩn bị người tạo phòng, người chơi thứ hai và người xem. T
 **Điều kiện hoàn thành**
 
 - Các nhánh nêu trên đạt với máy chủ và giao diện thật, gồm kiểm tên bằng bộ lọc chung.
+- Một lượt bắt đầu hợp lệ chỉ tạo một mã ván mới; dữ liệu giờ/trần người xem không bị sửa qua yêu cầu trực tiếp sau tạo.
 
 **Phạm vi và phối hợp**
 
@@ -2622,17 +2726,18 @@ Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiể
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | dac-ta, EP-02, p1, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 2.3, 3.6 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả việc xin đổi phe khi có hai người và tiếp tục dùng cùng phòng sau khi một ván kết thúc.
+Bàn giao đặc tả việc xin đổi phe khi có hai người và tiếp tục dùng cùng phòng sau khi một ván kết thúc theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Đổi phe cần người kia đồng ý; ở lại sau ván giữ phòng và ghế, nhưng ván tiếp theo phải được bắt đầu lại bằng thao tác Sẵn sàng của cả hai. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Đổi phe cần người kia đồng ý; ở lại sau ván giữ phòng và ghế, nhưng ván tiếp theo phải được bắt đầu lại bằng thao tác Sẵn sàng của cả hai. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -2653,19 +2758,19 @@ Nhánh rớt mạng khi đếm và đóng phòng phải xoá chat được kiể
 
 **Việc cần làm**
 
-- Mô tả gửi, rút, chấp nhận, từ chối và hết hạn đề nghị đổi phe; bảng dữ liệu được giữ hoặc đặt lại sau ván và khi một người rời.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát gửi/rút/chấp nhận/từ chối/hết hạn đổi bên; đối chiếu bảng dữ liệu giữ lại hoặc đặt lại khi kết thúc ván, chơi tiếp và rời phòng.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát xin đổi bên 30 giây, chờ gửi lại 60 giây và ở lại phòng sau ván bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ xin đổi bên 30 giây, chờ gửi lại 60 giây và ở lại phòng sau ván; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -2695,6 +2800,7 @@ Không thêm nút tái đấu trực tiếp hoặc xem lại ván; không đóng
 | Component chính | BE |
 | Components | BE, Phòng chơi, Ván trực tuyến |
 | Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 0.17, 3.6 |
 
 
 **Description**
@@ -2718,6 +2824,7 @@ Phòng tự tạo có chủ phòng và hai ghế Đỏ/Đen. Khi ván đã kết
 
 **Việc cần làm**
 
+- Mỗi đề nghị lưu người gửi, người nhận, phòng, hạn trả lời và trạng thái xử lý; khi nhận Đồng ý, kiểm lại đúng đề nghị còn hạn, phòng đang chờ và vẫn cùng hai người ngồi ghế rồi mới hoán đổi ghế và phát trạng thái mới.
 - Xây các thao tác gửi/rút/trả lời đổi bên và bộ đếm thời hạn phía máy chủ.
 - Kết nối sự kiện kết thúc ván với trạng thái phòng chờ, bảo toàn dữ liệu cần giữ.
 - Kiểm đề nghị quá hạn, đổi ghế, đếm bắt đầu, người rời và hai ván liên tiếp.
@@ -2725,10 +2832,12 @@ Phòng tự tạo có chủ phòng và hai ghế Đỏ/Đen. Khi ván đã kết
 **Kết quả bàn giao**
 
 - Xử lý đổi bên và phòng sau ván, kèm kiểm thử vòng đời.
+- Mẫu sự kiện đề nghị và trạng thái phòng sau kết thúc, đủ cho giao diện cập nhật ghế/sẵn sàng.
 
 **Điều kiện hoàn thành**
 
 - Không còn đề nghị cũ sau đổi thành phần ghế; ván tiếp theo có mã mới; phòng không tự đóng khi còn người chơi.
+- Phản hồi trùng, đến muộn hoặc gửi sau đổi người không hoán đổi thêm lần nữa. Kết thúc ván không xoá chat của cùng cặp và không tạo ván tiếp trước khi cả hai sẵn sàng.
 
 **Phạm vi và phối hợp**
 
@@ -2758,6 +2867,7 @@ Không thêm nút tái đấu nhanh; người chơi dùng Sẵn sàng và Xin đ
 | Component chính | FE |
 | Components | FE, Phòng chơi, Ván trực tuyến |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.17 |
 
 
 **Description**
@@ -2781,6 +2891,7 @@ Phòng đang chờ có thể có một hoặc hai người ngồi ghế. Sau khi
 
 **Việc cần làm**
 
+- Dùng trạng thái phòng, thành phần ghế, người gửi/nhận và thời hạn từ máy chủ để dựng nút và hộp đổi bên; tính phần thời gian còn lại từ hạn đã nhận, không bắt đầu lại 30 hoặc 60 giây khi đóng/mở giao diện.
 - Dựng nút theo số người, hộp nhận đề nghị, trạng thái phía gửi và đồng hồ chờ.
 - Nối kết quả đổi bên và lựa chọn sau ván; xử lý cập nhật máy chủ đến trong khi hộp đang mở.
 - Thử bằng hai trình duyệt: đồng ý, từ chối, hết hạn, rút, bắt đầu đếm và một người rời.
@@ -2788,10 +2899,12 @@ Phòng đang chờ có thể có một hoặc hai người ngồi ghế. Sau khi
 **Kết quả bàn giao**
 
 - Giao diện đổi bên và kết quả sau ván tích hợp với phòng chờ.
+- Bằng chứng hộp kết quả gián đoạn, bộ đếm đề nghị và dữ liệu ghế sau Đồng ý/Từ chối.
 
 **Điều kiện hoàn thành**
 
 - Hai bên thấy cùng trạng thái ghế/sẵn sàng; không còn đề nghị cũ khi máy chủ đã huỷ; lựa chọn sau ván đúng.
+- Ở lại phòng chỉ đóng lớp kết quả để thấy phòng đang chờ; không gửi tạo ván hoặc đổi phe. Ván bị gián đoạn có nội dung trung tính, không gán thắng/thua/hoà cho người chơi.
 
 **Phạm vi và phối hợp**
 
@@ -2821,6 +2934,7 @@ Phần này không tạo cơ chế tái đấu mới và không tự xử thời
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 0.10, 0.17 |
 
 
 **Description**
@@ -2844,6 +2958,7 @@ Chuẩn bị hai người chơi cùng một người xem trong phòng tự tạo
 
 **Việc cần làm**
 
+- Chụp trạng thái hai ghế, chủ phòng, người xem, chế độ, mức giờ và tin hai kênh trước khi kết thúc ván; dùng cùng phòng để kiểm giữ dữ liệu qua kết quả, đổi bên và ván kế tiếp.
 - Tạo phòng có hai người chơi, một người xem; thử trạng thái một ghế rồi đủ hai ghế để đối chiếu hai nút đổi phe.
 - Chạy riêng đồng ý, từ chối, hết hạn, rút và bấm trùng; ghi thời điểm 30 giây và 60 giây cùng trạng thái sẵn sàng.
 - Gửi đề nghị rồi bắt đầu đếm hoặc cho một người rời, kiểm đề nghị bị huỷ cả hai phía.
@@ -2859,6 +2974,7 @@ Chuẩn bị hai người chơi cùng một người xem trong phòng tự tạo
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Sau ván và sau đổi bên cùng cặp, chat riêng còn nguyên; thay người thì tin cặp cũ không xuất hiện. Một người rời chuyển chủ nếu cần, người cuối rời đóng phòng và đưa người xem về Sảnh.
 
 **Phạm vi và phối hợp**
 
@@ -2886,38 +3002,40 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Bạn bè |
 | Labels | EP-03, dac-ta, p1, phong-choi, ban-be |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.2, 2.4, 2.5, 2.6, 2.7, 2.8, 5.5, 11 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất cách mời người khác vào phòng bằng đường dẫn, mã hoặc danh sách bạn bè.
+Bàn giao bộ đặc tả đã duyệt về lời mời phòng và quan hệ bạn bè; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Người được mời không cần kết bạn nếu dùng mã/đường dẫn. Quan hệ bạn bè và lời mời vào phòng có vòng đời, giới hạn và giao diện riêng. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Người được mời không cần kết bạn nếu dùng mã/đường dẫn. Quan hệ bạn bè và lời mời vào phòng có vòng đời, giới hạn và giao diện riêng. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả cách chia sẻ và vào phòng bằng đường dẫn hoặc mã để người chưa kết bạn vẫn có thể tham gia.
-- Đặc tả kết bạn và mời bạn đang trực tuyến vào phòng, với giới hạn rõ ràng và trạng thái cập nhật tự động.
+- Người ngồi ghế chia sẻ mã tám ký tự/đường dẫn; người chưa đăng nhập được đăng nhập, đăng ký hoặc vào bằng Khách rồi tự tiếp tục tới phòng. Máy chủ kiểm lại quyền và sức chứa, xếp ghế trống hoặc chỗ xem.
+- Tìm bạn theo tên đăng nhập không phân biệt hoa thường, kết bạn hai chiều; tối đa 200 bạn và 50 lời mời chờ, hết hạn 30 ngày, bị từ chối hai lần thì không gửi lại được.
+- Chỉ mời bạn trực tuyến từ một phòng, lời mời 30 giây không giữ chỗ và không lưu trong chuông. Trang Bạn bè không có nút mời phòng; Khách không tham gia quan hệ bạn bè.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về lời mời phòng và quan hệ bạn bè với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát lời mời phòng và quan hệ bạn bè, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng lời mời phòng và quan hệ bạn bè theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -2947,17 +3065,18 @@ Không làm nhắn tin riêng, thách đấu hoặc mời qua mã ảnh để qu
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi |
 | Labels | dac-ta, EP-03, p1, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.2, 2.4, 2.6, 2.8 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả cách chia sẻ và vào phòng bằng đường dẫn hoặc mã để người chưa kết bạn vẫn có thể tham gia.
+Bàn giao đặc tả cách chia sẻ và vào phòng bằng đường dẫn hoặc mã để người chưa kết bạn vẫn có thể tham gia theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Người vào phòng được xếp ghế còn trống hoặc làm người xem nếu hai ghế đã đủ. Người chưa đăng nhập phải quay lại đúng phòng sau khi xác thực. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Người vào phòng được xếp ghế còn trống hoặc làm người xem nếu hai ghế đã đủ. Người chưa đăng nhập phải quay lại đúng phòng sau khi xác thực. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -2971,19 +3090,19 @@ Người vào phòng được xếp ghế còn trống hoặc làm người xem 
 
 **Việc cần làm**
 
-- Mô tả sao chép lời mời, nhập mã, lưu điểm đến trước đăng nhập và từng kết quả nhận ghế, nhận chỗ xem, phòng đầy, mã sai hoặc phòng đóng.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu sao chép lời mời, nhập mã và điểm đến sau đăng nhập/đăng ký/Khách; giữ đúng các nhánh ghế trống, chỗ xem, phòng đầy, phòng đóng và mã sai.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát mã tám ký tự, đường dẫn mời, quay lại sau xác thực và xếp ghế theo sức chứa bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ mã tám ký tự, đường dẫn mời, quay lại sau xác thực và xếp ghế theo sức chứa; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -3013,6 +3132,7 @@ Không tạo mã ảnh để quét; quyền vào vẫn phụ thuộc trạng th�
 | Component chính | BE |
 | Components | BE, Phòng chơi |
 | Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 1.8, 2.4, 2.6, 2.7, 2.8 |
 
 
 **Description**
@@ -3049,6 +3169,7 @@ Người nhận đường dẫn không cần kết bạn với chủ. Giữ đí
 - Xử lý tham gia bằng mã/đường dẫn.
 - Cơ chế giữ đích sau xác thực.
 - Kiểm tích hợp phân vai và sức chứa.
+- Hợp đồng tham gia nhận mã/đích phòng và danh tính đã xác thực, trả ghế/phe hoặc vai trò xem, trạng thái mới và lý do từ chối; không dùng dữ liệu đích chờ để cấp quyền.
 
 **Điều kiện hoàn thành**
 
@@ -3056,6 +3177,7 @@ Người nhận đường dẫn không cần kết bạn với chủ. Giữ đí
 - Chỉ một người nhận ghế cuối khi yêu cầu gần nhau; người còn lại được xếp xem hoặc từ chối đúng sức chứa.
 - Hoàn tất đăng nhập quay lại đúng phòng nhưng vẫn kiểm lại phòng/quyền hiện thời.
 - Luật phiên được ưu tiên: đăng nhập thiết bị khác đang có ván không bị chuyển thẳng vào phòng mời bỏ qua xử lý ván cũ.
+- Phòng chuyển khoá hoặc đóng trong lúc xác thực không được vào theo dữ liệu cũ; phòng đầy khi quay lại báo đầy thay vì giữ ghế ảo.
 
 **Phạm vi và phối hợp**
 
@@ -3085,6 +3207,7 @@ Bàn giao xử lý cho giao diện nhập mã/chia sẻ và lối vào Sảnh. C
 | Component chính | FE |
 | Components | FE, Phòng chơi |
 | Labels | sprint-2, phat-trien, p1, chinh-fe, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.4, 2.6, 2.7, 2.8 |
 
 
 **Description**
@@ -3103,6 +3226,7 @@ Người được mời không bắt buộc là bạn của chủ phòng. Hai ng
 - Sảnh có ô nhập mã. Khi mở đường dẫn lúc chưa đăng nhập, giữ lại đích đến trong quá trình đăng nhập hoặc đăng ký để tự vào phòng, không bắt mở lời mời lần nữa.
 - Dùng kết quả phân chỗ từ máy chủ: còn ghế thì ngồi ghế trống; đủ hai ghế và còn chỗ xem thì vào xem; phòng đầy thì từ chối. Không tự quyết định vai trò dựa vào thông tin cũ trên trình duyệt.
 - Khi chuyển sang người xem, báo “Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem.” Phòng đầy báo “Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!” và có nút “Quay về Sảnh chính”. Mã sai hoặc phòng đóng báo “Mã phòng không tồn tại hoặc phòng đã đóng”.
+- Người mở lời mời chưa đăng nhập có thể chọn Khách rồi tự tiếp tục vào phòng; giữ cùng đích chờ cho cả đăng nhập, đăng ký và Khách.
 
 **Việc cần làm**
 
@@ -3117,6 +3241,8 @@ Người được mời không bắt buộc là bạn của chủ phòng. Hai ng
 **Điều kiện hoàn thành**
 
 - Người chưa kết bạn vào được bằng mã hoặc đường dẫn hợp lệ; vai trò và thông báo khớp sức chứa thực tế.
+- Thử sao chép thành công và khi trình duyệt từ chối; lỗi không báo đã sao chép.
+- Sau đăng ký hoặc vào Khách, không phải mở lại lời mời; máy chủ báo đầy/đóng thì hiện đúng thông báo và đường về Sảnh.
 
 **Phạm vi và phối hợp**
 
@@ -3146,6 +3272,7 @@ Phần này phụ trách giao diện đường dẫn và mã; danh sách bạn b
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 1.8, 2.4, 2.6, 2.7, 2.8 |
 
 
 **Description**
@@ -3171,6 +3298,8 @@ Dùng ít nhất hai tài khoản chưa kết bạn và nhiều cửa sổ trìn
 - Ghi tiền điều kiện, cách tạo phòng và sức chứa cho từng trường hợp để người khác chạy lại được.
 - Thử vào bằng cả đường dẫn và mã, gồm việc phòng đổi số người trong lúc người được mời đang đăng nhập.
 - Lưu kết quả, ảnh thông báo và lỗi chuyển hướng; kiểm lại mọi lỗi đã sửa.
+- Cho hai người cùng vào ghế cuối bằng mã và đường dẫn; đối chiếu người nhận ghế, người được xếp xem hoặc báo đầy, không chấp nhận kết quả chỉ nhìn ở một trình duyệt.
+- Kiểm phòng đóng hoặc chuyển khoá trong lúc người nhận xác thực; xác minh đích chờ không bỏ qua trạng thái mới.
 
 **Kết quả bàn giao**
 
@@ -3179,6 +3308,7 @@ Dùng ít nhất hai tài khoản chưa kết bạn và nhiều cửa sổ trìn
 **Điều kiện hoàn thành**
 
 - Không cần mở lời mời lần hai sau xác thực; máy chủ quyết định ghế hoặc chỗ xem theo trạng thái hiện tại.
+- Mã sai, phòng đóng, đầy ghế còn chỗ xem và đầy toàn phòng có đúng vai trò/thông báo đã nêu; lưu bằng chứng riêng từng nhánh.
 
 **Phạm vi và phối hợp**
 
@@ -3208,17 +3338,18 @@ Luồng chọn chế độ Khách từ lời mời được kiểm chuyên biệ
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Bạn bè |
 | Labels | dac-ta, EP-03, p1, ban-be |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.5, 2.7, 5.5, 11 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả kết bạn và mời bạn đang trực tuyến vào phòng, với giới hạn rõ ràng và trạng thái cập nhật tự động.
+Bàn giao đặc tả kết bạn và mời bạn đang trực tuyến vào phòng, với giới hạn rõ ràng và trạng thái cập nhật tự động theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Kết bạn là quan hệ lâu dài; lời mời vào phòng chỉ có hiệu lực ngắn và không nằm trong chuông thông báo. Hai loại lời mời phải được phân biệt. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Kết bạn là quan hệ lâu dài; lời mời vào phòng chỉ có hiệu lực ngắn và không nằm trong chuông thông báo. Hai loại lời mời phải được phân biệt. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -3246,19 +3377,19 @@ Kết bạn là quan hệ lâu dài; lời mời vào phòng chỉ có hiệu l�
 
 **Việc cần làm**
 
-- Mô tả tìm theo tên đăng nhập, gửi/nhận/thu hồi lời mời kết bạn, giới hạn, trạng thái trực tuyến và lời mời vào phòng có thời hạn.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát tìm theo tên đăng nhập, kết bạn hai chiều, từ chối/thu hồi/hết hạn và trạng thái bạn; phân biệt lời mời phòng với chuông lời mời kết bạn.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát quan hệ bạn bè, giới hạn lời mời, trạng thái trực tuyến và mời vào phòng 30 giây bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ quan hệ bạn bè, giới hạn lời mời, trạng thái trực tuyến và mời vào phòng 30 giây; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -3288,6 +3419,7 @@ Không làm nhắn tin riêng hay thách đấu; không cho Khách tham gia quan
 | Component chính | BE |
 | Components | BE, Bạn bè |
 | Labels | sprint-3, phat-trien, p1, chinh-be, ban-be |
+| Nguồn đặc tả (BA / AC) | 0.3, 1.8, 2.5, 2.7, 2.8, 5.5 |
 
 
 **Description**
@@ -3317,10 +3449,14 @@ Tài khoản chính thức có tên đăng nhập để tìm nhau; Khách không
 **Kết quả bàn giao**
 
 - Dịch vụ bạn bè, trạng thái hoạt động và lời mời phòng; kiểm thử tự động kèm dữ liệu mẫu.
+- Hợp đồng tìm kiếm, lời mời kết bạn và lời mời phòng: dữ liệu vào/ra, quyền gọi, thời điểm hết hạn, phản hồi bị giới hạn; mẫu sự kiện để danh sách, chuông và hộp mời cập nhật.
 
 **Điều kiện hoàn thành**
 
 - Không thể gửi lời mời trái quyền qua yêu cầu trực tiếp; trạng thái hai phía và thời hạn nhất quán.
+- Gửi chéo chỉ có một lời mời chờ; từ chối hai lần, hết 30 ngày và giới hạn 200 bạn/50 lời mời được kiểm tại máy chủ.
+- Lời mời phòng hết 30 giây hoặc bị thu hồi do khoá không dùng được; không lưu lời mời phòng đã hết hạn vào chuông.
+- Một bạn vừa kết nối hiện Trực tuyến trong không quá 5 giây; ngồi ghế chuyển Đang đấu, đóng hết tab mới chuyển Ngoại tuyến sau nhận biết mất kết nối.
 
 **Phạm vi và phối hợp**
 
@@ -3350,6 +3486,7 @@ Không làm nhắn tin riêng giữa bạn bè hoặc thách đấu từ màn B�
 | Component chính | FE |
 | Components | FE, Bạn bè |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, ban-be |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.5, 5.5 |
 
 
 **Description**
@@ -3364,7 +3501,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 
 **Yêu cầu cần đáp ứng**
 
-- Màn Bạn bè có tìm theo phần đầu tên đăng nhập; kết quả hiện ảnh đại diện chữ cái, tên hiển thị và tên đăng nhập để phân biệt người trùng tên. Có thao tác gửi lời mời và thu hồi lời mời đã gửi.
+- Màn Bạn bè có tìm theo phần đầu tên đăng nhập, không phân biệt hoa thường; kết quả hiện ảnh đại diện chữ cái, tên hiển thị và tên đăng nhập để phân biệt người trùng tên. Có thao tác gửi lời mời và thu hồi lời mời đã gửi.
 - Danh sách bạn hiện Trực tuyến, Đang đấu hoặc Ngoại tuyến bằng cả chữ và dấu nhận biết. Có huỷ kết bạn; thẻ Lời mời đang chờ có Chấp nhận/Từ chối. Chuông điều hướng hiển thị lời mời kết bạn và số đếm.
 - Nhắn tin và Thách đấu hiện vô hiệu, giải thích “Sắp ra mắt”. Màn Bạn bè không có nút mời vào phòng.
 - Trong hộp Chia sẻ phòng, thẻ Bạn bè chỉ dành cho tài khoản chính thức ngồi ghế. Bạn Trực tuyến có nút Mời; Ngoại tuyến không bấm được và ghi “Ngoại tuyến”; Đang đấu không bấm được, giải thích “Bạn bè đang trong ván khác”.
@@ -3373,6 +3510,7 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 
 **Việc cần làm**
 
+- Ánh xạ dữ liệu bạn bè, lời mời kết bạn, trạng thái hoạt động và lời mời phòng vào các vùng hiển thị riêng; dùng hạn trả lời do máy chủ cung cấp cho thông báo phòng, cập nhật danh sách và chuông sau mỗi phản hồi thành công.
 - Dựng danh sách, tìm kiếm, các thao tác và trạng thái tải/rỗng/lỗi; cập nhật khi nhận thay đổi từ máy chủ.
 - Nối chuông, thẻ Mời vào phòng và thông báo phía người nhận; ẩn phần bạn bè không dành cho Khách.
 - Kiểm hai tài khoản thao tác qua lại, lời mời hết hạn và trạng thái nút theo bạn bè.
@@ -3380,10 +3518,12 @@ Tài khoản chính thức được kết bạn; Khách không có quyền này.
 **Kết quả bàn giao**
 
 - Giao diện quản lý bạn bè, chuông và mời bạn vào phòng.
+- Bằng chứng giới hạn kết bạn, thông báo hết hạn và cập nhật đồng thời hai tài khoản.
 
 **Điều kiện hoàn thành**
 
 - Hai bên thấy kết quả nhất quán, lời mời phòng tự hết sau 30 giây, không có nút hoạt động sai quyền.
+- Lỗi đạt 200 bạn, tổng 50 lời mời đang chờ hoặc đã bị cùng người từ chối hai lần phải hiện lý do từ máy chủ; không thêm bạn hay tăng số chuông trước khi thao tác được chấp nhận.
 
 **Phạm vi và phối hợp**
 
@@ -3413,6 +3553,7 @@ Không xây dịch vụ dữ liệu bạn bè, chat riêng hoặc thách đấu;
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Bạn bè |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-be |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.5, 5.5 |
 
 
 **Description**
@@ -3438,6 +3579,7 @@ Chuẩn bị ít nhất ba tài khoản chính thức, một phiên Khách, phò
 
 **Việc cần làm**
 
+- Ghi trạng thái quan hệ và số bạn/lời mời của cả hai bên trước ca biên; tách lời mời kết bạn có hạn 30 ngày khỏi thông báo mời phòng có hạn 30 giây trong dữ liệu và báo cáo.
 - Tạo dữ liệu 199/200 bạn và 49/50 lời mời tổng gửi/nhận, cùng lời mời gần hạn 30 ngày; ghi trạng thái ban đầu để thử đúng biên.
 - Dùng hai trình duyệt lần lượt gửi, nhận, từ chối hai lần, thu hồi, gửi ngược chiều đồng thời và huỷ bạn; kiểm dữ liệu cả hai phía.
 - Đo đổi trạng thái bạn; từ phòng gửi lời mời rồi chấp nhận, từ chối, để hết 30 giây và thử dùng sau khi khoá phòng.
@@ -3453,6 +3595,7 @@ Chuẩn bị ít nhất ba tài khoản chính thức, một phiên Khách, phò
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Hai yêu cầu kết bạn ngược chiều không tự tạo quan hệ; ca tổng 50 lời mời phải tính cả gửi và nhận. Thông báo phòng hết hạn không làm tăng số lời mời trong chuông.
 
 **Phạm vi và phối hợp**
 
@@ -3480,39 +3623,40 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ |
 | Labels | EP-04, dac-ta, p1, luat-co, ban-co |
+| Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.1, 3.4, 3.5, 10.1, 10.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất luật và trải nghiệm bàn cờ để người chơi hiểu, thao tác và quan sát ván cờ chính xác.
+Bàn giao bộ đặc tả đã duyệt về luật cờ dùng chung và thao tác bàn cờ; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Bộ luật dùng chung quyết định nước hợp lệ; giao diện biểu diễn bàn 9×10, quân chữ Hán, chọn/kéo quân, cảnh báo và âm thanh. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Bộ luật dùng chung quyết định nước hợp lệ; giao diện biểu diễn bàn 9×10, quân chữ Hán, chọn/kéo quân, cảnh báo và âm thanh. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả một bộ luật cờ tướng dùng chung để máy chủ, bàn cờ và máy cờ cùng xác định nước đi và kết quả.
-- Đặc tả bàn cờ dễ đọc trên máy tính và điện thoại, đúng vị trí quân và hướng nhìn của người chơi.
-- Đặc tả thao tác đi quân bằng chuột hoặc chạm và phản hồi hình ảnh, âm thanh dễ hiểu.
+- Bộ luật chung xác định nước hợp lệ, chiếu hết, hết nước đi, lặp thế ba lần và 120 nửa nước không ăn quân. Cùng thế gồm vị trí quân và bên tới lượt; chu kỳ từ lần một đến lần ba, bên chiếu mọi nước của mình thua, cả hai cùng chiếu thì hòa.
+- Chiếu hết ưu tiên cao nhất; hết nước đi/chiếu liên tục ưu tiên trước hòa 120 nửa nước; đồng hồ được kiểm trước khi duyệt nước. Đuổi quân liên tục không có luật xử riêng.
+- Bàn 9×10 có 32 quân chữ Hán, hỗ trợ bấm/kéo, lật theo phe, màn hình 360 điểm ảnh, dấu nước gần nhất, cảnh báo chiếu và âm thanh; quyền thao tác theo lượt/vai trò.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về luật cờ dùng chung và thao tác bàn cờ với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát luật cờ dùng chung và thao tác bàn cờ, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng luật cờ dùng chung và thao tác bàn cờ theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -3542,17 +3686,18 @@ Dùng luật rút gọn của ứng dụng, không bổ sung toàn bộ luật g
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Luật cờ |
 | Labels | dac-ta, EP-04, p1, luat-co |
+| Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.1, 3.3, 3.5 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả một bộ luật cờ tướng dùng chung để máy chủ, bàn cờ và máy cờ cùng xác định nước đi và kết quả.
+Bàn giao đặc tả một bộ luật cờ tướng dùng chung để máy chủ, bàn cờ và máy cờ cùng xác định nước đi và kết quả theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Ứng dụng dùng bộ luật rút gọn đã thống nhất. Một nửa nước là một lần đi quân của một bên; một thế gồm vị trí quân và bên tới lượt. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Ứng dụng dùng bộ luật rút gọn đã thống nhất. Một nửa nước là một lần đi quân của một bên; một thế gồm vị trí quân và bên tới lượt. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -3570,19 +3715,19 @@ Dùng luật rút gọn của ứng dụng, không bổ sung toàn bộ luật g
 
 **Việc cần làm**
 
-- Lập bảng luật bảy loại quân, thế cấm, kết thúc ván, lặp thế, chiếu liên tục và thứ tự ưu tiên; chuẩn bị ví dụ có đáp án kiểm tra được.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu bộ thế và đáp án độc lập với luật đã duyệt, đặc biệt định nghĩa cùng thế, chu kỳ từ lần một đến lần ba và thắng/thua ưu tiên trước hòa 120 nửa nước.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát nước hợp lệ, chiếu hết, hết nước đi, chu kỳ lặp và ưu tiên kết quả bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ nước hợp lệ, chiếu hết, hết nước đi, chu kỳ lặp và ưu tiên kết quả; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -3612,6 +3757,7 @@ Không bổ sung luật xử riêng việc đuổi quân liên tục; không tuy
 | Component chính | BE |
 | Components | BE, Luật cờ |
 | Labels | sprint-1, phat-trien, p1, chinh-be, luat-co |
+| Nguồn đặc tả (BA / AC) | 3.1, 3.4, 3.5 |
 
 
 **Description**
@@ -3641,6 +3787,7 @@ Bàn cờ tướng có 9 cột, 10 hàng giao điểm và hai bên Đỏ/Đen. B
 - Chuẩn bị thế trống, thế bị chắn và thế ăn quân cho từng loại.
 - Kiểm quân ở sát biên, sát sông và mép cung để phát hiện sai hướng.
 - Bàn giao danh sách nước cơ bản cùng mô tả đầu vào/đầu ra cho phần kiểm Tướng an toàn.
+- Ghi kiểu dữ liệu đầu vào/đầu ra cho thế cờ và nước đi, cách báo dữ liệu thế không hợp lệ; phân biệt hàm sinh nước cơ bản với hàm kiểm an toàn Tướng để nơi gọi không dùng nhầm.
 
 **Kết quả bàn giao**
 
@@ -3654,6 +3801,7 @@ Bàn cờ tướng có 9 cột, 10 hàng giao điểm và hai bên Đỏ/Đen. B
 - Pháo có không ngòi hoặc hai ngòi không ăn được; Mã bị chặn chân và Tượng bị chặn mắt không đi xuyên.
 - Đọc lại thế đã ghi khôi phục đúng quân và lượt đi.
 - Không sinh nước ra ngoài 90 giao điểm hoặc ăn quân cùng bên.
+- Ghi rồi đọc lại một thế giữa ván giữ đủ quân, bên tới lượt và bộ đếm; việc sinh nước không thay đổi thế đầu vào.
 
 **Phạm vi và phối hợp**
 
@@ -3683,6 +3831,7 @@ Kết quả là nước cơ bản theo cách đi của quân, chưa được g�
 | Component chính | BE |
 | Components | BE, Luật cờ |
 | Labels | sprint-1, phat-trien, p1, chinh-be, luat-co |
+| Nguồn đặc tả (BA / AC) | 3.4, 3.5 |
 
 
 **Description**
@@ -3712,6 +3861,7 @@ Biết cách đi của từng quân chưa đủ: một nước nhìn đúng hìn
 - Kết hợp tình trạng chiếu và số nước hợp lệ để phân biệt chiếu hết với hết nước đi.
 - Viết các thế kiểm: bỏ quân chắn trước Tướng, chặn chiếu, ăn quân chiếu, Tướng thoát chiếu và không có lối thoát.
 - Mô tả cách gọi legalMoves để lấy nước hợp lệ, isCheck để hỏi bên tới lượt có bị chiếu không, applyMove để áp dụng nước vào thế cờ, cùng đầu vào và dữ liệu trả về.
+- Chạy cùng thế qua hàm lấy nước hợp lệ và hàm áp dụng nước; đối chiếu kết quả trước/sau để chứng minh nước bị từ chối không làm mất quân hoặc đổi lượt.
 
 **Kết quả bàn giao**
 
@@ -3725,6 +3875,7 @@ Biết cách đi của từng quân chưa đủ: một nước nhìn đúng hìn
 - Quân bị ghim không được đi để lộ Tướng bị chiếu; nước chặn hoặc ăn quân chiếu được chấp nhận nếu Tướng an toàn.
 - Hai thế hết nước đi có và không có chiếu đều cho kết quả thua, với lý do khác nhau.
 - Áp dụng một nước không làm sai vị trí các quân còn lại.
+- Một nước thuộc danh sách hợp lệ áp dụng được với cùng đầu vào; nước tự chiếu hoặc làm hai Tướng đối mặt bị từ chối và giữ nguyên thế.
 
 **Phạm vi và phối hợp**
 
@@ -3754,6 +3905,7 @@ Bàn giao phân xử từng thế cờ. Lặp thế, 120 nửa nước không ă
 | Component chính | BE |
 | Components | BE, Luật cờ |
 | Labels | sprint-1, phat-trien, p1, chinh-be, luat-co |
+| Nguồn đặc tả (BA / AC) | 0.12, 0.17, 3.5 |
 
 
 **Description**
@@ -3764,7 +3916,7 @@ Hoàn chỉnh bộ luật kết thúc ván và kiểm chứng bộ sinh nước 
 
 **Bối cảnh công việc**
 
-Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặp thế có ngoại lệ chiếu liên tục, và đủ 120 nửa nước không ăn quân có thể hoà. Cần xác định rõ khi nhiều điều kiện xuất hiện cùng lúc. Một nửa nước là một lần đi của một bên; 120 nửa nước tương đương 60 lượt mà mỗi bên đều đã đi một lần. Chiếu là Tướng bị đe doạ ăn; chiếu liên tục là một bên thực hiện nước chiếu trong mọi lần đi của mình thuộc chu kỳ xét.
+Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặp thế có ngoại lệ chiếu liên tục, và đủ 120 nửa nước không ăn quân có thể hoà. Áp dụng thứ tự ưu tiên đã chốt khi nhiều điều kiện xuất hiện cùng lúc. Một nửa nước là một lần đi của một bên; 120 nửa nước tương đương 60 lượt mà mỗi bên đều đã đi một lần. Chiếu là Tướng bị đe doạ ăn; chiếu liên tục là một bên thực hiện nước chiếu trong mọi lần đi của mình thuộc chu kỳ xét.
 
 **Yêu cầu cần đáp ứng**
 
@@ -3796,6 +3948,8 @@ Dự án dùng luật cờ tướng rút gọn: hết nước đi là thua, lặ
 - Chu kỳ có một nước không chiếu không bị gán là chiếu liên tục của bên đó.
 - Ca nửa nước thứ 120 gây hết nước đi cho kết quả thua, không bị ghi hoà.
 - Số nhánh khớp chuẩn đã xác minh và độ phủ các dòng mã được kiểm thử thực thi đạt ít nhất 90%.
+- Hai bên cùng chiếu ở mọi nước của mình trong chu kỳ cho kết quả hoà; ăn quân đặt lại số nửa nước không ăn quân và mốc 119 chưa tự gây hoà.
+- Bộ dữ liệu kiểm riêng một bên chiếu liên tục gây thua cùng lúc chạm mốc 120; kết quả thắng/thua không bị thay bằng hoà không ăn quân.
 
 **Phạm vi và phối hợp**
 
@@ -3825,17 +3979,18 @@ Bộ luật phân xử một nước hợp lệ. Máy chủ vẫn phải kiểm 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, QA & DevOps, Bàn cờ |
 | Labels | dac-ta, EP-04, p1, ban-co |
+| Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1, 10.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả bàn cờ dễ đọc trên máy tính và điện thoại, đúng vị trí quân và hướng nhìn của người chơi.
+Bàn giao đặc tả bàn cờ dễ đọc trên máy tính và điện thoại, đúng vị trí quân và hướng nhìn của người chơi theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Bàn cờ có 9 cột và 10 hàng giao điểm, 32 quân, sông và hai cung. Hướng nhìn thay đổi theo phe của người chơi. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Bàn cờ có 9 cột và 10 hàng giao điểm, 32 quân, sông và hai cung. Hướng nhìn thay đổi theo phe của người chơi. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -3846,19 +4001,19 @@ Bàn cờ có 9 cột và 10 hàng giao điểm, 32 quân, sông và hai cung. H
 
 **Việc cần làm**
 
-- Mô tả bố cục, ký hiệu quân, hướng bàn, kích thước trên màn hình nhỏ và hỗ trợ người không phân biệt được màu hoặc dùng trình đọc màn hình.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát hình bàn cờ, vị trí quân, hướng nhìn, nhãn và viền trợ năng trên màn hình 360 điểm ảnh và máy tính theo đặc tả hiện hành.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát bàn 9×10, quân chữ Hán, hướng Đen và khả năng đọc/chạm bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ bàn 9×10, quân chữ Hán, hướng Đen và khả năng đọc/chạm; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -3888,6 +4043,7 @@ Chỉ đặc tả hiển thị; thao tác đi quân và phân xử luật nằm 
 | Component chính | FE |
 | Components | FE, Bàn cờ |
 | Labels | sprint-1, phat-trien, p1, chinh-fe, ban-co |
+| Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1 |
 
 
 **Description**
@@ -3918,6 +4074,7 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 - Áp dụng phông chữ Hán, màu và viền theo giao diện chung.
 - Thêm tên quân, phe và lượt đi dưới dạng nhãn trợ năng.
 - Kiểm khai cuộc và một thế giữa ván trên màn hình nhỏ và lớn.
+- Nhận thế, lượt và hướng nhìn qua dữ liệu thành phần; dùng cùng phép chuyển toạ độ cho quân, nhãn và vị trí bàn ở hai hướng, không xoay dữ liệu gốc.
 
 **Kết quả bàn giao**
 
@@ -3931,6 +4088,7 @@ Bàn cờ là thành phần hiển thị dùng lại cho phòng online và ván 
 - Đổi hướng nhìn không đổi thế cờ gốc; quân Đen ở dưới khi chọn phe Đen.
 - Độ rộng 360 pixel hiển thị trọn bàn; phông quân tải được.
 - Trình đọc màn hình đọc được phe/tên quân và trạng thái lượt; không chỉ dựa màu đỏ/đen.
+- Đầu vào dành cho người xem hiển thị Đỏ ở dưới; đổi từ khai cuộc sang thế giữa ván cập nhật đúng quân mà không giữ quân đã bị ăn.
 
 **Phạm vi và phối hợp**
 
@@ -3960,6 +4118,7 @@ Bàn giao phần hiển thị. Bấm chuột, kéo thả, dấu ô hợp lệ, �
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Bàn cờ |
 | Labels | sprint-1, kiem-thu, p1, chinh-qa-devops, ban-co |
+| Nguồn đặc tả (BA / AC) | 3.1, 3.4, 10.1 |
 
 
 **Description**
@@ -3991,12 +4150,14 @@ Kiểm chứng bàn cờ được vẽ đúng, xoay đúng phe và đọc đư�
 - Dùng trình đọc màn hình để duyệt tên quân, phe và lượt đi; xem khi không phân biệt được màu.
 - Ghi lỗi sai chữ, sai vị trí, sai hướng hoặc thiếu nhãn kèm thế đầu vào và kích thước.
 - Sau sửa, chạy lại ca lỗi và cả hai hướng nhìn để tránh sửa một phe làm hỏng phe kia.
+- Kiểm thêm hướng nhìn người xem luôn Đỏ phía dưới; lưu thế đầu vào cùng ảnh mỗi hướng để đối chiếu đúng giao điểm thay vì chỉ nhận xét hình thức.
 
 **Kết quả bàn giao**
 
 - Bộ ca kiểm hiển thị bàn cờ.
 - Ảnh và ghi nhận kiểm trợ năng.
 - Báo cáo đạt/không đạt/bị chặn, lỗi và kiểm lại.
+- Bảng trình duyệt/thiết bị/hướng nhìn/thế đã chạy, kết quả và đường dẫn bằng chứng; nêu rõ môi trường còn thiếu.
 
 **Điều kiện hoàn thành**
 
@@ -4033,17 +4194,18 @@ Không dùng kết quả này để kết luận bấm chuột, kéo thả, nư�
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, QA & DevOps, Bàn cờ |
 | Labels | dac-ta, EP-04, p1, ban-co |
+| Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả thao tác đi quân bằng chuột hoặc chạm và phản hồi hình ảnh, âm thanh dễ hiểu.
+Bàn giao đặc tả thao tác đi quân bằng chuột hoặc chạm và phản hồi hình ảnh, âm thanh dễ hiểu theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Người tới lượt mới được chọn quân. Gợi ý chỉ thể hiện nước hợp lệ của quân đang chọn; người xem không điều khiển bàn cờ. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Người tới lượt mới được chọn quân. Gợi ý chỉ thể hiện nước hợp lệ của quân đang chọn; người xem không điều khiển bàn cờ. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -4060,19 +4222,19 @@ Người tới lượt mới được chọn quân. Gợi ý chỉ thể hiện 
 
 **Việc cần làm**
 
-- Mô tả chọn/hủy chọn, kéo thả đúng và sai, dấu nước gần nhất, cảnh báo chiếu, giảm chuyển động và bật/tắt âm thanh.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu thao tác chuột/cảm ứng, bỏ chọn và nước không hợp lệ; giữ dấu nước gần nhất, cảnh báo chiếu, giảm chuyển động và lựa chọn âm thanh trong phiên.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát bấm/kéo quân, giới hạn theo lượt/vai trò, cảnh báo và âm thanh bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ bấm/kéo quân, giới hạn theo lượt/vai trò, cảnh báo và âm thanh; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -4102,6 +4264,7 @@ Không thêm chức năng gợi ý chiến thuật hoặc chọn nước tốt n
 | Component chính | FE |
 | Components | FE, Bàn cờ |
 | Labels | sprint-1, phat-trien, p1, chinh-fe, ban-co |
+| Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
 **Description**
@@ -4132,6 +4295,7 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 - Vẽ dấu nước gần nhất và cảnh báo chiếu với lựa chọn giảm chuyển động.
 - Tạo bốn âm bằng Web Audio, là công cụ âm thanh có sẵn trong trình duyệt, và điều khiển loa.
 - Dựng chế độ thử hai bên trên một máy, kiểm chuột/cảm ứng và hướng bàn Đen.
+- Đối chiếu điểm bấm/kéo trên bàn hướng Đen với toạ độ gửi đi; phân biệt quân đang được kéo và nước đã được chấp nhận để có thể trả về trạng thái máy chủ khi tích hợp.
 
 **Kết quả bàn giao**
 
@@ -4145,6 +4309,7 @@ Phần hiển thị bàn cờ đã có. Công việc này nối thao tác với 
 - Thả ngoài ô hợp lệ không làm đổi quân; Escape huỷ chọn.
 - Bật giảm chuyển động loại hiệu ứng chiếu, không mất chữ cảnh báo.
 - Tắt loa ngừng toàn bộ âm bàn cờ và chuyển ván trong cùng phiên vẫn giữ lựa chọn.
+- Cùng một nước được chọn bằng chuột hoặc chạm ở hướng Đỏ/Đen tạo cùng toạ độ thế cờ; kéo ngoài bàn không tạo nước.
 
 **Phạm vi và phối hợp**
 
@@ -4174,6 +4339,7 @@ Bàn giao thao tác và phản hồi. Khi nối online, nước bị máy chủ 
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Bàn cờ |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, ban-co |
+| Nguồn đặc tả (BA / AC) | 3.4, 10.1 |
 
 
 **Description**
@@ -4199,6 +4365,8 @@ Chuẩn bị hai người chơi và ít nhất một người xem trong phòng t
 - Viết từng tình huống thử với thế cờ ban đầu, người đang tới lượt, thao tác và kết quả mong đợi; tách thao tác chuột và cảm ứng.
 - Chạy trên màn hình nhỏ và máy tính, đồng thời quan sát trình duyệt đối thủ và người xem.
 - Ghi kết quả đạt, không đạt hoặc chưa thể kiểm; lưu ảnh hoặc video lỗi và kiểm lại sau khi sửa.
+- Lặp ca bấm và kéo trên cả hướng Đỏ phía dưới và Đen phía dưới; ghi toạ độ nước mong đợi để phát hiện lỗi xoay bàn.
+- Kiểm riêng bốn âm, tắt loa rồi sang ván khác trong cùng phiên; kiểm giảm chuyển động vẫn giữ chữ và biểu tượng cảnh báo.
 
 **Kết quả bàn giao**
 
@@ -4207,6 +4375,7 @@ Chuẩn bị hai người chơi và ít nhất một người xem trong phòng t
 **Điều kiện hoàn thành**
 
 - Tất cả tình huống được giao đạt trên phòng tích hợp thật; không bỏ qua nhánh sai quyền hoặc thiết bị cảm ứng.
+- Gửi thao tác sai hoặc ngoài lượt giữ nguyên thế ở người chơi, đối thủ và người xem; không chỉ kiểm rằng nút đã bị ẩn.
 
 **Phạm vi và phối hợp**
 
@@ -4234,39 +4403,40 @@ Kiểm cách tương tác và hiển thị; không thay việc chứng minh toà
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Luật cờ, Bàn cờ, Ván trực tuyến |
 | Labels | EP-05, dac-ta, p1, phong-choi, luat-co, ban-co, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.12, 0.17, 2.1, 3.3, 3.5, 3.6, 8.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất cách vận hành ván giữa hai người qua mạng, từ nước đi và đồng hồ đến kết quả và sự cố kết nối.
+Bàn giao bộ đặc tả đã duyệt về ván online, đồng hồ, kết quả và mất kết nối; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Máy chủ là nơi quyết định luật, giờ, quyền điều khiển và kết quả; cả hai người chơi và người xem phải nhìn thấy trạng thái nhất quán. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Máy chủ là nơi quyết định luật, giờ, quyền điều khiển và kết quả; cả hai người chơi và người xem phải nhìn thấy trạng thái nhất quán. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả ván giữa hai người qua mạng với máy chủ phân xử nước đi, đồng hồ và kết quả cuối cùng.
-- Đặc tả đầu hàng, rời phòng giữa ván và xin hòa để người chơi biết rõ hậu quả trước khi xác nhận.
-- Đặc tả khả năng quay lại ván sau sự cố mạng và xử lý minh bạch khi không thể tiếp tục.
+- Máy chủ phân xử nước, chống xử lý trùng, lưu bền nước/kết quả; đồng hồ 5/10/15 phút không cộng giây, hết giờ trước khi nhận nước thì xử thua.
+- Đầu hàng/rời giữa ván có xác nhận; xin hòa hạn 30 giây không chặn bàn cờ, bị từ chối/hết hạn thì người gửi đi thêm năm nước mới xin lại.
+- Mất mạng giữ ân hạn 60 giây nhưng đồng hồ vẫn chạy; hết giờ sớm hơn thì thua hết giờ. Máy chủ khởi động lại làm ván bị gián đoạn, không thắng/thua/hòa; phòng tự tạo về chờ với Ở lại phòng/Rời phòng, không hạn đóng 10 phút.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về ván online, đồng hồ, kết quả và mất kết nối với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát ván online, đồng hồ, kết quả và mất kết nối, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng ván online, đồng hồ, kết quả và mất kết nối theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -4296,17 +4466,18 @@ Không cộng thời gian sau nước đi, xin đi lại hoặc khôi phục gi�
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ, Ván trực tuyến |
 | Labels | dac-ta, EP-05, p1, luat-co, ban-co, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.12, 0.17, 2.1, 3.3, 3.5, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả ván giữa hai người qua mạng với máy chủ phân xử nước đi, đồng hồ và kết quả cuối cùng.
+Bàn giao đặc tả ván giữa hai người qua mạng với máy chủ phân xử nước đi, đồng hồ và kết quả cuối cùng theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Trình duyệt gửi yêu cầu đi quân; máy chủ kiểm tra giờ và luật trước khi chấp nhận, lưu nước đi và gửi trạng thái cho đối thủ cùng người xem. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Trình duyệt gửi yêu cầu đi quân; máy chủ kiểm tra giờ và luật trước khi chấp nhận, lưu nước đi và gửi trạng thái cho đối thủ cùng người xem. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -4326,19 +4497,19 @@ Trình duyệt gửi yêu cầu đi quân; máy chủ kiểm tra giờ và luậ
 
 **Việc cần làm**
 
-- Mô tả trình tự xử lý nước, chống gửi trùng, đồng hồ mỗi bên, mọi nguyên nhân kết thúc và nội dung kết quả theo vai trò.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát nước sai/trùng, tính giờ trước duyệt nước, các lý do kết thúc và quyền quan sát; giữ mục tiêu truyền nước và sai số đồng hồ đã quy định.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát máy chủ phân xử nước, đồng hồ, lưu bền và kết quả bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ máy chủ phân xử nước, đồng hồ, lưu bền và kết quả; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -4368,6 +4539,7 @@ Không cộng thêm thời gian sau nước đi và không triển khai giao di�
 | Component chính | BE |
 | Components | BE, Luật cờ, Ván trực tuyến |
 | Labels | sprint-1, phat-trien, p1, chinh-be, luat-co, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.12, 0.17, 3.3, 3.5 |
 
 
 **Description**
@@ -4399,6 +4571,8 @@ Khi hai người trong phòng đã sẵn sàng, phòng gửi tín hiệu bắt �
 - Nối xét kết thúc tự động và chỗ ghép đồng hồ, đầu hàng, xin hoà, mất kết nối.
 - Viết kiểm tích hợp hai người và người xem, gồm gửi nước giả và gửi lặp.
 - Đối chiếu dữ liệu lưu với trạng thái đã phát, kiểm ván kết thúc không nhận nước mới.
+- Khi ghép đồng hồ, đặt kiểm thời gian trước hàm áp dụng nước; sau nước hợp lệ mới xét kết thúc theo ưu tiên, lưu nước/kết quả rồi phát trạng thái chính thức.
+- Mô tả đường báo lỗi ghi dữ liệu và kiểm đối chiếu để không phát một kết quả thành công không có bản ghi bền tương ứng.
 
 **Kết quả bàn giao**
 
@@ -4412,6 +4586,7 @@ Khi hai người trong phòng đã sẵn sàng, phòng gửi tín hiệu bắt �
 - Sửa trình duyệt để đi sai hoặc đi hộ đối thủ bị từ chối.
 - Gửi cùng lệnh hai lần chỉ có một nước lưu.
 - Thế chiếu hết/hết nước tự kết thúc, lý do đúng và không nhận nước tiếp.
+- Lặp thế, chiếu liên tục và mốc 120 được kiểm bằng lịch sử nước thật; lý do lưu bền trùng lý do phát cho cả phòng.
 
 **Phạm vi và phối hợp**
 
@@ -4441,6 +4616,7 @@ Bàn giao lõi ván để nối đồng hồ, các nút đề nghị và phục 
 | Component chính | BE |
 | Components | BE, Ván trực tuyến |
 | Labels | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.17, 2.1, 3.3, 8.3 |
 
 
 **Description**
@@ -4484,6 +4660,8 @@ Mỗi phòng chọn 5, 10 hoặc 15 phút cho mỗi bên và không cộng giây
 - Nước đến khi thời gian còn lại đã bằng không hoặc âm phải bị từ chối; chỉ tạo một kết quả thua do hết giờ.
 - Đồng hồ tiếp tục giảm khi người tới lượt mất mạng.
 - Giao diện tích hợp lấy lại mốc máy chủ sau thẻ trình duyệt ẩn/nối lại; kiểm sai số hiển thị không quá một giây khi phần giao diện được nối.
+- Nước sai luật, ngoài lượt hoặc gửi trùng không chuyển đồng hồ sang đối thủ và không hoàn lại thời gian đã trôi.
+- Hết giờ và yêu cầu đầu hàng/hoà gần nhau chỉ chốt một kết quả; phép thử ghi mốc sự kiện và kết quả từ máy chủ để đối chiếu.
 
 **Phạm vi và phối hợp**
 
@@ -4513,6 +4691,7 @@ Bàn giao thời gian và kết quả hết giờ cho giao diện và xử lý m
 | Component chính | FE |
 | Components | FE, Bàn cờ, Ván trực tuyến |
 | Labels | sprint-2, phat-trien, p1, chinh-fe, ban-co, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.17, 3.3, 8.3 |
 
 
 **Description**
@@ -4538,6 +4717,7 @@ Người chơi ngồi ghế Đỏ hoặc Đen; người xem chỉ theo dõi. Má
 - Nối dữ liệu nước đi, lượt, đồng hồ và kết quả từ máy chủ; xử lý cập nhật mới thay cho trạng thái cũ.
 - Dựng lớp phủ nối lại theo thời gian máy chủ cung cấp; phân biệt đang đấu, đang chờ và người xem.
 - Kiểm trên màn hình điện thoại rộng 360 điểm ảnh và máy tính; bảo đảm bàn cờ không cuộn ngang, thông báo không che nút Đầu hàng.
+- Tạo dữ liệu thử cho từng lý do kết thúc, ngắt kết nối rồi nối lại và khởi động lại máy chủ; đối chiếu bảng cờ, đồng hồ, vai trò và nút theo trạng thái chính thức.
 
 **Kết quả bàn giao**
 
@@ -4546,6 +4726,9 @@ Người chơi ngồi ghế Đỏ hoặc Đen; người xem chỉ theo dõi. Má
 **Điều kiện hoàn thành**
 
 - Hai trình duyệt thấy cùng thế cờ và lượt; người xem không đi được quân; nhãn kết quả đúng với dữ liệu máy chủ.
+- Trở lại tab ẩn hoặc nối lại hiển thị giờ lệch không quá một giây; trong khi chờ 60 giây đồng hồ vẫn chạy, Escape không bỏ lớp phủ.
+- Ở lại phòng chỉ đóng lớp kết quả và trở về phòng chờ đã reset sẵn sàng; giữ ghế/phe và không khởi tạo ván mới trước khi cả hai sẵn sàng.
+- Ván bị gián đoạn không được ghi nhãn Thắng, Thua hay Hoà; có đúng lựa chọn Ở lại phòng/Rời phòng, không đếm đóng sau 10 phút.
 
 **Phạm vi và phối hợp**
 
@@ -4575,6 +4758,7 @@ Phần này làm giao diện. Việc máy chủ giữ ghế, xử thua sau mất
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Luật cờ, Ván trực tuyến |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, luat-co, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.12, 0.17, 2.1, 3.3, 3.5 |
 
 
 **Description**
@@ -4601,6 +4785,8 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 - Tạo bộ thế và dữ liệu đồng hồ xác định, ghi rõ kết quả mong đợi trước khi chạy.
 - Đối chiếu ba trình duyệt, phản hồi máy chủ và bản ghi nước đi/kết quả.
 - Ghi bằng chứng cho lỗi luật, sai thời điểm hoặc dữ liệu thiếu; kiểm lại sau sửa.
+- Lặp cùng vị trí khác lượt, lặp lần thứ ba với một bên/cả hai bên luôn chiếu và chu kỳ có nước không chiếu; đối chiếu kết quả với đáp án đã xác minh độc lập.
+- Truy vấn bản ghi ván/nước sau khi nhận kết quả, kiểm lý do và thời điểm thay vì chỉ chụp hộp kết quả.
 
 **Kết quả bàn giao**
 
@@ -4609,6 +4795,7 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 **Điều kiện hoàn thành**
 
 - Tất cả tình huống được giao đạt và không có kết quả trùng hoặc nước đi sau hết giờ.
+- Mốc 120 đồng thời hết nước hoặc một bên chiếu liên tục tạo kết quả thắng/thua; đồng thời chiếu hết vẫn là chiếu hết. Nước đến khi giờ bằng không bị từ chối trước khi xét các lý do này.
 
 **Phạm vi và phối hợp**
 
@@ -4638,17 +4825,18 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Ván trực tuyến |
 | Labels | dac-ta, EP-05, p1, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 2.3, 3.3, 3.5, 3.6 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả đầu hàng, rời phòng giữa ván và xin hòa để người chơi biết rõ hậu quả trước khi xác nhận.
+Bàn giao đặc tả đầu hàng, rời phòng giữa ván và xin hòa để người chơi biết rõ hậu quả trước khi xác nhận theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Đầu hàng hoặc chủ động rời ván là thua. Đề nghị hòa không dừng ván và không ngăn người nhận đi quân. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Đầu hàng hoặc chủ động rời ván là thua. Đề nghị hòa không dừng ván và không ngăn người nhận đi quân. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -4664,19 +4852,19 @@ Dùng hai người chơi thật và một người xem. Chuẩn bị các thế 
 
 **Việc cần làm**
 
-- Mô tả hộp xác nhận, nút mặc định an toàn, luồng xin/rút/chấp nhận/từ chối hòa, thời hạn và quyền gửi lại.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu xác nhận hậu quả, chuyển chủ, đề nghị hòa 30 giây, chờ thêm năm nước và phản hồi đến sau khi ván đã kết thúc.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát đầu hàng, rời phòng và đề nghị hòa không chặn bàn cờ bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ đầu hàng, rời phòng và đề nghị hòa không chặn bàn cờ; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -4706,6 +4894,7 @@ Không thêm xin đi lại; phản hồi đề nghị cũ không được thay �
 | Component chính | BE |
 | Components | BE, Ván trực tuyến |
 | Labels | sprint-2, phat-trien, p1, chinh-be, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 3.3, 3.5, 3.6 |
 
 
 **Description**
@@ -4725,12 +4914,14 @@ Máy chủ là nơi quyết định kết quả cuối cùng. Người chơi có
 - Chấp nhận hợp lệ kết thúc ván với lý do thoả thuận hoà. Từ chối hoặc hết hạn buộc người gửi đi thêm 5 nước của chính mình mới được đề nghị lại; cung cấp số nước còn chờ cho giao diện.
 - Người gửi được rút đề nghị đang chờ; phía nhận phải nhận thông báo đóng đề nghị. Nếu ván đã kết thúc vì lý do khác, đề nghị tự đóng và phản hồi đến sau không được sửa kết quả.
 - Chỉ người đang chơi trong ván có quyền đầu hàng hoặc gửi, rút, trả lời đề nghị tương ứng; người xem không được thực hiện các thao tác này.
+- Mỗi người chỉ có một đề nghị đang chờ; gửi thêm khi đã có đề nghị chưa xử lý bị từ chối, không tạo nhiều hạn trả lời độc lập.
 
 **Việc cần làm**
 
 - Tạo các thao tác máy chủ và sự kiện phản hồi cho đầu hàng, rời phòng, gửi/rút/trả lời đề nghị hoà.
 - Dùng cùng cơ chế kết thúc và lưu ván hiện có; xử lý tuần tự khi hết giờ, nước kết thúc ván và chấp nhận hoà đến gần nhau.
 - Viết kiểm thử từ chối, hết 30 giây, đếm 5 nước, rút đề nghị, quyền người xem và phản hồi sau khi ván đã kết thúc.
+- Lưu người gửi/nhận, hạn 30 giây và mốc số nước người gửi sau từ chối/hết hạn; chỉ tăng số nước đã đi khi máy chủ chấp nhận nước của chính người đó.
 
 **Kết quả bàn giao**
 
@@ -4739,6 +4930,8 @@ Máy chủ là nơi quyết định kết quả cuối cùng. Người chơi có
 **Điều kiện hoàn thành**
 
 - Rời giữa ván có kết quả thua đúng; đề nghị không dừng đồng hồ; yêu cầu muộn không thay đổi kết quả.
+- Bốn nước của người gửi chưa mở lại Xin hoà, nước thứ năm mở lại; nước đối thủ và lệnh gửi trùng không làm giảm số nước phải chờ.
+- Chấp nhận sau hạn, người xem trả lời hoặc người không phải bên nhận đều không tạo hoà; đầu hàng lặp chỉ lưu một kết quả.
 
 **Phạm vi và phối hợp**
 
@@ -4768,6 +4961,7 @@ Phần này không dựng hộp xác nhận hay khung đề nghị trên màn h�
 | Component chính | FE |
 | Components | FE, Ván trực tuyến |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 3.3, 3.5, 3.6 |
 
 
 **Description**
@@ -4802,6 +4996,9 @@ Người chơi cần xác nhận trước khi tự nhận thua. Đề nghị ho�
 **Điều kiện hoàn thành**
 
 - Không đầu hàng khi Huỷ; đề nghị không làm ngừng ván; hai bên thấy cùng kết quả xử lý.
+- Thu gọn rồi mở lại giữ nguyên hạn 30 giây, không tạo đề nghị mới; đối thủ vẫn đi được quân và đồng hồ tiếp tục.
+- Từ chối/hết hạn hiển thị số nước còn chờ từ máy chủ; nước đối thủ không làm nút Xin hoà mở sớm.
+- Lỗi gửi lệnh giữ thông báo lỗi và cho thử lại theo trạng thái máy chủ; bấm nhanh không tạo nhiều đề nghị hoặc tự hiện kết quả khi chưa được chấp nhận.
 
 **Phạm vi và phối hợp**
 
@@ -4831,6 +5028,7 @@ Máy chủ quyết định kết quả, hạn và quyền; phần giao diện kh
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Ván trực tuyến |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 3.3, 3.5, 3.6 |
 
 
 **Description**
@@ -4854,6 +5052,7 @@ Dùng hai người đang đấu và một người xem; chuẩn bị ván gần 
 
 **Việc cần làm**
 
+- Ghi mã ván, kết quả và số nước của người gửi trước từng ca; chuẩn bị đề nghị gần hết 30 giây và ván gần hết giờ để kiểm phản hồi đến sau kết thúc mà không nhầm với một ván mới.
 - Viết từng trường hợp Đồng ý/Huỷ/Từ chối/hết hạn/rút với kết quả mong đợi.
 - Thử bằng chuột và bàn phím, quan sát cả hai trình duyệt và kết quả máy chủ.
 - Lưu bằng chứng cho thời hạn, số nước chờ và phản hồi muộn; lập lỗi và kiểm lại khi sửa.
@@ -4865,6 +5064,7 @@ Dùng hai người đang đấu và một người xem; chuẩn bị ván gần 
 **Điều kiện hoàn thành**
 
 - Mọi nhánh được giao đạt; không có xử thua khi huỷ hoặc sửa kết quả sau khi ván đã kết thúc.
+- Đếm đủ năm nước tiếp theo của chính người gửi sau từ chối/hết hạn mới cho xin hoà lại; nước đối thủ không giảm số chờ. Rút/thu gọn đề nghị không được bị xử lý thành chấp nhận hoà.
 
 **Phạm vi và phối hợp**
 
@@ -4894,17 +5094,18 @@ Không kiểm xin đi lại, tái đấu hoặc luật riêng của chế độ 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | dac-ta, EP-05, p1, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.17, 3.3, 8.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả khả năng quay lại ván sau sự cố mạng và xử lý minh bạch khi không thể tiếp tục.
+Bàn giao đặc tả khả năng quay lại ván sau sự cố mạng và xử lý minh bạch khi không thể tiếp tục theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Người chơi có 60 giây để nối lại, nhưng đồng hồ ván vẫn chạy. Máy chủ khởi động lại được coi là gián đoạn hệ thống, khác với một người chơi mất mạng. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Người chơi có 60 giây để nối lại, nhưng đồng hồ ván vẫn chạy. Máy chủ khởi động lại được coi là gián đoạn hệ thống, khác với một người chơi mất mạng. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -4917,19 +5118,19 @@ Người chơi có 60 giây để nối lại, nhưng đồng hồ ván vẫn ch
 
 **Việc cần làm**
 
-- Lập bảng sự kiện và mốc thời gian: một người rớt mạng, hết giờ trước ân hạn, cả hai rớt mạng, nối lại và máy chủ khởi động lại.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát mất mạng một/hai phía, trở lại trước hạn và hết giờ trước hạn; giữ kết quả bị gián đoạn và phòng về chờ khi máy chủ khởi động lại.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát ân hạn mất kết nối, đồng hồ tiếp tục và khởi động lại máy chủ bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ ân hạn mất kết nối, đồng hồ tiếp tục và khởi động lại máy chủ; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -4959,6 +5160,7 @@ Không tạo thắng/thua/hòa cho ván bị gián đoạn do máy chủ khởi 
 | Component chính | BE |
 | Components | BE, Phòng chơi, Ván trực tuyến |
 | Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.10, 0.17, 2.8, 3.3, 8.3 |
 
 
 **Description**
@@ -4980,6 +5182,7 @@ Máy chủ giữ trạng thái ván và là nơi quyết định thời gian, l�
 
 **Việc cần làm**
 
+- Phân biệt mất kết nối của người đang đấu, người ngồi phòng chờ và người xem; lưu hạn giữ chỗ tương ứng. Khi nối lại, tra danh tính, ghế giữ và trạng thái ván hiện tại trước khi cấp quyền hoặc trả kết quả đã kết thúc.
 - Lưu thời điểm mất kết nối, hạn giữ ghế và thời gian còn lại từ cùng nguồn thời gian phía máy chủ. Xử lý đồng hồ hết giờ và sự kiện nối lại theo thứ tự xác định để không kết thúc một ván hai lần.
 - Kiểm danh tính và quyền trước khi khôi phục quyền điều khiển; gửi lại toàn bộ trạng thái cần thiết, không chỉ những nước đi bị thiếu. Phối hợp với giới hạn phiên để người đã hết quyền không tiếp tục điều khiển.
 - Tạo kiểm thử tự động cho mất mạng ngắn, quá hạn, hết giờ trước, cả hai cùng mất mạng và khởi động lại; lưu kết quả để nhóm kiểm thử chạy lại với thiết bị thật.
@@ -4988,11 +5191,13 @@ Máy chủ giữ trạng thái ván và là nơi quyết định thời gian, l�
 
 - Mã xử lý mất kết nối, nối lại và gián đoạn phía máy chủ; mô tả dữ liệu bàn giao cho giao diện.
 - Các kiểm thử tự động và bằng chứng về thứ tự xử lý thời gian, quyền điều khiển, kết quả ván.
+- Bảng chuyển trạng thái theo người đang đấu, phòng chờ, người xem; dữ liệu đồng bộ lại và kết quả sau restart.
 
 **Điều kiện hoàn thành**
 
 - Chạy thử các tình huống trên cho kết quả duy nhất, đúng hạn và đồng nhất ở mọi người tham gia; không có nước đi được chấp nhận từ người đã mất quyền.
 - Dữ liệu nối lại đủ để giao diện tiếp tục ván; gián đoạn máy chủ không bị biến thành chiến thắng hoặc khôi phục một thế cờ không còn lưu.
+- Mất mạng trong đếm bắt đầu huỷ đếm và giữ ghế 60 giây, không tạo ván hay ghi thua. Người cuối mất ghế ở phòng chờ làm đóng phòng; nếu còn người ngồi thì chuyển chủ khi cần.
 
 **Phạm vi và phối hợp**
 
@@ -5022,6 +5227,7 @@ Chỉ thực hiện xử lý phía máy chủ và dữ liệu đồng bộ. Khô
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi, Ván trực tuyến |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi, van-truc-tuyen |
+| Nguồn đặc tả (BA / AC) | 0.7, 0.10, 0.17, 2.8, 3.3, 8.3 |
 
 
 **Description**
@@ -5043,6 +5249,7 @@ Dùng hai thiết bị chơi một ván có đồng hồ và ít nhất một ng
 
 **Việc cần làm**
 
+- Chuẩn bị thêm phòng chỉ có chủ và phòng đang đếm vào ván; lưu mốc mất mạng, hết giờ, hết giữ ghế và nối lại để xác định nguyên nhân kết thúc bằng dữ liệu máy chủ, không chỉ theo đồng hồ màn hình.
 - Tạo ván có đủ thời gian; ngắt mạng một người 30 giây rồi nối lại, đối chiếu trạng thái trước và sau.
 - Lặp với hơn 60 giây; tạo ván khác có đồng hồ sắp hết để kiểm hết giờ trước ân hạn.
 - Ngắt hai người ở hai mốc khác nhau trong khi máy chủ vẫn hoạt động, kiểm chỉ bên mất trước bị xử thua.
@@ -5058,6 +5265,7 @@ Dùng hai thiết bị chơi một ván có đồng hồ và ít nhất một ng
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Mất mạng lúc chờ/đếm không ghi thua; hết 60 giây mất ghế, đóng phòng nếu không còn ai ngồi và báo người xem. Người xem nối lại trước/sau 5 phút được xử lý đúng chỗ giữ.
 
 **Phạm vi và phối hợp**
 
@@ -5085,39 +5293,40 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Camera và mic |
 | Labels | EP-06, dac-ta, p1, phong-choi, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.7, 2.7, 2.8, 4.1, 4.2, 4.3, 10.4, 11 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất quyền vào phòng, tìm phòng công khai và quản lý người xem để chủ phòng kiểm soát người tham gia.
+Bàn giao bộ đặc tả đã duyệt về chế độ phòng, Sảnh và người xem; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Có ba chế độ: Công khai, Chỉ vào bằng mã và Khóa phòng. Mỗi phòng có hai ghế và tối đa năm người xem; quyền thay đổi theo vai trò và trạng thái ván. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Có ba chế độ: Công khai, Chỉ vào bằng mã và Khóa phòng. Mỗi phòng có hai ghế và tối đa năm người xem; quyền thay đổi theo vai trò và trạng thái ván. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả quyền của chủ phòng khi cho phép vào công khai, chỉ vào bằng mã hoặc khóa người mới.
-- Đặc tả Sảnh để người chơi tìm phòng công khai, vào chơi hoặc xem, đọc luật và đi đến các chức năng đã có.
-- Đặc tả quyền của người xem, chuyển giữa ghế và chỗ xem, cùng việc đuổi người xem gây rối.
+- Phòng công khai xuất hiện ở Sảnh, phòng chỉ bằng mã hoặc khóa không xuất hiện. Sảnh tối đa 50 phòng, mới mở công khai lên trước, cập nhật tức thời; Vào chơi nhận ghế còn trống, Vào xem luôn là người xem.
+- Mỗi phòng hai ghế cộng tối đa năm chỗ xem; máy chủ kiểm lại sức chứa và quyền khi tham gia. Chỉ chủ phòng đổi chế độ, chỉ khóa khi đủ hai ghế; mở khóa sinh mã/đường dẫn mới.
+- Người xem không tự xuống ghế hoặc phát hình/tiếng; mời xuống ghế phải được chấp nhận, không giữ ghế. Cả hai người chơi được đuổi/chặn người xem tới khi phòng đóng; danh tính Khách mới vẫn có thể vào nếu phòng chưa khóa.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về chế độ phòng, Sảnh và người xem với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát chế độ phòng, Sảnh và người xem, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng chế độ phòng, Sảnh và người xem theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -5147,17 +5356,18 @@ Không để người xem tự chiếm ghế hoặc phát camera/mic; không tri
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi |
 | Labels | dac-ta, EP-06, p1, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.7, 2.8, 4.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả quyền của chủ phòng khi cho phép vào công khai, chỉ vào bằng mã hoặc khóa người mới.
+Bàn giao đặc tả quyền của chủ phòng khi cho phép vào công khai, chỉ vào bằng mã hoặc khóa người mới theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Phòng công khai xuất hiện ở Sảnh; phòng chỉ vào bằng mã không xuất hiện ở đó; phòng khóa chặn người mới nhưng giữ thành viên đang có quyền. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Phòng công khai xuất hiện ở Sảnh; phòng chỉ vào bằng mã không xuất hiện ở đó; phòng khóa chặn người mới nhưng giữ thành viên đang có quyền. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -5171,19 +5381,19 @@ Phòng công khai xuất hiện ở Sảnh; phòng chỉ vào bằng mã không 
 
 **Việc cần làm**
 
-- Lập bảng chuyển chế độ, điều kiện khóa, hiệu lực mã/lời mời cũ, quyền nối lại của thành viên cũ và quyền mở khóa.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu quyền chủ phòng, điều kiện đủ hai ghế để khóa, vô hiệu lời mời cũ và ngoại lệ nối lại; phòng vẫn khóa khi một người rời.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát ba chế độ phòng, khóa người mới, nối lại và thay mã khi mở khóa bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ ba chế độ phòng, khóa người mới, nối lại và thay mã khi mở khóa; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -5213,6 +5423,7 @@ Không đổi số chỗ xem hoặc mức giờ trong cài đặt phòng.
 | Component chính | BE |
 | Components | BE, Phòng chơi |
 | Labels | sprint-2, phat-trien, p1, chinh-be, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.8, 4.3 |
 
 
 **Description**
@@ -5234,6 +5445,7 @@ Phòng có thể Công khai để xuất hiện ở Sảnh, Chỉ vào bằng m�
 
 **Việc cần làm**
 
+- Nhận lệnh đổi chế độ kèm phòng và danh tính đã xác thực; trả chế độ thực tế, mã/link còn hiệu lực và lỗi nếu không đủ quyền/ghế. Cập nhật hiệu lực lời mời cùng chế độ trước khi chấp nhận lượt vào kế tiếp.
 - Xây thao tác đổi chế độ có kiểm quyền chủ phòng và kiểm lại số người ngồi ghế ngay khi xử lý; không dựa riêng vào điều kiện đã kiểm ở giao diện.
 - Cập nhật trạng thái phòng, hiệu lực thông tin mời và thông báo thay đổi cho người trong phòng cùng danh sách Sảnh. Giữ nhất quán khi có người vào cùng lúc với thao tác khoá.
 - Viết kiểm thử cho người không có quyền, thiếu ghế, khoá giữa ván, mở lại, dùng mã cũ và nối lại trong hoặc quá hạn.
@@ -5247,6 +5459,7 @@ Phòng có thể Công khai để xuất hiện ở Sảnh, Chỉ vào bằng m�
 
 - Người mới không thể vượt khoá bằng mã, đường dẫn hoặc lời mời cũ; người có quyền nối lại không bị nhầm thành người mới.
 - Mở khoá sinh thông tin mời mới và không làm mất trạng thái người đang chơi, đang xem.
+- Hai đường Công khai và Chỉ vào bằng mã đều nhận mã mới khi mở khoá; đổi chế độ không ngắt người xem cũ hoặc thay đổi mức chia sẻ media đã chọn.
 
 **Phạm vi và phối hợp**
 
@@ -5276,6 +5489,7 @@ Phần này thực thi quy tắc phía máy chủ; hộp cài đặt và danh s�
 | Component chính | FE |
 | Components | FE, Phòng chơi |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.7, 2.8, 4.3 |
 
 
 **Description**
@@ -5297,6 +5511,7 @@ Người chủ cần hiểu khác nhau giữa công khai, mời bằng mã và k
 
 **Việc cần làm**
 
+- Nhận chế độ hiện tại, chủ phòng và số ghế từ trạng thái phòng; cập nhật hộp đang mở khi chủ chuyển hoặc ghế thay đổi, để thao tác gửi đi luôn được máy chủ kiểm trên dữ liệu mới.
 - Xây hộp chọn với tên và giải thích ngắn bằng tiếng Việt. Hiển thị lựa chọn hiện tại, trạng thái đang gửi, thành công và lỗi; tránh thao tác lặp khi chưa có phản hồi.
 - Nối thao tác chọn với dịch vụ đổi chế độ. Khi bị từ chối do quyền hoặc số ghế vừa thay đổi, giữ trạng thái máy chủ xác nhận và hiển thị lý do.
 - Cập nhật thông tin chia sẻ phòng từ phản hồi mới. Kiểm sử dụng bằng chuột, bàn phím và màn hình điện thoại, gồm mở, đóng và vị trí chọn trong hộp.
@@ -5311,6 +5526,7 @@ Người chủ cần hiểu khác nhau giữa công khai, mời bằng mã và k
 
 - Chỉ đúng người có quyền thấy thao tác; chế độ hiển thị luôn khớp phản hồi máy chủ, không báo thành công giả.
 - Có thể thao tác trên điện thoại và bằng bàn phím; chú thích giải thích rõ lý do lựa chọn bị khoá.
+- Hộp đang mở không tiếp tục cho người đã mất quyền chủ đổi chế độ; khi khoá/mở khoá thất bại, cả nhãn chế độ và thông tin chia sẻ vẫn phản ánh trạng thái được xác nhận.
 
 **Phạm vi và phối hợp**
 
@@ -5340,6 +5556,7 @@ Phần giao diện không tự sinh mã, thu hồi lời mời hoặc quyết đ
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.5, 0.7, 2.8, 4.3 |
 
 
 **Description**
@@ -5363,6 +5580,7 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 **Việc cần làm**
 
+- Lập bảng các lối vào mã, đường dẫn, thông báo mời và nút Sảnh; thử khi đang mở, sau khoá và sau mở khoá. Ghi vai trò và chỗ giữ để phân biệt người mới với người nối lại.
 - Ghi mã/link ban đầu và vai trò từng người; thử gọi đổi chế độ bằng người không phải chủ.
 - Thử khoá lúc thiếu ghế, đủ ghế và đang ván; dùng thông tin mời cũ từ trình duyệt ngoài phòng.
 - Trong phòng khoá, thử nối lại trước/sau hạn 60 giây và 5 phút với đúng vai trò.
@@ -5378,6 +5596,7 @@ Chuẩn bị chủ phòng, người chơi thứ hai, người xem đang ở tron
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Mở khoá ở cả hai chế độ đều sinh mã/link mới, mọi bản cũ bị từ chối. Thay đổi chế độ phản ánh trên Sảnh nhưng không đẩy người xem hiện hữu ra khỏi phòng hoặc cắt media của họ.
 
 **Phạm vi và phối hợp**
 
@@ -5407,17 +5626,18 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi |
 | Labels | dac-ta, EP-06, p1, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.11, 0.12, 0.17, 2.0, 10.4, 11 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả Sảnh để người chơi tìm phòng công khai, vào chơi hoặc xem, đọc luật và đi đến các chức năng đã có.
+Bàn giao đặc tả Sảnh để người chơi tìm phòng công khai, vào chơi hoặc xem, đọc luật và đi đến các chức năng đã có theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Sảnh là trang chính sau đăng nhập. Danh sách phòng cần phản ánh thay đổi thực tế và xử lý trường hợp ghế bị người khác lấy trước. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Sảnh là trang chính sau đăng nhập. Danh sách phòng cần phản ánh thay đổi thực tế và xử lý trường hợp ghế bị người khác lấy trước. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -5437,26 +5657,27 @@ Sảnh là trang chính sau đăng nhập. Danh sách phòng cần phản ánh t
 - Bối cảnh: Khách. Thao tác hoặc sự kiện: Vào phòng bằng mã/đường dẫn, Vào chơi/Vào xem ở Sảnh, Đánh với máy. Kết quả cần có: Đều được phép theo luật phòng.
 - Bối cảnh: chủ phòng. Thao tác hoặc sự kiện: Chuyển sang Công khai. Kết quả cần có: Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây.
 - Bối cảnh: Phòng Công khai. Thao tác hoặc sự kiện: chủ phòng chuyển sang Chỉ vào bằng mã hoặc Khóa phòng. Kết quả cần có: Phòng biến khỏi danh sách Sảnh; yêu cầu vào từ danh sách cũ bị máy chủ từ chối.
+- Nội dung luật rút gọn phải nhất quán với ưu tiên kết quả: kiểm đồng hồ trước khi duyệt nước, chiếu hết cao nhất, hết nước đi hoặc chiếu liên tục ưu tiên trước hòa 120 nửa nước.
 
 **Việc cần làm**
 
-- Mô tả các cột, thứ tự, giới hạn danh sách, nút theo sức chứa, danh sách rỗng, thanh điều hướng và nội dung luật chơi rút gọn.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát cột, thứ tự, trần 50 phòng và cập nhật tức thời; kiểm ghế bị chiếm trước, danh sách cũ, Khách và các lối vào chưa phát triển.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát danh sách công khai, Vào chơi/Vào xem, luật rút gọn và điều hướng theo phạm vi bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ danh sách công khai, Vào chơi/Vào xem, luật rút gọn và điều hướng theo phạm vi; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
-Các mục chưa phát triển chỉ hiển thị Sắp ra mắt và không bấm được; không triển khai ghép trận hay đánh hạng.
+Lối vào điều hướng chính của tính năng để sau hiển thị Sắp ra mắt và không bấm được; chức năng nằm sâu được ẩn. Không triển khai ghép trận hay đánh hạng.
 
 ---
 
@@ -5482,6 +5703,7 @@ Các mục chưa phát triển chỉ hiển thị Sắp ra mắt và không bấ
 | Component chính | BE |
 | Components | BE, Phòng chơi |
 | Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.5, 2.8 |
 
 
 **Description**
@@ -5504,6 +5726,7 @@ Sảnh giúp người chưa được mời tìm phòng để chơi hoặc xem. D
 
 **Việc cần làm**
 
+- Dùng mốc mở Công khai để lấy tối đa 50 phòng gần nhất; trả đủ dữ liệu ghế/chỗ xem cho hai nút và nhãn Không cho xem. Khi một phòng rời danh sách, tính lại tập hiển thị để phòng hợp lệ kế tiếp có thể xuất hiện.
 - Tạo dữ liệu danh sách và sự kiện cập nhật dùng chung cho các trình duyệt đang mở Sảnh; chỉ trả dữ liệu cần hiển thị.
 - Xử lý yêu cầu vào phòng bằng cách kiểm lại quyền và sức chứa cùng lúc xếp chỗ, tránh hai yêu cầu cùng chiếm ghế hoặc vượt số người xem.
 - Viết kiểm thử danh sách rỗng, đủ 50 phòng, đổi chế độ, phòng đóng và tranh chấp ghế; đo thời gian cập nhật trong môi trường trình diễn.
@@ -5517,6 +5740,7 @@ Sảnh giúp người chưa được mời tìm phòng để chơi hoặc xem. D
 
 - Danh sách không lộ phòng riêng hoặc phòng khoá; thứ tự và các cột đúng với trạng thái thật.
 - Không vượt sức chứa khi người dùng bấm trên dữ liệu cũ; thông báo và vai trò cuối đúng từng nhánh.
+- Ca có 51 phòng công khai vẫn chỉ trả 50 phòng đúng thứ tự; ghế và chỗ xem được kiểm lại trước xếp vai trò. Yêu cầu từ dòng đã chuyển riêng bị từ chối và yêu cầu làm mới danh sách.
 
 **Phạm vi và phối hợp**
 
@@ -5546,6 +5770,7 @@ Không xây trang Sảnh trong công việc này. Kết quả là dữ liệu, s
 | Component chính | FE |
 | Components | FE, Phòng chơi |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.12, 0.17, 2.0, 10.4 |
 
 
 **Description**
@@ -5569,6 +5794,7 @@ Sảnh là màn hình sau đăng nhập và nơi người chơi trở về từ 
 
 **Việc cần làm**
 
+- Dùng danh sách máy chủ đã sắp theo mốc mở Công khai; duy trì tối đa 50 dòng khi nhận thêm/bớt/đổi phòng. Nối phản hồi chuyển sang xem với thông báo “Ghế vừa có người, bạn đang xem trận” và cập nhật lại danh sách khi phòng vừa chuyển riêng.
 - Xây danh sách và trạng thái chờ, trống, lỗi; nối các lối tạo phòng, nhập mã, vào chơi, vào xem và chơi với máy.
 - Xử lý phản hồi khi ghế vừa bị lấy, phòng đầy hoặc không còn công khai; không dựa vào dòng cũ để khẳng định đã vào được.
 - Kiểm giao diện điện thoại, bàn phím, tài khoản chính thức và Khách; đối chiếu nội dung luật bằng từng tình huống minh hoạ.
@@ -5576,11 +5802,13 @@ Sảnh là màn hình sau đăng nhập và nơi người chơi trở về từ 
 **Kết quả bàn giao**
 
 - Sảnh và thanh điều hướng hoàn chỉnh, kết nối dữ liệu thật và phần luật đọc được ngay tại màn hình.
+- Bằng chứng danh sách giới hạn 50 phòng, phản hồi dòng cũ và nội dung Luật chơi đã đối chiếu.
 
 **Điều kiện hoàn thành**
 
 - Mọi lối vào đang hỗ trợ dẫn đúng chức năng; phần chưa làm được ghi rõ, không cho thao tác giả.
 - Danh sách, quyền vào và thông báo khớp phản hồi máy chủ; nội dung luật không đánh đồng hết nước với hoà.
+- Phần Luật chơi giải thích lặp thế phải cùng vị trí quân và cùng bên đến lượt; chu kỳ tính từ lần xuất hiện thứ nhất đến thứ ba, mỗi nước của bên chiếu trong chu kỳ đều phải là nước chiếu. Nêu chiếu hết ưu tiên cao nhất, hết nước/chiếu liên tục gây thắng thua trước hòa 120 nửa nước.
 
 **Phạm vi và phối hợp**
 
@@ -5610,6 +5838,7 @@ Không triển khai ghép ngẫu nhiên, xếp hạng, lịch sử hoặc bảng
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.5, 0.12, 0.17, 10.4 |
 
 
 **Description**
@@ -5635,6 +5864,7 @@ Chuẩn bị tài khoản chính thức, phiên Khách và các phòng công kha
 
 **Việc cần làm**
 
+- Ghi danh sách phòng và mốc mở Công khai trước từng lần đổi; dùng phòng đã tồn tại rồi mới mở công khai để kiểm thứ tự dựa trên lần mở công khai, không nhầm với ngày tạo phòng.
 - Chuẩn bị các loại phòng, gồm không cho xem, đầy ghế, đầy người xem; kiểm từng cột và nút trên Sảnh của tài khoản thường và Khách.
 - Mở 51 phòng mẫu để kiểm giới hạn và thứ tự; đổi công khai, đóng và thay số người, đo cập nhật trên trình duyệt khác.
 - Cho hai người tranh ghế cuối; bấm Vào xem lúc ghế trống và dùng dòng cũ sau khi phòng chuyển riêng, kiểm vai trò cuối.
@@ -5650,6 +5880,7 @@ Chuẩn bị tài khoản chính thức, phiên Khách và các phòng công kha
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Bài đọc Luật chơi phải đối chiếu định nghĩa cùng vị trí/cùng lượt và chu kỳ lần thứ nhất đến thứ ba; nội dung không được tuyên bố hoà 120 nửa nước nếu cùng nước đã gây chiếu hết, hết nước hoặc chiếu liên tục xử thua.
 
 **Phạm vi và phối hợp**
 
@@ -5679,17 +5910,18 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Phòng chơi, Camera và mic |
 | Labels | dac-ta, EP-06, p1, phong-choi, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.3, 0.7, 2.8, 4.1, 4.2 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả quyền của người xem, chuyển giữa ghế và chỗ xem, cùng việc đuổi người xem gây rối.
+Bàn giao đặc tả quyền của người xem, chuyển giữa ghế và chỗ xem, cùng việc đuổi người xem gây rối theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Mỗi phòng có tối đa hai người chơi và năm người xem. Chuyển chỗ chỉ được thực hiện khi không có ván đang diễn ra. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Mỗi phòng có tối đa hai người chơi và năm người xem. Chuyển chỗ chỉ được thực hiện khi không có ván đang diễn ra. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -5707,22 +5939,23 @@ Mỗi phòng có tối đa hai người chơi và năm người xem. Chuyển ch
 - Khi xác nhận đuổi người xem, đưa người đó về Sảnh với thông báo “Bạn đã bị đuổi khỏi phòng thi đấu”, thu hồi ngay quyền nhận hình và tiếng. Ghi lại thời gian thu hồi thực tế trong phép kiểm truyền hình/tiếng.
 - Bối cảnh: Người đã bị đuổi. Thao tác hoặc sự kiện: Vào lại bằng đường dẫn/mã mới, lời mời hoặc từ Sảnh. Kết quả cần có: Bị chặn đến khi phòng đã đóng.
 - Bối cảnh: Người đã bị đuổi khỏi phòng. Thao tác hoặc sự kiện: Vào lại bằng bất kỳ cách nào. Kết quả cần có: màn hình thông báo không được vào phòng: "Bạn đã bị đuổi và chặn tham gia phòng cờ này!".
+- Giới hạn đã được chấp nhận: người bị đuổi có thể quay lại bằng một danh tính Khách mới nếu phòng chưa khóa; không hứa chặn được người thật qua mọi phiên Khách.
 
 **Việc cần làm**
 
-- Lập bảng quyền theo chủ phòng/người chơi/người xem, lời mời xuống ghế, giữ chỗ khi mất mạng và chặn quay lại sau khi bị đuổi.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu ma trận vai trò và chuyển ghế/chỗ xem; giữ việc chấp nhận lời mời không giữ ghế, chặn tự xuống ghế, ân hạn xem và thu hồi hình/tiếng khi đuổi.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát quyền người xem, mời xuống ghế, giữ chỗ và đuổi/chặn bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ quyền người xem, mời xuống ghế, giữ chỗ và đuổi/chặn; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -5752,6 +5985,7 @@ Người xem không được tự chiếm ghế; chủ phòng không tự xuốn
 | Component chính | BE |
 | Components | BE, Phòng chơi |
 | Labels | sprint-3, phat-trien, p1, chinh-be, phong-choi |
+| Nguồn đặc tả (BA / AC) | 0.6, 0.7, 2.8, 4.1, 4.2, 5.3 |
 
 
 **Description**
@@ -5774,6 +6008,7 @@ Một phòng có hai ghế chơi và số chỗ xem đã chọn khi tạo, tối
 
 **Việc cần làm**
 
+- Với mỗi thao tác, nhận phòng, người thao tác và người được chuyển/mời/đuổi; kiểm trạng thái chờ, quyền, ghế/chỗ xem hiện tại rồi mới cập nhật vai trò. Sau đổi ghế, gửi sự kiện để chat đổi mốc cặp, media đổi quyền và đề nghị đổi bên cũ bị huỷ.
 - Xây thao tác đổi vai trò, mời xuống ghế và đuổi có kiểm quyền tại máy chủ. Kiểm sức chứa ngay lúc xử lý, không chỉ lúc tạo lời mời.
 - Phát thay đổi danh sách, ghế và quyền cho những phần xử lý chat, camera và mic; gửi thông báo đưa người bị đuổi về Sảnh.
 - Kiểm thử phòng đầy, không cho xem, ghế bị lấy trước khi nhận lời, đổi vai trò giữa ván và vào lại sau khi bị đuổi.
@@ -5782,11 +6017,13 @@ Một phòng có hai ghế chơi và số chỗ xem đã chọn khi tạo, tối
 
 - Chức năng người xem phía máy chủ cùng dữ liệu thông báo cho giao diện và phần camera, mic.
 - Kiểm thử tự động về sức chứa, quyền thao tác và hiệu lực chặn.
+- Bảng quyền theo vai trò cùng dữ liệu đổi ghế/đuổi để chat và media cập nhật quyền.
 
 **Điều kiện hoàn thành**
 
 - Không có thao tác làm vượt số chỗ, tự chiếm ghế hoặc đổi vai trò trái phép; dữ liệu mọi người nhìn thấy thống nhất.
 - Người bị đuổi không vào lại bằng mã, đường dẫn, lời mời hoặc Sảnh trong cùng danh tính khi phòng chưa đóng.
+- Người rời ghế không còn quyền phát media hoặc đọc kênh riêng; xuống ghế thành công vẫn chưa sẵn sàng. Đuổi thu hồi cả kết nối nhận media hiện hữu, không chỉ ngừng cấp giấy phép mới.
 
 **Phạm vi và phối hợp**
 
@@ -5816,6 +6053,7 @@ Không xây khung danh sách người xem trong phần việc này. Giới hạn
 | Component chính | FE |
 | Components | FE, Phòng chơi, Camera và mic |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, phong-choi, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.13, 0.14, 1.8, 2.8, 4.1, 4.2 |
 
 
 **Description**
@@ -5838,6 +6076,7 @@ Màn phòng dùng chung thông tin ghế, danh sách người xem và phần hì
 
 **Việc cần làm**
 
+- Lập trạng thái thao tác theo chủ phòng/người chơi còn lại/người xem và phòng chờ/đang đấu; nối phản hồi ghế đã có người hoặc hết chỗ xem vào đúng lời mời/nút đang xử lý, giữ vai trò cũ nếu bị từ chối.
 - Nối danh sách, thao tác ghế và hộp xác nhận với dịch vụ người xem thật; cập nhật theo phản hồi thay vì tự nhận thao tác đã thành công.
 - Nối khung camera, mic với bộ xử lý hình tiếng đã có. Dùng chung khung cho phòng chờ và đang đấu để chuyển màn không cắt luồng.
 - Kiểm hai máy phát cùng người xem: đổi mức chia sẻ, tắt riêng mic, đổi vai trò, bị đuổi, mở thẻ khác và làm dịch vụ lỗi; quan sát trạng thái mỗi phía.
@@ -5851,6 +6090,7 @@ Màn phòng dùng chung thông tin ghế, danh sách người xem và phần hì
 
 - Giao diện không cung cấp thao tác trái quyền; lỗi được thông báo thật, không làm mất ván hoặc chat.
 - Người xem nhận đúng phạm vi chia sẻ; hình tiếng không bị ngắt chỉ vì bắt đầu ván.
+- Khi dịch vụ media lỗi hoặc hết hạn mức phải hiện “Camera/mic tạm thời không dùng được”; đổi thẻ dừng thiết bị ở thẻ cũ, thẻ mới không tự bật. Chuyển người chơi xuống xem phải bỏ các nút phát.
 
 **Phạm vi và phối hợp**
 
@@ -5880,6 +6120,7 @@ Không viết lại dịch vụ cấp quyền camera, mic hay quy tắc xếp ch
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Phòng chơi, Camera và mic |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, phong-choi, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.3, 2.8, 4.1, 4.2, 5.3 |
 
 
 **Description**
@@ -5905,6 +6146,7 @@ Chuẩn bị phòng có hai người chơi cùng những người xem, gồm m�
 
 **Việc cần làm**
 
+- Chuẩn bị tin riêng của cặp ban đầu và bật camera/mic trước khi chuyển người chơi xuống xem; đối chiếu ghế, Sẵn sàng, quyền đọc chat và quyền media sau cùng một thao tác đổi vai trò.
 - Tạo phòng còn chỗ, đầy chỗ và không cho xem; kiểm chuyển ghế/xem theo từng vai trò.
 - Mời người xem xuống ghế, thử đồng ý/từ chối và cho người khác lấy ghế trước khi đồng ý; kiểm không vượt sức chứa.
 - Trong ván gửi yêu cầu đổi chỗ trực tiếp; thử người xem tự ngồi hoặc tự đuổi để kiểm máy chủ chặn.
@@ -5920,6 +6162,7 @@ Chuẩn bị phòng có hai người chơi cùng những người xem, gồm m�
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Cặp mới không đọc tin riêng cặp cũ; người xuống xem mất quyền phát. Phiên Khách mới có danh tính mới chỉ bị chặn bởi khoá/quyền vào hiện tại, không ghi thành lỗi vì không chặn tuyệt đối theo người thật.
 
 **Phạm vi và phối hợp**
 
@@ -5947,38 +6190,40 @@ Công việc này chuẩn bị và thực hiện kiểm thử cho phạm vi trê
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Trò chuyện, Camera và mic |
 | Labels | EP-07, dac-ta, p1, tro-chuyen, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 4.1, 4.2, 5.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất giao tiếp bằng chữ, hình và tiếng theo đúng người nhận và quyền riêng tư.
+Bàn giao bộ đặc tả đã duyệt về hai kênh chat, camera/mic và quyền riêng tư; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Hai người chơi có kênh trò chuyện riêng; cả phòng có kênh chung. Người chơi bật camera/mic riêng từng nút và chọn Không chia sẻ, Chỉ đối thủ hoặc Cả đối thủ và người xem. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Hai người chơi có kênh trò chuyện riêng; cả phòng có kênh chung. Người chơi bật camera/mic riêng từng nút và chọn Không chia sẻ, Chỉ đối thủ hoặc Cả đối thủ và người xem. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả trò chuyện đúng đối tượng, có lọc từ cấm và chống gửi quá nhanh.
-- Đặc tả camera và mic do người chơi chủ động bật, chọn đối tượng nhận và có thể thu hồi quyền thực sự.
+- Phòng chờ và trong ván cùng có Kênh Riêng cho cặp người chơi và Kênh Chung cho cả phòng; cùng cặp đổi bên/chơi tiếp giữ chat, thay cặp đặt mốc mới, người mới chỉ thấy tin từ khi vào, đóng phòng xóa chat.
+- Tin tối đa 200 ký tự, năm tin/10 giây, lọc từ cấm ở máy chủ và hiển thị văn bản thuần. Camera/mic mặc định tắt, bật độc lập, mức chia sẻ mặc định Chỉ đối thủ, có thêm Không chia sẻ và Cả đối thủ và người xem.
+- Người xem chỉ nhận, không phát; thu hồi quyền khi rời ghế/phòng hoặc bị đuổi. Lỗi camera/mic không ngắt ván/chat hoặc dừng đồng hồ, không xử ai thua. Giữ hạ tầng LiveKit tự chạy và dịch vụ đám mây dự phòng đã chọn.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về hai kênh chat, camera/mic và quyền riêng tư với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát hai kênh chat, camera/mic và quyền riêng tư, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng hai kênh chat, camera/mic và quyền riêng tư theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -6008,17 +6253,18 @@ Không ghi/lưu hình tiếng, không lưu trò chuyện sau khi phòng đóng v
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Trò chuyện |
 | Labels | dac-ta, EP-07, p1, tro-chuyen |
+| Nguồn đặc tả (BA / AC) | 0.13, 5.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả trò chuyện đúng đối tượng, có lọc từ cấm và chống gửi quá nhanh.
+Bàn giao đặc tả trò chuyện đúng đối tượng, có lọc từ cấm và chống gửi quá nhanh theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Kênh Riêng dành cho cặp người đang ngồi hai ghế; Kênh Chung có người chơi và người xem. Quyền đọc phải được kiểm tra ở máy chủ. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Kênh Riêng dành cho cặp người đang ngồi hai ghế; Kênh Chung có người chơi và người xem. Quyền đọc phải được kiểm tra ở máy chủ. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -6039,19 +6285,19 @@ Kênh Riêng dành cho cặp người đang ngồi hai ghế; Kênh Chung có ng
 
 **Việc cần làm**
 
-- Mô tả hai kênh trên máy tính/điện thoại, thời điểm được xem tin, thay đổi cặp chơi, lọc từ, giới hạn và xóa tin khi phòng đóng.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát chat trên máy tính/điện thoại ở phòng chờ và trong ván; giữ mốc tin khi cùng cặp đổi bên/chơi tiếp, thay cặp, người mới vào và đóng phòng.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát hai kênh theo vai trò, mốc lịch sử chat, lọc từ và giới hạn gửi bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ hai kênh theo vai trò, mốc lịch sử chat, lọc từ và giới hạn gửi; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -6081,6 +6327,7 @@ Không thêm tin nhắn riêng ngoài phòng hoặc lưu lịch sử trò chuy�
 | Component chính | BE |
 | Components | BE, Trò chuyện |
 | Labels | sprint-2, phat-trien, p1, chinh-be, tro-chuyen |
+| Nguồn đặc tả (BA / AC) | 0.13, 5.3, 10.1 |
 
 
 **Description**
@@ -6101,9 +6348,11 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 - Tin nhắn dài tối đa 200 ký tự. Mỗi người gửi tối đa 5 tin trong 10 giây; tin thứ 6 bị chặn với thông báo “Bạn gửi quá nhanh”.
 - Thay từ cấm bằng *** trước khi phát cho người nhận. Bộ lọc xử lý chữ hoa/thường, có dấu/không dấu, khoảng trắng/ký tự chen vào và cách thay số 0 cho o, số 1 cho i. Danh sách từ nằm trong tệp cấu hình, áp dụng sau khởi động lại.
 - Nội dung phải được hiển thị như văn bản thường, không chạy đoạn mã do người gửi chèn; không ghi nội dung chat vào nhật ký vận hành.
+- Bộ lọc chung phục vụ tên đăng nhập, Tên hiển thị, tên Khách và tên phòng: các trường tên chứa từ cấm bị từ chối, không che bằng *** rồi lưu. Không ghi nội dung tin chưa lọc vào nhật ký.
 
 **Việc cần làm**
 
+- Nhận danh tính người gửi từ phiên đã xác thực; mỗi lệnh gửi/đọc mang phòng và kênh. Kiểm người còn ở phòng, vai trò hiện tại và mốc được đọc trước khi lấy hoặc phát tin; trả nội dung đã lọc hoặc lỗi quyền/độ dài/tốc độ để giao diện xử lý.
 - Tạo lưu trữ tin theo phòng, kênh và mốc cặp người chơi; cập nhật quyền khi đổi vai trò.
 - Tích hợp bộ lọc chung, kiểm độ dài và giới hạn gửi tại máy chủ.
 - Viết kiểm thử giả yêu cầu trái quyền, thay người, đổi phe, đóng phòng và các biến thể né bộ lọc.
@@ -6111,10 +6360,12 @@ Chat tồn tại cả khi chờ và khi đang đấu. Một phòng có thể đ�
 **Kết quả bàn giao**
 
 - Dịch vụ hai kênh chat, bộ lọc và kiểm thử tự động.
+- Hợp đồng gửi/đọc tin và lỗi quyền, độ dài, tốc độ; dữ liệu mẫu trước/sau đổi cặp.
 
 **Điều kiện hoàn thành**
 
 - Người xem không đọc tin riêng; cặp mới không đọc tin cũ; tin quá dài hoặc quá nhanh bị chặn.
+- Đổi cặp phải cắt quyền đọc của người rời ghế và tin cặp cũ của cả hai người trong cặp mới; bộ lọc dùng chung che tin chat nhưng từ chối tên chứa từ cấm.
 
 **Phạm vi và phối hợp**
 
@@ -6144,6 +6395,7 @@ Không làm chat riêng giữa bạn bè hay nhãn dán; khung hiển thị chat
 | Component chính | FE |
 | Components | FE, Trò chuyện |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, tro-chuyen |
+| Nguồn đặc tả (BA / AC) | 0.13, 5.3, 10.1 |
 
 
 **Description**
@@ -6167,6 +6419,7 @@ Cùng một khung chức năng được dùng ở phòng chờ và phòng đang 
 
 **Việc cần làm**
 
+- Dùng dữ liệu quyền/kênh/mốc cặp từ máy chủ làm nguồn hiển thị; khi đổi vai trò hoặc đổi cặp, xoá phần tin không còn quyền khỏi trạng thái giao diện trước khi nạp tập tin được phép.
 - Dựng bố cục hai khung ở máy tính và hai thẻ chọn kênh trên điện thoại, với trạng thái tải, rỗng và lỗi.
 - Nối gửi/nhận tin, quyền theo vai trò và việc thay tập tin khi đổi phòng hoặc đổi cặp.
 - Thử bằng người chơi và người xem, tin chứa thẻ mã, gửi lỗi rồi thử lại và chuyển trạng thái phòng.
@@ -6174,10 +6427,12 @@ Cùng một khung chức năng được dùng ở phòng chờ và phòng đang 
 **Kết quả bàn giao**
 
 - Khung chat dùng chung trong phòng chờ và bàn đấu, nối máy chủ thật.
+- Bằng chứng giao diện đổi cặp, đổi vai trò và gửi lỗi/Thử lại trên máy tính lẫn điện thoại.
 
 **Điều kiện hoàn thành**
 
 - Người xem không thấy kênh riêng; bố cục mặc định đúng thiết bị; nội dung không chạy mã và không rò tin cặp cũ.
+- Thử lại tin lỗi không hiện hai bản tin đã gửi thành công; tin của cặp cũ biến mất ở cả người ở lại lẫn người mới, không chỉ ẩn thẻ Kênh Riêng.
 
 **Phạm vi và phối hợp**
 
@@ -6207,6 +6462,7 @@ Không làm nhãn dán hay chat riêng giữa bạn bè; lọc từ cấm và gi
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Trò chuyện |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, tro-chuyen |
+| Nguồn đặc tả (BA / AC) | 0.13, 5.3, 10.1 |
 
 
 **Description**
@@ -6230,6 +6486,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 
 **Việc cần làm**
 
+- Ghi thời điểm tham gia phòng và mốc cặp ngồi ghế cho bộ tin mẫu; tạo tin trước/sau từng mốc để đối chiếu cả dữ liệu máy chủ trả về lẫn nội dung trên màn hình.
 - Viết bộ dữ liệu tin nhắn hợp lệ, biên, từ cấm và nội dung có thể gây chạy mã; xác định người được đọc cho từng tin.
 - Chạy đa trình duyệt, thử yêu cầu vượt quyền và đối chiếu dữ liệu sau đóng phòng.
 - Lưu kết quả theo từng biến thể, bằng chứng và lỗi; kiểm lại sau khi sửa.
@@ -6241,6 +6498,7 @@ Chuẩn bị hai người chơi và người xem; dùng cả máy tính và đi�
 **Điều kiện hoàn thành**
 
 - Không rò kênh riêng, không chạy mã từ tin nhắn, không phát tin vượt giới hạn.
+- Tin thứ sáu trong 10 giây không tới bất kỳ người nhận nào; sau đóng phòng, truy vấn bằng quyền cũ không lấy lại được chat. Báo tách những nhánh đổi vai trò đang chờ kiểm tích hợp, không ghi đã đạt.
 
 **Phạm vi và phối hợp**
 
@@ -6270,17 +6528,18 @@ Nhánh đổi người từ ghế xuống xem và đưa người khác lên gh�
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, QA & DevOps, Camera và mic |
 | Labels | dac-ta, EP-07, p1, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 4.1, 4.2 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả camera và mic do người chơi chủ động bật, chọn đối tượng nhận và có thể thu hồi quyền thực sự.
+Bàn giao đặc tả camera và mic do người chơi chủ động bật, chọn đối tượng nhận và có thể thu hồi quyền thực sự theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Hình và tiếng dùng chung mức chia sẻ nhưng có nút bật/tắt độc lập. Dịch vụ truyền hình/tiếng bị lỗi không được làm gián đoạn ván hoặc trò chuyện bằng chữ. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Hình và tiếng dùng chung mức chia sẻ nhưng có nút bật/tắt độc lập. Dịch vụ truyền hình/tiếng bị lỗi không được làm gián đoạn ván hoặc trò chuyện bằng chữ. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -6297,22 +6556,23 @@ Hình và tiếng dùng chung mức chia sẻ nhưng có nút bật/tắt độc
 - Bối cảnh: Đổi mức chia sẻ giữa ván. Thao tác hoặc sự kiện: Hệ thống. Kết quả cần có: Có hiệu lực ngay (≤ 2 giây).
 - Bối cảnh: Hai người chơi đang ở phòng chờ. Thao tác hoặc sự kiện: Bật camera/mic. Kết quả cần có: Đối thủ (và người xem nếu chọn mức "Cả đối thủ và người xem") thấy/nghe ngay trong phòng chờ; khi bắt đầu ván, hình và tiếng không bị ngắt.
 - Bối cảnh: Dịch vụ camera/mic lỗi, mất kết nối hoặc hết hạn mức. Thao tác hoặc sự kiện: Đang ở phòng chờ hoặc đang ván. Kết quả cần có: Ván tiếp tục bình thường, chat vẫn hoạt động, khung hình/tiếng hiện "Camera/mic tạm thời không dùng được", không xử ai thua.
+- Hạ tầng đã chọn: LiveKit mã nguồn mở tự chạy bằng Docker cho phát triển và trình diễn cùng mạng; LiveKit Cloud gói miễn phí dự phòng khi trình diễn qua Internet, web và máy chủ ứng dụng chạy Render. Không chạy LiveKit trên Render; trình diễn cùng mạng cần web qua HTTPS, đổi môi trường bằng cấu hình và kiểm chứng thực tế.
 
 **Việc cần làm**
 
-- Lập bảng ai được phát/nhận theo vai trò và mức chia sẻ, lỗi thiết bị/quyền truy cập, đổi thẻ trình duyệt, rời ghế và sự cố dịch vụ.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu quyền phát/nhận với vai trò và mức chia sẻ, chuyển thẻ/rời ghế, lỗi thiết bị và lỗi dịch vụ; chuẩn bị kiểm chứng hạ tầng tự chạy và phương án dự phòng đã chọn.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát camera/mic mặc định tắt, ba mức chia sẻ, thu hồi quyền và lỗi độc lập bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ camera/mic mặc định tắt, ba mức chia sẻ, thu hồi quyền và lỗi độc lập; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -6342,6 +6602,7 @@ Không ghi hình, ghi âm hoặc lưu nội dung truyền; người xem chỉ nh
 | Component chính | BE |
 | Components | BE, Camera và mic |
 | Labels | sprint-3, phat-trien, p1, chinh-be, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 1.8, 4.1, 4.2 |
 
 
 **Description**
@@ -6368,6 +6629,7 @@ LiveKit là dịch vụ chuyển âm thanh và hình ảnh trực tiếp giữa 
 - Tích hợp cấp giấy phép theo tài khoản, phòng và vai trò hiện tại; kiểm quyền lại khi trạng thái thay đổi.
 - Cung cấp thao tác cho giao diện bật/tắt, đổi chia sẻ và nhận lỗi rõ ràng.
 - Kiểm máy chủ bằng người chơi/người xem thật, gồm giả yêu cầu phát trái quyền, rời phòng, đổi vai và đổi thẻ trình duyệt.
+- Lập và chạy bảng người phát/người nhận cho ba mức chia sẻ, hai thiết bị bật/tắt độc lập và vai trò trước/sau rời ghế; đo từ thao tác tới khi phía nhận thực sự đổi luồng.
 
 **Kết quả bàn giao**
 
@@ -6376,6 +6638,9 @@ LiveKit là dịch vụ chuyển âm thanh và hình ảnh trực tiếp giữa 
 **Điều kiện hoàn thành**
 
 - Người không được phép không nhận hoặc phát được luồng; lỗi truyền hình/tiếng không kết thúc ván.
+- Không chia sẻ chặn cả đối thủ và người xem; Chỉ đối thủ chặn người xem; Cả đối thủ và người xem nhận được đúng người chơi đã bật thiết bị.
+- Chuyển mức chia sẻ và bật/tắt có hiệu lực không quá 2 giây; chuyển từ phòng chờ vào ván không ngắt luồng đang hợp lệ.
+- Dịch vụ lỗi trả trạng thái Camera/mic tạm thời không dùng được cho giao diện, trong khi nước đi, đồng hồ và chat vẫn hoạt động.
 
 **Phạm vi và phối hợp**
 
@@ -6405,6 +6670,7 @@ Không dựng khung video hoặc nút giao diện. Thử đầu-cuối trên mà
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Camera và mic |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, camera-va-mic |
+| Nguồn đặc tả (BA / AC) | 0.13, 0.14, 0.16, 1.8, 4.1 |
 
 
 **Description**
@@ -6428,6 +6694,7 @@ Dùng hai máy cho hai người chơi và thêm điện thoại hoặc máy khá
 
 **Việc cần làm**
 
+- Lập bảng cho mỗi người phát, trạng thái camera/mic và ba mức chia sẻ; ghi người phải nhận/không được nhận cùng thời điểm thao tác và thời điểm bên nhận đổi trạng thái để đo trên hai phía.
 - Viết tình huống cho từng người nhận, mức chia sẻ và trạng thái thiết bị; ghi mốc đổi để đo thời gian.
 - Thử giao diện thật và kiểm quyền phía máy chủ; lưu ảnh/video cùng số đo.
 - Ghi rõ môi trường, thiết bị và trường hợp chưa thể thử; kiểm lại lỗi sau sửa.
@@ -6439,6 +6706,7 @@ Dùng hai máy cho hai người chơi và thêm điện thoại hoặc máy khá
 **Điều kiện hoàn thành**
 
 - Các nhánh được giao đều đạt; không đánh dấu đạt nếu chỉ thử một người chơi hoặc chỉ kiểm nút giao diện.
+- Có bằng chứng riêng cho từng nút camera/mic và đổi mức chia sẻ trong 2 giây; lỗi hoặc hết hạn mức media giữ nguyên kết quả ván, đồng hồ và chat. Không dùng ngưỡng 2 giây này làm ngưỡng thu hồi sau đuổi.
 
 **Phạm vi và phối hợp**
 
@@ -6466,39 +6734,40 @@ Thu hồi luồng khi bị đuổi hoặc đổi từ ghế xuống xem được
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Luật cờ, Bàn cờ, Máy cờ |
 | Labels | EP-08, dac-ta, p1, luat-co, ban-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.1, 0.9, 0.17, 6.1, 6.3, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Thống nhất chế độ luyện tập với máy ở ba mức Dễ, Trung bình, Khó và tiêu chí chứng minh máy hoạt động đúng.
+Bàn giao bộ đặc tả đã duyệt về ván với máy, ba cấp độ và hồ sơ chất lượng; bảo đảm các đặc tả thành phần nhất quán khi triển khai.
 
 **Bối cảnh công việc**
 
-Người chơi chọn phe Đỏ, Đen hoặc Ngẫu nhiên; ván không có đồng hồ. Máy dùng cùng luật với ván trực tuyến, có giới hạn suy nghĩ và cách xử lý sự cố rõ ràng. Phần việc đặc tả tổng thể là chốt phạm vi và sự nhất quán của các đặc tả thuộc nhóm chức năng này.
+Người chơi chọn phe Đỏ, Đen hoặc Ngẫu nhiên; ván không có đồng hồ. Máy dùng cùng luật với ván trực tuyến, có giới hạn suy nghĩ và cách xử lý sự cố rõ ràng. Các quyết định sản phẩm đã có hiệu lực; nhóm chức năng này tổng hợp và truy vết yêu cầu, không mở một vòng quyết định hoặc duyệt lại phạm vi.
 
 **Yêu cầu cần đáp ứng**
 
-- Đặc tả thiết lập và thao tác ván luyện tập với máy ở ba cấp độ, có lựa chọn phe.
-- Đặc tả máy cờ ba mức khó luôn chọn nước hợp lệ và không làm chậm các ván giữa người với người.
-- Đặc tả việc tiếp tục ván với máy sau mất kết nối, xử lý máy cờ lỗi và chứng minh khác biệt chất lượng ba cấp.
+- Ba cấp Dễ/Trung bình/Khó, chọn Đỏ/Đen/Ngẫu nhiên, Đỏ đi trước, không đồng hồ. Kết thúc kể cả đầu hàng có Ván mới/Về Sảnh; Ván mới mở thiết lập điền sẵn cấp và lựa chọn phe trước đó.
+- Máy dùng luật chung, tách tính toán khỏi điều phối ván online; mục tiêu sâu 2/4/6 nửa nước, ngân sách 300/1.000/3.000 mili giây, hết ngân sách trả nước tốt nhất đã tìm được.
+- Ván với máy chỉ giữ trong bộ nhớ; sau mất kết nối/đóng thẻ, quay lại trong 30 phút thì tiếp tục đúng thế cũ, quá hạn thì bỏ trạng thái. Chờ máy quá 10 giây vẫn giữ ván/thế để Thử lại. Máy chủ khởi động lại không khôi phục giả. Cấp Khó giải đúng 100% bộ chiếu hết ngắn, đo tốc độ và đấu 20 ván mỗi cặp cấp; bằng chứng được thu thập ở công việc kiểm chứng.
 
 **Việc cần làm**
 
-- Xác định người sử dụng, quyền của từng vai trò, điểm bắt đầu và kết thúc của các luồng trong phạm vi bên trên.
-- Duyệt nội dung từng đặc tả thành phần, đối chiếu các chỗ dùng chung dữ liệu hoặc chuyển trạng thái để không có hai cách xử lý mâu thuẫn.
-- Thống nhất điều kiện nghiệm thu với người phụ trách sản phẩm; bảo đảm mỗi yêu cầu có công việc triển khai, người kiểm và bằng chứng dự kiến.
+- Đối chiếu các đặc tả thành phần về ván với máy, ba cấp độ và hồ sơ chất lượng với quyết định hiện hành; kiểm đầy đủ luồng, quyền, giới hạn và ngoại lệ nêu trên.
+- Rà các điểm giao với nhóm chức năng khác, gắn yêu cầu với công việc triển khai và tình huống kiểm thử; sửa sai lệch theo nguồn nghiệp vụ ưu tiên.
+- Theo dõi độ đầy đủ của hồ sơ thành phần và bằng chứng phải bổ sung; mâu thuẫn chưa giải được theo thứ tự ưu tiên nguồn cần báo người phụ trách sản phẩm, không tự sửa quyết định đã duyệt.
 
 **Kết quả bàn giao**
 
-- Phạm vi nhóm chức năng và các đặc tả thành phần đã được duyệt, ghi rõ điều kiện, thông báo, giới hạn và ngoại lệ.
-- Danh sách điều kiện nghiệm thu xuyên suốt nhóm chức năng, để người triển khai và kiểm thử không phải tự đoán quy tắc.
+- Bản tổng hợp đối soát ván với máy, ba cấp độ và hồ sơ chất lượng, kèm truy vết tới đặc tả thành phần và quyết định nguồn.
+- Danh sách điểm giao, tình huống nghiệm thu và sai lệch cần xử lý; bằng chứng kỹ thuật được quản lý tại công việc triển khai/kiểm chứng liên quan.
 
 **Điều kiện hoàn thành**
 
-- Tất cả đặc tả thành phần đáp ứng yêu cầu trong phạm vi; các luồng nối nhau nhất quán và không còn quyết định sản phẩm chưa chốt làm cản trở triển khai.
-- Người phụ trách sản phẩm xác nhận đặc tả. Chức năng chỉ được ghi nhận đạt sau khi các công việc triển khai và kiểm thử có bằng chứng riêng.
+- Các đặc tả thành phần phản ánh đúng ván với máy, ba cấp độ và hồ sơ chất lượng theo yêu cầu bên trên và thống nhất tại các điểm giao.
+- Hồ sơ hoàn tất theo đặc tả thành phần cuối cùng, không yêu cầu người phụ trách sản phẩm duyệt lại quy tắc đã chốt. Kết quả chạy phần mềm và kiểm thử chỉ được ghi nhận khi có bằng chứng riêng.
 
 **Phạm vi và phối hợp**
 
@@ -6528,17 +6797,18 @@ Không thêm xin hòa, đi lại, gợi ý nước, lịch sử ván với máy 
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | FE, BE, QA & DevOps, Bàn cờ, Máy cờ |
 | Labels | dac-ta, EP-08, p1, ban-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.9, 6.1, 6.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả thiết lập và thao tác ván luyện tập với máy ở ba cấp độ, có lựa chọn phe.
+Bàn giao đặc tả thiết lập và thao tác ván luyện tập với máy ở ba cấp độ, có lựa chọn phe theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Ván với máy không giới hạn thời gian. Đỏ đi trước; người chọn Đen nhìn bàn cờ lật và chờ máy đi nước đầu. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Ván với máy không giới hạn thời gian. Đỏ đi trước; người chọn Đen nhìn bàn cờ lật và chờ máy đi nước đầu. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -6552,19 +6822,19 @@ Ván với máy không giới hạn thời gian. Đỏ đi trước; người ch
 
 **Việc cần làm**
 
-- Mô tả hộp thiết lập, bắt đầu, hiển thị trong ván, đầu hàng, kết quả, ván mới và quay về Sảnh.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát thiết lập, lượt đầu của Đỏ, hướng bàn khi cầm Đen, đầu hàng và hộp kết quả; giữ lựa chọn cấp/phe cũ khi mở Ván mới.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát ba cấp, chọn phe, không đồng hồ và Ván mới sau kết thúc bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ ba cấp, chọn phe, không đồng hồ và Ván mới sau kết thúc; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -6594,6 +6864,7 @@ Không thêm xin hòa, đi lại, gợi ý nước đi hoặc lưu lịch sử v
 | Component chính | BE |
 | Components | BE, Máy cờ |
 | Labels | sprint-2, phat-trien, p1, chinh-be, may-co |
+| Nguồn đặc tả (BA / AC) | 0.9, 0.11, 1.8, 6.1, 6.3, 10.1 |
 
 
 **Description**
@@ -6613,12 +6884,14 @@ Người dùng luyện cờ một mình với máy. Thư viện luật và bộ 
 - Không áp đồng hồ thi đấu cho người chơi và không có chức năng xin hoà. Có đầu hàng; đầu hàng kết thúc ván với người chơi thua. Điều kiện kết thúc theo luật cờ chung vẫn được áp dụng.
 - Khi ván kết thúc, cung cấp dữ liệu để giao diện hiện Ván mới hoặc Về Sảnh. Ván mới mở lại lựa chọn cấp độ và lựa chọn phe trước đó, cho phép đổi trước khi bắt đầu; tạo mã ván mới, không hồi sinh ván đã xong.
 - Giữ riêng lựa chọn Ngẫu nhiên ban đầu và phe thực tế đã bốc để điền đúng khi tạo ván tiếp theo. Trạng thái ván đấu với máy trong phiên bản này chỉ giữ trong bộ nhớ máy chủ, không có lịch sử ván dành cho người dùng.
+- Trước tạo ván kiểm danh tính và vị trí chơi hiện có, không cho người đang ngồi ghế online hoặc có ván máy khác tạo vị trí thứ hai.
 
 **Việc cần làm**
 
 - Tạo thao tác bắt đầu ván, nhận nước người, yêu cầu máy tìm nước và chốt kết quả.
 - Kết nối việc đầu hàng và tạo ván mới, bảo đảm không gửi nước máy vào ván đã kết thúc.
 - Viết kiểm thử cả ba lựa chọn phe, nước đầu của máy, kết thúc và tạo lại ván có mã khác.
+- Gắn kết quả tìm nước với đúng ván và trạng thái đang chờ máy; huỷ tác vụ khi đầu hàng, bỏ kết quả đến muộn để không áp nước vào ván đã kết thúc hoặc ván mới.
 
 **Kết quả bàn giao**
 
@@ -6627,6 +6900,8 @@ Người dùng luyện cờ một mình với máy. Thư viện luật và bộ 
 **Điều kiện hoàn thành**
 
 - Đúng lượt đầu theo phe; ván mới có danh tính mới; người dùng không thể điều khiển ván của người khác.
+- Đầu hàng khi máy đang tính cho người chơi thua, giải phóng vị trí chơi và không nhận nước máy muộn.
+- Lựa chọn Ngẫu nhiên được giữ để điền thiết lập ván tiếp theo dù phe thực tế ván trước là Đỏ hoặc Đen; bắt đầu lại tạo mã mới.
 
 **Phạm vi và phối hợp**
 
@@ -6656,6 +6931,7 @@ Giữ ván khi mất mạng và xử lý Thử lại sau lỗi máy được th�
 | Component chính | FE |
 | Components | FE, Bàn cờ, Máy cờ |
 | Labels | sprint-3, phat-trien, p1, chinh-fe, ban-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3 |
 
 
 **Description**
@@ -6678,6 +6954,7 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 
 **Việc cần làm**
 
+- Nhận dữ liệu cấp độ, lựa chọn phe, phe thực tế, mã ván, lượt, trạng thái và lỗi từ dịch vụ ván máy; lưu riêng lựa chọn Ngẫu nhiên để điền lại khi bấm Ván mới, không suy ngược lựa chọn từ phe đã bốc.
 - Dựng hộp chọn và màn bàn cờ tinh gọn, nối thao tác người chơi với dịch vụ ván máy.
 - Dựng các trạng thái đang nghĩ, lỗi, thử lại, kết quả và quay về Sảnh; giữ nhãn lượt và thao tác rõ trên điện thoại.
 - Kiểm luồng bình thường bằng máy cờ thật; kiểm hình thức trạng thái lỗi theo dữ liệu phản hồi trước khi thử sự cố thật.
@@ -6685,10 +6962,12 @@ Người chơi luyện cờ một mình. Máy chủ quyết định phe ngẫu n
 **Kết quả bàn giao**
 
 - Giao diện đấu máy đầy đủ, gồm kết quả và sự cố/Thử lại.
+- Bảng ánh xạ phản hồi ván máy sang trạng thái giao diện và bằng chứng ba nhánh sự cố.
 
 **Điều kiện hoàn thành**
 
 - Đúng người đi đầu và hướng bàn; ván mới dùng lựa chọn được xác nhận; thử lại không nhân đôi nước người.
+- Cùng một ca quá 10 giây phải giữ mã ván/thế/lượt khi Thử lại; ca đã Bỏ dở phải tạo mã mới và giữ phe thực tế. Máy chủ mất trạng thái phải hiện đúng thông báo, không dựng lại ván từ màn hình cũ.
 
 **Phạm vi và phối hợp**
 
@@ -6718,6 +6997,7 @@ Giao diện không tự quyết định phục hồi ván. Hành vi sự cố th
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Bàn cờ, Máy cờ |
 | Labels | sprint-3, kiem-thu, p1, chinh-qa-devops, ban-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.9, 6.1, 6.3 |
 
 
 **Description**
@@ -6741,6 +7021,7 @@ Chuẩn bị tài khoản chính thức và phiên Khách, dùng máy cờ thậ
 
 **Việc cần làm**
 
+- Lập bảng chín tổ hợp cấp độ và lựa chọn phe, kèm mã ván, phe thực tế, lượt đầu và hướng bàn; tách ca Ván mới sau đầu hàng khỏi ca Thử lại sau lỗi để dùng đúng kỳ vọng.
 - Viết các tình huống cho cả ba cấp và ba lựa chọn phe, thêm kết thúc do đầu hàng và kết thúc theo luật.
 - Quan sát giao diện và phản hồi máy chủ để xác minh lượt, phe và mã ván; ghi dữ liệu các lần bốc ngẫu nhiên.
 - Lưu bằng chứng, phân loại đạt/không đạt/chưa thể kiểm và kiểm lại lỗi sau sửa.
@@ -6752,6 +7033,7 @@ Chuẩn bị tài khoản chính thức và phiên Khách, dùng máy cờ thậ
 **Điều kiện hoàn thành**
 
 - Đúng lượt đầu, hướng bàn và giá trị điền lại; mỗi ván mới có danh tính riêng.
+- Giá trị Ngẫu nhiên vẫn được điền lại là Ngẫu nhiên sau ván, không thành Đỏ/Đen theo kết quả bốc trước. Báo số lần thử và phân bố phe thực tế, không tự đặt ngưỡng thống kê mới ngoài yêu cầu 50/50.
 
 **Phạm vi và phối hợp**
 
@@ -6781,17 +7063,18 @@ Không dùng kết quả này để khẳng định máy cấp Khó đủ mạnh
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, Luật cờ, Máy cờ |
 | Labels | dac-ta, EP-08, p1, luat-co, may-co |
+| Nguồn đặc tả (BA / AC) | 6.1, 6.3, 10.1 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả máy cờ ba mức khó luôn chọn nước hợp lệ và không làm chậm các ván giữa người với người.
+Bàn giao đặc tả máy cờ ba mức khó luôn chọn nước hợp lệ và không làm chậm các ván giữa người với người theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Máy dùng cùng thư viện luật cờ với hệ thống, tăng dần độ sâu tìm kiếm và có giới hạn thời gian theo cấp. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Máy dùng cùng thư viện luật cờ với hệ thống, tăng dần độ sâu tìm kiếm và có giới hạn thời gian theo cấp. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -6802,19 +7085,19 @@ Máy dùng cùng thư viện luật cờ với hệ thống, tăng dần độ s
 
 **Việc cần làm**
 
-- Mô tả cách chọn nước, nước dự phòng khi hết thời gian, cách tách xử lý máy cờ khỏi máy chủ chính và bàn giao số đo ban đầu.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối chiếu cách chọn nước và phương án trả nước khi hết ngân sách với luật dùng chung; giữ mục tiêu 2/4/6 nửa nước và 300/1.000/3.000 mili giây để triển khai và đo thực tế.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát máy đi hợp lệ, độ sâu/ngân sách ba cấp và tách xử lý khỏi ván online bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ máy đi hợp lệ, độ sâu/ngân sách ba cấp và tách xử lý khỏi ván online; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
 
 **Phạm vi và phối hợp**
 
@@ -6844,6 +7127,7 @@ Chất lượng cấp Khó và khả năng khôi phục sau lỗi được xác 
 | Component chính | BE |
 | Components | BE, Luật cờ, Máy cờ |
 | Labels | sprint-1, phat-trien, p1, chinh-be, luat-co, may-co |
+| Nguồn đặc tả (BA / AC) | 6.1, 6.3, 10.1 |
 
 
 **Description**
@@ -6879,6 +7163,7 @@ Máy cờ tự viết dùng chung bộ luật với online. Tìm kiếm chạy r
 - Gói máy cờ trong packages/engine gọi được từ máy chủ.
 - Bộ kiểm nước hợp lệ và giới hạn thời gian.
 - Báo cáo đo đầu tiên phục vụ tối ưu.
+- Bảng từng thế/cấp với nước hợp lệ, độ sâu hoàn tất, thời gian phản hồi; tổng hợp thời gian mà 95% lượt đo không vượt quá, đối chiếu mục tiêu 300/1.000/3.000 mili giây.
 
 **Điều kiện hoàn thành**
 
@@ -6886,6 +7171,7 @@ Máy cờ tự viết dùng chung bộ luật với online. Tìm kiếm chạy r
 - Ép ngân sách ngắn vẫn lấy được nước hợp lệ tốt nhất đã lưu khi có nước để đi.
 - Tìm kiếm chạy riêng, không khóa đường xử lý chính.
 - Báo cáo có thời gian và độ sâu thực, không ghi đạt chỉ vì đã cấu hình độ sâu 6.
+- Thế đã kết thúc hoặc không có nước hợp lệ trả trạng thái kết thúc rõ ràng thay vì nước giả; lỗi tác vụ được trả cho máy chủ để luồng ván xử lý.
 
 **Phạm vi và phối hợp**
 
@@ -6915,17 +7201,18 @@ Bàn giao máy cờ và số đo đầu cho phần tích hợp, tối ưu và ki
 | Component chính | Tổng hợp phạm vi các Task |
 | Components | BE, QA & DevOps, Luật cờ, Máy cờ |
 | Labels | dac-ta, EP-08, p1, luat-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.1, 0.17, 6.1, 6.3 |
 
 
 **Description**
 
 **Mục tiêu**
 
-Đặc tả việc tiếp tục ván với máy sau mất kết nối, xử lý máy cờ lỗi và chứng minh khác biệt chất lượng ba cấp.
+Bàn giao đặc tả việc tiếp tục ván với máy sau mất kết nối, xử lý máy cờ lỗi và chứng minh khác biệt chất lượng ba cấp theo quy tắc đã duyệt.
 
 **Bối cảnh công việc**
 
-Trạng thái ván với máy chỉ giữ trong bộ nhớ. Việc chờ máy quá lâu khác với ván đã mất trạng thái hoặc đã bị bỏ dở. Phần việc này hoàn thiện và thống nhất đặc tả để người triển khai và người kiểm thử có cùng cách hiểu.
+Trạng thái ván với máy chỉ giữ trong bộ nhớ. Việc chờ máy quá lâu khác với ván đã mất trạng thái hoặc đã bị bỏ dở. Quy tắc và tiêu chí dưới đây là đầu vào đã được duyệt; phần việc này duy trì truy vết và kiểm tính nhất quán khi bàn giao triển khai.
 
 **Yêu cầu cần đáp ứng**
 
@@ -6941,19 +7228,21 @@ Trạng thái ván với máy chỉ giữ trong bộ nhớ. Việc chờ máy qu
 
 **Việc cần làm**
 
-- Lập bảng tiếp tục/thử lại/tạo mới, xử lý bấm trùng và rời ván; chốt bộ thế có đáp án, cách đo tốc độ và cách so sánh cấp độ.
-- Viết rõ điều kiện bắt đầu, người được thực hiện, kết quả thành công, trường hợp bị từ chối và cách khôi phục sau lỗi cho từng yêu cầu bên trên.
-- Đối chiếu nội dung với thiết kế màn hình và phần việc liên quan; sửa mọi điểm khác nhau trước khi bàn giao. Chuẩn bị ví dụ dữ liệu và tình huống kiểm tra cho từng nhánh.
+- Đối soát tiếp tục/thử lại/tạo mới và rời ván; chuẩn bị bộ thế có đáp án độc lập cùng quy trình đo tốc độ, giải chiếu hết và đấu 20 ván mỗi cặp cấp theo ngưỡng đã duyệt.
+- Gắn từng yêu cầu với tình huống kiểm thử và công việc triển khai tương ứng; đối chiếu thiết kế màn hình với đặc tả nghiệp vụ, ưu tiên quyết định hiện hành khi tài liệu cũ khác nhau.
+- Ghi nhận sai lệch và chuyển về đúng quyết định đã duyệt; nếu phát hiện mâu thuẫn chưa thể giải quyết bằng thứ tự ưu tiên tài liệu thì báo người phụ trách sản phẩm, không tự đổi phạm vi hoặc ngưỡng nghiệm thu.
 
 **Kết quả bàn giao**
 
-- Bản đặc tả đã thống nhất, bao gồm luồng thao tác hoặc xử lý, dữ liệu đầu vào, thông báo và bảng quy tắc cần áp dụng.
-- Danh sách tình huống nghiệm thu gắn với từng yêu cầu, đủ thông tin để người khác triển khai và kiểm thử.
+- Hồ sơ đối soát giữ ván 30 phút, Thử lại cùng thế, lỗi mất trạng thái và chất lượng cấp Khó bám đặc tả đã duyệt, kèm thông báo, ngoại lệ và nguồn truy vết.
+- Danh sách tình huống nghiệm thu tương ứng và các sai lệch cần sửa trong tài liệu hoặc công việc triển khai.
+- Hồ sơ bằng chứng được bổ sung từ công việc kiểm chứng cuối cùng: môi trường, ngày đo, người đo, kết quả thực tế, lỗi và các chỉ tiêu chưa đạt.
 
 **Điều kiện hoàn thành**
 
-- Mọi yêu cầu bên trên đều có cách xử lý cụ thể; không còn chỗ trống làm người thực hiện phải tự quyết luật sản phẩm.
-- Người phụ trách sản phẩm duyệt nội dung; người triển khai và người kiểm thử xác nhận hiểu đầu vào, kết quả và trường hợp lỗi. Đây là xác nhận đặc tả, chưa phải bằng chứng tính năng đã chạy đạt.
+- Hồ sơ phản ánh đầy đủ giữ ván 30 phút, Thử lại cùng thế, lỗi mất trạng thái và chất lượng cấp Khó; mọi yêu cầu bên trên truy được tới quy tắc đã duyệt và tình huống kiểm thử tương ứng.
+- Các phần giao nhau với chức năng liên quan nhất quán; việc hoàn tất hồ sơ không yêu cầu duyệt lại quyết định nghiệp vụ và không chứng minh phần mềm đã chạy đạt.
+- Ngưỡng nghiệm thu giữ nguyên trước thi công; hồ sơ bằng chứng chỉ đóng khi công việc kiểm chứng cuối cùng cung cấp đủ kết quả, chỉ tiêu chưa đạt ghi rõ Chưa thể nghiệm thu, không hạ ngưỡng để đóng hồ sơ.
 
 **Phạm vi và phối hợp**
 
@@ -6983,6 +7272,7 @@ Không khôi phục giả sau máy chủ khởi động lại và không dùng t
 | Component chính | BE |
 | Components | BE, Luật cờ, Máy cờ |
 | Labels | sprint-2, phat-trien, p1, chinh-be, luat-co, may-co |
+| Nguồn đặc tả (BA / AC) | 6.1, 6.3, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 
 **Description**
@@ -7003,6 +7293,7 @@ Bộ máy chọn nước đã có; bộ 50 thế giữa ván và bộ chiếu h�
 
 **Việc cần làm**
 
+- Đọc kết quả đo nền và cấu hình bộ máy hiện có; chạy lại cùng bộ thế trước khi chỉnh để xác định thế chậm/sai. Gắn mỗi thay đổi với kết quả trước/sau trên cùng dữ liệu và máy, giữ đáp án độc lập của bộ chiếu hết.
 - Điều chỉnh cách chấm điểm thế cờ, thứ tự thử nước và loại nhánh không cần thiết; giữ các kiểm thử luật để việc tăng tốc không làm sai nước.
 - Chạy cùng bộ 50 thế ở mỗi cấp trên máy trình diễn. Lưu thời gian từng lần, độ sâu đạt được, nước trả về, cấu hình máy và phiên bản phần mềm.
 - Tính mốc thời gian mà ít nhất 95% lượt đo không vượt quá, đối chiếu lần lượt 300, 1.000 và 3.000 mili giây. Chạy lại bộ chiếu hết và các cặp đấu máy, giữ dữ liệu thô để người kiểm thử đối chiếu.
@@ -7016,6 +7307,7 @@ Bộ máy chọn nước đã có; bộ 50 thế giữa ván và bộ chiếu h�
 
 - Ngưỡng thời gian, tính hợp lệ, bộ chiếu hết và phân biệt sức chơi có bằng chứng đáp ứng; không chỉ nêu “cảm giác nhanh hơn”.
 - Nếu chưa đạt, ghi đúng điểm chưa đạt và tác động để người phụ trách sản phẩm xử lý, không tự hạ mục tiêu hoặc tuyên bố hoàn tất.
+- Báo cáo liệt kê riêng số thế chiếu hết bắt buộc đúng/tổng và bộ mở rộng nếu có; không áp yêu cầu 100% chiếu hết của cấp Khó cho cấp Dễ/Trung bình.
 
 **Phạm vi và phối hợp**
 
@@ -7045,6 +7337,7 @@ Không xây giao diện báo lỗi hoặc tự tạo đáp án để chấm chí
 | Component chính | BE |
 | Components | BE, Máy cờ |
 | Labels | sprint-3, phat-trien, p1, chinh-be, may-co |
+| Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3 |
 
 
 **Description**
@@ -7067,6 +7360,7 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 
 **Việc cần làm**
 
+- Lưu mã ván, cấp độ, lựa chọn phe, phe thực tế, thế/lượt và mã tác vụ máy trong bộ nhớ; khi nhận tiếp tục/Thử lại, trả trạng thái đủ để giao diện phân biệt còn ván, đang tính, quá thời gian chờ, đã Bỏ dở hoặc mất trạng thái.
 - Quản lý thời hạn giữ ván và tác vụ tính nước cùng danh tính người chơi. Kiểm quyền mỗi yêu cầu tiếp tục hoặc thử lại, không chỉ kiểm đường dẫn ván.
 - Phân biệt quá thời gian chờ, lỗi tác vụ và ván đã bỏ dở để trả kết quả đủ cho giao diện báo đúng hậu quả.
 - Viết kiểm thử ngắt mạng trước, trong và sau lượt máy; quay lại trong hoặc quá hạn; gửi thử lại trùng; rời ván lúc máy đang nghĩ; máy chủ khởi động lại.
@@ -7076,11 +7370,13 @@ Ván với máy chỉ lưu trạng thái đang chơi trong bộ nhớ máy chủ
 
 - Xử lý phía máy chủ về giữ ván, thử lại, huỷ tác vụ và giải phóng chỗ chơi.
 - Bộ kiểm thử cùng dữ liệu phản hồi cho giao diện sự cố.
+- Dữ liệu mẫu ba nhánh sự cố và bằng chứng kết quả tác vụ cũ đến muộn bị bỏ qua.
 
 **Điều kiện hoàn thành**
 
 - Ván còn hạn được tiếp tục đúng thế; ván mất trạng thái không được tiếp tục bằng dữ liệu đoán.
 - Không áp nước trùng, không giữ vị trí chơi sau khi đã đầu hàng; thông báo thử lại phân biệt đúng tiếp tục ván cũ và tạo ván mới.
+- Thử lại ván đã Bỏ dở kiểm lại quyền và một vị trí chơi trước tạo mã mới; không bốc lại phe thực tế. Về Sảnh hoặc tạo ván mới sau restart không tự tạo lịch sử ván với máy.
 
 **Phạm vi và phối hợp**
 
@@ -7110,6 +7406,7 @@ Không làm lại giao diện thông báo hoặc điều chỉnh sức chơi c�
 | Component chính | QA & DevOps |
 | Components | QA & DevOps, Luật cờ, Máy cờ |
 | Labels | sprint-4, kiem-thu, p1, chinh-qa-devops, luat-co, may-co |
+| Nguồn đặc tả (BA / AC) | 0.9, 0.17, 6.1, 6.3, BACKLOG-P1.md §6, BACKLOG-P1.md §7 |
 
 
 **Description**
@@ -7128,11 +7425,12 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 - Khi máy cờ không phản hồi quá 10 giây, hiện “Máy cờ gặp sự cố” và Thử lại; giữ nguyên mã ván, bàn cờ, lượt và phe, không chuyển Bỏ dở chỉ vì hết thời gian chờ. Thử lại yêu cầu máy tính nước trên cùng thế, không gửi lại nước người chơi. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế, không bốc lại phe ngẫu nhiên.
 - Bấm Thử lại liên tiếp chỉ xử lý một lần. Khởi động lại máy chủ thì hiện “Ván không còn trạng thái để tiếp tục”, cho về Sảnh hoặc tạo ván mới, không khôi phục giả.
 - Rời ván/Đăng xuất chủ động phải xác nhận đầu hàng; Đồng ý kết thúc, huỷ tác vụ máy và giải phóng vị trí; Huỷ giữ nguyên.
-- Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; thời gian tại mốc 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.
+- Đo 50 thế giữa ván ở mỗi cấp trên máy demo: độ sâu mục tiêu Dễ/Trung bình/Khó là 2/4/6; mốc thời gian mà ít nhất 95% mẫu không vượt quá phải không quá 300/1.000/3.000 mili giây tương ứng. Ghi độ sâu thực, không chỉ cấu hình.
 - Cấp Khó giải đúng 100% bộ chiếu hết một và hai nước bắt buộc có đáp án độc lập. Đấu 20 ván mỗi cặp cấp liền nhau: Khó thắng Trung bình và Trung bình thắng Dễ ở đa số ván, ghi thắng/hoà/thua.
 
 **Việc cần làm**
 
+- Lập bảng ba lỗi độc lập: quá 10 giây nhưng còn ván, lỗi thực sự đã Bỏ dở và máy chủ khởi động lại mất ván; ghi mã ván/cấp/phe/thế/lượt trước và sau Thử lại, đồng thời cho tác vụ cũ trả kết quả muộn.
 - Chuẩn bị máy demo và bộ thế có đáp án độc lập; ghi bản phần mềm, thiết bị và cấu hình cho mọi phép đo.
 - Kiểm mất mạng trước/trong/sau lượt máy, quay lại trước/sau 30 phút; gây lỗi tìm nước và thử bấm Thử lại nhiều lần.
 - Khởi động lại máy chủ, rời hoặc đăng xuất khi máy đang nghĩ; kiểm không áp nước cũ hay giữ vị trí sau đầu hàng.
@@ -7149,6 +7447,7 @@ Dùng máy dự kiến trình diễn, bộ 50 thế giữa ván và bộ chiếu
 
 - Mọi tình huống nêu trên có kết quả đúng và bằng chứng lặp lại được; sai quyền, sai kết quả hoặc sai hạn thời gian phải ghi Không đạt, chưa được kết luận hoàn tất.
 - Thiếu thiết bị, thiếu dữ liệu hoặc lỗi của phần tích hợp phải ghi rõ là Chưa kiểm được; việc người phụ trách biết vấn đề không thay thế kết quả đạt.
+- Không đổi ván khi chỉ quá thời gian chờ; tạo mã mới giữ phe thực tế khi đã Bỏ dở; restart không khôi phục giả. Báo đủ thời gian từng mẫu và độ sâu thực, kết quả chiếu hết bắt buộc cùng số thắng/hoà/thua của 20 ván mỗi cặp.
 
 **Phạm vi và phối hợp**
 
