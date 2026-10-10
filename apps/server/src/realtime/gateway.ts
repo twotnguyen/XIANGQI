@@ -29,6 +29,7 @@ export function attachRealtime(
     socket: PeerSocket;
     connection: RealtimeConnection;
     token: string;
+    appSession: string;
     version: number;
     generation: number;
   };
@@ -39,7 +40,10 @@ export function attachRealtime(
   const peers = new Map<string, Peer>();
   async function authorize(peer: Peer) {
     try {
-      const current = await dependencies.identities.resolve(peer.token);
+      const current = await dependencies.identities.resolve(
+        peer.token,
+        peer.appSession,
+      );
       if (uuid(current.userId) !== peer.connection.identity.userId)
         throw new Error();
       return { ...peer.connection, identity: current };
@@ -113,7 +117,10 @@ export function attachRealtime(
       const handshake = parseHandshake(socket.handshake.auth as unknown);
       let identity;
       try {
-        identity = await dependencies.identities.resolve(handshake.accessToken);
+        identity = await dependencies.identities.resolve(
+          handshake.accessToken,
+          handshake.appSession,
+        );
       } catch {
         throw new RealtimeError(
           "AUTH_REQUIRED",
@@ -131,6 +138,7 @@ export function attachRealtime(
         socket,
         connection,
         token: handshake.accessToken,
+        appSession: handshake.appSession,
         version: -1,
         generation: -1,
       });

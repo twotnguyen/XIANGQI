@@ -71,6 +71,7 @@ export interface EngineFailureEvent {
 }
 export interface RealtimeHandshake {
   accessToken: string;
+  appSession: string;
   roomId: string;
   tabId: string;
 }
