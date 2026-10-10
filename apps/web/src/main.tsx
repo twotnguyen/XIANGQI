@@ -2,6 +2,7 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
 import "./style.css";
+import { BoardPreview } from "./components/BoardPreview.js";
 
 function App() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
@@ -50,8 +51,17 @@ function App() {
   );
 }
 
+const previewBoard = window.location.pathname === "/dev/board";
+if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    {previewBoard ? (
+      <main className="board-preview-page">
+        <BoardPreview />
+      </main>
+    ) : (
+      <App />
+    )}
   </StrictMode>,
 );
