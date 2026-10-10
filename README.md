@@ -4,7 +4,7 @@
 
 Đây là đồ án môn **Quản trị Dự án Công nghệ Thông tin**, thực hiện từ phân tích yêu cầu khách hàng đến lập kế hoạch, xây dựng và nghiệm thu sản phẩm.
 
-> **Đang chuẩn bị triển khai.** Repo hiện có đặc tả, mockup, kế hoạch và cấu hình dịch vụ; chưa có ứng dụng web/server hoàn chỉnh để chạy. Phạm vi P1 được lập kế hoạch **880 giờ**, hạn **04/11/2026**. Xem [kế hoạch và tiến độ](KE-HOACH-JIRA.md).
+> **Đang chuẩn bị triển khai.** Repo có bộ khung React/Vite và NestJS/Socket.IO chạy cục bộ; các tính năng P1 chưa hoàn chỉnh. Phạm vi P1 được lập kế hoạch **880 giờ**, hạn **04/11/2026**. Xem [kế hoạch và tiến độ](KE-HOACH-JIRA.md).
 
 [Chuẩn bị môi trường](CAU-HINH-MOI-TRUONG.md) · [Đặc tả P1](BACKLOG-P1.md) · [Mockup](mockups/index.html) · [Jira XIAN](https://xiangqi-web.atlassian.net/jira/software/c/projects/XIAN/boards/38)
 
@@ -62,11 +62,36 @@ chmod 600 .env apps/web/.env apps/server/.env
 
 Khóa thật không đi kèm repo. Nhận thông tin cần thiết qua kênh riêng của nhóm hoặc dùng dự án dịch vụ riêng. `SUPABASE_ACCESS_TOKEN` là tùy chọn cho công cụ quản trị.
 
-### 3. Chuẩn bị media và xem giao diện
+### 3. Chạy bộ khung ứng dụng
+
+Dùng Node.js 22 LTS (tối thiểu 22.13) theo `.node-version` và pnpm 10.34.6 theo `packageManager`. Nếu dùng Corepack: `corepack enable` rồi `corepack install`.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Web ở `http://localhost:5173`, server ở `http://localhost:3000`. Chạy `curl http://localhost:3000/health` để kiểm tra HTTP 200; `server` là `ok`, `database` và `engine` là `not_connected` cho đến khi tích hợp thật. Trang web hiện chỉ hiển thị trạng thái nền tảng, chưa có bàn cờ hay tài khoản. Socket.IO đã gắn vào server nhưng từ chối mọi kết nối đến khi T12 triển khai xác thực.
+
+Server nạp `apps/server/.env`; Vite nạp `apps/web/.env` và chỉ công khai tiền tố `VITE_`. Bộ khung dùng mặc định local khi không có file môi trường; PORT, CORS_ORIGINS và LOG_LEVEL được kiểm tra mà không in giá trị lỗi. Secret của dịch vụ chưa tích hợp không bắt buộc để chạy bộ khung.
+
+```sh
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm format:check
+```
+
+CI chạy lint, typecheck, test và build trên push/PR của `main` và `develop`. `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server dùng `tsx` cả khi chạy bản build (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói.
+
+Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event`; chỉ chấp nhận mã sự kiện cố định và port dạng số, bỏ chuỗi/payload tùy ý để tránh lộ mật khẩu, OTP, token, chat. Ứng dụng không ghi file hay giữ log bền (thời gian lưu trong ứng dụng là 0 ngày). Nếu triển khai bộ thu log ngoài, phải cấu hình xóa sau tối đa 14 ngày; repo chưa triển khai bộ thu log. Biên lai lệnh và việc xóa sau 24 giờ thuộc T12, chưa tồn tại ở bộ khung.
+
+### 4. Chuẩn bị media và xem giao diện
 
 - [Chạy LiveKit bằng Docker và chuyển local/Cloud](infra/livekit/README.md): cần Python 3, Docker và Docker Compose. Kiểm thử nhiều thiết bị LAN cần HTTPS/WSS và cấu hình mạng phù hợp.
 - Mở [mockups/index.html](mockups/index.html) trên máy để xem giao diện tham khảo. Đây là mockup, chưa phải ứng dụng kết nối backend.
-- Bộ khung web/server, phiên bản Node/pnpm và lệnh chạy ứng dụng sẽ được thiết lập ở T01. Hiện chưa có lệnh `pnpm dev` để chạy toàn bộ sản phẩm.
+- `pnpm dev` chạy bộ khung; các kiểm thử nghiệp vụ và media xuyên suốt ứng dụng sẽ được triển khai theo backlog.
 
 ## Tài liệu dự án
 
