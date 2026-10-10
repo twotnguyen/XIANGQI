@@ -158,20 +158,49 @@ it("ignores an old bootstrap result after accepting a new login", async () => {
     ),
   );
   mount();
+  await act(async () => {});
   fireEvent.click(screen.getByText("accept"));
   await act(async () => {
     resolve(reply({}, 401));
   });
   expect(state().status).toBe("active-member");
 });
-it("aborts stale StrictMode bootstrap and unmount requests", async () => {
+it("sends exactly one StrictMode bootstrap refresh, then aborts it on real unmount", async () => {
   const request = vi.fn().mockImplementation(() => new Promise(() => {}));
   vi.stubGlobal("fetch", request);
   const view = mount(true);
-  expect(request).toHaveBeenCalledTimes(2);
-  expect(request.mock.calls[0]![1].signal.aborted).toBe(true);
+  await act(async () => {});
+  expect(request).toHaveBeenCalledTimes(1);
+  expect(request.mock.calls[0]![1].signal.aborted).toBe(false);
   view.unmount();
-  expect(request.mock.calls[1]![1].signal.aborted).toBe(true);
+  expect(request.mock.calls[0]![1].signal.aborted).toBe(true);
+});
+it("never dispatches bootstrap when its initial effect is canceled before the microtask", async () => {
+  const request = vi.fn().mockResolvedValue(reply(session));
+  vi.stubGlobal("fetch", request);
+  const view = mount();
+  view.unmount();
+  await act(async () => {});
+  expect(request).not.toHaveBeenCalled();
+});
+it("cannot install a late successful bootstrap after real unmount", async () => {
+  let resolve!: (response: Response) => void;
+  const request = vi.fn(
+    () =>
+      new Promise<Response>((done) => {
+        resolve = done;
+      }),
+  );
+  vi.stubGlobal("fetch", request);
+  const view = mount();
+  await act(async () => {});
+  expect(request).toHaveBeenCalledTimes(1);
+  view.unmount();
+  await act(async () => {
+    resolve(reply(session));
+  });
+  await expect(current.authorizedFetch("/protected")).rejects.toThrow();
+  expect(request).toHaveBeenCalledTimes(1);
 });
 
 it("refreshes bearer before expiry without changing the fixed application deadline, then expires locally", async () => {
