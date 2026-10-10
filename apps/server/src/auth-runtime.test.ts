@@ -118,3 +118,33 @@ it("checks role membership at startup and closes a ready runtime only once", asy
   await Promise.all([runtime!.close(), runtime!.close()]);
   expect(pool.end).toHaveBeenCalledOnce();
 });
+it("rejects login/session enablement without registration or with invalid flag values", () => {
+  expect(() => readRegistrationConfig({ AUTH_LOGIN_ENABLED: "true" })).toThrow(
+    "Invalid registration configuration",
+  );
+  expect(() =>
+    readRegistrationConfig({ ...configured, AUTH_LOGIN_ENABLED: "yes" }),
+  ).toThrow("Invalid registration configuration");
+});
+it("refuses enabled login until its private session and counter migration exists", async () => {
+  pool.query.mockResolvedValue({
+    rows: [{ ready: true, canAssumeRole: true, loginReady: false }],
+  });
+  await expect(
+    createRegistrationRuntime({ ...configured, AUTH_LOGIN_ENABLED: "true" }),
+  ).rejects.toThrow("Registration migration is not ready");
+  expect(pool.end).toHaveBeenCalledOnce();
+});
+it("isolates nested registration/session work in two pools and closes both once", async () => {
+  pool.query.mockResolvedValue({
+    rows: [{ ready: true, canAssumeRole: true, loginReady: true }],
+  });
+  const runtime = await createRegistrationRuntime({
+    ...configured,
+    AUTH_LOGIN_ENABLED: "true",
+  });
+  expect(pool.construct).toHaveBeenCalledTimes(2);
+  expect(pool.construct.mock.calls[0]).toEqual(pool.construct.mock.calls[1]);
+  await Promise.all([runtime!.close(), runtime!.close()]);
+  expect(pool.end).toHaveBeenCalledTimes(2);
+});
