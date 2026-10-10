@@ -1,0 +1,119 @@
+@font-face {
+  font-family: "XQ Han";
+  src: url("/fonts/xq-han.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-display.ttf") format("truetype");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+.xq-ui {
+  --color-paper: #120d0a;
+  --color-surface: #241610;
+  --color-surface-sunken: #180f0a;
+  --color-ink: #fff5df;
+  --color-ink-muted: #c8b6a2;
+  --color-border: #9a7550;
+  --color-divider: #3d2012;
+  --color-wood: #d8ae72;
+  --color-wood-edge: #704525;
+  --color-red: #a51f25;
+  --color-black: #24201c;
+  --color-focus: #f5ca67;
+  --color-gold: #c6922a;
+  --color-gold-light: #f5ca67;
+  --color-gold-dark: #7a4e0f;
+  --color-success: #86efac;
+  --color-warning: #fcd34d;
+  --color-danger: #fca5a5;
+  --color-info: #93c5fd;
+  --color-success-bg: #152e1b;
+  --color-warning-bg: #3a240e;
+  --color-danger-bg: #3c1412;
+  --color-info-bg: #142236;
+  --color-btn-primary-bg: #c6922a;
+  --color-btn-primary-fg: #120d0a;
+  --color-btn-danger-bg: #8e161c;
+  --color-btn-danger-fg: #ffffff;
+  --board-piece-face: #f6e7c8;
+  --board-select: #1e6b3a;
+  --board-hint: #3a2a1a;
+  --board-last-move: #1e4f7a;
+  --board-check: #a51f25;
+  --board-focus: #155e75;
+  --font-ui:
+    "Plus Jakarta Sans", -apple-system, system-ui, "Segoe UI", Roboto,
+    sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-han: "XQ Han", "Noto Serif TC", "Songti TC", "SimSun", serif;
+  --font-mono: ui-monospace, "SF Mono", Consolas, monospace;
+  --text-xs: 12px;
+  --leading-xs: 16px;
+  --text-sm: 14px;
+  --leading-sm: 20px;
+  --text-md: 16px;
+  --leading-md: 24px;
+  --text-lg: 20px;
+  --leading-lg: 28px;
+  --text-xl: 24px;
+  --leading-xl: 32px;
+  --text-2xl: 32px;
+  --leading-2xl: 40px;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --touch-min: 44px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 999px;
+  --border-width: 1px;
+  --focus-ring: 3px solid var(--color-focus);
+  --shadow-1: 0 1px 2px rgba(40, 34, 28, 0.12);
+  --shadow-2: 0 4px 12px rgba(40, 34, 28, 0.18);
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-banner: 300;
+  --z-dialog: 400;
+  --z-toast: 500;
+  --z-overlay-blocking: 600;
+  --motion-move: 180ms;
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  line-height: var(--leading-md);
+}
+@media (prefers-reduced-motion: reduce) {
+  .xq-ui {
+    --motion-move: 0ms;
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+  }
+  .xq-ui *,
+  .xq-ui *::before,
+  .xq-ui *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
