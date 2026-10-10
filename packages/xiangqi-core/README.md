@@ -3,7 +3,12 @@
 Gói luật rút gọn theo BA0.12/0.17, dùng chung cho máy chủ và máy cờ. Truy vết: T05/XIAN-41, T07/XIAN-43, T10/XIAN-46; AC-04.1.1–9.
 
 ```ts
-import { initialPosition, legalMoves, playMove, ending } from "@xiangqi/xiangqi-core";
+import {
+  initialPosition,
+  legalMoves,
+  playMove,
+  ending,
+} from "@xiangqi/xiangqi-core";
 const history = [initialPosition()];
 const move = legalMoves(history[0]!)[0]!;
 history.push(playMove(history[0]!, move));
