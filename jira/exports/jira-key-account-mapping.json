@@ -2,7 +2,7 @@
   "status": "synced_from_jira_snapshot",
   "date": "2026-10-10",
   "project_key": "XIAN",
-  "source_snapshot": "current-jira-snapshot.json",
+  "source_snapshot": "../data/current-jira-snapshot.json",
   "items": [
     {
       "local_id": "EP-00",

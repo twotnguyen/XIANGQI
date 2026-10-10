@@ -33,4 +33,4 @@ Toàn bộ nhãn `sprint-*` khớp Sprint thực tế.
 - Không xác nhận mã sản phẩm, ca kiểm thử, gate, thiết bị hoặc quyền GitHub của từng người đã sẵn sàng.
 - Kiểm khớp snapshot không thay thế truy vấn live khi Jira có thay đổi mới.
 
-Tái chạy: `python3 jira/build_plan.py --check`.
+Tái chạy: `python3 jira/tools/build_plan.py --check`.

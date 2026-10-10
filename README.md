@@ -2,7 +2,7 @@
 
 Ứng dụng web chơi cờ tướng trực tuyến tiếng Việt: tự tạo phòng mời bạn so tài, người xem, chat, camera/mic, đánh với máy theo cấp độ. Đồ án môn **Quản trị Dự án Công nghệ Thông tin**: mô phỏng toàn bộ quy trình làm dự án với khách hàng, từ phỏng vấn yêu cầu, lập kế hoạch trên Jira đến bàn giao.
 
-> **Trạng thái (10/10/2026):** kế hoạch repo đã đồng bộ Jira XIAN: **9 Epic + 27 Story BA Done, 71 Task To Do, 880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả **4 Sprint chưa bắt đầu**. [Kế hoạch](KE-HOACH-JIRA.md), [trạng thái hiện hành](jira/CURRENT-JIRA-STATE.md), [bản kiểm tra](jira/KIEM-TRA-KE-HOACH.md) và [CSV đối chiếu](jira/xian-import.csv) cùng dùng snapshot Jira; không phải bằng chứng phần mềm đã được nghiệm thu.
+> **Trạng thái (10/10/2026):** kế hoạch repo đã đồng bộ Jira XIAN: **9 Epic + 27 Story BA Done, 71 Task To Do, 880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả **4 Sprint chưa bắt đầu**. [Kế hoạch](KE-HOACH-JIRA.md), [trạng thái hiện hành](jira/reports/CURRENT-JIRA-STATE.md), [bản kiểm tra](jira/reports/KIEM-TRA-KE-HOACH.md) và [CSV đối chiếu](jira/exports/xian-import.csv) cùng dùng snapshot Jira; không phải bằng chứng phần mềm đã được nghiệm thu.
 
 ---
 
@@ -45,7 +45,7 @@ Chỉ chuyển giai đoạn khi PO xác nhận giai đoạn trước đã ổn.
 
 Làm cả cuối tuần. Lập kế hoạch tối đa **8 giờ/người/ngày**, mỗi người một Task/ngày. Task phụ thuộc bắt đầu từ ngày sau khi Task trước kết thúc; **cao nhất 7 Task chạy song song trong lịch mới** (chi tiết: KE-HOACH-JIRA.md). Đây là lịch dự kiến đã kiểm ràng buộc; công suất trống không tự bảo đảm mọi việc sẽ đúng ước lượng.
 
-> Trường Sprint là nguồn lịch chính. Đã sửa 13 nhãn sprint trên Jira; 71/71 Task có nhãn khớp Sprint thực tế. Kết quả ở [báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md).
+> Trường Sprint là nguồn lịch chính. Đã sửa 13 nhãn sprint trên Jira; 71/71 Task có nhãn khớp Sprint thực tế. Kết quả ở [báo cáo kiểm tra](jira/reports/KIEM-TRA-KE-HOACH.md).
 
 ## Nhóm
 
@@ -104,19 +104,12 @@ Phân công chi tiết theo Task, số giờ từng người từng Sprint: [KE-
 ├── BA-SCOPE-DECISIONS.md          Quyết định nghiệp vụ và phạm vi (nguồn luật; Phần 0 ưu tiên cao nhất)
 ├── BACKLOG-P1.md                  9 Epic → 27 User Story → AC → TC của P1, NFR, cổng kiểm chứng, demo, phụ thuộc
 ├── KE-HOACH-JIRA.md               71 Task: người làm, giờ, ngày, phụ thuộc, mô tả chi tiết, mức song song
-├── jira/                         Dữ liệu, công cụ và kết quả lập kế hoạch
-│   ├── plan-data.json            Nguồn dữ liệu lịch, phân công và phạm vi Task
-│   ├── workload-assessment.json  Đánh giá nội dung từng Task, độc lập với giờ
-│   ├── DANH-GIA-KHOI-LUONG.md     Lý do đánh giá tải của 71 Task
-│   ├── PHAN-CONG-CAN-BANG.md      Phân công theo vai trò, nội dung và tải công việc
-│   ├── COMPONENTS-LABELS.md      Danh mục và phân loại Components/Labels của 107 mục
-│   ├── descriptions.json         Nội dung Description độc lập cho 107 mục Jira
-│   ├── build_plan.py             Sinh và kiểm tra kế hoạch
-│   ├── xian-import.csv           Tệp nhập 107 mục Epic/Story/Task
-│   ├── AC-TASK-MAP.json          Ánh xạ AC tới Task triển khai/kiểm thử
-│   ├── TRUY-VET-AC.md            Bản đồ nghiệm thu
-│   ├── JIRA-MUC-CHI-TIET.md       Mô tả đầy đủ các mục Jira
-│   └── KIEM-TRA-KE-HOACH.md       Kết quả kiểm ràng buộc kế hoạch
+├── jira/                         Kế hoạch Jira; bắt đầu ở jira/README.md
+│   ├── reports/                 Tài liệu và báo cáo cho nhóm
+│   ├── data/                    Dữ liệu nguồn và snapshot hiện hành
+│   ├── tools/                   Công cụ đồng bộ và sinh tài liệu
+│   ├── exports/                 CSV và bảng ánh xạ JSON
+│   └── tests/                   Kiểm tra kế hoạch
 ├── IDEA.md                        Giới thiệu sản phẩm ngắn gọn
 ├── DANH-MUC-MAN-HINH-XIANGQI.md   37 thành phần giao diện (26 P1, 11 P2) và 5 trạng thái bắt buộc
 ├── DESIGN.md                      Hệ thống thiết kế "Kỳ Đài Cổ Phong"
@@ -133,7 +126,7 @@ Mã nguồn sản phẩm (`apps/`, `packages/`, `supabase/`, `tests/`) dự ki�
 | Sản phẩm là gì, cho ai | [IDEA.md](IDEA.md) |
 | Luật nghiệp vụ, phạm vi P1/P2 | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
 | User Story, tiêu chí nghiệm thu, kiểm thử P1 | [BACKLOG-P1.md](BACKLOG-P1.md) |
-| Task, phân công, lịch, nhập Jira | [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md), [jira/xian-import.csv](jira/xian-import.csv) |
+| Task, phân công, lịch, nhập Jira | [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md), [jira/exports/xian-import.csv](jira/exports/xian-import.csv) |
 | Màn hình, modal, trạng thái giao diện | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) |
 | Màu, chữ, thành phần, bàn cờ | [DESIGN.md](DESIGN.md) |
 | Mockup | [mockups/index.html](mockups/index.html) (chỉ tham khảo, khác đặc tả thì theo đặc tả) |

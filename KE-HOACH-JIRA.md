@@ -2,7 +2,7 @@
 
 > **Đồng bộ Jira ngày 10/10/2026 · phiên bản 3.0.** 9 Epic + 27 Story BA đã Done; 71 Task triển khai To Do, **880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả bốn Sprint chưa bắt đầu.
 
-Nguồn dữ liệu: [snapshot Jira](jira/current-jira-snapshot.json), [kế hoạch](jira/plan-data.json), [Description](jira/descriptions.json). Nghiệp vụ: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [truy vết 268 AC](jira/TRUY-VET-AC.md). [Danh sách 107 mục](jira/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/xian-import.csv) được sinh từ cùng nguồn.
+Nguồn dữ liệu: [snapshot Jira](jira/data/current-jira-snapshot.json), [kế hoạch](jira/data/plan-data.json), [Description](jira/data/descriptions.json). Nghiệp vụ: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [truy vết 268 AC](jira/reports/TRUY-VET-AC.md). [Danh sách 107 mục](jira/reports/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/exports/xian-import.csv) được sinh từ cùng nguồn.
 
 ## 1. Quy tắc lịch và cách đọc
 
@@ -36,7 +36,7 @@ Nguồn dữ liệu: [snapshot Jira](jira/current-jira-snapshot.json), [kế ho�
 | Thư | 10 | 120 | 24.0 | 16.0 | 48.0 | 32.0 |
 
 
-Nhạn và Thư mỗi người tăng từ 104 lên 120 giờ; T37 thuộc Tình. Tổng giờ là 880, chưa bao gồm giờ BA/điều phối riêng. Phân công không bằng nhau tuyệt đối; xem [cơ sở phân công](jira/PHAN-CONG-CAN-BANG.md) và [đánh giá nội dung](jira/DANH-GIA-KHOI-LUONG.md).
+Nhạn và Thư mỗi người tăng từ 104 lên 120 giờ; T37 thuộc Tình. Tổng giờ là 880, chưa bao gồm giờ BA/điều phối riêng. Phân công không bằng nhau tuyệt đối; xem [cơ sở phân công](jira/reports/PHAN-CONG-CAN-BANG.md) và [đánh giá nội dung](jira/reports/DANH-GIA-KHOI-LUONG.md).
 
 ## 3. Sprint
 
@@ -3461,6 +3461,6 @@ T51 hồi quy sau triển khai; T70 chờ T51, T66 và toàn bộ QA chuyên đ�
 
 CSV là bản xuất đối chiếu **các mục đã tồn tại**, gồm Issue Key, Resolution và định danh tài khoản. Không nhập như các mục mới; không dùng import CSV để ép chuyển trạng thái. Script local không ghi lên Jira.
 
-Để cập nhật nguồn, lấy snapshot Jira mới vào `jira/current-jira-snapshot.json`, chạy `python3 jira/sync_plan_from_snapshot.py`, `python3 jira/build_plan.py`, rồi `python3 jira/build_plan.py --check`. Bộ kiểm đối chiếu dữ liệu với snapshot, 268 AC, phụ thuộc, giới hạn ngày, người kiểm độc lập và các đầu ra. Đây là kiểm dữ liệu kế hoạch, chưa phải kiểm phần mềm.
+Để cập nhật nguồn, lấy snapshot Jira mới vào `jira/data/current-jira-snapshot.json`, chạy `python3 jira/tools/sync_plan_from_snapshot.py`, `python3 jira/tools/build_plan.py`, rồi `python3 jira/tools/build_plan.py --check`. Bộ kiểm đối chiếu dữ liệu với snapshot, 268 AC, phụ thuộc, giới hạn ngày, người kiểm độc lập và các đầu ra. Đây là kiểm dữ liệu kế hoạch, chưa phải kiểm phần mềm.
 
-[Báo cáo kiểm tra](jira/KIEM-TRA-KE-HOACH.md) · [Trạng thái hiện hành](jira/CURRENT-JIRA-STATE.md).
+[Báo cáo kiểm tra](jira/reports/KIEM-TRA-KE-HOACH.md) · [Trạng thái hiện hành](jira/reports/CURRENT-JIRA-STATE.md).

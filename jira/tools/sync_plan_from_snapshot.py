@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1] / 'data'
 HEADINGS = [('goal', 'Mục tiêu'), ('context', 'Bối cảnh công việc'),
             ('requirements', 'Yêu cầu cần đáp ứng'), ('steps', 'Việc cần làm'),
             ('deliverables', 'Kết quả bàn giao'), ('acceptance', 'Điều kiện hoàn thành'),

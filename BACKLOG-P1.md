@@ -40,7 +40,7 @@
 
 **Yêu cầu (YC) của khách hàng:** YC1 Đăng ký/đăng nhập · YC2 Tạo phòng · YC3 Mời vào phòng · YC4 Khởi tạo bàn cờ · YC5 Hai người đánh online · YC6 Chế độ phòng và người xem (tối đa 5 xem / 7 người) · YC7 Chat + camera + mic, kênh người xem riêng · YC8 Đánh với máy theo cấp độ.
 
-**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA nên xong trước khi thi công; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](jira/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
+**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA nên xong trước khi thi công; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](jira/reports/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
 
 **Câu chữ giao diện** trong ngoặc kép là văn bản bắt buộc hiển thị đúng (có thể chỉnh dấu câu, không đổi nghĩa).
 
@@ -730,7 +730,7 @@ Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA
 
 ## 10. Truy vết
 
-Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [jira/TRUY-VET-AC.md](jira/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
+Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [jira/TRUY-VET-AC.md](jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
 
 ### 10.1 Yêu cầu khách hàng → Epic → Story
 

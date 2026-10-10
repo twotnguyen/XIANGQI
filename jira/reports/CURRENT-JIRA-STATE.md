@@ -1,6 +1,6 @@
 # Kế hoạch hiện hành — đồng bộ Jira ngày 10/10/2026
 
-Nguồn hiện hành: [current-jira-snapshot.json](current-jira-snapshot.json), đọc trực tiếp từ Jira; dữ liệu sinh tài liệu: [plan-data.json](plan-data.json) và [descriptions.json](descriptions.json).
+Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot.json), đọc trực tiếp từ Jira; dữ liệu sinh tài liệu: [plan-data.json](../data/plan-data.json) và [descriptions.json](../data/descriptions.json).
 
 - Board duy nhất: 38; cả 4 Sprint chưa bắt đầu.
 - 9 Epic và 27 Story BA: Done, Resolution = Done, không gắn Release triển khai.
@@ -14,16 +14,16 @@ Nguồn hiện hành: [current-jira-snapshot.json](current-jira-snapshot.json), 
 
 ## Dữ liệu đã đồng bộ
 
-`plan-data.json`, `descriptions.json`, `xian-import.csv`, `JIRA-MUC-CHI-TIET.md`, `ANH-XA-JIRA-107-MUC.md`, `jira-key-account-mapping.json`, `PHAN-CONG-CAN-BANG.md`, `DANH-GIA-KHOI-LUONG.md`, `COMPONENTS-LABELS.md`, `KIEM-TRA-KE-HOACH.md`, `../KE-HOACH-JIRA.md` và phần kế hoạch trong `../BACKLOG-P1.md` cùng phản ánh snapshot hiện hành.
+`../data/plan-data.json`, `../data/descriptions.json`, `../exports/xian-import.csv`, `JIRA-MUC-CHI-TIET.md`, `ANH-XA-JIRA-107-MUC.md`, `../exports/jira-key-account-mapping.json`, `PHAN-CONG-CAN-BANG.md`, `DANH-GIA-KHOI-LUONG.md`, `COMPONENTS-LABELS.md`, `KIEM-TRA-KE-HOACH.md`, `../../KE-HOACH-JIRA.md` và phần kế hoạch trong `../../BACKLOG-P1.md` cùng phản ánh snapshot hiện hành.
 
 CSV có Jira Key, Resolution, Remaining Estimate và account ID; đây là bản đối chiếu các mục đã tồn tại, không nhập như backlog mới hoặc dùng để ép chuyển trạng thái. Bộ sinh local không ghi dữ liệu lên Jira; đợt sửa nhãn được thực hiện riêng qua Atlassian rồi đọc lại.
 
 ## Kiểm tra và sinh lại
 
 ```sh
-python3 jira/sync_plan_from_snapshot.py
-python3 jira/build_plan.py
-python3 jira/build_plan.py --check
+python3 jira/tools/sync_plan_from_snapshot.py
+python3 jira/tools/build_plan.py
+python3 jira/tools/build_plan.py --check
 python3 -m unittest discover -s jira/tests -v
 ```
 
