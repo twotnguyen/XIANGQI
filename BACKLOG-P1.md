@@ -1,8 +1,8 @@
 # BACKLOG P1 — Cờ Tướng Online (XIANGQI)
 
-> **Phiên bản:** 2.0 · **Ngày:** 07/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
-> **Phạm vi:** P1 (MVP, hạn **05/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
-> **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (chốt 07/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
+> **Phiên bản:** 3.0 · **Ngày:** 10/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
+> **Phạm vi:** P1 (MVP, hạn **04/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
+> **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 10/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
 > **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
 > **Cấu trúc:** **EP-01 → EP-08 khớp đúng 8 yêu cầu của khách hàng (YC1 → YC8)**; EP-00 là Epic nền tảng phục vụ chung.
 
@@ -28,10 +28,10 @@
 
 | Ký hiệu | Ý nghĩa | Lên Jira thành |
 |---|---|---|
-| `EP-xx` | Epic. EP-01 → EP-08 = yêu cầu YC1 → YC8 của khách hàng; EP-00 = nền tảng | Epic; **phần việc BA**, bắt đầu 07/10, xong khi Story muộn nhất của nó xong |
-| `US-xx.y` | User Story (xx = số Epic) | Story; AC dán vào Description. **Story là phần việc BA**: Done khi đặc tả + AC được PO duyệt; bắt đầu 07/10, hạn = ngày Task đầu tiên của Story bắt đầu (ngoại lệ US-08.3, US-00.5: hạn = Task cuối, vì AC chờ kết quả đo GATE-ENGINE/GATE-REALTIME); không đặt vào Sprint (quy tắc R1, KE-HOACH-JIRA.md mục 4). **Story Points** gắn cho **Task** (quy đổi từ giờ Task: ≤4h = 1 · ≤8h = 2 · ≤16h = 3 · ≤24h = 5 · ≤40h = 8 · >40h = 13) để Jira tự vẽ Velocity/Burndown theo Sprint; điểm của Story = tổng điểm các Task, chỉ ghi để tham khảo |
+| `EP-xx` | Epic. EP-01 → EP-08 khớp YC1 → YC8; EP-00 nền tảng | Công việc BA; bắt đầu trước Story đầu tiên, hoàn tất đặc tả theo BA 0.1; lịch cụ thể ở KE-HOACH-JIRA mục 4 |
+| `US-xx.y` | User Story (xx = số Epic) | Công việc BA; Done khi đặc tả + AC đã được duyệt. Bắt đầu trước Task đầu; kết thúc BA có thể trước hoặc sau Task đầu một khoảng ngắn theo lịch hiện hành, không mặc định chờ Task cuối. Không gắn Sprint/Release triển khai. Story Points thuộc Task, giữ theo Jira; tổng điểm Task của Story chỉ để tham khảo, không tự quy đổi lại từ giờ |
 | `AC-xx.y.z` | Tiêu chí nghiệm thu dạng **Given / When / Then** | Checklist trong Story |
-| `TC-xx.y.z` | Ca kiểm thử **1-1** với AC cùng số | Tester viết bước chi tiết trong Task kiểm thử |
+| `TC-xx.y.z` | Mã ca kiểm thử theo AC cùng số; thêm hậu tố cho các biến thể | Tester viết bước chi tiết trong Task kiểm thử; hiện chưa có bộ TC đã thực thi |
 | `Txx` | Task: việc thi công của một người (4–32 giờ) | **Task** (cha là Epic, liên kết *relates to* tới Story), có Sprint, người làm, hạn riêng |
 | `NFR-xx`, `GATE-xx` | Yêu cầu phi chức năng, cổng kiểm chứng | AC của Story EP-00 hoặc Task kỹ thuật |
 | `Dx` | Kịch bản demo đầu-cuối | Story US-00.5 |
@@ -40,7 +40,7 @@
 
 **Yêu cầu (YC) của khách hàng:** YC1 Đăng ký/đăng nhập · YC2 Tạo phòng · YC3 Mời vào phòng · YC4 Khởi tạo bàn cờ · YC5 Hai người đánh online · YC6 Chế độ phòng và người xem (tối đa 5 xem / 7 người) · YC7 Chat + camera + mic, kênh người xem riêng · YC8 Đánh với máy theo cấp độ.
 
-**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA nên xong trước khi thi công; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi Task kiểm thử của Story đó đạt Definition of Done (mục 2.2).
+**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA; đặc tả đã chốt, tiến độ BA tách khỏi triển khai. Khoảng ngày BA có thể chồng với các Task đầu theo BA 0.1; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](jira/reports/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
 
 **Câu chữ giao diện** trong ngoặc kép là văn bản bắt buộc hiển thị đúng (có thể chỉnh dấu câu, không đổi nghĩa).
 
@@ -48,20 +48,21 @@
 
 ## 2. Definition of Ready và Definition of Done
 
-### 2.1 Definition of Ready (Task được kéo vào Sprint khi)
+### 2.1 Điều kiện lập kế hoạch và bắt đầu Task
 - [ ] Story của Task đã được đặc tả (câu chuyện, AC Given/When/Then, quyết định BA nguồn) và PO duyệt.
-- [ ] Các Story/Task phụ thuộc đã xong hoặc có giao diện giả (mock/contract) đã thống nhất.
+- [ ] Khi lập kế hoạch vào Sprint: phụ thuộc đã xác định và có lịch bàn giao trước ngày bắt đầu Task. Task tiền nhiệm và kế tiếp có thể cùng một Sprint.
+- [ ] Khi bắt đầu thực hiện: mọi Task tiền nhiệm đã hoàn thành và đầu vào đã bàn giao; bắt đầu sớm nhất từ ngày sau ngày kết thúc tiền nhiệm. Khi BE/FE làm độc lập, hợp đồng chung phải được bàn giao; nghiệm thu tích hợp vẫn dùng hệ thống thật.
 - [ ] Đã tách Task (BE/FE/kiểm thử), có người nhận, ước lượng giờ và ngày bắt đầu theo KE-HOACH-JIRA.md.
 - [ ] Màn hình liên quan có trong DANH-MUC (mockup chỉ tham khảo).
 - [ ] Không còn câu hỏi mở chặn việc làm (nếu có thì ghi rõ và PO đã trả lời).
 
-### 2.2 Definition of Done (chức năng của một Story được nghiệm thu khi — kiểm ở Task kiểm thử của Story)
+### 2.2 Definition of Done (chức năng của một Story được nghiệm thu khi — kiểm tại các Task được giao trong bản đồ nghiệm thu)
 - [ ] Mọi AC đạt; mỗi AC có TC tương ứng **PASS** và được ghi kết quả trong Jira.
 - [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), merge vào `develop` qua PR, CI xanh (lint, typecheck, unit test).
 - [ ] Luật nghiệp vụ kiểm ở **máy chủ**, không tin dữ liệu client gửi.
 - [ ] Màn hình đủ **5 trạng thái** (`SUCCESS`, `LOADING`, `EMPTY`, `ERROR`, `DISABLED` có tooltip) theo DANH-MUC §2 và đúng `DESIGN.md`.
 - [ ] Chạy được ở môi trường demo local; responsive từ 360 px; tiếng Việt.
-- [ ] Không có lỗi mức Nghiêm trọng/Cao còn mở; lỗi khác đã ghi Jira.
+- [ ] Không có lỗi mức Nghiêm trọng/Cao còn mở; lỗi khác đã ghi trong mục liên quan. PASS, FAIL, BLOCKED tách biệt; PO biết một BLOCKED không biến tiêu chí thành PASS.
 - [ ] Không log mật khẩu, OTP, token, nội dung chat (NFR-08).
 - [ ] Tài liệu (README chạy dự án, biến môi trường) được cập nhật nếu Story thay đổi chúng.
 
@@ -86,16 +87,16 @@
 
 | Epic | Tên | Yêu cầu | Story | Story Points | Mô tả ngắn |
 |---|---|---|---|---|---|
-| EP-00 | Nền tảng kỹ thuật và chất lượng | Hỗ trợ tất cả | US-00.1 – 00.5 | 29 | Việc kỹ thuật và kiểm thử chung mà 8 yêu cầu cùng dựa vào: khung dự án, CI, cơ sở dữ liệu, khung realtime, kế hoạch kiểm thử, nghiệm thu tổng và đóng gói demo. |
-| EP-01 | Đăng ký và đăng nhập | YC1 | US-01.1 – 01.4 | 31 | Đăng ký bằng username + mật khẩu + OTP email hoặc Google; đăng nhập bằng username + mật khẩu (khoá thử sai), Google hoặc Khách; quản lý phiên và hồ sơ. |
+| EP-00 | Nền tảng kỹ thuật và chất lượng | Hỗ trợ tất cả | US-00.1 – 00.5 | 33 | Việc kỹ thuật và kiểm thử chung mà 8 yêu cầu cùng dựa vào: khung dự án, CI, cơ sở dữ liệu, khung realtime, kế hoạch kiểm thử, nghiệm thu tổng và đóng gói demo. |
+| EP-01 | Đăng ký và đăng nhập | YC1 | US-01.1 – 01.4 | 34 | Đăng ký bằng username + mật khẩu + OTP email hoặc Google; đăng nhập bằng username + mật khẩu (khoá thử sai), Google hoặc Khách; quản lý phiên và hồ sơ. |
 | EP-02 | Tạo phòng | YC2 | US-02.1 – 02.2 | 16 | Tạo phòng, ghế Đỏ/Đen, Đổi ghế/Xin đổi bên, Sẵn sàng và đếm ngược, chuyển Host, ở lại phòng sau ván. |
 | EP-03 | Mời vào phòng | YC3 | US-03.1 – 03.2 | 17 | Mời bằng link/mã 8 ký tự cho người chưa kết bạn; kết bạn và mời bạn đang online ngay trong game. |
 | EP-04 | Khởi tạo bàn cờ | YC4 | US-04.1 – 04.3 | 16 | Lõi luật cờ dùng chung, bàn cờ SVG quân chữ Hán, đi cờ bằng click/kéo thả, âm thanh. |
 | EP-05 | Hai người đánh cờ online | YC5 | US-05.1 – 05.3 | 22 | Máy chủ phân xử nước đi, đồng hồ, kết thúc ván, đầu hàng, xin hoà, mất kết nối và nối lại. |
 | EP-06 | Chế độ phòng và người xem | YC6 | US-06.1 – 06.3 | 22 | PUBLIC / CODE_ONLY / LOCKED, danh sách phòng ở Sảnh, tối đa 5 người xem (7 người/phòng), đuổi người xem. |
-| EP-07 | Chat, camera và mic | YC7 | US-07.1 – 07.2 | 18 | Kênh Riêng cho hai người chơi, Kênh Chung cho người xem, bộ lọc từ cấm; camera/mic qua LiveKit với ba mức chia sẻ. |
-| EP-08 | Đánh với máy theo cấp độ | YC8 | US-08.1 – 08.3 | 26 | Máy cờ ba cấp Dễ/Trung bình/Khó, chọn phe, Ván mới, ổn định ván với máy. |
-| **Cộng** | | | 27 Story | **197** | |
+| EP-07 | Chat, camera và mic | YC7 | US-07.1 – 07.2 | 14 | Kênh Riêng cho hai người chơi, Kênh Chung cho người xem, bộ lọc từ cấm; camera/mic qua LiveKit với ba mức chia sẻ. |
+| EP-08 | Đánh với máy theo cấp độ | YC8 | US-08.1 – 08.3 | 24 | Máy cờ ba cấp Dễ/Trung bình/Khó, chọn phe, Ván mới, ổn định ván với máy. |
+| **Cộng** | | | 27 Story | **198** | |
 
 ### 4.2 Epic P2 (chỉ ở mức Epic, chưa tách Story)
 
@@ -118,7 +119,7 @@
 **Là** nhóm phát triển, **tôi muốn** một monorepo có sẵn khung ứng dụng, CI, nhật ký và điểm kiểm tra sức khoẻ, **để** mọi người code trên cùng một nền và tìm lỗi nhanh.
 *Nguồn:* README (Công nghệ, Quy trình Git), BA 10.1. *Ghi chú:* cấu trúc gợi ý `apps/web` (React + Vite), `apps/server` (NestJS + Socket.IO), `packages/xiangqi-core` (luật cờ dùng chung), `packages/shared` (kiểu dữ liệu, hằng số), `packages/engine` (máy cờ).
 *Nguồn:* BA 10.1 (NFR-08, NFR-09).
-*Sprint:* S1. *Story Points:* **5** (tổng điểm 2 Task, 24 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **5** (tổng điểm 2 Task, 20 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -132,7 +133,7 @@
 #### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.
 *Nguồn:* BA 1.x, 2.x, 4.2, 5.5, 10.1 (dữ liệu cá nhân). *Ghi chú:* tối thiểu `profiles`, `friendships`/`friend_requests`, `rooms`, `room_blocks`, `matches`, `match_moves`, `login_attempts`; tên bảng do nhóm chốt.
-*Sprint:* S1. *Story Points:* **3** (tổng điểm 1 Task, 16 giờ).
+*Sprint thi công:* S1. *Story Points:* **3** (tổng điểm 1 Task, 12 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -144,7 +145,7 @@
 **Là** nhóm phát triển, **tôi muốn** cổng Socket.IO có xác thực, lệnh chống trùng và đồng bộ lại khi nối lại, **để** phòng, ván và chat dùng chung một cách.
 *Nguồn:* BA 3.3 mục 1, 8.3, 1.8 (nhiều tab).
 *Hợp đồng sự kiện:* Task của Story này công bố kiểu dữ liệu sự kiện phòng/ván trong `packages/shared` để Story phòng và Story ván làm độc lập với nhau.
-*Sprint:* S1. *Story Points:* **5** (tổng điểm 1 Task, 24 giờ).
+*Sprint thi công:* S1. *Story Points:* **5** (tổng điểm 1 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -156,18 +157,18 @@
 
 #### US-00.4 · Kế hoạch kiểm thử và kiểm chứng sớm
 **Là** nhóm, **tôi muốn** có kế hoạch kiểm thử và kiểm chứng sớm rủi ro media, **để** nghiệm thu có bằng chứng và phát hiện sớm điểm không khả thi.
-*Kèm:* spike GATE-MEDIA (LiveKit Cloud) ở Sprint 1.
-*Sprint:* S1. *Story Points:* **6** (tổng điểm 2 Task, 32 giờ).
+*Kèm:* T06 kiểm chứng media tự chạy/Cloud/HTTPS và thử mô hình phiên sớm; T02 chuẩn bị bộ dữ liệu luật/máy cờ có đáp án độc lập.
+*Sprint thi công:* S1, S2. *Story Points:* **10** (tổng điểm 2 Task, 56 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-00.4.1 | Backlog P1 | Viết kế hoạch kiểm thử | Có phạm vi, môi trường, dữ liệu thử, tiêu chí vào/ra, quy trình báo lỗi trên Jira (mức độ: Nghiêm trọng/Cao/Trung bình/Thấp) | M |
-| AC-00.4.2 | Mỗi AC | Viết TC | TC cùng số có tiền điều kiện, bước, kết quả mong đợi; truy vết 100% AC | M |
+| AC-00.4.2 | Mỗi AC | Viết TC | TC cùng số có tiền điều kiện, bước, dữ liệu và kết quả mong đợi; một AC nhiều nhánh có các biến thể TC; truy vết 100% AC | M |
 | AC-00.4.3 | Cuối mỗi Sprint | Chạy hồi quy | Báo cáo PASS/FAIL/BLOCKED theo TC, lỗi mở được ghi Jira | M |
 
 #### US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo
 **Là** PO, **tôi muốn** đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, **để** chứng minh 8 yêu cầu cốt lõi với khách hàng.
-*Sprint:* S4. *Story Points:* **10** (tổng điểm 4 Task, 48 giờ).
+*Sprint thi công:* S4. *Story Points:* **10** (tổng điểm 4 Task, 52 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -186,11 +187,11 @@
 **Là** khách truy cập, **tôi muốn** đăng ký bằng username, mật khẩu và email có mã OTP gửi tới hộp thư thật, **để** có tài khoản chính thức.
 *Nguồn:* BA 1.1, 1.4, 1.5. *Màn hình:* `SCR-REGISTER`.
 *Nguồn:* BA 0.4. *Ghi chú:* gắn vào Custom SMTP của Supabase Auth; khoá SMTP chỉ lưu phía máy chủ/Supabase.
-*Sprint:* S1. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
-| AC-01.1.1 | Bước 1 | Nhập username sai định dạng (không khớp `^[a-zA-Z0-9_]{3,20}$`) | Báo lỗi tại ô, không sang bước 2 | U, E2E |
+| AC-01.1.1 | Bước 1 | Nhập username sai định dạng (không khớp `^[a-zA-Z0-9_]{3,20}$`) hoặc chứa từ cấm | Báo lỗi tại ô ngay bước nhập, không sang bước 2; máy chủ kiểm lại trước khi hoàn tất (BA 0.17) | U, E2E |
 | AC-01.1.2 | Bước 1 | Nhập username đã tồn tại (không phân biệt hoa thường) | Báo *"Username đã có người dùng"* | I |
 | AC-01.1.3 | Bước 1 | Mật khẩu < 8 ký tự hoặc ô xác nhận không khớp | Báo lỗi, không sang bước 2 | U |
 | AC-01.1.4 | Bước 2 | Nhập email đã có tài khoản | Báo *"Email này đã được đăng ký"*, **không** gửi OTP | I |
@@ -198,7 +199,7 @@
 | AC-01.1.6 | Bước 3 | Nhập đúng OTP trong 3 phút | Tài khoản `ACTIVE`, `display_name = username`, tự đăng nhập và vào Sảnh (hoặc phòng mời đang chờ) | E2E |
 | AC-01.1.7 | Bước 3 | Nhập sai, mã hết hạn, hoặc bị giới hạn số lần thử | Báo lỗi rõ ràng và hướng dẫn gửi mã mới | E2E |
 | AC-01.1.8 | Vừa gửi mã | Muốn gửi lại | Nút "Gửi lại mã OTP" khoá và đếm lùi 60 giây | E2E |
-| AC-01.1.9 | Người dùng bỏ dở trước khi xác nhận OTP | Người khác đăng ký cùng username | Username không bị giữ chỗ; bản xác thực tạm được dọn sau khoảng 60 phút | I |
+| AC-01.1.9 | Đăng ký chưa hoàn tất hoặc lỗi giữa ghi hồ sơ và xoá cờ PENDING | Dọn/phục hồi bản tạm cùng danh tính | Chưa có hồ sơ hoàn tất: không giữ username, dọn trong khoảng 60–65 phút; đã ghi hoàn tất: phục hồi, không xoá nhầm, chặn sử dụng tới khi phục hồi xong; các thao tác được tuần tự hoá (BA 1.1) | I |
 | AC-01.1.10 | Username bị người khác lấy trong lúc chờ OTP | Xác nhận OTP đúng | Báo lỗi và quay về Bước 1, không tạo tài khoản trùng | I |
 | AC-01.1.11 | SMTP ngoài đã cấu hình | Đăng ký bằng Gmail không thuộc nhóm | Thư OTP tới hộp thư (mục tiêu ≤ 1 phút), tên người gửi "Cờ Tướng Online", nội dung tiếng Việt | M |
 | AC-01.1.12 | Đăng ký liên tiếp 5 lần trong 1 giờ bằng 5 email khác nhau | Gửi OTP | Cả 5 thư đều gửi được (không còn giới hạn 2 thư/giờ của SMTP mặc định) | M |
@@ -207,7 +208,7 @@
 #### US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai
 **Là** người dùng, **tôi muốn** đăng nhập bằng username và mật khẩu an toàn, **để** vào ứng dụng mà tài khoản không bị dò mật khẩu.
 *Nguồn:* BA 0.2, 1.8. *Màn hình:* `SCR-LOGIN`. *Ghi chú kỹ thuật:* Supabase Auth đăng nhập bằng email, nên máy chủ tra email từ username rồi xác thực; không trả email hay sự tồn tại của username về client.
-*Sprint:* S1. *Story Points:* **6** (tổng điểm 3 Task, 28 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -225,12 +226,12 @@
 **Là** người dùng mới, **tôi muốn** vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), **để** không mất thời gian đăng ký.
 *Nguồn:* BA 1.2, 1.4, 0.2. *Màn hình:* `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`.
 *Nguồn:* BA 0.3, 1.3, 1.4 mục 4, 2.4. *Màn hình:* `SCR-LOGIN`, `MODAL-GUEST-NAME`. *Ghi chú kỹ thuật:* có thể dùng đăng nhập ẩn danh của Supabase; cần spike xác nhận.
-*Sprint:* S3. *Story Points:* **10** (tổng điểm 3 Task, 44 giờ).
+*Sprint thi công:* S1, S2, S3. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-01.3.1 | Email Google chưa có tài khoản | Bấm "Đăng ký bằng Google" hoặc "Đăng nhập bằng Google" | Chuyển tới `/onboarding`: email chỉ đọc, ô Username và Mật khẩu; không yêu cầu OTP | E2E, M |
-| AC-01.3.2 | Đang ở `/onboarding` | Nhập username/mật khẩu hợp lệ, bấm "Hoàn tất thiết lập" | Tạo tài khoản, `display_name = username` (không lấy họ tên Google), vào Sảnh | E2E |
+| AC-01.3.2 | Đang ở `/onboarding` | Nhập username/mật khẩu và bấm "Hoàn tất thiết lập" | Username chứa từ cấm bị từ chối ngay bước nhập; dữ liệu hợp lệ tạo tài khoản với `display_name = username` (không lấy họ tên Google), vào Sảnh; máy chủ kiểm lại (BA 0.17) | U, E2E |
 | AC-01.3.3 | Email Google đã thuộc tài khoản Username + Mật khẩu | Bấm đăng ký/đăng nhập Google | Báo *"Email này đã được đăng ký"*, **không** tự liên kết hai tài khoản | I, M |
 | AC-01.3.4 | Tài khoản tạo bằng Google đã hoàn tất | Bấm "Đăng nhập bằng Google" | Vào Sảnh ngay | E2E |
 | AC-01.3.5 | Tài khoản tạo bằng Google đã hoàn tất | Đăng nhập bằng username + mật khẩu đã đặt | Đăng nhập thành công | E2E |
@@ -249,7 +250,7 @@
 **Là** người chơi, **tôi muốn** phiên và vị trí chơi được quản lý rõ ràng và tự đặt tên hiển thị, **để** không chơi hai nơi cùng lúc và đối thủ nhận ra tôi.
 *Nguồn:* BA 1.8, 2.4, 6.3 mục 4. *Ghi chú kỹ thuật:* Supabase cho phép nhiều phiên song song; cần bảng phiên/vị trí chơi phía máy chủ để thực thi luật "thiết bị khác" (spike S1).
 *Nguồn:* BA 1.4, 1.6 (email chỉ đọc), Phần 11. *Màn hình:* `SCR-PROFILE-SETTINGS`, `PANEL-NAVBAR`.
-*Sprint:* S4. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
+*Sprint thi công:* S2, S3, S4. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -279,7 +280,7 @@
 **Là** người dùng hoặc Khách, **tôi muốn** tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, **để** so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* `SCR-WAITING-ROOM`.
-*Sprint:* S2. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -301,7 +302,7 @@
 **Là** người chơi, **tôi muốn** đề nghị đổi Đỏ/Đen và ở lại phòng để đánh tiếp sau mỗi ván, **để** chọn tiếp tục hay đổi phe mà không phải tạo phòng mới.
 *Nguồn:* BA 0.6, 2.3 mục 2, 3.6. *Màn hình:* `SCR-WAITING-ROOM`, `MODAL-SIDE-SWAP-PROMPT`.
 *Nguồn:* BA 0.7. *Màn hình:* `MODAL-MATCH-RESULT`, `SCR-WAITING-ROOM`.
-*Sprint:* S3. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -327,7 +328,7 @@
 #### US-03.1 · Mời bằng link/mã và vào phòng
 **Là** người được mời (kể cả chưa kết bạn), **tôi muốn** vào phòng bằng link hoặc mã, **để** chơi hoặc xem ngay.
 *Nguồn:* BA 2.4, 2.6, 2.7, 2.8, 4.2, 0.3. *Màn hình:* `MODAL-INVITE`, `SCR-LOBBY`, `SCR-LOGIN`, `SCR-ACCESS-DENIED`.
-*Sprint:* S2. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **7** (tổng điểm 3 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -344,7 +345,7 @@
 *Nguồn:* BA 5.5, Phần 11 (Bạn bè P1 tối thiểu). *Màn hình:* `SCR-FRIENDS`.
 *Nguồn:* BA 5.5 mục 4–5, 1.8 (hàng đợi). *Màn hình:* `SCR-FRIENDS`, `PANEL-NAVBAR`.
 *Nguồn:* BA 2.5, 2.7 mục 3, 2.8, 4.3. *Màn hình:* `MODAL-INVITE`.
-*Sprint:* S3. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **10** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -377,7 +378,7 @@
 #### US-04.1 · Lõi luật cờ dùng chung
 **Là** hệ thống, **tôi cần** một thư viện luật cờ duy nhất dùng cho máy chủ, client và máy cờ, **để** mọi nơi phân xử giống nhau.
 *Nguồn:* BA 3.3 mục 1–2, 3.5. *Ghi chú:* `packages/xiangqi-core`, phủ unit test cao (mục tiêu ≥ 90% dòng).
-*Sprint:* S1. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
+*Sprint thi công:* S1. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -388,7 +389,7 @@
 | AC-04.1.5 | Bên tới lượt **không** bị chiếu nhưng hết nước | Kiểm kết thúc | `STALEMATE` — bên đó **thua** | U |
 | AC-04.1.6 | Một thế lặp lần thứ 3 trên nhánh nước hiệu lực | Kiểm kết thúc | `DRAW_REPETITION`, trừ khi mọi nước của một bên trong chu kỳ đều là nước chiếu → `PERPETUAL_CHECK`, bên chiếu thua; cả hai cùng chiếu liên tục → hoà | U |
 | AC-04.1.7 | 120 nửa nước liên tiếp không ăn quân | Kiểm kết thúc | `DRAW_NO_CAPTURE` | U |
-| AC-04.1.8 | Nước cuối vừa chiếu hết vừa thoả điều kiện hoà | Kiểm kết thúc | Chiếu hết được ưu tiên | U |
+| AC-04.1.8 | Nước hợp lệ cuối đồng thời thoả điều kiện thắng/thua và hoà 120 nửa nước | Kiểm kết thúc | Chiếu hết ưu tiên cao nhất; hết nước đi và chiếu liên tục ưu tiên trước hoà 120 nửa nước. Đồng hồ được kiểm trước khi duyệt nước (BA 0.17) | U |
 | AC-04.1.9 | Bất kỳ thế cờ | Tuần tự hoá rồi đọc lại (chuỗi kiểu FEN nội bộ) | Thu được đúng thế cờ, lượt đi và bộ đếm | U |
 | AC-04.1.10 | Hai thế có cùng vị trí mọi quân nhưng khác bên tới lượt | Kiểm lặp thế | Không tính là cùng một thế (BA 0.12) | U |
 | AC-04.1.11 | Một thế xuất hiện lần thứ 3 trên nhánh nước hiệu lực | Xác định chu kỳ để xét chiếu liên tục | Chu kỳ gồm mọi nước từ lần xuất hiện thứ 1 đến lần thứ 3 của thế đó; bên chiếu ở **mọi** nước của mình trong chu kỳ là chiếu liên tục (BA 0.12) | U |
@@ -396,7 +397,7 @@
 #### US-04.2 · Khởi tạo và hiển thị bàn cờ
 **Là** người chơi, **tôi muốn** thấy bàn cờ chuẩn với quân chữ Hán, **để** chơi quen thuộc như cờ thật.
 *Nguồn:* BA 3.1, 6.3 mục 1, DESIGN §7. *Màn hình:* `SCR-GAME-ROOM`, `SCR-AI-GAME`.
-*Sprint:* S1. *Story Points:* **4** (tổng điểm 2 Task, 20 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **4** (tổng điểm 2 Task, 20 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -409,7 +410,7 @@
 **Là** người chơi, **tôi muốn** đi quân bằng click hoặc kéo thả kèm gợi ý ô hợp lệ và tiếng gõ cờ, **để** đi nhanh, không nhầm và có cảm giác như cờ thật.
 *Nguồn:* BA 3.4 mục 1–2, DESIGN §4, §7.4.
 *Nguồn:* BA 3.4 mục 3.
-*Sprint:* S2. *Story Points:* **6** (tổng điểm 2 Task, 28 giờ).
+*Sprint thi công:* S1, S3. *Story Points:* **6** (tổng điểm 2 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -430,10 +431,10 @@
 
 #### US-05.1 · Ván online: đi cờ, đồng hồ và kết thúc ván
 **Là** người chơi, **tôi muốn** nước đi được máy chủ phân xử và đồng bộ ngay, đồng hồ chính xác và kết quả rõ ràng, **để** ván đấu công bằng.
-*Nguồn:* BA 3.3 mục 1, 4.3 mục 2. *Phụ thuộc:* US-00.3, US-05.1.
+*Nguồn:* BA 3.3 mục 1, 4.3 mục 2. *Phụ thuộc:* US-00.3, US-04.1, US-04.3; chi tiết bàn giao phòng/ván theo hợp đồng T12.
 *Nguồn:* BA 2.1, 3.3 mục 3.
 *Nguồn:* BA 3.3, 3.5 mục 5, 0.7. *Màn hình:* `MODAL-MATCH-RESULT`.
-*Sprint:* S2. *Story Points:* **12** (tổng điểm 4 Task, 56 giờ).
+*Sprint thi công:* S1, S2, S3. *Story Points:* **12** (tổng điểm 4 Task, 56 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -455,7 +456,7 @@
 **Là** người chơi, **tôi muốn** đầu hàng có xác nhận và đề nghị hoà mà không chặn bàn cờ, **để** kết thúc ván văn minh, không bấm nhầm.
 *Nguồn:* BA 2.3 mục 5, 3.3 mục 2. *Màn hình:* `MODAL-CONFIRM-RESIGN`, `MODAL-CONFIRM-LEAVE`.
 *Nguồn:* BA 3.3 mục 2, 3.5 mục 4, 3.6 mục 2, 5. *Màn hình:* `MODAL-DRAW-PROMPT`.
-*Sprint:* S3. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **6** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -472,7 +473,7 @@
 #### US-05.3 · Mất kết nối và nối lại
 **Là** người chơi, **tôi muốn** có 60 giây để quay lại khi rớt mạng, **để** không thua oan vì sự cố ngắn.
 *Nguồn:* BA 3.3 mục 4, 8.3, 10.1 (ván gián đoạn). *Màn hình:* `OVERLAY-RECONNECTING`.
-*Sprint:* S4. *Story Points:* **4** (tổng điểm 2 Task, 20 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **4** (tổng điểm 2 Task, 16 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -481,7 +482,7 @@
 | AC-05.3.3 | Quá 60 giây | Máy chủ | A thua `DISCONNECT` | I, E2E |
 | AC-05.3.4 | A mất kết nối khi tới lượt A, đồng hồ A về 0 trước khi hết ân hạn | Máy chủ | Xử `TIMEOUT` | I |
 | AC-05.3.5 | Cả hai cùng mất kết nối, máy chủ vẫn chạy | Cả hai quá ân hạn | Bên mất kết nối **trước** thua `DISCONNECT` | I |
-| AC-05.3.6 | Máy chủ khởi động lại giữa ván | Người chơi nối lại | Hộp kết quả trung tính *"Ván bị gián đoạn"*: không thắng/thua/hoà, chỉ có nút Rời phòng | I, M |
+| AC-05.3.6 | Máy chủ khởi động lại giữa ván online trong phòng tự tạo | Người chơi nối lại | Ván INTERRUPTED, không thắng/thua/hoà; phòng WAITING, reset Sẵn sàng; hộp "Ván bị gián đoạn" có Ở lại phòng / Rời phòng, không hạn đóng 10 phút (BA 0.17) | I, M |
 
 ---
 
@@ -490,7 +491,7 @@
 #### US-06.1 · Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED
 **Là** Host, **tôi muốn** mở công khai, chỉ cho vào bằng mã, hoặc khoá phòng, **để** kiểm soát ai được vào.
 *Nguồn:* BA 2.7 mục 2, 2.8 mục 5–6, 4.3. *Màn hình:* `MODAL-ROOM-SETTINGS`.
-*Sprint:* S4. *Story Points:* **6** (tổng điểm 3 Task, 28 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **5** (tổng điểm 3 Task, 24 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -506,7 +507,7 @@
 **Là** người dùng hoặc Khách, **tôi muốn** Sảnh rõ ràng các lựa chọn, luật chơi và danh sách phòng công khai để vào chơi hoặc xem, **để** tìm trận mà không cần mã.
 *Nguồn:* BA 0.5, 2.7. *Màn hình:* `SCR-LOBBY`.
 *Nguồn:* BA 2.0, 10.4, Phần 11, DANH-MUC §7. *Màn hình:* `SCR-LOBBY`, `PANEL-NAVBAR`.
-*Sprint:* S4. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **7** (tổng điểm 3 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -531,7 +532,7 @@
 **Là** Host hoặc người chơi, **tôi muốn** sắp xếp người giữa ghế và hàng người xem và đuổi người xem quấy rối, **để** giữ không gian thi đấu tập trung.
 *Nguồn:* BA 2.6, 2.8 mục 3–4, 8.3. *Màn hình:* `SCR-WAITING-ROOM`, `PANEL-SPECTATORS`.
 *Nguồn:* BA 4.2, 4.1. *Màn hình:* `PANEL-SPECTATORS`, `MODAL-CONFIRM-KICK`.
-*Sprint:* S4. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
+*Sprint thi công:* S3, S4. *Story Points:* **10** (tổng điểm 3 Task, 44 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -558,7 +559,7 @@
 **Là** người chơi, **tôi muốn** một kênh riêng với đối thủ tách khỏi kênh của người xem, có lọc lời thô tục và chống spam, **để** trò chuyện văn minh và riêng tư.
 *Nguồn:* BA 5.3 mục 1, 10.1 (chat khi đổi người), 4.1. *Màn hình:* `PANEL-CHAT`.
 *Nguồn:* BA 5.3 mục 2.
-*Sprint:* S3. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -579,9 +580,9 @@
 
 #### US-07.2 · Camera, mic và mức chia sẻ
 **Là** người chơi, **tôi muốn** bật camera và mic và chọn ai được thấy/nghe mình, **để** giao lưu như ngồi cùng bàn mà vẫn chủ động quyền riêng tư.
-*Nguồn:* BA 4.1, 1.8 (nhiều tab), 10.1 (LiveKit Cloud, không ghi). *Màn hình:* `PANEL-MEDIA`. *Phụ thuộc:* spike GATE-MEDIA.
+*Nguồn:* BA 4.1, 1.8 (nhiều tab), 0.16, 10.1 (LiveKit tự chạy/Cloud dự phòng, không ghi). *Màn hình:* `PANEL-MEDIA`. *Phụ thuộc:* spike GATE-MEDIA.
 *Nguồn:* BA 4.1, 4.2.
-*Sprint:* S3. *Story Points:* **10** (tổng điểm 2 Task, 40 giờ).
+*Sprint thi công:* S3. *Story Points:* **7** (tổng điểm 2 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -606,7 +607,7 @@
 #### US-08.1 · Thiết lập và chơi ván với máy
 **Là** người chơi, **tôi muốn** chọn cấp độ và phe rồi chơi với máy không giới hạn thời gian, **để** luyện tập.
 *Nguồn:* BA 2.0 mục 4, 6.3, 0.9. *Màn hình:* `MODAL-AI-SETUP`, `SCR-AI-GAME`.
-*Sprint:* S3. *Story Points:* **8** (tổng điểm 3 Task, 36 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **8** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -621,7 +622,7 @@
 #### US-08.2 · Máy cờ ba cấp độ
 **Là** người chơi, **tôi muốn** ba cấp độ khác biệt rõ rệt, **để** luyện từ dễ đến khó.
 *Nguồn:* BA 6.1 (kèm tiêu chí bổ sung 05/10), 6.3 mục 3. *Ghi chú:* negamax + alpha-beta, tìm sâu dần, chạy ở tiến trình/worker riêng; dùng `xiangqi-core`.
-*Sprint:* S2. *Story Points:* **8** (tổng điểm 1 Task, 32 giờ).
+*Sprint thi công:* S1, S2. *Story Points:* **8** (tổng điểm 1 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
@@ -632,13 +633,13 @@
 #### US-08.3 · Ổn định ván với máy và hoàn thiện cấp Khó
 **Là** người chơi, **tôi muốn** ván với máy không mất vô lý khi rớt mạng hoặc máy cờ lỗi, và cấp Khó đạt chất lượng đã cam kết, **để** yên tâm luyện tập.
 *Nguồn:* BA 6.1 (Thử lại), 6.3 mục 4, 1.8.
-*Sprint:* S4. *Story Points:* **10** (tổng điểm 3 Task, 40 giờ).
+*Sprint thi công:* S2, S3. *Story Points:* **8** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-08.3.1 | Đang ván AI | Đóng tab hoặc mất mạng, quay lại trong 30 phút | Vào lại `/ai/:id` (hoặc banner ở Sảnh) và chơi tiếp đúng thế cũ | E2E |
 | AC-08.3.2 | Quá 30 phút | Hệ thống | Bỏ trạng thái ván trong bộ nhớ; không lưu lịch sử (P1) | I |
-| AC-08.3.3 | Máy cờ không trả lời quá 10 giây hoặc lỗi | Hệ thống | Báo *"Máy cờ gặp sự cố"* kèm "Thử lại"; nếu chỉ quá thời gian chờ thì Thử lại tìm nước trên cùng thế; nếu ván đã Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế | I, M |
+| AC-08.3.3 | Máy cờ không trả lời quá 10 giây hoặc lỗi | Hệ thống | Báo *"Máy cờ gặp sự cố"* kèm "Thử lại"; chỉ không phản hồi quá 10 giây thì giữ nguyên ván/thế, Thử lại tính nước trên cùng thế, không gửi lại nước người; nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế | I, M |
 | AC-08.3.4 | Bấm "Thử lại" nhiều lần liên tiếp | Hệ thống | Chỉ xử lý một lần (chặn bấm trùng) | I |
 | AC-08.3.5 | Máy chủ khởi động lại | Người chơi quay lại | *"Ván không còn trạng thái để tiếp tục"*, về Sảnh hoặc tạo ván mới; không khôi phục giả | M |
 | AC-08.3.6 | Đang ván AI | Chủ động Rời ván hoặc Đăng xuất | Xác nhận đầu hàng; Đồng ý → `RESIGN`, huỷ tác vụ máy, giải phóng vị trí chơi; Huỷ → giữ nguyên | E2E |
@@ -668,13 +669,13 @@
 
 ## 7. Cổng kiểm chứng kỹ thuật
 
-Các cổng nên chạy dưới dạng **Task spike ở Sprint 1** để phát hiện rủi ro sớm.
+Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp thật**. Lịch và người nhận ở [kế hoạch Sprint](KE-HOACH-JIRA.md#3-sprint); đầu ra/điều kiện hoàn thành ở [Description chi tiết](jira/reports/JIRA-MUC-CHI-TIET.md); nguyên mẫu không được dùng thay bằng chứng PASS. T24 dựng máy cờ từ 14–17/10 (S1 kéo sang S2), T59 tinh chỉnh/đo 18–19/10 (S2); không tuyên bố mọi gate đã xong trong S1.
 
 | Mã | Nội dung | Cách làm | Kết quả cần ghi |
 |---|---|---|---|
 | GATE-SMTP | OTP thật tới email ngoài nhóm qua SMTP ngoài | Đăng ký bằng 3 Gmail không thuộc nhóm; thử gửi 5 thư/giờ | Thời gian nhận thư, có vào Spam không, hạn mức nhà cung cấp |
 | GATE-GOOGLE | Không tự liên kết tài khoản cùng email | Tạo tài khoản email X bằng mật khẩu rồi đăng nhập Google bằng X | Hệ thống báo "Email này đã được đăng ký", không gộp tài khoản |
-| GATE-EMAIL | Email không đổi được | Gọi thẳng API đổi email của Supabase bằng phiên người dùng | Bị chặn (nếu cấu hình không chặn được thì ghi rõ "bị chặn ở tầng ứng dụng") |
+| GATE-EMAIL | Email không đổi được | Gọi thẳng API đổi email của Supabase bằng phiên người dùng | API trực tiếp không đổi được email; nếu chỉ chặn giao diện/tầng ứng dụng mà API vẫn đổi được thì GATE-EMAIL = BLOCKED, không PASS |
 | GATE-AUTH-USERNAME | Đăng nhập bằng username trên nền Supabase | Tra email theo username phía máy chủ + khoá thử sai | Không lộ email/sự tồn tại username; độ trễ đăng nhập |
 | GATE-SESSION | Một vị trí chơi, thiết bị khác xử thua | Đăng nhập 2 trình duyệt khác nhau giữa ván | Ván xử thua đúng, thiết bị cũ bị đăng xuất |
 | GATE-GUEST | Khách bằng đăng nhập ẩn danh | Tạo/huỷ phiên Khách, kiểm hạn 12 giờ | Phương án kỹ thuật chốt, giới hạn |
@@ -715,18 +716,22 @@ Mọi Story tính năng ─> US-00.5 (nghiệm thu tổng, đóng gói, demo)
 
 ### 9.2 Phân bổ Sprint
 
-| Sprint | Thời gian | Story được **thi công** (bằng Task) | Story Points | Increment / Release |
-|---|---|---|---|---|
-| Đặc tả (ngoài Sprint) | 07/10 → hạn từng Story | BA đặc tả 9 Epic, 27 Story; Story nào có Task sớm thì duyệt trước (quy tắc R1) | — | Story được PO duyệt trước khi Task đầu tiên của nó bắt đầu |
-| S1 | 08–14/10 | US-00.1 (5), US-00.2 (3), US-00.3 (5), US-00.4 (6), US-01.1 (7), US-01.2 (6), US-04.1 (6), US-04.2 (4) | **42** | **v0.1 · Nền tảng kỹ thuật, đăng ký/đăng nhập thật, bàn cờ đúng luật trên một máy** |
-| S2 | 15–21/10 | US-02.1 (10), US-03.1 (7), US-04.3 (6), US-05.1 (12), US-08.2 (8) | **43** | **v0.2 · Tạo phòng, vào bằng link/mã, hai người đánh trọn ván online có đồng hồ; máy cờ chạy được** |
-| S3 | 22–28/10 | US-01.3 (10), US-02.2 (6), US-03.2 (10), US-05.2 (6), US-07.1 (8), US-07.2 (10), US-08.1 (8) | **58** | **v0.3 · Google/Khách, Xin đổi bên và ở lại phòng, đầu hàng/xin hoà, bạn bè và mời online, chat, camera/mic, đánh với máy** |
-| S4 | 29/10–04/11 | US-00.5 (10), US-01.4 (8), US-05.3 (4), US-06.1 (6), US-06.2 (8), US-06.3 (8), US-08.3 (10) | **54** | **v1.0 · Phiên và hồ sơ, mất kết nối, chế độ phòng, Sảnh công khai, người xem, hoàn thiện máy cờ cấp Khó; nghiệm thu D1–D10 và đóng gói demo** |
+Đồng bộ Jira ngày 10/10: 36 Epic/Story BA Done, 71 Task To Do; cả bốn Sprint chưa bắt đầu. Thi công dự kiến từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.
 
-Ngày bắt đầu/kết thúc, người làm và giờ của từng Task: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
+| Sprint | Ngày | Task | Giờ | Điểm | Kết quả dự kiến |
+|---|---|---|---|---|---|
+| S1 | 10/10–16/10 | 15 | 284 | 60 | Nền tảng máy chủ, xác thực, lõi luật, bàn cờ tương tác, thử media và khởi động kế hoạch kiểm thử. Task gắn Sprint theo ngày bắt đầu; có Task hoàn tất trong Sprint kế tiếp. |
+| S2 | 17/10–23/10 | 17 | 212 | 48 | Khung giao diện, xác thực, phòng và ván cơ bản, máy cờ; triển khai chat và quản lý phiên theo lịch cân ngày. Task gắn Sprint theo ngày bắt đầu. |
+| S3 | 24/10–30/10 | 28 | 284 | 69 | Hoàn thiện bạn bè, chat/media, phòng/người xem, Sảnh, hồ sơ, nối lại và kiểm thử chuyên đề. Các phần triển khai hoàn tất chậm nhất 30/10 để hồi quy từ 31/10. |
+| S4 | 31/10–04/11 | 11 | 100 | 21 | Hồi quy 31/10–02/11, kiểm chất lượng 31/10–01/11, đóng gói 03/11 và tổng duyệt 04/11. Tối đa 7 Task/ngày, mỗi người một Task/ngày; phụ thuộc đầu-cuối không trùng ngày. Giữ nguyên thời lượng Task. |
+
+Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.
 
 ---
+
 ## 10. Truy vết
+
+Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [bản đồ truy vết AC](jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
 
 ### 10.1 Yêu cầu khách hàng → Epic → Story
 
@@ -766,7 +771,7 @@ Ngày bắt đầu/kết thúc, người làm và giờ của từng Task: [KE-H
 |---|---|
 | Epic P1 / P2 | 9 / 7 |
 | User Story P1 | 27 (EP-00: 5, EP-01 → EP-08: 22) |
-| Tiêu chí nghiệm thu P1 | 268 (= số TC) |
+| Tiêu chí nghiệm thu P1 | 268 AC; TC có cùng mã gốc và biến thể, sẽ được viết/thực thi trong Task |
 | Task | 71, xem KE-HOACH-JIRA.md |
 | NFR / Cổng kiểm chứng / Kịch bản demo | 12 / 9 / 10 |
 
@@ -777,6 +782,6 @@ Ngày bắt đầu/kết thúc, người làm và giờ của từng Task: [KE-H
 |---|---|---|---|
 | 1 | Các ngưỡng thời gian giao diện (≤ 2 giây cập nhật danh sách, ≤ 5 giây trạng thái bạn bè, ≤ 1 phút nhận OTP) do BA đề xuất | Đã chốt | **PO đồng ý 07/10** |
 | 2 | Câu chữ *"Khách chỉ được mở 1 phòng cùng lúc"*, *"Đăng ký tài khoản để kết bạn"*, *"Mã phòng không tồn tại hoặc phòng đã đóng"*, *"Không gửi được mã, vui lòng thử lại sau"*, *"Phòng đã đóng"* là đề xuất của BA | Đã chốt | **PO đồng ý 07/10** |
-| 3 | Lõi luật, máy cờ, LiveKit, realtime, CI/DevOps là phần khó, giao cho Tình theo quyết định PO; các Story khác phụ thuộc lõi luật và khung realtime | Rủi ro tiến độ | Kế hoạch Jira: Tình làm lõi luật + khung realtime ngay **S1** và công bố hợp đồng sự kiện trong US-00.3 để Story phòng và Story ván không phải chờ nhau |
-| 4 | Thư là Tester chính cho 268 TC | Rủi ro | Nhạn/Kỳ kiêm kiểm thử Story mà mình không làm (phân trong KE-HOACH-JIRA.md); dev tự viết unit test |
-| 5 | Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo | Rủi ro kỹ thuật | Máy cờ chạy ở S2, GATE-ENGINE đo ở S4 (US-08.3); không đạt thì báo PO, **không tự hạ ngưỡng** |
+| 3 | Tùng sở hữu lõi luật và ván online; Tình giữ khung realtime, xây máy cờ, LiveKit và CI/DevOps; Đông tinh chỉnh máy cờ. Các phần sau phụ thuộc nền này | Rủi ro tiến độ | Kế hoạch Jira: Tùng làm lõi luật và Tình làm khung realtime ngay **S1** và công bố hợp đồng sự kiện trong US-00.3 để Story phòng và Story ván không phải chờ nhau |
+| 4 | Thư là Tester chính cho phạm vi 268 AC và các biến thể TC | Rủi ro | Nhạn/Kỳ kiêm kiểm thử Story mà mình không làm (phân trong KE-HOACH-JIRA.md); dev tự viết unit test |
+| 5 | Máy cờ cấp Khó có mục tiêu độ sâu 6/ngân sách 3 giây; chưa có số đo | Rủi ro kỹ thuật | T24 từ 14–17/10 (S1–S2), T59 tinh chỉnh/đo 18–19/10 (S2), T68 kiểm độc lập 30/10 (S3); không đạt thì báo PO, **không tự hạ ngưỡng** |

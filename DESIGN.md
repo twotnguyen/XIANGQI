@@ -1,6 +1,6 @@
 # DESIGN.md — Hệ thống thiết kế Cờ Tướng Online
 
-**Cập nhật:** 2026-10-05 (Đồng bộ bốn lựa chọn chơi và bố cục chat; mockup chưa cập nhật) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
+**Cập nhật:** 2026-10-10 (làm rõ P1/P2 và bố cục; giữ quyết định thiết kế đã chốt; mockup chỉ tham khảo) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
 **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · chuẩn WCAG 2.1 AA
 
 > Các mã `DT-xx`, `DEC-xxx`, `GR-COORD`, `SCR-RULE-xx` trong file này là nhãn kế thừa từ bộ tài liệu cũ đã xoá. Nội dung luật đã được viết ngay tại chỗ dùng nó; không cần và không thể tra ở nơi khác. Các mã `TK…` (task Jira cũ) đã được gỡ khỏi file này.
@@ -13,7 +13,7 @@
 |---|---|
 | **Chốt** | Lấy nguyên từ đặc tả (`DT-*`, `SCR-*`, `DEC-*`). ⛔ Không được đổi ở đây — muốn đổi phải sửa đặc tả trước |
 | 🟡 | **Đề xuất** để lấp chỗ đặc tả chưa quy định. Design được đổi, nhưng phải sửa **cùng lúc** file này + Figma + `apps/web/src/styles/tokens.css` và **đo lại tương phản** |
-| 🆕 | Đề xuất **ngoài phạm vi đặc tả hiện tại** (chế độ tối). Cần quyết định `DEC` mới và Task trên Jira trước khi làm |
+| P1 / P2 | P1 dùng cố định Kỳ Đài Cổ Phong; Giấy Sáng/Theo hệ thống là P2. Tính năng P2 không nằm trong nghiệm thu P1 |
 
 - Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này.
 - Mọi tỉ lệ tương phản trong file đã được **tính** theo công thức WCAG 2.1 (độ chói tương đối). Khi dựng thật vẫn phải **đo lại** trên màn hình thật.
@@ -210,7 +210,7 @@ Chế độ tối (Kỳ Đài Cổ Phong): bóng khó thấy ⇒ dùng viền `-
 
 | Token CSS | Giá trị | Dùng cho |
 |---|---|---|
-| `--motion-move` | 180 ms, `ease-out` | **Chốt khoảng 150–200 ms:** quân trượt từ ô đi tới ô đến (ISSUE-083) |
+| `--motion-move` | 180 ms, `ease-out` | **Chốt khoảng 150–200 ms:** quân trượt từ ô đi tới ô đến |
 | `--motion-fast` 🟡 | 120 ms | Hover, đổi trạng thái nút, hiện chấm đích |
 | `--motion-base` 🟡 | 200 ms | Mở/đóng hộp thoại, toast, tab |
 
@@ -327,11 +327,11 @@ Câu bắt buộc (chốt):
 
 - **Cảnh báo treo ván** (`SCR-RULE-07`): vùng cảnh báo **không modal** (`--z-banner`), nền `--color-warning-bg`, không che bàn và nút Đầu hàng, **không có X**, không bẫy focus; "Bạn còn trong ván đấu không?" + nút **"Tôi còn đây"** + đếm ngược. Trình đọc màn hình **không** đọc từng giây.
 - **Mất kết nối:** lớp phủ `--z-overlay-blocking`, "Đang kết nối lại…" + thời gian giữ ván theo máy chủ; đối thủ thấy "Đối thủ mất kết nối — còn 00:45".
-- **Kết quả:** "🏆 Bạn thắng!" · "Bạn thua" · "Hoà" · "Ván bị gián đoạn — không có người thắng" (người xem: "Đỏ thắng"…), lý do bằng chữ, "Phòng đóng sau mm:ss", [Xem lại] [Tái đấu] [Rời phòng] theo chế độ và phân kỳ; P1 chỉ [Rời phòng]; P2 phòng tự tạo/ghép ngẫu nhiên có Tái đấu khi cả hai vẫn ở phòng và cùng đồng ý, Ranked không có (BA 2.0, 2.3, 7.2). Sau ván ghép ngẫu nhiên, một người rời thì người còn lại giữ màn kết quả; không nhận người mới, đóng khi cả hai rời hoặc hết 10 phút từ kết thúc ván (BA 2.0).
+- **Kết quả:** "🏆 Bạn thắng!" · "Bạn thua" · "Hoà" · "Ván bị gián đoạn — không có người thắng" (người xem: "Đỏ thắng"…), lý do bằng chữ. **P1, kết thúc ván thông thường:** phòng tự tạo có [Ở lại phòng] [Rời phòng], về WAITING ngay và không có hạn đóng 10 phút (BA 0.7); ván AI có [Ván mới] [Về Sảnh] (BA 0.9). **Gián đoạn do server khởi động lại (PO duyệt 09/10, BA 0.17):** phòng tự tạo cũng về WAITING, reset Sẵn sàng và có [Ở lại phòng] [Rời phòng], không hạn đóng 10 phút; nội dung kết quả trung tính, không có người thắng/thua/hoà. **P2:** [Xem lại] và [Tái đấu] theo chế độ/phân kỳ; phòng tự tạo/ghép ngẫu nhiên có Tái đấu chọn Giữ phe/Đổi phe khi cả hai vẫn ở phòng và cùng đồng ý, Ranked không có (BA 0.8). Chỉ các chế độ giữ FINISHED có "Phòng đóng sau mm:ss"; ghép ngẫu nhiên đóng khi cả hai rời hoặc hết 10 phút từ kết thúc ván, không nhận người mới (BA 2.0).
 
 ### 6.9 Chat và camera/mic
 
-**P2 — PO duyệt 05/10:** cùng hai người Đổi bên/Tái đấu trong cùng phòng giữ chat riêng; thay người trong cặp thì chỉ đọc từ mốc cặp mới, phòng đóng xoá chat (BA 5.3).
+**P1:** cùng hai người Đổi bên hoặc ở lại phòng chơi tiếp giữ chat riêng; chat và camera/mic hoạt động cả ở phòng chờ, chuyển vào ván không ngắt media (BA 0.7, 0.13). Thay người trong cặp thì chỉ đọc từ mốc cặp mới, phòng đóng xoá chat (BA 5.3). **P2:** Tái đấu cùng cặp trong cùng phòng cũng giữ chat riêng.
 
 - **Ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có Kênh riêng**, không Kênh Chung/người xem (BA 2.0, 5.4, 7.2). **Bố cục chat theo BA 5.3 (PO chốt 05/10/2026):** ở phòng có hai kênh, trên máy tính **mặc định chỉ mở Kênh Riêng**; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"**, hoặc ẩn bớt một trong hai rồi mở lại; trên điện thoại dùng hai tab trong một khung, mặc định chọn Kênh Riêng. Người xem chỉ thấy Kênh Chung. Ẩn khung không thay đổi quyền đọc/gửi. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
 - Trạng thái tin: đang gửi · đã gửi · gửi lỗi + "Thử lại".
@@ -341,7 +341,7 @@ Câu bắt buộc (chốt):
 
 ## 7. Bàn cờ
 
-### 7.1 Hệ toạ độ (chốt, xem [AGENTS.md §4](AGENTS.md))
+### 7.1 Hệ toạ độ (quy ước chốt trong mục này)
 
 Đen ở trên (`y = 0`), Đỏ ở dưới (`y = 9`). Người cầm Đen thấy bàn **lật 180°** — **chỉ hiển thị**; toạ độ gửi máy chủ không đổi (`DT-18`, `GR-COORD-01`).
 
@@ -393,7 +393,7 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 
 - Thao tác chính **chạm quân → chạm đích**; **hỗ trợ song song kéo thả**, bắt buộc ở P1 theo BA 3.4 (không phải tuỳ chọn).
 - Bàn phím (`DT-06`): mũi tên di chuyển con trỏ · `Enter`/`Space` chọn và xác nhận · `Esc` bỏ chọn.
-- Nhãn đọc (`DT-04`): *"<Tên quân> <màu>, cột <x+1> hàng <y+1>"* theo **toạ độ gốc**, không đổi khi lật bàn — ví dụ Mã đỏ ở `(1,9)` ⇒ "Mã đỏ, cột 2 hàng 10"; giao điểm trống 🟡 "Trống, cột 5 hàng 6" (TK02.1.2 §5.9).
+- Nhãn đọc (`DT-04`): *"<Tên quân> <màu>, cột <x+1> hàng <y+1>"* theo **toạ độ gốc**, không đổi khi lật bàn — ví dụ Mã đỏ ở `(1,9)` ⇒ "Mã đỏ, cột 2 hàng 10"; giao điểm trống 🟡 "Trống, cột 5 hàng 6".
 - Chú giải quân (`DT-05`): 14 chữ Hán + tên tiếng Việt.
 - Ở 360 px (`DT-08`): bàn full chiều ngang, giao điểm < 44 px ⇒ dấu chọn/đích to rõ, không phụ thuộc kéo thả.
 
@@ -403,30 +403,22 @@ Vẽ bằng **SVG** co giãn theo khung chứa; bàn giữ đúng tỉ lệ, kh�
 
 ### 8.1 Máy tính (≥ 1024 px)
 
-> Sơ đồ chỉ minh hoạ các khối chức năng. Bố cục của `SCR-GAME-ROOM` lấy **3 cột theo `DANH-MUC-MAN-HINH-XIANGQI.md`** (trái: media, thẻ người chơi, đồng hồ; giữa: bàn cờ, trạng thái lượt, công cụ ván; phải: người xem, chat); khi khác nhau thì theo DANH-MUC (ưu tiên cao hơn). **PO chốt 04/10/2026 theo khuyến nghị: bố cục theo DANH-MUC (3 cột)**; hình vẽ dưới đây chỉ minh hoạ và sẽ được vẽ lại cho khớp khi dựng giao diện. Nguyên tắc giữ: camera không đè bàn cờ.
+> Bố cục P1 của `SCR-GAME-ROOM` gồm ba cột theo DANH-MUC: trái là media, người chơi và đồng hồ; giữa là bàn cờ, lượt và công cụ ván; phải là người xem/chat. Camera không đè lên bàn cờ. Nội dung P2 chỉ hiện khi được triển khai ở giai đoạn sau.
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
-│ Cờ Tướng Online   Sảnh  Xếp hạng  Bạn bè  Lịch sử   [Hồ sơ ▾] │
-├──────────────────────────────────────────────────────────┤
-│  📹 Camera Đỏ     📹 Camera Đen    ← hàng riêng, KHÔNG đè bàn │
-├────────────────────────────────┬─────────────────────────┤
-│                                │ Lượt · Đồng hồ          │
-│           BÀN CỜ               ├─────────────────────────┤
-│         (trung tâm)            │ Lịch sử nước đi         │
-│                                ├─────────────────────────┤
-│  [Hệ tọa độ GR-COORD 9x10]     │ 💬 Chat (Kênh Riêng/Chung)│
-│                                ├─────────────────────────┤
-│                                │ 👥 Người xem (Tối đa 5)│
-├────────────────────────────────┴─────────────────────────┤
-│ [Đầu hàng]  [Xin hoà]  [Xin đi lại*]                     │
-└──────────────────────────────────────────────────────────┘
+│ Thanh điều hướng: Sảnh · Bạn bè · Hồ sơ                   │
+├─────────────────┬────────────────────┬───────────────────┤
+│ Media 2 người   │ Bàn cờ SVG         │ Người xem         │
+│ Thẻ người chơi  │ Trạng thái lượt    │ Kênh chat riêng   │
+│ Đồng hồ 2 bên   │ Đầu hàng · Xin hoà │ Kênh chung mở thêm│
+└─────────────────┴────────────────────┴───────────────────┘
 ```
 
 **Quy tắc động thích ứng theo Chế độ chơi (Chốt, `BA-SCOPE`):**
 - **Phòng tự tạo (CASUAL):** có `[Panel Người xem]`; P2 thêm `[Xin đi lại]` (tối đa 3 lần khi đối thủ chấp nhận) (người tạo phòng chọn không có người xem hoặc tối đa 1–5, mặc định 5; xem BA-SCOPE `Quyết định 2.8`).
 - **Đánh Thường ghép ngẫu nhiên (P2):** cố định 15 phút mỗi bên; không người xem/chia sẻ phòng, chỉ chat/camera/mic giữa hai người. Có Xin đi lại/Tái đấu theo BA 2.0, 2.3, 3.2 và 3.6; Tái đấu đặt lại 15 phút/bên.
-- **Ván Đánh Xếp Hạng (Ranked Elo FIDE):** 
+- **Ván Đánh Xếp Hạng (P2):**
   - ⛔ **ẨN HOÀN TOÀN** nút `[Xin đi lại]` (Cấm Undo 100%).
   - ⛔ **ẨN HOÀN TOÀN** khu vực `[Người xem]` (Cấm người xem 100% để chống phím cờ).
   - Cố định 10 phút Rapid mỗi bên.
@@ -446,7 +438,7 @@ Cột phải 🟡 320–360 px; bàn cờ chiếm phần còn lại, cao tối �
 ├──────────────────────┤
 │ [Ván] [Chat] [Camera]│ ← tab, không hiện cùng lúc
 ├──────────────────────┤
-│ [Đầu hàng][Hoà][Lại] │ ← cố định dưới cùng
+│ [Đầu hàng] [Xin hoà] │ ← P1; Xin đi lại chỉ P2
 └──────────────────────┘
 ```
 
@@ -471,7 +463,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - Toàn bộ giao diện **tiếng Việt**, kể cả lỗi và nhãn trợ năng (`DT` §11).
 - Câu ngắn, xưng "bạn", nói **việc cần làm tiếp**. Lỗi theo mẫu *điều gì xảy ra + cách sửa*: "Mã phòng không đúng. Kiểm tra lại 8 ký tự rồi thử lại."
 - ⛔ Không lộ chi tiết kỹ thuật (mã HTTP, stack), không tiết lộ dữ liệu vượt quyền (ví dụ "email đã tồn tại" ở màn quên mật khẩu).
-- Thuật ngữ theo [AGENTS.md §4.1](AGENTS.md): **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
+- Thuật ngữ dùng thống nhất: **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
 - Thời gian: `mm:ss` cho đồng hồ và đếm ngược; ngày giờ dạng `27/09/2026 14:05`.
 - Các câu đã chốt trong §6.3 phải dùng **đúng chữ**.
 
@@ -479,7 +471,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 
 ## 10. Trợ năng — tóm tắt kiểm
 
-- [ ] Tương phản đạt §2 (chữ ≥ 4,5; chữ lớn/UI ≥ 3) ở **cả hai chế độ** nếu làm chế độ tối
+- [ ] Tương phản đạt §2 (chữ ≥ 4,5; chữ lớn/UI ≥ 3) ở Kỳ Đài Cổ Phong cho P1; kiểm thêm Giấy Sáng/Theo hệ thống khi triển khai P2
 - [ ] Không thông tin nào chỉ bằng màu (`DT-01`); hai phe phân biệt ở giả lập mù màu (`DT-21`)
 - [ ] Toàn bộ dùng được bằng bàn phím; viền tiêu điểm luôn thấy (`DT-06`, `DT-09`)
 - [ ] Vùng chạm ≥ 44 px (`DT-07`); 360 px không cuộn ngang
@@ -487,25 +479,27 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - [ ] Vô hiệu luôn có giải thích (`SCR-RULE-01`)
 - [ ] `prefers-reduced-motion` tắt chuyển động
 - [ ] Đếm ngược không đọc từng giây; thông báo quan trọng qua `aria-live`
-- [ ] Kiểm chi tiết WCAG và 5 trạng thái cho toàn bộ màn hình: lập kế hoạch ở Giai đoạn 2
+- [ ] Kiểm chi tiết trợ năng và 5 trạng thái theo AC và Task kiểm thử trong BACKLOG-P1
 
 ---
 
 ## 11. Quy trình Figma (người thiết kế)
+
+Bảng dưới mô tả tổ chức thiết kế cho toàn sản phẩm. Bàn giao P1 chỉ gồm 26 thành phần P1 theo DANH-MUC; các màn hình P2 và phần P2 trong màn P1 chưa cần triển khai. Luồng Sảnh P1 có cả **Vào chơi** và **Vào xem** theo BA 0.5.
 
 ### 11.1 Cấu trúc file
 
 | Trang Figma | Nội dung bao phủ các màn hình |
 |---|---|
 | `00 · Design system` | Color/Text styles, token hoàng kim + gỗ mun, thành phần + mọi trạng thái |
-| `01 · Bàn giao token` | Bảng tên token CSS → giá trị (khớp §12, hỗ trợ 2 theme Sáng/Tối) |
+| `01 · Bàn giao token` | Bảng tên token CSS → giá trị (khớp §12; P1 chỉ Kỳ Đài, theme bổ sung P2) |
 | `02 · Bàn cờ` | Bàn SVG 3 cỡ × 2 hướng, quân chữ Hán, trạng thái §7.4 (GR-COORD) |
 | `10 · Tài khoản & Auth` | `SCR-LOGIN`, `MODAL-GUEST-NAME`, `SCR-REGISTER` (3 bước), `SCR-FORGOT-PASSWORD`, `SCR-RESET-PASSWORD`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS`, `MODAL-OTP-USERNAME` |
-| `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (4 lựa chọn theo BA 2.0; danh sách phòng PUBLIC và nút Vào xem), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
+| `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (4 lựa chọn theo BA 2.0; danh sách phòng PUBLIC, Vào chơi/Vào xem), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
 | `12 · Phòng thi đấu` | `SCR-GAME-ROOM` (Casual vs Ranked), đồng hồ, đề nghị hòa/undo, cờ treo, mất kết nối, `MODAL-MATCH-RESULT`, `SCR-ACCESS-DENIED` |
 | `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 người chơi), `PANEL-CHAT` (máy tính mặc định Kênh Riêng, mở thêm Kênh Chung hoặc ẩn bớt một; điện thoại dùng tab Riêng/Chung; 12 sticker P2, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
 | `14 · Xếp hạng & Xã hội` | `SCR-LEADERBOARD` (Top 50 + Sticky User Row), `SCR-FRIENDS`, `MODAL-DIRECT-CHAT` (chat 1-1 bạn bè) |
-| `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ, đi lại tối đa 3 lần không cần máy đồng ý), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) |
+| `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ P1; đi lại tối đa 3 lần là P2), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) |
 
 ### 11.2 Quy ước
 
@@ -521,7 +515,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 - [ ] Mọi khoảng cách ∈ {4, 8, 12, 16, 24, 32}; mọi vùng chạm ≥ 44 px
 - [ ] Mọi biến thể vô hiệu có câu giải thích
 - [ ] Bàn cờ xuất PNG, kiểm 3 giả lập mù màu
-- [ ] Lưu link Figma (quyền xem cho cả nhóm) + PNG + bảng token ở nơi nhóm thống nhất (Jira chưa tồn tại ở Giai đoạn 1)
+- [ ] Lưu link Figma (quyền xem cho cả nhóm) + PNG + bảng token ở nơi nhóm thống nhất trong Task Jira tương ứng
 
 Đổi giá trị 🟡 trong Figma ⇒ sửa §2–§4 và §12 của file này trong cùng lúc, báo Frontend.
 
@@ -671,7 +665,7 @@ body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-
 2. **Chỉ dùng token** (`var(--…)`); ⛔ không mã màu, không số px ngoài thang, phông chỉ lấy từ `--font-ui` / `--font-serif` / `--font-han` / `--font-mono` theo vai trò ở §3.1 (PO chốt 05/10).
 3. Dựng **đủ 5 trạng thái** của màn và mọi trạng thái của thành phần; vô hiệu luôn có câu giải thích.
 4. Dùng câu chữ đã chốt nguyên văn; không tự đặt câu cho các hộp xác nhận ở §6.3.
-5. Không thêm thư viện giao diện dựng sẵn hay Tailwind (`AGENTS.md §6`). Thư viện icon và toast chưa chốt (chọn khi bắt đầu Giai đoạn 4, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
+5. Không thêm thư viện giao diện dựng sẵn hay Tailwind. Thư viện icon và toast chưa chốt (chọn khi bắt đầu Giai đoạn 4, không thêm công nghệ ngoài danh sách README khi chưa được đồng ý).
 6. Kiểm trước khi mở PR: 4 kích thước (360, 390, 1366, 1920) không cuộn ngang; điều hướng hết bằng bàn phím; bật giảm chuyển động; giả lập mù màu cho bàn cờ.
 7. Cần giá trị chưa có trong file này ⇒ **hỏi** hoặc đề xuất 🟡 (kèm tỉ lệ tương phản đã tính) và cập nhật file này trong cùng PR — ⛔ không tự đặt giá trị rồi dùng lặng lẽ.
 8. Áp dụng chuẩn Theme Kỳ Đài Cổ Phong (Dark Tea-Room) theo định hướng thẩm mỹ Á Đông cao cấp, đảm bảo tương phản WCAG 2.1 AA.

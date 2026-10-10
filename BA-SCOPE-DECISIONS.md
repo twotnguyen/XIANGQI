@@ -1,9 +1,11 @@
 # BIÊN BẢN CHỐT YÊU CẦU NGHIỆP VỤ & PHẠM VI SẢN PHẨM (BA SCOPE FREEZE)
 
+> **Lịch triển khai hiện hành (10/10/2026):** Jira và repo đã đồng bộ 880 giờ, hạn hoàn thành/Release v1.0 04/11/2026; 36 mục BA Done, 71 Task To Do, chưa bắt đầu Sprint. Các mốc 05/11 trong quyết định có ngày bên dưới được giữ như lịch sử; lịch thực hiện hiện tại xem [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Không thay đổi phạm vi hoặc tiêu chí nghiệp vụ đã chốt.
+
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  
-> **Cập nhật lần cuối:** 07/10/2026 (PO chốt sau review BA: lịch đến 05/11, Khách và Xin đổi bên lên P1, quy tắc đăng nhập, Sảnh PUBLIC có "Vào chơi", luật sau ván, SMTP ngoài. Xem **Phần 0**)  
+> **Cập nhật lần cuối:** 10/10/2026 — thống nhất mục 0.1 với kế hoạch Jira 880 giờ, hạn 04/11; giữ các quyết định nghiệp vụ đã duyệt.
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
@@ -21,28 +23,22 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ---
 
-## PHẦN 0: QUYẾT ĐỊNH CHỐT 07/10/2026 — ƯU TIÊN CAO NHẤT
+## PHẦN 0: QUYẾT ĐỊNH HIỆN HÀNH (07–10/10/2026) — ƯU TIÊN CAO NHẤT
 
 > Product Owner (Twot) duyệt ngày 07/10/2026 (mục 0.1–0.11) và 08/10/2026 (mục 0.12–0.16) sau đợt review BA (Q1–Q10, F1–F5 và câu hỏi bổ sung về đổi bên/đấu lại). Khi phần nào khác trong tài liệu, nhật ký cũ, DANH-MUC, README hoặc mockup mâu thuẫn với Phần 0 thì **Phần 0 thắng**. Các mục bị ảnh hưởng đã được sửa trực tiếp và gắn nhãn **(07/10)**.
 
-### 0.1 Lịch, nguồn lực và Jira
-* **Hạn cuối: 05/11/2026** (nộp + demo). Thay toàn bộ lịch cũ (hạn 17–18/10, 4 Sprint 04/10–17/10) ở Quyết định 10.1 và README.
-* **Sprint:** 07/10 = ngày chuẩn bị (chốt tài liệu, dựng Jira, chuẩn bị môi trường; không tạo Sprint trên Jira) · **S1 08–14/10 · S2 15–21/10 · S3 22–28/10 · S4 29/10–04/11** · 05/11 nộp và demo. Làm cả cuối tuần.
-* **Công suất lập kế hoạch:** 8 giờ/người/ngày; phần 8 → 12 giờ là **dự phòng**, không đưa vào kế hoạch gốc.
-* **Nhóm 7 người:**
+### 0.1 Lịch, nguồn lực và Jira — hiện hành, đồng bộ 10/10/2026
 
-| Thành viên | Chuyên môn chính | Ghi chú phân vai |
-|---|---|---|
-| Tình (Twot) | Full-stack (FE, BE, DevOps, AI) | Scrum Master + PO; nhận **toàn bộ phần khó và quan trọng**, là người làm nhiều việc nhất, tính 100% công suất cho việc kỹ thuật (PO quyết định, không giảm trừ cho vai trò SM) |
-| Đông | Backend | |
-| Tùng | Backend | |
-| Cường | Backend | |
-| Nhạn | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
-| Kỳ | Frontend | Có thể kiêm Tester khi khối lượng kiểm thử lớn |
-| Thư | Tester | Phụ trách kiểm thử chính |
+* **Hạn hoàn thành và Release v1.0: 04/11/2026**, gồm tổng duyệt 8 giờ ngày 04/11; không còn buổi chiều dự phòng cố định. Tổng kế hoạch **880 giờ**, 9 Epic / 27 Story / 71 Task. Ngày phát triển dự kiến đầu tiên là 10/10; chưa ghi nhận Task triển khai đã bắt đầu.
+* **Sprint:** S1 10–16/10 · S2 17–23/10 · S3 24–30/10 · S4 31/10–04/11. Cả bốn Sprint chưa bắt đầu. Lịch tính cả cuối tuần, tối đa 8 giờ/người/ngày; không tính tăng ca vào công suất cơ sở.
+* **Phân công hiện hành:** Tình 156 giờ; Đông 120; Tùng 132; Cường 124; Nhạn 120; Kỳ 108; Thư 120. Tình full-stack, PO/SM, giữ nền realtime, xây máy cờ, media/DevOps và T37 chat; Tùng sở hữu lõi luật/ván online; Đông làm BE và tinh chỉnh máy cờ; Cường làm BE, hỗ trợ FE theo phân công; Nhạn/Kỳ làm FE và kiểm thử độc lập; Thư là Tester chính. T49 giữ Kỳ. Giờ BA/điều phối chưa có ước lượng riêng; tổng giờ không phải khẳng định mức tải bằng nhau.
+* **Giới hạn lịch:** tối đa 7 Task/ngày, mỗi người tối đa 1 Task/ngày, tính cả ngày bắt đầu và ngày kết thúc. Task phụ thuộc chỉ bắt đầu từ ngày sau khi Task tiền nhiệm kết thúc. Sprint của Task là Sprint bắt đầu; Task có thể kết thúc ở Sprint kế tiếp.
+* **BA và triển khai:** Epic bắt đầu trước Story đầu tiên; Story bắt đầu trước Task đầu tiên của nó. Epic/Story là công việc BA, có thể kết thúc trước hoặc sau Task đầu vài ngày, có thể sau Task thứ hai/thứ ba, chậm nhất không vượt Task cuối trong phạm vi; không mặc định kéo đến Task cuối hay lấy ngày kết thúc Story muộn nhất làm ngày kết thúc Epic. Ngày cụ thể giữ theo [lịch BA hiện hành](KE-HOACH-JIRA.md#4-lịch-ba-và-trạng-thái); không tự đặt lại tất cả về 09/10. Đây là ngày kế hoạch, không phải ngày hoàn thành thực tế.
+* **Trạng thái:** 9 Epic + 27 Story BA **Done**, Resolution = Done vì đặc tả đã chốt; không gắn Sprint hoặc Release triển khai. 71 Task **To Do**, Resolution trống, chưa ghi giờ thực tế. Bằng chứng nghiệm thu phần mềm được bổ sung tại Task kiểm thử/tích hợp, không đợi số đo mới đóng đặc tả BA; giữ nguyên ngưỡng đã duyệt.
+* **Cấu trúc:** Task là loại Task thường, cha là Epic, liên kết `relates to` tới Story. Không đưa họp/báo cáo quản lý thành Task triển khai. P2 chỉ ghi ở mức Epic trong Backlog, chưa đưa vào kế hoạch P1 trên Jira. Các mục hiện có được cập nhật theo Jira Key, không xoá và nhập lại.
+* **Story Points:** giữ giá trị đã có trên Jira, tổng 198 điểm; độc lập với cập nhật giờ ước lượng, không tự quy đổi lại từ giờ. Bảng giờ/người/ngày và mô tả công việc ở [kế hoạch Jira](KE-HOACH-JIRA.md) và [danh sách chi tiết](jira/reports/JIRA-MUC-CHI-TIET.md).
 
-* **Nguyên tắc phân công:** phần còn lại chia đều, đúng chuyên môn; 1–2 người được kiêm thêm vai trò khi một mảng quá tải (ví dụ Kỳ hoặc Nhạn kiểm thử cùng Thư). Bảng phân công chi tiết nằm trong kế hoạch Jira.
-* **Jira XIAN:** xoá 98 mục cũ, **lập lại từ đầu** theo [BACKLOG-P1.md](BACKLOG-P1.md). **Jira chỉ chứa việc phát triển** (gồm cả kiểm thử, cấu hình, triển khai); không đưa hoạt động quản lý dự án (họp, báo cáo) vào Jira. P1 chi tiết tới Story/Task; P2 chỉ ở mức Epic. **Cấu trúc chốt 07/10:** 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 Story; Epic và Story là phần việc BA, xong khi đặc tả được PO duyệt — theo hướng dẫn của giảng viên, Epic/Story có thể xong trước các Task bên trong, chậm nhất ở Task cuối cùng. **Quy tắc R1:** mọi Epic/Story bắt đầu 07/10; Story xong trước khi Task đầu tiên của nó bắt đầu, ngoại lệ US-08.3 (GATE-ENGINE) và US-00.5 (GATE-REALTIME) xong ở Task cuối; Epic xong theo Story muộn nhất; Epic/Story không đặt vào Sprint, nhập Jira ở trạng thái To Do; Task là loại Task thường (cha là Epic, liên kết tới Story) có Sprint, người làm và hạn riêng; mỗi người một Task tại một thời điểm, Task phụ thuộc chỉ bắt đầu khi Task trước xong, hạn chế tối đa số Task chạy song song (tối đa 7, mỗi Task một người). Kế hoạch: [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
+> **Đã thay thế:** quy tắc R1 cũ (mọi BA bắt đầu 09/10, các ngoại lệ đợi Task cuối), phương án 848 giờ, hạn 05/11 và yêu cầu xoá 98 mục/nhập lại là lịch sử. Không dùng để điều chỉnh kế hoạch hiện hành. Phạm vi nghiệp vụ và 268 tiêu chí nghiệm thu không thay đổi.
 
 ### 0.2 Đăng nhập và đăng ký (P1)
 * **Ba cách vào ứng dụng ở `SCR-LOGIN`:** (1) Username + Mật khẩu; (2) Đăng nhập bằng Google; (3) **Khách** (xem 0.3).
@@ -126,6 +122,16 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * Demo LAN phải chạy web qua **HTTPS** (ví dụ chứng chỉ nội bộ mkcert) vì trình duyệt chỉ cho bật camera/mic trên HTTPS hoặc `localhost`.
 * Thay quyết định "LiveKit Cloud, không tự dựng LiveKit" ở 10.1. Kiểm chứng ở GATE-MEDIA (Sprint 1).
 
+### 0.17 Ba điểm review đã chốt — PO duyệt 09/10/2026
+
+1. **Username và từ cấm:** từ chối username chứa từ cấm ngay tại bước nhập username trong đăng ký thường và Google onboarding, dùng bộ lọc 5.3; máy chủ kiểm lại trước khi hoàn tất. Giữ `display_name = username`, không tự sinh tên thay thế.
+2. **Ưu tiên kết quả:** chiếu hết vẫn ưu tiên cao nhất khi xét kết quả từ một nước hợp lệ. Nếu cùng nước chạm 120 nửa nước không ăn quân, kết quả thắng/thua do hết nước đi (`STALEMATE`) hoặc chiếu liên tục (`PERPETUAL_CHECK`) được ưu tiên trước hoà `DRAW_NO_CAPTURE`. Giữ nguyên định nghĩa lặp thế và các ngưỡng đã duyệt; đồng hồ vẫn được kiểm trước khi duyệt nước đi theo 3.3.
+3. **Server khởi động lại:** ván online đang chạy kết thúc `INTERRUPTED`, không có người thắng/thua/hoà. Với **phòng tự tạo**, phòng về `WAITING`, Sẵn sàng reset, hiện **Ở lại phòng / Rời phòng**, không hạn đóng 10 phút; áp dụng vòng đời 0.7. Phòng ghép ngẫu nhiên và Ranked (P2) vẫn theo luật `FINISHED` riêng của từng chế độ. Ván AI P1 vẫn theo 6.3: không còn trạng thái sau restart, không tự khôi phục.
+
+**Bổ sung review trước nhập Jira — PO chốt 09/10:** máy cờ không phản hồi quá 10 giây thì giữ nguyên ván/thế; Thử lại yêu cầu tính nước trên cùng thế. Không chuyển Bỏ dở chỉ vì hết thời gian chờ. Không đổi quy tắc mất trạng thái sau máy chủ khởi động lại; xem 6.1.
+
+Ba câu hỏi của lượt review đã được giải quyết; không còn điều kiện chờ PO cho ba điểm này. Đồng bộ vào AC/TC và Task hiện có, giữ **9 Epic / 27 Story / 71 Task**.
+
 ---
 
 ## PHẦN 1: TÀI KHOẢN & ĐĂNG NHẬP (Yêu cầu 1)
@@ -137,7 +143,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * `Username:` (Tên đăng nhập: duy nhất toàn hệ thống, 3–20 ký tự, viết liền không dấu `^[a-zA-Z0-9_]{3,20}$`).
     * `Mật khẩu:` (Tối thiểu 8 ký tự, có ô xác nhận lại mật khẩu).
   * **Quy trình 3 bước hoàn tất đăng ký:**
-    1. **Bước 1 (Nhập Username & Mật khẩu):** Người dùng điền đầy đủ và bấm nút **"Xác nhận / Tiếp tục"**. Hệ thống kiểm tra tính duy nhất (UNIQUE) của `username`.
+    1. **Bước 1 (Nhập Username & Mật khẩu):** Người dùng điền đầy đủ và bấm nút **"Xác nhận / Tiếp tục"**. Hệ thống kiểm tra tính duy nhất (UNIQUE) của `username` và từ chối tên chứa từ cấm ngay ở bước này (0.17, PO duyệt 09/10).
     2. **Bước 2 (Nhập Email):** Giao diện chuyển tiếp mượt mà sang khung nhập `Email:`. Người dùng điền địa chỉ email chính chủ và bấm **"Xác nhận Email"**.
     3. **Bước 3 (Xác thực Email qua mã OTP):** Hệ thống kích hoạt Supabase Auth gửi mã OTP 6 chữ số đến địa chỉ email vừa nhập, đồng thời hiển thị khung nhập mã OTP. Người dùng kiểm tra hòm thư (check mail), lấy mã và nhập vào hệ thống để xác nhận email vừa nhập là chính xác và đang hoạt động. Xác thực OTP thành công $\rightarrow$ Tài khoản chuyển sang trạng thái `ACTIVE`, tự động đăng nhập và đưa vào sảnh chính.
   * **Thời điểm tạo tài khoản:** Tài khoản **dùng được** (có hồ sơ và đăng nhập được) chỉ có **sau khi OTP xác thực thành công và hoàn tất bước cuối**. Trước đó người dùng chưa có hồ sơ và không đăng nhập được; **hệ thống xác thực (Supabase) có thể giữ tạm một bản ghi xác thực chưa xác nhận** (Product Owner chọn Phương án B ngày 03/10/2026), được dọn sau khoảng 1 giờ (tối đa khoảng 65 phút) để email không bị kẹt; username **không bị giữ chỗ** khi người dùng bỏ dở giữa chừng (đóng tab, hết hạn OTP). Máy chủ kiểm tra lại tính duy nhất của `username` và `email` ở bước cuối; nếu username đã bị người khác lấy trong lúc chờ thì báo lỗi và quay về Bước 1.
@@ -153,7 +159,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * **Quy trình đăng ký 1 chạm:**
     1. Người dùng bấm nút và chọn tài khoản Gmail đã có sẵn trên thiết bị/trình duyệt của mình.
     2. Sau khi xác thực danh tính với Google thành công, giao diện chuyển tiếp ngay sang màn hình nhập:
-       * `Username:` (Tên tài khoản duy nhất, 3–20 ký tự).
+       * `Username:` (Tên tài khoản duy nhất, 3–20 ký tự; từ chối từ cấm ngay tại bước nhập này theo 0.17).
        * `Mật khẩu:` (Mật khẩu cá nhân, tối thiểu 8 ký tự).
     3. **Miễn xác thực Email bằng OTP:** Do địa chỉ email đã được Google xác thực an toàn tuyệt đối, hệ thống **không yêu cầu nhập mã OTP email** trong luồng này.
     4. Người dùng xác nhận $\rightarrow$ Hoàn tất tạo tài khoản thành công.
@@ -193,6 +199,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
      * **`Username` (Tên tài khoản / Tên đăng nhập):**
        * Dùng để đăng nhập vào hệ thống cùng với Mật khẩu.
        * Quy tắc: Bắt buộc duy nhất (UNIQUE) toàn hệ thống, 3–20 ký tự, viết liền không dấu, không khoảng trắng (`^[a-zA-Z0-9_]{3,20}$`). **Không phân biệt hoa thường (đã duyệt 03/10):** `Twot` và `twot` là cùng một tên; lưu đúng chữ người dùng gõ nhưng kiểm tra trùng, đăng nhập và tìm bạn đều so sánh bằng chữ thường.
+       * **Từ cấm khi đăng ký (PO duyệt 09/10):** dùng bộ lọc 5.3 để từ chối username chứa từ cấm ngay tại bước nhập trong cả đăng ký thường và Google onboarding; kiểm lại phía máy chủ trước khi hoàn tất. Tên mặc định vẫn bằng username, không sinh tên thay thế (0.17).
        * Bảo mật đổi tên: Bắt buộc phải trải qua quy trình 4 bước xác thực mã OTP gửi về Email (`Quyết định 1.6`).
        * Tần suất: Cho phép đổi liên tục không giới hạn số lần (không cooldown) để thuận lợi cho dev và test.
        * **Giữ chỗ username cũ (đã duyệt 03/10):** Sau khi đổi, username cũ **bị khoá 30 ngày**: không ai đăng ký được, chỉ chủ cũ đổi lại được. Quy tắc này chặn việc chiếm tên cũ để mạo danh. Username đang bị khoá vẫn hiển thị "đã có người dùng" khi kiểm tra trùng.
@@ -499,7 +506,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Mô tả nghiệp vụ:**
   1. **Chiếu liên tục (perpetual check):** Khi một thế cờ lặp lần thứ 3 mà **mọi nước đi của một bên trong chu kỳ lặp đều là nước chiếu** (bên kia không chiếu) thì **bên chiếu liên tục bị xử THUA** (lý do `PERPETUAL_CHECK`). Nếu **cả hai bên** cùng chiếu liên tục thì xử Hòa.
   2. **Đuổi quân liên tục (perpetual chase):** **Không xử riêng trong cả P1/P2** (đã duyệt Giai đoạn 2 ngày 03/10). Lặp thế do đuổi quân xử Hoà theo lặp ba lần; khác biệt được công bố theo 10.4. Không tự bổ sung luật đuổi quân vào P2.
-  3. **Hòa do không ăn quân:** Sau **120 nửa nước liên tiếp** (mỗi bên 60 nước) không có nước ăn quân thì xử Hòa tự động (`DRAW_NO_CAPTURE`). Con số đã được xác nhận ở Giai đoạn 2 ngày 03/10/2026.
+  3. **Hòa do không ăn quân:** Sau **120 nửa nước liên tiếp** (mỗi bên 60 nước) không có nước ăn quân thì xử Hòa tự động (`DRAW_NO_CAPTURE`). Con số đã được xác nhận ở Giai đoạn 2 ngày 03/10/2026. **Ưu tiên (PO duyệt 09/10, 0.17):** chiếu hết ưu tiên cao nhất; hết nước đi hoặc chiếu liên tục gây thắng/thua trên cùng nước được ưu tiên trước hoà do đủ 120 nửa nước.
   4. **Xin hòa (`DRAW_AGREEMENT`):** Hạn trả lời 30 giây. Bên bị từ chối **không được xin hòa lại trong 5 nước kế tiếp của chính mình**; nút `DISABLED` kèm tooltip nêu số nước còn phải chờ. Quy tắc riêng cho Đánh Hạng xem `Quyết định 7.2`.
   5. **Lý do kết thúc ván** hiển thị ở `MODAL-MATCH-RESULT` gồm: `CHECKMATE`, `STALEMATE`, `RESIGN`, `TIMEOUT`, `DISCONNECT`, `INACTIVITY`, `DRAW_REPETITION`, `DRAW_AGREEMENT`, `DRAW_NO_CAPTURE`, `PERPETUAL_CHECK`, `INTERRUPTED`.
 
@@ -601,9 +608,9 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
      * Tích hợp bộ lọc từ ngữ nhạy cảm, thô tục và công kích cá nhân phổ biến (tiếng Việt & tiếng Anh).
      * Mọi tin nhắn gửi đi ở bất kỳ kênh nào (Kênh riêng, Kênh chung, Chat 1-1 bạn bè) nếu chứa từ ngữ trong danh sách đen sẽ **tự động được máy chủ và client che bằng các ký tự dấu sao `***`** (ví dụ: *"đánh cờ như ***"*).
      * Bảo đảm không gian văn hóa cờ tướng lành mạnh, văn minh, tránh các sự cố phản cảm khi biểu diễn đồ án trước hội đồng.
-     * **Danh sách và cách lọc:** Danh sách từ cấm do **nhóm dự án duy trì** trong một tệp cấu hình riêng (không sửa trực tiếp trong cơ sở dữ liệu). Khi so khớp, hệ thống chuẩn hoá trước: bỏ dấu tiếng Việt, đưa về chữ thường, bỏ khoảng trắng và ký tự đặc biệt chèn giữa chữ, đổi các ký tự thay thế phổ biến (ví dụ `0`→`o`, `1`→`i`). Bộ lọc này dùng chung cho tin nhắn chat, Display Name, tên Khách và tên phòng (Display Name/tên phòng bị **từ chối** thay vì che `***`).
+     * **Danh sách và cách lọc:** Danh sách từ cấm do **nhóm dự án duy trì** trong một tệp cấu hình riêng (không sửa trực tiếp trong cơ sở dữ liệu). Khi so khớp, hệ thống chuẩn hoá trước: bỏ dấu tiếng Việt, đưa về chữ thường, bỏ khoảng trắng và ký tự đặc biệt chèn giữa chữ, đổi các ký tự thay thế phổ biến (ví dụ `0`→`o`, `1`→`i`). Bộ lọc này dùng chung cho tin nhắn chat, username khi đăng ký (0.17), Display Name, tên Khách và tên phòng (các trường tên chứa từ cấm bị **từ chối** thay vì che `***`).
      * **Giới hạn chat:** Mỗi tin tối đa **200 ký tự**; tối đa **5 tin trong 10 giây** mỗi người, vượt thì báo *"Bạn gửi quá nhanh"*. Chat phòng **xoá khi phòng đóng**, không lưu sau đó. **Đã duyệt 03/10:** Kênh Riêng chỉ hiện cho 2 người đang ngồi ghế, cặp người chơi mới không đọc được tin của cặp cũ; người xem mới chỉ thấy tin Kênh Chung từ lúc vào. Chat 1-1 giữa bạn bè lưu theo `Quyết định 5.5` (huỷ kết bạn thì ẩn, kết bạn lại thì hiện lại).
-     * **Chat khi Đổi bên/Tái đấu — PO duyệt P2 05/10:** cùng hai người chơi chỉ đổi Đỏ/Đen hoặc Tái đấu trong cùng phòng thì vẫn đọc được chat riêng trước đó. Mốc hình thành cặp người chơi tách khỏi mốc đổi màu quân; thay một người trong cặp thì đặt mốc mới, cả cặp mới không đọc được chat của cặp cũ. Phòng đóng vẫn xoá chat theo luật hiện có; không mở quyền đọc cho người xem.
+     * **Chat cùng cặp người chơi — P1 cho Đổi bên và chơi tiếp theo 0.7/0.13; Tái đấu là P2:** cùng hai người chơi chỉ đổi Đỏ/Đen hoặc Tái đấu trong cùng phòng thì vẫn đọc được chat riêng trước đó. Mốc hình thành cặp người chơi tách khỏi mốc đổi màu quân; thay một người trong cặp thì đặt mốc mới, cả cặp mới không đọc được chat của cặp cũ. Phòng đóng vẫn xoá chat theo luật hiện có; không mở quyền đọc cho người xem.
 
 ---
 
@@ -641,8 +648,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * *Khó (Hard):* Depth 6, thời gian phản hồi $\le 3000$ ms.
   * **Lý do:** Giữ kiến trúc giao diện đơn giản, tập trung toàn lực cho AI vượt qua cổng kiểm định chất lượng (cách đo: GATE-ENGINE, US-08.3 trong BACKLOG-P1.md) và chạy ở tiến trình tách biệt khỏi máy chủ chính.
   * **Mục tiêu cảm nhận (không ràng buộc, đo bằng đấu máy với máy ở US-08.3):** Dễ — người mới học cờ thắng được; Trung bình — người chơi phổ thông thắng khoảng một nửa số ván; Khó — người chơi phổ thông hiếm khi thắng.
-  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). Nếu tiến trình máy cờ **lỗi hoặc không phản hồi sau 10 giây**: ván chuyển "Bỏ dở", báo *"Máy cờ gặp sự cố"* kèm nút *Thử lại*. Con số đo thực tế theo cổng kiểm chứng GATE-ENGINE ở [BACKLOG-P1.md](BACKLOG-P1.md).
-  * **Thử lại (duyệt 04/10):** Nếu chỉ hết thời gian chờ tiến trình (`ENGINE_BUSY`), Thử lại yêu cầu máy tìm nước trên **cùng ván và thế hiện tại**, không gửi lại nước của người chơi. Nếu ván đã `ABANDONED` do sự cố, Thử lại tạo **ván mới, Match ID mới**, cùng cấp độ và phe thực tế của ván cũ (phe Ngẫu nhiên đã bốc không bốc lại); không hồi sinh ván kết thúc. Mỗi lần bấm đang xử lý bị chặn trùng; kiểm lại quyền và một vị trí chơi trước khi tạo ván mới.
+  * **Khi máy không kịp (đã chốt, rà soát cuối):** Hết ngân sách thời gian mà chưa đạt độ sâu mục tiêu thì máy đi **nước tốt nhất đã tìm được đến lúc đó** (tìm sâu dần, luôn có ít nhất một nước hợp lệ). **PO chốt lại 09/10:** nếu tiến trình máy cờ **không phản hồi quá 10 giây**, giữ nguyên ván và thế cờ, báo *"Máy cờ gặp sự cố"* kèm *Thử lại*; bấm Thử lại tính nước trên cùng thế, không gửi lại nước người, không tự chuyển Bỏ dở vì hết thời gian chờ. Nếu tiến trình báo lỗi thực sự làm ván chuyển Bỏ dở, áp dụng nhánh tạo ván mới bên dưới. Con số đo thực tế theo cổng kiểm chứng GATE-ENGINE ở [BACKLOG-P1.md](BACKLOG-P1.md).
+  * **Thử lại (duyệt 04/10):** Nếu chỉ hết thời gian chờ tiến trình quá 10 giây (`ENGINE_BUSY`, giữ ván theo chốt 09/10), Thử lại yêu cầu máy tìm nước trên **cùng ván và thế hiện tại**, không gửi lại nước của người chơi. Nếu ván đã `ABANDONED` do sự cố, Thử lại tạo **ván mới, Match ID mới**, cùng cấp độ và phe thực tế của ván cũ (phe Ngẫu nhiên đã bốc không bốc lại); không hồi sinh ván kết thúc. Mỗi lần bấm đang xử lý bị chặn trùng; kiểm lại quyền và một vị trí chơi trước khi tạo ván mới.
 
 ---
 
@@ -790,7 +797,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
     * Nếu quá 60s không kết nối lại: Máy chủ tự động kết thúc ván đấu, xử thua bên mất kết nối với lý do `DISCONNECT`, trừ điểm Elo như một trận thua và cộng điểm Elo thắng cho đối thủ còn lại.
   * **Hành vi theo vai trò (rà soát cuối):** Ân hạn 60 giây và xử thua chỉ áp dụng cho **người chơi đang trong ván online**. Người chơi ở phòng `WAITING`/`FINISHED` chỉ giữ ghế 60 giây rồi mất ghế (không xử thua). Người xem giữ chỗ 5 phút. Ván với máy giữ 30 phút (`Quyết định 6.3`).
   * **Đồng hồ trong lúc chờ:** Đồng hồ ván **vẫn chạy bình thường** trong 60 giây ân hạn. Nếu bên đang tới lượt là bên mất kết nối và **hết giờ trước** khi hết ân hạn thì xử `TIMEOUT`; nếu ân hạn hết trước thì xử `DISCONNECT`.
-  * **Trường hợp lỗi hạ tầng / Server sập:** Ván chuyển sang `INTERRUPTED` (`ARCH-10`) và **giữ nguyên điểm Elo của cả hai bên** **chỉ khi máy chủ tự ghi nhận sự cố của chính nó** (khởi động lại, mất kết nối cơ sở dữ liệu). Nếu máy chủ vẫn chạy bình thường mà hai người chơi cùng mất kết nối thì **không phải `INTERRUPTED`**: mỗi bên có ân hạn 60 giây riêng; nếu cả hai cùng quá hạn thì **bên mất kết nối trước bị xử thua** (`DISCONNECT`), bên còn lại thắng. Cách này chặn việc hai người cùng rút mạng để né mất Elo. **Sau khởi động lại (PO uỷ quyền agent quyết định 04/10/2026, đã chốt):** phòng `PLAYING` được đưa về `FINISHED` và hiện kết quả trung tính "Ván bị gián đoạn" ở `MODAL-MATCH-RESULT`, rồi theo luật `FINISHED` **của từng chế độ**: CASUAL tối đa 10 phút rồi `CLOSED` (3.3), RANKED theo 7.2 (không về `WAITING`); không đóng ngay.
+  * **Trường hợp lỗi hạ tầng / Server sập:** Ván chuyển sang `INTERRUPTED` (`ARCH-10`) và **giữ nguyên điểm Elo của cả hai bên** **chỉ khi máy chủ tự ghi nhận sự cố của chính nó** (khởi động lại, mất kết nối cơ sở dữ liệu). Nếu máy chủ vẫn chạy bình thường mà hai người chơi cùng mất kết nối thì **không phải `INTERRUPTED`**: mỗi bên có ân hạn 60 giây riêng; nếu cả hai cùng quá hạn thì **bên mất kết nối trước bị xử thua** (`DISCONNECT`), bên còn lại thắng. Cách này chặn việc hai người cùng rút mạng để né mất Elo. **Sau khởi động lại (PO chốt lại 09/10, 0.17):** hiện kết quả trung tính "Ván bị gián đoạn" ở `MODAL-MATCH-RESULT`. Phòng tự tạo về `WAITING`, reset Sẵn sàng và có **Ở lại phòng / Rời phòng**, không hạn đóng 10 phút (0.7). Ghép ngẫu nhiên và RANKED (P2) giữ `FINISHED` theo 2.0/7.2, không về `WAITING`; không đóng ngay.
 
 ---
 
@@ -838,7 +845,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Nhịp Sprint (PO chọn 04/10/2026):** **4 Sprint** theo độ dài 4 + 3 + 4 + 3 ngày: Sprint 1 từ 04/10 đến 07/10, Sprint 2 từ 08/10 đến 10/10, Sprint 3 từ 11/10 đến 14/10, Sprint 4 từ 15/10 đến 17/10; nộp 18/10/2026. Mỗi Sprint phải có Sprint Goal và một Increment dùng được; số Sprint không làm thay đổi phạm vi P1.
   * **Nơi chạy demo (PO quyết định 04/10/2026; hạn demo nay là 05/11/2026; bố trí media xem Phần 0 mục 0.16):** **ưu tiên chạy trên máy cục bộ (local)**; chỉ dùng Render làm phương án dự phòng nếu cần có địa chỉ trên mạng. Hệ quả: không bắt buộc dịch vụ trả phí hay thẻ thanh toán cho phần máy chủ ứng dụng; vẫn dùng Supabase và LiveKit Cloud đã chọn (cần mạng). Kịch bản demo D1–D10 phải chạy được ở môi trường cục bộ.
   * **Chat Kênh Riêng khi đổi người ngồi ghế (PO quyết định 04/10/2026):** khi cặp người ngồi ghế thay đổi (ví dụ A và B đang chat riêng, B xuống xem, C lên ngồi), **người mới ngồi không đọc được tin cũ**, và **không ai** trong cặp mới đọc được tin của cặp cũ. Kênh Riêng chỉ hiển thị tin tạo từ lúc **cặp ngồi ghế hiện tại hình thành** (mốc muộn hơn trong hai mốc bắt đầu ngồi ghế). Người rời ghế mất quyền đọc Kênh Riêng.
-  * **Ván bị gián đoạn khi máy chủ khởi động lại (PO uỷ quyền agent quyết định 04/10/2026, đã chốt):** hiện hộp kết quả trung tính **"Ván bị gián đoạn"**: không có bên thắng, thua hay hoà; không đổi điểm Elo; chỉ có nút *Rời phòng*; không tự hiện nút Tái đấu. Lý do chọn: người chơi không bị phạt vì lỗi hệ thống và không cần thêm màn hình mới.
+  * **Ván bị gián đoạn khi máy chủ khởi động lại (PO chốt lại 09/10, 0.17):** hiện hộp kết quả trung tính **"Ván bị gián đoạn"**: không có bên thắng, thua hay hoà; không đổi Elo. Phòng tự tạo về `WAITING`, reset Sẵn sàng, có *Ở lại phòng* và *Rời phòng*, không hạn đóng 10 phút. Luật P2 của ghép ngẫu nhiên/Ranked giữ theo 2.0/7.2; trạng thái AI P1 theo 6.3.
   * **Yêu cầu phi chức năng NFR-08, NFR-09, NFR-10 (PO duyệt 04/10/2026):** (08) nhật ký vận hành có cấu trúc, điểm kiểm tra sức khoẻ, không ghi mật khẩu/OTP/token/nội dung chat; (09) lưu giữ dữ liệu: ván online và nước đi lưu bền, ván với máy chỉ ở bộ nhớ, chat phòng xoá khi phòng đóng, biên lai lệnh xoá sau 24 giờ, nhật ký giữ tối đa 14 ngày; (10) tin chat, tên hiển thị, tên phòng hiển thị như văn bản thuần. Chi tiết và cách kiểm ở mục NFR của [BACKLOG-P1.md](BACKLOG-P1.md). Từ nay là điều kiện bắt buộc của nghiệm thu P1.
   * **Cổng kiểm chứng (PO duyệt 04/10/2026; chi tiết nay ở mục Cổng kiểm chứng của BACKLOG-P1.md; (a) sửa 07/10 theo SMTP ngoài):** (a) demo đăng ký phải dùng **OTP thật** tới email thật (kể cả email ngoài nhóm), không dùng giả lập làm bằng chứng; (b) GATE-OTP: gọi thẳng chức năng đổi email của hệ thống đăng nhập phải không đổi được (nếu cấu hình không chặn được thì ghi "bị chặn" cho phần đó), và email ngoài nhóm hoặc vượt hạn mức thì báo lỗi thật, không để tài khoản kẹt; (c) GATE-MEDIA: ghi thời gian thu hồi quyền thực tế và mức dùng hạn mức miễn phí của LiveKit, **không đặt ngưỡng đạt**; (d) phần camera/micro của bài tải chạy **quy mô nhỏ (~3 phòng)**, **chỉ ghi số đo**, không nằm trong điều kiện đạt P1.
   * **Google OAuth vào P1 (PO quyết định 04/10/2026):** **đăng ký và đăng nhập bằng Google chạy thật ở P1** (`Quyết định 1.2`, `SCR-ONBOARDING`, tiêu chí hiện hành ở US-01.3 trong BACKLOG-P1.md). Liên kết *Quên mật khẩu?* hiện mờ "Sắp ra mắt"; nút *Guest* (Khách) **hoạt động ở P1 từ 07/10** (Phần 0 mục 0.3). Hệ quả: cần dịch vụ Google OAuth (khoá do nhóm tạo trên Google), thử nghiệm **không tự liên kết cùng email** của Supabase (cổng GATE-GOOGLE chuyển P1) và thêm công việc vào Epic 1.
@@ -865,7 +872,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ### Quyết định 10.4: Công bố luật rút gọn (duyệt 04/10/2026)
 * **P1:** phần **Luật chơi** mở rộng/thu gọn trong Sảnh hiện có; không tạo trang hoặc modal mới. Nêu cách kết thúc ván, hết nước đi là thua, chiếu liên tục, lặp thế và không ăn quân; thông báo rõ đuổi quân liên tục không xử riêng. Nội dung theo AC của Story Sảnh trong BACKLOG-P1.md, không tuyên bố tuân thủ toàn bộ luật thi đấu chính thức.
 
-## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP, HẠN 05/11/2026) VÀ P2 (LÀM SAU)
+## PHẦN 11: PHÂN KỲ PHẠM VI — P1 (MVP, HẠN 04/11/2026) VÀ P2 (LÀM SAU)
 
 > **Cập nhật 07/10:** Khách, Xin đổi bên, khoá thử sai đăng nhập, nút "Vào chơi" ở Sảnh, "Ở lại phòng"/"Ván mới" sau ván đã lên P1 (Phần 0). Bảng và danh sách dưới đây đã đồng bộ.
 
@@ -873,7 +880,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 >
 > **Tiêu chí hoàn thành P1 (Product Owner, 03/10/2026):** demo chạy được **8 mục tiêu cốt lõi từ đầu đến cuối** (end-to-end).
 
-* **Căn cứ:** Product Owner (03/10/2026) xác định 8 mục tiêu cốt lõi cho nhóm 7 người (lúc đó dự kiến khoảng 2 tuần; hạn hiện hành là 05/11/2026 theo Phần 0), và cho phép agent tự chuyển các mục còn lại xuống P2. **P1** = những gì cần để 8 mục tiêu chạy được trọn vẹn. **P2** = mọi thứ còn lại; vẫn là đặc tả đã duyệt, **các luật P2 giữ nguyên hiệu lực khi được làm**, chỉ chưa làm trong 2 tuần này.
+* **Căn cứ:** Product Owner (03/10/2026) xác định 8 mục tiêu cốt lõi cho nhóm 7 người (lúc đó dự kiến khoảng 2 tuần; hạn hiện hành là 04/11/2026 theo Phần 0), và cho phép agent tự chuyển các mục còn lại xuống P2. **P1** = những gì cần để 8 mục tiêu chạy được trọn vẹn. **P2** = mọi thứ còn lại; vẫn là đặc tả đã duyệt, **các luật P2 giữ nguyên hiệu lực khi được làm**, chưa đưa vào đợt P1 hiện hành.
 * **8 mục tiêu cốt lõi (nguyên văn ý Product Owner) và nơi định nghĩa:**
 
 | # | Mục tiêu cốt lõi | Quyết định / thành phần phục vụ |
@@ -896,7 +903,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
   * `MODAL-MATCH-RESULT` ở P1: ván online có *Ở lại phòng* và *Rời phòng* (0.7); ván AI có *Ván mới* và *Về Sảnh* (0.9). Không Tái đấu, không Xem lại.
 * **Bạn bè ở P1 (tối thiểu):** `SCR-FRIENDS` có tìm kiếm, gửi/nhận lời mời, danh sách bạn kèm trạng thái. **Không có nút mời trên trang này**: ở P1 chỉ mời bạn bè online **trong một phòng**, qua `MODAL-INVITE` do người đang ngồi ghế của phòng đó thực hiện (không tự tạo phòng, vì tạo phòng rồi mời là Thách đấu, P2). Nút "Nhắn tin" và "Thách đấu" `DISABLED` kèm tooltip *"Sắp ra mắt"*; huy hiệu tin chưa đọc chưa có.
 * **Ưu tiên theo thành phần:** xem cột "Ưu tiên" ở `DANH-MUC` §7 (**26 thành phần P1, 11 thành phần P2** từ 07/10).
-* **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người đến hạn 05/11/2026 (Phần 0) nên chạy song song các nhóm việc từ đầu và có phương án dự phòng (ví dụ máy cờ chỉ làm cấp Dễ trước).
+* **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người đến hạn 04/11/2026, thực hiện theo lịch phụ thuộc ở kế hoạch Jira. Có thể triển khai cấp Dễ trước như bước trung gian, nhưng P1 vẫn phải nghiệm thu đủ ba cấp; không tự giảm phạm vi để giữ hạn.
 
 ---
 
@@ -928,10 +935,11 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 | 22 | **Hệ thống Bạn bè & Thông báo** | **[FRIENDS]** `Quyết định 5.5` (nền cho chat 1-1, mời vào phòng, Thách đấu) | **P1** (kết bạn, trạng thái, mời bạn bè online); **P2** (chat 1-1, Thách đấu) |
 | 23 | **Luật cờ bổ sung & Hàng đợi/chống gian lận Ranked** (đã duyệt) | **[RULES-EXTRA] + [RANKED-GUARD] + [ROOM-SPEC]** `Quyết định 3.5, 7.2, 2.7` | **P1** (3.5, 2.7); **P2** (7.2) |
 | 24 | **Ràng buộc chung & Danh sách loại trừ** (đã duyệt) | **[GLOBAL-CONSTRAINTS] + [OUT-OF-SCOPE]** `Quyết định 10.1, 10.2` | **P1 — MVP** |
-| 25 | **Vào phòng, ghế/người xem, đề nghị trong ván, kết quả ván** (đã duyệt 03/10; bổ sung PO 05/10) | Mất mạng khi đếm bắt đầu ván tự tạo: huỷ/reset Sẵn sàng, giữ ghế 60 giây (2.3); mời xuống ghế cần chấp nhận, không giữ ghế (2.8); camera/mic tắt, chọn sẵn Chỉ đối thủ (4.1). **[ROOM-ACCESS] + [PROPOSALS] + [RESULT-TYPES]** `Quyết định 2.0, 2.3, 2.8, 3.6, 7.3` (sau ván/Tái đấu ghép ngẫu nhiên chốt 05/10; chat riêng giữ khi cùng cặp Đổi bên/Tái đấu trong cùng phòng, thay người thì đặt mốc mới theo 5.3, vẫn P2; kèm sửa 1.2, 1.3, 1.4, 2.3, 4.3, 5.3, 6.2) | **P1** (2.8; Xin hòa và **Xin đổi bên** trong 3.6 — Xin đổi bên lên P1 ngày 07/10, Phần 0 mục 0.6); **P2** (ghép ngẫu nhiên, Tái đấu, 7.3, Xin đi lại) |
+| 25 | **Vào phòng, ghế/người xem, đề nghị trong ván, kết quả ván** (đã duyệt 03/10; bổ sung PO 05/10) | Mất mạng khi đếm bắt đầu ván tự tạo: huỷ/reset Sẵn sàng, giữ ghế 60 giây (2.3); mời xuống ghế cần chấp nhận, không giữ ghế (2.8); camera/mic tắt, chọn sẵn Chỉ đối thủ (4.1). **[ROOM-ACCESS] + [PROPOSALS] + [RESULT-TYPES]** `Quyết định 2.0, 2.3, 2.8, 3.6, 7.3` (sau ván/Tái đấu ghép ngẫu nhiên chốt 05/10; chat riêng giữ khi cùng cặp Đổi bên/chơi tiếp trong cùng phòng ở P1, Tái đấu ở P2; thay người thì đặt mốc mới theo 5.3; kèm sửa 1.2, 1.3, 1.4, 2.3, 4.3, 5.3, 6.2) | **P1** (2.8; Xin hòa và **Xin đổi bên** trong 3.6 — Xin đổi bên lên P1 ngày 07/10, Phần 0 mục 0.6); **P2** (ghép ngẫu nhiên, Tái đấu, 7.3, Xin đi lại) |
 | 26 | **Giao diện theo phân kỳ** | Quyết định 10.3: Kỳ Đài Cổ Phong mặc định; đồng bộ phông theo DESIGN §3.1 (PO chốt 05/10); bộ chọn Giấy Sáng/Theo hệ thống | **P1** (giao diện mặc định); **P2** (bộ chọn) |
 | 27 | **Công bố luật rút gọn** | Quyết định 10.4: Luật chơi mở rộng/thu gọn trong Sảnh, không thêm màn hình | **P1** |
-| 28 | **Chốt 07/10/2026** | Phần 0: lịch đến 05/11, đăng nhập + khoá thử sai, Khách P1, SMTP ngoài, Sảnh PUBLIC Vào chơi/Vào xem, Xin đổi bên P1, sau ván về WAITING, Tái đấu chọn phe (P2), Ván mới AI, Jira lập lại | **P1** (trừ Tái đấu: P2) |
+| 28 | **Chốt 07/10/2026** | Phần 0: lịch gốc đến 05/11 (đã thay bởi mục 0.1 hiện hành), đăng nhập + khoá thử sai, Khách P1, SMTP ngoài, Sảnh PUBLIC Vào chơi/Vào xem, Xin đổi bên P1, sau ván về WAITING, Tái đấu chọn phe (P2), Ván mới AI, Jira lập lại | **P1** (trừ Tái đấu: P2) |
+| 29 | **Chốt review và lập lại kế hoạch 09/10/2026** | 0.1: BA/lập kế hoạch 09/10, phát triển từ 10/10, hạn gốc 05/11 (đã thay bởi mục 0.1 hiện hành), giữ 9/27/71. 0.17: từ chối username chứa từ cấm ngay bước nhập; thắng/thua ưu tiên hơn hoà 120 nửa nước, chiếu hết cao nhất; restart phòng tự tạo về WAITING, Ở lại/Rời | **P1** |
 
 > **Lưu ý đọc nhật ký (07/10):** các nhật ký dưới đây là lịch sử. Mọi tham chiếu `docs/...` trỏ tới bộ tài liệu đã xoá 07/10 (xem trong git tại `c4cf29d^`). Câu "không mở danh sách phòng công khai" ở nhật ký đồng bộ 05/10 đã bị thay bởi lần chốt lại MVP cùng ngày và Phần 0. Các số đếm US/AC trong nhật ký không còn hiệu lực; số hiện hành ở BACKLOG-P1.md.
 

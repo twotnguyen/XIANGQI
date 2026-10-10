@@ -2,10 +2,12 @@
 
 **Tài liệu:** Kiến trúc Giao diện & Bản đồ Màn hình Chuẩn hóa (UI/UX Screen Inventory)  
 **Dự án:** Cờ Tướng Trực Tuyến (`XIANGQI`)  
-**Ngày cập nhật:** 07/10/2026 · **Phiên bản:** v1.2.0 (đồng bộ BA Phần 0: Khách và Xin đổi bên lên P1, Sảnh PUBLIC có Vào chơi, sau ván về phòng chờ, Ván mới AI, khoá thử sai đăng nhập)
-**Căn cứ pháp lý:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
+**Ngày cập nhật:** 10/10/2026 · **Phiên bản:** v1.2.2 (đồng bộ BA Phần 0, gồm từ chối username chứa từ cấm và phòng tự tạo về WAITING sau server khởi động lại; giữ 26 thành phần P1 / 11 P2)
+**Nguồn đặc tả:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
 
 ---
+
+> **Vai trò:** bản đồ 37 thành phần giao diện và các trạng thái cho FE/QA. Luật nghiệp vụ theo BA; tiêu chí nghiệm thu theo BACKLOG-P1; lịch và phân công theo KE-HOACH-JIRA. Tệp này không thay thế các nguồn đó.
 
 ## 1. TỔNG QUAN PHÂN TẦNG KIẾN TRÚC GIAO DIỆN
 
@@ -70,10 +72,10 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * Checkbox `Ghi nhớ đăng nhập`: Mặc định tick (phiên 30 ngày). Bỏ tick: phiên kết thúc khi đóng trình duyệt hoặc sau 12 giờ, tuỳ cái nào đến trước (BA-SCOPE `Quyết định 1.8`).
   * Nút `Đăng nhập` (Primary button). Sai thông tin luôn báo *"Sai tên đăng nhập hoặc mật khẩu"*; sai 5 lần trong 15 phút với cùng username thì chặn 15 phút, báo *"Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút"* (BA Phần 0 mục 0.2).
   * Nút `Đăng nhập bằng Google` (Google OAuth 1 chạm).
-  * **Nút `Guest` (Chơi nhanh) — Nằm riêng biệt nổi bật (P1 từ 07/10):**
+  * **Nút `Khách` (Chơi nhanh) — Nằm riêng biệt nổi bật (P1 từ 07/10):**
     * Bấm vào mở `MODAL-GUEST-NAME` nhập tên tạm vào chơi ngay (phiên Khách tối đa 12 giờ, tên gắn nhãn "(Khách)", không cần duy nhất; quyền hạn xem BA-SCOPE `Quyết định 1.3`).
     * **Visual Note ngay dưới nút:** ⚠️ *"Chế độ Khách (Guest) không được tham gia đánh Xếp hạng để tính điểm Elo và không lưu lịch sử ván cờ."*
-  * Liên kết phụ: *"Quên mật khẩu?"* (`/forgot-password`), *"Đăng ký tài khoản mới"* (`/register`).
+  * Liên kết phụ: *"Quên mật khẩu?"* là P2, P1 hiển thị vô hiệu với tooltip *"Sắp ra mắt"*; *"Đăng ký tài khoản mới"* (`/register`) hoạt động ở P1.
 
 ---
 
@@ -82,7 +84,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Bố cục (Layout):** Card trung tâm kèm thanh tiến trình stepper `1. Tài khoản` $\rightarrow$ `2. Email` $\rightarrow$ `3. Xác thực OTP`.
 * **Chi tiết 3 bước:**
   * **Bước 1 (Username & Mật khẩu):**
-    * Ô `Username:` (3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, kiểm tra trùng lặp debounce 300ms).
+    * Ô `Username:` (3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, kiểm tra trùng lặp debounce 300ms; từ chối username chứa từ cấm ngay bước nhập theo BA 0.17).
     * Ô `Mật khẩu:` (tối thiểu 8 ký tự) + Ô `Xác nhận mật khẩu`.
     * Nút *"Tiếp tục"* $\rightarrow$ Chuyển Bước 2. Phía dưới có nút *"Đăng ký bằng Google"*.
   * **Bước 2 (Nhập Email):**
@@ -115,7 +117,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **URL:** `/onboarding` | **Quyền:** Người dùng vừa bấm Đăng ký qua Google OAuth lần đầu.
 * **Thành phần:**
   * Hiển thị Avatar & Email Google (Readonly).
-  * Ô `Username:` (bắt buộc đặt tên duy nhất, 3–20 ký tự không dấu).
+  * Ô `Username:` (bắt buộc đặt tên duy nhất, 3–20 ký tự không dấu; từ chối từ cấm ngay bước nhập, máy chủ kiểm lại trước khi hoàn tất theo BA 0.17).
   * Ô `Mật khẩu dự phòng:` (để sau này có thể đăng nhập bằng `Username + Password` nếu không muốn dùng Google).
   * Miễn mã OTP (vì Google đã xác thực email an toàn).
   * Nút `Hoàn tất thiết lập` $\rightarrow$ Tự động gán `display_name = username` (không dùng Họ tên Google) $\rightarrow$ Chuyển thẳng vào `/lobby`. Màn hình không có nút X; thoát giữa chừng thì chưa có tài khoản ứng dụng hoàn tất, dù có thể tồn tại bản xác thực Google tạm. Dọn bản Google mới chưa hoàn tất theo BA 1.2 (PO chọn A 05/10); chưa hoàn tất không được vào ứng dụng.
@@ -160,7 +162,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ---
 
 ### 8. `SCR-GAME-ROOM` — Trang Thi Đấu Cờ Tướng Trực Tiếp
-* **URL:** `/rooms/:id` (khi phòng `status = PLAYING` hoặc `FINISHED`).
+* **URL:** `/rooms/:id` (khi phòng `status = PLAYING`; `FINISHED` dành cho ghép ngẫu nhiên/Ranked P2. Phòng tự tạo kết thúc về `WAITING`, hộp kết quả hiển thị trên phòng chờ theo BA 0.7/0.17).
 * **RANKED sau ván:** giữ màn kết quả; Rời phòng mới giải phóng vị trí để tìm trận khác. Một người rời không mở phòng chờ cho người còn lại; không Sẵn sàng/Tái đấu/nhận người mới. Hết 10 phút hoặc cả hai rời thì đóng (BA 7.2).
 * **Đánh Thường ghép ngẫu nhiên sau ván (P2):** giữ màn kết quả cho người còn lại nếu một người rời; không chuyển về phòng chờ hoặc nhận người mới. Đóng khi cả hai rời hoặc hết 10 phút tính từ kết thúc ván; không đặt lại hạn khi một người rời. Tái đấu chỉ khi cả hai vẫn ở phòng và cùng đồng ý (BA 2.0).
 * **Bố cục (Layout 3 cột):**
@@ -185,7 +187,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Quy chuẩn vận hành:**
   * **Đồng hồ thi đấu:** Hoàn toàn **không giới hạn thời gian (No Time Limit)** đối với người chơi; máy cờ tính toán phản hồi nhanh theo cấp độ (Khó $\le 3000$ms). Không áp dụng cơ chế chống treo ván R17.
   * **Nút "Đi lại" (Undo):** Bấm lùi ngay **1 cặp nước đi (2 plies: 1 nước máy + 1 nước người)** ngay lập tức không cần máy đồng ý. Hiển thị nhãn *"Lượt đi lại: X/3"*, hết 3 lần nút bị `DISABLED`. Nếu máy đang nghĩ: huỷ tác vụ và chỉ lùi nước vừa đi của người chơi, vẫn tính một lượt (AC-HIS-03-02, P2).
-  * Không có nút gợi ý nước đi (No Hint). Không có nút Xin hòa (chỉ có Đầu hàng). Cầm Đen mà người chơi chưa đi nước nào thì nút "Đi lại" `DISABLED` kèm tooltip. Ván bỏ dở được giữ 30 phút (vào lại `/ai/:id`), quá hạn lưu là "Bỏ dở". Ván AI không tính Elo; ván của Khách không lưu.
+  * Không có nút gợi ý nước đi (No Hint). Không có nút Xin hòa (chỉ có Đầu hàng). Cầm Đen mà người chơi chưa đi nước nào thì nút "Đi lại" `DISABLED` kèm tooltip. P1: ván đang chơi bị mất kết nối được giữ trong bộ nhớ tối đa 30 phút để vào lại `/ai/:id`; quá hạn bỏ trạng thái, không lưu lịch sử. Máy không phản hồi quá 10 giây thì giữ nguyên ván/thế, hiện Thử lại để tính nước tiếp, không gửi lại nước người (PO chốt 09/10). Nếu lỗi thực sự làm ván Bỏ dở, Thử lại tạo ván mới cùng cấp và phe thực tế; máy chủ khởi động lại mất trạng thái thì không giả khôi phục. Lưu ván vào lịch sử là P2; ván AI không tính Elo, ván Khách không lưu.
   * Ván kết thúc mở `MODAL-MATCH-RESULT` với **Ván mới** (mở `MODAL-AI-SETUP` điền sẵn cấp độ và phe vừa chơi, đổi được) và **Về Sảnh** — P1 (BA 0.9). *(P2)* Ván của tài khoản chính thức lưu vào Lịch sử và có nút Xem lại.
   * *(Stretch P2):* Widget nhỏ hiển thị thông số AI Debug (số node duyệt, depth, độ trễ tính toán ms).
 
@@ -266,14 +268,14 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua; ở Đánh Hạng còn trừ điểm Elo, Đánh Thường và Đánh với máy không đổi Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc người chơi còn lại bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
-15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). Cụm nút P1 (07/10): ván online phòng tự tạo có 🏠 *Ở lại phòng* (phòng đã về `WAITING`, BA 0.7) và 🚪 *Rời phòng*; ván AI có *Ván mới* và *Về Sảnh* (BA 0.9). P2: 🔄 *Tái đấu* (phòng tự tạo và ghép ngẫu nhiên, người đề nghị chọn Giữ phe/Đổi phe, đối thủ đồng ý trong 30 giây; ghép ngẫu nhiên đặt lại 15 phút/bên; Ranked cấm; BA 0.8), 📜 *Xem lại (Replay)*.
+15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). **Gián đoạn do server khởi động lại (BA 0.17, PO duyệt 09/10):** kết quả trung tính, không có người thắng/thua/hoà; phòng tự tạo về `WAITING`, reset Sẵn sàng, vẫn có *Ở lại phòng* / *Rời phòng*, không hạn đóng 10 phút. Cụm nút P1: ván online phòng tự tạo có 🏠 *Ở lại phòng* (phòng đã về `WAITING`, BA 0.7) và 🚪 *Rời phòng*; ván AI có *Ván mới* và *Về Sảnh* (BA 0.9). P2: 🔄 *Tái đấu* (phòng tự tạo và ghép ngẫu nhiên, người đề nghị chọn Giữ phe/Đổi phe, đối thủ đồng ý trong 30 giây; ghép ngẫu nhiên đặt lại 15 phút/bên; Ranked cấm; BA 0.8), 📜 *Xem lại (Replay)*.
 
 ---
 
 ## 5. CHI TIẾT 4 KHUNG NHÚNG CHỨC NĂNG (EMBEDDED PANELS)
 
 1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân, Icon Chuông báo lời mời kết bạn, huy hiệu tổng **tin đến** chưa đọc từ bạn hiện tại (đánh dấu khi tin hiển thị trong vùng nhìn ở tab hoạt động, BA 5.2), Avatar + Tên hiển thị (`Display Name`) kèm menu con Cài đặt hồ sơ.
-2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; **ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có `[Kênh Riêng]`, không Kênh Chung/người xem** (BA 2.0, 5.4, 7.2); `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (cặp mới không đọc tin cũ; cùng cặp Đổi bên/Tái đấu trong cùng phòng giữ chat ở P2 theo BA 5.3), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. **Bố cục phòng tự tạo theo BA 5.3 (PO chốt 05/10/2026):** máy tính mặc định chỉ mở Kênh Riêng; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời hai khung, hoặc ẩn bớt một trong hai rồi mở lại; điện thoại chuyển giữa hai tab trong một khung, mặc định Kênh Riêng. Người xem chỉ có Kênh Chung; ẩn khung không thay đổi quyền đọc/gửi. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm (P2).
+2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; **ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có `[Kênh Riêng]`, không Kênh Chung/người xem** (BA 2.0, 5.4, 7.2); `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (cặp mới không đọc tin cũ; cùng cặp Đổi bên hoặc chơi ván tiếp trong cùng phòng giữ chat ngay ở P1 theo BA 0.7/0.13; Tái đấu là P2), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. **Bố cục phòng tự tạo theo BA 5.3 (PO chốt 05/10/2026):** máy tính mặc định chỉ mở Kênh Riêng; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời hai khung, hoặc ẩn bớt một trong hai rồi mở lại; điện thoại chuyển giữa hai tab trong một khung, mặc định Kênh Riêng. Người xem chỉ có Kênh Chung; ẩn khung không thay đổi quyền đọc/gửi. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm (P2).
 3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM` và trong `SCR-WAITING-ROOM` (BA 0.13). Lỗi dịch vụ media: ván tiếp tục, hiện "Camera/mic tạm thời không dùng được" (BA 0.14). 2 video trực tiếp SFU của 2 người chơi. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ **chung cho camera và mic đang bật**: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; ghép ngẫu nhiên và Ranked chỉ có 2 mức đầu). Phòng tự tạo chọn sẵn **Chỉ đối thủ**, camera/mic mặc định Tắt; muốn người xem thấy/nghe phải chủ động chọn chia sẻ cả người xem (BA 4.1, PO duyệt 05/10). Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Người xem tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 người chơi giao lưu.
 4. **`PANEL-SPECTATORS` (Danh Sách Người Xem Trong Phòng Tự Tạo):** Nằm ở cột phải `SCR-GAME-ROOM` (ghép ngẫu nhiên và Ranked không có người xem). Tiêu đề: *"Người xem (X / N)"* (N = số người xem tối đa của phòng: 1–5). Cả Chủ phòng và người chơi còn lại đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
 
@@ -289,7 +291,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 ## 7. BẢNG MA TRẬN 37 THÀNH PHẦN TOÀN DIỆN
 
-**Ưu tiên (đã duyệt 03/10, cập nhật 07/10):** P1 = MVP hạn 05/11/2026 (**26 thành phần**, gồm `SCR-ONBOARDING` do PO kéo lên 04/10/2026, `MODAL-GUEST-NAME` và `MODAL-SIDE-SWAP-PROMPT` lên P1 ngày 07/10), P2 = làm sau (**11 thành phần**). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
+**Ưu tiên (đã duyệt 03/10, cập nhật 07/10):** P1 = MVP hạn kế hoạch hiện hành 04/11/2026 (đồng bộ Jira ngày 10/10; mốc gốc 05/11) (**26 thành phần**, gồm `SCR-ONBOARDING` do PO kéo lên 04/10/2026, `MODAL-GUEST-NAME` và `MODAL-SIDE-SWAP-PROMPT` lên P1 ngày 07/10), P2 = làm sau (**11 thành phần**). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
 * **Lối vào cấp điều hướng chính** (thẻ Đánh Thường ghép ngẫu nhiên và Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, liên kết *Quên mật khẩu?* ở màn đăng nhập (PO duyệt 04/10/2026; nút Khách hoạt động ở P1 từ 07/10), nút Nhắn tin và Thách đấu ở Bạn bè; **nút Đăng nhập/Đăng ký bằng Google hoạt động ở P1**, PO quyết định 04/10/2026) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
@@ -298,24 +300,24 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 | STT | Mã Thành Phần | Tên Gọi Nghiệp Vụ | Phân Loại | Vị Trí / URL | Ưu tiên |
 |:---:|---|---|:---:|---|:---:|
-| 1 | `SCR-LOGIN` | Đăng nhập hệ thống & Nút Guest có note cấm Rank | Routed Page | `/login` | **P1** |
+| 1 | `SCR-LOGIN` | Đăng nhập hệ thống & nút Khách | Routed Page | `/login` | **P1** |
 | 2 | `SCR-REGISTER` | Đăng ký tài khoản (Wizard 3 bước OTP 3 phút) | Routed Page | `/register` | **P1** |
 | 3 | `SCR-FORGOT-PASSWORD` | Yêu cầu khôi phục Username/mật khẩu | Routed Page | `/forgot-password` | P2 |
 | 4 | `SCR-RESET-PASSWORD` | Khôi phục Username/đặt lại mật khẩu | Routed Page | `/reset-password` | P2 |
 | 5 | `SCR-ONBOARDING` | Đăng ký Google OA tạo Username + Password | Routed Page | `/onboarding` | **P1** |
-| 6 | `SCR-LOBBY` | Sảnh (4 lựa chọn: Thường ghép ngẫu nhiên, Hạng, Tự tạo phòng, Máy) | Routed Page | `/lobby` | **P1** |
+| 6 | `SCR-LOBBY` | P1: Tự tạo phòng, Máy; Thường/Hạng hiển thị vô hiệu, thuộc P2 | Routed Page | `/lobby` | **P1** |
 | 7 | `SCR-WAITING-ROOM` | Phòng chờ, đổi ghế solo, đếm 3s, nhượng Host | Routed Page | `/rooms/:id` (`WAITING`) | **P1** |
 | 8 | `SCR-GAME-ROOM` | Bàn cờ SVG thi đấu, 2 cách đi, đồng hồ, thao tác | Routed Page | `/rooms/:id` (`PLAYING`) | **P1** |
-| 9 | `SCR-AI-GAME` | Bàn cờ đấu với Máy, không giới hạn giờ, Undo 3 lần | Routed Page | `/ai/:id` | **P1** |
+| 9 | `SCR-AI-GAME` | P1: bàn cờ đấu máy, không giới hạn giờ; P2: Undo 3 lần | Routed Page | `/ai/:id` | **P1** |
 | 10 | `SCR-LEADERBOARD` | Bảng Xếp Hạng Top 50 & Dòng ghim rank cá nhân | Routed Page | `/leaderboard` | P2 |
-| 11 | `SCR-FRIENDS` | Quản lý bạn bè, Online/Offline, Thách đấu trực tiếp | Routed Page | `/friends` | **P1** |
+| 11 | `SCR-FRIENDS` | P1: bạn bè, Online/Offline, mời vào phòng; P2: Thách đấu/Nhắn tin | Routed Page | `/friends` | **P1** |
 | 12 | `SCR-HISTORY` | Lịch sử ván đấu cá nhân (lọc Rank/Casual/Máy) | Routed Page | `/history` | P2 |
 | 13 | `SCR-REPLAY` | Xem lại ván cờ từng nước, bảng biên bản, auto-play | Routed Page | `/history/:id` | P2 |
 | 14 | `SCR-ACCESS-DENIED` | Màn hình từ chối truy cập (Phòng đầy, Cấm xem) | Routed Page | `/access-denied` | **P1** |
-| 15 | `SCR-PROFILE-SETTINGS` | Cài đặt hồ sơ cá nhân & Đổi Username qua OTP | Routed Page | `/settings` | **P1** |
+| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, email chỉ đọc; P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | **P1** (07/10) |
-| 17 | `MODAL-CREATE-ROOM` | Thiết lập Tạo phòng thi đấu (4 mức thời gian) | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
-| 18 | `MODAL-INVITE` | Chia sẻ phòng: Mã QR, Link URL, Mã 8 ký tự, Bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
+| 17 | `MODAL-CREATE-ROOM` | P1: tạo phòng, 5/10/15 phút; P2: Không giới hạn | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
+| 18 | `MODAL-INVITE` | P1: link, mã 8 ký tự, mời bạn bè; P2: mã QR | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
 | 19 | `MODAL-ROOM-SETTINGS` | Đổi chế độ phòng động (Khóa phòng giữ khách cũ) | Modal Dialog | Mở bởi Host | **P1** |
 | 20 | `MODAL-MATCHMAKING` | Hàng đợi tìm trận Ranked ngẫu nhiên (Hủy tự do) | Modal Dialog | Mở từ `SCR-LOBBY` | P2 |
 | 21 | `MODAL-AI-SETUP` | Chọn cấp độ AI (Dễ/Trung bình/Khó) & Phe cờ (Đỏ/Đen/Random)| Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
@@ -327,9 +329,9 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 27 | `MODAL-CONFIRM-RESIGN` | Xác nhận đầu hàng ván cờ (cảnh báo thua ngay) | Modal Dialog | Mở khi bấm Đầu hàng | **P1** |
 | 28 | `MODAL-CONFIRM-LEAVE` | Xác nhận rời phòng khi đang đấu (xử thua) | Modal Dialog | Mở khi bấm Rời phòng | **P1** |
 | 29 | `MODAL-CONFIRM-KICK` | Xác nhận đuổi người xem (chặn vào lại đến đóng phòng)| Modal Dialog | Mở khi bấm Kick người xem | **P1** |
-| 30 | `MODAL-MATCH-RESULT` | Báo kết quả ván cờ, Elo, Tái đấu hoán bên, Replay | Modal Dialog | Tự mở khi ván kết thúc | **P1** |
+| 30 | `MODAL-MATCH-RESULT` | P1: kết quả và Ở lại/Rời hoặc Ván mới/Về Sảnh; P2: Elo, Tái đấu, Replay | Modal Dialog | Tự mở khi ván kết thúc | **P1** |
 | 31 | `PANEL-NAVBAR` | Thanh điều hướng Header toàn cục + Icon thông báo | Embedded Panel| Cố định đầu mọi trang | **P1** |
-| 32 | `PANEL-CHAT` | Khung chat 2 kênh, bộ lọc từ cấm `***`, 12 sticker | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
+| 32 | `PANEL-CHAT` | P1: chat 2 kênh, bộ lọc từ cấm; P2: 12 sticker | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
 | 33 | `PANEL-MEDIA` | Face cam & Mic LiveKit SFU 2 người chơi (3 mức chia sẻ) | Embedded Panel| Cột trái `SCR-GAME-ROOM` | **P1** |
 | 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa N, 1–5) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
 | 35 | `ALERT-INACTIVITY-BANNER`| Cảnh báo chống treo ván R17 đếm 30s không modal | System Alert | Banner nổi trên bàn cờ | P2 |
@@ -344,5 +346,5 @@ Ma trận điều kiện và kết quả **năm trạng thái của từng thàn
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
-4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP; Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
+4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
 5. Số lượng: 15 màn hình + 15 modal + 4 khung nhúng + 3 lớp phủ = **37**; `/rooms/:id` dùng chung cho `SCR-WAITING-ROOM` và `SCR-GAME-ROOM` nên chỉ có **14 URL** phân biệt.

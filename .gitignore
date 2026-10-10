@@ -1,8 +1,27 @@
-# macOS
+# Giữ trên GitHub: mã nguồn, tài liệu/thiết kế dùng chung, dữ liệu và công cụ
+# kiểm tra kế hoạch, test, cấu hình CI và các tệp cấu hình mẫu.
+# Không chặn toàn bộ JSON/CSV/ảnh vì dự án đang sử dụng các loại tệp này.
+
+# Tệp riêng trên máy: ghi chú, bản xuất thủ công, ảnh chụp và bản sao cá nhân.
+# Đặt chúng trong .local/ để không bị đưa lên GitHub.
+/.local/
+/jira/sprint-label-sync-2026-10-10.json
+
+# Hệ điều hành và thiết lập IDE cá nhân
 .DS_Store
 ._*
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+*.code-workspace
+*.swp
+*.swo
+*~
 
-# Local credentials and environment configuration
+# Bí mật và cấu hình môi trường thật; giữ các mẫu để nhóm cài đặt
 .env
 .env.*
 !.env.example
@@ -13,7 +32,9 @@
 *.p12
 *.pfx
 
-# Dependencies and build caches
+# Thư viện cài trên máy, cache và sản phẩm build
+__pycache__/
+*.py[cod]
 node_modules/
 .pnpm-store/
 .turbo/
@@ -22,15 +43,15 @@ dist/
 coverage/
 *.tsbuildinfo
 
-# Generated test artifacts (keep docs/test-reports tracked)
+# Kết quả chạy kiểm thử tự động; giữ test và tài liệu nghiệm thu dùng chung
 /test-results/
 /playwright-report/
 /blob-report/
 *.log
 
-# Dữ liệu trang tài liệu — sinh tự động bởi site/build.mjs, không commit
+# Dữ liệu sinh cục bộ còn sót của trang tài liệu đã bỏ
 /site/data/
 
-# Supabase local state
+# Trạng thái Supabase trên máy
 supabase/.temp/
 supabase/.branches/

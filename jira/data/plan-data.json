@@ -1,0 +1,4507 @@
+{
+  "version": "3.0",
+  "planning_date": "2026-10-09",
+  "start_date": "2026-10-10",
+  "deadline": "2026-11-04",
+  "buffer_date": null,
+  "sprints": [
+    [
+      0,
+      14
+    ],
+    [
+      14,
+      28
+    ],
+    [
+      28,
+      42
+    ],
+    [
+      42,
+      52
+    ]
+  ],
+  "max_parallel": 7,
+  "issues": [
+    {
+      "id": "EP-00",
+      "issue_id": "1",
+      "type": "Epic",
+      "title": "Nền tảng kỹ thuật và chất lượng",
+      "parent": null,
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "camera-va-mic",
+        "dac-ta",
+        "luat-co",
+        "may-co",
+        "nen-tang",
+        "p1",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "Camera và mic",
+        "FE",
+        "Luật cờ",
+        "Máy cờ",
+        "Nền tảng",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-1",
+      "jira_id": "10382",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-06",
+      "due_date": "2026-10-13",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-01",
+      "issue_id": "2",
+      "type": "Epic",
+      "title": "Đăng ký và đăng nhập",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-01",
+        "dac-ta",
+        "p1",
+        "tai-khoan",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Tài khoản",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-2",
+      "jira_id": "10383",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-07",
+      "due_date": "2026-10-14",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-02",
+      "issue_id": "3",
+      "type": "Epic",
+      "title": "Tạo phòng",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-02",
+        "dac-ta",
+        "p1",
+        "phong-choi",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-3",
+      "jira_id": "10384",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-15",
+      "due_date": "2026-10-22",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-03",
+      "issue_id": "4",
+      "type": "Epic",
+      "title": "Mời vào phòng",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-03",
+        "ban-be",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "Bạn bè",
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-4",
+      "jira_id": "10385",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-25",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-04",
+      "issue_id": "5",
+      "type": "Epic",
+      "title": "Khởi tạo bàn cờ",
+      "parent": null,
+      "priority": "High",
+      "labels": [
+        "EP-04",
+        "ban-co",
+        "dac-ta",
+        "luat-co",
+        "p1"
+      ],
+      "components": [
+        "Bàn cờ",
+        "BE",
+        "FE",
+        "Luật cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-5",
+      "jira_id": "10386",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-07",
+      "due_date": "2026-10-14",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-05",
+      "issue_id": "6",
+      "type": "Epic",
+      "title": "Hai người đánh cờ online",
+      "parent": null,
+      "priority": "High",
+      "labels": [
+        "EP-05",
+        "ban-co",
+        "dac-ta",
+        "luat-co",
+        "p1",
+        "phong-choi",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "Bàn cờ",
+        "BE",
+        "FE",
+        "Luật cờ",
+        "Phòng chơi",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-6",
+      "jira_id": "10387",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-19",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-06",
+      "issue_id": "7",
+      "type": "Epic",
+      "title": "Chế độ phòng và người xem",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-06",
+        "camera-va-mic",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "BE",
+        "Camera và mic",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-7",
+      "jira_id": "10388",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-27",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-07",
+      "issue_id": "8",
+      "type": "Epic",
+      "title": "Chat, camera và mic",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-07",
+        "camera-va-mic",
+        "dac-ta",
+        "p1",
+        "tro-chuyen"
+      ],
+      "components": [
+        "BE",
+        "Camera và mic",
+        "FE",
+        "QA & DevOps",
+        "Trò chuyện"
+      ],
+      "jira_key": "XIAN-8",
+      "jira_id": "10389",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-25",
+      "fix_versions": []
+    },
+    {
+      "id": "EP-08",
+      "issue_id": "9",
+      "type": "Epic",
+      "title": "Đánh với máy theo cấp độ",
+      "parent": null,
+      "priority": "Medium",
+      "labels": [
+        "EP-08",
+        "ban-co",
+        "dac-ta",
+        "luat-co",
+        "may-co",
+        "p1"
+      ],
+      "components": [
+        "Bàn cờ",
+        "BE",
+        "FE",
+        "Luật cờ",
+        "Máy cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-9",
+      "jira_id": "10390",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-10",
+      "due_date": "2026-10-17",
+      "fix_versions": []
+    },
+    {
+      "id": "US-00.1",
+      "issue_id": "10",
+      "type": "Story",
+      "title": "Khung dự án, CI và nhật ký vận hành",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "dac-ta",
+        "nen-tang",
+        "p1"
+      ],
+      "components": [
+        "FE",
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-10",
+      "jira_id": "10391",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-08",
+      "due_date": "2026-10-11",
+      "fix_versions": []
+    },
+    {
+      "id": "US-00.2",
+      "issue_id": "11",
+      "type": "Story",
+      "title": "Cơ sở dữ liệu và phân quyền P1",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "dac-ta",
+        "nen-tang",
+        "p1"
+      ],
+      "components": [
+        "BE",
+        "Nền tảng"
+      ],
+      "jira_key": "XIAN-11",
+      "jira_id": "10392",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-15",
+      "fix_versions": []
+    },
+    {
+      "id": "US-00.3",
+      "issue_id": "12",
+      "type": "Story",
+      "title": "Khung realtime",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "dac-ta",
+        "nen-tang",
+        "p1",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "Nền tảng",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-12",
+      "jira_id": "10393",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-12",
+      "fix_versions": []
+    },
+    {
+      "id": "US-00.4",
+      "issue_id": "13",
+      "type": "Story",
+      "title": "Kế hoạch kiểm thử và kiểm chứng sớm",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "camera-va-mic",
+        "dac-ta",
+        "luat-co",
+        "may-co",
+        "nen-tang",
+        "p1"
+      ],
+      "components": [
+        "Camera và mic",
+        "Luật cờ",
+        "Máy cờ",
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-13",
+      "jira_id": "10394",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-12",
+      "fix_versions": []
+    },
+    {
+      "id": "US-00.5",
+      "issue_id": "14",
+      "type": "Story",
+      "title": "Nghiệm thu tổng, NFR và đóng gói demo",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "EP-00",
+        "dac-ta",
+        "nen-tang",
+        "p1"
+      ],
+      "components": [
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-14",
+      "jira_id": "10395",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-29",
+      "due_date": "2026-11-01",
+      "fix_versions": []
+    },
+    {
+      "id": "US-01.1",
+      "issue_id": "15",
+      "type": "Story",
+      "title": "Đăng ký bằng Username + Mật khẩu + OTP email",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "EP-01",
+        "dac-ta",
+        "p1",
+        "tai-khoan"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-15",
+      "jira_id": "10396",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-12",
+      "fix_versions": []
+    },
+    {
+      "id": "US-01.2",
+      "issue_id": "16",
+      "type": "Story",
+      "title": "Đăng nhập bằng Username + Mật khẩu và khoá thử sai",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "EP-01",
+        "dac-ta",
+        "p1",
+        "tai-khoan"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-16",
+      "jira_id": "10397",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-15",
+      "fix_versions": []
+    },
+    {
+      "id": "US-01.3",
+      "issue_id": "17",
+      "type": "Story",
+      "title": "Đăng ký/đăng nhập bằng Google và chế độ Khách",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "EP-01",
+        "dac-ta",
+        "p1",
+        "tai-khoan"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-17",
+      "jira_id": "10398",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-17",
+      "fix_versions": []
+    },
+    {
+      "id": "US-01.4",
+      "issue_id": "18",
+      "type": "Story",
+      "title": "Phiên đăng nhập, hồ sơ và Đăng xuất",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "EP-01",
+        "dac-ta",
+        "p1",
+        "tai-khoan",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Tài khoản",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-18",
+      "jira_id": "10399",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-23",
+      "fix_versions": []
+    },
+    {
+      "id": "US-02.1",
+      "issue_id": "19",
+      "type": "Story",
+      "title": "Tạo phòng, ghế và bắt đầu ván",
+      "parent": "EP-02",
+      "priority": "High",
+      "labels": [
+        "EP-02",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-19",
+      "jira_id": "10400",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-17",
+      "due_date": "2026-10-20",
+      "fix_versions": []
+    },
+    {
+      "id": "US-02.2",
+      "issue_id": "20",
+      "type": "Story",
+      "title": "Xin đổi bên và ở lại phòng sau ván",
+      "parent": "EP-02",
+      "priority": "High",
+      "labels": [
+        "EP-02",
+        "dac-ta",
+        "p1",
+        "phong-choi",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-20",
+      "jira_id": "10401",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-23",
+      "due_date": "2026-10-26",
+      "fix_versions": []
+    },
+    {
+      "id": "US-03.1",
+      "issue_id": "21",
+      "type": "Story",
+      "title": "Mời bằng link/mã và vào phòng",
+      "parent": "EP-03",
+      "priority": "High",
+      "labels": [
+        "EP-03",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-21",
+      "jira_id": "10402",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-23",
+      "fix_versions": []
+    },
+    {
+      "id": "US-03.2",
+      "issue_id": "22",
+      "type": "Story",
+      "title": "Bạn bè và mời bạn online",
+      "parent": "EP-03",
+      "priority": "High",
+      "labels": [
+        "EP-03",
+        "ban-be",
+        "dac-ta",
+        "p1"
+      ],
+      "components": [
+        "Bạn bè",
+        "BE",
+        "FE",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-22",
+      "jira_id": "10403",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-27",
+      "fix_versions": []
+    },
+    {
+      "id": "US-04.1",
+      "issue_id": "23",
+      "type": "Story",
+      "title": "Lõi luật cờ dùng chung",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "EP-04",
+        "dac-ta",
+        "luat-co",
+        "p1"
+      ],
+      "components": [
+        "BE",
+        "Luật cờ"
+      ],
+      "jira_key": "XIAN-23",
+      "jira_id": "10404",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-12",
+      "fix_versions": []
+    },
+    {
+      "id": "US-04.2",
+      "issue_id": "24",
+      "type": "Story",
+      "title": "Khởi tạo và hiển thị bàn cờ",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "EP-04",
+        "ban-co",
+        "dac-ta",
+        "p1"
+      ],
+      "components": [
+        "Bàn cờ",
+        "FE",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-24",
+      "jira_id": "10405",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-12",
+      "fix_versions": []
+    },
+    {
+      "id": "US-04.3",
+      "issue_id": "25",
+      "type": "Story",
+      "title": "Đi cờ bằng click/kéo thả và âm thanh",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "EP-04",
+        "ban-co",
+        "dac-ta",
+        "p1"
+      ],
+      "components": [
+        "Bàn cờ",
+        "FE",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-25",
+      "jira_id": "10406",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-15",
+      "fix_versions": []
+    },
+    {
+      "id": "US-05.1",
+      "issue_id": "26",
+      "type": "Story",
+      "title": "Ván online: đi cờ, đồng hồ và kết thúc ván",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "EP-05",
+        "ban-co",
+        "dac-ta",
+        "luat-co",
+        "p1",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "Bàn cờ",
+        "BE",
+        "FE",
+        "Luật cờ",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-26",
+      "jira_id": "10407",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-17",
+      "fix_versions": []
+    },
+    {
+      "id": "US-05.2",
+      "issue_id": "27",
+      "type": "Story",
+      "title": "Đầu hàng và xin hoà",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "EP-05",
+        "dac-ta",
+        "p1",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-27",
+      "jira_id": "10408",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-21",
+      "fix_versions": []
+    },
+    {
+      "id": "US-05.3",
+      "issue_id": "28",
+      "type": "Story",
+      "title": "Mất kết nối và nối lại",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "EP-05",
+        "dac-ta",
+        "p1",
+        "phong-choi",
+        "van-truc-tuyen"
+      ],
+      "components": [
+        "BE",
+        "Phòng chơi",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-28",
+      "jira_id": "10409",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-30",
+      "fix_versions": []
+    },
+    {
+      "id": "US-06.1",
+      "issue_id": "29",
+      "type": "Story",
+      "title": "Cài đặt phòng: PUBLIC / CODE_ONLY / LOCKED",
+      "parent": "EP-06",
+      "priority": "High",
+      "labels": [
+        "EP-06",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-29",
+      "jira_id": "10410",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-25",
+      "fix_versions": []
+    },
+    {
+      "id": "US-06.2",
+      "issue_id": "30",
+      "type": "Story",
+      "title": "Sảnh và danh sách phòng công khai",
+      "parent": "EP-06",
+      "priority": "High",
+      "labels": [
+        "EP-06",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-30",
+      "jira_id": "10411",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-28",
+      "fix_versions": []
+    },
+    {
+      "id": "US-06.3",
+      "issue_id": "31",
+      "type": "Story",
+      "title": "Người xem và đuổi người xem",
+      "parent": "EP-06",
+      "priority": "High",
+      "labels": [
+        "EP-06",
+        "camera-va-mic",
+        "dac-ta",
+        "p1",
+        "phong-choi"
+      ],
+      "components": [
+        "BE",
+        "Camera và mic",
+        "FE",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-31",
+      "jira_id": "10412",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-23",
+      "due_date": "2026-10-26",
+      "fix_versions": []
+    },
+    {
+      "id": "US-07.1",
+      "issue_id": "32",
+      "type": "Story",
+      "title": "Hai kênh chat và bộ lọc",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "EP-07",
+        "dac-ta",
+        "p1",
+        "tro-chuyen"
+      ],
+      "components": [
+        "BE",
+        "FE",
+        "QA & DevOps",
+        "Trò chuyện"
+      ],
+      "jira_key": "XIAN-32",
+      "jira_id": "10413",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-23",
+      "fix_versions": []
+    },
+    {
+      "id": "US-07.2",
+      "issue_id": "33",
+      "type": "Story",
+      "title": "Camera, mic và mức chia sẻ",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "EP-07",
+        "camera-va-mic",
+        "dac-ta",
+        "p1"
+      ],
+      "components": [
+        "BE",
+        "Camera và mic",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-33",
+      "jira_id": "10414",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-25",
+      "fix_versions": []
+    },
+    {
+      "id": "US-08.1",
+      "issue_id": "34",
+      "type": "Story",
+      "title": "Thiết lập và chơi ván với máy",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "EP-08",
+        "ban-co",
+        "dac-ta",
+        "may-co",
+        "p1"
+      ],
+      "components": [
+        "Bàn cờ",
+        "BE",
+        "FE",
+        "Máy cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-34",
+      "jira_id": "10415",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-21",
+      "fix_versions": []
+    },
+    {
+      "id": "US-08.2",
+      "issue_id": "35",
+      "type": "Story",
+      "title": "Máy cờ ba cấp độ",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "EP-08",
+        "dac-ta",
+        "luat-co",
+        "may-co",
+        "p1"
+      ],
+      "components": [
+        "BE",
+        "Luật cờ",
+        "Máy cờ"
+      ],
+      "jira_key": "XIAN-35",
+      "jira_id": "10416",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-15",
+      "fix_versions": []
+    },
+    {
+      "id": "US-08.3",
+      "issue_id": "36",
+      "type": "Story",
+      "title": "Ổn định ván với máy và hoàn thiện cấp Khó",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "EP-08",
+        "dac-ta",
+        "luat-co",
+        "may-co",
+        "p1"
+      ],
+      "components": [
+        "BE",
+        "Luật cờ",
+        "Máy cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-36",
+      "jira_id": "10417",
+      "owner": "Tình",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "Done",
+      "resolution": "Done",
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-19",
+      "fix_versions": []
+    },
+    {
+      "id": "T01",
+      "issue_id": "37",
+      "type": "Task",
+      "title": "Dựng monorepo, CI, nhật ký và /health",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "chinh-qa-devops",
+        "ha-tang",
+        "nen-tang",
+        "p1",
+        "sprint-1"
+      ],
+      "story": "US-00.1",
+      "owner": "Tình",
+      "hours": 8,
+      "start_slot": 0,
+      "end_slot": 2,
+      "sprint": 1,
+      "deps": [],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-37",
+      "jira_id": "10418",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-10",
+      "due_date": "2026-10-10",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T02",
+      "issue_id": "38",
+      "type": "Task",
+      "title": "Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "chuan-bi-kiem-thu",
+        "luat-co",
+        "may-co",
+        "nen-tang",
+        "p1",
+        "sprint-1"
+      ],
+      "story": "US-00.4",
+      "owner": "Thư",
+      "hours": 32,
+      "start_slot": 8,
+      "end_slot": 16,
+      "sprint": 1,
+      "deps": [],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Luật cờ",
+        "Máy cờ",
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-38",
+      "jira_id": "10419",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-17",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 32,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T03",
+      "issue_id": "39",
+      "type": "Task",
+      "title": "Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "nen-tang",
+        "p1",
+        "phat-trien",
+        "sprint-2"
+      ],
+      "story": "US-00.1",
+      "owner": "Kỳ",
+      "hours": 12,
+      "start_slot": 16,
+      "end_slot": 20,
+      "sprint": 2,
+      "deps": [
+        "T01"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Nền tảng"
+      ],
+      "jira_key": "XIAN-39",
+      "jira_id": "10420",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-19",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T04",
+      "issue_id": "40",
+      "type": "Task",
+      "title": "BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-1",
+        "tai-khoan"
+      ],
+      "story": "US-01.1",
+      "owner": "Đông",
+      "hours": 24,
+      "start_slot": 2,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-40",
+      "jira_id": "10421",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-13",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T05",
+      "issue_id": "41",
+      "type": "Task",
+      "title": "Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "luat-co",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-04.1",
+      "owner": "Tùng",
+      "hours": 8,
+      "start_slot": 2,
+      "end_slot": 4,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Luật cờ"
+      ],
+      "jira_key": "XIAN-41",
+      "jira_id": "10422",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-11",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T06",
+      "issue_id": "42",
+      "type": "Task",
+      "title": "Spike media LAN/Cloud/HTTPS và thử mô hình phiên",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "camera-va-mic",
+        "chinh-qa-devops",
+        "nen-tang",
+        "p1",
+        "sprint-1",
+        "thu-nghiem-ky-thuat"
+      ],
+      "story": "US-00.4",
+      "owner": "Cường",
+      "hours": 24,
+      "start_slot": 2,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Camera và mic",
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-42",
+      "jira_id": "10423",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-13",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T07",
+      "issue_id": "43",
+      "type": "Task",
+      "title": "Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "luat-co",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-04.1",
+      "owner": "Tùng",
+      "hours": 8,
+      "start_slot": 4,
+      "end_slot": 6,
+      "sprint": 1,
+      "deps": [
+        "T05"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Luật cờ"
+      ],
+      "jira_key": "XIAN-43",
+      "jira_id": "10424",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-12",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T08",
+      "issue_id": "44",
+      "type": "Task",
+      "title": "FE màn Đăng ký 3 bước",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "tai-khoan"
+      ],
+      "story": "US-01.1",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 22,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T03",
+        "T04"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-44",
+      "jira_id": "10425",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-21",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T09",
+      "issue_id": "45",
+      "type": "Task",
+      "title": "BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-1",
+        "tai-khoan"
+      ],
+      "story": "US-01.2",
+      "owner": "Tùng",
+      "hours": 16,
+      "start_slot": 8,
+      "end_slot": 12,
+      "sprint": 1,
+      "deps": [
+        "T04"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-45",
+      "jira_id": "10426",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-15",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T10",
+      "issue_id": "46",
+      "type": "Task",
+      "title": "Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử",
+      "parent": "EP-04",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "luat-co",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-04.1",
+      "owner": "Tùng",
+      "hours": 8,
+      "start_slot": 6,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T07"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Luật cờ"
+      ],
+      "jira_key": "XIAN-46",
+      "jira_id": "10427",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-13",
+      "due_date": "2026-10-13",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T11",
+      "issue_id": "47",
+      "type": "Task",
+      "title": "FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-04.2",
+      "owner": "Nhạn",
+      "hours": 16,
+      "start_slot": 2,
+      "end_slot": 6,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "Bàn cờ",
+        "FE"
+      ],
+      "jira_key": "XIAN-47",
+      "jira_id": "10428",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-12",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T12",
+      "issue_id": "48",
+      "type": "Task",
+      "title": "Khung realtime Socket.IO",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "nen-tang",
+        "p1",
+        "phat-trien",
+        "sprint-1",
+        "van-truc-tuyen"
+      ],
+      "story": "US-00.3",
+      "owner": "Tình",
+      "hours": 24,
+      "start_slot": 2,
+      "end_slot": 8,
+      "sprint": 1,
+      "deps": [
+        "T01"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Nền tảng",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-48",
+      "jira_id": "10429",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-13",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T13",
+      "issue_id": "49",
+      "type": "Task",
+      "title": "Kiểm thử US-01.1",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-2",
+        "tai-khoan"
+      ],
+      "story": "US-01.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 24,
+      "end_slot": 26,
+      "sprint": 2,
+      "deps": [
+        "T08"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "QA & DevOps",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-49",
+      "jira_id": "10430",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-22",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T14",
+      "issue_id": "50",
+      "type": "Task",
+      "title": "Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "nen-tang",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-00.2",
+      "owner": "Đông",
+      "hours": 12,
+      "start_slot": 8,
+      "end_slot": 12,
+      "sprint": 1,
+      "deps": [
+        "T04"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Nền tảng"
+      ],
+      "jira_key": "XIAN-50",
+      "jira_id": "10431",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-15",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T15",
+      "issue_id": "51",
+      "type": "Task",
+      "title": "FE màn Đăng nhập",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "tai-khoan"
+      ],
+      "story": "US-01.2",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 20,
+      "end_slot": 22,
+      "sprint": 2,
+      "deps": [
+        "T03",
+        "T09"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-51",
+      "jira_id": "10432",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-20",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T16",
+      "issue_id": "52",
+      "type": "Task",
+      "title": "Kiểm thử US-04.2",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-2"
+      ],
+      "story": "US-04.2",
+      "owner": "Tình",
+      "hours": 4,
+      "start_slot": 20,
+      "end_slot": 22,
+      "sprint": 2,
+      "deps": [
+        "T11"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Bàn cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-52",
+      "jira_id": "10433",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-20",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T17",
+      "issue_id": "53",
+      "type": "Task",
+      "title": "Kiểm thử US-01.2",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-2",
+        "tai-khoan"
+      ],
+      "story": "US-01.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 22,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T15"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "QA & DevOps",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-53",
+      "jira_id": "10434",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-21",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T18",
+      "issue_id": "54",
+      "type": "Task",
+      "title": "BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-2"
+      ],
+      "story": "US-02.1",
+      "owner": "Tùng",
+      "hours": 24,
+      "start_slot": 18,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T12",
+        "T14"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-54",
+      "jira_id": "10435",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-19",
+      "due_date": "2026-10-21",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T19",
+      "issue_id": "55",
+      "type": "Task",
+      "title": "FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-04.3",
+      "owner": "Nhạn",
+      "hours": 24,
+      "start_slot": 8,
+      "end_slot": 14,
+      "sprint": 1,
+      "deps": [
+        "T10",
+        "T11"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "Bàn cờ",
+        "FE"
+      ],
+      "jira_key": "XIAN-55",
+      "jira_id": "10436",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-16",
+      "fix_versions": [
+        "v0.1"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T20",
+      "issue_id": "56",
+      "type": "Task",
+      "title": "BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "luat-co",
+        "p1",
+        "phat-trien",
+        "sprint-1",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.1",
+      "owner": "Tùng",
+      "hours": 24,
+      "start_slot": 12,
+      "end_slot": 18,
+      "sprint": 1,
+      "deps": [
+        "T10",
+        "T12",
+        "T14"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Luật cờ",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-56",
+      "jira_id": "10437",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-18",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T21",
+      "issue_id": "57",
+      "type": "Task",
+      "title": "FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-2"
+      ],
+      "story": "US-02.1",
+      "owner": "Nhạn",
+      "hours": 16,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T03",
+        "T18"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-57",
+      "jira_id": "10438",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T22",
+      "issue_id": "58",
+      "type": "Task",
+      "title": "BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-2"
+      ],
+      "story": "US-03.1",
+      "owner": "Tùng",
+      "hours": 12,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T09",
+        "T18"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-58",
+      "jira_id": "10439",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T23",
+      "issue_id": "59",
+      "type": "Task",
+      "title": "BE đồng hồ thi đấu và hết giờ",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.1",
+      "owner": "Cường",
+      "hours": 8,
+      "start_slot": 18,
+      "end_slot": 20,
+      "sprint": 2,
+      "deps": [
+        "T20"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-59",
+      "jira_id": "10440",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-19",
+      "due_date": "2026-10-19",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T24",
+      "issue_id": "60",
+      "type": "Task",
+      "title": "Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "luat-co",
+        "may-co",
+        "p1",
+        "phat-trien",
+        "sprint-1"
+      ],
+      "story": "US-08.2",
+      "owner": "Tình",
+      "hours": 32,
+      "start_slot": 8,
+      "end_slot": 16,
+      "sprint": 1,
+      "deps": [
+        "T10"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Luật cờ",
+        "Máy cờ"
+      ],
+      "jira_key": "XIAN-60",
+      "jira_id": "10441",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-17",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 32,
+      "spent_hours": 0,
+      "story_points": 8
+    },
+    {
+      "id": "T25",
+      "issue_id": "61",
+      "type": "Task",
+      "title": "FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.1",
+      "owner": "Kỳ",
+      "hours": 16,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T19",
+        "T23"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "Bàn cờ",
+        "FE",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-61",
+      "jira_id": "10442",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T26",
+      "issue_id": "62",
+      "type": "Task",
+      "title": "FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-03.1",
+      "owner": "Cường",
+      "hours": 8,
+      "start_slot": 28,
+      "end_slot": 30,
+      "sprint": 3,
+      "deps": [
+        "T21",
+        "T22"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-62",
+      "jira_id": "10443",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-24",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T27",
+      "issue_id": "63",
+      "type": "Task",
+      "title": "Kiểm thử US-04.3",
+      "parent": "EP-04",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-3"
+      ],
+      "story": "US-04.3",
+      "owner": "Tình",
+      "hours": 4,
+      "start_slot": 40,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T22",
+        "T25"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Bàn cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-63",
+      "jira_id": "10444",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-30",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T28",
+      "issue_id": "64",
+      "type": "Task",
+      "title": "Kiểm thử US-02.1",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-02.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 30,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T26",
+        "T37"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-64",
+      "jira_id": "10445",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-25",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T29",
+      "issue_id": "65",
+      "type": "Task",
+      "title": "Kiểm thử US-03.1",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-03.1",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 30,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T08",
+        "T15",
+        "T26",
+        "T35"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-65",
+      "jira_id": "10446",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-25",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T30",
+      "issue_id": "66",
+      "type": "Task",
+      "title": "Kiểm thử US-05.1",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "luat-co",
+        "p1",
+        "sprint-3",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 34,
+      "end_slot": 36,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T26"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Luật cờ",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-66",
+      "jira_id": "10447",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-27",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T31",
+      "issue_id": "67",
+      "type": "Task",
+      "title": "BE bạn bè, trạng thái online, mời bạn online vào phòng",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "ban-be",
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-3"
+      ],
+      "story": "US-03.2",
+      "owner": "Tùng",
+      "hours": 20,
+      "start_slot": 32,
+      "end_slot": 38,
+      "sprint": 3,
+      "deps": [
+        "T22",
+        "T35"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "Bạn bè",
+        "BE"
+      ],
+      "jira_key": "XIAN-67",
+      "jira_id": "10448",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-28",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 20,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T32",
+      "issue_id": "68",
+      "type": "Task",
+      "title": "BE đầu hàng, rời phòng giữa ván, xin hoà",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.2",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 20,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T20"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-68",
+      "jira_id": "10449",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-21",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T33",
+      "issue_id": "69",
+      "type": "Task",
+      "title": "BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "camera-va-mic",
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-3"
+      ],
+      "story": "US-07.2",
+      "owner": "Tình",
+      "hours": 24,
+      "start_slot": 28,
+      "end_slot": 34,
+      "sprint": 3,
+      "deps": [
+        "T06",
+        "T22",
+        "T35"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Camera và mic"
+      ],
+      "jira_key": "XIAN-69",
+      "jira_id": "10450",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-26",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T34",
+      "issue_id": "70",
+      "type": "Task",
+      "title": "BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "may-co",
+        "p1",
+        "phat-trien",
+        "sprint-2"
+      ],
+      "story": "US-08.1",
+      "owner": "Đông",
+      "hours": 12,
+      "start_slot": 20,
+      "end_slot": 24,
+      "sprint": 2,
+      "deps": [
+        "T20",
+        "T24"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Máy cờ"
+      ],
+      "jira_key": "XIAN-70",
+      "jira_id": "10451",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-21",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T35",
+      "issue_id": "71",
+      "type": "Task",
+      "title": "BE đăng ký/đăng nhập Google, onboarding, phiên Khách",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-1",
+        "tai-khoan"
+      ],
+      "story": "US-01.3",
+      "owner": "Cường",
+      "hours": 24,
+      "start_slot": 12,
+      "end_slot": 18,
+      "sprint": 1,
+      "deps": [
+        "T09",
+        "T14"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-71",
+      "jira_id": "10452",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-18",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T36",
+      "issue_id": "72",
+      "type": "Task",
+      "title": "FE nút Đầu hàng, Xin hoà và khung đề nghị",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-3",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 28,
+      "end_slot": 30,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T32"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-72",
+      "jira_id": "10453",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-24",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T37",
+      "issue_id": "73",
+      "type": "Task",
+      "title": "BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ",
+      "parent": "EP-07",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "tro-chuyen"
+      ],
+      "story": "US-07.1",
+      "owner": "Tình",
+      "hours": 16,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T18",
+        "T35"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Trò chuyện"
+      ],
+      "jira_key": "XIAN-73",
+      "jira_id": "10454",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T38",
+      "issue_id": "74",
+      "type": "Task",
+      "title": "FE thiết lập/chơi AI và giao diện sự cố máy cờ",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-fe",
+        "may-co",
+        "p1",
+        "phat-trien",
+        "sprint-3"
+      ],
+      "story": "US-08.1",
+      "owner": "Kỳ",
+      "hours": 12,
+      "start_slot": 34,
+      "end_slot": 38,
+      "sprint": 3,
+      "deps": [
+        "T19",
+        "T34"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "Bàn cờ",
+        "FE",
+        "Máy cờ"
+      ],
+      "jira_key": "XIAN-74",
+      "jira_id": "10455",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-28",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T39",
+      "issue_id": "75",
+      "type": "Task",
+      "title": "Kiểm thử US-05.2",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-3",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.2",
+      "owner": "Kỳ",
+      "hours": 4,
+      "start_slot": 30,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T18",
+        "T36"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-75",
+      "jira_id": "10456",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-25",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T40",
+      "issue_id": "76",
+      "type": "Task",
+      "title": "FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "ban-be",
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-3"
+      ],
+      "story": "US-03.2",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 38,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T31"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "Bạn bè",
+        "FE"
+      ],
+      "jira_key": "XIAN-76",
+      "jira_id": "10457",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-30",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T41",
+      "issue_id": "77",
+      "type": "Task",
+      "title": "BE Xin đổi bên và phòng về chờ sau ván",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3",
+        "van-truc-tuyen"
+      ],
+      "story": "US-02.2",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 30,
+      "end_slot": 34,
+      "sprint": 3,
+      "deps": [
+        "T20",
+        "T37"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-77",
+      "jira_id": "10458",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-26",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T42",
+      "issue_id": "78",
+      "type": "Task",
+      "title": "FE khung chat hai kênh",
+      "parent": "EP-07",
+      "priority": "High",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-3",
+        "tro-chuyen"
+      ],
+      "story": "US-07.1",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 32,
+      "end_slot": 34,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T37"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Trò chuyện"
+      ],
+      "jira_key": "XIAN-78",
+      "jira_id": "10459",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-26",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T43",
+      "issue_id": "79",
+      "type": "Task",
+      "title": "Kiểm thử US-08.1",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "ban-co",
+        "chinh-qa-devops",
+        "kiem-thu",
+        "may-co",
+        "p1",
+        "sprint-3"
+      ],
+      "story": "US-08.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 38,
+      "end_slot": 40,
+      "sprint": 3,
+      "deps": [
+        "T38",
+        "T63"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Bàn cờ",
+        "Máy cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-79",
+      "jira_id": "10460",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-29",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T44",
+      "issue_id": "80",
+      "type": "Task",
+      "title": "FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-3",
+        "tai-khoan"
+      ],
+      "story": "US-01.3",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 28,
+      "end_slot": 30,
+      "sprint": 3,
+      "deps": [
+        "T15",
+        "T35"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-80",
+      "jira_id": "10461",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-24",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T45",
+      "issue_id": "81",
+      "type": "Task",
+      "title": "Kiểm thử US-07.2",
+      "parent": "EP-07",
+      "priority": "Medium",
+      "labels": [
+        "camera-va-mic",
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-3"
+      ],
+      "story": "US-07.2",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 40,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T21",
+        "T42",
+        "T58"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Camera và mic",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-81",
+      "jira_id": "10462",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-30",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T46",
+      "issue_id": "82",
+      "type": "Task",
+      "title": "FE hộp Xin đổi bên, Ở lại phòng / Rời phòng",
+      "parent": "EP-02",
+      "priority": "High",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3",
+        "van-truc-tuyen"
+      ],
+      "story": "US-02.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 34,
+      "end_slot": 36,
+      "sprint": 3,
+      "deps": [
+        "T25",
+        "T41"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Phòng chơi",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-82",
+      "jira_id": "10463",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-27",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T47",
+      "issue_id": "83",
+      "type": "Task",
+      "title": "Kiểm thử US-07.1",
+      "parent": "EP-07",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-3",
+        "tro-chuyen"
+      ],
+      "story": "US-07.1",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 36,
+      "end_slot": 38,
+      "sprint": 3,
+      "deps": [
+        "T21",
+        "T42",
+        "T46"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "QA & DevOps",
+        "Trò chuyện"
+      ],
+      "jira_key": "XIAN-83",
+      "jira_id": "10464",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-28",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T48",
+      "issue_id": "84",
+      "type": "Task",
+      "title": "Kiểm thử US-01.3",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-3",
+        "tai-khoan"
+      ],
+      "story": "US-01.3",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 32,
+      "end_slot": 34,
+      "sprint": 3,
+      "deps": [
+        "T26",
+        "T37",
+        "T44"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "QA & DevOps",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-84",
+      "jira_id": "10465",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-26",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T49",
+      "issue_id": "85",
+      "type": "Task",
+      "title": "Kiểm thử US-03.2",
+      "parent": "EP-03",
+      "priority": "Medium",
+      "labels": [
+        "ban-be",
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-4"
+      ],
+      "story": "US-03.2",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 44,
+      "end_slot": 46,
+      "sprint": 4,
+      "deps": [
+        "T34",
+        "T40",
+        "T53",
+        "T56"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Bạn bè",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-85",
+      "jira_id": "10466",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-01",
+      "due_date": "2026-11-01",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T50",
+      "issue_id": "86",
+      "type": "Task",
+      "title": "Kiểm thử US-02.2",
+      "parent": "EP-02",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-4",
+        "van-truc-tuyen"
+      ],
+      "story": "US-02.2",
+      "owner": "Kỳ",
+      "hours": 4,
+      "start_slot": 42,
+      "end_slot": 44,
+      "sprint": 4,
+      "deps": [
+        "T46"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Phòng chơi",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-86",
+      "jira_id": "10467",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-31",
+      "due_date": "2026-10-31",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T51",
+      "issue_id": "87",
+      "type": "Task",
+      "title": "Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu-tich-hop",
+        "nen-tang",
+        "p1",
+        "sprint-4"
+      ],
+      "story": "US-00.5",
+      "owner": "Thư",
+      "hours": 24,
+      "start_slot": 42,
+      "end_slot": 48,
+      "sprint": 4,
+      "deps": [
+        "T08",
+        "T26",
+        "T36",
+        "T38",
+        "T40",
+        "T42",
+        "T44",
+        "T46",
+        "T52",
+        "T58",
+        "T59",
+        "T61",
+        "T65"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-87",
+      "jira_id": "10468",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-31",
+      "due_date": "2026-11-02",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T52",
+      "issue_id": "88",
+      "type": "Task",
+      "title": "BE mất kết nối, ân hạn, đồng bộ lại và server restart",
+      "parent": "EP-05",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.3",
+      "owner": "Đông",
+      "hours": 12,
+      "start_slot": 38,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T56"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-88",
+      "jira_id": "10469",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-30",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T53",
+      "issue_id": "89",
+      "type": "Task",
+      "title": "BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-06.1",
+      "owner": "Tùng",
+      "hours": 12,
+      "start_slot": 28,
+      "end_slot": 32,
+      "sprint": 3,
+      "deps": [
+        "T22"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-89",
+      "jira_id": "10470",
+      "assignee_account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-25",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T54",
+      "issue_id": "90",
+      "type": "Task",
+      "title": "BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-06.2",
+      "owner": "Đông",
+      "hours": 8,
+      "start_slot": 34,
+      "end_slot": 36,
+      "sprint": 3,
+      "deps": [
+        "T53"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-90",
+      "jira_id": "10471",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-27",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T55",
+      "issue_id": "91",
+      "type": "Task",
+      "title": "BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-06.3",
+      "owner": "Đông",
+      "hours": 16,
+      "start_slot": 30,
+      "end_slot": 34,
+      "sprint": 3,
+      "deps": [
+        "T22"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-91",
+      "jira_id": "10472",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-26",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T56",
+      "issue_id": "92",
+      "type": "Task",
+      "title": "BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "p1",
+        "phat-trien",
+        "sprint-2",
+        "tai-khoan",
+        "van-truc-tuyen"
+      ],
+      "story": "US-01.4",
+      "owner": "Đông",
+      "hours": 24,
+      "start_slot": 24,
+      "end_slot": 30,
+      "sprint": 2,
+      "deps": [
+        "T18",
+        "T20",
+        "T35"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Tài khoản",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-92",
+      "jira_id": "10473",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-24",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 24,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T57",
+      "issue_id": "93",
+      "type": "Task",
+      "title": "FE Cài đặt phòng",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-06.1",
+      "owner": "Cường",
+      "hours": 4,
+      "start_slot": 34,
+      "end_slot": 36,
+      "sprint": 3,
+      "deps": [
+        "T53"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-93",
+      "jira_id": "10474",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-27",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T58",
+      "issue_id": "94",
+      "type": "Task",
+      "title": "FE danh sách người xem, thao tác ghế và khung camera/mic",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "camera-va-mic",
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-06.3",
+      "owner": "Tình",
+      "hours": 20,
+      "start_slot": 34,
+      "end_slot": 40,
+      "sprint": 3,
+      "deps": [
+        "T33",
+        "T55"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "Camera và mic",
+        "FE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-94",
+      "jira_id": "10475",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-29",
+      "fix_versions": [
+        "v0.3"
+      ],
+      "remaining_hours": 20,
+      "spent_hours": 0,
+      "story_points": 5
+    },
+    {
+      "id": "T59",
+      "issue_id": "95",
+      "type": "Task",
+      "title": "Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh",
+      "parent": "EP-08",
+      "priority": "High",
+      "labels": [
+        "chinh-be",
+        "luat-co",
+        "may-co",
+        "p1",
+        "phat-trien",
+        "sprint-2"
+      ],
+      "story": "US-08.3",
+      "owner": "Đông",
+      "hours": 12,
+      "start_slot": 16,
+      "end_slot": 20,
+      "sprint": 2,
+      "deps": [
+        "T02",
+        "T24"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Luật cờ",
+        "Máy cờ"
+      ],
+      "jira_key": "XIAN-95",
+      "jira_id": "10476",
+      "assignee_account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-19",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T60",
+      "issue_id": "96",
+      "type": "Task",
+      "title": "Kiểm thử US-05.3",
+      "parent": "EP-05",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-4",
+        "van-truc-tuyen"
+      ],
+      "story": "US-05.3",
+      "owner": "Tình",
+      "hours": 4,
+      "start_slot": 46,
+      "end_slot": 48,
+      "sprint": 4,
+      "deps": [
+        "T25",
+        "T52"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Phòng chơi",
+        "QA & DevOps",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-96",
+      "jira_id": "10477",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-02",
+      "due_date": "2026-11-02",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T61",
+      "issue_id": "97",
+      "type": "Task",
+      "title": "FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "phong-choi",
+        "sprint-3"
+      ],
+      "story": "US-06.2",
+      "owner": "Kỳ",
+      "hours": 12,
+      "start_slot": 38,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T54",
+        "T57"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Phòng chơi"
+      ],
+      "jira_key": "XIAN-97",
+      "jira_id": "10478",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-30",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T62",
+      "issue_id": "98",
+      "type": "Task",
+      "title": "Kiểm thử US-06.1",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-4"
+      ],
+      "story": "US-06.1",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 46,
+      "end_slot": 48,
+      "sprint": 4,
+      "deps": [
+        "T31",
+        "T33",
+        "T52",
+        "T55",
+        "T57"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-98",
+      "jira_id": "10479",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-02",
+      "due_date": "2026-11-02",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T63",
+      "issue_id": "99",
+      "type": "Task",
+      "title": "BE giữ ván AI 30 phút, Thử lại, khởi động lại",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "chinh-be",
+        "may-co",
+        "p1",
+        "phat-trien",
+        "sprint-2"
+      ],
+      "story": "US-08.3",
+      "owner": "Cường",
+      "hours": 12,
+      "start_slot": 24,
+      "end_slot": 28,
+      "sprint": 2,
+      "deps": [
+        "T34",
+        "T35"
+      ],
+      "primary_component": "BE",
+      "components": [
+        "BE",
+        "Máy cờ"
+      ],
+      "jira_key": "XIAN-99",
+      "jira_id": "10480",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
+      "fix_versions": [
+        "v0.2"
+      ],
+      "remaining_hours": 12,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T64",
+      "issue_id": "100",
+      "type": "Task",
+      "title": "Kiểm thử US-06.3",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "camera-va-mic",
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-4"
+      ],
+      "story": "US-06.3",
+      "owner": "Kỳ",
+      "hours": 8,
+      "start_slot": 46,
+      "end_slot": 48,
+      "sprint": 4,
+      "deps": [
+        "T31",
+        "T52",
+        "T54",
+        "T58"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Camera và mic",
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-100",
+      "jira_id": "10481",
+      "assignee_account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-02",
+      "due_date": "2026-11-02",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T65",
+      "issue_id": "101",
+      "type": "Task",
+      "title": "FE Cài đặt hồ sơ, Đăng xuất, banner ván dở",
+      "parent": "EP-01",
+      "priority": "High",
+      "labels": [
+        "chinh-fe",
+        "p1",
+        "phat-trien",
+        "sprint-3",
+        "tai-khoan"
+      ],
+      "story": "US-01.4",
+      "owner": "Cường",
+      "hours": 8,
+      "start_slot": 36,
+      "end_slot": 38,
+      "sprint": 3,
+      "deps": [
+        "T56",
+        "T63"
+      ],
+      "primary_component": "FE",
+      "components": [
+        "FE",
+        "Tài khoản"
+      ],
+      "jira_key": "XIAN-101",
+      "jira_id": "10482",
+      "assignee_account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-28",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T66",
+      "issue_id": "102",
+      "type": "Task",
+      "title": "Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "do-chat-luong",
+        "nen-tang",
+        "p1",
+        "sprint-4"
+      ],
+      "story": "US-00.5",
+      "owner": "Tình",
+      "hours": 16,
+      "start_slot": 42,
+      "end_slot": 46,
+      "sprint": 4,
+      "deps": [
+        "T08",
+        "T26",
+        "T36",
+        "T38",
+        "T40",
+        "T42",
+        "T44",
+        "T46",
+        "T52",
+        "T58",
+        "T59",
+        "T61",
+        "T65"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-102",
+      "jira_id": "10483",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-31",
+      "due_date": "2026-11-01",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 16,
+      "spent_hours": 0,
+      "story_points": 3
+    },
+    {
+      "id": "T67",
+      "issue_id": "103",
+      "type": "Task",
+      "title": "Kiểm thử US-06.2",
+      "parent": "EP-06",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "phong-choi",
+        "sprint-4"
+      ],
+      "story": "US-06.2",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 42,
+      "end_slot": 44,
+      "sprint": 4,
+      "deps": [
+        "T26",
+        "T38",
+        "T40",
+        "T44",
+        "T55",
+        "T61",
+        "T65"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Phòng chơi",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-103",
+      "jira_id": "10484",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-31",
+      "due_date": "2026-10-31",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T68",
+      "issue_id": "104",
+      "type": "Task",
+      "title": "Kiểm thử US-08.3",
+      "parent": "EP-08",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "luat-co",
+        "may-co",
+        "p1",
+        "sprint-3"
+      ],
+      "story": "US-08.3",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 40,
+      "end_slot": 42,
+      "sprint": 3,
+      "deps": [
+        "T38",
+        "T59",
+        "T65"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Luật cờ",
+        "Máy cờ",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-104",
+      "jira_id": "10485",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-30",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T69",
+      "issue_id": "105",
+      "type": "Task",
+      "title": "Kiểm thử US-01.4",
+      "parent": "EP-01",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "kiem-thu",
+        "p1",
+        "sprint-4",
+        "tai-khoan",
+        "van-truc-tuyen"
+      ],
+      "story": "US-01.4",
+      "owner": "Nhạn",
+      "hours": 8,
+      "start_slot": 44,
+      "end_slot": 46,
+      "sprint": 4,
+      "deps": [
+        "T23",
+        "T26",
+        "T32",
+        "T37",
+        "T38",
+        "T40",
+        "T44",
+        "T52",
+        "T61",
+        "T65"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "QA & DevOps",
+        "Tài khoản",
+        "Ván trực tuyến"
+      ],
+      "jira_key": "XIAN-105",
+      "jira_id": "10486",
+      "assignee_account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-01",
+      "due_date": "2026-11-01",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 2
+    },
+    {
+      "id": "T70",
+      "issue_id": "106",
+      "type": "Task",
+      "title": "Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo",
+      "parent": "EP-00",
+      "priority": "High",
+      "labels": [
+        "chinh-qa-devops",
+        "dong-goi-phat-hanh",
+        "nen-tang",
+        "p1",
+        "sprint-4"
+      ],
+      "story": "US-00.5",
+      "owner": "Tình",
+      "hours": 4,
+      "start_slot": 48,
+      "end_slot": 50,
+      "sprint": 4,
+      "deps": [
+        "T13",
+        "T16",
+        "T17",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T39",
+        "T43",
+        "T45",
+        "T47",
+        "T48",
+        "T49",
+        "T50",
+        "T51",
+        "T60",
+        "T62",
+        "T64",
+        "T66",
+        "T67",
+        "T68",
+        "T69"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-106",
+      "jira_id": "10487",
+      "assignee_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-03",
+      "due_date": "2026-11-03",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 4,
+      "spent_hours": 0,
+      "story_points": 1
+    },
+    {
+      "id": "T71",
+      "issue_id": "107",
+      "type": "Task",
+      "title": "Tổng duyệt D1–D10 trên bản phát hành và ghi hình",
+      "parent": "EP-00",
+      "priority": "Medium",
+      "labels": [
+        "chinh-qa-devops",
+        "nen-tang",
+        "p1",
+        "sprint-4",
+        "tong-duyet"
+      ],
+      "story": "US-00.5",
+      "owner": "Thư",
+      "hours": 8,
+      "start_slot": 50,
+      "end_slot": 52,
+      "sprint": 4,
+      "deps": [
+        "T70"
+      ],
+      "primary_component": "QA & DevOps",
+      "components": [
+        "Nền tảng",
+        "QA & DevOps"
+      ],
+      "jira_key": "XIAN-107",
+      "jira_id": "10488",
+      "assignee_account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+      "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+      "status": "To Do",
+      "resolution": null,
+      "start_date": "2026-11-04",
+      "due_date": "2026-11-04",
+      "fix_versions": [
+        "v1.0"
+      ],
+      "remaining_hours": 8,
+      "spent_hours": 0,
+      "story_points": 1
+    }
+  ],
+  "component_catalog": {
+    "FE": "Giao diện và thao tác trên trình duyệt.",
+    "BE": "Xử lý máy chủ, dữ liệu, luật cờ và máy chọn nước.",
+    "QA & DevOps": "Chuẩn bị/kiểm thử, thử tính khả thi, hạ tầng, đo chất lượng và đóng gói bàn giao.",
+    "Nền tảng": "Bộ khung ứng dụng, kết nối và hạ tầng chung.",
+    "Tài khoản": "Đăng ký, đăng nhập, phiên, hồ sơ và quyền Khách.",
+    "Phòng chơi": "Tạo/vào phòng, ghế, chế độ phòng, Sảnh và người xem.",
+    "Bạn bè": "Quan hệ bạn bè, trạng thái và lời mời bạn vào phòng.",
+    "Luật cờ": "Nước hợp lệ và quy tắc kết thúc ván.",
+    "Bàn cờ": "Hiển thị bàn/quân và thao tác đi quân.",
+    "Ván trực tuyến": "Ván giữa hai người, đồng hồ, kết quả và nối lại.",
+    "Trò chuyện": "Hai kênh tin nhắn, lọc từ và giới hạn gửi.",
+    "Camera và mic": "Truyền hình/tiếng và quyền phát/nhận.",
+    "Máy cờ": "Ván luyện tập, thuật toán chọn nước và xử lý sự cố máy cờ."
+  },
+  "allocation_revision": {
+    "date": "2026-10-10",
+    "method": "jira_live_880",
+    "note": "Đồng bộ trực tiếp Jira: 880 giờ, hạn 04/11; T37 thuộc Tình; Nhạn/Thư 120 giờ.",
+    "roles": {
+      "Tình": "Full-stack, kỹ thuật khó, điều phối và phụ trách sản phẩm; nhận việc ở các khâu để cân tải.",
+      "Đông": "BE; không giao kiểm thử chuyên đề hoặc FE.",
+      "Tùng": "BE; sở hữu trọn chuỗi luật cờ, không giao kiểm thử chuyên đề hoặc FE.",
+      "Cường": "BE và thử tính khả thi kỹ thuật; hỗ trợ FE trong phạm vi đã chọn, giảm BE tương ứng; không giao kiểm thử chuyên đề.",
+      "Nhạn": "FE bàn cờ và phòng; hỗ trợ kiểm thử độc lập.",
+      "Kỳ": "FE nền và tài khoản/màn đấu; hỗ trợ kiểm thử độc lập.",
+      "Thư": "Tester chính; phương pháp/dữ liệu kiểm thử, kiểm chức năng, hồi quy toàn hệ thống và tổng duyệt."
+    },
+    "cuong_fe_allowed": [
+      "T26",
+      "T36",
+      "T40",
+      "T42",
+      "T46",
+      "T57",
+      "T65"
+    ],
+    "cuong_be_before_hours": 92,
+    "cuong_fe_max_hours": 40,
+    "frontend_qa_max_hours": 48,
+    "rationale": {
+      "Tình": "Giữ nền kết nối, xây máy cờ, quyền và giao diện camera/mic, đo chất lượng và phát hành. Chuyển ván online cho Tùng, tinh chỉnh máy cờ cho Đông; giữ ba kiểm chuyên đề độc lập T16/T27/T60. Phân công hiện tại gồm T37 chat; tổng 156 giờ.",
+      "Đông": "Nhận T54 danh sách phòng gắn với quản lý người xem; nhận T59 tinh chỉnh máy cờ gắn với dịch vụ ván máy. Tình bàn giao từ T24 bộ máy, cấu hình, dữ liệu đo và cách chạy; không đổi người kiểm độc lập T68.",
+      "Tùng": "Giữ trọn lõi luật và nhận T20 ván online để nối luật với phân xử/lưu ván; tiếp tục phòng, đăng nhập và bạn bè. T54 chuyển Đông.",
+      "Cường": "Giữ thử nguyên mẫu, Google/Khách, đồng hồ, đề nghị trong ván và vòng đời phòng; nhận phục hồi ván máy. Chỉ nhận các màn dùng lại thành phần chung: chia sẻ, bạn bè, cài đặt phòng, hồ sơ; không nhận bàn cờ/kéo thả hay nhiệm vụ Tester. BE giảm 24 giờ so với phân công đúng vai trò ban đầu.",
+      "Nhạn": "Giữ FE và kiểm thử độc lập theo Jira; T11/T19/T21/T62 tăng tổng cộng 16 giờ cho các nhánh đã đặc tả, tổng 120 giờ.",
+      "Kỳ": "Giữ khung giao diện và bộ đăng ký/đăng nhập/Google nhất quán; tiếp tục màn đấu, chat, chơi máy và Sảnh. Chỉ hỗ trợ kiểm các phần không tự viết, không chịu trách nhiệm hạ tầng phát hành.",
+      "Thư": "T02 tăng từ 20 lên 32 giờ, bắt đầu 14/10; T71 tăng từ 4 lên 8 giờ. Chuẩn bị dữ liệu, kiểm thử, hồi quy và tổng duyệt: 120 giờ."
+    },
+    "targets": {
+      "Tình": 156,
+      "Đông": 120,
+      "Tùng": 132,
+      "Cường": 124,
+      "Nhạn": 120,
+      "Kỳ": 108,
+      "Thư": 120
+    }
+  },
+  "schedule_notes": {
+    "date_precision": "day; inclusive start and due; slots encode date boundaries only",
+    "task_sprint_policy": "Actual Jira Sprint field denotes start. Sprint labels are synchronized to the actual Sprint field.",
+    "completion": "2026-11-04",
+    "buffer": null,
+    "hours_distribution": "For reporting only, distribute task estimate uniformly over its calendar dates; not logged work."
+  },
+  "synced_at": "2026-10-10",
+  "source_snapshot": "current-jira-snapshot.json",
+  "total_hours": 880,
+  "sprint_metadata": [
+    {
+      "id": 40,
+      "state": "future",
+      "name": "XIAN Sprint 1",
+      "startDate": "2026-10-10T02:00:00.000Z",
+      "endDate": "2026-10-16T11:00:00.000Z",
+      "originBoardId": 38,
+      "goal": "Nền tảng máy chủ, xác thực, lõi luật, bàn cờ tương tác, thử media và khởi động kế hoạch kiểm thử. Task gắn Sprint theo ngày bắt đầu; có Task hoàn tất trong Sprint kế tiếp."
+    },
+    {
+      "id": 41,
+      "state": "future",
+      "name": "XIAN Sprint 2",
+      "startDate": "2026-10-17T02:00:00.000Z",
+      "endDate": "2026-10-23T11:00:00.000Z",
+      "originBoardId": 38,
+      "goal": "Khung giao diện, xác thực, phòng và ván cơ bản, máy cờ; triển khai chat và quản lý phiên theo lịch cân ngày. Task gắn Sprint theo ngày bắt đầu."
+    },
+    {
+      "id": 42,
+      "state": "future",
+      "name": "XIAN Sprint 3",
+      "startDate": "2026-10-24T02:00:00.000Z",
+      "endDate": "2026-10-30T11:00:00.000Z",
+      "originBoardId": 38,
+      "goal": "Hoàn thiện bạn bè, chat/media, phòng/người xem, Sảnh, hồ sơ, nối lại và kiểm thử chuyên đề. Các phần triển khai hoàn tất chậm nhất 30/10 để hồi quy từ 31/10."
+    },
+    {
+      "id": 43,
+      "state": "future",
+      "name": "XIAN Sprint 4",
+      "startDate": "2026-10-31T02:00:00.000Z",
+      "endDate": "2026-11-04T11:00:00.000Z",
+      "originBoardId": 38,
+      "goal": "Hồi quy 31/10–02/11, kiểm chất lượng 31/10–01/11, đóng gói 03/11 và tổng duyệt 04/11. Tối đa 7 Task/ngày, mỗi người một Task/ngày; phụ thuộc đầu-cuối không trùng ngày. Giữ nguyên thời lượng Task."
+    }
+  ],
+  "releases": [
+    {
+      "id": "10036",
+      "name": "v0.1",
+      "description": "Khung ứng dụng, đăng ký OTP, lõi luật và bàn cờ tương tác; thử camera/mic, xác thực và phiên sớm. Chưa phát hành.",
+      "released": false,
+      "archived": false,
+      "overdue": false,
+      "releaseDate": "2026-10-16",
+      "startDate": "2026-10-10",
+      "projectId": 10039
+    },
+    {
+      "id": "10037",
+      "name": "v0.2",
+      "description": "Tạo/vào phòng, ván online cơ bản, Google/Khách và máy cờ; hoàn thiện xử lý phòng/chat phía máy chủ. Chưa phát hành.",
+      "released": false,
+      "archived": false,
+      "overdue": false,
+      "releaseDate": "2026-10-23",
+      "startDate": "2026-10-17",
+      "projectId": 10039
+    },
+    {
+      "id": "10038",
+      "name": "v0.3",
+      "description": "Mốc triển khai và kiểm thử thuộc v0.3 hoàn thành chậm nhất 30/10/2026. T50 kiểm thử US-02.2 ngày 31/10 thuộc v1.0. Tiến độ phiên bản chỉ tính Task triển khai; đặc tả BA theo dõi riêng. Chưa phát hành.",
+      "released": false,
+      "archived": false,
+      "overdue": false,
+      "releaseDate": "2026-10-30",
+      "startDate": "2026-10-24",
+      "projectId": 10039
+    },
+    {
+      "id": "10039",
+      "name": "v1.0",
+      "description": "Mốc hoàn thành triển khai, hồi quy, kiểm chất lượng, đóng gói và tổng duyệt: 04/11/2026. Tiến độ phiên bản chỉ tính Task triển khai; đặc tả BA được theo dõi riêng. Chưa phát hành.",
+      "released": false,
+      "archived": false,
+      "overdue": false,
+      "releaseDate": "2026-11-04",
+      "startDate": "2026-10-31",
+      "projectId": 10039
+    }
+  ]
+}
