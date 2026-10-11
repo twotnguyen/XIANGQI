@@ -30,6 +30,8 @@ export interface RoomCollaborator {
   ): Promise<RoomStateSnapshot>;
 }
 export interface RealtimeConnection {
+  // Private credentials for server-side room worker authorization only.
+  proof?: { accessToken: string; appSession: string };
   identity: RealtimeIdentity;
   roomId: string;
   tabId: string;
