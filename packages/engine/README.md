@@ -7,6 +7,7 @@ vị trí Mã/Pháo. Chỉ sinh/áp dụng nước bằng `xiangqi-core`.
 ```ts
 import { EngineWorker } from "@xiangqi/engine";
 const engine = new EngineWorker();
+await engine.ready(); // Khởi tạo máy trước khi máy chủ nhận yêu cầu đánh với máy.
 const result = await engine.search(
   {
     position: canonicalFen,
@@ -42,6 +43,17 @@ sử dụng khi thành công; hủy, timeout, crash hoặc kết quả không h�
 dứt và thu hồi worker trước khi cho tìm mới. `close()` chặn tác vụ mới và chờ
 thu hồi tác vụ hiện tại. Idle worker tự thoát/lỗi được loại khỏi cache.
 `onIteration(depth)` là tùy chọn đo vòng tìm kiếm thực, không sửa trạng thái ván.
+
+Máy chủ phải `await ready()` trong vòng đời khởi tạo **trước khi phục vụ AI**.
+Handshake chỉ hoàn tất sau khi thread, loader và module tìm kiếm đã sẵn sàng;
+không tìm nước giả để làm nóng. Các lời gọi `ready()` đồng thời dùng chung lần
+khởi tạo, chặn tìm kiếm bằng `ENGINE_BUSY` đến khi hoàn tất. Startup lỗi/treo
+được chặn bằng watchdog và thu hồi trước khi cho khởi tạo lại; `close()` cũng
+chờ thu hồi startup. Sau hủy/crash/watchdog hoặc idle exit, máy chủ phải chuẩn bị
+lại worker trước khi mở nhận AI, không ẩn bước này trong thời gian một lượt đi.
+Gọi thẳng `search()` trên máy lạnh vẫn tính startup vào cùng ngân sách: nếu
+startup đã hết 300 ms thì Dễ trả fallback với `completedDepth:0`, không tự cấp
+thêm 300 ms. Điều này chưa chứng minh GATE-ENGINE đạt trên hạ tầng demo.
 
 Các lỗi cố định: `ENGINE_INPUT_INVALID`, `ENGINE_BUSY`, `ENGINE_CANCELLED`,
 `ENGINE_TIMEOUT` (watchdog mặc định 10 giây), `ENGINE_FAILED`, `ENGINE_CLOSED`.
