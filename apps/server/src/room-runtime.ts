@@ -10,6 +10,7 @@ import {
 } from "./match/disconnect-worker.js";
 import { PostgresClockWorkerPort } from "./clock/postgres-clock-port.js";
 import { MatchStore } from "./match/match-store.js";
+import { DrawWorker, dueDrawOffers } from "./match/draw-worker.js";
 import { RoomError, type RoomScope, type RoomActor } from "./room/contracts.js";
 import { RoomTransactions } from "./room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
@@ -43,6 +44,7 @@ export async function createRoomRuntime(
   )
     throw new Error("Invalid Room configuration");
   const pool = registration.pool;
+  let drawReady: boolean;
   try {
     const schema =
       await pool.query(`SELECT pg_has_role(current_user,'app_server','SET') AND
@@ -59,6 +61,18 @@ export async function createRoomRuntime(
       AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid='public.matches'::regclass AND conname='matches_status_and_outcome_invariants' AND convalidated
         AND strpos(pg_catalog.pg_get_constraintdef(oid),'SERVER_RESTART')>0 AND strpos(pg_catalog.pg_get_constraintdef(oid),'DRAW_AGREEMENT')>0) AS ready`);
     if (!schema.rows[0]?.ready) throw new Error();
+    const draw = await pool.query<{ present: boolean; ready: boolean }>(`SELECT
+      to_regclass('xiangqi_room.match_draw_offers') IS NOT NULL AS present,
+      CASE WHEN to_regclass('xiangqi_room.match_draw_offers') IS NULL THEN false ELSE
+        has_table_privilege('app_server','xiangqi_room.match_draw_offers','SELECT') AND
+        has_table_privilege('app_server','xiangqi_room.match_draw_offers','INSERT') AND
+        has_table_privilege('app_server','xiangqi_room.match_draw_offers','UPDATE') AND
+        NOT has_table_privilege('app_server','xiangqi_room.match_draw_offers','DELETE') AND
+        NOT has_table_privilege('anon','xiangqi_room.match_draw_offers','SELECT,INSERT,UPDATE,DELETE') AND
+        NOT has_table_privilege('authenticated','xiangqi_room.match_draw_offers','SELECT,INSERT,UPDATE,DELETE')
+      END AS ready`);
+    if (draw.rows[0]?.present && !draw.rows[0].ready) throw new Error();
+    drawReady = draw.rows[0]?.ready === true;
   } catch {
     throw new Error("Room migration is not ready");
   }
@@ -99,6 +113,14 @@ export async function createRoomRuntime(
   };
   const rooms = new RoomStore({
     start: (client, input) => matches.start(client, input),
+    leave: async (client, input) => {
+      const scope = getScope(client, input.actor, input.roomId);
+      const match = await matches.snapshot(client, input.roomId, input.matchId);
+      await matches.resign(
+        { ...scope, roomId: input.roomId, canControl: true },
+        { matchId: input.matchId, matchVersion: match.version },
+      );
+    },
   });
   const matches = new MatchStore(clock, {
     onMatchEnded: async (client, input) => {
@@ -137,7 +159,13 @@ export async function createRoomRuntime(
   );
   const store = new RealtimeStore(
     pool,
-    new GameRooms(rooms, matches, clock, getScope),
+    new GameRooms(
+      rooms,
+      matches,
+      clock,
+      getScope,
+      drawReady ? matches : undefined,
+    ),
     transactions,
     presence,
   );
@@ -245,6 +273,26 @@ export async function createRoomRuntime(
       read((client) => dueDisconnectMatches(client, cursor)),
     withMatch,
   });
+  const drawWorker = drawReady
+    ? new DrawWorker(matches, {
+        dueOffers: (cursor) => read((client) => dueDrawOffers(client, cursor)),
+        withMatch: (candidate, work) =>
+          withMatch(candidate, async (scope) => {
+            const roomScope = context.get(scope.client);
+            if (!roomScope)
+              throw new RoomError(
+                "ROOM_AUTH_PROOF_INVALID",
+                "Giao dịch phòng chưa sẵn sàng",
+                503,
+              );
+            await work({
+              ...roomScope,
+              roomId: candidate.roomId,
+              canControl: true,
+            });
+          }),
+      })
+    : null;
   // Managed rooms only: old legacy state lacks the canonical match encoding.
   let cursor: string | null = null;
   do {
@@ -299,6 +347,7 @@ export async function createRoomRuntime(
     for (const run of [
       () => clockWorker.tick(),
       () => disconnectWorker.tick(),
+      ...(drawWorker ? [() => drawWorker.tick()] : []),
       () => worker.tick(),
     ]) {
       try {
@@ -328,7 +377,7 @@ export async function createRoomRuntime(
       await inFlight;
     })());
   const module = RoomModule.forRoot(
-    new RoomHttpService(rooms, coordinator, authorizer),
+    new RoomHttpService(rooms, coordinator, authorizer, withScope),
   );
   module.providers = [
     ...(module.providers ?? []),
