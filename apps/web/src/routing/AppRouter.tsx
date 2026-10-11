@@ -21,6 +21,9 @@ import {
 import { CreateRoomForm } from "../rooms/RoomForms.js";
 import { RoomPage } from "../rooms/RoomPage.js";
 import { InviteEntry } from "../rooms/InviteEntry.js";
+import { FriendsPage, FriendsBell } from "../friends/FriendsPage.js";
+import { RoomInvitePopup } from "../friends/RoomInvitePopup.js";
+import { createFriendClient } from "../friends/friend-client.js";
 import {
   createRoomClient,
   type RoomClient,
@@ -243,6 +246,10 @@ export function AppRouter() {
     () => createRoomClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
+  const friendClient = useMemo(
+    () => createFriendClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
   const [roomNotice, setRoomNotice] = useState("");
   const enterRoom = (entry: RoomEntry) => {
     setRoomNotice(entry.notice ?? "");
@@ -366,6 +373,8 @@ export function AppRouter() {
     content = (
       <InviteEntry client={client} onEntered={enterRoom} code={route.token} />
     );
+  else if (route.name === "friends" && session.state.status === "active-member")
+    content = <FriendsPage client={friendClient} />;
   else if (route.name === "room" && session.state.status === "active-member")
     content =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -421,8 +430,10 @@ export function AppRouter() {
           title={title}
           active={location.pathname}
           user={{ displayName: session.state.username, guest: false }}
+          bell={<FriendsBell client={friendClient} />}
         >
           {content}
+          <RoomInvitePopup client={friendClient} />
         </AppShell>
       ) : (
         content

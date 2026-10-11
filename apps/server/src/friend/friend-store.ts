@@ -442,7 +442,11 @@ export class FriendStore {
         "UPDATE xiangqi_social.room_invites SET status='ACCEPTED',resolved_at=clock_timestamp() WHERE id=$1",
         [inviteId],
       );
-      return { accepted: true as const, roomId: row.room_id as string };
+      return {
+        accepted: true as const,
+        roomId: row.room_id as string,
+        code: room.invite_code as string | null,
+      };
     });
   }
 }
