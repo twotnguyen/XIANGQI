@@ -6,6 +6,7 @@ import { createRegistrationRuntime } from "./auth-runtime.js";
 import { createGoogleRuntime } from "./google-runtime.js";
 import { createRoomRuntime } from "./room-runtime.js";
 import { createFriendRuntime } from "./friend-runtime.js";
+import { createMediaRuntime } from "./media-runtime.js";
 import { AuthProvidersModule } from "./auth/providers.module.js";
 
 config({ quiet: true });
@@ -16,7 +17,12 @@ try {
   const settings = readConfig(process.env);
   registration = await createRegistrationRuntime(process.env);
   const google = await createGoogleRuntime(process.env, registration);
-  rooms = await createRoomRuntime(process.env, registration);
+  const media = await createMediaRuntime(process.env, registration);
+  rooms = await createRoomRuntime(
+    process.env,
+    registration,
+    media?.access ?? null,
+  );
   const friends = await createFriendRuntime(process.env, registration);
   app = await createApp(
     settings.corsOrigins,
@@ -26,6 +32,7 @@ try {
       ...(google ? [google.module] : []),
       ...(rooms ? [rooms.module] : []),
       ...(friends ? [friends.module] : []),
+      ...(media ? [media.module] : []),
     ],
     registration?.checkDatabase,
     rooms?.realtime,
