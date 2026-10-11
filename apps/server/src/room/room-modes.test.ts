@@ -64,6 +64,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000013_side_swap.sql");
     await apply("supabase/migrations/20261011000008_room_modes.sql");
   });
   it("serializes simultaneous changes so only one wins the version CAS", async () => {
@@ -101,6 +102,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("preserves legacy room data and leaves unknown historical public opening time unset", async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000013_side_swap.sql");
     const owner = await actor(),
       id = randomUUID();
     await pool.query(
@@ -126,6 +128,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("refuses migration when the audited settings guard metadata differs", async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
       await client.query("SET ROLE postgres");
@@ -150,6 +153,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("does not resolve audit builtins from attacker-named public functions", async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
       await client.query("SET ROLE postgres");
