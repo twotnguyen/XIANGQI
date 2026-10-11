@@ -22,6 +22,50 @@ function invalid(): never {
 }
 export class RoomStore {
   constructor(private readonly matches?: MatchStartPort) {}
+  private swapTableReady: boolean | null = null;
+  private async swapTableExists(s: RoomScope): Promise<boolean> {
+    if (this.swapTableReady === null) {
+      const present = (
+        await s.client.query(
+          "SELECT to_regclass('xiangqi_room.side_swap_offers') IS NOT NULL AS present",
+        )
+      ).rows[0].present as boolean;
+      this.swapTableReady = present;
+    }
+    return this.swapTableReady;
+  }
+  private async pendingSwapOffer(
+    s: RoomScope,
+    id: string,
+  ): Promise<{
+    id: string;
+    proposer_id: string;
+    responder_id: string;
+    expires_at: Date;
+  } | null> {
+    // Bang doi ben thuoc migration 13; bo qua khi schema cu chua co bang
+    // (test tich hop pin migration, rollback tung phan).
+    if (!(await this.swapTableExists(s))) return null;
+    try {
+      return (
+        (
+          await s.client.query(
+            "SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1",
+            [id],
+          )
+        ).rows[0] ?? null
+      );
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        (error as { code?: string }).code === "42P01"
+      ) {
+        this.swapTableReady = false;
+        return null;
+      }
+      throw error;
+    }
+  }
   // Internal authenticated admission lookup; caller acquires all sorted actor locks afterwards.
   async resolveCode(client: PoolClient, input: unknown): Promise<string> {
     if (typeof input !== "string" || !/^[A-HJ-NP-Z2-9]{8}$/.test(input))
@@ -39,7 +83,7 @@ export class RoomStore {
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
-        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM xiangqi_room.side_swap_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
+        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
       )
     ).rows.map((r) => r.id as string);
   }
@@ -339,12 +383,7 @@ export class RoomStore {
         [id],
       )
     ).rows[0];
-    const swap = (
-      await s.client.query(
-        "SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1",
-        [id],
-      )
-    ).rows[0];
+    const swap = await this.pendingSwapOffer(s, id);
     const online = (
       await s.client.query(
         "SELECT user_id FROM xiangqi_room.presence WHERE room_id=$1 AND connected",
@@ -600,6 +639,7 @@ export class RoomStore {
     return this.snapshot(s, id);
   }
   private async closeSwapOffers(s: RoomScope, id: string) {
+    if (!(await this.swapTableExists(s))) return;
     await s.client.query(
       "UPDATE xiangqi_room.side_swap_offers SET status='CLOSED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING'",
       [id],
@@ -632,6 +672,8 @@ export class RoomStore {
   }
   async proposeSwap(s: RoomScope, id: string) {
     const { other } = await this.swapPair(s, id);
+    // Tu het han truoc khi kiem: phong khoe khong co worker ghe tham van tu phuc hoi.
+    await this.expireSwapOffers(s, id);
     const pending = (
       await s.client.query(
         "SELECT id FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING'",
@@ -736,6 +778,7 @@ export class RoomStore {
     return this.snapshot(s, id);
   }
   async expireSwapOffers(s: RoomScope, id: string) {
+    if (!(await this.swapTableExists(s))) return 0;
     const due = (
       await s.client.query(
         "UPDATE xiangqi_room.side_swap_offers SET status='EXPIRED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING' AND expires_at<=clock_timestamp() RETURNING id",
