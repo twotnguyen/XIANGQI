@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, "*/XIAN-**"]
   pull_request:
     branches: [main, develop]
 permissions:
