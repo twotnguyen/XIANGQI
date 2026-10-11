@@ -45,3 +45,14 @@ main.registration-page {
   margin: 0 auto;
   padding: 24px 0;
 }
+
+.xq-rejoin-banner {
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 0.5rem;
+  background: #fdf6e3;
+}
+.xq-rejoin-banner p {
+  margin: 0;
+}
