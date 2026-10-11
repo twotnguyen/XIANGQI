@@ -102,6 +102,7 @@ export function ReconnectStatus({
         aria-describedby={`${id}-description`}
         onCancel={(event) => event.preventDefault()}
         onKeyDown={(event) => {
+          if (event.key === "Escape") event.preventDefault();
           if (event.key === "Tab") {
             event.preventDefault();
             event.currentTarget.focus();
