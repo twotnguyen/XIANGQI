@@ -126,12 +126,14 @@ export async function createRoomRuntime(
         ),
       ),
   };
+  let publisher: RealtimePublisher | null = null;
   const presence = new MemberRealtimePresence(
     pool,
     coordinator,
     rooms,
     guard,
     instance,
+    (id) => publisher?.connections(id) ?? [],
   );
   const store = new RealtimeStore(
     pool,
@@ -139,7 +141,6 @@ export async function createRoomRuntime(
     transactions,
     presence,
   );
-  let publisher: RealtimePublisher | null = null;
   const roomPort = new PostgresRoomWorkerPort(
     pool,
     rooms,

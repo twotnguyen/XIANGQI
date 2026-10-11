@@ -1,4 +1,9 @@
-import { RoomError, type RoomActor, type RoomScope } from "./contracts.js";
+import {
+  RoomError,
+  type RoomActor,
+  type RoomScope,
+  type RoomView,
+} from "./contracts.js";
 import type { RoomStore } from "./room-store.js";
 import type {
   RoomActorProof,
@@ -123,6 +128,16 @@ export class RoomHttpService {
       await this.store.leave(scope, roomId);
       return { roomId, left: true as const };
     });
+  }
+  async changeVisibility(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    visibility: RoomView["room"]["visibility"],
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], (scope) =>
+      this.store.changeVisibility(scope, roomId, expectedVersion, visibility),
+    );
   }
   async snapshot(proof: MemberRoomRequestProof, roomId: string) {
     return this.run<Awaited<ReturnType<RoomStore["snapshot"]>>>(
