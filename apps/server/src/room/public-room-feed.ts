@@ -1,9 +1,8 @@
 import type { Server as HttpServer } from "node:http";
 import { Server, type Socket } from "socket.io";
 import type { PublicRoomView } from "./public-room-store.js";
-export type PublicFeedProof =
-  | { kind: "member"; accessToken: string; appSession: string }
-  | { kind: "guest"; guestCapability: string };
+import type { PublicRoomAuthProof } from "@xiangqi/shared";
+export type PublicFeedProof = PublicRoomAuthProof;
 export type PublicRoomFeedDependencies = {
   corsOrigins: readonly string[];
   /** Opens trusted identity once; every read must reauthorize its fixed session deadline. */
@@ -197,7 +196,10 @@ export function attachPublicRoomFeed(
               message: invalidSession,
             });
             peer.socket.disconnect(true);
-          } else peer.socket.emit("public.error", unavailable);
+          } else {
+            peer.prior = undefined;
+            peer.socket.emit("public.error", unavailable);
+          }
         } finally {
           peer.busy = false;
         }
