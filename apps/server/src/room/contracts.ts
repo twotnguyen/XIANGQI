@@ -68,6 +68,10 @@ export interface MatchStartPort {
     client: PoolClient,
     input: MatchStartInput,
   ): Promise<{ matchId: string }>;
+  leave?(
+    client: PoolClient,
+    input: { roomId: string; matchId: string; actor: RoomActor },
+  ): Promise<void>;
 }
 export interface RoomEvent {
   id: string;
