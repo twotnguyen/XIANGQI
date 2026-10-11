@@ -133,7 +133,13 @@ it("Escape/backdrop cannot dismiss the own overlay and keyboard focus stays insi
   expect(document.activeElement).toBe(modal);
   const cancel = new Event("cancel", { cancelable: true, bubbles: true });
   fireEvent(modal, cancel);
-  fireEvent.keyDown(modal, { key: "Escape" });
+  const escape = new KeyboardEvent("keydown", {
+    key: "Escape",
+    bubbles: true,
+    cancelable: true,
+  });
+  fireEvent(modal, escape);
+  expect(escape.defaultPrevented).toBe(true);
   fireEvent.click(modal);
   expect(cancel.defaultPrevented).toBe(true);
   expect(screen.getByRole("dialog")).toBeTruthy();
