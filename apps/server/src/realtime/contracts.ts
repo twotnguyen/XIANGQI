@@ -16,6 +16,8 @@ export interface RealtimeAuthProof {
   appSession: string;
 }
 export interface IdentityResolver {
+  // SQL-only fixed appSession validity; never consult the bearer provider.
+  sessionActive?(connection: RealtimeConnection): Promise<boolean>;
   resolve(
     accessToken: string,
     appSession: string,
