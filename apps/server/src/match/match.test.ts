@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
+import { ClockService } from "../clock/clock-service.js";
 import {
   initialPosition,
   parsePosition,
@@ -56,7 +57,7 @@ const end = {
   ),
 };
 let red: string, black: string, viewer: string;
-async function setup() {
+async function setup(time = at) {
   red = (await actor()).userId;
   black = (await actor()).userId;
   viewer = (await actor()).userId;
@@ -77,7 +78,7 @@ async function setup() {
     );
     await c.query(
       "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
-      [room, token, at, red, black],
+      [room, token, time, red, black],
     );
   });
   return { room, token };
@@ -85,8 +86,8 @@ async function setup() {
 function store() {
   return new implementation.MatchStore(clock, end, () => at);
 }
-async function start() {
-  const fixture = await setup();
+async function start(time = at) {
+  const fixture = await setup(time);
   const result = await transaction([red, black], [fixture.room], async (c) => {
     const r = await store().start(c, {
       roomId: fixture.room,
@@ -94,7 +95,7 @@ async function start() {
       redId: red,
       blackId: black,
       timeControlSeconds: 600,
-      startedAt: at,
+      startedAt: time,
     });
     await c.query(
       "UPDATE public.rooms SET status='PLAYING',current_match_id=$2 WHERE id=$1",
@@ -1060,4 +1061,73 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
       ).rows[0].n,
     ).toBe(0);
   });
+  it.each([
+    ["move", -70, "DISCONNECT", "RED"],
+    ["resign", -70, "DISCONNECT", "RED"],
+    ["move", -90, "TIMEOUT", "BLACK"],
+    ["resign", -90, "TIMEOUT", "BLACK"],
+  ] as const)(
+    "late %s preserves earliest grace/clock result",
+    async (action, clockOffset, reason, winner) => {
+      const s = await start(new Date(Date.now() - 200000));
+      await pool.query(
+        "UPDATE public.rooms SET invite_code=$2,viewer_limit=5 WHERE id=$1",
+        [
+          s.room,
+          randomUUID()
+            .replaceAll("-", "")
+            .slice(0, 8)
+            .toUpperCase()
+            .replace(/[01IO]/g, "A"),
+        ],
+      );
+      await pool.query(
+        "UPDATE public.matches SET clock=jsonb_set(jsonb_set(clock,'{redMs}','0'),'{runningSinceEpochMs}',to_jsonb(floor(extract(epoch FROM clock_timestamp())*1000)::bigint+$2)) WHERE id=$1",
+        [s.matchId, clockOffset * 1000],
+      );
+      await pool.query(
+        "UPDATE public.room_members SET disconnected_at=clock_timestamp()-interval '140 seconds' WHERE room_id=$1 AND user_id=$2",
+        [s.room, black],
+      );
+      const actual = new implementation.MatchStore(new ClockService(), end);
+      const result = await run(s.room, red, (scope) =>
+        action === "move"
+          ? actual.move(scope, {
+              matchId: s.matchId,
+              matchVersion: 0,
+              from: 54,
+              to: 45,
+            })
+          : actual.resign(scope, { matchId: s.matchId, matchVersion: 0 }),
+      );
+      expect(result.applied).toBe(false);
+      expect(result.error?.code).toBe(
+        reason === "DISCONNECT" ? "MATCH_FINISHED" : "MATCH_TIME_EXPIRED",
+      );
+      expect(result.match.outcome).toEqual({
+        reason,
+        winner: winner === "RED" ? "red" : "black",
+      });
+      expect(
+        (
+          await pool.query(
+            "SELECT type FROM public.match_events WHERE match_id=$1 ORDER BY version",
+            [s.matchId],
+          )
+        ).rows.map((r) => r.type),
+      ).toEqual(["START", "RESULT"]);
+      expect(
+        (
+          await pool.query(
+            "SELECT count(*)::int n FROM xiangqi_room.outbox WHERE room_id=$1 AND type='MATCH_RESULT'",
+            [s.room],
+          )
+        ).rows[0].n,
+      ).toBe(1);
+      const again = await run(s.room, red, (scope) =>
+        actual.resign(scope, { matchId: s.matchId, matchVersion: 1 }),
+      );
+      expect(again.error?.code).toBe("MATCH_FINISHED");
+    },
+  );
 });
