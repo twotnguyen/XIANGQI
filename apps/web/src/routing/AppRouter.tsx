@@ -26,57 +26,14 @@ import {
   type RoomClient,
   type RoomEntry,
 } from "../rooms/room-client.js";
+import {
+  makePublicRoomClient,
+  connectPublicRooms,
+  PublicRoomRequestError,
+} from "../rooms/public-room-client.js";
+import type { PublicRoomView } from "@xiangqi/shared";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
 
-function publicRooms(value: unknown): PublicRoom[] {
-  if (!value || typeof value !== "object")
-    throw new Error("Invalid public rooms");
-  const rooms = (value as { rooms?: unknown }).rooms;
-  if (!Array.isArray(rooms) || rooms.length > 50)
-    throw new Error("Invalid public rooms");
-  const ids = new Set<string>();
-  return rooms.map((value: unknown) => {
-    if (!value || typeof value !== "object")
-      throw new Error("Invalid public rooms");
-    const room = value as Record<string, unknown>;
-    if (
-      !["id", "name", "hostName"].every(
-        (key) => typeof room[key] === "string" && room[key].trim().length > 0,
-      ) ||
-      typeof room.id !== "string" ||
-      /[/\\]/.test(room.id) ||
-      Array.from(room.id).some((character) => {
-        const code = character.charCodeAt(0);
-        return code < 32 || code === 127;
-      }) ||
-      typeof room.hostGuest !== "boolean" ||
-      ![5, 10, 15].includes(Number(room.timeMinutes)) ||
-      typeof room.timeMinutes !== "number" ||
-      typeof room.status !== "string" ||
-      !["waiting", "playing"].includes(String(room.status)) ||
-      ![0, 1, 2].includes(Number(room.seats)) ||
-      typeof room.seats !== "number" ||
-      !Number.isSafeInteger(room.viewers) ||
-      !Number.isSafeInteger(room.spectatorLimit) ||
-      Number(room.viewers) < 0 ||
-      Number(room.spectatorLimit) < Number(room.viewers) ||
-      ids.has(room.id)
-    )
-      throw new Error("Invalid public rooms");
-    ids.add(room.id);
-    return {
-      id: room.id,
-      name: room.name as string,
-      hostName: room.hostName as string,
-      hostGuest: room.hostGuest,
-      timeMinutes: room.timeMinutes as PublicRoom["timeMinutes"],
-      status: room.status as PublicRoom["status"],
-      seats: room.seats as PublicRoom["seats"],
-      viewers: room.viewers as number,
-      spectatorLimit: room.spectatorLimit as number,
-    };
-  });
-}
 function Lobby({
   client,
   onEntered,
@@ -84,7 +41,18 @@ function Lobby({
   client: RoomClient;
   onEntered: (entry: RoomEntry) => void;
 }) {
-  const { authorizedFetch, logout } = useSession();
+  const { authorizedFetch, logout, getRealtimeProof } = useSession();
+  const publicClient = useMemo(
+    () => makePublicRoomClient(authorizedFetch),
+    [authorizedFetch],
+  );
+  const epoch = useRef(0),
+    connectionRevision = useRef(0),
+    ready = useRef(false);
+  const canonical = useRef<PublicRoomView[]>([]);
+  const joinPending = useRef<{ epoch: number; revision: number } | null>(null);
+  const [admissionReady, setAdmissionReady] = useState(false);
+  const [joiningRoomId, setJoiningRoomId] = useState<string | null>(null);
   const [rooms, setRooms] = useState<PublicRoom[]>([]);
   const [state, setState] = useState<DataState>("loading");
   const [attempt, setAttempt] = useState(0);
@@ -92,27 +60,129 @@ function Lobby({
   const [loggingOut, setLoggingOut] = useState(false);
   const [dialog, setDialog] = useState(false);
   useEffect(() => {
-    const abort = new AbortController();
+    const generation = ++epoch.current;
+    let alive = true,
+      feedSeen = false;
+    const current = () => alive && epoch.current === generation;
+    ready.current = false;
+    canonical.current = [];
+    joinPending.current = null;
+    setAdmissionReady(false);
+    setJoiningRoomId(null);
+    setRooms([]);
     setState("loading");
-    void (async () => {
-      try {
-        const response = await authorizedFetch("/rooms/public", {
-          signal: abort.signal,
-        });
-        if (!response.ok) throw new Error("Rooms unavailable");
-        const list = publicRooms(await response.json());
-        if (abort.signal.aborted) return;
-        setRooms(list);
-        setState(list.length ? "success" : "empty");
-      } catch {
-        if (!abort.signal.aborted) {
+    const accept = (rows: PublicRoomView[]) => {
+      canonical.current = rows;
+      setRooms(
+        rows.map((row) => ({
+          id: row.roomId,
+          name: row.name,
+          hostName: row.host.displayName,
+          hostGuest: row.host.isGuest,
+          timeMinutes: row.timeMinutes as PublicRoom["timeMinutes"],
+          status: row.status,
+          seats: (2 - row.emptySeats) as PublicRoom["seats"],
+          viewers: row.spectators,
+          spectatorLimit: row.viewerLimit,
+          canPlay: row.canPlay,
+          canWatch: row.canWatch,
+        })),
+      );
+      setState(rows.length ? "success" : "empty");
+    };
+    void publicClient.list().then(
+      (rows) => {
+        if (current() && !feedSeen) accept(rows);
+      },
+      () => {
+        if (current() && !feedSeen) {
           setRooms([]);
           setState("error");
         }
+      },
+    );
+    const feed = connectPublicRooms({
+      getProof: async () => {
+        const proof = await getRealtimeProof();
+        return {
+          kind: "member",
+          accessToken: proof.accessToken,
+          appSession: proof.appSession,
+        };
+      },
+      onRooms: (rows) => {
+        if (current()) {
+          feedSeen = true;
+          accept(rows);
+        }
+      },
+      onConnection: (value) => {
+        if (!current()) return;
+        if (!value) connectionRevision.current++;
+        ready.current = value;
+        setAdmissionReady(value);
+      },
+      onError: () => {
+        if (!current()) return;
+        feedSeen = true;
+        ready.current = false;
+        setAdmissionReady(false);
+        canonical.current = [];
+        setRooms([]);
+        setState("error");
+      },
+    });
+    return () => {
+      alive = false;
+      epoch.current++;
+      ready.current = false;
+      feed.close();
+    };
+  }, [attempt, publicClient, getRealtimeProof]);
+  const join = async (id: string, intent: "player" | "spectator") => {
+    const row = canonical.current.find((row) => row.roomId === id);
+    if (
+      joinPending.current ||
+      !ready.current ||
+      !row ||
+      !(intent === "player" ? row.canPlay : row.canWatch)
+    )
+      return;
+    const request = {
+      epoch: epoch.current,
+      revision: connectionRevision.current,
+    };
+    joinPending.current = request;
+    setJoiningRoomId(id);
+    setNotice("");
+    try {
+      const entry = await publicClient.join(
+        id,
+        intent === "player" ? "play" : "watch",
+      );
+      if (
+        joinPending.current === request &&
+        epoch.current === request.epoch &&
+        ready.current &&
+        connectionRevision.current === request.revision
+      )
+        onEntered(entry);
+    } catch (error) {
+      if (joinPending.current === request && epoch.current === request.epoch) {
+        setNotice(
+          error instanceof PublicRoomRequestError
+            ? error.message
+            : "Chưa thể vào phòng. Vui lòng thử lại.",
+        );
+        setAttempt((value) => value + 1);
       }
-    })();
-    return () => abort.abort();
-  }, [attempt, authorizedFetch]);
+    } finally {
+      if (joinPending.current === request && epoch.current === request.epoch) {
+        joinPending.current = null;
+        setJoiningRoomId(null);
+      }
+    }
+  };
   const unavailable = () =>
     setNotice("Chức năng này hiện chưa khả dụng. Vui lòng quay lại sau.");
   return (
@@ -126,9 +196,9 @@ function Lobby({
           navigate(`/rooms/join?token=${encodeURIComponent(code)}`)
         }
         onPlayAI={unavailable}
-        onJoinRoom={(id, intent) =>
-          navigate(`/rooms/${encodeURIComponent(id)}?intent=${intent}`)
-        }
+        admissionReady={admissionReady}
+        joiningRoomId={joiningRoomId}
+        onJoinRoom={(id, intent) => void join(id, intent)}
         onRetry={() => setAttempt((value) => value + 1)}
       />
       {dialog && (
