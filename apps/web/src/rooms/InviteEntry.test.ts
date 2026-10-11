@@ -21,6 +21,7 @@ function client(join: RoomClient["join"]): RoomClient {
     create: vi.fn(),
     snapshot: vi.fn(),
     switchSeat: vi.fn(),
+    changeVisibility: vi.fn(),
     leave: vi.fn(),
   };
 }

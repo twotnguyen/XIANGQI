@@ -14,6 +14,7 @@ import {
 import { createGameAudio } from "./game-audio.js";
 import { MatchClocks } from "./MatchClocks.js";
 import { MatchResult } from "./MatchResult.js";
+import { RoomSettings } from "./RoomSettings.js";
 import { ReconnectStatus } from "./ReconnectStatus.js";
 import "./rooms.css";
 export interface RoomPageProps {
@@ -46,6 +47,10 @@ export function RoomPage({
   const [retry, setRetry] = useState(0);
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsError, setSettingsError] = useState("");
+  const [settingsStatus, setSettingsStatus] = useState("");
+  const settingsPending = useRef(false);
   const connection = useRef<RoomConnection | null>(null);
   const epoch = useRef(0);
   const refreshEpoch = useRef(0);
@@ -230,6 +235,7 @@ export function RoomPage({
   async function ready() {
     if (
       !snapshot ||
+      snapshot.version < versionFloor.current ||
       !connected ||
       !connectedRef.current ||
       busy ||
@@ -283,6 +289,7 @@ export function RoomPage({
     const current = latest.current;
     if (
       !current?.match ||
+      current.version < versionFloor.current ||
       !connected ||
       !connectedRef.current ||
       busy ||
@@ -335,6 +342,76 @@ export function RoomPage({
         commandPending.current = false;
         setBusy(false);
       }
+    }
+  }
+  async function changeVisibility(visibility: RoomView["room"]["visibility"]) {
+    const current = latest.current;
+    if (
+      !current ||
+      !connectedRef.current ||
+      current.room.hostId !== userId ||
+      current.role === "spectator" ||
+      busy ||
+      settingsPending.current ||
+      current.version < versionFloor.current
+    )
+      return;
+    const requestEpoch = epoch.current;
+    const physicalEpoch = refreshEpoch.current;
+    const peer = connection.current;
+    const isCurrent = () =>
+      epoch.current === requestEpoch &&
+      connectedRef.current &&
+      connection.current === peer &&
+      refreshEpoch.current === physicalEpoch;
+    settingsPending.current = true;
+    setBusy(true);
+    setSettingsError("");
+    setSettingsStatus("");
+    try {
+      const next = await client.changeVisibility(
+        roomId,
+        current.version,
+        visibility,
+      );
+      if (
+        !isCurrent() ||
+        latest.current?.room.hostId !== userId ||
+        next.version < versionFloor.current
+      )
+        return;
+      versionFloor.current = next.version;
+      setView(next);
+      setSettingsStatus("Đã cập nhật chế độ phòng.");
+      if (peer) {
+        try {
+          const fresh = await peer.refresh();
+          if (isCurrent()) acceptSnapshot(fresh);
+        } catch {
+          if (isCurrent())
+            setSettingsError(
+              "Chế độ đã lưu. Chưa thể đồng bộ phòng; kiểm tra kết nối.",
+            );
+        }
+      }
+    } catch (e) {
+      if (!isCurrent()) return;
+      setSettingsError(
+        e instanceof RoomRequestError
+          ? e.message
+          : "Chưa thể đổi chế độ phòng. Kiểm tra trạng thái mới rồi thử lại.",
+      );
+      if (peer) {
+        try {
+          const fresh = await peer.refresh();
+          if (isCurrent()) acceptSnapshot(fresh);
+        } catch {
+          /* Keep the last canonical state. */
+        }
+      }
+    } finally {
+      settingsPending.current = false;
+      if (epoch.current === requestEpoch) setBusy(false);
     }
   }
   async function httpAction(action: "switch" | "leave") {
@@ -421,7 +498,15 @@ export function RoomPage({
   const serverCode = room.inviteCode;
   const code = serverCode === undefined ? inviteCode : serverCode;
   const player = view.role !== "spectator";
-  const writable = connected && snapshot?.control.mode === "writable";
+  const writable =
+    connected &&
+    snapshot?.control.mode === "writable" &&
+    snapshot.version >= versionFloor.current;
+  const canManage =
+    connected &&
+    Boolean(snapshot) &&
+    room.hostId === userId &&
+    view.role !== "spectator";
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
   const clockState = snapshot ?? latest.current;
@@ -450,6 +535,18 @@ export function RoomPage({
           </p>
         </div>
         <div className="xq-room-header-actions">
+          {canManage && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSettingsError("");
+                setSettingsStatus("");
+                setSettingsOpen(true);
+              }}
+            >
+              Cài đặt phòng
+            </Button>
+          )}
           {active && (
             <Button
               variant="ghost"
@@ -662,6 +759,16 @@ export function RoomPage({
           </div>
         </aside>
       </div>
+      <RoomSettings
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        room={room}
+        canManage={canManage}
+        busy={busy}
+        error={settingsError}
+        status={settingsStatus}
+        onChange={changeVisibility}
+      />
       {connected &&
         snapshot?.match &&
         snapshot.match.status !== "ACTIVE" &&
