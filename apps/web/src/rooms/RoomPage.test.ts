@@ -96,7 +96,13 @@ function setup(state = snapshot) {
       onLeft,
       connect: (input) => {
         handlers = input;
-        return { command, close, refresh };
+        return {
+          command,
+          close,
+          refresh,
+          readChat: vi.fn(),
+          sendChat: vi.fn(),
+        };
       },
     }),
   );
