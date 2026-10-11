@@ -1571,3 +1571,22 @@ it("moves a non-host player to spectator from the viewers panel", async () => {
     .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
   expect(fixture.client.toSpectator).toHaveBeenCalledWith("room", 8);
 });
+it("shows an invite QR with the room code and hides it when the host locks the room", async () => {
+  const fixture = setup({
+    ...snapshot,
+    room: { ...snapshot.room, visibility: "CODE_ONLY", inviteCode: "K7M2XQP4" },
+  });
+  await fixture.ready();
+  const qr = screen.getByRole("img", { name: "QR mời vào phòng, mã K7M2XQP4" });
+  expect(qr).toBeTruthy();
+  fixture.publish({
+    ...snapshot,
+    version: 9,
+    room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
+  });
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("img", { name: "QR mời vào phòng, mã K7M2XQP4" }),
+    ).toBeNull(),
+  );
+});
