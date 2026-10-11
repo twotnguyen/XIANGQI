@@ -1,0 +1,704 @@
+[
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_active_players:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "active_players"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_ai_jobs:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "ai_jobs"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_chat_messages:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "chat_messages"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_client_controls:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "client_controls"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_command_receipts:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "command_receipts"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_friend_relations:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "friend_relations"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_invitations:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "invitations"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_match_events:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "match_events"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_match_moves:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "match_moves"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_matches:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "matches"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_media_policies:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "media_policies"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_media_policy_jobs:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "media_policy_jobs"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_media_transports:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "media_transports"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,MAINTAIN,REFERENCES,SELECT,TRIGGER,TRUNCATE,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [],
+  "rls": true,
+  "schema": "public",
+  "table": "moves"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_profiles:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "profiles"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_room_command_receipts:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "room_command_receipts"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_room_members:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "room_members"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_room_rematch_votes:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "room_rematch_votes"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_rooms:*:app_server"
+  ],
+  "rls": true,
+  "schema": "public",
+  "table": "rooms"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "ai_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_ai",
+  "table": "boots"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "ai_controllers_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_ai",
+  "table": "controllers"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "ai_presence_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_ai",
+  "table": "presence"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "ai_tabs_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_ai",
+  "table": "tabs"
+ },
+ {
+  "anon": null,
+  "app_server": "SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "origin_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "account_origins"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_sessions:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "app_sessions"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "challenge_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "google_challenges"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "google_intent_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "google_creation_intents"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "google_draft_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "google_drafts"
+ },
+ {
+  "anon": null,
+  "app_server": null,
+  "authenticated": null,
+  "force": true,
+  "policies": [],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "google_guest_baseline"
+ },
+ {
+  "anon": null,
+  "app_server": "SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "google_temporary_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "google_temporary_accounts"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "guest_session_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "guest_sessions"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_login_attempts:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "login_attempts"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "actor_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "principals"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_drafts:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "registration_drafts"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_intents:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "registration_intents"
+ },
+ {
+  "anon": null,
+  "app_server": null,
+  "authenticated": null,
+  "force": true,
+  "policies": [],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "role_provisioning"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_username_reservations:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_auth",
+  "table": "username_reservations"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "chat_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_chat",
+  "table": "entries"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "chat_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_chat",
+  "table": "messages"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "chat_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_chat",
+  "table": "outbox"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "chat_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_chat",
+  "table": "rate"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "chat_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_chat",
+  "table": "receipts"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "chat_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_chat",
+  "table": "rooms"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "realtime_server_controllers:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_realtime",
+  "table": "controllers"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "realtime_server_receipts:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_realtime",
+  "table": "receipts"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "realtime_server_tabs:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_realtime",
+  "table": "tabs"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "room_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "countdowns"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "room_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "entry_receipts"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "match_draw_offers"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "media_share"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "room_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "outbox"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "room_server:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "presence"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "room_blocks"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "seat_invites"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_room",
+  "table": "side_swap_offers"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_social",
+  "table": "friend_decline_counts"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_social",
+  "table": "friend_requests"
+ },
+ {
+  "anon": null,
+  "app_server": "DELETE,INSERT,SELECT",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_social",
+  "table": "friendships"
+ },
+ {
+  "anon": null,
+  "app_server": "INSERT,SELECT,UPDATE",
+  "authenticated": null,
+  "force": true,
+  "policies": [
+   "app_server_all:*:app_server"
+  ],
+  "rls": true,
+  "schema": "xiangqi_social",
+  "table": "room_invites"
+ }
+]
