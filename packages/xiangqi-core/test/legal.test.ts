@@ -25,6 +25,9 @@ describe("general safety and move application (T07)", () => {
     expect(isInCheck(position, "red")).toBe(false);
     expect(legalMoves(position)).not.toContainEqual({ from: 49, to: 48 });
     expect(legalMoves(position)).not.toContainEqual({ from: 49, to: 4 });
+    expect(() => playMove(position, { from: 49, to: 4 })).toThrow(
+      "ILLEGAL_MOVE",
+    );
     expect(legalMoves(position)).toContainEqual({ from: 49, to: 40 });
     expect(
       isInCheck(
@@ -51,6 +54,18 @@ describe("general safety and move application (T07)", () => {
     expect(moves).toContainEqual({ from: 45, to: 49 });
     expect(moves).toContainEqual({ from: 85, to: 84 });
     expect(moves).not.toContainEqual({ from: 72, to: 73 });
+    for (const move of [
+      { from: 72, to: 76 },
+      { from: 45, to: 49 },
+      { from: 85, to: 84 },
+    ]) {
+      const next = playMove(position, move);
+      expect(next.board[move.to]).toEqual(position.board[move.from]);
+      expect(isInCheck(next, "red")).toBe(false);
+    }
+    expect(() => playMove(position, { from: 72, to: 73 })).toThrow(
+      "ILLEGAL_MOVE",
+    );
   });
 
   it("recognizes a cannon check only with one screen", () => {
@@ -115,6 +130,12 @@ describe("general safety and move application (T07)", () => {
     { from: 54, to: 90 },
     { from: 54, to: 54 },
     { from: 54.5, to: 45 },
+    { from: "54" as unknown as number, to: 45 },
+    { from: 54, to: "45" as unknown as number },
+    { from: NaN, to: 45 },
+    { from: Infinity, to: 45 },
+    { from: 81, to: 82 },
+    { from: 82, to: 75 },
   ])("rejects an illegal move without changing the position: %o", (move) => {
     const position = initialPosition();
     const before = structuredClone(position);
