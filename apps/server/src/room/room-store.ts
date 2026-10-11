@@ -21,7 +21,12 @@ function invalid(): never {
   );
 }
 export class RoomStore {
-  constructor(private readonly matches?: MatchStartPort) {}
+  constructor(
+    private readonly matches?: MatchStartPort,
+    private readonly media?: {
+      revoke(roomId: string, userId: string): Promise<void>;
+    },
+  ) {}
   private swapTableReady: boolean | null = null;
   private async swapTableExists(s: RoomScope): Promise<boolean> {
     if (this.swapTableReady === null) {
@@ -1064,6 +1069,11 @@ export class RoomStore {
       "DELETE FROM public.room_members WHERE room_id=$1 AND user_id=$2",
       [id, userId],
     );
+    try {
+      await this.media?.revoke(id, userId);
+    } catch {
+      // Media khong bao gio lam hong luong roi phong (BA 0.14).
+    }
     const others = (
       await s.client.query(
         "SELECT user_id FROM public.room_members WHERE room_id=$1 AND role='PLAYER' ORDER BY user_id",
