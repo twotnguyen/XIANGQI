@@ -1,0 +1,233 @@
+.xq-room-form {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  max-width: 520px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-family: var(--font-ui);
+}
+.xq-room-form h2,
+.xq-room-page h1 {
+  font-family: var(--font-serif);
+  margin: 0;
+}
+.xq-room-form p {
+  margin: 0;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
+.xq-room-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.xq-room-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.xq-room-options label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+.xq-room-select {
+  display: grid;
+  gap: 8px;
+}
+.xq-room-select select {
+  min-height: 44px;
+  padding: 8px;
+  background: var(--color-surface-sunken);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  font: inherit;
+}
+.xq-room-page {
+  max-width: none;
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  min-height: 100dvh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.xq-room-page * {
+  box-sizing: border-box;
+}
+.xq-room-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto 24px;
+  align-items: center;
+}
+.xq-room-header h1 {
+  font-size: 32px;
+  overflow-wrap: anywhere;
+}
+.xq-room-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  max-width: 1280px;
+  margin: auto;
+}
+.xq-room-arena {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+}
+.xq-room-seats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.xq-room-seat {
+  margin: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 200px;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  align-content: center;
+  gap: 8px;
+}
+.xq-seat-piece {
+  font-family: var(--font-han);
+  font-size: 48px;
+  border-radius: 50%;
+  width: 86px;
+  height: 86px;
+  background: var(--board-piece-face);
+  display: grid;
+  place-items: center;
+  border: 3px double var(--color-wood-edge);
+  color: var(--color-black);
+}
+.xq-room-seat.red .xq-seat-piece {
+  color: var(--color-red);
+}
+.xq-room-seat h2,
+.xq-room-seat p {
+  margin: 0;
+}
+.xq-room-seat p,
+.xq-room-info p {
+  color: var(--color-ink-muted);
+}
+.xq-room-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: start;
+}
+.xq-room-info {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+  align-self: start;
+  overflow-wrap: anywhere;
+}
+.xq-room-info dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+.xq-room-info dd {
+  margin: 0;
+}
+.xq-room-countdown {
+  padding: 16px;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold);
+  border-radius: 8px;
+}
+.xq-room-countdown strong {
+  font-size: 40px;
+  color: var(--color-gold-light);
+}
+.xq-room-board {
+  max-width: 440px;
+  margin: auto;
+  width: 100%;
+}
+.xq-room-slots {
+  border-top: 1px solid var(--color-divider);
+  padding-top: 12px;
+  margin-top: 20px;
+}
+.xq-room-page :focus-visible,
+.xq-room-form :focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .xq-room-page {
+    padding: 16px;
+  }
+  .xq-room-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .xq-room-header {
+    align-items: start;
+  }
+  .xq-room-header h1 {
+    font-size: 24px;
+  }
+  .xq-room-seats {
+    gap: 12px;
+  }
+  .xq-room-seat {
+    padding: 16px 8px;
+    min-height: 190px;
+  }
+  .xq-room-seat h2 {
+    font-size: 18px;
+  }
+  .xq-seat-piece {
+    width: 70px;
+    height: 70px;
+    font-size: 40px;
+  }
+  .xq-room-form {
+    padding: 20px;
+  }
+}
+
+.xq-room-entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1080px;
+  margin: auto;
+  align-items: start;
+}
+.xq-room-entry .xq-room-form {
+  max-width: none;
+}
+@media (max-width: 760px) {
+  .xq-room-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
