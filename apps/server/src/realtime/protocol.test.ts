@@ -204,3 +204,72 @@ describe("move coordinate bounds with match identity", () => {
       ).toThrow("Dữ liệu lệnh không hợp lệ");
   });
 });
+
+describe.each([
+  "match.draw.offer",
+  "match.draw.withdraw",
+  "match.draw.respond",
+] as const)("draw protocol %s", (type) => {
+  const input = (extra: Record<string, unknown> = {}) => ({
+    commandId: randomUUID(),
+    roomId: randomUUID(),
+    expectedVersion: 4,
+    action: {
+      type,
+      payload: {
+        matchId: randomUUID(),
+        matchVersion: 2,
+        ...(type === "match.draw.offer" ? {} : { offerId: randomUUID() }),
+        ...(type === "match.draw.respond" ? { accept: false } : {}),
+        ...extra,
+      },
+    },
+  });
+  it("accepts the canonical payload with independent room/match versions", () => {
+    const command = input();
+    expect(parseCommand(command)).toEqual(command);
+  });
+  it.each([
+    { matchId: undefined },
+    { matchId: "forged" },
+    { matchVersion: undefined },
+    { matchVersion: -1 },
+    { matchVersion: 0.5 },
+    { matchVersion: Number.MAX_SAFE_INTEGER + 1 },
+    { matchVersion: "2" },
+    { side: "red" },
+    { sender: randomUUID() },
+    { canControl: true },
+    { appSession: "secret" },
+    { accessToken: "secret" },
+    { clock: 0 },
+    { extra: "unknown" },
+  ])("rejects malformed or unlisted payload %j", (extra) => {
+    expect(() => parseCommand(input(extra))).toThrow(
+      "Dữ liệu lệnh không hợp lệ",
+    );
+  });
+  if (type !== "match.draw.offer")
+    it.each([undefined, null, {}, "forged", 12])(
+      "rejects malformed offerId %j",
+      (offerId) =>
+        expect(() => parseCommand(input({ offerId }))).toThrow(
+          "Dữ liệu lệnh không hợp lệ",
+        ),
+    );
+  if (type === "match.draw.respond") {
+    it.each([true, false])("accepts explicit boolean response %s", (accept) =>
+      expect(parseCommand(input({ accept })).action.payload).toHaveProperty(
+        "accept",
+        accept,
+      ),
+    );
+    it.each([undefined, null, "true", 1, [], {}])(
+      "rejects non-boolean response %j",
+      (accept) =>
+        expect(() => parseCommand(input({ accept }))).toThrow(
+          "Dữ liệu lệnh không hợp lệ",
+        ),
+    );
+  }
+});
