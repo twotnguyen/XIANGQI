@@ -13,6 +13,8 @@ import {
   type ProfileLocation,
   type ProfileView,
 } from "./profile-client.js";
+import { THEME_OPTIONS } from "../theme/theme.js";
+import { useTheme } from "../theme/useTheme.js";
 import "./profile.css";
 
 function nameError(error: unknown) {
@@ -40,6 +42,7 @@ export function ProfilePage({
   onSaved: (displayName: string) => void;
   onLogout: () => void;
 }) {
+  const theme = useTheme();
   const [profile, setProfile] = useState<ProfileView | null>(null);
   const [location, setLocation] = useState<ProfileLocation | null>(null);
   const [failed, setFailed] = useState(false);
@@ -156,6 +159,21 @@ export function ProfilePage({
               Lưu tên hiển thị
             </Button>
           </form>
+          <fieldset className="xq-profile-theme">
+            <legend>Giao diện</legend>
+            {THEME_OPTIONS.map((option) => (
+              <label key={option.value}>
+                <input
+                  type="radio"
+                  name="xq-theme"
+                  value={option.value}
+                  checked={theme.choice === option.value}
+                  onChange={() => theme.setChoice(option.value)}
+                />
+                {option.label}
+              </label>
+            ))}
+          </fieldset>
           <p className="xq-profile-note">
             Không đổi Tên đăng nhập, email hay ảnh đại diện trong màn này.
           </p>

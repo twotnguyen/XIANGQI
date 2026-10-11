@@ -2,7 +2,9 @@ import { StrictMode, Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
 import "./style.css";
+import "./theme/theme.css";
 import { SessionProvider } from "./auth/SessionProvider.js";
+import { applyTheme, readStoredTheme } from "./theme/theme.js";
 const AppRouter = lazy(() =>
   import("./routing/AppRouter.js").then((module) => ({
     default: module.AppRouter,
@@ -126,6 +128,11 @@ if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
 if (previewRegistration) document.title = "Cờ Tướng Online · Đăng ký";
 if (previewLogin) document.title = "Cờ Tướng Online · Đăng nhập";
 
+applyTheme(
+  readStoredTheme(window.localStorage),
+  document.documentElement.dataset,
+  window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
+);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {previewBoard ? (
