@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { LoginPage } from "../auth/LoginPage.js";
 import { RegistrationPage } from "../auth/RegistrationPage.js";
+import { GoogleSignInButton } from "../auth/GoogleSignInButton.js";
+import { GoogleOnboardingPage } from "../auth/GoogleOnboardingPage.js";
 import { useSession } from "../auth/SessionProvider.js";
 import { AppShell } from "../layouts/AppShell.js";
 import {
@@ -10,7 +12,12 @@ import {
 } from "../pages/LobbyShell.js";
 import { Button, ErrorState, Notice } from "../ui/primitives.js";
 import { NavigationLink } from "./NavigationLink.js";
-import { getLocation, navigate, subscribeLocation } from "./navigation.js";
+import {
+  getLocation,
+  navigate,
+  subscribeLocation,
+  getAuthDestination,
+} from "./navigation.js";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
 
 function publicRooms(value: unknown): PublicRoom[] {
@@ -126,6 +133,7 @@ function Lobby() {
 const titles: Partial<Record<Route["name"], string>> = {
   login: "Đăng nhập",
   register: "Đăng ký",
+  onboarding: "Thiết lập tài khoản",
   lobby: "Sảnh kỳ hữu",
   "not-found": "Không tìm thấy trang",
   room: "Phòng cờ",
@@ -138,7 +146,8 @@ const titles: Partial<Record<Route["name"], string>> = {
 export function AppRouter() {
   const session = useSession();
   const [location, setLocation] = useState(getLocation);
-  const pending = useRef<string | null>(null);
+  const pending = useRef<string | null>(getAuthDestination());
+  const [googleFlow, setGoogleFlow] = useState(0);
   const container = useRef<HTMLDivElement>(null);
   const route = resolveRoute(location.pathname, location.search);
   const decision = guardRoute(route, session.state);
@@ -146,14 +155,14 @@ export function AppRouter() {
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
   useEffect(() => {
     if (decision.kind !== "redirect") return;
-    if (decision.preserveDestination)
+    if (decision.preserveDestination && route.name !== "onboarding")
       pending.current = `${location.pathname}${location.search}`;
     const destination =
       decision.to === "/lobby" && pending.current
         ? pending.current
         : decision.to;
     if (destination === pending.current) pending.current = null;
-    navigate(destination, { replace: true });
+    navigate(destination, { replace: true, authDestination: pending.current });
   }, [
     decision.kind,
     decision.kind === "redirect" ? decision.to : null,
@@ -173,7 +182,17 @@ export function AppRouter() {
     session.accept(result);
     const destination = pending.current || "/lobby";
     pending.current = null;
-    navigate(destination, { replace: true });
+    navigate(destination, { replace: true, authDestination: null });
+  };
+  const googleResult = (result: unknown) => {
+    if ((result as { kind?: unknown })?.kind === "pending") {
+      session.accept(result);
+      setGoogleFlow((n) => n + 1);
+      navigate("/onboarding", {
+        replace: true,
+        authDestination: pending.current,
+      });
+    } else complete(result);
   };
   let content: ReactNode;
   if (decision.kind === "checking" || decision.kind === "redirect")
@@ -194,11 +213,46 @@ export function AppRouter() {
       </section>
     );
   else if (route.name === "login")
-    content = <LoginPage onLoggedIn={complete} />;
+    content = (
+      <LoginPage
+        onLoggedIn={complete}
+        renderGoogle={(remember, disabled, onBusyChange) => (
+          <GoogleSignInButton
+            remember={remember}
+            disabled={disabled}
+            onResult={googleResult}
+            onBusyChange={onBusyChange}
+          />
+        )}
+      />
+    );
   else if (route.name === "register")
     content = (
       <RegistrationPage
         onRegistered={(result) => complete({ ...result, remember: true })}
+        renderGoogle={(disabled, onBusyChange) => (
+          <GoogleSignInButton
+            remember={true}
+            disabled={disabled}
+            text="signup_with"
+            onResult={googleResult}
+            onBusyChange={onBusyChange}
+          />
+        )}
+      />
+    );
+  else if (route.name === "onboarding" && session.state.status === "pending")
+    content = (
+      <GoogleOnboardingPage
+        key={googleFlow}
+        pending={{
+          kind: "pending",
+          expiresAt: session.state.expiresAt,
+          recovering: session.state.recovering,
+          email: session.state.email,
+          avatar: session.state.avatar,
+        }}
+        onResult={googleResult}
       />
     );
   else if (route.name === "lobby" && session.state.status === "active-member")

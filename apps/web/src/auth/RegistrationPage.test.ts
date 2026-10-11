@@ -1,7 +1,13 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
 import { afterEach, expect, it, vi } from "vitest";
-import { act, cleanup, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  render,
+  screen,
+  fireEvent,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPage } from "./RegistrationPage.js";
 
@@ -11,6 +17,59 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.useRealTimers();
   vi.restoreAllMocks();
+});
+it("offers Google only on the account step while keeping the email wizard unchanged", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(new Response(JSON.stringify({ step: 2 }))),
+  );
+  const user = userEvent.setup();
+  render(
+    createElement(RegistrationPage, {
+      onRegistered: vi.fn(),
+      renderGoogle: () => createElement("span", null, "Official signup Google"),
+    }),
+  );
+  expect(screen.getByText("Official signup Google")).toBeTruthy();
+  await user.type(screen.getByLabelText("Username"), "KyThu_2026");
+  await user.type(
+    screen.getByLabelText("Mật khẩu", { exact: true }),
+    "Password123",
+  );
+  await user.type(screen.getByLabelText("Xác nhận mật khẩu"), "Password123");
+  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await screen.findByLabelText("Email chính chủ");
+  expect(screen.queryByText("Official signup Google")).toBeNull();
+});
+it("blocks email-wizard submission while Google authentication is in flight", () => {
+  const request = vi.fn();
+  vi.stubGlobal("fetch", request);
+  render(
+    createElement(RegistrationPage, {
+      onRegistered: vi.fn(),
+      renderGoogle: (_disabled: boolean, busy?: (value: boolean) => void) =>
+        createElement(
+          "button",
+          { onClick: () => busy?.(true) },
+          "Google inflight",
+        ),
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Username"), {
+    target: { value: "KyThu" },
+  });
+  fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
+    target: { value: "Password123" },
+  });
+  fireEvent.change(screen.getByLabelText("Xác nhận mật khẩu"), {
+    target: { value: "Password123" },
+  });
+  fireEvent.click(screen.getByText("Google inflight"));
+  expect((screen.getByLabelText("Username") as HTMLInputElement).disabled).toBe(
+    true,
+  );
+  fireEvent.submit(screen.getByLabelText("Username").closest("form")!);
+  expect(request).not.toHaveBeenCalled();
 });
 
 it("registers in three steps, sends the exact backend payload and hands the active session to its caller", async () => {

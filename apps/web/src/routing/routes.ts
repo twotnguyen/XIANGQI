@@ -91,7 +91,14 @@ export function guardRoute(
     return session.method === "google"
       ? route.name === "onboarding"
         ? { kind: "render" }
-        : { kind: "redirect", to: "/onboarding", replace: true }
+        : {
+            kind: "redirect",
+            to: "/onboarding",
+            replace: true,
+            ...(route.name === "room" || route.name === "join"
+              ? { preserveDestination: true as const }
+              : {}),
+          }
       : { kind: "pending" };
   if (
     session.status === "guest" &&
