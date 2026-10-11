@@ -23,10 +23,77 @@ function create(options?: ConstructorParameters<typeof EngineWorker>[0]) {
   workers.push(worker);
   return worker;
 }
+function delayedBootstrap() {
+  const bootstrap = new URL("./worker-bootstrap.mjs", import.meta.url).href;
+  return new URL(
+    "data:text/javascript," +
+      encodeURIComponent(
+        `await new Promise(resolve => setTimeout(resolve, 400)); await import(${JSON.stringify(bootstrap)});`,
+      ),
+  );
+}
+it("initializes once before serving search and keeps the startup busy fence", async () => {
+  const worker = create({ workerURL: delayedBootstrap() });
+  const started = performance.now();
+  const warming = worker.ready();
+  const alsoWarming = worker.ready();
+  await expect(worker.search(request())).rejects.toMatchObject({
+    code: "ENGINE_BUSY",
+  });
+  await Promise.all([warming, alsoWarming]);
+  expect(performance.now() - started).toBeGreaterThanOrEqual(400);
+  const result = await worker.search(request());
+  expect(result.completedDepth).toBeGreaterThanOrEqual(1);
+  expect(result.targetDepth).toBe(2);
+  expect(legalMoves(parsePosition(request().position))).toContainEqual(
+    result.move,
+  );
+});
+it("still counts delayed cold startup against a direct search deadline", async () => {
+  const result = await create({ workerURL: delayedBootstrap() }).search(
+    request(),
+  );
+  expect(result.completedDepth).toBe(0);
+  expect(result.nodes).toBe(0);
+  expect(result.timedOut).toBe(true);
+  expect(result.elapsedMs).toBeGreaterThanOrEqual(400);
+  expect(legalMoves(parsePosition(request().position))).toContainEqual(
+    result.move,
+  );
+});
+it("close drains initialization and rejects future readiness", async () => {
+  const worker = create({ workerURL: delayedBootstrap() });
+  const handled = worker.ready().catch((error) => error);
+  await worker.close();
+  expect((await handled).code).toBe("ENGINE_CLOSED");
+  await expect(worker.ready()).rejects.toMatchObject({ code: "ENGINE_CLOSED" });
+});
+it("bounds and drains a hung startup before permitting another initialization", async () => {
+  const worker = create({
+    workerURL: new URL("../test-fixtures/hung-worker.mjs", import.meta.url),
+    watchdogMs: 100,
+  });
+  await expect(worker.ready()).rejects.toMatchObject({
+    code: "ENGINE_TIMEOUT",
+  });
+  await expect(worker.ready()).rejects.toMatchObject({
+    code: "ENGINE_TIMEOUT",
+  });
+});
+it("sanitizes initialization crashes", async () => {
+  await expect(
+    create({
+      workerURL: new URL(
+        "data:text/javascript,throw%20Error(%22PRIVATE_STARTUP_DETAIL%22)",
+      ),
+    }).ready(),
+  ).rejects.toMatchObject({ code: "ENGINE_FAILED", message: "ENGINE_FAILED" });
+});
 it("runs actual search in a worker and returns a legal immutable result", async () => {
   const worker = create(),
     input = Object.freeze(request()),
     before = JSON.stringify(input);
+  await worker.ready();
   const result = await worker.search(input);
   expect(legalMoves(parsePosition(input.position))).toContainEqual(result.move);
   expect(result.completedDepth).toBeGreaterThanOrEqual(1);
