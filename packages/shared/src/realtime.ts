@@ -116,6 +116,9 @@ export interface RealtimeHandshake {
   tabId: string;
 }
 export interface ClientRealtimeEvents {
+  "room.sync": (
+    acknowledge: (response: CommandAcknowledgement) => void,
+  ) => void;
   "room.command": (
     command: RoomCommand,
     acknowledge: (response: CommandAcknowledgement) => void,
