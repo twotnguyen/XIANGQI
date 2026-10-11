@@ -33,6 +33,8 @@ const join = vi.fn<
 const snapshot = vi.fn<(scope: RoomScope, roomId: string) => Promise<unknown>>(
   async () => ({ roomId, version: 1, room: { name: "Phòng" }, role: "red" }),
 );
+const switchSeat = vi.fn(async () => ({ roomId, version: 2 }));
+const leave = vi.fn(async () => {});
 const resolveCode = vi.fn<(client: unknown, code: unknown) => Promise<string>>(
   async () => roomId,
 );
@@ -71,7 +73,14 @@ const withRoom = vi.fn(
   },
 );
 const service = new RoomHttpService(
-  { create, join, snapshot, resolveCode } as unknown as RoomStore,
+  {
+    create,
+    join,
+    snapshot,
+    resolveCode,
+    switchSeat,
+    leave,
+  } as unknown as RoomStore,
   { withRoom } as unknown as RoomTransactions,
   { resolve, authorize },
 );
@@ -299,4 +308,54 @@ it("keeps private snapshots behind fresh auth and same-client authorization", as
   expect(unavailable.status).toBe(503);
   expect(await unavailable.text()).not.toContain("private");
   expect(snapshot.mock.calls.length).toBe(calls);
+});
+
+it("switches seats only within fresh authorized matching room version", async () => {
+  const response = await request(`/rooms/${roomId}/switch-seat`, {
+    expectedVersion: 1,
+    userId: roomId,
+  });
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(switchSeat).toHaveBeenLastCalledWith(scope, roomId);
+  const calls = switchSeat.mock.calls.length;
+  const stale = await request(`/rooms/${roomId}/switch-seat`, {
+    expectedVersion: 0,
+  });
+  expect(stale.status).toBe(409);
+  expect(switchSeat.mock.calls.length).toBe(calls);
+  for (const expectedVersion of [undefined, -1, "1", 1.5]) {
+    expect(
+      (await request(`/rooms/${roomId}/switch-seat`, { expectedVersion }))
+        .status,
+    ).toBe(400);
+  }
+});
+it("leaves only the authenticated actor and preserves lifecycle errors", async () => {
+  const response = await request(`/rooms/${roomId}/leave`, {
+    expectedVersion: 1,
+    userId: roomId,
+  });
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({ roomId, left: true });
+  expect(leave).toHaveBeenLastCalledWith(scope, roomId);
+  leave.mockRejectedValueOnce(
+    new RoomError(
+      "MATCH_LIFECYCLE_UNAVAILABLE",
+      "Chưa thể xử lý kết quả ván",
+      503,
+    ),
+  );
+  const playing = await request(`/rooms/${roomId}/leave`, {
+    expectedVersion: 1,
+  });
+  expect(playing.status).toBe(503);
+  const calls = leave.mock.calls.length;
+  authorize.mockRejectedValueOnce(
+    new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401),
+  );
+  expect(
+    (await request(`/rooms/${roomId}/leave`, { expectedVersion: 1 })).status,
+  ).toBe(401);
+  expect(leave.mock.calls.length).toBe(calls);
 });
