@@ -97,6 +97,44 @@ export function parseCommand(value: unknown): RoomCommand {
       },
     };
   else if (
+    (action.type === "match.draw.offer" ||
+      action.type === "match.draw.withdraw" ||
+      action.type === "match.draw.respond") &&
+    typeof payload.matchVersion === "number" &&
+    Number.isSafeInteger(payload.matchVersion) &&
+    payload.matchVersion >= 0 &&
+    Object.keys(payload).every((key) =>
+      [
+        "matchId",
+        "matchVersion",
+        ...(action.type === "match.draw.offer" ? [] : ["offerId"]),
+        ...(action.type === "match.draw.respond" ? ["accept"] : []),
+      ].includes(key),
+    )
+  ) {
+    const base = {
+      matchId: uuid(payload.matchId),
+      matchVersion: payload.matchVersion,
+    };
+    if (action.type === "match.draw.offer")
+      parsed = { type: action.type, payload: base };
+    else if (action.type === "match.draw.withdraw")
+      parsed = {
+        type: action.type,
+        payload: { ...base, offerId: uuid(payload.offerId) },
+      };
+    else if (typeof payload.accept === "boolean")
+      parsed = {
+        type: action.type,
+        payload: {
+          ...base,
+          offerId: uuid(payload.offerId),
+          accept: payload.accept,
+        },
+      };
+    else
+      throw new RealtimeError("COMMAND_INVALID", "Dữ liệu lệnh không hợp lệ");
+  } else if (
     action.type === "media.sharing" &&
     typeof payload.sharing === "string" &&
     (payload.sharing === "none" ||
