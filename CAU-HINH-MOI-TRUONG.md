@@ -38,6 +38,7 @@ Biến bắt buộc còn trống nghĩa là chưa đủ để chạy chức năn
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase URL và khóa công khai nếu giao diện dùng SDK Auth |
 | `NODE_ENV`, `PORT`, `LOG_LEVEL` | Cấu hình chạy server; mẫu dùng development, 3000, info |
 | `CORS_ORIGINS` | Danh sách origin web cho phép, quy ước phân cách bằng dấu phẩy khi triển khai loader; không dùng wildcard với phiên đăng nhập |
+| `HISTORY_ENABLED` | Mặc định `false`. Chỉ bật cùng `AUTH_LOGIN_ENABLED=true` sau khi kiểm migration 1–7 và quyền `app_server`; runtime dùng chung pool/phiên đăng nhập, kiểm schema và từ chối khởi động nếu chưa sẵn sàng. API lịch sử chỉ dành cho người chơi sở hữu ván; bộ lọc Đánh Hạng chưa có dữ liệu thật trả lỗi dịch vụ chưa sẵn sàng. |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Cùng project với web; truy cập thông thường cần token người dùng và chính sách RLS |
 | `SUPABASE_SECRET_KEY` | Khóa đặc quyền chỉ ở server, dành cho các luồng quản trị đã kiểm quyền |
 | `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Bộ legacy dự phòng; service role chỉ dùng phía server. Ưu tiên bộ publishable/secret cho tích hợp mới |
