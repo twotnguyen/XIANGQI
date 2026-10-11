@@ -90,6 +90,40 @@ export class RoomHttpService {
       },
     );
   }
+  private async requireVersion(
+    scope: RoomScope,
+    roomId: string,
+    expectedVersion: number,
+  ) {
+    const current = await this.store.snapshot(scope, roomId);
+    if (current.version !== expectedVersion)
+      throw new RoomError(
+        "VERSION_STALE",
+        "Phòng đã thay đổi, vui lòng thử lại",
+        409,
+      );
+  }
+  async switchSeat(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.switchSeat(scope, roomId);
+    });
+  }
+  async leave(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      await this.store.leave(scope, roomId);
+      return { roomId, left: true as const };
+    });
+  }
   async snapshot(proof: MemberRoomRequestProof, roomId: string) {
     return this.run<Awaited<ReturnType<RoomStore["snapshot"]>>>(
       proof,
