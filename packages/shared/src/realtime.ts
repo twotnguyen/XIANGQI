@@ -17,6 +17,18 @@ export interface RoomStateSnapshot {
     connected: { red: boolean; black: boolean };
     graceUntil: { red: string | null; black: string | null };
     countdown: { token: string; dueAt: string } | null;
+    swapOffer: {
+      id: string;
+      proposerId: string;
+      responderId: string;
+      expiresAt: string;
+    } | null;
+    downOffer: {
+      id: string;
+      inviteeId: string;
+      expiresAt: string;
+    } | null;
+    spectators: { userId: string; displayName: string }[];
   };
   match: {
     id: string;

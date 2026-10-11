@@ -124,6 +124,35 @@ function parseView(value: unknown, roomId: string): RoomView {
     const countdown = record(room.countdown);
     if (!isId(countdown.token) || !isDate(countdown.dueAt)) invalidResponse();
   }
+  if (room.swapOffer !== null && room.swapOffer !== undefined) {
+    const offer = record(room.swapOffer);
+    if (
+      !isId(offer.id) ||
+      !isId(offer.proposerId) ||
+      !isId(offer.responderId) ||
+      !isDate(offer.expiresAt)
+    )
+      invalidResponse();
+  }
+  if (room.downOffer !== null && room.downOffer !== undefined) {
+    const offer = record(room.downOffer);
+    if (
+      !isId(offer.id) ||
+      !isId(offer.inviteeId) ||
+      !isDate(offer.expiresAt)
+    )
+      invalidResponse();
+  }
+  if (!Array.isArray(room.spectators)) invalidResponse();
+  for (const entry of room.spectators as unknown[]) {
+    const watcher = record(entry);
+    if (
+      typeof watcher.userId !== "string" ||
+      !isId(watcher.userId) ||
+      typeof watcher.displayName !== "string"
+    )
+      invalidResponse();
+  }
   return view as unknown as RoomView;
 }
 function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
@@ -289,6 +318,54 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
         (value) => parseView(value, roomId),
         {
           expectedVersion,
+        },
+      ),
+    toSpectator: (roomId: string, expectedVersion: number) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/to-spectator`,
+        (value) => parseView(value, roomId),
+        {
+          expectedVersion,
+        },
+      ),
+    moveToSpectator: (
+      roomId: string,
+      expectedVersion: number,
+      targetId: string,
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/move-to-spectator`,
+        (value) => parseView(value, roomId),
+        {
+          expectedVersion,
+          targetId,
+        },
+      ),
+    inviteDown: (roomId: string, expectedVersion: number, targetId: string) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/invite-down`,
+        (value) => parseView(value, roomId),
+        {
+          expectedVersion,
+          targetId,
+        },
+      ),
+    respondDown: (roomId: string, expectedVersion: number, accept: boolean) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/respond-down`,
+        (value) => parseView(value, roomId),
+        {
+          expectedVersion,
+          accept,
+        },
+      ),
+    kickViewer: (roomId: string, expectedVersion: number, targetId: string) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/kick`,
+        (value) => parseView(value, roomId),
+        {
+          expectedVersion,
+          targetId,
         },
       ),
     leave: (roomId: string, expectedVersion: number) =>

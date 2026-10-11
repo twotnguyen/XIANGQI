@@ -58,6 +58,7 @@ export interface RoomView {
       responderId: string;
       expiresAt: string;
     } | null;
+    spectators: { userId: string; displayName: string }[];
   };
   role: "red" | "black" | "spectator";
 }
