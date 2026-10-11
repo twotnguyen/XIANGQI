@@ -53,6 +53,7 @@ function fixture() {
     version: 3,
     ply: 1,
     position: "synthetic-fen",
+    lastMove: null,
     turn: "red",
     status: "ACTIVE",
     outcome: null,
@@ -111,6 +112,42 @@ function fixture() {
   };
 }
 describe("GameRooms native projection and adapter (synthetic stores, no SQL)", () => {
+  it("projects lastMove for reload/new viewers and committed terminal command snapshots", async () => {
+    const f = fixture();
+    const lastMove = { from: 54, to: 45, eventVersion: 2 };
+    Object.assign(f.match, { lastMove });
+    expect(
+      (await f.adapter.snapshot(f.client, f.identity, f.roomId)).match,
+    ).toHaveProperty("lastMove", lastMove);
+    f.room.role = "spectator";
+    expect(
+      (await f.adapter.snapshot(f.client, f.identity, f.roomId)).match,
+    ).toHaveProperty("lastMove", lastMove);
+    f.room.role = "red";
+    f.matchStore.move.mockResolvedValueOnce({
+      applied: false,
+      match: {
+        ...f.match,
+        status: "FINISHED",
+        version: 4,
+        outcome: { reason: "TIMEOUT", winner: "black" },
+      },
+      error: { code: "MATCH_TIME_EXPIRED", message: "expired" },
+    });
+    const result = await f.adapter.execute(
+      f.client,
+      f.identity,
+      f.command({
+        type: "match.move",
+        payload: { matchId: f.matchId, matchVersion: 3, from: 54, to: 45 },
+      }),
+    );
+    expect(result.snapshot.match).toMatchObject({
+      version: 4,
+      result: "TIMEOUT",
+      lastMove,
+    });
+  });
   it("authorizes actual RoomStore membership and only permits player control", async () => {
     const f = fixture();
     expect(await f.adapter.authorize(f.client, f.identity, f.roomId)).toEqual({
@@ -175,6 +212,7 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         id: f.matchId,
         version: 3,
         position: "synthetic-fen",
+        lastMove: null,
         turn: "red",
         status: "ACTIVE",
         winner: null,
