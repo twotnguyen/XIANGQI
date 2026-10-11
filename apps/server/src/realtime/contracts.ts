@@ -61,7 +61,6 @@ export interface RoomCollaborator {
 }
 export interface RealtimeConnection {
   // Private credentials for server-side room worker authorization only.
-  proof?: { accessToken: string; appSession: string };
   identity: RealtimeIdentity;
   proof?: RealtimeAuthProof;
   roomId: string;
