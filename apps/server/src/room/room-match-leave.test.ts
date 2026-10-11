@@ -222,6 +222,7 @@ describe.skipIf(!databaseUrl)(
         "20261011000007_match_outcomes",
         "20261011000008_room_modes",
         "20261011000009_match_draw",
+        "20261011000013_side_swap",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
     });

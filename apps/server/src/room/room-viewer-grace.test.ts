@@ -99,6 +99,7 @@ describe.skipIf(!databaseUrl)("spectator grace on synthetic PostgreSQL", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000013_side_swap.sql");
     await apply("supabase/migrations/20261011000008_room_modes.sql");
   });
   it("records physical spectator presence and fences lower generation and old disconnects", async () => {

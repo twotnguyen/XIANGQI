@@ -60,6 +60,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000013_side_swap.sql");
   });
   it("creates default code-only room with red reservation and durable idempotent response", async () => {
     const { a, proof } = await admitted(),
