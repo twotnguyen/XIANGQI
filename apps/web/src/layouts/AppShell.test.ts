@@ -21,6 +21,9 @@ it("provides a main skip target and working navigation addresses", () => {
   expect(
     screen.getByRole("link", { name: "Bạn bè" }).getAttribute("href"),
   ).toBe("/friends");
+  expect(
+    screen.getByRole("link", { name: "Lịch sử" }).getAttribute("href"),
+  ).toBe("/history");
 });
 it("labels a Guest and blocks the friends entry", () => {
   render(
@@ -35,6 +38,12 @@ it("labels a Guest and blocks the friends entry", () => {
   expect(
     screen
       .getByRole("button", { name: "Bạn bè" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  expect(screen.queryByRole("link", { name: "Lịch sử" })).toBeNull();
+  expect(
+    screen
+      .getByRole("button", { name: "Lịch sử" })
       .getAttribute("aria-disabled"),
   ).toBe("true");
 });

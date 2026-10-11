@@ -197,6 +197,90 @@ beforeEach(() => {
   window.history.replaceState(null, "", "/login");
 });
 afterEach(() => cleanup());
+const historyId = "77777777-7777-4777-8777-777777777777";
+const historyPage = {
+  items: [
+    {
+      id: historyId,
+      type: "CASUAL",
+      typeLabel: "Đánh Thường",
+      side: "red",
+      opponent: { displayName: "Đối thủ lịch sử", isGuest: false },
+      result: {
+        kind: "WIN",
+        reason: "RESIGN",
+        label: "Thắng",
+        countsForWdl: true,
+      },
+      eloDelta: null,
+      startedAt: "2026-10-11T00:00:00.000001Z",
+      endedAt: "2026-10-11T01:00:00.000001Z",
+      replayPath: `/history/${historyId}`,
+    },
+  ],
+  nextCursor: null,
+};
+it("loads member history through authorized HTTP and opens only the replay route", async () => {
+  window.history.replaceState(null, "", "/history");
+  mock.state = member;
+  mock.authorizedFetch.mockResolvedValue(reply(historyPage));
+  render(createElement(AppRouter));
+  expect(
+    await screen.findByRole("heading", { name: "Đối thủ lịch sử" }),
+  ).toBeTruthy();
+  expect(mock.authorizedFetch).toHaveBeenCalledExactlyOnceWith(
+    "/history?filter=ALL&limit=20",
+    { method: "GET", redirect: "error" },
+  );
+  expect(document.title).toContain("Lịch sử ván đấu");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Xem lại ván với Đối thủ lịch sử" }),
+  );
+  expect(window.location.pathname).toBe(`/history/${historyId}`);
+});
+it("preserves a history destination through login without reading anonymous data", async () => {
+  window.history.replaceState(null, "", "/history");
+  mock.authorizedFetch.mockResolvedValue(reply(historyPage));
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  await screen.findByRole("heading", { name: "Đối thủ lịch sử" });
+  expect(window.location.pathname).toBe("/history");
+});
+it("does not read history for Guests", () => {
+  window.history.replaceState(null, "", "/history");
+  mock.state = { status: "guest" };
+  render(createElement(AppRouter));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  expect(screen.queryByRole("heading", { name: "Đối thủ lịch sử" })).toBeNull();
+});
+it("drops a late history response after the authenticated owner changes", async () => {
+  window.history.replaceState(null, "", "/history");
+  mock.state = member;
+  let release!: (response: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((resolve) => {
+        release = resolve;
+      }),
+  );
+  mock.authorizedFetch.mockResolvedValue(
+    reply({ items: [], nextCursor: null }),
+  );
+  const view = render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledTimes(1));
+  mock.state = { ...member, userId: "another-member" };
+  view.rerender(createElement(AppRouter));
+  await screen.findByText("Chưa có ván đấu trong bộ lọc này.");
+  await act(async () => {
+    release(reply(historyPage));
+  });
+  expect(screen.queryByRole("heading", { name: "Đối thủ lịch sử" })).toBeNull();
+});
 it("keeps unknown routes readable and focuses the route heading", async () => {
   window.history.replaceState(null, "", "/unknown");
   mock.state = { status: "checking" };
