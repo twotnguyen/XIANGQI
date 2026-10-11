@@ -366,6 +366,23 @@ export function attachRealtime(
         acknowledge(response);
       }).catch(failedOperation);
     });
+    socket.on("room.sync", (acknowledge) => {
+      if (typeof acknowledge !== "function") return;
+      if (stopping) {
+        acknowledge(errorAcknowledgement(publicationFailure()));
+        return;
+      }
+      void track(async () => {
+        try {
+          const connection = await authorize(peer);
+          if (stopping) throw publicationFailure();
+          const snapshot = await dependencies.store.snapshot(connection);
+          acknowledge({ status: "ok", commandId: randomUUID(), snapshot });
+        } catch (error) {
+          acknowledge(errorAcknowledgement(error));
+        }
+      }).catch(failedOperation);
+    });
     socket.on("session.takeover", (acknowledge) => {
       if (typeof acknowledge !== "function") return;
       if (stopping) {
