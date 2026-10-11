@@ -195,11 +195,12 @@ describe.skipIf(!databaseUrl)(
       ).toBe(true);
       await f.send(old);
     });
-    it("spectator can send public without controller promotion, cannot access private and outsider cannot send", async () => {
+    it("spectator owning its chat tab can send public but cannot access private and outsider cannot send", async () => {
       const f = await fixture();
       await f.join(f.b, "watch");
       const viewer = await f.connect(f.b),
         outsider = await f.connect(f.c);
+      await f.control(viewer);
       expect(
         (await f.service.read(viewer, { channel: "ROOM_PUBLIC" })).canSend,
       ).toBe(true);
@@ -224,7 +225,7 @@ describe.skipIf(!databaseUrl)(
             [f.b.id],
           )
         ).rows[0].n,
-      ).toBe(0);
+      ).toBe(1);
     });
     it.each(["revoke", "expire"])(
       "rejects %s fixed session before read/send without mutations",

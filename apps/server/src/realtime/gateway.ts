@@ -276,12 +276,11 @@ export function attachRealtime(
     return track(() => doNotifyPreviousTabs(peer, snapshot));
   }
   async function doNotifyPreviousTabs(peer: Peer, snapshot: RoomSnapshot) {
-    if (snapshot.control.mode !== "writable") {
-      if (snapshot.control.reason === "superseded")
-        peer.socket.emit("session.read_only", {
-          message: "Phiên này đã được mở ở tab khác",
-          stopMedia: true,
-        });
+    if (snapshot.control.reason === "superseded") {
+      peer.socket.emit("session.read_only", {
+        message: "Phiên này đã được mở ở tab khác",
+        stopMedia: true,
+      });
       return;
     }
     for (const other of peers.values()) {

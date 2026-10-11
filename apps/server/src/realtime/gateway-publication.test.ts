@@ -9,7 +9,7 @@ import type { RealtimeConnection } from "./contracts.js";
 import type { ChatReadRequest } from "@xiangqi/shared";
 import type { RealtimeStore } from "./store.js";
 import type { CommandAcknowledgement } from "@xiangqi/shared";
-async function fixture(chatEnabled = false) {
+async function fixture(chatEnabled = false, viewerTabOwnership = false) {
   const roomId = randomUUID(),
     users = new Map<string, string>(),
     clients: Socket[] = [];
@@ -22,6 +22,21 @@ async function fixture(chatEnabled = false) {
     version: 1,
     control: { mode: "writable", generation: 1, reason: null },
   };
+  let ownerConnectionId: string | null = null;
+  const forConnection = (connection: RealtimeConnection) =>
+    viewerTabOwnership
+      ? {
+          ...snapshot,
+          control: {
+            mode: "readonly",
+            generation: 1,
+            reason:
+              ownerConnectionId === connection.connectionId
+                ? "not_allowed"
+                : "superseded",
+          },
+        }
+      : snapshot;
   const chatDenied = new Set<string>();
   const chatRead = vi.fn(
     async (connection: RealtimeConnection, input: ChatReadRequest) => {
@@ -63,11 +78,11 @@ async function fixture(chatEnabled = false) {
     if (!id) throw new RealtimeError("AUTH_REQUIRED", "private");
     return { userId: id, kind: "member" as const };
   });
-  const read = vi.fn(async () => {
+  const read = vi.fn(async (connection: RealtimeConnection) => {
     if (membership)
       throw new RealtimeError("ROOM_FORBIDDEN", "private membership");
     if (snapshotFailure) throw new Error("PRIVATE_SQL_SECRET");
-    return snapshot;
+    return forConnection(connection);
   });
   const command = vi.fn(async () => {
     if (failAfterCommit) providerFailure = true;
@@ -79,7 +94,10 @@ async function fixture(chatEnabled = false) {
     };
   });
   const store = {
-    connect: async () => snapshot,
+    connect: async (connection: RealtimeConnection) => {
+      if (viewerTabOwnership) ownerConnectionId = connection.connectionId;
+      return forConnection(connection);
+    },
     snapshot: read,
     command,
     disconnect: async () => {},
@@ -106,8 +124,8 @@ async function fixture(chatEnabled = false) {
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
   const address = server.address();
   if (!address || typeof address === "string") throw Error("fixture");
-  async function peer(targetRoom = roomId) {
-    const userId = randomUUID(),
+  async function peer(targetRoom = roomId, existingUserId?: string) {
+    const userId = existingUserId ?? randomUUID(),
       token = randomUUID();
     users.set(token, userId);
     const client = io(`http://127.0.0.1:${address.port}`, {
@@ -152,6 +170,34 @@ async function fixture(chatEnabled = false) {
   };
 }
 describe("native realtime publication outcomes", () => {
+  it("notifies an older spectator tab when a readonly viewer owns the newer tab or explicitly takes over", async () => {
+    const f = await fixture(false, true);
+    try {
+      const a = await f.peer(),
+        noticesA: unknown[] = [];
+      a.client.on("session.read_only", (notice) => noticesA.push(notice));
+      const b = await f.peer(f.roomId, a.userId),
+        noticesB: unknown[] = [];
+      b.client.on("session.read_only", (notice) => noticesB.push(notice));
+      await expect.poll(() => noticesA.length, { timeout: 1000 }).toBe(1);
+      expect(noticesA[0]).toEqual({
+        message: "Phiên này đã được mở ở tab khác",
+        stopMedia: true,
+      });
+      const ack = await a.client.timeout(1000).emitWithAck("session.takeover");
+      expect(ack).toMatchObject({
+        status: "ok",
+        snapshot: { control: { mode: "readonly", reason: "not_allowed" } },
+      });
+      await expect.poll(() => noticesB.length, { timeout: 1000 }).toBe(1);
+      expect(noticesB[0]).toEqual({
+        message: "Phiên này đã được mở ở tab khác",
+        stopMedia: true,
+      });
+    } finally {
+      await f.close();
+    }
+  });
   it("delivers chat invalidation only after per-recipient authorization without broadcasting private content", async () => {
     const f = await fixture(true);
     try {
