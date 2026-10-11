@@ -11,6 +11,10 @@ import { NestFactory } from "@nestjs/core";
 import type { HealthStatus } from "@xiangqi/shared";
 import { Server } from "socket.io";
 import {
+  attachPublicRoomFeed,
+  type PublicRoomFeedDependencies,
+} from "./room/public-room-feed.js";
+import {
   attachRealtime,
   type RealtimeDependencies,
 } from "./realtime/gateway.js";
@@ -44,6 +48,7 @@ export async function createApp(
   imports: DynamicModule[] = [],
   checkDatabase: (() => Promise<void>) | null = null,
   realtime: Omit<RealtimeDependencies, "corsOrigins"> | null = null,
+  publicRooms: Omit<PublicRoomFeedDependencies, "corsOrigins"> | null = null,
 ) {
   let closeSockets: () => Promise<void> = async () => {};
   const app = await NestFactory.create(
@@ -102,6 +107,19 @@ export async function createApp(
       (closing ??= new Promise<void>((resolve, reject) =>
         io.close((error) => (error ? reject(error) : resolve())),
       ));
+  }
+  if (publicRooms) {
+    const gatewayClose = closeSockets;
+    const feed = attachPublicRoomFeed(app.getHttpServer(), {
+      ...publicRooms,
+      corsOrigins,
+    });
+    let closingFeed: Promise<void> | undefined;
+    closeSockets = () =>
+      (closingFeed ??= (async () => {
+        await feed.close();
+        await gatewayClose();
+      })());
   }
   return app;
 }
