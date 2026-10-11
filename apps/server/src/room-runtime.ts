@@ -49,7 +49,6 @@ export async function createRoomRuntime(
     throw new Error("Invalid Room configuration");
   const pool = registration.pool;
   let drawReady: boolean;
-  let publicReady: boolean;
   let chatReady = false;
   try {
     const schema =
@@ -93,7 +92,7 @@ export async function createRoomRuntime(
         AND strpos(pg_get_constraintdef(oid),'PUBLIC')>0) AS ready`);
     if (publicSchema.rows[0]?.present && !publicSchema.rows[0].ready)
       throw new Error();
-    publicReady = publicSchema.rows[0]?.ready === true;
+    // Ghi nhan: publicReady se duoc XIAN-90 dung de khoi tao PublicRoomService.
     const chatSchema = await pool.query(
       "SELECT to_regnamespace('xiangqi_chat') IS NOT NULL AS present",
     );
