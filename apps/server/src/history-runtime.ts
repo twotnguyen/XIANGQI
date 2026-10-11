@@ -6,6 +6,14 @@ import { HistoryHttpService } from "./history/history-http.service.js";
 import { HistoryModule } from "./history/history.module.js";
 import { ReplayStore } from "./history/replay-store.js";
 import { ReplayHttpService } from "./history/replay-http.service.js";
+/**
+ * Điều kiện khớp kiểu cột cho cấu trúc lịch sử/replay. Cột yêu cầu `text` chấp nhận cả
+ * `varchar`/`bpchar` vì `xiangqi_auth.accounts` là view trên managed Auth (Supabase dùng
+ * `character varying`), còn fixture test local định nghĩa `text`. Các kiểu khác so khớp chính xác.
+ */
+export const HISTORY_COLUMN_TYPE_MATCH = `CASE WHEN t.column_type='text'
+            THEN a.atttypid IN ('pg_catalog.text'::pg_catalog.regtype,'pg_catalog.varchar'::pg_catalog.regtype,'pg_catalog.bpchar'::pg_catalog.regtype)
+            ELSE a.atttypid=pg_catalog.to_regtype(t.column_type) END`;
 /** Borrows registration's pool and sessions. No owned connection pool, timers or close hook. */
 export async function createHistoryRuntime(
   env: Record<string, string | undefined>,
@@ -80,7 +88,7 @@ export async function createHistoryRuntime(
         ('xiangqi_auth.accounts','id','uuid'),('xiangqi_auth.accounts','email','text'),('xiangqi_auth.accounts','email_confirmed_at','timestamptz'))
       SELECT (SELECT bool_and(EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a
         WHERE a.attrelid=pg_catalog.to_regclass(t.relation) AND a.attname=t.column_name
-          AND a.atttypid=pg_catalog.to_regtype(t.column_type) AND NOT a.attisdropped)) FROM required t)
+          AND ${HISTORY_COLUMN_TYPE_MATCH} AND NOT a.attisdropped)) FROM required t)
         AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid='public.matches'::pg_catalog.regclass
           AND conname='matches_mode_invariants' AND contype='c' AND convalidated
           AND pg_catalog.md5(pg_catalog.pg_get_constraintdef(oid))='9ed29788a7d07ed31ce99d03f2fc81a4')
