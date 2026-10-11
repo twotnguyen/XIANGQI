@@ -147,6 +147,7 @@ export class FixtureRooms implements RoomCollaborator {
         hostId: members[0]!,
         name: "Synthetic realtime fixture",
         visibility: "CODE_ONLY",
+        inviteCode: null,
         timeMinutes: 5,
         viewerLimit: 5,
         connected: { red: true, black: true },
