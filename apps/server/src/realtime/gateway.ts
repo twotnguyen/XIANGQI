@@ -63,6 +63,22 @@ export function attachRealtime(
   const disconnects = new Set<Promise<void>>();
   const admissions = new Set<Promise<void>>();
   let stopping = false;
+  const operations = new Set<Promise<unknown>>();
+  function track<T>(work: () => Promise<T>): Promise<T> {
+    const operation = work();
+    operations.add(operation);
+    void operation.then(
+      () => operations.delete(operation),
+      () => operations.delete(operation),
+    );
+    return operation;
+  }
+  function failedOperation() {
+    process.stderr.write(
+      logEvent("error", "realtime_maintenance_failed") + "\n",
+    );
+  }
+
   type PendingDisconnect = {
     connection: RealtimeConnection;
     failures: number;
@@ -133,21 +149,27 @@ export function attachRealtime(
     peer.generation = snapshot.control.generation;
     peer.socket.emit("room.snapshot", snapshot);
   }
-  async function publishSnapshots(roomId: string) {
+  function publishSnapshots(roomId: string): Promise<void> {
+    if (stopping) return Promise.reject(publicationFailure());
+    return track(() => doPublishSnapshots(roomId));
+  }
+  async function doPublishSnapshots(roomId: string) {
     await Promise.all(
       [...peers.values()]
         .filter(
           (peer) => peer.socket.connected && peer.connection.roomId === roomId,
         )
-        .map(async (peer) => {
-          try {
-            const connection = await authorize(peer);
-            sendSnapshot(peer, await dependencies.store.snapshot(connection));
-          } catch (error) {
-            if (!denied(error)) throw publicationFailure();
-            // Revoked membership/session never receives a private fallback.
-          }
-        }),
+        .map((peer) =>
+          track(async () => {
+            try {
+              const connection = await authorize(peer);
+              sendSnapshot(peer, await dependencies.store.snapshot(connection));
+            } catch (error) {
+              if (!denied(error)) throw publicationFailure();
+              // Revoked membership/session never receives a private fallback.
+            }
+          }),
+        ),
     );
   }
   function denied(error: unknown) {
@@ -162,7 +184,14 @@ export function attachRealtime(
       "Chưa thể đồng bộ trạng thái phòng",
     );
   }
-  async function publishRoomClosed(
+  function publishRoomClosed(
+    roomId: string,
+    recipientIds: readonly string[],
+  ): Promise<void> {
+    if (stopping) return Promise.reject(publicationFailure());
+    return track(() => doPublishRoomClosed(roomId, recipientIds));
+  }
+  async function doPublishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
   ) {
@@ -176,21 +205,30 @@ export function attachRealtime(
             peer.connection.roomId === room &&
             recipients.has(peer.connection.identity.userId),
         )
-        .map(async (peer) => {
-          try {
-            await authorize(peer);
-            peer.socket.emit("room.closed", {
-              roomId: room,
-              message: "Phòng đã đóng",
-            });
-          } catch (error) {
-            if (!denied(error)) throw publicationFailure();
-            peer.socket.disconnect(true);
-          }
-        }),
+        .map((peer) =>
+          track(async () => {
+            try {
+              await authorize(peer);
+              peer.socket.emit("room.closed", {
+                roomId: room,
+                message: "Phòng đã đóng",
+              });
+            } catch (error) {
+              if (!denied(error)) throw publicationFailure();
+              peer.socket.disconnect(true);
+            }
+          }),
+        ),
     );
   }
-  async function notifyPreviousTabs(peer: Peer, snapshot: RoomSnapshot) {
+  function notifyPreviousTabs(
+    peer: Peer,
+    snapshot: RoomSnapshot,
+  ): Promise<void> {
+    if (stopping) return Promise.resolve();
+    return track(() => doNotifyPreviousTabs(peer, snapshot));
+  }
+  async function doNotifyPreviousTabs(peer: Peer, snapshot: RoomSnapshot) {
     if (snapshot.control.mode !== "writable") {
       if (snapshot.control.reason === "superseded")
         peer.socket.emit("session.read_only", {
@@ -291,56 +329,77 @@ export function attachRealtime(
     void admission.then(() => admissions.delete(admission));
   });
   io.on("connection", (socket) => {
-    const peer = peers.get(socket.id)!;
+    const peer = peers.get(socket.id);
+    if (!peer || stopping) {
+      socket.disconnect(true);
+      return;
+    }
     socket.on("disconnect", () => {
       peers.delete(socket.id);
       void peer.disconnect();
     });
-    socket.on("room.command", async (input, acknowledge) => {
+    socket.on("room.command", (input, acknowledge) => {
       if (typeof acknowledge !== "function") return;
-      let response;
-      try {
-        const connection = await authorize(peer);
-        response = await dependencies.store.command(
-          connection,
-          parseCommand(input as unknown),
-        );
-      } catch (error) {
-        response = errorAcknowledgement(error);
+      if (stopping) {
+        acknowledge(errorAcknowledgement(publicationFailure()));
+        return;
       }
-      if (response.snapshot) {
+      void track(async () => {
+        let response;
         try {
-          await publishSnapshots(peer.connection.roomId);
-        } catch {
-          process.stderr.write(
-            logEvent("error", "realtime_maintenance_failed") + "\n",
+          const connection = await authorize(peer);
+          response = await dependencies.store.command(
+            connection,
+            parseCommand(input as unknown),
           );
+        } catch (error) {
+          response = errorAcknowledgement(error);
         }
-      }
-      acknowledge(response);
+        if (response.snapshot && !stopping) {
+          try {
+            await publishSnapshots(peer.connection.roomId);
+          } catch {
+            failedOperation();
+          }
+        }
+        // A committed result is never replaced by a shutdown/publication failure.
+        acknowledge(response);
+      }).catch(failedOperation);
     });
-    socket.on("session.takeover", async (acknowledge) => {
+    socket.on("session.takeover", (acknowledge) => {
       if (typeof acknowledge !== "function") return;
-      try {
-        const connection = await authorize(peer);
-        const snapshot = await dependencies.store.connect(connection, true);
-        await notifyPreviousTabs(peer, snapshot);
-        sendSnapshot(peer, snapshot);
-        acknowledge({ status: "ok", commandId: randomUUID(), snapshot });
-      } catch (error) {
-        acknowledge(errorAcknowledgement(error));
+      if (stopping) {
+        acknowledge(errorAcknowledgement(publicationFailure()));
+        return;
       }
+      void track(async () => {
+        try {
+          const connection = await authorize(peer);
+          if (stopping) throw publicationFailure();
+          const snapshot = await dependencies.store.connect(connection, true);
+          if (!stopping) {
+            await notifyPreviousTabs(peer, snapshot);
+            sendSnapshot(peer, snapshot);
+          }
+          acknowledge({ status: "ok", commandId: randomUUID(), snapshot });
+        } catch (error) {
+          acknowledge(errorAcknowledgement(error));
+        }
+      }).catch(failedOperation);
     });
-    void (async () => {
+    void track(async () => {
       try {
         const connection = await authorize(peer);
+        if (stopping) return;
         const snapshot = await dependencies.store.snapshot(connection);
-        sendSnapshot(peer, snapshot);
-        await notifyPreviousTabs(peer, snapshot);
+        if (!stopping) {
+          sendSnapshot(peer, snapshot);
+          await notifyPreviousTabs(peer, snapshot);
+        }
       } catch {
         socket.disconnect(true);
       }
-    })();
+    }).catch(failedOperation);
   });
   let maintenance: Promise<void> | null = null;
   const clean = () => {
@@ -428,6 +487,7 @@ export function attachRealtime(
         io.close((error) => {
           void (async () => {
             await Promise.all([...admissions]);
+            while (operations.size) await Promise.allSettled([...operations]);
             await Promise.all([...disconnects]);
             await maintenance;
             await sessionMaintenance;
