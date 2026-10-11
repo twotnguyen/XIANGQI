@@ -44,6 +44,7 @@ function fixture(
       },
     ],
     moves: [],
+    result: { reason: "RESIGN", winner: "red" },
   };
   const authorizer: MemberRoomAuthorizer = {
     async resolve(p) {
@@ -228,5 +229,28 @@ describe("Replay HTTP authenticated read port (native seams, no SQL)", () => {
     expect(
       replayHttpError(new RoomError("__proto__", "secret", 403)),
     ).toMatchObject({ code: "REPLAY_UNAVAILABLE", status: 503 });
+  });
+  it("exports FEN and PGN through the same replay ownership gate", async () => {
+    const f = fixture();
+    const value = await f.service.export(proof(), id, 0);
+    expect(value.fen).toBe(
+      "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",
+    );
+    expect(value.pgn).toContain('[Result "1-0"]');
+    expect(f.events[0]).toBe("resolve");
+    expect(f.events).toContain("authorize");
+  });
+  it("rejects an out-of-range ply and non-member export like read", async () => {
+    const f = fixture();
+    await expect(f.service.export(proof(), id, 9)).rejects.toMatchObject({
+      code: "REPLAY_INPUT_INVALID",
+      status: 400,
+    });
+    const guest = fixture({ kind: "guest" });
+    await expect(guest.service.export(proof(), id)).rejects.toMatchObject({
+      code: "REPLAY_FORBIDDEN",
+      status: 403,
+    });
+    expect(guest.store.read).not.toHaveBeenCalled();
   });
 });

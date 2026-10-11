@@ -33,10 +33,14 @@ function record(matchId = id): ReplayRecord {
       turn: p.turn,
     })),
     moves: [{ from: 54, to: 45, side: "red" }],
+    result: { reason: "CHECKMATE", winner: "red" },
   };
 }
 it("loads the authorized replay and renders real readonly board with Vietnamese notation", async () => {
-  const client = { read: vi.fn().mockResolvedValue(record()) };
+  const client = {
+    read: vi.fn().mockResolvedValue(record()),
+    export: vi.fn(),
+  };
   render(createElement(ReplayPage, { id, client }));
   expect(screen.getByRole("status").textContent).toContain("Đang tải");
   await screen.findByRole("heading", { name: "Biên bản ván đấu" });
@@ -55,6 +59,7 @@ it("never reflects private upstream details and retries an unavailable replay", 
       .fn()
       .mockRejectedValueOnce(Error("PRIVATE_PROVIDER"))
       .mockResolvedValueOnce(record()),
+    export: vi.fn(),
   };
   render(createElement(ReplayPage, { id, client }));
   await screen.findByRole("alert");
@@ -73,6 +78,7 @@ it.each([401, 403, 404, 409])(
       read: vi
         .fn()
         .mockRejectedValue(new ReplayRequestError(status, "REPLAY_NOT_FOUND")),
+      export: vi.fn(),
     };
     render(createElement(ReplayPage, { id, client }));
     await screen.findByRole("alert");
@@ -95,6 +101,7 @@ it("hides the previous replay immediately and ignores its late response after ma
           }),
       )
       .mockResolvedValue(record(next)),
+    export: vi.fn(),
   };
   const view = render(createElement(ReplayPage, { id, client }));
   view.rerender(createElement(ReplayPage, { id: next, client }));
@@ -106,7 +113,10 @@ it("hides the previous replay immediately and ignores its late response after ma
   expect(screen.getByText("Tốt 9 tiến 1")).toBeTruthy();
 });
 it("removes old data immediately when the authorized client changes and ignores unmounted work", async () => {
-  const client = { read: vi.fn().mockResolvedValue(record()) };
+  const client = {
+    read: vi.fn().mockResolvedValue(record()),
+    export: vi.fn(),
+  };
   const view = render(createElement(ReplayPage, { id, client }));
   await screen.findByRole("heading", { name: "Biên bản ván đấu" });
   let release!: (r: ReplayRecord) => void;
@@ -115,6 +125,7 @@ it("removes old data immediately when the authorized client changes and ignores 
       new Promise<ReplayRecord>((done) => {
         release = done;
       }),
+    export: vi.fn(),
   };
   view.rerender(createElement(ReplayPage, { id, client: changed }));
   expect(

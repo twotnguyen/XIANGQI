@@ -38,6 +38,7 @@ function record(): ReplayRecord {
     mode: "CASUAL",
     side: "red",
     moves,
+    result: { reason: "CHECKMATE", winner: "red" },
     positions,
   };
 }
@@ -255,4 +256,57 @@ it("keeps a zero-move initial board valid with all playback controls unavailable
     fireEvent.click(button(name));
   }
   boardAt(r, 0);
+});
+it("copies the FEN at the selected ply and downloads the PGN without chess services", async () => {
+  const r = record();
+  const exportAt = vi.fn(async (ply: number) => ({
+    fen: r.positions[ply]!.fen,
+    pgn: "PGN-BODY",
+  }));
+  const user = userEvent.setup();
+  const writeText = vi
+    .spyOn(navigator.clipboard, "writeText")
+    .mockResolvedValue(undefined);
+  const createUrl = vi.fn(() => "blob:xiangqi");
+  Object.defineProperty(URL, "createObjectURL", {
+    configurable: true,
+    value: createUrl,
+  });
+  const revoke = vi.fn();
+  Object.defineProperty(URL, "revokeObjectURL", {
+    configurable: true,
+    value: revoke,
+  });
+  const original = document.createElement.bind(document);
+  const anchors: HTMLAnchorElement[] = [];
+  const clicked: string[] = [];
+  const spy = vi.spyOn(document, "createElement").mockImplementation(((
+    tag: string,
+    options?: ElementCreationOptions,
+  ) => {
+    const node = original(tag as keyof HTMLElementTagNameMap, options);
+    if (tag === "a") {
+      anchors.push(node as HTMLAnchorElement);
+      (node as HTMLAnchorElement).click = () => {
+        clicked.push((node as HTMLAnchorElement).download);
+      };
+    }
+    return node;
+  }) as typeof document.createElement);
+  render(
+    createElement(ReplayViewer, { record: r, moveLabels: labels, exportAt }),
+  );
+  await user.click(screen.getByRole("button", { name: "Copy FEN" }));
+  expect(exportAt).toHaveBeenCalledWith(0);
+  expect(writeText).toHaveBeenCalledWith(r.positions[0]!.fen);
+  expect(
+    await screen.findByText("Đã sao chép FEN", { exact: false }),
+  ).toBeTruthy();
+  await user.click(screen.getByRole("button", { name: "Tải PGN" }));
+  expect(exportAt).toHaveBeenLastCalledWith(r.moves.length);
+  expect(createUrl).toHaveBeenCalledOnce();
+  expect(anchors).toHaveLength(1);
+  expect(clicked).toEqual([`${r.id}.pgn`]);
+  expect(revoke).toHaveBeenCalledWith("blob:xiangqi");
+  spy.mockRestore();
 });

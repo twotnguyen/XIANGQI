@@ -31,6 +31,7 @@ function record(): ReplayRecord {
     side: "red",
     positions,
     moves,
+    result: { reason: "CHECKMATE", winner: "red" },
   };
 }
 it("reads through authorized GET with a canonical UUID and verifies an actual legal branch", async () => {
@@ -201,4 +202,36 @@ it("sanitizes malformed JSON and malformed successful bodies", async () => {
     await expect(
       makeReplayClient(vi.fn().mockResolvedValue(response)).read(id),
     ).rejects.toMatchObject({ status: 503, code: "REPLAY_RESPONSE_INVALID" });
+});
+it("exports the permission-gated FEN and PGN through the dedicated endpoint", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      Response.json({ fen: "abc w - - 0 1", pgn: "1. a3a4 1-0" }),
+    );
+  const value = await makeReplayClient(fetch).export(id, 3);
+  expect(value).toEqual({ fen: "abc w - - 0 1", pgn: "1. a3a4 1-0" });
+  expect(fetch).toHaveBeenCalledExactlyOnceWith(
+    `/history/${id.toLowerCase()}/export?ply=3`,
+    { method: "GET", redirect: "error" },
+  );
+});
+it("rejects a malformed ply locally and maps a denial from the export endpoint", async () => {
+  const rejecting = vi.fn();
+  await expect(
+    makeReplayClient(rejecting).export(id, -1),
+  ).rejects.toMatchObject({
+    status: 400,
+  });
+  expect(rejecting).not.toHaveBeenCalled();
+  const denied = vi.fn().mockResolvedValue(
+    new Response(JSON.stringify({ code: "HISTORY_FORBIDDEN" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
+  await expect(makeReplayClient(denied).export(id, 1)).rejects.toMatchObject({
+    status: 403,
+    code: "HISTORY_FORBIDDEN",
+  });
 });

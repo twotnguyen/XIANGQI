@@ -119,3 +119,15 @@
     max-height: 320px;
   }
 }
+
+.xq-replay-export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.xq-replay-export p {
+  margin: 0;
+  flex-basis: 100%;
+}

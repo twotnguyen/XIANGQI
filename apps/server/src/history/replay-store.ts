@@ -13,6 +13,7 @@ export interface ReplayRecord {
   side: Side;
   positions: { fen: string; turn: Side }[];
   moves: { from: number; to: number; side: Side }[];
+  result: { reason: string; winner: Side | null };
 }
 type Row = {
   id: string;
@@ -186,6 +187,13 @@ export class ReplayStore {
             side: move.side === "RED" ? "red" : "black",
           };
         }),
+        result: {
+          reason: String(row.outcome.reason),
+          winner:
+            row.outcome.winner === null
+              ? null
+              : (String(row.outcome.winner).toLowerCase() as Side),
+        },
       };
     } catch {
       return corrupt();

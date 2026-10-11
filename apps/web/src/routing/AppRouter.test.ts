@@ -234,6 +234,7 @@ const replayRecord = {
     (p) => ({ fen: serializePosition(p), turn: p.turn }),
   ),
   moves: [{ from: 54, to: 45, side: "red" }],
+  result: { reason: "CHECKMATE", winner: "red" },
 };
 it("loads owned replay at the single canonical route with a readonly board", async () => {
   window.history.replaceState(null, "", `/history/${historyId}`);

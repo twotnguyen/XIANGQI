@@ -69,7 +69,11 @@ export function ReplayPage({
         />
       )}
       {record && (
-        <ReplayViewer record={record} moveLabels={replayMoveLabels(record)} />
+        <ReplayViewer
+          record={record}
+          moveLabels={replayMoveLabels(record)}
+          exportAt={(ply) => client.export(record.id, ply)}
+        />
       )}
     </section>
   );

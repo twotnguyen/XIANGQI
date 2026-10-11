@@ -186,6 +186,7 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
         { from: 54, to: 45, side: "red" },
         { from: 27, to: 36, side: "black" },
       ],
+      result: { reason: "RESIGN", winner: "red" },
     });
     expect((await read(b, g.id)).side).toBe("black");
     expect(JSON.stringify(value)).not.toContain(a.userId);

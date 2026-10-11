@@ -101,6 +101,40 @@ class ReplayController {
   constructor(
     @Inject("REPLAY_HTTP_SERVICE") private readonly service: ReplayHttpService,
   ) {}
+  @Get(":id/export")
+  @Header("Cache-Control", "no-store")
+  async export(@Req() request: IncomingMessage, @Param("id") id: string) {
+    try {
+      const proof = readMemberRoomProof(request);
+      const search = new URL(request.url ?? "", "http://localhost")
+        .searchParams;
+      for (const key of search.keys())
+        if (key !== "ply")
+          throw new RoomError(
+            "REPLAY_INPUT_INVALID",
+            "Định danh ván không hợp lệ",
+            400,
+          );
+      const raw = search.get("ply");
+      let ply: number | undefined;
+      if (raw !== null) {
+        if (!/^\d{1,4}$/.test(raw))
+          throw new RoomError(
+            "REPLAY_INPUT_INVALID",
+            "Mốc nước không hợp lệ",
+            400,
+          );
+        ply = Number(raw);
+      }
+      return await this.service.export(proof, id, ply);
+    } catch (error) {
+      const safe = replayHttpError(error);
+      throw new HttpException(
+        { code: safe.code, message: safe.message },
+        safe.status,
+      );
+    }
+  }
   @Get(":id")
   @Header("Cache-Control", "no-store")
   async read(@Req() request: IncomingMessage, @Param("id") id: string) {
