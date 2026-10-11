@@ -5,7 +5,10 @@ import type {
   ClientRealtimeEvents,
   ServerRealtimeEvents,
   RoomSnapshot,
+  ChatChannel,
 } from "@xiangqi/shared";
+import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
+import { RoomError } from "../room/contracts.js";
 import {
   RealtimeError,
   type IdentityResolver,
@@ -28,6 +31,7 @@ function authenticationFailure(error: unknown): RealtimeError {
 }
 
 export interface RealtimePublisher {
+  publishChat?(roomId: string, channel: ChatChannel): Promise<void>;
   publishSnapshots(roomId: string): Promise<void>;
   publishRoomClosed(
     roomId: string,
@@ -36,6 +40,7 @@ export interface RealtimePublisher {
   connections(roomId: string): RealtimeConnection[];
 }
 export interface RealtimeDependencies {
+  chat?: RoomChatGateway["chat"];
   store: RealtimeStore;
   identities: IdentityResolver;
   corsOrigins: string[];
@@ -152,6 +157,48 @@ export function attachRealtime(
   function publishSnapshots(roomId: string): Promise<void> {
     if (stopping) return Promise.reject(publicationFailure());
     return track(() => doPublishSnapshots(roomId));
+  }
+  function publishChat(roomId: string, channel: ChatChannel): Promise<void> {
+    if (stopping || !dependencies.chat)
+      return Promise.reject(publicationFailure());
+    const chat = dependencies.chat;
+    return track(async () => {
+      await Promise.all(
+        [...peers.values()]
+          .filter(
+            (peer) =>
+              peer.socket.connected && peer.connection.roomId === roomId,
+          )
+          .map(async (peer) => {
+            try {
+              const connection = await authorize(peer);
+              const page = await chat.read(connection, { channel });
+              if (
+                stopping ||
+                !peer.socket.connected ||
+                peers.get(peer.socket.id) !== peer
+              )
+                return;
+              // Invalidation contains no message body. Reads always recheck the current pair/entry scope.
+              peer.socket.emit("chat.changed", {
+                roomId: page.roomId,
+                channel: page.channel,
+                roomVersion: page.roomVersion,
+                scopeToken: page.scopeToken,
+                canSend: page.canSend,
+              });
+            } catch (error) {
+              if (
+                denied(error) ||
+                (error instanceof RoomError &&
+                  ["CHAT_FORBIDDEN", "AUTH_REQUIRED"].includes(error.code))
+              )
+                return;
+              throw publicationFailure();
+            }
+          }),
+      );
+    });
   }
   async function doPublishSnapshots(roomId: string) {
     await Promise.all(
@@ -334,6 +381,14 @@ export function attachRealtime(
       socket.disconnect(true);
       return;
     }
+    if (dependencies.chat)
+      bindRoomChat(socket, {
+        authorize: () => authorize(peer),
+        chat: dependencies.chat,
+        changed: publishChat,
+        stopping: () => stopping,
+        track,
+      });
     socket.on("disconnect", () => {
       peers.delete(socket.id);
       void peer.disconnect();
@@ -487,6 +542,7 @@ export function attachRealtime(
   sessionTimer.unref();
   let closing: Promise<void> | undefined;
   return {
+    publishChat,
     publishSnapshots,
     publishRoomClosed,
     connections: (roomId: string): RealtimeConnection[] =>

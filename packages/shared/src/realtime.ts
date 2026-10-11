@@ -1,3 +1,4 @@
+import type { ClientChatEvents, ServerChatEvents } from "./chat.js";
 export type RoomRole = "red" | "black" | "spectator";
 export interface RoomStateSnapshot {
   serverNow: string;
@@ -142,7 +143,7 @@ export interface RealtimeHandshake {
   roomId: string;
   tabId: string;
 }
-export interface ClientRealtimeEvents {
+export interface ClientRealtimeEvents extends ClientChatEvents {
   "room.sync": (
     acknowledge: (response: CommandAcknowledgement) => void,
   ) => void;
@@ -154,7 +155,7 @@ export interface ClientRealtimeEvents {
     acknowledge: (response: CommandAcknowledgement) => void,
   ) => void;
 }
-export interface ServerRealtimeEvents {
+export interface ServerRealtimeEvents extends ServerChatEvents {
   "room.closed": (notice: RoomClosedNotice) => void;
   "room.snapshot": (snapshot: RoomSnapshot) => void;
   "session.read_only": (notice: ReadOnlyNotice) => void;
