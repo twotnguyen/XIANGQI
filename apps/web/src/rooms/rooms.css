@@ -326,3 +326,26 @@
   align-items: center;
   gap: 8px;
 }
+
+/* Two desktop chat panes need enough width to compose and read in parallel. */
+@media (min-width: 1024px) {
+  .xq-room-content:has(.room-chat) {
+    grid-template-columns: minmax(0, 1fr) minmax(440px, 0.9fr);
+  }
+}
+@media (max-width: 1023px) {
+  .xq-room-content:has(.room-chat) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.is-playing .xq-room-info:has(.room-chat) {
+  display: flex;
+  flex-direction: column;
+}
+.is-playing .xq-room-info:has(.room-chat) .xq-room-slots {
+  order: -1;
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: 20px;
+}
