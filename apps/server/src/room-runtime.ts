@@ -16,6 +16,10 @@ import { RoomTransactions } from "./room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
 import { RoomStore } from "./room/room-store.js";
 import { RoomHttpService } from "./room/room-http.service.js";
+import { PublicRoomModule } from "./room/public-room.module.js";
+import { PublicRoomStore } from "./room/public-room-store.js";
+import { PublicRoomService } from "./room/public-room-service.js";
+import type { PublicFeedProof } from "./room/public-room-feed.js";
 import { RoomModule } from "./room/room.module.js";
 import { RoomWorker } from "./room/room-worker.js";
 import { PostgresRoomWorkerPort } from "./room/postgres-room-worker-port.js";
@@ -45,6 +49,7 @@ export async function createRoomRuntime(
     throw new Error("Invalid Room configuration");
   const pool = registration.pool;
   let drawReady: boolean;
+  let publicReady: boolean;
   try {
     const schema =
       await pool.query(`SELECT pg_has_role(current_user,'app_server','SET') AND
@@ -73,6 +78,21 @@ export async function createRoomRuntime(
       END AS ready`);
     if (draw.rows[0]?.present && !draw.rows[0].ready) throw new Error();
     drawReady = draw.rows[0]?.ready === true;
+    const publicSchema = await pool.query<{
+      present: boolean;
+      ready: boolean;
+    }>(`SELECT
+      EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass
+        AND attname='public_opened_at' AND NOT attisdropped) AS present,
+      EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass
+        AND attname='public_opened_at' AND atttypid='timestamptz'::regtype AND NOT attisdropped)
+      AND EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.rooms'::regclass
+        AND conname='rooms_visibility_check' AND convalidated
+        AND strpos(pg_get_constraintdef(oid),'LOCKED')>0
+        AND strpos(pg_get_constraintdef(oid),'PUBLIC')>0) AS ready`);
+    if (publicSchema.rows[0]?.present && !publicSchema.rows[0].ready)
+      throw new Error();
+    publicReady = publicSchema.rows[0]?.ready === true;
   } catch {
     throw new Error("Room migration is not ready");
   }
@@ -376,15 +396,44 @@ export async function createRoomRuntime(
       if (timer) clearTimeout(timer);
       await inFlight;
     })());
+  const publicService = publicReady
+    ? new PublicRoomService(
+        new PublicRoomStore(rooms),
+        coordinator,
+        authorizer,
+        withScope,
+      )
+    : null;
   const module = RoomModule.forRoot(
     new RoomHttpService(rooms, coordinator, authorizer, withScope),
   );
+  if (publicService)
+    module.imports = [
+      ...(module.imports ?? []),
+      PublicRoomModule.forRoot(publicService),
+    ];
   module.providers = [
     ...(module.providers ?? []),
     { provide: "ROOM_RUNTIME_LIFECYCLE", useValue: { onModuleDestroy: close } },
   ];
   return {
     module,
+    publicFeed: publicService
+      ? {
+          open: (proof: PublicFeedProof) => {
+            if (proof.kind !== "member")
+              throw new RoomError(
+                "AUTH_REQUIRED",
+                "Phiên truy cập không hợp lệ",
+                401,
+              );
+            return publicService.open({
+              accessToken: proof.accessToken,
+              appSession: proof.appSession,
+            });
+          },
+        }
+      : null,
     realtime: {
       store,
       identities: new MemberRealtimeIdentities(
