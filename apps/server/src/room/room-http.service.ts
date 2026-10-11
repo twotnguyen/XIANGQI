@@ -26,6 +26,10 @@ export class RoomHttpService {
     private readonly store: RoomStore,
     private readonly transactions: RoomTransactions,
     private readonly authorizer: MemberRoomAuthorizer,
+    private readonly withScope: <T>(
+      scope: RoomScope,
+      work: () => Promise<T>,
+    ) => Promise<T> = (_scope, work) => work(),
   ) {}
   private async actor(proof: MemberRoomRequestProof) {
     const actor = await this.authorizer.resolve(proof);
@@ -46,7 +50,7 @@ export class RoomHttpService {
     const result = await this.transactions.withRoom(
       { actor, roomIds },
       (actorProof) => this.authorizer.authorize(proof, actorProof),
-      work,
+      (scope) => this.withScope(scope, () => work(scope)),
     );
     if (result.status === "ended")
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
