@@ -1053,3 +1053,14 @@ it("a settings ACK after disconnect is ignored even after bare reconnect", async
   expect(f.refresh).not.toHaveBeenCalled();
   expect(screen.getByText(/Chế độ hiện tại: Chỉ qua mã/)).toBeTruthy();
 });
+
+it("closes settings when the authoritative match result arrives", async () => {
+  const f = setup(playing());
+  await f.ready();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  f.publish(terminal());
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  expect(screen.queryByRole("dialog", { name: "Cài đặt phòng" })).toBeNull();
+});

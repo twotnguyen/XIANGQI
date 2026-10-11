@@ -104,6 +104,8 @@ export function RoomPage({
     gameAudio.current?.accept(audioBaseline.current ? null : prior, value);
     audioBaseline.current = false;
     versionFloor.current = value.version;
+    if (prior?.match?.status === "ACTIVE" && value.match?.status !== "ACTIVE")
+      setSettingsOpen(false);
     latest.current = value;
     setSnapshot(value);
     setView(value);
