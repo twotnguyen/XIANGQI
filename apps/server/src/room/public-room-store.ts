@@ -1,19 +1,8 @@
 import { RoomError, type RoomScope } from "./contracts.js";
 import type { RoomStore } from "./room-store.js";
 import { uuid } from "../match/position-codec.js";
-export type PublicRoomView = {
-  roomId: string;
-  name: string;
-  host: { displayName: string; isGuest: boolean };
-  timeMinutes: number;
-  status: "waiting" | "playing";
-  spectators: number;
-  viewerLimit: number;
-  emptySeats: number;
-  canPlay: boolean;
-  canWatch: boolean;
-  publicOpenedAt: string | null;
-};
+import type { PublicRoomView } from "@xiangqi/shared";
+export type { PublicRoomView } from "@xiangqi/shared";
 /** Internal same-client store; the caller supplies a freshly authorized actor scope. */
 export class PublicRoomStore {
   constructor(private readonly rooms: RoomStore) {}
