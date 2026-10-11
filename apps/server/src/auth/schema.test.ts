@@ -282,6 +282,7 @@ describe.skipIf(!url)("registration migration on audited baseline", () => {
 });
 
 import { RegistrationService } from "./registration.service.js";
+import { RegistrationError } from "./contracts.js";
 import { SupabaseAuth } from "./supabase-auth.js";
 import { PostgresRegistrationStore } from "./postgres-store.js";
 import { startAuthFixture } from "./auth-fixture.test-helper.js";
@@ -459,6 +460,119 @@ describe.skipIf(!url)(
         password: input.password,
       });
       expect(await service.requireActive(session.access_token)).toBeTruthy();
+    });
+    it("issues the application session only after activation and before consuming the draft", async () => {
+      const input = credentials();
+      const registration = await service.email({ ...input, email: email() });
+      let issued = false;
+      const completing = new RegistrationService(
+        service.store,
+        service.auth,
+        () => clock,
+        async (userId) => {
+          const state = (
+            await pool.query(
+              `SELECT p.completed_at IS NOT NULL AS completed,p.registration_pending AS pending,
+                EXISTS(SELECT 1 FROM xiangqi_auth.registration_drafts d WHERE d.user_id=p.user_id) AS has_draft
+                FROM public.profiles p WHERE p.user_id=$1`,
+              [userId],
+            )
+          ).rows[0];
+          expect(state).toEqual({
+            completed: true,
+            pending: false,
+            has_draft: true,
+          });
+          issued = true;
+          return {
+            appSession: "synthetic-capability",
+            expiresAt: clock.toISOString(),
+          };
+        },
+      );
+      const session = await completing.verify({
+        registrationToken: registration.registrationToken,
+        otp: "123456",
+      });
+      expect(issued).toBe(true);
+      expect(session).toMatchObject({
+        appSession: "synthetic-capability",
+        username: input.username,
+        userId: expect.any(String),
+      });
+    });
+    it("keeps a completed registration retryable when application session issuance fails", async () => {
+      const input = credentials();
+      const registration = await service.email({ ...input, email: email() });
+      let fail = true;
+      const completing = new RegistrationService(
+        service.store,
+        service.auth,
+        () => clock,
+        async () => {
+          if (fail) throw new Error("synthetic session storage outage");
+          return {
+            appSession: "synthetic-recovered-capability",
+            expiresAt: clock.toISOString(),
+          };
+        },
+      );
+      await expect(
+        completing.verify({
+          registrationToken: registration.registrationToken,
+          otp: "123456",
+        }),
+      ).rejects.toMatchObject({ code: "REGISTRATION_RECOVERING" });
+      fail = false;
+      clock = new Date(clock.getTime() + 180001);
+      const session = await completing.verify({
+        registrationToken: registration.registrationToken,
+        password: input.password,
+      });
+      expect(session).toMatchObject({
+        appSession: "synthetic-recovered-capability",
+      });
+      expect(await completing.requireActive(session.access_token)).toBeTruthy();
+    });
+    it("uses the shared password-authentication boundary for verified registration recovery", async () => {
+      const { registration, input, address } =
+        await consumedVerificationRegistration();
+      let called = false;
+      const recovering = new RegistrationService(
+        service.store,
+        service.auth,
+        () => clock,
+        null,
+        async (account, password) => {
+          called = true;
+          expect(account).toMatchObject({
+            username: input.username,
+            email: address,
+            userId: expect.any(String),
+          });
+          expect(password).toBe(input.password);
+          throw new RegistrationError(
+            "RECOVERY_RATE_LIMIT",
+            "Password login is blocked",
+            429,
+          );
+        },
+      );
+      await expect(
+        recovering.verify({
+          registrationToken: registration.registrationToken,
+          password: input.password,
+        }),
+      ).rejects.toMatchObject({ code: "RECOVERY_RATE_LIMIT", status: 429 });
+      expect(called).toBe(true);
+      expect(
+        (
+          await pool.query(
+            "SELECT 1 FROM xiangqi_auth.registration_drafts WHERE username=$1",
+            [input.username],
+          )
+        ).rowCount,
+      ).toBe(1);
     });
     it("rejects wrong recovery credentials without creating a profile or consuming the draft", async () => {
       const { registration, input } = await consumedVerificationRegistration();
