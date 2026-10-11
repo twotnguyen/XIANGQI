@@ -107,6 +107,36 @@ function parseView(value: unknown, roomId: string): RoomView {
   }
   return view as unknown as RoomView;
 }
+function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
+  parseView(value, roomId);
+  const snapshot = record(value);
+  if (snapshot.match !== null) {
+    const match = record(snapshot.match);
+    if (
+      !isId(match.id) ||
+      !Number.isSafeInteger(match.version) ||
+      (match.version as number) < 0
+    )
+      invalidResponse();
+    if (match.lastMove !== null) {
+      const move = record(match.lastMove);
+      if (
+        !Number.isInteger(move.from) ||
+        !Number.isInteger(move.to) ||
+        (move.from as number) < 0 ||
+        (move.from as number) > 89 ||
+        (move.to as number) < 0 ||
+        (move.to as number) > 89 ||
+        move.from === move.to ||
+        !Number.isSafeInteger(move.eventVersion) ||
+        (move.eventVersion as number) <= 0 ||
+        (move.eventVersion as number) > (match.version as number)
+      )
+        invalidResponse();
+    }
+  }
+  return snapshot as unknown as RoomSnapshot;
+}
 export function createRoomClient(authorizedFetch: AuthorizedFetch) {
   async function request<T>(
     path: string,
@@ -220,7 +250,17 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     input.onConnection(false);
     input.onError("Chưa thể kết nối phòng. Kiểm tra mạng và phiên đăng nhập.");
   });
-  socket.on("room.snapshot", input.onSnapshot);
+  socket.on("room.snapshot", (snapshot) => {
+    if (closed) return;
+    let parsed: RoomSnapshot;
+    try {
+      parsed = parseSnapshot(snapshot, input.roomId);
+    } catch {
+      input.onError("Phản hồi phòng không hợp lệ. Vui lòng tải lại.");
+      return;
+    }
+    input.onSnapshot(parsed);
+  });
   socket.on("room.closed", (notice) => {
     if (
       !closed &&
@@ -259,7 +299,18 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                     "Chưa nhận được xác nhận. Kiểm tra trạng thái phòng trước khi thao tác lại.",
                   ),
                 );
-              else resolve(acknowledgement);
+              else {
+                try {
+                  const ack = record(acknowledgement);
+                  if (ack.status === "ok" || ack.snapshot !== undefined)
+                    parseSnapshot(ack.snapshot, input.roomId);
+                  resolve(acknowledgement);
+                } catch {
+                  reject(
+                    new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại."),
+                  );
+                }
+              }
             },
           );
       });
