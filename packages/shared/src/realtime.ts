@@ -21,6 +21,7 @@ export interface RoomStateSnapshot {
     id: string;
     version: number;
     position: string;
+    lastMove: { from: number; to: number; eventVersion: number } | null;
     turn: "red" | "black";
     status: "ACTIVE" | "FINISHED" | "INTERRUPTED";
     winner: "red" | "black" | null;
