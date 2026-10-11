@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode, Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
 import "./style.css";
@@ -8,6 +8,16 @@ import {
   type RegistrationSession,
 } from "./auth/RegistrationPage.js";
 
+const ComponentGallery = lazy(() =>
+  import("./ui/ComponentGallery.js").then((module) => ({
+    default: module.ComponentGallery,
+  })),
+);
+const LobbyPreview = lazy(() =>
+  import("./ui/ComponentGallery.js").then((module) => ({
+    default: module.LobbyPreview,
+  })),
+);
 function RegistrationPreview() {
   const [session, setSession] = useState<RegistrationSession | null>(null);
   return (
@@ -78,6 +88,8 @@ function App() {
 
 const previewBoard = window.location.pathname === "/dev/board";
 const previewRegistration = window.location.pathname === "/dev/register";
+const previewUi = window.location.pathname === "/dev/ui";
+const previewLobby = window.location.pathname === "/dev/lobby";
 if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
 if (previewRegistration) document.title = "Cờ Tướng Online · Đăng ký";
 
@@ -89,6 +101,10 @@ createRoot(document.getElementById("root")!).render(
       </main>
     ) : previewRegistration ? (
       <RegistrationPreview />
+    ) : previewUi || previewLobby ? (
+      <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
+        {previewUi ? <ComponentGallery /> : <LobbyPreview />}
+      </Suspense>
     ) : (
       <App />
     )}
