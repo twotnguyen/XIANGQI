@@ -7,6 +7,7 @@ import {
   TextField,
 } from "../ui/primitives.js";
 import "./LobbyShell.css";
+import { GameRules } from "./GameRules.js";
 export interface PublicRoom {
   id: string;
   name: string;
@@ -17,6 +18,8 @@ export interface PublicRoom {
   seats: 0 | 1 | 2;
   viewers: number;
   spectatorLimit: number;
+  canPlay?: boolean;
+  canWatch?: boolean;
 }
 export type DataState = "success" | "loading" | "empty" | "error" | "disabled";
 export interface LobbyShellProps {
@@ -28,6 +31,8 @@ export interface LobbyShellProps {
   onJoinRoom: (id: string, role: "player" | "spectator") => void;
   onRetry: () => void;
   fixture?: boolean;
+  admissionReady?: boolean;
+  joiningRoomId?: string | null;
 }
 export function LobbyShell({
   rooms,
@@ -38,9 +43,16 @@ export function LobbyShell({
   onJoinRoom,
   onRetry,
   fixture = false,
+  admissionReady = true,
+  joiningRoomId = null,
 }: LobbyShellProps) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
+  const joinDisabledReason = !admissionReady
+    ? "Danh sách đang kết nối lại. Vui lòng chờ."
+    : joiningRoomId !== null
+      ? "Đang vào phòng. Vui lòng chờ."
+      : undefined;
   return (
     <div className="xq-lobby xq-stack">
       <div className="xq-lobby-heading">
@@ -109,7 +121,11 @@ export function LobbyShell({
           </div>
         </section>
       </div>
-      <section className="xq-panel xq-stack" aria-label="Phòng công khai">
+      <section
+        className="xq-panel xq-stack"
+        aria-label="Phòng công khai"
+        aria-busy={joiningRoomId !== null}
+      >
         <h2>Phòng công khai</h2>
         {state === "loading" ? (
           <Skeleton label="Đang tải phòng công khai…" />
@@ -152,17 +168,20 @@ export function LobbyShell({
                   </span>
                 </div>
                 <div className="xq-row">
-                  {room.seats < 2 && (
+                  {(room.canPlay ??
+                    (room.status === "waiting" && room.seats < 2)) && (
                     <Button
                       variant="secondary"
+                      disabledReason={joinDisabledReason}
                       onClick={() => onJoinRoom(room.id, "player")}
                     >
                       Vào chơi
                     </Button>
                   )}
-                  {room.viewers < room.spectatorLimit && (
+                  {(room.canWatch ?? room.viewers < room.spectatorLimit) && (
                     <Button
                       variant="ghost"
+                      disabledReason={joinDisabledReason}
                       onClick={() => onJoinRoom(room.id, "spectator")}
                     >
                       Vào xem
@@ -174,6 +193,7 @@ export function LobbyShell({
           </div>
         )}
       </section>
+      <GameRules />
     </div>
   );
 }
