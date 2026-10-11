@@ -174,6 +174,13 @@ export class GameRooms implements RoomCollaborator {
             id: match.id,
             version: match.version,
             position: match.position,
+            lastMove: match.lastMove
+              ? {
+                  from: match.lastMove.from,
+                  to: match.lastMove.to,
+                  eventVersion: match.lastMove.eventVersion,
+                }
+              : null,
             turn: match.turn,
             status: match.status,
             winner: match.outcome?.winner ?? null,
