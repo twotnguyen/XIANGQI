@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import type { createRegistrationRuntime } from "./auth-runtime.js";
 import { ClockService } from "./clock/clock-service.js";
@@ -337,7 +337,26 @@ export async function createRoomRuntime(
     module,
     realtime: {
       store,
-      identities: new MemberRealtimeIdentities(authorizer),
+      identities: new MemberRealtimeIdentities(
+        authorizer,
+        (userId, appSession) =>
+          read(async (client) => {
+            const hash = createHash("sha256").update(appSession).digest("hex");
+            const row = (
+              await client.query<{ active: boolean }>(
+                `
+ SELECT (s.revoked_at IS NULL AND s.expires_at>clock_timestamp()
+ AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL
+ AND NOT p.registration_pending AND n.kind='member' AND n.auth_user_id=a.id) AS active
+ FROM xiangqi_auth.app_sessions s JOIN xiangqi_auth.accounts a ON a.id=s.user_id
+ JOIN public.profiles p ON p.user_id=a.id JOIN xiangqi_auth.principals n ON n.id=a.id
+ WHERE s.token_hash=$1 AND s.user_id=$2`,
+                [hash, userId],
+              )
+            ).rows[0];
+            return row?.active === true;
+          }),
+      ),
       onAttached: (attached: RealtimePublisher) => {
         if (publisher && publisher !== attached)
           throw new Error("Realtime publisher is already attached");
