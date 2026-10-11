@@ -586,3 +586,51 @@ it("does not probe onboarding after a stale readiness result when a newer login 
   expect(state().status).toBe("active-member");
   expect(request).toHaveBeenCalledTimes(2);
 });
+
+it("returns socket handshake proof only from active memory and never public state or storage", async () => {
+  const storage = vi.spyOn(Storage.prototype, "setItem");
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(reply(session)));
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("active-member"));
+  const first = await current.getRealtimeProof();
+  expect(first).toEqual({
+    accessToken: session.access_token,
+    appSession: session.appSession,
+  });
+  first.accessToken = "mutated caller copy";
+  expect((await current.getRealtimeProof()).accessToken).toBe(
+    session.access_token,
+  );
+  expect(JSON.stringify(state())).not.toContain(session.access_token);
+  expect(storage).not.toHaveBeenCalled();
+  await act(async () => {
+    current.accept({ kind: "pending", expiresAt: "2030-01-01T00:00:00Z" });
+  });
+  await expect(current.getRealtimeProof()).rejects.toThrow();
+});
+it("refreshes an expired socket bearer once and rejects unavailable or fixed-expired proof", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date("2026-10-11T00:00:00Z"));
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply({ ...session, expires_in: 1 }))
+    .mockResolvedValue(reply({ ...session, access_token: "renewed-socket" }));
+  vi.stubGlobal("fetch", request);
+  mount();
+  await act(async () => {});
+  vi.setSystemTime(new Date("2026-10-11T00:00:02Z"));
+  let proofs!: Awaited<ReturnType<typeof current.getRealtimeProof>>[];
+  await act(async () => {
+    proofs = await Promise.all([
+      current.getRealtimeProof(),
+      current.getRealtimeProof(),
+    ]);
+  });
+  expect(request).toHaveBeenCalledTimes(2);
+  expect(proofs.every((proof) => proof.accessToken === "renewed-socket")).toBe(
+    true,
+  );
+  vi.setSystemTime(new Date(session.expiresAt));
+  await expect(current.getRealtimeProof()).rejects.toThrow();
+  expect(request).toHaveBeenCalledTimes(2);
+});
