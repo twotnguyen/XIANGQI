@@ -150,16 +150,38 @@ export function searchPosition(
     const key = identity(fen);
     occurrences.set(key, (occurrences.get(key) ?? 0) + 1);
   }
-  function hasLegalMove(position: Position): boolean {
+  // Legality depends only on the exact board and side. Counters/history still
+  // adjudicate separately at every node before this bounded memo is consulted.
+  const legalBoards = new Map<string, { exists: boolean; moves?: Move[] }>();
+  legalBoards.set(identity(serialized.at(-1)!), {
+    exists: initial.length > 0,
+    moves: initial,
+  });
+  function memo(key: string, value: { exists: boolean; moves?: Move[] }) {
+    if (legalBoards.has(key) || legalBoards.size < 10000)
+      legalBoards.set(key, value);
+  }
+  function allLegalMoves(position: Position, key: string): Move[] {
+    const cached = legalBoards.get(key);
+    if (cached?.moves) return [...cached.moves];
+    const moves = legalMoves(position);
+    memo(key, { exists: moves.length > 0, moves: [...moves] });
+    return moves;
+  }
+  function hasLegalMove(position: Position, key: string): boolean {
+    const cached = legalBoards.get(key);
+    if (cached) return cached.exists;
     for (const candidate of pseudoLegalMoves(position)) {
       try {
         playMove(position, candidate);
+        memo(key, { exists: true });
         return true;
       } catch (error) {
         if (!(error instanceof Error) || error.message !== "ILLEGAL_MOVE")
           throw error;
       }
     }
+    memo(key, { exists: false });
     return false;
   }
   function check() {
@@ -186,9 +208,9 @@ export function searchPosition(
       if (depth === 0) {
         // Leaves need existence, not every legal move. Use the same public
         // core pipeline; never bypass king-capture or self-check validation.
-        if (!hasLegalMove(position)) result = ending(branch);
+        if (!hasLegalMove(position, positionIdentity)) result = ending(branch);
       } else {
-        moves = ply === 0 ? initial : legalMoves(position);
+        moves = ply === 0 ? initial : allLegalMoves(position, positionIdentity);
         if (moves.length === 0) result = ending(branch);
       }
     }
