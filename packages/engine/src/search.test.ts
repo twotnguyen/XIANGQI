@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import {
   ending,
   initialPosition,
@@ -6,10 +6,58 @@ import {
   parsePosition,
   playMove,
   serializePosition,
+  type Position,
 } from "@xiangqi/xiangqi-core";
 import { searchPosition } from "./search.js";
 import { ENGINE_LIMITS, type EngineRequest } from "./contracts.js";
 import { historyCases } from "./history.test-helper.js";
+import mates from "../fixtures/mates.json";
+import midgames from "../fixtures/midgames-50.json";
+const calls = vi.hoisted(() => ({ ending: 0 }));
+vi.mock("@xiangqi/xiangqi-core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@xiangqi/xiangqi-core")>();
+  return {
+    ...actual,
+    ending(history: readonly Position[]) {
+      calls.ending++;
+      return actual.ending(history);
+    },
+  };
+});
+beforeEach(() => {
+  calls.ending = 0;
+});
+it("reduces nodes on the verified fixed-depth workload without dropping legal moves", () => {
+  const fixture = midgames.positions.find(
+    (position) => position.id === "ccpd-midgame-00000001",
+  )!;
+  const position = parsePosition(fixture.fen);
+  const result = searchPosition(
+    { position: fixture.fen, side: position.turn, level: "hard" },
+    { depth: 3, now: () => 0 },
+  );
+  expect(result.completedDepth).toBe(3);
+  expect(result.timedOut).toBe(false);
+  expect(legalMoves(position)).toContainEqual(result.move);
+  // Stage1 without quiet cutoff ordering visits1799 nodes at this exact depth.
+  // This deterministic workload check is not the 50-position timing gate.
+  expect(result.nodes).toBeLessThan(1799);
+});
+it.each(mates.cases)(
+  "chooses an independently verified winning key at full mate depth: $id",
+  (fixture) => {
+    const position = parsePosition(fixture.fen);
+    const result = searchPosition(
+      { position: fixture.fen, side: position.turn, level: "hard" },
+      { depth: fixture.mateInPlies, now: () => 0 },
+    );
+    expect(result.completedDepth).toBe(fixture.mateInPlies);
+    expect(fixture.winningKeys.map((key) => key.move)).toContainEqual(
+      result.move,
+    );
+    expect(legalMoves(position)).toContainEqual(result.move);
+  },
+);
 const mate = "4k4/3R1R3/4P4/9/9/9/9/9/9/4K4 w - - 0 1";
 const request = (
   position = serializePosition(initialPosition()),
@@ -123,3 +171,99 @@ it("does not restart a full budget after an already-expired shared worker deadli
   expect(result.timedOut).toBe(true);
   expect(legalMoves(parsePosition(input.position))).toContainEqual(result.move);
 });
+it("avoids full history adjudication at every opening node when no ending condition can exist", () => {
+  const result = searchPosition(request(), { now: () => 0 });
+  expect(result.completedDepth).toBe(2);
+  expect(result.nodes).toBeGreaterThan(100);
+  expect(legalMoves(initialPosition())).toContainEqual(result.move);
+  // Each ending call scans all legal moves and the whole history. No opening
+  // node at depth2 can repeat three times or reach the 120-halfmove threshold.
+  expect(calls.ending).toBeLessThanOrEqual(1);
+});
+it("still finds checkmate on the same non-capture move that reaches halfmove120", () => {
+  const position = parsePosition(mate.replace("0 1", "119 1"));
+  const result = searchPosition(request(serializePosition(position)), {
+    now: () => 0,
+  });
+  const child = playMove(position, result.move!);
+  expect(child.halfmove).toBe(120);
+  expect(ending([position, child])).toEqual({
+    reason: "CHECKMATE",
+    winner: "red",
+  });
+});
+it.each([
+  ["4k4/3RPR3/9/9/9/9/9/9/9/4K4 b - - 120 1", "CHECKMATE"],
+  ["4k4/3R1R3/4P4/9/9/9/9/9/9/4K4 b - - 120 1", "STALEMATE"],
+])("keeps %s loss ahead of the simultaneous no-capture draw", (fen, reason) => {
+  const result = searchPosition({
+    position: fen,
+    side: "black",
+    level: "easy",
+  });
+  expect(result.move).toBeNull();
+  expect(result.terminal).toEqual({ reason, winner: "red" });
+});
+it("counts board plus side to move in actual legal odd-length cycles", () => {
+  let position = parsePosition("4k4/3R5/9/9/9/4P4/9/9/3r5/4K4 w - - 0 1");
+  const history = [serializePosition(position)];
+  for (const [from, to] of [
+    [12, 11],
+    [75, 74],
+    [11, 10],
+    [74, 75],
+    [10, 12],
+    [75, 74],
+    [12, 11],
+    [74, 73],
+    [11, 12],
+    [73, 75],
+  ]) {
+    position = playMove(position, { from: from!, to: to! });
+    history.push(serializePosition(position));
+  }
+  expect(history[0]!.split(" ")[0]).toBe(history[5]!.split(" ")[0]);
+  expect(history[0]!.split(" ")[0]).toBe(history[10]!.split(" ")[0]);
+  expect(parsePosition(history[5]!).turn).toBe("black");
+  expect(position.turn).toBe("red");
+  const result = searchPosition(
+    {
+      position: serializePosition(position),
+      history,
+      side: "red",
+      level: "easy",
+    },
+    { now: () => 0, depth: 1 },
+  );
+  expect(result.terminal).toBeNull();
+  expect(result.completedDepth).toBe(1);
+  expect(legalMoves(position)).toContainEqual(result.move);
+});
+it.each(
+  historyCases().filter(
+    ({ terminal }) => terminal.reason === "PERPETUAL_CHECK",
+  ),
+)(
+  "chooses the winning third-occurrence reply on the searched $name branch",
+  ({ input, terminal }) => {
+    const history = input.history!.slice(0, -1);
+    const position = parsePosition(history.at(-1)!);
+    const result = searchPosition(
+      {
+        ...input,
+        position: serializePosition(position),
+        side: position.turn,
+        history,
+      },
+      { now: () => 0, depth: 1 },
+    );
+    expect(result.terminal).toBeNull();
+    expect(result.completedDepth).toBe(1);
+    expect(result.move).toEqual(
+      position.turn === "black" ? { from: 3, to: 4 } : { from: 84, to: 85 },
+    );
+    expect(
+      ending([...history.map(parsePosition), playMove(position, result.move!)]),
+    ).toEqual(terminal);
+  },
+);
