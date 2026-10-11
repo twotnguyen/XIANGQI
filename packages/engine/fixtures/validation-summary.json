@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "oracle": {
+    "name": "pyffish",
+    "version": "0.0.90",
+    "wheelSha256": "cf0351ae5e85507acf39ee7290d40be70f76c0632e8c77f36eaad9acb2c4b918",
+    "license": "GPL-3.0",
+    "officialApiSourceCommit": "9f778da667f6e07dae1e85d3e2ea204fc6dee94d"
+  },
+  "method": "External legal-move enumeration; no project core or engine oracle",
+  "secondReviewerRerun": true,
+  "midgames": {
+    "positionCount": 50,
+    "validFenCount": 50,
+    "continuingPositionCount": 50,
+    "sourceCommit": "368a47a947773dd8692c026e286dd19b6277b993",
+    "positions": [
+      {
+        "id": "ccpd-midgame-00000001",
+        "fenSha256": "bf333ec025f91b85f66a4e44e0c102dd9616df691a1ba35723baf8d006bc9fa2",
+        "legalMoveCount": 30
+      },
+      {
+        "id": "ccpd-midgame-00000002",
+        "fenSha256": "b89c3a5386f3fac18f39c6cb70e51a20251322dd39f254b75aff00f6589e4625",
+        "legalMoveCount": 30
+      },
+      {
+        "id": "ccpd-midgame-00000003",
+        "fenSha256": "cc1c0134c3b36ac5d477cfe2295054a86deeef047328c3a1cd203c38f75e3013",
+        "legalMoveCount": 49
+      },
+      {
+        "id": "ccpd-midgame-00000004",
+        "fenSha256": "66925b37758512631209fd291d9d444c3018bf67637ca90beaf397548ab3e307",
+        "legalMoveCount": 47
+      },
+      {
+        "id": "ccpd-midgame-00000007",
+        "fenSha256": "1804093c08a09cdb6ca35128425422a41d127ec92ae7a1c0df8bcb310c266d03",
+        "legalMoveCount": 51
+      },
+      {
+        "id": "ccpd-midgame-00000008",
+        "fenSha256": "3da82afa334cc37f2155844bf84bb7ab754bc77510e90d359864ace6f19814dd",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000009",
+        "fenSha256": "1b3c71a3844aca6a794e1698cb7d7e1c47e011dfe6a8f20f6394d42f58a36fe7",
+        "legalMoveCount": 40
+      },
+      {
+        "id": "ccpd-midgame-00000010",
+        "fenSha256": "31fc0a44f57000e0e93b19d065ab6092079f4e4f4af2030e7e3520e17d40962c",
+        "legalMoveCount": 39
+      },
+      {
+        "id": "ccpd-midgame-00000011",
+        "fenSha256": "1bea5fd93fb520c743bc7b04dc47e8bf807710e237ffc9bbe3ab5d87eb1b76ad",
+        "legalMoveCount": 28
+      },
+      {
+        "id": "ccpd-midgame-00000012",
+        "fenSha256": "0a32d127b044786388e01b9a9c18e625f69b1ac46a54d288c658264e5b880dce",
+        "legalMoveCount": 36
+      },
+      {
+        "id": "ccpd-midgame-00000013",
+        "fenSha256": "b8db3e37d094760684d8389d4170da0bf51045d335bb942513e3d4a582154671",
+        "legalMoveCount": 32
+      },
+      {
+        "id": "ccpd-midgame-00000016",
+        "fenSha256": "2e03dab5ffe2f294c462f96eabc429d91b57f4f6aa90b7f1c5c1dd2b98c82f3b",
+        "legalMoveCount": 51
+      },
+      {
+        "id": "ccpd-midgame-00000017",
+        "fenSha256": "964b7c37722d6d481303c105acc72066badff0687fe35f9f75d6733e0a110ab3",
+        "legalMoveCount": 26
+      },
+      {
+        "id": "ccpd-midgame-00000018",
+        "fenSha256": "566c57a27413eca4d7db45484b15d0ac8aedef923a947fc455819d0ea78b86ca",
+        "legalMoveCount": 55
+      },
+      {
+        "id": "ccpd-midgame-00000019",
+        "fenSha256": "77b377cb4089fe2639d6fdb6a5a36888a7e9d834aa956124f87db3f5ce89a446",
+        "legalMoveCount": 44
+      },
+      {
+        "id": "ccpd-midgame-00000020",
+        "fenSha256": "21d10cf43074fd9a4ab892fded09fb9082907185d5db50719e03d30c1705bcb5",
+        "legalMoveCount": 44
+      },
+      {
+        "id": "ccpd-midgame-00000021",
+        "fenSha256": "f57d85c4a024cc873c0bb65992f6ad503b24af766e58fba44521688a0a5f4e6b",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000022",
+        "fenSha256": "d1c2f4ba16f93bf35ec329e2c3c36e7a6633e75ef851a7dc1090b37958d663a8",
+        "legalMoveCount": 40
+      },
+      {
+        "id": "ccpd-midgame-00000023",
+        "fenSha256": "25f2a0bd8a725024677fdc360f37c241b52469f08161e92901c895aff3ea8777",
+        "legalMoveCount": 37
+      },
+      {
+        "id": "ccpd-midgame-00000025",
+        "fenSha256": "96217c000d1e8d343b652d91ecd904b807ea078392a39ecdb6a9f74c20053a8b",
+        "legalMoveCount": 29
+      },
+      {
+        "id": "ccpd-midgame-00000026",
+        "fenSha256": "5a55f2001900e69fade62b7083c8e0f57d2d53c057c0d2fce283923fa651fb3e",
+        "legalMoveCount": 37
+      },
+      {
+        "id": "ccpd-midgame-00000028",
+        "fenSha256": "2c08f47b9a3297489bc3255c4bf66115fe68690f22df8592abb8fe8e968c7f0b",
+        "legalMoveCount": 35
+      },
+      {
+        "id": "ccpd-midgame-00000029",
+        "fenSha256": "4fef4dfd66d4854e2e853153e70d51cc42f1960994f514c626b9b8f4cff1ca35",
+        "legalMoveCount": 42
+      },
+      {
+        "id": "ccpd-midgame-00000030",
+        "fenSha256": "a9655c3a6a4df7dc12394edc0b7c2bbcf683734846c2e5dd08b58741babc035d",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000031",
+        "fenSha256": "b276ce9733f6ca3633dc143b3ef4ad7edfba0254bf6e2ade544ce37390781255",
+        "legalMoveCount": 47
+      },
+      {
+        "id": "ccpd-midgame-00000032",
+        "fenSha256": "f8ffc377b16c2bed624b189d711919998064a6ee684399a7c802b710b5f17f52",
+        "legalMoveCount": 41
+      },
+      {
+        "id": "ccpd-midgame-00000033",
+        "fenSha256": "f7c18aaf0594ecb13b23cc8b822993fbe6b2d5da2a034fce6b5d7b8c3ed46879",
+        "legalMoveCount": 31
+      },
+      {
+        "id": "ccpd-midgame-00000048",
+        "fenSha256": "db1194865eab8ece311196345f42bddd2d389fd42e1b594fb333ab62cd511c74",
+        "legalMoveCount": 47
+      },
+      {
+        "id": "ccpd-midgame-00000049",
+        "fenSha256": "9ac22c3599044f8820b9fa7f0063a7b2e7f1e87b9697196de54b27713d20a78b",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000050",
+        "fenSha256": "04536b6411a9c2c5b9fb1bf2c2e8027120aabe2448a3567499fc51bfa9120582",
+        "legalMoveCount": 33
+      },
+      {
+        "id": "ccpd-midgame-00000051",
+        "fenSha256": "705b5cc8c35102a4f3564e4571e1647ff2874937c6bf404b13c4db2d7105f0d5",
+        "legalMoveCount": 40
+      },
+      {
+        "id": "ccpd-midgame-00000053",
+        "fenSha256": "018a4b438075c4b4ce85ac331bdf838b123e3d5bc745d3650e82af1f690723b5",
+        "legalMoveCount": 39
+      },
+      {
+        "id": "ccpd-midgame-00000062",
+        "fenSha256": "f59508fa7e073ba4d67e6f8aede2ea2e3f6a6d80330504c111f481fa32fa1f8e",
+        "legalMoveCount": 39
+      },
+      {
+        "id": "ccpd-midgame-00000067",
+        "fenSha256": "52df5328b9b9d185b7e1d3c7f1e6db878bbe4a185b21ddd6cf12b9cd00e37c03",
+        "legalMoveCount": 47
+      },
+      {
+        "id": "ccpd-midgame-00000069",
+        "fenSha256": "3963219d3b19ec1e71344fd9888ee667bd68ef16081e9d40235aa5d52d4d8750",
+        "legalMoveCount": 36
+      },
+      {
+        "id": "ccpd-midgame-00000072",
+        "fenSha256": "60c99618d782e43dfdd89ba11ee8e14d4bf30a9b0c64a4c9b0a2057e7ffbaca6",
+        "legalMoveCount": 37
+      },
+      {
+        "id": "ccpd-midgame-00000075",
+        "fenSha256": "8f477aa51afa061ffe4bdabdb81e9e75259515ca39353fb05d9de4ced5325bdc",
+        "legalMoveCount": 32
+      },
+      {
+        "id": "ccpd-midgame-00000076",
+        "fenSha256": "947b4ed0fc06ab8d25ad9d0535bd5dd8d03dcb55609989740197f97ce93499bd",
+        "legalMoveCount": 52
+      },
+      {
+        "id": "ccpd-midgame-00000085",
+        "fenSha256": "70542faf16b4e8af6e57f7502a991ddcb7c9075d2e26ed094eda65f4ff600deb",
+        "legalMoveCount": 38
+      },
+      {
+        "id": "ccpd-midgame-00000087",
+        "fenSha256": "6fc0fb0e97219ed3cf4e226dacb67f2039c69752e6eba84223021b2bac6ef01c",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000088",
+        "fenSha256": "8413902262e26dc512b2c9bed7ed21d7af9807ac10b7a2567d7f8c2d19bcfe06",
+        "legalMoveCount": 37
+      },
+      {
+        "id": "ccpd-midgame-00000089",
+        "fenSha256": "e0e4604334ed193df57f70354393d7bc23751ef1b7a201ca7f38c0ffe555edd1",
+        "legalMoveCount": 46
+      },
+      {
+        "id": "ccpd-midgame-00000091",
+        "fenSha256": "275ebd18ba1d228a26e11cd26d29d130906dbf39049318d063e9e4958a608373",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000094",
+        "fenSha256": "571b7ca69fd6e27b9cdb73771f22cdb84470e7e526b5955706553ad6f14fbb1b",
+        "legalMoveCount": 49
+      },
+      {
+        "id": "ccpd-midgame-00000097",
+        "fenSha256": "17d3cdf56578de83fb8ff49289004409ab0027420221ebc47eaff10225658126",
+        "legalMoveCount": 43
+      },
+      {
+        "id": "ccpd-midgame-00000104",
+        "fenSha256": "0b26ef68a0da22de0fa4830d40bf729b1af2f96a2dd9f4097e4d4a1f11fc1435",
+        "legalMoveCount": 37
+      },
+      {
+        "id": "ccpd-midgame-00000106",
+        "fenSha256": "753b37b2b436b2a1f2f0d709b7b57318e6012bfdaed011f688e1244790602793",
+        "legalMoveCount": 50
+      },
+      {
+        "id": "ccpd-midgame-00000107",
+        "fenSha256": "295de0dd95c6f2d023066cb13d931502de252c938787f331b35acf8c3d88cb02",
+        "legalMoveCount": 47
+      },
+      {
+        "id": "ccpd-midgame-00000110",
+        "fenSha256": "9457631541e68933d51102a7ddcee79feadad9418ae1b244851e6d4c90a995c3",
+        "legalMoveCount": 45
+      },
+      {
+        "id": "ccpd-midgame-00000111",
+        "fenSha256": "e34b1a4b1788e09d0dbcfa8ee02afc3f2711ad5bcd22c73c147aef3901b721d9",
+        "legalMoveCount": 33
+      }
+    ]
+  },
+  "mates": {
+    "caseCount": 2,
+    "independentPublishedStartingPositions": 1,
+    "derivedPositions": 1,
+    "originalRootLegalMoveCount": 36,
+    "legalGenerationCalls": 2686,
+    "originalProofSha256": "a7ba7fd95768ae625418f63849f2647c54789702c19aa63cf8bc3d5255df904b",
+    "cases": [
+      {
+        "id": "xq_jianghu_endgames_084-mate2",
+        "mateInPlies": 3,
+        "winningMoves": [
+          {
+            "from": 42,
+            "to": 6
+          },
+          {
+            "from": 43,
+            "to": 7
+          }
+        ]
+      },
+      {
+        "id": "xq_jianghu_endgames_084-derived-mate1",
+        "mateInPlies": 1,
+        "winningMoves": [
+          {
+            "from": 43,
+            "to": 7
+          }
+        ]
+      }
+    ]
+  },
+  "acceptance": {
+    "timingGate": "not-run",
+    "strengthGate": "not-run",
+    "diverseMandatoryMateSuite": "not-established",
+    "bestMovesForMidgames": "not-asserted"
+  }
+}
