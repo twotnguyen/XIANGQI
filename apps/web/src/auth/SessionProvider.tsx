@@ -7,10 +7,18 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  googleAvailable,
+  googleRequest,
+  GoogleRequestError,
+  parseGooglePending,
+  type GooglePending,
+} from "./google-gis.js";
 
 export type SessionState =
   | { status: "checking" }
   | { status: "anonymous" }
+  | ({ status: "pending"; method: "google" } & Omit<GooglePending, "kind">)
   | {
       status: "active-member";
       userId: string;
@@ -79,6 +87,7 @@ function backend(path: string) {
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SessionState>({ status: "checking" });
   const credentials = useRef<Credentials | null>(null);
+  const pendingGoogle = useRef<GooglePending | null>(null);
   const mounted = useRef(false);
   const epoch = useRef(0);
   const controller = useRef<AbortController | null>(null);
@@ -103,11 +112,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     loggingOut.current = null;
     clearTimers();
     credentials.current = null;
+    pendingGoogle.current = null;
     if (mounted.current) setState({ status: "anonymous" });
   }, [clearTimers, invalidateRequest]);
   const install = useCallback(
     (result: SessionResult) => {
       clearTimers();
+      pendingGoogle.current = null;
       const record: Credentials = {
         bearer: result.access_token,
         capability: result.appSession,
@@ -145,12 +156,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
   const accept = useCallback(
     (value: unknown) => {
+      if ((value as { kind?: unknown })?.kind === "pending") {
+        const pending = parseGooglePending(
+          value,
+          typeof (value as { email?: unknown }).email === "string",
+        );
+        invalidateRequest();
+        loggingOut.current = null;
+        clearTimers();
+        credentials.current = null;
+        pendingGoogle.current = pending;
+        setState({
+          status: "pending",
+          method: "google",
+          expiresAt: pending.expiresAt,
+          recovering: pending.recovering,
+          ...(pending.email
+            ? { email: pending.email, avatar: pending.avatar }
+            : {}),
+        });
+        return;
+      }
       const result = parse(value);
       invalidateRequest();
       loggingOut.current = null;
       install(result);
     },
-    [install, invalidateRequest],
+    [clearTimers, install, invalidateRequest],
   );
   const refresh = useCallback(() => {
     if (loggingOut.current) return Promise.resolve();
@@ -178,6 +210,51 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         )
           return;
         if (response.status === 401) {
+          if (!previous) {
+            const enabled = await googleAvailable(abort.signal);
+            if (
+              abort.signal.aborted ||
+              !mounted.current ||
+              epoch.current !== requestEpoch
+            )
+              return;
+            if (enabled) {
+              let google: GooglePending;
+              try {
+                google = parseGooglePending(
+                  await googleRequest("onboarding", undefined, abort.signal),
+                  true,
+                );
+              } catch (e) {
+                if (e instanceof GoogleRequestError && e.status === 401) {
+                  if (
+                    !abort.signal.aborted &&
+                    mounted.current &&
+                    epoch.current === requestEpoch
+                  )
+                    anonymous();
+                  return;
+                }
+                throw e;
+              }
+              if (
+                abort.signal.aborted ||
+                !mounted.current ||
+                epoch.current !== requestEpoch
+              )
+                return;
+              pendingGoogle.current = google;
+              setState({
+                status: "pending",
+                method: "google",
+                expiresAt: google.expiresAt,
+                recovering: google.recovering,
+                email: google.email,
+                avatar: google.avatar,
+              });
+              return;
+            }
+          }
           anonymous();
           return;
         }
@@ -206,9 +283,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           epoch.current !== requestEpoch
         )
           return;
-        if (!credentials.current)
+        if (!credentials.current && !pendingGoogle.current)
           setState({ status: "error", message: unavailable });
-        else {
+        else if (credentials.current) {
           if (renewal.current !== null) clearTimeout(renewal.current);
           renewal.current = setTimeout(() => void refreshRef.current(), 15000);
         }
@@ -315,6 +392,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       loggingOut.current = null;
       clearTimers();
       credentials.current = null;
+      pendingGoogle.current = null;
     };
   }, [clearTimers, invalidateRequest, refresh]);
   return (
