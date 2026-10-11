@@ -253,6 +253,7 @@
   gap: 12px;
 }
 .is-playing .xq-room-seat {
+  box-sizing: border-box;
   min-height: 72px;
   padding: 10px 16px;
   grid-template-columns: 44px minmax(0, 1fr);
@@ -268,13 +269,29 @@
   font-size: 28px;
 }
 .is-playing .xq-room-seat h2 {
+  line-height: 1.2;
   font-size: 16px;
 }
 .is-playing .xq-room-seat p {
+  line-height: 1.25;
+  font-size: 12px;
+}
+.is-playing .match-clocks__side {
+  padding: 4px 12px;
+  gap: 0 8px;
+}
+.is-playing .match-clocks__time {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  font-size: 24px;
+}
+.is-playing .match-clocks__turn {
+  grid-column: 1;
+  line-height: 1.25;
   font-size: 12px;
 }
 .is-playing .xq-room-board {
-  max-width: min(440px, calc((100dvh - 340px) * 0.9));
+  max-width: min(440px, calc((100dvh - 440px) * 0.9));
 }
 @media (max-width: 760px) {
   .xq-ui .xq-main:has(.xq-room-page.is-playing) {
@@ -300,7 +317,7 @@
     font-size: 14px;
   }
   .is-playing .xq-room-board {
-    max-width: 440px;
+    max-width: min(440px, calc((100dvh - 510px) * 0.9));
   }
 }
 
