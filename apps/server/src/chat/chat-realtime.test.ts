@@ -238,7 +238,7 @@ describe.skipIf(!databaseUrl)(
           );
         else
           await pool.query(
-            "UPDATE xiangqi_auth.app_sessions SET created_at=clock_timestamp()-interval '13 hours',expires_at=clock_timestamp()-interval '1 hour' WHERE token_hash=$1",
+            "UPDATE xiangqi_auth.app_sessions SET created_at=statement_timestamp()-interval '13 hours',expires_at=statement_timestamp()-interval '1 hour' WHERE token_hash=$1",
             [hash(f.connection.proof!.appSession)],
           );
         await expect(f.send()).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
