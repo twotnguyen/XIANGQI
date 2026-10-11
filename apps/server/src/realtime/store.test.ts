@@ -548,7 +548,13 @@ describe.skipIf(!realtimeTestUrl)(
         expect(JSON.stringify(takeover)).not.toContain(
           "PRIVATE_PROVIDER_SECRET",
         );
-        await gateway.publishSnapshots(room.roomId);
+        if (known)
+          await expect(
+            gateway.publishSnapshots(room.roomId),
+          ).rejects.toMatchObject({
+            code: "REALTIME_UNAVAILABLE",
+          });
+        else await gateway.publishSnapshots(room.roomId);
         await command(peer.client, request);
         expect(snapshots).toEqual([]);
         expect(

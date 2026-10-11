@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { describe, expect, it, vi } from "vitest";
 import { attachRealtime } from "./gateway.js";
 import type { RealtimeStore } from "./store.js";
+import type { RealtimeConnection } from "./contracts.js";
 function gate() {
   let release!: () => void;
   const promise = new Promise<void>((resolve) => (release = resolve));
@@ -16,10 +17,12 @@ async function fixture(maintenance = async () => 0) {
     cleanup = gate();
   const roomId = randomUUID(),
     userId = randomUUID();
-  const disconnected = vi.fn(async () => {
-    cleaned.release();
-    await cleanup.promise;
-  });
+  const disconnected = vi.fn<(connection: RealtimeConnection) => Promise<void>>(
+    async () => {
+      cleaned.release();
+      await cleanup.promise;
+    },
+  );
   const snapshot = {
     version: 1,
     control: { mode: "writable", generation: 1, reason: null },
@@ -150,6 +153,105 @@ describe("native Socket.IO aborted admissions and shutdown drain", () => {
       f.cleanup.release();
       f.client.disconnect();
       await closing;
+    }
+  });
+  it("retries a failed physical disconnect without credentials and clears it after success", async () => {
+    const f = await fixture();
+    const log = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+    f.disconnected.mockRejectedValueOnce(new Error("PRIVATE_DATABASE_SECRET"));
+    f.connect.release();
+    f.cleanup.release();
+    const snapshot = new Promise<void>((r) =>
+      f.client.once("room.snapshot", () => r()),
+    );
+    try {
+      f.client.connect();
+      await snapshot;
+      f.client.disconnect();
+      await f.networkClosed.promise;
+      await new Promise((r) => setTimeout(r, 1100));
+      expect(f.disconnected).toHaveBeenCalledTimes(2);
+      expect(f.disconnected.mock.calls[0]![0]).not.toHaveProperty("proof");
+      expect(log.mock.calls.flat().join(" ")).not.toContain(
+        "PRIVATE_DATABASE_SECRET",
+      );
+      await f.gateway.close();
+      expect(f.disconnected).toHaveBeenCalledTimes(2);
+    } finally {
+      log.mockRestore();
+      f.cleanup.release();
+      f.client.disconnect();
+      await f.gateway.close();
+    }
+  });
+  it("close drains a running retry and does not duplicate a successful cleanup", async () => {
+    const f = await fixture();
+    const log = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+    f.disconnected.mockRejectedValueOnce(new Error("PRIVATE_DATABASE_SECRET"));
+    f.connect.release();
+    const snapshot = new Promise<void>((r) =>
+      f.client.once("room.snapshot", () => r()),
+    );
+    let closing: Promise<void> | undefined;
+    try {
+      f.client.connect();
+      await snapshot;
+      f.client.disconnect();
+      await f.networkClosed.promise;
+      await new Promise((r) => setTimeout(r, 1100));
+      expect(f.disconnected).toHaveBeenCalledTimes(2);
+      let closed = false;
+      closing = f.gateway.close().then(() => {
+        closed = true;
+      });
+      await turn();
+      expect(closed).toBe(false);
+      f.cleanup.release();
+      await closing;
+      await f.gateway.close();
+      expect(f.disconnected).toHaveBeenCalledTimes(2);
+    } finally {
+      log.mockRestore();
+      f.cleanup.release();
+      f.client.disconnect();
+      await (closing ?? f.gateway.close());
+    }
+  });
+  it("close stops retry timers and attempts a persistent failure only once more", async () => {
+    const f = await fixture();
+    const log = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+    f.disconnected.mockRejectedValue(new Error("PRIVATE_DATABASE_SECRET"));
+    f.connect.release();
+    f.cleanup.release();
+    const snapshot = new Promise<void>((r) =>
+      f.client.once("room.snapshot", () => r()),
+    );
+    try {
+      f.client.connect();
+      await snapshot;
+      f.client.disconnect();
+      await f.networkClosed.promise;
+      await turn();
+      expect(f.disconnected).toHaveBeenCalledOnce();
+      await f.gateway.close();
+      await f.gateway.close();
+      expect(f.disconnected).toHaveBeenCalledTimes(2);
+      await new Promise((r) => setTimeout(r, 1100));
+      expect(f.disconnected).toHaveBeenCalledTimes(2);
+      expect(f.disconnected.mock.calls[0]![0]).not.toHaveProperty("proof");
+      expect(log.mock.calls.flat().join(" ")).not.toContain(
+        "PRIVATE_DATABASE_SECRET",
+      );
+    } finally {
+      log.mockRestore();
+      f.client.disconnect();
+      await f.gateway.close();
     }
   });
   it("close drains initial receipt maintenance before a borrowed pool may be closed", async () => {

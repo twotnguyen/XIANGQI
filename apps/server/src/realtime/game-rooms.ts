@@ -152,6 +152,7 @@ export class GameRooms implements RoomCollaborator {
         hostId: current.hostId,
         name: current.name,
         visibility: current.visibility,
+        inviteCode: current.inviteCode,
         timeMinutes: current.timeMinutes,
         viewerLimit: current.viewerLimit,
         seats: { red: current.seats.red, black: current.seats.black },
