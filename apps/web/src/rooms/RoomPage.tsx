@@ -31,6 +31,7 @@ import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./MatchActions.js";
 import { ReconnectStatus } from "./ReconnectStatus.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
+import { RoomQr } from "./RoomQr.js";
 import { RoomChat } from "../chat/RoomChat.js";
 import { useRoomChat } from "./useRoomChat.js";
 import type { MediaClient } from "../media/media-client.js";
@@ -1112,6 +1113,10 @@ export function RoomPage({
               <a href={`/rooms/join?token=${encodeURIComponent(code)}`}>
                 Đường dẫn mời vào phòng
               </a>
+              <RoomQr
+                code={code}
+                url={`${window.location.origin}/rooms/join?token=${encodeURIComponent(code)}`}
+              />
             </>
           ) : (
             <p>Mã mời chưa được cung cấp cho phiên này.</p>
