@@ -1,0 +1,1465 @@
+{
+  "generatedAt": "2026-10-11T16:35:43.969Z",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.7.0",
+    "cpu": "Apple M3 Pro",
+    "runtime": "packages/engine/dist (compiled)"
+  },
+  "inputs": {
+    "midgames": 50,
+    "mateCases": 2,
+    "mateSuiteStatus": "not-established"
+  },
+  "levels": {
+    "easy": {
+      "limitMs": 300,
+      "positions": 50,
+      "elapsedMs": {
+        "p50": 5.787458000000015,
+        "p95": 11.863916000000017,
+        "max": 27.1995,
+        "mean": 6.484453359999999
+      },
+      "withinBudget": 50,
+      "timedOut": 0,
+      "completedDepth": {
+        "min": 2,
+        "median": 2,
+        "max": 2,
+        "target": 2
+      },
+      "nodesTotal": 10657,
+      "runs": [
+        {
+          "id": "ccpd-midgame-00000001",
+          "elapsedMs": 13.635917000000006,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 181,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000002",
+          "elapsedMs": 5.993375,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 107,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000003",
+          "elapsedMs": 11.227999999999994,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 158,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000004",
+          "elapsedMs": 10.000375000000005,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 191,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000007",
+          "elapsedMs": 9.406542000000002,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 253,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000008",
+          "elapsedMs": 7.078707999999992,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 218,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000009",
+          "elapsedMs": 4.337457999999998,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 221,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000010",
+          "elapsedMs": 8.770832999999996,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 260,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000011",
+          "elapsedMs": 4.474084000000005,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 221,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000012",
+          "elapsedMs": 7.8342090000000155,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 284,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000013",
+          "elapsedMs": 2.7266249999999843,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 183,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000016",
+          "elapsedMs": 8.022624999999977,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 248,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000017",
+          "elapsedMs": 2.3567500000000052,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 107,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000018",
+          "elapsedMs": 6.098417000000012,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 198,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000019",
+          "elapsedMs": 6.21237499999998,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 300,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000020",
+          "elapsedMs": 6.475915999999984,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 221,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000021",
+          "elapsedMs": 3.9576250000000073,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 165,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000022",
+          "elapsedMs": 3.597582999999986,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 150,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000023",
+          "elapsedMs": 6.0973749999999995,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 236,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000025",
+          "elapsedMs": 3.282166999999987,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 135,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000026",
+          "elapsedMs": 5.357209000000012,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 218,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000028",
+          "elapsedMs": 3.6485829999999737,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 145,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000029",
+          "elapsedMs": 5.4262919999999895,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 216,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000030",
+          "elapsedMs": 6.14666600000001,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 199,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000031",
+          "elapsedMs": 6.932333,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 278,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000032",
+          "elapsedMs": 5.4645419999999945,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 245,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000033",
+          "elapsedMs": 4.841582999999986,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 256,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000048",
+          "elapsedMs": 4.745834000000002,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 170,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000049",
+          "elapsedMs": 7.910167000000001,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 245,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000050",
+          "elapsedMs": 3.4503330000000005,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 137,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000051",
+          "elapsedMs": 3.81887500000002,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 190,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000053",
+          "elapsedMs": 2.703833000000003,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 204,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000062",
+          "elapsedMs": 4.586375000000004,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 160,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000067",
+          "elapsedMs": 6.256625000000014,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 328,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000069",
+          "elapsedMs": 3.780458999999979,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 150,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000072",
+          "elapsedMs": 3.6379589999999666,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 138,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000075",
+          "elapsedMs": 8.410374999999988,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 145,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000076",
+          "elapsedMs": 7.541832999999997,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 202,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000085",
+          "elapsedMs": 3.363833999999997,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 174,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000087",
+          "elapsedMs": 4.544290999999987,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 265,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000088",
+          "elapsedMs": 4.627667000000031,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 335,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000089",
+          "elapsedMs": 5.787458000000015,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 235,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000091",
+          "elapsedMs": 8.002292000000011,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 182,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000094",
+          "elapsedMs": 27.1995,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 343,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000097",
+          "elapsedMs": 5.6351249999999595,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 170,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000104",
+          "elapsedMs": 6.072000000000003,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 166,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000106",
+          "elapsedMs": 11.863916000000017,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 314,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000107",
+          "elapsedMs": 10.497208,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 334,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000110",
+          "elapsedMs": 6.484417000000008,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 299,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000111",
+          "elapsedMs": 3.89812500000005,
+          "completedDepth": 2,
+          "targetDepth": 2,
+          "nodes": 177,
+          "timedOut": false,
+          "terminal": null
+        }
+      ]
+    },
+    "medium": {
+      "limitMs": 1000,
+      "positions": 50,
+      "elapsedMs": {
+        "p50": 243.0712079999994,
+        "p95": 684.121666,
+        "max": 973.8989999999994,
+        "mean": 296.9401108
+      },
+      "withinBudget": 50,
+      "timedOut": 0,
+      "completedDepth": {
+        "min": 4,
+        "median": 4,
+        "max": 4,
+        "target": 4
+      },
+      "nodesTotal": 603390,
+      "runs": [
+        {
+          "id": "ccpd-midgame-00000001",
+          "elapsedMs": 99.62516699999998,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 6022,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000002",
+          "elapsedMs": 52.70549999999997,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 2538,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000003",
+          "elapsedMs": 204.094292,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 8089,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000004",
+          "elapsedMs": 189.69370800000002,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 6813,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000007",
+          "elapsedMs": 333.20391699999993,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 15209,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000008",
+          "elapsedMs": 407.067458,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 24294,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000009",
+          "elapsedMs": 141.09162500000002,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 8282,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000010",
+          "elapsedMs": 527.9702500000001,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 24675,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000011",
+          "elapsedMs": 221.03587499999958,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 13177,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000012",
+          "elapsedMs": 126.16474999999991,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 6957,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000013",
+          "elapsedMs": 118.27191700000003,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 9039,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000016",
+          "elapsedMs": 567.1889590000001,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 22060,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000017",
+          "elapsedMs": 85.70654200000035,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 4986,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000018",
+          "elapsedMs": 211.30845799999997,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 9287,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000019",
+          "elapsedMs": 336.15883299999996,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 16086,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000020",
+          "elapsedMs": 199.89116700000022,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 7505,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000021",
+          "elapsedMs": 247.48675000000003,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 12115,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000022",
+          "elapsedMs": 250.86008299999958,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 11223,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000023",
+          "elapsedMs": 168.8479580000003,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 7269,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000025",
+          "elapsedMs": 104.7733330000001,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 5658,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000026",
+          "elapsedMs": 231.70741699999962,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 9395,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000028",
+          "elapsedMs": 197.16762500000004,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 9471,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000029",
+          "elapsedMs": 329.1783340000002,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 17619,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000030",
+          "elapsedMs": 452.5906669999995,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 14710,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000031",
+          "elapsedMs": 263.18091600000025,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 7996,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000032",
+          "elapsedMs": 239.7589590000007,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 11184,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000033",
+          "elapsedMs": 684.121666,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 27327,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000048",
+          "elapsedMs": 181.66883299999972,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 7405,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000049",
+          "elapsedMs": 756.9529999999995,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 30180,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000050",
+          "elapsedMs": 121.88645799999904,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 4951,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000051",
+          "elapsedMs": 263.99320799999987,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 13956,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000053",
+          "elapsedMs": 113.73862499999996,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 4461,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000062",
+          "elapsedMs": 237.89741700000013,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 11809,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000067",
+          "elapsedMs": 458.14479200000096,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 20855,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000069",
+          "elapsedMs": 152.30025000000023,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 7216,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000072",
+          "elapsedMs": 166.1114579999994,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 5531,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000075",
+          "elapsedMs": 397.92775000000074,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 10165,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000076",
+          "elapsedMs": 564.9794579999998,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 13849,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000085",
+          "elapsedMs": 135.78458300000057,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 6476,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000087",
+          "elapsedMs": 357.27337500000067,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 17594,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000088",
+          "elapsedMs": 243.0712079999994,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 10975,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000089",
+          "elapsedMs": 284.4728329999998,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 11003,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000091",
+          "elapsedMs": 312.2600000000002,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 6635,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000094",
+          "elapsedMs": 373.40250000000015,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 12489,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000097",
+          "elapsedMs": 426.2098330000008,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 16410,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000104",
+          "elapsedMs": 285.91191699999945,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 11002,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000106",
+          "elapsedMs": 973.8989999999994,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 27190,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000107",
+          "elapsedMs": 673.8787499999999,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 18072,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000110",
+          "elapsedMs": 290.30875000000015,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 10995,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000111",
+          "elapsedMs": 84.07941599999867,
+          "completedDepth": 4,
+          "targetDepth": 4,
+          "nodes": 5185,
+          "timedOut": false,
+          "terminal": null
+        }
+      ]
+    },
+    "hard": {
+      "limitMs": 3000,
+      "positions": 50,
+      "elapsedMs": {
+        "p50": 2995.420333999995,
+        "p95": 2995.9507920000033,
+        "max": 3002.4533329999977,
+        "mean": 2893.359968379999
+      },
+      "withinBudget": 48,
+      "timedOut": 45,
+      "completedDepth": {
+        "min": 4,
+        "median": 5,
+        "max": 6,
+        "target": 6
+      },
+      "nodesTotal": 7625314,
+      "runs": [
+        {
+          "id": "ccpd-midgame-00000001",
+          "elapsedMs": 2995.2153329999983,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 192734,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000002",
+          "elapsedMs": 1081.627292000001,
+          "completedDepth": 6,
+          "targetDepth": 6,
+          "nodes": 45700,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000003",
+          "elapsedMs": 2995.4025839999995,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 170132,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000004",
+          "elapsedMs": 2995.4459590000006,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 180374,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000007",
+          "elapsedMs": 2995.5417909999996,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 153649,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000008",
+          "elapsedMs": 2995.464749999999,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 177934,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000009",
+          "elapsedMs": 2995.3339579999993,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 165636,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000010",
+          "elapsedMs": 2995.4398749999964,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 151739,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000011",
+          "elapsedMs": 2995.4836670000004,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 166329,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000012",
+          "elapsedMs": 2995.335834000005,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 192026,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000013",
+          "elapsedMs": 2677.815290999999,
+          "completedDepth": 6,
+          "targetDepth": 6,
+          "nodes": 161141,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000016",
+          "elapsedMs": 2995.7002920000014,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 131589,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000017",
+          "elapsedMs": 2249.4651250000024,
+          "completedDepth": 6,
+          "targetDepth": 6,
+          "nodes": 127405,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000018",
+          "elapsedMs": 2995.4528340000033,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 183972,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000019",
+          "elapsedMs": 2995.640416999995,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 225576,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000020",
+          "elapsedMs": 2995.421083000001,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 120928,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000021",
+          "elapsedMs": 2995.4656250000044,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 155620,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000022",
+          "elapsedMs": 2995.3721250000017,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 134015,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000023",
+          "elapsedMs": 2995.4510840000003,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 121457,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000025",
+          "elapsedMs": 2995.337667,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 183360,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000026",
+          "elapsedMs": 3002.256083,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 135043,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000028",
+          "elapsedMs": 2995.467457999999,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 157192,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000029",
+          "elapsedMs": 2995.6236659999995,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 113877,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000030",
+          "elapsedMs": 2995.9507920000033,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 156204,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000031",
+          "elapsedMs": 2995.4675410000054,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 134142,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000032",
+          "elapsedMs": 3002.4533329999977,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 186835,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000033",
+          "elapsedMs": 2995.2771249999932,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 140920,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000048",
+          "elapsedMs": 2995.4876249999943,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 178191,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000049",
+          "elapsedMs": 2995.481083000006,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 115090,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000050",
+          "elapsedMs": 2995.2324170000065,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 154315,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000051",
+          "elapsedMs": 2995.2502090000053,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 236531,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000053",
+          "elapsedMs": 2763.527707999994,
+          "completedDepth": 6,
+          "targetDepth": 6,
+          "nodes": 99272,
+          "timedOut": false,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000062",
+          "elapsedMs": 2995.353290999992,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 215786,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000067",
+          "elapsedMs": 2995.390916999997,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 182920,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000069",
+          "elapsedMs": 2995.3885840000003,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 221300,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000072",
+          "elapsedMs": 2995.4846249999973,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 95106,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000075",
+          "elapsedMs": 2995.409916999997,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 90468,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000076",
+          "elapsedMs": 2995.5720839999994,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 166147,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000085",
+          "elapsedMs": 2995.6714999999967,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 162109,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000087",
+          "elapsedMs": 2995.271875000006,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 187936,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000088",
+          "elapsedMs": 2995.385707999987,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 102840,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000089",
+          "elapsedMs": 2995.511125000019,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 184799,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000091",
+          "elapsedMs": 2995.420333999995,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 127212,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000094",
+          "elapsedMs": 2995.413415999996,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 126863,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000097",
+          "elapsedMs": 2995.4021659999853,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 218264,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000104",
+          "elapsedMs": 2995.366833999986,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 104516,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000106",
+          "elapsedMs": 2995.6803749999963,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 131769,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000107",
+          "elapsedMs": 2995.339042000007,
+          "completedDepth": 4,
+          "targetDepth": 6,
+          "nodes": 132404,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000110",
+          "elapsedMs": 2995.4885000000068,
+          "completedDepth": 5,
+          "targetDepth": 6,
+          "nodes": 159677,
+          "timedOut": true,
+          "terminal": null
+        },
+        {
+          "id": "ccpd-midgame-00000111",
+          "elapsedMs": 1086.5604999999923,
+          "completedDepth": 6,
+          "targetDepth": 6,
+          "nodes": 66270,
+          "timedOut": false,
+          "terminal": null
+        }
+      ]
+    }
+  },
+  "mates": [
+    {
+      "id": "xq_jianghu_endgames_084-mate2",
+      "mateInPlies": 3,
+      "chosen": "42->6",
+      "winningMoves": [
+        "42->6",
+        "43->7"
+      ],
+      "solved": true,
+      "completedDepth": 5,
+      "elapsedMs": 2995.4155420000025,
+      "terminal": null
+    },
+    {
+      "id": "xq_jianghu_endgames_084-derived-mate1",
+      "mateInPlies": 1,
+      "chosen": "43->7",
+      "winningMoves": [
+        "43->7"
+      ],
+      "solved": true,
+      "completedDepth": 5,
+      "elapsedMs": 2995.336916,
+      "terminal": null
+    }
+  ],
+  "thresholds": {
+    "NFR03": {
+      "easy": 300,
+      "medium": 1000,
+      "hard": 3000
+    },
+    "hardMateSolveRate": 1
+  }
+}
