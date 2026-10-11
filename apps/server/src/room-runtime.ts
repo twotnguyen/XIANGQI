@@ -1,5 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
+import { maskForbiddenChat } from "@xiangqi/shared";
+import { ChatStore } from "./chat/chat-store.js";
+import { ChatRealtimeService } from "./chat/chat-realtime.js";
+import { ChatOutboxWorker } from "./chat/chat-worker.js";
 import type { createRegistrationRuntime } from "./auth-runtime.js";
 import { ClockService } from "./clock/clock-service.js";
 import { ClockWorker } from "./clock/clock-worker.js";
@@ -50,6 +54,7 @@ export async function createRoomRuntime(
   const pool = registration.pool;
   let drawReady: boolean;
   let publicReady: boolean;
+  let chatReady = false;
   try {
     const schema =
       await pool.query(`SELECT pg_has_role(current_user,'app_server','SET') AND
@@ -93,6 +98,30 @@ export async function createRoomRuntime(
     if (publicSchema.rows[0]?.present && !publicSchema.rows[0].ready)
       throw new Error();
     publicReady = publicSchema.rows[0]?.ready === true;
+    const chatSchema = await pool.query(
+      "SELECT to_regnamespace('xiangqi_chat') IS NOT NULL AS present",
+    );
+    if (chatSchema.rows[0]?.present) {
+      const chat = await pool.query(`SELECT
+        has_schema_privilege('app_server','xiangqi_chat','USAGE') AND
+        (SELECT bool_and(
+          c.oid IS NOT NULL AND c.relrowsecurity AND c.relforcerowsecurity AND
+          has_table_privilege('app_server',c.oid,'SELECT') AND
+          has_table_privilege('app_server',c.oid,'INSERT') AND
+          has_table_privilege('app_server',c.oid,'DELETE') AND
+          has_table_privilege('app_server',c.oid,'UPDATE') = (t.name IN ('rooms','entries','rate','outbox')) AND
+          NOT has_table_privilege('anon',c.oid,'SELECT,INSERT,UPDATE,DELETE') AND
+          NOT has_table_privilege('authenticated',c.oid,'SELECT,INSERT,UPDATE,DELETE') AND
+          NOT has_table_privilege('service_role',c.oid,'SELECT,INSERT,UPDATE,DELETE')
+        ) FROM unnest(ARRAY['rooms','entries','messages','receipts','rate','outbox']) t(name)
+          LEFT JOIN pg_class c ON c.oid=to_regclass('xiangqi_chat.'||t.name)) AND
+        EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=to_regclass('xiangqi_chat.messages')
+          AND attname='sender_role' AND atttypid='text'::regtype AND attnotnull AND NOT attisdropped) AND
+        EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.room_members'::regclass AND tgname='chat_membership' AND tgenabled='O') AND
+        EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.rooms'::regclass AND tgname='chat_room_closed' AND tgenabled='O') AS ready`);
+      if (chat.rows[0]?.ready !== true) throw new Error();
+      chatReady = true;
+    }
   } catch {
     throw new Error("Room migration is not ready");
   }
@@ -169,6 +198,16 @@ export async function createRoomRuntime(
       ),
   };
   let publisher: RealtimePublisher | null = null;
+  const chat = chatReady
+    ? new ChatRealtimeService(new ChatStore(maskForbiddenChat), guard)
+    : undefined;
+  const chatWorker = chat
+    ? new ChatOutboxWorker(pool, async (roomId, channel) => {
+        if (!publisher?.publishChat)
+          throw new Error("Chat publisher is not attached");
+        await publisher.publishChat(roomId, channel);
+      })
+    : undefined;
   const presence = new MemberRealtimePresence(
     pool,
     coordinator,
@@ -369,6 +408,7 @@ export async function createRoomRuntime(
       () => disconnectWorker.tick(),
       ...(drawWorker ? [() => drawWorker.tick()] : []),
       () => worker.tick(),
+      ...(chatWorker ? [() => chatWorker.tick()] : []),
     ]) {
       try {
         await run();
@@ -395,6 +435,7 @@ export async function createRoomRuntime(
       closed = true;
       if (timer) clearTimeout(timer);
       await inFlight;
+      await chatWorker?.close();
     })());
   const publicService = publicReady
     ? new PublicRoomService(
@@ -436,6 +477,7 @@ export async function createRoomRuntime(
       : null,
     realtime: {
       store,
+      ...(chat ? { chat } : {}),
       identities: new MemberRealtimeIdentities(
         authorizer,
         (userId, appSession) =>
@@ -465,6 +507,8 @@ export async function createRoomRuntime(
     start: async () => {
       if (closed) throw new Error("Room runtime is closed");
       if (!publisher) throw new Error("Realtime publisher is not attached");
+      if (chat && !publisher.publishChat)
+        throw new Error("Chat publisher is not attached");
       if (!started) {
         started = true;
         schedule();
