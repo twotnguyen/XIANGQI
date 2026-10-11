@@ -13,6 +13,7 @@ import {
 } from "./room-client.js";
 import { createGameAudio } from "./game-audio.js";
 import { MatchClocks } from "./MatchClocks.js";
+import { MatchResult } from "./MatchResult.js";
 import "./rooms.css";
 export interface RoomPageProps {
   roomId: string;
@@ -42,6 +43,8 @@ export function RoomPage({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
+  const [dismissedResult, setDismissedResult] = useState<string | null>(null);
+  const [leaveError, setLeaveError] = useState("");
   const connection = useRef<RoomConnection | null>(null);
   const epoch = useRef(0);
   const refreshEpoch = useRef(0);
@@ -338,6 +341,7 @@ export function RoomPage({
     const requestEpoch = epoch.current;
     setBusy(true);
     setError("");
+    setLeaveError("");
     try {
       if (action === "leave") {
         await client.leave(roomId, view.version);
@@ -355,11 +359,12 @@ export function RoomPage({
       }
     } catch (e) {
       if (epoch.current !== requestEpoch) return;
-      setError(
+      const message =
         e instanceof RoomRequestError
           ? e.message
-          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.",
-      );
+          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
+      setError(message);
+      if (action === "leave") setLeaveError(message);
       if (e instanceof RoomRequestError && e.code === "VERSION_STALE") {
         try {
           const next = await client.snapshot(roomId);
@@ -369,7 +374,26 @@ export function RoomPage({
           ) {
             versionFloor.current = next.version;
             setView(next);
-            setSnapshot(null);
+            const current = latest.current;
+            if (
+              action === "leave" &&
+              current?.match &&
+              current.match.status !== "ACTIVE"
+            ) {
+              // A failed leave must retain the final board and result while
+              // a fresh control-bearing snapshot catches up with the HTTP CAS.
+              const peer = connection.current;
+              if (connectedRef.current && peer) {
+                const freshEpoch = refreshEpoch.current;
+                const fresh = await peer.refresh();
+                if (
+                  epoch.current === requestEpoch &&
+                  connection.current === peer &&
+                  refreshEpoch.current === freshEpoch
+                )
+                  acceptSnapshot(fresh);
+              }
+            } else setSnapshot(null);
           }
         } catch {
           /* Preserve the last authoritative state. */
@@ -400,12 +424,11 @@ export function RoomPage({
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
   const clockState = snapshot ?? latest.current;
-  const playingLayout =
-    room.status === "PLAYING" && clockState?.match?.status === "ACTIVE";
+  const playingLayout = Boolean(clockState?.match);
   const active =
     room.status === "PLAYING" && snapshot?.match?.status === "ACTIVE";
   let board = null;
-  if (active && snapshot?.match) {
+  if (snapshot?.match) {
     try {
       board = parsePosition(snapshot.match.position);
     } catch {
@@ -527,7 +550,10 @@ export function RoomPage({
                 orientation={view.role === "black" ? "black" : "red"}
                 playerSide={view.role === "black" ? "black" : "red"}
                 disabled={
-                  !writable || !player || snapshot?.match?.turn !== view.role
+                  !active ||
+                  !writable ||
+                  !player ||
+                  snapshot?.match?.turn !== view.role
                 }
                 pending={busy}
                 lastMove={snapshot?.match?.lastMove ?? null}
@@ -624,6 +650,23 @@ export function RoomPage({
           </div>
         </aside>
       </div>
+      {connected &&
+        snapshot?.match &&
+        snapshot.match.status !== "ACTIVE" &&
+        (snapshot.role === "spectator" ||
+          dismissedResult !== snapshot.match.id) && (
+          <MatchResult
+            match={snapshot.match}
+            role={snapshot.role}
+            leaving={busy}
+            error={leaveError}
+            onStay={() => {
+              setDismissedResult(snapshot.match!.id);
+              setLeaveError("");
+            }}
+            onLeave={() => void httpAction("leave")}
+          />
+        )}
     </main>
   );
 }
