@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
+import { NavigationLink } from "../routing/NavigationLink.js";
 import { containsForbiddenName } from "@xiangqi/shared";
 import "./RegistrationPage.css";
 
@@ -6,6 +13,10 @@ export interface RegistrationSession {
   access_token: string;
   refresh_token: string;
   expires_in: number;
+  appSession?: string;
+  expiresAt?: string;
+  userId?: string;
+  username?: string;
 }
 interface Deadline {
   expiresAt: string;
@@ -32,6 +43,7 @@ const messages: Record<string, string> = {
   REGISTRATION_CHANGED: "Thông tin đăng ký đã thay đổi. Vui lòng thử lại.",
   REGISTRATION_RECOVERING: "Đăng ký đang được xử lý. Vui lòng thử lại sau.",
   RECOVERY_PASSWORD_INVALID: "Vui lòng đăng nhập lại để hoàn tất tài khoản.",
+  RECOVERY_RATE_LIMIT: "Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút",
 };
 async function post<T>(
   path: string,
@@ -43,6 +55,8 @@ async function post<T>(
   ).replace(/\/$/, "");
   const response = await fetch(`${base}/auth/register/${path}`, {
     method: "POST",
+    credentials: "include",
+    redirect: "error",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
     signal,
@@ -56,8 +70,13 @@ const secondsUntil = (date: string, now: number) =>
 
 export function RegistrationPage({
   onRegistered,
+  renderGoogle,
 }: {
   onRegistered: (session: RegistrationSession) => void | Promise<void>;
+  renderGoogle?: (
+    disabled: boolean,
+    onBusyChange: (busy: boolean) => void,
+  ) => ReactNode;
 }) {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState("");
@@ -68,7 +87,10 @@ export function RegistrationPage({
   const [registrationToken, setToken] = useState("");
   const [deadline, setDeadline] = useState<Deadline | null>(null);
   const [now, setNow] = useState(Date.now());
-  const [busy, setBusy] = useState(false);
+  const [emailBusy, setBusy] = useState(false),
+    [googleBusy, setGoogleBusy] = useState(false);
+  const googleSending = useRef(false),
+    busy = emailBusy || googleBusy;
   const [error, setError] = useState("");
   const [attempted, setAttempted] = useState(false);
   const [availability, setAvailability] = useState("");
@@ -191,7 +213,13 @@ export function RegistrationPage({
     event.preventDefault();
     setAttempted(true);
     setError("");
-    if (busy || complete || (step === 1 && credentialError)) return;
+    if (
+      busy ||
+      googleSending.current ||
+      complete ||
+      (step === 1 && credentialError)
+    )
+      return;
     if (step === 2 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError("Vui lòng nhập Email hợp lệ.");
       return;
@@ -295,7 +323,7 @@ export function RegistrationPage({
   return (
     <main className="registration-page">
       <div className="registration-shell">
-        <a
+        <NavigationLink
           className="registration-brand"
           href="/"
           aria-label="Cờ Tướng Online — Trang chủ"
@@ -304,7 +332,7 @@ export function RegistrationPage({
           <strong>
             Cờ Tướng <em>Online</em>
           </strong>
-        </a>
+        </NavigationLink>
         <section
           className="registration-card"
           aria-labelledby="registration-title"
@@ -560,6 +588,14 @@ export function RegistrationPage({
             <p className="registration-error" role="alert">
               {error}
             </p>
+          )}
+          {step === 1 && !complete && renderGoogle && (
+            <div style={{ marginTop: 20 }}>
+              {renderGoogle(emailBusy, (value) => {
+                googleSending.current = value;
+                setGoogleBusy(value);
+              })}
+            </div>
           )}
         </section>
         <p className="registration-footer">

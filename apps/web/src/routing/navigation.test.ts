@@ -1,7 +1,16 @@
 // @vitest-environment jsdom
 import { beforeEach, expect, it, vi } from "vitest";
 import { waitFor } from "@testing-library/react";
+<<<<<<< HEAD
 import { getLocation, navigate, subscribeLocation } from "./navigation.js";
+=======
+import {
+  getLocation,
+  navigate,
+  subscribeLocation,
+  getAuthDestination,
+} from "./navigation.js";
+>>>>>>> origin/feat/XIAN-71-google-guest
 beforeEach(() => window.history.replaceState(null, "", "/login"));
 it("notifies the current location on push and unsubscribes cleanly", () => {
   const listener = vi.fn();
@@ -52,3 +61,32 @@ it("re-evaluates the supplied session guard after Back returns to account entry"
     }),
   ).toEqual({ kind: "redirect", to: "/lobby", replace: true });
 });
+<<<<<<< HEAD
+=======
+it("preserves only validated relative room/invite history intent through account pages and clears it after completion", () => {
+  navigate("/login", { authDestination: "/rooms/join?token=fixture-invite" });
+  navigate("/register");
+  navigate("/onboarding");
+  expect(getAuthDestination()).toBe("/rooms/join?token=fixture-invite");
+  expect(window.history.state).toEqual({
+    xiangqiAuthDestination: "/rooms/join?token=fixture-invite",
+  });
+  navigate("/rooms/join?token=fixture-invite", { authDestination: null });
+  expect(getAuthDestination()).toBeNull();
+});
+it.each([
+  "https://outside.invalid/rooms/x",
+  "//outside.invalid/rooms/x",
+  "/login",
+  "/rooms/join?token=a&token=b",
+  "/rooms/%5Cbad",
+  "/rooms/x\n",
+])("rejects forged history intent %s", (value) => {
+  window.history.replaceState(
+    { xiangqiAuthDestination: value },
+    "",
+    "/onboarding",
+  );
+  expect(getAuthDestination()).toBeNull();
+});
+>>>>>>> origin/feat/XIAN-71-google-guest

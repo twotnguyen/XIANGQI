@@ -147,3 +147,16 @@ it("resolves home and onboarding from authenticated state while leaving unknown 
     guardRoute({ name: "access-denied" }, { status: "anonymous" }),
   ).toEqual({ kind: "render" });
 });
+it("preserves a new invitation when pending Google is redirected back to onboarding", () => {
+  expect(
+    guardRoute(
+      { name: "join", token: "fixture-invite" },
+      { status: "pending", method: "google" },
+    ),
+  ).toEqual({
+    kind: "redirect",
+    to: "/onboarding",
+    replace: true,
+    preserveDestination: true,
+  });
+});
