@@ -4,6 +4,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { LoginPage } from "./LoginPage.js";
+import { fireEvent } from "@testing-library/react";
 
 const session = {
   access_token: "test-access",
@@ -22,6 +23,47 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
+});
+it("passes the current remember selection to the official Google slot without replacing password login", () => {
+  const slot = vi.fn((remember: boolean) =>
+    createElement("span", null, `Google remember ${remember}`),
+  );
+  render(createElement(LoginPage, { onLoggedIn: vi.fn(), renderGoogle: slot }));
+  expect(screen.getByText("Google remember true")).toBeTruthy();
+  fireEvent.click(screen.getByLabelText("Ghi nhớ đăng nhập"));
+  expect(screen.getByText("Google remember false")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Đăng nhập" })).toBeTruthy();
+});
+it("prevents a password-login request while Google authentication is in flight", () => {
+  const request = vi.fn();
+  vi.stubGlobal("fetch", request);
+  render(
+    createElement(LoginPage, {
+      onLoggedIn: vi.fn(),
+      renderGoogle: (
+        _remember: boolean,
+        _disabled: boolean,
+        busy?: (value: boolean) => void,
+      ) =>
+        createElement(
+          "button",
+          { onClick: () => busy?.(true) },
+          "Google inflight",
+        ),
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Username"), {
+    target: { value: "KyThu" },
+  });
+  fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
+    target: { value: "Password123" },
+  });
+  fireEvent.click(screen.getByText("Google inflight"));
+  expect((screen.getByLabelText("Username") as HTMLInputElement).disabled).toBe(
+    true,
+  );
+  fireEvent.submit(screen.getByRole("form", { name: "Đăng nhập tài khoản" }));
+  expect(request).not.toHaveBeenCalled();
 });
 async function fill(
   user: ReturnType<typeof userEvent.setup>,
