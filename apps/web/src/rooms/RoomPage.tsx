@@ -23,6 +23,8 @@ import { MatchResult } from "./MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./MatchActions.js";
 import { ReconnectStatus } from "./ReconnectStatus.js";
+import { RoomChat } from "../chat/RoomChat.js";
+import { useRoomChat } from "./useRoomChat.js";
 import "./rooms.css";
 export interface RoomPageProps {
   roomId: string;
@@ -61,6 +63,7 @@ export function RoomPage({
   const [settingsStatus, setSettingsStatus] = useState("");
   const settingsPending = useRef(false);
   const connection = useRef<RoomConnection | null>(null);
+  const roomChat = useRoomChat(roomId, connection);
   const epoch = useRef(0);
   const refreshEpoch = useRef(0);
   const versionFloor = useRef(0);
@@ -120,6 +123,7 @@ export function RoomPage({
       setLeaveConfirm(null);
     }
     latest.current = value;
+    roomChat.update(value, true);
     setSnapshot(value);
     setView(value);
     return true;
@@ -127,6 +131,7 @@ export function RoomPage({
   useEffect(() => {
     let alive = true;
     epoch.current++;
+    roomChat.clear();
     latest.current = null;
     versionFloor.current = 0;
     setBusy(false);
@@ -160,6 +165,7 @@ export function RoomPage({
           refreshEpoch.current++;
           connectedRef.current = value;
           setConnected(value);
+          roomChat.update(null, value);
           if (!value) {
             invalidateCommands();
             audioBaseline.current = true;
@@ -171,7 +177,13 @@ export function RoomPage({
         if (alive) setError(message);
       },
       onClosed: (message) => {
-        if (alive) leaveCallback.current(message);
+        if (alive) {
+          roomChat.clear();
+          leaveCallback.current(message);
+        }
+      },
+      onChatChanged: (notice) => {
+        if (alive) roomChat.changed(notice);
       },
     });
     connection.current = peer;
@@ -208,6 +220,7 @@ export function RoomPage({
       epoch.current++;
       commandEpoch.current++;
       connectedRef.current = false;
+      roomChat.clear();
       peer.close();
       if (connection.current === peer) connection.current = null;
     };
@@ -897,7 +910,34 @@ export function RoomPage({
             <p>Mã mời chưa được cung cấp cho phiên này.</p>
           )}
           <div className="xq-room-slots">
-            {chat ?? <p>Chat phòng chưa khả dụng.</p>}
+            {chat ?? (
+              <RoomChat
+                viewerRole={view.role}
+                connected={connected && !!snapshot}
+                channels={roomChat.channels}
+                pendingSend={roomChat.pendingSend}
+                onSend={roomChat.onSend}
+                onLoadMore={roomChat.onLoadMore}
+              />
+            )}
+            {connected &&
+              snapshot &&
+              (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const).map((channel) =>
+                roomChat.channels[channel]?.error ? (
+                  <Button
+                    key={channel}
+                    variant="secondary"
+                    onClick={() =>
+                      void roomChat.onLoadMore(channel).catch(() => {})
+                    }
+                  >
+                    Tải lại{" "}
+                    {channel === "PLAYERS_PRIVATE"
+                      ? "Kênh riêng"
+                      : "Kênh chung"}
+                  </Button>
+                ) : null,
+              )}
             {media ?? <p>Camera và mic chưa khả dụng.</p>}
           </div>
         </aside>
