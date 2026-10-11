@@ -8,7 +8,11 @@ export interface ChatMessage {
   channel: ChatChannel;
   content: string;
   createdAt: string;
-  sender: { displayName: string; isGuest: boolean };
+  sender: {
+    displayName: string;
+    isGuest: boolean;
+    role: "red" | "black" | "spectator";
+  };
 }
 export interface ChatPage {
   messages: ChatMessage[];
@@ -46,11 +50,12 @@ export class ChatStore {
     const row = (
       await s.client.query<{
         role: string;
+        side: "RED" | "BLACK" | null;
         floor: string;
         pair_epoch: string;
         sequence: string;
       }>(
-        `SELECT m.role,e.floor,c.pair_epoch,c.sequence FROM public.rooms r JOIN public.room_members m ON m.room_id=r.id JOIN xiangqi_auth.principals p ON p.id=m.user_id JOIN xiangqi_chat.rooms c ON c.room_id=r.id JOIN xiangqi_chat.entries e ON e.room_id=r.id AND e.user_id=m.user_id WHERE r.id=$1 AND m.user_id=$2 AND p.kind=$3 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED') FOR UPDATE OF r,c,m`,
+        `SELECT m.role,e.floor,c.pair_epoch,c.sequence,m.side FROM public.rooms r JOIN public.room_members m ON m.room_id=r.id JOIN xiangqi_auth.principals p ON p.id=m.user_id JOIN xiangqi_chat.rooms c ON c.room_id=r.id JOIN xiangqi_chat.entries e ON e.room_id=r.id AND e.user_id=m.user_id WHERE r.id=$1 AND m.user_id=$2 AND p.kind=$3 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED') FOR UPDATE OF r,c,m`,
         [id, s.actor.userId, s.actor.kind],
       )
     ).rows[0];
@@ -80,8 +85,9 @@ export class ChatStore {
         created_at: Date;
         display_name: string;
         kind: string;
+        sender_role: "red" | "black" | "spectator";
       }>(
-        `SELECT x.id,x.sequence,x.content,x.created_at,p.display_name,n.kind FROM xiangqi_chat.messages x JOIN xiangqi_auth.principals n ON n.id=x.sender_id JOIN public.profiles p ON p.user_id=x.sender_id WHERE x.room_id=$1 AND x.channel=$2 AND x.sequence>$3 AND ($2='ROOM_PUBLIC' OR x.pair_epoch=$4) ORDER BY x.sequence LIMIT 51`,
+        `SELECT x.id,x.sequence,x.content,x.created_at,p.display_name,n.kind,x.sender_role FROM xiangqi_chat.messages x JOIN xiangqi_auth.principals n ON n.id=x.sender_id JOIN public.profiles p ON p.user_id=x.sender_id WHERE x.room_id=$1 AND x.channel=$2 AND x.sequence>$3 AND ($2='ROOM_PUBLIC' OR x.pair_epoch=$4) ORDER BY x.sequence LIMIT 51`,
         [id, channel, Math.max(after, access.floor), access.pair_epoch],
       )
     ).rows;
@@ -92,7 +98,11 @@ export class ChatStore {
       channel,
       content: x.content,
       createdAt: x.created_at.toISOString(),
-      sender: { displayName: x.display_name, isGuest: x.kind === "guest" },
+      sender: {
+        displayName: x.display_name,
+        isGuest: x.kind === "guest",
+        role: x.sender_role,
+      },
     }));
     return {
       messages,
@@ -194,7 +204,7 @@ export class ChatStore {
       messageId = randomUUID(),
       epoch = input.channel === "PLAYERS_PRIVATE" ? access.pair_epoch : null;
     await s.client.query(
-      "INSERT INTO xiangqi_chat.messages(id,room_id,sequence,sender_id,channel,pair_epoch,content,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      "INSERT INTO xiangqi_chat.messages(id,room_id,sequence,sender_id,channel,pair_epoch,content,created_at,sender_role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
       [
         messageId,
         id,
@@ -204,6 +214,11 @@ export class ChatStore {
         epoch,
         content,
         now,
+        access.role === "SPECTATOR"
+          ? "spectator"
+          : access.side === "RED"
+            ? "red"
+            : "black",
       ],
     );
     await s.client.query(
