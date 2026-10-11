@@ -35,6 +35,8 @@ import type { PublicRoomView } from "@xiangqi/shared";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
 import { HistoryPage } from "../history/HistoryPage.js";
 import { makeHistoryClient } from "../history/history-client.js";
+import { ReplayPage } from "../history/ReplayPage.js";
+import { makeReplayClient } from "../history/replay-client.js";
 
 function Lobby({
   client,
@@ -251,6 +253,10 @@ export function AppRouter() {
     () => makeHistoryClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
+  const replayClient = useMemo(
+    () => makeReplayClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
   const [roomNotice, setRoomNotice] = useState("");
   const enterRoom = (entry: RoomEntry) => {
     setRoomNotice(entry.notice ?? "");
@@ -380,6 +386,14 @@ export function AppRouter() {
         key={`${session.state.userId}:${session.state.expiresAt}`}
         client={historyClient}
         onReplay={(id) => navigate(`/history/${id}`)}
+      />
+    );
+  else if (route.name === "replay" && session.state.status === "active-member")
+    content = (
+      <ReplayPage
+        key={`${session.state.userId}:${session.state.expiresAt}:${route.id}`}
+        client={replayClient}
+        id={route.id}
       />
     );
   else if (route.name === "room" && session.state.status === "active-member")

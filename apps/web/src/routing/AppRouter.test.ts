@@ -12,6 +12,11 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AppRouter } from "./AppRouter.js";
 import { navigate } from "./navigation.js";
 import { NavigationLink } from "./NavigationLink.js";
+import {
+  initialPosition,
+  playMove,
+  serializePosition,
+} from "@xiangqi/xiangqi-core";
 const mock = vi.hoisted(() => ({
   state: { status: "anonymous" } as Record<string, unknown>,
   accept: vi.fn(),
@@ -198,6 +203,68 @@ beforeEach(() => {
 });
 afterEach(() => cleanup());
 const historyId = "77777777-7777-4777-8777-777777777777";
+const initialReplay = initialPosition();
+const replayRecord = {
+  id: historyId,
+  mode: "CASUAL",
+  side: "red",
+  positions: [initialReplay, playMove(initialReplay, { from: 54, to: 45 })].map(
+    (p) => ({ fen: serializePosition(p), turn: p.turn }),
+  ),
+  moves: [{ from: 54, to: 45, side: "red" }],
+};
+it("loads owned replay at the single canonical route with a readonly board", async () => {
+  window.history.replaceState(null, "", `/history/${historyId}`);
+  mock.state = member;
+  mock.authorizedFetch.mockResolvedValue(reply(replayRecord));
+  render(createElement(AppRouter));
+  await screen.findByRole("heading", { name: "Biên bản ván đấu" });
+  expect(mock.authorizedFetch).toHaveBeenCalledExactlyOnceWith(
+    `/history/${historyId}`,
+    { method: "GET", redirect: "error" },
+  );
+  expect(screen.getByText("Tốt 9 tiến 1")).toBeTruthy();
+  expect(document.title).toContain("Xem lại ván đấu");
+});
+it("never reads a replay for a Guest or an invalid match ID", async () => {
+  window.history.replaceState(null, "", `/history/${historyId}`);
+  mock.state = { status: "guest" };
+  const view = render(createElement(AppRouter));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  mock.state = member;
+  act(() => navigate("/history/invalid-id"));
+  view.rerender(createElement(AppRouter));
+  await screen.findByRole("alert");
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  expect(
+    screen.queryByRole("heading", { name: "Biên bản ván đấu" }),
+  ).toBeNull();
+});
+it("fences a late private replay when the logged-in account changes", async () => {
+  window.history.replaceState(null, "", `/history/${historyId}`);
+  mock.state = member;
+  let release!: (r: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((done) => {
+        release = done;
+      }),
+  );
+  mock.authorizedFetch.mockResolvedValue(
+    reply({
+      ...replayRecord,
+      moves: [],
+      positions: [replayRecord.positions[0]],
+    }),
+  );
+  const view = render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledTimes(1));
+  mock.state = { ...member, userId: "new-private-owner" };
+  view.rerender(createElement(AppRouter));
+  await screen.findByText("Ván đấu kết thúc ở thế cờ ban đầu.");
+  await act(async () => release(reply(replayRecord)));
+  expect(screen.queryByText("Tốt 9 tiến 1")).toBeNull();
+});
 const historyPage = {
   items: [
     {
