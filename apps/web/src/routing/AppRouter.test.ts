@@ -171,7 +171,7 @@ it("shows accessible session checking and retry for bootstrap errors without for
   expect(mock.refresh).toHaveBeenCalledOnce();
   expect(window.location.pathname).toBe("/login");
 });
-it("preserves a join destination in memory through registration, then routes without claiming a seat", async () => {
+it("preserves an invalid join destination through registration without claiming a seat", async () => {
   window.history.replaceState(null, "", "/rooms/join?token=fixture-invite");
   mock.accept.mockImplementation(() => {
     mock.state = member;
@@ -189,7 +189,7 @@ it("preserves a join destination in memory through registration, then routes wit
     remember: true,
   });
   expect(
-    screen.getByRole("heading", { name: "Vào phòng bằng mã" }),
+    screen.getByRole("heading", { name: "Vào phòng được mời" }),
   ).toBeTruthy();
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
 });
@@ -405,4 +405,62 @@ it("creates through the authorized form then enters the actual server room route
   fireEvent.click(screen.getByText("Server closed fixture"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
   expect(screen.getByText("Phòng đã đóng")).toBeTruthy();
+});
+
+it("automatically joins the valid invitation once after login without another submit", async () => {
+  const roomId = "12345678-1234-4234-8234-123456789abc";
+  window.history.replaceState(null, "", "/rooms/join?token=ABCDEFGH");
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  mock.authorizedFetch.mockResolvedValue(
+    reply({ roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }),
+  );
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe(`/rooms/${roomId}`),
+  );
+  expect(mock.authorizedFetch).toHaveBeenCalledOnce();
+  const [url, options] = mock.authorizedFetch.mock.calls[0]!;
+  expect(url).toBe("/rooms/join");
+  expect(options.method).toBe("POST");
+  expect(JSON.parse(options.body)).toEqual({
+    code: "ABCDEFGH",
+    preference: "auto",
+    commandId: expect.stringMatching(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    ),
+  });
+});
+
+it("uses the lobby's entered room code without requesting it again", async () => {
+  const roomId = "12345678-1234-4234-8234-123456789abc";
+  window.history.replaceState(null, "", "/lobby");
+  mock.state = member;
+  mock.authorizedFetch.mockImplementation(async (url: string) =>
+    reply(
+      url === "/rooms/join"
+        ? { roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }
+        : { rooms: [] },
+    ),
+  );
+  render(createElement(AppRouter));
+  fireEvent.change(screen.getByRole("textbox", { name: "Mã phòng" }), {
+    target: { value: "ABCDEFGH" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Vào phòng" }));
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe(`/rooms/${roomId}`),
+  );
+  const joins = mock.authorizedFetch.mock.calls.filter(
+    ([url]) => url === "/rooms/join",
+  );
+  expect(joins).toHaveLength(1);
+  expect(JSON.parse(joins[0]![1].body)).toMatchObject({
+    code: "ABCDEFGH",
+    preference: "auto",
+  });
 });

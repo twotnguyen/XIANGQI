@@ -18,9 +18,9 @@ import {
   subscribeLocation,
   getAuthDestination,
 } from "./navigation.js";
-import { CreateRoomForm, JoinRoomForm } from "../rooms/RoomForms.js";
+import { CreateRoomForm } from "../rooms/RoomForms.js";
 import { RoomPage } from "../rooms/RoomPage.js";
-import { RoomLobby } from "../rooms/RoomLobby.js";
+import { InviteEntry } from "../rooms/InviteEntry.js";
 import {
   createRoomClient,
   type RoomClient,
@@ -90,7 +90,7 @@ function Lobby({
   const [attempt, setAttempt] = useState(0);
   const [notice, setNotice] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
-  const [dialog, setDialog] = useState<"create" | "join" | null>(null);
+  const [dialog, setDialog] = useState(false);
   useEffect(() => {
     const abort = new AbortController();
     setState("loading");
@@ -121,8 +121,10 @@ function Lobby({
       <LobbyShell
         rooms={rooms}
         state={state}
-        onCreate={() => setDialog("create")}
-        onJoinCode={() => setDialog("join")}
+        onCreate={() => setDialog(true)}
+        onJoinCode={(code) =>
+          navigate(`/rooms/join?token=${encodeURIComponent(code)}`)
+        }
         onPlayAI={unavailable}
         onJoinRoom={(id, intent) =>
           navigate(`/rooms/${encodeURIComponent(id)}?intent=${intent}`)
@@ -130,20 +132,10 @@ function Lobby({
         onRetry={() => setAttempt((value) => value + 1)}
       />
       {dialog && (
-        <Dialog
-          open
-          onClose={() => setDialog(null)}
-          title={dialog === "create" ? "Tạo phòng" : "Vào phòng bằng mã"}
-        >
-          {dialog === "create" ? (
-            <CreateRoomForm
-              onCreate={async (input) => onEntered(await client.create(input))}
-            />
-          ) : (
-            <JoinRoomForm
-              onJoin={async (code) => onEntered(await client.join(code))}
-            />
-          )}
+        <Dialog open onClose={() => setDialog(false)} title="Tạo phòng">
+          <CreateRoomForm
+            onCreate={async (input) => onEntered(await client.create(input))}
+          />
         </Dialog>
       )}
       <Button
@@ -302,11 +294,7 @@ export function AppRouter() {
     );
   else if (route.name === "join" && session.state.status === "active-member")
     content = (
-      <RoomLobby
-        client={client}
-        onEntered={enterRoom}
-        initialCode={route.token}
-      />
+      <InviteEntry client={client} onEntered={enterRoom} code={route.token} />
     );
   else if (route.name === "room" && session.state.status === "active-member")
     content =
