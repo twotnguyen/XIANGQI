@@ -14,6 +14,7 @@ import {
 import { createGameAudio } from "./game-audio.js";
 import { MatchClocks } from "./MatchClocks.js";
 import { MatchResult } from "./MatchResult.js";
+import { ReconnectStatus } from "./ReconnectStatus.js";
 import "./rooms.css";
 export interface RoomPageProps {
   roomId: string;
@@ -443,7 +444,7 @@ export function RoomPage({
           <p>
             {room.status === "CLOSED"
               ? "Phòng đã đóng"
-              : active
+              : clockState?.match?.status === "ACTIVE"
                 ? "Ván cờ đang diễn ra"
                 : "Phòng chờ thi đấu"}
           </p>
@@ -477,9 +478,20 @@ export function RoomPage({
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
           {error && <Notice tone="error" message={error} />}
-          {!connected && (
-            <Notice message="Kết nối phòng đang gián đoạn. Sẵn sàng và đếm ngược tạm dừng hiển thị; đang chờ trạng thái máy chủ." />
-          )}
+          <ReconnectStatus
+            connected={connected}
+            waitingForSnapshot={connected && !snapshot}
+            ownRole={clockState?.role ?? view.role}
+            matchStatus={clockState?.match?.status ?? null}
+            opponentGraceUntil={
+              view.role === "spectator"
+                ? (Object.values(room.graceUntil)
+                    .filter((value): value is string => value !== null)
+                    .sort()[0] ?? null)
+                : room.graceUntil[view.role === "red" ? "black" : "red"]
+            }
+            serverNow={view.serverNow}
+          />
           {snapshot?.control.mode === "readonly" && (
             <Notice
               message={
