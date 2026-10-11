@@ -1,4 +1,9 @@
-import { RoomError, type RoomActor, type RoomScope } from "./contracts.js";
+import {
+  RoomError,
+  type RoomActor,
+  type RoomScope,
+  type RoomView,
+} from "./contracts.js";
 import type { RoomStore } from "./room-store.js";
 import type {
   RoomActorProof,
@@ -21,6 +26,10 @@ export class RoomHttpService {
     private readonly store: RoomStore,
     private readonly transactions: RoomTransactions,
     private readonly authorizer: MemberRoomAuthorizer,
+    private readonly withScope: <T>(
+      scope: RoomScope,
+      work: () => Promise<T>,
+    ) => Promise<T> = (_scope, work) => work(),
   ) {}
   private async actor(proof: MemberRoomRequestProof) {
     const actor = await this.authorizer.resolve(proof);
@@ -41,7 +50,7 @@ export class RoomHttpService {
     const result = await this.transactions.withRoom(
       { actor, roomIds },
       (actorProof) => this.authorizer.authorize(proof, actorProof),
-      work,
+      (scope) => this.withScope(scope, () => work(scope)),
     );
     if (result.status === "ended")
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
@@ -123,6 +132,16 @@ export class RoomHttpService {
       await this.store.leave(scope, roomId);
       return { roomId, left: true as const };
     });
+  }
+  async changeVisibility(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    visibility: RoomView["room"]["visibility"],
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], (scope) =>
+      this.store.changeVisibility(scope, roomId, expectedVersion, visibility),
+    );
   }
   async snapshot(proof: MemberRoomRequestProof, roomId: string) {
     return this.run<Awaited<ReturnType<RoomStore["snapshot"]>>>(

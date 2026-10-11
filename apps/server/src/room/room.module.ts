@@ -178,6 +178,32 @@ class RoomController {
       );
     });
   }
+  @Post(":roomId/visibility")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  changeVisibility(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = proof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0 ||
+        typeof input.visibility !== "string" ||
+        !["PUBLIC", "CODE_ONLY", "LOCKED"].includes(input.visibility)
+      )
+        invalid();
+      return this.service.changeVisibility(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+        input.visibility as "PUBLIC" | "CODE_ONLY" | "LOCKED",
+      );
+    });
+  }
   @Get(":roomId")
   @Header("Cache-Control", "no-store")
   snapshot(@Req() request: IncomingMessage, @Param("roomId") roomId: string) {

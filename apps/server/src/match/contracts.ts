@@ -64,3 +64,10 @@ export class MatchError extends Error {
     super(message);
   }
 }
+export type MatchDrawView = {
+  offers: { id: string; sender: Side; expiresAt: string }[];
+  remainingMoves: { red: number; black: number };
+};
+export type MatchDrawCommandResult = MatchCommandResult & {
+  draw: MatchDrawView;
+};
