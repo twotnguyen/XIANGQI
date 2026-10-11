@@ -1,0 +1,48 @@
+.xq-media {
+  display: grid;
+  gap: 0.75rem;
+}
+.xq-media h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.xq-media-toggles {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.xq-media-share {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 20rem;
+}
+.xq-media-share select {
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.4rem;
+}
+.xq-media-feeds {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+.xq-media-feeds figure {
+  margin: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.xq-media-feeds figcaption {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+.xq-media-feed {
+  aspect-ratio: 4 / 3;
+  background: #111;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.xq-media-feed video,
+.xq-media-feed audio {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

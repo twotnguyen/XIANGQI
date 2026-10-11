@@ -1,0 +1,266 @@
+@font-face {
+  font-family: "XQ Han";
+  src: url("/fonts/xq-han.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+.xq-board {
+  --color-wood: #d8ae72;
+  --color-wood-edge: #704525;
+  --color-paper-board: #f5e8cc;
+  --color-red: #a51f25;
+  --color-black: #24201c;
+  --board-piece-face: #f6e7c8;
+  --color-ink: #fff5df;
+  --color-ink-muted: #c8b6a2;
+  --color-focus: #f5ca67;
+  --font-ui:
+    "Plus Jakarta Sans", -apple-system, system-ui, "Segoe UI", Roboto,
+    sans-serif;
+  --font-han: "XQ Han", "Noto Serif TC", "Songti TC", "SimSun", serif;
+  --shadow-1: 0 1px 2px rgba(40, 34, 28, 0.12);
+  --space-2: 8px;
+  --space-8: 32px;
+  --touch-min: 44px;
+  --text-md: 16px;
+  --leading-md: 24px;
+  --weight-semibold: 600;
+  --xq-grid: 40px;
+  inline-size: 100%;
+  max-inline-size: 640px;
+  min-inline-size: 0;
+  margin: 0 auto;
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+}
+
+.xq-board-svg {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  overflow: visible;
+  cursor: default;
+}
+
+.xq-board-grid {
+  stroke: var(--color-wood-edge);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.xq-board-grid rect {
+  stroke-width: 2;
+}
+
+.xq-board-river {
+  font-family: var(--font-han);
+  font-size: calc(var(--xq-grid) * 0.5);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-wood-edge);
+  stroke: none;
+  text-anchor: middle;
+  dominant-baseline: central;
+  letter-spacing: 0.2em;
+}
+
+.xq-board-piece-red {
+  color: var(--color-red);
+}
+
+.xq-board-piece-black {
+  color: var(--color-black);
+}
+
+.xq-board-piece-face {
+  fill: var(--board-piece-face);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  filter: drop-shadow(var(--shadow-1));
+}
+
+.xq-board-piece-inner {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.xq-board-piece-glyph {
+  font-family: var(--font-han);
+  font-size: calc(var(--xq-grid) * 0.55);
+  font-weight: var(--weight-semibold);
+  fill: currentColor;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.xq-board-turn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
+  font-size: var(--text-md);
+  line-height: var(--leading-md);
+  font-weight: var(--weight-semibold);
+}
+
+.xq-board-legend {
+  margin-block-start: var(--space-2);
+  font-size: var(--text-md);
+  line-height: var(--leading-md);
+}
+
+.xq-board-legend summary {
+  box-sizing: border-box;
+  min-block-size: var(--touch-min);
+  padding: var(--space-2);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.xq-board-legend summary:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.xq-board-legend-sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.xq-board-legend-sides ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+}
+
+.xq-board-legend-sides li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.xq-board-legend-glyph {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--space-8);
+  block-size: var(--space-8);
+  flex: none;
+  border-radius: 50%;
+  background: var(--board-piece-face);
+  font-family: var(--font-han);
+  font-size: calc(var(--xq-grid) * 0.5);
+  font-weight: var(--weight-semibold);
+}
+
+.xq-board-preview {
+  --color-paper: #120d0a;
+  --color-surface: #241610;
+  --color-ink: #fff5df;
+  --color-ink-muted: #c8b6a2;
+  --color-border: #9a7550;
+  --color-focus: #f5ca67;
+  --font-ui:
+    "Plus Jakarta Sans", -apple-system, system-ui, "Segoe UI", Roboto,
+    sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --touch-min: 44px;
+  --text-md: 16px;
+  --leading-md: 24px;
+  --text-2xl: 32px;
+  --leading-2xl: 40px;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  inline-size: 100%;
+  min-inline-size: 0;
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  background: var(--color-paper);
+}
+
+.xq-board-preview-heading {
+  padding-inline: var(--space-4);
+  text-align: center;
+}
+
+.xq-board-preview-heading h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-2xl);
+  font-weight: var(--weight-semibold);
+}
+
+.xq-board-preview-heading p {
+  margin-block: var(--space-2) var(--space-4);
+  color: var(--color-ink-muted);
+  font-size: var(--text-md);
+  line-height: var(--leading-md);
+}
+
+.xq-board-preview-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-6);
+  margin-block-end: var(--space-4);
+  padding-inline: var(--space-4);
+}
+
+.xq-board-preview-options fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.xq-board-preview-options legend {
+  padding: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-md);
+  line-height: var(--leading-md);
+}
+
+.xq-board-preview-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch-min);
+  font-size: var(--text-md);
+  line-height: var(--leading-md);
+  cursor: pointer;
+}
+
+.xq-board-preview-options input {
+  margin: 0;
+  accent-color: var(--color-focus);
+}
+
+.xq-board-preview-options input:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .xq-board-preview .xq-board {
+    /* Reserve the example heading, controls, turn and collapsed legend. */
+    max-inline-size: min(
+      640px,
+      calc((100svh - var(--space-8) * 10) * 368 / 408)
+    );
+  }
+}

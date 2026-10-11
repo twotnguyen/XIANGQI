@@ -1,0 +1,277 @@
+@font-face {
+  font-family: "XQ Han";
+  src: url("/fonts/xq-han.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+.registration-page {
+  --reg-bg: #120d0a;
+  --reg-surface: #241610;
+  --reg-field: #1b110d;
+  --reg-text: #fff5df;
+  --reg-muted: #c8b6a2;
+  --reg-border: #9a7550;
+  --reg-focus: #f5ca67;
+  --reg-gold: #c6922a;
+  --reg-error: #ffb6a3;
+  min-height: 100svh;
+  box-sizing: border-box;
+  background: var(--reg-bg);
+  color: var(--reg-text);
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+}
+.registration-page *,
+.registration-page *::before,
+.registration-page *::after {
+  box-sizing: border-box;
+}
+.registration-shell {
+  width: min(100%, 448px);
+}
+.registration-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: var(--reg-text);
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+.registration-brand > span {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--reg-gold);
+  border-radius: 50%;
+  color: var(--reg-focus);
+  font:
+    28px "XQ Han",
+    serif;
+}
+.registration-brand strong {
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+.registration-brand em {
+  font-style: normal;
+  color: var(--reg-focus);
+}
+.registration-card {
+  border: 1px solid var(--reg-border);
+  border-radius: 16px;
+  padding: 24px 32px;
+  background: var(--reg-surface);
+}
+.registration-eyebrow {
+  color: var(--reg-focus);
+  font-size: 10px;
+  letter-spacing: 1.7px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.registration-card h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 32px;
+  line-height: 1.2;
+  margin: 0;
+}
+.registration-card h1:focus {
+  outline: none;
+}
+.registration-intro {
+  font-size: 14px;
+  color: var(--reg-muted);
+  margin: 8px 0 12px;
+}
+.registration-steps {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--reg-muted);
+}
+.registration-steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.registration-steps li > span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--reg-border);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.registration-steps li[aria-current] {
+  color: var(--reg-focus);
+  font-weight: 600;
+}
+.registration-steps li[aria-current] > span {
+  background: var(--reg-focus);
+  color: var(--reg-bg);
+  border-color: var(--reg-focus);
+}
+.registration-steps li[data-completed="true"] > span {
+  border-color: var(--reg-focus);
+  color: var(--reg-focus);
+}
+.registration-card label,
+.registration-otp legend {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.registration-card input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--reg-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--reg-field);
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 16px;
+}
+.registration-page input:focus-visible,
+.registration-page button:focus-visible,
+.registration-page a:focus-visible {
+  outline: 2px solid var(--reg-focus);
+  outline-offset: 3px;
+}
+.registration-help {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--reg-muted);
+  margin: 8px 0 12px;
+}
+.registration-availability {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--reg-focus);
+  min-height: 18px;
+  margin: -8px 0 8px;
+}
+.registration-error {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--reg-error);
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.registration-error:empty {
+  margin: 0;
+}
+.registration-card button {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 44px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.registration-primary {
+  width: 100%;
+  color: var(--reg-bg);
+  background: var(--reg-focus);
+  border: 1px solid var(--reg-focus);
+  margin-top: 16px;
+}
+.registration-primary:hover:not(:disabled) {
+  background: var(--reg-text);
+}
+.registration-card button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.registration-back,
+.registration-resend {
+  border: 0;
+  color: var(--reg-focus);
+  background: transparent;
+  padding: 8px 0;
+}
+.registration-back {
+  display: block;
+  margin: 8px auto 0;
+}
+.registration-card h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+.registration-copy {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--reg-muted);
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.registration-copy strong {
+  color: var(--reg-text);
+}
+.registration-otp {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.registration-otp > div {
+  display: flex;
+  gap: 8px;
+}
+.registration-otp input {
+  min-width: 0;
+  width: calc((100% - 40px) / 6);
+  padding: 8px 0;
+  text-align: center;
+  font-size: 24px;
+  height: 48px;
+}
+.registration-expiry {
+  color: var(--reg-muted);
+  font-size: 13px;
+  margin: 16px 0 0;
+}
+.registration-success {
+  font-size: 16px;
+  line-height: 1.6;
+}
+.registration-success p {
+  color: var(--reg-muted);
+}
+.registration-footer {
+  font-size: 12px;
+  text-align: center;
+  color: var(--reg-muted);
+  margin: 16px 0 0;
+}
+@media (max-width: 480px) {
+  .registration-page {
+    padding: 24px 16px;
+  }
+  .registration-card {
+    padding: 24px 16px;
+  }
+  .registration-otp > div {
+    gap: 4px;
+  }
+  .registration-otp input {
+    width: calc((100% - 20px) / 6);
+  }
+  .registration-steps {
+    gap: 4px;
+    font-size: 11px;
+  }
+  .registration-steps li {
+    gap: 4px;
+  }
+}

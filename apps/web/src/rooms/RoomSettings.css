@@ -1,0 +1,71 @@
+.room-settings-boundary {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.room-settings {
+  max-width: 440px;
+  color: var(--color-ink);
+  line-height: 1.5;
+}
+.room-settings p {
+  margin: 0 0 16px;
+}
+.room-settings__current {
+  font-weight: 600;
+}
+.room-settings__modes {
+  padding: 0;
+  margin: 20px 0 12px;
+  border: 0;
+  min-width: 0;
+}
+.room-settings__modes legend {
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.room-settings__modes label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+}
+.room-settings__modes input {
+  margin: 5px 0 0;
+  accent-color: var(--color-gold);
+}
+.room-settings__modes small {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+}
+.room-settings__modes label:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.room-settings__modes input:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+.room-settings__help {
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+}
+.room-settings__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.room-settings [role="alert"] {
+  color: var(--color-danger);
+  margin-top: 16px;
+}
+@media (max-width: 480px) {
+  .room-settings__actions > button {
+    width: 100%;
+    min-height: 44px;
+  }
+}

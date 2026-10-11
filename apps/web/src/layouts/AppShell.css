@@ -1,0 +1,122 @@
+.xq-shell {
+  min-height: 100svh;
+}
+.xq-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+.xq-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-ink) !important;
+  text-decoration: none;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.xq-brand > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-full);
+  color: var(--color-gold-light);
+  font: 600 28px var(--font-han);
+}
+.xq-desktop-nav {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+.xq-desktop-nav a,
+.xq-menu-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  color: var(--color-ink);
+  text-decoration: none;
+  padding: var(--space-2);
+}
+.xq-desktop-nav a[aria-current="page"] {
+  border-bottom: 3px solid var(--color-gold-light);
+  font-weight: 600;
+}
+.xq-account {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  max-width: 240px;
+  overflow-wrap: anywhere;
+}
+.xq-mobile-menu {
+  display: none;
+  flex-shrink: 0;
+}
+.xq-mobile-menu .xq-button {
+  white-space: nowrap;
+}
+.xq-ui .xq-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-8);
+  width: 100%;
+}
+.xq-skip {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transform: translateY(-200%);
+  z-index: var(--z-overlay-blocking);
+}
+.xq-skip:focus {
+  transform: none;
+}
+.xq-menu-nav {
+  display: grid;
+  gap: var(--space-4);
+}
+@media (max-width: 1023px) {
+  .xq-desktop-nav {
+    display: none;
+  }
+  .xq-mobile-menu {
+    display: block;
+  }
+  .xq-header {
+    padding: var(--space-4);
+  }
+  .xq-ui .xq-main {
+    padding: var(--space-6) var(--space-4);
+  }
+  .xq-account {
+    max-width: 160px;
+  }
+  .xq-brand > span:last-child {
+    max-width: 112px;
+  }
+  .xq-header {
+    gap: var(--space-2);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1365px) {
+  .xq-header {
+    gap: var(--space-3);
+    padding-inline: var(--space-4);
+  }
+  .xq-desktop-nav {
+    gap: var(--space-2);
+  }
+  .xq-account {
+    max-width: 144px;
+  }
+}

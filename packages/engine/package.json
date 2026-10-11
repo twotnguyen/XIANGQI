@@ -1,0 +1,21 @@
+{
+  "name": "@xiangqi/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./compiled": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "build": "tsc && node scripts/copy-worker.mjs"
+  },
+  "dependencies": {
+    "@xiangqi/xiangqi-core": "workspace:*",
+    "tsx": "4.23.15"
+  }
+}
