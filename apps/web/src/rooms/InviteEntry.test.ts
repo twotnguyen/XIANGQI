@@ -23,6 +23,9 @@ function client(join: RoomClient["join"]): RoomClient {
     switchSeat: vi.fn(),
     changeVisibility: vi.fn(),
     leave: vi.fn(),
+    proposeSwap: vi.fn(),
+    withdrawSwap: vi.fn(),
+    respondSwap: vi.fn(),
   };
 }
 it("automatically joins after mount exactly once under StrictMode without a second click", async () => {

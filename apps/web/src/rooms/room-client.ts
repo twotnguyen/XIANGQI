@@ -124,6 +124,16 @@ function parseView(value: unknown, roomId: string): RoomView {
     const countdown = record(room.countdown);
     if (!isId(countdown.token) || !isDate(countdown.dueAt)) invalidResponse();
   }
+  if (room.swapOffer !== null && room.swapOffer !== undefined) {
+    const offer = record(room.swapOffer);
+    if (
+      !isId(offer.id) ||
+      !isId(offer.proposerId) ||
+      !isId(offer.responderId) ||
+      !isDate(offer.expiresAt)
+    )
+      invalidResponse();
+  }
   return view as unknown as RoomView;
 }
 function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
@@ -301,6 +311,24 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
           return { roomId, left: true as const };
         },
         { expectedVersion },
+      ),
+    proposeSwap: (roomId: string, expectedVersion: number) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/swap-propose`,
+        (value) => parseView(value, roomId),
+        { expectedVersion },
+      ),
+    withdrawSwap: (roomId: string, expectedVersion: number) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/swap-withdraw`,
+        (value) => parseView(value, roomId),
+        { expectedVersion },
+      ),
+    respondSwap: (roomId: string, expectedVersion: number, accept: boolean) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/swap-respond`,
+        (value) => parseView(value, roomId),
+        { expectedVersion, accept },
       ),
   };
 }

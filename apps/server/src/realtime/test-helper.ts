@@ -153,6 +153,7 @@ export class FixtureRooms implements RoomCollaborator {
         connected: { red: true, black: true },
         graceUntil: { red: null, black: null },
         countdown: null,
+        swapOffer: null,
         seats: { red: members[0]!, black: members[1] ?? null },
         ready: { red: row.red_ready, black: row.black_ready },
       },
