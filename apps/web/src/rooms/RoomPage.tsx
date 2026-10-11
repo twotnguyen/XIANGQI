@@ -2,7 +2,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { parsePosition } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "../components/XiangqiBoard.js";
-import { Button, ErrorState, Notice, Skeleton } from "../ui/primitives.js";
+import {
+  Button,
+  Dialog,
+  ErrorState,
+  Notice,
+  Skeleton,
+} from "../ui/primitives.js";
 import {
   connectRoom,
   RoomRequestError,
@@ -14,7 +20,11 @@ import {
 import { createGameAudio } from "./game-audio.js";
 import { MatchClocks } from "./MatchClocks.js";
 import { MatchResult } from "./MatchResult.js";
+import { RoomSettings } from "./RoomSettings.js";
+import { MatchActions, type MatchAction } from "./MatchActions.js";
 import { ReconnectStatus } from "./ReconnectStatus.js";
+import { RoomChat } from "../chat/RoomChat.js";
+import { useRoomChat } from "./useRoomChat.js";
 import "./rooms.css";
 export interface RoomPageProps {
   roomId: string;
@@ -46,7 +56,14 @@ export function RoomPage({
   const [retry, setRetry] = useState(0);
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
+  const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsError, setSettingsError] = useState("");
+  const [settingsStatus, setSettingsStatus] = useState("");
+  const settingsPending = useRef(false);
   const connection = useRef<RoomConnection | null>(null);
+  const roomChat = useRoomChat(roomId, connection);
   const epoch = useRef(0);
   const refreshEpoch = useRef(0);
   const versionFloor = useRef(0);
@@ -61,6 +78,7 @@ export function RoomPage({
   const leaveCallback = useRef(onLeft);
   leaveCallback.current = onLeft;
   function invalidateCommands() {
+    setActionError("");
     commandEpoch.current++;
     if (commandPending.current) setBusy(false);
     commandPending.current = false;
@@ -81,6 +99,7 @@ export function RoomPage({
     if (
       prior &&
       (prior.match?.id !== value.match?.id ||
+        prior.match?.status !== value.match?.status ||
         prior.role !== value.role ||
         prior.control.generation !== value.control.generation ||
         prior.control.mode !== value.control.mode)
@@ -99,7 +118,12 @@ export function RoomPage({
     gameAudio.current?.accept(audioBaseline.current ? null : prior, value);
     audioBaseline.current = false;
     versionFloor.current = value.version;
+    if (prior?.match?.status === "ACTIVE" && value.match?.status !== "ACTIVE") {
+      setSettingsOpen(false);
+      setLeaveConfirm(null);
+    }
     latest.current = value;
+    roomChat.update(value, true);
     setSnapshot(value);
     setView(value);
     return true;
@@ -107,6 +131,7 @@ export function RoomPage({
   useEffect(() => {
     let alive = true;
     epoch.current++;
+    roomChat.clear();
     latest.current = null;
     versionFloor.current = 0;
     setBusy(false);
@@ -140,6 +165,7 @@ export function RoomPage({
           refreshEpoch.current++;
           connectedRef.current = value;
           setConnected(value);
+          roomChat.update(null, value);
           if (!value) {
             invalidateCommands();
             audioBaseline.current = true;
@@ -151,7 +177,13 @@ export function RoomPage({
         if (alive) setError(message);
       },
       onClosed: (message) => {
-        if (alive) leaveCallback.current(message);
+        if (alive) {
+          roomChat.clear();
+          leaveCallback.current(message);
+        }
+      },
+      onChatChanged: (notice) => {
+        if (alive) roomChat.changed(notice);
       },
     });
     connection.current = peer;
@@ -188,6 +220,7 @@ export function RoomPage({
       epoch.current++;
       commandEpoch.current++;
       connectedRef.current = false;
+      roomChat.clear();
       peer.close();
       if (connection.current === peer) connection.current = null;
     };
@@ -230,6 +263,7 @@ export function RoomPage({
   async function ready() {
     if (
       !snapshot ||
+      snapshot.version < versionFloor.current ||
       !connected ||
       !connectedRef.current ||
       busy ||
@@ -283,6 +317,7 @@ export function RoomPage({
     const current = latest.current;
     if (
       !current?.match ||
+      current.version < versionFloor.current ||
       !connected ||
       !connectedRef.current ||
       busy ||
@@ -335,6 +370,132 @@ export function RoomPage({
         commandPending.current = false;
         setBusy(false);
       }
+    }
+  }
+  async function matchAction(action: MatchAction) {
+    const current = latest.current;
+    const peer = connection.current;
+    if (
+      !current?.match ||
+      !peer ||
+      !connectedRef.current ||
+      current.version < versionFloor.current ||
+      busy ||
+      commandPending.current ||
+      current.role === "spectator" ||
+      current.control.mode !== "writable" ||
+      current.room.status !== "PLAYING" ||
+      current.match.status !== "ACTIVE" ||
+      action.payload.matchId !== current.match.id ||
+      action.payload.matchVersion !== current.match.version
+    )
+      return;
+    const requestEpoch = epoch.current;
+    const requestCommandEpoch = ++commandEpoch.current;
+    const isCurrent = () =>
+      epoch.current === requestEpoch &&
+      commandEpoch.current === requestCommandEpoch &&
+      connectedRef.current &&
+      connection.current === peer &&
+      latest.current?.match?.id === current.match!.id;
+    commandPending.current = true;
+    setBusy(true);
+    setActionError("");
+    try {
+      const acknowledgement = await peer.command(action, current.version);
+      if (!isCurrent()) return;
+      if (acknowledgement.snapshot) acceptSnapshot(acknowledgement.snapshot);
+      if (!isCurrent()) return;
+      if (acknowledgement.status === "error") {
+        setActionError(
+          acknowledgement.error.code === "VERSION_STALE" ||
+            acknowledgement.error.code === "MATCH_VERSION_CONFLICT"
+            ? "Ván cờ đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+            : "Thao tác chưa thực hiện được. Kiểm tra đề nghị và quyền điều khiển.",
+        );
+      }
+    } catch {
+      if (isCurrent()) {
+        setActionError(
+          "Chưa nhận được xác nhận thao tác ván cờ. Kiểm tra trạng thái máy chủ trước khi thử lại.",
+        );
+        throw new Error("MATCH_ACTION_UNCONFIRMED");
+      }
+    } finally {
+      if (isCurrent()) {
+        commandPending.current = false;
+        setBusy(false);
+      }
+    }
+  }
+  async function changeVisibility(visibility: RoomView["room"]["visibility"]) {
+    const current = latest.current;
+    if (
+      !current ||
+      !connectedRef.current ||
+      current.room.hostId !== userId ||
+      current.role === "spectator" ||
+      busy ||
+      settingsPending.current ||
+      current.version < versionFloor.current
+    )
+      return;
+    const requestEpoch = epoch.current;
+    const physicalEpoch = refreshEpoch.current;
+    const peer = connection.current;
+    const isCurrent = () =>
+      epoch.current === requestEpoch &&
+      connectedRef.current &&
+      connection.current === peer &&
+      refreshEpoch.current === physicalEpoch;
+    settingsPending.current = true;
+    setBusy(true);
+    setSettingsError("");
+    setSettingsStatus("");
+    try {
+      const next = await client.changeVisibility(
+        roomId,
+        current.version,
+        visibility,
+      );
+      if (
+        !isCurrent() ||
+        latest.current?.room.hostId !== userId ||
+        next.version < versionFloor.current
+      )
+        return;
+      versionFloor.current = next.version;
+      setView(next);
+      setSettingsStatus("Đã cập nhật chế độ phòng.");
+      if (peer) {
+        try {
+          const fresh = await peer.refresh();
+          if (isCurrent()) acceptSnapshot(fresh);
+        } catch {
+          if (isCurrent())
+            setSettingsError(
+              "Chế độ đã lưu. Chưa thể đồng bộ phòng; kiểm tra kết nối.",
+            );
+        }
+      }
+    } catch (e) {
+      if (!isCurrent()) return;
+      setSettingsError(
+        e instanceof RoomRequestError
+          ? e.message
+          : "Chưa thể đổi chế độ phòng. Kiểm tra trạng thái mới rồi thử lại.",
+      );
+      if (peer) {
+        try {
+          const fresh = await peer.refresh();
+          if (isCurrent()) acceptSnapshot(fresh);
+        } catch {
+          /* Keep the last canonical state. */
+        }
+      }
+    } finally {
+      settingsPending.current = false;
+      if (epoch.current === requestEpoch) setBusy(false);
     }
   }
   async function httpAction(action: "switch" | "leave") {
@@ -421,7 +582,15 @@ export function RoomPage({
   const serverCode = room.inviteCode;
   const code = serverCode === undefined ? inviteCode : serverCode;
   const player = view.role !== "spectator";
-  const writable = connected && snapshot?.control.mode === "writable";
+  const writable =
+    connected &&
+    snapshot?.control.mode === "writable" &&
+    snapshot.version >= versionFloor.current;
+  const canManage =
+    connected &&
+    Boolean(snapshot) &&
+    room.hostId === userId &&
+    view.role !== "spectator";
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
   const clockState = snapshot ?? latest.current;
@@ -450,6 +619,18 @@ export function RoomPage({
           </p>
         </div>
         <div className="xq-room-header-actions">
+          {canManage && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSettingsError("");
+                setSettingsStatus("");
+                setSettingsOpen(true);
+              }}
+            >
+              Cài đặt phòng
+            </Button>
+          )}
           {active && (
             <Button
               variant="ghost"
@@ -469,12 +650,72 @@ export function RoomPage({
           <Button
             variant="ghost"
             loading={busy}
-            onClick={() => void httpAction("leave")}
+            disabledReason={
+              player &&
+              room.status === "PLAYING" &&
+              (!connected ||
+                !snapshot ||
+                snapshot.version < versionFloor.current ||
+                snapshot.match?.status !== "ACTIVE")
+                ? "Chờ đồng bộ ván cờ để xác nhận rời phòng."
+                : undefined
+            }
+            onClick={() => {
+              const current = latest.current;
+              if (
+                player &&
+                room.status === "PLAYING" &&
+                (!connectedRef.current ||
+                  !snapshot ||
+                  current?.match?.status !== "ACTIVE" ||
+                  current.version < versionFloor.current)
+              )
+                return;
+              if (
+                view.role !== "spectator" &&
+                current?.match?.status === "ACTIVE"
+              ) {
+                setSettingsOpen(false);
+                setLeaveError("");
+                setLeaveConfirm(current.match.id);
+              } else void httpAction("leave");
+            }}
           >
             Rời phòng
           </Button>
         </div>
       </header>
+      <fieldset className="match-actions__confirmation" disabled={busy}>
+        <Dialog
+          open={leaveConfirm !== null}
+          title="Rời phòng?"
+          danger
+          confirmLabel="Rời phòng"
+          cancelLabel="Ở lại"
+          onClose={() => {
+            if (!busy) setLeaveConfirm(null);
+          }}
+          onConfirm={() => {
+            const current = latest.current;
+            if (
+              !connectedRef.current ||
+              current?.match?.id !== leaveConfirm ||
+              current.match.status !== "ACTIVE" ||
+              current.role === "spectator" ||
+              busy
+            )
+              return;
+            void httpAction("leave");
+          }}
+        >
+          <p>
+            <strong>
+              Rời phòng lúc này được tính là đầu hàng. Bạn sẽ thua ván này.
+            </strong>
+          </p>
+          {leaveError && <Notice tone="error" message={leaveError} />}
+        </Dialog>
+      </fieldset>
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
           {error && <Notice tone="error" message={error} />}
@@ -573,6 +814,18 @@ export function RoomPage({
               />
             </div>
           )}
+          {snapshot && (
+            <MatchActions
+              match={snapshot.match}
+              role={snapshot.role}
+              draw={snapshot.draw}
+              serverNow={snapshot.serverNow}
+              canAct={Boolean(writable && player && active)}
+              busy={busy}
+              error={actionError}
+              onAction={matchAction}
+            />
+          )}
           {active && !board && (
             <Notice
               tone="error"
@@ -657,11 +910,48 @@ export function RoomPage({
             <p>Mã mời chưa được cung cấp cho phiên này.</p>
           )}
           <div className="xq-room-slots">
-            {chat ?? <p>Chat phòng chưa khả dụng.</p>}
+            {chat ?? (
+              <RoomChat
+                viewerRole={view.role}
+                connected={connected && !!snapshot}
+                channels={roomChat.channels}
+                pendingSend={roomChat.pendingSend}
+                onSend={roomChat.onSend}
+                onLoadMore={roomChat.onLoadMore}
+              />
+            )}
+            {connected &&
+              snapshot &&
+              (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const).map((channel) =>
+                roomChat.channels[channel]?.error ? (
+                  <Button
+                    key={channel}
+                    variant="secondary"
+                    onClick={() =>
+                      void roomChat.onLoadMore(channel).catch(() => {})
+                    }
+                  >
+                    Tải lại{" "}
+                    {channel === "PLAYERS_PRIVATE"
+                      ? "Kênh riêng"
+                      : "Kênh chung"}
+                  </Button>
+                ) : null,
+              )}
             {media ?? <p>Camera và mic chưa khả dụng.</p>}
           </div>
         </aside>
       </div>
+      <RoomSettings
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        room={room}
+        canManage={canManage}
+        busy={busy}
+        error={settingsError}
+        status={settingsStatus}
+        onChange={changeVisibility}
+      />
       {connected &&
         snapshot?.match &&
         snapshot.match.status !== "ACTIVE" &&

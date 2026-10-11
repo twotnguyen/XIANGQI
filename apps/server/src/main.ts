@@ -26,6 +26,7 @@ try {
     ],
     registration?.checkDatabase,
     rooms?.realtime,
+    rooms?.publicFeed,
   );
   app.enableShutdownHooks();
   await app.listen(settings.port, "127.0.0.1");

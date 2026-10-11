@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { createElement, type ReactNode } from "react";
+import { createElement, StrictMode, type ReactNode } from "react";
 import {
   act,
   cleanup,
@@ -19,7 +19,49 @@ const mock = vi.hoisted(() => ({
   logout: vi.fn(),
   authorizedFetch: vi.fn(),
   getRealtimeProof: vi.fn(),
+  sockets: [] as {
+    handlers: Map<string, (value?: unknown) => void>;
+    closed: boolean;
+    auth?: unknown;
+  }[],
 }));
+vi.mock("socket.io-client", () => ({
+  io: (
+    _url: string,
+    options: { auth: (done: (value: unknown) => void) => void },
+  ) => {
+    const peer = {
+      handlers: new Map<string, (value?: unknown) => void>(),
+      closed: false,
+      auth: undefined as unknown,
+    };
+    mock.sockets.push(peer);
+    return {
+      on: (name: string, handler: (value?: unknown) => void) => {
+        peer.handlers.set(name, handler);
+      },
+      connect: () =>
+        options.auth((value) => {
+          peer.auth = value;
+        }),
+      disconnect: () => {
+        peer.closed = true;
+        peer.handlers.get("disconnect")?.();
+      },
+      removeAllListeners: () => peer.handlers.clear(),
+    };
+  },
+}));
+function feedRooms(rows: unknown[], index = mock.sockets.length - 1) {
+  const socket = mock.sockets[index]!;
+  act(() => {
+    socket.handlers.get("connect")?.();
+    socket.handlers.get("public.rooms")?.({
+      rooms: rows,
+      serverNow: "2026-10-11T01:00:00Z",
+    });
+  });
+}
 vi.mock("../auth/SessionProvider.js", () => ({ useSession: () => mock }));
 vi.mock("../auth/LoginPage.js", () => ({
   LoginPage: ({
@@ -120,20 +162,27 @@ const member = {
   remember: true,
 };
 const room = {
-  id: "fixture-room",
+  roomId: "11111111-1111-4111-8111-111111111111",
   name: "Kỳ hữu",
-  hostName: "Chủ phòng",
-  hostGuest: false,
+  host: { displayName: "Chủ phòng", isGuest: false },
   timeMinutes: 10,
   status: "waiting",
-  seats: 1,
-  viewers: 0,
-  spectatorLimit: 5,
+  emptySeats: 1,
+  spectators: 0,
+  viewerLimit: 5,
+  canPlay: true,
+  canWatch: true,
+  publicOpenedAt: "2026-10-11T00:00:00Z",
 };
 const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status });
 beforeEach(() => {
   vi.clearAllMocks();
+  mock.sockets.length = 0;
+  mock.getRealtimeProof.mockResolvedValue({
+    accessToken: "synthetic-bearer",
+    appSession: "a".repeat(43),
+  });
   HTMLDialogElement.prototype.showModal = function () {
     this.setAttribute("open", "");
   };
@@ -144,7 +193,7 @@ beforeEach(() => {
   mock.logout.mockResolvedValue(undefined);
   mock.refresh.mockResolvedValue(undefined);
   mock.state = { status: "anonymous" };
-  mock.authorizedFetch.mockResolvedValue(reply({ rooms: [] }));
+  mock.authorizedFetch.mockResolvedValue(reply([]));
   window.history.replaceState(null, "", "/login");
 });
 afterEach(() => cleanup());
@@ -222,24 +271,29 @@ it("preserves a room destination through login and handles browser Back/Forward 
 it("loads validated public rooms and opens the actual create dialog", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  mock.authorizedFetch.mockResolvedValue(reply({ rooms: [room] }));
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(screen.getByText(room.name)).toBeTruthy());
-  expect(mock.authorizedFetch).toHaveBeenCalledWith(
-    "/rooms/public",
-    expect.objectContaining({ signal: expect.any(AbortSignal) }),
-  );
+  expect(mock.authorizedFetch).toHaveBeenCalledWith("/public-rooms", {
+    method: "GET",
+  });
   fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(screen.getByRole("dialog")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Huỷ" }));
+  feedRooms([room]);
+  mock.authorizedFetch.mockResolvedValueOnce(
+    reply({ roomId: room.roomId, version: 2, role: "spectator" }),
+  );
   fireEvent.click(screen.getByRole("button", { name: "Vào xem" }));
-  expect(window.location.pathname).toBe("/rooms/fixture-room");
-  expect(window.location.search).toBe("?intent=spectator");
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe("/rooms/" + room.roomId),
+  );
+  expect(window.location.search).toBe("");
 });
 it.each([
   reply({ private: "hidden" }, 404),
-  reply({ rooms: [{ ...room, seats: 9, name: "private fixture" }] }),
-  reply({ rooms: [room, room] }),
+  reply([{ ...room, emptySeats: 9, name: "private fixture" }]),
+  reply([room, room]),
 ])(
   "treats unavailable or malformed room data as error, not empty, and hides private error details",
   async (response) => {
@@ -255,11 +309,11 @@ it.each([
 
 it.each([
   { ...room, status: ["waiting"] },
-  { ...room, id: "bad\nroom" },
+  { ...room, roomId: "bad\nroom" },
 ])("rejects values that are not a valid PublicRoom", async (invalidRoom) => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  mock.authorizedFetch.mockResolvedValue(reply({ rooms: [invalidRoom] }));
+  mock.authorizedFetch.mockResolvedValue(reply([invalidRoom]));
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
 });
@@ -268,7 +322,7 @@ it("retries a failed public-room request and renders empty only after valid succ
   window.history.replaceState(null, "", "/lobby");
   mock.authorizedFetch
     .mockRejectedValueOnce(new Error("private upstream"))
-    .mockResolvedValueOnce(reply({ rooms: [] }));
+    .mockResolvedValueOnce(reply([]));
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
   expect(screen.queryByText("private upstream")).toBeNull();
@@ -278,7 +332,7 @@ it("retries a failed public-room request and renders empty only after valid succ
   );
   expect(mock.authorizedFetch).toHaveBeenCalledTimes(2);
 });
-it("aborts room loading on route leave and ignores its stale response", async () => {
+it("closes feed on route leave and ignores its stale HTTP response", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
   let resolve!: (response: Response) => void;
@@ -290,9 +344,9 @@ it("aborts room loading on route leave and ignores its stale response", async ()
   );
   render(createElement(AppRouter));
   act(() => navigate("/friends"));
-  expect(mock.authorizedFetch.mock.calls[0]![1].signal.aborted).toBe(true);
+  expect(mock.sockets[0]!.closed).toBe(true);
   await act(async () => {
-    resolve(reply({ rooms: [room] }));
+    resolve(reply([room]));
   });
   expect(screen.queryByText(room.name)).toBeNull();
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Bạn bè");
@@ -372,7 +426,7 @@ it("creates through the authorized form then enters the actual server room route
   mock.authorizedFetch.mockImplementation(async (path: string) =>
     path === "/rooms"
       ? reply({ roomId, version: 1, role: "red", inviteCode: "ABCDEFGH" })
-      : reply({ rooms: [] }),
+      : reply([]),
   );
   render(createElement(AppRouter));
   await vi.waitFor(() =>
@@ -444,7 +498,7 @@ it("uses the lobby's entered room code without requesting it again", async () =>
     reply(
       url === "/rooms/join"
         ? { roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }
-        : { rooms: [] },
+        : [],
     ),
   );
   render(createElement(AppRouter));
@@ -463,4 +517,263 @@ it("uses the lobby's entered room code without requesting it again", async () =>
     code: "ABCDEFGH",
     preference: "auto",
   });
+});
+
+it("requires a validated feed before allowing admission and wraps only the member proof", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(screen.getByText(room.name)).toBeTruthy());
+  expect(
+    screen
+      .getByRole("button", { name: "Vào chơi" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  await vi.waitFor(() =>
+    expect(mock.sockets[0]!.auth).toEqual({
+      kind: "member",
+      accessToken: "synthetic-bearer",
+      appSession: "a".repeat(43),
+    }),
+  );
+  act(() => mock.sockets[0]!.handlers.get("connect")?.());
+  expect(
+    screen
+      .getByRole("button", { name: "Vào xem" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  feedRooms([room]);
+  expect(
+    screen
+      .getByRole("button", { name: "Vào chơi" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+});
+it("never lets stale HTTP restore a room removed by the newer feed", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  let done!: (r: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((r) => {
+        done = r;
+      }),
+  );
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  expect(screen.getByText(room.name)).toBeTruthy();
+  feedRooms([]);
+  await act(async () => done(reply([room])));
+  expect(screen.queryByText(room.name)).toBeNull();
+  expect(screen.getByText("Chưa có phòng công khai")).toBeTruthy();
+});
+it("waits for join ACK, blocks a double join and carries the canonical fallback notice", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  let done!: (r: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((r) => {
+        done = r;
+      }),
+  );
+  const play = screen.getByRole("button", { name: "Vào chơi" });
+  fireEvent.click(play);
+  fireEvent.click(play);
+  expect(window.location.pathname).toBe("/lobby");
+  expect(
+    mock.authorizedFetch.mock.calls.filter(([url]) =>
+      String(url).endsWith("/join"),
+    ),
+  ).toHaveLength(1);
+  await act(async () =>
+    done(
+      reply({
+        roomId: room.roomId,
+        version: 2,
+        role: "spectator",
+        notice: "Ghế vừa có người, bạn đang xem trận",
+      }),
+    ),
+  );
+  expect(window.location.pathname).toBe("/rooms/" + room.roomId);
+  expect(screen.getByText("Ghế vừa có người, bạn đang xem trận")).toBeTruthy();
+});
+it.each(["disconnect", "error", "unmount"])(
+  "fences a pending join ACK after %s",
+  async (reason) => {
+    mock.state = member;
+    window.history.replaceState(null, "", "/lobby");
+    mock.authorizedFetch.mockResolvedValue(reply([room]));
+    render(createElement(AppRouter));
+    feedRooms([room]);
+    let done!: (r: Response) => void;
+    mock.authorizedFetch.mockImplementationOnce(
+      () =>
+        new Promise<Response>((r) => {
+          done = r;
+        }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Vào xem" }));
+    if (reason === "unmount") act(() => navigate("/friends"));
+    else
+      act(() =>
+        mock.sockets[0]!.handlers.get(
+          reason === "error" ? "public.error" : "disconnect",
+        )?.({ code: "PUBLIC_ROOMS_UNAVAILABLE", message: "PRIVATE_SECRET" }),
+      );
+    await act(async () =>
+      done(reply({ roomId: room.roomId, version: 2, role: "spectator" })),
+    );
+    expect(window.location.pathname).toBe(
+      reason === "unmount" ? "/friends" : "/lobby",
+    );
+    expect(screen.queryByText("PRIVATE_SECRET")).toBeNull();
+  },
+);
+it("refreshes once after a private-room join failure without retrying the POST or leaking its error", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  mock.authorizedFetch
+    .mockResolvedValueOnce(
+      reply({ code: "ROOM_NOT_PUBLIC", message: "PRIVATE_SECRET" }, 409),
+    )
+    .mockResolvedValueOnce(reply([]));
+  fireEvent.click(screen.getByRole("button", { name: "Vào chơi" }));
+  await vi.waitFor(() =>
+    expect(
+      mock.authorizedFetch.mock.calls.filter(
+        ([url]) => url === "/public-rooms",
+      ),
+    ).toHaveLength(2),
+  );
+  expect(window.location.pathname).toBe("/lobby");
+  expect(
+    mock.authorizedFetch.mock.calls.filter(([url]) =>
+      String(url).endsWith("/join"),
+    ),
+  ).toHaveLength(1);
+  expect(screen.queryByText("PRIVATE_SECRET")).toBeNull();
+  expect(screen.queryByText(room.name)).toBeNull();
+});
+
+it("keeps admission disabled across reconnect until a fresh snapshot and rejects the previous join ACK", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  let done!: (r: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((r) => {
+        done = r;
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Vào chơi" }));
+  act(() => {
+    mock.sockets[0]!.handlers.get("disconnect")?.();
+    mock.sockets[0]!.handlers.get("connect")?.();
+  });
+  expect(
+    screen
+      .getByRole("button", { name: "Vào xem" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  feedRooms([room]);
+  await act(async () =>
+    done(reply({ roomId: room.roomId, version: 2, role: "black" })),
+  );
+  expect(window.location.pathname).toBe("/lobby");
+  expect(
+    screen
+      .getByRole("button", { name: "Vào xem" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+});
+it("maps canonical canPlay=false even when the presentation has an empty seat", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  feedRooms([{ ...room, canPlay: false }]);
+  expect(screen.queryByRole("button", { name: "Vào chơi" })).toBeNull();
+  expect(
+    screen
+      .getByRole("button", { name: "Vào xem" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+});
+it("ignores a stale HTTP error after a valid live snapshot", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  let reject!: (error: Error) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((_, no) => {
+        reject = no;
+      }),
+  );
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  await act(async () => reject(Error("PRIVATE_UPSTREAM")));
+  expect(screen.getByText(room.name)).toBeTruthy();
+  expect(screen.queryByRole("alert")).toBeNull();
+  expect(
+    screen
+      .getByRole("button", { name: "Vào chơi" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+});
+
+it("fences StrictMode's discarded feed and HTTP requests behind the newest live snapshot", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  const done: ((response: Response) => void)[] = [];
+  mock.authorizedFetch.mockImplementation(
+    () => new Promise<Response>((resolve) => done.push(resolve)),
+  );
+  render(createElement(StrictMode, null, createElement(AppRouter)));
+  expect(mock.sockets).toHaveLength(2);
+  expect(mock.sockets[0]!.closed).toBe(true);
+  expect(mock.sockets[1]!.closed).toBe(false);
+  feedRooms([]);
+  await act(async () => {
+    for (const resolve of done) resolve(reply([room]));
+  });
+  expect(screen.queryByText(room.name)).toBeNull();
+  expect(screen.getByText("Chưa có phòng công khai")).toBeTruthy();
+  expect(mock.sockets[0]!.auth).toBeUndefined();
+});
+it("trusts a committed join ACK when a same-connection feed update removes the discovery row", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  let done!: (response: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((resolve) => {
+        done = resolve;
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Vào chơi" }));
+  act(() =>
+    mock.sockets[0]!.handlers.get("public.rooms")?.({
+      rooms: [],
+      serverNow: "2026-10-11T01:00:01Z",
+    }),
+  );
+  await act(async () =>
+    done(reply({ roomId: room.roomId, version: 2, role: "black" })),
+  );
+  expect(window.location.pathname).toBe("/rooms/" + room.roomId);
 });

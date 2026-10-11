@@ -3,13 +3,20 @@ import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import {
   cleanup,
+  within,
   render,
   screen,
   act,
   fireEvent,
+  waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
+import type {
+  CommandAcknowledgement,
+  RoomSnapshot,
+  ChatChannel,
+  ChatPage,
+} from "@xiangqi/shared";
 import {
   initialPosition,
   serializePosition,
@@ -78,12 +85,30 @@ function setup(state = snapshot) {
   const client = {
     snapshot: vi.fn().mockResolvedValue(state),
     switchSeat: vi.fn(),
+    changeVisibility: vi.fn(),
     leave: vi.fn().mockResolvedValue({ roomId: "room", left: true }),
     create: vi.fn(),
     join: vi.fn(),
   };
   const refresh = vi.fn().mockResolvedValue(state);
   const close = vi.fn();
+  const readChat = vi
+    .fn()
+    .mockImplementation(async (channel: ChatChannel): Promise<ChatPage> => ({
+      roomId: "room",
+      channel,
+      roomVersion: state.version,
+      scopeToken: (channel === "ROOM_PUBLIC" ? "a" : "b").repeat(64),
+      canSend: true,
+      messages: [],
+      nextCursor: 0,
+      hasMore: false,
+    }));
+  const sendChat = vi.fn().mockResolvedValue({
+    messageId: "22222222-2222-4222-8222-222222222222",
+    sequence: 1,
+    createdAt: "2026-10-11T00:00:01Z",
+  });
   const onLeft = vi.fn();
   const rendered = render(
     createElement(RoomPage, {
@@ -94,7 +119,7 @@ function setup(state = snapshot) {
       onLeft,
       connect: (input) => {
         handlers = input;
-        return { command, close, refresh };
+        return { command, close, refresh, readChat, sendChat };
       },
     }),
   );
@@ -103,6 +128,11 @@ function setup(state = snapshot) {
     command,
     refresh,
     close,
+    readChat,
+    sendChat,
+    chatChanged: (
+      notice: Parameters<NonNullable<RoomConnectionInput["onChatChanged"]>>[0],
+    ) => act(() => handlers.onChatChanged?.(notice)),
     onLeft,
     unmount: rendered.unmount,
     closed: () => act(() => handlers.onClosed?.("Phòng đã đóng")),
@@ -906,4 +936,514 @@ it("opponent reconnect notice uses canonical grace while the local board remains
   expect(
     screen.queryByRole("region", { name: "Trạng thái nối lại" }),
   ).toBeNull();
+});
+
+it("only the connected host sees room settings, including during a match", async () => {
+  const f = setup(clockState());
+  await f.ready();
+  expect(screen.getByRole("button", { name: "Cài đặt phòng" })).toBeTruthy();
+  f.publish({
+    ...clockState(),
+    version: 4,
+    room: { ...clockState().room, hostId: "b" },
+  });
+  expect(screen.queryByRole("button", { name: "Cài đặt phòng" })).toBeNull();
+});
+it("mode save uses current CAS, waits for canonical HTTP and hides the old invite on lock", async () => {
+  const f = setup();
+  await f.ready();
+  let finish!: (value: typeof snapshot) => void;
+  f.client.changeVisibility.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const u = userEvent.setup();
+  await u.click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  await u.click(screen.getByRole("radio", { name: /Khóa phòng/ }));
+  await u.click(screen.getByRole("button", { name: "Lưu thay đổi" }));
+  await u.click(screen.getByRole("button", { name: "Khóa phòng" }));
+  expect(f.client.changeVisibility).toHaveBeenCalledExactlyOnceWith(
+    "room",
+    3,
+    "LOCKED",
+  );
+  expect(screen.getByText("K7M2XQP4")).toBeTruthy();
+  await act(async () =>
+    finish({
+      ...snapshot,
+      version: 4,
+      room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
+    }),
+  );
+  expect(screen.queryByText("K7M2XQP4")).toBeNull();
+  expect(f.refresh).toHaveBeenCalledOnce();
+  expect(f.command).not.toHaveBeenCalled();
+});
+it("an obsolete settings ACK cannot overwrite a newer host or mode", async () => {
+  const f = setup();
+  await f.ready();
+  let finish!: (value: typeof snapshot) => void;
+  f.client.changeVisibility.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const u = userEvent.setup();
+  await u.click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  await u.click(screen.getByRole("radio", { name: /Công khai/ }));
+  await u.click(screen.getByRole("button", { name: "Lưu thay đổi" }));
+  f.publish({
+    ...snapshot,
+    version: 5,
+    room: {
+      ...snapshot.room,
+      hostId: "b",
+      visibility: "LOCKED",
+      inviteCode: null,
+    },
+  });
+  await act(async () =>
+    finish({
+      ...snapshot,
+      version: 4,
+      room: { ...snapshot.room, visibility: "PUBLIC" },
+    }),
+  );
+  expect(screen.queryByText("K7M2XQP4")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Cài đặt phòng" })).toBeNull();
+});
+it("unlock displays only the new server invite", async () => {
+  const f = setup({
+    ...snapshot,
+    room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
+  });
+  await f.ready();
+  f.client.changeVisibility.mockResolvedValue({
+    ...snapshot,
+    version: 4,
+    room: { ...snapshot.room, inviteCode: "NEW8CODE" },
+  });
+  const u = userEvent.setup();
+  await u.click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  await u.click(screen.getByRole("radio", { name: /Chỉ qua mã/ }));
+  await u.click(screen.getByRole("button", { name: "Lưu thay đổi" }));
+  expect(await screen.findByText("NEW8CODE")).toBeTruthy();
+  expect(screen.queryByText("K7M2XQP4")).toBeNull();
+});
+
+it("settings uses the latest room version while open and preserves the mode on a failed save", async () => {
+  const f = setup();
+  await f.ready();
+  const u = userEvent.setup();
+  await u.click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  f.publish({ ...snapshot, version: 7 });
+  f.client.changeVisibility.mockRejectedValue(
+    new RoomRequestError("VERSION_STALE", 409),
+  );
+  f.refresh.mockResolvedValue({ ...snapshot, version: 8 });
+  await u.click(screen.getByRole("radio", { name: /Công khai/ }));
+  await u.click(screen.getByRole("button", { name: "Lưu thay đổi" }));
+  expect(f.client.changeVisibility).toHaveBeenCalledExactlyOnceWith(
+    "room",
+    7,
+    "PUBLIC",
+  );
+  expect(await screen.findByText(/Chế độ hiện tại: Chỉ qua mã/)).toBeTruthy();
+  expect(screen.getByRole("dialog").textContent).toContain("Phòng đã thay đổi");
+  expect(screen.getByText("K7M2XQP4")).toBeTruthy();
+});
+it("a settings ACK after disconnect is ignored even after bare reconnect", async () => {
+  const f = setup();
+  await f.ready();
+  let finish!: (v: typeof snapshot) => void;
+  f.client.changeVisibility.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const u = userEvent.setup();
+  await u.click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  await u.click(screen.getByRole("radio", { name: /Công khai/ }));
+  await u.click(screen.getByRole("button", { name: "Lưu thay đổi" }));
+  f.disconnect();
+  f.reconnect();
+  await act(async () =>
+    finish({
+      ...snapshot,
+      version: 4,
+      room: { ...snapshot.room, visibility: "PUBLIC" },
+    }),
+  );
+  expect(screen.queryByText("Đã cập nhật chế độ phòng.")).toBeNull();
+  expect(f.refresh).not.toHaveBeenCalled();
+  expect(screen.getByText(/Chế độ hiện tại: Chỉ qua mã/)).toBeTruthy();
+});
+
+it("closes settings when the authoritative match result arrives", async () => {
+  const f = setup(playing());
+  await f.ready();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Cài đặt phòng" }));
+  f.publish(terminal());
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  expect(screen.queryByRole("dialog", { name: "Cài đặt phòng" })).toBeNull();
+});
+
+function actionable(): RoomSnapshot {
+  return {
+    ...playing(),
+    draw: { offers: [], remainingMoves: { red: 0, black: 0 } },
+  };
+}
+it("draw sends both canonical versions once and waits for the server proposal", async () => {
+  const state = actionable(),
+    f = setup(state);
+  await f.ready();
+  let finish!: (value: unknown) => void;
+  f.command.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  expect(f.command).toHaveBeenCalledExactlyOnceWith(
+    {
+      type: "match.draw.offer",
+      payload: { matchId: state.match!.id, matchVersion: 0 },
+    },
+    3,
+  );
+  expect(screen.queryByText("Bạn đang xin hòa")).toBeNull();
+  await act(async () =>
+    finish({
+      status: "ok",
+      commandId: "draw",
+      snapshot: {
+        ...state,
+        version: 4,
+        match: { ...state.match!, version: 1 },
+        draw: {
+          offers: [
+            {
+              id: "22345678-1234-4234-8234-123456789abc",
+              sender: "red",
+              expiresAt: "2026-10-11T00:00:30Z",
+            },
+          ],
+          remainingMoves: { red: 0, black: 0 },
+        },
+      },
+    }),
+  );
+  expect(screen.getByText("Bạn đang xin hòa")).toBeTruthy();
+});
+it("resigning out of turn requires confirmation and keeps the active board until ACK", async () => {
+  const state = {
+      ...actionable(),
+      match: { ...playing().match!, turn: "black" as const },
+    },
+    f = setup(state);
+  await f.ready();
+  f.command.mockImplementation(() => new Promise(() => {}));
+  fireEvent.click(screen.getByRole("button", { name: "Đầu hàng" }));
+  expect(f.command).not.toHaveBeenCalled();
+  fireEvent.click(
+    within(screen.getByRole("dialog", { name: "Đầu hàng?" })).getByRole(
+      "button",
+      { name: "Đầu hàng" },
+    ),
+  );
+  expect(f.command).toHaveBeenCalledExactlyOnceWith(
+    {
+      type: "match.resign",
+      payload: { matchId: state.match.id, matchVersion: 0 },
+    },
+    3,
+  );
+  expect(screen.getByLabelText("Bàn cờ đang thi đấu")).toBeTruthy();
+  expect(screen.queryByText("Bạn thua")).toBeNull();
+});
+it("terminal push invalidates a pending draw error without reopening actions", async () => {
+  const state = actionable(),
+    f = setup(state);
+  await f.ready();
+  let fail!: (reason: unknown) => void;
+  f.command.mockImplementation(
+    () =>
+      new Promise((_resolve, reject) => {
+        fail = reject;
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  f.publish({
+    ...state,
+    version: 4,
+    room: { ...state.room, status: "WAITING" },
+    match: {
+      ...state.match!,
+      status: "FINISHED",
+      winner: "black",
+      endedAt: "2026-10-11T00:00:01Z",
+      result: "RESIGN",
+      version: 1,
+    },
+    draw: null,
+  });
+  await act(async () => fail(Error("private-provider-detail")));
+  expect(screen.queryByRole("button", { name: "Xin hòa" })).toBeNull();
+  expect(
+    screen.queryByText(/Chưa nhận được xác nhận thao tác ván cờ/),
+  ).toBeNull();
+  expect(screen.queryByText("private-provider-detail")).toBeNull();
+});
+it("read-only and offline players cannot issue match actions", async () => {
+  const state = actionable(),
+    f = setup({
+      ...state,
+      control: { mode: "readonly", generation: 2, reason: "superseded" },
+    });
+  await f.ready();
+  expect(
+    (screen.getByRole("button", { name: "Xin hòa" }) as HTMLButtonElement)
+      .disabled,
+  ).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  f.disconnect();
+  expect(f.command).not.toHaveBeenCalled();
+});
+
+it("draw conflict consumes only the authoritative ACK snapshot and keeps a safe conflict message", async () => {
+  const state = actionable(),
+    f = setup(state);
+  await f.ready();
+  f.command.mockResolvedValue({
+    status: "error",
+    commandId: "x",
+    error: { code: "MATCH_VERSION_CONFLICT", message: "private-provider" },
+    snapshot: {
+      ...state,
+      version: 4,
+      match: { ...state.match!, version: 1 },
+      draw: { offers: [], remainingMoves: { red: 5, black: 0 } },
+    },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  expect(
+    await screen.findByText(
+      "Ván cờ đã thay đổi. Kiểm tra trạng thái mới rồi thử lại.",
+    ),
+  ).toBeTruthy();
+  expect(
+    screen.getByText("Cần đi thêm 5 nước của bạn để xin hòa lại."),
+  ).toBeTruthy();
+  expect(screen.queryByText("private-provider")).toBeNull();
+  expect(f.command).toHaveBeenCalledTimes(1);
+});
+it("pre-disconnect draw ACK cannot overwrite a fresh match or clear its pending action", async () => {
+  const state = actionable(),
+    f = setup(state);
+  await f.ready();
+  let first!: (value: unknown) => void;
+  f.command.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        first = resolve;
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  f.disconnect();
+  f.reconnect();
+  const next = {
+    ...state,
+    version: 5,
+    match: { ...state.match!, id: "32345678-1234-4234-8234-123456789abc" },
+  };
+  f.publish(next);
+  f.command.mockImplementationOnce(() => new Promise(() => {}));
+  fireEvent.click(screen.getByRole("button", { name: "Xin hòa" }));
+  await act(async () =>
+    first({
+      status: "ok",
+      commandId: "old",
+      snapshot: { ...state, version: 99 },
+    }),
+  );
+  expect(
+    (screen.getByRole("button", { name: "Xin hòa" }) as HTMLButtonElement)
+      .disabled,
+  ).toBe(true);
+  expect(f.command).toHaveBeenCalledTimes(2);
+  expect(f.command.mock.calls[1]).toEqual([
+    {
+      type: "match.draw.offer",
+      payload: { matchId: next.match.id, matchVersion: 0 },
+    },
+    5,
+  ]);
+});
+
+it("active player Leave warns before HTTP, Stay preserves the game, confirmation waits for ACK", async () => {
+  const state = actionable(),
+    f = setup(state);
+  await f.ready();
+  fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
+  expect(f.client.leave).not.toHaveBeenCalled();
+  expect(
+    screen.getByText(
+      "Rời phòng lúc này được tính là đầu hàng. Bạn sẽ thua ván này.",
+    ),
+  ).toBeTruthy();
+  fireEvent.click(
+    within(screen.getByRole("dialog", { name: "Rời phòng?" })).getByRole(
+      "button",
+      { name: "Ở lại" },
+    ),
+  );
+  expect(f.client.leave).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
+  let finish!: (value: unknown) => void;
+  f.client.leave.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  fireEvent.click(
+    within(screen.getByRole("dialog", { name: "Rời phòng?" })).getByRole(
+      "button",
+      { name: "Rời phòng" },
+    ),
+  );
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", 3);
+  expect(f.onLeft).not.toHaveBeenCalled();
+  await act(async () => finish({ roomId: "room", left: true }));
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+it("spectators Leave without claiming resignation or opening player confirmation", async () => {
+  const f = setup({ ...actionable(), role: "spectator", draw: null });
+  await f.ready();
+  fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", 3);
+  expect(screen.queryByRole("dialog", { name: "Rời phòng?" })).toBeNull();
+});
+
+it("initial HTTP PLAYING view cannot resign before the fresh socket match and confirmation", async () => {
+  const f = setup(actionable());
+  await screen.findByRole("heading", { name: "Kỳ hữu" });
+  fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
+  expect(f.client.leave).not.toHaveBeenCalled();
+});
+
+it("loads actual room chat in waiting, keeps private by default and exposes independent public chat", async () => {
+  const f = setup();
+  await f.ready();
+  expect(
+    await screen.findByRole("textbox", { name: "Tin nhắn Kênh riêng" }),
+  ).toBeTruthy();
+  expect(
+    screen.queryByRole("textbox", { name: "Tin nhắn Kênh chung" }),
+  ).toBeNull();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Hiện Kênh chung" }));
+  expect(
+    screen.getByRole("textbox", { name: "Tin nhắn Kênh chung" }),
+  ).toBeTruthy();
+  expect(f.readChat).toHaveBeenCalledWith("PLAYERS_PRIVATE", 0);
+  expect(f.readChat).toHaveBeenCalledWith("ROOM_PUBLIC", 0);
+});
+it("room chat retry retains raw draft and the command ID while messages remain server-owned", async () => {
+  const f = setup();
+  await f.ready();
+  const user = userEvent.setup();
+  await waitFor(() =>
+    expect(
+      (
+        screen.getByRole("textbox", {
+          name: "Tin nhắn Kênh riêng",
+        }) as HTMLTextAreaElement
+      ).disabled,
+    ).toBe(false),
+  );
+  await user.type(
+    await screen.findByRole("textbox", { name: "Tin nhắn Kênh riêng" }),
+    "Tin thử",
+  );
+  f.sendChat.mockRejectedValueOnce(new Error("Bạn gửi quá nhanh"));
+  await user.click(screen.getByRole("button", { name: "Gửi Kênh riêng" }));
+  expect(await screen.findByText("Bạn gửi quá nhanh")).toBeTruthy();
+  expect(
+    (
+      screen.getByRole("textbox", {
+        name: "Tin nhắn Kênh riêng",
+      }) as HTMLTextAreaElement
+    ).value,
+  ).toBe("Tin thử");
+  await user.click(screen.getByRole("button", { name: "Thử lại Kênh riêng" }));
+  expect(f.sendChat.mock.calls[0]![2]).toBe(f.sendChat.mock.calls[1]![2]);
+  expect(f.sendChat.mock.calls[1]!.slice(0, 2)).toEqual([
+    "PLAYERS_PRIVATE",
+    "Tin thử",
+  ]);
+  expect(screen.queryByText("Tin thử", { selector: "li p" })).toBeNull();
+  expect(await screen.findByText("Đã gửi")).toBeTruthy();
+});
+it("a readonly spectator can send canonical public chat without gaining game control or private access", async () => {
+  const f = setup({
+    ...snapshot,
+    role: "spectator",
+    control: { mode: "readonly", generation: 0, reason: "not_allowed" },
+  });
+  await f.ready();
+  const user = userEvent.setup();
+  await waitFor(() =>
+    expect(
+      (
+        screen.getByRole("textbox", {
+          name: "Tin nhắn Kênh chung",
+        }) as HTMLTextAreaElement
+      ).disabled,
+    ).toBe(false),
+  );
+  await user.type(
+    await screen.findByRole("textbox", { name: "Tin nhắn Kênh chung" }),
+    "Chào kỳ hữu",
+  );
+  await user.click(screen.getByRole("button", { name: "Gửi Kênh chung" }));
+  expect(f.sendChat).toHaveBeenCalledWith(
+    "ROOM_PUBLIC",
+    "Chào kỳ hữu",
+    expect.any(String),
+  );
+  expect(f.readChat.mock.calls.every((call) => call[0] === "ROOM_PUBLIC")).toBe(
+    true,
+  );
+  expect(screen.queryByText("Kênh riêng người chơi")).toBeNull();
+  expect(f.command).not.toHaveBeenCalled();
+});
+it("failed initial chat loading offers a real readonly retry without inventing messages", async () => {
+  const f = setup();
+  f.readChat.mockRejectedValueOnce(new Error("private-provider-token"));
+  await f.ready();
+  const retry = await screen.findByRole("button", {
+    name: "Tải lại Kênh chung",
+  });
+  expect(screen.queryByText("private-provider-token")).toBeNull();
+  await userEvent.setup().click(retry);
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("button", { name: "Tải lại Kênh chung" }),
+    ).toBeNull(),
+  );
+  expect(
+    f.readChat.mock.calls.filter((call) => call[0] === "ROOM_PUBLIC"),
+  ).toHaveLength(2);
+  expect(f.sendChat).not.toHaveBeenCalled();
 });
