@@ -52,6 +52,7 @@ export interface RoomView {
     connected: { red: boolean; black: boolean };
     graceUntil: { red: string | null; black: string | null };
     countdown: { token: string; dueAt: string } | null;
+    downOffer: { id: string; inviteeId: string; expiresAt: string } | null;
   };
   role: "red" | "black" | "spectator";
 }
