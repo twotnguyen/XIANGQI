@@ -792,12 +792,43 @@ export class RoomStore {
   }
   async leave(s: RoomScope, id: string) {
     const { r, member } = await this.member(s, id);
-    if (r.status === "PLAYING" && member.role === "PLAYER")
-      throw new RoomError(
-        "MATCH_LIFECYCLE_UNAVAILABLE",
-        "Chưa thể xử lý rời ván",
-        503,
-      );
+    if (r.status === "PLAYING" && member.role === "PLAYER") {
+      if (!this.matches?.leave || !r.current_match_id)
+        throw new RoomError(
+          "MATCH_LIFECYCLE_UNAVAILABLE",
+          "Chưa thể xử lý rời ván",
+          503,
+        );
+      await this.matches.leave(s.client, {
+        roomId: id,
+        matchId: r.current_match_id,
+        actor: s.actor,
+      });
+      const current = (
+        await s.client.query<{
+          status: string;
+          current_match_id: string | null;
+        }>("SELECT status,current_match_id FROM public.rooms WHERE id=$1", [id])
+      ).rows[0];
+      const ended = (
+        await s.client.query<{ status: string }>(
+          "SELECT status FROM public.matches WHERE id=$1 AND room_id=$2",
+          [r.current_match_id, id],
+        )
+      ).rows[0];
+      if (
+        !current ||
+        current.status === "PLAYING" ||
+        current.current_match_id !== null ||
+        !ended ||
+        !["FINISHED", "INTERRUPTED"].includes(ended.status)
+      )
+        throw new RoomError(
+          "MATCH_LIFECYCLE_UNAVAILABLE",
+          "Chưa thể xử lý rời ván",
+          503,
+        );
+    }
     await this.release(s, id, s.actor.userId, member.role === "PLAYER");
   }
   private async release(
