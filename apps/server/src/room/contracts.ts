@@ -44,6 +44,7 @@ export interface RoomView {
     hostId: string | null;
     name: string;
     visibility: "PUBLIC" | "CODE_ONLY" | "LOCKED";
+    inviteCode: string | null;
     timeMinutes: number;
     viewerLimit: number;
     seats: { red: string | null; black: string | null };
