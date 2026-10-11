@@ -192,7 +192,7 @@ describe.skipIf(!databaseUrl)(
         const first = await f.peer(f.viewer);
         expect(first.latest()).toMatchObject({
           role: "spectator",
-          control: { mode: "readonly", generation: 0, reason: "not_allowed" },
+          control: { mode: "readonly", generation: 1, reason: "not_allowed" },
         });
         const initial = await f.presence();
         expect(initial).toMatchObject({
@@ -208,7 +208,12 @@ describe.skipIf(!databaseUrl)(
               [f.viewer.id, f.entry.roomId],
             )
           ).rows[0].n,
-        ).toBe(0);
+        ).toBe(1);
+        // The durable row owns this spectator's chat tab, never permission to play.
+        expect(await first.ready()).toMatchObject({
+          status: "error",
+          error: { code: "TAB_READ_ONLY" },
+        });
         const second = await f.peer(f.viewer);
         const secondId = second.socket.id;
         await waitFor(f.presence, (p) => p?.connection_id === secondId);
@@ -274,7 +279,7 @@ describe.skipIf(!databaseUrl)(
         const watching = await f.peer(f.viewer);
         expect(watching.latest()).toMatchObject({
           role: "spectator",
-          control: { mode: "readonly", generation: 0 },
+          control: { mode: "readonly", generation: 1 },
           match: { id: matchId, status: "ACTIVE" },
         });
         expect((await f.presence()).connected).toBe(true);
