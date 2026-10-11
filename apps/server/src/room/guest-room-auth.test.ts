@@ -11,6 +11,7 @@ import {
   GuestRoomAuthorizer,
   type GuestRoomRequestProof,
 } from "./guest-room-auth.js";
+import { RoomRosterChanged } from "./contracts.js";
 import { RoomTransactions, type RoomActorProof } from "./room-transactions.js";
 import {
   baseline,
@@ -383,6 +384,90 @@ describe.skipIf(!databaseUrl)(
         dependency.mockRestore();
       }
     });
+    it.each(["authorize", "finish"] as const)(
+      "preserves lifecycle roster retry and rolls back partial cleanup/work (%s)",
+      async (phase) => {
+        const f = await fixture(false, true),
+          extra = await f.service.create("Retry Actor"),
+          actor = await f.authorizer.resolve(f.proof),
+          changed = new RoomRosterChanged([extra.userId]);
+        await pool.query(
+          "CREATE TABLE public.guest_retry_probe(cleanup integer NOT NULL,work integer NOT NULL); INSERT INTO public.guest_retry_probe VALUES(0,0); GRANT SELECT,UPDATE ON public.guest_retry_probe TO app_server",
+        );
+        const attempts: { cleanup: number; work: number; members: number }[] =
+          [];
+        vi.mocked(f.port.end).mockImplementation(async (client, id) => {
+          const probe = (
+            await client.query(
+              "SELECT cleanup,work FROM public.guest_retry_probe",
+            )
+          ).rows[0];
+          const members = (
+            await client.query(
+              "SELECT count(*)::int AS n FROM public.room_members WHERE user_id=$1",
+              [id],
+            )
+          ).rows[0].n;
+          attempts.push({ ...probe, members });
+          await client.query(
+            "UPDATE public.guest_retry_probe SET cleanup=cleanup+1",
+          );
+          await client.query(
+            "DELETE FROM public.room_members WHERE user_id=$1",
+            [id],
+          );
+          if (attempts.length === 1) throw changed;
+        });
+        if (phase === "authorize") f.setNow(new Date(f.guest.expiresAt));
+        const scopes: ReadonlySet<string>[] = [],
+          caught: unknown[] = [];
+        const work = vi.fn(
+          async (s: Parameters<GuestRoomAuthorizer["finish"]>[1]) => {
+            await s.client.query(
+              "UPDATE public.guest_retry_probe SET work=work+1",
+            );
+            f.setNow(new Date(f.guest.expiresAt));
+            await f.authorizer.finish(f.proof, s).catch((error) => {
+              caught.push(error);
+              throw error;
+            });
+          },
+        );
+        const result = await coordinator.withRoom(
+          { actor, roomIds: [f.roomId] },
+          (p) => {
+            scopes.push(p.lockedActorIds);
+            return f.authorizer.authorize(f.proof, p).catch((error) => {
+              caught.push(error);
+              throw error;
+            });
+          },
+          work,
+        );
+        expect(result).toEqual({ status: "ended" });
+        expect(caught).toHaveLength(1);
+        expect(caught[0]).toBe(changed);
+        expect(attempts).toEqual([
+          { cleanup: 0, work: phase === "finish" ? 1 : 0, members: 1 },
+          { cleanup: 0, work: 0, members: 1 },
+        ]);
+        expect(scopes[0]!.has(extra.userId)).toBe(false);
+        expect(scopes.at(-1)!.has(extra.userId)).toBe(true);
+        expect(work).toHaveBeenCalledTimes(phase === "finish" ? 1 : 0);
+        expect(
+          (
+            await pool.query(
+              "SELECT cleanup,work FROM public.guest_retry_probe",
+            )
+          ).rows,
+        ).toEqual([{ cleanup: 1, work: 0 }]);
+        expect(await state(f.guest.userId)).toEqual({
+          sessions: [],
+          name: "Khách",
+          members: [],
+        });
+      },
+    );
     it("maps known Guest errors without forwarding raw error payloads", async () => {
       const f = await fixture(),
         a = await f.authorizer.resolve(f.proof),
