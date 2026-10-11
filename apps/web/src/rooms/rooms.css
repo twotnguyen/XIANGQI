@@ -231,3 +231,81 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Keep the board in the laptop viewport while a match is active. */
+.xq-ui .xq-main:has(.xq-room-page.is-playing) {
+  padding: 16px 24px;
+}
+.xq-room-page.is-playing {
+  min-height: 0;
+  padding: 0;
+}
+.is-playing .xq-room-header {
+  margin-bottom: 12px;
+}
+.is-playing .xq-room-header h1 {
+  font-size: 26px;
+}
+.is-playing .xq-room-header p {
+  margin: 4px 0 0;
+}
+.is-playing .xq-room-arena {
+  gap: 12px;
+}
+.is-playing .xq-room-seat {
+  min-height: 72px;
+  padding: 10px 16px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 2px;
+  text-align: start;
+  justify-items: start;
+}
+.is-playing .xq-room-seat .xq-seat-piece {
+  grid-row: 1 / 4;
+  width: 44px;
+  height: 44px;
+  font-size: 28px;
+}
+.is-playing .xq-room-seat h2 {
+  font-size: 16px;
+}
+.is-playing .xq-room-seat p {
+  font-size: 12px;
+}
+.is-playing .xq-room-board {
+  max-width: min(440px, calc((100dvh - 340px) * 0.9));
+}
+@media (max-width: 760px) {
+  .xq-ui .xq-main:has(.xq-room-page.is-playing) {
+    padding: 12px;
+  }
+  .is-playing .xq-room-content {
+    gap: 16px;
+  }
+  .is-playing .xq-room-header h1 {
+    font-size: 22px;
+  }
+  .is-playing .xq-room-seat {
+    padding: 8px;
+    grid-template-columns: 32px minmax(0, 1fr);
+    column-gap: 6px;
+  }
+  .is-playing .xq-room-seat .xq-seat-piece {
+    width: 32px;
+    height: 32px;
+    font-size: 22px;
+  }
+  .is-playing .xq-room-seat h2 {
+    font-size: 14px;
+  }
+  .is-playing .xq-room-board {
+    max-width: 440px;
+  }
+}
+
+.xq-room-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
