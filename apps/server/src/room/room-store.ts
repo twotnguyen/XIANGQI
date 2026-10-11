@@ -28,7 +28,7 @@ export class RoomStore {
       throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
     const row = (
       await client.query(
-        "SELECT id FROM public.rooms WHERE invite_code=$1 AND closed_at IS NULL",
+        "SELECT id FROM public.rooms WHERE invite_code=$1 AND closed_at IS NULL AND visibility<>'LOCKED'",
         [input],
       )
     ).rows[0];
@@ -39,7 +39,7 @@ export class RoomStore {
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
-        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())) ORDER BY r.id LIMIT 50",
+        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
       )
     ).rows.map((r) => r.id as string);
   }
@@ -102,20 +102,37 @@ export class RoomStore {
         "COMMAND_ID_REUSED",
         "Mã lệnh đã được dùng cho nội dung khác",
       );
-    if (
-      !(
-        await s.client.query(
-          "SELECT 1 FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id WHERE m.user_id=$1 AND m.room_id=$2 AND r.closed_at IS NULL",
-          [s.actor.userId, row.room_id],
-        )
-      ).rowCount
-    )
+    const current = (
+      await s.client.query(
+        "SELECT r.room_version,r.visibility,r.invite_code,m.side FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id WHERE m.user_id=$1 AND m.room_id=$2 AND r.closed_at IS NULL AND (m.role<>'SPECTATOR' OR m.disconnected_at IS NULL OR m.disconnected_at+interval '5 minutes'>clock_timestamp())",
+        [s.actor.userId, row.room_id],
+      )
+    ).rows[0];
+    if (!current)
       throw new RoomError(
         "ROOM_FORBIDDEN",
         "Bạn không có quyền truy cập phòng này",
         403,
       );
-    return row.response as RoomEntry;
+    const response = row.response as RoomEntry;
+    const projected: RoomEntry = {
+      ...response,
+      version: Number(current.room_version),
+      role:
+        current.side === "RED"
+          ? "red"
+          : current.side === "BLACK"
+            ? "black"
+            : "spectator",
+    };
+    delete projected.inviteCode;
+    if (
+      Object.hasOwn(response, "inviteCode") &&
+      current.visibility !== "LOCKED" &&
+      current.invite_code !== null
+    )
+      projected.inviteCode = current.invite_code as string;
+    return projected;
   }
   private async receipt(
     s: RoomScope,
@@ -259,10 +276,25 @@ export class RoomStore {
       );
     return { r, members };
   }
-  private async member(s: RoomScope, id: string) {
+  private async viewerExpired(s: RoomScope, id: string, userId: string) {
+    return Boolean(
+      (
+        await s.client.query(
+          "SELECT 1 FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND role='SPECTATOR' AND disconnected_at+interval '5 minutes'<=clock_timestamp()",
+          [id, userId],
+        )
+      ).rowCount,
+    );
+  }
+  private async member(s: RoomScope, id: string, allowExpiredViewer = false) {
     const state = await this.room(s, id);
     const member = state.members.find((m) => m.user_id === s.actor.userId);
-    if (!member)
+    if (
+      !member ||
+      (!allowExpiredViewer &&
+        member.role === "SPECTATOR" &&
+        (await this.viewerExpired(s, id, s.actor.userId)))
+    )
       throw new RoomError(
         "ROOM_FORBIDDEN",
         "Bạn không có quyền truy cập phòng này",
@@ -352,6 +384,79 @@ export class RoomStore {
             : "spectator",
     };
   }
+  async changeVisibility(
+    s: RoomScope,
+    id: string,
+    expectedVersion: number,
+    visibility: "PUBLIC" | "CODE_ONLY" | "LOCKED",
+  ): Promise<RoomView> {
+    if (
+      !uuid.test(id) ||
+      !Number.isSafeInteger(expectedVersion) ||
+      expectedVersion < 0 ||
+      !["PUBLIC", "CODE_ONLY", "LOCKED"].includes(visibility)
+    )
+      invalid();
+    this.scope(s, id);
+    await s.client.query("SELECT id FROM public.rooms WHERE id=$1 FOR UPDATE", [
+      id,
+    ]);
+    const { r, members } = await this.member(s, id);
+    if (r.owner_id !== s.actor.userId)
+      throw new RoomError(
+        "ROOM_FORBIDDEN",
+        "Chỉ chủ phòng được đổi chế độ",
+        403,
+      );
+    if (Number(r.room_version) !== expectedVersion)
+      throw new RoomError("VERSION_STALE", "Trạng thái đã thay đổi");
+    if (r.visibility === visibility) return this.snapshot(s, id);
+    if (
+      visibility === "LOCKED" &&
+      members.filter((m) => m.role === "PLAYER").length !== 2
+    )
+      throw new RoomError(
+        "ROOM_LOCK_REQUIRES_PLAYERS",
+        "Chỉ khoá được khi đã đủ 2 người chơi",
+      );
+    if (r.visibility === "LOCKED") {
+      let rotated = false;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const code = Array.from(
+          { length: 8 },
+          () => alphabet[randomInt(32)]!,
+        ).join("");
+        if (code === r.invite_code) continue;
+        await s.client.query("SAVEPOINT room_code_rotation");
+        try {
+          const row = await s.client.query(
+            "UPDATE public.rooms SET invite_code=$2,visibility=$3,public_opened_at=CASE WHEN $3='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1 AND NOT EXISTS(SELECT 1 FROM public.rooms WHERE invite_code=$2) RETURNING id",
+            [id, code, visibility],
+          );
+          rotated = !!row.rowCount;
+        } catch (error) {
+          await s.client.query("ROLLBACK TO SAVEPOINT room_code_rotation");
+          if ((error as { code?: string }).code !== "23505") throw error;
+        }
+        await s.client.query("RELEASE SAVEPOINT room_code_rotation");
+        if (rotated) break;
+      }
+      if (!rotated)
+        throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
+    } else {
+      await s.client.query(
+        "UPDATE public.rooms SET visibility=$2,public_opened_at=CASE WHEN $2='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1",
+        [id, visibility],
+      );
+    }
+    if (visibility === "LOCKED")
+      await s.client.query(
+        "UPDATE public.invitations SET status='REVOKED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='ACTIVE'",
+        [id],
+      );
+    await this.bump(s, id, "room.visibility-changed", { visibility });
+    return this.snapshot(s, id);
+  }
   async join(
     s: RoomScope,
     input: {
@@ -381,6 +486,15 @@ export class RoomStore {
       old = await this.replay(s, input.commandId, digest);
     if (old) return old;
     const existing = members.find((m) => m.user_id === s.actor.userId);
+    if (
+      existing?.role === "SPECTATOR" &&
+      (await this.viewerExpired(s, input.roomId, s.actor.userId))
+    )
+      throw new RoomError(
+        "ROOM_FORBIDDEN",
+        "Chỗ xem trong phòng đã hết hạn",
+        403,
+      );
     if (existing)
       return {
         roomId: input.roomId,
@@ -514,10 +628,27 @@ export class RoomStore {
     proof: PresenceProof,
     connected: boolean,
   ) {
-    const { r, member } = await this.member(s, id);
-    if (member.role !== "PLAYER") return;
+    if (
+      typeof connected !== "boolean" ||
+      typeof proof.connectionId !== "string" ||
+      !proof.connectionId ||
+      !Number.isSafeInteger(proof.generation) ||
+      proof.generation <= 0 ||
+      !uuid.test(proof.serverInstance)
+    )
+      invalid();
+    const { r, member } = await this.member(s, id, true);
     if (
       connected &&
+      member.role === "SPECTATOR" &&
+      (await this.viewerExpired(s, id, s.actor.userId))
+    ) {
+      await this.release(s, id, s.actor.userId, false);
+      return "viewer-expired" as const;
+    }
+    if (
+      connected &&
+      member.role === "PLAYER" &&
       (
         await s.client.query(
           "SELECT 1 FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND disconnected_at+interval '60 seconds'<=clock_timestamp()",
@@ -536,7 +667,7 @@ export class RoomStore {
     }
     if (connected) {
       const changed = await s.client.query(
-        "INSERT INTO xiangqi_room.presence(room_id,user_id,connection_id,generation,server_instance,connected,last_seen_at) VALUES($1,$2,$3,$4,$5,true,clock_timestamp()) ON CONFLICT(room_id,user_id) DO UPDATE SET connection_id=EXCLUDED.connection_id,generation=EXCLUDED.generation,server_instance=EXCLUDED.server_instance,connected=true,last_seen_at=EXCLUDED.last_seen_at WHERE xiangqi_room.presence.generation<=EXCLUDED.generation RETURNING user_id",
+        "INSERT INTO xiangqi_room.presence(room_id,user_id,connection_id,generation,server_instance,connected,last_seen_at) VALUES($1,$2,$3,$4,$5,true,clock_timestamp()) ON CONFLICT(room_id,user_id) DO UPDATE SET connection_id=EXCLUDED.connection_id,generation=EXCLUDED.generation,server_instance=EXCLUDED.server_instance,connected=true,last_seen_at=EXCLUDED.last_seen_at WHERE xiangqi_room.presence.generation<EXCLUDED.generation OR (xiangqi_room.presence.generation=EXCLUDED.generation AND xiangqi_room.presence.connection_id=EXCLUDED.connection_id AND xiangqi_room.presence.server_instance=EXCLUDED.server_instance) RETURNING user_id",
         [
           id,
           s.actor.userId,
@@ -566,7 +697,7 @@ export class RoomStore {
         "UPDATE public.room_members SET disconnected_at=COALESCE(disconnected_at,clock_timestamp()) WHERE room_id=$1 AND user_id=$2",
         [id, s.actor.userId],
       );
-      await this.cancel(s, id);
+      if (member.role === "PLAYER") await this.cancel(s, id);
     }
     await this.bump(s, id, "room.connection-changed");
   }
@@ -726,17 +857,16 @@ export class RoomStore {
   }
   async expireDisconnected(s: RoomScope, id: string) {
     const { r } = await this.room(s, id);
-    if (r.status === "PLAYING") return false;
     const due = (
       await s.client.query(
-        "SELECT user_id FROM public.room_members WHERE room_id=$1 AND role='PLAYER' AND disconnected_at+interval '60 seconds'<=clock_timestamp()",
-        [id],
+        "SELECT user_id,role FROM public.room_members WHERE room_id=$1 AND ((role='SPECTATOR' AND disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (role='PLAYER' AND $2::boolean AND disconnected_at+interval '60 seconds'<=clock_timestamp())) ORDER BY user_id",
+        [id, r.status !== "PLAYING"],
       )
     ).rows;
     for (const p of due) {
       if (!s.lockedActorIds.has(p.user_id))
         throw new RoomRosterChanged([...s.lockedActorIds, p.user_id].sort());
-      await this.release(s, id, p.user_id, true);
+      await this.release(s, id, p.user_id, p.role === "PLAYER");
     }
     return (
       await s.client.query(
@@ -753,10 +883,18 @@ export class RoomStore {
       [id, instance],
     );
     await s.client.query(
-      "UPDATE public.room_members m SET disconnected_at=COALESCE(disconnected_at,clock_timestamp()) WHERE room_id=$1 AND role='PLAYER' AND NOT EXISTS(SELECT 1 FROM xiangqi_room.presence p WHERE p.room_id=m.room_id AND p.user_id=m.user_id AND p.connected)",
+      "UPDATE public.room_members m SET disconnected_at=COALESCE(disconnected_at,clock_timestamp()) WHERE room_id=$1 AND NOT EXISTS(SELECT 1 FROM xiangqi_room.presence p WHERE p.room_id=m.room_id AND p.user_id=m.user_id AND p.connected)",
       [id],
     );
-    await this.cancel(s, id);
+    if (
+      (
+        await s.client.query(
+          "SELECT 1 FROM public.room_members m WHERE room_id=$1 AND role='PLAYER' AND NOT EXISTS(SELECT 1 FROM xiangqi_room.presence p WHERE p.room_id=m.room_id AND p.user_id=m.user_id AND p.connected)",
+          [id],
+        )
+      ).rowCount
+    )
+      await this.cancel(s, id);
     await this.bump(s, id, "room.server-recovered");
   }
 }
