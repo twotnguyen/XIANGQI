@@ -85,10 +85,12 @@ export async function createApp(
   );
   app.enableCors({ origin: corsOrigins, credentials: true });
   if (realtime) {
-    closeSockets = attachRealtime(app.getHttpServer(), {
+    const gateway = attachRealtime(app.getHttpServer(), {
       ...realtime,
       corsOrigins,
-    }).close;
+    });
+    realtime.onAttached?.(gateway);
+    closeSockets = gateway.close;
   } else {
     const io = new Server(app.getHttpServer(), {
       cors: { origin: corsOrigins },

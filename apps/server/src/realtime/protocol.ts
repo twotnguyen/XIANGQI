@@ -55,6 +55,12 @@ export function parseCommand(value: unknown): RoomCommand {
     parsed = { type: action.type, payload: { ready: payload.ready } };
   else if (
     action.type === "match.move" &&
+    Object.keys(payload).every((key) =>
+      ["matchId", "matchVersion", "from", "to"].includes(key),
+    ) &&
+    typeof payload.matchVersion === "number" &&
+    Number.isSafeInteger(payload.matchVersion) &&
+    payload.matchVersion >= 0 &&
     typeof payload.from === "number" &&
     typeof payload.to === "number" &&
     Number.isInteger(payload.from) &&
@@ -67,10 +73,29 @@ export function parseCommand(value: unknown): RoomCommand {
   )
     parsed = {
       type: action.type,
-      payload: { from: payload.from, to: payload.to },
+      payload: {
+        matchId: uuid(payload.matchId),
+        matchVersion: payload.matchVersion,
+        from: payload.from,
+        to: payload.to,
+      },
     };
-  else if (action.type === "match.resign" && !Object.keys(payload).length)
-    parsed = { type: action.type, payload: {} };
+  else if (
+    action.type === "match.resign" &&
+    Object.keys(payload).every((key) =>
+      ["matchId", "matchVersion"].includes(key),
+    ) &&
+    typeof payload.matchVersion === "number" &&
+    Number.isSafeInteger(payload.matchVersion) &&
+    payload.matchVersion >= 0
+  )
+    parsed = {
+      type: action.type,
+      payload: {
+        matchId: uuid(payload.matchId),
+        matchVersion: payload.matchVersion,
+      },
+    };
   else if (
     action.type === "media.sharing" &&
     typeof payload.sharing === "string" &&
