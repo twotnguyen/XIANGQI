@@ -122,9 +122,6 @@ export async function createRoomRuntime(
       if (chat.rows[0]?.ready !== true) throw new Error();
       chatReady = true;
     }
-=======
-    publicReady = publicSchema.rows[0]?.ready === true;
->>>>>>> origin/feat/XIAN-90-public-room-discovery
   } catch {
     throw new Error("Room migration is not ready");
   }

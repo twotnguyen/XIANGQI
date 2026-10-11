@@ -53,7 +53,6 @@ export function readMemberRoomProof(
     throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
   return { accessToken: auth.slice(7), appSession: cap };
 }
-export { proof as readMemberRoomProof };
 @Controller("rooms")
 class RoomController {
   constructor(
