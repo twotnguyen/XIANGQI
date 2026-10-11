@@ -42,6 +42,9 @@ export async function createRoomRuntime(
   registration: NonNullable<
     Awaited<ReturnType<typeof createRegistrationRuntime>>
   > | null,
+  media: {
+    revoke(roomId: string, userId: string): Promise<void>;
+  } | null = null,
 ) {
   const enabled = env.ROOMS_ENABLED ?? "false";
   if (enabled === "false") return null;
@@ -160,17 +163,24 @@ export async function createRoomRuntime(
       );
     return scope;
   };
-  const rooms = new RoomStore({
-    start: (client, input) => matches.start(client, input),
-    leave: async (client, input) => {
-      const scope = getScope(client, input.actor, input.roomId);
-      const match = await matches.snapshot(client, input.roomId, input.matchId);
-      await matches.resign(
-        { ...scope, roomId: input.roomId, canControl: true },
-        { matchId: input.matchId, matchVersion: match.version },
-      );
+  const rooms = new RoomStore(
+    {
+      start: (client, input) => matches.start(client, input),
+      leave: async (client, input) => {
+        const scope = getScope(client, input.actor, input.roomId);
+        const match = await matches.snapshot(
+          client,
+          input.roomId,
+          input.matchId,
+        );
+        await matches.resign(
+          { ...scope, roomId: input.roomId, canControl: true },
+          { matchId: input.matchId, matchVersion: match.version },
+        );
+      },
     },
-  });
+    media ?? undefined,
+  );
   const matches = new MatchStore(clock, {
     onMatchEnded: async (client, input) => {
       const scope = context.get(client);

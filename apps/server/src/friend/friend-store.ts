@@ -142,7 +142,7 @@ export class FriendStore {
         await client.query("SAVEPOINT friend_request_insert");
         const row = (
           await client.query(
-            "INSERT INTO xiangqi_social.friend_requests(id,sender_id,receiver_id,status,created_at,expires_at,resolved_at) VALUES($1,$2,$3,'PENDING',clock_timestamp(),clock_timestamp()+interval '30 days',NULL) RETURNING id,created_at,expires_at",
+            "WITH t AS MATERIALIZED(SELECT clock_timestamp() AS now) INSERT INTO xiangqi_social.friend_requests(id,sender_id,receiver_id,status,created_at,expires_at,resolved_at) SELECT $1,$2,$3,'PENDING',t.now,t.now+interval '30 days',NULL FROM t RETURNING id,created_at,expires_at",
             [randomUUID(), userId, peer!.user_id],
           )
         ).rows[0];
@@ -341,7 +341,7 @@ export class FriendStore {
       try {
         const row = (
           await client.query(
-            "INSERT INTO xiangqi_social.room_invites(id,room_id,inviter_id,invitee_id,status,created_at,expires_at,resolved_at) VALUES($1,$2,$3,$4,'PENDING',clock_timestamp(),clock_timestamp()+interval '30 seconds',NULL) RETURNING id,created_at,expires_at",
+            "WITH t AS MATERIALIZED(SELECT clock_timestamp() AS now) INSERT INTO xiangqi_social.room_invites(id,room_id,inviter_id,invitee_id,status,created_at,expires_at,resolved_at) SELECT $1,$2,$3,$4,'PENDING',t.now,t.now+interval '30 seconds',NULL FROM t RETURNING id,created_at,expires_at",
             [randomUUID(), roomId, userId, peer!.user_id],
           )
         ).rows[0];

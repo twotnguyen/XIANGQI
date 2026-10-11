@@ -990,7 +990,7 @@ export class RoomStore {
       throw new RoomError("SWAP_COOLDOWN", "Vui lòng chờ trước khi gửi lại");
     const offer = (
       await s.client.query(
-        "INSERT INTO xiangqi_room.side_swap_offers(id,room_id,proposer_id,responder_id,status,created_at,expires_at,resolved_at) VALUES($1,$2,$3,$4,'PENDING',clock_timestamp(),clock_timestamp()+interval '30 seconds',NULL) RETURNING id,expires_at",
+        "WITH t AS MATERIALIZED(SELECT clock_timestamp() AS now) INSERT INTO xiangqi_room.side_swap_offers(id,room_id,proposer_id,responder_id,status,created_at,expires_at,resolved_at) SELECT $1,$2,$3,$4,'PENDING',t.now,t.now+interval '30 seconds',NULL FROM t RETURNING id,expires_at",
         [randomUUID(), id, s.actor.userId, other.user_id],
       )
     ).rows[0];
