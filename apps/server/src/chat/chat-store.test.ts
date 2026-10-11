@@ -196,6 +196,32 @@ describe.skipIf(!databaseUrl)(
         ).rows[0].pair_epoch,
       ).not.toBe(old);
     });
+    it("captures sender color at send time and does not relabel history after a side swap", async () => {
+      const f = await fixture();
+      await f.join(f.b, "play");
+      await f.send(f.a, "ROOM_PUBLIC", "red at send time");
+      await pool.query(
+        "UPDATE public.room_members SET side=CASE side WHEN 'RED' THEN 'BLACK' ELSE 'RED' END WHERE room_id=$1",
+        [f.id],
+      );
+      await f.send(f.a, "ROOM_PUBLIC", "black at send time");
+      expect((await f.read(f.a, "ROOM_PUBLIC")).messages).toMatchObject([
+        { sender: { role: "red" } },
+        { sender: { role: "black" } },
+      ]);
+    });
+    it("captures spectator badge even after the sender leaves and rejoins as a player", async () => {
+      const f = await fixture();
+      await f.join(f.c, "watch");
+      await f.send(f.c, "ROOM_PUBLIC", "viewer at send time");
+      await run(f.c, f.id, (s) => rooms.leave(s, f.id));
+      await f.join(f.c, "play");
+      await f.send(f.c, "ROOM_PUBLIC", "black at send time");
+      expect((await f.read(f.a, "ROOM_PUBLIC")).messages).toMatchObject([
+        { sender: { role: "spectator" } },
+        { sender: { role: "black" } },
+      ]);
+    });
     it("uses entry sequences: viewer cannot read pre-entry messages, reconnect preserves floor and rejoin resets it", async () => {
       const f = await fixture();
       await f.send(f.a, "ROOM_PUBLIC", "before");
@@ -429,7 +455,7 @@ describe.skipIf(!databaseUrl)(
             async () =>
               (
                 await pool.query(
-                  "SELECT count(*)::int AS n FROM pg_catalog.pg_stat_activity WHERE wait_event_type='Lock' AND query LIKE 'SELECT m.role,e.floor,c.pair_epoch,c.sequence FROM public.rooms%' ",
+                  "SELECT count(*)::int AS n FROM pg_catalog.pg_stat_activity WHERE wait_event_type='Lock' AND query LIKE 'SELECT m.role,e.floor,c.pair_epoch,c.sequence,m.side FROM public.rooms%' ",
                 )
               ).rows[0].n,
             { timeout: 2000 },
@@ -490,7 +516,7 @@ describe.skipIf(!databaseUrl)(
     it("bounds cursor pages without discarding older room history", async () => {
       const f = await fixture();
       await pool.query(
-        "INSERT INTO xiangqi_chat.messages(id,room_id,sequence,sender_id,channel,content,created_at) SELECT gen_random_uuid(),$1,n,$2,'ROOM_PUBLIC','Synthetic history '||n,clock_timestamp() FROM generate_series(1,51) n",
+        "INSERT INTO xiangqi_chat.messages(id,room_id,sequence,sender_id,sender_role,channel,content,created_at) SELECT gen_random_uuid(),$1,n,$2,'red','ROOM_PUBLIC','Synthetic history '||n,clock_timestamp() FROM generate_series(1,51) n",
         [f.id, f.a.userId],
       );
       await pool.query(
