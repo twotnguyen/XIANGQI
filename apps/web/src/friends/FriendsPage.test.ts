@@ -51,16 +51,14 @@ describe("friends page", () => {
   });
   it("searches and sends requests with server limit guidance", async () => {
     const c = client({
-      search: vi
-        .fn()
-        .mockResolvedValue([
-          {
-            userId: "d",
-            username: "band",
-            displayName: "Bạn D",
-            status: "offline",
-          },
-        ]),
+      search: vi.fn().mockResolvedValue([
+        {
+          userId: "d",
+          username: "band",
+          displayName: "Bạn D",
+          status: "offline",
+        },
+      ]),
     });
     render(createElement(FriendsPage, { client: c }));
     await screen.findByText("@banb", { exact: false });
