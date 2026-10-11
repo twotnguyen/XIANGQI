@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { createElement } from "react";
+import { createElement, type ReactNode } from "react";
 import {
   act,
   cleanup,
@@ -20,12 +20,19 @@ const mock = vi.hoisted(() => ({
 }));
 vi.mock("../auth/SessionProvider.js", () => ({ useSession: () => mock }));
 vi.mock("../auth/LoginPage.js", () => ({
-  LoginPage: ({ onLoggedIn }: { onLoggedIn: (value: unknown) => void }) =>
+  LoginPage: ({
+    onLoggedIn,
+    renderGoogle,
+  }: {
+    onLoggedIn: (value: unknown) => void;
+    renderGoogle?: (remember: boolean, disabled: boolean) => ReactNode;
+  }) =>
     createElement(
       "section",
       null,
       createElement("h1", null, "Đăng nhập"),
       createElement(NavigationLink, { href: "/register" }, "Đăng ký tài khoản"),
+      renderGoogle?.(true, false),
       createElement(
         "button",
         { onClick: () => onLoggedIn({ fixture: "login" }) },
@@ -36,18 +43,51 @@ vi.mock("../auth/LoginPage.js", () => ({
 vi.mock("../auth/RegistrationPage.js", () => ({
   RegistrationPage: ({
     onRegistered,
+    renderGoogle,
   }: {
     onRegistered: (value: unknown) => void;
+    renderGoogle?: (disabled: boolean) => ReactNode;
   }) =>
     createElement(
       "section",
       null,
       createElement("h1", null, "Đăng ký"),
       createElement(NavigationLink, { href: "/login" }, "Về đăng nhập"),
+      renderGoogle?.(false),
       createElement(
         "button",
         { onClick: () => onRegistered({ fixture: "registration" }) },
         "Hoàn tất đăng ký",
+      ),
+    ),
+}));
+vi.mock("../auth/GoogleSignInButton.js", () => ({
+  GoogleSignInButton: ({ onResult }: { onResult: (result: unknown) => void }) =>
+    createElement(
+      "button",
+      {
+        onClick: () =>
+          onResult({ kind: "pending", expiresAt: "2030-01-01T00:00:00Z" }),
+      },
+      "Official Google",
+    ),
+}));
+vi.mock("../auth/GoogleOnboardingPage.js", () => ({
+  GoogleOnboardingPage: ({
+    onResult,
+  }: {
+    onResult: (result: unknown) => void;
+  }) =>
+    createElement(
+      "section",
+      null,
+      createElement("h1", null, "Thiết lập tài khoản"),
+      createElement(
+        "button",
+        {
+          onClick: () => onResult({ kind: "member", fixture: "google-member" }),
+        },
+        "Hoàn tất thiết lập",
       ),
     ),
 }));
@@ -226,4 +266,71 @@ it("aborts room loading on route leave and ignores its stale response", async ()
   });
   expect(screen.queryByText(room.name)).toBeNull();
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Bạn bè");
+});
+it("preserves a validated invitation through Google registration, pending onboarding and actual component remount", async () => {
+  window.history.replaceState(
+    null,
+    "",
+    "/rooms/join?token=fixture-google-invite",
+  );
+  mock.accept.mockImplementation((value) => {
+    mock.state =
+      value.kind === "pending"
+        ? {
+            status: "pending",
+            method: "google",
+            expiresAt: value.expiresAt,
+            recovering: false,
+          }
+        : member;
+  });
+  const view = render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  fireEvent.click(screen.getByRole("link", { name: "Đăng ký tài khoản" }));
+  fireEvent.click(screen.getByText("Official Google"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/onboarding"));
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+    "Thiết lập tài khoản",
+  );
+  view.unmount();
+  render(createElement(AppRouter));
+  fireEvent.click(screen.getByText("Hoàn tất thiết lập"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
+  expect(window.location.search).toBe("?token=fixture-google-invite");
+  expect(window.history.state).toBeNull();
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+});
+it("rejects a forged external history destination after Google onboarding", async () => {
+  window.history.replaceState(
+    { xiangqiAuthDestination: "https://outside.invalid/rooms/x" },
+    "",
+    "/onboarding",
+  );
+  mock.state = {
+    status: "pending",
+    method: "google",
+    expiresAt: "2030-01-01T00:00:00Z",
+    recovering: false,
+  };
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  render(createElement(AppRouter));
+  fireEvent.click(screen.getByText("Hoàn tất thiết lập"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
+});
+it("retains the invitation when an expired onboarding cookie sends a reload back to login", async () => {
+  window.history.replaceState(
+    { xiangqiAuthDestination: "/rooms/join?token=expired-google-invite" },
+    "",
+    "/onboarding",
+  );
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
+  expect(window.location.search).toBe("?token=expired-google-invite");
 });

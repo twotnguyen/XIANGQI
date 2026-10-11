@@ -84,6 +84,7 @@ it("accepts login in memory and sends credentials only to relative backend paths
   const request = vi
     .fn()
     .mockResolvedValueOnce(reply({}, 401))
+    .mockResolvedValueOnce(reply({ google: false, guest: false }))
     .mockResolvedValue(reply({ ok: true }));
   vi.stubGlobal("fetch", request);
   mount();
@@ -91,8 +92,8 @@ it("accepts login in memory and sends credentials only to relative backend paths
   fireEvent.click(screen.getByText("accept"));
   expect(state().status).toBe("active-member");
   fireEvent.click(screen.getByText("protected"));
-  await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(2));
-  const init = request.mock.calls[1]![1];
+  await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(3));
+  const init = request.mock.calls[2]![1];
   expect(init.credentials).toBe("include");
   expect(new Headers(init.headers).get("authorization")).toBe(
     "Bearer fixture-access",
@@ -496,5 +497,92 @@ it("cancels logout-renewal retries when a newer login is accepted", async () => 
   await act(async () => {
     await vi.advanceTimersByTimeAsync(15000);
   });
+  expect(request).toHaveBeenCalledTimes(2);
+});
+const googlePending = {
+  kind: "pending",
+  expiresAt: "2030-01-01T00:00:00Z",
+  recovering: false,
+  email: "verified@example.invalid",
+  avatar: { kind: "initials", text: "?" },
+};
+it("bootstraps pending Google only after member401 and server readiness, with server-verified metadata and no tokens", async () => {
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply({}, 401))
+    .mockResolvedValueOnce(reply({ google: true, guest: false }))
+    .mockResolvedValueOnce(
+      reply({ ...googlePending, access_token: "private-provider-token" }),
+    );
+  vi.stubGlobal("fetch", request);
+  const storage = vi.spyOn(Storage.prototype, "setItem");
+  mount(true);
+  await vi.waitFor(() => expect(state().status).toBe("pending"));
+  expect(state()).toEqual({
+    status: "pending",
+    method: "google",
+    expiresAt: googlePending.expiresAt,
+    recovering: false,
+    email: googlePending.email,
+    avatar: googlePending.avatar,
+  });
+  expect(request.mock.calls.map(([url]) => new URL(url).pathname)).toEqual([
+    "/auth/refresh",
+    "/auth/providers",
+    "/auth/google/onboarding",
+  ]);
+  expect(storage).not.toHaveBeenCalled();
+  await expect(current.authorizedFetch("/protected")).rejects.toThrow();
+});
+it("does not probe Google onboarding when server readiness is false", async () => {
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply({}, 401))
+    .mockResolvedValueOnce(reply({ google: false, guest: false }));
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("anonymous"));
+  expect(request).toHaveBeenCalledTimes(2);
+});
+it("keeps readiness and Google bootstrap outages distinct from anonymous", async () => {
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply({}, 401))
+    .mockResolvedValueOnce(reply({ google: true, guest: false }))
+    .mockResolvedValueOnce(reply({ message: "private" }, 503));
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("error"));
+  expect(JSON.stringify(state())).not.toContain("private");
+});
+it("accepts pending metadata without granting bearer access and ignores a stale bootstrap", async () => {
+  let resolve!: (response: Response) => void;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() => new Promise<Response>((done) => (resolve = done))),
+  );
+  mount();
+  await act(async () => {});
+  act(() =>
+    current.accept({ kind: "pending", expiresAt: googlePending.expiresAt }),
+  );
+  await act(async () => resolve(reply(session)));
+  expect(state().status).toBe("pending");
+  await expect(current.authorizedFetch("/protected")).rejects.toThrow();
+});
+it("does not probe onboarding after a stale readiness result when a newer login has been accepted", async () => {
+  let resolve!: (r: Response) => void;
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply({}, 401))
+    .mockImplementationOnce(
+      () => new Promise<Response>((done) => (resolve = done)),
+    );
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+  act(() => current.accept(session));
+  await act(async () => resolve(reply({ google: true, guest: false })));
+  expect(state().status).toBe("active-member");
   expect(request).toHaveBeenCalledTimes(2);
 });
