@@ -7,6 +7,7 @@ import {
   type RealtimeIdentity,
   type RoomCollaborator,
   type RealtimeConnection,
+  type RoomExecutionResult,
 } from "./contracts.js";
 
 export const realtimeTestUrl = process.env.REALTIME_TEST_DATABASE_URL;
@@ -138,11 +139,19 @@ export class FixtureRooms implements RoomCollaborator {
     const row = rows[0];
     const members: string[] = row.members;
     return {
+      serverNow: new Date().toISOString(),
       roomId,
       version: row.version,
       room: {
         status: "WAITING",
         hostId: members[0]!,
+        name: "Synthetic realtime fixture",
+        visibility: "CODE_ONLY",
+        timeMinutes: 5,
+        viewerLimit: 5,
+        connected: { red: true, black: true },
+        graceUntil: { red: null, black: null },
+        countdown: null,
         seats: { red: members[0]!, black: members[1] ?? null },
         ready: { red: row.red_ready, black: row.black_ready },
       },
@@ -160,7 +169,7 @@ export class FixtureRooms implements RoomCollaborator {
     client: PoolClient,
     identity: RealtimeIdentity,
     command: RoomCommand,
-  ) {
+  ): Promise<RoomStateSnapshot | RoomExecutionResult> {
     if (
       !(await this.authorize(client, identity, command.roomId)).canControl ||
       command.action.type !== "room.ready"
