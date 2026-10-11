@@ -5,12 +5,10 @@ import { RoomTransactions } from "../room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
 import { SessionService } from "../login/session.service.js";
 import { PostgresLoginStore } from "../login/postgres-login-store.js";
+import { AiPresence } from "./ai-presence.js";
 import { AiReservations } from "./ai-reservations.js";
 import { AiHistoryStore } from "./ai-history-store.js";
-import {
-  SqlAiTransactions,
-  type AiHumanControl,
-} from "./ai-sql-transactions.js";
+import { SqlAiTransactions } from "./ai-sql-transactions.js";
 import type { AiOrigin } from "./ai-transactions.js";
 import { AiGames } from "./ai-games.js";
 import type { EngineWorker } from "@xiangqi/engine";
@@ -49,7 +47,7 @@ async function fixture() {
   const sessions = new SessionService(new PostgresLoginStore(pool), provider);
   const issued = await sessions.issue(ownerId, false);
   const authorizer = new PostgresMemberRoomAuthorizer(sessions);
-  const origin: AiOrigin = {
+  const origin: Extract<AiOrigin, { kind: "human" }> = {
     kind: "human",
     proof: { accessToken: "synthetic-ai-token", appSession: issued.appSession },
     tab: { tabId: randomUUID(), connectionId: randomUUID(), generation: 1 },
@@ -64,9 +62,26 @@ async function fixture() {
     await client.query("ROLLBACK");
     client.release();
   }
-  // Control is a unit boundary stub; the SQL authority and all transactions below are real.
+  const presence = new AiPresence(boot.id, reservations);
+  const actor = await authorizer.resolve(origin.proof);
+  const attached = await coordinator.withRoom(
+    { actor, roomIds: [] },
+    (p) => authorizer.authorize(origin.proof, p),
+    (scope) => presence.attach(scope, origin.tab),
+  );
+  if (attached.status !== "active") throw Error("synthetic fixture ended");
+  origin.tab.generation = attached.value.control.generation;
+  // Spy around the actual SQL presence port; only provider/transport identity is synthetic.
   const control = {
-    authorize: vi.fn<AiHumanControl["authorize"]>(async () => {}),
+    authorize: vi.fn((...args: Parameters<AiPresence["authorize"]>) =>
+      presence.authorize(...args),
+    ),
+    bindGame: vi.fn((...args: Parameters<AiPresence["bindGame"]>) =>
+      presence.bindGame(...args),
+    ),
+    assertRetained: vi.fn((...args: Parameters<AiPresence["assertRetained"]>) =>
+      presence.assertRetained(...args),
+    ),
   };
   const runner = new SqlAiTransactions({
     coordinator,
@@ -76,7 +91,7 @@ async function fixture() {
     bootId: boot.id,
     control,
   });
-  return { ownerId, origin, provider, boot, runner, control };
+  return { ownerId, origin, provider, boot, runner, control, presence, actor };
 }
 afterAll(() => pool.end());
 describe.skipIf(!databaseUrl)(
@@ -94,6 +109,7 @@ describe.skipIf(!databaseUrl)(
         "09_match_draw",
         "10_room_chat",
         "11_ai_reservations",
+        "12_ai_presence",
       ])
         await apply(`supabase/migrations/202610110000${suffix}.sql`);
     });
@@ -211,7 +227,7 @@ describe.skipIf(!databaseUrl)(
         [f.boot.id],
       );
       await expect(
-        f.runner.run(f.ownerId, { kind: "internal" }, async (tx) => {
+        f.runner.run(f.ownerId, f.origin, async (tx) => {
           await tx.reserve(randomUUID());
           await new Promise((r) => setTimeout(r, 260));
           return { value: 1, install };
@@ -228,6 +244,11 @@ describe.skipIf(!databaseUrl)(
         install = vi.fn(),
         reached = deferred(),
         release = deferred();
+      const gameId = randomUUID();
+      await f.runner.run(f.ownerId, f.origin, async (tx) => {
+        await tx.reserve(gameId);
+        return { value: 0, install: () => {} };
+      });
       const c = await pool.connect(),
         query = c.query.bind(c);
       const querySpy = vi.spyOn(c, "query").mockImplementation((async (
@@ -247,7 +268,7 @@ describe.skipIf(!databaseUrl)(
         f.ownerId,
         { kind: "internal" },
         async (tx) => {
-          await tx.reserve(randomUUID());
+          await tx.check(gameId);
           return { value: 1, install };
         },
       );
@@ -263,6 +284,107 @@ describe.skipIf(!databaseUrl)(
         querySpy.mockRestore();
       }
     });
+    it.each([false, true])(
+      "serializes private reads through the post-COMMIT RAM gap (expires while waiting: %s)",
+      async (expires) => {
+        const f = await fixture(),
+          gameId = randomUUID();
+        let ram = 0;
+        await f.runner.run(f.ownerId, f.origin, async (tx) => {
+          await tx.reserve(gameId);
+          return { value: 0, install: () => {} };
+        });
+        if (expires)
+          await pool.query(
+            "UPDATE xiangqi_auth.app_sessions SET created_at=statement_timestamp()-interval '12 hours'+interval '2 seconds',expires_at=statement_timestamp()+interval '2 seconds' WHERE token_hash=$1",
+            [hash(f.origin.proof.appSession)],
+          );
+        const reached = deferred(),
+          release = deferred();
+        const c = await pool.connect(),
+          query = c.query.bind(c);
+        const querySpy = vi.spyOn(c, "query").mockImplementation((async (
+          text: string,
+          values?: unknown[],
+        ) => {
+          const result = await query(text, values);
+          // SQL has committed and released actor locks, but the runner has not installed RAM.
+          if (text === "COMMIT") {
+            reached.resolve();
+            await release.promise;
+          }
+          return result;
+        }) as typeof c.query);
+        const connect = vi
+          .spyOn(
+            pool as unknown as { connect(): Promise<PoolClient> },
+            "connect",
+          )
+          .mockResolvedValueOnce(c);
+        const mutation = f.runner.run(
+          f.ownerId,
+          { kind: "internal" },
+          async (tx) => {
+            await tx.check(gameId);
+            return {
+              value: 1,
+              install: () => {
+                ram = 1;
+              },
+            };
+          },
+        );
+        const work = vi.fn(async () => ram);
+        let read: Promise<{ value?: number; error?: unknown }> | undefined;
+        try {
+          await reached.promise;
+          expect(ram).toBe(0);
+          read = f.runner.read(f.origin.proof, work).then(
+            (value) => ({ value }),
+            (error: unknown) => ({ error }),
+          );
+          // This real SQL transaction passed its first dual-authority check and now awaits
+          // the process-local owner gate; it is no longer waiting on an actor SQL lock.
+          await vi.waitFor(async () => {
+            const rows = await pool.query(
+              "SELECT count(*)::int n FROM pg_stat_activity WHERE datname=current_database() AND state='idle in transaction' AND query LIKE 'SELECT (expires_at>clock_timestamp()%'",
+            );
+            expect(rows.rows[0].n).toBe(1);
+          });
+          expect(work.mock.calls.length).toBe(0);
+          if (expires)
+            await pool.query(
+              "SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM expires_at-clock_timestamp()))+0.02) FROM xiangqi_auth.app_sessions WHERE token_hash=$1",
+              [hash(f.origin.proof.appSession)],
+            );
+          release.resolve();
+          expect(await mutation).toBe(1);
+          const result = await read;
+          if (expires) {
+            expect(result.error).toMatchObject({
+              code: "AUTH_REQUIRED",
+              status: 401,
+            });
+            expect(work.mock.calls.length).toBe(0);
+            // Failed post-gate authorization releases the gate for a later valid read.
+            await pool.query(
+              "UPDATE xiangqi_auth.app_sessions SET created_at=statement_timestamp(),expires_at=statement_timestamp()+interval '12 hours' WHERE token_hash=$1",
+              [hash(f.origin.proof.appSession)],
+            );
+            expect(await f.runner.read(f.origin.proof, work)).toBe(1);
+          } else {
+            expect(result).toEqual({ value: 1 });
+            expect(work).toHaveBeenCalledOnce();
+          }
+        } finally {
+          release.resolve();
+          await mutation;
+          await read;
+          connect.mockRestore();
+          querySpy.mockRestore();
+        }
+      },
+    );
     it("requires a real SQL reservation/history authority operation", async () => {
       const f = await fixture(),
         install = vi.fn();
@@ -292,6 +414,11 @@ describe.skipIf(!databaseUrl)(
     it("rolls back a failed COMMIT and releases the owner gate for a later admission", async () => {
       const f = await fixture(),
         install = vi.fn();
+      const gameId = randomUUID();
+      await f.runner.run(f.ownerId, f.origin, async (tx) => {
+        await tx.reserve(gameId);
+        return { value: 0, install: () => {} };
+      });
       const c = await pool.connect(),
         query = c.query.bind(c);
       let failed = false;
@@ -311,7 +438,7 @@ describe.skipIf(!databaseUrl)(
       try {
         await expect(
           f.runner.run(f.ownerId, { kind: "internal" }, async (tx) => {
-            await tx.reserve(randomUUID());
+            await tx.check(gameId);
             return { value: 1, install };
           }),
         ).rejects.toThrow("synthetic COMMIT failure");
@@ -323,10 +450,10 @@ describe.skipIf(!databaseUrl)(
       expect(
         (await pool.query("SELECT count(*)::int n FROM public.active_players"))
           .rows[0].n,
-      ).toBe(0);
+      ).toBe(1);
       expect(
         await f.runner.run(f.ownerId, { kind: "internal" }, async (tx) => {
-          await tx.reserve(randomUUID());
+          await tx.check(gameId);
           return { value: 2, install };
         }),
       ).toBe(2);
@@ -436,6 +563,216 @@ describe.skipIf(!databaseUrl)(
         ).toBe(0);
       } finally {
         release.resolve();
+        await games.close();
+      }
+    });
+
+    it("rejects internal admission instead of minting synthetic physical control", async () => {
+      const f = await fixture(),
+        install = vi.fn();
+      await expect(
+        f.runner.run(f.ownerId, { kind: "internal" }, async (tx) => {
+          await tx.reserve(randomUUID());
+          return { value: 1, install };
+        }),
+      ).rejects.toMatchObject({ status: 403 });
+      expect(install).not.toHaveBeenCalled();
+      expect(
+        (await pool.query("SELECT count(*)::int n FROM public.active_players"))
+          .rows[0].n,
+      ).toBe(0);
+    });
+    it("rejects admission without a physical attached controller", async () => {
+      const f = await fixture(),
+        install = vi.fn();
+      await coordinator.withRoom(
+        { actor: f.actor, roomIds: [] },
+        async () => ({ status: "active", actor: f.actor }),
+        (scope) =>
+          f.presence.disconnected(scope, { ...f.origin.tab, gameId: null }),
+      );
+      await expect(
+        f.runner.run(f.ownerId, f.origin, async (tx) => {
+          await tx.reserve(randomUUID());
+          return { value: 1, install };
+        }),
+      ).rejects.toMatchObject({ code: "TAB_READ_ONLY" });
+      expect(install).not.toHaveBeenCalled();
+    });
+    it("blocks an internal engine check after the fixed thirty-minute physical grace expires", async () => {
+      const f = await fixture(),
+        id = randomUUID(),
+        install = vi.fn();
+      await f.runner.run(f.ownerId, f.origin, async (tx) => {
+        await tx.reserve(id);
+        return { value: id, install: () => {} };
+      });
+      await coordinator.withRoom(
+        { actor: f.actor, roomIds: [] },
+        async () => ({ status: "active", actor: f.actor }),
+        (scope) =>
+          f.presence.disconnected(scope, { ...f.origin.tab, gameId: id }),
+      );
+      await pool.query(
+        "UPDATE xiangqi_ai.presence SET disconnected_at=clock_timestamp()-interval '30 minutes' WHERE game_id=$1",
+        [id],
+      );
+      await expect(
+        f.runner.run(f.ownerId, { kind: "internal" }, async (tx) => {
+          await tx.check(id);
+          return { value: 1, install };
+        }),
+      ).rejects.toMatchObject({ code: "AI_GAME_EXPIRED" });
+      expect(install).not.toHaveBeenCalled();
+    });
+
+    it("checks retained deadline again after internal staged work, not only at entry", async () => {
+      const f = await fixture(),
+        id = randomUUID(),
+        install = vi.fn();
+      await f.runner.run(f.ownerId, f.origin, async (tx) => {
+        await tx.reserve(id);
+        return { value: 1, install: () => {} };
+      });
+      await coordinator.withRoom(
+        { actor: f.actor, roomIds: [] },
+        async () => ({ status: "active", actor: f.actor }),
+        (s) => f.presence.disconnected(s, { ...f.origin.tab, gameId: id }),
+      );
+      await pool.query(
+        "UPDATE xiangqi_ai.presence SET disconnected_at=clock_timestamp()-interval '30 minutes'+interval '200 milliseconds' WHERE game_id=$1",
+        [id],
+      );
+      await expect(
+        f.runner.run(f.ownerId, { kind: "internal" }, async (tx) => {
+          await tx.check(id);
+          await new Promise((r) => setTimeout(r, 260));
+          return { value: 1, install };
+        }),
+      ).rejects.toMatchObject({ code: "AI_GAME_EXPIRED" });
+      expect(install).not.toHaveBeenCalled();
+    });
+    it("rejects superseded physical generation even with valid owner session", async () => {
+      const f = await fixture(),
+        next = { tabId: randomUUID(), connectionId: randomUUID() };
+      await coordinator.withRoom(
+        { actor: f.actor, roomIds: [] },
+        async () => ({ status: "active", actor: f.actor }),
+        (s) => f.presence.attach(s, next),
+      );
+      const work = vi.fn();
+      await expect(
+        f.runner.run(f.ownerId, f.origin, work),
+      ).rejects.toMatchObject({ code: "TAB_READ_ONLY" });
+      expect(work).not.toHaveBeenCalled();
+      const oldgen = {
+        ...f.origin,
+        tab: {
+          tabId: next.tabId,
+          connectionId: next.connectionId,
+          generation: 1,
+        },
+      };
+      await expect(f.runner.run(f.ownerId, oldgen, work)).rejects.toMatchObject(
+        { code: "TAB_READ_ONLY" },
+      );
+    });
+    it("finishes an existing authorized FINALIZING outcome internally after physical grace expiry", async () => {
+      const f = await fixture(),
+        engine: Pick<EngineWorker, "ready" | "search"> = {
+          ready: async () => {},
+          search: vi.fn(),
+        };
+      const games = new AiGames({ engine, transactions: f.runner });
+      const finish = vi.spyOn(history, "finish");
+      try {
+        await games.ready();
+        const g = await games.create(
+          f.ownerId,
+          { requestedSide: "red", level: "easy" },
+          f.origin,
+        );
+        finish.mockRejectedValueOnce(Error("synthetic history failure"));
+        await expect(
+          games.resign(f.ownerId, g.id, { version: g.version }, f.origin),
+        ).rejects.toMatchObject({ code: "AI_UNAVAILABLE" });
+        const pending = games.read(f.ownerId, g.id);
+        expect(pending.status).toBe("FINALIZING");
+        await coordinator.withRoom(
+          { actor: f.actor, roomIds: [] },
+          async () => ({ status: "active", actor: f.actor }),
+          (s) => f.presence.disconnected(s, { ...f.origin.tab, gameId: g.id }),
+        );
+        await pool.query(
+          "UPDATE xiangqi_ai.presence SET disconnected_at=clock_timestamp()-interval '31 minutes' WHERE game_id=$1",
+          [g.id],
+        );
+        const terminal = await games.retry(
+          f.ownerId,
+          g.id,
+          { version: pending.version },
+          { kind: "internal" },
+        );
+        expect(terminal.status).toBe("FINISHED");
+        expect(terminal.outcome).toEqual({ reason: "RESIGN", winner: "black" });
+        expect(
+          (
+            await pool.query("SELECT outcome FROM public.matches WHERE id=$1", [
+              g.id,
+            ])
+          ).rows[0].outcome.reason,
+        ).toBe("RESIGN");
+        expect(
+          (
+            await pool.query(
+              "SELECT count(*)::int n FROM public.active_players",
+            )
+          ).rows[0].n,
+        ).toBe(0);
+      } finally {
+        finish.mockRestore();
+        await games.close();
+      }
+    });
+    it("allows a noncontrolling member's private terminal read without creating a slot", async () => {
+      const f = await fixture(),
+        games = new AiGames({
+          engine: { ready: async () => {}, search: vi.fn() },
+          transactions: f.runner,
+        });
+      try {
+        await games.ready();
+        const g = await games.create(
+          f.ownerId,
+          { requestedSide: "red", level: "easy" },
+          f.origin,
+        );
+        await games.resign(f.ownerId, g.id, { version: g.version }, f.origin);
+        await coordinator.withRoom(
+          { actor: f.actor, roomIds: [] },
+          async () => ({ status: "active", actor: f.actor }),
+          (s) =>
+            f.presence.attach(s, {
+              tabId: randomUUID(),
+              connectionId: randomUUID(),
+            }),
+        );
+        const value = await f.runner.read(
+          f.origin.proof,
+          async (_scope, owner) => games.read(owner, g.id),
+        );
+        expect(value.status).toBe("FINISHED");
+        expect(
+          (
+            await pool.query(
+              "SELECT count(*)::int n FROM public.active_players",
+            )
+          ).rows[0].n,
+        ).toBe(0);
+        await expect(
+          f.runner.run(f.ownerId, f.origin, vi.fn()),
+        ).rejects.toMatchObject({ code: "TAB_READ_ONLY" });
+      } finally {
         await games.close();
       }
     });
