@@ -1,3 +1,4 @@
+import { earliestDisconnect } from "./disconnect-worker.js";
 import { randomUUID } from "node:crypto";
 import {
   ending,
@@ -426,6 +427,42 @@ export class MatchStore {
   ): MatchCommandResult {
     return { applied: false, match, error: { code, message } };
   }
+  private async expiredDisconnect(
+    scope: MatchScope,
+    row: MatchRow,
+    match: MatchView,
+    position: Position,
+  ): Promise<MatchView | null> {
+    const disconnect = await earliestDisconnect(
+      scope.client,
+      scope.roomId,
+      row.red_user_id,
+      row.black_user_id,
+    );
+    if (!disconnect) return null;
+    const deadline =
+      match.clock.runningSinceEpochMs +
+      (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
+    if (disconnect.deadline >= deadline) return null;
+    const at = new Date(
+      Number(
+        (
+          await scope.client.query<{ ms: string }>(
+            "SELECT floor(extract(epoch FROM clock_timestamp())*1000)::bigint ms",
+          )
+        ).rows[0]!.ms,
+      ),
+    );
+    if (disconnect.deadline > at.getTime()) return null;
+    return this.end(
+      scope.client,
+      row,
+      position,
+      { reason: "DISCONNECT", winner: opposite(disconnect.loser) },
+      at,
+      row.clock,
+    );
+  }
   async move(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number; from: number; to: number },
@@ -448,6 +485,13 @@ export class MatchStore {
       return this.denied(match, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (room.current_match_id !== row.id || room.status !== "PLAYING")
       reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+    const ended = await this.expiredDisconnect(
+      scope,
+      row,
+      match,
+      history.at(-1)!,
+    );
+    if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (match.version !== input.matchVersion)
       return this.denied(
         match,
@@ -555,6 +599,13 @@ export class MatchStore {
       return this.denied(match, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (room.current_match_id !== row.id || room.status !== "PLAYING")
       reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+    const ended = await this.expiredDisconnect(
+      scope,
+      row,
+      match,
+      history.at(-1)!,
+    );
+    if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (match.version !== input.matchVersion)
       return this.denied(
         match,
