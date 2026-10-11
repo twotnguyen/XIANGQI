@@ -169,14 +169,21 @@ export function legalMoves(position: Position): Move[] {
 
 /** Rejects ILLEGAL_MOVE without altering the input. Server must check clocks first. */
 export function playMove(position: Position, move: Move): Position {
+  const piece = position.board[move.from];
+  const candidates: Move[] = [];
+  if (Number.isInteger(move.from) && piece?.side === position.turn)
+    pieceMoves(position, piece, move.from, candidates);
   if (
-    !legalMoves(position).some(
+    position.board[move.to]?.type === "king" ||
+    !candidates.some(
       (candidate) => candidate.from === move.from && candidate.to === move.to,
     )
   ) {
     throw new Error("ILLEGAL_MOVE");
   }
-  return applyUnchecked(position, move);
+  const next = applyUnchecked(position, move);
+  if (isInCheck(next, position.turn)) throw new Error("ILLEGAL_MOVE");
+  return next;
 }
 
 /** Counts legal move paths without applying repetition/no-capture adjudication. */
