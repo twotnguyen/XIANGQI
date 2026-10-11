@@ -8,6 +8,7 @@ export interface RoomStateSnapshot {
     hostId: string | null;
     name: string;
     visibility: "PUBLIC" | "CODE_ONLY" | "LOCKED";
+    inviteCode: string | null;
     timeMinutes: number;
     viewerLimit: number;
     seats: { red: string | null; black: string | null };
@@ -99,6 +100,10 @@ export interface ReadOnlyNotice {
   message: "Phiên này đã được mở ở tab khác";
   stopMedia: true;
 }
+export interface RoomClosedNotice {
+  roomId: string;
+  message: "Phòng đã đóng";
+}
 export interface EngineFailureEvent {
   matchId: string;
   code: "ENGINE_BUSY" | "ENGINE_FAILED" | "ENGINE_TIMEOUT";
@@ -120,6 +125,7 @@ export interface ClientRealtimeEvents {
   ) => void;
 }
 export interface ServerRealtimeEvents {
+  "room.closed": (notice: RoomClosedNotice) => void;
   "room.snapshot": (snapshot: RoomSnapshot) => void;
   "session.read_only": (notice: ReadOnlyNotice) => void;
   "engine.failure": (failure: EngineFailureEvent) => void;
