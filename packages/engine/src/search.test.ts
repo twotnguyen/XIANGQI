@@ -13,11 +13,33 @@ import { ENGINE_LIMITS, type EngineRequest } from "./contracts.js";
 import { historyCases } from "./history.test-helper.js";
 import mates from "../fixtures/mates.json";
 import midgames from "../fixtures/midgames-50.json";
-const calls = vi.hoisted(() => ({ ending: 0 }));
+const calls = vi.hoisted(() => ({
+  ending: 0,
+  legal: new Map<string, number>(),
+  existence: new Map<string, number>(),
+}));
 vi.mock("@xiangqi/xiangqi-core", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@xiangqi/xiangqi-core")>();
   return {
     ...actual,
+    legalMoves(position: Position) {
+      const key = actual
+        .serializePosition(position)
+        .split(" ")
+        .slice(0, 2)
+        .join(" ");
+      calls.legal.set(key, (calls.legal.get(key) ?? 0) + 1);
+      return actual.legalMoves(position);
+    },
+    pseudoLegalMoves(position: Position) {
+      const key = actual
+        .serializePosition(position)
+        .split(" ")
+        .slice(0, 2)
+        .join(" ");
+      calls.existence.set(key, (calls.existence.get(key) ?? 0) + 1);
+      return actual.pseudoLegalMoves(position);
+    },
     ending(history: readonly Position[]) {
       calls.ending++;
       return actual.ending(history);
@@ -26,6 +48,23 @@ vi.mock("@xiangqi/xiangqi-core", async (importOriginal) => {
 });
 beforeEach(() => {
   calls.ending = 0;
+  calls.legal.clear();
+  calls.existence.clear();
+});
+it("reuses core legal-board work across full-history branches without altering the searched tree", () => {
+  const fixture = midgames.positions[0]!;
+  const position = parsePosition(fixture.fen);
+  const result = searchPosition(
+    { position: fixture.fen, side: position.turn, level: "hard" },
+    { depth: 3, now: () => 0 },
+  );
+  // Baseline exact full-width tree on the unchanged independently verified fixture.
+  expect(result.completedDepth).toBe(3);
+  expect(result.nodes).toBe(1773);
+  expect(result.move).toEqual({ from: 60, to: 54 });
+  expect(Math.max(...calls.legal.values())).toBe(1);
+  expect(Math.max(...calls.existence.values())).toBe(1);
+  expect(legalMoves(position)).toContainEqual(result.move);
 });
 it("reduces nodes on the verified fixed-depth workload without dropping legal moves", () => {
   const fixture = midgames.positions.find(
