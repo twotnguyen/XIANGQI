@@ -305,3 +305,61 @@ it("keeps typed domain error acknowledgements without a snapshot", async () => {
   ).resolves.toBe(acknowledgement);
   peer.close();
 });
+
+it.each([
+  null,
+  undefined,
+  { redMs: -1, blackMs: 600000, running: "red", asOf: "2026-10-11T00:00:00Z" },
+  { redMs: 600000, blackMs: NaN, running: "red", asOf: "2026-10-11T00:00:00Z" },
+  {
+    redMs: 600000,
+    blackMs: 600000,
+    running: "black",
+    asOf: "2026-10-11T00:00:00Z",
+  },
+  {
+    redMs: 600000,
+    blackMs: 600000,
+    running: null,
+    asOf: "2026-10-11T00:00:00Z",
+  },
+  { redMs: 600000, blackMs: 600000, running: "red", asOf: "invalid" },
+])("rejects unusable active clocks before rendering", (clocks) => {
+  const { peer, onSnapshot, onError } = observer();
+  fixture.handlers.get("room.snapshot")?.({ ...snapshot(), clocks });
+  expect(onSnapshot).not.toHaveBeenCalled();
+  expect(onError).toHaveBeenCalledOnce();
+  peer.close();
+});
+it("requests a fresh readonly snapshot without issuing a game command", async () => {
+  const { peer } = observer();
+  const state = snapshot();
+  state.control.mode = "readonly";
+  fixture.emit.mockImplementation((event, callback) => {
+    expect(event).toBe("room.sync");
+    callback(null, { status: "ok", commandId: "sync", snapshot: state });
+  });
+  await expect(peer.refresh()).resolves.toBe(state);
+  expect(fixture.emit).toHaveBeenCalledOnce();
+  peer.close();
+});
+it("rejects malformed refresh clocks and never retries", async () => {
+  const { peer } = observer();
+  fixture.emit.mockImplementation((_event, callback) =>
+    callback(null, { status: "ok", snapshot: { ...snapshot(), clocks: null } }),
+  );
+  await expect(peer.refresh()).rejects.toThrow("Phản hồi phòng không hợp lệ");
+  expect(fixture.emit).toHaveBeenCalledOnce();
+  peer.close();
+});
+it("rejects unavailable refresh with a fixed message rather than a provider body", async () => {
+  const { peer } = observer();
+  fixture.emit.mockImplementation((_event, callback) =>
+    callback(null, {
+      status: "error",
+      error: { code: "PRIVATE", message: "PRIVATE_PROVIDER" },
+    }),
+  );
+  await expect(peer.refresh()).rejects.toThrow("Chưa thể đồng bộ phòng");
+  peer.close();
+});

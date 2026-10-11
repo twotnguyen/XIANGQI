@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import {
   cleanup,
   render,
@@ -17,11 +17,28 @@ import {
 } from "@xiangqi/xiangqi-core";
 import { RoomPage } from "./RoomPage.js";
 import * as gameAudio from "./game-audio.js";
-import type { RoomConnectionInput } from "./room-client.js";
+import { RoomRequestError, type RoomConnectionInput } from "./room-client.js";
+const originalDialogShow = Object.getOwnPropertyDescriptor(
+  HTMLDialogElement.prototype,
+  "showModal",
+);
+const originalDialogClose = Object.getOwnPropertyDescriptor(
+  HTMLDialogElement.prototype,
+  "close",
+);
+beforeEach(nativeDialogStub);
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.restoreAllMocks();
+  for (const [name, descriptor] of [
+    ["showModal", originalDialogShow],
+    ["close", originalDialogClose],
+  ] as const) {
+    if (descriptor)
+      Object.defineProperty(HTMLDialogElement.prototype, name, descriptor);
+    else Reflect.deleteProperty(HTMLDialogElement.prototype, name);
+  }
 });
 const snapshot: RoomSnapshot = {
   serverNow: "2026-10-11T00:00:00Z",
@@ -65,6 +82,7 @@ function setup(state = snapshot) {
     create: vi.fn(),
     join: vi.fn(),
   };
+  const refresh = vi.fn().mockResolvedValue(state);
   const close = vi.fn();
   const onLeft = vi.fn();
   const rendered = render(
@@ -76,13 +94,14 @@ function setup(state = snapshot) {
       onLeft,
       connect: (input) => {
         handlers = input;
-        return { command, close };
+        return { command, close, refresh };
       },
     }),
   );
   return {
     client,
     command,
+    refresh,
     close,
     onLeft,
     unmount: rendered.unmount,
@@ -524,4 +543,367 @@ it("a canonical ACK that introduces a new match clears its previous request pend
       .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
       .getAttribute("aria-disabled"),
   ).toBe("false");
+});
+
+function clockState(): RoomSnapshot {
+  return {
+    ...playing(),
+    clocks: {
+      redMs: 300000,
+      blackMs: 300000,
+      running: "red",
+      asOf: snapshot.serverNow,
+    },
+  };
+}
+async function visibility(state: "visible" | "hidden") {
+  vi.spyOn(document, "visibilityState", "get").mockReturnValue(state);
+  await act(async () => {
+    fireEvent(document, new Event("visibilitychange"));
+  });
+}
+it("shows both server clocks and readonly visibility refresh rebases a spectator without issuing a command", async () => {
+  const state = { ...clockState(), role: "spectator" as const };
+  const f = setup(state);
+  await f.ready();
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
+    "05:00",
+  );
+  await visibility("hidden");
+  expect(f.refresh).not.toHaveBeenCalled();
+  f.refresh.mockResolvedValue({
+    ...state,
+    serverNow: "2026-10-11T00:01:00Z",
+    clocks: { ...state.clocks!, redMs: 240000, asOf: "2026-10-11T00:01:00Z" },
+  });
+  await visibility("visible");
+  expect(f.refresh).toHaveBeenCalledOnce();
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
+    "04:00",
+  );
+  expect(f.command).not.toHaveBeenCalled();
+});
+it("keeps the running clock during physical disconnection and does not refresh while disconnected", async () => {
+  let now = 1000;
+  vi.spyOn(performance, "now").mockImplementation(() => now);
+  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+  const f = setup(clockState());
+  await f.ready();
+  f.disconnect();
+  act(() => {
+    now += 2000;
+    vi.advanceTimersByTime(2000);
+  });
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
+    "04:58",
+  );
+  await visibility("visible");
+  expect(f.refresh).not.toHaveBeenCalled();
+  expect(f.command).not.toHaveBeenCalled();
+});
+it.each(["reconnect", "new-match", "unmount"] as const)(
+  "fences a visibility response after %s",
+  async (change) => {
+    const state = clockState(),
+      f = setup(state);
+    await f.ready();
+    let finish!: (value: RoomSnapshot) => void;
+    f.refresh.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    await visibility("visible");
+    if (change === "reconnect") {
+      f.disconnect();
+      f.reconnect();
+      f.publish({
+        ...state,
+        serverNow: "2026-10-11T00:00:20Z",
+        clocks: {
+          ...state.clocks!,
+          redMs: 280000,
+          asOf: "2026-10-11T00:00:20Z",
+        },
+      });
+    } else if (change === "new-match") {
+      f.publish({
+        ...state,
+        version: 5,
+        match: { ...state.match!, id: "87654321-1234-4234-8234-123456789abc" },
+        clocks: { ...state.clocks!, redMs: 600000 },
+      });
+    } else f.unmount();
+    await act(async () =>
+      finish({
+        ...state,
+        version: 100,
+        serverNow: "2026-10-11T00:02:00Z",
+        clocks: { ...state.clocks!, redMs: 180000 },
+      }),
+    );
+    if (change !== "unmount")
+      expect(
+        screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent,
+      ).toBe(change === "reconnect" ? "04:40" : "10:00");
+    else expect(screen.queryByRole("timer")).toBeNull();
+    expect(f.command).not.toHaveBeenCalled();
+  },
+);
+it("retains the fresher clock when a same-version snapshot has an older server timestamp", async () => {
+  const state = clockState(),
+    f = setup(state);
+  await f.ready();
+  const fresh = {
+    ...state,
+    serverNow: "2026-10-11T00:00:30Z",
+    clocks: { ...state.clocks!, redMs: 270000, asOf: "2026-10-11T00:00:30Z" },
+  };
+  f.publish(fresh);
+  f.refresh.mockResolvedValue(state);
+  await visibility("visible");
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
+    "04:30",
+  );
+  f.publish(state);
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
+    "04:30",
+  );
+});
+it("sanitizes a refresh failure and permits another readonly refresh", async () => {
+  const f = setup(clockState());
+  await f.ready();
+  f.refresh.mockRejectedValueOnce(new Error("PRIVATE_PROVIDER_PAYLOAD"));
+  await visibility("visible");
+  expect(
+    screen.getByText("Chưa thể đồng bộ đồng hồ. Kiểm tra kết nối rồi thử lại."),
+  ).toBeTruthy();
+  expect(screen.queryByText("PRIVATE_PROVIDER_PAYLOAD")).toBeNull();
+  await visibility("hidden");
+  await visibility("visible");
+  expect(f.refresh).toHaveBeenCalledTimes(2);
+  expect(
+    screen.queryByText(
+      "Chưa thể đồng bộ đồng hồ. Kiểm tra kết nối rồi thử lại.",
+    ),
+  ).toBeNull();
+  expect(f.command).not.toHaveBeenCalled();
+});
+
+function terminal(state = playing()): RoomSnapshot {
+  return {
+    ...state,
+    version: state.version + 2,
+    room: {
+      ...state.room,
+      status: "WAITING",
+      ready: { red: false, black: false },
+    },
+    match: {
+      ...state.match!,
+      status: "FINISHED",
+      result: "TIMEOUT",
+      winner: "red",
+      endedAt: state.serverNow,
+    },
+    clocks: { ...state.clocks!, running: null },
+  };
+}
+function nativeDialogStub() {
+  Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.setAttribute("open", "");
+    },
+  });
+  Object.defineProperty(HTMLDialogElement.prototype, "close", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.removeAttribute("open");
+    },
+  });
+}
+it("keeps the authoritative final board and stops moves when the result arrives", async () => {
+  nativeDialogStub();
+  const f = setup(playing());
+  await f.ready();
+  f.publish(terminal());
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  expect(
+    screen.getByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
+  ).toBeTruthy();
+  expect(
+    screen.queryByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeNull();
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
+    "10:00",
+  );
+  expect(f.command).not.toHaveBeenCalled();
+});
+it("Stay closes only this result and a duplicate or reconnect cannot reopen it", async () => {
+  nativeDialogStub();
+  const state = terminal();
+  const f = setup(state);
+  await f.ready();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Ở lại phòng" }));
+  expect(screen.queryByRole("dialog")).toBeNull();
+  f.publish({ ...state, version: state.version + 1 });
+  f.disconnect();
+  f.reconnect();
+  f.publish({ ...state, version: state.version + 2 });
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(f.client.leave).not.toHaveBeenCalled();
+  expect(f.command).not.toHaveBeenCalled();
+  f.publish({
+    ...state,
+    version: state.version + 3,
+    match: { ...state.match!, id: "second-match" },
+  });
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+});
+it("result Leave waits for HTTP acknowledgement and uses the terminal room version", async () => {
+  nativeDialogStub();
+  const state = terminal();
+  const f = setup(state);
+  await f.ready();
+  let finish!: (v: unknown) => void;
+  f.client.leave.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  await userEvent
+    .setup()
+    .click(screen.getByRole("dialog").querySelectorAll("button")[1]!);
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", state.version);
+  expect(f.onLeft).not.toHaveBeenCalled();
+  expect(
+    screen
+      .getByRole("button", { name: "Ở lại phòng" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  await act(async () => finish({ left: true }));
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+it("failed result Leave keeps the modal and reports the safe error inside it", async () => {
+  nativeDialogStub();
+  const f = setup(terminal());
+  await f.ready();
+  f.client.leave.mockRejectedValue(new Error("private-server-detail"));
+  await userEvent
+    .setup()
+    .click(screen.getByRole("dialog").querySelectorAll("button")[1]!);
+  expect(
+    screen.getByRole("dialog").querySelector('[role="alert"]')?.textContent,
+  ).toContain("Thao tác chưa thực hiện được");
+  expect(screen.queryByText("private-server-detail")).toBeNull();
+  expect(f.onLeft).not.toHaveBeenCalled();
+});
+it("spectator sees a neutral inline result and has no player Stay action", async () => {
+  const state = terminal();
+  const f = setup({
+    ...state,
+    role: "spectator",
+    control: { mode: "readonly", generation: 0, reason: "not_allowed" },
+  });
+  await f.ready();
+  expect(screen.getByRole("region", { name: "Kết quả ván cờ" })).toBeTruthy();
+  expect(screen.getByRole("heading", { name: "Đỏ thắng" })).toBeTruthy();
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Ở lại phòng" })).toBeNull();
+  expect(f.command).not.toHaveBeenCalled();
+});
+it("a disconnected client waits for a fresh authoritative result before opening the modal", async () => {
+  nativeDialogStub();
+  const f = setup(playing());
+  await f.ready();
+  f.disconnect();
+  f.publish(terminal());
+  expect(screen.queryByRole("dialog", { name: "Bạn thắng!" })).toBeNull();
+  f.reconnect();
+  expect(screen.queryByRole("dialog", { name: "Bạn thắng!" })).toBeNull();
+  f.publish(terminal());
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+});
+
+it("a stale result Leave keeps the final board and modal until fresh realtime sync", async () => {
+  nativeDialogStub();
+  const state = terminal();
+  const f = setup(state);
+  await f.ready();
+  f.client.leave.mockRejectedValue(new RoomRequestError("VERSION_STALE", 409));
+  f.client.snapshot.mockResolvedValue({ ...state, version: state.version + 1 });
+  let sync!: (value: RoomSnapshot) => void;
+  f.refresh.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        sync = resolve;
+      }),
+  );
+  await userEvent
+    .setup()
+    .click(screen.getByRole("dialog").querySelectorAll("button")[1]!);
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  expect(
+    screen.getByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
+  ).toBeTruthy();
+  expect(f.refresh).toHaveBeenCalledOnce();
+  expect(f.onLeft).not.toHaveBeenCalled();
+  await act(async () => sync({ ...state, version: state.version + 1 }));
+  expect(screen.getByRole("dialog")).toBeTruthy();
+});
+it("keeps the reconnect modal through bare transport reconnection until a fresh snapshot arrives", async () => {
+  nativeDialogStub();
+  const state = playing();
+  const f = setup(state);
+  await f.ready();
+  f.disconnect();
+  expect(
+    screen.getByRole("dialog", { name: "Đang kết nối lại…" }),
+  ).toBeTruthy();
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" })).toBeTruthy();
+  f.reconnect();
+  expect(
+    screen.getByRole("dialog", { name: "Đang kết nối lại…" }),
+  ).toBeTruthy();
+  expect(
+    screen.queryByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeNull();
+  f.publish({ ...state, version: state.version + 1 });
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeTruthy();
+});
+it("opponent reconnect notice uses canonical grace while the local board remains enabled", async () => {
+  const state = playing();
+  state.room.connected.black = false;
+  state.room.graceUntil.black = "2026-10-11T00:01:00Z";
+  const f = setup(state);
+  await f.ready();
+  expect(
+    screen.getByRole("region", { name: "Trạng thái nối lại" }),
+  ).toBeTruthy();
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(
+    screen
+      .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+  f.publish({
+    ...state,
+    version: state.version + 1,
+    room: {
+      ...state.room,
+      connected: { red: true, black: true },
+      graceUntil: { red: null, black: null },
+    },
+  });
+  expect(
+    screen.queryByRole("region", { name: "Trạng thái nối lại" }),
+  ).toBeNull();
 });
