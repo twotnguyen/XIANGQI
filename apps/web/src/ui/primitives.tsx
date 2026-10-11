@@ -347,6 +347,7 @@ export function Dialog({
   danger = false,
   onConfirm,
   confirmLabel = "Xác nhận",
+  cancelLabel = "Huỷ",
 }: {
   open: boolean;
   onClose: () => void;
@@ -355,6 +356,7 @@ export function Dialog({
   danger?: boolean;
   onConfirm?: () => void;
   confirmLabel?: string;
+  cancelLabel?: string;
 }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -423,7 +425,7 @@ export function Dialog({
           className="xq-button xq-button-secondary"
           onClick={onClose}
         >
-          Huỷ
+          {cancelLabel}
         </button>
         {onConfirm && (
           <Button variant={danger ? "danger" : "primary"} onClick={onConfirm}>

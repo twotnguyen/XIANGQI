@@ -157,7 +157,56 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
     )
       invalidResponse();
   }
-  return snapshot as unknown as RoomSnapshot;
+  let normalizedDraw: RoomSnapshot["draw"] = null;
+  if (snapshot.draw !== undefined && snapshot.draw !== null) {
+    if (
+      snapshot.role === "spectator" ||
+      snapshot.match === null ||
+      record(snapshot.match).status !== "ACTIVE"
+    )
+      invalidResponse();
+    const draw = record(snapshot.draw),
+      remaining = record(draw.remainingMoves);
+    if (
+      !Array.isArray(draw.offers) ||
+      draw.offers.length > 2 ||
+      ![remaining.red, remaining.black].every(
+        (value) =>
+          Number.isInteger(value) &&
+          (value as number) >= 0 &&
+          (value as number) <= 5,
+      )
+    )
+      invalidResponse();
+    const ids = new Set<string>(),
+      senders = new Set<string>();
+    const offers = draw.offers.map((value) => {
+      const offer = record(value);
+      if (
+        !isId(offer.id) ||
+        !["red", "black"].includes(offer.sender as string) ||
+        !isDate(offer.expiresAt) ||
+        ids.has((offer.id as string).toLowerCase()) ||
+        senders.has(offer.sender as string)
+      )
+        invalidResponse();
+      ids.add((offer.id as string).toLowerCase());
+      senders.add(offer.sender as string);
+      return {
+        id: offer.id as string,
+        sender: offer.sender as "red" | "black",
+        expiresAt: offer.expiresAt as string,
+      };
+    });
+    normalizedDraw = {
+      offers,
+      remainingMoves: {
+        red: remaining.red as number,
+        black: remaining.black as number,
+      },
+    };
+  }
+  return { ...(snapshot as unknown as RoomSnapshot), draw: normalizedDraw };
 }
 export function createRoomClient(authorizedFetch: AuthorizedFetch) {
   async function request<T>(
@@ -365,9 +414,12 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
               else {
                 try {
                   const ack = record(acknowledgement);
-                  if (ack.status === "ok" || ack.snapshot !== undefined)
-                    parseSnapshot(ack.snapshot, input.roomId);
-                  resolve(acknowledgement);
+                  if (ack.status === "ok" || ack.snapshot !== undefined) {
+                    resolve({
+                      ...acknowledgement,
+                      snapshot: parseSnapshot(ack.snapshot, input.roomId),
+                    });
+                  } else resolve(acknowledgement);
                 } catch {
                   reject(
                     new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại."),

@@ -2,7 +2,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { parsePosition } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "../components/XiangqiBoard.js";
-import { Button, ErrorState, Notice, Skeleton } from "../ui/primitives.js";
+import {
+  Button,
+  Dialog,
+  ErrorState,
+  Notice,
+  Skeleton,
+} from "../ui/primitives.js";
 import {
   connectRoom,
   RoomRequestError,
@@ -15,6 +21,7 @@ import { createGameAudio } from "./game-audio.js";
 import { MatchClocks } from "./MatchClocks.js";
 import { MatchResult } from "./MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
+import { MatchActions, type MatchAction } from "./MatchActions.js";
 import { ReconnectStatus } from "./ReconnectStatus.js";
 import "./rooms.css";
 export interface RoomPageProps {
@@ -47,6 +54,8 @@ export function RoomPage({
   const [retry, setRetry] = useState(0);
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
+  const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsStatus, setSettingsStatus] = useState("");
@@ -66,6 +75,7 @@ export function RoomPage({
   const leaveCallback = useRef(onLeft);
   leaveCallback.current = onLeft;
   function invalidateCommands() {
+    setActionError("");
     commandEpoch.current++;
     if (commandPending.current) setBusy(false);
     commandPending.current = false;
@@ -86,6 +96,7 @@ export function RoomPage({
     if (
       prior &&
       (prior.match?.id !== value.match?.id ||
+        prior.match?.status !== value.match?.status ||
         prior.role !== value.role ||
         prior.control.generation !== value.control.generation ||
         prior.control.mode !== value.control.mode)
@@ -104,8 +115,10 @@ export function RoomPage({
     gameAudio.current?.accept(audioBaseline.current ? null : prior, value);
     audioBaseline.current = false;
     versionFloor.current = value.version;
-    if (prior?.match?.status === "ACTIVE" && value.match?.status !== "ACTIVE")
+    if (prior?.match?.status === "ACTIVE" && value.match?.status !== "ACTIVE") {
       setSettingsOpen(false);
+      setLeaveConfirm(null);
+    }
     latest.current = value;
     setSnapshot(value);
     setView(value);
@@ -346,6 +359,62 @@ export function RoomPage({
       }
     }
   }
+  async function matchAction(action: MatchAction) {
+    const current = latest.current;
+    const peer = connection.current;
+    if (
+      !current?.match ||
+      !peer ||
+      !connectedRef.current ||
+      current.version < versionFloor.current ||
+      busy ||
+      commandPending.current ||
+      current.role === "spectator" ||
+      current.control.mode !== "writable" ||
+      current.room.status !== "PLAYING" ||
+      current.match.status !== "ACTIVE" ||
+      action.payload.matchId !== current.match.id ||
+      action.payload.matchVersion !== current.match.version
+    )
+      return;
+    const requestEpoch = epoch.current;
+    const requestCommandEpoch = ++commandEpoch.current;
+    const isCurrent = () =>
+      epoch.current === requestEpoch &&
+      commandEpoch.current === requestCommandEpoch &&
+      connectedRef.current &&
+      connection.current === peer &&
+      latest.current?.match?.id === current.match!.id;
+    commandPending.current = true;
+    setBusy(true);
+    setActionError("");
+    try {
+      const acknowledgement = await peer.command(action, current.version);
+      if (!isCurrent()) return;
+      if (acknowledgement.snapshot) acceptSnapshot(acknowledgement.snapshot);
+      if (!isCurrent()) return;
+      if (acknowledgement.status === "error") {
+        setActionError(
+          acknowledgement.error.code === "VERSION_STALE" ||
+            acknowledgement.error.code === "MATCH_VERSION_CONFLICT"
+            ? "Ván cờ đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+            : "Thao tác chưa thực hiện được. Kiểm tra đề nghị và quyền điều khiển.",
+        );
+      }
+    } catch {
+      if (isCurrent()) {
+        setActionError(
+          "Chưa nhận được xác nhận thao tác ván cờ. Kiểm tra trạng thái máy chủ trước khi thử lại.",
+        );
+        throw new Error("MATCH_ACTION_UNCONFIRMED");
+      }
+    } finally {
+      if (isCurrent()) {
+        commandPending.current = false;
+        setBusy(false);
+      }
+    }
+  }
   async function changeVisibility(visibility: RoomView["room"]["visibility"]) {
     const current = latest.current;
     if (
@@ -568,12 +637,72 @@ export function RoomPage({
           <Button
             variant="ghost"
             loading={busy}
-            onClick={() => void httpAction("leave")}
+            disabledReason={
+              player &&
+              room.status === "PLAYING" &&
+              (!connected ||
+                !snapshot ||
+                snapshot.version < versionFloor.current ||
+                snapshot.match?.status !== "ACTIVE")
+                ? "Chờ đồng bộ ván cờ để xác nhận rời phòng."
+                : undefined
+            }
+            onClick={() => {
+              const current = latest.current;
+              if (
+                player &&
+                room.status === "PLAYING" &&
+                (!connectedRef.current ||
+                  !snapshot ||
+                  current?.match?.status !== "ACTIVE" ||
+                  current.version < versionFloor.current)
+              )
+                return;
+              if (
+                view.role !== "spectator" &&
+                current?.match?.status === "ACTIVE"
+              ) {
+                setSettingsOpen(false);
+                setLeaveError("");
+                setLeaveConfirm(current.match.id);
+              } else void httpAction("leave");
+            }}
           >
             Rời phòng
           </Button>
         </div>
       </header>
+      <fieldset className="match-actions__confirmation" disabled={busy}>
+        <Dialog
+          open={leaveConfirm !== null}
+          title="Rời phòng?"
+          danger
+          confirmLabel="Rời phòng"
+          cancelLabel="Ở lại"
+          onClose={() => {
+            if (!busy) setLeaveConfirm(null);
+          }}
+          onConfirm={() => {
+            const current = latest.current;
+            if (
+              !connectedRef.current ||
+              current?.match?.id !== leaveConfirm ||
+              current.match.status !== "ACTIVE" ||
+              current.role === "spectator" ||
+              busy
+            )
+              return;
+            void httpAction("leave");
+          }}
+        >
+          <p>
+            <strong>
+              Rời phòng lúc này được tính là đầu hàng. Bạn sẽ thua ván này.
+            </strong>
+          </p>
+          {leaveError && <Notice tone="error" message={leaveError} />}
+        </Dialog>
+      </fieldset>
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
           {error && <Notice tone="error" message={error} />}
@@ -671,6 +800,18 @@ export function RoomPage({
                 onMove={(from, to) => void move(from, to)}
               />
             </div>
+          )}
+          {snapshot && (
+            <MatchActions
+              match={snapshot.match}
+              role={snapshot.role}
+              draw={snapshot.draw}
+              serverNow={snapshot.serverNow}
+              canAct={Boolean(writable && player && active)}
+              busy={busy}
+              error={actionError}
+              onAction={matchAction}
+            />
           )}
           {active && !board && (
             <Notice
