@@ -187,6 +187,37 @@ export class RoomHttpService {
       return { roomId, left: true as const };
     });
   }
+  async proposeSwap(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.proposeSwap(scope, roomId);
+    });
+  }
+  async withdrawSwap(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.withdrawSwap(scope, roomId);
+    });
+  }
+  async respondSwap(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    accept: boolean,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.respondSwap(scope, roomId, accept);
+    });
+  }
   async changeVisibility(
     proof: MemberRoomRequestProof,
     roomId: string,

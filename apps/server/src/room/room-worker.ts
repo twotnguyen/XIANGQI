@@ -22,6 +22,7 @@ export class RoomWorker {
       try {
         await this.port.withRoom(id, async (scope) => {
           const closed = await this.rooms.expireDisconnected(scope, id);
+          await this.rooms.expireSwapOffers(scope, id);
           if (!closed) await this.rooms.startDue(scope, id);
         });
       } catch (error) {

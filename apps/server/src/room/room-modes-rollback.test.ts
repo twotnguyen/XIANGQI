@@ -59,6 +59,7 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await reset();
       await apply("supabase/migrations/20261011000006_rooms.sql");
+      await apply("supabase/migrations/20261011000013_side_swap.sql");
       const owner = await actor();
       legacyRoom = randomUUID();
       await pool.query(
