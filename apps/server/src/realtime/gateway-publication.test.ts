@@ -4,9 +4,12 @@ import { io, type Socket } from "socket.io-client";
 import { describe, expect, it, vi } from "vitest";
 import { attachRealtime } from "./gateway.js";
 import { RealtimeError } from "./contracts.js";
+import { RoomError } from "../room/contracts.js";
+import type { RealtimeConnection } from "./contracts.js";
+import type { ChatReadRequest } from "@xiangqi/shared";
 import type { RealtimeStore } from "./store.js";
 import type { CommandAcknowledgement } from "@xiangqi/shared";
-async function fixture() {
+async function fixture(chatEnabled = false) {
   const roomId = randomUUID(),
     users = new Map<string, string>(),
     clients: Socket[] = [];
@@ -19,6 +22,37 @@ async function fixture() {
     version: 1,
     control: { mode: "writable", generation: 1, reason: null },
   };
+  const chatDenied = new Set<string>();
+  const chatRead = vi.fn(
+    async (connection: RealtimeConnection, input: ChatReadRequest) => {
+      if (chatDenied.has(connection.identity.userId))
+        throw new RoomError("CHAT_FORBIDDEN", "private denied", 403);
+      return {
+        roomId,
+        channel: input.channel,
+        roomVersion: 1,
+        scopeToken: "a".repeat(64),
+        canSend: true,
+        messages: [
+          {
+            messageId: randomUUID(),
+            roomId,
+            sequence: 1,
+            channel: input.channel,
+            content: "PRIVATE_CHAT_BODY",
+            createdAt: new Date().toISOString(),
+            sender: {
+              displayName: "Synthetic",
+              isGuest: false,
+              role: "red" as const,
+            },
+          },
+        ],
+        nextCursor: 1,
+        hasMore: false,
+      };
+    },
+  );
   const resolve = vi.fn(async (token: string) => {
     if (providerFailure)
       throw new RealtimeError(
@@ -56,6 +90,18 @@ async function fixture() {
       store,
       identities: { resolve },
       corsOrigins: [],
+      ...(chatEnabled
+        ? {
+            chat: {
+              read: chatRead,
+              send: async () => ({
+                messageId: randomUUID(),
+                sequence: 1,
+                createdAt: new Date().toISOString(),
+              }),
+            },
+          }
+        : {}),
     });
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
   const address = server.address();
@@ -93,6 +139,8 @@ async function fixture() {
     command,
     snapshot,
     resolve,
+    chatRead,
+    chatDenied,
     setProvider: (b: boolean) => (providerFailure = b),
     setMembership: (b: boolean) => (membership = b),
     setSnapshot: (b: boolean) => (snapshotFailure = b),
@@ -104,6 +152,55 @@ async function fixture() {
   };
 }
 describe("native realtime publication outcomes", () => {
+  it("delivers chat invalidation only after per-recipient authorization without broadcasting private content", async () => {
+    const f = await fixture(true);
+    try {
+      const allowed = await f.peer(),
+        denied = await f.peer(),
+        elsewhere = await f.peer(randomUUID());
+      f.chatDenied.add(denied.userId);
+      const blocked: unknown[] = [];
+      denied.client.on("chat.changed", (value) => blocked.push(value));
+      elsewhere.client.on("chat.changed", (value) => blocked.push(value));
+      const received = new Promise<unknown>((r) =>
+        allowed.client.once("chat.changed", r),
+      );
+      await f.gateway.publishChat(f.roomId, "PLAYERS_PRIVATE");
+      expect(await received).toEqual({
+        roomId: f.roomId,
+        channel: "PLAYERS_PRIVATE",
+        roomVersion: 1,
+        scopeToken: "a".repeat(64),
+        canSend: true,
+      });
+      expect(blocked).toEqual([]);
+      expect(f.chatRead).toHaveBeenCalledTimes(2);
+      const response = await allowed.client
+        .timeout(1000)
+        .emitWithAck("chat.read", { channel: "PLAYERS_PRIVATE" });
+      expect(response).toMatchObject({
+        status: "ok",
+        value: { messages: [{ content: "PRIVATE_CHAT_BODY" }] },
+      });
+    } finally {
+      await f.close();
+    }
+  });
+  it("rejects chat publication when unavailable so a durable outbox can retry", async () => {
+    const f = await fixture(true);
+    try {
+      await f.peer();
+      f.chatRead.mockRejectedValue(new Error("PRIVATE_SQL_CHAT"));
+      await expect(
+        f.gateway.publishChat(f.roomId, "ROOM_PUBLIC"),
+      ).rejects.toMatchObject({ code: "REALTIME_UNAVAILABLE" });
+      await expect(
+        f.gateway.publishChat(f.roomId, "ROOM_PUBLIC"),
+      ).rejects.not.toThrow("PRIVATE");
+    } finally {
+      await f.close();
+    }
+  });
   it.each(["provider", "SQL"])(
     "rejects transient %s publication with a sanitized failure for outbox retry",
     async (kind) => {
