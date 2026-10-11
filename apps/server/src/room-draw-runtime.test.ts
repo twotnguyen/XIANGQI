@@ -264,14 +264,23 @@ describe.skipIf(!databaseUrl)(
           (s) =>
             s?.draw?.offers.length === 0 && s.draw.remainingMoves.red === 5,
         );
-        expect(
-          (
-            await pool.query(
-              "SELECT status,cooldown_after_move_count FROM xiangqi_room.match_draw_offers WHERE id=$1",
-              [offer.id],
-            )
-          ).rows[0],
-        ).toEqual({ status: "EXPIRED", cooldown_after_move_count: 0 });
+        // Clock snapshots hide elapsed offers before the draw worker commits expiry.
+        // Require its canonical transition as well as both peer publications.
+        const expired = await waitFor(
+          async () =>
+            (
+              await pool.query(
+                "SELECT status,cooldown_after_move_count FROM xiangqi_room.match_draw_offers WHERE id=$1",
+                [offer.id],
+              )
+            ).rows[0],
+          (row) =>
+            row?.status === "EXPIRED" && row.cooldown_after_move_count === 0,
+        );
+        expect(expired).toEqual({
+          status: "EXPIRED",
+          cooldown_after_move_count: 0,
+        });
         expect(
           (
             await pool.query("SELECT clock FROM public.matches WHERE id=$1", [
