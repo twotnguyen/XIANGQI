@@ -87,9 +87,11 @@ async function fixture() {
     roomId,
     users,
     gateway,
+    server,
     peer,
     read,
     command,
+    snapshot,
     resolve,
     setProvider: (b: boolean) => (providerFailure = b),
     setMembership: (b: boolean) => (membership = b),
@@ -204,4 +206,90 @@ describe("native realtime publication outcomes", () => {
       await f.close();
     }
   });
+});
+
+async function sync(client: Socket) {
+  return new Promise<CommandAcknowledgement>((resolve, reject) =>
+    client
+      .timeout(250)
+      .emit(
+        "room.sync",
+        (error: Error | null, response: CommandAcknowledgement) =>
+          error ? reject(error) : resolve(response),
+      ),
+  );
+}
+it("resynchronizes a readonly peer from a freshly authorized snapshot without executing a command", async () => {
+  const f = await fixture();
+  try {
+    const peer = await f.peer();
+    f.snapshot.version = 9;
+    f.snapshot.control.mode = "readonly";
+    const resolves = f.resolve.mock.calls.length;
+    const response = await sync(peer.client);
+    expect(response).toMatchObject({
+      status: "ok",
+      snapshot: { roomId: f.roomId, version: 9, control: { mode: "readonly" } },
+    });
+    expect(f.resolve.mock.calls.length).toBeGreaterThan(resolves);
+    expect(f.command).not.toHaveBeenCalled();
+  } finally {
+    await f.close();
+  }
+});
+it.each(["provider", "SQL", "membership"])(
+  "sanitizes %s failures when resynchronizing instead of returning a stale snapshot",
+  async (kind) => {
+    const f = await fixture();
+    try {
+      const peer = await f.peer();
+      if (kind === "provider") f.setProvider(true);
+      else if (kind === "SQL") f.setSnapshot(true);
+      else f.setMembership(true);
+      const response = await sync(peer.client);
+      expect(response.status).toBe("error");
+      expect(response).not.toHaveProperty("snapshot");
+      expect(JSON.stringify(response)).not.toContain("PRIVATE");
+      expect(f.command).not.toHaveBeenCalled();
+    } finally {
+      await f.close();
+    }
+  },
+);
+
+it("drains an in-flight snapshot resynchronization before closing its service", async () => {
+  const f = await fixture();
+  let release!: () => void;
+  let entered!: () => void;
+  const barrier = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const started = new Promise<void>((resolve) => {
+    entered = resolve;
+  });
+  const peer = await f.peer();
+  f.read.mockImplementationOnce(async () => {
+    entered();
+    await barrier;
+    return f.snapshot;
+  });
+  const pending = sync(peer.client).catch(() => null);
+  await started;
+  let closed = false;
+  const transportClosed = new Promise<void>((resolve) =>
+    f.server.once("close", resolve),
+  );
+  const closing = f.close().then(() => {
+    closed = true;
+  });
+  try {
+    await transportClosed;
+    await Promise.resolve();
+    expect(closed).toBe(false);
+  } finally {
+    release();
+    await closing;
+    await pending;
+  }
+  expect(closed).toBe(true);
 });
