@@ -46,6 +46,7 @@ function snapshot(): RoomSnapshot {
       connected: { red: true, black: true },
       graceUntil: { red: null, black: null },
       countdown: null,
+      swapOffer: null,
     },
     control: { mode: "writable", generation: 1, reason: null },
     match: null,

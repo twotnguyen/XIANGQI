@@ -52,6 +52,7 @@ const room: RoomSettingsProps["room"] = {
   connected: { red: true, black: true },
   graceUntil: { red: null, black: null },
   countdown: null,
+  swapOffer: null,
 };
 function setup(overrides: Partial<RoomSettingsProps> = {}) {
   const props: RoomSettingsProps = {

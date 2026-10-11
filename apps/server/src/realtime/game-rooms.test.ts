@@ -46,6 +46,7 @@ function fixture() {
         connected: { red: true, black: false },
         graceUntil: { red: null, black: "2026-10-11T12:01:00Z" },
         countdown: null,
+        swapOffer: null,
       },
     };
   const match: MatchView = {
@@ -208,6 +209,7 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         connected: { red: true, black: false },
         graceUntil: { red: null, black: "2026-10-11T12:01:00Z" },
         countdown: null,
+        swapOffer: null,
       },
       match: {
         id: f.matchId,
