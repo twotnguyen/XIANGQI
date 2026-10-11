@@ -324,3 +324,66 @@ describe.skipIf(!databaseUrl)(
     });
   },
 );
+
+describe("SQL-only member session checker seam", () => {
+  function connection(): RealtimeConnection {
+    return {
+      identity: { userId: randomUUID(), kind: "member" },
+      proof: {
+        accessToken: "expired-provider-token",
+        appSession: "x".repeat(43),
+      },
+      roomId: randomUUID(),
+      tabId: randomUUID(),
+      connectionId: randomUUID(),
+    };
+  }
+  it("checks only the capability and authoritative actor without provider resolve", async () => {
+    const authorizer = {
+      resolve: vi.fn(),
+    } as unknown as PostgresMemberRoomAuthorizer;
+    const check = vi.fn(async () => false),
+      c = connection();
+    const identities = new MemberRealtimeIdentities(authorizer, check);
+    expect(await identities.sessionActive(c)).toBe(false);
+    expect(check).toHaveBeenCalledWith(c.identity.userId, c.proof!.appSession);
+    expect(authorizer.resolve).not.toHaveBeenCalled();
+  });
+  it("sanitizes SQL failures and never classifies outage as ended", async () => {
+    const identities = new MemberRealtimeIdentities(
+      {} as PostgresMemberRoomAuthorizer,
+      async () => {
+        throw new Error("PRIVATE_SQL_SECRET");
+      },
+    );
+    await expect(identities.sessionActive(connection())).rejects.toMatchObject({
+      code: "REALTIME_UNAVAILABLE",
+    });
+  });
+  it("fails closed without configured checker or with Guest/malformed capability", async () => {
+    const c = connection(),
+      check = vi.fn(async () => true),
+      identities = new MemberRealtimeIdentities(
+        {} as PostgresMemberRoomAuthorizer,
+        check,
+      );
+    expect(
+      await identities.sessionActive({
+        ...c,
+        identity: { ...c.identity, kind: "guest" },
+      }),
+    ).toBe(false);
+    expect(
+      await identities.sessionActive({
+        ...c,
+        proof: { ...c.proof!, appSession: "bad" },
+      }),
+    ).toBe(false);
+    expect(check).not.toHaveBeenCalled();
+    await expect(
+      new MemberRealtimeIdentities(
+        {} as PostgresMemberRoomAuthorizer,
+      ).sessionActive(c),
+    ).rejects.toMatchObject({ code: "REALTIME_UNAVAILABLE" });
+  });
+});
