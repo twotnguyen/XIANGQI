@@ -191,7 +191,7 @@ it.each([
   const { peer, onSnapshot, onError } = observer();
   const state = snapshot(lastMove);
   fixture.handlers.get("room.snapshot")?.(state);
-  expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(state);
+  expect(onSnapshot).toHaveBeenCalledExactlyOnceWith({ ...state, draw: null });
   expect(onError).not.toHaveBeenCalled();
   peer.close();
 });
@@ -278,7 +278,10 @@ it("preserves valid acknowledgement snapshots including finished moves whose res
   );
   await expect(
     peer.command({ type: "room.ready", payload: { ready: true } }, 4),
-  ).resolves.toBe(acknowledgement);
+  ).resolves.toEqual({
+    ...acknowledgement,
+    snapshot: { ...state, draw: null },
+  });
   peer.close();
 });
 it("accepts a waiting snapshot with no match and ignores closed connection deliveries", () => {
@@ -286,7 +289,7 @@ it("accepts a waiting snapshot with no match and ignores closed connection deliv
   const state = { ...snapshot(), match: null, clocks: null };
   state.room.status = "WAITING";
   fixture.handlers.get("room.snapshot")?.(state);
-  expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(state);
+  expect(onSnapshot).toHaveBeenCalledExactlyOnceWith({ ...state, draw: null });
   peer.close();
   fixture.handlers.get("room.snapshot")?.(state);
   expect(onSnapshot).toHaveBeenCalledOnce();
@@ -339,7 +342,7 @@ it("requests a fresh readonly snapshot without issuing a game command", async ()
     expect(event).toBe("room.sync");
     callback(null, { status: "ok", commandId: "sync", snapshot: state });
   });
-  await expect(peer.refresh()).resolves.toBe(state);
+  await expect(peer.refresh()).resolves.toEqual({ ...state, draw: null });
   expect(fixture.emit).toHaveBeenCalledOnce();
   peer.close();
 });
@@ -361,5 +364,122 @@ it("rejects unavailable refresh with a fixed message rather than a provider body
     }),
   );
   await expect(peer.refresh()).rejects.toThrow("Chưa thể đồng bộ phòng");
+  peer.close();
+});
+const validDraw = {
+  offers: [
+    {
+      id: "44444444-4444-4444-8444-444444444444",
+      sender: "black",
+      expiresAt: "2026-10-11T00:00:30Z",
+    },
+  ],
+  remainingMoves: { red: 5, black: 0 },
+};
+it("accepts and whitelists actual draw fields while legacy absent draw normalizes null", () => {
+  const { peer, onSnapshot } = observer();
+  fixture.handlers.get("room.snapshot")?.({
+    ...snapshot(),
+    draw: {
+      ...validDraw,
+      secret: "private",
+      offers: [{ ...validDraw.offers[0], private: "not public" }],
+    },
+  });
+  expect(onSnapshot.mock.calls[0]![0].draw).toEqual(validDraw);
+  fixture.handlers.get("room.snapshot")?.(snapshot());
+  expect(onSnapshot.mock.calls[1]![0].draw).toBeNull();
+  peer.close();
+});
+it.each([
+  {
+    offers: [
+      ...validDraw.offers,
+      { ...validDraw.offers[0], id: "55555555-5555-4555-8555-555555555555" },
+    ],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  {
+    offers: [...validDraw.offers, { ...validDraw.offers[0], sender: "red" }],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  {
+    offers: [...validDraw.offers, ...validDraw.offers, ...validDraw.offers],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  {
+    offers: [...validDraw.offers, ...validDraw.offers],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  {
+    offers: [{ ...validDraw.offers[0], id: "bad" }],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  {
+    offers: [{ ...validDraw.offers[0], sender: "WHITE" }],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  {
+    offers: [{ ...validDraw.offers[0], expiresAt: "invalid" }],
+    remainingMoves: { red: 0, black: 0 },
+  },
+  { offers: [], remainingMoves: { red: 6, black: 0 } },
+  { offers: [], remainingMoves: { red: -1, black: 0 } },
+  { offers: [], remainingMoves: { red: 0.5, black: 0 } },
+  { offers: [], remainingMoves: { red: "0", black: 0 } },
+  { offers: [], remainingMoves: { red: 0 } },
+])(
+  "rejects malformed draw projection without delivering a snapshot",
+  (draw) => {
+    const { peer, onSnapshot, onError } = observer();
+    fixture.handlers.get("room.snapshot")?.({ ...snapshot(), draw });
+    expect(onSnapshot).not.toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledExactlyOnceWith(
+      "Phản hồi phòng không hợp lệ. Vui lòng tải lại.",
+    );
+    peer.close();
+  },
+);
+it.each(["spectator", "FINISHED", "INTERRUPTED", "no-match"])(
+  "rejects draw attached to unauthorized or terminal %s snapshot",
+  (state) => {
+    const { peer, onSnapshot, onError } = observer(),
+      base = snapshot();
+    const value =
+      state === "spectator"
+        ? { ...base, role: "spectator" }
+        : state === "no-match"
+          ? { ...base, match: null, clocks: null }
+          : {
+              ...base,
+              match: { ...base.match, status: state },
+              clocks: { ...base.clocks, running: null },
+            };
+    fixture.handlers.get("room.snapshot")?.({ ...value, draw: validDraw });
+    expect(onSnapshot).not.toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledOnce();
+    peer.close();
+  },
+);
+it("sync and command acknowledgements reject malformed draws through the same parser", async () => {
+  const { peer } = observer();
+  const value = {
+    ...snapshot(),
+    draw: { offers: [], remainingMoves: { red: 99, black: 0 } },
+  };
+  fixture.emit.mockImplementation((_event, ...args) => {
+    const cb = args.at(-1) as (error: null, value: unknown) => void;
+    cb(null, { status: "ok", commandId: "c", snapshot: value });
+  });
+  await expect(peer.refresh()).rejects.toThrow("Phản hồi phòng không hợp lệ");
+  await expect(
+    peer.command(
+      {
+        type: "match.draw.offer",
+        payload: { matchId: snapshot().match.id, matchVersion: 3 },
+      },
+      2,
+    ),
+  ).rejects.toThrow("Phản hồi phòng không hợp lệ");
   peer.close();
 });
