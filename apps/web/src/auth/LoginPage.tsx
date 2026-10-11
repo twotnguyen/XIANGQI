@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { Button, Notice, TextField, Tooltip } from "../ui/primitives.js";
 import { NavigationLink } from "../routing/NavigationLink.js";
 import "./LoginPage.css";
@@ -34,16 +40,25 @@ export function LoginPage({
   onLoggedIn,
   onGoogle,
   onGuest,
+  renderGoogle,
 }: {
   onLoggedIn: (result: LoginResult) => void | Promise<void>;
   onGoogle?: () => void | Promise<void>;
   onGuest?: () => void | Promise<void>;
+  renderGoogle?: (
+    remember: boolean,
+    disabled: boolean,
+    onBusyChange: (busy: boolean) => void,
+  ) => ReactNode;
 }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [visible, setVisible] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [loginBusy, setBusy] = useState(false),
+    [googleBusy, setGoogleBusy] = useState(false);
+  const googleSending = useRef(false),
+    busy = loginBusy || googleBusy;
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState("");
   const sending = useRef(false);
@@ -55,7 +70,7 @@ export function LoginPage({
   }, [error]);
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (sending.current || complete) return;
+    if (sending.current || googleSending.current || complete) return;
     setError("");
     if (!/^[A-Za-z0-9_]{3,20}$/.test(username) || !password) {
       setError(invalid);
@@ -205,16 +220,23 @@ export function LoginPage({
               <span>Hoặc</span>
             </div>
             <div className="login-alternatives">
-              <Button
-                variant="secondary"
-                disabled={busy}
-                disabledReason={
-                  onGoogle ? undefined : "Chưa kết nối đăng nhập Google."
-                }
-                onClick={() => void provider(onGoogle)}
-              >
-                Đăng nhập bằng Google
-              </Button>
+              {renderGoogle ? (
+                renderGoogle(remember, loginBusy, (value) => {
+                  googleSending.current = value;
+                  setGoogleBusy(value);
+                })
+              ) : (
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  disabledReason={
+                    onGoogle ? undefined : "Chưa kết nối đăng nhập Google."
+                  }
+                  onClick={() => void provider(onGoogle)}
+                >
+                  Đăng nhập bằng Google
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 disabled={busy}

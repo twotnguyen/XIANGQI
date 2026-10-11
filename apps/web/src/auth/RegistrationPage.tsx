@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { NavigationLink } from "../routing/NavigationLink.js";
 import { containsForbiddenName } from "@xiangqi/shared";
 import "./RegistrationPage.css";
@@ -64,8 +70,13 @@ const secondsUntil = (date: string, now: number) =>
 
 export function RegistrationPage({
   onRegistered,
+  renderGoogle,
 }: {
   onRegistered: (session: RegistrationSession) => void | Promise<void>;
+  renderGoogle?: (
+    disabled: boolean,
+    onBusyChange: (busy: boolean) => void,
+  ) => ReactNode;
 }) {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState("");
@@ -76,7 +87,10 @@ export function RegistrationPage({
   const [registrationToken, setToken] = useState("");
   const [deadline, setDeadline] = useState<Deadline | null>(null);
   const [now, setNow] = useState(Date.now());
-  const [busy, setBusy] = useState(false);
+  const [emailBusy, setBusy] = useState(false),
+    [googleBusy, setGoogleBusy] = useState(false);
+  const googleSending = useRef(false),
+    busy = emailBusy || googleBusy;
   const [error, setError] = useState("");
   const [attempted, setAttempted] = useState(false);
   const [availability, setAvailability] = useState("");
@@ -199,7 +213,13 @@ export function RegistrationPage({
     event.preventDefault();
     setAttempted(true);
     setError("");
-    if (busy || complete || (step === 1 && credentialError)) return;
+    if (
+      busy ||
+      googleSending.current ||
+      complete ||
+      (step === 1 && credentialError)
+    )
+      return;
     if (step === 2 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError("Vui lòng nhập Email hợp lệ.");
       return;
@@ -568,6 +588,14 @@ export function RegistrationPage({
             <p className="registration-error" role="alert">
               {error}
             </p>
+          )}
+          {step === 1 && !complete && renderGoogle && (
+            <div style={{ marginTop: 20 }}>
+              {renderGoogle(emailBusy, (value) => {
+                googleSending.current = value;
+                setGoogleBusy(value);
+              })}
+            </div>
           )}
         </section>
         <p className="registration-footer">
