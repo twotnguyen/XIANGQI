@@ -165,9 +165,13 @@ test("503 retries without stale snapshot; later401 emits sanitized error and dis
   });
   expect(socket.connected).toBe(true);
   expect(snapshots).not.toHaveBeenCalled();
+  const recovered = event(socket, "public.rooms");
   failure = 0;
-  await new Promise((r) => setTimeout(r, 1100));
-  expect(snapshots).not.toHaveBeenCalled();
+  expect(((await recovered) as { rooms: PublicRoomView[] }).rooms).toEqual([
+    room(),
+  ]);
+  expect(snapshots).toHaveBeenCalledTimes(1);
+  snapshots.mockClear();
   failure = 401;
   const expired = event(socket, "public.error");
   const disconnected = event(socket, "disconnect");
@@ -318,3 +322,30 @@ test.each([
   });
   expect(snapshots).not.toHaveBeenCalled();
 });
+
+test("recovery from SQL503 publishes a fresh successful snapshot even when rooms are unchanged", async () => {
+  let failed = false;
+  const url = await setup(async () => ({
+    read: async () => {
+      if (failed)
+        throw Object.assign(Error("private-database"), { status: 503 });
+      return [room()];
+    },
+  }));
+  const socket = connect(url),
+    initial = event(socket, "public.rooms");
+  socket.connect();
+  await initial;
+  failed = true;
+  const outage = event(socket, "public.error");
+  expect(await outage).toEqual({
+    code: "PUBLIC_ROOMS_UNAVAILABLE",
+    message: "Không thể tải danh sách phòng",
+  });
+  expect(socket.connected).toBe(true);
+  const recovered = event(socket, "public.rooms");
+  failed = false;
+  expect(((await recovered) as { rooms: PublicRoomView[] }).rooms).toEqual([
+    room(),
+  ]);
+}, 8000);
