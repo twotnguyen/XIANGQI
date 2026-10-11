@@ -1,0 +1,43 @@
+.xq-ai-setup {
+  display: grid;
+  gap: var(--space-4);
+}
+.xq-ai-setup p {
+  margin: 0;
+}
+.xq-ai-setup-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.xq-ai-setup fieldset {
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.xq-ai-setup legend {
+  font-weight: var(--weight-semibold);
+  padding-inline: var(--space-1);
+}
+.xq-ai-setup label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch-min);
+  overflow-wrap: anywhere;
+}
+.xq-ai-setup input {
+  accent-color: var(--color-gold);
+  flex-shrink: 0;
+}
+.xq-ai-setup input:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .xq-ai-setup-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

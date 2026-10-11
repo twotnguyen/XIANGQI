@@ -1,0 +1,77 @@
+.xq-ai {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  padding: var(--space-6);
+}
+.xq-ai-header,
+.xq-ai-layout {
+  max-inline-size: 1120px;
+  margin-inline: auto;
+}
+.xq-ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-block-end: var(--space-4);
+}
+.xq-ai h1 {
+  margin: 0;
+  font: 600 var(--text-2xl)/var(--leading-2xl) var(--font-serif);
+}
+.xq-ai h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+}
+.xq-ai p {
+  margin-block: var(--space-2);
+}
+.xq-ai-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--space-8);
+  align-items: start;
+}
+.xq-ai-board {
+  min-inline-size: 0;
+  inline-size: min(100%, 640px, calc((100dvh - 220px) * 0.9));
+  justify-self: center;
+}
+.xq-ai-info {
+  display: grid;
+  gap: var(--space-4);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.xq-ai-player {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-inline-start: 3px solid var(--color-gold);
+}
+.xq-ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+@media (max-width: 767px) {
+  .xq-ai {
+    padding: var(--space-3);
+  }
+  .xq-ai-header {
+    display: block;
+  }
+  .xq-ai-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+  .xq-ai-board {
+    inline-size: 100%;
+  }
+  .xq-ai-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .xq-ai-info > :not(.xq-ai-player) {
+    grid-column: 1 / -1;
+  }
+}

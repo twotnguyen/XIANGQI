@@ -348,6 +348,7 @@ export function Dialog({
   onConfirm,
   confirmLabel = "Xác nhận",
   cancelLabel = "Huỷ",
+  dismissible = true,
 }: {
   open: boolean;
   onClose: () => void;
@@ -357,6 +358,7 @@ export function Dialog({
   onConfirm?: () => void;
   confirmLabel?: string;
   cancelLabel?: string;
+  dismissible?: boolean;
 }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -380,7 +382,7 @@ export function Dialog({
       aria-describedby={`${id}-content`}
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        if (dismissible) onClose();
       }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
@@ -408,12 +410,17 @@ export function Dialog({
           event.clientY < rect.top ||
           event.clientY > rect.bottom
         )
-          onClose();
+          if (dismissible) onClose();
       }}
     >
       <header>
         <h2 id={`${id}-title`}>{title}</h2>
-        <Button variant="ghost" aria-label="Đóng hộp thoại" onClick={onClose}>
+        <Button
+          variant="ghost"
+          aria-label="Đóng hộp thoại"
+          onClick={onClose}
+          disabled={!dismissible}
+        >
           <span aria-hidden="true">×</span>
         </Button>
       </header>
@@ -424,6 +431,7 @@ export function Dialog({
           ref={cancel}
           className="xq-button xq-button-secondary"
           onClick={onClose}
+          disabled={!dismissible}
         >
           {cancelLabel}
         </button>
