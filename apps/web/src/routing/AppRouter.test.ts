@@ -154,6 +154,13 @@ vi.mock("../rooms/RoomPage.js", () => ({
       ),
     ),
 }));
+vi.mock("../friends/FriendsPage.js", () => ({
+  FriendsPage: () => createElement("h1", null, "Bạn bè"),
+  FriendsBell: () => null,
+}));
+vi.mock("../friends/RoomInvitePopup.js", () => ({
+  RoomInvitePopup: () => null,
+}));
 const member = {
   status: "active-member",
   userId: "fixture-user",

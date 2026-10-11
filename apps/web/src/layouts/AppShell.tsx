@@ -12,12 +12,14 @@ export function AppShell({
   children,
   active = "/lobby",
   onLogout,
+  bell,
 }: {
   title: string;
   user?: ShellUser;
   children: ReactNode;
   active?: string;
   onLogout?: () => void;
+  bell?: ReactNode;
 }) {
   const [menu, setMenu] = useState(false);
   const navigation = (
@@ -87,6 +89,7 @@ export function AppShell({
           {navigation}
         </nav>
         <div className="xq-account">
+          {bell}
           {user && (
             <span>
               {user.displayName}
