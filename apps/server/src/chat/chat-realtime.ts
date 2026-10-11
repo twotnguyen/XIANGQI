@@ -86,9 +86,8 @@ export class ChatRealtimeService {
           "Bạn không có quyền truy cập kênh chat này",
           403,
         );
-      return true;
     }
-    // This is a controller fence only; it never creates or promotes a controller.
+    // Controller rows also fence spectator chat tabs; game authority remains separate.
     return Boolean(
       (
         await scope.client.query(

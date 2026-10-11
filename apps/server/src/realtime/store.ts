@@ -91,16 +91,16 @@ export class RealtimeStore {
       [connection.identity.userId, connection.roomId],
     );
     const row = rows[0];
-    const writable =
-      canControl &&
+    const ownsTab =
       row?.tab_id === connection.tabId &&
       row.connection_id === connection.connectionId;
+    const writable = canControl && ownsTab;
     return {
       mode: writable ? ("writable" as const) : ("readonly" as const),
       generation: (row?.generation ?? 0) as number,
       reason: writable
         ? null
-        : canControl
+        : (row && !ownsTab) || canControl
           ? ("superseded" as const)
           : ("not_allowed" as const),
     };
@@ -146,11 +146,10 @@ export class RealtimeStore {
         [connection.identity.userId, connection.roomId, connection.tabId],
       );
       if (
-        access.canControl &&
-        (takeover ||
-          !known.rowCount ||
-          !current.rowCount ||
-          current.rows[0].tab_id === connection.tabId)
+        takeover ||
+        !known.rowCount ||
+        !current.rowCount ||
+        current.rows[0].tab_id === connection.tabId
       ) {
         await client.query(
           `INSERT INTO xiangqi_realtime.controllers(user_id,room_id,tab_id,connection_id,generation) VALUES($1,$2,$3,$4,1)
