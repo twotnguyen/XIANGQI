@@ -35,6 +35,7 @@ import {
   PublicRoomRequestError,
 } from "../rooms/public-room-client.js";
 import type { PublicRoomView } from "@xiangqi/shared";
+import { createMediaClient } from "../media/media-client.js";
 import { createProfileClient } from "../profile/profile-client.js";
 import type { ProfileLocation } from "../profile/profile-client.js";
 import { ProfilePage } from "../profile/ProfilePage.js";
@@ -259,6 +260,10 @@ export function AppRouter() {
   const session = useSession();
   const client = useMemo(
     () => createRoomClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
+  const mediaClient = useMemo(
+    () => createMediaClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
   const friendClient = useMemo(
@@ -494,6 +499,7 @@ export function AppRouter() {
           userId={session.state.userId}
           client={client}
           getProof={session.getRealtimeProof}
+          mediaClient={mediaClient}
           onLeft={(message) => {
             setRoomNotice(message ?? "");
             navigate("/lobby");

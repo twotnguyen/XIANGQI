@@ -390,6 +390,12 @@ export class RoomStore {
     ).rows[0];
     const down = await this.pendingDownOffer(s, id);
     const swap = await this.pendingSwapOffer(s, id);
+    const watchers = (
+      await s.client.query(
+        "SELECT m.user_id,COALESCE(p.display_name,'Khách') AS display_name FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR' ORDER BY m.user_id",
+        [id],
+      )
+    ).rows as { user_id: string; display_name: string }[];
     const online = (
       await s.client.query(
         "SELECT user_id FROM xiangqi_room.presence WHERE room_id=$1 AND connected",
@@ -441,6 +447,10 @@ export class RoomStore {
               expiresAt: (swap.expires_at as Date).toISOString(),
             }
           : null,
+        spectators: watchers.map((m) => ({
+          userId: m.user_id,
+          displayName: m.display_name,
+        })),
       },
       role:
         member.side === "RED"

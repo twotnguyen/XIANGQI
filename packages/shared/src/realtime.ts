@@ -23,6 +23,12 @@ export interface RoomStateSnapshot {
       responderId: string;
       expiresAt: string;
     } | null;
+    downOffer: {
+      id: string;
+      inviteeId: string;
+      expiresAt: string;
+    } | null;
+    spectators: { userId: string; displayName: string }[];
   };
   match: {
     id: string;

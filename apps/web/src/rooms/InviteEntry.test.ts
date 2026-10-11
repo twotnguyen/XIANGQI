@@ -26,6 +26,11 @@ function client(join: RoomClient["join"]): RoomClient {
     proposeSwap: vi.fn(),
     withdrawSwap: vi.fn(),
     respondSwap: vi.fn(),
+    toSpectator: vi.fn(),
+    moveToSpectator: vi.fn(),
+    inviteDown: vi.fn(),
+    respondDown: vi.fn(),
+    kickViewer: vi.fn(),
   };
 }
 it("automatically joins after mount exactly once under StrictMode without a second click", async () => {

@@ -204,6 +204,8 @@ export class GameRooms implements RoomCollaborator {
           ? { token: current.countdown.token, dueAt: current.countdown.dueAt }
           : null,
         swapOffer: current.swapOffer ?? null,
+        downOffer: current.downOffer ?? null,
+        spectators: current.spectators ?? [],
       },
       match: match
         ? {

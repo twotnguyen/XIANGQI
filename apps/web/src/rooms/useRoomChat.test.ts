@@ -47,6 +47,8 @@ function snapshot(): RoomSnapshot {
       graceUntil: { red: null, black: null },
       countdown: null,
       swapOffer: null,
+      downOffer: null,
+      spectators: [],
     },
     control: { mode: "writable", generation: 1, reason: null },
     match: null,
