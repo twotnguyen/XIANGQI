@@ -632,3 +632,45 @@ it("rejects late engine response by monotonic deadline even before a delayed tim
     clock.mockRestore();
   }
 });
+
+it("counts replacement preparation inside the retry whole-turn deadline", async () => {
+  vi.useFakeTimers();
+  const f = fixture();
+  let release: (() => void) | undefined;
+  try {
+    await f.games.ready();
+    f.engine.search.mockRejectedValueOnce(new EngineError("ENGINE_TIMEOUT"));
+    const game = await f.games.create(owner, {
+      requestedSide: "black",
+      level: "easy",
+    });
+    await f.games.waitForEngine(owner, game.id);
+    const prior = f.games.read(owner, game.id);
+    f.engine.ready.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          release = resolve;
+        }),
+    );
+    const command = f.games.retry(owner, game.id, { version: prior.version });
+    void command.catch(() => {});
+    await vi.advanceTimersByTimeAsync(0);
+    expect(f.games.read(owner, game.id).engineState).toBe("THINKING");
+    await vi.advanceTimersByTimeAsync(10000);
+    await command;
+    await f.games.waitForEngine(owner, game.id);
+    const after = f.games.read(owner, game.id);
+    expect(after.id).toBe(game.id);
+    expect(after.position).toBe(game.position);
+    expect(after.engineError).toBe("ENGINE_TIMEOUT");
+    expect(after.engineState).toBe("RETRY");
+    expect(f.engine.search).toHaveBeenCalledTimes(1);
+    release!();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(f.engine.search).toHaveBeenCalledTimes(1);
+  } finally {
+    release?.();
+    await f.games.close();
+    vi.useRealTimers();
+  }
+});
