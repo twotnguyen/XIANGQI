@@ -11,6 +11,7 @@ import {
   type RoomConnectionInput,
   type RoomView,
 } from "./room-client.js";
+import { createGameAudio } from "./game-audio.js";
 import "./rooms.css";
 export interface RoomPageProps {
   roomId: string;
@@ -45,16 +46,57 @@ export function RoomPage({
   const versionFloor = useRef(0);
   const latest = useRef<RoomSnapshot | null>(null);
   const audio = useRef<AudioContext | null>(null);
+  const commandPending = useRef(false);
+  const commandEpoch = useRef(0);
+  const connectedRef = useRef(false);
+  const audioBaseline = useRef(true);
+  const gameAudio = useRef<ReturnType<typeof createGameAudio> | null>(null);
+  const [muted, setMuted] = useState(false);
   const leaveCallback = useRef(onLeft);
   leaveCallback.current = onLeft;
+  function invalidateCommands() {
+    commandEpoch.current++;
+    if (commandPending.current) setBusy(false);
+    commandPending.current = false;
+  }
+  function acceptSnapshot(value: RoomSnapshot) {
+    const prior = latest.current;
+    if (
+      !connectedRef.current ||
+      value.roomId !== roomId ||
+      value.version < versionFloor.current ||
+      (prior &&
+        (value.version < prior.version ||
+          value.control.generation < prior.control.generation))
+    )
+      return false;
+    if (
+      prior &&
+      (prior.match?.id !== value.match?.id ||
+        prior.role !== value.role ||
+        prior.control.generation !== value.control.generation ||
+        prior.control.mode !== value.control.mode)
+    )
+      invalidateCommands();
+    gameAudio.current?.accept(audioBaseline.current ? null : prior, value);
+    audioBaseline.current = false;
+    versionFloor.current = value.version;
+    latest.current = value;
+    setSnapshot(value);
+    setView(value);
+    return true;
+  }
   useEffect(() => {
     let alive = true;
     epoch.current++;
     latest.current = null;
     versionFloor.current = 0;
     setBusy(false);
+    commandPending.current = false;
+    audioBaseline.current = true;
     setSnapshot(null);
     setView(null);
+    connectedRef.current = false;
     setConnected(false);
     setError("");
     void client.snapshot(roomId).then(
@@ -73,25 +115,17 @@ export function RoomPage({
       roomId,
       getProof,
       onSnapshot: (value) => {
-        if (!alive || value.roomId !== roomId) return;
-        const prior = latest.current;
-        if (value.version < versionFloor.current) return;
-        if (
-          prior &&
-          (value.version < prior.version ||
-            value.control.generation < prior.control.generation)
-        )
-          return;
-        versionFloor.current = value.version;
-        latest.current = value;
-        setSnapshot(value);
-        setView(value);
-        setError("");
+        if (alive && acceptSnapshot(value)) setError("");
       },
       onConnection: (value) => {
         if (alive) {
+          connectedRef.current = value;
           setConnected(value);
-          if (!value) setSnapshot(null);
+          if (!value) {
+            invalidateCommands();
+            audioBaseline.current = true;
+            setSnapshot(null);
+          }
         }
       },
       onError: (message) => {
@@ -105,17 +139,26 @@ export function RoomPage({
     return () => {
       alive = false;
       epoch.current++;
+      commandEpoch.current++;
+      connectedRef.current = false;
       peer.close();
       if (connection.current === peer) connection.current = null;
     };
   }, [roomId, client, getProof, connect, retry]);
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    const playback = createGameAudio();
+    gameAudio.current = playback;
+    setMuted(playback.muted);
+    return () => {
+      playback.close();
+      if (gameAudio.current === playback) gameAudio.current = null;
       void audio.current?.close();
-    },
-    [],
-  );
+      audio.current = null;
+    };
+  }, []);
   function unlockAudio() {
+    void gameAudio.current?.unlock();
+    if (muted) return;
     try {
       if (!audio.current && typeof AudioContext !== "undefined")
         audio.current = new AudioContext();
@@ -126,7 +169,7 @@ export function RoomPage({
   }
   function sound() {
     const context = audio.current;
-    if (!context || context.state !== "running") return;
+    if (muted || !context || context.state !== "running") return;
     const oscillator = context.createOscillator(),
       gain = context.createGain();
     oscillator.frequency.value = 660;
@@ -141,13 +184,23 @@ export function RoomPage({
     if (
       !snapshot ||
       !connected ||
+      !connectedRef.current ||
       busy ||
+      commandPending.current ||
       snapshot.role === "spectator" ||
       snapshot.control.mode !== "writable" ||
       snapshot.room.status !== "WAITING"
     )
       return;
     const requestEpoch = epoch.current;
+    const requestCommandEpoch = ++commandEpoch.current;
+    const matchId = latest.current?.match?.id;
+    const isCurrent = () =>
+      epoch.current === requestEpoch &&
+      commandEpoch.current === requestCommandEpoch &&
+      connectedRef.current &&
+      latest.current?.match?.id === matchId;
+    commandPending.current = true;
     unlockAudio();
     setBusy(true);
     setError("");
@@ -159,23 +212,8 @@ export function RoomPage({
         },
         snapshot.version,
       );
-      if (epoch.current !== requestEpoch) return;
-      if (acknowledgement.snapshot) {
-        const next = acknowledgement.snapshot;
-        const prior = latest.current;
-        if (
-          next.roomId === roomId &&
-          next.version >= versionFloor.current &&
-          (!prior ||
-            (next.version >= prior.version &&
-              next.control.generation >= prior.control.generation))
-        ) {
-          versionFloor.current = next.version;
-          latest.current = next;
-          setSnapshot(next);
-          setView(next);
-        }
-      }
+      if (!isCurrent()) return;
+      if (acknowledgement.snapshot) acceptSnapshot(acknowledgement.snapshot);
       if (acknowledgement.status === "error")
         setError(
           acknowledgement.error.code === "VERSION_STALE"
@@ -183,12 +221,73 @@ export function RoomPage({
             : "Chưa thể thay đổi Sẵn sàng. Kiểm tra kết nối, ghế và quyền điều khiển.",
         );
     } catch {
-      if (epoch.current === requestEpoch)
+      if (isCurrent())
         setError(
           "Chưa nhận được xác nhận Sẵn sàng. Kiểm tra trạng thái phòng trước khi thao tác lại.",
         );
     } finally {
-      if (epoch.current === requestEpoch) setBusy(false);
+      if (isCurrent()) {
+        commandPending.current = false;
+        setBusy(false);
+      }
+    }
+  }
+  async function move(from: number, to: number) {
+    const current = latest.current;
+    if (
+      !current?.match ||
+      !connected ||
+      !connectedRef.current ||
+      busy ||
+      commandPending.current ||
+      current.role === "spectator" ||
+      current.control.mode !== "writable" ||
+      current.room.status !== "PLAYING" ||
+      current.match.status !== "ACTIVE" ||
+      current.role !== current.match.turn
+    )
+      return;
+    const requestEpoch = epoch.current;
+    const matchId = current.match.id;
+    const requestCommandEpoch = ++commandEpoch.current;
+    const isCurrent = () =>
+      epoch.current === requestEpoch &&
+      commandEpoch.current === requestCommandEpoch &&
+      connectedRef.current &&
+      latest.current?.match?.id === matchId;
+    commandPending.current = true;
+    unlockAudio();
+    setBusy(true);
+    setError("");
+    try {
+      const acknowledgement = await connection.current!.command(
+        {
+          type: "match.move",
+          payload: { matchId, matchVersion: current.match.version, from, to },
+        },
+        current.version,
+      );
+      if (!isCurrent()) return;
+      if (acknowledgement.snapshot) acceptSnapshot(acknowledgement.snapshot);
+      if (acknowledgement.status === "error")
+        setError(
+          acknowledgement.error.code === "MATCH_VERSION_CONFLICT" ||
+            acknowledgement.error.code === "VERSION_STALE"
+            ? "Thế cờ đã thay đổi. Kiểm tra bàn cờ mới rồi thử lại."
+            : acknowledgement.error.code === "MATCH_ILLEGAL_MOVE"
+              ? "Nước đi không hợp lệ. Chọn lại quân và ô đích."
+              : "Chưa thể đi cờ. Kiểm tra lượt, kết nối và quyền điều khiển.",
+        );
+    } catch {
+      if (isCurrent())
+        setError(
+          "Chưa nhận được xác nhận nước đi. Kiểm tra bàn cờ máy chủ trước khi thao tác lại.",
+        );
+    } finally {
+      if (isCurrent()) {
+        commandPending.current = false;
+        setBusy(false);
+      }
     }
   }
   async function httpAction(action: "switch" | "leave") {
@@ -268,7 +367,7 @@ export function RoomPage({
     }
   }
   return (
-    <main className="xq-ui xq-room-page">
+    <main className={`xq-ui xq-room-page${active ? " is-playing" : ""}`}>
       <header className="xq-room-header">
         <div>
           <h1>{room.name}</h1>
@@ -280,13 +379,31 @@ export function RoomPage({
                 : "Phòng chờ thi đấu"}
           </p>
         </div>
-        <Button
-          variant="ghost"
-          loading={busy}
-          onClick={() => void httpAction("leave")}
-        >
-          Rời phòng
-        </Button>
+        <div className="xq-room-header-actions">
+          {active && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                const nextMuted = gameAudio.current?.toggle() ?? false;
+                setMuted(nextMuted);
+                if (nextMuted) {
+                  void audio.current?.close();
+                  audio.current = null;
+                } else unlockAudio();
+              }}
+              aria-pressed={muted}
+            >
+              {muted ? "Bật âm thanh" : "Tắt âm thanh"}
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            loading={busy}
+            onClick={() => void httpAction("leave")}
+          >
+            Rời phòng
+          </Button>
+        </div>
       </header>
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
@@ -355,8 +472,14 @@ export function RoomPage({
               <XiangqiBoard
                 position={board}
                 orientation={view.role === "black" ? "black" : "red"}
+                playerSide={view.role === "black" ? "black" : "red"}
+                disabled={
+                  !writable || !player || snapshot?.match?.turn !== view.role
+                }
+                pending={busy}
+                lastMove={snapshot?.match?.lastMove ?? null}
+                onMove={(from, to) => void move(from, to)}
               />
-              <p>Thao tác đi cờ chưa khả dụng.</p>
             </div>
           )}
           {active && !board && (

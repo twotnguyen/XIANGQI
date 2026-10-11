@@ -221,6 +221,104 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
       ).rows[0].n,
     ).toBe(0);
   });
+  it("projects verified lastMove across reload, rejected commands and RESULT without changing its MOVE version", async () => {
+    const s = await start();
+    const snapshot = () =>
+      transaction([red, black], [s.room], (c) =>
+        store().snapshot(c, s.room, s.matchId),
+      );
+    expect(await snapshot()).toHaveProperty("lastMove", null);
+    const move = await run(s.room, red, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 0,
+        from: 54,
+        to: 45,
+      }),
+    );
+    const lastMove = { from: 54, to: 45, eventVersion: 1 };
+    expect(move.match).toHaveProperty("lastMove", lastMove);
+    expect(await snapshot()).toHaveProperty("lastMove", lastMove);
+    const stale = await run(s.room, black, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 0,
+        from: 27,
+        to: 36,
+      }),
+    );
+    expect(stale.error?.code).toBe("MATCH_VERSION_CONFLICT");
+    expect(stale.match).toHaveProperty("lastMove", lastMove);
+    const illegal = await run(s.room, black, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 1,
+        from: 27,
+        to: 45,
+      }),
+    );
+    expect(illegal.error?.code).toBe("MATCH_ILLEGAL_MOVE");
+    expect(illegal.match).toHaveProperty("lastMove", lastMove);
+    const resigned = await run(s.room, black, (scope) =>
+      store().resign(scope, { matchId: s.matchId, matchVersion: 1 }),
+    );
+    expect(resigned.match.version).toBe(2);
+    expect(resigned.match).toHaveProperty("lastMove", lastMove);
+    expect(await snapshot()).toHaveProperty("lastMove", lastMove);
+    const retry = await run(s.room, black, (scope) =>
+      store().resign(scope, { matchId: s.matchId, matchVersion: 1 }),
+    );
+    expect(retry.error?.code).toBe("MATCH_FINISHED");
+    expect(retry.match).toHaveProperty("lastMove", lastMove);
+  });
+  it("lastMove follows the effective branch rather than a newer abandoned MOVE", async () => {
+    const s = await start();
+    const first = await run(s.room, red, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 0,
+        from: 54,
+        to: 45,
+      }),
+    );
+    await run(s.room, black, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 1,
+        from: 27,
+        to: 36,
+      }),
+    );
+    await pool.query(
+      "UPDATE public.matches SET active_move_ids=jsonb_build_array(active_move_ids->0),ply=1,position=$2,version=3 WHERE id=$1",
+      [s.matchId, encodePosition(parsePosition(first.match.position))],
+    );
+    await pool.query(
+      "INSERT INTO public.match_events(match_id,version,type,payload) VALUES($1,3,'UNDO','{}')",
+      [s.matchId],
+    );
+    const snapshot = await transaction([red, black], [s.room], (c) =>
+      store().snapshot(c, s.room, s.matchId),
+    );
+    expect(snapshot).toMatchObject({
+      version: 3,
+      ply: 1,
+      lastMove: { from: 54, to: 45, eventVersion: 1 },
+    });
+    const continued = await run(s.room, black, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 3,
+        from: 27,
+        to: 36,
+      }),
+    );
+    expect(continued.match).toHaveProperty("lastMove", {
+      from: 27,
+      to: 36,
+      eventVersion: 4,
+    });
+  });
   it("persists an actual pawn move, canonical coordinates and effective branch", async () => {
     const s = await start();
     const r = await run(s.room, red, (scope) =>
@@ -355,6 +453,7 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
           status: "FINISHED",
           version: 2,
           ply: 1,
+          lastMove: { from, to, eventVersion: 1 },
           outcome: { reason, winner: "red" },
         },
       });
@@ -588,6 +687,11 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
       version: 121,
       position: noCaptureFinal,
       outcome: { reason: "DRAW_NO_CAPTURE", winner: null },
+      lastMove: {
+        from: noCaptureMoves.at(-1)![0],
+        to: noCaptureMoves.at(-1)![1],
+        eventVersion: 120,
+      },
     });
     expect(
       (
@@ -917,6 +1021,11 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
       "INSERT INTO public.match_events(match_id,version,type,payload) VALUES($1,5,'UNDO','{}')",
       [s.matchId],
     );
+    expect(
+      await transaction([red, black], [s.room], (c) =>
+        store().snapshot(c, s.room, s.matchId),
+      ),
+    ).toHaveProperty("lastMove", null);
     let result;
     for (const [i, [from, to]] of cycle.entries())
       result = await run(s.room, i % 2 === 0 ? red : black, (scope) =>
@@ -932,6 +1041,7 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
       ply: 4,
       version: 9,
       outcome: null,
+      lastMove: { from: 3, to: 4, eventVersion: 9 },
     });
     const moves = (
       await pool.query(
