@@ -18,3 +18,4 @@ parentPort.on(
     }
   },
 );
+parentPort.postMessage({ ready: true });
