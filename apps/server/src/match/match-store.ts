@@ -21,6 +21,7 @@ import {
 import { replayHistory, type HistoryMove } from "./history.js";
 import {
   corrupt,
+  decodeMove,
   encodeMove,
   encodePosition,
   record,
@@ -156,7 +157,7 @@ export class MatchStore {
   private async history(
     client: PoolClient,
     row: MatchRow,
-  ): Promise<Position[]> {
+  ): Promise<{ positions: Position[]; lastMove: MatchView["lastMove"] }> {
     const start = await client.query<{ payload: unknown }>(
       "SELECT payload FROM public.match_events WHERE match_id=$1 AND version=0 AND type='START'",
       [row.id],
@@ -225,7 +226,20 @@ export class MatchStore {
         )
           corrupt();
       }
-      return history;
+      // The selected branch and MOVE payloads have all passed canonical replay.
+      const lastId = (row.active_move_ids as string[]).at(-1);
+      const last = lastId
+        ? moves.rows.find((move) => move.id === lastId)!
+        : null;
+      return {
+        positions: history,
+        lastMove: last
+          ? {
+              ...decodeMove(last.move),
+              eventVersion: Number(last.event_version),
+            }
+          : null,
+      };
     } catch (error) {
       if (
         error instanceof Error &&
@@ -235,7 +249,11 @@ export class MatchStore {
       return reject("MATCH_HISTORY_CORRUPT", "Lịch sử ván không nhất quán.");
     }
   }
-  private view(row: MatchRow, position: Position): MatchView {
+  private view(
+    row: MatchRow,
+    position: Position,
+    lastMove: MatchView["lastMove"],
+  ): MatchView {
     if (!Number.isSafeInteger(Number(row.version)) || Number(row.version) < 0)
       corrupt();
     return {
@@ -243,6 +261,7 @@ export class MatchStore {
       version: Number(row.version),
       ply: row.ply,
       position: toFen(position),
+      lastMove,
       turn: position.turn,
       status: row.status,
       outcome: storedOutcome(row.outcome),
@@ -288,7 +307,7 @@ export class MatchStore {
         old.time_control !== input.timeControlSeconds
       )
         reject("MATCH_START_CONFLICT", "Mã bắt đầu ván đã được dùng.");
-      const history = await this.history(client, old);
+      const { positions: history } = await this.history(client, old);
       if (toFen(history[0]!) !== toFen(initialPosition()))
         reject("MATCH_START_CONFLICT", "Thế bắt đầu ván đã thay đổi.");
       return { matchId: old.id };
@@ -366,8 +385,8 @@ export class MatchStore {
     matchId: string,
   ): Promise<MatchView> {
     const row = await this.row(client, roomId, matchId);
-    const history = await this.history(client, row);
-    return this.view(row, history.at(-1)!);
+    const { positions: history, lastMove } = await this.history(client, row);
+    return this.view(row, history.at(-1)!, lastMove);
   }
   private async context(
     scope: MatchScope,
@@ -416,8 +435,11 @@ export class MatchStore {
     ).rows[0];
     if (!seat || seat.side !== (side === "red" ? "RED" : "BLACK"))
       reject("MATCH_PLAYER_REQUIRED", "Ghế người chơi đã thay đổi.", 403);
-    const history = await this.history(scope.client, row);
-    const match = this.view(row, history.at(-1)!);
+    const { positions: history, lastMove } = await this.history(
+      scope.client,
+      row,
+    );
+    const match = this.view(row, history.at(-1)!, lastMove);
     return { room, row, side, history, match };
   }
   private denied(
@@ -461,6 +483,7 @@ export class MatchStore {
       { reason: "DISCONNECT", winner: opposite(disconnect.loser) },
       at,
       row.clock,
+      match.lastMove,
     );
   }
   async move(
@@ -511,6 +534,7 @@ export class MatchStore {
         { reason: "TIMEOUT", winner: opposite(checked.expired) },
         at,
         checked.clock,
+        match.lastMove,
       );
       return this.denied(
         terminal,
@@ -559,6 +583,7 @@ export class MatchStore {
       active_move_ids: [...active, moveId],
       clock: validClock(clock.afterMove(checked.clock, next.turn, at)),
     };
+    const lastMove = { from: input.from, to: input.to, eventVersion: version };
     const outcome = ending([...history, next]);
     let result: MatchView;
     if (outcome)
@@ -569,6 +594,7 @@ export class MatchStore {
         outcome,
         at,
         updated.clock,
+        lastMove,
       );
     else {
       await this.update(scope.client, updated);
@@ -576,7 +602,7 @@ export class MatchStore {
         "UPDATE public.rooms SET room_version=room_version+1 WHERE id=$1",
         [room.id],
       );
-      result = this.view(updated, next);
+      result = this.view(updated, next, lastMove);
     }
     await this.outbox(scope.client, row.room_id, "MATCH_MOVE", {
       matchId: row.id,
@@ -629,6 +655,7 @@ export class MatchStore {
         outcome,
         at,
         checked.clock,
+        match.lastMove,
       ),
       ...(checked.expired
         ? {
@@ -646,8 +673,9 @@ export class MatchStore {
   ): Promise<MatchView> {
     const room = await this.room(client, input.roomId);
     const row = await this.row(client, input.roomId, input.matchId);
-    const history = await this.history(client, row);
-    if (row.status !== "ACTIVE") return this.view(row, history.at(-1)!);
+    const { positions: history, lastMove } = await this.history(client, row);
+    if (row.status !== "ACTIVE")
+      return this.view(row, history.at(-1)!, lastMove);
     if (room.current_match_id !== row.id || room.status !== "PLAYING")
       reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
     const { reason, winner } = input.outcome;
@@ -693,6 +721,7 @@ export class MatchStore {
       input.outcome,
       input.at,
       clock,
+      lastMove,
     );
   }
   private async update(client: PoolClient, row: MatchRow) {
@@ -720,6 +749,7 @@ export class MatchStore {
     outcome: MatchOutcome,
     at: Date,
     clock: MatchClock,
+    lastMove: MatchView["lastMove"],
   ): Promise<MatchView> {
     if (!Number.isFinite(at.getTime()) || at < row.created_at)
       reject("MATCH_INVALID_OUTCOME", "Thời điểm kết thúc không hợp lệ.", 500);
@@ -753,7 +783,7 @@ export class MatchStore {
       outcome,
       endedAt: at.toISOString(),
     });
-    return this.view(updated, position);
+    return this.view(updated, position, lastMove);
   }
   private async outbox(
     client: PoolClient,

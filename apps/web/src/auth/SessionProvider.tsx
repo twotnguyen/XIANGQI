@@ -49,6 +49,7 @@ interface SessionContextValue {
   refresh(): Promise<void>;
   logout(): Promise<void>;
   authorizedFetch(path: string, init?: RequestInit): Promise<Response>;
+  getRealtimeProof(): Promise<{ accessToken: string; appSession: string }>;
 }
 const SessionContext = createContext<SessionContextValue | null>(null);
 const unavailable = "Chưa thể xác thực phiên đăng nhập. Vui lòng thử lại.";
@@ -348,6 +349,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     loggingOut.current = pending;
     return pending;
   }, [anonymous, invalidateRequest, refresh]);
+  const getRealtimeProof = useCallback(async () => {
+    if (loggingOut.current || !mounted.current) throw new Error(unavailable);
+    const previous = credentials.current;
+    if (!previous || Date.parse(previous.member.expiresAt) <= Date.now())
+      throw new Error(unavailable);
+    if (previous.bearerExpiresAt <= Date.now()) await refresh();
+    const record = credentials.current;
+    if (
+      !record ||
+      loggingOut.current ||
+      !mounted.current ||
+      Date.parse(record.member.expiresAt) <= Date.now() ||
+      record.bearerExpiresAt <= Date.now()
+    )
+      throw new Error(unavailable);
+    return { accessToken: record.bearer, appSession: record.capability };
+  }, [refresh]);
   const authorizedFetch = useCallback(
     async (path: string, init: RequestInit = {}) => {
       const url = backend(path);
@@ -397,7 +415,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [clearTimers, invalidateRequest, refresh]);
   return (
     <SessionContext.Provider
-      value={{ state, accept, refresh, logout, authorizedFetch }}
+      value={{
+        state,
+        accept,
+        refresh,
+        logout,
+        authorizedFetch,
+        getRealtimeProof,
+      }}
     >
       {children}
     </SessionContext.Provider>

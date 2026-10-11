@@ -1,0 +1,64 @@
+.xq-board {
+  --board-select: #1e6b3a;
+  --board-hint: #3a2a1a;
+  --board-last-move: #1e4f7a;
+  --board-check: #a51f25;
+  --board-focus: #155e75;
+}
+.xq-board-signs {
+  pointer-events: none;
+}
+.xq-board-selected {
+  fill: none;
+  stroke: var(--board-select);
+  stroke-width: 3;
+}
+.xq-board-hint {
+  fill: var(--board-hint);
+}
+.xq-board-capture {
+  fill: none;
+  stroke: var(--board-hint);
+  stroke-width: 3;
+}
+.xq-board-last {
+  fill: none;
+  stroke: var(--board-last-move);
+  stroke-width: 3;
+}
+.xq-board-check {
+  fill: none;
+  stroke: var(--board-check);
+  stroke-width: 3;
+}
+.xq-board-hit {
+  fill: transparent;
+  stroke: none;
+  cursor: pointer;
+}
+.xq-board-hit[aria-disabled="true"] {
+  cursor: default;
+}
+.xq-board-hit:focus-visible {
+  stroke: var(--board-focus);
+  stroke-width: 3;
+  outline: none;
+}
+.xq-board-can-move .xq-board-svg {
+  touch-action: none;
+  user-select: none;
+}
+.xq-board-ghost {
+  pointer-events: none;
+}
+.xq-board-drag-source {
+  opacity: 0.4;
+}
+.xq-board-returning {
+  transition: transform 180ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .xq-board-returning {
+    transition: none;
+  }
+}

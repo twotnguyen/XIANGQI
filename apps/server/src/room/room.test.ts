@@ -97,6 +97,36 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
       match_id: null,
     });
   });
+  it("projects the current invite code after reload only to admitted members and hides a locked code", async () => {
+    const { a, proof } = await admitted();
+    const entry = await run(a, proof, [], (scope) =>
+      store.create(scope, {
+        commandId: randomUUID(),
+        name: "Reload invitation",
+      }),
+    );
+    const reloaded = await run(a, proof, [entry.roomId], (scope) =>
+      new RoomStore().snapshot(scope, entry.roomId),
+    );
+    expect(reloaded.room).toHaveProperty("inviteCode", entry.inviteCode);
+    const outsider = await admitted();
+    await expect(
+      run(outsider.a, outsider.proof, [entry.roomId], (scope) =>
+        store.snapshot(scope, entry.roomId),
+      ),
+    ).rejects.toMatchObject({ code: "ROOM_FORBIDDEN" });
+    await pool.query(
+      "UPDATE public.rooms SET visibility='LOCKED' WHERE id=$1",
+      [entry.roomId],
+    );
+    expect(
+      (
+        await run(a, proof, [entry.roomId], (scope) =>
+          store.snapshot(scope, entry.roomId),
+        )
+      ).room,
+    ).toHaveProperty("inviteCode", null);
+  });
   it("denies wrong session and concurrent second seat; rejects changed command payload", async () => {
     const { a, proof } = await admitted();
     await expect(

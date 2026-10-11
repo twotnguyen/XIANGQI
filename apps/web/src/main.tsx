@@ -111,7 +111,6 @@ function HealthPreview() {
   );
 }
 
-
 const previewHealth =
   import.meta.env.DEV && window.location.pathname === "/dev/health";
 const previewBoard =
@@ -135,7 +134,6 @@ createRoot(document.getElementById("root")!).render(
       </main>
     ) : previewRegistration ? (
       <RegistrationPreview />
-
     ) : previewUi || previewLobby || previewLogin ? (
       <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
         {previewUi ? (

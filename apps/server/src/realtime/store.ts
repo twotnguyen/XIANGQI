@@ -9,6 +9,8 @@ import {
   RealtimeError,
   type RoomCollaborator,
   type RealtimeConnection,
+  type RealtimeTransactions,
+  type RealtimePresence,
 } from "./contracts.js";
 
 export function errorAcknowledgement(
@@ -45,11 +47,16 @@ export class RealtimeStore {
   constructor(
     private readonly pool: Pool,
     private readonly rooms: RoomCollaborator,
+    private readonly transactions?: RealtimeTransactions,
+    private readonly presence?: RealtimePresence,
   ) {}
   private async transaction<T>(
-    roomId: string | null,
+    connection: RealtimeConnection | null,
     work: (client: PoolClient) => Promise<T>,
   ): Promise<T> {
+    if (connection && this.transactions)
+      return this.transactions.run(connection, work);
+    const roomId = connection?.roomId ?? null;
     const client = await this.pool.connect();
     let broken = false;
     try {
@@ -120,7 +127,7 @@ export class RealtimeStore {
     connection: RealtimeConnection,
     takeover = false,
   ): Promise<RoomSnapshot> {
-    return this.transaction(connection.roomId, async (client) => {
+    const result = await this.transaction(connection, async (client) => {
       const access = await this.rooms.authorize(
         client,
         connection.identity,
@@ -156,8 +163,20 @@ export class RealtimeStore {
           ],
         );
       }
+      const control = await this.control(client, connection, access.canControl);
+      if (
+        (await this.presence?.connected(client, connection, control)) ===
+        "ended"
+      )
+        return null;
       return this.currentSnapshot(client, connection);
     });
+    if (!result)
+      throw new RealtimeError("ROOM_FORBIDDEN", "Ghế trong phòng đã hết hạn");
+    return result;
+  }
+  async disconnect(connection: RealtimeConnection): Promise<void> {
+    await this.presence?.disconnected(connection);
   }
   async command(
     connection: RealtimeConnection,
@@ -169,7 +188,7 @@ export class RealtimeStore {
           "ROOM_FORBIDDEN",
           "Bạn không có quyền truy cập phòng này",
         );
-      return await this.transaction(connection.roomId, async (client) => {
+      return await this.transaction(connection, async (client) => {
         const current = await this.currentSnapshot(client, connection);
         if (current.control.mode !== "writable")
           throw new RealtimeError(
@@ -216,11 +235,16 @@ export class RealtimeStore {
             connection.identity,
             command,
           );
-          response = {
-            status: "ok",
-            commandId: command.commandId,
-            snapshot: { ...next, control: current.control },
-          };
+          const executed = "snapshot" in next ? next : { snapshot: next };
+          const snapshot = { ...executed.snapshot, control: current.control };
+          response = executed.error
+            ? {
+                status: "error",
+                commandId: command.commandId,
+                error: executed.error,
+                snapshot,
+              }
+            : { status: "ok", commandId: command.commandId, snapshot };
         }
         await client.query(
           "INSERT INTO xiangqi_realtime.receipts(user_id,room_id,command_id,fingerprint,response) VALUES($1,$2,$3,$4,$5::jsonb)",
@@ -233,7 +257,7 @@ export class RealtimeStore {
     }
   }
   async snapshot(connection: RealtimeConnection): Promise<RoomSnapshot> {
-    return this.transaction(connection.roomId, (client) =>
+    return this.transaction(connection, (client) =>
       this.currentSnapshot(client, connection),
     );
   }

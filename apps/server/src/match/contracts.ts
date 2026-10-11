@@ -43,6 +43,7 @@ export type MatchView = {
   version: number;
   ply: number;
   position: string;
+  lastMove: { from: number; to: number; eventVersion: number } | null;
   turn: Side;
   status: "ACTIVE" | "FINISHED" | "INTERRUPTED";
   outcome: MatchOutcome | null;

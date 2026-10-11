@@ -6,6 +6,7 @@ import {
   fireEvent,
   render,
   screen,
+  within,
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AppRouter } from "./AppRouter.js";
@@ -17,6 +18,7 @@ const mock = vi.hoisted(() => ({
   refresh: vi.fn(),
   logout: vi.fn(),
   authorizedFetch: vi.fn(),
+  getRealtimeProof: vi.fn(),
 }));
 vi.mock("../auth/SessionProvider.js", () => ({ useSession: () => mock }));
 vi.mock("../auth/LoginPage.js", () => ({
@@ -91,6 +93,25 @@ vi.mock("../auth/GoogleOnboardingPage.js", () => ({
       ),
     ),
 }));
+vi.mock("../rooms/RoomPage.js", () => ({
+  RoomPage: ({
+    roomId,
+    onLeft,
+  }: {
+    roomId: string;
+    onLeft: (message?: string) => void;
+  }) =>
+    createElement(
+      "section",
+      null,
+      createElement("h1", null, "Phòng chờ " + roomId),
+      createElement(
+        "button",
+        { onClick: () => onLeft("Phòng đã đóng") },
+        "Server closed fixture",
+      ),
+    ),
+}));
 const member = {
   status: "active-member",
   userId: "fixture-user",
@@ -113,6 +134,12 @@ const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status });
 beforeEach(() => {
   vi.clearAllMocks();
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
   mock.accept.mockReset();
   mock.logout.mockResolvedValue(undefined);
   mock.refresh.mockResolvedValue(undefined);
@@ -144,7 +171,7 @@ it("shows accessible session checking and retry for bootstrap errors without for
   expect(mock.refresh).toHaveBeenCalledOnce();
   expect(window.location.pathname).toBe("/login");
 });
-it("preserves a join destination in memory through registration, then routes without claiming a seat", async () => {
+it("preserves an invalid join destination through registration without claiming a seat", async () => {
   window.history.replaceState(null, "", "/rooms/join?token=fixture-invite");
   mock.accept.mockImplementation(() => {
     mock.state = member;
@@ -161,7 +188,9 @@ it("preserves a join destination in memory through registration, then routes wit
     fixture: "registration",
     remember: true,
   });
-  expect(screen.getByText(/chưa thể vào phòng/i)).toBeTruthy();
+  expect(
+    screen.getByRole("heading", { name: "Vào phòng được mời" }),
+  ).toBeTruthy();
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
 });
 it("preserves a room destination through login and handles browser Back/Forward reactively", async () => {
@@ -183,14 +212,14 @@ it("preserves a room destination through login and handles browser Back/Forward 
   await vi.waitFor(() =>
     expect(window.location.pathname).toBe("/rooms/fixture-room"),
   );
-  expect(screen.getByText(/chưa thể vào phòng/i)).toBeTruthy();
+  expect(screen.getByText("Định danh phòng không hợp lệ.")).toBeTruthy();
   window.history.forward();
   await vi.waitFor(() => expect(window.location.pathname).toBe("/missing"));
   expect(screen.getByRole("heading", { level: 1 }).textContent).toContain(
     "Không tìm thấy",
   );
 });
-it("loads validated public rooms only and makes unavailable create and AI actions explicit", async () => {
+it("loads validated public rooms and opens the actual create dialog", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
   mock.authorizedFetch.mockResolvedValue(reply({ rooms: [room] }));
@@ -201,7 +230,8 @@ it("loads validated public rooms only and makes unavailable create and AI action
     expect.objectContaining({ signal: expect.any(AbortSignal) }),
   );
   fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
-  expect(screen.getByRole("alert").textContent).toContain("chưa khả dụng");
+  expect(screen.getByRole("dialog")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Huỷ" }));
   fireEvent.click(screen.getByRole("button", { name: "Vào xem" }));
   expect(window.location.pathname).toBe("/rooms/fixture-room");
   expect(window.location.search).toBe("?intent=spectator");
@@ -333,4 +363,104 @@ it("retains the invitation when an expired onboarding cookie sends a reload back
   fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
   expect(window.location.search).toBe("?token=expired-google-invite");
+});
+
+it("creates through the authorized form then enters the actual server room route", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  const roomId = "11111111-1111-4111-8111-111111111111";
+  mock.authorizedFetch.mockImplementation(async (path: string) =>
+    path === "/rooms"
+      ? reply({ roomId, version: 1, role: "red", inviteCode: "ABCDEFGH" })
+      : reply({ rooms: [] }),
+  );
+  render(createElement(AppRouter));
+  await vi.waitFor(() =>
+    expect(screen.getByText("Chưa có phòng công khai")).toBeTruthy(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
+  expect(screen.getByRole("dialog")).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("Tên phòng"), {
+    target: { value: "Phòng thực" },
+  });
+  fireEvent.click(
+    within(screen.getByRole("dialog")).getByRole("button", {
+      name: "Tạo phòng",
+    }),
+  );
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe(`/rooms/${roomId}`),
+  );
+  const create = mock.authorizedFetch.mock.calls.find(
+    (call) => call[0] === "/rooms",
+  );
+  expect(JSON.parse(create![1].body)).toMatchObject({
+    name: "Phòng thực",
+    timeMinutes: 10,
+    viewerLimit: 5,
+  });
+  expect(
+    screen.getByRole("heading", { name: "Phòng chờ " + roomId }),
+  ).toBeTruthy();
+  fireEvent.click(screen.getByText("Server closed fixture"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
+  expect(screen.getByText("Phòng đã đóng")).toBeTruthy();
+});
+
+it("automatically joins the valid invitation once after login without another submit", async () => {
+  const roomId = "12345678-1234-4234-8234-123456789abc";
+  window.history.replaceState(null, "", "/rooms/join?token=ABCDEFGH");
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  mock.authorizedFetch.mockResolvedValue(
+    reply({ roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }),
+  );
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe(`/rooms/${roomId}`),
+  );
+  expect(mock.authorizedFetch).toHaveBeenCalledOnce();
+  const [url, options] = mock.authorizedFetch.mock.calls[0]!;
+  expect(url).toBe("/rooms/join");
+  expect(options.method).toBe("POST");
+  expect(JSON.parse(options.body)).toEqual({
+    code: "ABCDEFGH",
+    preference: "auto",
+    commandId: expect.stringMatching(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    ),
+  });
+});
+
+it("uses the lobby's entered room code without requesting it again", async () => {
+  const roomId = "12345678-1234-4234-8234-123456789abc";
+  window.history.replaceState(null, "", "/lobby");
+  mock.state = member;
+  mock.authorizedFetch.mockImplementation(async (url: string) =>
+    reply(
+      url === "/rooms/join"
+        ? { roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }
+        : { rooms: [] },
+    ),
+  );
+  render(createElement(AppRouter));
+  fireEvent.change(screen.getByRole("textbox", { name: "Mã phòng" }), {
+    target: { value: "ABCDEFGH" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Vào phòng" }));
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe(`/rooms/${roomId}`),
+  );
+  const joins = mock.authorizedFetch.mock.calls.filter(
+    ([url]) => url === "/rooms/join",
+  );
+  expect(joins).toHaveLength(1);
+  expect(JSON.parse(joins[0]![1].body)).toMatchObject({
+    code: "ABCDEFGH",
+    preference: "auto",
+  });
 });
