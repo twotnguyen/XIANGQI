@@ -322,6 +322,10 @@ export class RoomStore {
         hostId: r.owner_id,
         name: r.name,
         visibility: r.visibility,
+        inviteCode:
+          r.visibility === "LOCKED" || r.status === "CLOSED"
+            ? null
+            : r.invite_code,
         timeMinutes: r.time_control / 60,
         viewerLimit: r.viewer_limit,
         seats: { red: red?.user_id ?? null, black: black?.user_id ?? null },
