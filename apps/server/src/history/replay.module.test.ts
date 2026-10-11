@@ -267,6 +267,7 @@ describe.skipIf(!databaseUrl)(
             { from: 54, to: 45, side: "red" },
             { from: 27, to: 36, side: "black" },
           ],
+          result: { reason: "RESIGN", winner: "red" },
         });
         for (const secret of [
           a.userId,
@@ -282,6 +283,49 @@ describe.skipIf(!databaseUrl)(
       }
       expect(await counts()).toEqual(before);
       expect(providerCalls).toBe(2);
+    });
+    it("exports FEN at a ply and a PGN only for the game owner's replay rights", async () => {
+      const a = await member(),
+        b = await member(),
+        outside = await member(),
+        g = await game(a, b);
+      const exported = await fetch(`${base}/history/${g.id}/export?ply=1`, {
+        headers: a.headers,
+      });
+      expect(exported.status).toBe(200);
+      const value = (await exported.json()) as { fen: string; pgn: string };
+      expect(value.fen).toBe(
+        "rnbakabnr/9/1c5c1/p1p1p1p1p/9/P8/2P1P1P1P/1C5C1/9/RNBAKABNR b - - 1 1",
+      );
+      expect(value.pgn).toContain('[Variant "Xiangqi"]');
+      expect(value.pgn).toContain('[Result "1-0"]');
+      for (const secret of [a.userId, b.userId, a.cap, g.discarded])
+        expect(JSON.stringify(value)).not.toContain(secret);
+      expect(
+        (await fetch(`${base}/history/${g.id}/export`, { headers: a.headers }))
+          .status,
+      ).toBe(200);
+      expect(
+        (
+          await fetch(`${base}/history/${g.id}/export?ply=99`, {
+            headers: a.headers,
+          })
+        ).status,
+      ).toBe(400);
+      expect(
+        (
+          await fetch(`${base}/history/${g.id}/export?share=1`, {
+            headers: a.headers,
+          })
+        ).status,
+      ).toBe(400);
+      expect(
+        (
+          await fetch(`${base}/history/${g.id}/export`, {
+            headers: outside.headers,
+          })
+        ).status,
+      ).toBe(404);
     });
     it("reads AI owner's actual side, no alternative/share route", async () => {
       const a = await member(),

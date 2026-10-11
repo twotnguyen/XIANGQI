@@ -1,3 +1,4 @@
+import { buildPgn, fenAt } from "@xiangqi/shared";
 import { RoomError } from "../room/contracts.js";
 import type {
   MemberRoomAuthorizer,
@@ -104,6 +105,20 @@ export class ReplayHttpService {
       return result.value;
     } catch (error) {
       throw replayHttpError(error);
+    }
+  }
+  /** Same replay ownership gate as read(); export never widens authorization. */
+  async export(
+    proof: MemberRoomRequestProof,
+    id: string,
+    ply?: number,
+  ): Promise<{ fen: string; pgn: string }> {
+    const record = await this.read(proof, id);
+    const requested = ply === undefined ? record.moves.length : ply;
+    try {
+      return { fen: fenAt(record, requested), pgn: buildPgn(record) };
+    } catch {
+      throw new RoomError("REPLAY_INPUT_INVALID", "Mốc nước không hợp lệ", 400);
     }
   }
 }

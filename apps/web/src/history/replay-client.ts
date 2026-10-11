@@ -11,6 +11,7 @@ export interface ReplayRecord {
   side: Side;
   positions: Array<{ fen: string; turn: Side }>;
   moves: Array<{ from: number; to: number; side: Side }>;
+  result: { reason: string; winner: Side | null };
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const invalidMessage = "Phản hồi xem lại không hợp lệ. Vui lòng tải lại.";
@@ -30,7 +31,20 @@ function side(value: unknown): value is Side {
 }
 export function parseReplayRecord(value: unknown): ReplayRecord {
   try {
-    const record = object(value, ["id", "mode", "side", "positions", "moves"]);
+    const record = object(value, [
+      "id",
+      "mode",
+      "side",
+      "positions",
+      "moves",
+      "result",
+    ]);
+    const outcome = object(record.result, ["reason", "winner"]);
+    if (
+      typeof outcome.reason !== "string" ||
+      !(outcome.winner === null || side(outcome.winner))
+    )
+      throw Error();
     if (
       typeof record.id !== "string" ||
       !uuid.test(record.id) ||
@@ -79,6 +93,7 @@ export function parseReplayRecord(value: unknown): ReplayRecord {
       side: record.side,
       positions: positions.map(({ fen, turn }) => ({ fen, turn })),
       moves,
+      result: { reason: outcome.reason, winner: outcome.winner as Side | null },
     };
   } catch {
     throw Error(invalidMessage);
@@ -136,6 +151,51 @@ export function makeReplayClient(authorizedFetch: AuthorizedFetch) {
         const record = parseReplayRecord(await response.json());
         if (record.id.toLowerCase() !== canonicalId) throw Error();
         return record;
+      } catch {
+        throw new ReplayRequestError(503, "REPLAY_RESPONSE_INVALID");
+      }
+    },
+    async export(
+      id: string,
+      ply: number,
+    ): Promise<{ fen: string; pgn: string }> {
+      if (typeof id !== "string" || !uuid.test(id))
+        throw new ReplayRequestError(400, "REPLAY_INPUT_INVALID");
+      if (!Number.isInteger(ply) || ply < 0)
+        throw new ReplayRequestError(400, "REPLAY_INPUT_INVALID");
+      const canonicalId = id.toLowerCase();
+      let response: Response;
+      try {
+        response = await authorizedFetch(
+          `/history/${encodeURIComponent(canonicalId)}/export?ply=${ply}`,
+          { method: "GET", redirect: "error" },
+        );
+      } catch {
+        throw new ReplayRequestError(503, "REPLAY_UNAVAILABLE");
+      }
+      if (!response.ok) {
+        const codes: Record<number, string> = {
+          401: "AUTH_REQUIRED",
+          403: "HISTORY_FORBIDDEN",
+          404: "REPLAY_NOT_FOUND",
+          409: "REPLAY_CORRUPT",
+          503: "REPLAY_UNAVAILABLE",
+        };
+        throw new ReplayRequestError(
+          codes[response.status] ? response.status : 503,
+          codes[response.status] ?? "REPLAY_UNAVAILABLE",
+        );
+      }
+      try {
+        const value = (await response.json()) as unknown;
+        if (
+          !value ||
+          typeof value !== "object" ||
+          typeof (value as { fen?: unknown }).fen !== "string" ||
+          typeof (value as { pgn?: unknown }).pgn !== "string"
+        )
+          throw Error();
+        return value as { fen: string; pgn: string };
       } catch {
         throw new ReplayRequestError(503, "REPLAY_RESPONSE_INVALID");
       }

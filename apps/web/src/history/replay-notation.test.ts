@@ -20,6 +20,7 @@ function one(position: Position, move: Move): ReplayRecord {
       { fen: serializePosition(next), turn: next.turn },
     ],
     moves: [{ ...move, side: position.turn }],
+    result: { reason: "CHECKMATE", winner: "red" },
   };
 }
 function sparse(turn: Side = "red"): Position {
