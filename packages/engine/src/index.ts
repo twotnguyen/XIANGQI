@@ -1,2 +1,4 @@
-// T01 workspace placeholder; no game rules or engine integration yet.
-export {};
+export { EngineWorker } from "./engine-worker.js";
+export type { EngineWorkerOptions } from "./engine-worker.js";
+export { EngineError, ENGINE_LIMITS } from "./contracts.js";
+export type { EngineLevel, EngineRequest, EngineResult } from "./contracts.js";

@@ -1,7 +1,13 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
 import { afterEach, expect, it, vi } from "vitest";
-import { act, cleanup, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  render,
+  screen,
+  fireEvent,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPage } from "./RegistrationPage.js";
 
@@ -11,6 +17,59 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.useRealTimers();
   vi.restoreAllMocks();
+});
+it("offers Google only on the account step while keeping the email wizard unchanged", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(new Response(JSON.stringify({ step: 2 }))),
+  );
+  const user = userEvent.setup();
+  render(
+    createElement(RegistrationPage, {
+      onRegistered: vi.fn(),
+      renderGoogle: () => createElement("span", null, "Official signup Google"),
+    }),
+  );
+  expect(screen.getByText("Official signup Google")).toBeTruthy();
+  await user.type(screen.getByLabelText("Username"), "KyThu_2026");
+  await user.type(
+    screen.getByLabelText("Mật khẩu", { exact: true }),
+    "Password123",
+  );
+  await user.type(screen.getByLabelText("Xác nhận mật khẩu"), "Password123");
+  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await screen.findByLabelText("Email chính chủ");
+  expect(screen.queryByText("Official signup Google")).toBeNull();
+});
+it("blocks email-wizard submission while Google authentication is in flight", () => {
+  const request = vi.fn();
+  vi.stubGlobal("fetch", request);
+  render(
+    createElement(RegistrationPage, {
+      onRegistered: vi.fn(),
+      renderGoogle: (_disabled: boolean, busy?: (value: boolean) => void) =>
+        createElement(
+          "button",
+          { onClick: () => busy?.(true) },
+          "Google inflight",
+        ),
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Username"), {
+    target: { value: "KyThu" },
+  });
+  fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
+    target: { value: "Password123" },
+  });
+  fireEvent.change(screen.getByLabelText("Xác nhận mật khẩu"), {
+    target: { value: "Password123" },
+  });
+  fireEvent.click(screen.getByText("Google inflight"));
+  expect((screen.getByLabelText("Username") as HTMLInputElement).disabled).toBe(
+    true,
+  );
+  fireEvent.submit(screen.getByLabelText("Username").closest("form")!);
+  expect(request).not.toHaveBeenCalled();
 });
 
 it("registers in three steps, sends the exact backend payload and hands the active session to its caller", async () => {
@@ -59,6 +118,9 @@ it("registers in three steps, sends the exact backend payload and hands the acti
     true,
   );
   const emailCall = request.mock.calls.find(([url]) => url.endsWith("/email"))!;
+  expect(
+    request.mock.calls.every(([, init]) => init?.redirect === "error"),
+  ).toBe(true);
   expect(JSON.parse(emailCall[1]!.body as string)).toEqual({
     username: "KyThu_2026",
     password: "password123",
@@ -388,43 +450,49 @@ it("resets recovery when an expired draft starts a new registration", async () =
   expect(await screen.findByLabelText("Chữ số OTP 1")).toBeTruthy();
   expect(screen.getByRole("button", { name: /Gửi lại mã/ })).toBeTruthy();
 });
-it("keeps confirmed recovery after a rate-limited password retry", async () => {
-  let calls = 0;
-  const callback = vi.fn();
-  vi.stubGlobal(
-    "fetch",
-    vi.fn(async (url: string) => {
-      if (url.endsWith("/verify")) {
-        calls++;
-        if (calls === 1) return reply({ code: "REGISTRATION_RECOVERING" }, 503);
-        if (calls === 2) return reply({ code: "OTP_RATE_LIMIT" }, 429);
-        return reply({
-          access_token: "recovered",
-          refresh_token: "refresh",
-          expires_in: 3600,
-        });
-      }
-      return reply(url.endsWith("/check") ? { step: 2 } : draft());
-    }),
-  );
-  const user = userEvent.setup();
-  render(createElement(RegistrationPage, { onRegistered: callback }));
-  await enterAccount(user);
-  await enterEmail(user);
-  await user.click(screen.getByLabelText("Chữ số OTP 1"));
-  await user.paste("123456");
-  await user.click(
-    screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
-  );
-  await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
-  vi.spyOn(Date, "now").mockReturnValue(Date.now() + 181000);
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1100));
-  });
-  expect(screen.queryByRole("button", { name: /Gửi lại mã/ })).toBeNull();
-  await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
-  await vi.waitFor(() => expect(callback).toHaveBeenCalledOnce());
-});
+it.each(["OTP_RATE_LIMIT", "RECOVERY_RATE_LIMIT"])(
+  "keeps confirmed recovery after a rate-limited password retry (%s)",
+  async (rateCode) => {
+    let calls = 0;
+    const callback = vi.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (url.endsWith("/verify")) {
+          calls++;
+          if (calls === 1)
+            return reply({ code: "REGISTRATION_RECOVERING" }, 503);
+          if (calls === 2) return reply({ code: rateCode }, 429);
+          return reply({
+            access_token: "recovered",
+            refresh_token: "refresh",
+            expires_in: 3600,
+          });
+        }
+        return reply(url.endsWith("/check") ? { step: 2 } : draft());
+      }),
+    );
+    const user = userEvent.setup();
+    render(createElement(RegistrationPage, { onRegistered: callback }));
+    await enterAccount(user);
+    await enterEmail(user);
+    await user.click(screen.getByLabelText("Chữ số OTP 1"));
+    await user.paste("123456");
+    await user.click(
+      screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
+    if (rateCode === "RECOVERY_RATE_LIMIT")
+      expect(screen.getByRole("alert").textContent).toContain("15 phút");
+    vi.spyOn(Date, "now").mockReturnValue(Date.now() + 181000);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+    });
+    expect(screen.queryByRole("button", { name: /Gửi lại mã/ })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
+    await vi.waitFor(() => expect(callback).toHaveBeenCalledOnce());
+  },
+);
 it("returns a last-moment username collision to step one and preserves the draft for retry", async () => {
   const request = vi.fn<
     (url: string, options?: RequestInit) => Promise<Response>

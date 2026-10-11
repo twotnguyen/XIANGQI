@@ -1,9 +1,294 @@
-import { describe, expect, it } from "vitest";
+// @vitest-environment jsdom
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { initialPosition, parsePosition } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "./XiangqiBoard.js";
 import type { Position, Side } from "@xiangqi/xiangqi-core";
+import {
+  cleanup,
+  render as renderDom,
+  screen,
+  fireEvent,
+} from "@testing-library/react";
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
+function pointerFixture(orientation: Side) {
+  class TestPointerEvent extends MouseEvent {
+    readonly pointerId: number;
+    readonly pointerType: string;
+    constructor(type: string, init: PointerEventInit) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 1;
+      this.pointerType = init.pointerType ?? "mouse";
+    }
+  }
+  vi.stubGlobal("PointerEvent", TestPointerEvent);
+  const move = vi.fn(),
+    view = renderDom(
+      createElement(XiangqiBoard, {
+        position: initialPosition(),
+        orientation,
+        playerSide: "red",
+        onMove: move,
+      }),
+    );
+  const svg = view.container.querySelector("svg")!;
+  Object.defineProperty(svg, "getScreenCTM", {
+    value: () => ({
+      inverse: () => ({ a: 0.5, b: 0, c: 0, d: 0.5, e: -10, f: -20 }),
+    }),
+  });
+  Object.defineProperty(svg, "setPointerCapture", { value: vi.fn() });
+  Object.defineProperty(svg, "releasePointerCapture", { value: vi.fn() });
+  Object.defineProperty(svg, "hasPointerCapture", { value: () => true });
+  return { move, svg, view };
+}
+it.each(["red", "black"] as const)(
+  "mouse drag in %s orientation maps scaled SVG coordinates and sends only canonical intent",
+  (orientation) => {
+    const { move, svg } = pointerFixture(orientation);
+    const from =
+      orientation === "red"
+        ? { clientX: 68, clientY: 568 }
+        : { clientX: 708, clientY: 328 };
+    const to =
+      orientation === "red"
+        ? { clientX: 68, clientY: 488 }
+        : { clientX: 708, clientY: 408 };
+    fireEvent.pointerDown(svg, { ...from, pointerId: 7 });
+    fireEvent.pointerMove(svg, { ...to, pointerId: 7 });
+    fireEvent.pointerUp(svg, { ...to, pointerId: 7 });
+    expect(move).toHaveBeenCalledExactlyOnceWith(54, 45);
+    expect(
+      screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+    ).toBeTruthy();
+  },
+);
+it("touch drag outside the board and pointercancel keep the position and do not send", () => {
+  const { move, svg } = pointerFixture("red");
+  fireEvent.pointerDown(svg, {
+    clientX: 68,
+    clientY: 568,
+    pointerId: 4,
+    pointerType: "touch",
+  });
+  fireEvent.pointerMove(svg, {
+    clientX: -30,
+    clientY: 200,
+    pointerId: 4,
+    pointerType: "touch",
+  });
+  fireEvent.pointerUp(svg, {
+    clientX: -30,
+    clientY: 200,
+    pointerId: 4,
+    pointerType: "touch",
+  });
+  expect(move).not.toHaveBeenCalled();
+  fireEvent.pointerDown(svg, {
+    clientX: 68,
+    clientY: 568,
+    pointerId: 5,
+    pointerType: "touch",
+  });
+  fireEvent.pointerMove(svg, {
+    clientX: 68,
+    clientY: 488,
+    pointerId: 5,
+    pointerType: "touch",
+  });
+  fireEvent.pointerCancel(svg, { pointerId: 5, pointerType: "touch" });
+  expect(move).not.toHaveBeenCalled();
+  expect(
+    screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeTruthy();
+});
+it("touch drag accepts the legal move and ignores the following compatibility click", () => {
+  const { move, svg } = pointerFixture("red");
+  fireEvent.pointerDown(svg, {
+    clientX: 68,
+    clientY: 568,
+    pointerId: 11,
+    pointerType: "touch",
+  });
+  fireEvent.pointerMove(svg, {
+    clientX: 68,
+    clientY: 488,
+    pointerId: 11,
+    pointerType: "touch",
+  });
+  fireEvent.pointerUp(svg, {
+    clientX: 68,
+    clientY: 488,
+    pointerId: 11,
+    pointerType: "touch",
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Trống, cột 1 hàng 6" }));
+  expect(move).toHaveBeenCalledExactlyOnceWith(54, 45);
+});
+it("Escape during a captured drag cancels the request", () => {
+  const { move, svg } = pointerFixture("red");
+  fireEvent.pointerDown(svg, { clientX: 68, clientY: 568, pointerId: 8 });
+  fireEvent.pointerMove(svg, { clientX: 68, clientY: 488, pointerId: 8 });
+  fireEvent.keyDown(
+    screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+    { key: "Escape" },
+  );
+  fireEvent.pointerUp(svg, { clientX: 68, clientY: 488, pointerId: 8 });
+  expect(move).not.toHaveBeenCalled();
+});
+it("a new canonical position invalidates an old drag without sending it", () => {
+  const { move, svg, view } = pointerFixture("red");
+  fireEvent.pointerDown(svg, { clientX: 68, clientY: 568, pointerId: 9 });
+  fireEvent.pointerMove(svg, { clientX: 68, clientY: 488, pointerId: 9 });
+  view.rerender(
+    createElement(XiangqiBoard, {
+      position: { ...initialPosition(), turn: "black" },
+      onMove: move,
+    }),
+  );
+  fireEvent.pointerUp(svg, { clientX: 68, clientY: 488, pointerId: 9 });
+  expect(move).not.toHaveBeenCalled();
+});
+it.each(["red", "black"] as const)(
+  "keyboard visual arrows submit the same canonical pawn move in %s orientation",
+  (orientation) => {
+    const move = vi.fn();
+    renderDom(
+      createElement(XiangqiBoard, {
+        position: initialPosition(),
+        orientation,
+        playerSide: "red",
+        onMove: move,
+      }),
+    );
+    const pawn = screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" });
+    pawn.focus();
+    fireEvent.keyDown(pawn, { key: "Enter" });
+    fireEvent.keyDown(pawn, {
+      key: orientation === "red" ? "ArrowUp" : "ArrowDown",
+    });
+    const destination = screen.getByRole("button", {
+      name: "Trống, cột 1 hàng 6",
+    });
+    expect(document.activeElement).toBe(destination);
+    fireEvent.keyDown(destination, { key: " " });
+    expect(move).toHaveBeenCalledExactlyOnceWith(54, 45);
+  },
+);
+it("marks cannon captures from legal core and preserves previous-move and check information for spectators", () => {
+  const view = renderDom(
+    createElement(XiangqiBoard, {
+      position: initialPosition(),
+      onMove: vi.fn(),
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Pháo đỏ, cột 2 hàng 8" }),
+  );
+  expect(
+    screen
+      .getByRole("button", { name: "Mã đen, cột 2 hàng 1" })
+      .getAttribute("data-legal"),
+  ).toBe("true");
+  expect(
+    view.container.querySelectorAll(".xq-board-capture").length,
+  ).toBeGreaterThan(0);
+  view.rerender(
+    createElement(XiangqiBoard, {
+      position: parsePosition("4k4/9/9/9/9/9/9/9/4r4/4K4 w - - 0 1"),
+      orientation: "black",
+      lastMove: { from: 54, to: 45 },
+    }),
+  );
+  expect(screen.getByText(/Đang bị chiếu/)).toBeTruthy();
+  expect(view.container.querySelectorAll(".xq-board-check")).toHaveLength(1);
+  const markers = view.container.querySelectorAll(".xq-board-last");
+  expect(markers).toHaveLength(2);
+  expect(markers[0]!.getAttribute("transform")).toBe("translate(344 144)");
+  expect(markers[1]!.getAttribute("transform")).toBe("translate(344 184)");
+  expect(screen.queryByRole("button")).toBeNull();
+});
+it("selects legal pawn targets, sends intent, and keeps the canonical piece at its source", () => {
+  const move = vi.fn();
+  renderDom(
+    createElement(XiangqiBoard, { position: initialPosition(), onMove: move }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }));
+  expect(
+    screen
+      .getByRole("button", { name: "Trống, cột 1 hàng 6" })
+      .getAttribute("data-legal"),
+  ).toBe("true");
+  fireEvent.click(screen.getByRole("button", { name: "Trống, cột 1 hàng 6" }));
+  expect(move).toHaveBeenCalledExactlyOnceWith(54, 45);
+  expect(
+    screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeTruthy();
+});
+it("cancels selected pieces through repeated click, invalid target and Escape", () => {
+  renderDom(
+    createElement(XiangqiBoard, {
+      position: initialPosition(),
+      onMove: vi.fn(),
+    }),
+  );
+  const pawn = screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" });
+  fireEvent.click(pawn);
+  expect(pawn.getAttribute("aria-pressed")).toBe("true");
+  fireEvent.click(pawn);
+  expect(pawn.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(pawn);
+  fireEvent.click(screen.getByRole("button", { name: "Trống, cột 2 hàng 6" }));
+  expect(pawn.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(pawn);
+  fireEvent.keyDown(pawn, { key: "Escape" });
+  expect(pawn.getAttribute("aria-pressed")).toBe("false");
+});
+it("prevents selection for disabled, pending or the wrong side", () => {
+  const move = vi.fn();
+  const view = renderDom(
+    createElement(XiangqiBoard, {
+      position: initialPosition(),
+      onMove: move,
+      pending: true,
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }));
+  expect(move).not.toHaveBeenCalled();
+  expect(
+    screen
+      .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
+      .getAttribute("aria-pressed"),
+  ).toBe("false");
+  view.rerender(
+    createElement(XiangqiBoard, {
+      position: initialPosition(),
+      onMove: move,
+      orientation: "black",
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Tốt đen, cột 1 hàng 4" }),
+  );
+  expect(
+    screen
+      .getByRole("button", { name: "Tốt đen, cột 1 hàng 4" })
+      .getAttribute("aria-pressed"),
+  ).toBe("false");
+  view.rerender(
+    createElement(XiangqiBoard, {
+      position: initialPosition(),
+      onMove: move,
+      disabled: true,
+    }),
+  );
+  expect(screen.queryByRole("button")).toBeNull();
+});
 
 function render(position = initialPosition(), orientation?: Side): string {
   return renderToStaticMarkup(
@@ -134,4 +419,21 @@ describe("T11 SVG board display", () => {
     ).toBe("translate(224 264)");
     expect(render(midgame)).toContain("Lượt: Đen");
   });
+});
+
+it("selects a captured no-movement click even when Chrome retargets click to the SVG", () => {
+  const { svg } = pointerFixture("red");
+  fireEvent.pointerDown(svg, { clientX: 68, clientY: 568, pointerId: 12 });
+  fireEvent.pointerUp(svg, { clientX: 68, clientY: 568, pointerId: 12 });
+  fireEvent.click(svg);
+  expect(
+    screen
+      .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
+      .getAttribute("aria-pressed"),
+  ).toBe("true");
+  expect(
+    screen
+      .getByRole("button", { name: "Trống, cột 1 hàng 6" })
+      .getAttribute("data-legal"),
+  ).toBe("true");
 });

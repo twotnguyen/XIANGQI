@@ -1,0 +1,188 @@
+.login-page.xq-ui {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-height: 100dvh;
+  margin: 0;
+  padding: var(--space-8) var(--space-6);
+  display: grid;
+  place-items: center;
+  background: radial-gradient(
+    ellipse at top,
+    var(--color-surface),
+    var(--color-paper)
+  );
+}
+.login-page *,
+.login-page *::before,
+.login-page *::after {
+  box-sizing: border-box;
+}
+.login-card {
+  width: min(100%, 480px);
+  padding: var(--space-8);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunken);
+  box-shadow: var(--shadow-2);
+}
+.login-heading {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+.login-mark {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-han);
+  font-size: var(--text-xl);
+}
+.login-mark span {
+  display: grid;
+  place-items: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border: var(--border-width) solid var(--color-wood);
+  border-radius: var(--radius-full);
+  color: var(--color-wood);
+}
+.login-heading h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-2xl);
+  font-weight: var(--weight-semibold);
+  margin: var(--space-2) 0;
+}
+.login-heading p {
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-muted);
+}
+.login-heading .login-brand {
+  color: var(--color-gold-light);
+  font-weight: var(--weight-semibold);
+}
+.login-card form {
+  display: grid;
+  gap: var(--space-4);
+}
+.login-card form > .xq-button-group > button,
+.login-alternatives > .xq-button-group > button {
+  width: 100%;
+}
+.login-password {
+  position: relative;
+}
+.login-password input {
+  padding-right: calc(var(--touch-min) + var(--space-4));
+}
+.login-password > .xq-button-group {
+  position: absolute;
+  right: var(--space-1);
+  bottom: var(--space-1);
+}
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+.login-remember input {
+  width: var(--space-6);
+  height: var(--space-6);
+  accent-color: var(--color-gold);
+}
+.login-remember input:focus-visible,
+.login-footer a:focus-visible,
+.login-error:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--space-1);
+}
+.login-session-help {
+  margin-top: calc(-1 * var(--space-3));
+}
+.login-error {
+  margin-bottom: var(--space-4);
+}
+.login-divider {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  color: var(--color-ink-muted);
+  margin: var(--space-6) 0 var(--space-4);
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  height: var(--border-width);
+  background: var(--color-border);
+  flex: 1;
+}
+.login-alternatives {
+  display: grid;
+  gap: var(--space-3);
+}
+.login-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-6);
+}
+.login-footer a {
+  color: var(--color-gold-light);
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+  text-underline-offset: var(--space-1);
+}
+@media (max-width: 600px) {
+  .login-page.xq-ui {
+    padding: var(--space-4);
+  }
+  .login-card {
+    padding: var(--space-6);
+  }
+  .login-heading h1 {
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+}
+@media (min-width: 960px) {
+  .login-card:has(form) {
+    width: min(100%, 960px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "brand form" "providers form" "register form";
+    column-gap: var(--space-8);
+    row-gap: var(--space-4);
+    align-items: start;
+  }
+  .login-card:has(.login-error):has(form) {
+    grid-template-areas: "message message" "brand form" "providers form" "register form";
+  }
+  .login-card form {
+    grid-area: form;
+    padding-left: var(--space-8);
+    border-left: var(--border-width) solid var(--color-border);
+  }
+  .login-heading {
+    grid-area: brand;
+    margin-bottom: 0;
+  }
+  .login-alternatives {
+    grid-area: providers;
+  }
+  .login-footer {
+    grid-area: register;
+    margin-top: 0;
+  }
+  .login-error {
+    grid-area: message;
+    margin-bottom: 0;
+  }
+  .login-divider {
+    display: none;
+  }
+}
