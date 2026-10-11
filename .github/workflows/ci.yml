@@ -101,7 +101,21 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      clock-postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_DB: xiangqi_clock_test
+          POSTGRES_USER: clock_test_admin
+          POSTGRES_PASSWORD: isolated-clock-ci-test
+        ports:
+          - 55448:5432
+        options: >-
+          --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
+      CLOCK_TEST_DATABASE_URL: postgresql://clock_test_admin:isolated-clock-ci-test@127.0.0.1:55448/xiangqi_clock_test
       MATCH_TEST_DATABASE_URL: postgresql://match_test_admin:isolated-match-ci-test@127.0.0.1:55447/xiangqi_match_test
       ROOM_TEST_DATABASE_URL: postgresql://room_test_admin:isolated-room-ci-test@127.0.0.1:55446/xiangqi_room_test
       GOOGLE_GUEST_TEST_DATABASE_URL: postgresql://google_guest_test_admin:isolated-google-guest-ci-test@127.0.0.1:55445/google_guest_test
