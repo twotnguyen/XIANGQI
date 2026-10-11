@@ -180,6 +180,77 @@ class RoomController {
       );
     });
   }
+  @Post(":roomId/swap-propose")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  proposeSwap(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0
+      )
+        invalid();
+      return this.service.proposeSwap(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+      );
+    });
+  }
+  @Post(":roomId/swap-withdraw")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  withdrawSwap(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0
+      )
+        invalid();
+      return this.service.withdrawSwap(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+      );
+    });
+  }
+  @Post(":roomId/swap-respond")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  respondSwap(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0 ||
+        typeof input.accept !== "boolean"
+      )
+        invalid();
+      return this.service.respondSwap(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+        input.accept as boolean,
+      );
+    });
+  }
   @Post(":roomId/visibility")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")

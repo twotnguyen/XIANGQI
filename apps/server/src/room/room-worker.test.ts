@@ -10,6 +10,7 @@ it("continues healthy due rooms and committed publication after one room transac
   const worker = new RoomWorker(
     {
       expireDisconnected: async () => false,
+      expireSwapOffers: async () => 0,
       startDue: started,
     } as unknown as RoomStore,
     {

@@ -39,7 +39,7 @@ export class RoomStore {
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
-        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
+        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM xiangqi_room.side_swap_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
       )
     ).rows.map((r) => r.id as string);
   }
@@ -339,6 +339,12 @@ export class RoomStore {
         [id],
       )
     ).rows[0];
+    const swap = (
+      await s.client.query(
+        "SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1",
+        [id],
+      )
+    ).rows[0];
     const online = (
       await s.client.query(
         "SELECT user_id FROM xiangqi_room.presence WHERE room_id=$1 AND connected",
@@ -375,6 +381,14 @@ export class RoomStore {
             : null,
         },
         countdown: d ? { token: d.token, dueAt: d.due_at.toISOString() } : null,
+        swapOffer: swap
+          ? {
+              id: swap.id,
+              proposerId: swap.proposer_id,
+              responderId: swap.responder_id,
+              expiresAt: (swap.expires_at as Date).toISOString(),
+            }
+          : null,
       },
       role:
         member.side === "RED"
@@ -541,6 +555,7 @@ export class RoomStore {
         [s.actor.userId, input.roomId],
       );
       await this.cancel(s, input.roomId);
+      await this.closeSwapOffers(s, input.roomId);
     }
     await s.client.query(
       "INSERT INTO public.room_members(room_id,user_id,role,side,disconnected_at) VALUES($1,$2,$3,$4,clock_timestamp())",
@@ -580,8 +595,156 @@ export class RoomStore {
       "UPDATE public.room_members SET side=CASE side WHEN 'RED' THEN 'BLACK' ELSE 'RED' END,ready=false WHERE room_id=$1 AND user_id=$2",
       [id, s.actor.userId],
     );
+    await this.closeSwapOffers(s, id);
     await this.bump(s, id, "room.seats-changed");
     return this.snapshot(s, id);
+  }
+  private async closeSwapOffers(s: RoomScope, id: string) {
+    await s.client.query(
+      "UPDATE xiangqi_room.side_swap_offers SET status='CLOSED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING'",
+      [id],
+    );
+  }
+  private async swapPair(s: RoomScope, id: string) {
+    const { r, members, member } = await this.member(s, id);
+    if (r.status !== "WAITING" || member.role !== "PLAYER")
+      throw new RoomError(
+        "SWAP_DENIED",
+        "Chỉ đổi bên khi đang chờ đủ hai người",
+      );
+    const players = members.filter((m) => m.role === "PLAYER");
+    if (players.length !== 2)
+      throw new RoomError(
+        "SWAP_DENIED",
+        "Chỉ đổi bên khi đang chờ đủ hai người",
+      );
+    if (
+      (
+        await s.client.query(
+          "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
+          [id],
+        )
+      ).rowCount
+    )
+      throw new RoomError("SWAP_DENIED", "Đang đếm vào ván, không đổi bên");
+    const other = players.find((m) => m.user_id !== s.actor.userId)!;
+    return { r, me: member, other };
+  }
+  async proposeSwap(s: RoomScope, id: string) {
+    const { other } = await this.swapPair(s, id);
+    const pending = (
+      await s.client.query(
+        "SELECT id FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING'",
+        [id],
+      )
+    ).rows[0];
+    if (pending)
+      throw new RoomError("SWAP_ALREADY_PENDING", "Đang có đề nghị đổi bên");
+    const cooling = (
+      await s.client.query(
+        "SELECT resolved_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND proposer_id=$2 AND status IN('DECLINED','EXPIRED') AND resolved_at+interval '60 seconds'>clock_timestamp() ORDER BY resolved_at DESC LIMIT 1",
+        [id, s.actor.userId],
+      )
+    ).rows[0];
+    if (cooling)
+      throw new RoomError("SWAP_COOLDOWN", "Vui lòng chờ trước khi gửi lại");
+    const offer = (
+      await s.client.query(
+        "INSERT INTO xiangqi_room.side_swap_offers(id,room_id,proposer_id,responder_id,status,created_at,expires_at,resolved_at) VALUES($1,$2,$3,$4,'PENDING',clock_timestamp(),clock_timestamp()+interval '30 seconds',NULL) RETURNING id,expires_at",
+        [randomUUID(), id, s.actor.userId, other.user_id],
+      )
+    ).rows[0];
+    await this.bump(s, id, "room.swap-proposed", {
+      offerId: offer.id,
+      proposerId: s.actor.userId,
+      responderId: other.user_id,
+      expiresAt: (offer.expires_at as Date).toISOString(),
+    });
+    return this.snapshot(s, id);
+  }
+  async withdrawSwap(s: RoomScope, id: string) {
+    const { r } = await this.member(s, id);
+    if (r.status !== "WAITING")
+      throw new RoomError("SWAP_DENIED", "Không thể rút đề nghị lúc này");
+    const done = (
+      await s.client.query(
+        "UPDATE xiangqi_room.side_swap_offers SET status='WITHDRAWN',resolved_at=clock_timestamp() WHERE room_id=$1 AND proposer_id=$2 AND status='PENDING' RETURNING id",
+        [id, s.actor.userId],
+      )
+    ).rows[0];
+    if (!done)
+      throw new RoomError("SWAP_NOT_PENDING", "Không có đề nghị đang chờ");
+    await this.bump(s, id, "room.swap-withdrawn", { offerId: done.id });
+    return this.snapshot(s, id);
+  }
+  async respondSwap(s: RoomScope, id: string, accept: boolean) {
+    if (typeof accept !== "boolean") invalid();
+    const offer = (
+      await s.client.query(
+        "SELECT * FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1",
+        [id],
+      )
+    ).rows[0];
+    if (!offer)
+      throw new RoomError("SWAP_NOT_PENDING", "Không có đề nghị đang chờ");
+    if (offer.responder_id !== s.actor.userId)
+      throw new RoomError("SWAP_FORBIDDEN", "Chỉ người được mời trả lời");
+    if (new Date(offer.expires_at).getTime() <= Date.now()) {
+      // Het han do worker ket luan (expireSwapOffers) de tranh rollback
+      // khi throw; day chi la kiem tra doc.
+      throw new RoomError("SWAP_EXPIRED", "Đề nghị đã hết hạn");
+    }
+    if (!accept) {
+      await s.client.query(
+        "UPDATE xiangqi_room.side_swap_offers SET status='DECLINED',resolved_at=clock_timestamp() WHERE id=$1 AND status='PENDING'",
+        [offer.id],
+      );
+      await this.bump(s, id, "room.swap-declined", { offerId: offer.id });
+      return this.snapshot(s, id);
+    }
+    const { members } = await this.member(s, id);
+    const seated = new Set(
+      members.filter((m) => m.role === "PLAYER").map((m) => m.user_id),
+    );
+    if (
+      seated.size !== 2 ||
+      !seated.has(offer.proposer_id) ||
+      !seated.has(offer.responder_id) ||
+      (
+        await s.client.query(
+          "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
+          [id],
+        )
+      ).rowCount
+    ) {
+      await s.client.query(
+        "UPDATE xiangqi_room.side_swap_offers SET status='CLOSED',resolved_at=clock_timestamp() WHERE id=$1 AND status='PENDING'",
+        [offer.id],
+      );
+      await this.bump(s, id, "room.swap-closed", { offerId: offer.id });
+      throw new RoomError("SWAP_STALE", "Thành phần phòng đã thay đổi");
+    }
+    await s.client.query(
+      "UPDATE xiangqi_room.side_swap_offers SET status='ACCEPTED',resolved_at=clock_timestamp() WHERE id=$1 AND status='PENDING'",
+      [offer.id],
+    );
+    await s.client.query(
+      "UPDATE public.room_members SET side=CASE side WHEN 'RED' THEN 'BLACK' ELSE 'RED' END,ready=false WHERE room_id=$1 AND role='PLAYER'",
+      [id],
+    );
+    await this.bump(s, id, "room.swap-accepted", { offerId: offer.id });
+    return this.snapshot(s, id);
+  }
+  async expireSwapOffers(s: RoomScope, id: string) {
+    const due = (
+      await s.client.query(
+        "UPDATE xiangqi_room.side_swap_offers SET status='EXPIRED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING' AND expires_at<=clock_timestamp() RETURNING id",
+        [id],
+      )
+    ).rows as { id: string }[];
+    for (const offer of due)
+      await this.bump(s, id, "room.swap-expired", { offerId: offer.id });
+    return due.length;
   }
   async ready(s: RoomScope, id: string, value: boolean) {
     if (typeof value !== "boolean") invalid();
@@ -619,6 +782,15 @@ export class RoomStore {
           players.find((p) => p.side === "BLACK").user_id,
         ],
       );
+    if (
+      (
+        await s.client.query(
+          "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
+          [id],
+        )
+      ).rowCount
+    )
+      await this.closeSwapOffers(s, id);
     await this.bump(s, id, "room.ready-changed");
     return this.snapshot(s, id);
   }
@@ -839,6 +1011,7 @@ export class RoomStore {
   ) {
     if (player) {
       await this.cancel(s, id);
+      await this.closeSwapOffers(s, id);
       await s.client.query(
         "DELETE FROM public.active_players WHERE user_id=$1 AND room_id=$2",
         [userId, id],
