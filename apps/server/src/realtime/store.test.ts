@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { randomUUID, randomBytes } from "node:crypto";
-import { beforeAll, afterAll, describe, expect, it } from "vitest";
+import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { RealtimeStore } from "./store.js";
 import { createApp } from "../app.js";
 import {
@@ -63,6 +63,56 @@ describe.skipIf(!realtimeTestUrl)(
         ).rejects.toMatchObject({ code: "42501" });
       } finally {
         client.release();
+      }
+    });
+    it("commits a domain rejection with its terminal state and replays one durable receipt", async () => {
+      const room = await addRoom(fixture.admin);
+      const connection = room.connection();
+      await store.connect(connection);
+      const command = readyCommand(room.roomId);
+      const execute = vi
+        .spyOn(fixture.rooms, "execute")
+        .mockImplementation(async (client, identity) => {
+          await client.query(
+            "UPDATE public.rooms SET version=version+1 WHERE id=$1",
+            [room.roomId],
+          );
+          return {
+            snapshot: await fixture.rooms.snapshot(
+              client,
+              identity,
+              room.roomId,
+            ),
+            error: { code: "MATCH_TIME_EXPIRED", message: "Đã hết thời gian" },
+          };
+        });
+      try {
+        const result = await store.command(connection, command);
+        expect(result).toMatchObject({
+          status: "error",
+          error: { code: "MATCH_TIME_EXPIRED" },
+          snapshot: { version: 1 },
+        });
+        expect(await store.command(connection, command)).toEqual(result);
+        expect(execute).toHaveBeenCalledTimes(1);
+        expect(
+          (
+            await fixture.admin.query(
+              "SELECT version FROM public.rooms WHERE id=$1",
+              [room.roomId],
+            )
+          ).rows[0].version,
+        ).toBe(1);
+        expect(
+          (
+            await fixture.admin.query(
+              "SELECT count(*)::int AS n FROM xiangqi_realtime.receipts WHERE room_id=$1",
+              [room.roomId],
+            )
+          ).rows[0].n,
+        ).toBe(1);
+      } finally {
+        execute.mockRestore();
       }
     });
     it("commits one state mutation and one identical receipt for concurrent duplicates", async () => {
@@ -335,6 +385,8 @@ describe.skipIf(!realtimeTestUrl)(
     const httpServer = createServer();
     const identities = new Map<string, RealtimeIdentity>();
     const capabilities = new Map<string, string>();
+    const providerFailures = new Map<string, Error>();
+    const proofs = new Map<string, object[]>();
     const clients: ClientSocket[] = [];
     beforeAll(async () => {
       fixture = await prepareFixture();
@@ -342,7 +394,12 @@ describe.skipIf(!realtimeTestUrl)(
         store: new RealtimeStore(fixture.runtime, fixture.rooms),
         corsOrigins: ["http://localhost:5173"],
         identities: {
-          resolve: async (token, appSession) => {
+          resolve: async (token, appSession, proof) => {
+            const seen = proofs.get(token) ?? [];
+            if (proof) seen.push(proof);
+            proofs.set(token, seen);
+            const failure = providerFailures.get(token);
+            if (failure) throw failure;
             const identity = identities.get(token);
             if (
               !identity ||
@@ -422,6 +479,115 @@ describe.skipIf(!realtimeTestUrl)(
           ),
       );
     }
+    it.each([true, false])(
+      "sanitizes handshake provider failure (known outage %s)",
+      async (known) => {
+        const room = await addRoom(fixture.admin);
+        const peer = socket(room.roomId, room.members[0]!);
+        providerFailures.set(
+          peer.token,
+          known
+            ? new RealtimeError(
+                "REALTIME_UNAVAILABLE",
+                "PRIVATE_PROVIDER_SECRET",
+              )
+            : new Error("PRIVATE_PROVIDER_SECRET"),
+        );
+        const snapshots: unknown[] = [];
+        peer.client.on("room.snapshot", (value) => snapshots.push(value));
+        const denied = event<Error & { data?: { code: string } }>(
+          peer.client,
+          "connect_error",
+        );
+        peer.client.connect();
+        const error = await denied;
+        expect(error.data).toEqual({
+          code: known ? "REALTIME_UNAVAILABLE" : "AUTH_REQUIRED",
+        });
+        expect(error.message).not.toContain("PRIVATE_PROVIDER_SECRET");
+        expect(snapshots).toEqual([]);
+      },
+    );
+    it.each([true, false])(
+      "sanitizes reauthentication failure before command, replay and takeover (known outage %s)",
+      async (known) => {
+        const room = await addRoom(fixture.admin);
+        const peer = socket(room.roomId, room.members[0]!);
+        await connect(peer.client);
+        const request = readyCommand(room.roomId);
+        expect(await command(peer.client, request)).toMatchObject({
+          status: "ok",
+        });
+        providerFailures.set(
+          peer.token,
+          known
+            ? new RealtimeError(
+                "REALTIME_UNAVAILABLE",
+                "PRIVATE_PROVIDER_SECRET",
+              )
+            : new Error("PRIVATE_PROVIDER_SECRET"),
+        );
+        const snapshots: unknown[] = [];
+        peer.client.on("room.snapshot", (value) => snapshots.push(value));
+        const expected = {
+          status: "error",
+          error: { code: known ? "REALTIME_UNAVAILABLE" : "AUTH_REQUIRED" },
+        };
+        for (const input of [readyCommand(room.roomId, 1), request]) {
+          const response = await command(peer.client, input);
+          expect(response).toMatchObject(expected);
+          expect(JSON.stringify(response)).not.toContain(
+            "PRIVATE_PROVIDER_SECRET",
+          );
+          expect(response).not.toHaveProperty("snapshot");
+        }
+        const takeover = await new Promise<CommandAcknowledgement>((resolve) =>
+          peer.client.emit("session.takeover", resolve),
+        );
+        expect(takeover).toMatchObject(expected);
+        expect(JSON.stringify(takeover)).not.toContain(
+          "PRIVATE_PROVIDER_SECRET",
+        );
+        await gateway.publishSnapshots(room.roomId);
+        await command(peer.client, request);
+        expect(snapshots).toEqual([]);
+        expect(
+          (
+            await fixture.admin.query(
+              "SELECT version FROM public.rooms WHERE id=$1",
+              [room.roomId],
+            )
+          ).rows[0].version,
+        ).toBe(1);
+        expect(
+          (
+            await fixture.admin.query(
+              "SELECT count(*)::int AS n FROM xiangqi_realtime.receipts WHERE room_id=$1",
+              [room.roomId],
+            )
+          ).rows[0].n,
+        ).toBe(1);
+      },
+    );
+    it("resolves each socket request with a fresh private proof and keeps it out of snapshots", async () => {
+      const room = await addRoom(fixture.admin);
+      const peer = socket(room.roomId, room.members[0]!);
+      const snapshot = await connect(peer.client);
+      const input = readyCommand(room.roomId);
+      const first = await command(peer.client, input);
+      expect(first.status).toBe("ok");
+      expect(await command(peer.client, input)).toEqual(first);
+      const seen = proofs.get(peer.token)!;
+      expect(seen.length).toBeGreaterThanOrEqual(4);
+      expect(new Set(seen).size).toBe(seen.length);
+      for (const value of seen)
+        expect(value).toEqual({
+          accessToken: peer.token,
+          appSession: peer.appSession,
+        });
+      expect(JSON.stringify([snapshot, first])).not.toContain(peer.appSession);
+      expect(JSON.stringify([snapshot, first])).not.toContain(peer.token);
+    });
     it("rejects missing/invalid session tokens before receiving private snapshots", async () => {
       const room = await addRoom(fixture.admin);
       const connection = socket(room.roomId, room.members[0]!);

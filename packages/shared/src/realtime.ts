@@ -1,18 +1,29 @@
 export type RoomRole = "red" | "black" | "spectator";
 export interface RoomStateSnapshot {
+  serverNow: string;
   roomId: string;
   version: number;
   room: {
     status: "WAITING" | "PLAYING" | "FINISHED" | "CLOSED";
     hostId: string | null;
+    name: string;
+    visibility: "PUBLIC" | "CODE_ONLY" | "LOCKED";
+    timeMinutes: number;
+    viewerLimit: number;
     seats: { red: string | null; black: string | null };
     ready: { red: boolean; black: boolean };
+    connected: { red: boolean; black: boolean };
+    graceUntil: { red: string | null; black: string | null };
+    countdown: { token: string; dueAt: string } | null;
   };
   match: {
     id: string;
     version: number;
     position: string;
     turn: "red" | "black";
+    status: "ACTIVE" | "FINISHED" | "INTERRUPTED";
+    winner: "red" | "black" | null;
+    endedAt: string | null;
     result: string | null;
   } | null;
   clocks: {
@@ -32,8 +43,19 @@ export interface RoomSnapshot extends RoomStateSnapshot {
 }
 export type RoomAction =
   | { type: "room.ready"; payload: { ready: boolean } }
-  | { type: "match.move"; payload: { from: number; to: number } }
-  | { type: "match.resign"; payload: Record<string, never> }
+  | {
+      type: "match.move";
+      payload: {
+        matchId: string;
+        matchVersion: number;
+        from: number;
+        to: number;
+      };
+    }
+  | {
+      type: "match.resign";
+      payload: { matchId: string; matchVersion: number };
+    }
   | {
       type: "media.sharing";
       payload: { sharing: "none" | "opponent" | "room" };
@@ -51,7 +73,20 @@ export type RealtimeErrorCode =
   | "COMMAND_INVALID"
   | "COMMAND_ID_REUSED"
   | "VERSION_STALE"
-  | "REALTIME_UNAVAILABLE";
+  | "REALTIME_UNAVAILABLE"
+  | "MATCH_FINISHED"
+  | "MATCH_VERSION_CONFLICT"
+  | "MATCH_NOT_YOUR_TURN"
+  | "MATCH_ILLEGAL_MOVE"
+  | "MATCH_TIME_EXPIRED"
+  | "MATCH_ID_MISMATCH"
+  | "MATCH_PLAYER_REQUIRED"
+  | "MATCH_READ_ONLY"
+  | "MATCH_INVALID_INPUT"
+  | "MATCH_NOT_FOUND"
+  | "READY_DENIED"
+  | "PLAYER_DISCONNECTED"
+  | "ROOM_INPUT_INVALID";
 export type CommandAcknowledgement =
   | { status: "ok"; commandId: string; snapshot: RoomSnapshot }
   | {

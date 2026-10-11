@@ -15,10 +15,27 @@ import { errorAcknowledgement, type RealtimeStore } from "./store.js";
 import { parseCommand, parseHandshake, uuid } from "./protocol.js";
 import { logEvent } from "../logger.js";
 
+function authenticationFailure(error: unknown): RealtimeError {
+  return error instanceof RealtimeError && error.code === "REALTIME_UNAVAILABLE"
+    ? new RealtimeError(
+        "REALTIME_UNAVAILABLE",
+        "Chưa thể xác thực phiên đăng nhập",
+      )
+    : new RealtimeError(
+        "AUTH_REQUIRED",
+        "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+      );
+}
+
+export interface RealtimePublisher {
+  publishSnapshots(roomId: string): Promise<void>;
+  connections(roomId: string): RealtimeConnection[];
+}
 export interface RealtimeDependencies {
   store: RealtimeStore;
   identities: IdentityResolver;
   corsOrigins: string[];
+  onAttached?: (publisher: RealtimePublisher) => void;
 }
 export function attachRealtime(
   httpServer: HttpServer,
@@ -32,26 +49,39 @@ export function attachRealtime(
     appSession: string;
     version: number;
     generation: number;
+    disconnect: () => Promise<void>;
   };
   const io = new Server<ClientRealtimeEvents, ServerRealtimeEvents>(
     httpServer,
     { cors: { origin: dependencies.corsOrigins }, maxHttpBufferSize: 16384 },
   );
   const peers = new Map<string, Peer>();
+  const disconnects = new Set<Promise<void>>();
+  const admissions = new Set<Promise<void>>();
+  let stopping = false;
+  function disconnect(connection: RealtimeConnection) {
+    const cleanup = dependencies.store.disconnect(connection).catch(() => {
+      process.stderr.write(
+        logEvent("error", "realtime_disconnect_failed") + "\n",
+      );
+    });
+    disconnects.add(cleanup);
+    void cleanup.then(() => disconnects.delete(cleanup));
+    return cleanup;
+  }
   async function authorize(peer: Peer) {
     try {
+      const proof = { accessToken: peer.token, appSession: peer.appSession };
       const current = await dependencies.identities.resolve(
         peer.token,
         peer.appSession,
+        proof,
       );
       if (uuid(current.userId) !== peer.connection.identity.userId)
         throw new Error();
-      return { ...peer.connection, identity: current };
-    } catch {
-      throw new RealtimeError(
-        "AUTH_REQUIRED",
-        "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
-      );
+      return { ...peer.connection, identity: current, proof };
+    } catch (error) {
+      throw authenticationFailure(error);
     }
   }
   function sendSnapshot(peer: Peer, snapshot: RoomSnapshot) {
@@ -112,54 +142,80 @@ export function attachRealtime(
       }
     }
   }
-  io.use(async (socket, next) => {
-    try {
-      const handshake = parseHandshake(socket.handshake.auth as unknown);
-      let identity;
+  io.use((socket, next) => {
+    const admission = (async () => {
       try {
-        identity = await dependencies.identities.resolve(
-          handshake.accessToken,
-          handshake.appSession,
-        );
-      } catch {
-        throw new RealtimeError(
-          "AUTH_REQUIRED",
-          "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
-        );
+        if (stopping)
+          throw new RealtimeError("REALTIME_UNAVAILABLE", "Máy chủ đang dừng");
+        const handshake = parseHandshake(socket.handshake.auth as unknown);
+        const proof = {
+          accessToken: handshake.accessToken,
+          appSession: handshake.appSession,
+        };
+        let identity;
+        try {
+          identity = await dependencies.identities.resolve(
+            handshake.accessToken,
+            handshake.appSession,
+            proof,
+          );
+        } catch (error) {
+          throw authenticationFailure(error);
+        }
+        const connection: RealtimeConnection = {
+          proof,
+          identity: { ...identity, userId: uuid(identity.userId) },
+          roomId: handshake.roomId,
+          tabId: handshake.tabId,
+          connectionId: socket.id,
+        };
+        let committed = false;
+        let cleanup: Promise<void> | undefined;
+        const disconnectOnce = () => (cleanup ??= disconnect(connection));
+        // Engine transport may close before the namespace connection event.
+        socket.conn.once("close", () => {
+          peers.delete(socket.id);
+          if (committed) void disconnectOnce();
+        });
+        await dependencies.store.connect(connection);
+        committed = true;
+        if (stopping || socket.conn.readyState !== "open") {
+          await disconnectOnce();
+          throw new RealtimeError("REALTIME_UNAVAILABLE", "Kết nối đã đóng");
+        }
+        peers.set(socket.id, {
+          socket,
+          connection,
+          token: handshake.accessToken,
+          appSession: handshake.appSession,
+          version: -1,
+          generation: -1,
+          disconnect: disconnectOnce,
+        });
+        next();
+      } catch (error) {
+        const failure = new Error(
+          "Không thể mở kết nối thời gian thực",
+        ) as Error & { data: { code: string } };
+        const response = errorAcknowledgement(error);
+        failure.data = {
+          code:
+            response.status === "error"
+              ? response.error.code
+              : "REALTIME_UNAVAILABLE",
+        };
+        next(failure);
       }
-      const connection: RealtimeConnection = {
-        identity: { ...identity, userId: uuid(identity.userId) },
-        roomId: handshake.roomId,
-        tabId: handshake.tabId,
-        connectionId: socket.id,
-      };
-      await dependencies.store.connect(connection);
-      peers.set(socket.id, {
-        socket,
-        connection,
-        token: handshake.accessToken,
-        appSession: handshake.appSession,
-        version: -1,
-        generation: -1,
-      });
-      next();
-    } catch (error) {
-      const failure = new Error(
-        "Không thể mở kết nối thời gian thực",
-      ) as Error & { data: { code: string } };
-      const response = errorAcknowledgement(error);
-      failure.data = {
-        code:
-          response.status === "error"
-            ? response.error.code
-            : "REALTIME_UNAVAILABLE",
-      };
-      next(failure);
-    }
+    })();
+    admissions.add(admission);
+    void admission.then(() => admissions.delete(admission));
   });
   io.on("connection", (socket) => {
     const peer = peers.get(socket.id)!;
-    socket.on("disconnect", () => peers.delete(socket.id));
+    socket.on("disconnect", () => {
+      peers.delete(socket.id);
+      void peer.disconnect();
+    });
     socket.on("room.command", async (input, acknowledge) => {
       if (typeof acknowledge !== "function") return;
       let response;
@@ -172,8 +228,7 @@ export function attachRealtime(
       } catch (error) {
         response = errorAcknowledgement(error);
       }
-      if (response.status === "ok")
-        await publishSnapshots(peer.connection.roomId);
+      if (response.snapshot) await publishSnapshots(peer.connection.roomId);
       acknowledge(response);
     });
     socket.on("session.takeover", async (acknowledge) => {
@@ -199,30 +254,48 @@ export function attachRealtime(
       }
     })();
   });
-  let cleaning = false;
-  const clean = async () => {
-    if (cleaning) return;
-    cleaning = true;
-    try {
-      await dependencies.store.cleanupExpiredReceipts();
-    } catch {
-      process.stderr.write(
-        logEvent("error", "realtime_maintenance_failed") + "\n",
-      );
-    } finally {
-      cleaning = false;
-    }
+  let maintenance: Promise<void> | null = null;
+  const clean = () => {
+    if (maintenance || stopping) return;
+    maintenance = dependencies.store
+      .cleanupExpiredReceipts()
+      .then(
+        () => {},
+        () => {
+          process.stderr.write(
+            logEvent("error", "realtime_maintenance_failed") + "\n",
+          );
+        },
+      )
+      .finally(() => {
+        maintenance = null;
+      });
   };
-  void clean();
-  const timer = setInterval(() => void clean(), 60000);
+  clean();
+  const timer = setInterval(clean, 60000);
   timer.unref();
   let closing: Promise<void> | undefined;
   return {
     publishSnapshots,
+    connections: (roomId: string): RealtimeConnection[] =>
+      [...peers.values()]
+        .filter(
+          (peer) => peer.socket.connected && peer.connection.roomId === roomId,
+        )
+        .map((peer) => peer.connection),
     close: () =>
       (closing ??= new Promise<void>((resolve, reject) => {
+        stopping = true;
         clearInterval(timer);
-        io.close((error) => (error ? reject(error) : resolve()));
+        io.close((error) => {
+          void (async () => {
+            await Promise.all([...admissions]);
+            await Promise.all([...disconnects]);
+            await maintenance;
+            if (error) reject(error);
+            else resolve();
+          })().catch(reject);
+        });
       })),
   };
 }
