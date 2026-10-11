@@ -1,3 +1,5 @@
+import { createApp } from "../app.js";
+import { SessionModule } from "../session/session.module.js";
 import { RegistrationError } from "../auth/contracts.js";
 import "reflect-metadata";
 import { Controller, Get, Module, Req, UseGuards } from "@nestjs/common";
@@ -340,7 +342,7 @@ describe.skipIf(!url)(
           measurements[index]!.push(performance.now() - start);
         }
       const median = (values: number[]) => values.sort((a, b) => a - b)[1]!;
-      expect(Math.min(...measurements.flat())).toBeGreaterThanOrEqual(230);
+      expect(Math.min(...measurements.flat())).toBeGreaterThanOrEqual(2100);
       expect(
         Math.abs(median(measurements[0]!) - median(measurements[1]!)),
       ).toBeLessThan(100);
@@ -641,6 +643,274 @@ describe.skipIf(!url)(
       expect((await store.attempts("testplayer")).failures).toEqual(failures);
       await login.authenticateRegistration(account, "password123");
     });
+    it("rotates provider credentials through actual cookie HTTP while keeping the SQL application deadline and revokes durably", async () => {
+      await store.resetAttempts("testplayer");
+      @Module({})
+      class BrowserSessionFixture {}
+      const app = await createApp(
+        [],
+        [
+          {
+            module: BrowserSessionFixture,
+            controllers: [LoginController],
+            providers: [
+              { provide: LoginService, useValue: login },
+              { provide: "SESSION_COOKIE_SECURE", useValue: false },
+            ],
+          },
+          SessionModule.forRoot(
+            sessions,
+            (token) => auth.refreshSession(token),
+            false,
+          ),
+        ],
+      );
+      await app.listen(0, "127.0.0.1");
+      const base = await app.getUrl();
+      const cookieJar = (response: Response) =>
+        response.headers
+          .getSetCookie()
+          .map((value) => value.split(";")[0])
+          .join("; ");
+      try {
+        const loggedIn = await fetch(`${base}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: "TESTPLAYER",
+            password: "password123",
+            remember: false,
+          }),
+        });
+        expect(loggedIn.status).toBe(200);
+        const original = await loggedIn.json();
+        const oldCookies = cookieJar(loggedIn);
+        expect(
+          loggedIn.headers
+            .getSetCookie()
+            .every((value) => !value.includes("Max-Age=")),
+        ).toBe(true);
+        const refreshed = await fetch(`${base}/auth/refresh`, {
+          method: "POST",
+          headers: { Cookie: oldCookies },
+        });
+        expect(refreshed.status).toBe(200);
+        const renewed = await refreshed.json();
+        expect(renewed).toMatchObject({
+          appSession: original.appSession,
+          userId: original.userId,
+          expiresAt: original.expiresAt,
+          remember: false,
+        });
+        expect(renewed.refresh_token).not.toBe(original.refresh_token);
+        expect(renewed.access_token).not.toBe(original.access_token);
+        await expect(
+          auth.refreshSession(original.refresh_token),
+        ).rejects.toMatchObject({ status: 401 });
+        const currentCookies = cookieJar(refreshed);
+        const actor = await fetch(`${base}/auth/session`, {
+          headers: {
+            Cookie: currentCookies,
+            Authorization: `Bearer ${renewed.access_token}`,
+          },
+        });
+        expect(actor.status).toBe(200);
+        expect(await actor.json()).toEqual({
+          userId: original.userId,
+          username: "TestPlayer",
+          kind: "member",
+          expiresAt: original.expiresAt,
+          remember: false,
+        });
+        const loggedOut = await fetch(`${base}/auth/logout`, {
+          method: "POST",
+          headers: {
+            Cookie: currentCookies,
+            Authorization: `Bearer ${renewed.access_token}`,
+          },
+        });
+        expect(loggedOut.status).toBe(200);
+        expect(
+          loggedOut.headers
+            .getSetCookie()
+            .every((value) => value.includes("Max-Age=0")),
+        ).toBe(true);
+        expect(
+          (
+            await fetch(`${base}/auth/refresh`, {
+              method: "POST",
+              headers: { Cookie: currentCookies },
+            })
+          ).status,
+        ).toBe(401);
+        await expect(
+          new SessionService(
+            new PostgresLoginStore(pool),
+            auth,
+            now,
+          ).requireValidSession(original.appSession),
+        ).rejects.toMatchObject({ code: "SESSION_EXPIRED" });
+        expect(
+          (
+            await pool.query(
+              "SELECT revoked_at FROM xiangqi_auth.app_sessions WHERE user_id=$1 AND revoked_at IS NOT NULL",
+              [original.userId],
+            )
+          ).rowCount,
+        ).toBeGreaterThan(0);
+      } finally {
+        await app.close();
+      }
+    });
+    it.each([
+      {
+        remember: false,
+        deadline: "2026-10-11T12:00:00.000Z",
+        midpoint: "2026-10-11T06:00:00.000Z",
+        initialMaxAge: undefined,
+        midpointMaxAge: undefined,
+      },
+      {
+        remember: true,
+        deadline: "2026-11-10T00:00:00.000Z",
+        midpoint: "2026-10-26T00:00:00.000Z",
+        initialMaxAge: 2592000,
+        midpointMaxAge: 1296000,
+      },
+    ])(
+      "enforces the exact SQL deadline through HTTP refresh (remember=$remember)",
+      async ({
+        remember,
+        deadline,
+        midpoint,
+        initialMaxAge,
+        midpointMaxAge,
+      }) => {
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(clock);
+        const advance = (value: string | number) => {
+          clock = new Date(value);
+          vi.setSystemTime(clock);
+        };
+        @Module({})
+        class BoundaryFixture {}
+        const app = await createApp(
+          [],
+          [
+            {
+              module: BoundaryFixture,
+              controllers: [LoginController],
+              providers: [
+                { provide: LoginService, useValue: login },
+                { provide: "SESSION_COOKIE_SECURE", useValue: false },
+              ],
+            },
+            SessionModule.forRoot(
+              sessions,
+              (token) => auth.refreshSession(token),
+              false,
+            ),
+          ],
+        );
+        await app.listen(0, "127.0.0.1");
+        const base = await app.getUrl();
+        const jar = (response: Response) =>
+          response.headers
+            .getSetCookie()
+            .map((cookie) => cookie.split(";")[0])
+            .join("; ");
+        const maxAges = (response: Response) =>
+          response.headers.getSetCookie().map((cookie) => {
+            const match = /(?:^|; )Max-Age=(\d+)(?:;|$)/.exec(cookie);
+            return match ? Number(match[1]) : undefined;
+          });
+        try {
+          await store.resetAttempts("testplayer");
+          const issued = await fetch(`${base}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: "TestPlayer",
+              password: "password123",
+              remember,
+            }),
+          });
+          expect(issued.status).toBe(200);
+          const original = await issued.json();
+          expect(original.expiresAt).toBe(deadline);
+          expect(maxAges(issued)).toEqual([initialMaxAge, initialMaxAge]);
+          for (const cookie of issued.headers.getSetCookie()) {
+            expect(cookie).toContain("; HttpOnly; SameSite=Lax");
+            expect(cookie).toContain("; Path=/");
+            expect(cookie).not.toContain("Expires=");
+          }
+          const persisted = async () =>
+            (
+              await pool.query(
+                "SELECT created_at,expires_at,remember FROM xiangqi_auth.app_sessions WHERE token_hash=encode(sha256($1::bytea),'hex')",
+                [Buffer.from(original.appSession)],
+              )
+            ).rows[0];
+          expect(await persisted()).toEqual({
+            created_at: new Date("2026-10-11T00:00:00.000Z"),
+            expires_at: new Date(deadline),
+            remember,
+          });
+          let cookies = jar(issued);
+          const calls = fixture.state.refreshRequests;
+          for (const [at, maxAge] of [
+            [midpoint, midpointMaxAge],
+            [Date.parse(deadline) - 1, remember ? 0 : undefined],
+          ] as const) {
+            advance(at);
+            const refreshed = await fetch(`${base}/auth/refresh`, {
+              method: "POST",
+              headers: { Cookie: cookies },
+            });
+            expect(refreshed.status).toBe(200);
+            const result = await refreshed.json();
+            expect(result).toMatchObject({
+              appSession: original.appSession,
+              userId: original.userId,
+              expiresAt: deadline,
+              remember,
+            });
+            expect(maxAges(refreshed)).toEqual([maxAge, maxAge]);
+            expect(
+              refreshed.headers
+                .getSetCookie()
+                .every((cookie) => !cookie.includes("Expires=")),
+            ).toBe(true);
+            cookies = jar(refreshed);
+            expect(await persisted()).toEqual({
+              created_at: new Date("2026-10-11T00:00:00.000Z"),
+              expires_at: new Date(deadline),
+              remember,
+            });
+          }
+          expect(fixture.state.refreshRequests).toBe(calls + 2);
+          fixture.state.failRefresh = true;
+          for (const at of [Date.parse(deadline), Date.parse(deadline) + 1]) {
+            advance(at);
+            const expired = await fetch(`${base}/auth/refresh`, {
+              method: "POST",
+              headers: { Cookie: cookies },
+            });
+            expect(expired.status).toBe(401);
+            expect(await expired.json()).toEqual({
+              code: "SESSION_EXPIRED",
+              message: "Phiên đăng nhập đã hết hạn",
+            });
+            expect(expired.headers.getSetCookie()).toEqual([]);
+            expect(fixture.state.refreshRequests).toBe(calls + 2);
+          }
+        } finally {
+          fixture.state.failRefresh = false;
+          vi.useRealTimers();
+          await app.close();
+        }
+      },
+    );
     it("can roll back empty synthetic login tables and reapply without changing existing auth objects", async () => {
       const metadata = async () =>
         (
