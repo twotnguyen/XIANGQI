@@ -174,4 +174,42 @@ describe("profile page", () => {
     expect(screen.queryByLabelText("Tên hiển thị")).toBeNull();
     expect(screen.getByRole("button", { name: "Đăng xuất" })).toBeTruthy();
   });
+  it("offers the default theme, applies a chosen theme and hides the choice from guests", async () => {
+    const user = userEvent.setup();
+    const store = new Map<string, string>();
+    const setItem = vi.fn((key: string, value: string) => {
+      store.set(key, value);
+    });
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      value: { getItem: (key: string) => store.get(key) ?? null, setItem },
+    });
+    delete document.documentElement.dataset.theme;
+    const view = render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByText("kythu");
+    const classic = screen.getByRole("radio", {
+      name: "Kỳ Đài Cổ Phong",
+    }) as HTMLInputElement;
+    expect(classic.checked).toBe(true);
+    await user.click(screen.getByRole("radio", { name: "Giấy Sáng" }));
+    expect(document.documentElement.dataset.theme).toBe("paper-light");
+    expect(setItem).toHaveBeenCalledWith("xiangqi.theme", "paper-light");
+    view.unmount();
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: true,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    expect(screen.queryByRole("radio", { name: "Giấy Sáng" })).toBeNull();
+  });
 });
