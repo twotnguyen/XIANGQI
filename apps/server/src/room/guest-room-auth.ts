@@ -6,7 +6,7 @@ import {
   type GuestActor,
   type GuestPurpose,
 } from "../guest/contracts.js";
-import { RoomError, type RoomActor } from "./contracts.js";
+import { RoomError, RoomRosterChanged, type RoomActor } from "./contracts.js";
 import type { RoomActorProof, RoomAuthorization } from "./room-transactions.js";
 export interface GuestRoomRequestProof {
   capability: string;
@@ -29,6 +29,7 @@ function checkedHash(proof: GuestRoomRequestProof) {
   return fingerprint(proof.capability);
 }
 function sanitized(error: unknown): RoomError {
+  if (error instanceof RoomRosterChanged) return error;
   if (error instanceof RoomError && error.code === "AUTH_REQUIRED")
     return required();
   if (error instanceof GuestError) {
