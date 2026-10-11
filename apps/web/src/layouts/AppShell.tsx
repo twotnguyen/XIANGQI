@@ -61,11 +61,21 @@ export function AppShell({
           Hồ sơ
         </NavigationLink>
       )}
-      <Tooltip text="Sắp ra mắt">
-        <Button variant="ghost" disabledReason="Sắp ra mắt">
+      {user?.guest ? (
+        <Button
+          variant="ghost"
+          disabledReason="Khách không có lịch sử ván đấu."
+        >
           Lịch sử
         </Button>
-      </Tooltip>
+      ) : (
+        <NavigationLink
+          href="/history"
+          aria-current={active === "/history" ? "page" : undefined}
+        >
+          Lịch sử
+        </NavigationLink>
+      )}
       <Tooltip text="Sắp ra mắt">
         <Button variant="ghost" disabledReason="Sắp ra mắt">
           Bảng xếp hạng

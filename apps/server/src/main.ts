@@ -5,6 +5,7 @@ import { logEvent } from "./logger.js";
 import { createRegistrationRuntime } from "./auth-runtime.js";
 import { createGoogleRuntime } from "./google-runtime.js";
 import { createRoomRuntime } from "./room-runtime.js";
+import { createHistoryRuntime } from "./history-runtime.js";
 import { AuthProvidersModule } from "./auth/providers.module.js";
 
 config({ quiet: true });
@@ -16,6 +17,7 @@ try {
   registration = await createRegistrationRuntime(process.env);
   const google = await createGoogleRuntime(process.env, registration);
   rooms = await createRoomRuntime(process.env, registration);
+  const history = await createHistoryRuntime(process.env, registration);
   app = await createApp(
     settings.corsOrigins,
     [
@@ -23,6 +25,7 @@ try {
       ...(registration ? [registration.module] : []),
       ...(google ? [google.module] : []),
       ...(rooms ? [rooms.module] : []),
+      ...(history ? [history.module] : []),
     ],
     registration?.checkDatabase,
     rooms?.realtime,

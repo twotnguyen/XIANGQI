@@ -33,6 +33,8 @@ import {
 } from "../rooms/public-room-client.js";
 import type { PublicRoomView } from "@xiangqi/shared";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
+import { HistoryPage } from "../history/HistoryPage.js";
+import { makeHistoryClient } from "../history/history-client.js";
 
 function Lobby({
   client,
@@ -235,12 +237,18 @@ const titles: Partial<Record<Route["name"], string>> = {
   ai: "Đánh với máy",
   friends: "Bạn bè",
   settings: "Hồ sơ",
+  history: "Lịch sử ván đấu",
+  replay: "Xem lại ván đấu",
   "access-denied": "Không thể truy cập",
 };
 export function AppRouter() {
   const session = useSession();
   const client = useMemo(
     () => createRoomClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
+  const historyClient = useMemo(
+    () => makeHistoryClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
   const [roomNotice, setRoomNotice] = useState("");
@@ -365,6 +373,14 @@ export function AppRouter() {
   else if (route.name === "join" && session.state.status === "active-member")
     content = (
       <InviteEntry client={client} onEntered={enterRoom} code={route.token} />
+    );
+  else if (route.name === "history" && session.state.status === "active-member")
+    content = (
+      <HistoryPage
+        key={`${session.state.userId}:${session.state.expiresAt}`}
+        client={historyClient}
+        onReplay={(id) => navigate(`/history/${id}`)}
+      />
     );
   else if (route.name === "room" && session.state.status === "active-member")
     content =
