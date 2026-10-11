@@ -13,7 +13,7 @@ DO $$ DECLARE signature text;BEGIN
  UNION ALL SELECT 'function:'||p.proname,concat(p.proowner::pg_catalog.regrole,':',p.proacl,':',pg_catalog.pg_get_functiondef(p.oid)) FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='xiangqi_chat'
  UNION ALL SELECT 'trigger:'||c.relname||':'||t.tgname,concat(t.tgenabled,':',pg_catalog.pg_get_triggerdef(t.oid)) FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid JOIN pg_catalog.pg_proc p ON p.oid=t.tgfoid JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE NOT t.tgisinternal AND n.nspname='xiangqi_chat'
  ) metadata;
- IF signature IS DISTINCT FROM '5da36a4c4896ccbdd71822c0dcc1595c' THEN RAISE EXCEPTION 'Chat metadata changed; rollback refused'; END IF;
+ IF signature IS DISTINCT FROM '81802fd2b34df89fd8472301d607f6bb' THEN RAISE EXCEPTION 'Chat metadata changed; rollback refused'; END IF;
 END $$;
 DROP TRIGGER chat_membership ON public.room_members;
 DROP TRIGGER chat_room_closed ON public.rooms;
