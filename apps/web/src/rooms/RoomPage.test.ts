@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import {
   cleanup,
   render,
@@ -18,10 +18,27 @@ import {
 import { RoomPage } from "./RoomPage.js";
 import * as gameAudio from "./game-audio.js";
 import { RoomRequestError, type RoomConnectionInput } from "./room-client.js";
+const originalDialogShow = Object.getOwnPropertyDescriptor(
+  HTMLDialogElement.prototype,
+  "showModal",
+);
+const originalDialogClose = Object.getOwnPropertyDescriptor(
+  HTMLDialogElement.prototype,
+  "close",
+);
+beforeEach(nativeDialogStub);
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.restoreAllMocks();
+  for (const [name, descriptor] of [
+    ["showModal", originalDialogShow],
+    ["close", originalDialogClose],
+  ] as const) {
+    if (descriptor)
+      Object.defineProperty(HTMLDialogElement.prototype, name, descriptor);
+    else Reflect.deleteProperty(HTMLDialogElement.prototype, name);
+  }
 });
 const snapshot: RoomSnapshot = {
   serverNow: "2026-10-11T00:00:00Z",
@@ -806,9 +823,9 @@ it("a disconnected client waits for a fresh authoritative result before opening 
   await f.ready();
   f.disconnect();
   f.publish(terminal());
-  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("dialog", { name: "Bạn thắng!" })).toBeNull();
   f.reconnect();
-  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("dialog", { name: "Bạn thắng!" })).toBeNull();
   f.publish(terminal());
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
 });
@@ -838,4 +855,55 @@ it("a stale result Leave keeps the final board and modal until fresh realtime sy
   expect(f.onLeft).not.toHaveBeenCalled();
   await act(async () => sync({ ...state, version: state.version + 1 }));
   expect(screen.getByRole("dialog")).toBeTruthy();
+});
+it("keeps the reconnect modal through bare transport reconnection until a fresh snapshot arrives", async () => {
+  nativeDialogStub();
+  const state = playing();
+  const f = setup(state);
+  await f.ready();
+  f.disconnect();
+  expect(
+    screen.getByRole("dialog", { name: "Đang kết nối lại…" }),
+  ).toBeTruthy();
+  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" })).toBeTruthy();
+  f.reconnect();
+  expect(
+    screen.getByRole("dialog", { name: "Đang kết nối lại…" }),
+  ).toBeTruthy();
+  expect(
+    screen.queryByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeNull();
+  f.publish({ ...state, version: state.version + 1 });
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeTruthy();
+});
+it("opponent reconnect notice uses canonical grace while the local board remains enabled", async () => {
+  const state = playing();
+  state.room.connected.black = false;
+  state.room.graceUntil.black = "2026-10-11T00:01:00Z";
+  const f = setup(state);
+  await f.ready();
+  expect(
+    screen.getByRole("region", { name: "Trạng thái nối lại" }),
+  ).toBeTruthy();
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(
+    screen
+      .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+  f.publish({
+    ...state,
+    version: state.version + 1,
+    room: {
+      ...state.room,
+      connected: { red: true, black: true },
+      graceUntil: { red: null, black: null },
+    },
+  });
+  expect(
+    screen.queryByRole("region", { name: "Trạng thái nối lại" }),
+  ).toBeNull();
 });
