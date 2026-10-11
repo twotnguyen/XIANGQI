@@ -27,15 +27,20 @@ export class RoomRequestError extends Error {
   constructor(
     public readonly code: string,
     public readonly status: number,
+    context?: "visibility",
   ) {
     super(
-      code === "VERSION_STALE"
-        ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
-        : status === 401
-          ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-          : status === 503
-            ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
-            : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
+      code === "ROOM_LOCK_REQUIRES_PLAYERS"
+        ? "Chỉ khoá được khi đã đủ 2 người chơi"
+        : code === "ROOM_FORBIDDEN" && context === "visibility"
+          ? "Chỉ chủ phòng được đổi chế độ"
+          : code === "VERSION_STALE"
+            ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+            : status === 401
+              ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+              : status === 503
+                ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
+                : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
     );
   }
 }
@@ -159,6 +164,7 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
     path: string,
     parse: (value: unknown) => T,
     body?: object,
+    context?: "visibility",
   ): Promise<T> {
     const response = await authorizedFetch(path, {
       method: body ? "POST" : "GET",
@@ -179,7 +185,7 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
       } catch {
         /* Do not display upstream response bodies. */
       }
-      throw new RoomRequestError(code, response.status);
+      throw new RoomRequestError(code, response.status, context);
     }
     try {
       return parse(await response.json());
@@ -202,6 +208,17 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
     snapshot: (roomId: string) =>
       request(`/rooms/${encodeURIComponent(roomId)}`, (value) =>
         parseView(value, roomId),
+      ),
+    changeVisibility: (
+      roomId: string,
+      expectedVersion: number,
+      visibility: RoomView["room"]["visibility"],
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/visibility`,
+        (value) => parseView(value, roomId),
+        { expectedVersion, visibility },
+        "visibility",
       ),
     switchSeat: (roomId: string, expectedVersion: number) =>
       request(
