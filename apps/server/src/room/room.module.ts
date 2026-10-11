@@ -157,6 +157,112 @@ class RoomController {
       );
     });
   }
+  private versioned(input: Record<string, unknown>) {
+    if (
+      !Number.isSafeInteger(input.expectedVersion) ||
+      (input.expectedVersion as number) < 0
+    )
+      invalid();
+    return input.expectedVersion as number;
+  }
+  @Post(":roomId/to-spectator")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  toSpectator(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      return this.service.toSpectator(
+        authority,
+        id(roomId),
+        this.versioned(input),
+      );
+    });
+  }
+  @Post(":roomId/move-to-spectator")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  moveToSpectator(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (typeof input.targetId !== "string") invalid();
+      return this.service.moveToSpectator(
+        authority,
+        id(roomId),
+        this.versioned(input),
+        input.targetId as string,
+      );
+    });
+  }
+  @Post(":roomId/invite-down")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  inviteDown(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (typeof input.targetId !== "string") invalid();
+      return this.service.inviteDown(
+        authority,
+        id(roomId),
+        this.versioned(input),
+        input.targetId as string,
+      );
+    });
+  }
+  @Post(":roomId/respond-down")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  respondDown(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (typeof input.accept !== "boolean") invalid();
+      return this.service.respondDown(
+        authority,
+        id(roomId),
+        this.versioned(input),
+        input.accept as boolean,
+      );
+    });
+  }
+  @Post(":roomId/kick")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  kickViewer(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readMemberRoomProof(request),
+        input = object(body);
+      if (typeof input.targetId !== "string") invalid();
+      return this.service.kickViewer(
+        authority,
+        id(roomId),
+        this.versioned(input),
+        input.targetId as string,
+      );
+    });
+  }
   @Post(":roomId/leave")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
