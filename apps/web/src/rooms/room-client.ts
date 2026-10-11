@@ -135,6 +135,23 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
         invalidResponse();
     }
   }
+  if (snapshot.match === null) {
+    if (snapshot.clocks !== null) invalidResponse();
+  } else {
+    const clocks = record(snapshot.clocks),
+      match = record(snapshot.match);
+    if (
+      !Number.isSafeInteger(clocks.redMs) ||
+      (clocks.redMs as number) < 0 ||
+      !Number.isSafeInteger(clocks.blackMs) ||
+      (clocks.blackMs as number) < 0 ||
+      !isDate(clocks.asOf) ||
+      !["red", "black"].includes(match.turn as string) ||
+      !["ACTIVE", "FINISHED", "INTERRUPTED"].includes(match.status as string) ||
+      clocks.running !== (match.status === "ACTIVE" ? match.turn : null)
+    )
+      invalidResponse();
+  }
   return snapshot as unknown as RoomSnapshot;
 }
 export function createRoomClient(authorizedFetch: AuthorizedFetch) {
@@ -209,6 +226,7 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
 }
 export type RoomClient = ReturnType<typeof createRoomClient>;
 export interface RoomConnection {
+  refresh(): Promise<RoomSnapshot>;
   command(action: RoomAction, version: number): Promise<CommandAcknowledgement>;
   close(): void;
 }
@@ -277,6 +295,34 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   );
   socket.connect();
   return {
+    refresh() {
+      if (closed || !socket.connected)
+        return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
+      return new Promise((resolve, reject) => {
+        socket
+          .timeout(8000)
+          .emit(
+            "room.sync",
+            (error: Error | null, acknowledgement: CommandAcknowledgement) => {
+              if (closed || error || acknowledgement?.status !== "ok") {
+                reject(
+                  new Error(
+                    "Chưa thể đồng bộ phòng. Kiểm tra kết nối và phiên đăng nhập.",
+                  ),
+                );
+                return;
+              }
+              try {
+                resolve(parseSnapshot(acknowledgement.snapshot, input.roomId));
+              } catch {
+                reject(
+                  new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại."),
+                );
+              }
+            },
+          );
+      });
+    },
     command(action, expectedVersion) {
       if (!socket.connected)
         return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
