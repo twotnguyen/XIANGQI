@@ -21,7 +21,37 @@ function authError(error: unknown): never {
   );
 }
 export class MemberRealtimeIdentities implements IdentityResolver {
-  constructor(private readonly authorizer: PostgresMemberRoomAuthorizer) {}
+  constructor(
+    private readonly authorizer: PostgresMemberRoomAuthorizer,
+    private readonly checkSession?: (
+      userId: string,
+      appSession: string,
+    ) => Promise<boolean>,
+  ) {}
+  async sessionActive(connection: RealtimeConnection): Promise<boolean> {
+    if (
+      connection.identity.kind !== "member" ||
+      !connection.proof ||
+      !/^[A-Za-z0-9_-]{43}$/.test(connection.proof.appSession)
+    )
+      return false;
+    if (!this.checkSession)
+      throw new RealtimeError(
+        "REALTIME_UNAVAILABLE",
+        "Chưa thể xác thực phiên đăng nhập",
+      );
+    try {
+      return await this.checkSession(
+        connection.identity.userId,
+        connection.proof.appSession,
+      );
+    } catch {
+      throw new RealtimeError(
+        "REALTIME_UNAVAILABLE",
+        "Chưa thể xác thực phiên đăng nhập",
+      );
+    }
+  }
   async resolve(
     accessToken: string,
     appSession: string,
