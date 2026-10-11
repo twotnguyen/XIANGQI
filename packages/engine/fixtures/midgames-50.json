@@ -1,0 +1,1382 @@
+{
+  "schemaVersion": 1,
+  "purpose": "GATE-ENGINE timing candidates; not a best-move answer oracle",
+  "verificationStatus": "independent-legality-validated",
+  "source": {
+    "repository": "https://github.com/Yvonne761/Chinese-Chess-Practical-Dataset",
+    "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+    "license": "CC-BY-4.0",
+    "copyright": "Yu-Han Tseng, 2026",
+    "licenseUrl": "https://github.com/Yvonne761/Chinese-Chess-Practical-Dataset/blob/368a47a947773dd8692c026e286dd19b6277b993/LICENSE"
+  },
+  "selection": {
+    "sourceDirectory": "Dataset/中局",
+    "scannedRecords": 160,
+    "minimumPieces": 16,
+    "maximumPieces": 30,
+    "deduplication": "board placement plus side to move",
+    "ordering": "ascending original file number, first 50 matching records",
+    "transformations": [
+      "FEN extracted verbatim from source PGN header",
+      "metadata decoded from Big5",
+      "raw PGN bytes hashed with SHA-256; no source move answers generated"
+    ],
+    "limitations": [
+      "Independent pyffish legality validated; no timing, best-move or strength acceptance",
+      "source game labels are publisher claims, not tournament-organizer certification",
+      "source halfmove/fullmove counters preserved; no prior history invented"
+    ]
+  },
+  "positions": [
+    {
+      "id": "ccpd-midgame-00000001",
+      "fen": "4kab2/4a4/2R1b1P2/9/p3p4/5p3/P3P1c2/N2Cr4/4A4/3AK4 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000001.pgn",
+        "path": "Dataset/中局/00000001.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "c1303638f6aeacdbae548d3f45e28f9fa317aaa45d7f2224bf66098ccfb29784",
+        "encoding": "Big5",
+        "event": "北方杯 (1)三軍逼宮",
+        "date": "1982",
+        "red": "徐天利",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 30,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 19
+    },
+    {
+      "id": "ccpd-midgame-00000002",
+      "fen": "6bC1/3ka4/3ab1P2/2P6/2p1N4/6B2/4pn2n/4B4/4AK3/3A5 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000002.pgn",
+        "path": "Dataset/中局/00000002.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "8ed1b5df008be99a22c2c034bd6fed49fcea178f8a0a4d7c0cb3105539e98d52",
+        "encoding": "Big5",
+        "event": "“百花杯”第四屆棋王挑戰賽 (10)兩翼包抄",
+        "date": "1994",
+        "red": "呂欽",
+        "black": "李來群",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 30,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 18
+    },
+    {
+      "id": "ccpd-midgame-00000003",
+      "fen": "r1bakabr1/8n/n3c4/p3p2Cp/6R2/2p6/P3P1P1P/N1c1C4/4A3N/4KABR1 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000003.pgn",
+        "path": "Dataset/中局/00000003.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "f2bd18d61eedbdd9d0f9315a8e8cb8a4d167650fc3d38d15fb2107beec95b8b3",
+        "encoding": "Big5",
+        "event": "第二屆“嘉豐房地產杯”象棋王位賽 (11)白刃格鬥",
+        "date": "",
+        "red": "呂欽",
+        "black": "林宏敏",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 49,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 29
+    },
+    {
+      "id": "ccpd-midgame-00000004",
+      "fen": "2bakc3/4a1R2/3cb1n2/2C1p3p/p2P2p2/2C6/P3P1r1P/1r2B1N2/4A4/2BAKR3 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000004.pgn",
+        "path": "Dataset/中局/00000004.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "e04375901a4ff45f03fb9ca23f8bfa38699d88b45edf62bb8f2f83f2fb262a0a",
+        "encoding": "Big5",
+        "event": "全國象棋個人賽 (12)二士爭功",
+        "date": "1995",
+        "red": "田長興",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 47,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 28
+    },
+    {
+      "id": "ccpd-midgame-00000007",
+      "fen": "1r2kabr1/4a4/2n1b4/p3p1P1p/3n5/P1R6/1cP2R2P/N3C1C2/9/2BAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000007.pgn",
+        "path": "Dataset/中局/00000007.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "8cc1a8ac0027372c692d2786f7cdbcde5af120dd73d5cf4337672272b904d05c",
+        "encoding": "Big5",
+        "event": "“林河杯”全國象棋明人戰 (16)炮打中宮",
+        "date": "",
+        "red": "呂欽",
+        "black": "於幼華",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 51,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 27
+    },
+    {
+      "id": "ccpd-midgame-00000008",
+      "fen": "2cakab2/1r5r1/4b2c1/p1p1N3p/6pn1/2P6/P3P1P1P/2C1B1N2/5R3/2BAKA2R b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000008.pgn",
+        "path": "Dataset/中局/00000008.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "100ed5c358b5af497b23bea4e68d57e306315a903ec883207074ffb7860c58b1",
+        "encoding": "Big5",
+        "event": "蓮花山旅遊杯快棋賽（冠亞爭奪戰首盤） (17)騷擾敵後",
+        "date": "",
+        "red": "徐天紅",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 29
+    },
+    {
+      "id": "ccpd-midgame-00000009",
+      "fen": "2baka3/4n2r1/4b1n2/p1C1p1RCp/9/9/P3r1P1P/4B4/4A4/2BAK2R1 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000009.pgn",
+        "path": "Dataset/中局/00000009.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "12d32f60c746baec788ac57c66ca6bed62738b3e33fae37c8a16c097d15d0784",
+        "encoding": "Big5",
+        "event": "第九屆“銀荔杯”全國冠軍賽 (18)巧攻窩心",
+        "date": "",
+        "red": "呂欽",
+        "black": "陶漢明",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 40,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000010",
+      "fen": "2baka3/9/1c2b1n2/4p1C1p/pnr4r1/2B2NP2/P3P3P/2N1BC1c1/4A4/3RKAR2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000010.pgn",
+        "path": "Dataset/中局/00000010.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "dc755ddfeb26925d8647a14c4a80fc4c53b11f615c177fbbe6d7cbeee74656f2",
+        "encoding": "Big5",
+        "event": "底十九屆“五羊杯”全國冠軍賽 (19)運馬如龍",
+        "date": "",
+        "red": "呂欽",
+        "black": "徐天紅",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 39,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 29
+    },
+    {
+      "id": "ccpd-midgame-00000011",
+      "fen": "3ak1b2/4a4/2c1b4/5R2p/p1p1C2r1/9/P3PN2P/c3B4/4A4/4KAB2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000011.pgn",
+        "path": "Dataset/中局/00000011.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "376c6672c13957b8a70c03e4046af8d9e824f1da00d63f350b66701023ba9b3d",
+        "encoding": "Big5",
+        "event": "“少林汽車杯”全國象棋八強賽（首屆） (20)棄車入局",
+        "date": "",
+        "red": "蔣全勝",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 28,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 22
+    },
+    {
+      "id": "ccpd-midgame-00000012",
+      "fen": "2rak1b2/4a4/1cN1b4/p5R1p/6P2/2p6/P7P/2n1C4/2N1A4/1c2KAB2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000012.pgn",
+        "path": "Dataset/中局/00000012.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "db72359352c8aa91cde6328b12ac6433627595e69dc4063bd8db17ba112b7e9f",
+        "encoding": "Big5",
+        "event": "首屆“少林汽車杯”全國象棋八強賽 (21)渴驥奔泉",
+        "date": "",
+        "red": "劉殿中",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 36,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 23
+    },
+    {
+      "id": "ccpd-midgame-00000013",
+      "fen": "2b1ka3/4a4/n1P1b3c/C3P2P1/1N7/2B6/3p1p3/9/3pA4/3A1K3 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000013.pgn",
+        "path": "Dataset/中局/00000013.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "4ed6e24df2d0ea3d3ea76c88261c9c90d121f17841578424c16d0da9bb18e8c9",
+        "encoding": "Big5",
+        "event": "全國象棋團體賽 (23)飛兵奇襲",
+        "date": "1999",
+        "red": "金波",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 32,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 19
+    },
+    {
+      "id": "ccpd-midgame-00000016",
+      "fen": "2bak2r1/4a4/n2cbc3/2p1p3C/p2r1n3/1NP3R1P/P3P1P2/C3B1N2/2R6/2BAKA3 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000016.pgn",
+        "path": "Dataset/中局/00000016.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "accadf30738660e5f9e22aa32f09dec57a9592629e313ad31fe88d53347796dc",
+        "encoding": "Big5",
+        "event": "首屆全國體育大會 (26)重炮突發",
+        "date": "2000",
+        "red": "於幼華",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 51,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 30
+    },
+    {
+      "id": "ccpd-midgame-00000017",
+      "fen": "4kab2/4a4/4b4/C3n3p/3P2p2/P1p1C4/4c1P1c/N3B4/4A4/4KAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000017.pgn",
+        "path": "Dataset/中局/00000017.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "905ea25fade2bdabda3bfc421e52fe289e645f14243837f2a7359aef7c6ee066",
+        "encoding": "Big5",
+        "event": "第21屆“五羊杯”象棋冠軍賽 (27)平淡出棋",
+        "date": "",
+        "red": "呂欽",
+        "black": "徐天紅",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 26,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 22
+    },
+    {
+      "id": "ccpd-midgame-00000018",
+      "fen": "r3kab2/4a4/1cn1bcnr1/pC2p2Rp/2p6/7N1/P1P1P3P/N3C4/3R5/2BAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000018.pgn",
+        "path": "Dataset/中局/00000018.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "9d83e8ef34d933899e63bd104e72b7dd9619866d965f5b87b96b425932a5c98f",
+        "encoding": "Big5",
+        "event": "“派威互動電視”象棋超級牌位賽 (28)巧兌謀子",
+        "date": "",
+        "red": "呂欽",
+        "black": "黃海林",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 55,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 30
+    },
+    {
+      "id": "ccpd-midgame-00000019",
+      "fen": "r3kab2/4a4/1c2n1n1c/p1p5p/2b1p1r2/9/P1N1P3P/1CC1B1N2/2RR5/2BAKA3 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000019.pgn",
+        "path": "Dataset/中局/00000019.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "d0f8644e73407d6eba6e17704b1d124dd6adb394b26eaec78b976f361e0d298b",
+        "encoding": "Big5",
+        "event": "化亞防水杯特級大師賽 (29)馬踏連營",
+        "date": "",
+        "red": "呂欽",
+        "black": "張申宏",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 44,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 29
+    },
+    {
+      "id": "ccpd-midgame-00000020",
+      "fen": "4kab2/4a4/2c3n2/R3p3p/6pR1/6P2/P3P3P/B1rC2N2/4Ar3/3AK1B2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000020.pgn",
+        "path": "Dataset/中局/00000020.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "0cc7e9dafe8567c1bf875d3331a7d89d055b551388fa6054fe0a18efa9198313",
+        "encoding": "Big5",
+        "event": "(3)疾進如風",
+        "date": "1984",
+        "red": "呂欽",
+        "black": "李日純",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 44,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000021",
+      "fen": "2b1kabn1/4a4/2n5c/p3p3p/2p3p2/4P1P2/1rP1N3P/C3C4/3R5/2BAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000021.pgn",
+        "path": "Dataset/中局/00000021.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "2f81407de8da0c51966f93ee01f9c2144ed2ef7f5b916e8ce0a108550ce7ee5b",
+        "encoding": "Big5",
+        "event": "第22屆“五羊杯”全國象棋冠軍賽 (30)雷公神威",
+        "date": "",
+        "red": "呂欽",
+        "black": "陶漢明",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 27
+    },
+    {
+      "id": "ccpd-midgame-00000022",
+      "fen": "2bakab2/9/9/p4n2R/6p2/P1P6/5r2c/Nc2C4/4A4/2BAK1B2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000022.pgn",
+        "path": "Dataset/中局/00000022.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "46031cf38b7b05e58f3354e059b39b5e57b36058759940601622d56849b00d46",
+        "encoding": "Big5",
+        "event": "(31)三軍臨門",
+        "date": "",
+        "red": "王斌",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 40,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 21
+    },
+    {
+      "id": "ccpd-midgame-00000023",
+      "fen": "4kab2/n3a4/6N2/C2P4p/4p1b2/5r3/P3P3P/BR1A5/6Nc1/3AK1c2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000023.pgn",
+        "path": "Dataset/中局/00000023.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "8e2f9eea176908396857bec8dd2c513a094af42ae50fd181ca595ccb81233404",
+        "encoding": "Big5",
+        "event": "“香港迴歸杯”特級大師表演賽 (32)步步追殺",
+        "date": "2002",
+        "red": "呂欽",
+        "black": "趙汝全",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 37,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 23
+    },
+    {
+      "id": "ccpd-midgame-00000025",
+      "fen": "C3kab2/9/2n1ba3/4p1n2/P1p6/3R5/2r3P1P/1C7/4A4/3AK4 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000025.pgn",
+        "path": "Dataset/中局/00000025.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "6c48fc231b06676d8e3a472a6231ecd99f43ecccc0ab7b2ea1646f4b237b421f",
+        "encoding": "Big5",
+        "event": "百歲杯 (6)直搗黃龍",
+        "date": "",
+        "red": "蔣志梁",
+        "black": "呂欽",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 29,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 19
+    },
+    {
+      "id": "ccpd-midgame-00000026",
+      "fen": "3rkab2/4aR3/2n1Nc3/p3p3p/9/1CP6/c3P3P/1C6B/4A4/2B1K4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000026.pgn",
+        "path": "Dataset/中局/00000026.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "6e5d6ea4d28869d5188702e724a125bd1ace8edb4c3b142d9e8d0c5972662213",
+        "encoding": "Big5",
+        "event": "全國團體賽 (7)引而不發",
+        "date": "1986",
+        "red": "呂欽",
+        "black": "李來群",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 37,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 22
+    },
+    {
+      "id": "ccpd-midgame-00000028",
+      "fen": "4kan1C/4a4/b3bc3/8p/4p2R1/2P3r2/P3P1n1P/2CA2N2/3c2N2/2BAK4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000028.pgn",
+        "path": "Dataset/中局/00000028.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "7d8d421a37a558f34250530c5fb226aeb7fcf8d1a4e3e54a76ee5c9fedc7dce7",
+        "encoding": "Big5",
+        "event": "全國個人賽 (9)單刀赴會",
+        "date": "1993",
+        "red": "呂欽",
+        "black": "傅光明",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 35,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    },
+    {
+      "id": "ccpd-midgame-00000029",
+      "fen": "2bak4/1R2a4/2Rcb1n2/p3p1p1p/5r3/6P2/P3P3P/C5N2/4A4/r1B1K1B2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000029.pgn",
+        "path": "Dataset/中局/00000029.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "d2b730a8d5f7eb3e053d8fa0053ccac881d06f2f6c6772d1d964f9535ca76943",
+        "encoding": "Big5",
+        "event": "第二屆“敦煌杯”大師邀請賽 001",
+        "date": "1985年",
+        "red": "喻之青",
+        "black": "徐天紅",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 42,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    },
+    {
+      "id": "ccpd-midgame-00000030",
+      "fen": "2r1kab2/4a4/1cn1b1n2/p3p1R1p/6c2/1C1N5/P3P3P/3CB1N2/3rA4/R1BAK4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000030.pgn",
+        "path": "Dataset/中局/00000030.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "e348156f73355ec04e379f92e733567965d865392b95841ff8173dd046feaae7",
+        "encoding": "Big5",
+        "event": "全運會個人賽 001",
+        "date": "1979年",
+        "red": "柳大華",
+        "black": "胡榮華",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 28
+    },
+    {
+      "id": "ccpd-midgame-00000031",
+      "fen": "2b1kab2/4aR3/2n3C2/4p1N1p/pnc2P3/1r7/P1prP3P/4B2R1/4A4/1N1AK4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000031.pgn",
+        "path": "Dataset/中局/00000031.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "e95d7177f583c68ebf581e677bdb560359755d482593a549974e7e57915d2f7b",
+        "encoding": "Big5",
+        "event": "全國個人賽 001",
+        "date": "1989年",
+        "red": "許銀川",
+        "black": "李洪濱",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 47,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 27
+    },
+    {
+      "id": "ccpd-midgame-00000032",
+      "fen": "2bakab2/9/2n1c3n/p1p1p1p1p/5Rc2/7r1/P1P1P1P1P/N2CC1N1B/4A4/2BAK4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000032.pgn",
+        "path": "Dataset/中局/00000032.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "31037aea2bef0015733cc0da6c0334be556bfc87ceb78902716196c04d0f72ba",
+        "encoding": "Big5",
+        "event": "浙黑遼粵四省名手賽 001",
+        "date": "1962年",
+        "red": "王嘉良",
+        "black": "孟立國",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 41,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 30
+    },
+    {
+      "id": "ccpd-midgame-00000033",
+      "fen": "2bakab2/9/1r7/p3p3p/1n7/3n5/P1P1Pr2P/N2R5/R3C4/2BAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000033.pgn",
+        "path": "Dataset/中局/00000033.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "c1514f8361434f2a4a71ee5283841d5a07a0b437be7016ac3b388cf0dd6aaeb9",
+        "encoding": "Big5",
+        "event": "中國象棋名手邀請賽 001",
+        "date": "1986年",
+        "red": "胡榮華",
+        "black": "李來群",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 31,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    },
+    {
+      "id": "ccpd-midgame-00000048",
+      "fen": "r3kabr1/4a4/1c2b1n2/pR6p/6pC1/2p6/P1P3P1P/2N1C1n2/9/R1BAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000048.pgn",
+        "path": "Dataset/中局/00000048.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "fbc8fa699918993e36fc913714822f1796339191700d55141e16a25ff2cb03f0",
+        "encoding": "Big5",
+        "event": "全國個人賽 002",
+        "date": "1964年",
+        "red": "王嘉良",
+        "black": "趙  明",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 47,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 28
+    },
+    {
+      "id": "ccpd-midgame-00000049",
+      "fen": "2bak2r1/1R2a4/2n1b3c/p1N1p3p/6pn1/2P2R1N1/P2rP3P/2C3C1B/4A4/2BAK2c1 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000049.pgn",
+        "path": "Dataset/中局/00000049.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "31d4e816acfb68fdcacf9b487c555e52e6d0a1eb4097963120c3b44d13d4a175",
+        "encoding": "Big5",
+        "event": "全國個人賽 002",
+        "date": "1980年",
+        "red": "楊官嶙",
+        "black": "柳大華",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 30
+    },
+    {
+      "id": "ccpd-midgame-00000050",
+      "fen": "4kab2/4a4/4b1c2/4r3p/9/p3n1R2/cCP5P/N1N1B4/4A4/2BAK4 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000050.pgn",
+        "path": "Dataset/中局/00000050.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "27b5390e5385ef0073f82ebad1ede0ba451e3a588aca597ca7c4d09e10f91447",
+        "encoding": "Big5",
+        "event": "全國個人賽 002",
+        "date": "1991年",
+        "red": "崔  巖",
+        "black": "許銀川",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 33,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 22
+    },
+    {
+      "id": "ccpd-midgame-00000051",
+      "fen": "4k1b1r/4a4/3abc3/p1C1c1p1p/2nR5/2C3P2/1p6P/4B1N2/4A4/3K1AB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000051.pgn",
+        "path": "Dataset/中局/00000051.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "89d6b3efd799e7f1418b5d1d9eb3d45c2a64fa5cc37caa5e6a370b3d45fd0ec5",
+        "encoding": "Big5",
+        "event": "全國個人賽 002",
+        "date": "1985年",
+        "red": "徐天紅",
+        "black": "李艾東",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 40,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000053",
+      "fen": "3C5/4a1P2/2R1bk3/9/p3p4/9/c3r3P/4B4/4A4/2BAK4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000053.pgn",
+        "path": "Dataset/中局/00000053.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "8cc7731c8bf87aca64be9b9478bf73541d69a3906bdbf341b34654934bb19082",
+        "encoding": "Big5",
+        "event": "上海第三屆運動會 002",
+        "date": "1975年",
+        "red": "上海胡榮華",
+        "black": "福建蔡忠誠",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 39,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 16
+    },
+    {
+      "id": "ccpd-midgame-00000062",
+      "fen": "2baka3/9/1Rc3n2/4p1C1p/p1pn3r1/6R2/P3P3P/2N3Nr1/9/2BAKAB2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000062.pgn",
+        "path": "Dataset/中局/00000062.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "3c110b738537f8405a1136678e8b12b21f7efe2e7dfcde44d3e4842e90ca102b",
+        "encoding": "Big5",
+        "event": "廣州第二屆“味極王杯”八省市象棋精英賽 002",
+        "date": "1993年",
+        "red": "陶漢明",
+        "black": "許銀川",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 39,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 26
+    },
+    {
+      "id": "ccpd-midgame-00000067",
+      "fen": "1rb1ka3/4a4/2c1b1c1n/p1R1C2rp/9/4Pp3/P1P1N3P/4C4/9/2BAKAB1R b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000067.pgn",
+        "path": "Dataset/中局/00000067.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "6a60c8aebbdaa9b6f72cd4778a087e5879e061ec100aba59b26b8a7ae81eea1b",
+        "encoding": "Big5",
+        "event": "003  舍車砍炮 棄子搶攻",
+        "date": "",
+        "red": "馬國樑",
+        "black": "楊官磷",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 47,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 27
+    },
+    {
+      "id": "ccpd-midgame-00000069",
+      "fen": "3rkab2/4a4/2n2c3/p7p/2b3pC1/3np4/P2R2P1P/4C3B/9/2BAKA1N1 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000069.pgn",
+        "path": "Dataset/中局/00000069.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "7c5429ffd0fda7c9e16c206d48beeee18542a0848aec51035128f7f8782a674a",
+        "encoding": "Big5",
+        "event": "全國個人賽 003",
+        "date": "1985年",
+        "red": "鄔正偉",
+        "black": "徐天紅",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 36,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    },
+    {
+      "id": "ccpd-midgame-00000072",
+      "fen": "1n2kab2/3ra4/4b1c2/p3p3p/6P2/9/P1R1P3n/3CC4/4A3N/2B1KAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000072.pgn",
+        "path": "Dataset/中局/00000072.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "212d33e557e6cc26632bdec948bb52238f15552612a6390da43d3fa3be1813e9",
+        "encoding": "Big5",
+        "event": "全國個人賽 003",
+        "date": "2000年",
+        "red": "許銀川",
+        "black": "胡榮華",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 37,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000075",
+      "fen": "2bak1b1R/4a4/1c7/2N6/7n1/C1P6/P3P1p1c/2N1B4/4K4/2BA1r3 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000075.pgn",
+        "path": "Dataset/中局/00000075.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "4341ef77bc185004b6931e7e8237e3c2c506b1d35c5f06d3aee30ec018c00a05",
+        "encoding": "Big5",
+        "event": "上海 東北聯隊對抗賽 003",
+        "date": "1963年",
+        "red": "王嘉良",
+        "black": "胡榮華",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 32,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 21
+    },
+    {
+      "id": "ccpd-midgame-00000076",
+      "fen": "4kab2/1c2a1c2/4b1n2/p1p1nN2p/3rp2r1/5R3/P1P3P1P/C3C4/9/1RBAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000076.pgn",
+        "path": "Dataset/中局/00000076.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "1a5fbee06c753b7dd9cbee302407e7e08eb2fae873262f9ad6a56b267f24236b",
+        "encoding": "Big5",
+        "event": "全國個人賽 003",
+        "date": "1981年",
+        "red": "柳大華",
+        "black": "呂  欽",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 52,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 29
+    },
+    {
+      "id": "ccpd-midgame-00000085",
+      "fen": "c1b1kab2/4a4/4c1n2/p3C3p/2p6/P3P1r2/2P5P/N3C4/3RA4/2BK1AB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000085.pgn",
+        "path": "Dataset/中局/00000085.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "3a9ececd1a40a09d16576bd7b7037a43144b98856b90e972d8fe0ee2a45af935",
+        "encoding": "Big5",
+        "event": "004  魚翔淺底 百舸爭流",
+        "date": "",
+        "red": "楊官磷",
+        "black": "張增華",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 38,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    },
+    {
+      "id": "ccpd-midgame-00000087",
+      "fen": "3akab2/3c5/4b3c/p2PN3p/7r1/2RN2p2/P3P3n/4C4/4A4/2B1KAB2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000087.pgn",
+        "path": "Dataset/中局/00000087.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "77bd9d1d0dbb7786cf239e7a90bb6780e076667c68780a38577ec7f0e76b3a10",
+        "encoding": "Big5",
+        "event": "第一屆五羊杯 004",
+        "date": "1981年",
+        "red": "胡榮華",
+        "black": "柳大華",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000088",
+      "fen": "2bak2r1/4a4/1c2b4/p3CNp1p/2p6/6P2/2P5P/N8/2CR5/2BAKAr2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000088.pgn",
+        "path": "Dataset/中局/00000088.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "a8cc5b0fce3a9456cf7221911b90593cd0040ad97e6697f87bd36a90033836f3",
+        "encoding": "Big5",
+        "event": "避暑山莊杯 004",
+        "date": "1984",
+        "red": "遼寧孟立國",
+        "black": "江蘇言穆江",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 37,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000089",
+      "fen": "2bak2r1/4a4/3cb2c1/2C1C1pRp/9/p2r2P2/n1P1P3P/N8/1R2A4/2B1KAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000089.pgn",
+        "path": "Dataset/中局/00000089.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "9073de9a868f7d3b289b2075feabb1ae54e32a0898509bb96813d7f12de222c6",
+        "encoding": "Big5",
+        "event": null,
+        "date": "1992年",
+        "red": "許銀川",
+        "black": "熊學元",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 46,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 27
+    },
+    {
+      "id": "ccpd-midgame-00000091",
+      "fen": "3k1ab2/4aRc2/4C1n2/p1p1n3p/7r1/2P6/Pc1rN1P1P/2N1C4/9/1RBAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000091.pgn",
+        "path": "Dataset/中局/00000091.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "280be9be436b6298630a51956bfff24624ce6b6165f8bbc50d58bd665e46d7b1",
+        "encoding": "Big5",
+        "event": "冀遼黑友誼賽 004",
+        "date": "1978年",
+        "red": "王嘉良",
+        "black": "劉殿中",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 28
+    },
+    {
+      "id": "ccpd-midgame-00000094",
+      "fen": "1rbakab2/9/2n6/p1p1p3p/1c4P2/PR3R3/2P1P1r1c/N2CC4/9/2BAKAB2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000094.pgn",
+        "path": "Dataset/中局/00000094.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "58426c1b4ff260dbfed8da7b733e33b03156125277a0c7cadf3f93a62752b439",
+        "encoding": "Big5",
+        "event": "全國個人賽 004",
+        "date": "1976年",
+        "red": "楊官嶙",
+        "black": "劉殿中",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 49,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 28
+    },
+    {
+      "id": "ccpd-midgame-00000097",
+      "fen": "rn2kab2/2P1a4/4b3c/p3n1p1p/4p4/3r2P2/P3P3P/1C2C1N2/9/1RBAKABR1 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000097.pgn",
+        "path": "Dataset/中局/00000097.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "07af5b45124f06eeb6807e7827e80c818ce1c7db1919143806b88ec6d6608acc",
+        "encoding": "Big5",
+        "event": "“柳泉杯”大師邀請賽 004",
+        "date": "1985年",
+        "red": "徐天紅",
+        "black": "趙慶閣",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 43,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 29
+    },
+    {
+      "id": "ccpd-midgame-00000104",
+      "fen": "2bak2r1/3ra4/4b1n2/pN2p1Ccp/7R1/4P1P2/Pcp5P/4C4/1R7/2BAKAB2 b - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000104.pgn",
+        "path": "Dataset/中局/00000104.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "452e77b9657fb6416a039f241d51576104b5b9b36d9a04d2d83c92ccb0185d83",
+        "encoding": "Big5",
+        "event": "005  巧棄中卒 反攻倒算",
+        "date": "",
+        "red": "任德純",
+        "black": "楊官磷",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 37,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 28
+    },
+    {
+      "id": "ccpd-midgame-00000106",
+      "fen": "2b1ka1r1/4a4/1c2b1n2/2P1p3p/1n5c1/5RR2/2C1P3P/N4CN2/3rA4/2BAK1B2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000106.pgn",
+        "path": "Dataset/中局/00000106.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "7b201f8b60f09af3cef8e6535d260295d9e224d3b88de5f158831751de5c37da",
+        "encoding": "Big5",
+        "event": "全國個人賽 005",
+        "date": "1981年",
+        "red": "柳大華",
+        "black": "李來群",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 50,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 27
+    },
+    {
+      "id": "ccpd-midgame-00000107",
+      "fen": "4kab2/4a4/2n1b4/pR6p/2p1RN3/9/P1cr4P/3CC4/4A1r2/2B1KAB1c w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000107.pgn",
+        "path": "Dataset/中局/00000107.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "17abb2f4e77756361d21ad31ab3c8360ce82be8c2328639f857e5318f29d0348",
+        "encoding": "Big5",
+        "event": "“寧波杯” 005",
+        "date": "1986年",
+        "red": "徐天紅",
+        "black": "鄒立武",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 47,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    },
+    {
+      "id": "ccpd-midgame-00000110",
+      "fen": "1r1k1a3/4a4/4C1R1b/p3pP2p/2P6/5n3/Pc1r4P/8B/4A1C2/1RBAK4 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000110.pgn",
+        "path": "Dataset/中局/00000110.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "e8f31a15bb66e94bf42cee2871d4aa06fa07819a5f0680d078fa036640d66383",
+        "encoding": "Big5",
+        "event": "合肥邀請賽 005",
+        "date": "1978年",
+        "red": "李來群",
+        "black": "王嘉良",
+        "recordedResult": "0-1"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 45,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 24
+    },
+    {
+      "id": "ccpd-midgame-00000111",
+      "fen": "1r2kab2/4a4/1cn1b4/pRp1p3p/5N3/2P6/P3P3P/B3n1N2/9/3AKAC2 w - - 0 1",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E4%B8%AD%E5%B1%80/00000111.pgn",
+        "path": "Dataset/中局/00000111.pgn",
+        "commit": "368a47a947773dd8692c026e286dd19b6277b993",
+        "rawPgnSha256": "543d7661a4e18de8926877390ea6e1870bb74061ac616ffee077206fd32eb5e6",
+        "encoding": "Big5",
+        "event": "全國團體賽 005",
+        "date": "1997年",
+        "red": "萬春林",
+        "black": "侯昭忠",
+        "recordedResult": "1-0"
+      },
+      "verification": {
+        "status": "independent-legality-validated",
+        "method": "Official pyffish FEN validation and legal-move enumeration; parent independently reran all 50",
+        "oracle": "pyffish",
+        "version": "0.0.90",
+        "fenValidation": 1,
+        "legalMoveCount": 33,
+        "sideToMoveInCheck": false,
+        "immediateEnd": false
+      },
+      "pieceCount": 25
+    }
+  ]
+}
