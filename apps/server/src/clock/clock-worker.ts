@@ -1,4 +1,5 @@
 import type { PoolClient } from "pg";
+import { earliestDisconnect } from "../match/disconnect-worker.js";
 import type { MatchStore } from "../match/match-store.js";
 import { uuid } from "../match/position-codec.js";
 import type { ClockService } from "./clock-service.js";
@@ -124,6 +125,16 @@ export class ClockWorker {
     );
     const checked = this.clock.beforeAction(match.clock, match.turn, at);
     if (!checked.expired) return;
+    const disconnect = await earliestDisconnect(
+      scope.client,
+      candidate.roomId,
+      row.red_user_id,
+      row.black_user_id,
+    );
+    const deadline =
+      match.clock.runningSinceEpochMs +
+      (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
+    if (disconnect && disconnect.deadline < deadline) return;
     await this.matches.finish(scope.client, {
       ...candidate,
       outcome: {
