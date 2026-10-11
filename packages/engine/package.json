@@ -5,10 +5,11 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "build": "tsc && node scripts/copy-worker.mjs"
   },
   "dependencies": {
-    "@xiangqi/xiangqi-core": "workspace:*"
+    "@xiangqi/xiangqi-core": "workspace:*",
+    "tsx": "4.23.15"
   }
 }
