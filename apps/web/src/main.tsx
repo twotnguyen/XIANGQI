@@ -24,8 +24,6 @@ const LobbyPreview = lazy(() =>
     default: module.LobbyPreview,
   })),
 );
-<<<<<<< HEAD
-=======
 const LoginPage = lazy(() =>
   import("./auth/LoginPage.js").then((module) => ({
     default: module.LoginPage,
@@ -45,7 +43,6 @@ function LoginPreview() {
   );
 }
 
->>>>>>> origin/feat/XIAN-71-google-guest
 function RegistrationPreview() {
   const [session, setSession] = useState<RegistrationSession | null>(null);
   return (
@@ -114,12 +111,7 @@ function HealthPreview() {
   );
 }
 
-<<<<<<< HEAD
-const previewBoard = window.location.pathname === "/dev/board";
-const previewRegistration = window.location.pathname === "/dev/register";
-const previewUi = window.location.pathname === "/dev/ui";
-const previewLobby = window.location.pathname === "/dev/lobby";
-=======
+
 const previewHealth =
   import.meta.env.DEV && window.location.pathname === "/dev/health";
 const previewBoard =
@@ -131,7 +123,6 @@ const previewLobby =
   import.meta.env.DEV && window.location.pathname === "/dev/lobby";
 const previewLogin =
   import.meta.env.DEV && window.location.pathname === "/dev/login";
->>>>>>> origin/feat/XIAN-71-google-guest
 if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
 if (previewRegistration) document.title = "Cờ Tướng Online · Đăng ký";
 if (previewLogin) document.title = "Cờ Tướng Online · Đăng nhập";
@@ -144,12 +135,7 @@ createRoot(document.getElementById("root")!).render(
       </main>
     ) : previewRegistration ? (
       <RegistrationPreview />
-<<<<<<< HEAD
-    ) : previewUi || previewLobby ? (
-      <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
-        {previewUi ? <ComponentGallery /> : <LobbyPreview />}
-      </Suspense>
-=======
+
     ) : previewUi || previewLobby || previewLogin ? (
       <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
         {previewUi ? (
@@ -162,7 +148,6 @@ createRoot(document.getElementById("root")!).render(
       </Suspense>
     ) : previewHealth ? (
       <HealthPreview />
->>>>>>> origin/feat/XIAN-71-google-guest
     ) : (
       <SessionProvider>
         <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
