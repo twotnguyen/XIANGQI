@@ -397,7 +397,6 @@ export class AiGames {
       if (game.snapshot.status !== "ACTIVE") throw new AiError("AI_FINISHED");
       if (game.snapshot.engineState !== "RETRY" || game.job)
         throw new AiError("AI_BUSY");
-      await this.ready();
       this.launch(game);
       return this.copy(game);
     });
