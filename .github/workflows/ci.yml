@@ -117,6 +117,17 @@ jobs:
       room-transactions-postgres:
         image: postgres:17.6
         env:
+          POSTGRES_DB: xiangqi_room_transactions_test
+          POSTGRES_USER: room_transaction_test_admin
+          POSTGRES_PASSWORD: isolated-room-transactions-ci-test
+        ports:
+          - 55449:5432
+        options: >-
+          --health-cmd "pg_isready -U room_transaction_test_admin -d xiangqi_room_transactions_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
       ROOM_TRANSACTION_TEST_DATABASE_URL: postgresql://room_transaction_test_admin:isolated-room-transactions-ci-test@127.0.0.1:55449/xiangqi_room_transactions_test
       CLOCK_TEST_DATABASE_URL: postgresql://clock_test_admin:isolated-clock-ci-test@127.0.0.1:55448/xiangqi_clock_test
       MATCH_TEST_DATABASE_URL: postgresql://match_test_admin:isolated-match-ci-test@127.0.0.1:55447/xiangqi_match_test
