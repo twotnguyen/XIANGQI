@@ -53,8 +53,8 @@ const room: RoomSettingsProps["room"] = {
   graceUntil: { red: null, black: null },
   countdown: null,
   swapOffer: null,
-      downOffer: null,
-      spectators: [],
+  downOffer: null,
+  spectators: [],
 };
 function setup(overrides: Partial<RoomSettingsProps> = {}) {
   const props: RoomSettingsProps = {

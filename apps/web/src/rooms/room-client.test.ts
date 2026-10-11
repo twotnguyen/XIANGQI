@@ -20,8 +20,8 @@ const roomView = {
     graceUntil: { red: null, black: null },
     countdown: null,
     swapOffer: null,
-      downOffer: null,
-      spectators: [],
+    downOffer: null,
+    spectators: [],
   },
 };
 it("accepts the actual waiting projection including nullable seat/countdown fields", async () => {

@@ -47,8 +47,8 @@ function fixture() {
         graceUntil: { red: null, black: "2026-10-11T12:01:00Z" },
         countdown: null,
         swapOffer: null,
-      downOffer: null,
-      spectators: [],
+        downOffer: null,
+        spectators: [],
       },
     };
   const match: MatchView = {
@@ -212,8 +212,8 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         graceUntil: { red: null, black: "2026-10-11T12:01:00Z" },
         countdown: null,
         swapOffer: null,
-      downOffer: null,
-      spectators: [],
+        downOffer: null,
+        spectators: [],
       },
       match: {
         id: f.matchId,

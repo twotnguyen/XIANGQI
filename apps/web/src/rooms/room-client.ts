@@ -136,11 +136,7 @@ function parseView(value: unknown, roomId: string): RoomView {
   }
   if (room.downOffer !== null && room.downOffer !== undefined) {
     const offer = record(room.downOffer);
-    if (
-      !isId(offer.id) ||
-      !isId(offer.inviteeId) ||
-      !isDate(offer.expiresAt)
-    )
+    if (!isId(offer.id) || !isId(offer.inviteeId) || !isDate(offer.expiresAt))
       invalidResponse();
   }
   if (!Array.isArray(room.spectators)) invalidResponse();

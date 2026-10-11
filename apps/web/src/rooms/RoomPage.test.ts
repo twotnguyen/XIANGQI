@@ -67,8 +67,8 @@ const snapshot: RoomSnapshot = {
     graceUntil: { red: null, black: null },
     countdown: null,
     swapOffer: null,
-      downOffer: null,
-      spectators: [],
+    downOffer: null,
+    spectators: [],
   },
   match: null,
   clocks: null,
@@ -1510,4 +1510,64 @@ it("maps swap cooldown failures to Vietnamese guidance", async () => {
   expect(
     await screen.findByText("Vừa bị từ chối hoặc hết hạn.", { exact: false }),
   ).toBeTruthy();
+});
+it("lists spectators with capacity and confirms a kick before calling the server", async () => {
+  nativeDialogStub();
+  const withViewers: RoomSnapshot = {
+    ...snapshot,
+    version: 6,
+    room: {
+      ...snapshot.room,
+      hostId: "a",
+      seats: { red: "a", black: "b" },
+      spectators: [{ userId: "w1", displayName: "Người xem A" }],
+    },
+  };
+  const fixture = setup(withViewers);
+  await fixture.ready();
+  expect(screen.getByText("Người xem 1/5")).toBeTruthy();
+  await userEvent.setup().click(screen.getByRole("button", { name: "Đuổi" }));
+  const dialog = screen.getByRole("dialog", { name: "Đuổi người xem" });
+  expect(fixture.client.kickViewer).not.toHaveBeenCalled();
+  await userEvent
+    .setup()
+    .click(within(dialog).getByRole("button", { name: "Đuổi khỏi phòng" }));
+  expect(fixture.client.kickViewer).toHaveBeenCalledWith("room", 6, "w1");
+});
+it("answers a host seat invite as the invited viewer", async () => {
+  const invited: RoomSnapshot = {
+    ...snapshot,
+    version: 7,
+    role: "spectator",
+    room: {
+      ...snapshot.room,
+      hostId: "a",
+      seats: { red: "a", black: null },
+      downOffer: {
+        id: "44444444-4444-4444-8444-444444444444",
+        inviteeId: "a",
+        expiresAt: "2026-10-11T00:00:30Z",
+      },
+    },
+  };
+  const fixture = setup(invited);
+  await fixture.ready();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Chấp nhận" }));
+  expect(fixture.client.respondDown).toHaveBeenCalledWith("room", 7, true);
+});
+it("moves a non-host player to spectator from the viewers panel", async () => {
+  const guest: RoomSnapshot = {
+    ...snapshot,
+    version: 8,
+    role: "black",
+    room: { ...snapshot.room, hostId: "b", seats: { red: "b", black: "a" } },
+  };
+  const fixture = setup(guest);
+  await fixture.ready();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
+  expect(fixture.client.toSpectator).toHaveBeenCalledWith("room", 8);
 });

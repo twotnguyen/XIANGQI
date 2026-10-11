@@ -32,6 +32,7 @@ import {
   PublicRoomRequestError,
 } from "../rooms/public-room-client.js";
 import type { PublicRoomView } from "@xiangqi/shared";
+import { createMediaClient } from "../media/media-client.js";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
 
 function Lobby({
@@ -243,6 +244,10 @@ export function AppRouter() {
     () => createRoomClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
+  const mediaClient = useMemo(
+    () => createMediaClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
   const [roomNotice, setRoomNotice] = useState("");
   const enterRoom = (entry: RoomEntry) => {
     setRoomNotice(entry.notice ?? "");
@@ -377,6 +382,7 @@ export function AppRouter() {
           userId={session.state.userId}
           client={client}
           getProof={session.getRealtimeProof}
+          mediaClient={mediaClient}
           onLeft={(message) => {
             setRoomNotice(message ?? "");
             navigate("/lobby");

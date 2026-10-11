@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  lazy,
+  Suspense,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { parsePosition } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "../components/XiangqiBoard.js";
@@ -23,8 +30,15 @@ import { MatchResult } from "./MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./MatchActions.js";
 import { ReconnectStatus } from "./ReconnectStatus.js";
+import { SpectatorsPanel } from "./SpectatorsPanel.js";
 import { RoomChat } from "../chat/RoomChat.js";
 import { useRoomChat } from "./useRoomChat.js";
+import type { MediaClient } from "../media/media-client.js";
+const LazyMediaPanel = lazy(() =>
+  import("../media/MediaPanel.js").then((module) => ({
+    default: module.MediaPanel,
+  })),
+);
 import "./rooms.css";
 function swapMessage(code: string, fallback: string) {
   switch (code) {
@@ -52,6 +66,7 @@ export interface RoomPageProps {
   connect?: (input: RoomConnectionInput) => RoomConnection;
   chat?: ReactNode;
   media?: ReactNode;
+  mediaClient?: MediaClient;
 }
 export function RoomPage({
   roomId,
@@ -63,6 +78,7 @@ export function RoomPage({
   connect = connectRoom,
   chat,
   media,
+  mediaClient,
 }: RoomPageProps) {
   const [view, setView] = useState<RoomView | null>(null);
   const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
@@ -616,6 +632,56 @@ export function RoomPage({
       if (epoch.current === requestEpoch) setBusy(false);
     }
   }
+  async function viewerAction(
+    action: "to-spectator" | "invite-down" | "respond-down" | "kick",
+    extra: { targetId?: string; accept?: boolean } = {},
+  ) {
+    if (!view || busy) return;
+    const requestEpoch = epoch.current;
+    setBusy(true);
+    setError("");
+    try {
+      const next =
+        action === "to-spectator"
+          ? await client.toSpectator(roomId, view.version)
+          : action === "invite-down"
+            ? await client.inviteDown(roomId, view.version, extra.targetId!)
+            : action === "respond-down"
+              ? await client.respondDown(
+                  roomId,
+                  view.version,
+                  extra.accept === true,
+                )
+              : await client.kickViewer(roomId, view.version, extra.targetId!);
+      if (
+        epoch.current === requestEpoch &&
+        next.version >= versionFloor.current
+      ) {
+        versionFloor.current = next.version;
+        setView(next);
+        setSnapshot(null);
+      }
+    } catch (e) {
+      if (epoch.current !== requestEpoch) return;
+      setError(
+        e instanceof RoomRequestError
+          ? e.code === "ROOM_FULL"
+            ? "Phòng đã đầy chỗ xem."
+            : e.code === "SEAT_FULL"
+              ? "Ghế đã đủ hai người chơi."
+              : e.code === "HOST_STAYS"
+                ? "Chủ phòng không tự chuyển xuống xem."
+                : e.code === "KICK_DENIED"
+                  ? "Chỉ người chơi được đuổi người xem."
+                  : e.code === "SEAT_MOVE_DENIED"
+                    ? "Không thể đổi chỗ khi ván đang diễn ra."
+                    : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại."
+          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.",
+      );
+    } finally {
+      if (epoch.current === requestEpoch) setBusy(false);
+    }
+  }
   if (!view)
     return (
       <main className="xq-ui xq-room-page">
@@ -770,6 +836,35 @@ export function RoomPage({
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
           {error && <Notice tone="error" message={error} />}
+          {room.downOffer?.inviteeId === userId && (
+            <div
+              className="xq-down-prompt"
+              role="group"
+              aria-label="Lời mời xuống ghế"
+            >
+              <p>
+                Chủ phòng mời bạn xuống ghế chơi. Ghế có thể đã bị lấy trước khi
+                bạn đồng ý.
+              </p>
+              <Button
+                loading={busy}
+                onClick={() =>
+                  void viewerAction("respond-down", { accept: true })
+                }
+              >
+                Chấp nhận
+              </Button>{" "}
+              <Button
+                variant="secondary"
+                loading={busy}
+                onClick={() =>
+                  void viewerAction("respond-down", { accept: false })
+                }
+              >
+                Từ chối
+              </Button>
+            </div>
+          )}
           <ReconnectStatus
             connected={connected}
             waitingForSnapshot={connected && !snapshot}
@@ -1050,8 +1145,45 @@ export function RoomPage({
                   </Button>
                 ) : null,
               )}
-            {media ?? <p>Camera và mic chưa khả dụng.</p>}
+            {mediaClient ? (
+              <Suspense fallback={<p>Đang tải phần hình tiếng…</p>}>
+                <LazyMediaPanel
+                  roomId={roomId}
+                  role={view.role}
+                  client={mediaClient}
+                  connected={connected && Boolean(snapshot)}
+                />
+              </Suspense>
+            ) : (
+              (media ?? <p>Camera và mic chưa khả dụng.</p>)
+            )}
           </div>
+          <SpectatorsPanel
+            spectators={room.spectators ?? []}
+            limit={room.viewerLimit}
+            selfId={userId}
+            canMoveToSpectator={
+              player &&
+              room.hostId !== userId &&
+              room.status === "WAITING" &&
+              !room.countdown &&
+              (room.spectators?.length ?? 0) < room.viewerLimit
+            }
+            canInviteDown={
+              player &&
+              room.hostId === userId &&
+              room.status === "WAITING" &&
+              !(room.seats.red && room.seats.black)
+            }
+            canKick={player}
+            downOfferInviteeId={room.downOffer?.inviteeId ?? null}
+            busy={busy}
+            onMoveToSpectator={() => void viewerAction("to-spectator")}
+            onInviteDown={(target) =>
+              void viewerAction("invite-down", { targetId: target })
+            }
+            onKick={(target) => void viewerAction("kick", { targetId: target })}
+          />
         </aside>
       </div>
       <RoomSettings
