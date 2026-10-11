@@ -122,6 +122,60 @@ export class RoomHttpService {
       return this.store.switchSeat(scope, roomId);
     });
   }
+  async toSpectator(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.toSpectator(scope, roomId);
+    });
+  }
+  async moveToSpectator(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    targetId: string,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.moveToSpectator(scope, roomId, targetId);
+    });
+  }
+  async inviteDown(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    targetId: string,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.inviteDown(scope, roomId, targetId);
+    });
+  }
+  async respondDown(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    accept: boolean,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.respondDown(scope, roomId, accept);
+    });
+  }
+  async kickViewer(
+    proof: MemberRoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    targetId: string,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.kickViewer(scope, roomId, targetId);
+    });
+  }
   async leave(
     proof: MemberRoomRequestProof,
     roomId: string,

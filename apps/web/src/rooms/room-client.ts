@@ -379,6 +379,24 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
         },
         { expectedVersion },
       ),
+    proposeSwap: (roomId: string, expectedVersion: number) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/swap-propose`,
+        (value) => parseView(value, roomId),
+        { expectedVersion },
+      ),
+    withdrawSwap: (roomId: string, expectedVersion: number) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/swap-withdraw`,
+        (value) => parseView(value, roomId),
+        { expectedVersion },
+      ),
+    respondSwap: (roomId: string, expectedVersion: number, accept: boolean) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/swap-respond`,
+        (value) => parseView(value, roomId),
+        { expectedVersion, accept },
+      ),
   };
 }
 export type RoomClient = ReturnType<typeof createRoomClient>;

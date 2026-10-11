@@ -26,6 +26,22 @@ import { ReconnectStatus } from "./ReconnectStatus.js";
 import { RoomChat } from "../chat/RoomChat.js";
 import { useRoomChat } from "./useRoomChat.js";
 import "./rooms.css";
+function swapMessage(code: string, fallback: string) {
+  switch (code) {
+    case "SWAP_COOLDOWN":
+      return "Vừa bị từ chối hoặc hết hạn. Chờ 60 giây rồi gửi lại.";
+    case "SWAP_ALREADY_PENDING":
+      return "Đang có đề nghị đổi bên chờ trả lời.";
+    case "SWAP_EXPIRED":
+      return "Đề nghị đã hết hạn. Gửi đề nghị mới nếu muốn đổi bên.";
+    case "SWAP_NOT_PENDING":
+      return "Không còn đề nghị đổi bên nào.";
+    case "SWAP_STALE":
+      return "Thành phần phòng đã thay đổi. Đề nghị cũ đã huỷ.";
+    default:
+      return fallback;
+  }
+}
 export interface RoomPageProps {
   roomId: string;
   userId: string;
@@ -61,6 +77,7 @@ export function RoomPage({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsStatus, setSettingsStatus] = useState("");
+  const [swapNow, setSwapNow] = useState(() => Date.now());
   const settingsPending = useRef(false);
   const connection = useRef<RoomConnection | null>(null);
   const roomChat = useRoomChat(roomId, connection);
@@ -236,6 +253,13 @@ export function RoomPage({
       audio.current = null;
     };
   }, []);
+  const swapOfferId = view?.room.swapOffer?.id ?? null;
+  useEffect(() => {
+    if (!swapOfferId) return;
+    setSwapNow(Date.now());
+    const timer = setInterval(() => setSwapNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [swapOfferId]);
   function unlockAudio() {
     void gameAudio.current?.unlock();
     if (muted) return;
@@ -498,7 +522,15 @@ export function RoomPage({
       if (epoch.current === requestEpoch) setBusy(false);
     }
   }
-  async function httpAction(action: "switch" | "leave") {
+  async function httpAction(
+    action:
+      | "switch"
+      | "leave"
+      | "swap-propose"
+      | "swap-withdraw"
+      | "swap-accept"
+      | "swap-decline",
+  ) {
     if (!view || busy) return;
     const requestEpoch = epoch.current;
     setBusy(true);
@@ -508,8 +540,27 @@ export function RoomPage({
       if (action === "leave") {
         await client.leave(roomId, view.version);
         if (epoch.current === requestEpoch) onLeft();
-      } else {
+      } else if (action === "switch") {
         const next = await client.switchSeat(roomId, view.version);
+        if (
+          epoch.current === requestEpoch &&
+          next.version >= versionFloor.current
+        ) {
+          versionFloor.current = next.version;
+          setView(next);
+          setSnapshot(null);
+        }
+      } else {
+        const next =
+          action === "swap-propose"
+            ? await client.proposeSwap(roomId, view.version)
+            : action === "swap-withdraw"
+              ? await client.withdrawSwap(roomId, view.version)
+              : await client.respondSwap(
+                  roomId,
+                  view.version,
+                  action === "swap-accept",
+                );
         if (
           epoch.current === requestEpoch &&
           next.version >= versionFloor.current
@@ -523,7 +574,7 @@ export function RoomPage({
       if (epoch.current !== requestEpoch) return;
       const message =
         e instanceof RoomRequestError
-          ? e.message
+          ? swapMessage(e.code, e.message)
           : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
       setError(message);
       if (action === "leave") setLeaveError(message);
@@ -873,6 +924,67 @@ export function RoomPage({
                 >
                   Đổi ghế
                 </Button>
+              )}
+              {!solo && !room.countdown && !room.swapOffer && (
+                <Button
+                  variant="secondary"
+                  loading={busy}
+                  disabledReason={
+                    !writable
+                      ? "Cần kết nối và quyền điều khiển ghế."
+                      : undefined
+                  }
+                  onClick={() => void httpAction("swap-propose")}
+                >
+                  Xin đổi bên
+                </Button>
+              )}
+              {!solo && !room.countdown && room.swapOffer && (
+                <div
+                  className="xq-swap-prompt"
+                  role="group"
+                  aria-label="Đề nghị đổi bên"
+                >
+                  {room.swapOffer.responderId === userId ? (
+                    <>
+                      <p>
+                        Đối thủ muốn đổi bên Đỏ ↔ Đen. Còn{" "}
+                        {Math.max(
+                          0,
+                          Math.ceil(
+                            (Date.parse(room.swapOffer.expiresAt) - swapNow) /
+                              1000,
+                          ),
+                        )}{" "}
+                        giây để trả lời.
+                      </p>
+                      <Button
+                        loading={busy}
+                        onClick={() => void httpAction("swap-accept")}
+                      >
+                        Đồng ý
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        loading={busy}
+                        onClick={() => void httpAction("swap-decline")}
+                      >
+                        Từ chối
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p>Đang chờ đối thủ trả lời đề nghị đổi bên…</p>
+                      <Button
+                        variant="secondary"
+                        loading={busy}
+                        onClick={() => void httpAction("swap-withdraw")}
+                      >
+                        Rút đề nghị
+                      </Button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           )}

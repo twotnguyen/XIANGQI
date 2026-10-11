@@ -66,6 +66,9 @@ const snapshot: RoomSnapshot = {
     connected: { red: true, black: true },
     graceUntil: { red: null, black: null },
     countdown: null,
+    swapOffer: null,
+      downOffer: null,
+      spectators: [],
   },
   match: null,
   clocks: null,
@@ -87,6 +90,14 @@ function setup(state = snapshot) {
     switchSeat: vi.fn(),
     changeVisibility: vi.fn(),
     leave: vi.fn().mockResolvedValue({ roomId: "room", left: true }),
+    proposeSwap: vi.fn(),
+    withdrawSwap: vi.fn(),
+    respondSwap: vi.fn(),
+    toSpectator: vi.fn(),
+    moveToSpectator: vi.fn(),
+    inviteDown: vi.fn(),
+    respondDown: vi.fn(),
+    kickViewer: vi.fn(),
     create: vi.fn(),
     join: vi.fn(),
   };
@@ -1446,4 +1457,57 @@ it("failed initial chat loading offers a real readonly retry without inventing m
     f.readChat.mock.calls.filter((call) => call[0] === "ROOM_PUBLIC"),
   ).toHaveLength(2);
   expect(f.sendChat).not.toHaveBeenCalled();
+});
+it("proposes a side swap and shows the waiting state with withdraw", async () => {
+  const fixture = setup();
+  await fixture.ready();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Xin đổi bên" }));
+  expect(fixture.client.proposeSwap).toHaveBeenCalledWith("room", 3);
+  expect(fixture.client.proposeSwap).toHaveBeenCalledTimes(1);
+});
+it("shows accept and decline to the responder with a countdown", async () => {
+  const offer = {
+    id: "33333333-3333-4333-8333-333333333333",
+    proposerId: "b",
+    responderId: "a",
+    expiresAt: "2026-10-11T00:00:30Z",
+  };
+  const fixture = setup({
+    ...snapshot,
+    version: 4,
+    room: { ...snapshot.room, swapOffer: offer },
+  });
+  await fixture.ready();
+  expect(
+    screen.getByText("Đối thủ muốn đổi bên Đỏ ↔ Đen.", { exact: false }),
+  ).toBeTruthy();
+  fixture.client.respondSwap.mockResolvedValue({
+    ...snapshot,
+    version: 5,
+    room: {
+      ...snapshot.room,
+      seats: { red: "b", black: "a" },
+      swapOffer: null,
+      downOffer: null,
+      spectators: [],
+    },
+  });
+  await userEvent.setup().click(screen.getByRole("button", { name: "Đồng ý" }));
+  expect(fixture.client.respondSwap).toHaveBeenCalledWith("room", 4, true);
+});
+it("maps swap cooldown failures to Vietnamese guidance", async () => {
+  const fixture = setup();
+  await fixture.ready();
+  const { RoomRequestError } = await import("./room-client.js");
+  fixture.client.proposeSwap.mockRejectedValue(
+    new RoomRequestError("SWAP_COOLDOWN", 409),
+  );
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Xin đổi bên" }));
+  expect(
+    await screen.findByText("Vừa bị từ chối hoặc hết hạn.", { exact: false }),
+  ).toBeTruthy();
 });

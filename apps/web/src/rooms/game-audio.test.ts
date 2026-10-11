@@ -67,6 +67,9 @@ function snapshot(
       connected: { red: true, black: true },
       graceUntil: { red: null, black: null },
       countdown: null,
+      swapOffer: null,
+      downOffer: null,
+      spectators: [],
     },
     match: {
       id: "match",
