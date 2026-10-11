@@ -132,6 +132,52 @@ class RoomController {
       });
     });
   }
+  @Post(":roomId/switch-seat")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  switchSeat(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = proof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0
+      )
+        invalid();
+      return this.service.switchSeat(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+      );
+    });
+  }
+  @Post(":roomId/leave")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  leave(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = proof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0
+      )
+        invalid();
+      return this.service.leave(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+      );
+    });
+  }
   @Get(":roomId")
   @Header("Cache-Control", "no-store")
   snapshot(@Req() request: IncomingMessage, @Param("roomId") roomId: string) {
