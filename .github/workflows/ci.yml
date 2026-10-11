@@ -169,6 +169,7 @@ jobs:
           --health-retries 10
     env:
       ROOM_RUNTIME_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test
+      DRAW_WORKER_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test
       MEMBER_REALTIME_TEST_DATABASE_URL: postgresql://member_realtime_test_admin:isolated-member-realtime-ci-test@127.0.0.1:55450/xiangqi_member_realtime_test
       CLOCK_PORT_TEST_DATABASE_URL: postgresql://clock_test_admin:isolated-clock-port-ci-test@127.0.0.1:55451/xiangqi_clock_port_test
       ROOM_TRANSACTION_TEST_DATABASE_URL: postgresql://room_transaction_test_admin:isolated-room-transactions-ci-test@127.0.0.1:55449/xiangqi_room_transactions_test
