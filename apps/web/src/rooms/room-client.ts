@@ -6,7 +6,21 @@ import type {
   RoomAction,
   CommandAcknowledgement,
   RoomStateSnapshot,
+  ChatChannel,
+  ChatPage,
+  ChatSent,
+  ClientChatEvents,
+  ServerChatEvents,
 } from "@xiangqi/shared";
+import {
+  parseChatPage,
+  parseChatSent,
+  parseChatChanged,
+  chatAcknowledgement,
+  chatUuid,
+  isChatChannel,
+  type ChatChanged,
+} from "./chat-client.js";
 import type { CreateRoomInput } from "./RoomForms.js";
 export type RoomView = Pick<
   RoomStateSnapshot,
@@ -294,6 +308,12 @@ export type RoomClient = ReturnType<typeof createRoomClient>;
 export interface RoomConnection {
   refresh(): Promise<RoomSnapshot>;
   command(action: RoomAction, version: number): Promise<CommandAcknowledgement>;
+  readChat(channel: ChatChannel, after?: number): Promise<ChatPage>;
+  sendChat(
+    channel: ChatChannel,
+    content: string,
+    commandId: string,
+  ): Promise<ChatSent>;
   close(): void;
 }
 export interface RoomConnectionInput {
@@ -303,34 +323,68 @@ export interface RoomConnectionInput {
   onConnection: (connected: boolean) => void;
   onError: (message: string) => void;
   onClosed?: (message: string) => void;
+  onChatChanged?: (notice: ChatChanged) => void;
 }
 export function connectRoom(input: RoomConnectionInput): RoomConnection {
   let closed = false;
   let closureNotified = false;
-  const socket: Socket<ServerRealtimeEvents, ClientRealtimeEvents> = io(
-    import.meta.env.VITE_API_URL || "http://localhost:3000",
-    {
-      autoConnect: false,
-      auth: (done) => {
-        void input.getProof().then(
-          (proof) => {
-            if (!closed) done({ ...proof, roomId: input.roomId, tabId });
-          },
-          () => {
-            if (closed) return;
-            input.onError(
-              "Phiên đăng nhập chưa sẵn sàng. Vui lòng đăng nhập lại.",
-            );
-            done({});
-          },
-        );
-      },
+  let chatEpoch = 0;
+  let latestRoomVersion = -1;
+  let chatRoomAuthority: string | null = null;
+  const chatNotices = new Map<ChatChannel, ChatChanged>();
+  const chatGrants = new Map<ChatChannel, ChatChanged>();
+  const chatReads = new Map<ChatChannel, number>();
+  function invalidateChat() {
+    chatEpoch++;
+    chatGrants.clear();
+  }
+  function observeSnapshot(snapshot: RoomSnapshot) {
+    if (snapshot.version < latestRoomVersion) return;
+    latestRoomVersion = snapshot.version;
+    const authority = JSON.stringify([
+      snapshot.role === "spectator" ? "spectator" : "player",
+      [snapshot.room.seats.red, snapshot.room.seats.black].sort(),
+      snapshot.control.mode,
+      snapshot.control.reason,
+      snapshot.control.generation,
+    ]);
+    if (authority !== chatRoomAuthority) {
+      chatRoomAuthority = authority;
+      invalidateChat();
+    }
+  }
+  const socket: Socket<
+    ServerRealtimeEvents & ServerChatEvents,
+    ClientRealtimeEvents & ClientChatEvents
+  > = io(import.meta.env.VITE_API_URL || "http://localhost:3000", {
+    autoConnect: false,
+    auth: (done) => {
+      invalidateChat();
+      void input.getProof().then(
+        (proof) => {
+          if (!closed) done({ ...proof, roomId: input.roomId, tabId });
+        },
+        () => {
+          if (closed) return;
+          input.onError(
+            "Phiên đăng nhập chưa sẵn sàng. Vui lòng đăng nhập lại.",
+          );
+          done({});
+        },
+      );
     },
-  );
+  });
   const tabId = crypto.randomUUID();
-  socket.on("connect", () => input.onConnection(true));
-  socket.on("disconnect", () => input.onConnection(false));
+  socket.on("connect", () => {
+    invalidateChat();
+    input.onConnection(true);
+  });
+  socket.on("disconnect", () => {
+    invalidateChat();
+    input.onConnection(false);
+  });
   socket.on("connect_error", () => {
+    invalidateChat();
     input.onConnection(false);
     input.onError("Chưa thể kết nối phòng. Kiểm tra mạng và phiên đăng nhập.");
   });
@@ -343,6 +397,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       input.onError("Phản hồi phòng không hợp lệ. Vui lòng tải lại.");
       return;
     }
+    observeSnapshot(parsed);
     input.onSnapshot(parsed);
   });
   socket.on("room.closed", (notice) => {
@@ -353,14 +408,137 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       notice.message === "Phòng đã đóng"
     ) {
       closureNotified = true;
+      invalidateChat();
       input.onClosed?.("Phòng đã đóng");
     }
   });
-  socket.on("session.read_only", () =>
-    input.onError("Phiên này đã được mở ở tab khác. Tab hiện tại chỉ xem."),
-  );
+  socket.on("session.read_only", () => {
+    invalidateChat();
+    input.onError("Phiên này đã được mở ở tab khác. Tab hiện tại chỉ xem.");
+  });
+  socket.on("chat.changed", (value) => {
+    if (closed || closureNotified) return;
+    let notice: ChatChanged;
+    try {
+      notice = parseChatChanged(value, input.roomId);
+    } catch {
+      input.onError("Phản hồi chat không hợp lệ. Vui lòng thử lại.");
+      return;
+    }
+    const previous = chatNotices.get(notice.channel);
+    if (notice.roomVersion < latestRoomVersion) return;
+    if (previous && notice.roomVersion < previous.roomVersion) return;
+    chatNotices.set(notice.channel, notice);
+    chatReads.set(notice.channel, (chatReads.get(notice.channel) ?? 0) + 1);
+    if (
+      !previous ||
+      previous.scopeToken !== notice.scopeToken ||
+      previous.canSend !== notice.canSend
+    )
+      chatGrants.delete(notice.channel);
+    input.onChatChanged?.(notice);
+  });
   socket.connect();
   return {
+    readChat(channel, after = 0) {
+      if (!isChatChannel(channel) || !Number.isSafeInteger(after) || after < 0)
+        return Promise.reject(new Error("Tin nhắn không hợp lệ"));
+      if (closed || closureNotified || !socket.connected)
+        return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
+      const epoch = chatEpoch,
+        revision = (chatReads.get(channel) ?? 0) + 1;
+      chatReads.set(channel, revision);
+      return new Promise((resolve, reject) => {
+        socket
+          .timeout(8000)
+          .emit(
+            "chat.read",
+            { channel, after },
+            (error: Error | null, acknowledgement: unknown) => {
+              if (
+                closed ||
+                error ||
+                !socket.connected ||
+                epoch !== chatEpoch ||
+                revision !== chatReads.get(channel)
+              ) {
+                reject(new Error("Chat tạm thời không dùng được"));
+                return;
+              }
+              try {
+                const page = parseChatPage(
+                  chatAcknowledgement(acknowledgement),
+                  input.roomId,
+                  channel,
+                  after,
+                );
+                const notice = chatNotices.get(channel);
+                if (
+                  page.roomVersion < latestRoomVersion ||
+                  (notice && page.roomVersion < notice.roomVersion)
+                )
+                  throw new Error("Quyền đọc chat đã thay đổi");
+                const authority = {
+                  roomId: page.roomId,
+                  channel,
+                  roomVersion: page.roomVersion,
+                  scopeToken: page.scopeToken,
+                  canSend: page.canSend,
+                };
+                chatNotices.set(channel, authority);
+                chatGrants.set(channel, authority);
+                resolve(page);
+              } catch (failure) {
+                reject(failure);
+              }
+            },
+          );
+      });
+    },
+    sendChat(channel, content, commandId) {
+      if (
+        !isChatChannel(channel) ||
+        typeof content !== "string" ||
+        !content.trim() ||
+        Array.from(content).length > 200 ||
+        typeof commandId !== "string" ||
+        !chatUuid.test(commandId)
+      )
+        return Promise.reject(new Error("Tin nhắn không hợp lệ"));
+      if (closed || closureNotified || !socket.connected)
+        return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
+      const grant = chatGrants.get(channel),
+        epoch = chatEpoch;
+      if (!grant?.canSend)
+        return Promise.reject(new Error("Không có quyền gửi tin nhắn"));
+      return new Promise((resolve, reject) => {
+        socket
+          .timeout(8000)
+          .emit(
+            "chat.send",
+            { channel, content, commandId },
+            (error: Error | null, acknowledgement: unknown) => {
+              const current = chatGrants.get(channel);
+              if (
+                closed ||
+                error ||
+                !socket.connected ||
+                epoch !== chatEpoch ||
+                !current?.canSend ||
+                current.scopeToken !== grant.scopeToken
+              ) {
+                reject(new Error("Chat tạm thời không dùng được"));
+                return;
+              }
+              try {
+                resolve(parseChatSent(chatAcknowledgement(acknowledgement)));
+              } catch (failure) {
+                reject(failure);
+              }
+            },
+          );
+      });
+    },
     refresh() {
       if (closed || !socket.connected)
         return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
@@ -379,7 +557,12 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                 return;
               }
               try {
-                resolve(parseSnapshot(acknowledgement.snapshot, input.roomId));
+                const parsed = parseSnapshot(
+                  acknowledgement.snapshot,
+                  input.roomId,
+                );
+                observeSnapshot(parsed);
+                resolve(parsed);
               } catch {
                 reject(
                   new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại."),
@@ -415,9 +598,11 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                 try {
                   const ack = record(acknowledgement);
                   if (ack.status === "ok" || ack.snapshot !== undefined) {
+                    const parsed = parseSnapshot(ack.snapshot, input.roomId);
+                    observeSnapshot(parsed);
                     resolve({
                       ...acknowledgement,
-                      snapshot: parseSnapshot(ack.snapshot, input.roomId),
+                      snapshot: parsed,
                     });
                   } else resolve(acknowledgement);
                 } catch {
@@ -432,6 +617,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     },
     close() {
       closed = true;
+      invalidateChat();
       socket.removeAllListeners();
       socket.disconnect();
     },
