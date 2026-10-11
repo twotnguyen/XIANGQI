@@ -155,10 +155,13 @@ describe("native gateway fixed appSession maintenance", () => {
         .map((c) => c.id!)
         .sort()
         .at(-1)!;
+      const endedPeer = f.clients.find((c) => c.id === endedId)!;
       await waitFor(() => check.mock.calls.length >= 50);
       expect(check.mock.calls.length).toBe(50);
       expect(f.disconnected).not.toHaveBeenCalled();
       await waitFor(() => f.disconnected.mock.calls.length === 1);
+      // Server cleanup runs before the client receives the transport close.
+      await waitFor(() => !endedPeer.connected);
       expect(check.mock.calls.length).toBe(51);
       expect(f.clients.filter((c) => c.connected)).toHaveLength(50);
       expect(

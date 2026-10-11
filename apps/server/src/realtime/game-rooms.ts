@@ -31,6 +31,11 @@ const messages = {
   MATCH_READ_ONLY: "Tab này chỉ theo dõi ván.",
   MATCH_INVALID_INPUT: "Dữ liệu ván không hợp lệ.",
   MATCH_NOT_FOUND: "Không tìm thấy ván.",
+  MATCH_DRAW_PENDING: "Bạn đã có đề nghị đang chờ.",
+  MATCH_DRAW_COOLDOWN: "Chưa đủ số nước để xin hòa lại.",
+  MATCH_DRAW_EXPIRED: "Đề nghị không còn hiệu lực.",
+  MATCH_DRAW_SENDER_REQUIRED: "Chỉ người gửi được rút đề nghị.",
+  MATCH_DRAW_RECEIVER_REQUIRED: "Chỉ người nhận được phản hồi đề nghị.",
   READY_DENIED: "Không thể Sẵn sàng lúc này",
   PLAYER_DISCONNECTED: "Chưa có kết nối điều khiển",
   ROOM_INPUT_INVALID: "Thông tin phòng không hợp lệ",
@@ -52,6 +57,8 @@ export type GameRoomScope = (
   roomId: string,
 ) => RoomScope;
 
+export type GameDrawPort = Pick<MatchStore, "drawSnapshot">;
+
 /** Delegates only inside the root's authenticated actor-first transaction. */
 export class GameRooms implements RoomCollaborator {
   constructor(
@@ -59,6 +66,7 @@ export class GameRooms implements RoomCollaborator {
     private readonly matches: MatchStore,
     private readonly clock: ClockService,
     private readonly getScope: GameRoomScope,
+    private readonly drawPort?: GameDrawPort,
   ) {}
   private scope(
     client: PoolClient,
@@ -142,8 +150,35 @@ export class GameRooms implements RoomCollaborator {
           ).clock
         : match.clock
       : null;
+    const draw =
+      this.drawPort && match?.status === "ACTIVE" && room.role !== "spectator"
+        ? await this.drawPort.drawSnapshot(
+            {
+              client: scope.client,
+              actor: scope.actor,
+              roomId: room.roomId,
+              canControl: true,
+              lockedActorIds: scope.lockedActorIds,
+              lockedRoomIds: scope.lockedRoomIds,
+            },
+            { matchId: match.id },
+          )
+        : null;
     return {
       serverNow: room.serverNow,
+      draw: draw
+        ? {
+            offers: draw.offers.map((offer) => ({
+              id: offer.id,
+              sender: offer.sender,
+              expiresAt: offer.expiresAt,
+            })),
+            remainingMoves: {
+              red: draw.remainingMoves.red,
+              black: draw.remainingMoves.black,
+            },
+          }
+        : null,
       roomId: room.roomId,
       version: room.version,
       role: room.role,
@@ -247,10 +282,42 @@ export class GameRooms implements RoomCollaborator {
         lockedActorIds: scope.lockedActorIds,
         lockedRoomIds: scope.lockedRoomIds,
       };
-      const result =
-        command.action.type === "match.move"
-          ? await this.matches.move(matchScope, command.action.payload)
-          : await this.matches.resign(matchScope, command.action.payload);
+      let result;
+      switch (command.action.type) {
+        case "match.move":
+          result = await this.matches.move(matchScope, command.action.payload);
+          break;
+        case "match.resign":
+          result = await this.matches.resign(
+            matchScope,
+            command.action.payload,
+          );
+          break;
+        case "match.draw.offer":
+        case "match.draw.withdraw":
+        case "match.draw.respond":
+          if (!this.drawPort)
+            throw new RealtimeError(
+              "REALTIME_UNAVAILABLE",
+              "Xin hòa chưa sẵn sàng",
+            );
+          if (command.action.type === "match.draw.offer")
+            result = await this.matches.offerDraw(
+              matchScope,
+              command.action.payload,
+            );
+          else if (command.action.type === "match.draw.withdraw")
+            result = await this.matches.withdrawDraw(
+              matchScope,
+              command.action.payload,
+            );
+          else
+            result = await this.matches.respondDraw(
+              matchScope,
+              command.action.payload,
+            );
+          break;
+      }
       if (!result.applied && !result.error)
         throw new RealtimeError(
           "REALTIME_UNAVAILABLE",

@@ -51,6 +51,7 @@ function proof(request: IncomingMessage): MemberRoomRequestProof {
     throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
   return { accessToken: auth.slice(7), appSession: cap };
 }
+export { proof as readMemberRoomProof };
 @Controller("rooms")
 class RoomController {
   constructor(
@@ -175,6 +176,32 @@ class RoomController {
         authority,
         id(roomId),
         input.expectedVersion as number,
+      );
+    });
+  }
+  @Post(":roomId/visibility")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  changeVisibility(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = proof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0 ||
+        typeof input.visibility !== "string" ||
+        !["PUBLIC", "CODE_ONLY", "LOCKED"].includes(input.visibility)
+      )
+        invalid();
+      return this.service.changeVisibility(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+        input.visibility as "PUBLIC" | "CODE_ONLY" | "LOCKED",
       );
     });
   }

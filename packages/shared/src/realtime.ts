@@ -1,3 +1,4 @@
+import type { ClientChatEvents, ServerChatEvents } from "./chat.js";
 export type RoomRole = "red" | "black" | "spectator";
 export interface RoomStateSnapshot {
   serverNow: string;
@@ -35,6 +36,10 @@ export interface RoomStateSnapshot {
     asOf: string;
   } | null;
   role: RoomRole;
+  draw?: {
+    offers: { id: string; sender: "red" | "black"; expiresAt: string }[];
+    remainingMoves: { red: number; black: number };
+  } | null;
 }
 export interface RoomSnapshot extends RoomStateSnapshot {
   control: {
@@ -57,6 +62,23 @@ export type RoomAction =
   | {
       type: "match.resign";
       payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.draw.offer";
+      payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.draw.withdraw";
+      payload: { matchId: string; matchVersion: number; offerId: string };
+    }
+  | {
+      type: "match.draw.respond";
+      payload: {
+        matchId: string;
+        matchVersion: number;
+        offerId: string;
+        accept: boolean;
+      };
     }
   | {
       type: "media.sharing";
@@ -86,6 +108,11 @@ export type RealtimeErrorCode =
   | "MATCH_READ_ONLY"
   | "MATCH_INVALID_INPUT"
   | "MATCH_NOT_FOUND"
+  | "MATCH_DRAW_PENDING"
+  | "MATCH_DRAW_COOLDOWN"
+  | "MATCH_DRAW_EXPIRED"
+  | "MATCH_DRAW_SENDER_REQUIRED"
+  | "MATCH_DRAW_RECEIVER_REQUIRED"
   | "READY_DENIED"
   | "PLAYER_DISCONNECTED"
   | "ROOM_INPUT_INVALID";
@@ -116,7 +143,10 @@ export interface RealtimeHandshake {
   roomId: string;
   tabId: string;
 }
-export interface ClientRealtimeEvents {
+export interface ClientRealtimeEvents extends ClientChatEvents {
+  "room.sync": (
+    acknowledge: (response: CommandAcknowledgement) => void,
+  ) => void;
   "room.command": (
     command: RoomCommand,
     acknowledge: (response: CommandAcknowledgement) => void,
@@ -125,7 +155,7 @@ export interface ClientRealtimeEvents {
     acknowledge: (response: CommandAcknowledgement) => void,
   ) => void;
 }
-export interface ServerRealtimeEvents {
+export interface ServerRealtimeEvents extends ServerChatEvents {
   "room.closed": (notice: RoomClosedNotice) => void;
   "room.snapshot": (snapshot: RoomSnapshot) => void;
   "session.read_only": (notice: ReadOnlyNotice) => void;

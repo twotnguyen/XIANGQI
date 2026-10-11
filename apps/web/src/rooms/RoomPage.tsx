@@ -12,6 +12,9 @@ import {
   type RoomView,
 } from "./room-client.js";
 import { createGameAudio } from "./game-audio.js";
+import { MatchClocks } from "./MatchClocks.js";
+import { MatchResult } from "./MatchResult.js";
+import { ReconnectStatus } from "./ReconnectStatus.js";
 import "./rooms.css";
 export interface RoomPageProps {
   roomId: string;
@@ -41,8 +44,11 @@ export function RoomPage({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
+  const [dismissedResult, setDismissedResult] = useState<string | null>(null);
+  const [leaveError, setLeaveError] = useState("");
   const connection = useRef<RoomConnection | null>(null);
   const epoch = useRef(0);
+  const refreshEpoch = useRef(0);
   const versionFloor = useRef(0);
   const latest = useRef<RoomSnapshot | null>(null);
   const audio = useRef<AudioContext | null>(null);
@@ -67,7 +73,9 @@ export function RoomPage({
       value.version < versionFloor.current ||
       (prior &&
         (value.version < prior.version ||
-          value.control.generation < prior.control.generation))
+          value.control.generation < prior.control.generation ||
+          (value.version === prior.version &&
+            Date.parse(value.serverNow) < Date.parse(prior.serverNow))))
     )
       return false;
     if (
@@ -78,6 +86,16 @@ export function RoomPage({
         prior.control.mode !== value.control.mode)
     )
       invalidateCommands();
+    // A duplicate authoritative sample must not refund local elapsed time.
+    if (
+      prior?.clocks &&
+      value.clocks &&
+      prior.clocks.asOf === value.clocks.asOf &&
+      prior.clocks.redMs === value.clocks.redMs &&
+      prior.clocks.blackMs === value.clocks.blackMs &&
+      prior.clocks.running === value.clocks.running
+    )
+      value = { ...value, clocks: prior.clocks };
     gameAudio.current?.accept(audioBaseline.current ? null : prior, value);
     audioBaseline.current = false;
     versionFloor.current = value.version;
@@ -119,6 +137,7 @@ export function RoomPage({
       },
       onConnection: (value) => {
         if (alive) {
+          refreshEpoch.current++;
           connectedRef.current = value;
           setConnected(value);
           if (!value) {
@@ -136,8 +155,36 @@ export function RoomPage({
       },
     });
     connection.current = peer;
+    const refreshVisible = () => {
+      if (
+        document.visibilityState !== "visible" ||
+        !connectedRef.current ||
+        !alive
+      )
+        return;
+      const requestEpoch = ++refreshEpoch.current;
+      const matchId = latest.current?.match?.id;
+      const isCurrent = () =>
+        alive &&
+        connectedRef.current &&
+        connection.current === peer &&
+        refreshEpoch.current === requestEpoch &&
+        latest.current?.match?.id === matchId;
+      void peer.refresh().then(
+        (value) => {
+          if (isCurrent() && acceptSnapshot(value)) setError("");
+        },
+        () => {
+          if (isCurrent())
+            setError("Chưa thể đồng bộ đồng hồ. Kiểm tra kết nối rồi thử lại.");
+        },
+      );
+    };
+    document.addEventListener("visibilitychange", refreshVisible);
     return () => {
       alive = false;
+      refreshEpoch.current++;
+      document.removeEventListener("visibilitychange", refreshVisible);
       epoch.current++;
       commandEpoch.current++;
       connectedRef.current = false;
@@ -295,6 +342,7 @@ export function RoomPage({
     const requestEpoch = epoch.current;
     setBusy(true);
     setError("");
+    setLeaveError("");
     try {
       if (action === "leave") {
         await client.leave(roomId, view.version);
@@ -312,11 +360,12 @@ export function RoomPage({
       }
     } catch (e) {
       if (epoch.current !== requestEpoch) return;
-      setError(
+      const message =
         e instanceof RoomRequestError
           ? e.message
-          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.",
-      );
+          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
+      setError(message);
+      if (action === "leave") setLeaveError(message);
       if (e instanceof RoomRequestError && e.code === "VERSION_STALE") {
         try {
           const next = await client.snapshot(roomId);
@@ -326,7 +375,26 @@ export function RoomPage({
           ) {
             versionFloor.current = next.version;
             setView(next);
-            setSnapshot(null);
+            const current = latest.current;
+            if (
+              action === "leave" &&
+              current?.match &&
+              current.match.status !== "ACTIVE"
+            ) {
+              // A failed leave must retain the final board and result while
+              // a fresh control-bearing snapshot catches up with the HTTP CAS.
+              const peer = connection.current;
+              if (connectedRef.current && peer) {
+                const freshEpoch = refreshEpoch.current;
+                const fresh = await peer.refresh();
+                if (
+                  epoch.current === requestEpoch &&
+                  connection.current === peer &&
+                  refreshEpoch.current === freshEpoch
+                )
+                  acceptSnapshot(fresh);
+              }
+            } else setSnapshot(null);
           }
         } catch {
           /* Preserve the last authoritative state. */
@@ -356,10 +424,12 @@ export function RoomPage({
   const writable = connected && snapshot?.control.mode === "writable";
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
+  const clockState = snapshot ?? latest.current;
+  const playingLayout = Boolean(clockState?.match);
   const active =
     room.status === "PLAYING" && snapshot?.match?.status === "ACTIVE";
   let board = null;
-  if (active && snapshot?.match) {
+  if (snapshot?.match) {
     try {
       board = parsePosition(snapshot.match.position);
     } catch {
@@ -367,14 +437,14 @@ export function RoomPage({
     }
   }
   return (
-    <main className={`xq-ui xq-room-page${active ? " is-playing" : ""}`}>
+    <main className={`xq-ui xq-room-page${playingLayout ? " is-playing" : ""}`}>
       <header className="xq-room-header">
         <div>
           <h1>{room.name}</h1>
           <p>
             {room.status === "CLOSED"
               ? "Phòng đã đóng"
-              : active
+              : clockState?.match?.status === "ACTIVE"
                 ? "Ván cờ đang diễn ra"
                 : "Phòng chờ thi đấu"}
           </p>
@@ -408,9 +478,20 @@ export function RoomPage({
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
           {error && <Notice tone="error" message={error} />}
-          {!connected && (
-            <Notice message="Kết nối phòng đang gián đoạn. Sẵn sàng và đếm ngược tạm dừng hiển thị; đang chờ trạng thái máy chủ." />
-          )}
+          <ReconnectStatus
+            connected={connected}
+            waitingForSnapshot={connected && !snapshot}
+            ownRole={clockState?.role ?? view.role}
+            matchStatus={clockState?.match?.status ?? null}
+            opponentGraceUntil={
+              view.role === "spectator"
+                ? (Object.values(room.graceUntil)
+                    .filter((value): value is string => value !== null)
+                    .sort()[0] ?? null)
+                : room.graceUntil[view.role === "red" ? "black" : "red"]
+            }
+            serverNow={view.serverNow}
+          />
           {snapshot?.control.mode === "readonly" && (
             <Notice
               message={
@@ -456,6 +537,13 @@ export function RoomPage({
               );
             })}
           </div>
+          {clockState?.clocks && (
+            <MatchClocks
+              clocks={clockState.clocks}
+              matchStatus={clockState.match?.status ?? null}
+              connected={connected}
+            />
+          )}
           {connected &&
             snapshot &&
             room.countdown &&
@@ -474,7 +562,10 @@ export function RoomPage({
                 orientation={view.role === "black" ? "black" : "red"}
                 playerSide={view.role === "black" ? "black" : "red"}
                 disabled={
-                  !writable || !player || snapshot?.match?.turn !== view.role
+                  !active ||
+                  !writable ||
+                  !player ||
+                  snapshot?.match?.turn !== view.role
                 }
                 pending={busy}
                 lastMove={snapshot?.match?.lastMove ?? null}
@@ -571,6 +662,23 @@ export function RoomPage({
           </div>
         </aside>
       </div>
+      {connected &&
+        snapshot?.match &&
+        snapshot.match.status !== "ACTIVE" &&
+        (snapshot.role === "spectator" ||
+          dismissedResult !== snapshot.match.id) && (
+          <MatchResult
+            match={snapshot.match}
+            role={snapshot.role}
+            leaving={busy}
+            error={leaveError}
+            onStay={() => {
+              setDismissedResult(snapshot.match!.id);
+              setLeaveError("");
+            }}
+            onLeave={() => void httpAction("leave")}
+          />
+        )}
     </main>
   );
 }

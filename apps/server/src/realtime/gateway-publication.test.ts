@@ -4,9 +4,12 @@ import { io, type Socket } from "socket.io-client";
 import { describe, expect, it, vi } from "vitest";
 import { attachRealtime } from "./gateway.js";
 import { RealtimeError } from "./contracts.js";
+import { RoomError } from "../room/contracts.js";
+import type { RealtimeConnection } from "./contracts.js";
+import type { ChatReadRequest } from "@xiangqi/shared";
 import type { RealtimeStore } from "./store.js";
 import type { CommandAcknowledgement } from "@xiangqi/shared";
-async function fixture() {
+async function fixture(chatEnabled = false, viewerTabOwnership = false) {
   const roomId = randomUUID(),
     users = new Map<string, string>(),
     clients: Socket[] = [];
@@ -19,6 +22,52 @@ async function fixture() {
     version: 1,
     control: { mode: "writable", generation: 1, reason: null },
   };
+  let ownerConnectionId: string | null = null;
+  const forConnection = (connection: RealtimeConnection) =>
+    viewerTabOwnership
+      ? {
+          ...snapshot,
+          control: {
+            mode: "readonly",
+            generation: 1,
+            reason:
+              ownerConnectionId === connection.connectionId
+                ? "not_allowed"
+                : "superseded",
+          },
+        }
+      : snapshot;
+  const chatDenied = new Set<string>();
+  const chatRead = vi.fn(
+    async (connection: RealtimeConnection, input: ChatReadRequest) => {
+      if (chatDenied.has(connection.identity.userId))
+        throw new RoomError("CHAT_FORBIDDEN", "private denied", 403);
+      return {
+        roomId,
+        channel: input.channel,
+        roomVersion: 1,
+        scopeToken: "a".repeat(64),
+        canSend: true,
+        messages: [
+          {
+            messageId: randomUUID(),
+            roomId,
+            sequence: 1,
+            channel: input.channel,
+            content: "PRIVATE_CHAT_BODY",
+            createdAt: new Date().toISOString(),
+            sender: {
+              displayName: "Synthetic",
+              isGuest: false,
+              role: "red" as const,
+            },
+          },
+        ],
+        nextCursor: 1,
+        hasMore: false,
+      };
+    },
+  );
   const resolve = vi.fn(async (token: string) => {
     if (providerFailure)
       throw new RealtimeError(
@@ -29,11 +78,11 @@ async function fixture() {
     if (!id) throw new RealtimeError("AUTH_REQUIRED", "private");
     return { userId: id, kind: "member" as const };
   });
-  const read = vi.fn(async () => {
+  const read = vi.fn(async (connection: RealtimeConnection) => {
     if (membership)
       throw new RealtimeError("ROOM_FORBIDDEN", "private membership");
     if (snapshotFailure) throw new Error("PRIVATE_SQL_SECRET");
-    return snapshot;
+    return forConnection(connection);
   });
   const command = vi.fn(async () => {
     if (failAfterCommit) providerFailure = true;
@@ -45,7 +94,10 @@ async function fixture() {
     };
   });
   const store = {
-    connect: async () => snapshot,
+    connect: async (connection: RealtimeConnection) => {
+      if (viewerTabOwnership) ownerConnectionId = connection.connectionId;
+      return forConnection(connection);
+    },
     snapshot: read,
     command,
     disconnect: async () => {},
@@ -56,12 +108,24 @@ async function fixture() {
       store,
       identities: { resolve },
       corsOrigins: [],
+      ...(chatEnabled
+        ? {
+            chat: {
+              read: chatRead,
+              send: async () => ({
+                messageId: randomUUID(),
+                sequence: 1,
+                createdAt: new Date().toISOString(),
+              }),
+            },
+          }
+        : {}),
     });
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
   const address = server.address();
   if (!address || typeof address === "string") throw Error("fixture");
-  async function peer(targetRoom = roomId) {
-    const userId = randomUUID(),
+  async function peer(targetRoom = roomId, existingUserId?: string) {
+    const userId = existingUserId ?? randomUUID(),
       token = randomUUID();
     users.set(token, userId);
     const client = io(`http://127.0.0.1:${address.port}`, {
@@ -87,10 +151,14 @@ async function fixture() {
     roomId,
     users,
     gateway,
+    server,
     peer,
     read,
     command,
+    snapshot,
     resolve,
+    chatRead,
+    chatDenied,
     setProvider: (b: boolean) => (providerFailure = b),
     setMembership: (b: boolean) => (membership = b),
     setSnapshot: (b: boolean) => (snapshotFailure = b),
@@ -102,6 +170,83 @@ async function fixture() {
   };
 }
 describe("native realtime publication outcomes", () => {
+  it("notifies an older spectator tab when a readonly viewer owns the newer tab or explicitly takes over", async () => {
+    const f = await fixture(false, true);
+    try {
+      const a = await f.peer(),
+        noticesA: unknown[] = [];
+      a.client.on("session.read_only", (notice) => noticesA.push(notice));
+      const b = await f.peer(f.roomId, a.userId),
+        noticesB: unknown[] = [];
+      b.client.on("session.read_only", (notice) => noticesB.push(notice));
+      await expect.poll(() => noticesA.length, { timeout: 1000 }).toBe(1);
+      expect(noticesA[0]).toEqual({
+        message: "Phiên này đã được mở ở tab khác",
+        stopMedia: true,
+      });
+      const ack = await a.client.timeout(1000).emitWithAck("session.takeover");
+      expect(ack).toMatchObject({
+        status: "ok",
+        snapshot: { control: { mode: "readonly", reason: "not_allowed" } },
+      });
+      await expect.poll(() => noticesB.length, { timeout: 1000 }).toBe(1);
+      expect(noticesB[0]).toEqual({
+        message: "Phiên này đã được mở ở tab khác",
+        stopMedia: true,
+      });
+    } finally {
+      await f.close();
+    }
+  });
+  it("delivers chat invalidation only after per-recipient authorization without broadcasting private content", async () => {
+    const f = await fixture(true);
+    try {
+      const allowed = await f.peer(),
+        denied = await f.peer(),
+        elsewhere = await f.peer(randomUUID());
+      f.chatDenied.add(denied.userId);
+      const blocked: unknown[] = [];
+      denied.client.on("chat.changed", (value) => blocked.push(value));
+      elsewhere.client.on("chat.changed", (value) => blocked.push(value));
+      const received = new Promise<unknown>((r) =>
+        allowed.client.once("chat.changed", r),
+      );
+      await f.gateway.publishChat(f.roomId, "PLAYERS_PRIVATE");
+      expect(await received).toEqual({
+        roomId: f.roomId,
+        channel: "PLAYERS_PRIVATE",
+        roomVersion: 1,
+        scopeToken: "a".repeat(64),
+        canSend: true,
+      });
+      expect(blocked).toEqual([]);
+      expect(f.chatRead).toHaveBeenCalledTimes(2);
+      const response = await allowed.client
+        .timeout(1000)
+        .emitWithAck("chat.read", { channel: "PLAYERS_PRIVATE" });
+      expect(response).toMatchObject({
+        status: "ok",
+        value: { messages: [{ content: "PRIVATE_CHAT_BODY" }] },
+      });
+    } finally {
+      await f.close();
+    }
+  });
+  it("rejects chat publication when unavailable so a durable outbox can retry", async () => {
+    const f = await fixture(true);
+    try {
+      await f.peer();
+      f.chatRead.mockRejectedValue(new Error("PRIVATE_SQL_CHAT"));
+      await expect(
+        f.gateway.publishChat(f.roomId, "ROOM_PUBLIC"),
+      ).rejects.toMatchObject({ code: "REALTIME_UNAVAILABLE" });
+      await expect(
+        f.gateway.publishChat(f.roomId, "ROOM_PUBLIC"),
+      ).rejects.not.toThrow("PRIVATE");
+    } finally {
+      await f.close();
+    }
+  });
   it.each(["provider", "SQL"])(
     "rejects transient %s publication with a sanitized failure for outbox retry",
     async (kind) => {
@@ -204,4 +349,90 @@ describe("native realtime publication outcomes", () => {
       await f.close();
     }
   });
+});
+
+async function sync(client: Socket) {
+  return new Promise<CommandAcknowledgement>((resolve, reject) =>
+    client
+      .timeout(250)
+      .emit(
+        "room.sync",
+        (error: Error | null, response: CommandAcknowledgement) =>
+          error ? reject(error) : resolve(response),
+      ),
+  );
+}
+it("resynchronizes a readonly peer from a freshly authorized snapshot without executing a command", async () => {
+  const f = await fixture();
+  try {
+    const peer = await f.peer();
+    f.snapshot.version = 9;
+    f.snapshot.control.mode = "readonly";
+    const resolves = f.resolve.mock.calls.length;
+    const response = await sync(peer.client);
+    expect(response).toMatchObject({
+      status: "ok",
+      snapshot: { roomId: f.roomId, version: 9, control: { mode: "readonly" } },
+    });
+    expect(f.resolve.mock.calls.length).toBeGreaterThan(resolves);
+    expect(f.command).not.toHaveBeenCalled();
+  } finally {
+    await f.close();
+  }
+});
+it.each(["provider", "SQL", "membership"])(
+  "sanitizes %s failures when resynchronizing instead of returning a stale snapshot",
+  async (kind) => {
+    const f = await fixture();
+    try {
+      const peer = await f.peer();
+      if (kind === "provider") f.setProvider(true);
+      else if (kind === "SQL") f.setSnapshot(true);
+      else f.setMembership(true);
+      const response = await sync(peer.client);
+      expect(response.status).toBe("error");
+      expect(response).not.toHaveProperty("snapshot");
+      expect(JSON.stringify(response)).not.toContain("PRIVATE");
+      expect(f.command).not.toHaveBeenCalled();
+    } finally {
+      await f.close();
+    }
+  },
+);
+
+it("drains an in-flight snapshot resynchronization before closing its service", async () => {
+  const f = await fixture();
+  let release!: () => void;
+  let entered!: () => void;
+  const barrier = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const started = new Promise<void>((resolve) => {
+    entered = resolve;
+  });
+  const peer = await f.peer();
+  f.read.mockImplementationOnce(async () => {
+    entered();
+    await barrier;
+    return f.snapshot;
+  });
+  const pending = sync(peer.client).catch(() => null);
+  await started;
+  let closed = false;
+  const transportClosed = new Promise<void>((resolve) =>
+    f.server.once("close", resolve),
+  );
+  const closing = f.close().then(() => {
+    closed = true;
+  });
+  try {
+    await transportClosed;
+    await Promise.resolve();
+    expect(closed).toBe(false);
+  } finally {
+    release();
+    await closing;
+    await pending;
+  }
+  expect(closed).toBe(true);
 });

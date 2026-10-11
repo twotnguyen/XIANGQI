@@ -16,6 +16,9 @@ export class MemberRealtimePresence implements RealtimePresence {
     private readonly rooms: RoomStore,
     private readonly transactions: MemberRealtimeTransactions,
     private readonly serverInstance: string,
+    private readonly currentPeers: (
+      roomId: string,
+    ) => readonly RealtimeConnection[] = () => [],
   ) {
     if (!uuid.test(serverInstance))
       throw new RealtimeError(
@@ -33,18 +36,48 @@ export class MemberRealtimePresence implements RealtimePresence {
       connection.identity,
       connection.roomId,
     );
-    if (control.mode !== "writable") return;
+    let generation = control.generation;
+    if (control.mode !== "writable") {
+      const member = (
+        await client.query<{ role: string }>(
+          "SELECT role FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+          [connection.roomId, connection.identity.userId],
+        )
+      ).rows[0];
+      if (member?.role !== "SPECTATOR") return;
+      const prior = (
+        await client.query<{ generation: string }>(
+          "SELECT generation::text FROM xiangqi_room.presence WHERE room_id=$1 AND user_id=$2 FOR UPDATE",
+          [connection.roomId, connection.identity.userId],
+        )
+      ).rows[0];
+      generation = this.nextGeneration(prior?.generation);
+    }
     const result = await this.rooms.presence(
       scope,
       connection.roomId,
       {
         connectionId: connection.connectionId,
-        generation: control.generation,
+        generation,
         serverInstance: this.serverInstance,
       },
       true,
     );
-    if (result === "seat-expired") return "ended";
+    if (result === "seat-expired" || result === "viewer-expired")
+      return "ended";
+  }
+  private nextGeneration(current?: string) {
+    const previous = current === undefined ? 0 : Number(current);
+    if (
+      !Number.isSafeInteger(previous) ||
+      previous < 0 ||
+      previous >= Number.MAX_SAFE_INTEGER
+    )
+      throw new RealtimeError(
+        "REALTIME_UNAVAILABLE",
+        "Hiện diện phòng chưa sẵn sàng",
+      );
+    return previous + 1;
   }
   // Trusted physical gateway event: expiry/revocation must not suppress grace.
   async disconnected(connection: RealtimeConnection): Promise<void> {
@@ -90,6 +123,53 @@ export class MemberRealtimePresence implements RealtimePresence {
       { actor: { ...captured.identity }, roomIds: [captured.roomId] },
       async (p) => ({ status: "active", actor: p.actor }),
       async (scope) => {
+        const member = (
+          await scope.client.query<{ role: string }>(
+            "SELECT role FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+            [captured.roomId, captured.identity.userId],
+          )
+        ).rows[0];
+        if (member?.role === "SPECTATOR") {
+          const row = (
+            await scope.client.query<{ generation: string }>(
+              `SELECT generation::text FROM xiangqi_room.presence
+             WHERE room_id=$1 AND user_id=$2 AND connection_id=$3
+             AND server_instance=$4 AND connected FOR UPDATE`,
+              [
+                captured.roomId,
+                captured.identity.userId,
+                captured.connectionId,
+                this.serverInstance,
+              ],
+            )
+          ).rows[0];
+          if (!row) return;
+          // Physical peers must be sampled after actor/room locks, not before a
+          // potentially queued disconnect: another tab may have closed meanwhile.
+          const survivor = this.currentPeers(captured.roomId)
+            .filter(
+              (peer) =>
+                peer.connectionId !== captured.connectionId &&
+                peer.roomId === captured.roomId &&
+                peer.identity.kind === "member" &&
+                peer.identity.userId === captured.identity.userId,
+            )
+            .sort((a, b) => a.connectionId.localeCompare(b.connectionId))[0];
+          await this.rooms.presence(
+            scope,
+            captured.roomId,
+            {
+              connectionId: survivor?.connectionId ?? captured.connectionId,
+              generation: survivor
+                ? this.nextGeneration(row.generation)
+                : Number(row.generation),
+              serverInstance: this.serverInstance,
+            },
+            Boolean(survivor),
+          );
+          return;
+        }
+        if (member?.role !== "PLAYER") return;
         const row = (
           await scope.client.query<{ generation: number }>(
             `SELECT c.generation FROM xiangqi_realtime.controllers c

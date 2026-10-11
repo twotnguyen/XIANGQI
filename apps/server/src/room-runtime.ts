@@ -1,5 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
+import { maskForbiddenChat } from "@xiangqi/shared";
+import { ChatStore } from "./chat/chat-store.js";
+import { ChatRealtimeService } from "./chat/chat-realtime.js";
+import { ChatOutboxWorker } from "./chat/chat-worker.js";
 import type { createRegistrationRuntime } from "./auth-runtime.js";
 import { ClockService } from "./clock/clock-service.js";
 import { ClockWorker } from "./clock/clock-worker.js";
@@ -10,6 +14,7 @@ import {
 } from "./match/disconnect-worker.js";
 import { PostgresClockWorkerPort } from "./clock/postgres-clock-port.js";
 import { MatchStore } from "./match/match-store.js";
+import { DrawWorker, dueDrawOffers } from "./match/draw-worker.js";
 import { RoomError, type RoomScope, type RoomActor } from "./room/contracts.js";
 import { RoomTransactions } from "./room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
@@ -43,6 +48,8 @@ export async function createRoomRuntime(
   )
     throw new Error("Invalid Room configuration");
   const pool = registration.pool;
+  let drawReady: boolean;
+  let chatReady = false;
   try {
     const schema =
       await pool.query(`SELECT pg_has_role(current_user,'app_server','SET') AND
@@ -59,6 +66,57 @@ export async function createRoomRuntime(
       AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid='public.matches'::regclass AND conname='matches_status_and_outcome_invariants' AND convalidated
         AND strpos(pg_catalog.pg_get_constraintdef(oid),'SERVER_RESTART')>0 AND strpos(pg_catalog.pg_get_constraintdef(oid),'DRAW_AGREEMENT')>0) AS ready`);
     if (!schema.rows[0]?.ready) throw new Error();
+    const draw = await pool.query<{ present: boolean; ready: boolean }>(`SELECT
+      to_regclass('xiangqi_room.match_draw_offers') IS NOT NULL AS present,
+      CASE WHEN to_regclass('xiangqi_room.match_draw_offers') IS NULL THEN false ELSE
+        has_table_privilege('app_server','xiangqi_room.match_draw_offers','SELECT') AND
+        has_table_privilege('app_server','xiangqi_room.match_draw_offers','INSERT') AND
+        has_table_privilege('app_server','xiangqi_room.match_draw_offers','UPDATE') AND
+        NOT has_table_privilege('app_server','xiangqi_room.match_draw_offers','DELETE') AND
+        NOT has_table_privilege('anon','xiangqi_room.match_draw_offers','SELECT,INSERT,UPDATE,DELETE') AND
+        NOT has_table_privilege('authenticated','xiangqi_room.match_draw_offers','SELECT,INSERT,UPDATE,DELETE')
+      END AS ready`);
+    if (draw.rows[0]?.present && !draw.rows[0].ready) throw new Error();
+    drawReady = draw.rows[0]?.ready === true;
+    const publicSchema = await pool.query<{
+      present: boolean;
+      ready: boolean;
+    }>(`SELECT
+      EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass
+        AND attname='public_opened_at' AND NOT attisdropped) AS present,
+      EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass
+        AND attname='public_opened_at' AND atttypid='timestamptz'::regtype AND NOT attisdropped)
+      AND EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.rooms'::regclass
+        AND conname='rooms_visibility_check' AND convalidated
+        AND strpos(pg_get_constraintdef(oid),'LOCKED')>0
+        AND strpos(pg_get_constraintdef(oid),'PUBLIC')>0) AS ready`);
+    if (publicSchema.rows[0]?.present && !publicSchema.rows[0].ready)
+      throw new Error();
+    // Ghi nhan: publicReady se duoc XIAN-90 dung de khoi tao PublicRoomService.
+    const chatSchema = await pool.query(
+      "SELECT to_regnamespace('xiangqi_chat') IS NOT NULL AS present",
+    );
+    if (chatSchema.rows[0]?.present) {
+      const chat = await pool.query(`SELECT
+        has_schema_privilege('app_server','xiangqi_chat','USAGE') AND
+        (SELECT bool_and(
+          c.oid IS NOT NULL AND c.relrowsecurity AND c.relforcerowsecurity AND
+          has_table_privilege('app_server',c.oid,'SELECT') AND
+          has_table_privilege('app_server',c.oid,'INSERT') AND
+          has_table_privilege('app_server',c.oid,'DELETE') AND
+          has_table_privilege('app_server',c.oid,'UPDATE') = (t.name IN ('rooms','entries','rate','outbox')) AND
+          NOT has_table_privilege('anon',c.oid,'SELECT,INSERT,UPDATE,DELETE') AND
+          NOT has_table_privilege('authenticated',c.oid,'SELECT,INSERT,UPDATE,DELETE') AND
+          NOT has_table_privilege('service_role',c.oid,'SELECT,INSERT,UPDATE,DELETE')
+        ) FROM unnest(ARRAY['rooms','entries','messages','receipts','rate','outbox']) t(name)
+          LEFT JOIN pg_class c ON c.oid=to_regclass('xiangqi_chat.'||t.name)) AND
+        EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=to_regclass('xiangqi_chat.messages')
+          AND attname='sender_role' AND atttypid='text'::regtype AND attnotnull AND NOT attisdropped) AND
+        EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.room_members'::regclass AND tgname='chat_membership' AND tgenabled='O') AND
+        EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.rooms'::regclass AND tgname='chat_room_closed' AND tgenabled='O') AS ready`);
+      if (chat.rows[0]?.ready !== true) throw new Error();
+      chatReady = true;
+    }
   } catch {
     throw new Error("Room migration is not ready");
   }
@@ -99,6 +157,14 @@ export async function createRoomRuntime(
   };
   const rooms = new RoomStore({
     start: (client, input) => matches.start(client, input),
+    leave: async (client, input) => {
+      const scope = getScope(client, input.actor, input.roomId);
+      const match = await matches.snapshot(client, input.roomId, input.matchId);
+      await matches.resign(
+        { ...scope, roomId: input.roomId, canControl: true },
+        { matchId: input.matchId, matchVersion: match.version },
+      );
+    },
   });
   const matches = new MatchStore(clock, {
     onMatchEnded: async (client, input) => {
@@ -126,20 +192,37 @@ export async function createRoomRuntime(
         ),
       ),
   };
+  let publisher: RealtimePublisher | null = null;
+  const chat = chatReady
+    ? new ChatRealtimeService(new ChatStore(maskForbiddenChat), guard)
+    : undefined;
+  const chatWorker = chat
+    ? new ChatOutboxWorker(pool, async (roomId, channel) => {
+        if (!publisher?.publishChat)
+          throw new Error("Chat publisher is not attached");
+        await publisher.publishChat(roomId, channel);
+      })
+    : undefined;
   const presence = new MemberRealtimePresence(
     pool,
     coordinator,
     rooms,
     guard,
     instance,
+    (id) => publisher?.connections(id) ?? [],
   );
   const store = new RealtimeStore(
     pool,
-    new GameRooms(rooms, matches, clock, getScope),
+    new GameRooms(
+      rooms,
+      matches,
+      clock,
+      getScope,
+      drawReady ? matches : undefined,
+    ),
     transactions,
     presence,
   );
-  let publisher: RealtimePublisher | null = null;
   const roomPort = new PostgresRoomWorkerPort(
     pool,
     rooms,
@@ -244,6 +327,26 @@ export async function createRoomRuntime(
       read((client) => dueDisconnectMatches(client, cursor)),
     withMatch,
   });
+  const drawWorker = drawReady
+    ? new DrawWorker(matches, {
+        dueOffers: (cursor) => read((client) => dueDrawOffers(client, cursor)),
+        withMatch: (candidate, work) =>
+          withMatch(candidate, async (scope) => {
+            const roomScope = context.get(scope.client);
+            if (!roomScope)
+              throw new RoomError(
+                "ROOM_AUTH_PROOF_INVALID",
+                "Giao dịch phòng chưa sẵn sàng",
+                503,
+              );
+            await work({
+              ...roomScope,
+              roomId: candidate.roomId,
+              canControl: true,
+            });
+          }),
+      })
+    : null;
   // Managed rooms only: old legacy state lacks the canonical match encoding.
   let cursor: string | null = null;
   do {
@@ -298,7 +401,9 @@ export async function createRoomRuntime(
     for (const run of [
       () => clockWorker.tick(),
       () => disconnectWorker.tick(),
+      ...(drawWorker ? [() => drawWorker.tick()] : []),
       () => worker.tick(),
+      ...(chatWorker ? [() => chatWorker.tick()] : []),
     ]) {
       try {
         await run();
@@ -325,9 +430,10 @@ export async function createRoomRuntime(
       closed = true;
       if (timer) clearTimeout(timer);
       await inFlight;
+      await chatWorker?.close();
     })());
   const module = RoomModule.forRoot(
-    new RoomHttpService(rooms, coordinator, authorizer),
+    new RoomHttpService(rooms, coordinator, authorizer, withScope),
   );
   module.providers = [
     ...(module.providers ?? []),
@@ -337,6 +443,7 @@ export async function createRoomRuntime(
     module,
     realtime: {
       store,
+      ...(chat ? { chat } : {}),
       identities: new MemberRealtimeIdentities(
         authorizer,
         (userId, appSession) =>
@@ -366,6 +473,8 @@ export async function createRoomRuntime(
     start: async () => {
       if (closed) throw new Error("Room runtime is closed");
       if (!publisher) throw new Error("Realtime publisher is not attached");
+      if (chat && !publisher.publishChat)
+        throw new Error("Chat publisher is not attached");
       if (!started) {
         started = true;
         schedule();

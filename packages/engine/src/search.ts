@@ -3,6 +3,7 @@ import {
   legalMoves,
   parsePosition,
   playMove,
+  pseudoLegalMoves,
   serializePosition,
   type Move,
   type PieceType,
@@ -82,14 +83,28 @@ function evaluate(position: Position) {
 function same(a: Move, b: Move | undefined) {
   return b && a.from === b.from && a.to === b.to;
 }
-function ordered(position: Position, moves: Move[], preferred?: Move) {
+function moveKey(position: Position, move: Move): string {
+  return position.turn + ":" + move.from + ":" + move.to;
+}
+function ordered(
+  position: Position,
+  moves: Move[],
+  preferred?: Move,
+  killers: readonly Move[] = [],
+  history?: ReadonlyMap<string, number>,
+) {
   const priority = (move: Move) =>
     same(move, preferred)
-      ? 100000
+      ? 1e9
       : position.board[move.to]
-        ? 10 * values[position.board[move.to]!.type] -
+        ? 1e8 +
+          10 * values[position.board[move.to]!.type] -
           values[position.board[move.from]!.type]
-        : 0;
+        : same(move, killers[0])
+          ? 1e7
+          : same(move, killers[1])
+            ? 9e6
+            : (history?.get(moveKey(position, move)) ?? 0);
   return moves.sort(
     (a, b) => priority(b) - priority(a) || a.from - b.from || a.to - b.to,
   );
@@ -126,11 +141,56 @@ export function searchPosition(
   const initial = ordered(current, legalMoves(current));
   let bestMove = terminal ? null : (initial[0] ?? null);
   const table = new Map<string, Entry>();
+  const killers = new Map<number, Move[]>();
+  const cutoffHistory = new Map<string, number>();
+  const serialized = history.map(serializePosition);
+  const identity = (fen: string) => fen.split(" ").slice(0, 2).join(" ");
+  const occurrences = new Map<string, number>();
+  for (const fen of serialized) {
+    const key = identity(fen);
+    occurrences.set(key, (occurrences.get(key) ?? 0) + 1);
+  }
+  // Legality depends only on the exact board and side. Counters/history still
+  // adjudicate separately at every node before this bounded memo is consulted.
+  const legalBoards = new Map<string, { exists: boolean; moves?: Move[] }>();
+  legalBoards.set(identity(serialized.at(-1)!), {
+    exists: initial.length > 0,
+    moves: initial,
+  });
+  function memo(key: string, value: { exists: boolean; moves?: Move[] }) {
+    if (legalBoards.has(key) || legalBoards.size < 10000)
+      legalBoards.set(key, value);
+  }
+  function allLegalMoves(position: Position, key: string): Move[] {
+    const cached = legalBoards.get(key);
+    if (cached?.moves) return [...cached.moves];
+    const moves = legalMoves(position);
+    memo(key, { exists: moves.length > 0, moves: [...moves] });
+    return moves;
+  }
+  function hasLegalMove(position: Position, key: string): boolean {
+    const cached = legalBoards.get(key);
+    if (cached) return cached.exists;
+    for (const candidate of pseudoLegalMoves(position)) {
+      try {
+        playMove(position, candidate);
+        memo(key, { exists: true });
+        return true;
+      } catch (error) {
+        if (!(error instanceof Error) || error.message !== "ILLEGAL_MOVE")
+          throw error;
+      }
+    }
+    memo(key, { exists: false });
+    return false;
+  }
   function check() {
     if (now() >= deadline) throw expired;
   }
   function negamax(
     branch: Position[],
+    key: string,
+    positionIdentity: string,
     depth: number,
     alpha: number,
     beta: number,
@@ -138,8 +198,22 @@ export function searchPosition(
   ): { score: number; move?: Move } {
     check();
     nodes++;
-    const position = branch.at(-1)!,
-      result = ending(branch);
+    const position = branch.at(-1)!;
+    let result =
+      (occurrences.get(positionIdentity) ?? 0) >= 3 || position.halfmove >= 120
+        ? ending(branch)
+        : null;
+    let moves: Move[] = [];
+    if (!result) {
+      if (depth === 0) {
+        // Leaves need existence, not every legal move. Use the same public
+        // core pipeline; never bypass king-capture or self-check validation.
+        if (!hasLegalMove(position, positionIdentity)) result = ending(branch);
+      } else {
+        moves = ply === 0 ? initial : allLegalMoves(position, positionIdentity);
+        if (moves.length === 0) result = ending(branch);
+      }
+    }
     if (result)
       return {
         score:
@@ -151,8 +225,7 @@ export function searchPosition(
       };
     if (depth === 0) return { score: evaluate(position) };
     // Full branch/counters are deliberately included: different repetition/check histories cannot share a bound.
-    const key = branch.map(serializePosition).join("|"),
-      cached = table.get(key),
+    const cached = table.get(key),
       originalAlpha = alpha,
       originalBeta = beta;
     if (cached && cached.depth >= depth) {
@@ -166,24 +239,59 @@ export function searchPosition(
       move: Move | undefined;
     for (const candidate of ordered(
       position,
-      legalMoves(position),
+      moves,
       cached?.move,
+      killers.get(ply),
+      cutoffHistory,
     )) {
       check();
       const child = playMove(position, candidate);
-      const value = -negamax(
-        [...branch, child],
-        depth - 1,
-        -beta,
-        -alpha,
-        ply + 1,
-      ).score;
+      const childFen = serializePosition(child),
+        childIdentity = identity(childFen);
+      const previous = occurrences.get(childIdentity) ?? 0;
+      occurrences.set(childIdentity, previous + 1);
+      branch.push(child);
+      let value: number;
+      try {
+        value = -negamax(
+          branch,
+          key + "|" + childFen,
+          childIdentity,
+          depth - 1,
+          -beta,
+          -alpha,
+          ply + 1,
+        ).score;
+      } finally {
+        branch.pop();
+        if (previous === 0) occurrences.delete(childIdentity);
+        else occurrences.set(childIdentity, previous);
+      }
       if (value > score) {
         score = value;
         move = candidate;
       }
       alpha = Math.max(alpha, value);
-      if (alpha >= beta) break;
+      if (alpha >= beta) {
+        if (!position.board[candidate.to]) {
+          const previousKillers = killers.get(ply) ?? [];
+          if (!same(candidate, previousKillers[0])) {
+            killers.set(
+              ply,
+              [
+                candidate,
+                ...previousKillers.filter((move) => !same(candidate, move)),
+              ].slice(0, 2),
+            );
+          }
+          const historyKey = moveKey(position, candidate);
+          cutoffHistory.set(
+            historyKey,
+            Math.min(1e6, (cutoffHistory.get(historyKey) ?? 0) + depth * depth),
+          );
+        }
+        break;
+      }
     }
     check();
     if (move && table.size < 50000)
@@ -203,7 +311,15 @@ export function searchPosition(
   if (!terminal) {
     for (let depth = 1; depth <= targetDepth; depth++) {
       try {
-        const result = negamax(history, depth, -Infinity, Infinity, 0);
+        const result = negamax(
+          history,
+          serialized.join("|"),
+          identity(serialized.at(-1)!),
+          depth,
+          -Infinity,
+          Infinity,
+          0,
+        );
         check();
         if (result.move) bestMove = result.move;
         completedDepth = depth;

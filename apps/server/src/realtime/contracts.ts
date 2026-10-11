@@ -60,6 +60,7 @@ export interface RoomCollaborator {
   ): Promise<RoomStateSnapshot | RoomExecutionResult>;
 }
 export interface RealtimeConnection {
+  // Private credentials for server-side room worker authorization only.
   identity: RealtimeIdentity;
   proof?: RealtimeAuthProof;
   roomId: string;

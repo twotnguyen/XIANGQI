@@ -5,7 +5,10 @@ import type {
   ClientRealtimeEvents,
   ServerRealtimeEvents,
   RoomSnapshot,
+  ChatChannel,
 } from "@xiangqi/shared";
+import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
+import { RoomError } from "../room/contracts.js";
 import {
   RealtimeError,
   type IdentityResolver,
@@ -28,6 +31,7 @@ function authenticationFailure(error: unknown): RealtimeError {
 }
 
 export interface RealtimePublisher {
+  publishChat?(roomId: string, channel: ChatChannel): Promise<void>;
   publishSnapshots(roomId: string): Promise<void>;
   publishRoomClosed(
     roomId: string,
@@ -36,6 +40,7 @@ export interface RealtimePublisher {
   connections(roomId: string): RealtimeConnection[];
 }
 export interface RealtimeDependencies {
+  chat?: RoomChatGateway["chat"];
   store: RealtimeStore;
   identities: IdentityResolver;
   corsOrigins: string[];
@@ -153,6 +158,48 @@ export function attachRealtime(
     if (stopping) return Promise.reject(publicationFailure());
     return track(() => doPublishSnapshots(roomId));
   }
+  function publishChat(roomId: string, channel: ChatChannel): Promise<void> {
+    if (stopping || !dependencies.chat)
+      return Promise.reject(publicationFailure());
+    const chat = dependencies.chat;
+    return track(async () => {
+      await Promise.all(
+        [...peers.values()]
+          .filter(
+            (peer) =>
+              peer.socket.connected && peer.connection.roomId === roomId,
+          )
+          .map(async (peer) => {
+            try {
+              const connection = await authorize(peer);
+              const page = await chat.read(connection, { channel });
+              if (
+                stopping ||
+                !peer.socket.connected ||
+                peers.get(peer.socket.id) !== peer
+              )
+                return;
+              // Invalidation contains no message body. Reads always recheck the current pair/entry scope.
+              peer.socket.emit("chat.changed", {
+                roomId: page.roomId,
+                channel: page.channel,
+                roomVersion: page.roomVersion,
+                scopeToken: page.scopeToken,
+                canSend: page.canSend,
+              });
+            } catch (error) {
+              if (
+                denied(error) ||
+                (error instanceof RoomError &&
+                  ["CHAT_FORBIDDEN", "AUTH_REQUIRED"].includes(error.code))
+              )
+                return;
+              throw publicationFailure();
+            }
+          }),
+      );
+    });
+  }
   async function doPublishSnapshots(roomId: string) {
     await Promise.all(
       [...peers.values()]
@@ -229,12 +276,11 @@ export function attachRealtime(
     return track(() => doNotifyPreviousTabs(peer, snapshot));
   }
   async function doNotifyPreviousTabs(peer: Peer, snapshot: RoomSnapshot) {
-    if (snapshot.control.mode !== "writable") {
-      if (snapshot.control.reason === "superseded")
-        peer.socket.emit("session.read_only", {
-          message: "Phiên này đã được mở ở tab khác",
-          stopMedia: true,
-        });
+    if (snapshot.control.reason === "superseded") {
+      peer.socket.emit("session.read_only", {
+        message: "Phiên này đã được mở ở tab khác",
+        stopMedia: true,
+      });
       return;
     }
     for (const other of peers.values()) {
@@ -334,6 +380,14 @@ export function attachRealtime(
       socket.disconnect(true);
       return;
     }
+    if (dependencies.chat)
+      bindRoomChat(socket, {
+        authorize: () => authorize(peer),
+        chat: dependencies.chat,
+        changed: publishChat,
+        stopping: () => stopping,
+        track,
+      });
     socket.on("disconnect", () => {
       peers.delete(socket.id);
       void peer.disconnect();
@@ -364,6 +418,23 @@ export function attachRealtime(
         }
         // A committed result is never replaced by a shutdown/publication failure.
         acknowledge(response);
+      }).catch(failedOperation);
+    });
+    socket.on("room.sync", (acknowledge) => {
+      if (typeof acknowledge !== "function") return;
+      if (stopping) {
+        acknowledge(errorAcknowledgement(publicationFailure()));
+        return;
+      }
+      void track(async () => {
+        try {
+          const connection = await authorize(peer);
+          if (stopping) throw publicationFailure();
+          const snapshot = await dependencies.store.snapshot(connection);
+          acknowledge({ status: "ok", commandId: randomUUID(), snapshot });
+        } catch (error) {
+          acknowledge(errorAcknowledgement(error));
+        }
       }).catch(failedOperation);
     });
     socket.on("session.takeover", (acknowledge) => {
@@ -470,6 +541,7 @@ export function attachRealtime(
   sessionTimer.unref();
   let closing: Promise<void> | undefined;
   return {
+    publishChat,
     publishSnapshots,
     publishRoomClosed,
     connections: (roomId: string): RealtimeConnection[] =>
