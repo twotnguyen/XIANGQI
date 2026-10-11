@@ -1,5 +1,8 @@
 import { RoomError, type RoomScope } from "../room/contracts.js";
-import type { MemberRoomAuthorizer } from "../room/room-http.service.js";
+import type {
+  MemberRoomAuthorizer,
+  MemberRoomRequestProof,
+} from "../room/room-http.service.js";
 import {
   type RoomActorProof,
   type RoomAuthorization,
@@ -20,6 +23,12 @@ export interface AiHumanControl {
     scope: RoomScope,
     origin: Extract<AiOrigin, { kind: "human" }>,
   ): Promise<void>;
+  bindGame(
+    scope: RoomScope,
+    gameId: string,
+    origin: Extract<AiOrigin, { kind: "human" }>,
+  ): Promise<void>;
+  assertRetained(scope: RoomScope, gameId: string): Promise<void>;
 }
 interface Options {
   coordinator: RoomTransactions;
@@ -37,7 +46,12 @@ function denied(code: string, status = 409): never {
 export class SqlAiTransactions implements AiTransactions {
   private readonly gates = new Map<string, Promise<void>>();
   constructor(private readonly options: Options) {
-    if (!options.control?.authorize) denied("AI_AUTHORITY_REQUIRED", 503);
+    if (
+      !options.control?.authorize ||
+      !options.control.bindGame ||
+      !options.control.assertRetained
+    )
+      denied("AI_AUTHORITY_REQUIRED", 503);
   }
   private async gate(owner: string): Promise<() => void> {
     const previous = this.gates.get(owner) ?? Promise.resolve();
@@ -67,6 +81,54 @@ export class SqlAiTransactions implements AiTransactions {
     ).rows[0];
     if (!row?.active) denied("AUTH_REQUIRED", 401);
     return { status: "active", actor: proof.actor };
+  }
+  /** Private reads share the mutation gate, but do not manufacture a live game slot. */
+  async read<T>(
+    proof: MemberRoomRequestProof,
+    work: (scope: RoomScope, ownerId: string) => Promise<T>,
+  ): Promise<T> {
+    const { coordinator, authorizer } = this.options;
+    const actor = await authorizer.resolve(proof);
+    if (actor.kind !== "member") denied("AUTH_REQUIRED", 401);
+    const authorize = (p: RoomActorProof) => authorizer.authorize(proof, p);
+    let release: (() => void) | undefined;
+    try {
+      const result = await coordinator.withRoom(
+        { actor, roomIds: [] },
+        authorize,
+        async (scope) => {
+          release = await this.gate(actor.userId);
+          try {
+            const actorProof: RoomActorProof = {
+              client: scope.client,
+              actor: scope.actor,
+              roomIds: [...scope.lockedRoomIds],
+              lockedActorIds: scope.lockedActorIds,
+            };
+            if (
+              (await coordinator.reauthorize(actorProof, authorize)).status !==
+              "active"
+            )
+              denied("AUTH_REQUIRED", 401);
+            const value = await work(scope, actor.userId);
+            if (
+              (await coordinator.reauthorize(actorProof, authorize)).status !==
+              "active"
+            )
+              denied("AUTH_REQUIRED", 401);
+            return value;
+          } catch (error) {
+            release();
+            release = undefined;
+            throw error;
+          }
+        },
+      );
+      if (result.status !== "active") denied("AUTH_REQUIRED", 401);
+      return result.value;
+    } finally {
+      release?.();
+    }
   }
   async run<T>(
     ownerId: string,
@@ -113,6 +175,7 @@ export class SqlAiTransactions implements AiTransactions {
           const liveGames = new Set<string>();
           const check = async (gameId: string) => {
             await reservations.check(scope, { gameId, bootId });
+            await control.assertRetained(scope, gameId);
             authorized = true;
             liveGames.add(gameId);
           };
@@ -120,7 +183,10 @@ export class SqlAiTransactions implements AiTransactions {
             await reauthorize();
             const staged = await work({
               reserve: async (gameId) => {
+                if (origin.kind !== "human")
+                  denied("AI_ADMISSION_REQUIRED", 403);
                 await reservations.reserve(scope, { gameId, bootId });
+                await control.bindGame(scope, gameId, origin);
                 await check(gameId);
               },
               check,
@@ -134,8 +200,7 @@ export class SqlAiTransactions implements AiTransactions {
             if (!authorized) denied("AI_AUTHORITY_REQUIRED", 503);
             await reauthorize();
             // Fresh clock after arbitrary callback awaits, including unchanged locked rows.
-            for (const gameId of liveGames)
-              await reservations.check(scope, { gameId, bootId });
+            for (const gameId of liveGames) await check(gameId);
             return staged;
           } catch (error) {
             // RoomTransactions can retry a roster change. Release this attempt before it does.
