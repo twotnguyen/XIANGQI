@@ -1,0 +1,512 @@
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { RoomSnapshot } from "@xiangqi/shared";
+import { parsePosition } from "@xiangqi/xiangqi-core";
+import { XiangqiBoard } from "../components/XiangqiBoard.js";
+import { Button, ErrorState, Notice, Skeleton } from "../ui/primitives.js";
+import {
+  connectRoom,
+  RoomRequestError,
+  type RoomClient,
+  type RoomConnection,
+  type RoomConnectionInput,
+  type RoomView,
+} from "./room-client.js";
+import "./rooms.css";
+export interface RoomPageProps {
+  roomId: string;
+  userId: string;
+  client: RoomClient;
+  getProof: RoomConnectionInput["getProof"];
+  inviteCode?: string;
+  onLeft: (message?: string) => void;
+  connect?: (input: RoomConnectionInput) => RoomConnection;
+  chat?: ReactNode;
+  media?: ReactNode;
+}
+export function RoomPage({
+  roomId,
+  userId,
+  client,
+  getProof,
+  inviteCode,
+  onLeft,
+  connect = connectRoom,
+  chat,
+  media,
+}: RoomPageProps) {
+  const [view, setView] = useState<RoomView | null>(null);
+  const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const connection = useRef<RoomConnection | null>(null);
+  const epoch = useRef(0);
+  const versionFloor = useRef(0);
+  const latest = useRef<RoomSnapshot | null>(null);
+  const audio = useRef<AudioContext | null>(null);
+  const leaveCallback = useRef(onLeft);
+  leaveCallback.current = onLeft;
+  useEffect(() => {
+    let alive = true;
+    epoch.current++;
+    latest.current = null;
+    versionFloor.current = 0;
+    setBusy(false);
+    setSnapshot(null);
+    setView(null);
+    setConnected(false);
+    setError("");
+    void client.snapshot(roomId).then(
+      (value) => {
+        if (alive && !latest.current && value.version >= versionFloor.current) {
+          versionFloor.current = value.version;
+          setView(value);
+        }
+      },
+      () => {
+        if (alive && !latest.current)
+          setError("Chưa thể tải phòng. Kiểm tra quyền vào phòng và kết nối.");
+      },
+    );
+    const peer = connect({
+      roomId,
+      getProof,
+      onSnapshot: (value) => {
+        if (!alive || value.roomId !== roomId) return;
+        const prior = latest.current;
+        if (value.version < versionFloor.current) return;
+        if (
+          prior &&
+          (value.version < prior.version ||
+            value.control.generation < prior.control.generation)
+        )
+          return;
+        versionFloor.current = value.version;
+        latest.current = value;
+        setSnapshot(value);
+        setView(value);
+        setError("");
+      },
+      onConnection: (value) => {
+        if (alive) {
+          setConnected(value);
+          if (!value) setSnapshot(null);
+        }
+      },
+      onError: (message) => {
+        if (alive) setError(message);
+      },
+      onClosed: (message) => {
+        if (alive) leaveCallback.current(message);
+      },
+    });
+    connection.current = peer;
+    return () => {
+      alive = false;
+      epoch.current++;
+      peer.close();
+      if (connection.current === peer) connection.current = null;
+    };
+  }, [roomId, client, getProof, connect, retry]);
+  useEffect(
+    () => () => {
+      void audio.current?.close();
+    },
+    [],
+  );
+  function unlockAudio() {
+    try {
+      if (!audio.current && typeof AudioContext !== "undefined")
+        audio.current = new AudioContext();
+      void audio.current?.resume();
+    } catch {
+      /* Browser permissions may prevent audio. Visual count remains. */
+    }
+  }
+  function sound() {
+    const context = audio.current;
+    if (!context || context.state !== "running") return;
+    const oscillator = context.createOscillator(),
+      gain = context.createGain();
+    oscillator.frequency.value = 660;
+    gain.gain.setValueAtTime(0.08, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.12);
+  }
+  async function ready() {
+    if (
+      !snapshot ||
+      !connected ||
+      busy ||
+      snapshot.role === "spectator" ||
+      snapshot.control.mode !== "writable" ||
+      snapshot.room.status !== "WAITING"
+    )
+      return;
+    const requestEpoch = epoch.current;
+    unlockAudio();
+    setBusy(true);
+    setError("");
+    try {
+      const acknowledgement = await connection.current!.command(
+        {
+          type: "room.ready",
+          payload: { ready: !snapshot.room.ready[snapshot.role] },
+        },
+        snapshot.version,
+      );
+      if (epoch.current !== requestEpoch) return;
+      if (acknowledgement.snapshot) {
+        const next = acknowledgement.snapshot;
+        const prior = latest.current;
+        if (
+          next.roomId === roomId &&
+          next.version >= versionFloor.current &&
+          (!prior ||
+            (next.version >= prior.version &&
+              next.control.generation >= prior.control.generation))
+        ) {
+          versionFloor.current = next.version;
+          latest.current = next;
+          setSnapshot(next);
+          setView(next);
+        }
+      }
+      if (acknowledgement.status === "error")
+        setError(
+          acknowledgement.error.code === "VERSION_STALE"
+            ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+            : "Chưa thể thay đổi Sẵn sàng. Kiểm tra kết nối, ghế và quyền điều khiển.",
+        );
+    } catch {
+      if (epoch.current === requestEpoch)
+        setError(
+          "Chưa nhận được xác nhận Sẵn sàng. Kiểm tra trạng thái phòng trước khi thao tác lại.",
+        );
+    } finally {
+      if (epoch.current === requestEpoch) setBusy(false);
+    }
+  }
+  async function httpAction(action: "switch" | "leave") {
+    if (!view || busy) return;
+    const requestEpoch = epoch.current;
+    setBusy(true);
+    setError("");
+    try {
+      if (action === "leave") {
+        await client.leave(roomId, view.version);
+        if (epoch.current === requestEpoch) onLeft();
+      } else {
+        const next = await client.switchSeat(roomId, view.version);
+        if (
+          epoch.current === requestEpoch &&
+          next.version >= versionFloor.current
+        ) {
+          versionFloor.current = next.version;
+          setView(next);
+          setSnapshot(null);
+        }
+      }
+    } catch (e) {
+      if (epoch.current !== requestEpoch) return;
+      setError(
+        e instanceof RoomRequestError
+          ? e.message
+          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.",
+      );
+      if (e instanceof RoomRequestError && e.code === "VERSION_STALE") {
+        try {
+          const next = await client.snapshot(roomId);
+          if (
+            epoch.current === requestEpoch &&
+            next.version >= versionFloor.current
+          ) {
+            versionFloor.current = next.version;
+            setView(next);
+            setSnapshot(null);
+          }
+        } catch {
+          /* Preserve the last authoritative state. */
+        }
+      }
+    } finally {
+      if (epoch.current === requestEpoch) setBusy(false);
+    }
+  }
+  if (!view)
+    return (
+      <main className="xq-ui xq-room-page">
+        {error ? (
+          <ErrorState
+            message={error}
+            onRetry={() => setRetry((value) => value + 1)}
+          />
+        ) : (
+          <Skeleton label="Đang tải phòng…" />
+        )}
+      </main>
+    );
+  const { room } = view;
+  const serverCode = room.inviteCode;
+  const code = serverCode === undefined ? inviteCode : serverCode;
+  const player = view.role !== "spectator";
+  const writable = connected && snapshot?.control.mode === "writable";
+  const solo =
+    Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
+  const active =
+    room.status === "PLAYING" && snapshot?.match?.status === "ACTIVE";
+  let board = null;
+  if (active && snapshot?.match) {
+    try {
+      board = parsePosition(snapshot.match.position);
+    } catch {
+      /* Do not fabricate a board from malformed server data. */
+    }
+  }
+  return (
+    <main className="xq-ui xq-room-page">
+      <header className="xq-room-header">
+        <div>
+          <h1>{room.name}</h1>
+          <p>
+            {room.status === "CLOSED"
+              ? "Phòng đã đóng"
+              : active
+                ? "Ván cờ đang diễn ra"
+                : "Phòng chờ thi đấu"}
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          loading={busy}
+          onClick={() => void httpAction("leave")}
+        >
+          Rời phòng
+        </Button>
+      </header>
+      <div className="xq-room-content">
+        <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
+          {error && <Notice tone="error" message={error} />}
+          {!connected && (
+            <Notice message="Kết nối phòng đang gián đoạn. Sẵn sàng và đếm ngược tạm dừng hiển thị; đang chờ trạng thái máy chủ." />
+          )}
+          {snapshot?.control.mode === "readonly" && (
+            <Notice
+              message={
+                snapshot.control.reason === "superseded"
+                  ? "Phiên này đã được mở ở tab khác. Tab hiện tại chỉ xem."
+                  : "Bạn đang xem phòng."
+              }
+            />
+          )}
+          <div className="xq-room-seats">
+            {(["red", "black"] as const).map((side) => {
+              const occupant = room.seats[side],
+                label = side === "red" ? "Đỏ" : "Đen";
+              return (
+                <section
+                  className={`xq-room-seat ${side}`}
+                  key={side}
+                  aria-label={`Ghế ${label}`}
+                >
+                  <span className="xq-seat-piece" aria-hidden="true">
+                    {side === "red" ? "帥" : "將"}
+                  </span>
+                  <h2>
+                    {occupant
+                      ? occupant === userId
+                        ? `Bạn · ${label}`
+                        : `Người chơi ${label}${occupant === room.hostId ? " · Chủ phòng" : ""}`
+                      : `Ghế ${label} đang trống`}
+                  </h2>
+                  {occupant === userId && occupant === room.hostId && (
+                    <p>Chủ phòng</p>
+                  )}
+                  <p>
+                    {!occupant
+                      ? "Đang chờ kỳ hữu"
+                      : !room.connected[side]
+                        ? "Mất kết nối · đang giữ ghế"
+                        : room.ready[side]
+                          ? "Đã sẵn sàng"
+                          : "Chưa sẵn sàng"}
+                  </p>
+                </section>
+              );
+            })}
+          </div>
+          {connected &&
+            snapshot &&
+            room.countdown &&
+            room.status === "WAITING" && (
+              <Countdown
+                key={room.countdown.token}
+                dueAt={room.countdown.dueAt}
+                serverNow={view.serverNow}
+                sound={sound}
+              />
+            )}
+          {board && (
+            <div className="xq-room-board" aria-label="Bàn cờ đang thi đấu">
+              <XiangqiBoard
+                position={board}
+                orientation={view.role === "black" ? "black" : "red"}
+              />
+              <p>Thao tác đi cờ chưa khả dụng.</p>
+            </div>
+          )}
+          {active && !board && (
+            <Notice
+              tone="error"
+              message="Chưa thể hiển thị bàn cờ từ trạng thái máy chủ."
+            />
+          )}
+          {room.status === "WAITING" &&
+            snapshot?.match &&
+            snapshot.match.status !== "ACTIVE" && (
+              <Notice
+                message={
+                  snapshot.match.status === "INTERRUPTED"
+                    ? "Ván vừa gián đoạn. Hai bên có thể Sẵn sàng cho ván mới."
+                    : "Ván đã kết thúc. Hai bên có thể Sẵn sàng cho ván mới."
+                }
+              />
+            )}
+          {room.status === "WAITING" && player && (
+            <div className="xq-room-actions">
+              <Button
+                loading={busy}
+                disabledReason={
+                  !writable
+                    ? "Cần kết nối và quyền điều khiển ghế."
+                    : !room.seats.red || !room.seats.black
+                      ? "Chờ đủ hai người chơi để Sẵn sàng."
+                      : undefined
+                }
+                onClick={() => void ready()}
+              >
+                {room.ready[view.role as "red" | "black"]
+                  ? "Huỷ sẵn sàng"
+                  : "Sẵn sàng"}
+              </Button>
+              {solo && room.hostId === userId && (
+                <Button
+                  variant="secondary"
+                  loading={busy}
+                  disabledReason={
+                    !writable
+                      ? "Cần kết nối và quyền điều khiển ghế."
+                      : undefined
+                  }
+                  onClick={() => void httpAction("switch")}
+                >
+                  Đổi ghế
+                </Button>
+              )}
+            </div>
+          )}
+          {view.role === "spectator" && (
+            <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
+          )}
+        </section>
+        <aside className="xq-room-info" aria-label="Thông tin phòng">
+          <h2>Phòng của kỳ hữu</h2>
+          <dl>
+            <dt>Mỗi bên</dt>
+            <dd>{room.timeMinutes} phút</dd>
+            <dt>Người xem tối đa</dt>
+            <dd>{room.viewerLimit}</dd>
+            <dt>Chế độ</dt>
+            <dd>
+              {room.visibility === "CODE_ONLY"
+                ? "Theo mã mời"
+                : room.visibility === "PUBLIC"
+                  ? "Công khai"
+                  : "Đã khóa"}
+            </dd>
+          </dl>
+          <p>Thời gian và trần người xem đã cố định.</p>
+          {code && room.visibility !== "LOCKED" ? (
+            <>
+              <p>
+                Mã phòng: <strong>{code}</strong>
+              </p>
+              <a href={`/rooms/join?token=${encodeURIComponent(code)}`}>
+                Đường dẫn mời vào phòng
+              </a>
+            </>
+          ) : (
+            <p>Mã mời chưa được cung cấp cho phiên này.</p>
+          )}
+          <div className="xq-room-slots">
+            {chat ?? <p>Chat phòng chưa khả dụng.</p>}
+            {media ?? <p>Camera và mic chưa khả dụng.</p>}
+          </div>
+        </aside>
+      </div>
+    </main>
+  );
+}
+function Countdown({
+  dueAt,
+  serverNow,
+  sound,
+}: {
+  dueAt: string;
+  serverNow: string;
+  sound: () => void;
+}) {
+  const [count, setCount] = useState(() =>
+    Math.max(
+      0,
+      Math.min(
+        3,
+        Math.ceil((Date.parse(dueAt) - Date.parse(serverNow)) / 1000),
+      ),
+    ),
+  );
+  const sounded = useRef<number | null>(null);
+  const play = useRef(sound);
+  play.current = sound;
+  useEffect(() => {
+    const received = Date.now(),
+      remaining = Date.parse(dueAt) - Date.parse(serverNow);
+    function update() {
+      setCount(
+        Math.max(
+          0,
+          Math.min(3, Math.ceil((remaining - (Date.now() - received)) / 1000)),
+        ),
+      );
+    }
+    update();
+    const timer = setInterval(update, 100);
+    return () => clearInterval(timer);
+  }, [dueAt, serverNow]);
+  useEffect(() => {
+    if (count > 0 && sounded.current !== count) {
+      sounded.current = count;
+      play.current();
+    }
+  }, [count]);
+  return (
+    <div
+      className="xq-room-countdown"
+      role="status"
+      aria-label="Đếm ngược bắt đầu ván"
+    >
+      {count > 0 ? (
+        <>
+          <p>Hai bên đã sẵn sàng</p>
+          <strong>{count}</strong>
+        </>
+      ) : (
+        <p>Đang chờ máy chủ xác nhận bắt đầu…</p>
+      )}
+    </div>
+  );
+}

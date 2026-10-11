@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { LoginPage } from "../auth/LoginPage.js";
 import { RegistrationPage } from "../auth/RegistrationPage.js";
 import { GoogleSignInButton } from "../auth/GoogleSignInButton.js";
@@ -10,7 +10,7 @@ import {
   type DataState,
   type PublicRoom,
 } from "../pages/LobbyShell.js";
-import { Button, ErrorState, Notice } from "../ui/primitives.js";
+import { Button, Dialog, ErrorState, Notice } from "../ui/primitives.js";
 import { NavigationLink } from "./NavigationLink.js";
 import {
   getLocation,
@@ -18,6 +18,14 @@ import {
   subscribeLocation,
   getAuthDestination,
 } from "./navigation.js";
+import { CreateRoomForm, JoinRoomForm } from "../rooms/RoomForms.js";
+import { RoomPage } from "../rooms/RoomPage.js";
+import { RoomLobby } from "../rooms/RoomLobby.js";
+import {
+  createRoomClient,
+  type RoomClient,
+  type RoomEntry,
+} from "../rooms/room-client.js";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
 
 function publicRooms(value: unknown): PublicRoom[] {
@@ -69,13 +77,20 @@ function publicRooms(value: unknown): PublicRoom[] {
     };
   });
 }
-function Lobby() {
+function Lobby({
+  client,
+  onEntered,
+}: {
+  client: RoomClient;
+  onEntered: (entry: RoomEntry) => void;
+}) {
   const { authorizedFetch, logout } = useSession();
   const [rooms, setRooms] = useState<PublicRoom[]>([]);
   const [state, setState] = useState<DataState>("loading");
   const [attempt, setAttempt] = useState(0);
   const [notice, setNotice] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
+  const [dialog, setDialog] = useState<"create" | "join" | null>(null);
   useEffect(() => {
     const abort = new AbortController();
     setState("loading");
@@ -106,14 +121,31 @@ function Lobby() {
       <LobbyShell
         rooms={rooms}
         state={state}
-        onCreate={unavailable}
-        onJoinCode={unavailable}
+        onCreate={() => setDialog("create")}
+        onJoinCode={() => setDialog("join")}
         onPlayAI={unavailable}
         onJoinRoom={(id, intent) =>
           navigate(`/rooms/${encodeURIComponent(id)}?intent=${intent}`)
         }
         onRetry={() => setAttempt((value) => value + 1)}
       />
+      {dialog && (
+        <Dialog
+          open
+          onClose={() => setDialog(null)}
+          title={dialog === "create" ? "Tạo phòng" : "Vào phòng bằng mã"}
+        >
+          {dialog === "create" ? (
+            <CreateRoomForm
+              onCreate={async (input) => onEntered(await client.create(input))}
+            />
+          ) : (
+            <JoinRoomForm
+              onJoin={async (code) => onEntered(await client.join(code))}
+            />
+          )}
+        </Dialog>
+      )}
       <Button
         variant="ghost"
         loading={loggingOut}
@@ -145,6 +177,15 @@ const titles: Partial<Record<Route["name"], string>> = {
 };
 export function AppRouter() {
   const session = useSession();
+  const client = useMemo(
+    () => createRoomClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
+  const [roomNotice, setRoomNotice] = useState("");
+  const enterRoom = (entry: RoomEntry) => {
+    setRoomNotice(entry.notice ?? "");
+    navigate(`/rooms/${entry.roomId}`);
+  };
   const [location, setLocation] = useState(getLocation);
   const pending = useRef<string | null>(getAuthDestination());
   const [googleFlow, setGoogleFlow] = useState(0);
@@ -256,7 +297,40 @@ export function AppRouter() {
       />
     );
   else if (route.name === "lobby" && session.state.status === "active-member")
-    content = <Lobby key={session.state.userId} />;
+    content = (
+      <Lobby key={session.state.userId} client={client} onEntered={enterRoom} />
+    );
+  else if (route.name === "join" && session.state.status === "active-member")
+    content = (
+      <RoomLobby
+        client={client}
+        onEntered={enterRoom}
+        initialCode={route.token}
+      />
+    );
+  else if (route.name === "room" && session.state.status === "active-member")
+    content =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        route.id,
+      ) ? (
+        <RoomPage
+          key={`${session.state.userId}:${route.id}`}
+          roomId={route.id}
+          userId={session.state.userId}
+          client={client}
+          getProof={session.getRealtimeProof}
+          onLeft={(message) => {
+            setRoomNotice(message ?? "");
+            navigate("/lobby");
+          }}
+        />
+      ) : (
+        <section>
+          <h1>Phòng cờ</h1>
+          <p>Định danh phòng không hợp lệ.</p>
+          <NavigationLink href="/lobby">Quay về Sảnh</NavigationLink>
+        </section>
+      );
   else
     content = (
       <section className="xq-panel xq-stack">
@@ -279,6 +353,9 @@ export function AppRouter() {
     );
   return (
     <div ref={container} className="xq-ui">
+      {roomNotice && session.state.status === "active-member" && (
+        <Notice message={roomNotice} onDismiss={() => setRoomNotice("")} />
+      )}
       {session.state.status === "active-member" &&
       route.name !== "login" &&
       route.name !== "register" ? (
