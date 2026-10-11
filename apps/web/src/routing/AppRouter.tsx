@@ -39,6 +39,10 @@ import { createProfileClient } from "../profile/profile-client.js";
 import type { ProfileLocation } from "../profile/profile-client.js";
 import { ProfilePage } from "../profile/ProfilePage.js";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
+import { HistoryPage } from "../history/HistoryPage.js";
+import { makeHistoryClient } from "../history/history-client.js";
+import { ReplayPage } from "../history/ReplayPage.js";
+import { makeReplayClient } from "../history/replay-client.js";
 
 function Lobby({
   client,
@@ -247,6 +251,8 @@ const titles: Partial<Record<Route["name"], string>> = {
   ai: "Đánh với máy",
   friends: "Bạn bè",
   settings: "Hồ sơ",
+  history: "Lịch sử ván đấu",
+  replay: "Xem lại ván đấu",
   "access-denied": "Không thể truy cập",
 };
 export function AppRouter() {
@@ -257,6 +263,14 @@ export function AppRouter() {
   );
   const friendClient = useMemo(
     () => createFriendClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
+  const historyClient = useMemo(
+    () => makeHistoryClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
+  const replayClient = useMemo(
+    () => makeReplayClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
   const profileClient = useMemo(
@@ -453,6 +467,22 @@ export function AppRouter() {
     );
   else if (route.name === "friends" && session.state.status === "active-member")
     content = <FriendsPage client={friendClient} />;
+  else if (route.name === "history" && session.state.status === "active-member")
+    content = (
+      <HistoryPage
+        key={`${session.state.userId}:${session.state.expiresAt}`}
+        client={historyClient}
+        onReplay={(id) => navigate(`/history/${id}`)}
+      />
+    );
+  else if (route.name === "replay" && session.state.status === "active-member")
+    content = (
+      <ReplayPage
+        key={`${session.state.userId}:${session.state.expiresAt}:${route.id}`}
+        client={replayClient}
+        id={route.id}
+      />
+    );
   else if (route.name === "room" && session.state.status === "active-member")
     content =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
