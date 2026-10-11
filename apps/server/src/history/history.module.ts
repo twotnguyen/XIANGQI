@@ -5,6 +5,7 @@ import {
   HttpException,
   Inject,
   Module,
+  Param,
   Req,
   type DynamicModule,
 } from "@nestjs/common";
@@ -16,6 +17,7 @@ import {
   historyHttpError,
 } from "./history-http.service.js";
 import type { HistoryInput } from "./history-store.js";
+import { ReplayHttpService, replayHttpError } from "./replay-http.service.js";
 function invalid(): never {
   throw new RoomError(
     "HISTORY_INPUT_INVALID",
@@ -94,13 +96,47 @@ class HistoryController {
     });
   }
 }
+@Controller("history")
+class ReplayController {
+  constructor(
+    @Inject("REPLAY_HTTP_SERVICE") private readonly service: ReplayHttpService,
+  ) {}
+  @Get(":id")
+  @Header("Cache-Control", "no-store")
+  async read(@Req() request: IncomingMessage, @Param("id") id: string) {
+    try {
+      const proof = readMemberRoomProof(request);
+      if (new URL(request.url ?? "", "http://localhost").searchParams.size)
+        throw new RoomError(
+          "REPLAY_INPUT_INVALID",
+          "Định danh ván không hợp lệ",
+          400,
+        );
+      return await this.service.read(proof, id);
+    } catch (error) {
+      const safe = replayHttpError(error);
+      throw new HttpException(
+        { code: safe.code, message: safe.message },
+        safe.status,
+      );
+    }
+  }
+}
 @Module({})
 export class HistoryModule {
-  static forRoot(service: HistoryHttpService): DynamicModule {
+  static forRoot(
+    service: HistoryHttpService,
+    replay?: ReplayHttpService,
+  ): DynamicModule {
     return {
       module: HistoryModule,
-      controllers: [HistoryController],
-      providers: [{ provide: "HISTORY_HTTP_SERVICE", useValue: service }],
+      controllers: [HistoryController, ...(replay ? [ReplayController] : [])],
+      providers: [
+        { provide: "HISTORY_HTTP_SERVICE", useValue: service },
+        ...(replay
+          ? [{ provide: "REPLAY_HTTP_SERVICE", useValue: replay }]
+          : []),
+      ],
     };
   }
 }

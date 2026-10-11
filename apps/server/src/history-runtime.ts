@@ -4,6 +4,8 @@ import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
 import { HistoryStore } from "./history/history-store.js";
 import { HistoryHttpService } from "./history/history-http.service.js";
 import { HistoryModule } from "./history/history.module.js";
+import { ReplayStore } from "./history/replay-store.js";
+import { ReplayHttpService } from "./history/replay-http.service.js";
 /** Borrows registration's pool and sessions. No owned connection pool, timers or close hook. */
 export async function createHistoryRuntime(
   env: Record<string, string | undefined>,
@@ -24,7 +26,7 @@ export async function createHistoryRuntime(
   try {
     const schema = await pool.query<{ ready: boolean }>(`
       WITH required(name,kind) AS (VALUES
-        ('public.matches','r'),('public.match_events','r'),('public.profiles','r'),
+        ('public.matches','r'),('public.match_events','r'),('public.match_moves','r'),('public.profiles','r'),
         ('public.rooms','r'),('public.room_members','r'),('public.active_players','r'),
         ('xiangqi_auth.principals','r'),('xiangqi_auth.app_sessions','r'),
         ('xiangqi_auth.guest_sessions','r'),('xiangqi_auth.accounts','v'))
@@ -58,7 +60,12 @@ export async function createHistoryRuntime(
         ('public.matches','red_user_id','uuid'),('public.matches','black_user_id','uuid'),
         ('public.matches','ai_side','text'),('public.matches','ai_level','text'),
         ('public.matches','rule_set_version','text'),('public.matches','outcome','jsonb'),
+        ('public.matches','position','jsonb'),('public.matches','version','int8'),
+        ('public.matches','ply','int4'),('public.matches','active_move_ids','jsonb'),
         ('public.matches','created_at','timestamptz'),('public.matches','ended_at','timestamptz'),
+        ('public.match_moves','id','uuid'),('public.match_moves','match_id','uuid'),
+        ('public.match_moves','parent_move_id','uuid'),('public.match_moves','event_version','int8'),
+        ('public.match_moves','side','text'),('public.match_moves','move','jsonb'),
         ('public.match_events','match_id','uuid'),('public.match_events','version','int8'),
         ('public.match_events','type','text'),('public.match_events','payload','jsonb'),
         ('public.profiles','user_id','uuid'),('public.profiles','display_name','text'),
@@ -93,10 +100,17 @@ export async function createHistoryRuntime(
   } catch {
     throw new Error("History migration is not ready");
   }
+  const transactions = new RoomTransactions(pool),
+    authorizer = new PostgresMemberRoomAuthorizer(registration.sessions);
   const service = new HistoryHttpService(
     new HistoryStore(),
-    new RoomTransactions(pool),
-    new PostgresMemberRoomAuthorizer(registration.sessions),
+    transactions,
+    authorizer,
   );
-  return { module: HistoryModule.forRoot(service), service };
+  const replay = new ReplayHttpService(
+    new ReplayStore(),
+    transactions,
+    authorizer,
+  );
+  return { module: HistoryModule.forRoot(service, replay), service };
 }

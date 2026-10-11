@@ -280,5 +280,21 @@ describe.skipIf(!databaseUrl)(
         createHistoryRuntime(enabled, registration().context),
       ).rejects.toThrow("History migration is not ready");
     });
+    it.each([
+      "ALTER TABLE public.match_moves NO FORCE ROW LEVEL SECURITY",
+      "REVOKE SELECT ON public.match_moves FROM app_server",
+      "GRANT SELECT ON public.match_moves TO authenticated",
+      "ALTER TABLE public.match_moves DROP COLUMN parent_move_id CASCADE",
+    ])("refuses unsafe or incomplete Replay storage: %s", async (sql) => {
+      await pool.query(sql);
+      const result = await createHistoryRuntime(
+        enabled,
+        registration().context,
+      ).then(
+        () => null,
+        (error: Error) => error.message,
+      );
+      expect(result).toBe("History migration is not ready");
+    });
   },
 );
