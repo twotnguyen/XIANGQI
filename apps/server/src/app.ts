@@ -8,6 +8,7 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { PrivateBodyFilter } from "./private-body-filter.js";
 import type { HealthStatus } from "@xiangqi/shared";
 import { Server } from "socket.io";
 import {
@@ -65,6 +66,7 @@ export async function createApp(
     },
     { logger: false },
   );
+  app.useGlobalFilters(new PrivateBodyFilter(app.getHttpAdapter()));
   app.use(
     (request: IncomingMessage, response: ServerResponse, next: () => void) => {
       const origin = request.headers.origin;
