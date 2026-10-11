@@ -54,7 +54,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     const ids = await this.transaction(async (client) =>
       (
         await client.query<{ id: string }>(
-          "SELECT r.id FROM public.rooms r WHERE ($1::uuid IS NULL OR r.id>$1) AND r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())) ORDER BY r.id LIMIT 50",
+          "SELECT r.id FROM public.rooms r WHERE ($1::uuid IS NULL OR r.id>$1) AND r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
           [this.cursor],
         )
       ).rows.map((r) => r.id),
