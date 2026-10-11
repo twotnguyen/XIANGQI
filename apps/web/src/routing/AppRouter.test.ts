@@ -161,6 +161,21 @@ vi.mock("../friends/FriendsPage.js", () => ({
 vi.mock("../friends/RoomInvitePopup.js", () => ({
   RoomInvitePopup: () => null,
 }));
+vi.mock("../profile/profile-client.js", () => ({
+  createProfileClient: () => ({
+    read: async () => ({
+      userId: "fixture-user",
+      username: "fixture",
+      email: "fixture@example.invalid",
+      displayName: "Thành viên",
+    }),
+    updateDisplayName: async (displayName: string) => ({ displayName }),
+    location: async () => ({ kind: "none", roomId: null, matchId: null }),
+  }),
+}));
+vi.mock("../profile/ProfilePage.js", () => ({
+  ProfilePage: () => createElement("h1", null, "Hồ sơ"),
+}));
 const member = {
   status: "active-member",
   userId: "fixture-user",
