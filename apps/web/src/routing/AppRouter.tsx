@@ -35,6 +35,9 @@ import {
   PublicRoomRequestError,
 } from "../rooms/public-room-client.js";
 import type { PublicRoomView } from "@xiangqi/shared";
+import { createProfileClient } from "../profile/profile-client.js";
+import type { ProfileLocation } from "../profile/profile-client.js";
+import { ProfilePage } from "../profile/ProfilePage.js";
 import { guardRoute, resolveRoute, type Route } from "./routes.js";
 import { HistoryPage } from "../history/HistoryPage.js";
 import { makeHistoryClient } from "../history/history-client.js";
@@ -44,9 +47,13 @@ import { makeReplayClient } from "../history/replay-client.js";
 function Lobby({
   client,
   onEntered,
+  blockedReason,
+  banner,
 }: {
   client: RoomClient;
   onEntered: (entry: RoomEntry) => void;
+  blockedReason?: string;
+  banner?: ReactNode;
 }) {
   const { authorizedFetch, logout, getRealtimeProof } = useSession();
   const publicClient = useMemo(
@@ -194,6 +201,7 @@ function Lobby({
     setNotice("Chức năng này hiện chưa khả dụng. Vui lòng quay lại sau.");
   return (
     <>
+      {banner}
       {notice && <Notice tone="error" message={notice} />}
       <LobbyShell
         rooms={rooms}
@@ -205,6 +213,7 @@ function Lobby({
         onPlayAI={unavailable}
         admissionReady={admissionReady}
         joiningRoomId={joiningRoomId}
+        blockedReason={blockedReason}
         onJoinRoom={(id, intent) => void join(id, intent)}
         onRetry={() => setAttempt((value) => value + 1)}
       />
@@ -264,6 +273,29 @@ export function AppRouter() {
     () => makeReplayClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
+  const profileClient = useMemo(
+    () => createProfileClient(session.authorizedFetch),
+    [session.authorizedFetch],
+  );
+  const [profileName, setProfileName] = useState<string | null>(null);
+  const [where, setWhere] = useState<ProfileLocation | null>(null);
+  useEffect(() => {
+    if (session.state.status !== "active-member") {
+      setProfileName(null);
+      setWhere(null);
+      return;
+    }
+    let alive = true;
+    void profileClient.read().then(
+      (view) => {
+        if (alive) setProfileName(view.displayName);
+      },
+      () => undefined,
+    );
+    return () => {
+      alive = false;
+    };
+  }, [profileClient, session.state.status]);
   const [roomNotice, setRoomNotice] = useState("");
   const enterRoom = (entry: RoomEntry) => {
     setRoomNotice(entry.notice ?? "");
@@ -277,6 +309,19 @@ export function AppRouter() {
   const decision = guardRoute(route, session.state);
   const title = titles[route.name] || "Chức năng đang chuẩn bị";
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
+  useEffect(() => {
+    if (session.state.status !== "active-member") return;
+    let alive = true;
+    void profileClient.location().then(
+      (value) => {
+        if (alive) setWhere(value);
+      },
+      () => undefined,
+    );
+    return () => {
+      alive = false;
+    };
+  }, [profileClient, session.state.status, location.pathname]);
   useEffect(() => {
     if (decision.kind !== "redirect") return;
     if (decision.preserveDestination && route.name !== "onboarding")
@@ -381,7 +426,40 @@ export function AppRouter() {
     );
   else if (route.name === "lobby" && session.state.status === "active-member")
     content = (
-      <Lobby key={session.state.userId} client={client} onEntered={enterRoom} />
+      <Lobby
+        key={session.state.userId}
+        client={client}
+        onEntered={enterRoom}
+        blockedReason={
+          where && where.kind !== "none"
+            ? "Bạn đang ở trong một ván/phòng khác."
+            : undefined
+        }
+        banner={
+          where && where.kind !== "none" ? (
+            <section className="xq-rejoin-banner" role="status">
+              <p>
+                Bạn có ván đang chơi dở.{" "}
+                <NavigationLink href={`/rooms/${where.roomId}`}>
+                  Quay lại
+                </NavigationLink>
+              </p>
+            </section>
+          ) : null
+        }
+      />
+    );
+  else if (
+    route.name === "settings" &&
+    session.state.status === "active-member"
+  )
+    content = (
+      <ProfilePage
+        client={profileClient}
+        guest={false}
+        onSaved={setProfileName}
+        onLogout={() => void session.logout()}
+      />
     );
   else if (route.name === "join" && session.state.status === "active-member")
     content = (
@@ -459,7 +537,10 @@ export function AppRouter() {
         <AppShell
           title={title}
           active={location.pathname}
-          user={{ displayName: session.state.username, guest: false }}
+          user={{
+            displayName: profileName ?? session.state.username,
+            guest: false,
+          }}
           bell={<FriendsBell client={friendClient} />}
         >
           {content}

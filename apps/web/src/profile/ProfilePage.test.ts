@@ -1,0 +1,177 @@
+// @vitest-environment jsdom
+import { createElement } from "react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ProfilePage } from "./ProfilePage.js";
+import { ProfileRequestError, type ProfileClient } from "./profile-client.js";
+
+const originalShow = Object.getOwnPropertyDescriptor(
+  HTMLDialogElement.prototype,
+  "showModal",
+);
+const originalClose = Object.getOwnPropertyDescriptor(
+  HTMLDialogElement.prototype,
+  "close",
+);
+beforeEach(() => {
+  Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.setAttribute("open", "");
+    },
+  });
+  Object.defineProperty(HTMLDialogElement.prototype, "close", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.removeAttribute("open");
+    },
+  });
+});
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+  for (const [name, descriptor] of [
+    ["showModal", originalShow],
+    ["close", originalClose],
+  ] as const) {
+    if (descriptor)
+      Object.defineProperty(HTMLDialogElement.prototype, name, descriptor);
+    else Reflect.deleteProperty(HTMLDialogElement.prototype, name);
+  }
+});
+
+function client(overrides: Partial<ProfileClient> = {}): ProfileClient {
+  return {
+    read: vi.fn().mockResolvedValue({
+      userId: "u",
+      username: "kythu",
+      email: "kythu@example.invalid",
+      displayName: "Kỳ Hữu",
+    }),
+    updateDisplayName: vi.fn().mockResolvedValue({ displayName: "Tên Mới" }),
+    location: vi
+      .fn()
+      .mockResolvedValue({ kind: "none", roomId: null, matchId: null }),
+    ...overrides,
+  } as unknown as ProfileClient;
+}
+
+describe("profile page", () => {
+  it("shows avatar letter, username and read-only email and saves a name", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    const c = client();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        onSaved,
+        onLogout: vi.fn(),
+      }),
+    );
+    expect(await screen.findByText("kythu")).toBeTruthy();
+    expect(screen.getByText("kythu@example.invalid")).toBeTruthy();
+    const input = screen.getByLabelText("Tên hiển thị");
+    await user.clear(input);
+    await user.type(input, "Tên Mới");
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    await waitFor(() =>
+      expect(c.updateDisplayName).toHaveBeenCalledWith("Tên Mới"),
+    );
+    expect(onSaved).toHaveBeenCalledWith("Tên Mới");
+    expect(await screen.findByText("Đã lưu tên hiển thị.")).toBeTruthy();
+  });
+  it("keeps the server name and shows a field error when rejected", async () => {
+    const user = userEvent.setup();
+    const c = client({
+      updateDisplayName: vi
+        .fn()
+        .mockRejectedValue(
+          new ProfileRequestError("PROFILE_NAME_FORBIDDEN", 400),
+        ),
+    });
+    const onSaved = vi.fn();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        onSaved,
+        onLogout: vi.fn(),
+      }),
+    );
+    const input = (await screen.findByLabelText(
+      "Tên hiển thị",
+    )) as HTMLInputElement;
+    expect(input.value).toBe("Kỳ Hữu");
+    await user.clear(input);
+    await user.type(input, "cấm");
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    expect(
+      await screen.findByText("Tên hiển thị chứa từ không được phép."),
+    ).toBeTruthy();
+    expect(onSaved).not.toHaveBeenCalled();
+  });
+  it("requires confirmation before logging out during an online match", async () => {
+    const user = userEvent.setup();
+    const onLogout = vi.fn();
+    const c = client({
+      location: vi.fn().mockResolvedValue({
+        kind: "playing-online",
+        roomId: "r",
+        matchId: "m",
+      }),
+    });
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout,
+      }),
+    );
+    await screen.findByText("kythu");
+    await user.click(screen.getByRole("button", { name: "Đăng xuất" }));
+    const dialog = screen.getByRole("dialog", {
+      name: "Đăng xuất khi đang đấu",
+    });
+    expect(onLogout).not.toHaveBeenCalled();
+    await user.click(
+      within(dialog).getByRole("button", { name: "Đồng ý đăng xuất" }),
+    );
+    expect(onLogout).toHaveBeenCalledOnce();
+  });
+  it("logs out from the lobby without a confirmation dialog", async () => {
+    const user = userEvent.setup();
+    const onLogout = vi.fn();
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout,
+      }),
+    );
+    await screen.findByText("kythu");
+    await user.click(screen.getByRole("button", { name: "Đăng xuất" }));
+    expect(onLogout).toHaveBeenCalledOnce();
+  });
+  it("hides profile fields from guests but keeps logout", () => {
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: true,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    expect(screen.queryByLabelText("Tên hiển thị")).toBeNull();
+    expect(screen.getByRole("button", { name: "Đăng xuất" })).toBeTruthy();
+  });
+});

@@ -8,6 +8,7 @@ import { createRoomRuntime } from "./room-runtime.js";
 import { createFriendRuntime } from "./friend-runtime.js";
 import { createMediaRuntime } from "./media-runtime.js";
 import { createHistoryRuntime } from "./history-runtime.js";
+import { createProfileRuntime } from "./profile-runtime.js";
 import { AuthProvidersModule } from "./auth/providers.module.js";
 
 config({ quiet: true });
@@ -26,6 +27,7 @@ try {
   );
   const friends = await createFriendRuntime(process.env, registration);
   const history = await createHistoryRuntime(process.env, registration);
+  const profile = await createProfileRuntime(process.env, registration);
   app = await createApp(
     settings.corsOrigins,
     [
@@ -36,6 +38,7 @@ try {
       ...(friends ? [friends.module] : []),
       ...(media ? [media.module] : []),
       ...(history ? [history.module] : []),
+      ...(profile ? [profile.module] : []),
     ],
     registration?.checkDatabase,
     rooms?.realtime,
