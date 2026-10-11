@@ -33,6 +33,7 @@ export interface LobbyShellProps {
   fixture?: boolean;
   admissionReady?: boolean;
   joiningRoomId?: string | null;
+  blockedReason?: string;
 }
 export function LobbyShell({
   rooms,
@@ -45,14 +46,17 @@ export function LobbyShell({
   fixture = false,
   admissionReady = true,
   joiningRoomId = null,
+  blockedReason,
 }: LobbyShellProps) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
-  const joinDisabledReason = !admissionReady
-    ? "Danh sách đang kết nối lại. Vui lòng chờ."
-    : joiningRoomId !== null
-      ? "Đang vào phòng. Vui lòng chờ."
-      : undefined;
+  const joinDisabledReason = blockedReason
+    ? blockedReason
+    : !admissionReady
+      ? "Danh sách đang kết nối lại. Vui lòng chờ."
+      : joiningRoomId !== null
+        ? "Đang vào phòng. Vui lòng chờ."
+        : undefined;
   return (
     <div className="xq-lobby xq-stack">
       <div className="xq-lobby-heading">
@@ -70,7 +74,9 @@ export function LobbyShell({
         <section className="xq-panel xq-stack">
           <h2>Tự tạo phòng</h2>
           <p>Mời kỳ hữu qua mã phòng hoặc đường dẫn.</p>
-          <Button onClick={onCreate}>Tạo phòng</Button>
+          <Button onClick={onCreate} disabledReason={blockedReason}>
+            Tạo phòng
+          </Button>
           <form
             className="xq-code-form"
             onSubmit={(event) => {
@@ -96,7 +102,11 @@ export function LobbyShell({
               helper="Nhập 8 ký tự, không có dấu gạch nối."
               error={codeError}
             />
-            <Button type="submit" variant="secondary">
+            <Button
+              type="submit"
+              variant="secondary"
+              disabledReason={blockedReason}
+            >
               Vào phòng
             </Button>
           </form>
@@ -104,7 +114,9 @@ export function LobbyShell({
         <section className="xq-panel xq-stack">
           <h2>Đánh với máy</h2>
           <p>Luyện nước đi với ba cấp độ Dễ, Trung bình và Khó.</p>
-          <Button onClick={onPlayAI}>Chọn cấp độ máy</Button>
+          <Button onClick={onPlayAI} disabledReason={blockedReason}>
+            Chọn cấp độ máy
+          </Button>
           <div className="xq-future-modes">
             <h3>Ghép ngẫu nhiên</h3>
             <p className="xq-help">
@@ -141,7 +153,11 @@ export function LobbyShell({
         ) : state === "empty" || rooms.length === 0 ? (
           <EmptyState
             title="Chưa có phòng công khai"
-            action={<Button onClick={onCreate}>Tạo phòng đầu tiên</Button>}
+            action={
+              <Button onClick={onCreate} disabledReason={blockedReason}>
+                Tạo phòng đầu tiên
+              </Button>
+            }
           >
             Hãy tạo phòng rồi mở Công khai để mời kỳ hữu.
           </EmptyState>
