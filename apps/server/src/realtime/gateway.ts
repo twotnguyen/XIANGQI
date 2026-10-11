@@ -362,6 +362,53 @@ export function attachRealtime(
   clean();
   const timer = setInterval(clean, 60000);
   timer.unref();
+  let sessionMaintenance: Promise<void> | null = null;
+  let sessionCursor: string | null = null;
+  const scanSessions = () => {
+    if (
+      sessionMaintenance ||
+      stopping ||
+      !dependencies.identities.sessionActive
+    )
+      return;
+    const check = dependencies.identities.sessionActive.bind(
+      dependencies.identities,
+    );
+    sessionMaintenance = (async () => {
+      const batch = [...peers.values()]
+        .filter(
+          (peer) =>
+            peer.socket.connected &&
+            (sessionCursor === null || peer.socket.id > sessionCursor),
+        )
+        .sort((a, b) =>
+          a.socket.id < b.socket.id ? -1 : a.socket.id > b.socket.id ? 1 : 0,
+        )
+        .slice(0, 50);
+      for (const peer of batch) {
+        if (stopping) break;
+        try {
+          const active = await check(peer.connection);
+          if (
+            !active &&
+            !stopping &&
+            peers.get(peer.socket.id) === peer &&
+            peer.socket.connected
+          )
+            peer.socket.disconnect(true);
+        } catch {
+          process.stderr.write(
+            logEvent("error", "realtime_maintenance_failed") + "\n",
+          );
+        }
+      }
+      sessionCursor = batch.length === 50 ? batch[49]!.socket.id : null;
+    })().finally(() => {
+      sessionMaintenance = null;
+    });
+  };
+  const sessionTimer = setInterval(scanSessions, 1000);
+  sessionTimer.unref();
   let closing: Promise<void> | undefined;
   return {
     publishSnapshots,
@@ -376,12 +423,14 @@ export function attachRealtime(
       (closing ??= new Promise<void>((resolve, reject) => {
         stopping = true;
         clearInterval(timer);
+        clearInterval(sessionTimer);
         for (const entry of pendingDisconnects) clearTimeout(entry.timer);
         io.close((error) => {
           void (async () => {
             await Promise.all([...admissions]);
             await Promise.all([...disconnects]);
             await maintenance;
+            await sessionMaintenance;
             await Promise.all([...pendingDisconnects].map(attemptDisconnect));
             pendingDisconnects.clear();
             if (error) reject(error);
