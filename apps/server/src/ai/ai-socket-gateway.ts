@@ -84,7 +84,7 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
   if (s.outcome !== null) {
     const end = object(s.outcome);
     if (!["CHECKMATE", "STALEMATE", "PERPETUAL_CHECK", "DRAW_REPETITION", "DRAW_NO_CAPTURE", "RESIGN", "ENGINE_FAILURE"].includes(end.reason as string) || ![null, "red", "black"].includes(end.winner as string | null)) throw Error();
-    outcome = { reason: end.reason, winner: end.winner } as typeof outcome;
+    outcome = { reason: end.reason, winner: end.winner } as NonNullable<AiSocketSnapshot["snapshot"]["outcome"]>;
   }
   return {
     snapshot: { id: s.id, requestedSide: s.requestedSide, actualSide: s.actualSide, level: s.level, position: s.position, history: [...s.history], version: s.version, status: s.status, engineState: s.engineState, engineError: s.engineError, outcome } as AiSocketSnapshot["snapshot"],
