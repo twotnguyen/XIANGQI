@@ -1,6 +1,6 @@
 # T18 / XIAN-54: phòng tự tạo
 
-> Cấu trúc thư mục: `runtime/` chứa `room-runtime.ts` (nối module vào ứng dụng) cùng kiểm thử runtime; `public/` chứa danh sách phòng công khai (feed, service, store, module).
+> Cấu trúc thư mục: `public/` chứa danh sách phòng công khai (feed, service, store, controller, module). Phần nối kết cả miền game nằm ở `../game.runtime.ts`.
 
 RoomStore nhận PoolClient của giao dịch ngoài, không mở pool/giao dịch/provider HTTP riêng. Root owns HTTP/session guards, shared protocol, RealtimeStore actor-first hook, gateway presence callbacks và scheduler. Không dùng trực tiếp trusted RoomScope từ body client.
 

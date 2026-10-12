@@ -108,7 +108,8 @@ XIANGQI/
 │  │  └─ main.tsx
 │  └─ server/src/            NestJS + Socket.IO
 │     ├─ account/            auth, login, session, google, guest, profile, friend
-│     ├─ game/               room (+runtime, public), match, clock, realtime, chat, ai, history, media
+│     ├─ game/               room (+public), match, clock, realtime, chat, ai, history, media;
+│     │                      game.runtime.ts nối các miền này vào ứng dụng
 │     ├─ core/               config, logger, bộ lọc nội dung riêng tư, schema (kiểm thử SQL/RLS)
 │     └─ main.ts, app.ts     điểm vào
 ├─ packages/                 shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
@@ -123,6 +124,10 @@ XIANGQI/
 ├─ .github/                  CI, CODEOWNERS
 └─ .local/                   ghi chú, log, bản sao lưu cá nhân (Git bỏ qua)
 ```
+
+**Quy ước mỗi tính năng ở server:** `x.types.ts` (kiểu, lỗi), `x.module.ts` (khai báo module và
+`createXRuntime` đọc cờ môi trường/kiểm tra schema), `x.controller.ts` (HTTP và kiểm tra đầu vào),
+`x.service.ts` (nghiệp vụ, SQL); tính năng lớn có thêm `*.store.ts`, `*-worker.ts`, `*-port.ts`. Test nằm cạnh file nguồn.
 
 **Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*` (và `features` khác khi thật cần);
 `shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả. Test nằm cạnh file nguồn
