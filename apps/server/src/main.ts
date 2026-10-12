@@ -4,7 +4,7 @@ import { readConfig } from "./core/config.js";
 import { logEvent } from "./core/logger.js";
 import { createRegistrationRuntime } from "./account/auth/registration.module.js";
 import { createGoogleRuntime } from "./account/google/google.module.js";
-import { createRoomRuntime } from "./game/room/runtime/room-runtime.js";
+import { createRoomRuntime } from "./game/game.runtime.js";
 import { createFriendRuntime } from "./account/friend/friend.module.js";
 import { createMediaRuntime } from "./game/media/media.module.js";
 import { createHistoryRuntime } from "./game/history/history.module.js";

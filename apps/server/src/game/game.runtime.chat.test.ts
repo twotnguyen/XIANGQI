@@ -10,12 +10,12 @@ import type {
 } from "@xiangqi/shared";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { io, type Socket } from "socket.io-client";
-import { createApp } from "../../../app.js";
-import type { createRegistrationRuntime } from "../../../account/auth/registration.module.js";
-import { SessionService } from "../../../account/login/session.service.js";
-import { PostgresLoginStore } from "../../../account/login/postgres-login-store.js";
-import { createRoomRuntime } from "./room-runtime.js";
-import { apply, databaseUrl, pool, reset } from "./room-runtime.test-helper.js";
+import { createApp } from "../app.js";
+import type { createRegistrationRuntime } from "../account/auth/registration.module.js";
+import { SessionService } from "../account/login/session.service.js";
+import { PostgresLoginStore } from "../account/login/postgres-login-store.js";
+import { createRoomRuntime } from "./game.runtime.js";
+import { apply, databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>

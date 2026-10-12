@@ -7,7 +7,7 @@ import {
   reset,
   apply,
   databaseUrl,
-} from "../room/runtime/room-runtime.test-helper.js";
+} from "../game.runtime.test-helper.js";
 import { ChatStore } from "./chat-store.js";
 import { ChatOutboxWorker } from "./chat-worker.js";
 const rooms = new RoomStore(),
