@@ -28,7 +28,7 @@ Use only a dedicated PostgreSQL17 cluster on `127.0.0.1:55447`, database `xiangq
 
 ```sh
 MATCH_TEST_DATABASE_URL=postgresql://match_test_admin@127.0.0.1:55447/xiangqi_match_test \
-  pnpm vitest run apps/server/src/game/match packages/xiangqi-core/test --no-file-parallelism
+  pnpm vitest run tests/server/game/match tests/packages/xiangqi-core --no-file-parallelism
 ```
 
 Without that variable, SQL cases skip; codec/core tests still run. No Supabase-managed Auth, SMTP, real accounts or live database is involved.

@@ -97,7 +97,7 @@ Root gắn `attachRealtime(app.getHttpServer(), { store, identities, corsOrigins
 Node 22.23.3 và PostgreSQL 17 tại database riêng `xiangqi_realtime_test`: 32/32 tests PASS (25 SQL/Socket.IO/Nest và 7 protocol). Có mutation/receipt failure rollback, rollback migration trước ghi dữ liệu và từ chối sau ghi dữ liệu, quyền login NOINHERIT/NOBYPASSRLS, expiry 24h, token expiry, membership revocation, controller restart/reconnect và Socket.IO thật. Fixture 50 kết nối/10 phòng đo ack p95 19.54ms ở lần chạy kiểm chứng sau format; không có ván cờ/media thật nên chưa thay GATE-REALTIME 10 ván ứng dụng.
 
 ```sh
-REALTIME_TEST_DATABASE_URL=postgresql://twot@127.0.0.1:55441/xiangqi_realtime_test pnpm exec vitest run apps/server/src/game/realtime/store.test.ts
+REALTIME_TEST_DATABASE_URL=postgresql://twot@127.0.0.1:55441/xiangqi_realtime_test pnpm exec vitest run tests/server/game/realtime/store.test.ts
 ```
 
 Test chỉ chấp nhận database name `xiangqi_realtime_test` trên host local hoặc service postgres CI; reset schema trong database này. Không dùng auth test DB hay URL Supabase live.

@@ -3,7 +3,7 @@
 `schema.test.ts` chỉ chạy khi `SCHEMA_TEST_DATABASE_URL` chỉ đến **127.0.0.1:55443/xiangqi_schema_test**. Database/cluster này dành riêng fixture T14; không dùng Supabase live, authDB55441 hoặc loginDB55444. Suite reset schema public/auth/xiangqi_* trong database này. Role bootstrap chỉ tạo role chưa có, không ALTER flags hoặc mật khẩu; membership do fixture admin của cluster riêng quản lý. `managed-auth.test-fixture.sql` là mô phỏng tối thiểu của managed dependency, không được deploy lên Supabase.
 
 ```sh
-SCHEMA_TEST_DATABASE_URL=postgresql://schema_test_admin@127.0.0.1:55443/xiangqi_schema_test pnpm exec vitest run apps/server/src/core/schema/schema.test.ts
+SCHEMA_TEST_DATABASE_URL=postgresql://schema_test_admin@127.0.0.1:55443/xiangqi_schema_test pnpm exec vitest run tests/server/core/schema/schema.test.ts
 ```
 
 Node22.23.3, PostgreSQL17.11 (Homebrew): **7/7 tests PASS**. TDD RED trước hardening: baseline/rebuild PASS, ba permission/FORCE/rollback guards FAIL với stub; GREEN khi áp dụng exact migration/inverse. Các checks gồm:

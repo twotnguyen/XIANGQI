@@ -1,7 +1,7 @@
 # Kiểm thử phiên HTTP — XIAN-53 / T17
 
-[login.test.ts](login.test.ts) chạy Nest thật, PostgreSQL thật và
-[Auth HTTP fixture](../auth/auth-fixture.test-helper.ts) qua adapter SupabaseAuth.
+[login.test.ts](../../../../../tests/server/account/login/login.test.ts) chạy Nest thật, PostgreSQL thật và
+[Auth HTTP fixture](../../../../../tests/server/account/auth/auth-fixture.test-helper.ts) qua adapter SupabaseAuth.
 Database local riêng là `xiangqi_login_test` tại cổng 55444; bộ Auth chạy trước
 trên `xiangqi_auth_test` tại cổng 55441. Không dùng dữ liệu hoặc gửi thư thật.
 
@@ -33,8 +33,8 @@ minh reload, đóng trình duyệt, SMTP hay đăng nhập nhiều thiết bị 
 Chạy tuần tự bằng Node 22, chỉ với hai database synthetic đã nêu:
 
 ```sh
-AUTH_TEST_DATABASE_URL=postgresql://twot@127.0.0.1:55441/xiangqi_auth_test pnpm vitest run apps/server/src/account/auth/schema.test.ts
-LOGIN_TEST_DATABASE_URL=postgresql://login_test_admin@127.0.0.1:55444/xiangqi_login_test pnpm vitest run apps/server/src/account/login/login.test.ts
+AUTH_TEST_DATABASE_URL=postgresql://twot@127.0.0.1:55441/xiangqi_auth_test pnpm vitest run tests/server/account/auth/schema.test.ts
+LOGIN_TEST_DATABASE_URL=postgresql://login_test_admin@127.0.0.1:55444/xiangqi_login_test pnpm vitest run tests/server/account/login/login.test.ts
 ```
 
 Các suite từ chối database sai tên/host; khi thiếu biến SQL sẽ báo skip. Không

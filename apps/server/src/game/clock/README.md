@@ -20,8 +20,8 @@ Use a separate PostgreSQL17 cluster on `127.0.0.1:55448`, database `xiangqi_cloc
 
 ```sh
 CLOCK_TEST_DATABASE_URL=postgresql://clock_test_admin@127.0.0.1:55448/xiangqi_clock_test \
-  pnpm vitest run apps/server/src/game/clock apps/server/src/game/match/history.test.ts \
-  packages/xiangqi-core/test --no-file-parallelism
+  pnpm vitest run tests/server/game/clock tests/server/game/match/history.test.ts \
+  tests/packages/xiangqi-core --no-file-parallelism
 ```
 
 Without CLOCK_TEST_DATABASE_URL, SQL cases skip. Pure clock/core tests remain available.

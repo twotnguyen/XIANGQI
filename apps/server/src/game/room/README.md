@@ -45,8 +45,8 @@ Rollback only before feature writes; metadata/defaults/ACL/function body/trigger
 Dedicated PostgreSQL17 trên127.0.0.1:55446/xiangqi_room_test. URL guard rejects host/port/db/query/fragment khác trước reset. Full audited baseline replay, fake managed Auth dependency chỉ dùng test; không seed user thật hoặc gửi email. Node22:
 
 ```sh
-ROOM_TEST_DATABASE_URL=postgresql://room_test_admin@127.0.0.1:55446/xiangqi_room_test pnpm exec vitest run apps/server/src/game/room/room.test.ts
-pnpm exec eslint apps/server/src/game/room
+ROOM_TEST_DATABASE_URL=postgresql://room_test_admin@127.0.0.1:55446/xiangqi_room_test pnpm exec vitest run tests/server/game/room/room.test.ts
+pnpm exec eslint apps/server/src/game/room tests/server/game/room
 pnpm --filter @xiangqi/server typecheck
 pnpm --filter @xiangqi/server build
 ```

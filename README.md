@@ -113,6 +113,7 @@ XIANGQI/
 │     ├─ core/               config, logger, bộ lọc nội dung riêng tư, schema (kiểm thử SQL/RLS)
 │     └─ main.ts, app.ts     điểm vào
 ├─ packages/                 shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
+├─ tests/                    toàn bộ test, helper và fixture (server/, web/, packages/); xem tests/README.md
 ├─ supabase/                 migration, rollback, baseline, kiểm thử SQL, mẫu email
 ├─ infra/livekit/            Docker và báo cáo spike LiveKit
 ├─ scripts/                  công cụ dòng lệnh (chuyển LiveKit local/Cloud)
@@ -127,11 +128,11 @@ XIANGQI/
 
 **Quy ước mỗi tính năng ở server:** `x.types.ts` (kiểu, lỗi), `x.module.ts` (khai báo module và
 `createXRuntime` đọc cờ môi trường/kiểm tra schema), `x.controller.ts` (HTTP và kiểm tra đầu vào),
-`x.service.ts` (nghiệp vụ, SQL); tính năng lớn có thêm `*.store.ts`, `*-worker.ts`, `*-port.ts`. Test nằm cạnh file nguồn.
+`x.service.ts` (nghiệp vụ, SQL); tính năng lớn có thêm `*.store.ts`, `*-worker.ts`, `*-port.ts`. Test nằm riêng ở `tests/`
+theo cùng cấu trúc thư mục.
 
 **Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*` (và `features` khác khi thật cần);
-`shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả. Test nằm cạnh file nguồn
-(`*.test.ts`).
+`shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả.
 
 ## Tài liệu dự án
 
