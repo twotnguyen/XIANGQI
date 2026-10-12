@@ -13,9 +13,9 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import type { IncomingMessage } from "node:http";
-import { LoginError } from "../login/contracts.js";
-import { RoomError } from "./contracts.js";
-import { readMemberRoomProof } from "./room.module.js";
+import { LoginError } from "../../login/contracts.js";
+import { RoomError } from "../contracts.js";
+import { readMemberRoomProof } from "../room.module.js";
 import type {
   PublicRoomJoinInput,
   PublicRoomService,

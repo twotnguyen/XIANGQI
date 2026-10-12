@@ -10,7 +10,7 @@ import type { AuthProvider, RegistrationStore, Session } from "./contracts.js";
 import { RegistrationService } from "./registration.service.js";
 import { RegistrationController } from "./registration.controller.js";
 import { AccountActiveGuard } from "./account-active.guard.js";
-import { logEvent } from "../logger.js";
+import { logEvent } from "../core/logger.js";
 
 @Injectable()
 class RegistrationMaintenance

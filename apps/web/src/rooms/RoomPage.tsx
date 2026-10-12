@@ -8,7 +8,7 @@ import {
 } from "react";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { parsePosition } from "@xiangqi/xiangqi-core";
-import { XiangqiBoard } from "../components/XiangqiBoard.js";
+import { XiangqiBoard } from "../board/XiangqiBoard.js";
 import {
   Button,
   Dialog,
@@ -25,15 +25,15 @@ import {
   type RoomView,
 } from "./room-client.js";
 import { createGameAudio } from "./game-audio.js";
-import { MatchClocks } from "./MatchClocks.js";
-import { MatchResult } from "./MatchResult.js";
+import { MatchClocks } from "./match/MatchClocks.js";
+import { MatchResult } from "./match/MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
-import { MatchActions, type MatchAction } from "./MatchActions.js";
-import { ReconnectStatus } from "./ReconnectStatus.js";
+import { MatchActions, type MatchAction } from "./match/MatchActions.js";
+import { ReconnectStatus } from "./match/ReconnectStatus.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
 import { RoomQr } from "./RoomQr.js";
 import { RoomChat } from "../chat/RoomChat.js";
-import { useRoomChat } from "./useRoomChat.js";
+import { useRoomChat } from "../chat/useRoomChat.js";
 import type { MediaClient } from "../media/media-client.js";
 const LazyMediaPanel = lazy(() =>
   import("../media/MediaPanel.js").then((module) => ({

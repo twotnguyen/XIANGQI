@@ -1,16 +1,16 @@
-import { record, uuid } from "../match/position-codec.js";
+import { record, uuid } from "../../match/position-codec.js";
 import {
   RoomError,
   type RoomActor,
   type RoomEntry,
   type RoomScope,
-} from "./contracts.js";
+} from "../contracts.js";
 import type {
   MemberRoomAuthorizer,
   MemberRoomRequestProof,
-} from "./room-http.service.js";
+} from "../room-http.service.js";
 import type { PublicRoomStore } from "./public-room-store.js";
-import type { RoomTransactions } from "./room-transactions.js";
+import type { RoomTransactions } from "../room-transactions.js";
 export type PublicRoomJoinInput = {
   commandId: string;
   preference: "play" | "watch";

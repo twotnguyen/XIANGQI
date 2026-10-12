@@ -16,7 +16,7 @@ import {
 } from "./contracts.js";
 import { errorAcknowledgement, type RealtimeStore } from "./store.js";
 import { parseCommand, parseHandshake, uuid } from "./protocol.js";
-import { logEvent } from "../logger.js";
+import { logEvent } from "../core/logger.js";
 
 function authenticationFailure(error: unknown): RealtimeError {
   return error instanceof RealtimeError && error.code === "REALTIME_UNAVAILABLE"

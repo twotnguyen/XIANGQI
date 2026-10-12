@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import type { ChatChannel, ChatPage, RoomSnapshot } from "@xiangqi/shared";
-import type { RoomConnection } from "./room-client.js";
+import type { RoomConnection } from "../rooms/room-client.js";
 import type { ChatChanged } from "./chat-client.js";
-import type { RoomChatChannelState, RoomChatProps } from "../chat/RoomChat.js";
+import type { RoomChatChannelState, RoomChatProps } from "./RoomChat.js";
 const empty = (scopeToken: string | null = null): RoomChatChannelState => ({
   scopeToken,
   canSend: false,

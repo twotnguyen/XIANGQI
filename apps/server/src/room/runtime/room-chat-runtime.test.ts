@@ -10,10 +10,10 @@ import type {
 } from "@xiangqi/shared";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { io, type Socket } from "socket.io-client";
-import { createApp } from "./app.js";
-import type { createRegistrationRuntime } from "./auth-runtime.js";
-import { SessionService } from "./login/session.service.js";
-import { PostgresLoginStore } from "./login/postgres-login-store.js";
+import { createApp } from "../../app.js";
+import type { createRegistrationRuntime } from "../../auth/auth-runtime.js";
+import { SessionService } from "../../login/session.service.js";
+import { PostgresLoginStore } from "../../login/postgres-login-store.js";
 import { createRoomRuntime } from "./room-runtime.js";
 import { apply, databaseUrl, pool, reset } from "./room-runtime.test-helper.js";
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };

@@ -1,14 +1,14 @@
 import { config } from "dotenv";
 import { createApp } from "./app.js";
-import { readConfig } from "./config.js";
-import { logEvent } from "./logger.js";
-import { createRegistrationRuntime } from "./auth-runtime.js";
-import { createGoogleRuntime } from "./google-runtime.js";
-import { createRoomRuntime } from "./room-runtime.js";
-import { createFriendRuntime } from "./friend-runtime.js";
-import { createMediaRuntime } from "./media-runtime.js";
-import { createHistoryRuntime } from "./history-runtime.js";
-import { createProfileRuntime } from "./profile-runtime.js";
+import { readConfig } from "./core/config.js";
+import { logEvent } from "./core/logger.js";
+import { createRegistrationRuntime } from "./auth/auth-runtime.js";
+import { createGoogleRuntime } from "./google/google-runtime.js";
+import { createRoomRuntime } from "./room/runtime/room-runtime.js";
+import { createFriendRuntime } from "./friend/friend-runtime.js";
+import { createMediaRuntime } from "./media/media-runtime.js";
+import { createHistoryRuntime } from "./history/history-runtime.js";
+import { createProfileRuntime } from "./profile/profile-runtime.js";
 import { AuthProvidersModule } from "./auth/providers.module.js";
 
 config({ quiet: true });

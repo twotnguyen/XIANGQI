@@ -8,13 +8,13 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { PrivateBodyFilter } from "./private-body-filter.js";
+import { PrivateBodyFilter } from "./core/private-body-filter.js";
 import type { HealthStatus } from "@xiangqi/shared";
 import { Server } from "socket.io";
 import {
   attachPublicRoomFeed,
   type PublicRoomFeedDependencies,
-} from "./room/public-room-feed.js";
+} from "./room/public/public-room-feed.js";
 import {
   attachRealtime,
   type RealtimeDependencies,

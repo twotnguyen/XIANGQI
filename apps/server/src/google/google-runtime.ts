@@ -11,11 +11,11 @@ export function readGoogleConfig(env: Record<string, string | undefined>) {
     throw new Error("Invalid Google configuration");
   return { clientId };
 }
-import type { createRegistrationRuntime } from "./auth-runtime.js";
-import { GoogleTokenVerifier } from "./auth/google-verifier.js";
-import { GoogleService } from "./google/google.service.js";
-import { GoogleModule } from "./google/google.module.js";
-import { logEvent } from "./logger.js";
+import type { createRegistrationRuntime } from "../auth/auth-runtime.js";
+import { GoogleTokenVerifier } from "../auth/google-verifier.js";
+import { GoogleService } from "./google.service.js";
+import { GoogleModule } from "./google.module.js";
+import { logEvent } from "../core/logger.js";
 
 export async function createGoogleRuntime(
   env: Record<string, string | undefined>,

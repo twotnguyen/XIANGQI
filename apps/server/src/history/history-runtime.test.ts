@@ -2,13 +2,13 @@ import { randomUUID } from "node:crypto";
 import { request } from "node:http";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { initialPosition } from "@xiangqi/xiangqi-core";
-import type { createRegistrationRuntime } from "./auth-runtime.js";
-import { createApp } from "./app.js";
-import { SessionService } from "./login/session.service.js";
-import { PostgresLoginStore } from "./login/postgres-login-store.js";
-import { LoginError } from "./login/contracts.js";
-import { encodePosition } from "./match/position-codec.js";
-import { apply, databaseUrl, pool, reset } from "./match/match.test-helper.js";
+import type { createRegistrationRuntime } from "../auth/auth-runtime.js";
+import { createApp } from "../app.js";
+import { SessionService } from "../login/session.service.js";
+import { PostgresLoginStore } from "../login/postgres-login-store.js";
+import { LoginError } from "../login/contracts.js";
+import { encodePosition } from "../match/position-codec.js";
+import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
 import { createHistoryRuntime } from "./history-runtime.js";
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>

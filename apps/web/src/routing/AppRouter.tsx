@@ -9,7 +9,7 @@ import {
   LobbyShell,
   type DataState,
   type PublicRoom,
-} from "../pages/LobbyShell.js";
+} from "../lobby/LobbyShell.js";
 import { Button, Dialog, ErrorState, Notice } from "../ui/primitives.js";
 import { NavigationLink } from "./NavigationLink.js";
 import {

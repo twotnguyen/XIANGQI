@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, expect, it } from "vitest";
-import { createApp } from "./app.js";
+import { createApp } from "../app.js";
 
 let app: Awaited<ReturnType<typeof createApp>>, base: string;
 beforeAll(async () => {

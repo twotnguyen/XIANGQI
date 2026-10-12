@@ -1,16 +1,16 @@
 import { Pool } from "pg";
 import { readFileSync } from "node:fs";
 import type { DynamicModule } from "@nestjs/common";
-import { RegistrationModule } from "./auth/registration.module.js";
-import { PostgresRegistrationStore } from "./auth/postgres-store.js";
-import { SupabaseAuth } from "./auth/supabase-auth.js";
-import { RegistrationError } from "./auth/contracts.js";
-import { LoginError } from "./login/contracts.js";
-import { LoginController } from "./login/login.controller.js";
-import { LoginService } from "./login/login.service.js";
-import { PostgresLoginStore } from "./login/postgres-login-store.js";
-import { SessionService } from "./login/session.service.js";
-import { SessionModule } from "./session/session.module.js";
+import { RegistrationModule } from "./registration.module.js";
+import { PostgresRegistrationStore } from "./postgres-store.js";
+import { SupabaseAuth } from "./supabase-auth.js";
+import { RegistrationError } from "./contracts.js";
+import { LoginError } from "../login/contracts.js";
+import { LoginController } from "../login/login.controller.js";
+import { LoginService } from "../login/login.service.js";
+import { PostgresLoginStore } from "../login/postgres-login-store.js";
+import { SessionService } from "../login/session.service.js";
+import { SessionModule } from "../session/session.module.js";
 
 export function readRegistrationConfig(
   env: Record<string, string | undefined>,
@@ -74,7 +74,7 @@ export async function createRegistrationRuntime(
     connectionString: settings.databaseUrl,
     ssl: {
       ca: readFileSync(
-        new URL("../../../supabase/certs/prod-ca-2021.crt", import.meta.url),
+        new URL("../../../../supabase/certs/prod-ca-2021.crt", import.meta.url),
         "utf8",
       ),
       rejectUnauthorized: true,

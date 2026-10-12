@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
-import { createApp } from "../app.js";
-import { LoginError } from "../login/contracts.js";
-import { RoomError } from "./contracts.js";
+import { createApp } from "../../app.js";
+import { LoginError } from "../../login/contracts.js";
+import { RoomError } from "../contracts.js";
 import { PublicRoomModule } from "./public-room.module.js";
 import type { PublicRoomService } from "./public-room-service.js";
 const roomId = "22222222-2222-4222-8222-222222222222";

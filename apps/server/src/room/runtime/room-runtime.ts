@@ -1,42 +1,42 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { maskForbiddenChat } from "@xiangqi/shared";
-import { ChatStore } from "./chat/chat-store.js";
-import { ChatRealtimeService } from "./chat/chat-realtime.js";
-import { ChatOutboxWorker } from "./chat/chat-worker.js";
-import type { createRegistrationRuntime } from "./auth-runtime.js";
-import { ClockService } from "./clock/clock-service.js";
-import { ClockWorker } from "./clock/clock-worker.js";
-import type { ClockWorkerPort } from "./clock/contracts.js";
+import { ChatStore } from "../../chat/chat-store.js";
+import { ChatRealtimeService } from "../../chat/chat-realtime.js";
+import { ChatOutboxWorker } from "../../chat/chat-worker.js";
+import type { createRegistrationRuntime } from "../../auth/auth-runtime.js";
+import { ClockService } from "../../clock/clock-service.js";
+import { ClockWorker } from "../../clock/clock-worker.js";
+import type { ClockWorkerPort } from "../../clock/contracts.js";
 import {
   DisconnectWorker,
   dueDisconnectMatches,
-} from "./match/disconnect-worker.js";
-import { PostgresClockWorkerPort } from "./clock/postgres-clock-port.js";
-import { MatchStore } from "./match/match-store.js";
-import { DrawWorker, dueDrawOffers } from "./match/draw-worker.js";
-import { RoomError, type RoomScope, type RoomActor } from "./room/contracts.js";
-import { RoomTransactions } from "./room/room-transactions.js";
-import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
-import { RoomStore } from "./room/room-store.js";
-import { RoomHttpService } from "./room/room-http.service.js";
-import { PublicRoomModule } from "./room/public-room.module.js";
-import { PublicRoomStore } from "./room/public-room-store.js";
-import { PublicRoomService } from "./room/public-room-service.js";
-import type { PublicFeedProof } from "./room/public-room-feed.js";
-import { RoomModule } from "./room/room.module.js";
-import { RoomWorker } from "./room/room-worker.js";
-import { PostgresRoomWorkerPort } from "./room/postgres-room-worker-port.js";
+} from "../../match/disconnect-worker.js";
+import { PostgresClockWorkerPort } from "../../clock/postgres-clock-port.js";
+import { MatchStore } from "../../match/match-store.js";
+import { DrawWorker, dueDrawOffers } from "../../match/draw-worker.js";
+import { RoomError, type RoomScope, type RoomActor } from "../contracts.js";
+import { RoomTransactions } from "../room-transactions.js";
+import { PostgresMemberRoomAuthorizer } from "../member-room-auth.js";
+import { RoomStore } from "../room-store.js";
+import { RoomHttpService } from "../room-http.service.js";
+import { PublicRoomModule } from "../public/public-room.module.js";
+import { PublicRoomStore } from "../public/public-room-store.js";
+import { PublicRoomService } from "../public/public-room-service.js";
+import type { PublicFeedProof } from "../public/public-room-feed.js";
+import { RoomModule } from "../room.module.js";
+import { RoomWorker } from "../room-worker.js";
+import { PostgresRoomWorkerPort } from "../postgres-room-worker-port.js";
 import {
   MemberRealtimeIdentities,
   MemberRealtimeTransactions,
-} from "./realtime/member-transactions.js";
-import { MemberRealtimePresence } from "./realtime/member-presence.js";
-import { GameRooms } from "./realtime/game-rooms.js";
-import { RealtimeStore } from "./realtime/store.js";
-import type { RealtimePublisher } from "./realtime/gateway.js";
-import type { RealtimeTransactions } from "./realtime/contracts.js";
-import { logEvent } from "./logger.js";
+} from "../../realtime/member-transactions.js";
+import { MemberRealtimePresence } from "../../realtime/member-presence.js";
+import { GameRooms } from "../../realtime/game-rooms.js";
+import { RealtimeStore } from "../../realtime/store.js";
+import type { RealtimePublisher } from "../../realtime/gateway.js";
+import type { RealtimeTransactions } from "../../realtime/contracts.js";
+import { logEvent } from "../../core/logger.js";
 export async function createRoomRuntime(
   env: Record<string, string | undefined>,
   registration: NonNullable<

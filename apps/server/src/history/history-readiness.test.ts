@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { databaseUrl, pool } from "../room/room.test-helper.js";
-import { HISTORY_COLUMN_TYPE_MATCH } from "../history-runtime.js";
+import { HISTORY_COLUMN_TYPE_MATCH } from "./history-runtime.js";
 
 /**
  * XIAN-160: `xiangqi_auth.accounts` là view trên managed Auth. Supabase dùng

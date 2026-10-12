@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import type { RoomStateSnapshot } from "@xiangqi/shared";
-import "../styles/tokens.css";
+import "../../styles/tokens.css";
 import "./MatchResult.css";
 
 export interface MatchResultProps {

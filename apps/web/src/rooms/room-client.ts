@@ -20,7 +20,7 @@ import {
   chatUuid,
   isChatChannel,
   type ChatChanged,
-} from "./chat-client.js";
+} from "../chat/chat-client.js";
 import type { CreateRoomInput } from "./RoomForms.js";
 export type RoomView = Pick<
   RoomStateSnapshot,

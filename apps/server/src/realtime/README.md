@@ -8,7 +8,7 @@
 
 **Tech stack:** TypeScript strict, Socket.IO, pg, Vitest, socket.io-client chỉ trong test. Contract trong `packages/shared/src/realtime.ts` không dùng `any`.
 
-**Spec:** XIAN-48/T12 Description tại `jira/reports/JIRA-MUC-CHI-TIET.md`; US-00.3; BA1.8/3.3/10.1. Root ACK kiến trúc ngày11/10/2026 trong chat.
+**Spec:** XIAN-48/T12 Description tại `docs/planning/jira/reports/JIRA-MUC-CHI-TIET.md`; US-00.3; BA1.8/3.3/10.1. Root ACK kiến trúc ngày11/10/2026 trong chat.
 
 ## Giới hạn
 

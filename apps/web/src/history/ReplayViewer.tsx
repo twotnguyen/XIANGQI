@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { parsePosition } from "@xiangqi/xiangqi-core";
-import { XiangqiBoard } from "../components/XiangqiBoard.js";
+import { XiangqiBoard } from "../board/XiangqiBoard.js";
 import { Button } from "../ui/primitives.js";
 import type { ReplayRecord } from "./replay-client.js";
 import "./replay-viewer.css";

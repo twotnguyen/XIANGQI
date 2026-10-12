@@ -4,7 +4,7 @@ import {
   LobbyShell,
   type DataState,
   type PublicRoom,
-} from "../pages/LobbyShell.js";
+} from "../lobby/LobbyShell.js";
 import {
   Badge,
   Button,

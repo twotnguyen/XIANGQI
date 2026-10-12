@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 import { actor, apply, databaseUrl, reset } from "../room/room.test-helper.js";
 import { MediaAccess } from "./media-access.js";
-import { readMediaConfig } from "../media-runtime.js";
+import { readMediaConfig } from "./media-runtime.js";
 import { privateRoomName, stageRoomName } from "./contracts.js";
 const url = process.env.ROOM_TEST_DATABASE_URL ?? databaseUrl;
 const pool = new Pool({ connectionString: url });

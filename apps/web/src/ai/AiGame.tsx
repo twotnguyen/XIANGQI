@@ -4,7 +4,7 @@ import {
   type Move,
   type Side,
 } from "@xiangqi/xiangqi-core";
-import { XiangqiBoard } from "../components/XiangqiBoard.js";
+import { XiangqiBoard } from "../board/XiangqiBoard.js";
 import { useEffect, useRef, useState } from "react";
 import { Button, Dialog } from "../ui/primitives.js";
 import "./ai-game.css";

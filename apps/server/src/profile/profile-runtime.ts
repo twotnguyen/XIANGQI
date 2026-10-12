@@ -1,8 +1,8 @@
 import type { DynamicModule } from "@nestjs/common";
 import type { Pool } from "pg";
-import { ProfileModule } from "./profile/profile.module.js";
-import { ProfileStore } from "./profile/profile-store.js";
-import type { SessionService } from "./login/session.service.js";
+import { ProfileModule } from "./profile.module.js";
+import { ProfileStore } from "./profile-store.js";
+import type { SessionService } from "../login/session.service.js";
 export async function createProfileRuntime(
   env: Record<string, string | undefined>,
   registration: {

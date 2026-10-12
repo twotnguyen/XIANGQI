@@ -1,11 +1,11 @@
-import type { createRegistrationRuntime } from "./auth-runtime.js";
-import { RoomTransactions } from "./room/room-transactions.js";
-import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
-import { HistoryStore } from "./history/history-store.js";
-import { HistoryHttpService } from "./history/history-http.service.js";
-import { HistoryModule } from "./history/history.module.js";
-import { ReplayStore } from "./history/replay-store.js";
-import { ReplayHttpService } from "./history/replay-http.service.js";
+import type { createRegistrationRuntime } from "../auth/auth-runtime.js";
+import { RoomTransactions } from "../room/room-transactions.js";
+import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
+import { HistoryStore } from "./history-store.js";
+import { HistoryHttpService } from "./history-http.service.js";
+import { HistoryModule } from "./history.module.js";
+import { ReplayStore } from "./replay-store.js";
+import { ReplayHttpService } from "./replay-http.service.js";
 /**
  * Điều kiện khớp kiểu cột cho cấu trúc lịch sử/replay. Cột yêu cầu `text` chấp nhận cả
  * `varchar`/`bpchar` vì `xiangqi_auth.accounts` là view trên managed Auth (Supabase dùng

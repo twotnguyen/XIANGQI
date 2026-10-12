@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { createApp } from "./app.js";
+import { createApp } from "../app.js";
 import { io as connectSocket } from "socket.io-client";
 import {
   createRegistrationRuntime,
@@ -182,7 +182,7 @@ it("keeps borrowed registration pools alive while actual socket disconnect teard
         entered();
         await draining;
       },
-    } as unknown as import("./realtime/store.js").RealtimeStore,
+    } as unknown as import("../realtime/store.js").RealtimeStore,
   });
   await app.listen(0, "127.0.0.1");
   const client = connectSocket(

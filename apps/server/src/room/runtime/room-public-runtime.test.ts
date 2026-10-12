@@ -2,12 +2,12 @@ import { randomUUID } from "node:crypto";
 import type { AddressInfo } from "node:net";
 import { io, type Socket } from "socket.io-client";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { createApp } from "./app.js";
-import type { createRegistrationRuntime } from "./auth-runtime.js";
-import { SessionService } from "./login/session.service.js";
-import { PostgresLoginStore } from "./login/postgres-login-store.js";
+import { createApp } from "../../app.js";
+import type { createRegistrationRuntime } from "../../auth/auth-runtime.js";
+import { SessionService } from "../../login/session.service.js";
+import { PostgresLoginStore } from "../../login/postgres-login-store.js";
 import { createRoomRuntime } from "./room-runtime.js";
-import type { PublicRoomView } from "./room/public-room-store.js";
+import type { PublicRoomView } from "../public/public-room-store.js";
 import { apply, databaseUrl, pool, reset } from "./room-runtime.test-helper.js";
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>

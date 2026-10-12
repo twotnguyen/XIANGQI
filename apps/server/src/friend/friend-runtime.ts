@@ -1,7 +1,7 @@
 import type { DynamicModule } from "@nestjs/common";
-import { FriendModule } from "./friend/friend.module.js";
-import { FriendStore } from "./friend/friend-store.js";
-import type { SessionService } from "./login/session.service.js";
+import { FriendModule } from "./friend.module.js";
+import { FriendStore } from "./friend-store.js";
+import type { SessionService } from "../login/session.service.js";
 import type { Pool } from "pg";
 export async function createFriendRuntime(
   env: Record<string, string | undefined>,

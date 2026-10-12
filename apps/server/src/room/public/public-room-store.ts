@@ -1,6 +1,6 @@
-import { RoomError, type RoomScope } from "./contracts.js";
-import type { RoomStore } from "./room-store.js";
-import { uuid } from "../match/position-codec.js";
+import { RoomError, type RoomScope } from "../contracts.js";
+import type { RoomStore } from "../room-store.js";
+import { uuid } from "../../match/position-codec.js";
 import type { PublicRoomView } from "@xiangqi/shared";
 export type { PublicRoomView } from "@xiangqi/shared";
 /** Internal same-client store; the caller supplies a freshly authorized actor scope. */

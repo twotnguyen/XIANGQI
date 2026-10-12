@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { RoomStateSnapshot } from "@xiangqi/shared";
-import "../styles/tokens.css";
+import "../../styles/tokens.css";
 import "./ReconnectStatus.css";
 
 export interface ReconnectStatusProps {

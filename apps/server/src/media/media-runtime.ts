@@ -1,8 +1,8 @@
 import type { DynamicModule } from "@nestjs/common";
 import type { Pool } from "pg";
-import { MediaModule } from "./media/media.module.js";
-import { MediaAccess } from "./media/media-access.js";
-import type { SessionService } from "./login/session.service.js";
+import { MediaModule } from "./media.module.js";
+import { MediaAccess } from "./media-access.js";
+import type { SessionService } from "../login/session.service.js";
 export interface MediaRuntime {
   module: DynamicModule;
   access: MediaAccess;

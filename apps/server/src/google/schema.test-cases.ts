@@ -1,5 +1,5 @@
 import { createApp } from "../app.js";
-import { createGoogleRuntime } from "../google-runtime.js";
+import { createGoogleRuntime } from "./google-runtime.js";
 import { SupabaseAuth } from "../auth/supabase-auth.js";
 import { SessionService } from "../login/session.service.js";
 import { PostgresLoginStore } from "../login/postgres-login-store.js";

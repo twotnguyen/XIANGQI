@@ -1,7 +1,7 @@
 import { StrictMode, Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
-import "./style.css";
+import "./styles/global.css";
 import "./theme/theme.css";
 import { SessionProvider } from "./auth/SessionProvider.js";
 import { applyTheme, readStoredTheme } from "./theme/theme.js";
@@ -10,7 +10,7 @@ const AppRouter = lazy(() =>
     default: module.AppRouter,
   })),
 );
-import { BoardPreview } from "./components/BoardPreview.js";
+import { BoardPreview } from "./board/BoardPreview.js";
 import {
   RegistrationPage,
   type RegistrationSession,

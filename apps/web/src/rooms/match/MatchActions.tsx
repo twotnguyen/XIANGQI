@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { RoomAction, RoomStateSnapshot } from "@xiangqi/shared";
-import { Dialog } from "../ui/primitives.js";
+import { Dialog } from "../../ui/primitives.js";
 import "./MatchActions.css";
 export type MatchAction = Extract<
   RoomAction,

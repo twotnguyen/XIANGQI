@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { MatchStore } from "../match/match-store.js";
-import { ClockService } from "../clock/clock-service.js";
-import { RoomStore } from "./room-store.js";
-import { RoomTransactions } from "./room-transactions.js";
-import type { RoomActor, RoomScope } from "./contracts.js";
+import { MatchStore } from "../../match/match-store.js";
+import { ClockService } from "../../clock/clock-service.js";
+import { RoomStore } from "../room-store.js";
+import { RoomTransactions } from "../room-transactions.js";
+import type { RoomActor, RoomScope } from "../contracts.js";
 import { PublicRoomStore } from "./public-room-store.js";
 import {
   actor,
@@ -13,7 +13,7 @@ import {
   pool,
   reset,
   transaction,
-} from "./room.test-helper.js";
+} from "../room.test-helper.js";
 const rooms = new RoomStore(),
   publicRooms = new PublicRoomStore(rooms),
   coordinator = new RoomTransactions(pool);
