@@ -1,6 +1,6 @@
 import { createApp } from "../../app.js";
 import { SessionModule } from "../session/session.module.js";
-import { RegistrationError } from "../auth/auth.types.js";
+import { RegistrationError } from "../auth/registration.types.js";
 import "reflect-metadata";
 import { Controller, Get, Module, Req, UseGuards } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
@@ -21,7 +21,7 @@ import {
 import { startAuthFixture } from "../auth/auth-fixture.test-helper.js";
 import { SupabaseAuth } from "../auth/supabase-auth.js";
 import { RegistrationService } from "../auth/registration.service.js";
-import { PostgresRegistrationStore } from "../auth/postgres-store.js";
+import { PostgresRegistrationStore } from "../auth/registration.store.js";
 import { PostgresLoginStore } from "./postgres-login-store.js";
 import { LoginService } from "./login.service.js";
 import { SessionService } from "./session.service.js";

@@ -11,7 +11,7 @@ import { GoogleService } from "./google.service.js";
 import type { GoogleClaims, GoogleAuth } from "./google.types.js";
 import { SessionService } from "../login/session.service.js";
 import { PostgresLoginStore } from "../login/postgres-login-store.js";
-import type { Session } from "../auth/auth.types.js";
+import type { Session } from "../auth/registration.types.js";
 describe.skipIf(!databaseUrl)(
   "verified Google boundary with real database/session persistence",
   () => {

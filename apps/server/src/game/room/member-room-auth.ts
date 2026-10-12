@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { RegistrationError } from "../../account/auth/auth.types.js";
+import { RegistrationError } from "../../account/auth/registration.types.js";
 import { LoginError } from "../../account/login/login.types.js";
 import type { SessionService } from "../../account/login/session.service.js";
 import { RoomError, type RoomActor } from "./room.types.js";

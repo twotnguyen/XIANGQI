@@ -1,5 +1,8 @@
 import { expect, it } from "vitest";
-import { containsForbiddenName, validateCredentials } from "./name-filter.js";
+import {
+  containsForbiddenName,
+  validateCredentials,
+} from "./registration.service.js";
 it("rejects forbidden names after accent, leetspeak and separator normalization", () => {
   for (const name of ["f.u.c.k", "sh1t", "ĐỤ_MÁ", "d!t me"])
     expect(containsForbiddenName(name)).toBe(true);

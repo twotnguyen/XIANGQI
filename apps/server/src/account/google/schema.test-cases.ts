@@ -3,7 +3,7 @@ import { createGoogleRuntime } from "./google.module.js";
 import { SupabaseAuth } from "../auth/supabase-auth.js";
 import { SessionService } from "../login/session.service.js";
 import { PostgresLoginStore } from "../login/postgres-login-store.js";
-import { PostgresRegistrationStore } from "../auth/postgres-store.js";
+import { PostgresRegistrationStore } from "../auth/registration.store.js";
 import { RegistrationModule } from "../auth/registration.module.js";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";

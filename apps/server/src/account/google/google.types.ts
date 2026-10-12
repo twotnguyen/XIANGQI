@@ -1,4 +1,4 @@
-import type { Session } from "../auth/auth.types.js";
+import type { Session } from "../auth/registration.types.js";
 export interface GoogleClaims {
   aud: string;
   iss: string;

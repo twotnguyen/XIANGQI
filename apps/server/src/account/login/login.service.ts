@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { setTimeout } from "node:timers/promises";
-import { RegistrationError, type Session } from "../auth/auth.types.js";
+import { RegistrationError, type Session } from "../auth/registration.types.js";
 import {
   invalidLogin,
   LoginError,

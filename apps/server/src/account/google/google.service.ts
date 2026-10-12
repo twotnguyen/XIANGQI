@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import type { Session } from "../auth/auth.types.js";
-import { validateUsername } from "../auth/name-filter.js";
+import type { Session } from "../auth/registration.types.js";
+import { validateUsername } from "../auth/registration.service.js";
 import {
   GoogleError,
   type GoogleAuth,

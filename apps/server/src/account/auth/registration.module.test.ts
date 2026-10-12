@@ -4,8 +4,8 @@ import { io as connectSocket } from "socket.io-client";
 import {
   createRegistrationRuntime,
   readRegistrationConfig,
+  AuthProvidersModule,
 } from "./registration.module.js";
-
 const pool = vi.hoisted(() => ({
   query: vi.fn(),
   end: vi.fn(),
@@ -212,3 +212,24 @@ it("keeps borrowed registration pools alive while actual socket disconnect teard
   }
   expect(pool.end).toHaveBeenCalledOnce();
 });
+it.each([false, true])(
+  "reports Google availability %s without exposing credentials or enabling Guest",
+  async (google) => {
+    const app = await createApp(
+      ["http://localhost:5174"],
+      [AuthProvidersModule.forRoot({ google, guest: false })],
+    );
+    try {
+      await app.listen(0, "127.0.0.1");
+      const address = app.getHttpServer().address();
+      const response = await fetch(
+        `http://127.0.0.1:${address.port}/auth/providers`,
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("cache-control")).toBe("no-store");
+      expect(await response.json()).toEqual({ google, guest: false });
+    } finally {
+      await app.close();
+    }
+  },
+);

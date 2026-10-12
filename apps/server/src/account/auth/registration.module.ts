@@ -6,16 +6,24 @@ import {
   type OnApplicationBootstrap,
   type OnModuleDestroy,
 } from "@nestjs/common";
-import type { AuthProvider, RegistrationStore, Session } from "./auth.types.js";
+import type {
+  AuthProvider,
+  RegistrationStore,
+  Session,
+} from "./registration.types.js";
 import { RegistrationService } from "./registration.service.js";
-import { RegistrationController } from "./registration.controller.js";
-import { AccountActiveGuard } from "./account-active.guard.js";
+import {
+  RegistrationController,
+  AccountActiveGuard,
+  Providers,
+  ProvidersController,
+} from "./registration.controller.js";
 import { logEvent } from "../../core/logger.js";
 import { Pool } from "pg";
 import { readFileSync } from "node:fs";
-import { PostgresRegistrationStore } from "./postgres-store.js";
+import { PostgresRegistrationStore } from "./registration.store.js";
 import { SupabaseAuth } from "./supabase-auth.js";
-import { RegistrationError } from "./auth.types.js";
+import { RegistrationError } from "./registration.types.js";
 import { LoginError } from "../login/login.types.js";
 import { LoginController } from "../login/login.controller.js";
 import { LoginService } from "../login/login.service.js";
@@ -262,4 +270,14 @@ export async function createRegistrationRuntime(
     },
     close,
   };
+}
+@Module({})
+export class AuthProvidersModule {
+  static forRoot(providers: Providers): DynamicModule {
+    return {
+      module: AuthProvidersModule,
+      controllers: [ProvidersController],
+      providers: [{ provide: "AUTH_PROVIDERS", useValue: providers }],
+    };
+  }
 }

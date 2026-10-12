@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createApp } from "../../app.js";
 import { LoginError } from "../login/login.types.js";
-import { RegistrationError } from "../auth/auth.types.js";
+import { RegistrationError } from "../auth/registration.types.js";
 import type { SessionService } from "../login/session.service.js";
 import { SessionModule } from "./session.module.js";
 

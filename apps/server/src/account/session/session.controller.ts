@@ -12,7 +12,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { RegistrationError, type Session } from "../auth/auth.types.js";
+import { RegistrationError, type Session } from "../auth/registration.types.js";
 import { LoginError } from "../login/login.types.js";
 import { SessionService } from "../login/session.service.js";
 import {

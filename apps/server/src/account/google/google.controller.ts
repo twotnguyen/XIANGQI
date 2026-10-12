@@ -11,8 +11,8 @@ import {
   Res,
 } from "@nestjs/common";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Session } from "../auth/auth.types.js";
-import { RegistrationError } from "../auth/auth.types.js";
+import type { Session } from "../auth/registration.types.js";
+import { RegistrationError } from "../auth/registration.types.js";
 import { GoogleError } from "./google.types.js";
 import type { GoogleService } from "./google.service.js";
 import {

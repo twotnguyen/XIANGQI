@@ -1,7 +1,7 @@
 import { expect, it, vi } from "vitest";
 import { setTimeout } from "node:timers/promises";
 import { performance } from "node:perf_hooks";
-import { RegistrationError } from "../auth/auth.types.js";
+import { RegistrationError } from "../auth/registration.types.js";
 import type { LoginStore, PasswordAuth } from "./login.types.js";
 import { LoginService } from "./login.service.js";
 import type { SessionService } from "./session.service.js";

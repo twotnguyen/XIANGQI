@@ -9,7 +9,7 @@ import { createFriendRuntime } from "./account/friend/friend.module.js";
 import { createMediaRuntime } from "./game/media/media.module.js";
 import { createHistoryRuntime } from "./game/history/history.module.js";
 import { createProfileRuntime } from "./account/profile/profile.module.js";
-import { AuthProvidersModule } from "./account/auth/providers.module.js";
+import { AuthProvidersModule } from "./account/auth/registration.module.js";
 
 config({ quiet: true });
 let registration: Awaited<ReturnType<typeof createRegistrationRuntime>> = null;

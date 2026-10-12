@@ -282,15 +282,15 @@ describe.skipIf(!url)("registration migration on audited baseline", () => {
 });
 
 import { RegistrationService } from "./registration.service.js";
-import { RegistrationError } from "./auth.types.js";
+import { RegistrationError } from "./registration.types.js";
 import { SupabaseAuth } from "./supabase-auth.js";
-import { PostgresRegistrationStore } from "./postgres-store.js";
+import { PostgresRegistrationStore } from "./registration.store.js";
 import { startAuthFixture } from "./auth-fixture.test-helper.js";
 import { randomUUID, createHash } from "node:crypto";
 import { Controller, Get, Module, Req, UseGuards } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { RegistrationModule } from "./registration.module.js";
-import { AccountActiveGuard } from "./account-active.guard.js";
+import { AccountActiveGuard } from "./registration.controller.js";
 
 describe.skipIf(!url)(
   "registration with real SQL store and HTTP provider adapter",
@@ -968,7 +968,7 @@ describe.skipIf(!url)(
         override async withLocks<T>(
           keys: string[],
           work: (
-            store: import("./auth.types.js").RegistrationStore,
+            store: import("./registration.types.js").RegistrationStore,
           ) => Promise<T>,
         ): Promise<T> {
           await pool.query(

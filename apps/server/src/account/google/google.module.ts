@@ -6,7 +6,7 @@ import {
   GoogleRefreshProvider,
 } from "./google.controller.js";
 import type { createRegistrationRuntime } from "../auth/registration.module.js";
-import { GoogleTokenVerifier } from "../auth/google-verifier.js";
+import { GoogleTokenVerifier } from "./google-verifier.js";
 import { GoogleService } from "./google.service.js";
 import { logEvent } from "../../core/logger.js";
 @Module({})

@@ -1,4 +1,4 @@
-import { RegistrationError } from "../auth/auth.types.js";
+import { RegistrationError } from "../auth/registration.types.js";
 import {
   HttpException,
   Inject,

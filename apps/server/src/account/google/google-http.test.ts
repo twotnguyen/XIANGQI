@@ -3,7 +3,7 @@ import { createApp } from "../../app.js";
 import { GoogleModule } from "./google.module.js";
 import { type GoogleHttpService } from "./google.controller.js";
 import { GoogleError } from "./google.types.js";
-import type { Session } from "../auth/auth.types.js";
+import type { Session } from "../auth/registration.types.js";
 import type { INestApplication } from "@nestjs/common";
 const time = new Date("2026-10-11T00:00:00Z"),
   expiresAt = "2026-10-11T01:00:00.000Z",
