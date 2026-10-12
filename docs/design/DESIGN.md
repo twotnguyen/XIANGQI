@@ -12,7 +12,7 @@
 | Ký hiệu | Nghĩa |
 |---|---|
 | **Chốt** | Lấy nguyên từ đặc tả (`DT-*`, `SCR-*`, `DEC-*`). ⛔ Không được đổi ở đây — muốn đổi phải sửa đặc tả trước |
-| 🟡 | **Đề xuất** để lấp chỗ đặc tả chưa quy định. Design được đổi, nhưng phải sửa **cùng lúc** file này + Figma + `apps/web/src/styles/tokens.css` và **đo lại tương phản** |
+| 🟡 | **Đề xuất** để lấp chỗ đặc tả chưa quy định. Design được đổi, nhưng phải sửa **cùng lúc** file này + Figma + `apps/web/src/shared/styles/tokens.css` và **đo lại tương phản** |
 | P1 / P2 | P1 dùng cố định Kỳ Đài Cổ Phong; Giấy Sáng/Theo hệ thống là P2. Tính năng P2 không nằm trong nghiệm thu P1 |
 
 - Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này.
@@ -178,7 +178,7 @@ Vùng chạm tối thiểu `--touch-min: 44px` cho nút, tab, ô nhập (`DT-07`
 | Điểm ngắt 🟡 | `< 768 px` bố cục điện thoại (tab) · `768–1023 px` bố cục điện thoại, bàn giới hạn rộng 640 px · `≥ 1024 px` bố cục máy tính (cột phải) |
 | Độ rộng nội dung tối đa 🟡 | 1280 px cho trang thường (sảnh, bạn bè, lịch sử); phòng chơi dùng hết chiều ngang |
 
-Biến CSS không dùng được trong `@media` ⇒ ghi điểm ngắt thành hằng số trong một file (`apps/web/src/styles/breakpoints.ts` 🟡) và dùng lại, không gõ số rải rác.
+Biến CSS không dùng được trong `@media` ⇒ ghi điểm ngắt thành hằng số trong một file (`apps/web/src/shared/styles/breakpoints.ts` 🟡) và dùng lại, không gõ số rải rác.
 
 ### 4.3 Bo góc, viền, bóng — 🟡
 

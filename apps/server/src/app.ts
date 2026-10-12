@@ -14,11 +14,11 @@ import { Server } from "socket.io";
 import {
   attachPublicRoomFeed,
   type PublicRoomFeedDependencies,
-} from "./room/public/public-room-feed.js";
+} from "./game/room/public/public-room-feed.js";
 import {
   attachRealtime,
   type RealtimeDependencies,
-} from "./realtime/gateway.js";
+} from "./game/realtime/gateway.js";
 
 @Controller()
 class HealthController {

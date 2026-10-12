@@ -1,7 +1,7 @@
 # NFR-04 (RLS theo vai trò) — đo tại local (11/10/2026)
 
 > Đây là kiểm **bằng vai trò thật** trên catalog PostgreSQL sau khi áp đủ migrations, khác với "RLS đã khai báo".
-> Raw: [evidence/role-matrix-2026-10-11.json](evidence/role-matrix-2026-10-11.json). Test: `apps/server/src/schema/rls-role-matrix.test.ts`.
+> Raw: [evidence/role-matrix-2026-10-11.json](evidence/role-matrix-2026-10-11.json). Test: `apps/server/src/core/schema/rls-role-matrix.test.ts`.
 
 ## 1. Phương pháp
 
@@ -10,7 +10,7 @@
 3. Đọc catalog thật: `pg_class.relrowsecurity/relforcerowsecurity`, `aclexplode(relacl)` cho `anon`, `authenticated`, `app_server`, và `pg_policy` (lệnh + vai trò nhận policy).
 4. Assert 5 bất biến (bên dưới). Chạy:
    ```
-   ROOM_TEST_DATABASE_URL=... pnpm vitest run apps/server/src/schema/rls-role-matrix.test.ts
+   ROOM_TEST_DATABASE_URL=... pnpm vitest run apps/server/src/core/schema/rls-role-matrix.test.ts
    ```
 
 ## 2. Kết quả

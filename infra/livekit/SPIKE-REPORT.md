@@ -24,7 +24,7 @@ Xem `infra/livekit/spike-probe.py` (chỉ đọc khóa từ `.local/`, không in
 ## 2. Mô hình phiên (kiểm bằng test đã gộp ở develop-merge)
 
 - Hạn cố định từ đăng nhập (30 ngày / 12 giờ, không gia hạn khi hoạt động):
-  `apps/server/src/login` — 12 test pass.
+  `apps/server/src/account/login` — 12 test pass.
 - Google onboarding + Khách: `google`/`guest`/`session` — 21 test pass,
   31 skip (cần postgres CI, sẽ chạy ở PR #97).
 - Thu hồi phiên hai trình duyệt: cơ chế đã có trong SessionProvider

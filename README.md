@@ -100,23 +100,33 @@ Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event
 ```text
 XIANGQI/
 ├─ apps/
-│  ├─ web/            React + Vite. src/ chia theo tính năng: auth, board, lobby, rooms (rooms/match),
-│  │                  chat, ai, friends, history, media, profile; dùng chung: ui, layouts, routing, theme, styles
-│  └─ server/         NestJS + Socket.IO. src/ chia theo miền: auth, google, guest, login, session, room
-│                     (room/runtime, room/public), match, clock, realtime, chat, ai, history, friend, media,
-│                     profile, schema; core/ giữ config, logger, bộ lọc nội dung riêng tư; main.ts/app.ts là điểm vào
-├─ packages/          shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
-├─ supabase/          migration, rollback, baseline, kiểm thử SQL, mẫu email
-├─ infra/livekit/     Docker và báo cáo spike LiveKit
-├─ scripts/           công cụ dòng lệnh (chuyển LiveKit local/Cloud)
+│  ├─ web/src/               React + Vite
+│  │  ├─ app/                ghép ứng dụng: AppRouter, layouts/, dev/ (thư viện thành phần)
+│  │  ├─ features/           theo tính năng: auth, lobby, rooms (+match), chat, ai, friends,
+│  │  │                      history, media, profile
+│  │  ├─ shared/             dùng chung: ui, board, navigation (route + điều hướng), theme, styles
+│  │  └─ main.tsx
+│  └─ server/src/            NestJS + Socket.IO
+│     ├─ account/            auth, login, session, google, guest, profile, friend
+│     ├─ game/               room (+runtime, public), match, clock, realtime, chat, ai, history, media
+│     ├─ core/               config, logger, bộ lọc nội dung riêng tư, schema (kiểm thử SQL/RLS)
+│     └─ main.ts, app.ts     điểm vào
+├─ packages/                 shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
+├─ supabase/                 migration, rollback, baseline, kiểm thử SQL, mẫu email
+├─ infra/livekit/            Docker và báo cáo spike LiveKit
+├─ scripts/                  công cụ dòng lệnh (chuyển LiveKit local/Cloud)
 ├─ docs/
-│  ├─ product/        IDEA, quyết định BA, backlog P1/P2
-│  ├─ design/         DESIGN, danh mục màn hình, mockups/
-│  ├─ planning/       KE-HOACH-JIRA.md và jira/ (dữ liệu, công cụ, báo cáo, kiểm thử)
-│  └─ setup/          hướng dẫn cấu hình môi trường và dịch vụ
-├─ .github/           CI, CODEOWNERS
-└─ .local/            ghi chú, log, bản sao lưu cá nhân (Git bỏ qua)
+│  ├─ product/               IDEA, quyết định BA, backlog P1/P2
+│  ├─ design/                DESIGN, danh mục màn hình, mockups/
+│  ├─ planning/              KE-HOACH-JIRA.md và jira/ (dữ liệu, công cụ, báo cáo, kiểm thử)
+│  └─ setup/                 hướng dẫn cấu hình môi trường và dịch vụ
+├─ .github/                  CI, CODEOWNERS
+└─ .local/                   ghi chú, log, bản sao lưu cá nhân (Git bỏ qua)
 ```
+
+**Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*` (và `features` khác khi thật cần);
+`shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả. Test nằm cạnh file nguồn
+(`*.test.ts`).
 
 ## Tài liệu dự án
 

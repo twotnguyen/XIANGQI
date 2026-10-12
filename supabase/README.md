@@ -13,7 +13,7 @@ mkdir -p .local/goal/auth-pg
 initdb -D .local/goal/auth-pg/data -A trust --no-locale -E UTF8
 pg_ctl -D .local/goal/auth-pg/data -l .local/goal/auth-pg/server.log -o '-h 127.0.0.1 -p 55440' start
 createdb -h 127.0.0.1 -p 55440 xiangqi_auth_test
-AUTH_TEST_DATABASE_URL='postgresql://LOCAL_ROLE@127.0.0.1:55440/xiangqi_auth_test' pnpm test apps/server/src/auth
+AUTH_TEST_DATABASE_URL='postgresql://LOCAL_ROLE@127.0.0.1:55440/xiangqi_auth_test' pnpm test apps/server/src/account/auth
 pg_ctl -D .local/goal/auth-pg/data stop
 ```
 
