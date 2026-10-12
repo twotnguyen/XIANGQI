@@ -1,6 +1,6 @@
 # Chuẩn bị môi trường XIANGQI
 
-Bộ mẫu chuẩn bị dịch vụ, đối chiếu tài liệu nhà cung cấp ngày 10/10/2026. Chưa có mã ứng dụng, lệnh chạy hay bộ nạp cấu hình; điền biến không đồng nghĩa kết nối thành công. T01 sẽ nối cấu hình vào web/server và kiểm tra biến bắt buộc. Việc chuẩn bị này không bắt đầu Sprint, không đóng Task và không thay đổi kế hoạch 880 giờ, hạn 04/11.
+Bộ mẫu chuẩn bị dịch vụ, đối chiếu tài liệu nhà cung cấp ngày 10/10/2026. Repo hiện đã có mã web/server và bộ nạp cấu hình (xem README để chạy `pnpm dev`); điền biến không đồng nghĩa kết nối thành công, và mỗi dịch vụ cần được kiểm chứng riêng. Việc chuẩn bị này không bắt đầu Sprint, không đóng Task và không thay đổi kế hoạch 880 giờ, hạn 04/11.
 
 Quyết định nghiệp vụ vẫn theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md), đặc biệt mục 0.4 (SMTP), 0.16 (LiveKit), đăng ký/Google và các cổng kiểm chứng trong [BACKLOG-P1.md](BACKLOG-P1.md). Không dùng hướng dẫn hạ tầng này để thay luật nghiệp vụ.
 
