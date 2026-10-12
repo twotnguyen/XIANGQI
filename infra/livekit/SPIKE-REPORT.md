@@ -37,7 +37,7 @@ Xem `infra/livekit/spike-probe.py` (chỉ đọc khóa từ `.local/`, không in
   (cấp token theo quyền, `canPublish: false` cho người xem) + camera/mic thật.
   Cơ chế thu hồi: thu hồi phiên media + chặn cấp token mới (không chỉ chờ hết hạn).
 - HTTPS/WSS LAN nhiều máy và LiveKit Cloud qua Internet: cấu hình mẫu và script
-  chuyển đã có (`infra/livekit/README.md`, `scripts/livekit-env.py`); chưa chạy
+  chuyển đã có (`infra/livekit/README.md`, `infra/livekit/livekit-env.py`); chưa chạy
   vì cần máy thứ hai + chứng chỉ được mọi thiết bị tin cậy.
 - Không dùng kết quả HTTP/API ở trên để kết luận camera đã hoạt động.
 

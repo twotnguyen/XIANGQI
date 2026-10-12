@@ -76,7 +76,7 @@ Không thêm `hotfix` hoặc `release` vào quy trình hiện tại khi chưa c�
 - `.env` gốc là bản tổng; đồng bộ vào `apps/web/.env` và `apps/server/.env` sau khi sửa. Đối chiếu thay đổi riêng ở bản sao trước khi ghi đè. Các file thật và `.local/` phải được Git bỏ qua, quyền file bí mật là `600` khi hệ điều hành hỗ trợ.
 - Chỉ đưa tên biến và giá trị trống/mẫu công khai vào `.env.example`. Rà nội dung staged để tránh khóa xuất hiện trong tài liệu, ảnh, log, fixture hoặc URL. Không in nguyên file `.env` hay trả khóa trong chat.
 - Dự án dùng Vite; `NEXT_PUBLIC_*` chỉ là dự phòng cho Next.js. Cả hai nhóm tiền tố đều dành cho dữ liệu công khai; secret Supabase/LiveKit/SMTP và mật khẩu SQL không được đưa vào bundle frontend.
-- Giữ Cloud hiện tại trừ khi được yêu cầu chuyển. `scripts/livekit-env.py prepare` chuẩn bị khóa local riêng; `local`/`cloud` đổi ba biến media và đồng bộ file. Không dùng khóa Cloud trong máy chủ Docker local.
+- Giữ Cloud hiện tại trừ khi được yêu cầu chuyển. `infra/livekit/livekit-env.py prepare` chuẩn bị khóa local riêng; `local`/`cloud` đổi ba biến media và đồng bộ file. Không dùng khóa Cloud trong máy chủ Docker local.
 - Database query thành công, OTP đến hộp thư hoặc LiveKit HTTP 200 chỉ là kiểm tra hạ tầng. Chưa đủ chứng minh OAuth, RLS, camera nhiều thiết bị và phân quyền nghiệp vụ đã đạt.
 
 ## Kiểm tra và bàn giao

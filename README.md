@@ -115,12 +115,12 @@ XIANGQI/
 ├─ packages/                 shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
 ├─ tests/                    toàn bộ test, helper và fixture (server/, web/, packages/); xem tests/README.md
 ├─ supabase/                 migration, rollback, baseline, kiểm thử SQL, mẫu email
-├─ infra/livekit/            Docker và báo cáo spike LiveKit
-├─ scripts/                  công cụ dòng lệnh (chuyển LiveKit local/Cloud)
+├─ infra/livekit/            Docker, báo cáo spike và livekit-env.py (chuyển LiveKit local/Cloud)
 ├─ docs/
 │  ├─ product/               IDEA, quyết định BA, backlog P1/P2
 │  ├─ design/                DESIGN, danh mục màn hình, mockups/
 │  ├─ planning/              KE-HOACH-JIRA.md và jira/ (dữ liệu, công cụ, báo cáo, kiểm thử)
+│  ├─ engineering/           ghi chú kỹ thuật từng tính năng (server/, web/)
 │  └─ setup/                 hướng dẫn cấu hình môi trường và dịch vụ
 ├─ .github/                  CI, CODEOWNERS
 └─ .local/                   ghi chú, log, bản sao lưu cá nhân (Git bỏ qua)

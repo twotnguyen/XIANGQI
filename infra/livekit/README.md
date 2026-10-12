@@ -10,7 +10,7 @@ Chạy các lệnh bên dưới từ thư mục gốc XIANGQI.
 Điền bộ ba `LIVEKIT_*` của Cloud vào `.env` tổng trước, rồi chạy:
 
 ```sh
-python3 scripts/livekit-env.py prepare
+python3 infra/livekit/livekit-env.py prepare
 docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet
 docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml up -d
 ```
@@ -34,13 +34,13 @@ Mặc định cả ba cổng chỉ được mở trên `127.0.0.1`:
 Thử trên cùng máy Docker, ứng dụng web chạy ở `http://localhost:5173`:
 
 ```sh
-python3 scripts/livekit-env.py local
+python3 infra/livekit/livekit-env.py local
 ```
 
 Quay lại Cloud cho demo Internet:
 
 ```sh
-python3 scripts/livekit-env.py cloud
+python3 infra/livekit/livekit-env.py cloud
 docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml down
 ```
 
@@ -67,9 +67,9 @@ Bộ mặc định chỉ dành cho cùng máy, chưa phải cấu hình LAN hoà
 3. Chuẩn bị lại địa chỉ local (giữ nguyên khóa), rồi tạo lại container:
 
    ```sh
-   python3 scripts/livekit-env.py prepare --host 192.168.1.20 --url wss://media.xiangqi.test
+   python3 infra/livekit/livekit-env.py prepare --host 192.168.1.20 --url wss://media.xiangqi.test
    docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml up -d --force-recreate
-   python3 scripts/livekit-env.py local
+   python3 infra/livekit/livekit-env.py local
    ```
 
 4. IP và URL trên chỉ là ví dụ: phải thay bằng máy, DNS và proxy thực. Đồng bộ URL

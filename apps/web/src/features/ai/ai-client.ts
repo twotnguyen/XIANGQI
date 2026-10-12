@@ -290,4 +290,3 @@ export function makeAiClient(
     retry: (id: string, version: number) => mutation(id, version, "retry"),
   };
 }
-export type AiClient = ReturnType<typeof makeAiClient>;
