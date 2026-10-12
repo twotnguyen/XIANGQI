@@ -35,7 +35,7 @@ async function fixture(seated = false, spectator = false) {
           [id],
         )
       ).rows[0];
-      return row ? { kind: "room", roomId: row.room_id } : null;
+      return row ? { kind: "room" as const, roomId: row.room_id } : null;
     }),
     end: vi.fn(async (c, id) => {
       await c.query("DELETE FROM public.room_members WHERE user_id=$1", [id]);

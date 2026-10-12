@@ -265,7 +265,9 @@ describe.skipIf(!databaseUrl)(
         { ...a.headers, Authorization: "Bearer revoked-token" },
         { ...a.headers, "X-Xiangqi-Session": "x".repeat(43) },
       ]) {
-        const response = await fetch(base + "/history", { headers });
+        const response = await fetch(base + "/history", {
+          headers: headers as HeadersInit,
+        });
         expect(response.status).toBe(401);
         expect(response.headers.get("cache-control")).toBe("no-store");
       }

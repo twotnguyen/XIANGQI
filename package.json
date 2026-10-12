@@ -14,8 +14,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "build": "pnpm -r build",
-    "test:core": "vitest run tests/packages/xiangqi-core --coverage",
-    "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json"
+    "test:core": "vitest run tests/packages/xiangqi-core --coverage"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

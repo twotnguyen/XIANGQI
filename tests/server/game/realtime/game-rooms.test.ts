@@ -590,7 +590,7 @@ describe("draw capability projection and dispatch", () => {
       const payload = {
         matchId: f.matchId,
         matchVersion: 3,
-        ...(type === "match.draw.offer" ? {} : { offerId: draw.offers[0].id }),
+        ...(type === "match.draw.offer" ? {} : { offerId: draw.offers[0]!.id }),
         ...(type === "match.draw.respond" ? { accept: true } : {}),
       };
       const result = await f.adapter.execute(

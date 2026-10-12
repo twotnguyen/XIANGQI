@@ -591,7 +591,7 @@ describe.skipIf(!databaseUrl)("clock SQL integration", () => {
   it("fails closed when the worker scope lacks both-player lock proof", async () => {
     const g = await game(300, new Date(Date.now() - 301000));
     const port: ClockWorkerPort = {
-      dueMatches: async () => [g],
+      dueMatches: async () => [g] as never,
       withMatch: async (_, work) => {
         await transaction([g.red, g.black], [g.roomId], (c) =>
           work({

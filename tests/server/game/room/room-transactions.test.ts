@@ -315,7 +315,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     }) as typeof firstClient.query);
     const connectSpy = vi
       .spyOn(pool, "connect")
-      .mockResolvedValueOnce(firstClient);
+      .mockResolvedValueOnce(firstClient as never);
     const auth = vi.fn(async (p: RoomActorProof) => {
       expect(await tryLock("actor:" + viewer.userId)).toBe(false);
       return authorize(p);

@@ -1,3 +1,4 @@
+import type { AddressInfo } from "node:net";
 import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { io, type Socket } from "socket.io-client";
@@ -128,7 +129,7 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
     const userId = existingUserId ?? randomUUID(),
       token = randomUUID();
     users.set(token, userId);
-    const client = io(`http://127.0.0.1:${address.port}`, {
+    const client = io(`http://127.0.0.1:${(address as AddressInfo).port}`, {
       autoConnect: false,
       reconnection: false,
       transports: ["websocket"],

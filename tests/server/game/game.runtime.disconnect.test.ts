@@ -46,7 +46,10 @@ describe.skipIf(!databaseUrl)(
           return user;
         },
       };
-      const sessions = new SessionService(new PostgresLoginStore(pool), auth);
+      const sessions = new SessionService(
+        new PostgresLoginStore(pool),
+        auth as never,
+      );
       async function member() {
         const id = randomUUID(),
           email = `synthetic-${id}@example.invalid`,
@@ -173,8 +176,8 @@ describe.skipIf(!databaseUrl)(
           (s) => s?.match?.status === "ACTIVE",
           8000,
         );
-        expect(started.room.status).toBe("PLAYING");
-        const matchId = started.match!.id;
+        expect(started!.room.status).toBe("PLAYING");
+        const matchId = started!.match!.id;
         sockets[0]!.disconnect();
         await waitFor(
           async () =>
@@ -214,13 +217,13 @@ describe.skipIf(!databaseUrl)(
             s.room.hostId === b.id &&
             s.room.seats.red === null,
         );
-        expect(terminal.match).toMatchObject({
+        expect(terminal!.match).toMatchObject({
           result: "DISCONNECT",
           winner: "black",
         });
-        expect(terminal.room.status).toBe("WAITING");
-        expect(terminal.room.ready.black).toBe(false);
-        expect(terminal.clocks?.running).toBeNull();
+        expect(terminal!.room.status).toBe("WAITING");
+        expect(terminal!.room.ready.black).toBe(false);
+        expect(terminal!.clocks?.running).toBeNull();
         expect(
           (
             await pool.query(

@@ -43,7 +43,7 @@ async function fixture() {
     clock = new ClockService(),
     game = new GameRooms(
       rooms,
-      new MatchStore(clock),
+      new MatchStore(clock, undefined as never),
       clock,
       transactions.getScope.bind(transactions),
     ),
@@ -89,7 +89,7 @@ async function fixture() {
     });
   await http.join(viewer.proof, {
     commandId: randomUUID(),
-    code: entry.inviteCode,
+    code: entry.inviteCode!,
     preference: "watch",
   });
   const connection = async (tabId = randomUUID()) => {
@@ -223,7 +223,7 @@ describe.skipIf(!databaseUrl)(
             roomId: f.entry.roomId,
             commandId: randomUUID(),
             expectedVersion: state.version,
-            action,
+            action: action as never,
           }),
         ).toMatchObject({ status: "error", error: { code: "TAB_READ_ONLY" } });
       expect(

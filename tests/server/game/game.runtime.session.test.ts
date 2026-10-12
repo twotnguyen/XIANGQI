@@ -51,7 +51,10 @@ async function fixture() {
       return { id, email, email_confirmed_at: at.toISOString() };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth),
+  const sessions = new SessionService(
+      new PostgresLoginStore(pool),
+      auth as never,
+    ),
     issued = await sessions.issue(id, false),
     cap = issued.appSession;
   const runtime = await createRoomRuntime(

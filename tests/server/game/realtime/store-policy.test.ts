@@ -33,7 +33,7 @@ function fixture() {
       connected: { red: false, black: false },
       graceUntil: { red: null, black: null },
       countdown: null,
-    },
+    } as never,
     match: null,
     clocks: null,
   };

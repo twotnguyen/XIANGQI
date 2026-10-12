@@ -102,7 +102,7 @@ async function fixture() {
   const join = (m: typeof a, preference: "play" | "watch") =>
     http.join(m.proof, {
       commandId: randomUUID(),
-      code: entry.inviteCode,
+      code: entry.inviteCode!,
       preference,
     });
   const send = (
@@ -149,7 +149,7 @@ describe.skipIf(!databaseUrl)(
       const one = await f.send(
           f.connection,
           "địt <script>",
-          command.toUpperCase(),
+          command.toUpperCase() as never,
         ),
         two = await f.send(f.connection, "địt <script>", command);
       expect(two).toEqual(one);
@@ -188,7 +188,7 @@ describe.skipIf(!databaseUrl)(
         f.send(f.connection, "hello", command),
       ).rejects.toMatchObject({ code: "TAB_READ_ONLY" });
       await expect(
-        f.send({ ...old, connectionId: "forged" }),
+        f.send({ ...old, connectionId: "forged" as never }),
       ).rejects.toMatchObject({ code: "TAB_READ_ONLY" });
       expect(
         (await f.service.read(old, { channel: "PLAYERS_PRIVATE" })).canSend,
@@ -356,7 +356,7 @@ describe.skipIf(!databaseUrl)(
             await original(...args);
             throw new Error("private bearer token providerSQL");
           },
-        } as ChatStore,
+        } as unknown as ChatStore,
         f.transactions,
       );
       await expect(

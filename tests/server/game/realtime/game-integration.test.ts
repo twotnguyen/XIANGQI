@@ -1,3 +1,4 @@
+import type { AddressInfo } from "node:net";
 import { createHash, randomUUID } from "node:crypto";
 import { createServer } from "node:http";
 import type { PoolClient } from "pg";
@@ -482,13 +483,16 @@ describe.skipIf(!databaseUrl)(
         throw new Error("No local address");
       const sockets: Socket[] = [];
       async function open(m: typeof f.red) {
-        const socket = socketClient(`http://127.0.0.1:${address.port}`, {
-          transports: ["websocket"],
-          forceNew: true,
-          reconnection: false,
-          extraHeaders: { Origin: "http://localhost:5173" },
-          auth: { ...m.proof, roomId: f.entry.roomId, tabId: randomUUID() },
-        });
+        const socket = socketClient(
+          `http://127.0.0.1:${(address as AddressInfo).port}`,
+          {
+            transports: ["websocket"],
+            forceNew: true,
+            reconnection: false,
+            extraHeaders: { Origin: "http://localhost:5173" },
+            auth: { ...m.proof, roomId: f.entry.roomId, tabId: randomUUID() },
+          },
+        );
         sockets.push(socket);
         const initial = await new Promise<RoomSnapshot>((resolve, reject) => {
           const timeout = setTimeout(

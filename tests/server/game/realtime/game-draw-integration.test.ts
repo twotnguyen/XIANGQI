@@ -266,7 +266,7 @@ describe.skipIf(!databaseUrl)(
         },
       });
       const snap = await f.rt.snapshot(f.r),
-        offerId = snap.draw!.offers[0].id;
+        offerId = snap.draw!.offers[0]!.id;
       const withdrawn = await f.command(f.r, {
         type: "match.draw.withdraw",
         payload: { matchId: m.id, matchVersion: snap.match!.version, offerId },
@@ -332,7 +332,7 @@ describe.skipIf(!databaseUrl)(
         payload: { matchId: m.id, matchVersion: 0 },
       });
       const pending = await f.rt.snapshot(f.b),
-        offerId = pending.draw!.offers[0].id;
+        offerId = pending.draw!.offers[0]!.id;
       const self = await f.command(f.r, {
         type: "match.draw.respond",
         payload: {
@@ -402,7 +402,7 @@ describe.skipIf(!databaseUrl)(
         payload: { matchId: m.id, matchVersion: 0 },
       });
       const pending = await f.rt.snapshot(f.b),
-        offerId = pending.draw!.offers[0].id;
+        offerId = pending.draw!.offers[0]!.id;
       await pool.query(
         "UPDATE public.matches SET clock=jsonb_build_object('redMs',0,'blackMs',600000,'runningSinceEpochMs',floor(extract(epoch FROM clock_timestamp())*1000)::bigint) WHERE id=$1",
         [m.id],
@@ -448,7 +448,7 @@ describe.skipIf(!databaseUrl)(
         payload: { matchId: m.id, matchVersion: 0 },
       });
       const pending = await f.rt.snapshot(f.b),
-        offerId = pending.draw!.offers[0].id;
+        offerId = pending.draw!.offers[0]!.id;
       await pool.query(
         "WITH t AS MATERIALIZED(SELECT clock_timestamp()-interval '1 second' deadline) UPDATE xiangqi_room.match_draw_offers SET created_at=t.deadline-interval '30 seconds',expires_at=t.deadline FROM t WHERE id=$1",
         [offerId],

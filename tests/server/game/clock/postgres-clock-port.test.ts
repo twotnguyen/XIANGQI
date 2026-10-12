@@ -300,7 +300,9 @@ describe.skipIf(!databaseUrl)("Postgres clock port actual SQL", () => {
         throw new Error("synthetic SQL read failure");
       return original(text, values);
     }) as typeof c.query);
-    const connectSpy = vi.spyOn(pool, "connect").mockResolvedValueOnce(c);
+    const connectSpy = vi
+      .spyOn(pool, "connect")
+      .mockResolvedValueOnce(c as never);
     try {
       await expect(port.dueMatches(null)).rejects.toThrow(
         "synthetic SQL read failure",

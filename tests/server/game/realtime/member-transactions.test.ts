@@ -240,7 +240,13 @@ describe.skipIf(!databaseUrl)(
             [c, { userId: randomUUID(), kind: "member" }, m.connection.roomId],
             [c, m.connection.identity, randomUUID()],
           ] as const)
-            expect(() => m.transactions.getScope(...args)).toThrow();
+            expect(() =>
+              m.transactions.getScope(
+                ...(args as unknown as Parameters<
+                  typeof m.transactions.getScope
+                >),
+              ),
+            ).toThrow();
         });
       } finally {
         other.release();
@@ -300,7 +306,7 @@ describe.skipIf(!databaseUrl)(
       }) as typeof client.query);
       const connectSpy = vi
         .spyOn(pool, "connect")
-        .mockResolvedValueOnce(client);
+        .mockResolvedValueOnce(client as never);
       const pending = m.transactions.run(m.connection, work),
         denied = expect(pending).rejects.toMatchObject({
           code: "AUTH_REQUIRED",

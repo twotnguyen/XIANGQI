@@ -109,7 +109,10 @@ it("never falls back from a present bad capability header and denies duplicate o
     expect(
       (
         await fetch(`${base}/cookie-probe`, {
-          headers: { Authorization: "Bearer synthetic-access", ...headers },
+          headers: {
+            Authorization: "Bearer synthetic-access",
+            ...headers,
+          } as Record<string, string>,
         })
       ).status,
     ).toBe(401);

@@ -40,7 +40,7 @@ function fixture(
         actor,
         lockedActorIds: new Set([owner]),
         lockedRoomIds: new Set(),
-      } as RoomScope;
+      } as unknown as RoomScope;
       try {
         const auth = await authorize({ ...scope, roomIds: [] });
         if (auth.status === "ended") return { status: "ended" };

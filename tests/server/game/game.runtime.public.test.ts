@@ -29,7 +29,12 @@ async function fixture(modes = true) {
     }),
   };
   const sessions = new SessionService(new PostgresLoginStore(pool), auth);
-  const members = [];
+  const members: {
+    id: string;
+    email: string;
+    token: string;
+    appSession: string;
+  }[] = [];
   for (let i = 0; i < 3; i++) {
     const id = randomUUID(),
       email = `public-runtime-${id}@example.invalid`,

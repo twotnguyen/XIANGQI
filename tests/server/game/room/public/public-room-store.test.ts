@@ -289,17 +289,17 @@ describe.skipIf(!databaseUrl)(
           "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
           [f.roomId, startToken, at, f.host.userId, black.userId],
         );
-        const result = await new MatchStore(new ClockService()).start(
-          s.client,
-          {
-            roomId: f.roomId,
-            startToken,
-            redId: f.host.userId,
-            blackId: black.userId,
-            timeControlSeconds: 600,
-            startedAt: at,
-          },
-        );
+        const result = await new MatchStore(
+          new ClockService(),
+          undefined as never,
+        ).start(s.client, {
+          roomId: f.roomId,
+          startToken,
+          redId: f.host.userId,
+          blackId: black.userId,
+          timeControlSeconds: 600,
+          startedAt: at,
+        });
         await s.client.query(
           "UPDATE public.rooms SET status='PLAYING',current_match_id=$2 WHERE id=$1",
           [f.roomId, result.matchId],

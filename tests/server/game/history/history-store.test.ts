@@ -236,7 +236,7 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     const high = await game(a, b, { at: "2026-10-01T00:00:00.123456Z" });
     const tied = await game(a, b, { at: "2026-10-01T00:00:00.123456Z" });
     const ids: string[] = [];
-    let cursor;
+    let cursor: NonNullable<Parameters<typeof store.list>[1]>["cursor"];
     do {
       const page = await run(a, (s) => store.list(s, { limit: 1, cursor }));
       ids.push(...page.items.map((r) => r.id));

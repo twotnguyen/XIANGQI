@@ -58,7 +58,7 @@ describe.skipIf(!url)("friendships", () => {
     await store.respondRequest(b, sent.id, true);
     const friends = await store.listFriends(a);
     expect(friends.map((f) => f.username)).toEqual(["anhrifriend"]);
-    expect(friends[0].status).toBe("offline");
+    expect(friends[0]!.status).toBe("offline");
   });
   it("keeps one pending invite on cross sends and enforces two-decline block", async () => {
     const a = await member("crossa");
@@ -110,7 +110,7 @@ describe.skipIf(!url)("friendships", () => {
     const mate = await member("invmate");
     await store.sendRequest(host, "invmate");
     const req = (await store.listRequests(mate))[0];
-    await store.respondRequest(mate, req.id, true);
+    await store.respondRequest(mate, req!.id, true);
     const roomId = randomUUID();
     await pool.query(
       "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong moi','CODE_ONLY','ABCDEFGH',600,5,'WAITING',1)",

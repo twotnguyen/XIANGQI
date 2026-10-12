@@ -85,8 +85,8 @@ async function fixture() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + member.token,
-        "X-Xiangqi-Session": member.appSession,
+        Authorization: "Bearer " + member!.token,
+        "X-Xiangqi-Session": member!.appSession,
       },
       body: JSON.stringify(body),
     });
@@ -120,8 +120,8 @@ async function fixture() {
       transports: ["websocket"],
       reconnection: false,
       auth: {
-        accessToken: member.token,
-        appSession: member.appSession,
+        accessToken: member!.token,
+        appSession: member!.appSession,
         roomId: entry.roomId,
         tabId: randomUUID(),
       },

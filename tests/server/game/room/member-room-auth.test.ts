@@ -179,7 +179,7 @@ describe.skipIf(!databaseUrl)(
         }) as typeof client.query);
         const connectSpy = vi
           .spyOn(pool, "connect")
-          .mockResolvedValueOnce(client);
+          .mockResolvedValueOnce(client as never);
         const pending = coordinator.withRoom(
           { actor, roomIds: [] },
           (p) => m.authorizer.authorize(m.proof, p),
@@ -236,7 +236,7 @@ describe.skipIf(!databaseUrl)(
       }) as typeof client.query);
       const connectSpy = vi
         .spyOn(pool, "connect")
-        .mockResolvedValueOnce(client);
+        .mockResolvedValueOnce(client as never);
       const pending = coordinator.withRoom(
         { actor, roomIds: [] },
         (p) => m.authorizer.authorize(m.proof, p),
@@ -289,7 +289,7 @@ describe.skipIf(!databaseUrl)(
       }) as typeof client.query);
       const connectSpy = vi
         .spyOn(pool, "connect")
-        .mockResolvedValueOnce(client);
+        .mockResolvedValueOnce(client as never);
       const pending = coordinator.withRoom(
         { actor, roomIds: [] },
         (p) => m.authorizer.authorize(m.proof, p),
@@ -348,7 +348,7 @@ describe.skipIf(!databaseUrl)(
       }) as typeof client.query);
       const connectSpy = vi
         .spyOn(pool, "connect")
-        .mockResolvedValueOnce(client);
+        .mockResolvedValueOnce(client as never);
       const pending = coordinator.withRoom(
         { actor, roomIds: [created.roomId] },
         (p) => m.authorizer.authorize(m.proof, p),

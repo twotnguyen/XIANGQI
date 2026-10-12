@@ -7,9 +7,7 @@ tests/
 ├─ server/     phản chiếu apps/server/src (account/, game/, core/) + fixtures/ (SQL dựng database test)
 ├─ web/        phản chiếu apps/web/src (app/, features/, shared/)
 ├─ packages/   shared/, xiangqi-core/, engine/ (+ worker-fixtures/: worker giả cho test engine)
-├─ tsconfig.json         IDE: server + packages + web (kiểm kiểu toàn bộ, không chặn CI)
-├─ web/tsconfig.json     kiểm kiểu test web — chặn CI (`pnpm typecheck`)
-└─ packages/tsconfig.json kiểm kiểu test packages — chặn CI (`pnpm typecheck`)
+└─ tsconfig.json         kiểm kiểu toàn bộ test (server + web + packages) — chặn CI qua `pnpm typecheck`; IDE dùng chung
 ```
 
 Quy ước đặt tên: `x.test.ts` (test), `x.test-helper.ts` (hàm dùng chung), `x.test-cases.ts` (bộ ca dùng chung),
@@ -28,7 +26,7 @@ Test import mã nguồn bằng alias (chỉ có hiệu lực trong `tests/`, mã
 | `@engine/…` | `packages/engine/src/…`       |
 | `@shared/…` | `packages/shared/src/…`       |
 
-Cấu hình ở `vitest.config.ts` (chạy) và `tests/**/tsconfig.json` (kiểm kiểu/IDE). Thư viện test dùng trực tiếp
+Cấu hình ở `vitest.config.ts` (chạy) và `tests/tsconfig.json` (kiểm kiểu/IDE). Thư viện test dùng trực tiếp
 (`react`, `pg`, `@nestjs/*`, …) khai báo trong `tests/package.json` (package workspace `@xiangqi/tests`).
 
 ## Chạy
@@ -36,8 +34,7 @@ Cấu hình ở `vitest.config.ts` (chạy) và `tests/**/tsconfig.json` (kiểm
 ```sh
 pnpm test                    # test không cần database (các bộ cần database tự bỏ qua)
 pnpm test:core               # luật cờ + ngưỡng độ phủ 90%
-pnpm typecheck               # gồm kiểm kiểu test web và packages
-pnpm typecheck:tests         # kiểm kiểu toàn bộ test (server còn nợ ~110 lỗi, chưa chặn CI)
+pnpm typecheck               # gồm kiểm kiểu toàn bộ test (0 lỗi, chặn CI)
 tests/server/db.sh test      # toàn bộ test, gồm các bộ cần database (dựng 12 cụm Postgres 17 cục bộ)
 tests/server/db.sh test tests/server/game/room   # chỉ một nhóm
 tests/server/db.sh stop      # tắt các cụm (db.sh purge để xóa dữ liệu)

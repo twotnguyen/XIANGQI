@@ -1,3 +1,4 @@
+import type { AddressInfo } from "node:net";
 import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { io, type Socket } from "socket.io-client";
@@ -46,7 +47,7 @@ async function fixture(check: (c: RealtimeConnection) => Promise<boolean>) {
   const address = server.address();
   if (!address || typeof address === "string") throw Error("fixture");
   async function peer() {
-    const socket = io(`http://127.0.0.1:${address.port}`, {
+    const socket = io(`http://127.0.0.1:${(address as AddressInfo).port}`, {
       autoConnect: false,
       transports: ["websocket"],
       reconnection: false,

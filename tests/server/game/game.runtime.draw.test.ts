@@ -242,8 +242,8 @@ describe.skipIf(!databaseUrl)(
           async () => f.latest(0),
           (s) => s?.draw?.offers.length === 1,
         );
-        expect(offered.draw!.offers[0]!.sender).toBe("red");
-        const offer = offered.draw!.offers[0]!;
+        expect(offered!.draw!.offers[0]!.sender).toBe("red");
+        const offer = offered!.draw!.offers[0]!;
         const before = (
           await pool.query("SELECT clock FROM public.matches WHERE id=$1", [
             started.match!.id,
@@ -289,7 +289,7 @@ describe.skipIf(!databaseUrl)(
           ).rows[0].clock,
         ).toEqual(before);
         expect(f.latest(1)!.clocks!.redMs).toBeLessThanOrEqual(
-          offered.clocks!.redMs,
+          offered!.clocks!.redMs,
         );
         expect(f.latest(1)!.match!.status).toBe("ACTIVE");
         expect(
@@ -319,10 +319,16 @@ describe.skipIf(!databaseUrl)(
           async () => f.latest(1),
           (s) => s?.room.status === "WAITING" && s.match?.result === "RESIGN",
         );
-        expect(peer.match).toMatchObject({ result: "RESIGN", winner: "black" });
-        expect(peer.room.hostId).toBe(f.players[1]!.id);
-        expect(peer.room.seats).toEqual({ red: null, black: f.players[1]!.id });
-        expect(peer.room.ready).toEqual({ red: false, black: false });
+        expect(peer!.match).toMatchObject({
+          result: "RESIGN",
+          winner: "black",
+        });
+        expect(peer!.room.hostId).toBe(f.players[1]!.id);
+        expect(peer!.room.seats).toEqual({
+          red: null,
+          black: f.players[1]!.id,
+        });
+        expect(peer!.room.ready).toEqual({ red: false, black: false });
         expect(
           (
             await pool.query(

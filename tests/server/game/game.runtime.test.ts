@@ -120,7 +120,7 @@ async function oldRoom(r: ReturnType<typeof registration>, playing = false) {
         [entry.roomId, token, at, a.id, b.id],
       );
       if (playing) {
-        const match = new MatchStore(new ClockService()),
+        const match = new MatchStore(new ClockService(), undefined as never),
           created = await match.start(scope.client, {
             roomId: entry.roomId,
             startToken: token,
@@ -704,12 +704,12 @@ describe.skipIf(!databaseUrl)(
           (s) => s?.match?.status === "ACTIVE",
           8000,
         );
-        expect(started.room.status).toBe("PLAYING");
+        expect(started!.room.status).toBe("PLAYING");
         const move = await command(0, {
           type: "match.move",
           payload: {
-            matchId: started.match.id,
-            matchVersion: started.match.version,
+            matchId: started!.match!.id,
+            matchVersion: started!.match!.version,
             from: 54,
             to: 45,
           },
@@ -730,10 +730,10 @@ describe.skipIf(!databaseUrl)(
             ).rows[0],
           (row) => row?.disconnected_at instanceof Date,
         );
-        expect(snapshots.get(a.id).match.status).toBe("ACTIVE");
+        expect(snapshots.get(a.id)!.match!.status).toBe("ACTIVE");
         await pool.query(
           "UPDATE public.matches SET clock=jsonb_set(clock,'{blackMs}','0'::jsonb) WHERE id=$1",
-          [started.match.id],
+          [started!.match!.id],
         );
         const terminal = await waitFor(
           async () => snapshots.get(a.id),

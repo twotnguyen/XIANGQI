@@ -38,19 +38,19 @@ const leave = vi.fn(async () => {});
 const resolveCode = vi.fn<(client: unknown, code: unknown) => Promise<string>>(
   async () => roomId,
 );
-const resolve = vi.fn<(proof: typeof proof) => Promise<typeof actor>>(
+const resolve = vi.fn<(input: typeof proof) => Promise<typeof actor>>(
   async () => actor,
 );
 const authorize = vi.fn<
   (
-    proof: typeof proof,
+    input: typeof proof,
     actorProof: import("@server/game/room/room-transactions.js").RoomActorProof,
   ) => Promise<
     import("@server/game/room/room-transactions.js").RoomAuthorization
   >
 >(async () => ({ status: "active", actor }));
 const order: string[] = [];
-const client = {};
+const client = {} as never;
 const scope = {
   client,
   actor,
@@ -166,7 +166,9 @@ it("rejects malformed/missing dual proof and malformed or duplicate cookies befo
     },
   ]) {
     const calls = resolve.mock.calls.length;
-    const response = await fetch(base + "/rooms/" + roomId, { headers });
+    const response = await fetch(base + "/rooms/" + roomId, {
+      headers: headers as HeadersInit,
+    });
     expect(response.status).toBe(401);
     expect(resolve.mock.calls.length).toBe(calls);
   }

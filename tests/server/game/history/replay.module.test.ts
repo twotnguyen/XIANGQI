@@ -379,7 +379,7 @@ describe.skipIf(!databaseUrl)(
         b = await member(),
         g = await game(a, b);
       for (const headers of [{}, { "X-Guest-Capability": "a".repeat(43) }]) {
-        const r = await request(g.id, headers);
+        const r = await request(g.id, headers as Record<string, string>);
         expect(r.status).toBe(401);
         expect(r.headers.get("cache-control")).toBe("no-store");
         expect(await r.json()).toMatchObject({ code: "AUTH_REQUIRED" });

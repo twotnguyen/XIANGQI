@@ -196,7 +196,7 @@ test("guest identity cannot enter member-only public service", async () => {
   f.resolve.mockResolvedValue({
     userId: actor.userId,
     kind: "guest",
-  } as typeof actor);
+  } as unknown as typeof actor);
   await expect(f.service.open(proof())).rejects.toMatchObject({
     code: "ROOM_MEMBER_REQUIRED",
     status: 403,

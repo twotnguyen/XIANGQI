@@ -80,7 +80,10 @@ it.each([
 ])(
   "denies malformed proof without cookie fallback or service access",
   async (headers) => {
-    const response = await request(undefined, headers);
+    const response = await request(
+      undefined,
+      headers as unknown as Record<string, string>,
+    );
     expect(response.status).toBe(401);
     expect((await response.json()).code).toBe("AUTH_REQUIRED");
     expect(list).not.toHaveBeenCalled();

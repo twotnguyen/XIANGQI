@@ -48,7 +48,7 @@ const view: RoomView = {
     connected: { red: true, black: false },
     graceUntil: { red: null, black: null },
     countdown: null,
-  },
+  } as never,
 };
 const changeVisibility = vi.fn(
   async (
@@ -228,7 +228,10 @@ it("requires both proofs and never falls back to cookie for a malformed explicit
       Cookie: `xiangqi_session=${proof.appSession}`,
     },
   ]) {
-    expect((await request(undefined, headers)).status).toBe(401);
+    expect(
+      (await request(undefined, headers as unknown as Record<string, string>))
+        .status,
+    ).toBe(401);
   }
   expect(resolve).not.toHaveBeenCalled();
   expect(changeVisibility).not.toHaveBeenCalled();

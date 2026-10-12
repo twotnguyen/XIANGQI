@@ -120,7 +120,7 @@ describe.skipIf(!databaseUrl)(
       );
       expect(offered.applied).toBe(true);
       expect(offered.draw.offers).toHaveLength(1);
-      expect(offered.draw.offers[0].sender).toBe("red");
+      expect(offered.draw.offers[0]!.sender).toBe("red");
       expect(
         (
           await pool.query("SELECT clock FROM public.matches WHERE id=$1", [
@@ -128,7 +128,7 @@ describe.skipIf(!databaseUrl)(
           ])
         ).rows[0].clock,
       ).toEqual(before);
-      const offerId = offered.draw.offers[0].id;
+      const offerId = offered.draw.offers[0]!.id;
       const self = await run(f, f.red, (s) =>
         store.respondDraw(s, {
           matchId: f.matchId,
@@ -209,7 +209,7 @@ describe.skipIf(!databaseUrl)(
         store.withdrawDraw(s, {
           matchId: f.matchId,
           matchVersion: b.match.version,
-          offerId: a.draw.offers[0].id,
+          offerId: a.draw.offers[0]!.id,
         }),
       );
       expect(wrong.error?.code).toBe("MATCH_DRAW_SENDER_REQUIRED");
@@ -217,7 +217,7 @@ describe.skipIf(!databaseUrl)(
         store.withdrawDraw(s, {
           matchId: f.matchId,
           matchVersion: b.match.version,
-          offerId: a.draw.offers[0].id,
+          offerId: a.draw.offers[0]!.id,
         }),
       );
       expect(withdrawn.draw.offers).toHaveLength(1);
@@ -246,7 +246,7 @@ describe.skipIf(!databaseUrl)(
         store.respondDraw(s, {
           matchId: f.matchId,
           matchVersion: offer.match.version,
-          offerId: offer.draw.offers[0].id,
+          offerId: offer.draw.offers[0]!.id,
           accept: false,
         }),
       );
@@ -278,8 +278,8 @@ describe.skipIf(!databaseUrl)(
           store.move(s, {
             matchId: f.matchId,
             matchVersion: version,
-            from: moves[n][0],
-            to: moves[n][1],
+            from: moves[n]![0]!,
+            to: moves[n]![1]!,
           }),
         );
         expect(moved.applied).toBe(true);
@@ -342,13 +342,13 @@ describe.skipIf(!databaseUrl)(
       );
       await pool.query(
         "WITH t AS MATERIALIZED(SELECT clock_timestamp()-interval '1 second' deadline) UPDATE xiangqi_room.match_draw_offers SET created_at=t.deadline-interval '30 seconds',expires_at=t.deadline FROM t WHERE id=$1",
-        [offer.draw.offers[0].id],
+        [offer.draw.offers[0]!.id],
       );
       const late = await run(f, f.black, (s) =>
         store.respondDraw(s, {
           matchId: f.matchId,
           matchVersion: offer.match.version,
-          offerId: offer.draw.offers[0].id,
+          offerId: offer.draw.offers[0]!.id,
           accept: true,
         }),
       );
@@ -359,7 +359,7 @@ describe.skipIf(!databaseUrl)(
         (
           await pool.query(
             "SELECT status FROM xiangqi_room.match_draw_offers WHERE id=$1",
-            [offer.draw.offers[0].id],
+            [offer.draw.offers[0]!.id],
           )
         ).rows[0].status,
       ).toBe("EXPIRED");
@@ -381,7 +381,7 @@ describe.skipIf(!databaseUrl)(
         store.respondDraw(s, {
           matchId: f.matchId,
           matchVersion: offer.match.version,
-          offerId: offer.draw.offers[0].id,
+          offerId: offer.draw.offers[0]!.id,
           accept: true,
         }),
       );
@@ -416,7 +416,7 @@ describe.skipIf(!databaseUrl)(
           store.respondDraw(s, {
             matchId: f.matchId,
             matchVersion: offer.match.version,
-            offerId: offer.draw.offers[0].id,
+            offerId: offer.draw.offers[0]!.id,
             accept: true,
           }),
         ),
@@ -446,7 +446,7 @@ describe.skipIf(!databaseUrl)(
       );
       await pool.query(
         "WITH t AS MATERIALIZED(SELECT date_trunc('milliseconds',clock_timestamp())-interval '1 second' deadline) UPDATE xiangqi_room.match_draw_offers SET created_at=t.deadline-interval '30 seconds',expires_at=t.deadline FROM t WHERE id=$1",
-        [offer.draw.offers[0].id],
+        [offer.draw.offers[0]!.id],
       );
       const moved = await run(f, f.red, (s) =>
         store.move(s, {
@@ -466,7 +466,7 @@ describe.skipIf(!databaseUrl)(
         (
           await pool.query(
             "SELECT status FROM xiangqi_room.match_draw_offers WHERE id=$1",
-            [offer.draw.offers[0].id],
+            [offer.draw.offers[0]!.id],
           )
         ).rows[0].status,
       ).toBe("PENDING");
@@ -505,7 +505,7 @@ describe.skipIf(!databaseUrl)(
         store.respondDraw(s, {
           matchId: f.matchId,
           matchVersion: offer.match.version,
-          offerId: offer.draw.offers[0].id,
+          offerId: offer.draw.offers[0]!.id,
           accept: true,
         }),
       );
@@ -518,7 +518,7 @@ describe.skipIf(!databaseUrl)(
         store.respondDraw(s, {
           matchId: f.matchId,
           matchVersion: accepted.match.version,
-          offerId: offer.draw.offers[0].id,
+          offerId: offer.draw.offers[0]!.id,
           accept: true,
         }),
       );
@@ -616,7 +616,7 @@ describe.skipIf(!databaseUrl)(
         store.respondDraw(s, {
           matchId: f.matchId,
           matchVersion: b.match.version,
-          offerId: a.draw.offers[0].id,
+          offerId: a.draw.offers[0]!.id,
           accept: true,
         }),
       );

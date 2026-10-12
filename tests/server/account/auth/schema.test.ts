@@ -418,6 +418,8 @@ describe.skipIf(!url)(
       });
       const session = await service.verify({
         registrationToken: registration.registrationToken,
+        // khôi phục: client không gửi lại OTP
+        otp: undefined as never,
         password: input.password,
       });
       expect(await service.requireActive(session.access_token)).toBeTruthy();
@@ -457,6 +459,8 @@ describe.skipIf(!url)(
       clock = new Date(clock.getTime() + 180001);
       const session = await service.verify({
         registrationToken: registration.registrationToken,
+        // khôi phục: client không gửi lại OTP
+        otp: undefined as never,
         password: input.password,
       });
       expect(await service.requireActive(session.access_token)).toBeTruthy();
@@ -527,6 +531,8 @@ describe.skipIf(!url)(
       clock = new Date(clock.getTime() + 180001);
       const session = await completing.verify({
         registrationToken: registration.registrationToken,
+        // khôi phục: client không gửi lại OTP
+        otp: undefined as never,
         password: input.password,
       });
       expect(session).toMatchObject({
@@ -561,6 +567,8 @@ describe.skipIf(!url)(
       await expect(
         recovering.verify({
           registrationToken: registration.registrationToken,
+          // khôi phục: client không gửi lại OTP
+          otp: undefined as never,
           password: input.password,
         }),
       ).rejects.toMatchObject({ code: "RECOVERY_RATE_LIMIT", status: 429 });
@@ -579,6 +587,7 @@ describe.skipIf(!url)(
       await expect(
         service.verify({
           registrationToken: registration.registrationToken,
+          otp: undefined as never,
           password: "wrong-password",
         }),
       ).rejects.toMatchObject({
@@ -617,6 +626,8 @@ describe.skipIf(!url)(
       }
       const session = await service.verify({
         registrationToken: registration.registrationToken,
+        // khôi phục: client không gửi lại OTP
+        otp: undefined as never,
         password: input.password,
       });
       expect(await service.requireActive(session.access_token)).toBeTruthy();
