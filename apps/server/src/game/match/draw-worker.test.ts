@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { ClockService } from "../clock/clock-service.js";
+import { ClockService } from "../clock/clock.service.js";
 import { RoomRosterChanged } from "../room/room.types.js";
 import { RoomTransactions } from "../room/room-transactions.js";
 import type { MatchScope } from "./match.types.js";

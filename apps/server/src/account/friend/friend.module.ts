@@ -1,6 +1,6 @@
 import { Module, type DynamicModule } from "@nestjs/common";
 import type { Pool } from "pg";
-import { FriendStore } from "./friend-store.js";
+import { FriendStore } from "./friend.service.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
 import { FriendController } from "./friend.controller.js";

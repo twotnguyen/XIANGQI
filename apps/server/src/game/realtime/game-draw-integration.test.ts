@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RoomCommand } from "@xiangqi/shared";
-import { ClockService } from "../clock/clock-service.js";
+import { ClockService } from "../clock/clock.service.js";
 import { MatchStore } from "../match/match-store.js";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
 import { PostgresLoginStore } from "../../account/login/postgres-login-store.js";

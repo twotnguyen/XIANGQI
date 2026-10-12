@@ -6,7 +6,7 @@ import {
   pool,
   reset,
 } from "../../game/room/room.test-helper.js";
-import { ProfileStore } from "./profile-store.js";
+import { ProfileStore } from "./profile.service.js";
 afterAll(() => pool.end());
 const store = new ProfileStore(pool);
 async function member(username: string) {

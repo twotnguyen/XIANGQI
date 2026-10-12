@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as implementation from "./clock-service.js";
+import * as implementation from "./clock.service.js";
 const at = new Date(1_000_000);
 const state = {
   redMs: 300000,

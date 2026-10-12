@@ -8,7 +8,7 @@ import {
   transaction,
 } from "./match.test-helper.js";
 import { MatchStore } from "./match-store.js";
-import { ClockService } from "../clock/clock-service.js";
+import { ClockService } from "../clock/clock.service.js";
 import { ClockWorker, dueMatches } from "../clock/clock-worker.js";
 import { dueDisconnectMatches, DisconnectWorker } from "./disconnect-worker.js";
 import type { ClockWorkerPort } from "../clock/clock.types.js";

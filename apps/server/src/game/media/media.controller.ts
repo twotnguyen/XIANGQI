@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { MediaError, SHARE_LEVELS, type ShareLevel } from "./media.types.js";
-import { MediaAccess } from "./media-access.js";
+import { MediaAccess } from "./media.service.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,

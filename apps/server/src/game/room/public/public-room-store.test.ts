@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { MatchStore } from "../../match/match-store.js";
-import { ClockService } from "../../clock/clock-service.js";
+import { ClockService } from "../../clock/clock.service.js";
 import { RoomStore } from "../room-store.js";
 import { RoomTransactions } from "../room-transactions.js";
 import type { RoomActor, RoomScope } from "../room.types.js";

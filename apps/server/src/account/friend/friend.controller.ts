@@ -14,7 +14,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { FriendError } from "./friend.types.js";
-import { FriendStore } from "./friend-store.js";
+import { FriendStore } from "./friend.service.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,

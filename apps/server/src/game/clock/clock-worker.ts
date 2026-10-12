@@ -2,7 +2,7 @@ import type { PoolClient } from "pg";
 import { earliestDisconnect } from "../match/disconnect-worker.js";
 import type { MatchStore } from "../match/match-store.js";
 import { uuid } from "../match/position-codec.js";
-import type { ClockService } from "./clock-service.js";
+import type { ClockService } from "./clock.service.js";
 import {
   ClockError,
   type ClockCandidate,

@@ -4,7 +4,7 @@ import type {
   RoomCommand,
   RoomStateSnapshot,
 } from "@xiangqi/shared";
-import type { ClockService } from "../clock/clock-service.js";
+import type { ClockService } from "../clock/clock.service.js";
 import {
   MatchError,
   type MatchScope,

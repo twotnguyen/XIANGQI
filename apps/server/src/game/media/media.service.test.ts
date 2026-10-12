@@ -3,7 +3,7 @@ import { decodeJwt, jwtVerify } from "jose";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 import { actor, apply, databaseUrl, reset } from "../room/room.test-helper.js";
-import { MediaAccess } from "./media-access.js";
+import { MediaAccess } from "./media.service.js";
 import { readMediaConfig } from "./media.module.js";
 import { privateRoomName, stageRoomName } from "./media.types.js";
 const url = process.env.ROOM_TEST_DATABASE_URL ?? databaseUrl;

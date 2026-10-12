@@ -1,5 +1,5 @@
 import { Module, type DynamicModule } from "@nestjs/common";
-import { MediaAccess } from "./media-access.js";
+import { MediaAccess } from "./media.service.js";
 import { SessionService } from "../../account/login/session.service.js";
 import { SessionGuard } from "../../account/login/session.guard.js";
 import { MediaController } from "./media.controller.js";

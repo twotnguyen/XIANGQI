@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ProfileError } from "./profile.types.js";
-import { ProfileStore } from "./profile-store.js";
+import { ProfileStore } from "./profile.service.js";
 import { SessionService } from "../login/session.service.js";
 import { LoginError } from "../login/login.types.js";
 import {

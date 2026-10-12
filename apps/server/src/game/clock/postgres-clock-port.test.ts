@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { RoomTransactions } from "../room/room-transactions.js";
 import { RoomStore } from "../room/room-store.js";
 import { MatchStore } from "../match/match-store.js";
-import { ClockService } from "./clock-service.js";
+import { ClockService } from "./clock.service.js";
 import { ClockWorker } from "./clock-worker.js";
 import { PostgresClockWorkerPort } from "./postgres-clock-port.js";
 import {

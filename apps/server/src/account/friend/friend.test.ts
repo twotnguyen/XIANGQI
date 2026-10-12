@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 import { apply, databaseUrl, reset } from "../../game/room/room.test-helper.js";
-import { FriendStore } from "./friend-store.js";
+import { FriendStore } from "./friend.service.js";
 const url = process.env.ROOM_TEST_DATABASE_URL ?? databaseUrl;
 const pool = new Pool({ connectionString: url });
 afterAll(() => pool.end());

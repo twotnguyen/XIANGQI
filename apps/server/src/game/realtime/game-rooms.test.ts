@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { describe, expect, it, vi } from "vitest";
 import type { RoomCommand } from "@xiangqi/shared";
-import { ClockService } from "../clock/clock-service.js";
+import { ClockService } from "../clock/clock.service.js";
 import {
   MatchError,
   type MatchCommandResult,

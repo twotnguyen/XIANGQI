@@ -4,7 +4,7 @@ import type { PoolClient } from "pg";
 import { parsePosition } from "@xiangqi/xiangqi-core";
 import { MatchStore } from "../match/match-store.js";
 import { encodePosition } from "../match/position-codec.js";
-import { ClockService } from "./clock-service.js";
+import { ClockService } from "./clock.service.js";
 import * as workerImplementation from "./clock-worker.js";
 import {
   actor,

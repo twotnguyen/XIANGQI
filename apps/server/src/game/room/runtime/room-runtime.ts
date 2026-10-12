@@ -5,7 +5,7 @@ import { ChatStore } from "../../chat/chat-store.js";
 import { ChatRealtimeService } from "../../chat/chat-realtime.js";
 import { ChatOutboxWorker } from "../../chat/chat-worker.js";
 import type { createRegistrationRuntime } from "../../../account/auth/registration.module.js";
-import { ClockService } from "../../clock/clock-service.js";
+import { ClockService } from "../../clock/clock.service.js";
 import { ClockWorker } from "../../clock/clock-worker.js";
 import type { ClockWorkerPort } from "../../clock/clock.types.js";
 import {

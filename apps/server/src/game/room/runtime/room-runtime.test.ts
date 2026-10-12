@@ -12,7 +12,7 @@ import { RoomTransactions } from "../room-transactions.js";
 import { RoomHttpService } from "../room-http.service.js";
 import { PostgresMemberRoomAuthorizer } from "../member-room-auth.js";
 import { MatchStore } from "../../match/match-store.js";
-import { ClockService } from "../../clock/clock-service.js";
+import { ClockService } from "../../clock/clock.service.js";
 import { createRoomRuntime } from "./room-runtime.js";
 import { databaseUrl, pool, reset } from "./room-runtime.test-helper.js";
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
