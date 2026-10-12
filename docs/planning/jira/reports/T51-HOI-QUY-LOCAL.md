@@ -11,7 +11,7 @@
 | Kiểu                | `pnpm typecheck`                             | PASS — 0 lỗi                                                   |
 | Định dạng           | `pnpm format:check`                          | PASS                                                           |
 | Build web           | `pnpm --filter @xiangqi/web build`           | PASS                                                           |
-| Kế hoạch Jira       | `python3 jira/tools/build_plan.py --check`   | PASS (107 issue, 71 task, 880h, 268 AC)                        |
+| Kế hoạch Jira       | `python3 docs/planning/jira/tools/build_plan.py --check`   | PASS (107 issue, 71 task, 880h, 268 AC)                        |
 | **Hồi quy tự động** | `pnpm exec vitest run --no-file-parallelism` | **130 file PASS / 21 skip; 2003 test PASS / 284 skip** (172 s) |
 
 Môi trường: macOS 15.7.3, Apple M3 Pro 18 GB, Node v26.7.0, pnpm 10.34.6; PostgreSQL cô lập `127.0.0.1:55446` (room) và `:55447` (match) — như job CI.

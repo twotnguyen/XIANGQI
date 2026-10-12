@@ -5,7 +5,7 @@
 # Tệp riêng trên máy: ghi chú, bản xuất thủ công, ảnh chụp và bản sao cá nhân.
 # Đặt chúng trong .local/ để không bị đưa lên GitHub.
 /.local/
-/jira/sprint-label-sync-2026-10-10.json
+/docs/planning/jira/sprint-label-sync-2026-10-10.json
 
 # Hệ điều hành và thiết lập IDE cá nhân
 .DS_Store

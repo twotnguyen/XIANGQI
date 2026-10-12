@@ -1,7 +1,7 @@
 # DESIGN.md — Hệ thống thiết kế Cờ Tướng Online
 
 **Cập nhật:** 2026-10-10 (làm rõ P1/P2 và bố cục; giữ quyết định thiết kế đã chốt; mockup chỉ tham khảo) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
-**Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · chuẩn WCAG 2.1 AA
+**Nguồn luật:** [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · chuẩn WCAG 2.1 AA
 
 > Các mã `DT-xx`, `DEC-xxx`, `GR-COORD`, `SCR-RULE-xx` trong file này là nhãn kế thừa từ bộ tài liệu cũ đã xoá. Nội dung luật đã được viết ngay tại chỗ dùng nó; không cần và không thể tra ở nơi khác. Các mã `TK…` (task Jira cũ) đã được gỡ khỏi file này.
 

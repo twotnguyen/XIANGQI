@@ -36,7 +36,7 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 ## 5. Thành công được chứng minh thế nào?
 
-- 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 User Story, 268 tiêu chí nghiệm thu có ca kiểm thử đối ứng; 71 Task, 880 giờ trong 4 Sprint ([KE-HOACH-JIRA.md](KE-HOACH-JIRA.md)).
+- 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 User Story, 268 tiêu chí nghiệm thu có ca kiểm thử đối ứng; 71 Task, 880 giờ trong 4 Sprint ([KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md)).
 - Kế hoạch dự kiến: BA đã chốt; lịch triển khai từ 10/10, hoàn tất và tổng duyệt ngày 04/11. Jira hiện có 36 mục BA Done và 71 Task To Do; bốn Sprint chưa bắt đầu. Chưa triển khai sản phẩm; số AC/TC là độ phủ đặc tả, không phải số ca đã kiểm đạt.
 - Điều kiện nghiệm thu: kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
 - Luật cờ kiểm độc lập ở máy chủ; không tin kết quả client gửi.
@@ -45,5 +45,5 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 ## 6. Đọc tiếp
 
 1. [Quyết định nghiệp vụ và phân kỳ](BA-SCOPE-DECISIONS.md)
-2. [Backlog P1: Epic, User Story, AC, TC](BACKLOG-P1.md) · [Kế hoạch Jira](KE-HOACH-JIRA.md)
-3. [Danh mục màn hình](DANH-MUC-MAN-HINH-XIANGQI.md) · [Hệ thống thiết kế](DESIGN.md)
+2. [Backlog P1: Epic, User Story, AC, TC](BACKLOG-P1.md) · [Kế hoạch Jira](../planning/KE-HOACH-JIRA.md)
+3. [Danh mục màn hình](../design/DANH-MUC-MAN-HINH-XIANGQI.md) · [Hệ thống thiết kế](../design/DESIGN.md)

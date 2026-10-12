@@ -3,7 +3,7 @@
 > **Phiên bản:** 3.0 · **Ngày:** 10/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
 > **Phạm vi:** P1 (MVP, hạn **04/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
 > **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 10/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
-> **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md).
+> **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md).
 > **Cấu trúc:** **EP-01 → EP-08 khớp đúng 8 yêu cầu của khách hàng (YC1 → YC8)**; EP-00 là Epic nền tảng phục vụ chung.
 
 ---
@@ -40,7 +40,7 @@
 
 **Yêu cầu (YC) của khách hàng:** YC1 Đăng ký/đăng nhập · YC2 Tạo phòng · YC3 Mời vào phòng · YC4 Khởi tạo bàn cờ · YC5 Hai người đánh online · YC6 Chế độ phòng và người xem (tối đa 5 xem / 7 người) · YC7 Chat + camera + mic, kênh người xem riêng · YC8 Đánh với máy theo cấp độ.
 
-**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA; đặc tả đã chốt, tiến độ BA tách khỏi triển khai. Khoảng ngày BA có thể chồng với các Task đầu theo BA 0.1; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](jira/reports/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
+**Mô hình Jira (theo hướng dẫn của giảng viên):** Epic và Story là sản phẩm của BA; đặc tả đã chốt, tiến độ BA tách khỏi triển khai. Khoảng ngày BA có thể chồng với các Task đầu theo BA 0.1; đội chia Story thành Task và đặt hạn cho Task. Một chức năng chỉ được coi là **đã chạy xong** khi mọi AC của Story đạt tại các Task được chỉ định trong [bản đồ nghiệm thu](../planning/jira/reports/TRUY-VET-AC.md), kể cả AC giao cho Task tích hợp/đo tổng. Task kiểm thử cục bộ Done không có nghĩa toàn bộ Story đã được nghiệm thu.
 
 **Câu chữ giao diện** trong ngoặc kép là văn bản bắt buộc hiển thị đúng (có thể chỉnh dấu câu, không đổi nghĩa).
 
@@ -130,7 +130,7 @@
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; **không** chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
 
-> **Cấu hình nhánh cập nhật 10/10:** chỉ `main`/`develop`, mặc định `main`, không bảo vệ nhánh và không bắt buộc PR/Approve. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](README.md#quy-trình-git).
+> **Cấu hình nhánh cập nhật 10/10:** chỉ `main`/`develop`, mặc định `main`, không bảo vệ nhánh và không bắt buộc PR/Approve. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
 
 #### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.
@@ -671,7 +671,7 @@
 
 ## 7. Cổng kiểm chứng kỹ thuật
 
-Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp thật**. Lịch và người nhận ở [kế hoạch Sprint](KE-HOACH-JIRA.md#3-sprint); đầu ra/điều kiện hoàn thành ở [Description chi tiết](jira/reports/JIRA-MUC-CHI-TIET.md); nguyên mẫu không được dùng thay bằng chứng PASS. T24 dựng máy cờ từ 14–17/10 (S1 kéo sang S2), T59 tinh chỉnh/đo 18–19/10 (S2); không tuyên bố mọi gate đã xong trong S1.
+Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp thật**. Lịch và người nhận ở [kế hoạch Sprint](../planning/KE-HOACH-JIRA.md#3-sprint); đầu ra/điều kiện hoàn thành ở [Description chi tiết](../planning/jira/reports/JIRA-MUC-CHI-TIET.md); nguyên mẫu không được dùng thay bằng chứng PASS. T24 dựng máy cờ từ 14–17/10 (S1 kéo sang S2), T59 tinh chỉnh/đo 18–19/10 (S2); không tuyên bố mọi gate đã xong trong S1.
 
 | Mã | Nội dung | Cách làm | Kết quả cần ghi |
 |---|---|---|---|
@@ -727,13 +727,13 @@ Mọi Story tính năng ─> US-00.5 (nghiệm thu tổng, đóng gói, demo)
 | S3 | 24/10–30/10 | 28 | 284 | 69 | Hoàn thiện bạn bè, chat/media, phòng/người xem, Sảnh, hồ sơ, nối lại và kiểm thử chuyên đề. Các phần triển khai hoàn tất chậm nhất 30/10 để hồi quy từ 31/10. |
 | S4 | 31/10–04/11 | 11 | 100 | 21 | Hồi quy 31/10–02/11, kiểm chất lượng 31/10–01/11, đóng gói 03/11 và tổng duyệt 04/11. Tối đa 7 Task/ngày, mỗi người một Task/ngày; phụ thuộc đầu-cuối không trùng ngày. Giữ nguyên thời lượng Task. |
 
-Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.
+Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.
 
 ---
 
 ## 10. Truy vết
 
-Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [bản đồ truy vết AC](jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
+Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [bản đồ truy vết AC](../planning/jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
 
 ### 10.1 Yêu cầu khách hàng → Epic → Story
 

@@ -3,7 +3,7 @@
 **Tài liệu:** Kiến trúc Giao diện & Bản đồ Màn hình Chuẩn hóa (UI/UX Screen Inventory)  
 **Dự án:** Cờ Tướng Trực Tuyến (`XIANGQI`)  
 **Ngày cập nhật:** 10/10/2026 · **Phiên bản:** v1.2.2 (đồng bộ BA Phần 0, gồm từ chối username chứa từ cấm và phòng tự tạo về WAITING sau server khởi động lại; giữ 26 thành phần P1 / 11 P2)
-**Nguồn đặc tả:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
+**Nguồn đặc tả:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
 
 ---
 
@@ -342,8 +342,8 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 ## 8. KIỂM CHỨNG TÍNH KHÉP KÍN (CLOSED-LOOP VERIFICATION)
 
-Ma trận điều kiện và kết quả **năm trạng thái của từng thành phần** (bản cũ ở `docs/08` đã xoá 07/10) được thay bằng truy vết thành phần → User Story trong [BACKLOG-P1.md](BACKLOG-P1.md); năm trạng thái bắt buộc vẫn là điều kiện trong Definition of Done. Bảng danh mục không phải bằng chứng đã dựng/kiểm thử giao diện. Mockup không được sửa trong đợt này; nếu khác đặc tả thì chỉ dùng tham khảo, không dùng nghiệm thu.
-1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
+Ma trận điều kiện và kết quả **năm trạng thái của từng thành phần** (bản cũ ở `docs/08` đã xoá 07/10) được thay bằng truy vết thành phần → User Story trong [BACKLOG-P1.md](../product/BACKLOG-P1.md); năm trạng thái bắt buộc vẫn là điều kiện trong Definition of Done. Bảng danh mục không phải bằng chứng đã dựng/kiểm thử giao diện. Mockup không được sửa trong đợt này; nếu khác đặc tả thì chỉ dùng tham khảo, không dùng nghiệm thu.
+1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
 4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.

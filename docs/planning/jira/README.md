@@ -24,10 +24,10 @@ Nhóm bắt đầu từ [trạng thái hiện hành](reports/CURRENT-JIRA-STATE.
 Chạy từ thư mục gốc dự án:
 
 ```sh
-python3 jira/tools/sync_plan_from_snapshot.py
-python3 jira/tools/build_plan.py
-python3 jira/tools/build_plan.py --check
-python3 -m unittest discover -s jira/tests -v
+python3 docs/planning/jira/tools/sync_plan_from_snapshot.py
+python3 docs/planning/jira/tools/build_plan.py
+python3 docs/planning/jira/tools/build_plan.py --check
+python3 -m unittest discover -s docs/planning/jira/tests -v
 ```
 
 Công cụ đồng bộ đọc `data/current-jira-snapshot.json` đã có trên máy; không tự truy vấn hoặc ghi lên Jira. Các đường dẫn trong công cụ được xác định theo vị trí tệp, không phụ thuộc thư mục đang đứng. Tệp `source_snapshot` trong kế hoạch và bản xuất được hiểu tương đối với thư mục chứa tệp JSON đó.

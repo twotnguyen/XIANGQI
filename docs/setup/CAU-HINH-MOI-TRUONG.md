@@ -2,11 +2,11 @@
 
 Bộ mẫu chuẩn bị dịch vụ, đối chiếu tài liệu nhà cung cấp ngày 10/10/2026. Repo hiện đã có mã web/server và bộ nạp cấu hình (xem README để chạy `pnpm dev`); điền biến không đồng nghĩa kết nối thành công, và mỗi dịch vụ cần được kiểm chứng riêng. Việc chuẩn bị này không bắt đầu Sprint, không đóng Task và không thay đổi kế hoạch 880 giờ, hạn 04/11.
 
-Quyết định nghiệp vụ vẫn theo [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md), đặc biệt mục 0.4 (SMTP), 0.16 (LiveKit), đăng ký/Google và các cổng kiểm chứng trong [BACKLOG-P1.md](BACKLOG-P1.md). Không dùng hướng dẫn hạ tầng này để thay luật nghiệp vụ.
+Quyết định nghiệp vụ vẫn theo [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md), đặc biệt mục 0.4 (SMTP), 0.16 (LiveKit), đăng ký/Google và các cổng kiểm chứng trong [BACKLOG-P1.md](../product/BACKLOG-P1.md). Không dùng hướng dẫn hạ tầng này để thay luật nghiệp vụ.
 
 ## 1. Các file và cách điền
 
-Chỉ có một mẫu chung: [.env.example](.env.example). File `.env` ở gốc là bản tổng hợp để bạn điền toàn bộ thông tin. `apps/web/.env` và `apps/server/.env` là bản sao đầy đủ của file gốc, đều được Git bỏ qua.
+Chỉ có một mẫu chung: [.env.example](../../.env.example). File `.env` ở gốc là bản tổng hợp để bạn điền toàn bộ thông tin. `apps/web/.env` và `apps/server/.env` là bản sao đầy đủ của file gốc, đều được Git bỏ qua.
 
 Nhập hoặc cập nhật khóa ở `.env` gốc trước. Với thành viên mới:
 
@@ -106,7 +106,7 @@ Xem [kết nối phòng](https://docs.livekit.io/intro/basics/connect/). Đây l
 
 ### Tự chạy — phát triển và demo LAN
 
-Đã có [bộ Docker và hướng dẫn chuyển local/Cloud](infra/livekit/README.md), cùng công cụ `python3 scripts/livekit-env.py prepare|local|cloud`. `prepare` lưu riêng bộ Cloud hiện tại và tạo khóa local; không đổi môi trường đang dùng. Theo BA, nhóm kiểm chứng LiveKit mã nguồn mở bằng Docker ở công việc media. Không cần đăng ký Cloud cho riêng môi trường này; phần HTTPS và kết nối nhiều thiết bị LAN vẫn phải chuẩn bị, kiểm thử theo hướng dẫn.
+Đã có [bộ Docker và hướng dẫn chuyển local/Cloud](../../infra/livekit/README.md), cùng công cụ `python3 scripts/livekit-env.py prepare|local|cloud`. `prepare` lưu riêng bộ Cloud hiện tại và tạo khóa local; không đổi môi trường đang dùng. Theo BA, nhóm kiểm chứng LiveKit mã nguồn mở bằng Docker ở công việc media. Không cần đăng ký Cloud cho riêng môi trường này; phần HTTPS và kết nối nhiều thiết bị LAN vẫn phải chuẩn bị, kiểm thử theo hướng dẫn.
 
 - Thay bộ ba biến LiveKit bằng địa chỉ và khóa của máy chủ tự chạy. `ws://localhost:7880` chỉ phù hợp thử cùng máy; mọi thiết bị phải truy cập được địa chỉ media thực.
 - LAN nhiều thiết bị cần HTTPS tin cậy cho web và WSS phù hợp cho media; thiết bị nhận phải tin chứng chỉ. HTTP qua IP LAN không tương đương ngoại lệ localhost cho camera/mic.

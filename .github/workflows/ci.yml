@@ -4,13 +4,13 @@ on:
     branches: [main, develop]
     paths-ignore:
       - "**/*.md"
-      - "jira/**"
+      - "docs/**"
       - ".env.example"
   pull_request:
     branches: [main, develop]
     paths-ignore:
       - "**/*.md"
-      - "jira/**"
+      - "docs/**"
       - ".env.example"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

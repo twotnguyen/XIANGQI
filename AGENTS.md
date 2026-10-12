@@ -11,11 +11,11 @@
 
 | Khi làm việc với | Đọc trước |
 |---|---|
-| Nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md), ưu tiên Phần 0 |
-| Tính năng, test, nghiệm thu | [BACKLOG-P1.md](BACKLOG-P1.md), AC/TC của Story và Description của Task |
-| Giao diện | [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](DESIGN.md); mockup chỉ tham khảo |
-| Jira, lịch và phân công | [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md), [jira/README.md](jira/README.md) |
-| Biến môi trường, xác thực, database | [CAU-HINH-MOI-TRUONG.md](CAU-HINH-MOI-TRUONG.md), [.env.example](.env.example) |
+| Nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md), ưu tiên Phần 0 |
+| Tính năng, test, nghiệm thu | [BACKLOG-P1.md](docs/product/BACKLOG-P1.md), AC/TC của Story và Description của Task |
+| Giao diện | [DANH-MUC-MAN-HINH-XIANGQI.md](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md); mockup chỉ tham khảo |
+| Jira, lịch và phân công | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md), [docs/planning/jira/README.md](docs/planning/jira/README.md) |
+| Biến môi trường, xác thực, database | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md), [.env.example](.env.example) |
 | Camera/mic và Docker | BA 0.16 và [infra/livekit/README.md](infra/livekit/README.md) |
 
 Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại → BACKLOG-P1 → danh mục màn hình → DESIGN → mockup. Jira live là nguồn tiến độ khi đã truy vấn thành công; snapshot trong repo là dữ liệu có thời điểm, không phải xác nhận trạng thái hiện tại. Báo mâu thuẫn ảnh hưởng công việc, không tự thay quyết định BA.
@@ -36,7 +36,7 @@ MCP được cài và cấp quyền trong môi trường agent, không được 
 - Khi được giao sửa lịch, giữ cơ sở 880 giờ, hạn 04/11/2026, tối đa 7 Task/ngày và 1 Task/người/ngày. Phụ thuộc đầu-cuối phải bắt đầu từ ngày sau khi Task trước kết thúc; thứ tự bắt đầu Epic → Story → Task. Thay đổi cơ sở cần quyết định rõ của người dùng.
 - Chỉ cập nhật Jira khi thuộc phạm vi yêu cầu. Không tự bắt đầu/kết thúc Sprint, chuyển issue Done, sửa Resolution hoặc thay ước lượng vì đã sửa tài liệu hay tạo commit. Mặc định giữ Sprint chưa bắt đầu cho đến khi có yêu cầu mới.
 - Trước khi cập nhật issue, đọc lại dữ liệu live để tránh ghi đè công việc của người khác. Trường Sprint là nguồn chính, nhãn `sprint-*` phải khớp; liên kết Story–Task có thể là `relates to`, không giả định Task là con trực tiếp của Story.
-- Đồng bộ kế hoạch theo [jira/README.md](jira/README.md): cập nhật nguồn phù hợp, sinh lại báo cáo rồi kiểm tra. Script đọc snapshot không tự lấy Jira live. Không nhập lại CSV đối chiếu để tạo backlog trùng.
+- Đồng bộ kế hoạch theo [docs/planning/jira/README.md](docs/planning/jira/README.md): cập nhật nguồn phù hợp, sinh lại báo cáo rồi kiểm tra. Script đọc snapshot không tự lấy Jira live. Không nhập lại CSV đối chiếu để tạo backlog trùng.
 
 ## Git, commit và pull request
 
@@ -86,7 +86,7 @@ Chọn kiểm tra theo thay đổi, không tự chạy các script sinh lại k�
 | Thay đổi | Kiểm tra |
 |---|---|
 | Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged |
-| Kế hoạch Jira | `python3 jira/tools/build_plan.py --check` và `python3 -m unittest discover -s jira/tests -v` |
+| Kế hoạch Jira | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v` |
 | LiveKit Docker | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`; thử runtime nếu Docker sẵn có và phù hợp yêu cầu |
 | Mã ứng dụng | Đọc manifest/lockfile và chạy lint, typecheck, test/build đã có cho phần thay đổi; không bịa lệnh hoặc kết quả |
 

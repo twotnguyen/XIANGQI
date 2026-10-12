@@ -14,7 +14,7 @@ Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot
 
 ## Cấu hình GitHub hiện hành
 
-Chỉ có `main` và `develop`; `main` là mặc định. Không còn bộ quy tắc bảo vệ nhánh, bắt buộc PR/Approve/Code Owner hay CI. Đây là cấu hình GitHub, không thay đổi trạng thái Jira. AC-00.1.2, Story US-00.1 và Description T01 đã đồng bộ: CI tự chạy khi push/PR, báo kết quả lint/typecheck/unit test; không dùng bảo vệ nhánh để chặn gộp. Đây là yêu cầu triển khai, chưa phải bằng chứng CI đã chạy đạt. Xem [README](../../README.md#quy-trình-git).
+Chỉ có `main` và `develop`; `main` là mặc định. Không còn bộ quy tắc bảo vệ nhánh, bắt buộc PR/Approve/Code Owner hay CI. Đây là cấu hình GitHub, không thay đổi trạng thái Jira. AC-00.1.2, Story US-00.1 và Description T01 đã đồng bộ: CI tự chạy khi push/PR, báo kết quả lint/typecheck/unit test; không dùng bảo vệ nhánh để chặn gộp. Đây là yêu cầu triển khai, chưa phải bằng chứng CI đã chạy đạt. Xem [README](../../../../README.md#quy-trình-git).
 
 ## Dữ liệu đã đồng bộ
 
@@ -25,10 +25,10 @@ CSV có Jira Key, Resolution, Remaining Estimate và account ID; đây là bản
 ## Kiểm tra và sinh lại
 
 ```sh
-python3 jira/tools/sync_plan_from_snapshot.py
-python3 jira/tools/build_plan.py
-python3 jira/tools/build_plan.py --check
-python3 -m unittest discover -s jira/tests -v
+python3 docs/planning/jira/tools/sync_plan_from_snapshot.py
+python3 docs/planning/jira/tools/build_plan.py
+python3 docs/planning/jira/tools/build_plan.py --check
+python3 -m unittest discover -s docs/planning/jira/tests -v
 ```
 
 Ước lượng giờ độc lập với khoảng ngày. Khi trình bày giờ theo Sprint, bộ sinh chia đều ước lượng trên số ngày lịch; đây không phải giờ đã log. Các ngày Epic/Story là ngày kế hoạch được giữ nguyên từ Jira, không phải ngày hoàn thành thực tế.

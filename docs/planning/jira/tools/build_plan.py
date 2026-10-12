@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Generate and validate the current Jira-synchronized plan using Python stdlib.
 Source: plan-data.json + descriptions.json + BACKLOG-P1.md + AC-TASK-MAP.json.
-Run from any directory: python3 jira/tools/build_plan.py [--check]
+Run from any directory: python3 docs/planning/jira/tools/build_plan.py [--check]
 --check validates and compares generated artifacts without writing.
 """
 import collections,csv,datetime,io,json,re,sys
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[2]
+ROOT=Path(__file__).resolve().parents[2]  # docs/planning
+BACKLOG_P1=ROOT.parent/'product'/'BACKLOG-P1.md'
 DATA=json.loads((ROOT/'jira/data/plan-data.json').read_text())
 ISSUES=DATA['issues'];BY={x['id']:x for x in ISSUES};TASKS={k:x for k,x in BY.items() if x['type']=='Task'}
 ACS=json.loads((ROOT/'jira/data/AC-TASK-MAP.json').read_text())
@@ -127,7 +128,7 @@ def validate():
   assert all(TASKS[q]['owner']!=TASKS[t]['owner'] for t in impl),(q,'self-test')
  assert len(ACS)==268 and len({r['ac'] for r in ACS})==268
  ac_source={}
- for line in (ROOT/'BACKLOG-P1.md').read_text().splitlines():
+ for line in BACKLOG_P1.read_text().splitlines():
   if re.match(r'^\| AC-',line):
    cells=[z.strip() for z in line.strip('|').split('|')];ac_source[cells[0]]=dict(zip(['given','when','then','test_level'],cells[1:]))
  assert set(ac_source)=={r['ac'] for r in ACS}
@@ -149,7 +150,7 @@ def validate():
  return parallel
 
 def backlog_update():
- s=(ROOT/'BACKLOG-P1.md').read_text()
+ s=BACKLOG_P1.read_text()
  # Epic point totals are derived from Task estimates, not copied from the old plan.
  lines=s.splitlines()
  for n,line in enumerate(lines):
@@ -172,7 +173,7 @@ def backlog_update():
  for n,(lo,hi) in enumerate(SPRINTS,1):
   group=[x for x in TASKS.values() if x['sprint']==n]
   rows.append([f'S{n}',ds(lo)+'–'+ds(hi-1),len(group),sum(x['hours'] for x in group),sum(task_points(x) for x in group),GOALS[n-1]])
- s=s[:a]+'### 9.2 Phân bổ Sprint\n\nĐồng bộ Jira ngày 10/10: 36 Epic/Story BA Done, 71 Task To Do; cả bốn Sprint chưa bắt đầu. Thi công dự kiến từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.\n\n'+table(['Sprint','Ngày','Task','Giờ','Điểm','Kết quả dự kiến'],rows)+'\nLịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.\n\n---\n\n'+s[b:]
+ s=s[:a]+'### 9.2 Phân bổ Sprint\n\nĐồng bộ Jira ngày 10/10: 36 Epic/Story BA Done, 71 Task To Do; cả bốn Sprint chưa bắt đầu. Thi công dự kiến từ 10/10. Story BA không vào Sprint; một Story có thể được thi công/kiểm ở nhiều Sprint. Task gắn Sprint bắt đầu; ngày kết thúc có thể sang Sprint kế tiếp. Giờ/điểm trong bảng nhóm là toàn bộ ước lượng của Task, không phải công thực hiện trong riêng Sprint đó.\n\n'+table(['Sprint','Ngày','Task','Giờ','Điểm','Kết quả dự kiến'],rows)+'\nLịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md). Tổng 880 giờ; hoàn thành và Release v1.0 ngày 04/11/2026, không còn nửa ngày dự phòng cố định.\n\n---\n\n'+s[b:]
  s=s.replace('Máy cờ cấp Khó độ sâu 6 trong 3 giây bằng TypeScript chưa có số đo','Máy cờ cấp Khó có mục tiêu độ sâu 6/ngân sách 3 giây; chưa có số đo')
  return s
 
@@ -199,8 +200,8 @@ def generate_csv(backlog):
 def generate_detail(backlog):
  out=['# Danh sách mục Jira XIAN — đồng bộ 10/10/2026\n', '> **9 Epic · 27 Story · 71 Task = 107 mục.** Sinh từ `plan-data.json`, `descriptions.json`, BACKLOG-P1 và AC-TASK-MAP; đồng bộ snapshot Jira hiện tại: 36 mục BA Done, 71 Task To Do, 880 giờ, hạn 04/11; cả bốn Sprint chưa bắt đầu.\n',
  'Epic/Story là việc BA, không có Sprint/ước lượng ở trường Jira. Story và Task đều có cha Epic; Task liên kết *relates to* Story. Một Story có thể có Task ở nhiều Sprint. Ngày Epic/Story lấy nguyên giá trị Jira; Epic bắt đầu trước Story, Story trước Task. BA Done nghĩa là đặc tả đã chốt, không phải phần mềm đã nghiệm thu. BA không gắn Release triển khai.\n',
- '**Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../../BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.\n',
- 'Lưu ý cấu hình GitHub mới: chỉ main/develop, main mặc định, không bảo vệ nhánh. T01 và AC-00.1.2 yêu cầu CI tự chạy khi push/PR và báo kết quả lint/typecheck/unit test; không cấu hình CI thành điều kiện bắt buộc để GitHub cho phép gộp. Đặc tả này chưa phải bằng chứng CI đã triển khai hoặc PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).\n',
+ '**Cơ sở nội dung:** Toàn bộ 107 Description đã được đối chiếu với [BA-SCOPE-DECISIONS.md](../../../product/BA-SCOPE-DECISIONS.md). Quyết định và đặc tả sản phẩm đã được duyệt; Epic/Story diễn đạt nội dung bàn giao, đối chiếu và truy vết theo bản đã chốt, không yêu cầu duyệt lại. Task giữ bảy phần Description, cụ thể hóa việc triển khai và kiểm chứng. Ưu tiên Phần 0 khi có nội dung cũ khác nhau; chức năng dành cho P2 không đưa vào P1. Thiết kế kỹ thuật cụ thể, lựa chọn dịch vụ được giao cho đội phát triển và bằng chứng kiểm thử vẫn cần thực hiện; đặc tả đã duyệt không có nghĩa phần mềm đã đạt nghiệm thu.\n',
+ 'Lưu ý cấu hình GitHub mới: chỉ main/develop, main mặc định, không bảo vệ nhánh. T01 và AC-00.1.2 yêu cầu CI tự chạy khi push/PR và báo kết quả lint/typecheck/unit test; không cấu hình CI thành điều kiện bắt buộc để GitHub cho phép gộp. Đặc tả này chưa phải bằng chứng CI đã triển khai hoặc PASS. Xem [quy trình Git hiện hành](../../../../README.md#quy-trình-git).\n',
  'Mỗi mục ghi các phần quyết định BA liên quan và mục nghiệm thu bổ sung trong BACKLOG-P1 khi cần; nhật ký đối chiếu nằm trong [description-source-audit.json](../data/description-source-audit.json). Lịch, phân công, giờ, điểm và trạng thái lấy từ current-jira-snapshot.json; nhãn sprint cũ không thay thế trường Sprint.\n']
  for ep in [x for x in ISSUES if x['type']=='Epic']:
   group=[ep]
@@ -314,7 +315,7 @@ def validate_live_parity():
 def generate_plan(parallel):
  out=['# KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)\n',
  '> **Đồng bộ Jira ngày 10/10/2026 · phiên bản 3.0.** 9 Epic + 27 Story BA đã Done; 71 Task triển khai To Do, **880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả bốn Sprint chưa bắt đầu.\n',
- 'Nguồn dữ liệu: [snapshot Jira](jira/data/current-jira-snapshot.json), [kế hoạch](jira/data/plan-data.json), [Description](jira/data/descriptions.json). Nghiệp vụ: [BA](BA-SCOPE-DECISIONS.md), [backlog](BACKLOG-P1.md), [truy vết 268 AC](jira/reports/TRUY-VET-AC.md). [Danh sách 107 mục](jira/reports/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/exports/xian-import.csv) được sinh từ cùng nguồn.\n',
+ 'Nguồn dữ liệu: [snapshot Jira](jira/data/current-jira-snapshot.json), [kế hoạch](jira/data/plan-data.json), [Description](jira/data/descriptions.json). Nghiệp vụ: [BA](../product/BA-SCOPE-DECISIONS.md), [backlog](../product/BACKLOG-P1.md), [truy vết 268 AC](jira/reports/TRUY-VET-AC.md). [Danh sách 107 mục](jira/reports/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/exports/xian-import.csv) được sinh từ cùng nguồn.\n',
  '## 1. Quy tắc lịch và cách đọc\n',
  '- Lịch theo **ngày**, tính cả ngày bắt đầu và ngày kết thúc, kể cả cuối tuần. Mỗi người tối đa một Task/ngày; toàn nhóm tối đa bảy Task/ngày. Task phụ thuộc chỉ bắt đầu từ ngày sau khi đầu vào kết thúc.\n- Ước lượng giờ độc lập với độ dài thanh lịch. Một Task 4 giờ vẫn chiếm một ngày trong ràng buộc một Task/người/ngày; không suy ra giờ làm bằng số ngày × 8. Mỗi Task không vượt 8 giờ/ngày nếu phân bổ đều trong khoảng lịch.\n- Epic và Story là hồ sơ BA đã chốt; Done của BA không đại diện cho phần mềm đã hoàn thành. Story và Task cùng thuộc Epic, liên kết với nhau bằng relates to. Ngày BA giữ nguyên giá trị Jira; Epic bắt đầu trước Story, Story trước Task. BA có thể kết thúc trước hoặc sau các Task đầu một khoảng ngắn theo lịch mục 4; không mặc định chờ Task cuối.\n- Task gắn Sprint theo ngày bắt đầu, có thể kéo qua Sprint sau. **Trường Sprint** là nguồn chính; 71/71 nhãn sprint đã khớp trường Sprint sau đợt sửa 13 nhãn cũ.\n- Story Points lấy nguyên Jira, không tự tính lại từ giờ mới. Các bảng chia giờ theo Sprint phân bổ đều ước lượng trên số ngày lịch, chỉ là cách trình bày kế hoạch, không phải giờ đã làm.\n- Tổng duyệt T71 chiếm ngày 04/11 (8 giờ); **không còn cam kết chiều 04/11 dự phòng**. Mốc demo 05/11 trong hồ sơ cũ là lịch sử; hạn kế hoạch hiện tại là 04/11.\n',
  table(['Chỉ số','Kết quả'],[['Epic / Story / Task','9 / 27 / 71'],['Giờ / Story Points',f"{TOTAL_HOURS} / {sum(task_points(x) for x in TASKS.values())}"],['Phụ thuộc trực tiếp',sum(len(x['deps']) for x in TASKS.values())],['Song song tối đa',max(parallel.values())],['Hạn hoàn thành',DATA['deadline']],['Trạng thái Sprint','4 future; chưa bắt đầu']]),
@@ -344,7 +345,7 @@ def generate_plan(parallel):
  out += ['\n## 8. Kiểm chứng và sử dụng dữ liệu\n',
  'T51 hồi quy sau triển khai; T70 chờ T51, T66 và toàn bộ QA chuyên đề; T71 tổng duyệt bản phát hành. Mọi tiêu chí bắt buộc cần bằng chứng thực tế. Nếu đầu vào trễ hoặc ước lượng không đủ, cập nhật lịch thay vì tự hạ ngưỡng hoặc ghi PASS cho ca chưa chạy.\n',
  'CSV là bản xuất đối chiếu **các mục đã tồn tại**, gồm Issue Key, Resolution và định danh tài khoản. Không nhập như các mục mới; không dùng import CSV để ép chuyển trạng thái. Script local không ghi lên Jira.\n',
- 'Để cập nhật nguồn, lấy snapshot Jira mới vào `jira/data/current-jira-snapshot.json`, chạy `python3 jira/tools/sync_plan_from_snapshot.py`, `python3 jira/tools/build_plan.py`, rồi `python3 jira/tools/build_plan.py --check`. Bộ kiểm đối chiếu dữ liệu với snapshot, 268 AC, phụ thuộc, giới hạn ngày, người kiểm độc lập và các đầu ra. Đây là kiểm dữ liệu kế hoạch, chưa phải kiểm phần mềm.\n',
+ 'Để cập nhật nguồn, lấy snapshot Jira mới vào `docs/planning/jira/data/current-jira-snapshot.json`, chạy `python3 docs/planning/jira/tools/sync_plan_from_snapshot.py`, `python3 docs/planning/jira/tools/build_plan.py`, rồi `python3 docs/planning/jira/tools/build_plan.py --check`. Bộ kiểm đối chiếu dữ liệu với snapshot, 268 AC, phụ thuộc, giới hạn ngày, người kiểm độc lập và các đầu ra. Đây là kiểm dữ liệu kế hoạch, chưa phải kiểm phần mềm.\n',
  '[Báo cáo kiểm tra](jira/reports/KIEM-TRA-KE-HOACH.md) · [Trạng thái hiện hành](jira/reports/CURRENT-JIRA-STATE.md).\n']
  return '\n'.join(out)
 
@@ -356,7 +357,7 @@ def report(parallel):
  f'Đã đối chiếu 71 Task; số nhãn lệch trường Sprint: **{len(label_mismatches())}**. Trường Sprint là nguồn chính. Lịch sử sửa 13 nhãn: [sprint-label-sync-2026-10-10.json](https://github.com/twotnguyen/XIANGQI/blob/a586f372549561d8c2f0f508bc7ab10d431d5ef7/jira/sprint-label-sync-2026-10-10.json).\n',
  table(['Jira','Task','Nhãn hiện tại','Sprint thực tế'],label_mismatches()) if label_mismatches() else 'Toàn bộ nhãn `sprint-*` khớp Sprint thực tế.\n',
  '\n## Giới hạn\n',
- '- Lịch có cuối tuần; không còn nửa ngày dự phòng 04/11.\n- Giờ theo Sprint được phân bổ đều trên các ngày của Task để trình bày, không phải giờ log hoặc lịch giờ cụ thể.\n- Cấu hình Resolution đã lưu và đọc lại, chưa thử chuyển Task thật.\n- Không xác nhận mã sản phẩm, ca kiểm thử, gate, thiết bị hoặc quyền GitHub của từng người đã sẵn sàng.\n- Kiểm khớp snapshot không thay thế truy vấn live khi Jira có thay đổi mới.\n\nTái chạy: `python3 jira/tools/build_plan.py --check`.\n']
+ '- Lịch có cuối tuần; không còn nửa ngày dự phòng 04/11.\n- Giờ theo Sprint được phân bổ đều trên các ngày của Task để trình bày, không phải giờ log hoặc lịch giờ cụ thể.\n- Cấu hình Resolution đã lưu và đọc lại, chưa thử chuyển Task thật.\n- Không xác nhận mã sản phẩm, ca kiểm thử, gate, thiết bị hoặc quyền GitHub của từng người đã sẵn sàng.\n- Kiểm khớp snapshot không thay thế truy vấn live khi Jira có thay đổi mới.\n\nTái chạy: `python3 docs/planning/jira/tools/build_plan.py --check`.\n']
  return '\n'.join(out)
 
 
@@ -378,7 +379,7 @@ def mapping_json():
 
 def main():
  parallel=validate();backlog=backlog_update()
- outputs={'jira/reports/ANH-XA-JIRA-107-MUC.md':mapping_md(),'jira/exports/jira-key-account-mapping.json':mapping_json(),'BACKLOG-P1.md':backlog,'KE-HOACH-JIRA.md':generate_plan(parallel),'jira/reports/JIRA-MUC-CHI-TIET.md':generate_detail(backlog),'jira/exports/xian-import.csv':generate_csv(backlog),'jira/reports/TRUY-VET-AC.md':traceability_md(),'jira/reports/KIEM-TRA-KE-HOACH.md':report(parallel),'jira/reports/COMPONENTS-LABELS.md':components_md(),'jira/reports/PHAN-CONG-CAN-BANG.md':allocation_md(),'jira/reports/DANH-GIA-KHOI-LUONG.md':workload_md()}
+ outputs={'jira/reports/ANH-XA-JIRA-107-MUC.md':mapping_md(),'jira/exports/jira-key-account-mapping.json':mapping_json(),'../product/BACKLOG-P1.md':backlog,'KE-HOACH-JIRA.md':generate_plan(parallel),'jira/reports/JIRA-MUC-CHI-TIET.md':generate_detail(backlog),'jira/exports/xian-import.csv':generate_csv(backlog),'jira/reports/TRUY-VET-AC.md':traceability_md(),'jira/reports/KIEM-TRA-KE-HOACH.md':report(parallel),'jira/reports/COMPONENTS-LABELS.md':components_md(),'jira/reports/PHAN-CONG-CAN-BANG.md':allocation_md(),'jira/reports/DANH-GIA-KHOI-LUONG.md':workload_md()}
  validate_export(outputs['jira/exports/xian-import.csv'],backlog)
  check='--check' in sys.argv
  for name,value in outputs.items():

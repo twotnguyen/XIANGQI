@@ -1,6 +1,6 @@
 # BACKLOG P2 — XIANGQI
 
-Ngày lập: 11/10/2026. Phạm vi P2 được giao mới qua goal, gồm cả Stretch; chưa là xác nhận đã triển khai. Nhóm Epic giữ [BACKLOG-P1 §4.2](BACKLOG-P1.md#42-epic-p2-chỉ-ở-mức-epic-chưa-tách-story). Nguồn nghiệp vụ là [BA-SCOPE-DECISIONS](BA-SCOPE-DECISIONS.md), ưu tiên Phần 0. Danh mục phủ toàn bộ 25 mục tại [PHAM-VI-P1-P2](jira/reports/PHAM-VI-P1-P2.md).
+Ngày lập: 11/10/2026. Phạm vi P2 được giao mới qua goal, gồm cả Stretch; chưa là xác nhận đã triển khai. Nhóm Epic giữ [BACKLOG-P1 §4.2](BACKLOG-P1.md#42-epic-p2-chỉ-ở-mức-epic-chưa-tách-story). Nguồn nghiệp vụ là [BA-SCOPE-DECISIONS](BA-SCOPE-DECISIONS.md), ưu tiên Phần 0. Danh mục phủ toàn bộ 25 mục tại [PHAM-VI-P1-P2](../planning/jira/reports/PHAM-VI-P1-P2.md).
 
 Nguồn BA đã được PO duyệt; Story, AC/TC và ước lượng dưới đây là phân rã kỹ thuật Codex bổ sung, chưa có xác nhận riêng của PO và không tự coi là BA Done. TC chưa chạy, toàn bộ issue mới giữ To Do trong backlog. Không gán Sprint, ngày cam kết, assignee hoặc release.
 
@@ -8,7 +8,7 @@ Nguồn BA đã được PO duyệt; Story, AC/TC và ước lượng dưới đ
 
 Giữ nguyên P1: 9 Epic, 27 Story, 71 Task, 268 AC, 880 giờ, hạn 04/11/2026. P2 riêng: **7 Epic, 25 Story, 50 Task, 75 AC/TC; 768 giờ đề xuất**. Đây là tổng ước lượng kỹ thuật, không phải giờ đã làm hoặc cam kết chung hạn P1. Mỗi Story có Task triển khai tích hợp và Task kiểm chứng; Task triển khai bao gồm migration/code/UI/unit/integration trong phạm vi Story. Có thể phân nhỏ thêm khi triển khai nếu cần mà không giảm phạm vi.
 
-Phụ thuộc là kỹ thuật; Codex có thể làm sớm khi đầu vào thật đã đủ, không sửa lịch nhân sự P1. Kiểm QA chờ các nhánh tích hợp ghi rõ trong JSON. P2 không đẩy vào Sprint 1. [Dữ liệu nguồn P2](jira/data/p2-backlog.json) riêng, không sửa baseline `jira/data/plan-data.json` hoặc báo cáo sinh tự động.
+Phụ thuộc là kỹ thuật; Codex có thể làm sớm khi đầu vào thật đã đủ, không sửa lịch nhân sự P1. Kiểm QA chờ các nhánh tích hợp ghi rõ trong JSON. P2 không đẩy vào Sprint 1. [Dữ liệu nguồn P2](../planning/jira/data/p2-backlog.json) riêng, không sửa baseline `docs/planning/jira/data/plan-data.json` hoặc báo cáo sinh tự động.
 
 ## Quyền, chất lượng và bàn giao
 
