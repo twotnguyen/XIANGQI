@@ -1,26 +1,5 @@
-import {
-  Controller,
-  Get,
-  Header,
-  Inject,
-  Module,
-  type DynamicModule,
-} from "@nestjs/common";
-interface Providers {
-  google: boolean;
-  guest: boolean;
-}
-@Controller("auth")
-class ProvidersController {
-  constructor(
-    @Inject("AUTH_PROVIDERS") private readonly providers: Providers,
-  ) {}
-  @Get("providers")
-  @Header("Cache-Control", "no-store")
-  current() {
-    return { google: this.providers.google, guest: this.providers.guest };
-  }
-}
+import { Module, type DynamicModule } from "@nestjs/common";
+import { Providers, ProvidersController } from "./providers.controller.js";
 @Module({})
 export class AuthProvidersModule {
   static forRoot(providers: Providers): DynamicModule {

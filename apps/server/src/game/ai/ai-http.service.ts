@@ -3,7 +3,7 @@ import type { Move, Side } from "@xiangqi/xiangqi-core";
 import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { MemberRoomRequestProof } from "../room/room-http.service.js";
 import type { AiGames, AiSnapshot } from "./ai-games.js";
-import type { AiHttpApi, AiHttpResult } from "./ai.module.js";
+import type { AiHttpApi, AiHttpResult } from "./ai.controller.js";
 import type { AiReservations } from "./ai-reservations.js";
 import type { SqlAiTransactions } from "./ai-sql-transactions.js";
 import type { AiOrigin } from "./ai-transactions.js";

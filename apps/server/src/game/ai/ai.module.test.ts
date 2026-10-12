@@ -3,7 +3,8 @@ import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import { createApp } from "../../app.js";
 import { RoomError } from "../room/room.types.js";
 import { AiError, type AiSnapshot } from "./ai-games.js";
-import { AiModule, type AiHttpApi } from "./ai.module.js";
+import { AiModule } from "./ai.module.js";
+import { type AiHttpApi } from "./ai.controller.js";
 
 const gameId = "11111111-1111-4111-8111-111111111111";
 const tabId = "22222222-2222-4222-8222-222222222222";

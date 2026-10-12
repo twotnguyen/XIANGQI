@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, expect, it } from "vitest";
 import { createApp } from "../../app.js";
-import { GoogleModule, type GoogleHttpService } from "./google.module.js";
+import { GoogleModule } from "./google.module.js";
+import { type GoogleHttpService } from "./google.controller.js";
 import { GoogleError } from "./google.types.js";
 import type { Session } from "../auth/auth.types.js";
 import type { INestApplication } from "@nestjs/common";
