@@ -1,9 +1,20 @@
 name: CI
 on:
   push:
-    branches: [main, develop, "*/XIAN-**"]
+    branches: [main, develop]
+    paths-ignore:
+      - '**/*.md'
+      - 'jira/**'
+      - '.env.example'
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - '**/*.md'
+      - 'jira/**'
+      - '.env.example'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
