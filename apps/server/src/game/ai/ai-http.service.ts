@@ -1,9 +1,10 @@
 import type { EngineLevel } from "@xiangqi/engine";
 import type { Move, Side } from "@xiangqi/xiangqi-core";
-import { RoomError, type RoomScope } from "../room/room.types.js";
+import type { RoomScope } from "../room/room.types.js";
 import type { MemberRoomRequestProof } from "../room/room-http.service.js";
 import type { AiGames, AiSnapshot } from "./ai-games.js";
 import type { AiHttpApi, AiHttpResult } from "./ai.controller.js";
+import { sessionNotReady } from "./ai-presence.js";
 import type { AiReservations } from "./ai-reservations.js";
 import type { SqlAiTransactions } from "./ai-sql-transactions.js";
 import type { AiOrigin } from "./ai-transactions.js";
@@ -26,9 +27,6 @@ function originCopy(origin: Human): Human {
     tab: Object.freeze({ ...origin.tab }),
   });
 }
-function fail(code: string, status = 409): never {
-  throw new RoomError(code, "Phiên chơi với máy chưa sẵn sàng", status);
-}
 /** Human mutations use SqlAiTransactions again inside AiGames; preparation runs outside SQL locks. */
 export class AiHttpService implements AiHttpApi {
   constructor(private readonly options: Options) {}
@@ -49,7 +47,8 @@ export class AiHttpService implements AiHttpApi {
           )
         ).rows[0];
         if (!row?.ai_game_id) return { gameId: null };
-        if (row.ai_boot_id !== this.options.bootId) fail("AI_RESERVATION_LOST");
+        if (row.ai_boot_id !== this.options.bootId)
+          sessionNotReady("AI_RESERVATION_LOST");
         await this.options.reservations.check(scope, {
           gameId: row.ai_game_id,
           bootId: this.options.bootId,
@@ -89,7 +88,7 @@ export class AiHttpService implements AiHttpApi {
       origin.proof,
       async (scope, owner) => {
         const control = await this.options.control.inspect(scope, origin);
-        if (control.mode !== "controller") fail("TAB_READ_ONLY");
+        if (control.mode !== "controller") sessionNotReady("TAB_READ_ONLY");
         return owner;
       },
     );

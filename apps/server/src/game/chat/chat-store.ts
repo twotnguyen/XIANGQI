@@ -25,7 +25,7 @@ export interface ChatSent {
   createdAt: string;
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function invalid(): never {
+export function invalidChatInput(): never {
   throw new RoomError("CHAT_INPUT_INVALID", "Tin nhắn không hợp lệ", 400);
 }
 function denied(): never {
@@ -40,7 +40,7 @@ export class ChatStore {
   constructor(private readonly mask: (content: string) => string) {}
   private async access(s: RoomScope, id: string, channel: ChatChannel) {
     if (!uuid.test(id) || !["PLAYERS_PRIVATE", "ROOM_PUBLIC"].includes(channel))
-      invalid();
+      invalidChatInput();
     if (!s.lockedActorIds.has(s.actor.userId) || !s.lockedRoomIds.has(id))
       throw new RoomError(
         "ROOM_LOCK_REQUIRED",
@@ -75,7 +75,7 @@ export class ChatStore {
     channel: ChatChannel,
     after = 0,
   ): Promise<ChatPage> {
-    if (!Number.isSafeInteger(after) || after < 0) invalid();
+    if (!Number.isSafeInteger(after) || after < 0) invalidChatInput();
     const access = await this.access(s, id, channel);
     const rows = (
       await s.client.query<{
@@ -123,7 +123,7 @@ export class ChatStore {
       Array.from(input.content).length > 200 ||
       !input.content.trim()
     )
-      invalid();
+      invalidChatInput();
     const access = await this.access(s, id, input.channel),
       fingerprint = createHash("sha256")
         .update(

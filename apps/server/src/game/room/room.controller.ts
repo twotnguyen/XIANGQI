@@ -13,25 +13,19 @@ import {
 import type { IncomingMessage } from "node:http";
 import { LoginError } from "../../account/login/login.types.js";
 import { readSessionCookie } from "../../account/session/cookies.js";
-import { RoomError } from "./room.types.js";
+import { invalidRoomInput, RoomError } from "./room.types.js";
 import type {
   RoomHttpService,
   MemberRoomRequestProof,
 } from "./room-http.service.js";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function invalid(): never {
-  throw new RoomError(
-    "ROOM_INPUT_INVALID",
-    "Thông tin phòng không hợp lệ",
-    400,
-  );
-}
 function id(value: unknown): string {
-  if (typeof value !== "string" || !uuid.test(value)) invalid();
+  if (typeof value !== "string" || !uuid.test(value)) invalidRoomInput();
   return value.toLowerCase();
 }
 function object(value: unknown): Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) invalid();
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    invalidRoomInput();
   return value as Record<string, unknown>;
 }
 export function readMemberRoomProof(
@@ -90,7 +84,7 @@ export class RoomController {
             input.viewerLimit < 0 ||
             input.viewerLimit > 5))
       )
-        invalid();
+        invalidRoomInput();
       return this.service.create(authority, {
         commandId,
         name: input.name,
@@ -121,7 +115,7 @@ export class RoomController {
           (!Number.isSafeInteger(input.expectedVersion) ||
             (input.expectedVersion as number) < 0))
       )
-        invalid();
+        invalidRoomInput();
       return this.service.join(authority, {
         commandId,
         code: input.code,
@@ -147,7 +141,7 @@ export class RoomController {
         !Number.isSafeInteger(input.expectedVersion) ||
         (input.expectedVersion as number) < 0
       )
-        invalid();
+        invalidRoomInput();
       return this.service.switchSeat(
         authority,
         id(roomId),
@@ -160,7 +154,7 @@ export class RoomController {
       !Number.isSafeInteger(input.expectedVersion) ||
       (input.expectedVersion as number) < 0
     )
-      invalid();
+      invalidRoomInput();
     return input.expectedVersion as number;
   }
   @Post(":roomId/to-spectator")
@@ -192,7 +186,7 @@ export class RoomController {
     return this.respond(() => {
       const authority = readMemberRoomProof(request),
         input = object(body);
-      if (typeof input.targetId !== "string") invalid();
+      if (typeof input.targetId !== "string") invalidRoomInput();
       return this.service.moveToSpectator(
         authority,
         id(roomId),
@@ -212,7 +206,7 @@ export class RoomController {
     return this.respond(() => {
       const authority = readMemberRoomProof(request),
         input = object(body);
-      if (typeof input.targetId !== "string") invalid();
+      if (typeof input.targetId !== "string") invalidRoomInput();
       return this.service.inviteDown(
         authority,
         id(roomId),
@@ -232,7 +226,7 @@ export class RoomController {
     return this.respond(() => {
       const authority = readMemberRoomProof(request),
         input = object(body);
-      if (typeof input.accept !== "boolean") invalid();
+      if (typeof input.accept !== "boolean") invalidRoomInput();
       return this.service.respondDown(
         authority,
         id(roomId),
@@ -252,7 +246,7 @@ export class RoomController {
     return this.respond(() => {
       const authority = readMemberRoomProof(request),
         input = object(body);
-      if (typeof input.targetId !== "string") invalid();
+      if (typeof input.targetId !== "string") invalidRoomInput();
       return this.service.kickViewer(
         authority,
         id(roomId),
@@ -276,7 +270,7 @@ export class RoomController {
         !Number.isSafeInteger(input.expectedVersion) ||
         (input.expectedVersion as number) < 0
       )
-        invalid();
+        invalidRoomInput();
       return this.service.leave(
         authority,
         id(roomId),
@@ -299,7 +293,7 @@ export class RoomController {
         !Number.isSafeInteger(input.expectedVersion) ||
         (input.expectedVersion as number) < 0
       )
-        invalid();
+        invalidRoomInput();
       return this.service.proposeSwap(
         authority,
         id(roomId),
@@ -322,7 +316,7 @@ export class RoomController {
         !Number.isSafeInteger(input.expectedVersion) ||
         (input.expectedVersion as number) < 0
       )
-        invalid();
+        invalidRoomInput();
       return this.service.withdrawSwap(
         authority,
         id(roomId),
@@ -346,7 +340,7 @@ export class RoomController {
         (input.expectedVersion as number) < 0 ||
         typeof input.accept !== "boolean"
       )
-        invalid();
+        invalidRoomInput();
       return this.service.respondSwap(
         authority,
         id(roomId),
@@ -372,7 +366,7 @@ export class RoomController {
         typeof input.visibility !== "string" ||
         !["PUBLIC", "CODE_ONLY", "LOCKED"].includes(input.visibility)
       )
-        invalid();
+        invalidRoomInput();
       return this.service.changeVisibility(
         authority,
         id(roomId),

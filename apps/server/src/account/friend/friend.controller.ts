@@ -5,7 +5,6 @@ import {
   Get,
   Header,
   HttpCode,
-  HttpException,
   Inject,
   Param,
   Post,
@@ -14,37 +13,25 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { FriendError } from "./friend.types.js";
+import { httpFailure, invalidInput } from "../../core/http-errors.js";
 import { FriendStore } from "./friend.service.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,
 } from "../login/session.guard.js";
-function invalid(): never {
-  throw new HttpException(
-    { code: "FRIEND_INPUT_INVALID", message: "Dữ liệu không hợp lệ" },
-    400,
-  );
-}
-function fail(error: unknown): never {
-  if (error instanceof FriendError)
-    throw new HttpException(
-      { code: error.code, message: error.message },
-      error.status,
-    );
-  throw error;
-}
+const fail = httpFailure(FriendError);
 @Controller("friends")
 @UseGuards(SessionGuard)
 export class FriendController {
   constructor(@Inject(FriendStore) private readonly friends: FriendStore) {}
   private user(request: AuthenticatedRequest) {
-    if (!request.userId) invalid();
+    if (!request.userId) invalidInput("FRIEND_INPUT_INVALID");
     return request.userId as string;
   }
   @Get("search")
   @Header("Cache-Control", "no-store")
   search(@Req() request: AuthenticatedRequest, @Query("q") q: unknown) {
-    if (typeof q !== "string") invalid();
+    if (typeof q !== "string") invalidInput("FRIEND_INPUT_INVALID");
     return this.friends.search(this.user(request), q).catch(fail);
   }
   @Get()
@@ -57,7 +44,8 @@ export class FriendController {
   @Header("Cache-Control", "no-store")
   send(@Req() request: AuthenticatedRequest, @Body() body: unknown) {
     const input = (body ?? {}) as Record<string, unknown>;
-    if (typeof input.username !== "string") invalid();
+    if (typeof input.username !== "string")
+      invalidInput("FRIEND_INPUT_INVALID");
     return this.friends
       .sendRequest(this.user(request), input.username as string)
       .catch(fail);
@@ -76,7 +64,7 @@ export class FriendController {
     @Body() body: unknown,
   ) {
     const input = (body ?? {}) as Record<string, unknown>;
-    if (typeof input.accept !== "boolean") invalid();
+    if (typeof input.accept !== "boolean") invalidInput("FRIEND_INPUT_INVALID");
     return this.friends
       .respondRequest(this.user(request), id, input.accept as boolean)
       .catch(fail);
@@ -98,7 +86,7 @@ export class FriendController {
   invite(@Req() request: AuthenticatedRequest, @Body() body: unknown) {
     const input = (body ?? {}) as Record<string, unknown>;
     if (typeof input.roomId !== "string" || typeof input.username !== "string")
-      invalid();
+      invalidInput("FRIEND_INPUT_INVALID");
     return this.friends
       .inviteToRoom(
         this.user(request),
@@ -121,7 +109,7 @@ export class FriendController {
     @Body() body: unknown,
   ) {
     const input = (body ?? {}) as Record<string, unknown>;
-    if (typeof input.accept !== "boolean") invalid();
+    if (typeof input.accept !== "boolean") invalidInput("FRIEND_INPUT_INVALID");
     return this.friends
       .respondRoomInvite(this.user(request), id, input.accept as boolean)
       .catch(fail);

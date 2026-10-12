@@ -4,13 +4,13 @@ import {
   Get,
   Header,
   HttpCode,
-  HttpException,
   Inject,
   Patch,
   Req,
   UseGuards,
 } from "@nestjs/common";
 import { ProfileError } from "./profile.types.js";
+import { httpFailure, invalidInput } from "../../core/http-errors.js";
 import { ProfileStore } from "./profile.service.js";
 import { SessionService } from "../login/session.service.js";
 import { LoginError } from "../login/login.types.js";
@@ -19,25 +19,7 @@ import {
   type AuthenticatedRequest,
 } from "../login/session.guard.js";
 import { readSessionCookie } from "../session/cookies.js";
-function invalid(): never {
-  throw new HttpException(
-    { code: "PROFILE_INPUT_INVALID", message: "Dữ liệu không hợp lệ" },
-    400,
-  );
-}
-function fail(error: unknown): never {
-  if (error instanceof ProfileError)
-    throw new HttpException(
-      { code: error.code, message: error.message },
-      error.status,
-    );
-  if (error instanceof LoginError)
-    throw new HttpException(
-      { code: error.code, message: error.message },
-      error.status,
-    );
-  throw error;
-}
+const fail = httpFailure(ProfileError, LoginError);
 @Controller("profile")
 @UseGuards(SessionGuard)
 export class ProfileController {
@@ -75,7 +57,8 @@ export class ProfileController {
   @Header("Cache-Control", "no-store")
   update(@Req() request: AuthenticatedRequest, @Body() body: unknown) {
     const input = (body ?? {}) as Record<string, unknown>;
-    if (!Object.hasOwn(input, "displayName")) invalid();
+    if (!Object.hasOwn(input, "displayName"))
+      invalidInput("PROFILE_INPUT_INVALID");
     return this.identity(request)
       .then((identity) =>
         this.profiles.updateDisplayName(identity.userId, input.displayName),

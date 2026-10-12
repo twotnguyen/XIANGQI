@@ -5,6 +5,7 @@ import {
   type RealtimeConnection,
 } from "../realtime/realtime.types.js";
 import type { MemberRealtimeTransactions } from "../realtime/member-transactions.js";
+import { invalidChatInput } from "./chat-store.js";
 import type {
   ChatStore,
   ChatChannel,
@@ -19,9 +20,6 @@ export type RealtimeChatPage = ChatPage & {
   canSend: boolean;
 };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function invalid(): never {
-  throw new RoomError("CHAT_INPUT_INVALID", "Tin nhắn không hợp lệ", 400);
-}
 function body(value: object, keys: string[]) {
   if (
     !value ||
@@ -29,10 +27,11 @@ function body(value: object, keys: string[]) {
     Array.isArray(value) ||
     Object.keys(value).some((key) => !keys.includes(key))
   )
-    invalid();
+    invalidChatInput();
 }
 function channel(value: unknown) {
-  if (value !== "PLAYERS_PRIVATE" && value !== "ROOM_PUBLIC") invalid();
+  if (value !== "PLAYERS_PRIVATE" && value !== "ROOM_PUBLIC")
+    invalidChatInput();
 }
 export class ChatRealtimeService {
   constructor(
@@ -112,7 +111,7 @@ export class ChatRealtimeService {
       input.after !== undefined &&
       (!Number.isSafeInteger(input.after) || input.after < 0)
     )
-      invalid();
+      invalidChatInput();
     return this.guarded(connection, async (scope) => {
       const page = await this.store.read(
         scope,
@@ -168,7 +167,7 @@ export class ChatRealtimeService {
       !input.content.trim() ||
       Array.from(input.content).length > 200
     )
-      invalid();
+      invalidChatInput();
     return this.guarded(connection, async (scope) => {
       if (!(await this.canSend(scope, connection, input.channel)))
         throw new RealtimeError("TAB_READ_ONLY", "Tab này chỉ có thể xem");

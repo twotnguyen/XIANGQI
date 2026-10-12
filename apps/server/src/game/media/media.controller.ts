@@ -4,7 +4,6 @@ import {
   Get,
   Header,
   HttpCode,
-  HttpException,
   Inject,
   Post,
   Query,
@@ -12,31 +11,19 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { MediaError, SHARE_LEVELS, type ShareLevel } from "./media.types.js";
+import { httpFailure, invalidInput } from "../../core/http-errors.js";
 import { MediaAccess } from "./media.service.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,
 } from "../../account/login/session.guard.js";
-function invalid(): never {
-  throw new HttpException(
-    { code: "MEDIA_INPUT_INVALID", message: "Dữ liệu không hợp lệ" },
-    400,
-  );
-}
-function fail(error: unknown): never {
-  if (error instanceof MediaError)
-    throw new HttpException(
-      { code: error.code, message: error.message },
-      error.status,
-    );
-  throw error;
-}
+const fail = httpFailure(MediaError);
 @Controller("media")
 @UseGuards(SessionGuard)
 export class MediaController {
   constructor(@Inject(MediaAccess) private readonly media: MediaAccess) {}
   private user(request: AuthenticatedRequest) {
-    if (!request.userId) invalid();
+    if (!request.userId) invalidInput("MEDIA_INPUT_INVALID");
     return request.userId as string;
   }
   @Post("token")
@@ -49,7 +36,7 @@ export class MediaController {
       typeof input.camera !== "boolean" ||
       typeof input.mic !== "boolean"
     )
-      invalid();
+      invalidInput("MEDIA_INPUT_INVALID");
     return this.media
       .tokenFor(this.user(request), input.roomId as string, {
         camera: input.camera as boolean,
@@ -67,7 +54,7 @@ export class MediaController {
       typeof input.level !== "string" ||
       !(SHARE_LEVELS as string[]).includes(input.level as string)
     )
-      invalid();
+      invalidInput("MEDIA_INPUT_INVALID");
     return this.media
       .setShare(
         this.user(request),
@@ -82,7 +69,7 @@ export class MediaController {
     @Req() request: AuthenticatedRequest,
     @Query("roomId") roomId: unknown,
   ) {
-    if (typeof roomId !== "string") invalid();
+    if (typeof roomId !== "string") invalidInput("MEDIA_INPUT_INVALID");
     return this.media.getShare(this.user(request), roomId).catch(fail);
   }
 }

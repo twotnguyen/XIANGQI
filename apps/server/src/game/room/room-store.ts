@@ -2,6 +2,7 @@ import type { PoolClient } from "pg";
 import { createHash, randomInt, randomUUID } from "node:crypto";
 import { containsForbiddenName } from "@xiangqi/shared";
 import {
+  invalidRoomInput,
   RoomError,
   RoomRosterChanged,
   type MatchStartPort,
@@ -13,13 +14,6 @@ import {
 } from "./room.types.js";
 const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function invalid(): never {
-  throw new RoomError(
-    "ROOM_INPUT_INVALID",
-    "Thông tin phòng không hợp lệ",
-    400,
-  );
-}
 export class RoomStore {
   constructor(
     private readonly matches?: MatchStartPort,
@@ -209,7 +203,7 @@ export class RoomStore {
   ): Promise<RoomEntry> {
     this.scope(s);
     if (!uuid.test(input.commandId) || typeof input.name !== "string")
-      invalid();
+      invalidRoomInput();
     const name = input.name.normalize("NFC").trim(),
       time = input.timeMinutes ?? 10,
       viewers = input.viewerLimit ?? 5;
@@ -226,7 +220,7 @@ export class RoomStore {
       viewers < 0 ||
       viewers > 5
     )
-      invalid();
+      invalidRoomInput();
     const digest = createHash("sha256")
         .update(JSON.stringify({ type: "create", name, time, viewers }))
         .digest("hex"),
@@ -472,7 +466,7 @@ export class RoomStore {
       expectedVersion < 0 ||
       !["PUBLIC", "CODE_ONLY", "LOCKED"].includes(visibility)
     )
-      invalid();
+      invalidRoomInput();
     this.scope(s, id);
     await s.client.query("SELECT id FROM public.rooms WHERE id=$1 FOR UPDATE", [
       id,
@@ -547,7 +541,7 @@ export class RoomStore {
       !uuid.test(input.roomId) ||
       !["auto", "play", "watch"].includes(input.intent)
     )
-      invalid();
+      invalidRoomInput();
     const { r, members } = await this.room(s, input.roomId),
       digest = createHash("sha256")
         .update(
@@ -840,7 +834,7 @@ export class RoomStore {
     }
   }
   async respondDown(s: RoomScope, id: string, accept: boolean) {
-    if (typeof accept !== "boolean") invalid();
+    if (typeof accept !== "boolean") invalidRoomInput();
     if (!(await this.downTableExists(s)))
       throw new RoomError(
         "SEAT_INVITE_MISSING",
@@ -1028,7 +1022,7 @@ export class RoomStore {
     return this.snapshot(s, id);
   }
   async respondSwap(s: RoomScope, id: string, accept: boolean) {
-    if (typeof accept !== "boolean") invalid();
+    if (typeof accept !== "boolean") invalidRoomInput();
     const offer = (
       await s.client.query(
         "SELECT * FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1",
@@ -1098,7 +1092,7 @@ export class RoomStore {
     return due.length;
   }
   async ready(s: RoomScope, id: string, value: boolean) {
-    if (typeof value !== "boolean") invalid();
+    if (typeof value !== "boolean") invalidRoomInput();
     const { r, member } = await this.member(s, id);
     if (r.status !== "WAITING" || member.role !== "PLAYER")
       throw new RoomError("READY_DENIED", "Không thể Sẵn sàng lúc này");
@@ -1161,7 +1155,7 @@ export class RoomStore {
       proof.generation <= 0 ||
       !uuid.test(proof.serverInstance)
     )
-      invalid();
+      invalidRoomInput();
     const { r, member } = await this.member(s, id, true);
     if (
       connected &&

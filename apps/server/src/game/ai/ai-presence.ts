@@ -33,10 +33,10 @@ export interface ExpiredAiPresence {
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function id(value: string) {
   if (typeof value !== "string" || !uuid.test(value))
-    fail("AI_INPUT_INVALID", 400);
+    sessionNotReady("AI_INPUT_INVALID", 400);
   return value.toLowerCase();
 }
-function fail(code: string, status = 409): never {
+export function sessionNotReady(code: string, status = 409): never {
   throw new RoomError(code, "Phiên chơi với máy chưa sẵn sàng", status);
 }
 function physical<
@@ -51,12 +51,12 @@ function physical<
     typeof input.connectionId !== "string" ||
     !/^[A-Za-z0-9_-]{1,64}$/.test(input.connectionId)
   )
-    fail("AI_INPUT_INVALID", 400);
+    sessionNotReady("AI_INPUT_INVALID", 400);
   if (
     input.generation !== undefined &&
     (!Number.isSafeInteger(input.generation) || input.generation <= 0)
   )
-    fail("AI_INPUT_INVALID", 400);
+    sessionNotReady("AI_INPUT_INVALID", 400);
   return { ...input, tabId };
 }
 /** SQL-only trusted physical socket port; caller owns actor-first scope and transaction. */
@@ -70,15 +70,15 @@ export class AiPresence {
   }
   private async slot(scope: RoomScope): Promise<string | null> {
     const owner = id(scope.actor.userId);
-    if (!scope.lockedActorIds.has(owner)) fail("AI_SCOPE_INVALID");
-    if (scope.actor.kind !== "member") fail("AUTH_REQUIRED", 401);
+    if (!scope.lockedActorIds.has(owner)) sessionNotReady("AI_SCOPE_INVALID");
+    if (scope.actor.kind !== "member") sessionNotReady("AUTH_REQUIRED", 401);
     const principal = (
       await scope.client.query(
         `SELECT 1 FROM xiangqi_auth.principals n JOIN xiangqi_auth.accounts a ON a.id=n.id JOIN public.profiles p ON p.user_id=n.id WHERE n.id=$1 AND n.kind='member' AND n.auth_user_id=a.id AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending`,
         [owner],
       )
     ).rowCount;
-    if (!principal) fail("AUTH_REQUIRED", 401);
+    if (!principal) sessionNotReady("AUTH_REQUIRED", 401);
     const row = (
       await scope.client.query<{
         ai_game_id: string | null;
@@ -96,9 +96,9 @@ export class AiPresence {
         (room) => room && !scope.lockedRoomIds.has(room),
       )
     )
-      fail("AI_SCOPE_INVALID");
+      sessionNotReady("AI_SCOPE_INVALID");
     if (row && (!row.ai_game_id || row.ai_boot_id !== this.bootId))
-      fail("AI_RESERVATION_LOST");
+      sessionNotReady("AI_RESERVATION_LOST");
     await this.live(scope);
     return row?.ai_game_id ?? null;
   }
@@ -113,7 +113,7 @@ export class AiPresence {
         [this.bootId],
       )
     ).rows[0];
-    if (!boot?.live) fail("AI_BOOT_EXPIRED");
+    if (!boot?.live) sessionNotReady("AI_BOOT_EXPIRED");
   }
   private async controller(scope: RoomScope) {
     return (
@@ -133,7 +133,8 @@ export class AiPresence {
   }
   private async retained(scope: RoomScope, gameId: string): Promise<boolean> {
     const row = await this.presence(scope);
-    if (row?.game_id !== gameId) fail("AI_PRESENCE_UNAVAILABLE", 503);
+    if (row?.game_id !== gameId)
+      sessionNotReady("AI_PRESENCE_UNAVAILABLE", 503);
     return (
       (
         await scope.client.query<{ valid: boolean }>(
@@ -156,7 +157,7 @@ export class AiPresence {
   ): Promise<AiAttachment> {
     const p = physical(input);
     if (input.takeover !== undefined && typeof input.takeover !== "boolean")
-      fail("AI_INPUT_INVALID", 400);
+      sessionNotReady("AI_INPUT_INVALID", 400);
     const gameId = await this.slot(scope);
     const current = await this.controller(scope);
     await this.live(scope);
@@ -186,7 +187,7 @@ export class AiPresence {
     );
     await this.live(scope);
     if (gameId && !(await this.retained(scope, gameId)))
-      fail("AI_GAME_EXPIRED");
+      sessionNotReady("AI_GAME_EXPIRED");
     const writable =
       !current ||
       !known ||
@@ -198,7 +199,7 @@ export class AiPresence {
         !Number.isSafeInteger(generation) ||
         generation >= Number.MAX_SAFE_INTEGER
       )
-        fail("AI_GENERATION_EXHAUSTED", 503);
+        sessionNotReady("AI_GENERATION_EXHAUSTED", 503);
       generation++;
       await scope.client.query(
         `INSERT INTO xiangqi_ai.controllers(owner_id,boot_id,tab_id,connection_id,generation,connected) VALUES($1,$2,$3,$4,$5,true) ON CONFLICT(owner_id,boot_id) DO UPDATE SET tab_id=EXCLUDED.tab_id,connection_id=EXCLUDED.connection_id,generation=EXCLUDED.generation,connected=true`,
@@ -206,7 +207,7 @@ export class AiPresence {
       );
       await this.live(scope);
       if (gameId && !(await this.retained(scope, gameId)))
-        fail("AI_GAME_EXPIRED");
+        sessionNotReady("AI_GAME_EXPIRED");
       if (gameId) await this.writePresence(scope, gameId, { ...p, generation });
     }
     const presence = gameId ? await this.presence(scope) : undefined;
@@ -226,10 +227,11 @@ export class AiPresence {
       row = gameId ? await this.presence(scope) : undefined;
     await this.live(scope);
     if (gameId && !(await this.retained(scope, gameId)))
-      fail("AI_GAME_EXPIRED");
-    if (!this.matches(current, p) || !current?.connected) fail("TAB_READ_ONLY");
+      sessionNotReady("AI_GAME_EXPIRED");
+    if (!this.matches(current, p) || !current?.connected)
+      sessionNotReady("TAB_READ_ONLY");
     if (gameId && (!this.matches(row, p) || !row?.connected))
-      fail("TAB_READ_ONLY");
+      sessionNotReady("TAB_READ_ONLY");
   }
   private async writePresence(scope: RoomScope, gameId: string, p: Physical) {
     await scope.client.query(
@@ -251,15 +253,16 @@ export class AiPresence {
   ): Promise<void> {
     gameId = id(gameId);
     const actual = await this.slot(scope);
-    if (actual !== gameId) fail("AI_RESERVATION_LOST");
+    if (actual !== gameId) sessionNotReady("AI_RESERVATION_LOST");
     await this.reservations.check(scope, { gameId, bootId: this.bootId });
     const p = physical(origin.tab),
       current = await this.controller(scope);
-    if (!this.matches(current, p) || !current?.connected) fail("TAB_READ_ONLY");
+    if (!this.matches(current, p) || !current?.connected)
+      sessionNotReady("TAB_READ_ONLY");
     const prior = await this.presence(scope);
     await this.live(scope);
     if (prior?.game_id === gameId && !(await this.retained(scope, gameId)))
-      fail("AI_GAME_EXPIRED");
+      sessionNotReady("AI_GAME_EXPIRED");
     await this.writePresence(scope, gameId, p);
   }
   async disconnected(
@@ -290,11 +293,13 @@ export class AiPresence {
   }
   async assertRetained(scope: RoomScope, gameId: string): Promise<void> {
     gameId = id(gameId);
-    if ((await this.slot(scope)) !== gameId) fail("AI_RESERVATION_LOST");
+    if ((await this.slot(scope)) !== gameId)
+      sessionNotReady("AI_RESERVATION_LOST");
     await this.reservations.check(scope, { gameId, bootId: this.bootId });
     await this.presence(scope);
     await this.live(scope);
-    if (!(await this.retained(scope, gameId))) fail("AI_GAME_EXPIRED");
+    if (!(await this.retained(scope, gameId)))
+      sessionNotReady("AI_GAME_EXPIRED");
   }
   async dueExpired(
     client: PoolClient,
@@ -305,7 +310,7 @@ export class AiPresence {
       (!/^\d+(\.\d+)?$/.test(cursor.leaseMilliseconds) ||
         cursor.leaseMilliseconds.length > 32)
     )
-      fail("AI_INPUT_INVALID", 400);
+      sessionNotReady("AI_INPUT_INVALID", 400);
     const rows = (
       await client.query<{
         owner_id: string;

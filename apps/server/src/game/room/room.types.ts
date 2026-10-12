@@ -20,6 +20,13 @@ export class RoomError extends Error {
     super(message);
   }
 }
+export function invalidRoomInput(): never {
+  throw new RoomError(
+    "ROOM_INPUT_INVALID",
+    "Thông tin phòng không hợp lệ",
+    400,
+  );
+}
 export class RoomRosterChanged extends RoomError {
   constructor(public readonly actorIds: string[]) {
     super(
