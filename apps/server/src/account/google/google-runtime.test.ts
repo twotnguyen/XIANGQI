@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { createGoogleRuntime, readGoogleConfig } from "./google-runtime.js";
+import { createGoogleRuntime, readGoogleConfig } from "./google.module.js";
 
 it("keeps Google disabled until explicitly configured", () => {
   expect(readGoogleConfig({})).toBeNull();

@@ -4,7 +4,7 @@ import { io as connectSocket } from "socket.io-client";
 import {
   createRegistrationRuntime,
   readRegistrationConfig,
-} from "./auth-runtime.js";
+} from "./registration.module.js";
 
 const pool = vi.hoisted(() => ({
   query: vi.fn(),

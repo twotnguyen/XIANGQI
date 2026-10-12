@@ -3,7 +3,7 @@ import type { AddressInfo } from "node:net";
 import { io, type Socket } from "socket.io-client";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createApp } from "../../../app.js";
-import type { createRegistrationRuntime } from "../../../account/auth/auth-runtime.js";
+import type { createRegistrationRuntime } from "../../../account/auth/registration.module.js";
 import { SessionService } from "../../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../../account/login/postgres-login-store.js";
 import { createRoomRuntime } from "./room-runtime.js";
