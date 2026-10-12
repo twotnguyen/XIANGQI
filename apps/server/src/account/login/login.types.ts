@@ -1,4 +1,4 @@
-import type { AuthProvider } from "../auth/contracts.js";
+import type { AuthProvider } from "../auth/auth.types.js";
 export type PasswordAuth = Pick<AuthProvider, "signInPassword" | "getUser">;
 export interface LoginAccount {
   userId: string;

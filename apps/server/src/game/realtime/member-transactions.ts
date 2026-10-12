@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
 import type { RoomTransactions } from "../room/room-transactions.js";
 import {
@@ -9,7 +9,7 @@ import {
   type RealtimeAuthProof,
   type IdentityResolver,
   type RealtimeTransactions,
-} from "./contracts.js";
+} from "./realtime.types.js";
 function required(): never {
   throw new RealtimeError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ");
 }

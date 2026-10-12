@@ -7,7 +7,7 @@ import {
 } from "@xiangqi/xiangqi-core";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
 import { RoomTransactions } from "../room/room-transactions.js";
-import type { RoomActor, RoomScope } from "../room/contracts.js";
+import type { RoomActor, RoomScope } from "../room/room.types.js";
 import { AiReservations } from "./ai-reservations.js";
 import { AiHistoryStore } from "./ai-history-store.js";
 import type { AiSnapshot } from "./ai-games.js";

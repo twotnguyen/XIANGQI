@@ -13,7 +13,7 @@ import {
   reset,
   transaction,
 } from "./clock.test-helper.js";
-import type { ClockWorkerPort } from "./contracts.js";
+import type { ClockWorkerPort } from "./clock.types.js";
 const clock = new ClockService();
 let now = new Date("2030-01-01T00:00:00Z");
 const end = {

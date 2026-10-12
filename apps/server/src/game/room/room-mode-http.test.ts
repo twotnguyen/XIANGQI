@@ -6,7 +6,7 @@ import {
   type RoomActor,
   type RoomScope,
   type RoomView,
-} from "./contracts.js";
+} from "./room.types.js";
 import { RoomHttpService } from "./room-http.service.js";
 import { RoomModule } from "./room.module.js";
 import type { RoomStore } from "./room-store.js";

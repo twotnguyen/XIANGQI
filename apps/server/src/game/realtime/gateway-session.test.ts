@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { io, type Socket } from "socket.io-client";
 import { describe, expect, it, vi } from "vitest";
 import { attachRealtime } from "./gateway.js";
-import { RealtimeError, type RealtimeConnection } from "./contracts.js";
+import { RealtimeError, type RealtimeConnection } from "./realtime.types.js";
 import type { RealtimeStore } from "./store.js";
 async function waitFor(read: () => boolean, timeout = 3500) {
   const until = Date.now() + timeout;

@@ -4,7 +4,7 @@ import {
   type RoomActor,
   type RoomEntry,
   type RoomScope,
-} from "../contracts.js";
+} from "../room.types.js";
 import type {
   MemberRoomAuthorizer,
   MemberRoomRequestProof,

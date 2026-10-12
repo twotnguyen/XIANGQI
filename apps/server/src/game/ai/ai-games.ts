@@ -1,4 +1,4 @@
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import type {
   AiTransactions,
   AiTransaction,

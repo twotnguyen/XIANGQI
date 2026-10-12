@@ -12,10 +12,10 @@ import {
   UseGuards,
   type DynamicModule,
 } from "@nestjs/common";
-import { ProfileError } from "./contracts.js";
+import { ProfileError } from "./profile.types.js";
 import { ProfileStore } from "./profile-store.js";
 import { SessionService } from "../login/session.service.js";
-import { LoginError } from "../login/contracts.js";
+import { LoginError } from "../login/login.types.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,

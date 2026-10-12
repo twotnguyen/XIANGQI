@@ -3,7 +3,7 @@ import type {
   RoomAction,
   RoomCommand,
 } from "@xiangqi/shared";
-import { RealtimeError } from "./contracts.js";
+import { RealtimeError } from "./realtime.types.js";
 
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))

@@ -10,7 +10,7 @@ import {
   type ClockDueCandidate,
   type ClockWorkerPort,
   type ClockWorkerScope,
-} from "./contracts.js";
+} from "./clock.types.js";
 /** One server-time sample; no client/presence timestamps participate in eligibility. */
 export async function dueMatches(
   client: PoolClient,

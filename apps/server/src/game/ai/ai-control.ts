@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { AiPresence } from "./ai-presence.js";
 import type { AiOrigin } from "./ai-transactions.js";
 import type { AiHttpResult } from "./ai.module.js";

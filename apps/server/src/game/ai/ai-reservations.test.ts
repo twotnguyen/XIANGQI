@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { RoomTransactions } from "../room/room-transactions.js";
 import { RoomStore } from "../room/room-store.js";
-import type { RoomActor, RoomScope } from "../room/contracts.js";
+import type { RoomActor, RoomScope } from "../room/room.types.js";
 import { AiReservations } from "./ai-reservations.js";
 import { actor } from "../room/room.test-helper.js";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";

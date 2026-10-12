@@ -8,7 +8,7 @@ import {
   RealtimeError,
   type RealtimeConnection,
   type RealtimePresence,
-} from "./contracts.js";
+} from "./realtime.types.js";
 export class MemberRealtimePresence implements RealtimePresence {
   constructor(
     private readonly pool: Pool,

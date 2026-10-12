@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { setTimeout } from "node:timers/promises";
-import { RegistrationError, type Session } from "../auth/contracts.js";
+import { RegistrationError, type Session } from "../auth/auth.types.js";
 import {
   invalidLogin,
   LoginError,
   type LoginStore,
   type PasswordAuth,
   type RegistrationPasswordAccount,
-} from "./contracts.js";
+} from "./login.types.js";
 import { SessionService } from "./session.service.js";
 const RESPONSE_FLOOR_MS = 250;
 const PASSWORD_TIMEOUT_MS = 2000;

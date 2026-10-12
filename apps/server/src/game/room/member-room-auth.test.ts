@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { LoginError } from "../../account/login/contracts.js";
-import { RegistrationError } from "../../account/auth/contracts.js";
+import { LoginError } from "../../account/login/login.types.js";
+import { RegistrationError } from "../../account/auth/auth.types.js";
 import { SessionService } from "../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../account/login/postgres-login-store.js";
 import { RoomHttpService } from "./room-http.service.js";

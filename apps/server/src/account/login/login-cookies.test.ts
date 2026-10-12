@@ -1,8 +1,8 @@
 import { Controller, Get, Module, UseGuards } from "@nestjs/common";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createApp } from "../../app.js";
-import { RegistrationError } from "../auth/contracts.js";
-import { LoginError } from "./contracts.js";
+import { RegistrationError } from "../auth/auth.types.js";
+import { LoginError } from "./login.types.js";
 import { LoginController } from "./login.controller.js";
 import { LoginService } from "./login.service.js";
 import { SessionGuard } from "./session.guard.js";

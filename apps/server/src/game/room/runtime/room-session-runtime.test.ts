@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { io, type Socket } from "socket.io-client";
 import { createApp } from "../../../app.js";
 import type { createRegistrationRuntime } from "../../../account/auth/auth-runtime.js";
-import { RegistrationError } from "../../../account/auth/contracts.js";
+import { RegistrationError } from "../../../account/auth/auth.types.js";
 import { SessionService } from "../../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../../account/login/postgres-login-store.js";
 import { createRoomRuntime } from "./room-runtime.js";

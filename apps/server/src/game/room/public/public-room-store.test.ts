@@ -4,7 +4,7 @@ import { MatchStore } from "../../match/match-store.js";
 import { ClockService } from "../../clock/clock-service.js";
 import { RoomStore } from "../room-store.js";
 import { RoomTransactions } from "../room-transactions.js";
-import type { RoomActor, RoomScope } from "../contracts.js";
+import type { RoomActor, RoomScope } from "../room.types.js";
 import { PublicRoomStore } from "./public-room-store.js";
 import {
   actor,

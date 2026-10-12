@@ -1,4 +1,4 @@
-import type { RoomEvent, RoomEventSink, RoomScope } from "./contracts.js";
+import type { RoomEvent, RoomEventSink, RoomScope } from "./room.types.js";
 import type { RoomStore } from "./room-store.js";
 export interface RoomWorkerPort {
   dueRooms(): Promise<string[]>;

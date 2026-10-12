@@ -1,4 +1,4 @@
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { copyFile } from "node:fs/promises";

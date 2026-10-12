@@ -1,6 +1,6 @@
 import type { Side } from "@xiangqi/xiangqi-core";
-import type { ClockPort, MatchClock } from "../match/contracts.js";
-import { ClockError } from "./contracts.js";
+import type { ClockPort, MatchClock } from "../match/match.types.js";
+import { ClockError } from "./clock.types.js";
 function invalid(): never {
   throw new ClockError("CLOCK_INVALID_STATE");
 }

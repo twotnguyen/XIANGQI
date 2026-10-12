@@ -3,8 +3,8 @@ import type { PoolClient } from "pg";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { ClockService } from "../clock/clock-service.js";
 import { MatchStore } from "../match/match-store.js";
-import type { MatchScope } from "../match/contracts.js";
-import type { MatchStartPort, RoomActor, RoomScope } from "./contracts.js";
+import type { MatchScope } from "../match/match.types.js";
+import type { MatchStartPort, RoomActor, RoomScope } from "./room.types.js";
 import { RoomStore } from "./room-store.js";
 import {
   apply,

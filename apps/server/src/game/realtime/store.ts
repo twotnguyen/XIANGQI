@@ -11,7 +11,7 @@ import {
   type RealtimeConnection,
   type RealtimeTransactions,
   type RealtimePresence,
-} from "./contracts.js";
+} from "./realtime.types.js";
 
 export function errorAcknowledgement(
   error: unknown,

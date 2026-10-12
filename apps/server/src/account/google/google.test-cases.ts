@@ -8,10 +8,10 @@ import {
   asRole,
 } from "./database.test-helper.js";
 import { GoogleService } from "./google.service.js";
-import type { GoogleClaims, GoogleAuth } from "./contracts.js";
+import type { GoogleClaims, GoogleAuth } from "./google.types.js";
 import { SessionService } from "../login/session.service.js";
 import { PostgresLoginStore } from "../login/postgres-login-store.js";
-import type { Session } from "../auth/contracts.js";
+import type { Session } from "../auth/auth.types.js";
 describe.skipIf(!databaseUrl)(
   "verified Google boundary with real database/session persistence",
   () => {

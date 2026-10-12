@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, beforeEach, expect, it } from "vitest";
 import { createApp } from "../../app.js";
 import { GoogleModule, type GoogleHttpService } from "./google.module.js";
-import { GoogleError } from "./contracts.js";
-import type { Session } from "../auth/contracts.js";
+import { GoogleError } from "./google.types.js";
+import type { Session } from "../auth/auth.types.js";
 import type { INestApplication } from "@nestjs/common";
 const time = new Date("2026-10-11T00:00:00Z"),
   expiresAt = "2026-10-11T01:00:00.000Z",

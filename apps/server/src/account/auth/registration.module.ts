@@ -6,7 +6,7 @@ import {
   type OnApplicationBootstrap,
   type OnModuleDestroy,
 } from "@nestjs/common";
-import type { AuthProvider, RegistrationStore, Session } from "./contracts.js";
+import type { AuthProvider, RegistrationStore, Session } from "./auth.types.js";
 import { RegistrationService } from "./registration.service.js";
 import { RegistrationController } from "./registration.controller.js";
 import { AccountActiveGuard } from "./account-active.guard.js";

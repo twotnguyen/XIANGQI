@@ -1,4 +1,4 @@
-import { RegistrationError } from "../auth/contracts.js";
+import { RegistrationError } from "../auth/auth.types.js";
 import {
   HttpException,
   Inject,
@@ -7,7 +7,7 @@ import {
   type ExecutionContext,
 } from "@nestjs/common";
 import { SessionService } from "./session.service.js";
-import { LoginError } from "./contracts.js";
+import { LoginError } from "./login.types.js";
 import { readSessionCookie } from "../session/cookies.js";
 export interface AuthenticatedRequest {
   headers: Record<string, string | string[] | undefined>;

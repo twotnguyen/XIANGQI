@@ -6,7 +6,7 @@ import type { createRegistrationRuntime } from "../../account/auth/auth-runtime.
 import { createApp } from "../../app.js";
 import { SessionService } from "../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../account/login/postgres-login-store.js";
-import { LoginError } from "../../account/login/contracts.js";
+import { LoginError } from "../../account/login/login.types.js";
 import { encodePosition } from "../match/position-codec.js";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
 import { createHistoryRuntime } from "./history-runtime.js";

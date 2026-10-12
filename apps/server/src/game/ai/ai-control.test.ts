@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { Server, type Socket } from "socket.io";
 import { io, type Socket as ClientSocket } from "socket.io-client";
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import { AiControl } from "./ai-control.js";
 import type { AiOrigin } from "./ai-transactions.js";
 const owner = randomUUID(),

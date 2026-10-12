@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import type { RoomScope } from "./contracts.js";
+import type { RoomScope } from "./room.types.js";
 import type { RoomStore } from "./room-store.js";
 import { RoomWorker } from "./room-worker.js";
 

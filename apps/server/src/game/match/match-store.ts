@@ -19,7 +19,7 @@ import {
   type MatchRoomEndPort,
   type MatchScope,
   type MatchView,
-} from "./contracts.js";
+} from "./match.types.js";
 import { replayHistory, type HistoryMove } from "./history.js";
 import {
   corrupt,

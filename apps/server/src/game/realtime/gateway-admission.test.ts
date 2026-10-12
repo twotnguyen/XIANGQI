@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import { describe, expect, it, vi } from "vitest";
 import { attachRealtime } from "./gateway.js";
 import type { RealtimeStore } from "./store.js";
-import type { RealtimeConnection } from "./contracts.js";
+import type { RealtimeConnection } from "./realtime.types.js";
 function gate() {
   let release!: () => void;
   const promise = new Promise<void>((resolve) => (release = resolve));

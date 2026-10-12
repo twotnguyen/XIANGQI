@@ -10,7 +10,7 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import type { IncomingMessage } from "node:http";
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import { readMemberRoomProof } from "../room/room.module.js";
 import {
   HistoryHttpService,

@@ -1,6 +1,6 @@
 import type { EngineLevel } from "@xiangqi/engine";
 import type { Move, Side } from "@xiangqi/xiangqi-core";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { MemberRoomRequestProof } from "../room/room-http.service.js";
 import type { AiGames, AiSnapshot } from "./ai-games.js";
 import type { AiHttpApi, AiHttpResult } from "./ai.module.js";

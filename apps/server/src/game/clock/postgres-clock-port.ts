@@ -1,5 +1,5 @@
 import type { Pool, PoolClient } from "pg";
-import type { RoomActor } from "../room/contracts.js";
+import type { RoomActor } from "../room/room.types.js";
 import type { RoomTransactions } from "../room/room-transactions.js";
 import { uuid } from "../match/position-codec.js";
 import { dueMatches } from "./clock-worker.js";
@@ -10,7 +10,7 @@ import {
   type ClockDueCandidate,
   type ClockWorkerPort,
   type ClockWorkerScope,
-} from "./contracts.js";
+} from "./clock.types.js";
 export class PostgresClockWorkerPort implements ClockWorkerPort {
   constructor(
     private readonly pool: Pool,

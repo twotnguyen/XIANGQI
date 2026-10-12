@@ -13,9 +13,9 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Session } from "../auth/contracts.js";
-import { RegistrationError } from "../auth/contracts.js";
-import { GoogleError } from "./contracts.js";
+import type { Session } from "../auth/auth.types.js";
+import { RegistrationError } from "../auth/auth.types.js";
+import { GoogleError } from "./google.types.js";
 import type { GoogleService } from "./google.service.js";
 import {
   readGoogleCookie,

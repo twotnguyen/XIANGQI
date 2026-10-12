@@ -9,7 +9,7 @@ import {
   actor as guest,
 } from "../room/room.test-helper.js";
 import { RoomTransactions } from "../room/room-transactions.js";
-import type { RoomActor, RoomScope } from "../room/contracts.js";
+import type { RoomActor, RoomScope } from "../room/room.types.js";
 import type { AiOrigin } from "./ai-transactions.js";
 import { AiReservations } from "./ai-reservations.js";
 import { AiPresence } from "./ai-presence.js";

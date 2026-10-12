@@ -4,7 +4,7 @@ import { initialPosition } from "@xiangqi/xiangqi-core";
 import { encodePosition } from "../match/position-codec.js";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
 import { RoomTransactions } from "../room/room-transactions.js";
-import type { RoomActor, RoomScope } from "../room/contracts.js";
+import type { RoomActor, RoomScope } from "../room/room.types.js";
 import { HistoryStore } from "./history-store.js";
 const store = new HistoryStore(),
   coordinator = new RoomTransactions(pool);

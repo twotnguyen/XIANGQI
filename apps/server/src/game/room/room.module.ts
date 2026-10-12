@@ -13,9 +13,9 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import type { IncomingMessage } from "node:http";
-import { LoginError } from "../../account/login/contracts.js";
+import { LoginError } from "../../account/login/login.types.js";
 import { readSessionCookie } from "../../account/session/cookies.js";
-import { RoomError } from "./contracts.js";
+import { RoomError } from "./room.types.js";
 import type {
   RoomHttpService,
   MemberRoomRequestProof,

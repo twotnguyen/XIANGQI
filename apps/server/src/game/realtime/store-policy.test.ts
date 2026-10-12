@@ -8,7 +8,7 @@ import {
   type RealtimeConnection,
   type RealtimePresence,
   type RealtimeTransactions,
-} from "./contracts.js";
+} from "./realtime.types.js";
 function fixture() {
   const connection: RealtimeConnection = {
     identity: { userId: randomUUID(), kind: "member" },

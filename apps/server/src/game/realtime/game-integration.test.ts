@@ -15,7 +15,7 @@ import { PostgresLoginStore } from "../../account/login/postgres-login-store.js"
 import { SessionService } from "../../account/login/session.service.js";
 import { RoomStore } from "../room/room-store.js";
 import { RoomTransactions } from "../room/room-transactions.js";
-import type { RoomScope } from "../room/contracts.js";
+import type { RoomScope } from "../room/room.types.js";
 import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
 import { RoomHttpService } from "../room/room-http.service.js";
 import {
@@ -24,7 +24,7 @@ import {
 } from "./member-transactions.js";
 import { GameRooms } from "./game-rooms.js";
 import { RealtimeStore } from "./store.js";
-import type { RealtimeConnection } from "./contracts.js";
+import type { RealtimeConnection } from "./realtime.types.js";
 import { attachRealtime } from "./gateway.js";
 import { parseCommand } from "./protocol.js";
 

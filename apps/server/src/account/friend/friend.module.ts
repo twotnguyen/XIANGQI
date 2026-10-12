@@ -16,7 +16,7 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import type { Pool } from "pg";
-import { FriendError } from "./contracts.js";
+import { FriendError } from "./friend.types.js";
 import { FriendStore } from "./friend-store.js";
 import { SessionService } from "../login/session.service.js";
 import {

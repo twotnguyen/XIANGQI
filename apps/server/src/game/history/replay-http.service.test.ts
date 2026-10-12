@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import type {
   MemberRoomAuthorizer,
   MemberRoomRequestProof,

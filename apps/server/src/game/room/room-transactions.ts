@@ -4,7 +4,7 @@ import {
   RoomRosterChanged,
   type RoomActor,
   type RoomScope,
-} from "./contracts.js";
+} from "./room.types.js";
 
 export interface RoomTransactionInput {
   actor: RoomActor;

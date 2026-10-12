@@ -9,16 +9,20 @@ import {
   MatchError,
   type MatchScope,
   type MatchView,
-} from "../match/contracts.js";
+} from "../match/match.types.js";
 import type { MatchStore } from "../match/match-store.js";
-import { RoomError, type RoomScope, type RoomView } from "../room/contracts.js";
+import {
+  RoomError,
+  type RoomScope,
+  type RoomView,
+} from "../room/room.types.js";
 import type { RoomStore } from "../room/room-store.js";
 import {
   RealtimeError,
   type RealtimeIdentity,
   type RoomCollaborator,
   type RoomExecutionResult,
-} from "./contracts.js";
+} from "./realtime.types.js";
 
 const messages = {
   MATCH_FINISHED: "Ván đã kết thúc.",

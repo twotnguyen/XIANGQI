@@ -44,7 +44,7 @@ Command examples định nghĩa ý định `room.ready`, `match.move`, `match.re
 
 ### 1. Store bền và migration
 
-Files: `store.ts`, `contracts.ts`, `store.test.ts`, `test-helper.ts`; migration/rollback `20261011000002_realtime.sql`.
+Files: `store.ts`, `realtime.types.ts`, `store.test.ts`, `test-helper.ts`; migration/rollback `20261011000002_realtime.sql`.
 
 - [x] RED: real SQL concurrent duplicate -> một mutation+receipt, cùng ack; changed payload -> rejected; stale -> fresh snapshot.
 - [x] RED: throw sau state write -> transaction rollback; snapshot privacy/unauthorized replay rejected; expires24h removes.

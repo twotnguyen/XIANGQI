@@ -14,8 +14,8 @@ import {
   UseGuards,
   type DynamicModule,
 } from "@nestjs/common";
-import { RegistrationError, type Session } from "../auth/contracts.js";
-import { LoginError } from "../login/contracts.js";
+import { RegistrationError, type Session } from "../auth/auth.types.js";
+import { LoginError } from "../login/login.types.js";
 import { SessionService } from "../login/session.service.js";
 import {
   SessionGuard,

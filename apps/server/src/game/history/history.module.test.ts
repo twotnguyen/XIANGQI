@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest";
 import { initialPosition } from "@xiangqi/xiangqi-core";
 import { createApp } from "../../app.js";
-import { LoginError } from "../../account/login/contracts.js";
+import { LoginError } from "../../account/login/login.types.js";
 import { SessionService } from "../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";

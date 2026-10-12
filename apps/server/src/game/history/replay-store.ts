@@ -4,7 +4,7 @@ import {
   serializePosition,
   type Side,
 } from "@xiangqi/xiangqi-core";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import { replayHistory, type HistoryMove } from "../match/history.js";
 import { decodeMove, record, uuid } from "../match/position-codec.js";
 export interface ReplayRecord {

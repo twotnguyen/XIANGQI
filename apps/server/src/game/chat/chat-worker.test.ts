@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { RoomScope } from "../room/contracts.js";
+import type { RoomScope } from "../room/room.types.js";
 import { RoomStore } from "../room/room-store.js";
 import {
   pool,

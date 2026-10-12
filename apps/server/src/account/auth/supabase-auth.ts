@@ -2,7 +2,7 @@ import {
   RegistrationError,
   type AuthProvider,
   type Session,
-} from "./contracts.js";
+} from "./auth.types.js";
 
 export class SupabaseAuth implements AuthProvider {
   constructor(

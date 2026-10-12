@@ -5,8 +5,8 @@ import {
   GuestError,
   type GuestActor,
   type GuestPurpose,
-} from "../../account/guest/contracts.js";
-import { RoomError, RoomRosterChanged, type RoomActor } from "./contracts.js";
+} from "../../account/guest/guest.types.js";
+import { RoomError, RoomRosterChanged, type RoomActor } from "./room.types.js";
 import type { RoomActorProof, RoomAuthorization } from "./room-transactions.js";
 export interface GuestRoomRequestProof {
   capability: string;

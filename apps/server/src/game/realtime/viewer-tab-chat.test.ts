@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { RealtimeConnection } from "./contracts.js";
+import type { RealtimeConnection } from "./realtime.types.js";
 import {
   MemberRealtimeIdentities,
   MemberRealtimeTransactions,

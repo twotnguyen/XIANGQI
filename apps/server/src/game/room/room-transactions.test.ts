@@ -4,7 +4,7 @@ import { GuestService } from "../../account/guest/guest.service.js";
 import { SessionService } from "../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../account/login/postgres-login-store.js";
 import { RoomStore } from "./room-store.js";
-import { RoomRosterChanged, type RoomActor } from "./contracts.js";
+import { RoomRosterChanged, type RoomActor } from "./room.types.js";
 import { RoomTransactions, type RoomActorProof } from "./room-transactions.js";
 import {
   actor,
@@ -35,7 +35,7 @@ async function authorize(proof: RoomActorProof) {
 async function run<T>(
   a: RoomActor,
   roomIds: string[],
-  work: (s: import("./contracts.js").RoomScope) => Promise<T>,
+  work: (s: import("./room.types.js").RoomScope) => Promise<T>,
 ) {
   const result = await coordinator.withRoom(
     { actor: a, roomIds },

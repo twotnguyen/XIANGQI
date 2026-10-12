@@ -12,7 +12,7 @@ import { SqlAiTransactions } from "./ai-sql-transactions.js";
 import type { AiOrigin } from "./ai-transactions.js";
 import { AiGames } from "./ai-games.js";
 import type { EngineWorker } from "@xiangqi/engine";
-import { RoomRosterChanged } from "../room/contracts.js";
+import { RoomRosterChanged } from "../room/room.types.js";
 import type { PoolClient } from "pg";
 
 const coordinator = new RoomTransactions(pool);

@@ -22,7 +22,7 @@ import {
   noCaptureFinal,
   noCaptureMoves,
 } from "./fixtures.js";
-import type { ClockPort, MatchScope } from "./contracts.js";
+import type { ClockPort, MatchScope } from "./match.types.js";
 
 // Synthetic port tests ordering/persistence. T23 supplies the real clock/worker.
 const at = new Date("2030-01-01T00:00:00.000Z");

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { beforeEach, expect, it, vi } from "vitest";
 import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import { AiError, type AiSnapshot } from "./ai-games.js";
 import { AiHttpService } from "./ai-http.service.js";
 import type { SqlAiTransactions } from "./ai-sql-transactions.js";

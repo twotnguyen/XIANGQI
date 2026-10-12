@@ -8,7 +8,7 @@ import {
   type RoomCollaborator,
   type RealtimeConnection,
   type RoomExecutionResult,
-} from "./contracts.js";
+} from "./realtime.types.js";
 
 export const realtimeTestUrl = process.env.REALTIME_TEST_DATABASE_URL;
 if (realtimeTestUrl) {

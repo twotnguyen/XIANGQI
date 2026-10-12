@@ -1,6 +1,6 @@
 import type { Pool, PoolClient } from "pg";
-import type { RealtimeConnection } from "../realtime/contracts.js";
-import { RoomError, type RoomScope } from "./contracts.js";
+import type { RealtimeConnection } from "../realtime/realtime.types.js";
+import { RoomError, type RoomScope } from "./room.types.js";
 import type { PostgresMemberRoomAuthorizer } from "./member-room-auth.js";
 import type { RoomStore } from "./room-store.js";
 import type { RoomTransactions, RoomActorProof } from "./room-transactions.js";

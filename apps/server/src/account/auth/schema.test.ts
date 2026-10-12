@@ -282,7 +282,7 @@ describe.skipIf(!url)("registration migration on audited baseline", () => {
 });
 
 import { RegistrationService } from "./registration.service.js";
-import { RegistrationError } from "./contracts.js";
+import { RegistrationError } from "./auth.types.js";
 import { SupabaseAuth } from "./supabase-auth.js";
 import { PostgresRegistrationStore } from "./postgres-store.js";
 import { startAuthFixture } from "./auth-fixture.test-helper.js";
@@ -968,7 +968,7 @@ describe.skipIf(!url)(
         override async withLocks<T>(
           keys: string[],
           work: (
-            store: import("./contracts.js").RegistrationStore,
+            store: import("./auth.types.js").RegistrationStore,
           ) => Promise<T>,
         ): Promise<T> {
           await pool.query(

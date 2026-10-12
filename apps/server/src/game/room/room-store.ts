@@ -10,7 +10,7 @@ import {
   type RoomEvent,
   type RoomScope,
   type RoomView,
-} from "./contracts.js";
+} from "./room.types.js";
 const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function invalid(): never {

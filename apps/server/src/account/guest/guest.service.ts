@@ -7,7 +7,7 @@ import {
   type GuestActor,
   type GuestPurpose,
   type GuestRoomPort,
-} from "./contracts.js";
+} from "./guest.types.js";
 function hash(capability: unknown) {
   if (typeof capability !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(capability))
     throw new GuestError("GUEST_INVALID", "Phiên Khách không hợp lệ");

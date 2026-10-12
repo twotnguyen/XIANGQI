@@ -7,9 +7,13 @@ import {
   MatchError,
   type MatchCommandResult,
   type MatchView,
-} from "../match/contracts.js";
+} from "../match/match.types.js";
 import type { MatchStore } from "../match/match-store.js";
-import { RoomError, type RoomScope, type RoomView } from "../room/contracts.js";
+import {
+  RoomError,
+  type RoomScope,
+  type RoomView,
+} from "../room/room.types.js";
 import type { RoomStore } from "../room/room-store.js";
 import { GameRooms } from "./game-rooms.js";
 function fixture() {

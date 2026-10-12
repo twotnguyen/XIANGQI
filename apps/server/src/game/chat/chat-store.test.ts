@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { ChatStore } from "./chat-store.js";
 import { RoomStore } from "../room/room-store.js";
-import type { RoomActor, RoomScope } from "../room/contracts.js";
+import type { RoomActor, RoomScope } from "../room/room.types.js";
 import {
   actor,
   apply,

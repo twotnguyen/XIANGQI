@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { RoomScope } from "../room/contracts.js";
-import { RoomError } from "../room/contracts.js";
+import type { RoomScope } from "../room/room.types.js";
+import { RoomError } from "../room/room.types.js";
 import type { MemberRoomAuthorizer } from "../room/room-http.service.js";
 import type { RoomTransactions } from "../room/room-transactions.js";
 import { HistoryHttpService } from "./history-http.service.js";

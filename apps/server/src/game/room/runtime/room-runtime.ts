@@ -7,7 +7,7 @@ import { ChatOutboxWorker } from "../../chat/chat-worker.js";
 import type { createRegistrationRuntime } from "../../../account/auth/auth-runtime.js";
 import { ClockService } from "../../clock/clock-service.js";
 import { ClockWorker } from "../../clock/clock-worker.js";
-import type { ClockWorkerPort } from "../../clock/contracts.js";
+import type { ClockWorkerPort } from "../../clock/clock.types.js";
 import {
   DisconnectWorker,
   dueDisconnectMatches,
@@ -15,7 +15,7 @@ import {
 import { PostgresClockWorkerPort } from "../../clock/postgres-clock-port.js";
 import { MatchStore } from "../../match/match-store.js";
 import { DrawWorker, dueDrawOffers } from "../../match/draw-worker.js";
-import { RoomError, type RoomScope, type RoomActor } from "../contracts.js";
+import { RoomError, type RoomScope, type RoomActor } from "../room.types.js";
 import { RoomTransactions } from "../room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "../member-room-auth.js";
 import { RoomStore } from "../room-store.js";
@@ -35,7 +35,7 @@ import { MemberRealtimePresence } from "../../realtime/member-presence.js";
 import { GameRooms } from "../../realtime/game-rooms.js";
 import { RealtimeStore } from "../../realtime/store.js";
 import type { RealtimePublisher } from "../../realtime/gateway.js";
-import type { RealtimeTransactions } from "../../realtime/contracts.js";
+import type { RealtimeTransactions } from "../../realtime/realtime.types.js";
 import { logEvent } from "../../../core/logger.js";
 export async function createRoomRuntime(
   env: Record<string, string | undefined>,

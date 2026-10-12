@@ -1,6 +1,6 @@
 import { createApp } from "../../app.js";
 import { SessionModule } from "../session/session.module.js";
-import { RegistrationError } from "../auth/contracts.js";
+import { RegistrationError } from "../auth/auth.types.js";
 import "reflect-metadata";
 import { Controller, Get, Module, Req, UseGuards } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";

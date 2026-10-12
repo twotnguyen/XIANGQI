@@ -1,4 +1,4 @@
-import { RoomError, type RoomScope } from "../contracts.js";
+import { RoomError, type RoomScope } from "../room.types.js";
 import type { RoomStore } from "../room-store.js";
 import { uuid } from "../../match/position-codec.js";
 import type { PublicRoomView } from "@xiangqi/shared";

@@ -7,7 +7,7 @@ import {
   type RegistrationStore,
   type Draft,
   type Session,
-} from "./contracts.js";
+} from "./auth.types.js";
 import { validateCredentials, validateUsername } from "./name-filter.js";
 
 function hashToken(value: unknown): string {

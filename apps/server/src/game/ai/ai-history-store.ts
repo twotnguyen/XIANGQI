@@ -5,7 +5,7 @@ import type { AiReservations } from "./ai-reservations.js";
 import { prepareAiHistory } from "./ai-history.js";
 import { encodeMove, encodePosition, record } from "../match/position-codec.js";
 import { replayHistory, type HistoryMove } from "../match/history.js";
-import type { RoomScope } from "../room/contracts.js";
+import type { RoomScope } from "../room/room.types.js";
 function fail(): never {
   throw new Error("AI_HISTORY_CONFLICT");
 }

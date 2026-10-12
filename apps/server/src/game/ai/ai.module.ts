@@ -18,8 +18,8 @@ import {
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { EngineLevel } from "@xiangqi/engine";
 import type { Move, Side } from "@xiangqi/xiangqi-core";
-import { LoginError } from "../../account/login/contracts.js";
-import { RoomError } from "../room/contracts.js";
+import { LoginError } from "../../account/login/login.types.js";
+import { RoomError } from "../room/room.types.js";
 import { readMemberRoomProof } from "../room/room.module.js";
 import type { MemberRoomRequestProof } from "../room/room-http.service.js";
 import { AiError, type AiSnapshot } from "./ai-games.js";

@@ -8,7 +8,7 @@ import {
   stageRoomName,
   type MediaToken,
   type ShareLevel,
-} from "./contracts.js";
+} from "./media.types.js";
 export interface MediaConfig {
   url: string;
   apiKey: string;

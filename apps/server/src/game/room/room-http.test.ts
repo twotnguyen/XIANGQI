@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { createApp } from "../../app.js";
-import { RoomError, type RoomScope } from "./contracts.js";
+import { RoomError, type RoomScope } from "./room.types.js";
 import { RoomModule } from "./room.module.js";
 import { RoomHttpService } from "./room-http.service.js";
 import type { RoomStore } from "./room-store.js";

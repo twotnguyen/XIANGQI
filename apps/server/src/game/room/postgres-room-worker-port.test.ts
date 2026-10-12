@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { SessionService } from "../../account/login/session.service.js";
 import { PostgresLoginStore } from "../../account/login/postgres-login-store.js";
-import type { RealtimeConnection } from "../realtime/contracts.js";
+import type { RealtimeConnection } from "../realtime/realtime.types.js";
 import { PostgresMemberRoomAuthorizer } from "./member-room-auth.js";
 import { RoomStore } from "./room-store.js";
 import { RoomTransactions } from "./room-transactions.js";
@@ -51,7 +51,7 @@ async function setup(two = false) {
   const run = <T>(
     actor: typeof a,
     roomIds: string[],
-    work: (s: import("./contracts.js").RoomScope) => Promise<T>,
+    work: (s: import("./room.types.js").RoomScope) => Promise<T>,
   ) =>
     coordinator.withRoom(
       { actor, roomIds },

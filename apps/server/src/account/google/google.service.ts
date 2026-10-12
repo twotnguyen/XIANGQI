@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import type { Session } from "../auth/contracts.js";
+import type { Session } from "../auth/auth.types.js";
 import { validateUsername } from "../auth/name-filter.js";
 import {
   GoogleError,
@@ -8,7 +8,7 @@ import {
   type GoogleClaims,
   type GoogleIdentityVerifier,
   type GoogleSessionIssuer,
-} from "./contracts.js";
+} from "./google.types.js";
 import { transaction } from "./postgres.js";
 interface GoogleAccount {
   userId: string;

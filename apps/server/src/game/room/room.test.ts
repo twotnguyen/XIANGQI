@@ -12,7 +12,7 @@ import { RoomGuestPort } from "./guest-room-port.js";
 import { GuestService } from "../../account/guest/guest.service.js";
 import { RoomWorker } from "./room-worker.js";
 import { RoomStore } from "./room-store.js";
-import type { RoomActor, RoomScope } from "./contracts.js";
+import type { RoomActor, RoomScope } from "./room.types.js";
 const migration = "supabase/migrations/20261011000006_rooms.sql";
 const rollback = "supabase/rollback/20261011000006_rooms.sql";
 afterAll(() => pool.end());
@@ -503,7 +503,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const port = {
       async start(
         client: import("pg").PoolClient,
-        input: import("./contracts.js").MatchStartInput,
+        input: import("./room.types.js").MatchStartInput,
       ) {
         const matchId = randomUUID();
         await client.query(

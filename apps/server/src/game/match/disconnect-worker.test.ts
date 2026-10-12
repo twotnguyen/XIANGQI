@@ -11,7 +11,7 @@ import { MatchStore } from "./match-store.js";
 import { ClockService } from "../clock/clock-service.js";
 import { ClockWorker, dueMatches } from "../clock/clock-worker.js";
 import { dueDisconnectMatches, DisconnectWorker } from "./disconnect-worker.js";
-import type { ClockWorkerPort } from "../clock/contracts.js";
+import type { ClockWorkerPort } from "../clock/clock.types.js";
 import type { PoolClient } from "pg";
 let failEnd = false;
 const clock = new ClockService();

@@ -9,7 +9,7 @@ import {
   transaction,
 } from "../room/room.test-helper.js";
 import { encodeMove, encodePosition } from "../match/position-codec.js";
-import type { RoomActor } from "../room/contracts.js";
+import type { RoomActor } from "../room/room.types.js";
 import { ReplayStore } from "./replay-store.js";
 const store = new ReplayStore();
 async function member() {

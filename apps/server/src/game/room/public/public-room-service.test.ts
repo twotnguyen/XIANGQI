@@ -1,7 +1,7 @@
 import type { PoolClient } from "pg";
 import { expect, test, vi } from "vitest";
 import { PublicRoomService } from "./public-room-service.js";
-import { RoomError, type RoomEntry, type RoomScope } from "../contracts.js";
+import { RoomError, type RoomEntry, type RoomScope } from "../room.types.js";
 import type { MemberRoomRequestProof } from "../room-http.service.js";
 import type {
   RoomActorProof,

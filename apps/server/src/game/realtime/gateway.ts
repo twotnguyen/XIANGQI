@@ -8,12 +8,12 @@ import type {
   ChatChannel,
 } from "@xiangqi/shared";
 import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import {
   RealtimeError,
   type IdentityResolver,
   type RealtimeConnection,
-} from "./contracts.js";
+} from "./realtime.types.js";
 import { errorAcknowledgement, type RealtimeStore } from "./store.js";
 import { parseCommand, parseHandshake, uuid } from "./protocol.js";
 import { logEvent } from "../../core/logger.js";

@@ -1,5 +1,5 @@
 import { containsForbiddenName } from "@xiangqi/shared";
-import { RegistrationError, type Credentials } from "./contracts.js";
+import { RegistrationError, type Credentials } from "./auth.types.js";
 export { containsForbiddenName } from "@xiangqi/shared";
 export function validateUsername(value: unknown): string {
   if (typeof value !== "string" || !/^[a-zA-Z0-9_]{3,20}$/.test(value)) {

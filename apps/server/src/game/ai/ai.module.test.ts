@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import { createApp } from "../../app.js";
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import { AiError, type AiSnapshot } from "./ai-games.js";
 import { AiModule, type AiHttpApi } from "./ai.module.js";
 

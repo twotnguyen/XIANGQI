@@ -4,7 +4,7 @@ import type {
   LoginAccount,
   LoginStore,
   LoginAttempts,
-} from "./contracts.js";
+} from "./login.types.js";
 const accountSelect = `SELECT u.id AS "userId",u.email,p.username,
   (u.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending) AS active
   FROM xiangqi_auth.accounts u JOIN public.profiles p ON p.user_id=u.id`;

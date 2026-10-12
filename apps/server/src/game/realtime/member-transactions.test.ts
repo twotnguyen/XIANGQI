@@ -7,7 +7,7 @@ import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
 import { RoomTransactions } from "../room/room-transactions.js";
 import { RoomHttpService } from "../room/room-http.service.js";
 import { RoomStore } from "../room/room-store.js";
-import type { RealtimeConnection } from "./contracts.js";
+import type { RealtimeConnection } from "./realtime.types.js";
 import {
   MemberRealtimeIdentities,
   MemberRealtimeTransactions,

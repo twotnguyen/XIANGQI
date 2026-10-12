@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { createHash, randomBytes } from "node:crypto";
-import { LoginError, type LoginStore, type PasswordAuth } from "./contracts.js";
+import {
+  LoginError,
+  type LoginStore,
+  type PasswordAuth,
+} from "./login.types.js";
 function tokenHash(token: unknown): string {
   if (typeof token !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(token))
     throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");

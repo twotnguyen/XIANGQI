@@ -11,7 +11,7 @@ import {
 import type { ServerResponse } from "node:http";
 import { writeSessionCookies } from "../session/cookies.js";
 import { LoginService } from "./login.service.js";
-import { LoginError } from "./contracts.js";
+import { LoginError } from "./login.types.js";
 @Controller("auth")
 export class LoginController {
   constructor(

@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import {
   RealtimeError,
   type RealtimeConnection,
-} from "../realtime/contracts.js";
+} from "../realtime/realtime.types.js";
 import type { MemberRealtimeTransactions } from "../realtime/member-transactions.js";
 import type {
   ChatStore,

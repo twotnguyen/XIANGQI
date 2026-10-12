@@ -2,7 +2,7 @@ import type { PoolClient } from "pg";
 import {
   GuestError,
   type GuestRoomPort,
-} from "../../account/guest/contracts.js";
+} from "../../account/guest/guest.types.js";
 export class RoomGuestPort implements GuestRoomPort {
   constructor(private readonly terminate?: GuestRoomPort["end"]) {}
   async seatedSeat(

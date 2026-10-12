@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { MatchError, type MatchScope } from "./contracts.js";
+import { MatchError, type MatchScope } from "./match.types.js";
 import type { MatchStore } from "./match-store.js";
 import { uuid } from "./position-codec.js";
 export type DrawCursor = { deadlineEpochMs: string; offerId: string };

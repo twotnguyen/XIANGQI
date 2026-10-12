@@ -13,7 +13,7 @@ import { createServer } from "node:http";
 import { performance } from "node:perf_hooks";
 import { io, type Socket as ClientSocket } from "socket.io-client";
 import { attachRealtime } from "./gateway.js";
-import { RealtimeError, type RealtimeIdentity } from "./contracts.js";
+import { RealtimeError, type RealtimeIdentity } from "./realtime.types.js";
 import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
 
 describe.skipIf(!realtimeTestUrl)(

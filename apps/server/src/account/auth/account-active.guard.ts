@@ -6,7 +6,7 @@ import {
   type ExecutionContext,
 } from "@nestjs/common";
 import { RegistrationService } from "./registration.service.js";
-import { RegistrationError } from "./contracts.js";
+import { RegistrationError } from "./auth.types.js";
 
 @Injectable()
 export class AccountActiveGuard implements CanActivate {

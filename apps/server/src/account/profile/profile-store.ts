@@ -7,7 +7,7 @@ import {
   ProfileError,
   type ProfileLocation,
   type ProfileView,
-} from "./contracts.js";
+} from "./profile.types.js";
 function fail(code: string, message: string, status = 409): never {
   throw new ProfileError(code, message, status);
 }

@@ -4,7 +4,7 @@ import {
   type RegistrationStore,
   type Account,
   type Draft,
-} from "./contracts.js";
+} from "./auth.types.js";
 
 const accountSelect = `SELECT u.id AS "userId", u.email, u.email_confirmed_at IS NOT NULL AS verified,
   p.completed_at AS "completedAt", COALESCE(p.registration_pending,true) AS pending,

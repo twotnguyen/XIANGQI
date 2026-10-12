@@ -3,7 +3,7 @@ import {
   type RoomActor,
   type RoomScope,
   type RoomView,
-} from "./contracts.js";
+} from "./room.types.js";
 import type { RoomStore } from "./room-store.js";
 import type {
   RoomActorProof,

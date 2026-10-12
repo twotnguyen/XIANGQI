@@ -3,8 +3,8 @@ import { randomUUID } from "node:crypto";
 import { Server } from "socket.io";
 import { io } from "socket.io-client";
 import { expect, it, vi } from "vitest";
-import { RoomError } from "../room/contracts.js";
-import type { RealtimeConnection } from "../realtime/contracts.js";
+import { RoomError } from "../room/room.types.js";
+import type { RealtimeConnection } from "../realtime/realtime.types.js";
 import { bindRoomChat } from "./chat-gateway.js";
 
 async function fixture() {

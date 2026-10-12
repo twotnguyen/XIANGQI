@@ -7,7 +7,7 @@ import {
   databaseUrl,
 } from "../google/database.test-helper.js";
 import { GuestService } from "./guest.service.js";
-import type { GuestRoomPort } from "./contracts.js";
+import type { GuestRoomPort } from "./guest.types.js";
 describe.skipIf(!databaseUrl)(
   "Guest capability lifecycle with real transactions",
   () => {

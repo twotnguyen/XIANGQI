@@ -1,4 +1,4 @@
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import { record, uuid } from "../match/position-codec.js";
 export interface HistoryCursor {
   endedAt: string;

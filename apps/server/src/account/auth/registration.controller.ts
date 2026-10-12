@@ -10,7 +10,7 @@ import {
   Header,
 } from "@nestjs/common";
 import { RegistrationService } from "./registration.service.js";
-import { RegistrationError, type Credentials } from "./contracts.js";
+import { RegistrationError, type Credentials } from "./auth.types.js";
 
 import type { ServerResponse } from "node:http";
 import { writeSessionCookies } from "../session/cookies.js";

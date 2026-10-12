@@ -9,7 +9,7 @@ import {
   transaction,
 } from "./room.test-helper.js";
 import { RoomStore } from "./room-store.js";
-import type { RoomActor, RoomScope } from "./contracts.js";
+import type { RoomActor, RoomScope } from "./room.types.js";
 afterAll(() => pool.end());
 const store = new RoomStore();
 const capabilities = new Map<string, string>();

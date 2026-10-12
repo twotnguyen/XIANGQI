@@ -6,7 +6,7 @@ import {
   type ClockDueCandidate,
   type ClockWorkerPort,
   type ClockWorkerScope,
-} from "../clock/contracts.js";
+} from "../clock/clock.types.js";
 import type { MatchStore } from "./match-store.js";
 import { uuid } from "./position-codec.js";
 

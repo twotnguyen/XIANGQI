@@ -1,5 +1,5 @@
 import { buildPgn, fenAt } from "@xiangqi/shared";
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import type {
   MemberRoomAuthorizer,
   MemberRoomRequestProof,

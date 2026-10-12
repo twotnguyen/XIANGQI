@@ -6,12 +6,12 @@ import {
   GuestError,
   type GuestPurpose,
   type GuestRoomPort,
-} from "../../account/guest/contracts.js";
+} from "../../account/guest/guest.types.js";
 import {
   GuestRoomAuthorizer,
   type GuestRoomRequestProof,
 } from "./guest-room-auth.js";
-import { RoomRosterChanged } from "./contracts.js";
+import { RoomRosterChanged } from "./room.types.js";
 import { RoomTransactions, type RoomActorProof } from "./room-transactions.js";
 import {
   baseline,

@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { AiOrigin } from "./ai-transactions.js";
 import type { AiReservations, AiExpiredCursor } from "./ai-reservations.js";
 type Human = Extract<AiOrigin, { kind: "human" }>;

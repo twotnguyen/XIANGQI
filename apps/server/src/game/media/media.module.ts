@@ -13,7 +13,7 @@ import {
   UseGuards,
   type DynamicModule,
 } from "@nestjs/common";
-import { MediaError, SHARE_LEVELS, type ShareLevel } from "./contracts.js";
+import { MediaError, SHARE_LEVELS, type ShareLevel } from "./media.types.js";
 import { MediaAccess } from "./media-access.js";
 import { SessionService } from "../../account/login/session.service.js";
 import {

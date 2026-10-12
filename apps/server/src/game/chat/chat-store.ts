@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { RoomError, type RoomScope } from "../room/contracts.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 export type ChatChannel = "PLAYERS_PRIVATE" | "ROOM_PUBLIC";
 export interface ChatMessage {
   messageId: string;

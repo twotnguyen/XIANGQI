@@ -10,7 +10,7 @@ import {
   transaction,
 } from "./room.test-helper.js";
 import { RoomStore } from "./room-store.js";
-import type { PresenceProof, RoomActor, RoomScope } from "./contracts.js";
+import type { PresenceProof, RoomActor, RoomScope } from "./room.types.js";
 const store = new RoomStore();
 afterAll(() => pool.end());
 async function run<T>(

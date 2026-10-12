@@ -7,7 +7,7 @@ import {
   type FriendRequestView,
   type FriendStatus,
   type RoomInviteView,
-} from "./contracts.js";
+} from "./friend.types.js";
 function fail(code: string, message: string, status = 409): never {
   throw new FriendError(code, message, status);
 }

@@ -8,11 +8,11 @@ import type {
   ChatSent,
   ClientChatEvents,
 } from "@xiangqi/shared";
-import { RoomError } from "../room/contracts.js";
+import { RoomError } from "../room/room.types.js";
 import {
   RealtimeError,
   type RealtimeConnection,
-} from "../realtime/contracts.js";
+} from "../realtime/realtime.types.js";
 
 export interface RoomChatGateway {
   authorize(): Promise<RealtimeConnection>;

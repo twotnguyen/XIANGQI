@@ -13,8 +13,8 @@ import {
   type DynamicModule,
 } from "@nestjs/common";
 import type { IncomingMessage } from "node:http";
-import { LoginError } from "../../../account/login/contracts.js";
-import { RoomError } from "../contracts.js";
+import { LoginError } from "../../../account/login/login.types.js";
+import { RoomError } from "../room.types.js";
 import { readMemberRoomProof } from "../room.module.js";
 import type {
   PublicRoomJoinInput,
