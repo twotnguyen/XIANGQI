@@ -76,7 +76,7 @@ describe.skipIf(!databaseUrl)(
           throw Object.assign(new Error("private bad token"), { status: 401 });
         return changedUserAfterClear ? { ...u, id: randomUUID() } : u;
       },
-      async setPassword() {
+      async setPassword(id) {
         passwordCalls++;
         if (failPassword) throw new Error("private password failure");
         if (passwordGate) {
@@ -85,6 +85,25 @@ describe.skipIf(!databaseUrl)(
           gate.entered();
           await gate.wait;
         }
+        // Supabase Admin password updates revoke every session of the user.
+        for (const [access, owner] of tokens)
+          if (owner === id) tokens.delete(access);
+      },
+      async signInPassword(email) {
+        const user = (
+          await pool.query(
+            "SELECT id,email,email_confirmed_at FROM auth.users WHERE lower(email)=lower($1)",
+            [email],
+          )
+        ).rows[0];
+        const access = randomUUID();
+        tokens.set(access, user.id);
+        return {
+          access_token: access,
+          refresh_token: randomUUID(),
+          expires_in: 3600,
+          user,
+        };
       },
       async clearPending(id) {
         if (failClear) throw new Error("private clear failure");
@@ -233,11 +252,21 @@ describe.skipIf(!databaseUrl)(
         ).rows[0].n,
       ).toBe(0);
       failClear = false;
-      const complete = await service.complete(
-        pending.capability,
-        pending.session,
-        { username: "PlayerGood", password: "Password123" },
+      // The password update revoked the old proof, so retrying complete() is invalid;
+      // signing in with Google again finishes the already-written profile.
+      await expect(
+        service.complete(pending.capability, pending.session, {
+          username: "PlayerGood",
+          password: "Password123",
+        }),
+      ).rejects.toMatchObject({ code: "GOOGLE_INVALID" });
+      const again = await service.authenticate(
+        "fixture",
+        (await challenge("complete@example.invalid")).capability,
+        false,
       );
+      if (again.kind !== "member") throw new Error("Expected member");
+      const complete = again;
       expect(complete.username).toBe("PlayerGood");
       expect(complete.expiresAt).toBe("2026-10-11T12:00:00.000Z");
       expect(

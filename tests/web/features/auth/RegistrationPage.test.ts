@@ -31,13 +31,18 @@ it("offers Google only on the account step while keeping the email wizard unchan
     }),
   );
   expect(screen.getByText("Official signup Google")).toBeTruthy();
-  await user.type(screen.getByLabelText("Username"), "KyThu_2026");
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập (Username)"),
+    "KyThu_2026",
+  );
   await user.type(
     screen.getByLabelText("Mật khẩu", { exact: true }),
     "Password123",
   );
   await user.type(screen.getByLabelText("Xác nhận mật khẩu"), "Password123");
-  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await user.click(
+    screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+  );
   await screen.findByLabelText("Email chính chủ");
   expect(screen.queryByText("Official signup Google")).toBeNull();
 });
@@ -55,7 +60,7 @@ it("blocks email-wizard submission while Google authentication is in flight", ()
         ),
     }),
   );
-  fireEvent.change(screen.getByLabelText("Username"), {
+  fireEvent.change(screen.getByLabelText("Tên đăng nhập (Username)"), {
     target: { value: "KyThu" },
   });
   fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
@@ -65,10 +70,13 @@ it("blocks email-wizard submission while Google authentication is in flight", ()
     target: { value: "Password123" },
   });
   fireEvent.click(screen.getByText("Google inflight"));
-  expect((screen.getByLabelText("Username") as HTMLInputElement).disabled).toBe(
-    true,
+  expect(
+    (screen.getByLabelText("Tên đăng nhập (Username)") as HTMLInputElement)
+      .disabled,
+  ).toBe(true);
+  fireEvent.submit(
+    screen.getByLabelText("Tên đăng nhập (Username)").closest("form")!,
   );
-  fireEvent.submit(screen.getByLabelText("Username").closest("form")!);
   expect(request).not.toHaveBeenCalled();
 });
 
@@ -96,18 +104,25 @@ it("registers in three steps, sends the exact backend payload and hands the acti
   const onRegistered = vi.fn();
   const user = userEvent.setup();
   render(createElement(RegistrationPage, { onRegistered }));
-  await user.type(screen.getByLabelText("Username"), "KyThu_2026");
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập (Username)"),
+    "KyThu_2026",
+  );
   await user.type(
     screen.getByLabelText("Mật khẩu", { exact: true }),
     "password123",
   );
   await user.type(screen.getByLabelText("Xác nhận mật khẩu"), "password123");
-  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await user.click(
+    screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+  );
   await user.type(
     await screen.findByLabelText("Email chính chủ"),
     "player@example.test",
   );
-  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  await user.click(
+    screen.getByRole("button", { name: "Gửi mã OTP qua Email" }),
+  );
   await user.click(await screen.findByLabelText("Chữ số OTP 1"));
   await user.paste("123456");
   await user.click(
@@ -146,20 +161,27 @@ const draft = () => ({
   resendAt: new Date(Date.now() + 60000).toISOString(),
 });
 async function enterAccount(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText("Username"), "KyThu_2026");
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập (Username)"),
+    "KyThu_2026",
+  );
   await user.type(
     screen.getByLabelText("Mật khẩu", { exact: true }),
     "password123",
   );
   await user.type(screen.getByLabelText("Xác nhận mật khẩu"), "password123");
-  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await user.click(
+    screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+  );
 }
 async function enterEmail(user: ReturnType<typeof userEvent.setup>) {
   await user.type(
     await screen.findByLabelText("Email chính chủ"),
     "player@example.test",
   );
-  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  await user.click(
+    screen.getByRole("button", { name: "Gửi mã OTP qua Email" }),
+  );
   await screen.findByLabelText("Chữ số OTP 1");
 }
 it("blocks short credentials and forbidden names before requesting the server", async () => {
@@ -167,9 +189,14 @@ it("blocks short credentials and forbidden names before requesting the server", 
   vi.stubGlobal("fetch", request);
   const user = userEvent.setup();
   render(createElement(RegistrationPage, { onRegistered: vi.fn() }));
-  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await user.click(
+    screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+  );
   expect(screen.getByRole("alert").textContent).toContain("3–20");
-  await user.type(screen.getByLabelText("Username"), "fuck_123");
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập (Username)"),
+    "fuck_123",
+  );
   expect(screen.getByRole("alert").textContent).toContain("không được phép");
   expect(request).not.toHaveBeenCalled();
 });
@@ -180,7 +207,10 @@ it("checks availability after a pause and keeps the user on the account step", a
   vi.stubGlobal("fetch", request);
   const user = userEvent.setup();
   render(createElement(RegistrationPage, { onRegistered: vi.fn() }));
-  await user.type(screen.getByLabelText("Username"), "KyThu_2026");
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập (Username)"),
+    "KyThu_2026",
+  );
   await user.type(
     screen.getByLabelText("Mật khẩu", { exact: true }),
     "password123",
@@ -205,7 +235,9 @@ it("keeps an already registered email at step two and never verifies OTP", async
     await screen.findByLabelText("Email chính chủ"),
     "player@example.test",
   );
-  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  await user.click(
+    screen.getByRole("button", { name: "Gửi mã OTP qua Email" }),
+  );
   await screen.findByText("Email này đã được đăng ký");
   expect(screen.queryByLabelText("Chữ số OTP 1")).toBeNull();
 });
@@ -260,7 +292,9 @@ it("shows a safe provider failure without exposing server messages", async () =>
     await screen.findByLabelText("Email chính chủ"),
     "player@example.test",
   );
-  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  await user.click(
+    screen.getByRole("button", { name: "Gửi mã OTP qua Email" }),
+  );
   await screen.findByText("Không gửi được mã, vui lòng thử lại sau");
   expect(screen.queryByText("smtp secret details")).toBeNull();
 });
@@ -298,7 +332,7 @@ it("locks rate-limited verification until a successful resend after sixty second
   expect(
     (
       screen.getByRole("button", {
-        name: /Gửi lại mã sau/,
+        name: /Gửi lại mã \(/,
       }) as HTMLButtonElement
     ).disabled,
   ).toBe(true);
@@ -445,8 +479,12 @@ it("resets recovery when an expired draft starts a new registration", async () =
     screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
   );
   await user.click(screen.getByRole("button", { name: "Hoàn tất đăng ký" }));
-  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
-  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  await user.click(
+    screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Gửi mã OTP qua Email" }),
+  );
   expect(await screen.findByLabelText("Chữ số OTP 1")).toBeTruthy();
   expect(screen.getByRole("button", { name: /Gửi lại mã/ })).toBeTruthy();
 });
@@ -516,19 +554,26 @@ it("returns a last-moment username collision to step one and preserves the draft
   await user.click(
     screen.getByRole("button", { name: "Xác thực và vào Sảnh" }),
   );
-  await screen.findByLabelText("Username");
+  await screen.findByLabelText("Tên đăng nhập (Username)");
   expect(screen.getByRole("alert").textContent).toContain(
     "Username đã có người dùng",
   );
-  await user.clear(screen.getByLabelText("Username"));
-  await user.type(screen.getByLabelText("Username"), "KyThu_Moi");
-  await user.click(screen.getByRole("button", { name: "Tiếp tục" }));
+  await user.clear(screen.getByLabelText("Tên đăng nhập (Username)"));
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập (Username)"),
+    "KyThu_Moi",
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+  );
   await screen.findByLabelText("Email chính chủ");
   vi.spyOn(Date, "now").mockReturnValue(Date.now() + 61000);
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 1100));
   });
-  await user.click(screen.getByRole("button", { name: "Xác nhận Email" }));
+  await user.click(
+    screen.getByRole("button", { name: "Gửi mã OTP qua Email" }),
+  );
   await screen.findByLabelText("Chữ số OTP 1");
   const calls = request.mock.calls.filter(([url]) => url.endsWith("/email"));
   expect(JSON.parse(calls[1]![1]!.body as string)).toMatchObject({
@@ -625,11 +670,13 @@ it("reports malformed Username while typing without waiting for submission", asy
   vi.stubGlobal("fetch", request);
   const user = userEvent.setup();
   render(createElement(RegistrationPage, { onRegistered: vi.fn() }));
-  await user.type(screen.getByLabelText("Username"), "Ky Thu");
+  await user.type(screen.getByLabelText("Tên đăng nhập (Username)"), "Ky Thu");
   expect(screen.getByRole("alert").textContent).toContain("3–20");
-  expect(screen.getByLabelText("Username").getAttribute("aria-invalid")).toBe(
-    "true",
-  );
+  expect(
+    screen
+      .getByLabelText("Tên đăng nhập (Username)")
+      .getAttribute("aria-invalid"),
+  ).toBe("true");
   expect(request).not.toHaveBeenCalled();
 });
 
@@ -660,3 +707,18 @@ it.each([
     );
   },
 );
+
+it("uses the shared shell, a three-step indicator and a link back to login", () => {
+  const { container } = render(
+    createElement(RegistrationPage, { onRegistered: vi.fn() }),
+  );
+  expect(
+    screen.getByRole("heading", { level: 1, name: "Đăng Ký Tài Khoản" }),
+  ).toBeTruthy();
+  expect(container.querySelector(".auth-shell .wing-brand")).toBeTruthy();
+  const steps = screen.getByRole("list", { name: "Các bước đăng ký" });
+  expect(steps.querySelectorAll("li").length).toBe(3);
+  expect(
+    screen.getByRole("link", { name: "Đăng nhập ngay →" }).getAttribute("href"),
+  ).toBe("/login");
+});

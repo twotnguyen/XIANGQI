@@ -2,6 +2,8 @@
 
 Đọc file này trước khi làm việc trong repo. Hướng dẫn áp dụng cho toàn dự án; chỉ dẫn cụ thể của người dùng trong phiên làm việc được ưu tiên. Trả lời bằng tiếng Việt, nêu thay đổi, kiểm tra đã chạy và giới hạn còn lại.
 
+Monorepo: `pnpm@10.34.6`, `node >=22.13 <23`. `apps/web` (React + Vite, 5173) + `apps/server` (NestJS + Socket.IO, 3000, `GET /health`), `packages/xiangqi-core/engine/shared`, `supabase/`, `tests/`. Không thêm dependency/abstraction/cấu hình nếu chưa được giao; xóa hơn thêm.
+
 ## Bắt đầu phiên làm việc
 
 1. Đọc yêu cầu, kiểm tra nhánh và `git status`; giữ nguyên thay đổi chưa commit của người dùng. Xác định công việc là tài liệu, cấu hình, triển khai hay đồng bộ Jira.
@@ -9,14 +11,16 @@
 3. Kiểm tra khả năng kết nối MCP Supabase và Atlassian/Jira theo mục kế tiếp. Ghi rõ kết nối đã kiểm chứng, chưa kiểm tra hoặc bị chặn; không coi việc có tên plugin là kết nối thành công.
 4. Làm thay đổi trong phạm vi được giao, chạy kiểm tra phù hợp, xem diff và rà bí mật trước khi bàn giao hoặc push.
 
-| Khi làm việc với | Đọc trước |
-|---|---|
-| Nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md), ưu tiên Phần 0 |
-| Tính năng, test, nghiệm thu | [BACKLOG-P1.md](docs/product/BACKLOG-P1.md), AC/TC của Story và Description của Task |
-| Giao diện | [DANH-MUC-MAN-HINH-XIANGQI.md](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md); mockup chỉ tham khảo |
-| Jira, lịch và phân công | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md), [docs/planning/jira/README.md](docs/planning/jira/README.md) |
-| Biến môi trường, xác thực, database | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md), [.env.example](.env.example) |
-| Camera/mic và Docker | BA 0.16 và [infra/livekit/README.md](infra/livekit/README.md) |
+
+| Khi làm việc với                    | Đọc trước                                                                                                                          |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Nghiệp vụ và phạm vi                | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md), ưu tiên Phần 0                                                        |
+| Tính năng, test, nghiệm thu         | [BACKLOG-P1.md](docs/product/BACKLOG-P1.md), AC/TC của Story và Description của Task                                               |
+| Giao diện                           | [DANH-MUC-MAN-HINH-XIANGQI.md](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md); mockup chỉ tham khảo |
+| Jira, lịch và phân công             | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md), [docs/planning/jira/README.md](docs/planning/jira/README.md)                   |
+| Biến môi trường, xác thực, database | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md), [.env.example](.env.example)                                          |
+| Camera/mic và Docker                | BA 0.16 và [infra/livekit/README.md](infra/livekit/README.md)                                                                      |
+
 
 Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại → BACKLOG-P1 → danh mục màn hình → DESIGN → mockup. Jira live là nguồn tiến độ khi đã truy vấn thành công; snapshot trong repo là dữ liệu có thời điểm, không phải xác nhận trạng thái hiện tại. Báo mâu thuẫn ảnh hưởng công việc, không tự thay quyết định BA.
 
@@ -41,9 +45,9 @@ MCP được cài và cấp quyền trong môi trường agent, không được 
 ## Git, commit và pull request
 
 - `main` là nhánh mặc định; `develop` là nhánh tích hợp. Đây là hai nhánh lâu dài. Không bật lại bảo vệ nhánh, bắt buộc Approve/CI hay đổi nhánh mặc định trong công việc thông thường.
-- Khi cần nhánh riêng cho Task, tạo nhánh **tạm thời** từ `develop` đã cập nhật: `<type>/XIAN-<số>-<mô-tả-ngắn>`, ví dụ `chore/XIAN-42-livekit-local`. Slug dùng chữ thường ASCII và dấu gạch nối. Không tạo nhánh mới nếu người dùng yêu cầu làm trực tiếp hoặc giữ đúng hai nhánh.
+- Khi cần nhánh riêng cho Task, tạo nhánh Task ngắn hạn từ `develop` đã cập nhật: `<type>/XIAN-<số>-<mô-tả-ngắn>`, ví dụ `chore/XIAN-42-livekit-local`. Slug dùng chữ thường ASCII và dấu gạch nối. Không tạo nhánh mới nếu người dùng yêu cầu làm trực tiếp hoặc giữ đúng hai nhánh.
 - Một nhánh tập trung một Task/phạm vi liên quan. Kiểm tra issue thật trước; với việc không có issue, dùng `docs/<slug>` hoặc `chore/<slug>`, không bịa mã Jira. Chỉ push/xóa nhánh hoặc gộp khi được yêu cầu hay nằm trong phạm vi đã giao.
-- **Không tự ý xóa nhánh**, kể cả nhánh đã gộp hoặc có vẻ lỗi thời, ở remote lẫn local. Nhánh remote là bằng chứng truy vết cho Jira (panel Development, key `XIAN-<số>`) và cho review. Chỉ xóa khi người dùng yêu cầu rõ nhánh hoặc nhóm nhánh cụ thể; trước khi xóa, liệt kê tên nhánh, trạng thái đã gộp và issue liên quan để người dùng xác nhận. Đề xuất dọn dẹp chỉ là gợi ý, không phải quyền thực hiện. Từ "tạm thời" ở trên chỉ mô tả vòng đời dự kiến của nhánh Task, không cho phép tự xóa.
+- **Không tự ý xóa nhánh**, kể cả nhánh đã gộp hoặc có vẻ lỗi thời, ở remote lẫn local. Nhánh remote là bằng chứng truy vết cho Jira (panel Development, key `XIAN-<số>`) và cho review. Chỉ xóa khi người dùng yêu cầu rõ nhánh hoặc nhóm nhánh cụ thể; trước khi xóa, liệt kê tên nhánh, trạng thái đã gộp và issue liên quan để người dùng xác nhận. Đề xuất dọn dẹp chỉ là gợi ý, không phải quyền thực hiện. Từ "ngắn hạn" ở trên chỉ mô tả vòng đời dự kiến của nhánh Task, không cho phép tự xóa.
 - Commit theo dạng `<type>(<scope>): XIAN-<số> <mô tả thay đổi>`. Type theo bảng bên dưới; scope chỉ phần thay đổi. Ví dụ: `chore(media): XIAN-42 add local LiveKit configuration`. Việc không gắn issue có thể bỏ mã Jira; mô tả ngắn, rõ và nhất quán ngôn ngữ.
 - Key Jira trong tên nhánh, commit và tiêu đề PR giúp truy vết khi tích hợp GitHub–Jira đã được cấu hình; không bảo đảm liên kết Development tự xuất hiện. Không thêm Smart Commit như `#done`, `#time` hoặc `#comment` nếu chưa được giao cập nhật Jira.
 - Nếu tạo PR, hướng vào `develop` cho Task; tiêu đề có mã Jira. Mô tả gồm vấn đề, thay đổi, AC liên quan, kiểm tra thực sự đã chạy và giới hạn. PR sang `main` dùng để bàn giao/tích hợp theo yêu cầu. PR là cách review của nhóm, không phải quy tắc bảo vệ bắt buộc trên GitHub.
@@ -53,19 +57,21 @@ MCP được cài và cấp quyền trong môi trường agent, không được 
 
 Dùng cùng bộ type cho nhánh và commit; chọn theo mục đích chính của thay đổi. Đây là quy ước của nhóm, không dùng tên công cụ/agent làm tiền tố nhánh.
 
-| Type | Khi sử dụng |
-|---|---|
-| `feat` | Thêm tính năng |
-| `fix` | Sửa lỗi |
-| `docs` | Thay đổi tài liệu |
-| `refactor` | Tổ chức lại mã, giữ nguyên hành vi |
-| `test` | Thêm hoặc sửa kiểm thử |
-| `perf` | Cải thiện hiệu năng |
-| `style` | Định dạng mã, không đổi hành vi; không dùng cho tính năng giao diện |
-| `build` | Hệ thống build, đóng gói hoặc dependency |
-| `ci` | Workflow tích hợp/triển khai tự động |
-| `chore` | Bảo trì, công cụ hoặc cấu hình không thuộc các nhóm trên |
-| `revert` | Hoàn tác thay đổi trước đó |
+
+| Type       | Khi sử dụng                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `feat`     | Thêm tính năng                                                      |
+| `fix`      | Sửa lỗi                                                             |
+| `docs`     | Thay đổi tài liệu                                                   |
+| `refactor` | Tổ chức lại mã, giữ nguyên hành vi                                  |
+| `test`     | Thêm hoặc sửa kiểm thử                                              |
+| `perf`     | Cải thiện hiệu năng                                                 |
+| `style`    | Định dạng mã, không đổi hành vi; không dùng cho tính năng giao diện |
+| `build`    | Hệ thống build, đóng gói hoặc dependency                            |
+| `ci`       | Workflow tích hợp/triển khai tự động                                |
+| `chore`    | Bảo trì, công cụ hoặc cấu hình không thuộc các nhóm trên            |
+| `revert`   | Hoàn tác thay đổi trước đó                                          |
+
 
 Ví dụ: `feat/XIAN-40-email-signup`, `chore/XIAN-42-livekit-local`.
 Commit tương ứng: `feat(auth): XIAN-40 add email signup`.
@@ -73,7 +79,7 @@ Không thêm `hotfix` hoặc `release` vào quy trình hiện tại khi chưa c�
 
 ## Môi trường và bảo mật
 
-- `.env` gốc là bản tổng; đồng bộ vào `apps/web/.env` và `apps/server/.env` sau khi sửa. Đối chiếu thay đổi riêng ở bản sao trước khi ghi đè. Các file thật và `.local/` phải được Git bỏ qua, quyền file bí mật là `600` khi hệ điều hành hỗ trợ.
+- `.env` gốc là bản tổng; đồng bộ vào `apps/web/.env` và `apps/server/.env` sau khi sửa. Đối chiếu thay đổi riêng ở bản sao trước khi ghi đè. Các file thật và `.local/` phải được Git bỏ qua, quyền file bí mật là `600` khi hệ điều hành hỗ trợ. Các cờ `AUTH_*_ENABLED`, `ROOMS/FRIENDS/HISTORY/PROFILE_ENABLED` mặc định `false`, chỉ bật khi Task yêu cầu.
 - Chỉ đưa tên biến và giá trị trống/mẫu công khai vào `.env.example`. Rà nội dung staged để tránh khóa xuất hiện trong tài liệu, ảnh, log, fixture hoặc URL. Không in nguyên file `.env` hay trả khóa trong chat.
 - Dự án dùng Vite; `NEXT_PUBLIC_*` chỉ là dự phòng cho Next.js. Cả hai nhóm tiền tố đều dành cho dữ liệu công khai; secret Supabase/LiveKit/SMTP và mật khẩu SQL không được đưa vào bundle frontend.
 - Giữ Cloud hiện tại trừ khi được yêu cầu chuyển. `infra/livekit/livekit-env.py prepare` chuẩn bị khóa local riêng; `local`/`cloud` đổi ba biến media và đồng bộ file. Không dùng khóa Cloud trong máy chủ Docker local.
@@ -83,11 +89,13 @@ Không thêm `hotfix` hoặc `release` vào quy trình hiện tại khi chưa c�
 
 Chọn kiểm tra theo thay đổi, không tự chạy các script sinh lại kế hoạch cho việc không liên quan:
 
-| Thay đổi | Kiểm tra |
-|---|---|
-| Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged |
-| Kế hoạch Jira | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v` |
-| LiveKit Docker | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`; thử runtime nếu Docker sẵn có và phù hợp yêu cầu |
-| Mã ứng dụng | Đọc manifest/lockfile và chạy lint, typecheck, test/build đã có cho phần thay đổi; không bịa lệnh hoặc kết quả |
 
-Repo đã có manifest web/server (`apps/web`, `apps/server`), các package dùng chung và CI (`.github/workflows/ci.yml`, thiết lập từ T01/XIAN-37). Luôn đọc manifest và workflow hiện tại để biết lệnh lint/typecheck/test/build thực tế, và kiểm tra cây hiện tại trước khi kết luận còn thiếu. Sau push, kiểm ref remote thay vì chỉ dựa vào commit local. Bàn giao ngắn gọn: file thay đổi, kiểm tra đạt/chưa chạy, việc còn thiếu và có hay không tác động Jira/Sprint.
+| Thay đổi         | Kiểm tra                                                                                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged                                                             |
+| Kế hoạch Jira    | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v`                            |
+| LiveKit Docker   | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`; thử runtime nếu Docker sẵn có và phù hợp yêu cầu |
+| Mã ứng dụng      | `pnpm lint`, `pnpm typecheck`, `pnpm exec vitest run --no-file-parallelism`, `pnpm test:core`, `pnpm build`; thêm `pnpm format:check` khi đụng style |
+
+
+CI bỏ qua `**/*.md`, `docs/**`, `.env.example` nên sửa docs không có CI kiểm. Sau push, kiểm ref remote thay vì chỉ dựa vào commit local. Bàn giao ngắn gọn: file thay đổi, kiểm tra đạt/chưa chạy, việc còn thiếu và có hay không tác động Jira/Sprint.

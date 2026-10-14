@@ -30,9 +30,11 @@ it("passes the current remember selection to the official Google slot without re
   );
   render(createElement(LoginPage, { onLoggedIn: vi.fn(), renderGoogle: slot }));
   expect(screen.getByText("Google remember true")).toBeTruthy();
-  fireEvent.click(screen.getByLabelText("Ghi nhớ đăng nhập"));
+  fireEvent.click(screen.getByLabelText("Ghi nhớ 30 ngày"));
   expect(screen.getByText("Google remember false")).toBeTruthy();
-  expect(screen.getByRole("button", { name: "Đăng nhập" })).toBeTruthy();
+  expect(
+    screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }),
+  ).toBeTruthy();
 });
 it("prevents a password-login request while Google authentication is in flight", () => {
   const request = vi.fn();
@@ -52,16 +54,17 @@ it("prevents a password-login request while Google authentication is in flight",
         ),
     }),
   );
-  fireEvent.change(screen.getByLabelText("Username"), {
+  fireEvent.change(screen.getByLabelText("Tên đăng nhập (Username)"), {
     target: { value: "KyThu" },
   });
   fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
     target: { value: "Password123" },
   });
   fireEvent.click(screen.getByText("Google inflight"));
-  expect((screen.getByLabelText("Username") as HTMLInputElement).disabled).toBe(
-    true,
-  );
+  expect(
+    (screen.getByLabelText("Tên đăng nhập (Username)") as HTMLInputElement)
+      .disabled,
+  ).toBe(true);
   fireEvent.submit(screen.getByRole("form", { name: "Đăng nhập tài khoản" }));
   expect(request).not.toHaveBeenCalled();
 });
@@ -69,7 +72,7 @@ async function fill(
   user: ReturnType<typeof userEvent.setup>,
   username = "KYTHU",
 ) {
-  await user.type(screen.getByLabelText("Username"), username);
+  await user.type(screen.getByLabelText("Tên đăng nhập (Username)"), username);
   await user.type(
     screen.getByLabelText("Mật khẩu", { exact: true }),
     "password123",
@@ -84,7 +87,7 @@ it("sends username case intact and the checked default, with cookies; delegates 
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn }));
   expect(
-    (screen.getByLabelText("Ghi nhớ đăng nhập") as HTMLInputElement).checked,
+    (screen.getByLabelText("Ghi nhớ 30 ngày") as HTMLInputElement).checked,
   ).toBe(true);
   await fill(user);
   await user.keyboard("{Enter}");
@@ -114,8 +117,8 @@ it("sends the unchecked choice to a configured backend with trailing slash", asy
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn }));
   await fill(user);
-  await user.click(screen.getByLabelText("Ghi nhớ đăng nhập"));
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByLabelText("Ghi nhớ 30 ngày"));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   await vi.waitFor(() =>
     expect(onLoggedIn).toHaveBeenCalledWith({ ...session, remember: false }),
   );
@@ -151,7 +154,9 @@ it.each(["LOGIN_INVALID", "UNKNOWN_USER"])(
     const user = userEvent.setup();
     render(createElement(LoginPage, { onLoggedIn }));
     await fill(user);
-    await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+    await user.click(
+      screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }),
+    );
     expect((await screen.findByRole("alert")).textContent).toContain(
       "Sai tên đăng nhập hoặc mật khẩu",
     );
@@ -164,10 +169,10 @@ it("does not accept email as a username or send an empty form", async () => {
   vi.stubGlobal("fetch", request);
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn: vi.fn() }));
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect(await screen.findByRole("alert")).toBeTruthy();
   await fill(user, "player@example.test");
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect(screen.getByRole("alert").textContent).toContain(
     "Sai tên đăng nhập hoặc mật khẩu",
   );
@@ -182,7 +187,7 @@ it("shows the exact blocked message and never grants a blocked login", async () 
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn }));
   await fill(user);
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect((await screen.findByRole("alert")).textContent).toContain(
     "Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút",
   );
@@ -205,10 +210,14 @@ it.each(["network", "503", "malformed", "missing-capability"])(
     const user = userEvent.setup();
     render(createElement(LoginPage, { onLoggedIn }));
     await fill(user);
-    await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+    await user.click(
+      screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }),
+    );
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(onLoggedIn).not.toHaveBeenCalled();
-    await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+    await user.click(
+      screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }),
+    );
     await vi.waitFor(() => expect(onLoggedIn).toHaveBeenCalledTimes(1));
   },
 );
@@ -225,7 +234,7 @@ it("blocks double submissions while pending and preserves the posted remember ch
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn }));
   await fill(user);
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect(
     screen
       .getByRole("button", { name: "Đang xử lý…" })
@@ -247,7 +256,7 @@ it("does not pretend navigation succeeded if the parent callback fails", async (
     }),
   );
   await fill(user);
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect(await screen.findByRole("alert")).toBeTruthy();
   expect(screen.queryByText("Đăng nhập thành công")).toBeNull();
 });
@@ -256,7 +265,7 @@ it("keeps unavailable recovery and providers inert with readable reasons", async
   render(createElement(LoginPage, { onLoggedIn: vi.fn() }));
   for (const name of [
     "Đăng nhập bằng Google",
-    "Chơi với tư cách Khách",
+    "Chơi nhanh với tư cách Khách (Guest)",
     "Quên mật khẩu?",
   ]) {
     expect(
@@ -280,7 +289,9 @@ it("calls only supplied real provider hooks", async () => {
     screen.getByRole("button", { name: "Đăng nhập bằng Google" }),
   );
   await user.click(
-    screen.getByRole("button", { name: "Chơi với tư cách Khách" }),
+    screen.getByRole("button", {
+      name: "Chơi nhanh với tư cách Khách (Guest)",
+    }),
   );
   expect(onGoogle).toHaveBeenCalledTimes(1);
   expect(onGuest).toHaveBeenCalledTimes(1);
@@ -298,9 +309,21 @@ it("does not hand a late response to the caller after leaving the page", async (
   const user = userEvent.setup();
   const view = render(createElement(LoginPage, { onLoggedIn }));
   await fill(user);
-  await user.click(screen.getByRole("button", { name: "Đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   view.unmount();
   resolve(reply(session));
   await new Promise((done) => setTimeout(done, 0));
   expect(onLoggedIn).not.toHaveBeenCalled();
+});
+
+it("uses the shared two-wing shell with the Kỳ Đài heading and brand wing", () => {
+  const { container } = render(
+    createElement(LoginPage, { onLoggedIn: vi.fn() }),
+  );
+  expect(
+    screen.getByRole("heading", { level: 1, name: "Đăng Nhập Kỳ Đài" }),
+  ).toBeTruthy();
+  expect(container.querySelector(".auth-shell .wing-brand")).toBeTruthy();
+  expect(container.querySelectorAll(".wing-brand .feat-box").length).toBe(4);
+  expect(container.querySelector(".auth-shell .wing-form form")).toBeTruthy();
 });

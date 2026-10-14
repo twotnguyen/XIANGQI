@@ -802,6 +802,45 @@ describe.skipIf(!url)(
           .rowCount,
       ).toBe(1);
     });
+    it("reclaims unverified legacy signups that have no intent or draft", async () => {
+      const id = randomUUID();
+      const address = email();
+      await pool.query(
+        "INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data,created_at) VALUES($1,$2,$3,$4,$5)",
+        [
+          id,
+          address,
+          { signup_username: "legacy_orphan" },
+          { provider: "email" },
+          new Date(clock.getTime() - 61 * 60000),
+        ],
+      );
+      // Re-registering the same email replaces the orphan instead of reporting EMAIL_TAKEN.
+      await expect(
+        service.email({ ...credentials(), email: address }),
+      ).resolves.toHaveProperty("registrationToken");
+      expect(
+        (await pool.query("SELECT id FROM auth.users WHERE id=$1", [id]))
+          .rowCount,
+      ).toBe(0);
+      // Maintenance removes an abandoned one even when nobody retries.
+      const stale = randomUUID();
+      await pool.query(
+        "INSERT INTO auth.users(id,email,raw_user_meta_data,raw_app_meta_data,created_at) VALUES($1,$2,$3,$4,$5)",
+        [
+          stale,
+          email(),
+          { signup_username: "legacy_stale" },
+          { provider: "email" },
+          new Date(clock.getTime() - 61 * 60000),
+        ],
+      );
+      await service.maintain();
+      expect(
+        (await pool.query("SELECT id FROM auth.users WHERE id=$1", [stale]))
+          .rowCount,
+      ).toBe(0);
+    });
     it("refuses to claim an unrelated identity returned by a signup race", async () => {
       const id = randomUUID();
       await pool.query(

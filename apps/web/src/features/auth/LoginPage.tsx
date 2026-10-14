@@ -5,9 +5,8 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { Button, Notice, TextField, Tooltip } from "../../shared/ui/primitives.js";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
-import "./LoginPage.css";
+import { AuthShell, GoogleMark, type AuthFeature } from "./AuthShell.js";
 
 export interface LoginResult {
   access_token: string;
@@ -36,6 +35,20 @@ function validResult(value: unknown): value is Omit<LoginResult, "remember"> {
     Number.isFinite(Date.parse(result.expiresAt))
   );
 }
+const features: readonly AuthFeature[] = [
+  {
+    icon: "👥",
+    title: "Chơi Cùng Bạn Bè",
+    text: "Tạo phòng, mời bằng mã hoặc link",
+  },
+  {
+    icon: "👁️",
+    title: "Phòng Có Người Xem",
+    text: "Tối đa năm người xem mỗi phòng",
+  },
+  { icon: "🤖", title: "Máy Cờ 3 Cấp", text: "Rèn luyện từ Dễ đến Khó" },
+  { icon: "📹", title: "Face Cam Trực Tiếp", text: "Đàm đạo nét mặt đối thủ" },
+];
 export function LoginPage({
   onLoggedIn,
   onGoogle,
@@ -133,133 +146,214 @@ export function LoginPage({
       setError(unavailable);
     }
   }
+
   return (
-    <main className="login-page xq-ui">
-      <section className="login-card" aria-labelledby="login-title">
-        <header className="login-heading">
-          <div className="login-mark" aria-hidden="true">
-            <span>帥</span>
-            <span>將</span>
-          </div>
-          <p className="login-brand">Cờ Tướng Online</p>
-          <h1 id="login-title">Kỳ Đài Đăng Nhập</h1>
-          <p>Mỗi nước cờ, một cuộc gặp.</p>
-        </header>
-        {error && (
-          <div ref={errorRegion} tabIndex={-1} className="login-error">
-            <Notice tone="error" message={error} />
-          </div>
-        )}
-        {complete ? (
-          <Notice
-            tone="success"
-            message="Đăng nhập thành công. Đang vào ứng dụng…"
-          />
-        ) : (
-          <>
-            <form
-              onSubmit={submit}
-              noValidate
-              aria-label="Đăng nhập tài khoản"
-              aria-busy={busy}
-            >
-              <TextField
-                label="Username"
-                name="username"
-                autoComplete="username"
-                autoCapitalize="none"
-                spellCheck={false}
-                helper="Dùng tên tài khoản, không dùng Email."
-                value={username}
-                disabled={busy}
-                onChange={(event) => setUsername(event.target.value)}
-              />
-              <div className="login-password">
-                <TextField
-                  label="Mật khẩu"
+    <AuthShell
+      slogan="“Kỳ đạo tương phùng, tương đối kiến diện”"
+      features={features}
+    >
+      <div className="form-head-row">
+        <h1 className="form-title" id="login-title">
+          Đăng Nhập Kỳ Đài
+          <span className="seal-icon" aria-hidden="true">
+            印
+          </span>
+        </h1>
+      </div>
+      <p className="form-subtitle">— Bước một nước cờ, kết vạn tâm giao —</p>
+      {error && (
+        <div
+          ref={errorRegion}
+          tabIndex={-1}
+          role="alert"
+          className="form-alert"
+        >
+          {error}
+        </div>
+      )}
+      {complete ? (
+        <div className="form-success" role="status">
+          Đăng nhập thành công. Đang vào ứng dụng…
+        </div>
+      ) : (
+        <>
+          <form
+            onSubmit={submit}
+            noValidate
+            aria-label="Đăng nhập tài khoản"
+            aria-busy={busy}
+          >
+            <div className="field-row">
+              <label className="field-lbl" htmlFor="login-username">
+                Tên đăng nhập (Username)
+              </label>
+              <div className="input-box">
+                <span className="input-ico" aria-hidden="true">
+                  👤
+                </span>
+                <input
+                  className="input-elem"
+                  id="login-username"
+                  name="username"
+                  autoComplete="username"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  placeholder="nguyen_tinh99"
+                  aria-describedby="login-username-help"
+                  value={username}
+                  disabled={busy}
+                  onChange={(event) => setUsername(event.target.value)}
+                />
+              </div>
+              <p className="field-hint" id="login-username-help">
+                Dùng tên tài khoản, không dùng Email.
+              </p>
+            </div>
+            <div className="field-row">
+              <label className="field-lbl" htmlFor="login-password">
+                Mật khẩu
+              </label>
+              <div className="input-box">
+                <span className="input-ico" aria-hidden="true">
+                  🔒
+                </span>
+                <input
+                  className="input-elem"
+                  id="login-password"
                   name="password"
                   type={visible ? "text" : "password"}
                   autoComplete="current-password"
+                  placeholder="••••••••••••"
                   value={password}
                   disabled={busy}
                   onChange={(event) => setPassword(event.target.value)}
                 />
-                <Button
-                  variant="ghost"
+                <button
+                  type="button"
+                  className="btn-eye"
                   aria-label={visible ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                   aria-pressed={visible}
                   onClick={() => setVisible(!visible)}
                 >
-                  {visible ? "Ẩn" : "Hiện"}
-                </Button>
+                  <span aria-hidden="true">{visible ? "🙈" : "👁️"}</span>
+                </button>
               </div>
-              <label className="login-remember">
+            </div>
+            <div className="options-row">
+              <label className="check-lbl">
                 <input
                   type="checkbox"
                   checked={remember}
                   disabled={busy}
                   onChange={(event) => setRemember(event.target.checked)}
-                />{" "}
-                <span>Ghi nhớ đăng nhập</span>
+                />
+                <span>Ghi nhớ 30 ngày</span>
               </label>
-              <p className="xq-help login-session-help">
-                {remember
-                  ? "Giữ phiên 30 ngày từ lúc đăng nhập."
-                  : "Phiên kết thúc khi đóng trình duyệt hoặc sau 12 giờ."}
-              </p>
-              <Button type="submit" loading={busy}>
-                Đăng nhập
-              </Button>
-              <Tooltip text="Sắp ra mắt">
-                <Button variant="ghost" disabledReason="Sắp ra mắt">
-                  Quên mật khẩu?
-                </Button>
-              </Tooltip>
-            </form>
-            <div className="login-divider">
-              <span>Hoặc</span>
-            </div>
-            <div className="login-alternatives">
-              {renderGoogle ? (
-                renderGoogle(remember, loginBusy, (value) => {
-                  googleSending.current = value;
-                  setGoogleBusy(value);
-                })
-              ) : (
-                <Button
-                  variant="secondary"
-                  disabled={busy}
-                  disabledReason={
-                    onGoogle ? undefined : "Chưa kết nối đăng nhập Google."
-                  }
-                  onClick={() => void provider(onGoogle)}
-                >
-                  Đăng nhập bằng Google
-                </Button>
-              )}
-              <Button
-                variant="secondary"
-                disabled={busy}
-                disabledReason={
-                  onGuest ? undefined : "Chưa kết nối chế độ Khách."
-                }
-                onClick={() => void provider(onGuest)}
+              <button
+                type="button"
+                className="link-forgot"
+                aria-disabled="true"
+                title="Sắp ra mắt"
+                aria-describedby="login-forgot-help"
+                onClick={(event) => event.preventDefault()}
               >
-                Chơi với tư cách Khách
-              </Button>
-              <p className="xq-help">
-                Khách không tham gia Đánh Hạng và không lưu lịch sử ván cờ.
-              </p>
+                Quên mật khẩu?
+              </button>
             </div>
-            <footer className="login-footer">
-              <span>Chưa có tài khoản?</span>
-              <NavigationLink href="/register">
-                Đăng ký tài khoản mới
-              </NavigationLink>
-            </footer>
-          </>
-        )}
-      </section>
-    </main>
+            <span className="sr-only" id="login-forgot-help">
+              Sắp ra mắt
+            </span>
+            <p className="session-note">
+              {remember
+                ? "Giữ phiên 30 ngày từ lúc đăng nhập."
+                : "Phiên kết thúc khi đóng trình duyệt hoặc sau 12 giờ."}
+            </p>
+            <button
+              type="submit"
+              className="btn-submit btn-caps"
+              aria-disabled={busy}
+              aria-busy={busy}
+              onClick={(event) => {
+                if (busy) event.preventDefault();
+              }}
+            >
+              {busy ? (
+                "Đang xử lý…"
+              ) : (
+                <>
+                  <span aria-hidden="true">🏛️</span>
+                  Đăng nhập vào Sảnh
+                  <span aria-hidden="true">❯</span>
+                </>
+              )}
+            </button>
+          </form>
+          <div className="divider">hoặc tiếp tục với</div>
+          {renderGoogle ? (
+            <div className="google-slot">
+              {renderGoogle(remember, loginBusy, (value) => {
+                googleSending.current = value;
+                setGoogleBusy(value);
+              })}
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn-google"
+                aria-disabled={busy || !onGoogle}
+                aria-describedby={onGoogle ? undefined : "login-google-help"}
+                onClick={(event) => {
+                  if (busy || !onGoogle) event.preventDefault();
+                  else void provider(onGoogle);
+                }}
+              >
+                <GoogleMark />
+                Đăng nhập bằng Google
+              </button>
+              {!onGoogle && (
+                <p className="form-note" id="login-google-help">
+                  Chưa kết nối đăng nhập Google.
+                </p>
+              )}
+            </>
+          )}
+          <div className="guest-wrap">
+            <button
+              type="button"
+              className="btn-guest"
+              aria-disabled={busy || !onGuest}
+              aria-describedby={onGuest ? undefined : "login-guest-help"}
+              onClick={(event) => {
+                if (busy || !onGuest) event.preventDefault();
+                else void provider(onGuest);
+              }}
+            >
+              <span aria-hidden="true">⚡</span>
+              Chơi nhanh với tư cách Khách (Guest)
+              <span aria-hidden="true">❯</span>
+            </button>
+            {!onGuest && (
+              <p className="form-note" id="login-guest-help">
+                Chưa kết nối chế độ Khách.
+              </p>
+            )}
+            <div className="guest-alert">
+              <span aria-hidden="true">⚠️</span>
+              <span>
+                <strong>Lưu ý:</strong> Khách không tham gia Đánh Hạng và không
+                lưu lịch sử ván cờ.
+              </span>
+            </div>
+          </div>
+          <div className="reg-foot">
+            <span>Chưa có tài khoản?</span>
+            <NavigationLink href="/register">
+              Đăng ký tài khoản mới
+            </NavigationLink>
+          </div>
+        </>
+      )}
+    </AuthShell>
   );
 }

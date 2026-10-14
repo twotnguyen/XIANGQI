@@ -424,6 +424,7 @@ export class GoogleService {
           "Xác thực Google không hợp lệ",
           401,
         );
+      let activeProof = proof;
       if (!account.completedAt) {
         if (draft.created_at.getTime() + 3600000 <= this.now().getTime())
           throw new GoogleError(
@@ -470,14 +471,29 @@ export class GoogleService {
             );
           throw unavailable();
         }
+        try {
+          // The password update revoked the Google proof session; continue on a fresh one.
+          activeProof = await this.auth.signInPassword(account.email, password);
+        } catch {
+          throw new GoogleError(
+            "GOOGLE_RECOVERING",
+            "Chưa thể hoàn tất đăng ký Google, vui lòng thử lại",
+            503,
+          );
+        }
       }
-      await this.clearPending(c, account, proof);
+      await this.clearPending(c, account, activeProof);
       return {
         account: (await this.account(c, account.userId))!,
         remember: draft.remember,
+        session: activeProof,
       };
     });
-    const result = await this.issue(finished.account, proof, finished.remember);
+    const result = await this.issue(
+      finished.account,
+      finished.session,
+      finished.remember,
+    );
     await this.query(
       "DELETE FROM xiangqi_auth.google_drafts WHERE user_id=$1 AND token_hash=$2",
       [finished.account.userId, tokenHash],

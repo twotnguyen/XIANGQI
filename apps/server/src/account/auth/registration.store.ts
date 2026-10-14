@@ -6,9 +6,15 @@ import {
   type Draft,
 } from "./registration.types.js";
 
+const intentExists = `EXISTS(SELECT 1 FROM xiangqi_auth.registration_intents i WHERE i.user_id=u.id OR (i.user_id IS NULL AND i.email=lower(u.email) AND i.nonce=u.raw_user_meta_data->>'registration_intent'))`;
+// Unverified, unfinished signups made by the pre-intent flow (its trigger required signup_username)
+// have no intent or draft, so nothing else would ever reclaim them. Auth deletion cascades their profile.
+const legacyOrphan = `(u.email_confirmed_at IS NULL AND p.completed_at IS NULL AND u.raw_user_meta_data ? 'signup_username'
+  AND NOT EXISTS(SELECT 1 FROM xiangqi_auth.registration_drafts d WHERE d.user_id=u.id))`;
+const temporaryAccount = `(${intentExists} OR ${legacyOrphan})`;
 const accountSelect = `SELECT u.id AS "userId", u.email, u.email_confirmed_at IS NOT NULL AS verified,
   p.completed_at AS "completedAt", COALESCE(p.registration_pending,true) AS pending,
-  EXISTS(SELECT 1 FROM xiangqi_auth.registration_intents i WHERE i.user_id=u.id OR (i.user_id IS NULL AND i.email=lower(u.email) AND i.nonce=u.raw_user_meta_data->>'registration_intent')) AS temporary,
+  ${temporaryAccount} AS temporary,
   EXISTS(SELECT 1 FROM xiangqi_auth.registration_drafts d WHERE d.user_id=u.id) AS "hasDraft"
   FROM xiangqi_auth.accounts u LEFT JOIN public.profiles p ON p.user_id=u.id`;
 
@@ -190,7 +196,7 @@ export class PostgresRegistrationStore implements RegistrationStore {
   async staleAccounts(before: Date): Promise<Account[]> {
     const { rows } = await this.query(
       `${accountSelect} WHERE (p.completed_at IS NOT NULL AND p.registration_pending=true)
-      OR (u.created_at <= $1 AND EXISTS(SELECT 1 FROM xiangqi_auth.registration_intents i WHERE i.user_id=u.id OR (i.user_id IS NULL AND i.email=lower(u.email) AND i.nonce=u.raw_user_meta_data->>'registration_intent')) AND p.completed_at IS NULL)`,
+      OR (u.created_at <= $1 AND ${temporaryAccount} AND p.completed_at IS NULL)`,
       [before],
     );
     return rows;

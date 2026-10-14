@@ -16,6 +16,8 @@ export interface GoogleAuth {
   exchangeIDToken(credential: string, rawNonce: string): Promise<Session>;
   getUser(accessToken: string): Promise<Session["user"]>;
   setPassword(userId: string, password: string): Promise<void>;
+  // Setting a password through the Admin API revokes every session of the user.
+  signInPassword(email: string, password: string): Promise<Session>;
   clearPending(userId: string): Promise<void>;
   deleteTemporary(userId: string): Promise<void>;
 }

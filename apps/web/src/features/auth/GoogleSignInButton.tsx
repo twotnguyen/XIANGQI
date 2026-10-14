@@ -132,7 +132,14 @@ export function GoogleSignInButton({
               size: "large",
               text,
               locale: "vi",
-              width: String(Math.min(320, host.current.clientWidth || 260)),
+              width: String(
+                Math.min(
+                  400,
+                  host.current.clientWidth ||
+                    host.current.parentElement?.clientWidth ||
+                    260,
+                ),
+              ),
               click_listener: () => {
                 clickedRemember = latest.current.remember;
               },

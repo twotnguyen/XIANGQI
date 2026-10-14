@@ -7,7 +7,7 @@ import {
 } from "react";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { containsForbiddenName } from "@xiangqi/shared";
-import "./RegistrationPage.css";
+import { AuthShell, type AuthFeature } from "./AuthShell.js";
 
 export interface RegistrationSession {
   access_token: string;
@@ -65,6 +65,18 @@ async function post<T>(
   if (!response.ok) throw { ...result, status: response.status } as ApiError;
   return result as T;
 }
+const features: readonly AuthFeature[] = [
+  { icon: "🛡️", title: "Bảo Toàn Hồ Sơ", text: "Email cố định, bảo mật OTP" },
+  {
+    icon: "👥",
+    title: "Chơi Cùng Bạn Bè",
+    text: "Tạo phòng, mời bằng mã hoặc link",
+  },
+  { icon: "📜", title: "Lưu Trữ Kỳ Phổ", text: "Tự động lưu lịch sử ván cờ" },
+  { icon: "✨", title: "Hồ Sơ Riêng", text: "Tên hiển thị gán theo Username" },
+];
+const clock = (seconds: number) =>
+  `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 const secondsUntil = (date: string, now: number) =>
   Math.max(0, Math.ceil((Date.parse(date) - now) / 1000));
 
@@ -100,6 +112,8 @@ export function RegistrationPage({
   );
   const recovering = recovery !== null;
   const [complete, setComplete] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const focusAfterResend = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -320,288 +334,396 @@ export function RegistrationPage({
     ((attempted || forbidden || usernameInvalid) && step === 1
       ? credentialError
       : "");
+  const availabilityTone =
+    availability === "Username có thể sử dụng."
+      ? " valid"
+      : availability &&
+          availability !== "Đang kiểm tra Username…" &&
+          availability.startsWith("Username đã")
+        ? " error"
+        : "";
   return (
-    <main className="registration-page">
-      <div className="registration-shell">
-        <NavigationLink
-          className="registration-brand"
-          href="/"
-          aria-label="Cờ Tướng Online — Trang chủ"
-        >
-          <span aria-hidden="true">帥</span>
-          <strong>
-            Cờ Tướng <em>Online</em>
-          </strong>
-        </NavigationLink>
-        <section
-          className="registration-card"
-          aria-labelledby="registration-title"
-        >
-          <p className="registration-eyebrow">MỘT TÀI KHOẢN · VẠN THẾ CỜ</p>
-          <h1 id="registration-title" ref={heading} tabIndex={-1}>
-            {complete ? "Sẵn sàng vào Sảnh" : "Tạo tài khoản"}
+    <AuthShell
+      slogan="“Đăng kỳ lập chí, bách chiến xưng vương”"
+      features={features}
+      spread
+    >
+      <div>
+        <div className="form-head-row">
+          <h1
+            className="form-title"
+            id="registration-title"
+            ref={heading}
+            tabIndex={-1}
+          >
+            {complete ? "Sẵn sàng vào Sảnh" : "Đăng Ký Tài Khoản"}
+            <span className="seal-icon" aria-hidden="true">
+              印
+            </span>
           </h1>
-          <p className="registration-intro">
-            Lưu lại hành trình kỳ thủ của bạn.
-          </p>
-          <ol className="registration-steps" aria-label="Các bước đăng ký">
-            {["Tài khoản", "Email", "Xác thực OTP"].map((label, index) => (
-              <li
-                key={label}
-                aria-current={step === index + 1 ? "step" : undefined}
-                data-completed={step > index + 1}
-              >
-                <span aria-hidden="true">
-                  {step > index + 1 ? "✓" : index + 1}
-                </span>
-                {label}
-              </li>
-            ))}
-          </ol>
-          {complete ? (
-            <div className="registration-success" role="status">
-              <strong>Tài khoản đã được tạo.</strong>
-              <p>Đang đưa bạn vào Sảnh…</p>
-            </div>
-          ) : (
-            <form
-              onSubmit={(event) => void submit(event)}
-              noValidate
-              aria-busy={busy}
+        </div>
+        <ol className="stepper-wrap" aria-label="Các bước đăng ký">
+          {["Tài khoản", "Email", "Xác thực OTP"].map((label, index) => (
+            <li
+              className="step-item"
+              key={label}
+              aria-current={step === index + 1 ? "step" : undefined}
+              data-completed={step > index + 1}
             >
-              {step === 1 && (
-                <>
-                  <label htmlFor="registration-username">Username</label>
-                  <input
-                    id="registration-username"
-                    value={username}
-                    onChange={(event) => {
-                      setUsername(event.target.value);
-                      setError("");
-                    }}
-                    autoComplete="username"
-                    maxLength={20}
-                    aria-describedby="username-help username-availability registration-error"
-                    aria-invalid={Boolean(
-                      forbidden || usernameInvalid || (attempted && !username),
-                    )}
-                    disabled={busy}
-                  />
-                  <p id="username-help" className="registration-help">
+              <span className="step-num" aria-hidden="true">
+                {step > index + 1 ? "✓" : index + 1}
+              </span>
+              <span className="step-text">{label}</span>
+            </li>
+          ))}
+        </ol>
+        {complete ? (
+          <div className="form-success" role="status">
+            <strong>Tài khoản đã được tạo.</strong>
+            <p>Đang đưa bạn vào Sảnh…</p>
+          </div>
+        ) : (
+          <form
+            className="wizard-step"
+            key={step}
+            onSubmit={(event) => void submit(event)}
+            noValidate
+            aria-busy={busy}
+          >
+            {step === 1 && (
+              <>
+                <div className="field-row">
+                  <label className="field-lbl" htmlFor="registration-username">
+                    Tên đăng nhập (Username)
+                  </label>
+                  <div className="input-box">
+                    <span className="input-ico" aria-hidden="true">
+                      👤
+                    </span>
+                    <input
+                      className="input-elem"
+                      id="registration-username"
+                      value={username}
+                      onChange={(event) => {
+                        setUsername(event.target.value);
+                        setError("");
+                      }}
+                      autoComplete="username"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      placeholder="3–20 ký tự (chữ, số, gạch dưới)"
+                      maxLength={20}
+                      aria-describedby="username-help username-availability registration-error"
+                      aria-invalid={Boolean(
+                        forbidden ||
+                        usernameInvalid ||
+                        (attempted && !username),
+                      )}
+                      disabled={busy}
+                    />
+                  </div>
+                  <p id="username-help" className="field-hint">
                     3–20 chữ cái, số hoặc dấu gạch dưới. Không dùng từ bị cấm.
                   </p>
                   <p
                     id="username-availability"
-                    className="registration-availability"
+                    className={`field-hint${availabilityTone}`}
                     role="status"
                   >
                     {availability}
                   </p>
-                  <label htmlFor="registration-password">Mật khẩu</label>
-                  <input
-                    id="registration-password"
-                    type="password"
-                    value={password}
-                    onChange={(event) => {
-                      setPassword(event.target.value);
-                      setError("");
-                    }}
-                    autoComplete="new-password"
-                    aria-describedby="password-help registration-error"
-                    aria-invalid={attempted && password.length < 8}
-                    disabled={busy}
-                  />
-                  <p id="password-help" className="registration-help">
+                </div>
+                <div className="field-row">
+                  <label className="field-lbl" htmlFor="registration-password">
+                    Mật khẩu
+                  </label>
+                  <div className="input-box">
+                    <span className="input-ico" aria-hidden="true">
+                      🔒
+                    </span>
+                    <input
+                      className="input-elem"
+                      id="registration-password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(event) => {
+                        setPassword(event.target.value);
+                        setError("");
+                      }}
+                      autoComplete="new-password"
+                      placeholder="Tối thiểu 8 ký tự"
+                      aria-describedby="password-help registration-error"
+                      aria-invalid={attempted && password.length < 8}
+                      disabled={busy}
+                    />
+                    <button
+                      type="button"
+                      className="btn-eye"
+                      aria-label={
+                        showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                      }
+                      aria-pressed={showPassword}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      <span aria-hidden="true">
+                        {showPassword ? "🙈" : "👁️"}
+                      </span>
+                    </button>
+                  </div>
+                  <p id="password-help" className="field-hint">
                     Ít nhất 8 ký tự.
                   </p>
-                  <label htmlFor="registration-confirmation">
+                </div>
+                <div className="field-row">
+                  <label
+                    className="field-lbl"
+                    htmlFor="registration-confirmation"
+                  >
                     Xác nhận mật khẩu
                   </label>
-                  <input
-                    id="registration-confirmation"
-                    type="password"
-                    value={passwordConfirmation}
-                    onChange={(event) => {
-                      setPasswordConfirmation(event.target.value);
-                      setError("");
-                    }}
-                    autoComplete="new-password"
-                    aria-describedby="registration-error"
-                    aria-invalid={
-                      attempted && password !== passwordConfirmation
-                    }
-                    disabled={busy}
-                  />
-                </>
-              )}
-              {step === 2 && (
-                <>
-                  <h2>Email chính chủ của bạn</h2>
-                  <p className="registration-copy">
-                    Mã xác thực sẽ được gửi đến Email này. Hãy dùng địa chỉ bạn
-                    có thể truy cập.
+                  <div className="input-box">
+                    <span className="input-ico" aria-hidden="true">
+                      🔒
+                    </span>
+                    <input
+                      className="input-elem"
+                      id="registration-confirmation"
+                      type={showConfirmation ? "text" : "password"}
+                      value={passwordConfirmation}
+                      onChange={(event) => {
+                        setPasswordConfirmation(event.target.value);
+                        setError("");
+                      }}
+                      autoComplete="new-password"
+                      placeholder="Nhập lại mật khẩu"
+                      aria-describedby="registration-error"
+                      aria-invalid={
+                        attempted && password !== passwordConfirmation
+                      }
+                      disabled={busy}
+                    />
+                    <button
+                      type="button"
+                      className="btn-eye"
+                      aria-label={
+                        showConfirmation
+                          ? "Ẩn xác nhận mật khẩu"
+                          : "Hiện xác nhận mật khẩu"
+                      }
+                      aria-pressed={showConfirmation}
+                      onClick={() => setShowConfirmation(!showConfirmation)}
+                    >
+                      <span aria-hidden="true">
+                        {showConfirmation ? "🙈" : "👁️"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <h2 className="sr-only">Email chính chủ của bạn</h2>
+                <div className="alert-callout">
+                  <span aria-hidden="true">🛡️</span>
+                  <span>
+                    <strong>Bảo mật danh tính:</strong> Email sau khi xác thực
+                    là cố định để bảo vệ toàn vẹn tài khoản và lịch sử thi đấu.
+                  </span>
+                </div>
+                <div className="field-row">
+                  <label className="field-lbl" htmlFor="registration-email">
+                    Email chính chủ
+                  </label>
+                  <div className="input-box">
+                    <span className="input-ico" aria-hidden="true">
+                      ✉️
+                    </span>
+                    <input
+                      className="input-elem"
+                      id="registration-email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        setError("");
+                      }}
+                      autoComplete="email"
+                      placeholder="kythu@gmail.com"
+                      aria-describedby="registration-email-help registration-error"
+                      aria-invalid={Boolean(error)}
+                      maxLength={254}
+                      disabled={busy}
+                    />
+                  </div>
+                  <p id="registration-email-help" className="field-hint">
+                    Mã xác thực 6 chữ số sẽ được gửi đến hộp thư này. Email đã
+                    đăng ký sẽ không nhận thêm mã OTP.
                   </p>
-                  <label htmlFor="registration-email">Email chính chủ</label>
-                  <input
-                    id="registration-email"
-                    type="email"
-                    value={email}
-                    onChange={(event) => {
-                      setEmail(event.target.value);
-                      setError("");
-                    }}
-                    autoComplete="email"
-                    aria-describedby="registration-error"
-                    aria-invalid={Boolean(error)}
-                    maxLength={254}
-                    disabled={busy}
-                  />
-                  <p className="registration-help">
-                    Email đã đăng ký sẽ không nhận thêm mã OTP.
-                  </p>
-                </>
-              )}
-              {step === 3 && !recovering && (
-                <>
-                  <h2>Kiểm tra hộp thư của bạn</h2>
-                  <p className="registration-copy">
-                    Nhập mã 6 chữ số đã gửi đến <strong>{email}</strong>.
-                  </p>
-                  <fieldset className="registration-otp">
-                    <legend>Mã xác thực OTP</legend>
-                    <div>
-                      {otp.map((digit, index) => (
-                        <input
-                          key={index}
-                          ref={(input) => {
-                            inputs.current[index] = input;
-                          }}
-                          aria-label={`Chữ số OTP ${index + 1}`}
-                          aria-invalid={Boolean(shownError)}
-                          aria-describedby="registration-error"
-                          inputMode="numeric"
-                          autoComplete={index === 0 ? "one-time-code" : "off"}
-                          value={digit}
-                          disabled={busy}
-                          onChange={(event) =>
-                            updateOtp(index, event.target.value)
-                          }
-                          onPaste={(event) => {
-                            event.preventDefault();
-                            updateOtp(
-                              index,
-                              event.clipboardData.getData("text"),
-                            );
-                          }}
-                          onKeyDown={(event) => {
-                            if (
-                              event.key === "Backspace" &&
-                              !digit &&
-                              index > 0
-                            )
-                              inputs.current[index - 1]?.focus();
-                          }}
-                          autoFocus={index === 0}
-                        />
-                      ))}
-                    </div>
-                  </fieldset>
-                  <p className="registration-expiry">
-                    {expirySeconds > 0
-                      ? `Mã có hiệu lực trong ${Math.floor(expirySeconds / 60)}:${String(expirySeconds % 60).padStart(2, "0")}`
-                      : "Mã đã hết hạn. Hãy gửi lại mã mới."}
+                </div>
+              </>
+            )}
+            {step === 3 && !recovering && (
+              <>
+                <h2 className="sr-only">Kiểm tra hộp thư của bạn</h2>
+                <p className="otp-info-card">
+                  <span aria-hidden="true">✉️</span> Mã xác thực 6 số đã được
+                  gửi đến:
+                  <br />
+                  <strong>{email}</strong>
+                </p>
+                <fieldset className="otp-fieldset">
+                  <legend>Nhập mã OTP 6 số:</legend>
+                  <div className="otp-grid">
+                    {otp.map((digit, index) => (
+                      <input
+                        className="otp-input"
+                        key={index}
+                        ref={(input) => {
+                          inputs.current[index] = input;
+                        }}
+                        aria-label={`Chữ số OTP ${index + 1}`}
+                        aria-invalid={Boolean(shownError)}
+                        aria-describedby="registration-error"
+                        inputMode="numeric"
+                        autoComplete={index === 0 ? "one-time-code" : "off"}
+                        value={digit}
+                        disabled={busy}
+                        onChange={(event) =>
+                          updateOtp(index, event.target.value)
+                        }
+                        onPaste={(event) => {
+                          event.preventDefault();
+                          updateOtp(index, event.clipboardData.getData("text"));
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Backspace" && !digit && index > 0)
+                            inputs.current[index - 1]?.focus();
+                        }}
+                        autoFocus={index === 0}
+                      />
+                    ))}
+                  </div>
+                </fieldset>
+                <div className="otp-timer-row">
+                  <p>
+                    {expirySeconds > 0 ? (
+                      <>
+                        Thời hạn mã:{" "}
+                        <span className="otp-countdown">
+                          {clock(expirySeconds)}
+                        </span>
+                      </>
+                    ) : (
+                      "Mã đã hết hạn. Hãy gửi lại mã mới."
+                    )}
                   </p>
                   <button
-                    className="registration-resend"
+                    className="btn-resend"
                     type="button"
                     onClick={() => void resend()}
                     disabled={busy || resendSeconds > 0}
                   >
                     {resendSeconds > 0
-                      ? `Gửi lại mã sau ${resendSeconds}s`
+                      ? `Gửi lại mã (${resendSeconds}s)`
                       : "Gửi lại mã"}
                   </button>
+                </div>
+              </>
+            )}
+            {step === 3 && recovering && (
+              <p className="form-note">
+                {recovery === "confirmed"
+                  ? "Email đã được xác minh. Nhấn Hoàn tất đăng ký để thử phục hồi tài khoản; không cần gửi mã mới."
+                  : "Chưa xác định được kết quả xác minh. Nhấn Kiểm tra đăng ký để thử lại an toàn."}
+              </p>
+            )}
+            <div id="registration-error" className="form-alert" role="alert">
+              {shownError}
+            </div>
+            <button
+              ref={submitButton}
+              className={`btn-submit${step === 3 && !recovering ? " btn-caps" : ""}`}
+              type="submit"
+              disabled={
+                busy ||
+                (step === 2 &&
+                  Boolean(registrationToken) &&
+                  resendSeconds > 0) ||
+                (step === 3 &&
+                  !recovering &&
+                  (rateLimited || expirySeconds === 0))
+              }
+            >
+              {busy ? (
+                "Đang xử lý…"
+              ) : step === 1 ? (
+                <>
+                  Tiếp tục: Nhập Email <span aria-hidden="true">❯</span>
+                </>
+              ) : step === 2 ? (
+                <>
+                  Gửi mã OTP qua Email <span aria-hidden="true">❯</span>
+                </>
+              ) : recovering ? (
+                recovery === "confirmed" ? (
+                  "Hoàn tất đăng ký"
+                ) : (
+                  "Kiểm tra đăng ký"
+                )
+              ) : (
+                <>
+                  <span aria-hidden="true">🏛️</span>
+                  Xác thực và vào Sảnh
+                  <span aria-hidden="true">❯</span>
                 </>
               )}
-              {step === 3 && recovering && (
-                <p className="registration-help">
-                  {recovery === "confirmed"
-                    ? "Email đã được xác minh. Nhấn Hoàn tất đăng ký để thử phục hồi tài khoản; không cần gửi mã mới."
-                    : "Chưa xác định được kết quả xác minh. Nhấn Kiểm tra đăng ký để thử lại an toàn."}
-                </p>
-              )}
-              <div
-                id="registration-error"
-                className="registration-error"
-                role="alert"
-              >
-                {shownError}
-              </div>
+            </button>
+            {step === 2 && registrationToken && resendSeconds > 0 && (
+              <p className="form-note">
+                Có thể gửi mã mới sau {resendSeconds}s.
+              </p>
+            )}
+            {step > 1 && !recovering && (
               <button
-                ref={submitButton}
-                className="registration-primary"
-                type="submit"
-                disabled={
-                  busy ||
-                  (step === 2 &&
-                    Boolean(registrationToken) &&
-                    resendSeconds > 0) ||
-                  (step === 3 &&
-                    !recovering &&
-                    (rateLimited || expirySeconds === 0))
-                }
+                className="btn-back"
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setStep(step - 1);
+                  setError("");
+                  setAttempted(false);
+                }}
               >
-                {busy
-                  ? "Đang xử lý…"
-                  : step === 1
-                    ? "Tiếp tục"
-                    : step === 2
-                      ? "Xác nhận Email"
-                      : recovering
-                        ? recovery === "confirmed"
-                          ? "Hoàn tất đăng ký"
-                          : "Kiểm tra đăng ký"
-                        : "Xác thực và vào Sảnh"}
+                <span aria-hidden="true">❮</span>{" "}
+                {step === 2
+                  ? "Quay lại chỉnh sửa thông tin tài khoản"
+                  : "Đổi email nhận mã OTP"}
               </button>
-              {step === 2 && registrationToken && resendSeconds > 0 && (
-                <p className="registration-help">
-                  Có thể gửi mã mới sau {resendSeconds}s.
-                </p>
-              )}
-              {step > 1 && !recovering && (
-                <button
-                  className="registration-back"
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    setStep(step - 1);
-                    setError("");
-                    setAttempted(false);
-                  }}
-                >
-                  ← Quay lại {step === 2 ? "Tài khoản" : "Email"}
-                </button>
-              )}
-            </form>
-          )}
-          {complete && error && (
-            <p className="registration-error" role="alert">
-              {error}
-            </p>
-          )}
-          {step === 1 && !complete && renderGoogle && (
-            <div style={{ marginTop: 20 }}>
+            )}
+          </form>
+        )}
+        {complete && error && (
+          <p className="form-alert" role="alert">
+            {error}
+          </p>
+        )}
+        {step === 1 && !complete && renderGoogle && (
+          <>
+            <div className="divider">hoặc đăng ký nhanh</div>
+            <div className="google-slot">
               {renderGoogle(emailBusy, (value) => {
                 googleSending.current = value;
                 setGoogleBusy(value);
               })}
             </div>
-          )}
-        </section>
-        <p className="registration-footer">
-          Một nước đi tốt bắt đầu từ sự bình tĩnh.
-        </p>
+          </>
+        )}
       </div>
-    </main>
+      <div className="reg-foot">
+        <span>Đã có tài khoản kỳ đài?</span>
+        <NavigationLink href="/login">Đăng nhập ngay →</NavigationLink>
+      </div>
+    </AuthShell>
   );
 }
