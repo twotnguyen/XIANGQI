@@ -4,9 +4,9 @@
 
 Đây là đồ án môn **Quản trị Dự án Công nghệ Thông tin**, thực hiện từ phân tích yêu cầu khách hàng đến lập kế hoạch, xây dựng và nghiệm thu sản phẩm.
 
-> **Đang chuẩn bị triển khai.** Repo có bộ khung React/Vite và NestJS/Socket.IO chạy cục bộ; các tính năng P1 chưa hoàn chỉnh. Phạm vi P1 được lập kế hoạch **880 giờ**, hạn **04/11/2026**. Xem [kế hoạch và tiến độ](KE-HOACH-JIRA.md).
+> **Đang triển khai.** Mã nguồn trên `main` đã có web React/Vite, server NestJS/Socket.IO và các tính năng P1 đã tích hợp (đăng ký/đăng nhập, phòng, ván thời gian thực, chat, ván với máy, bạn bè, media), cùng một phần P2 (lịch sử, replay, mã QR mời). Việc nghiệm thu từng Task vẫn theo Jira và các cổng kiểm chứng trong [BACKLOG-P1.md](docs/product/BACKLOG-P1.md); nhiều Task trên Jira chưa được cập nhật trạng thái, và các kiểm chứng như camera/mic nhiều thiết bị, Google OAuth, RLS trên môi trường thật chưa hoàn tất. Phạm vi P1 được lập kế hoạch **880 giờ**, hạn **04/11/2026**. Xem [kế hoạch và tiến độ](docs/planning/KE-HOACH-JIRA.md).
 
-[Chuẩn bị môi trường](CAU-HINH-MOI-TRUONG.md) · [Đặc tả P1](BACKLOG-P1.md) · [Mockup](mockups/index.html) · [Jira XIAN](https://xiangqi-web.atlassian.net/jira/software/c/projects/XIAN/boards/38)
+[Chuẩn bị môi trường](docs/setup/CAU-HINH-MOI-TRUONG.md) · [Đặc tả P1](docs/product/BACKLOG-P1.md) · [Mockup](docs/design/mockups/index.html) · [Jira XIAN](https://xiangqi-web.atlassian.net/jira/software/c/projects/XIAN/boards/38)
 
 ## Tính năng dự kiến
 
@@ -17,7 +17,7 @@
 - **Luyện tập với máy:** ba cấp Dễ, Trung bình, Khó; chọn phe và bắt đầu ván mới.
 - **Tài khoản và chế độ Khách:** đăng ký với OTP email, đăng nhập Google hoặc vào nhanh dưới vai trò Khách.
 
-Đánh hạng/Elo, ghép ngẫu nhiên, lịch sử và replay thuộc P2, chưa nằm trong kế hoạch triển khai P1. Phạm vi và luật chi tiết được quản lý tại [quyết định nghiệp vụ](BA-SCOPE-DECISIONS.md).
+Đánh hạng/Elo, ghép ngẫu nhiên, lịch sử và replay thuộc P2, chưa nằm trong kế hoạch triển khai P1. Phạm vi và luật chi tiết được quản lý tại [quyết định nghiệp vụ](docs/product/BA-SCOPE-DECISIONS.md).
 
 ## Công nghệ
 
@@ -52,7 +52,7 @@ umask 077
 mkdir -p apps/web apps/server
 ```
 
-Điền `.env` tổng theo [hướng dẫn Supabase, Google OAuth, SMTP và LiveKit](CAU-HINH-MOI-TRUONG.md), rồi đồng bộ:
+Điền `.env` tổng theo [hướng dẫn Supabase, Google OAuth, SMTP và LiveKit](docs/setup/CAU-HINH-MOI-TRUONG.md), rồi đồng bộ:
 
 ```sh
 cp .env apps/web/.env
@@ -92,21 +92,60 @@ Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event
 ### 4. Chuẩn bị media và xem giao diện
 
 - [Chạy LiveKit bằng Docker và chuyển local/Cloud](infra/livekit/README.md): cần Python 3, Docker và Docker Compose. Kiểm thử nhiều thiết bị LAN cần HTTPS/WSS và cấu hình mạng phù hợp.
-- Mở [mockups/index.html](mockups/index.html) trên máy để xem giao diện tham khảo. Đây là mockup, chưa phải ứng dụng kết nối backend.
+- Mở [docs/design/mockups/index.html](docs/design/mockups/index.html) trên máy để xem giao diện tham khảo. Đây là mockup, chưa phải ứng dụng kết nối backend.
 - `pnpm dev` chạy bộ khung; các kiểm thử nghiệp vụ và media xuyên suốt ứng dụng sẽ được triển khai theo backlog.
+
+## Cấu trúc thư mục
+
+```text
+XIANGQI/
+├─ apps/
+│  ├─ web/src/               React + Vite
+│  │  ├─ app/                ghép ứng dụng: AppRouter, layouts/, dev/ (thư viện thành phần)
+│  │  ├─ features/           theo tính năng: auth, lobby, rooms (+match), chat, ai, friends,
+│  │  │                      history, media, profile
+│  │  ├─ shared/             dùng chung: ui, board, navigation (route + điều hướng), theme, styles
+│  │  └─ main.tsx
+│  └─ server/src/            NestJS + Socket.IO
+│     ├─ account/            auth, login, session, google, guest, profile, friend
+│     ├─ game/               room (+public), match, clock, realtime, chat, ai, history, media;
+│     │                      game.runtime.ts nối các miền này vào ứng dụng
+│     ├─ core/               config, logger, bộ lọc nội dung riêng tư, schema (kiểm thử SQL/RLS)
+│     └─ main.ts, app.ts     điểm vào
+├─ packages/                 shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
+├─ tests/                    toàn bộ test, helper và fixture (server/, web/, packages/); xem tests/README.md
+├─ supabase/                 migration, rollback, baseline, kiểm thử SQL, mẫu email
+├─ infra/livekit/            Docker, báo cáo spike và livekit-env.py (chuyển LiveKit local/Cloud)
+├─ docs/
+│  ├─ product/               IDEA, quyết định BA, backlog P1/P2
+│  ├─ design/                DESIGN, danh mục màn hình, mockups/
+│  ├─ planning/              KE-HOACH-JIRA.md và jira/ (dữ liệu, công cụ, báo cáo, kiểm thử)
+│  ├─ engineering/           ghi chú kỹ thuật từng tính năng (server/, web/)
+│  └─ setup/                 hướng dẫn cấu hình môi trường và dịch vụ
+├─ .github/                  CI, CODEOWNERS
+└─ .local/                   ghi chú, log, bản sao lưu cá nhân (Git bỏ qua)
+```
+
+**Quy ước mỗi tính năng ở server:** `x.types.ts` (kiểu, lỗi), `x.module.ts` (khai báo module và
+`createXRuntime` đọc cờ môi trường/kiểm tra schema), `x.controller.ts` (HTTP và kiểm tra đầu vào),
+`x.service.ts` (nghiệp vụ, SQL); tính năng lớn có thêm `*.store.ts`, `*-worker.ts`, `*-port.ts`. Test nằm riêng ở `tests/`
+theo cùng cấu trúc thư mục.
+
+**Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*` (và `features` khác khi thật cần);
+`shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả.
 
 ## Tài liệu dự án
 
 | Nội dung | Tài liệu |
 |---|---|
-| Mục đích, người dùng và trải nghiệm | [IDEA.md](IDEA.md) |
-| Quyết định nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) |
-| User Story, tiêu chí nghiệm thu và kiểm thử | [P1](BACKLOG-P1.md), [P2](BACKLOG-P2.md) |
-| Phạm vi P1/P2 và tiến độ triển khai | [Danh mục](jira/reports/PHAM-VI-P1-P2.md), [Kế hoạch triển khai](jira/reports/KE-HOACH-TRIEN-KHAI-P1-P2.md) |
-| Màn hình và thiết kế | [Danh mục màn hình](DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](DESIGN.md) |
-| Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](KE-HOACH-JIRA.md) |
-| Dữ liệu, báo cáo và công cụ Jira | [jira/README.md](jira/README.md) |
-| Cấu hình dịch vụ và kết quả kiểm chứng | [CAU-HINH-MOI-TRUONG.md](CAU-HINH-MOI-TRUONG.md) |
+| Mục đích, người dùng và trải nghiệm | [IDEA.md](docs/product/IDEA.md) |
+| Quyết định nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md) |
+| User Story, tiêu chí nghiệm thu và kiểm thử | [P1](docs/product/BACKLOG-P1.md), [P2](docs/product/BACKLOG-P2.md) |
+| Phạm vi P1/P2 và tiến độ triển khai | [Danh mục](docs/planning/jira/reports/PHAM-VI-P1-P2.md), [Kế hoạch triển khai](docs/planning/jira/reports/KE-HOACH-TRIEN-KHAI-P1-P2.md) |
+| Màn hình và thiết kế | [Danh mục màn hình](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md) |
+| Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md) |
+| Dữ liệu, báo cáo và công cụ Jira | [docs/planning/jira/README.md](docs/planning/jira/README.md) |
+| Cấu hình dịch vụ và kết quả kiểm chứng | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md) |
 | Hướng dẫn cho coding agent và quy ước Git/Jira | [AGENTS.md](AGENTS.md) |
 
 ## Đóng góp

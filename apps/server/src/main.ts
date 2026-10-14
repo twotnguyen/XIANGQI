@@ -1,15 +1,15 @@
 import { config } from "dotenv";
 import { createApp } from "./app.js";
-import { readConfig } from "./config.js";
-import { logEvent } from "./logger.js";
-import { createRegistrationRuntime } from "./auth-runtime.js";
-import { createGoogleRuntime } from "./google-runtime.js";
-import { createRoomRuntime } from "./room-runtime.js";
-import { createFriendRuntime } from "./friend-runtime.js";
-import { createMediaRuntime } from "./media-runtime.js";
-import { createHistoryRuntime } from "./history-runtime.js";
-import { createProfileRuntime } from "./profile-runtime.js";
-import { AuthProvidersModule } from "./auth/providers.module.js";
+import { readConfig } from "./core/config.js";
+import { logEvent } from "./core/logger.js";
+import { createRegistrationRuntime } from "./account/auth/registration.module.js";
+import { createGoogleRuntime } from "./account/google/google.module.js";
+import { createRoomRuntime } from "./game/game.runtime.js";
+import { createFriendRuntime } from "./account/friend/friend.module.js";
+import { createMediaRuntime } from "./game/media/media.module.js";
+import { createHistoryRuntime } from "./game/history/history.module.js";
+import { createProfileRuntime } from "./account/profile/profile.module.js";
+import { AuthProvidersModule } from "./account/auth/registration.module.js";
 
 config({ quiet: true });
 let registration: Awaited<ReturnType<typeof createRegistrationRuntime>> = null;

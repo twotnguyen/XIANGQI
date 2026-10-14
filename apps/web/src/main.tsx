@@ -1,33 +1,33 @@
 import { StrictMode, Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
-import "./style.css";
-import "./theme/theme.css";
-import { SessionProvider } from "./auth/SessionProvider.js";
-import { applyTheme, readStoredTheme } from "./theme/theme.js";
+import "./shared/styles/global.css";
+import "./shared/theme/theme.css";
+import { SessionProvider } from "./features/auth/SessionProvider.js";
+import { applyTheme, readStoredTheme } from "./shared/theme/theme.js";
 const AppRouter = lazy(() =>
-  import("./routing/AppRouter.js").then((module) => ({
+  import("./app/AppRouter.js").then((module) => ({
     default: module.AppRouter,
   })),
 );
-import { BoardPreview } from "./components/BoardPreview.js";
+import { BoardPreview } from "./shared/board/BoardPreview.js";
 import {
   RegistrationPage,
   type RegistrationSession,
-} from "./auth/RegistrationPage.js";
+} from "./features/auth/RegistrationPage.js";
 
 const ComponentGallery = lazy(() =>
-  import("./ui/ComponentGallery.js").then((module) => ({
+  import("./app/dev/ComponentGallery.js").then((module) => ({
     default: module.ComponentGallery,
   })),
 );
 const LobbyPreview = lazy(() =>
-  import("./ui/ComponentGallery.js").then((module) => ({
+  import("./app/dev/ComponentGallery.js").then((module) => ({
     default: module.LobbyPreview,
   })),
 );
 const LoginPage = lazy(() =>
-  import("./auth/LoginPage.js").then((module) => ({
+  import("./features/auth/LoginPage.js").then((module) => ({
     default: module.LoginPage,
   })),
 );
