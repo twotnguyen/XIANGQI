@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { RoomSnapshot } from "@xiangqi/shared";
-import { parsePosition } from "@xiangqi/xiangqi-core";
+import { parsePosition, playMove, type Position } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "../../shared/board/XiangqiBoard.js";
 import {
   Button,
@@ -111,11 +111,17 @@ export function RoomPage({
   const [muted, setMuted] = useState(false);
   const leaveCallback = useRef(onLeft);
   leaveCallback.current = onLeft;
+  const [optimistic, setOptimistic] = useState<{
+    position: Position;
+    lastMove: { from: number; to: number };
+    matchVersion: number;
+  } | null>(null);
   function invalidateCommands() {
     setActionError("");
     commandEpoch.current++;
     if (commandPending.current) setBusy(false);
     commandPending.current = false;
+    setOptimistic(null);
   }
   function acceptSnapshot(value: RoomSnapshot) {
     const prior = latest.current;
@@ -160,6 +166,11 @@ export function RoomPage({
     roomChat.update(value, true);
     setSnapshot(value);
     setView(value);
+    setOptimistic((prev) =>
+      prev && value.match && value.match.version <= prev.matchVersion
+        ? prev
+        : null,
+    );
     return true;
   }
   useEffect(() => {
@@ -382,6 +393,21 @@ export function RoomPage({
     unlockAudio();
     setBusy(true);
     setError("");
+    let nextBoard: Position | null = null;
+    try {
+      const currentBoard = parsePosition(current.match.position);
+      nextBoard = playMove(currentBoard, { from, to });
+    } catch {
+      /* Nước đi không hợp lệ theo luật cờ */
+    }
+    if (nextBoard) {
+      setOptimistic({
+        position: nextBoard,
+        lastMove: { from, to },
+        matchVersion: current.match.version,
+      });
+      void gameAudio.current?.unlock();
+    }
     try {
       const acknowledgement = await connection.current!.command(
         {
@@ -392,7 +418,8 @@ export function RoomPage({
       );
       if (!isCurrent()) return;
       if (acknowledgement.snapshot) acceptSnapshot(acknowledgement.snapshot);
-      if (acknowledgement.status === "error")
+      if (acknowledgement.status === "error") {
+        setOptimistic(null);
         setError(
           acknowledgement.error.code === "MATCH_VERSION_CONFLICT" ||
             acknowledgement.error.code === "VERSION_STALE"
@@ -401,11 +428,14 @@ export function RoomPage({
               ? "Nước đi không hợp lệ. Chọn lại quân và ô đích."
               : "Chưa thể đi cờ. Kiểm tra lượt, kết nối và quyền điều khiển.",
         );
+      }
     } catch {
-      if (isCurrent())
+      if (isCurrent()) {
+        setOptimistic(null);
         setError(
           "Chưa nhận được xác nhận nước đi. Kiểm tra bàn cờ máy chủ trước khi thao tác lại.",
         );
+      }
     } finally {
       if (isCurrent()) {
         commandPending.current = false;
@@ -723,6 +753,10 @@ export function RoomPage({
       /* Do not fabricate a board from malformed server data. */
     }
   }
+  const activeBoard = optimistic ? optimistic.position : board;
+  const activeLastMove = optimistic
+    ? { ...optimistic.lastMove, eventVersion: 0 }
+    : (snapshot?.match?.lastMove ?? null);
   return (
     <main className={`xq-ui xq-room-page${playingLayout ? " is-playing" : ""}`}>
       <header className="xq-room-header">
@@ -943,20 +977,22 @@ export function RoomPage({
                 sound={sound}
               />
             )}
-          {board && (
+          {activeBoard && (
             <div className="xq-room-board" aria-label="Bàn cờ đang thi đấu">
               <XiangqiBoard
-                position={board}
+                position={activeBoard}
                 orientation={view.role === "black" ? "black" : "red"}
                 playerSide={view.role === "black" ? "black" : "red"}
                 disabled={
                   !active ||
                   !writable ||
                   !player ||
-                  snapshot?.match?.turn !== view.role
+                  (optimistic
+                    ? optimistic.position.turn !== view.role
+                    : snapshot?.match?.turn !== view.role)
                 }
-                pending={busy}
-                lastMove={snapshot?.match?.lastMove ?? null}
+                pending={busy && !optimistic}
+                lastMove={activeLastMove}
                 onMove={(from, to) => void move(from, to)}
               />
             </div>

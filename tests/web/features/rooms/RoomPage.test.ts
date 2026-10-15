@@ -298,7 +298,7 @@ function playing(): RoomSnapshot {
     },
   };
 }
-it("sends a canonical move once and keeps the original board until server acknowledgement", async () => {
+it("sends a canonical move once and updates the board optimistically until server acknowledgement", async () => {
   const state = playing();
   const f = setup(state);
   await f.ready();
@@ -319,10 +319,11 @@ it("sends a canonical move once and keeps the original board until server acknow
     state.version,
   );
   expect(
-    screen
-      .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
-      .getAttribute("aria-disabled"),
-  ).toBe("true");
+    screen.getByRole("img", { name: "Tốt đỏ, cột 1 hàng 6" }),
+  ).toBeTruthy();
+  expect(
+    screen.queryByRole("img", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeNull();
   const next = {
     ...state,
     version: 4,
@@ -360,9 +361,11 @@ it("preserves canonical position on rejected moves and disables input while disc
   });
   fireEvent.click(screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }));
   fireEvent.click(screen.getByRole("button", { name: "Trống, cột 1 hàng 6" }));
-  expect(
-    screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
-  ).toBeTruthy();
+  await vi.waitFor(() => {
+    expect(
+      screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+    ).toBeTruthy();
+  });
   expect(screen.queryByText("PRIVATE_PROVIDER_BODY")).toBeNull();
   f.disconnect();
   expect(
@@ -512,10 +515,8 @@ it.each(["resolve", "reject"] as const)(
       ),
     ).toBeNull();
     expect(
-      screen
-        .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })
-        .getAttribute("aria-disabled"),
-    ).toBe("true");
+      screen.getByRole("img", { name: "Tốt đỏ, cột 1 hàng 6" }),
+    ).toBeTruthy();
     await act(async () =>
       finishFresh({
         status: "ok",

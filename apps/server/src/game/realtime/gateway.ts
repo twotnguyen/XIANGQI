@@ -6,6 +6,7 @@ import type {
   ServerRealtimeEvents,
   RoomSnapshot,
   ChatChannel,
+  RoomRole,
 } from "@xiangqi/shared";
 import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
 import { RoomError } from "../room/room.types.js";
@@ -32,7 +33,7 @@ function authenticationFailure(error: unknown): RealtimeError {
 
 export interface RealtimePublisher {
   publishChat?(roomId: string, channel: ChatChannel): Promise<void>;
-  publishSnapshots(roomId: string): Promise<void>;
+  publishSnapshots(roomId: string, baseSnapshot?: RoomSnapshot): Promise<void>;
   publishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
@@ -58,6 +59,7 @@ export function attachRealtime(
     appSession: string;
     version: number;
     generation: number;
+    control?: RoomSnapshot["control"];
     disconnect: () => Promise<void>;
   };
   const io = new Server<ClientRealtimeEvents, ServerRealtimeEvents>(
@@ -152,11 +154,15 @@ export function attachRealtime(
       return;
     peer.version = snapshot.version;
     peer.generation = snapshot.control.generation;
+    peer.control = snapshot.control;
     peer.socket.emit("room.snapshot", snapshot);
   }
-  function publishSnapshots(roomId: string): Promise<void> {
+  function publishSnapshots(
+    roomId: string,
+    baseSnapshot?: RoomSnapshot,
+  ): Promise<void> {
     if (stopping) return Promise.reject(publicationFailure());
-    return track(() => doPublishSnapshots(roomId));
+    return track(() => doPublishSnapshots(roomId, baseSnapshot));
   }
   function publishChat(roomId: string, channel: ChatChannel): Promise<void> {
     if (stopping || !dependencies.chat)
@@ -200,7 +206,10 @@ export function attachRealtime(
       );
     });
   }
-  async function doPublishSnapshots(roomId: string) {
+  async function doPublishSnapshots(
+    roomId: string,
+    baseSnapshot?: RoomSnapshot,
+  ) {
     await Promise.all(
       [...peers.values()]
         .filter(
@@ -209,6 +218,26 @@ export function attachRealtime(
         .map((peer) =>
           track(async () => {
             try {
+              if (baseSnapshot && baseSnapshot.roomId === roomId) {
+                const userId = peer.connection.identity.userId;
+                const role =
+                  baseSnapshot.room.seats.red === userId
+                    ? "red"
+                    : baseSnapshot.room.seats.black === userId
+                      ? "black"
+                      : "spectator";
+                const peerSnapshot: RoomSnapshot = {
+                  ...baseSnapshot,
+                  role: role as RoomRole,
+                  control: peer.control ?? {
+                    mode: peer.generation > 0 ? "writable" : "readonly",
+                    generation: peer.generation,
+                    reason: null,
+                  },
+                };
+                sendSnapshot(peer, peerSnapshot);
+                return;
+              }
               const connection = await authorize(peer);
               sendSnapshot(peer, await dependencies.store.snapshot(connection));
             } catch (error) {
@@ -411,7 +440,7 @@ export function attachRealtime(
         }
         if (response.snapshot && !stopping) {
           try {
-            await publishSnapshots(peer.connection.roomId);
+            await publishSnapshots(peer.connection.roomId, response.snapshot);
           } catch {
             failedOperation();
           }
