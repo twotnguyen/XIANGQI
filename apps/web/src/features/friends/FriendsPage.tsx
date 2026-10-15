@@ -288,9 +288,12 @@ export function FriendsBell({ client }: { client: FriendClient }) {
   return (
     <a
       href="/friends"
+      className="xq-friends-bell"
       aria-label={count ? `${count} lời mời kết bạn` : "Bạn bè"}
+      title={count ? `${count} lời mời kết bạn` : "Thông báo kết bạn"}
     >
-      Chuông <Badge count={count} label="lời mời kết bạn" />
+      <span aria-hidden="true">🔔</span>
+      <Badge count={count} label="lời mời kết bạn" />
     </a>
   );
 }

@@ -467,7 +467,10 @@ export function AppRouter() {
         client={profileClient}
         guest={false}
         onSaved={setProfileName}
-        onLogout={() => void session.logout()}
+        onLogout={() => {
+          pending.current = null;
+          void session.logout();
+        }}
       />
     );
   else if (route.name === "join" && session.state.status === "active-member")
@@ -552,6 +555,10 @@ export function AppRouter() {
             guest: false,
           }}
           bell={<FriendsBell client={friendClient} />}
+          onLogout={() => {
+            pending.current = null;
+            void session.logout();
+          }}
         >
           {content}
           <RoomInvitePopup client={friendClient} />

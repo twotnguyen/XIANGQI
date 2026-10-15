@@ -2,21 +2,10 @@
 export function GameRules() {
   return (
     <details
-      className="xq-ui"
-      style={{
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-md)",
-        background: "var(--color-surface)",
-        padding: "var(--space-4)",
-      }}
+      className="xq-ui xq-rules-accordion"
     >
       <summary
-        style={{
-          minHeight: 44,
-          cursor: "pointer",
-          fontWeight: 600,
-          lineHeight: "44px",
-        }}
+        className="xq-rules-summary"
       >
         Luật chơi
       </summary>
