@@ -30,14 +30,14 @@ Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại →
 
 ## Kiểm tra
 
-Thứ tự CI (`.github/workflows/ci.yml`): `lint` → `typecheck` → `vitest run --no-file-parallelism` → `test:core` → `build`. Chạy đúng lệnh CI dùng, không bịa lệnh hoặc kết quả.
+Thứ tự CI (`.github/workflows/ci.yml`): Job 1 `checks` (`lint` → `typecheck` → `test:core` → `test:unit` → `build`, không cần database) → Job 2 `db-integration` (`needs: checks`, 12 container Postgres → `vitest run tests/server --no-file-parallelism`). Chạy đúng lệnh CI dùng, không bịa lệnh hoặc kết quả.
 
 | Thay đổi         | Kiểm tra                                                                                                                                             |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged                                                             |
 | Kế hoạch Jira    | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v`                            |
 | LiveKit Docker   | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`; thử runtime nếu Docker sẵn có và phù hợp yêu cầu |
-| Mã ứng dụng      | `pnpm lint`, `pnpm typecheck`, `pnpm exec vitest run --no-file-parallelism`, `pnpm test:core`, `pnpm build`; thêm `pnpm format:check` khi đụng style (chỉ kiểm local, CI không chạy) |
+| Mã ứng dụng      | `pnpm lint`, `pnpm typecheck`, `pnpm test:core`, `pnpm test:unit`, `pnpm build`, `pnpm exec vitest run tests/server --no-file-parallelism`; thêm `pnpm format:check` khi đụng style (chỉ kiểm local, CI không chạy) |
 
 - Chạy lẻ test không cần database: `pnpm exec vitest run <đường-dẫn-test>`. Test cần database: `tests/server/db.sh test [đường-dẫn]` (dựng 12 cụm Postgres 17 cục bộ; `db.sh stop`/`purge` để tắt/xóa). `pnpm test` tự bỏ qua các bộ cần database.
 - CI bỏ qua `**/*.md`, `docs/**`, `.env.example` nên sửa docs không có CI kiểm. Sau push, kiểm ref remote thay vì chỉ dựa vào commit local.

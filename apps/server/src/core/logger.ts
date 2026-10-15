@@ -6,6 +6,8 @@ const events = [
   "registration_maintenance_failed",
   "google_maintenance_failed",
   "realtime_maintenance_failed",
+  "server_shutdown_failed",
+  "realtime_disconnect_failed",
   "unknown_event",
 ];
 

@@ -33,6 +33,8 @@ Cấu hình ở `vitest.config.ts` (chạy) và `tests/tsconfig.json` (kiểm ki
 
 ```sh
 pnpm test                    # test không cần database (các bộ cần database tự bỏ qua)
+pnpm test:fast               # như pnpm test nhưng bỏ qua timing.test.ts (chạy nhanh hơn)
+pnpm test:unit               # chỉ chạy test web và packages (không động tới server)
 pnpm test:core               # luật cờ + ngưỡng độ phủ 90%
 pnpm typecheck               # gồm kiểm kiểu toàn bộ test (0 lỗi, chặn CI)
 tests/server/db.sh test      # toàn bộ test, gồm các bộ cần database (dựng 12 cụm Postgres 17 cục bộ)

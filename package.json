@@ -13,6 +13,8 @@
     "format:check": "prettier --check apps packages tests package.json pnpm-workspace.yaml tsconfig.base.json eslint.config.js vitest.config.ts .github/workflows/ci.yml",
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
+    "test:fast": "vitest run --exclude '**/timing.test.ts'",
+    "test:unit": "vitest run tests/web tests/packages",
     "build": "pnpm -r build",
     "test:core": "vitest run tests/packages/xiangqi-core --coverage"
   },

@@ -40,10 +40,16 @@ export function replayHistory(input: HistoryInput): Position[] {
   const history = [initial];
   let parent: string | null = null;
   let version = 0;
+  const moveMap = new Map<string, HistoryMove[]>();
+  for (const m of input.moves) {
+    const list = moveMap.get(m.id);
+    if (list) list.push(m);
+    else moveMap.set(m.id, [m]);
+  }
   for (const id of input.active_move_ids) {
     if (typeof id !== "string" || !uuid.test(id)) corrupt();
-    const matches = input.moves.filter((m) => m.id === id);
-    if (matches.length !== 1) corrupt();
+    const matches = moveMap.get(id);
+    if (!matches || matches.length !== 1) corrupt();
     const row = matches[0]!;
     const current = history.at(-1)!;
     if (

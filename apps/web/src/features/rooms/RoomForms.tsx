@@ -7,7 +7,7 @@ export interface CreateRoomInput {
   timeMinutes: 5 | 10 | 15;
   viewerLimit: number;
 }
-export function nameError(value: string) {
+function nameError(value: string) {
   const name = value.normalize("NFC").trim();
   if (!name) return "Nhập tên phòng.";
   if (Array.from(name).length > 60) return "Tên phòng tối đa 60 ký tự.";

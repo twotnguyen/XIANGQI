@@ -154,7 +154,7 @@ const codes = [
   "AI_AUTHORITY_REQUIRED",
   "ACTIVE_GAME_EXISTS",
 ] as const;
-export class AiRequestError extends Error {
+class AiRequestError extends Error {
   constructor(
     public readonly status: number,
     public readonly code: string,

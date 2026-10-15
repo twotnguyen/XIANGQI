@@ -106,7 +106,7 @@ export function readyCommand(
   };
 }
 
-export class FixtureRooms implements RoomCollaborator {
+class FixtureRooms implements RoomCollaborator {
   failAfterMutation = false;
   async authorize(
     client: PoolClient,
