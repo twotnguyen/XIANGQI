@@ -39,6 +39,9 @@ import { createMediaClient } from "../features/media/media-client.js";
 import { createProfileClient } from "../features/profile/profile-client.js";
 import type { ProfileLocation } from "../features/profile/profile-client.js";
 import { ProfilePage } from "../features/profile/ProfilePage.js";
+import { AiSetupDialog } from "../features/ai/AiSetupDialog.js";
+import { AiGamePage } from "../features/ai/AiGamePage.js";
+import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import {
   guardRoute,
   resolveRoute,
@@ -78,6 +81,7 @@ function Lobby({
   const [notice, setNotice] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
   const [dialog, setDialog] = useState(false);
+  const [aiDialog, setAiDialog] = useState(false);
   useEffect(() => {
     const generation = ++epoch.current;
     let alive = true,
@@ -202,8 +206,6 @@ function Lobby({
       }
     }
   };
-  const unavailable = () =>
-    setNotice("Chức năng này hiện chưa khả dụng. Vui lòng quay lại sau.");
   return (
     <>
       {banner}
@@ -215,7 +217,7 @@ function Lobby({
         onJoinCode={(code) =>
           navigate(`/rooms/join?token=${encodeURIComponent(code)}`)
         }
-        onPlayAI={unavailable}
+        onPlayAI={() => setAiDialog(true)}
         admissionReady={admissionReady}
         joiningRoomId={joiningRoomId}
         blockedReason={blockedReason}
@@ -228,6 +230,36 @@ function Lobby({
             onCreate={async (input) => onEntered(await client.create(input))}
           />
         </Dialog>
+      )}
+      {aiDialog && (
+        <AiSetupDialog
+          open={aiDialog}
+          onClose={() => setAiDialog(false)}
+          onStart={async (selection) => {
+            setAiDialog(false);
+            const gameId = crypto.randomUUID();
+            sessionStorage.setItem(
+              `xiangqi_ai_game_${gameId}`,
+              JSON.stringify({
+                level: selection.level,
+                requestedSide: selection.requestedSide,
+                actualSide:
+                  selection.requestedSide === "random"
+                    ? Math.random() < 0.5
+                      ? "red"
+                      : "black"
+                    : selection.requestedSide,
+                position: serializePosition(initialPosition()),
+                history: [serializePosition(initialPosition())],
+                version: 0,
+                undoRemaining: 3,
+                status: "ACTIVE",
+                outcome: null,
+              }),
+            );
+            navigate(`/ai/${gameId}`);
+          }}
+        />
       )}
       <Button
         variant="ghost"
@@ -495,6 +527,8 @@ export function AppRouter() {
         id={route.id}
       />
     );
+  else if (route.name === "ai" && session.state.status === "active-member")
+    content = <AiGamePage key={route.id} gameId={route.id} />;
   else if (route.name === "room" && session.state.status === "active-member")
     content =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
