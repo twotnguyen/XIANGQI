@@ -208,6 +208,8 @@ function proof(value: unknown): PublicRoomAuthProof {
     return { kind: "guest", guestCapability: row.guestCapability as string };
   throw Error(expired);
 }
+import { getApiBaseUrl } from "../../shared/api.js";
+
 export function connectPublicRooms(input: PublicRoomsConnectionInput) {
   let closed = false,
     denied = false,
@@ -215,7 +217,7 @@ export function connectPublicRooms(input: PublicRoomsConnectionInput) {
     epoch = 0;
   const current = () => !closed && !denied;
   const socket = io(
-    `${(import.meta.env.VITE_API_URL || "http://localhost:3000").replace(/\/+$/, "")}/public-rooms`,
+    `${getApiBaseUrl()}/public-rooms`,
     {
       path: "/public-rooms/socket.io",
       autoConnect: false,

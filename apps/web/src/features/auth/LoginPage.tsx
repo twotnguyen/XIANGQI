@@ -18,6 +18,8 @@ export interface LoginResult {
   expiresAt: string;
   remember: boolean;
 }
+import { getApiBaseUrl } from "../../shared/api.js";
+
 const invalid = "Sai tên đăng nhập hoặc mật khẩu";
 const locked = "Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút";
 const unavailable = "Chưa thể đăng nhập. Vui lòng kiểm tra kết nối và thử lại.";
@@ -95,9 +97,7 @@ export function LoginPage({
     const abort = new AbortController();
     controller.current = abort;
     try {
-      const base = (
-        import.meta.env.VITE_API_URL || "http://localhost:3000"
-      ).replace(/\/$/, "");
+      const base = getApiBaseUrl();
       const response = await fetch(`${base}/auth/login`, {
         method: "POST",
         credentials: "include",

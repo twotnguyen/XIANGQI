@@ -45,7 +45,7 @@ try {
     rooms?.publicFeed,
   );
   app.enableShutdownHooks();
-  await app.listen(settings.port, "127.0.0.1");
+  await app.listen(settings.port, process.env.HOST ?? "0.0.0.0");
   await rooms?.start();
   if (["debug", "info"].includes(settings.logLevel)) {
     process.stdout.write(

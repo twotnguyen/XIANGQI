@@ -59,6 +59,8 @@ export class RoomRequestError extends Error {
   }
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { getApiBaseUrl } from "../../shared/api.js";
+
 function invalidResponse(): never {
   throw new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại.");
 }
@@ -447,7 +449,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   const socket: Socket<
     ServerRealtimeEvents & ServerChatEvents,
     ClientRealtimeEvents & ClientChatEvents
-  > = io(import.meta.env.VITE_API_URL || "http://localhost:3000", {
+  > = io(getApiBaseUrl(), {
     autoConnect: false,
     auth: (done) => {
       invalidateChat();
