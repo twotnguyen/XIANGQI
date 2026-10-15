@@ -25,10 +25,10 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 10%, rgba(200, 130, 40, 0.12) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(15, 11, 8, 0.88) 0%, rgba(15, 11, 8, 0.96) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
@@ -92,14 +92,17 @@
 
     /* COLUMN 1: PANEL-MEDIA (LIVEKIT SFU CAM & MIC) */
     .panel-media {
-      background: var(--panel-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+      color: #24160E;
     }
 
     .cam-box {
@@ -210,7 +213,7 @@
       background: radial-gradient(circle at 50% 50%, #E3BA82 0%, #C49A62 70%, #9C7238 100%);
       border: 12px solid #4A2614;
       border-radius: 10px;
-      box-shadow: 
+      box-shadow:
         0 20px 50px rgba(0,0,0,0.85),
         inset 0 0 15px rgba(60, 30, 10, 0.6);
       padding: 8px;
@@ -261,13 +264,16 @@
 
     /* COLUMN 3: PANEL-CHAT & SPECTATORS */
     .panel-right {
-      background: var(--panel-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
       overflow: hidden;
+      color: #24160E;
     }
 
     .chat-tabs-header {
@@ -307,12 +313,12 @@
 
     .chat-msg {
       line-height: 1.4;
-      background: rgba(0,0,0,0.25);
+      background: #F5ECDC;
       padding: 6px 8px;
       border-radius: 5px;
     }
-    .chat-msg .sender-red { color: #FCA5A5; font-weight: 700; }
-    .chat-msg .sender-black { color: #E5E7EB; font-weight: 700; }
+    .chat-msg .sender-red { color: #8E161C; font-weight: 700; }
+    .chat-msg .sender-black { color: #24160E; font-weight: 700; }
     .chat-msg .sender-spec { color: #FCD34D; font-style: italic; }
 
     /* STICKERS TRAY (12 STICKERS) */
@@ -339,17 +345,17 @@
       display: flex;
       padding: 8px 10px;
       gap: 6px;
-      border-top: 1px solid var(--gold-dark);
-      background: #180F0A;
+      border-top: 1px solid #D8C3A5;
+      background: #FAF3E3;
     }
     .chat-text-input {
       flex: 1;
       height: 34px;
-      background: #25160E;
-      border: 1px solid #542C15;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
       border-radius: 5px;
       padding: 0 8px;
-      color: #FFF;
+      color: #24160E;
       font-size: 12px;
       outline: none;
     }
@@ -368,7 +374,8 @@
     .spectators-widget {
       padding: 10px 12px;
       border-top: 2px solid var(--gold-dark);
-      background: rgba(20, 11, 7, 0.8);
+      background: #F5ECDC;
+      color: #24160E;
     }
     .spec-row {
       display: flex;
@@ -756,16 +763,54 @@
       <div style="font-size: 48px; margin-bottom: 8px;" id="result-icon">🏆</div>
       <h2 style="font-family: var(--font-serif); font-size: 24px; color: #FFF5DF; margin-bottom: 4px;" id="result-title">CHIẾN THẮNG!</h2>
       <p style="font-size: 13px; color: #86EFAC; margin-bottom: 16px;" id="result-elo-delta">Ván Đánh Thường · không tính điểm Elo</p>
-      <div style="background: rgba(0,0,0,0.4); border: 1px solid #542C15; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 18px;">
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid #542C15; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 18px;" id="result-reason-desc">
         Đối thủ xin đầu hàng ở nước thứ 28. Bạn đã bảo vệ thành công Tướng Đỏ!
       </div>
-      <div style="display: flex; gap: 10px;">
+      <!-- P1 CONTROLS: Ở LẠI PHÒNG & RỜI PHÒNG (BA 0.7) -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" onclick="stayInRoom()" style="flex: 1.2; min-width: 140px; height: 40px; background: linear-gradient(180deg, #15803D 0%, #166534 100%); border: 1.5px solid #86EFAC; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+          🏠 Ở Lại Phòng (Về Chờ)
+        </button>
         <button type="button" onclick="window.location.href='SCR-LOBBY.html'" style="flex: 1; height: 40px; background: transparent; border: 1.5px solid #542C15; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
-          Về Sảnh Cờ
+          🚪 Rời Phòng
         </button>
-        <button type="button" onclick="window.location.href='SCR-REPLAY.html?match=88392019'" style="flex: 1.2; height: 40px; background: var(--gold-main); border: none; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
-          Xem Lại Ván Cờ ❯
+      </div>
+      <!-- P2 EXTENSIONS (TÁI ĐẤU & REPLAY - BA 0.8) -->
+      <div style="display: flex; gap: 8px; margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+        <button type="button" onclick="openRematchChoiceModal()" style="flex: 1; height: 36px; background: rgba(198, 146, 42, 0.2); border: 1px solid var(--gold-dark); border-radius: 6px; color: var(--gold-light); font-weight: 700; font-size: 12px; cursor: pointer;" title="P2: Tái đấu có chọn Giữ phe / Đổi phe">
+          🔄 Tái Đấu (P2)
         </button>
+        <button type="button" onclick="window.location.href='SCR-REPLAY.html?match=88392019'" style="flex: 1; height: 36px; background: rgba(255,255,255,0.08); border: 1px solid #4B5563; border-radius: 6px; color: #E5E7EB; font-weight: 700; font-size: 12px; cursor: pointer;" title="P2: Xem lại ván cờ">
+          📜 Xem Lại (Replay)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REMATCH CHOICE (BA 0.8 - P2) -->
+  <div id="modal-rematch-choice" class="modal-backdrop">
+    <div class="modal-box" style="text-align: center;">
+      <h3 style="font-family: var(--font-serif); font-size: 18px; color: #FFF5DF; margin-bottom: 10px;">🔄 Đề Nghị Tái Đấu (P2)</h3>
+      <p style="font-size: 12.5px; color: #C8B6A2; margin-bottom: 14px;">Bạn muốn thiết lập phe cờ thế nào cho hiệp tái đấu tiếp theo?</p>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; text-align: left;">
+        <label style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; border: 1px solid #542C15; cursor: pointer;">
+          <input type="radio" name="rematch-side" value="SWAP" checked style="accent-color: var(--gold-main);">
+          <div>
+            <strong style="color: #FFF; font-size: 13px;">Đổi phe cờ (Mặc định)</strong>
+            <div style="font-size: 11px; color: #C8B6A2;">Đỏ ↔ Đen hoán đổi cho nhau để so tài công bằng.</div>
+          </div>
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; border: 1px solid #542C15; cursor: pointer;">
+          <input type="radio" name="rematch-side" value="KEEP" style="accent-color: var(--gold-main);">
+          <div>
+            <strong style="color: #FFF; font-size: 13px;">Giữ nguyên phe cờ</strong>
+            <div style="font-size: 11px; color: #C8B6A2;">Giữ nguyên bên cầm quân như ván vừa rồi.</div>
+          </div>
+        </label>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" onclick="closeModal('modal-rematch-choice')" style="flex: 1; height: 38px; background: transparent; border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">Hủy</button>
+        <button type="button" onclick="sendRematchRequest()" style="flex: 1.3; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: none; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">Gửi Đề Nghị Tái Đấu</button>
       </div>
     </div>
   </div>
@@ -985,9 +1030,9 @@
       <div style="font-size: 44px; margin-bottom: 8px; animation: timerPulse 1s infinite;">📡</div>
       <h2 style="font-family: var(--font-serif); font-size: 19px; color: #FFF; margin-bottom: 6px;">MẤT KẾT NỐI MÁY CHỦ REALTIME</h2>
       <p style="font-size: 12px; color: #C8B6A2;">Đang tự động kết nối lại Socket.IO... Vui lòng không đóng trình duyệt.</p>
-      
+
       <div class="reconnect-timer-big" id="reconnect-countdown">60s</div>
-      
+
       <div style="background: rgba(0,0,0,0.4); border: 1px solid #542C15; border-radius: 6px; padding: 10px; font-size: 11.5px; color: #FCA5A5; margin-bottom: 16px;">
         ⚠️ Thời gian ân hạn 60 giây. Nếu quá 60s không kết nối lại được, ván cờ sẽ bị xử <strong>THUA</strong> do mất kết nối (DISCONNECT).
       </div>
@@ -1514,6 +1559,29 @@
       const btn = document.getElementById('btn-mic');
       btn.classList.toggle('muted');
       btn.textContent = btn.classList.contains('muted') ? '🚫 Tắt Mic' : '🎙️ Bật Mic';
+    }
+
+    function stayInRoom() {
+      // BA 0.7: After match in custom room, room returns to WAITING immediately
+      alert('✓ Đang trở về phòng chờ! Phòng tự tạo không đóng sau 10 phút, giữ nguyên ghế và người xem (BA 0.7).');
+      window.location.href = 'SCR-WAITING-ROOM.html?room=88392019&status=WAITING';
+    }
+
+    function openRematchChoiceModal() {
+      document.getElementById('modal-match-result').style.display = 'none';
+      document.getElementById('modal-rematch-choice').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function sendRematchRequest() {
+      const choice = document.querySelector('input[name="rematch-side"]:checked').value;
+      const choiceText = (choice === 'SWAP') ? 'ĐỔI PHE CỜ (Đỏ ↔ Đen)' : 'GIỮ NGUYÊN PHE CỜ';
+      closeModal('modal-rematch-choice');
+      alert(`✓ Đã gửi đề nghị Tái đấu (${choiceText}) tới đối thủ! Thời hạn chờ đối thủ xác nhận là 30 giây (BA 0.8).`);
+      window.location.href = 'SCR-WAITING-ROOM.html?room=88392019&rematch=1';
     }
 
     renderPieces();

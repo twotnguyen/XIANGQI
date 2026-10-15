@@ -26,10 +26,10 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(18, 13, 10, 0.82) 0%, rgba(18, 13, 10, 0.95) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
@@ -217,7 +217,9 @@
     }
 
     .mode-card {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 22px 20px;
@@ -226,19 +228,23 @@
       justify-content: space-between;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
       transition: all 0.25s;
+      color: #24160E;
     }
     .mode-card:hover {
-      border-color: var(--gold-light);
+      border-color: var(--gold-main);
       transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.7), 0 0 15px rgba(245, 202, 103, 0.2);
+      box-shadow: 0 14px 35px rgba(0,0,0,0.45), 0 0 15px rgba(198, 146, 42, 0.25);
     }
 
     .mode-card.featured {
-      border-color: var(--gold-main);
-      background: linear-gradient(180deg, rgba(50, 16, 12, 0.92) 0%, rgba(28, 14, 10, 0.95) 100%);
+      border: 2px solid var(--gold-light);
+      background: linear-gradient(180deg, #8E161C 0%, #5E0B10 100%);
+      color: #FFF5DF;
     }
+    .mode-card.featured .mode-title { color: #FFF5DF; }
+    .mode-card.featured .mode-desc { color: #E8D3BF; }
 
     .mode-badge {
       position: absolute;
@@ -264,13 +270,13 @@
       font-family: var(--font-serif);
       font-size: 20px;
       font-weight: 700;
-      color: #FFF5DF;
+      color: #24160E;
       margin-bottom: 6px;
     }
 
     .mode-desc {
       font-size: 12.5px;
-      color: #C8B6A2;
+      color: #5C4A3E;
       line-height: 1.45;
       margin-bottom: 16px;
       min-height: 52px;
@@ -284,16 +290,17 @@
     }
     .rule-pill {
       font-size: 10.5px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #F0E5D0;
+      border: 1px solid #D8C6AB;
       padding: 2px 7px;
       border-radius: 4px;
-      color: #E2CFB7;
+      color: #4A382A;
+      font-weight: 600;
     }
     .rule-pill.strict {
-      background: rgba(220, 38, 38, 0.15);
-      border-color: rgba(220, 38, 38, 0.4);
-      color: #FCA5A5;
+      background: #FEE2E2;
+      border-color: #FCA5A5;
+      color: #991B1B;
     }
 
     .btn-mode-cta {
@@ -343,13 +350,94 @@
       border-color: #34D399;
     }
 
+    /* BANNER ACTIVE MATCH (BA 1.8) */
+    .active-match-banner {
+      background: linear-gradient(90deg, rgba(142, 22, 28, 0.92) 0%, rgba(85, 12, 16, 0.95) 100%);
+      border: 1.5px solid var(--gold-light);
+      border-radius: 8px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 18px rgba(142, 22, 28, 0.45);
+    }
+    .active-match-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      color: #FFF5DF;
+    }
+    .btn-resume-match {
+      padding: 6px 16px;
+      background: linear-gradient(180deg, #F5CA67 0%, #C6922A 100%);
+      color: #3F0609;
+      font-weight: 700;
+      font-size: 12.5px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* QUICK JOIN CODE INPUT (BA 2.7) */
+    .join-code-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+    .join-code-input {
+      flex: 1;
+      height: 36px;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
+      border-radius: 6px;
+      color: #201915;
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0 10px;
+      text-transform: uppercase;
+      outline: none;
+    }
+    .join-code-input:focus { border-color: var(--gold-main); }
+    .btn-join-code {
+      height: 36px;
+      padding: 0 12px;
+      background: var(--gold-main);
+      color: #FFF;
+      font-weight: 700;
+      font-size: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-join-code:hover {
+      background: #D4A139;
+    }
+
     /* PUBLIC ROOMS SECTION */
     .rooms-section {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 90% 10%, rgba(200, 150, 70, 0.06) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      color: #24160E;
     }
 
     .rooms-head-row {
@@ -370,7 +458,7 @@
     .rooms-title-wrap h3 {
       font-family: var(--font-serif);
       font-size: 19px;
-      color: #FFF5DF;
+      color: #24160E;
     }
 
     .btn-create-room {
@@ -401,8 +489,8 @@
     }
 
     .room-item-card {
-      background: rgba(24, 15, 11, 0.75);
-      border: 1.5px solid #4A2614;
+      background: #FFFDF9;
+      border: 1.5px solid #D8C3A5;
       border-radius: 8px;
       padding: 12px 14px;
       display: flex;
@@ -410,10 +498,12 @@
       justify-content: space-between;
       gap: 10px;
       transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
     .room-item-card:hover {
       border-color: var(--gold-main);
-      background: rgba(35, 20, 14, 0.85);
+      background: #FFF8EB;
+      box-shadow: 0 4px 12px rgba(198, 146, 42, 0.2);
     }
 
     .room-top {
@@ -426,12 +516,12 @@
     .r-title {
       font-size: 13.5px;
       font-weight: 700;
-      color: #FFF;
+      color: #24160E;
     }
 
     .r-host {
       font-size: 11.5px;
-      color: #C8B6A2;
+      color: #6E5A4B;
       margin-top: 2px;
     }
 
@@ -450,8 +540,8 @@
       align-items: center;
       justify-content: space-between;
       font-size: 11px;
-      color: #A89582;
-      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      color: #6E5A4B;
+      border-top: 1px dashed #D8C3A5;
       padding-top: 8px;
     }
 
@@ -469,12 +559,72 @@
     .btn-join-play {
       background: #C6922A;
       color: #FFF;
+      border: 1px solid #E2BE78;
+    }
+    .btn-join-play:hover {
+      background: #D4A139;
+      color: #FFF;
     }
     .btn-join-watch {
       background: #374151;
       color: #E5E7EB;
       border: 1px solid #4B5563;
     }
+    .btn-join-watch:hover {
+      background: #4B5563;
+      color: #FFF;
+    }
+
+    /* RULES ACCORDION (BA 10.4) */
+    .rules-accordion {
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      color: #24160E;
+    }
+    .rules-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .rules-header h3 {
+      font-family: var(--font-serif);
+      font-size: 16.5px;
+      color: #24160E;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rules-content {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #D8C3A5;
+      display: none;
+      animation: modalIn 0.2s ease-out;
+    }
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: #4A382A;
+    }
+    .rule-item-box {
+      background: #FFFDF9;
+      border: 1px solid #D8C3A5;
+      border-radius: 6px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .rule-item-box strong { color: #8E161C; display: block; margin-bottom: 3px; font-weight: 700; }
 
     /* MODALS GENERIC BACKDROP */
     .modal-backdrop {
@@ -492,12 +642,13 @@
     .modal-box {
       width: 100%;
       max-width: 440px;
-      background: #25160E;
+      background: #FAF3E3;
       border: 3px solid #542C15;
       border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
       overflow: hidden;
       animation: modalIn 0.2s ease-out;
+      color: #24160E;
     }
 
     @keyframes modalIn {
@@ -507,7 +658,7 @@
 
     .modal-header {
       padding: 14px 18px;
-      background: linear-gradient(180deg, #3C1E14 0%, #28140B 100%);
+      background: linear-gradient(180deg, #8E161C 0%, #680E13 100%);
       border-bottom: 2px solid var(--gold-dark);
       display: flex;
       align-items: center;
@@ -531,7 +682,7 @@
       display: block;
       font-size: 12px;
       font-weight: 700;
-      color: #E2CFB7;
+      color: #382D25;
       margin-bottom: 5px;
     }
 
@@ -539,10 +690,10 @@
       width: 100%;
       height: 38px;
       padding: 0 12px;
-      background: rgba(18, 11, 8, 0.85);
-      border: 1.5px solid #542C15;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
       border-radius: 6px;
-      color: #FFF;
+      color: #24160E;
       font-size: 13.5px;
       font-family: inherit;
       outline: none;
@@ -616,6 +767,20 @@
   <!-- MAIN LOBBY HUB -->
   <main class="lobby-container">
 
+    <!-- ACTIVE MATCH BANNER (BA 1.8) -->
+    <div class="active-match-banner" id="active-match-banner">
+      <div class="active-match-text">
+        <span style="font-size: 20px;">⚔️</span>
+        <div>
+          <strong>Bạn có ván đang chơi dở:</strong>
+          <span style="opacity: 0.9;">Phòng #8839-2019 (Đang đánh với Trần Hưng Đạo)</span>
+        </div>
+      </div>
+      <a href="SCR-GAME-ROOM.html?room=88392019&side=red" class="btn-resume-match">
+        Quay Lại Ván Đấu ❯
+      </a>
+    </div>
+
     <!-- WELCOME BANNER -->
     <div class="welcome-banner">
       <div class="banner-text">
@@ -627,68 +792,48 @@
       </div>
     </div>
 
-    <!-- 3 CORE GAME MODES -->
+    <!-- 4 CORE GAME MODES (BA 2.0) -->
     <section>
-      <div class="modes-grid">
+      <div class="modes-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
 
-        <!-- MODE 1: CASUAL MATCH -->
+        <!-- MODE 1: TỰ TẠO PHÒNG (P1) -->
         <div class="mode-card">
           <div>
-            <div class="mode-badge badge-casual">Tự Do</div>
-            <div class="mode-icon-box">🍵</div>
-            <h3 class="mode-title">Đánh Thường</h3>
+            <div class="mode-badge badge-casual">P1 · Khả Dụng</div>
+            <div class="mode-icon-box">🏛️</div>
+            <h3 class="mode-title">Tự Tạo Phòng</h3>
             <p class="mode-desc">
-              Giao lưu không tính điểm Elo. Tự do tạo phòng mời bạn bè, cho phép người xem vào xem hoặc ghép trận ngẫu nhiên.
+              Tự do mở phòng giao lưu, mời bạn bè bằng mã/link hoặc bạn bè Online. 3 mức giờ (5/10/15p), tối đa 5 người xem.
             </p>
             <div class="mode-rule-pills">
-              <span class="rule-pill">Cho phép Undo 3 lần</span>
-              <span class="rule-pill">Người xem theo dõi trực tiếp</span>
+              <span class="rule-pill">5p · 10p · 15p</span>
+              <span class="rule-pill">Tối đa 5 người xem</span>
               <span class="rule-pill">Cam / Mic LiveKit</span>
             </div>
           </div>
-          <div style="display: flex; gap: 8px;">
+          <div>
             <button type="button" class="btn-mode-cta btn-mode-casual" onclick="openCreateRoomModal()">
               ➕ Tạo Phòng Mới
             </button>
-            <button type="button" class="btn-mode-cta btn-mode-casual" onclick="quickJoinCasual()">
-              ⚡ Ghép Nhanh
-            </button>
-          </div>
-        </div>
-
-        <!-- MODE 2: RANKED MATCH -->
-        <div class="mode-card featured">
-          <div>
-            <div class="mode-badge badge-ranked">Nghiêm Ngặt</div>
-            <div class="mode-icon-box">⚔️</div>
-            <h3 class="mode-title" style="color: #FCA5A5;">Đánh Xếp Hạng (Ranked)</h3>
-            <p class="mode-desc">
-              Thi đấu tính điểm Elo FIDE chuẩn quốc tế. Ghép ngẫu nhiên 100%, tuyệt đối cấm người xem theo dõi để chống phím cờ.
-            </p>
-            <div class="mode-rule-pills">
-              <span class="rule-pill strict">CẤM Người Xem Xem</span>
-              <span class="rule-pill strict">CẤM Xin Đi Lại (Undo)</span>
-              <span class="rule-pill">Cố định 10 phút Rapid</span>
-              <span class="rule-pill">Tự do bật Mic / Cam</span>
+            <div class="join-code-row">
+              <input type="text" class="join-code-input" id="quick-room-code" placeholder="Mã 8 ký tự (VD: K7M2-XQP4)" maxlength="9">
+              <button type="button" class="btn-join-code" onclick="joinRoomByCode()">Vào ❯</button>
             </div>
           </div>
-          <button type="button" class="btn-mode-cta btn-mode-ranked" onclick="openMatchmakingModal()">
-            🏆 TÌM TRẬN XẾP HẠNG ❯
-          </button>
         </div>
 
-        <!-- MODE 3: AI PRACTICE -->
+        <!-- MODE 2: ĐÁNH VỚI MÁY (P1) -->
         <div class="mode-card">
           <div>
-            <div class="mode-badge badge-ai">Rèn Luyện</div>
+            <div class="mode-badge badge-ai">P1 · Khả Dụng</div>
             <div class="mode-icon-box">🤖</div>
             <h3 class="mode-title" style="color: #A7F3D0;">Đánh Với Máy (AI)</h3>
             <p class="mode-desc">
-              Thao dượt chiến thuật với trí tuệ nhân tạo. 3 cấp độ thông minh, không áp lực thời gian, hỗ trợ đi lại tối đa 3 lần.
+              Thao dượt chiến thuật cùng thuật toán Minimax/Alpha-Beta. 3 cấp độ, tự chọn phe, đi lại tối đa 3 lần, không áp lực giờ.
             </p>
             <div class="mode-rule-pills">
-              <span class="rule-pill">3 Cấp: Dễ · Trung bình · Khó</span>
-              <span class="rule-pill">Tự chọn phe Đỏ / Đen</span>
+              <span class="rule-pill">Dễ · Trung bình · Khó</span>
+              <span class="rule-pill">Tự chọn Đỏ / Đen / 🎲</span>
               <span class="rule-pill">Không giới hạn giờ</span>
             </div>
           </div>
@@ -697,10 +842,50 @@
           </button>
         </div>
 
+        <!-- MODE 3: GHÉP NGẪU NHIÊN CASUAL (P2) -->
+        <div class="mode-card">
+          <div>
+            <div class="mode-badge" style="background: rgba(100, 116, 139, 0.25); color: #94A3B8; border: 1px solid #475569;">🔒 Sắp ra mắt (P2)</div>
+            <div class="mode-icon-box" style="filter: grayscale(0.5);">🍵</div>
+            <h3 class="mode-title" style="color: #CBD5E1;">Ghép Ngẫu Nhiên</h3>
+            <p class="mode-desc">
+              Tìm đối thủ giao lưu tức thì không tính Elo. Cố định 15 phút mỗi bên. Riêng tư 100%, không người xem.
+            </p>
+            <div class="mode-rule-pills">
+              <span class="rule-pill">Cố định 15 phút</span>
+              <span class="rule-pill strict">Không người xem</span>
+              <span class="rule-pill">Chat & Cam riêng</span>
+            </div>
+          </div>
+          <button type="button" class="btn-mode-cta" style="background: rgba(255,255,255,0.06); border: 1px solid #475569; color: #94A3B8; cursor: pointer;" onclick="alert('Tính năng Đánh Thường ghép ngẫu nhiên thuộc Giai đoạn 2 (P2) · Sắp ra mắt!')">
+            ⚡ Ghép Ngẫu Nhiên (15p)
+          </button>
+        </div>
+
+        <!-- MODE 4: ĐÁNH HẠNG ELO (P2) -->
+        <div class="mode-card featured">
+          <div>
+            <div class="mode-badge badge-ranked">🔒 Sắp ra mắt (P2)</div>
+            <div class="mode-icon-box">🏆</div>
+            <h3 class="mode-title" style="color: #FCA5A5;">Đánh Xếp Hạng (Ranked)</h3>
+            <p class="mode-desc">
+              Thi đấu tính điểm Elo FIDE chuẩn quốc tế. Cố định 10 phút Rapid. 100% không người xem, cấm đi lại (No Undo).
+            </p>
+            <div class="mode-rule-pills">
+              <span class="rule-pill strict">CẤM Người Xem</span>
+              <span class="rule-pill strict">CẤM Undo</span>
+              <span class="rule-pill">10 phút Rapid</span>
+            </div>
+          </div>
+          <button type="button" class="btn-mode-cta btn-mode-ranked" onclick="openMatchmakingModal()">
+            🏆 TÌM TRẬN XẾP HẠNG (Demo) ❯
+          </button>
+        </div>
+
       </div>
     </section>
 
-    <!-- PUBLIC ROOMS LIST -->
+    <!-- PUBLIC ROOMS LIST (BA 0.5) -->
     <section class="rooms-section">
       <div class="rooms-head-row">
         <div class="rooms-title-wrap">
@@ -719,13 +904,16 @@
           <div class="room-top">
             <div>
               <div class="r-title">Trà Quán Kỳ Ngộ #102</div>
-              <div class="r-host">Chủ phòng: Trần Đại Nghĩa (1240 Elo)</div>
+              <div class="r-host">Host: Trần Đại Nghĩa (1240 Elo)</div>
             </div>
-            <span class="r-badge waiting">Chờ đối thủ</span>
+            <span class="r-badge waiting">Đang chờ (1/2 ghế)</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 10 phút · Ghế: 1/2</span>
-            <a href="SCR-GAME-ROOM.html?room=102&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem</a>
+            <span>⏱️ 10 phút · 👥 2/5</span>
+            <div style="display: flex; gap: 6px;">
+              <a href="SCR-WAITING-ROOM.html?room=102&seat=black" class="btn-join-room btn-join-play">⚔️ Vào Chơi</a>
+              <a href="SCR-GAME-ROOM.html?room=102&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (2/5)</a>
+            </div>
           </div>
         </div>
 
@@ -734,13 +922,13 @@
           <div class="room-top">
             <div>
               <div class="r-title">So Tài Trực Tiếp Cam/Mic</div>
-              <div class="r-host">Lê Văn Hùng (1310) vs Mai Quốc Tuấn (1290)</div>
+              <div class="r-host">Lê Văn Hùng (Khách) vs Mai Quốc Tuấn (1290)</div>
             </div>
             <span class="r-badge playing">Đang đánh</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 15 phút · Người xem: 5/5</span>
-            <span class="btn-join-room btn-join-watch" style="opacity: 0.5; cursor: not-allowed;" title="Phòng đã đủ 5 người xem">👁️ Đã đầy (5/5)</span>
+            <span>⏱️ 15 phút · 👥 3/5</span>
+            <a href="SCR-GAME-ROOM.html?room=105&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (3/5)</a>
           </div>
         </div>
 
@@ -748,14 +936,17 @@
         <div class="room-item-card">
           <div class="room-top">
             <div>
-              <div class="r-title">Tân Thủ Học Cờ Vui Vẻ</div>
-              <div class="r-host">Chủ phòng: Hoàng Kim Yến (1150 Elo)</div>
+              <div class="r-title">Tân Thủ Học Cờ Vui Vẻ #108</div>
+              <div class="r-host">Host: Hoàng Kim Yến (1150 Elo)</div>
             </div>
-            <span class="r-badge waiting">Chờ đối thủ</span>
+            <span class="r-badge waiting">Đang chờ (1/2 ghế)</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ Không giới hạn · Ghế: 1/2</span>
-            <a href="SCR-GAME-ROOM.html?room=108&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem</a>
+            <span>⏱️ 5 phút · Không cho xem</span>
+            <div style="display: flex; gap: 6px;">
+              <a href="SCR-WAITING-ROOM.html?room=108&seat=black" class="btn-join-room btn-join-play">⚔️ Vào Chơi</a>
+              <span class="btn-join-room btn-join-watch" style="opacity: 0.5; cursor: not-allowed;" title="Phòng không mở người xem">Không cho xem</span>
+            </div>
           </div>
         </div>
 
@@ -764,13 +955,51 @@
           <div class="room-top">
             <div>
               <div class="r-title">Cao Thủ Quán Kỳ Bất Ngữ</div>
-              <div class="r-host">Vũ Minh Thông (1450) vs Phan Bá Lạc (1420)</div>
+              <div class="r-host">Vũ Minh Thông vs Phan Bá Lạc</div>
             </div>
             <span class="r-badge playing">Đang đánh</span>
           </div>
           <div class="room-meta">
-            <span>⏱️ 10 phút · Người xem: 1/5</span>
-            <a href="SCR-GAME-ROOM.html?room=112&role=spectator" class="btn-join-room btn-join-watch">👁️ Vào Xem (1/5)</a>
+            <span>⏱️ 10 phút · 👥 5/5</span>
+            <span class="btn-join-room btn-join-watch" style="opacity: 0.5; cursor: not-allowed;" title="Phòng đã đủ trần 5 người xem">👁️ Đã đầy (5/5)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RULES ACCORDION (BA 10.4) -->
+    <section class="rules-accordion">
+      <div class="rules-header" onclick="toggleRulesAccordion()">
+        <h3>
+          <span>📜</span> Luật Chơi Cờ Tướng (Quy Chuẩn Rút Gọn)
+        </h3>
+        <span id="rules-toggle-icon" style="font-size: 16px; color: var(--gold-light);">▼</span>
+      </div>
+      <div class="rules-content" id="rules-content-body">
+        <div class="rules-grid">
+          <div class="rule-item-box">
+            <strong>⚔️ Chiếu Hết (Checkmate):</strong>
+            Tướng đối phương bị chiếu mà không còn nước hóa giải hợp lệ. Bên chiếu hết thắng ngay lập tức.
+          </div>
+          <div class="rule-item-box">
+            <strong>🔒 Hết Nước Đi (Stalemate):</strong>
+            Đến lượt đi mà không còn nước cờ hợp lệ để di chuyển hợp pháp. Bên hết nước đi bị xử THUA.
+          </div>
+          <div class="rule-item-box">
+            <strong>🔁 Lặp Thế Cờ 3 Lần:</strong>
+            Khi một thế cờ lặp lại lần thứ 3 (cùng vị trí toàn bộ quân cờ và cùng lượt đi) thì ván đấu tự động xử HÒA.
+          </div>
+          <div class="rule-item-box">
+            <strong>⚠️ Chiếu Liên Tục (Perpetual Check):</strong>
+            Lặp thế lần 3 mà mọi nước đi trong chu kỳ lặp của một bên đều là nước chiếu thì bên chiếu liên tục bị xử THUA. Nếu cả 2 cùng chiếu thì Hòa.
+          </div>
+          <div class="rule-item-box">
+            <strong>⏳ Hòa 120 Nửa Nước Không Ăn Quân:</strong>
+            Sau 120 nửa nước liên tiếp (mỗi bên 60 nước) mà hai bên không có nước ăn quân nào thì tự động xử HÒA (DRAW_NO_CAPTURE).
+          </div>
+          <div class="rule-item-box">
+            <strong>📢 Lưu Ý Công Bố Luật:</strong>
+            Luật đuổi quân liên tục (perpetual chase) không xử riêng trong giai đoạn này, sẽ hòa theo quy tắc lặp thế cờ 3 lần.
           </div>
         </div>
       </div>
@@ -1002,6 +1231,27 @@
       const level = document.querySelector('input[name="ai-level"]:checked').value;
       const side = document.querySelector('input[name="ai-side"]:checked').value;
       window.location.href = `SCR-AI-GAME.html?level=${level}&side=${side}`;
+    }
+
+    function joinRoomByCode() {
+      const code = document.getElementById('quick-room-code').value.trim();
+      if (!code) {
+        alert('Vui lòng nhập mã phòng gồm 8 ký tự!');
+        return;
+      }
+      window.location.href = `SCR-WAITING-ROOM.html?room=${encodeURIComponent(code)}&seat=black`;
+    }
+
+    function toggleRulesAccordion() {
+      const body = document.getElementById('rules-content-body');
+      const icon = document.getElementById('rules-toggle-icon');
+      if (body.style.display === 'block') {
+        body.style.display = 'none';
+        icon.textContent = '▼';
+      } else {
+        body.style.display = 'block';
+        icon.textContent = '▲';
+      }
     }
   </script>
 </body>

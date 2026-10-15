@@ -23,10 +23,10 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
@@ -101,11 +101,13 @@
 
     /* LEADERBOARD TABLE */
     .lb-table-wrap {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
 
     table.lb-table {
@@ -116,9 +118,9 @@
     }
 
     .lb-table th {
-      background: #25160E;
+      background: #8E161C;
       padding: 12px 16px;
-      color: var(--gold-light);
+      color: #FFF5DF;
       font-weight: 700;
       border-bottom: 2px solid var(--gold-dark);
       font-size: 12px;
@@ -127,12 +129,12 @@
 
     .lb-table td {
       padding: 12px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      color: #E2CFB7;
+      border-bottom: 1px solid #D8C3A5;
+      color: #24160E;
     }
 
     .lb-table tr:hover td {
-      background: rgba(220, 160, 50, 0.08);
+      background: #FFF8EB;
     }
 
     .rank-trophy {
@@ -170,16 +172,16 @@
       font-weight: 700;
       padding: 2px 7px;
       border-radius: 4px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #FDE68A;
+      background: #F0E5D0;
+      border: 1px solid #D8C6AB;
+      color: #7A4E0F;
     }
 
     .elo-cell {
       font-family: monospace;
       font-weight: 800;
       font-size: 15px;
-      color: #FFF;
+      color: #8E161C;
     }
 
     /* STICKY USER ROW PINNED AT BOTTOM (STICKY USER ROW - DECISION 7.1) */
@@ -188,10 +190,10 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: linear-gradient(180deg, #3C1E14 0%, #1E0F0A 100%);
-      border-top: 2.5px solid var(--gold-main);
+      background: linear-gradient(180deg, #8E161C 0%, #680E13 100%);
+      border-top: 2.5px solid var(--gold-light);
       padding: 10px clamp(16px, 4vw, 40px);
-      box-shadow: 0 -8px 25px rgba(0,0,0,0.8);
+      box-shadow: 0 -8px 25px rgba(0,0,0,0.6);
       z-index: 90;
       display: flex;
       align-items: center;

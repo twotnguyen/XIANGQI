@@ -23,16 +23,16 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 10%, rgba(200, 130, 40, 0.12) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(15, 11, 8, 0.88) 0%, rgba(15, 11, 8, 0.96) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       font-family: var(--font-sans);
-      color: #F5E8D4;
+      color: #24160E;
       display: flex;
       flex-direction: column;
     }
@@ -93,23 +93,26 @@
     }
 
     .replay-sidebar {
-      background: var(--panel-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
       max-height: 560px;
+      color: #24160E;
     }
 
     .moves-table-box {
       flex: 1;
       overflow-y: auto;
-      border: 1px solid #4A2614;
+      border: 1px solid #D8C3A5;
       border-radius: 6px;
-      background: #180F0A;
+      background: #FFFDF9;
       max-height: 280px;
     }
 
@@ -118,12 +121,14 @@
       grid-template-columns: 36px 1fr 1fr;
       padding: 6px 10px;
       font-size: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid #EFE4D2;
       cursor: pointer;
+      color: #24160E;
     }
     .move-row:hover, .move-row.active {
-      background: rgba(198, 146, 42, 0.2);
-      color: var(--gold-light);
+      background: #FDF1DC;
+      color: #8E161C;
+      font-weight: 700;
     }
 
     .controls-row {

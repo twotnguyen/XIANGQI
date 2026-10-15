@@ -23,16 +23,16 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       font-family: var(--font-sans);
-      color: #F5E8D4;
+      color: #24160E;
       display: flex;
       flex-direction: column;
     }
@@ -102,7 +102,9 @@
     }
 
     .match-item-card {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 1.5px solid #542C15;
       border-radius: 10px;
       padding: 16px 20px;
@@ -110,7 +112,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
       transition: all 0.2s;
+      color: #24160E;
     }
     .match-item-card:hover {
       border-color: var(--gold-main);

@@ -26,10 +26,10 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
@@ -118,7 +118,9 @@
     }
 
     .seat-box {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2.5px solid #542C15;
       border-radius: 14px;
       padding: 28px 20px;
@@ -127,19 +129,20 @@
       align-items: center;
       text-align: center;
       position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
       min-height: 380px;
       justify-content: space-between;
+      color: #24160E;
     }
 
     .seat-box.red-seat {
-      border-color: #B91C1C;
-      background: radial-gradient(circle at 50% 20%, rgba(185, 28, 28, 0.15) 0%, rgba(36, 22, 16, 0.95) 75%);
+      border-color: #8E161C;
+      box-shadow: 0 10px 30px rgba(142, 22, 28, 0.25);
     }
 
     .seat-box.black-seat {
-      border-color: #4B5563;
-      background: radial-gradient(circle at 50% 20%, rgba(75, 85, 99, 0.2) 0%, rgba(36, 22, 16, 0.95) 75%);
+      border-color: #4A2614;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     .seat-badge {
@@ -183,13 +186,13 @@
       font-family: var(--font-serif);
       font-size: 19px;
       font-weight: 700;
-      color: #FFF5DF;
+      color: #24160E;
       margin-bottom: 4px;
     }
 
     .seat-player-elo {
       font-size: 12px;
-      color: var(--gold-light);
+      color: #6E5A4B;
       font-weight: 600;
       margin-bottom: 14px;
     }
@@ -305,13 +308,16 @@
     }
 
     .invite-share-card {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      color: #24160E;
     }
 
     .btn-open-invite {
@@ -331,10 +337,13 @@
     }
 
     .spectators-panel {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 16px;
+      color: #24160E;
     }
 
     .spec-list {
@@ -344,14 +353,15 @@
       margin-top: 10px;
     }
     .spec-chip {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #FFFDF9;
+      border: 1.5px solid #D8C3A5;
       padding: 4px 10px;
       border-radius: 16px;
       font-size: 11.5px;
       display: flex;
       align-items: center;
       gap: 6px;
+      color: #382D25;
     }
 
     /* MODAL INVITE */
@@ -370,16 +380,17 @@
     .modal-box {
       width: 100%;
       max-width: 440px;
-      background: #25160E;
+      background: #FAF3E3;
       border: 3px solid #542C15;
       border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
       overflow: hidden;
+      color: #24160E;
     }
 
     .modal-header {
       padding: 14px 18px;
-      background: #3C1E14;
+      background: linear-gradient(180deg, #8E161C 0%, #680E13 100%);
       border-bottom: 2px solid var(--gold-dark);
       display: flex;
       align-items: center;
@@ -398,10 +409,10 @@
       flex: 1;
       height: 38px;
       padding: 0 10px;
-      background: #180F0A;
-      border: 1.5px solid #542C15;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
       border-radius: 6px;
-      color: var(--gold-light);
+      color: #24160E;
       font-size: 12px;
       outline: none;
     }
@@ -443,6 +454,143 @@
       100% { opacity: 0.65; transform: scale(0.96); }
     }
 
+    /* WAITING ROOM MEDIA & CHAT (BA 0.13) */
+    .waiting-media-chat-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    @media (max-width: 860px) {
+      .waiting-media-chat-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .panel-box {
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
+      border: 2px solid #542C15;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+      color: #24160E;
+    }
+    .panel-head {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: #24160E;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #D8C3A5;
+      padding-bottom: 8px;
+    }
+    .media-cam-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .cam-feed {
+      height: 90px;
+      background: #24160E;
+      border: 1.5px solid #542C15;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 6px;
+      position: relative;
+    }
+    .cam-feed-label {
+      font-size: 10px;
+      color: var(--gold-light);
+      font-weight: 700;
+    }
+    .cam-ctrl-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-media-ctrl {
+      flex: 1;
+      height: 28px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid #542C15;
+      border-radius: 4px;
+      color: #E2CFB7;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-media-ctrl.active {
+      background: #15803D;
+      border-color: #86EFAC;
+      color: #FFF;
+    }
+    .select-sharing-mode {
+      width: 100%;
+      height: 28px;
+      margin-top: 6px;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
+      border-radius: 4px;
+      color: #24160E;
+      font-size: 11px;
+      padding: 0 6px;
+    }
+
+    /* CHAT PANEL IN WAITING ROOM */
+    .chat-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #D8C3A5;
+      padding-bottom: 6px;
+    }
+    .chat-tab-btn {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      color: #6E5A4B;
+      cursor: pointer;
+    }
+    .chat-tab-btn.active {
+      background: rgba(198, 146, 42, 0.2);
+      color: var(--gold-light);
+      border: 1px solid var(--gold-dark);
+    }
+    .chat-msgs-box {
+      height: 100px;
+      overflow-y: auto;
+      background: #FFFDF9;
+      border: 1px solid #D8C3A5;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+      color: #24160E;
+    }
+    .chat-in {
+      flex: 1;
+      height: 32px;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
+      border-radius: 4px;
+      padding: 0 8px;
+      font-size: 12px;
+      color: #24160E;
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -466,6 +614,16 @@
   </header>
 
   <main class="stage-container">
+
+    <!-- DEMO STATE CONTROLLER (BA 0.6) -->
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+      <button type="button" class="pill-tag" id="demo-btn-2p" style="background: rgba(198,146,42,0.3); border-color: var(--gold-light); cursor: pointer;" onclick="setWaitingRoomState('TWO_PLAYERS')">
+        👥 Chế độ: Đủ 2 Người (Xin Đổi Bên)
+      </button>
+      <button type="button" class="pill-tag" id="demo-btn-1p" style="background: rgba(0,0,0,0.4); border-color: #542C15; cursor: pointer;" onclick="setWaitingRoomState('SOLO_HOST')">
+        👤 Chế độ: Chỉ Host (Đổi Ghế Solo)
+      </button>
+    </div>
 
     <!-- ARENA 2 SEATS -->
     <div class="seats-arena">
@@ -494,31 +652,34 @@
       <!-- ARENA CENTER: VERSUS & SIDE SWAP -->
       <div class="arena-center">
         <div class="vs-emblem">VS</div>
-        <button type="button" class="btn-side-swap" onclick="requestSideSwap()">
+        <button type="button" class="btn-side-swap" id="btn-side-swap" onclick="requestSideSwap()">
           ⇄ Xin Đổi Bên
         </button>
-        <button type="button" onclick="openSideSwapPromptModal()" style="margin-top: 6px; background: rgba(198, 146, 42, 0.15); border: 1px dashed var(--gold-light); color: var(--gold-light); font-size: 10.5px; padding: 3px 8px; border-radius: 4px; cursor: pointer;" title="Giả lập đối thủ gửi lời đề nghị đổi bên">
+        <button type="button" class="btn-side-swap" id="btn-solo-swap" style="display: none; background: #C6922A; color: #FFF;" onclick="handleSoloSwap()">
+          🔄 Đổi Ghế Solo (Đỏ ↔ Đen)
+        </button>
+        <button type="button" id="btn-demo-swap-prompt" onclick="openSideSwapPromptModal()" style="margin-top: 6px; background: rgba(198, 146, 42, 0.15); border: 1px dashed var(--gold-light); color: var(--gold-light); font-size: 10.5px; padding: 3px 8px; border-radius: 4px; cursor: pointer;" title="Giả lập đối thủ gửi lời đề nghị đổi bên">
           [🧪 Nhận Lời Đổi Bên (Demo)]
         </button>
         <div class="countdown-big" id="countdown-banner">3</div>
       </div>
 
       <!-- SEAT 2: BLACK (OPPONENT) -->
-      <div class="seat-box black-seat">
+      <div class="seat-box black-seat" id="black-seat-box">
         <div>
-          <span class="seat-badge badge-black-side">⚫ Phe Đen (Đi sau)</span>
-          <div class="seat-token-visual token-black-side">將</div>
+          <span class="seat-badge badge-black-side" id="black-side-badge">⚫ Phe Đen (Đi sau)</span>
+          <div class="seat-token-visual token-black-side" id="black-token">將</div>
           <h3 class="seat-player-name" id="black-name">Trần Hưng Đạo</h3>
-          <div class="seat-player-elo">⚔️ 1290 Elo · Đấu Thủ 2</div>
+          <div class="seat-player-elo" id="black-elo">⚔️ 1290 Elo · Đấu Thủ 2</div>
         </div>
 
-        <div>
+        <div id="black-actions-wrap">
           <div style="margin-bottom: 12px;">
             <span class="ready-status-badge status-ready" id="black-ready-status">
               ✓ Đã Sẵn Sàng
             </span>
           </div>
-          <button type="button" class="btn-action-seat" style="background: rgba(255,255,255,0.08); color: #C8B6A2; border: 1px solid #4B5563; cursor: default;">
+          <button type="button" class="btn-action-seat" id="btn-black-action" style="background: rgba(255,255,255,0.08); color: #C8B6A2; border: 1px solid #4B5563;" onclick="moveToSpectator()">
             Đối Thủ Đã Sẵn Sàng
           </button>
         </div>
@@ -546,8 +707,66 @@
           <span style="font-size: 11px; color: var(--gold-light);">Tối đa 5 người xem</span>
         </div>
         <div class="spec-list">
-          <div class="spec-chip">👁️ Kỳ Vương Ba Vì</div>
-          <div class="spec-chip">👁️ Bạch Thủ Cờ</div>
+          <div class="spec-chip">
+            <span>👁️ Kỳ Vương Ba Vì</span>
+            <button type="button" onclick="openInviteToSeatModal('Kỳ Vương Ba Vì')" style="padding: 2px 6px; font-size: 10px; background: #C6922A; border: none; border-radius: 3px; color: #FFF; font-weight: 700; cursor: pointer;">Mời ngồi</button>
+          </div>
+          <div class="spec-chip">
+            <span>👁️ Bạch Thủ Cờ</span>
+            <button type="button" onclick="openInviteToSeatModal('Bạch Thủ Cờ')" style="padding: 2px 6px; font-size: 10px; background: #C6922A; border: none; border-radius: 3px; color: #FFF; font-weight: 700; cursor: pointer;">Mời ngồi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAITING ROOM MEDIA & CHAT (BA 0.13) -->
+    <div class="waiting-media-chat-grid">
+      <!-- PANEL-MEDIA IN WAITING ROOM -->
+      <div class="panel-box">
+        <div class="panel-head">
+          <span>📹 Camera & Mic (LiveKit SFU)</span>
+          <span style="font-size: 10px; color: #86EFAC;">Bật được ở phòng chờ</span>
+        </div>
+        <div class="media-cam-grid">
+          <div class="cam-feed">
+            <div class="cam-feed-label">Host: Tình (Bạn)</div>
+            <div style="font-size: 26px; text-align: center; margin-top: 10px;" id="my-cam-icon">👤</div>
+            <div style="font-size: 10px; color: #9CA3AF;" id="my-mic-status">🎙️ Mic: Tắt</div>
+          </div>
+          <div class="cam-feed">
+            <div class="cam-feed-label">Đối thủ: Hưng Đạo</div>
+            <div style="font-size: 26px; text-align: center; margin-top: 10px;">👤</div>
+            <div style="font-size: 10px; color: #9CA3AF;">🎙️ Mic: Tắt</div>
+          </div>
+        </div>
+        <div class="cam-ctrl-row">
+          <button type="button" class="btn-media-ctrl" id="btn-toggle-mic" onclick="toggleWaitingMic()">🎙️ Bật Mic</button>
+          <button type="button" class="btn-media-ctrl" id="btn-toggle-cam" onclick="toggleWaitingCam()">📹 Bật Cam</button>
+        </div>
+        <select class="select-sharing-mode" id="waiting-sharing-mode">
+          <option value="OPPONENT" selected>Mức chia sẻ: Chỉ đối thủ (Mặc định)</option>
+          <option value="ALL">Mức chia sẻ: Cả đối thủ và người xem</option>
+          <option value="NONE">Mức chia sẻ: Không chia sẻ</option>
+        </select>
+      </div>
+
+      <!-- PANEL-CHAT IN WAITING ROOM -->
+      <div class="panel-box">
+        <div class="panel-head">
+          <span>💬 Trò Chuyện Phòng Chờ</span>
+          <span style="font-size: 10px; color: var(--gold-light);">2 Kênh Theo Vai Trò</span>
+        </div>
+        <div class="chat-tabs">
+          <button type="button" class="chat-tab-btn active" id="tab-chat-private" onclick="switchWaitingChatTab('private')">🔒 Kênh Riêng (2 Người Chơi)</button>
+          <button type="button" class="chat-tab-btn" id="tab-chat-public" onclick="switchWaitingChatTab('public')">👥 Kênh Chung (Có Người Xem)</button>
+        </div>
+        <div class="chat-msgs-box" id="waiting-chat-msgs">
+          <div class="chat-msg-row"><span class="chat-author">Trần Hưng Đạo:</span> Chào bạn, trận này giao lưu học hỏi nhé!</div>
+          <div class="chat-msg-row"><span class="chat-author" style="color: #FCA5A5;">Nguyễn Ngọc Tình:</span> Chào anh Hưng Đạo, chúc ván cờ hay!</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-in" id="waiting-chat-input" placeholder="Gõ tin nhắn phòng chờ (bộ lọc từ cấm)..." onkeydown="if(event.key==='Enter') sendWaitingChat()">
+          <button type="button" class="btn-send-chat" onclick="sendWaitingChat()">Gửi</button>
         </div>
       </div>
     </div>
@@ -669,7 +888,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="font-size: 12px; color: #FFF;">Người xem theo dõi cờ (Spectators):</strong>
-              <div style="font-size: 11px; color: #C8B6A2;">Cho phép tối đa 2 người vào xem</div>
+              <div style="font-size: 11px; color: #C8B6A2;">Cho phép tối đa 5 người vào xem (mặc định 5)</div>
             </div>
             <input type="checkbox" id="setting-allow-specs" checked style="accent-color: var(--gold-main); width: 18px; height: 18px;">
           </div>
@@ -716,10 +935,39 @@
     </div>
   </div>
 
+  <!-- MODAL: INVITE TO SEAT (MODAL-INVITE-TO-SEAT - BA 2.8) -->
+  <div id="modal-invite-to-seat" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🪑 Lời Mời Xuống Ghế Thi Đấu</h3>
+        <button type="button" onclick="closeInviteToSeatModal()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="font-size: 36px; margin-bottom: 8px;">⚔️</div>
+        <p style="font-size: 13.5px; color: #FFF; line-height: 1.5;">
+          Chủ phòng mời bạn (<span id="seat-invitee-name" style="color: var(--gold-light);">Kỳ Vương Ba Vì</span>) xuống ghế thi đấu phe Đen!
+        </p>
+        <p style="font-size: 11.5px; color: #C8B6A2; margin: 10px 0 16px;">
+          Sau khi xuống ghế, bạn cần bấm <strong>Sẵn sàng</strong> để cùng bắt đầu ván cờ.
+        </p>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="rejectSeatInvite()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
+            Từ Chối Tiếp Tục Xem
+          </button>
+          <button type="button" onclick="acceptSeatInvite()" style="flex: 1.2; height: 38px; background: linear-gradient(180deg, #C6922A, #875F17); border: none; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
+            ✓ Đồng Ý Xuống Ghế
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let isRedReady = true;
     let countdownVal = 3;
     let countdownTimer = null;
+    let currentRoomMode = 'TWO_PLAYERS';
+    let hostSide = 'red';
 
     // Check query params
     const params = new URLSearchParams(window.location.search);
@@ -728,10 +976,74 @@
       document.getElementById('room-title-display').textContent = roomName;
     }
 
-    // Auto trigger match start countdown since both are ready in demo
-    setTimeout(() => {
-      startMatchCountdown();
-    }, 1500);
+    function setWaitingRoomState(state) {
+      currentRoomMode = state;
+      const btn2p = document.getElementById('demo-btn-2p');
+      const btn1p = document.getElementById('demo-btn-1p');
+      const btnSwap = document.getElementById('btn-side-swap');
+      const btnSolo = document.getElementById('btn-solo-swap');
+      const btnPrompt = document.getElementById('btn-demo-swap-prompt');
+      const blackName = document.getElementById('black-name');
+      const blackElo = document.getElementById('black-elo');
+      const blackAction = document.getElementById('btn-black-action');
+      const blackBadge = document.getElementById('black-ready-status');
+
+      if (state === 'SOLO_HOST') {
+        btn1p.style.background = 'rgba(198,146,42,0.3)';
+        btn1p.style.borderColor = 'var(--gold-light)';
+        btn2p.style.background = 'rgba(0,0,0,0.4)';
+        btn2p.style.borderColor = '#542C15';
+
+        btnSwap.style.display = 'none';
+        btnPrompt.style.display = 'none';
+        btnSolo.style.display = 'flex';
+
+        blackName.textContent = 'Ghế Đang Trống';
+        blackElo.textContent = '⏳ Đang chờ người vào...';
+        blackBadge.textContent = 'Trống';
+        blackBadge.className = 'ready-status-badge status-waiting';
+        blackAction.textContent = 'Mời bạn bè / Chia sẻ link';
+        blackAction.onclick = openInviteModal;
+      } else {
+        btn2p.style.background = 'rgba(198,146,42,0.3)';
+        btn2p.style.borderColor = 'var(--gold-light)';
+        btn1p.style.background = 'rgba(0,0,0,0.4)';
+        btn1p.style.borderColor = '#542C15';
+
+        btnSwap.style.display = 'flex';
+        btnPrompt.style.display = 'inline-block';
+        btnSolo.style.display = 'none';
+
+        blackName.textContent = 'Trần Hưng Đạo';
+        blackElo.textContent = '⚔️ 1290 Elo · Đấu Thủ 2';
+        blackBadge.textContent = '✓ Đã Sẵn Sàng';
+        blackBadge.className = 'ready-status-badge status-ready';
+        blackAction.textContent = '👁️ Chuyển Sang Người Xem';
+        blackAction.onclick = moveToSpectator;
+      }
+    }
+
+    function handleSoloSwap() {
+      hostSide = (hostSide === 'red') ? 'black' : 'red';
+      if (hostSide === 'black') {
+        document.getElementById('red-name').textContent = 'Ghế Đang Trống';
+        document.getElementById('black-name').textContent = 'Nguyễn Ngọc Tình (Host)';
+        alert('✓ Đã đổi sang cầm quân ⚫ Phe Đen (Solo đổi ghế tự do không cần duyệt theo BA 0.6)!');
+      } else {
+        document.getElementById('red-name').textContent = 'Nguyễn Ngọc Tình (Host)';
+        document.getElementById('black-name').textContent = 'Ghế Đang Trống';
+        alert('✓ Đã đổi sang cầm quân 🔴 Phe Đỏ (Solo đổi ghế tự do không cần duyệt theo BA 0.6)!');
+      }
+    }
+
+    function moveToSpectator() {
+      if (confirm('Chuyển người chơi này sang danh sách Người xem?')) {
+        setWaitingRoomState('SOLO_HOST');
+        alert('✓ Đã chuyển người chơi sang vai trò Người xem!');
+      }
+    }
+
+    // Match countdown triggered only on user action or demo click
 
     function startMatchCountdown() {
       const banner = document.getElementById('countdown-banner');
@@ -804,11 +1116,26 @@
     function acceptSideSwap() {
       clearInterval(sideSwapTimer);
       document.getElementById('modal-side-swap-prompt').style.display = 'none';
-      alert('✓ Đã đồng ý đổi bên! Bạn đã chuyển sang cầm quân ⚫ Phe Đen (Đi sau).');
       const redName = document.getElementById('red-name').textContent;
       const blackName = document.getElementById('black-name').textContent;
       document.getElementById('red-name').textContent = blackName;
       document.getElementById('black-name').textContent = redName;
+
+      // BA 0.6 & 2.3: Ready state of both resets to false on swap
+      isRedReady = false;
+      const btnRed = document.getElementById('btn-red-ready');
+      const badgeRed = document.getElementById('red-ready-status');
+      btnRed.textContent = 'Sẵn Sàng Xuất Quân';
+      btnRed.classList.remove('is-ready');
+      badgeRed.className = 'ready-status-badge status-waiting';
+      badgeRed.textContent = '⏳ Chưa Sẵn Sàng';
+
+      const badgeBlack = document.getElementById('black-ready-status');
+      badgeBlack.className = 'ready-status-badge status-waiting';
+      badgeBlack.textContent = '⏳ Chưa Sẵn Sàng';
+      clearInterval(countdownTimer);
+      document.getElementById('countdown-banner').style.display = 'none';
+      alert('✓ Đã hoán đổi phe Đỏ ↔ Đen thành công! Trạng thái Sẵn sàng của cả 2 bên đã được đặt lại (BA 0.6).');
     }
 
     function rejectSideSwap() {
@@ -853,6 +1180,59 @@
       copyText.select();
       navigator.clipboard.writeText(copyText.value);
       alert('✓ Đã sao chép link mời phòng vào bộ nhớ tạm!');
+    }
+
+    // Spectator to Seat (BA 2.8)
+    function openInviteToSeatModal(name) {
+      document.getElementById('seat-invitee-name').textContent = name;
+      document.getElementById('modal-invite-to-seat').style.display = 'flex';
+    }
+    function closeInviteToSeatModal() {
+      document.getElementById('modal-invite-to-seat').style.display = 'none';
+    }
+    function acceptSeatInvite() {
+      const name = document.getElementById('seat-invitee-name').textContent;
+      closeInviteToSeatModal();
+      setWaitingRoomState('TWO_PLAYERS');
+      document.getElementById('black-name').textContent = name;
+      alert(`✓ ${name} đã chấp nhận lời mời và ngồi vào ghế Đen! Cả hai cần sẵn sàng để đấu.`);
+    }
+    function rejectSeatInvite() {
+      closeInviteToSeatModal();
+      alert('Bạn đã từ chối lời mời xuống ghế và tiếp tục theo dõi với vai trò Người xem.');
+    }
+
+    // Media in Waiting Room (BA 0.13)
+    let isMicOn = false;
+    let isCamOn = false;
+    function toggleWaitingMic() {
+      isMicOn = !isMicOn;
+      const btn = document.getElementById('btn-toggle-mic');
+      btn.classList.toggle('active', isMicOn);
+      btn.textContent = isMicOn ? '🎙️ Tắt Mic' : '🎙️ Bật Mic';
+      document.getElementById('my-mic-status').textContent = isMicOn ? '🎙️ Mic: Đang bật' : '🎙️ Mic: Tắt';
+    }
+    function toggleWaitingCam() {
+      isCamOn = !isCamOn;
+      const btn = document.getElementById('btn-toggle-cam');
+      btn.classList.toggle('active', isCamOn);
+      btn.textContent = isCamOn ? '📹 Tắt Cam' : '📹 Bật Cam';
+      document.getElementById('my-cam-icon').textContent = isCamOn ? '📷' : '👤';
+    }
+
+    // Chat in Waiting Room (BA 0.13)
+    function switchWaitingChatTab(tab) {
+      document.getElementById('tab-chat-private').classList.toggle('active', tab === 'private');
+      document.getElementById('tab-chat-public').classList.toggle('active', tab === 'public');
+    }
+    function sendWaitingChat() {
+      const input = document.getElementById('waiting-chat-input');
+      const txt = input.value.trim();
+      if (!txt) return;
+      const box = document.getElementById('waiting-chat-msgs');
+      box.innerHTML += `<div class="chat-msg-row"><span class="chat-author" style="color: #FCA5A5;">Nguyễn Ngọc Tình:</span> ${txt.replace(/đm|vcl|chó/gi, '***')}</div>`;
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
     }
   </script>
 </body>
