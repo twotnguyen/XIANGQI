@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./friends.css";
 import {
   Badge,
   Button,

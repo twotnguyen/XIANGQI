@@ -44,10 +44,16 @@
   gap: 24px;
   align-items: center;
   padding: 20px;
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-gold-dark);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: linear-gradient(180deg, rgba(38, 22, 14, 0.92) 0%, rgba(24, 14, 9, 0.96) 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   overflow-wrap: anywhere;
+  transition: all var(--motion-fast);
+}
+.xq-history-row:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 .xq-history-row h2 {
   font-size: 18px;
