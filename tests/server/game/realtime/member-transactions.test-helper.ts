@@ -15,7 +15,7 @@ if (databaseUrl) {
     );
 }
 export const pool = new Pool({ connectionString: databaseUrl });
-export async function apply(file: string) {
+async function apply(file: string) {
   const c = await pool.connect();
   try {
     if (!file.includes("test-fixture")) await c.query("SET ROLE postgres");

@@ -23,16 +23,16 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 20%, rgba(200, 130, 40, 0.15) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(18, 13, 10, 0.85) 0%, rgba(18, 13, 10, 0.95) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.18) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       font-family: var(--font-sans);
-      color: #F5E8D4;
+      color: #24160E;
       display: flex;
       flex-direction: column;
     }
@@ -122,19 +122,22 @@
 
     /* FORMS SECTIONS */
     .section-card {
-      background: var(--card-bg);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
       border: 2px solid #542C15;
       border-radius: 12px;
       padding: 22px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+      color: #24160E;
     }
 
     .section-title {
       font-family: var(--font-serif);
       font-size: 18px;
-      color: #FFF5DF;
+      color: #24160E;
       margin-bottom: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid #D8C3A5;
       padding-bottom: 8px;
     }
 
@@ -154,24 +157,24 @@
     .form-label {
       font-size: 12px;
       font-weight: 700;
-      color: #E2CFB7;
+      color: #382D25;
     }
 
     .form-input {
       height: 40px;
       padding: 0 12px;
-      background: #180F0A;
-      border: 1.5px solid #542C15;
+      background: #FFFDF9;
+      border: 1.5px solid #C4A57B;
       border-radius: 6px;
-      color: #FFF;
+      color: #24160E;
       font-size: 13.5px;
       outline: none;
     }
     .form-input:focus { border-color: var(--gold-main); }
     .form-input.readonly {
-      background: rgba(0,0,0,0.4);
-      color: #9CA3AF;
-      border-color: #374151;
+      background: #EFE4D2;
+      color: #6E5A4B;
+      border-color: #D8C3A5;
       cursor: not-allowed;
     }
 

@@ -12,11 +12,7 @@ import {
 import "../styles/tokens.css";
 import "./ui.css";
 
-export function Icon({
-  kind,
-}: {
-  kind: "success" | "error" | "info" | "loading";
-}) {
+function Icon({ kind }: { kind: "success" | "error" | "info" | "loading" }) {
   return (
     <svg
       className={`xq-icon ${kind === "loading" ? "xq-spinner" : ""}`}

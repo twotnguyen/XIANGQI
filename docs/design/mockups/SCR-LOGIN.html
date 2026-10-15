@@ -44,7 +44,7 @@
       justify-content: center;
       background: #0B0806;
       /* Layer 1: Ambient Infinite Background */
-      background-image: 
+      background-image:
         radial-gradient(ellipse at 50% 30%, rgba(220, 140, 50, 0.18) 0%, transparent 70%),
         linear-gradient(180deg, rgba(11, 8, 6, 0.65) 0%, rgba(11, 8, 6, 0.92) 100%),
         url('login-bg-scenic.png');
@@ -95,7 +95,7 @@
       background: #23120A;
       border: 3.5px solid #542C15;
       border-radius: 14px;
-      box-shadow: 
+      box-shadow:
         0 25px 70px rgba(0,0,0,0.85),
         0 0 0 1px rgba(245, 202, 103, 0.25),
         inset 0 0 25px rgba(0,0,0,0.7);
@@ -138,7 +138,7 @@
 
     /* LEFT PANEL: Imperial Silk Crimson Branding */
     .wing-brand {
-      background: 
+      background:
         radial-gradient(circle at 50% 25%, rgba(240, 60, 60, 0.25) 0%, transparent 65%),
         linear-gradient(155deg, var(--crimson-top) 0%, var(--crimson-mid) 50%, var(--crimson-dark) 100%);
       color: #FFF;
@@ -174,7 +174,7 @@
       border-radius: 50%;
       background: radial-gradient(circle at 35% 28%, #F7DCB2 0%, #D8A562 45%, #9E6B2A 85%, #643E12 100%);
       border: 3.5px solid #FFF8E7;
-      box-shadow: 
+      box-shadow:
         0 12px 25px rgba(0, 0, 0, 0.7),
         inset 0 4px 6px rgba(255, 255, 255, 0.7),
         inset 0 -6px 10px rgba(0, 0, 0, 0.5),
@@ -277,7 +277,7 @@
 
     /* RIGHT PANEL: Parchment Paper Form */
     .wing-form {
-      background: 
+      background:
         radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
         linear-gradient(180deg, #FFFDF8 0%, #F5ECDB 100%);
       padding: clamp(24px, 3.8vw, 38px) clamp(20px, 3.2vw, 34px);
@@ -762,6 +762,9 @@
       </div>
       <p class="form-subtitle">— Bước một nước cờ, kết vạn tâm giao —</p>
 
+      <!-- ERROR / LOCKOUT BANNER (BA 0.2) -->
+      <div id="login-error-alert" style="display: none; background: rgba(220, 38, 38, 0.12); border: 1.5px solid #EF4444; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; font-size: 12px; color: #991B1B; font-weight: 600; line-height: 1.4;"></div>
+
       <form onsubmit="handleLoginSubmit(event)">
         <div class="field-row">
           <label class="field-lbl" for="usr">Tên đăng nhập (Username)</label>
@@ -816,6 +819,11 @@
 
         <div class="reg-foot">
           Chưa có tài khoản? <a href="SCR-REGISTER.html">Đăng ký ngay →</a>
+        </div>
+
+        <!-- DEMO LOCKOUT TEST BUTTON (BA 0.2) -->
+        <div style="text-align: center; margin-top: 10px;">
+          <button type="button" onclick="demoBruteForceLockout()" style="background: none; border: none; font-size: 10.5px; color: #9A7B56; cursor: pointer; text-decoration: underline;">[🧪 Giả lập: Thử sai 5 lần / Khóa 15 phút]</button>
         </div>
       </form>
     </div>
@@ -932,6 +940,21 @@
         elo: 1280
       }));
       window.location.href = 'SCR-LOBBY.html';
+    }
+
+    let failedAttempts = 0;
+    function demoBruteForceLockout() {
+      failedAttempts++;
+      const alertBox = document.getElementById('login-error-alert');
+      alertBox.style.display = 'block';
+      if (failedAttempts < 5) {
+        alertBox.innerHTML = `⚠️ Sai tên đăng nhập hoặc mật khẩu! (Lần ${failedAttempts}/5)`;
+      } else {
+        // BA 0.2: 5 failed attempts locks for 15 minutes
+        alertBox.innerHTML = `⛔ <strong>Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút.</strong><br><span style="font-size: 11px; font-weight: normal; color: #7F1D1D;">(Khóa bảo mật chống brute-force cho username này trong 15 phút tính từ lần sai thứ 5 - BA Phần 0 mục 0.2)</span>`;
+        document.querySelector('.btn-submit').disabled = true;
+        document.querySelector('.btn-submit').style.opacity = '0.6';
+      }
     }
   </script>
 

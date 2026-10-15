@@ -20,10 +20,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      background: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.15) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(18, 13, 10, 0.9) 0%, rgba(18, 13, 10, 0.98) 100%),
+      background: #1C120C;
+      background-image:
+        radial-gradient(ellipse at 50% 15%, rgba(200, 130, 40, 0.2) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(20, 12, 8, 0.42) 0%, rgba(20, 12, 8, 0.72) 100%),
         url('login-bg-scenic.png');
       background-size: cover;
       background-attachment: fixed;
@@ -41,10 +41,10 @@
       text-align: center;
       margin-bottom: 30px;
       padding: 24px;
-      background: var(--card-bg);
-      border: 2px solid var(--gold-dark);
+      background: linear-gradient(135deg, rgba(142, 22, 28, 0.95) 0%, rgba(104, 14, 19, 0.95) 100%);
+      border: 2px solid var(--gold-light);
       border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .hero-title {
       font-family: var(--font-serif);
@@ -76,7 +76,8 @@
     .section-title {
       font-family: var(--font-serif);
       font-size: 19px;
-      color: var(--gold-light);
+      color: #FFF5DF;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
       margin: 28px 0 14px 4px;
       display: flex;
       align-items: center;
@@ -96,28 +97,31 @@
     }
 
     .item-card {
-      background: var(--card-bg);
-      border: 1.5px solid #542C15;
+      background:
+        radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFDF8 0%, #FAF3E3 100%);
+      border: 2px solid #542C15;
       border-radius: 8px;
       padding: 14px;
       text-decoration: none;
-      color: inherit;
+      color: #24160E;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }
     .item-card:hover {
       border-color: var(--gold-main);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(198, 146, 42, 0.25);
+      box-shadow: 0 8px 25px rgba(198, 146, 42, 0.35);
     }
 
     .card-code {
       font-size: 11px;
       font-weight: 700;
-      color: var(--gold-light);
-      background: rgba(0,0,0,0.4);
+      color: #FFF5DF;
+      background: #8E161C;
       padding: 2px 6px;
       border-radius: 4px;
       display: inline-block;
@@ -126,13 +130,13 @@
     .card-title {
       font-size: 13.5px;
       font-weight: 700;
-      color: #FFF;
+      color: #24160E;
       margin-bottom: 6px;
       line-height: 1.4;
     }
     .card-desc {
       font-size: 11.5px;
-      color: #C8B6A2;
+      color: #5C4A3E;
       line-height: 1.4;
       margin-bottom: 10px;
     }
@@ -141,8 +145,9 @@
       justify-content: space-between;
       align-items: center;
       font-size: 11px;
-      color: #86EFAC;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      color: #15803D;
+      font-weight: 700;
+      border-top: 1px dashed #D8C3A5;
       padding-top: 8px;
     }
 
@@ -150,9 +155,9 @@
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 3px;
-      background: rgba(198, 146, 42, 0.15);
-      color: var(--gold-light);
-      border: 1px solid var(--gold-dark);
+      background: #F0E5D0;
+      color: #7A4E0F;
+      border: 1px solid #D8C6AB;
     }
   </style>
 </head>
@@ -162,7 +167,7 @@
     <header class="hero-banner">
       <h1 class="hero-title">KỲ ĐÀI CỜ TƯỚNG ONLINE · BỘ PROTOTYPE 37 THÀNH PHẦN</h1>
       <p class="hero-sub">Hệ thống giao diện Cổ Phong Á Đông (WCAG 2.1 AA) · Đồng bộ theo DANH-MUC-MAN-HINH-XIANGQI.md</p>
-      
+
       <div class="stats-row">
         <div class="stat-pill">📄 15 Trang Định Tuyến</div>
         <div class="stat-pill">🪟 15 Cửa Sổ Modal</div>

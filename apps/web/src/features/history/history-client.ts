@@ -141,7 +141,7 @@ function item(v: unknown): HistoryItem {
   if (!valid) invalid();
   return r as unknown as HistoryItem;
 }
-export function parseHistoryPage(v: unknown, limit = 50): HistoryPage {
+function parseHistoryPage(v: unknown, limit = 50): HistoryPage {
   const r = object(v, ["items", "nextCursor"]);
   if (!Array.isArray(r.items) || r.items.length > limit) invalid();
   const items = r.items.map(item),

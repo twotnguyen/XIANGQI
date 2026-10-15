@@ -44,7 +44,7 @@
       justify-content: center;
       background: #0B0806;
       /* Background scenery */
-      background-image: 
+      background-image:
         radial-gradient(ellipse at 50% 30%, rgba(220, 140, 50, 0.18) 0%, transparent 70%),
         linear-gradient(180deg, rgba(11, 8, 6, 0.65) 0%, rgba(11, 8, 6, 0.92) 100%),
         url('login-bg-scenic.png');
@@ -94,7 +94,7 @@
       background: #23120A;
       border: 3.5px solid #542C15;
       border-radius: 14px;
-      box-shadow: 
+      box-shadow:
         0 25px 70px rgba(0,0,0,0.85),
         0 0 0 1px rgba(245, 202, 103, 0.25),
         inset 0 0 25px rgba(0,0,0,0.7);
@@ -137,7 +137,7 @@
 
     /* LEFT PANEL: Imperial Silk Crimson Branding */
     .wing-brand {
-      background: 
+      background:
         radial-gradient(circle at 50% 25%, rgba(240, 60, 60, 0.25) 0%, transparent 65%),
         linear-gradient(155deg, var(--crimson-top) 0%, var(--crimson-mid) 50%, var(--crimson-dark) 100%);
       color: #FFF;
@@ -173,7 +173,7 @@
       border-radius: 50%;
       background: radial-gradient(circle at 35% 28%, #F7DCB2 0%, #D8A562 45%, #9E6B2A 85%, #643E12 100%);
       border: 3.5px solid #FFF8E7;
-      box-shadow: 
+      box-shadow:
         0 12px 25px rgba(0, 0, 0, 0.7),
         inset 0 4px 6px rgba(255, 255, 255, 0.7),
         inset 0 -6px 10px rgba(0, 0, 0, 0.5),
@@ -276,7 +276,7 @@
 
     /* RIGHT PANEL: Wizard Form on Parchment Paper */
     .wing-form {
-      background: 
+      background:
         radial-gradient(circle at 85% 10%, rgba(200, 150, 70, 0.08) 0%, transparent 50%),
         linear-gradient(180deg, #FFFDF8 0%, #F5ECDB 100%);
       padding: clamp(22px, 3.5vw, 36px) clamp(18px, 3vw, 32px);
@@ -1076,7 +1076,7 @@
     function updateTimerDisplay() {
       const m = Math.floor(otpCountdown / 60);
       const s = otpCountdown % 60;
-      document.getElementById('otp-timer').textContent = 
+      document.getElementById('otp-timer').textContent =
         (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
     }
 

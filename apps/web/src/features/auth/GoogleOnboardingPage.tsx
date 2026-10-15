@@ -8,7 +8,7 @@ import {
   parseGooglePending,
   type GooglePending,
 } from "./google-gis.js";
-import "./LoginPage.css";
+import "./GoogleOnboardingPage.css";
 export function GoogleOnboardingPage({
   pending,
   onResult,
@@ -154,10 +154,13 @@ export function GoogleOnboardingPage({
     }
   }
   return (
-    <main className="login-page xq-ui">
-      <section className="login-card" aria-labelledby="google-onboarding-title">
-        <header className="login-heading">
-          <p className="login-brand">Cờ Tướng Online</p>
+    <main className="onboarding-page xq-ui">
+      <section
+        className="onboarding-card"
+        aria-labelledby="google-onboarding-title"
+      >
+        <header className="onboarding-heading">
+          <p className="onboarding-brand">Cờ Tướng Online</p>
           <h1 id="google-onboarding-title" ref={heading} tabIndex={-1}>
             Thiết lập tài khoản
           </h1>
@@ -204,7 +207,7 @@ export function GoogleOnboardingPage({
               tone="info"
               message="Vui lòng xác thực Google lại để tiếp tục."
             />
-            <label className="login-remember">
+            <label className="onboarding-remember">
               <input
                 type="checkbox"
                 checked={remember}
@@ -213,7 +216,7 @@ export function GoogleOnboardingPage({
               />{" "}
               <span>Ghi nhớ đăng nhập</span>
             </label>
-            <p className="xq-help login-session-help">
+            <p className="xq-help onboarding-session-help">
               Không ghi nhớ: 12 giờ. Ghi nhớ: 30 ngày.
             </p>
             <GoogleSignInButton
