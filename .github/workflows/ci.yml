@@ -25,19 +25,23 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
         with:
-          filters: |
-            backend:
-              - 'apps/server/**'
-              - 'packages/**'
-              - 'supabase/**'
-              - 'tests/server/**'
-              - '.github/workflows/ci.yml'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-              - 'pnpm-workspace.yaml'
+          fetch-depth: 0
+      - id: filter
+        name: Detect backend changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            DIFF=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            DIFF=$(git diff --name-only ${{ github.event.before }} HEAD 2>/dev/null || echo "apps/server/fallback")
+          fi
+          echo "Changed files:"
+          echo "$DIFF"
+          if echo "$DIFF" | grep -qE '^(apps/server|packages|supabase|tests/server|\.github/workflows/ci\.yml|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml)'; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
