@@ -19,14 +19,15 @@ export function InviteEntry({
   const epoch = useRef(0);
   const entered = useRef(onEntered);
   entered.current = onEntered;
-  const valid = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(code);
+  const normalizedCode = (code ?? "").trim().toUpperCase();
+  const valid = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(normalizedCode);
   useEffect(() => {
     const requestEpoch = ++epoch.current;
     setError("");
     if (valid)
       queueMicrotask(() => {
         if (epoch.current !== requestEpoch) return;
-        void Promise.resolve().then(() => client.join(code)).then(
+        void Promise.resolve().then(() => client.join(normalizedCode)).then(
           (entry) => {
             if (epoch.current === requestEpoch) entered.current(entry);
           },
