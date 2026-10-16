@@ -1,45 +1,82 @@
 .xq-media {
   display: grid;
-  gap: 0.75rem;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(38, 22, 14, 0.92) 0%, rgba(24, 14, 9, 0.96) 100%);
+  border: 1.5px solid var(--color-gold-dark);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  color: var(--color-ink, #fff5df);
 }
+
 .xq-media h2 {
   margin: 0;
-  font-size: 1rem;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-gold-light);
+  letter-spacing: 0.5px;
 }
+
 .xq-media-toggles {
   display: flex;
-  gap: 0.5rem;
+  gap: 10px;
   flex-wrap: wrap;
 }
+
+.xq-media-toggles button {
+  min-height: 40px;
+  font-weight: 600;
+}
+
 .xq-media-share {
   display: grid;
-  gap: 0.25rem;
-  max-width: 20rem;
+  gap: 6px;
+  max-width: 24rem;
+  font-size: 13.5px;
+  color: var(--color-ink-muted);
 }
+
 .xq-media-share select {
-  padding: 0.4rem 0.5rem;
-  border-radius: 0.4rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--color-surface-sunken, #180f0a);
+  color: var(--color-ink, #fff5df);
+  border: 1px solid var(--color-gold-dark);
+  font-size: 14px;
+  cursor: pointer;
 }
+
 .xq-media-feeds {
   display: grid;
-  gap: 0.75rem;
+  gap: 16px;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 }
+
 .xq-media-feeds figure {
   margin: 0;
   display: grid;
-  gap: 0.25rem;
+  gap: 6px;
 }
+
 .xq-media-feeds figcaption {
-  font-size: 0.85rem;
-  opacity: 0.8;
+  font-size: 12.5px;
+  color: var(--color-gold-light);
+  font-weight: 600;
 }
+
 .xq-media-feed {
   aspect-ratio: 4 / 3;
-  background: #111;
-  border-radius: 0.5rem;
+  background: #0d0805;
+  border: 1.5px solid rgba(198, 146, 42, 0.35);
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .xq-media-feed video,
 .xq-media-feed audio {
   width: 100%;
