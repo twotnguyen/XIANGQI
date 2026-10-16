@@ -16,6 +16,8 @@
     "test:fast": "vitest run --exclude '**/timing.test.ts'",
     "test:unit": "vitest run tests/web tests/packages",
     "build": "pnpm -r build",
+    "build:web": "pnpm --filter @xiangqi/web... build",
+    "build:server": "pnpm --filter @xiangqi/server... build",
     "test:core": "vitest run tests/packages/xiangqi-core --coverage"
   },
   "devDependencies": {
