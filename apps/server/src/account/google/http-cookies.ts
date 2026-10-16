@@ -15,7 +15,10 @@ function controls(value: string) {
   );
 }
 function flags(secure: boolean) {
-  return `; Path=/auth/google; HttpOnly; SameSite=Lax${secure ? "; Secure" : ""}`;
+  const sameSite =
+    process.env.COOKIE_SAMESITE ??
+    (process.env.NODE_ENV === "production" && secure ? "None" : "Lax");
+  return `; Path=/auth/google; HttpOnly; SameSite=${sameSite}${secure ? "; Secure" : ""}`;
 }
 function append(response: CookieResponse, cookies: string[]) {
   const existing = response.getHeader("Set-Cookie");

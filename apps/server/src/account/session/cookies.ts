@@ -10,7 +10,10 @@ export interface CookieSession {
   remember: boolean;
 }
 function flags(secure: boolean) {
-  return `; Path=/; HttpOnly; SameSite=Lax${secure ? "; Secure" : ""}`;
+  const sameSite =
+    process.env.COOKIE_SAMESITE ??
+    (process.env.NODE_ENV === "production" && secure ? "None" : "Lax");
+  return `; Path=/; HttpOnly; SameSite=${sameSite}${secure ? "; Secure" : ""}`;
 }
 function hasControl(value: string) {
   return [...value].some((character) => {
