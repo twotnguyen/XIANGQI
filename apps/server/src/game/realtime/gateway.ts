@@ -64,7 +64,10 @@ export function attachRealtime(
   };
   const io = new Server<ClientRealtimeEvents, ServerRealtimeEvents>(
     httpServer,
-    { cors: { origin: dependencies.corsOrigins }, maxHttpBufferSize: 16384 },
+    {
+      cors: { origin: dependencies.corsOrigins, credentials: true },
+      maxHttpBufferSize: 16384,
+    },
   );
   const peers = new Map<string, Peer>();
   const disconnects = new Set<Promise<void>>();
@@ -218,27 +221,36 @@ export function attachRealtime(
         .map((peer) =>
           track(async () => {
             try {
+              const connection = await authorize(peer);
               if (baseSnapshot && baseSnapshot.roomId === roomId) {
-                const userId = peer.connection.identity.userId;
-                const role =
-                  baseSnapshot.room.seats.red === userId
+                const userId = connection.identity.userId;
+                const isRed = baseSnapshot.room.seats.red === userId;
+                const isBlack = baseSnapshot.room.seats.black === userId;
+                const isSpectator = baseSnapshot.room.spectators.some(
+                  (s) => s.userId === userId,
+                );
+                if (isRed || isBlack || isSpectator) {
+                  const role: RoomRole = isRed
                     ? "red"
-                    : baseSnapshot.room.seats.black === userId
+                    : isBlack
                       ? "black"
                       : "spectator";
-                const peerSnapshot: RoomSnapshot = {
-                  ...baseSnapshot,
-                  role: role as RoomRole,
-                  control: peer.control ?? {
-                    mode: peer.generation > 0 ? "writable" : "readonly",
-                    generation: peer.generation,
-                    reason: null,
-                  },
-                };
-                sendSnapshot(peer, peerSnapshot);
-                return;
+                  const peerSnapshot: RoomSnapshot = {
+                    ...baseSnapshot,
+                    role,
+                    control: peer.control ?? {
+                      mode:
+                        peer.generation > 0 && (isRed || isBlack)
+                          ? "writable"
+                          : "readonly",
+                      generation: peer.generation,
+                      reason: null,
+                    },
+                  };
+                  sendSnapshot(peer, peerSnapshot);
+                  return;
+                }
               }
-              const connection = await authorize(peer);
               sendSnapshot(peer, await dependencies.store.snapshot(connection));
             } catch (error) {
               if (!denied(error)) throw publicationFailure();
