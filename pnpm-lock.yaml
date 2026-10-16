@@ -92,6 +92,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@xiangqi/engine':
+        specifier: workspace:*
+        version: link:../../packages/engine
       '@xiangqi/shared':
         specifier: workspace:*
         version: link:../../packages/shared

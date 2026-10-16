@@ -77,12 +77,12 @@ function parse(value: unknown): SessionResult {
     throw new Error(unavailable);
   return value as SessionResult;
 }
+import { getApiBaseUrl } from "../../shared/api.js";
+
 function backend(path: string) {
   if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\"))
     throw new Error(unavailable);
-  const base = (
-    import.meta.env.VITE_API_URL || "http://localhost:3000"
-  ).replace(/\/$/, "");
+  const base = getApiBaseUrl();
   return `${base}${path}`;
 }
 export function SessionProvider({ children }: { children: ReactNode }) {

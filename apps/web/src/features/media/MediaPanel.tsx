@@ -152,11 +152,34 @@ export function MediaPanel({
         );
       } catch (error) {
         if (epoch.current !== requestEpoch) return;
-        setStatus(
-          error instanceof MediaRequestError
-            ? "Chưa thể bật camera hoặc mic. Kiểm tra quyền trình duyệt."
-            : "Chưa thể kết nối hình tiếng. Vui lòng thử lại.",
-        );
+        if (next.camera && !camera) setCamera(false);
+        if (next.mic && !mic) setMic(false);
+
+        let message = "Chưa thể kết nối hình tiếng. Vui lòng thử lại.";
+        if (
+          typeof window !== "undefined" &&
+          !window.isSecureContext &&
+          window.location.hostname !== "localhost" &&
+          window.location.hostname !== "127.0.0.1"
+        ) {
+          message =
+            "Trình duyệt chỉ cho phép Camera/Mic qua HTTPS hoặc localhost. Để dùng qua IP mạng khác, cần truy cập qua HTTPS.";
+        } else if (error instanceof MediaRequestError) {
+          message = "Chưa thể bật camera hoặc mic. Kiểm tra quyền trình duyệt.";
+        } else if (error instanceof Error) {
+          if (
+            error.name === "NotAllowedError" ||
+            error.name === "PermissionDeniedError"
+          ) {
+            message = "Bạn chưa cấp quyền truy cập Camera/Mic trên trình duyệt.";
+          } else if (
+            error.name === "NotFoundError" ||
+            error.name === "DevicesNotFoundError"
+          ) {
+            message = "Không tìm thấy thiết bị Camera hoặc Microphone trên máy.";
+          }
+        }
+        setStatus(message);
       } finally {
         if (epoch.current === requestEpoch) setBusy(false);
       }

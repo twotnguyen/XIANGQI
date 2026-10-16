@@ -14,7 +14,10 @@ import {
   EngineError,
   type EngineRequest,
   type EngineResult,
+  type EngineLevel,
 } from "./contracts.js";
+export { ENGINE_LIMITS, EngineError };
+export type { EngineRequest, EngineResult, EngineLevel };
 const values: Record<PieceType, number> = {
   king: 0,
   advisor: 120,

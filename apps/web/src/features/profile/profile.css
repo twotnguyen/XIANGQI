@@ -1,52 +1,97 @@
 .xq-profile {
   display: grid;
-  gap: 1rem;
-  max-width: 40rem;
+  gap: 24px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px);
+  color: var(--color-ink, #fff5df);
 }
+
+.xq-profile h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(180deg, #fff5df 0%, #e2be78 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(198, 146, 42, 0.25);
+}
+
 .xq-profile-card {
   display: grid;
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 0.6rem;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(38, 22, 14, 0.92) 0%, rgba(24, 14, 9, 0.96) 100%);
+  border: 1.5px solid var(--color-gold-dark);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
+
 .xq-profile-avatar {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
+  font-size: 28px;
   font-weight: 700;
-  background: #f0e6d2;
+  background: radial-gradient(circle, #d8a562 0%, #875b26 100%);
+  border: 2px solid var(--color-gold-light);
+  color: #fffdf8;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+
 .xq-profile-card dl {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 0.25rem 1rem;
+  gap: 8px 20px;
   margin: 0;
+  align-items: baseline;
 }
+
 .xq-profile-card dt {
-  font-weight: 600;
+  color: var(--color-ink-muted);
+  font-weight: 500;
+  font-size: 14px;
 }
+
 .xq-profile-card dd {
   margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-ink);
 }
+
 .xq-profile-note {
-  font-size: 0.85rem;
-  opacity: 0.8;
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  margin: 0;
 }
 
 .xq-profile-theme {
   display: grid;
-  gap: 0.35rem;
+  gap: 8px;
   margin: 0;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 0.5rem;
+  padding: 16px;
+  background: rgba(255, 253, 248, 0.04);
+  border: 1px solid rgba(198, 146, 42, 0.2);
+  border-radius: 8px;
 }
+
+.xq-profile-theme legend {
+  font-weight: 600;
+  color: var(--color-gold-light);
+  padding: 0 4px;
+}
+
 .xq-profile-theme label {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 8px;
+  cursor: pointer;
 }

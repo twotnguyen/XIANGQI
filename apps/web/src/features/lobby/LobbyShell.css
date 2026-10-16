@@ -1,80 +1,491 @@
 .xq-lobby {
   gap: var(--space-6);
+  width: 100%;
 }
-.xq-lobby-heading {
+
+/* 1. HERO WELCOME BANNER (SCR-LOBBY) */
+.xq-welcome-banner {
+  background: linear-gradient(
+    135deg,
+    rgba(142, 22, 28, 0.92) 0%,
+    rgba(85, 12, 16, 0.96) 100%
+  );
+  border: 2px solid var(--color-gold);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--space-6);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 25px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
 }
-.xq-lobby-heading p {
-  color: var(--color-ink-muted);
-  margin-top: var(--space-2);
+
+.xq-banner-text {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
 }
-.xq-fixture {
-  font-size: var(--text-sm);
-  max-width: 280px;
+
+.xq-banner-sub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
+
+.xq-online-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--color-gold-light);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--color-gold-dark);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.xq-fixture-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.25);
+  border: 1px solid #ef4444;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.xq-welcome-banner h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 3.2vw, 32px);
+  color: #fff5df;
+  margin: 0 0 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.xq-welcome-banner p {
+  font-size: 14px;
+  color: #e6ceb3;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.xq-banner-calligraphy {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-han);
+  font-size: clamp(48px, 6vw, 76px);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  letter-spacing: 16px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* 2. GAME MODES GRID */
 .xq-lobby-modes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }
-.xq-lobby-modes p {
-  color: var(--color-ink-muted);
+
+.xq-mode-card {
+  background:
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(200, 150, 70, 0.08) 0%,
+      transparent 50%
+    ),
+    linear-gradient(180deg, #fffdf8 0%, #faf3e3 100%);
+  border: 2px solid #542c15 !important;
+  border-radius: 12px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+  color: #24160e;
 }
+
+.xq-mode-card:hover {
+  border-color: var(--color-gold) !important;
+  transform: translateY(-3px);
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.45),
+    0 0 15px rgba(198, 146, 42, 0.25);
+}
+
+.xq-mode-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.xq-mode-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.xq-mode-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-p1 {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+  border: 1px solid #3b82f6;
+}
+
+.badge-ai {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+  border: 1px solid #10b981;
+}
+
+.badge-p2 {
+  background: rgba(100, 116, 139, 0.15);
+  color: #475569;
+  border: 1px solid #94a3b8;
+}
+
+.badge-ranked {
+  background: rgba(220, 38, 38, 0.15);
+  color: #b91c1c;
+  border: 1px solid #ef4444;
+}
+
+.xq-mode-info h2,
+.xq-mode-info h3 {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: #24160e;
+  margin-bottom: 6px;
+}
+
+.xq-mode-info p {
+  font-size: 13px;
+  color: #5c4a3e;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  min-height: 40px;
+}
+
+.xq-mode-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.xq-pill {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f0e5d0;
+  border: 1px solid #d8c6ab;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #4a382a;
+}
+
+.xq-pill.strict {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
 .xq-code-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: start;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #d8c3a5;
 }
+
 .xq-code-form > .xq-button-group {
   margin-top: var(--space-8);
 }
+
 .xq-code-form input {
   font-family: var(--font-mono);
+  font-weight: 700;
+  background: #fffdf9;
+  border-color: #c4a57b;
+  color: #24160e;
 }
-.xq-future-modes {
-  display: grid;
-  gap: var(--space-3);
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--space-4);
+
+.xq-code-form input:focus {
+  border-color: var(--color-gold);
 }
+
+.xq-ranked-card {
+  border-color: #8e161c !important;
+  background:
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(200, 150, 70, 0.1) 0%,
+      transparent 50%
+    ),
+    linear-gradient(180deg, #fffcf6 0%, #f7ebe1 100%);
+}
+
+.xq-ranked-card:hover {
+  border-color: #b91c1c !important;
+}
+
+/* 3. PUBLIC ROOMS SECTION */
+.xq-rooms-section {
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(200, 150, 70, 0.06) 0%,
+      transparent 50%
+    ),
+    linear-gradient(180deg, #fffdf8 0%, #faf3e3 100%);
+  border: 2px solid #542c15 !important;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  color: #24160e;
+}
+
+.xq-rooms-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.xq-rooms-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.xq-rooms-title-icon {
+  font-size: 22px;
+}
+
+.xq-rooms-title-wrap h2 {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 700;
+  color: #24160e;
+  margin: 0;
+}
+
+.xq-rooms-count-pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  background: #e2be78;
+  color: #3a2218;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid #c6922a;
+}
+
 .xq-room-list {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
-.xq-room {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: var(--space-6);
-  align-items: center;
-  padding-block: var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  overflow-wrap: anywhere;
+
+.xq-room-card {
+  background: #fffdf9;
+  border: 1.5px solid #d8c3a5;
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  color: #24160e;
 }
-.xq-room:last-child {
-  border-bottom: 0;
+
+.xq-room-card:hover {
+  border-color: var(--color-gold);
+  background: #fff8eb;
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 16px rgba(198, 146, 42, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.08);
 }
+
+.xq-room-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.xq-room-title-block h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #24160e;
+  margin: 0 0 3px 0;
+}
+
+.xq-room-title-block .xq-help {
+  font-size: 12px;
+  color: #6e5a4b;
+  margin: 0;
+}
+
+.xq-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.badge-waiting {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.badge-playing {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
 .xq-room-meta {
   display: flex;
-  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6e5a4b;
+  border-top: 1px dashed #d8c3a5;
+  padding-top: 10px;
   flex-wrap: wrap;
-  font-size: var(--text-sm);
-  color: var(--color-ink-muted);
+  gap: 6px;
 }
-@media (max-width: 1023px) {
+
+.xq-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.xq-room-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* 4. RULES ACCORDION (SCR-LOBBY) */
+.xq-rules-accordion {
+  background:
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(200, 150, 70, 0.08) 0%,
+      transparent 50%
+    ),
+    linear-gradient(180deg, #fffdf8 0%, #faf3e3 100%);
+  border: 2px solid #542c15 !important;
+  border-radius: 12px;
+  padding: 18px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  color: #24160e;
+  transition: all 0.25s ease;
+}
+
+.xq-rules-summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 44px;
+  color: #24160e;
+  user-select: none;
+}
+
+.xq-rules-summary:hover {
+  color: #8e161c;
+}
+
+.xq-rules-accordion[open] {
+  border-color: var(--color-gold) !important;
+}
+
+.xq-rules-accordion[open] .xq-rules-summary {
+  border-bottom: 1px solid #d8c3a5;
+  margin-bottom: 16px;
+  padding-bottom: 4px;
+}
+
+.xq-rules-accordion .xq-stack {
+  color: #3d2b1f;
+  line-height: 1.6;
+}
+
+.xq-rules-accordion h2 {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: #8e161c;
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.xq-rules-accordion ul {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.xq-rules-accordion li {
+  margin-bottom: 6px;
+  font-size: 13.5px;
+}
+
+.xq-rules-accordion strong {
+  color: #8e161c;
+}
+
+.xq-rules-accordion p {
+  font-size: 13.5px;
+  margin-bottom: 8px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
   .xq-lobby-modes {
     grid-template-columns: 1fr;
   }
-  .xq-lobby-heading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-  .xq-room {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
+  .xq-welcome-banner {
+    padding: 20px;
   }
   .xq-code-form {
     grid-template-columns: 1fr;

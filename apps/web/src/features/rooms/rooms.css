@@ -54,11 +54,22 @@
 .xq-room-page {
   max-width: none;
   margin: 0;
-  background: var(--color-paper);
+  background-color: #120d0a;
+  background-image:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(200, 130, 40, 0.12) 0%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgba(20, 12, 8, 0.7) 0%, rgba(18, 11, 7, 0.95) 100%),
+    url("/images/login-bg-scenic.webp");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-ui);
   min-height: 100dvh;
-  padding: 24px;
+  padding: clamp(16px, 2.5vw, 32px);
   box-sizing: border-box;
 }
 .xq-room-page * {
@@ -71,9 +82,18 @@
   max-width: 1280px;
   margin: 0 auto 24px;
   align-items: center;
+  border-bottom: 1px solid rgba(198, 146, 42, 0.25);
+  padding-bottom: 14px;
 }
 .xq-room-header h1 {
-  font-size: 32px;
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(180deg, #fff5df 0%, #e2be78 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   overflow-wrap: anywhere;
 }
 .xq-room-content {
@@ -100,8 +120,8 @@
 }
 .xq-room-seat {
   margin: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: linear-gradient(180deg, rgba(42, 24, 15, 0.92) 0%, rgba(26, 14, 9, 0.96) 100%);
+  border: 1.5px solid var(--color-gold-dark);
   border-radius: 12px;
   padding: 24px;
   min-height: 200px;
@@ -110,6 +130,7 @@
   text-align: center;
   align-content: center;
   gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 .xq-seat-piece {
   font-family: var(--font-han);

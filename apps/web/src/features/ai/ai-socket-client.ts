@@ -24,6 +24,8 @@ export interface AiConnection {
   takeover(): Promise<void>;
   disconnect(): void;
 }
+import { getApiBaseUrl } from "../../shared/api.js";
+
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const invalid = "Phản hồi ván với máy không hợp lệ. Vui lòng tải lại.";
 const unavailable = "Chưa thể kết nối ván với máy. Kiểm tra mạng và thử lại.";
@@ -226,7 +228,7 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
     });
   }
   const socket = io(
-    `${(import.meta.env.VITE_API_URL || "http://localhost:3000").replace(/\/$/, "")}/ai`,
+    `${getApiBaseUrl()}/ai`,
     {
       path: "/ai/socket.io",
       transports: ["websocket"],

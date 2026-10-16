@@ -45,14 +45,14 @@ const messages: Record<string, string> = {
   RECOVERY_PASSWORD_INVALID: "Vui lòng đăng nhập lại để hoàn tất tài khoản.",
   RECOVERY_RATE_LIMIT: "Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút",
 };
+import { getApiBaseUrl } from "../../shared/api.js";
+
 async function post<T>(
   path: string,
   body: object,
   signal?: AbortSignal,
 ): Promise<T> {
-  const base = (
-    import.meta.env.VITE_API_URL || "http://localhost:3000"
-  ).replace(/\/$/, "");
+  const base = getApiBaseUrl();
   const response = await fetch(`${base}/auth/register/${path}`, {
     method: "POST",
     credentials: "include",

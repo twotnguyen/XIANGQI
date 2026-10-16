@@ -953,3 +953,14 @@ it("trusts a committed join ACK when a same-connection feed update removes the d
   );
   expect(window.location.pathname).toBe("/rooms/" + room.roomId);
 });
+it("opens AI setup dialog from lobby and navigates to AI game page on start", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  fireEvent.click(screen.getByRole("button", { name: "Chọn cấp độ máy" }));
+  expect(await screen.findByRole("heading", { name: "Thiết lập ván với máy" })).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Bắt đầu" }));
+  await vi.waitFor(() => expect(window.location.pathname).toMatch(/^\/ai\/[0-9a-f-]{36}$/));
+});

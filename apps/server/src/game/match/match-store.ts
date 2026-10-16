@@ -123,6 +123,15 @@ export class MatchStore {
     private readonly rooms: MatchRoomEndPort,
     private readonly now: () => Date = () => new Date(),
   ) {}
+  private readonly historyCache = new Map<
+    string,
+    {
+      version: number;
+      ply: number;
+      positions: Position[];
+      lastMove: MatchView["lastMove"];
+    }
+  >();
   private needClock(): ClockPort {
     return (
       this.clock ??
@@ -160,6 +169,14 @@ export class MatchStore {
     client: PoolClient,
     row: MatchRow,
   ): Promise<{ positions: Position[]; lastMove: MatchView["lastMove"] }> {
+    const cached = this.historyCache.get(row.id);
+    if (
+      cached &&
+      cached.version === Number(row.version) &&
+      cached.ply === Number(row.ply)
+    ) {
+      return { positions: cached.positions, lastMove: cached.lastMove };
+    }
     const start = await client.query<{ payload: unknown }>(
       "SELECT payload FROM public.match_events WHERE match_id=$1 AND version=0 AND type='START'",
       [row.id],
@@ -233,7 +250,7 @@ export class MatchStore {
       const last = lastId
         ? moves.rows.find((move) => move.id === lastId)!
         : null;
-      return {
+      const result = {
         positions: history,
         lastMove: last
           ? {
@@ -242,6 +259,15 @@ export class MatchStore {
             }
           : null,
       };
+      if (row.status === "ACTIVE") {
+        this.historyCache.set(row.id, {
+          version: Number(row.version),
+          ply: Number(row.ply),
+          positions: result.positions,
+          lastMove: result.lastMove,
+        });
+      }
+      return result;
     } catch (error) {
       if (
         error instanceof Error &&
@@ -606,6 +632,12 @@ export class MatchStore {
       );
       result = this.view(updated, next, lastMove);
     }
+    this.historyCache.set(row.id, {
+      version,
+      ply: Number(row.ply) + 1,
+      positions: [...history, next],
+      lastMove,
+    });
     await this.outbox(scope.client, row.room_id, "MATCH_MOVE", {
       matchId: row.id,
       matchVersion: version,
@@ -1041,6 +1073,7 @@ export class MatchStore {
   ): Promise<MatchView> {
     if (!Number.isFinite(at.getTime()) || at < row.created_at)
       reject("MATCH_INVALID_OUTCOME", "Thời điểm kết thúc không hợp lệ.", 500);
+    this.historyCache.delete(row.id);
     const version = Number(row.version) + 1;
     await client.query(
       "INSERT INTO public.match_events(match_id,version,type,payload,created_at) VALUES($1,$2,'RESULT',$3,$4)",
