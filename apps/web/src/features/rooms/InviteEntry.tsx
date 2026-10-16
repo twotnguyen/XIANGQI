@@ -26,7 +26,7 @@ export function InviteEntry({
     if (valid)
       queueMicrotask(() => {
         if (epoch.current !== requestEpoch) return;
-        void client.join(code).then(
+        void Promise.resolve().then(() => client.join(code)).then(
           (entry) => {
             if (epoch.current === requestEpoch) entered.current(entry);
           },
