@@ -52,7 +52,7 @@ try {
       logEvent("info", "server_started", { port: settings.port }) + "\n",
     );
   }
-} catch {
+} catch (error) {
   for (const close of [
     () => rooms?.close(),
     () => app?.close(),
@@ -65,5 +65,8 @@ try {
     }
   }
   process.stderr.write(logEvent("error", "server_start_failed") + "\n");
+  if (error instanceof Error && error.stack) {
+    process.stderr.write(error.stack + "\n");
+  }
   process.exitCode = 1;
 }

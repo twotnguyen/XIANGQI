@@ -34,9 +34,8 @@ export function InviteEntry({
           (failure: unknown) => {
             if (epoch.current !== requestEpoch) return;
             const msg =
-              failure instanceof RoomRequestError ||
-              (typeof failure === "object" && failure !== null && "code" in failure && typeof (failure as Record<string, unknown>).message === "string")
-                ? String((failure as Record<string, unknown>).message)
+              failure instanceof RoomRequestError
+                ? failure.message
                 : "Chưa thể vào phòng theo lời mời. Kiểm tra kết nối và thử lại.";
             setError(msg);
           },
