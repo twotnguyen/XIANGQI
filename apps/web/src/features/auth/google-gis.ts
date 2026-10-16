@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from "../../shared/api.js";
 export interface GoogleIdentity {
   initialize(config: {
     client_id: string;
@@ -76,9 +77,7 @@ async function request(
   body?: object,
   signal?: AbortSignal,
 ): Promise<unknown> {
-  const base = (
-    import.meta.env.VITE_API_URL || "http://localhost:3000"
-  ).replace(/\/$/, "");
+  const base = getApiBaseUrl();
   const response = await fetch(`${base}${path}`, {
     method: body === undefined ? "GET" : "POST",
     credentials: "include",

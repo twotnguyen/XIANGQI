@@ -1,3 +1,4 @@
+import "./shared/uuid.js";
 import { StrictMode, Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { HealthStatus } from "@xiangqi/shared";
@@ -5,6 +6,7 @@ import "./shared/styles/global.css";
 import "./shared/theme/theme.css";
 import { SessionProvider } from "./features/auth/SessionProvider.js";
 import { applyTheme, readStoredTheme } from "./shared/theme/theme.js";
+import { getApiBaseUrl } from "./shared/api.js";
 const AppRouter = lazy(() =>
   import("./app/AppRouter.js").then((module) => ({
     default: module.AppRouter,
@@ -64,7 +66,7 @@ function HealthPreview() {
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     const abort = new AbortController();
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/health`, {
+    fetch(`${getApiBaseUrl()}/health`, {
       signal: abort.signal,
     })
       .then((response) => {

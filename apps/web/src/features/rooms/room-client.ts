@@ -60,6 +60,7 @@ export class RoomRequestError extends Error {
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 import { getApiBaseUrl } from "../../shared/api.js";
+import { generateUuid } from "../../shared/uuid.js";
 
 function invalidResponse(): never {
   throw new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại.");
@@ -286,12 +287,12 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
   return {
     create: (input: CreateRoomInput) =>
       request("/rooms", parseEntry, {
-        commandId: crypto.randomUUID(),
+        commandId: generateUuid(),
         ...input,
       }),
     join: (code: string) =>
       request("/rooms/join", parseEntry, {
-        commandId: crypto.randomUUID(),
+        commandId: generateUuid(),
         code,
         preference: "auto",
       }),
@@ -467,7 +468,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       );
     },
   });
-  const tabId = crypto.randomUUID();
+  const tabId = generateUuid();
   socket.on("connect", () => {
     invalidateChat();
     input.onConnection(true);
@@ -669,7 +670,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       if (!socket.connected)
         return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
       const command = {
-        commandId: crypto.randomUUID(),
+        commandId: generateUuid(),
         roomId: input.roomId,
         expectedVersion,
         action,
