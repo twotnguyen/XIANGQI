@@ -18,7 +18,13 @@
     "build": "pnpm -r build",
     "build:web": "pnpm --filter @xiangqi/web... build",
     "build:server": "pnpm --filter @xiangqi/server... build",
-    "test:core": "vitest run tests/packages/xiangqi-core --coverage"
+    "test:core": "vitest run tests/packages/xiangqi-core --coverage",
+    "test:yc1": "tests/server/db.sh test tests/server/account",
+    "test:yc2": "tests/server/db.sh test tests/server/game/room",
+    "test:yc4": "tests/server/db.sh test tests/server/game/match tests/server/game/clock",
+    "test:yc6": "tests/server/db.sh test tests/server/game/realtime",
+    "test:yc7": "tests/server/db.sh test tests/server/game/chat tests/server/game/media",
+    "test:yc8": "tests/server/db.sh test tests/server/game/ai"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
