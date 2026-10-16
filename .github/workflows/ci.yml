@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     paths-ignore:
       - "**/*.md"
       - "docs/**"
@@ -13,7 +13,7 @@ on:
       - "docs/**"
       - ".env.example"
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -21,8 +21,27 @@ jobs:
   checks:
     name: Lint, Typecheck, Unit & Build
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: filter
+        name: Detect backend changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            DIFF=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            DIFF=$(git diff --name-only ${{ github.event.before }} HEAD 2>/dev/null || echo "apps/server/fallback")
+          fi
+          echo "Changed files:"
+          echo "$DIFF"
+          if echo "$DIFF" | grep -qE '^(apps/server|packages|supabase|tests/server|\.github/workflows/ci\.yml|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml)'; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -31,13 +50,14 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm test:core
-      - run: pnpm test:unit
+      - run: pnpm test:core --bail 1
+      - run: pnpm test:unit --bail 1
       - run: pnpm build
 
   db-integration:
     name: Database Integration Tests
     needs: checks
+    if: needs.checks.outputs.backend == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -50,8 +70,8 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd "pg_isready -U auth_test_admin -d xiangqi_auth_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       realtime-postgres:
         image: postgres:17.6
@@ -63,8 +83,8 @@ jobs:
           - 5433:5432
         options: >-
           --health-cmd "pg_isready -U realtime_test_admin -d xiangqi_realtime_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       login-postgres:
         image: postgres:17.6
@@ -76,8 +96,8 @@ jobs:
           - 5434:5432
         options: >-
           --health-cmd "pg_isready -U login_test_admin -d xiangqi_login_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       schema-postgres:
         image: postgres:17.6
@@ -89,8 +109,8 @@ jobs:
           - 55443:5432
         options: >-
           --health-cmd "pg_isready -U schema_test_admin -d xiangqi_schema_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       google-guest-postgres:
         image: postgres:17.6
@@ -102,8 +122,8 @@ jobs:
           - 55445:5432
         options: >-
           --health-cmd "pg_isready -U google_guest_test_admin -d google_guest_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       room-postgres:
         image: postgres:17.6
@@ -115,8 +135,8 @@ jobs:
           - 55446:5432
         options: >-
           --health-cmd "pg_isready -U room_test_admin -d xiangqi_room_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       match-postgres:
         image: postgres:17.6
@@ -128,8 +148,8 @@ jobs:
           - 55447:5432
         options: >-
           --health-cmd "pg_isready -U match_test_admin -d xiangqi_match_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       clock-postgres:
         image: postgres:17.6
@@ -141,8 +161,8 @@ jobs:
           - 55448:5432
         options: >-
           --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       room-transactions-postgres:
         image: postgres:17.6
@@ -154,8 +174,8 @@ jobs:
           - 55449:5432
         options: >-
           --health-cmd "pg_isready -U room_transaction_test_admin -d xiangqi_room_transactions_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       clock-port-postgres:
         image: postgres:17.6
@@ -167,8 +187,8 @@ jobs:
           - 55451:5432
         options: >-
           --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_port_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
       member-realtime-postgres:
         image: postgres:17.6
@@ -180,8 +200,8 @@ jobs:
           - 55450:5432
         options: >-
           --health-cmd "pg_isready -U member_realtime_test_admin -d xiangqi_member_realtime_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
 
       room-runtime-postgres:
@@ -194,8 +214,8 @@ jobs:
           - 55452:5432
         options: >-
           --health-cmd "pg_isready -U room_runtime_test_admin -d xiangqi_room_runtime_test"
-          --health-interval 5s
-          --health-timeout 5s
+          --health-interval 3s
+          --health-timeout 3s
           --health-retries 10
     env:
       ROOM_RUNTIME_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test
@@ -219,4 +239,4 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec vitest run tests/server --no-file-parallelism
+      - run: pnpm exec vitest run tests/server --no-file-parallelism --bail 1
