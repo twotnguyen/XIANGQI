@@ -31,7 +31,7 @@ import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./match/MatchActions.js";
 import { ReconnectStatus } from "./match/ReconnectStatus.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
-import { RoomQr } from "./RoomQr.js";
+
 import { RoomChat } from "../chat/RoomChat.js";
 import { useRoomChat } from "../chat/useRoomChat.js";
 import type { MediaClient } from "../media/media-client.js";
@@ -41,6 +41,9 @@ const LazyMediaPanel = lazy(() =>
   })),
 );
 import "./rooms.css";
+// Chờ realtime bao lâu trước khi đọc phòng qua HTTP.
+const SNAPSHOT_FALLBACK_MS = 1200;
+
 function swapMessage(code: string, fallback: string) {
   switch (code) {
     case "SWAP_COOLDOWN":
@@ -91,6 +94,8 @@ export function RoomPage({
   const [leaveError, setLeaveError] = useState("");
   const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
+  const [copying, setCopying] = useState(false);
+  const [copyStatus, setCopyStatus] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsStatus, setSettingsStatus] = useState("");
@@ -187,22 +192,33 @@ export function RoomPage({
     connectedRef.current = false;
     setConnected(false);
     setError("");
-    void client.snapshot(roomId).then(
-      (value) => {
-        if (alive && !latest.current && value.version >= versionFloor.current) {
-          versionFloor.current = value.version;
-          setView(value);
-        }
-      },
-      () => {
-        if (alive && !latest.current)
-          setError("Chưa thể tải phòng. Kiểm tra quyền vào phòng và kết nối.");
-      },
-    );
+    // shortcut: the gateway pushes a full snapshot on connect, so the HTTP read
+    // only runs when realtime stays silent (blocked socket, offline, slow auth).
+    const fallbackTimer = setTimeout(() => {
+      void client.snapshot(roomId).then(
+        (value) => {
+          if (
+            alive &&
+            !latest.current &&
+            value.version >= versionFloor.current
+          ) {
+            versionFloor.current = value.version;
+            setView(value);
+          }
+        },
+        () => {
+          if (alive && !latest.current)
+            setError(
+              "Chưa thể tải phòng. Kiểm tra quyền vào phòng và kết nối.",
+            );
+        },
+      );
+    }, SNAPSHOT_FALLBACK_MS);
     const peer = connect({
       roomId,
       getProof,
       onSnapshot: (value) => {
+        clearTimeout(fallbackTimer);
         if (alive && acceptSnapshot(value)) setError("");
       },
       onConnection: (value) => {
@@ -260,6 +276,7 @@ export function RoomPage({
     document.addEventListener("visibilitychange", refreshVisible);
     return () => {
       alive = false;
+      clearTimeout(fallbackTimer);
       refreshEpoch.current++;
       document.removeEventListener("visibilitychange", refreshVisible);
       epoch.current++;
@@ -288,6 +305,20 @@ export function RoomPage({
     const timer = setInterval(() => setSwapNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [swapOfferId]);
+  async function copyInvite(value: string) {
+    if (copying) return;
+    setCopying(true);
+    setCopyStatus("");
+    try {
+      if (!navigator.clipboard?.writeText) throw Error("clipboard unavailable");
+      await navigator.clipboard.writeText(value);
+      setCopyStatus("Đã sao chép mã phòng.");
+    } catch {
+      setCopyStatus("Chưa sao chép được. Hãy chọn mã và sao chép thủ công.");
+    } finally {
+      setCopying(false);
+    }
+  }
   function unlockAudio() {
     void gameAudio.current?.unlock();
     if (muted) return;
@@ -837,6 +868,42 @@ export function RoomPage({
           </Button>
         </div>
       </header>
+      {code && room.visibility !== "LOCKED" && (
+        <section className="xq-room-invite" aria-label="Mời người vào phòng">
+          <div className="xq-room-invite-code">
+            <span className="xq-room-invite-label">Mã phòng</span>
+            <strong>{code}</strong>
+          </div>
+          <p className="xq-room-invite-hint">
+            Đọc mã này cho người muốn vào. Họ phải đăng nhập để ngồi ghế hoặc
+            xem.
+          </p>
+          <div className="xq-room-invite-actions">
+            <Button
+              variant="secondary"
+              loading={copying}
+              onClick={() => void copyInvite(code)}
+            >
+              Sao chép mã
+            </Button>
+            <a
+              className="xq-room-invite-link"
+              href={`/rooms/join?token=${encodeURIComponent(code)}`}
+            >
+              Đường dẫn mời vào phòng
+            </a>
+          </div>
+          {copyStatus && (
+            <p
+              className="xq-room-invite-status"
+              role="status"
+              aria-live="polite"
+            >
+              {copyStatus}
+            </p>
+          )}
+        </section>
+      )}
       <fieldset className="match-actions__confirmation" disabled={busy}>
         <Dialog
           open={leaveConfirm !== null}
@@ -926,11 +993,14 @@ export function RoomPage({
           <div className="xq-room-seats">
             {(["red", "black"] as const).map((side) => {
               const occupant = room.seats[side],
-                label = side === "red" ? "Đỏ" : "Đen";
+                label = side === "red" ? "Đỏ" : "Đen",
+                ready =
+                  Boolean(occupant) && room.connected[side] && room.ready[side];
               return (
                 <section
                   className={`xq-room-seat ${side}`}
                   key={side}
+                  data-ready={ready}
                   aria-label={`Ghế ${label}`}
                 >
                   <span className="xq-seat-piece" aria-hidden="true">
@@ -946,7 +1016,7 @@ export function RoomPage({
                   {occupant === userId && occupant === room.hostId && (
                     <p>Chủ phòng</p>
                   )}
-                  <p>
+                  <p className="xq-room-seat-state">
                     {!occupant
                       ? "Đang chờ kỳ hữu"
                       : !room.connected[side]
@@ -958,6 +1028,14 @@ export function RoomPage({
                 </section>
               );
             })}
+            {!playingLayout && (
+              <p className="xq-room-seats-river" aria-hidden="true">
+                <span>楚</span>
+                <span>河</span>
+                <span>漢</span>
+                <span>界</span>
+              </p>
+            )}
           </div>
           {clockState?.clocks && (
             <MatchClocks
@@ -1141,21 +1219,8 @@ export function RoomPage({
             </dd>
           </dl>
           <p>Thời gian và trần người xem đã cố định.</p>
-          {code && room.visibility !== "LOCKED" ? (
-            <>
-              <p>
-                Mã phòng: <strong>{code}</strong>
-              </p>
-              <a href={`/rooms/join?token=${encodeURIComponent(code)}`}>
-                Đường dẫn mời vào phòng
-              </a>
-              <RoomQr
-                code={code}
-                url={`${window.location.origin}/rooms/join?token=${encodeURIComponent(code)}`}
-              />
-            </>
-          ) : (
-            <p>Mã mời chưa được cung cấp cho phiên này.</p>
+          {room.visibility === "LOCKED" && (
+            <p>Mã mời đã bị khoá, người mới không vào được.</p>
           )}
           <div className="xq-room-slots">
             {chat ?? (

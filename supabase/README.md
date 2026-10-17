@@ -34,3 +34,9 @@ Luồng bảo trì chạy khi server khởi động và mỗi 5 phút. Đăng k�
 ## Mẫu email xác thực
 
 Mẫu trong `templates/confirm-sign-up.html` dùng `{{ .Token }}`. Subject: **Cờ Tướng Online — Mã xác thực đăng ký**; sender name: **Cờ Tướng Online**. Cấu hình Supabase cần bật Confirm Email, OTP 6 chữ số/hết hạn 180 giây, mật khẩu tối thiểu 8 ký tự và khoảng gửi lại tối thiểu 60 giây. Nội dung mẫu nêu hiệu lực 3 phút và nhắc không chia sẻ mã. SMTP credentials chỉ nằm trong cấu hình riêng, không đưa vào template hoặc repo.
+
+## Chuyển mã phòng sang 8 chữ số
+
+Migration `20261017000018_room_code_digits.sql` từ chối nếu còn phòng chưa đóng dùng mã chữ cũ. Cho các phòng này kết thúc và đóng bằng server cũ trước, sau đó dừng toàn bộ server cũ, áp migration và khởi động bản server/web mới; không rolling deploy hai định dạng mã. Migration không tự đóng phòng hay đổi mã; mã cũ của phòng đã đóng được giữ để bảo toàn lịch sử.
+
+`NOT VALID` chỉ bỏ qua kiểm tra dữ liệu hiện hữu; mọi INSERT/UPDATE sau migration vẫn phải dùng mã số hoặc `NULL`. Không cập nhật lại dòng phòng đã đóng còn mã chữ. Rollback tương ứng từ chối khi tồn tại mã 8 chữ số, kể cả phòng đã đóng; không xóa dữ liệu để ép rollback.

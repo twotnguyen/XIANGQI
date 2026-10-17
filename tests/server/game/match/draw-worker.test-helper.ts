@@ -49,4 +49,5 @@ export async function reset() {
     await apply(
       `supabase/migrations/20261011${String(name[0] + 1).padStart(6, "0")}_${name[1]}.sql`,
     );
+  await apply("supabase/migrations/20261017000018_room_code_digits.sql");
 }

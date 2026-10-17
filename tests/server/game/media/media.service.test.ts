@@ -32,7 +32,7 @@ async function seat(roomId: string, userId: string, side: string) {
 async function makeRoom(owner: string) {
   const roomId = randomUUID();
   await pool.query(
-    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong media','CODE_ONLY','ABCDEFGH',600,5,'WAITING',1)",
+    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong media','CODE_ONLY','12345678',600,5,'WAITING',1)",
     [roomId, owner],
   );
   return roomId;
@@ -44,6 +44,7 @@ describe.skipIf(!url)("media access", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000015_media_share.sql");
   });
   it("issues player tokens with device-scoped publish rights", async () => {

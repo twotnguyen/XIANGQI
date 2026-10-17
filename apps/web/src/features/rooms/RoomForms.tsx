@@ -125,9 +125,9 @@ export function JoinRoomForm({
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (busy) return;
-    const normalized = code.replace(/[\s-]/g, "").toUpperCase();
-    if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(normalized)) {
-      setError("Nhập mã phòng gồm 8 ký tự hợp lệ.");
+    const normalized = code.replace(/[\s-]/g, "");
+    if (!/^[0-9]{8}$/.test(normalized)) {
+      setError("Mã phòng gồm đúng 8 chữ số.");
       return;
     }
     setBusy(true);
@@ -149,14 +149,14 @@ export function JoinRoomForm({
       <h2>Vào phòng bằng mã</h2>
       <TextField
         label="Mã phòng"
-        autoCapitalize="characters"
+        inputMode="numeric"
         autoComplete="off"
         value={code}
         disabled={busy}
         error={error}
-        helper="Nhập mã 8 ký tự từ người mời."
+        helper="Nhập 8 chữ số từ người mời."
         onChange={(event) => {
-          setCode(event.target.value);
+          setCode(event.target.value.replace(/\D/g, ""));
           setError("");
         }}
       />

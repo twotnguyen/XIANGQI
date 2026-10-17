@@ -159,6 +159,7 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
   });
   afterAll(() => pool.end());

@@ -61,7 +61,11 @@
       rgba(200, 130, 40, 0.12) 0%,
       transparent 70%
     ),
-    linear-gradient(180deg, rgba(20, 12, 8, 0.7) 0%, rgba(18, 11, 7, 0.95) 100%),
+    linear-gradient(
+      180deg,
+      rgba(20, 12, 8, 0.7) 0%,
+      rgba(18, 11, 7, 0.95) 100%
+    ),
     url("/images/login-bg-scenic.webp");
   background-size: cover;
   background-position: center;
@@ -117,10 +121,29 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  align-items: stretch;
+}
+.xq-room-seats:has(.xq-room-seats-river) {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+.xq-room-seats-river {
+  margin: 0;
+  align-self: center;
+  display: grid;
+  gap: 10px;
+  font-family: var(--font-han);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-gold-dark);
+  text-align: center;
 }
 .xq-room-seat {
   margin: 0;
-  background: linear-gradient(180deg, rgba(42, 24, 15, 0.92) 0%, rgba(26, 14, 9, 0.96) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(42, 24, 15, 0.92) 0%,
+    rgba(26, 14, 9, 0.96) 100%
+  );
   border: 1.5px solid var(--color-gold-dark);
   border-radius: 12px;
   padding: 24px;
@@ -131,6 +154,75 @@
   align-content: center;
   gap: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.xq-room-seat[data-ready="true"] {
+  border-color: var(--color-gold);
+}
+.xq-room-seat-state {
+  display: inline-block;
+  padding: 2px 12px;
+  border: 1px solid var(--color-gold-dark);
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+.xq-room-seat[data-ready="true"] .xq-room-seat-state {
+  color: var(--color-gold-light);
+  border-color: var(--color-gold);
+}
+/* Mã phòng là thứ chủ phòng đọc ra: dải ngang ngay dưới tiêu đề. */
+.xq-room-invite {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 24px;
+  max-width: 1280px;
+  margin: 0 auto 20px;
+  padding: 14px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(42, 24, 15, 0.92) 0%,
+    rgba(26, 14, 9, 0.96) 100%
+  );
+  border: 1.5px solid var(--color-gold-dark);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.xq-room-invite-code {
+  display: grid;
+  gap: 2px;
+}
+.xq-room-invite-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-muted);
+}
+.xq-room-invite-code strong {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-gold-light);
+}
+.xq-room-invite-hint {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+.xq-room-invite-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.xq-room-invite-link {
+  color: var(--color-gold-light);
+}
+.xq-room-invite-status {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--color-ink-muted);
 }
 .xq-seat-piece {
   font-family: var(--font-han);
@@ -219,9 +311,16 @@
   .xq-room-seats {
     gap: 12px;
   }
+  .xq-room-seats-river {
+    display: none;
+  }
   .xq-room-seat {
     padding: 16px 8px;
     min-height: 190px;
+  }
+  .xq-room-invite {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
   }
   .xq-room-seat h2 {
     font-size: 18px;

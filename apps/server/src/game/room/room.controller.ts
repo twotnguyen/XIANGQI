@@ -107,7 +107,7 @@ export class RoomController {
         commandId = id(input.commandId);
       if (
         typeof input.code !== "string" ||
-        !/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(input.code) ||
+        !/^[0-9]{8}$/.test(input.code) ||
         (input.preference !== undefined &&
           (typeof input.preference !== "string" ||
             !["auto", "play", "watch"].includes(input.preference))) ||

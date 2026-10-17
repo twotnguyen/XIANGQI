@@ -77,8 +77,9 @@ async function setup(guest = false) {
         randomUUID()
           .replaceAll("-", "")
           .slice(0, 8)
-          .toUpperCase()
-          .replace(/[01IO]/g, "A"),
+          .split("")
+          .map((c) => parseInt(c, 16) % 10)
+          .join(""),
       ],
     );
     await c.query(

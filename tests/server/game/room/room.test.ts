@@ -60,6 +60,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
   });
   it("creates default code-only room with red reservation and durable idempotent response", async () => {
@@ -69,7 +70,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     expect(entry).toMatchObject({
       role: "red",
       version: 1,
-      inviteCode: expect.stringMatching(/^[A-HJ-NP-Z2-9]{8}$/),
+      inviteCode: expect.stringMatching(/^[0-9]{8}$/),
     });
     expect(await run(a, proof, [], (s) => store.create(s, input))).toEqual(
       entry,
@@ -989,6 +990,50 @@ describe.skipIf(!databaseUrl)("room schema", () => {
         )
       ).rows,
     ).toEqual(before);
+  });
+  it("refuses digit cutover until legacy-code rooms close without rewriting history", async () => {
+    await apply(migration);
+    const a = await actor(),
+      id = randomUUID();
+    await pool.query(
+      "INSERT INTO public.rooms(id,owner_id,name,invite_code,viewer_limit,time_control) VALUES($1,$2,'Legacy code','ABCDEFGH',5,600)",
+      [id, a.userId],
+    );
+    const digitMigration =
+      "supabase/migrations/20261017000018_room_code_digits.sql";
+    await expect(apply(digitMigration)).rejects.toThrow(
+      /Open rooms with legacy invite codes/,
+    );
+    expect(
+      (
+        await pool.query(
+          "UPDATE public.rooms SET room_version=room_version+1 WHERE id=$1 RETURNING invite_code,room_version",
+          [id],
+        )
+      ).rows[0],
+    ).toEqual({ invite_code: "ABCDEFGH", room_version: "1" });
+    await pool.query(
+      "UPDATE public.rooms SET status='CLOSED',closed_at=now() WHERE id=$1",
+      [id],
+    );
+    await apply(digitMigration);
+    expect(
+      (
+        await pool.query("SELECT invite_code FROM public.rooms WHERE id=$1", [
+          id,
+        ])
+      ).rows[0].invite_code,
+    ).toBe("ABCDEFGH");
+    await pool.query(
+      "INSERT INTO public.rooms(owner_id,name,invite_code,viewer_limit,time_control) VALUES($1,'Digit code','01234567',5,600)",
+      [a.userId],
+    );
+    await expect(
+      pool.query(
+        "INSERT INTO public.rooms(owner_id,name,invite_code,viewer_limit,time_control) VALUES($1,'Old code','BCDEFGHJ',5,600)",
+        [a.userId],
+      ),
+    ).rejects.toThrow(/rooms_invite_code_check/);
   });
   it("requires existing legacy seat reservations rather than repairing rows", async () => {
     const a = await actor(),

@@ -48,13 +48,7 @@ async function fixture(memberOwner = false, id = randomUUID()) {
     viewer = await actor();
   await pool.query(
     "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Worker','CODE_ONLY',600,5,$3)",
-    [
-      id,
-      hostId,
-      String(++codeSequence)
-        .padStart(8, "0")
-        .replace(/[0-9]/g, (digit) => "ABCDEFGHJK"[Number(digit)]!),
-    ],
+    [id, hostId, String(++codeSequence).padStart(8, "0")],
   );
   const client = await pool.connect();
   await client.query("BEGIN");

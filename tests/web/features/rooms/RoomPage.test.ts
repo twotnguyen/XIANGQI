@@ -60,7 +60,7 @@ const snapshot: RoomSnapshot = {
     status: "WAITING",
     hostId: "a",
     visibility: "CODE_ONLY",
-    inviteCode: "K7M2XQP4",
+    inviteCode: "70521348",
 
     timeMinutes: 10,
     viewerLimit: 5,
@@ -151,11 +151,11 @@ function setup(state = snapshot) {
     unmount: rendered.unmount,
     closed: () => act(() => handlers.onClosed?.("Phòng đã đóng")),
     ready: async () => {
-      await screen.findByRole("heading", { name: "Kỳ hữu" });
-      act(() => {
+      await act(async () => {
         handlers.onConnection(true);
         handlers.onSnapshot(state);
       });
+      await screen.findByRole("heading", { name: "Kỳ hữu" });
     },
     publish: (value: RoomSnapshot) => act(() => handlers.onSnapshot(value)),
     disconnect: () => act(() => handlers.onConnection(false)),
@@ -984,7 +984,7 @@ it("mode save uses current CAS, waits for canonical HTTP and hides the old invit
     3,
     "LOCKED",
   );
-  expect(screen.getByText("K7M2XQP4")).toBeTruthy();
+  expect(screen.getByText("70521348")).toBeTruthy();
   await act(async () =>
     finish({
       ...snapshot,
@@ -992,7 +992,7 @@ it("mode save uses current CAS, waits for canonical HTTP and hides the old invit
       room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
     }),
   );
-  expect(screen.queryByText("K7M2XQP4")).toBeNull();
+  expect(screen.queryByText("70521348")).toBeNull();
   expect(f.refresh).toHaveBeenCalledOnce();
   expect(f.command).not.toHaveBeenCalled();
 });
@@ -1027,7 +1027,7 @@ it("an obsolete settings ACK cannot overwrite a newer host or mode", async () =>
       room: { ...snapshot.room, visibility: "PUBLIC" },
     }),
   );
-  expect(screen.queryByText("K7M2XQP4")).toBeNull();
+  expect(screen.queryByText("70521348")).toBeNull();
   expect(screen.queryByRole("button", { name: "Cài đặt phòng" })).toBeNull();
 });
 it("unlock displays only the new server invite", async () => {
@@ -1039,14 +1039,14 @@ it("unlock displays only the new server invite", async () => {
   f.client.changeVisibility.mockResolvedValue({
     ...snapshot,
     version: 4,
-    room: { ...snapshot.room, inviteCode: "NEW8CODE" },
+    room: { ...snapshot.room, inviteCode: "90125374" },
   });
   const u = userEvent.setup();
   await u.click(screen.getByRole("button", { name: "Cài đặt phòng" }));
   await u.click(screen.getByRole("radio", { name: /Chỉ qua mã/ }));
   await u.click(screen.getByRole("button", { name: "Lưu thay đổi" }));
-  expect(await screen.findByText("NEW8CODE")).toBeTruthy();
-  expect(screen.queryByText("K7M2XQP4")).toBeNull();
+  expect(await screen.findByText("90125374")).toBeTruthy();
+  expect(screen.queryByText("70521348")).toBeNull();
 });
 
 it("settings uses the latest room version while open and preserves the mode on a failed save", async () => {
@@ -1068,7 +1068,7 @@ it("settings uses the latest room version while open and preserves the mode on a
   );
   expect(await screen.findByText(/Chế độ hiện tại: Chỉ qua mã/)).toBeTruthy();
   expect(screen.getByRole("dialog").textContent).toContain("Phòng đã thay đổi");
-  expect(screen.getByText("K7M2XQP4")).toBeTruthy();
+  expect(screen.getByText("70521348")).toBeTruthy();
 });
 it("a settings ACK after disconnect is ignored even after bare reconnect", async () => {
   const f = setup();
@@ -1349,8 +1349,12 @@ it("spectators Leave without claiming resignation or opening player confirmation
   expect(screen.queryByRole("dialog", { name: "Rời phòng?" })).toBeNull();
 });
 
-it("initial HTTP PLAYING view cannot resign before the fresh socket match and confirmation", async () => {
+it("the fallback HTTP PLAYING view cannot resign before the fresh socket match and confirmation", async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true });
   const f = setup(actionable());
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1500);
+  });
   await screen.findByRole("heading", { name: "Kỳ hữu" });
   fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
   expect(f.client.leave).not.toHaveBeenCalled();
@@ -1576,22 +1580,28 @@ it("moves a non-host player to spectator from the viewers panel", async () => {
     .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
   expect(fixture.client.toSpectator).toHaveBeenCalledWith("room", 8);
 });
-it("shows an invite QR with the room code and hides it when the host locks the room", async () => {
+it("shows the invite code with a copy action and hides it when the host locks the room", async () => {
   const fixture = setup({
     ...snapshot,
-    room: { ...snapshot.room, visibility: "CODE_ONLY", inviteCode: "K7M2XQP4" },
+    room: { ...snapshot.room, visibility: "CODE_ONLY", inviteCode: "70521348" },
   });
   await fixture.ready();
-  const qr = screen.getByRole("img", { name: "QR mời vào phòng, mã K7M2XQP4" });
-  expect(qr).toBeTruthy();
+  expect(screen.getByText("70521348")).toBeTruthy();
+  const u = userEvent.setup();
+  const copied: string[] = [];
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { writeText: vi.fn((value: string) => void copied.push(value)) },
+  });
+  await u.click(screen.getByRole("button", { name: "Sao chép mã" }));
+  expect(copied).toEqual(["70521348"]);
+  expect((await screen.findByRole("status")).textContent).toBe(
+    "Đã sao chép mã phòng.",
+  );
   fixture.publish({
     ...snapshot,
     version: 9,
     room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
   });
-  await waitFor(() =>
-    expect(
-      screen.queryByRole("img", { name: "QR mời vào phòng, mã K7M2XQP4" }),
-    ).toBeNull(),
-  );
+  await waitFor(() => expect(screen.queryByText("70521348")).toBeNull());
 });

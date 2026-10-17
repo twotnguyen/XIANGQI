@@ -38,6 +38,7 @@ describe.skipIf(!url)("friendships", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000014_friendships.sql");
   });
   it("searches by prefix, sends, accepts and lists friends", async () => {
@@ -113,7 +114,7 @@ describe.skipIf(!url)("friendships", () => {
     await store.respondRequest(mate, req!.id, true);
     const roomId = randomUUID();
     await pool.query(
-      "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong moi','CODE_ONLY','ABCDEFGH',600,5,'WAITING',1)",
+      "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong moi','CODE_ONLY','12345678',600,5,'WAITING',1)",
       [roomId, host],
     );
     await pool.query("BEGIN");

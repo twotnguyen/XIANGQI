@@ -19,27 +19,29 @@ export function InviteEntry({
   const epoch = useRef(0);
   const entered = useRef(onEntered);
   entered.current = onEntered;
-  const normalizedCode = (code ?? "").trim().toUpperCase();
-  const valid = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(normalizedCode);
+  const normalizedCode = (code ?? "").trim();
+  const valid = /^[0-9]{8}$/.test(normalizedCode);
   useEffect(() => {
     const requestEpoch = ++epoch.current;
     setError("");
     if (valid)
       queueMicrotask(() => {
         if (epoch.current !== requestEpoch) return;
-        void Promise.resolve().then(() => client.join(normalizedCode)).then(
-          (entry) => {
-            if (epoch.current === requestEpoch) entered.current(entry);
-          },
-          (failure: unknown) => {
-            if (epoch.current !== requestEpoch) return;
-            const msg =
-              failure instanceof RoomRequestError
-                ? failure.message
-                : "Chưa thể vào phòng theo lời mời. Kiểm tra kết nối và thử lại.";
-            setError(msg);
-          },
-        );
+        void Promise.resolve()
+          .then(() => client.join(normalizedCode))
+          .then(
+            (entry) => {
+              if (epoch.current === requestEpoch) entered.current(entry);
+            },
+            (failure: unknown) => {
+              if (epoch.current !== requestEpoch) return;
+              const msg =
+                failure instanceof RoomRequestError
+                  ? failure.message
+                  : "Chưa thể vào phòng theo lời mời. Kiểm tra kết nối và thử lại.";
+              setError(msg);
+            },
+          );
       });
     return () => {
       epoch.current++;

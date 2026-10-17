@@ -40,7 +40,7 @@ const view: RoomView = {
     status: "WAITING",
     hostId: actor.userId,
     visibility: "PUBLIC",
-    inviteCode: "ABCDEFGH",
+    inviteCode: "12345678",
     timeMinutes: 10,
     viewerLimit: 5,
     seats: { red: actor.userId, black: null },

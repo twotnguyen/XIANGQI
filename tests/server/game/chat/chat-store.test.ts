@@ -79,6 +79,7 @@ describe.skipIf(!databaseUrl)(
       ])
         await apply(`supabase/migrations/202610110000${name}.sql`);
       await apply(migration);
+      await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     });
     it("supports WAITING self private chat and never writes legacy messages or raw receipt/outbox bodies", async () => {
       const f = await fixture();

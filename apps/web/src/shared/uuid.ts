@@ -2,13 +2,13 @@
  * RFC4122 v4 UUID generator that works in both Secure Contexts (HTTPS / localhost)
  * and Insecure Contexts (HTTP over LAN / VPN / Tailscale).
  */
+const nativeRandomUUID =
+  typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID.bind(crypto)
+    : null;
+
 export function generateUuid(): string {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
+  if (nativeRandomUUID) return nativeRandomUUID();
 
   if (
     typeof crypto !== "undefined" &&

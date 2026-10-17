@@ -16,7 +16,7 @@ const entry = {
   roomId,
   version: 1,
   role: "red" as const,
-  inviteCode: "ABCDEFGH",
+  inviteCode: "12345678",
 };
 const create = vi.fn<
   (
@@ -176,14 +176,14 @@ it("rejects malformed/missing dual proof and malformed or duplicate cookies befo
 it("resolves code privately and rechecks it under the target room transaction", async () => {
   const response = await request("/rooms/join", {
     commandId,
-    code: "ABCDEFGH",
+    code: "12345678",
     preference: "watch",
     expectedVersion: 1,
     userId: actor.userId,
     roomId: actor.userId,
   });
   expect(response.status).toBe(200);
-  expect(resolveCode).toHaveBeenLastCalledWith(client, "ABCDEFGH");
+  expect(resolveCode).toHaveBeenLastCalledWith(client, "12345678");
   expect(withRoom.mock.calls.at(-1)?.[0]).toEqual({ actor, roomIds: [roomId] });
   expect(join).toHaveBeenLastCalledWith(scope, {
     commandId,
@@ -207,7 +207,7 @@ it("rejects malformed bodies/UUID and unsupported input types with400", async ()
     (
       await request("/rooms/join", {
         commandId,
-        code: ["ABCDEFGH"],
+        code: ["12345678"],
         preference: "watch",
       })
     ).status,
@@ -273,7 +273,7 @@ it("defaults preference to auto and preserves authoritative spectator fallback/n
   } as never);
   const response = await request("/rooms/join", {
     commandId,
-    code: "ABCDEFGH",
+    code: "12345678",
     acceptViewerFallback: false,
   });
   expect(response.status).toBe(200);
@@ -293,7 +293,7 @@ it("rejects a changed code target during the second transaction without joining"
   const calls = join.mock.calls.length;
   const response = await request("/rooms/join", {
     commandId,
-    code: "ABCDEFGH",
+    code: "12345678",
   });
   expect(response.status).toBe(409);
   expect(join.mock.calls.length).toBe(calls);

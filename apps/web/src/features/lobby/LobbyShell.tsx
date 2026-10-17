@@ -68,7 +68,10 @@ export function LobbyShell({
       <div className="xq-welcome-banner">
         <div className="xq-banner-text">
           <div className="xq-banner-sub">
-            <span className="xq-online-pill">🟢 Kỳ Đài Trực Tuyến</span>
+            <span className="xq-online-pill">
+              <span className="xq-live-pulse" aria-hidden="true" />
+              🟢 Kỳ Đài Trực Tuyến · Đang Hoạt Động
+            </span>
             {fixture && (
               <span className="xq-fixture-pill">
                 Dữ liệu minh họa · chưa kết nối phòng thật
@@ -89,23 +92,27 @@ export function LobbyShell({
       {/* 2. GAME MODES GRID */}
       <div className="xq-lobby-modes">
         {/* MODE 1: TỰ TẠO PHÒNG */}
-        <section className="xq-panel xq-mode-card xq-stack">
-          <div className="xq-mode-top">
+        <section className="xq-panel xq-mode-card xq-mode-casual">
+          <div className="xq-mode-header">
+            <div className="xq-mode-icon-box" aria-hidden="true">
+              🏮
+            </div>
             <span className="xq-mode-badge badge-p1">P1 · Khả dụng</span>
-            <div className="xq-mode-icon" aria-hidden="true">
-              🏛️
-            </div>
           </div>
-          <div className="xq-mode-info">
+          <div className="xq-mode-body">
             <h2>Tự tạo phòng</h2>
-            <p>Mời kỳ hữu qua mã phòng hoặc đường dẫn.</p>
+            <p className="xq-mode-desc">
+              Tự do mở phòng giao lưu, mời bạn bè bằng mã hoặc đường dẫn trực
+              tiếp.
+            </p>
             <div className="xq-mode-pills">
-              <span className="xq-pill">5p · 10p · 15p</span>
-              <span className="xq-pill">Tối đa 5 người xem</span>
-              <span className="xq-pill">Cam / Mic LiveKit</span>
+              <span className="xq-pill">⏱️ 5p · 10p · 15p</span>
+              <span className="xq-pill">👥 Tối đa 5 khán giả</span>
+              <span className="xq-pill">🎙️ LiveKit Cam/Mic</span>
+              <span className="xq-pill">🛡️ Tự chọn bảo mật</span>
             </div>
           </div>
-          <div className="xq-mode-bottom xq-stack">
+          <div className="xq-mode-footer">
             <Button onClick={onCreate} disabledReason={blockedReason}>
               Tạo phòng
             </Button>
@@ -113,9 +120,9 @@ export function LobbyShell({
               className="xq-code-form"
               onSubmit={(event) => {
                 event.preventDefault();
-                if (!/^[A-Z0-9]{8}$/.test(code)) {
+                if (!/^[0-9]{8}$/.test(code)) {
                   setCodeError(
-                    "Mã phòng gồm 8 chữ cái hoặc số. Kiểm tra lại rồi thử lại.",
+                    "Mã phòng gồm đúng 8 chữ số. Kiểm tra lại rồi thử lại.",
                   );
                   return;
                 }
@@ -123,101 +130,131 @@ export function LobbyShell({
                 onJoinCode(code);
               }}
             >
-              <TextField
-                label="Mã phòng"
-                value={code}
-                onChange={(event) => {
-                  setCode(event.target.value.toUpperCase());
-                  setCodeError("");
-                }}
-                maxLength={8}
-                helper="Nhập 8 ký tự, không có dấu gạch nối."
-                error={codeError}
-              />
-              <Button
-                type="submit"
-                variant="secondary"
-                disabledReason={blockedReason}
-              >
-                Vào phòng
-              </Button>
+              <div className="xq-code-input-row">
+                <TextField
+                  label="Mã phòng"
+                  placeholder="MÃ 8 SỐ"
+                  inputMode="numeric"
+                  value={code}
+                  onChange={(event) => {
+                    setCode(event.target.value.replace(/\D/g, ""));
+                    setCodeError("");
+                  }}
+                  maxLength={8}
+                  helper="Nhập 8 chữ số từ người mời."
+                  error={codeError}
+                />
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  disabledReason={blockedReason}
+                >
+                  Vào phòng
+                </Button>
+              </div>
             </form>
           </div>
         </section>
 
         {/* MODE 2: ĐÁNH VỚI MÁY */}
-        <section className="xq-panel xq-mode-card xq-stack">
-          <div className="xq-mode-top">
+        <section className="xq-panel xq-mode-card xq-mode-ai">
+          <div className="xq-mode-header">
+            <div className="xq-mode-icon-box" aria-hidden="true">
+              ☯️
+            </div>
             <span className="xq-mode-badge badge-ai">P1 · Khả dụng</span>
-            <div className="xq-mode-icon" aria-hidden="true">
-              🤖
-            </div>
           </div>
-          <div className="xq-mode-info">
+          <div className="xq-mode-body">
             <h2>Đánh với máy</h2>
-            <p>Luyện nước đi với ba cấp độ Dễ, Trung bình và Khó.</p>
+            <p className="xq-mode-desc">
+              Thao dượt chiến thuật cùng thuật toán Minimax 3 cấp độ, tự chọn
+              phe.
+            </p>
             <div className="xq-mode-pills">
-              <span className="xq-pill">Dễ · Trung bình · Khó</span>
-              <span className="xq-pill">Tự chọn phe</span>
-              <span className="xq-pill">Không giới hạn giờ</span>
+              <span className="xq-pill">🎯 Dễ · Trung bình · Khó</span>
+              <span className="xq-pill">🎲 Tự chọn phe Đỏ/Đen</span>
+              <span className="xq-pill">⏳ Không giới hạn giờ</span>
+              <span className="xq-pill">📚 Kỳ phổ rèn luyện</span>
             </div>
           </div>
-          <div className="xq-mode-bottom">
+          <div className="xq-mode-footer">
             <Button onClick={onPlayAI} disabledReason={blockedReason}>
               Chọn cấp độ máy
             </Button>
+            <div className="xq-mode-subnote" aria-hidden="true">
+              <span className="xq-subnote-label">Chế độ rèn luyện:</span>
+              <span className="xq-subnote-text">
+                ⚡ Đi lại 3 nước · Không tính giờ
+              </span>
+            </div>
           </div>
         </section>
 
         {/* MODE 3: GHÉP NGẪU NHIÊN (P2) */}
-        <section className="xq-panel xq-mode-card xq-future-card xq-stack">
-          <div className="xq-mode-top">
-            <span className="xq-mode-badge badge-p2">Sắp ra mắt</span>
-            <div className="xq-mode-icon" aria-hidden="true">
+        <section className="xq-panel xq-mode-card xq-future-card">
+          <div className="xq-mode-header">
+            <div className="xq-mode-icon-box" aria-hidden="true">
               🍵
             </div>
+            <span className="xq-mode-badge badge-p2">Sắp ra mắt</span>
           </div>
-          <div className="xq-mode-info">
+          <div className="xq-mode-body">
             <h3>Ghép ngẫu nhiên</h3>
-            <p className="xq-help">
-              Đánh Thường và Đánh Hạng sẽ được mở trong bản bổ sung.
+            <p className="xq-mode-desc">
+              Tìm kiếm đối thủ giao lưu tức thì không tính điểm Elo (Giai đoạn
+              P2).
             </p>
             <div className="xq-mode-pills">
-              <span className="xq-pill">Cố định 15 phút</span>
-              <span className="xq-pill">Riêng tư 100%</span>
+              <span className="xq-pill">⏱️ Cố định 15 phút</span>
+              <span className="xq-pill">🔒 Riêng tư 100%</span>
               <span className="xq-pill strict">Không người xem</span>
+              <span className="xq-pill">🎙️ Chat & Cam riêng</span>
             </div>
           </div>
-          <div className="xq-mode-bottom">
+          <div className="xq-mode-footer">
             <Button variant="secondary" disabledReason="Sắp ra mắt">
               Đánh thường
             </Button>
+            <div className="xq-mode-subnote" aria-hidden="true">
+              <span className="xq-subnote-label">Kỳ hữu tương ngộ:</span>
+              <span className="xq-subnote-text">
+                🍵 Đàm đạo luận cờ · Giai đoạn P2
+              </span>
+            </div>
           </div>
         </section>
 
         {/* MODE 4: ĐÁNH HẠNG (P2) */}
-        <section className="xq-panel xq-mode-card xq-future-card xq-ranked-card xq-stack">
-          <div className="xq-mode-top">
-            <span className="xq-mode-badge badge-ranked">Sắp ra mắt</span>
-            <div className="xq-mode-icon" aria-hidden="true">
-              🏆
+        <section className="xq-panel xq-mode-card xq-future-card xq-ranked-card">
+          <div className="xq-mode-header">
+            <div className="xq-mode-icon-box" aria-hidden="true">
+              👑
             </div>
+            <span className="xq-mode-badge badge-ranked">Sắp ra mắt</span>
           </div>
-          <div className="xq-mode-info">
+          <div className="xq-mode-body">
             <h3>Đánh hạng</h3>
-            <p className="xq-help">
-              Thi đấu tính điểm Elo chuẩn quốc tế FIDE Rapid.
+            <p className="xq-mode-desc">
+              Thi đấu xếp hạng tính điểm Elo chuẩn quốc tế WXF Rapid (Giai đoạn
+              P2).
             </p>
             <div className="xq-mode-pills">
+              <span className="xq-pill">⏱️ 10 phút Rapid</span>
+              <span className="xq-pill strict">Cấm đi lại (No Undo)</span>
               <span className="xq-pill strict">Cấm người xem</span>
-              <span className="xq-pill strict">Cấm đi lại</span>
-              <span className="xq-pill">10 phút Rapid</span>
+              <span className="xq-pill">🎖️ Bảng vàng kỳ vương</span>
             </div>
           </div>
-          <div className="xq-mode-bottom">
+          <div className="xq-mode-footer">
             <Button variant="secondary" disabledReason="Sắp ra mắt">
               Đánh hạng
             </Button>
+            <div className="xq-mode-subnote" aria-hidden="true">
+              <span className="xq-subnote-label">Đấu trường Elo:</span>
+              <span className="xq-subnote-text">
+                🏆 Bảng vàng kỳ vương · Giai đoạn P2
+              </span>
+            </div>
           </div>
         </section>
       </div>

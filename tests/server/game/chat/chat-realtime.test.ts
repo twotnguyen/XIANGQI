@@ -142,6 +142,7 @@ describe.skipIf(!databaseUrl)(
         "10_room_chat",
       ])
         await apply(`supabase/migrations/202610110000${n}.sql`);
+      await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     });
     it("commits canonical masked messages and metadata ACK; uppercase command UUID deduplicates", async () => {
       const f = await fixture(),

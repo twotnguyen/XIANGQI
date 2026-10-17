@@ -158,9 +158,9 @@ async function game() {
           randomUUID()
             .replaceAll("-", "")
             .slice(0, 8)
-            .toUpperCase()
-            .replaceAll("0", "G")
-            .replaceAll("1", "H"),
+            .split("")
+            .map((c) => parseInt(c, 16) % 10)
+            .join(""),
         ],
       );
       await client.query(
