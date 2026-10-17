@@ -49,7 +49,7 @@ Chỉ chạy lệnh trên với database test cô lập này; không trỏ biế
 
 ## Commit/push nhanh và CI theo phạm vi
 
-Tác vụ chỉ commit/push không chạy lại lint/test/build hay chờ CI. Agent kiểm tra nhánh, diff/whitespace và bí mật staged, commit/push rồi trả mã commit. Trong lúc code, chỉ chạy file test hoặc smoke phần vừa sửa; không tự quét hàng trăm test web/packages/server. Không lặp lại kiểm tra nếu mã/dependency/cấu hình liên quan chưa đổi. Push thành công không phải bằng chứng test đã đạt.
+Tác vụ chỉ commit/push không chạy lại lint/test/build hay chờ CI. Agent kiểm tra nhánh, diff/whitespace và bí mật staged, commit/push rồi trả mã commit. Merge cũng thực hiện ngay khi được yêu cầu và GitHub cho phép, không dùng `--watch`, polling hay đợi CI trừ khi người dùng yêu cầu rõ. Nếu GitHub chặn bằng kiểm tra bắt buộc/bảo vệ nhánh, báo ngay thay vì tự chờ hoặc bypass. Trong lúc code, chỉ chạy file test hoặc smoke phần vừa sửa; không tự quét hàng trăm test web/packages/server. Không lặp lại kiểm tra nếu mã/dependency/cấu hình liên quan chưa đổi. Commit/push/merge thành công không phải bằng chứng test đã đạt.
 
 **Luồng phát triển:** push `develop` hoặc PR vào `develop` chỉ chạy lint/typecheck toàn repo và build ứng dụng bị ảnh hưởng. Không chạy các bộ core/unit/database. `.github/scripts/ci-scope.mjs` chọn build theo diff:
 
@@ -60,7 +60,7 @@ Tác vụ chỉ commit/push không chạy lại lint/test/build hay chờ CI. Ag
 | `packages/`, `tests/packages/` | Cả hai ứng dụng |
 | Cấu hình gốc, workflow, đường dẫn chưa phân loại hoặc không đọc được diff | Cả hai ứng dụng; không tự bật test nặng |
 
-PR vào `main` và push `main` luôn chạy mọi nhóm test/build cùng toàn bộ test server trên 12 cụm PostgreSQL cô lập. Giữ cả hai sự kiện để bảo vệ cả cập nhật qua PR và push trực tiếp; không chạy thêm toàn bộ database local chỉ để chờ CI chạy lại. Thay đổi chỉ gồm Markdown, `docs/` hoặc `.env.example` vẫn không kích hoạt workflow.
+PR vào `main` và push `main` chạy mọi nhóm test/build cùng toàn bộ test server trên 12 cụm PostgreSQL cô lập ở nền; agent không chờ lượt này khi merge, trừ khi người dùng yêu cầu rõ. Giữ cả hai sự kiện để kiểm tra cả cập nhật qua PR và push trực tiếp; không chạy thêm toàn bộ database local. Thay đổi chỉ gồm Markdown, `docs/` hoặc `.env.example` vẫn không kích hoạt workflow.
 
 **Luồng tích hợp `main`:** core chạy một lần với coverage, sau đó `test:unit` loại thư mục core để không chạy trùng. Các lệnh local giữ nguyên để dùng khi chủ động yêu cầu kiểm tra toàn diện, không phải thủ tục trước mỗi commit/push:
 

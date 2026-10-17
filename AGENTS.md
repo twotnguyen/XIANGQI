@@ -35,9 +35,9 @@ Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại →
 
 - Kiểm tra nhanh nhánh, phạm vi diff, `git diff --check` và bí mật trong staged; stage rõ từng file rồi commit/push theo yêu cầu.
 - Không tự chạy lint/typecheck/test/build, review sâu, kiểm tra MCP, tạo PR, merge hoặc sửa code ngoài phạm vi trong tác vụ chỉ commit/push. Nếu phát hiện rõ secret hay nguy cơ mất dữ liệu, chặn đúng vấn đề đó; không bỏ qua để push nhanh.
-- Sau push thành công, trả mã commit và nhánh ngay. CI chạy nền; không dùng `--watch` hoặc chờ CI nếu người dùng không yêu cầu.
-- Push thành công không đồng nghĩa build/test đạt. Không báo CI thành công khi chưa có kết quả.
-- Merge `main` chỉ khi được yêu cầu riêng hoặc được nêu cùng yêu cầu commit/push; dùng CI của PR làm cổng kiểm tra đầy đủ, không chạy toàn bộ database local rồi chờ CI chạy lại cùng bộ.
+- Sau commit/push/merge thành công, trả mã commit và nhánh ngay. CI chạy nền; không dùng `--watch`, polling hoặc chờ CI, kể cả merge `main`, trừ khi người dùng yêu cầu rõ phải đợi kiểm tra.
+- Commit/push/merge thành công không đồng nghĩa build/test đạt. Không báo CI thành công khi chưa có kết quả.
+- Merge `main` chỉ khi được yêu cầu riêng hoặc được nêu cùng yêu cầu commit/push; thực hiện ngay nếu GitHub cho phép, không chạy lại suite local hay đợi CI. Nếu GitHub chặn bằng kiểm tra bắt buộc/bảo vệ nhánh, báo ngay lý do; không tự chờ, dùng quyền bypass hoặc sửa bảo vệ để vượt chặn.
 - Các cấp kiểm thử và bảng bên dưới áp dụng khi **triển khai thay đổi**, không phải điều kiện để lặp lại kiểm tra trong tác vụ chỉ commit/push.
 
 **Ưu tiên vòng lặp code → commit → push nhanh:** Không tự chạy `pnpm test`, `pnpm test:unit`, `pnpm test:core` hoặc toàn bộ `vitest run tests/server` ở local cho mỗi thay đổi. Chỉ chạy file test hoặc smoke trực tiếp chứng minh phần vừa sửa; chỉ mở rộng khi có phụ thuộc bị ảnh hưởng hoặc người dùng yêu cầu. Toàn bộ suite thuộc cổng CI `main`, không phải cổng commit/push.
@@ -66,7 +66,7 @@ Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại →
      `./tests/server/db.sh test tests/server/game/ai`
 
 4. **Cấp 4 — Khi chuẩn bị Release / Merge PR vào `main`:**
-   Dùng CI của PR vào `main` làm cổng kiểm tra toàn diện; không mặc định chạy lại toàn bộ suite local trước đó. Push trực tiếp lên `main` cũng chạy đầy đủ để không bỏ lọt đường cập nhật không qua PR.
+   CI của PR/push `main` tự chạy kiểm tra toàn diện ở nền; đây không phải yêu cầu agent ngồi chờ trước khi merge. Không mặc định chạy lại toàn bộ suite local. Chỉ đợi khi người dùng yêu cầu rõ; nếu GitHub bắt buộc chặn merge thì báo ngay, không bypass.
 
 CI (`.github/workflows/ci.yml`) có hai luồng: push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ unit/core/database; PR/push `main` chạy đầy đủ, core có coverage và được loại khỏi lượt unit để không trùng. Package dùng chung kích hoạt build cả hai ứng dụng. Không đọc được diff hoặc gặp đường dẫn chưa phân loại thì build cả hai, nhưng không tự bật test nặng trên `develop`. Chi tiết tại [tests/README.md](tests/README.md).
 
