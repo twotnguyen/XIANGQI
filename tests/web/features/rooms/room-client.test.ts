@@ -11,7 +11,7 @@ const roomView = {
     status: "WAITING",
     hostId: id,
     visibility: "CODE_ONLY",
-    inviteCode: "K7M2XQP4",
+    inviteCode: "70521348",
     timeMinutes: 10,
     viewerLimit: 5,
     seats: { red: id, black: null },
@@ -30,7 +30,7 @@ it("accepts the actual waiting projection including nullable seat/countdown fiel
     .mockResolvedValue(new Response(JSON.stringify(roomView)));
   const value = await createRoomClient(request).snapshot(id);
   expect(value.room.seats.black).toBeNull();
-  expect(value.room.inviteCode).toBe("K7M2XQP4");
+  expect(value.room.inviteCode).toBe("70521348");
   expect(value.role).toBe("red");
 });
 it.each([
@@ -58,7 +58,7 @@ it("sends strict create defaults with an idempotency UUID through authorizedFetc
         roomId: "11111111-1111-4111-8111-111111111111",
         version: 0,
         role: "red",
-        inviteCode: "K7M2XQP4",
+        inviteCode: "70521348",
       }),
     ),
   );
@@ -142,7 +142,7 @@ it("changes visibility with only CAS version and mode and accepts the server rot
         room: {
           ...roomView.room,
           visibility: "PUBLIC",
-          inviteCode: "P8M2XQP4",
+          inviteCode: "80521348",
         },
       }),
     ),
@@ -158,7 +158,7 @@ it("changes visibility with only CAS version and mode and accepts the server rot
     expectedVersion: 2,
     visibility: "PUBLIC",
   });
-  expect(value.room.inviteCode).toBe("P8M2XQP4");
+  expect(value.room.inviteCode).toBe("80521348");
   expect(value.version).toBe(3);
 });
 it.each([

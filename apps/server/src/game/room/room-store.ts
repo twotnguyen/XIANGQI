@@ -12,7 +12,7 @@ import {
   type RoomScope,
   type RoomView,
 } from "./room.types.js";
-const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const alphabet = "0123456789";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export class RoomStore {
   constructor(
@@ -67,7 +67,7 @@ export class RoomStore {
   }
   // Internal authenticated admission lookup; caller acquires all sorted actor locks afterwards.
   async resolveCode(client: PoolClient, input: unknown): Promise<string> {
-    if (typeof input !== "string" || !/^[A-HJ-NP-Z2-9]{8}$/.test(input))
+    if (typeof input !== "string" || !/^[0-9]{8}$/.test(input))
       throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
     const row = (
       await client.query(
@@ -254,7 +254,7 @@ export class RoomStore {
     const id = randomUUID();
     let code = "";
     for (let attempt = 0; attempt < 5; attempt++) {
-      code = Array.from({ length: 8 }, () => alphabet[randomInt(32)]!).join("");
+      code = Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
       const row = await s.client.query(
         "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,'CODE_ONLY',$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
         [id, s.actor.userId, name, time * 60, viewers, code],
@@ -494,7 +494,7 @@ export class RoomStore {
       for (let attempt = 0; attempt < 5; attempt++) {
         const code = Array.from(
           { length: 8 },
-          () => alphabet[randomInt(32)]!,
+          () => alphabet[randomInt(10)]!,
         ).join("");
         if (code === r.invite_code) continue;
         await s.client.query("SAVEPOINT room_code_rotation");

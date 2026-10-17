@@ -31,13 +31,13 @@ it("submits normalized name with 10 minute and 5 viewer defaults", async () => {
     viewerLimit: 5,
   });
 });
-it("normalizes the formatted room code but rejects ambiguous characters", async () => {
+it("keeps eight digits only and rejects letters", async () => {
   const join = vi.fn().mockResolvedValue(undefined);
   render(createElement(JoinRoomForm, { onJoin: join }));
   const user = userEvent.setup();
-  await user.type(screen.getByLabelText("Mã phòng"), "k7m2-xqp4");
+  await user.type(screen.getByLabelText("Mã phòng"), "7052-13AB48");
   await user.click(screen.getByRole("button", { name: "Vào phòng" }));
-  expect(join).toHaveBeenCalledWith("K7M2XQP4");
+  expect(join).toHaveBeenCalledWith("70521348");
   await user.clear(screen.getByLabelText("Mã phòng"));
   await user.type(screen.getByLabelText("Mã phòng"), "OOOOOOOO");
   await user.click(screen.getByRole("button", { name: "Vào phòng" }));

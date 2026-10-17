@@ -68,6 +68,7 @@ describe.skipIf(!databaseUrl)(
         "20261011000007_match_outcomes",
         "20261011000008_room_modes",
         "20261011000013_side_swap",
+        "20261017000018_room_code_digits",
       ])
         await apply(`supabase/migrations/${name}.sql`);
     });

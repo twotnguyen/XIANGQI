@@ -7,7 +7,11 @@
       rgba(200, 130, 40, 0.16) 0%,
       transparent 65%
     ),
-    linear-gradient(180deg, rgba(20, 12, 8, 0.55) 0%, rgba(20, 12, 8, 0.85) 100%),
+    linear-gradient(
+      180deg,
+      rgba(20, 12, 8, 0.55) 0%,
+      rgba(20, 12, 8, 0.85) 100%
+    ),
     url("/images/login-bg-scenic.webp");
   background-size: cover;
   background-position: center;
@@ -74,6 +78,21 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
+}
+
+.xq-desktop-nav .xq-button-group {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.xq-desktop-nav .xq-button-group .xq-help {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .xq-desktop-nav a,

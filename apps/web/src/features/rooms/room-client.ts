@@ -85,7 +85,7 @@ function parseEntry(value: unknown): RoomEntry {
     !["red", "black", "spectator"].includes(entry.role as string) ||
     (entry.inviteCode !== undefined &&
       (typeof entry.inviteCode !== "string" ||
-        !/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(entry.inviteCode)))
+        !/^[0-9]{8}$/.test(entry.inviteCode)))
   )
     invalidResponse();
   return entry as unknown as RoomEntry;
@@ -112,7 +112,7 @@ function parseView(value: unknown, roomId: string): RoomView {
     (room.viewerLimit as number) > 5 ||
     (room.inviteCode !== null &&
       (typeof room.inviteCode !== "string" ||
-        !/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(room.inviteCode)))
+        !/^[0-9]{8}$/.test(room.inviteCode)))
   )
     invalidResponse();
   for (const side of ["red", "black"])

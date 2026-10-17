@@ -42,7 +42,7 @@ it("automatically joins after mount exactly once under StrictMode without a seco
       null,
       createElement(InviteEntry, {
         client: client(join),
-        code: "K7M2XQP4",
+        code: "70521348",
         onEntered,
       }),
     ),
@@ -50,7 +50,7 @@ it("automatically joins after mount exactly once under StrictMode without a seco
   await act(async () => {
     await Promise.resolve();
   });
-  expect(join).toHaveBeenCalledExactlyOnceWith("K7M2XQP4");
+  expect(join).toHaveBeenCalledExactlyOnceWith("70521348");
   expect(onEntered).toHaveBeenCalledExactlyOnceWith(entry);
 });
 it("does not join when unmounted before the microtask starts", async () => {
@@ -59,7 +59,7 @@ it("does not join when unmounted before the microtask starts", async () => {
   const view = render(
     createElement(InviteEntry, {
       client: client(join),
-      code: "K7M2XQP4",
+      code: "70521348",
       onEntered,
     }),
   );
@@ -82,7 +82,7 @@ it("ignores a late result after the route has been left", async () => {
   const view = render(
     createElement(InviteEntry, {
       client: client(join),
-      code: "K7M2XQP4",
+      code: "70521348",
       onEntered,
     }),
   );
@@ -107,21 +107,21 @@ it("ignores the previous invite response after the route code changes", async ()
     api = client(join),
     onEntered = vi.fn();
   const view = render(
-    createElement(InviteEntry, { client: api, code: "K7M2XQP4", onEntered }),
+    createElement(InviteEntry, { client: api, code: "70521348", onEntered }),
   );
   await act(async () => {
     await Promise.resolve();
   });
   view.rerender(
-    createElement(InviteEntry, { client: api, code: "ABCD2345", onEntered }),
+    createElement(InviteEntry, { client: api, code: "90718364", onEntered }),
   );
   await act(async () => {
     await Promise.resolve();
     finish({ ...entry, roomId: "22222222-2222-4222-8222-222222222222" });
   });
   expect(join.mock.calls.map((call) => call[0])).toEqual([
-    "K7M2XQP4",
-    "ABCD2345",
+    "70521348",
+    "90718364",
   ]);
   expect(onEntered).toHaveBeenCalledExactlyOnceWith(entry);
 });
@@ -139,7 +139,7 @@ it("callback rerender neither rejoins nor delivers the receipt to a stale callba
   const view = render(
     createElement(InviteEntry, {
       client: api,
-      code: "K7M2XQP4",
+      code: "70521348",
       onEntered: oldCallback,
     }),
   );
@@ -149,7 +149,7 @@ it("callback rerender neither rejoins nor delivers the receipt to a stale callba
   view.rerender(
     createElement(InviteEntry, {
       client: api,
-      code: "K7M2XQP4",
+      code: "70521348",
       onEntered: newCallback,
     }),
   );
@@ -179,7 +179,7 @@ it("sanitizes failures and only joins again after explicit Retry", async () => {
   render(
     createElement(InviteEntry, {
       client: client(join),
-      code: "K7M2XQP4",
+      code: "70521348",
       onEntered,
     }),
   );
@@ -207,7 +207,7 @@ it.each(["ROOM_FORBIDDEN", "ROOM_LOCKED", "ROOM_FULL", "VERSION_STALE"])(
     render(
       createElement(InviteEntry, {
         client: client(join),
-        code: "K7M2XQP4",
+        code: "70521348",
         onEntered,
       }),
     );

@@ -24,6 +24,7 @@ const migrations = [
   "20261011000015_media_share",
   "20261011000016_room_viewers",
   "20261011000017_rls_hardening",
+  "20261017000018_room_code_digits",
 ];
 const appSchemas = [
   "public",

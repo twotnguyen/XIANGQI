@@ -44,7 +44,7 @@ const room: RoomSettingsProps["room"] = {
   status: "PLAYING",
   hostId: "11111111-1111-4111-8111-111111111111",
   visibility: "CODE_ONLY",
-  inviteCode: "K7M2XQP4",
+  inviteCode: "70521348",
   timeMinutes: 10,
   viewerLimit: 5,
   seats: {
@@ -207,7 +207,7 @@ it("accepts a fresh server mode and renders parent success/error status", () => 
   view.rerender(
     createElement(RoomSettings, {
       ...view.props,
-      room: { ...room, visibility: "PUBLIC", inviteCode: "P8M2XQP4" },
+      room: { ...room, visibility: "PUBLIC", inviteCode: "80521348" },
       status: "Đã đổi chế độ phòng.",
     }),
   );

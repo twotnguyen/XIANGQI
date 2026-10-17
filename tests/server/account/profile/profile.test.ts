@@ -28,6 +28,7 @@ describe.skipIf(!databaseUrl)("profile store", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   });
   it("reads username, read-only email and display name", async () => {
     const id = await member("profread");
@@ -78,7 +79,7 @@ describe.skipIf(!databaseUrl)("profile store", () => {
     const roomId = randomUUID();
     await pool.query("BEGIN");
     await pool.query(
-      "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong ho so','CODE_ONLY','ABCDEFGH',600,5,'WAITING',1)",
+      "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong ho so','CODE_ONLY','12345678',600,5,'WAITING',1)",
       [roomId, id],
     );
     await pool.query(

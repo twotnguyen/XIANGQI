@@ -285,13 +285,7 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
       );
       await pool.query(
         "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code) VALUES($1,$2,'Unsupported Guest','CODE_ONLY',600,5,$3)",
-        [
-          id,
-          guest,
-          "AAAAAA" +
-            String.fromCharCode(65 + Math.floor(i / 20)) +
-            "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[i % 20],
-        ],
+        [id, guest, String(10000000 + i)],
       );
       await pool.query(
         "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,clock_timestamp()-interval '1 second',$3,$4)",

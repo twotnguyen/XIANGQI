@@ -49,15 +49,15 @@ it.each([
   expect(within(list).queryByRole("button", { name: "Vào chơi" })).toBeNull();
   expect(within(list).queryByRole("button", { name: "Vào xem" })).toBeNull();
 });
-it("blocks unfinished P2 actions and dispatches an eight-character room code", async () => {
+it("blocks unfinished P2 actions and dispatches an eight-digit room code", async () => {
   const props = callbacks();
   render(createElement(LobbyShell, { ...props, rooms: [] }));
   const user = userEvent.setup();
   await user.click(screen.getByRole("button", { name: "Đánh hạng" }));
   expect(props.onCreate).not.toHaveBeenCalled();
-  await user.type(screen.getByLabelText("Mã phòng"), "K7M2XQP4");
+  await user.type(screen.getByLabelText("Mã phòng"), "70521348");
   await user.click(screen.getByRole("button", { name: "Vào phòng" }));
-  expect(props.onJoinCode).toHaveBeenCalledWith("K7M2XQP4");
+  expect(props.onJoinCode).toHaveBeenCalledWith("70521348");
 });
 it("rejects a malformed code without invoking a room action", async () => {
   const props = callbacks();
@@ -70,9 +70,7 @@ it("rejects a malformed code without invoking a room action", async () => {
     "true",
   );
   expect(
-    screen.getByText(
-      "Mã phòng gồm 8 chữ cái hoặc số. Kiểm tra lại rồi thử lại.",
-    ),
+    screen.getByText("Mã phòng gồm đúng 8 chữ số. Kiểm tra lại rồi thử lại."),
   ).toBeTruthy();
 });
 it("keeps room names as text and offers the error retry callback", async () => {

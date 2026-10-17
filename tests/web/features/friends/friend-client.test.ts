@@ -40,7 +40,7 @@ describe("friend client", () => {
       .fn()
       .mockResolvedValueOnce(ok({ id: "i" }))
       .mockResolvedValueOnce(
-        ok({ accepted: true, roomId: "r", code: "ABCD1234" }),
+        ok({ accepted: true, roomId: "r", code: "12345678" }),
       );
     const client = createFriendClient(fetch);
     await client.invite("r", "b");
@@ -49,7 +49,7 @@ describe("friend client", () => {
       expect.objectContaining({ method: "POST" }),
     );
     const accepted = await client.respondInvite("i", true);
-    expect(accepted).toMatchObject({ accepted: true, code: "ABCD1234" });
+    expect(accepted).toMatchObject({ accepted: true, code: "12345678" });
   });
   it("rejects malformed payloads", async () => {
     const fetch = vi.fn().mockResolvedValue(ok([{ userId: "u" }]));

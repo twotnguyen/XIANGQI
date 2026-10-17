@@ -28,19 +28,47 @@ Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại →
 - Ba package dùng chung cho cả hai đầu (`shared`: filter/validation; `xiangqi-core` + `engine`: luật cờ và tìm nước đi, chạy cả ở web worker lẫn server): một thay đổi luật/kiểm tra phải sửa cả hai đầu dùng trong cùng một PR. Không copy logic sang chỗ mới khi package đã có.
 - `tests/` phản chiếu đúng cây `apps/` (ví dụ `apps/server/src/game/room/room-store.ts` ↔ `tests/server/game/room/room.test.ts`). Quy ước tên: `x.test.ts`, `x.test-helper.ts`, `x.test-cases.ts`, `fixtures.ts`. Chi tiết xem [tests/README.md](tests/README.md).
 
-## Kiểm tra
+## Kiểm tra và kỷ luật chạy test (Test Scoping Rules)
 
-Thứ tự CI (`.github/workflows/ci.yml`): Job 1 `checks` (`lint` → `typecheck` → `test:core` → `test:unit` → `build`, không cần database) → Job 2 `db-integration` (`needs: checks`, 12 container Postgres → `vitest run tests/server --no-file-parallelism`). Chạy đúng lệnh CI dùng, không bịa lệnh hoặc kết quả.
+**Nguyên tắc tối thượng cho Agent:** Tuyệt đối KHÔNG chạy toàn bộ test database (`vitest run tests/server`) khi đang phát triển tính năng lẻ hoặc sửa lỗi cục bộ. Làm vậy sẽ lãng phí 7–9 phút, làm tràn cửa sổ ngữ cảnh và tốn quota của người dùng. Hãy giới hạn phạm vi kiểm thử theo 4 cấp độ:
 
-| Thay đổi         | Kiểm tra                                                                                                                                             |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged                                                             |
-| Kế hoạch Jira    | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v`                            |
-| LiveKit Docker   | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`; thử runtime nếu Docker sẵn có và phù hợp yêu cầu |
-| Mã ứng dụng      | `pnpm lint`, `pnpm typecheck`, `pnpm test:core`, `pnpm test:unit`, `pnpm build`, `pnpm exec vitest run tests/server --no-file-parallelism`; thêm `pnpm format:check` khi đụng style (chỉ kiểm local, CI không chạy) |
+1. **Cấp 1 — Đang code dở từng file (Phản hồi < 1 giây):**
+   Chỉ chạy đúng duy nhất 1 file test tương ứng với file mã nguồn vừa chạm vào:
+   `pnpm exec vitest run <đường-dẫn-file-test>`
+   _Ví dụ:_ `pnpm exec vitest run tests/web/features/auth/LoginPage.test.ts` hoặc `pnpm exec vitest run tests/packages/xiangqi-core/legal.test.ts`.
 
-- Chạy lẻ test không cần database: `pnpm exec vitest run <đường-dẫn-test>`. Test cần database: `tests/server/db.sh test [đường-dẫn]` (dựng 12 cụm Postgres 17 cục bộ; `db.sh stop`/`purge` để tắt/xóa). `pnpm test` tự bỏ qua các bộ cần database.
-- CI bỏ qua `**/*.md`, `docs/**`, `.env.example` nên sửa docs không có CI kiểm. Sau push, kiểm ref remote thay vì chỉ dựa vào commit local.
+2. **Cấp 2 — Xong tính năng UI / Logic dùng chung (Phản hồi ~17 giây):**
+   Chỉ chạy kiểm tra tĩnh và tầng Unit Test (chạy hoàn toàn trong RAM, không cần database/Docker):
+   `pnpm lint && pnpm typecheck && pnpm test:unit`
+
+3. **Cấp 3 — Kiểm tra tích hợp Database theo từng Yêu cầu (1–8):**
+   Chỉ khi nào hoàn thành hoặc sửa đổi logic Backend của Yêu cầu cụ thể, mới dựng database để kiểm tra riêng cho Yêu cầu đó bằng `./tests/server/db.sh test <thư-mục>`. Sau khi test xong, gọi `./tests/server/db.sh stop`:
+   - **Yêu cầu 1 (Tài khoản, Đăng nhập, Session, Google, Guest):**
+     `./tests/server/db.sh test tests/server/account`
+   - **Yêu cầu 2 & 3 (Tạo phòng, Sảnh chờ, Mã mời, Ghép phòng):**
+     `./tests/server/db.sh test tests/server/game/room`
+   - **Yêu cầu 4 & 5 (Trận đấu, Luật cờ, Đồng hồ thi đấu):**
+     `./tests/server/db.sh test tests/server/game/match tests/server/game/clock`
+   - **Yêu cầu 6 (Chế độ phòng, Khán giả, Đồng bộ Realtime):**
+     `./tests/server/db.sh test tests/server/game/realtime`
+   - **Yêu cầu 7 (Chat 2 kênh & Media WebRTC):**
+     `./tests/server/db.sh test tests/server/game/chat tests/server/game/media`
+   - **Yêu cầu 8 (Chơi với máy AI):**
+     `./tests/server/db.sh test tests/server/game/ai`
+
+4. **Cấp 4 — Khi chuẩn bị Release / Merge PR vào `main`:**
+   Chỉ chạy kiểm tra toàn diện trước khi phát hành phiên bản production. CI trên nhánh `develop` đã được cấu hình tự động bỏ qua tầng Database nặng để tiết kiệm thời gian; chỉ PR vào `main` mới kích hoạt toàn bộ 12 cụm DB.
+
+Thứ tự CI (`.github/workflows/ci.yml`): Job 1 `checks` (`lint` → `typecheck` → `test:core` → `test:unit` → `build`, không cần database) → Job 2 `db-integration` (`needs: checks`, 12 container Postgres trên RAM disk `tmpfs` → `vitest run tests/server --no-file-parallelism --bail 1`, chỉ chạy khi có PR/push vào `main`). Chạy đúng lệnh CI dùng, không bịa lệnh hoặc kết quả.
+
+| Thay đổi         | Kiểm tra bắt buộc trước commit                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged                                  |
+| Kế hoạch Jira    | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v` |
+| LiveKit Docker   | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`                        |
+| Mã giao diện Web | `pnpm lint`, `pnpm typecheck`, `pnpm test:unit`                                                                           |
+| Mã logic chung   | `pnpm lint`, `pnpm typecheck`, `pnpm test:core`, `pnpm test:unit`                                                         |
+| Mã Server / DB   | `pnpm lint`, `pnpm typecheck`, kèm lệnh `./tests/server/db.sh test <thư-mục-yêu-cầu>` tương ứng ở mục 3                   |
 
 ## Kiểm tra MCP và dịch vụ
 

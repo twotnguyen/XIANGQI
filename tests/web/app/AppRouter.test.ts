@@ -601,7 +601,7 @@ it("creates through the authorized form then enters the actual server room route
   const roomId = "11111111-1111-4111-8111-111111111111";
   mock.authorizedFetch.mockImplementation(async (path: string) =>
     path === "/rooms"
-      ? reply({ roomId, version: 1, role: "red", inviteCode: "ABCDEFGH" })
+      ? reply({ roomId, version: 1, role: "red", inviteCode: "12345678" })
       : reply([]),
   );
   render(createElement(AppRouter));
@@ -639,12 +639,12 @@ it("creates through the authorized form then enters the actual server room route
 
 it("automatically joins the valid invitation once after login without another submit", async () => {
   const roomId = "12345678-1234-4234-8234-123456789abc";
-  window.history.replaceState(null, "", "/rooms/join?token=ABCDEFGH");
+  window.history.replaceState(null, "", "/rooms/join?token=12345678");
   mock.accept.mockImplementation(() => {
     mock.state = member;
   });
   mock.authorizedFetch.mockResolvedValue(
-    reply({ roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }),
+    reply({ roomId, version: 2, role: "black", inviteCode: "12345678" }),
   );
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
@@ -658,7 +658,7 @@ it("automatically joins the valid invitation once after login without another su
   expect(url).toBe("/rooms/join");
   expect(options.method).toBe("POST");
   expect(JSON.parse(options.body)).toEqual({
-    code: "ABCDEFGH",
+    code: "12345678",
     preference: "auto",
     commandId: expect.stringMatching(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -673,13 +673,13 @@ it("uses the lobby's entered room code without requesting it again", async () =>
   mock.authorizedFetch.mockImplementation(async (url: string) =>
     reply(
       url === "/rooms/join"
-        ? { roomId, version: 2, role: "black", inviteCode: "ABCDEFGH" }
+        ? { roomId, version: 2, role: "black", inviteCode: "12345678" }
         : [],
     ),
   );
   render(createElement(AppRouter));
   fireEvent.change(screen.getByRole("textbox", { name: "Mã phòng" }), {
-    target: { value: "ABCDEFGH" },
+    target: { value: "12345678" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Vào phòng" }));
   await vi.waitFor(() =>
@@ -690,7 +690,7 @@ it("uses the lobby's entered room code without requesting it again", async () =>
   );
   expect(joins).toHaveLength(1);
   expect(JSON.parse(joins[0]![1].body)).toMatchObject({
-    code: "ABCDEFGH",
+    code: "12345678",
     preference: "auto",
   });
 });
@@ -960,7 +960,11 @@ it("opens AI setup dialog from lobby and navigates to AI game page on start", as
   render(createElement(AppRouter));
   feedRooms([room]);
   fireEvent.click(screen.getByRole("button", { name: "Chọn cấp độ máy" }));
-  expect(await screen.findByRole("heading", { name: "Thiết lập ván với máy" })).toBeTruthy();
+  expect(
+    await screen.findByRole("heading", { name: "Thiết lập ván với máy" }),
+  ).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Bắt đầu" }));
-  await vi.waitFor(() => expect(window.location.pathname).toMatch(/^\/ai\/[0-9a-f-]{36}$/));
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toMatch(/^\/ai\/[0-9a-f-]{36}$/),
+  );
 });

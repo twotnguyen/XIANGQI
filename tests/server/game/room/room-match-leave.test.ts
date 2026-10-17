@@ -122,10 +122,10 @@ async function fixture(
         red.userId,
         roomId
           .replaceAll("-", "")
-          .replaceAll("0", "2")
-          .replaceAll("1", "3")
           .slice(0, 8)
-          .toUpperCase(),
+          .split("")
+          .map((c) => parseInt(c, 16) % 10)
+          .join(""),
       ],
     );
     await c.query(
@@ -227,6 +227,7 @@ describe.skipIf(!databaseUrl)(
         "20261011000008_room_modes",
         "20261011000009_match_draw",
         "20261011000013_side_swap",
+        "20261017000018_room_code_digits",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
     });

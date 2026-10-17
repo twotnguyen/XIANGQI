@@ -152,6 +152,7 @@ describe.skipIf(!databaseUrl)(
         "10_room_chat",
       ])
         await apply(`supabase/migrations/202610110000${n}.sql`);
+      await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     });
     it("new viewer tab supersedes old chat including replay; old reconnect/restart cannot steal but explicit takeover never grants game authority", async () => {
       const f = await fixture(),

@@ -44,7 +44,7 @@ async function fixture() {
     [roomId],
     async (client) => {
       await client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Draw',600,5,'ABCDEFGH')",
+        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Draw',600,5,'12345678')",
         [roomId, red],
       );
       await client.query(

@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths-ignore:
       - "**/*.md"
       - "docs/**"
@@ -57,7 +57,7 @@ jobs:
   db-integration:
     name: Database Integration Tests
     needs: checks
-    if: needs.checks.outputs.backend == 'true'
+    if: needs.checks.outputs.backend == 'true' && (github.base_ref == 'main' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -73,6 +73,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       realtime-postgres:
         image: postgres:17.6
         env:
@@ -86,6 +87,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       login-postgres:
         image: postgres:17.6
         env:
@@ -99,6 +101,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       schema-postgres:
         image: postgres:17.6
         env:
@@ -112,6 +115,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       google-guest-postgres:
         image: postgres:17.6
         env:
@@ -125,6 +129,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       room-postgres:
         image: postgres:17.6
         env:
@@ -138,6 +143,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       match-postgres:
         image: postgres:17.6
         env:
@@ -151,6 +157,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       clock-postgres:
         image: postgres:17.6
         env:
@@ -164,6 +171,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       room-transactions-postgres:
         image: postgres:17.6
         env:
@@ -177,6 +185,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       clock-port-postgres:
         image: postgres:17.6
         env:
@@ -190,6 +199,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
       member-realtime-postgres:
         image: postgres:17.6
         env:
@@ -203,6 +213,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
 
       room-runtime-postgres:
         image: postgres:17.6
@@ -217,6 +228,7 @@ jobs:
           --health-interval 3s
           --health-timeout 3s
           --health-retries 10
+          --tmpfs /var/lib/postgresql/data
     env:
       ROOM_RUNTIME_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test
       DRAW_WORKER_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test

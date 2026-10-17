@@ -64,7 +64,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 ## 3. CHI TIẾT 15 TRANG ĐỊNH TUYẾN ĐỘC LẬP (ROUTED PAGES)
 
 ### 1. `SCR-LOGIN` — Trang Đăng Nhập
-* **URL:** `/login` | **Quyền:** Chưa đăng nhập (đã đăng nhập tự redirect về `/lobby`). Nếu người dùng đến từ link/QR mời phòng thì sau khi đăng nhập hoặc chọn Guest tự chuyển vào đúng phòng, với ưu tiên phiên/vị trí chơi ở BA 1.8: khác thiết bị khi đang chơi thì xử thua/về Sảnh; cùng thiết bị đăng nhập lại trong ân hạn thì tiếp tục ván cũ (BA-SCOPE `Quyết định 2.4`).
+* **URL:** `/login` | **Quyền:** Chưa đăng nhập (đã đăng nhập tự redirect về `/lobby`). Nếu người dùng đến từ link mời phòng thì sau khi đăng nhập hoặc chọn Guest tự chuyển vào đúng phòng, với ưu tiên phiên/vị trí chơi ở BA 1.8: khác thiết bị khi đang chơi thì xử thua/về Sảnh; cùng thiết bị đăng nhập lại trong ân hạn thì tiếp tục ván cũ (BA-SCOPE `Quyết định 2.4`).
 * **Bố cục (Layout):** Khung Card chính giữa trên nền giấy ấm (`--color-paper`), hoa văn thủy mặc cờ tướng.
 * **Thành phần & Dữ liệu:**
   * Logo Cờ Tướng truyền thống (帥/將) + Tiêu đề *"Kỳ Đài Đăng Nhập"*.
@@ -138,7 +138,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
      * Bộ nhãn cam kết nghiêm ngặt: 🚫 *Ghép ngẫu nhiên 100%* | 🚫 *Cấm xem (No Spectators)* | 🚫 *Cấm Undo* | ⏱️ *10 phút Rapid*.
   3. **TỰ TẠO PHÒNG (P1) — Mời người vào chơi/xem:**
      * Nút *"Tạo phòng"* mở `MODAL-CREATE-ROOM`; phòng tạo mặc định CODE_ONLY; Host mở PUBLIC qua Cài đặt phòng để hiện ở Sảnh.
-     * Ô *"Vào phòng bằng mã"*: mã 8 ký tự (VD: `K7M2-XQP4`); vào theo BA 2.7/2.8, không bắt buộc kết bạn. Chưa đăng nhập phải đăng nhập/đăng ký rồi tự chuyển vào phòng, với ưu tiên phiên/vị trí chơi theo BA 1.8/2.4.
+     * Ô *"Vào phòng bằng mã"*: mã 8 số (VD: `7052 1348`); vào theo BA 2.7/2.8, không bắt buộc kết bạn. Chưa đăng nhập phải đăng nhập/đăng ký rồi tự chuyển vào phòng, với ưu tiên phiên/vị trí chơi theo BA 1.8/2.4.
      * Trong phòng, `MODAL-INVITE` cho mời nhanh bạn bè online hoặc sao chép link/mã gửi cho người chưa kết bạn. Sảnh có danh sách phòng PUBLIC còn mở (07/10, BA 0.5): cột Tên phòng · Host · Mức giờ · Trạng thái · Người xem x/N; nút **Vào chơi** khi còn ghế trống và **Vào xem** khi còn chỗ xem; mới nhất lên đầu, cập nhật realtime, tối đa 50 phòng. CODE_ONLY/LOCKED không hiện. Vào xem giữ vai trò SPECTATOR; Vào chơi vào ghế trống, ghế vừa hết thì vào xem nếu còn chỗ; máy chủ kiểm chỗ và quyền theo BA 2.7/2.8.
   4. **ĐÁNH VỚI MÁY (P1) — Rèn luyện:**
      * 3 thẻ cấp độ: 🟢 **Dễ** (depth 2), 🟡 **Trung bình** (depth 4), 🔴 **Khó** (depth 6).
@@ -256,7 +256,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 1. **`MODAL-GUEST-NAME` (Nhập Tên Khách Tạm Thời):** Mở từ nút Guest tại `SCR-LOGIN`. Nhập Display Name tạm (2–20 ký tự, có dấu tiếng Việt, qua bộ lọc từ cấm, không cần duy nhất). Nhắc nhở cấm đánh Ranked và không lưu lịch sử. Nút *"Vào chơi"* và *"Hủy"*.
 2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Nhập tên phòng (1–60 ký tự, qua bộ lọc từ cấm), chọn thời gian (P1: 5p/10p/15p; P2 thêm Không giới hạn; không cộng giây, không đổi được sau khi tạo), phòng tạo ở `CODE_ONLY`, PUBLIC mở qua Cài đặt phòng; `LOCKED` chỉ bật sau khi đủ hai người chơi (BA 2.7/2.8); chọn **Người xem**: *Không có người xem* hoặc tối đa 1–5 (**mặc định 5**, không đổi sau khi tạo).
-3. **`MODAL-INVITE` (Chia Sẻ Phòng Đa Kênh):** Chỉ mở trong phòng tự tạo. Mời nhanh bạn bè online hoặc chia sẻ link/mã cho người chưa kết bạn; không bắt buộc kết bạn khi vào bằng link/mã (BA 2.7). P1 có link/mã; P2 thêm QR tạo đủ 3 hình thức (cùng một quyền vào phòng, không phân biệt xem/chơi); chỉ 2 người chơi thấy nút này. Gồm: Khối hiển thị Mã QR (nút tải/sao chép ảnh), Khối Link URL (Auto-Redirect sau login/guest), Khối Mã 8 ký tự monospace, Tab mời bạn bè Online.
+3. **`MODAL-INVITE` (Chia Sẻ Phòng Đa Kênh):** Chỉ mở trong phòng tự tạo. Mời nhanh bạn bè online hoặc chia sẻ link/mã cho người chưa kết bạn; không bắt buộc kết bạn khi vào bằng link/mã (BA 2.7). P1 có link/mã; chỉ 2 người chơi thấy nút này. Gồm: Khối Link URL (Auto-Redirect sau login/guest), Khối Mã 8 số tabular, Tab mời bạn bè Online. Mã QR bị loại khỏi phạm vi.
 4. **`MODAL-ROOM-SETTINGS` (Cài Đặt Phòng Động):** Chỉ phòng tự tạo: Host đổi giữa `PUBLIC`, `CODE_ONLY` và `LOCKED`; **`LOCKED` chỉ bật được khi đã đủ 2 người chơi** (trước đó nút `DISABLED` kèm tooltip), người đang có ghế/đang xem mất mạng vẫn vào lại được (người chơi 60 giây, người xem 5 phút). Khóa chặn người mới, thu hồi mã/link/lời mời chưa dùng, **giữ người xem hiện có**; mở lại sinh mã/link mới. PUBLIC hiện tại Sảnh; CODE_ONLY/LOCKED không hiện; lời gọi từ mục danh sách cũ phải kiểm lại quyền (BA 4.3).
 5. **`MODAL-MATCHMAKING` (Hàng Đợi Tìm Trận Ranked):** Radar quét đối thủ theo Elo ($\Delta Elo \le 100$, $\pm 50$ mỗi 10s), đồng hồ đếm giây. Nút *"Hủy tìm trận"* (hủy tự do khi chưa thấy đối thủ; khóa nút khi `MATCH_FOUND`).
 6. **`MODAL-AI-SETUP` (Chọn Cấp Độ & Phe Cờ AI):** Mở từ Sảnh. Chọn cấp độ Dễ/Trung bình/Khó. Chọn phe cờ: 🔴 Đỏ (đi trước), ⚫ Đen (đi sau - máy tự đi nước đầu), 🎲 Ngẫu nhiên (50/50).
@@ -295,7 +295,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
 * **Lối vào cấp điều hướng chính** (thẻ Đánh Thường ghép ngẫu nhiên và Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, liên kết *Quên mật khẩu?* ở màn đăng nhập (PO duyệt 04/10/2026; nút Khách hoạt động ở P1 từ 07/10), nút Nhắn tin và Thách đấu ở Bạn bè; **nút Đăng nhập/Đăng ký bằng Google hoạt động ở P1**, PO quyết định 04/10/2026) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
-* **Chức năng nằm sâu trong màn hình P1** (Mã QR, Sticker, Xin đi lại, Tái đấu, Xem lại ở kết quả ván, đi lại với máy, Lưu lịch sử, widget AI) **ẩn hoàn toàn** ở P1, không để nút xám.
+* **Chức năng nằm sâu trong màn hình P1** (Sticker, Xin đi lại, Tái đấu, Xem lại ở kết quả ván, đi lại với máy, Lưu lịch sử, widget AI) **ẩn hoàn toàn** ở P1, không để nút xám.
 * `MODAL-MATCH-RESULT` ở P1 chỉ có *Ở lại phòng*/*Rời phòng* (online) hoặc *Ván mới*/*Về Sảnh* (AI); không hiện Tái đấu và Xem lại.
 
 | STT | Mã Thành Phần | Tên Gọi Nghiệp Vụ | Phân Loại | Vị Trí / URL | Ưu tiên |
@@ -317,7 +317,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, email chỉ đọc; P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | **P1** (07/10) |
 | 17 | `MODAL-CREATE-ROOM` | P1: tạo phòng, 5/10/15 phút; P2: Không giới hạn | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
-| 18 | `MODAL-INVITE` | P1: link, mã 8 ký tự, mời bạn bè; P2: mã QR | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
+| 18 | `MODAL-INVITE` | P1: link, mã 8 số, mời bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
 | 19 | `MODAL-ROOM-SETTINGS` | Đổi chế độ phòng động (Khóa phòng giữ khách cũ) | Modal Dialog | Mở bởi Host | **P1** |
 | 20 | `MODAL-MATCHMAKING` | Hàng đợi tìm trận Ranked ngẫu nhiên (Hủy tự do) | Modal Dialog | Mở từ `SCR-LOBBY` | P2 |
 | 21 | `MODAL-AI-SETUP` | Chọn cấp độ AI (Dễ/Trung bình/Khó) & Phe cờ (Đỏ/Đen/Random)| Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |

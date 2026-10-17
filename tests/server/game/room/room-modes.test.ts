@@ -64,6 +64,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     await apply("supabase/migrations/20261011000008_room_modes.sql");
   });
@@ -102,6 +103,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("preserves legacy room data and leaves unknown historical public opening time unset", async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const owner = await actor(),
       id = randomUUID();
@@ -128,6 +130,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("refuses migration when the audited settings guard metadata differs", async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
@@ -153,6 +156,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("does not resolve audit builtins from attacker-named public functions", async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
@@ -369,9 +373,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
       const opened = await run(host, entry.roomId, (scope) =>
         store.changeVisibility(scope, entry.roomId, locked.version, visibility),
       );
-      expect(opened.room.inviteCode).toMatch(
-        /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/,
-      );
+      expect(opened.room.inviteCode).toMatch(/^[0-9]{8}$/);
       expect(opened.room.inviteCode).not.toBe(entry.inviteCode);
       await expect(
         run(host, entry.roomId, (scope) =>
@@ -589,10 +591,10 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     const locked = await run(host, entry.roomId, (scope) =>
       store.changeVisibility(scope, entry.roomId, view.version, "LOCKED"),
     );
-    const fresh = ["AAAAAAAA", "BBBBBBBB", "CCCCCCCC"].find(
+    const fresh = ["11111111", "22222222", "33333333"].find(
       (code) => code !== entry.inviteCode && code !== collision.inviteCode,
     )!;
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const alphabet = "0123456789";
     const native =
       await vi.importActual<typeof import("node:crypto")>("node:crypto");
     try {
