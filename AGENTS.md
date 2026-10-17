@@ -6,10 +6,11 @@ Monorepo pnpm (`pnpm@10.34.6`, `node >=22.13 <23`, `.node-version` là nguồn c
 
 ## Bắt đầu phiên làm việc
 
-1. Đọc yêu cầu, kiểm tra nhánh và `git status`; giữ nguyên thay đổi chưa commit của người dùng. Xác định công việc là tài liệu, cấu hình, triển khai hay đồng bộ Jira.
-2. Đọc tài liệu theo phạm vi trong bảng dưới. Xác nhận mã issue thật trước khi đặt tên nhánh/commit theo Jira; không suy ra `T01` là `XIAN-1`.
-3. Kiểm tra khả năng kết nối MCP Supabase và Atlassian/Jira theo mục kế tiếp. Ghi rõ đã kiểm chứng / chưa kiểm tra / bị chặn; không coi việc có tên plugin là kết nối thành công.
-4. Làm thay đổi trong phạm vi được giao, chạy kiểm tra phù hợp, xem diff và rà bí mật trước khi bàn giao hoặc push.
+1. Đọc yêu cầu, kiểm tra nhánh và `git status`; giữ nguyên thay đổi chưa commit của người dùng. Phân biệt tác vụ chỉ commit/push với triển khai, tài liệu, cấu hình hoặc đồng bộ Jira.
+2. Với tác vụ chỉ commit/push, áp dụng quy trình nhanh bên dưới; không mở rộng thành triển khai hoặc kiểm tra dịch vụ.
+3. Với công việc triển khai/tài liệu/cấu hình, đọc tài liệu theo phạm vi trong bảng dưới. Xác nhận mã issue thật trước khi đặt tên nhánh/commit theo Jira; không suy ra `T01` là `XIAN-1`.
+4. Kiểm tra khả năng kết nối MCP Supabase và Atlassian/Jira theo mục kế tiếp khi công việc cần; chỉ sửa file thì kiểm tra sự sẵn có của connector là đủ. Không coi tên plugin là kết nối thành công.
+5. Kiểm thử trong lúc triển khai theo phạm vi bị ảnh hưởng; không chạy lại kết quả còn hiệu lực nếu mã, dependency và cấu hình liên quan không đổi. Khi bàn giao/push, nêu đúng kiểm tra đã chạy.
 
 | Khi làm việc với                    | Đọc trước                                                                                                                          |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -30,19 +31,27 @@ Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại →
 
 ## Kiểm tra và kỷ luật chạy test (Test Scoping Rules)
 
-**Nguyên tắc tối thượng cho Agent:** Tuyệt đối KHÔNG chạy toàn bộ test database (`vitest run tests/server`) khi đang phát triển tính năng lẻ hoặc sửa lỗi cục bộ. Làm vậy sẽ lãng phí 7–9 phút, làm tràn cửa sổ ngữ cảnh và tốn quota của người dùng. Hãy giới hạn phạm vi kiểm thử theo 4 cấp độ:
+### Chỉ commit/push — trả kết quả ngay
 
-1. **Cấp 1 — Đang code dở từng file (Phản hồi < 1 giây):**
-   Chỉ chạy đúng duy nhất 1 file test tương ứng với file mã nguồn vừa chạm vào:
+- Kiểm tra nhanh nhánh, phạm vi diff, `git diff --check` và bí mật trong staged; stage rõ từng file rồi commit/push theo yêu cầu.
+- Không tự chạy lint/typecheck/test/build, review sâu, kiểm tra MCP, tạo PR, merge hoặc sửa code ngoài phạm vi trong tác vụ chỉ commit/push. Nếu phát hiện rõ secret hay nguy cơ mất dữ liệu, chặn đúng vấn đề đó; không bỏ qua để push nhanh.
+- Sau push thành công, trả mã commit và nhánh ngay. CI chạy nền; không dùng `--watch` hoặc chờ CI nếu người dùng không yêu cầu.
+- Push thành công không đồng nghĩa build/test đạt. Không báo CI thành công khi chưa có kết quả.
+- Merge `main` chỉ khi được yêu cầu riêng hoặc được nêu cùng yêu cầu commit/push; dùng CI của PR làm cổng kiểm tra đầy đủ, không chạy toàn bộ database local rồi chờ CI chạy lại cùng bộ.
+- Các cấp kiểm thử và bảng bên dưới áp dụng khi **triển khai thay đổi**, không phải điều kiện để lặp lại kiểm tra trong tác vụ chỉ commit/push.
+
+**Ưu tiên vòng lặp code → commit → push nhanh:** Không tự chạy `pnpm test`, `pnpm test:unit`, `pnpm test:core` hoặc toàn bộ `vitest run tests/server` ở local cho mỗi thay đổi. Chỉ chạy file test hoặc smoke trực tiếp chứng minh phần vừa sửa; chỉ mở rộng khi có phụ thuộc bị ảnh hưởng hoặc người dùng yêu cầu. Toàn bộ suite thuộc cổng CI `main`, không phải cổng commit/push.
+
+1. **Cấp 1 — Sửa một phần mã:**
+   Chạy file test trực tiếp liên quan hoặc smoke đường chạy vừa thay đổi:
    `pnpm exec vitest run <đường-dẫn-file-test>`
    _Ví dụ:_ `pnpm exec vitest run tests/web/features/auth/LoginPage.test.ts` hoặc `pnpm exec vitest run tests/packages/xiangqi-core/legal.test.ts`.
 
-2. **Cấp 2 — Xong tính năng UI / Logic dùng chung (Phản hồi ~17 giây):**
-   Chỉ chạy kiểm tra tĩnh và tầng Unit Test (chạy hoàn toàn trong RAM, không cần database/Docker):
-   `pnpm lint && pnpm typecheck && pnpm test:unit`
+2. **Cấp 2 — Hoàn thành tính năng UI / Logic dùng chung:**
+   Chọn các file test bị ảnh hưởng và smoke thực tế; không mặc định quét cả web/packages. Chạy lint/typecheck khi cần xác minh thay đổi, không lặp lại chỉ để commit/push.
 
-3. **Cấp 3 — Kiểm tra tích hợp Database theo từng Yêu cầu (1–8):**
-   Chỉ khi nào hoàn thành hoặc sửa đổi logic Backend của Yêu cầu cụ thể, mới dựng database để kiểm tra riêng cho Yêu cầu đó bằng `./tests/server/db.sh test <thư-mục>`. Sau khi test xong, gọi `./tests/server/db.sh stop`:
+3. **Cấp 3 — Logic Backend / Database:**
+   Nếu cần SQL thật, dùng `./tests/server/db.sh test <file-test-liên-quan>`, sau đó `./tests/server/db.sh stop`. Chỉ mở rộng sang thư mục khi thay đổi thật sự ảnh hưởng cả nhóm; các lệnh nhóm dưới đây là tham khảo, không tự chạy tất cả:
    - **Yêu cầu 1 (Tài khoản, Đăng nhập, Session, Google, Guest):**
      `./tests/server/db.sh test tests/server/account`
    - **Yêu cầu 2 & 3 (Tạo phòng, Sảnh chờ, Mã mời, Ghép phòng):**
@@ -57,18 +66,18 @@ Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại →
      `./tests/server/db.sh test tests/server/game/ai`
 
 4. **Cấp 4 — Khi chuẩn bị Release / Merge PR vào `main`:**
-   Chỉ chạy kiểm tra toàn diện trước khi phát hành phiên bản production. CI trên nhánh `develop` đã được cấu hình tự động bỏ qua tầng Database nặng để tiết kiệm thời gian; chỉ PR vào `main` mới kích hoạt toàn bộ 12 cụm DB.
+   Dùng CI của PR vào `main` làm cổng kiểm tra toàn diện; không mặc định chạy lại toàn bộ suite local trước đó. Push trực tiếp lên `main` cũng chạy đầy đủ để không bỏ lọt đường cập nhật không qua PR.
 
-Thứ tự CI (`.github/workflows/ci.yml`): Job 1 `checks` (`lint` → `typecheck` → `test:core` → `test:unit` → `build`, không cần database) → Job 2 `db-integration` (`needs: checks`, 12 container Postgres trên RAM disk `tmpfs` → `vitest run tests/server --no-file-parallelism --bail 1`, chỉ chạy khi có PR/push vào `main`). Chạy đúng lệnh CI dùng, không bịa lệnh hoặc kết quả.
+CI (`.github/workflows/ci.yml`) có hai luồng: push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ unit/core/database; PR/push `main` chạy đầy đủ, core có coverage và được loại khỏi lượt unit để không trùng. Package dùng chung kích hoạt build cả hai ứng dụng. Không đọc được diff hoặc gặp đường dẫn chưa phân loại thì build cả hai, nhưng không tự bật test nặng trên `develop`. Chi tiết tại [tests/README.md](tests/README.md).
 
-| Thay đổi         | Kiểm tra bắt buộc trước commit                                                                                            |
+| Thay đổi         | Kiểm tra khi triển khai (không chạy lại chỉ để commit/push)                                                               |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged                                  |
 | Kế hoạch Jira    | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v` |
 | LiveKit Docker   | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`                        |
-| Mã giao diện Web | `pnpm lint`, `pnpm typecheck`, `pnpm test:unit`                                                                           |
-| Mã logic chung   | `pnpm lint`, `pnpm typecheck`, `pnpm test:core`, `pnpm test:unit`                                                         |
-| Mã Server / DB   | `pnpm lint`, `pnpm typecheck`, kèm lệnh `./tests/server/db.sh test <thư-mục-yêu-cầu>` tương ứng ở mục 3                   |
+| Mã giao diện Web | File test liên quan và smoke giao diện; lint/typecheck khi cần xác minh                                                 |
+| Mã logic chung   | File test trực tiếp bị ảnh hưởng, gồm caller web/server liên quan; không tự chạy cả suite                                |
+| Mã Server / DB   | File test/smoke liên quan; nếu cần SQL thật, `./tests/server/db.sh test <file-test>` rồi `./tests/server/db.sh stop`        |
 
 ## Kiểm tra MCP và dịch vụ
 

@@ -46,3 +46,33 @@ Mỗi bộ test cần database khóa cứng host `127.0.0.1`, cổng và tên da
 và `ci.yml`), nên `db.sh` dựng đúng từng cụm riêng. Kết quả chuẩn khi chạy đầy đủ: mọi test pass, 0 skip.
 
 Chỉ chạy lệnh trên với database test cô lập này; không trỏ biến `*_TEST_DATABASE_URL` vào Supabase hay dữ liệu thật.
+
+## Commit/push nhanh và CI theo phạm vi
+
+Tác vụ chỉ commit/push không chạy lại lint/test/build hay chờ CI. Agent kiểm tra nhánh, diff/whitespace và bí mật staged, commit/push rồi trả mã commit. Trong lúc code, chỉ chạy file test hoặc smoke phần vừa sửa; không tự quét hàng trăm test web/packages/server. Không lặp lại kiểm tra nếu mã/dependency/cấu hình liên quan chưa đổi. Push thành công không phải bằng chứng test đã đạt.
+
+**Luồng phát triển:** push `develop` hoặc PR vào `develop` chỉ chạy lint/typecheck toàn repo và build ứng dụng bị ảnh hưởng. Không chạy các bộ core/unit/database. `.github/scripts/ci-scope.mjs` chọn build theo diff:
+
+| Vùng thay đổi | Build trên `develop` |
+|---|---|
+| `apps/web/`, `tests/web/` | Web và dependency |
+| `apps/server/`, `tests/server/`, `supabase/` | Server và dependency |
+| `packages/`, `tests/packages/` | Cả hai ứng dụng |
+| Cấu hình gốc, workflow, đường dẫn chưa phân loại hoặc không đọc được diff | Cả hai ứng dụng; không tự bật test nặng |
+
+PR vào `main` và push `main` luôn chạy mọi nhóm test/build cùng toàn bộ test server trên 12 cụm PostgreSQL cô lập. Giữ cả hai sự kiện để bảo vệ cả cập nhật qua PR và push trực tiếp; không chạy thêm toàn bộ database local chỉ để chờ CI chạy lại. Thay đổi chỉ gồm Markdown, `docs/` hoặc `.env.example` vẫn không kích hoạt workflow.
+
+**Luồng tích hợp `main`:** core chạy một lần với coverage, sau đó `test:unit` loại thư mục core để không chạy trùng. Các lệnh local giữ nguyên để dùng khi chủ động yêu cầu kiểm tra toàn diện, không phải thủ tục trước mỗi commit/push:
+
+```sh
+pnpm test:core --bail 1
+pnpm test:unit --exclude 'tests/packages/xiangqi-core/**' --bail 1
+```
+
+Self-check của bộ lọc (không cần database/dependency ngoài Node và Git):
+
+```sh
+node .github/scripts/ci-scope.mjs --self-test
+```
+
+Self-check kiểm tra ranh giới web/server/package, ảnh hưởng package dùng chung, cổng `main`, diff push/PR trên Git thật, rename liên vùng và fallback khi thiếu commit gốc. Bộ lọc dùng diff không gộp rename để không bỏ mất vùng cũ khi chuyển file.

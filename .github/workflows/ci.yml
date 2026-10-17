@@ -19,45 +19,52 @@ permissions:
   contents: read
 jobs:
   checks:
-    name: Lint, Typecheck, Unit & Build
+    name: Fast Checks & Build (full tests on main)
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
+      full: ${{ steps.filter.outputs.full }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - id: filter
-        name: Detect backend changes
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            DIFF=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            DIFF=$(git diff --name-only ${{ github.event.before }} HEAD 2>/dev/null || echo "apps/server/fallback")
-          fi
-          echo "Changed files:"
-          echo "$DIFF"
-          if echo "$DIFF" | grep -qE '^(apps/server|packages|supabase|tests/server|\.github/workflows/ci\.yml|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml)'; then
-            echo "backend=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "backend=false" >> "$GITHUB_OUTPUT"
-          fi
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
           cache: pnpm
+      - name: Check CI scope rules
+        run: node .github/scripts/ci-scope.mjs --self-test
+      - id: filter
+        name: Detect release gate and affected builds
+        env:
+          CI_EVENT: ${{ github.event_name }}
+          CI_BASE_REF: ${{ github.base_ref }}
+          CI_BEFORE: ${{ github.event.before }}
+          CI_REF: ${{ github.ref }}
+        run: node .github/scripts/ci-scope.mjs
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm test:core --bail 1
-      - run: pnpm test:unit --bail 1
-      - run: pnpm build
+      - name: Core tests with coverage
+        if: steps.filter.outputs.full == 'true'
+        run: pnpm test:core --bail 1
+      - name: Unit tests without repeating core
+        if: steps.filter.outputs.full == 'true'
+        run: pnpm test:unit --exclude 'tests/packages/xiangqi-core/**' --bail 1
+      - name: Build both applications
+        if: steps.filter.outputs.web == 'true' && steps.filter.outputs.server == 'true'
+        run: pnpm build
+      - name: Build web and its dependencies
+        if: steps.filter.outputs.web == 'true' && steps.filter.outputs.server != 'true'
+        run: pnpm build:web
+      - name: Build server and its dependencies
+        if: steps.filter.outputs.server == 'true' && steps.filter.outputs.web != 'true'
+        run: pnpm build:server
 
   db-integration:
     name: Database Integration Tests
     needs: checks
-    if: needs.checks.outputs.backend == 'true' && (github.base_ref == 'main' || github.ref == 'refs/heads/main')
+    if: needs.checks.outputs.full == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
