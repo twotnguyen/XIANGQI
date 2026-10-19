@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import console from "node:console";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve, sep } from "node:path";
+import process from "node:process";
 import ts from "typescript";
 
 function requiredDatabases(files, known, root = resolve("tests")) {
