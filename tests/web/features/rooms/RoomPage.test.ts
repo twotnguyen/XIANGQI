@@ -1349,11 +1349,77 @@ it("spectators Leave without claiming resignation or opening player confirmation
   expect(screen.queryByRole("dialog", { name: "Rời phòng?" })).toBeNull();
 });
 
-it("the immediate HTTP PLAYING view cannot resign before a fresh socket snapshot", async () => {
+it("an HTTP PLAYING fallback cannot resign before a fresh socket snapshot", async () => {
   const f = setup(actionable());
+  f.disconnect();
   await screen.findByRole("heading", { name: "Kỳ hữu" });
   fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
   expect(f.client.leave).not.toHaveBeenCalled();
+});
+it("defers HTTP room display until realtime is unavailable and never grants its controls", async () => {
+  const f = setup();
+  expect(f.client.snapshot).not.toHaveBeenCalled();
+  f.disconnect();
+  await screen.findByRole("heading", { name: "Kỳ hữu" });
+  expect(f.client.snapshot).toHaveBeenCalledOnce();
+  expect(
+    screen
+      .getByRole("button", { name: "Sẵn sàng" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  expect(f.command).not.toHaveBeenCalled();
+});
+it("does not starve an in-flight fallback on duplicate disconnect notifications", async () => {
+  const f = setup();
+  const { promise, reject } = Promise.withResolvers<RoomSnapshot>();
+  f.client.snapshot.mockReturnValue(promise);
+  f.disconnect();
+  f.disconnect();
+  expect(f.client.snapshot).toHaveBeenCalledOnce();
+  await act(async () => reject(new RoomRequestError("ROOM_FORBIDDEN", 403)));
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+
+it("does not treat an expired login as a closed room", async () => {
+  const f = setup();
+  f.client.snapshot.mockRejectedValue(
+    new RoomRequestError("AUTH_REQUIRED", 401),
+  );
+  f.disconnect();
+  await waitFor(() => expect(f.client.snapshot).toHaveBeenCalledOnce());
+  expect(f.onLeft).not.toHaveBeenCalled();
+});
+it("ignores a forbidden fallback response after realtime has reconnected", async () => {
+  const f = setup();
+  const { promise, reject } = Promise.withResolvers<RoomSnapshot>();
+  f.client.snapshot.mockReturnValue(promise);
+  f.disconnect();
+  expect(f.client.snapshot).toHaveBeenCalledOnce();
+  f.reconnect();
+  f.publish(snapshot);
+  await act(async () => reject(new RoomRequestError("ROOM_FORBIDDEN", 403)));
+  expect(f.onLeft).not.toHaveBeenCalled();
+  expect(screen.getByRole("heading", { name: "Kỳ hữu" })).toBeTruthy();
+});
+
+it("does not refresh a waiting room clock on focus", async () => {
+  const f = setup();
+  await f.ready();
+  await visibility("visible");
+  expect(f.refresh).not.toHaveBeenCalled();
+});
+it("keeps a waiting-room leave failure when the page regains focus", async () => {
+  const f = setup();
+  await f.ready();
+  f.client.leave.mockRejectedValue(new Error("private backend detail"));
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Rời phòng" }));
+  const error = screen.getByRole("alert").textContent;
+  await visibility("visible");
+  expect(f.refresh).not.toHaveBeenCalled();
+  expect(screen.getByRole("alert").textContent).toBe(error);
+  expect(error).toContain("Thao tác chưa thực hiện được");
 });
 
 it("loads actual room chat in waiting, keeps private by default and exposes independent public chat", async () => {
@@ -1600,4 +1666,42 @@ it("shows the invite code with a copy action and hides it when the host locks th
     room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
   });
   await waitFor(() => expect(screen.queryByText("70521348")).toBeNull());
+});
+
+it.each([
+  ["ROOM_FORBIDDEN", 403, true],
+  ["AUTH_REQUIRED", 401, false],
+] as const)(
+  "handles %s from Leave without confusing room access with login expiry",
+  async (code, status, terminal) => {
+    const f = setup();
+    await f.ready();
+    f.client.leave.mockRejectedValue(new RoomRequestError(code, status));
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Rời phòng" }));
+    if (terminal) expect(f.onLeft).toHaveBeenCalledOnce();
+    else {
+      expect(f.onLeft).not.toHaveBeenCalled();
+      expect(screen.getByRole("heading", { name: "Kỳ hữu" })).toBeTruthy();
+    }
+  },
+);
+
+it("allows manual reconnection after a failed admission without granting HTTP control", async () => {
+  const f = setup();
+  await f.ready();
+  f.disconnect();
+  act(() => handlers.onError("Kết nối chưa sẵn sàng."));
+  await screen.findByRole("heading", { name: "Kỳ hữu" });
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Thử lại" }));
+  expect(screen.queryByRole("button", { name: "Sẵn sàng" })).toBeNull();
+  await f.ready();
+  expect(
+    screen
+      .getByRole("button", { name: "Sẵn sàng" })
+      .getAttribute("aria-disabled"),
+  ).not.toBe("true");
 });

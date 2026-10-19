@@ -17,7 +17,8 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
   let providerFailure = false,
     membership = false,
     snapshotFailure = false,
-    failAfterCommit = false;
+    failAfterCommit = false,
+    snapshotGate: Promise<void> | null = null;
   const snapshot = {
     roomId,
     version: 1,
@@ -83,6 +84,7 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
     if (membership)
       throw new RealtimeError("ROOM_FORBIDDEN", "private membership");
     if (snapshotFailure) throw new Error("PRIVATE_SQL_SECRET");
+    if (snapshotGate) await snapshotGate;
     return forConnection(connection);
   });
   const command = vi.fn(async () => {
@@ -163,6 +165,7 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
     setProvider: (b: boolean) => (providerFailure = b),
     setMembership: (b: boolean) => (membership = b),
     setSnapshot: (b: boolean) => (snapshotFailure = b),
+    setSnapshotGate: (gate: Promise<void> | null) => (snapshotGate = gate),
     setAfterCommit: () => (failAfterCommit = true),
     close: async () => {
       clients.forEach((c) => c.disconnect());
@@ -267,6 +270,48 @@ describe("native realtime publication outcomes", () => {
       }
     },
   );
+  it("does not publish snapshots after membership is revoked", async () => {
+    const f = await fixture();
+    try {
+      const peer = await f.peer();
+      f.setMembership(true);
+      const snapshots: RoomSnapshot[] = [];
+      peer.client.on("room.snapshot", (value: RoomSnapshot) =>
+        snapshots.push(value),
+      );
+      await f.gateway.publishSnapshots(f.roomId);
+      expect(snapshots).toEqual([]);
+    } finally {
+      await f.close();
+    }
+  });
+  it("acks a committed receipt without waiting for snapshot publication", async () => {
+    const f = await fixture();
+    let release!: () => void;
+    const blocked = new Promise<void>((resolve) => (release = resolve));
+    try {
+      const peer = await f.peer();
+      f.setSnapshotGate(blocked);
+      const result = await peer.client
+        .timeout(1000)
+        .emitWithAck("room.command", {
+          roomId: f.roomId,
+          commandId: randomUUID(),
+          expectedVersion: 1,
+          action: { type: "room.ready", payload: { ready: true } },
+        });
+      expect(result).toMatchObject({
+        status: "error",
+        error: { code: "MATCH_TIME_EXPIRED" },
+        snapshot: { version: 1 },
+      });
+      expect(f.command).toHaveBeenCalledOnce();
+    } finally {
+      release();
+      f.setSnapshotGate(null);
+      await f.close();
+    }
+  });
   it("acknowledges a committed terminal error even if subsequent publication fails", async () => {
     const f = await fixture(),
       log = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
