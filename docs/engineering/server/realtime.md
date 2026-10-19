@@ -37,6 +37,11 @@ Quyền tại thời điểm commit quyết định snapshot admission; các l�
 và publication sau đó vẫn xác thực lại. Trạng thái có thể đổi sau commit như với
 mọi phản hồi snapshot; version/generation và các kiểm quyền tiếp theo vẫn áp dụng.
 
+Ack của `room.command` được gửi ngay sau khi lệnh commit; phát snapshot cho các
+tab chạy độc lập. Publication luôn xác thực lại từng người nhận và đọc snapshot
+mới, không dùng snapshot gốc hay `control` đã cache. Admission dựng snapshot
+bằng quyền/control vừa xác định trong cùng giao dịch, không đọc lại hai lần.
+
 Command examples định nghĩa ý định `room.ready`, `match.move`, `match.resign`, `media.sharing`; T18/T20/T23/T33 cung cấp handlers. `EngineFailureEvent` chỉ hợp đồng thông báo lỗi/busy/retry, không gọi engine. Không gửi payload chat/media stream vào receipts.
 
 ## Review focus

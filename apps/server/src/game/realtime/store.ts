@@ -168,7 +168,14 @@ export class RealtimeStore {
         "ended"
       )
         return null;
-      return this.currentSnapshot(client, connection);
+      return {
+        ...(await this.rooms.snapshot(
+          client,
+          connection.identity,
+          connection.roomId,
+        )),
+        control,
+      };
     });
     if (!result)
       throw new RealtimeError("ROOM_FORBIDDEN", "Ghế trong phòng đã hết hạn");

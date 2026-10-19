@@ -6,7 +6,6 @@ import type {
   ServerRealtimeEvents,
   RoomSnapshot,
   ChatChannel,
-  RoomRole,
 } from "@xiangqi/shared";
 import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
 import { RoomError } from "../room/room.types.js";
@@ -33,7 +32,7 @@ function authenticationFailure(error: unknown): RealtimeError {
 
 export interface RealtimePublisher {
   publishChat?(roomId: string, channel: ChatChannel): Promise<void>;
-  publishSnapshots(roomId: string, baseSnapshot?: RoomSnapshot): Promise<void>;
+  publishSnapshots(roomId: string): Promise<void>;
   publishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
@@ -60,7 +59,6 @@ export function attachRealtime(
     initialSnapshot?: RoomSnapshot;
     version: number;
     generation: number;
-    control?: RoomSnapshot["control"];
     disconnect: () => Promise<void>;
   };
   const io = new Server<ClientRealtimeEvents, ServerRealtimeEvents>(
@@ -158,15 +156,11 @@ export function attachRealtime(
       return;
     peer.version = snapshot.version;
     peer.generation = snapshot.control.generation;
-    peer.control = snapshot.control;
     peer.socket.emit("room.snapshot", snapshot);
   }
-  function publishSnapshots(
-    roomId: string,
-    baseSnapshot?: RoomSnapshot,
-  ): Promise<void> {
+  function publishSnapshots(roomId: string): Promise<void> {
     if (stopping) return Promise.reject(publicationFailure());
-    return track(() => doPublishSnapshots(roomId, baseSnapshot));
+    return track(() => doPublishSnapshots(roomId));
   }
   function publishChat(roomId: string, channel: ChatChannel): Promise<void> {
     if (stopping || !dependencies.chat)
@@ -210,10 +204,7 @@ export function attachRealtime(
       );
     });
   }
-  async function doPublishSnapshots(
-    roomId: string,
-    baseSnapshot?: RoomSnapshot,
-  ) {
+  async function doPublishSnapshots(roomId: string) {
     await Promise.all(
       [...peers.values()]
         .filter(
@@ -223,35 +214,6 @@ export function attachRealtime(
           track(async () => {
             try {
               const connection = await authorize(peer);
-              if (baseSnapshot && baseSnapshot.roomId === roomId) {
-                const userId = connection.identity.userId;
-                const isRed = baseSnapshot.room.seats.red === userId;
-                const isBlack = baseSnapshot.room.seats.black === userId;
-                const isSpectator = baseSnapshot.room.spectators.some(
-                  (s) => s.userId === userId,
-                );
-                if (isRed || isBlack || isSpectator) {
-                  const role: RoomRole = isRed
-                    ? "red"
-                    : isBlack
-                      ? "black"
-                      : "spectator";
-                  const peerSnapshot: RoomSnapshot = {
-                    ...baseSnapshot,
-                    role,
-                    control: peer.control ?? {
-                      mode:
-                        peer.generation > 0 && (isRed || isBlack)
-                          ? "writable"
-                          : "readonly",
-                      generation: peer.generation,
-                      reason: null,
-                    },
-                  };
-                  sendSnapshot(peer, peerSnapshot);
-                  return;
-                }
-              }
               sendSnapshot(peer, await dependencies.store.snapshot(connection));
             } catch (error) {
               if (!denied(error)) throw publicationFailure();
@@ -452,15 +414,11 @@ export function attachRealtime(
         } catch (error) {
           response = errorAcknowledgement(error);
         }
-        if (response.snapshot && !stopping) {
-          try {
-            await publishSnapshots(peer.connection.roomId, response.snapshot);
-          } catch {
-            failedOperation();
-          }
-        }
-        // A committed result is never replaced by a shutdown/publication failure.
+        // The command transaction has committed; publication is an independent
+        // side effect and must not delay delivery of its durable receipt.
         acknowledge(response);
+        if (response.snapshot && !stopping)
+          void publishSnapshots(peer.connection.roomId).catch(failedOperation);
       }).catch(failedOperation);
     });
     socket.on("room.sync", (acknowledge) => {

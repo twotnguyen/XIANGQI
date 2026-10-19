@@ -246,12 +246,17 @@ export class RoomStore {
     if (!code)
       throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
     await s.client.query(
-      "INSERT INTO public.active_players(user_id,room_id) VALUES($1,$2)",
-      [s.actor.userId, id],
-    );
-    await s.client.query(
-      "INSERT INTO public.room_members(room_id,user_id,role,side,disconnected_at) VALUES($1,$2,'PLAYER','RED',clock_timestamp())",
-      [id, s.actor.userId],
+      `WITH reserved AS (
+        INSERT INTO public.active_players(user_id,room_id)
+        VALUES($1,$2) RETURNING user_id,room_id
+      ), seated AS (
+        INSERT INTO public.room_members(room_id,user_id,role,side,disconnected_at)
+        SELECT room_id,user_id,'PLAYER','RED',clock_timestamp() FROM reserved
+        RETURNING room_id
+      )
+      INSERT INTO xiangqi_room.outbox(id,room_id,room_version,type,payload)
+      SELECT $3,room_id,1,'room.created','{}'::jsonb FROM seated`,
+      [s.actor.userId, id, randomUUID()],
     );
     const response: RoomEntry = {
       roomId: id,
@@ -259,7 +264,6 @@ export class RoomStore {
       role: "red",
       inviteCode: code,
     };
-    await this.event(s, id, 1, "room.created");
     await this.receipt(s, input.commandId, digest, response);
     return response;
   }

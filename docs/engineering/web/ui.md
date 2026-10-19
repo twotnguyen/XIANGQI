@@ -35,11 +35,14 @@ mã lên thao tác nhập form và request tạo phòng. Reload `/rooms/:id` t�
 phòng song song với kiểm tra phiên, nhưng chỉ đọc dữ liệu phòng sau khi phiên
 được xác thực. Không tải graph phòng khi chỉ reload Sảnh.
 
-HTTP snapshot bắt đầu cùng handshake socket, không đợi thêm 1,2 giây. HTTP
-chỉ giúp hiển thị phòng; quyền điều khiển vẫn cần snapshot realtime hợp lệ.
-Phản hồi HTTP trễ không ghi đè snapshot realtime đã nhận hoặc phiên bản mới hơn.
-Cả HTTP khởi tạo và socket đều bỏ lượt mount StrictMode đã hủy bằng microtask.
-Đổi lại, đường vào phòng có thể đọc HTTP ngay cả khi socket trả lời nhanh.
+Socket là đường tải phòng chính; chỉ đọc HTTP dự phòng khi socket báo mất
+kết nối. HTTP chỉ giúp hiển thị, không cấp quyền điều khiển. Phản hồi HTTP
+trễ không ghi đè snapshot realtime hoặc kết nối thuộc thế hệ mới hơn.
+Lỗi `ROOM_FORBIDDEN` khi đọc dự phòng hoặc rời phòng đưa về Sảnh; lỗi xác
+thực không được coi là rời phòng thành công. Khi admission thất bại, nút
+Thử lại dựng lại kết nối; phải nhận snapshot realtime mới trước khi thao tác.
+Refresh khi quay lại tab chỉ chạy cho ván đang ACTIVE, không đọc lại phòng
+WAITING mỗi lần focus. Phản hồi refresh cũ bị bỏ qua khi bắt đầu rời phòng.
 
 `Suspense` giữ shell khi trang đang tải; boundary đổi theo route để dọn socket
 và effect của trang cũ ngay khi rời trang, kể cả trang mới chưa tải xong.

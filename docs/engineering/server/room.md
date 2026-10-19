@@ -54,6 +54,10 @@ Nếu bảng biến mất sau khi đã dò, lỗi SQL được trả lên, khôn
 Contract `RoomEntry`, receipt chống trùng, mã mời và outbox không thay đổi;
 không cần migration cho các tối ưu này.
 
+Tạo phòng ghi `active_players`, ghế Host và outbox `room.created` bằng một CTE
+trong cùng giao dịch; insert `public.rooms` vẫn riêng để retry khi trùng mã.
+Receipt, khóa actor/phòng và thứ tự khóa không đổi.
+
 ## Guest port
 
 RoomGuestPort.seatedSeat union active_players và PLAYER membership ở open room, cả AI match roomNULL. Không coi AI là no-seat. end mặc định GUEST_UNAVAILABLE cho đến root cung cấp full same-client termination (room/match/chat/media/structured snapshot PII scrub); không giả UPDATE profile là đủ xóa PII. Guest integration test dùng synthetic no-history/no-media fixture cleanup và GuestService thật để chứng minh12h/defer/final-leave đồng giao dịch. Production full cleanup còn gate riêng.
