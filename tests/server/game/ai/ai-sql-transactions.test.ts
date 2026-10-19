@@ -347,7 +347,7 @@ describe.skipIf(!databaseUrl)(
           // the process-local owner gate; it is no longer waiting on an actor SQL lock.
           await vi.waitFor(async () => {
             const rows = await pool.query(
-              "SELECT count(*)::int n FROM pg_stat_activity WHERE datname=current_database() AND state='idle in transaction' AND query LIKE 'SELECT (expires_at>clock_timestamp()%'",
+              "SELECT count(*)::int n FROM pg_stat_activity WHERE datname=current_database() AND state='idle in transaction' AND query LIKE 'WITH locked AS MATERIALIZED (%' AND query LIKE '%(expires_at>clock_timestamp()) AS valid FROM locked'",
             );
             expect(rows.rows[0].n).toBe(1);
           });
