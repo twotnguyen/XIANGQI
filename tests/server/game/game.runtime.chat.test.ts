@@ -108,7 +108,6 @@ async function roomFixture() {
       });
     const created = await post("/rooms", 0, {
       commandId: randomUUID(),
-      name: "Runtime Chat Gate",
       timeMinutes: 5,
     });
     expect(created.status).toBe(200);

@@ -48,6 +48,7 @@ export async function createRoomRuntime(
   > | null,
   media: {
     revoke(roomId: string, userId: string): Promise<void>;
+    revokeRoom(roomId: string): Promise<void>;
   } | null = null,
 ) {
   const enabled = env.ROOMS_ENABLED ?? "false";
@@ -262,12 +263,6 @@ export async function createRoomRuntime(
     {
       deliver: async (event) => {
         if (!publisher) throw new Error("Realtime publisher is not attached");
-        if (event.type === "media.revoke-room")
-          throw new RoomError(
-            "MEDIA_UNAVAILABLE",
-            "Chia sẻ camera và mic chưa sẵn sàng",
-            503,
-          );
         if (event.type === "room.closed") {
           const recipients = event.payload.recipients;
           if (
@@ -416,22 +411,60 @@ export async function createRoomRuntime(
     started = false,
     closed = false,
     closing: Promise<void> | undefined;
-  const tick = async () => {
-    for (const run of [
-      () => clockWorker.tick(),
-      () => disconnectWorker.tick(),
-      ...(drawWorker ? [() => drawWorker.tick()] : []),
-      () => worker.tick(),
-      ...(chatWorker ? [() => chatWorker.tick()] : []),
-    ]) {
-      try {
-        await run();
-      } catch {
-        process.stderr.write(
-          logEvent("error", "realtime_maintenance_failed") + "\n",
-        );
-      }
+  let nextReceiptCleanup = 0;
+  let nextMediaSweep = 0;
+  let mediaInFlight: Promise<void> | null = null;
+  const drainMedia = async () => {
+    const event = await roomPort.pendingMediaEvent();
+    if (!event) return;
+    try {
+      if (!media) throw new Error("Media revocation is unavailable");
+      await media.revokeRoom(event.roomId);
+      await roomPort.markDelivered(event.id);
+    } catch {
+      await roomPort.markFailed(event.id);
     }
+    nextMediaSweep = 0;
+  };
+  const tick = async () => {
+    // Media service latency must not delay clocks, room transitions or chat.
+    if (!mediaInFlight && Date.now() >= nextMediaSweep) {
+      nextMediaSweep = Date.now() + 1000;
+      mediaInFlight = drainMedia()
+        .catch(() => {
+          process.stderr.write(
+            logEvent("error", "media_revocation_failed") + "\n",
+          );
+        })
+        .finally(() => {
+          mediaInFlight = null;
+        });
+    }
+    // Pollers are independent and each takes its own room locks; serial runs
+    // cost one DB round-trip chain per worker, which dominates tick latency.
+    await Promise.all(
+      [
+        async () => {
+          if (Date.now() < nextReceiptCleanup) return;
+          nextReceiptCleanup = Date.now() + 60000;
+          const removed = await roomPort.cleanupExpiredReceipts();
+          nextReceiptCleanup = Date.now() + (removed >= 500 ? 1000 : 60000);
+        },
+        () => clockWorker.tick(),
+        () => disconnectWorker.tick(),
+        ...(drawWorker ? [() => drawWorker.tick()] : []),
+        () => worker.tick(),
+        ...(chatWorker ? [() => chatWorker.tick()] : []),
+      ].map(async (run) => {
+        try {
+          await run();
+        } catch {
+          process.stderr.write(
+            logEvent("error", "realtime_maintenance_failed") + "\n",
+          );
+        }
+      }),
+    );
   };
   const schedule = () => {
     if (closed) return;
@@ -449,6 +482,7 @@ export async function createRoomRuntime(
       closed = true;
       if (timer) clearTimeout(timer);
       await inFlight;
+      await mediaInFlight;
       await chatWorker?.close();
     })());
   const publicService = publicReady

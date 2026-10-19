@@ -55,7 +55,7 @@ async function waitingPair() {
   const h = await admitted(),
     b = await admitted();
   const e = await run(h.a, h.proof, [], (s) =>
-    store.create(s, { commandId: randomUUID(), name: "Doi ben" }),
+    store.create(s, { commandId: randomUUID() }),
   );
   await run(b.a, b.proof, [e.roomId], (s) =>
     store.join(s, {
@@ -185,7 +185,7 @@ describe.skipIf(!databaseUrl)("side swap offers", () => {
   it("rejects swap with one seat, during countdown and after seat change", async () => {
     const h = await admitted();
     const e = await run(h.a, h.proof, [], (s) =>
-      store.create(s, { commandId: randomUUID(), name: "Mot ghe" }),
+      store.create(s, { commandId: randomUUID() }),
     );
     await expect(
       run(h.a, h.proof, [e.roomId], (s) => store.proposeSwap(s, e.roomId)),

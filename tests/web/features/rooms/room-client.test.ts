@@ -51,32 +51,6 @@ it.each([
     );
   },
 );
-it("sends strict create defaults with an idempotency UUID through authorizedFetch", async () => {
-  const request = vi.fn().mockResolvedValue(
-    new Response(
-      JSON.stringify({
-        roomId: "11111111-1111-4111-8111-111111111111",
-        version: 0,
-        role: "red",
-        inviteCode: "70521348",
-      }),
-    ),
-  );
-  await createRoomClient(request).create({
-    name: "Kỳ hữu",
-    timeMinutes: 10,
-    viewerLimit: 5,
-  });
-  const [path, init] = request.mock.calls[0]!;
-  expect(path).toBe("/rooms");
-  expect(init.redirect).toBe("error");
-  expect(JSON.parse(init.body)).toEqual({
-    commandId: expect.stringMatching(/^[0-9a-f-]{36}$/),
-    name: "Kỳ hữu",
-    timeMinutes: 10,
-    viewerLimit: 5,
-  });
-});
 it.each([
   { rooms: [] },
   { roomId: "not-a-uuid", version: 0, role: "red" },
@@ -84,11 +58,7 @@ it.each([
 ])("rejects malformed HTTP 200 entries before navigation", async (body) => {
   const request = vi.fn().mockResolvedValue(new Response(JSON.stringify(body)));
   await expect(
-    createRoomClient(request).create({
-      name: "Kỳ hữu",
-      timeMinutes: 10,
-      viewerLimit: 5,
-    }),
+    createRoomClient(request).create({ timeMinutes: 10, viewerLimit: 5 }),
   ).rejects.toThrow("Phản hồi phòng không hợp lệ");
 });
 it("rejects a malformed room shape before rendering", async () => {

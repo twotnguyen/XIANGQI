@@ -1,6 +1,5 @@
-import type { PoolClient } from "pg";
+import type { PoolClient, QueryResultRow } from "pg";
 import { createHash, randomInt, randomUUID } from "node:crypto";
-import { containsForbiddenName } from "@xiangqi/shared";
 import {
   invalidRoomInput,
   RoomError,
@@ -89,7 +88,7 @@ export class RoomStore {
   async pendingEvents(client: PoolClient): Promise<RoomEvent[]> {
     return (
       await client.query(
-        'SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50',
+        `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND type<>'media.revoke-room' AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50`,
       )
     ).rows as RoomEvent[];
   }
@@ -196,25 +195,15 @@ export class RoomStore {
     s: RoomScope,
     input: {
       commandId: string;
-      name: string;
       timeMinutes?: number;
       viewerLimit?: number;
     },
   ): Promise<RoomEntry> {
     this.scope(s);
-    if (!uuid.test(input.commandId) || typeof input.name !== "string")
-      invalidRoomInput();
-    const name = input.name.normalize("NFC").trim(),
-      time = input.timeMinutes ?? 10,
+    if (!uuid.test(input.commandId)) invalidRoomInput();
+    const time = input.timeMinutes ?? 10,
       viewers = input.viewerLimit ?? 5;
     if (
-      Array.from(name).length < 1 ||
-      Array.from(name).length > 60 ||
-      Array.from(name).some((c) => {
-        const n = c.codePointAt(0)!;
-        return n < 32 || (n >= 127 && n <= 159);
-      }) ||
-      containsForbiddenName(name) ||
       ![5, 10, 15].includes(time) ||
       !Number.isInteger(viewers) ||
       viewers < 0 ||
@@ -222,31 +211,23 @@ export class RoomStore {
     )
       invalidRoomInput();
     const digest = createHash("sha256")
-        .update(JSON.stringify({ type: "create", name, time, viewers }))
+        .update(JSON.stringify({ type: "create", time, viewers }))
         .digest("hex"),
       old = await this.replay(s, input.commandId, digest);
     if (old) return old;
-    if (
-      (
-        await s.client.query(
-          "SELECT 1 FROM public.active_players WHERE user_id=$1",
-          [s.actor.userId],
-        )
-      ).rowCount
-    )
+    const limits = (
+      await s.client.query<{ seated: boolean; guestRoom: boolean }>(
+        `SELECT EXISTS(SELECT 1 FROM public.active_players WHERE user_id=$1) AS seated,
+         ($2::boolean AND EXISTS(SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL)) AS "guestRoom"`,
+        [s.actor.userId, s.actor.kind === "guest"],
+      )
+    ).rows[0]!;
+    if (limits.seated)
       throw new RoomError(
         "ALREADY_SEATED",
         "Bạn đang giữ vị trí chơi ở nơi khác",
       );
-    if (
-      s.actor.kind === "guest" &&
-      (
-        await s.client.query(
-          "SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL",
-          [s.actor.userId],
-        )
-      ).rowCount
-    )
+    if (limits.guestRoom)
       throw new RoomError(
         "GUEST_ROOM_LIMIT",
         "Khách chỉ được tạo một phòng đang mở",
@@ -257,7 +238,7 @@ export class RoomStore {
       code = Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
       const row = await s.client.query(
         "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,'CODE_ONLY',$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
-        [id, s.actor.userId, name, time * 60, viewers, code],
+        [id, s.actor.userId, `Phòng ${code}`, time * 60, viewers, code],
       );
       if (row.rowCount) break;
       code = "";
@@ -284,12 +265,20 @@ export class RoomStore {
   }
   private async room(s: RoomScope, id: string) {
     this.scope(s, id);
-    const r = (
+    const rows = (
       await s.client.query(
-        "SELECT *,clock_timestamp() AS server_now FROM public.rooms WHERE id=$1",
+        "SELECT r.*,clock_timestamp() AS server_now,m.user_id AS member_user_id,m.role AS member_role,m.side AS member_side,m.ready AS member_ready,m.disconnected_at AS member_disconnected_at,(m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) AS member_viewer_expired FROM public.rooms r LEFT JOIN public.room_members m ON m.room_id=r.id WHERE r.id=$1 ORDER BY m.user_id",
         [id],
       )
-    ).rows[0];
+    ).rows as (QueryResultRow & {
+      member_user_id: string | null;
+      member_role: string | null;
+      member_side: string | null;
+      member_ready: boolean | null;
+      member_disconnected_at: Date | null;
+      member_viewer_expired: boolean | null;
+    })[];
+    const r = rows[0];
     if (!r || r.status === "CLOSED")
       throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
     if (r.invite_code === null)
@@ -298,18 +287,18 @@ export class RoomStore {
         "Phòng cũ chưa được hỗ trợ",
         503,
       );
-    const members = (
-      await s.client.query(
-        "SELECT * FROM public.room_members WHERE room_id=$1 ORDER BY user_id",
-        [id],
-      )
-    ).rows as {
-      user_id: string;
-      role: string;
-      side: string | null;
-      ready: boolean;
-      disconnected_at: Date | null;
-    }[];
+    const members = [];
+    for (const row of rows) {
+      if (row.member_user_id === null) continue;
+      members.push({
+        user_id: row.member_user_id,
+        role: row.member_role!,
+        side: row.member_side,
+        ready: row.member_ready!,
+        disconnected_at: row.member_disconnected_at,
+        viewer_expired: row.member_viewer_expired,
+      });
+    }
     const missing = members
       .filter((m) => m.role === "PLAYER" && !s.lockedActorIds.has(m.user_id))
       .map((m) => m.user_id);
@@ -319,16 +308,6 @@ export class RoomStore {
       );
     return { r, members };
   }
-  private async viewerExpired(s: RoomScope, id: string, userId: string) {
-    return Boolean(
-      (
-        await s.client.query(
-          "SELECT 1 FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND role='SPECTATOR' AND disconnected_at+interval '5 minutes'<=clock_timestamp()",
-          [id, userId],
-        )
-      ).rowCount,
-    );
-  }
   private async member(s: RoomScope, id: string, allowExpiredViewer = false) {
     const state = await this.room(s, id);
     const member = state.members.find((m) => m.user_id === s.actor.userId);
@@ -336,7 +315,7 @@ export class RoomStore {
       !member ||
       (!allowExpiredViewer &&
         member.role === "SPECTATOR" &&
-        (await this.viewerExpired(s, id, s.actor.userId)))
+        member.viewer_expired)
     )
       throw new RoomError(
         "ROOM_FORBIDDEN",
@@ -344,6 +323,10 @@ export class RoomStore {
         403,
       );
     return { ...state, member };
+  }
+  async authorize(s: RoomScope, id: string) {
+    const { member } = await this.member(s, id);
+    return { canControl: member.side === "RED" || member.side === "BLACK" };
   }
   private async bump(
     s: RoomScope,
@@ -376,26 +359,61 @@ export class RoomStore {
     const { r, members, member } = await this.member(s, id),
       red = members.find((m) => m.side === "RED"),
       black = members.find((m) => m.side === "BLACK");
-    const d = (
-      await s.client.query(
-        "SELECT token,due_at FROM xiangqi_room.countdowns WHERE room_id=$1",
-        [id],
-      )
-    ).rows[0];
-    const down = await this.pendingDownOffer(s, id);
-    const swap = await this.pendingSwapOffer(s, id);
-    const watchers = (
-      await s.client.query(
-        "SELECT m.user_id,COALESCE(p.display_name,'Khách') AS display_name FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR' ORDER BY m.user_id",
-        [id],
-      )
-    ).rows as { user_id: string; display_name: string }[];
-    const online = (
-      await s.client.query(
-        "SELECT user_id FROM xiangqi_room.presence WHERE room_id=$1 AND connected",
-        [id],
-      )
-    ).rows.map((p) => p.user_id);
+    const includeDown = await this.downTableExists(s);
+    const includeSwap = await this.swapTableExists(s);
+    const offerJoins = `${includeDown ? "LEFT JOIN LATERAL (SELECT id,invitee_id,expires_at FROM xiangqi_room.seat_invites WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) down_offer ON TRUE" : ""} ${includeSwap ? "LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) swap_offer ON TRUE" : ""}`;
+    const offerColumns = `${includeDown ? "down_offer.id AS down_id,down_offer.invitee_id AS down_invitee_id,down_offer.expires_at AS down_expires_at" : "NULL::uuid AS down_id,NULL::uuid AS down_invitee_id,NULL::timestamptz AS down_expires_at"},${includeSwap ? "swap_offer.id AS swap_id,swap_offer.proposer_id AS swap_proposer_id,swap_offer.responder_id AS swap_responder_id,swap_offer.expires_at AS swap_expires_at" : "NULL::uuid AS swap_id,NULL::uuid AS swap_proposer_id,NULL::uuid AS swap_responder_id,NULL::timestamptz AS swap_expires_at"}`;
+    const aux = await s.client.query(
+      `SELECT (SELECT token FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_token,(SELECT due_at FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_due_at,COALESCE((SELECT json_agg(json_build_object('user_id',m.user_id,'display_name',COALESCE(p.display_name,'Khách')) ORDER BY m.user_id) FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR'),'[]'::json) AS spectators,ARRAY(SELECT user_id::text FROM xiangqi_room.presence WHERE room_id=$1 AND connected) AS online,${offerColumns} FROM (SELECT 1) room_snapshot ${offerJoins}`,
+      [id],
+    );
+    const {
+      countdown_token,
+      countdown_due_at,
+      spectators: watchers,
+      online,
+      down_id,
+      down_invitee_id,
+      down_expires_at,
+      swap_id,
+      swap_proposer_id,
+      swap_responder_id,
+      swap_expires_at,
+    } = aux.rows[0] as {
+      countdown_token: string | null;
+      countdown_due_at: Date | null;
+      spectators: { user_id: string; display_name: string }[];
+      online: string[];
+      down_id: string | null;
+      down_invitee_id: string | null;
+      down_expires_at: Date | null;
+      swap_id: string | null;
+      swap_proposer_id: string | null;
+      swap_responder_id: string | null;
+      swap_expires_at: Date | null;
+    };
+    const down = down_id
+      ? {
+          id: down_id,
+          invitee_id: down_invitee_id!,
+          expires_at: down_expires_at!,
+        }
+      : null;
+    const swap = swap_id
+      ? {
+          id: swap_id,
+          proposer_id: swap_proposer_id!,
+          responder_id: swap_responder_id!,
+          expires_at: swap_expires_at!,
+        }
+      : null;
+    const d =
+      countdown_token === null
+        ? null
+        : {
+            token: countdown_token,
+            due_at: countdown_due_at!,
+          };
     return {
       serverNow: (r.server_now as Date).toISOString(),
       roomId: id,
@@ -556,10 +574,7 @@ export class RoomStore {
       old = await this.replay(s, input.commandId, digest);
     if (old) return old;
     const existing = members.find((m) => m.user_id === s.actor.userId);
-    if (
-      existing?.role === "SPECTATOR" &&
-      (await this.viewerExpired(s, input.roomId, s.actor.userId))
-    )
+    if (existing?.role === "SPECTATOR" && existing.viewer_expired)
       throw new RoomError(
         "ROOM_FORBIDDEN",
         "Chỗ xem trong phòng đã hết hạn",
@@ -1157,11 +1172,7 @@ export class RoomStore {
     )
       invalidRoomInput();
     const { r, member } = await this.member(s, id, true);
-    if (
-      connected &&
-      member.role === "SPECTATOR" &&
-      (await this.viewerExpired(s, id, s.actor.userId))
-    ) {
+    if (connected && member.role === "SPECTATOR" && member.viewer_expired) {
       await this.release(s, id, s.actor.userId, false);
       return "viewer-expired" as const;
     }

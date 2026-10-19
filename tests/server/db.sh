@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Chạy test cần database bằng các cụm Postgres cô lập trên máy (khớp ci.yml).
-# Mỗi bộ test khóa cứng host 127.0.0.1, cổng và tên database, nên cần đúng 12 cụm riêng.
+# Chỉ dựng các cụm được test đã chọn (và helper import) sử dụng; guard host/port/database giữ nguyên.
 #
-#   tests/server/db.sh test [đối số vitest...]   dựng cụm (nếu chưa có) rồi chạy vitest tuần tự
+#   tests/server/db.sh test [đối số vitest...]   chọn cụm cần thiết rồi chạy vitest tuần tự
 #   tests/server/db.sh start | stop | status     dựng / tắt / xem các cụm
 #   tests/server/db.sh env                       in các lệnh export *_TEST_DATABASE_URL
 #   tests/server/db.sh purge                     tắt và xóa dữ liệu cụm
@@ -14,6 +14,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BASE="${XQ_PG_DIR:-${TMPDIR:-/tmp}/xq-pg}"
 export LC_ALL="${LC_ALL:-en_US.UTF-8}"
+REQUIRED_DATABASES=all
 
 find_pgbin() {
   if [ -n "${PGBIN:-}" ]; then echo "$PGBIN"; return; fi
@@ -46,6 +47,7 @@ each_cluster() { # $1 = lệnh
   local c port admin db var
   for c in "${CLUSTERS[@]}"; do
     IFS=: read -r port admin db var <<<"$c"
+    [[ "$REQUIRED_DATABASES" = all || " $REQUIRED_DATABASES " = *" $var "* ]] || continue
     "$1" "$port" "$admin" "$db" "$var"
   done
 }
@@ -72,7 +74,7 @@ env_one() {
 
 cmd="${1:-status}"
 [ $# -gt 0 ] && shift
-PGBIN="$(find_pgbin)"
+if [ "$cmd" != test ]; then PGBIN="$(find_pgbin)"; fi
 case "$cmd" in
   start) each_cluster start_one ;;
   stop) each_cluster stop_one ;;
@@ -80,9 +82,14 @@ case "$cmd" in
   env) each_cluster env_one ;;
   purge) each_cluster stop_one; rm -rf "$BASE" ;;
   test)
+    cd "$ROOT"
+    files="$(pnpm exec vitest list --filesOnly "$@")"
+    REQUIRED_DATABASES="$(printf '%s\n' "$files" | node tests/server/db-scope.mjs "${CLUSTERS[@]##*:}")"
+    for cluster in "${CLUSTERS[@]}"; do unset "${cluster##*:}"; done
+    unset DRAW_WORKER_TEST_DATABASE_URL
+    if [ -n "$REQUIRED_DATABASES" ]; then PGBIN="$(find_pgbin)"; fi
     each_cluster start_one
     eval "$(each_cluster env_one)"
-    cd "$ROOT"
     exec pnpm exec vitest run --no-file-parallelism "$@"
     ;;
   *) sed -n '2,12p' "${BASH_SOURCE[0]}"; exit 2 ;;

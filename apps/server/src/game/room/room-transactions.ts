@@ -57,28 +57,36 @@ function canonical(input: RoomTransactionInput): RoomTransactionInput {
   };
 }
 async function projection(client: PoolClient, input: RoomTransactionInput) {
-  const rooms = (
-    await client.query<{ id: string }>(
-      `SELECT id FROM public.rooms WHERE id=ANY($1::uuid[])
-     OR (owner_id=$2 AND closed_at IS NULL)
-     OR id IN (SELECT room_id FROM public.room_members WHERE user_id=$2)
-     OR id IN (SELECT room_id FROM public.active_players WHERE user_id=$2)
-     OR id IN (SELECT room_id FROM public.matches WHERE id IN (SELECT match_id FROM public.active_players WHERE user_id=$2))
-     ORDER BY id`,
+  const rows = (
+    await client.query<{ kind: "room" | "actor"; id: string | null }>(
+      `WITH rooms AS MATERIALIZED (
+       SELECT id FROM public.rooms WHERE id=ANY($1::uuid[])
+         OR (owner_id=$2 AND closed_at IS NULL)
+         OR id IN (SELECT room_id FROM public.room_members WHERE user_id=$2)
+         OR id IN (SELECT room_id FROM public.active_players WHERE user_id=$2)
+         OR id IN (SELECT room_id FROM public.matches WHERE id IN
+           (SELECT match_id FROM public.active_players WHERE user_id=$2))
+     ), actors AS (
+       SELECT owner_id AS id FROM public.rooms WHERE id IN (SELECT id FROM rooms)
+       UNION SELECT user_id FROM public.room_members WHERE room_id IN (SELECT id FROM rooms)
+       UNION SELECT red_user_id FROM public.matches WHERE id IN
+         (SELECT current_match_id FROM public.rooms WHERE id IN (SELECT id FROM rooms)
+          UNION SELECT match_id FROM public.active_players WHERE user_id=$2)
+       UNION SELECT black_user_id FROM public.matches WHERE id IN
+         (SELECT current_match_id FROM public.rooms WHERE id IN (SELECT id FROM rooms)
+          UNION SELECT match_id FROM public.active_players WHERE user_id=$2)
+     )
+     SELECT 'room'::text AS kind,id FROM rooms
+     UNION ALL SELECT 'actor'::text AS kind,id FROM actors`,
       [input.roomIds, input.actor.userId],
     )
-  ).rows.map((r) => r.id);
-  const actors = (
-    await client.query<{ id: string }>(
-      `SELECT owner_id AS id FROM public.rooms WHERE id=ANY($1::uuid[])
-     UNION SELECT user_id FROM public.room_members WHERE room_id=ANY($1::uuid[])
-     UNION SELECT red_user_id FROM public.matches WHERE id IN
-       (SELECT current_match_id FROM public.rooms WHERE id=ANY($1::uuid[]) UNION SELECT match_id FROM public.active_players WHERE user_id=$2)
-     UNION SELECT black_user_id FROM public.matches WHERE id IN
-       (SELECT current_match_id FROM public.rooms WHERE id=ANY($1::uuid[]) UNION SELECT match_id FROM public.active_players WHERE user_id=$2)`,
-      [rooms, input.actor.userId],
-    )
-  ).rows
+  ).rows;
+  const rooms = rows
+    .filter((r) => r.kind === "room")
+    .map((r) => r.id)
+    .filter((id): id is string => id !== null);
+  const actors = rows
+    .filter((r) => r.kind === "actor")
     .map((r) => r.id)
     .filter((id): id is string => id !== null);
   // Include nonexistent targets for the room advisory lock and eventual domain 404.
@@ -98,6 +106,16 @@ function requireComplete(
     throw new RoomRosterChanged(current.actorIds);
 }
 
+// One round-trip for the whole sorted key set; COLLATE "C" keeps the order equal
+// to the JS sort so every path acquires locks in the same sequence (no deadlocks).
+async function lockInOrder(client: PoolClient, keys: readonly string[]) {
+  if (!keys.length) return;
+  await client.query(
+    'WITH k AS MATERIALIZED(SELECT key FROM unnest($1::text[]) key ORDER BY key COLLATE "C") SELECT pg_advisory_xact_lock(hashtextextended(key,0)) FROM k',
+    [keys],
+  );
+}
+
 export class RoomTransactions {
   constructor(private readonly pool: Pool) {}
 
@@ -114,11 +132,7 @@ export class RoomTransactions {
     const actorIds = [
       ...new Set([...before.actorIds, ...extraActorIds.map(uuid)]),
     ].sort();
-    for (const id of actorIds)
-      await client.query(
-        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
-        ["actor:" + id],
-      );
+    await lockInOrder(client, actorIds.map((id) => "actor:" + id));
     const after = await projection(client, normalized);
     const proof: RoomActorProof = {
       client,
@@ -165,11 +179,7 @@ export class RoomTransactions {
 
   // Same client and complete actor union; never acquire actors here.
   async lockRooms(proof: RoomActorProof): Promise<RoomScope> {
-    for (const id of proof.roomIds)
-      await proof.client.query(
-        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
-        ["room:" + id],
-      );
+    await lockInOrder(proof.client, proof.roomIds.map((id) => "room:" + id));
     if (proof.roomIds.length)
       await proof.client.query(
         "SELECT id FROM public.rooms WHERE id=ANY($1::uuid[]) ORDER BY id FOR UPDATE",
@@ -202,8 +212,7 @@ export class RoomTransactions {
       const client = await this.pool.connect();
       let broken = false;
       try {
-        await client.query("BEGIN");
-        await client.query("SET LOCAL ROLE app_server");
+        await client.query("BEGIN; SET LOCAL ROLE app_server");
         const prepared = await this.prepare(client, normalized, authorize, [
           ...extraActors,
         ]);

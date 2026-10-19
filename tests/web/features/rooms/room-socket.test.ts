@@ -18,7 +18,24 @@ it("does not pass a late credential result to a socket that has been closed", as
   peer.close();
   finish({ accessToken: "late", appSession: "cap" });
   await Promise.resolve();
+  expect(fixture.socket.connect).not.toHaveBeenCalled();
   expect(done).not.toHaveBeenCalled();
+});
+it("skips a StrictMode-disposed socket before connecting the live room socket", async () => {
+  const input = {
+    roomId: "room",
+    getProof: vi.fn(),
+    onSnapshot: vi.fn(),
+    onConnection: vi.fn(),
+    onError: vi.fn(),
+  };
+  const discarded = connectRoom(input);
+  discarded.close();
+  const live = connectRoom(input);
+  expect(fixture.socket.connect).not.toHaveBeenCalled();
+  await Promise.resolve();
+  expect(fixture.socket.connect).toHaveBeenCalledOnce();
+  live.close();
 });
 const fixture = vi.hoisted(() => ({
   handlers: new Map<string, (...args: unknown[]) => void>(),

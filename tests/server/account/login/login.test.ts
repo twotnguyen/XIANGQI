@@ -204,6 +204,37 @@ describe.skipIf(!url)(
         crossing.requireActive(result.access_token, result.appSession),
       ).rejects.toMatchObject({ code: "SESSION_EXPIRED" });
     });
+    it("rejects an account deactivated while the provider validates the bearer", async () => {
+      const result = await login.login({
+        username: "TestPlayer",
+        password: "password123",
+      });
+      const deactivated = new SessionService(
+        store,
+        {
+          signInPassword: auth.signInPassword.bind(auth),
+          getUser: async (token) => {
+            const user = await auth.getUser(token);
+            await pool.query(
+              "UPDATE public.profiles SET registration_pending=true WHERE user_id=$1",
+              [result.userId],
+            );
+            return user;
+          },
+        },
+        now,
+      );
+      try {
+        await expect(
+          deactivated.requireActive(result.access_token, result.appSession),
+        ).rejects.toMatchObject({ code: "ACCOUNT_PENDING" });
+      } finally {
+        await pool.query(
+          "UPDATE public.profiles SET registration_pending=false WHERE user_id=$1",
+          [result.userId],
+        );
+      }
+    });
 
     it("uses a sliding strict fifteen-minute boundary and a successful password resets the count", async () => {
       for (let i = 0; i < 3; i++)

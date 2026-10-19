@@ -74,7 +74,6 @@ export class RoomController {
         input = object(body);
       const commandId = id(input.commandId);
       if (
-        typeof input.name !== "string" ||
         (input.timeMinutes !== undefined &&
           (typeof input.timeMinutes !== "number" ||
             ![5, 10, 15].includes(input.timeMinutes))) ||
@@ -87,7 +86,6 @@ export class RoomController {
         invalidRoomInput();
       return this.service.create(authority, {
         commandId,
-        name: input.name,
         ...(input.timeMinutes === undefined
           ? {}
           : { timeMinutes: input.timeMinutes as number }),

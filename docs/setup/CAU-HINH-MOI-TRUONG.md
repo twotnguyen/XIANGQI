@@ -35,6 +35,7 @@ Biến bắt buộc còn trống nghĩa là chưa đủ để chạy chức năn
 | Biến | Nguồn / cách dùng |
 |---|---|
 | `VITE_API_URL` | URL NestJS; dự kiến dùng cả HTTP API và Socket.IO |
+| `DEV_ALLOWED_HOSTS` | Hostname dev web được Vite cho phép khi đi qua proxy, phân cách bằng dấu phẩy, không có scheme/port. Ví dụ hostname Tailscale `.ts.net`; để trống khi không dùng proxy. Không tắt kiểm tra host bằng wildcard. |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase URL và khóa công khai nếu giao diện dùng SDK Auth |
 | `NODE_ENV`, `PORT`, `LOG_LEVEL` | Cấu hình chạy server; mẫu dùng development, 3000, info |
 | `CORS_ORIGINS` | Danh sách origin web cho phép, quy ước phân cách bằng dấu phẩy khi triển khai loader; không dùng wildcard với phiên đăng nhập |
@@ -110,6 +111,7 @@ Xem [kết nối phòng](https://docs.livekit.io/intro/basics/connect/). Đây l
 
 - Thay bộ ba biến LiveKit bằng địa chỉ và khóa của máy chủ tự chạy. `ws://localhost:7880` chỉ phù hợp thử cùng máy; mọi thiết bị phải truy cập được địa chỉ media thực.
 - LAN nhiều thiết bị cần HTTPS tin cậy cho web và WSS phù hợp cho media; thiết bị nhận phải tin chứng chỉ. HTTP qua IP LAN không tương đương ngoại lệ localhost cho camera/mic.
+- Với Tailscale và LiveKit Cloud hiện có, xem [hướng dẫn HTTPS bằng Tailscale Serve](../../infra/livekit/README.md#demo-qua-tailscale-giữ-livekit-cloud); không cần chuyển bộ khóa media sang local.
 - Cấu hình firewall, UDP/TCP và địa chỉ máy chủ quảng bá theo hướng dẫn triển khai. Chứng chỉ và khóa riêng giữ cục bộ, không commit.
 - Không triển khai máy chủ LiveKit trên Render theo phương án đã chốt. Khi dùng Render cho web/NestJS, dùng LiveKit Cloud cho media.
 
@@ -143,3 +145,16 @@ git diff --cached --name-only
 ```
 
 Danh sách staged chỉ được có file mẫu và tài liệu, không có ba file `.env` thật. Không dùng `git add -f` cho bí mật. Chỉ chia sẻ khóa qua kênh riêng được nhóm kiểm soát; không dán lên Jira, PR hay ảnh chụp. Nếu đã lộ khóa thì thu hồi/đổi khóa ở dịch vụ, xóa file khỏi commit sau không làm khóa cũ an toàn trở lại.
+
+## 8. Quy tắc cho agent về môi trường, bảo mật và Supabase
+
+Chuyển từ `AGENTS.md`; chỉ áp dụng khi tác vụ chạm `.env`, database hoặc media.
+
+- MCP được cài và cấp quyền trong môi trường agent, không cấu hình bằng `.env` của ứng dụng; không lưu token MCP vào repo.
+- **Supabase:** xác nhận project ref `snsnkoicxmubuotcdafi` thuộc XIANGQI bằng công cụ đọc thông tin project. Khi Task liên quan database, đọc schema/migration cần thiết; cần kiểm kết nối SQL thì dùng truy vấn chỉ đọc như `SELECT 1`. Ghi riêng khả năng truy cập thông tin project và khả năng truy vấn database. Kiểm tra chỉ đọc không cấp quyền sửa schema, chạy migration, thay Auth/RLS, cập nhật issue hay gửi email; không ghi dữ liệu để thử kết nối.
+- Thiếu MCP hoặc hết quyền: báo chính xác dịch vụ nào không truy cập được; dùng dashboard đã đăng nhập hoặc API người dùng cho phép thì ghi rõ là phương án thay thế. Không dùng token không rõ nguồn.
+- `.env` gốc là bản tổng; đồng bộ vào `apps/web/.env` và `apps/server/.env` sau khi sửa. Đối chiếu thay đổi riêng ở bản sao trước khi ghi đè. File thật và `.local/` phải được Git bỏ qua, quyền file bí mật là `600` khi hệ điều hành hỗ trợ. Các cờ `AUTH_*_ENABLED`, `ROOMS/FRIENDS/HISTORY/PROFILE_ENABLED` mặc định `false`, chỉ bật khi Task yêu cầu.
+- Chỉ đưa tên biến và giá trị trống/mẫu công khai vào `.env.example`. Rà nội dung staged để tránh khóa trong tài liệu, ảnh, log, fixture hoặc URL. Không in nguyên file `.env` hay trả khóa trong chat.
+- Dự án dùng Vite; `NEXT_PUBLIC_*` chỉ là dự phòng cho Next.js. Cả hai nhóm tiền tố đều dành cho dữ liệu công khai; secret Supabase/LiveKit/SMTP và mật khẩu SQL không được vào bundle frontend.
+- Giữ Cloud hiện tại trừ khi được yêu cầu chuyển. `infra/livekit/livekit-env.py prepare` chuẩn bị khóa local riêng; `local`/`cloud` đổi ba biến media và đồng bộ file. Không dùng khóa Cloud trong máy chủ Docker local.
+- Database query thành công, OTP đến hộp thư hoặc LiveKit HTTP 200 chỉ là kiểm tra hạ tầng; chưa đủ chứng minh OAuth, RLS, camera nhiều thiết bị và phân quyền nghiệp vụ.

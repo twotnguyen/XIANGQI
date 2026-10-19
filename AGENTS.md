@@ -1,172 +1,68 @@
 # Hướng dẫn agent — XIANGQI
 
-Đọc file này trước khi làm việc trong repo. Chỉ dẫn cụ thể của người dùng trong phiên làm việc được ưu tiên. Trả lời bằng tiếng Việt, nêu thay đổi, kiểm tra đã chạy và giới hạn còn lại.
+Chỉ dẫn của người dùng trong phiên được ưu tiên. Trả lời bằng tiếng Việt: nêu thay đổi, kiểm tra đã chạy, giới hạn còn lại.
 
-Monorepo pnpm (`pnpm@10.34.6`, `node >=22.13 <23`, `.node-version` là nguồn cho CI): `apps/web` (React + Vite, 5173) + `apps/server` (NestJS + Socket.IO, cổng `PORT` mặc định 3000, `GET /health`), `packages/xiangqi-core/engine/shared`, `supabase/`, `tests/`. Không thêm dependency/abstraction/cấu hình nếu chưa được giao; xóa hơn thêm.
+Monorepo pnpm, Node 22 (`.node-version`): `apps/web` (React + Vite), `apps/server` (NestJS + Socket.IO), `packages/{shared,xiangqi-core,engine}`, `supabase/`, `tests/`. Không thêm dependency/abstraction/cấu hình nếu chưa được giao; xóa hơn thêm.
 
-## Bắt đầu phiên làm việc
+## Đọc gì
 
-1. Đọc yêu cầu, kiểm tra nhánh và `git status`; giữ nguyên thay đổi chưa commit của người dùng. Phân biệt tác vụ chỉ commit/push với triển khai, tài liệu, cấu hình hoặc đồng bộ Jira.
-2. Với tác vụ chỉ commit/push, áp dụng quy trình nhanh bên dưới; không mở rộng thành triển khai hoặc kiểm tra dịch vụ.
-3. Với công việc triển khai/tài liệu/cấu hình, đọc tài liệu theo phạm vi trong bảng dưới. Xác nhận mã issue thật trước khi đặt tên nhánh/commit theo Jira; không suy ra `T01` là `XIAN-1`.
-4. Kiểm tra khả năng kết nối MCP Supabase và Atlassian/Jira theo mục kế tiếp khi công việc cần; chỉ sửa file thì kiểm tra sự sẵn có của connector là đủ. Không coi tên plugin là kết nối thành công.
-5. Kiểm thử trong lúc triển khai theo phạm vi bị ảnh hưởng; không chạy lại kết quả còn hiệu lực nếu mã, dependency và cấu hình liên quan không đổi. Khi bàn giao/push, nêu đúng kiểm tra đã chạy.
+- **Mặc định chỉ đọc code và caller bị ảnh hưởng.** Không đọc README, không mở thư mục `docs/` để "nắm bối cảnh".
+- Chỉ tra tài liệu khi việc đổi luật/hành vi nghiệp vụ: grep đúng mã (`AC-02.1.x`, `BA 2.8`) trong `docs/product/BA-SCOPE-DECISIONS.md` (Phần 0 thắng) hoặc `BACKLOG-P1.md`, đọc đúng mục, không đọc cả file. Không đối chiếu nhiều nguồn trừ khi mâu thuẫn trực tiếp; khi đó báo người dùng, không tự đổi quyết định BA.
+- Sửa UI/CSS: dùng code và token đang có (`apps/web/src/shared/styles/tokens.css`); không đọc BA, BACKLOG, DANH-MUC.
+- Hợp đồng từng miền ở `docs/engineering/{server,web}/*.md`: chỉ đọc file của miền đang sửa (room, realtime, match…).
+- MCP Jira/Supabase chỉ khi tác vụ chạm Jira/Supabase (quy tắc: `docs/planning/jira/README.md`, `docs/setup/CAU-HINH-MOI-TRUONG.md` mục 8).
+- Không spawn subagent để đọc/review dưới ~10 file; nếu dùng, yêu cầu trả lời tiếng Việt và không đề xuất lệnh test.
 
-| Khi làm việc với                    | Đọc trước                                                                                                                          |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Nghiệp vụ và phạm vi                | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md), ưu tiên Phần 0                                                        |
-| Tính năng, test, nghiệm thu         | [BACKLOG-P1.md](docs/product/BACKLOG-P1.md), AC/TC của Story và Description của Task                                               |
-| Giao diện                           | [DANH-MUC-MAN-HINH-XIANGQI.md](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md); mockup chỉ tham khảo |
-| Jira, lịch và phân công             | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md), [docs/planning/jira/README.md](docs/planning/jira/README.md)                   |
-| Biến môi trường, xác thực, database | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md), [.env.example](.env.example)                                          |
-| Camera/mic và Docker                | BA 0.16 và [infra/livekit/README.md](infra/livekit/README.md)                                                                      |
+## Mã dùng chung
 
-Nguồn nghiệp vụ khi mâu thuẫn: BA Phần 0 → phần BA còn lại → BACKLOG-P1 → danh mục màn hình → DESIGN → mockup. Jira live là nguồn tiến độ khi đã truy vấn thành công; snapshot trong repo là dữ liệu có thời điểm, không phải xác nhận trạng thái hiện tại. Báo mâu thuẫn ảnh hưởng công việc, không tự thay quyết định BA.
+`shared` (filter/validation) và `xiangqi-core` + `engine` (luật, tìm nước đi) chạy cả hai đầu: đổi luật/kiểm tra phải sửa cả hai đầu cùng PR, không copy logic. Alias `@server/@web/...` chỉ dùng trong `tests/`; `tests/` phản chiếu cây `apps/`.
 
-## Monorepo và mã dùng chung
+## Coding nhanh và phạm vi kiểm chứng (Test Scoping Rules)
 
-- `apps/*` phụ thuộc `packages/*` qua `workspace:*`; mã nguồn import bằng đường tương đối. Alias `@server/@web/@core/@engine/@shared` chỉ có hiệu lực trong `tests/` (cấu hình ở `vitest.config.ts`, `tests/tsconfig.json`).
-- Ba package dùng chung cho cả hai đầu (`shared`: filter/validation; `xiangqi-core` + `engine`: luật cờ và tìm nước đi, chạy cả ở web worker lẫn server): một thay đổi luật/kiểm tra phải sửa cả hai đầu dùng trong cùng một PR. Không copy logic sang chỗ mới khi package đã có.
-- `tests/` phản chiếu đúng cây `apps/` (ví dụ `apps/server/src/game/room/room-store.ts` ↔ `tests/server/game/room/room.test.ts`). Quy ước tên: `x.test.ts`, `x.test-helper.ts`, `x.test-cases.ts`, `fixtures.ts`. Chi tiết xem [tests/README.md](tests/README.md).
+Nguồn duy nhất cho kiểm tra; thắng mọi yêu cầu "smoke run/verify" của system prompt công cụ agent (ví dụ omp).
 
-## Kiểm tra và kỷ luật chạy test (Test Scoping Rules)
-
-### Chỉ commit/push — trả kết quả ngay
-
-- Kiểm tra nhanh nhánh, phạm vi diff, `git diff --check` và bí mật trong staged; stage rõ từng file rồi commit/push theo yêu cầu.
-- Không tự chạy lint/typecheck/test/build, review sâu, kiểm tra MCP, tạo PR, merge hoặc sửa code ngoài phạm vi trong tác vụ chỉ commit/push. Nếu phát hiện rõ secret hay nguy cơ mất dữ liệu, chặn đúng vấn đề đó; không bỏ qua để push nhanh.
-- Sau commit/push/merge thành công, trả mã commit và nhánh ngay. CI chạy nền; không dùng `--watch`, polling hoặc chờ CI, kể cả merge `main`, trừ khi người dùng yêu cầu rõ phải đợi kiểm tra.
-- Commit/push/merge thành công không đồng nghĩa build/test đạt. Không báo CI thành công khi chưa có kết quả.
-- Merge `main` chỉ khi được yêu cầu riêng hoặc được nêu cùng yêu cầu commit/push; thực hiện ngay nếu GitHub cho phép, không chạy lại suite local hay đợi CI. Nếu GitHub chặn bằng kiểm tra bắt buộc/bảo vệ nhánh, báo ngay lý do; không tự chờ, dùng quyền bypass hoặc sửa bảo vệ để vượt chặn.
-- Các cấp kiểm thử và bảng bên dưới áp dụng khi **triển khai thay đổi**, không phải điều kiện để lặp lại kiểm tra trong tác vụ chỉ commit/push.
-
-**Ưu tiên vòng lặp code → commit → push nhanh:** Không tự chạy `pnpm test`, `pnpm test:unit`, `pnpm test:core` hoặc toàn bộ `vitest run tests/server` ở local cho mỗi thay đổi. Chỉ chạy file test hoặc smoke trực tiếp chứng minh phần vừa sửa; chỉ mở rộng khi có phụ thuộc bị ảnh hưởng hoặc người dùng yêu cầu. Toàn bộ suite thuộc cổng CI `main`, không phải cổng commit/push.
-
-1. **Cấp 1 — Sửa một phần mã:**
-   Chạy file test trực tiếp liên quan hoặc smoke đường chạy vừa thay đổi:
-   `pnpm exec vitest run <đường-dẫn-file-test>`
-   _Ví dụ:_ `pnpm exec vitest run tests/web/features/auth/LoginPage.test.ts` hoặc `pnpm exec vitest run tests/packages/xiangqi-core/legal.test.ts`.
-
-2. **Cấp 2 — Hoàn thành tính năng UI / Logic dùng chung:**
-   Chọn các file test bị ảnh hưởng và smoke thực tế; không mặc định quét cả web/packages. Chạy lint/typecheck khi cần xác minh thay đổi, không lặp lại chỉ để commit/push.
-
-3. **Cấp 3 — Logic Backend / Database:**
-   Nếu cần SQL thật, dùng `./tests/server/db.sh test <file-test-liên-quan>`, sau đó `./tests/server/db.sh stop`. Chỉ mở rộng sang thư mục khi thay đổi thật sự ảnh hưởng cả nhóm; các lệnh nhóm dưới đây là tham khảo, không tự chạy tất cả:
-   - **Yêu cầu 1 (Tài khoản, Đăng nhập, Session, Google, Guest):**
-     `./tests/server/db.sh test tests/server/account`
-   - **Yêu cầu 2 & 3 (Tạo phòng, Sảnh chờ, Mã mời, Ghép phòng):**
-     `./tests/server/db.sh test tests/server/game/room`
-   - **Yêu cầu 4 & 5 (Trận đấu, Luật cờ, Đồng hồ thi đấu):**
-     `./tests/server/db.sh test tests/server/game/match tests/server/game/clock`
-   - **Yêu cầu 6 (Chế độ phòng, Khán giả, Đồng bộ Realtime):**
-     `./tests/server/db.sh test tests/server/game/realtime`
-   - **Yêu cầu 7 (Chat 2 kênh & Media WebRTC):**
-     `./tests/server/db.sh test tests/server/game/chat tests/server/game/media`
-   - **Yêu cầu 8 (Chơi với máy AI):**
-     `./tests/server/db.sh test tests/server/game/ai`
-
-4. **Cấp 4 — Khi chuẩn bị Release / Merge PR vào `main`:**
-   CI của PR/push `main` tự chạy kiểm tra toàn diện ở nền; đây không phải yêu cầu agent ngồi chờ trước khi merge. Không mặc định chạy lại toàn bộ suite local. Chỉ đợi khi người dùng yêu cầu rõ; nếu GitHub bắt buộc chặn merge thì báo ngay, không bypass.
-
-CI (`.github/workflows/ci.yml`) có hai luồng: push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ unit/core/database; PR/push `main` chạy đầy đủ, core có coverage và được loại khỏi lượt unit để không trùng. Package dùng chung kích hoạt build cả hai ứng dụng. Không đọc được diff hoặc gặp đường dẫn chưa phân loại thì build cả hai, nhưng không tự bật test nặng trên `develop`. Chi tiết tại [tests/README.md](tests/README.md).
-
-| Thay đổi         | Kiểm tra khi triển khai (không chạy lại chỉ để commit/push)                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Markdown/mẫu env | Liên kết tương đối, tên biến/biến tùy chọn, `git diff --check`, scan bí mật trong staged                                  |
-| Kế hoạch Jira    | `python3 docs/planning/jira/tools/build_plan.py --check` và `python3 -m unittest discover -s docs/planning/jira/tests -v` |
-| LiveKit Docker   | `docker compose --env-file .local/livekit/docker.env -f infra/livekit/compose.yaml config --quiet`                        |
-| Mã giao diện Web | File test liên quan và smoke giao diện; lint/typecheck khi cần xác minh                                                 |
-| Mã logic chung   | File test trực tiếp bị ảnh hưởng, gồm caller web/server liên quan; không tự chạy cả suite                                |
-| Mã Server / DB   | File test/smoke liên quan; nếu cần SQL thật, `./tests/server/db.sh test <file-test>` rồi `./tests/server/db.sh stop`        |
-
-## Kiểm tra MCP và dịch vụ
-
-MCP được cài và cấp quyền trong môi trường agent, không được cấu hình chỉ bằng `.env` của ứng dụng. Không lưu token MCP vào repo. Khám phá công cụ thực sự có sẵn; không giả định tên tool hoặc tự cài connector.
-
-- **Atlassian/Jira:** dùng thao tác chỉ đọc để xác nhận site `xiangqi-web.atlassian.net`, project `XIAN`, board `38`, rồi đọc issue liên quan (ví dụ T01 là `XIAN-37`, T06 là `XIAN-42`). Đối chiếu summary, Description, AC, assignee, Sprint, phụ thuộc và trạng thái trước khi triển khai hoặc đồng bộ. Chỉ báo MCP Jira hoạt động khi có phản hồi thành công từ đúng site/project.
-- **Supabase:** xác nhận project ref `snsnkoicxmubuotcdafi` thuộc XIANGQI bằng công cụ đọc thông tin project. Khi Task liên quan database, đọc schema/migration cần thiết; nếu cần kiểm kết nối SQL, dùng truy vấn chỉ đọc như `SELECT 1`. Ghi riêng khả năng truy cập thông tin project và khả năng truy vấn database; thành công ở một phần không chứng minh phần còn lại.
-- **Thiếu MCP hoặc hết quyền:** báo chính xác dịch vụ nào không truy cập được. Có thể dùng Computer trên dashboard đã đăng nhập hoặc công cụ/API được người dùng cho phép; ghi rõ đây là phương án thay thế, không gọi là đã kết nối MCP. Không dùng token không rõ nguồn hoặc bỏ qua xác thực.
-- **Công việc chỉ sửa file:** kiểm tra sự sẵn có của connector là đủ; không cần đọc dữ liệu người dùng hay truy vấn database không liên quan. Nếu dịch vụ không có, tiếp tục phần độc lập dựa trên tài liệu và nói rõ chưa xác minh live.
-- Kiểm tra kết nối chỉ đọc không cấp quyền sửa schema, chạy migration, thay Auth/RLS, cập nhật issue hoặc gửi email. Các thao tác đó phải thuộc yêu cầu hiện hành. Không chạy migration hay ghi dữ liệu để thử kết nối.
-
-## Jira và kế hoạch
-
-- Giữ ranh giới BA/triển khai: Epic/Story Done là đặc tả đã chốt; Task Done cần bằng chứng triển khai và kiểm thử. Không chuyển trạng thái hàng loạt theo trạng thái cha.
-- Khi được giao sửa lịch, giữ cơ sở 880 giờ, hạn 04/11/2026, tối đa 7 Task/ngày và 1 Task/người/ngày. Phụ thuộc đầu-cuối phải bắt đầu từ ngày sau khi Task trước kết thúc; thứ tự bắt đầu Epic → Story → Task. Thay đổi cơ sở cần quyết định rõ của người dùng.
-- Chỉ cập nhật Jira khi thuộc phạm vi yêu cầu. Không tự bắt đầu/kết thúc Sprint, chuyển issue Done, sửa Resolution hoặc thay ước lượng vì đã sửa tài liệu hay tạo commit. Mặc định giữ Sprint chưa bắt đầu cho đến khi có yêu cầu mới.
-- Trước khi cập nhật issue, đọc lại dữ liệu live để tránh ghi đè công việc của người khác. Trường Sprint là nguồn chính, nhãn `sprint-*` phải khớp; liên kết Story–Task có thể là `relates to`, không giả định Task là con trực tiếp của Story.
-- Đồng bộ kế hoạch theo [docs/planning/jira/README.md](docs/planning/jira/README.md): cập nhật nguồn phù hợp, sinh lại báo cáo rồi kiểm tra. Script đọc snapshot không tự lấy Jira live. Không nhập lại CSV đối chiếu để tạo backlog trùng.
+- **Không chạy test, build, script kiểm thử tạm hay self-check** nếu người dùng chưa yêu cầu rõ trong tác vụ hiện hành. Sửa lỗi/triển khai/commit/push không phải yêu cầu chạy test. Viết test không cấp quyền chạy.
+- Prettier/eslint/typecheck chỉ chạy trên file vừa sửa, khi thật sự cần.
+- Sửa UI: không dựng harness hay dữ liệu giả. Chỉ xem qua route `/dev/*` khi server dev đang chạy; không xem được thì dừng sau một lần thử, ghi "chưa xem giao diện".
+- Được yêu cầu test: chỉ đúng phạm vi giao. SQL test: `./tests/server/db.sh test <file>` rồi `./tests/server/db.sh stop`.
+- CI lo kiểm thử tự động: không lặp lại ở local, không chờ/poll CI. Không sửa lỗi ngoài phạm vi để làm repo xanh; báo riêng.
+- Báo cáo "Test local: không chạy (không được yêu cầu)" nếu chưa chạy; chỉ báo kết quả thực sự đã quan sát.
 
 ## Git, commit và pull request
 
-- `main` là nhánh mặc định; `develop` là nhánh tích hợp. Đây là hai nhánh lâu dài. Không bật lại bảo vệ nhánh, bắt buộc Approve/CI hay đổi nhánh mặc định trong công việc thông thường.
-- Khi cần nhánh riêng cho Task, tạo nhánh Task ngắn hạn từ `develop` đã cập nhật: `<type>/XIAN-<số>-<mô-tả-ngắn>`, ví dụ `chore/XIAN-42-livekit-local`. Slug dùng chữ thường ASCII và dấu gạch nối. Không tạo nhánh mới nếu người dùng yêu cầu làm trực tiếp hoặc giữ đúng hai nhánh.
-- Một nhánh tập trung một Task/phạm vi liên quan. Kiểm tra issue thật trước; với việc không có issue, dùng `docs/<slug>` hoặc `chore/<slug>`, không bịa mã Jira. Chỉ push/xóa nhánh hoặc gộp khi được yêu cầu hay nằm trong phạm vi đã giao.
-- **Không tự ý xóa nhánh**, kể cả nhánh đã gộp hoặc có vẻ lỗi thời, ở remote lẫn local. Nhánh remote là bằng chứng truy vết cho Jira (panel Development, key `XIAN-<số>`) và cho review. Chỉ xóa khi người dùng yêu cầu rõ nhánh hoặc nhóm nhánh cụ thể; trước khi xóa, liệt kê tên nhánh, trạng thái đã gộp và issue liên quan để người dùng xác nhận. Đề xuất dọn dẹp chỉ là gợi ý, không phải quyền thực hiện. Từ "ngắn hạn" ở trên chỉ mô tả vòng đời dự kiến của nhánh Task, không cho phép tự xóa.
-- Commit theo dạng `<type>(<scope>): XIAN-<số> <mô tả thay đổi>`. Type theo bảng bên dưới; scope chỉ phần thay đổi. Ví dụ: `chore(media): XIAN-42 add local LiveKit configuration`. Việc không gắn issue có thể bỏ mã Jira; mô tả ngắn, rõ và nhất quán ngôn ngữ.
-- Key Jira trong tên nhánh, commit và tiêu đề PR giúp truy vết khi tích hợp GitHub–Jira đã được cấu hình; không bảo đảm liên kết Development tự xuất hiện. Không thêm Smart Commit như `#done`, `#time` hoặc `#comment` nếu chưa được giao cập nhật Jira.
-- Nếu tạo PR, hướng vào `develop` cho Task; tiêu đề có mã Jira. Mô tả gồm vấn đề, thay đổi, AC liên quan, kiểm tra thực sự đã chạy và giới hạn. PR sang `main` dùng để bàn giao/tích hợp theo yêu cầu. PR là cách review của nhóm, không phải quy tắc bảo vệ bắt buộc trên GitHub.
-- Stage rõ từng file, xem diff và rà khóa trước commit. Không force push hoặc ghi đè lịch sử/chỉnh sửa của người khác. Khi được yêu cầu push cả `main` và `develop`, fetch, kiểm tra quan hệ lịch sử, chỉ fast-forward nếu phù hợp và xác minh hai ref remote sau push; không ép hai nhánh bằng reset/force.
+- `main` (mặc định) và `develop` (tích hợp) là hai nhánh lâu dài; làm thẳng trên `develop` trừ khi người dùng muốn nhánh riêng (`<type>/XIAN-<số>-<mô-tả>`). Không bịa mã Jira, không suy ra `T01` là `XIAN-1`.
+- Commit: `<type>(<scope>): XIAN-<số> <mô tả>` (bỏ mã nếu không có issue). Type: `feat fix docs refactor perf ci chore`. Không Smart Commit, không dòng `Co-Authored-By`.
+- **Chỉ commit/push:** kiểm nhánh, `git diff --check`, secret staged; stage từng file; commit, push. Không chạy lint/test/build, không review sâu, không MCP, không tự tạo PR/merge.
+- Chỉ push/merge khi được yêu cầu; xong trả commit và nhánh. Không force push. Push cả hai nhánh: fetch, chỉ fast-forward, xác minh hai ref.
+- Không tự xóa nhánh. Khi được yêu cầu dọn: liệt kê một lần (tên, đã gộp chưa, issue), chỉ xóa nhóm được xác nhận; nhánh chưa gộp cần nêu rõ.
+- PR hướng vào `develop`, tiêu đề có mã Jira nếu có, mô tả ngắn kèm kiểm tra đã chạy.
 
-### Type của nhánh và commit
+## Nguyên tắc
 
-Dùng cùng bộ type cho nhánh và commit; chọn theo mục đích chính của thay đổi. Đây là quy ước của nhóm, không dùng tên công cụ/agent làm tiền tố nhánh.
+Thay đổi nhỏ nhất giải quyết đủ vấn đề; dùng lại thứ có sẵn; giữ style xung quanh; chỉ dọn phần do mình tạo ra. Sửa lỗi: grep caller, sửa ở mã dùng chung. Đường tắt có giới hạn: ghi `shortcut: <giới hạn>, <khi nào nâng cấp>`. Không cắt validation ở ranh giới tin cậy, xử lý lỗi chống mất dữ liệu, bảo mật, trợ năng. Không in `.env` hay khóa trong chat. Không chắc thì chọn phương án an toàn, nêu giả định rồi làm tiếp. Cuối phản hồi ghi 1–2 dòng: đã bỏ qua/chưa kiểm gì, rủi ro cần biết.
 
-| Type       | Khi sử dụng                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `feat`     | Thêm tính năng                                                      |
-| `fix`      | Sửa lỗi                                                             |
-| `docs`     | Thay đổi tài liệu                                                   |
-| `refactor` | Tổ chức lại mã, giữ nguyên hành vi                                  |
-| `test`     | Thêm hoặc sửa kiểm thử                                              |
-| `perf`     | Cải thiện hiệu năng                                                 |
-| `style`    | Định dạng mã, không đổi hành vi; không dùng cho tính năng giao diện |
-| `build`    | Hệ thống build, đóng gói hoặc dependency                            |
-| `ci`       | Workflow tích hợp/triển khai tự động                                |
-| `chore`    | Bảo trì, công cụ hoặc cấu hình không thuộc các nhóm trên            |
-| `revert`   | Hoàn tác thay đổi trước đó                                          |
+## Commands
 
-Ví dụ: `feat/XIAN-40-email-signup`, `chore/XIAN-42-livekit-local`.
-Commit tương ứng: `feat(auth): XIAN-40 add email signup`.
-Không thêm `hotfix` hoặc `release` vào quy trình hiện tại khi chưa có yêu cầu riêng; lỗi dùng `fix`, còn `main`/`develop` giữ vai trò đã chốt.
+Node `>=22.13 <23` (`fnm use 22`); other versions only warn but diverge from CI.
 
-## Môi trường và bảo mật
+```sh
+pnpm dev                                   # web :5173 + server :3000, watch
+pnpm --filter @xiangqi/server typecheck    # per package; `pnpm typecheck` runs all
+pnpm --filter @xiangqi/web build           # web: scripts/build.mjs; server: tsc
+pnpm lint
+pnpm exec vitest run tests/path/x.test.ts [-t "name"]        # one test, no DB
+tests/server/db.sh test tests/server/game/room/room.test.ts  # tests needing Postgres
+tests/server/db.sh stop
+```
 
-- `.env` gốc là bản tổng; đồng bộ vào `apps/web/.env` và `apps/server/.env` sau khi sửa. Đối chiếu thay đổi riêng ở bản sao trước khi ghi đè. Các file thật và `.local/` phải được Git bỏ qua, quyền file bí mật là `600` khi hệ điều hành hỗ trợ. Các cờ `AUTH_*_ENABLED`, `ROOMS/FRIENDS/HISTORY/PROFILE_ENABLED` mặc định `false`, chỉ bật khi Task yêu cầu.
-- Chỉ đưa tên biến và giá trị trống/mẫu công khai vào `.env.example`. Rà nội dung staged để tránh khóa xuất hiện trong tài liệu, ảnh, log, fixture hoặc URL. Không in nguyên file `.env` hay trả khóa trong chat.
-- Dự án dùng Vite; `NEXT_PUBLIC_*` chỉ là dự phòng cho Next.js. Cả hai nhóm tiền tố đều dành cho dữ liệu công khai; secret Supabase/LiveKit/SMTP và mật khẩu SQL không được đưa vào bundle frontend.
-- Giữ Cloud hiện tại trừ khi được yêu cầu chuyển. `infra/livekit/livekit-env.py prepare` chuẩn bị khóa local riêng; `local`/`cloud` đổi ba biến media và đồng bộ file. Không dùng khóa Cloud trong máy chủ Docker local.
-- Database query thành công, OTP đến hộp thư hoặc LiveKit HTTP 200 chỉ là kiểm tra hạ tầng. Chưa đủ chứng minh OAuth, RLS, camera nhiều thiết bị và phân quyền nghiệp vụ đã đạt.
+`db.sh` starts isolated local Postgres 17 clusters (ports 55441+, `*_TEST_DATABASE_URL`) picked from the test's imports. DB suites skip silently when their URL is unset. Never point those URLs at Supabase: fixtures reset the schema.
 
-## Ponytail, lazy senior dev mode
+## Architecture
 
-You are a lazy senior developer. The best code is the code never written. You solve the whole problem with the least new code. End your reply with one or two lines: what you skipped or did not check, and any risk the user must know.
-
-### Before you write
-
-Read the task and the code it touches. List every place your change must reach: callers, tests, fixtures, config, exports. Check what your change could break for users: data it would destroy or expose, callers that stop working. That is scope. Extra features are not.
-
-### The smallest complete change
-
-Take the first option that fully works:
-
-1. Does it need to exist? Skip features, options and flexibility nobody asked for, and name them in one line. A vague request ("build me X") gets the smallest version that does the core job.
-2. Already in this codebase (a helper, component, service, pattern)? Use it the way the surrounding code does.
-3. Standard library or a platform feature? Use it, unless the project has its own. A house component beats a native widget.
-4. An installed dependency? Use it. Never add a dependency for a few lines.
-5. Can it be one line a reader gets at a glance? One line.
-6. Otherwise: the minimum code that works.
-
-- Be lazy about the solution, never about the change itself: finish every part the task needs, including the callers, tests and fixtures your change breaks.
-- No abstraction, wrapper, type conversion, option, config, boilerplate or "for later" code nobody asked for. Keep values in the form the platform already gives you. Deletion beats addition. Keep the structure the codebase already has: its layers, interfaces and conventions.
-- The shortest working diff wins, once you know everything it must touch. A one-liner that needs decoding is not short.
-- Comment only the why the code cannot show, in one line.
-- Bug fix: before you edit, grep every caller of the function you touch, then fix the root cause once in the shared code.
-- Code you move or merge keeps its error handling and validation.
-- Between options of equal size, take the one that is correct on edge cases.
-- Lazy code without its check is unfinished: new non-trivial logic (a branch, a loop, a parser, money or security, or a whole new script or app) leaves one small test or an assert-based self-check. Trivial changes need none.
-- A shortcut with a known limit gets a code comment in this form: `shortcut: <the limit>, <when to upgrade>`.
-
-Never cut: validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs, anything the user asked for.
-
-(Yes, this file also applies to agents working on the ponytail repo itself. Especially to them.)
+- **Shared rules run on both ends.** `xiangqi-core` (moves, check/ending) and `engine` (negamax/alpha-beta, in a worker) serve the server as authority and the web client for AI and optimistic moves. `shared` holds cross-end contracts (`realtime.ts`) and word filters. Packages export TS source directly (no build step).
+- **Server startup is flag-gated.** `apps/server/src/main.ts` chains `createXRuntime` factories (registration → google → media → rooms → friends → history → profile); each mounts only if its `*_ENABLED` flag is `true`, and verifies DB schema/privileges at boot ("... migration is not ready" / "... database unavailable"). Rooms require login and registration. `game/game.runtime.ts` wires the whole game domain (room, match, clock, chat, realtime, workers).
+- **Mutations are Postgres transactions with a fixed lock order.** Stores never open their own transaction; they get the caller's `PoolClient` in a `RoomScope`. `RoomTransactions.withRoom` (`game/room/room-transactions.ts`): `BEGIN; SET LOCAL ROLE app_server` (app connects as `postgres`, so RLS/grants apply) → advisory locks on all actors, sorted → session recheck → room locks, sorted → retry on `RoomRosterChanged`. Never lock in ad-hoc order (two-player deadlock). Commands carry a `commandId` and are idempotent via receipts; side effects (Socket.IO, media revoke) go through an `outbox` drained by `*-worker.ts`, never before commit.
+- **Realtime.** `game/realtime/gateway.ts` authenticates the handshake, allows one controlling tab per actor+room (`connectionId` fencing) and sends per-recipient snapshots; the HTTP snapshot is display-only. Clock, disconnect-grace and draw timeouts are server workers. AI games (`game/ai/`) use their own gateway.
+- **Auth is two-layer:** Supabase bearer token (verified outside the transaction) plus an app-session capability (43-char base64url, hashed in `xiangqi_auth.app_sessions`). Guests are a separate actor kind. `DIRECT_URL` must be the direct/session pooler, not 6543.
+- **Database** (`supabase/`): ordered `migrations/` each with a `rollback/` twin, `baseline/` for legacy tables, schemas `xiangqi_{auth,realtime,room,chat,social}` + `public`. Migrations assert existing index/constraint definitions before changing them; add a new migration plus rollback instead of editing an applied one.
+- **Web:** `features/*` per domain, `shared/` for board, UI primitives, tokens. Pages are `React.lazy` in `app/AppRouter.tsx`. `RoomPage` serves WAITING and PLAYING under `/rooms/:id` and keeps chat/media mounted across the switch. `/dev/*` routes (dev only) preview components. LiveKit camera/mic failure must never interrupt a match.

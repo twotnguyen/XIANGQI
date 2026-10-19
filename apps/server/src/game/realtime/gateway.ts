@@ -57,6 +57,7 @@ export function attachRealtime(
     connection: RealtimeConnection;
     token: string;
     appSession: string;
+    initialSnapshot?: RoomSnapshot;
     version: number;
     generation: number;
     control?: RoomSnapshot["control"];
@@ -382,7 +383,7 @@ export function attachRealtime(
           peers.delete(socket.id);
           if (committed) void disconnectOnce();
         });
-        await dependencies.store.connect(connection);
+        const initialSnapshot = await dependencies.store.connect(connection);
         committed = true;
         if (stopping || socket.conn.readyState !== "open") {
           await disconnectOnce();
@@ -393,6 +394,7 @@ export function attachRealtime(
           connection,
           token: handshake.accessToken,
           appSession: handshake.appSession,
+          initialSnapshot,
           version: -1,
           generation: -1,
           disconnect: disconnectOnce,
@@ -500,17 +502,11 @@ export function attachRealtime(
       }).catch(failedOperation);
     });
     void track(async () => {
-      try {
-        const connection = await authorize(peer);
-        if (stopping) return;
-        const snapshot = await dependencies.store.snapshot(connection);
-        if (!stopping) {
-          sendSnapshot(peer, snapshot);
-          await notifyPreviousTabs(peer, snapshot);
-        }
-      } catch {
-        socket.disconnect(true);
-      }
+      const snapshot = peer.initialSnapshot;
+      if (!snapshot) return;
+      peer.initialSnapshot = undefined;
+      sendSnapshot(peer, snapshot);
+      await notifyPreviousTabs(peer, snapshot);
     }).catch(failedOperation);
   });
   let maintenance: Promise<void> | null = null;

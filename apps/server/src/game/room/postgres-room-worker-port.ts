@@ -1,6 +1,7 @@
 import type { Pool, PoolClient } from "pg";
 import type { RealtimeConnection } from "../realtime/realtime.types.js";
 import { RoomError, type RoomScope } from "./room.types.js";
+import type { RoomEvent } from "./room.types.js";
 import type { PostgresMemberRoomAuthorizer } from "./member-room-auth.js";
 import type { RoomStore } from "./room-store.js";
 import type { RoomTransactions, RoomActorProof } from "./room-transactions.js";
@@ -155,6 +156,35 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
         return { status: "active", actor: ownerActor, activeActorIds };
       },
       work,
+    );
+  }
+  async cleanupExpiredReceipts(): Promise<number> {
+    return this.transaction(async (client) => {
+      await client.query("SET LOCAL lock_timeout='250ms'");
+      const result = await client.query<{ removed: number }>(`
+        WITH expired_entries AS (
+          SELECT actor_id,command_id FROM xiangqi_room.entry_receipts
+          WHERE expires_at<=now() ORDER BY expires_at,actor_id,command_id
+          LIMIT 500 FOR UPDATE SKIP LOCKED
+        ), removed_entries AS (
+          DELETE FROM xiangqi_room.entry_receipts r USING expired_entries e
+          WHERE r.actor_id=e.actor_id AND r.command_id=e.command_id RETURNING 1
+        )
+        SELECT count(*)::integer AS removed FROM removed_entries`);
+      return result.rows[0]!.removed;
+    });
+  }
+  async pendingMediaEvent(): Promise<RoomEvent | undefined> {
+    return this.transaction(
+      async (client) =>
+        (
+          await client.query<RoomEvent>(
+            `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload
+         FROM xiangqi_room.outbox
+         WHERE delivered_at IS NULL AND type='media.revoke-room' AND next_attempt_at<=now()
+         ORDER BY created_at,id LIMIT 1`,
+          )
+        ).rows[0],
     );
   }
   pendingEvents() {

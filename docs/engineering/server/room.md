@@ -16,7 +16,7 @@ RoomScope.activeActorIds là các proof còn active đã được worker/root ki
 
 ## API local
 
-- create(scope,{commandId,name,timeMinutes?,viewerLimit?}) → roomId/version/role RED/inviteCode. Defaults10phút/5viewer, CODE_ONLY; Unicode NFC/name filter. Crypto code8, collision retries5. Entry receipt fingerprint rejects changed content.
+- create(scope,{commandId,timeMinutes?,viewerLimit?}) → roomId/version/role RED/inviteCode. Mặc định 10 phút/5 người xem, CODE_ONLY. Máy chủ tự sinh UUID và mã 8 chữ số bằng crypto, thử lại tối đa 5 lần khi trùng mã; lưu tên hiển thị `Phòng <mã>`, không nhận tên từ client. Entry receipt fingerprint gồm mức giờ/số người xem, không gồm ID/mã tự sinh; gửi lại cùng lệnh trả phòng đã tạo. Không đổi tên hay mã của phòng cũ, không cần migration.
 - resolveCode(client,code) → roomId chỉ cho authenticated admission nội bộ; code không bỏ qua LOCKED/auth/seat/capacity. Root trả link `/rooms/:id`, không dùng host/header không tin cậy để sinh absolute URL.
 - join(scope,{commandId,roomId,intent,expectedVersion?}), snapshot, switchSeat, ready.
 - create/join initially retain a seat for60s before first controlling socket; verified connection clears disconnected_at. A lost create response cannot reserve an offline seat indefinitely. Connected lone Host vẫn chờ vô hạn.
@@ -29,6 +29,30 @@ RoomScope.activeActorIds là các proof còn active đã được worker/root ki
 RoomWorker.tick orchestrates caller-provided clients/transactions/sink, không tự chạy timer. Root serialize ticks và startup recoverWaiting **trước** xử lý countdown. Worker transaction may close final expired seat; skip startDue after close, không rollback closure. Stale due-room race/RoomRosterChanged được root retry/ignore theo typed errors, SQL/provider errors vẫn generic outward.
 
 Single backend lifecycle: boot instance UUID mới invalidate old presence, reset Ready/countdown, giữ ghế60s từ boot (disconnected_at có sẵn không kéo dài). Không claim HA đa-node/lease. PLAYING interruption/outcome/clock/resign thuộc T20; absent port giữ seat/history và fail503.
+
+## Đường tạo phòng và kết nối ban đầu
+
+Projection room/actor dùng một truy vấn CTE nhưng vẫn đọc lại sau khi khóa,
+giữ đủ roster, thứ tự advisory lock và retry hiện có. `BEGIN`/`SET LOCAL ROLE`
+đi chung một lượt gửi. Session/profile được khóa trong CTE `MATERIALIZED`;
+`clock_timestamp()` kiểm hạn ở SELECT ngoài, sau khi CTE đã chờ đủ các khóa,
+không cần lượt SQL riêng. Vẫn kiểm lại quyền sau khi khóa phòng.
+Kiểm giới hạn ghế và phòng Khách được gộp, giữ ưu tiên lỗi `ALREADY_SEATED`.
+
+Realtime kiểm quyền qua `RoomStore.authorize`: chỉ đọc membership đã khóa và
+kiểm hạn người xem, không dựng cả countdown/offers/presence/spectators để lấy
+`canControl`. Snapshot đầy đủ vẫn được đọc từ server khi gửi giao diện; không
+bỏ kiểm quyền hoặc cấp quyền điều khiển từ dữ liệu frontend.
+
+Đọc phòng và roster dùng một LEFT JOIN, giữ kiểm tra roster và hạn người xem.
+Snapshot lấy countdown, người xem, presence và offer trong một SELECT bổ sung:
+hai truy vấn khi cache kiểm tra bảng offer đã sẵn sàng. Các bảng offer tùy chọn
+vẫn được dò khi dùng lần đầu; không cache dữ liệu phòng và không đổi contract.
+Nếu bảng biến mất sau khi đã dò, lỗi SQL được trả lên, không retry trong giao dịch
+đã lỗi. Gateway gửi snapshot đã commit từ admission, không đọc lại toàn bộ phòng.
+
+Contract `RoomEntry`, receipt chống trùng, mã mời và outbox không thay đổi;
+không cần migration cho các tối ưu này.
 
 ## Guest port
 
@@ -54,3 +78,18 @@ pnpm --filter @xiangqi/server build
 25 SQL tests: create/settings/code/privacy/idempotency/unique seat; Ready/lone switch/viewerlimit; countdown/factory rollback/retry/one SQL match; oldtab disconnect/restart/60s; Guest12h/AI seat/sameclient release; durable outbox retry; additive legacy/rollback/ACL/function/trigger/reservation guards. Full T18 chưa Done: actual T20 engine/match/REDclock adapter, HTTP/Socket runtime and current-controller proof wiring, frontend countdown sound/navigation, production Guest full PII termination, chat/media actual outbox delivery cần root integration + E2E proof. Jira unchanged/read-only, chưa live DDL.
 
 Worker tiếp tục xử lý các phòng và outbox sau lỗi giao dịch của một mục; lỗi được gom báo sau batch. Lỗi gửi sự kiện giữ backoff/at-least-once, ack thất bại không chặn sự kiện đã commit khác. Hai regression unit tests kiểm tiến độ này; 25 SQL cases kiểm nghiệp vụ riêng.
+
+## Bảo trì receipts và thu hồi media
+
+Runtime dọn `xiangqi_room.entry_receipts` hết hạn ngay ở tick đầu và mỗi phút:
+tối đa 500 hàng/giao dịch, dùng index expiry và `FOR UPDATE SKIP LOCKED`.
+Còn đủ batch thì tiếp tục sau một giây; lock timeout 250 ms tránh giữ vòng
+bảo trì khi có giao dịch khác. Biên lai chưa hết hạn không bị xóa.
+Realtime receipts vẫn do gateway dọn mỗi phút, nay giới hạn 500 hàng/lượt.
+
+`media.revoke-room` có vòng xử lý riêng, single-flight và được drain lúc đóng
+runtime; HTTP LiveKit không chặn đồng hồ, chuyển trạng thái phòng hoặc chat.
+Chỉ đánh dấu outbox đã giao sau khi xóa cả phòng media riêng và stage, hoặc
+LiveKit trả HTTP 404 với mã `not_found`. Lỗi khác giữ sự kiện và backoff.
+API server dùng HTTPS tương ứng URL WSS; `DeleteRoom` cần grant `roomCreate`,
+`RemoveParticipant` dùng `roomAdmin` kèm đúng tên phòng. Không log token/khóa.

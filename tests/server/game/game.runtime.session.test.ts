@@ -87,7 +87,6 @@ async function fixture() {
     },
     body: JSON.stringify({
       commandId: randomUUID(),
-      name: "Fixed Session",
       timeMinutes: 5,
     }),
   });

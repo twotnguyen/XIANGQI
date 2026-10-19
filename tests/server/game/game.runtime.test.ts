@@ -83,7 +83,6 @@ async function oldRoom(r: ReturnType<typeof registration>, playing = false) {
     });
   const entry = await service.create(proof(a), {
     commandId: randomUUID(),
-    name: "Recover Room",
     timeMinutes: 5,
   });
   await service.join(proof(b), {
@@ -167,7 +166,6 @@ async function publicationFixture(viewer = false) {
     headers: headers(a),
     body: JSON.stringify({
       commandId: randomUUID(),
-      name: "Publication Regression",
       timeMinutes: 5,
     }),
   });
@@ -544,7 +542,6 @@ describe.skipIf(!databaseUrl)(
         };
         const entry = await post("/rooms", a, {
           commandId: randomUUID(),
-          name: "Switch Host",
           timeMinutes: 5,
         });
         const switched = await post(`/rooms/${entry.roomId}/switch-seat`, a, {
@@ -638,7 +635,6 @@ describe.skipIf(!databaseUrl)(
         };
         const entry = await post("/rooms", a, {
           commandId: randomUUID(),
-          name: "Runtime Room",
           timeMinutes: 5,
         });
         await post("/rooms/join", b, {

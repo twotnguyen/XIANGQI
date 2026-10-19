@@ -43,7 +43,7 @@ async function run<T>(
 async function room(twoSeats = false) {
   const host = await actor();
   const entry = await run(host, null, (scope) =>
-    store.create(scope, { commandId: randomUUID(), name: "Modes Fixture" }),
+    store.create(scope, { commandId: randomUUID() }),
   );
   if (twoSeats) {
     const opponent = await actor();
@@ -226,7 +226,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
   it("projects a replayed create receipt from the current mode and code without rewriting the durable receipt", async () => {
     const host = await actor(),
       opponent = await actor();
-    const input = { commandId: randomUUID(), name: "Receipt Fixture" };
+    const input = { commandId: randomUUID() };
     const entry = await run(host, null, (scope) => store.create(scope, input));
     await run(opponent, entry.roomId, (scope) =>
       store.join(scope, {
@@ -585,7 +585,6 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     const collision = await run(other, null, (scope) =>
       store.create(scope, {
         commandId: randomUUID(),
-        name: "Collision Fixture",
       }),
     );
     const locked = await run(host, entry.roomId, (scope) =>

@@ -163,6 +163,8 @@ vi.mock("@web/features/rooms/RoomPage.js", () => ({
 }));
 vi.mock("@web/features/friends/FriendsPage.js", () => ({
   FriendsPage: () => createElement("h1", null, "Bạn bè"),
+}));
+vi.mock("@web/features/friends/FriendsBell.js", () => ({
   FriendsBell: () => null,
 }));
 vi.mock("@web/features/friends/RoomInvitePopup.js", () => ({
@@ -250,6 +252,9 @@ it("loads owned replay at the single canonical route with a readonly board", asy
   );
   expect(screen.getByText("Tốt 9 tiến 1")).toBeTruthy();
   expect(document.title).toContain("Xem lại ván đấu");
+  expect(document.activeElement).toBe(
+    screen.getByRole("heading", { name: "Xem lại ván đấu" }),
+  );
 });
 it("never reads a replay for a Guest or an invalid match ID", async () => {
   window.history.replaceState(null, "", `/history/${historyId}`);
@@ -339,7 +344,7 @@ it("preserves a history destination through login without reading anonymous data
   mock.accept.mockImplementation(() => {
     mock.state = member;
   });
-  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  fireEvent.click(await screen.findByText("Hoàn tất đăng nhập"));
   await screen.findByRole("heading", { name: "Đối thủ lịch sử" });
   expect(window.location.pathname).toBe("/history");
 });
@@ -403,10 +408,14 @@ it("preserves an invalid join destination through registration without claiming 
   });
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
-  fireEvent.click(screen.getByRole("link", { name: "Đăng ký tài khoản" }));
-  fireEvent.click(screen.getByRole("link", { name: "Về đăng nhập" }));
-  fireEvent.click(screen.getByRole("link", { name: "Đăng ký tài khoản" }));
-  fireEvent.click(screen.getByText("Hoàn tất đăng ký"));
+  fireEvent.click(
+    await screen.findByRole("link", { name: "Đăng ký tài khoản" }),
+  );
+  fireEvent.click(await screen.findByRole("link", { name: "Về đăng nhập" }));
+  fireEvent.click(
+    await screen.findByRole("link", { name: "Đăng ký tài khoản" }),
+  );
+  fireEvent.click(await screen.findByText("Hoàn tất đăng ký"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
   expect(window.location.search).toBe("?token=fixture-invite");
   expect(mock.accept).toHaveBeenCalledWith({
@@ -414,7 +423,7 @@ it("preserves an invalid join destination through registration without claiming 
     remember: true,
   });
   expect(
-    screen.getByRole("heading", { name: "Vào phòng được mời" }),
+    await screen.findByRole("heading", { name: "Vào phòng được mời" }),
   ).toBeTruthy();
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
 });
@@ -425,7 +434,7 @@ it("preserves a room destination through login and handles browser Back/Forward 
   });
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
-  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  fireEvent.click(await screen.findByText("Hoàn tất đăng nhập"));
   await vi.waitFor(() =>
     expect(window.location.pathname).toBe("/rooms/fixture-room"),
   );
@@ -519,13 +528,17 @@ it("closes feed on route leave and ignores its stale HTTP response", async () =>
       }),
   );
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   act(() => navigate("/friends"));
   expect(mock.sockets[0]!.closed).toBe(true);
   await act(async () => {
     resolve(reply([room]));
   });
   expect(screen.queryByText(room.name)).toBeNull();
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Bạn bè");
+  expect(await screen.findByRole("heading", { level: 1 })).toHaveProperty(
+    "textContent",
+    "Bạn bè",
+  );
 });
 it("preserves a validated invitation through Google registration, pending onboarding and actual component remount", async () => {
   window.history.replaceState(
@@ -546,15 +559,17 @@ it("preserves a validated invitation through Google registration, pending onboar
   });
   const view = render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
-  fireEvent.click(screen.getByRole("link", { name: "Đăng ký tài khoản" }));
-  fireEvent.click(screen.getByText("Official Google"));
-  await vi.waitFor(() => expect(window.location.pathname).toBe("/onboarding"));
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
-    "Thiết lập tài khoản",
+  fireEvent.click(
+    await screen.findByRole("link", { name: "Đăng ký tài khoản" }),
   );
+  fireEvent.click(await screen.findByText("Official Google"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/onboarding"));
+  expect(
+    await screen.findByRole("heading", { name: "Thiết lập tài khoản" }),
+  ).toBeTruthy();
   view.unmount();
   render(createElement(AppRouter));
-  fireEvent.click(screen.getByText("Hoàn tất thiết lập"));
+  fireEvent.click(await screen.findByText("Hoàn tất thiết lập"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
   expect(window.location.search).toBe("?token=fixture-google-invite");
   expect(window.history.state).toBeNull();
@@ -576,7 +591,7 @@ it("rejects a forged external history destination after Google onboarding", asyn
     mock.state = member;
   });
   render(createElement(AppRouter));
-  fireEvent.click(screen.getByText("Hoàn tất thiết lập"));
+  fireEvent.click(await screen.findByText("Hoàn tất thiết lập"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
 });
 it("retains the invitation when an expired onboarding cookie sends a reload back to login", async () => {
@@ -590,7 +605,7 @@ it("retains the invitation when an expired onboarding cookie sends a reload back
   });
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
-  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  fireEvent.click(await screen.findByText("Hoàn tất đăng nhập"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
   expect(window.location.search).toBe("?token=expired-google-invite");
 });
@@ -610,9 +625,6 @@ it("creates through the authorized form then enters the actual server room route
   );
   fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(screen.getByRole("dialog")).toBeTruthy();
-  fireEvent.change(screen.getByLabelText("Tên phòng"), {
-    target: { value: "Phòng thực" },
-  });
   fireEvent.click(
     within(screen.getByRole("dialog")).getByRole("button", {
       name: "Tạo phòng",
@@ -624,13 +636,13 @@ it("creates through the authorized form then enters the actual server room route
   const create = mock.authorizedFetch.mock.calls.find(
     (call) => call[0] === "/rooms",
   );
-  expect(JSON.parse(create![1].body)).toMatchObject({
-    name: "Phòng thực",
+  expect(JSON.parse(create![1].body)).toEqual({
+    commandId: expect.stringMatching(/^[0-9a-f-]{36}$/),
     timeMinutes: 10,
     viewerLimit: 5,
   });
   expect(
-    screen.getByRole("heading", { name: "Phòng chờ " + roomId }),
+    await screen.findByRole("heading", { name: "Phòng chờ " + roomId }),
   ).toBeTruthy();
   fireEvent.click(screen.getByText("Server closed fixture"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
@@ -649,7 +661,7 @@ it("automatically joins the valid invitation once after login without another su
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByText("Hoàn tất đăng nhập"));
+  fireEvent.click(await screen.findByText("Hoàn tất đăng nhập"));
   await vi.waitFor(() =>
     expect(window.location.pathname).toBe(`/rooms/${roomId}`),
   );
@@ -737,6 +749,7 @@ it("never lets stale HTTP restore a room removed by the newer feed", async () =>
       }),
   );
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([room]);
   expect(screen.getByText(room.name)).toBeTruthy();
   feedRooms([]);
@@ -749,6 +762,7 @@ it("waits for join ACK, blocks a double join and carries the canonical fallback 
   window.history.replaceState(null, "", "/lobby");
   mock.authorizedFetch.mockResolvedValue(reply([room]));
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([room]);
   let done!: (r: Response) => void;
   mock.authorizedFetch.mockImplementationOnce(
@@ -786,6 +800,7 @@ it.each(["disconnect", "error", "unmount"])(
     window.history.replaceState(null, "", "/lobby");
     mock.authorizedFetch.mockResolvedValue(reply([room]));
     render(createElement(AppRouter));
+    await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
     feedRooms([room]);
     let done!: (r: Response) => void;
     mock.authorizedFetch.mockImplementationOnce(
@@ -816,6 +831,7 @@ it("refreshes once after a private-room join failure without retrying the POST o
   window.history.replaceState(null, "", "/lobby");
   mock.authorizedFetch.mockResolvedValue(reply([room]));
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([room]);
   mock.authorizedFetch
     .mockResolvedValueOnce(
@@ -845,6 +861,7 @@ it("keeps admission disabled across reconnect until a fresh snapshot and rejects
   window.history.replaceState(null, "", "/lobby");
   mock.authorizedFetch.mockResolvedValue(reply([room]));
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([room]);
   let done!: (r: Response) => void;
   mock.authorizedFetch.mockImplementationOnce(
@@ -898,6 +915,7 @@ it("ignores a stale HTTP error after a valid live snapshot", async () => {
       }),
   );
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([room]);
   await act(async () => reject(Error("PRIVATE_UPSTREAM")));
   expect(screen.getByText(room.name)).toBeTruthy();
@@ -909,7 +927,7 @@ it("ignores a stale HTTP error after a valid live snapshot", async () => {
   ).toBe("false");
 });
 
-it("fences StrictMode's discarded feed and HTTP requests behind the newest live snapshot", async () => {
+it("skips StrictMode's discarded HTTP request and fences stale HTTP behind the newest live snapshot", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
   const done: ((response: Response) => void)[] = [];
@@ -920,6 +938,7 @@ it("fences StrictMode's discarded feed and HTTP requests behind the newest live 
   expect(mock.sockets).toHaveLength(2);
   expect(mock.sockets[0]!.closed).toBe(true);
   expect(mock.sockets[1]!.closed).toBe(false);
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([]);
   await act(async () => {
     for (const resolve of done) resolve(reply([room]));
@@ -933,6 +952,7 @@ it("trusts a committed join ACK when a same-connection feed update removes the d
   window.history.replaceState(null, "", "/lobby");
   mock.authorizedFetch.mockResolvedValue(reply([room]));
   render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
   feedRooms([room]);
   let done!: (response: Response) => void;
   mock.authorizedFetch.mockImplementationOnce(
@@ -960,9 +980,7 @@ it("opens AI setup dialog from lobby and navigates to AI game page on start", as
   render(createElement(AppRouter));
   feedRooms([room]);
   fireEvent.click(screen.getByRole("button", { name: "Chọn cấp độ máy" }));
-  expect(
-    await screen.findByRole("heading", { name: "Thiết lập ván với máy" }),
-  ).toBeTruthy();
+  expect(await screen.findByRole("button", { name: "Bắt đầu" })).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Bắt đầu" }));
   await vi.waitFor(() =>
     expect(window.location.pathname).toMatch(/^\/ai\/[0-9a-f-]{36}$/),

@@ -12,37 +12,24 @@ import {
 import { ProfileError } from "./profile.types.js";
 import { httpFailure, invalidInput } from "../../core/http-errors.js";
 import { ProfileStore } from "./profile.service.js";
-import { SessionService } from "../login/session.service.js";
 import { LoginError } from "../login/login.types.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,
 } from "../login/session.guard.js";
-import { readSessionCookie } from "../session/cookies.js";
 const fail = httpFailure(ProfileError, LoginError);
 @Controller("profile")
 @UseGuards(SessionGuard)
 export class ProfileController {
-  constructor(
-    @Inject(ProfileStore) private readonly profiles: ProfileStore,
-    @Inject(SessionService) private readonly sessions: SessionService,
-  ) {}
-  private capability(request: AuthenticatedRequest) {
-    return Object.hasOwn(request.headers, "x-xiangqi-session")
-      ? request.headers["x-xiangqi-session"]
-      : readSessionCookie(request.headers.cookie, "xiangqi_session");
-  }
+  constructor(@Inject(ProfileStore) private readonly profiles: ProfileStore) {}
   private async identity(request: AuthenticatedRequest) {
-    const session = await this.sessions.requireValidSession(
-      this.capability(request),
-    );
-    const account = await this.sessions.store.accountById(session.userId);
-    if (!account?.active)
+    const session = request.session;
+    if (!session)
       throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
     return {
       userId: session.userId,
-      username: account.username,
-      email: account.email,
+      username: session.username,
+      email: session.email,
     };
   }
   @Get()

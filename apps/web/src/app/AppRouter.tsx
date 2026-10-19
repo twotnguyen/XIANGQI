@@ -1,8 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { LoginPage } from "../features/auth/LoginPage.js";
-import { RegistrationPage } from "../features/auth/RegistrationPage.js";
-import { GoogleSignInButton } from "../features/auth/GoogleSignInButton.js";
-import { GoogleOnboardingPage } from "../features/auth/GoogleOnboardingPage.js";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode, RefObject } from "react";
 import { useSession } from "../features/auth/SessionProvider.js";
 import { AppShell } from "./layouts/AppShell.js";
 import {
@@ -10,7 +7,13 @@ import {
   type DataState,
   type PublicRoom,
 } from "../features/lobby/LobbyShell.js";
-import { Button, Dialog, ErrorState, Notice } from "../shared/ui/primitives.js";
+import {
+  Button,
+  Dialog,
+  ErrorState,
+  LoadingScreen,
+  Notice,
+} from "../shared/ui/primitives.js";
 import { NavigationLink } from "../shared/navigation/NavigationLink.js";
 import {
   getLocation,
@@ -18,10 +21,7 @@ import {
   subscribeLocation,
   getAuthDestination,
 } from "../shared/navigation/navigation.js";
-import { CreateRoomForm } from "../features/rooms/RoomForms.js";
-import { RoomPage } from "../features/rooms/RoomPage.js";
-import { InviteEntry } from "../features/rooms/InviteEntry.js";
-import { FriendsPage, FriendsBell } from "../features/friends/FriendsPage.js";
+import { FriendsBell } from "../features/friends/FriendsBell.js";
 import { RoomInvitePopup } from "../features/friends/RoomInvitePopup.js";
 import { createFriendClient } from "../features/friends/friend-client.js";
 import {
@@ -38,19 +38,96 @@ import type { PublicRoomView } from "@xiangqi/shared";
 import { createMediaClient } from "../features/media/media-client.js";
 import { createProfileClient } from "../features/profile/profile-client.js";
 import type { ProfileLocation } from "../features/profile/profile-client.js";
-import { ProfilePage } from "../features/profile/ProfilePage.js";
-import { AiSetupDialog } from "../features/ai/AiSetupDialog.js";
-import { AiGamePage } from "../features/ai/AiGamePage.js";
-import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import {
   guardRoute,
   resolveRoute,
   type Route,
 } from "../shared/navigation/routes.js";
-import { HistoryPage } from "../features/history/HistoryPage.js";
 import { makeHistoryClient } from "../features/history/history-client.js";
-import { ReplayPage } from "../features/history/ReplayPage.js";
-import { makeReplayClient } from "../features/history/replay-client.js";
+
+// Keep non-current feature graphs out of the session/lobby bootstrap.
+const LoginPage = lazy(() =>
+  import("../features/auth/LoginPage.js").then((module) => ({
+    default: module.LoginPage,
+  })),
+);
+const RegistrationPage = lazy(() =>
+  import("../features/auth/RegistrationPage.js").then((module) => ({
+    default: module.RegistrationPage,
+  })),
+);
+const GoogleSignInButton = lazy(() =>
+  import("../features/auth/GoogleSignInButton.js").then((module) => ({
+    default: module.GoogleSignInButton,
+  })),
+);
+const GoogleOnboardingPage = lazy(() =>
+  import("../features/auth/GoogleOnboardingPage.js").then((module) => ({
+    default: module.GoogleOnboardingPage,
+  })),
+);
+const CreateRoomForm = lazy(() =>
+  import("../features/rooms/RoomForms.js").then((module) => ({
+    default: module.CreateRoomForm,
+  })),
+);
+const loadRoomPage = () =>
+  import("../features/rooms/RoomPage.js").then((module) => ({
+    default: module.RoomPage,
+  }));
+const RoomPage = lazy(loadRoomPage);
+const InviteEntry = lazy(() =>
+  import("../features/rooms/InviteEntry.js").then((module) => ({
+    default: module.InviteEntry,
+  })),
+);
+const FriendsPage = lazy(() =>
+  import("../features/friends/FriendsPage.js").then((module) => ({
+    default: module.FriendsPage,
+  })),
+);
+const ProfilePage = lazy(() =>
+  import("../features/profile/ProfilePage.js").then((module) => ({
+    default: module.ProfilePage,
+  })),
+);
+const AiSetupDialog = lazy(() =>
+  import("../features/ai/AiSetupDialog.js").then((module) => ({
+    default: module.AiSetupDialog,
+  })),
+);
+const AiGamePage = lazy(() =>
+  import("../features/ai/AiGamePage.js").then((module) => ({
+    default: module.AiGamePage,
+  })),
+);
+const HistoryPage = lazy(() =>
+  import("../features/history/HistoryPage.js").then((module) => ({
+    default: module.HistoryPage,
+  })),
+);
+const ReplayRoute = lazy(() =>
+  import("../features/history/ReplayPage.js").then((module) => ({
+    default: module.ReplayRoute,
+  })),
+);
+
+function RouteContent({
+  children,
+  container,
+}: {
+  children: ReactNode;
+  container: RefObject<HTMLDivElement | null>;
+}) {
+  useEffect(() => {
+    const heading = container.current?.querySelector<HTMLHeadingElement>("h1");
+    if (heading) {
+      heading.tabIndex = -1;
+      heading.focus();
+    }
+  }, [container]);
+  return children;
+}
 
 function Lobby({
   client,
@@ -113,17 +190,20 @@ function Lobby({
       );
       setState(rows.length ? "success" : "empty");
     };
-    void publicClient.list().then(
-      (rows) => {
-        if (current() && !feedSeen) accept(rows);
-      },
-      () => {
-        if (current() && !feedSeen) {
-          setRooms([]);
-          setState("error");
-        }
-      },
-    );
+    queueMicrotask(() => {
+      if (!current()) return;
+      void publicClient.list().then(
+        (rows) => {
+          if (current() && !feedSeen) accept(rows);
+        },
+        () => {
+          if (current() && !feedSeen) {
+            setRooms([]);
+            setState("error");
+          }
+        },
+      );
+    });
     const feed = connectPublicRooms({
       getProof: async () => {
         const proof = await getRealtimeProof();
@@ -213,7 +293,10 @@ function Lobby({
       <LobbyShell
         rooms={rooms}
         state={state}
-        onCreate={() => setDialog(true)}
+        onCreate={() => {
+          void loadRoomPage().catch(() => undefined);
+          setDialog(true);
+        }}
         onJoinCode={(code) =>
           navigate(`/rooms/join?token=${encodeURIComponent(code)}`)
         }
@@ -226,40 +309,58 @@ function Lobby({
       />
       {dialog && (
         <Dialog open onClose={() => setDialog(false)} title="Tạo phòng">
-          <CreateRoomForm
-            onCreate={async (input) => onEntered(await client.create(input))}
-          />
+          <Suspense fallback={<p role="status">Đang tải biểu mẫu…</p>}>
+            <CreateRoomForm
+              onCreate={async (input) => onEntered(await client.create(input))}
+            />
+          </Suspense>
         </Dialog>
       )}
       {aiDialog && (
-        <AiSetupDialog
-          open={aiDialog}
-          onClose={() => setAiDialog(false)}
-          onStart={async (selection) => {
-            setAiDialog(false);
-            const gameId = crypto.randomUUID();
-            sessionStorage.setItem(
-              `xiangqi_ai_game_${gameId}`,
-              JSON.stringify({
-                level: selection.level,
-                requestedSide: selection.requestedSide,
-                actualSide:
-                  selection.requestedSide === "random"
-                    ? Math.random() < 0.5
-                      ? "red"
-                      : "black"
-                    : selection.requestedSide,
-                position: serializePosition(initialPosition()),
-                history: [serializePosition(initialPosition())],
-                version: 0,
-                undoRemaining: 3,
-                status: "ACTIVE",
-                outcome: null,
-              }),
-            );
-            navigate(`/ai/${gameId}`);
-          }}
-        />
+        <Suspense
+          fallback={
+            <Dialog
+              open
+              onClose={() => setAiDialog(false)}
+              title="Thiết lập ván với máy"
+            >
+              <p role="status">Đang tải thiết lập…</p>
+            </Dialog>
+          }
+        >
+          <AiSetupDialog
+            open={aiDialog}
+            onClose={() => setAiDialog(false)}
+            onStart={async (selection) => {
+              // Board rules are needed only when a game starts, not on lobby reload.
+              const { initialPosition, serializePosition } =
+                await import("@xiangqi/xiangqi-core");
+              const position = serializePosition(initialPosition());
+              const gameId = crypto.randomUUID();
+              sessionStorage.setItem(
+                `xiangqi_ai_game_${gameId}`,
+                JSON.stringify({
+                  level: selection.level,
+                  requestedSide: selection.requestedSide,
+                  actualSide:
+                    selection.requestedSide === "random"
+                      ? Math.random() < 0.5
+                        ? "red"
+                        : "black"
+                      : selection.requestedSide,
+                  position,
+                  history: [position],
+                  version: 0,
+                  undoRemaining: 3,
+                  status: "ACTIVE",
+                  outcome: null,
+                }),
+              );
+              setAiDialog(false);
+              navigate(`/ai/${gameId}`);
+            }}
+          />
+        </Suspense>
       )}
       <Button
         variant="ghost"
@@ -310,10 +411,6 @@ export function AppRouter() {
     () => makeHistoryClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
-  const replayClient = useMemo(
-    () => makeReplayClient(session.authorizedFetch),
-    [session.authorizedFetch],
-  );
   const profileClient = useMemo(
     () => createProfileClient(session.authorizedFetch),
     [session.authorizedFetch],
@@ -327,12 +424,15 @@ export function AppRouter() {
       return;
     }
     let alive = true;
-    void profileClient.read().then(
-      (view) => {
-        if (alive) setProfileName(view.displayName);
-      },
-      () => undefined,
-    );
+    queueMicrotask(() => {
+      if (!alive) return;
+      void profileClient.read().then(
+        (view) => {
+          if (alive) setProfileName(view.displayName);
+        },
+        () => undefined,
+      );
+    });
     return () => {
       alive = false;
     };
@@ -351,14 +451,20 @@ export function AppRouter() {
   const title = titles[route.name] || "Chức năng đang chuẩn bị";
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
   useEffect(() => {
+    if (route.name === "room") void loadRoomPage().catch(() => undefined);
+  }, [route.name]);
+  useEffect(() => {
     if (session.state.status !== "active-member") return;
     let alive = true;
-    void profileClient.location().then(
-      (value) => {
-        if (alive) setWhere(value);
-      },
-      () => undefined,
-    );
+    queueMicrotask(() => {
+      if (!alive) return;
+      void profileClient.location().then(
+        (value) => {
+          if (alive) setWhere(value);
+        },
+        () => undefined,
+      );
+    });
     return () => {
       alive = false;
     };
@@ -382,11 +488,6 @@ export function AppRouter() {
   ]);
   useEffect(() => {
     document.title = `Cờ Tướng Online · ${title}`;
-    const heading = container.current?.querySelector<HTMLHeadingElement>("h1");
-    if (heading) {
-      heading.tabIndex = -1;
-      heading.focus();
-    }
   }, [location.pathname, location.search, decision.kind, title]);
   const complete = (result: unknown) => {
     session.accept(result);
@@ -407,10 +508,10 @@ export function AppRouter() {
   let content: ReactNode;
   if (decision.kind === "checking" || decision.kind === "redirect")
     content = (
-      <section>
-        <h1>Kiểm tra phiên</h1>
-        <p role="status">Đang kiểm tra phiên đăng nhập…</p>
-      </section>
+      <LoadingScreen
+        title="Kiểm tra phiên"
+        message="Đang kiểm tra phiên đăng nhập…"
+      />
     );
   else if (decision.kind === "session-error")
     content = (
@@ -521,9 +622,9 @@ export function AppRouter() {
     );
   else if (route.name === "replay" && session.state.status === "active-member")
     content = (
-      <ReplayPage
+      <ReplayRoute
         key={`${session.state.userId}:${session.state.expiresAt}:${route.id}`}
-        client={replayClient}
+        authorizedFetch={session.authorizedFetch}
         id={route.id}
       />
     );
@@ -573,6 +674,19 @@ export function AppRouter() {
         </NavigationLink>
       </section>
     );
+  const page = (
+    <Suspense
+      key={`${location.pathname}${location.search}:${decision.kind}`}
+      fallback={
+        <section aria-busy="true">
+          <h1>{title}</h1>
+          <p role="status">Đang tải giao diện…</p>
+        </section>
+      }
+    >
+      <RouteContent container={container}>{content}</RouteContent>
+    </Suspense>
+  );
   return (
     <div ref={container} className="xq-ui">
       {roomNotice && session.state.status === "active-member" && (
@@ -594,11 +708,11 @@ export function AppRouter() {
             void session.logout();
           }}
         >
-          {content}
+          {page}
           <RoomInvitePopup client={friendClient} />
         </AppShell>
       ) : (
-        content
+        page
       )}
     </div>
   );

@@ -1,0 +1,12 @@
+BEGIN;
+SET LOCAL search_path=pg_catalog,public;
+DROP INDEX xiangqi_social.friend_decline_requester_idx;
+DROP INDEX xiangqi_social.room_invites_inviter_idx;
+DROP INDEX xiangqi_social.room_invites_room_idx;
+DROP INDEX xiangqi_room.media_share_user_idx;
+DROP INDEX xiangqi_room.room_blocks_user_idx;
+DROP INDEX xiangqi_room.seat_invites_inviter_idx;
+DROP INDEX xiangqi_room.seat_invites_invitee_idx;
+DROP INDEX xiangqi_room.side_swap_proposer_idx;
+DROP INDEX xiangqi_room.side_swap_responder_idx;
+COMMIT;

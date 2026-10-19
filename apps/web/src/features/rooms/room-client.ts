@@ -532,7 +532,9 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       chatGrants.delete(notice.channel);
     input.onChatChanged?.(notice);
   });
-  socket.connect();
+  queueMicrotask(() => {
+    if (!closed) socket.connect();
+  });
   return {
     readChat(channel, after = 0) {
       if (!isChatChannel(channel) || !Number.isSafeInteger(after) || after < 0)

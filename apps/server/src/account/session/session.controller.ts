@@ -14,7 +14,10 @@ import {
 } from "@nestjs/common";
 import { RegistrationError, type Session } from "../auth/registration.types.js";
 import { LoginError } from "../login/login.types.js";
-import { SessionService } from "../login/session.service.js";
+import {
+  SessionService,
+  type ValidatedSession,
+} from "../login/session.service.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,
@@ -40,14 +43,10 @@ export class SessionController {
       ? request.headers["x-xiangqi-session"]
       : readSessionCookie(request.headers.cookie, "xiangqi_session");
   }
-  private async actor(capability: unknown) {
-    const session = await this.sessions.requireValidSession(capability);
-    const account = await this.sessions.store.accountById(session.userId);
-    if (!account?.active)
-      throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
+  private actor(session: ValidatedSession) {
     return {
       userId: session.userId,
-      username: account.username,
+      username: session.username,
       kind: "member" as const,
       expiresAt: session.expiresAt,
       remember: session.remember,
@@ -80,7 +79,11 @@ export class SessionController {
   @Header("Cache-Control", "no-store")
   @UseGuards(SessionGuard)
   current(@Req() request: AuthenticatedRequest) {
-    return this.respond(() => this.actor(this.capability(request)));
+    return this.respond(async () => {
+      if (!request.session)
+        throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
+      return this.actor(request.session);
+    });
   }
   @Post("refresh")
   @Header("Cache-Control", "no-store")
@@ -92,7 +95,6 @@ export class SessionController {
   ) {
     return this.respond(async () => {
       const capability = this.capability(request);
-      await this.sessions.requireValidSession(capability);
       const supplied =
         body && typeof body === "object"
           ? (body as Record<string, unknown>).refresh_token
@@ -101,11 +103,18 @@ export class SessionController {
         body && typeof body === "object" && Object.hasOwn(body, "refresh_token")
           ? supplied
           : readSessionCookie(request.headers.cookie, "xiangqi_refresh");
-      if (typeof token !== "string" || !token)
-        throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
-      const session = await this.refreshProvider(token);
-      await this.sessions.requireActive(session.access_token, capability);
-      const actor = await this.actor(capability);
+      const { session, actor: validated } = await this.sessions.refresh(
+        capability,
+        async () => {
+          if (typeof token !== "string" || !token)
+            throw new LoginError(
+              "SESSION_INVALID",
+              "Phiên đăng nhập không hợp lệ",
+            );
+          return this.refreshProvider(token);
+        },
+      );
+      const actor = this.actor(validated);
       writeSessionCookies(
         response,
         {

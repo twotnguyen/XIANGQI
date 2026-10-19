@@ -1,5 +1,6 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
+  makeReplayClient,
   ReplayRequestError,
   type ReplayClient,
   type ReplayRecord,
@@ -8,6 +9,22 @@ import { ReplayViewer } from "./ReplayViewer.js";
 import { replayMoveLabels } from "./replay-notation.js";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { ErrorState } from "../../shared/ui/primitives.js";
+import type { AuthorizedFetch } from "../rooms/room-client.js";
+
+export function ReplayRoute({
+  authorizedFetch,
+  id,
+}: {
+  authorizedFetch: AuthorizedFetch;
+  id: string;
+}) {
+  const client = useMemo(
+    () => makeReplayClient(authorizedFetch),
+    [authorizedFetch],
+  );
+  return <ReplayPage client={client} id={id} />;
+}
+
 export function ReplayPage({
   client,
   id,

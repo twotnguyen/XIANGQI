@@ -136,7 +136,6 @@ describe.skipIf(!databaseUrl)(
         run(a, (s) =>
           rooms.create(s, {
             commandId: randomUUID(),
-            name: "Synthetic AI race",
           }),
         ),
         run(a, (s) =>
@@ -163,7 +162,6 @@ describe.skipIf(!databaseUrl)(
       const room = await run(a, (s) =>
         rooms.create(s, {
           commandId: randomUUID(),
-          name: "Synthetic existing seat",
         }),
       );
       await expect(

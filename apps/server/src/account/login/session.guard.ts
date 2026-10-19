@@ -6,12 +6,13 @@ import {
   type CanActivate,
   type ExecutionContext,
 } from "@nestjs/common";
-import { SessionService } from "./session.service.js";
+import { SessionService, type ValidatedSession } from "./session.service.js";
 import { LoginError } from "./login.types.js";
 import { readSessionCookie } from "../session/cookies.js";
 export interface AuthenticatedRequest {
   headers: Record<string, string | string[] | undefined>;
   userId?: string;
+  session?: ValidatedSession;
 }
 @Injectable()
 export class SessionGuard implements CanActivate {
@@ -30,7 +31,11 @@ export class SessionGuard implements CanActivate {
       const capability = Object.hasOwn(request.headers, "x-xiangqi-session")
         ? request.headers["x-xiangqi-session"]
         : readSessionCookie(request.headers.cookie, "xiangqi_session");
-      request.userId = await this.sessions.requireActive(bearer, capability);
+      request.session = await this.sessions.requireActiveSession(
+        bearer,
+        capability,
+      );
+      request.userId = request.session.userId;
       return true;
     } catch (error) {
       if (error instanceof RegistrationError && error.status === 401)

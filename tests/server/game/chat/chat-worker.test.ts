@@ -54,7 +54,7 @@ async function fixture() {
     }
   };
   const room = await run(undefined, (s) =>
-    rooms.create(s, { commandId: randomUUID(), name: "Synthetic Worker" }),
+    rooms.create(s, { commandId: randomUUID() }),
   );
   const send = () =>
     run(room.roomId, (s) =>

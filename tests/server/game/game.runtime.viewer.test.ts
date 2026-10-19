@@ -99,7 +99,6 @@ async function fixture() {
   }
   const entry = await post(red, "/rooms", {
     commandId: randomUUID(),
-    name: "Native Viewer Runtime",
     timeMinutes: 5,
   });
   await post(black, "/rooms/join", {

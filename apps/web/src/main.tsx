@@ -7,16 +7,24 @@ import "./shared/theme/theme.css";
 import { SessionProvider } from "./features/auth/SessionProvider.js";
 import { applyTheme, readStoredTheme } from "./shared/theme/theme.js";
 import { getApiBaseUrl } from "./shared/api.js";
+import { LoadingScreen } from "./shared/ui/primitives.js";
 const AppRouter = lazy(() =>
   import("./app/AppRouter.js").then((module) => ({
     default: module.AppRouter,
   })),
 );
-import { BoardPreview } from "./shared/board/BoardPreview.js";
-import {
-  RegistrationPage,
-  type RegistrationSession,
-} from "./features/auth/RegistrationPage.js";
+import type { RegistrationSession } from "./features/auth/RegistrationPage.js";
+
+const BoardPreview = lazy(() =>
+  import("./shared/board/BoardPreview.js").then((module) => ({
+    default: module.BoardPreview,
+  })),
+);
+const RegistrationPage = lazy(() =>
+  import("./features/auth/RegistrationPage.js").then((module) => ({
+    default: module.RegistrationPage,
+  })),
+);
 
 const ComponentGallery = lazy(() =>
   import("./app/dev/ComponentGallery.js").then((module) => ({
@@ -138,13 +146,17 @@ applyTheme(
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {previewBoard ? (
-      <main className="board-preview-page">
-        <BoardPreview />
-      </main>
+      <Suspense fallback={<LoadingScreen />}>
+        <main className="board-preview-page">
+          <BoardPreview />
+        </main>
+      </Suspense>
     ) : previewRegistration ? (
-      <RegistrationPreview />
+      <Suspense fallback={<LoadingScreen />}>
+        <RegistrationPreview />
+      </Suspense>
     ) : previewUi || previewLobby || previewLogin ? (
-      <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
+      <Suspense fallback={<LoadingScreen />}>
         {previewUi ? (
           <ComponentGallery />
         ) : previewLogin ? (
@@ -157,7 +169,7 @@ createRoot(document.getElementById("root")!).render(
       <HealthPreview />
     ) : (
       <SessionProvider>
-        <Suspense fallback={<p role="status">Đang tải giao diện…</p>}>
+        <Suspense fallback={<LoadingScreen />}>
           <AppRouter />
         </Suspense>
       </SessionProvider>
