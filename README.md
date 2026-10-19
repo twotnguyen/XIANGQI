@@ -148,7 +148,7 @@ theo cùng cấu trúc thư mục.
 | Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md) |
 | Dữ liệu, báo cáo và công cụ Jira | [docs/planning/jira/README.md](docs/planning/jira/README.md) |
 | Cấu hình dịch vụ và kết quả kiểm chứng | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md) |
-| Hướng dẫn cho coding agent và quy ước Git/Jira | [AGENTS.md](AGENTS.md) |
+| Coding agent: chỉ cần [AGENTS.md](AGENTS.md) (và `CLAUDE.md`); không cần đọc README này | [AGENTS.md](AGENTS.md) |
 
 ## Đóng góp
 
