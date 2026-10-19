@@ -35,3 +35,14 @@ Công cụ đồng bộ đọc `data/current-jira-snapshot.json` đã có trên 
 Giữ dữ liệu nguồn trong Git để người khác có thể sinh lại và kiểm tra tài liệu sau khi clone. Các báo cáo sinh tự động được cập nhật bằng công cụ; trạng thái hiện hành được duy trì riêng. CSV là bản đối chiếu các mục đã tồn tại, không dùng để nhập lại thành backlog mới.
 
 Ghi chú và bản xuất cá nhân đặt trong `.local/` ở gốc dự án. Việc sắp xếp thư mục không cập nhật Jira, chuyển trạng thái Task hoặc bắt đầu Sprint.
+
+## Quy tắc cho agent khi làm việc với Jira
+
+Chuyển từ `AGENTS.md`; chỉ áp dụng khi tác vụ chạm Jira hoặc kế hoạch.
+
+- **Kiểm tra kết nối (chỉ đọc):** xác nhận site `xiangqi-web.atlassian.net`, project `XIAN`, board `38`, rồi đọc issue liên quan (ví dụ T01 là `XIAN-37`, T06 là `XIAN-42`). Đối chiếu summary, Description, AC, assignee, Sprint, phụ thuộc và trạng thái trước khi triển khai hoặc đồng bộ. Chỉ báo MCP Jira hoạt động khi có phản hồi thành công từ đúng site/project. Không giả định tên tool hoặc tự cài connector; thiếu quyền thì báo chính xác dịch vụ nào không truy cập được.
+- Giữ ranh giới BA/triển khai: Epic/Story Done là đặc tả đã chốt; Task Done cần bằng chứng triển khai và kiểm thử. Không chuyển trạng thái hàng loạt theo trạng thái cha.
+- Khi được giao sửa lịch, giữ cơ sở 880 giờ, hạn 04/11/2026, tối đa 7 Task/ngày và 1 Task/người/ngày. Phụ thuộc đầu-cuối phải bắt đầu từ ngày sau khi Task trước kết thúc; thứ tự bắt đầu Epic → Story → Task. Thay đổi cơ sở cần quyết định rõ của người dùng.
+- Chỉ cập nhật Jira khi thuộc phạm vi yêu cầu. Không tự bắt đầu/kết thúc Sprint, chuyển issue Done, sửa Resolution hoặc thay ước lượng vì đã sửa tài liệu hay tạo commit. Mặc định giữ Sprint chưa bắt đầu cho đến khi có yêu cầu mới.
+- Trước khi cập nhật issue, đọc lại dữ liệu live để tránh ghi đè công việc của người khác. Trường Sprint là nguồn chính, nhãn `sprint-*` phải khớp; liên kết Story–Task có thể là `relates to`, không giả định Task là con trực tiếp của Story.
+- Đồng bộ kế hoạch theo mục "Cập nhật và kiểm tra" ở trên: cập nhật nguồn phù hợp, sinh lại báo cáo rồi kiểm tra. Script đọc snapshot không tự lấy Jira live. Không nhập lại CSV đối chiếu để tạo backlog trùng.

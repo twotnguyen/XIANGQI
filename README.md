@@ -75,6 +75,8 @@ Web ở `http://localhost:5173`, server ở `http://localhost:3000`. Chạy `cur
 
 Server nạp `apps/server/.env`; Vite nạp `apps/web/.env` và chỉ công khai tiền tố `VITE_`. Bộ khung dùng mặc định local khi không có file môi trường; PORT, CORS_ORIGINS và LOG_LEVEL được kiểm tra mà không in giá trị lỗi. Secret của dịch vụ chưa tích hợp không bắt buộc để chạy bộ khung.
 
+Nhóm lệnh dưới đây dành cho CI hoặc khi người dùng chủ động yêu cầu; agent xem [quy tắc kiểm chứng](AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules).
+
 ```sh
 pnpm lint
 pnpm typecheck
@@ -83,7 +85,7 @@ pnpm build
 pnpm format:check
 ```
 
-CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; PR/push `main` mới chạy đầy đủ. Khi code, chỉ test/smoke phần vừa sửa; tác vụ commit/push/merge không chờ CI nền trừ khi được yêu cầu rõ. Nếu GitHub chặn merge bằng kiểm tra bắt buộc, agent báo ngay, không bypass. Xem [quy tắc kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server dùng `tsx` cả khi chạy bản build (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói.
+CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; PR/push `main` mới chạy đầy đủ. Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server dùng `tsx` cả khi chạy bản build (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói.
 
 Build web luôn dùng React production, kể cả khi `.env` dùng `NODE_ENV=development` cho server. CI có PostgreSQL 17 riêng để chạy kiểm thử SQL/HTTP đăng ký; chạy local theo [hướng dẫn database](supabase/README.md). Đăng ký mặc định tắt: chỉ bật `AUTH_REGISTRATION_ENABLED=true` sau khi migration, quyền runtime và cấu hình SMTP/OTP trên đúng project đã được kiểm chứng. Runtime dùng `DIRECT_URL` với direct/session pooler, không dùng transaction pooler 6543. Kiểm thử tự động dùng Auth HTTP fixture; nhận OTP thật, hoàn tất vào Sảnh và các cổng nghiệm thu vẫn cần bằng chứng riêng.
 
