@@ -87,7 +87,6 @@ async function fixture() {
     outsider = await member();
   const entry = await http.create(red.proof, {
     commandId: randomUUID(),
-    name: "Synthetic integration",
   });
   await http.join(black.proof, {
     commandId: randomUUID(),

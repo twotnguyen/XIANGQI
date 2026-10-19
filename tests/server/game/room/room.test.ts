@@ -65,7 +65,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   });
   it("creates default code-only room with red reservation and durable idempotent response", async () => {
     const { a, proof } = await admitted(),
-      input = { commandId: randomUUID(), name: "  Kỳ đài  " };
+      input = { commandId: randomUUID() };
     const entry = await run(a, proof, [], (s) => store.create(s, input));
     expect(entry).toMatchObject({
       role: "red",
@@ -82,7 +82,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
         )
       ).rows[0],
     ).toEqual({
-      name: "Kỳ đài",
+      name: `Phòng ${entry.inviteCode}`,
       visibility: "CODE_ONLY",
       time_control: 600,
       viewer_limit: 5,
@@ -104,7 +104,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const entry = await run(a, proof, [], (scope) =>
       store.create(scope, {
         commandId: randomUUID(),
-        name: "Reload invitation",
       }),
     );
     const reloaded = await run(a, proof, [entry.roomId], (scope) =>
@@ -133,27 +132,29 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const { a, proof } = await admitted();
     await expect(
       run(a, "wrong", [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Room" }),
+        store.create(s, { commandId: randomUUID() }),
       ),
     ).rejects.toThrow("SESSION_INVALID");
     const commandId = randomUUID();
-    await run(a, proof, [], (s) => store.create(s, { commandId, name: "One" }));
+    await run(a, proof, [], (s) =>
+      store.create(s, { commandId, timeMinutes: 10 }),
+    );
     await expect(
-      run(a, proof, [], (s) => store.create(s, { commandId, name: "Two" })),
+      run(a, proof, [], (s) =>
+        store.create(s, { commandId, timeMinutes: 15 }),
+      ),
     ).rejects.toMatchObject({ code: "COMMAND_ID_REUSED" });
     await expect(
       run(a, proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Other" }),
+        store.create(s, { commandId: randomUUID() }),
       ),
     ).rejects.toMatchObject({ code: "ALREADY_SEATED" });
   });
-  it("validates room settings and Unicode name before writing any room", async () => {
+  it("validates room settings before writing any room", async () => {
     const { a, proof } = await admitted();
     for (const input of [
-      { name: "" },
-      { name: "x".repeat(61) },
-      { name: "Room", timeMinutes: 0 },
-      { name: "Room", viewerLimit: 6 },
+      { timeMinutes: 0 },
+      { viewerLimit: 6 },
     ])
       await expect(
         run(a, proof, [], (s) =>
@@ -173,7 +174,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const e = await run(h.a, h.proof, [], (s) =>
       store.create(s, {
         commandId: randomUUID(),
-        name: "Seats",
         viewerLimit: 1,
       }),
     );
@@ -225,7 +225,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const entry = await run(host.a, host.proof, [], (scope) =>
       store.create(scope, {
         commandId: randomUUID(),
-        name: "Membership authority",
       }),
     );
     await run(viewer.a, viewer.proof, [entry.roomId], (scope) =>
@@ -264,7 +263,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const h = await admitted(),
       b = await admitted();
     const e = await run(h.a, h.proof, [], (s) =>
-      store.create(s, { commandId: randomUUID(), name: "Ready" }),
+      store.create(s, { commandId: randomUUID() }),
     );
     await run(h.a, h.proof, [e.roomId], (s) => store.switchSeat(s, e.roomId));
     expect(
@@ -320,7 +319,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const h = await admitted(),
       b = await admitted();
     const e = await run(h.a, h.proof, [], (s) =>
-      store.create(s, { commandId: randomUUID(), name: "Disconnect" }),
+      store.create(s, { commandId: randomUUID() }),
     );
     await run(b.a, b.proof, [e.roomId], (s) =>
       store.join(s, {
@@ -392,7 +391,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const h = await admitted(),
       b = await admitted();
     const e = await run(h.a, h.proof, [], (s) =>
-      store.create(s, { commandId: randomUUID(), name: "Close" }),
+      store.create(s, { commandId: randomUUID() }),
     );
     await run(b.a, b.proof, [e.roomId], (s) =>
       store.join(s, {
@@ -433,7 +432,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   it("rejects reconnect at sixty seconds and commits seat release without a loss", async () => {
     const h = await admitted(),
       e = await run(h.a, h.proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Late" }),
+        store.create(s, { commandId: randomUUID() }),
       );
     const proof = {
       connectionId: "host",
@@ -471,7 +470,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const h = await admitted(),
       b = await admitted(),
       e = await run(h.a, h.proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Roster" }),
+        store.create(s, { commandId: randomUUID() }),
       );
     await expect(
       transaction([b.a.userId], [e.roomId], (client) =>
@@ -491,7 +490,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     );
     await expect(
       run(b.a, b.proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Rollback" }),
+        store.create(s, { commandId: randomUUID() }),
       ),
     ).rejects.toThrow("synthetic failure");
     expect(
@@ -513,7 +512,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
       e = await run(h.a, h.proof, [], (s) =>
         store.create(s, {
           commandId: randomUUID(),
-          name: "Actual SQL fixture",
         }),
       );
     await run(b.a, b.proof, [e.roomId], (s) =>
@@ -659,7 +657,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   it("recovers waiting countdown safely after backend restart and retains grace seat", async () => {
     const h = await admitted(),
       e = await run(h.a, h.proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Restart" }),
+        store.create(s, { commandId: randomUUID() }),
       );
     await run(h.a, h.proof, [e.roomId], (s) =>
       store.presence(
@@ -697,7 +695,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const h = await admitted(),
       b = await admitted(),
       e = await run(h.a, h.proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Expired proof" }),
+        store.create(s, { commandId: randomUUID() }),
       );
     await run(b.a, b.proof, [e.roomId], (s) =>
       store.join(s, {
@@ -752,7 +750,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   it("retries durable outbox publication without changing the committed room", async () => {
     const h = await admitted(),
       e = await run(h.a, h.proof, [], (s) =>
-        store.create(s, { commandId: randomUUID(), name: "Outbox" }),
+        store.create(s, { commandId: randomUUID() }),
       );
     let unavailable = true;
     const worker = new RoomWorker(
@@ -809,7 +807,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   it("commits final disconnected-seat expiry when the worker processes its due room", async () => {
     const h = await admitted(),
       e = await run(h.a, h.proof, [], (scope) =>
-        store.create(scope, { commandId: randomUUID(), name: "Due close" }),
+        store.create(scope, { commandId: randomUUID() }),
       );
     await pool.query(
       "UPDATE public.room_members SET disconnected_at=clock_timestamp()-interval '60 seconds' WHERE room_id=$1",
@@ -901,7 +899,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
               lockedActorIds: new Set([a.userId]),
               lockedRoomIds: new Set(),
             },
-            { commandId: randomUUID(), name: "Guest room" },
+            { commandId: randomUUID() },
           ),
       );
     now = new Date(now.getTime() + 12 * 3600000);
@@ -952,7 +950,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     const h = await admitted(),
       outsider = await admitted(),
       e = await run(h.a, h.proof, [], (scope) =>
-        store.create(scope, { commandId: randomUUID(), name: "Private" }),
+        store.create(scope, { commandId: randomUUID() }),
       );
     await transaction([outsider.a.userId], [], async (c) =>
       expect(await store.resolveCode(c, e.inviteCode!)).toBe(e.roomId),
@@ -968,7 +966,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
       e = await run(h.a, h.proof, [], (scope) =>
         store.create(scope, {
           commandId: randomUUID(),
-          name: "Never connected",
         }),
       );
     expect(

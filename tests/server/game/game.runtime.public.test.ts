@@ -90,7 +90,6 @@ async function fixture(modes = true) {
   const create = async () => {
     const response = await request("/rooms", 0, {
       commandId: randomUUID(),
-      name: "Actual Public Runtime",
       timeMinutes: 5,
     });
     expect(response.status).toBe(200);

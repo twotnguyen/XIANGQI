@@ -209,7 +209,6 @@ try {
     const members = proofs.users.slice(room * 5, room * 5 + 5);
     const created = await api("/rooms", members[0]!, {
       commandId: randomUUID(),
-      name: `Load ${proofs.runId.slice(0, 8)} ${room}`,
       timeMinutes: 15,
       viewerLimit: 3,
     });

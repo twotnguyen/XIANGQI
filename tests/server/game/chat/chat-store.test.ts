@@ -44,7 +44,7 @@ async function fixture() {
     b = await actor(),
     c = await actor();
   const entry = await run(a, undefined, (s) =>
-    rooms.create(s, { commandId: randomUUID(), name: "Synthetic Chat" }),
+    rooms.create(s, { commandId: randomUUID() }),
   );
   const id = entry.roomId;
   const join = (who: RoomActor, role: "play" | "watch") =>

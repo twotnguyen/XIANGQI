@@ -56,7 +56,7 @@ async function fixture() {
     opponent = await actor(),
     viewer = await actor();
   const entry = await run(host, null, (s) =>
-    store.create(s, { commandId: randomUUID(), name: "Viewer Fixture" }),
+    store.create(s, { commandId: randomUUID() }),
   );
   await run(opponent, entry.roomId, (s) =>
     store.join(s, {

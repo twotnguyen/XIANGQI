@@ -16,7 +16,7 @@ RoomScope.activeActorIds là các proof còn active đã được worker/root ki
 
 ## API local
 
-- create(scope,{commandId,name,timeMinutes?,viewerLimit?}) → roomId/version/role RED/inviteCode. Defaults10phút/5viewer, CODE_ONLY; Unicode NFC/name filter. Crypto code8, collision retries5. Entry receipt fingerprint rejects changed content.
+- create(scope,{commandId,timeMinutes?,viewerLimit?}) → roomId/version/role RED/inviteCode. Mặc định 10 phút/5 người xem, CODE_ONLY. Máy chủ tự sinh UUID và mã 8 chữ số bằng crypto, thử lại tối đa 5 lần khi trùng mã; lưu tên hiển thị `Phòng <mã>`, không nhận tên từ client. Entry receipt fingerprint gồm mức giờ/số người xem, không gồm ID/mã tự sinh; gửi lại cùng lệnh trả phòng đã tạo. Không đổi tên hay mã của phòng cũ, không cần migration.
 - resolveCode(client,code) → roomId chỉ cho authenticated admission nội bộ; code không bỏ qua LOCKED/auth/seat/capacity. Root trả link `/rooms/:id`, không dùng host/header không tin cậy để sinh absolute URL.
 - join(scope,{commandId,roomId,intent,expectedVersion?}), snapshot, switchSeat, ready.
 - create/join initially retain a seat for60s before first controlling socket; verified connection clears disconnected_at. A lost create response cannot reserve an offline seat indefinitely. Connected lone Host vẫn chờ vô hạn.

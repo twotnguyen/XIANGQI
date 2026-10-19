@@ -84,7 +84,7 @@ describe.skipIf(!databaseUrl)(
           return result;
         },
         (s) =>
-          rooms.create(s, { commandId: randomUUID(), name: "Member Room" }),
+          rooms.create(s, { commandId: randomUUID() }),
       );
       expect(result.status).toBe("active");
       expect(m.provider.getUser).toHaveBeenCalledTimes(1);
@@ -101,7 +101,6 @@ describe.skipIf(!databaseUrl)(
       );
       const entry = await ownerService.create(owner.proof, {
         commandId: randomUUID(),
-        name: "Two TX room",
       });
       const joinService = new RoomHttpService(
         rooms,
@@ -324,7 +323,7 @@ describe.skipIf(!databaseUrl)(
         rooms,
         coordinator,
         m.authorizer,
-      ).create(m.proof, { commandId: randomUUID(), name: "Room Row Wait" });
+      ).create(m.proof, { commandId: randomUUID() });
       await pool.query(
         "WITH t AS (SELECT clock_timestamp()+interval '300 milliseconds' AS at) UPDATE xiangqi_auth.app_sessions SET created_at=t.at-interval '12 hours',expires_at=t.at FROM t WHERE token_hash=$1",
         [hash(m.proof.appSession)],
@@ -394,7 +393,6 @@ describe.skipIf(!databaseUrl)(
           await revoker.query("ROLLBACK");
           return rooms.create(s, {
             commandId: randomUUID(),
-            name: "Before Revoke",
           });
         },
       );

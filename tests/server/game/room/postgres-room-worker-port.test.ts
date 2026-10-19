@@ -60,7 +60,7 @@ async function setup(two = false) {
       work,
     );
   const created = await run(a, [], (s) =>
-    rooms.create(s, { commandId: randomUUID(), name: "Synthetic Worker" }),
+    rooms.create(s, { commandId: randomUUID() }),
   );
   if (created.status !== "active") throw Error("fixture");
   const roomId = created.value.roomId,

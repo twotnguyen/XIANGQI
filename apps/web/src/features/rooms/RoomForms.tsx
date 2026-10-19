@@ -1,48 +1,26 @@
 import { useState, type FormEvent } from "react";
-import { containsForbiddenName } from "@xiangqi/shared";
 import { Button, TextField, Notice } from "../../shared/ui/primitives.js";
 import "./rooms.css";
 export interface CreateRoomInput {
-  name: string;
   timeMinutes: 5 | 10 | 15;
   viewerLimit: number;
-}
-function nameError(value: string) {
-  const name = value.normalize("NFC").trim();
-  if (!name) return "Nhập tên phòng.";
-  if (Array.from(name).length > 60) return "Tên phòng tối đa 60 ký tự.";
-  if (
-    containsForbiddenName(name) ||
-    Array.from(name).some((character) => {
-      const point = character.codePointAt(0)!;
-      return point < 32 || (point >= 127 && point <= 159);
-    })
-  )
-    return "Tên phòng chứa nội dung không được phép.";
-  return "";
 }
 export function CreateRoomForm({
   onCreate,
 }: {
   onCreate: (input: CreateRoomInput) => Promise<void>;
 }) {
-  const [name, setName] = useState("");
   const [timeMinutes, setTime] = useState<5 | 10 | 15>(10);
   const [viewerLimit, setViewers] = useState(5);
-  const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (busy) return;
-    const invalid = nameError(name);
-    setError(invalid);
-    if (invalid) return;
     setBusy(true);
     setNotice("");
     try {
       await onCreate({
-        name: name.normalize("NFC").trim(),
         timeMinutes,
         viewerLimit,
       });
@@ -59,18 +37,7 @@ export function CreateRoomForm({
       noValidate
     >
       <h2>Tạo phòng cờ</h2>
-      <p>Mời một kỳ hữu, chọn nhịp đấu của bạn.</p>
-      <TextField
-        label="Tên phòng"
-        value={name}
-        onChange={(event) => {
-          setName(event.target.value);
-          setError("");
-        }}
-        error={error}
-        helper="1–60 ký tự, không chứa từ cấm."
-        disabled={busy}
-      />
+      <p>Mã phòng được cấp tự động. Chọn nhịp đấu và mời một kỳ hữu.</p>
       <fieldset disabled={busy}>
         <legend>Thời gian mỗi bên</legend>
         <div className="xq-room-options">

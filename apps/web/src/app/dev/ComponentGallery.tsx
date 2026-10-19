@@ -5,6 +5,7 @@ import {
   type DataState,
   type PublicRoom,
 } from "../../features/lobby/LobbyShell.js";
+import { CreateRoomForm } from "../../features/rooms/RoomForms.js";
 import {
   Badge,
   Button,
@@ -249,7 +250,6 @@ export function LobbyPreview() {
   const [state, setState] = useState<DataState>("success");
   const [notice, setNotice] = useState("");
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
   const [rooms, setRooms] = useState(fixtures);
   return (
     <AppShell
@@ -287,30 +287,25 @@ export function LobbyPreview() {
           open={open}
           onClose={() => setOpen(false)}
           title="Tạo phòng minh họa"
-          confirmLabel="Tạo phòng minh họa"
-          onConfirm={() => {
-            setRooms((previous) => [
-              {
-                ...fixtures[0]!,
-                id: `local-${previous.length}`,
-                name: name.trim() || "Phòng minh họa mới",
-              },
-              ...previous,
-            ]);
-            setName("");
-            setOpen(false);
-            setState("success");
-            setNotice(
-              "Phòng minh họa đã được thêm vào danh sách local. Chưa tạo phòng thật.",
-            );
-          }}
         >
-          <TextField
-            label="Tên phòng"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            maxLength={60}
-            helper="Chỉ thay đổi dữ liệu minh họa trên trang này."
+          <CreateRoomForm
+            onCreate={async ({ timeMinutes, viewerLimit }) => {
+              setRooms((previous) => [
+                {
+                  ...fixtures[0]!,
+                  id: `local-${previous.length}`,
+                  name: `Phòng minh họa ${previous.length + 1}`,
+                  timeMinutes,
+                  spectatorLimit: viewerLimit,
+                },
+                ...previous,
+              ]);
+              setOpen(false);
+              setState("success");
+              setNotice(
+                "Phòng minh họa đã được thêm vào danh sách local. Chưa tạo phòng thật.",
+              );
+            }}
           />
         </Dialog>
       </div>

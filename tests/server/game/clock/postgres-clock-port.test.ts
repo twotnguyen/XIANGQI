@@ -55,7 +55,6 @@ async function game() {
     (s) =>
       rooms.create(s, {
         commandId: randomUUID(),
-        name: "Clock Port Room",
         timeMinutes: 5,
       }),
   );
@@ -99,7 +98,13 @@ async function game() {
       return started.matchId;
     },
   );
-  return { roomId, matchId, red: red.userId, black: black.userId };
+  return {
+    roomId,
+    matchId,
+    inviteCode: created.value.inviteCode,
+    red: red.userId,
+    black: black.userId,
+  };
 }
 afterAll(() => pool.end());
 describe.skipIf(!databaseUrl)("Postgres clock port actual SQL", () => {
@@ -265,7 +270,7 @@ describe.skipIf(!databaseUrl)("Postgres clock port actual SQL", () => {
           g.roomId,
         ])
       ).rows[0].name,
-    ).toBe("Clock Port Room");
+    ).toBe(`Phòng ${g.inviteCode}`);
     expect(pool.waitingCount).toBe(0);
     await port.withMatch(g, async () => {});
   });

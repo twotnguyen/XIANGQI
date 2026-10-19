@@ -1,6 +1,5 @@
 import type { PoolClient, QueryResultRow } from "pg";
 import { createHash, randomInt, randomUUID } from "node:crypto";
-import { containsForbiddenName } from "@xiangqi/shared";
 import {
   invalidRoomInput,
   RoomError,
@@ -196,25 +195,15 @@ export class RoomStore {
     s: RoomScope,
     input: {
       commandId: string;
-      name: string;
       timeMinutes?: number;
       viewerLimit?: number;
     },
   ): Promise<RoomEntry> {
     this.scope(s);
-    if (!uuid.test(input.commandId) || typeof input.name !== "string")
-      invalidRoomInput();
-    const name = input.name.normalize("NFC").trim(),
-      time = input.timeMinutes ?? 10,
+    if (!uuid.test(input.commandId)) invalidRoomInput();
+    const time = input.timeMinutes ?? 10,
       viewers = input.viewerLimit ?? 5;
     if (
-      Array.from(name).length < 1 ||
-      Array.from(name).length > 60 ||
-      Array.from(name).some((c) => {
-        const n = c.codePointAt(0)!;
-        return n < 32 || (n >= 127 && n <= 159);
-      }) ||
-      containsForbiddenName(name) ||
       ![5, 10, 15].includes(time) ||
       !Number.isInteger(viewers) ||
       viewers < 0 ||
@@ -222,7 +211,7 @@ export class RoomStore {
     )
       invalidRoomInput();
     const digest = createHash("sha256")
-        .update(JSON.stringify({ type: "create", name, time, viewers }))
+        .update(JSON.stringify({ type: "create", time, viewers }))
         .digest("hex"),
       old = await this.replay(s, input.commandId, digest);
     if (old) return old;
@@ -249,7 +238,7 @@ export class RoomStore {
       code = Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
       const row = await s.client.query(
         "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,'CODE_ONLY',$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
-        [id, s.actor.userId, name, time * 60, viewers, code],
+        [id, s.actor.userId, `Phòng ${code}`, time * 60, viewers, code],
       );
       if (row.rowCount) break;
       code = "";

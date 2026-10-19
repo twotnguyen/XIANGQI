@@ -51,8 +51,8 @@ async function run<T>(
   if (result.status !== "active") throw new Error("Unexpected ended fixture");
   return result.value;
 }
-async function create(a: RoomActor, name = "Synthetic Room") {
-  return run(a, [], (s) => rooms.create(s, { commandId: randomUUID(), name }));
+async function create(a: RoomActor) {
+  return run(a, [], (s) => rooms.create(s, { commandId: randomUUID() }));
 }
 async function tryLock(key: string) {
   const c = await pool.connect();
@@ -135,8 +135,8 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     const a = await admitted(),
       b = await admitted(),
       viewer = await admitted();
-    const first = await create(a, "First"),
-      second = await create(b, "Second");
+    const first = await create(a),
+      second = await create(b);
     for (const entry of [first, second])
       await run(viewer, [entry.roomId], (s) =>
         rooms.join(s, {
@@ -233,7 +233,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
   });
   it("rolls back room version/outbox/entry receipt on auth or work failure", async () => {
     const a = await admitted(),
-      input = { commandId: randomUUID(), name: "Rollback" };
+      input = { commandId: randomUUID() };
     await expect(
       coordinator.withRoom(
         { actor: a, roomIds: [] },
@@ -339,7 +339,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     const a = await admitted(),
       extra = await admitted();
     let attempts = 0;
-    const input = { commandId: randomUUID(), name: "Retry Room" };
+    const input = { commandId: randomUUID() };
     const result = await run(a, [], async (s) => {
       attempts++;
       if (attempts === 2)
@@ -368,7 +368,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     await expect(
       run(a, [], async (s) => {
         attempts++;
-        await rooms.create(s, { commandId: randomUUID(), name: "Unstable" });
+        await rooms.create(s, { commandId: randomUUID() });
         throw new RoomRosterChanged([randomUUID()]);
       }),
     ).rejects.toMatchObject({ code: "ROOM_ROSTER_UNSTABLE" });
@@ -534,7 +534,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     await coordinator.withRoom(
       { actor: a, roomIds: [] },
       authorizeMember,
-      (s) => rooms.create(s, { commandId: randomUUID(), name: "Member room" }),
+      (s) => rooms.create(s, { commandId: randomUUID() }),
     );
     at = new Date(session.expiresAt);
     const work = vi.fn();

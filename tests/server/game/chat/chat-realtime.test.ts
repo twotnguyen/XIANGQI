@@ -69,7 +69,6 @@ async function fixture() {
     c = members[2]!;
   const entry = await http.create(a.proof, {
     commandId: randomUUID(),
-    name: "Synthetic Realtime Chat",
   });
   const connect = async (m: typeof a) => {
     // Each realtime resolution owns the original proof for the following guarded transaction.
