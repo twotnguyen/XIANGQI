@@ -1349,12 +1349,8 @@ it("spectators Leave without claiming resignation or opening player confirmation
   expect(screen.queryByRole("dialog", { name: "Rời phòng?" })).toBeNull();
 });
 
-it("the fallback HTTP PLAYING view cannot resign before the fresh socket match and confirmation", async () => {
-  vi.useFakeTimers({ shouldAdvanceTime: true });
+it("the immediate HTTP PLAYING view cannot resign before a fresh socket snapshot", async () => {
   const f = setup(actionable());
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(1500);
-  });
   await screen.findByRole("heading", { name: "Kỳ hữu" });
   fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
   expect(f.client.leave).not.toHaveBeenCalled();

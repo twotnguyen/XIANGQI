@@ -35,14 +35,14 @@ import { SpectatorsPanel } from "./SpectatorsPanel.js";
 import { RoomChat } from "../chat/RoomChat.js";
 import { useRoomChat } from "../chat/useRoomChat.js";
 import type { MediaClient } from "../media/media-client.js";
+import { MediaSeats } from "../media/MediaSeats.js";
 const LazyMediaPanel = lazy(() =>
   import("../media/MediaPanel.js").then((module) => ({
     default: module.MediaPanel,
   })),
 );
 import "./rooms.css";
-// Chờ realtime bao lâu trước khi đọc phòng qua HTTP.
-const SNAPSHOT_FALLBACK_MS = 1200;
+// The HTTP snapshot is a display-only fallback while realtime establishes authority.
 
 function swapMessage(code: string, fallback: string) {
   switch (code) {
@@ -192,9 +192,9 @@ export function RoomPage({
     connectedRef.current = false;
     setConnected(false);
     setError("");
-    // shortcut: the gateway pushes a full snapshot on connect, so the HTTP read
-    // only runs when realtime stays silent (blocked socket, offline, slow auth).
-    const fallbackTimer = setTimeout(() => {
+    // HTTP can display the room before realtime grants control.
+    queueMicrotask(() => {
+      if (!alive || latest.current) return;
       void client.snapshot(roomId).then(
         (value) => {
           if (
@@ -213,12 +213,11 @@ export function RoomPage({
             );
         },
       );
-    }, SNAPSHOT_FALLBACK_MS);
+    });
     const peer = connect({
       roomId,
       getProof,
       onSnapshot: (value) => {
-        clearTimeout(fallbackTimer);
         if (alive && acceptSnapshot(value)) setError("");
       },
       onConnection: (value) => {
@@ -276,7 +275,6 @@ export function RoomPage({
     document.addEventListener("visibilitychange", refreshVisible);
     return () => {
       alive = false;
-      clearTimeout(fallbackTimer);
       refreshEpoch.current++;
       document.removeEventListener("visibilitychange", refreshVisible);
       epoch.current++;
@@ -788,8 +786,26 @@ export function RoomPage({
   const activeLastMove = optimistic
     ? { ...optimistic.lastMove, eventVersion: 0 }
     : (snapshot?.match?.lastMove ?? null);
+  const readyControl = room.status === "WAITING" && player && (
+    <Button
+      className="xq-room-ready"
+      loading={busy}
+      disabledReason={
+        !writable
+          ? "Cần kết nối và quyền điều khiển ghế."
+          : !room.seats.red || !room.seats.black
+            ? "Chờ đủ hai người chơi để Sẵn sàng."
+            : undefined
+      }
+      onClick={() => void ready()}
+    >
+      {room.ready[view.role as "red" | "black"] ? "Huỷ sẵn sàng" : "Sẵn sàng"}
+    </Button>
+  );
   return (
-    <main className={`xq-ui xq-room-page${playingLayout ? " is-playing" : ""}`}>
+    <main
+      className={`xq-ui xq-room-page${playingLayout ? " is-playing" : " is-waiting"}`}
+    >
       <header className="xq-room-header">
         <div>
           <h1>{room.name}</h1>
@@ -800,6 +816,18 @@ export function RoomPage({
                 ? "Ván cờ đang diễn ra"
                 : "Phòng chờ thi đấu"}
           </p>
+          {!playingLayout && (
+            <div className="xq-room-meta">
+              <span>{room.timeMinutes} phút mỗi bên</span>
+              <span>
+                {room.visibility === "PUBLIC"
+                  ? "Công khai"
+                  : room.visibility === "CODE_ONLY"
+                    ? "Theo mã mời"
+                    : "Đã khóa"}
+              </span>
+            </div>
+          )}
         </div>
         <div className="xq-room-header-actions">
           {canManage && (
@@ -868,42 +896,6 @@ export function RoomPage({
           </Button>
         </div>
       </header>
-      {code && room.visibility !== "LOCKED" && (
-        <section className="xq-room-invite" aria-label="Mời người vào phòng">
-          <div className="xq-room-invite-code">
-            <span className="xq-room-invite-label">Mã phòng</span>
-            <strong>{code}</strong>
-          </div>
-          <p className="xq-room-invite-hint">
-            Đọc mã này cho người muốn vào. Họ phải đăng nhập để ngồi ghế hoặc
-            xem.
-          </p>
-          <div className="xq-room-invite-actions">
-            <Button
-              variant="secondary"
-              loading={copying}
-              onClick={() => void copyInvite(code)}
-            >
-              Sao chép mã
-            </Button>
-            <a
-              className="xq-room-invite-link"
-              href={`/rooms/join?token=${encodeURIComponent(code)}`}
-            >
-              Đường dẫn mời vào phòng
-            </a>
-          </div>
-          {copyStatus && (
-            <p
-              className="xq-room-invite-status"
-              role="status"
-              aria-live="polite"
-            >
-              {copyStatus}
-            </p>
-          )}
-        </section>
-      )}
       <fieldset className="match-actions__confirmation" disabled={busy}>
         <Dialog
           open={leaveConfirm !== null}
@@ -1003,19 +995,26 @@ export function RoomPage({
                   data-ready={ready}
                   aria-label={`Ghế ${label}`}
                 >
+                  {!playingLayout && (
+                    <span className="xq-seat-side">
+                      Phe {label} ({side === "red" ? "Đi trước" : "Đi sau"})
+                    </span>
+                  )}
                   <span className="xq-seat-piece" aria-hidden="true">
                     {side === "red" ? "帥" : "將"}
                   </span>
-                  <h2>
-                    {occupant
-                      ? occupant === userId
-                        ? `Bạn · ${label}`
-                        : `Người chơi ${label}${occupant === room.hostId ? " · Chủ phòng" : ""}`
-                      : `Ghế ${label} đang trống`}
-                  </h2>
-                  {occupant === userId && occupant === room.hostId && (
-                    <p>Chủ phòng</p>
-                  )}
+                  <div className="xq-room-seat-player">
+                    <h2>
+                      {occupant
+                        ? occupant === userId
+                          ? `Bạn · ${label}`
+                          : `Người chơi ${label}${occupant === room.hostId ? " · Chủ phòng" : ""}`
+                        : `Ghế ${label} đang trống`}
+                    </h2>
+                    {occupant === userId && occupant === room.hostId && (
+                      <p>Chủ phòng</p>
+                    )}
+                  </div>
                   <p className="xq-room-seat-state">
                     {!occupant
                       ? "Đang chờ kỳ hữu"
@@ -1025,16 +1024,105 @@ export function RoomPage({
                           ? "Đã sẵn sàng"
                           : "Chưa sẵn sàng"}
                   </p>
+                  {!playingLayout && occupant === userId && readyControl}
+                  {!playingLayout && occupant !== userId && (
+                    <p className="xq-room-seat-hint">
+                      {occupant
+                        ? ready
+                          ? "Đối thủ đã sẵn sàng"
+                          : "Đang chờ đối thủ sẵn sàng"
+                        : "Mời kỳ hữu bằng mã phòng"}
+                    </p>
+                  )}
                 </section>
               );
             })}
-            {!playingLayout && (
-              <p className="xq-room-seats-river" aria-hidden="true">
-                <span>楚</span>
-                <span>河</span>
-                <span>漢</span>
-                <span>界</span>
-              </p>
+            {(!playingLayout || room.status === "WAITING") && (
+              <div className="xq-room-versus">
+                <span className="xq-room-vs" aria-hidden="true">
+                  VS
+                </span>
+                {room.status === "WAITING" && player && (
+                  <div className="xq-room-actions">
+                    {solo && room.hostId === userId && (
+                      <Button
+                        variant="secondary"
+                        loading={busy}
+                        disabledReason={
+                          !writable
+                            ? "Cần kết nối và quyền điều khiển ghế."
+                            : undefined
+                        }
+                        onClick={() => void httpAction("switch")}
+                      >
+                        Đổi ghế
+                      </Button>
+                    )}
+                    {!solo && !room.countdown && !room.swapOffer && (
+                      <Button
+                        variant="secondary"
+                        loading={busy}
+                        disabledReason={
+                          !writable
+                            ? "Cần kết nối và quyền điều khiển ghế."
+                            : undefined
+                        }
+                        onClick={() => void httpAction("swap-propose")}
+                      >
+                        Xin đổi bên
+                      </Button>
+                    )}
+                    {!solo && !room.countdown && room.swapOffer && (
+                      <div
+                        className="xq-swap-prompt"
+                        role="group"
+                        aria-label="Đề nghị đổi bên"
+                      >
+                        {room.swapOffer.responderId === userId ? (
+                          <>
+                            <p>
+                              Đối thủ muốn đổi bên Đỏ ↔ Đen. Còn{" "}
+                              {Math.max(
+                                0,
+                                Math.ceil(
+                                  (Date.parse(room.swapOffer.expiresAt) -
+                                    swapNow) /
+                                    1000,
+                                ),
+                              )}{" "}
+                              giây để trả lời.
+                            </p>
+                            <Button
+                              loading={busy}
+                              onClick={() => void httpAction("swap-accept")}
+                            >
+                              Đồng ý
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              loading={busy}
+                              onClick={() => void httpAction("swap-decline")}
+                            >
+                              Từ chối
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <p>Đang chờ đối thủ trả lời đề nghị đổi bên…</p>
+                            <Button
+                              variant="secondary"
+                              loading={busy}
+                              onClick={() => void httpAction("swap-withdraw")}
+                            >
+                              Rút đề nghị
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
           {clockState?.clocks && (
@@ -1104,164 +1192,67 @@ export function RoomPage({
                 }
               />
             )}
-          {room.status === "WAITING" && player && (
-            <div className="xq-room-actions">
-              <Button
-                loading={busy}
-                disabledReason={
-                  !writable
-                    ? "Cần kết nối và quyền điều khiển ghế."
-                    : !room.seats.red || !room.seats.black
-                      ? "Chờ đủ hai người chơi để Sẵn sàng."
-                      : undefined
-                }
-                onClick={() => void ready()}
-              >
-                {room.ready[view.role as "red" | "black"]
-                  ? "Huỷ sẵn sàng"
-                  : "Sẵn sàng"}
-              </Button>
-              {solo && room.hostId === userId && (
-                <Button
-                  variant="secondary"
-                  loading={busy}
-                  disabledReason={
-                    !writable
-                      ? "Cần kết nối và quyền điều khiển ghế."
-                      : undefined
-                  }
-                  onClick={() => void httpAction("switch")}
-                >
-                  Đổi ghế
-                </Button>
-              )}
-              {!solo && !room.countdown && !room.swapOffer && (
-                <Button
-                  variant="secondary"
-                  loading={busy}
-                  disabledReason={
-                    !writable
-                      ? "Cần kết nối và quyền điều khiển ghế."
-                      : undefined
-                  }
-                  onClick={() => void httpAction("swap-propose")}
-                >
-                  Xin đổi bên
-                </Button>
-              )}
-              {!solo && !room.countdown && room.swapOffer && (
-                <div
-                  className="xq-swap-prompt"
-                  role="group"
-                  aria-label="Đề nghị đổi bên"
-                >
-                  {room.swapOffer.responderId === userId ? (
-                    <>
-                      <p>
-                        Đối thủ muốn đổi bên Đỏ ↔ Đen. Còn{" "}
-                        {Math.max(
-                          0,
-                          Math.ceil(
-                            (Date.parse(room.swapOffer.expiresAt) - swapNow) /
-                              1000,
-                          ),
-                        )}{" "}
-                        giây để trả lời.
-                      </p>
-                      <Button
-                        loading={busy}
-                        onClick={() => void httpAction("swap-accept")}
-                      >
-                        Đồng ý
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => void httpAction("swap-decline")}
-                      >
-                        Từ chối
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <p>Đang chờ đối thủ trả lời đề nghị đổi bên…</p>
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => void httpAction("swap-withdraw")}
-                      >
-                        Rút đề nghị
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+          {playingLayout && readyControl}
           {view.role === "spectator" && (
             <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
           )}
         </section>
-        <aside className="xq-room-info" aria-label="Thông tin phòng">
-          <h2>Phòng của kỳ hữu</h2>
-          <dl>
-            <dt>Mỗi bên</dt>
-            <dd>{room.timeMinutes} phút</dd>
-            <dt>Người xem tối đa</dt>
-            <dd>{room.viewerLimit}</dd>
-            <dt>Chế độ</dt>
-            <dd>
-              {room.visibility === "CODE_ONLY"
-                ? "Theo mã mời"
-                : room.visibility === "PUBLIC"
-                  ? "Công khai"
-                  : "Đã khóa"}
-            </dd>
-          </dl>
-          <p>Thời gian và trần người xem đã cố định.</p>
-          {room.visibility === "LOCKED" && (
-            <p>Mã mời đã bị khoá, người mới không vào được.</p>
-          )}
-          <div className="xq-room-slots">
-            {chat ?? (
-              <RoomChat
-                viewerRole={view.role}
-                connected={connected && !!snapshot}
-                channels={roomChat.channels}
-                pendingSend={roomChat.pendingSend}
-                onSend={roomChat.onSend}
-                onLoadMore={roomChat.onLoadMore}
-              />
+        {code && room.visibility !== "LOCKED" && (
+          <section className="xq-room-invite" aria-label="Mời người vào phòng">
+            <div className="xq-room-invite-code">
+              <span className="xq-room-invite-label">Mã phòng</span>
+              <strong>{code}</strong>
+            </div>
+            <p className="xq-room-invite-hint">
+              Đọc mã này cho người muốn vào. Họ phải đăng nhập để ngồi ghế hoặc
+              xem.
+            </p>
+            <div className="xq-room-invite-actions">
+              <Button
+                variant="secondary"
+                loading={copying}
+                onClick={() => void copyInvite(code)}
+              >
+                Sao chép mã
+              </Button>
+              <a
+                className="xq-room-invite-link"
+                href={`/rooms/join?token=${encodeURIComponent(code)}`}
+              >
+                Đường dẫn mời vào phòng
+              </a>
+            </div>
+            {copyStatus && (
+              <p
+                className="xq-room-invite-status"
+                role="status"
+                aria-live="polite"
+              >
+                {copyStatus}
+              </p>
             )}
-            {connected &&
-              snapshot &&
-              (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const).map((channel) =>
-                roomChat.channels[channel]?.error ? (
-                  <Button
-                    key={channel}
-                    variant="secondary"
-                    onClick={() =>
-                      void roomChat.onLoadMore(channel).catch(() => {})
-                    }
-                  >
-                    Tải lại{" "}
-                    {channel === "PLAYERS_PRIVATE"
-                      ? "Kênh riêng"
-                      : "Kênh chung"}
-                  </Button>
-                ) : null,
-              )}
-            {mediaClient ? (
-              <Suspense fallback={<p>Đang tải phần hình tiếng…</p>}>
-                <LazyMediaPanel
-                  roomId={roomId}
-                  role={view.role}
-                  client={mediaClient}
-                  connected={connected && Boolean(snapshot)}
-                />
-              </Suspense>
-            ) : (
-              (media ?? <p>Camera và mic chưa khả dụng.</p>)
+          </section>
+        )}
+        <aside className="xq-room-info" aria-label="Thông tin phòng">
+          <div className="xq-room-details">
+            <h2>Phòng của kỳ hữu</h2>
+            <dl>
+              <dt>Mỗi bên</dt>
+              <dd>{room.timeMinutes} phút</dd>
+              <dt>Người xem tối đa</dt>
+              <dd>{room.viewerLimit}</dd>
+              <dt>Chế độ</dt>
+              <dd>
+                {room.visibility === "CODE_ONLY"
+                  ? "Theo mã mời"
+                  : room.visibility === "PUBLIC"
+                    ? "Công khai"
+                    : "Đã khóa"}
+              </dd>
+            </dl>
+            <p>Thời gian và trần người xem đã cố định.</p>
+            {room.visibility === "LOCKED" && (
+              <p>Mã mời đã bị khoá, người mới không vào được.</p>
             )}
           </div>
           <SpectatorsPanel
@@ -1290,6 +1281,62 @@ export function RoomPage({
             }
             onKick={(target) => void viewerAction("kick", { targetId: target })}
           />
+          <div className="xq-room-slots">
+            <div className="xq-room-chat-slot">
+              {chat ?? (
+                <RoomChat
+                  viewerRole={view.role}
+                  connected={connected && !!snapshot}
+                  channels={roomChat.channels}
+                  pendingSend={roomChat.pendingSend}
+                  onSend={roomChat.onSend}
+                  onLoadMore={roomChat.onLoadMore}
+                />
+              )}
+              {connected &&
+                snapshot &&
+                (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const).map((channel) =>
+                  roomChat.channels[channel]?.error ? (
+                    <Button
+                      key={channel}
+                      variant="secondary"
+                      onClick={() =>
+                        void roomChat.onLoadMore(channel).catch(() => {})
+                      }
+                    >
+                      Tải lại{" "}
+                      {channel === "PLAYERS_PRIVATE"
+                        ? "Kênh riêng"
+                        : "Kênh chung"}
+                    </Button>
+                  ) : null,
+                )}
+            </div>
+            <div className="xq-room-media-slot">
+              {mediaClient ? (
+                <Suspense
+                  fallback={<MediaSeats seats={room.seats} selfId={userId} />}
+                >
+                  <LazyMediaPanel
+                    roomId={roomId}
+                    role={view.role}
+                    client={mediaClient}
+                    connected={connected && Boolean(snapshot)}
+                    seats={room.seats}
+                    userId={userId}
+                  />
+                </Suspense>
+              ) : (
+                (media ?? (
+                  <section className="xq-media" aria-label="Camera và mic">
+                    <h2>Camera và mic</h2>
+                    <MediaSeats seats={room.seats} selfId={userId} />
+                    <p>Camera và mic chưa khả dụng.</p>
+                  </section>
+                ))
+              )}
+            </div>
+          </div>
         </aside>
       </div>
       <RoomSettings

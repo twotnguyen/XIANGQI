@@ -12,13 +12,7 @@ import {
   type MediaClient,
   type ShareLevel,
 } from "./media-client.js";
-import "./media.css";
-
-interface Feed {
-  key: string;
-  label: string;
-  element: HTMLVideoElement | HTMLAudioElement;
-}
+import { MediaSeats, type MediaFeed } from "./MediaSeats.js";
 const LABELS: Record<ShareLevel, string> = {
   NONE: "Không chia sẻ",
   OPPONENT: "Chỉ đối thủ",
@@ -30,18 +24,22 @@ export function MediaPanel({
   role,
   client,
   connected,
+  seats,
+  userId,
 }: {
   roomId: string;
   role: "red" | "black" | "spectator";
   client: MediaClient;
   connected: boolean;
+  seats: { red: string | null; black: string | null };
+  userId: string;
 }) {
   const [camera, setCamera] = useState(false);
   const [mic, setMic] = useState(false);
   const [level, setLevel] = useState<ShareLevel>("OPPONENT");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
-  const [feeds, setFeeds] = useState<Feed[]>([]);
+  const [feeds, setFeeds] = useState<MediaFeed[]>([]);
   const rooms = useRef<Room[]>([]);
   const epoch = useRef(0);
 
@@ -80,7 +78,7 @@ export function MediaPanel({
       elements.current.set(sid, element);
       setFeeds((previous) => [
         ...previous,
-        { key, label: participant.identity, element },
+        { key, identity: participant.identity, element },
       ]);
     },
     [],
@@ -109,11 +107,23 @@ export function MediaPanel({
         );
       });
       await live.connect(url, token);
-      if (publish.camera) await live.localParticipant.setCameraEnabled(true);
+      if (publish.camera) {
+        const publication = await live.localParticipant.setCameraEnabled(true);
+        if (publication?.track) {
+          const element = publication.track.attach();
+          element.muted = true;
+          element.setAttribute("playsinline", "true");
+          element.setAttribute("aria-label", "Camera của bạn");
+          setFeeds((previous) => [
+            ...previous.filter((feed) => feed.identity !== userId),
+            { key: `local:${userId}`, identity: userId, element },
+          ]);
+        }
+      }
       if (publish.mic) await live.localParticipant.setMicrophoneEnabled(true);
       return live;
     },
-    [attachTrack],
+    [attachTrack, userId],
   );
 
   const sync = useCallback(
@@ -171,12 +181,14 @@ export function MediaPanel({
             error.name === "NotAllowedError" ||
             error.name === "PermissionDeniedError"
           ) {
-            message = "Bạn chưa cấp quyền truy cập Camera/Mic trên trình duyệt.";
+            message =
+              "Bạn chưa cấp quyền truy cập Camera/Mic trên trình duyệt.";
           } else if (
             error.name === "NotFoundError" ||
             error.name === "DevicesNotFoundError"
           ) {
-            message = "Không tìm thấy thiết bị Camera hoặc Microphone trên máy.";
+            message =
+              "Không tìm thấy thiết bị Camera hoặc Microphone trên máy.";
           }
         }
         setStatus(message);
@@ -213,7 +225,8 @@ export function MediaPanel({
   const canPublish = role !== "spectator";
   return (
     <section className="xq-media" aria-label="Camera và mic">
-      <h2>Hình tiếng</h2>
+      <h2>Camera và mic</h2>
+      <MediaSeats seats={seats} selfId={userId} feeds={feeds} />
       {canPublish ? (
         <>
           <div className="xq-media-toggles">
@@ -253,33 +266,9 @@ export function MediaPanel({
         <p>Người xem chỉ nhận hình tiếng theo mức chia sẻ của người chơi.</p>
       )}
       {status && <Notice message={status} />}
-      <div className="xq-media-feeds" aria-live="polite">
-        {feeds.map((feed) => (
-          <figure key={feed.key}>
-            <figcaption>{feed.label}</figcaption>
-            <MediaHost element={feed.element} />
-          </figure>
-        ))}
-        {feeds.length === 0 && <p>Chưa có ai đang chia sẻ hình tiếng.</p>}
-      </div>
+      <p className="xq-media-privacy">
+        Chỉ trực tiếp — không ghi âm, không ghi hình.
+      </p>
     </section>
   );
-}
-
-function MediaHost({
-  element,
-}: {
-  element: HTMLVideoElement | HTMLAudioElement;
-}) {
-  const host = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const node = host.current;
-    if (!node) return;
-    node.appendChild(element);
-    void element.play?.().catch(() => undefined);
-    return () => {
-      element.remove();
-    };
-  }, [element]);
-  return <div ref={host} className="xq-media-feed" />;
 }

@@ -81,6 +81,8 @@ describe("media panel", () => {
         role: "red",
         client: c,
         connected: true,
+        seats: { red: "a", black: "b" },
+        userId: "a",
       }),
     );
     expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
@@ -102,6 +104,8 @@ describe("media panel", () => {
         role: "spectator",
         client: c,
         connected: true,
+        seats: { red: "a", black: "b" },
+        userId: "viewer",
       }),
     );
     expect(screen.queryByRole("button", { name: "Bật camera" })).toBeNull();
@@ -126,6 +130,8 @@ describe("media panel", () => {
         role: "red",
         client: c,
         connected: true,
+        seats: { red: "a", black: "b" },
+        userId: "a",
       }),
     );
     await userEvent
