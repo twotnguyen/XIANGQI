@@ -90,7 +90,7 @@ export function FriendsPage({ client }: { client: FriendClient }) {
   }
   if (failed)
     return (
-      <main>
+      <main className="xq-friends">
         <h1>Bạn bè</h1>
         <ErrorState
           message="Chưa thể tải danh sách bạn bè."
@@ -100,62 +100,125 @@ export function FriendsPage({ client }: { client: FriendClient }) {
     );
   if (!friends || !requests)
     return (
-      <main>
+      <main className="xq-friends">
         <h1>Bạn bè</h1>
         <Skeleton label="Đang tải danh sách bạn bè…" />
       </main>
     );
   const incoming = requests.filter((r) => r.direction === "incoming");
   return (
-    <main>
-      <h1>Bạn bè</h1>
-      <section aria-label="Tìm bạn bè">
-        <h2>Tìm bạn bè</h2>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            void search();
-          }}
-        >
-          <TextField
-            label="Tên đăng nhập"
-            helper="Gõ phần đầu tên đăng nhập, không phân biệt hoa thường."
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <Button loading={searching} onClick={() => void search()}>
-            Tìm
-          </Button>
-        </form>
-        {results && results.length === 0 && (
-          <EmptyState title="Không tìm thấy">
-            Thử phần đầu tên đăng nhập khác.
-          </EmptyState>
-        )}
-        {results && results.length > 0 && (
-          <ul>
-            {results.map((peer) => (
-              <li key={peer.userId}>
-                <span aria-hidden="true">
-                  {peer.displayName.slice(0, 1).toUpperCase()}
-                </span>{" "}
-                {peer.displayName} @{peer.username}{" "}
-                <Button
-                  variant="secondary"
-                  loading={busy === `send-${peer.userId}`}
-                  onClick={() =>
-                    void act(`send-${peer.userId}`, () =>
-                      client.send(peer.username),
-                    )
-                  }
-                >
-                  Kết bạn
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+    <main className="xq-friends">
+      <h1 className="page-title">Bạn bè</h1>
+      <div className="friends-top-row">
+        <section className="friends-search-card" aria-label="Tìm bạn bè">
+          {/* Hoa văn mây góc trên bên trái tạo sự cân đối */}
+          <span className="card-cloud-tl" aria-hidden="true" />
+
+          <h2>Tìm bạn bè</h2>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void search();
+            }}
+          >
+            <TextField
+              label="Tên đăng nhập"
+              placeholder="Nhập tên đăng nhập…"
+              helper="Gõ phần đầu tên đăng nhập, không phân biệt hoa thường."
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            <Button type="submit" loading={searching} onClick={() => void search()}>
+              Tìm
+            </Button>
+          </form>
+          {results && results.length === 0 && (
+            <EmptyState title="Không tìm thấy">
+              Thử phần đầu tên đăng nhập khác.
+            </EmptyState>
+          )}
+          {results && results.length > 0 && (
+            <ul>
+              {results.map((peer) => (
+                <li key={peer.userId}>
+                  <span aria-hidden="true">
+                    {peer.displayName.slice(0, 1).toUpperCase()}
+                  </span>{" "}
+                  {peer.displayName} @{peer.username}{" "}
+                  <Button
+                    variant="secondary"
+                    loading={busy === `send-${peer.userId}`}
+                    onClick={() =>
+                      void act(`send-${peer.userId}`, () =>
+                        client.send(peer.username),
+                      )
+                    }
+                  >
+                    Kết bạn
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <aside className="xq-floating-chess" aria-label="Các quân cờ lơ lửng">
+          <div className="xq-chess-glow" />
+          <div className="xq-chess-rays" />
+
+          {/* Vệt sương mờ / luồng khí xoay tròn mềm mại cổ phong */}
+          <svg className="xq-chess-vortex" viewBox="0 0 450 400" fill="none">
+            <path
+              d="M225 200 C270 200 310 170 310 130 C310 80 250 50 180 55 C110 60 70 120 70 180 C70 260 140 320 230 325 C310 330 380 270 380 200 C380 120 340 50 260 25 C230 15 190 20 160 35"
+              stroke="url(#vortex-gold)"
+              strokeWidth="1.2"
+              opacity="0.35"
+            />
+            <path
+              d="M225 200 C190 200 160 180 160 150 C160 110 210 90 260 100 C310 110 330 160 320 210 C310 260 250 290 190 280 C130 270 100 220 110 160"
+              stroke="url(#vortex-gold-inner)"
+              strokeWidth="1.4"
+              opacity="0.4"
+            />
+            <defs>
+              <linearGradient id="vortex-gold" x1="70" y1="25" x2="380" y2="330" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#ffd700" stopOpacity="0.05" />
+                <stop offset="40%" stopColor="#f5ca67" stopOpacity="0.5" />
+                <stop offset="80%" stopColor="#ffd700" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#fff5df" stopOpacity="0.1" />
+              </linearGradient>
+              <linearGradient id="vortex-gold-inner" x1="100" y1="90" x2="330" y2="290" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#f5ca67" stopOpacity="0.1" />
+                <stop offset="50%" stopColor="#ffd700" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#f5ca67" stopOpacity="0.2" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          {/* Các tia sáng sao băng lướt qua */}
+          <div className="xq-meteor meteor-1" />
+          <div className="xq-meteor meteor-2" />
+          <div className="xq-meteor meteor-3" />
+
+          {/* Hạt bụi sáng lấp lánh */}
+          <span className="xq-chess-sparkle sp-1">✦</span>
+          <span className="xq-chess-sparkle sp-2">✦</span>
+          <span className="xq-chess-sparkle sp-3">✦</span>
+          <span className="xq-chess-sparkle sp-4">✦</span>
+          <span className="xq-chess-sparkle sp-5">✦</span>
+
+          {/* Quân Tướng làm tâm điểm nổi bật */}
+          <div className="xq-chess-piece floating-piece chess-piece piece-general piece-center" title="將" />
+
+          {/* 6 quân cờ lơ lửng chuyển động bồng bềnh quanh tâm */}
+          <div className="xq-chess-piece floating-piece chess-piece piece-advisor piece-shi" title="士" />
+          <div className="xq-chess-piece floating-piece chess-piece piece-elephant piece-xiang" title="象" />
+          <div className="xq-chess-piece floating-piece chess-piece piece-chariot piece-che" title="車" />
+          <div className="xq-chess-piece floating-piece chess-piece piece-cannon piece-pao" title="砲" />
+          <div className="xq-chess-piece floating-piece piece-horse chess-piece piece-ma" title="馬" />
+          <div className="xq-chess-piece floating-piece chess-piece piece-soldier piece-zu" title="卒" />
+        </aside>
+      </div>
       {notice && (
         <p role="status" aria-live="polite">
           {notice}
