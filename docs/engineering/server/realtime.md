@@ -30,6 +30,13 @@
 
 `RealtimeStore.connect(identity, roomId, tabId, connectionId, takeover=false)` trả snapshot+mode/generation; `command(...)` trả discriminated ack; `snapshot(...)` kiểm membership; `cleanupExpiredReceipts()` dọn thời hạn. `attachRealtime(httpServer, dependencies)` tạo Socket.IO với lifecycle close để root gắn Nest và đóng tài nguyên.
 
+Snapshot đầu tiên được phát ngay từ kết quả đã commit của `connect`, trong cùng
+lượt admission; không xác thực provider và mở thêm giao dịch để đọc lại phòng.
+Kết quả này được bỏ ngay sau lần phát đầu, không cache cho request sau.
+Quyền tại thời điểm commit quyết định snapshot admission; các lệnh, sync, tiếp quản
+và publication sau đó vẫn xác thực lại. Trạng thái có thể đổi sau commit như với
+mọi phản hồi snapshot; version/generation và các kiểm quyền tiếp theo vẫn áp dụng.
+
 Command examples định nghĩa ý định `room.ready`, `match.move`, `match.resign`, `media.sharing`; T18/T20/T23/T33 cung cấp handlers. `EngineFailureEvent` chỉ hợp đồng thông báo lỗi/busy/retry, không gọi engine. Không gửi payload chat/media stream vào receipts.
 
 ## Review focus

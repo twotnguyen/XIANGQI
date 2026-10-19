@@ -83,6 +83,60 @@ Quay về cấu hình cùng máy: chuyển `cloud`, chạy lại `prepare` khôn
 tạo lại container rồi chuyển `local` nếu cần. Nếu vừa sửa hồ sơ local trong lúc
 `.env` vẫn dùng địa chỉ local cũ, hãy chuyển `cloud` trước khi chọn `local` lại.
 
+## Demo qua Tailscale, giữ LiveKit Cloud
+
+IP Tailscale qua HTTP không phải secure context cho camera/mic. Dùng Tailscale
+Serve cấp HTTPS cho web/API; các thiết bị cần cùng tailnet và được phép truy cập
+máy chủ. Không cần bật Funnel hoặc chuyển LiveKit Cloud sang Docker.
+
+Trên máy đang chạy web cổng 5173 và API cổng 3000:
+
+```sh
+tailscale serve status
+tailscale serve --bg --https=443 http://127.0.0.1:5173
+tailscale serve --bg --https=8443 http://127.0.0.1:3000
+```
+
+Nếu CLI chưa có trong PATH trên macOS, dùng
+`/Applications/Tailscale.app/Contents/MacOS/Tailscale` thay cho `tailscale`.
+Nếu được yêu cầu, bật HTTPS theo liên kết Tailscale hiển thị.
+
+Lấy hostname `.ts.net` thật từ kết quả Serve, ví dụ `machine.tailnet.ts.net`.
+Cập nhật `.env` tổng, đối chiếu thay đổi riêng trước khi đồng bộ hai bản sao:
+
+```dotenv
+VITE_API_URL=https://machine.tailnet.ts.net:8443
+DEV_ALLOWED_HOSTS=machine.tailnet.ts.net
+```
+
+Thêm `https://machine.tailnet.ts.net` vào danh sách `CORS_ORIGINS` hiện có;
+không dùng wildcard hoặc tắt kiểm tra host. Vite chỉ dùng `DEV_ALLOWED_HOSTS`
+ở dev server, không đưa biến này vào bundle. Giữ nguyên bộ ba `LIVEKIT_*`
+của Cloud, rồi nạp lại web/server để nhận cấu hình.
+
+Mở `https://machine.tailnet.ts.net/lobby` trên cả hai thiết bị, không dùng URL
+HTTP bằng IP cũ. Đăng nhập lại bằng hai tài khoản khác nhau vì cookie của IP
+không chuyển sang hostname mới. Đăng nhập Google cần origin mới được cho phép
+riêng ở Google; cấu hình Serve không tự sửa dashboard OAuth.
+
+Kiểm tra HTTPS không bỏ qua chứng chỉ, health API, CORS của origin mới và
+`window.isSecureContext`. API media từ chối người chưa đăng nhập là bình thường.
+LiveKit `ListRooms` xác thực thành công chỉ chứng minh URL/khóa Cloud hoạt động,
+không chứng minh hình tiếng hai chiều. Hai thiết bị vẫn cần kiểm tra camera/mic
+trong cùng phòng và các mức chia sẻ; Cloud vẫn sử dụng quota.
+
+Serve chạy nền qua lần khởi động lại Tailscale. Khi không cần, tắt riêng hai
+proxy vừa tạo, không dùng `serve reset` để tránh xóa cấu hình khác:
+
+```sh
+tailscale serve --https=443 off
+tailscale serve --https=8443 off
+```
+
+Nếu quay lại truy cập web bằng HTTP localhost, đổi `VITE_API_URL` về
+`http://localhost:3000`, đồng bộ `.env` và nạp lại web/server. Không cần đổi
+khóa LiveKit.
+
 ## Kiểm tra
 
 ```sh
@@ -94,7 +148,7 @@ Với LAN, thay địa chỉ kiểm tra bằng địa chỉ phù hợp. HTTP ho�
 dịch vụ đã khởi động; GATE-MEDIA vẫn cần hai người chơi và năm người xem trên các
 thiết bị thật: phát/nhận hình tiếng, quyền chia sẻ, thu hồi quyền, ngắt/kết nối lại,
 CPU/RAM và quota Cloud. Không dùng kết quả HTTP để kết luận camera đã hoạt động.
-Repo hiện chưa có ứng dụng cấp token/phòng để kiểm thử xuyên suốt.
+API `/media/token` cần phiên đăng nhập hợp lệ và quyền trong phòng trước khi cấp token.
 
 Tự chạy không tiêu quota LiveKit Cloud nhưng dùng CPU, RAM và băng thông máy chủ.
 Không cần Redis cho bộ một máy chủ này, không bật ghi hình/Ingress/Egress.

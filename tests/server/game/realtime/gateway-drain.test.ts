@@ -157,28 +157,6 @@ describe("native gateway all-operation shutdown drain", () => {
       }
     },
   );
-  it("drains initial private snapshot before returning close", async () => {
-    const f = await fixture(),
-      blocked = gate();
-    try {
-      f.setStage(async (stage) => {
-        if (stage === "snapshot") await blocked.wait();
-      });
-      await f.peer(randomUUID(), false);
-      await blocked.entered;
-      let done = false;
-      const closing = f.gateway.close().then(() => (done = true));
-      await f.networkClosed;
-      await turn();
-      expect(done).toBe(false);
-      blocked.release();
-      await closing;
-      expect(done).toBe(true);
-    } finally {
-      blocked.release();
-      await f.close();
-    }
-  });
   it("drains every peer branch after external publication rejects early", async () => {
     const f = await fixture(),
       blocked = gate();

@@ -1,12 +1,22 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  server: {
+    allowedHosts:
+      loadEnv(mode, process.cwd(), "DEV_")
+        .DEV_ALLOWED_HOSTS?.split(",")
+        .map((host) => host.trim())
+        .filter(Boolean) ?? [],
+  },
   resolve: {
     alias: {
-      "@xiangqi/engine": path.resolve(__dirname, "../../packages/engine/src/search.ts"),
+      "@xiangqi/engine": path.resolve(
+        __dirname,
+        "../../packages/engine/src/search.ts",
+      ),
     },
   },
   build: {
@@ -18,4 +28,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

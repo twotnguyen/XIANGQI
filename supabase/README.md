@@ -40,3 +40,28 @@ Mẫu trong `templates/confirm-sign-up.html` dùng `{{ .Token }}`. Subject: **C�
 Migration `20261017000018_room_code_digits.sql` từ chối nếu còn phòng chưa đóng dùng mã chữ cũ. Cho các phòng này kết thúc và đóng bằng server cũ trước, sau đó dừng toàn bộ server cũ, áp migration và khởi động bản server/web mới; không rolling deploy hai định dạng mã. Migration không tự đóng phòng hay đổi mã; mã cũ của phòng đã đóng được giữ để bảo toàn lịch sử.
 
 `NOT VALID` chỉ bỏ qua kiểm tra dữ liệu hiện hữu; mọi INSERT/UPDATE sau migration vẫn phải dùng mã số hoặc `NULL`. Không cập nhật lại dòng phòng đã đóng còn mã chữ. Rollback tương ứng từ chối khi tồn tại mã 8 chữ số, kể cả phòng đã đóng; không xóa dữ liệu để ép rollback.
+
+## Hardening ngày 19/10/2026
+
+- `20261019000019_principal_foreign_keys.sql`: 14 FK tới
+  `xiangqi_auth.principals` cho social/media/đề nghị trong phòng. Preflight
+  từ chối dữ liệu mồ côi, không tự xóa hoặc sửa ID. `ON DELETE CASCADE` chỉ
+  áp dụng các trạng thái phụ thuộc danh tính; không xóa phòng/ván/nước đi.
+- `20261019000020_caller_indexes.sql`: index theo tra cứu user→room,
+  controller theo room, social theo hai đầu/thời hạn, lịch sử theo `ended_at`.
+  Giữ index unique `(match_id,event_version)` và index legacy `moves_match_id_idx`;
+  chỉ bỏ hai index btree tương đương sau khi đối chiếu định nghĩa catalog.
+  Rollback tương ứng kiểm định nghĩa trước khi khôi phục.
+- `20261019000021_principal_fk_indexes.sql`: 9 index phủ các cột FK của
+  migration 19 chưa có index (xóa principal không phải quét toàn bảng).
+
+Schema live đã có constraint mã 8 chữ số nhưng thiếu sổ migration 18:
+đối chiếu `pg_get_constraintdef`, kiểm không có mã sai ở phòng mở, sau đó
+dùng `supabase migration repair --status applied 20261017000018` với kết nối
+quản trị được cấp. Không chạy lại SQL 18 hoặc chèn sổ migrations thủ công.
+Không dùng `db push --include-all` để áp các migration cũ vào schema đã có.
+
+Đã đối soát và áp dụng 19/20 trên project XIANGQI bằng CLI ngày 19/10.
+Giữ metadata trước thay đổi trong `.local/`, không chứa bản sao dữ liệu người
+dùng. Bản SQL kiểm thử dùng PostgreSQL cô lập và kiểm cả từ chối orphan,
+giữ dữ liệu hợp lệ, cascade trạng thái phụ và rollback; không reset Supabase.

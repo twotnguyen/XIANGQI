@@ -261,14 +261,19 @@ export class RealtimeStore {
     );
   }
   async cleanupExpiredReceipts(): Promise<number> {
-    return this.transaction(
-      null,
-      async (client) =>
+    return this.transaction(null, async (client) => {
+      await client.query("SET LOCAL lock_timeout='250ms'");
+      return (
         (
-          await client.query(
-            "DELETE FROM xiangqi_realtime.receipts WHERE expires_at<=now()",
-          )
-        ).rowCount ?? 0,
-    );
+          await client.query(`
+        WITH expired AS (
+          SELECT user_id,room_id,command_id FROM xiangqi_realtime.receipts
+          WHERE expires_at<=now() ORDER BY expires_at,user_id,room_id,command_id LIMIT 500
+        )
+        DELETE FROM xiangqi_realtime.receipts r USING expired e
+        WHERE r.user_id=e.user_id AND r.room_id=e.room_id AND r.command_id=e.command_id`)
+        ).rowCount ?? 0
+      );
+    });
   }
 }

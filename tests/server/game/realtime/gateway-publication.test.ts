@@ -9,7 +9,7 @@ import { RoomError } from "@server/game/room/room.types.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import type { ChatReadRequest } from "@xiangqi/shared";
 import type { RealtimeStore } from "@server/game/realtime/store.js";
-import type { CommandAcknowledgement } from "@xiangqi/shared";
+import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
 async function fixture(chatEnabled = false, viewerTabOwnership = false) {
   const roomId = randomUUID(),
     users = new Map<string, string>(),
@@ -141,12 +141,12 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
       },
     });
     clients.push(client);
-    const initial = new Promise<void>((r) =>
-      client.once("room.snapshot", () => r()),
+    const initial = new Promise<RoomSnapshot>((r) =>
+      client.once("room.snapshot", r),
     );
     client.connect();
-    await initial;
-    return { client, userId, token };
+    const initialSnapshot = await initial;
+    return { client, userId, token, initialSnapshot };
   }
   return {
     roomId,
@@ -350,6 +350,23 @@ describe("native realtime publication outcomes", () => {
       await f.close();
     }
   });
+});
+it("delivers admission state even if a subsequent snapshot read is unavailable", async () => {
+  const f = await fixture();
+  try {
+    f.setSnapshot(true);
+    const peer = await f.peer();
+    expect(peer.initialSnapshot).toMatchObject({
+      roomId: f.roomId,
+      version: 1,
+      control: { mode: "writable", generation: 1 },
+    });
+    const response = await sync(peer.client);
+    expect(response.status).toBe("error");
+    expect(response).not.toHaveProperty("snapshot");
+  } finally {
+    await f.close();
+  }
 });
 
 async function sync(client: Socket) {

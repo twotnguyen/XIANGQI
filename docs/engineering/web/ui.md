@@ -31,10 +31,15 @@ không tải sẵn các trang này hoặc lõi bàn cờ. Chuông thông báo t�
 Bạn bè để không kéo cả trang vào shell.
 
 Mở form Tạo phòng đồng thời tải trước module `RoomPage` để chồng thời gian tải
-mã lên thao tác nhập form và request tạo phòng. Không tải graph phòng khi chỉ
-reload Sảnh. Kết nối socket đầu tiên chờ microtask và kiểm đã đóng hay chưa,
-bỏ handshake của lượt mount StrictMode bị hủy. Phòng vẫn dùng snapshot thật;
-HTTP fallback khi realtime chậm và điều kiện cấp quyền điều khiển được giữ nguyên.
+mã lên thao tác nhập form và request tạo phòng. Reload `/rooms/:id` tải module
+phòng song song với kiểm tra phiên, nhưng chỉ đọc dữ liệu phòng sau khi phiên
+được xác thực. Không tải graph phòng khi chỉ reload Sảnh.
+
+HTTP snapshot bắt đầu cùng handshake socket, không đợi thêm 1,2 giây. HTTP
+chỉ giúp hiển thị phòng; quyền điều khiển vẫn cần snapshot realtime hợp lệ.
+Phản hồi HTTP trễ không ghi đè snapshot realtime đã nhận hoặc phiên bản mới hơn.
+Cả HTTP khởi tạo và socket đều bỏ lượt mount StrictMode đã hủy bằng microtask.
+Đổi lại, đường vào phòng có thể đọc HTTP ngay cả khi socket trả lời nhanh.
 
 `Suspense` giữ shell khi trang đang tải; boundary đổi theo route để dọn socket
 và effect của trang cũ ngay khi rời trang, kể cả trang mới chưa tải xong.
@@ -57,3 +62,26 @@ giả hoặc thay đổi luồng xác thực.
 `LoadingScreen` được dùng chung cho fallback entry và kiểm tra phiên. Entry
 import trực tiếp component cùng CSS/token trước khi tải router bất đồng bộ,
 để giai đoạn đầu cũng có khung chờ đầy đủ, không hiện dòng chữ ở góc trang.
+
+## Phòng chờ thi đấu
+
+`RoomPage.tsx` và `features/rooms/rooms.css` dùng token Kỳ Đài Cổ Phong:
+hai ghế nền gỗ trầm với quân Đỏ/Đen mặt ngà, VS và đổi bên ở giữa;
+camera/mic dưới ghế, chat bên phải, mã mời/người xem ở hàng cuối.
+Hai kênh chat khi cùng mở xếp dọc để giữ đủ chỗ soạn tin.
+Dưới 1024px các khối xếp một cột; dưới 541px hai ghế cũng xếp dọc.
+Trang cuộn tự nhiên, không khoá chiều cao làm mất nội dung trên laptop.
+Nút Sẵn sàng nằm trong ghế của người đang điều khiển; dữ liệu,
+quyền thao tác và trạng thái kết nối vẫn lấy từ luồng phòng hiện có.
+
+CSS phòng chờ giới hạn bằng `.is-waiting`, không đổi màu màn đang đấu.
+Chat/media giữ cùng vị trí trong cây React khi chuyển sang ván để tránh
+ngắt kết nối do thay bố cục. Dùng ảnh nền và phông local có sẵn; không thêm
+nút demo, Elo mẫu, QR hoặc chức năng P2 từ mockup.
+
+`MediaSeats` luôn giữ hai ô camera theo ghế Đỏ/Đen, kể cả khi chưa có track,
+ghế trống, đang tải media hoặc chưa có dịch vụ media. Video được gắn theo
+identity người chơi, không theo thứ tự track; đổi ghế thì hình đi theo người,
+rời ghế thì hình cũ không còn hiển thị. Audio không tạo thêm ô camera.
+`MediaPanel` gắn preview camera của chính mình ở chế độ muted để không phát
+lại tiếng của mình; không tự bật camera/mic khi mở phòng.

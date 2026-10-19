@@ -38,23 +38,60 @@ async function mint(
     .setExpirationTime(Math.floor(Date.now() / 1000) + ttlSeconds)
     .sign(new TextEncoder().encode(config.apiSecret));
 }
+class MediaServiceError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string | undefined,
+    path: string,
+  ) {
+    super(`LiveKit service ${path} HTTP ${status}${code ? ` (${code})` : ""}`);
+  }
+}
+function serviceUrl(config: MediaConfig, path: string): string {
+  const url = new URL(config.url);
+  if (url.protocol === "wss:") url.protocol = "https:";
+  else if (url.protocol === "ws:") url.protocol = "http:";
+  url.pathname = `${url.pathname.replace(/\/$/, "")}${path}`;
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
 async function serviceCall(
   config: MediaConfig,
   fetchFn: typeof fetch,
   path: string,
-  body: unknown,
+  room: string,
+  body: Record<string, string>,
 ) {
-  const token = await mint(config, "xiangqi-server", { roomAdmin: true }, 60);
-  const response = await fetchFn(`${config.url.replace(/\/$/, "")}${path}`, {
+  const grant: VideoGrant = path.endsWith("/DeleteRoom")
+    ? { roomCreate: true }
+    : { room, roomAdmin: true };
+  const token = await mint(config, "xiangqi-server", grant, 60);
+  const response = await fetchFn(serviceUrl(config, path), {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10000),
   });
-  if (!response.ok)
-    throw new Error(`LiveKit service ${path} HTTP ${response.status}`);
+  if (!response.ok) {
+    let code: string | undefined;
+    try {
+      const payload: unknown = await response.json();
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "code" in payload &&
+        typeof payload.code === "string"
+      )
+        code = payload.code;
+    } catch {
+      // Non-JSON proxy errors still retain their HTTP status.
+    }
+    throw new MediaServiceError(response.status, code, path);
+  }
 }
 export class MediaAccess {
   constructor(
@@ -212,23 +249,54 @@ export class MediaAccess {
     return { level: (row?.level ?? "OPPONENT") as ShareLevel };
   }
   async revoke(roomId: string, userId: string): Promise<void> {
-    try {
-      for (const room of [privateRoomName(roomId), stageRoomName(roomId)])
-        try {
-          await serviceCall(
-            this.config,
-            this.fetchFn,
-            "/twirp/livekit.RoomService/RemoveParticipant",
-            {
-              room,
-              identity: userId,
-            },
-          );
-        } catch {
-          // Phong stage co the chua ton tai: bo qua, phong con lai van thu hoi.
-        }
-    } catch {
-      // Media khong bao gio lam hong luong choi (BA 0.14).
+    const failures: unknown[] = [];
+    for (const room of [privateRoomName(roomId), stageRoomName(roomId)]) {
+      try {
+        await serviceCall(
+          this.config,
+          this.fetchFn,
+          "/twirp/livekit.RoomService/RemoveParticipant",
+          room,
+          { room, identity: userId },
+        );
+      } catch (error) {
+        if (!(
+          error instanceof MediaServiceError &&
+          error.status === 404 &&
+          error.code === "not_found"
+        ))
+          failures.push(error);
+      }
     }
+    if (failures.length === 1) throw failures[0];
+    if (failures.length > 1)
+      throw new AggregateError(
+        failures,
+        "LiveKit participant revocation failed",
+      );
+  }
+  async revokeRoom(roomId: string): Promise<void> {
+    const failures: unknown[] = [];
+    for (const room of [privateRoomName(roomId), stageRoomName(roomId)]) {
+      try {
+        await serviceCall(
+          this.config,
+          this.fetchFn,
+          "/twirp/livekit.RoomService/DeleteRoom",
+          room,
+          { room },
+        );
+      } catch (error) {
+        if (!(
+          error instanceof MediaServiceError &&
+          error.status === 404 &&
+          error.code === "not_found"
+        ))
+          failures.push(error);
+      }
+    }
+    if (failures.length === 1) throw failures[0];
+    if (failures.length > 1)
+      throw new AggregateError(failures, "LiveKit room revocation failed");
   }
 }

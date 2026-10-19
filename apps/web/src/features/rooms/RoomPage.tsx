@@ -1204,8 +1204,7 @@ export function RoomPage({
               <strong>{code}</strong>
             </div>
             <p className="xq-room-invite-hint">
-              Đọc mã này cho người muốn vào. Họ phải đăng nhập để ngồi ghế hoặc
-              xem.
+              Chia sẻ mã hoặc đường dẫn để mời kỳ hữu vào chơi hay xem.
             </p>
             <div className="xq-room-invite-actions">
               <Button
