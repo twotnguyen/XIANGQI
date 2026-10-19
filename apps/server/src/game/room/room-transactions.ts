@@ -106,6 +106,16 @@ function requireComplete(
     throw new RoomRosterChanged(current.actorIds);
 }
 
+// One round-trip for the whole sorted key set; COLLATE "C" keeps the order equal
+// to the JS sort so every path acquires locks in the same sequence (no deadlocks).
+async function lockInOrder(client: PoolClient, keys: readonly string[]) {
+  if (!keys.length) return;
+  await client.query(
+    'WITH k AS MATERIALIZED(SELECT key FROM unnest($1::text[]) key ORDER BY key COLLATE "C") SELECT pg_advisory_xact_lock(hashtextextended(key,0)) FROM k',
+    [keys],
+  );
+}
+
 export class RoomTransactions {
   constructor(private readonly pool: Pool) {}
 
@@ -122,11 +132,7 @@ export class RoomTransactions {
     const actorIds = [
       ...new Set([...before.actorIds, ...extraActorIds.map(uuid)]),
     ].sort();
-    for (const id of actorIds)
-      await client.query(
-        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
-        ["actor:" + id],
-      );
+    await lockInOrder(client, actorIds.map((id) => "actor:" + id));
     const after = await projection(client, normalized);
     const proof: RoomActorProof = {
       client,
@@ -173,11 +179,7 @@ export class RoomTransactions {
 
   // Same client and complete actor union; never acquire actors here.
   async lockRooms(proof: RoomActorProof): Promise<RoomScope> {
-    for (const id of proof.roomIds)
-      await proof.client.query(
-        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
-        ["room:" + id],
-      );
+    await lockInOrder(proof.client, proof.roomIds.map((id) => "room:" + id));
     if (proof.roomIds.length)
       await proof.client.query(
         "SELECT id FROM public.rooms WHERE id=ANY($1::uuid[]) ORDER BY id FOR UPDATE",

@@ -417,13 +417,15 @@ export async function createRoomRuntime(
     closed = false,
     closing: Promise<void> | undefined;
   const tick = async () => {
-    for (const run of [
+    // Pollers are independent and each takes its own room locks; serial runs
+    // cost one DB round-trip chain per worker, which dominates tick latency.
+    await Promise.all([
       () => clockWorker.tick(),
       () => disconnectWorker.tick(),
       ...(drawWorker ? [() => drawWorker.tick()] : []),
       () => worker.tick(),
       ...(chatWorker ? [() => chatWorker.tick()] : []),
-    ]) {
+    ].map(async (run) => {
       try {
         await run();
       } catch {
@@ -431,7 +433,7 @@ export async function createRoomRuntime(
           logEvent("error", "realtime_maintenance_failed") + "\n",
         );
       }
-    }
+    }));
   };
   const schedule = () => {
     if (closed) return;

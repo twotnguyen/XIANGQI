@@ -202,7 +202,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
       values?: unknown[],
     ) => {
       if (text.includes("pg_advisory_xact_lock"))
-        queries.push(String(values?.[0]));
+        queries.push(...(values?.[0] as string[]));
       return original(text, values);
     }) as typeof c.query);
     try {
