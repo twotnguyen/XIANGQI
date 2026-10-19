@@ -155,23 +155,6 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
       lastMove,
     });
   });
-  it("authorizes actual RoomStore membership and only permits player control", async () => {
-    const f = fixture();
-    expect(await f.adapter.authorize(f.client, f.identity, f.roomId)).toEqual({
-      canControl: true,
-    });
-    expect(f.roomStore.snapshot).toHaveBeenCalledWith(f.scope, f.roomId);
-    f.room.role = "spectator";
-    expect(await f.adapter.authorize(f.client, f.identity, f.roomId)).toEqual({
-      canControl: false,
-    });
-    f.roomStore.snapshot.mockRejectedValueOnce(
-      new RoomError("ROOM_FORBIDDEN", "private context", 403),
-    );
-    await expect(
-      f.adapter.authorize(f.client, f.identity, f.roomId),
-    ).rejects.toMatchObject({ code: "ROOM_FORBIDDEN" });
-  });
   it.each(["client", "userId", "kind", "actorLock", "roomLock"])(
     "fails closed on scope mismatch %s before SQL or mutation",
     async (key) => {

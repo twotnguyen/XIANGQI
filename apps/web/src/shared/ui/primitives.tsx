@@ -236,6 +236,34 @@ export function Skeleton({ label = "Đang tải dữ liệu…" }: { label?: str
     </div>
   );
 }
+export function LoadingScreen({
+  title = "Đang mở kỳ đài",
+  message = "Đang tải giao diện…",
+}: {
+  title?: string;
+  message?: string;
+}) {
+  const headingId = useId();
+  return (
+    <div className="xq-ui">
+      <section className="xq-session-loading" aria-labelledby={headingId}>
+        <div className="xq-data-state xq-session-loading-card">
+          <span
+            className="xq-state-piece xq-session-loading-piece"
+            aria-hidden="true"
+          >
+            帥
+          </span>
+          <div className="xq-session-loading-copy">
+            <h1 id={headingId}>{title}</h1>
+            <p role="status">{message}</p>
+          </div>
+          <span className="xq-session-loading-brand">Cờ Tướng Online</span>
+        </div>
+      </section>
+    </div>
+  );
+}
 export function EmptyState({
   title,
   children,

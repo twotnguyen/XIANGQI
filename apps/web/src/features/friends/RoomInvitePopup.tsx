@@ -14,6 +14,7 @@ export function RoomInvitePopup({ client }: { client: FriendClient }) {
   useEffect(() => {
     let alive = true;
     async function poll() {
+      if (!alive) return;
       try {
         const list = await client.invites();
         if (alive) setInvites(list);
@@ -21,7 +22,7 @@ export function RoomInvitePopup({ client }: { client: FriendClient }) {
         if (alive) setInvites((previous) => previous ?? []);
       }
     }
-    void poll();
+    queueMicrotask(() => void poll());
     const timer = setInterval(poll, 5000);
     const clock = setInterval(() => setNow(Date.now()), 1000);
     return () => {

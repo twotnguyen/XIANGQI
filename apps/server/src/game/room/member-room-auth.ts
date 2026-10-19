@@ -82,31 +82,30 @@ export class PostgresMemberRoomAuthorizer implements MemberRoomAuthorizer {
     )
       throw required();
     try {
-      const session = (
+      // Lock session and profile together; deadline stays separate so the clock
+      // is sampled only after every lock wait completes.
+      const account = (
         await actorProof.client.query<{
           user_id: string;
           revoked_at: Date | null;
+          active: boolean;
         }>(
-          "SELECT user_id,revoked_at FROM xiangqi_auth.app_sessions WHERE token_hash=$1 FOR UPDATE",
-          [trusted.sessionHash],
-        )
-      ).rows[0];
-      if (!session || session.user_id !== trusted.userId || session.revoked_at)
-        throw required();
-      // Hold profile state through room work; sample the deadline in a separate
-      // statement after both session and profile lock waits, never transaction now().
-      const account = (
-        await actorProof.client.query<{ active: boolean }>(
-          `SELECT (s.revoked_at IS NULL
+          `SELECT s.user_id,s.revoked_at,(s.revoked_at IS NULL
      AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL
      AND NOT p.registration_pending AND n.kind='member' AND n.auth_user_id=a.id) AS active
      FROM xiangqi_auth.app_sessions s JOIN xiangqi_auth.accounts a ON a.id=s.user_id
      JOIN public.profiles p ON p.user_id=a.id JOIN xiangqi_auth.principals n ON n.id=a.id
-     WHERE s.token_hash=$1 AND s.user_id=$2 FOR UPDATE OF p`,
+     WHERE s.token_hash=$1 AND s.user_id=$2 FOR UPDATE OF s,p`,
           [trusted.sessionHash, trusted.userId],
         )
       ).rows[0];
-      if (!account?.active) throw required();
+      if (
+        !account ||
+        account.user_id !== trusted.userId ||
+        account.revoked_at ||
+        !account.active
+      )
+        throw required();
       const deadline = (
         await actorProof.client.query<{ valid: boolean }>(
           "SELECT (expires_at>clock_timestamp() AND revoked_at IS NULL) AS valid FROM xiangqi_auth.app_sessions WHERE token_hash=$1",

@@ -18,6 +18,9 @@ export interface AppSession {
   remember: boolean;
   revokedAt: Date | null;
 }
+export interface SessionAccount extends AppSession {
+  account: LoginAccount | null;
+}
 export interface LoginAttempts {
   failures: Date[];
   blockedUntil: Date | null;
@@ -33,7 +36,7 @@ export interface LoginStore {
   accountByUsername(username: string): Promise<LoginAccount | null>;
   accountById(userId: string): Promise<LoginAccount | null>;
   saveSession(session: AppSession): Promise<void>;
-  sessionByHash(hash: string): Promise<AppSession | null>;
+  sessionByHash(hash: string): Promise<SessionAccount | null>;
   revokeSession(hash: string, time: Date): Promise<void>;
 }
 export class LoginError extends Error {

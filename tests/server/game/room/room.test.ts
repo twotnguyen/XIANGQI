@@ -218,6 +218,48 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
       ),
     ).rejects.toMatchObject({ code: "ROOM_FULL" });
   });
+  it("grants control only to seated members and rejects missing or expired viewer membership", async () => {
+    const host = await admitted(),
+      viewer = await admitted(),
+      outsider = await admitted();
+    const entry = await run(host.a, host.proof, [], (scope) =>
+      store.create(scope, {
+        commandId: randomUUID(),
+        name: "Membership authority",
+      }),
+    );
+    await run(viewer.a, viewer.proof, [entry.roomId], (scope) =>
+      store.join(scope, {
+        commandId: randomUUID(),
+        roomId: entry.roomId,
+        intent: "watch",
+      }),
+    );
+    expect(
+      await run(host.a, host.proof, [entry.roomId], (scope) =>
+        store.authorize(scope, entry.roomId),
+      ),
+    ).toEqual({ canControl: true });
+    expect(
+      await run(viewer.a, viewer.proof, [entry.roomId], (scope) =>
+        store.authorize(scope, entry.roomId),
+      ),
+    ).toEqual({ canControl: false });
+    await expect(
+      run(outsider.a, outsider.proof, [entry.roomId], (scope) =>
+        store.authorize(scope, entry.roomId),
+      ),
+    ).rejects.toMatchObject({ code: "ROOM_FORBIDDEN" });
+    await pool.query(
+      "UPDATE public.room_members SET disconnected_at=clock_timestamp()-interval '5 minutes' WHERE room_id=$1 AND user_id=$2",
+      [entry.roomId, viewer.a.userId],
+    );
+    await expect(
+      run(viewer.a, viewer.proof, [entry.roomId], (scope) =>
+        store.authorize(scope, entry.roomId),
+      ),
+    ).rejects.toMatchObject({ code: "ROOM_FORBIDDEN" });
+  });
   it("switches freely only when lone host and starts durable three-second countdown", async () => {
     const h = await admitted(),
       b = await admitted();

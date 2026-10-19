@@ -284,7 +284,7 @@ describe.skipIf(!databaseUrl)(
         text: string,
         values?: unknown[],
       ) => {
-        if (text.includes("FOR UPDATE OF p")) waiting();
+        if (text.includes("FOR UPDATE OF s,p")) waiting();
         return original(text, values);
       }) as typeof client.query);
       const connectSpy = vi

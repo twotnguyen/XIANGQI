@@ -29,6 +29,10 @@
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+/* Route headings receive focus for screen readers, not as interactive controls. */
+.xq-ui h1[tabindex="-1"]:focus {
+  outline: none;
+}
 .xq-icon {
   inline-size: 20px;
   block-size: 20px;
@@ -192,6 +196,74 @@
   font: 600 28px var(--font-han);
   color: var(--color-gold-light);
 }
+.xq-ui .xq-session-loading {
+  display: grid;
+  place-items: center;
+  min-block-size: 100svh;
+  margin: 0;
+  padding: var(--space-8) var(--space-4);
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(
+      ellipse at 50% 45%,
+      color-mix(in srgb, var(--color-gold) 12%, transparent),
+      transparent 65%
+    ),
+    var(--color-paper);
+}
+.xq-session-loading-card {
+  inline-size: min(100%, 420px);
+  gap: var(--space-6);
+  padding: 48px var(--space-6) var(--space-8);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 24px 64px
+    color-mix(in srgb, var(--color-paper) 65%, transparent);
+}
+.xq-session-loading-piece {
+  position: relative;
+  inline-size: 72px;
+  block-size: 72px;
+  margin-block: var(--space-3);
+  border: 2px solid var(--color-gold);
+  background: var(--color-btn-danger-bg);
+  font-size: 40px;
+}
+.xq-session-loading-piece::before,
+.xq-session-loading-piece::after {
+  content: "";
+  position: absolute;
+  border: 1px solid var(--color-gold);
+  border-radius: inherit;
+}
+.xq-session-loading-piece::before {
+  inset: -12px;
+  border-color: color-mix(in srgb, var(--color-gold) 20%, transparent);
+  border-block-start-color: var(--color-gold-light);
+  animation: xq-spin 1.8s linear infinite;
+}
+.xq-session-loading-piece::after {
+  inset: 5px;
+}
+.xq-session-loading-copy {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+}
+.xq-session-loading-copy h1 {
+  font-size: clamp(24px, 5vw, 28px);
+  line-height: 1.3;
+}
+.xq-session-loading-copy p {
+  max-inline-size: 30ch;
+  font-size: var(--text-sm);
+}
+.xq-session-loading-brand {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
 .xq-skeleton {
   display: grid;
   gap: var(--space-4);
@@ -259,7 +331,11 @@
 .xq-dialog {
   color: var(--color-ink);
   background:
-    radial-gradient(circle at 50% 0%, rgba(200, 140, 50, 0.12) 0%, transparent 70%),
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(200, 140, 50, 0.12) 0%,
+      transparent 70%
+    ),
     linear-gradient(180deg, #2c1a11 0%, #1a0f0a 100%);
   border: 2px solid var(--color-gold);
   border-radius: var(--radius-lg);
@@ -267,7 +343,9 @@
   width: min(520px, calc(100% - 32px));
   max-height: calc(100svh - 48px);
   overflow: auto;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(198, 146, 42, 0.2);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(198, 146, 42, 0.2);
 }
 .xq-dialog h2 {
   font-family: var(--font-serif);

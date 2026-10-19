@@ -106,8 +106,16 @@ export class GameRooms implements RoomCollaborator {
     identity: RealtimeIdentity,
     roomId: string,
   ) {
-    const view = await this.room(this.scope(client, identity, roomId), roomId);
-    return { canControl: view.role === "red" || view.role === "black" };
+    try {
+      return await this.rooms.authorize(
+        this.scope(client, identity, roomId),
+        roomId,
+      );
+    } catch (error) {
+      if (error instanceof RoomError && error.code === "ROOM_FORBIDDEN")
+        throw new RealtimeError("ROOM_FORBIDDEN", messages.ROOM_FORBIDDEN);
+      throw error;
+    }
   }
   private async project(
     scope: RoomScope,

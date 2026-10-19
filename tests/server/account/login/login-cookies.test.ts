@@ -33,7 +33,13 @@ beforeEach(async () => {
   active.mockImplementation(async (bearer: unknown, capability: unknown) => {
     if (bearer !== "synthetic-access" || capability !== "synthetic-capability")
       throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
-    return "synthetic-user";
+    return {
+      userId: "synthetic-user",
+      username: "SyntheticUser",
+      email: "private@example.invalid",
+      expiresAt: "2030-01-01T00:00:00.000Z",
+      remember: true,
+    };
   });
   app = await createApp(
     [],
@@ -43,7 +49,10 @@ beforeEach(async () => {
         controllers: [LoginController, ProbeController],
         providers: [
           { provide: LoginService, useValue: { login } },
-          { provide: SessionService, useValue: { requireActive: active } },
+          {
+            provide: SessionService,
+            useValue: { requireActiveSession: active },
+          },
           SessionGuard,
           { provide: "SESSION_COOKIE_SECURE", useValue: false },
         ],

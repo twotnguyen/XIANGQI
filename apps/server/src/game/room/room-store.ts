@@ -226,27 +226,19 @@ export class RoomStore {
         .digest("hex"),
       old = await this.replay(s, input.commandId, digest);
     if (old) return old;
-    if (
-      (
-        await s.client.query(
-          "SELECT 1 FROM public.active_players WHERE user_id=$1",
-          [s.actor.userId],
-        )
-      ).rowCount
-    )
+    const limits = (
+      await s.client.query<{ seated: boolean; guestRoom: boolean }>(
+        `SELECT EXISTS(SELECT 1 FROM public.active_players WHERE user_id=$1) AS seated,
+         ($2::boolean AND EXISTS(SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL)) AS "guestRoom"`,
+        [s.actor.userId, s.actor.kind === "guest"],
+      )
+    ).rows[0]!;
+    if (limits.seated)
       throw new RoomError(
         "ALREADY_SEATED",
         "Bạn đang giữ vị trí chơi ở nơi khác",
       );
-    if (
-      s.actor.kind === "guest" &&
-      (
-        await s.client.query(
-          "SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL",
-          [s.actor.userId],
-        )
-      ).rowCount
-    )
+    if (limits.guestRoom)
       throw new RoomError(
         "GUEST_ROOM_LIMIT",
         "Khách chỉ được tạo một phòng đang mở",
@@ -344,6 +336,10 @@ export class RoomStore {
         403,
       );
     return { ...state, member };
+  }
+  async authorize(s: RoomScope, id: string) {
+    const { member } = await this.member(s, id);
+    return { canControl: member.side === "RED" || member.side === "BLACK" };
   }
   private async bump(
     s: RoomScope,

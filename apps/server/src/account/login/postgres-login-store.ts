@@ -4,9 +4,11 @@ import type {
   LoginAccount,
   LoginStore,
   LoginAttempts,
+  SessionAccount,
 } from "./login.types.js";
+const accountActive = `(u.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending)`;
 const accountSelect = `SELECT u.id AS "userId",u.email,p.username,
-  (u.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending) AS active
+  ${accountActive} AS active
   FROM xiangqi_auth.accounts u JOIN public.profiles p ON p.user_id=u.id`;
 export class PostgresLoginStore implements LoginStore {
   constructor(
@@ -106,11 +108,19 @@ export class PostgresLoginStore implements LoginStore {
       ],
     );
   }
-  async sessionByHash(hash: string): Promise<AppSession | null> {
+  async sessionByHash(hash: string): Promise<SessionAccount | null> {
     return (
       (
         await this.query(
-          `SELECT token_hash AS "tokenHash",user_id AS "userId",created_at AS "createdAt",expires_at AS "expiresAt",remember,revoked_at AS "revokedAt" FROM xiangqi_auth.app_sessions WHERE token_hash=$1`,
+          `SELECT s.token_hash AS "tokenHash",s.user_id AS "userId",s.created_at AS "createdAt",
+            s.expires_at AS "expiresAt",s.remember,s.revoked_at AS "revokedAt",
+            CASE WHEN u.id IS NULL OR p.user_id IS NULL THEN NULL ELSE
+              jsonb_build_object('userId',u.id,'email',u.email,'username',p.username,'active',${accountActive})
+            END AS account
+            FROM xiangqi_auth.app_sessions s
+            LEFT JOIN xiangqi_auth.accounts u ON u.id=s.user_id
+            LEFT JOIN public.profiles p ON p.user_id=u.id
+            WHERE s.token_hash=$1`,
           [hash],
         )
       ).rows[0] ?? null

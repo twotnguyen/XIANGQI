@@ -30,6 +30,22 @@ RoomWorker.tick orchestrates caller-provided clients/transactions/sink, không t
 
 Single backend lifecycle: boot instance UUID mới invalidate old presence, reset Ready/countdown, giữ ghế60s từ boot (disconnected_at có sẵn không kéo dài). Không claim HA đa-node/lease. PLAYING interruption/outcome/clock/resign thuộc T20; absent port giữ seat/history và fail503.
 
+## Đường tạo phòng và kết nối ban đầu
+
+Projection room/actor dùng một truy vấn CTE nhưng vẫn đọc lại sau khi khóa,
+giữ đủ roster, thứ tự advisory lock và retry hiện có. `BEGIN`/`SET LOCAL ROLE`
+đi chung một lượt gửi; session/profile được khóa cùng một truy vấn. Hạn phiên
+vẫn lấy `clock_timestamp()` bằng câu lệnh riêng **sau** khi chờ các khóa.
+Kiểm giới hạn ghế và phòng Khách được gộp, giữ ưu tiên lỗi `ALREADY_SEATED`.
+
+Realtime kiểm quyền qua `RoomStore.authorize`: chỉ đọc membership đã khóa và
+kiểm hạn người xem, không dựng cả countdown/offers/presence/spectators để lấy
+`canControl`. Snapshot đầy đủ vẫn được đọc từ server khi gửi giao diện; không
+bỏ kiểm quyền hoặc cấp quyền điều khiển từ dữ liệu frontend.
+
+Contract `RoomEntry`, receipt chống trùng, mã mời và outbox không thay đổi;
+không cần migration cho các tối ưu này.
+
 ## Guest port
 
 RoomGuestPort.seatedSeat union active_players và PLAYER membership ở open room, cả AI match roomNULL. Không coi AI là no-seat. end mặc định GUEST_UNAVAILABLE cho đến root cung cấp full same-client termination (room/match/chat/media/structured snapshot PII scrub); không giả UPDATE profile là đủ xóa PII. Guest integration test dùng synthetic no-history/no-media fixture cleanup và GuestService thật để chứng minh12h/defer/final-leave đồng giao dịch. Production full cleanup còn gate riêng.
