@@ -158,6 +158,7 @@ function setup(state = snapshot) {
       await screen.findByRole("heading", { name: "Kỳ hữu" });
     },
     publish: (value: RoomSnapshot) => act(() => handlers.onSnapshot(value)),
+    error: (message: string) => act(() => handlers.onError(message)),
     disconnect: () => act(() => handlers.onConnection(false)),
     reconnect: () => act(() => handlers.onConnection(true)),
   };
@@ -1371,7 +1372,10 @@ it("defers HTTP room display until realtime is unavailable and never grants its 
 });
 it("does not starve an in-flight fallback on duplicate disconnect notifications", async () => {
   const f = setup();
-  const { promise, reject } = Promise.withResolvers<RoomSnapshot>();
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<RoomSnapshot>((_resolve, rejectPromise) => {
+    reject = rejectPromise;
+  });
   f.client.snapshot.mockReturnValue(promise);
   f.disconnect();
   f.disconnect();
@@ -1391,7 +1395,10 @@ it("does not treat an expired login as a closed room", async () => {
 });
 it("ignores a forbidden fallback response after realtime has reconnected", async () => {
   const f = setup();
-  const { promise, reject } = Promise.withResolvers<RoomSnapshot>();
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<RoomSnapshot>((_resolve, rejectPromise) => {
+    reject = rejectPromise;
+  });
   f.client.snapshot.mockReturnValue(promise);
   f.disconnect();
   expect(f.client.snapshot).toHaveBeenCalledOnce();
@@ -1692,7 +1699,7 @@ it("allows manual reconnection after a failed admission without granting HTTP co
   const f = setup();
   await f.ready();
   f.disconnect();
-  act(() => handlers.onError("Kết nối chưa sẵn sàng."));
+  f.error("Kết nối chưa sẵn sàng.");
   await screen.findByRole("heading", { name: "Kỳ hữu" });
   await userEvent
     .setup()
