@@ -49,8 +49,8 @@ Không đối chiếu các nguồn với nhau trừ khi thấy mâu thuẫn tr�
 - Commit: `<type>(<scope>): XIAN-<số> <mô tả>`; không có issue thì bỏ mã Jira. Không thêm Smart Commit (`#done`, `#time`, `#comment`) nếu chưa được giao cập nhật Jira. Không thêm dòng `Co-Authored-By`.
 - **Chỉ commit/push:** kiểm nhánh, diff, `git diff --check`, bí mật staged; stage rõ từng file rồi commit/push. Không chạy lại lint/typecheck/test/build, không review sâu, không gọi MCP, không tự tạo PR/merge. Secret hoặc nguy cơ mất dữ liệu phải chặn.
 - Chỉ push, gộp hoặc merge khi được yêu cầu; sau khi thành công trả commit và nhánh ngay. GitHub chặn thì báo, không bypass.
-- **Không tự ý xóa nhánh**, kể cả đã gộp, ở remote lẫn local. Chỉ xóa khi người dùng nêu rõ nhánh; trước khi xóa liệt kê tên, trạng thái đã gộp và issue liên quan để xác nhận.
-- PR cho Task hướng vào `develop`, tiêu đề có mã Jira; mô tả gồm vấn đề, thay đổi, AC liên quan, kiểm tra thực sự đã chạy và giới hạn.
+- **Không tự ý xóa nhánh**, ở remote lẫn local. Khi được yêu cầu dọn, liệt kê một lần tên nhánh, trạng thái đã gộp vào `develop` và issue liên quan; chỉ xóa nhóm nhánh người dùng xác nhận (ví dụ "mọi nhánh đã gộp"). Nhánh chưa gộp không xóa nếu chưa được nêu rõ.
+- PR hướng vào `develop`, tiêu đề có mã Jira nếu có; mô tả ngắn, nêu kiểm tra đã chạy.
 - Không force push hay ghi đè lịch sử người khác. Push cả `main` và `develop`: fetch, kiểm tra quan hệ lịch sử, chỉ fast-forward, xác minh hai ref sau push.
 
 ### Type của nhánh và commit
@@ -61,13 +61,9 @@ Không đối chiếu các nguồn với nhau trừ khi thấy mâu thuẫn tr�
 | `fix` | Sửa lỗi |
 | `docs` | Thay đổi tài liệu |
 | `refactor` | Tổ chức lại mã, giữ nguyên hành vi |
-| `test` | Thêm hoặc sửa kiểm thử |
 | `perf` | Cải thiện hiệu năng |
-| `style` | Định dạng mã, không đổi hành vi; không dùng cho tính năng giao diện |
-| `build` | Hệ thống build, đóng gói hoặc dependency |
 | `ci` | Workflow tích hợp/triển khai tự động |
-| `chore` | Bảo trì, công cụ hoặc cấu hình không thuộc các nhóm trên |
-| `revert` | Hoàn tác thay đổi trước đó |
+| `chore` | Việc còn lại: test, build, dependency, định dạng, cấu hình |
 
 Ví dụ: `feat/XIAN-40-email-signup` → `feat(auth): XIAN-40 add email signup`. Không dùng `hotfix`/`release`.
 
