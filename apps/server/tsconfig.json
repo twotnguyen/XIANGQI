@@ -1,6 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@xiangqi/engine": ["../../packages/engine/src/index.ts"],
+      "@xiangqi/shared": ["../../packages/shared/src/index.ts"],
+      "@xiangqi/xiangqi-core": ["../../packages/xiangqi-core/src/index.ts"]
+    },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "dist"

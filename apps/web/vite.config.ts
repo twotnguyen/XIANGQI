@@ -17,6 +17,14 @@ export default defineConfig(({ mode }) => ({
         __dirname,
         "../../packages/engine/src/search.ts",
       ),
+      "@xiangqi/xiangqi-core": path.resolve(
+        __dirname,
+        "../../packages/xiangqi-core/src/index.ts",
+      ),
+      "@xiangqi/shared": path.resolve(
+        __dirname,
+        "../../packages/shared/src/index.ts",
+      ),
     },
   },
   build: {
