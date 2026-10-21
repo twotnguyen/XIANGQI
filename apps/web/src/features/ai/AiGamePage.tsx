@@ -150,19 +150,20 @@ export function AiGamePage({
         engineError: null,
       }));
 
-      // Non-blocking timeout to allow UI render
-      window.setTimeout(() => {
-        try {
-          const result = searchPosition({
-            position: currentSnapshot.position,
-            side: pos.turn,
-            level: currentSnapshot.level,
-            history: currentSnapshot.history,
-          });
+      // Non-blocking timeout scheduled after next paint to guarantee UI updates
+      window.requestAnimationFrame(() => {
+        window.setTimeout(() => {
+          try {
+            const result = searchPosition({
+              position: currentSnapshot.position,
+              side: pos.turn,
+              level: currentSnapshot.level,
+              history: currentSnapshot.history,
+            });
 
-          if (result.move) {
-            const nextPos = playMove(pos, result.move);
-            const nextFen = serializePosition(nextPos);
+            if (result.move) {
+              const nextPos = playMove(pos, result.move);
+              const nextFen = serializePosition(nextPos);
             const nextHistory = [...currentSnapshot.history, nextFen];
             const gameEnding = ending(nextHistory.map(parsePosition));
 
@@ -200,6 +201,7 @@ export function AiGamePage({
           isThinking.current = false;
         }
       }, 50);
+      });
     },
     [],
   );

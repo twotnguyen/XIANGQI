@@ -125,16 +125,22 @@ export function XiangqiBoard({
   } | null>(null);
   const suppressClick = useRef(false);
   const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fen = serializePosition(position);
+  const fen = useMemo(() => serializePosition(position), [position]);
   const moves = useMemo(
     () => (enabled ? legalMoves(position) : []),
     [enabled, fen],
   );
-  const destinations = moves
-    .filter((move) => move.from === selected)
-    .map((move) => move.to);
-  const checks = (["red", "black"] as const).filter((side) =>
-    isInCheck(position, side),
+  const destinations = useMemo(
+    () =>
+      moves
+        .filter((move) => move.from === selected)
+        .map((move) => move.to),
+    [moves, selected],
+  );
+  const checks = useMemo(
+    () =>
+      (["red", "black"] as const).filter((side) => isInCheck(position, side)),
+    [fen],
   );
   useEffect(() => {
     setSelected(null);
@@ -326,6 +332,82 @@ export function XiangqiBoard({
   const woodId = `${id}-wood`;
   const clipId = `${id}-drag-clip`;
   const bottom = orientation === "red" ? "Đỏ" : "Đen";
+
+  const boardGrid = useMemo(
+    () => (
+      <g aria-hidden="true" className="xq-board-grid">
+        <rect
+          x="1"
+          y="1"
+          width="366"
+          height="406"
+          rx="8"
+          fill={`url(#${woodId})`}
+        />
+        {ranks.map((y) => (
+          <line
+            key={y}
+            className="xq-board-rank"
+            x1="24"
+            x2="344"
+            y1={24 + y * 40}
+            y2={24 + y * 40}
+          />
+        ))}
+        {files.map((x) =>
+          x === 0 || x === 8 ? (
+            <line
+              key={x}
+              className="xq-board-file"
+              x1={24 + x * 40}
+              x2={24 + x * 40}
+              y1="24"
+              y2="384"
+            />
+          ) : (
+            <g key={x}>
+              <line
+                className="xq-board-file"
+                x1={24 + x * 40}
+                x2={24 + x * 40}
+                y1="24"
+                y2="184"
+              />
+              <line
+                className="xq-board-file"
+                x1={24 + x * 40}
+                x2={24 + x * 40}
+                y1="224"
+                y2="384"
+              />
+            </g>
+          ),
+        )}
+        <path
+          className="xq-board-palace"
+          d="M144 24L224 104M224 24L144 104"
+        />
+        <path
+          className="xq-board-palace"
+          d="M144 304L224 384M224 304L144 384"
+        />
+        {marks.map(([x, y]) => (
+          <path
+            key={`${x}-${y}`}
+            className="xq-board-mark"
+            d={markerPath(x!, y!)}
+          />
+        ))}
+        <text className="xq-board-river" x="104" y="204">
+          楚河
+        </text>
+        <text className="xq-board-river" x="264" y="204">
+          漢界
+        </text>
+      </g>
+    ),
+    [woodId],
+  );
   return (
     <figure
       className={`xq-board${interactive ? " xq-board-interactive" : ""}${enabled ? " xq-board-can-move" : ""}`}
@@ -359,76 +441,7 @@ export function XiangqiBoard({
             <stop offset="1" stopColor="var(--color-wood)" />
           </linearGradient>
         </defs>
-        <g aria-hidden="true" className="xq-board-grid">
-          <rect
-            x="1"
-            y="1"
-            width="366"
-            height="406"
-            rx="8"
-            fill={`url(#${woodId})`}
-          />
-          {ranks.map((y) => (
-            <line
-              key={y}
-              className="xq-board-rank"
-              x1="24"
-              x2="344"
-              y1={24 + y * 40}
-              y2={24 + y * 40}
-            />
-          ))}
-          {files.map((x) =>
-            x === 0 || x === 8 ? (
-              <line
-                key={x}
-                className="xq-board-file"
-                x1={24 + x * 40}
-                x2={24 + x * 40}
-                y1="24"
-                y2="384"
-              />
-            ) : (
-              <g key={x}>
-                <line
-                  className="xq-board-file"
-                  x1={24 + x * 40}
-                  x2={24 + x * 40}
-                  y1="24"
-                  y2="184"
-                />
-                <line
-                  className="xq-board-file"
-                  x1={24 + x * 40}
-                  x2={24 + x * 40}
-                  y1="224"
-                  y2="384"
-                />
-              </g>
-            ),
-          )}
-          <path
-            className="xq-board-palace"
-            d="M144 24L224 104M224 24L144 104"
-          />
-          <path
-            className="xq-board-palace"
-            d="M144 304L224 384M224 304L144 384"
-          />
-          {marks.map(([x, y]) => (
-            <path
-              key={`${x}-${y}`}
-              className="xq-board-mark"
-              d={markerPath(x!, y!)}
-            />
-          ))}
-          <text className="xq-board-river" x="104" y="204">
-            楚河
-          </text>
-          <text className="xq-board-river" x="264" y="204">
-            漢界
-          </text>
-        </g>
+        {boardGrid}
         <g aria-hidden="true" className="xq-board-signs">
           {lastMove &&
             [lastMove.from, lastMove.to].map((square, index) => {

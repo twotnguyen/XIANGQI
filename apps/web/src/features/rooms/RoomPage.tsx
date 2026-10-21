@@ -192,6 +192,11 @@ export function RoomPage({
     connectedRef.current = false;
     setConnected(false);
     setError("");
+    const loadingTimeout = setTimeout(() => {
+      if (alive && !latest.current) {
+        setError((prev) => prev || "Chưa thể kết nối phòng. Vui lòng kiểm tra máy chủ hoặc thử lại.");
+      }
+    }, 6000);
     // HTTP can display the room before realtime grants control.
     queueMicrotask(() => {
       if (!alive || latest.current) return;
@@ -281,6 +286,7 @@ export function RoomPage({
       commandEpoch.current++;
       connectedRef.current = false;
       roomChat.clear();
+      clearTimeout(loadingTimeout);
       peer.close();
       if (connection.current === peer) connection.current = null;
     };
@@ -746,10 +752,23 @@ export function RoomPage({
     return (
       <main className="xq-ui xq-room-page">
         {error ? (
-          <ErrorState
-            message={error}
-            onRetry={() => setRetry((value) => value + 1)}
-          />
+          <div
+            className="xq-stack"
+            style={{
+              maxWidth: 480,
+              margin: "64px auto",
+              padding: 24,
+              textAlign: "center",
+            }}
+          >
+            <ErrorState
+              message={error}
+              onRetry={() => setRetry((value) => value + 1)}
+            />
+            <Button variant="secondary" onClick={() => onLeft()}>
+              Quay về Sảnh
+            </Button>
+          </div>
         ) : (
           <Skeleton label="Đang tải phòng…" />
         )}
