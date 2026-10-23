@@ -138,6 +138,7 @@ export function XiangqiBoard({
 
   useEffect(() => {
     if (
+      !disabled &&
       lastMove &&
       (lastMove.from !== prevLastMoveRef.current?.from ||
         lastMove.to !== prevLastMoveRef.current?.to)
@@ -155,7 +156,7 @@ export function XiangqiBoard({
         });
         const timer = setTimeout(() => {
           setSlidingMove(null);
-        }, 260);
+        }, 280);
         prevLastMoveRef.current = lastMove;
         return () => clearTimeout(timer);
       }
@@ -167,10 +168,7 @@ export function XiangqiBoard({
     [enabled, fen],
   );
   const destinations = useMemo(
-    () =>
-      moves
-        .filter((move) => move.from === selected)
-        .map((move) => move.to),
+    () => moves.filter((move) => move.from === selected).map((move) => move.to),
     [moves, selected],
   );
   const checks = useMemo(
@@ -308,7 +306,7 @@ export function XiangqiBoard({
     returnTimer.current = setTimeout(() => {
       setGhost(null);
       returnTimer.current = null;
-    }, 180);
+    }, 240);
   }
   function cancelPointer(event: PointerEvent<SVGSVGElement>) {
     if (drag.current?.pointerId !== event.pointerId) return;
@@ -388,22 +386,23 @@ export function XiangqiBoard({
           stroke={`url(#${pieceRimId})`}
           strokeWidth="1.2"
         />
-        {/* Rãnh tròn chạm khắc đồng tâm tinh xảo */}
-        <circle
+        {/* Quân đen có thêm vòng tròn inner để phân biệt 1 nét và 2 nét chuẩn T11 */}
+        {side === "black" && (
+          <circle
+            className="xq-board-piece-inner"
+            r="14.3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="0.9"
+          />
+        )}
+        {/* Rãnh tròn chạm khắc đồng tâm tinh xảo (path SVG) */}
+        <path
           className="xq-board-piece-groove"
-          r="14.3"
+          d="M 0 -14.3 a 14.3 14.3 0 1 0 0.0001 0 Z"
           fill="none"
           stroke={`url(#${pieceGrooveId})`}
           strokeWidth="0.9"
-        />
-        {/* Vòng mực kẻ mỏng */}
-        <circle
-          className="xq-board-piece-inkring"
-          r="13.2"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.6"
-          strokeOpacity="0.35"
         />
         {/* Chữ Hán thư pháp */}
         <text className="xq-board-piece-glyph" aria-hidden="true">
@@ -484,10 +483,7 @@ export function XiangqiBoard({
             </g>
           ),
         )}
-        <path
-          className="xq-board-palace"
-          d="M144 24L224 104M224 24L144 104"
-        />
+        <path className="xq-board-palace" d="M144 24L224 104M224 24L144 104" />
         <path
           className="xq-board-palace"
           d="M144 304L224 384M224 304L144 384"
@@ -529,8 +525,8 @@ export function XiangqiBoard({
       >
         <title id={titleId}>{`Bàn cờ tướng — ${bottom} ở phía dưới`}</title>
         <desc id={descriptionId}>
-          9 cột, 10 hàng giao điểm. Quân cờ tiện gỗ 3D chạm khắc tinh xảo.
-          Nhãn quân dùng tọa độ gốc.
+          9 cột, 10 hàng giao điểm. Quân cờ tiện gỗ 3D chạm khắc tinh xảo. Nhãn
+          quân dùng tọa độ gốc.
         </desc>
         <defs>
           <clipPath id={clipId}>
@@ -538,20 +534,68 @@ export function XiangqiBoard({
           </clipPath>
 
           {/* Bóng đổ chân thực dưới quân cờ */}
-          <filter id={pieceShadowId} x="-35%" y="-30%" width="170%" height="175%">
-            <feDropShadow dx="0" dy="1.0" stdDeviation="0.8" floodColor="#180b03" floodOpacity="0.35" />
-            <feDropShadow dx="0" dy="3.2" stdDeviation="2.4" floodColor="#2b1405" floodOpacity="0.48" />
+          <filter
+            id={pieceShadowId}
+            x="-35%"
+            y="-30%"
+            width="170%"
+            height="175%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="1.0"
+              stdDeviation="0.8"
+              floodColor="#180b03"
+              floodOpacity="0.35"
+            />
+            <feDropShadow
+              dx="0"
+              dy="3.2"
+              stdDeviation="2.4"
+              floodColor="#2b1405"
+              floodOpacity="0.48"
+            />
           </filter>
 
           {/* Bóng đổ khi nhấc nhẹ quân cờ đứng tại chỗ */}
-          <filter id={pieceLiftedShadowId} x="-45%" y="-35%" width="190%" height="190%">
-            <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#180b03" floodOpacity="0.3" />
-            <feDropShadow dx="0" dy="4.5" stdDeviation="3.0" floodColor="#261204" floodOpacity="0.45" />
+          <filter
+            id={pieceLiftedShadowId}
+            x="-45%"
+            y="-35%"
+            width="190%"
+            height="190%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="1.5"
+              stdDeviation="1.5"
+              floodColor="#180b03"
+              floodOpacity="0.3"
+            />
+            <feDropShadow
+              dx="0"
+              dy="4.5"
+              stdDeviation="3.0"
+              floodColor="#261204"
+              floodOpacity="0.45"
+            />
           </filter>
 
           {/* Vầng sáng mềm mại khi chọn quân */}
-          <filter id={selectedGlowId} x="-40%" y="-40%" width="180%" height="180%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3.2" floodColor="#ffffff" floodOpacity="0.95" />
+          <filter
+            id={selectedGlowId}
+            x="-40%"
+            y="-40%"
+            width="180%"
+            height="180%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="0"
+              stdDeviation="3.2"
+              floodColor="#ffffff"
+              floodOpacity="0.95"
+            />
           </filter>
 
           {/* Khung viền gỗ bên ngoài bàn cờ */}
@@ -588,7 +632,13 @@ export function XiangqiBoard({
           </linearGradient>
 
           {/* Đường rãnh chìm tròn đồng tâm của quân cờ */}
-          <linearGradient id={pieceGrooveId} x1="30%" y1="0%" x2="70%" y2="100%">
+          <linearGradient
+            id={pieceGrooveId}
+            x1="30%"
+            y1="0%"
+            x2="70%"
+            y2="100%"
+          >
             <stop offset="0%" stopColor="#7c4e1f" stopOpacity="0.85" />
             <stop offset="50%" stopColor="#a57640" stopOpacity="0.5" />
             <stop offset="100%" stopColor="#fff3db" stopOpacity="0.8" />
@@ -597,17 +647,44 @@ export function XiangqiBoard({
         {boardGrid}
         <g aria-hidden="true" className="xq-board-signs">
           {lastMove &&
-            [lastMove.from, lastMove.to].map((square, index) => {
-              const [x, y] = point(square);
+            (() => {
+              const [fromX, fromY] = point(lastMove.from);
+              const [toX, toY] = point(lastMove.to);
               return (
-                <path
-                  key={index}
-                  className="xq-board-last"
-                  transform={`translate(${x} ${y})`}
-                  d="M-12 -20h-8v8M12 -20h8v8M-12 20h-8v-8M12 20h8v-8"
-                />
+                <g className="xq-board-last-indicators">
+                  <g
+                    className="xq-board-last"
+                    transform={`translate(${fromX} ${fromY})`}
+                  >
+                    {/* Dấu chấm tròn và vòng tròn mảnh mờ tại ô xuất phát */}
+                    <circle
+                      className="xq-board-last-from-ring"
+                      cx={0}
+                      cy={0}
+                      r="16"
+                    />
+                    <circle
+                      className="xq-board-last-from-dot"
+                      cx={0}
+                      cy={0}
+                      r="4"
+                    />
+                  </g>
+                  <g
+                    className="xq-board-last"
+                    transform={`translate(${toX} ${toY})`}
+                  >
+                    {/* Vòng viền vàng kim thanh nhã ôm quanh quân cờ vừa di chuyển */}
+                    <circle
+                      className="xq-board-last-dest-ring"
+                      cx={0}
+                      cy={0}
+                      r="20.5"
+                    />
+                  </g>
+                </g>
               );
-            })}
+            })()}
           {destinations.map((square) => {
             const [x, y] = point(square);
             const isCapture = Boolean(position.board[square]);
@@ -646,12 +723,15 @@ export function XiangqiBoard({
           })}
         </g>
         {(() => {
-          // Render regular pieces first, then the selected floating piece on top
+          // Render regular pieces first, then the selected floating piece or sliding piece on top
           const piecesToRender: number[] = [];
           let topSquare: number | null = null;
           position.board.forEach((p, sq) => {
             if (!p) return;
-            if (selected === sq && enabled) {
+            if (
+              (selected === sq && enabled) ||
+              (slidingMove !== null && slidingMove.to === sq)
+            ) {
               topSquare = sq;
             } else {
               piecesToRender.push(sq);
@@ -690,7 +770,11 @@ export function XiangqiBoard({
                 <g
                   className={`xq-board-piece xq-board-piece-${piece.side}${isSelected ? " xq-board-piece-selected" : ""}${isSliding ? " xq-board-piece-slide" : ""}`}
                   style={slideStyle}
-                  filter={isSelected || isSliding ? `url(#${pieceLiftedShadowId})` : `url(#${pieceShadowId})`}
+                  filter={
+                    isSelected || isSliding
+                      ? `url(#${pieceLiftedShadowId})`
+                      : `url(#${pieceShadowId})`
+                  }
                 >
                   {renderPieceContent(piece.side, piece.type)}
                 </g>

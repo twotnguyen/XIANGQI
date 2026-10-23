@@ -31,6 +31,7 @@ export interface AiGameProps {
   canControl: boolean;
   pending?: boolean;
   undoRemaining?: number;
+  lastMove?: Move | null;
   onMove: (move: Move) => Promise<void>;
   onResign: () => Promise<void>;
   onRetry: () => Promise<void>;
@@ -153,6 +154,7 @@ function AiGameView(props: AiGameProps) {
             playerSide={snapshot.actualSide}
             disabled={!available || !active || snapshot.engineState !== "IDLE"}
             pending={pending || working}
+            lastMove={props.lastMove}
             onMove={(from, to) => {
               if (active && snapshot.engineState === "IDLE")
                 void request(() => props.onMove({ from, to }));
