@@ -125,7 +125,43 @@ export function XiangqiBoard({
   } | null>(null);
   const suppressClick = useRef(false);
   const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const justDropped = useRef(false);
+  const prevLastMoveRef = useRef<Move | null>(null);
+  const [slidingMove, setSlidingMove] = useState<{
+    from: number;
+    to: number;
+    dx: number;
+    dy: number;
+  } | null>(null);
+
   const fen = useMemo(() => serializePosition(position), [position]);
+
+  useEffect(() => {
+    if (
+      lastMove &&
+      (lastMove.from !== prevLastMoveRef.current?.from ||
+        lastMove.to !== prevLastMoveRef.current?.to)
+    ) {
+      if (justDropped.current) {
+        justDropped.current = false;
+      } else {
+        const [fromX, fromY] = point(lastMove.from);
+        const [toX, toY] = point(lastMove.to);
+        setSlidingMove({
+          from: lastMove.from,
+          to: lastMove.to,
+          dx: fromX - toX,
+          dy: fromY - toY,
+        });
+        const timer = setTimeout(() => {
+          setSlidingMove(null);
+        }, 260);
+        prevLastMoveRef.current = lastMove;
+        return () => clearTimeout(timer);
+      }
+      prevLastMoveRef.current = lastMove;
+    }
+  }, [lastMove, orientation]);
   const moves = useMemo(
     () => (enabled ? legalMoves(position) : []),
     [enabled, fen],
@@ -262,6 +298,7 @@ export function XiangqiBoard({
       to !== null &&
       moves.some((move) => move.from === current.from && move.to === to)
     ) {
+      justDropped.current = true;
       setGhost(null);
       onMove?.(current.from, to);
       return;
@@ -331,18 +368,82 @@ export function XiangqiBoard({
   const descriptionId = `${id}-description`;
   const woodId = `${id}-wood`;
   const clipId = `${id}-drag-clip`;
+  const boardFrameId = `${id}-board-frame`;
+  const pieceWoodId = `${id}-piece-wood`;
+  const pieceRimId = `${id}-piece-rim`;
+  const pieceGrooveId = `${id}-piece-groove`;
+  const pieceShadowId = `${id}-piece-shadow`;
+  const pieceLiftedShadowId = `${id}-piece-shadow-lifted`;
+  const selectedGlowId = `${id}-selected-glow`;
   const bottom = orientation === "red" ? "Đỏ" : "Đen";
+
+  function renderPieceContent(side: Side, type: PieceType) {
+    return (
+      <>
+        {/* Mặt phôi gỗ tiện 3D */}
+        <circle
+          className="xq-board-piece-face"
+          r="17.6"
+          fill={`url(#${pieceWoodId})`}
+          stroke={`url(#${pieceRimId})`}
+          strokeWidth="1.2"
+        />
+        {/* Rãnh tròn chạm khắc đồng tâm tinh xảo */}
+        <circle
+          className="xq-board-piece-groove"
+          r="14.3"
+          fill="none"
+          stroke={`url(#${pieceGrooveId})`}
+          strokeWidth="0.9"
+        />
+        {/* Vòng mực kẻ mỏng */}
+        <circle
+          className="xq-board-piece-inkring"
+          r="13.2"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.6"
+          strokeOpacity="0.35"
+        />
+        {/* Chữ Hán thư pháp */}
+        <text className="xq-board-piece-glyph" aria-hidden="true">
+          {glyphs[side][type]}
+        </text>
+      </>
+    );
+  }
 
   const boardGrid = useMemo(
     () => (
       <g aria-hidden="true" className="xq-board-grid">
+        {/* Khung viền bàn cờ gỗ tự nhiên dày dặn bo góc */}
         <rect
           x="1"
           y="1"
           width="366"
           height="406"
-          rx="8"
+          rx="10"
+          className="xq-board-frame"
+          fill={`url(#${boardFrameId})`}
+        />
+        {/* Mặt bàn cờ gỗ vàng ấm */}
+        <rect
+          x="6"
+          y="6"
+          width="356"
+          height="396"
+          rx="6"
+          className="xq-board-surface"
           fill={`url(#${woodId})`}
+        />
+        {/* Viền rãnh bo quanh lưới cờ */}
+        <rect
+          x="18"
+          y="18"
+          width="332"
+          height="372"
+          rx="3"
+          className="xq-board-inner-frame"
         />
         {ranks.map((y) => (
           <line
@@ -406,7 +507,7 @@ export function XiangqiBoard({
         </text>
       </g>
     ),
-    [woodId],
+    [woodId, boardFrameId],
   );
   return (
     <figure
@@ -428,17 +529,69 @@ export function XiangqiBoard({
       >
         <title id={titleId}>{`Bàn cờ tướng — ${bottom} ở phía dưới`}</title>
         <desc id={descriptionId}>
-          9 cột, 10 hàng giao điểm. Quân đỏ viền một nét, quân đen viền hai nét.
+          9 cột, 10 hàng giao điểm. Quân cờ tiện gỗ 3D chạm khắc tinh xảo.
           Nhãn quân dùng tọa độ gốc.
         </desc>
         <defs>
           <clipPath id={clipId}>
             <rect width="368" height="408" />
           </clipPath>
-          <linearGradient id={woodId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="var(--color-wood)" />
-            <stop offset="0.5" stopColor="var(--color-paper-board)" />
-            <stop offset="1" stopColor="var(--color-wood)" />
+
+          {/* Bóng đổ chân thực dưới quân cờ */}
+          <filter id={pieceShadowId} x="-35%" y="-30%" width="170%" height="175%">
+            <feDropShadow dx="0" dy="1.0" stdDeviation="0.8" floodColor="#180b03" floodOpacity="0.35" />
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.4" floodColor="#2b1405" floodOpacity="0.48" />
+          </filter>
+
+          {/* Bóng đổ khi nhấc nhẹ quân cờ đứng tại chỗ */}
+          <filter id={pieceLiftedShadowId} x="-45%" y="-35%" width="190%" height="190%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#180b03" floodOpacity="0.3" />
+            <feDropShadow dx="0" dy="4.5" stdDeviation="3.0" floodColor="#261204" floodOpacity="0.45" />
+          </filter>
+
+          {/* Vầng sáng mềm mại khi chọn quân */}
+          <filter id={selectedGlowId} x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3.2" floodColor="#ffffff" floodOpacity="0.95" />
+          </filter>
+
+          {/* Khung viền gỗ bên ngoài bàn cờ */}
+          <linearGradient id={boardFrameId} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#b4834b" />
+            <stop offset="45%" stopColor="#8d5b27" />
+            <stop offset="100%" stopColor="#5d3913" />
+          </linearGradient>
+
+          {/* Vân gỗ mặt bàn cờ tự nhiên ấm áp */}
+          <linearGradient id={woodId} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#eed5af" />
+            <stop offset="25%" stopColor="#e3c293" />
+            <stop offset="50%" stopColor="#ecd5b1" />
+            <stop offset="75%" stopColor="#dec08f" />
+            <stop offset="100%" stopColor="#d5af77" />
+          </linearGradient>
+
+          {/* Thân gỗ tự nhiên của quân cờ tròn 3D */}
+          <radialGradient id={pieceWoodId} cx="38%" cy="34%" r="66%">
+            <stop offset="0%" stopColor="#fff8ea" />
+            <stop offset="20%" stopColor="#fae7c4" />
+            <stop offset="55%" stopColor="#ebd2a2" />
+            <stop offset="85%" stopColor="#d9b178" />
+            <stop offset="100%" stopColor="#bf9053" />
+          </radialGradient>
+
+          {/* Viền gờ tròn nổi 3D của quân cờ */}
+          <linearGradient id={pieceRimId} x1="20%" y1="0%" x2="80%" y2="100%">
+            <stop offset="0%" stopColor="#fffaf0" />
+            <stop offset="35%" stopColor="#e2bc84" />
+            <stop offset="70%" stopColor="#a9763c" />
+            <stop offset="100%" stopColor="#754a1d" />
+          </linearGradient>
+
+          {/* Đường rãnh chìm tròn đồng tâm của quân cờ */}
+          <linearGradient id={pieceGrooveId} x1="30%" y1="0%" x2="70%" y2="100%">
+            <stop offset="0%" stopColor="#7c4e1f" stopOpacity="0.85" />
+            <stop offset="50%" stopColor="#a57640" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#fff3db" stopOpacity="0.8" />
           </linearGradient>
         </defs>
         {boardGrid}
@@ -455,25 +608,24 @@ export function XiangqiBoard({
                 />
               );
             })}
-          {selected !== null &&
-            enabled &&
-            (() => {
-              const [x, y] = point(selected);
-              return (
-                <circle className="xq-board-selected" cx={x} cy={y} r="21" />
-              );
-            })()}
           {destinations.map((square) => {
             const [x, y] = point(square);
-            return (
+            const isCapture = Boolean(position.board[square]);
+            return isCapture ? (
               <circle
                 key={square}
-                className={
-                  position.board[square] ? "xq-board-capture" : "xq-board-hint"
-                }
+                className="xq-board-capture"
                 cx={x}
                 cy={y}
-                r={position.board[square] ? 20 : 5}
+                r="19"
+              />
+            ) : (
+              <circle
+                key={square}
+                className="xq-board-hint-dot"
+                cx={x}
+                cy={y}
+                r="4.8"
               />
             );
           })}
@@ -493,31 +645,59 @@ export function XiangqiBoard({
             );
           })}
         </g>
-        {position.board.map((piece, square) => {
-          if (!piece) return null;
-          const x = square % 9;
-          const y = Math.floor(square / 9);
-          const displayX = orientation === "black" ? 8 - x : x;
-          const displayY = orientation === "black" ? 9 - y : y;
-          return (
-            <g
-              key={square}
-              className={`xq-board-piece xq-board-piece-${piece.side}${ghost?.from === square ? " xq-board-drag-source" : ""}`}
-              role="img"
-              aria-hidden={interactive || undefined}
-              aria-label={`${names[piece.type]} ${piece.side === "red" ? "đỏ" : "đen"}, cột ${x + 1} hàng ${y + 1}`}
-              transform={`translate(${24 + displayX * 40} ${24 + displayY * 40})`}
-            >
-              <circle className="xq-board-piece-face" r="17.6" />
-              {piece.side === "black" && (
-                <circle className="xq-board-piece-inner" r="14.5" />
-              )}
-              <text className="xq-board-piece-glyph" aria-hidden="true">
-                {glyphs[piece.side][piece.type]}
-              </text>
-            </g>
-          );
-        })}
+        {(() => {
+          // Render regular pieces first, then the selected floating piece on top
+          const piecesToRender: number[] = [];
+          let topSquare: number | null = null;
+          position.board.forEach((p, sq) => {
+            if (!p) return;
+            if (selected === sq && enabled) {
+              topSquare = sq;
+            } else {
+              piecesToRender.push(sq);
+            }
+          });
+          if (topSquare !== null) {
+            piecesToRender.push(topSquare);
+          }
+
+          return piecesToRender.map((square) => {
+            const piece = position.board[square];
+            if (!piece) return null;
+            const x = square % 9;
+            const y = Math.floor(square / 9);
+            const displayX = orientation === "black" ? 8 - x : x;
+            const displayY = orientation === "black" ? 9 - y : y;
+            const isSelected = selected === square && enabled;
+            const isSliding = slidingMove !== null && slidingMove.to === square;
+            const isSource = ghost?.from === square;
+            const slideStyle = isSliding
+              ? ({
+                  "--slide-dx": `${slidingMove.dx}px`,
+                  "--slide-dy": `${slidingMove.dy}px`,
+                } as React.CSSProperties)
+              : undefined;
+
+            return (
+              <g
+                key={square}
+                className={`xq-board-piece-anchor${isSource ? " xq-board-drag-source" : ""}`}
+                transform={`translate(${24 + displayX * 40} ${24 + displayY * 40})`}
+                role="img"
+                aria-hidden={interactive || undefined}
+                aria-label={`${names[piece.type]} ${piece.side === "red" ? "đỏ" : "đen"}, cột ${x + 1} hàng ${y + 1}`}
+              >
+                <g
+                  className={`xq-board-piece xq-board-piece-${piece.side}${isSelected ? " xq-board-piece-selected" : ""}${isSliding ? " xq-board-piece-slide" : ""}`}
+                  style={slideStyle}
+                  filter={isSelected || isSliding ? `url(#${pieceLiftedShadowId})` : `url(#${pieceShadowId})`}
+                >
+                  {renderPieceContent(piece.side, piece.type)}
+                </g>
+              </g>
+            );
+          });
+        })()}
         {ghost &&
           (() => {
             const piece = position.board[ghost.from];
@@ -527,14 +707,9 @@ export function XiangqiBoard({
                 <g
                   className={`xq-board-piece xq-board-piece-${piece.side} xq-board-ghost${ghost.returning ? " xq-board-returning" : ""}`}
                   transform={`translate(${ghost.x} ${ghost.y})`}
+                  filter={`url(#${pieceLiftedShadowId})`}
                 >
-                  <circle className="xq-board-piece-face" r="17.6" />
-                  {piece.side === "black" && (
-                    <circle className="xq-board-piece-inner" r="14.5" />
-                  )}
-                  <text className="xq-board-piece-glyph">
-                    {glyphs[piece.side][piece.type]}
-                  </text>
+                  {renderPieceContent(piece.side, piece.type)}
                 </g>
               </g>
             );
@@ -556,6 +731,7 @@ export function XiangqiBoard({
                   aria-disabled={!enabled}
                   data-legal={destinations.includes(square)}
                   className="xq-board-hit"
+                  style={{ outline: "none", stroke: "none" }}
                   x={x - 20}
                   y={y - 20}
                   width="40"
@@ -568,7 +744,6 @@ export function XiangqiBoard({
                       return;
                     }
                     setFocused(square);
-                    controls.current[square]?.focus();
                     choose(square);
                   }}
                   onKeyDown={(event) => keyboard(event, square)}
