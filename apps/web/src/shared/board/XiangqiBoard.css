@@ -7,12 +7,13 @@
 }
 
 .xq-board {
-  --color-wood: #d8ae72;
-  --color-wood-edge: #704525;
-  --color-paper-board: #f5e8cc;
-  --color-red: #a51f25;
-  --color-black: #24201c;
-  --board-piece-face: #f6e7c8;
+  --color-wood: #eed5af;
+  --color-wood-frame: #6c411a;
+  --color-wood-edge: #6a411d;
+  --color-paper-board: #f4e3c7;
+  --color-red: #a42323;
+  --color-black: #1e1a17;
+  --board-piece-face: #f8e5c3;
   --color-ink: #fff5df;
   --color-ink-muted: #c8b6a2;
   --color-focus: #f5ca67;
@@ -20,7 +21,6 @@
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --font-han: "XQ Han", "Noto Serif TC", "Songti TC", "SimSun", serif;
-  --shadow-1: 0 1px 2px rgba(40, 34, 28, 0.12);
   --space-2: 8px;
   --space-8: 32px;
   --touch-min: 44px;
@@ -42,27 +42,60 @@
   block-size: auto;
   overflow: visible;
   cursor: default;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
 }
 
 .xq-board-grid {
   stroke: var(--color-wood-edge);
-  stroke-width: 1.2;
+  stroke-width: 1.1;
   fill: none;
 }
 
-.xq-board-grid rect {
-  stroke-width: 2;
+.xq-board-frame {
+  stroke: #5a3411;
+  stroke-width: 1.5;
+}
+
+.xq-board-surface {
+  stroke: #9d6d39;
+  stroke-width: 1;
+}
+
+.xq-board-inner-frame {
+  fill: none;
+  stroke: #86592a;
+  stroke-width: 1.2;
+  stroke-dasharray: none;
+}
+
+.xq-board-file,
+.xq-board-rank {
+  stroke: var(--color-wood-edge);
+  stroke-width: 1.1;
+}
+
+.xq-board-palace {
+  stroke: var(--color-wood-edge);
+  stroke-width: 1.1;
+  opacity: 0.95;
+}
+
+.xq-board-mark {
+  stroke: var(--color-wood-edge);
+  stroke-width: 1.1;
+  fill: none;
 }
 
 .xq-board-river {
   font-family: var(--font-han);
-  font-size: calc(var(--xq-grid) * 0.5);
-  font-weight: var(--weight-semibold);
-  fill: var(--color-wood-edge);
+  font-size: calc(var(--xq-grid) * 0.52);
+  font-weight: 700;
+  fill: #734821;
   stroke: none;
   text-anchor: middle;
   dominant-baseline: central;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.28em;
+  opacity: 0.88;
 }
 
 .xq-board-piece-red {
@@ -74,25 +107,29 @@
 }
 
 .xq-board-piece-face {
-  fill: var(--board-piece-face);
-  stroke: currentColor;
-  stroke-width: 1.5;
-  filter: drop-shadow(var(--shadow-1));
+  /* Filled via SVG radial-gradient url */
 }
 
-.xq-board-piece-inner {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1;
+.xq-board-piece-groove {
+  /* Stroked via SVG linear-gradient url */
+}
+
+.xq-board-piece-inkring {
+  pointer-events: none;
 }
 
 .xq-board-piece-glyph {
   font-family: var(--font-han);
-  font-size: calc(var(--xq-grid) * 0.55);
-  font-weight: var(--weight-semibold);
+  font-size: calc(var(--xq-grid) * 0.54);
+  font-weight: 700;
   fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 0.4;
+  paint-order: stroke fill;
   text-anchor: middle;
   dominant-baseline: central;
+  letter-spacing: -0.01em;
+  pointer-events: none;
 }
 
 .xq-board-turn {

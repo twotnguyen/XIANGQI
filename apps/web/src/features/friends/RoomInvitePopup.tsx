@@ -24,13 +24,19 @@ export function RoomInvitePopup({ client }: { client: FriendClient }) {
     }
     queueMicrotask(() => void poll());
     const timer = setInterval(poll, 5000);
-    const clock = setInterval(() => setNow(Date.now()), 1000);
     return () => {
       alive = false;
       clearInterval(timer);
-      clearInterval(clock);
     };
   }, [client]);
+
+  useEffect(() => {
+    if (!invites || !invites.some((invite) => Date.parse(invite.expiresAt) > Date.now()))
+      return;
+    setNow(Date.now());
+    const clock = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(clock);
+  }, [invites]);
   if (!invites) return null;
   const live = invites.filter((invite) => Date.parse(invite.expiresAt) > now);
   if (!live.length) return null;

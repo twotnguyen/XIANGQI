@@ -7,6 +7,7 @@ export class ChatOutboxWorker {
   private cursor: Cursor | null = null;
   private inFlight: Promise<void> | null = null;
   private closed = false;
+  private nextReceiptCleanup = 0;
   constructor(
     private readonly pool: Pool,
     private readonly publish: (
@@ -54,10 +55,13 @@ export class ChatOutboxWorker {
   }
   private async batch(): Promise<void> {
     const entries = await this.transaction(async (client) => {
-      await client.query(`DELETE FROM xiangqi_chat.receipts r USING (
-        SELECT actor_id,room_id,command_id FROM xiangqi_chat.receipts
-        WHERE expires_at<=clock_timestamp() ORDER BY expires_at,actor_id,room_id,command_id LIMIT 50
-      ) b WHERE r.actor_id=b.actor_id AND r.room_id=b.room_id AND r.command_id=b.command_id`);
+      if (Date.now() >= this.nextReceiptCleanup) {
+        this.nextReceiptCleanup = Date.now() + 60000;
+        await client.query(`DELETE FROM xiangqi_chat.receipts r USING (
+          SELECT actor_id,room_id,command_id FROM xiangqi_chat.receipts
+          WHERE expires_at<=clock_timestamp() ORDER BY expires_at,actor_id,room_id,command_id LIMIT 50
+        ) b WHERE r.actor_id=b.actor_id AND r.room_id=b.room_id AND r.command_id=b.command_id`);
+      }
       return (
         await client.query<Entry>(
           `SELECT o.message_id AS "messageId",o.room_id AS "roomId",m.channel,

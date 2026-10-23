@@ -108,6 +108,11 @@ export class MediaAccess {
       return work(client);
     });
   }
+  private async readUser<T>(
+    work: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    return transaction(this.pool, work);
+  }
   async setShare(
     userId: string,
     roomId: string,
@@ -144,7 +149,7 @@ export class MediaAccess {
     userId: string,
     roomId: string,
   ): Promise<{ level: ShareLevel }> {
-    return this.withUser(userId, async (client) => {
+    return this.readUser(async (client) => {
       const row = (
         await client.query(
           "SELECT level FROM xiangqi_room.media_share WHERE room_id=$1 AND user_id=$2",
@@ -161,7 +166,7 @@ export class MediaAccess {
   ): Promise<
     MediaToken & { stage: { token: string; roomName: string } | null }
   > {
-    return this.withUser(userId, async (client) => {
+    return this.readUser(async (client) => {
       const member = (
         await client.query(
           `SELECT m.role FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id

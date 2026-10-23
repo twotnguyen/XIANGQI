@@ -19,6 +19,91 @@ const LABELS: Record<ShareLevel, string> = {
   ALL: "Cả đối thủ và người xem",
 };
 
+function CameraIcon({ off }: { off?: boolean }) {
+  if (off) {
+    return (
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="xq-media-icon"
+      >
+        <line x1="2" y1="2" x2="22" y2="22" />
+        <path d="M10.41 10.41a2 2 0 0 0 2.83 2.83" />
+        <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2" />
+        <path d="m22 7-5 4v2l5 4V7z" />
+      </svg>
+    );
+  }
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="xq-media-icon"
+    >
+      <path d="m22 7-5 4v6l5 4V7z" />
+      <rect x="2" y="5" width="15" height="14" rx="2" ry="2" />
+    </svg>
+  );
+}
+
+function MicIcon({ off }: { off?: boolean }) {
+  if (off) {
+    return (
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="xq-media-icon"
+      >
+        <line x1="2" y1="2" x2="22" y2="22" />
+        <path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2" />
+        <path d="M5 10v2a7 7 0 0 0 12 5" />
+        <path d="M15 9.34V5a3 3 0 0 0-5.68-1.33" />
+        <path d="M9 9v3a3 3 0 0 0 5.12 2.12" />
+        <line x1="12" y1="19" x2="12" y2="22" />
+      </svg>
+    );
+  }
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="xq-media-icon"
+    >
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="22" />
+    </svg>
+  );
+}
+
 export function MediaPanel({
   roomId,
   role,
@@ -61,6 +146,21 @@ export function MediaPanel({
   }, [client, roomId]);
 
   useEffect(() => () => detach(), [detach]);
+
+  useEffect(() => {
+    if (!connected) {
+      detach();
+      setCamera(false);
+      setMic(false);
+      setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
+    } else {
+      setStatus((previous) =>
+        previous === "Chưa kết nối phòng, camera và mic tạm tắt."
+          ? ""
+          : previous,
+      );
+    }
+  }, [connected, detach]);
 
   const elements = useRef(new Map<string, HTMLElement>());
   const attachTrack = useCallback(
@@ -141,17 +241,19 @@ export function MediaPanel({
         const ticket = await client.token(roomId, next.camera, next.mic);
         if (epoch.current !== requestEpoch) return;
         const canPublishHere = role !== "spectator" && next.level !== "NONE";
-        await connect(ticket.url, ticket.token, ticket.roomName, {
+        const stage = ticket.stage;
+        const connectPrivate = connect(ticket.url, ticket.token, ticket.roomName, {
           camera: next.camera && canPublishHere,
           mic: next.mic && canPublishHere,
         });
-        if (epoch.current !== requestEpoch) return;
-        const stage = ticket.stage;
-        if (stage && role !== "spectator")
-          await connect(ticket.url, stage.token, stage.roomName, {
-            camera: next.camera,
-            mic: next.mic,
-          });
+        const connectStage =
+          stage && role !== "spectator"
+            ? connect(ticket.url, stage.token, stage.roomName, {
+                camera: next.camera,
+                mic: next.mic,
+              })
+            : Promise.resolve();
+        await Promise.all([connectPrivate, connectStage]);
         if (epoch.current !== requestEpoch) return;
         setStatus(
           enabled
@@ -196,18 +298,24 @@ export function MediaPanel({
         if (epoch.current === requestEpoch) setBusy(false);
       }
     },
-    [client, connect, connected, detach, role, roomId],
+    [camera, client, connect, connected, detach, mic, role, roomId],
   );
 
   async function toggle(kind: "camera" | "mic") {
     if (busy) return;
+    if (!connected) {
+      setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
+      return;
+    }
+    const nextCamera = kind === "camera" ? !camera : camera;
+    const nextMic = kind === "mic" ? !mic : mic;
     const next = {
-      camera: kind === "camera" ? !camera : camera,
-      mic: kind === "mic" ? !mic : mic,
+      camera: nextCamera,
+      mic: nextMic,
       level,
     };
-    setCamera(next.camera);
-    setMic(next.mic);
+    setCamera(nextCamera);
+    setMic(nextMic);
     await sync(next);
   }
 
@@ -234,17 +342,23 @@ export function MediaPanel({
               variant={camera ? "primary" : "secondary"}
               aria-pressed={camera}
               loading={busy}
+              disabledReason={!connected ? "Chưa kết nối phòng." : undefined}
               onClick={() => void toggle("camera")}
+              className={`xq-media-btn ${camera ? "is-active" : ""}`}
             >
-              {camera ? "Tắt camera" : "Bật camera"}
+              <CameraIcon off={!camera} />
+              <span>{camera ? "Tắt camera" : "Bật camera"}</span>
             </Button>
             <Button
               variant={mic ? "primary" : "secondary"}
               aria-pressed={mic}
               loading={busy}
+              disabledReason={!connected ? "Chưa kết nối phòng." : undefined}
               onClick={() => void toggle("mic")}
+              className={`xq-media-btn ${mic ? "is-active" : ""}`}
             >
-              {mic ? "Tắt mic" : "Bật mic"}
+              <MicIcon off={!mic} />
+              <span>{mic ? "Tắt mic" : "Bật mic"}</span>
             </Button>
           </div>
           <label className="xq-media-share">
