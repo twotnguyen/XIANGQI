@@ -74,14 +74,11 @@ export class SessionService {
       await this.currentSession(appSession);
     return { userId, expiresAt, remember };
   }
-  private async validateAccessToken(
-    accessToken: unknown,
+  private async validateProviderUser(
+    user: Session["user"],
     appSession: unknown,
     userId: string,
   ): Promise<ValidatedSession> {
-    if (typeof accessToken !== "string" || !accessToken)
-      throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
-    const user = await this.auth.getUser(accessToken);
     // Re-read after the provider: revocation, expiry and activation may change in flight.
     const current = await this.currentSession(appSession);
     if (
@@ -93,6 +90,16 @@ export class SessionService {
     )
       throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
     return current;
+  }
+  private async validateAccessToken(
+    accessToken: unknown,
+    appSession: unknown,
+    userId: string,
+  ): Promise<ValidatedSession> {
+    if (typeof accessToken !== "string" || !accessToken)
+      throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
+    const user = await this.auth.getUser(accessToken);
+    return this.validateProviderUser(user, appSession, userId);
   }
   async requireActiveSession(accessToken: unknown, appSession: unknown) {
     const session = await this.currentSession(appSession);
@@ -107,8 +114,8 @@ export class SessionService {
   async refresh(appSession: unknown, refresh: () => Promise<Session>) {
     const initial = await this.currentSession(appSession);
     const session = await refresh();
-    const actor = await this.validateAccessToken(
-      session.access_token,
+    const actor = await this.validateProviderUser(
+      session.user,
       appSession,
       initial.userId,
     );

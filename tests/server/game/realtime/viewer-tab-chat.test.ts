@@ -85,7 +85,6 @@ async function fixture() {
     viewer = members[1]!,
     entry = await http.create(owner.proof, {
       commandId: randomUUID(),
-      name: "Actual Viewer Tab Chat",
     });
   await http.join(viewer.proof, {
     commandId: randomUUID(),

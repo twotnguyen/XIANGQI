@@ -59,7 +59,6 @@ async function setup() {
   const http = new RoomHttpService(rooms, coordinator, authorizer);
   const entry = await http.create(host.proof, {
     commandId: randomUUID(),
-    name: "Synthetic viewer room",
   });
   await http.join(viewer.proof, {
     commandId: randomUUID(),

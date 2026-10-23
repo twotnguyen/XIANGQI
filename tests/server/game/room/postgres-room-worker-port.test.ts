@@ -8,6 +8,7 @@ import { RoomStore } from "@server/game/room/room-store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomWorker } from "@server/game/room/room-worker.js";
 import { PostgresRoomWorkerPort } from "@server/game/room/postgres-room-worker-port.js";
+import type { RoomScope } from "@server/game/room/room.types.js";
 import { databaseUrl, pool, reset } from "./room-transactions.test-helper.js";
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 const coordinator = new RoomTransactions(pool);
@@ -51,9 +52,7 @@ async function setup(two = false) {
   const run = <T>(
     actor: typeof a,
     roomIds: string[],
-    work: (
-      s: import("@server/game/room/room.types.js").RoomScope,
-    ) => Promise<T>,
+    work: (s: RoomScope) => Promise<T>,
   ) =>
     coordinator.withRoom(
       { actor, roomIds },
@@ -61,7 +60,7 @@ async function setup(two = false) {
       work,
     );
   const created = await run(a, [], (s) =>
-    rooms.create(s, { commandId: randomUUID(), name: "Synthetic Worker" }),
+    rooms.create(s, { commandId: randomUUID() }),
   );
   if (created.status !== "active") throw Error("fixture");
   const roomId = created.value.roomId,
@@ -375,5 +374,45 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
         )
       ).rows[0].delivered,
     ).toBe(true);
+  });
+  it("prunes expired receipts, preserves fresh retries and skips an entry locked by another transaction", async () => {
+    const f = await setup();
+    const entries = [randomUUID(), randomUUID(), randomUUID()];
+    await pool.query(
+      `INSERT INTO xiangqi_room.entry_receipts(actor_id,command_id,fingerprint,room_id,response,expires_at)
+       SELECT $1,id,repeat('a',64),$2,'{}'::jsonb,
+         CASE WHEN id=$4::uuid THEN now()+interval '1 hour' ELSE now()-interval '1 second' END
+       FROM unnest($3::uuid[]) id`,
+      [f.a.userId, f.roomId, entries, entries[2]],
+    );
+    const lock = await pool.connect();
+    try {
+      await lock.query("BEGIN");
+      await lock.query(
+        "SELECT 1 FROM xiangqi_room.entry_receipts WHERE actor_id=$1 AND command_id=$2 FOR UPDATE",
+        [f.a.userId, entries[1]],
+      );
+      expect(await f.port.cleanupExpiredReceipts()).toBe(1);
+      expect(
+        (
+          await pool.query(
+            "SELECT command_id FROM xiangqi_room.entry_receipts WHERE command_id=ANY($1::uuid[]) ORDER BY command_id",
+            [entries],
+          )
+        ).rows.map((row) => row.command_id),
+      ).toEqual([entries[1], entries[2]].sort());
+    } finally {
+      await lock.query("ROLLBACK");
+      lock.release();
+    }
+    expect(await f.port.cleanupExpiredReceipts()).toBe(1);
+    expect(
+      (
+        await pool.query(
+          "SELECT command_id FROM xiangqi_room.entry_receipts WHERE command_id=ANY($1::uuid[])",
+          [entries],
+        )
+      ).rows,
+    ).toEqual([{ command_id: entries[2] }]);
   });
 });

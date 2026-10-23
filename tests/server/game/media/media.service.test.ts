@@ -134,23 +134,106 @@ describe.skipIf(!url)("media access", () => {
       access.setShare(a.userId, roomId, "EVERYONE" as never),
     ).rejects.toMatchObject({ code: "MEDIA_INPUT_INVALID" });
   });
-  it("revokes both rooms and never rejects on service outage", async () => {
-    const calls: string[] = [];
-    const access = new MediaAccess(config, pool, (async (
-      url: string | URL | Request,
-    ) => {
-      calls.push(String(url));
+  it("uses HTTP service URLs and room-scoped grants for both participant scopes", async () => {
+    const calls: { url: string; body: string; token: string }[] = [];
+    const access = new MediaAccess(config, pool, (async (input, init) => {
+      calls.push({
+        url: String(input),
+        body: String(init?.body),
+        token: new Headers(init?.headers).get("Authorization") ?? "",
+      });
       return { ok: true } as Response;
     }) as typeof fetch);
     await access.revoke("room-1", "user-1");
-    expect(calls).toEqual([
-      `${config.url}/twirp/livekit.RoomService/RemoveParticipant`,
-      `${config.url}/twirp/livekit.RoomService/RemoveParticipant`,
+    expect(calls.map(({ url }) => url)).toEqual([
+      "https://media.example.invalid/twirp/livekit.RoomService/RemoveParticipant",
+      "https://media.example.invalid/twirp/livekit.RoomService/RemoveParticipant",
     ]);
-    const failing = new MediaAccess(config, pool, (async () => {
+    for (const [index, room] of [
+      privateRoomName("room-1"),
+      stageRoomName("room-1"),
+    ].entries()) {
+      expect(JSON.parse(calls[index]!.body)).toEqual({
+        room,
+        identity: "user-1",
+      });
+      expect(
+        decodeJwt(calls[index]!.token.slice("Bearer ".length)).video,
+      ).toMatchObject({ room, roomAdmin: true });
+    }
+  });
+  it("attempts both participant scopes and propagates forbidden and transport failures", async () => {
+    let call = 0;
+    const forbidden = new MediaAccess(config, pool, (async () => {
+      call++;
+      return {
+        ok: false,
+        status: 403,
+        json: async () => ({ code: "permission_denied" }),
+      } as Response;
+    }) as typeof fetch);
+    await expect(forbidden.revoke("room-1", "user-1")).rejects.toBeInstanceOf(
+      AggregateError,
+    );
+    expect(call).toBe(2);
+    const transport = new MediaAccess(config, pool, (async () => {
       throw new Error("media down");
     }) as typeof fetch);
-    await expect(failing.revoke("room-1", "user-1")).resolves.toBeUndefined();
+    await expect(transport.revoke("room-1", "user-1")).rejects.toThrow();
+  });
+  it("deletes both room scopes, treats not_found as idempotent, and propagates real failures", async () => {
+    const calls: { url: string; body: string; grant: unknown }[] = [];
+    const access = new MediaAccess(config, pool, (async (input, init) => {
+      calls.push({
+        url: String(input),
+        body: String(init?.body),
+        grant: decodeJwt(
+          new Headers(init?.headers)
+            .get("Authorization")!
+            .slice("Bearer ".length),
+        ).video,
+      });
+      return { ok: true } as Response;
+    }) as typeof fetch);
+    await access.revokeRoom("room-2");
+    expect(calls.map(({ url }) => url)).toEqual([
+      "https://media.example.invalid/twirp/livekit.RoomService/DeleteRoom",
+      "https://media.example.invalid/twirp/livekit.RoomService/DeleteRoom",
+    ]);
+    expect(calls.map(({ body }) => JSON.parse(body))).toEqual([
+      { room: privateRoomName("room-2") },
+      { room: stageRoomName("room-2") },
+    ]);
+    expect(calls.map(({ grant }) => grant)).toEqual([
+      { roomCreate: true },
+      { roomCreate: true },
+    ]);
+    const missing = new MediaAccess(
+      config,
+      pool,
+      (async () =>
+        ({
+          ok: false,
+          status: 404,
+          json: async () => ({ code: "not_found" }),
+        }) as Response) as typeof fetch,
+    );
+    await expect(missing.revokeRoom("room-2")).resolves.toBeUndefined();
+    const denied = new MediaAccess(
+      config,
+      pool,
+      (async () =>
+        ({
+          ok: false,
+          status: 403,
+          json: async () => ({ code: "permission_denied" }),
+        }) as Response) as typeof fetch,
+    );
+    await expect(denied.revokeRoom("room-2")).rejects.toThrow();
+    const transport = new MediaAccess(config, pool, (async () => {
+      throw new Error("media down");
+    }) as typeof fetch);
+    await expect(transport.revokeRoom("room-2")).rejects.toThrow();
   });
   it("reads media configuration strictly", () => {
     expect(readMediaConfig({})).toBeNull();

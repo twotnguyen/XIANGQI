@@ -518,9 +518,16 @@ describe.skipIf(!realtimeTestUrl)(
         const peer = socket(room.roomId, room.members[0]!);
         await connect(peer.client);
         const request = readyCommand(room.roomId);
+        const committedSnapshot = event<RoomSnapshot>(
+          peer.client,
+          "room.snapshot",
+        );
         expect(await command(peer.client, request)).toMatchObject({
           status: "ok",
         });
+        // Ack precedes publication; consume the authorized command's snapshot
+        // before testing that failed reauthentication publishes nothing.
+        expect(await committedSnapshot).toMatchObject({ version: 1 });
         providerFailures.set(
           peer.token,
           known
@@ -784,7 +791,9 @@ describe.skipIf(!realtimeTestUrl)(
       await connect(red.client);
       await connect(black.client);
       const request = readyCommand(room.roomId);
+      const committedSnapshot = event<RoomSnapshot>(red.client, "room.snapshot");
       await command(red.client, request);
+      expect(await committedSnapshot).toMatchObject({ version: 1 });
       identities.delete(red.token);
       expect(await command(red.client, request)).toMatchObject({
         status: "error",
@@ -795,6 +804,7 @@ describe.skipIf(!realtimeTestUrl)(
       expect(
         await command(black.client, readyCommand(room.roomId, 1)),
       ).toMatchObject({ status: "ok" });
+      await gateway.publishSnapshots(room.roomId);
       // An acknowledgement on the revoked peer flushes any earlier frames on that same transport.
       expect(await command(red.client, request)).toMatchObject({
         status: "error",
@@ -809,9 +819,11 @@ describe.skipIf(!realtimeTestUrl)(
       await connect(red.client);
       await connect(black.client);
       const request = readyCommand(room.roomId);
+      const committedSnapshot = event<RoomSnapshot>(red.client, "room.snapshot");
       expect(await command(red.client, request)).toMatchObject({
         status: "ok",
       });
+      expect(await committedSnapshot).toMatchObject({ version: 1 });
       capabilities.delete(red.token);
       expect(identities.has(red.token)).toBe(true);
       for (const input of [request, readyCommand(room.roomId, 1)])

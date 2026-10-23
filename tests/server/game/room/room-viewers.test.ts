@@ -56,7 +56,7 @@ async function fullRoom() {
     b = await admitted(),
     w = await admitted();
   const e = await run(h.a, h.proof, [], (s) =>
-    store.create(s, { commandId: randomUUID(), name: "Khan dai" }),
+    store.create(s, { commandId: randomUUID() }),
   );
   await run(b.a, b.proof, [e.roomId], (s) =>
     store.join(s, {

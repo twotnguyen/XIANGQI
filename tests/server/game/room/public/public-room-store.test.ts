@@ -30,14 +30,14 @@ async function run<T>(
   if (result.status !== "active") throw new Error("Synthetic actor ended");
   return result.value;
 }
-async function create(name = "Public Fixture", viewerLimit = 5) {
+async function create(viewerLimit = 5) {
   const host = await actor();
   await pool.query(
     "UPDATE public.profiles SET display_name=$2 WHERE user_id=$1",
-    [host.userId, name + " Host"],
+    [host.userId, "Public Fixture Host"],
   );
   const entry = await run(host, [], (s) =>
-    rooms.create(s, { commandId: randomUUID(), name, viewerLimit }),
+    rooms.create(s, { commandId: randomUUID(), viewerLimit }),
   );
   await run(host, [entry.roomId], (s) =>
     rooms.changeVisibility(s, entry.roomId, entry.version, "PUBLIC"),
@@ -88,10 +88,10 @@ describe.skipIf(!databaseUrl)(
     });
     it("projects only PUBLIC open managed rooms and safe Host display fields, preserving unknown dates", async () => {
       const a = await actor(),
-        visible = await create("Visible"),
-        privateRoom = await create("Private"),
-        locked = await create("Locked"),
-        closed = await create("Closed");
+        visible = await create(),
+        privateRoom = await create(),
+        locked = await create(),
+        closed = await create();
       await run(privateRoom.host, [privateRoom.roomId], async (s) => {
         const v = await rooms.snapshot(s, privateRoom.roomId);
         await rooms.changeVisibility(
@@ -124,8 +124,8 @@ describe.skipIf(!databaseUrl)(
       expect(data).toEqual([
         {
           roomId: visible.roomId,
-          name: "Visible",
-          host: { displayName: "Visible Host", isGuest: true },
+          name: `Phòng ${visible.inviteCode}`,
+          host: { displayName: "Public Fixture Host", isGuest: true },
           timeMinutes: 10,
           status: "waiting",
           spectators: 0,
@@ -137,7 +137,7 @@ describe.skipIf(!databaseUrl)(
         },
       ]);
       const serialized = JSON.stringify(data);
-      expect(serialized).not.toContain(visible.inviteCode!);
+      expect(data[0]).not.toHaveProperty("inviteCode");
       expect(serialized).not.toContain(visible.host.userId);
       expect(serialized).not.toMatch(/email|username|session|position|token/);
     });
@@ -170,7 +170,7 @@ describe.skipIf(!databaseUrl)(
       const reader = await actor(),
         entries = [];
       for (let i = 0; i < 51; i++) {
-        const f = await create("Room " + i);
+        const f = await create();
         await pool.query(
           "UPDATE public.rooms SET public_opened_at=$2 WHERE id=$1",
           [f.roomId, new Date(1600000000000 + i)],
@@ -211,14 +211,14 @@ describe.skipIf(!databaseUrl)(
     }, 15000);
     it("zero viewers remains explicit, while expired five-minute reservations free capacity at authoritative join", async () => {
       const reader = await actor(),
-        none = await create("No viewers", 0);
+        none = await create(0);
       expect(
         (await list(reader)).find((r) => r.roomId === none.roomId),
       ).toMatchObject({ viewerLimit: 0, spectators: 0, canWatch: false });
       await expect(join(reader, none.roomId)).rejects.toMatchObject({
         code: "ROOM_FULL",
       });
-      const f = await create("Full viewers"),
+      const f = await create(),
         watchers = [];
       for (let i = 0; i < 5; i++) {
         const w = await actor();
@@ -275,7 +275,7 @@ describe.skipIf(!databaseUrl)(
       expect(await list(outsider)).toEqual([]);
     });
     it("projects actual PLAYING state as watch-only without disclosing the match or player identities", async () => {
-      const f = await create("Playing Public"),
+      const f = await create(),
         black = await actor(),
         viewer = await actor();
       await join(black, f.roomId, "play");
@@ -372,7 +372,7 @@ describe.skipIf(!databaseUrl)(
       ).toBe(2);
     });
     it("two concurrent watch clicks cannot overfill a single viewer slot or take a seat", async () => {
-      const f = await create("One viewer", 1),
+      const f = await create(1),
         a = await actor(),
         b = await actor();
       const results = await Promise.allSettled([

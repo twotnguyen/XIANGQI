@@ -106,7 +106,6 @@ describe.skipIf(!databaseUrl)(
         };
         const entry = await post("/rooms", a, {
           commandId: randomUUID(),
-          name: "Disconnect Runtime",
           timeMinutes: 5,
         });
         await post("/rooms/join", b, {

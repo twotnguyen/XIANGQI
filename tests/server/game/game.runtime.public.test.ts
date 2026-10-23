@@ -90,7 +90,6 @@ async function fixture(modes = true) {
   const create = async () => {
     const response = await request("/rooms", 0, {
       commandId: randomUUID(),
-      name: "Actual Public Runtime",
       timeMinutes: 5,
     });
     expect(response.status).toBe(200);
@@ -222,17 +221,21 @@ describe.skipIf(!databaseUrl)(
         expect(dto).toEqual(feed.latest());
         expect(dto[0]).toMatchObject({
           roomId: entry.roomId,
+          name: `Phòng ${entry.inviteCode}`,
           host: { displayName: "Synthetic Public 0", isGuest: false },
           emptySeats: 1,
           status: "waiting",
           canPlay: true,
         });
         expect(dto[0]!.publicOpenedAt).toEqual(expect.any(String));
+        expect(dto[0]).not.toHaveProperty("inviteCode");
         const serialized = JSON.stringify(dto);
-        for (const privateValue of [
-          entry.inviteCode,
-          ...f.members.flatMap((m) => [m.id, m.email, m.token, m.appSession]),
-        ])
+        for (const privateValue of f.members.flatMap((m) => [
+          m.id,
+          m.email,
+          m.token,
+          m.appSession,
+        ]))
           expect(serialized).not.toContain(privateValue);
         const hidden = Date.now();
         await f.mode(entry.roomId, "CODE_ONLY");

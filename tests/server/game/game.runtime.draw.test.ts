@@ -105,7 +105,6 @@ async function playing() {
       });
     const created = await post("/rooms", 0, {
       commandId: randomUUID(),
-      name: "Runtime Draw Gate",
       timeMinutes: 5,
     });
     expect(created.status).toBe(200);

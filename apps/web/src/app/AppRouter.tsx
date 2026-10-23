@@ -451,6 +451,9 @@ export function AppRouter() {
   const title = titles[route.name] || "Chức năng đang chuẩn bị";
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
   useEffect(() => {
+    if (route.name === "room") void loadRoomPage().catch(() => undefined);
+  }, [route.name]);
+  useEffect(() => {
     if (session.state.status !== "active-member") return;
     let alive = true;
     queueMicrotask(() => {

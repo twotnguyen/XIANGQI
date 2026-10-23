@@ -464,7 +464,6 @@ it("loads validated public rooms and opens the actual create dialog", async () =
   });
   fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(screen.getByRole("dialog")).toBeTruthy();
-  await screen.findByLabelText("Tên phòng");
   fireEvent.click(screen.getByRole("button", { name: "Huỷ" }));
   feedRooms([room]);
   mock.authorizedFetch.mockResolvedValueOnce(
@@ -626,9 +625,6 @@ it("creates through the authorized form then enters the actual server room route
   );
   fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(screen.getByRole("dialog")).toBeTruthy();
-  fireEvent.change(await screen.findByLabelText("Tên phòng"), {
-    target: { value: "Phòng thực" },
-  });
   fireEvent.click(
     within(screen.getByRole("dialog")).getByRole("button", {
       name: "Tạo phòng",
@@ -640,8 +636,8 @@ it("creates through the authorized form then enters the actual server room route
   const create = mock.authorizedFetch.mock.calls.find(
     (call) => call[0] === "/rooms",
   );
-  expect(JSON.parse(create![1].body)).toMatchObject({
-    name: "Phòng thực",
+  expect(JSON.parse(create![1].body)).toEqual({
+    commandId: expect.stringMatching(/^[0-9a-f-]{36}$/),
     timeMinutes: 10,
     viewerLimit: 5,
   });

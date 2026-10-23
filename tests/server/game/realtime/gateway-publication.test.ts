@@ -9,7 +9,7 @@ import { RoomError } from "@server/game/room/room.types.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import type { ChatReadRequest } from "@xiangqi/shared";
 import type { RealtimeStore } from "@server/game/realtime/store.js";
-import type { CommandAcknowledgement } from "@xiangqi/shared";
+import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
 async function fixture(chatEnabled = false, viewerTabOwnership = false) {
   const roomId = randomUUID(),
     users = new Map<string, string>(),
@@ -17,7 +17,8 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
   let providerFailure = false,
     membership = false,
     snapshotFailure = false,
-    failAfterCommit = false;
+    failAfterCommit = false,
+    snapshotGate: Promise<void> | null = null;
   const snapshot = {
     roomId,
     version: 1,
@@ -83,6 +84,7 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
     if (membership)
       throw new RealtimeError("ROOM_FORBIDDEN", "private membership");
     if (snapshotFailure) throw new Error("PRIVATE_SQL_SECRET");
+    if (snapshotGate) await snapshotGate;
     return forConnection(connection);
   });
   const command = vi.fn(async () => {
@@ -141,12 +143,12 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
       },
     });
     clients.push(client);
-    const initial = new Promise<void>((r) =>
-      client.once("room.snapshot", () => r()),
+    const initial = new Promise<RoomSnapshot>((r) =>
+      client.once("room.snapshot", r),
     );
     client.connect();
-    await initial;
-    return { client, userId, token };
+    const initialSnapshot = await initial;
+    return { client, userId, token, initialSnapshot };
   }
   return {
     roomId,
@@ -163,6 +165,7 @@ async function fixture(chatEnabled = false, viewerTabOwnership = false) {
     setProvider: (b: boolean) => (providerFailure = b),
     setMembership: (b: boolean) => (membership = b),
     setSnapshot: (b: boolean) => (snapshotFailure = b),
+    setSnapshotGate: (gate: Promise<void> | null) => (snapshotGate = gate),
     setAfterCommit: () => (failAfterCommit = true),
     close: async () => {
       clients.forEach((c) => c.disconnect());
@@ -267,6 +270,48 @@ describe("native realtime publication outcomes", () => {
       }
     },
   );
+  it("does not publish snapshots after membership is revoked", async () => {
+    const f = await fixture();
+    try {
+      const peer = await f.peer();
+      f.setMembership(true);
+      const snapshots: RoomSnapshot[] = [];
+      peer.client.on("room.snapshot", (value: RoomSnapshot) =>
+        snapshots.push(value),
+      );
+      await f.gateway.publishSnapshots(f.roomId);
+      expect(snapshots).toEqual([]);
+    } finally {
+      await f.close();
+    }
+  });
+  it("acks a committed receipt without waiting for snapshot publication", async () => {
+    const f = await fixture();
+    let release!: () => void;
+    const blocked = new Promise<void>((resolve) => (release = resolve));
+    try {
+      const peer = await f.peer();
+      f.setSnapshotGate(blocked);
+      const result = await peer.client
+        .timeout(1000)
+        .emitWithAck("room.command", {
+          roomId: f.roomId,
+          commandId: randomUUID(),
+          expectedVersion: 1,
+          action: { type: "room.ready", payload: { ready: true } },
+        });
+      expect(result).toMatchObject({
+        status: "error",
+        error: { code: "MATCH_TIME_EXPIRED" },
+        snapshot: { version: 1 },
+      });
+      expect(f.command).toHaveBeenCalledOnce();
+    } finally {
+      release();
+      f.setSnapshotGate(null);
+      await f.close();
+    }
+  });
   it("acknowledges a committed terminal error even if subsequent publication fails", async () => {
     const f = await fixture(),
       log = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
@@ -350,6 +395,23 @@ describe("native realtime publication outcomes", () => {
       await f.close();
     }
   });
+});
+it("delivers admission state even if a subsequent snapshot read is unavailable", async () => {
+  const f = await fixture();
+  try {
+    f.setSnapshot(true);
+    const peer = await f.peer();
+    expect(peer.initialSnapshot).toMatchObject({
+      roomId: f.roomId,
+      version: 1,
+      control: { mode: "writable", generation: 1 },
+    });
+    const response = await sync(peer.client);
+    expect(response.status).toBe("error");
+    expect(response).not.toHaveProperty("snapshot");
+  } finally {
+    await f.close();
+  }
 });
 
 async function sync(client: Socket) {

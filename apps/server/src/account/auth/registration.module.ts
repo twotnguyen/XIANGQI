@@ -176,6 +176,7 @@ export async function createRegistrationRuntime(
   };
   const pool = new Pool(poolOptions);
   let sessionPool: Pool | null = null;
+  let schemaReady = true;
   try {
     const schema = await pool.query(
       "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AS \"loginReady\"",
@@ -184,8 +185,10 @@ export async function createRegistrationRuntime(
       !schema.rows[0]?.ready ||
       !schema.rows[0]?.canAssumeRole ||
       (settings.loginEnabled && !schema.rows[0]?.loginReady)
-    )
+    ) {
+      schemaReady = false;
       throw new Error();
+    }
     if (settings.loginEnabled) {
       // Registration keeps its connection while invoking password/session work.
       // A separate pool prevents five concurrent registrations exhausting their own nested calls.
@@ -194,7 +197,12 @@ export async function createRegistrationRuntime(
     }
   } catch {
     await Promise.all([pool.end(), sessionPool?.end()]);
-    throw new Error("Registration migration is not ready");
+    // A connection/TLS/timeout failure must not be reported as a missing migration.
+    throw new Error(
+      schemaReady
+        ? "Registration database unavailable"
+        : "Registration migration is not ready",
+    );
   }
   const auth = new SupabaseAuth(
     settings.url,

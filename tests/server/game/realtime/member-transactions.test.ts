@@ -47,7 +47,7 @@ async function setup() {
     rooms,
     coordinator,
     authorizer,
-  ).create(proof, { commandId: randomUUID(), name: "Realtime Member" });
+  ).create(proof, { commandId: randomUUID() });
   provider.getUser.mockClear();
   const identities = new MemberRealtimeIdentities(authorizer),
     transactions = new MemberRealtimeTransactions(coordinator, authorizer);

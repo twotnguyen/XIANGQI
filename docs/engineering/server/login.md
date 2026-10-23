@@ -32,9 +32,12 @@ Tra capability dùng một truy vấn JOIN `app_sessions` với account/profile.
 Mỗi lần xác thực đọc hai snapshot: trước khi gọi Auth và sau khi Auth trả về.
 Snapshot cuối kiểm lại thu hồi, hạn phiên, tài khoản hoàn tất và email/danh tính;
 không dùng kết quả cũ nếu tài khoản thay đổi trong lúc gọi dịch vụ từ xa.
-Refresh tái sử dụng actor đã xác thực thay vì đọc lại phiên/tài khoản.
-Guard gắn actor vào request để API phiên/hồ sơ dùng lại; không cache giữa các
-request, không đổi role database và không gia hạn `expiresAt`.
+Refresh kiểm danh tính từ `user` trong phản hồi làm mới token thành công của
+provider, không gọi thêm `getUser` cho token vừa được cấp. Vẫn đối chiếu ID,
+email đã xác nhận, trạng thái đăng ký và email trong database sau lời gọi Auth;
+xác thực bearer thông thường vẫn gọi `getUser`. Controller tái sử dụng actor
+đã kiểm, guard gắn actor vào request để API phiên/hồ sơ dùng lại; không cache
+giữa các request, không đổi role database và không gia hạn `expiresAt`.
 
 Reload frontend vẫn phải chờ `/auth/refresh` trước khi mở trang cần đăng nhập.
 Không dùng dữ liệu localStorage làm bằng chứng phiên hợp lệ.

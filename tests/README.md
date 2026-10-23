@@ -31,36 +31,53 @@ Cấu hình ở `vitest.config.ts` (chạy) và `tests/tsconfig.json` (kiểm ki
 
 ## Chạy
 
+**Không tự chạy test local khi coding hoặc hoàn thành tác vụ.** Chỉ dùng các lệnh test/self-check bên dưới khi người dùng yêu cầu rõ; CI GitHub giữ trách nhiệm kiểm thử tự động theo từng nhánh. Nguồn điều phối duy nhất là [AGENTS.md](../AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules).
+
+Ví dụ chạy đúng phạm vi **sau khi được yêu cầu test**:
+
+```sh
+pnpm exec vitest run tests/server/core/logger.test.ts
+tests/server/db.sh test tests/server/game/chat/chat-realtime.test.ts
+tests/server/db.sh stop
+```
+
+**Các lệnh toàn diện dưới đây dành cho CI hoặc yêu cầu kiểm tra toàn diện rõ ràng của người dùng, không phải checklist mỗi tác vụ:**
+
 ```sh
 pnpm test                    # test không cần database (các bộ cần database tự bỏ qua)
 pnpm test:fast               # như pnpm test nhưng bỏ qua timing.test.ts (chạy nhanh hơn)
 pnpm test:unit               # chỉ chạy test web và packages (không động tới server)
 pnpm test:core               # luật cờ + ngưỡng độ phủ 90%
 pnpm typecheck               # gồm kiểm kiểu toàn bộ test (0 lỗi, chặn CI)
-tests/server/db.sh test      # toàn bộ test, gồm các bộ cần database (dựng 12 cụm Postgres 17 cục bộ)
-tests/server/db.sh test tests/server/game/room   # chỉ một nhóm
-tests/server/db.sh stop      # tắt các cụm (db.sh purge để xóa dữ liệu)
+tests/server/db.sh test      # toàn bộ test; dựng đủ cụm cần thiết khi không lọc file
 ```
 
-Mỗi bộ test cần database khóa cứng host `127.0.0.1`, cổng và tên database (xem guard trong `*.test-helper.ts`
-và `ci.yml`), nên `db.sh` dựng đúng từng cụm riêng. Kết quả chuẩn khi chạy đầy đủ: mọi test pass, 0 skip.
+`db.sh test` dùng `vitest list --filesOnly` với chính đối số sẽ truyền cho lượt chạy, rồi theo các import tương đối tĩnh trong test/helper để chọn cụm. Vì vậy nhiều file/thư mục và `--exclude` đều được tính trước khi khởi động PostgreSQL; riêng test không cần SQL không yêu cầu cài PostgreSQL. Helper dùng chung giữa các miền vẫn chọn đúng database (ví dụ chat dùng cụm phòng); draw worker và game runtime dùng chung cụm 55452.
+
+Runner xóa các biến `*_TEST_DATABASE_URL` thuộc danh sách quản lý được kế thừa, rồi chỉ cấp URL local cho cụm đã chọn; tên database chưa được khai báo hoặc import tương đối không phân giải được sẽ báo lỗi trước khi dựng cụm. Guard host/port/tên database trong các bộ test giữ nguyên. `start`, `stop`, `status`, `env`, `purge` vẫn thao tác toàn bộ danh sách cụm như trước.
+
+Self-check của bộ chọn (chỉ chạy khi được yêu cầu; không dựng database):
+
+```sh
+node tests/server/db-scope.mjs --self-test
+```
 
 Chỉ chạy lệnh trên với database test cô lập này; không trỏ biến `*_TEST_DATABASE_URL` vào Supabase hay dữ liệu thật.
 
 ## Commit/push nhanh và CI theo phạm vi
 
-Tác vụ chỉ commit/push không chạy lại lint/test/build hay chờ CI. Agent kiểm tra nhánh, diff/whitespace và bí mật staged, commit/push rồi trả mã commit. Merge cũng thực hiện ngay khi được yêu cầu và GitHub cho phép, không dùng `--watch`, polling hay đợi CI trừ khi người dùng yêu cầu rõ. Nếu GitHub chặn bằng kiểm tra bắt buộc/bảo vệ nhánh, báo ngay thay vì tự chờ hoặc bypass. Trong lúc code, chỉ chạy file test hoặc smoke phần vừa sửa; không tự quét hàng trăm test web/packages/server. Không lặp lại kiểm tra nếu mã/dependency/cấu hình liên quan chưa đổi. Commit/push/merge thành công không phải bằng chứng test đã đạt.
+Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được điều phối duy nhất tại [AGENTS.md — Coding nhanh và phạm vi kiểm chứng](../AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules). Các lệnh ở đây không cấp quyền tự chạy test local, kể cả một file, test mới hoặc self-check; không chạy lại kết quả còn hiệu lực.
 
 **Luồng phát triển:** push `develop` hoặc PR vào `develop` chỉ chạy lint/typecheck toàn repo và build ứng dụng bị ảnh hưởng. Không chạy các bộ core/unit/database. `.github/scripts/ci-scope.mjs` chọn build theo diff:
 
-| Vùng thay đổi | Build trên `develop` |
-|---|---|
-| `apps/web/`, `tests/web/` | Web và dependency |
-| `apps/server/`, `tests/server/`, `supabase/` | Server và dependency |
-| `packages/`, `tests/packages/` | Cả hai ứng dụng |
+| Vùng thay đổi                                                             | Build trên `develop`                    |
+| ------------------------------------------------------------------------- | --------------------------------------- |
+| `apps/web/`, `tests/web/`                                                 | Web và dependency                       |
+| `apps/server/`, `tests/server/`, `supabase/`                              | Server và dependency                    |
+| `packages/`, `tests/packages/`                                            | Cả hai ứng dụng                         |
 | Cấu hình gốc, workflow, đường dẫn chưa phân loại hoặc không đọc được diff | Cả hai ứng dụng; không tự bật test nặng |
 
-PR vào `main` và push `main` chạy mọi nhóm test/build cùng toàn bộ test server trên 12 cụm PostgreSQL cô lập ở nền; agent không chờ lượt này khi merge, trừ khi người dùng yêu cầu rõ. Giữ cả hai sự kiện để kiểm tra cả cập nhật qua PR và push trực tiếp; không chạy thêm toàn bộ database local. Thay đổi chỉ gồm Markdown, `docs/` hoặc `.env.example` vẫn không kích hoạt workflow.
+PR vào `main` và push `main` chạy mọi nhóm test/build cùng toàn bộ test server trên 12 cụm PostgreSQL cô lập. Giữ cả hai sự kiện để kiểm tra cả cập nhật qua PR và push trực tiếp. Thay đổi chỉ gồm Markdown, `docs/` hoặc `.env.example` vẫn không kích hoạt workflow.
 
 **Luồng tích hợp `main`:** core chạy một lần với coverage, sau đó `test:unit` loại thư mục core để không chạy trùng. Các lệnh local giữ nguyên để dùng khi chủ động yêu cầu kiểm tra toàn diện, không phải thủ tục trước mỗi commit/push:
 
@@ -69,10 +86,44 @@ pnpm test:core --bail 1
 pnpm test:unit --exclude 'tests/packages/xiangqi-core/**' --bail 1
 ```
 
-Self-check của bộ lọc (không cần database/dependency ngoài Node và Git):
+Self-check của bộ lọc (chỉ chạy khi được yêu cầu; không cần database/dependency ngoài Node và Git):
 
 ```sh
 node .github/scripts/ci-scope.mjs --self-test
 ```
 
 Self-check kiểm tra ranh giới web/server/package, ảnh hưởng package dùng chung, cổng `main`, diff push/PR trên Git thật, rename liên vùng và fallback khi thiếu commit gốc. Bộ lọc dùng diff không gộp rename để không bỏ mất vùng cũ khi chuyển file.
+
+## Đo tải realtime trên dịch vụ đang chạy
+
+`load/realtime.ts` dùng HTTP API, Socket.IO và luật cờ thật; không khởi động
+runtime thứ hai vì startup recovery của runtime có thể tác động phòng đang có.
+Chỉ chạy khi được giao đo tải trên đúng môi trường. Không trỏ các
+`*_TEST_DATABASE_URL` vào Supabase để chạy các fixture reset.
+
+Chuẩn bị riêng 50 danh tính và phiên hợp lệ trong file quyền `600`, không gửi
+email; cấu trúc `{runId, users: [{userId, accessToken, appSession}]}`. Mỗi bearer
+vẫn được backend xác minh bằng GoTrue thật; không dùng mock provider hoặc
+chỉ decode JWT làm bằng chứng đăng nhập. Không in file proofs vào log.
+
+```sh
+REALTIME_LOAD_URL='https://HOST.ts.net:8443' \
+REALTIME_LOAD_ORIGIN='https://HOST.ts.net' \
+REALTIME_LOAD_PROOFS='.local/realtime-load/RUN_ID/proofs.json' \
+REALTIME_LOAD_OUTPUT='.local/realtime-load/RUN_ID/result.json' \
+REALTIME_LOAD_MANIFEST='.local/realtime-load/RUN_ID/resources.json' \
+REALTIME_LOAD_ROUNDS=20 \
+pnpm --filter @xiangqi/server exec tsx ../../tests/load/realtime.ts
+```
+
+Probe tạo 10 phòng với hai người chơi và ba người xem mỗi phòng; giữ 50 socket,
+chờ đủ snapshot và 10 ván thực sự ACTIVE, rồi gửi 20 vòng nước hợp lệ đồng thời
+qua 10 phòng. Đích là 200 nước, 800 mẫu gửi→snapshot của đối thủ/người xem.
+ACK đo riêng, không thay cho độ trễ nhận trạng thái chính thức. Các peer phải
+đồng thuận thế cờ sau mỗi vòng; lỗi hoặc thiếu mẫu không được tính PASS.
+
+File manifest ghi room/match IDs ngay khi tạo. Probe không reset/xóa database:
+người chạy phải dọn đúng resources và 50 danh tính tải sau khi lưu kết quả,
+không dọn theo tên gần giống hoặc khoảng thời gian. Đo CPU/RAM tiến trình server
+riêng; độ trễ chỉ có ý nghĩa với topology, phiên bản Node và đường mạng ghi nhận.
+Không dùng kết quả client cùng máy để chứng nhận nhiều thiết bị hoặc camera.

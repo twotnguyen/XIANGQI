@@ -117,7 +117,6 @@ async function request(
 it("creates with dual proof, whitelist fields and no-store, ignoring forged actor/settings", async () => {
   const response = await request("/rooms", {
     commandId,
-    name: "Phòng",
     timeMinutes: 5,
     viewerLimit: 0,
     userId: roomId,
@@ -130,7 +129,6 @@ it("creates with dual proof, whitelist fields and no-store, ignoring forged acto
   expect(resolve).toHaveBeenLastCalledWith(proof);
   expect(create).toHaveBeenLastCalledWith(scope, {
     commandId,
-    name: "Phòng",
     timeMinutes: 5,
     viewerLimit: 0,
   });
@@ -196,9 +194,8 @@ it("rejects malformed bodies/UUID and unsupported input types with400", async ()
   for (const body of [
     [],
     null,
-    { commandId, name: 1 },
-    { commandId, name: "Phòng", timeMinutes: "5" },
-    { commandId, name: "Phòng", viewerLimit: false },
+    { commandId, timeMinutes: "5" },
+    { commandId, viewerLimit: false },
   ]) {
     expect((await request("/rooms", body)).status).toBe(400);
   }
@@ -218,7 +215,7 @@ it("preserves known errors and sanitizes unknown provider/SQL payloads", async (
     create.mockRejectedValueOnce(
       new RoomError("ROOM_TEST", "Thông báo hợp lệ", status),
     );
-    const response = await request("/rooms", { commandId, name: "Phòng" });
+    const response = await request("/rooms", { commandId });
     expect(response.status).toBe(status);
     expect(await response.json()).toEqual({
       code: "ROOM_TEST",
@@ -226,19 +223,19 @@ it("preserves known errors and sanitizes unknown provider/SQL payloads", async (
     });
   }
   create.mockRejectedValueOnce(new Error("password=private provider payload"));
-  const response = await request("/rooms", { commandId, name: "Phòng" });
+  const response = await request("/rooms", { commandId });
   expect(response.status).toBe(503);
   expect(await response.text()).not.toContain("private");
 });
 it("fails closed for Guest or ended authorization before store work", async () => {
   resolve.mockResolvedValueOnce({ ...actor, kind: "guest" } as never);
   const calls = create.mock.calls.length;
-  expect((await request("/rooms", { commandId, name: "Phòng" })).status).toBe(
+  expect((await request("/rooms", { commandId })).status).toBe(
     403,
   );
   expect(create.mock.calls.length).toBe(calls);
   authorize.mockResolvedValueOnce({ status: "ended" } as never);
-  expect((await request("/rooms", { commandId, name: "Phòng" })).status).toBe(
+  expect((await request("/rooms", { commandId })).status).toBe(
     401,
   );
   expect(create.mock.calls.length).toBe(calls);
@@ -249,14 +246,14 @@ it("authenticates before entering SQL coordinator and rejects cross-origin write
     order.push("resolve");
     return actor;
   });
-  await request("/rooms", { commandId, name: "Phòng" });
+  await request("/rooms", { commandId });
   expect(order).toEqual(["resolve", "transaction"]);
   const calls = create.mock.calls.length;
   expect(
     (
       await request(
         "/rooms",
-        { commandId, name: "Phòng" },
+        { commandId },
         { Origin: "https://untrusted.invalid" },
       )
     ).status,

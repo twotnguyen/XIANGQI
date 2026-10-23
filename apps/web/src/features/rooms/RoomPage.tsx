@@ -197,28 +197,48 @@ export function RoomPage({
         setError((prev) => prev || "Chưa thể kết nối phòng. Vui lòng kiểm tra máy chủ hoặc thử lại.");
       }
     }, 6000);
-    // HTTP can display the room before realtime grants control.
-    queueMicrotask(() => {
-      if (!alive || latest.current) return;
+    let fallbackStarted = false;
+    let connectionGeneration = 0;
+    const loadDisplayFallback = () => {
+      if (!alive || connectedRef.current || fallbackStarted) return;
+      fallbackStarted = true;
+      const requestGeneration = connectionGeneration;
+      const requestEpoch = epoch.current;
       void client.snapshot(roomId).then(
         (value) => {
           if (
             alive &&
-            !latest.current &&
+            epoch.current === requestEpoch &&
+            connectionGeneration === requestGeneration &&
+            !connectedRef.current &&
             value.version >= versionFloor.current
           ) {
             versionFloor.current = value.version;
             setView(value);
           }
         },
-        () => {
-          if (alive && !latest.current)
+        (error) => {
+          if (
+            !alive ||
+            epoch.current !== requestEpoch ||
+            connectionGeneration !== requestGeneration ||
+            connectedRef.current ||
+            connection.current !== peer
+          )
+            return;
+          if (
+            error instanceof RoomRequestError &&
+            error.code === "ROOM_FORBIDDEN"
+          ) {
+            leaveCallback.current("Phòng không còn khả dụng.");
+          } else if (!latest.current) {
             setError(
               "Chưa thể tải phòng. Kiểm tra quyền vào phòng và kết nối.",
             );
+          }
         },
       );
-    });
+    };
     const peer = connect({
       roomId,
       getProof,
@@ -227,14 +247,17 @@ export function RoomPage({
       },
       onConnection: (value) => {
         if (alive) {
+          if (value !== connectedRef.current) connectionGeneration++;
           refreshEpoch.current++;
           connectedRef.current = value;
           setConnected(value);
           roomChat.update(null, value);
+          if (value) fallbackStarted = false;
           if (!value) {
             invalidateCommands();
             audioBaseline.current = true;
             setSnapshot(null);
+            loadDisplayFallback();
           }
         }
       },
@@ -259,8 +282,10 @@ export function RoomPage({
         !alive
       )
         return;
+      const current = latest.current;
+      if (!current?.match || current.match.status !== "ACTIVE") return;
       const requestEpoch = ++refreshEpoch.current;
-      const matchId = latest.current?.match?.id;
+      const matchId = current.match.id;
       const isCurrent = () =>
         alive &&
         connectedRef.current &&
@@ -615,6 +640,7 @@ export function RoomPage({
   ) {
     if (!view || busy) return;
     const requestEpoch = epoch.current;
+    if (action === "leave") refreshEpoch.current++;
     setBusy(true);
     setError("");
     setLeaveError("");
@@ -654,6 +680,14 @@ export function RoomPage({
       }
     } catch (e) {
       if (epoch.current !== requestEpoch) return;
+      if (
+        action === "leave" &&
+        e instanceof RoomRequestError &&
+        e.code === "ROOM_FORBIDDEN"
+      ) {
+        leaveCallback.current("Phòng không còn khả dụng.");
+        return;
+      }
       const message =
         e instanceof RoomRequestError
           ? swapMessage(e.code, e.message)
@@ -948,7 +982,15 @@ export function RoomPage({
       </fieldset>
       <div className="xq-room-content">
         <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
-          {error && <Notice tone="error" message={error} />}
+          {error &&
+            (connected ? (
+              <Notice tone="error" message={error} />
+            ) : (
+              <ErrorState
+                message={error}
+                onRetry={() => setRetry((value) => value + 1)}
+              />
+            ))}
           {room.downOffer?.inviteeId === userId && (
             <div
               className="xq-down-prompt"
@@ -1223,8 +1265,7 @@ export function RoomPage({
               <strong>{code}</strong>
             </div>
             <p className="xq-room-invite-hint">
-              Đọc mã này cho người muốn vào. Họ phải đăng nhập để ngồi ghế hoặc
-              xem.
+              Chia sẻ mã hoặc đường dẫn để mời kỳ hữu vào chơi hay xem.
             </p>
             <div className="xq-room-invite-actions">
               <Button
