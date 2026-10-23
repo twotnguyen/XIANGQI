@@ -1,90 +1,350 @@
 .xq-friends {
   max-width: 820px;
   margin: 0 auto;
-  padding: clamp(16px, 3vw, 32px);
+  padding: clamp(16px, 3vw, 36px);
   color: var(--color-ink, #fff5df);
   display: grid;
   gap: 24px;
 }
 
-.xq-friends h1 {
+/* 1. HEADER */
+.xq-friends__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(198, 146, 42, 0.25);
+}
+
+.xq-friends__header h1,
+.xq-friends__title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(26px, 3vw, 34px);
+  font-size: clamp(26px, 3.5vw, 36px);
   font-weight: 700;
   letter-spacing: 0.5px;
   background: linear-gradient(180deg, #fff5df 0%, #e2be78 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(198, 146, 42, 0.25);
 }
 
-.xq-friends h2 {
+.xq-friends__subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-ink-muted, #c8b6a2);
+  line-height: 1.5;
+}
+
+/* 2. CARD CONTAINER CHUNG */
+.xq-friends section,
+.xq-friends__search-card,
+.xq-friends__content-card {
+  margin-top: 0 !important;
+  padding: clamp(18px, 2.5vw, 24px) !important;
+  background: linear-gradient(180deg, rgba(38, 22, 14, 0.9) 0%, rgba(22, 13, 8, 0.95) 100%) !important;
+  border: 1.5px solid var(--color-gold-dark, #7a4e0f) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(8px);
+}
+
+.xq-friends__card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.xq-friends__card-header h2 {
+  margin: 0;
   font-family: var(--font-serif);
-  font-size: 18px;
-  margin: 0 0 12px;
-  color: var(--color-gold-light);
+  font-size: 20px;
+  color: var(--color-gold-light, #f5ca67);
+  letter-spacing: 0.3px;
 }
 
-.xq-friends section {
-  margin-top: 0;
-  padding: 20px 24px;
-  background: linear-gradient(180deg, rgba(38, 22, 14, 0.92) 0%, rgba(24, 14, 9, 0.96) 100%);
-  border: 1.5px solid var(--color-gold-dark);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+.xq-friends__card-hint {
+  font-size: 13px;
+  color: var(--color-ink-muted, #c8b6a2);
 }
 
-.xq-friends form {
+/* 3. FORM TÌM KIẾM */
+.xq-friends__search-form {
   display: flex;
   gap: 12px;
   align-items: flex-end;
   flex-wrap: wrap;
 }
 
-.xq-friends form > div {
+.xq-friends__search-input-wrap {
   flex: 1;
-  min-width: 200px;
+  min-width: 240px;
 }
 
-.xq-friends ul {
+.xq-friends__search-input-wrap .xq-field label {
+  color: var(--color-ink, #fff5df);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.xq-friends__search-input-wrap .xq-field input {
+  background: rgba(16, 10, 6, 0.85);
+  border: 1px solid rgba(198, 146, 42, 0.35);
+  border-radius: 8px;
+  color: var(--color-ink, #fff5df);
+  padding: 10px 14px;
+  font-size: 15px;
+  transition: all var(--motion-fast, 120ms);
+}
+
+.xq-friends__search-input-wrap .xq-field input:focus {
+  border-color: var(--color-gold-light, #f5ca67);
+  box-shadow: 0 0 0 3px rgba(245, 202, 103, 0.2);
+  outline: none;
+}
+
+.xq-friends__search-btn {
+  height: 44px;
+  padding: 0 20px;
+  font-weight: 600;
+  align-self: flex-start;
+  margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .xq-friends__search-btn {
+    align-self: stretch;
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+.xq-friends__search-empty {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px dashed rgba(198, 146, 42, 0.25);
+}
+
+.xq-friends__search-results {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(198, 146, 42, 0.2);
+}
+
+.xq-friends__section-label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-gold-light, #f5ca67);
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+/* 4. USER LIST & CARD ITEMS */
+.xq-friends__user-list {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
-.xq-friends li {
+.xq-friends__user-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 18px;
+  gap: 16px;
+  padding: 12px 18px;
   background: rgba(255, 253, 248, 0.04);
   border: 1px solid rgba(198, 146, 42, 0.2);
-  border-radius: 8px;
-  transition: all var(--motion-fast);
+  border-radius: 10px;
+  transition: all var(--motion-move, 180ms) ease;
 }
 
-.xq-friends li:hover {
+.xq-friends__user-item:hover {
   background: rgba(255, 253, 248, 0.07);
-  border-color: rgba(198, 146, 42, 0.4);
+  border-color: rgba(198, 146, 42, 0.45);
+  transform: translateY(-1px);
 }
 
+.xq-friends__user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* Avatar quân cờ sang trọng */
+.xq-friends__avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.xq-friends__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  background: radial-gradient(circle, #d8a562 0%, #875b26 100%);
+  border: 1.5px solid var(--color-gold-light, #f5ca67);
+  color: #fffdf8;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Chấm trạng thái trên avatar */
+.xq-friends__status-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #1a0f0a;
+}
+
+.xq-friends__status-dot--online {
+  background: #34d399;
+  box-shadow: 0 0 6px #34d399;
+}
+
+.xq-friends__status-dot--in-match {
+  background: #fbbf24;
+  box-shadow: 0 0 6px #fbbf24;
+}
+
+.xq-friends__status-dot--offline {
+  background: #6b7280;
+}
+
+/* Tên và tag trạng thái */
+.xq-friends__user-names {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.xq-friends__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.xq-friends__display-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-ink, #fff5df);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xq-friends__username {
+  font-size: 13px;
+  color: var(--color-ink-muted, #c8b6a2);
+}
+
+.xq-friends__status-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 999px;
+  line-height: 16px;
+}
+
+.xq-friends__status-pill--online {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.xq-friends__status-pill--in-match {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.xq-friends__status-pill--offline {
+  color: #9ca3af;
+  background: rgba(156, 163, 175, 0.1);
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+/* Nút thao tác */
+.xq-friends__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 680px) {
+  .xq-friends__user-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .xq-friends__actions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(198, 146, 42, 0.1);
+  }
+}
+
+/* 5. TABS & LỜI MỜI */
 .xq-friends [role="tablist"] {
-  border-bottom-color: rgba(198, 146, 42, 0.3);
+  border-bottom: 2px solid rgba(198, 146, 42, 0.25);
+  margin-bottom: 20px;
+  display: flex;
+  gap: 16px;
 }
 
 .xq-friends [role="tab"] {
-  color: var(--color-ink-muted);
+  padding: 10px 16px;
   font-weight: 600;
+  font-size: 15px;
+  color: var(--color-ink-muted, #c8b6a2);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all var(--motion-fast, 120ms);
+  background: transparent;
+  cursor: pointer;
+}
+
+.xq-friends [role="tab"]:hover {
+  color: var(--color-ink, #fff5df);
 }
 
 .xq-friends [role="tab"][aria-selected="true"] {
-  color: var(--color-gold-light);
-  border-bottom-color: var(--color-gold);
+  color: var(--color-gold-light, #f5ca67);
+  border-bottom-color: var(--color-gold, #c6922a);
 }
+
+.xq-friends__requests-container {
+  display: grid;
+  gap: 24px;
+}
+
+.xq-friends__requests-group {
+  display: grid;
+  gap: 10px;
+}
+
+.xq-friends__loading-card {
+  padding: 32px;
+  background: rgba(38, 22, 14, 0.9);
+  border-radius: 12px;
+  border: 1px solid var(--color-gold-dark, #7a4e0f);
+}
+
