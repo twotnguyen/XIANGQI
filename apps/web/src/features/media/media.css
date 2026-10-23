@@ -29,8 +29,28 @@
 }
 
 .xq-media-toggles button {
-  min-height: 40px;
+  min-height: 38px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.xq-media-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
+.xq-media-toggles button.is-active,
+.xq-media-toggles button[aria-pressed="true"] {
+  background: linear-gradient(180deg, #15803d, #166534);
+  border-color: #86efac;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
 }
 
 .xq-media-share {

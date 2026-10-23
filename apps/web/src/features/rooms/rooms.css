@@ -485,58 +485,109 @@
   flex: 1 1 16rem;
 }
 
-/* Keep media mounted while the waiting-room grid changes into the match layout. */
+/* SCR-WAITING-ROOM: cameras left, chat right, room code and viewers along the bottom. */
 .xq-ui .xq-main:has(.xq-room-page.is-waiting) {
   padding: 0;
 }
 .xq-room-page.is-waiting {
-  min-height: 0;
-  padding: 24px;
-  background-color: var(--color-paper);
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 16px;
+  background-color: #1c120c;
+  background-image:
+    radial-gradient(ellipse at 50% 15%, #c882282e, transparent 65%),
+    linear-gradient(180deg, #140c086b, #140c08b8),
+    url("/images/login-bg-scenic.webp");
 }
 .is-waiting .match-actions__confirmation {
+  flex: none;
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
 }
 .is-waiting .xq-room-header {
-  max-width: 1280px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-color: var(--color-border);
+  flex: none;
+  max-width: none;
+  margin: 0 0 16px;
+  min-height: 64px;
+  padding: 10px clamp(16px, 3vw, 36px);
+  border-bottom: 1.5px solid rgba(198, 146, 42, 0.35);
+  background: linear-gradient(180deg, rgba(35, 20, 14, 0.95), rgba(20, 12, 8, 0.95));
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
-.is-waiting .xq-room-header h1 {
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 600;
-  color: var(--color-ink);
-  background: none;
-  -webkit-text-fill-color: currentColor;
-}
-.is-waiting .xq-room-header p {
-  margin: 8px 0;
-  color: var(--color-ink-muted);
-}
+.is-waiting .xq-room-header > div:first-child,
 .xq-room-meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  color: var(--color-gold-light);
-  font-size: 14px;
+  gap: 12px;
+}
+.is-waiting .xq-room-header h1 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(180deg, #fff5df 0%, #e2be78 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.is-waiting .xq-room-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #c8b6a2;
+}
+.xq-room-meta span {
+  padding: 4px 10px;
+  border: 1px solid rgba(198, 146, 42, 0.4);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #f5ca67;
+  font-size: 12px;
+  font-weight: 600;
 }
 .is-waiting .xq-room-header-actions {
   flex-shrink: 0;
-  flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.is-waiting .xq-room-header-actions .xq-button {
+  font-size: 13px;
+  min-height: 38px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(40, 26, 18, 0.8);
+  border: 1px solid rgba(198, 146, 42, 0.35);
+  color: #fff5df;
+  transition: all 0.2s ease;
+}
+.is-waiting .xq-room-header-actions .xq-button:hover:not([aria-disabled="true"]) {
+  background: rgba(198, 146, 42, 0.2);
+  border-color: #f5ca67;
 }
 .is-waiting .xq-room-header-actions > .xq-button-group:last-child .xq-button {
-  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  background: rgba(185, 28, 28, 0.18);
 }
-.is-waiting .xq-room-content,
-.is-waiting .xq-room-content:has(.room-chat) {
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-rows: auto auto auto;
-  align-items: start;
-  gap: 24px;
+.is-waiting .xq-room-header-actions > .xq-button-group:last-child .xq-button:hover:not([aria-disabled="true"]) {
+  background: rgba(185, 28, 28, 0.35);
+  border-color: #ef4444;
+}
+.is-waiting .xq-room-content {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(12px, 2vw, 24px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 14px;
 }
 .is-playing .xq-room-invite {
   grid-column: 1 / -1;
@@ -556,316 +607,761 @@
 .is-waiting .xq-room-details {
   display: none;
 }
+
+/* ========================================================
+   1. CỘT TRÁI - HÀNG 1: SÀN ĐẤU KỲ THỦ (MATCH STAGE)
+   ======================================================== */
 .is-waiting .xq-room-arena {
-  grid-column: 1 / 9;
+  grid-column: 1;
   grid-row: 1;
-  gap: 16px;
-  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
 }
 .is-waiting .xq-room-seats {
-  grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1fr);
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
   align-items: stretch;
 }
 .is-waiting .xq-room-seat {
-  min-width: 0;
-  min-height: 280px;
-  padding: 24px 16px;
-  gap: 12px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: none;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-areas:
+    "piece meta"
+    "piece player"
+    "piece state"
+    "action action";
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 4px;
+  padding: 14px 18px;
+  text-align: left;
+  border: 1.5px solid rgba(198, 146, 42, 0.35);
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    rgba(34, 20, 13, 0.9) 0%,
+    rgba(20, 12, 8, 0.96) 100%
+  );
+  backdrop-filter: blur(14px);
+  color: var(--color-ink, #fff5df);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 245, 223, 0.08);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-.is-waiting .xq-room-seat[data-ready="true"] {
-  border-color: var(--color-success);
+.is-waiting .xq-room-seat.red {
+  border-color: rgba(165, 31, 37, 0.7);
+  box-shadow: 0 10px 28px rgba(165, 31, 37, 0.25), 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 120, 120, 0.15);
 }
 .is-waiting .xq-room-seat.black {
   grid-column: 3;
-  grid-row: 1;
+  border-color: rgba(198, 146, 42, 0.45);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(245, 202, 103, 0.12);
+}
+.is-waiting .xq-room-seat[data-ready="true"] {
+  border-color: #86efac;
+  box-shadow: 0 10px 28px rgba(34, 197, 94, 0.2), inset 0 1px 0 rgba(134, 239, 172, 0.25);
 }
 .xq-seat-side {
-  color: var(--color-ink-muted);
-  font-size: 14px;
+  grid-area: meta;
+  justify-self: start;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(40, 30, 24, 0.85);
+  border: 1px solid rgba(198, 146, 42, 0.35);
+  color: #e2cfb7;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.red .xq-seat-side {
+  background: rgba(165, 31, 37, 0.35);
+  border-color: rgba(165, 31, 37, 0.7);
+  color: #fca5a5;
+}
+.black .xq-seat-side {
+  background: rgba(30, 25, 20, 0.75);
+  border-color: rgba(198, 146, 42, 0.5);
+  color: #f5ca67;
 }
 .is-waiting .xq-seat-piece {
-  width: 80px;
-  height: 80px;
-  font-size: 44px;
-  background: var(--board-piece-face);
-  border: 3px double var(--color-wood-edge);
-  box-shadow: 0 4px 0 var(--color-wood-edge);
+  grid-area: piece;
+  width: 58px;
+  height: 58px;
+  font-size: 36px;
+  font-family: var(--font-han);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2.5px solid #d8ae72;
+  background: radial-gradient(
+    circle at 35% 28%,
+    #4a4036,
+    #24201c 55%,
+    #14110e 95%
+  );
+  color: #f5ca67;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.8);
+}
+.is-waiting .red .xq-seat-piece {
+  border-color: #a51f25;
+  background: radial-gradient(
+    circle at 35% 28%,
+    #fff8e7,
+    #f6e7c8 50%,
+    #d8ae72 90%
+  );
+  color: #a51f25;
+  box-shadow: 0 6px 16px rgba(165, 31, 37, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(112, 69, 37, 0.4);
 }
 .xq-room-seat-player {
   display: contents;
 }
 .is-waiting .xq-room-seat-player {
-  display: grid;
-  gap: 4px;
+  grid-area: player;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 .is-waiting .xq-room-seat h2 {
-  font-family: var(--font-ui);
-  font-size: 20px;
-  font-weight: 600;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff5df;
   overflow-wrap: anywhere;
 }
 .is-waiting .xq-room-seat-player p {
-  font-size: 14px;
+  font-size: 10.5px;
+  color: #f5ca67;
+  background: rgba(198, 146, 42, 0.15);
+  border: 1px solid rgba(198, 146, 42, 0.4);
+  border-radius: 4px;
+  padding: 1px 5px;
+  display: inline-block;
+  width: fit-content;
 }
 .is-waiting .xq-room-seat-state {
-  padding: 4px 12px;
-  border-color: var(--color-border);
-  color: var(--color-ink-muted);
+  grid-area: state;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  background: rgba(30, 20, 15, 0.65);
+  border: 1px solid rgba(154, 117, 80, 0.35);
+  border-radius: 999px;
+  color: #c8b6a2;
   white-space: normal;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.is-waiting .xq-room-seat-state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9ca3af;
+  box-shadow: 0 0 6px rgba(156, 163, 175, 0.6);
 }
 .is-waiting .xq-room-seat[data-ready="true"] .xq-room-seat-state {
-  color: var(--color-success);
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
+  background: rgba(30, 107, 58, 0.25);
+  border-color: rgba(134, 239, 172, 0.5);
+  color: #86efac;
 }
+.is-waiting .xq-room-seat[data-ready="true"] .xq-room-seat-state::before {
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+}
+.is-waiting .xq-room-seat .xq-button-group,
 .is-waiting .xq-room-seat-hint {
-  max-width: 24ch;
-  font-size: 14px;
-  line-height: 1.5;
+  grid-area: action;
+  width: 100%;
+  margin-top: 8px;
+}
+.is-waiting .xq-room-seat .xq-button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
 }
 .is-waiting .xq-room-ready {
-  min-width: 160px;
+  width: 100%;
+  min-height: 40px;
+  font-weight: 700;
+  font-size: 13.5px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #c6922a, #996e1a);
+  border: 1px solid #f5ca67;
+  color: #120d0a;
+  box-shadow: 0 4px 14px rgba(198, 146, 42, 0.35);
+  transition: all 0.2s ease;
+}
+.is-waiting .xq-room-ready:hover:not([aria-disabled="true"]) {
+  background: linear-gradient(180deg, #d8a53a, #b08022);
+  box-shadow: 0 4px 18px rgba(245, 202, 103, 0.5);
+  color: #000;
 }
 .is-waiting .xq-room-seat[data-ready="true"] .xq-room-ready {
-  background: var(--color-surface-sunken);
-  border-color: var(--color-border);
-  color: var(--color-ink);
+  background: linear-gradient(180deg, #991b1b, #7f1d1d);
+  border-color: #fca5a5;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(153, 27, 27, 0.4);
 }
+.is-waiting .xq-room-seat .xq-help {
+  color: #e2cfb7;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.35;
+}
+.is-waiting .xq-room-seat-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 6px 12px;
+  background: rgba(24, 14, 9, 0.45);
+  border: 1px dashed rgba(198, 146, 42, 0.35);
+  border-radius: 8px;
+  color: #c8b6a2;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+/* Cụm VS trung tâm */
 .is-waiting .xq-room-versus {
   grid-column: 2;
-  grid-row: 1;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 4px;
 }
 .xq-room-vs {
-  color: var(--color-gold-light);
-  font: 600 24px var(--font-serif);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #f5ca67;
+  background: radial-gradient(circle at 35% 30%, #f5ca67, #c6922a 60%, #7a4e0f 95%);
+  color: #180e08;
+  font: 800 15px var(--font-serif);
+  box-shadow: 0 0 16px rgba(198, 146, 42, 0.45), 0 4px 10px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.5px;
 }
 .is-waiting .xq-room-actions {
+  display: flex;
   justify-content: center;
 }
 .is-waiting .xq-room-actions .xq-button {
-  padding-inline: 12px;
-  font-size: 14px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  padding: 5px 12px;
+  min-height: 32px;
+  background: rgba(36, 22, 16, 0.9);
+  border: 1px solid rgba(198, 146, 42, 0.45);
+  color: #f5ca67;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
 }
-.is-waiting .xq-swap-prompt {
-  overflow-wrap: anywhere;
+.is-waiting .xq-room-actions .xq-button:hover:not([aria-disabled="true"]) {
+  background: rgba(198, 146, 42, 0.25);
+  border-color: #f5ca67;
+  color: #fff5df;
 }
-.is-waiting .xq-room-media-slot {
-  grid-column: 1 / 9;
+
+/* ========================================================
+   2. CỘT TRÁI - HÀNG 2: THANH MÃ PHÒNG (ROOM INVITE BAR)
+   ======================================================== */
+.is-waiting .xq-room-invite {
+  grid-column: 1;
   grid-row: 2;
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 10px 18px;
+  border: 1px solid rgba(198, 146, 42, 0.3);
   border-radius: 12px;
-  background: var(--color-surface-sunken);
+  background: linear-gradient(
+    180deg,
+    rgba(34, 20, 13, 0.85) 0%,
+    rgba(20, 12, 8, 0.92) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  color: var(--color-ink, #fff5df);
+}
+.is-waiting .xq-room-invite-code {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.is-waiting .xq-room-invite-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #c8b6a2;
+}
+.is-waiting .xq-room-invite-code strong {
+  font: 700 24px var(--font-mono);
+  color: #f5ca67;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(245, 202, 103, 0.3);
+}
+.is-waiting .xq-room-invite-hint {
+  display: none;
+}
+.is-waiting .xq-room-invite-status {
+  grid-column: 1 / -1;
+  font-size: 11.5px;
+  color: #86efac;
+}
+.is-waiting .xq-room-invite-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.is-waiting .xq-room-invite-actions .xq-button {
+  min-height: 34px;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(198, 146, 42, 0.15);
+  border: 1px solid rgba(198, 146, 42, 0.4);
+  color: #f5ca67;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.is-waiting .xq-room-invite-actions .xq-button:hover {
+  background: rgba(198, 146, 42, 0.3);
+  border-color: #f5ca67;
+  color: #fff5df;
+}
+.is-waiting .xq-room-invite-link {
+  color: #c8b6a2;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.is-waiting .xq-room-invite-link:hover {
+  color: #fff5df;
+}
+
+/* ========================================================
+   3. CỘT TRÁI - HÀNG 3: KHUNG CAMERA COMPACT (MEDIA BAR)
+   ======================================================== */
+.is-waiting .xq-room-media-slot {
+  grid-column: 1;
+  grid-row: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid rgba(198, 146, 42, 0.3);
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(34, 20, 13, 0.85) 0%,
+    rgba(20, 12, 8, 0.92) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  min-height: 0;
 }
 .is-waiting .xq-media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
   min-width: 0;
+  min-height: 0;
   margin: 0;
   padding: 0;
   border: 0;
   background: none;
   box-shadow: none;
-  gap: 16px;
 }
 .is-waiting .xq-media h2 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 .is-waiting .xq-media-feeds {
-  gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  height: 140px;
+  min-height: 110px;
 }
-.is-waiting .xq-media-feed {
-  aspect-ratio: 16 / 9;
-  width: 100%;
-  min-width: 0;
-}
-.is-waiting .xq-media-share {
-  max-width: none;
-}
-.is-waiting .xq-media-toggles button,
-.is-waiting .xq-media-share select {
-  min-height: 44px;
-}
-.is-waiting .xq-media-share select {
-  width: 100%;
-  min-width: 0;
-  font-size: 16px;
-}
-.is-waiting .xq-room-chat-slot {
-  grid-column: 9 / -1;
-  grid-row: 1 / 3;
-  align-self: stretch;
+.is-waiting .xq-media-feeds figure {
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  background: var(--color-surface);
+  gap: 4px;
+  min-height: 0;
+  margin: 0;
+}
+.is-waiting .xq-media-feed {
+  flex: 1;
+  aspect-ratio: auto;
+  height: 100%;
+  min-height: 0;
+  background: #090503;
+  border: 1px solid rgba(198, 146, 42, 0.25);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.85);
+  color: #fff5df;
+}
+.is-waiting .xq-media-toggles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.is-waiting .xq-media-toggles button {
+  min-height: 34px;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(40, 26, 18, 0.85);
+  border: 1px solid rgba(198, 146, 42, 0.4);
+  color: #fff5df;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.is-waiting .xq-media-toggles button:hover:not([aria-disabled="true"]) {
+  background: rgba(198, 146, 42, 0.2);
+  border-color: #f5ca67;
+}
+.is-waiting .xq-media-toggles button.is-active,
+.is-waiting .xq-media-toggles button[aria-pressed="true"] {
+  background: linear-gradient(180deg, #15803d, #166534);
+  border-color: #86efac;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.35);
+}
+.is-waiting .xq-media-share {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: none;
+}
+.is-waiting .xq-media-share select {
+  background: #180f0a;
+  border: 1px solid rgba(198, 146, 42, 0.4);
+  color: #f5ca67;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.is-waiting .xq-media-privacy {
+  margin-left: auto;
+  font-size: 11px;
+  color: #c8b6a2;
+}
+
+/* ========================================================
+   4. CỘT PHẢI - HÀNG 1 & 2: KHUNG CHAT (ROOM CHAT)
+   ======================================================== */
+.is-waiting .xq-room-chat-slot {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1.5px solid rgba(198, 146, 42, 0.35);
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    rgba(34, 20, 13, 0.9) 0%,
+    rgba(20, 12, 8, 0.96) 100%
+  );
+  backdrop-filter: blur(14px);
+  padding: 14px 16px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 245, 223, 0.08);
+  color: var(--color-ink, #fff5df);
 }
 .is-waiting .room-chat {
   display: flex;
   flex: 1;
   flex-direction: column;
-  min-width: 0;
-  gap: 16px;
+  min-height: 0;
 }
 .is-waiting .room-chat h2 {
-  margin: 0;
-  font: 600 20px var(--font-serif);
-  color: var(--color-ink);
+  font: 700 16px var(--font-serif);
+  color: #f5ca67;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.is-waiting .room-chat__tabs,
+.is-waiting .room-chat__toggles {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  background: rgba(14, 8, 5, 0.6);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(198, 146, 42, 0.2);
+}
+.is-waiting .room-chat__tabs button,
+.is-waiting .room-chat__toggles button {
+  flex: 1;
+  min-height: 32px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #c8b6a2;
+  transition: all 0.2s ease;
+}
+.is-waiting .room-chat__tabs button:hover,
+.is-waiting .room-chat__toggles button:hover {
+  color: #fff5df;
+  background: rgba(198, 146, 42, 0.12);
+}
+.is-waiting .room-chat__tabs [aria-selected="true"],
+.is-waiting .room-chat__toggles [aria-pressed="true"] {
+  background: linear-gradient(180deg, rgba(198, 146, 42, 0.25), rgba(122, 78, 15, 0.35));
+  border-color: rgba(245, 202, 103, 0.5);
+  color: #f5ca67;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 .is-waiting .room-chat__panes {
   flex: 1;
   grid-auto-flow: row;
   grid-auto-rows: minmax(0, 1fr);
+  min-height: 0;
+  gap: 10px;
 }
 .is-waiting .room-chat__pane {
-  min-width: 0;
   margin: 0;
+  min-height: 0;
+  background: rgba(14, 8, 5, 0.55);
+  border: 1px solid rgba(198, 146, 42, 0.22);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.is-waiting .room-chat__pane h3 {
+  font-size: 13px;
+  color: #f5ca67;
+}
+.is-waiting .room-chat__note {
+  font-size: 11.5px;
+  color: #a8947f;
 }
 .is-waiting .room-chat__messages {
   flex: 1;
-  min-height: 120px;
   height: auto;
+  min-height: 48px;
+  border-radius: 6px;
 }
-.is-waiting .xq-room-invite,
+.is-waiting .room-chat textarea {
+  background: rgba(10, 6, 4, 0.85);
+  border: 1px solid rgba(198, 146, 42, 0.35);
+  border-radius: 8px;
+  color: #fff5df;
+  font-size: 13px;
+  padding: 8px 10px;
+  transition: border-color 0.2s;
+}
+.is-waiting .room-chat textarea:focus {
+  border-color: #f5ca67;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(245, 202, 103, 0.2);
+}
+.is-waiting .room-chat button[type="submit"] {
+  background: linear-gradient(180deg, #c6922a, #8c6418);
+  border: 1px solid #f5ca67;
+  color: #120d0a;
+  font-weight: 700;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 5px 14px;
+  box-shadow: 0 2px 8px rgba(198, 146, 42, 0.3);
+  transition: all 0.2s ease;
+}
+.is-waiting .room-chat button[type="submit"]:hover:not([aria-disabled="true"]) {
+  background: linear-gradient(180deg, #dbab42, #9e7420);
+  box-shadow: 0 4px 12px rgba(245, 202, 103, 0.4);
+  color: #000;
+}
+
+/* ========================================================
+   5. CỘT PHẢI - HÀNG 3: KHÁN GIẢ GỌN GÀNG (SPECTATORS)
+   ======================================================== */
 .is-waiting .xq-viewers {
-  min-width: 0;
-  margin: 0;
-  padding: 16px;
-  border: 1px solid var(--color-border);
+  grid-column: 2;
+  grid-row: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid rgba(198, 146, 42, 0.3);
   border-radius: 12px;
-  background: var(--color-surface);
-  box-shadow: none;
-}
-.is-waiting .xq-room-invite {
-  grid-column: 1 / 9;
-  grid-row: 3;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 12px 24px;
-}
-.is-waiting .xq-room-invite-code {
-  grid-row: 1 / 3;
-  gap: 8px;
-}
-.is-waiting .xq-room-invite-label {
-  font-size: 14px;
-  letter-spacing: normal;
-}
-.is-waiting .xq-room-invite-code strong {
-  font: 600 clamp(24px, 3vw, 32px) var(--font-mono);
-  letter-spacing: 0.08em;
-  color: var(--color-gold-light);
-}
-.is-waiting .xq-room-invite-hint {
-  font-size: 14px;
-  line-height: 1.5;
-}
-.is-waiting .xq-room-invite-status {
-  grid-column: 1 / -1;
-}
-.is-waiting .xq-room-invite-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
-.is-waiting .xq-viewers {
-  grid-column: 9 / -1;
-  grid-row: 3;
-  align-self: stretch;
-  align-content: start;
-  gap: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(34, 20, 13, 0.85) 0%,
+    rgba(20, 12, 8, 0.92) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  color: var(--color-ink, #fff5df);
+  max-height: 120px;
 }
 .is-waiting .xq-viewers h2 {
   margin: 0;
-  font-size: 16px;
+  font: 700 14px var(--font-serif);
+  color: #f5ca67;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .is-waiting .xq-viewers p {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 12px;
+  color: #c8b6a2;
 }
-@container (max-width: 640px) {
-  .is-waiting .xq-room-seats {
-    grid-template-columns: minmax(0, 1fr) 88px minmax(0, 1fr);
-    gap: 8px;
-  }
-  .is-waiting .xq-room-ready {
-    min-width: 0;
-    width: 100%;
-  }
+.is-waiting .xq-viewers ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
 }
-@media (max-width: 1023px) {
+.is-waiting .xq-viewers li {
+  padding: 2px 8px;
+  background: rgba(40, 26, 18, 0.8);
+  border: 1px solid rgba(198, 146, 42, 0.3);
+  border-radius: 999px;
+  font-size: 11px;
+  color: #e2cfb7;
+}
+
+/* ========================================================
+   6. HỆ THỐNG RESPONSIVE TOÀN DIỆN (ALL DEVICES)
+   ======================================================== */
+@media (min-width: 1024px) and (min-height: 600px) {
+  .xq-shell:has(.xq-room-page.is-waiting) {
+    display: flex;
+    flex-direction: column;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .xq-ui .xq-main:has(.xq-room-page.is-waiting) {
+    flex: 1;
+    min-height: 0;
+    max-width: none;
+  }
   .xq-room-page.is-waiting {
-    padding: 16px;
+    height: 100%;
+    min-height: 0;
   }
-  .is-waiting .xq-room-header {
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .is-waiting .xq-room-content,
-  .is-waiting .xq-room-content:has(.room-chat) {
+}
+
+/* Tablet & Mobile (< 1024px) */
+@media (max-width: 1023px) {
+  .is-waiting .xq-room-content {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: none;
-    gap: 16px;
+    grid-template-rows: auto;
+    overflow-y: auto;
+    max-height: none;
+    gap: 14px;
+    padding-bottom: 24px;
   }
-  .is-waiting .xq-room-arena,
-  .is-waiting .xq-room-invite,
-  .is-waiting .xq-viewers,
-  .is-waiting .xq-room-media-slot,
+  .is-waiting .xq-room-arena {
+    grid-column: 1;
+    grid-row: auto;
+    order: 1;
+  }
+  .is-waiting .xq-room-invite {
+    grid-column: 1;
+    grid-row: auto;
+    order: 2;
+  }
+  .is-waiting .xq-room-media-slot {
+    grid-column: 1;
+    grid-row: auto;
+    order: 3;
+  }
+  .is-waiting .xq-viewers {
+    grid-column: 1;
+    grid-row: auto;
+    order: 4;
+    max-height: none;
+  }
   .is-waiting .xq-room-chat-slot {
     grid-column: 1;
     grid-row: auto;
-  }
-  .is-waiting .xq-room-invite {
-    order: 1;
-  }
-  .is-waiting .xq-room-chat-slot {
-    order: 2;
-  }
-  .is-waiting .xq-viewers {
-    order: 3;
+    order: 5;
+    min-height: 340px;
   }
   .is-waiting .room-chat__messages {
-    flex: none;
-    height: 160px;
+    height: 180px;
   }
 }
-@media (max-width: 540px) {
-  .is-waiting .xq-room-seats {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+
+/* Mobile nhỏ (< 700px) */
+@media (max-width: 699px) {
+  .is-waiting .xq-room-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 16px;
   }
-  .is-waiting .xq-room-seat {
-    min-height: 0;
-    padding: 16px;
+  .is-waiting .xq-room-seats {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   .is-waiting .xq-room-seat.black {
     grid-column: 1;
-    grid-row: 3;
+    order: 3;
   }
   .is-waiting .xq-room-versus {
     grid-column: 1;
-    grid-row: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    order: 2;
+    padding: 6px 0;
+  }
+  .is-waiting .xq-room-seat {
+    order: 1;
+    padding: 12px 14px;
+  }
+  .is-waiting .xq-media-feeds {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .is-waiting .xq-media-feed {
+    aspect-ratio: 16 / 9;
+    height: 140px;
   }
   .is-waiting .xq-room-invite {
-    grid-template-columns: minmax(0, 1fr);
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
   }
   .is-waiting .xq-room-invite-code {
-    grid-row: auto;
+    justify-content: center;
+  }
+  .is-waiting .xq-room-invite-actions {
+    justify-content: center;
   }
 }

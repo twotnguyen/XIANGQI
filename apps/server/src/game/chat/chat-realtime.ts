@@ -65,10 +65,12 @@ export class ChatRealtimeService {
     scope: RoomScope,
     connection: RealtimeConnection,
     requested: ChatChannel,
+    forUpdate = false,
   ): Promise<boolean> {
+    const lockClause = forUpdate ? " FOR UPDATE" : "";
     const member = (
       await scope.client.query<{ role: string }>(
-        "SELECT role FROM public.room_members WHERE room_id=$1 AND user_id=$2 FOR UPDATE",
+        `SELECT role FROM public.room_members WHERE room_id=$1 AND user_id=$2${lockClause}`,
         [connection.roomId, scope.actor.userId],
       )
     ).rows[0];
@@ -90,7 +92,7 @@ export class ChatRealtimeService {
     return Boolean(
       (
         await scope.client.query(
-          "SELECT 1 FROM xiangqi_realtime.controllers WHERE room_id=$1 AND user_id=$2 AND tab_id=$3 AND connection_id=$4 FOR UPDATE",
+          `SELECT 1 FROM xiangqi_realtime.controllers WHERE room_id=$1 AND user_id=$2 AND tab_id=$3 AND connection_id=$4${lockClause}`,
           [
             connection.roomId,
             scope.actor.userId,
@@ -169,7 +171,7 @@ export class ChatRealtimeService {
     )
       invalidChatInput();
     return this.guarded(connection, async (scope) => {
-      if (!(await this.canSend(scope, connection, input.channel)))
+      if (!(await this.canSend(scope, connection, input.channel, true)))
         throw new RealtimeError("TAB_READ_ONLY", "Tab này chỉ có thể xem");
       return this.store.send(scope, connection.roomId, {
         commandId: input.commandId.toLowerCase(),

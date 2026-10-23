@@ -38,7 +38,12 @@ function denied(): never {
 // Runtime must bind this scope to pre/post room-lock session authorization. No credentials or controller grants are accepted here.
 export class ChatStore {
   constructor(private readonly mask: (content: string) => string) {}
-  private async access(s: RoomScope, id: string, channel: ChatChannel) {
+  private async access(
+    s: RoomScope,
+    id: string,
+    channel: ChatChannel,
+    forUpdate = true,
+  ) {
     if (!uuid.test(id) || !["PLAYERS_PRIVATE", "ROOM_PUBLIC"].includes(channel))
       invalidChatInput();
     if (!s.lockedActorIds.has(s.actor.userId) || !s.lockedRoomIds.has(id))
@@ -47,6 +52,7 @@ export class ChatStore {
         "Giao dịch phòng chưa sẵn sàng",
         503,
       );
+    const lockClause = forUpdate ? " FOR UPDATE OF r,c,m" : "";
     const row = (
       await s.client.query<{
         role: string;
@@ -55,7 +61,7 @@ export class ChatStore {
         pair_epoch: string;
         sequence: string;
       }>(
-        `SELECT m.role,e.floor,c.pair_epoch,c.sequence,m.side FROM public.rooms r JOIN public.room_members m ON m.room_id=r.id JOIN xiangqi_auth.principals p ON p.id=m.user_id JOIN xiangqi_chat.rooms c ON c.room_id=r.id JOIN xiangqi_chat.entries e ON e.room_id=r.id AND e.user_id=m.user_id WHERE r.id=$1 AND m.user_id=$2 AND p.kind=$3 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED') FOR UPDATE OF r,c,m`,
+        `SELECT m.role,e.floor,c.pair_epoch,c.sequence,m.side FROM public.rooms r JOIN public.room_members m ON m.room_id=r.id JOIN xiangqi_auth.principals p ON p.id=m.user_id JOIN xiangqi_chat.rooms c ON c.room_id=r.id JOIN xiangqi_chat.entries e ON e.room_id=r.id AND e.user_id=m.user_id WHERE r.id=$1 AND m.user_id=$2 AND p.kind=$3 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED')${lockClause}`,
         [id, s.actor.userId, s.actor.kind],
       )
     ).rows[0];
@@ -76,7 +82,7 @@ export class ChatStore {
     after = 0,
   ): Promise<ChatPage> {
     if (!Number.isSafeInteger(after) || after < 0) invalidChatInput();
-    const access = await this.access(s, id, channel);
+    const access = await this.access(s, id, channel, false);
     const rows = (
       await s.client.query<{
         id: string;

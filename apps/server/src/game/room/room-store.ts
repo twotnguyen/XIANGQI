@@ -951,10 +951,8 @@ export class RoomStore {
       "DELETE FROM public.room_members WHERE room_id=$1 AND user_id=$2",
       [id, targetId],
     );
-    try {
-      await this.media?.revoke(id, targetId);
-    } catch {
-      // Media khong bao gio lam hong luong phong (BA 0.14).
+    if (this.media) {
+      void this.media.revoke(id, targetId).catch(() => {});
     }
     await this.bump(s, id, "room.viewer-kicked", { userId: targetId });
     return this.snapshot(s, id);
@@ -1384,10 +1382,8 @@ export class RoomStore {
       "DELETE FROM public.room_members WHERE room_id=$1 AND user_id=$2",
       [id, userId],
     );
-    try {
-      await this.media?.revoke(id, userId);
-    } catch {
-      // Media khong bao gio lam hong luong roi phong (BA 0.14).
+    if (this.media) {
+      void this.media.revoke(id, userId).catch(() => {});
     }
     const others = (
       await s.client.query(
