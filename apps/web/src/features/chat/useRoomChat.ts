@@ -313,7 +313,8 @@ export function useRoomChat(
         if (channel === "PLAYERS_PRIVATE" || snapshot.role === "spectator")
           publish(channel, {
             ...s,
-            ...(s.messages.length === 0 ? { loading: true } : {}),
+            messages: [],
+            loading: true,
             canSend: false,
           });
         refresh(channel);

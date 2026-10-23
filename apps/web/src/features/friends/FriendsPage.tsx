@@ -141,11 +141,7 @@ export function FriendsPage({ client }: { client: FriendClient }) {
       </header>
 
       {notice && (
-        <Notice
-          tone="error"
-          message={notice}
-          onDismiss={() => setNotice("")}
-        />
+        <Notice tone="error" message={notice} onDismiss={() => setNotice("")} />
       )}
 
       {/* KHỐI TÌM KIẾM BẠN BÈ */}
@@ -179,21 +175,24 @@ export function FriendsPage({ client }: { client: FriendClient }) {
             loading={searching}
             onClick={() => void search()}
           >
-            Tìm kiếm
+            Tìm
           </Button>
         </form>
 
         {results && results.length === 0 && (
           <div className="xq-friends__search-empty">
             <EmptyState title="Không tìm thấy">
-              Không có kỳ thủ nào bắt đầu bằng &quot;{query}&quot;. Vui lòng thử lại với tên khác.
+              Không có kỳ thủ nào bắt đầu bằng &quot;{query}&quot;. Vui lòng thử
+              lại với tên khác.
             </EmptyState>
           </div>
         )}
 
         {results && results.length > 0 && (
           <div className="xq-friends__search-results">
-            <h3 className="xq-friends__section-label">Kết quả tìm kiếm ({results.length})</h3>
+            <h3 className="xq-friends__section-label">
+              Kết quả tìm kiếm ({results.length})
+            </h3>
             <ul className="xq-friends__user-list">
               {results.map((peer) => (
                 <li key={peer.userId} className="xq-friends__user-item">
@@ -219,7 +218,7 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                       )
                     }
                   >
-                    + Kết bạn
+                    Kết bạn
                   </Button>
                 </li>
               ))}
@@ -229,7 +228,10 @@ export function FriendsPage({ client }: { client: FriendClient }) {
       </section>
 
       {/* KHỐI DANH SÁCH BẠN BÈ VÀ LỜI MỜI */}
-      <section className="xq-friends__content-card" aria-label="Danh sách và lời mời">
+      <section
+        className="xq-friends__content-card"
+        aria-label="Danh sách và lời mời"
+      >
         <Tabs
           label="Bạn bè và lời mời"
           items={[
@@ -239,7 +241,8 @@ export function FriendsPage({ client }: { client: FriendClient }) {
               content:
                 friends.length === 0 ? (
                   <EmptyState title="Chưa có bạn bè">
-                    Bạn chưa có bạn bè nào. Hãy gõ tên đăng nhập ở trên để kết bạn và cùng so tài!
+                    Bạn chưa có bạn bè nào. Hãy gõ tên đăng nhập ở trên để kết
+                    bạn và cùng so tài!
                   </EmptyState>
                 ) : (
                   <ul className="xq-friends__user-list">
@@ -247,7 +250,10 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                       <li key={friend.userId} className="xq-friends__user-item">
                         <div className="xq-friends__user-info">
                           <div className="xq-friends__avatar-wrapper">
-                            <div className="xq-friends__avatar" aria-hidden="true">
+                            <div
+                              className="xq-friends__avatar"
+                              aria-hidden="true"
+                            >
                               {friend.displayName.slice(0, 1).toUpperCase()}
                             </div>
                             <span
@@ -277,7 +283,10 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                           <Button variant="ghost" disabledReason="Sắp ra mắt">
                             Nhắn tin
                           </Button>
-                          <Button variant="secondary" disabledReason="Sắp ra mắt">
+                          <Button
+                            variant="secondary"
+                            disabledReason="Sắp ra mắt"
+                          >
                             Thách đấu
                           </Button>
                           <Button
@@ -316,8 +325,13 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                           {incoming.map((item) => (
                             <li key={item.id} className="xq-friends__user-item">
                               <div className="xq-friends__user-info">
-                                <div className="xq-friends__avatar" aria-hidden="true">
-                                  {item.peer.displayName.slice(0, 1).toUpperCase()}
+                                <div
+                                  className="xq-friends__avatar"
+                                  aria-hidden="true"
+                                >
+                                  {item.peer.displayName
+                                    .slice(0, 1)
+                                    .toUpperCase()}
                                 </div>
                                 <div className="xq-friends__user-names">
                                   <span className="xq-friends__display-name">
@@ -367,8 +381,13 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                           {outgoing.map((item) => (
                             <li key={item.id} className="xq-friends__user-item">
                               <div className="xq-friends__user-info">
-                                <div className="xq-friends__avatar" aria-hidden="true">
-                                  {item.peer.displayName.slice(0, 1).toUpperCase()}
+                                <div
+                                  className="xq-friends__avatar"
+                                  aria-hidden="true"
+                                >
+                                  {item.peer.displayName
+                                    .slice(0, 1)
+                                    .toUpperCase()}
                                 </div>
                                 <div className="xq-friends__user-names">
                                   <span className="xq-friends__display-name">

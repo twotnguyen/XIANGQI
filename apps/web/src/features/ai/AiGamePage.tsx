@@ -24,6 +24,31 @@ interface AiGameStorage {
   undoRemaining: number;
   status: "ACTIVE" | "FINALIZING" | "FINISHED" | "ABANDONED";
   outcome: AiGameSnapshot["outcome"];
+  lastMove?: Move | null;
+}
+
+function findMoveBetween(prevFen: string, currFen: string): Move | null {
+  try {
+    const prevPos = parsePosition(prevFen);
+    const currPos = parsePosition(currFen);
+    let from: number | null = null;
+    let to: number | null = null;
+    for (let i = 0; i < 90; i++) {
+      const p = prevPos.board[i];
+      const c = currPos.board[i];
+      if (p && !c) {
+        from = i;
+      } else if (c && (!p || p.side !== c.side || p.type !== c.type)) {
+        to = i;
+      }
+    }
+    if (from !== null && to !== null) {
+      return { from, to };
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 function storageKey(gameId: string) {
@@ -105,6 +130,18 @@ export function AiGamePage({
     return saved?.undoRemaining ?? 3;
   });
 
+  const [lastMove, setLastMove] = useState<Move | null>(() => {
+    const saved = loadGame(gameId);
+    if (saved?.lastMove) return saved.lastMove;
+    if (saved && saved.history && saved.history.length >= 2) {
+      return findMoveBetween(
+        saved.history[saved.history.length - 2]!,
+        saved.history[saved.history.length - 1]!,
+      );
+    }
+    return null;
+  });
+
   const [newGameDialog, setNewGameDialog] = useState(false);
   const audio = useRef<ReturnType<typeof createGameAudio> | null>(null);
   const isThinking = useRef(false);
@@ -128,8 +165,9 @@ export function AiGamePage({
       undoRemaining,
       status: snapshot.status,
       outcome: snapshot.outcome,
+      lastMove,
     });
-  }, [gameId, snapshot, undoRemaining]);
+  }, [gameId, snapshot, undoRemaining, lastMove]);
 
   // Execute AI move when it's AI's turn
   const triggerAiTurn = useCallback(
@@ -150,20 +188,27 @@ export function AiGamePage({
         engineError: null,
       }));
 
-      // Non-blocking timeout scheduled after next paint to guarantee UI updates
-      window.requestAnimationFrame(() => {
-        window.setTimeout(() => {
-          try {
-            const result = searchPosition({
-              position: currentSnapshot.position,
-              side: pos.turn,
-              level: currentSnapshot.level,
-              history: currentSnapshot.history,
-            });
+      // Tốc độ suy nghĩ tự nhiên của máy cờ (700ms - 1300ms) để người chơi kịp quan sát
+      const delay =
+        currentSnapshot.level === "easy"
+          ? 700 + Math.random() * 200
+          : currentSnapshot.level === "medium"
+            ? 900 + Math.random() * 250
+            : 1200 + Math.random() * 300;
 
-            if (result.move) {
-              const nextPos = playMove(pos, result.move);
-              const nextFen = serializePosition(nextPos);
+      window.setTimeout(() => {
+        try {
+          const result = searchPosition({
+            position: currentSnapshot.position,
+            side: pos.turn,
+            level: currentSnapshot.level,
+            history: currentSnapshot.history,
+          });
+
+          if (result.move) {
+            setLastMove(result.move);
+            const nextPos = playMove(pos, result.move);
+            const nextFen = serializePosition(nextPos);
             const nextHistory = [...currentSnapshot.history, nextFen];
             const gameEnding = ending(nextHistory.map(parsePosition));
 
@@ -200,8 +245,7 @@ export function AiGamePage({
         } finally {
           isThinking.current = false;
         }
-      }, 50);
-      });
+      }, delay);
     },
     [],
   );
@@ -235,6 +279,8 @@ export function AiGamePage({
     const nextFen = serializePosition(nextPos);
     const nextHistory = [...snapshot.history, nextFen];
     const gameEnding = ending(nextHistory.map(parsePosition));
+
+    setLastMove(move);
 
     const nextSnapshot: AiGameSnapshot = {
       ...snapshot,
@@ -298,6 +344,12 @@ export function AiGamePage({
     const newHistory = hist.slice(0, hist.length - stepsToRevert);
     const restoredFen = newHistory[newHistory.length - 1]!;
 
+    if (newHistory.length >= 2) {
+      setLastMove(findMoveBetween(newHistory[newHistory.length - 2]!, restoredFen));
+    } else {
+      setLastMove(null);
+    }
+
     setUndoRemaining((r) => Math.max(0, r - 1));
     setSnapshot((prev) => ({
       ...prev,
@@ -317,6 +369,7 @@ export function AiGamePage({
         connected={true}
         canControl={true}
         undoRemaining={undoRemaining}
+        lastMove={lastMove}
         onMove={handleMove}
         onResign={handleResign}
         onRetry={handleRetry}
