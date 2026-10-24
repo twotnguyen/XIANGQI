@@ -69,7 +69,12 @@ export class EngineWorker {
           });
         return draining;
       };
-      const error = () => {
+      const error = (err?: unknown) => {
+        if (err) console.error("[WORKER_ERROR]", err);
+        void stop("ENGINE_FAILED");
+      };
+      const exit = (code?: number) => {
+        console.error("[WORKER_EXIT]", code);
         void stop("ENGINE_FAILED");
       };
       const message = (value: unknown) => {
@@ -94,7 +99,7 @@ export class EngineWorker {
       this.pending = { stop };
       worker.on("message", message);
       worker.on("error", error);
-      worker.on("exit", error);
+      worker.on("exit", exit);
     });
     return this.warming;
   }
