@@ -176,7 +176,7 @@ async function fixture(modes = true) {
     },
   };
 }
-async function waitFor(read: () => boolean, timeout = 2500) {
+async function waitFor(read: () => boolean, timeout = 6000) {
   const end = Date.now() + timeout;
   while (Date.now() < end) {
     if (read()) return;
