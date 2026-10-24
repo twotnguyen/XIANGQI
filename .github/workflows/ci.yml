@@ -78,12 +78,12 @@ jobs:
         run: pnpm build:server
 
   db-integration:
-    name: Database Integration Tests (${{ matrix.shard }}/2)
+    name: Database Integration Tests (${{ matrix.shard }}/4)
     if: (github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main'
     strategy:
       fail-fast: true
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -277,7 +277,7 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec vitest run tests/server --shard=${{ matrix.shard }}/2 --no-file-parallelism --bail 1
+      - run: pnpm exec vitest run tests/server --shard=${{ matrix.shard }}/4 --no-file-parallelism --bail 1
 
   db-gate:
     name: Database Integration Gate

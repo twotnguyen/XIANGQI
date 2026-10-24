@@ -110,7 +110,7 @@ describe.skipIf(!url)(
       auth = new SupabaseAuth(fixture.url, "fixture-public", "fixture-secret");
       store = new PostgresLoginStore(pool);
       sessions = new SessionService(store, auth, now);
-      login = new LoginService(store, auth, sessions, now);
+      login = new LoginService(store, auth, sessions, now, 50);
       const registration = new RegistrationService(
         new PostgresRegistrationStore(pool),
         auth,
@@ -360,6 +360,7 @@ describe.skipIf(!url)(
       await login.login({ username: "TestPlayer", password: "password123" });
     });
     it("gives wrong passwords and unknown usernames the same measured response floor", async () => {
+      const timingLogin = new LoginService(store, auth, sessions, now, 2150);
       const measurements: number[][] = [[], []];
       for (let i = 0; i < 3; i++)
         for (const [index, username] of [
@@ -368,7 +369,7 @@ describe.skipIf(!url)(
         ].entries()) {
           const start = performance.now();
           await expect(
-            login.login({ username, password: "wrong" }),
+            timingLogin.login({ username, password: "wrong" }),
           ).rejects.toMatchObject({
             code: "LOGIN_INVALID",
             message: "Sai tên đăng nhập hoặc mật khẩu",
@@ -387,7 +388,10 @@ describe.skipIf(!url)(
           unknownMedianMs: Math.round(median(measurements[1]!)),
         }),
       );
-      await login.login({ username: "TestPlayer", password: "password123" });
+      await timingLogin.login({
+        username: "TestPlayer",
+        password: "password123",
+      });
     });
     it("serves actual HTTP login and requires both credentials in the Nest guard", async () => {
       @Controller("login-protected")
