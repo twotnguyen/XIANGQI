@@ -9,20 +9,24 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterAll, beforeAll, expect, it } from "vitest";
 
 const root = fileURLToPath(new URL("../../../../", import.meta.url));
+const tsxDir = dirname(
+  createRequire(join(root, "packages/engine/package.json")).resolve(
+    "tsx/package.json",
+  ),
+);
 let temporary: string;
 function execute(script: string) {
   const result = spawnSync(
     process.execPath,
     [
       "--import",
-      pathToFileURL(
-        join(root, "packages/engine/node_modules/tsx/dist/loader.mjs"),
-      ).href,
+      pathToFileURL(join(tsxDir, "dist/loader.mjs")).href,
       "--input-type=module",
       "--eval",
       script,
@@ -84,11 +88,7 @@ beforeAll(async () => {
   await cp(join(root, "packages/engine/scripts"), join(engine, "scripts"), {
     recursive: true,
   });
-  await symlink(
-    join(root, "packages/engine/node_modules/tsx"),
-    join(temporary, "node_modules/tsx"),
-    "dir",
-  );
+  await symlink(tsxDir, join(temporary, "node_modules/tsx"), "dir");
   for (const name of ["xiangqi-core", "engine"]) {
     const result = spawnSync(
       process.execPath,

@@ -10,7 +10,8 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { historyCases } from "./history.test-helper.js";
@@ -111,11 +112,12 @@ beforeAll(async () => {
     "dir",
   );
   await symlink(engine, join(temporary, "node_modules/@xiangqi/engine"), "dir");
-  await symlink(
-    join(root, "packages/engine/node_modules/tsx"),
-    join(engine, "node_modules/tsx"),
-    "dir",
+  const tsxDir = dirname(
+    createRequire(join(root, "packages/engine/package.json")).resolve(
+      "tsx/package.json",
+    ),
   );
+  await symlink(tsxDir, join(engine, "node_modules/tsx"), "dir");
   compile(core);
   await restoreBuild();
 }, 20000);
