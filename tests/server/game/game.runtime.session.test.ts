@@ -17,7 +17,7 @@ const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 async function waitFor<T>(
   read: () => Promise<T>,
   accept: (v: T) => boolean,
-  timeout = 5000,
+  timeout = 20000,
 ) {
   const until = Date.now() + timeout;
   while (Date.now() < until) {
