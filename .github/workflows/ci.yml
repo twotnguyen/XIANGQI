@@ -59,14 +59,14 @@ jobs:
           CI_REF: ${{ github.ref }}
         run: node .github/scripts/ci-scope.mjs
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - name: Core tests with coverage
-        if: steps.filter.outputs.full == 'true'
-        run: pnpm test:core --bail 1
-      - name: Unit tests without repeating core
-        if: steps.filter.outputs.full == 'true'
-        run: pnpm test:unit --exclude 'tests/packages/xiangqi-core/**' --bail 1
+      - name: Run lint and typecheck concurrently
+        run: |
+          pnpm lint &
+          PID_LINT=$!
+          pnpm typecheck &
+          PID_TYPE=$!
+          wait $PID_LINT
+          wait $PID_TYPE
       - name: Build both applications
         if: steps.filter.outputs.web == 'true' && steps.filter.outputs.server == 'true'
         run: pnpm build
@@ -77,13 +77,30 @@ jobs:
         if: steps.filter.outputs.server == 'true' && steps.filter.outputs.web != 'true'
         run: pnpm build:server
 
+  unit-tests:
+    name: Unit & Core Tests (parallel on main)
+    if: (github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Core tests with coverage
+        run: pnpm test:core --bail 1
+      - name: Unit tests without repeating core
+        run: pnpm test:unit --exclude 'tests/packages/xiangqi-core/**' --bail 1
+
   db-integration:
-    name: Database Integration Tests (${{ matrix.shard }}/4)
+    name: Database Integration Tests (${{ matrix.shard }}/6)
     if: (github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main'
     strategy:
       fail-fast: true
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6]
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -96,8 +113,8 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd "pg_isready -U auth_test_admin -d xiangqi_auth_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       realtime-postgres:
@@ -110,8 +127,8 @@ jobs:
           - 5433:5432
         options: >-
           --health-cmd "pg_isready -U realtime_test_admin -d xiangqi_realtime_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       login-postgres:
@@ -124,8 +141,8 @@ jobs:
           - 5434:5432
         options: >-
           --health-cmd "pg_isready -U login_test_admin -d xiangqi_login_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       schema-postgres:
@@ -138,8 +155,8 @@ jobs:
           - 55443:5432
         options: >-
           --health-cmd "pg_isready -U schema_test_admin -d xiangqi_schema_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       google-guest-postgres:
@@ -152,8 +169,8 @@ jobs:
           - 55445:5432
         options: >-
           --health-cmd "pg_isready -U google_guest_test_admin -d google_guest_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       room-postgres:
@@ -166,8 +183,8 @@ jobs:
           - 55446:5432
         options: >-
           --health-cmd "pg_isready -U room_test_admin -d xiangqi_room_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       match-postgres:
@@ -180,8 +197,8 @@ jobs:
           - 55447:5432
         options: >-
           --health-cmd "pg_isready -U match_test_admin -d xiangqi_match_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       clock-postgres:
@@ -194,8 +211,8 @@ jobs:
           - 55448:5432
         options: >-
           --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       room-transactions-postgres:
@@ -208,8 +225,8 @@ jobs:
           - 55449:5432
         options: >-
           --health-cmd "pg_isready -U room_transaction_test_admin -d xiangqi_room_transactions_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       clock-port-postgres:
@@ -222,8 +239,8 @@ jobs:
           - 55451:5432
         options: >-
           --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_port_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
       member-realtime-postgres:
@@ -236,8 +253,8 @@ jobs:
           - 55450:5432
         options: >-
           --health-cmd "pg_isready -U member_realtime_test_admin -d xiangqi_member_realtime_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
 
@@ -251,8 +268,8 @@ jobs:
           - 55452:5432
         options: >-
           --health-cmd "pg_isready -U room_runtime_test_admin -d xiangqi_room_runtime_test"
-          --health-interval 3s
-          --health-timeout 3s
+          --health-interval 1s
+          --health-timeout 1s
           --health-retries 10
           --tmpfs /var/lib/postgresql/data
     env:
@@ -277,18 +294,18 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec vitest run tests/server --shard=${{ matrix.shard }}/4 --no-file-parallelism --bail 1
+      - run: pnpm exec vitest run tests/server --shard=${{ matrix.shard }}/6 --no-file-parallelism --bail 1
 
   db-gate:
     name: Database Integration Gate
-    needs: db-integration
+    needs: [db-integration, unit-tests]
     if: always() && ((github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
-      - name: Verify all database test shards passed
+      - name: Verify all database and unit test shards passed
         run: |
-          if [ "${{ needs.db-integration.result }}" != "success" ]; then
-            echo "::error::Một hoặc nhiều shard kiểm thử database đã thất bại."
+          if [ "${{ needs.db-integration.result }}" != "success" ] || [ "${{ needs.unit-tests.result }}" != "success" ]; then
+            echo "::error::Một hoặc nhiều bài kiểm thử database hoặc unit test đã thất bại."
             exit 1
           fi
-          echo "Toàn bộ database test shards đã pass thành công."
+          echo "Toàn bộ database test shards và unit tests đã pass thành công."
