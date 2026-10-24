@@ -78,9 +78,12 @@ jobs:
         run: pnpm build:server
 
   db-integration:
-    name: Database Integration Tests
-    needs: checks
-    if: needs.checks.outputs.full == 'true'
+    name: Database Integration Tests (${{ matrix.shard }}/2)
+    if: (github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: [1, 2]
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -274,4 +277,18 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec vitest run tests/server --no-file-parallelism --bail 1
+      - run: pnpm exec vitest run tests/server --shard=${{ matrix.shard }}/2 --no-file-parallelism --bail 1
+
+  db-gate:
+    name: Database Integration Gate
+    needs: db-integration
+    if: always() && ((github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all database test shards passed
+        run: |
+          if [ "${{ needs.db-integration.result }}" != "success" ]; then
+            echo "::error::Một hoặc nhiều shard kiểm thử database đã thất bại."
+            exit 1
+          fi
+          echo "Toàn bộ database test shards đã pass thành công."
