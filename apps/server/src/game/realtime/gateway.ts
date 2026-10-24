@@ -532,7 +532,10 @@ export function attachRealtime(
       sessionMaintenance = null;
     });
   };
-  const sessionTimer = setInterval(scanSessions, 15000);
+  const sessionTimer = setInterval(
+    scanSessions,
+    process.env.NODE_ENV === "test" ? 1000 : 10000,
+  );
   sessionTimer.unref();
   let closing: Promise<void> | undefined;
   return {

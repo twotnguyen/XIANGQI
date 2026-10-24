@@ -82,7 +82,7 @@ export class ChatStore {
     after = 0,
   ): Promise<ChatPage> {
     if (!Number.isSafeInteger(after) || after < 0) invalidChatInput();
-    const access = await this.access(s, id, channel, false);
+    const access = await this.access(s, id, channel);
     const rows = (
       await s.client.query<{
         id: string;
