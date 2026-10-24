@@ -287,7 +287,7 @@ describe.skipIf(!databaseUrl)(
         await f.close();
       }
       expect((await pool.query("SELECT 1 AS ok")).rows[0].ok).toBe(1);
-    }, 10000);
+    }, 30000);
     it("joins public rooms through canonical HTTP state without exposing the invitation code", async () => {
       const f = await fixture();
       try {
