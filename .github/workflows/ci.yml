@@ -17,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 permissions:
   contents: read
+  pull-requests: write
 jobs:
   checks:
     name: Fast Checks & Build (full tests on main)
@@ -27,6 +28,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Verify PR source branch for main
+        if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref != 'develop'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          echo "::error::Chỉ cho phép mở Pull Request vào 'main' từ nhánh 'develop'. Nhánh '${HEAD_REF}' không được merge trực tiếp vào 'main'."
+          gh pr comment "$PR_NUMBER" --body "⚠️ **Quy chuẩn Git Flow của dự án XIANGQI:**
+
+          Nhánh **\`main\`** chỉ nhận Pull Request từ nhánh **\`develop\`**.
+          Các nhánh tính năng/sửa lỗi (\`${HEAD_REF}\`) phải được mở PR vào nhánh **\`develop\`** trước.
+
+          👉 Vui lòng đổi Base Branch của PR này từ \`main\` sang \`develop\`." || true
+          exit 1
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
