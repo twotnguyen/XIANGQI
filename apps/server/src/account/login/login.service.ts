@@ -35,6 +35,10 @@ export class LoginService {
     private readonly auth: PasswordAuth,
     private readonly sessions: SessionService,
     private readonly now = () => new Date(),
+    private readonly invalidFloorMs = process.env.LOGIN_RESPONSE_FLOOR_MS !==
+    undefined
+      ? Number(process.env.LOGIN_RESPONSE_FLOOR_MS)
+      : INVALID_RESPONSE_FLOOR_MS,
   ) {}
   private async withResponseFloor<T>(work: () => Promise<T>): Promise<T> {
     const started = performance.now();
@@ -48,7 +52,7 @@ export class LoginService {
           error.code,
         )
       )
-        floor = INVALID_RESPONSE_FLOOR_MS;
+        floor = this.invalidFloorMs;
       throw error;
     } finally {
       await setTimeout(Math.max(0, floor - (performance.now() - started)));
