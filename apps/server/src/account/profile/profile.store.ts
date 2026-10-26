@@ -1,5 +1,5 @@
 import type { Pool, PoolClient } from "pg";
-import { actorLock, transaction } from "../google/postgres.js";
+import { actorLock, transaction } from "../../core/postgres.js";
 import { ProfileError } from "./profile.types.js";
 
 export interface ProfileRow {

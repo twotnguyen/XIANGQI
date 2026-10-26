@@ -9,7 +9,7 @@ import {
   type GoogleIdentityVerifier,
   type GoogleSessionIssuer,
 } from "./google.types.js";
-import { transaction } from "./postgres.js";
+import { transaction } from "../../core/postgres.js";
 interface GoogleAccount {
   userId: string;
   email: string;

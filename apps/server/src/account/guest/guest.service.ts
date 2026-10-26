@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { containsForbiddenName } from "@xiangqi/shared";
-import { actorLock, transaction } from "../google/postgres.js";
+import { actorLock, transaction } from "../../core/postgres.js";
 import {
   GuestError,
   type GuestActor,

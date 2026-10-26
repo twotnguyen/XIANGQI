@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import { actorLock, transaction } from "../google/postgres.js";
+import { actorLock, transaction } from "../../core/postgres.js";
 import {
   FriendError,
   type FriendPeer,

@@ -1,6 +1,6 @@
 import { SignJWT } from "jose";
 import type { Pool, PoolClient } from "pg";
-import { actorLock, transaction } from "../../account/google/postgres.js";
+import { actorLock, transaction } from "../../core/postgres.js";
 import {
   MediaError,
   SHARE_LEVELS,
