@@ -7,6 +7,7 @@ import {
   databaseUrl,
 } from "../google/database.test-helper.js";
 import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import type { GuestRoomPort } from "@server/account/guest/guest.types.js";
 describe.skipIf(!databaseUrl)(
   "Guest capability lifecycle with real transactions",
@@ -26,7 +27,8 @@ describe.skipIf(!databaseUrl)(
         await c.query("DELETE FROM public.room_members WHERE user_id=$1", [id]);
       },
     };
-    const service = () => new GuestService(pool, rooms, () => time);
+    const service = () =>
+      new GuestService(new GuestStore(pool), rooms, () => time);
     beforeAll(async () => {
       await baseline();
       await apply("supabase/migrations/20261011000005_google_guest.sql");
@@ -127,10 +129,10 @@ describe.skipIf(!databaseUrl)(
       time = new Date("2026-10-11T00:00:00Z");
       const s = await service().create("An toàn");
       await expect(
-        new GuestService(pool).requireActive(s.capability),
+        new GuestService(new GuestStore(pool)).requireActive(s.capability),
       ).rejects.toMatchObject({ code: "GUEST_UNAVAILABLE" });
       const bad = new GuestService(
-        pool,
+        new GuestStore(pool),
         {
           ...rooms,
           async end() {

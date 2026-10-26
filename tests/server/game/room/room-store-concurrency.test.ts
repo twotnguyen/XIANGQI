@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import { RoomError, type RoomActor } from "@server/game/room/room.types.js";
 import {
@@ -11,7 +12,7 @@ import { databaseUrl, pool, reset } from "./room-transactions.test-helper.js";
 
 const coordinator = new RoomTransactions(pool);
 const rooms = new RoomStore();
-const guest = new GuestService(pool, {
+const guest = new GuestService(new GuestStore(pool), {
   seatedSeat: async () => null,
   end: async () => {},
 });

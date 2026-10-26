@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID, createHash } from "node:crypto";
-import type { Pool, PoolClient } from "pg";
+import type { PoolClient } from "pg";
 import { containsForbiddenName } from "@xiangqi/shared";
-import { actorLock, transaction } from "../../core/postgres.js";
+import type { ExpiryCursor, GuestStore, StoredGuest } from "./guest.store.js";
 import {
   GuestError,
   type GuestActor,
@@ -38,15 +38,11 @@ function displayName(input: unknown) {
     );
   return name;
 }
-interface StoredGuest {
-  userId: string;
-  displayName: string;
-  expiresAt: Date;
-}
+/** Guest session rules; all SQL lives in GuestStore. */
 export class GuestService {
-  private expiryCursor: { expiresAt: Date; tokenHash: string } | null = null;
+  private expiryCursor: ExpiryCursor | null = null;
   constructor(
-    private readonly pool: Pool,
+    private readonly store: GuestStore,
     private readonly rooms?: GuestRoomPort,
     private readonly now = () => new Date(),
   ) {}
@@ -57,20 +53,15 @@ export class GuestService {
       created = this.now();
     const expires = new Date(created.getTime() + 12 * 3600000);
     try {
-      await transaction(this.pool, async (c) => {
-        await c.query(
-          "INSERT INTO xiangqi_auth.principals(id,kind) VALUES($1,'guest')",
-          [userId],
-        );
-        await c.query(
-          "INSERT INTO public.profiles(user_id,username,display_name) VALUES($1,$2,$3)",
-          [userId, "g" + userId.replaceAll("-", "").slice(0, 19), name],
-        );
-        await c.query(
-          "INSERT INTO xiangqi_auth.guest_sessions(token_hash,guest_id,created_at,expires_at) VALUES($1,$2,$3,$4)",
-          [hash(capability), userId, created, expires],
-        );
-      });
+      await this.store.transaction((c) =>
+        this.store.insertGuest(c, {
+          userId,
+          displayName: name,
+          tokenHash: hash(capability),
+          createdAt: created,
+          expiresAt: expires,
+        }),
+      );
     } catch {
       throw new GuestError(
         "GUEST_UNAVAILABLE",
@@ -102,13 +93,7 @@ export class GuestService {
   ) {
     if (!this.rooms) throw this.unavailable();
     await this.rooms.end(c, guest.userId, { reason, confirmedResign });
-    await c.query(
-      "UPDATE public.profiles SET display_name='Khách',updated_at=$2 WHERE user_id=$1",
-      [guest.userId, this.now()],
-    );
-    await c.query("DELETE FROM xiangqi_auth.guest_sessions WHERE guest_id=$1", [
-      guest.userId,
-    ]);
+    await this.store.clearGuest(c, guest.userId, this.now());
   }
   async withActor<T>(
     capability: unknown,
@@ -126,7 +111,7 @@ export class GuestService {
   ): Promise<T> {
     if (!this.rooms) throw this.unavailable();
     try {
-      const result = await transaction(this.pool, async (c) => {
+      const result = await this.store.transaction(async (c) => {
         const authorization = await this.authorizeHash(
           c,
           tokenHash,
@@ -163,21 +148,11 @@ export class GuestService {
     contextId?: string,
   ): Promise<{ status: "active"; actor: GuestActor } | { status: "ended" }> {
     if (!this.rooms) throw this.unavailable();
-    const initial = (
-      await c.query(
-        "SELECT guest_id FROM xiangqi_auth.guest_sessions WHERE token_hash=$1",
-        [tokenHash],
-      )
-    ).rows[0];
-    if (!initial)
+    const ownerId = await this.store.findSessionOwner(c, tokenHash);
+    if (!ownerId)
       throw new GuestError("GUEST_INVALID", "Phiên Khách không hợp lệ");
-    await actorLock(c, initial.guest_id);
-    const guest: StoredGuest | undefined = (
-      await c.query(
-        `SELECT s.guest_id AS "userId",s.expires_at AS "expiresAt",p.display_name AS "displayName" FROM xiangqi_auth.guest_sessions s JOIN xiangqi_auth.principals a ON a.id=s.guest_id AND a.kind='guest' JOIN public.profiles p ON p.user_id=s.guest_id WHERE s.token_hash=$1 AND s.ended_at IS NULL FOR UPDATE OF s`,
-        [tokenHash],
-      )
-    ).rows[0];
+    await this.store.lockActor(c, ownerId);
+    const guest = await this.store.findActiveGuest(c, tokenHash);
     if (!guest)
       throw new GuestError("GUEST_INVALID", "Phiên Khách không hợp lệ");
     const seat = await this.rooms.seatedSeat(c, guest.userId),
@@ -202,12 +177,7 @@ export class GuestService {
       );
     if (
       purpose === "new-room" &&
-      (
-        await c.query(
-          "SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL LIMIT 1",
-          [guest.userId],
-        )
-      ).rowCount
+      (await this.store.ownsOpenRoom(c, guest.userId))
     )
       throw new GuestError(
         "GUEST_ROOM_LIMIT",
@@ -228,18 +198,13 @@ export class GuestService {
   // Call after room/AI mutation, before the same transaction commits.
   async finishActorMutation(c: PoolClient, actor: GuestActor) {
     if (!this.rooms) throw this.unavailable();
-    const row = (
-      await c.query(
-        "SELECT expires_at FROM xiangqi_auth.guest_sessions WHERE guest_id=$1 AND ended_at IS NULL",
-        [actor.userId],
-      )
-    ).rows[0];
+    const expiresAt = await this.store.activeSessionExpiry(c, actor.userId);
     if (
-      row &&
-      row.expires_at.getTime() <= this.now().getTime() &&
+      expiresAt &&
+      expiresAt.getTime() <= this.now().getTime() &&
       !(await this.rooms.seatedSeat(c, actor.userId))
     )
-      await this.end(c, { ...actor, expiresAt: row.expires_at }, "expiry");
+      await this.end(c, { ...actor, expiresAt }, "expiry");
   }
   async requireActive(
     capability: unknown,
@@ -264,19 +229,9 @@ export class GuestService {
     );
   }
   async expireDue() {
-    const candidates = await transaction(
-      this.pool,
-      async (c) =>
-        (
-          await c.query(
-            "SELECT token_hash,expires_at FROM xiangqi_auth.guest_sessions WHERE expires_at<=$1 AND ended_at IS NULL AND ($2::timestamptz IS NULL OR (expires_at,token_hash)>($2,$3)) ORDER BY expires_at,token_hash LIMIT 100",
-            [
-              this.now(),
-              this.expiryCursor?.expiresAt ?? null,
-              this.expiryCursor?.tokenHash ?? null,
-            ],
-          )
-        ).rows,
+    const candidates = await this.store.expiredSessions(
+      this.now(),
+      this.expiryCursor,
     );
     for (const candidate of candidates) {
       try {
