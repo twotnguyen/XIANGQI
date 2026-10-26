@@ -8,6 +8,12 @@ export type PublicRoomFeedDependencies = {
   /** Opens trusted identity once; every read must reauthorize its fixed session deadline. */
   open(proof: PublicFeedProof): Promise<{ read(): Promise<PublicRoomView[]> }>;
 };
+/**
+ * AC-06.2.3 and AC-06.2.15: the lobby must reflect a change within 2 seconds.
+ * Each tick runs one 7-statement read transaction per connected peer (about 2 ms
+ * locally); do not raise this without asking the PO to move the 2-second limit.
+ */
+export const PUBLIC_FEED_POLL_MS = 1000;
 const capability = /^[A-Za-z0-9_-]{43}$/;
 const invalidSession = "Phiên truy cập không hợp lệ";
 const unavailable = {
@@ -219,7 +225,7 @@ export function attachPublicRoomFeed(
   });
   const timer = setInterval(() => {
     for (const peer of peers) read(peer);
-  }, 3000);
+  }, PUBLIC_FEED_POLL_MS);
   timer.unref();
   return {
     close(): Promise<void> {
