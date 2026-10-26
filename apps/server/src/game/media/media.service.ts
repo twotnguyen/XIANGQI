@@ -1,6 +1,5 @@
 import { SignJWT } from "jose";
-import type { Pool, PoolClient } from "pg";
-import { actorLock, transaction } from "../../core/postgres.js";
+import type { MediaStore, MediaTx } from "./media.store.js";
 import {
   MediaError,
   SHARE_LEVELS,
@@ -96,23 +95,9 @@ async function serviceCall(
 export class MediaAccess {
   constructor(
     private readonly config: MediaConfig,
-    private readonly pool: Pool,
+    private readonly store: MediaStore,
     private readonly fetchFn: typeof fetch = fetch,
   ) {}
-  private async withUser<T>(
-    userId: string,
-    work: (client: PoolClient) => Promise<T>,
-  ): Promise<T> {
-    return transaction(this.pool, async (client) => {
-      await actorLock(client, userId);
-      return work(client);
-    });
-  }
-  private async readUser<T>(
-    work: (client: PoolClient) => Promise<T>,
-  ): Promise<T> {
-    return transaction(this.pool, work);
-  }
   async setShare(
     userId: string,
     roomId: string,
@@ -124,24 +109,14 @@ export class MediaAccess {
         "Mức chia sẻ không hợp lệ",
         400,
       );
-    return this.withUser(userId, async (client) => {
-      const seat = (
-        await client.query(
-          `SELECT m.side FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id
-           WHERE m.room_id=$1 AND m.user_id=$2 AND m.role='PLAYER' AND r.status IN('WAITING','PLAYING') AND r.closed_at IS NULL`,
-          [roomId, userId],
-        )
-      ).rows[0];
-      if (!seat)
+    return this.store.withUser(userId, async (tx) => {
+      if (!(await tx.hasPlayerSeat(roomId, userId)))
         throw new MediaError(
           "MEDIA_PLAYER_REQUIRED",
           "Chỉ người ngồi ghế đổi mức chia sẻ",
           403,
         );
-      await client.query(
-        "INSERT INTO xiangqi_room.media_share(room_id,user_id,level,updated_at) VALUES($1,$2,$3,clock_timestamp()) ON CONFLICT(room_id,user_id) DO UPDATE SET level=EXCLUDED.level,updated_at=clock_timestamp()",
-        [roomId, userId, level],
-      );
+      await tx.saveShare(roomId, userId, level);
       return { level };
     });
   }
@@ -149,15 +124,7 @@ export class MediaAccess {
     userId: string,
     roomId: string,
   ): Promise<{ level: ShareLevel }> {
-    return this.readUser(async (client) => {
-      const row = (
-        await client.query(
-          "SELECT level FROM xiangqi_room.media_share WHERE room_id=$1 AND user_id=$2",
-          [roomId, userId],
-        )
-      ).rows[0];
-      return { level: (row?.level ?? "OPPONENT") as ShareLevel };
-    });
+    return this.store.read((tx) => this.shareIn(tx, roomId, userId));
   }
   async tokenFor(
     userId: string,
@@ -166,20 +133,14 @@ export class MediaAccess {
   ): Promise<
     MediaToken & { stage: { token: string; roomName: string } | null }
   > {
-    return this.readUser(async (client) => {
-      const member = (
-        await client.query(
-          `SELECT m.role FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id
-           WHERE m.room_id=$1 AND m.user_id=$2 AND r.closed_at IS NULL`,
-          [roomId, userId],
-        )
-      ).rows[0];
-      if (!member)
+    return this.store.read(async (tx) => {
+      const role = await tx.findMemberRole(roomId, userId);
+      if (!role)
         throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
       const publishing = devices.camera || devices.mic;
       const ttl = 600;
       const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
-      if (member.role !== "PLAYER") {
+      if (role !== "PLAYER") {
         const token = await mint(
           this.config,
           userId,
@@ -200,7 +161,7 @@ export class MediaAccess {
           stage: null,
         };
       }
-      const { level } = await this.getShareIn(client, roomId, userId);
+      const { level } = await this.shareIn(tx, roomId, userId);
       const privateToken = await mint(
         this.config,
         userId,
@@ -240,18 +201,12 @@ export class MediaAccess {
       };
     });
   }
-  private async getShareIn(
-    client: PoolClient,
+  private async shareIn(
+    tx: MediaTx,
     roomId: string,
     userId: string,
   ): Promise<{ level: ShareLevel }> {
-    const row = (
-      await client.query(
-        "SELECT level FROM xiangqi_room.media_share WHERE room_id=$1 AND user_id=$2",
-        [roomId, userId],
-      )
-    ).rows[0];
-    return { level: (row?.level ?? "OPPONENT") as ShareLevel };
+    return { level: (await tx.findShare(roomId, userId)) ?? "OPPONENT" };
   }
   async revoke(roomId: string, userId: string): Promise<void> {
     const failures: unknown[] = [];
