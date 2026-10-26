@@ -19,12 +19,12 @@
     "build:web": "pnpm --filter @xiangqi/web... build",
     "build:server": "pnpm --filter @xiangqi/server... build",
     "test:core": "vitest run tests/packages/xiangqi-core --coverage",
-    "test:yc1": "tests/server/db.sh test tests/server/account",
-    "test:yc2": "tests/server/db.sh test tests/server/game/room",
-    "test:yc4": "tests/server/db.sh test tests/server/game/match tests/server/game/clock",
-    "test:yc6": "tests/server/db.sh test tests/server/game/realtime",
-    "test:yc7": "tests/server/db.sh test tests/server/game/chat tests/server/game/media",
-    "test:yc8": "tests/server/db.sh test tests/server/game/ai"
+    "test:db:account": "tests/server/db.sh test tests/server/account",
+    "test:db:room": "tests/server/db.sh test tests/server/game/room",
+    "test:db:match": "tests/server/db.sh test tests/server/game/match tests/server/game/clock",
+    "test:db:realtime": "tests/server/db.sh test tests/server/game/realtime",
+    "test:db:chat-media": "tests/server/db.sh test tests/server/game/chat tests/server/game/media",
+    "test:db:ai": "tests/server/db.sh test tests/server/game/ai"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -32,14 +32,14 @@
     "@testing-library/user-event": "14.6.7",
     "@types/node": "22.20.5",
     "@types/pg": "8.15.6",
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "4.1.12",
     "eslint": "10.12.0",
     "jsdom": "30.1.2",
     "prettier": "3.9.10",
     "socket.io-client": "4.8.4",
     "typescript": "5.9.3",
     "typescript-eslint": "8.71.1",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   },
   "type": "module"
 }
