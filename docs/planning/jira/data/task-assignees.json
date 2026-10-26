@@ -1,0 +1,902 @@
+{
+  "XIAN-45": {
+    "key": "XIAN-45",
+    "code": "T09",
+    "title": "T09 · BE đăng nhập username, khoá thử sai, ghi nhớ đăng nhập",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-10",
+    "due": "2026-10-12"
+  },
+  "XIAN-40": {
+    "key": "XIAN-40",
+    "code": "T04",
+    "title": "T04 · BE đăng ký, SMTP, phục hồi tài khoản và thử xác thực sớm",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-10-10",
+    "due": "2026-10-12"
+  },
+  "XIAN-37": {
+    "key": "XIAN-37",
+    "code": "T01",
+    "title": "T01 · Dựng monorepo, CI, nhật ký và /health",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-06",
+    "due": "2026-10-08"
+  },
+  "XIAN-39": {
+    "key": "XIAN-39",
+    "code": "T03",
+    "title": "T03 · Khung giao diện chung: theme, layout, router, thành phần 5 trạng thái",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-06",
+    "due": "2026-10-08"
+  },
+  "XIAN-50": {
+    "key": "XIAN-50",
+    "code": "T14",
+    "title": "T14 · Lược đồ CSDL P1, RLS, migration, dữ liệu mẫu",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-10-07",
+    "due": "2026-10-09"
+  },
+  "XIAN-48": {
+    "key": "XIAN-48",
+    "code": "T12",
+    "title": "T12 · Khung realtime Socket.IO",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-07",
+    "due": "2026-10-09"
+  },
+  "XIAN-47": {
+    "key": "XIAN-47",
+    "code": "T11",
+    "title": "T11 · FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-20",
+    "due": "2026-10-22"
+  },
+  "XIAN-73": {
+    "key": "XIAN-73",
+    "code": "T37",
+    "title": "T37 · BE hai kênh chat, bộ lọc từ cấm, giới hạn tốc độ",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-30",
+    "due": "2026-11-01"
+  },
+  "XIAN-38": {
+    "key": "XIAN-38",
+    "code": "T02",
+    "title": "T02 · Kế hoạch kiểm thử, TC nền tảng và dữ liệu chuẩn luật/máy cờ",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-08",
+    "due": "2026-10-10"
+  },
+  "XIAN-42": {
+    "key": "XIAN-42",
+    "code": "T06",
+    "title": "T06 · Spike media LAN/Cloud/HTTPS và thử mô hình phiên",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-08",
+    "due": "2026-10-10"
+  },
+  "XIAN-87": {
+    "key": "XIAN-87",
+    "code": "T51",
+    "title": "T51 · Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-08",
+    "due": "2026-10-10"
+  },
+  "XIAN-41": {
+    "key": "XIAN-41",
+    "code": "T05",
+    "title": "T05 · Lõi luật cờ (1/3): bàn cờ và nước đi, ăn quân của 7 loại quân",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-20",
+    "due": "2026-10-22"
+  },
+  "XIAN-43": {
+    "key": "XIAN-43",
+    "code": "T07",
+    "title": "T07 · Lõi luật cờ (2/3): nước hợp lệ, chiếu, chiếu hết, hết nước",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-20",
+    "due": "2026-10-22"
+  },
+  "XIAN-71": {
+    "key": "XIAN-71",
+    "code": "T35",
+    "title": "T35 · BE đăng ký/đăng nhập Google, onboarding, phiên Khách",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-11",
+    "due": "2026-10-13"
+  },
+  "XIAN-51": {
+    "key": "XIAN-51",
+    "code": "T15",
+    "title": "T15 · FE màn Đăng nhập",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-11",
+    "due": "2026-10-13"
+  },
+  "XIAN-44": {
+    "key": "XIAN-44",
+    "code": "T08",
+    "title": "T08 · FE màn Đăng ký 3 bước",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-12",
+    "due": "2026-10-14"
+  },
+  "XIAN-53": {
+    "key": "XIAN-53",
+    "code": "T17",
+    "title": "T17 · Kiểm thử US-01.2",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-12",
+    "due": "2026-10-14"
+  },
+  "XIAN-46": {
+    "key": "XIAN-46",
+    "code": "T10",
+    "title": "T10 · Lõi luật cờ (3/3): luật kết thúc ván, perft, độ phủ kiểm thử",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-21",
+    "due": "2026-10-23"
+  },
+  "XIAN-55": {
+    "key": "XIAN-55",
+    "code": "T19",
+    "title": "T19 · FE đi cờ click/kéo thả, gợi ý ô, đánh dấu, âm thanh",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-21",
+    "due": "2026-10-23"
+  },
+  "XIAN-49": {
+    "key": "XIAN-49",
+    "code": "T13",
+    "title": "T13 · Kiểm thử US-01.1",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-12",
+    "due": "2026-10-14"
+  },
+  "XIAN-92": {
+    "key": "XIAN-92",
+    "code": "T56",
+    "title": "T56 · BE phiên cố định, một vị trí chơi, thiết bị khác xử thua, đăng xuất",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-10-13",
+    "due": "2026-10-15"
+  },
+  "XIAN-52": {
+    "key": "XIAN-52",
+    "code": "T16",
+    "title": "T16 · Kiểm thử US-04.2",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-22",
+    "due": "2026-10-24"
+  },
+  "XIAN-54": {
+    "key": "XIAN-54",
+    "code": "T18",
+    "title": "T18 · BE tạo phòng, mã/link, ghế, Đổi ghế tự do, Sẵn sàng, đếm 3-2-1, chuyển Host",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-15",
+    "due": "2026-10-17"
+  },
+  "XIAN-56": {
+    "key": "XIAN-56",
+    "code": "T20",
+    "title": "T20 · BE ván online: tạo ván, phân xử nước đi, kết thúc ván, lưu ván",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-22",
+    "due": "2026-10-24"
+  },
+  "XIAN-57": {
+    "key": "XIAN-57",
+    "code": "T21",
+    "title": "T21 · FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-15",
+    "due": "2026-10-17"
+  },
+  "XIAN-58": {
+    "key": "XIAN-58",
+    "code": "T22",
+    "title": "T22 · BE vào phòng bằng link/mã, xếp ghế/người xem, chuyển hướng sau đăng nhập",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-17",
+    "due": "2026-10-19"
+  },
+  "XIAN-59": {
+    "key": "XIAN-59",
+    "code": "T23",
+    "title": "T23 · BE đồng hồ thi đấu và hết giờ",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-23",
+    "due": "2026-10-25"
+  },
+  "XIAN-68": {
+    "key": "XIAN-68",
+    "code": "T32",
+    "title": "T32 · BE đầu hàng, rời phòng giữa ván, xin hoà",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-23",
+    "due": "2026-10-25"
+  },
+  "XIAN-61": {
+    "key": "XIAN-61",
+    "code": "T25",
+    "title": "T25 · FE phòng đấu, đồng hồ, kết quả và lớp phủ nối lại",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-24",
+    "due": "2026-10-26"
+  },
+  "XIAN-60": {
+    "key": "XIAN-60",
+    "code": "T24",
+    "title": "T24 · Máy cờ 3 cấp: negamax + alpha-beta, tìm sâu dần, tiến trình riêng",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-11-01",
+    "due": "2026-11-03"
+  },
+  "XIAN-62": {
+    "key": "XIAN-62",
+    "code": "T26",
+    "title": "T26 · FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-18",
+    "due": "2026-10-20"
+  },
+  "XIAN-63": {
+    "key": "XIAN-63",
+    "code": "T27",
+    "title": "T27 · Kiểm thử US-04.3",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-22",
+    "due": "2026-10-24"
+  },
+  "XIAN-64": {
+    "key": "XIAN-64",
+    "code": "T28",
+    "title": "T28 · Kiểm thử US-02.1",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-16",
+    "due": "2026-10-18"
+  },
+  "XIAN-65": {
+    "key": "XIAN-65",
+    "code": "T29",
+    "title": "T29 · Kiểm thử US-03.1",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-18",
+    "due": "2026-10-20"
+  },
+  "XIAN-67": {
+    "key": "XIAN-67",
+    "code": "T31",
+    "title": "T31 · BE bạn bè, trạng thái online, mời bạn online vào phòng",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-18",
+    "due": "2026-10-20"
+  },
+  "XIAN-69": {
+    "key": "XIAN-69",
+    "code": "T33",
+    "title": "T33 · BE LiveKit: token, quyền phát/nhận, thu hồi và mức chia sẻ",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-30",
+    "due": "2026-11-01"
+  },
+  "XIAN-95": {
+    "key": "XIAN-95",
+    "code": "T59",
+    "title": "T59 · Tinh chỉnh máy cờ và đo GATE-ENGINE trên dữ liệu đã xác minh",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-11-01",
+    "due": "2026-11-03"
+  },
+  "XIAN-70": {
+    "key": "XIAN-70",
+    "code": "T34",
+    "title": "T34 · BE ván với máy: tạo ván, chọn phe, đầu hàng, Ván mới",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-11-01",
+    "due": "2026-11-03"
+  },
+  "XIAN-99": {
+    "key": "XIAN-99",
+    "code": "T63",
+    "title": "T63 · BE giữ ván AI 30 phút, Thử lại, khởi động lại",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-11-02",
+    "due": "2026-11-04"
+  },
+  "XIAN-72": {
+    "key": "XIAN-72",
+    "code": "T36",
+    "title": "T36 · FE nút Đầu hàng, Xin hoà và khung đề nghị",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-24",
+    "due": "2026-10-26"
+  },
+  "XIAN-74": {
+    "key": "XIAN-74",
+    "code": "T38",
+    "title": "T38 · FE thiết lập/chơi AI và giao diện sự cố máy cờ",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-11-02",
+    "due": "2026-11-04"
+  },
+  "XIAN-75": {
+    "key": "XIAN-75",
+    "code": "T39",
+    "title": "T39 · Kiểm thử US-05.2",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-24",
+    "due": "2026-10-26"
+  },
+  "XIAN-66": {
+    "key": "XIAN-66",
+    "code": "T30",
+    "title": "T30 · Kiểm thử US-05.1",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-25",
+    "due": "2026-10-27"
+  },
+  "XIAN-76": {
+    "key": "XIAN-76",
+    "code": "T40",
+    "title": "T40 · FE màn Bạn bè, chuông, tab mời bạn bè, pop-up lời mời",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-19",
+    "due": "2026-10-21"
+  },
+  "XIAN-77": {
+    "key": "XIAN-77",
+    "code": "T41",
+    "title": "T41 · BE Xin đổi bên và phòng về chờ sau ván",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-16",
+    "due": "2026-10-18"
+  },
+  "XIAN-78": {
+    "key": "XIAN-78",
+    "code": "T42",
+    "title": "T42 · FE khung chat hai kênh",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-30",
+    "due": "2026-11-01"
+  },
+  "XIAN-79": {
+    "key": "XIAN-79",
+    "code": "T43",
+    "title": "T43 · Kiểm thử US-08.1",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-11-03",
+    "due": "2026-11-04"
+  },
+  "XIAN-80": {
+    "key": "XIAN-80",
+    "code": "T44",
+    "title": "T44 · FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-13",
+    "due": "2026-10-15"
+  },
+  "XIAN-83": {
+    "key": "XIAN-83",
+    "code": "T47",
+    "title": "T47 · Kiểm thử US-07.1",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-31",
+    "due": "2026-11-02"
+  },
+  "XIAN-81": {
+    "key": "XIAN-81",
+    "code": "T45",
+    "title": "T45 · Kiểm thử US-07.2",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-31",
+    "due": "2026-11-02"
+  },
+  "XIAN-82": {
+    "key": "XIAN-82",
+    "code": "T46",
+    "title": "T46 · FE hộp Xin đổi bên, Ở lại phòng / Rời phòng",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-16",
+    "due": "2026-10-18"
+  },
+  "XIAN-84": {
+    "key": "XIAN-84",
+    "code": "T48",
+    "title": "T48 · Kiểm thử US-01.3",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-14",
+    "due": "2026-10-16"
+  },
+  "XIAN-85": {
+    "key": "XIAN-85",
+    "code": "T49",
+    "title": "T49 · Kiểm thử US-03.2",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-19",
+    "due": "2026-10-21"
+  },
+  "XIAN-86": {
+    "key": "XIAN-86",
+    "code": "T50",
+    "title": "T50 · Kiểm thử US-02.2",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-17",
+    "due": "2026-10-19"
+  },
+  "XIAN-88": {
+    "key": "XIAN-88",
+    "code": "T52",
+    "title": "T52 · BE mất kết nối, ân hạn, đồng bộ lại và server restart",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-10-25",
+    "due": "2026-10-27"
+  },
+  "XIAN-89": {
+    "key": "XIAN-89",
+    "code": "T53",
+    "title": "T53 · BE chế độ PUBLIC / CODE_ONLY / LOCKED, thu hồi mã",
+    "account_id": "712020:301ba2fa-0327-4499-8a6e-5e49fdff7e34",
+    "name": "nguyenhoangtungtuyhoa",
+    "start": "2026-10-26",
+    "due": "2026-10-28"
+  },
+  "XIAN-91": {
+    "key": "XIAN-91",
+    "code": "T55",
+    "title": "T55 · BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-10-26",
+    "due": "2026-10-28"
+  },
+  "XIAN-90": {
+    "key": "XIAN-90",
+    "code": "T54",
+    "title": "T54 · BE danh sách phòng PUBLIC realtime, Vào chơi/Vào xem",
+    "account_id": "712020:38fd850f-76a4-493c-b474-da1d3ecbc6bc",
+    "name": "Võ Thành Đông",
+    "start": "2026-10-27",
+    "due": "2026-10-29"
+  },
+  "XIAN-93": {
+    "key": "XIAN-93",
+    "code": "T57",
+    "title": "T57 · FE Cài đặt phòng",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-27",
+    "due": "2026-10-29"
+  },
+  "XIAN-94": {
+    "key": "XIAN-94",
+    "code": "T58",
+    "title": "T58 · FE danh sách người xem, thao tác ghế và khung camera/mic",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-28",
+    "due": "2026-10-30"
+  },
+  "XIAN-96": {
+    "key": "XIAN-96",
+    "code": "T60",
+    "title": "T60 · Kiểm thử US-05.3",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-26",
+    "due": "2026-10-28"
+  },
+  "XIAN-97": {
+    "key": "XIAN-97",
+    "code": "T61",
+    "title": "T61 · FE Sảnh: bốn lựa chọn, Luật chơi, danh sách phòng, thanh điều hướng",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-28",
+    "due": "2026-10-30"
+  },
+  "XIAN-103": {
+    "key": "XIAN-103",
+    "code": "T67",
+    "title": "T67 · Kiểm thử US-06.2",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-28",
+    "due": "2026-10-30"
+  },
+  "XIAN-98": {
+    "key": "XIAN-98",
+    "code": "T62",
+    "title": "T62 · Kiểm thử US-06.1",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-29",
+    "due": "2026-10-31"
+  },
+  "XIAN-100": {
+    "key": "XIAN-100",
+    "code": "T64",
+    "title": "T64 · Kiểm thử US-06.3",
+    "account_id": "712020:1451a1ca-6eca-44ce-b834-02eb38d1dd18",
+    "name": "Gia Kỳ",
+    "start": "2026-10-29",
+    "due": "2026-10-31"
+  },
+  "XIAN-101": {
+    "key": "XIAN-101",
+    "code": "T65",
+    "title": "T65 · FE Cài đặt hồ sơ, Đăng xuất, banner ván dở",
+    "account_id": "712020:91fd9097-411b-4618-9585-29ad9712c346",
+    "name": "Tưởng Lê khoa Cường-4572",
+    "start": "2026-10-14",
+    "due": "2026-10-16"
+  },
+  "XIAN-102": {
+    "key": "XIAN-102",
+    "code": "T66",
+    "title": "T66 · Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-09",
+    "due": "2026-10-11"
+  },
+  "XIAN-104": {
+    "key": "XIAN-104",
+    "code": "T68",
+    "title": "T68 · Kiểm thử US-08.3",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-11-03",
+    "due": "2026-11-04"
+  },
+  "XIAN-105": {
+    "key": "XIAN-105",
+    "code": "T69",
+    "title": "T69 · Kiểm thử US-01.4",
+    "account_id": "712020:f1637552-6150-4198-afed-c2af454dd6dc",
+    "name": "4841_Lê Thị Xuân Nhạn",
+    "start": "2026-10-14",
+    "due": "2026-10-16"
+  },
+  "XIAN-106": {
+    "key": "XIAN-106",
+    "code": "T70",
+    "title": "T70 · Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo",
+    "account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
+    "name": "TÌNH 4851_NGUYỄN NGỌC",
+    "start": "2026-10-09",
+    "due": "2026-10-11"
+  },
+  "XIAN-107": {
+    "key": "XIAN-107",
+    "code": "T71",
+    "title": "T71 · Tổng duyệt D1–D10 trên bản phát hành và ghi hình",
+    "account_id": "712020:5b8f2874-7938-4cff-bd77-9671381f301f",
+    "name": "Nguyễn Minh Thư",
+    "start": "2026-10-10",
+    "due": "2026-10-12"
+  },
+  "XIAN-140": {
+    "key": "XIAN-140",
+    "code": "T-P2-01-I",
+    "title": "T-P2-01-I · Triển khai Tính Elo và số ván Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-141": {
+    "key": "XIAN-141",
+    "code": "T-P2-01-Q",
+    "title": "T-P2-01-Q · Nghiệm thu Tính Elo và số ván Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-142": {
+    "key": "XIAN-142",
+    "code": "T-P2-02-I",
+    "title": "T-P2-02-I · Triển khai Hàng đợi Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-143": {
+    "key": "XIAN-143",
+    "code": "T-P2-02-Q",
+    "title": "T-P2-02-Q · Nghiệm thu Hàng đợi Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-144": {
+    "key": "XIAN-144",
+    "code": "T-P2-03-I",
+    "title": "T-P2-03-I · Triển khai Giới hạn cặp Ranked trong 24 giờ",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-145": {
+    "key": "XIAN-145",
+    "code": "T-P2-03-Q",
+    "title": "T-P2-03-Q · Nghiệm thu Giới hạn cặp Ranked trong 24 giờ",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-146": {
+    "key": "XIAN-146",
+    "code": "T-P2-04-I",
+    "title": "T-P2-04-I · Triển khai Phân quyền và vòng đời ván Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-147": {
+    "key": "XIAN-147",
+    "code": "T-P2-04-Q",
+    "title": "T-P2-04-Q · Nghiệm thu Phân quyền và vòng đời ván Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-148": {
+    "key": "XIAN-148",
+    "code": "T-P2-05-I",
+    "title": "T-P2-05-I · Triển khai Quyền nhận media Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-149": {
+    "key": "XIAN-149",
+    "code": "T-P2-05-Q",
+    "title": "T-P2-05-Q · Nghiệm thu Quyền nhận media Ranked",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-150": {
+    "key": "XIAN-150",
+    "code": "T-P2-06-I",
+    "title": "T-P2-06-I · Triển khai Bảng xếp hạng và thẻ tóm tắt",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-151": {
+    "key": "XIAN-151",
+    "code": "T-P2-06-Q",
+    "title": "T-P2-06-Q · Nghiệm thu Bảng xếp hạng và thẻ tóm tắt",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-152": {
+    "key": "XIAN-152",
+    "code": "T-P2-07-I",
+    "title": "T-P2-07-I · Triển khai Ghép ngẫu nhiên Casual",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-153": {
+    "key": "XIAN-153",
+    "code": "T-P2-07-Q",
+    "title": "T-P2-07-Q · Nghiệm thu Ghép ngẫu nhiên Casual",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-154": {
+    "key": "XIAN-154",
+    "code": "T-P2-08-I",
+    "title": "T-P2-08-I · Triển khai Xin đi lại online",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-155": {
+    "key": "XIAN-155",
+    "code": "T-P2-08-Q",
+    "title": "T-P2-08-Q · Nghiệm thu Xin đi lại online",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-156": {
+    "key": "XIAN-156",
+    "code": "T-P2-09-I",
+    "title": "T-P2-09-I · Triển khai Tái đấu có chọn phe",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-157": {
+    "key": "XIAN-157",
+    "code": "T-P2-09-Q",
+    "title": "T-P2-09-Q · Nghiệm thu Tái đấu có chọn phe",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-158": {
+    "key": "XIAN-158",
+    "code": "T-P2-10-I",
+    "title": "T-P2-10-I · Triển khai Không giới hạn giờ và chống treo ván",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-159": {
+    "key": "XIAN-159",
+    "code": "T-P2-10-Q",
+    "title": "T-P2-10-Q · Nghiệm thu Không giới hạn giờ và chống treo ván",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-160": {
+    "key": "XIAN-160",
+    "code": "T-P2-11-I",
+    "title": "T-P2-11-I · Triển khai Lịch sử cá nhân và phân loại kết quả",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-161": {
+    "key": "XIAN-161",
+    "code": "T-P2-11-Q",
+    "title": "T-P2-11-Q · Nghiệm thu Lịch sử cá nhân và phân loại kết quả",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-162": {
+    "key": "XIAN-162",
+    "code": "T-P2-12-I",
+    "title": "T-P2-12-I · Triển khai Lưu ván AI và Bỏ dở",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-163": {
+    "key": "XIAN-163",
+    "code": "T-P2-12-Q",
+    "title": "T-P2-12-Q · Nghiệm thu Lưu ván AI và Bỏ dở",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-164": {
+    "key": "XIAN-164",
+    "code": "T-P2-13-I",
+    "title": "T-P2-13-I · Triển khai Replay riêng tư",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-165": {
+    "key": "XIAN-165",
+    "code": "T-P2-13-Q",
+    "title": "T-P2-13-Q · Nghiệm thu Replay riêng tư",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-166": {
+    "key": "XIAN-166",
+    "code": "T-P2-14-I",
+    "title": "T-P2-14-I · Triển khai Đi lại với máy",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-167": {
+    "key": "XIAN-167",
+    "code": "T-P2-14-Q",
+    "title": "T-P2-14-Q · Nghiệm thu Đi lại với máy",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  },
+  "XIAN-168": {
+    "key": "XIAN-168",
+    "code": "T-P2-15-I",
+    "title": "T-P2-15-I · Triển khai Copy FEN và tải PGN",
+    "account_id": null,
+    "name": "Unassigned",
+    "start": null,
+    "due": null
+  }
+}
