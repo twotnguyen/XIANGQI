@@ -149,5 +149,18 @@ describe.skipIf(!url)("friendships", () => {
     await expect(
       service.respondRoomInvite(mate, invite.id, true),
     ).rejects.toMatchObject({ code: "FRIEND_INVITE_REVOKED" });
+    // AC-03.2.20: the unused invite is revoked for good, not left pending.
+    expect(
+      (
+        await pool.query(
+          "SELECT status FROM xiangqi_social.room_invites WHERE id=$1",
+          [invite.id],
+        )
+      ).rows[0].status,
+    ).toBe("REVOKED");
+    expect(await service.listRoomInvites(mate)).toEqual([]);
+    await expect(
+      service.respondRoomInvite(mate, invite.id, true),
+    ).rejects.toMatchObject({ code: "FRIEND_INVITE_MISSING" });
   });
 });

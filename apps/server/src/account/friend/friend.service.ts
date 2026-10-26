@@ -139,7 +139,7 @@ export class FriendService {
     });
   }
   async respondRoomInvite(userId: string, inviteId: string, accept: boolean) {
-    return this.store.withUser(userId, async (tx) => {
+    const outcome = await this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
       await tx.expireStale();
       const row = await tx.findPendingInvite(inviteId);
@@ -153,8 +153,9 @@ export class FriendService {
       }
       const room = await tx.findOpenRoom(row!.room_id);
       if (!room || room.visibility === "LOCKED") {
+        // Persist the revocation first: throwing here would roll it back.
         await tx.revokeInvite(inviteId);
-        fail("FRIEND_INVITE_REVOKED", "Phòng đã khoá lời mời này", 410);
+        return { revoked: true as const };
       }
       if (await tx.isSeated(userId))
         fail("FRIEND_BUSY", "Bạn đang ở trong một ván/phòng khác", 409);
@@ -165,5 +166,8 @@ export class FriendService {
         code: room!.invite_code,
       };
     });
+    if ("revoked" in outcome)
+      fail("FRIEND_INVITE_REVOKED", "Phòng đã khoá lời mời này", 410);
+    return outcome;
   }
 }
