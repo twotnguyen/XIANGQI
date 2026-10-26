@@ -1,4 +1,6 @@
+import { once } from "node:events";
 import { createServer } from "node:http";
+import type { Worker } from "node:worker_threads";
 import { afterEach, expect, it } from "vitest";
 import {
   initialPosition,
@@ -247,7 +249,11 @@ it("replaces an idle worker which exited after a successful result", async () =>
     watchdogMs: 200,
   });
   expect((await worker.search(request())).move).toEqual({ from: 54, to: 45 });
-  await new Promise((resolve) => setTimeout(resolve, 60));
+  // Wait for the real exit instead of guessing a delay; the worker's own exit
+  // listener is registered first, so the dead worker is already discarded here.
+  const cached = (worker as unknown as { worker: Worker | null }).worker;
+  expect(cached).not.toBeNull();
+  if (cached!.threadId !== -1) await once(cached!, "exit");
   expect((await worker.search(request())).move).toEqual({ from: 54, to: 45 });
 });
 it("sanitizes synchronous worker startup failures", async () => {
