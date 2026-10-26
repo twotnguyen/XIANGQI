@@ -10,10 +10,7 @@ it("submits chosen room settings without a room name", async () => {
   render(createElement(CreateRoomForm, { onCreate: create }));
   const user = userEvent.setup();
   await user.click(screen.getByLabelText("15 phút"));
-  await user.selectOptions(
-    screen.getByLabelText("Người xem"),
-    "3",
-  );
+  await user.selectOptions(screen.getByLabelText("Người xem"), "3");
   await user.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(create).toHaveBeenCalledExactlyOnceWith({
     timeMinutes: 15,

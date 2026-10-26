@@ -118,7 +118,9 @@ export function AppShell({
       </NavigationLink>
       <header className="xq-header">
         <NavigationLink className="xq-brand" href="/lobby">
-          <span className="xq-logo-token" aria-hidden="true">帥</span>
+          <span className="xq-logo-token" aria-hidden="true">
+            帥
+          </span>
           <span className="xq-brand-title">Cờ Tướng Online</span>
         </NavigationLink>
         <nav className="xq-desktop-nav" aria-label="Điều hướng chính">
@@ -158,15 +160,22 @@ export function AppShell({
                       {user.displayName.trim().charAt(0).toUpperCase() || "K"}
                     </div>
                     <div className="xq-dropdown-user-details">
-                      <strong className="xq-dropdown-name">{user.displayName}</strong>
+                      <strong className="xq-dropdown-name">
+                        {user.displayName}
+                      </strong>
                       <span className="xq-dropdown-role">
                         {user.guest ? "Tài khoản Khách" : "⚔️ Kỳ thủ Kỳ Đài"}
                       </span>
-                      <span className="xq-dropdown-status">🟢 Đang trực tuyến</span>
+                      <span className="xq-dropdown-status">
+                        🟢 Đang trực tuyến
+                      </span>
                     </div>
                   </div>
                   <div className="xq-dropdown-divider" />
-                  <nav className="xq-dropdown-links" aria-label="Tác vụ tài khoản">
+                  <nav
+                    className="xq-dropdown-links"
+                    aria-label="Tác vụ tài khoản"
+                  >
                     <NavigationLink
                       href="/lobby"
                       className="xq-dropdown-item"

@@ -83,8 +83,7 @@ describe.skipIf(!databaseUrl)(
           expect(result).toEqual({ status: "active", actor });
           return result;
         },
-        (s) =>
-          rooms.create(s, { commandId: randomUUID() }),
+        (s) => rooms.create(s, { commandId: randomUUID() }),
       );
       expect(result.status).toBe("active");
       expect(m.provider.getUser).toHaveBeenCalledTimes(1);

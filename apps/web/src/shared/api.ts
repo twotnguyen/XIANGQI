@@ -12,7 +12,10 @@ export function getApiBaseUrl(): string {
     ) {
       try {
         const parsed = new URL(envUrl);
-        if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
+        if (
+          parsed.hostname === "localhost" ||
+          parsed.hostname === "127.0.0.1"
+        ) {
           return `${parsed.protocol}//${window.location.hostname}:${parsed.port || "3000"}`;
         }
       } catch {

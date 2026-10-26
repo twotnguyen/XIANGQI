@@ -230,14 +230,10 @@ it("preserves known errors and sanitizes unknown provider/SQL payloads", async (
 it("fails closed for Guest or ended authorization before store work", async () => {
   resolve.mockResolvedValueOnce({ ...actor, kind: "guest" } as never);
   const calls = create.mock.calls.length;
-  expect((await request("/rooms", { commandId })).status).toBe(
-    403,
-  );
+  expect((await request("/rooms", { commandId })).status).toBe(403);
   expect(create.mock.calls.length).toBe(calls);
   authorize.mockResolvedValueOnce({ status: "ended" } as never);
-  expect((await request("/rooms", { commandId })).status).toBe(
-    401,
-  );
+  expect((await request("/rooms", { commandId })).status).toBe(401);
   expect(create.mock.calls.length).toBe(calls);
 });
 it("authenticates before entering SQL coordinator and rejects cross-origin writes", async () => {

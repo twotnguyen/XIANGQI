@@ -227,39 +227,36 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       else socket.timeout(5000).emit(event, payload, ack);
     });
   }
-  const socket = io(
-    `${getApiBaseUrl()}/ai`,
-    {
-      path: "/ai/socket.io",
-      transports: ["websocket"],
-      withCredentials: true,
-      autoConnect: false,
-      auth: (done) => {
-        if (disposed) return;
-        revoke();
-        const currentEpoch = epoch;
-        void options.getProof().then(
-          (value) => {
-            if (disposed || currentEpoch !== epoch) return;
-            try {
-              const fresh = proof(value);
-              if (capability !== null && fresh.appSession !== capability) {
-                close(expired);
-                return;
-              }
-              capability = fresh.appSession;
-              done({ ...fresh, tabId });
-            } catch {
+  const socket = io(`${getApiBaseUrl()}/ai`, {
+    path: "/ai/socket.io",
+    transports: ["websocket"],
+    withCredentials: true,
+    autoConnect: false,
+    auth: (done) => {
+      if (disposed) return;
+      revoke();
+      const currentEpoch = epoch;
+      void options.getProof().then(
+        (value) => {
+          if (disposed || currentEpoch !== epoch) return;
+          try {
+            const fresh = proof(value);
+            if (capability !== null && fresh.appSession !== capability) {
               close(expired);
+              return;
             }
-          },
-          () => {
-            if (!disposed && currentEpoch === epoch) close(expired);
-          },
-        );
-      },
+            capability = fresh.appSession;
+            done({ ...fresh, tabId });
+          } catch {
+            close(expired);
+          }
+        },
+        () => {
+          if (!disposed && currentEpoch === epoch) close(expired);
+        },
+      );
     },
-  );
+  });
   socket.on("connect", () => {
     if (disposed) return;
     // Transport connection alone does not confer authority.

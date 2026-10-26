@@ -74,7 +74,8 @@
 }
 
 @keyframes xq-dest-ring-pulse {
-  0%, 100% {
+  0%,
+  100% {
     stroke-opacity: 0.95;
     stroke-width: 2.2;
   }
@@ -130,7 +131,8 @@
 /* Nhấc nhẹ nhàng đứng tại chỗ với vầng sáng nổi bật */
 .xq-board-piece-selected {
   transform: scale(1.07);
-  filter: drop-shadow(0 0 6px rgba(245, 202, 103, 0.55)) drop-shadow(0 5px 12px rgba(20, 10, 4, 0.5)) !important;
+  filter: drop-shadow(0 0 6px rgba(245, 202, 103, 0.55))
+    drop-shadow(0 5px 12px rgba(20, 10, 4, 0.5)) !important;
 }
 
 .xq-board-ghost {
@@ -155,10 +157,18 @@
     transform: translate(var(--slide-dx, 0px), var(--slide-dy, 0px)) scale(1.07);
   }
   35% {
-    transform: translate(calc(var(--slide-dx, 0px) * 0.65), calc(var(--slide-dy, 0px) * 0.65)) scale(1.1);
+    transform: translate(
+        calc(var(--slide-dx, 0px) * 0.65),
+        calc(var(--slide-dy, 0px) * 0.65)
+      )
+      scale(1.1);
   }
   75% {
-    transform: translate(calc(var(--slide-dx, 0px) * 0.12), calc(var(--slide-dy, 0px) * 0.12)) scale(1.03);
+    transform: translate(
+        calc(var(--slide-dx, 0px) * 0.12),
+        calc(var(--slide-dy, 0px) * 0.12)
+      )
+      scale(1.03);
   }
   100% {
     transform: translate(0px, 0px) scale(1);
@@ -178,5 +188,3 @@
     animation: none;
   }
 }
-
-
