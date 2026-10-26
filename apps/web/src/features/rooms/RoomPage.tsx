@@ -31,6 +31,15 @@ import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./match/MatchActions.js";
 import { ReconnectStatus } from "./match/ReconnectStatus.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
+import { Countdown } from "./RoomCountdown.js";
+import { RoomDetails } from "./RoomDetails.js";
+import { RoomInvite } from "./RoomInvite.js";
+import { RoomSeats } from "./RoomSeats.js";
+import {
+  swapMessage,
+  viewerActionMessage,
+  visibilityLabel,
+} from "./room-labels.js";
 
 import { RoomChat } from "../chat/RoomChat.js";
 import { useRoomChat } from "../chat/useRoomChat.js";
@@ -44,22 +53,6 @@ const LazyMediaPanel = lazy(() =>
 import "./rooms.css";
 // The HTTP snapshot is a display-only fallback while realtime establishes authority.
 
-function swapMessage(code: string, fallback: string) {
-  switch (code) {
-    case "SWAP_COOLDOWN":
-      return "Vừa bị từ chối hoặc hết hạn. Chờ 60 giây rồi gửi lại.";
-    case "SWAP_ALREADY_PENDING":
-      return "Đang có đề nghị đổi bên chờ trả lời.";
-    case "SWAP_EXPIRED":
-      return "Đề nghị đã hết hạn. Gửi đề nghị mới nếu muốn đổi bên.";
-    case "SWAP_NOT_PENDING":
-      return "Không còn đề nghị đổi bên nào.";
-    case "SWAP_STALE":
-      return "Thành phần phòng đã thay đổi. Đề nghị cũ đã huỷ.";
-    default:
-      return fallback;
-  }
-}
 export interface RoomPageProps {
   roomId: string;
   userId: string;
@@ -194,7 +187,11 @@ export function RoomPage({
     setError("");
     const loadingTimeout = setTimeout(() => {
       if (alive && !latest.current) {
-        setError((prev) => prev || "Chưa thể kết nối phòng. Vui lòng kiểm tra máy chủ hoặc thử lại.");
+        setError(
+          (prev) =>
+            prev ||
+            "Chưa thể kết nối phòng. Vui lòng kiểm tra máy chủ hoặc thử lại.",
+        );
       }
     }, 6000);
     let fallbackStarted = false;
@@ -763,21 +760,7 @@ export function RoomPage({
       }
     } catch (e) {
       if (epoch.current !== requestEpoch) return;
-      setError(
-        e instanceof RoomRequestError
-          ? e.code === "ROOM_FULL"
-            ? "Phòng đã đầy chỗ xem."
-            : e.code === "SEAT_FULL"
-              ? "Ghế đã đủ hai người chơi."
-              : e.code === "HOST_STAYS"
-                ? "Chủ phòng không tự chuyển xuống xem."
-                : e.code === "KICK_DENIED"
-                  ? "Chỉ người chơi được đuổi người xem."
-                  : e.code === "SEAT_MOVE_DENIED"
-                    ? "Không thể đổi chỗ khi ván đang diễn ra."
-                    : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại."
-          : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.",
-      );
+      setError(viewerActionMessage(e));
     } finally {
       if (epoch.current === requestEpoch) setBusy(false);
     }
@@ -872,13 +855,7 @@ export function RoomPage({
           {!playingLayout && (
             <div className="xq-room-meta">
               <span>{room.timeMinutes} phút mỗi bên</span>
-              <span>
-                {room.visibility === "PUBLIC"
-                  ? "Công khai"
-                  : room.visibility === "CODE_ONLY"
-                    ? "Theo mã mời"
-                    : "Đã khóa"}
-              </span>
+              <span>{visibilityLabel(room.visibility)}</span>
             </div>
           )}
         </div>
@@ -1043,149 +1020,18 @@ export function RoomPage({
               }
             />
           )}
-          <div className="xq-room-seats">
-            {(["red", "black"] as const).map((side) => {
-              const occupant = room.seats[side],
-                label = side === "red" ? "Đỏ" : "Đen",
-                ready =
-                  Boolean(occupant) && room.connected[side] && room.ready[side];
-              return (
-                <section
-                  className={`xq-room-seat ${side}`}
-                  key={side}
-                  data-ready={ready}
-                  aria-label={`Ghế ${label}`}
-                >
-                  {!playingLayout && (
-                    <span className="xq-seat-side">
-                      Phe {label} ({side === "red" ? "Đi trước" : "Đi sau"})
-                    </span>
-                  )}
-                  <span className="xq-seat-piece" aria-hidden="true">
-                    {side === "red" ? "帥" : "將"}
-                  </span>
-                  <div className="xq-room-seat-player">
-                    <h2>
-                      {occupant
-                        ? occupant === userId
-                          ? `Bạn · ${label}`
-                          : `Người chơi ${label}${occupant === room.hostId ? " · Chủ phòng" : ""}`
-                        : `Ghế ${label} đang trống`}
-                    </h2>
-                    {occupant === userId && occupant === room.hostId && (
-                      <p>Chủ phòng</p>
-                    )}
-                  </div>
-                  <p className="xq-room-seat-state">
-                    {!occupant
-                      ? "Đang chờ kỳ hữu"
-                      : !room.connected[side]
-                        ? "Mất kết nối · đang giữ ghế"
-                        : room.ready[side]
-                          ? "Đã sẵn sàng"
-                          : "Chưa sẵn sàng"}
-                  </p>
-                  {!playingLayout && occupant === userId && readyControl}
-                  {!playingLayout && occupant !== userId && (
-                    <p className="xq-room-seat-hint">
-                      {occupant
-                        ? ready
-                          ? "Đối thủ đã sẵn sàng"
-                          : "Đang chờ đối thủ sẵn sàng"
-                        : "Mời kỳ hữu bằng mã phòng"}
-                    </p>
-                  )}
-                </section>
-              );
-            })}
-            {(!playingLayout || room.status === "WAITING") && (
-              <div className="xq-room-versus">
-                <span className="xq-room-vs" aria-hidden="true">
-                  VS
-                </span>
-                {room.status === "WAITING" && player && (
-                  <div className="xq-room-actions">
-                    {solo && room.hostId === userId && (
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        disabledReason={
-                          !writable
-                            ? "Cần kết nối và quyền điều khiển ghế."
-                            : undefined
-                        }
-                        onClick={() => void httpAction("switch")}
-                      >
-                        Đổi ghế
-                      </Button>
-                    )}
-                    {!solo && !room.countdown && !room.swapOffer && (
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        disabledReason={
-                          !writable
-                            ? "Cần kết nối và quyền điều khiển ghế."
-                            : undefined
-                        }
-                        onClick={() => void httpAction("swap-propose")}
-                      >
-                        Xin đổi bên
-                      </Button>
-                    )}
-                    {!solo && !room.countdown && room.swapOffer && (
-                      <div
-                        className="xq-swap-prompt"
-                        role="group"
-                        aria-label="Đề nghị đổi bên"
-                      >
-                        {room.swapOffer.responderId === userId ? (
-                          <>
-                            <p>
-                              Đối thủ muốn đổi bên Đỏ ↔ Đen. Còn{" "}
-                              {Math.max(
-                                0,
-                                Math.ceil(
-                                  (Date.parse(room.swapOffer.expiresAt) -
-                                    swapNow) /
-                                    1000,
-                                ),
-                              )}{" "}
-                              giây để trả lời.
-                            </p>
-                            <Button
-                              loading={busy}
-                              onClick={() => void httpAction("swap-accept")}
-                            >
-                              Đồng ý
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              loading={busy}
-                              onClick={() => void httpAction("swap-decline")}
-                            >
-                              Từ chối
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <p>Đang chờ đối thủ trả lời đề nghị đổi bên…</p>
-                            <Button
-                              variant="secondary"
-                              loading={busy}
-                              onClick={() => void httpAction("swap-withdraw")}
-                            >
-                              Rút đề nghị
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <RoomSeats
+            room={room}
+            userId={userId}
+            playingLayout={playingLayout}
+            player={player}
+            solo={solo}
+            writable={writable}
+            busy={busy}
+            swapNow={swapNow}
+            readyControl={readyControl}
+            onAction={(action) => void httpAction(action)}
+          />
           {clockState?.clocks && (
             <MatchClocks
               clocks={clockState.clocks}
@@ -1259,62 +1105,15 @@ export function RoomPage({
           )}
         </section>
         {code && room.visibility !== "LOCKED" && (
-          <section className="xq-room-invite" aria-label="Mời người vào phòng">
-            <div className="xq-room-invite-code">
-              <span className="xq-room-invite-label">Mã phòng</span>
-              <strong>{code}</strong>
-            </div>
-            <p className="xq-room-invite-hint">
-              Chia sẻ mã hoặc đường dẫn để mời kỳ hữu vào chơi hay xem.
-            </p>
-            <div className="xq-room-invite-actions">
-              <Button
-                variant="secondary"
-                loading={copying}
-                onClick={() => void copyInvite(code)}
-              >
-                Sao chép mã
-              </Button>
-              <a
-                className="xq-room-invite-link"
-                href={`/rooms/join?token=${encodeURIComponent(code)}`}
-              >
-                Đường dẫn mời vào phòng
-              </a>
-            </div>
-            {copyStatus && (
-              <p
-                className="xq-room-invite-status"
-                role="status"
-                aria-live="polite"
-              >
-                {copyStatus}
-              </p>
-            )}
-          </section>
+          <RoomInvite
+            code={code}
+            copying={copying}
+            copyStatus={copyStatus}
+            onCopy={() => void copyInvite(code)}
+          />
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">
-          <div className="xq-room-details">
-            <h2>Phòng của kỳ hữu</h2>
-            <dl>
-              <dt>Mỗi bên</dt>
-              <dd>{room.timeMinutes} phút</dd>
-              <dt>Người xem tối đa</dt>
-              <dd>{room.viewerLimit}</dd>
-              <dt>Chế độ</dt>
-              <dd>
-                {room.visibility === "CODE_ONLY"
-                  ? "Theo mã mời"
-                  : room.visibility === "PUBLIC"
-                    ? "Công khai"
-                    : "Đã khóa"}
-              </dd>
-            </dl>
-            <p>Thời gian và trần người xem đã cố định.</p>
-            {room.visibility === "LOCKED" && (
-              <p>Mã mời đã bị khoá, người mới không vào được.</p>
-            )}
-          </div>
+          <RoomDetails room={room} />
           <SpectatorsPanel
             spectators={room.spectators ?? []}
             limit={room.viewerLimit}
@@ -1427,64 +1226,5 @@ export function RoomPage({
           />
         )}
     </main>
-  );
-}
-function Countdown({
-  dueAt,
-  serverNow,
-  sound,
-}: {
-  dueAt: string;
-  serverNow: string;
-  sound: () => void;
-}) {
-  const [count, setCount] = useState(() =>
-    Math.max(
-      0,
-      Math.min(
-        3,
-        Math.ceil((Date.parse(dueAt) - Date.parse(serverNow)) / 1000),
-      ),
-    ),
-  );
-  const sounded = useRef<number | null>(null);
-  const play = useRef(sound);
-  play.current = sound;
-  useEffect(() => {
-    const received = Date.now(),
-      remaining = Date.parse(dueAt) - Date.parse(serverNow);
-    function update() {
-      setCount(
-        Math.max(
-          0,
-          Math.min(3, Math.ceil((remaining - (Date.now() - received)) / 1000)),
-        ),
-      );
-    }
-    update();
-    const timer = setInterval(update, 100);
-    return () => clearInterval(timer);
-  }, [dueAt, serverNow]);
-  useEffect(() => {
-    if (count > 0 && sounded.current !== count) {
-      sounded.current = count;
-      play.current();
-    }
-  }, [count]);
-  return (
-    <div
-      className="xq-room-countdown"
-      role="status"
-      aria-label="Đếm ngược bắt đầu ván"
-    >
-      {count > 0 ? (
-        <>
-          <p>Hai bên đã sẵn sàng</p>
-          <strong>{count}</strong>
-        </>
-      ) : (
-        <p>Đang chờ máy chủ xác nhận bắt đầu…</p>
-      )}
-    </div>
   );
 }
