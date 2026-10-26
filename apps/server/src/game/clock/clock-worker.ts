@@ -11,7 +11,9 @@ import {
   type ClockWorkerPort,
   type ClockWorkerScope,
 } from "./clock.types.js";
-/** One server-time sample; no client/presence timestamps participate in eligibility. */
+/**
+ * Truy vấn danh sách các ván cờ online đang chơi mà bên đến lượt đã vượt quá thời gian suy nghĩ (hết giờ).
+ */
 export async function dueMatches(
   client: PoolClient,
   cursor: ClockCursor | null = null,
@@ -37,7 +39,9 @@ export async function dueMatches(
   );
   return result.rows;
 }
-/** Root owns the scheduler, clients, actor→room locks and committed publication. */
+/**
+ * Tiến trình nền tự động quét và xử thua các ván cờ có người chơi hết thời gian suy nghĩ.
+ */
 export class ClockWorker {
   private cursor: ClockCursor | null = null;
   constructor(
@@ -45,6 +49,9 @@ export class ClockWorker {
     private readonly matches: MatchStore,
     private readonly port: ClockWorkerPort,
   ) {}
+  /**
+   * Quét và xử lý đợt tối đa 50 ván cờ đã hết giờ suy nghĩ.
+   */
   async tick(): Promise<void> {
     const failures: unknown[] = [];
     const candidates = (await this.port.dueMatches(this.cursor)).slice(0, 50);
@@ -65,6 +72,9 @@ export class ClockWorker {
     if (failures.length)
       throw new AggregateError(failures, "Clock batch transactions failed");
   }
+  /**
+   * Xác minh thời gian thực tế và xử thua ván đấu do TIMEOUT (hoặc DISCONNECT nếu ngắt kết nối trước).
+   */
   private async expire(
     candidate: ClockCandidate,
     scope: ClockWorkerScope,

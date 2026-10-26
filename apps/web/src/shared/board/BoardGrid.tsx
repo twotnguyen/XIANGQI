@@ -26,6 +26,9 @@ function markerPath(x: number, y: number): string {
   return corners.join(" ");
 }
 
+/**
+ * Vẽ lưới bàn cờ tướng dạng SVG gồm các đường ngang/dọc, cung tướng (cửu cung), sông (Sở Hà Hán Giới) và các điểm dấu pháo/tốt.
+ */
 export const BoardGrid = memo(function BoardGrid({
   woodId,
   boardFrameId,

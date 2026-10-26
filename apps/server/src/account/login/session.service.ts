@@ -18,6 +18,10 @@ function tokenHash(token: unknown): string {
     throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
   return createHash("sha256").update(token).digest("hex");
 }
+/**
+ * Dịch vụ quản lý phiên ứng dụng (app sessions):
+ * Khởi tạo, kiểm tra tính hiệu lực, xác thực chéo với token của Auth Provider và thu hồi phiên.
+ */
 @Injectable()
 export class SessionService {
   constructor(
@@ -25,6 +29,9 @@ export class SessionService {
     private readonly auth: PasswordAuth,
     private readonly now = () => new Date(),
   ) {}
+  /**
+   * Cấp phiên làm việc mới cho người dùng sau khi đăng nhập thành công.
+   */
   async issue(userId: string, remember = true, store = this.store) {
     if (!(await store.accountById(userId))?.active)
       throw new LoginError(
@@ -69,6 +76,9 @@ export class SessionService {
       remember: session.remember,
     };
   }
+  /**
+   * Kiểm tra phiên appSession còn hiệu lực và tài khoản đang hoạt động.
+   */
   async requireValidSession(appSession: unknown) {
     const { userId, expiresAt, remember } =
       await this.currentSession(appSession);
@@ -101,6 +111,9 @@ export class SessionService {
     const user = await this.auth.getUser(accessToken);
     return this.validateProviderUser(user, appSession, userId);
   }
+  /**
+   * Xác thực kép: kiểm tra appSession và đối chiếu với Bearer access token từ Auth Provider.
+   */
   async requireActiveSession(accessToken: unknown, appSession: unknown) {
     const session = await this.currentSession(appSession);
     return this.validateAccessToken(accessToken, appSession, session.userId);
@@ -111,6 +124,9 @@ export class SessionService {
   ): Promise<string> {
     return (await this.requireActiveSession(accessToken, appSession)).userId;
   }
+  /**
+   * Làm mới access token của người dùng đồng thời đảm bảo session ứng dụng vẫn nhất quán.
+   */
   async refresh(appSession: unknown, refresh: () => Promise<Session>) {
     const initial = await this.currentSession(appSession);
     const session = await refresh();
@@ -121,6 +137,9 @@ export class SessionService {
     );
     return { session, actor };
   }
+  /**
+   * Thu hồi phiên làm việc (đăng xuất) trong cơ sở dữ liệu.
+   */
   async revoke(appSession: unknown) {
     await this.store.revokeSession(tokenHash(appSession), this.now());
   }

@@ -12,6 +12,9 @@ export function record(value: unknown): value is Record<string, unknown> {
 export function corrupt(): never {
   throw new Error("MATCH_HISTORY_CORRUPT");
 }
+/**
+ * Giải mã và kiểm tra tính hợp lệ của cấu trúc bàn cờ từ dữ liệu thô trong cơ sở dữ liệu sang đối tượng `Position`.
+ */
 export function decodePosition(value: unknown): Position {
   if (
     !record(value) ||
@@ -55,6 +58,9 @@ export function decodePosition(value: unknown): Position {
     corrupt();
   }
 }
+/**
+ * Mã hóa trạng thái bàn cờ chuẩn sang định dạng lưu trữ JSONB trong cơ sở dữ liệu.
+ */
 export function encodePosition(position: Position) {
   return {
     ...position,
@@ -63,6 +69,9 @@ export function encodePosition(position: Position) {
   };
 }
 export const toFen = serializePosition;
+/**
+ * Giải mã tọa độ nước đi từ định dạng đối tượng `{ from: {x,y}, to: {x,y} }` sang chỉ số ô phẳng (0–89).
+ */
 export function decodeMove(value: unknown) {
   if (!record(value) || !record(value.from) || !record(value.to)) corrupt();
   const square = (point: Record<string, unknown>) => {
@@ -81,6 +90,9 @@ export function decodeMove(value: unknown) {
   if (move.from === move.to) corrupt();
   return move;
 }
+/**
+ * Chuyển đổi nước đi dạng chỉ số ô cờ phẳng (0–89) sang tọa độ {x, y} phục vụ truyền tải và lưu trữ.
+ */
 export function encodeMove(move: { from: number; to: number }) {
   return {
     from: { x: move.from % 9, y: Math.floor(move.from / 9) },

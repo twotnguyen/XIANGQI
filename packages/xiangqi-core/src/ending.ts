@@ -20,8 +20,14 @@ function identity(position: Position): string {
   return serializePosition(position).split(" ").slice(0, 2).join(" ");
 }
 
-/** Initial position followed by each resulting position on the effective branch.
- * Callers truncate on undo, check clocks first, and stop at the first ending.
+/**
+ * Xác định kết quả kết thúc ván cờ dựa trên lịch sử toàn bộ các thế cờ từ đầu ván:
+ * - CHECKMATE (Chiếu hết): không còn nước đi hợp lệ và đang bị chiếu -> đối thủ thắng.
+ * - STALEMATE (Bức tử/Hết nước đi): không còn nước đi hợp lệ và không bị chiếu -> bên hết nước thua theo luật cờ tướng.
+ * - PERPETUAL_CHECK (Chiếu liên tục): lặp lại thế cờ 3 lần và liên tục chiếu -> bên chiếu liên tục bị xử thua.
+ * - DRAW_REPETITION (Lặp thế cờ 3 lần): lặp lại thế cờ 3 lần thông thường -> Hòa.
+ * - DRAW_NO_CAPTURE (120 nửa nước không ăn quân): 60 nước đầy đủ không ăn quân -> Hòa.
+ * Trả về `null` nếu ván cờ vẫn chưa kết thúc.
  */
 export function ending(history: readonly Position[]): MatchEnding | null {
   const current = history.at(-1);

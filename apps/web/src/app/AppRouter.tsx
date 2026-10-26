@@ -112,6 +112,9 @@ const ReplayRoute = lazy(() =>
   })),
 );
 
+/**
+ * Component bọc nội dung route để hỗ trợ trợ năng, tự động focus vào thẻ heading h1 khi chuyển trang.
+ */
 function RouteContent({
   children,
   container,
@@ -129,6 +132,9 @@ function RouteContent({
   return children;
 }
 
+/**
+ * Component hiển thị giao diện Sảnh chính, kết nối luồng phòng chơi realtime, tạo phòng và ghép ván.
+ */
 function Lobby({
   client,
   onEntered,
@@ -393,6 +399,9 @@ const titles: Partial<Record<Route["name"], string>> = {
   replay: "Xem lại ván đấu",
   "access-denied": "Không thể truy cập",
 };
+/**
+ * Component điều hướng chính của ứng dụng web, kiểm soát phân quyền route, điều hướng URL và kết nối layout chung.
+ */
 export function AppRouter() {
   const session = useSession();
   const client = useMemo(

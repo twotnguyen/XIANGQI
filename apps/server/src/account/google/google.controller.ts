@@ -70,6 +70,10 @@ function publicMember(
     remember: result.remember,
   };
 }
+/**
+ * Controller xử lý các bước trong luồng đăng nhập và đăng ký bằng tài khoản Google:
+ * Khởi tạo challenge nonce -> Xác thực Google ID Token -> Onboarding hồ sơ (nếu mới) -> Hoàn tất.
+ */
 @Controller("auth/google")
 export class GoogleController {
   constructor(
@@ -93,6 +97,9 @@ export class GoogleController {
       );
     }
   }
+  /**
+   * Endpoint POST /auth/google/challenge: Sinh nonce và thiết lập cookie thử thách chống tấn công giả mạo (CSRF/replay).
+   */
   @Post("challenge")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -114,6 +121,9 @@ export class GoogleController {
       };
     });
   }
+  /**
+   * Endpoint POST /auth/google/authenticate: Xác minh credential từ Google, đăng nhập hoặc chuyển sang onboarding.
+   */
   @Post("authenticate")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -161,6 +171,9 @@ export class GoogleController {
       return publicMember(result);
     });
   }
+  /**
+   * Endpoint GET /auth/google/onboarding: Lấy thông tin trạng thái tài khoản đang chờ hoàn tất đăng ký bằng Google.
+   */
   @Get("onboarding")
   @Header("Cache-Control", "no-store")
   onboarding(@Req() request: IncomingMessage) {
@@ -177,6 +190,9 @@ export class GoogleController {
       };
     });
   }
+  /**
+   * Endpoint POST /auth/google/complete: Thiết lập username và mật khẩu khởi tạo để hoàn tất tài khoản Google mới.
+   */
   @Post("complete")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")

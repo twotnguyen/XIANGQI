@@ -6,7 +6,9 @@ interface CodedError extends Error {
 }
 type CodedErrorClass = abstract new (...args: never[]) => CodedError;
 
-// Đầu vào HTTP sai khuôn: 400 với mã riêng của tính năng.
+/**
+ * Ném ngoại lệ HTTP 400 kèm mã lỗi nghiệp vụ khi dữ liệu đầu vào không hợp lệ.
+ */
 export function invalidInput(
   code: string,
   message = "Dữ liệu không hợp lệ",
@@ -14,8 +16,10 @@ export function invalidInput(
   throw new HttpException({ code, message }, 400);
 }
 
-// Dùng cho `.catch(fail)` ở controller: lỗi nghiệp vụ thuộc `kinds` đổi thành
-// HttpException cùng mã/trạng thái, lỗi khác ném lại nguyên trạng.
+/**
+ * Tạo bộ xử lý lỗi (error handler) dùng cho catch ở controller:
+ * Tự động chuyển đổi các lỗi nghiệp vụ thuộc danh sách `kinds` thành HttpException với status tương ứng.
+ */
 export function httpFailure(
   ...kinds: CodedErrorClass[]
 ): (error: unknown) => never {

@@ -6,6 +6,9 @@ export interface ShellUser {
   displayName: string;
   guest: boolean;
 }
+/**
+ * Khung giao diện bao bọc ứng dụng (header điều hướng, menu người dùng, thông báo chuông và vùng nội dung chính).
+ */
 export function AppShell({
   title,
   user,

@@ -1,5 +1,8 @@
 import { Button } from "../../shared/ui/primitives.js";
 
+/**
+ * Khung hiển thị mã mời phòng cờ và đường dẫn chia sẻ kèm nút sao chép nhanh vào clipboard.
+ */
 export function RoomInvite({
   code,
   copying,

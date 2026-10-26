@@ -9,6 +9,9 @@ import {
   type RealtimeConnection,
   type RealtimePresence,
 } from "./realtime.types.js";
+/**
+ * Quản lý trạng thái hiện diện (presence: trực tuyến / ngắt kết nối) của thành viên trong phòng cờ.
+ */
 export class MemberRealtimePresence implements RealtimePresence {
   constructor(
     private readonly pool: Pool,
@@ -26,6 +29,9 @@ export class MemberRealtimePresence implements RealtimePresence {
         "Máy chủ kết nối chưa sẵn sàng",
       );
   }
+  /**
+   * Cập nhật trạng thái kết nối thành công của thành viên vào bảng hiện diện `xiangqi_room.presence`.
+   */
   async connected(
     client: PoolClient,
     connection: RealtimeConnection,
@@ -79,7 +85,9 @@ export class MemberRealtimePresence implements RealtimePresence {
       );
     return previous + 1;
   }
-  // Trusted physical gateway event: expiry/revocation must not suppress grace.
+  /**
+   * Xử lý khi kết nối socket bị đóng, kích hoạt thời gian ân hạn hoặc chuyển kết nối sang tab còn lại.
+   */
   async disconnected(connection: RealtimeConnection): Promise<void> {
     if (
       connection.identity.kind !== "member" ||

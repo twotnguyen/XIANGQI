@@ -92,12 +92,18 @@ async function serviceCall(
     throw new MediaServiceError(response.status, code, path);
   }
 }
+/**
+ * Dịch vụ tạo token LiveKit và quản lý phòng thoại/video cho người chơi và khán giả.
+ */
 export class MediaAccess {
   constructor(
     private readonly config: MediaConfig,
     private readonly store: MediaStore,
     private readonly fetchFn: typeof fetch = fetch,
   ) {}
+  /**
+   * Cập nhật mức độ chia sẻ camera/mic của người chơi trong phòng cờ.
+   */
   async setShare(
     userId: string,
     roomId: string,
@@ -120,12 +126,18 @@ export class MediaAccess {
       return { level };
     });
   }
+  /**
+   * Lấy mức chia sẻ camera/mic hiện tại của người dùng trong phòng cờ.
+   */
   async getShare(
     userId: string,
     roomId: string,
   ): Promise<{ level: ShareLevel }> {
     return this.store.read((tx) => this.shareIn(tx, roomId, userId));
   }
+  /**
+   * Cấp token JWT kết nối LiveKit với quyền phát/nghe tùy theo vai trò (kỳ thủ hoặc khán giả).
+   */
   async tokenFor(
     userId: string,
     roomId: string,
@@ -208,6 +220,9 @@ export class MediaAccess {
   ): Promise<{ level: ShareLevel }> {
     return { level: (await tx.findShare(roomId, userId)) ?? "OPPONENT" };
   }
+  /**
+   * Thu hồi quyền và xóa người dùng khỏi các phòng media LiveKit khi rời phòng hoặc mất quyền.
+   */
   async revoke(roomId: string, userId: string): Promise<void> {
     const failures: unknown[] = [];
     for (const room of [privateRoomName(roomId), stageRoomName(roomId)]) {
@@ -235,6 +250,9 @@ export class MediaAccess {
         "LiveKit participant revocation failed",
       );
   }
+  /**
+   * Xóa toàn bộ phòng LiveKit (phòng riêng và stage) khi phòng cờ bị đóng.
+   */
   async revokeRoom(roomId: string): Promise<void> {
     const failures: unknown[] = [];
     for (const room of [privateRoomName(roomId), stageRoomName(roomId)]) {

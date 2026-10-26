@@ -33,7 +33,10 @@ function unavailable() {
 function duplicate() {
   return new GoogleError("EMAIL_TAKEN", "Email này đã được đăng ký", 409);
 }
-/** Google sign-in rules and orchestration; all SQL lives in GoogleStore. */
+/**
+ * Dịch vụ xử lý nghiệp vụ đăng nhập và đăng ký qua Google:
+ * Quản lý nonce challenge, xác thực ID token, tạo draft onboarding và thu hồi tài khoản tạm.
+ */
 export class GoogleService {
   private cleanupCursor: CleanupCursor | null = null;
   constructor(
@@ -55,6 +58,9 @@ export class GoogleService {
   private byEmail(email: string): Promise<GoogleAccount | undefined> {
     return this.db(() => this.store.findAccountByEmail(email));
   }
+  /**
+   * Tạo phiên thử thách (challenge) mới chứa capability token và nonce để gửi cho client.
+   */
   async beginChallenge() {
     const capability = randomBytes(32).toString("base64url"),
       nonce = hash(capability),
@@ -86,6 +92,10 @@ export class GoogleService {
       claims.nonce === nonce
     );
   }
+  /**
+   * Xác thực Google ID Token gửi từ client:
+   * Kiểm tra chữ ký, so khớp nonce, liên kết với Supabase Auth và phân nhánh thành công hoặc cần onboarding.
+   */
   async authenticate(credential: unknown, challenge: unknown, remember = true) {
     const nonce = hash(challenge);
     if (
@@ -248,6 +258,9 @@ export class GoogleService {
       );
     }
   }
+  /**
+   * Truy vấn thông tin trạng thái chuẩn bị tạo tài khoản (onboarding) của người dùng Google.
+   */
   async onboarding(capability: unknown) {
     const row = await this.db(() =>
       this.store.findOnboarding(hash(capability)),
@@ -272,6 +285,9 @@ export class GoogleService {
       },
     };
   }
+  /**
+   * Hoàn tất tạo tài khoản Google: lưu tên người dùng, mật khẩu dự phòng và kích hoạt hồ sơ.
+   */
   async complete(
     capability: unknown,
     proof: Session,
@@ -433,6 +449,9 @@ export class GoogleService {
       );
     }
   }
+  /**
+   * Tác vụ bảo trì định kỳ: dọn dẹp các challenge quá hạn và xóa tài khoản Google tạm không hoàn thành.
+   */
   async maintain() {
     await this.db(() => this.store.purgeExpiredChallenges(this.now()));
     await this.db(() => this.store.purgeExpiredIntents());

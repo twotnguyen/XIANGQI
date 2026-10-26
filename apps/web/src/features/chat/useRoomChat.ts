@@ -42,6 +42,9 @@ const safeError = (error: unknown) =>
   ].includes(error.message)
     ? error.message
     : "Chat tạm thời không dùng được";
+/**
+ * Custom React hook quản lý trạng thái và đồng bộ tin nhắn chat thời gian thực trong phòng cờ (kênh riêng/kênh chung).
+ */
 export function useRoomChat(
   roomId: string,
   connection: RefObject<RoomConnection | null>,

@@ -37,6 +37,9 @@ function record(value: unknown): Record<string, unknown> {
     throw new FriendRequestError("FRIEND_BAD_RESPONSE", 502);
   return value as Record<string, unknown>;
 }
+/**
+ * Khởi tạo client điều phối các thao tác bạn bè (tìm kiếm, gửi lời mời kết bạn, hủy kết bạn, mời và nhận lời mời vào phòng cờ).
+ */
 export function createFriendClient(authorizedFetch: AuthorizedFetch) {
   async function request<T>(
     path: string,

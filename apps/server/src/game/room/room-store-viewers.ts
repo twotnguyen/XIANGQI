@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { invalidRoomInput, RoomError, type RoomScope } from "./room.types.js";
 import { RoomSwapStore } from "./room-store-swap.js";
+/**
+ * Lớp mở rộng của RoomStore quản lý vai trò khán giả và tương tác ghế ngồi:
+ * Chuyển đổi vai trò người chơi/khán giả, mời khán giả xuống ghế và đuổi khán giả khỏi phòng.
+ */
 export class RoomViewerStore extends RoomSwapStore {
   private async expireDownOffers(s: RoomScope, id: string) {
     if (!(await this.downTableExists(s))) return 0;
@@ -14,6 +18,9 @@ export class RoomViewerStore extends RoomSwapStore {
       await this.bump(s, id, "room.seat-invite-expired", { offerId: offer.id });
     return due.length;
   }
+  /**
+   * Người chơi tự nguyện rời ghế thi đấu để chuyển xuống làm khán giả xem phòng.
+   */
   async toSpectator(s: RoomScope, id: string) {
     const { r, members, member } = await this.member(s, id);
     if (r.status !== "WAITING" || member.role !== "PLAYER")
@@ -35,6 +42,9 @@ export class RoomViewerStore extends RoomSwapStore {
     await this.bump(s, id, "room.seats-changed");
     return this.snapshot(s, id);
   }
+  /**
+   * Chủ phòng chủ động chuyển một người chơi khác xuống làm khán giả.
+   */
   async moveToSpectator(s: RoomScope, id: string, targetId: string) {
     const { r, members } = await this.member(s, id);
     if (r.status !== "WAITING" || r.owner_id !== s.actor.userId)
@@ -57,6 +67,9 @@ export class RoomViewerStore extends RoomSwapStore {
     await this.bump(s, id, "room.seats-changed");
     return this.snapshot(s, id);
   }
+  /**
+   * Chủ phòng gửi lời mời một khán giả đang xem xuống ghế thi đấu còn trống.
+   */
   async inviteDown(s: RoomScope, id: string, targetId: string) {
     const { r, members } = await this.member(s, id);
     if (r.status !== "WAITING" || r.owner_id !== s.actor.userId)
@@ -104,6 +117,9 @@ export class RoomViewerStore extends RoomSwapStore {
       throw error;
     }
   }
+  /**
+   * Khán giả phản hồi chấp nhận (ngồi vào ghế thi đấu) hoặc từ chối lời mời từ chủ phòng.
+   */
   async respondDown(s: RoomScope, id: string, accept: boolean) {
     if (typeof accept !== "boolean") invalidRoomInput();
     if (!(await this.downTableExists(s)))
@@ -188,6 +204,9 @@ export class RoomViewerStore extends RoomSwapStore {
     await this.bump(s, id, "room.seat-invite-accepted", { offerId: offer.id });
     return this.snapshot(s, id);
   }
+  /**
+   * Đuổi một khán giả ra khỏi phòng cờ, hủy phân quyền media và chặn người này tham gia lại.
+   */
   async kickViewer(s: RoomScope, id: string, targetId: string) {
     const { r, members, member } = await this.member(s, id);
     if (!["WAITING", "PLAYING"].includes(r.status) || member.role !== "PLAYER")

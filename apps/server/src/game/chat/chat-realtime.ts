@@ -33,6 +33,9 @@ function channel(value: unknown) {
   if (value !== "PLAYERS_PRIVATE" && value !== "ROOM_PUBLIC")
     invalidChatInput();
 }
+/**
+ * Dịch vụ điều phối nghiệp vụ chat realtime trong phòng cờ (kênh công khai phòng và kênh riêng hai kỳ thủ).
+ */
 export class ChatRealtimeService {
   constructor(
     private readonly store: ChatStore,
@@ -103,6 +106,9 @@ export class ChatRealtimeService {
       ).rowCount,
     );
   }
+  /**
+   * Đọc danh sách tin nhắn chat theo kênh và trả về token phạm vi hiển thị kèm cờ quyền gửi.
+   */
   async read(
     connection: RealtimeConnection,
     input: { channel: ChatChannel; after?: number },
@@ -156,6 +162,9 @@ export class ChatRealtimeService {
       };
     });
   }
+  /**
+   * Kiểm tra quyền tab điều khiển và gửi tin nhắn mới vào phòng cờ.
+   */
   async send(
     connection: RealtimeConnection,
     input: { commandId: string; channel: ChatChannel; content: string },

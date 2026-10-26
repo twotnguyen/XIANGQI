@@ -27,8 +27,13 @@ import {
 } from "./match-store-core.js";
 import { MatchDrawStore } from "./match-store-draw.js";
 
-/** The caller owns actor→room locks, transaction, receipts and post-commit publication. */
+/**
+ * Lớp Store hoàn chỉnh quản lý vòng đời ván đấu: khởi tạo ván, thực hiện nước đi, đầu hàng và kết thúc ván.
+ */
 export class MatchStore extends MatchDrawStore {
+  /**
+   * Khởi tạo và bắt đầu ván đấu mới khi cả hai người chơi đã sẵn sàng và đếm ngược hoàn tất.
+   */
   async start(
     client: PoolClient,
     input: {
@@ -139,6 +144,9 @@ export class MatchStore extends MatchDrawStore {
     );
     return { matchId };
   }
+  /**
+   * Truy vấn ảnh chụp nhanh trạng thái ván cờ hiện tại.
+   */
   async snapshot(
     client: PoolClient,
     roomId: string,
@@ -148,6 +156,9 @@ export class MatchStore extends MatchDrawStore {
     const { positions: history, lastMove } = await this.history(client, row);
     return this.view(row, history.at(-1)!, lastMove);
   }
+  /**
+   * Thực hiện một nước đi cờ của người chơi, kiểm tra tính hợp lệ luật cờ, cập nhật đồng hồ và phát hiện thắng thua.
+   */
   async move(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number; from: number; to: number },
@@ -281,6 +292,9 @@ export class MatchStore extends MatchDrawStore {
     });
     return { applied: true, match: result };
   }
+  /**
+   * Người chơi nhận thua (đầu hàng) ván đấu.
+   */
   async resign(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number },
@@ -335,6 +349,9 @@ export class MatchStore extends MatchDrawStore {
         : {}),
     };
   }
+  /**
+   * Kết thúc ván đấu từ phía máy chủ khi phát hiện hết giờ hoặc mất kết nối ngoài luồng thao tác trực tiếp của người chơi.
+   */
   async finish(
     client: PoolClient,
     input: { roomId: string; matchId: string; outcome: MatchOutcome; at: Date },

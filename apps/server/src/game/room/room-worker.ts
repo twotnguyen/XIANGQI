@@ -10,12 +10,20 @@ export interface RoomWorkerPort {
   markDelivered(id: string): Promise<void>;
   markFailed(id: string): Promise<void>;
 }
+/**
+ * Worker chạy nền quản lý các tiến trình theo chu kỳ thời gian của phòng cờ:
+ * Xử lý phòng đến hạn, ngắt kết nối quá hạn, đếm ngược bắt đầu ván và gửi sự kiện outbox.
+ */
 export class RoomWorker {
   constructor(
     private readonly rooms: RoomStore,
     private readonly port: RoomWorkerPort,
     private readonly sink: RoomEventSink,
   ) {}
+
+  /**
+   * Thực hiện một chu kỳ quét: xử lý hết hạn người chơi, đếm ngược ván đấu và chuyển tiếp sự kiện outbox.
+   */
   async tick() {
     const failures: unknown[] = [];
     for (const id of await this.port.dueRooms()) {

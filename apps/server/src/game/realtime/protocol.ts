@@ -20,6 +20,9 @@ export function uuid(value: unknown): string {
     throw new RealtimeError("COMMAND_INVALID", "Dữ liệu lệnh không hợp lệ");
   return value.toLowerCase();
 }
+/**
+ * Phân tích và kiểm tra tính hợp lệ của payload bắt tay (handshake auth) khi client mở kết nối WebSocket.
+ */
 export function parseHandshake(value: unknown): RealtimeHandshake {
   const input = object(value);
   if (
@@ -40,6 +43,9 @@ export function parseHandshake(value: unknown): RealtimeHandshake {
     tabId: uuid(input.tabId),
   };
 }
+/**
+ * Phân tích, xác thực định dạng và trích xuất lệnh phòng cờ (`RoomCommand`) từ dữ liệu thô do client gửi qua socket.
+ */
 export function parseCommand(value: unknown): RoomCommand {
   const input = object(value);
   const action = object(input.action);

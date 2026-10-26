@@ -18,7 +18,10 @@ const accountSelect = `SELECT u.id AS "userId", u.email, u.email_confirmed_at IS
   EXISTS(SELECT 1 FROM xiangqi_auth.registration_drafts d WHERE d.user_id=u.id) AS "hasDraft"
   FROM xiangqi_auth.accounts u LEFT JOIN public.profiles p ON p.user_id=u.id`;
 
-// Requires a direct or session-pooling connection; transaction pooling cannot preserve these locks.
+/**
+ * Store tương tác cơ sở dữ liệu PostgreSQL cho luồng đăng ký tài khoản:
+ * Sử dụng advisory lock theo key (email/username) để tuần tự hóa các thao tác đồng thời.
+ */
 export class PostgresRegistrationStore implements RegistrationStore {
   constructor(
     private readonly pool: Pool,
@@ -40,6 +43,9 @@ export class PostgresRegistrationStore implements RegistrationStore {
       client.release(broken);
     }
   }
+  /**
+   * Thực thi khối công việc dưới phạm vi các khóa advisory (Postgres advisory locks).
+   */
   async withLocks<T>(
     keys: string[],
     work: (store: RegistrationStore) => Promise<T>,
@@ -70,6 +76,9 @@ export class PostgresRegistrationStore implements RegistrationStore {
       client.release(broken);
     }
   }
+  /**
+   * Kiểm tra username đã được sử dụng trong bảng profiles hoặc đang được giữ chỗ (reservation) hay chưa.
+   */
   async usernameTaken(username: string, userId?: string) {
     const { rows } = await this.query(
       `SELECT EXISTS(SELECT 1 FROM public.profiles WHERE lower(username)=lower($1) AND ($2::uuid IS NULL OR user_id<>$2))
@@ -78,6 +87,9 @@ export class PostgresRegistrationStore implements RegistrationStore {
     );
     return rows[0].taken as boolean;
   }
+  /**
+   * Truy vấn thông tin tài khoản theo địa chỉ email.
+   */
   async accountByEmail(email: string): Promise<Account | null> {
     const { rows } = await this.query(
       `${accountSelect} WHERE lower(u.email)=lower($1)`,
@@ -85,18 +97,27 @@ export class PostgresRegistrationStore implements RegistrationStore {
     );
     return rows[0] ?? null;
   }
+  /**
+   * Truy vấn thông tin tài khoản theo userId.
+   */
   async accountById(userId: string): Promise<Account | null> {
     const { rows } = await this.query(`${accountSelect} WHERE u.id=$1`, [
       userId,
     ]);
     return rows[0] ?? null;
   }
+  /**
+   * Khởi tạo bản ghi intent đăng ký tài khoản với nonce bảo mật.
+   */
   async beginIntent(email: string, nonce: string, time: Date) {
     await this.query(
       "INSERT INTO xiangqi_auth.registration_intents(email,nonce,created_at) VALUES($1,$2,$3) ON CONFLICT(email) DO UPDATE SET nonce=EXCLUDED.nonce,created_at=EXCLUDED.created_at WHERE xiangqi_auth.registration_intents.user_id IS NULL",
       [email, nonce, time],
     );
   }
+  /**
+   * Ràng buộc userId được tạo từ Supabase Auth với intent đăng ký tương ứng.
+   */
   async bindIntent(email: string, userId: string) {
     const result = await this.query(
       `UPDATE xiangqi_auth.registration_intents i SET user_id=$2
@@ -124,6 +145,9 @@ export class PostgresRegistrationStore implements RegistrationStore {
       [before],
     );
   }
+  /**
+   * Lưu hoặc cập nhật phiên nháp đăng ký (draft) vào cơ sở dữ liệu.
+   */
   async saveDraft(draft: Draft) {
     await this.query(
       `INSERT INTO xiangqi_auth.registration_drafts(token_hash,user_id,email,username,created_at,last_sent_at) VALUES($1,$2,$3,$4,$5,$6)
@@ -151,6 +175,9 @@ export class PostgresRegistrationStore implements RegistrationStore {
       [hash, time],
     );
   }
+  /**
+   * Hoàn tất quá trình đăng ký: tạo hồ sơ (profile) cho người dùng trong cơ sở dữ liệu.
+   */
   async complete(userId: string, username: string, time: Date) {
     try {
       const result = await this.query(
@@ -193,6 +220,9 @@ export class PostgresRegistrationStore implements RegistrationStore {
       [userId],
     );
   }
+  /**
+   * Lấy danh sách các tài khoản đăng ký quá hạn cần được thu hồi hoặc dọn dẹp.
+   */
   async staleAccounts(before: Date): Promise<Account[]> {
     const { rows } = await this.query(
       `${accountSelect} WHERE (p.completed_at IS NOT NULL AND p.registration_pending=true)

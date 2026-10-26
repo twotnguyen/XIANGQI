@@ -3,7 +3,11 @@ import { forbiddenNames } from "./auth-forbidden-words.js";
 
 const words = forbiddenNames.map(normalizeName);
 
-/** Mask original spans; rendering as plain text and length checks belong to callers. */
+/**
+ * Bộ lọc tin nhắn chat: Tự động che dấu các từ ngữ tục tĩu/bị cấm thành "***".
+ * Ánh xạ vị trí ký tự gốc (kể cả dấu thanh tổ hợp Unicode NFD và leetspeak) để thay thế chính xác
+ * mà không làm xáo trộn các ký tự và từ ngữ bình thường khác trong câu.
+ */
 export function maskForbiddenChat(raw: string): string {
   let normalized = "",
     offset = 0;

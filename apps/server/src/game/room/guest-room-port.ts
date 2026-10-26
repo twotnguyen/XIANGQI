@@ -3,8 +3,14 @@ import {
   GuestError,
   type GuestRoomPort,
 } from "../../account/guest/guest.types.js";
+/**
+ * Cổng kết nối giữa module Phòng cờ và module Người chơi Khách (Guest).
+ */
 export class RoomGuestPort implements GuestRoomPort {
   constructor(private readonly terminate?: GuestRoomPort["end"]) {}
+  /**
+   * Kiểm tra và trả về thông tin ghế/vị trí người chơi khách đang giữ (phòng cờ hoặc trận AI).
+   */
   async seatedSeat(
     client: PoolClient,
     id: string,
@@ -35,6 +41,9 @@ export class RoomGuestPort implements GuestRoomPort {
       ? { kind: "room", roomId: rooms[0].room_id as string }
       : null;
   }
+  /**
+   * Xử lý kết thúc hoặc dọn dẹp các ràng buộc phòng chơi khi phiên khách bị thu hồi/hết hạn.
+   */
   async end(
     client: PoolClient,
     id: string,

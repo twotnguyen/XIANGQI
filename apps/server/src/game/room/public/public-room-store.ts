@@ -3,7 +3,9 @@ import type { RoomStore } from "../room-store.js";
 import { uuid } from "../../match/position-codec.js";
 import type { PublicRoomView } from "@xiangqi/shared";
 export type { PublicRoomView } from "@xiangqi/shared";
-/** Internal same-client store; the caller supplies a freshly authorized actor scope. */
+/**
+ * Store tương tác cơ sở dữ liệu PostgreSQL cho danh sách phòng cờ công khai (sảnh chờ).
+ */
 export class PublicRoomStore {
   constructor(private readonly rooms: RoomStore) {}
   private actor(scope: RoomScope) {
@@ -14,6 +16,9 @@ export class PublicRoomStore {
     )
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
   }
+  /**
+   * Truy vấn danh sách tối đa 50 phòng cờ công khai đang mở (chờ người hoặc đang chơi).
+   */
   async list(scope: RoomScope): Promise<PublicRoomView[]> {
     this.actor(scope);
     const rows = (
@@ -56,6 +61,9 @@ export class PublicRoomStore {
       publicOpenedAt: r.public_opened_at?.toISOString() ?? null,
     }));
   }
+  /**
+   * Kiểm tra tính công khai của phòng cờ và tiến hành tham gia phòng thông qua RoomStore.
+   */
   async join(
     scope: RoomScope,
     roomId: string,

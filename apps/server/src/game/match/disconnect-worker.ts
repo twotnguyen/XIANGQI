@@ -10,7 +10,10 @@ import {
 import type { MatchStore } from "./match-store.js";
 import { uuid } from "./position-codec.js";
 
-/** Managed rooms only. Forward cursor prevents failed old rows starving later deadlines. */
+/**
+ * Truy vấn danh sách các ván đấu online có người chơi mất kết nối quá thời gian chờ (60s) đến hạn xử lý.
+ * Sử dụng con trỏ cursor để phân trang và tránh lặp lại ván cũ.
+ */
 export async function dueDisconnectMatches(
   client: PoolClient,
   cursor: ClockCursor | null = null,
@@ -39,7 +42,9 @@ export async function dueDisconnectMatches(
   );
   return result.rows;
 }
-/** Called only under both actor locks and the room lock; presence cannot race this sample. */
+/**
+ * Xác định người chơi mất kết nối sớm nhất và hạn chót tương ứng trong phòng (chỉ gọi khi đã giữ đủ khóa).
+ */
 export async function earliestDisconnect(
   client: PoolClient,
   roomId: string,
@@ -90,12 +95,18 @@ export async function earliestDisconnect(
     throw new ClockError("CLOCK_INVALID_STATE");
   return { deadline, loser: first.side === "RED" ? "red" : "black" };
 }
+/**
+ * Tiến trình nền tự động quét và xử lý kết thúc ván cờ khi có người chơi ngắt kết nối quá hạn.
+ */
 export class DisconnectWorker {
   private cursor: ClockCursor | null = null;
   constructor(
     private readonly matches: MatchStore,
     private readonly port: ClockWorkerPort,
   ) {}
+  /**
+   * Quét và xử lý theo đợt tối đa 50 ván đấu đến hạn xử lý ngắt kết nối.
+   */
   async tick(): Promise<void> {
     const failures: unknown[] = [];
     const candidates = (await this.port.dueMatches(this.cursor)).slice(0, 50);
@@ -119,6 +130,9 @@ export class DisconnectWorker {
         "Disconnect batch transactions failed",
       );
   }
+  /**
+   * Kiểm tra điều kiện ngắt kết nối hoặc hết giờ và thực hiện kết thúc ván đấu tương ứng.
+   */
   private async expire(
     candidate: ClockDueCandidate,
     scope: ClockWorkerScope,

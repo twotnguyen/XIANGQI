@@ -22,6 +22,9 @@ class VerificationError extends Error {
     );
   }
 }
+/**
+ * Xác thực chữ ký và tính hợp lệ của Google ID Token (JWT) thông qua Google JWKS công khai.
+ */
 export class GoogleTokenVerifier {
   constructor(
     private readonly clientId: string,
@@ -30,6 +33,9 @@ export class GoogleTokenVerifier {
     if (!clientId || clientId.length > 255)
       throw new Error("Google client ID is required");
   }
+  /**
+   * Giải mã và kiểm tra các claims bắt buộc của Google ID Token (aud, iss, exp, sub, email, nonce).
+   */
   async verify(credential: string) {
     if (!credential || credential.length > 16384)
       throw new VerificationError(401);

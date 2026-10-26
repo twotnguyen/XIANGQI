@@ -14,7 +14,9 @@ import type { AiSnapshot } from "./ai-games.js";
 function invalid(): never {
   throw new Error("AI_HISTORY_INVALID");
 }
-/** Validates the server-owned effective branch before any durable history write. */
+/**
+ * Kiểm tra tính hợp lệ và toàn vẹn của ván đấu AI (tái hiện nước đi, kiểm tra kết quả) và tính toán fingerprint trước khi lưu trữ vào CSDL.
+ */
 export function prepareAiHistory(snapshot: AiSnapshot) {
   if (
     !uuid.test(snapshot.id) ||

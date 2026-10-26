@@ -104,6 +104,9 @@ function MicIcon({ off }: { off?: boolean }) {
   );
 }
 
+/**
+ * Bảng điều khiển Facecam và Micro LiveKit trong phòng cờ (bật/tắt thiết bị, thiết lập phạm vi chia sẻ và kết nối phòng LiveKit).
+ */
 export function MediaPanel({
   roomId,
   role,

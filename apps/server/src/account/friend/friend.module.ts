@@ -5,8 +5,14 @@ import { FriendService } from "./friend.service.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
 import { FriendController } from "./friend.controller.js";
+/**
+ * Module NestJS đóng gói tính năng bạn bè và quản lý lời mời.
+ */
 @Module({})
 export class FriendModule {
+  /**
+   * Tạo dynamic module FriendModule cấu hình các controller và service kết bạn.
+   */
   static forRoot(pool: Pool, sessions: SessionService): DynamicModule {
     return {
       module: FriendModule,
@@ -22,6 +28,10 @@ export class FriendModule {
     };
   }
 }
+/**
+ * Khởi tạo runtime cho hệ thống bạn bè nếu biến môi trường FRIENDS_ENABLED được kích hoạt.
+ * Thẩm định quyền schema xiangqi_social và các bảng liên quan trước khi khởi chạy.
+ */
 export async function createFriendRuntime(
   env: Record<string, string | undefined>,
   registration: {

@@ -16,7 +16,10 @@ export type PublicRoomJoinInput = {
   preference: "play" | "watch";
 };
 export type PublicRoomEntry = Omit<RoomEntry, "inviteCode">;
-/** Member-only public discovery; the runtime owns HTTP/feed and guest integration. */
+/**
+ * Dịch vụ xử lý nghiệp vụ tìm kiếm và tham gia phòng chơi cờ công khai (sảnh chờ):
+ * Cung cấp danh sách phòng công khai theo thời gian thực và điều phối tham gia phòng từ sảnh.
+ */
 export class PublicRoomService {
   constructor(
     private readonly store: Pick<PublicRoomStore, "list" | "join">,
@@ -63,6 +66,9 @@ export class PublicRoomService {
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
     return result.value;
   }
+  /**
+   * Mở phiên kết nối nguồn đọc danh sách phòng công khai (dùng cho feed Socket.IO).
+   */
   async open(proof: MemberRoomRequestProof) {
     const trusted = await this.resolved(proof);
     return {
@@ -72,9 +78,15 @@ export class PublicRoomService {
         ),
     };
   }
+  /**
+   * Lấy danh sách các phòng cờ công khai hiện có thông qua truy vấn HTTP.
+   */
   async list(proof: MemberRoomRequestProof) {
     return (await this.open(proof)).read();
   }
+  /**
+   * Tham gia vào một phòng cờ công khai được chọn từ danh sách sảnh.
+   */
   async join(
     proof: MemberRoomRequestProof,
     roomId: string,

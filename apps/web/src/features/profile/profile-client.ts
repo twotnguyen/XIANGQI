@@ -28,6 +28,9 @@ function record(value: unknown): Record<string, unknown> {
     throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
   return value as Record<string, unknown>;
 }
+/**
+ * Khởi tạo client gọi API hồ sơ cá nhân (đọc thông tin, cập nhật tên hiển thị, kiểm tra trạng thái phòng/trận đang tham gia).
+ */
 export function createProfileClient(authorizedFetch: AuthorizedFetch) {
   async function request<T>(
     path: string,

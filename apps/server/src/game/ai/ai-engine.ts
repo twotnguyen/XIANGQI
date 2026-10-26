@@ -5,7 +5,10 @@ import {
 } from "@xiangqi/engine";
 
 export type AiEngine = Pick<EngineWorker, "ready" | "search" | "close">;
-/** Load compiled runtime explicitly; source and compiled errors have different constructors. */
+/**
+ * Tải và khởi tạo engine cờ tướng AI biên dịch sẵn (`@xiangqi/engine/compiled`).
+ * Bọc lỗi của engine về kiểu `EngineError` chuẩn.
+ */
 export async function createCompiledAiEngine(
   options: EngineWorkerOptions = {},
 ): Promise<AiEngine> {

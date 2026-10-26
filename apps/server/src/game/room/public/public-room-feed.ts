@@ -25,6 +25,9 @@ function object(value: unknown): Record<string, unknown> {
     throw Error("Invalid payload");
   return value as Record<string, unknown>;
 }
+/**
+ * Phân tích và thẩm định tính hợp lệ của token chứng thực (member hoặc guest) từ handshake Socket.IO.
+ */
 export function parsePublicFeedProof(value: unknown): PublicFeedProof {
   const data = object(value);
   if (
@@ -111,7 +114,10 @@ function authFailure(error: unknown) {
       (error as { code?: unknown }).code === "AUTH_REQUIRED")
   );
 }
-/** Attach after other Engine.IO gateways; close before closing the shared HTTP server. */
+/**
+ * Thiết lập Socket.IO Gateway phát feed danh sách phòng công khai ở namespace /public-rooms:
+ * Định kỳ polling (1000ms) danh sách phòng và chỉ gửi cập nhật tới client khi có thay đổi dữ liệu.
+ */
 export function attachPublicRoomFeed(
   httpServer: HttpServer,
   dependencies: PublicRoomFeedDependencies,

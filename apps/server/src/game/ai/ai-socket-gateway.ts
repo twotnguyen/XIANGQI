@@ -209,7 +209,12 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
     },
   };
 }
-/** Separate Engine.IO path; closing this attachment leaves the shared HTTP server open. */
+/**
+ * Khởi tạo cổng kết nối WebSocket chuyên biệt cho chế độ chơi với AI (namespace `/ai` trên đường dẫn `/ai/socket.io`):
+ * - Xác thực handshake phiên đăng nhập và định danh tab client.
+ * - Quản lý quyền điều khiển tab (`ai.control`) và cơ chế takeover tab.
+ * - Phát cập nhật trạng thái ván cờ AI (`ai.snapshot`) và xử lý sự kiện `ai.watch`, `ai.refresh`.
+ */
 export function attachAiSocketGateway(
   httpServer: HttpServer,
   dependencies: AiSocketDependencies,

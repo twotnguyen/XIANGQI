@@ -1,4 +1,7 @@
-// Team-maintained configuration. Avoid short ambiguous fragments such as "lon" in "Long".
+/**
+ * Danh sách từ ngữ cấm (tục tĩu, xúc phạm) không được phép xuất hiện trong tên hiển thị người dùng.
+ * Được chuẩn hóa và kiểm tra trong bộ lọc auth-filter.
+ */
 export const forbiddenNames = [
   "fuck",
   "shit",

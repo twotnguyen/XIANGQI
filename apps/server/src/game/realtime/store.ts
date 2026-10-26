@@ -43,6 +43,9 @@ function fingerprint(command: RoomCommand) {
     .digest("hex");
 }
 
+/**
+ * Lớp Store quản lý tầng realtime: lưu trữ thẻ điều khiển (tab/controller), biên lai lệnh idempotent và snapshot phòng.
+ */
 export class RealtimeStore {
   constructor(
     private readonly pool: Pool,
@@ -123,6 +126,9 @@ export class RealtimeStore {
       control: await this.control(client, connection, access.canControl),
     };
   }
+  /**
+   * Đăng ký kết nối client vào phòng, xác định tab có quyền điều khiển (writable) hoặc chỉ xem (readonly/superseded).
+   */
   async connect(
     connection: RealtimeConnection,
     takeover = false,
@@ -181,9 +187,15 @@ export class RealtimeStore {
       throw new RealtimeError("ROOM_FORBIDDEN", "Ghế trong phòng đã hết hạn");
     return result;
   }
+  /**
+   * Xử lý ngắt kết nối của client khỏi phòng.
+   */
   async disconnect(connection: RealtimeConnection): Promise<void> {
     await this.presence?.disconnected(connection);
   }
+  /**
+   * Xử lý thực thi lệnh phòng từ client với kiểm tra quyền điều khiển thẻ tab, chống lặp qua biên lai receipt và kiểm tra version.
+   */
   async command(
     connection: RealtimeConnection,
     command: RoomCommand,
@@ -262,11 +274,17 @@ export class RealtimeStore {
       return errorAcknowledgement(error, command.commandId);
     }
   }
+  /**
+   * Truy vấn ảnh chụp nhanh trạng thái phòng hiện tại kèm quyền điều khiển (control) của kết nối.
+   */
   async snapshot(connection: RealtimeConnection): Promise<RoomSnapshot> {
     return this.transaction(connection, (client) =>
       this.currentSnapshot(client, connection),
     );
   }
+  /**
+   * Xóa định kỳ các biên lai lệnh đã hết hạn (tối đa 500 biên lai mỗi lần chạy).
+   */
   async cleanupExpiredReceipts(): Promise<number> {
     return this.transaction(null, async (client) => {
       await client.query("SET LOCAL lock_timeout='250ms'");

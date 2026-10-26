@@ -65,6 +65,9 @@ export interface RoomPageProps {
   media?: ReactNode;
   mediaClient?: MediaClient;
 }
+/**
+ * Trang phòng cờ trực tuyến: điều phối kết nối realtime, bàn cờ, đồng hồ đấu, ghế ngồi, video/audio và chat phòng.
+ */
 export function RoomPage({
   roomId,
   userId,

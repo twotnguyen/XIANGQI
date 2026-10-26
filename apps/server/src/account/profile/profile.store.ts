@@ -12,6 +12,9 @@ export interface LocationRow {
   currentMatchId: string | null;
   mode: string | null;
 }
+/**
+ * Store tương tác cơ sở dữ liệu PostgreSQL cho bảng profiles và thông tin thành viên phòng room_members.
+ */
 export class ProfileStore {
   constructor(private readonly pool: Pool) {}
   private withUser<T>(
@@ -34,9 +37,15 @@ export class ProfileStore {
       throw new ProfileError("PROFILE_MISSING", "Không tìm thấy hồ sơ", 404);
     return { username: row.username, displayName: row.display_name };
   }
+  /**
+   * Truy vấn thông tin hồ sơ của người dùng từ bảng public.profiles.
+   */
   read(userId: string): Promise<ProfileRow> {
     return this.withUser(userId, (client) => this.row(client, userId));
   }
+  /**
+   * Cập nhật trường display_name và thời điểm updated_at trong bảng public.profiles.
+   */
   updateDisplayName(userId: string, displayName: string): Promise<void> {
     return this.withUser(userId, async (client) => {
       await this.row(client, userId);
@@ -46,6 +55,9 @@ export class ProfileStore {
       );
     });
   }
+  /**
+   * Truy vấn thông tin phòng mở gần nhất mà người dùng đang tham gia (bảng room_members và rooms).
+   */
   location(userId: string): Promise<LocationRow | null> {
     return transaction(this.pool, async (client) => {
       const row = (

@@ -30,6 +30,10 @@ import { LoginService } from "../login/login.service.js";
 import { PostgresLoginStore } from "../login/postgres-login-store.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionModule } from "../session/session.module.js";
+/**
+ * Tác vụ nền định kỳ dọn dẹp các tài khoản đăng ký quá hạn không hoàn tất
+ * hoặc khôi phục các trạng thái tài khoản đang pending.
+ */
 @Injectable()
 class RegistrationMaintenance
   implements OnApplicationBootstrap, OnModuleDestroy
@@ -64,8 +68,14 @@ class RegistrationMaintenance
   }
 }
 
+/**
+ * Module NestJS quản lý tính năng đăng ký tài khoản.
+ */
 @Module({})
 export class RegistrationModule {
+  /**
+   * Cấu hình và khởi tạo RegistrationModule cùng các provider và controller tương ứng.
+   */
   static forRoot(
     store: RegistrationStore,
     auth: AuthProvider,
@@ -101,6 +111,9 @@ export class RegistrationModule {
     };
   }
 }
+/**
+ * Đọc và thẩm định biến môi trường cấu hình đăng ký (Supabase URL, API keys, kết nối database).
+ */
 export function readRegistrationConfig(
   env: Record<string, string | undefined>,
 ) {
@@ -153,6 +166,10 @@ export function readRegistrationConfig(
   }
 }
 
+/**
+ * Khởi tạo runtime hoàn chỉnh cho tính năng đăng ký và đăng nhập:
+ * Thiết lập connection pool Postgres, kiểm tra schema bảng dữ liệu, và kết nối Supabase Auth.
+ */
 export async function createRegistrationRuntime(
   env: Record<string, string | undefined>,
 ) {
@@ -279,8 +296,14 @@ export async function createRegistrationRuntime(
     close,
   };
 }
+/**
+ * Module cấu hình các nhà cung cấp xác thực (Google, Guest).
+ */
 @Module({})
 export class AuthProvidersModule {
+  /**
+   * Tạo DynamicModule với cấu hình các nhà cung cấp xác thực được kích hoạt.
+   */
   static forRoot(providers: Providers): DynamicModule {
     return {
       module: AuthProvidersModule,

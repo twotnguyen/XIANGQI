@@ -11,6 +11,9 @@ export interface ReplayViewerProps {
   /** Permission-gated export; absent means the controls are hidden. */
   exportAt?: (ply: number) => Promise<{ fen: string; pgn: string }>;
 }
+/**
+ * Khung phát lại từng nước cờ của ván đấu (bộ điều khiển tua/phát tự động, danh sách biên bản ký âm tiếng Việt và nút xuất FEN/tải tệp PGN).
+ */
 export function ReplayViewer({
   record,
   moveLabels,

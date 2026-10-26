@@ -42,9 +42,13 @@ function id(value: string): string {
 function fail(code: string): never {
   throw new RoomError(code, "Vị trí chơi với máy chưa sẵn sàng", 409);
 }
-/** Internal SQL port. Caller supplies authenticated actor-first RoomTransactions scope.
- * Never expose boot IDs or trusted cleanup methods to a client. No nested pool/transaction. */
+/**
+ * Quản lý vị trí ghế chơi cờ với máy (reservation slot) và chu kỳ sống của phiên server instance (boot/heartbeat lease).
+ */
 export class AiReservations {
+  /**
+   * Tạo bản ghi boot cho server instance với thời hạn lease ban đầu 60 giây.
+   */
   async createBoot(client: PoolClient): Promise<AiBoot> {
     const bootId = randomUUID();
     const row = (
@@ -56,6 +60,9 @@ export class AiReservations {
     ).rows[0]!;
     return { id: bootId, leaseUntil: row.lease_until.toISOString() };
   }
+  /**
+   * Gia hạn lease của server boot thêm 60 giây qua cơ chế heartbeat.
+   */
   async heartbeat(client: PoolClient, bootId: string): Promise<AiBoot> {
     const canonical = id(bootId);
     // Sample expiry after acquiring the row lock, never before a lock wait.
@@ -73,7 +80,9 @@ export class AiReservations {
     if (!row) fail("AI_BOOT_EXPIRED");
     return { id: canonical, leaseUntil: row.lease_until.toISOString() };
   }
-  /** The AI game and boot the user currently holds, or nulls when none. */
+  /**
+   * Lấy mã ván AI và mã boot mà người chơi đang giữ ghế trong `active_players`.
+   */
   async held(
     scope: RoomScope,
     userId: string,
@@ -131,6 +140,9 @@ export class AiReservations {
       )
     ).rows[0]?.live;
   }
+  /**
+   * Đặt chỗ chơi ván AI cho người dùng trong bảng `public.active_players`.
+   */
   async reserve(
     scope: RoomScope,
     input: { gameId: string; bootId: string },
@@ -147,6 +159,9 @@ export class AiReservations {
     );
     if (!inserted.rowCount) fail("AI_BOOT_EXPIRED");
   }
+  /**
+   * Xác minh người chơi đang giữ đúng vị trí đặt chỗ ván AI và boot còn hiệu lực.
+   */
   async check(
     scope: RoomScope,
     input: { gameId: string; bootId: string },
@@ -165,6 +180,9 @@ export class AiReservations {
       acquiredAt: row.acquired_at.toISOString(),
     };
   }
+  /**
+   * Giải phóng vị trí ghế chơi cờ với máy khỏi bảng `public.active_players`.
+   */
   async release(
     scope: RoomScope,
     input: { gameId: string; bootId: string },
@@ -177,6 +195,9 @@ export class AiReservations {
     );
     if (!deleted.rowCount) fail("AI_BOOT_EXPIRED");
   }
+  /**
+   * Thu hồi và dọn dẹp vị trí ghế nếu boot của server instance đã hết hạn.
+   */
   async reclaimExpired(
     scope: RoomScope,
     input: { gameId: string; bootId: string },
@@ -194,6 +215,9 @@ export class AiReservations {
     );
     return deleted.rowCount === 1;
   }
+  /**
+   * Quét danh sách các vị trí đặt chỗ thuộc boot đã hết hạn để xử lý dọn dẹp.
+   */
   async expired(
     client: PoolClient,
     cursor: AiExpiredCursor | null = null,

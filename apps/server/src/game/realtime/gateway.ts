@@ -46,6 +46,13 @@ export interface RealtimeDependencies {
   corsOrigins: string[];
   onAttached?: (publisher: RealtimePublisher) => void;
 }
+/**
+ * Khởi tạo cổng kết nối WebSocket (Socket.IO) cho phòng cờ và chat:
+ * - Xác thực phiên người dùng từ handshake auth.
+ * - Quản lý kết nối nhiều tab và cơ chế chiếm quyền điều khiển (takeover).
+ * - Lắng nghe các sự kiện `room.command`, `room.sync`, `session.takeover`, và chat.
+ * - Phát broadcast snapshot và thông báo phòng đóng tới các client liên quan.
+ */
 export function attachRealtime(
   httpServer: HttpServer,
   dependencies: RealtimeDependencies,

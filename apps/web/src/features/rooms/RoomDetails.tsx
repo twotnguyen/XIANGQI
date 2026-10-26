@@ -1,6 +1,9 @@
 import type { RoomView } from "./room-client.js";
 import { visibilityLabel } from "./room-labels.js";
 
+/**
+ * Hiển thị thông số chi tiết của phòng cờ (thời gian mỗi bên, giới hạn người xem, chế độ hiển thị công khai/khóa).
+ */
 export function RoomDetails({ room }: { room: RoomView["room"] }) {
   return (
     <div className="xq-room-details">

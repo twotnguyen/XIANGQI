@@ -1,5 +1,8 @@
 import type { AnchorHTMLAttributes } from "react";
 import { navigate } from "./navigation.js";
+/**
+ * Thẻ liên kết nội bộ ứng dụng, chặn tải lại trang toàn phần và kích hoạt chuyển route qua History API.
+ */
 export function NavigationLink({
   href,
   replace = false,

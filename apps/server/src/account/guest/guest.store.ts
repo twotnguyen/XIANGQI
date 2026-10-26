@@ -15,12 +15,18 @@ export interface ExpiredSession {
   expires_at: Date;
 }
 
-/** All SQL of the guest domain; GuestService decides when and why. */
+/**
+ * Store tương tác PostgreSQL cho miền dữ liệu khách (guest):
+ * Quản lý phiên tạm guest_sessions, định danh principals và hồ sơ profiles.
+ */
 export class GuestStore {
   constructor(private readonly pool: Pool) {}
   transaction<T>(work: (c: PoolClient) => Promise<T>): Promise<T> {
     return transaction(this.pool, work);
   }
+  /**
+   * Thêm người dùng khách mới: chèn principal, profile và guest_session vào database.
+   */
   async insertGuest(
     c: PoolClient,
     guest: {
@@ -48,6 +54,9 @@ export class GuestStore {
       [guest.tokenHash, guest.userId, guest.createdAt, guest.expiresAt],
     );
   }
+  /**
+   * Tìm guest_id sở hữu phiên dựa trên mã băm của token.
+   */
   async findSessionOwner(
     c: PoolClient,
     tokenHash: string,
@@ -63,6 +72,9 @@ export class GuestStore {
   lockActor(c: PoolClient, userId: string): Promise<void> {
     return actorLock(c, userId);
   }
+  /**
+   * Khóa dòng và truy vấn thông tin phiên khách đang hoạt động.
+   */
   async findActiveGuest(
     c: PoolClient,
     tokenHash: string,
@@ -74,6 +86,9 @@ export class GuestStore {
       )
     ).rows[0];
   }
+  /**
+   * Kiểm tra xem khách có đang làm chủ phòng mở nào chưa kết thúc không.
+   */
   async ownsOpenRoom(c: PoolClient, userId: string): Promise<boolean> {
     return Boolean(
       (
@@ -96,7 +111,9 @@ export class GuestStore {
     ).rows[0];
     return row?.expires_at;
   }
-  /** Anonymizes the guest and drops its sessions. */
+  /**
+   * Ẩn danh hóa thông tin hiển thị của khách và xóa phiên guest_sessions.
+   */
   async clearGuest(c: PoolClient, userId: string, at: Date): Promise<void> {
     await c.query(
       "UPDATE public.profiles SET display_name='Khách',updated_at=$2 WHERE user_id=$1",
@@ -106,6 +123,9 @@ export class GuestStore {
       userId,
     ]);
   }
+  /**
+   * Lấy danh sách các phiên khách đã quá hạn cần được thu hồi theo batch.
+   */
   expiredSessions(
     now: Date,
     cursor: ExpiryCursor | null,

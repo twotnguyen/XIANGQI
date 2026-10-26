@@ -156,6 +156,9 @@ class NoStore implements NestInterceptor {
     return next.handle();
   }
 }
+/**
+ * Controller xử lý các yêu cầu HTTP quản lý và điều khiển ván đấu cờ tướng với máy AI.
+ */
 @Controller("ai")
 @UseInterceptors(NoStore)
 export class AiController {
@@ -203,6 +206,9 @@ export class AiController {
       );
     }
   }
+  /**
+   * Truy vấn mã ván cờ AI hiện tại của người chơi (nếu đang có ván chưa hoàn tất).
+   */
   @Get("current")
   current(@Req() request: IncomingMessage) {
     return this.respond(request, async () => {
@@ -210,12 +216,18 @@ export class AiController {
       return { gameId: result.gameId };
     });
   }
+  /**
+   * Đọc chi tiết thế cờ, lịch sử nước đi và trạng thái ván cờ AI theo id.
+   */
   @Get(":gameId")
   read(@Req() request: IncomingMessage, @Param("gameId") gameId: string) {
     return this.respond(request, async () =>
       publish(await this.service.read(human(request), id(gameId))),
     );
   }
+  /**
+   * Tạo mới một ván cờ với AI.
+   */
   @Post()
   @HttpCode(200)
   create(@Req() request: IncomingMessage, @Body() body: unknown) {
@@ -235,6 +247,9 @@ export class AiController {
       );
     });
   }
+  /**
+   * Gửi nước đi của người chơi trong ván cờ với AI.
+   */
   @Post(":gameId/move")
   @HttpCode(200)
   move(
@@ -265,6 +280,9 @@ export class AiController {
       );
     });
   }
+  /**
+   * Người chơi nhận thua (đầu hàng) trước máy.
+   */
   @Post(":gameId/resign")
   @HttpCode(200)
   resign(
@@ -282,6 +300,9 @@ export class AiController {
       ),
     );
   }
+  /**
+   * Yêu cầu máy AI thử lại lượt tính nước đi khi bị timeout hoặc quá tải.
+   */
   @Post(":gameId/retry")
   @HttpCode(200)
   retry(

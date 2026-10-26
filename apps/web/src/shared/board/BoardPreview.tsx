@@ -5,7 +5,9 @@ import { XiangqiBoard } from "./XiangqiBoard.js";
 const midgameFen =
   "r1ba1a3/4kn3/2n1b4/pNp1p1p1p/4c4/6P2/P1P2R2P/1CcC5/9/2BAKAB2 w - - 0 1";
 
-/** Isolated display examples; no game commands, selection or server connection. */
+/**
+ * Component hiển thị thử nghiệm bàn cờ cô lập (khai cuộc, giữa ván, đổi góc nhìn quân Đỏ/Đen).
+ */
 export function BoardPreview() {
   const [example, setExample] = useState<"initial" | "midgame">("initial");
   const [view, setView] = useState<"red" | "black" | "spectator">("red");

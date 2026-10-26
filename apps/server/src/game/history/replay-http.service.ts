@@ -25,6 +25,9 @@ const errors: Record<string, { status: number; message: string }> = {
     message: "Phòng đang thay đổi, vui lòng thử lại",
   },
 };
+/**
+ * Chuyển đổi lỗi nội bộ thành đối tượng RoomError an toàn khi xem lại ván đấu.
+ */
 export function replayHttpError(error: unknown): RoomError {
   const known =
     error instanceof RoomError && Object.hasOwn(errors, error.code)
@@ -34,13 +37,18 @@ export function replayHttpError(error: unknown): RoomError {
     ? new RoomError(error.code, known.message, known.status)
     : new RoomError("REPLAY_UNAVAILABLE", "Chưa thể đọc lại ván đấu", 503);
 }
-/** Required member authorizer/coordinator; no tab control is needed for a read. */
+/**
+ * Service xử lý logic HTTP cho việc xem lại và xuất dữ liệu ván đấu của thành viên.
+ */
 export class ReplayHttpService {
   constructor(
     private readonly store: Pick<ReplayStore, "read">,
     private readonly transactions: Pick<RoomTransactions, "withRoom">,
     private readonly authorizer: MemberRoomAuthorizer,
   ) {}
+  /**
+   * Đọc dữ liệu xem lại ván đấu sau khi xác thực quyền sở hữu của thành viên.
+   */
   async read(proof: MemberRoomRequestProof, id: string): Promise<ReplayRecord> {
     try {
       if (typeof id !== "string" || !uuid.test(id))
@@ -107,7 +115,9 @@ export class ReplayHttpService {
       throw replayHttpError(error);
     }
   }
-  /** Same replay ownership gate as read(); export never widens authorization. */
+  /**
+   * Xuất trạng thái ván cờ sang định dạng FEN (ở nước đi chỉ định) và toàn bộ biên bản PGN.
+   */
   async export(
     proof: MemberRoomRequestProof,
     id: string,

@@ -12,6 +12,12 @@ import { createProfileRuntime } from "./account/profile/profile.module.js";
 import { AuthProvidersModule } from "./account/auth/registration.module.js";
 
 config({ quiet: true });
+
+/**
+ * Khởi tạo và chạy ứng dụng server:
+ * Đọc cấu hình môi trường, khởi tạo các runtime nghiệp vụ (xác thực, phòng chơi, bạn bè, lịch sử...),
+ * gắn cổng HTTP/WebSocket và xử lý đóng kết nối an toàn khi tắt server.
+ */
 let registration: Awaited<ReturnType<typeof createRegistrationRuntime>> = null;
 let rooms: Awaited<ReturnType<typeof createRoomRuntime>> = null;
 let app: Awaited<ReturnType<typeof createApp>> | null = null;

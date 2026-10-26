@@ -40,6 +40,9 @@ function date(value: unknown) {
   const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   return month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1]!;
 }
+/**
+ * Kiểm tra xem giá trị có phải là định danh kênh chat hợp lệ hay không.
+ */
 export function isChatChannel(value: unknown): value is ChatChannel {
   return value === "PLAYERS_PRIVATE" || value === "ROOM_PUBLIC";
 }
@@ -55,6 +58,9 @@ function authority(value: Record<string, unknown>, roomId: string) {
   )
     invalid();
 }
+/**
+ * Phân tích và kiểm tra tính hợp lệ của sự kiện chat.changed từ server.
+ */
 export function parseChatChanged(value: unknown, roomId: string): ChatChanged {
   const v = body(value, [
     "roomId",
@@ -66,6 +72,9 @@ export function parseChatChanged(value: unknown, roomId: string): ChatChanged {
   authority(v, roomId);
   return v as unknown as ChatChanged;
 }
+/**
+ * Phân tích và kiểm tra kết quả xác nhận tin nhắn đã gửi thành công từ server.
+ */
 export function parseChatSent(value: unknown): ChatSent {
   const v = body(value, ["messageId", "sequence", "createdAt"]);
   if (
@@ -77,6 +86,9 @@ export function parseChatSent(value: unknown): ChatSent {
     invalid();
   return v as unknown as ChatSent;
 }
+/**
+ * Phân tích và kiểm tra tính toàn vẹn của danh sách trang tin nhắn tải về từ server.
+ */
 export function parseChatPage(
   value: unknown,
   roomId: string,
@@ -149,6 +161,9 @@ const errorMessages: Record<string, string> = {
   COMMAND_ID_REUSED: "Mã lệnh đã được dùng cho nội dung khác",
   TAB_READ_ONLY: "Tab này chỉ có thể xem",
 };
+/**
+ * Xử lý phản hồi xác nhận (ACK) khi gửi lệnh chat realtime qua WebSocket.
+ */
 export function chatAcknowledgement(value: unknown): unknown {
   if (!value || typeof value !== "object") invalid();
   if ((value as { status?: unknown }).status === "ok")

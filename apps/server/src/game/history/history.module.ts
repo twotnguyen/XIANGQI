@@ -7,8 +7,14 @@ import { RoomTransactions } from "../room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
 import { HistoryStore } from "./history-store.js";
 import { ReplayStore } from "./replay-store.js";
+/**
+ * Module NestJS quản lý tính năng lịch sử và xem lại ván cờ (History & Replay).
+ */
 @Module({})
 export class HistoryModule {
+  /**
+   * Khởi tạo DynamicModule với các service HTTP tương ứng.
+   */
   static forRoot(
     service: HistoryHttpService,
     replay?: ReplayHttpService,
@@ -33,7 +39,9 @@ export class HistoryModule {
 export const HISTORY_COLUMN_TYPE_MATCH = `CASE WHEN t.column_type='text'
             THEN a.atttypid IN ('pg_catalog.text'::pg_catalog.regtype,'pg_catalog.varchar'::pg_catalog.regtype,'pg_catalog.bpchar'::pg_catalog.regtype)
             ELSE a.atttypid=pg_catalog.to_regtype(t.column_type) END`;
-/** Borrows registration's pool and sessions. No owned connection pool, timers or close hook. */
+/**
+ * Kiểm tra tính tương thích của cơ sở dữ liệu và khởi tạo runtime cho phân hệ History & Replay.
+ */
 export async function createHistoryRuntime(
   env: Record<string, string | undefined>,
   registration: NonNullable<

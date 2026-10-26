@@ -27,9 +27,14 @@ function originCopy(origin: Human): Human {
     tab: Object.freeze({ ...origin.tab }),
   });
 }
-/** Human mutations use SqlAiTransactions again inside AiGames; preparation runs outside SQL locks. */
+/**
+ * Dịch vụ xử lý các yêu cầu HTTP điều khiển ván đấu cờ tướng với máy AI.
+ */
 export class AiHttpService implements AiHttpApi {
   constructor(private readonly options: Options) {}
+  /**
+   * Lấy mã ván cờ AI hiện tại mà người chơi đang tham gia (nếu có).
+   */
   async current(
     proof: MemberRoomRequestProof,
   ): Promise<{ gameId: string | null }> {
@@ -68,6 +73,9 @@ export class AiHttpService implements AiHttpApi {
       },
     );
   }
+  /**
+   * Đọc chi tiết ván cờ AI và trạng thái điều khiển của tab kết nối.
+   */
   read(origin: Human, gameId: string): Promise<AiHttpResult> {
     return this.result(originCopy(origin), gameId);
   }
@@ -88,6 +96,9 @@ export class AiHttpService implements AiHttpApi {
     // Reauthorize the response and read canonical RAM; never return a captured pre-commit board.
     return this.result(origin, committed.id);
   }
+  /**
+   * Tạo ván cờ AI mới theo cấp độ và phe lựa chọn.
+   */
   create(
     origin: Human,
     input: { level: EngineLevel; requestedSide: Side | "random" },
@@ -97,6 +108,9 @@ export class AiHttpService implements AiHttpApi {
       this.options.games.create(owner, setup, proof),
     );
   }
+  /**
+   * Người chơi đi một nước cờ trong ván đấu với AI.
+   */
   move(
     origin: Human,
     gameId: string,
@@ -110,6 +124,9 @@ export class AiHttpService implements AiHttpApi {
       this.options.games.move(owner, gameId, command, proof),
     );
   }
+  /**
+   * Người chơi đầu hàng ván cờ với AI.
+   */
   resign(
     origin: Human,
     gameId: string,
@@ -119,6 +136,9 @@ export class AiHttpService implements AiHttpApi {
       this.options.games.resign(owner, gameId, { version }, proof),
     );
   }
+  /**
+   * Thử lại lượt đi của AI khi bị timeout hoặc bận.
+   */
   retry(origin: Human, gameId: string, version: number): Promise<AiHttpResult> {
     return this.mutate(origin, (owner, proof) =>
       this.options.games.retry(owner, gameId, { version }, proof),

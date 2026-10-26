@@ -22,6 +22,12 @@ const descriptions = {
   CODE_ONLY: "Không hiện ở Sảnh. Người mới cần mã hoặc link để vào phòng.",
   LOCKED: "Chặn người mới. Giữ người đang chơi và người xem hiện có.",
 } as const;
+
+/**
+ * Hộp thoại cài đặt chế độ hiển thị phòng cờ (Công khai, Chỉ qua mã/link, Khóa phòng).
+ * Chỉ chủ phòng mới có quyền thay đổi; chế độ Khóa phòng yêu cầu xác nhận nguy hiểm
+ * và chỉ khả dụng khi đã đủ 2 người chơi.
+ */
 export function RoomSettings({
   open,
   onClose,

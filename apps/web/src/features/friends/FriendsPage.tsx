@@ -42,6 +42,9 @@ function errorText(error: unknown) {
   return "Chưa thể tải dữ liệu. Kiểm tra kết nối rồi thử lại.";
 }
 
+/**
+ * Màn hình quản lý bạn bè: danh sách bạn bè, trạng thái trực tuyến/đang đấu, duyệt lời mời kết bạn và tìm kiếm kỳ hữu.
+ */
 export function FriendsPage({ client }: { client: FriendClient }) {
   const [friends, setFriends] = useState<FriendPeer[] | null>(null);
   const [requests, setRequests] = useState<FriendRequest[] | null>(null);

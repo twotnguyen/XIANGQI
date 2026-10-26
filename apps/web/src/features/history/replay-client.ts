@@ -29,6 +29,9 @@ function object(value: unknown, keys: string[]): Record<string, unknown> {
 function side(value: unknown): value is Side {
   return value === "red" || value === "black";
 }
+/**
+ * Kiểm tra tính toàn vẹn và phân tích dữ liệu ván xem lại (tái hiện từng nước đi kiểm tra tính nhất quán với chuỗi FEN).
+ */
 export function parseReplayRecord(value: unknown): ReplayRecord {
   try {
     const record = object(value, [
@@ -119,6 +122,9 @@ export class ReplayRequestError extends Error {
     );
   }
 }
+/**
+ * Khởi tạo client HTTP đọc chi tiết ván xem lại và xuất biên bản FEN/PGN.
+ */
 export function makeReplayClient(authorizedFetch: AuthorizedFetch) {
   return {
     async read(id: string): Promise<ReplayRecord> {

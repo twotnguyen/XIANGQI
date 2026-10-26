@@ -2,26 +2,36 @@ import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
 import type { ShareLevel } from "./media.types.js";
 
-/** All SQL of the media domain; MediaAccess decides and talks to LiveKit. */
+/**
+ * Lớp Repository quản lý lưu trữ cấu hình chia sẻ media trong cơ sở dữ liệu.
+ */
 export class MediaStore {
   constructor(private readonly pool: Pool) {}
-  /** Transaction holding the actor lock. */
+  /**
+   * Mở giao dịch ghi có giữ khóa actor lock của người dùng.
+   */
   withUser<T>(userId: string, work: (tx: MediaTx) => Promise<T>): Promise<T> {
     return transaction(this.pool, async (client) => {
       await actorLock(client, userId);
       return work(new MediaTx(client));
     });
   }
-  /** Transaction without an actor lock. */
+  /**
+   * Mở giao dịch chỉ đọc không giữ khóa.
+   */
   read<T>(work: (tx: MediaTx) => Promise<T>): Promise<T> {
     return transaction(this.pool, (client) => work(new MediaTx(client)));
   }
 }
 
-/** Data access bound to one open transaction. */
+/**
+ * Đối tượng thao tác cơ sở dữ liệu media gắn liền với một kết nối giao dịch đang mở.
+ */
 export class MediaTx {
   constructor(private readonly client: PoolClient) {}
-  /** True when the user holds a player seat in an open WAITING/PLAYING room. */
+  /**
+   * Kiểm tra người dùng có đang giữ ghế kỳ thủ trong phòng đang mở không.
+   */
   async hasPlayerSeat(roomId: string, userId: string): Promise<boolean> {
     const seat = (
       await this.client.query(
@@ -32,6 +42,9 @@ export class MediaTx {
     ).rows[0];
     return Boolean(seat);
   }
+  /**
+   * Lưu hoặc cập nhật mức độ chia sẻ camera/mic của người dùng trong phòng.
+   */
   async saveShare(
     roomId: string,
     userId: string,
@@ -42,7 +55,9 @@ export class MediaTx {
       [roomId, userId, level],
     );
   }
-  /** Stored sharing level, or undefined when the user never chose one. */
+  /**
+   * Lấy mức chia sẻ media đã lưu của người dùng.
+   */
   async findShare(
     roomId: string,
     userId: string,
@@ -55,7 +70,9 @@ export class MediaTx {
     ).rows[0];
     return row?.level;
   }
-  /** Role of the user in an open room, or undefined when not a member. */
+  /**
+   * Lấy vai trò thành viên của người dùng trong phòng.
+   */
   async findMemberRole(
     roomId: string,
     userId: string,

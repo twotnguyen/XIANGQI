@@ -75,7 +75,9 @@ type Game = {
   job?: Promise<void>;
   terminalStatus?: "FINISHED" | "ABANDONED";
 };
-/** Internal foundation: production boundary supplies human proof; autonomous jobs are server-only. */
+/**
+ * Lớp điều phối cốt lõi quản lý các ván đấu với máy cờ AI (khởi tạo, đi cờ, tìm nước đi, đầu hàng và thử lại).
+ */
 export class AiGames {
   private readonly games = new Map<string, Game>();
   private readonly active = new Map<string, string>();
@@ -86,6 +88,9 @@ export class AiGames {
     if (!options.engine || !options.transactions?.run)
       throw new AiError("AI_INPUT_INVALID");
   }
+  /**
+   * Khởi động và chuẩn bị engine AI sẵn sàng phục vụ tìm kiếm nước đi.
+   */
   async ready(): Promise<void> {
     if (this.closed) throw new AiError("AI_CLOSED");
     try {
@@ -138,6 +143,9 @@ export class AiGames {
   private copy(game: Game): AiSnapshot {
     return structuredClone(game.snapshot);
   }
+  /**
+   * Đọc ảnh chụp trạng thái ván cờ với AI hiện tại của người chơi.
+   */
   read(owner: string, id: string): AiSnapshot {
     return this.copy(this.find(owner, id));
   }
@@ -240,6 +248,9 @@ export class AiGames {
       this.launch(this.find(owner, result.id));
     return result;
   }
+  /**
+   * Tạo mới một ván cờ với AI theo phe yêu cầu và cấp độ máy mong muốn.
+   */
   create(
     owner: string,
     input: { requestedSide: Side | "random"; level: EngineLevel },
@@ -288,6 +299,9 @@ export class AiGames {
     if (result.engineState === "THINKING" && !this.closed) this.launch(game);
     return result;
   }
+  /**
+   * Người chơi thực hiện một nước đi cờ, kiểm tra luật và kích hoạt engine AI suy nghĩ nước đáp trả nếu ván chưa kết thúc.
+   */
   move(
     owner: string,
     id: string,
@@ -471,6 +485,9 @@ export class AiGames {
       }
     });
   }
+  /**
+   * Người chơi đầu hàng (chịu thua) trước máy cờ AI.
+   */
   resign(
     owner: string,
     id: string,
@@ -503,6 +520,9 @@ export class AiGames {
       })(),
     );
   }
+  /**
+   * Thử lại lượt đi của engine AI nếu lượt đi trước bị timeout hoặc bận.
+   */
   retry(
     owner: string,
     id: string,
@@ -541,9 +561,15 @@ export class AiGames {
       })(),
     );
   }
+  /**
+   * Chờ lượt tìm kiếm nước đi hiện tại của máy hoàn tất.
+   */
   async waitForEngine(owner: string, id: string): Promise<void> {
     await this.find(owner, id).job;
   }
+  /**
+   * Dừng toàn bộ các ván đấu đang diễn ra và hủy các tác vụ tìm kiếm nước đi của engine.
+   */
   async close(): Promise<void> {
     this.closed = true;
     for (const game of this.games.values()) this.cancel(game);

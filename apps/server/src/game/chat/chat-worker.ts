@@ -2,7 +2,9 @@ import type { Pool, PoolClient } from "pg";
 import type { ChatChannel } from "./chat-store.js";
 type Cursor = { deadline: string; messageId: string };
 type Entry = Cursor & { roomId: string; channel: ChatChannel };
-/** At-least-once invalidation only. The required publisher owns recipient authorization. */
+/**
+ * Tiến trình nền xử lý phát tán tin nhắn chat từ bảng outbox tới các client và dọn dẹp biên lai hết hạn.
+ */
 export class ChatOutboxWorker {
   private cursor: Cursor | null = null;
   private inFlight: Promise<void> | null = null;
@@ -14,6 +16,9 @@ export class ChatOutboxWorker {
       channel: ChatChannel,
     ) => Promise<void>,
   ) {}
+  /**
+   * Chạy một chu kỳ quét các tin nhắn đang chờ gửi trong outbox và phát broadcast realtime.
+   */
   tick(): Promise<void> {
     if (this.closed) return Promise.resolve();
     if (!this.inFlight) {
@@ -27,6 +32,9 @@ export class ChatOutboxWorker {
     }
     return this.inFlight;
   }
+  /**
+   * Đóng worker và chờ đợt xử lý đang chạy hoàn tất.
+   */
   async close(): Promise<void> {
     this.closed = true;
     await this.inFlight?.catch(() => {});

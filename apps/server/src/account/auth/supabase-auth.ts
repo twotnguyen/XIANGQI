@@ -4,6 +4,10 @@ import {
   type Session,
 } from "./registration.types.js";
 
+/**
+ * Lớp giao tiếp trực tiếp với Supabase Auth (GoTrue API):
+ * Đảm nhiệm đăng ký, xác thực OTP, đăng nhập mật khẩu, đổi Google ID token và quản trị tài khoản pending.
+ */
 export class SupabaseAuth implements AuthProvider {
   constructor(
     private readonly url: string,
@@ -86,6 +90,9 @@ export class SupabaseAuth implements AuthProvider {
       );
     }
   }
+  /**
+   * Tạo tài khoản mới trên Supabase Auth và gửi mã OTP qua email.
+   */
   async signup(email: string, password: string, intentNonce: string) {
     try {
       const user = await this.request("signup", {
@@ -117,6 +124,9 @@ export class SupabaseAuth implements AuthProvider {
       "PUT",
     );
   }
+  /**
+   * Yêu cầu Supabase gửi lại mã OTP đăng ký tới email.
+   */
   async resend(email: string) {
     try {
       await this.request("resend", { type: "signup", email });
@@ -128,9 +138,15 @@ export class SupabaseAuth implements AuthProvider {
       );
     }
   }
+  /**
+   * Xác thực mã OTP email với Supabase Auth.
+   */
   async verify(email: string, otp: string): Promise<Session> {
     return this.session("verify", { email, token: otp, type: "email" });
   }
+  /**
+   * Đăng nhập người dùng bằng email và mật khẩu qua Supabase Auth.
+   */
   async signInPassword(
     email: string,
     password: string,
@@ -142,6 +158,9 @@ export class SupabaseAuth implements AuthProvider {
       signal,
     );
   }
+  /**
+   * Làm mới phiên làm việc (session) bằng refresh token.
+   */
   async refreshSession(refreshToken: unknown): Promise<Session> {
     if (typeof refreshToken !== "string" || !refreshToken)
       throw new RegistrationError(
@@ -153,6 +172,9 @@ export class SupabaseAuth implements AuthProvider {
       refresh_token: refreshToken,
     });
   }
+  /**
+   * Đổi Google ID Token lấy phiên làm việc Supabase (hỗ trợ đăng nhập Google).
+   */
   async exchangeIDToken(
     credential: string,
     rawNonce: string,
@@ -227,6 +249,9 @@ export class SupabaseAuth implements AuthProvider {
       "DELETE",
     );
   }
+  /**
+   * Truy vấn thông tin người dùng từ Supabase Auth bằng access token.
+   */
   async getUser(token: string): Promise<Session["user"]> {
     const user = await this.request("user", undefined, false, token, "GET");
     if (typeof user.id !== "string")

@@ -21,6 +21,10 @@ export interface MemberRoomAuthorizer {
     actorProof: RoomActorProof,
   ): Promise<RoomAuthorization>;
 }
+/**
+ * Dịch vụ điều phối nghiệp vụ phòng chơi cờ thông qua các lệnh HTTP:
+ * Quản lý vòng đời phòng, vào/rời phòng, phân bổ ghế, đổi bên và điều chỉnh quyền truy cập.
+ */
 export class RoomHttpService {
   constructor(
     private readonly store: RoomStore,
@@ -56,6 +60,9 @@ export class RoomHttpService {
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
     return result.value;
   }
+  /**
+   * Tạo phòng chơi mới với cấu hình thời gian thi đấu và giới hạn số lượng khán giả.
+   */
   async create(
     proof: MemberRoomRequestProof,
     input: Parameters<RoomStore["create"]>[1],
@@ -67,6 +74,9 @@ export class RoomHttpService {
       (scope) => this.store.create(scope, input),
     );
   }
+  /**
+   * Tham gia vào phòng chơi theo mã mời 8 chữ số, phân bổ vào ghế đấu hoặc khán giả tùy tình trạng phòng.
+   */
   async join(
     proof: MemberRoomRequestProof,
     input: {
@@ -112,6 +122,9 @@ export class RoomHttpService {
         409,
       );
   }
+  /**
+   * Đổi ghế đấu (Đỏ <-> Đen) khi chủ phòng đang ngồi một mình chờ đối thủ.
+   */
   async switchSeat(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -122,6 +135,9 @@ export class RoomHttpService {
       return this.store.switchSeat(scope, roomId);
     });
   }
+  /**
+   * Người chơi tự nguyện rời ghế thi đấu để chuyển xuống làm khán giả.
+   */
   async toSpectator(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -132,6 +148,9 @@ export class RoomHttpService {
       return this.store.toSpectator(scope, roomId);
     });
   }
+  /**
+   * Chủ phòng chuyển một người chơi khác xuống làm khán giả xem phòng.
+   */
   async moveToSpectator(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -143,6 +162,9 @@ export class RoomHttpService {
       return this.store.moveToSpectator(scope, roomId, targetId);
     });
   }
+  /**
+   * Chủ phòng mời một khán giả đang xem xuống ghế trống để thi đấu.
+   */
   async inviteDown(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -154,6 +176,9 @@ export class RoomHttpService {
       return this.store.inviteDown(scope, roomId, targetId);
     });
   }
+  /**
+   * Khán giả phản hồi chấp nhận hoặc từ chối lời mời xuống ghế thi đấu từ chủ phòng.
+   */
   async respondDown(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -165,6 +190,9 @@ export class RoomHttpService {
       return this.store.respondDown(scope, roomId, accept);
     });
   }
+  /**
+   * Đuổi một khán giả ra khỏi phòng cờ và đưa vào danh sách chặn của phòng.
+   */
   async kickViewer(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -176,6 +204,9 @@ export class RoomHttpService {
       return this.store.kickViewer(scope, roomId, targetId);
     });
   }
+  /**
+   * Rời khỏi phòng cờ, xử thua nếu đang trong ván hoặc đóng phòng nếu là người cuối cùng rời đi.
+   */
   async leave(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -187,6 +218,9 @@ export class RoomHttpService {
       return { roomId, left: true as const };
     });
   }
+  /**
+   * Gửi đề nghị đổi bên (Đỏ <-> Đen) cho đối thủ cùng phòng.
+   */
   async proposeSwap(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -197,6 +231,9 @@ export class RoomHttpService {
       return this.store.proposeSwap(scope, roomId);
     });
   }
+  /**
+   * Rút lại đề nghị đổi bên khi đối thủ chưa phản hồi.
+   */
   async withdrawSwap(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -207,6 +244,9 @@ export class RoomHttpService {
       return this.store.withdrawSwap(scope, roomId);
     });
   }
+  /**
+   * Phản hồi đồng ý hoặc từ chối đề nghị đổi bên từ đối thủ.
+   */
   async respondSwap(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -218,6 +258,9 @@ export class RoomHttpService {
       return this.store.respondSwap(scope, roomId, accept);
     });
   }
+  /**
+   * Thay đổi chế độ hiển thị phòng cờ (PUBLIC, CODE_ONLY, LOCKED).
+   */
   async changeVisibility(
     proof: MemberRoomRequestProof,
     roomId: string,
@@ -228,6 +271,9 @@ export class RoomHttpService {
       this.store.changeVisibility(scope, roomId, expectedVersion, visibility),
     );
   }
+  /**
+   * Lấy ảnh chụp trạng thái đầy đủ (snapshot) của phòng cờ.
+   */
   async snapshot(proof: MemberRoomRequestProof, roomId: string) {
     return this.run<Awaited<ReturnType<RoomStore["snapshot"]>>>(
       proof,

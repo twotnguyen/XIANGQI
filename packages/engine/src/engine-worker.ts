@@ -10,6 +10,12 @@ export interface EngineWorkerOptions {
   workerURL?: URL;
   watchdogMs?: number;
 }
+/**
+ * Quản lý vòng đời tiến trình tính toán AI chạy trong Node.js `worker_threads`.
+ * Đảm bảo các tác vụ tìm kiếm nước đi nặng nề không làm nghẽn Event Loop của máy chủ.
+ * Cung cấp cơ chế khởi động trước (ready/warm-up), hủy bỏ an toàn (AbortSignal),
+ * watchdog chống treo và tự động dọn dẹp tiến trình khi đóng.
+ */
 export class EngineWorker {
   private worker: Worker | null = null;
   private pending: {
@@ -26,6 +32,10 @@ export class EngineWorker {
     )
       throw new EngineError("ENGINE_INPUT_INVALID");
   }
+
+  /**
+   * Khởi động trước (warm-up) tiến trình worker để sẵn sàng nhận lệnh.
+   */
   ready(): Promise<void> {
     if (this.closed) return Promise.reject(new EngineError("ENGINE_CLOSED"));
     if (this.warming) return this.warming;
@@ -137,6 +147,11 @@ export class EngineWorker {
     worker.on("exit", discard);
     return worker;
   }
+
+  /**
+   * Gửi yêu cầu tìm kiếm nước đi tới worker thread.
+   * Hỗ trợ AbortSignal để hủy ngang, giám sát watchdog timeout, và kiểm tra tính hợp lệ của nước đi trả về.
+   */
   async search(
     request: EngineRequest,
     options: {
@@ -263,6 +278,10 @@ export class EngineWorker {
       }
     });
   }
+
+  /**
+   * Đóng và hủy bỏ tiến trình worker an toàn, dọn dẹp tài nguyên hệ thống.
+   */
   close(): Promise<void> {
     if (this.closing) return this.closing;
     this.closed = true;

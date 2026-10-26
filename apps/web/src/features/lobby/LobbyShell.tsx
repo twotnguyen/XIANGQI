@@ -39,6 +39,9 @@ export interface LobbyShellProps {
   blockedReason?: string;
 }
 
+/**
+ * Giao diện chính của Sảnh (Hero banner, các chế độ chơi: Tạo phòng, Đánh với máy, Vào bằng mã mời và danh sách phòng cờ công khai).
+ */
 export function LobbyShell({
   rooms,
   state = "success",

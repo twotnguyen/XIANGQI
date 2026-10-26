@@ -13,6 +13,9 @@ export interface AiSetupDialogProps {
   onStart: (selection: AiSetupSelection) => Promise<void>;
 }
 const defaults: AiSetupSelection = { level: "easy", requestedSide: "red" };
+/**
+ * Hộp thoại thiết lập ván cờ với máy (chọn độ khó Dễ/Trung bình/Khó và chọn phe Đỏ/Đen/Ngẫu nhiên).
+ */
 export function AiSetupDialog(props: AiSetupDialogProps) {
   const initial = props.initial ?? defaults;
   return props.open ? (

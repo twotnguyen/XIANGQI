@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * Hiển thị đếm ngược 3 giây trước khi bắt đầu trận cờ, đồng bộ theo thời gian server và kích hoạt âm thanh tick.
+ */
 export function Countdown({
   dueAt,
   serverNow,

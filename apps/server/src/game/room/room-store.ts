@@ -10,7 +10,14 @@ import {
 } from "./room.types.js";
 import { RoomViewerStore } from "./room-store-viewers.js";
 import { alphabet, uuid } from "./room-store-core.js";
+/**
+ * Lớp Store hoàn chỉnh quản lý trạng thái và dữ liệu phòng chơi cờ (kế thừa RoomViewerStore):
+ * Đảm nhiệm tạo phòng, tham gia, sẵn sàng, đổi bên, ngắt kết nối/hiện diện, bắt đầu và kết thúc trận đấu.
+ */
 export class RoomStore extends RoomViewerStore {
+  /**
+   * Tạo phòng cờ mới với mã mời ngẫu nhiên, giữ ghế Đỏ cho chủ phòng và thiết lập thời gian/khán giả.
+   */
   async create(
     s: RoomScope,
     input: {
@@ -87,6 +94,9 @@ export class RoomStore extends RoomViewerStore {
     await this.receipt(s, input.commandId, digest, response);
     return response;
   }
+  /**
+   * Thay đổi chế độ hiển thị phòng cờ (PUBLIC, CODE_ONLY, LOCKED) và xoay vòng mã mời nếu cần.
+   */
   async changeVisibility(
     s: RoomScope,
     id: string,
@@ -160,6 +170,9 @@ export class RoomStore extends RoomViewerStore {
     await this.bump(s, id, "room.visibility-changed", { visibility });
     return this.snapshot(s, id);
   }
+  /**
+   * Tham gia vào phòng chơi: phân bổ vào ghế người chơi còn trống hoặc danh sách khán giả.
+   */
   async join(
     s: RoomScope,
     input: {
@@ -262,6 +275,9 @@ export class RoomStore extends RoomViewerStore {
     await this.receipt(s, input.commandId, digest, response);
     return response;
   }
+  /**
+   * Chủ phòng đổi vị trí ghế cờ (Đỏ <-> Đen) khi đang ở phòng chờ một mình.
+   */
   async switchSeat(s: RoomScope, id: string) {
     const { r, members, member } = await this.member(s, id);
     if (
@@ -288,6 +304,9 @@ export class RoomStore extends RoomViewerStore {
     await this.bump(s, id, "room.seats-changed");
     return this.snapshot(s, id);
   }
+  /**
+   * Cập nhật trạng thái Sẵn sàng của người chơi; tự động kích hoạt đếm ngược 3 giây khi cả hai bên sẵn sàng.
+   */
   async ready(s: RoomScope, id: string, value: boolean) {
     if (typeof value !== "boolean") invalidRoomInput();
     const { r, member } = await this.member(s, id);
@@ -338,6 +357,9 @@ export class RoomStore extends RoomViewerStore {
     await this.bump(s, id, "room.ready-changed");
     return this.snapshot(s, id);
   }
+  /**
+   * Cập nhật trạng thái hiện diện (presence/heartbeat) và xử lý mốc thời gian ngắt kết nối của thành viên.
+   */
   async presence(
     s: RoomScope,
     id: string,
@@ -413,6 +435,9 @@ export class RoomStore extends RoomViewerStore {
     }
     await this.bump(s, id, "room.connection-changed");
   }
+  /**
+   * Khởi chạy ván cờ chính thức khi thời gian đếm ngược kết thúc và cả hai kỳ thủ đều kết nối sẵn sàng.
+   */
   async startDue(s: RoomScope, id: string) {
     const { r, members } = await this.room(s, id);
     const d = (
@@ -477,6 +502,9 @@ export class RoomStore extends RoomViewerStore {
       startToken: d.token,
     });
   }
+  /**
+   * Đưa trạng thái phòng cờ trở về trạng thái phòng chờ (WAITING) sau khi ván đấu hoàn tất.
+   */
   async onMatchEnded(s: RoomScope, input: { roomId: string; matchId: string }) {
     const { r } = await this.room(s, input.roomId);
     if (r.current_match_id !== input.matchId) return;
@@ -502,6 +530,9 @@ export class RoomStore extends RoomViewerStore {
       matchId: input.matchId,
     });
   }
+  /**
+   * Thành viên rời phòng cờ; tự động xử thua nếu đang trong trận hoặc đóng phòng nếu không còn thành viên nào.
+   */
   async leave(s: RoomScope, id: string) {
     const { r, member } = await this.member(s, id);
     if (r.status === "PLAYING" && member.role === "PLAYER") {
@@ -603,6 +634,9 @@ export class RoomStore extends RoomViewerStore {
       await this.event(s, id, v, "media.revoke-room");
     }
   }
+  /**
+   * Quét và giải phóng các thành viên đã ngắt kết nối quá hạn (player > 60 giây, spectator > 5 phút).
+   */
   async expireDisconnected(s: RoomScope, id: string) {
     const { r } = await this.room(s, id);
     const due = (
@@ -623,6 +657,9 @@ export class RoomStore extends RoomViewerStore {
       )
     ).rows[0].closed as boolean;
   }
+  /**
+   * Khôi phục trạng thái phòng chờ sau khi server instance khởi động lại.
+   */
   async recoverWaiting(s: RoomScope, id: string, instance: string) {
     const { r } = await this.room(s, id);
     if (r.status !== "WAITING" && r.status !== "FINISHED") return;

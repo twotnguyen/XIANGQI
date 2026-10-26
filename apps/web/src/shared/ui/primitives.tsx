@@ -36,6 +36,9 @@ function Icon({ kind }: { kind: "success" | "error" | "info" | "loading" }) {
     </svg>
   );
 }
+/**
+ * Nút bấm đa năng hỗ trợ các biến thể màu sắc, trạng thái đang tải (spinner) và lý do vô hiệu hóa cho trợ năng.
+ */
 export function Button({
   children,
   variant = "primary",
@@ -86,6 +89,10 @@ export function Button({
     </span>
   );
 }
+
+/**
+ * Ô nhập văn bản kèm nhãn (label), dòng trợ giúp (helper) và thông báo lỗi hợp lệ chuẩn trợ năng.
+ */
 export function TextField({
   label,
   helper,
@@ -130,6 +137,10 @@ export function TextField({
     </div>
   );
 }
+
+/**
+ * Chú thích nổi (tooltip) hiển thị khi rê chuột hoặc di chuyển tiêu điểm bàn phím vào phần tử con.
+ */
 export function Tooltip({
   text,
   children,
@@ -192,6 +203,10 @@ export function Tooltip({
     </span>
   );
 }
+
+/**
+ * Hộp thông báo hoặc toast hiển thị thông điệp phản hồi (thành công, cảnh báo, lỗi) kèm tùy chọn đóng hoặc hành động.
+ */
 export function Notice({
   tone = "info",
   message,
@@ -226,6 +241,9 @@ export function Notice({
     </div>
   );
 }
+/**
+ * Khung xương hiển thị hiệu ứng đang tải dạng dòng (placeholder loading skeleton).
+ */
 export function Skeleton({ label = "Đang tải dữ liệu…" }: { label?: string }) {
   return (
     <div className="xq-skeleton" role="status">
@@ -236,6 +254,10 @@ export function Skeleton({ label = "Đang tải dữ liệu…" }: { label?: str
     </div>
   );
 }
+
+/**
+ * Màn hình tải toàn trang hiển thị huy hiệu quân Tướng (帥) và thông điệp khởi động phiên/giao diện.
+ */
 export function LoadingScreen({
   title = "Đang mở kỳ đài",
   message = "Đang tải giao diện…",
@@ -264,6 +286,10 @@ export function LoadingScreen({
     </div>
   );
 }
+
+/**
+ * Khung hiển thị trạng thái dữ liệu trống kèm hình ảnh quân cờ và nút hành động gợi ý.
+ */
 export function EmptyState({
   title,
   children,
@@ -284,6 +310,10 @@ export function EmptyState({
     </div>
   );
 }
+
+/**
+ * Khung hiển thị trạng thái lỗi tải dữ liệu với icon cảnh báo và nút thử lại (retry).
+ */
 export function ErrorState({
   message,
   onRetry,
@@ -302,6 +332,10 @@ export function ErrorState({
     </div>
   );
 }
+
+/**
+ * Huy hiệu hiển thị số lượng thông báo hoặc lời mời chưa đọc (tối đa hiển thị 9+).
+ */
 export function Badge({ count, label }: { count: number; label: string }) {
   return count > 0 ? (
     <span className="xq-badge" aria-label={`${count} ${label}`}>
@@ -309,6 +343,10 @@ export function Badge({ count, label }: { count: number; label: string }) {
     </span>
   ) : null;
 }
+
+/**
+ * Bộ chuyển đổi các tab nội dung hỗ trợ điều hướng bằng phím mũi tên và chuẩn ARIA tablist.
+ */
 export function Tabs({
   items,
   label,
@@ -363,6 +401,10 @@ export function Tabs({
     </div>
   );
 }
+
+/**
+ * Hộp thoại modal (dialog) hỗ trợ focus trap, bấm ra ngoài để đóng, phím Esc và chế độ xác nhận nguy hiểm.
+ */
 export function Dialog({
   open,
   onClose,

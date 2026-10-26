@@ -60,6 +60,9 @@ function parse(request: IncomingMessage, summary = false): HistoryInput {
   }
   return input;
 }
+/**
+ * Controller tiếp nhận các yêu cầu HTTP liên quan đến xem lịch sử ván đấu.
+ */
 @Controller("history")
 export class HistoryController {
   constructor(
@@ -77,6 +80,9 @@ export class HistoryController {
       );
     }
   }
+  /**
+   * Endpoint GET /history - Lấy danh sách lịch sử ván đấu của người chơi có phân trang và bộ lọc.
+   */
   @Get()
   @Header("Cache-Control", "no-store")
   list(@Req() request: IncomingMessage) {
@@ -84,6 +90,9 @@ export class HistoryController {
       this.service.list(readMemberRoomProof(request), parse(request)),
     );
   }
+  /**
+   * Endpoint GET /history/ranked-summary - Lấy tóm tắt thống kê đấu hạng của người chơi.
+   */
   @Get("ranked-summary")
   @Header("Cache-Control", "no-store")
   summary(@Req() request: IncomingMessage) {
@@ -94,11 +103,17 @@ export class HistoryController {
     });
   }
 }
+/**
+ * Controller tiếp nhận các yêu cầu HTTP liên quan đến xem lại và xuất biên bản ván đấu (replay/export).
+ */
 @Controller("history")
 export class ReplayController {
   constructor(
     @Inject("REPLAY_HTTP_SERVICE") private readonly service: ReplayHttpService,
   ) {}
+  /**
+   * Endpoint GET /history/:id/export - Xuất trạng thái ván cờ theo định dạng FEN và PGN tại mốc nước đi chỉ định.
+   */
   @Get(":id/export")
   @Header("Cache-Control", "no-store")
   async export(@Req() request: IncomingMessage, @Param("id") id: string) {
@@ -133,6 +148,9 @@ export class ReplayController {
       );
     }
   }
+  /**
+   * Endpoint GET /history/:id - Đọc toàn bộ dữ liệu xem lại (replay) của một ván đấu.
+   */
   @Get(":id")
   @Header("Cache-Control", "no-store")
   async read(@Req() request: IncomingMessage, @Param("id") id: string) {

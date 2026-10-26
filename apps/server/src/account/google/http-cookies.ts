@@ -28,6 +28,9 @@ function append(response: CookieResponse, cookies: string[]) {
     ...cookies,
   ]);
 }
+/**
+ * Ghi cookie chuyên dụng cho luồng Google Auth (challenge, onboarding, refresh) với cờ bảo mật.
+ */
 export function writeGoogleCookie(
   response: CookieResponse,
   name: GoogleCookieName,
@@ -50,6 +53,9 @@ export function writeGoogleCookie(
     `${name}=${encoded}${flags(secure)}; Max-Age=${Math.max(0, Math.floor((deadline - now.getTime()) / 1000))}`,
   ]);
 }
+/**
+ * Xóa bỏ các cookie tạm của luồng Google Auth.
+ */
 export function clearGoogleCookies(
   response: CookieResponse,
   secure = true,
@@ -60,6 +66,9 @@ export function clearGoogleCookies(
     namesToClear.map((name) => `${name}=${flags(secure)}; Max-Age=0`),
   );
 }
+/**
+ * Thiết lập cookie phiên thành viên (member session) sau khi xác thực Google thành công và xóa cookie tạm.
+ */
 export function writeGoogleMemberCookies(
   response: CookieResponse,
   member: CookieSession,
@@ -78,6 +87,9 @@ export function writeGoogleMemberCookies(
   );
   clearGoogleCookies(response, secure);
 }
+/**
+ * Đọc và phân tích an toàn giá trị cookie của luồng Google từ chuỗi header Cookie.
+ */
 export function readGoogleCookie(
   header: unknown,
   name: GoogleCookieName,
