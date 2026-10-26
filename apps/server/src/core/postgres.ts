@@ -1,5 +1,8 @@
 import type { Pool, PoolClient } from "pg";
-// Owns role/transaction/locks; nested work receives the same client, never a second pool checkout.
+/**
+ * Quản lý vòng đời transaction PostgreSQL với role 'app_server':
+ * Tự động kết nối, mở transaction, chuyển role, thực thi callback và commit hoặc rollback khi có lỗi.
+ */
 export async function transaction<T>(
   pool: Pool,
   work: (client: PoolClient) => Promise<T>,
@@ -23,6 +26,10 @@ export async function transaction<T>(
     client.release(broken);
   }
 }
+/**
+ * Khóa advisory theo định danh người chơi (actor lock) trong phạm vi transaction hiện tại
+ * nhằm ngăn chặn xung đột dữ liệu khi nhiều tác vụ đồng thời tác động lên cùng một người dùng.
+ */
 export async function actorLock(client: PoolClient, userId: string) {
   await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
     `actor:${userId}`,

@@ -1,5 +1,8 @@
 import { RoomRequestError, type RoomView } from "./room-client.js";
 
+/**
+ * Chuyển đổi mã chế độ hiển thị phòng (PUBLIC, CODE_ONLY, LOCKED) thành nhãn tiếng Việt.
+ */
 export function visibilityLabel(visibility: RoomView["room"]["visibility"]) {
   return visibility === "PUBLIC"
     ? "Công khai"
@@ -8,6 +11,9 @@ export function visibilityLabel(visibility: RoomView["room"]["visibility"]) {
       : "Đã khóa";
 }
 
+/**
+ * Ánh xạ mã lỗi hoặc trạng thái hoán đổi ghế (swap) thành thông báo tiếng Việt dễ hiểu.
+ */
 export function swapMessage(code: string, fallback: string) {
   switch (code) {
     case "SWAP_COOLDOWN":
@@ -25,6 +31,9 @@ export function swapMessage(code: string, fallback: string) {
   }
 }
 
+/**
+ * Chuyển đổi lỗi thao tác khán giả (đầy phòng, chủ phòng không thể xuống xem, cấm đuổi...) thành câu thông báo thân thiện.
+ */
 export function viewerActionMessage(error: unknown) {
   const generic =
     "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";

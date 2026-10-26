@@ -23,6 +23,9 @@ function record(value: unknown): Record<string, unknown> {
     throw new MediaRequestError("MEDIA_BAD_RESPONSE", 502);
   return value as Record<string, unknown>;
 }
+/**
+ * Khởi tạo client tương tác API đa phương tiện LiveKit (lấy token kết nối phòng, đọc và cập nhật mức độ chia sẻ camera/mic).
+ */
 export function createMediaClient(authorizedFetch: AuthorizedFetch) {
   async function request<T>(
     path: string,

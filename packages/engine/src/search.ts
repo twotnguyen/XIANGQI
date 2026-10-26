@@ -35,7 +35,11 @@ export interface SearchOptions {
   onIteration?: (depth: number) => void;
   deadline?: number;
 }
-/** Validate at the worker boundary too. Histories belong to server AI state. */
+/**
+ * Xác thực và chuẩn hóa dữ liệu yêu cầu tìm kiếm nước đi từ client/server.
+ * Kiểm tra tính hợp lệ của cấp độ, bên đi, chuỗi FEN và chuỗi lịch sử các thế cờ.
+ * Ném lỗi ENGINE_INPUT_INVALID nếu dữ liệu không đạt chuẩn.
+ */
 export function readRequest(request: EngineRequest) {
   try {
     const { position, side, level, history: suppliedHistory } = request;
@@ -118,7 +122,12 @@ type Entry = {
   bound: "exact" | "lower" | "upper";
   move: Move;
 };
-/** Synchronous kernel: invoke in EngineWorker, never from a room request handler. */
+/**
+ * Nhân tìm kiếm nước đi đồng bộ chính (search kernel) của engine cờ tướng.
+ * Thuật toán: Negamax kết hợp Alpha-Beta Pruning, tìm kiếm tăng dần độ sâu (Iterative Deepening),
+ * sắp xếp nước đi ưu tiên (ăn quân MVV-LVA, Killer Moves, History Heuristic), bảng chuyển vị Transposition Table,
+ * và kiểm soát thời gian nghiêm ngặt theo giới hạn của từng cấp độ.
+ */
 export function searchPosition(
   request: EngineRequest,
   options: SearchOptions = {},

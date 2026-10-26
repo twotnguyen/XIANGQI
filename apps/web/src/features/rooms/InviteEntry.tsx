@@ -5,6 +5,9 @@ import {
   type RoomClient,
   type RoomEntry,
 } from "./room-client.js";
+/**
+ * Màn hình xử lý tự động vào phòng cờ khi người dùng truy cập qua liên kết mời (mã token 8 chữ số).
+ */
 export function InviteEntry({
   client,
   code,

@@ -28,6 +28,9 @@ function encoded(value: string) {
   if (result.length > 3800) throw new Error("Invalid session cookie");
   return result;
 }
+/**
+ * Thiết lập các cookie phiên làm việc (xiangqi_session, xiangqi_refresh) vào response HTTP kèm các cờ bảo mật.
+ */
 export function writeSessionCookies(
   response: CookieResponse,
   session: CookieSession,
@@ -51,12 +54,18 @@ export function writeSessionCookies(
     `${names[1]}=${encoded(session.refresh_token)}${suffix}`,
   ]);
 }
+/**
+ * Xóa bỏ các cookie phiên làm việc trên trình duyệt (đặt Max-Age=0) khi đăng xuất.
+ */
 export function clearSessionCookies(response: CookieResponse, secure: boolean) {
   response.setHeader(
     "Set-Cookie",
     names.map((name) => `${name}=${flags(secure)}; Max-Age=0`),
   );
 }
+/**
+ * Phân tích và đọc giá trị cookie phiên được chỉ định từ chuỗi header Cookie của request.
+ */
 export function readSessionCookie(
   header: unknown,
   name: SessionCookieName,

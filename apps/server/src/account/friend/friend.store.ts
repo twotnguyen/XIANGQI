@@ -17,23 +17,32 @@ export type PendingRequestRow = { sender_id: string; receiver_id: string };
 export type PendingInviteRow = { room_id: string; invitee_id: string };
 export type OpenRoomRow = { invite_code: string | null; visibility: string };
 
-/** All SQL of the friend domain; the service decides, this only reads and writes. */
+/**
+ * Store tương tác cơ sở dữ liệu PostgreSQL cho tính năng bạn bè:
+ * Quản lý các bảng trong schema xiangqi_social (friendships, friend_requests, room_invites, decline_counts).
+ */
 export class FriendStore {
   constructor(private readonly pool: Pool) {}
-  /** Transaction holding the actor lock. */
+  /**
+   * Mở transaction PostgreSQL có khóa actorLock theo userId của người thực hiện.
+   */
   withUser<T>(userId: string, work: (tx: FriendTx) => Promise<T>): Promise<T> {
     return transaction(this.pool, async (client) => {
       await actorLock(client, userId);
       return work(new FriendTx(client));
     });
   }
-  /** Transaction without an actor lock, for reads that need no serialization. */
+  /**
+   * Mở transaction chỉ đọc (read-only) không giữ actorLock cho các thao tác tra cứu độc lập.
+   */
   read<T>(work: (tx: FriendTx) => Promise<T>): Promise<T> {
     return transaction(this.pool, (client) => work(new FriendTx(client)));
   }
 }
 
-/** Data access bound to one open transaction. */
+/**
+ * Lớp thực thi truy vấn dữ liệu quan hệ bạn bè gắn với một client kết nối Postgres đang mở.
+ */
 export class FriendTx {
   constructor(private readonly client: PoolClient) {}
   async isMember(userId: string): Promise<boolean> {

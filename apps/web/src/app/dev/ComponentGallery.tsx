@@ -26,6 +26,9 @@ const states: { value: DataState; label: string }[] = [
   { value: "error", label: "Lỗi" },
   { value: "disabled", label: "Vô hiệu" },
 ];
+/**
+ * Bộ nút chọn trạng thái dữ liệu minh họa (thành công, tải, trống, lỗi, vô hiệu).
+ */
 function StatePicker({
   value,
   onChange,
@@ -52,6 +55,10 @@ function StatePicker({
     </div>
   );
 }
+
+/**
+ * Trang trưng bày và kiểm thử trực quan các thành phần UI nguyên tử của hệ thống thiết kế.
+ */
 export function ComponentGallery() {
   const [state, setState] = useState<DataState>("success");
   const [notice, setNotice] = useState("");
@@ -246,6 +253,9 @@ const fixtures: PublicRoom[] = [
     spectatorLimit: 0,
   },
 ];
+/**
+ * Component xem trước giao diện Sảnh với các trạng thái và danh sách phòng mẫu (fixtures).
+ */
 export function LobbyPreview() {
   const [state, setState] = useState<DataState>("success");
   const [notice, setNotice] = useState("");

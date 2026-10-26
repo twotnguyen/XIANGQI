@@ -18,6 +18,9 @@ import {
   type AuthenticatedRequest,
 } from "../../account/login/session.guard.js";
 const fail = httpFailure(MediaError);
+/**
+ * Controller xử lý các yêu cầu HTTP liên quan đến media (camera, mic) và token LiveKit.
+ */
 @Controller("media")
 @UseGuards(SessionGuard)
 export class MediaController {
@@ -26,6 +29,9 @@ export class MediaController {
     if (!request.userId) invalidInput("MEDIA_INPUT_INVALID");
     return request.userId as string;
   }
+  /**
+   * Tạo token kết nối LiveKit cho người dùng vào phòng cờ với quyền bật camera/mic tương ứng.
+   */
   @Post("token")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -44,6 +50,9 @@ export class MediaController {
       })
       .catch(fail);
   }
+  /**
+   * Cập nhật mức độ chia sẻ media (none: tắt, opponent: đối thủ, room: cả phòng).
+   */
   @Post("share")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -63,6 +72,9 @@ export class MediaController {
       )
       .catch(fail);
   }
+  /**
+   * Truy vấn trạng thái và quyền chia sẻ media hiện tại của người dùng trong phòng cờ.
+   */
   @Get("share")
   @Header("Cache-Control", "no-store")
   getShare(

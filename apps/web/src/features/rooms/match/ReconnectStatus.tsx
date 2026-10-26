@@ -15,6 +15,13 @@ function formatTime(milliseconds: number) {
   const seconds = Math.ceil(Math.max(0, milliseconds) / 1000);
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
+
+/**
+ * Component hiển thị thông báo và đếm ngược thời gian ân hạn (grace period) khi mất kết nối:
+ * - Khi chính người chơi mất kết nối: hiển thị modal chặn thao tác và đếm ngược ước tính thời gian kết nối lại.
+ * - Khi đối thủ mất kết nối: hiển thị panel đếm ngược thời gian chờ đối thủ quay lại trước khi bị xử thua.
+ * - Khi là khán giả: hiển thị thông báo trạng thái kết nối nhẹ nhàng.
+ */
 export function ReconnectStatus({
   connected,
   waitingForSnapshot,

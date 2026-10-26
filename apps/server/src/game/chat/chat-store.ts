@@ -35,7 +35,9 @@ function denied(): never {
     403,
   );
 }
-// Runtime must bind this scope to pre/post room-lock session authorization. No credentials or controller grants are accepted here.
+/**
+ * Lớp Store quản lý cơ sở dữ liệu chat trong phòng: đọc lịch sử chat, gửi tin nhắn, lọc từ ngữ và giới hạn tần suất.
+ */
 export class ChatStore {
   constructor(private readonly mask: (content: string) => string) {}
   private async access(
@@ -75,6 +77,9 @@ export class ChatStore {
     if (!fresh.rowCount) denied();
     return { ...row, floor: row.role === "SPECTATOR" ? Number(row.floor) : 0 };
   }
+  /**
+   * Truy vấn danh sách tin nhắn chat theo trang từ mốc thứ tự `after`, bảo đảm khán giả không xem được tin trước khi vào phòng.
+   */
   async read(
     s: RoomScope,
     id: string,
@@ -116,6 +121,9 @@ export class ChatStore {
       hasMore: rows.length > 50,
     };
   }
+  /**
+   * Gửi tin nhắn mới vào phòng: lọc từ cấm, kiểm tra rate limit (tối đa 5 tin/10 giây), lưu tin và ghi outbox.
+   */
   async send(
     s: RoomScope,
     id: string,

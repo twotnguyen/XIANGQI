@@ -1,3 +1,6 @@
+/**
+ * Định nghĩa các bộ lọc SVG (shadows, glows, gradients) tạo hiệu ứng gỗ và chiều sâu 3D cho bàn cờ và quân cờ.
+ */
 export function BoardDefs({
   clipId,
   pieceShadowId,

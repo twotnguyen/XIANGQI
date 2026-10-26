@@ -68,9 +68,9 @@ function validCursor(cursor: HistoryCursor) {
     uuid.test(cursor.matchId)
   );
 }
-/** Internal read port: caller supplies fresh member proof and actor-locked transaction.
- * Avatar and Elo provenance do not exist yet; avatars are omitted, Elo stays null.
- * AI_UNAVAILABLE denotes interruption, not the future distinct 30-minute abandonment. */
+/**
+ * Tầng lưu trữ truy vấn cơ sở dữ liệu lịch sử ván đấu của thành viên.
+ */
 export class HistoryStore {
   private async member(scope: RoomScope) {
     if (
@@ -85,6 +85,9 @@ export class HistoryStore {
     );
     if (!member.rowCount) fail("HISTORY_FORBIDDEN", 403);
   }
+  /**
+   * Truy vấn danh sách lịch sử ván đấu (đấu thường hoặc AI) có phân trang bằng cursor.
+   */
   async list(scope: RoomScope, input: HistoryInput = {}): Promise<HistoryPage> {
     await this.member(scope);
     const filter = input.filter ?? "ALL",
@@ -254,6 +257,9 @@ export class HistoryStore {
       replayPath: "/history/" + row.id,
     };
   }
+  /**
+   * Truy vấn tóm tắt thống kê đấu hạng của thành viên (chưa hỗ trợ, ném lỗi 503).
+   */
   async rankedSummary(scope: RoomScope): Promise<never> {
     await this.member(scope);
     fail("HISTORY_RANKED_UNAVAILABLE", 503);

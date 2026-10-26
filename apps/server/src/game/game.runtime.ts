@@ -41,6 +41,13 @@ import { RealtimeStore } from "./realtime/store.js";
 import type { RealtimePublisher } from "./realtime/gateway.js";
 import type { RealtimeTransactions } from "./realtime/realtime.types.js";
 import { logEvent } from "../core/logger.js";
+/**
+ * Khởi tạo toàn bộ môi trường chạy phòng cờ (Room Runtime):
+ * - Kiểm tra tính sẵn sàng của schema và migration CSDL (room, draw, chat, public room).
+ * - Khởi tạo các Store, Service, và Authorizer cho phòng, trận đấu, đồng hồ và chat.
+ * - Khôi phục trạng thái phòng/ván cờ khi server khởi động lại (SERVER_RESTART).
+ * - Điều phối vòng lặp các worker nền: đồng hồ, ngắt kết nối, hết hạn hòa, outbox phòng, chat và media.
+ */
 export async function createRoomRuntime(
   env: Record<string, string | undefined>,
   registration: NonNullable<

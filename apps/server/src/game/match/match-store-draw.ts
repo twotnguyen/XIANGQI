@@ -15,6 +15,9 @@ import {
 } from "./match-store-core.js";
 import { MatchStoreCore } from "./match-store-core.js";
 
+/**
+ * Lớp mở rộng quản lý toàn bộ cơ chế xin hòa, rút đề nghị, chấp thuận, từ chối và thời gian chờ cầu hòa.
+ */
 export class MatchDrawStore extends MatchStoreCore {
   private async drawTime(client: PoolClient): Promise<Date> {
     return (await client.query<{ at: Date }>("SELECT clock_timestamp() at"))
@@ -90,6 +93,9 @@ export class MatchDrawStore extends MatchStoreCore {
       )
     ).rows[0]!.n;
   }
+  /**
+   * Lấy trạng thái hiện tại của các đề nghị hòa và số nước hồi chiêu (cooldown) của mỗi bên.
+   */
   async drawSnapshot(
     scope: MatchScope,
     input: { matchId: string },
@@ -101,18 +107,27 @@ export class MatchDrawStore extends MatchStoreCore {
       await this.drawTime(scope.client),
     );
   }
+  /**
+   * Người chơi gửi đề nghị xin hòa tới đối thủ trong ván đấu đang diễn ra.
+   */
   offerDraw(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number },
   ): Promise<MatchDrawCommandResult> {
     return this.drawAction(scope, input, "offer");
   }
+  /**
+   * Người chơi rút lại lời đề nghị xin hòa đã gửi trước đó khi đối thủ chưa phản hồi.
+   */
   withdrawDraw(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number; offerId: string },
   ): Promise<MatchDrawCommandResult> {
     return this.drawAction(scope, input, "withdraw");
   }
+  /**
+   * Đối thủ phản hồi đề nghị hòa (chấp nhận hoặc từ chối).
+   */
   respondDraw(
     scope: MatchScope,
     input: {
@@ -126,12 +141,18 @@ export class MatchDrawStore extends MatchStoreCore {
       reject("MATCH_INVALID_INPUT", "Phản hồi không hợp lệ.", 400);
     return this.drawAction(scope, input, input.accept ? "accept" : "decline");
   }
+  /**
+   * Cập nhật trạng thái hết hạn cho các đề nghị hòa đã quá thời gian 30 giây.
+   */
   async expireDrawOffers(
     scope: MatchScope,
     input: { matchId: string },
   ): Promise<MatchDrawCommandResult> {
     return this.drawAction(scope, { ...input, matchVersion: 0 }, "expire");
   }
+  /**
+   * Điều phối và thực thi các hành động cầu hòa với đầy đủ kiểm tra khóa, trạng thái đồng hồ và xung đột phiên bản.
+   */
   private async drawAction(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number; offerId?: string },

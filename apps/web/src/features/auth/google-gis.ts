@@ -28,6 +28,9 @@ declare global {
 const unavailable = "Chưa thể xác thực Google. Vui lòng thử lại.";
 const scriptUrl = "https://accounts.google.com/gsi/client";
 let loading: Promise<GoogleIdentity> | null = null;
+/**
+ * Tải động thư viện script Google Identity Services (GIS) vào trang và trả về API đối tượng window.google.accounts.id.
+ */
 export function loadGoogleIdentity(): Promise<GoogleIdentity> {
   if (window.google?.accounts?.id)
     return Promise.resolve(window.google.accounts.id);
@@ -111,6 +114,9 @@ async function request(
   }
   return value;
 }
+/**
+ * Kiểm tra xem dịch vụ đăng nhập Google có đang được hỗ trợ và bật trên máy chủ hay không.
+ */
 export async function googleAvailable(signal?: AbortSignal): Promise<boolean> {
   const value = await request("/auth/providers", undefined, signal);
   if (
@@ -122,6 +128,9 @@ export async function googleAvailable(signal?: AbortSignal): Promise<boolean> {
     throw new Error(unavailable);
   return (value as { google: boolean }).google;
 }
+/**
+ * Thực hiện yêu cầu HTTP đến các endpoint API Google backend (/auth/google/*).
+ */
 export function googleRequest(
   path: "challenge" | "authenticate" | "onboarding" | "complete",
   body?: object,
@@ -136,6 +145,9 @@ export interface GooglePending {
   email?: string;
   avatar?: { kind: "initials"; text: string };
 }
+/**
+ * Phân tích và kiểm tra tính toàn vẹn của dữ liệu phiên Google đang chờ hoàn tất đăng ký (pending onboarding).
+ */
 export function parseGooglePending(
   value: unknown,
   metadata = false,

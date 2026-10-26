@@ -11,11 +11,17 @@ import {
   type ClockWorkerPort,
   type ClockWorkerScope,
 } from "./clock.types.js";
+/**
+ * Triển khai cổng `ClockWorkerPort` sử dụng PostgreSQL và điều phối khóa `RoomTransactions`.
+ */
 export class PostgresClockWorkerPort implements ClockWorkerPort {
   constructor(
     private readonly pool: Pool,
     private readonly coordinator: RoomTransactions,
   ) {}
+  /**
+   * Mở kết nối giao dịch ở chế độ READ ONLY an toàn để truy vấn dữ liệu từ cơ sở dữ liệu.
+   */
   private async read<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
     const c = await this.pool.connect();
     let broken = false;
@@ -35,6 +41,9 @@ export class PostgresClockWorkerPort implements ClockWorkerPort {
       c.release(broken);
     }
   }
+  /**
+   * Truy vấn các ván cờ tới hạn hết giờ suy nghĩ.
+   */
   async dueMatches(cursor: ClockCursor | null): Promise<ClockDueCandidate[]> {
     if (
       cursor &&
@@ -45,6 +54,9 @@ export class PostgresClockWorkerPort implements ClockWorkerPort {
       throw new ClockError("CLOCK_INVALID_STATE");
     return this.read((c) => dueMatches(c, cursor));
   }
+  /**
+   * Khóa thứ tự actor -> room và gọi callback xử lý ván cờ bảo đảm an toàn dữ liệu và tránh deadlock.
+   */
   async withMatch(
     candidate: ClockCandidate,
     work: (scope: ClockWorkerScope) => Promise<void>,

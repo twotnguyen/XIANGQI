@@ -28,6 +28,11 @@ function unavailable() {
     503,
   );
 }
+/**
+ * Dịch vụ xử lý nghiệp vụ đăng nhập:
+ * Kiểm soát số lần thử sai chống brute-force, làm trễ phản hồi (timing attack mitigation)
+ * và phối hợp giữa Supabase Auth cùng session lưu tại Postgres.
+ */
 @Injectable()
 export class LoginService {
   constructor(
@@ -58,10 +63,15 @@ export class LoginService {
       await setTimeout(Math.max(0, floor - (performance.now() - started)));
     }
   }
+  /**
+   * Thực hiện quy trình đăng nhập tài khoản với thời gian phản hồi sàn an toàn.
+   */
   async login(input: unknown) {
     return this.withResponseFloor(() => this.authenticate(input));
   }
-  // Server-only seam: the registration owner supplies its verified, capability-bound draft.
+  /**
+   * Xác thực tài khoản với mật khẩu trong luồng khôi phục / hoàn tất đăng ký.
+   */
   async authenticateRegistration(
     account: RegistrationPasswordAccount,
     password: string,

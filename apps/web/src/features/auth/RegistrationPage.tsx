@@ -80,6 +80,9 @@ const clock = (seconds: number) =>
 const secondsUntil = (date: string, now: number) =>
   Math.max(0, Math.ceil((Date.parse(date) - now) / 1000));
 
+/**
+ * Màn hình đăng ký tài khoản thành viên đa bước (nhập thông tin tài khoản, xác thực OTP qua Email và hoàn tất).
+ */
 export function RegistrationPage({
   onRegistered,
   renderGoogle,

@@ -52,7 +52,9 @@ const pieceTypes: PieceType[] = [
   "pawn",
 ];
 
-/** Controlled position: callbacks request a move; only new props change the board. */
+/**
+ * Component hiển thị và tương tác bàn cờ Tướng (hỗ trợ kéo thả, nhấp chọn nước đi, chiếu tướng và trợ năng).
+ */
 export function XiangqiBoard({
   position,
   orientation = "red",

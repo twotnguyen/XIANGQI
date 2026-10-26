@@ -42,7 +42,11 @@ function denied(code: string, status = 409): never {
   throw new RoomError(code, "Ván với máy chưa sẵn sàng", status);
 }
 
-/** Required SQL runner. Engine jobs use internal origins, never expired bearer tokens. */
+/**
+ * Bộ điều phối giao dịch SQL an toàn cho chế độ chơi với AI:
+ * - Bảo vệ bằng actor-first lock và hàng đợi gate theo người dùng.
+ * - Bảo đảm cập nhật bộ nhớ RAM chỉ diễn ra sau khi SQL COMMIT thành công.
+ */
 export class SqlAiTransactions implements AiTransactions {
   private readonly gates = new Map<string, Promise<void>>();
   constructor(private readonly options: Options) {
@@ -82,7 +86,9 @@ export class SqlAiTransactions implements AiTransactions {
     if (!row?.active) denied("AUTH_REQUIRED", 401);
     return { status: "active", actor: proof.actor };
   }
-  /** Private reads share the mutation gate, but do not manufacture a live game slot. */
+  /**
+   * Thực thi thao tác đọc chỉ đọc trong giao dịch có xác thực người dùng.
+   */
   async read<T>(
     proof: MemberRoomRequestProof,
     work: (scope: RoomScope, ownerId: string) => Promise<T>,
@@ -130,6 +136,9 @@ export class SqlAiTransactions implements AiTransactions {
       release?.();
     }
   }
+  /**
+   * Thực thi tác vụ thay đổi trạng thái ván cờ AI trong giao dịch CSDL với kiểm tra quyền và khóa an toàn.
+   */
   async run<T>(
     ownerId: string,
     origin: AiOrigin,

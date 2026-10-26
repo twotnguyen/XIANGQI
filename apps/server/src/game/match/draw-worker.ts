@@ -19,7 +19,9 @@ const eligible = `o.status='PENDING' AND o.expires_at<=clock_timestamp()
  AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(300,600,900)
  AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1'
  AND r.invite_code IS NOT NULL AND r.status='PLAYING' AND r.current_match_id=m.id`;
-/** Exact numeric deadline preserves PostgreSQL submillisecond ordering. Read only. */
+/**
+ * Truy vấn danh sách các đề nghị hòa đang chờ (PENDING) đã hết hạn theo đồng hồ máy chủ.
+ */
 export async function dueDrawOffers(
   client: PoolClient,
   cursor: DrawCursor | null = null,
@@ -36,12 +38,18 @@ export async function dueDrawOffers(
     )
   ).rows;
 }
+/**
+ * Tiến trình nền tự động quét và hết hạn các đề nghị cầu hòa quá thời gian quy định (30s).
+ */
 export class DrawWorker {
   private cursor: DrawCursor | null = null;
   constructor(
     private readonly matches: MatchStore,
     private readonly port: DrawWorkerPort,
   ) {}
+  /**
+   * Quét và xử lý đợt tối đa 50 đề nghị hòa đã quá hạn.
+   */
   async tick(): Promise<void> {
     const candidates = (await this.port.dueOffers(this.cursor)).slice(0, 50),
       failures: unknown[] = [];
@@ -65,6 +73,9 @@ export class DrawWorker {
         "Draw expiry batch transactions failed",
       );
   }
+  /**
+   * Chuyển trạng thái đề nghị hòa sang EXPIRED nếu vẫn còn PENDING dưới khóa giao dịch hợp lệ.
+   */
   private async expire(
     candidate: DrawDueOffer,
     scope: MatchScope,

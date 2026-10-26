@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Badge } from "../../shared/ui/primitives.js";
 import type { FriendClient } from "./friend-client.js";
 
+/**
+ * Biểu tượng chuông thông báo hiển thị số lượng lời mời kết bạn mới nhận (polling định kỳ 15s).
+ */
 export function FriendsBell({ client }: { client: FriendClient }) {
   const [count, setCount] = useState(0);
   useEffect(() => {

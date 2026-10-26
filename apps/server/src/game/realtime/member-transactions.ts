@@ -20,6 +20,9 @@ function authError(error: unknown): never {
     "Chưa thể xác thực phiên đăng nhập",
   );
 }
+/**
+ * Xác thực danh tính thành viên từ token/phiên đăng nhập và kiểm tra trạng thái hoạt động của phiên.
+ */
 export class MemberRealtimeIdentities implements IdentityResolver {
   constructor(
     private readonly authorizer: PostgresMemberRoomAuthorizer,
@@ -28,6 +31,9 @@ export class MemberRealtimeIdentities implements IdentityResolver {
       appSession: string,
     ) => Promise<boolean>,
   ) {}
+  /**
+   * Kiểm tra xem phiên đăng nhập (app_session) của kết nối hiện tại có còn hoạt động không.
+   */
   async sessionActive(connection: RealtimeConnection): Promise<boolean> {
     if (
       connection.identity.kind !== "member" ||
@@ -52,6 +58,9 @@ export class MemberRealtimeIdentities implements IdentityResolver {
       );
     }
   }
+  /**
+   * Giải mã và xác thực thông tin danh tính người dùng từ access token và chuỗi app session.
+   */
   async resolve(
     accessToken: string,
     appSession: string,
@@ -70,12 +79,18 @@ export class MemberRealtimeIdentities implements IdentityResolver {
     }
   }
 }
+/**
+ * Điều phối giao dịch realtime cho thành viên: khóa tài nguyên theo thứ tự an toàn và quản lý RoomScope.
+ */
 export class MemberRealtimeTransactions implements RealtimeTransactions {
   private readonly scopes = new WeakMap<PoolClient, RoomScope>();
   constructor(
     private readonly coordinator: RoomTransactions,
     private readonly authorizer: PostgresMemberRoomAuthorizer,
   ) {}
+  /**
+   * Lấy phạm vi thực thi `RoomScope` hiện tại được gắn với client kết nối trong giao dịch.
+   */
   getScope(
     client: PoolClient,
     identity: RealtimeIdentity,
@@ -94,6 +109,9 @@ export class MemberRealtimeTransactions implements RealtimeTransactions {
       required();
     return scope;
   }
+  /**
+   * Thực thi khối công việc trong giao dịch có kiểm tra quyền và khóa phòng/người dùng.
+   */
   async run<T>(
     connection: RealtimeConnection,
     work: (client: PoolClient) => Promise<T>,

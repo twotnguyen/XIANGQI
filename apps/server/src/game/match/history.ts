@@ -24,6 +24,10 @@ export type HistoryInput = {
   start: unknown;
   moves: HistoryMove[];
 };
+/**
+ * Tái hiện tuần tự toàn bộ lịch sử các nước đi từ thế cờ ban đầu để xác minh tính toàn vẹn của ván đấu.
+ * Ném lỗi nếu phát hiện lịch sử bị hỏng hoặc nước đi không hợp lệ.
+ */
 export function replayHistory(input: HistoryInput): Position[] {
   if (!record(input.start) || input.start.encoding !== "xiangqi-core-v1")
     throw new Error("MATCH_HISTORY_UNSUPPORTED");

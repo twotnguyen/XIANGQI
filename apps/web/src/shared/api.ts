@@ -1,6 +1,5 @@
 /**
- * Resolves backend API base URL.
- * Automatically adapts hostname when accessing from mobile or other devices via LAN or Tailscale.
+ * Xác định URL gốc của backend API (tự động thích ứng IP/hostname khi truy cập qua LAN/mạng nội bộ).
  */
 export function getApiBaseUrl(): string {
   const envUrl = import.meta.env.VITE_API_URL;

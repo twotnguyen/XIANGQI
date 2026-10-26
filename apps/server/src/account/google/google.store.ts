@@ -34,12 +34,18 @@ export interface CleanupCursor {
 }
 const accountQuery = `SELECT o.user_id AS "userId",o.email_key AS email,o.method,o.created_at AS "createdAt",p.completed_at AS "completedAt",p.registration_pending AS pending,p.username FROM xiangqi_auth.account_origins o LEFT JOIN public.profiles p ON p.user_id=o.user_id`;
 
-/** All SQL of the Google sign-in domain; GoogleService decides and calls Auth. */
+/**
+ * Store tương tác cơ sở dữ liệu PostgreSQL cho tính năng xác thực Google:
+ * Quản lý google_challenges, google_drafts, creation_intents và temporary_accounts.
+ */
 export class GoogleStore {
   constructor(private readonly pool: Pool) {}
   private one<T>(work: (c: PoolClient) => Promise<T>): Promise<T> {
     return transaction(this.pool, work);
   }
+  /**
+   * Lưu bản ghi challenge (nonce và thời hạn hết hạn) vào database.
+   */
   insertChallenge(nonce: string, expires: Date): Promise<void> {
     return this.one(async (c) => {
       await c.query(
@@ -48,7 +54,9 @@ export class GoogleStore {
       );
     });
   }
-  /** True when the challenge was still unused and unexpired. */
+  /**
+   * Đánh dấu challenge đã được sử dụng (consumed), trả về true nếu challenge còn hạn và chưa dùng.
+   */
   consumeChallenge(nonce: string, now: Date): Promise<boolean> {
     return this.one(async (c) =>
       Boolean(
@@ -151,8 +159,7 @@ export class GoogleStore {
     );
   }
   /**
-   * Runs `work` on a dedicated connection holding session-level advisory locks
-   * for the user (and username); the connection is rolled back and unlocked afterwards.
+   * Thực thi khối công việc với kết nối chuyên dụng nắm giữ advisory lock theo user (và username).
    */
   async locked<T>(
     id: string,
@@ -189,7 +196,9 @@ export class GoogleStore {
   }
 }
 
-/** Data access bound to the locked connection. */
+/**
+ * Đối tượng thao tác dữ liệu gắn liền với kết nối đã được khóa advisory trong GoogleStore.
+ */
 export class GoogleTx {
   constructor(private readonly client: PoolClient) {}
   async account(id: string): Promise<GoogleAccount | undefined> {

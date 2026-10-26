@@ -21,6 +21,9 @@ export const glyphs: Record<Side, Record<PieceType, string>> = {
   },
 };
 
+/**
+ * Vẽ đồ họa quân cờ dạng SVG gồm phôi gỗ 3D, viền, rãnh chạm khắc và ký tự chữ Hán thư pháp.
+ */
 export function PieceContent({
   side,
   type,

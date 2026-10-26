@@ -60,6 +60,9 @@ function utc(v: unknown): v is string {
   if (!Number.isFinite(ms)) return false;
   return new Date(ms).toISOString().slice(0, 19) === v.slice(0, 19);
 }
+/**
+ * Kiểm tra và giải mã phản hồi dữ liệu ván đấu với máy AI từ backend (snapshot trạng thái, mốc thời gian máy chủ và quyền điều khiển tab).
+ */
 export function parseAiResponse(
   value: unknown,
   expectedId?: string,
@@ -170,6 +173,9 @@ class AiRequestError extends Error {
     );
   }
 }
+/**
+ * Khởi tạo client HTTP tương tác với các endpoint API ván cờ AI (đọc ván, tạo ván, đánh cờ, đầu hàng, thử lại).
+ */
 export function makeAiClient(
   authorizedFetch: AuthorizedFetch,
   getControl: () => Promise<AiControlProof>,

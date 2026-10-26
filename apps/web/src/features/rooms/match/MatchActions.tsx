@@ -26,6 +26,13 @@ function time(ms: number) {
   const seconds = Math.ceil(Math.max(0, ms) / 1000);
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
+
+/**
+ * Component hiển thị các thao tác người chơi trong ván cờ đang diễn ra (Match Actions):
+ * - Đầu hàng (kèm popup xác nhận nguy cơ thua ngay).
+ * - Xin hòa (kiểm tra điều kiện cooldown nước đi, hiển thị đồng hồ đếm ngược đề nghị, cho phép rút đề nghị).
+ * - Phản hồi lời xin hòa của đối thủ (Đồng ý hoặc Từ chối).
+ */
 export function MatchActions({
   match,
   role,

@@ -33,6 +33,9 @@ const errors: Record<string, { status: number; message: string }> = {
     message: "Phòng đang thay đổi, vui lòng thử lại",
   },
 };
+/**
+ * Chuyển đổi lỗi nội bộ thành đối tượng RoomError an toàn để trả về qua HTTP.
+ */
 export function historyHttpError(error: unknown): RoomError {
   const known =
     error instanceof RoomError && Object.hasOwn(errors, error.code)
@@ -42,7 +45,9 @@ export function historyHttpError(error: unknown): RoomError {
     ? new RoomError(error.code, known.message, known.status)
     : new RoomError("HISTORY_UNAVAILABLE", "Chưa thể đọc lịch sử ván đấu", 503);
 }
-/** Member-only HTTP port. Runtime supplies the actual member authorizer and coordinator. */
+/**
+ * Service xử lý logic HTTP cho lịch sử ván đấu của thành viên (xác thực và ủy quyền).
+ */
 export class HistoryHttpService {
   constructor(
     private readonly store: Pick<HistoryStore, "list" | "rankedSummary">,
@@ -94,12 +99,18 @@ export class HistoryHttpService {
       throw historyHttpError(error);
     }
   }
+  /**
+   * Lấy danh sách lịch sử ván đấu đã kết thúc hoặc gián đoạn theo bộ lọc.
+   */
   list(
     proof: MemberRoomRequestProof,
     input: HistoryInput = {},
   ): Promise<HistoryPage> {
     return this.run(proof, (scope) => this.store.list(scope, input));
   }
+  /**
+   * Tóm tắt thống kê đấu hạng của thành viên (chưa hỗ trợ, trả về 503).
+   */
   rankedSummary(proof: MemberRoomRequestProof): Promise<never> {
     return this.run(proof, (scope) => this.store.rankedSummary(scope));
   }

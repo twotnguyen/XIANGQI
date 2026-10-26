@@ -11,7 +11,10 @@ const events = [
   "unknown_event",
 ];
 
-// Accept no free-form strings, Error objects, request bodies or nested payloads.
+/**
+ * Định dạng và chuẩn hóa thông tin sự kiện thành chuỗi JSON an toàn để ghi log hệ thống.
+ * Chỉ cho phép các cấp độ (level) và mã sự kiện (event) hợp lệ nhằm ngăn ngừa rò rỉ dữ liệu nhạy cảm.
+ */
 export function logEvent(
   level: unknown,
   event: unknown,

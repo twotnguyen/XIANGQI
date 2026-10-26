@@ -5,6 +5,12 @@ import type { RoomView } from "./room-client.js";
 export type SeatAction =
   "switch" | "swap-propose" | "swap-withdraw" | "swap-accept" | "swap-decline";
 
+/**
+ * Component hiển thị khu vực hai ghế người chơi (Đỏ và Đen) trong phòng cờ.
+ * Bao gồm thông tin người chơi, trạng thái kết nối, trạng thái sẵn sàng,
+ * các nút đổi ghế (khi trống) hoặc yêu cầu hoán đổi ghế (khi cả 2 đã ngồi),
+ * và nút sẵn sàng/bắt đầu ván.
+ */
 export function RoomSeats({
   room,
   userId,

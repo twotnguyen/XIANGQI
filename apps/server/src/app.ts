@@ -20,12 +20,19 @@ import {
   type RealtimeDependencies,
 } from "./game/realtime/gateway.js";
 
+/**
+ * Controller kiểm tra trạng thái hoạt động (health check) của server và kết nối database.
+ */
 @Controller()
 class HealthController {
   constructor(
     @Inject("DATABASE_CHECK")
     private readonly checkDatabase: (() => Promise<void>) | null,
   ) {}
+
+  /**
+   * Endpoint GET /health: Trả về trạng thái của server và kiểm tra kết nối cơ sở dữ liệu.
+   */
   @Get("health")
   async health(): Promise<HealthStatus> {
     let database: HealthStatus["database"] = "not_connected";
@@ -44,6 +51,11 @@ class HealthController {
 @Module({ controllers: [HealthController] })
 class AppModule {}
 
+/**
+ * Khởi tạo và thiết lập ứng dụng NestJS:
+ * Cấu hình CORS, middleware kiểm tra Origin, gắn bộ lọc lỗi bảo mật PrivateBodyFilter,
+ * và tích hợp Socket.IO Gateway cho realtime ván cờ và feed sảnh phòng chờ.
+ */
 export async function createApp(
   corsOrigins = ["http://localhost:5173"],
   imports: DynamicModule[] = [],

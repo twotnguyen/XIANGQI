@@ -29,6 +29,11 @@ const draws = new Set([
   "PERPETUAL_CHECK",
 ]);
 
+/**
+ * Component hiển thị kết quả ván cờ (Thắng, Thua, Hòa, Gián đoạn) kèm lý do chi tiết (Chiếu hết, Hết giờ, Đầu hàng...).
+ * Đối với người chơi: hiển thị modal dialog với hai lựa chọn Ở lại phòng hoặc Rời phòng.
+ * Đối với khán giả: hiển thị thông tin kết quả dưới dạng panel thông thường.
+ */
 export function MatchResult({
   match,
   role,

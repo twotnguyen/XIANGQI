@@ -54,7 +54,9 @@ function sanitized(error: unknown): RoomError {
     503,
   );
 }
-// The private proof object is request scoped, never a public room DTO.
+/**
+ * Quản lý xác thực và phân quyền cho người chơi Khách (Guest) trong các giao dịch phòng cờ.
+ */
 export class GuestRoomAuthorizer {
   private readonly resolved = new WeakMap<
     GuestRoomRequestProof,
@@ -68,6 +70,9 @@ export class GuestRoomAuthorizer {
     private readonly guests: GuestService,
     private readonly pool: Pool,
   ) {}
+  /**
+   * Tra cứu thông tin định danh ban đầu của khách từ capability token mà không khóa actor.
+   */
   async resolve(proof: GuestRoomRequestProof): Promise<RoomActor> {
     const hash = checkedHash(proof);
     this.resolved.delete(proof);
@@ -113,6 +118,9 @@ export class GuestRoomAuthorizer {
       throw required();
     return trusted;
   }
+  /**
+   * Xác thực và áp dụng quy tắc quyền hạn cho khách trong transaction đã khóa actor của phòng cờ.
+   */
   async authorize(
     proof: GuestRoomRequestProof,
     actorProof: RoomActorProof,
@@ -152,6 +160,9 @@ export class GuestRoomAuthorizer {
       throw sanitized(error);
     }
   }
+  /**
+   * Hoàn tất biến đổi trạng thái của khách, kiểm tra dọn dẹp phiên nếu đã hết hạn và không còn giữ ghế.
+   */
   async finish(
     proof: GuestRoomRequestProof,
     scope: GuestRoomMutationScope,

@@ -81,6 +81,9 @@ function saveGame(gameId: string, data: AiGameStorage) {
   }
 }
 
+/**
+ * Trang quản lý ván đấu Đánh với máy AI (điều phối engine tìm kiếm nước đi, âm thanh ván đấu, lưu trữ trạng thái vào sessionStorage).
+ */
 export function AiGamePage({
   gameId,
   initialSetup,

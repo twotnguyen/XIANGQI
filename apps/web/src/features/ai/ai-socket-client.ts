@@ -64,6 +64,9 @@ function proof(value: unknown) {
   return { accessToken: row.accessToken, appSession: row.appSession };
 }
 
+/**
+ * Thiết lập kết nối Socket.IO thời gian thực cho ván cờ với máy AI (quản lý quyền tab điều khiển, đồng bộ snapshot và takeover).
+ */
 export function connectAi(options: AiConnectionOptions): AiConnection {
   const tabId = crypto.randomUUID();
   let disposed = false,

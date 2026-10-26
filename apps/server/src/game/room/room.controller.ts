@@ -45,6 +45,10 @@ export function readMemberRoomProof(
     throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
   return { accessToken: auth.slice(7), appSession: cap };
 }
+/**
+ * Controller xử lý các yêu cầu HTTP điều khiển phòng chơi cờ:
+ * Tạo phòng, vào phòng, đổi ghế, mời khán giả, chuyển đổi khán giả, đổi bên và điều chỉnh trạng thái phòng.
+ */
 @Controller("rooms")
 export class RoomController {
   constructor(
@@ -65,6 +69,9 @@ export class RoomController {
       );
     }
   }
+  /**
+   * Endpoint POST /rooms: Tạo phòng cờ mới (thời gian ván, giới hạn người xem, mã mời).
+   */
   @Post()
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -95,6 +102,9 @@ export class RoomController {
       });
     });
   }
+  /**
+   * Endpoint POST /rooms/join: Tham gia phòng theo mã phòng 8 chữ số.
+   */
   @Post("join")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -124,6 +134,9 @@ export class RoomController {
       });
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/switch-seat: Chủ phòng đổi ghế Đỏ/Đen khi đang chờ một mình.
+   */
   @Post(":roomId/switch-seat")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -155,6 +168,9 @@ export class RoomController {
       invalidRoomInput();
     return input.expectedVersion as number;
   }
+  /**
+   * Endpoint POST /rooms/:roomId/to-spectator: Người chơi tự nguyện chuyển xuống làm khán giả.
+   */
   @Post(":roomId/to-spectator")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -173,6 +189,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/move-to-spectator: Chủ phòng chuyển người chơi khác xuống làm khán giả.
+   */
   @Post(":roomId/move-to-spectator")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -193,6 +212,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/invite-down: Chủ phòng mời một khán giả xuống ghế thi đấu.
+   */
   @Post(":roomId/invite-down")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -213,6 +235,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/respond-down: Khán giả phản hồi chấp nhận hoặc từ chối lời mời xuống ghế.
+   */
   @Post(":roomId/respond-down")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -233,6 +258,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/kick: Đuổi một khán giả ra khỏi phòng và chặn vào lại.
+   */
   @Post(":roomId/kick")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -253,6 +281,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/leave: Rời khỏi phòng cờ (đóng phòng nếu là thành viên cuối).
+   */
   @Post(":roomId/leave")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -276,6 +307,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/swap-propose: Gửi đề nghị đổi bên (Đỏ <-> Đen) cho đối thủ.
+   */
   @Post(":roomId/swap-propose")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -299,6 +333,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/swap-withdraw: Rút lại đề nghị đổi bên đã gửi.
+   */
   @Post(":roomId/swap-withdraw")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -322,6 +359,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/swap-respond: Phản hồi chấp nhận hoặc từ chối đề nghị đổi bên.
+   */
   @Post(":roomId/swap-respond")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -347,6 +387,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/visibility: Điều chỉnh chế độ hiển thị phòng (PUBLIC, CODE_ONLY, LOCKED).
+   */
   @Post(":roomId/visibility")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -373,6 +416,9 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint GET /rooms/:roomId: Lấy ảnh chụp trạng thái phòng cờ (snapshot).
+   */
   @Get(":roomId")
   @Header("Cache-Control", "no-store")
   snapshot(@Req() request: IncomingMessage, @Param("roomId") roomId: string) {

@@ -9,11 +9,16 @@ import type { RoomScope } from "../room/room.types.js";
 function fail(): never {
   throw new Error("AI_HISTORY_CONFLICT");
 }
-/** Caller owns the actor-bound transaction and commits history and seat release together. */
+/**
+ * Lớp Store phụ trách lưu trữ ván cờ với AI đã hoàn tất vào cơ sở dữ liệu và giải phóng vị trí đặt trước.
+ */
 export class AiHistoryStore {
   constructor(
     private readonly reservations: Pick<AiReservations, "check" | "release">,
   ) {}
+  /**
+   * Lưu ván cờ AI vào bảng matches, match_events, match_moves và giải phóng vị trí trong active_players.
+   */
   async finish(scope: RoomScope, snapshot: AiSnapshot, bootId: string) {
     if (
       scope.actor.kind !== "member" ||

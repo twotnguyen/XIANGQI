@@ -7,6 +7,9 @@ const nativeRandomUUID =
     ? crypto.randomUUID.bind(crypto)
     : null;
 
+/**
+ * Tạo mã UUID v4 tuân chuẩn RFC4122 (hoạt động tốt trong cả ngữ cảnh HTTPS và HTTP qua mạng LAN/VPN).
+ */
 export function generateUuid(): string {
   if (nativeRandomUUID) return nativeRandomUUID();
 

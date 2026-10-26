@@ -14,11 +14,18 @@ export interface AuthenticatedRequest {
   userId?: string;
   session?: ValidatedSession;
 }
+/**
+ * Guard bảo vệ các endpoint yêu cầu người dùng đã đăng nhập:
+ * Kiểm tra kết hợp cả Bearer token (từ Authorization header) và app session token (từ cookie hoặc header).
+ */
 @Injectable()
 export class SessionGuard implements CanActivate {
   constructor(
     @Inject(SessionService) private readonly sessions: SessionService,
   ) {}
+  /**
+   * Thẩm định phiên đăng nhập hợp lệ và gán session / userId vào đối tượng request.
+   */
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const authorization = request.headers.authorization;

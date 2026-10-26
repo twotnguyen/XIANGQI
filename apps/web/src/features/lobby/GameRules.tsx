@@ -1,4 +1,6 @@
-/** Inline lobby disclosure; the server remains authoritative for every result. */
+/**
+ * Khung hiển thị bộ luật chơi cờ tướng rút gọn (quy tắc di chuyển 7 loại quân, điều kiện thắng thua hòa và thao tác ván đấu).
+ */
 export function GameRules() {
   return (
     <details className="xq-ui xq-rules-accordion">

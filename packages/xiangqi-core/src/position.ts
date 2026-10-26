@@ -43,11 +43,18 @@ const letterPieces: Record<string, PieceType> = {
 const initialFen =
   "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1";
 
+/**
+ * Tạo trạng thái thế cờ ban đầu chuẩn của cờ tướng (FEN mặc định với 32 quân cờ).
+ */
 export function initialPosition(): Position {
   return parsePosition(initialFen);
 }
 
-/** Xiangqi FEN: n=horse, b=elephant, uppercase=red, w=red to move. */
+/**
+ * Phân tích cú pháp chuỗi Xiangqi FEN thành cấu trúc thế cờ Position.
+ * Bàn cờ 90 ô (chỉ số 0-89: y * 9 + x, Đen ở y=0..4, Đỏ ở y=5..9).
+ * Xác thực nghiêm ngặt: đúng 10 hàng x 9 cột, mỗi bên có đúng 1 quân Tướng.
+ */
 export function parsePosition(fen: string): Position {
   const fields = fen.trim().split(/\s+/);
   const [placement, turn, castling, enPassant, halfmove, fullmove] = fields;
@@ -97,6 +104,9 @@ export function parsePosition(fen: string): Position {
   };
 }
 
+/**
+ * Tuần tự hóa cấu trúc thế cờ Position thành chuỗi Xiangqi FEN chuẩn.
+ */
 export function serializePosition(position: Position): string {
   const rows: string[] = [];
   for (let y = 0; y < 10; y += 1) {

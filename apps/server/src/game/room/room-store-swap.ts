@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { invalidRoomInput, RoomError, type RoomScope } from "./room.types.js";
 import { RoomStoreCore } from "./room-store-core.js";
+/**
+ * Lớp mở rộng của RoomStore hỗ trợ tính năng đề nghị đổi bên (Red <-> Black) giữa 2 người chơi.
+ */
 export class RoomSwapStore extends RoomStoreCore {
   private async swapPair(s: RoomScope, id: string) {
     const { r, members, member } = await this.member(s, id);
@@ -27,6 +30,9 @@ export class RoomSwapStore extends RoomStoreCore {
     const other = players.find((m) => m.user_id !== s.actor.userId)!;
     return { r, me: member, other };
   }
+  /**
+   * Tạo đề nghị đổi bên gửi tới đối phương (thời hạn 30 giây, giới hạn cooldown sau khi bị từ chối).
+   */
   async proposeSwap(s: RoomScope, id: string) {
     const { other } = await this.swapPair(s, id);
     // Tu het han truoc khi kiem: phong khoe khong co worker ghe tham van tu phuc hoi.
@@ -61,6 +67,9 @@ export class RoomSwapStore extends RoomStoreCore {
     });
     return this.snapshot(s, id);
   }
+  /**
+   * Người gửi rút lại đề nghị đổi bên đang chờ phản hồi.
+   */
   async withdrawSwap(s: RoomScope, id: string) {
     const { r } = await this.member(s, id);
     if (r.status !== "WAITING")
@@ -76,6 +85,9 @@ export class RoomSwapStore extends RoomStoreCore {
     await this.bump(s, id, "room.swap-withdrawn", { offerId: done.id });
     return this.snapshot(s, id);
   }
+  /**
+   * Người nhận phản hồi chấp nhận (hoán đổi ghế Đỏ/Đen) hoặc từ chối đề nghị đổi bên.
+   */
   async respondSwap(s: RoomScope, id: string, accept: boolean) {
     if (typeof accept !== "boolean") invalidRoomInput();
     const offer = (
@@ -134,6 +146,9 @@ export class RoomSwapStore extends RoomStoreCore {
     await this.bump(s, id, "room.swap-accepted", { offerId: offer.id });
     return this.snapshot(s, id);
   }
+  /**
+   * Đánh dấu hết hạn cho các đề nghị đổi bên đã quá thời hạn 30 giây.
+   */
   async expireSwapOffers(s: RoomScope, id: string) {
     if (!(await this.swapTableExists(s))) return 0;
     const due = (

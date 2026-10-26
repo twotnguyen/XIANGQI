@@ -6,6 +6,9 @@ import {
   type FriendClient,
   type RoomInvite,
 } from "./friend-client.js";
+/**
+ * Hộp thông báo popup hiển thị lời mời vào phòng cờ từ bạn bè (kèm đếm ngược thời gian chấp nhận/từ chối).
+ */
 export function RoomInvitePopup({ client }: { client: FriendClient }) {
   const [invites, setInvites] = useState<RoomInvite[] | null>(null);
   const [now, setNow] = useState(() => Date.now());

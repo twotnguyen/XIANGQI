@@ -116,11 +116,17 @@ async function lockInOrder(client: PoolClient, keys: readonly string[]) {
   );
 }
 
+/**
+ * Bộ điều phối khóa đồng thời và quản trị transaction cho toàn bộ hệ thống phòng cờ:
+ * Khóa các actor theo thứ tự bảng chữ cái cố định (chống deadlock), kiểm tra biến động thành viên (roster check),
+ * khóa phòng cờ và tái xác thực quyền hạn trước khi thực thi nghiệp vụ.
+ */
 export class RoomTransactions {
   constructor(private readonly pool: Pool) {}
 
-  // Caller owns an open app_server transaction. Call before every room lock.
-  // authorize may lockRooms(proof) only after validating the principal, for ended cleanup.
+  /**
+   * Chuẩn bị danh sách actor, khóa advisory lock theo actor và xác thực actor ban đầu trước khi khóa phòng.
+   */
   async prepare(
     client: PoolClient,
     input: RoomTransactionInput,
@@ -149,9 +155,9 @@ export class RoomTransactions {
     return { status: "active", proof };
   }
 
-  // Recheck after room locks as a fixed deadline may pass during a row lock wait.
-  // Auth implementations reuse already held actor/session/profile locks and never
-  // call the provider or acquire additional actor locks here.
+  /**
+   * Tái xác thực actor sau khi đã khóa phòng để đảm bảo phiên không bị hết hạn hoặc thay đổi trong lúc chờ khóa.
+   */
   async reauthorize(
     proof: RoomActorProof,
     authorize: RoomAuthorize,
@@ -180,7 +186,9 @@ export class RoomTransactions {
     return authorization;
   }
 
-  // Same client and complete actor union; never acquire actors here.
+  /**
+   * Khóa advisory lock và khóa dòng (SELECT ... FOR UPDATE) trên bảng rooms theo thứ tự id cố định.
+   */
   async lockRooms(proof: RoomActorProof): Promise<RoomScope> {
     await lockInOrder(
       proof.client,
@@ -207,6 +215,10 @@ export class RoomTransactions {
     };
   }
 
+  /**
+   * Khung thực thi chuẩn cho mọi giao dịch thay đổi trạng thái phòng cờ:
+   * Tự động thử lại (tối đa 3 lần) nếu danh sách người chơi thay đổi (RoomRosterChanged) trong lúc thiết lập khóa.
+   */
   async withRoom<T>(
     input: RoomTransactionInput,
     authorize: RoomAuthorize,

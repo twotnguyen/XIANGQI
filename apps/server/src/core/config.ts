@@ -1,3 +1,6 @@
+/**
+ * Đọc và thẩm định tính hợp lệ của cấu hình server từ biến môi trường (PORT, CORS_ORIGINS, LOG_LEVEL).
+ */
 export function readConfig(env: Record<string, string | undefined>) {
   const portValue = env.PORT ?? "3000";
   const port = Number(portValue);

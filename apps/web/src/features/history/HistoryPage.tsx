@@ -42,6 +42,9 @@ interface State {
   loading: boolean;
   error: string;
 }
+/**
+ * Màn hình danh sách lịch sử các ván đấu đã kết thúc (phân trang bằng con trỏ cursor, lọc theo Đánh Thường, Đấu với Máy hoặc Đánh Hạng).
+ */
 export function HistoryPage({ client, onReplay }: HistoryPageProps) {
   const [filter, setFilter] =
       useState<NonNullable<HistoryInput["filter"]>>("ALL"),

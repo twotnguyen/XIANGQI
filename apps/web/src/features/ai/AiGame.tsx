@@ -42,6 +42,9 @@ export interface AiGameProps {
   }) => void;
   onLobby: () => void;
 }
+/**
+ * Component trình bày bàn cờ và bảng điều khiển ván đấu với Máy AI (nước đi, xin đi lại/undo, đầu hàng, thử lại khi máy bận và kết quả ván cờ).
+ */
 export function AiGame(props: AiGameProps) {
   return (
     <AiGameView

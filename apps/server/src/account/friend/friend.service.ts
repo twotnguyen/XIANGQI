@@ -18,9 +18,15 @@ async function statusOf(tx: FriendTx, userId: string): Promise<FriendStatus> {
   if (await tx.isSeated(userId)) return "in-match";
   return (await tx.isOnline(userId)) ? "online" : "offline";
 }
-/** Friend rules: who may befriend or invite whom, limits, ownership of answers. */
+/**
+ * Dịch vụ xử lý toàn bộ logic nghiệp vụ mạng xã hội bạn bè:
+ * Thẩm định điều kiện kết bạn, giới hạn số lượng bạn/lời mời, xử lý từ chối và mời vào phòng chơi cờ.
+ */
 export class FriendService {
   constructor(private readonly store: FriendStore) {}
+  /**
+   * Tìm kiếm thành viên hệ thống theo tiền tố username để kết bạn.
+   */
   async search(
     userId: string,
     prefix: string,
@@ -33,6 +39,9 @@ export class FriendService {
       return tx.searchMembers(clean, userId);
     });
   }
+  /**
+   * Gửi lời mời kết bạn tới người dùng khác: kiểm tra giới hạn bạn bè, lời mời chờ và chặn sau 2 lần từ chối.
+   */
   async sendRequest(userId: string, username: string) {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -52,6 +61,9 @@ export class FriendService {
       return tx.insertRequest(userId, peer!.user_id);
     });
   }
+  /**
+   * Lấy danh sách các lời mời kết bạn đang chờ xử lý của người dùng.
+   */
   async listRequests(userId: string): Promise<FriendRequestView[]> {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -59,6 +71,9 @@ export class FriendService {
       return tx.listPendingRequests(userId);
     });
   }
+  /**
+   * Trả lời lời mời kết bạn: chấp nhận tạo quan hệ bạn bè hoặc từ chối và tăng biến đếm từ chối.
+   */
   async respondRequest(userId: string, requestId: string, accept: boolean) {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -80,6 +95,9 @@ export class FriendService {
       return { accepted: true as const };
     });
   }
+  /**
+   * Thu hồi lời mời kết bạn đã gửi đi khi đối phương chưa phản hồi.
+   */
   async revokeRequest(userId: string, requestId: string) {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -88,6 +106,9 @@ export class FriendService {
       return { revoked: true as const };
     });
   }
+  /**
+   * Hủy quan hệ bạn bè giữa hai người dùng.
+   */
   async unfriend(userId: string, otherId: string) {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -98,6 +119,9 @@ export class FriendService {
       return { removed: true as const };
     });
   }
+  /**
+   * Lấy danh sách bạn bè kèm trạng thái hoạt động thực tế (online, offline, in-match).
+   */
   async listFriends(userId: string): Promise<FriendPeer[]> {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -112,6 +136,9 @@ export class FriendService {
       return peers;
     });
   }
+  /**
+   * Mời bạn bè tham gia phòng chơi cờ: kiểm tra bạn bè có đang online và rảnh rỗi không.
+   */
   async inviteToRoom(userId: string, roomId: string, username: string) {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -131,6 +158,9 @@ export class FriendService {
       return invite!;
     });
   }
+  /**
+   * Lấy danh sách các lời mời vào phòng cờ đang chờ người dùng phản hồi.
+   */
   async listRoomInvites(userId: string): Promise<RoomInviteView[]> {
     return this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);
@@ -138,6 +168,9 @@ export class FriendService {
       return tx.listPendingRoomInvites(userId);
     });
   }
+  /**
+   * Phản hồi lời mời vào phòng: chấp nhận trả về mã phòng để tham gia, hoặc từ chối.
+   */
   async respondRoomInvite(userId: string, inviteId: string, accept: boolean) {
     const outcome = await this.store.withUser(userId, async (tx) => {
       await requireMember(tx, userId);

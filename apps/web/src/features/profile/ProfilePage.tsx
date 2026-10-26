@@ -31,6 +31,9 @@ function nameError(error: unknown) {
   return "Chưa thể lưu tên hiển thị. Kiểm tra kết nối rồi thử lại.";
 }
 
+/**
+ * Màn hình hồ sơ cá nhân: đổi tên hiển thị, tùy chọn chủ đề giao diện và xử lý đăng xuất an toàn khi đang trong trận.
+ */
 export function ProfilePage({
   client,
   guest,

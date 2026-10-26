@@ -7,6 +7,9 @@ import {
   loadGoogleIdentity,
   parseGooglePending,
 } from "./google-gis.js";
+/**
+ * Nút đăng nhập Google Identity Services (GIS), khởi tạo challenge/nonce bảo mật và render iframe nút Google chính thức.
+ */
 export function GoogleSignInButton({
   remember,
   onResult,

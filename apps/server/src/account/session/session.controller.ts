@@ -30,6 +30,10 @@ import {
 } from "./cookies.js";
 export type RefreshProvider = (refreshToken: unknown) => Promise<Session>;
 
+/**
+ * Controller quản lý trạng thái phiên đăng nhập:
+ * Lấy thông tin phiên hiện tại, làm mới token và xử lý đăng xuất.
+ */
 @Controller("auth")
 export class SessionController {
   constructor(
@@ -75,6 +79,9 @@ export class SessionController {
       );
     }
   }
+  /**
+   * Endpoint GET /auth/session: Lấy thông tin tài khoản người dùng gắn với phiên hiện tại.
+   */
   @Get("session")
   @Header("Cache-Control", "no-store")
   @UseGuards(SessionGuard)
@@ -85,6 +92,9 @@ export class SessionController {
       return this.actor(request.session);
     });
   }
+  /**
+   * Endpoint POST /auth/refresh: Cấp lại access token mới bằng refresh token và cập nhật cookie phiên.
+   */
   @Post("refresh")
   @Header("Cache-Control", "no-store")
   @HttpCode(200)
@@ -134,6 +144,9 @@ export class SessionController {
       };
     });
   }
+  /**
+   * Endpoint POST /auth/logout: Thu hồi phiên làm việc trên server và xóa bỏ cookie phiên trên client.
+   */
   @Post("logout")
   @Header("Cache-Control", "no-store")
   @HttpCode(200)

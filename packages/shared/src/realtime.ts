@@ -1,5 +1,13 @@
 import type { ClientChatEvents, ServerChatEvents } from "./chat.js";
 export type RoomRole = "red" | "black" | "spectator";
+
+/**
+ * Trạng thái toàn diện của phòng cờ và ván đấu do máy chủ quản trị (authoritative snapshot):
+ * - `room`: Thông tin phòng, trạng thái ghế Đỏ/Đen, sẵn sàng, kết nối, đếm ngược và khán giả.
+ * - `match`: Thế cờ FEN, nước đi cuối cùng, lượt đi, trạng thái và kết quả ván cờ.
+ * - `clocks`: Đồng hồ thi đấu của hai bên Đỏ và Đen tại thời điểm `asOf`.
+ * - `draw`: Danh sách đề nghị hòa đang chờ và số nước cooldown.
+ */
 export interface RoomStateSnapshot {
   serverNow: string;
   roomId: string;
@@ -53,6 +61,11 @@ export interface RoomStateSnapshot {
     remainingMoves: { red: number; black: number };
   } | null;
 }
+
+/**
+ * Snapshot trạng thái phòng gửi tới từng phiên người dùng,
+ * bổ sung thêm quyền điều khiển `control` (chế độ ghi `writable` hoặc chỉ xem `readonly` do mở nhiều tab).
+ */
 export interface RoomSnapshot extends RoomStateSnapshot {
   control: {
     mode: "writable" | "readonly";
@@ -60,6 +73,15 @@ export interface RoomSnapshot extends RoomStateSnapshot {
     reason: "superseded" | "not_allowed" | null;
   };
 }
+
+/**
+ * Các hành động mà người chơi có thể thực hiện trong phòng cờ và ván đấu:
+ * - `room.ready`: Báo sẵn sàng bắt đầu ván.
+ * - `match.move`: Đi một nước cờ (từ ô `from` đến ô `to`).
+ * - `match.resign`: Đầu hàng.
+ * - `match.draw.*`: Xin hòa, rút đề nghị hòa, chấp nhận hoặc từ chối hòa.
+ * - `media.sharing`: Thay đổi phạm vi chia sẻ camera/micro.
+ */
 export type RoomAction =
   | { type: "room.ready"; payload: { ready: boolean } }
   | {
@@ -96,6 +118,11 @@ export type RoomAction =
       type: "media.sharing";
       payload: { sharing: "none" | "opponent" | "room" };
     };
+
+/**
+ * Gói lệnh thao tác gửi từ Client lên Server qua Socket.IO:
+ * Chứa `commandId` (UUID chống gửi lặp) và `expectedVersion` (chống xung đột phiên bản thế cờ).
+ */
 export interface RoomCommand {
   commandId: string;
   roomId: string;
@@ -155,6 +182,12 @@ export interface RealtimeHandshake {
   roomId: string;
   tabId: string;
 }
+/**
+ * Danh sách sự kiện Socket.IO phía Client gửi lên Server trong phòng cờ:
+ * - `room.sync`: Đồng bộ snapshot trạng thái phòng mới nhất.
+ * - `room.command`: Gửi lệnh cờ tướng (đi quân, xin hòa, đầu hàng, sẵn sàng).
+ * - `session.takeover`: Giành lại quyền thao tác (writable) từ tab trình duyệt khác.
+ */
 export interface ClientRealtimeEvents extends ClientChatEvents {
   "room.sync": (
     acknowledge: (response: CommandAcknowledgement) => void,
@@ -167,6 +200,14 @@ export interface ClientRealtimeEvents extends ClientChatEvents {
     acknowledge: (response: CommandAcknowledgement) => void,
   ) => void;
 }
+
+/**
+ * Danh sách sự kiện Socket.IO Server phát tới Client trong phòng cờ:
+ * - `room.snapshot`: Cập nhật snapshot trạng thái phòng toàn diện (bàn cờ, đồng hồ...).
+ * - `room.closed`: Báo phòng đã đóng.
+ * - `session.read_only`: Cảnh báo phiên đã mở ở tab khác và chuyển tab này sang chỉ đọc.
+ * - `engine.failure`: Báo lỗi sự cố của Engine AI khi đấu với máy.
+ */
 export interface ServerRealtimeEvents extends ServerChatEvents {
   "room.closed": (notice: RoomClosedNotice) => void;
   "room.snapshot": (snapshot: RoomSnapshot) => void;
