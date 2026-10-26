@@ -5,6 +5,7 @@ import { afterEach, expect, test, vi } from "vitest";
 import {
   attachPublicRoomFeed,
   parsePublicFeedProof,
+  PUBLIC_FEED_POLL_MS,
 } from "@server/game/room/public/public-room-feed.js";
 import type { PublicRoomView } from "@server/game/room/public/public-room-store.js";
 const origin = "http://localhost:5174";
@@ -78,6 +79,10 @@ afterEach(async () => {
   if (server?.listening)
     await new Promise<void>((r) => server.close(() => r()));
 });
+test("polls at least once a second so a lobby change lands within the 2-second AC", () => {
+  // Deterministic guard: wall-clock assertions are loosened on CI, this one is not.
+  expect(PUBLIC_FEED_POLL_MS).toBeLessThanOrEqual(1000);
+});
 test("strict proof rejects authority injection, mixed proof, missing fields and oversized bearer", () => {
   expect(parsePublicFeedProof(proof)).toEqual(proof);
   expect(
@@ -125,7 +130,7 @@ test("native socket initial/refill snapshot preserves full50 and strips private 
     ((await next) as { rooms: PublicRoomView[] }).rooms.map((r) => r.roomId),
   ).toEqual(rooms.map((r) => r.roomId));
   expect(performance.now() - changedAt).toBeLessThanOrEqual(
-    process.env.CI ? 6000 : 2000,
+    process.env.CI ? 2500 : 2000,
   );
   const listener = vi.fn();
   socket.on("public.rooms", listener);

@@ -241,7 +241,7 @@ describe.skipIf(!databaseUrl)(
         await f.mode(entry.roomId, "CODE_ONLY");
         await waitFor(() => feed.latest().length === 0);
         expect(Date.now() - hidden).toBeLessThanOrEqual(
-          process.env.CI ? 6000 : 2000,
+          process.env.CI ? 2500 : 2000,
         );
         await f.mode(entry.roomId, "PUBLIC");
         await waitFor(() => feed.latest().length === 1);
@@ -257,7 +257,7 @@ describe.skipIf(!databaseUrl)(
         await f.mode(entry.roomId, "LOCKED");
         await waitFor(() => feed.latest().length === 0);
         expect(Date.now() - locked).toBeLessThanOrEqual(
-          process.env.CI ? 6000 : 2000,
+          process.env.CI ? 2500 : 2000,
         );
         expect(await (await f.request("/public-rooms")).json()).toEqual([]);
         feed.socket.disconnect();
