@@ -9,7 +9,7 @@ Bản đồ tên pattern ↔ mã thật của `apps/server/src`. Mục đích l�
 | Tầng | Việc | Quy ước tên | Ví dụ |
 |---|---|---|---|
 | Controller | Nhận HTTP, kiểm tra hình dạng đầu vào, trả mã lỗi | `x.controller.ts` | `game/room/room.controller.ts` |
-| Service | Nghiệp vụ, điều phối nhiều store, không viết SQL | `x.service.ts` | `game/room/room-http.service.ts` |
+| Service | Nghiệp vụ, điều phối nhiều store, không viết SQL | `x.service.ts` | `game/room/room-http.service.ts`; mẫu miền account: `account/profile/profile.service.ts` |
 | Store (Repository) | Toàn bộ SQL của miền | `x.store.ts` | `game/room/room-store.ts` |
 
 Dự án gọi Repository là *store* và không dùng interface cho store (class cụ thể); chỗ cần đảo phụ thuộc dùng *Port* (bên dưới). Đo ngày 26/10/2026: 11 controller đều không có SQL và không import `pg`; 17 file store (tính cả các lớp tách của `RoomStore`, `MatchStore`) đều chứa SQL.
@@ -31,10 +31,12 @@ Store lớn được chia theo nhóm lệnh bằng kế thừa (`RoomStoreCore` 
 
 | Miền | Hiện trạng | Quy mô (đo bằng đếm `.query(`) |
 |---|---|---|
-| `account/profile`, `account/friend` | Controller gọi store trực tiếp, không có Service; nghiệp vụ (kiểm tra tên hiển thị, quy tắc kết bạn) nằm trong store. Hai file đã đổi tên `.service.ts` → `.store.ts` để tên khớp vai trò | profile 109 dòng / 3 lệnh SQL; friend 452 dòng / 37 lệnh |
+| `account/friend` | Controller gọi store trực tiếp, không có Service; nghiệp vụ (quy tắc kết bạn, mời vào phòng) nằm trong store. File đã đổi tên `.service.ts` → `.store.ts` để tên khớp vai trò | 452 dòng / 37 lệnh SQL |
+| `account/profile` | **Đã đúng phân tầng** (mẫu): Controller → `ProfileService` (kiểm tra tên hiển thị, quy đổi dòng dữ liệu sang `ProfileView`/`ProfileLocation`) → `ProfileStore` (chỉ SQL) | 3 lệnh SQL, đều trong store |
 | `account/google` (`GoogleService`) | Service chứa SQL | 580 dòng / 31 lệnh |
 | `account/guest` (`GuestService`) | Service chứa SQL | 303 dòng / 10 lệnh |
 | `game/media` (`MediaAccess`) | Lớp truy cập chứa SQL | 307 dòng / 5 lệnh |
+| `account/google/postgres.js` | Helper `transaction`/`actorLock` dùng chung nhưng nằm trong thư mục miền `google`; `profile`, `friend`, `guest` import chéo từ đó | 3 nơi dùng; nên chuyển sang `core/` hoặc `account/` khi chạm vào |
 
 Quy tắc xử lý: khi phải chạm vào các file này thì tách SQL sang `*.store.ts` và để nghiệp vụ ở service; không viết thêm SQL vào service, không refactor hàng loạt riêng một PR.
 

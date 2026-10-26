@@ -80,7 +80,7 @@ Bẫy khi chạy test local:
   - Controller: HTTP và kiểm tra hình dạng đầu vào; không SQL, không import `pg`.
   - Service: nghiệp vụ và điều phối store; không viết SQL mới.
   - Store (`*.store.ts`, vai trò Repository): toàn bộ SQL của miền. Tên file phải khớp vai trò: `.store.ts` chứa SQL, `.service.ts` không.
-  - Mã cũ chưa đúng (profile/friend: controller gọi store thẳng; google, guest, `MediaAccess`: service chứa SQL) ghi ở `patterns.md`: chạm vào thì tách SQL sang store, không refactor hàng loạt riêng một PR.
+  - `account/profile` là mẫu đúng phân tầng. Mã cũ chưa đúng (friend: controller gọi store thẳng; google, guest, `MediaAccess`: service chứa SQL; helper `google/postgres.js` bị import chéo) ghi ở `patterns.md`: chạm vào thì tách SQL sang store, không refactor hàng loạt riêng một PR.
   - Không thêm pattern khi chưa có vấn đề cụ thể (khó mở rộng, đổi nhỏ lan rộng, mã trùng); thêm pattern thì ghi tên và file vào `patterns.md`.
   - Review mã server theo năm câu hỏi: SQL có nằm ngoài store không; controller có chạm DB không; ghi có đi qua `withRoom`/biên lai/outbox không; phụ thuộc giữa miền có qua `*Port` không; có thêm abstraction mà chưa có vấn đề không.
 - **Test và CI.** `tests/` phản chiếu `apps/`; đặt tên `x.test.ts`, `x.test-helper.ts`, `fixtures.ts`. `.github/workflows/ci.yml`: job lint+typecheck+build chọn theo diff (`.github/scripts/ci-scope.mjs`); trên `main` thêm unit/core và 6 shard `tests/server` chạy tuần tự, gom bởi `Database Integration Gate`. Server triển khai qua `render.yaml` (`autoDeploy: true`), web qua Vercel.
