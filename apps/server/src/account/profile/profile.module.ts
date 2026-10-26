@@ -1,5 +1,5 @@
 import { Module, type DynamicModule } from "@nestjs/common";
-import { ProfileStore } from "./profile.service.js";
+import { ProfileStore } from "./profile.store.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
 import { ProfileController } from "./profile.controller.js";

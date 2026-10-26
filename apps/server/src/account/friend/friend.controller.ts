@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common";
 import { FriendError } from "./friend.types.js";
 import { httpFailure, invalidInput } from "../../core/http-errors.js";
-import { FriendStore } from "./friend.service.js";
+import { FriendStore } from "./friend.store.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,

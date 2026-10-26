@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { ProfileError } from "./profile.types.js";
 import { httpFailure, invalidInput } from "../../core/http-errors.js";
-import { ProfileStore } from "./profile.service.js";
+import { ProfileStore } from "./profile.store.js";
 import { LoginError } from "../login/login.types.js";
 import {
   SessionGuard,
