@@ -6,9 +6,11 @@ import {
   pool,
   reset,
 } from "../../game/room/room.test-helper.js";
+import { ProfileService } from "@server/account/profile/profile.service.js";
 import { ProfileStore } from "@server/account/profile/profile.store.js";
 afterAll(() => pool.end());
 const store = new ProfileStore(pool);
+const service = new ProfileService(store);
 async function member(username: string) {
   const id = randomUUID();
   await pool.query(
@@ -21,7 +23,7 @@ async function member(username: string) {
   );
   return id;
 }
-describe.skipIf(!databaseUrl)("profile store", () => {
+describe.skipIf(!databaseUrl)("profile service over store", () => {
   beforeEach(async () => {
     await pool.query(
       "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_social CASCADE",
@@ -32,7 +34,7 @@ describe.skipIf(!databaseUrl)("profile store", () => {
   });
   it("reads username, read-only email and display name", async () => {
     const id = await member("profread");
-    const view = await store.read(id, {
+    const view = await service.read(id, {
       username: "profread",
       email: "profread@example.invalid",
     });
@@ -45,9 +47,11 @@ describe.skipIf(!databaseUrl)("profile store", () => {
   });
   it("updates valid display names and rejects length and forbidden words", async () => {
     const id = await member("profwrite");
-    await expect(store.updateDisplayName(id, "Kỳ Hữu Việt")).resolves.toEqual({
-      displayName: "Kỳ Hữu Việt",
-    });
+    await expect(service.updateDisplayName(id, "Kỳ Hữu Việt")).resolves.toEqual(
+      {
+        displayName: "Kỳ Hữu Việt",
+      },
+    );
     expect(
       (
         await pool.query(
@@ -56,22 +60,22 @@ describe.skipIf(!databaseUrl)("profile store", () => {
         )
       ).rows[0].display_name,
     ).toBe("Kỳ Hữu Việt");
-    await expect(store.updateDisplayName(id, "a")).rejects.toMatchObject({
+    await expect(service.updateDisplayName(id, "a")).rejects.toMatchObject({
       code: "PROFILE_NAME_INVALID",
     });
     await expect(
-      store.updateDisplayName(id, "x".repeat(31)),
+      service.updateDisplayName(id, "x".repeat(31)),
     ).rejects.toMatchObject({ code: "PROFILE_NAME_INVALID" });
-    await expect(store.updateDisplayName(id, "screwyou")).rejects.toMatchObject(
-      {
-        code: "PROFILE_NAME_FORBIDDEN",
-      },
-    );
+    await expect(
+      service.updateDisplayName(id, "screwyou"),
+    ).rejects.toMatchObject({
+      code: "PROFILE_NAME_FORBIDDEN",
+    });
   });
   it("reports waiting, playing-online and empty locations", async () => {
     const id = await member("profloc1");
     const mate = await member("profloc2");
-    expect(await store.location(id)).toEqual({
+    expect(await service.location(id)).toEqual({
       kind: "none",
       roomId: null,
       matchId: null,
@@ -91,7 +95,7 @@ describe.skipIf(!databaseUrl)("profile store", () => {
       [id, roomId],
     );
     await pool.query("COMMIT");
-    expect(await store.location(id)).toEqual({
+    expect(await service.location(id)).toEqual({
       kind: "waiting",
       roomId,
       matchId: null,
@@ -107,10 +111,31 @@ describe.skipIf(!databaseUrl)("profile store", () => {
       [roomId, matchId],
     );
     await pool.query("COMMIT");
-    expect(await store.location(id)).toEqual({
+    expect(await service.location(id)).toEqual({
       kind: "playing-online",
       roomId,
       matchId,
     });
+  });
+});
+
+describe("profile service rules", () => {
+  it("validates the display name before touching the store", async () => {
+    const calls: string[] = [];
+    const fake = {
+      updateDisplayName: async () => void calls.push("update"),
+    } as unknown as ProfileStore;
+    const rules = new ProfileService(fake);
+    await expect(rules.updateDisplayName("u", "a")).rejects.toMatchObject({
+      code: "PROFILE_NAME_INVALID",
+    });
+    await expect(rules.updateDisplayName("u", 7)).rejects.toMatchObject({
+      code: "PROFILE_NAME_INVALID",
+    });
+    expect(calls).toEqual([]);
+    await expect(rules.updateDisplayName("u", "  Kỳ Hữu  ")).resolves.toEqual({
+      displayName: "Kỳ Hữu",
+    });
+    expect(calls).toEqual(["update"]);
   });
 });

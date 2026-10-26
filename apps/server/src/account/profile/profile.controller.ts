@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { ProfileError } from "./profile.types.js";
 import { httpFailure, invalidInput } from "../../core/http-errors.js";
-import { ProfileStore } from "./profile.store.js";
+import { ProfileService } from "./profile.service.js";
 import { LoginError } from "../login/login.types.js";
 import {
   SessionGuard,
@@ -21,7 +21,9 @@ const fail = httpFailure(ProfileError, LoginError);
 @Controller("profile")
 @UseGuards(SessionGuard)
 export class ProfileController {
-  constructor(@Inject(ProfileStore) private readonly profiles: ProfileStore) {}
+  constructor(
+    @Inject(ProfileService) private readonly profiles: ProfileService,
+  ) {}
   private async identity(request: AuthenticatedRequest) {
     const session = request.session;
     if (!session)

@@ -1,32 +1,16 @@
 import type { Pool, PoolClient } from "pg";
-import { containsForbiddenName } from "@xiangqi/shared";
 import { actorLock, transaction } from "../google/postgres.js";
-import {
-  DISPLAY_NAME_MAX,
-  DISPLAY_NAME_MIN,
-  ProfileError,
-  type ProfileLocation,
-  type ProfileView,
-} from "./profile.types.js";
-function fail(code: string, message: string, status = 409): never {
-  throw new ProfileError(code, message, status);
+import { ProfileError } from "./profile.types.js";
+
+export interface ProfileRow {
+  username: string | null;
+  displayName: string;
 }
-function displayName(input: unknown): string {
-  if (typeof input !== "string")
-    fail("PROFILE_NAME_INVALID", "Tên hiển thị cần 2–30 ký tự", 400);
-  const name = (input as string).normalize("NFC").trim();
-  const length = Array.from(name).length;
-  if (length < DISPLAY_NAME_MIN || length > DISPLAY_NAME_MAX)
-    fail("PROFILE_NAME_INVALID", "Tên hiển thị cần 2–30 ký tự", 400);
-  if (
-    Array.from(name).some((character) => {
-      const code = character.codePointAt(0)!;
-      return code < 32 || (code >= 127 && code <= 159);
-    }) ||
-    containsForbiddenName(name)
-  )
-    fail("PROFILE_NAME_FORBIDDEN", "Tên hiển thị chứa từ không được phép", 400);
-  return name;
+export interface LocationRow {
+  roomId: string;
+  status: string;
+  currentMatchId: string | null;
+  mode: string | null;
 }
 export class ProfileStore {
   constructor(private readonly pool: Pool) {}
@@ -39,48 +23,30 @@ export class ProfileStore {
       return work(client);
     });
   }
-  private async row(
-    client: PoolClient,
-    userId: string,
-  ): Promise<{ username: string; display_name: string }> {
+  private async row(client: PoolClient, userId: string): Promise<ProfileRow> {
     const row = (
       await client.query(
         "SELECT username,display_name FROM public.profiles WHERE user_id=$1",
         [userId],
       )
     ).rows[0];
-    if (!row) fail("PROFILE_MISSING", "Không tìm thấy hồ sơ", 404);
-    return row;
+    if (!row)
+      throw new ProfileError("PROFILE_MISSING", "Không tìm thấy hồ sơ", 404);
+    return { username: row.username, displayName: row.display_name };
   }
-  async read(
-    userId: string,
-    identity: { username: string; email: string },
-  ): Promise<ProfileView> {
-    return this.withUser(userId, async (client) => {
-      const row = await this.row(client, userId);
-      return {
-        userId,
-        username: row.username ?? identity.username,
-        email: identity.email,
-        displayName: row.display_name,
-      };
-    });
+  read(userId: string): Promise<ProfileRow> {
+    return this.withUser(userId, (client) => this.row(client, userId));
   }
-  async updateDisplayName(
-    userId: string,
-    input: unknown,
-  ): Promise<{ displayName: string }> {
-    const name = displayName(input);
+  updateDisplayName(userId: string, displayName: string): Promise<void> {
     return this.withUser(userId, async (client) => {
       await this.row(client, userId);
       await client.query(
         "UPDATE public.profiles SET display_name=$2,updated_at=clock_timestamp() WHERE user_id=$1",
-        [userId, name],
+        [userId, displayName],
       );
-      return { displayName: name };
     });
   }
-  async location(userId: string): Promise<ProfileLocation> {
+  location(userId: string): Promise<LocationRow | null> {
     return transaction(this.pool, async (client) => {
       const row = (
         await client.query(
@@ -92,17 +58,12 @@ export class ProfileStore {
           [userId],
         )
       ).rows[0];
-      if (!row) return { kind: "none", roomId: null, matchId: null };
-      if (row.status === "PLAYING" && row.current_match_id)
-        return {
-          kind: row.mode === "AI" ? "playing-ai" : "playing-online",
-          roomId: row.room_id as string,
-          matchId: row.current_match_id as string,
-        };
+      if (!row) return null;
       return {
-        kind: "waiting",
-        roomId: row.room_id as string,
-        matchId: null,
+        roomId: row.room_id,
+        status: row.status,
+        currentMatchId: row.current_match_id,
+        mode: row.mode,
       };
     });
   }
