@@ -16,6 +16,9 @@ import {
   type Position,
   type Side,
 } from "@xiangqi/xiangqi-core";
+import { BoardDefs } from "./BoardDefs.js";
+import { BoardGrid } from "./BoardGrid.js";
+import { glyphs, PieceContent } from "./PieceContent.js";
 import "./XiangqiBoard.css";
 import "./XiangqiBoardInteraction.css";
 
@@ -30,26 +33,6 @@ export interface XiangqiBoardProps {
   lastMove?: Move | null;
 }
 
-const glyphs: Record<Side, Record<PieceType, string>> = {
-  red: {
-    king: "帥",
-    advisor: "仕",
-    elephant: "相",
-    rook: "俥",
-    horse: "傌",
-    cannon: "炮",
-    pawn: "兵",
-  },
-  black: {
-    king: "將",
-    advisor: "士",
-    elephant: "象",
-    rook: "車",
-    horse: "馬",
-    cannon: "砲",
-    pawn: "卒",
-  },
-};
 const names: Record<PieceType, string> = {
   king: "Tướng",
   advisor: "Sĩ",
@@ -68,31 +51,6 @@ const pieceTypes: PieceType[] = [
   "cannon",
   "pawn",
 ];
-const files = Array.from({ length: 9 }, (_, x) => x);
-const ranks = Array.from({ length: 10 }, (_, y) => y);
-const marks = [
-  [1, 2],
-  [7, 2],
-  [1, 7],
-  [7, 7],
-  ...[0, 2, 4, 6, 8].flatMap((x) => [
-    [x, 3],
-    [x, 6],
-  ]),
-];
-
-function markerPath(x: number, y: number): string {
-  const cx = 24 + x * 40;
-  const cy = 24 + y * 40;
-  const corners: string[] = [];
-  for (const dx of [-1, 1]) {
-    if ((x === 0 && dx === -1) || (x === 8 && dx === 1)) continue;
-    for (const dy of [-1, 1]) {
-      corners.push(`M${cx + dx * 4} ${cy + dy * 9}v${-dy * 5}h${dx * 5}`);
-    }
-  }
-  return corners.join(" ");
-}
 
 /** Controlled position: callbacks request a move; only new props change the board. */
 export function XiangqiBoard({
@@ -375,136 +333,6 @@ export function XiangqiBoard({
   const selectedGlowId = `${id}-selected-glow`;
   const bottom = orientation === "red" ? "Đỏ" : "Đen";
 
-  function renderPieceContent(side: Side, type: PieceType) {
-    return (
-      <>
-        {/* Mặt phôi gỗ tiện 3D */}
-        <circle
-          className="xq-board-piece-face"
-          r="17.6"
-          fill={`url(#${pieceWoodId})`}
-          stroke={`url(#${pieceRimId})`}
-          strokeWidth="1.2"
-        />
-        {/* Quân đen có thêm vòng tròn inner để phân biệt 1 nét và 2 nét chuẩn T11 */}
-        {side === "black" && (
-          <circle
-            className="xq-board-piece-inner"
-            r="14.3"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="0.9"
-          />
-        )}
-        {/* Rãnh tròn chạm khắc đồng tâm tinh xảo (path SVG) */}
-        <path
-          className="xq-board-piece-groove"
-          d="M 0 -14.3 a 14.3 14.3 0 1 0 0.0001 0 Z"
-          fill="none"
-          stroke={`url(#${pieceGrooveId})`}
-          strokeWidth="0.9"
-        />
-        {/* Chữ Hán thư pháp */}
-        <text className="xq-board-piece-glyph" aria-hidden="true">
-          {glyphs[side][type]}
-        </text>
-      </>
-    );
-  }
-
-  const boardGrid = useMemo(
-    () => (
-      <g aria-hidden="true" className="xq-board-grid">
-        {/* Khung viền bàn cờ gỗ tự nhiên dày dặn bo góc */}
-        <rect
-          x="1"
-          y="1"
-          width="366"
-          height="406"
-          rx="10"
-          className="xq-board-frame"
-          fill={`url(#${boardFrameId})`}
-        />
-        {/* Mặt bàn cờ gỗ vàng ấm */}
-        <rect
-          x="6"
-          y="6"
-          width="356"
-          height="396"
-          rx="6"
-          className="xq-board-surface"
-          fill={`url(#${woodId})`}
-        />
-        {/* Viền rãnh bo quanh lưới cờ */}
-        <rect
-          x="18"
-          y="18"
-          width="332"
-          height="372"
-          rx="3"
-          className="xq-board-inner-frame"
-        />
-        {ranks.map((y) => (
-          <line
-            key={y}
-            className="xq-board-rank"
-            x1="24"
-            x2="344"
-            y1={24 + y * 40}
-            y2={24 + y * 40}
-          />
-        ))}
-        {files.map((x) =>
-          x === 0 || x === 8 ? (
-            <line
-              key={x}
-              className="xq-board-file"
-              x1={24 + x * 40}
-              x2={24 + x * 40}
-              y1="24"
-              y2="384"
-            />
-          ) : (
-            <g key={x}>
-              <line
-                className="xq-board-file"
-                x1={24 + x * 40}
-                x2={24 + x * 40}
-                y1="24"
-                y2="184"
-              />
-              <line
-                className="xq-board-file"
-                x1={24 + x * 40}
-                x2={24 + x * 40}
-                y1="224"
-                y2="384"
-              />
-            </g>
-          ),
-        )}
-        <path className="xq-board-palace" d="M144 24L224 104M224 24L144 104" />
-        <path
-          className="xq-board-palace"
-          d="M144 304L224 384M224 304L144 384"
-        />
-        {marks.map(([x, y]) => (
-          <path
-            key={`${x}-${y}`}
-            className="xq-board-mark"
-            d={markerPath(x!, y!)}
-          />
-        ))}
-        <text className="xq-board-river" x="104" y="204">
-          楚河
-        </text>
-        <text className="xq-board-river" x="264" y="204">
-          漢界
-        </text>
-      </g>
-    ),
-    [woodId, boardFrameId],
-  );
   return (
     <figure
       className={`xq-board${interactive ? " xq-board-interactive" : ""}${enabled ? " xq-board-can-move" : ""}`}
@@ -528,123 +356,18 @@ export function XiangqiBoard({
           9 cột, 10 hàng giao điểm. Quân cờ tiện gỗ 3D chạm khắc tinh xảo. Nhãn
           quân dùng tọa độ gốc.
         </desc>
-        <defs>
-          <clipPath id={clipId}>
-            <rect width="368" height="408" />
-          </clipPath>
-
-          {/* Bóng đổ chân thực dưới quân cờ */}
-          <filter
-            id={pieceShadowId}
-            x="-35%"
-            y="-30%"
-            width="170%"
-            height="175%"
-          >
-            <feDropShadow
-              dx="0"
-              dy="1.0"
-              stdDeviation="0.8"
-              floodColor="#180b03"
-              floodOpacity="0.35"
-            />
-            <feDropShadow
-              dx="0"
-              dy="3.2"
-              stdDeviation="2.4"
-              floodColor="#2b1405"
-              floodOpacity="0.48"
-            />
-          </filter>
-
-          {/* Bóng đổ khi nhấc nhẹ quân cờ đứng tại chỗ */}
-          <filter
-            id={pieceLiftedShadowId}
-            x="-45%"
-            y="-35%"
-            width="190%"
-            height="190%"
-          >
-            <feDropShadow
-              dx="0"
-              dy="1.5"
-              stdDeviation="1.5"
-              floodColor="#180b03"
-              floodOpacity="0.3"
-            />
-            <feDropShadow
-              dx="0"
-              dy="4.5"
-              stdDeviation="3.0"
-              floodColor="#261204"
-              floodOpacity="0.45"
-            />
-          </filter>
-
-          {/* Vầng sáng mềm mại khi chọn quân */}
-          <filter
-            id={selectedGlowId}
-            x="-40%"
-            y="-40%"
-            width="180%"
-            height="180%"
-          >
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation="3.2"
-              floodColor="#ffffff"
-              floodOpacity="0.95"
-            />
-          </filter>
-
-          {/* Khung viền gỗ bên ngoài bàn cờ */}
-          <linearGradient id={boardFrameId} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#b4834b" />
-            <stop offset="45%" stopColor="#8d5b27" />
-            <stop offset="100%" stopColor="#5d3913" />
-          </linearGradient>
-
-          {/* Vân gỗ mặt bàn cờ tự nhiên ấm áp */}
-          <linearGradient id={woodId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#eed5af" />
-            <stop offset="25%" stopColor="#e3c293" />
-            <stop offset="50%" stopColor="#ecd5b1" />
-            <stop offset="75%" stopColor="#dec08f" />
-            <stop offset="100%" stopColor="#d5af77" />
-          </linearGradient>
-
-          {/* Thân gỗ tự nhiên của quân cờ tròn 3D */}
-          <radialGradient id={pieceWoodId} cx="38%" cy="34%" r="66%">
-            <stop offset="0%" stopColor="#fff8ea" />
-            <stop offset="20%" stopColor="#fae7c4" />
-            <stop offset="55%" stopColor="#ebd2a2" />
-            <stop offset="85%" stopColor="#d9b178" />
-            <stop offset="100%" stopColor="#bf9053" />
-          </radialGradient>
-
-          {/* Viền gờ tròn nổi 3D của quân cờ */}
-          <linearGradient id={pieceRimId} x1="20%" y1="0%" x2="80%" y2="100%">
-            <stop offset="0%" stopColor="#fffaf0" />
-            <stop offset="35%" stopColor="#e2bc84" />
-            <stop offset="70%" stopColor="#a9763c" />
-            <stop offset="100%" stopColor="#754a1d" />
-          </linearGradient>
-
-          {/* Đường rãnh chìm tròn đồng tâm của quân cờ */}
-          <linearGradient
-            id={pieceGrooveId}
-            x1="30%"
-            y1="0%"
-            x2="70%"
-            y2="100%"
-          >
-            <stop offset="0%" stopColor="#7c4e1f" stopOpacity="0.85" />
-            <stop offset="50%" stopColor="#a57640" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#fff3db" stopOpacity="0.8" />
-          </linearGradient>
-        </defs>
-        {boardGrid}
+        <BoardDefs
+          clipId={clipId}
+          pieceShadowId={pieceShadowId}
+          pieceLiftedShadowId={pieceLiftedShadowId}
+          selectedGlowId={selectedGlowId}
+          boardFrameId={boardFrameId}
+          woodId={woodId}
+          pieceWoodId={pieceWoodId}
+          pieceRimId={pieceRimId}
+          pieceGrooveId={pieceGrooveId}
+        />
+        <BoardGrid woodId={woodId} boardFrameId={boardFrameId} />
         <g aria-hidden="true" className="xq-board-signs">
           {lastMove &&
             (() => {
@@ -776,7 +499,13 @@ export function XiangqiBoard({
                       : `url(#${pieceShadowId})`
                   }
                 >
-                  {renderPieceContent(piece.side, piece.type)}
+                  <PieceContent
+                    side={piece.side}
+                    type={piece.type}
+                    woodId={pieceWoodId}
+                    rimId={pieceRimId}
+                    grooveId={pieceGrooveId}
+                  />
                 </g>
               </g>
             );
@@ -793,7 +522,13 @@ export function XiangqiBoard({
                   transform={`translate(${ghost.x} ${ghost.y})`}
                   filter={`url(#${pieceLiftedShadowId})`}
                 >
-                  {renderPieceContent(piece.side, piece.type)}
+                  <PieceContent
+                    side={piece.side}
+                    type={piece.type}
+                    woodId={pieceWoodId}
+                    rimId={pieceRimId}
+                    grooveId={pieceGrooveId}
+                  />
                 </g>
               </g>
             );
