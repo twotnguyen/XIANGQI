@@ -219,7 +219,7 @@ export function attachPublicRoomFeed(
   });
   const timer = setInterval(() => {
     for (const peer of peers) read(peer);
-  }, 3000);
+  }, 1000);
   timer.unref();
   return {
     close(): Promise<void> {
