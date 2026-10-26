@@ -27,6 +27,7 @@ Nguồn duy nhất cho kiểm tra; thắng mọi yêu cầu "smoke run/verify" c
 - Prettier/eslint/typecheck chạy trên file vừa sửa, khi thật sự cần.
 - Sửa UI: không dựng harness hay dữ liệu giả. Xem qua route `/dev/*` (`shared/navigation/routes.ts`) khi server dev đang chạy; không xem được thì dừng sau một lần thử, ghi "chưa xem giao diện".
 - Được yêu cầu test: chạy đúng phạm vi giao, dưới Node 22.
+- Viết test mới: ưu tiên test chạy mã thật (DB qua `db.sh`, luật qua `xiangqi-core`); không thêm test mock lại hành vi đã có test thật phủ. File test quá ~600 dòng thì tách theo kịch bản (`x.<nhóm>.test.ts` + `x.test-helper.ts`), giữ nguyên số test. Tìm test trùng bằng độ phủ từng file, không bằng cảm giác.
 - CI lo kiểm thử tự động: không lặp lại ở local, không chờ/poll CI (đọc trạng thái PR một lần bằng công cụ của ứng dụng). Lỗi ngoài phạm vi báo riêng, không sửa để làm repo xanh.
 - Chưa chạy thì báo "Test local: không chạy (không được yêu cầu)"; chỉ báo kết quả thực sự đã quan sát.
 
