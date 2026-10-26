@@ -73,6 +73,22 @@ export class AiReservations {
     if (!row) fail("AI_BOOT_EXPIRED");
     return { id: canonical, leaseUntil: row.lease_until.toISOString() };
   }
+  /** The AI game and boot the user currently holds, or nulls when none. */
+  async held(
+    scope: RoomScope,
+    userId: string,
+  ): Promise<{ gameId: string | null; bootId: string | null }> {
+    const row = (
+      await scope.client.query<{
+        ai_game_id: string | null;
+        ai_boot_id: string | null;
+      }>(
+        "SELECT ai_game_id,ai_boot_id FROM public.active_players WHERE user_id=$1",
+        [userId],
+      )
+    ).rows[0];
+    return { gameId: row?.ai_game_id ?? null, bootId: row?.ai_boot_id ?? null };
+  }
   private async slot(scope: RoomScope): Promise<Slot | undefined> {
     const actorId = id(scope.actor.userId);
     if (

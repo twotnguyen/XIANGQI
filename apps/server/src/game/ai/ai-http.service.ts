@@ -12,7 +12,7 @@ type Human = Extract<AiOrigin, { kind: "human" }>;
 interface Options {
   games: Pick<AiGames, "read" | "create" | "move" | "resign" | "retry">;
   transactions: Pick<SqlAiTransactions, "read">;
-  reservations: Pick<AiReservations, "check">;
+  reservations: Pick<AiReservations, "check" | "held">;
   bootId: string;
   control: {
     /** Inspect a server-owned live physical connection and SQL generation. Never attach/take over on GET. */
@@ -37,24 +37,16 @@ export class AiHttpService implements AiHttpApi {
     return this.options.transactions.read(
       privateProof,
       async (scope, owner) => {
-        const row = (
-          await scope.client.query<{
-            ai_game_id: string | null;
-            ai_boot_id: string | null;
-          }>(
-            "SELECT ai_game_id,ai_boot_id FROM public.active_players WHERE user_id=$1",
-            [owner],
-          )
-        ).rows[0];
-        if (!row?.ai_game_id) return { gameId: null };
-        if (row.ai_boot_id !== this.options.bootId)
+        const held = await this.options.reservations.held(scope, owner);
+        if (!held.gameId) return { gameId: null };
+        if (held.bootId !== this.options.bootId)
           sessionNotReady("AI_RESERVATION_LOST");
         await this.options.reservations.check(scope, {
-          gameId: row.ai_game_id,
+          gameId: held.gameId,
           bootId: this.options.bootId,
         });
-        this.options.games.read(owner, row.ai_game_id);
-        return { gameId: row.ai_game_id };
+        this.options.games.read(owner, held.gameId);
+        return { gameId: held.gameId };
       },
     );
   }
