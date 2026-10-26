@@ -1,6 +1,7 @@
 import { Module, type DynamicModule } from "@nestjs/common";
 import type { Pool } from "pg";
 import { FriendStore } from "./friend.store.js";
+import { FriendService } from "./friend.service.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
 import { FriendController } from "./friend.controller.js";
@@ -11,7 +12,10 @@ export class FriendModule {
       module: FriendModule,
       controllers: [FriendController],
       providers: [
-        { provide: FriendStore, useValue: new FriendStore(pool) },
+        {
+          provide: FriendService,
+          useValue: new FriendService(new FriendStore(pool)),
+        },
         { provide: SessionService, useValue: sessions },
         SessionGuard,
       ],

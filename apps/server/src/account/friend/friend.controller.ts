@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common";
 import { FriendError } from "./friend.types.js";
 import { httpFailure, invalidInput } from "../../core/http-errors.js";
-import { FriendStore } from "./friend.store.js";
+import { FriendService } from "./friend.service.js";
 import {
   SessionGuard,
   type AuthenticatedRequest,
@@ -23,7 +23,7 @@ const fail = httpFailure(FriendError);
 @Controller("friends")
 @UseGuards(SessionGuard)
 export class FriendController {
-  constructor(@Inject(FriendStore) private readonly friends: FriendStore) {}
+  constructor(@Inject(FriendService) private readonly friends: FriendService) {}
   private user(request: AuthenticatedRequest) {
     if (!request.userId) invalidInput("FRIEND_INPUT_INVALID");
     return request.userId as string;
