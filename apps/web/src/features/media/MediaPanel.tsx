@@ -242,10 +242,15 @@ export function MediaPanel({
         if (epoch.current !== requestEpoch) return;
         const canPublishHere = role !== "spectator" && next.level !== "NONE";
         const stage = ticket.stage;
-        const connectPrivate = connect(ticket.url, ticket.token, ticket.roomName, {
-          camera: next.camera && canPublishHere,
-          mic: next.mic && canPublishHere,
-        });
+        const connectPrivate = connect(
+          ticket.url,
+          ticket.token,
+          ticket.roomName,
+          {
+            camera: next.camera && canPublishHere,
+            mic: next.mic && canPublishHere,
+          },
+        );
         const connectStage =
           stage && role !== "spectator"
             ? connect(ticket.url, stage.token, stage.roomName, {

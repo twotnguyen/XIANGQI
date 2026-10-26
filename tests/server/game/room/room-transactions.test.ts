@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { SessionService } from "@server/account/login/session.service.js";
 import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
 import { RoomStore } from "@server/game/room/room-store.js";
@@ -21,7 +22,7 @@ import {
 const coordinator = new RoomTransactions(pool);
 const rooms = new RoomStore();
 // Synthetic lifecycle for coordinator tests only, not production privacy cleanup.
-const guest = new GuestService(pool, {
+const guest = new GuestService(new GuestStore(pool), {
   seatedSeat: async () => null,
   end: async () => {},
 });
@@ -429,7 +430,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     let now = new Date();
     let context: RoomActorProof | undefined;
     const expiredGuest = new GuestService(
-      pool,
+      new GuestStore(pool),
       {
         seatedSeat: async () => null,
         end: async (c) => {

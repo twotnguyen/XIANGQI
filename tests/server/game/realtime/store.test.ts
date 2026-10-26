@@ -791,7 +791,10 @@ describe.skipIf(!realtimeTestUrl)(
       await connect(red.client);
       await connect(black.client);
       const request = readyCommand(room.roomId);
-      const committedSnapshot = event<RoomSnapshot>(red.client, "room.snapshot");
+      const committedSnapshot = event<RoomSnapshot>(
+        red.client,
+        "room.snapshot",
+      );
       await command(red.client, request);
       expect(await committedSnapshot).toMatchObject({ version: 1 });
       identities.delete(red.token);
@@ -819,7 +822,10 @@ describe.skipIf(!realtimeTestUrl)(
       await connect(red.client);
       await connect(black.client);
       const request = readyCommand(room.roomId);
-      const committedSnapshot = event<RoomSnapshot>(red.client, "room.snapshot");
+      const committedSnapshot = event<RoomSnapshot>(
+        red.client,
+        "room.snapshot",
+      );
       expect(await command(red.client, request)).toMatchObject({
         status: "ok",
       });

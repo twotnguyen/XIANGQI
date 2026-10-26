@@ -10,6 +10,7 @@ import {
 } from "./room.test-helper.js";
 import { RoomGuestPort } from "@server/game/room/guest-room-port.js";
 import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { RoomWorker } from "@server/game/room/room-worker.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import type { RoomActor, RoomScope } from "@server/game/room/room.types.js";
@@ -131,31 +132,22 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   it("denies wrong session and concurrent second seat; rejects changed command payload", async () => {
     const { a, proof } = await admitted();
     await expect(
-      run(a, "wrong", [], (s) =>
-        store.create(s, { commandId: randomUUID() }),
-      ),
+      run(a, "wrong", [], (s) => store.create(s, { commandId: randomUUID() })),
     ).rejects.toThrow("SESSION_INVALID");
     const commandId = randomUUID();
     await run(a, proof, [], (s) =>
       store.create(s, { commandId, timeMinutes: 10 }),
     );
     await expect(
-      run(a, proof, [], (s) =>
-        store.create(s, { commandId, timeMinutes: 15 }),
-      ),
+      run(a, proof, [], (s) => store.create(s, { commandId, timeMinutes: 15 })),
     ).rejects.toMatchObject({ code: "COMMAND_ID_REUSED" });
     await expect(
-      run(a, proof, [], (s) =>
-        store.create(s, { commandId: randomUUID() }),
-      ),
+      run(a, proof, [], (s) => store.create(s, { commandId: randomUUID() })),
     ).rejects.toMatchObject({ code: "ALREADY_SEATED" });
   });
   it("validates room settings before writing any room", async () => {
     const { a, proof } = await admitted();
-    for (const input of [
-      { timeMinutes: 0 },
-      { viewerLimit: 6 },
-    ])
+    for (const input of [{ timeMinutes: 0 }, { viewerLimit: 6 }])
       await expect(
         run(a, proof, [], (s) =>
           store.create(s, { commandId: randomUUID(), ...input }),
@@ -884,7 +876,7 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
         id,
       ]);
     });
-    const guests = new GuestService(pool, port, () => now);
+    const guests = new GuestService(new GuestStore(pool), port, () => now);
     const session = await guests.create("Tên tạm");
     const guest = await guests.requireActive(session.capability),
       e = await guests.withActor(

@@ -132,7 +132,10 @@ export class RoomTransactions {
     const actorIds = [
       ...new Set([...before.actorIds, ...extraActorIds.map(uuid)]),
     ].sort();
-    await lockInOrder(client, actorIds.map((id) => "actor:" + id));
+    await lockInOrder(
+      client,
+      actorIds.map((id) => "actor:" + id),
+    );
     const after = await projection(client, normalized);
     const proof: RoomActorProof = {
       client,
@@ -179,7 +182,10 @@ export class RoomTransactions {
 
   // Same client and complete actor union; never acquire actors here.
   async lockRooms(proof: RoomActorProof): Promise<RoomScope> {
-    await lockInOrder(proof.client, proof.roomIds.map((id) => "room:" + id));
+    await lockInOrder(
+      proof.client,
+      proof.roomIds.map((id) => "room:" + id),
+    );
     if (proof.roomIds.length)
       await proof.client.query(
         "SELECT id FROM public.rooms WHERE id=ANY($1::uuid[]) ORDER BY id FOR UPDATE",

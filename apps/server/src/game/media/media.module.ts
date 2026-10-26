@@ -1,5 +1,6 @@
 import { Module, type DynamicModule } from "@nestjs/common";
 import { MediaAccess } from "./media.service.js";
+import { MediaStore } from "./media.store.js";
 import { SessionService } from "../../account/login/session.service.js";
 import { SessionGuard } from "../../account/login/session.guard.js";
 import { MediaController } from "./media.controller.js";
@@ -36,6 +37,6 @@ export async function createMediaRuntime(
 ): Promise<MediaRuntime | null> {
   const config = readMediaConfig(env);
   if (!config || !registration?.sessions) return null;
-  const access = new MediaAccess(config, registration.pool);
+  const access = new MediaAccess(config, new MediaStore(registration.pool));
   return { module: MediaModule.forRoot(access, registration.sessions), access };
 }

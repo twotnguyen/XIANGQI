@@ -1,4 +1,6 @@
+import { once } from "node:events";
 import { createServer } from "node:http";
+import type { Worker } from "node:worker_threads";
 import { afterEach, expect, it } from "vitest";
 import {
   initialPosition,
@@ -244,10 +246,15 @@ it("bounds a hung worker, terminates it and preserves the original request", asy
 it("replaces an idle worker which exited after a successful result", async () => {
   const worker = create({
     workerURL: new URL("./worker-fixtures/exit-worker.mjs", import.meta.url),
-    watchdogMs: 200,
+    // Generous: this success path took up to 173 ms when the machine was busy; timeouts are tested elsewhere.
+    watchdogMs: 3000,
   });
   expect((await worker.search(request())).move).toEqual({ from: 54, to: 45 });
-  await new Promise((resolve) => setTimeout(resolve, 60));
+  // Wait for the real exit instead of guessing a delay; the worker's own exit
+  // listener is registered first, so the dead worker is already discarded here.
+  // A null worker was already discarded (it exited before this line ran).
+  const cached = (worker as unknown as { worker: Worker | null }).worker;
+  if (cached && cached.threadId !== -1) await once(cached, "exit");
   expect((await worker.search(request())).move).toEqual({ from: 54, to: 45 });
 });
 it("sanitizes synchronous worker startup failures", async () => {

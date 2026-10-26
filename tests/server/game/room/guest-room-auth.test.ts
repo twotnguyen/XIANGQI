@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import {
   GuestError,
   type GuestPurpose,
@@ -41,7 +42,7 @@ async function fixture(seated = false, spectator = false) {
       await c.query("DELETE FROM public.room_members WHERE user_id=$1", [id]);
     }),
   };
-  const service = new GuestService(pool, port, () => now),
+  const service = new GuestService(new GuestStore(pool), port, () => now),
     guest = await service.create("Synthetic Guest"),
     authorizer = new GuestRoomAuthorizer(service, pool),
     proof = { capability: guest.capability };
@@ -358,7 +359,10 @@ describe.skipIf(!databaseUrl)(
     });
     it("fails closed without lifecycle ports and sanitizes unknown dependency errors", async () => {
       const f = await fixture(),
-        withoutPorts = new GuestRoomAuthorizer(new GuestService(pool), pool),
+        withoutPorts = new GuestRoomAuthorizer(
+          new GuestService(new GuestStore(pool)),
+          pool,
+        ),
         a = await withoutPorts.resolve(f.proof);
       await expect(
         coordinator.withRoom(

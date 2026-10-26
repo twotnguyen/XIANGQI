@@ -60,7 +60,11 @@ function loadGame(gameId: string): AiGameStorage | null {
     const raw = sessionStorage.getItem(storageKey(gameId));
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === "object" && typeof parsed.position === "string") {
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      typeof parsed.position === "string"
+    ) {
       return parsed as AiGameStorage;
     }
   } catch {
@@ -82,7 +86,10 @@ export function AiGamePage({
   initialSetup,
 }: {
   gameId: string;
-  initialSetup?: { level: "easy" | "medium" | "hard"; requestedSide: Side | "random" };
+  initialSetup?: {
+    level: "easy" | "medium" | "hard";
+    requestedSide: Side | "random";
+  };
 }) {
   const [snapshot, setSnapshot] = useState<AiGameSnapshot>(() => {
     const saved = loadGame(gameId);
@@ -170,85 +177,78 @@ export function AiGamePage({
   }, [gameId, snapshot, undoRemaining, lastMove]);
 
   // Execute AI move when it's AI's turn
-  const triggerAiTurn = useCallback(
-    (currentSnapshot: AiGameSnapshot) => {
-      if (
-        currentSnapshot.status !== "ACTIVE" ||
-        isThinking.current
-      )
-        return;
+  const triggerAiTurn = useCallback((currentSnapshot: AiGameSnapshot) => {
+    if (currentSnapshot.status !== "ACTIVE" || isThinking.current) return;
 
-      const pos = parsePosition(currentSnapshot.position);
-      if (pos.turn === currentSnapshot.actualSide) return; // Player's turn
+    const pos = parsePosition(currentSnapshot.position);
+    if (pos.turn === currentSnapshot.actualSide) return; // Player's turn
 
-      isThinking.current = true;
-      setSnapshot((prev) => ({
-        ...prev,
-        engineState: "THINKING",
-        engineError: null,
-      }));
+    isThinking.current = true;
+    setSnapshot((prev) => ({
+      ...prev,
+      engineState: "THINKING",
+      engineError: null,
+    }));
 
-      // Tốc độ suy nghĩ tự nhiên của máy cờ (700ms - 1300ms) để người chơi kịp quan sát
-      const delay =
-        currentSnapshot.level === "easy"
-          ? 700 + Math.random() * 200
-          : currentSnapshot.level === "medium"
-            ? 900 + Math.random() * 250
-            : 1200 + Math.random() * 300;
+    // Tốc độ suy nghĩ tự nhiên của máy cờ (700ms - 1300ms) để người chơi kịp quan sát
+    const delay =
+      currentSnapshot.level === "easy"
+        ? 700 + Math.random() * 200
+        : currentSnapshot.level === "medium"
+          ? 900 + Math.random() * 250
+          : 1200 + Math.random() * 300;
 
-      window.setTimeout(() => {
-        try {
-          const result = searchPosition({
-            position: currentSnapshot.position,
-            side: pos.turn,
-            level: currentSnapshot.level,
-            history: currentSnapshot.history,
-          });
+    window.setTimeout(() => {
+      try {
+        const result = searchPosition({
+          position: currentSnapshot.position,
+          side: pos.turn,
+          level: currentSnapshot.level,
+          history: currentSnapshot.history,
+        });
 
-          if (result.move) {
-            setLastMove(result.move);
-            const nextPos = playMove(pos, result.move);
-            const nextFen = serializePosition(nextPos);
-            const nextHistory = [...currentSnapshot.history, nextFen];
-            const gameEnding = ending(nextHistory.map(parsePosition));
+        if (result.move) {
+          setLastMove(result.move);
+          const nextPos = playMove(pos, result.move);
+          const nextFen = serializePosition(nextPos);
+          const nextHistory = [...currentSnapshot.history, nextFen];
+          const gameEnding = ending(nextHistory.map(parsePosition));
 
-            setSnapshot((prev) => ({
-              ...prev,
-              position: nextFen,
-              history: nextHistory,
-              version: prev.version + 1,
-              engineState: "IDLE",
-              engineError: null,
-              status: gameEnding ? "FINISHED" : "ACTIVE",
-              outcome: gameEnding ?? null,
-            }));
-            void audio.current?.unlock();
-          } else if (result.terminal) {
-            setSnapshot((prev) => ({
-              ...prev,
-              engineState: "IDLE",
-              status: "FINISHED",
-              outcome: result.terminal,
-            }));
-          } else {
-            setSnapshot((prev) => ({
-              ...prev,
-              engineState: "IDLE",
-            }));
-          }
-        } catch {
           setSnapshot((prev) => ({
             ...prev,
-            engineState: "RETRY",
-            engineError: "ENGINE_TIMEOUT",
+            position: nextFen,
+            history: nextHistory,
+            version: prev.version + 1,
+            engineState: "IDLE",
+            engineError: null,
+            status: gameEnding ? "FINISHED" : "ACTIVE",
+            outcome: gameEnding ?? null,
           }));
-        } finally {
-          isThinking.current = false;
+          void audio.current?.unlock();
+        } else if (result.terminal) {
+          setSnapshot((prev) => ({
+            ...prev,
+            engineState: "IDLE",
+            status: "FINISHED",
+            outcome: result.terminal,
+          }));
+        } else {
+          setSnapshot((prev) => ({
+            ...prev,
+            engineState: "IDLE",
+          }));
         }
-      }, delay);
-    },
-    [],
-  );
+      } catch {
+        setSnapshot((prev) => ({
+          ...prev,
+          engineState: "RETRY",
+          engineError: "ENGINE_TIMEOUT",
+        }));
+      } finally {
+        isThinking.current = false;
+      }
+    }, delay);
+  }, []);
 
   // If player chose Black, AI (Red) moves first!
   useEffect(() => {
@@ -312,12 +312,17 @@ export function AiGamePage({
   };
 
   const handleRetry = async () => {
-    if (snapshot.status !== "ACTIVE" || snapshot.engineState !== "RETRY") return;
+    if (snapshot.status !== "ACTIVE" || snapshot.engineState !== "RETRY")
+      return;
     triggerAiTurn(snapshot);
   };
 
   const handleUndo = async () => {
-    if (undoRemaining <= 0 || snapshot.status !== "ACTIVE" || snapshot.engineState !== "IDLE")
+    if (
+      undoRemaining <= 0 ||
+      snapshot.status !== "ACTIVE" ||
+      snapshot.engineState !== "IDLE"
+    )
       return;
 
     const hist = [...snapshot.history];
@@ -345,7 +350,9 @@ export function AiGamePage({
     const restoredFen = newHistory[newHistory.length - 1]!;
 
     if (newHistory.length >= 2) {
-      setLastMove(findMoveBetween(newHistory[newHistory.length - 2]!, restoredFen));
+      setLastMove(
+        findMoveBetween(newHistory[newHistory.length - 2]!, restoredFen),
+      );
     } else {
       setLastMove(null);
     }

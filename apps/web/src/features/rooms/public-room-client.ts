@@ -216,39 +216,36 @@ export function connectPublicRooms(input: PublicRoomsConnectionInput) {
     connected = false,
     epoch = 0;
   const current = () => !closed && !denied;
-  const socket = io(
-    `${getApiBaseUrl()}/public-rooms`,
-    {
-      path: "/public-rooms/socket.io",
-      autoConnect: false,
-      auth: (done) => {
-        const attempt = ++epoch;
-        input.onConnection(false);
-        void input.getProof().then(
-          (value) => {
-            if (!current() || attempt !== epoch) return;
-            let safe: PublicRoomAuthProof;
-            try {
-              safe = proof(value);
-            } catch {
-              denied = true;
-              input.onConnection(false);
-              input.onError(expired);
-              socket.disconnect();
-              return;
-            }
-            done(safe);
-          },
-          () => {
-            if (!current() || attempt !== epoch) return;
+  const socket = io(`${getApiBaseUrl()}/public-rooms`, {
+    path: "/public-rooms/socket.io",
+    autoConnect: false,
+    auth: (done) => {
+      const attempt = ++epoch;
+      input.onConnection(false);
+      void input.getProof().then(
+        (value) => {
+          if (!current() || attempt !== epoch) return;
+          let safe: PublicRoomAuthProof;
+          try {
+            safe = proof(value);
+          } catch {
+            denied = true;
             input.onConnection(false);
-            input.onError(unavailable);
+            input.onError(expired);
             socket.disconnect();
-          },
-        );
-      },
+            return;
+          }
+          done(safe);
+        },
+        () => {
+          if (!current() || attempt !== epoch) return;
+          input.onConnection(false);
+          input.onError(unavailable);
+          socket.disconnect();
+        },
+      );
     },
-  );
+  });
   socket.on("connect", () => {
     connected = true;
     if (current()) input.onConnection(false);

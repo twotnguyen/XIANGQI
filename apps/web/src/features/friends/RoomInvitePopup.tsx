@@ -31,7 +31,10 @@ export function RoomInvitePopup({ client }: { client: FriendClient }) {
   }, [client]);
 
   useEffect(() => {
-    if (!invites || !invites.some((invite) => Date.parse(invite.expiresAt) > Date.now()))
+    if (
+      !invites ||
+      !invites.some((invite) => Date.parse(invite.expiresAt) > Date.now())
+    )
       return;
     setNow(Date.now());
     const clock = setInterval(() => setNow(Date.now()), 1000);

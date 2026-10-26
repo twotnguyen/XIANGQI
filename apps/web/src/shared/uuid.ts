@@ -33,7 +33,10 @@ export function generateUuid(): string {
 
 // Automatically polyfill crypto.randomUUID if absent (insecure contexts like HTTP on IP)
 if (typeof window !== "undefined") {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID !== "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID !== "function"
+  ) {
     try {
       Object.defineProperty(crypto, "randomUUID", {
         value: generateUuid,

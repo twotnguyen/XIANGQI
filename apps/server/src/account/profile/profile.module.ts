@@ -1,5 +1,6 @@
 import { Module, type DynamicModule } from "@nestjs/common";
-import { ProfileStore } from "./profile.service.js";
+import { ProfileStore } from "./profile.store.js";
+import { ProfileService } from "./profile.service.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
 import { ProfileController } from "./profile.controller.js";
@@ -11,7 +12,7 @@ export class ProfileModule {
       module: ProfileModule,
       controllers: [ProfileController],
       providers: [
-        { provide: ProfileStore, useValue: store },
+        { provide: ProfileService, useValue: new ProfileService(store) },
         { provide: SessionService, useValue: sessions },
         SessionGuard,
       ],

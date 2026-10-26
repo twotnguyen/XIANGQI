@@ -4,6 +4,7 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 import { actor, apply, databaseUrl, reset } from "../room/room.test-helper.js";
 import { MediaAccess } from "@server/game/media/media.service.js";
+import { MediaStore } from "@server/game/media/media.store.js";
 import { readMediaConfig } from "@server/game/media/media.module.js";
 import {
   privateRoomName,
@@ -48,7 +49,7 @@ describe.skipIf(!url)("media access", () => {
     await apply("supabase/migrations/20261011000015_media_share.sql");
   });
   it("issues player tokens with device-scoped publish rights", async () => {
-    const access = new MediaAccess(config, pool, async () => {
+    const access = new MediaAccess(config, new MediaStore(pool), async () => {
       throw new Error("no fetch expected");
     });
     const a = await actor();
@@ -76,7 +77,7 @@ describe.skipIf(!url)("media access", () => {
     expect(on.stage).toBeNull();
   });
   it("opens the stage room only at ALL and keeps viewers publish-free", async () => {
-    const access = new MediaAccess(config, pool, async () => {
+    const access = new MediaAccess(config, new MediaStore(pool), async () => {
       throw new Error("no fetch expected");
     });
     const a = await actor();
@@ -116,7 +117,7 @@ describe.skipIf(!url)("media access", () => {
     ).toBe(false);
   });
   it("denies outsiders and non-players from sharing", async () => {
-    const access = new MediaAccess(config, pool, async () => {
+    const access = new MediaAccess(config, new MediaStore(pool), async () => {
       throw new Error("no fetch expected");
     });
     const a = await actor();
@@ -136,7 +137,10 @@ describe.skipIf(!url)("media access", () => {
   });
   it("uses HTTP service URLs and room-scoped grants for both participant scopes", async () => {
     const calls: { url: string; body: string; token: string }[] = [];
-    const access = new MediaAccess(config, pool, (async (input, init) => {
+    const access = new MediaAccess(config, new MediaStore(pool), (async (
+      input,
+      init,
+    ) => {
       calls.push({
         url: String(input),
         body: String(init?.body),
@@ -164,26 +168,37 @@ describe.skipIf(!url)("media access", () => {
   });
   it("attempts both participant scopes and propagates forbidden and transport failures", async () => {
     let call = 0;
-    const forbidden = new MediaAccess(config, pool, (async () => {
-      call++;
-      return {
-        ok: false,
-        status: 403,
-        json: async () => ({ code: "permission_denied" }),
-      } as Response;
-    }) as typeof fetch);
+    const forbidden = new MediaAccess(
+      config,
+      new MediaStore(pool),
+      (async () => {
+        call++;
+        return {
+          ok: false,
+          status: 403,
+          json: async () => ({ code: "permission_denied" }),
+        } as Response;
+      }) as typeof fetch,
+    );
     await expect(forbidden.revoke("room-1", "user-1")).rejects.toBeInstanceOf(
       AggregateError,
     );
     expect(call).toBe(2);
-    const transport = new MediaAccess(config, pool, (async () => {
-      throw new Error("media down");
-    }) as typeof fetch);
+    const transport = new MediaAccess(
+      config,
+      new MediaStore(pool),
+      (async () => {
+        throw new Error("media down");
+      }) as typeof fetch,
+    );
     await expect(transport.revoke("room-1", "user-1")).rejects.toThrow();
   });
   it("deletes both room scopes, treats not_found as idempotent, and propagates real failures", async () => {
     const calls: { url: string; body: string; grant: unknown }[] = [];
-    const access = new MediaAccess(config, pool, (async (input, init) => {
+    const access = new MediaAccess(config, new MediaStore(pool), (async (
+      input,
+      init,
+    ) => {
       calls.push({
         url: String(input),
         body: String(init?.body),
@@ -210,7 +225,7 @@ describe.skipIf(!url)("media access", () => {
     ]);
     const missing = new MediaAccess(
       config,
-      pool,
+      new MediaStore(pool),
       (async () =>
         ({
           ok: false,
@@ -221,7 +236,7 @@ describe.skipIf(!url)("media access", () => {
     await expect(missing.revokeRoom("room-2")).resolves.toBeUndefined();
     const denied = new MediaAccess(
       config,
-      pool,
+      new MediaStore(pool),
       (async () =>
         ({
           ok: false,
@@ -230,9 +245,13 @@ describe.skipIf(!url)("media access", () => {
         }) as Response) as typeof fetch,
     );
     await expect(denied.revokeRoom("room-2")).rejects.toThrow();
-    const transport = new MediaAccess(config, pool, (async () => {
-      throw new Error("media down");
-    }) as typeof fetch);
+    const transport = new MediaAccess(
+      config,
+      new MediaStore(pool),
+      (async () => {
+        throw new Error("media down");
+      }) as typeof fetch,
+    );
     await expect(transport.revokeRoom("room-2")).rejects.toThrow();
   });
   it("reads media configuration strictly", () => {
@@ -253,7 +272,7 @@ describe.skipIf(!url)("media access", () => {
     ).toThrow();
   });
   it("defaults sharing to OPPONENT", async () => {
-    const access = new MediaAccess(config, pool, async () => {
+    const access = new MediaAccess(config, new MediaStore(pool), async () => {
       throw new Error("no fetch expected");
     });
     const a = await actor();
