@@ -8,6 +8,7 @@ import {
   asRole,
 } from "./database.test-helper.js";
 import { GoogleService } from "@server/account/google/google.service.js";
+import { GoogleStore } from "@server/account/google/google.store.js";
 import type {
   GoogleClaims,
   GoogleAuth,
@@ -127,7 +128,7 @@ describe.skipIf(!databaseUrl)(
       () => time,
     );
     const service = new GoogleService(
-      pool,
+      new GoogleStore(pool),
       {
         async verify() {
           return claims;
@@ -300,7 +301,7 @@ describe.skipIf(!databaseUrl)(
         [old],
       );
       const unavailableVerifier = new GoogleService(
-        pool,
+        new GoogleStore(pool),
         {
           async verify() {
             throw Object.assign(new Error("private jwks outage"), {

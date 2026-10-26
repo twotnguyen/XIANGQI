@@ -8,6 +8,7 @@ import {
 import type { createRegistrationRuntime } from "../auth/registration.module.js";
 import { GoogleTokenVerifier } from "./google-verifier.js";
 import { GoogleService } from "./google.service.js";
+import { GoogleStore } from "./google.store.js";
 import { logEvent } from "../../core/logger.js";
 @Module({})
 export class GoogleModule {
@@ -71,7 +72,7 @@ export async function createGoogleRuntime(
   }
   const sessions = registration.sessions;
   const service = new GoogleService(
-    registration.pool,
+    new GoogleStore(registration.pool),
     new GoogleTokenVerifier(settings.clientId),
     registration.auth,
     (userId, remember) => sessions.issue(userId, remember),

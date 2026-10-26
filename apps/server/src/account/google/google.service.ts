@@ -1,5 +1,4 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { Pool, PoolClient } from "pg";
 import type { Session } from "../auth/registration.types.js";
 import { validateUsername } from "../auth/registration.service.js";
 import {
@@ -9,17 +8,12 @@ import {
   type GoogleIdentityVerifier,
   type GoogleSessionIssuer,
 } from "./google.types.js";
-import { transaction } from "../../core/postgres.js";
-interface GoogleAccount {
-  userId: string;
-  email: string;
-  method: "email" | "google";
-  createdAt: Date;
-  completedAt: Date | null;
-  pending: boolean | null;
-  username: string | null;
-}
-const accountQuery = `SELECT o.user_id AS "userId",o.email_key AS email,o.method,o.created_at AS "createdAt",p.completed_at AS "completedAt",p.registration_pending AS pending,p.username FROM xiangqi_auth.account_origins o LEFT JOIN public.profiles p ON p.user_id=o.user_id`;
+import type {
+  CleanupCursor,
+  GoogleAccount,
+  GoogleStore,
+  GoogleTx,
+} from "./google.store.js";
 function hash(value: unknown) {
   if (typeof value !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(value))
     throw new GoogleError(
@@ -39,46 +33,33 @@ function unavailable() {
 function duplicate() {
   return new GoogleError("EMAIL_TAKEN", "Email này đã được đăng ký", 409);
 }
+/** Google sign-in rules and orchestration; all SQL lives in GoogleStore. */
 export class GoogleService {
-  private cleanupCursor: { createdAt: Date; userId: string } | null = null;
+  private cleanupCursor: CleanupCursor | null = null;
   constructor(
-    private readonly pool: Pool,
+    private readonly store: GoogleStore,
     private readonly verifier: GoogleIdentityVerifier,
     private readonly auth: GoogleAuth,
     private readonly issuer: GoogleSessionIssuer,
     private readonly clientId: string,
     private readonly now = () => new Date(),
   ) {}
-  private async query(sql: string, values: unknown[] = []) {
+  /** Any database failure of a stand-alone store call is reported as unavailable. */
+  private async db<T>(work: () => Promise<T>): Promise<T> {
     try {
-      return await transaction(this.pool, (c) => c.query(sql, values));
+      return await work();
     } catch {
       throw unavailable();
     }
   }
-  private async byEmail(email: string): Promise<GoogleAccount | undefined> {
-    return (
-      await this.query(`${accountQuery} WHERE o.email_key=lower($1)`, [email])
-    ).rows[0];
-  }
-  private async account(
-    c: PoolClient,
-    id: string,
-  ): Promise<GoogleAccount | undefined> {
-    return (await c.query(`${accountQuery} WHERE o.user_id=$1`, [id])).rows[0];
+  private byEmail(email: string): Promise<GoogleAccount | undefined> {
+    return this.db(() => this.store.findAccountByEmail(email));
   }
   async beginChallenge() {
     const capability = randomBytes(32).toString("base64url"),
       nonce = hash(capability),
       expires = new Date(this.now().getTime() + 300000);
-    try {
-      await this.query(
-        "INSERT INTO xiangqi_auth.google_challenges(token_hash,nonce_hash,expires_at) VALUES($1,$1,$2)",
-        [nonce, expires],
-      );
-    } catch {
-      throw unavailable();
-    }
+    await this.db(() => this.store.insertChallenge(nonce, expires));
     return {
       capability,
       nonce,
@@ -135,11 +116,10 @@ export class GoogleService {
         "Xác thực Google không hợp lệ",
         401,
       );
-    const consumed = await this.query(
-      "UPDATE xiangqi_auth.google_challenges SET consumed_at=$2 WHERE token_hash=$1 AND consumed_at IS NULL AND expires_at>$2 RETURNING token_hash",
-      [nonce, this.now()],
+    const consumed = await this.db(() =>
+      this.store.consumeChallenge(nonce, this.now()),
     );
-    if (!consumed.rowCount)
+    if (!consumed)
       throw new GoogleError(
         "GOOGLE_INVALID",
         "Xác thực Google không hợp lệ",
@@ -149,16 +129,7 @@ export class GoogleService {
     if (before?.method === "email") throw duplicate();
     if (!before) {
       try {
-        await transaction(this.pool, async (c) => {
-          await c.query(
-            "DELETE FROM xiangqi_auth.google_creation_intents WHERE email_key=lower($1) AND expires_at<=statement_timestamp()",
-            [claims.email],
-          );
-          await c.query(
-            "INSERT INTO xiangqi_auth.google_creation_intents(email_key,provider_id) SELECT lower($1),$2 WHERE NOT EXISTS(SELECT 1 FROM xiangqi_auth.account_origins WHERE email_key=lower($1)) ON CONFLICT(email_key) DO NOTHING",
-            [claims.email, claims.sub],
-          );
-        });
+        await this.store.recordCreationIntent(claims.email, claims.sub);
       } catch {
         throw unavailable();
       }
@@ -187,83 +158,66 @@ export class GoogleService {
         "Xác thực Google không hợp lệ",
         401,
       );
-    const subject = (
-      await this.query(
-        "SELECT provider_id FROM xiangqi_auth.google_subjects WHERE user_id=$1",
-        [account.userId],
-      )
-    ).rows[0]?.provider_id;
+    const subject = await this.db(() => this.store.findSubject(account.userId));
     if (subject !== claims.sub)
       throw new GoogleError(
         "GOOGLE_INVALID",
         "Xác thực Google không hợp lệ",
         401,
       );
-    const decision = await this.locked(account.userId, undefined, async (c) => {
-      const fresh = await this.account(c, account.userId);
-      if (
-        !fresh ||
-        fresh.method !== "google" ||
-        fresh.email !== claims.email.toLowerCase()
-      )
-        throw new GoogleError(
-          "GOOGLE_INVALID",
-          "Xác thực Google không hợp lệ",
-          401,
-        );
-      if (fresh.completedAt && fresh.username) {
-        if (fresh.pending) await this.clearPending(c, fresh, session);
-        const draft = (
-          await c.query(
-            "SELECT token_hash FROM xiangqi_auth.google_drafts WHERE user_id=$1",
-            [fresh.userId],
-          )
-        ).rows[0];
+    const decision = await this.store.locked(
+      account.userId,
+      undefined,
+      async (tx) => {
+        const fresh = await tx.account(account.userId);
+        if (
+          !fresh ||
+          fresh.method !== "google" ||
+          fresh.email !== claims.email.toLowerCase()
+        )
+          throw new GoogleError(
+            "GOOGLE_INVALID",
+            "Xác thực Google không hợp lệ",
+            401,
+          );
+        if (fresh.completedAt && fresh.username) {
+          if (fresh.pending) await this.clearPending(tx, fresh, session);
+          return {
+            kind: "member" as const,
+            account: fresh,
+            draftHash: await tx.draftHash(fresh.userId),
+          };
+        }
+        const capability = randomBytes(32).toString("base64url");
+        const marker = await tx.temporaryCreatedAt(fresh.userId);
+        const prior = await tx.draftCreatedAt(fresh.userId);
+        const createdAt = marker ?? prior ?? this.now();
+        if (createdAt.getTime() + 3600000 <= this.now().getTime())
+          throw new GoogleError(
+            "GOOGLE_EXPIRED",
+            "Đăng ký Google đã hết hạn",
+            401,
+          );
+        const draftCreatedAt = await tx.upsertDraft({
+          tokenHash: hash(capability),
+          userId: fresh.userId,
+          createdAt,
+          remember,
+          owned: !!marker,
+        });
         return {
-          kind: "member" as const,
-          account: fresh,
-          draftHash: draft?.token_hash,
+          kind: "pending" as const,
+          capability,
+          expiresAt: new Date(draftCreatedAt.getTime() + 3600000).toISOString(),
+          session,
         };
-      }
-      const capability = randomBytes(32).toString("base64url");
-      const marker = (
-        await c.query(
-          "SELECT created_at FROM xiangqi_auth.google_temporary_accounts WHERE user_id=$1",
-          [fresh.userId],
-        )
-      ).rows[0];
-      const prior = (
-        await c.query(
-          "SELECT created_at FROM xiangqi_auth.google_drafts WHERE user_id=$1",
-          [fresh.userId],
-        )
-      ).rows[0];
-      const createdAt = marker?.created_at ?? prior?.created_at ?? this.now();
-      if (createdAt.getTime() + 3600000 <= this.now().getTime())
-        throw new GoogleError(
-          "GOOGLE_EXPIRED",
-          "Đăng ký Google đã hết hạn",
-          401,
-        );
-      const draft = (
-        await c.query(
-          `INSERT INTO xiangqi_auth.google_drafts(token_hash,user_id,created_at,remember,owned) VALUES($1,$2,$3,$4,$5) ON CONFLICT(user_id) DO UPDATE SET token_hash=EXCLUDED.token_hash,remember=EXCLUDED.remember RETURNING created_at`,
-          [hash(capability), fresh.userId, createdAt, remember, !!marker],
-        )
-      ).rows[0];
-      return {
-        kind: "pending" as const,
-        capability,
-        expiresAt: new Date(draft.created_at.getTime() + 3600000).toISOString(),
-        session,
-      };
-    });
+      },
+    );
     if (decision.kind === "member") {
       const result = await this.issue(decision.account, session, remember);
       if (decision.draftHash)
-        await this.query(
-          "DELETE FROM xiangqi_auth.google_drafts WHERE user_id=$1 AND token_hash=$2",
-          [decision.account.userId, decision.draftHash],
+        await this.db(() =>
+          this.store.deleteDraft(decision.account.userId, decision.draftHash!),
         );
       return result;
     }
@@ -294,46 +248,10 @@ export class GoogleService {
       );
     }
   }
-  private async locked<T>(
-    id: string,
-    username: string | undefined,
-    work: (c: PoolClient) => Promise<T>,
-  ) {
-    const c = await this.pool.connect(),
-      keys = [
-        `google-user:${id}`,
-        ...(username ? [`username:${username.toLowerCase()}`] : []),
-      ];
-    const acquired: string[] = [];
-    let broken = false;
-    try {
-      await c.query("SET ROLE app_server");
-      for (const key of keys) {
-        await c.query("SELECT pg_advisory_lock(hashtextextended($1,0))", [key]);
-        acquired.push(key);
-      }
-      return await work(c);
-    } finally {
-      try {
-        await c.query("ROLLBACK");
-        for (const key of acquired.reverse())
-          await c.query("SELECT pg_advisory_unlock(hashtextextended($1,0))", [
-            key,
-          ]);
-        await c.query("RESET ROLE");
-      } catch {
-        broken = true;
-      }
-      c.release(broken);
-    }
-  }
   async onboarding(capability: unknown) {
-    const row = (
-      await this.query(
-        "SELECT d.created_at,d.state,p.completed_at,p.username,o.email_key AS email FROM xiangqi_auth.google_drafts d JOIN xiangqi_auth.account_origins o ON o.user_id=d.user_id AND o.method='google' JOIN xiangqi_auth.accounts a ON a.id=d.user_id AND a.email_confirmed_at IS NOT NULL AND lower(a.email)=o.email_key LEFT JOIN public.profiles p ON p.user_id=d.user_id WHERE d.token_hash=$1",
-        [hash(capability)],
-      )
-    ).rows[0];
+    const row = await this.db(() =>
+      this.store.findOnboarding(hash(capability)),
+    );
     if (!row || row.state === "cleanup")
       throw new GoogleError(
         "GOOGLE_INVALID",
@@ -371,137 +289,129 @@ export class GoogleService {
         "Mật khẩu cần tối thiểu 8 ký tự",
       );
     const password = input.password;
-    const initial = (
-      await this.query(
-        "SELECT user_id FROM xiangqi_auth.google_drafts WHERE token_hash=$1",
-        [tokenHash],
-      )
-    ).rows[0];
-    if (!initial)
+    const initialUserId = await this.db(() =>
+      this.store.findDraftOwner(tokenHash),
+    );
+    if (!initialUserId)
       throw new GoogleError(
         "GOOGLE_INVALID",
         "Phiên đăng ký Google không hợp lệ",
         401,
       );
-    const finished = await this.locked(initial.user_id, username, async (c) => {
-      const draft = (
-          await c.query(
-            "SELECT * FROM xiangqi_auth.google_drafts WHERE token_hash=$1",
-            [tokenHash],
-          )
-        ).rows[0],
-        account = await this.account(c, initial.user_id);
-      if (
-        !draft ||
-        !account ||
-        account.method !== "google" ||
-        draft.state === "cleanup"
-      )
-        throw new GoogleError(
-          "GOOGLE_INVALID",
-          "Phiên đăng ký Google không hợp lệ",
-          401,
-        );
-      let user: Session["user"];
-      try {
-        user = await this.auth.getUser(proof.access_token);
-      } catch (error) {
-        if ((error as { status?: number })?.status !== 401) throw unavailable();
-        throw new GoogleError(
-          "GOOGLE_INVALID",
-          "Xác thực Google không hợp lệ",
-          401,
-        );
-      }
-      if (
-        user.id !== account.userId ||
-        proof.user.id !== account.userId ||
-        user.email?.toLowerCase() !== account.email ||
-        !user.email_confirmed_at
-      )
-        throw new GoogleError(
-          "GOOGLE_INVALID",
-          "Xác thực Google không hợp lệ",
-          401,
-        );
-      let activeProof = proof;
-      if (!account.completedAt) {
-        if (draft.created_at.getTime() + 3600000 <= this.now().getTime())
+    const finished = await this.store.locked(
+      initialUserId,
+      username,
+      async (tx) => {
+        const draft = await tx.findDraft(tokenHash),
+          account = await tx.account(initialUserId);
+        if (
+          !draft ||
+          !account ||
+          account.method !== "google" ||
+          draft.state === "cleanup"
+        )
           throw new GoogleError(
-            "GOOGLE_EXPIRED",
-            "Đăng ký Google đã hết hạn",
+            "GOOGLE_INVALID",
+            "Phiên đăng ký Google không hợp lệ",
             401,
           );
-        const taken = (
-          await c.query(
-            `SELECT EXISTS(SELECT 1 FROM public.profiles WHERE lower(username)=lower($1) AND user_id<>$2) OR EXISTS(SELECT 1 FROM xiangqi_auth.username_reservations WHERE username_key=lower($1) AND owner_id<>$2 AND expires_at>$3) taken`,
-            [username, account.userId, this.now()],
-          )
-        ).rows[0].taken;
-        if (taken)
-          throw new GoogleError(
-            "USERNAME_TAKEN",
-            "Tên tài khoản đã được sử dụng",
-            409,
-          );
-        await c.query(
-          "UPDATE xiangqi_auth.google_drafts SET state='recovering' WHERE user_id=$1",
-          [account.userId],
-        );
+        let user: Session["user"];
         try {
-          await this.auth.setPassword(account.userId, password);
-        } catch {
+          user = await this.auth.getUser(proof.access_token);
+        } catch (error) {
+          if ((error as { status?: number })?.status !== 401)
+            throw unavailable();
           throw new GoogleError(
-            "GOOGLE_RECOVERING",
-            "Chưa thể hoàn tất đăng ký Google, vui lòng thử lại",
-            503,
+            "GOOGLE_INVALID",
+            "Xác thực Google không hợp lệ",
+            401,
           );
         }
-        try {
-          await c.query(
-            `INSERT INTO public.profiles(user_id,username,display_name,completed_at,registration_pending) VALUES($1,$2,$2,$3,true) ON CONFLICT(user_id) DO UPDATE SET username=EXCLUDED.username,display_name=EXCLUDED.display_name,completed_at=EXCLUDED.completed_at`,
-            [account.userId, username, this.now()],
+        if (
+          user.id !== account.userId ||
+          proof.user.id !== account.userId ||
+          user.email?.toLowerCase() !== account.email ||
+          !user.email_confirmed_at
+        )
+          throw new GoogleError(
+            "GOOGLE_INVALID",
+            "Xác thực Google không hợp lệ",
+            401,
           );
-        } catch (error) {
-          if ((error as { code?: string }).code === "23505")
+        let activeProof = proof;
+        if (!account.completedAt) {
+          if (draft.created_at.getTime() + 3600000 <= this.now().getTime())
+            throw new GoogleError(
+              "GOOGLE_EXPIRED",
+              "Đăng ký Google đã hết hạn",
+              401,
+            );
+          if (await tx.isUsernameTaken(username, account.userId, this.now()))
             throw new GoogleError(
               "USERNAME_TAKEN",
               "Tên tài khoản đã được sử dụng",
               409,
             );
-          throw unavailable();
+          await tx.markDraftRecovering(account.userId);
+          try {
+            await this.auth.setPassword(account.userId, password);
+          } catch {
+            throw new GoogleError(
+              "GOOGLE_RECOVERING",
+              "Chưa thể hoàn tất đăng ký Google, vui lòng thử lại",
+              503,
+            );
+          }
+          let saved: boolean;
+          try {
+            saved = await tx.saveCompletedProfile(
+              account.userId,
+              username,
+              this.now(),
+            );
+          } catch {
+            throw unavailable();
+          }
+          if (!saved)
+            throw new GoogleError(
+              "USERNAME_TAKEN",
+              "Tên tài khoản đã được sử dụng",
+              409,
+            );
+          try {
+            // The password update revoked the Google proof session; continue on a fresh one.
+            activeProof = await this.auth.signInPassword(
+              account.email,
+              password,
+            );
+          } catch {
+            throw new GoogleError(
+              "GOOGLE_RECOVERING",
+              "Chưa thể hoàn tất đăng ký Google, vui lòng thử lại",
+              503,
+            );
+          }
         }
-        try {
-          // The password update revoked the Google proof session; continue on a fresh one.
-          activeProof = await this.auth.signInPassword(account.email, password);
-        } catch {
-          throw new GoogleError(
-            "GOOGLE_RECOVERING",
-            "Chưa thể hoàn tất đăng ký Google, vui lòng thử lại",
-            503,
-          );
-        }
-      }
-      await this.clearPending(c, account, activeProof);
-      return {
-        account: (await this.account(c, account.userId))!,
-        remember: draft.remember,
-        session: activeProof,
-      };
-    });
+        await this.clearPending(tx, account, activeProof);
+        return {
+          account: (await tx.account(account.userId))!,
+          remember: draft.remember,
+          session: activeProof,
+        };
+      },
+    );
     const result = await this.issue(
       finished.account,
       finished.session,
       finished.remember,
     );
-    await this.query(
-      "DELETE FROM xiangqi_auth.google_drafts WHERE user_id=$1 AND token_hash=$2",
-      [finished.account.userId, tokenHash],
+    await this.db(() =>
+      this.store.deleteDraft(finished.account.userId, tokenHash),
     );
     return result;
   }
   private async clearPending(
-    c: PoolClient,
+    tx: GoogleTx,
     account: GoogleAccount,
     proof: Session,
   ) {
@@ -514,10 +424,7 @@ export class GoogleService {
         current.email?.toLowerCase() !== account.email
       )
         throw new Error("Provider proof changed");
-      await c.query(
-        "UPDATE public.profiles SET registration_pending=false WHERE user_id=$1",
-        [account.userId],
-      );
+      await tx.clearRegistrationPending(account.userId);
     } catch {
       throw new GoogleError(
         "GOOGLE_RECOVERING",
@@ -527,44 +434,27 @@ export class GoogleService {
     }
   }
   async maintain() {
-    await this.query(
-      "DELETE FROM xiangqi_auth.google_challenges WHERE expires_at<=$1",
-      [this.now()],
+    await this.db(() => this.store.purgeExpiredChallenges(this.now()));
+    await this.db(() => this.store.purgeExpiredIntents());
+    const rows = await this.db(() =>
+      this.store.temporaryAccountsBefore(
+        new Date(this.now().getTime() - 3600000),
+        this.cleanupCursor,
+      ),
     );
-    await this.query(
-      "DELETE FROM xiangqi_auth.google_creation_intents WHERE expires_at<=statement_timestamp()",
-    );
-    const rows = (
-      await this.query(
-        "SELECT user_id,created_at FROM xiangqi_auth.google_temporary_accounts WHERE created_at<=$1 AND ($2::timestamptz IS NULL OR (created_at,user_id)>($2,$3::uuid)) ORDER BY created_at,user_id LIMIT 100",
-        [
-          new Date(this.now().getTime() - 3600000),
-          this.cleanupCursor?.createdAt ?? null,
-          this.cleanupCursor?.userId ?? null,
-        ],
-      )
-    ).rows;
     for (const row of rows)
-      await this.locked(row.user_id, undefined, async (c) => {
-        const account = await this.account(c, row.user_id),
-          marker = (
-            await c.query(
-              "SELECT created_at FROM xiangqi_auth.google_temporary_accounts WHERE user_id=$1",
-              [row.user_id],
-            )
-          ).rows[0];
+      await this.store.locked(row.user_id, undefined, async (tx) => {
+        const account = await tx.account(row.user_id),
+          markerCreatedAt = await tx.temporaryCreatedAt(row.user_id);
         if (
-          !marker ||
+          !markerCreatedAt ||
           !account ||
           account.method !== "google" ||
           account.completedAt ||
-          marker.created_at.getTime() + 3600000 > this.now().getTime()
+          markerCreatedAt.getTime() + 3600000 > this.now().getTime()
         )
           return;
-        await c.query(
-          "UPDATE xiangqi_auth.google_drafts SET state='cleanup' WHERE user_id=$1",
-          [row.user_id],
-        );
+        await tx.markDraftCleanup(row.user_id);
         try {
           await this.auth.deleteTemporary(row.user_id);
         } catch {
