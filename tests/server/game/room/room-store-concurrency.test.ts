@@ -74,15 +74,22 @@ describe.skipIf(!databaseUrl)("RoomStore concurrent commands", () => {
     await reset();
   });
 
-  it("never deadlocks when both players leave the same room at once", async () => {
+  it("never deadlocks when every member leaves the same room at once", async () => {
     for (let i = 0; i < ROUNDS; i++) {
       const a = await admitted(),
-        b = await admitted();
+        b = await admitted(),
+        watchers = [await admitted(), await admitted()];
       const roomId = await roomWith(a, b);
-      const results = await Promise.allSettled([
-        run(a, [roomId], (s) => rooms.leave(s, roomId)),
-        run(b, [roomId], (s) => rooms.leave(s, roomId)),
-      ]);
+      for (const w of watchers)
+        await run(w, [roomId], (s) =>
+          rooms.join(s, { commandId: randomUUID(), roomId, intent: "watch" }),
+        );
+      // Four actors lock the same four keys: an unordered acquisition would deadlock.
+      const results = await Promise.allSettled(
+        [a, b, ...watchers].map((who) =>
+          run(who, [roomId], (s) => rooms.leave(s, roomId)),
+        ),
+      );
       expect(unexpected(results)).toEqual([]);
     }
     expect(await idleInTransaction()).toBe(0);
