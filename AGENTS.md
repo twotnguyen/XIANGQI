@@ -9,7 +9,7 @@ Monorepo pnpm, Node `>=22.13 <23` (`.node-version` = 22; `fnm use 22`, bản kh�
 - **Mặc định chỉ đọc code và caller bị ảnh hưởng.** Không đọc README, không mở thư mục `docs/` để "nắm bối cảnh".
 - Chỉ tra tài liệu khi việc đổi luật/hành vi nghiệp vụ: grep đúng mã (`AC-02.1.x`, `BA 2.8`) trong `docs/product/BA-SCOPE-DECISIONS.md` (Phần 0 thắng) hoặc `BACKLOG-P1.md`, đọc đúng mục, không đọc cả file. Không đối chiếu nhiều nguồn trừ khi mâu thuẫn trực tiếp; khi đó báo người dùng, không tự đổi quyết định BA.
 - Sửa UI/CSS: dùng code và token đang có (`apps/web/src/shared/styles/tokens.css`); không đọc BA, BACKLOG, DANH-MUC.
-- Hợp đồng từng miền ở `docs/engineering/server/{clock,google,login,match,realtime,room,schema}.md` và `docs/engineering/web/ui.md`: chỉ đọc file của miền đang sửa. Viết hoặc review mã server thì đọc thêm `docs/engineering/server/patterns.md` (tên pattern ↔ file thật, chỗ chưa đúng phân tầng).
+- Hợp đồng từng miền ở `docs/engineering/server/{clock,google,login,match,realtime,room,schema}.md` và `docs/engineering/web/ui.md`: chỉ đọc file của miền đang sửa. Viết hoặc review mã server thì đọc thêm `docs/engineering/server/patterns.md` (tên pattern ↔ file thật, trạng thái phân tầng từng miền).
 - MCP Jira/Supabase chỉ khi tác vụ chạm Jira/Supabase (quy tắc: `docs/planning/jira/README.md`, `docs/setup/CAU-HINH-MOI-TRUONG.md` mục 8). Jira là site `xiangqi-web.atlassian.net`, project `XIAN`; Task Done cần bằng chứng triển khai và kiểm thử, không chuyển trạng thái hàng loạt.
 - Không spawn subagent để đọc/review dưới ~10 file; nếu dùng, yêu cầu trả lời tiếng Việt và không đề xuất lệnh test.
 - `.local/` (Git bỏ qua) là nơi đặt ghi chú, báo cáo, log cá nhân; không commit gì từ đó.
@@ -80,7 +80,7 @@ Bẫy khi chạy test local:
   - Controller: HTTP và kiểm tra hình dạng đầu vào; không SQL, không import `pg`.
   - Service: nghiệp vụ và điều phối store; không viết SQL mới.
   - Store (`*.store.ts`, vai trò Repository): toàn bộ SQL của miền. Tên file phải khớp vai trò: `.store.ts` chứa SQL, `.service.ts` không.
-  - `account/profile` là mẫu đúng phân tầng. Mã cũ chưa đúng (friend: controller gọi store thẳng; google, guest, `MediaAccess`: service chứa SQL; helper `google/postgres.js` bị import chéo) ghi ở `patterns.md`: chạm vào thì tách SQL sang store, không refactor hàng loạt riêng một PR.
+  - Mọi miền hiện đã đúng phân tầng (đo ngày 26/10/2026: không `*service*.ts` nào chứa SQL). Service cần nhiều bước xen kẽ truy vấn thì dùng `store.withUser(…, tx => …)` với đối tượng `*Tx` (xem `friend`, `media`, `google`); không viết SQL vào service.
   - Không thêm pattern khi chưa có vấn đề cụ thể (khó mở rộng, đổi nhỏ lan rộng, mã trùng); thêm pattern thì ghi tên và file vào `patterns.md`.
   - Review mã server theo năm câu hỏi: SQL có nằm ngoài store không; controller có chạm DB không; ghi có đi qua `withRoom`/biên lai/outbox không; phụ thuộc giữa miền có qua `*Port` không; có thêm abstraction mà chưa có vấn đề không.
 - **Test và CI.** `tests/` phản chiếu `apps/`; đặt tên `x.test.ts`, `x.test-helper.ts`, `fixtures.ts`. `.github/workflows/ci.yml`: job lint+typecheck+build chọn theo diff (`.github/scripts/ci-scope.mjs`); trên `main` thêm unit/core và 6 shard `tests/server` chạy tuần tự, gom bởi `Database Integration Gate`. Server triển khai qua `render.yaml` (`autoDeploy: true`), web qua Vercel.
