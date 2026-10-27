@@ -106,4 +106,11 @@ ghế trống, đang tải media hoặc chưa có dịch vụ media. Video đư�
 identity người chơi, không theo thứ tự track; đổi ghế thì hình đi theo người,
 rời ghế thì hình cũ không còn hiển thị. Audio không tạo thêm ô camera.
 `MediaPanel` gắn preview camera của chính mình ở chế độ muted để không phát
-lại tiếng của mình; không tự bật camera/mic khi mở phòng.
+lại tiếng của mình. Khi mở phòng hoặc kết nối lại, panel chỉ join receive-only
+(camera/mic tắt, token không publish); người xem vào phòng stage và không bao
+giờ publish. Chỉ khi người chơi bấm bật thiết bị mới publish: phòng riêng khi
+mức đã xác nhận khác `NONE`, và phòng stage chỉ khi mức đã xác nhận là `ALL`.
+Đổi mức chia sẻ chỉ áp dụng sau khi máy chủ xác nhận; nếu lưu thất bại, camera
+và mic tắt, panel rejoin receive-only ở mức đã xác nhận. Mọi tác vụ join/publish
+đang chờ đều bị vô hiệu khi đổi phòng, ngắt kết nối hoặc unmount, và phòng/track
+của thế hệ cũ được giải phóng.

@@ -40,7 +40,13 @@ export function fenAt(source: ReplayExportSource, ply: number): string {
  */
 export function pgnResult(source: ReplayExportSource): string {
   const result = source.result;
-  if (!result) return "*";
+  if (
+    !result ||
+    result.reason === "SERVER_RESTART" ||
+    result.reason === "BOTH_OFFLINE" ||
+    result.reason === "AI_UNAVAILABLE"
+  )
+    return "*";
   if (result.winner === "red") return "1-0";
   if (result.winner === "black") return "0-1";
   return "1/2-1/2";

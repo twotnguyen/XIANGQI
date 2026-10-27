@@ -7,7 +7,7 @@ services:
     buildCommand: pnpm --filter @xiangqi/server... build
     startCommand: pnpm --filter @xiangqi/server start
     healthCheckPath: /ready
-    autoDeploy: true
+    autoDeployTrigger: "off"
     envVars:
       - key: NODE_ENV
         value: production

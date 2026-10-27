@@ -197,7 +197,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
           await client.query<RoomEvent>(
             `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload
          FROM xiangqi_room.outbox
-         WHERE delivered_at IS NULL AND type='media.revoke-room' AND next_attempt_at<=now()
+         WHERE delivered_at IS NULL AND type IN ('media.revoke-room','media.revoke-user') AND next_attempt_at<=now()
          ORDER BY created_at,id LIMIT 1`,
           )
         ).rows[0],

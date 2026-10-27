@@ -51,7 +51,7 @@ type RoomRegistration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
 >;
 type RoomMedia = {
-  revoke(roomId: string, userId: string): Promise<void>;
+  revoke(roomId: string, userId: string, eventId: string): Promise<void>;
   revokeRoom(roomId: string): Promise<void>;
 } | null;
 /**
@@ -202,24 +202,17 @@ async function bootRoomRuntime(
       );
     return scope;
   };
-  const rooms = new RoomStore(
-    {
-      start: (client, input) => matches.start(client, input),
-      leave: async (client, input) => {
-        const scope = getScope(client, input.actor, input.roomId);
-        const match = await matches.snapshot(
-          client,
-          input.roomId,
-          input.matchId,
-        );
-        await matches.resign(
-          { ...scope, roomId: input.roomId, canControl: true },
-          { matchId: input.matchId, matchVersion: match.version },
-        );
-      },
+  const rooms = new RoomStore({
+    start: (client, input) => matches.start(client, input),
+    leave: async (client, input) => {
+      const scope = getScope(client, input.actor, input.roomId);
+      const match = await matches.snapshot(client, input.roomId, input.matchId);
+      await matches.resign(
+        { ...scope, roomId: input.roomId, canControl: true },
+        { matchId: input.matchId, matchVersion: match.version },
+      );
     },
-    media ?? undefined,
-  );
+  });
   const matches = new MatchStore(clock, {
     onMatchEnded: async (client, input) => {
       const scope = context.get(client);
@@ -456,7 +449,19 @@ async function bootRoomRuntime(
     if (!event) return;
     try {
       if (!media) throw new Error("Media revocation is unavailable");
-      await media.revokeRoom(event.roomId);
+      if (event.type === "media.revoke-room") {
+        await media.revokeRoom(event.roomId);
+      } else {
+        const userId = event.payload.userId;
+        if (
+          typeof userId !== "string" ||
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            userId,
+          )
+        )
+          throw new Error("malformed media.revoke-user payload");
+        await media.revoke(event.roomId, userId, event.id);
+      }
       await roomPort.markDelivered(event.id);
     } catch {
       await roomPort.markFailed(event.id);

@@ -167,6 +167,14 @@ export function readRegistrationConfig(
 }
 
 /**
+ * Ghi nhận lỗi client rảnh của pool mà không ghi thông điệp, payload hay cấu hình kết nối.
+ * Listener này ngăn pg-pool phát lỗi không được xử lý làm sập tiến trình.
+ */
+function logPoolError() {
+  process.stderr.write(logEvent("error", "registration_pool_failed") + "\n");
+}
+
+/**
  * Khởi tạo runtime hoàn chỉnh cho tính năng đăng ký và đăng nhập:
  * Thiết lập connection pool Postgres, kiểm tra schema bảng dữ liệu, và kết nối Supabase Auth.
  */
@@ -192,6 +200,7 @@ export async function createRegistrationRuntime(
     connectionTimeoutMillis: 10000,
   };
   const pool = new Pool(poolOptions);
+  pool.on("error", logPoolError);
   let sessionPool: Pool | null = null;
   let schemaReady = true;
   try {
@@ -210,6 +219,7 @@ export async function createRegistrationRuntime(
       // Registration keeps its connection while invoking password/session work.
       // A separate pool prevents five concurrent registrations exhausting their own nested calls.
       sessionPool = new Pool(poolOptions);
+      sessionPool.on("error", logPoolError);
       await sessionPool.query("SELECT 1");
     }
   } catch {

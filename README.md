@@ -85,7 +85,7 @@ pnpm build
 pnpm format:check
 ```
 
-CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; PR/push `main` mới chạy đầy đủ. Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server dùng `tsx` cả khi chạy bản build (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói.
+CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; PR/push `main` mới chạy đầy đủ. Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server chạy trực tiếp `src/main.ts` bằng `tsx` (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói. `pnpm build:server` kiểm tra kiểu server và build engine cần cho runtime; không tạo `apps/server/dist`.
 
 Build web luôn dùng React production, kể cả khi `.env` dùng `NODE_ENV=development` cho server. CI có PostgreSQL 17 riêng để chạy kiểm thử SQL/HTTP đăng ký; chạy local theo [hướng dẫn database](supabase/README.md). Đăng ký mặc định tắt: chỉ bật `AUTH_REGISTRATION_ENABLED=true` sau khi migration, quyền runtime và cấu hình SMTP/OTP trên đúng project đã được kiểm chứng. Runtime dùng `DIRECT_URL` với direct/session pooler, không dùng transaction pooler 6543. Kiểm thử tự động dùng Auth HTTP fixture; nhận OTP thật, hoàn tất vào Sảnh và các cổng nghiệm thu vẫn cần bằng chứng riêng.
 

@@ -10,20 +10,62 @@ const pool = vi.hoisted(() => ({
   query: vi.fn(),
   end: vi.fn(),
   construct: vi.fn(),
+  instances: [] as Array<{ emit(event: string, ...args: unknown[]): boolean }>,
 }));
-vi.mock("pg", () => ({
-  Pool: class {
-    constructor(options: unknown) {
-      pool.construct(options);
-    }
-    query = pool.query;
-    end = pool.end;
-  },
-}));
+// Dynamic import: vi.mock factories are hoisted above static imports, so node:events must be loaded inside the factory.
+vi.mock("pg", async () => {
+  const { EventEmitter } = await import("node:events");
+  return {
+    Pool: class extends EventEmitter {
+      query = pool.query;
+      end = pool.end;
+      constructor(options: unknown) {
+        super();
+        pool.construct(options);
+        pool.instances.push(this);
+      }
+    },
+  };
+});
 beforeEach(() => {
   vi.clearAllMocks();
   pool.end.mockResolvedValue(undefined);
+  pool.instances.length = 0;
 });
+
+it.each([false, true])(
+  "handles emitted idle pool errors on every runtime pool without crashing or logging details (login %s)",
+  async (login) => {
+    pool.query.mockResolvedValue({
+      rows: [{ ready: true, canAssumeRole: true, loginReady: true }],
+    });
+    const stderr = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+    const runtime = (await createRegistrationRuntime(
+      login ? { ...configured, AUTH_LOGIN_ENABLED: "true" } : configured,
+    ))!;
+    expect(pool.instances).toHaveLength(login ? 2 : 1);
+    const secret = "postgres://app:fake-idle-secret@db.invalid/app";
+    for (const instance of pool.instances) {
+      // EventEmitter throws on unhandled "error"; a listener must absorb it.
+      expect(() => instance.emit("error", new Error(secret))).not.toThrow();
+    }
+    const lines = stderr.mock.calls.map(([line]) => JSON.parse(String(line)));
+    expect(lines).toEqual(
+      pool.instances.map(() => ({
+        time: expect.any(String),
+        level: "error",
+        event: "registration_pool_failed",
+      })),
+    );
+    expect(JSON.stringify(stderr.mock.calls)).not.toContain(secret);
+    stderr.mockRestore();
+    await expect(runtime.checkDatabase()).resolves.toBeUndefined();
+    await runtime.close();
+    expect(pool.end).toHaveBeenCalledTimes(pool.instances.length);
+  },
+);
 
 it("requires verified TLS with the trusted project CA for the runtime database", async () => {
   pool.query.mockResolvedValue({

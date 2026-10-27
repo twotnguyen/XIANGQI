@@ -17,12 +17,7 @@ export const uuid =
  * Quản lý sự kiện outbox, kiểm tra biên lai idempotency, giải mã invite code và truy vấn snapshot phòng.
  */
 export class RoomStoreCore {
-  constructor(
-    protected readonly matches?: MatchStartPort,
-    protected readonly media?: {
-      revoke(roomId: string, userId: string): Promise<void>;
-    },
-  ) {}
+  constructor(protected readonly matches?: MatchStartPort) {}
   protected swapTableReady: boolean | null = null;
   protected seatTableReady: boolean | null = null;
   protected async swapTableExists(s: RoomScope): Promise<boolean> {
@@ -100,7 +95,7 @@ export class RoomStoreCore {
   async pendingEvents(client: PoolClient): Promise<RoomEvent[]> {
     return (
       await client.query(
-        `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND type<>'media.revoke-room' AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50`,
+        `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND type NOT IN ('media.revoke-room','media.revoke-user') AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50`,
       )
     ).rows as RoomEvent[];
   }

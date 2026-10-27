@@ -8,8 +8,7 @@
       "@xiangqi/xiangqi-core": ["../../packages/xiangqi-core/src/index.ts"]
     },
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "outDir": "dist"
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*.ts"]
 }

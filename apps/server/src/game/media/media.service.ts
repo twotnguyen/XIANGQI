@@ -105,10 +105,12 @@ export class MediaAccess {
    * Cập nhật mức độ chia sẻ camera/mic của người chơi trong phòng cờ.
    */
   async setShare(
-    userId: string,
-    roomId: string,
+    rawUserId: string,
+    rawRoomId: string,
     level: ShareLevel,
   ): Promise<{ level: ShareLevel }> {
+    const userId = rawUserId.toLowerCase(),
+      roomId = rawRoomId.toLowerCase();
     if (!SHARE_LEVELS.includes(level))
       throw new MediaError(
         "MEDIA_INPUT_INVALID",
@@ -130,22 +132,33 @@ export class MediaAccess {
    * Lấy mức chia sẻ camera/mic hiện tại của người dùng trong phòng cờ.
    */
   async getShare(
-    userId: string,
-    roomId: string,
+    rawUserId: string,
+    rawRoomId: string,
   ): Promise<{ level: ShareLevel }> {
+    const userId = rawUserId.toLowerCase(),
+      roomId = rawRoomId.toLowerCase();
     return this.store.read((tx) => this.shareIn(tx, roomId, userId));
   }
   /**
    * Cấp token JWT kết nối LiveKit với quyền phát/nghe tùy theo vai trò (kỳ thủ hoặc khán giả).
    */
   async tokenFor(
-    userId: string,
-    roomId: string,
+    rawUserId: string,
+    rawRoomId: string,
     devices: { camera: boolean; mic: boolean },
   ): Promise<
     MediaToken & { stage: { token: string; roomName: string } | null }
   > {
-    return this.store.read(async (tx) => {
+    const userId = rawUserId.toLowerCase(),
+      roomId = rawRoomId.toLowerCase();
+    return this.store.withParticipant(roomId, userId, async (tx) => {
+      // Revoke đang chờ của cặp này phải được gỡ trước khi đọc vai trò và cấp token.
+      await this.settleRevocations(
+        tx,
+        roomId,
+        userId,
+        await tx.pendingUserRevocations(roomId, userId),
+      );
       const role = await tx.findMemberRole(roomId, userId);
       if (!role)
         throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
@@ -223,7 +236,39 @@ export class MediaAccess {
   /**
    * Thu hồi quyền và xóa người dùng khỏi các phòng media LiveKit khi rời phòng hoặc mất quyền.
    */
-  async revoke(roomId: string, userId: string): Promise<void> {
+  async revoke(
+    rawRoomId: string,
+    rawUserId: string,
+    rawEventId: string,
+  ): Promise<void> {
+    const roomId = rawRoomId.toLowerCase(),
+      userId = rawUserId.toLowerCase(),
+      eventId = rawEventId.toLowerCase();
+    await this.store.withParticipant(roomId, userId, async (tx) => {
+      const pending = await tx.pendingUserRevocations(roomId, userId);
+      // Event đã được ack trước đó: không gọi LiveKit lại.
+      if (!pending.includes(eventId)) return;
+      await this.settleRevocations(tx, roomId, userId, pending);
+    });
+  }
+  /**
+   * Gỡ người dùng khỏi phòng riêng và stage rồi ack đúng các event đã snapshot.
+   * Nếu LiveKit lỗi thì không ack event nào để worker thử lại.
+   */
+  private async settleRevocations(
+    tx: MediaTx,
+    roomId: string,
+    userId: string,
+    pending: string[],
+  ): Promise<void> {
+    if (!pending.length) return;
+    await this.removeFromRooms(roomId, userId);
+    await tx.markUserRevocationsDelivered(pending);
+  }
+  /**
+   * Gọi RemoveParticipant trên phòng riêng và stage. 404 not_found coi như đã gỡ.
+   */
+  private async removeFromRooms(roomId: string, userId: string): Promise<void> {
     const failures: unknown[] = [];
     for (const room of [privateRoomName(roomId), stageRoomName(roomId)]) {
       try {
@@ -253,7 +298,8 @@ export class MediaAccess {
   /**
    * Xóa toàn bộ phòng LiveKit (phòng riêng và stage) khi phòng cờ bị đóng.
    */
-  async revokeRoom(roomId: string): Promise<void> {
+  async revokeRoom(rawRoomId: string): Promise<void> {
+    const roomId = rawRoomId.toLowerCase();
     const failures: unknown[] = [];
     for (const room of [privateRoomName(roomId), stageRoomName(roomId)]) {
       try {

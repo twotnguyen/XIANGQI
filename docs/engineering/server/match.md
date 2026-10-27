@@ -22,6 +22,8 @@ Positions persist as a 90-cell board with uppercase RED/BLACK turn and core coun
 
 Migration000007 preserves legacy REPETITION/AGREED_DRAW and other prior outcomes. It adds DRAW_REPETITION, DRAW_NO_CAPTURE, DRAW_AGREEMENT and PERPETUAL_CHECK (including null winner for both sides continuously checking), plus a partial unique managed START-token index. It changes no table ACL, owner, RLS, FK or terminal trigger. The existing NOT VALID active-list constraint is not validated against old data. Rollback refuses managed START/new outcome writes or altered migration metadata.
 
+Replay export uses the same effective branch. PGN marks `SERVER_RESTART`, `BOTH_OFFLINE` and `AI_UNAVAILABLE` as `*` (no game result), not `1/2-1/2`; genuine draws still export `1/2-1/2`.
+
 ## Synthetic SQL tests
 
 Use only a dedicated PostgreSQL17 cluster on `127.0.0.1:55447`, database `xiangqi_match_test`, synthetic administrator `match_test_admin`. The helper refuses other endpoints before resetting schemas. Run the SQL files sequentially because they reset that one database:

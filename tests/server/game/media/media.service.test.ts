@@ -1,8 +1,5 @@
-import { randomUUID } from "node:crypto";
 import { decodeJwt, jwtVerify } from "jose";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { Pool } from "pg";
-import { actor, apply, databaseUrl, reset } from "../room/room.test-helper.js";
 import { MediaAccess } from "@server/game/media/media.service.js";
 import { MediaStore } from "@server/game/media/media.store.js";
 import { readMediaConfig } from "@server/game/media/media.module.js";
@@ -10,44 +7,24 @@ import {
   privateRoomName,
   stageRoomName,
 } from "@server/game/media/media.types.js";
-const url = process.env.ROOM_TEST_DATABASE_URL ?? databaseUrl;
-const pool = new Pool({ connectionString: url });
+import {
+  actor,
+  config,
+  deferred,
+  deliveredAt,
+  makeRoom,
+  pool,
+  queueRevoke,
+  resetMediaSchema,
+  seat,
+  url,
+  waitForBlockedAdvisoryLock,
+} from "./media.test-helper.js";
+
 afterAll(() => pool.end());
-const config = {
-  url: "wss://media.example.invalid",
-  apiKey: "test-api-key",
-  apiSecret: "test-api-secret-that-is-long-enough-for-hs256",
-};
-async function seat(roomId: string, userId: string, side: string) {
-  await pool.query("BEGIN");
-  await pool.query(
-    "INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'PLAYER',$3)",
-    [roomId, userId, side],
-  );
-  await pool.query(
-    "INSERT INTO public.active_players(user_id,room_id,match_id) VALUES($1,$2,NULL)",
-    [userId, roomId],
-  );
-  await pool.query("COMMIT");
-}
-async function makeRoom(owner: string) {
-  const roomId = randomUUID();
-  await pool.query(
-    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong media','CODE_ONLY','12345678',600,5,'WAITING',1)",
-    [roomId, owner],
-  );
-  return roomId;
-}
+
 describe.skipIf(!url)("media access", () => {
-  beforeEach(async () => {
-    await pool.query(
-      "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_social CASCADE",
-    );
-    await reset();
-    await apply("supabase/migrations/20261011000006_rooms.sql");
-    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
-    await apply("supabase/migrations/20261011000015_media_share.sql");
-  });
+  beforeEach(resetMediaSchema);
   it("issues player tokens with device-scoped publish rights", async () => {
     const access = new MediaAccess(config, new MediaStore(pool), async () => {
       throw new Error("no fetch expected");
@@ -148,25 +125,31 @@ describe.skipIf(!url)("media access", () => {
       });
       return { ok: true } as Response;
     }) as typeof fetch);
-    await access.revoke("room-1", "user-1");
+    const a = await actor();
+    const roomId = await makeRoom(a.userId);
+    const eventId = await queueRevoke(roomId, a.userId);
+    await access.revoke(roomId, a.userId, eventId);
     expect(calls.map(({ url }) => url)).toEqual([
       "https://media.example.invalid/twirp/livekit.RoomService/RemoveParticipant",
       "https://media.example.invalid/twirp/livekit.RoomService/RemoveParticipant",
     ]);
     for (const [index, room] of [
-      privateRoomName("room-1"),
-      stageRoomName("room-1"),
+      privateRoomName(roomId),
+      stageRoomName(roomId),
     ].entries()) {
       expect(JSON.parse(calls[index]!.body)).toEqual({
         room,
-        identity: "user-1",
+        identity: a.userId,
       });
       expect(
         decodeJwt(calls[index]!.token.slice("Bearer ".length)).video,
       ).toMatchObject({ room, roomAdmin: true });
     }
+    expect(await deliveredAt(eventId)).not.toBeNull();
   });
   it("attempts both participant scopes and propagates forbidden and transport failures", async () => {
+    const a = await actor();
+    const roomId = await makeRoom(a.userId);
     let call = 0;
     const forbidden = new MediaAccess(
       config,
@@ -180,10 +163,12 @@ describe.skipIf(!url)("media access", () => {
         } as Response;
       }) as typeof fetch,
     );
-    await expect(forbidden.revoke("room-1", "user-1")).rejects.toBeInstanceOf(
-      AggregateError,
-    );
+    const forbiddenEvent = await queueRevoke(roomId, a.userId);
+    await expect(
+      forbidden.revoke(roomId, a.userId, forbiddenEvent),
+    ).rejects.toBeInstanceOf(AggregateError);
     expect(call).toBe(2);
+    expect(await deliveredAt(forbiddenEvent)).toBeNull();
     const transport = new MediaAccess(
       config,
       new MediaStore(pool),
@@ -191,7 +176,11 @@ describe.skipIf(!url)("media access", () => {
         throw new Error("media down");
       }) as typeof fetch,
     );
-    await expect(transport.revoke("room-1", "user-1")).rejects.toThrow();
+    const transportEvent = await queueRevoke(roomId, a.userId);
+    await expect(
+      transport.revoke(roomId, a.userId, transportEvent),
+    ).rejects.toThrow();
+    expect(await deliveredAt(transportEvent)).toBeNull();
   });
   it("deletes both room scopes, treats not_found as idempotent, and propagates real failures", async () => {
     const calls: { url: string; body: string; grant: unknown }[] = [];
@@ -253,6 +242,47 @@ describe.skipIf(!url)("media access", () => {
       }) as typeof fetch,
     );
     await expect(transport.revokeRoom("room-2")).rejects.toThrow();
+  });
+  it("keeps token issuance behind a pending revoke while unrelated room work proceeds", async () => {
+    const a = await actor();
+    const roomId = await makeRoom(a.userId);
+    const eventId = await queueRevoke(roomId, a.userId);
+    const { promise: entered, resolve: enter } = deferred();
+    const { promise: released, resolve: free } = deferred();
+    let calls = 0;
+    const access = new MediaAccess(config, new MediaStore(pool), (async () => {
+      calls++;
+      enter();
+      await released;
+      return { ok: true } as Response;
+    }) as typeof fetch);
+    const revoking = access.revoke(roomId, a.userId, eventId);
+    await entered;
+    await seat(roomId, a.userId, "RED");
+    let issued = false;
+    const token = access
+      .tokenFor(a.userId.toUpperCase(), roomId.toUpperCase(), {
+        camera: false,
+        mic: false,
+      })
+      .then((value) => {
+        issued = true;
+        return value;
+      });
+    await waitForBlockedAdvisoryLock();
+    await new MediaStore(pool).withUser(a.userId, (tx) =>
+      tx.saveShare(roomId, a.userId, "ALL"),
+    );
+    await pool.query("SELECT id FROM public.rooms WHERE id=$1 FOR UPDATE", [
+      roomId,
+    ]);
+    expect(issued).toBe(false);
+    free();
+    await revoking;
+    expect(calls).toBe(2);
+    expect((await token).roomName).toBe(privateRoomName(roomId));
+    expect(issued).toBe(true);
+    expect(await deliveredAt(eventId)).not.toBeNull();
   });
   it("reads media configuration strictly", () => {
     expect(readMediaConfig({})).toBeNull();

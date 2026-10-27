@@ -33,6 +33,19 @@ describe("operational logs", () => {
     });
     expect(line).not.toContain("private-media-token");
   });
+  it("logs registration pool failures as a fixed event without error payloads", () => {
+    const secret = "fake-pool-secret";
+    const line = logEvent("error", "registration_pool_failed", {
+      message: `connect failed for ${secret}`,
+      connectionString: secret,
+    });
+    expect(JSON.parse(line)).toEqual({
+      time: expect.any(String),
+      level: "error",
+      event: "registration_pool_failed",
+    });
+    expect(line).not.toContain(secret);
+  });
   it("does not allow arbitrary values to become event, level or numeric metadata", () => {
     const secret = "fake-sensitive-fixture";
     const line = logEvent(secret, secret, { port: secret });

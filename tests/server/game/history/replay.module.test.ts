@@ -330,6 +330,18 @@ describe.skipIf(!databaseUrl)(
         ).status,
       ).toBe(404);
     });
+    it("exports a restart-interrupted game without turning it into a draw", async () => {
+      const a = await member(),
+        b = await member(),
+        g = await game(a, b, { status: "INTERRUPTED" });
+      const response = await fetch(`${base}/history/${g.id}/export`, {
+        headers: a.headers,
+      });
+      expect(response.status).toBe(200);
+      const value = (await response.json()) as { pgn: string };
+      expect(value.pgn).toContain('[Result "*"]');
+      expect(value.pgn.trimEnd().endsWith("*")).toBe(true);
+    });
     it("reads AI owner's actual side, no alternative/share route", async () => {
       const a = await member(),
         g = await game(a, null, { mode: "AI", blackAiOwner: true });

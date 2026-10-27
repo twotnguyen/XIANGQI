@@ -4,6 +4,7 @@ const events = [
   "server_start_failed",
   "server_stopped",
   "registration_maintenance_failed",
+  "registration_pool_failed",
   "google_maintenance_failed",
   "realtime_maintenance_failed",
   "server_shutdown_failed",

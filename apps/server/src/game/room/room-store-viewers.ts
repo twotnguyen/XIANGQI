@@ -222,10 +222,10 @@ export class RoomViewerStore extends RoomSwapStore {
       "DELETE FROM public.room_members WHERE room_id=$1 AND user_id=$2",
       [id, targetId],
     );
-    if (this.media) {
-      void this.media.revoke(id, targetId).catch(() => {});
-    }
-    await this.bump(s, id, "room.viewer-kicked", { userId: targetId });
+    const version = await this.bump(s, id, "room.viewer-kicked", {
+      userId: targetId,
+    });
+    await this.event(s, id, version, "media.revoke-user", { userId: targetId });
     return this.snapshot(s, id);
   }
 }

@@ -593,9 +593,6 @@ export class RoomStore extends RoomViewerStore {
       "DELETE FROM public.room_members WHERE room_id=$1 AND user_id=$2",
       [id, userId],
     );
-    if (this.media) {
-      void this.media.revoke(id, userId).catch(() => {});
-    }
     const others = (
       await s.client.query(
         "SELECT user_id FROM public.room_members WHERE room_id=$1 AND role='PLAYER' ORDER BY user_id",
@@ -607,7 +604,8 @@ export class RoomStore extends RoomViewerStore {
         "UPDATE public.rooms SET owner_id=CASE WHEN owner_id=$2 THEN $3 ELSE owner_id END WHERE id=$1",
         [id, userId, others[0].user_id],
       );
-      await this.bump(s, id, "room.members-changed");
+      const version = await this.bump(s, id, "room.members-changed");
+      await this.event(s, id, version, "media.revoke-user", { userId });
     } else {
       const recipients = (
         await s.client.query(

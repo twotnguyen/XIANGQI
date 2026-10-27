@@ -17,6 +17,22 @@ export class MediaStore {
     });
   }
   /**
+   * Mở giao dịch giữ khóa riêng cho cặp phòng–người dùng. Chỉ cấp token và thu hồi media dùng khóa này, không dùng khóa actor/phòng của ván/đồng hồ.
+   */
+  withParticipant<T>(
+    roomId: string,
+    userId: string,
+    work: (tx: MediaTx) => Promise<T>,
+  ): Promise<T> {
+    return transaction(this.pool, async (client) => {
+      await client.query(
+        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+        [`media:${roomId}:${userId}`],
+      );
+      return work(new MediaTx(client));
+    });
+  }
+  /**
    * Mở giao dịch chỉ đọc không giữ khóa.
    */
   read<T>(work: (tx: MediaTx) => Promise<T>): Promise<T> {
@@ -85,5 +101,32 @@ export class MediaTx {
       )
     ).rows[0];
     return member?.role;
+  }
+  /**
+   * Lấy id các sự kiện media.revoke-user chưa ack của cặp phòng–người dùng.
+   */
+  async pendingUserRevocations(
+    roomId: string,
+    userId: string,
+  ): Promise<string[]> {
+    const rows = (
+      await this.client.query<{ id: string }>(
+        `SELECT id FROM xiangqi_room.outbox
+           WHERE room_id=$1 AND type='media.revoke-user' AND delivered_at IS NULL AND lower(payload->>'userId')=$2
+           ORDER BY created_at,id`,
+        [roomId, userId],
+      )
+    ).rows;
+    return rows.map((row) => row.id);
+  }
+  /**
+   * Đánh dấu đã thu hồi xong cho đúng các event đã snapshot.
+   */
+  async markUserRevocationsDelivered(ids: string[]): Promise<void> {
+    if (!ids.length) return;
+    await this.client.query(
+      "UPDATE xiangqi_room.outbox SET delivered_at=clock_timestamp() WHERE id=ANY($1::uuid[]) AND type='media.revoke-user' AND delivered_at IS NULL",
+      [ids],
+    );
   }
 }

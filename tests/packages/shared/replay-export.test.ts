@@ -62,6 +62,19 @@ describe("replay export", () => {
     ).toBe("0-1");
     expect(pgnResult({ ...source, result: undefined })).toBe("*");
   });
+  it.each(["SERVER_RESTART", "BOTH_OFFLINE", "AI_UNAVAILABLE"])(
+    "exports %s as an unfinished game, not a draw",
+    (reason) => {
+      const interrupted = {
+        ...source,
+        result: { reason, winner: null },
+      };
+      expect(pgnResult(interrupted)).toBe("*");
+      const pgn = buildPgn(interrupted);
+      expect(pgn).toContain('[Result "*"]');
+      expect(pgn.trimEnd().endsWith("*")).toBe(true);
+    },
+  );
   it("accepts display labels but keeps a portable fallback", () => {
     const pgn = buildPgn(source, ["Pháo 2 bình 5", ""]);
     expect(pgn).toContain("1. Pháo 2 bình 5 a6a5");
