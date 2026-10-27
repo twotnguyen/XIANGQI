@@ -1,3 +1,8 @@
+import type { GuestPurpose } from "../../account/guest/guest.types.js";
+import type {
+  RoomRequestProof,
+  RoomSessionAuthorizer,
+} from "./room-session.js";
 import {
   RoomError,
   type RoomActor,
@@ -29,42 +34,45 @@ export class RoomHttpService {
   constructor(
     private readonly store: RoomStore,
     private readonly transactions: RoomTransactions,
-    private readonly authorizer: MemberRoomAuthorizer,
+    private readonly authorizer: RoomSessionAuthorizer,
     private readonly withScope: <T>(
       scope: RoomScope,
       work: () => Promise<T>,
     ) => Promise<T> = (_scope, work) => work(),
   ) {}
-  private async actor(proof: MemberRoomRequestProof) {
-    const actor = await this.authorizer.resolve(proof);
-    if (actor.kind !== "member")
-      throw new RoomError(
-        "ROOM_MEMBER_REQUIRED",
-        "Phiên thành viên là bắt buộc",
-        403,
-      );
-    return actor;
+  private async actor(proof: RoomRequestProof) {
+    // Member and guest actors are both valid; the session authorizer picks the proof kind.
+    return this.authorizer.resolve(proof);
   }
   private async run<T>(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     actor: RoomActor,
     roomIds: string[],
     work: (scope: RoomScope) => Promise<T>,
+    purpose: GuestPurpose = "existing-room",
   ) {
     const result = await this.transactions.withRoom(
       { actor, roomIds },
-      (actorProof) => this.authorizer.authorize(proof, actorProof),
-      (scope) => this.withScope(scope, () => work(scope)),
+      (actorProof) =>
+        this.authorizer.authorize(proof, actorProof, purpose, roomIds[0]),
+      (scope) =>
+        this.withScope(scope, async () => {
+          const value = await work(scope);
+          await this.authorizer.finish(proof, scope);
+          return value;
+        }),
     );
-    if (result.status === "ended")
+    if (result.status === "ended") {
+      await this.authorizer.settleEnded(proof);
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
+    }
     return result.value;
   }
   /**
    * Tạo phòng chơi mới với cấu hình thời gian thi đấu và giới hạn số lượng khán giả.
    */
   async create(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     input: Parameters<RoomStore["create"]>[1],
   ) {
     return this.run<Awaited<ReturnType<RoomStore["create"]>>>(
@@ -72,13 +80,14 @@ export class RoomHttpService {
       await this.actor(proof),
       [],
       (scope) => this.store.create(scope, input),
+      "new-room",
     );
   }
   /**
    * Tham gia vào phòng chơi theo mã mời 8 chữ số, phân bổ vào ghế đấu hoặc khán giả tùy tình trạng phòng.
    */
   async join(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     input: {
       commandId: string;
       code: string;
@@ -87,8 +96,12 @@ export class RoomHttpService {
     },
   ) {
     const actor = await this.actor(proof);
-    const roomId = await this.run<string>(proof, actor, [], (scope) =>
-      this.store.resolveCode(scope.client, input.code),
+    const roomId = await this.run<string>(
+      proof,
+      actor,
+      [],
+      (scope) => this.store.resolveCode(scope.client, input.code),
+      "join-room",
     );
     return this.run<Awaited<ReturnType<RoomStore["join"]>>>(
       proof,
@@ -107,6 +120,7 @@ export class RoomHttpService {
         });
         return entry;
       },
+      "join-room",
     );
   }
   private async requireVersion(
@@ -126,7 +140,7 @@ export class RoomHttpService {
    * Đổi ghế đấu (Đỏ <-> Đen) khi chủ phòng đang ngồi một mình chờ đối thủ.
    */
   async switchSeat(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
   ) {
@@ -139,7 +153,7 @@ export class RoomHttpService {
    * Người chơi tự nguyện rời ghế thi đấu để chuyển xuống làm khán giả.
    */
   async toSpectator(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
   ) {
@@ -152,7 +166,7 @@ export class RoomHttpService {
    * Chủ phòng chuyển một người chơi khác xuống làm khán giả xem phòng.
    */
   async moveToSpectator(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
     targetId: string,
@@ -166,7 +180,7 @@ export class RoomHttpService {
    * Chủ phòng mời một khán giả đang xem xuống ghế trống để thi đấu.
    */
   async inviteDown(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
     targetId: string,
@@ -180,7 +194,7 @@ export class RoomHttpService {
    * Khán giả phản hồi chấp nhận hoặc từ chối lời mời xuống ghế thi đấu từ chủ phòng.
    */
   async respondDown(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
     accept: boolean,
@@ -194,7 +208,7 @@ export class RoomHttpService {
    * Đuổi một khán giả ra khỏi phòng cờ và đưa vào danh sách chặn của phòng.
    */
   async kickViewer(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
     targetId: string,
@@ -208,7 +222,7 @@ export class RoomHttpService {
    * Rời khỏi phòng cờ, xử thua nếu đang trong ván hoặc đóng phòng nếu là người cuối cùng rời đi.
    */
   async leave(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
   ) {
@@ -222,7 +236,7 @@ export class RoomHttpService {
    * Gửi đề nghị đổi bên (Đỏ <-> Đen) cho đối thủ cùng phòng.
    */
   async proposeSwap(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
   ) {
@@ -235,7 +249,7 @@ export class RoomHttpService {
    * Rút lại đề nghị đổi bên khi đối thủ chưa phản hồi.
    */
   async withdrawSwap(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
   ) {
@@ -248,7 +262,7 @@ export class RoomHttpService {
    * Phản hồi đồng ý hoặc từ chối đề nghị đổi bên từ đối thủ.
    */
   async respondSwap(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
     accept: boolean,
@@ -262,7 +276,7 @@ export class RoomHttpService {
    * Thay đổi chế độ hiển thị phòng cờ (PUBLIC, CODE_ONLY, LOCKED).
    */
   async changeVisibility(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
     visibility: RoomView["room"]["visibility"],
@@ -274,7 +288,7 @@ export class RoomHttpService {
   /**
    * Lấy ảnh chụp trạng thái đầy đủ (snapshot) của phòng cờ.
    */
-  async snapshot(proof: MemberRoomRequestProof, roomId: string) {
+  async snapshot(proof: RoomRequestProof, roomId: string) {
     return this.run<Awaited<ReturnType<RoomStore["snapshot"]>>>(
       proof,
       await this.actor(proof),

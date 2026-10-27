@@ -135,18 +135,19 @@ export async function fenceClient(
   client: PoolClient,
   holderPid: number,
 ): Promise<void> {
-  const shared = await client.query<{ shared: boolean }>(
-    "SELECT pg_try_advisory_lock_shared($1::int,$2::int) AS shared",
-    [LOCK_CLASS, BARRIER_KEY],
+  const result = await client.query<{ shared: boolean; owner: boolean }>(
+    `WITH barrier AS MATERIALIZED (
+       SELECT pg_try_advisory_lock_shared($1::int,$2::int) AS shared
+     )
+     SELECT shared,shared AND EXISTS(
+       SELECT 1 FROM pg_locks WHERE locktype='advisory' AND granted
+       AND classid=$1::oid AND objid=$3::oid AND objsubid=2 AND pid=$4::int
+     ) AS owner FROM barrier`,
+    [LOCK_CLASS, BARRIER_KEY, SINGLETON_KEY, holderPid],
   );
-  if (shared.rows[0]?.shared !== true)
+  if (result.rows[0]?.shared !== true)
     throw new Error("Runtime barrier is held by a successor");
-  const owner = await client.query<{ owner: boolean }>(
-    `SELECT EXISTS(SELECT 1 FROM pg_locks WHERE locktype='advisory' AND granted
-      AND classid=$1::oid AND objid=$2::oid AND objsubid=2 AND pid=$3::int) AS owner`,
-    [LOCK_CLASS, SINGLETON_KEY, holderPid],
-  );
-  if (owner.rows[0]?.owner !== true)
+  if (result.rows[0]?.owner !== true)
     throw new Error("Room runtime lock holder is no longer active");
 }
 

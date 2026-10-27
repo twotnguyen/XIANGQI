@@ -23,6 +23,13 @@ const mock = vi.hoisted(() => ({
   refresh: vi.fn(),
   logout: vi.fn(),
   authorizedFetch: vi.fn(),
+  guestFetch: vi.fn(),
+  // Mirrors SessionProvider.sessionFetch: guest ? guestFetch : authorizedFetch.
+  sessionFetch: vi.fn((path: string, init?: RequestInit) =>
+    mock.state.status === "guest"
+      ? mock.guestFetch(path, init)
+      : mock.authorizedFetch(path, init),
+  ),
   where: { kind: "none", roomId: null, matchId: null } as Record<
     string,
     unknown
@@ -224,11 +231,19 @@ const room = {
 };
 const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status });
+const guest = {
+  status: "guest",
+  userId: "guest-user-1",
+  displayName: "Lữ khách",
+  expiresAt: "2030-01-01T12:00:00Z",
+  deferred: false,
+};
 beforeEach(() => {
   vi.clearAllMocks();
   mock.sockets.length = 0;
   mock.where = { kind: "none", roomId: null, matchId: null };
   mock.getRealtimeProof.mockResolvedValue({
+    kind: "member",
     accessToken: "synthetic-bearer",
     appSession: "a".repeat(43),
   });
@@ -243,6 +258,7 @@ beforeEach(() => {
   mock.refresh.mockResolvedValue(undefined);
   mock.state = { status: "anonymous" };
   mock.authorizedFetch.mockResolvedValue(reply([]));
+  mock.guestFetch.mockResolvedValue(reply([]));
   window.history.replaceState(null, "", "/login");
 });
 afterEach(() => cleanup());
@@ -276,7 +292,7 @@ it("loads owned replay at the single canonical route with a readonly board", asy
 });
 it("never reads a replay for a Guest or an invalid match ID", async () => {
   window.history.replaceState(null, "", `/history/${historyId}`);
-  mock.state = { status: "guest" };
+  mock.state = guest;
   const view = render(createElement(AppRouter));
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
   mock.state = member;
@@ -368,7 +384,7 @@ it("preserves a history destination through login without reading anonymous data
 });
 it("does not read history for Guests", () => {
   window.history.replaceState(null, "", "/history");
-  mock.state = { status: "guest" };
+  mock.state = guest;
   render(createElement(AppRouter));
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
   expect(screen.queryByRole("heading", { name: "Đối thủ lịch sử" })).toBeNull();
@@ -1026,14 +1042,19 @@ it.each([
   },
 );
 it("denies a Guest the P2 leaderboard without redirecting or showing scope actions", () => {
-  mock.state = { status: "guest" };
+  mock.state = guest;
   window.history.replaceState(null, "", "/leaderboard");
   const { container } = render(createElement(AppRouter));
   expect(container.querySelector("#p2-scope-title")).toBeNull();
   expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
   expect(window.location.pathname).toBe("/leaderboard");
+  const denied = screen
+    .getByText("Phiên Khách không có quyền xem nội dung này.")
+    .closest("section")!;
   expect(
-    screen.getAllByRole("link").map((link) => link.getAttribute("href")),
+    within(denied)
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href")),
   ).toEqual(["/login"]);
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
 });

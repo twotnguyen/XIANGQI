@@ -1,33 +1,45 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "@server/game/realtime/member-transactions.js";
-import { MemberRealtimePresence } from "@server/game/realtime/member-presence.js";
+import { RoomRealtimePresence } from "@server/game/realtime/member-presence.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { databaseUrl, pool, reset } from "./member-transactions.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const readonly = {
   mode: "readonly" as const,
   generation: 0,
   reason: "not_allowed" as const,
 };
 async function setup() {
-  const users = new Map<
-    string,
-    { id: string; email: string; email_confirmed_at: string }
-  >();
+  const users = new Map<string, { id: string; email: string }>();
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => users.get(token)!),
+    verifyAccessToken: vi.fn(async (token: string) => {
+      const u = users.get(token);
+      if (!u) throw new Error("Synthetic unauthorized");
+      return { userId: u.id, email: u.email };
+    }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider);
+  const sessions = new SessionService(
+    new PostgresLoginStore(loginPool),
+    provider,
+  );
   async function member() {
     const id = randomUUID(),
       email = `synthetic-${id}@example.invalid`,
@@ -47,7 +59,6 @@ async function setup() {
     users.set(proof.accessToken, {
       id,
       email,
-      email_confirmed_at: confirmed.toISOString(),
     });
     return { id, proof };
   }
@@ -56,7 +67,11 @@ async function setup() {
   const authorizer = new PostgresMemberRoomAuthorizer(sessions),
     coordinator = new RoomTransactions(pool),
     rooms = new RoomStore();
-  const http = new RoomHttpService(rooms, coordinator, authorizer);
+  const sessionAuthorizer = new RoomSessionAuthorizer(
+    authorizer,
+    new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+  );
+  const http = new RoomHttpService(rooms, coordinator, sessionAuthorizer);
   const entry = await http.create(host.proof, {
     commandId: randomUUID(),
   });
@@ -65,13 +80,12 @@ async function setup() {
     code: entry.inviteCode!,
     preference: "watch",
   });
-  const transactions = new MemberRealtimeTransactions(coordinator, authorizer),
-    identities = new MemberRealtimeIdentities(authorizer);
-  const identity = await identities.resolve(
-    viewer.proof.accessToken,
-    viewer.proof.appSession,
-    viewer.proof,
-  );
+  const transactions = new RoomRealtimeTransactions(
+      coordinator,
+      sessionAuthorizer,
+    ),
+    identities = new RoomRealtimeIdentities(sessionAuthorizer);
+  const identity = await identities.resolve(viewer.proof);
   const connection: RealtimeConnection = {
     identity,
     proof: viewer.proof,
@@ -82,7 +96,7 @@ async function setup() {
   const serverInstance = randomUUID();
   let peers: RealtimeConnection[] = [connection];
   const currentPeers = vi.fn(() => peers);
-  const presence = new MemberRealtimePresence(
+  const presence = new RoomRealtimePresence(
     pool,
     coordinator,
     rooms,
@@ -117,7 +131,10 @@ async function setup() {
     host,
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
   beforeEach(reset);
   it("marks a readonly spectator physically online with positive generation without granting controller", async () => {
@@ -147,14 +164,14 @@ describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
     const m = await setup();
     await m.online();
     m.setPeers([]);
-    m.provider.getUser.mockClear();
-    await m.presence.disconnected({ ...m.connection, proof: undefined });
+    m.provider.verifyAccessToken.mockClear();
+    await m.presence.disconnected(m.connection);
     const row = await m.state();
     expect(row.connected).toBe(false);
     expect(row.disconnected_at).toBeInstanceOf(Date);
     await m.presence.disconnected(m.connection);
     expect((await m.state()).disconnected_at).toEqual(row.disconnected_at);
-    expect(m.provider.getUser).not.toHaveBeenCalled();
+    expect(m.provider.verifyAccessToken).not.toHaveBeenCalled();
   });
   it("rebinds a departing active viewer to its surviving tab and fences stale disconnect events", async () => {
     const m = await setup();
@@ -293,7 +310,7 @@ describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
       recovered.disconnected_at,
     );
     const fresh = { ...m.connection, connectionId: randomUUID() };
-    const restarted = new MemberRealtimePresence(
+    const restarted = new RoomRealtimePresence(
       pool,
       m.coordinator,
       m.rooms,
@@ -304,7 +321,7 @@ describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
     await m.transactions.run(fresh, (client) =>
       restarted.connected(client, fresh, readonly),
     );
-    m.provider.getUser.mockClear();
+    m.provider.verifyAccessToken.mockClear();
     await m.presence.disconnected(fresh);
     expect(await m.state()).toMatchObject({
       connected: true,
@@ -313,7 +330,7 @@ describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
       server_instance: newBoot,
       disconnected_at: null,
     });
-    expect(m.provider.getUser).not.toHaveBeenCalled();
+    expect(m.provider.verifyAccessToken).not.toHaveBeenCalled();
   });
   it("expired viewer reconnect returns ended and commits membership release at the 300-second boundary", async () => {
     const m = await setup();
@@ -337,11 +354,14 @@ describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
   });
   it("does not mark a readonly PLAYER online or grant it spectator presence", async () => {
     const m = await setup();
-    const identity = await new MemberRealtimeIdentities(
-      new PostgresMemberRoomAuthorizer(
-        new SessionService(new PostgresLoginStore(pool), m.provider),
+    const identity = await new RoomRealtimeIdentities(
+      new RoomSessionAuthorizer(
+        new PostgresMemberRoomAuthorizer(
+          new SessionService(new PostgresLoginStore(loginPool), m.provider),
+        ),
+        new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
       ),
-    ).resolve(m.host.proof.accessToken, m.host.proof.appSession, m.host.proof);
+    ).resolve(m.host.proof);
     const c = {
       ...m.connection,
       identity,
@@ -375,7 +395,7 @@ describe.skipIf(!databaseUrl)("member viewer physical presence SQL", () => {
   it("ignores cleanup from another boot instance and filters unrelated surviving peers", async () => {
     const m = await setup();
     await m.online();
-    const otherInstance = new MemberRealtimePresence(
+    const otherInstance = new RoomRealtimePresence(
       pool,
       m.coordinator,
       m.rooms,

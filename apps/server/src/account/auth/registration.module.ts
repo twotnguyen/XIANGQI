@@ -19,7 +19,7 @@ import {
   ProvidersController,
 } from "./registration.controller.js";
 import { logEvent } from "../../core/logger.js";
-import { Pool } from "pg";
+import { Pool, type PoolConfig } from "pg";
 import { readFileSync } from "node:fs";
 import { PostgresRegistrationStore } from "./registration.store.js";
 import { SupabaseAuth } from "./supabase-auth.js";
@@ -27,7 +27,10 @@ import { RegistrationError } from "./registration.types.js";
 import { LoginError } from "../login/login.types.js";
 import { LoginController } from "../login/login.controller.js";
 import { LoginService } from "../login/login.service.js";
-import { PostgresLoginStore } from "../login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "../login/postgres-login-store.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionModule } from "../session/session.module.js";
 /**
@@ -174,13 +177,23 @@ function logPoolError() {
   process.stderr.write(logEvent("error", "registration_pool_failed") + "\n");
 }
 
+export interface RegistrationRuntime {
+  module: DynamicModule;
+  sessions: SessionService | null;
+  auth: SupabaseAuth;
+  pool: Pool;
+  connection: PoolConfig;
+  checkDatabase(): Promise<void>;
+  close(): Promise<void>;
+}
+
 /**
  * Khởi tạo runtime hoàn chỉnh cho tính năng đăng ký và đăng nhập:
  * Thiết lập connection pool Postgres, kiểm tra schema bảng dữ liệu, và kết nối Supabase Auth.
  */
 export async function createRegistrationRuntime(
   env: Record<string, string | undefined>,
-) {
+): Promise<RegistrationRuntime | null> {
   const settings = readRegistrationConfig(env);
   if (!settings) return null;
   // Session pooler is required because registration serializes remote Auth calls with session advisory locks.
@@ -218,7 +231,8 @@ export async function createRegistrationRuntime(
     if (settings.loginEnabled) {
       // Registration keeps its connection while invoking password/session work.
       // A separate pool prevents five concurrent registrations exhausting their own nested calls.
-      sessionPool = new Pool(poolOptions);
+      // Login pool: each new connection is already app_server; this pool is never reset to another role.
+      sessionPool = createLoginPool(poolOptions);
       sessionPool.on("error", logPoolError);
       await sessionPool.query("SELECT 1");
     }
@@ -299,6 +313,7 @@ export async function createRegistrationRuntime(
     sessions,
     auth,
     pool,
+    connection: poolOptions,
     checkDatabase: async () => {
       await pool.query("SELECT 1");
       await sessionPool?.query("SELECT 1");

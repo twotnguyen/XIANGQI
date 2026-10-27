@@ -3,7 +3,10 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { GuestService } from "@server/account/guest/guest.service.js";
 import { GuestStore } from "@server/account/guest/guest.store.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import {
   RoomRosterChanged,
@@ -13,12 +16,15 @@ import {
   RoomTransactions,
   type RoomActorProof,
 } from "@server/game/room/room-transactions.js";
+import { GuestRoomCoordinator } from "@server/game/room/guest-room-auth.js";
+import { scopeContext } from "./guest-scope.test-helper.js";
 import {
   actor,
   databaseUrl,
   pool,
   reset,
 } from "./room-transactions.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const coordinator = new RoomTransactions(pool);
 const rooms = new RoomStore();
 // Synthetic lifecycle for coordinator tests only, not production privacy cleanup.
@@ -36,6 +42,9 @@ async function authorize(proof: RoomActorProof) {
   const result = await guest.requireActorInTransaction(
     proof.client,
     capabilities.get(proof.actor.userId),
+    "read",
+    undefined,
+    proof.lockedActorIds,
   );
   return result;
 }
@@ -70,7 +79,10 @@ async function tryLock(key: string) {
     c.release();
   }
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
   beforeEach(async () => {
     capabilities.clear();
@@ -428,19 +440,18 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
   });
   it("commits actual expired Guest cleanup outcome without invoking work", async () => {
     let now = new Date();
-    let context: RoomActorProof | undefined;
+    const scopes = scopeContext();
     const expiredGuest = new GuestService(
       new GuestStore(pool),
       {
         seatedSeat: async () => null,
         end: async (c) => {
-          if (!context || context.client !== c)
-            throw new Error("Missing trusted scope");
-          const s = await coordinator.lockRooms(context);
+          const s = scopes.scopeOf(c);
           for (const roomId of s.lockedRoomIds) await rooms.leave(s, roomId);
         },
       },
       () => now,
+      new GuestRoomCoordinator(coordinator, scopes.withScope),
     );
     const created = await expiredGuest.create("Expired Viewer");
     capabilities.set(created.userId, created.capability);
@@ -458,16 +469,21 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     const work = vi.fn();
     const result = await coordinator.withRoom(
       { actor: a, roomIds: [] },
-      async (p) => {
-        context = p;
-        return expiredGuest.requireActorInTransaction(
+      (p) =>
+        expiredGuest.requireActorInTransaction(
           p.client,
           created.capability,
-        );
-      },
+          "read",
+          undefined,
+          p.lockedActorIds,
+        ),
       work,
     );
     expect(result).toEqual({ status: "ended" });
+    // Production contract: ended is settled by the coordinator (cleanup + COMMIT) outside the authorize phase.
+    await expect(
+      expiredGuest.requireActive(created.capability),
+    ).rejects.toMatchObject({ code: "GUEST_EXPIRED" });
     expect(work).not.toHaveBeenCalled();
     expect(
       (
@@ -510,9 +526,9 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
       "INSERT INTO public.profiles(user_id,username,display_name,completed_at,registration_pending) VALUES($1,'SyntheticMember','Synthetic Member',$2,false)",
       [id, now],
     );
-    const auth = { signInPassword: vi.fn(), getUser: vi.fn() };
+    const auth = { signInPassword: vi.fn(), verifyAccessToken: vi.fn() };
     const issuer = new SessionService(
-      new PostgresLoginStore(pool),
+      new PostgresLoginStore(loginPool),
       auth,
       () => now,
     );
@@ -522,7 +538,7 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
     const authorizeMember = async (p: RoomActorProof) => {
       expect(await tryLock("actor:" + id)).toBe(false);
       const scoped = new SessionService(
-        new PostgresLoginStore(pool, p.client),
+        new PostgresLoginStore(loginPool, p.client),
         auth,
         () => at,
       );
@@ -543,7 +559,6 @@ describe.skipIf(!databaseUrl)("actor-first room transactions", () => {
       coordinator.withRoom({ actor: a, roomIds: [] }, authorizeMember, work),
     ).rejects.toMatchObject({ code: "SESSION_EXPIRED" });
     expect(work).not.toHaveBeenCalled();
-    expect(auth.getUser).not.toHaveBeenCalled();
     expect(
       (await pool.query("SELECT count(*)::int AS n FROM public.rooms")).rows[0]
         .n,

@@ -11,8 +11,11 @@ import {
 import { RoomGuestPort } from "@server/game/room/guest-room-port.js";
 import { GuestService } from "@server/account/guest/guest.service.js";
 import { GuestStore } from "@server/account/guest/guest.store.js";
+import { GuestRoomCoordinator } from "@server/game/room/guest-room-auth.js";
+import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomWorker } from "@server/game/room/room-worker.js";
 import { RoomStore } from "@server/game/room/room-store.js";
+import { scopeContext } from "./guest-scope.test-helper.js";
 import type { RoomActor, RoomScope } from "@server/game/room/room.types.js";
 const migration = "supabase/migrations/20261011000006_rooms.sql";
 const rollback = "supabase/rollback/20261011000006_rooms.sql";
@@ -61,6 +64,8 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000011_ai_reservations.sql");
+    await apply("supabase/migrations/20261011000012_ai_presence.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
   });
@@ -230,12 +235,12 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
       await run(host.a, host.proof, [entry.roomId], (scope) =>
         store.authorize(scope, entry.roomId),
       ),
-    ).toEqual({ canControl: true });
+    ).toMatchObject({ canControl: true });
     expect(
       await run(viewer.a, viewer.proof, [entry.roomId], (scope) =>
         store.authorize(scope, entry.roomId),
       ),
-    ).toEqual({ canControl: false });
+    ).toMatchObject({ canControl: false });
     await expect(
       run(outsider.a, outsider.proof, [entry.roomId], (scope) =>
         store.authorize(scope, entry.roomId),
@@ -833,25 +838,36 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   });
   it("reports an AI reservation as a seat and fails closed until full guest cleanup is integrated", async () => {
     const a = await actor(),
-      matchId = randomUUID();
+      gameId = randomUUID(),
+      bootId = randomUUID();
     await pool.query(
-      "INSERT INTO public.matches(id,mode,red_user_id,ai_side,ai_level,position) VALUES($1,'AI',$2,'BLACK','EASY',$3)",
-      [matchId, a.userId, { board: Array(90).fill(null), turn: "RED" }],
+      "INSERT INTO xiangqi_ai.boots(id,created_at,lease_until) VALUES($1,now(),now()+interval '1 minute')",
+      [bootId],
     );
     await pool.query(
-      "INSERT INTO public.active_players(user_id,match_id) VALUES($1,$2)",
-      [a.userId, matchId],
+      "INSERT INTO public.active_players(user_id,ai_game_id,ai_boot_id) VALUES($1,$2,$3)",
+      [a.userId, gameId, bootId],
     );
-    const port = new RoomGuestPort();
+    const port = new RoomGuestPort(
+      async () => {
+        throw new Error("AI reservation must fail before any leave runs");
+      },
+      () => {
+        throw new Error("AI reservation must fail before scope lookup");
+      },
+    );
     await transaction([a.userId], [], async (client) => {
       expect(await port.seatedSeat(client, a.userId)).toEqual({
         kind: "ai",
-        matchId,
+        matchId: gameId,
       });
       await expect(
         port.end(client, a.userId, {
           reason: "expiry",
           confirmedResign: false,
+          stageCommit: () => {
+            throw new Error("No AI effect may be staged before the 409");
+          },
         }),
       ).rejects.toMatchObject({ code: "GUEST_UNAVAILABLE" });
     });
@@ -862,21 +878,27 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
   });
   it("integrates fixed12h guest deferral and finishes actual seat release on the same client", async () => {
     let now = new Date("2026-10-11T00:00:00Z");
-    // Synthetic fixture has no match/media/personal snapshots. Production termination port is required separately.
-    const port = new RoomGuestPort(async (c, id) => {
-      expect(
-        (
-          await c.query(
-            "SELECT 1 FROM public.active_players WHERE user_id=$1",
-            [id],
-          )
-        ).rowCount,
-      ).toBe(0);
-      await c.query("DELETE FROM public.chat_messages WHERE sender_id=$1", [
-        id,
-      ]);
-    });
-    const guests = new GuestService(new GuestStore(pool), port, () => now);
+    const scopes = scopeContext();
+    const scopeOf = (
+      client: Parameters<typeof scopes.current>[0],
+      id: string,
+      roomId: string,
+    ) => {
+      const s = scopes.current(client);
+      if (!s || s.actor.userId !== id || !s.lockedRoomIds.has(roomId))
+        throw new Error("Missing trusted room scope");
+      return s;
+    };
+    const port = new RoomGuestPort(
+      (c, id, roomId) => store.leave(scopeOf(c, id, roomId), roomId),
+      scopes.scopeOf,
+    );
+    const guests = new GuestService(
+      new GuestStore(pool),
+      port,
+      () => now,
+      new GuestRoomCoordinator(new RoomTransactions(pool), scopes.withScope),
+    );
     const session = await guests.create("Tên tạm");
     const guest = await guests.requireActive(session.capability),
       e = await guests.withActor(
@@ -894,6 +916,28 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
             { commandId: randomUUID() },
           ),
       );
+    // Deferral applies only to a guest seated in a PLAYING room (RoomGuestPort.seatedSeat); a WAITING host holds no seat.
+    const opponent = await actor(),
+      matchId = randomUUID();
+    await pool.query(
+      "INSERT INTO public.matches(id,mode,status,red_user_id,black_user_id,position,time_control,clock,room_id) VALUES($1,'ONLINE','ACTIVE',$2,$3,$4,600,$5,$6)",
+      [
+        matchId,
+        guest.userId,
+        opponent.userId,
+        JSON.stringify({ board: Array(90).fill(null), turn: "RED" }),
+        JSON.stringify({
+          redMs: 600000,
+          blackMs: 600000,
+          runningSinceEpochMs: now.getTime(),
+        }),
+        e.roomId,
+      ],
+    );
+    await pool.query(
+      "UPDATE public.rooms SET status='PLAYING',current_match_id=$2 WHERE id=$1",
+      [e.roomId, matchId],
+    );
     now = new Date(now.getTime() + 12 * 3600000);
     await expect(
       guests.requireActive(session.capability, "new-room"),
@@ -901,26 +945,44 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
     expect(
       await guests.requireActive(session.capability, "existing-room", e.roomId),
     ).toMatchObject({ deferred: true });
-    await guests.withActor(
-      session.capability,
-      "existing-room",
-      e.roomId,
-      async (client, a) => {
-        await client.query(
-          "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
-          ["room:" + e.roomId],
+    // Leaving a PLAYING seat needs the match lifecycle port; interrupt the match as the real leave path would.
+    const leaveStore = new RoomStore({
+      async start() {
+        throw new Error("start is not used by this leave path");
+      },
+      async leave(c, i) {
+        await c.query(
+          'UPDATE public.matches SET status=\'INTERRUPTED\',ended_at=clock_timestamp(),outcome=\'{"reason":"SERVER_RESTART","winner":null}\' WHERE id=$1',
+          [i.matchId],
         );
-        await store.leave(
-          {
-            client,
-            actor: a,
-            lockedActorIds: new Set([a.userId]),
-            lockedRoomIds: new Set([e.roomId]),
-          },
-          e.roomId,
+        await c.query(
+          "UPDATE public.rooms SET status='WAITING',current_match_id=NULL WHERE id=$1",
+          [i.roomId],
         );
       },
-    );
+    });
+    await expect(
+      guests.withActor(
+        session.capability,
+        "existing-room",
+        e.roomId,
+        async (client, a) => {
+          await client.query(
+            "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+            ["room:" + e.roomId],
+          );
+          await leaveStore.leave(
+            {
+              client,
+              actor: a,
+              lockedActorIds: new Set([a.userId]),
+              lockedRoomIds: new Set([e.roomId]),
+            },
+            e.roomId,
+          );
+        },
+      ),
+    ).rejects.toMatchObject({ code: "GUEST_EXPIRED" });
     expect(
       (
         await pool.query(

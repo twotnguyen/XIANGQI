@@ -4,7 +4,10 @@ import { initialPosition, playMove } from "@xiangqi/xiangqi-core";
 import { createApp } from "@server/app.js";
 import { LoginError } from "@server/account/login/login.types.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
@@ -29,14 +32,18 @@ const provider = {
   async signInPassword(): Promise<never> {
     throw Error("Not used");
   },
-  async getUser(token: string) {
+  async verifyAccessToken(token: string) {
     providerCalls++;
     const value = identities.get(token);
     if (!value) throw new LoginError("SESSION_INVALID", "synthetic token", 401);
-    return value;
+    return { userId: value.id, email: value.email };
   },
 };
-const sessions = new SessionService(new PostgresLoginStore(pool), provider),
+const loginPool = createLoginPool({ connectionString: databaseUrl });
+const sessions = new SessionService(
+    new PostgresLoginStore(loginPool),
+    provider,
+  ),
   transactions = new RoomTransactions(pool),
   authorizer = new PostgresMemberRoomAuthorizer(sessions),
   store = new ReplayStore();
@@ -234,7 +241,10 @@ describe.skipIf(!databaseUrl)(
       await app?.close();
       app = undefined;
     });
-    afterAll(() => pool.end());
+    afterAll(async () => {
+      await pool.end();
+      await loginPool.end();
+    });
     it("reads golden effective branch for both players without writes or private metadata", async () => {
       const a = await member(),
         b = await member(),

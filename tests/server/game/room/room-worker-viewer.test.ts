@@ -2,8 +2,15 @@ import { randomUUID } from "node:crypto";
 import { initialPosition } from "@xiangqi/xiangqi-core";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { PostgresRoomWorkerPort } from "@server/game/room/postgres-room-worker-port.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
@@ -14,11 +21,15 @@ import {
   pool,
   reset,
 } from "./room-transactions.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const rooms = new RoomStore();
 const coordinator = new RoomTransactions(pool);
-const provider = { signInPassword: vi.fn(), getUser: vi.fn() };
-const authorizer = new PostgresMemberRoomAuthorizer(
-  new SessionService(new PostgresLoginStore(pool), provider),
+const provider = { signInPassword: vi.fn(), verifyAccessToken: vi.fn() };
+const authorizer = new RoomSessionAuthorizer(
+  new PostgresMemberRoomAuthorizer(
+    new SessionService(new PostgresLoginStore(loginPool), provider),
+  ),
+  new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
 );
 function port() {
   return new PostgresRoomWorkerPort(
@@ -101,7 +112,10 @@ async function playing(f: Awaited<ReturnType<typeof fixture>>) {
   );
   return matchId;
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "runtime viewer due-room bridge on synthetic PostgreSQL",
   () => {
@@ -218,7 +232,7 @@ describe.skipIf(!databaseUrl)(
         ).rows[0],
       ).toEqual({ status: "PLAYING", current_match_id: matchId });
       expect(deliver).toHaveBeenCalled();
-      expect(provider.getUser).not.toHaveBeenCalled();
+      expect(provider.verifyAccessToken).not.toHaveBeenCalled();
     });
   },
 );

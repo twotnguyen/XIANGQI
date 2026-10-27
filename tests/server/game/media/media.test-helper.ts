@@ -19,11 +19,14 @@ export async function resetMediaSchema() {
   await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   await apply("supabase/migrations/20261011000015_media_share.sql");
 }
+let inviteSequence = 0;
+/** Creates a room owned by `owner`. Every room gets its own invite code (rooms_invite_code_unique). */
 export async function makeRoom(owner: string) {
   const roomId = randomUUID();
+  const inviteCode = String(++inviteSequence).padStart(8, "0");
   await pool.query(
-    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong media','CODE_ONLY','12345678',600,5,'WAITING',1)",
-    [roomId, owner],
+    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong media','CODE_ONLY',$3,600,5,'WAITING',1)",
+    [roomId, owner, inviteCode],
   );
   return roomId;
 }

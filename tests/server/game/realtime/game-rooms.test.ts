@@ -85,6 +85,27 @@ function fixture() {
       applied: true,
       match,
     })),
+    current: vi.fn(async (client: PoolClient, roomId: string) => {
+      const currentId = (
+        await client.query<{ current_match_id: string | null }>(
+          "SELECT current_match_id FROM public.rooms WHERE id=$1",
+          [roomId],
+        )
+      ).rows[0]?.current_match_id;
+      return {
+        room: {
+          id: roomId,
+          status: "PLAYING",
+          current_match_id: currentId ?? null,
+          time_control: 10,
+          closed_at: null,
+          room_version: "8",
+        },
+        row: null,
+        seat: "red",
+        match: currentId ? match : null,
+      };
+    }),
   };
   const getScope = vi.fn(() => scope),
     clock = new ClockService();
@@ -220,10 +241,10 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         asOf: f.room.serverNow,
       },
     });
-    expect(f.matchStore.snapshot).toHaveBeenCalledWith(
+    expect(f.matchStore.current).toHaveBeenCalledWith(
       f.client,
       f.roomId,
-      f.matchId,
+      f.userId,
     );
     expect(f.match.clock).toEqual(storedClock);
     expect(JSON.stringify(result)).not.toContain("PRIVATE");
@@ -232,9 +253,9 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
   it("does not query MatchStore when waiting room has no current match", async () => {
     const f = fixture();
     f.room.room.status = "WAITING";
-    (f.client.query as ReturnType<typeof vi.fn>).mockResolvedValue({
-      rows: [{ current_match_id: null }],
-    });
+    (f.client.query as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({ rows: [{ current_match_id: null }] })
+      .mockResolvedValueOnce({ rows: [] });
     expect(
       await f.adapter.snapshot(f.client, f.identity, f.roomId),
     ).toMatchObject({ match: null, clocks: null });
@@ -507,7 +528,10 @@ describe("draw capability projection and dispatch", () => {
   };
   function setup() {
     const f = fixture();
-    const getter = { drawSnapshot: vi.fn(async () => draw) };
+    const getter = {
+      drawSnapshot: vi.fn(async () => draw),
+      drawOf: vi.fn(async () => draw),
+    };
     const mutations = {
       offerDraw: vi.fn(async () => ({ applied: true, match: f.match, draw })),
       withdrawDraw: vi.fn(async () => ({
@@ -549,16 +573,17 @@ describe("draw capability projection and dispatch", () => {
     expect(
       (await f.adapter.snapshot(f.client, f.identity, f.roomId)).draw,
     ).toEqual(draw);
-    expect(f.getter.drawSnapshot).toHaveBeenCalledWith(
+    expect(f.getter.drawOf).toHaveBeenCalledWith(
       { ...f.scope, roomId: f.roomId, canControl: true },
-      { matchId: f.matchId },
+      expect.objectContaining({ seat: "red" }),
+      f.match,
     );
-    f.getter.drawSnapshot.mockClear();
+    f.getter.drawOf.mockClear();
     f.room.role = "spectator";
     expect(
       (await f.adapter.snapshot(f.client, f.identity, f.roomId)).draw,
     ).toBeNull();
-    expect(f.getter.drawSnapshot).not.toHaveBeenCalled();
+    expect(f.getter.drawOf).not.toHaveBeenCalled();
   });
   it.each([
     "match.draw.offer",
@@ -621,19 +646,19 @@ describe("draw capability projection and dispatch", () => {
   });
   it("whitelists draw getter fields and does not invoke it for a terminal match", async () => {
     const f = setup();
-    f.getter.drawSnapshot.mockResolvedValueOnce({
+    f.getter.drawOf.mockResolvedValueOnce({
       ...draw,
       privateDetail: "SECRET DRAW",
     } as typeof draw);
     const snap = await f.adapter.snapshot(f.client, f.identity, f.roomId);
     expect(snap.draw).toEqual(draw);
     expect(JSON.stringify(snap)).not.toContain("SECRET DRAW");
-    f.getter.drawSnapshot.mockClear();
+    f.getter.drawOf.mockClear();
     f.match.status = "FINISHED";
     f.match.outcome = { reason: "DRAW_AGREEMENT", winner: null };
     expect(
       (await f.adapter.snapshot(f.client, f.identity, f.roomId)).draw,
     ).toBeNull();
-    expect(f.getter.drawSnapshot).not.toHaveBeenCalled();
+    expect(f.getter.drawOf).not.toHaveBeenCalled();
   });
 });

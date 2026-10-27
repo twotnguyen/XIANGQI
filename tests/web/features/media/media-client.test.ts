@@ -60,3 +60,16 @@ describe("media client", () => {
     );
   });
 });
+
+it("surfaces a deferred guest's media refusal as its server code, not a generic failure", async () => {
+  const client = createMediaClient(
+    vi.fn().mockResolvedValue(fail("GUEST_DEFERRED", 403)),
+  );
+  await expect(client.token("room", false, false)).rejects.toMatchObject({
+    code: "GUEST_DEFERRED",
+    status: 403,
+  });
+  await expect(client.token("room", false, false)).rejects.toBeInstanceOf(
+    MediaRequestError,
+  );
+});

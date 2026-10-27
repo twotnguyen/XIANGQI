@@ -4,11 +4,18 @@ import { randomUUID } from "node:crypto";
 import { vi } from "vitest";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { MatchStore } from "@server/game/match/match-store.js";
 import { ClockService } from "@server/game/clock/clock.service.js";
 export const databaseUrl = process.env.ROOM_RUNTIME_TEST_DATABASE_URL;
@@ -26,6 +33,7 @@ if (databaseUrl) {
     );
 }
 export const pool = new Pool({ connectionString: databaseUrl });
+export const loginPool = createLoginPool({ connectionString: databaseUrl });
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
@@ -37,13 +45,13 @@ function registration() {
   >();
   const auth = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
+    verifyAccessToken: vi.fn(async (token: string) => {
       const user = users.get(token);
       if (!user) throw new Error("synthetic invalid bearer");
-      return user;
+      return { userId: user.id, email: user.email };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth);
+  const sessions = new SessionService(new PostgresLoginStore(loginPool), auth);
   return {
     users,
     auth,
@@ -86,7 +94,10 @@ async function oldRoom(r: ReturnType<typeof registration>, playing = false) {
     b = await member(r),
     rooms = new RoomStore(),
     coordinator = new RoomTransactions(pool),
-    authorizer = new PostgresMemberRoomAuthorizer(r.sessions);
+    authorizer = new RoomSessionAuthorizer(
+      new PostgresMemberRoomAuthorizer(r.sessions),
+      new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+    );
   const service = new RoomHttpService(rooms, coordinator, authorizer),
     proof = (m: typeof a) => ({
       accessToken: m.token,

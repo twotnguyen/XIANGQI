@@ -68,6 +68,7 @@ const afterRed = playMove(start, legalMoves(start)[0]!);
 const afterBlack = playMove(afterRed, legalMoves(afterRed)[0]!);
 const midHistory = [start, afterRed, afterBlack].map(serializePosition);
 const proof = async () => ({
+  kind: "member" as const,
   accessToken: "synthetic-bearer",
   appSession: "a".repeat(43),
 });
@@ -302,6 +303,44 @@ it("navigates to the new game ID when an abandoned game is retried into a replac
   expect(
     f.mock.calls.filter(([p]) => String(p).endsWith("/retry")),
   ).toHaveLength(1);
+});
+
+it("retries a transient FINALIZING save on the same game until the exact terminal result lands", async () => {
+  const terminal = midGame({
+    version: 4,
+    status: "FINISHED",
+    outcome: { reason: "RESIGN", winner: "black" },
+  });
+  let saves = 0;
+  const f = fetchWith(async (method, path) => {
+    if (method === "GET")
+      return json(envelope(midGame({ version: 3, status: "FINALIZING" })));
+    if (path.endsWith("/retry")) {
+      saves++;
+      return saves === 1
+        ? json({ code: "AI_UNAVAILABLE" }, 503)
+        : json(envelope(terminal));
+    }
+    return json({ code: "AI_UNAVAILABLE" }, 503);
+  });
+  mount(f);
+  await screen.findByText("Đang ghi nhận kết quả…");
+  grantControl();
+  const save = await screen.findByRole("button", { name: "Thử lưu kết quả" });
+  fireEvent.click(save);
+  await vi.waitFor(() => expect(saves).toBe(1));
+  // Transient failure keeps the same game and leaves the retry available.
+  const again = await screen.findByRole("button", { name: "Thử lưu kết quả" });
+  expect(window.location.pathname).toBe(`/ai/${id}`);
+  fireEvent.click(again);
+  expect(await screen.findByText("Bạn thua")).toBeTruthy();
+  expect(saves).toBe(2);
+  const retries = f.mock.calls.filter(([p]) => String(p).endsWith("/retry"));
+  expect(retries.map(([, init]) => JSON.parse(String(init?.body)))).toEqual([
+    { version: 3 },
+    { version: 3 },
+  ]);
+  expect(window.location.pathname).toBe(`/ai/${id}`);
 });
 
 it("keeps the game when the leave dialog is cancelled and sends no resign", async () => {

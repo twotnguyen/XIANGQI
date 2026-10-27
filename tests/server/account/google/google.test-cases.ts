@@ -14,8 +14,12 @@ import type {
   GoogleAuth,
 } from "@server/account/google/google.types.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import type { Session } from "@server/account/auth/registration.types.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 describe.skipIf(!databaseUrl)(
   "verified Google boundary with real database/session persistence",
   () => {
@@ -118,11 +122,13 @@ describe.skipIf(!databaseUrl)(
       },
     };
     const sessions = new SessionService(
-      new PostgresLoginStore(pool),
+      new PostgresLoginStore(loginPool),
       {
-        getUser: auth.getUser,
-        async signInPassword() {
-          throw new Error("not password path");
+        verifyAccessToken: async (access: string) => {
+          const u = await auth.getUser(access);
+          if (typeof u.email !== "string")
+            throw new Error("Fixture user email missing");
+          return { userId: u.id, email: u.email };
         },
       },
       () => time,

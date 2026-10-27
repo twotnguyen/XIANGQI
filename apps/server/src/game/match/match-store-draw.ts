@@ -12,6 +12,9 @@ import {
   reject,
   assertUuid,
   validClock,
+  assertScope,
+  assertSeated,
+  type RoomMatch,
 } from "./match-store-core.js";
 import { MatchStoreCore } from "./match-store-core.js";
 
@@ -26,42 +29,54 @@ export class MatchDrawStore extends MatchStoreCore {
   private async drawState(
     client: PoolClient,
     match: MatchView,
-    at: Date,
+    at: Date | null,
   ): Promise<MatchDrawView> {
-    const offers = (
+    // Một lượt truy vấn: đề nghị, tổng nước đi hiện tại của từng bên, và số nước
+    // đi tính đến expires_at cho đề nghị PENDING đã hết hạn tại `at`.
+    // date_trunc ms khớp với Date phía JS (node-pg chỉ giữ mili-giây).
+    const rows = (
       await client.query<{
         id: string;
         sender: "RED" | "BLACK";
         status: string;
         expires_at: Date;
+        sampled_at: Date;
         cooldown_after_move_count: number | null;
+        side_moves: number;
+        expired_baseline: number | null;
       }>(
-        "SELECT id,sender,status,expires_at,cooldown_after_move_count FROM xiangqi_room.match_draw_offers WHERE match_id=$1 ORDER BY created_at,id",
-        [match.id],
-      )
-    ).rows;
-    const counts = (
-      await client.query<{ side: "RED" | "BLACK"; n: number }>(
-        "SELECT payload->>'side' side,count(*)::int n FROM public.match_events WHERE match_id=$1 AND type='MOVE' GROUP BY payload->>'side'",
-        [match.id],
+        `WITH sampled AS MATERIALIZED (
+           SELECT COALESCE($2::timestamptz,date_trunc('milliseconds',clock_timestamp())) AS at
+         ), side_counts AS (
+           SELECT payload->>'side' AS side,count(*)::int AS n
+           FROM public.match_events WHERE match_id=$1 AND type='MOVE'
+           GROUP BY payload->>'side'
+         )
+         SELECT o.id,o.sender,o.status,o.expires_at,o.cooldown_after_move_count,
+           sampled.at AS sampled_at,COALESCE(sc.n,0) AS side_moves,
+           CASE WHEN o.status='PENDING' AND date_trunc('milliseconds',o.expires_at)<=sampled.at THEN (
+             SELECT count(*)::int FROM public.match_events e
+             WHERE e.match_id=$1 AND e.type='MOVE' AND e.payload->>'side'=o.sender
+               AND e.created_at<=date_trunc('milliseconds',o.expires_at)
+           ) END AS expired_baseline
+         FROM xiangqi_room.match_draw_offers o CROSS JOIN sampled
+         LEFT JOIN side_counts sc ON sc.side=o.sender
+         WHERE o.match_id=$1
+         ORDER BY o.created_at,o.id`,
+        [match.id, at],
       )
     ).rows;
     const remainingMoves = { red: 0, black: 0 };
-    for (const offer of offers) {
-      let baseline = offer.cooldown_after_move_count;
-      if (offer.status === "PENDING" && offer.expires_at <= at)
-        baseline = await this.drawMoveCount(
-          client,
-          match.id,
-          offer.sender,
-          offer.expires_at,
-        );
+    for (const offer of rows) {
+      const baseline =
+        offer.status === "PENDING" && offer.expires_at <= offer.sampled_at
+          ? offer.expired_baseline
+          : offer.cooldown_after_move_count;
       if (baseline !== null) {
         const side = offer.sender === "RED" ? "red" : "black";
         remainingMoves[side] = Math.max(
           remainingMoves[side],
-          5 -
-            ((counts.find((c) => c.side === offer.sender)?.n ?? 0) - baseline),
+          5 - (offer.side_moves - baseline),
           0,
         );
       }
@@ -69,8 +84,10 @@ export class MatchDrawStore extends MatchStoreCore {
     return {
       offers:
         match.status === "ACTIVE"
-          ? offers
-              .filter((o) => o.status === "PENDING" && o.expires_at > at)
+          ? rows
+              .filter(
+                (o) => o.status === "PENDING" && o.expires_at > o.sampled_at,
+              )
               .map((o) => ({
                 id: o.id,
                 sender: o.sender === "RED" ? "red" : "black",
@@ -101,11 +118,20 @@ export class MatchDrawStore extends MatchStoreCore {
     input: { matchId: string },
   ): Promise<MatchDrawView> {
     const { match } = await this.context(scope, { ...input, matchVersion: 0 });
-    return this.drawState(
-      scope.client,
-      match,
-      await this.drawTime(scope.client),
-    );
+    return this.drawState(scope.client, match, null);
+  }
+  /**
+   * Chiếu cầu hòa cho ván đã đọc trong cùng giao dịch khóa (`MatchStore.current`) mà không đọc lại ván.
+   * Giữ nguyên kiểm tra quyền điều khiển, khóa và ghế như `drawSnapshot`.
+   */
+  async drawOf(
+    scope: MatchScope,
+    loaded: RoomMatch,
+    match: MatchView,
+  ): Promise<MatchDrawView> {
+    assertScope(scope);
+    assertSeated(scope, match.id, loaded);
+    return this.drawState(scope.client, match, null);
   }
   /**
    * Người chơi gửi đề nghị xin hòa tới đối thủ trong ván đấu đang diễn ra.

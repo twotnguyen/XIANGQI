@@ -4,7 +4,7 @@ import {
   RealtimeError,
   type RealtimeConnection,
 } from "../realtime/realtime.types.js";
-import type { MemberRealtimeTransactions } from "../realtime/member-transactions.js";
+import type { RoomRealtimeTransactions } from "../realtime/member-transactions.js";
 import { invalidChatInput } from "./chat-store.js";
 import type {
   ChatStore,
@@ -40,7 +40,7 @@ export class ChatRealtimeService {
   constructor(
     private readonly store: ChatStore,
     private readonly transactions: Pick<
-      MemberRealtimeTransactions,
+      RoomRealtimeTransactions,
       "run" | "getScope"
     >,
   ) {}

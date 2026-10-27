@@ -41,10 +41,17 @@ export type RoomRow = {
   closed_at: Date | null;
   room_version: string;
 };
+type RoomMatchRow = RoomRow & { seat_side: string | null } & {
+  [K in keyof MatchRow as `m_${K}`]: MatchRow[K] | null;
+};
 export const opposite = (side: Side): Side =>
   side === "red" ? "black" : "red";
 export const reject = (code: string, message: string, status = 409): never => {
   throw new MatchError(code, message, status);
+};
+const assertHistorySupported = (row: MatchRow): void => {
+  if (row.mode !== "ONLINE" || row.rule_set_version !== "xiangqi-simple-v1")
+    reject("MATCH_HISTORY_UNSUPPORTED", "Không hỗ trợ lịch sử ván này.", 409);
 };
 export const assertUuid = (value: string) => {
   if (typeof value !== "string" || !uuid.test(value))
@@ -99,6 +106,89 @@ export function dbOutcome(value: MatchOutcome) {
     winner:
       value.winner === null ? null : value.winner === "red" ? "RED" : "BLACK",
   };
+}
+export type RoomMatch = {
+  room: RoomRow;
+  row: MatchRow | null;
+  seat: string | null;
+};
+const roomMatchOf = (r: RoomMatchRow): RoomMatch => {
+  const room: RoomRow = {
+    id: r.id,
+    status: r.status,
+    current_match_id: r.current_match_id,
+    time_control: r.time_control,
+    closed_at: r.closed_at,
+    room_version: r.room_version,
+  };
+  const row =
+    r.m_id === null
+      ? null
+      : ({
+          id: r.m_id,
+          room_id: r.m_room_id,
+          mode: r.m_mode,
+          status: r.m_status,
+          red_user_id: r.m_red_user_id,
+          black_user_id: r.m_black_user_id,
+          position: r.m_position,
+          version: r.m_version,
+          ply: r.m_ply,
+          active_move_ids: r.m_active_move_ids,
+          clock: r.m_clock,
+          time_control: r.m_time_control,
+          outcome: r.m_outcome,
+          ended_at: r.m_ended_at,
+          created_at: r.m_created_at,
+          rule_set_version: r.m_rule_set_version,
+        } as MatchRow);
+  return { room, row, seat: r.seat_side };
+};
+/** Kiểm tra khóa giao dịch và quyền điều khiển trước khi đọc dữ liệu ván. */
+export function assertScope(scope: MatchScope): void {
+  if (!scope.canControl)
+    reject("MATCH_READ_ONLY", "Tab này chỉ theo dõi ván.", 403);
+  if (
+    !scope.lockedActorIds.has(scope.actor.userId) ||
+    !scope.lockedRoomIds.has(scope.roomId)
+  )
+    reject("MATCH_LOCK_REQUIRED", "Thiếu khóa giao dịch.", 500);
+}
+/**
+ * Kiểm tra phòng/ván đã khóa thuộc về người điều khiển: đúng ván hiện tại, đủ khóa người chơi, đúng ghế.
+ * Dùng chung cho mọi đường đi cần quyền người chơi (lệnh ván và chiếu cầu hòa).
+ */
+export function assertSeated(
+  scope: MatchScope,
+  matchId: string,
+  loaded: RoomMatch,
+): { row: MatchRow; side: Side } {
+  const { room, row, seat } = loaded;
+  if (room.current_match_id !== matchId && room.current_match_id !== null)
+    reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+  // An arbitrary nonexistent match ID is not accepted while the room has a current match.
+  if (room.current_match_id === null && room.status === "PLAYING")
+    reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+  if (!row) return reject("MATCH_NOT_FOUND", "Ván không tồn tại.", 404);
+  assertHistorySupported(row);
+  if (
+    !scope.lockedActorIds.has(row.red_user_id) ||
+    !scope.lockedActorIds.has(row.black_user_id)
+  )
+    reject("MATCH_LOCK_REQUIRED", "Thiếu khóa người chơi.", 500);
+  const side: Side =
+    scope.actor.userId === row.red_user_id
+      ? "red"
+      : scope.actor.userId === row.black_user_id
+        ? "black"
+        : reject(
+            "MATCH_PLAYER_REQUIRED",
+            "Chỉ người chơi được điều khiển ván.",
+            403,
+          );
+  if (!seat || seat !== (side === "red" ? "RED" : "BLACK"))
+    reject("MATCH_PLAYER_REQUIRED", "Ghế người chơi đã thay đổi.", 403);
+  return { row, side };
 }
 /**
  * Lớp trừu tượng cơ sở quản lý trạng thái, lịch sử, khóa và kết thúc ván cờ tướng online.
@@ -156,9 +246,72 @@ export class MatchStoreCore {
     );
     const row =
       result.rows[0] ?? reject("MATCH_NOT_FOUND", "Ván không tồn tại.", 404);
-    if (row.mode !== "ONLINE" || row.rule_set_version !== "xiangqi-simple-v1")
-      reject("MATCH_HISTORY_UNSUPPORTED", "Không hỗ trợ lịch sử ván này.", 409);
+    assertHistorySupported(row);
     return row;
+  }
+  /**
+   * Khóa phòng rồi khóa ván hiện tại trong một câu lệnh (phòng trước, ván sau), kèm ghế của người điều khiển.
+   * Ván chỉ bị khóa khi là ván hiện tại của phòng, hoặc phòng không có ván hiện tại và không PLAYING.
+   */
+  protected async roomMatch(
+    client: PoolClient,
+    roomId: string,
+    matchId: string,
+    userId: string,
+  ): Promise<{ room: RoomRow; row: MatchRow | null; seat: string | null }> {
+    const result = await client.query<RoomMatchRow>(
+      `WITH lr AS MATERIALIZED (
+         SELECT id,status,current_match_id,time_control,closed_at,room_version FROM public.rooms WHERE id=$1 FOR UPDATE
+       ), lm AS MATERIALIZED (
+         SELECT m.* FROM public.matches m JOIN lr ON lr.id=m.room_id
+         WHERE m.id=$2 AND (lr.current_match_id=$2 OR (lr.current_match_id IS NULL AND lr.status<>'PLAYING'))
+         FOR UPDATE OF m
+       )
+       SELECT lr.id,lr.status,lr.current_match_id,lr.time_control,lr.closed_at,lr.room_version,
+         lm.id AS m_id,lm.room_id AS m_room_id,lm.mode AS m_mode,lm.status AS m_status,
+         lm.red_user_id AS m_red_user_id,lm.black_user_id AS m_black_user_id,lm.position AS m_position,
+         lm.version AS m_version,lm.ply AS m_ply,lm.active_move_ids AS m_active_move_ids,lm.clock AS m_clock,
+         lm.time_control AS m_time_control,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
+         lm.created_at AS m_created_at,lm.rule_set_version AS m_rule_set_version,
+         (SELECT side FROM public.room_members WHERE room_id=lr.id AND user_id=$3 AND role='PLAYER') AS seat_side
+       FROM lr LEFT JOIN lm ON true`,
+      [roomId, matchId, userId],
+    );
+    return roomMatchOf(
+      result.rows[0] ??
+        reject("MATCH_ROOM_NOT_FOUND", "Phòng không tồn tại.", 404),
+    );
+  }
+  /**
+   * Đọc phòng, ván hiện tại và ghế của người xem trong một truy vấn; khóa phòng trước rồi khóa ván.
+   * Không kiểm tra quyền: người gọi phải tự xác thực bằng `assertSeated` khi cần điều khiển.
+   */
+  protected async currentRoomMatch(
+    client: PoolClient,
+    roomId: string,
+    userId: string,
+  ): Promise<RoomMatch> {
+    const result = await client.query<RoomMatchRow>(
+      `WITH lr AS MATERIALIZED (
+         SELECT id,status,current_match_id,time_control,closed_at,room_version FROM public.rooms WHERE id=$1 FOR UPDATE
+       ), lm AS MATERIALIZED (
+         SELECT m.* FROM public.matches m JOIN lr ON lr.id=m.room_id AND lr.current_match_id=m.id
+         FOR UPDATE OF m
+       )
+       SELECT lr.id,lr.status,lr.current_match_id,lr.time_control,lr.closed_at,lr.room_version,
+         lm.id AS m_id,lm.room_id AS m_room_id,lm.mode AS m_mode,lm.status AS m_status,
+         lm.red_user_id AS m_red_user_id,lm.black_user_id AS m_black_user_id,lm.position AS m_position,
+         lm.version AS m_version,lm.ply AS m_ply,lm.active_move_ids AS m_active_move_ids,lm.clock AS m_clock,
+         lm.time_control AS m_time_control,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
+         lm.created_at AS m_created_at,lm.rule_set_version AS m_rule_set_version,
+         (SELECT side FROM public.room_members WHERE room_id=lr.id AND user_id=$2 AND role='PLAYER') AS seat_side
+       FROM lr LEFT JOIN lm ON true`,
+      [roomId, userId],
+    );
+    return roomMatchOf(
+      result.rows[0] ??
+        reject("MATCH_ROOM_NOT_FOUND", "Phòng không tồn tại.", 404),
+    );
   }
   /**
    * Tái hiện toàn bộ lịch sử các thế cờ của ván và nước đi gần nhất, có hỗ trợ bộ nhớ đệm cache.
@@ -175,11 +328,18 @@ export class MatchStoreCore {
     ) {
       return { positions: cached.positions, lastMove: cached.lastMove };
     }
-    const start = await client.query<{ payload: unknown }>(
-      "SELECT payload FROM public.match_events WHERE match_id=$1 AND version=0 AND type='START'",
+    // START and RESULT share one round trip; moves stay separate because they depend on active_move_ids.
+    const events = await client.query<{
+      type: string;
+      version: string;
+      payload: unknown;
+    }>(
+      "SELECT type,version,payload FROM public.match_events WHERE match_id=$1 AND ((version=0 AND type='START') OR type='RESULT')",
       [row.id],
     );
-    const payload = start.rows[0]?.payload;
+    const startRow = events.rows.find((e) => e.type === "START");
+    const results = events.rows.filter((e) => e.type === "RESULT");
+    const payload = startRow?.payload;
     if (
       record(payload) &&
       payload.encoding === "xiangqi-core-v1" &&
@@ -202,23 +362,19 @@ export class MatchStoreCore {
       "SELECT m.id,m.parent_move_id,m.event_version,m.side,m.move,e.type event_type,e.payload FROM public.match_moves m JOIN public.match_events e ON e.match_id=m.match_id AND e.version=m.event_version WHERE m.match_id=$1 AND m.id=ANY($2::uuid[])",
       [row.id, row.active_move_ids],
     );
-    const results = await client.query<{ version: string; payload: unknown }>(
-      "SELECT version,payload FROM public.match_events WHERE match_id=$1 AND type='RESULT'",
-      [row.id],
-    );
     try {
       const history = replayHistory({
         ...row,
-        start: start.rows[0]?.payload,
+        start: payload,
         moves: moves.rows,
       });
       const coreOutcome = ending(history);
       if (row.status === "ACTIVE") {
-        if (coreOutcome || results.rows.length) corrupt();
+        if (coreOutcome || results.length) corrupt();
       } else {
-        const result = results.rows[0];
+        const result = results[0];
         if (
-          results.rows.length !== 1 ||
+          results.length !== 1 ||
           !result ||
           Number(result.version) !== Number(row.version) ||
           !record(result.payload) ||
@@ -308,52 +464,20 @@ export class MatchStoreCore {
     assertUuid(input.matchId);
     if (!Number.isSafeInteger(input.matchVersion) || input.matchVersion < 0)
       reject("MATCH_INVALID_INPUT", "Phiên bản ván không hợp lệ.", 400);
-    if (!scope.canControl)
-      reject("MATCH_READ_ONLY", "Tab này chỉ theo dõi ván.", 403);
-    if (
-      !scope.lockedActorIds.has(scope.actor.userId) ||
-      !scope.lockedRoomIds.has(scope.roomId)
-    )
-      reject("MATCH_LOCK_REQUIRED", "Thiếu khóa giao dịch.", 500);
-    const room = await this.room(scope.client, scope.roomId);
-    if (
-      room.current_match_id !== input.matchId &&
-      room.current_match_id !== null
-    )
-      reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
-    // An arbitrary nonexistent match ID is not accepted while the room has a current match.
-    if (room.current_match_id === null && room.status === "PLAYING")
-      reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
-    const row = await this.row(scope.client, scope.roomId, input.matchId);
-    if (
-      !scope.lockedActorIds.has(row.red_user_id) ||
-      !scope.lockedActorIds.has(row.black_user_id)
-    )
-      reject("MATCH_LOCK_REQUIRED", "Thiếu khóa người chơi.", 500);
-    const side: Side =
-      scope.actor.userId === row.red_user_id
-        ? "red"
-        : scope.actor.userId === row.black_user_id
-          ? "black"
-          : reject(
-              "MATCH_PLAYER_REQUIRED",
-              "Chỉ người chơi được điều khiển ván.",
-              403,
-            );
-    const seat = (
-      await scope.client.query<{ side: string }>(
-        "SELECT side FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND role='PLAYER'",
-        [scope.roomId, scope.actor.userId],
-      )
-    ).rows[0];
-    if (!seat || seat.side !== (side === "red" ? "RED" : "BLACK"))
-      reject("MATCH_PLAYER_REQUIRED", "Ghế người chơi đã thay đổi.", 403);
+    assertScope(scope);
+    const loaded = await this.roomMatch(
+      scope.client,
+      scope.roomId,
+      input.matchId,
+      scope.actor.userId,
+    );
+    const { row, side } = assertSeated(scope, input.matchId, loaded);
     const { positions: history, lastMove } = await this.history(
       scope.client,
       row,
     );
     const match = this.view(row, history.at(-1)!, lastMove);
-    return { room, row, side, history, match };
+    return { room: loaded.room, row, side, history, match };
   }
   /**
    * Tạo đối tượng kết quả trả về khi hành động trong ván bị từ chối kèm lỗi.

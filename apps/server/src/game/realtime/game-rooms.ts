@@ -10,7 +10,7 @@ import {
   type MatchScope,
   type MatchView,
 } from "../match/match.types.js";
-import type { MatchStore } from "../match/match-store.js";
+import type { CurrentMatch, MatchStore } from "../match/match-store.js";
 import {
   RoomError,
   type RoomScope,
@@ -20,6 +20,7 @@ import type { RoomStore } from "../room/room-store.js";
 import {
   RealtimeError,
   type RealtimeIdentity,
+  type RoomAccess,
   type RoomCollaborator,
   type RoomExecutionResult,
 } from "./realtime.types.js";
@@ -61,7 +62,7 @@ export type GameRoomScope = (
   roomId: string,
 ) => RoomScope;
 
-export type GameDrawPort = Pick<MatchStore, "drawSnapshot">;
+export type GameDrawPort = Pick<MatchStore, "drawSnapshot" | "drawOf">;
 
 /**
  * Lớp điều phối tích hợp trạng thái phòng cờ và ván cờ, xử lý các lệnh realtime từ client trong giao dịch có khóa.
@@ -110,12 +111,13 @@ export class GameRooms implements RoomCollaborator {
     client: PoolClient,
     identity: RealtimeIdentity,
     roomId: string,
-  ) {
+  ): Promise<RoomAccess> {
     try {
-      return await this.rooms.authorize(
+      const access = await this.rooms.authorize(
         this.scope(client, identity, roomId),
         roomId,
       );
+      return { canControl: access.canControl, version: access.version };
     } catch (error) {
       if (error instanceof RoomError && error.code === "ROOM_FORBIDDEN")
         throw new RealtimeError("ROOM_FORBIDDEN", messages.ROOM_FORBIDDEN);
@@ -131,20 +133,15 @@ export class GameRooms implements RoomCollaborator {
     matchOverride?: MatchView,
   ): Promise<RoomStateSnapshot> {
     let match = matchOverride;
+    let loaded: CurrentMatch | null = null;
     if (!match) {
-      const row = (
-        await scope.client.query<{ current_match_id: string | null }>(
-          "SELECT current_match_id FROM public.rooms WHERE id=$1",
-          [room.roomId],
-        )
-      ).rows[0];
-      if (!row)
-        throw new RealtimeError(
-          "REALTIME_UNAVAILABLE",
-          "Không thể đọc trạng thái phòng",
-        );
-      let matchId = row.current_match_id;
-      if (!matchId && room.room.status === "WAITING") {
+      loaded = await this.matches.current(
+        scope.client,
+        room.roomId,
+        scope.actor.userId,
+      );
+      match = loaded.match ?? undefined;
+      if (!match && room.room.status === "WAITING") {
         const previous = (
           await scope.client.query<{ id: string }>(
             `SELECT m.id FROM public.matches m
@@ -155,10 +152,13 @@ export class GameRooms implements RoomCollaborator {
             [room.roomId],
           )
         ).rows[0];
-        matchId = previous?.id ?? null;
+        if (previous)
+          match = await this.matches.snapshot(
+            scope.client,
+            room.roomId,
+            previous.id,
+          );
       }
-      if (matchId)
-        match = await this.matches.snapshot(scope.client, room.roomId, matchId);
     }
     const current = room.room;
     const clock = match
@@ -170,19 +170,19 @@ export class GameRooms implements RoomCollaborator {
           ).clock
         : match.clock
       : null;
+    const matchScope: MatchScope = {
+      client: scope.client,
+      actor: scope.actor,
+      roomId: room.roomId,
+      canControl: true,
+      lockedActorIds: scope.lockedActorIds,
+      lockedRoomIds: scope.lockedRoomIds,
+    };
     const draw =
       this.drawPort && match?.status === "ACTIVE" && room.role !== "spectator"
-        ? await this.drawPort.drawSnapshot(
-            {
-              client: scope.client,
-              actor: scope.actor,
-              roomId: room.roomId,
-              canControl: true,
-              lockedActorIds: scope.lockedActorIds,
-              lockedRoomIds: scope.lockedRoomIds,
-            },
-            { matchId: match.id },
-          )
+        ? loaded?.match && loaded.match === match
+          ? await this.drawPort.drawOf(matchScope, loaded, match)
+          : await this.drawPort.drawSnapshot(matchScope, { matchId: match.id })
         : null;
     return {
       serverNow: room.serverNow,

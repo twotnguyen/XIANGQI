@@ -1,8 +1,8 @@
 import type { Pool, PoolClient } from "pg";
 import type { RealtimeConnection } from "../realtime/realtime.types.js";
-import { RoomError, type RoomScope } from "./room.types.js";
+import { RoomError, RoomRosterChanged, type RoomScope } from "./room.types.js";
 import type { RoomEvent } from "./room.types.js";
-import type { PostgresMemberRoomAuthorizer } from "./member-room-auth.js";
+import type { RoomSessionAuthorizer } from "./room-session.js";
 import type { RoomStore } from "./room-store.js";
 import type { RoomTransactions, RoomActorProof } from "./room-transactions.js";
 import type { RoomWorkerPort } from "./room-worker.js";
@@ -30,7 +30,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     private readonly pool: Pool,
     private readonly rooms: RoomStore,
     private readonly coordinator: RoomTransactions,
-    private readonly authorizer: PostgresMemberRoomAuthorizer,
+    private readonly authorizer: RoomSessionAuthorizer,
     private readonly currentPeers: (roomId: string) => RealtimeConnection[],
   ) {}
   private async transaction<T>(
@@ -84,7 +84,8 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
           [roomId],
         )
       ).rows[0];
-      if (!owner || owner.kind !== "member") invalidOwner();
+      if (!owner || (owner.kind !== "member" && owner.kind !== "guest"))
+        invalidOwner();
       const controllers = (
         await client.query<{
           user_id: string;
@@ -101,8 +102,6 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
       .filter(
         (peer) =>
           peer.roomId === roomId &&
-          peer.identity.kind === "member" &&
-          peer.proof &&
           initial.controllers.some(
             (c) =>
               c.user_id === peer.identity.userId &&
@@ -114,14 +113,17 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
       .map((peer) => ({
         ...peer,
         identity: { ...peer.identity },
-        proof: { ...peer.proof! },
+        proof: { ...peer.proof },
       }))
       .sort((a, b) => a.identity.userId.localeCompare(b.identity.userId));
     const verified: RealtimeConnection[] = [];
     for (const peer of peers) {
       try {
-        const actor = await this.authorizer.resolve(peer.proof!);
-        if (actor.kind !== "member" || actor.userId !== peer.identity.userId)
+        const actor = await this.authorizer.resolve(peer.proof);
+        if (
+          actor.kind !== peer.identity.kind ||
+          actor.userId !== peer.identity.userId
+        )
           invalidOwner();
         verified.push(peer);
       } catch (error) {
@@ -130,18 +132,25 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     }
     const ownerActor = {
       userId: initial.owner.owner_id,
-      kind: "member" as const,
+      kind:
+        initial.owner.kind === "guest"
+          ? ("guest" as const)
+          : ("member" as const),
     };
     await this.coordinator.withRoom(
       { actor: ownerActor, roomIds: [roomId] },
       async (proof: RoomActorProof) => {
         const owner = (
-          await proof.client.query<{ kind: string }>(
-            "SELECT p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.id=$1 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL",
+          await proof.client.query<{ kind: string; owner_id: string }>(
+            "SELECT r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.id=$1 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL",
             [roomId],
           )
         ).rows[0];
-        if (!owner || owner.kind !== "member") invalidOwner();
+        if (!owner || (owner.kind !== "member" && owner.kind !== "guest"))
+          invalidOwner();
+        // Ownership moved after the unlocked read: retry with the current owner's actor set.
+        if (owner.owner_id !== ownerActor.userId)
+          throw new RoomRosterChanged([owner.owner_id]);
         const activeActorIds = new Set<string>();
         for (const peer of verified) {
           if (!proof.lockedActorIds.has(peer.identity.userId)) continue;
@@ -153,7 +162,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
           ).rowCount;
           if (!controller) continue;
           try {
-            const checked = await this.authorizer.authorize(peer.proof!, {
+            const checked = await this.authorizer.authorize(peer.proof, {
               ...proof,
               actor: { ...peer.identity },
             });
@@ -162,6 +171,14 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
           } catch (error) {
             if (!expired(error)) throw error;
           }
+        }
+        if (ownerActor.kind === "guest") {
+          // A guest past its fixed 12h stays live only while it still holds this room's seat (deferral).
+          const live = await proof.client.query(
+            "SELECT 1 FROM xiangqi_auth.guest_sessions s WHERE s.guest_id=$1 AND s.ended_at IS NULL AND (s.expires_at>clock_timestamp() OR EXISTS(SELECT 1 FROM public.active_players a WHERE a.user_id=s.guest_id AND a.room_id=$2))",
+            [ownerActor.userId, roomId],
+          );
+          if (!live.rowCount) return { status: "ended" as const };
         }
         return { status: "active", actor: ownerActor, activeActorIds };
       },

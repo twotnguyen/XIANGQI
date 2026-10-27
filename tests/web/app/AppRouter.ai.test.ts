@@ -17,6 +17,13 @@ const mock = vi.hoisted(() => ({
   refresh: vi.fn(),
   accept: vi.fn(),
   authorizedFetch: vi.fn(),
+  guestFetch: vi.fn(),
+  // Mirrors SessionProvider.sessionFetch: the active actor picks the HTTP boundary.
+  sessionFetch: vi.fn((path: string, init?: RequestInit) =>
+    mock.state.status === "guest"
+      ? mock.guestFetch(path, init)
+      : mock.authorizedFetch(path, init),
+  ),
   getRealtimeProof: vi.fn(),
   where: { kind: "none", roomId: null, matchId: null } as Record<
     string,
@@ -133,6 +140,7 @@ beforeEach(() => {
   mock.state = member;
   mock.where = { kind: "none", roomId: null, matchId: null };
   mock.getRealtimeProof.mockResolvedValue({
+    kind: "member",
     accessToken: "synthetic-bearer",
     appSession: "a".repeat(43),
   });

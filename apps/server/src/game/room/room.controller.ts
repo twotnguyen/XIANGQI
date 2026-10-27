@@ -15,9 +15,10 @@ import { LoginError } from "../../account/login/login.types.js";
 import { readSessionCookie } from "../../account/session/cookies.js";
 import { invalidRoomInput, RoomError } from "./room.types.js";
 import type {
-  RoomHttpService,
   MemberRoomRequestProof,
+  RoomHttpService,
 } from "./room-http.service.js";
+import type { RoomRequestProof } from "./room-session.js";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function id(value: unknown): string {
   if (typeof value !== "string" || !uuid.test(value)) invalidRoomInput();
@@ -44,6 +45,26 @@ export function readMemberRoomProof(
   )
     throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
   return { accessToken: auth.slice(7), appSession: cap };
+}
+
+/**
+ * Proof của yêu cầu phòng: `Authorization: Guest <capability>` cho khách,
+ * hoặc Bearer + phiên tài khoản cho thành viên. Không bao giờ trộn lẫn hai loại.
+ */
+export function readRoomProof(request: IncomingMessage): RoomRequestProof {
+  const auth = request.headers.authorization;
+  if (typeof auth !== "string" || !auth.startsWith("Guest ")) {
+    return readMemberRoomProof(request);
+  }
+  const cap = auth.slice(6);
+  if (
+    Object.hasOwn(request.headers, "x-xiangqi-session") ||
+    readSessionCookie(request.headers.cookie, "xiangqi_session") !==
+      undefined ||
+    !/^[A-Za-z0-9_-]{43}$/.test(cap)
+  )
+    throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
+  return { guestCapability: cap };
 }
 /**
  * Controller xử lý các yêu cầu HTTP điều khiển phòng chơi cờ:
@@ -77,7 +98,7 @@ export class RoomController {
   @Header("Cache-Control", "no-store")
   create(@Req() request: IncomingMessage, @Body() body: unknown) {
     return this.respond(async () => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       const commandId = id(input.commandId);
       if (
@@ -110,7 +131,7 @@ export class RoomController {
   @Header("Cache-Control", "no-store")
   join(@Req() request: IncomingMessage, @Body() body: unknown) {
     return this.respond(async () => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body),
         commandId = id(input.commandId);
       if (
@@ -146,7 +167,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (
         !Number.isSafeInteger(input.expectedVersion) ||
@@ -180,7 +201,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       return this.service.toSpectator(
         authority,
@@ -201,7 +222,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (typeof input.targetId !== "string") invalidRoomInput();
       return this.service.moveToSpectator(
@@ -224,7 +245,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (typeof input.targetId !== "string") invalidRoomInput();
       return this.service.inviteDown(
@@ -247,7 +268,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (typeof input.accept !== "boolean") invalidRoomInput();
       return this.service.respondDown(
@@ -270,7 +291,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (typeof input.targetId !== "string") invalidRoomInput();
       return this.service.kickViewer(
@@ -293,7 +314,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (
         !Number.isSafeInteger(input.expectedVersion) ||
@@ -319,7 +340,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (
         !Number.isSafeInteger(input.expectedVersion) ||
@@ -345,7 +366,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (
         !Number.isSafeInteger(input.expectedVersion) ||
@@ -371,7 +392,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (
         !Number.isSafeInteger(input.expectedVersion) ||
@@ -399,7 +420,7 @@ export class RoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const authority = readMemberRoomProof(request),
+      const authority = readRoomProof(request),
         input = object(body);
       if (
         !Number.isSafeInteger(input.expectedVersion) ||
@@ -423,7 +444,7 @@ export class RoomController {
   @Header("Cache-Control", "no-store")
   snapshot(@Req() request: IncomingMessage, @Param("roomId") roomId: string) {
     return this.respond(() =>
-      this.service.snapshot(readMemberRoomProof(request), id(roomId)),
+      this.service.snapshot(readRoomProof(request), id(roomId)),
     );
   }
 }

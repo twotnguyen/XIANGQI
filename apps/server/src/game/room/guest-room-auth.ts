@@ -5,29 +5,54 @@ import {
   GuestError,
   type GuestActor,
   type GuestPurpose,
+  type GuestCoordinator,
+  type GuestLifecycle,
 } from "../../account/guest/guest.types.js";
-import { RoomError, RoomRosterChanged, type RoomActor } from "./room.types.js";
-import type { RoomActorProof, RoomAuthorization } from "./room-transactions.js";
-export interface GuestRoomRequestProof {
-  capability: string;
-}
-export type GuestRoomMutationScope = Pick<
+import {
+  RoomError,
+  RoomRosterChanged,
+  type RoomActor,
+  type RoomScope,
+} from "./room.types.js";
+import type {
   RoomActorProof,
+  RoomAuthorization,
+  RoomTransactions,
+} from "./room-transactions.js";
+
+// Strict guest proof: the Authorization: Guest <capability> value and nothing else.
+export interface GuestRoomRequestProof {
+  guestCapability: string;
+}
+
+export type GuestRoomMutationScope = Pick<
+  RoomScope,
   "client" | "actor" | "lockedActorIds"
 >;
+
 const fingerprint = (cap: string) =>
   createHash("sha256").update(cap).digest("hex");
+
 const required = () =>
   new RoomError("AUTH_REQUIRED", "Phiên Khách không hợp lệ", 401);
+
+const GUEST_POLICY_CODES: Record<string, true> = {
+  GUEST_DEFERRED: true,
+  GUEST_ROOM_LIMIT: true,
+  GUEST_RESIGN_CONFIRM_REQUIRED: true,
+};
+
 function checkedHash(proof: GuestRoomRequestProof) {
   if (
     !proof ||
-    typeof proof.capability !== "string" ||
-    !/^[A-Za-z0-9_-]{43}$/.test(proof.capability)
+    Object.keys(proof).join() !== "guestCapability" ||
+    typeof proof.guestCapability !== "string" ||
+    !/^[A-Za-z0-9_-]{43}$/.test(proof.guestCapability)
   )
     throw required();
-  return fingerprint(proof.capability);
+  return fingerprint(proof.guestCapability);
 }
+
 function sanitized(error: unknown): RoomError {
   if (error instanceof RoomRosterChanged) return error;
   if (error instanceof RoomError && error.code === "AUTH_REQUIRED")
@@ -47,6 +72,12 @@ function sanitized(error: unknown): RoomError {
         "Khách chỉ được tạo một phòng đang mở",
         409,
       );
+    if (error.code === "GUEST_RESIGN_CONFIRM_REQUIRED")
+      return new RoomError(
+        "GUEST_RESIGN_CONFIRM_REQUIRED",
+        "Cần xác nhận đầu hàng trước khi đăng xuất",
+        409,
+      );
   }
   return new RoomError(
     "AUTH_UNAVAILABLE",
@@ -54,8 +85,15 @@ function sanitized(error: unknown): RoomError {
     503,
   );
 }
+
 /**
- * Quản lý xác thực và phân quyền cho người chơi Khách (Guest) trong các giao dịch phòng cờ.
+ * Xác thực và phân quyền cho người chơi Khách (Guest) trong các giao dịch phòng cờ.
+ *
+ * Quy tắc:
+ * - resolve() chỉ đọc (không khóa) để biết actor cần khóa; kết quả gắn với đúng object proof.
+ * - authorize() chạy trong transaction sau khi đã khóa toàn bộ roster (actor trước phòng);
+ *   từ chối nếu danh tính trong phiên không khớp actor đã khóa.
+ * - finish() chạy sau mutation dưới cùng roster lock để dọn phiên hết hạn không còn ghế.
  */
 export class GuestRoomAuthorizer {
   private readonly resolved = new WeakMap<
@@ -66,16 +104,17 @@ export class GuestRoomAuthorizer {
     PoolClient,
     { proof: GuestRoomRequestProof; actor: GuestActor }
   >();
+
   constructor(
     private readonly guests: GuestService,
     private readonly pool: Pool,
   ) {}
+
   /**
-   * Tra cứu thông tin định danh ban đầu của khách từ capability token mà không khóa actor.
+   * Tra cứu danh tính khách từ capability mà không khóa actor.
    */
   async resolve(proof: GuestRoomRequestProof): Promise<RoomActor> {
     const hash = checkedHash(proof);
-    this.resolved.delete(proof);
     let client: PoolClient | undefined;
     let broken = false;
     try {
@@ -91,7 +130,7 @@ export class GuestRoomAuthorizer {
           [hash],
         )
       ).rows[0];
-      if (!row || checkedHash(proof) !== hash) throw required();
+      if (!row) throw required();
       await client.query("COMMIT");
       this.resolved.set(proof, { userId: row.guest_id, hash });
       return { userId: row.guest_id, kind: "guest" };
@@ -105,7 +144,11 @@ export class GuestRoomAuthorizer {
       client?.release(broken);
     }
   }
-  private trusted(proof: GuestRoomRequestProof, scope: GuestRoomMutationScope) {
+
+  private trusted(
+    proof: GuestRoomRequestProof,
+    scope: Pick<RoomScope, "actor" | "lockedActorIds">,
+  ) {
     const hash = checkedHash(proof),
       trusted = this.resolved.get(proof);
     if (
@@ -118,8 +161,10 @@ export class GuestRoomAuthorizer {
       throw required();
     return trusted;
   }
+
   /**
-   * Xác thực và áp dụng quy tắc quyền hạn cho khách trong transaction đã khóa actor của phòng cờ.
+   * Xác thực khách trong transaction đã khóa roster. Không ghi dữ liệu ở đây:
+   * việc dọn phiên hết hạn chỉ diễn ra trong finish() dưới cùng khóa.
    */
   async authorize(
     proof: GuestRoomRequestProof,
@@ -130,7 +175,6 @@ export class GuestRoomAuthorizer {
     this.authorized.delete(actorProof.client);
     const trusted = this.trusted(proof, actorProof);
     try {
-      // Refuse identity drift before GuestService can acquire a different actor lock.
       const row = (
         await actorProof.client.query<{ guest_id: string }>(
           "SELECT guest_id FROM xiangqi_auth.guest_sessions WHERE token_hash=$1 AND ended_at IS NULL FOR UPDATE",
@@ -138,14 +182,14 @@ export class GuestRoomAuthorizer {
         )
       ).rows[0];
       if (!row || row.guest_id !== trusted.userId) throw required();
-      const result = await this.guests.requireActorInTransaction(
+      const result = await this.guests.authorizeHash(
         actorProof.client,
-        proof.capability,
+        trusted.hash,
         purpose,
         contextId,
+        actorProof.lockedActorIds,
       );
       if (result.status === "ended") return { status: "ended" };
-      this.trusted(proof, actorProof);
       if (
         result.actor.userId !== trusted.userId ||
         result.actor.kind !== "guest"
@@ -160,8 +204,9 @@ export class GuestRoomAuthorizer {
       throw sanitized(error);
     }
   }
+
   /**
-   * Hoàn tất biến đổi trạng thái của khách, kiểm tra dọn dẹp phiên nếu đã hết hạn và không còn giữ ghế.
+   * Hoàn tất mutation: dọn phiên Khách nếu đã hết hạn và không còn giữ ghế (cùng roster lock).
    */
   async finish(
     proof: GuestRoomRequestProof,
@@ -181,5 +226,101 @@ export class GuestRoomAuthorizer {
     } catch (error) {
       throw sanitized(error);
     }
+  }
+
+  /**
+   * Sau khi withRoom đã COMMIT kết quả `ended`: chạy dọn dẹp qua coordinator (khóa roster đầy đủ,
+   * COMMIT) để phiên hết hạn không còn ở lại sau 401. Lỗi hết hạn/không hợp lệ là kết quả mong đợi.
+   */
+  async settleEnded(proof: GuestRoomRequestProof): Promise<void> {
+    checkedHash(proof);
+    try {
+      await this.guests.requireActive(proof.guestCapability, "read");
+    } catch (error) {
+      if (
+        error instanceof GuestError &&
+        ["GUEST_EXPIRED", "GUEST_INVALID"].includes(error.code)
+      )
+        return;
+      throw sanitized(error);
+    }
+  }
+}
+
+/**
+ * Khóa roster đầy đủ (actor trước phòng) qua RoomTransactions, rồi mới chạy work của khách.
+ * Kết quả trả về trực tiếp từ withRoom, không bọc thêm lớp trạng thái.
+ */
+export class GuestRoomCoordinator implements GuestCoordinator {
+  constructor(
+    private readonly transactions: RoomTransactions,
+    private readonly withScope: <T>(
+      scope: RoomScope,
+      work: () => Promise<T>,
+    ) => Promise<T>,
+  ) {}
+
+  async run<T>(
+    guests: GuestLifecycle,
+    tokenHash: string,
+    purpose: GuestPurpose,
+    roomId: string | undefined,
+    work: (c: PoolClient, actor: GuestActor) => Promise<T>,
+  ): Promise<{ status: "active"; value: T } | { status: "ended" }> {
+    const owner = await this.resolveOwner(guests, tokenHash);
+    let outcome:
+      { status: "active"; actor: GuestActor } | { status: "ended" } | undefined;
+    // Object holder: the callback assigns the client, which TypeScript cannot track across await.
+    const staging: { client?: PoolClient } = {};
+    try {
+      const result = await this.transactions.withRoom(
+        {
+          actor: { userId: owner, kind: "guest" },
+          roomIds: roomId ? [roomId] : [],
+        },
+        async (proof) => {
+          staging.client = proof.client;
+          outcome = await guests.authorizeHash(
+            proof.client,
+            tokenHash,
+            purpose,
+            roomId,
+            proof.lockedActorIds,
+          );
+          if (outcome.status === "active" && outcome.actor.userId !== owner)
+            throw required();
+          return { status: "active", actor: proof.actor };
+        },
+        (scope) =>
+          this.withScope(scope, async () => {
+            if (!outcome) throw required();
+            if (outcome.status === "ended") {
+              // Cleanup commits under the same roster lock before the caller sees ended.
+              await guests.expireIfDue(scope.client, owner);
+              return { status: "ended" as const };
+            }
+            return {
+              status: "active" as const,
+              value: await work(scope.client, outcome.actor),
+            };
+          }),
+      );
+      // Room COMMIT succeeded: only now may staged AI effects drop RAM / release gates.
+      if (staging.client) guests.commitStaged(staging.client);
+      return result.status === "ended" ? result : result.value;
+    } catch (error) {
+      if (staging.client) guests.rollbackStaged(staging.client);
+      // Guest policy codes are emitted as RoomError by sanitized(); GuestService must see them as GuestError, not as an internal failure.
+      if (error instanceof RoomError && GUEST_POLICY_CODES[error.code] === true)
+        throw new GuestError(error.code, error.message, error.status);
+      throw error;
+    }
+  }
+
+  private async resolveOwner(guests: GuestLifecycle, tokenHash: string) {
+    const owner = await guests.ownerOf(tokenHash);
+    if (!owner)
+      throw new GuestError("GUEST_INVALID", "Phiên Khách không hợp lệ");
+    return owner;
   }
 }

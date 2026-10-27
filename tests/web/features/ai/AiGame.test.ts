@@ -146,6 +146,35 @@ it("retries a timed-out engine on the same game without replaying the human move
   expect(p.onMove).not.toHaveBeenCalled();
   expect(screen.getByText(/cùng thế cờ/)).toBeTruthy();
 });
+it("offers the terminal save retry only while FINALIZING and blocks double submit", async () => {
+  const gate: { release?: () => void } = {};
+  const p = props({ ...snapshot(), status: "FINALIZING", version: 3 });
+  p.onRetry = vi.fn(
+    () =>
+      new Promise<void>((resolve) => {
+        gate.release = resolve;
+      }),
+  );
+  render(createElement(AiGame, p));
+  const save = screen.getByRole("button", { name: "Thử lưu kết quả" });
+  const user = userEvent.setup();
+  await user.click(save);
+  await user.click(save);
+  expect(p.onRetry).toHaveBeenCalledOnce();
+  expect(p.onMove).not.toHaveBeenCalled();
+  gate.release?.();
+});
+it("keeps the terminal save retry disabled for a read-only tab", async () => {
+  const p = {
+    ...props({ ...snapshot(), status: "FINALIZING", version: 3 }),
+    canControl: false,
+  };
+  render(createElement(AiGame, p));
+  const save = screen.getByRole("button", { name: "Thử lưu kết quả" });
+  expect(save.getAttribute("aria-disabled")).toBe("true");
+  await userEvent.setup().click(save);
+  expect(p.onRetry).not.toHaveBeenCalled();
+});
 it("resigning requires confirmation and cancellation does not alter the game", async () => {
   const p = props();
   render(createElement(AiGame, p));

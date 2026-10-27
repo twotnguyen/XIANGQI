@@ -29,13 +29,21 @@ không được bỏ qua để dùng cookie khác.
 ### Đường kiểm tra phiên khi reload
 
 Tra capability dùng một truy vấn JOIN `app_sessions` với account/profile.
-Mỗi lần xác thực đọc hai snapshot: trước khi gọi Auth và sau khi Auth trả về.
-Snapshot cuối kiểm lại thu hồi, hạn phiên, tài khoản hoàn tất và email/danh tính;
-không dùng kết quả cũ nếu tài khoản thay đổi trong lúc gọi dịch vụ từ xa.
-Refresh kiểm danh tính từ `user` trong phản hồi làm mới token thành công của
-provider, không gọi thêm `getUser` cho token vừa được cấp. Vẫn đối chiếu ID,
-email đã xác nhận, trạng thái đăng ký và email trong database sau lời gọi Auth;
-xác thực bearer thông thường vẫn gọi `getUser`. Controller tái sử dụng actor
+Bearer kiểm cấu trúc capability rồi xác minh chữ ký JWT ES256 cục bộ bằng JWKS
+công khai của project (`<url>/auth/v1/.well-known/jwks.json`), kiểm issuer
+`<url>/auth/v1`, audience/role `authenticated`, hạn và claim bắt buộc. Sau bước
+xác minh/tải khóa, một truy vấn DB kiểm thu hồi, hạn phiên, tài khoản đã xác nhận,
+hoàn tất và email/danh tính hiện hành; không dùng snapshot trước đó. Nếu JWT lỗi,
+vẫn kiểm phiên DB trước khi trả lỗi để giữ ưu tiên phiên hết hạn/đã thu hồi.
+Refresh vẫn kiểm DB trước và sau lời gọi provider, đối chiếu ID, email đã xác
+nhận và trạng thái đăng ký từ `user`; không gọi thêm `getUser` cho token vừa cấp.
+Bearer không có fallback HS256, alg none hay userinfo. Khoá JWKS dùng cache mặc
+định của jose (10 phút); không cache token, kết quả xác minh hoặc quyền.
+Khi khóa đã có và JWT còn hạn, Auth API lỗi không chặn phiên DB hợp lệ; khóa chưa
+có/hết cache mà tải thất bại thì từ chối. Thu hồi appSession có hiệu lực qua DB;
+thu hồi bearer/key riêng trên provider không được phát hiện tức thì: phụ thuộc
+hạn JWT và cache khóa ở Supabase Edge/server. Đây là chính sách tối ưu đã được
+người dùng chấp thuận; không thay thế logout/thu hồi phiên DB. Controller tái sử dụng actor
 đã kiểm, guard gắn actor vào request để API phiên/hồ sơ dùng lại; không cache
 giữa các request, không đổi role database và không gia hạn `expiresAt`.
 
@@ -50,6 +58,9 @@ không chờ chính pool đang giữ khoá. Cả hai pool dùng TLS xác minh ch
 Supabase, kiểm kết nối khi khởi động và đóng cùng lifecycle ứng dụng. Mỗi pool
 gắn listener lỗi ngay khi tạo: lỗi client rảnh chỉ ghi `registration_pool_failed`
 không kèm thông điệp, payload hay chuỗi kết nối, và pool vẫn phục vụ truy vấn sau đó.
+Pool đăng nhập/phiên tạo bằng `createLoginPool`: mỗi kết nối vật lý mới chạy
+`SET ROLE app_server` trong `onConnect` một lần; store không đặt hay reset role theo
+từng truy vấn. Pool quản trị của fixture giữ quyền đặc quyền để chuẩn bị dữ liệu.
 
 Kiểm thử SQL chỉ nhận database cô lập `xiangqi_login_test` trên localhost hoặc
 host `postgres`. CI dùng PostgreSQL 17.6 riêng cho đăng ký, realtime và login;
@@ -92,10 +103,12 @@ có Max-Age hoặc Expires. Cả hai cookie có HttpOnly, SameSite=Lax và Path=
 Secure=false chỉ phục vụ loopback HTTP của test này; kiểm Secure production nằm
 trong các test cookie riêng.
 
-Fixture dùng map token với refresh một lần và giữ các bearer đã cấp. Nó không
-mô phỏng JWT hết hạn, refresh reuse interval, cookie jar trình duyệt, hành vi
-khôi phục phiên khi mở lại trình duyệt hoặc GoTrue thật. Kết quả này chưa chứng
-minh reload, đóng trình duyệt, SMTP hay đăng nhập nhiều thiết bị thực tế.
+Fixture dùng map token với refresh một lần và giữ các bearer đã cấp. Access token
+là JWT ES256 thật, ký bằng khoá sinh một lần cho mỗi fixture và công bố qua JWKS
+HTTP cục bộ; `exp` tính theo đồng hồ thật, không theo `now` được tiêm vào. Nó không
+mô phỏng refresh reuse interval, cookie jar trình duyệt, hành vi khôi phục phiên
+khi mở lại trình duyệt hoặc GoTrue thật. Kết quả này chưa chứng minh reload, đóng
+trình duyệt, SMTP hay đăng nhập nhiều thiết bị thực tế.
 
 Chạy tuần tự bằng Node 22, chỉ với hai database synthetic đã nêu:
 

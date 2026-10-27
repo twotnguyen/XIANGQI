@@ -173,7 +173,10 @@ describe("native Socket.IO aborted admissions and shutdown drain", () => {
       await f.networkClosed.promise;
       await new Promise((r) => setTimeout(r, 1100));
       expect(f.disconnected).toHaveBeenCalledTimes(2);
-      expect(f.disconnected.mock.calls[0]![0]).not.toHaveProperty("proof");
+      expect(f.disconnected.mock.calls[0]![0].proof).toEqual({
+        accessToken: "synthetic",
+        appSession: "x".repeat(43),
+      });
       expect(log.mock.calls.flat().join(" ")).not.toContain(
         "PRIVATE_DATABASE_SECRET",
       );
@@ -244,7 +247,10 @@ describe("native Socket.IO aborted admissions and shutdown drain", () => {
       expect(f.disconnected).toHaveBeenCalledTimes(2);
       await new Promise((r) => setTimeout(r, 1100));
       expect(f.disconnected).toHaveBeenCalledTimes(2);
-      expect(f.disconnected.mock.calls[0]![0]).not.toHaveProperty("proof");
+      expect(f.disconnected.mock.calls[0]![0].proof).toEqual({
+        accessToken: "synthetic",
+        appSession: "x".repeat(43),
+      });
       expect(log.mock.calls.flat().join(" ")).not.toContain(
         "PRIVATE_DATABASE_SECRET",
       );

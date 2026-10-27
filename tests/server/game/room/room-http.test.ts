@@ -5,6 +5,10 @@ import { RoomModule } from "@server/game/room/room.module.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import type { RoomStore } from "@server/game/room/room-store.js";
 import type { RoomTransactions } from "@server/game/room/room-transactions.js";
+import type {
+  RoomRequestProof,
+  RoomSessionAuthorizer,
+} from "@server/game/room/room-session.js";
 const actor = {
   userId: "11111111-1111-4111-8111-111111111111",
   kind: "member" as const,
@@ -38,17 +42,19 @@ const leave = vi.fn(async () => {});
 const resolveCode = vi.fn<(client: unknown, code: unknown) => Promise<string>>(
   async () => roomId,
 );
-const resolve = vi.fn<(input: typeof proof) => Promise<typeof actor>>(
+const resolve = vi.fn<(input: RoomRequestProof) => Promise<typeof actor>>(
   async () => actor,
 );
 const authorize = vi.fn<
   (
-    input: typeof proof,
+    input: RoomRequestProof,
     actorProof: import("@server/game/room/room-transactions.js").RoomActorProof,
   ) => Promise<
     import("@server/game/room/room-transactions.js").RoomAuthorization
   >
 >(async () => ({ status: "active", actor }));
+const finish = vi.fn(async () => {});
+const settleEnded = vi.fn(async () => {});
 const order: string[] = [];
 const client = {} as never;
 const scope = {
@@ -84,7 +90,12 @@ const service = new RoomHttpService(
     leave,
   } as unknown as RoomStore,
   { withRoom } as unknown as RoomTransactions,
-  { resolve, authorize },
+  {
+    resolve,
+    authorize,
+    finish,
+    settleEnded,
+  } as unknown as RoomSessionAuthorizer,
 );
 let app: Awaited<ReturnType<typeof createApp>>;
 let base: string;
@@ -227,14 +238,15 @@ it("preserves known errors and sanitizes unknown provider/SQL payloads", async (
   expect(response.status).toBe(503);
   expect(await response.text()).not.toContain("private");
 });
-it("fails closed for Guest or ended authorization before store work", async () => {
+it("admits Guest room creation as a guest owner, and fails closed for ended authorization before store work", async () => {
   resolve.mockResolvedValueOnce({ ...actor, kind: "guest" } as never);
   const calls = create.mock.calls.length;
-  expect((await request("/rooms", { commandId })).status).toBe(403);
-  expect(create.mock.calls.length).toBe(calls);
+  expect((await request("/rooms", { commandId })).status).toBe(200);
+  expect(create.mock.calls.length).toBe(calls + 1);
   authorize.mockResolvedValueOnce({ status: "ended" } as never);
   expect((await request("/rooms", { commandId })).status).toBe(401);
-  expect(create.mock.calls.length).toBe(calls);
+  expect(settleEnded).toHaveBeenCalledTimes(1);
+  expect(create.mock.calls.length).toBe(calls + 1);
 });
 it("authenticates before entering SQL coordinator and rejects cross-origin writes", async () => {
   order.length = 0;

@@ -5,10 +5,11 @@ import {
   type RoomEntry,
   type RoomScope,
 } from "../room.types.js";
-import type {
-  MemberRoomAuthorizer,
-  MemberRoomRequestProof,
-} from "../room-http.service.js";
+import {
+  roomProofKind,
+  type RoomRequestProof,
+  type RoomSessionAuthorizer,
+} from "../room-session.js";
 import type { PublicRoomStore, PublicRoomView } from "./public-room-store.js";
 import {
   PublicRoomCatalog,
@@ -36,7 +37,10 @@ export class PublicRoomService {
   constructor(
     private readonly store: Pick<PublicRoomStore, "catalog" | "join">,
     private readonly transactions: Pick<RoomTransactions, "withRoom">,
-    private readonly authorizer: MemberRoomAuthorizer,
+    private readonly authorizer: Pick<
+      RoomSessionAuthorizer,
+      "resolve" | "authorize" | "settleEnded"
+    >,
     private readonly withScope: <T>(
       scope: RoomScope,
       work: () => Promise<T>,
@@ -46,51 +50,48 @@ export class PublicRoomService {
       this.store.catalog(client),
     );
   }
-  private async resolved(proof: MemberRoomRequestProof) {
-    if (
-      !proof ||
-      typeof proof.accessToken !== "string" ||
-      typeof proof.appSession !== "string"
-    )
-      throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
+  private async resolved(proof: RoomRequestProof) {
+    // roomProofKind rejects anything but the exact member or guest key sets.
+    roomProofKind(proof);
     // WeakMap-bound authorizers must see this same private, unchanged object on every read.
-    const privateProof = Object.freeze({
-      accessToken: proof.accessToken,
-      appSession: proof.appSession,
-    });
+    const privateProof: RoomRequestProof =
+      "accessToken" in proof
+        ? Object.freeze({
+            accessToken: proof.accessToken,
+            appSession: proof.appSession,
+          })
+        : Object.freeze({ guestCapability: proof.guestCapability });
     const actor = await this.authorizer.resolve(privateProof);
-    if (actor.kind !== "member")
-      throw new RoomError(
-        "ROOM_MEMBER_REQUIRED",
-        "Phiên thành viên là bắt buộc",
-        403,
-      );
     return { proof: privateProof, actor };
   }
   private async run<T>(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     actor: RoomActor,
     roomIds: string[],
+    purpose: "read" | "existing-room",
     work: (scope: RoomScope) => Promise<T>,
   ) {
     const result = await this.transactions.withRoom(
       { actor, roomIds },
-      (actorProof) => this.authorizer.authorize(proof, actorProof),
+      (actorProof) =>
+        this.authorizer.authorize(proof, actorProof, purpose, roomIds[0]),
       (scope) => this.withScope(scope, () => work(scope)),
     );
-    if (result.status === "ended")
+    if (result.status === "ended") {
+      await this.authorizer.settleEnded(proof);
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
+    }
     return result.value;
   }
   /**
    * Mở phiên kết nối nguồn đọc danh sách phòng công khai (dùng cho feed Socket.IO).
    * Mỗi lần `read` vẫn mở giao dịch và kiểm quyền người đọc; chỉ truy vấn catalog được chia sẻ theo `tick`.
    */
-  async open(proof: MemberRoomRequestProof): Promise<PublicRoomReader> {
+  async open(proof: RoomRequestProof): Promise<PublicRoomReader> {
     const trusted = await this.resolved(proof);
     return {
       read: (tick: PublicRoomTick) =>
-        this.run(trusted.proof, trusted.actor, [], (scope) =>
+        this.run(trusted.proof, trusted.actor, [], "read", (scope) =>
           this.catalog.read(tick, scope.client),
         ),
     };
@@ -98,14 +99,14 @@ export class PublicRoomService {
   /**
    * Lấy danh sách các phòng cờ công khai hiện có thông qua truy vấn HTTP.
    */
-  async list(proof: MemberRoomRequestProof) {
+  async list(proof: RoomRequestProof) {
     return (await this.open(proof)).read({});
   }
   /**
    * Tham gia vào một phòng cờ công khai được chọn từ danh sách sảnh.
    */
   async join(
-    proof: MemberRoomRequestProof,
+    proof: RoomRequestProof,
     roomId: string,
     input: PublicRoomJoinInput,
   ): Promise<PublicRoomEntry> {
@@ -129,14 +130,20 @@ export class PublicRoomService {
         preference: input.preference,
       };
     const trusted = await this.resolved(proof);
-    return this.run(trusted.proof, trusted.actor, [id], async (scope) => {
-      const entry = await this.store.join(scope, id, command);
-      return {
-        roomId: entry.roomId,
-        version: entry.version,
-        role: entry.role,
-        ...(entry.notice === undefined ? {} : { notice: entry.notice }),
-      };
-    });
+    return this.run(
+      trusted.proof,
+      trusted.actor,
+      [id],
+      "existing-room",
+      async (scope) => {
+        const entry = await this.store.join(scope, id, command);
+        return {
+          roomId: entry.roomId,
+          version: entry.version,
+          role: entry.role,
+          ...(entry.notice === undefined ? {} : { notice: entry.notice }),
+        };
+      },
+    );
   }
 }

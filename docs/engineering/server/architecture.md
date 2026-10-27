@@ -10,6 +10,8 @@ Mỗi miền gồm `x.types.ts`, `x.module.ts` (chứa `createXRuntime`), `x.con
 
 Backend game chỉ có một instance hoạt động trên mỗi database. `core/runtime-lock.ts` giữ advisory lock cấp phiên trước recovery; instance thứ hai bị từ chối, không ngắt ván của instance đang chạy. Barrier bảo vệ các kết nối đang xử lý khi chủ khóa mất kết nối; AI (`game/ai/`) dùng cùng `rooms.ownershipPool` đã fence nên cũng nằm sau barrier và cổng đóng (không dùng pool thô của registration). Không coi đây là HA hoặc rolling deployment. Restart hợp lệ vẫn kết thúc ván online bằng `SERVER_RESTART`/`INTERRUPTED`, phòng tự tạo về `WAITING` theo BA 0.17.
 
+Mỗi kết nối phòng lấy shared barrier và kiểm PID chủ singleton trong một câu SQL với CTE materialized. Chỉ nhận kết nối khi cả hai điều kiện đúng; không cache kết quả giữa các lượt checkout và vẫn giữ barrier đến khi trả kết nối.
+
 `/health` là liveness; `/ready` trả 503 khi probe DB hoặc runtime chưa sẵn sàng. Render kiểm `/ready`. Khi tắt, runtime ngừng nhận và drain thao tác/socket trước khi nhả khóa và đóng pool. Log lỗi thu hồi media giữ mã `media_revocation_failed`, không ghi token hoặc phản hồi riêng tư của provider.
 
 ## Ghi dữ liệu: transaction, khóa, biên lai, outbox
@@ -40,7 +42,13 @@ Feed Sảnh (`game/room/public/public-room-feed.ts`) giữ `PUBLIC_FEED_POLL_MS 
 
 ## Xác thực hai lớp
 
-Bearer Supabase (xác minh ngoài transaction) cộng khả năng phiên ứng dụng: chuỗi base64url 43 ký tự, được băm trong `xiangqi_auth.app_sessions`. Khách là loại actor riêng. `DIRECT_URL` phải là direct/session pooler, không phải cổng 6543.
+Bearer Supabase được xác minh chữ ký ES256, issuer/audience/role và hạn bằng `jose` + JWKS công khai ngoài transaction; không gọi Auth userinfo từng lệnh. Chỉ cache khóa công khai, không cache token/phiên/quyền. Sau xác minh, tra capability base64url 43 ký tự (băm trong `xiangqi_auth.app_sessions`) và tài khoản hiện hành; transaction game kiểm lại phiên dưới khóa trước khi đọc/ghi. Refresh vẫn qua Auth và kiểm DB trước/sau. JWT còn hạn + khóa đã cache có thể dùng khi Auth API lỗi; thu hồi trực tiếp bearer/key phụ thuộc hạn/cache (xem [login.md](login.md)), còn thu hồi appSession vẫn qua DB. Khách là loại actor riêng. `DIRECT_URL` phải là direct/session pooler, không phải cổng 6543.
+
+## Khách, quyền phòng và media
+
+`GuestModule`/`GuestService` (`account/guest/`) cấp khách qua `POST /account/guest` (HTTP 200, cookie `xiangqi_guest`). `GuestService.expireDue()` chạy trong tick bảo trì mỗi 60 giây; dọn dẹp commit qua `GuestRoomCoordinator` trước khi trả `GUEST_EXPIRED`. `game/game.runtime.ts` ghép `RoomSessionAuthorizer` từ `PostgresMemberRoomAuthorizer` và `GuestRoomAuthorizer`; REST phòng, phòng công khai, realtime và media đều dùng bộ ghép này. Khách đang có ghế AI bị từ chối (503) cho đến khi cổng kết thúc AI được gắn ở giai đoạn AI.
+
+Media dùng pool riêng (`MEDIA_POOL_MAX = 3`), tách khỏi pool phòng. Thu hồi media đi qua outbox và chỉ xả sau commit.
 
 ## Cơ sở dữ liệu
 

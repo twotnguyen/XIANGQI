@@ -1,14 +1,9 @@
 import type { Server as HttpServer } from "node:http";
 import { Server, type Socket } from "socket.io";
+import type { RoomRequestProof } from "../room/room-session.js";
 import type { AiSnapshot } from "./ai-games.js";
 
-export interface AiSocketSessionProof {
-  accessToken: string;
-  appSession: string;
-}
-export interface AiSocketProof extends AiSocketSessionProof {
-  tabId: string;
-}
+export type AiSocketProof = RoomRequestProof & { tabId: string };
 export interface AiSocketControl {
   tabId: string;
   connectionId: string;
@@ -28,7 +23,7 @@ export interface AiSocketSnapshot {
 }
 export interface AiSocketAdmission {
   connect(): Promise<AiSocketControl>;
-  refresh(proof: AiSocketSessionProof): Promise<AiSocketControl>;
+  refresh(proof: RoomRequestProof): Promise<AiSocketControl>;
   takeover(): Promise<AiSocketControl>;
   watch(gameId: string): Promise<AiSocketSnapshot>;
   read(): Promise<AiSocketSnapshot | null>;
@@ -65,26 +60,41 @@ function exact(value: unknown, keys: string[]) {
     throw Error();
   return row;
 }
+function credential(row: Record<string, unknown>): RoomRequestProof {
+  const keys = Object.keys(row).sort().join();
+  if (keys === "guestCapability") {
+    if (
+      typeof row.guestCapability !== "string" ||
+      !capability.test(row.guestCapability)
+    )
+      throw Error();
+    return Object.freeze({ guestCapability: row.guestCapability });
+  }
+  if (keys === "accessToken,appSession") {
+    if (
+      typeof row.accessToken !== "string" ||
+      !/^\S{1,8192}$/.test(row.accessToken) ||
+      typeof row.appSession !== "string" ||
+      !capability.test(row.appSession)
+    )
+      throw Error();
+    return Object.freeze({
+      accessToken: row.accessToken,
+      appSession: row.appSession,
+    });
+  }
+  throw Error();
+}
 function proof(
   value: unknown,
   handshake: boolean,
-): AiSocketSessionProof | AiSocketProof {
-  const row = exact(
-    value,
-    handshake
-      ? ["accessToken", "appSession", "tabId"]
-      : ["accessToken", "appSession"],
-  );
-  if (
-    typeof row.accessToken !== "string" ||
-    !/^\S{1,8192}$/.test(row.accessToken) ||
-    typeof row.appSession !== "string" ||
-    !capability.test(row.appSession)
-  )
-    throw Error();
-  const session = { accessToken: row.accessToken, appSession: row.appSession };
-  if (!handshake) return Object.freeze(session);
+): RoomRequestProof | AiSocketProof {
+  const row = object(value);
+  if (!handshake) return credential(row);
   if (typeof row.tabId !== "string" || !uuid.test(row.tabId)) throw Error();
+  const session = credential(
+    Object.fromEntries(Object.entries(row).filter(([key]) => key !== "tabId")),
+  );
   return Object.freeze({ ...session, tabId: row.tabId.toLowerCase() });
 }
 function date(value: unknown): value is string {
@@ -415,7 +425,7 @@ export function attachAiSocketGateway(
           typeof args.at(-1) === "function"
             ? (args.pop() as (value: unknown) => void)
             : undefined;
-        let command: AiSocketSessionProof | string | undefined;
+        let command: RoomRequestProof | string | undefined;
         try {
           if (event === "ai.takeover") {
             if (args.length) throw Error();
@@ -443,7 +453,7 @@ export function attachAiSocketGateway(
             } else {
               const next = control(
                 await (event === "ai.refresh"
-                  ? peer.port!.refresh(command as AiSocketSessionProof)
+                  ? peer.port!.refresh(command as RoomRequestProof)
                   : peer.port!.takeover()),
                 socket,
                 peer.tabId,

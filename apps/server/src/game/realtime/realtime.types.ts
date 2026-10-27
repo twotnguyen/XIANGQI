@@ -5,24 +5,17 @@ import type {
   RoomStateSnapshot,
   RoomSnapshot,
 } from "@xiangqi/shared";
+import type { RoomRequestProof } from "../room/room-session.js";
 
 export interface RealtimeIdentity {
   userId: string;
   kind: "member" | "guest";
 }
-// Internal credentials are never projected into snapshots, receipts or events.
-export interface RealtimeAuthProof {
-  accessToken: string;
-  appSession: string;
-}
 export interface IdentityResolver {
-  // SQL-only fixed appSession validity; never consult the bearer provider.
+  // Liveness of the connection's own credential; never consults the bearer provider.
   sessionActive?(connection: RealtimeConnection): Promise<boolean>;
-  resolve(
-    accessToken: string,
-    appSession: string,
-    proof?: RealtimeAuthProof,
-  ): Promise<RealtimeIdentity>;
+  // Resolves the canonical member-or-guest proof; the proof is never fabricated.
+  resolve(proof: RoomRequestProof): Promise<RealtimeIdentity>;
 }
 export interface RealtimeTransactions {
   run<T>(
@@ -42,12 +35,18 @@ export interface RoomExecutionResult {
   snapshot: RoomStateSnapshot;
   error?: { code: RealtimeErrorCode; message: string };
 }
+export interface RoomAccess {
+  canControl: boolean;
+  // Authoritative room version read from the same locked member state as the authorization.
+  version: number;
+}
 export interface RoomCollaborator {
   authorize(
     client: PoolClient,
     identity: RealtimeIdentity,
     roomId: string,
-  ): Promise<{ canControl: boolean }>;
+  ): Promise<RoomAccess>;
+  // Recheck membership under the transaction's locks and return this identity's authoritative role.
   snapshot(
     client: PoolClient,
     identity: RealtimeIdentity,
@@ -60,9 +59,9 @@ export interface RoomCollaborator {
   ): Promise<RoomStateSnapshot | RoomExecutionResult>;
 }
 export interface RealtimeConnection {
-  // Private credentials for server-side room worker authorization only.
   identity: RealtimeIdentity;
-  proof?: RealtimeAuthProof;
+  // Private physical credential for server-side authorization only; never projected.
+  proof: RoomRequestProof;
   roomId: string;
   tabId: string;
   connectionId: string;

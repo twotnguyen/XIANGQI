@@ -10,6 +10,7 @@ import {
   env,
   member,
   oldRoom,
+  loginPool,
   pool,
   registration,
   reset,
@@ -98,7 +99,10 @@ async function publicationFixture(viewer = false) {
     },
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe("Room runtime feature configuration", () => {
   it("defaults off without touching database", async () => {
     expect(await createRoomRuntime({}, null)).toBeNull();

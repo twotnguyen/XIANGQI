@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import type { ChatChannel, ChatPage, RoomSnapshot } from "@xiangqi/shared";
+import { isSingleMove } from "../../shared/room-snapshot.js";
 import type { RoomConnection } from "../rooms/room-client.js";
 import type { ChatChanged } from "./chat-client.js";
 import type { RoomChatChannelState, RoomChatProps } from "./RoomChat.js";
@@ -64,7 +65,14 @@ export function useRoomChat(
     connected: boolean;
     key: string;
     control: string;
-  }>({ snapshot: null, connected: false, key: "", control: "" });
+    scopeVersion: number;
+  }>({
+    snapshot: null,
+    connected: false,
+    key: "",
+    control: "",
+    scopeVersion: 0,
+  });
   const alive = useRef(true);
   useEffect(() => {
     alive.current = true;
@@ -158,7 +166,7 @@ export function useRoomChat(
             !page ||
             page.roomId !== roomId ||
             page.channel !== channel ||
-            page.roomVersion < context.current.snapshot!.version ||
+            page.roomVersion < context.current.scopeVersion ||
             (w.notice && page.roomVersion < w.notice.roomVersion)
           )
             throw new Error("Quyền đọc chat đã thay đổi");
@@ -239,6 +247,7 @@ export function useRoomChat(
       connected: false,
       key: "",
       control: "",
+      scopeVersion: 0,
     };
     jobs.current = { ROOM_PUBLIC: work(), PLAYERS_PRIVATE: work() };
     pending.current = null;
@@ -272,7 +281,17 @@ export function useRoomChat(
     const control = snapshot.control.mode + ":" + snapshot.control.generation;
     const reset =
       !prior.snapshot || prior.key !== key || prior.control !== control;
-    context.current = { snapshot, connected, key, control };
+    const moveOnly = isSingleMove(prior.snapshot, snapshot);
+    context.current = {
+      snapshot,
+      connected,
+      key,
+      control,
+      scopeVersion:
+        reset || (!moveOnly && snapshot.version > prior.snapshot!.version)
+          ? snapshot.version
+          : prior.scopeVersion,
+    };
     if (reset) {
       const priorJobs = jobs.current;
       jobs.current = { ROOM_PUBLIC: work(), PLAYERS_PRIVATE: work() };
@@ -309,7 +328,10 @@ export function useRoomChat(
       setChannels(next);
       refresh("ROOM_PUBLIC");
       if (snapshot.role !== "spectator") refresh("PLAYERS_PRIVATE");
-    } else if (snapshot.version > (prior.snapshot?.version ?? -1)) {
+    } else if (
+      !moveOnly &&
+      snapshot.version > (prior.snapshot?.version ?? -1)
+    ) {
       for (const channel of ["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const) {
         const s = state.current[channel];
         if (!s || !enabled(channel)) continue;

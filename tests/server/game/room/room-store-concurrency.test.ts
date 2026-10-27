@@ -28,6 +28,9 @@ async function authorize(proof: RoomActorProof) {
   return guest.requireActorInTransaction(
     proof.client,
     capabilities.get(proof.actor.userId),
+    "read",
+    undefined,
+    proof.lockedActorIds,
   );
 }
 function run<T>(

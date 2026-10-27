@@ -1,4 +1,4 @@
-import type { Pool, PoolClient } from "pg";
+import { Pool, type PoolClient, type PoolConfig } from "pg";
 import type {
   AppSession,
   LoginAccount,
@@ -11,28 +11,34 @@ const accountSelect = `SELECT u.id AS "userId",u.email,p.username,
   ${accountActive} AS active
   FROM xiangqi_auth.accounts u JOIN public.profiles p ON p.user_id=u.id`;
 /**
+ * Tạo pool riêng cho đăng nhập và phiên. Mỗi kết nối vật lý mới chạy `SET ROLE app_server`
+ * trong onConnect của pg-pool; nếu lệnh lỗi, kết nối không được đưa vào pool.
+ * Chỉ dùng pool này cho PostgresLoginStore. Không RESET ROLE và không dùng chung với pool quản trị.
+ */
+export function createLoginPool(config: PoolConfig): Pool {
+  const options: PoolConfig & {
+    onConnect: (client: PoolClient) => Promise<void>;
+  } = {
+    ...config,
+    onConnect: async (client) => {
+      await client.query("SET ROLE app_server");
+    },
+  };
+  return new Pool(options);
+}
+/**
  * Store tương tác cơ sở dữ liệu PostgreSQL cho tính năng đăng nhập và quản lý phiên (app sessions).
+ * `pool` BẮT BUỘC lấy từ createLoginPool: store không đổi role, mọi kết nối đã là app_server.
  */
 export class PostgresLoginStore implements LoginStore {
   constructor(
     private readonly pool: Pool,
     private readonly client?: PoolClient,
   ) {}
-  private async query(text: string, values: unknown[] = []) {
-    if (this.client) return this.client.query(text, values);
-    const client = await this.pool.connect();
-    let broken = false;
-    try {
-      await client.query("SET ROLE app_server");
-      return await client.query(text, values);
-    } finally {
-      try {
-        await client.query("RESET ROLE");
-      } catch {
-        broken = true;
-      }
-      client.release(broken);
-    }
+  private query(text: string, values: unknown[] = []) {
+    return this.client
+      ? this.client.query(text, values)
+      : this.pool.query(text, values);
   }
   /**
    * Khóa advisory lock theo username trong thời gian thực thi thao tác để ngăn chặn đăng nhập đồng thời.
@@ -45,7 +51,6 @@ export class PostgresLoginStore implements LoginStore {
     let acquired = false;
     let broken = false;
     try {
-      await client.query("SET ROLE app_server");
       await client.query("SELECT pg_advisory_lock(hashtextextended($1,0))", [
         `login:${username}`,
       ]);
@@ -58,7 +63,6 @@ export class PostgresLoginStore implements LoginStore {
             "SELECT pg_advisory_unlock(hashtextextended($1,0))",
             [`login:${username}`],
           );
-        await client.query("RESET ROLE");
       } catch {
         broken = true;
       }

@@ -18,8 +18,8 @@ import type { EngineLevel } from "@xiangqi/engine";
 import type { Move, Side } from "@xiangqi/xiangqi-core";
 import { LoginError } from "../../account/login/login.types.js";
 import { RoomError } from "../room/room.types.js";
-import { readMemberRoomProof } from "../room/room.controller.js";
-import type { MemberRoomRequestProof } from "../room/room-http.service.js";
+import { readRoomProof } from "../room/room.controller.js";
+import type { RoomRequestProof } from "../room/room-session.js";
 import { AiError, type AiSnapshot } from "./ai-games.js";
 import type { AiOrigin } from "./ai-transactions.js";
 type Human = Extract<AiOrigin, { kind: "human" }>;
@@ -34,7 +34,7 @@ export interface AiHttpResult {
 }
 /** Required authenticated service; this module never constructs an owner from HTTP input. */
 export interface AiHttpApi {
-  current(proof: MemberRoomRequestProof): Promise<{ gameId: string | null }>;
+  current(proof: RoomRequestProof): Promise<{ gameId: string | null }>;
   read(origin: Human, gameId: string): Promise<AiHttpResult>;
   create(
     origin: Human,
@@ -73,6 +73,7 @@ const safeCodes = new Set([
   "AI_AUTHORITY_REQUIRED",
   "AI_ADMISSION_REQUIRED",
   "AI_SCOPE_INVALID",
+  "ALREADY_SEATED",
   "AI_GENERATION_EXHAUSTED",
   "AI_UNDO_UNAVAILABLE",
   "AI_UNDO_EXHAUSTED",
@@ -105,7 +106,7 @@ function version(value: unknown): number {
   return value;
 }
 function human(request: IncomingMessage): Human {
-  const proof = readMemberRoomProof(request);
+  const proof = readRoomProof(request);
   const tabId = id(request.headers["x-ai-tab"]),
     connectionId = request.headers["x-ai-connection"],
     generation = request.headers["x-ai-generation"];
@@ -216,7 +217,7 @@ export class AiController {
   @Get("current")
   current(@Req() request: IncomingMessage) {
     return this.respond(request, async () => {
-      const result = await this.service.current(readMemberRoomProof(request));
+      const result = await this.service.current(readRoomProof(request));
       return { gameId: result.gameId };
     });
   }

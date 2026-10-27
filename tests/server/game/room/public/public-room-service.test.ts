@@ -70,6 +70,7 @@ function fixture() {
     };
   });
   const inputs = vi.fn();
+  const settleEnded = vi.fn(async () => undefined);
   const transactions: Pick<RoomTransactions, "withRoom"> = {
     async withRoom(input, auth, work) {
       order.push("transaction");
@@ -101,10 +102,11 @@ function fixture() {
     service: new PublicRoomService(
       { catalog, join },
       transactions,
-      { resolve, authorize },
+      { resolve, authorize, settleEnded },
       withScope,
     ),
     resolve,
+    settleEnded,
     authorize,
     catalog,
     join,
@@ -194,17 +196,24 @@ test.each([
   expect(f.resolve).not.toHaveBeenCalled();
   expect(f.inputs).not.toHaveBeenCalled();
 });
-test("guest identity cannot enter member-only public service", async () => {
+test("guest identity reads the public feed under its own actor kind and settles an ended session", async () => {
   const f = fixture();
-  f.resolve.mockResolvedValue({
+  const guest = {
     userId: actor.userId,
     kind: "guest",
-  } as unknown as typeof actor);
-  await expect(f.service.open(proof())).rejects.toMatchObject({
-    code: "ROOM_MEMBER_REQUIRED",
-    status: 403,
+  } as unknown as typeof actor;
+  f.resolve.mockResolvedValue(guest);
+  const source = await f.service.open(proof());
+  f.authorize.mockResolvedValueOnce({ status: "ended" });
+  await expect(source.read({})).rejects.toMatchObject({
+    code: "AUTH_REQUIRED",
+    status: 401,
   });
-  expect(f.inputs).not.toHaveBeenCalled();
+  expect(f.inputs).toHaveBeenCalledWith(
+    expect.objectContaining({ actor: guest }),
+  );
+  expect(f.catalog).not.toHaveBeenCalled();
+  expect(f.settleEnded).toHaveBeenCalledOnce();
 });
 test("ended transaction maps401 and never reads", async () => {
   const f = fixture();

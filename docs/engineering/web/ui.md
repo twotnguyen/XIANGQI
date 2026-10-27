@@ -23,6 +23,26 @@ của từng tính năng. Không coi preview hoặc guard phía client là nghi�
 phân quyền. Phóng to 200%, screen reader và đánh giá không phân biệt màu
 vẫn cần được kiểm xuyên suốt trước bàn giao đầy đủ.
 
+## Chế độ Khách
+
+Đăng nhập có nút "Chơi nhanh với tư cách Khách (Guest)", mở hộp thoại
+"Chơi với tư cách Khách" nhập "Tên hiển thị" (2–20 ký tự). Tên được chuẩn hóa
+NFC, cắt khoảng trắng và kiểm tra trước khi gửi; máy chủ kiểm tra lại. Hủy hộp
+thoại khi đang chờ thì phiên Khách đến muộn không được cài (máy chủ bị thu hồi
+ngay). Phiên Khách chỉ có trong bộ nhớ và cookie HttpOnly của máy chủ; capability
+không được lưu trong storage, URL hoặc log. Cookie được khôi phục khi tải lại;
+401 xóa phiên Khách, còn lỗi tạm thời (ví dụ 503) hiện lỗi có thể thử lại, không
+coi là ẩn danh. Khi đến hạn, phiên được kiểm lại với máy chủ: máy chủ là nguồn sự
+thật, client không tự gia hạn hay tự xóa phiên. Khách vào Sảnh, phòng (chơi, xem,
+chat, media), ván với máy và `/rooms/join` như thành viên, hiển thị "(Khách)" ở
+mọi nơi có tên người dùng. Khách không thấy bạn bè, lịch sử, replay hay bảng xếp
+hạng; trang Hồ sơ chỉ còn đăng xuất và không gọi API hồ sơ/vị trí của thành viên.
+Đăng xuất (từ Sảnh hoặc Hồ sơ) đi qua cùng luồng với thành viên: nếu đang có ván
+AI thì hỏi xác nhận đầu hàng trước; nếu đang có ván phòng thì hỏi xác nhận xin thua
+(409 `GUEST_RESIGN_CONFIRM_REQUIRED`). Đăng xuất lỗi giữ phiên Khách và kiểm lại
+sau. Kết nối phòng và AI dùng `getRealtimeProof()`; HTTP dùng `sessionFetch`, còn
+route thành viên giữ `authorizedFetch`.
+
 ## Tải giao diện theo màn hình
 
 Entry chỉ tải preview khi mở route `/dev/*` tương ứng. Router tải trang đăng nhập,
@@ -47,6 +67,14 @@ WAITING mỗi lần focus. Phản hồi refresh cũ bị bỏ qua khi bắt đ�
 `features/rooms/useRoomConnection.ts` giữ vòng đời socket, fallback HTTP và các
 epoch/ref đồng bộ; `RoomPage` giữ lệnh và điều phối giao diện. Nút Thử lại đóng
 kết nối cũ rồi chờ snapshot realtime mới; HTTP không cấp lại quyền điều khiển.
+
+Chat không tải lại lịch sử sau một nước đi ACTIVE được xác nhận: room version và
+match version cùng tăng đúng 1, `lastMove.eventVersion` khớp match version, ván,
+ghế, vai trò và quyền tab không đổi. `shared/room-snapshot.ts` giữ điều kiện này
+cho cả hook chat và bộ đọc Socket.IO. Phản hồi chat đang bay được so với mốc
+thay đổi phạm vi chat, không phải mốc nước đi mới nhất; notice chat vẫn có mốc
+riêng. Nhảy phiên bản, đổi ghế/quyền, kết thúc ván hoặc reconnect vẫn kiểm lại
+phạm vi và xóa lịch sử riêng khi cần. Không cache quyền phía server.
 
 `Suspense` giữ shell khi trang đang tải; boundary đổi theo route để dọn socket
 và effect của trang cũ ngay khi rời trang, kể cả trang mới chưa tải xong.
@@ -79,6 +107,8 @@ tìm nước hoặc lưu bản ván chính thức trong sessionStorage. Thiết 
 Mất trạng thái sau restart/hết ân hạn hiển thị lỗi thật, không tự dựng ván thay thế.
 Rời ván/đăng xuất chủ động chỉ điều hướng sau khi người dùng xác nhận và server
 đã nhận đầu hàng; hủy xác nhận hoặc lỗi server giữ phiên/giao diện hiện tại.
+Đăng xuất khi đang mở ván AI (route `/ai/:id` hoặc vị trí đang chơi) hỏi xác nhận
+và đầu hàng ván đó trước, cho cả Khách lẫn thành viên.
 
 `/forgot-password`, `/reset-password` và `/leaderboard` dùng `P2ScopePage` để
 phân định tính năng P2 chưa mở, giữ guard phiên và đường quay lại phù hợp.

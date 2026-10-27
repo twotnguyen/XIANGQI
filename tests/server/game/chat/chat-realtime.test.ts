@@ -2,14 +2,21 @@ import { createHash, randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { maskForbiddenChat } from "@shared/chat-filter.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "@server/game/realtime/member-transactions.js";
 import {
   RealtimeError,
@@ -19,6 +26,7 @@ import { RoomError } from "@server/game/room/room.types.js";
 import { apply, databaseUrl, pool, reset } from "../room/room.test-helper.js";
 import { ChatStore } from "@server/game/chat/chat-store.js";
 import { ChatRealtimeService } from "@server/game/chat/chat-realtime.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 async function fixture() {
   const users = new Map<
@@ -28,19 +36,26 @@ async function fixture() {
   // Only GoTrue is synthetic: sessions, authorizers, transactions, rooms and chat use actual SQL.
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
+    verifyAccessToken: vi.fn(async (token: string) => {
       const u = users.get(token);
       if (!u) throw new Error("private synthetic token");
-      return u;
+      return { userId: u.id, email: u.email };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider),
+  const sessions = new SessionService(
+      new PostgresLoginStore(loginPool),
+      provider,
+    ),
     authorizer = new PostgresMemberRoomAuthorizer(sessions),
     coordinator = new RoomTransactions(pool),
     rooms = new RoomStore(),
-    http = new RoomHttpService(rooms, coordinator, authorizer),
-    transactions = new MemberRealtimeTransactions(coordinator, authorizer),
-    identities = new MemberRealtimeIdentities(authorizer),
+    roomAuthorizer = new RoomSessionAuthorizer(
+      authorizer,
+      new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+    ),
+    http = new RoomHttpService(rooms, coordinator, roomAuthorizer),
+    transactions = new RoomRealtimeTransactions(coordinator, roomAuthorizer),
+    identities = new RoomRealtimeIdentities(roomAuthorizer),
     store = new ChatStore(maskForbiddenChat),
     service = new ChatRealtimeService(store, transactions);
   const members = [];
@@ -73,11 +88,7 @@ async function fixture() {
   const connect = async (m: typeof a) => {
     // Each realtime resolution owns the original proof for the following guarded transaction.
     const proof = { ...m.proof },
-      identity = await identities.resolve(
-        proof.accessToken,
-        proof.appSession,
-        proof,
-      );
+      identity = await identities.resolve(proof);
     return {
       identity,
       proof,
@@ -126,7 +137,10 @@ async function fixture() {
     provider,
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "member guarded realtime chat on actual SQL",
   () => {
@@ -234,12 +248,12 @@ describe.skipIf(!databaseUrl)(
         if (mode === "revoke")
           await pool.query(
             "UPDATE xiangqi_auth.app_sessions SET revoked_at=clock_timestamp() WHERE token_hash=$1",
-            [hash(f.connection.proof!.appSession)],
+            [hash(f.connection.proof.appSession)],
           );
         else
           await pool.query(
             "UPDATE xiangqi_auth.app_sessions SET created_at=statement_timestamp()-interval '13 hours',expires_at=statement_timestamp()-interval '1 hour' WHERE token_hash=$1",
-            [hash(f.connection.proof!.appSession)],
+            [hash(f.connection.proof.appSession)],
           );
         await expect(f.send()).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
         await expect(

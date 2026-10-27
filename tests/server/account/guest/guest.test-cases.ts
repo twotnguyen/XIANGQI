@@ -8,11 +8,18 @@ import {
 } from "../google/database.test-helper.js";
 import { GuestService } from "@server/account/guest/guest.service.js";
 import { GuestStore } from "@server/account/guest/guest.store.js";
-import type { GuestRoomPort } from "@server/account/guest/guest.types.js";
+import type {
+  GuestActor,
+  GuestRoomPort,
+} from "@server/account/guest/guest.types.js";
+import { GuestRoomCoordinator } from "@server/game/room/guest-room-auth.js";
+import { scopeContext } from "../../game/room/guest-scope.test-helper.js";
+import { RoomTransactions } from "@server/game/room/room-transactions.js";
 describe.skipIf(!databaseUrl)(
   "Guest capability lifecycle with real transactions",
   () => {
     let time = new Date("2026-10-11T00:00:00Z");
+    const scopes = scopeContext();
     const rooms: GuestRoomPort = {
       async seatedSeat(c, id) {
         const room = (
@@ -28,7 +35,12 @@ describe.skipIf(!databaseUrl)(
       },
     };
     const service = () =>
-      new GuestService(new GuestStore(pool), rooms, () => time);
+      new GuestService(
+        new GuestStore(pool),
+        rooms,
+        () => time,
+        new GuestRoomCoordinator(new RoomTransactions(pool), scopes.withScope),
+      );
     beforeAll(async () => {
       await baseline();
       await apply("supabase/migrations/20261011000005_google_guest.sql");
@@ -104,16 +116,13 @@ describe.skipIf(!databaseUrl)(
       await expect(
         service().requireActive(s.capability, "new-room"),
       ).rejects.toMatchObject({ code: "GUEST_DEFERRED" });
-      await service().withActor(
-        s.capability,
-        "existing-room",
-        room,
-        async (c) => {
+      await expect(
+        service().withActor(s.capability, "existing-room", room, async (c) => {
           await c.query("DELETE FROM public.room_members WHERE user_id=$1", [
             s.userId,
           ]);
-        },
-      );
+        }),
+      ).rejects.toMatchObject({ code: "GUEST_EXPIRED" });
       await expect(service().requireActive(s.capability)).rejects.toMatchObject(
         { code: "GUEST_INVALID" },
       );
@@ -140,6 +149,7 @@ describe.skipIf(!databaseUrl)(
           },
         },
         () => time,
+        new GuestRoomCoordinator(new RoomTransactions(pool), scopes.withScope),
       );
       await expect(bad.logout(s.capability, true)).rejects.toMatchObject({
         code: "GUEST_UNAVAILABLE",
@@ -190,23 +200,26 @@ describe.skipIf(!databaseUrl)(
     it("supports caller-owned actor-before-room transaction hook and maintenance on hashed capabilities", async () => {
       time = new Date("2026-10-12T00:00:00Z");
       const s = await service().create("Hook phòng");
-      const c = await pool.connect();
-      try {
-        await c.query("BEGIN");
-        await c.query("SET LOCAL ROLE app_server");
-        const authorized = await service().requireActorInTransaction(
-          c,
-          s.capability,
-          "read",
-        );
-        expect(authorized.status).toBe("active");
-        if (authorized.status === "active")
-          await service().finishActorMutation(c, authorized.actor);
-        await c.query("COMMIT");
-      } finally {
-        await c.query("ROLLBACK");
-        c.release();
-      }
+      let activeActor: GuestActor | undefined;
+      await new RoomTransactions(pool).withRoom(
+        { actor: { userId: s.userId, kind: "guest" }, roomIds: [] },
+        async (p) => {
+          const r = await service().requireActorInTransaction(
+            p.client,
+            s.capability,
+            "read",
+            undefined,
+            p.lockedActorIds,
+          );
+          if (r.status === "active") activeActor = r.actor;
+          return r;
+        },
+        async (scope) => {
+          if (activeActor)
+            await service().finishActorMutation(scope.client, activeActor);
+        },
+      );
+      expect(activeActor?.userId).toBe(s.userId);
       time = new Date("2026-10-12T12:00:00Z");
       await service().expireDue();
       await expect(service().requireActive(s.capability)).rejects.toMatchObject(

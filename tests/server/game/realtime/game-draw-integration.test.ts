@@ -5,40 +5,52 @@ import type { RoomCommand } from "@xiangqi/shared";
 import { ClockService } from "@server/game/clock/clock.service.js";
 import { MatchStore } from "@server/game/match/match-store.js";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { SessionService } from "@server/account/login/session.service.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import type { RoomScope } from "@server/game/room/room.types.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "@server/game/realtime/member-transactions.js";
 import { GameRooms } from "@server/game/realtime/game-rooms.js";
 import { RealtimeStore } from "@server/game/realtime/store.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import { parseCommand } from "@server/game/realtime/protocol.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 async function fixture() {
-  const users = new Map<
-    string,
-    { id: string; email: string; email_confirmed_at: string }
-  >();
+  const users = new Map<string, { id: string; email: string }>();
   // Synthetic provider boundary ONLY; all application auth/session/room/match SQL is real.
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
+    verifyAccessToken: vi.fn(async (token: string) => {
       const user = users.get(token);
       if (!user) throw new Error("Synthetic unauthorized");
-      return user;
+      return { userId: user.id, email: user.email };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider),
+  const sessions = new SessionService(
+      new PostgresLoginStore(loginPool),
+      provider,
+    ),
     authorizer = new PostgresMemberRoomAuthorizer(sessions),
     coordinator = new RoomTransactions(pool);
-  const identities = new MemberRealtimeIdentities(authorizer),
-    transactions = new MemberRealtimeTransactions(coordinator, authorizer),
+  const roomAuthorizer = new RoomSessionAuthorizer(
+      authorizer,
+      new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+    ),
+    identities = new RoomRealtimeIdentities(roomAuthorizer),
+    transactions = new RoomRealtimeTransactions(coordinator, roomAuthorizer),
     clock = new ClockService(),
     scopes = new WeakMap<PoolClient, RoomScope>();
   const matches = new MatchStore(clock, {
@@ -61,7 +73,7 @@ async function fixture() {
     matches,
   );
   const rt = new RealtimeStore(pool, game, transactions),
-    http = new RoomHttpService(rooms, coordinator, authorizer);
+    http = new RoomHttpService(rooms, coordinator, roomAuthorizer);
   async function member() {
     const id = randomUUID(),
       email = `synthetic-${id}@example.invalid`,
@@ -75,10 +87,10 @@ async function fixture() {
       [id, "m" + id.replaceAll("-", "").slice(0, 18), at],
     );
     const token = "synthetic-bearer-" + id;
-    users.set(token, { id, email, email_confirmed_at: at.toISOString() });
+    users.set(token, { id, email });
     const issued = await sessions.issue(id, false),
       proof = { accessToken: token, appSession: issued.appSession };
-    const identity = await identities.resolve(token, issued.appSession, proof);
+    const identity = await identities.resolve(proof);
     return { id, proof, identity };
   }
   const red = await member(),
@@ -211,7 +223,10 @@ async function fixture() {
     move,
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "draw commands with actual auth, coordinator and receipts on synthetic PG55447",
   () => {

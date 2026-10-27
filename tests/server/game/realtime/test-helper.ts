@@ -86,6 +86,7 @@ export async function addRoom(
     tabId = randomUUID(),
   ): RealtimeConnection => ({
     identity: { userId, kind: "member" },
+    proof: { accessToken: randomUUID(), appSession: "x".repeat(43) },
     roomId,
     tabId,
     connectionId: randomUUID(),
@@ -114,17 +115,18 @@ class FixtureRooms implements RoomCollaborator {
     roomId: string,
   ) {
     const { rows } = await client.query(
-      "SELECT members FROM public.rooms WHERE id=$1",
+      "SELECT members,version FROM public.rooms WHERE id=$1",
       [roomId],
     );
     const members: string[] | undefined = rows[0]?.members;
+    const version: number = rows[0]?.version;
     const index = members?.indexOf(identity.userId) ?? -1;
     if (index < 0)
       throw new RealtimeError(
         "ROOM_FORBIDDEN",
         "Bạn không có quyền truy cập phòng này",
       );
-    return { canControl: index < 2 };
+    return { canControl: index < 2, version };
   }
   async snapshot(
     client: PoolClient,

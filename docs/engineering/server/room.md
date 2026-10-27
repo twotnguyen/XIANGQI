@@ -39,15 +39,11 @@ giữ đủ roster, thứ tự advisory lock và retry hiện có. `BEGIN`/`SET 
 không cần lượt SQL riêng. Vẫn kiểm lại quyền sau khi khóa phòng.
 Kiểm giới hạn ghế và phòng Khách được gộp, giữ ưu tiên lỗi `ALREADY_SEATED`.
 
-Realtime kiểm quyền qua `RoomStore.authorize`: chỉ đọc membership đã khóa và
-kiểm hạn người xem, không dựng cả countdown/offers/presence/spectators để lấy
-`canControl`. Snapshot đầy đủ vẫn được đọc từ server khi gửi giao diện; không
+Realtime kiểm quyền qua `RoomStore.authorize`: đọc cùng membership đã khóa (một SELECT, không thêm truy vấn), trả `canControl` và `version` của phòng từ cùng dòng đó, đồng thời kiểm hạn người xem. Không dựng countdown/offers/presence/spectators để lấy quyền.
+Snapshot đầy đủ vẫn được đọc từ server khi gửi giao diện; không
 bỏ kiểm quyền hoặc cấp quyền điều khiển từ dữ liệu frontend.
 
-Đọc phòng và roster dùng một LEFT JOIN, giữ kiểm tra roster và hạn người xem.
-Snapshot lấy countdown, người xem, presence và offer trong một SELECT bổ sung:
-hai truy vấn khi cache kiểm tra bảng offer đã sẵn sàng. Các bảng offer tùy chọn
-vẫn được dò khi dùng lần đầu; không cache dữ liệu phòng và không đổi contract.
+Snapshot đọc phòng, roster, countdown, người xem, presence và offer trong MỘT SELECT: phòng LEFT JOIN roster, CROSS JOIN một dòng nguồn snapshot. Khi cache kiểm tra bảng offer đã sẵn sàng, snapshot chỉ còn một truy vấn. Các bảng offer tùy chọn vẫn được dò khi dùng lần đầu; không cache dữ liệu phòng và không đổi contract.
 Nếu bảng biến mất sau khi đã dò, lỗi SQL được trả lên, không retry trong giao dịch
 đã lỗi. Gateway gửi snapshot đã commit từ admission, không đọc lại toàn bộ phòng.
 
@@ -60,7 +56,7 @@ Receipt, khóa actor/phòng và thứ tự khóa không đổi.
 
 ## Guest port
 
-RoomGuestPort.seatedSeat union active_players và PLAYER membership ở open room, cả AI match roomNULL. Không coi AI là no-seat. end mặc định GUEST_UNAVAILABLE cho đến root cung cấp full same-client termination (room/match/chat/media/structured snapshot PII scrub); không giả UPDATE profile là đủ xóa PII. Guest integration test dùng synthetic no-history/no-media fixture cleanup và GuestService thật để chứng minh12h/defer/final-leave đồng giao dịch. Production full cleanup còn gate riêng.
+RoomGuestPort.seatedSeat: ghế là ván AI (active_players.ai_game_id) hoặc PLAYER membership trong phòng `status='PLAYING'` chưa đóng. Reservation WAITING/FINISHED (active_players.room_id) và membership ở phòng không PLAYING KHÔNG phải ghế: khách hết hạn không được gia hạn 12h để tiếp tục Ready/ván mới và sẽ kết thúc ở lần auth/finish/worker kế tiếp. Ghế PLAYING và AI giữ 12h defer như cũ. end với `reason='logout'` khi khách đang ở phòng PLAYING (PLAYER) hoặc có ván AI phải có `confirmedResign`, nếu không trả 409 `GUEST_RESIGN_CONFIRM_REQUIRED` trước mọi leave/scrub. end mặc định GUEST_UNAVAILABLE cho đến root cung cấp full same-client termination (room/match/chat/media/structured snapshot PII scrub); không giả UPDATE profile là đủ xóa PII. Guest integration test dùng synthetic no-history/no-media fixture cleanup và GuestService thật để chứng minh12h/defer/final-leave đồng giao dịch. Production full cleanup còn gate riêng.
 
 ## Migration000006
 

@@ -176,12 +176,12 @@ export interface EngineFailureEvent {
   code: "ENGINE_BUSY" | "ENGINE_FAILED" | "ENGINE_TIMEOUT";
   retryable: boolean;
 }
-export interface RealtimeHandshake {
-  accessToken: string;
-  appSession: string;
+export type RealtimeHandshake = (
+  { accessToken: string; appSession: string } | { guestCapability: string }
+) & {
   roomId: string;
   tabId: string;
-}
+};
 /**
  * Danh sách sự kiện Socket.IO phía Client gửi lên Server trong phòng cờ:
  * - `room.sync`: Đồng bộ snapshot trạng thái phòng mới nhất.

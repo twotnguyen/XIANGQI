@@ -1,11 +1,11 @@
 import type { AiSnapshot } from "./ai-games.js";
-import type { MemberRoomRequestProof } from "../room/room-http.service.js";
+import type { RoomRequestProof } from "../room/room-session.js";
 
 /** Internal origins; only the HTTP boundary may construct a human operation. */
 export type AiOrigin =
   | {
       kind: "human";
-      proof: MemberRoomRequestProof;
+      proof: RoomRequestProof;
       tab: { tabId: string; connectionId: string; generation: number };
     }
   | { kind: "internal" }

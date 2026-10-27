@@ -2,10 +2,14 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "@server/game/realtime/member-transactions.js";
-import { MemberRealtimePresence } from "@server/game/realtime/member-presence.js";
+import { RoomRealtimePresence } from "@server/game/realtime/member-presence.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { RealtimeStore } from "@server/game/realtime/store.js";
 import { GameRooms } from "@server/game/realtime/game-rooms.js";
 import { ClockService } from "@server/game/clock/clock.service.js";
@@ -15,31 +19,39 @@ import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { ChatStore } from "@server/game/chat/chat-store.js";
 import { ChatRealtimeService } from "@server/game/chat/chat-realtime.js";
 import { pool, reset, apply, databaseUrl } from "../room/room.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 async function fixture() {
-  const users = new Map<
-    string,
-    { id: string; email: string; email_confirmed_at: string }
-  >();
+  const users = new Map<string, { id: string; email: string }>();
   // Synthetic GoTrue and physical peer inventory only; all authority, room/game adapters and presence storage are real.
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
+    verifyAccessToken: vi.fn(async (token: string) => {
       const u = users.get(token);
       if (!u) throw Error("invalid synthetic bearer");
-      return u;
+      return { userId: u.id, email: u.email };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider),
+  const sessions = new SessionService(
+      new PostgresLoginStore(loginPool),
+      provider,
+    ),
     authorizer = new PostgresMemberRoomAuthorizer(sessions),
     coordinator = new RoomTransactions(pool),
     rooms = new RoomStore(),
-    http = new RoomHttpService(rooms, coordinator, authorizer),
-    transactions = new MemberRealtimeTransactions(coordinator, authorizer),
-    identities = new MemberRealtimeIdentities(authorizer),
+    sessionAuthorizer = new RoomSessionAuthorizer(
+      authorizer,
+      new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+    ),
+    http = new RoomHttpService(rooms, coordinator, sessionAuthorizer),
+    transactions = new RoomRealtimeTransactions(coordinator, sessionAuthorizer),
+    identities = new RoomRealtimeIdentities(sessionAuthorizer),
     clock = new ClockService(),
     game = new GameRooms(
       rooms,
@@ -48,7 +60,7 @@ async function fixture() {
       transactions.getScope.bind(transactions),
     ),
     peers: RealtimeConnection[] = [];
-  const presence = new MemberRealtimePresence(
+  const presence = new RoomRealtimePresence(
       pool,
       coordinator,
       rooms,
@@ -72,7 +84,7 @@ async function fixture() {
       "INSERT INTO public.profiles(user_id,username,display_name,completed_at,registration_pending) VALUES($1,$2,'Synthetic Viewer Tabs',$3,false)",
       [id, "m" + id.replaceAll("-", "").slice(0, 18), at],
     );
-    users.set(token, { id, email, email_confirmed_at: at.toISOString() });
+    users.set(token, { id, email });
     members.push({
       id,
       proof: {
@@ -93,11 +105,7 @@ async function fixture() {
   });
   const connection = async (tabId = randomUUID()) => {
     const proof = { ...viewer.proof },
-      identity = await identities.resolve(
-        proof.accessToken,
-        proof.appSession,
-        proof,
-      );
+      identity = await identities.resolve(proof);
     return {
       identity,
       proof,
@@ -136,7 +144,10 @@ async function fixture() {
     presence,
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "durable spectator tab chat ownership with actual member SQL",
   () => {

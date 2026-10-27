@@ -1,5 +1,12 @@
 import type { AuthProvider } from "../auth/registration.types.js";
-export type PasswordAuth = Pick<AuthProvider, "signInPassword" | "getUser">;
+export type PasswordAuth = Pick<AuthProvider, "signInPassword">;
+export interface VerifiedAccessToken {
+  userId: string;
+  email: string;
+}
+export interface SessionTokenVerifier {
+  verifyAccessToken(accessToken: string): Promise<VerifiedAccessToken>;
+}
 export interface LoginAccount {
   userId: string;
   email: string;

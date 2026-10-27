@@ -53,6 +53,32 @@ describe.skipIf(!databaseUrl)("runtime barrier fence", () => {
     }
   });
 
+  it("rejects admission while the successor barrier is held without leaving a shared lock", async () => {
+    const holderPool = new Pool({ connectionString: databaseUrl, max: 1 });
+    const barrier = await pool.connect();
+    const entrant = await pool.connect();
+    const owner = await acquireRuntimeLock(holderPool);
+    try {
+      await barrier.query("SELECT pg_advisory_lock(7204,2)");
+      await expect(fenceClient(entrant, owner.holderPid)).rejects.toThrow(
+        "Runtime barrier is held by a successor",
+      );
+      expect(
+        (
+          await entrant.query(
+            "SELECT pg_advisory_unlock_shared(7204,2) AS released",
+          )
+        ).rows[0].released,
+      ).toBe(false);
+    } finally {
+      await barrier.query("SELECT pg_advisory_unlock(7204,2)");
+      barrier.release();
+      entrant.release();
+      await owner.release();
+      await holderPool.end();
+    }
+  });
+
   it("makes a successor wait for checked-out fenced connections of the lost holder", async () => {
     const holderPool = new Pool({
       connectionString: databaseUrl,

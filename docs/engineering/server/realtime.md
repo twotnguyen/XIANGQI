@@ -15,7 +15,7 @@
 - Auth resolver được root nối với Supabase/session/account thật; test dùng identity fixture riêng, không tuyên bố GATE-AUTH đạt.
 - Room collaborator kiểm membership và quyền từng lệnh, cung cấp snapshot theo người nhận, thực thi state mutation trong cùng SQL transaction. Chưa triển khai phòng, đồng hồ, chat, luật, AI hoặc media.
 - Schema mới `xiangqi_realtime`; không đổi schema T04 hoặc bảng legacy room_command_receipts. Tham chiếu auth.users/public.rooms đã tồn tại; không chạy migration live.
-- Socket.IO dùng tên sự kiện `room.command`, `room.snapshot`, `session.takeover`, `session.read_only`. Handshake: accessToken, appSession, roomId, tabId. appSession là capability 43 ký tự base64url; thiếu hoặc sai bị từ chối. UUID tabId ổn định qua reconnect và khác ở tab mới; frontend lưu sessionStorage, không dùng localStorage chung giữa tab.
+- Socket.IO dùng tên sự kiện `room.command`, `room.snapshot`, `session.takeover`, `session.read_only`. Handshake thành viên: `{accessToken, appSession, roomId, tabId}`; Khách: `{guestCapability, roomId, tabId}`. Khóa phải đúng bộ, không trộn hai loại; appSession và guestCapability là capability 43 ký tự base64url, thiếu, thừa hoặc sai bị từ chối. UUID tabId ổn định qua reconnect và khác ở tab mới; frontend lưu sessionStorage, không dùng localStorage chung giữa tab.
 - Identity có userId và kind member/guest; room authorization được kiểm lại trước snapshot/receipt replay/mutation. Collaborator chịu trách nhiệm quyền vai trò và policy phiên chính thức; socket không tin userId/role từ client.
 - Receipt key: actorId+roomId+commandId. Request fingerprint bao gồm type/payload/expectedVersion; cùng ID đổi payload trả COMMAND_ID_REUSED, không ghi đè kết quả.
 - Tab đã biết chỉ reconnect vào quyền hiện có; tabId mới tiếp quản. `session.takeover` là hành động chủ động. ConnectionId fencing vô hiệu hóa socket cũ ngay cả khi dùng cùng tabId. Control persisted theo actor+room, generation tăng, tab cũ reconnect sau restart vẫn readonly.
@@ -24,9 +24,15 @@
 
 ## Hợp đồng
 
-`IdentityResolver.resolve(accessToken: string, appSession: string): Promise<RealtimeIdentity>` từ root.
+`IdentityResolver.resolve(proof: RoomRequestProof): Promise<RealtimeIdentity>` từ root; `RoomRequestProof` là proof duy nhất (member hoặc Khách), không tách bearer/capability rời rạc.
 
-`RoomCollaborator.authorize(client, identity, roomId): Promise<RoomAccess>`; `snapshot(client, identity, roomId): Promise<RoomStateSnapshot>`; `execute(client, identity, command): Promise<RoomStateSnapshot>`. `RoomAccess` có canControl; quyền spectator/command chi tiết được collaborator thực thi. Snapshot có roomId/version, room/match/clocks/role rõ ràng; frontend chỉ vẽ từ trạng thái chính thức.
+`RoomCollaborator.authorize(client, identity, roomId): Promise<RoomAccess>`; `snapshot(client, identity, roomId): Promise<RoomStateSnapshot>`; `execute(client, identity, command): Promise<RoomExecutionResult>`. `RoomAccess` gồm `canControl` và `version` (room version đọc trong cùng lần đọc member đã khóa để xác thực); quyền spectator/command chi tiết được collaborator thực thi. Snapshot có roomId/version, room/match/clocks/role rõ ràng; frontend chỉ vẽ từ trạng thái chính thức.
+
+`snapshot` tự kiểm membership trong transaction và trả đúng role của người nhận;
+`RealtimeStore` dùng role đó để đọc control, không gọi `authorize` lần nữa trước
+cùng một snapshot. `authorize` riêng vẫn dùng trước command/admission.
+
+`command(...)` theo thứ tự: xác thực membership (`authorize`) → một câu SQL đọc đồng thời dòng controller và receipt theo khóa (user, room, command) → từ chối `TAB_READ_ONLY` nếu thẻ không ghi được → replay receipt (kiểm fingerprint) hoặc dọn receipt hết hạn → so `access.version` với `expectedVersion`. Không dựng snapshot đầy đủ trước khi kiểm; snapshot đầy đủ chỉ được dựng khi trả `VERSION_STALE` hoặc sau khi `execute` trả kết quả. Nước đi không kết thúc ván ghi event+move, match và tăng `room_version` cùng outbox trong một câu lệnh CTE; ván kết thúc giữ thứ tự cũ (event+move, `end`, outbox).
 
 `RealtimeStore.connect(identity, roomId, tabId, connectionId, takeover=false)` trả snapshot+mode/generation; `command(...)` trả discriminated ack; `snapshot(...)` kiểm membership; `cleanupExpiredReceipts()` dọn thời hạn. `attachRealtime(httpServer, dependencies)` tạo Socket.IO với lifecycle close để root gắn Nest và đóng tài nguyên.
 
@@ -38,9 +44,14 @@ và publication sau đó vẫn xác thực lại. Trạng thái có thể đổi
 mọi phản hồi snapshot; version/generation và các kiểm quyền tiếp theo vẫn áp dụng.
 
 Ack của `room.command` được gửi ngay sau khi lệnh commit; phát snapshot cho các
-tab chạy độc lập. Publication luôn xác thực lại từng người nhận và đọc snapshot
-mới, không dùng snapshot gốc hay `control` đã cache. Admission dựng snapshot
-bằng quyền/control vừa xác định trong cùng giao dịch, không đọc lại hai lần.
+tab chạy độc lập. Mỗi snapshot cần phát vẫn xác thực chữ ký/hạn JWT, phiên DB và membership
+mới cho chính người nhận, không dùng snapshot gốc hay `control` đã cache.
+Publication được gộp theo từng phòng: tối đa một pass đang chạy và một pass chờ
+(dirty rerun). Một trigger chỉ được gộp vào pass chưa bắt đầu đọc; pass đó khởi động sau khi trigger được gọi, còn promise trả về chỉ resolve khi pass kết thúc, nên ack outbox chỉ diễn ra sau một pass đã bắt đầu sau lời gọi. Lỗi của pass
+đang chạy trả về cho các caller của nó; pass chờ chạy độc lập và lần gọi sau
+được thử lại. Khi đóng service, pass chờ không được khởi động.
+Admission dựng snapshot bằng quyền/control vừa xác định trong cùng giao dịch, không đọc lại hai lần.
+Sàn phiên bản (`publishSnapshots(roomId, minimumVersion)`, do outbox truyền `event.version`): recipient đã có version ≥ sàn không xác thực, đọc hay emit lại vì không có dữ liệu mới được giao. Recipient còn thiếu phiên bản vẫn xác thực mới và đọc snapshot trong transaction; kiểm lại sàn sau bước xác thực để tránh race với ack. Pass gộp lấy sàn lớn nhất; lời gọi không có sàn vẫn kiểm mọi recipient. Ack `room.command` ghi nhận version đã giao cho origin (monotonic, chỉ khi socket còn kết nối).
 
 Command examples định nghĩa ý định `room.ready`, `match.move`, `match.resign`, `media.sharing`; T18/T20/T23/T33 cung cấp handlers. `EngineFailureEvent` chỉ hợp đồng thông báo lỗi/busy/retry, không gọi engine. Không gửi payload chat/media stream vào receipts.
 
@@ -81,7 +92,7 @@ Files: `gateway.ts`, shared `realtime.ts`; Socket.IO tests nằm chung `store.te
 
 ## Ví dụ tích hợp
 
-Frontend tạo `tabId=crypto.randomUUID()` một lần trong sessionStorage của tab, mở Socket.IO với `auth: { accessToken, appSession, roomId, tabId }`. Khi token đổi, reconnect với token mới; server xác minh identity qua resolver trước từng lệnh, replay và phát snapshot. Resolver phải dùng xác thực Supabase có kiểm tra token còn hạn, account active và phiên chính thức; không chỉ decode JWT hay tin metadata client. Pool runtime dùng TLS kiểm chứng CA, login NOINHERIT/NOBYPASSRLS và quyền SET ROLE app_server tương tự T04.
+Frontend tạo `tabId=crypto.randomUUID()` một lần trong sessionStorage của tab, mở Socket.IO với `auth: { accessToken, appSession, roomId, tabId }` (thành viên) hoặc `auth: { guestCapability, roomId, tabId }` (Khách). Khi token đổi, reconnect với token mới; server xác minh identity qua resolver trước từng lệnh, replay và phát snapshot. Resolver phải dùng xác thực Supabase có kiểm tra token còn hạn, account active và phiên chính thức; không chỉ decode JWT hay tin metadata client. Pool runtime dùng TLS kiểm chứng CA, login NOINHERIT/NOBYPASSRLS và quyền SET ROLE app_server tương tự T04.
 
 ```ts
 socket.emit(
@@ -104,7 +115,7 @@ Khi reconnect, snapshot chứa room/match/clocks/role và control. `control.reas
 
 AI (`apps/server/src/game/ai`, factory `createAiRuntime({env, registration})` trả `{module, attach, start, ready, close}`; `registration.sessions` có thể null, khi đó runtime từ chối khởi động) dùng namespace Socket.IO `/ai` tại `/ai/socket.io`, các sự kiện `ai.control`, `ai.snapshot`, `ai.sessionExpired`, và các lệnh `ai.refresh`, `ai.takeover`, `ai.watch` đều có ack; mọi lệnh xác thực lại accessToken/appSession và tab vật lý qua SQL. Ván AI nằm trong `active_players` với `ai_game_id/ai_boot_id`; lease boot 60 giây được gia hạn mỗi 20 giây, sweeper 5 giây thu hồi boot hết hạn bằng origin `sweep` (chỉ khóa owner, không yêu cầu owner còn active; SQL vẫn kiểm điều kiện hết hạn). Lease cục bộ quá hạn thì fence vĩnh viễn: sweep bỏ mọi ván RAM và gia hạn sau đó không khôi phục. Lỗi từng dòng của sweep được giữ và làm `/ready` thất bại. Boot kiểm tra schema theo migration `20261011000011` và `20261011000012` (bảng, RLS FORCE, policy, quyền `app_server`, cột `active_players`); thiếu bất kỳ mục nào thì báo "AI migration is not ready" và đóng engine. `start()` warm games trước khi bật timer; `close()` chờ heartbeat/sweep đang chạy rồi mới đóng gateway, games, engine. Undo tối đa 3 lần mỗi ván, mỗi lần lùi 2 nửa nước hoặc 1 nửa nước khi máy đang nghĩ. Mất kết nối quá 30 phút: P1 bỏ trạng thái RAM và giải phóng reservation/presence trong transaction actor-first, không ghi lịch sử; máy quá 10 giây giữ ván và báo "Máy cờ gặp sự cố", Retry tính lại trên cùng thế cờ. `/ready` báo lỗi khi heartbeat hoặc sweep thất bại, hoặc lease đã quá hạn/fence.
 
-Root gắn `attachRealtime(app.getHttpServer(), { store, identities, corsOrigins })` sau khi tạo collaborator thật và trước listen. `publishSnapshots(roomId)` dành cho thay đổi chính thức từ service khác; từng người nhận được xác thực và kiểm membership lại. Close gateway trước khi đóng pool; Socket.IO close cũng đóng HTTP server nên lifecycle cần gọi đúng một lần. Khi chưa có room collaborator thật hoặc migration chưa được duyệt, để runtime realtime tắt; không bật bằng fixture trong production.
+Root gắn `attachRealtime(app.getHttpServer(), { store, identities, corsOrigins })` sau khi tạo collaborator thật và trước listen. `publishSnapshots(roomId)` dành cho thay đổi chính thức từ service khác; từng người nhận được xác thực và kiểm membership lại. Các trigger cùng phòng được gộp theo mô tả ở phần publication (tối đa một pass đang chạy và một pass chờ); close không khởi động pass chờ mới. Close gateway trước khi đóng pool; Socket.IO close cũng đóng HTTP server nên lifecycle cần gọi đúng một lần. Khi chưa có room collaborator thật hoặc migration chưa được duyệt, để runtime realtime tắt; không bật bằng fixture trong production.
 
 ## Bằng chứng kiểm tra cục bộ
 
@@ -118,6 +129,49 @@ Test chỉ chấp nhận database name `xiangqi_realtime_test` trên host local 
 
 Kiểm tra tích hợp từ develop sau PR #95: 179/179 kiểm thử toàn bộ đạt, gồm 27 auth SQL và 25 realtime SQL/Socket.IO/Nest; core 53/53, độ phủ lines 100% và branches 99.41%. Nest createApp nhận dependencies tùy chọn ở đối số thứ tư; khi thiếu collaborator thật, kết nối vẫn bị từ chối. app.close ngắt client và giải phóng cổng HTTP. CI dùng hai dịch vụ PostgreSQL 17.6 riêng để các fixture không sửa role chung của nhau. Chưa áp dụng migration realtime lên Supabase và chưa nghiệm thu danh tính thường/Khách thật.
 
+## Đo độ trễ qua Chrome MCP
+
+Hai tài khoản thật, hai tab Chrome trên cùng Mac, frontend Vite qua HTTPS
+Tailscale và PostgreSQL/provider xác thực từ xa ở mẫu ban đầu. Hai mẫu đầu gồm 12 nước đi hợp lệ;
+đo từ click thật vào ô đích đến lúc DOM tab đối thủ có cùng chữ ký các quân cờ.
+Không tính thời gian chờ giữa các lệnh MCP. Frontend được reload sạch trước mẫu
+cuối để loại callback cũ còn giữ bởi hot reload.
+
+| Độ trễ tab đối thủ |    Trước |      Sau |
+| ------------------ | -------: | -------: |
+| Trung vị           | 5.525 ms | 2.419 ms |
+| Nhỏ nhất           | 2.682 ms | 2.210 ms |
+| Lớn nhất           | 7.081 ms | 3.003 ms |
+
+Hai bàn cờ khớp ở cả 12 nước cuối, có bắt quân; tin nhắn riêng giữ nguyên trong
+toàn bộ mẫu cuối. `room.ready` khi WAITING sau ván kết thúc giảm 44 → 31 câu SQL;
+snapshot WAITING tương ứng giảm 22 → 20 câu SQL. Active move đo được 28 câu SQL,
+snapshot ACTIVE 19 câu; đây không phải số đo tải nhiều phòng.
+
+Mẫu trước/sau thuộc các giai đoạn ván khác nhau và frontend dev trên một máy;
+không thay kiểm chứng hai thiết bị hoặc nghiệm thu tải. Độ trễ còn 2,2–3,0 giây,
+chưa đạt realtime dưới 200 ms. SQL từ xa mất khoảng 28–35 ms mỗi lượt.
+
+Lượt tối ưu tiếp theo giữ backend trên Mac theo quyết định người dùng và chuyển
+bearer sang JWT ES256 cục bộ + phiên DB hiện hành (xem chính sách/cache khóa ở
+`login.md`). Sáu nước đi thật mới có trung vị 1.926 ms, nhỏ nhất 1.676 ms, lớn
+nhất 2.119 ms; cả sáu lần hai bàn cờ khớp. Mẫu nhỏ hơn và khác giai đoạn ván nên
+không phải benchmark tải hay cam kết SLO. Chữ ký JWT khi khóa đã tải mất khoảng
+0,4–3,3 ms; phiên DB thêm một SELECT. Active command còn 26 câu SQL, snapshot
+ACTIVE 17 câu, thay vì 28/19 ở lượt trước. MOVE event + move cùng một INSERT CTE,
+snapshot không đọc membership hai lần và đọc draw clock ngay trong projection.
+Publication phiên bản đã giao không xác thực/đọc/emit lại; mọi dữ liệu mới vẫn
+kiểm JWT, phiên và quyền hiện hành. Không cache token/phiên/quyền.
+
+Đường đọc snapshot ván hiện tại dùng một truy vấn khóa `MatchStore.current` (phòng khóa trước, ván sau, ghế người xem trong cùng CTE) thay cho ba câu SQL riêng (current_match_id, khóa ván, roomMatch trong context cầu hòa). Chiếu cầu hòa `MatchDrawStore.drawOf` dùng lại dữ liệu đã khóa và chạy cùng kiểm tra quyền/khóa/ghế qua `assertScope` và `assertSeated`; lệnh ván vẫn đi qua `context` và `drawSnapshot` không đổi. Không thêm cache quyền hay đường tắt client; đồng hồ lấy sau khi khóa.
+
+Kiểm chứng sau cutover: 1.421 test đạt trên 111 file server/account/game/ops,
+PostgreSQL cô lập, Node 22; gồm chữ ký thật, claim sai/hết hạn, khóa không tin
+cậy, JWKS lỗi/cached-key, thu hồi phiên, khóa, biên lai, publication và runtime.
+Typecheck server và lint file sửa đạt. Vẫn chưa kiểm hai thiết bị độc lập,
+tải đồng thời nhiều phòng hoặc mục tiêu dưới 200 ms. Muốn giảm tiếp cần cắt
+chuỗi SQL từ xa hoặc đặt backend gần DB; không phát dự đoán như dữ liệu chính thức.
+
 ## Bổ sung phiên XIAN-48
 
-Resolver nhận bearer và capability ở handshake, command, replay, phát snapshot và tiếp quản. Capability chỉ giữ trong bộ nhớ; thu hồi capability phải từ chối dù bearer còn hợp lệ. Test dùng fixture độc lập; adapter SessionService production và danh tính Khách còn cần tích hợp phòng. Kết quả CI nhánh bổ sung cần xác minh sau push.
+Resolver nhận `RoomRequestProof` ở handshake, command, replay, phát snapshot và tiếp quản. Proof không bao giờ được chiếu vào receipt hoặc snapshot. Thu hồi capability phải từ chối ngay, kể cả khi bearer còn hợp lệ. Lớp `RoomRealtimeIdentities`/`RoomRealtimeTransactions`/`RoomRealtimePresence` (tên cũ `Member*` đã bỏ) dùng `RoomSessionAuthorizer` để định tuyến thành viên/Khách; disconnect chỉ hạ cấp presence, không tăng quyền.

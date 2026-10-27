@@ -5,11 +5,15 @@ import {
   type RuntimeLock,
 } from "@server/core/runtime-lock.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
 import type { RealtimePublisher } from "@server/game/realtime/gateway.js";
 import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
@@ -17,8 +21,8 @@ type Registration = NonNullable<
 >;
 
 function registration(): Registration {
-  const auth = { signInPassword: vi.fn(), getUser: vi.fn() };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth);
+  const auth = { signInPassword: vi.fn(), verifyAccessToken: vi.fn() };
+  const sessions = new SessionService(new PostgresLoginStore(loginPool), auth);
   return { pool, sessions, auth } as unknown as Registration;
 }
 
@@ -31,7 +35,10 @@ async function bootAttached(context: Registration) {
   return runtime;
 }
 
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)("Room runtime single-active lock", () => {
   beforeEach(reset);
 

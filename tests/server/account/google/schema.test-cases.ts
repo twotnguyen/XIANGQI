@@ -2,7 +2,10 @@ import { createApp } from "@server/app.js";
 import { createGoogleRuntime } from "@server/account/google/google.module.js";
 import { SupabaseAuth } from "@server/account/auth/supabase-auth.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresRegistrationStore } from "@server/account/auth/registration.store.js";
 import { RegistrationModule } from "@server/account/auth/registration.module.js";
 import { readFile } from "node:fs/promises";
@@ -15,6 +18,7 @@ import {
   databaseUrl,
   pool,
 } from "./database.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const migration = "supabase/migrations/20261011000005_google_guest.sql";
 const rollback = "supabase/rollback/20261011000005_google_guest.sql";
 async function restore() {
@@ -207,7 +211,7 @@ describe.skipIf(!databaseUrl)(
         ),
         auth,
         pool,
-        sessions: new SessionService(new PostgresLoginStore(pool), auth),
+        sessions: new SessionService(new PostgresLoginStore(loginPool), auth),
         checkDatabase: async () => {
           await pool.query("SELECT 1");
         },

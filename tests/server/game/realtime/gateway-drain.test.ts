@@ -9,6 +9,7 @@ import {
   type RealtimeConnection,
 } from "@server/game/realtime/realtime.types.js";
 import type { RealtimeStore } from "@server/game/realtime/store.js";
+import type { RoomRequestProof } from "@server/game/room/room-session.js";
 function gate() {
   let release!: () => void, enter!: () => void;
   const blocked = new Promise<void>((r) => (release = r)),
@@ -23,6 +24,10 @@ function gate() {
   };
 }
 const turn = () => new Promise<void>((r) => setImmediate(r));
+function bearer(proof: RoomRequestProof): string {
+  if (!("accessToken" in proof)) throw new Error("member proof expected");
+  return proof.accessToken;
+}
 async function fixture() {
   const server = createServer(),
     roomId = randomUUID(),
@@ -35,20 +40,20 @@ async function fixture() {
     version: 1,
     control: { mode: "writable", generation: 1, reason: null },
   };
-  const resolve = vi.fn(async (token: string) => {
-    await stage("provider", token);
+  const resolve = vi.fn(async (proof: RoomRequestProof) => {
+    await stage("provider", bearer(proof));
     return { userId, kind: "member" as const };
   });
   const command = vi.fn(async (c: RealtimeConnection) => {
-    await stage("command", c.proof!.accessToken);
+    await stage("command", bearer(c.proof));
     return { status: "ok", commandId: randomUUID(), snapshot };
   });
   const read = vi.fn(async (c: RealtimeConnection) => {
-    await stage("snapshot", c.proof!.accessToken);
+    await stage("snapshot", bearer(c.proof));
     return snapshot;
   });
   const connect = vi.fn(async (c: RealtimeConnection, takeover?: boolean) => {
-    if (takeover) await stage("takeover", c.proof!.accessToken);
+    if (takeover) await stage("takeover", bearer(c.proof));
     return snapshot;
   });
   const disconnect = vi.fn(async () => {});

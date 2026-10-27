@@ -73,7 +73,8 @@ export class AiPresence {
   private owner(scope: RoomScope): string {
     const owner = id(scope.actor.userId);
     if (!scope.lockedActorIds.has(owner)) sessionNotReady("AI_SCOPE_INVALID");
-    if (scope.actor.kind !== "member") sessionNotReady("AUTH_REQUIRED", 401);
+    if (scope.actor.kind !== "member" && scope.actor.kind !== "guest")
+      sessionNotReady("AUTH_REQUIRED", 401);
     return owner;
   }
   /** Admission read: principal phải active. Chỉ dùng cho attach/authorize/bind/retention/mutation. */
@@ -81,7 +82,9 @@ export class AiPresence {
     const owner = this.owner(scope);
     const principal = (
       await scope.client.query(
-        `SELECT 1 FROM xiangqi_auth.principals n JOIN xiangqi_auth.accounts a ON a.id=n.id JOIN public.profiles p ON p.user_id=n.id WHERE n.id=$1 AND n.kind='member' AND n.auth_user_id=a.id AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending`,
+        scope.actor.kind === "guest"
+          ? "SELECT 1 FROM xiangqi_auth.principals n WHERE n.id=$1 AND n.kind='guest' AND EXISTS(SELECT 1 FROM xiangqi_auth.guest_sessions s WHERE s.guest_id=n.id AND s.ended_at IS NULL)"
+          : `SELECT 1 FROM xiangqi_auth.principals n JOIN xiangqi_auth.accounts a ON a.id=n.id JOIN public.profiles p ON p.user_id=n.id WHERE n.id=$1 AND n.kind='member' AND n.auth_user_id=a.id AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending`,
         [owner],
       )
     ).rowCount;
@@ -93,7 +96,7 @@ export class AiPresence {
     const owner = this.owner(scope);
     const principal = (
       await scope.client.query(
-        "SELECT 1 FROM xiangqi_auth.principals WHERE id=$1 AND kind='member'",
+        "SELECT 1 FROM xiangqi_auth.principals WHERE id=$1 AND kind IN ('member','guest')",
         [owner],
       )
     ).rowCount;
@@ -123,7 +126,7 @@ export class AiPresence {
       )
     )
       sessionNotReady("AI_SCOPE_INVALID");
-    if (row && (!row.ai_game_id || row.ai_boot_id !== this.bootId))
+    if (row?.ai_game_id && row.ai_boot_id !== this.bootId)
       sessionNotReady("AI_RESERVATION_LOST");
     await this.live(scope);
     return row?.ai_game_id ?? null;
