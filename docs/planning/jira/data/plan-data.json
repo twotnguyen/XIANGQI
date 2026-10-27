@@ -1579,7 +1579,7 @@
       "id": "T11",
       "issue_id": "47",
       "type": "Task",
-      "title": "FE bàn cờ SVG: vẽ, quân, lật bàn, responsive, nhãn trợ năng",
+      "title": "T11 · FE Bàn cờ SVG: vẽ lưới, 32 quân chữ Hán, lật bàn cờ, responsive",
       "parent": "EP-04",
       "priority": "Medium",
       "labels": [
@@ -1753,7 +1753,7 @@
       "id": "T15",
       "issue_id": "51",
       "type": "Task",
-      "title": "FE màn Đăng nhập",
+      "title": "T15 · FE Màn Đăng nhập: form username/mật khẩu, ghi nhớ đăng nhập, thông báo an toàn",
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
@@ -2018,7 +2018,7 @@
       "id": "T21",
       "issue_id": "57",
       "type": "Task",
-      "title": "FE hộp Tạo phòng và phòng chờ: ghế, Sẵn sàng, đếm ngược",
+      "title": "FE Modal Tạo phòng & Màn hình Phòng chờ: ghế, Sẵn sàng, đếm 3-2-1",
       "parent": "EP-02",
       "priority": "Medium",
       "labels": [
@@ -2240,7 +2240,7 @@
       "id": "T26",
       "issue_id": "62",
       "type": "Task",
-      "title": "FE Chia sẻ phòng, nhập mã ở Sảnh, tự vào phòng sau đăng nhập",
+      "title": "T26 · FE Chia sẻ phòng & Vào phòng: link mời, mã 8 ký tự, chuyển hướng sau đăng nhập",
       "parent": "EP-03",
       "priority": "Medium",
       "labels": [
@@ -2509,7 +2509,7 @@
       "id": "T32",
       "issue_id": "68",
       "type": "Task",
-      "title": "BE đầu hàng, rời phòng giữa ván, xin hoà",
+      "title": "T32 · BE Xử lý kết thúc sớm: Đầu hàng, Rời phòng giữa ván, Xin hoà 30s",
       "parent": "EP-05",
       "priority": "Medium",
       "labels": [
@@ -2685,7 +2685,7 @@
       "id": "T36",
       "issue_id": "72",
       "type": "Task",
-      "title": "FE nút Đầu hàng, Xin hoà và khung đề nghị",
+      "title": "T36 · FE Nút thao tác ván đấu: Đầu hàng, Xin hoà, Popup đếm ngược 30s",
       "parent": "EP-05",
       "priority": "Medium",
       "labels": [
@@ -2906,7 +2906,7 @@
       "id": "T41",
       "issue_id": "77",
       "type": "Task",
-      "title": "BE Xin đổi bên và phòng về chờ sau ván",
+      "title": "T41 · BE Cơ chế Xin đổi bên & Đưa phòng về trạng thái Chờ sau ván",
       "parent": "EP-02",
       "priority": "Medium",
       "labels": [
@@ -3042,7 +3042,7 @@
       "id": "T44",
       "issue_id": "80",
       "type": "Task",
-      "title": "FE nút Google, Onboarding, hộp tên Khách, ẩn chức năng cho Khách",
+      "title": "T44 · FE Đăng nhập Google, Onboarding & Chế độ Khách (Guest)",
       "parent": "EP-01",
       "priority": "Medium",
       "labels": [
@@ -3131,7 +3131,7 @@
       "id": "T46",
       "issue_id": "82",
       "type": "Task",
-      "title": "FE hộp Xin đổi bên, Ở lại phòng / Rời phòng",
+      "title": "T46 · FE Modal Xin đổi bên & Popup Kết thúc ván: Ở lại phòng / Rời phòng",
       "parent": "EP-02",
       "priority": "High",
       "labels": [
@@ -3544,7 +3544,7 @@
       "id": "T55",
       "issue_id": "91",
       "type": "Task",
-      "title": "BE người xem, chuyển ghế ↔ xem, mời xuống ghế, đuổi và chặn",
+      "title": "T55 · BE Quản lý khán giả: giới hạn 5 người xem, chuyển ghế ↔ xem, đuổi & chặn",
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
@@ -3634,7 +3634,7 @@
       "id": "T57",
       "issue_id": "93",
       "type": "Task",
-      "title": "FE Cài đặt phòng",
+      "title": "T57 · FE Modal Cài đặt phòng: đổi chế độ PUBLIC/CODE_ONLY/LOCKED, thời gian ván",
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
@@ -3677,7 +3677,7 @@
       "id": "T58",
       "issue_id": "94",
       "type": "Task",
-      "title": "FE danh sách người xem, thao tác ghế và khung camera/mic",
+      "title": "T58 · FE Danh sách khán giả, khung Camera/Mic và phân quyền thao tác",
       "parent": "EP-06",
       "priority": "Medium",
       "labels": [
@@ -3998,7 +3998,7 @@
       "id": "T65",
       "issue_id": "101",
       "type": "Task",
-      "title": "FE Cài đặt hồ sơ, Đăng xuất, banner ván dở",
+      "title": "T65 · FE Màn Cài đặt hồ sơ, Đăng xuất & Banner quay lại ván dở",
       "parent": "EP-01",
       "priority": "High",
       "labels": [
