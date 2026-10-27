@@ -59,7 +59,7 @@
       "status": "Done",
       "resolution": "Done",
       "start_date": "2026-10-06",
-      "due_date": "2026-10-11",
+      "due_date": "2026-10-09",
       "fix_versions": []
     },
     {
@@ -90,8 +90,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-10",
-      "due_date": "2026-10-15",
+      "start_date": "2026-10-08",
+      "due_date": "2026-10-13",
       "fix_versions": []
     },
     {
@@ -122,8 +122,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-15",
-      "due_date": "2026-10-18",
+      "start_date": "2026-10-13",
+      "due_date": "2026-10-16",
       "fix_versions": []
     },
     {
@@ -154,8 +154,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-17",
-      "due_date": "2026-10-20",
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-19",
       "fix_versions": []
     },
     {
@@ -186,8 +186,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-20",
-      "due_date": "2026-10-24",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-22",
       "fix_versions": []
     },
     {
@@ -222,8 +222,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-23",
-      "due_date": "2026-10-27",
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-25",
       "fix_versions": []
     },
     {
@@ -254,8 +254,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-26",
-      "due_date": "2026-10-30",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-29",
       "fix_versions": []
     },
     {
@@ -286,8 +286,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-30",
-      "due_date": "2026-11-02",
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-31",
       "fix_versions": []
     },
     {
@@ -320,7 +320,7 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-11-01",
+      "start_date": "2026-10-30",
       "due_date": "2026-11-04",
       "fix_versions": []
     },
@@ -450,7 +450,7 @@
       "issue_id": "14",
       "type": "Story",
       "title": "Nghiệm thu tổng, NFR và đóng gói demo",
-      "parent": "EP-00",
+      "parent": "EP-08",
       "priority": "High",
       "labels": [
         "EP-00",
@@ -469,8 +469,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-09",
-      "due_date": "2026-10-11",
+      "start_date": "2026-11-02",
+      "due_date": "2026-11-04",
       "fix_versions": []
     },
     {
@@ -499,8 +499,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-10",
-      "due_date": "2026-10-13",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-11",
       "fix_versions": []
     },
     {
@@ -529,8 +529,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-10",
-      "due_date": "2026-10-13",
+      "start_date": "2026-10-08",
+      "due_date": "2026-10-12",
       "fix_versions": []
     },
     {
@@ -559,8 +559,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-11",
-      "due_date": "2026-10-15",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-13",
       "fix_versions": []
     },
     {
@@ -591,8 +591,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-13",
-      "due_date": "2026-10-15",
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-13",
       "fix_versions": []
     },
     {
@@ -621,8 +621,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-15",
-      "due_date": "2026-10-17",
+      "start_date": "2026-10-13",
+      "due_date": "2026-10-15",
       "fix_versions": []
     },
     {
@@ -653,8 +653,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-16",
-      "due_date": "2026-10-18",
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-16",
       "fix_versions": []
     },
     {
@@ -683,8 +683,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-17",
-      "due_date": "2026-10-19",
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-17",
       "fix_versions": []
     },
     {
@@ -713,8 +713,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-18",
-      "due_date": "2026-10-20",
+      "start_date": "2026-10-17",
+      "due_date": "2026-10-19",
       "fix_versions": []
     },
     {
@@ -741,8 +741,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-20",
-      "due_date": "2026-10-22",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-20",
       "fix_versions": []
     },
     {
@@ -770,8 +770,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-20",
-      "due_date": "2026-10-22",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-20",
       "fix_versions": []
     },
     {
@@ -799,8 +799,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-22",
-      "due_date": "2026-10-24",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-22",
       "fix_versions": []
     },
     {
@@ -833,8 +833,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-23",
-      "due_date": "2026-10-26",
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-24",
       "fix_versions": []
     },
     {
@@ -863,8 +863,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-24",
-      "due_date": "2026-10-26",
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-24",
       "fix_versions": []
     },
     {
@@ -894,8 +894,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-25",
-      "due_date": "2026-10-27",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-25",
       "fix_versions": []
     },
     {
@@ -924,8 +924,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-26",
-      "due_date": "2026-10-30",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-29",
       "fix_versions": []
     },
     {
@@ -954,8 +954,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-27",
-      "due_date": "2026-10-28",
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-27",
       "fix_versions": []
     },
     {
@@ -986,8 +986,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-26",
-      "due_date": "2026-10-30",
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-28",
       "fix_versions": []
     },
     {
@@ -1016,8 +1016,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-30",
-      "due_date": "2026-11-01",
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-30",
       "fix_versions": []
     },
     {
@@ -1045,8 +1045,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-10-31",
-      "due_date": "2026-11-02",
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-31",
       "fix_versions": []
     },
     {
@@ -1077,8 +1077,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-11-02",
-      "due_date": "2026-11-04",
+      "start_date": "2026-10-31",
+      "due_date": "2026-11-02",
       "fix_versions": []
     },
     {
@@ -1107,8 +1107,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-11-01",
-      "due_date": "2026-11-02",
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-31",
       "fix_versions": []
     },
     {
@@ -1138,8 +1138,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "Done",
       "resolution": "Done",
-      "start_date": "2026-11-01",
-      "due_date": "2026-11-04",
+      "start_date": "2026-10-30",
+      "due_date": "2026-11-02",
       "fix_versions": []
     },
     {
@@ -1220,7 +1220,7 @@
       "status": "To Do",
       "resolution": null,
       "start_date": "2026-10-08",
-      "due_date": "2026-10-08",
+      "due_date": "2026-10-09",
       "fix_versions": [
         "v0.2"
       ],
@@ -1305,7 +1305,7 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-10",
+      "start_date": "2026-10-09",
       "due_date": "2026-10-10",
       "fix_versions": [
         "v0.1"
@@ -1348,8 +1348,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-20",
-      "due_date": "2026-10-20",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-18",
       "fix_versions": [
         "v0.1"
       ],
@@ -1394,7 +1394,7 @@
       "status": "To Do",
       "resolution": null,
       "start_date": "2026-10-08",
-      "due_date": "2026-10-09",
+      "due_date": "2026-10-08",
       "fix_versions": [
         "v0.1"
       ],
@@ -1436,8 +1436,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-21",
-      "due_date": "2026-10-21",
+      "start_date": "2026-10-19",
+      "due_date": "2026-10-19",
       "fix_versions": [
         "v0.1"
       ],
@@ -1480,8 +1480,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-12",
-      "due_date": "2026-10-12",
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-11",
       "fix_versions": [
         "v0.2"
       ],
@@ -1523,8 +1523,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-10",
-      "due_date": "2026-10-11",
+      "start_date": "2026-10-08",
+      "due_date": "2026-10-09",
       "fix_versions": [
         "v0.1"
       ],
@@ -1566,8 +1566,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-22",
-      "due_date": "2026-10-22",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-20",
       "fix_versions": [
         "v0.1"
       ],
@@ -1609,8 +1609,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-20",
-      "due_date": "2026-10-21",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-19",
       "fix_versions": [
         "v0.1"
       ],
@@ -1697,8 +1697,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-12",
-      "due_date": "2026-10-13",
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-11",
       "fix_versions": [
         "v0.2"
       ],
@@ -1784,8 +1784,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-11",
-      "due_date": "2026-10-11",
+      "start_date": "2026-10-10",
+      "due_date": "2026-10-10",
       "fix_versions": [
         "v0.2"
       ],
@@ -1827,8 +1827,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-22",
-      "due_date": "2026-10-22",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-20",
       "fix_versions": [
         "v0.2"
       ],
@@ -1870,8 +1870,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-12",
-      "due_date": "2026-10-13",
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-12",
       "fix_versions": [
         "v0.2"
       ],
@@ -1914,8 +1914,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-15",
-      "due_date": "2026-10-16",
+      "start_date": "2026-10-13",
+      "due_date": "2026-10-14",
       "fix_versions": [
         "v0.2"
       ],
@@ -1958,8 +1958,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-22",
-      "due_date": "2026-10-23",
+      "start_date": "2026-10-20",
+      "due_date": "2026-10-21",
       "fix_versions": [
         "v0.1"
       ],
@@ -2005,8 +2005,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-23",
-      "due_date": "2026-10-24",
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-22",
       "fix_versions": [
         "v0.2"
       ],
@@ -2049,8 +2049,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-15",
-      "due_date": "2026-10-15",
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-14",
       "fix_versions": [
         "v0.2"
       ],
@@ -2093,8 +2093,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-17",
-      "due_date": "2026-10-17",
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-16",
       "fix_versions": [
         "v0.2"
       ],
@@ -2136,8 +2136,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-23",
-      "due_date": "2026-10-23",
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-21",
       "fix_versions": [
         "v0.2"
       ],
@@ -2181,8 +2181,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-01",
-      "due_date": "2026-11-02",
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-31",
       "fix_versions": [
         "v0.2"
       ],
@@ -2227,8 +2227,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-24",
-      "due_date": "2026-10-24",
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-22",
       "fix_versions": [
         "v0.2"
       ],
@@ -2271,8 +2271,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-18",
-      "due_date": "2026-10-18",
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-16",
       "fix_versions": [
         "v0.3"
       ],
@@ -2315,8 +2315,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-23",
-      "due_date": "2026-10-24",
+      "start_date": "2026-10-21",
+      "due_date": "2026-10-22",
       "fix_versions": [
         "v1.0"
       ],
@@ -2360,8 +2360,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-16",
-      "due_date": "2026-10-17",
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-15",
       "fix_versions": [
         "v0.3"
       ],
@@ -2406,8 +2406,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-18",
-      "due_date": "2026-10-19",
+      "start_date": "2026-10-16",
+      "due_date": "2026-10-17",
       "fix_versions": [
         "v0.3"
       ],
@@ -2452,8 +2452,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-25",
-      "due_date": "2026-10-26",
+      "start_date": "2026-10-23",
+      "due_date": "2026-10-24",
       "fix_versions": [
         "v0.3"
       ],
@@ -2496,8 +2496,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-18",
-      "due_date": "2026-10-19",
+      "start_date": "2026-10-17",
+      "due_date": "2026-10-17",
       "fix_versions": [
         "v0.3"
       ],
@@ -2539,8 +2539,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-24",
-      "due_date": "2026-10-25",
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
       "fix_versions": [
         "v0.2"
       ],
@@ -2584,8 +2584,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-31",
-      "due_date": "2026-10-31",
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-29",
       "fix_versions": [
         "v0.3"
       ],
@@ -2628,8 +2628,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-02",
-      "due_date": "2026-11-03",
+      "start_date": "2026-10-31",
+      "due_date": "2026-11-01",
       "fix_versions": [
         "v0.2"
       ],
@@ -2672,8 +2672,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-11",
-      "due_date": "2026-10-12",
+      "start_date": "2026-10-09",
+      "due_date": "2026-10-10",
       "fix_versions": [
         "v0.2"
       ],
@@ -2716,8 +2716,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-24",
-      "due_date": "2026-10-25",
+      "start_date": "2026-10-22",
+      "due_date": "2026-10-23",
       "fix_versions": [
         "v0.3"
       ],
@@ -2760,8 +2760,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-30",
-      "due_date": "2026-10-30",
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-28",
       "fix_versions": [
         "v0.3"
       ],
@@ -2806,8 +2806,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-02",
-      "due_date": "2026-11-03",
+      "start_date": "2026-11-01",
+      "due_date": "2026-11-02",
       "fix_versions": [
         "v0.3"
       ],
@@ -2850,8 +2850,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-25",
-      "due_date": "2026-10-26",
+      "start_date": "2026-10-23",
+      "due_date": "2026-10-24",
       "fix_versions": [
         "v0.3"
       ],
@@ -2893,8 +2893,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-19",
-      "due_date": "2026-10-20",
+      "start_date": "2026-10-17",
+      "due_date": "2026-10-18",
       "fix_versions": [
         "v0.3"
       ],
@@ -2939,8 +2939,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-16",
-      "due_date": "2026-10-17",
+      "start_date": "2026-10-14",
+      "due_date": "2026-10-15",
       "fix_versions": [
         "v0.3"
       ],
@@ -2983,8 +2983,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-31",
-      "due_date": "2026-11-01",
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-30",
       "fix_versions": [
         "v0.3"
       ],
@@ -3029,8 +3029,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-03",
-      "due_date": "2026-11-04",
+      "start_date": "2026-11-01",
+      "due_date": "2026-11-01",
       "fix_versions": [
         "v0.3"
       ],
@@ -3073,8 +3073,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-13",
-      "due_date": "2026-10-14",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-13",
       "fix_versions": [
         "v0.3"
       ],
@@ -3118,8 +3118,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-01",
-      "due_date": "2026-11-02",
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-31",
       "fix_versions": [
         "v0.3"
       ],
@@ -3164,8 +3164,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-16",
-      "due_date": "2026-10-17",
+      "start_date": "2026-10-15",
+      "due_date": "2026-10-15",
       "fix_versions": [
         "v0.3"
       ],
@@ -3209,8 +3209,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-31",
-      "due_date": "2026-10-31",
+      "start_date": "2026-10-29",
+      "due_date": "2026-10-29",
       "fix_versions": [
         "v0.3"
       ],
@@ -3254,8 +3254,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-14",
-      "due_date": "2026-10-15",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-13",
       "fix_versions": [
         "v0.3"
       ],
@@ -3300,8 +3300,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-19",
-      "due_date": "2026-10-20",
+      "start_date": "2026-10-18",
+      "due_date": "2026-10-19",
       "fix_versions": [
         "v1.0"
       ],
@@ -3345,8 +3345,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-17",
-      "due_date": "2026-10-18",
+      "start_date": "2026-10-15",
+      "due_date": "2026-10-16",
       "fix_versions": [
         "v1.0"
       ],
@@ -3359,7 +3359,7 @@
       "issue_id": "87",
       "type": "Task",
       "title": "Hồi quy tích hợp toàn bộ chức năng và D1–D10 vòng đầy đủ",
-      "parent": "EP-00",
+      "parent": "EP-08",
       "priority": "Medium",
       "labels": [
         "chinh-qa-devops",
@@ -3400,8 +3400,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-09",
-      "due_date": "2026-10-09",
+      "start_date": "2026-11-02",
+      "due_date": "2026-11-02",
       "fix_versions": [
         "v1.0"
       ],
@@ -3445,8 +3445,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-25",
-      "due_date": "2026-10-25",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-24",
       "fix_versions": [
         "v1.0"
       ],
@@ -3488,8 +3488,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-26",
-      "due_date": "2026-10-27",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-25",
       "fix_versions": [
         "v0.3"
       ],
@@ -3531,8 +3531,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-27",
-      "due_date": "2026-10-28",
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-27",
       "fix_versions": [
         "v0.3"
       ],
@@ -3574,8 +3574,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-26",
-      "due_date": "2026-10-26",
+      "start_date": "2026-10-25",
+      "due_date": "2026-10-25",
       "fix_versions": [
         "v0.3"
       ],
@@ -3621,8 +3621,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-13",
-      "due_date": "2026-10-14",
+      "start_date": "2026-10-11",
+      "due_date": "2026-10-12",
       "fix_versions": [
         "v0.3"
       ],
@@ -3664,8 +3664,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-27",
-      "due_date": "2026-10-28",
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-27",
       "fix_versions": [
         "v0.3"
       ],
@@ -3710,8 +3710,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-28",
-      "due_date": "2026-10-29",
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-27",
       "fix_versions": [
         "v0.3"
       ],
@@ -3756,8 +3756,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-01",
-      "due_date": "2026-11-01",
+      "start_date": "2026-10-30",
+      "due_date": "2026-10-30",
       "fix_versions": [
         "v0.2"
       ],
@@ -3802,8 +3802,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-26",
-      "due_date": "2026-10-27",
+      "start_date": "2026-10-24",
+      "due_date": "2026-10-25",
       "fix_versions": [
         "v1.0"
       ],
@@ -3846,8 +3846,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-28",
-      "due_date": "2026-10-28",
+      "start_date": "2026-10-26",
+      "due_date": "2026-10-27",
       "fix_versions": [
         "v1.0"
       ],
@@ -3893,8 +3893,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-29",
-      "due_date": "2026-10-30",
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-29",
       "fix_versions": [
         "v1.0"
       ],
@@ -3937,8 +3937,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-02",
-      "due_date": "2026-11-03",
+      "start_date": "2026-10-31",
+      "due_date": "2026-11-01",
       "fix_versions": [
         "v0.2"
       ],
@@ -3985,8 +3985,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-29",
-      "due_date": "2026-10-30",
+      "start_date": "2026-10-28",
+      "due_date": "2026-10-28",
       "fix_versions": [
         "v1.0"
       ],
@@ -4029,8 +4029,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-14",
-      "due_date": "2026-10-15",
+      "start_date": "2026-10-12",
+      "due_date": "2026-10-13",
       "fix_versions": [
         "v1.0"
       ],
@@ -4043,7 +4043,7 @@
       "issue_id": "102",
       "type": "Task",
       "title": "Đo tải, NFR và đối soát bằng chứng chín cổng kỹ thuật",
-      "parent": "EP-00",
+      "parent": "EP-08",
       "priority": "Medium",
       "labels": [
         "chinh-qa-devops",
@@ -4084,8 +4084,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-09",
-      "due_date": "2026-10-09",
+      "start_date": "2026-11-02",
+      "due_date": "2026-11-02",
       "fix_versions": [
         "v1.0"
       ],
@@ -4133,8 +4133,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-28",
-      "due_date": "2026-10-28",
+      "start_date": "2026-10-27",
+      "due_date": "2026-10-27",
       "fix_versions": [
         "v1.0"
       ],
@@ -4180,8 +4180,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-11-03",
-      "due_date": "2026-11-04",
+      "start_date": "2026-11-01",
+      "due_date": "2026-11-02",
       "fix_versions": [
         "v1.0"
       ],
@@ -4234,8 +4234,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-14",
-      "due_date": "2026-10-14",
+      "start_date": "2026-10-13",
+      "due_date": "2026-10-13",
       "fix_versions": [
         "v1.0"
       ],
@@ -4248,7 +4248,7 @@
       "issue_id": "106",
       "type": "Task",
       "title": "Kiểm cổng phát hành, đóng gói v1.0 và hướng dẫn demo",
-      "parent": "EP-00",
+      "parent": "EP-08",
       "priority": "High",
       "labels": [
         "chinh-qa-devops",
@@ -4298,8 +4298,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-10",
-      "due_date": "2026-10-11",
+      "start_date": "2026-11-03",
+      "due_date": "2026-11-04",
       "fix_versions": [
         "v1.0"
       ],
@@ -4312,7 +4312,7 @@
       "issue_id": "107",
       "type": "Task",
       "title": "Tổng duyệt D1–D10 trên bản phát hành và ghi hình",
-      "parent": "EP-00",
+      "parent": "EP-08",
       "priority": "Medium",
       "labels": [
         "chinh-qa-devops",
@@ -4341,8 +4341,8 @@
       "reporter_account_id": "712020:f4042fc2-ba79-43ad-8ee0-293f56434c23",
       "status": "To Do",
       "resolution": null,
-      "start_date": "2026-10-10",
-      "due_date": "2026-10-11",
+      "start_date": "2026-11-03",
+      "due_date": "2026-11-04",
       "fix_versions": [
         "v1.0"
       ],
