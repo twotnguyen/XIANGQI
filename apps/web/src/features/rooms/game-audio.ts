@@ -4,8 +4,22 @@ import { isInCheck, parsePosition } from "@xiangqi/xiangqi-core";
 let sessionMuted = false;
 const stops = new Set<() => void>();
 
-/** Call unlock from a user gesture; accept only authoritative snapshots. */
-export function createGameAudio() {
+export interface GameAudio {
+  unlock(): Promise<void>;
+  accept(previous: RoomSnapshot | null, next: RoomSnapshot): void;
+  readonly muted: boolean;
+  setMuted(value: boolean): void;
+  toggle(): boolean;
+  close(): void;
+}
+
+/**
+ * Khởi tạo bộ quản lý âm thanh trò chơi bằng Web Audio API (tổng hợp sóng âm qua Oscillator).
+ * Phát các hiệu ứng âm thanh: đi quân thường (440Hz), ăn quân (220Hz), chiếu tướng (880Hz), kết thúc ván (660Hz).
+ * So khớp snapshot phòng trước/sau để xác định nước đi mới hoặc kết quả mới.
+ * Tự động bỏ qua an toàn nếu trình duyệt chặn AudioContext hoặc không hỗ trợ.
+ */
+export function createGameAudio(): GameAudio {
   let context: AudioContext | null = null;
   let closed = false;
   const active = new Set<OscillatorNode>();

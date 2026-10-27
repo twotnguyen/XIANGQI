@@ -129,6 +129,53 @@ Xem [kết nối phòng](https://docs.livekit.io/intro/basics/connect/). Đây l
 
 Bằng chứng trên thuộc máy chuẩn bị của chủ dự án, không bảo đảm máy thành viên đã cấu hình. Khóa thật không đi kèm repo: mỗi thành viên cần nhận qua kênh riêng hoặc dùng dịch vụ riêng, điền bản tổng rồi đồng bộ. Repo chưa có bộ khung web/server, loader hoặc workflow CI; đây vẫn là công việc triển khai T01. HTTPS/WSS và kiểm thử LAN thuộc T06/GATE-MEDIA. Không coi các kiểm tra hạ tầng này là nghiệm thu BA/AC hoặc hoàn thành Task.
 
+### Chạy server production local: dừng trước, khởi động sau
+
+Dùng khi triển khai bản mới của `apps/server` trên máy chủ local (không dùng rolling/zero-downtime, vì khóa runtime một instance không cho hai tiến trình cùng chạy). Yêu cầu Node `>=22.13.0 <23` và pnpm `>=10 <11` (theo `engines` ở `package.json`). Server đọc `.env` từ thư mục làm việc hiện tại (`dotenv` trong `apps/server/src/main.ts`), nên luôn chạy lệnh qua `--filter` hoặc trong `apps/server`, và `apps/server/.env` phải đã tồn tại theo mục 1.
+
+Downtime được tính từ lúc tiến trình cũ nhận tín hiệu dừng đến khi tiến trình mới trả 200 ở `/ready`. Ván online đang diễn ra kết thúc bằng `SERVER_RESTART`/`INTERRUPTED` theo `docs/engineering/server/architecture.md`; trạng thái AI chạy trong bộ nhớ tiến trình bị mất khi dừng.
+
+Hai terminal, làm theo thứ tự:
+
+1. **Terminal A (tiến trình cũ):** nếu đang chạy `pnpm --filter @xiangqi/server start`, nhấn `Ctrl-C` một lần. Server đóng theo thứ tự: AI, room, socket (khi còn giữ khóa), room release khóa, HTTP, pool. Chờ đến khi tiến trình thoát và shell trả lại dấu nhắc. Không dùng `kill -9` trong quy trình bình thường.
+2. **Terminal B:** đặt cổng (thay `3000` bằng giá trị `PORT` trong `apps/server/.env`), rồi kiểm tra cổng đã đóng:
+
+   ```sh
+   PORT=3000 # thay bằng cổng cấu hình trong apps/server/.env
+   lsof -nP -iTCP:"$PORT" -sTCP:LISTEN
+   ```
+
+   Kết quả mong đợi: không có dòng LISTEN nào và không có thông báo lỗi. `lsof` có thể thoát khác 0 khi không tìm thấy tiến trình, đó là trạng thái đúng. Chỉ tiếp tục khi shell ở Terminal A đã trả dấu nhắc (tiến trình cũ đã thoát). Nếu còn dòng LISTEN hoặc báo lỗi khác, quay lại Terminal A kiểm tra log `server_shutdown_failed` và không khởi động tiến trình mới: khóa runtime sẽ từ chối và tiến trình mới thoát.
+3. **Terminal B:** chỉ khi mã nguồn hoặc phụ thuộc đã thay đổi, build lại từ thư mục gốc repo:
+
+   ```sh
+   pnpm install --frozen-lockfile
+   pnpm --filter @xiangqi/server... build
+   ```
+
+   `@xiangqi/server...` build `@xiangqi/engine` (copy worker `dist` cho `@xiangqi/engine/compiled`, dùng bởi AI) và kiểm tra kiểu `apps/server` bằng `tsc --noEmit`; không tạo `apps/server/dist`. Lệnh `start` chạy trực tiếp mã nguồn `src/main.ts` bằng `tsx`, nên không có `dist/main.js` cũ nào được nạp. Bước build vẫn bắt buộc trước khi khởi động để có `@xiangqi/engine/compiled`.
+4. **Terminal A (tiến trình mới):**
+
+   ```sh
+   pnpm --filter @xiangqi/server start
+   ```
+
+5. **Terminal B:** kiểm tra sẵn sàng (dùng lại `PORT` đã đặt ở bước 2 trong cùng terminal; nếu mở terminal mới, đặt lại):
+
+   ```sh
+   curl -fsS "http://localhost:$PORT/ready"
+   ```
+
+   `/health` là liveness; `/ready` trả 503 khi DB hoặc runtime chưa sẵn sàng.
+
+Rollback về commit trước (mã được build lại từ commit cũ; không tự rollback migration):
+
+1. Terminal A: `Ctrl-C` và chờ tiến trình thoát; kiểm tra cổng như bước 2.
+2. Terminal B: đưa mã về commit trước (`git switch --detach <commit-cũ>`), rồi chạy bước 3 (build bắt buộc vì mã đã đổi) và bước 4 ở trên.
+3. Schema đã migrate không tự hoàn tác. Trước khi rollback, xác nhận bản cũ tương thích với schema hiện tại; nếu không, phải có migration đảo do người quản trị DB thực hiện có kế hoạch riêng.
+
+Không triển khai auto-deploy Render cho bản mới: `render.yaml` đặt `autoDeployTrigger: 'off'`, và đường đưa commit lên Render gói free chưa có quy trình được xác minh (xem `docs/engineering/server/architecture.md`).
+
 ### Checklist khi triển khai
 
 - [ ] Điền các URL/khóa vào đúng file riêng; `.env.example` vẫn chỉ có giá trị trống hoặc mẫu công khai.

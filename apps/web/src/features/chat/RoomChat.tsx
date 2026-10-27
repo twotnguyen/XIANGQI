@@ -49,6 +49,9 @@ function safeError(error: unknown) {
     ? String(message)
     : "Không gửi được tin nhắn. Vui lòng thử lại.";
 }
+/**
+ * Khung giao diện chi tiết của một kênh chat (hiển thị danh sách tin nhắn, tự động cuộn và ô soạn thảo tin).
+ */
 function ChatPane({
   channel,
   state,
@@ -272,6 +275,9 @@ function ChatPane({
     </section>
   );
 }
+/**
+ * Khung trò chuyện trong phòng cờ (hỗ trợ chuyển đổi giữa Kênh riêng kỳ thủ và Kênh chung phòng, thích ứng giao diện mobile/desktop).
+ */
 export function RoomChat(props: RoomChatProps) {
   const query = "(max-width: 767px)";
   const [mobile, setMobile] = useState(

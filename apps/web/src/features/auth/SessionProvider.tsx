@@ -85,6 +85,9 @@ function backend(path: string) {
   const base = getApiBaseUrl();
   return `${base}${path}`;
 }
+/**
+ * Context Provider quản lý vòng đời phiên đăng nhập toàn cục, tự động làm mới token và cung cấp hàm gọi API có xác thực.
+ */
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SessionState>({ status: "checking" });
   const credentials = useRef<Credentials | null>(null);
@@ -428,6 +431,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     </SessionContext.Provider>
   );
 }
+/**
+ * Hook truy xuất thông tin phiên đăng nhập hiện tại và các hàm điều phối xác thực (fetch, logout, refresh).
+ */
 export function useSession() {
   const context = useContext(SessionContext);
   if (!context) throw new Error("SessionProvider is required");

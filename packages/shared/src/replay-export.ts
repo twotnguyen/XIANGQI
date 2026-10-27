@@ -16,29 +16,45 @@ export interface ReplayExportSource {
   result?: { reason: string; winner: ReplaySide | null } | null;
 }
 const FILES = "abcdefghi";
-/** ICCS-style square name: file a–i then rank 0–9 counted from Black's side. */
+/**
+ * Chuyển đổi chỉ số ô cờ (0–89) thành tọa độ bàn cờ chuẩn ICCS (cột a–i, hàng 0–9 tính từ bên Đen).
+ */
 export function squareName(square: number): string {
   const x = square % 9,
     y = Math.floor(square / 9);
   if (x < 0 || x > 8 || y < 0 || y > 9) throw Error("invalid square");
   return `${FILES[x]}${9 - y}`;
 }
-/** FEN at a ply: ply 0 is the initial position, ply N is before move N+1. */
+
+/**
+ * Lấy chuỗi FEN của thế cờ tại một nửa nước đi (ply) cụ thể trong ván cờ.
+ */
 export function fenAt(source: ReplayExportSource, ply: number): string {
   if (!Number.isInteger(ply) || ply < 0 || ply >= source.positions.length)
     throw Error("invalid ply");
   return source.positions[ply]!.fen;
 }
+
+/**
+ * Chuyển đổi kết quả ván cờ thành định dạng PGN chuẩn: "1-0" (Đỏ thắng), "0-1" (Đen thắng), "1/2-1/2" (Hòa) hoặc "*".
+ */
 export function pgnResult(source: ReplayExportSource): string {
   const result = source.result;
-  if (!result) return "*";
+  if (
+    !result ||
+    result.reason === "SERVER_RESTART" ||
+    result.reason === "BOTH_OFFLINE" ||
+    result.reason === "AI_UNAVAILABLE"
+  )
+    return "*";
   if (result.winner === "red") return "1-0";
   if (result.winner === "black") return "0-1";
   return "1/2-1/2";
 }
+
 /**
- * Minimal, re-readable PGN: FEN/Variant headers and ICCS move text. A caller may
- * pass display labels (e.g. Vietnamese notation) but the default stays portable.
+ * Xuất dữ liệu ván cờ thành văn bản định dạng PGN chuẩn (Portable Game Notation) cho Cờ Tướng:
+ * Bao gồm các thẻ meta (Event, Variant Xiangqi, FEN bắt đầu, Result) và danh sách nước đi theo tọa độ ICCS hoặc ký pháp tùy chọn.
  */
 export function buildPgn(
   source: ReplayExportSource,

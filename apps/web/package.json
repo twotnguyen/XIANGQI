@@ -9,7 +9,6 @@
     "build": "node scripts/build.mjs"
   },
   "dependencies": {
-    "@xiangqi/engine": "workspace:*",
     "@xiangqi/shared": "workspace:*",
     "@xiangqi/xiangqi-core": "workspace:*",
     "livekit-client": "2.22.4",

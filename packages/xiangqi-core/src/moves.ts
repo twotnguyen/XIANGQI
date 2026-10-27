@@ -31,7 +31,12 @@ function inPalace(x: number, y: number, side: Side): boolean {
   return x >= 3 && x <= 5 && (side === "red" ? y >= 7 : y <= 2);
 }
 
-/** Geometric candidates only; may expose the general and must not authorize play. */
+/**
+ * Sinh danh sách các nước đi giả định (pseudo-legal) theo quy tắc hình học di chuyển của từng quân cờ
+ * (Tướng/Sĩ trong cung, Tượng không qua sông và kiểm tra cản tượng, Mã kiểm tra cản chân mã,
+ * Xe/Pháo đi thẳng và Pháo cần ngòi khi ăn quân, Tốt tiến và đi ngang sau khi qua sông).
+ * Chưa kiểm tra xem nước đi có khiến Tướng bên mình bị chiếu hay không.
+ */
 export function pseudoLegalMoves(position: Position): Move[] {
   const moves: Move[] = [];
   for (let from = 0; from < 90; from += 1) {
@@ -118,6 +123,10 @@ function pieceMoves(
   }
 }
 
+/**
+ * Kiểm tra xem bên chỉ định (Đỏ hoặc Đen) có đang bị chiếu tướng hay không.
+ * Xử lý cả luật hai Tướng đối mặt (lộ mặt tướng trên cùng cột mà không có quân cản ở giữa).
+ */
 export function isInCheck(position: Position, side: Side): boolean {
   const king = position.board.findIndex(
     (piece) => piece?.type === "king" && piece.side === side,
@@ -159,6 +168,10 @@ function applyUnchecked(position: Position, move: Move): Position {
   };
 }
 
+/**
+ * Trả về danh sách tất cả các nước đi hợp lệ tuyệt đối của bên đang đến lượt.
+ * Loại bỏ các nước ăn tướng trực tiếp và các nước đi khiến Tướng bên mình bị chiếu.
+ */
 export function legalMoves(position: Position): Move[] {
   return pseudoLegalMoves(position).filter(
     (move) =>
@@ -167,7 +180,11 @@ export function legalMoves(position: Position): Move[] {
   );
 }
 
-/** Rejects ILLEGAL_MOVE without altering the input. Server must check clocks first. */
+/**
+ * Thực hiện một nước đi trên bàn cờ và trả về thế cờ mới.
+ * Kiểm tra tính hợp lệ nghiêm ngặt: đúng lượt, đúng luật di chuyển của quân, không ăn tướng và không để Tướng bên mình bị chiếu.
+ * Ném lỗi "ILLEGAL_MOVE" nếu nước đi không hợp lệ.
+ */
 export function playMove(position: Position, move: Move): Position {
   const piece = position.board[move.from];
   const candidates: Move[] = [];
@@ -186,7 +203,10 @@ export function playMove(position: Position, move: Move): Position {
   return next;
 }
 
-/** Counts legal move paths without applying repetition/no-capture adjudication. */
+/**
+ * Thuật toán Perft (Performance Test): Đếm tổng số nút thế cờ lá ở độ sâu `depth`.
+ * Dùng để kiểm thử tính chính xác và hiệu năng của bộ sinh nước đi và luật cờ.
+ */
 export function perft(position: Position, depth: number): number {
   if (depth === 0) return 1;
   const moves = legalMoves(position);

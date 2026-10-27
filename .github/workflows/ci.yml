@@ -78,8 +78,7 @@ jobs:
         run: pnpm build:server
 
   unit-tests:
-    name: Unit & Core Tests (parallel on main)
-    if: (github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main'
+    name: Unit & Core Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

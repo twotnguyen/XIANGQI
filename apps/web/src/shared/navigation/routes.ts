@@ -37,6 +37,9 @@ export type RouteDecision =
       replace: true;
       preserveDestination?: true;
     };
+/**
+ * Phân tích đường dẫn pathname và chuỗi truy vấn (search query) thành cấu trúc Route tương ứng.
+ */
 export function resolveRoute(pathname: string, search = ""): Route {
   if (Object.hasOwn(staticRoutes, pathname))
     return { name: staticRoutes[pathname as keyof typeof staticRoutes] };
@@ -75,6 +78,9 @@ const p2 = new Set<Route["name"]>([
   "history",
   "replay",
 ]);
+/**
+ * Kiểm tra quyền truy cập route dựa trên trạng thái phiên đăng nhập của người dùng.
+ */
 export function guardRoute(
   route: Route,
   session: SessionSnapshot,

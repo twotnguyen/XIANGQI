@@ -50,6 +50,9 @@ function failure(error: unknown): ChatAcknowledgement<never> {
     error: { code, message: messages[code] ?? "Chat chưa sẵn sàng" },
   };
 }
+/**
+ * Lắng nghe và xử lý các sự kiện tin nhắn chat (`chat.read`, `chat.send`) từ kết nối socket của client.
+ */
 export function bindRoomChat(
   socket: Socket<ClientChatEvents>,
   dependencies: RoomChatGateway,

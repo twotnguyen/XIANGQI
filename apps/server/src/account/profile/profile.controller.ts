@@ -18,6 +18,9 @@ import {
   type AuthenticatedRequest,
 } from "../login/session.guard.js";
 const fail = httpFailure(ProfileError, LoginError);
+/**
+ * Controller quản lý hồ sơ cá nhân và vị trí phòng chơi hiện tại của người dùng.
+ */
 @Controller("profile")
 @UseGuards(SessionGuard)
 export class ProfileController {
@@ -34,6 +37,9 @@ export class ProfileController {
       email: session.email,
     };
   }
+  /**
+   * Endpoint GET /profile: Lấy thông tin hồ sơ cá nhân (userId, username, email, displayName).
+   */
   @Get()
   @Header("Cache-Control", "no-store")
   read(@Req() request: AuthenticatedRequest) {
@@ -41,6 +47,9 @@ export class ProfileController {
       .then((identity) => this.profiles.read(identity.userId, identity))
       .catch(fail);
   }
+  /**
+   * Endpoint PATCH /profile: Cập nhật tên hiển thị (displayName) của người dùng.
+   */
   @Patch()
   @HttpCode(200)
   @Header("Cache-Control", "no-store")
@@ -54,6 +63,9 @@ export class ProfileController {
       )
       .catch(fail);
   }
+  /**
+   * Endpoint GET /profile/location: Kiểm tra người dùng hiện đang ở đâu (phòng chờ, trận đấu online hay trận AI).
+   */
   @Get("location")
   @Header("Cache-Control", "no-store")
   location(@Req() request: AuthenticatedRequest) {

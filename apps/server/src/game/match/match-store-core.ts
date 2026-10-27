@@ -100,6 +100,9 @@ export function dbOutcome(value: MatchOutcome) {
       value.winner === null ? null : value.winner === "red" ? "RED" : "BLACK",
   };
 }
+/**
+ * Lớp trừu tượng cơ sở quản lý trạng thái, lịch sử, khóa và kết thúc ván cờ tướng online.
+ */
 export class MatchStoreCore {
   constructor(
     protected readonly clock: ClockPort | undefined,
@@ -115,12 +118,18 @@ export class MatchStoreCore {
       lastMove: MatchView["lastMove"];
     }
   >();
+  /**
+   * Đảm bảo cổng đồng hồ được cung cấp, nếu chưa có sẽ ném lỗi 503.
+   */
   protected needClock(): ClockPort {
     return (
       this.clock ??
       reject("MATCH_CLOCK_UNAVAILABLE", "Đồng hồ ván chưa khả dụng.", 503)
     );
   }
+  /**
+   * Truy vấn và khóa hàng dữ liệu phòng cờ trong giao dịch (`FOR UPDATE`).
+   */
   protected async room(client: PoolClient, id: string): Promise<RoomRow> {
     const result = await client.query<RoomRow>(
       "SELECT id,status,current_match_id,time_control,closed_at,room_version FROM public.rooms WHERE id=$1 FOR UPDATE",
@@ -131,6 +140,9 @@ export class MatchStoreCore {
       reject("MATCH_ROOM_NOT_FOUND", "Phòng không tồn tại.", 404)
     );
   }
+  /**
+   * Truy vấn và khóa hàng dữ liệu ván đấu theo id phòng và id ván (`FOR UPDATE`).
+   */
   protected async row(
     client: PoolClient,
     roomId: string,
@@ -148,6 +160,9 @@ export class MatchStoreCore {
       reject("MATCH_HISTORY_UNSUPPORTED", "Không hỗ trợ lịch sử ván này.", 409);
     return row;
   }
+  /**
+   * Tái hiện toàn bộ lịch sử các thế cờ của ván và nước đi gần nhất, có hỗ trợ bộ nhớ đệm cache.
+   */
   protected async history(
     client: PoolClient,
     row: MatchRow,
@@ -260,6 +275,9 @@ export class MatchStoreCore {
       return reject("MATCH_HISTORY_CORRUPT", "Lịch sử ván không nhất quán.");
     }
   }
+  /**
+   * Tạo đối tượng hiển thị `MatchView` hoàn chỉnh cho người dùng từ bản ghi CSDL và thế cờ.
+   */
   protected view(
     row: MatchRow,
     position: Position,
@@ -280,6 +298,9 @@ export class MatchStoreCore {
       clock: validClock(row.clock),
     };
   }
+  /**
+   * Nạp và kiểm tra tính toàn vẹn của ngữ cảnh thực thi: phòng, ván, người chơi, quyền điều khiển và khóa giao dịch.
+   */
   protected async context(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number },
@@ -334,6 +355,9 @@ export class MatchStoreCore {
     const match = this.view(row, history.at(-1)!, lastMove);
     return { room, row, side, history, match };
   }
+  /**
+   * Tạo đối tượng kết quả trả về khi hành động trong ván bị từ chối kèm lỗi.
+   */
   protected denied(
     match: MatchView,
     code: string,
@@ -341,6 +365,9 @@ export class MatchStoreCore {
   ): MatchCommandResult {
     return { applied: false, match, error: { code, message } };
   }
+  /**
+   * Kiểm tra và tự động xử thua nếu có người chơi đã mất kết nối quá thời hạn cho phép.
+   */
   protected async expiredDisconnect(
     scope: MatchScope,
     row: MatchRow,
@@ -378,6 +405,9 @@ export class MatchStoreCore {
       match.lastMove,
     );
   }
+  /**
+   * Cập nhật trạng thái ván đấu trong bảng `public.matches`.
+   */
   protected async update(client: PoolClient, row: MatchRow) {
     await client.query(
       "UPDATE public.matches SET position=$2,version=$3,ply=$4,active_move_ids=$5,clock=$6,repetition_counts=$7,status=$8,outcome=$9,ended_at=$10,proposal=NULL,updated_at=$11 WHERE id=$1",
@@ -396,6 +426,9 @@ export class MatchStoreCore {
       ],
     );
   }
+  /**
+   * Kết thúc ván đấu, lưu sự kiện RESULT, cập nhật phòng và ghi sự kiện realtime vào outbox.
+   */
   protected async end(
     client: PoolClient,
     row: MatchRow,
@@ -440,6 +473,9 @@ export class MatchStoreCore {
     });
     return this.view(updated, position, lastMove);
   }
+  /**
+   * Thêm sự kiện phòng vào bảng outbox để phát thông báo realtime ra client.
+   */
   protected async outbox(
     client: PoolClient,
     roomId: string,

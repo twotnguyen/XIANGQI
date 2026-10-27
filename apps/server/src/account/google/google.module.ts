@@ -10,8 +10,14 @@ import { GoogleTokenVerifier } from "./google-verifier.js";
 import { GoogleService } from "./google.service.js";
 import { GoogleStore } from "./google.store.js";
 import { logEvent } from "../../core/logger.js";
+/**
+ * Module NestJS đóng gói các endpoint và provider xác thực người dùng bằng Google.
+ */
 @Module({})
 export class GoogleModule {
+  /**
+   * Cấu hình dynamic module cho Google authentication.
+   */
   static forRoot(
     service: GoogleHttpService,
     refreshProvider: GoogleRefreshProvider,
@@ -35,6 +41,9 @@ export class GoogleModule {
     };
   }
 }
+/**
+ * Đọc và thẩm định biến môi trường cấu hình Google Auth (AUTH_GOOGLE_ENABLED, GOOGLE_CLIENT_ID).
+ */
 export function readGoogleConfig(env: Record<string, string | undefined>) {
   const enabled = env.AUTH_GOOGLE_ENABLED ?? "false";
   if (enabled === "false") return null;
@@ -49,6 +58,10 @@ export function readGoogleConfig(env: Record<string, string | undefined>) {
   return { clientId };
 }
 
+/**
+ * Khởi tạo runtime cho hệ thống đăng nhập Google:
+ * Kiểm tra migration database, cấu hình GoogleService, GoogleTokenVerifier và lập lịch bảo trì định kỳ.
+ */
 export async function createGoogleRuntime(
   env: Record<string, string | undefined>,
   registration: Awaited<ReturnType<typeof createRegistrationRuntime>>,

@@ -18,7 +18,9 @@ function denied(): never {
     403,
   );
 }
-/** Bind only after authenticated Socket admission and SQL presence COMMIT; never from HTTP headers. */
+/**
+ * Quản lý trạng thái và quyền điều khiển kết nối Socket của người chơi trong chế độ chơi với AI.
+ */
 export class AiControl {
   private readonly connections = new Map<string, Binding>();
   constructor(
@@ -27,6 +29,9 @@ export class AiControl {
       "authorize" | "bindGame" | "assertRetained"
     >,
   ) {}
+  /**
+   * Đăng ký gắn kết socket client với thông tin phiên, tab và generation điều khiển.
+   */
   bind(
     socket: Socket,
     ownerId: string,
@@ -43,6 +48,9 @@ export class AiControl {
       generation,
     });
   }
+  /**
+   * Hủy đăng ký socket khi kết nối bị đóng.
+   */
   unbind(socket: Socket): void {
     if (this.connections.get(socket.id)?.socket === socket)
       this.connections.delete(socket.id);
@@ -63,6 +71,9 @@ export class AiControl {
       denied();
     return binding;
   }
+  /**
+   * Kiểm tra quyền của tab: là controller hay readonly do đã mở ở tab khác.
+   */
   async inspect(
     scope: RoomScope,
     origin: Human,
@@ -87,11 +98,17 @@ export class AiControl {
       generation: binding.generation,
     };
   }
+  /**
+   * Xác thực quyền điều khiển của người chơi trong giao dịch an toàn.
+   */
   async authorize(scope: RoomScope, origin: Human): Promise<void> {
     const binding = this.check(scope, origin);
     await this.presence.authorize(scope, origin);
     this.check(scope, origin, binding);
   }
+  /**
+   * Gắn kết trận đấu cờ với AI vào tab điều khiển hiện tại của người chơi.
+   */
   async bindGame(
     scope: RoomScope,
     gameId: string,
@@ -101,6 +118,9 @@ export class AiControl {
     await this.presence.bindGame(scope, gameId, origin);
     this.check(scope, origin, binding);
   }
+  /**
+   * Kiểm tra và bảo đảm ván đấu cờ với AI vẫn đang được lưu giữ trong phiên.
+   */
   assertRetained(scope: RoomScope, gameId: string): Promise<void> {
     return this.presence.assertRetained(scope, gameId);
   }

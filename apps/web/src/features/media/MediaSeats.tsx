@@ -7,6 +7,9 @@ export interface MediaFeed {
   element: HTMLVideoElement | HTMLAudioElement;
 }
 
+/**
+ * Component hiển thị khung hình camera và phát âm thanh tương ứng với 2 ghế Đỏ và Đen trong phòng cờ.
+ */
 export function MediaSeats({
   seats,
   selfId,

@@ -31,13 +31,19 @@ function valid(proof: MemberRoomRequestProof) {
   )
     throw required();
 }
-// Request-scoped private proof objects must remain unchanged across resolve/authorize.
+/**
+ * Xác thực và phân quyền cho người chơi Thành viên (Member) trong giao dịch phòng cờ:
+ * Kiểm tra kết hợp Bearer access token và app session capability.
+ */
 export class PostgresMemberRoomAuthorizer implements MemberRoomAuthorizer {
   private readonly resolved = new WeakMap<
     MemberRoomRequestProof,
     { userId: string; sessionHash: string; bearerHash: string }
   >();
   constructor(private readonly sessions: SessionService) {}
+  /**
+   * Tra cứu danh tính thành viên từ access token và session capability qua SessionService.
+   */
   async resolve(proof: MemberRoomRequestProof): Promise<RoomActor> {
     valid(proof);
     this.resolved.delete(proof);
@@ -66,6 +72,9 @@ export class PostgresMemberRoomAuthorizer implements MemberRoomAuthorizer {
       throw unavailable();
     }
   }
+  /**
+   * Xác thực và khóa dòng tài khoản thành viên trong transaction phòng cờ để đảm bảo tính hợp lệ.
+   */
   async authorize(
     proof: MemberRoomRequestProof,
     actorProof: RoomActorProof,

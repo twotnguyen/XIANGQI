@@ -18,6 +18,9 @@ import type {
   PublicRoomJoinInput,
   PublicRoomService,
 } from "./public-room-service.js";
+/**
+ * Controller xử lý các yêu cầu HTTP liên quan đến danh sách phòng công khai (sảnh chờ).
+ */
 @Controller("public-rooms")
 export class PublicRoomController {
   constructor(
@@ -38,11 +41,17 @@ export class PublicRoomController {
       );
     }
   }
+  /**
+   * Endpoint GET /public-rooms: Lấy danh sách các phòng cờ công khai hiện đang mở.
+   */
   @Get()
   @Header("Cache-Control", "no-store")
   list(@Req() request: IncomingMessage) {
     return this.respond(() => this.service.list(readMemberRoomProof(request)));
   }
+  /**
+   * Endpoint POST /public-rooms/:roomId/join: Tham gia vào phòng chơi cờ công khai từ sảnh.
+   */
   @Post(":roomId/join")
   @HttpCode(200)
   @Header("Cache-Control", "no-store")

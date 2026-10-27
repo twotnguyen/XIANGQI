@@ -10,9 +10,12 @@ import type { SqlAiTransactions } from "./ai-sql-transactions.js";
 import type { AiOrigin } from "./ai-transactions.js";
 type Human = Extract<AiOrigin, { kind: "human" }>;
 interface Options {
-  games: Pick<AiGames, "read" | "create" | "move" | "resign" | "retry">;
+  games: Pick<
+    AiGames,
+    "read" | "create" | "move" | "resign" | "retry" | "undo"
+  >;
   transactions: Pick<SqlAiTransactions, "read">;
-  reservations: Pick<AiReservations, "check">;
+  reservations: Pick<AiReservations, "check" | "held">;
   bootId: string;
   control: {
     /** Inspect a server-owned live physical connection and SQL generation. Never attach/take over on GET. */
@@ -27,9 +30,14 @@ function originCopy(origin: Human): Human {
     tab: Object.freeze({ ...origin.tab }),
   });
 }
-/** Human mutations use SqlAiTransactions again inside AiGames; preparation runs outside SQL locks. */
+/**
+ * Dịch vụ xử lý các yêu cầu HTTP điều khiển ván đấu cờ tướng với máy AI.
+ */
 export class AiHttpService implements AiHttpApi {
   constructor(private readonly options: Options) {}
+  /**
+   * Lấy mã ván cờ AI hiện tại mà người chơi đang tham gia (nếu có).
+   */
   async current(
     proof: MemberRoomRequestProof,
   ): Promise<{ gameId: string | null }> {
@@ -37,24 +45,16 @@ export class AiHttpService implements AiHttpApi {
     return this.options.transactions.read(
       privateProof,
       async (scope, owner) => {
-        const row = (
-          await scope.client.query<{
-            ai_game_id: string | null;
-            ai_boot_id: string | null;
-          }>(
-            "SELECT ai_game_id,ai_boot_id FROM public.active_players WHERE user_id=$1",
-            [owner],
-          )
-        ).rows[0];
-        if (!row?.ai_game_id) return { gameId: null };
-        if (row.ai_boot_id !== this.options.bootId)
+        const held = await this.options.reservations.held(scope, owner);
+        if (!held.gameId) return { gameId: null };
+        if (held.bootId !== this.options.bootId)
           sessionNotReady("AI_RESERVATION_LOST");
         await this.options.reservations.check(scope, {
-          gameId: row.ai_game_id,
+          gameId: held.gameId,
           bootId: this.options.bootId,
         });
-        this.options.games.read(owner, row.ai_game_id);
-        return { gameId: row.ai_game_id };
+        this.options.games.read(owner, held.gameId);
+        return { gameId: held.gameId };
       },
     );
   }
@@ -76,6 +76,9 @@ export class AiHttpService implements AiHttpApi {
       },
     );
   }
+  /**
+   * Đọc chi tiết ván cờ AI và trạng thái điều khiển của tab kết nối.
+   */
   read(origin: Human, gameId: string): Promise<AiHttpResult> {
     return this.result(originCopy(origin), gameId);
   }
@@ -96,6 +99,9 @@ export class AiHttpService implements AiHttpApi {
     // Reauthorize the response and read canonical RAM; never return a captured pre-commit board.
     return this.result(origin, committed.id);
   }
+  /**
+   * Tạo ván cờ AI mới theo cấp độ và phe lựa chọn.
+   */
   create(
     origin: Human,
     input: { level: EngineLevel; requestedSide: Side | "random" },
@@ -105,6 +111,9 @@ export class AiHttpService implements AiHttpApi {
       this.options.games.create(owner, setup, proof),
     );
   }
+  /**
+   * Người chơi đi một nước cờ trong ván đấu với AI.
+   */
   move(
     origin: Human,
     gameId: string,
@@ -118,6 +127,9 @@ export class AiHttpService implements AiHttpApi {
       this.options.games.move(owner, gameId, command, proof),
     );
   }
+  /**
+   * Người chơi đầu hàng ván cờ với AI.
+   */
   resign(
     origin: Human,
     gameId: string,
@@ -127,9 +139,20 @@ export class AiHttpService implements AiHttpApi {
       this.options.games.resign(owner, gameId, { version }, proof),
     );
   }
+  /**
+   * Thử lại lượt đi của AI khi bị timeout hoặc bận.
+   */
   retry(origin: Human, gameId: string, version: number): Promise<AiHttpResult> {
     return this.mutate(origin, (owner, proof) =>
       this.options.games.retry(owner, gameId, { version }, proof),
+    );
+  }
+  /**
+   * Undo nước đi theo BA 6.3 (tối đa 3 lần/ván, không sau khi kết thúc).
+   */
+  undo(origin: Human, gameId: string, version: number): Promise<AiHttpResult> {
+    return this.mutate(origin, (owner, proof) =>
+      this.options.games.undo(owner, gameId, { version }, proof),
     );
   }
 }

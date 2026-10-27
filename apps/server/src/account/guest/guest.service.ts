@@ -38,7 +38,11 @@ function displayName(input: unknown) {
     );
   return name;
 }
-/** Guest session rules; all SQL lives in GuestStore. */
+/**
+ * Dịch vụ quản lý người chơi Khách (Guest):
+ * Xử lý tạo phiên ẩn danh tạm thời, xác thực quyền hạn (capability),
+ * duy trì ván đấu đang chơi khi hết hạn (deferred mode), và thu hồi phiên khi rời bàn/đăng xuất.
+ */
 export class GuestService {
   private expiryCursor: ExpiryCursor | null = null;
   constructor(
@@ -46,6 +50,9 @@ export class GuestService {
     private readonly rooms?: GuestRoomPort,
     private readonly now = () => new Date(),
   ) {}
+  /**
+   * Khởi tạo phiên khách mới: tạo ngẫu nhiên userId, capability token và lưu thông tin profile.
+   */
   async create(input: unknown) {
     const name = displayName(input),
       userId = randomUUID(),
@@ -95,6 +102,9 @@ export class GuestService {
     await this.rooms.end(c, guest.userId, { reason, confirmedResign });
     await this.store.clearGuest(c, guest.userId, this.now());
   }
+  /**
+   * Thực thi khối công việc trong transaction với actor khách đã được xác thực và phân quyền.
+   */
   async withActor<T>(
     capability: unknown,
     purpose: GuestPurpose,
@@ -131,8 +141,9 @@ export class GuestService {
       throw this.unavailable();
     }
   }
-  // Caller MUST own an open transaction and call this BEFORE acquiring any room lock.
-  // An ended outcome includes committed-intent cleanup; caller must commit, then reject the command.
+  /**
+   * Thẩm định và lấy thông tin actor khách bên trong transaction sẵn có của caller trước khi khóa phòng.
+   */
   async requireActorInTransaction(
     c: PoolClient,
     capability: unknown,
@@ -195,7 +206,9 @@ export class GuestService {
       },
     };
   }
-  // Call after room/AI mutation, before the same transaction commits.
+  /**
+   * Kiểm tra dọn dẹp phiên khách sau khi biến đổi trạng thái phòng/trận đấu nếu phiên đã hết hạn và không còn giữ ghế.
+   */
   async finishActorMutation(c: PoolClient, actor: GuestActor) {
     if (!this.rooms) throw this.unavailable();
     const expiresAt = await this.store.activeSessionExpiry(c, actor.userId);
@@ -206,6 +219,9 @@ export class GuestService {
     )
       await this.end(c, { ...actor, expiresAt }, "expiry");
   }
+  /**
+   * Kiểm tra capability token còn hiệu lực và trả về thông tin actor khách.
+   */
   async requireActive(
     capability: unknown,
     purpose: GuestPurpose = "read",
@@ -218,6 +234,9 @@ export class GuestService {
       async (_c, actor) => actor,
     );
   }
+  /**
+   * Khách chủ động đăng xuất: rời ghế, xử thua nếu đang trong trận và xóa phiên làm việc.
+   */
   async logout(capability: unknown, confirmedResign = false) {
     return this.withActor(capability, "read", undefined, async (c, actor) =>
       this.end(
@@ -228,6 +247,9 @@ export class GuestService {
       ),
     );
   }
+  /**
+   * Quét và xử lý hết hạn cho các phiên khách quá hạn (thu hồi ghế và giải phóng tài nguyên).
+   */
   async expireDue() {
     const candidates = await this.store.expiredSessions(
       this.now(),

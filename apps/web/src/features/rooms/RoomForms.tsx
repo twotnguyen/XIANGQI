@@ -5,6 +5,9 @@ export interface CreateRoomInput {
   timeMinutes: 5 | 10 | 15;
   viewerLimit: number;
 }
+/**
+ * Biểu mẫu tạo phòng cờ mới (chọn nhịp đấu thời gian mỗi bên và giới hạn số lượng người xem).
+ */
 export function CreateRoomForm({
   onCreate,
 }: {
@@ -79,6 +82,9 @@ export function CreateRoomForm({
     </form>
   );
 }
+/**
+ * Biểu mẫu nhập mã mời 8 chữ số để tham gia phòng cờ.
+ */
 export function JoinRoomForm({
   onJoin,
   initialCode = "",

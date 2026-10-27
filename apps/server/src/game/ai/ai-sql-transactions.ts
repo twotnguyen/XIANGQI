@@ -42,7 +42,11 @@ function denied(code: string, status = 409): never {
   throw new RoomError(code, "Ván với máy chưa sẵn sàng", status);
 }
 
-/** Required SQL runner. Engine jobs use internal origins, never expired bearer tokens. */
+/**
+ * Bộ điều phối giao dịch SQL an toàn cho chế độ chơi với AI:
+ * - Bảo vệ bằng actor-first lock và hàng đợi gate theo người dùng.
+ * - Bảo đảm cập nhật bộ nhớ RAM chỉ diễn ra sau khi SQL COMMIT thành công.
+ */
 export class SqlAiTransactions implements AiTransactions {
   private readonly gates = new Map<string, Promise<void>>();
   constructor(private readonly options: Options) {
@@ -82,7 +86,24 @@ export class SqlAiTransactions implements AiTransactions {
     if (!row?.active) denied("AUTH_REQUIRED", 401);
     return { status: "active", actor: proof.actor };
   }
-  /** Private reads share the mutation gate, but do not manufacture a live game slot. */
+  /**
+   * Quét nền dọn reservation/ván của boot đã hết hạn. Owner có thể đã inactive (email/hồ sơ thay đổi),
+   * nên không yêu cầu principal active; chỉ cần actor đã được khóa đúng theo thứ tự. Việc thu hồi vẫn
+   * bị chặn bởi điều kiện lease hết hạn trong SQL (reclaimExpired/dueExpired).
+   */
+  private async sweepAuthorize(
+    proof: RoomActorProof,
+  ): Promise<RoomAuthorization> {
+    if (
+      proof.actor.kind !== "member" ||
+      !proof.lockedActorIds.has(proof.actor.userId)
+    )
+      denied("AUTH_REQUIRED", 401);
+    return { status: "active", actor: proof.actor };
+  }
+  /**
+   * Thực thi thao tác đọc chỉ đọc trong giao dịch có xác thực người dùng.
+   */
   async read<T>(
     proof: MemberRoomRequestProof,
     work: (scope: RoomScope, ownerId: string) => Promise<T>,
@@ -130,12 +151,19 @@ export class SqlAiTransactions implements AiTransactions {
       release?.();
     }
   }
+  /**
+   * Thực thi tác vụ thay đổi trạng thái ván cờ AI trong giao dịch CSDL với kiểm tra quyền và khóa an toàn.
+   */
   async run<T>(
     ownerId: string,
     origin: AiOrigin,
     work: (tx: AiTransaction) => Promise<AiCommit<T>>,
   ): Promise<T> {
-    if (origin.kind !== "human" && origin.kind !== "internal")
+    if (
+      origin.kind !== "human" &&
+      origin.kind !== "internal" &&
+      origin.kind !== "sweep"
+    )
       denied("AI_AUTHORITY_REQUIRED", 403);
     const { coordinator, authorizer, reservations, history, bootId, control } =
       this.options;
@@ -148,7 +176,9 @@ export class SqlAiTransactions implements AiTransactions {
     const authorize = (proof: RoomActorProof) =>
       origin.kind === "human"
         ? authorizer.authorize(origin.proof, proof)
-        : this.internal(proof);
+        : origin.kind === "sweep"
+          ? this.sweepAuthorize(proof)
+          : this.internal(proof);
     let release: (() => void) | undefined;
     try {
       const result = await coordinator.withRoom(
@@ -191,10 +221,26 @@ export class SqlAiTransactions implements AiTransactions {
               },
               check,
               finish: async (snapshot) => {
+                if (origin.kind === "sweep")
+                  denied("AI_AUTHORITY_REQUIRED", 403);
                 if (snapshot.ownerId !== ownerId) denied("AI_FORBIDDEN", 403);
                 await history.finish(scope, snapshot, bootId);
                 authorized = true;
                 liveGames.delete(snapshot.id);
+              },
+              drop: async (gameId) => {
+                await reservations.release(scope, { gameId, bootId });
+                authorized = true;
+                liveGames.delete(gameId);
+              },
+              reclaim: async (gameId, expiredBootId) => {
+                if (origin.kind !== "sweep")
+                  denied("AI_AUTHORITY_REQUIRED", 403);
+                authorized = true;
+                return reservations.reclaimExpired(scope, {
+                  gameId,
+                  bootId: expiredBootId,
+                });
               },
             });
             if (!authorized) denied("AI_AUTHORITY_REQUIRED", 503);

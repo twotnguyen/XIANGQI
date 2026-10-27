@@ -51,6 +51,9 @@ const features: readonly AuthFeature[] = [
   { icon: "🤖", title: "Máy Cờ 3 Cấp", text: "Rèn luyện từ Dễ đến Khó" },
   { icon: "📹", title: "Face Cam Trực Tiếp", text: "Đàm đạo nét mặt đối thủ" },
 ];
+/**
+ * Màn hình đăng nhập tài khoản (hỗ trợ tài khoản mật khẩu, đăng nhập nhanh qua Google và chơi với tư cách Khách).
+ */
 export function LoginPage({
   onLoggedIn,
   onGoogle,

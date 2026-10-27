@@ -12,13 +12,12 @@ import {
 export const alphabet = "0123456789";
 export const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/**
+ * Tầng lưu trữ cơ sở của phòng cờ:
+ * Quản lý sự kiện outbox, kiểm tra biên lai idempotency, giải mã invite code và truy vấn snapshot phòng.
+ */
 export class RoomStoreCore {
-  constructor(
-    protected readonly matches?: MatchStartPort,
-    protected readonly media?: {
-      revoke(roomId: string, userId: string): Promise<void>;
-    },
-  ) {}
+  constructor(protected readonly matches?: MatchStartPort) {}
   protected swapTableReady: boolean | null = null;
   protected seatTableReady: boolean | null = null;
   protected async swapTableExists(s: RoomScope): Promise<boolean> {
@@ -64,7 +63,9 @@ export class RoomStoreCore {
       throw error;
     }
   }
-  // Internal authenticated admission lookup; caller acquires all sorted actor locks afterwards.
+  /**
+   * Tra cứu ID phòng cờ hợp lệ từ mã mời (invite code) 8 chữ số.
+   */
   async resolveCode(client: PoolClient, input: unknown): Promise<string> {
     if (typeof input !== "string" || !/^[0-9]{8}$/.test(input))
       throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
@@ -78,6 +79,9 @@ export class RoomStoreCore {
       throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
     return row.id as string;
   }
+  /**
+   * Truy vấn danh sách các phòng cờ cần worker kiểm tra và xử lý định kỳ.
+   */
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
@@ -85,10 +89,13 @@ export class RoomStoreCore {
       )
     ).rows.map((r) => r.id as string);
   }
+  /**
+   * Lấy danh sách các sự kiện phòng cờ chưa được gửi từ bảng xiangqi_room.outbox.
+   */
   async pendingEvents(client: PoolClient): Promise<RoomEvent[]> {
     return (
       await client.query(
-        `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND type<>'media.revoke-room' AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50`,
+        `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND type NOT IN ('media.revoke-room','media.revoke-user') AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50`,
       )
     ).rows as RoomEvent[];
   }
@@ -283,6 +290,9 @@ export class RoomStoreCore {
       [id],
     );
   }
+  /**
+   * Lấy ảnh chụp trạng thái toàn diện (snapshot) của phòng cờ: ghế, người sẵn sàng, đếm ngược, khán giả, lời mời.
+   */
   async snapshot(s: RoomScope, id: string): Promise<RoomView> {
     const { r, members, member } = await this.member(s, id),
       red = members.find((m) => m.side === "RED"),

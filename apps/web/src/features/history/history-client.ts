@@ -191,6 +191,9 @@ export class HistoryRequestError extends Error {
     );
   }
 }
+/**
+ * Khởi tạo client gọi API lịch sử ván đấu (hỗ trợ phân trang bằng cursor và các bộ lọc loại ván).
+ */
 export function makeHistoryClient(authorizedFetch: AuthorizedFetch) {
   return {
     async list(input: HistoryInput = {}): Promise<HistoryPage> {

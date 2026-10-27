@@ -47,7 +47,9 @@ sau khi kiểm thử, kiểm dữ liệu và chuẩn bị khôi phục. Đặt
 `AUTH_REGISTRATION_ENABLED=true` và `AUTH_LOGIN_ENABLED=true` để mở runtime.
 Runtime dùng pool riêng cho đăng ký và đăng nhập/phiên để callback đăng ký
 không chờ chính pool đang giữ khoá. Cả hai pool dùng TLS xác minh chứng chỉ trên
-Supabase, kiểm kết nối khi khởi động và đóng cùng lifecycle ứng dụng.
+Supabase, kiểm kết nối khi khởi động và đóng cùng lifecycle ứng dụng. Mỗi pool
+gắn listener lỗi ngay khi tạo: lỗi client rảnh chỉ ghi `registration_pool_failed`
+không kèm thông điệp, payload hay chuỗi kết nối, và pool vẫn phục vụ truy vấn sau đó.
 
 Kiểm thử SQL chỉ nhận database cô lập `xiangqi_login_test` trên localhost hoặc
 host `postgres`. CI dùng PostgreSQL 17.6 riêng cho đăng ký, realtime và login;

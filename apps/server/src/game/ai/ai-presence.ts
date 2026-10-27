@@ -59,7 +59,9 @@ function physical<
     sessionNotReady("AI_INPUT_INVALID", 400);
   return { ...input, tabId };
 }
-/** SQL-only trusted physical socket port; caller owns actor-first scope and transaction. */
+/**
+ * Quản lý trạng thái kết nối, hiện diện (presence) và thời gian ân hạn của người chơi cờ với máy trong CSDL.
+ */
 export class AiPresence {
   private readonly bootId: string;
   constructor(
@@ -68,10 +70,15 @@ export class AiPresence {
   ) {
     this.bootId = id(bootId);
   }
-  private async slot(scope: RoomScope): Promise<string | null> {
+  private owner(scope: RoomScope): string {
     const owner = id(scope.actor.userId);
     if (!scope.lockedActorIds.has(owner)) sessionNotReady("AI_SCOPE_INVALID");
     if (scope.actor.kind !== "member") sessionNotReady("AUTH_REQUIRED", 401);
+    return owner;
+  }
+  /** Admission read: principal phải active. Chỉ dùng cho attach/authorize/bind/retention/mutation. */
+  private async slot(scope: RoomScope): Promise<string | null> {
+    const owner = this.owner(scope);
     const principal = (
       await scope.client.query(
         `SELECT 1 FROM xiangqi_auth.principals n JOIN xiangqi_auth.accounts a ON a.id=n.id JOIN public.profiles p ON p.user_id=n.id WHERE n.id=$1 AND n.kind='member' AND n.auth_user_id=a.id AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending`,
@@ -79,6 +86,25 @@ export class AiPresence {
       )
     ).rowCount;
     if (!principal) sessionNotReady("AUTH_REQUIRED", 401);
+    return this.reserved(scope, owner);
+  }
+  /** Downgrade-only read cho trusted physical disconnect: owner inactive vẫn được hạ connected=false; chỉ cần identity member tồn tại. */
+  private async cleanupSlot(scope: RoomScope): Promise<string | null> {
+    const owner = this.owner(scope);
+    const principal = (
+      await scope.client.query(
+        "SELECT 1 FROM xiangqi_auth.principals WHERE id=$1 AND kind='member'",
+        [owner],
+      )
+    ).rowCount;
+    if (!principal) sessionNotReady("AUTH_REQUIRED", 401);
+    return this.reserved(scope, owner);
+  }
+  /** Fence chung: lock active_players, room scope và reservation/boot; không kiểm tra principal active. */
+  private async reserved(
+    scope: RoomScope,
+    owner: string,
+  ): Promise<string | null> {
     const row = (
       await scope.client.query<{
         ai_game_id: string | null;
@@ -151,6 +177,9 @@ export class AiPresence {
       Number(row.generation) === input.generation
     );
   }
+  /**
+   * Đăng ký gắn tab client vào phiên chơi với AI, xác định quyền writable hoặc readonly và kiểm tra thời gian ân hạn.
+   */
   async attach(
     scope: RoomScope,
     input: { tabId: string; connectionId: string; takeover?: boolean },
@@ -220,6 +249,9 @@ export class AiPresence {
         : null,
     };
   }
+  /**
+   * Xác thực quyền điều khiển của kết nối trong giao dịch (ném lỗi TAB_READ_ONLY nếu mất quyền).
+   */
   async authorize(scope: RoomScope, origin: Human): Promise<void> {
     const p = physical(origin.tab),
       gameId = await this.slot(scope),
@@ -246,6 +278,9 @@ export class AiPresence {
       ],
     );
   }
+  /**
+   * Gắn kết trận đấu AI vào bản ghi hiện diện của tab đang giữ quyền điều khiển.
+   */
   async bindGame(
     scope: RoomScope,
     gameId: string,
@@ -265,13 +300,16 @@ export class AiPresence {
       sessionNotReady("AI_GAME_EXPIRED");
     await this.writePresence(scope, gameId, p);
   }
+  /**
+   * Đánh dấu tab ngắt kết nối và bắt đầu tính thời gian ân hạn 30 phút.
+   */
   async disconnected(
     scope: RoomScope,
     input: Physical & { gameId: string | null },
   ): Promise<void> {
     const p = physical(input),
       gameId = input.gameId === null ? null : id(input.gameId),
-      actual = await this.slot(scope);
+      actual = await this.cleanupSlot(scope);
     if (actual !== gameId) return;
     const current = await this.controller(scope);
     if (!this.matches(current, p) || !current?.connected) return;
@@ -291,6 +329,9 @@ export class AiPresence {
       [scope.actor.userId, this.bootId, p.generation],
     );
   }
+  /**
+   * Đảm bảo ván đấu AI vẫn còn thời gian giữ hợp lệ (chưa quá 30 phút ngắt kết nối).
+   */
   async assertRetained(scope: RoomScope, gameId: string): Promise<void> {
     gameId = id(gameId);
     if ((await this.slot(scope)) !== gameId)
@@ -301,6 +342,9 @@ export class AiPresence {
     if (!(await this.retained(scope, gameId)))
       sessionNotReady("AI_GAME_EXPIRED");
   }
+  /**
+   * Quét danh sách các ván đấu AI có người chơi đã ngắt kết nối quá 30 phút để dọn dẹp giải phóng.
+   */
   async dueExpired(
     client: PoolClient,
     cursor: AiExpiredCursor | null = null,

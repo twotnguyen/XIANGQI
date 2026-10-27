@@ -63,7 +63,9 @@ export type GameRoomScope = (
 
 export type GameDrawPort = Pick<MatchStore, "drawSnapshot">;
 
-/** Delegates only inside the root's authenticated actor-first transaction. */
+/**
+ * Lớp điều phối tích hợp trạng thái phòng cờ và ván cờ, xử lý các lệnh realtime từ client trong giao dịch có khóa.
+ */
 export class GameRooms implements RoomCollaborator {
   constructor(
     private readonly rooms: RoomStore,
@@ -101,6 +103,9 @@ export class GameRooms implements RoomCollaborator {
       throw error;
     }
   }
+  /**
+   * Xác thực quyền truy cập phòng của người dùng và trả về thông tin vai trò (chủ phòng, người chơi, khán giả).
+   */
   async authorize(
     client: PoolClient,
     identity: RealtimeIdentity,
@@ -117,6 +122,9 @@ export class GameRooms implements RoomCollaborator {
       throw error;
     }
   }
+  /**
+   * Chiếu và tổng hợp dữ liệu phòng, ván đấu, đồng hồ cờ và cầu hòa thành ảnh chụp nhanh `RoomStateSnapshot`.
+   */
   private async project(
     scope: RoomScope,
     room: RoomView,
@@ -249,6 +257,9 @@ export class GameRooms implements RoomCollaborator {
           : null,
     };
   }
+  /**
+   * Chụp lại toàn bộ trạng thái phòng cờ theo góc nhìn của người dùng kết nối.
+   */
   async snapshot(
     client: PoolClient,
     identity: RealtimeIdentity,
@@ -257,6 +268,9 @@ export class GameRooms implements RoomCollaborator {
     const scope = this.scope(client, identity, roomId);
     return this.project(scope, await this.room(scope, roomId));
   }
+  /**
+   * Thực thi các lệnh phòng cờ (sẵn sàng, đi cờ, đầu hàng, xin hòa/rút hòa/phản hồi hòa) trong giao dịch an toàn.
+   */
   async execute(
     client: PoolClient,
     identity: RealtimeIdentity,

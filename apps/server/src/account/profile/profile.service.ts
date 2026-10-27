@@ -28,9 +28,15 @@ function displayName(input: unknown): string {
     fail("PROFILE_NAME_FORBIDDEN", "Tên hiển thị chứa từ không được phép", 400);
   return name;
 }
-/** Business rules for the profile; all SQL lives in ProfileStore. */
+/**
+ * Dịch vụ xử lý nghiệp vụ hồ sơ người dùng:
+ * Đọc thông tin cá nhân, kiểm tra tính hợp lệ và từ cấm của tên hiển thị, và xác định vị trí trong phòng chơi.
+ */
 export class ProfileService {
   constructor(private readonly store: ProfileStore) {}
+  /**
+   * Đọc thông tin hồ sơ của người dùng (tên đăng nhập, email, tên hiển thị).
+   */
   async read(
     userId: string,
     identity: { username: string; email: string },
@@ -43,6 +49,9 @@ export class ProfileService {
       displayName: row.displayName,
     };
   }
+  /**
+   * Kiểm tra định dạng và cập nhật tên hiển thị mới của người dùng.
+   */
   async updateDisplayName(
     userId: string,
     input: unknown,
@@ -51,6 +60,9 @@ export class ProfileService {
     await this.store.updateDisplayName(userId, name);
     return { displayName: name };
   }
+  /**
+   * Xác định vị trí phòng chơi hiện tại của người dùng (chưa vào phòng, đang chờ, hoặc đang trong ván cờ).
+   */
   async location(userId: string): Promise<ProfileLocation> {
     const row = await this.store.location(userId);
     if (!row) return { kind: "none", roomId: null, matchId: null };

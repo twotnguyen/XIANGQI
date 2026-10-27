@@ -56,6 +56,10 @@ function date(value: unknown): value is string {
     second! <= 59
   );
 }
+/**
+ * Kiểm tra và parse mảng danh sách phòng cờ công khai từ dữ liệu máy chủ.
+ * Đảm bảo tính hợp lệ của từng trường (roomId, host, thời gian, số người xem, trạng thái ghế...).
+ */
 export function parsePublicRooms(value: unknown): PublicRoomView[] {
   if (!Array.isArray(value) || value.length > 50) fail();
   const ids = new Set<string>();
@@ -106,6 +110,9 @@ export interface PublicRoomEntry {
   role: "red" | "black" | "spectator";
   notice?: string;
 }
+/**
+ * Lớp lỗi xử lý các phản hồi thất bại khi gọi API phòng công khai (hết hạn phiên, phòng không còn công khai...).
+ */
 export class PublicRoomRequestError extends Error {
   constructor(
     public readonly status: number,
@@ -120,6 +127,11 @@ export class PublicRoomRequestError extends Error {
     );
   }
 }
+
+/**
+ * Khởi tạo client HTTP để thao tác với các phòng cờ công khai qua REST API.
+ * Bao gồm: lấy danh sách phòng (list) và tham gia phòng với vai trò muốn chơi hoặc muốn xem (join).
+ */
 export function makePublicRoomClient(authorizedFetch: AuthorizedFetch) {
   async function response(path: string, init: RequestInit) {
     const response = await authorizedFetch(path, init);
@@ -210,6 +222,10 @@ function proof(value: unknown): PublicRoomAuthProof {
 }
 import { getApiBaseUrl } from "../../shared/api.js";
 
+/**
+ * Thiết lập kết nối Socket.IO tới namespace `/public-rooms` để nhận dữ liệu danh sách phòng công khai theo thời gian thực.
+ * Tự động xác thực thông qua token thành viên hoặc capability khách, cập nhật danh sách phòng định kỳ và xử lý ngắt kết nối/lỗi.
+ */
 export function connectPublicRooms(input: PublicRoomsConnectionInput) {
   let closed = false,
     denied = false,

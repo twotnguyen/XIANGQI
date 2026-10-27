@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
-    "start": "tsx dist/main.js",
+    "start": "tsx src/main.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "11.2.7",

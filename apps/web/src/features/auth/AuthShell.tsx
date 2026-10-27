@@ -9,7 +9,9 @@ export interface AuthFeature {
   text: string;
 }
 
-/** Vỏ chung của /login và /register: câu đối, thẻ hai cánh, cánh thương hiệu. */
+/**
+ * Khung giao diện dùng chung cho các trang xác thực (/login, /register) với câu đối cổ phong và panel hai cánh.
+ */
 export function AuthShell({
   slogan,
   features,
@@ -79,6 +81,9 @@ export function AuthShell({
   );
 }
 
+/**
+ * Biểu tượng logo màu SVG 4 màu của Google.
+ */
 export function GoogleMark() {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">

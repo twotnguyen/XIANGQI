@@ -12,6 +12,9 @@ import type { ServerResponse } from "node:http";
 import { writeSessionCookies } from "../session/cookies.js";
 import { LoginService } from "./login.service.js";
 import { LoginError } from "./login.types.js";
+/**
+ * Controller xử lý yêu cầu đăng nhập người dùng bằng username và mật khẩu.
+ */
 @Controller("auth")
 export class LoginController {
   constructor(
@@ -20,6 +23,9 @@ export class LoginController {
     @Inject("SESSION_COOKIE_SECURE")
     private readonly secureCookies = true,
   ) {}
+  /**
+   * Endpoint POST /auth/login: Xác thực tài khoản, trả về token và thiết lập cookie phiên.
+   */
   @Post("login")
   @HttpCode(200)
   async login(

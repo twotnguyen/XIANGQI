@@ -37,6 +37,10 @@ export type AuthorizedFetch = (
   path: string,
   init?: RequestInit,
 ) => Promise<Response>;
+
+/**
+ * Lớp lỗi xử lý các lỗi yêu cầu HTTP liên quan đến phòng cờ (quyền chủ phòng, đủ người để khóa, phiên hết hạn...).
+ */
 export class RoomRequestError extends Error {
   constructor(
     public readonly code: string,
@@ -250,6 +254,14 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
   }
   return { ...(snapshot as unknown as RoomSnapshot), draw: normalizedDraw };
 }
+
+/**
+ * Khởi tạo client REST API để quản lý phòng cờ.
+ * Cung cấp các thao tác: tạo phòng (create), vào phòng bằng mã (join), lấy snapshot,
+ * thay đổi chế độ hiển thị (changeVisibility), đổi ghế (switchSeat), chuyển sang xem (toSpectator),
+ * mời/đáp lại lời mời xuống ghế (inviteDown, respondDown), đuổi người xem (kickViewer),
+ * rời phòng (leave), và đề xuất/rút/đáp lại hoán đổi ghế (proposeSwap, withdrawSwap, respondSwap).
+ */
 export function createRoomClient(authorizedFetch: AuthorizedFetch) {
   async function request<T>(
     path: string,
@@ -419,6 +431,13 @@ export interface RoomConnectionInput {
   onClosed?: (message: string) => void;
   onChatChanged?: (notice: ChatChanged) => void;
 }
+
+/**
+ * Thiết lập kết nối thời gian thực qua Socket.IO tới namespace `/rooms` cho một phòng cờ cụ thể.
+ * Đồng bộ snapshot phòng (bàn cờ, đồng hồ, lượt đi, danh sách người chơi/khán giả),
+ * gửi lệnh ván cờ (đi quân, xin hòa, chấp nhận/từ chối hòa, đầu hàng, sẵn sàng),
+ * tích hợp đọc/gửi tin nhắn chat trong phòng, và tự động xử lý kết nối lại/mất kết nối.
+ */
 export function connectRoom(input: RoomConnectionInput): RoomConnection {
   let closed = false;
   let closureNotified = false;

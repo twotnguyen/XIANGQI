@@ -1,12 +1,15 @@
 import type { Server as HttpServer } from "node:http";
 import { Server, type Socket } from "socket.io";
 import type { PublicRoomView } from "./public-room-store.js";
+import type { PublicRoomTick } from "./public-room-catalog.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 export type PublicFeedProof = PublicRoomAuthProof;
 export type PublicRoomFeedDependencies = {
   corsOrigins: readonly string[];
   /** Opens trusted identity once; every read must reauthorize its fixed session deadline. */
-  open(proof: PublicFeedProof): Promise<{ read(): Promise<PublicRoomView[]> }>;
+  open(
+    proof: PublicFeedProof,
+  ): Promise<{ read(tick: PublicRoomTick): Promise<PublicRoomView[]> }>;
 };
 /**
  * AC-06.2.3 and AC-06.2.15: the lobby must reflect a change within 2 seconds.
@@ -25,6 +28,9 @@ function object(value: unknown): Record<string, unknown> {
     throw Error("Invalid payload");
   return value as Record<string, unknown>;
 }
+/**
+ * Phân tích và thẩm định tính hợp lệ của token chứng thực (member hoặc guest) từ handshake Socket.IO.
+ */
 export function parsePublicFeedProof(value: unknown): PublicFeedProof {
   const data = object(value);
   if (
@@ -111,7 +117,10 @@ function authFailure(error: unknown) {
       (error as { code?: unknown }).code === "AUTH_REQUIRED")
   );
 }
-/** Attach after other Engine.IO gateways; close before closing the shared HTTP server. */
+/**
+ * Thiết lập Socket.IO Gateway phát feed danh sách phòng công khai ở namespace /public-rooms:
+ * Định kỳ polling (1000ms) danh sách phòng và chỉ gửi cập nhật tới client khi có thay đổi dữ liệu.
+ */
 export function attachPublicRoomFeed(
   httpServer: HttpServer,
   dependencies: PublicRoomFeedDependencies,
@@ -140,11 +149,14 @@ export function attachPublicRoomFeed(
   const namespace = io.of("/public-rooms");
   type Peer = {
     socket: Socket;
-    read: () => Promise<PublicRoomView[]>;
+    read: (tick: PublicRoomTick) => Promise<PublicRoomView[]>;
     busy: boolean;
     prior?: string;
   };
-  const readers = new WeakMap<Socket, () => Promise<PublicRoomView[]>>();
+  const readers = new WeakMap<
+    Socket,
+    (tick: PublicRoomTick) => Promise<PublicRoomView[]>
+  >();
   const peers = new Set<Peer>(),
     pending = new Set<Promise<unknown>>();
   let stopping = false,
@@ -170,7 +182,7 @@ export function attachPublicRoomFeed(
           next(Error(unavailable.message));
           return;
         }
-        readers.set(socket, () => source.read());
+        readers.set(socket, (tick) => source.read(tick));
         next();
       } catch (error) {
         next(Error(authFailure(error) ? invalidSession : unavailable.message));
@@ -178,13 +190,13 @@ export function attachPublicRoomFeed(
     })();
     track(admission);
   });
-  function read(peer: Peer) {
+  function read(peer: Peer, tick: PublicRoomTick) {
     if (stopping || peer.busy || !peer.socket.connected) return;
     peer.busy = true;
     track(
       (async () => {
         try {
-          const rooms = safeRooms(await peer.read());
+          const rooms = safeRooms(await peer.read(tick));
           if (stopping || !peer.socket.connected) return;
           const identity = JSON.stringify(rooms);
           if (identity !== peer.prior) {
@@ -221,10 +233,11 @@ export function attachPublicRoomFeed(
     const peer: Peer = { socket, read: source, busy: false };
     peers.add(peer);
     socket.on("disconnect", () => peers.delete(peer));
-    read(peer);
+    read(peer, {});
   });
   const timer = setInterval(() => {
-    for (const peer of peers) read(peer);
+    const tick: PublicRoomTick = {};
+    for (const peer of peers) read(peer, tick);
   }, PUBLIC_FEED_POLL_MS);
   timer.unref();
   return {

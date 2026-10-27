@@ -23,8 +23,13 @@ function validate(clock: MatchClock, side: Side) {
   )
     invalid();
 }
-/** Fixed time, no increment. Position.turn is the running side. */
+/**
+ * Dịch vụ tính toán thời gian đồng hồ cờ tướng (chế độ thời gian cố định, không cộng dồn giây).
+ */
 export class ClockService implements ClockPort {
+  /**
+   * Khởi tạo trạng thái đồng hồ ban đầu cho ván đấu với định mức thời gian quy định (300s, 600s, 900s).
+   */
   start(seconds: 300 | 600 | 900, at: Date): MatchClock {
     if (![300, 600, 900].includes(seconds)) invalid();
     return {
@@ -33,6 +38,9 @@ export class ClockService implements ClockPort {
       runningSinceEpochMs: sample(at),
     };
   }
+  /**
+   * Tính toán thời gian còn lại của bên đang đi trước khi thực thi một hành động và kiểm tra hết giờ.
+   */
   beforeAction(
     clock: MatchClock,
     turn: Side,
@@ -54,6 +62,9 @@ export class ClockService implements ClockPort {
       expired: remaining === 0 ? turn : null,
     };
   }
+  /**
+   * Cập nhật lại mốc thời gian bắt đầu chạy giờ cho bên tiếp theo sau khi nước đi hợp lệ đã hoàn tất.
+   */
   afterMove(clock: MatchClock, nextTurn: Side, at: Date): MatchClock {
     validate(clock, nextTurn);
     return {

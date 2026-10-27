@@ -146,6 +146,87 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
       ),
     ).rejects.toMatchObject({ code: "ROOM_BLOCKED" });
   });
+  it("kick queues a per-user media revoke with the kick version, kept out of generic delivery", async () => {
+    const { h, b, w, roomId } = await fullRoom();
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.kickViewer(s, roomId, w.a.userId),
+    );
+    const rows = (
+      await pool.query(
+        "SELECT type,room_version::float8 AS version,payload FROM xiangqi_room.outbox WHERE room_id=$1 AND type IN ('room.viewer-kicked','media.revoke-user')",
+        [roomId],
+      )
+    ).rows;
+    // Cả hai sự kiện cùng giao dịch nên không có thứ tự ghi nhận đáng tin; chỉ kiểm tra tập sự kiện và nội dung.
+    expect(rows.map((r) => r.type).sort()).toEqual([
+      "media.revoke-user",
+      "room.viewer-kicked",
+    ]);
+    const kick = rows.find((r) => r.type === "room.viewer-kicked")!;
+    const revoke = rows.find((r) => r.type === "media.revoke-user")!;
+    expect(revoke).toMatchObject({
+      version: kick.version,
+      payload: { userId: w.a.userId },
+    });
+    const pending = await run(h.a, h.proof, [roomId], (s) =>
+      store.pendingEvents(s.client),
+    );
+    expect(pending.map((e) => e.type)).toContain("room.viewer-kicked");
+    expect(pending.map((e) => e.type)).not.toContain("media.revoke-user");
+  });
+  it("rolls the kick back when its media revoke event cannot be stored", async () => {
+    const { b, w, roomId } = await fullRoom();
+    await pool.query(
+      "CREATE FUNCTION public.fail_media_revoke_outbox() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN IF NEW.type='media.revoke-user' THEN RAISE EXCEPTION 'synthetic media outbox failure'; END IF; RETURN NEW; END$$; CREATE TRIGGER fail_media_revoke_outbox BEFORE INSERT ON xiangqi_room.outbox FOR EACH ROW EXECUTE FUNCTION public.fail_media_revoke_outbox()",
+    );
+    try {
+      await expect(
+        run(b.a, b.proof, [roomId], (s) =>
+          store.kickViewer(s, roomId, w.a.userId),
+        ),
+      ).rejects.toThrow("synthetic media outbox failure");
+    } finally {
+      await pool.query(
+        "DROP TRIGGER fail_media_revoke_outbox ON xiangqi_room.outbox; DROP FUNCTION public.fail_media_revoke_outbox()",
+      );
+    }
+    expect(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+          [roomId, w.a.userId],
+        )
+      ).rows[0].n,
+    ).toBe(1);
+    expect(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM xiangqi_room.room_blocks WHERE room_id=$1 AND user_id=$2",
+          [roomId, w.a.userId],
+        )
+      ).rows[0].n,
+    ).toBe(0);
+  });
+  it("spectator leave queues a per-user media revoke in the membership transaction", async () => {
+    const { w, roomId } = await fullRoom();
+    await run(w.a, w.proof, [roomId], (s) => store.leave(s, roomId));
+    expect(
+      (
+        await pool.query(
+          "SELECT payload FROM xiangqi_room.outbox WHERE room_id=$1 AND type='media.revoke-user'",
+          [roomId],
+        )
+      ).rows,
+    ).toEqual([{ payload: { userId: w.a.userId } }]);
+    expect(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+          [roomId, w.a.userId],
+        )
+      ).rows[0].n,
+    ).toBe(0);
+  });
   it("rejects seat invite races and moves during play", async () => {
     const { h, b, roomId } = await fullRoom();
     await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));

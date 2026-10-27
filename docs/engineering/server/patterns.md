@@ -30,7 +30,7 @@ Store lớn được chia theo nhóm lệnh bằng kế thừa (`RoomStoreCore` 
 
 ## Trạng thái phân tầng
 
-Tất cả miền server hiện đi theo Controller → Service → Store; không còn mục lệch đã biết.
+Tất cả miền server hiện đi theo Controller → Service → Store; không còn mục lệch đã biết và `layering.test.ts` chặn việc quay lại.
 
 | Miền | Service | Store | Ghi chú |
 |---|---|---|---|
@@ -47,6 +47,15 @@ Helper `transaction`/`actorLock` dùng chung nằm ở `core/postgres.ts` (trư�
 Giới hạn còn lại, cố ý giữ: store là class cụ thể, không có interface (đảo phụ thuộc chỉ dùng `*Port` giữa các miền game); `createFriendRuntime`/`createProfileRuntime` còn trả `store` mà `main.ts` không dùng.
 
 Quy tắc khi sửa: không viết SQL vào service hay controller; thêm truy vấn mới vào store (hoặc `*Tx`) rồi để service quyết định.
+
+## Giữ phân tầng bằng test
+
+`tests/server/core/layering.test.ts` quét `apps/server/src` (không cần DB) và fail khi:
+- một `*.controller.ts` chứa SQL hoặc import `pg`;
+- một `*service*.ts` chứa SQL (tính cả `.query(` lẫn `.query<…>(`, bỏ qua comment);
+- một `*.store.ts` không chứa SQL (tên không khớp vai trò).
+
+Test này từng bắt `game/ai/ai-http.service.ts` có một truy vấn `SELECT … FROM public.active_players` mà lần đo bằng `grep ".query("` bỏ sót; truy vấn đã chuyển sang `AiReservations.held`.
 
 ## Khi nào thêm pattern
 

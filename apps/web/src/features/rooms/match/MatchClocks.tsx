@@ -13,6 +13,11 @@ function formatTime(milliseconds: number) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
+/**
+ * Component hiển thị đồng hồ thi đấu thời gian thực cho cả hai bên Đỏ và Đen.
+ * Tự động nội suy thời gian đã trôi qua ở client bằng `performance.now()` và làm mới mỗi 200ms.
+ * Báo hiệu bên đang đến lượt, cảnh báo khi đồng hồ về 0 hoặc khi mất kết nối.
+ */
 export function MatchClocks({
   clocks,
   matchStatus,

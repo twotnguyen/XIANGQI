@@ -6,8 +6,8 @@ services:
     region: singapore
     buildCommand: pnpm --filter @xiangqi/server... build
     startCommand: pnpm --filter @xiangqi/server start
-    healthCheckPath: /health
-    autoDeploy: true
+    healthCheckPath: /ready
+    autoDeployTrigger: "off"
     envVars:
       - key: NODE_ENV
         value: production

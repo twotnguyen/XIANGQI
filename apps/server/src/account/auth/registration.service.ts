@@ -34,6 +34,10 @@ function times(draft: Draft) {
     resendAt: new Date(draft.lastSentAt.getTime() + 60000).toISOString(),
   };
 }
+/**
+ * Dịch vụ xử lý toàn bộ logic nghiệp vụ đăng ký tài khoản:
+ * Điều phối xác thực email, kiểm tra trùng lặp thông tin, mã hóa dữ liệu nháp và bảo trì dọn dẹp.
+ */
 @Injectable()
 export class RegistrationService {
   constructor(
@@ -50,6 +54,9 @@ export class RegistrationService {
         ) => Promise<Session>)
       | null = null,
   ) {}
+  /**
+   * Kiểm tra xem username đã tồn tại trong hệ thống chưa (bước 1 luồng đăng ký).
+   */
   async check(input: unknown) {
     const credentials = validateCredentials(input);
     if (await this.store.usernameTaken(credentials.username))
@@ -61,6 +68,9 @@ export class RegistrationService {
       );
     return { step: 2 };
   }
+  /**
+   * Bắt đầu phiên đăng ký bằng email: lưu thông tin nháp (draft intent) và gửi mã xác nhận OTP.
+   */
   async email(
     input: Credentials & { email: string; registrationToken?: string },
   ) {
@@ -162,6 +172,9 @@ export class RegistrationService {
         429,
       );
   }
+  /**
+   * Gửi lại mã OTP xác minh email cho phiên đăng ký đang chờ.
+   */
   async resend(input: { registrationToken: string }) {
     const initial = await this.getDraft(input.registrationToken);
     return this.store.withLocks([`email:${initial.email}`], async (store) => {
@@ -181,6 +194,9 @@ export class RegistrationService {
       return times(draft);
     });
   }
+  /**
+   * Xác minh mã OTP do người dùng nhập, hoàn tất hồ sơ người dùng và cấp phiên đăng nhập.
+   */
   async verify(input: {
     registrationToken: string;
     otp: string;
@@ -298,6 +314,9 @@ export class RegistrationService {
       },
     );
   }
+  /**
+   * Kiểm tra tính hợp lệ của token và đảm bảo tài khoản đã hoàn tất đăng ký đầy đủ.
+   */
   async requireActive(accessToken: string) {
     const user = await this.auth.getUser(accessToken);
     const account = await this.store.accountById(user.id);
@@ -316,6 +335,9 @@ export class RegistrationService {
       );
     return user.id;
   }
+  /**
+   * Tác vụ định kỳ bảo trì: dọn dẹp các intent và tài khoản nháp quá hạn không kích hoạt.
+   */
   async maintain() {
     const candidates = await this.store.staleAccounts(
       new Date(this.now().getTime() - 60 * 60000),
@@ -354,6 +376,9 @@ export class RegistrationService {
   }
 }
 export { containsForbiddenName } from "@xiangqi/shared";
+/**
+ * Kiểm tra định dạng tên người dùng (3–20 ký tự, không chứa từ cấm).
+ */
 export function validateUsername(value: unknown): string {
   if (typeof value !== "string" || !/^[a-zA-Z0-9_]{3,20}$/.test(value)) {
     throw new RegistrationError(
@@ -372,6 +397,9 @@ export function validateUsername(value: unknown): string {
     );
   return value;
 }
+/**
+ * Kiểm tra tính hợp lệ của thông tin đăng ký (username, mật khẩu đủ độ dài và khớp nhau).
+ */
 export function validateCredentials(value: unknown): Credentials {
   if (!value || typeof value !== "object")
     throw new RegistrationError(

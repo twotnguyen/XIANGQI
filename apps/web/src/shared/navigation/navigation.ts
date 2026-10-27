@@ -25,13 +25,22 @@ function authDestination(value: unknown): string | null {
     ? `${url.pathname}${url.search}`
     : null;
 }
+/**
+ * Lấy đường dẫn đích người dùng muốn truy cập trước khi bị chuyển hướng đăng nhập.
+ */
 export function getAuthDestination(): string | null {
   return authDestination(window.history.state?.xiangqiAuthDestination);
 }
+/**
+ * Lấy thông tin vị trí URL hiện tại của trình duyệt (pathname, search, hash).
+ */
 export function getLocation(): BrowserLocation {
   const { pathname, search, hash } = window.location;
   return { pathname, search, hash };
 }
+/**
+ * Đăng ký hàm callback lắng nghe sự thay đổi URL của trình duyệt (hỗ trợ cả popstate và pushState/replaceState).
+ */
 export function subscribeLocation(listener: () => void): () => void {
   window.addEventListener("popstate", listener);
   window.addEventListener(navigationEvent, listener);
@@ -40,6 +49,9 @@ export function subscribeLocation(listener: () => void): () => void {
     window.removeEventListener(navigationEvent, listener);
   };
 }
+/**
+ * Điều hướng người dùng tới đường dẫn nội bộ mới và phát sự kiện cập nhật route.
+ */
 export function navigate(
   to: string,
   options: { replace?: boolean; authDestination?: string | null } = {},

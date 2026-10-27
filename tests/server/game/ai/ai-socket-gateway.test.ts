@@ -52,6 +52,7 @@ function snapshot(
       status: "ACTIVE",
       engineState: "IDLE",
       engineError: null,
+      undoUsed: 0,
       outcome: null,
     },
     serverNow: new Date().toISOString(),

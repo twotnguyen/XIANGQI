@@ -5,8 +5,14 @@ import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
 import { ProfileController } from "./profile.controller.js";
 import type { Pool } from "pg";
+/**
+ * Module NestJS đóng gói các endpoint và service quản lý hồ sơ người dùng.
+ */
 @Module({})
 export class ProfileModule {
+  /**
+   * Khởi tạo DynamicModule cho tính năng hồ sơ người dùng.
+   */
   static forRoot(store: ProfileStore, sessions: SessionService): DynamicModule {
     return {
       module: ProfileModule,
@@ -19,6 +25,9 @@ export class ProfileModule {
     };
   }
 }
+/**
+ * Khởi tạo runtime cho module Profile nếu cờ PROFILE_ENABLED được bật trong môi trường.
+ */
 export async function createProfileRuntime(
   env: Record<string, string | undefined>,
   registration: {

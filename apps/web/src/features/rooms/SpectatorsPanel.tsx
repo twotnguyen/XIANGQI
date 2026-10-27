@@ -4,6 +4,12 @@ export interface SpectatorSeat {
   userId: string;
   displayName: string;
 }
+
+/**
+ * Component hiển thị danh sách người xem (khán giả) trong phòng cờ.
+ * Hỗ trợ các hành động: người chơi chuyển xuống làm người xem,
+ * chủ phòng mời người xem lên ghế chơi cờ, hoặc đuổi người xem khỏi phòng (kèm popup xác nhận).
+ */
 export function SpectatorsPanel({
   spectators,
   limit,

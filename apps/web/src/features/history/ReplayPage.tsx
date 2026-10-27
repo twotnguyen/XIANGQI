@@ -11,6 +11,9 @@ import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { ErrorState } from "../../shared/ui/primitives.js";
 import type { AuthorizedFetch } from "../rooms/room-client.js";
 
+/**
+ * Component định tuyến trung gian khởi tạo ReplayClient có xác thực để tải ván đấu.
+ */
 export function ReplayRoute({
   authorizedFetch,
   id,
@@ -25,6 +28,9 @@ export function ReplayRoute({
   return <ReplayPage client={client} id={id} />;
 }
 
+/**
+ * Trang xem lại ván đấu (tải toàn bộ lịch sử nước đi, hiển thị bàn cờ và biên bản kỳ phổ).
+ */
 export function ReplayPage({
   client,
   id,

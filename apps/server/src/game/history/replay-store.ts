@@ -44,8 +44,13 @@ function fail(code: string, status: number): never {
 function corrupt(): never {
   return fail("REPLAY_CORRUPT", 409);
 }
-/** Read-only projection. Caller supplies freshly authenticated, actor-locked same-client scope. */
+/**
+ * Tầng lưu trữ truy vấn và tái hiện lịch sử nước đi ván đấu từ cơ sở dữ liệu.
+ */
 export class ReplayStore {
+  /**
+   * Đọc chi tiết ván đấu đã kết thúc, kiểm tra tính toàn vẹn và tái hiện lại diễn biến bàn cờ.
+   */
   async read(scope: RoomScope, id: string): Promise<ReplayRecord> {
     if (typeof id !== "string" || !uuid.test(id))
       fail("REPLAY_INPUT_INVALID", 400);

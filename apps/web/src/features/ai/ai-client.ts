@@ -60,6 +60,9 @@ function utc(v: unknown): v is string {
   if (!Number.isFinite(ms)) return false;
   return new Date(ms).toISOString().slice(0, 19) === v.slice(0, 19);
 }
+/**
+ * Kiểm tra và giải mã phản hồi dữ liệu ván đấu với máy AI từ backend (snapshot trạng thái, mốc thời gian máy chủ và quyền điều khiển tab).
+ */
 export function parseAiResponse(
   value: unknown,
   expectedId?: string,
@@ -73,6 +76,7 @@ export function parseAiResponse(
       "position",
       "history",
       "version",
+      "undoUsed",
       "status",
       "engineState",
       "engineError",
@@ -92,6 +96,8 @@ export function parseAiResponse(
     !s.history.every(fen) ||
     s.history.at(-1) !== s.position ||
     !integer(s.version) ||
+    !integer(s.undoUsed) ||
+    (s.undoUsed as number) > 3 ||
     !["ACTIVE", "FINALIZING", "FINISHED", "ABANDONED"].includes(
       s.status as string,
     ) ||
@@ -170,10 +176,22 @@ class AiRequestError extends Error {
     );
   }
 }
+export interface AiClient {
+  current(): Promise<{ gameId: string | null }>;
+  read(id: string): Promise<AiResponse>;
+  create(selection: AiSetupSelection): Promise<AiResponse>;
+  move(id: string, version: number, move: Move): Promise<AiResponse>;
+  resign(id: string, version: number): Promise<AiResponse>;
+  retry(id: string, version: number): Promise<AiResponse>;
+  undo(id: string, version: number): Promise<AiResponse>;
+}
+/**
+ * Khởi tạo client HTTP tương tác với các endpoint API ván cờ AI (đọc ván, tạo ván, đánh cờ, đầu hàng, thử lại).
+ */
 export function makeAiClient(
   authorizedFetch: AuthorizedFetch,
   getControl: () => Promise<AiControlProof>,
-) {
+): AiClient {
   async function request(
     path: string,
     method: "GET" | "POST",
@@ -288,5 +306,6 @@ export function makeAiClient(
       mutation(id, version, "move", move),
     resign: (id: string, version: number) => mutation(id, version, "resign"),
     retry: (id: string, version: number) => mutation(id, version, "retry"),
+    undo: (id: string, version: number) => mutation(id, version, "undo"),
   };
 }

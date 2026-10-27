@@ -15,7 +15,9 @@ function browserStorage(): Storage | null {
   }
 }
 
-/** Reads the stored choice, applies it to <html> and follows the OS for "system". */
+/**
+ * Custom React hook quản lý trạng thái chủ đề giao diện, đồng bộ với localStorage và phản ứng theo chế độ sáng/tối của hệ điều hành.
+ */
 export function useTheme() {
   const [choice, setChoiceState] = useState<ThemeChoice>(() =>
     readStoredTheme(browserStorage() ?? { getItem: () => null }),

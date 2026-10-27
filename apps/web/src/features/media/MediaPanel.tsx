@@ -104,6 +104,43 @@ function MicIcon({ off }: { off?: boolean }) {
   );
 }
 
+const DEFAULT_MEDIA_ERROR = "Chưa thể kết nối hình tiếng. Vui lòng thử lại.";
+
+function mediaErrorMessage(error: unknown, devices: boolean): string {
+  const insecure =
+    typeof window !== "undefined" &&
+    !window.isSecureContext &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1";
+  if (devices && insecure)
+    return "Trình duyệt chỉ cho phép Camera/Mic qua HTTPS hoặc localhost. Để dùng qua IP mạng khác, cần truy cập qua HTTPS.";
+  if (error instanceof MediaRequestError)
+    return devices
+      ? "Chưa thể bật camera hoặc mic. Kiểm tra quyền trình duyệt."
+      : DEFAULT_MEDIA_ERROR;
+  if (error instanceof Error) {
+    if (
+      error.name === "NotAllowedError" ||
+      error.name === "PermissionDeniedError"
+    )
+      return "Bạn chưa cấp quyền truy cập Camera/Mic trên trình duyệt.";
+    if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError")
+      return "Không tìm thấy thiết bị Camera hoặc Microphone trên máy.";
+  }
+  return DEFAULT_MEDIA_ERROR;
+}
+
+/** Ngắt phòng LiveKit và dừng mọi track local đang giữ thiết bị; gọi lại nhiều lần vẫn an toàn. */
+function releaseRoom(room: Room) {
+  room.removeAllListeners();
+  for (const publication of room.localParticipant.getTrackPublications())
+    publication.track?.stop();
+  void room.disconnect();
+}
+
+/**
+ * Bảng điều khiển Facecam và Micro LiveKit trong phòng cờ (bật/tắt thiết bị, thiết lập phạm vi chia sẻ và kết nối phòng LiveKit).
+ */
 export function MediaPanel({
   roomId,
   role,
@@ -121,48 +158,48 @@ export function MediaPanel({
 }) {
   const [camera, setCamera] = useState(false);
   const [mic, setMic] = useState(false);
+  // Mức đang áp dụng: chỉ đổi khi máy chủ xác nhận; mặc định khớp máy chủ (OPPONENT).
   const [level, setLevel] = useState<ShareLevel>("OPPONENT");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [feeds, setFeeds] = useState<MediaFeed[]>([]);
   const rooms = useRef<Room[]>([]);
   const epoch = useRef(0);
+  const levelRef = useRef<ShareLevel>("OPPONENT");
+  const shareVersion = useRef(0);
+  const elements = useRef(new Map<string, HTMLElement>());
 
-  const detach = useCallback(() => {
+  const confirmLevel = useCallback((next: ShareLevel) => {
+    levelRef.current = next;
+    setLevel(next);
+  }, []);
+
+  // Mọi lần đổi vòng đời hoặc yêu cầu mới làm tác vụ cũ thành stale và giải phóng phòng cũ.
+  const invalidate = useCallback(() => {
+    const id = ++epoch.current;
     const live = rooms.current;
     rooms.current = [];
     setFeeds([]);
-    for (const room of live) {
-      room.removeAllListeners();
-      void room.disconnect();
-    }
+    elements.current.clear();
+    for (const room of live) releaseRoom(room);
+    return id;
   }, []);
 
   useEffect(() => {
+    let active = true;
+    const version = shareVersion.current;
     void client
       .getShare(roomId)
-      .then((value) => setLevel(value.level))
+      .then((value) => {
+        if (active && version === shareVersion.current)
+          confirmLevel(value.level);
+      })
       .catch(() => undefined);
-  }, [client, roomId]);
+    return () => {
+      active = false;
+    };
+  }, [client, roomId, confirmLevel]);
 
-  useEffect(() => () => detach(), [detach]);
-
-  useEffect(() => {
-    if (!connected) {
-      detach();
-      setCamera(false);
-      setMic(false);
-      setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
-    } else {
-      setStatus((previous) =>
-        previous === "Chưa kết nối phòng, camera và mic tạm tắt."
-          ? ""
-          : previous,
-      );
-    }
-  }, [connected, detach]);
-
-  const elements = useRef(new Map<string, HTMLElement>());
   const attachTrack = useCallback(
     (track: RemoteTrack, participant: RemoteParticipant, roomName: string) => {
       if (track.kind !== Track.Kind.Video && track.kind !== Track.Kind.Audio)
@@ -186,16 +223,18 @@ export function MediaPanel({
 
   const connect = useCallback(
     async (
+      id: number,
       url: string,
       token: string,
       roomName: string,
       publish: { camera: boolean; mic: boolean },
     ) => {
+      const current = () => epoch.current === id;
       const live = new Room({ adaptiveStream: true, dynacast: true });
       rooms.current.push(live);
-      live.on(RoomEvent.TrackSubscribed, (track, _pub, participant) =>
-        attachTrack(track, participant, roomName),
-      );
+      live.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
+        if (current()) attachTrack(track, participant, roomName);
+      });
       live.on(RoomEvent.TrackUnsubscribed, (track) => {
         const sid = track.sid ?? `${roomName}-unnamed`;
         const element =
@@ -207,8 +246,16 @@ export function MediaPanel({
         );
       });
       await live.connect(url, token);
+      if (!current()) {
+        releaseRoom(live);
+        return;
+      }
       if (publish.camera) {
         const publication = await live.localParticipant.setCameraEnabled(true);
+        if (!current()) {
+          releaseRoom(live);
+          return;
+        }
         if (publication?.track) {
           const element = publication.track.attach();
           element.muted = true;
@@ -220,91 +267,85 @@ export function MediaPanel({
           ]);
         }
       }
-      if (publish.mic) await live.localParticipant.setMicrophoneEnabled(true);
-      return live;
+      if (publish.mic) {
+        await live.localParticipant.setMicrophoneEnabled(true);
+        if (!current()) releaseRoom(live);
+      }
     },
     [attachTrack, userId],
   );
 
-  const sync = useCallback(
-    async (next: { camera: boolean; mic: boolean; level: ShareLevel }) => {
-      const requestEpoch = ++epoch.current;
-      detach();
-      if (!connected) {
-        setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
-        return;
-      }
-      const enabled = next.camera || next.mic;
+  // Lấy ticket theo đúng quyền thiết bị đang yêu cầu rồi chỉ phát khi mức đã xác nhận cho phép.
+  const run = useCallback(
+    async (
+      next: { camera: boolean; mic: boolean; level: ShareLevel },
+      notice?: string,
+    ) => {
+      const id = invalidate();
+      const current = () => epoch.current === id;
       setBusy(true);
       setStatus("");
       try {
         const ticket = await client.token(roomId, next.camera, next.mic);
-        if (epoch.current !== requestEpoch) return;
-        const canPublishHere = role !== "spectator" && next.level !== "NONE";
+        if (!current()) return;
+        const enabled = next.camera || next.mic;
+        const canPublish =
+          enabled && role !== "spectator" && next.level !== "NONE";
         const stage = ticket.stage;
-        const connectPrivate = connect(
-          ticket.url,
-          ticket.token,
-          ticket.roomName,
-          {
-            camera: next.camera && canPublishHere,
-            mic: next.mic && canPublishHere,
-          },
-        );
-        const connectStage =
-          stage && role !== "spectator"
-            ? connect(ticket.url, stage.token, stage.roomName, {
+        await Promise.all([
+          connect(id, ticket.url, ticket.token, ticket.roomName, {
+            camera: next.camera && canPublish,
+            mic: next.mic && canPublish,
+          }),
+          stage && canPublish && next.level === "ALL"
+            ? connect(id, ticket.url, stage.token, stage.roomName, {
                 camera: next.camera,
                 mic: next.mic,
               })
-            : Promise.resolve();
-        await Promise.all([connectPrivate, connectStage]);
-        if (epoch.current !== requestEpoch) return;
+            : Promise.resolve(),
+        ]);
+        if (!current()) return;
         setStatus(
-          enabled
-            ? canPublishHere
-              ? "Đang chia sẻ hình tiếng."
-              : "Đã bật thiết bị nhưng mức chia sẻ là Không chia sẻ."
-            : "Camera và mic đang tắt.",
+          notice ??
+            (enabled
+              ? canPublish
+                ? "Đang chia sẻ hình tiếng."
+                : "Đã bật thiết bị nhưng mức chia sẻ là Không chia sẻ."
+              : "Camera và mic đang tắt."),
         );
       } catch (error) {
-        if (epoch.current !== requestEpoch) return;
-        if (next.camera && !camera) setCamera(false);
-        if (next.mic && !mic) setMic(false);
-
-        let message = "Chưa thể kết nối hình tiếng. Vui lòng thử lại.";
-        if (
-          typeof window !== "undefined" &&
-          !window.isSecureContext &&
-          window.location.hostname !== "localhost" &&
-          window.location.hostname !== "127.0.0.1"
-        ) {
-          message =
-            "Trình duyệt chỉ cho phép Camera/Mic qua HTTPS hoặc localhost. Để dùng qua IP mạng khác, cần truy cập qua HTTPS.";
-        } else if (error instanceof MediaRequestError) {
-          message = "Chưa thể bật camera hoặc mic. Kiểm tra quyền trình duyệt.";
-        } else if (error instanceof Error) {
-          if (
-            error.name === "NotAllowedError" ||
-            error.name === "PermissionDeniedError"
-          ) {
-            message =
-              "Bạn chưa cấp quyền truy cập Camera/Mic trên trình duyệt.";
-          } else if (
-            error.name === "NotFoundError" ||
-            error.name === "DevicesNotFoundError"
-          ) {
-            message =
-              "Không tìm thấy thiết bị Camera hoặc Microphone trên máy.";
-          }
-        }
-        setStatus(message);
+        if (!current()) return;
+        // Lỗi một phần: dừng mọi phòng/track đã mở, không giữ publish dở dang.
+        invalidate();
+        setCamera(false);
+        setMic(false);
+        setBusy(false);
+        setStatus(mediaErrorMessage(error, next.camera || next.mic));
       } finally {
-        if (epoch.current === requestEpoch) setBusy(false);
+        if (current()) setBusy(false);
       }
     },
-    [camera, client, connect, connected, detach, mic, role, roomId],
+    [client, connect, invalidate, role, roomId],
   );
+
+  // Vòng đời: join receive-only khi mount/kết nối lại; cleanup vô hiệu tác vụ đang chờ.
+  useEffect(() => {
+    if (!connected) {
+      invalidate();
+      setCamera(false);
+      setMic(false);
+      setBusy(false);
+      setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
+      return undefined;
+    }
+    // Đổi phòng/vai trò/client: thiết bị của phòng cũ không còn hợp lệ, tắt trước khi join lại.
+    setCamera(false);
+    setMic(false);
+    void run({ camera: false, mic: false, level: levelRef.current });
+    return () => {
+      invalidate();
+    };
+  }, [connected, invalidate, run]);
 
   async function toggle(kind: "camera" | "mic") {
     if (busy) return;
@@ -312,27 +353,46 @@ export function MediaPanel({
       setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
       return;
     }
-    const nextCamera = kind === "camera" ? !camera : camera;
-    const nextMic = kind === "mic" ? !mic : mic;
     const next = {
-      camera: nextCamera,
-      mic: nextMic,
+      camera: kind === "camera" ? !camera : camera,
+      mic: kind === "mic" ? !mic : mic,
       level,
     };
-    setCamera(nextCamera);
-    setMic(nextMic);
-    await sync(next);
+    setCamera(next.camera);
+    setMic(next.mic);
+    await run(next);
   }
 
   async function share(next: ShareLevel) {
     if (busy) return;
-    setLevel(next);
+    const id = epoch.current;
+    shareVersion.current += 1;
+    setBusy(true);
+    let confirmed: ShareLevel;
     try {
-      await client.setShare(roomId, next);
+      confirmed = (await client.setShare(roomId, next)).level;
     } catch {
-      setStatus("Chưa thể đổi mức chia sẻ.");
+      if (epoch.current !== id) return;
+      // Không xác nhận được: tắt phát, giữ mức đã xác nhận và chỉ join receive-only (không stage).
+      setCamera(false);
+      setMic(false);
+      const message = `Chưa thể đổi mức chia sẻ. Vẫn giữ "${LABELS[levelRef.current]}"; camera và mic đã tắt để không phát ngoài ý muốn.`;
+      if (connected && (camera || mic))
+        await run(
+          { camera: false, mic: false, level: levelRef.current },
+          message,
+        );
+      else {
+        setStatus(message);
+        setBusy(false);
+      }
+      return;
     }
-    await sync({ camera, mic, level: next });
+    if (epoch.current !== id) return;
+    confirmLevel(confirmed);
+    if (connected && (camera || mic))
+      await run({ camera, mic, level: confirmed });
+    else setBusy(false);
   }
 
   const canPublish = role !== "spectator";

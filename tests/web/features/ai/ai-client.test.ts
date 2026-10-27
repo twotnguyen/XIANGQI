@@ -14,6 +14,7 @@ function envelope() {
       position: fen,
       history: [fen],
       version: 0,
+      undoUsed: 0,
       status: "ACTIVE",
       engineState: "IDLE",
       engineError: null,
@@ -234,4 +235,37 @@ describe("AI REST client", () => {
       await expect(fixture(value).client.current()).rejects.toThrow("Phản hồi");
     },
   );
+  it("posts undo with the snapshot version and returns the server undo count", async () => {
+    const value = envelope();
+    value.snapshot.version = 3;
+    value.snapshot.undoUsed = 1;
+    const f = fixture(value);
+    const out = await f.client.undo(id, 3);
+    expect(out.snapshot.undoUsed).toBe(1);
+    expect(f.fetch).toHaveBeenCalledTimes(1);
+    const [url, init] = f.fetch.mock.calls[0]!;
+    expect(String(url)).toBe(`/ai/${id}/undo`);
+    expect(init?.method).toBe("POST");
+    expect(JSON.parse(String(init?.body))).toEqual({ version: 3 });
+  });
+  it.each([4, -1, 1.5])(
+    "rejects an undo count of %s in the response",
+    async (undoUsed) => {
+      const value = envelope();
+      value.snapshot.undoUsed = undoUsed;
+      await expect(fixture(value).client.undo(id, 0)).rejects.toThrow(
+        "Phản hồi",
+      );
+    },
+  );
+  it("rejects an undo response for a different game", async () => {
+    const value = envelope();
+    value.snapshot.id = other;
+    await expect(fixture(value).client.undo(id, 0)).rejects.toThrow("Phản hồi");
+  });
+  it("rejects undo with an invalid game ID before any HTTP", async () => {
+    const f = fixture();
+    await expect(f.client.undo("bad", 0)).rejects.toThrow();
+    expect(f.fetch).not.toHaveBeenCalled();
+  });
 });

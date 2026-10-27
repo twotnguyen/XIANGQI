@@ -47,6 +47,7 @@ export interface AiHttpApi {
   ): Promise<AiHttpResult>;
   resign(origin: Human, gameId: string, version: number): Promise<AiHttpResult>;
   retry(origin: Human, gameId: string, version: number): Promise<AiHttpResult>;
+  undo(origin: Human, gameId: string, version: number): Promise<AiHttpResult>;
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const safeCodes = new Set([
@@ -73,6 +74,8 @@ const safeCodes = new Set([
   "AI_ADMISSION_REQUIRED",
   "AI_SCOPE_INVALID",
   "AI_GENERATION_EXHAUSTED",
+  "AI_UNDO_UNAVAILABLE",
+  "AI_UNDO_EXHAUSTED",
 ]);
 function invalid(): never {
   throw new RoomError(
@@ -132,6 +135,7 @@ function publish(result: AiHttpResult) {
       history: [...s.history],
       version: s.version,
       status: s.status,
+      undoUsed: s.undoUsed,
       engineState: s.engineState,
       engineError: s.engineError,
       outcome:
@@ -156,6 +160,9 @@ class NoStore implements NestInterceptor {
     return next.handle();
   }
 }
+/**
+ * Controller xử lý các yêu cầu HTTP quản lý và điều khiển ván đấu cờ tướng với máy AI.
+ */
 @Controller("ai")
 @UseInterceptors(NoStore)
 export class AiController {
@@ -203,6 +210,9 @@ export class AiController {
       );
     }
   }
+  /**
+   * Truy vấn mã ván cờ AI hiện tại của người chơi (nếu đang có ván chưa hoàn tất).
+   */
   @Get("current")
   current(@Req() request: IncomingMessage) {
     return this.respond(request, async () => {
@@ -210,12 +220,18 @@ export class AiController {
       return { gameId: result.gameId };
     });
   }
+  /**
+   * Đọc chi tiết thế cờ, lịch sử nước đi và trạng thái ván cờ AI theo id.
+   */
   @Get(":gameId")
   read(@Req() request: IncomingMessage, @Param("gameId") gameId: string) {
     return this.respond(request, async () =>
       publish(await this.service.read(human(request), id(gameId))),
     );
   }
+  /**
+   * Tạo mới một ván cờ với AI.
+   */
   @Post()
   @HttpCode(200)
   create(@Req() request: IncomingMessage, @Body() body: unknown) {
@@ -235,6 +251,9 @@ export class AiController {
       );
     });
   }
+  /**
+   * Gửi nước đi của người chơi trong ván cờ với AI.
+   */
   @Post(":gameId/move")
   @HttpCode(200)
   move(
@@ -265,6 +284,9 @@ export class AiController {
       );
     });
   }
+  /**
+   * Người chơi nhận thua (đầu hàng) trước máy.
+   */
   @Post(":gameId/resign")
   @HttpCode(200)
   resign(
@@ -282,6 +304,9 @@ export class AiController {
       ),
     );
   }
+  /**
+   * Yêu cầu máy AI thử lại lượt tính nước đi khi bị timeout hoặc quá tải.
+   */
   @Post(":gameId/retry")
   @HttpCode(200)
   retry(
@@ -292,6 +317,27 @@ export class AiController {
     return this.respond(request, async () =>
       publish(
         await this.service.retry(
+          human(request),
+          id(gameId),
+          version(object(body, ["version"]).version),
+        ),
+      ),
+    );
+  }
+
+  /**
+   * Hoàn tác nước đi (tối đa 3 lần/ván) theo BA 6.3.
+   */
+  @Post(":gameId/undo")
+  @HttpCode(200)
+  undo(
+    @Req() request: IncomingMessage,
+    @Param("gameId") gameId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(request, async () =>
+      publish(
+        await this.service.undo(
           human(request),
           id(gameId),
           version(object(body, ["version"]).version),

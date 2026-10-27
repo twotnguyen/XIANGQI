@@ -13,10 +13,6 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      "@xiangqi/engine": path.resolve(
-        __dirname,
-        "../../packages/engine/src/search.ts",
-      ),
       "@xiangqi/xiangqi-core": path.resolve(
         __dirname,
         "../../packages/xiangqi-core/src/index.ts",

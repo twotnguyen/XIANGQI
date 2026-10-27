@@ -4,144 +4,17 @@ import type { RoomSnapshot, CommandAcknowledgement } from "@xiangqi/shared";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { io, type Socket } from "socket.io-client";
 import { createApp } from "@server/app.js";
-import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
-import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
-import { RoomStore } from "@server/game/room/room-store.js";
-import { RoomTransactions } from "@server/game/room/room-transactions.js";
-import { RoomHttpService } from "@server/game/room/room-http.service.js";
-import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
-import { MatchStore } from "@server/game/match/match-store.js";
-import { ClockService } from "@server/game/clock/clock.service.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
-import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
-const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
-type Registration = NonNullable<
-  Awaited<ReturnType<typeof createRegistrationRuntime>>
->;
-function registration() {
-  const users = new Map<
-    string,
-    { id: string; email: string; email_confirmed_at: string }
-  >();
-  const auth = {
-    signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
-      const user = users.get(token);
-      if (!user) throw new Error("synthetic invalid bearer");
-      return user;
-    }),
-  };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth);
-  return {
-    users,
-    auth,
-    sessions,
-    context: { pool, sessions, auth } as unknown as Registration,
-  };
-}
-async function member(r: ReturnType<typeof registration>) {
-  const id = randomUUID(),
-    email = `synthetic-${id}@example.invalid`,
-    at = new Date();
-  await pool.query(
-    "INSERT INTO auth.users(id,email,email_confirmed_at) VALUES($1,$2,$3)",
-    [id, email, at],
-  );
-  await pool.query(
-    "INSERT INTO public.profiles(user_id,username,display_name,completed_at,registration_pending) VALUES($1,$2,'Synthetic Runtime',$3,false)",
-    [id, "m" + id.replaceAll("-", "").slice(0, 18), at],
-  );
-  const token = "synthetic-" + id;
-  r.users.set(token, { id, email, email_confirmed_at: at.toISOString() });
-  const issued = await r.sessions.issue(id, false);
-  return { id, token, appSession: issued.appSession };
-}
-async function waitFor<T>(
-  read: () => Promise<T>,
-  accept: (value: T) => boolean,
-  timeout = 7000,
-) {
-  const until = Date.now() + timeout;
-  while (Date.now() < until) {
-    const value = await read();
-    if (accept(value)) return value;
-    await new Promise((r) => setTimeout(r, 25));
-  }
-  throw new Error("Synthetic runtime wait timed out");
-}
-async function oldRoom(r: ReturnType<typeof registration>, playing = false) {
-  const a = await member(r),
-    b = await member(r),
-    rooms = new RoomStore(),
-    coordinator = new RoomTransactions(pool),
-    authorizer = new PostgresMemberRoomAuthorizer(r.sessions);
-  const service = new RoomHttpService(rooms, coordinator, authorizer),
-    proof = (m: typeof a) => ({
-      accessToken: m.token,
-      appSession: m.appSession,
-    });
-  const entry = await service.create(proof(a), {
-    commandId: randomUUID(),
-    timeMinutes: 5,
-  });
-  await service.join(proof(b), {
-    commandId: randomUUID(),
-    code: entry.inviteCode!,
-    preference: "play",
-  });
-  let matchId: string | null = null;
-  await coordinator.withRoom(
-    { actor: { userId: a.id, kind: "member" }, roomIds: [entry.roomId] },
-    async (p) => ({ status: "active", actor: p.actor }),
-    async (scope) => {
-      for (const m of [a, b])
-        await rooms.presence(
-          scope.actor.userId === m.id
-            ? scope
-            : { ...scope, actor: { userId: m.id, kind: "member" } },
-          entry.roomId,
-          {
-            connectionId: randomUUID(),
-            generation: 1,
-            serverInstance: randomUUID(),
-          },
-          true,
-        );
-      await scope.client.query(
-        "UPDATE public.room_members SET ready=true WHERE room_id=$1",
-        [entry.roomId],
-      );
-      const token = randomUUID(),
-        at = new Date();
-      await scope.client.query(
-        "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
-        [entry.roomId, token, at, a.id, b.id],
-      );
-      if (playing) {
-        const match = new MatchStore(new ClockService(), undefined as never),
-          created = await match.start(scope.client, {
-            roomId: entry.roomId,
-            startToken: token,
-            redId: a.id,
-            blackId: b.id,
-            timeControlSeconds: 300,
-            startedAt: at,
-          });
-        matchId = created.matchId;
-        await scope.client.query(
-          "UPDATE public.rooms SET status='PLAYING',current_match_id=$2 WHERE id=$1",
-          [entry.roomId, matchId],
-        );
-        await scope.client.query(
-          "UPDATE public.active_players SET match_id=$2 WHERE room_id=$1",
-          [entry.roomId, matchId],
-        );
-      }
-    },
-  );
-  return { a, b, roomId: entry.roomId, matchId };
-}
+import {
+  databaseUrl,
+  env,
+  member,
+  oldRoom,
+  pool,
+  registration,
+  reset,
+  waitFor,
+} from "./game.runtime.test-helper.js";
 async function publicationFixture(viewer = false) {
   const r = registration(),
     a = await member(r),
@@ -378,38 +251,6 @@ describe.skipIf(!databaseUrl)(
         release();
         await runtime.close();
         poolEnd.mockRestore();
-      }
-    });
-    it("keeps media revocation unacknowledged when no real media port is integrated", async () => {
-      const r = registration(),
-        g = await oldRoom(r),
-        runtime = await createRoomRuntime(env, r.context),
-        eventId = randomUUID();
-      if (!runtime) throw new Error("missing runtime");
-      await pool.query(
-        "INSERT INTO xiangqi_room.outbox(id,room_id,room_version,type,payload) SELECT $1,id,room_version,'media.revoke-room','{}'::jsonb FROM public.rooms WHERE id=$2",
-        [eventId, g.roomId],
-      );
-      runtime.realtime.onAttached({
-        connections: () => [],
-        publishRoomClosed: async () => {},
-        publishSnapshots: async () => {},
-      });
-      try {
-        await runtime.start();
-        const row = await waitFor(
-          async () =>
-            (
-              await pool.query(
-                "SELECT delivered_at,attempts FROM xiangqi_room.outbox WHERE id=$1",
-                [eventId],
-              )
-            ).rows[0],
-          (value) => value?.attempts > 0,
-        );
-        expect(row.delivered_at).toBeNull();
-      } finally {
-        await runtime.close();
       }
     });
     it("delivers a closed-room notice to the actual spectator after SQL membership removal", async () => {

@@ -158,6 +158,9 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
     !Array.isArray(s.history) ||
     !s.history.every((item) => typeof item === "string") ||
     !generation(s.version) ||
+    !Number.isSafeInteger(s.undoUsed) ||
+    (s.undoUsed as number) < 0 ||
+    (s.undoUsed as number) > 3 ||
     !["ACTIVE", "FINALIZING", "FINISHED", "ABANDONED"].includes(
       s.status as string,
     ) ||
@@ -196,6 +199,7 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
       position: s.position,
       history: [...s.history],
       version: s.version,
+      undoUsed: s.undoUsed,
       status: s.status,
       engineState: s.engineState,
       engineError: s.engineError,
@@ -209,7 +213,12 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
     },
   };
 }
-/** Separate Engine.IO path; closing this attachment leaves the shared HTTP server open. */
+/**
+ * Khởi tạo cổng kết nối WebSocket chuyên biệt cho chế độ chơi với AI (namespace `/ai` trên đường dẫn `/ai/socket.io`):
+ * - Xác thực handshake phiên đăng nhập và định danh tab client.
+ * - Quản lý quyền điều khiển tab (`ai.control`) và cơ chế takeover tab.
+ * - Phát cập nhật trạng thái ván cờ AI (`ai.snapshot`) và xử lý sự kiện `ai.watch`, `ai.refresh`.
+ */
 export function attachAiSocketGateway(
   httpServer: HttpServer,
   dependencies: AiSocketDependencies,

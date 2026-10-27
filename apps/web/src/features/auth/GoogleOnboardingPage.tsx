@@ -9,6 +9,9 @@ import {
   type GooglePending,
 } from "./google-gis.js";
 import "./GoogleOnboardingPage.css";
+/**
+ * Trang thiết lập tài khoản (onboarding) cho người dùng đăng nhập bằng Google lần đầu (nhập username và mật khẩu dự phòng).
+ */
 export function GoogleOnboardingPage({
   pending,
   onResult,

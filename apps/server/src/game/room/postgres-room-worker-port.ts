@@ -20,6 +20,10 @@ function expired(error: unknown) {
     error.status === 401
   );
 }
+/**
+ * Cổng kết nối Postgres hỗ trợ tiến trình worker phòng cờ:
+ * Quét các phòng đến hạn xử lý, thiết lập transaction bao bọc phòng, dọn dẹp biên lai và xử lý outbox.
+ */
 export class PostgresRoomWorkerPort implements RoomWorkerPort {
   private cursor: string | null = null;
   constructor(
@@ -51,6 +55,9 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
       client.release(broken);
     }
   }
+  /**
+   * Truy vấn danh sách các phòng cờ đến hạn cần xử lý (spectator ngắt kết nối quá 5 phút, đếm ngược bắt đầu ván...).
+   */
   async dueRooms(): Promise<string[]> {
     const ids = await this.transaction(async (client) =>
       (
@@ -63,6 +70,9 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     this.cursor = ids.length === 50 ? ids[49]! : null;
     return ids;
   }
+  /**
+   * Khóa phòng và thực thi khối công việc của worker trong transaction có kiểm soát khóa actor/room tuần tự.
+   */
   async withRoom(
     roomId: string,
     work: (scope: RoomScope) => Promise<void>,
@@ -158,6 +168,9 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
       work,
     );
   }
+  /**
+   * Dọn dẹp các biên lai lệnh (entry receipts) đã hết hạn để giải phóng bộ nhớ cơ sở dữ liệu.
+   */
   async cleanupExpiredReceipts(): Promise<number> {
     return this.transaction(async (client) => {
       await client.query("SET LOCAL lock_timeout='250ms'");
@@ -174,6 +187,9 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
       return result.rows[0]!.removed;
     });
   }
+  /**
+   * Truy vấn sự kiện thu hồi media đang chờ gửi từ outbox.
+   */
   async pendingMediaEvent(): Promise<RoomEvent | undefined> {
     return this.transaction(
       async (client) =>
@@ -181,7 +197,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
           await client.query<RoomEvent>(
             `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload
          FROM xiangqi_room.outbox
-         WHERE delivered_at IS NULL AND type='media.revoke-room' AND next_attempt_at<=now()
+         WHERE delivered_at IS NULL AND type IN ('media.revoke-room','media.revoke-user') AND next_attempt_at<=now()
          ORDER BY created_at,id LIMIT 1`,
           )
         ).rows[0],

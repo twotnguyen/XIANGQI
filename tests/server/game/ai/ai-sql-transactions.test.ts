@@ -239,6 +239,75 @@ describe.skipIf(!databaseUrl)(
           .rows[0].n,
       ).toBe(0);
     });
+    it("reclaims an expired boot's reservation under sweep even when the owner is inactive", async () => {
+      const f = await fixture(),
+        gameId = randomUUID();
+      await f.runner.run(f.ownerId, f.origin, async (tx) => {
+        await tx.reserve(gameId);
+        return { value: 0, install() {} };
+      });
+      await pool.query(
+        "UPDATE xiangqi_ai.boots SET created_at=clock_timestamp()-interval '2 minutes',lease_until=clock_timestamp()-interval '1 second' WHERE id=$1",
+        [f.boot.id],
+      );
+      await pool.query(
+        "UPDATE public.profiles SET registration_pending=true WHERE user_id=$1",
+        [f.ownerId],
+      );
+      const reclaimed = await f.runner.run(
+        f.ownerId,
+        { kind: "sweep" },
+        async (tx) => ({
+          value: await tx.reclaim(gameId, f.boot.id),
+          install() {},
+        }),
+      );
+      expect(reclaimed).toBe(true);
+      expect(
+        (await pool.query("SELECT count(*)::int n FROM public.active_players"))
+          .rows[0].n,
+      ).toBe(0);
+    });
+    it("leaves a live boot's reservation untouched when sweep asks to reclaim it", async () => {
+      const f = await fixture(),
+        gameId = randomUUID();
+      await f.runner.run(f.ownerId, f.origin, async (tx) => {
+        await tx.reserve(gameId);
+        return { value: 0, install() {} };
+      });
+      const reclaimed = await f.runner.run(
+        f.ownerId,
+        { kind: "sweep" },
+        async (tx) => ({
+          value: await tx.reclaim(gameId, f.boot.id),
+          install() {},
+        }),
+      );
+      expect(reclaimed).toBe(false);
+      expect(
+        (await pool.query("SELECT count(*)::int n FROM public.active_players"))
+          .rows[0].n,
+      ).toBe(1);
+    });
+    it("keeps sweep to drop and reclaim: finish and reclaim are refused for other origins", async () => {
+      const f = await fixture();
+      await expect(
+        f.runner.run(f.ownerId, { kind: "sweep" }, async (tx) => {
+          await tx.finish({
+            id: randomUUID(),
+            ownerId: f.ownerId,
+            status: "FINISHED",
+          } as never);
+          return { value: 0, install() {} };
+        }),
+      ).rejects.toMatchObject({ code: "AI_AUTHORITY_REQUIRED" });
+      await expect(
+        f.runner.run(f.ownerId, f.origin, async (tx) => ({
+          value: await tx.reclaim(randomUUID(), f.boot.id),
+          install() {},
+        })),
+      ).rejects.toMatchObject({ code: "AI_AUTHORITY_REQUIRED" });
+    });
     it("does not install RAM before actual COMMIT completes", async () => {
       const f = await fixture(),
         install = vi.fn(),

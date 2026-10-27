@@ -41,6 +41,9 @@ const LoginPage = lazy(() =>
     default: module.LoginPage,
   })),
 );
+/**
+ * Component xem trước màn hình đăng nhập phục vụ phát triển (/dev/login).
+ */
 function LoginPreview() {
   const [received, setReceived] = useState(false);
   return (
@@ -55,6 +58,9 @@ function LoginPreview() {
   );
 }
 
+/**
+ * Component xem trước màn hình đăng ký tài khoản phục vụ phát triển (/dev/register).
+ */
 function RegistrationPreview() {
   const [session, setSession] = useState<RegistrationSession | null>(null);
   return (
@@ -69,6 +75,9 @@ function RegistrationPreview() {
   );
 }
 
+/**
+ * Component kiểm tra và hiển thị trạng thái hoạt động của server và database (/dev/health).
+ */
 function HealthPreview() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [failed, setFailed] = useState(false);
