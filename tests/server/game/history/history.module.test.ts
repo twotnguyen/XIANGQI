@@ -4,7 +4,10 @@ import { initialPosition } from "@xiangqi/xiangqi-core";
 import { createApp } from "@server/app.js";
 import { LoginError } from "@server/account/login/login.types.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { encodePosition } from "@server/game/match/position-codec.js";
@@ -21,16 +24,20 @@ const provider = {
   async signInPassword(): Promise<never> {
     throw new Error("Not used");
   },
-  async getUser(token: string) {
+  async verifyAccessToken(token: string) {
     upstreamCalls++;
     if (upstreamFailure) throw new Error("synthetic private provider payload");
     const identity = identities.get(token);
     if (!identity)
       throw new LoginError("SESSION_INVALID", "synthetic private token", 401);
-    return identity;
+    return { userId: identity.id, email: identity.email };
   },
 };
-const sessions = new SessionService(new PostgresLoginStore(pool), provider);
+const loginPool = createLoginPool({ connectionString: databaseUrl });
+const sessions = new SessionService(
+  new PostgresLoginStore(loginPool),
+  provider,
+);
 const service = new HistoryHttpService(
   new HistoryStore(),
   new RoomTransactions(pool),
@@ -142,7 +149,10 @@ describe.skipIf(!databaseUrl)(
       await app?.close();
       app = undefined;
     });
-    afterAll(() => pool.end());
+    afterAll(async () => {
+      await pool.end();
+      await loginPool.end();
+    });
     it("returns member-owned terminal safe DTO with no-store and never accepts a forged owner or spectator membership", async () => {
       const a = await member("A"),
         b = await member("B"),

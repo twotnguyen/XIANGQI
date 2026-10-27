@@ -32,9 +32,11 @@ const other = "22222222-2222-4222-8222-222222222222";
 const fen = serializePosition(initialPosition());
 const peers: Array<ReturnType<typeof connectAi>> = [];
 async function observer(
-  getProof = vi
-    .fn()
-    .mockResolvedValue({ accessToken: "token", appSession: "cap" }),
+  getProof = vi.fn().mockResolvedValue({
+    kind: "member",
+    accessToken: "token",
+    appSession: "cap",
+  }),
 ) {
   const onControl = vi.fn(),
     onSnapshot = vi.fn(),
@@ -99,8 +101,16 @@ afterEach(() => {
 it("uses an isolated authenticated namespace with one tab identity and fresh handshakes", async () => {
   const proof = vi
     .fn()
-    .mockResolvedValueOnce({ accessToken: "first", appSession: "cap" })
-    .mockResolvedValueOnce({ accessToken: "rotated", appSession: "cap" });
+    .mockResolvedValueOnce({
+      kind: "member",
+      accessToken: "first",
+      appSession: "cap",
+    })
+    .mockResolvedValueOnce({
+      kind: "member",
+      accessToken: "rotated",
+      appSession: "cap",
+    });
   const f = await observer(proof);
   expect(fixture.io).toHaveBeenCalledWith(
     "http://localhost:3000/ai",
@@ -190,13 +200,19 @@ it("rejects old watch acknowledgements and snapshots when another game is watche
   expect(f.onSnapshot).toHaveBeenCalledExactlyOnceWith(envelope(0, other));
 });
 it("refreshes with current proof and takeover emits no client authority metadata", async () => {
-  const proof = vi
-    .fn()
-    .mockResolvedValue({ accessToken: "first", appSession: "cap" });
+  const proof = vi.fn().mockResolvedValue({
+    kind: "member",
+    accessToken: "first",
+    appSession: "cap",
+  });
   const f = await observer(proof);
   deliver("ai.control", f.control);
   success();
-  proof.mockResolvedValue({ accessToken: "renewed", appSession: "cap" });
+  proof.mockResolvedValue({
+    kind: "member",
+    accessToken: "renewed",
+    appSession: "cap",
+  });
   await f.peer.refresh();
   deliver("ai.control", f.control);
   await f.peer.takeover();
@@ -206,7 +222,11 @@ it("refreshes with current proof and takeover emits no client authority metadata
   ]);
 });
 it("cancels pending proof and late callbacks on final disconnect", async () => {
-  let finish!: (proof: { accessToken: string; appSession: string }) => void;
+  let finish!: (proof: {
+    kind: "member";
+    accessToken: string;
+    appSession: string;
+  }) => void;
   const f = await observer(
     vi.fn(
       () =>
@@ -222,7 +242,7 @@ it("cancels pending proof and late callbacks on final disconnect", async () => {
     f.onError.mock.calls.length,
     f.onConnection.mock.calls.length,
   ];
-  finish({ accessToken: "late", appSession: "cap" });
+  finish({ kind: "member", accessToken: "late", appSession: "cap" });
   await Promise.resolve();
   deliver("connect");
   deliver("ai.control", f.control);
@@ -319,4 +339,23 @@ it("rejects a takeover whose authority is revoked before the takeover is emitted
   expect(
     fixture.emit.mock.calls.some((call) => call[0] === "ai.takeover"),
   ).toBe(false);
+});
+
+it("authorizes an AI socket with the guest capability and no member token", async () => {
+  const guestCapability = "guest-capability-synthetic-0123456789abcdefghijk";
+  connectAi({
+    getProof: async () => ({ kind: "guest", guestCapability }),
+    onControl: vi.fn(),
+    onSnapshot: vi.fn(),
+    onConnection: vi.fn(),
+    onError: vi.fn(),
+  });
+  const done = vi.fn();
+  fixture.auth!(done);
+  await vi.waitFor(() => expect(done).toHaveBeenCalledOnce());
+  const payload = done.mock.calls[0]![0] as Record<string, unknown>;
+  expect(payload).toMatchObject({ guestCapability });
+  expect(payload).toHaveProperty("tabId", expect.any(String));
+  expect(payload).not.toHaveProperty("accessToken");
+  expect(payload).not.toHaveProperty("appSession");
 });

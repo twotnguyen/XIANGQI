@@ -193,7 +193,20 @@ function AiGameView(props: AiGameProps) {
             </p>
           )}
           {snapshot.status === "FINALIZING" && (
-            <p role="status">Đang ghi nhận kết quả…</p>
+            <div>
+              <p role="status">Đang ghi nhận kết quả…</p>
+              <p>
+                Chưa lưu được kết quả ván. Thử lưu lại để ghi nhận đúng kết quả
+                đã xác định.
+              </p>
+              <Button
+                disabled={!available}
+                disabledReason={canControl ? "" : "Tab này chỉ có thể xem."}
+                onClick={() => void request(props.onRetry)}
+              >
+                Thử lưu kết quả
+              </Button>
+            </div>
           )}
           {snapshot.engineState === "RETRY" && active && (
             <div role="alert">

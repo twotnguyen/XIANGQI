@@ -40,15 +40,10 @@ const sessions = new SessionService(
     revokeSession: revoke,
   } as unknown as LoginStore,
   {
-    signInPassword: vi.fn(),
-    getUser: async (bearer: string) => {
+    verifyAccessToken: async (bearer: string) => {
       if (!["synthetic-access", "refreshed-access"].includes(bearer))
         throw new RegistrationError("SESSION_INVALID", "Invalid token", 401);
-      return {
-        id: "synthetic-user",
-        email: "private@example.invalid",
-        email_confirmed_at: "2026-01-01T00:00:00Z",
-      };
+      return { userId: "synthetic-user", email: "private@example.invalid" };
     },
   },
   () => new Date("2026-01-01T00:00:00Z"),

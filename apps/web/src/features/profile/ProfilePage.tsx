@@ -58,13 +58,15 @@ export function ProfilePage({
 
   async function load() {
     setFailed(false);
+    // Khách không có hồ sơ máy chủ: không gọi API hồ sơ hay vị trí của thành viên.
+    if (guest) return;
     try {
       const [view, where] = await Promise.all([
-        guest ? Promise.resolve(null) : client.read(),
+        client.read(),
         client.location().catch(() => null),
       ]);
       setProfile(view);
-      setName(view?.displayName ?? "");
+      setName(view.displayName);
       setLocation(where);
     } catch {
       setFailed(true);
@@ -72,7 +74,7 @@ export function ProfilePage({
   }
   useEffect(() => {
     void load();
-  }, []);
+  }, [guest]);
 
   async function save() {
     if (saving) return;

@@ -5,10 +5,14 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createApp } from "@server/app.js";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
 import type { PublicRoomView } from "@server/game/room/public/public-room-store.js";
 import { apply, databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
 >;
@@ -19,16 +23,16 @@ async function fixture(modes = true) {
     string,
     { id: string; email: string; email_confirmed_at: string }
   >();
-  // Only GoTrue is synthetic. Session SQL, room services, HTTP and sockets are actual production code.
+  // Only the token verifier is synthetic. Session SQL, room services, HTTP and sockets are actual production code.
   const auth = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
+    verifyAccessToken: vi.fn(async (token: string) => {
       const user = users.get(token);
       if (!user) throw Error("Synthetic invalid provider session");
-      return user;
+      return { userId: user.id, email: user.email };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth);
+  const sessions = new SessionService(new PostgresLoginStore(loginPool), auth);
   const members: {
     id: string;
     email: string;
@@ -184,7 +188,10 @@ async function waitFor(read: () => boolean, timeout = 6000) {
   }
   throw Error("Actual public feed deadline exceeded");
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "actual member PUBLIC room runtime on isolated SQL",
   () => {
@@ -319,14 +326,11 @@ describe.skipIf(!databaseUrl)(
         await f.close();
       }
     });
-    it("checks fixed SQL session expiry on feed polls without repeated getUser, disconnects and denies HTTP", async () => {
+    it("checks fixed SQL session expiry on feed polls, disconnects and denies HTTP", async () => {
       const f = await fixture();
       try {
-        const before = f.auth.getUser.mock.calls.length,
-          feed = await f.feed();
-        expect(f.auth.getUser.mock.calls.length - before).toBe(1);
+        const feed = await f.feed();
         await new Promise((r) => setTimeout(r, 1200));
-        expect(f.auth.getUser.mock.calls.length - before).toBe(1);
         expect(feed.socket.connected).toBe(true);
         await pool.query(
           "UPDATE xiangqi_auth.app_sessions SET created_at=statement_timestamp()-interval '12 hours 1 second', expires_at=statement_timestamp()-interval '1 second' WHERE user_id=$1",
@@ -336,7 +340,6 @@ describe.skipIf(!databaseUrl)(
         expect(feed.errors).toEqual([
           { code: "AUTH_REQUIRED", message: expect.any(String) },
         ]);
-        expect(f.auth.getUser.mock.calls.length - before).toBe(1);
         const denied = await f.request("/public-rooms", 2);
         expect(denied.status).toBe(401);
       } finally {

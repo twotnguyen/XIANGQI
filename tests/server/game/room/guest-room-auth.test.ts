@@ -10,6 +10,7 @@ import {
 } from "@server/account/guest/guest.types.js";
 import {
   GuestRoomAuthorizer,
+  GuestRoomCoordinator,
   type GuestRoomRequestProof,
 } from "@server/game/room/guest-room-auth.js";
 import { RoomRosterChanged } from "@server/game/room/room.types.js";
@@ -23,6 +24,7 @@ import {
   pool,
   databaseUrl,
 } from "../../account/google/database.test-helper.js";
+import { scopeContext } from "./guest-scope.test-helper.js";
 const hash = (cap: string) => createHash("sha256").update(cap).digest("hex");
 const coordinator = new RoomTransactions(pool);
 async function fixture(seated = false, spectator = false) {
@@ -42,10 +44,16 @@ async function fixture(seated = false, spectator = false) {
       await c.query("DELETE FROM public.room_members WHERE user_id=$1", [id]);
     }),
   };
-  const service = new GuestService(new GuestStore(pool), port, () => now),
+  const scopes = scopeContext();
+  const service = new GuestService(
+      new GuestStore(pool),
+      port,
+      () => now,
+      new GuestRoomCoordinator(coordinator, scopes.withScope),
+    ),
     guest = await service.create("Synthetic Guest"),
     authorizer = new GuestRoomAuthorizer(service, pool),
-    proof = { capability: guest.capability };
+    proof = { guestCapability: guest.capability };
   const roomId = randomUUID();
   if (seated || spectator) {
     const owner = spectator ? await service.create("Synthetic Host") : guest;
@@ -110,7 +118,7 @@ async function run<T>(
   contextId?: string,
 ) {
   const actor = await f.authorizer.resolve(f.proof);
-  return coordinator.withRoom(
+  const result = await coordinator.withRoom(
     { actor, roomIds },
     (p) => f.authorizer.authorize(f.proof, p, purpose, contextId),
     async (s) => {
@@ -119,6 +127,9 @@ async function run<T>(
       return value;
     },
   );
+  // Production contract: ended callers settle (cleanup + COMMIT) before answering 401.
+  if (result.status === "ended") await f.authorizer.settleEnded(f.proof);
+  return result;
 }
 afterAll(() => pool.end());
 describe.skipIf(!databaseUrl)(
@@ -132,25 +143,29 @@ describe.skipIf(!databaseUrl)(
       const f = await fixture(false, true);
       f.setNow(new Date(f.guest.expiresAt));
       const before = await state(f.guest.userId);
-      expect(
-        await f.authorizer.resolve({
+      expect(await f.authorizer.resolve({ ...f.proof })).toEqual({
+        kind: "guest",
+        userId: f.guest.userId,
+      });
+      await expect(
+        f.authorizer.resolve({
           ...f.proof,
           userId: randomUUID(),
         } as GuestRoomRequestProof),
-      ).toEqual({ kind: "guest", userId: f.guest.userId });
+      ).rejects.toMatchObject({ code: "AUTH_REQUIRED", status: 401 });
       expect(await state(f.guest.userId)).toEqual(before);
       expect(f.port.end).not.toHaveBeenCalled();
       expect(f.port.seatedSeat).not.toHaveBeenCalled();
       for (const cap of ["bad", "A".repeat(43)])
         await expect(
-          f.authorizer.resolve({ capability: cap }),
+          f.authorizer.resolve({ guestCapability: cap }),
         ).rejects.toMatchObject({ code: "AUTH_REQUIRED", status: 401 });
     });
     it("authorizes pre/post room phases and finishes on the same client without nested pool checkout", async () => {
       const f = await fixture(true),
         actor = await f.authorizer.resolve(f.proof),
         connect = vi.spyOn(pool, "connect"),
-        requireActor = vi.spyOn(f.service, "requireActorInTransaction"),
+        authorizeHash = vi.spyOn(f.service, "authorizeHash"),
         finish = vi.spyOn(f.service, "finishActorMutation");
       try {
         let used: PoolClient | undefined;
@@ -165,12 +180,12 @@ describe.skipIf(!databaseUrl)(
         );
         expect(result).toEqual({ status: "active", value: "performed" });
         expect(connect).toHaveBeenCalledTimes(1);
-        expect(requireActor).toHaveBeenCalledTimes(2);
+        expect(authorizeHash).toHaveBeenCalledTimes(2);
         expect(
-          requireActor.mock.calls.every(
-            ([c, cap, purpose, id]) =>
+          authorizeHash.mock.calls.every(
+            ([c, tokenHash, purpose, id]) =>
               c === used &&
-              cap === f.proof.capability &&
+              tokenHash === hash(f.proof.guestCapability) &&
               purpose === "existing-room" &&
               id === f.roomId,
           ),
@@ -199,7 +214,7 @@ describe.skipIf(!databaseUrl)(
         expect(f.port.end).toHaveBeenCalledExactlyOnceWith(
           expect.anything(),
           f.guest.userId,
-          { reason: "expiry", confirmedResign: false },
+          expect.objectContaining({ reason: "expiry", confirmedResign: false }),
         );
       },
     );
@@ -233,6 +248,7 @@ describe.skipIf(!databaseUrl)(
         f.setNow(new Date(f.guest.expiresAt));
         await blocker.query("ROLLBACK");
         expect(await pending).toEqual({ status: "ended" });
+        await f.authorizer.settleEnded(f.proof);
         expect(work).not.toHaveBeenCalled();
         expect(await state(f.guest.userId)).toEqual({
           sessions: [],
@@ -299,7 +315,7 @@ describe.skipIf(!databaseUrl)(
     it("refuses proof copies, mutated capabilities, forged actor or missing actor lock before GuestService", async () => {
       const f = await fixture(),
         a = await f.authorizer.resolve(f.proof),
-        requireActor = vi.spyOn(f.service, "requireActorInTransaction"),
+        authorizeHash = vi.spyOn(f.service, "authorizeHash"),
         client = await pool.connect();
       const p: RoomActorProof = {
         client,
@@ -320,11 +336,11 @@ describe.skipIf(!databaseUrl)(
         await expect(
           f.authorizer.authorize(f.proof, { ...p, lockedActorIds: new Set() }),
         ).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
-        f.proof.capability = "A".repeat(43);
+        f.proof.guestCapability = "A".repeat(43);
         await expect(f.authorizer.authorize(f.proof, p)).rejects.toMatchObject({
           code: "AUTH_REQUIRED",
         });
-        expect(requireActor).not.toHaveBeenCalled();
+        expect(authorizeHash).not.toHaveBeenCalled();
       } finally {
         client.release();
       }
@@ -333,14 +349,14 @@ describe.skipIf(!databaseUrl)(
       const f = await fixture(),
         other = await f.service.create("Other Guest"),
         a = await f.authorizer.resolve(f.proof),
-        requireActor = vi.spyOn(f.service, "requireActorInTransaction");
+        authorizeHash = vi.spyOn(f.service, "authorizeHash");
       await pool.query(
         "DELETE FROM xiangqi_auth.guest_sessions WHERE guest_id=$1",
         [other.userId],
       );
       await pool.query(
         "UPDATE xiangqi_auth.guest_sessions SET guest_id=$2 WHERE token_hash=$1",
-        [hash(f.proof.capability), other.userId],
+        [hash(f.proof.guestCapability), other.userId],
       );
       await expect(
         coordinator.withRoom(
@@ -349,7 +365,7 @@ describe.skipIf(!databaseUrl)(
           async () => "never",
         ),
       ).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
-      expect(requireActor).not.toHaveBeenCalled();
+      expect(authorizeHash).not.toHaveBeenCalled();
     });
     it("enforces one owned open room for an active guest", async () => {
       const f = await fixture(true);
@@ -373,7 +389,7 @@ describe.skipIf(!databaseUrl)(
       ).rejects.toMatchObject({ code: "AUTH_UNAVAILABLE", status: 503 });
       await f.authorizer.resolve(f.proof);
       const dependency = vi
-        .spyOn(f.service, "requireActorInTransaction")
+        .spyOn(f.service, "authorizeHash")
         .mockRejectedValue(new Error("private-capability-provider-value"));
       try {
         await expect(
@@ -391,8 +407,8 @@ describe.skipIf(!databaseUrl)(
         dependency.mockRestore();
       }
     });
-    it.each(["authorize", "finish"] as const)(
-      "preserves lifecycle roster retry and rolls back partial cleanup/work (%s)",
+    it.each(["settleEnded", "finish"] as const)(
+      "retries lifecycle cleanup after roster change and rolls back the partial attempt (%s)",
       async (phase) => {
         const f = await fixture(false, true),
           extra = await f.service.create("Retry Actor"),
@@ -425,7 +441,6 @@ describe.skipIf(!databaseUrl)(
           );
           if (attempts.length === 1) throw changed;
         });
-        if (phase === "authorize") f.setNow(new Date(f.guest.expiresAt));
         const scopes: ReadonlySet<string>[] = [],
           caught: unknown[] = [];
         const work = vi.fn(
@@ -440,6 +455,7 @@ describe.skipIf(!databaseUrl)(
             });
           },
         );
+        if (phase === "settleEnded") f.setNow(new Date(f.guest.expiresAt));
         const result = await coordinator.withRoom(
           { actor, roomIds: [f.roomId] },
           (p) => {
@@ -451,16 +467,19 @@ describe.skipIf(!databaseUrl)(
           },
           work,
         );
+        // Production contract: ended callers settle cleanup under the roster lock before answering 401.
         expect(result).toEqual({ status: "ended" });
-        expect(caught).toHaveLength(1);
-        expect(caught[0]).toBe(changed);
+        await f.authorizer.settleEnded(f.proof);
+        expect(work).toHaveBeenCalledTimes(phase === "finish" ? 1 : 0);
+        expect(caught).toEqual(phase === "finish" ? [changed] : []);
         expect(attempts).toEqual([
           { cleanup: 0, work: phase === "finish" ? 1 : 0, members: 1 },
           { cleanup: 0, work: 0, members: 1 },
         ]);
-        expect(scopes[0]!.has(extra.userId)).toBe(false);
-        expect(scopes.at(-1)!.has(extra.userId)).toBe(true);
-        expect(work).toHaveBeenCalledTimes(phase === "finish" ? 1 : 0);
+        if (phase === "finish") {
+          expect(scopes[0]!.has(extra.userId)).toBe(false);
+          expect(scopes.at(-1)!.has(extra.userId)).toBe(true);
+        }
         expect(
           (
             await pool.query(
@@ -479,7 +498,7 @@ describe.skipIf(!databaseUrl)(
       const f = await fixture(),
         a = await f.authorizer.resolve(f.proof),
         dependency = vi
-          .spyOn(f.service, "requireActorInTransaction")
+          .spyOn(f.service, "authorizeHash")
           .mockRejectedValue(
             new GuestError("GUEST_INVALID", "private error", 401),
           );

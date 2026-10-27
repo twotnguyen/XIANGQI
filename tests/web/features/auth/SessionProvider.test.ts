@@ -12,6 +12,13 @@ import {
   SessionProvider,
   useSession,
 } from "@web/features/auth/SessionProvider.js";
+import type { PublicRoomAuthProof } from "@xiangqi/shared";
+
+// Narrows a proof to the member variant: a guest proof has no accessToken, so reading it is a failure.
+function memberProof(proof: PublicRoomAuthProof) {
+  if (proof.kind !== "member") throw new Error("expected a member proof");
+  return proof;
+}
 const session = {
   access_token: "fixture-access",
   refresh_token: "fixture-refresh",
@@ -56,6 +63,17 @@ function mount(strict = false) {
   );
 }
 const state = () => JSON.parse(screen.getByLabelText("state").textContent!);
+// Member-only fixtures have no guest cookie: answer the guest restore 401 so
+// the sequenced member responses are consumed only by member requests.
+function withoutGuest(
+  inner: (url: string, init?: RequestInit) => Promise<Response>,
+) {
+  return vi.fn((url: string, init?: RequestInit) =>
+    new URL(url).pathname === "/account/guest/session"
+      ? Promise.resolve(reply({ code: "AUTH_REQUIRED" }, 401))
+      : inner(url, init),
+  );
+}
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
@@ -89,7 +107,7 @@ it("accepts login in memory and sends credentials only to relative backend paths
     .mockResolvedValueOnce(reply({}, 401))
     .mockResolvedValueOnce(reply({ google: false, guest: false }))
     .mockResolvedValue(reply({ ok: true }));
-  vi.stubGlobal("fetch", request);
+  vi.stubGlobal("fetch", withoutGuest(request));
   mount();
   await vi.waitFor(() => expect(state().status).toBe("anonymous"));
   fireEvent.click(screen.getByText("accept"));
@@ -517,7 +535,7 @@ it("bootstraps pending Google only after member401 and server readiness, with se
     .mockResolvedValueOnce(
       reply({ ...googlePending, access_token: "private-provider-token" }),
     );
-  vi.stubGlobal("fetch", request);
+  vi.stubGlobal("fetch", withoutGuest(request));
   const storage = vi.spyOn(Storage.prototype, "setItem");
   mount(true);
   await vi.waitFor(() => expect(state().status).toBe("pending"));
@@ -542,7 +560,7 @@ it("does not probe Google onboarding when server readiness is false", async () =
     .fn()
     .mockResolvedValueOnce(reply({}, 401))
     .mockResolvedValueOnce(reply({ google: false, guest: false }));
-  vi.stubGlobal("fetch", request);
+  vi.stubGlobal("fetch", withoutGuest(request));
   mount();
   await vi.waitFor(() => expect(state().status).toBe("anonymous"));
   expect(request).toHaveBeenCalledTimes(2);
@@ -553,7 +571,7 @@ it("keeps readiness and Google bootstrap outages distinct from anonymous", async
     .mockResolvedValueOnce(reply({}, 401))
     .mockResolvedValueOnce(reply({ google: true, guest: false }))
     .mockResolvedValueOnce(reply({ message: "private" }, 503));
-  vi.stubGlobal("fetch", request);
+  vi.stubGlobal("fetch", withoutGuest(request));
   mount();
   await vi.waitFor(() => expect(state().status).toBe("error"));
   expect(JSON.stringify(state())).not.toContain("private");
@@ -581,7 +599,7 @@ it("does not probe onboarding after a stale readiness result when a newer login 
     .mockImplementationOnce(
       () => new Promise<Response>((done) => (resolve = done)),
     );
-  vi.stubGlobal("fetch", request);
+  vi.stubGlobal("fetch", withoutGuest(request));
   mount();
   await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(2));
   act(() => current.accept(session));
@@ -597,11 +615,12 @@ it("returns socket handshake proof only from active memory and never public stat
   await vi.waitFor(() => expect(state().status).toBe("active-member"));
   const first = await current.getRealtimeProof();
   expect(first).toEqual({
+    kind: "member",
     accessToken: session.access_token,
     appSession: session.appSession,
   });
-  first.accessToken = "mutated caller copy";
-  expect((await current.getRealtimeProof()).accessToken).toBe(
+  memberProof(first).accessToken = "mutated caller copy";
+  expect(memberProof(await current.getRealtimeProof()).accessToken).toBe(
     session.access_token,
   );
   expect(JSON.stringify(state())).not.toContain(session.access_token);
@@ -630,9 +649,12 @@ it("refreshes an expired socket bearer once and rejects unavailable or fixed-exp
     ]);
   });
   expect(request).toHaveBeenCalledTimes(2);
-  expect(proofs.every((proof) => proof.accessToken === "renewed-socket")).toBe(
-    true,
-  );
+  expect(
+    proofs.every(
+      (proof) =>
+        proof.kind === "member" && proof.accessToken === "renewed-socket",
+    ),
+  ).toBe(true);
   vi.setSystemTime(new Date(session.expiresAt));
   await expect(current.getRealtimeProof()).rejects.toThrow();
   expect(request).toHaveBeenCalledTimes(2);

@@ -5,7 +5,7 @@ import {
   GoogleHttpService,
   GoogleRefreshProvider,
 } from "./google.controller.js";
-import type { createRegistrationRuntime } from "../auth/registration.module.js";
+import type { RegistrationRuntime } from "../auth/registration.module.js";
 import { GoogleTokenVerifier } from "./google-verifier.js";
 import { GoogleService } from "./google.service.js";
 import { GoogleStore } from "./google.store.js";
@@ -64,7 +64,7 @@ export function readGoogleConfig(env: Record<string, string | undefined>) {
  */
 export async function createGoogleRuntime(
   env: Record<string, string | undefined>,
-  registration: Awaited<ReturnType<typeof createRegistrationRuntime>>,
+  registration: Pick<RegistrationRuntime, "pool" | "auth" | "sessions"> | null,
 ) {
   const settings = readGoogleConfig(env);
   if (!settings) return null;

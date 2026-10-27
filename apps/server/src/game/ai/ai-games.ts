@@ -77,8 +77,21 @@ type Game = {
   epoch: number;
   abort?: AbortController;
   job?: Promise<void>;
-  terminalStatus?: "FINISHED" | "ABANDONED";
+  /** Timer for a computed engine completion whose SQL commit failed transiently. */
+  timer?: NodeJS.Timeout;
 };
+/** Engine output retained for a deferred commit; the engine is never searched again for it. */
+type Completion = { position: string } | { error: unknown };
+type Pending = {
+  epoch: number;
+  version: number;
+  attempt: number;
+  completion: Completion;
+};
+/** Terminal games stay readable for the active-seat grace window; at most one per owner. */
+const terminalGraceMilliseconds = 30 * 60 * 1000;
+/** Transient commit retries back off from 1s, doubling, capped here. */
+const commitRetryCapMilliseconds = 30000;
 /** Số lần undo tối đa trong một ván (BA 6.3). */
 const MAX_UNDO = 3;
 /**
@@ -87,6 +100,10 @@ const MAX_UNDO = 3;
 export class AiGames {
   private readonly games = new Map<string, Game>();
   private readonly active = new Map<string, string>();
+  private readonly terminals = new Map<
+    string,
+    { id: string; retiredAt: number }
+  >();
   private readonly operations = new Set<Promise<unknown>>();
   private prepared = false;
   private closed = false;
@@ -246,6 +263,7 @@ export class AiGames {
       return {
         value: this.copy(game),
         install: () => {
+          this.evictTerminal(owner);
           this.games.set(id, game);
           this.active.set(owner, id);
         },
@@ -276,10 +294,120 @@ export class AiGames {
     game.epoch++;
     this.games.delete(id);
     if (this.active.get(owner) === id) this.active.delete(owner);
+    if (this.terminals.get(owner)?.id === id) this.terminals.delete(owner);
+  }
+  /**
+   * Bỏ các ván kết thúc đã quá ân hạn 30 phút. Ván ACTIVE/FINALIZING không bao giờ bị bỏ ở đây.
+   */
+  prune(now = performance.now()): void {
+    for (const [owner, terminal] of this.terminals) {
+      if (now - terminal.retiredAt < terminalGraceMilliseconds) continue;
+      this.terminals.delete(owner);
+      this.games.delete(terminal.id);
+    }
+  }
+  /** A terminal game is superseded by the owner's next game or next terminal. */
+  private evictTerminal(owner: string): void {
+    const prior = this.terminals.get(owner);
+    if (!prior) return;
+    this.terminals.delete(owner);
+    this.games.delete(prior.id);
+  }
+  /** Fence for one engine turn: same live game, epoch and version, still ACTIVE and not closed. */
+  private current(game: Game, epoch: number, version: number): boolean {
+    return (
+      !this.closed &&
+      this.games.get(game.snapshot.id) === game &&
+      game.epoch === epoch &&
+      game.snapshot.version === version &&
+      game.snapshot.status === "ACTIVE"
+    );
   }
   private cancel(game: Game): void {
     game.abort?.abort();
     game.abort = undefined;
+    clearTimeout(game.timer);
+    game.timer = undefined;
+  }
+  /**
+   * Commits one completed engine turn after a fresh SQL authority check. Transient SQL failure keeps the
+   * computed completion for a backoff retry; lost authority (RoomError, fenced turn) discards it.
+   */
+  private async settle(game: Game, pending: Pending): Promise<void> {
+    const { epoch, version, completion } = pending;
+    try {
+      const result = await this.run(
+        game.snapshot.ownerId,
+        { kind: "internal" },
+        async (tx) => {
+          if (!this.current(game, epoch, version))
+            return { value: null, install: () => {} };
+          await tx.check(game.snapshot.id);
+          if (!this.current(game, epoch, version))
+            return { value: null, install: () => {} };
+          const draft = this.copy(game);
+          if ("error" in completion) {
+            const error = completion.error;
+            if (
+              error instanceof EngineError &&
+              (error.code === "ENGINE_TIMEOUT" || error.code === "ENGINE_BUSY")
+            ) {
+              draft.engineState = "RETRY";
+              draft.engineError = error.code;
+              draft.version++;
+            } else {
+              this.finalizing(draft, {
+                reason: "ENGINE_FAILURE",
+                winner: null,
+              });
+            }
+          } else {
+            this.apply(draft, completion.position);
+            draft.engineState = "IDLE";
+            const outcome = ending(draft.history.map(parsePosition));
+            if (outcome) this.finalizing(draft, outcome);
+          }
+          return this.staged(
+            game,
+            draft,
+            draft.status === "FINALIZING" ? game.epoch + 1 : game.epoch,
+          );
+        },
+      );
+      if (result?.status === "FINALIZING") {
+        this.cancel(game);
+        await this.commitFinish(result.ownerId, result.id, {
+          kind: "internal",
+        });
+      }
+    } catch (error) {
+      // Only transient SQL on a still-current turn retries; other failures are authority, never engine state.
+      if (
+        error instanceof AiError &&
+        error.code === "AI_UNAVAILABLE" &&
+        this.current(game, epoch, version)
+      )
+        this.defer(game, {
+          epoch,
+          version,
+          attempt: pending.attempt,
+          completion,
+        });
+    }
+  }
+  /** `pending.attempt` counts failed commits so far: the first retry waits 1s, then 2s, 4s, … capped at 30s. */
+  private defer(game: Game, pending: Pending): void {
+    const timer = setTimeout(
+      () => {
+        if (game.timer === timer) game.timer = undefined;
+        void this.track(
+          this.settle(game, { ...pending, attempt: pending.attempt + 1 }),
+        );
+      },
+      Math.min(1000 * 2 ** pending.attempt, commitRetryCapMilliseconds),
+    );
+    timer.unref?.();
+    game.timer = timer;
   }
   private async commitFinish(
     owner: string,
@@ -293,7 +421,11 @@ export class AiGames {
       if (game.snapshot.status !== "FINALIZING")
         throw new AiError("AI_FINISHED");
       const terminal = this.copy(game);
-      terminal.status = game.terminalStatus!;
+      // FINALIZING outcome decides terminal status: engine failure abandons, any other outcome finishes.
+      terminal.status =
+        game.snapshot.outcome?.reason === "ENGINE_FAILURE"
+          ? "ABANDONED"
+          : "FINISHED";
       // Writer checks live exact slot, or exact previously committed terminal dedup.
       await tx.finish(terminal);
       return {
@@ -301,6 +433,8 @@ export class AiGames {
         install: () => {
           game.snapshot = terminal;
           if (this.active.get(owner) === id) this.active.delete(owner);
+          this.evictTerminal(owner);
+          this.terminals.set(owner, { id, retiredAt: performance.now() });
         },
       };
     });
@@ -352,14 +486,7 @@ export class AiGames {
           const outcome = ending(draft.history.map(parsePosition));
           if (outcome) this.finalizing(draft, outcome);
           else this.thinking(draft);
-          const staged = this.staged(game, draft, game.epoch + 1);
-          return {
-            ...staged,
-            install: () => {
-              staged.install();
-              if (outcome) game.terminalStatus = "FINISHED";
-            },
-          };
+          return this.staged(game, draft, game.epoch + 1);
         });
         return this.afterTransition(owner, result, origin);
       })(),
@@ -384,26 +511,20 @@ export class AiGames {
       level: game.snapshot.level,
       history: [...game.snapshot.history],
     };
-    const current = () =>
-      !this.closed &&
-      this.games.get(game.snapshot.id) === game &&
-      game.epoch === epoch &&
-      game.snapshot.version === version &&
-      game.snapshot.status === "ACTIVE";
-    const valid = () => current() && !abort.signal.aborted;
+    const valid = () =>
+      this.current(game, epoch, version) && !abort.signal.aborted;
     const job = (async () => {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      let onAbort!: () => void;
-      const interrupted = new Promise<never>((_, reject) => {
-        onAbort = () => reject(new EngineError("ENGINE_CANCELLED"));
-        abort.signal.addEventListener("abort", onAbort, { once: true });
-        timer = setTimeout(() => {
-          reject(new EngineError("ENGINE_TIMEOUT"));
-          abort.abort();
-        }, 10000);
+      let reject!: (error: unknown) => void;
+      const interrupted = new Promise<never>((_, rej) => {
+        reject = rej;
       });
-      let nextPosition: string | undefined;
-      let engineError: unknown;
+      const onAbort = () => reject(new EngineError("ENGINE_CANCELLED"));
+      abort.signal.addEventListener("abort", onAbort, { once: true });
+      const timer = setTimeout(() => {
+        reject(new EngineError("ENGINE_TIMEOUT"));
+        abort.abort();
+      }, 10000);
+      let completion!: Completion;
       try {
         const result = await Promise.race([
           (async () => {
@@ -424,77 +545,21 @@ export class AiGames {
         if (!result?.move || result.terminal)
           throw new EngineError("ENGINE_FAILED");
         try {
-          nextPosition = serializePosition(
-            playMove(parsePosition(request.position), result.move),
-          );
+          completion = {
+            position: serializePosition(
+              playMove(parsePosition(request.position), result.move),
+            ),
+          };
         } catch {
           throw new EngineError("ENGINE_FAILED");
         }
       } catch (error) {
-        engineError = error;
+        completion = { error };
       } finally {
-        if (timer) clearTimeout(timer);
+        clearTimeout(timer);
         abort.signal.removeEventListener("abort", onAbort);
       }
-      // Authority failures below are discarded, never classified as engine failures.
-      try {
-        const result = await this.run(
-          game.snapshot.ownerId,
-          { kind: "internal" },
-          async (tx) => {
-            if (!current()) return { value: null, install: () => {} };
-            await tx.check(game.snapshot.id);
-            if (!current()) return { value: null, install: () => {} };
-            const draft = this.copy(game);
-            let terminalStatus: Game["terminalStatus"];
-            if (engineError) {
-              if (
-                engineError instanceof EngineError &&
-                (engineError.code === "ENGINE_TIMEOUT" ||
-                  engineError.code === "ENGINE_BUSY")
-              ) {
-                draft.engineState = "RETRY";
-                draft.engineError = engineError.code;
-                draft.version++;
-              } else {
-                this.finalizing(draft, {
-                  reason: "ENGINE_FAILURE",
-                  winner: null,
-                });
-                terminalStatus = "ABANDONED";
-              }
-            } else {
-              this.apply(draft, nextPosition!);
-              draft.engineState = "IDLE";
-              const outcome = ending(draft.history.map(parsePosition));
-              if (outcome) {
-                this.finalizing(draft, outcome);
-                terminalStatus = "FINISHED";
-              }
-            }
-            const staged = this.staged(
-              game,
-              draft,
-              terminalStatus ? game.epoch + 1 : game.epoch,
-            );
-            return {
-              ...staged,
-              install: () => {
-                staged.install();
-                if (terminalStatus) game.terminalStatus = terminalStatus;
-              },
-            };
-          },
-        );
-        if (result?.status === "FINALIZING") {
-          this.cancel(game);
-          await this.commitFinish(result.ownerId, result.id, {
-            kind: "internal",
-          });
-        }
-      } catch {
-        /* Lost authority or failed persistence: no additional canonical transition. */
-      }
+      await this.settle(game, { epoch, version, attempt: 0, completion });
     })();
     game.job = job;
     void job.finally(() => {
@@ -526,14 +591,7 @@ export class AiGames {
             reason: "RESIGN",
             winner: draft.actualSide === "red" ? "black" : "red",
           });
-          const staged = this.staged(game, draft, game.epoch + 1);
-          return {
-            ...staged,
-            install: () => {
-              staged.install();
-              game.terminalStatus = "FINISHED";
-            },
-          };
+          return this.staged(game, draft, game.epoch + 1);
         });
         return this.afterTransition(owner, result, origin);
       })(),

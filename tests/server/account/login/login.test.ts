@@ -25,7 +25,10 @@ import { startAuthFixture } from "../auth/auth-fixture.test-helper.js";
 import { SupabaseAuth } from "@server/account/auth/supabase-auth.js";
 import { RegistrationService } from "@server/account/auth/registration.service.js";
 import { PostgresRegistrationStore } from "@server/account/auth/registration.store.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { LoginService } from "@server/account/login/login.service.js";
 import { SessionService } from "@server/account/login/session.service.js";
 
@@ -46,6 +49,7 @@ describe.skipIf(!url)(
   "username login with PostgreSQL and native provider HTTP",
   () => {
     const pool = new Pool({ connectionString: url });
+    const loginPool = createLoginPool({ connectionString: url });
     let fixture: Awaited<ReturnType<typeof startAuthFixture>>;
     let auth: SupabaseAuth;
     let store: PostgresLoginStore;
@@ -108,7 +112,7 @@ describe.skipIf(!url)(
       );
       fixture = await startAuthFixture(pool, now);
       auth = new SupabaseAuth(fixture.url, "fixture-public", "fixture-secret");
-      store = new PostgresLoginStore(pool);
+      store = new PostgresLoginStore(loginPool);
       sessions = new SessionService(store, auth, now);
       login = new LoginService(store, auth, sessions, now, 50);
       const registration = new RegistrationService(
@@ -133,6 +137,7 @@ describe.skipIf(!url)(
     afterAll(async () => {
       await fixture?.close();
       await pool.end();
+      await loginPool.end();
     });
     it("logs in by case-insensitive username without returning internal email and guards its fixed session", async () => {
       const result = await login.login({
@@ -191,11 +196,10 @@ describe.skipIf(!url)(
       const crossing = new SessionService(
         store,
         {
-          signInPassword: auth.signInPassword.bind(auth),
-          getUser: async (token) => {
-            const user = await auth.getUser(token);
+          verifyAccessToken: async (token) => {
+            const bearer = await auth.verifyAccessToken(token);
             clock = new Date(result.expiresAt);
-            return user;
+            return bearer;
           },
         },
         now,
@@ -212,14 +216,13 @@ describe.skipIf(!url)(
       const deactivated = new SessionService(
         store,
         {
-          signInPassword: auth.signInPassword.bind(auth),
-          getUser: async (token) => {
-            const user = await auth.getUser(token);
+          verifyAccessToken: async (token) => {
+            const bearer = await auth.verifyAccessToken(token);
             await pool.query(
               "UPDATE public.profiles SET registration_pending=true WHERE user_id=$1",
               [result.userId],
             );
-            return user;
+            return bearer;
           },
         },
         now,
@@ -274,7 +277,7 @@ describe.skipIf(!url)(
         await sessions.requireActive(renewed.access_token, result.appSession),
       ).toBe(result.userId);
       const restarted = new SessionService(
-        new PostgresLoginStore(pool),
+        new PostgresLoginStore(loginPool),
         auth,
         now,
       );
@@ -291,7 +294,6 @@ describe.skipIf(!url)(
       const down = new LoginService(
         store,
         {
-          getUser: auth.getUser.bind(auth),
           signInPassword: async () => {
             throw new Error("fake secret payload");
           },
@@ -343,7 +345,6 @@ describe.skipIf(!url)(
       const foreign = new LoginService(
         store,
         {
-          getUser: auth.getUser.bind(auth),
           signInPassword: async (email, password) => {
             const session = await auth.signInPassword(email, password);
             session.user.id = "00000000-0000-0000-0000-000000000099";
@@ -466,8 +467,8 @@ describe.skipIf(!url)(
         expect(
           await (await fetch(base + "/login-protected", { headers })).json(),
         ).toEqual({ userId: result.userId });
-        const getUser = auth.getUser.bind(auth);
-        auth.getUser = async () => {
+        const verifyAccessToken = auth.verifyAccessToken.bind(auth);
+        auth.verifyAccessToken = async () => {
           throw new RegistrationError(
             "AUTH_PROVIDER_ERROR",
             "fake-sensitive-provider-payload",
@@ -483,10 +484,19 @@ describe.skipIf(!url)(
             code: "SESSION_UNAVAILABLE",
             message: "Chưa thể xác thực phiên đăng nhập",
           });
+          await sessions.revoke(result.appSession);
+          // Revocation is read from SQL before verifier work: a down verifier must not revive it.
+          const revokedWhileDown = await fetch(base + "/login-protected", {
+            headers,
+          });
+          expect(revokedWhileDown.status).toBe(401);
+          expect(await revokedWhileDown.json()).toEqual({
+            code: "SESSION_EXPIRED",
+            message: "Phiên đăng nhập đã hết hạn",
+          });
         } finally {
-          auth.getUser = getUser;
+          auth.verifyAccessToken = verifyAccessToken;
         }
-        await sessions.revoke(result.appSession);
         expect(
           (await fetch(base + "/login-protected", { headers })).status,
         ).toBe(401);
@@ -518,7 +528,7 @@ describe.skipIf(!url)(
       const account = await store.accountByUsername("testplayer");
       await sessions.issue(account!.userId); // Google integration only issues: never resets password failures.
       const restarted = new LoginService(
-        new PostgresLoginStore(pool),
+        new PostgresLoginStore(loginPool),
         auth,
         sessions,
         now,
@@ -540,10 +550,12 @@ describe.skipIf(!url)(
       const foreign = new SessionService(
         store,
         {
-          signInPassword: auth.signInPassword.bind(auth),
-          getUser: async (token) => {
-            const user = await auth.getUser(token);
-            return { ...user, id: "00000000-0000-0000-0000-000000000099" };
+          verifyAccessToken: async (token) => {
+            const bearer = await auth.verifyAccessToken(token);
+            return {
+              ...bearer,
+              userId: "00000000-0000-0000-0000-000000000099",
+            };
           },
         },
         now,
@@ -586,11 +598,10 @@ describe.skipIf(!url)(
       const revoked = new SessionService(
         store,
         {
-          signInPassword: auth.signInPassword.bind(auth),
-          getUser: async (token) => {
-            const user = await auth.getUser(token);
+          verifyAccessToken: async (token) => {
+            const bearer = await auth.verifyAccessToken(token);
             await sessions.revoke(result.appSession);
-            return user;
+            return bearer;
           },
         },
         now,
@@ -667,7 +678,6 @@ describe.skipIf(!url)(
       const down = new LoginService(
         store,
         {
-          getUser: auth.getUser.bind(auth),
           signInPassword: async () => {
             throw new Error("fake provider secret");
           },
@@ -783,7 +793,7 @@ describe.skipIf(!url)(
         ).toBe(401);
         await expect(
           new SessionService(
-            new PostgresLoginStore(pool),
+            new PostgresLoginStore(loginPool),
             auth,
             now,
           ).requireValidSession(original.appSession),

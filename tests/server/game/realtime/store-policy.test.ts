@@ -12,6 +12,7 @@ import {
 function fixture() {
   const connection: RealtimeConnection = {
     identity: { userId: randomUUID(), kind: "member" },
+    proof: { accessToken: randomUUID(), appSession: "x".repeat(43) },
     roomId: randomUUID(),
     tabId: randomUUID(),
     connectionId: randomUUID(),
@@ -38,15 +39,28 @@ function fixture() {
     clocks: null,
   };
   const query = vi.fn(async (text: string) => ({
-    rows: text.includes("SELECT tab_id,connection_id,generation")
+    rows: text.includes("FROM (SELECT 1) seed")
       ? [
           {
             tab_id: connection.tabId,
             connection_id: connection.connectionId,
             generation: 1,
+            has_controller: true,
+            fingerprint: null,
+            response: null,
+            active: null,
+            has_receipt: false,
           },
         ]
-      : [],
+      : text.includes("SELECT tab_id,connection_id,generation")
+        ? [
+            {
+              tab_id: connection.tabId,
+              connection_id: connection.connectionId,
+              generation: 1,
+            },
+          ]
+        : [],
     rowCount: 0,
   }));
   const client = { query } as unknown as PoolClient;
@@ -56,7 +70,7 @@ function fixture() {
     }),
   } as unknown as Pool;
   const rooms = {
-    authorize: vi.fn(async () => ({ canControl: true })),
+    authorize: vi.fn(async () => ({ canControl: true, version: 0 })),
     snapshot: vi.fn(async () => snapshot),
     execute: vi.fn(async () => snapshot),
   };

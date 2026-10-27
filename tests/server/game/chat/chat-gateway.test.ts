@@ -12,6 +12,7 @@ async function fixture() {
     sockets = new Server(server);
   const connection: RealtimeConnection = {
     identity: { userId: randomUUID(), kind: "member" },
+    proof: { accessToken: randomUUID(), appSession: "x".repeat(43) },
     roomId: randomUUID(),
     tabId: randomUUID(),
     connectionId: "trusted-connection",

@@ -13,9 +13,13 @@ import { io, type Socket } from "socket.io-client";
 import { createApp } from "@server/app.js";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
 import { apply, databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
@@ -25,16 +29,16 @@ function registration() {
     string,
     { id: string; email: string; email_confirmed_at: string }
   >();
-  // Explicit synthetic GoTrue boundary; SQL/session/HTTP/Socket/runtime are real.
+  // Explicit synthetic token-verifier boundary; SQL/session/HTTP/Socket/runtime are real.
   const auth = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async (token: string) => {
+    verifyAccessToken: vi.fn(async (token: string) => {
       const user = users.get(token);
       if (!user) throw new Error("Synthetic provider invalid session");
-      return user;
+      return { userId: user.id, email: user.email };
     }),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth);
+  const sessions = new SessionService(new PostgresLoginStore(loginPool), auth);
   return {
     users,
     context: { pool, sessions, auth } as unknown as Registration,
@@ -201,7 +205,10 @@ function request<T>(socket: Socket, event: string, body: object) {
       );
   });
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)("actual room chat runtime", () => {
   beforeEach(async () => {
     await pool.query("DROP SCHEMA IF EXISTS xiangqi_chat CASCADE");

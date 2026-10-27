@@ -1,4 +1,6 @@
 import { io } from "socket.io-client";
+import type { PublicRoomAuthProof } from "@xiangqi/shared";
+import { handshakeAuth, proofCapability } from "../../shared/realtime-proof.js";
 import {
   parseAiResponse,
   type AiControlProof,
@@ -11,7 +13,7 @@ export interface AiControl extends AiControlProof {
   graceUntil: string | null;
 }
 export interface AiConnectionOptions {
-  getProof(): Promise<{ accessToken: string; appSession: string }>;
+  getProof(): Promise<PublicRoomAuthProof>;
   onControl(control: AiControl): void;
   onSnapshot(snapshot: AiResponse): void;
   onConnection(ready: boolean): void;
@@ -52,16 +54,30 @@ function utc(value: unknown): value is string {
     new Date(value).toISOString().slice(0, 19) === value.slice(0, 19)
   );
 }
-function proof(value: unknown) {
-  const row = record(value, ["accessToken", "appSession"]);
+function proof(value: unknown): PublicRoomAuthProof {
+  const row =
+    value && typeof value === "object"
+      ? (value as Record<string, unknown>)
+      : {};
   if (
-    typeof row.accessToken !== "string" ||
-    !row.accessToken ||
-    typeof row.appSession !== "string" ||
-    !row.appSession
+    row.kind === "member" &&
+    typeof row.accessToken === "string" &&
+    row.accessToken &&
+    typeof row.appSession === "string" &&
+    row.appSession
   )
-    throw Error(expired);
-  return { accessToken: row.accessToken, appSession: row.appSession };
+    return {
+      kind: "member",
+      accessToken: row.accessToken,
+      appSession: row.appSession,
+    };
+  if (
+    row.kind === "guest" &&
+    typeof row.guestCapability === "string" &&
+    row.guestCapability
+  )
+    return { kind: "guest", guestCapability: row.guestCapability };
+  throw Error(expired);
 }
 
 /**
@@ -280,12 +296,12 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
           if (disposed || currentEpoch !== epoch) return;
           try {
             const fresh = proof(value);
-            if (capability !== null && fresh.appSession !== capability) {
+            if (capability !== null && proofCapability(fresh) !== capability) {
               close(expired);
               return;
             }
-            capability = fresh.appSession;
-            done({ ...fresh, tabId });
+            capability = proofCapability(fresh);
+            done({ ...handshakeAuth(fresh), tabId });
           } catch {
             close(expired);
           }
@@ -392,11 +408,11 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
         );
       });
       if (disposed || currentEpoch !== epoch) throw Error(unavailable);
-      if (fresh.appSession !== capability) {
+      if (proofCapability(fresh) !== capability) {
         close(expired);
         throw Error(expired);
       }
-      await command("ai.refresh", fresh);
+      await command("ai.refresh", handshakeAuth(fresh));
     },
     watch(gameId) {
       if (!isId(gameId))

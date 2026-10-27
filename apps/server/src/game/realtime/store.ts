@@ -93,7 +93,18 @@ export class RealtimeStore {
       "SELECT tab_id,connection_id,generation FROM xiangqi_realtime.controllers WHERE user_id=$1 AND room_id=$2",
       [connection.identity.userId, connection.roomId],
     );
-    const row = rows[0];
+    return this.controlState(rows[0] ?? null, connection, canControl);
+  }
+  // Pure derivation so command() can reuse a controller row read in its own query.
+  private controlState(
+    row: {
+      tab_id: string;
+      connection_id: string;
+      generation: number;
+    } | null,
+    connection: RealtimeConnection,
+    canControl: boolean,
+  ) {
     const ownsTab =
       row?.tab_id === connection.tabId &&
       row.connection_id === connection.connectionId;
@@ -112,18 +123,18 @@ export class RealtimeStore {
     client: PoolClient,
     connection: RealtimeConnection,
   ): Promise<RoomSnapshot> {
-    const access = await this.rooms.authorize(
+    const snapshot = await this.rooms.snapshot(
       client,
       connection.identity,
       connection.roomId,
     );
     return {
-      ...(await this.rooms.snapshot(
+      ...snapshot,
+      control: await this.control(
         client,
-        connection.identity,
-        connection.roomId,
-      )),
-      control: await this.control(client, connection, access.canControl),
+        connection,
+        snapshot.role === "red" || snapshot.role === "black",
+      ),
     };
   }
   /**
@@ -207,37 +218,70 @@ export class RealtimeStore {
           "Bạn không có quyền truy cập phòng này",
         );
       return await this.transaction(connection, async (client) => {
-        const current = await this.currentSnapshot(client, connection);
-        if (current.control.mode !== "writable")
-          throw new RealtimeError(
-            "TAB_READ_ONLY",
-            "Thẻ này chỉ có quyền xem; vui lòng chủ động tiếp quản để điều khiển",
-          );
+        const access = await this.rooms.authorize(
+          client,
+          connection.identity,
+          connection.roomId,
+        );
         const key = [
           connection.identity.userId,
           connection.roomId,
           command.commandId,
         ];
-        const existing = await client.query(
-          "SELECT fingerprint,response FROM xiangqi_realtime.receipts WHERE user_id=$1 AND room_id=$2 AND command_id=$3 AND expires_at>now()",
+        // One round-trip for the controller row and the receipt row (same key tuple).
+        const { rows } = await client.query<{
+          tab_id: string;
+          connection_id: string;
+          generation: number;
+          has_controller: boolean;
+          fingerprint: string | null;
+          response: CommandAcknowledgement | null;
+          active: boolean | null;
+          has_receipt: boolean;
+        }>(
+          `SELECT c.tab_id,c.connection_id,c.generation,(c.user_id IS NOT NULL) AS has_controller,
+             r.fingerprint,r.response,r.expires_at>now() AS active,(r.command_id IS NOT NULL) AS has_receipt
+           FROM (SELECT 1) seed
+           LEFT JOIN xiangqi_realtime.controllers c ON c.user_id=$1 AND c.room_id=$2
+           LEFT JOIN xiangqi_realtime.receipts r ON r.user_id=$1 AND r.room_id=$2 AND r.command_id=$3`,
           key,
         );
+        const state = rows[0];
+        if (!state)
+          throw new Error("Realtime command state query returned no seed row");
+        const control = this.controlState(
+          state.has_controller
+            ? {
+                tab_id: state.tab_id,
+                connection_id: state.connection_id,
+                generation: state.generation,
+              }
+            : null,
+          connection,
+          access.canControl,
+        );
+        if (control.mode !== "writable")
+          throw new RealtimeError(
+            "TAB_READ_ONLY",
+            "Thẻ này chỉ có quyền xem; vui lòng chủ động tiếp quản để điều khiển",
+          );
         const digest = fingerprint(command);
-        if (existing.rowCount) {
-          if (existing.rows[0].fingerprint !== digest)
+        if (state.active) {
+          if (state.fingerprint !== digest)
             throw new RealtimeError(
               "COMMAND_ID_REUSED",
               "Mã lệnh đã được dùng cho nội dung khác",
             );
-          return existing.rows[0].response as CommandAcknowledgement;
+          return state.response as CommandAcknowledgement;
         }
         // Expired keys may be reused even before the periodic cleanup has run.
-        await client.query(
-          "DELETE FROM xiangqi_realtime.receipts WHERE user_id=$1 AND room_id=$2 AND command_id=$3 AND expires_at<=now()",
-          key,
-        );
+        if (state.has_receipt)
+          await client.query(
+            "DELETE FROM xiangqi_realtime.receipts WHERE user_id=$1 AND room_id=$2 AND command_id=$3 AND expires_at<=now()",
+            key,
+          );
         let response: CommandAcknowledgement;
-        if (current.version !== command.expectedVersion) {
+        if (access.version !== command.expectedVersion) {
           response = {
             status: "error",
             commandId: command.commandId,
@@ -245,7 +289,14 @@ export class RealtimeStore {
               code: "VERSION_STALE",
               message: "Trạng thái đã thay đổi, vui lòng đồng bộ lại",
             },
-            snapshot: current,
+            snapshot: {
+              ...(await this.rooms.snapshot(
+                client,
+                connection.identity,
+                connection.roomId,
+              )),
+              control,
+            },
           };
         } else {
           const next = await this.rooms.execute(
@@ -254,7 +305,7 @@ export class RealtimeStore {
             command,
           );
           const executed = "snapshot" in next ? next : { snapshot: next };
-          const snapshot = { ...executed.snapshot, control: current.control };
+          const snapshot = { ...executed.snapshot, control };
           response = executed.error
             ? {
                 status: "error",

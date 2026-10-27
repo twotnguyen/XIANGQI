@@ -20,6 +20,7 @@ import {
 } from "./position-codec.js";
 import {
   type MatchRow,
+  type RoomMatch,
   opposite,
   reject,
   assertUuid,
@@ -27,6 +28,7 @@ import {
 } from "./match-store-core.js";
 import { MatchDrawStore } from "./match-store-draw.js";
 
+export type CurrentMatch = RoomMatch & { match: MatchView | null };
 /**
  * Lớp Store hoàn chỉnh quản lý vòng đời ván đấu: khởi tạo ván, thực hiện nước đi, đầu hàng và kết thúc ván.
  */
@@ -157,6 +159,28 @@ export class MatchStore extends MatchDrawStore {
     return this.view(row, history.at(-1)!, lastMove);
   }
   /**
+   * Đọc phòng, ván hiện tại và ghế của người xem trong một truy vấn đã khóa, kèm ảnh chụp ván (nếu có).
+   * Không kiểm tra quyền; đường điều khiển phải gọi `assertSeated` trước khi tin `seat`.
+   */
+  async current(
+    client: PoolClient,
+    roomId: string,
+    viewerId: string,
+  ): Promise<CurrentMatch> {
+    const loaded = await this.currentRoomMatch(client, roomId, viewerId);
+    if (loaded.room.current_match_id !== null && !loaded.row)
+      reject("MATCH_NOT_FOUND", "Ván không tồn tại.", 404);
+    if (!loaded.row) return { ...loaded, match: null };
+    const { positions: history, lastMove } = await this.history(
+      client,
+      loaded.row,
+    );
+    return {
+      ...loaded,
+      match: this.view(loaded.row, history.at(-1)!, lastMove),
+    };
+  }
+  /**
    * Thực hiện một nước đi cờ của người chơi, kiểm tra tính hợp lệ luật cờ, cập nhật đồng hồ và phát hiện thắng thua.
    */
   async move(
@@ -226,28 +250,7 @@ export class MatchStore extends MatchDrawStore {
     const moveId = randomUUID(),
       version = match.version + 1;
     const move = encodeMove(input);
-    await scope.client.query(
-      "INSERT INTO public.match_events(match_id,version,type,payload,created_at) VALUES($1,$2,'MOVE',$3,$4)",
-      [
-        row.id,
-        version,
-        { moveId, side: side === "red" ? "RED" : "BLACK", move },
-        at,
-      ],
-    );
     const active = row.active_move_ids as string[];
-    await scope.client.query(
-      "INSERT INTO public.match_moves(id,match_id,parent_move_id,event_version,side,move,created_at) VALUES($1,$2,$3,$4,$5,$6,$7)",
-      [
-        moveId,
-        row.id,
-        active.at(-1) ?? null,
-        version,
-        side === "red" ? "RED" : "BLACK",
-        move,
-        at,
-      ],
-    );
     const updated = {
       ...row,
       position: encodePosition(next),
@@ -258,8 +261,26 @@ export class MatchStore extends MatchDrawStore {
     };
     const lastMove = { from: input.from, to: input.to, eventVersion: version };
     const outcome = ending([...history, next]);
+    const sideCode = side === "red" ? "RED" : "BLACK";
+    const payload = {
+      matchId: row.id,
+      matchVersion: version,
+      moveId,
+      move,
+      turn: next.turn,
+    };
     let result: MatchView;
-    if (outcome)
+    if (outcome) {
+      await scope.client.query(
+        `WITH event AS (
+           INSERT INTO public.match_events(match_id,version,type,payload,created_at)
+           VALUES($2,$4,'MOVE',jsonb_build_object('moveId',$1::uuid,'side',$5::text,'move',$6::jsonb),$7)
+           RETURNING match_id,version
+         )
+         INSERT INTO public.match_moves(id,match_id,parent_move_id,event_version,side,move,created_at)
+         SELECT $1,event.match_id,$3,event.version,$5,$6,$7 FROM event`,
+        [moveId, row.id, active.at(-1) ?? null, version, sideCode, move, at],
+      );
       result = await this.end(
         scope.client,
         updated,
@@ -269,11 +290,48 @@ export class MatchStore extends MatchDrawStore {
         updated.clock,
         lastMove,
       );
-    else {
-      await this.update(scope.client, updated);
+      await this.outbox(scope.client, row.room_id, "MATCH_MOVE", payload);
+    } else {
+      // One round-trip: event+move, match row, room version bump and outbox row.
       await scope.client.query(
-        "UPDATE public.rooms SET room_version=room_version+1 WHERE id=$1",
-        [room.id],
+        `WITH event AS (
+           INSERT INTO public.match_events(match_id,version,type,payload,created_at)
+           VALUES($2,$4,'MOVE',jsonb_build_object('moveId',$1::uuid,'side',$5::text,'move',$6::jsonb),$7)
+           RETURNING match_id,version
+         ), moved AS (
+           INSERT INTO public.match_moves(id,match_id,parent_move_id,event_version,side,move,created_at)
+           SELECT $1,event.match_id,$3,event.version,$5,$6,$7 FROM event
+           RETURNING id
+         ), upd AS (
+           UPDATE public.matches SET position=$8,version=$9,ply=$10,active_move_ids=$11,clock=$12,repetition_counts=$13,status=$14,outcome=$15,ended_at=$16,proposal=NULL,updated_at=$20
+           WHERE id=$2 RETURNING id
+         ), bump AS (
+           UPDATE public.rooms SET room_version=room_version+1 WHERE id=$17 RETURNING id,room_version
+         )
+         INSERT INTO xiangqi_room.outbox(id,room_id,room_version,type,payload)
+         SELECT $18,bump.id,bump.room_version,'MATCH_MOVE',$19 FROM bump`,
+        [
+          moveId,
+          row.id,
+          active.at(-1) ?? null,
+          version,
+          sideCode,
+          move,
+          at,
+          updated.position,
+          updated.version,
+          updated.ply,
+          JSON.stringify(updated.active_move_ids),
+          updated.clock,
+          {},
+          updated.status,
+          updated.outcome,
+          updated.ended_at,
+          room.id,
+          randomUUID(),
+          payload,
+          this.now(),
+        ],
       );
       result = this.view(updated, next, lastMove);
     }
@@ -282,13 +340,6 @@ export class MatchStore extends MatchDrawStore {
       ply: Number(row.ply) + 1,
       positions: [...history, next],
       lastMove,
-    });
-    await this.outbox(scope.client, row.room_id, "MATCH_MOVE", {
-      matchId: row.id,
-      matchVersion: version,
-      moveId,
-      move,
-      turn: next.turn,
     });
     return { applied: true, match: result };
   }

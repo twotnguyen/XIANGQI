@@ -12,22 +12,42 @@ import {
 } from "vitest";
 import { createApp } from "@server/app.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { apply, databaseUrl, pool, reset } from "../room/room.test-helper.js";
 import type { AiOrigin } from "@server/game/ai/ai-transactions.js";
+import { scopeContext } from "../room/guest-scope.test-helper.js";
+import type { MemberRoomRequestProof } from "@server/game/room/room-http.service.js";
+type MemberOrigin = Omit<Extract<AiOrigin, { kind: "human" }>, "proof"> & {
+  proof: MemberRoomRequestProof;
+};
 import { createAiRuntime, type AiRuntime } from "@server/game/ai/ai-runtime.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
 const tokens = new Map<
   string,
   { id: string; email: string; email_confirmed_at: string }
 >();
-const sessions = new SessionService(new PostgresLoginStore(pool), {
-  signInPassword: vi.fn(),
-  getUser: async (token) => {
+const loginPool = createLoginPool({ connectionString: databaseUrl });
+const sessions = new SessionService(new PostgresLoginStore(loginPool), {
+  verifyAccessToken: async (token) => {
     const user = tokens.get(token);
     if (!user) throw Error("synthetic invalid provider token");
-    return user;
+    return { userId: user.id, email: user.email };
   },
 });
+// Real composed room-session authority: member proofs use SQL member auth; the guest branch stays unused and fails closed.
+const guests = new GuestService(new GuestStore(pool));
+const authorizer = new RoomSessionAuthorizer(
+  new PostgresMemberRoomAuthorizer(sessions),
+  new GuestRoomAuthorizer(guests, pool),
+);
+const scopes = scopeContext();
 const clients: ClientSocket[] = [];
 async function member() {
   const id = randomUUID(),
@@ -57,11 +77,7 @@ describe.skipIf(!databaseUrl)(
       if (!runtime) throw Error("AI runtime not built");
       return runtime;
     }
-    function request(
-      p: Extract<AiOrigin, { kind: "human" }>,
-      path: string,
-      body?: unknown,
-    ) {
+    function request(p: MemberOrigin, path: string, body?: unknown) {
       return fetch(base + path, {
         method: body === undefined ? "GET" : "POST",
         headers: {
@@ -172,6 +188,9 @@ describe.skipIf(!databaseUrl)(
       const built = await createAiRuntime({
         env: { ROOMS_ENABLED: "true", CORS_ORIGINS: origin },
         registration: { pool, sessions },
+        authorizer,
+        guests,
+        withScope: scopes.withScope,
         // Engine is deliberately controlled; search never resolves so games stay ACTIVE.
         engine: {
           ready: vi.fn(async () => {}),
@@ -194,7 +213,10 @@ describe.skipIf(!databaseUrl)(
       runtime = undefined;
       runtimeApi = undefined;
     });
-    afterAll(() => pool.end());
+    afterAll(async () => {
+      await pool.end();
+      await loginPool.end();
+    });
 
     it("parks connected presence in grace when the socket closes before any watch", async () => {
       const a = await member(),

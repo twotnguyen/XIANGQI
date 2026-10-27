@@ -11,13 +11,17 @@ import {
   env,
   member,
   oldRoom,
+  loginPool,
   pool,
   registration,
   reset,
   waitFor,
 } from "./game.runtime.test-helper.js";
 
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 
 const mediaConfig = {
   url: "wss://media.example.invalid",

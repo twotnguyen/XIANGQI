@@ -1,7 +1,7 @@
 import type { EngineLevel } from "@xiangqi/engine";
 import type { Move, Side } from "@xiangqi/xiangqi-core";
 import type { RoomScope } from "../room/room.types.js";
-import type { MemberRoomRequestProof } from "../room/room-http.service.js";
+import type { RoomRequestProof } from "../room/room-session.js";
 import type { AiGames, AiSnapshot } from "./ai-games.js";
 import type { AiHttpApi, AiHttpResult } from "./ai.controller.js";
 import { sessionNotReady } from "./ai-presence.js";
@@ -38,9 +38,7 @@ export class AiHttpService implements AiHttpApi {
   /**
    * Lấy mã ván cờ AI hiện tại mà người chơi đang tham gia (nếu có).
    */
-  async current(
-    proof: MemberRoomRequestProof,
-  ): Promise<{ gameId: string | null }> {
+  async current(proof: RoomRequestProof): Promise<{ gameId: string | null }> {
     const privateProof = Object.freeze({ ...proof });
     return this.options.transactions.read(
       privateProof,
@@ -87,15 +85,22 @@ export class AiHttpService implements AiHttpApi {
     work: (owner: string, origin: Human) => Promise<AiSnapshot>,
   ): Promise<AiHttpResult> {
     const origin = originCopy(supplied);
-    const owner = await this.options.transactions.read(
+    const { owner, control } = await this.options.transactions.read(
       origin.proof,
       async (scope, owner) => {
         const control = await this.options.control.inspect(scope, origin);
         if (control.mode !== "controller") sessionNotReady("TAB_READ_ONLY");
-        return owner;
+        return { owner, control };
       },
     );
     const committed = await work(owner, origin);
+    // A terminal commit may have been the guest's final release, which ends its session; this request already proved authority, so return the canonical committed snapshot without re-reading the session.
+    if (committed.status !== "ACTIVE" && committed.status !== "FINALIZING")
+      return {
+        snapshot: committed,
+        control,
+        serverNow: new Date().toISOString(),
+      };
     // Reauthorize the response and read canonical RAM; never return a captured pre-commit board.
     return this.result(origin, committed.id);
   }

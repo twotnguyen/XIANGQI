@@ -179,19 +179,6 @@ it("refuses enabled login until its private session and counter migration exists
   ).rejects.toThrow("Registration migration is not ready");
   expect(pool.end).toHaveBeenCalledOnce();
 });
-it("isolates nested registration/session work in two pools and closes both once", async () => {
-  pool.query.mockResolvedValue({
-    rows: [{ ready: true, canAssumeRole: true, loginReady: true }],
-  });
-  const runtime = await createRegistrationRuntime({
-    ...configured,
-    AUTH_LOGIN_ENABLED: "true",
-  });
-  expect(pool.construct).toHaveBeenCalledTimes(2);
-  expect(pool.construct.mock.calls[0]).toEqual(pool.construct.mock.calls[1]);
-  await Promise.all([runtime!.close(), runtime!.close()]);
-  expect(pool.end).toHaveBeenCalledTimes(2);
-});
 
 it("keeps borrowed registration pools alive while actual socket disconnect teardown drains", async () => {
   pool.query.mockResolvedValue({

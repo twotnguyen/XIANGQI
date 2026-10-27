@@ -1,13 +1,15 @@
 import type { Socket } from "socket.io";
+import { createHash } from "node:crypto";
 import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { AiPresence } from "./ai-presence.js";
 import type { AiOrigin } from "./ai-transactions.js";
 import type { AiHttpResult } from "./ai.controller.js";
+import type { RoomRequestProof } from "../room/room-session.js";
 type Human = Extract<AiOrigin, { kind: "human" }>;
 type Binding = {
   socket: Socket;
   ownerId: string;
-  appSession: string;
+  credential: string;
   tabId: string;
   generation: number;
 };
@@ -17,6 +19,16 @@ function denied(): never {
     "Kết nối chơi với máy không hợp lệ",
     403,
   );
+}
+/** Fingerprint credential phiên (member appSession / guest capability); không lưu secret thô. */
+function credentialOf(proof: RoomRequestProof): string {
+  if ("guestCapability" in proof)
+    return createHash("sha256")
+      .update(`guest:${proof.guestCapability}`)
+      .digest("hex");
+  return createHash("sha256")
+    .update(`member:${proof.appSession}`)
+    .digest("hex");
 }
 /**
  * Quản lý trạng thái và quyền điều khiển kết nối Socket của người chơi trong chế độ chơi với AI.
@@ -35,7 +47,7 @@ export class AiControl {
   bind(
     socket: Socket,
     ownerId: string,
-    appSession: string,
+    proof: RoomRequestProof,
     tabId: string,
     generation: number,
   ): void {
@@ -43,7 +55,7 @@ export class AiControl {
     this.connections.set(socket.id, {
       socket,
       ownerId,
-      appSession,
+      credential: credentialOf(proof),
       tabId,
       generation,
     });
@@ -61,10 +73,11 @@ export class AiControl {
       !binding ||
       (expected && binding !== expected) ||
       !binding.socket.connected ||
-      scope.actor.kind !== "member" ||
+      ("guestCapability" in origin.proof ? "guest" : "member") !==
+        scope.actor.kind ||
       !scope.lockedActorIds.has(scope.actor.userId) ||
       binding.ownerId !== scope.actor.userId ||
-      binding.appSession !== origin.proof.appSession ||
+      binding.credential !== credentialOf(origin.proof) ||
       binding.tabId !== origin.tab.tabId ||
       binding.generation !== origin.tab.generation
     )

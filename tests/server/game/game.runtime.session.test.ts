@@ -6,10 +6,14 @@ import { createApp } from "@server/app.js";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { RegistrationError } from "@server/account/auth/registration.types.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
 import type { RealtimePublisher } from "@server/game/realtime/gateway.js";
 import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
 >;
@@ -39,20 +43,19 @@ async function fixture() {
     "INSERT INTO public.profiles(user_id,username,display_name,completed_at,registration_pending) VALUES($1,$2,'Synthetic Session',$3,false)",
     [id, "m" + id.replaceAll("-", "").slice(0, 18), at],
   );
-  let providerStatus = 200;
   const auth = {
-    getUser: vi.fn(async (token: string) => {
-      if (providerStatus !== 200 || token === "expired-bearer")
+    verifyAccessToken: vi.fn(async (token: string) => {
+      if (token === "expired-bearer")
         throw new RegistrationError(
-          providerStatus === 503 ? "AUTH_PROVIDER_ERROR" : "SESSION_INVALID",
+          "SESSION_INVALID",
           "PRIVATE_PROVIDER_SECRET",
-          providerStatus === 503 ? 503 : 401,
+          401,
         );
-      return { id, email, email_confirmed_at: at.toISOString() };
+      return { userId: id, email };
     }),
   };
   const sessions = new SessionService(
-      new PostgresLoginStore(pool),
+      new PostgresLoginStore(loginPool),
       auth as never,
     ),
     issued = await sessions.issue(id, false),
@@ -139,7 +142,6 @@ async function fixture() {
     auth,
     runtime,
     publisher,
-    provider: (status: number) => (providerStatus = status),
     close: async () => {
       sockets.forEach((s) => s.disconnect());
       await runtime.close();
@@ -147,7 +149,10 @@ async function fixture() {
     },
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "native runtime fixed appSession validity without bearer provider",
   () => {
@@ -197,46 +202,30 @@ describe.skipIf(!databaseUrl)(
       },
       9000,
     );
-    it.each([401, 503])(
-      "valid appSession survives provider%s and no private snapshot leaks",
-      async (status) => {
-        const f = await fixture();
-        try {
-          let snapshots = 0;
-          f.socket.on("room.snapshot", () => snapshots++);
-          f.provider(status);
-          await f.publisher.publishSnapshots(f.entry.roomId).catch((error) => {
-            expect(error.code).toBe("REALTIME_UNAVAILABLE");
-          });
-          const calls = f.auth.getUser.mock.calls.length;
-          await new Promise((r) => setTimeout(r, 1250));
-          expect(f.socket.connected).toBe(true);
-          expect((await f.member()).disconnected_at).toBeNull();
-          expect(snapshots).toBe(0);
-          expect(f.auth.getUser).toHaveBeenCalledTimes(calls);
-          f.provider(200);
-          f.socket.disconnect();
-          await waitFor(
-            f.member,
-            (row) => row?.disconnected_at instanceof Date,
-          );
-          const resumed = await f.connect("new-refreshed-bearer");
-          expect(resumed.connected).toBe(true);
-          expect((await f.member()).disconnected_at).toBeNull();
-          const session = (
-            await pool.query(
-              "SELECT expires_at,remember FROM xiangqi_auth.app_sessions WHERE token_hash=$1",
-              [hash(f.cap)],
-            )
-          ).rows[0];
-          expect(session.expires_at.toISOString()).toBe(f.issued.expiresAt);
-          expect(session.remember).toBe(false);
-        } finally {
-          await f.close();
-        }
-      },
-      9000,
-    );
+    it("warm signed bearer with valid DB session keeps the seat through idle recheck and resumes", async () => {
+      const f = await fixture();
+      try {
+        await f.publisher.publishSnapshots(f.entry.roomId);
+        await new Promise((r) => setTimeout(r, 1250));
+        expect(f.socket.connected).toBe(true);
+        expect((await f.member()).disconnected_at).toBeNull();
+        f.socket.disconnect();
+        await waitFor(f.member, (row) => row?.disconnected_at instanceof Date);
+        const resumed = await f.connect("new-refreshed-bearer");
+        expect(resumed.connected).toBe(true);
+        expect((await f.member()).disconnected_at).toBeNull();
+        const session = (
+          await pool.query(
+            "SELECT expires_at,remember FROM xiangqi_auth.app_sessions WHERE token_hash=$1",
+            [hash(f.cap)],
+          )
+        ).rows[0];
+        expect(session.expires_at.toISOString()).toBe(f.issued.expiresAt);
+        expect(session.remember).toBe(false);
+      } finally {
+        await f.close();
+      }
+    }, 9000);
     it("SQL access outage retains the transport and retries after recovery", async () => {
       const f = await fixture();
       try {

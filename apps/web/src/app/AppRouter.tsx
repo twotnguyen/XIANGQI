@@ -1,6 +1,10 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
-import { useSession } from "../features/auth/SessionProvider.js";
+import {
+  GuestRequestError,
+  useSession,
+} from "../features/auth/SessionProvider.js";
+import { GuestNameDialog } from "../features/auth/GuestNameDialog.js";
 import { AppShell } from "./layouts/AppShell.js";
 import { P2ScopePage } from "./P2ScopePage.js";
 import {
@@ -142,17 +146,19 @@ function Lobby({
   blockedReason,
   banner,
   requestLogout,
+  performLogout,
 }: {
   client: RoomClient;
   onEntered: (entry: RoomEntry) => void;
   blockedReason?: string;
   banner?: ReactNode;
-  requestLogout: (run: () => Promise<void>) => void;
+  requestLogout: (run: (confirmedResign: boolean) => Promise<void>) => void;
+  performLogout: (confirmedResign: boolean) => Promise<void>;
 }) {
-  const { authorizedFetch, logout, getRealtimeProof } = useSession();
+  const { sessionFetch, getRealtimeProof } = useSession();
   const publicClient = useMemo(
-    () => makePublicRoomClient(authorizedFetch),
-    [authorizedFetch],
+    () => makePublicRoomClient(sessionFetch),
+    [sessionFetch],
   );
   const epoch = useRef(0),
     connectionRevision = useRef(0),
@@ -214,14 +220,7 @@ function Lobby({
       );
     });
     const feed = connectPublicRooms({
-      getProof: async () => {
-        const proof = await getRealtimeProof();
-        return {
-          kind: "member",
-          accessToken: proof.accessToken,
-          appSession: proof.appSession,
-        };
-      },
+      getProof: getRealtimeProof,
       onRooms: (rows) => {
         if (current()) {
           feedSeen = true;
@@ -345,7 +344,7 @@ function Lobby({
               const { startAiGame } =
                 await import("../features/ai/AiGamePage.js");
               const gameId = await startAiGame(
-                authorizedFetch,
+                sessionFetch,
                 getRealtimeProof,
                 selection,
               );
@@ -360,11 +359,13 @@ function Lobby({
         loading={loggingOut}
         onClick={() => {
           if (loggingOut) return;
-          requestLogout(() => {
+          requestLogout(async (confirmedResign) => {
             setLoggingOut(true);
-            return logout()
-              .catch(() => setNotice("Chưa thể đăng xuất. Vui lòng thử lại."))
-              .finally(() => setLoggingOut(false));
+            try {
+              await performLogout(confirmedResign);
+            } finally {
+              setLoggingOut(false);
+            }
           });
         }}
       >
@@ -397,12 +398,12 @@ const titles: Partial<Record<Route["name"], string>> = {
 export function AppRouter() {
   const session = useSession();
   const client = useMemo(
-    () => createRoomClient(session.authorizedFetch),
-    [session.authorizedFetch],
+    () => createRoomClient(session.sessionFetch),
+    [session.sessionFetch],
   );
   const mediaClient = useMemo(
-    () => createMediaClient(session.authorizedFetch),
-    [session.authorizedFetch],
+    () => createMediaClient(session.sessionFetch),
+    [session.sessionFetch],
   );
   const friendClient = useMemo(
     () => createFriendClient(session.authorizedFetch),
@@ -451,8 +452,22 @@ export function AppRouter() {
   const decision = guardRoute(route, session.state);
   const [logoutGate, setLogoutGate] = useState<{
     gameId: string;
-    run: () => Promise<void>;
+    run: (confirmedResign: boolean) => Promise<void>;
   } | null>(null);
+  // Người đang đăng nhập (member hoặc Khách) dưới dạng tham chiếu đã thu hẹp để đọc userId an toàn.
+  const actor =
+    session.state.status === "active-member" || session.state.status === "guest"
+      ? session.state
+      : null;
+  const signedIn = actor !== null;
+  const shellUser =
+    session.state.status === "guest"
+      ? { displayName: session.state.displayName, guest: true }
+      : session.state.status === "active-member"
+        ? { displayName: profileName ?? session.state.username, guest: false }
+        : null;
+  const [guestDialog, setGuestDialog] = useState(false);
+  const [guestResign, setGuestResign] = useState(false);
   // Ván AI đang mở (route /ai/:id hoặc vị trí đang chơi dở) cần đầu hàng trước khi đăng xuất.
   const aiGameId =
     route.name === "ai"
@@ -460,15 +475,27 @@ export function AppRouter() {
       : where?.kind === "playing-ai"
         ? (where.matchId ?? null)
         : null;
-  const performSessionLogout = () => {
+  const logoutGuestSession = (confirmedResign: boolean) =>
+    session.logoutGuest(confirmedResign).catch((failure: unknown) => {
+      if (
+        !confirmedResign &&
+        failure instanceof GuestRequestError &&
+        failure.code === "GUEST_RESIGN_CONFIRM_REQUIRED"
+      )
+        setGuestResign(true);
+      else setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại.");
+    });
+  const performSessionLogout = (confirmedResign: boolean): Promise<void> => {
     pending.current = null;
+    if (session.state.status === "guest")
+      return logoutGuestSession(confirmedResign);
     return session
       .logout()
       .catch(() => setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại."));
   };
-  const guardedLogout = (run: () => Promise<void>) => {
+  const guardedLogout = (run: (confirmedResign: boolean) => Promise<void>) => {
     if (aiGameId) setLogoutGate({ gameId: aiGameId, run });
-    else void run();
+    else void run(false);
   };
   const confirmLogoutGate = async () => {
     const gate = logoutGate;
@@ -478,7 +505,7 @@ export function AppRouter() {
       const { resignActiveAiGame } =
         await import("../features/ai/AiGamePage.js");
       await resignActiveAiGame(
-        session.authorizedFetch,
+        session.sessionFetch,
         session.getRealtimeProof,
         gate.gameId,
       );
@@ -488,7 +515,7 @@ export function AppRouter() {
       return;
     }
     setLogoutGate(null);
-    await gate.run();
+    await gate.run(true);
   };
   const title = titles[route.name] || "Chức năng đang chuẩn bị";
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
@@ -567,17 +594,24 @@ export function AppRouter() {
     );
   else if (route.name === "login")
     content = (
-      <LoginPage
-        onLoggedIn={complete}
-        renderGoogle={(remember, disabled, onBusyChange) => (
-          <GoogleSignInButton
-            remember={remember}
-            disabled={disabled}
-            onResult={googleResult}
-            onBusyChange={onBusyChange}
-          />
-        )}
-      />
+      <>
+        <LoginPage
+          onLoggedIn={complete}
+          onGuest={() => setGuestDialog(true)}
+          renderGoogle={(remember, disabled, onBusyChange) => (
+            <GoogleSignInButton
+              remember={remember}
+              disabled={disabled}
+              onResult={googleResult}
+              onBusyChange={onBusyChange}
+            />
+          )}
+        />
+        <GuestNameDialog
+          open={guestDialog}
+          onClose={() => setGuestDialog(false)}
+        />
+      </>
     );
   else if (route.name === "register")
     content = (
@@ -608,13 +642,14 @@ export function AppRouter() {
         onResult={googleResult}
       />
     );
-  else if (route.name === "lobby" && session.state.status === "active-member")
+  else if (route.name === "lobby" && actor)
     content = (
       <Lobby
-        key={session.state.userId}
+        key={actor.userId}
         client={client}
         onEntered={enterRoom}
         requestLogout={guardedLogout}
+        performLogout={performSessionLogout}
         blockedReason={
           where && where.kind !== "none"
             ? "Bạn đang ở trong một ván/phòng khác."
@@ -640,19 +675,16 @@ export function AppRouter() {
         }
       />
     );
-  else if (
-    route.name === "settings" &&
-    session.state.status === "active-member"
-  )
+  else if (route.name === "settings" && signedIn)
     content = (
       <ProfilePage
         client={profileClient}
-        guest={false}
+        guest={session.state.status === "guest"}
         onSaved={setProfileName}
         onLogout={() => guardedLogout(performSessionLogout)}
       />
     );
-  else if (route.name === "join" && session.state.status === "active-member")
+  else if (route.name === "join" && signedIn)
     content = (
       <InviteEntry client={client} onEntered={enterRoom} code={route.token} />
     );
@@ -674,12 +706,12 @@ export function AppRouter() {
         id={route.id}
       />
     );
-  else if (route.name === "ai" && session.state.status === "active-member")
+  else if (route.name === "ai" && signedIn)
     content = (
       <AiGamePage
         key={route.id}
         gameId={route.id}
-        authorizedFetch={session.authorizedFetch}
+        authorizedFetch={session.sessionFetch}
         getProof={session.getRealtimeProof}
       />
     );
@@ -702,15 +734,15 @@ export function AppRouter() {
         signedIn={session.state.status === "active-member"}
       />
     );
-  else if (route.name === "room" && session.state.status === "active-member")
+  else if (route.name === "room" && actor)
     content =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         route.id,
       ) ? (
         <RoomPage
-          key={`${session.state.userId}:${route.id}`}
+          key={`${actor.userId}:${route.id}`}
           roomId={route.id}
-          userId={session.state.userId}
+          userId={actor.userId}
           client={client}
           getProof={session.getRealtimeProof}
           mediaClient={mediaClient}
@@ -737,12 +769,8 @@ export function AppRouter() {
               ? "Dịch vụ phòng cờ hiện chưa khả dụng; bạn chưa thể vào phòng lúc này."
               : "Chức năng này hiện chưa khả dụng. Vui lòng quay lại sau."}
         </p>
-        <NavigationLink
-          href={session.state.status === "active-member" ? "/lobby" : "/login"}
-        >
-          {session.state.status === "active-member"
-            ? "Quay về Sảnh"
-            : "Về trang đăng nhập"}
+        <NavigationLink href={signedIn ? "/lobby" : "/login"}>
+          {signedIn ? "Quay về Sảnh" : "Về trang đăng nhập"}
         </NavigationLink>
       </section>
     );
@@ -761,24 +789,25 @@ export function AppRouter() {
   );
   return (
     <div ref={container} className="xq-ui">
-      {roomNotice && session.state.status === "active-member" && (
+      {roomNotice && signedIn && (
         <Notice message={roomNotice} onDismiss={() => setRoomNotice("")} />
       )}
-      {session.state.status === "active-member" &&
-      route.name !== "login" &&
-      route.name !== "register" ? (
+      {shellUser && route.name !== "login" && route.name !== "register" ? (
         <AppShell
           title={title}
           active={location.pathname}
-          user={{
-            displayName: profileName ?? session.state.username,
-            guest: false,
-          }}
-          bell={<FriendsBell client={friendClient} />}
+          user={shellUser}
+          bell={
+            session.state.status === "active-member" ? (
+              <FriendsBell client={friendClient} />
+            ) : undefined
+          }
           onLogout={() => guardedLogout(performSessionLogout)}
         >
           {page}
-          <RoomInvitePopup client={friendClient} />
+          {session.state.status === "active-member" && (
+            <RoomInvitePopup client={friendClient} />
+          )}
         </AppShell>
       ) : (
         page
@@ -797,6 +826,22 @@ export function AppRouter() {
             Đăng xuất sẽ được tính là đầu hàng và thua ván đang chơi với máy.
             Ván đấu với máy không thay đổi Elo.
           </p>
+        </Dialog>
+      )}
+      {guestResign && (
+        <Dialog
+          open
+          onClose={() => setGuestResign(false)}
+          title="Đăng xuất sẽ xin thua ván đang chơi"
+          danger
+          onConfirm={() => {
+            setGuestResign(false);
+            void logoutGuestSession(true);
+          }}
+          confirmLabel="Xin thua và đăng xuất"
+          cancelLabel="Ở lại"
+        >
+          <p>Ván đang chơi sẽ được tính là thua khi bạn đăng xuất.</p>
         </Dialog>
       )}
     </div>

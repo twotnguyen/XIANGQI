@@ -1,31 +1,42 @@
 import { createHash, randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomWorker } from "@server/game/room/room-worker.js";
 import { PostgresRoomWorkerPort } from "@server/game/room/postgres-room-worker-port.js";
 import type { RoomScope } from "@server/game/room/room.types.js";
 import { databaseUrl, pool, reset } from "./room-transactions.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 const coordinator = new RoomTransactions(pool);
-const users = new Map<
-  string,
-  { id: string; email: string; email_confirmed_at: string }
->();
+const users = new Map<string, { userId: string; email: string }>();
 const provider = {
   signInPassword: vi.fn(),
-  getUser: vi.fn(async (token: string) => {
+  verifyAccessToken: vi.fn(async (token: string) => {
     const user = users.get(token);
     if (!user) throw new Error("synthetic provider unavailable");
     return user;
   }),
 };
-const sessions = new SessionService(new PostgresLoginStore(pool), provider);
-const authorizer = new PostgresMemberRoomAuthorizer(sessions);
+const sessions = new SessionService(
+  new PostgresLoginStore(loginPool),
+  provider,
+);
+const authorizer = new RoomSessionAuthorizer(
+  new PostgresMemberRoomAuthorizer(sessions),
+  new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+);
 async function member() {
   const id = randomUUID(),
     email = `synthetic-${id}@example.invalid`,
@@ -40,7 +51,7 @@ async function member() {
   );
   const issued = await sessions.issue(id, false),
     proof = { accessToken: id, appSession: issued.appSession };
-  users.set(id, { id, email, email_confirmed_at: at.toISOString() });
+  users.set(id, { userId: id, email });
   return { userId: id, kind: "member" as const, proof };
 }
 async function setup(two = false) {
@@ -136,11 +147,14 @@ async function setup(two = false) {
     sink,
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
   beforeEach(async () => {
     users.clear();
-    provider.getUser.mockClear();
+    provider.verifyAccessToken.mockClear();
     await reset();
   });
   it("starts countdown only with both fresh controller proofs in the same locked SQL transaction", async () => {
@@ -164,7 +178,7 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
         client.release();
       }
     };
-    provider.getUser
+    provider.verifyAccessToken
       .mockImplementationOnce(outsideLocks)
       .mockImplementationOnce(outsideLocks);
     await f.worker.tick();
@@ -176,7 +190,7 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
         ])
       ).rows[0].status,
     ).toBe("PLAYING");
-    expect(provider.getUser).toHaveBeenCalledTimes(2);
+    expect(provider.verifyAccessToken).toHaveBeenCalledTimes(2);
   });
   it("cancels countdown with no current peers and explicitly supplies an empty verified set", async () => {
     const f = await setup(true);
@@ -262,7 +276,7 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
     }
     expect(f.start).not.toHaveBeenCalled();
   });
-  it("advances the bounded due-room cursor across fifty unsupported owners to a healthy room", async () => {
+  it("advances the bounded due-room cursor past fifty guest-owned rooms without a live session to a healthy room", async () => {
     const f = await setup();
     await pool.query(
       "UPDATE public.room_members SET disconnected_at=clock_timestamp()-interval '61 seconds' WHERE room_id=$1",
@@ -292,10 +306,13 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
       );
     }
     expect(ids).toContain(f.roomId);
-    await expect(f.worker.tick()).rejects.toThrow(
-      "Room batch transactions failed",
-    );
+    // Guest owners are supported but fail closed: no live guest session means the room is skipped, never worked.
     await f.worker.tick();
+    await f.worker.tick();
+    expect(
+      (await pool.query("SELECT count(*)::int n FROM xiangqi_room.countdowns"))
+        .rows[0].n,
+    ).toBe(50);
     expect(
       (
         await pool.query("SELECT status FROM public.rooms WHERE id=$1", [
@@ -325,12 +342,12 @@ describe.skipIf(!databaseUrl)("actual PostgreSQL room worker port", () => {
   });
   it("keeps an original peer proof valid while worker provider resolution is paused", async () => {
     const f = await setup(true);
-    const original = f.peers[0]!.proof!;
+    const original = f.peers[0]!.proof;
     const actor = await authorizer.resolve(original);
     let reached!: () => void, release!: () => void;
     const waiting = new Promise<void>((r) => (reached = r));
     const resumed = new Promise<void>((r) => (release = r));
-    provider.getUser.mockImplementationOnce(async (token) => {
+    provider.verifyAccessToken.mockImplementationOnce(async (token) => {
       reached();
       await resumed;
       return users.get(token)!;

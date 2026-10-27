@@ -71,7 +71,6 @@ function fixture(auth: PasswordAuth, priorFailures = 0) {
 
 it("serializes each username's concurrent burst without exposing slow versus fast provider failures", async () => {
   const { service, saveAttempts } = fixture({
-    getUser: vi.fn(),
     signInPassword: async (email) => {
       await setTimeout(email === account.email ? 600 : 10);
       throw new RegistrationError("RECOVERY_PASSWORD_INVALID", "private", 401);
@@ -110,7 +109,6 @@ it("serializes each username's concurrent burst without exposing slow versus fas
 it("does not disclose existence through the fifth wrong-password transition to a locked username", async () => {
   const { service, saveAttempts } = fixture(
     {
-      getUser: vi.fn(),
       signInPassword: async (email) => {
         await setTimeout(email === account.email ? 600 : 10);
         throw new RegistrationError(
@@ -144,7 +142,6 @@ it("does not disclose existence through the fifth wrong-password transition to a
 
 it("returns uniform provider outages without counting password failures for either name", async () => {
   const { service, saveAttempts } = fixture({
-    getUser: vi.fn(),
     signInPassword: async (email) => {
       await setTimeout(email === account.email ? 600 : 10);
       throw new RegistrationError(
@@ -169,7 +166,6 @@ it("returns uniform provider outages without counting password failures for eith
 
 it("never writes a late wrong-password outcome after the provider deadline has returned an outage", async () => {
   const { service, saveAttempts } = fixture({
-    getUser: vi.fn(),
     // A deliberately non-cooperative provider verifies that the race contains provider work only.
     signInPassword: async () => {
       await setTimeout(2300);
@@ -193,7 +189,6 @@ it("never writes a late wrong-password outcome after the provider deadline has r
 it("pads slow existing and fast unknown password failures inside the username lock", async () => {
   const calls: string[] = [];
   const { service } = fixture({
-    getUser: vi.fn(),
     signInPassword: async (email) => {
       calls.push(email);
       await setTimeout(email === account.email ? 600 : 10);
@@ -215,7 +210,6 @@ it("pads slow existing and fast unknown password failures inside the username lo
 }, 10000);
 it("bounds stalled providers for both names and never counts timeouts as wrong passwords", async () => {
   const { service, saveAttempts } = fixture({
-    getUser: vi.fn(),
     signInPassword: () => new Promise(() => {}),
   });
   for (const username of ["KnownUser", "UnknownUser"]) {

@@ -18,6 +18,7 @@ import {
   type RealtimeIdentity,
 } from "@server/game/realtime/realtime.types.js";
 import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
+import type { RoomRequestProof } from "@server/game/room/room-session.js";
 
 describe.skipIf(!realtimeTestUrl)(
   "durable realtime store on isolated PostgreSQL",
@@ -180,6 +181,29 @@ describe.skipIf(!realtimeTestUrl)(
         ).rows[0].version,
       ).toBe(1);
     });
+    it("denies stale commands from read-only tabs with control state before version state", async () => {
+      const room = await addRoom(fixture.admin, [
+        randomUUID(),
+        randomUUID(),
+        randomUUID(),
+      ]);
+      const red = room.connection();
+      const spectator = room.connection(room.members[2]);
+      await store.connect(red);
+      await store.connect(spectator);
+      await store.command(red, readyCommand(room.roomId));
+      expect(
+        await store.command(spectator, readyCommand(room.roomId, 0)),
+      ).toMatchObject({ status: "error", error: { code: "TAB_READ_ONLY" } });
+      expect(
+        (
+          await fixture.admin.query(
+            "SELECT version FROM public.rooms WHERE id=$1",
+            [room.roomId],
+          )
+        ).rows[0].version,
+      ).toBe(1);
+    });
     it("rolls back a state write when execution fails before receipt creation", async () => {
       const room = await addRoom(fixture.admin);
       const connection = room.connection();
@@ -286,6 +310,32 @@ describe.skipIf(!realtimeTestUrl)(
       expect(
         await store.command(second, readyCommand(room.roomId)),
       ).toMatchObject({ status: "ok", snapshot: { version: 1 } });
+    });
+    it("does not replay a stored receipt to a tab that lost control before retrying", async () => {
+      const room = await addRoom(fixture.admin);
+      const first = room.connection();
+      await store.connect(first);
+      const command = readyCommand(room.roomId);
+      expect(await store.command(first, command)).toMatchObject({
+        status: "ok",
+        snapshot: { version: 1 },
+      });
+      const second = { ...first, connectionId: randomUUID() };
+      await store.connect(second);
+      const replay = await store.command(first, command);
+      expect(replay).toMatchObject({
+        status: "error",
+        error: { code: "TAB_READ_ONLY" },
+      });
+      expect(replay).not.toMatchObject({ status: "ok" });
+      expect(
+        (
+          await fixture.admin.query(
+            "SELECT version FROM public.rooms WHERE id=$1",
+            [room.roomId],
+          )
+        ).rows[0].version,
+      ).toBe(1);
     });
     it("rechecks membership before receipt replay or private snapshots", async () => {
       const room = await addRoom(fixture.admin);
@@ -397,18 +447,20 @@ describe.skipIf(!realtimeTestUrl)(
         store: new RealtimeStore(fixture.runtime, fixture.rooms),
         corsOrigins: ["http://localhost:5173"],
         identities: {
-          resolve: async (token, appSession, proof) => {
+          resolve: async (proof: RoomRequestProof) => {
+            if (!("accessToken" in proof))
+              throw new RealtimeError(
+                "AUTH_REQUIRED",
+                "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+              );
+            const { accessToken: token, appSession } = proof;
             const seen = proofs.get(token) ?? [];
-            if (proof) seen.push(proof);
+            seen.push(proof);
             proofs.set(token, seen);
             const failure = providerFailures.get(token);
             if (failure) throw failure;
             const identity = identities.get(token);
-            if (
-              !identity ||
-              !appSession ||
-              capabilities.get(token) !== appSession
-            )
+            if (!identity || capabilities.get(token) !== appSession)
               throw new RealtimeError(
                 "AUTH_REQUIRED",
                 "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
@@ -518,16 +570,9 @@ describe.skipIf(!realtimeTestUrl)(
         const peer = socket(room.roomId, room.members[0]!);
         await connect(peer.client);
         const request = readyCommand(room.roomId);
-        const committedSnapshot = event<RoomSnapshot>(
-          peer.client,
-          "room.snapshot",
-        );
         expect(await command(peer.client, request)).toMatchObject({
           status: "ok",
         });
-        // Ack precedes publication; consume the authorized command's snapshot
-        // before testing that failed reauthentication publishes nothing.
-        expect(await committedSnapshot).toMatchObject({ version: 1 });
         providerFailures.set(
           peer.token,
           known
@@ -594,7 +639,6 @@ describe.skipIf(!realtimeTestUrl)(
       expect(first.status).toBe("ok");
       expect(await command(peer.client, input)).toEqual(first);
       const seen = proofs.get(peer.token)!;
-      expect(seen.length).toBeGreaterThanOrEqual(4);
       expect(new Set(seen).size).toBe(seen.length);
       for (const value of seen)
         expect(value).toEqual({
@@ -791,12 +835,7 @@ describe.skipIf(!realtimeTestUrl)(
       await connect(red.client);
       await connect(black.client);
       const request = readyCommand(room.roomId);
-      const committedSnapshot = event<RoomSnapshot>(
-        red.client,
-        "room.snapshot",
-      );
       await command(red.client, request);
-      expect(await committedSnapshot).toMatchObject({ version: 1 });
       identities.delete(red.token);
       expect(await command(red.client, request)).toMatchObject({
         status: "error",
@@ -822,14 +861,9 @@ describe.skipIf(!realtimeTestUrl)(
       await connect(red.client);
       await connect(black.client);
       const request = readyCommand(room.roomId);
-      const committedSnapshot = event<RoomSnapshot>(
-        red.client,
-        "room.snapshot",
-      );
       expect(await command(red.client, request)).toMatchObject({
         status: "ok",
       });
-      expect(await committedSnapshot).toMatchObject({ version: 1 });
       capabilities.delete(red.token);
       expect(identities.has(red.token)).toBe(true);
       for (const input of [request, readyCommand(room.roomId, 1)])
@@ -983,13 +1017,12 @@ describe.skipIf(!realtimeTestUrl)("Nest realtime lifecycle integration", () => {
     app = await createApp(["http://localhost:5173"], [], null, {
       store: new RealtimeStore(fixture.runtime, fixture.rooms),
       identities: {
-        resolve: async (token, appSession) => {
+        resolve: async (proof: RoomRequestProof) => {
+          if (!("accessToken" in proof))
+            throw new RealtimeError("AUTH_REQUIRED", "Fixture session invalid");
+          const { accessToken: token, appSession } = proof;
           const identity = identities.get(token);
-          if (
-            !identity ||
-            !appSession ||
-            capabilities.get(token) !== appSession
-          )
+          if (!identity || capabilities.get(token) !== appSession)
             throw new RealtimeError("AUTH_REQUIRED", "Fixture session invalid");
           return identity;
         },

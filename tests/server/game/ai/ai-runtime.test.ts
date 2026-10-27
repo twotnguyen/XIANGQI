@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { scopeContext } from "../room/guest-scope.test-helper.js";
 import { createAiRuntime } from "@server/game/ai/ai-runtime.js";
 import { AiReservations } from "@server/game/ai/ai-reservations.js";
 import { SqlAiTransactions } from "@server/game/ai/ai-sql-transactions.js";
 import type { AiEngine } from "@server/game/ai/ai-engine.js";
 import type { SessionService } from "@server/account/login/session.service.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
 import { apply, databaseUrl, pool, reset } from "../room/room.test-helper.js";
 
 const env = { ROOMS_ENABLED: "true", CORS_ORIGINS: "http://localhost:5173" };
@@ -19,6 +25,13 @@ function fakeEngine() {
 
 // createAiRuntime only hands the session service to the authorizer; these tests never authenticate.
 const sessions = {} as unknown as SessionService;
+// Real composed room-session authority; member-only lifecycle never reaches the guest branch, which fails closed.
+const guests = new GuestService(new GuestStore(pool));
+const authorizer = new RoomSessionAuthorizer(
+  new PostgresMemberRoomAuthorizer(sessions),
+  new GuestRoomAuthorizer(guests, pool),
+);
+const scopes = scopeContext();
 
 describe("createAiRuntime without a database", () => {
   it("returns null when rooms are disabled and never touches the pool or engine", async () => {
@@ -27,6 +40,9 @@ describe("createAiRuntime without a database", () => {
     const runtime = await createAiRuntime({
       env: { ROOMS_ENABLED: "false" },
       registration: { pool: { query } as never, sessions },
+      authorizer,
+      guests,
+      withScope: scopes.withScope,
       engine: engine as unknown as AiEngine,
     });
     expect(runtime).toBeNull();
@@ -65,6 +81,9 @@ describe.skipIf(!databaseUrl)("AI runtime lifecycle", () => {
       createAiRuntime({
         env,
         registration: { pool, sessions },
+        authorizer,
+        guests,
+        withScope: scopes.withScope,
         engine: engine as unknown as AiEngine,
       }),
     ).rejects.toThrow("AI migration is not ready");
@@ -82,6 +101,9 @@ describe.skipIf(!databaseUrl)("AI runtime lifecycle", () => {
       createAiRuntime({
         env,
         registration: { pool, sessions },
+        authorizer,
+        guests,
+        withScope: scopes.withScope,
         engine: engine as unknown as AiEngine,
       }),
     ).rejects.toThrow("boot down");
@@ -95,6 +117,9 @@ describe.skipIf(!databaseUrl)("AI runtime lifecycle", () => {
     const runtime = await createAiRuntime({
       env,
       registration: { pool, sessions },
+      authorizer,
+      guests,
+      withScope: scopes.withScope,
       engine: engine as unknown as AiEngine,
     });
     expect(runtime).not.toBeNull();
@@ -118,6 +143,9 @@ describe.skipIf(!databaseUrl)("AI runtime lifecycle", () => {
     const runtime = await createAiRuntime({
       env,
       registration: { pool, sessions },
+      authorizer,
+      guests,
+      withScope: scopes.withScope,
       engine: engine as unknown as AiEngine,
     });
     await runtime!.start();
@@ -140,6 +168,9 @@ describe.skipIf(!databaseUrl)("AI runtime lifecycle", () => {
     const runtime = await createAiRuntime({
       env,
       registration: { pool, sessions },
+      authorizer,
+      guests,
+      withScope: scopes.withScope,
       engine: engine as unknown as AiEngine,
     });
     await runtime!.start();
@@ -157,6 +188,9 @@ describe.skipIf(!databaseUrl)("AI runtime lifecycle", () => {
     const runtime = await createAiRuntime({
       env,
       registration: { pool, sessions },
+      authorizer,
+      guests,
+      withScope: scopes.withScope,
       engine: engine as unknown as AiEngine,
     });
     // One expired reservation row forces the sweep to run its per-row transaction, which fails.

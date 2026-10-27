@@ -6,6 +6,10 @@ import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { RoomError, type RoomScope } from "@server/game/room/room.types.js";
 import { AiControl } from "@server/game/ai/ai-control.js";
 import type { AiOrigin } from "@server/game/ai/ai-transactions.js";
+import type { MemberRoomRequestProof } from "@server/game/room/room-http.service.js";
+type MemberOrigin = Omit<Extract<AiOrigin, { kind: "human" }>, "proof"> & {
+  proof: MemberRoomRequestProof;
+};
 const owner = randomUUID(),
   tabId = randomUUID(),
   cap = "a".repeat(43),
@@ -21,10 +25,7 @@ const authorize = vi.fn(async () => {}),
 const control = new AiControl({ authorize, bindGame, assertRetained });
 const http = createServer(),
   server = new Server(http, { transports: ["websocket"] });
-let base: string,
-  client: ClientSocket,
-  socket: Socket,
-  origin: Extract<AiOrigin, { kind: "human" }>;
+let base: string, client: ClientSocket, socket: Socket, origin: MemberOrigin;
 // Native Socket is real; provider/SQL ownership is a controlled boundary in these transport tests.
 beforeAll(async () => {
   await new Promise<void>((resolve) => http.listen(0, "127.0.0.1", resolve));
@@ -45,12 +46,12 @@ beforeEach(async () => {
     reconnection: false,
   });
   socket = await admitted;
-  control.bind(socket, owner, cap, tabId, 2);
   origin = {
     kind: "human",
     proof: { accessToken: "synthetic-token", appSession: cap },
     tab: { tabId, connectionId: socket.id, generation: 2 },
   };
+  control.bind(socket, owner, origin.proof, tabId, 2);
 });
 afterAll(async () => {
   client?.disconnect();
@@ -122,7 +123,13 @@ it("rechecks a disconnect that occurs during SQL authority validation", async ()
 });
 it("rejects late proof when the same physical Socket binding is refreshed during SQL read", async () => {
   authorize.mockImplementationOnce(async () => {
-    control.bind(socket, owner, "b".repeat(43), tabId, 3);
+    control.bind(
+      socket,
+      owner,
+      { accessToken: "synthetic-token", appSession: "b".repeat(43) },
+      tabId,
+      3,
+    );
   });
   await expect(control.inspect(scope, origin)).rejects.toMatchObject({
     code: "AI_AUTHORITY_REQUIRED",

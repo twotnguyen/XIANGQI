@@ -46,9 +46,15 @@ export class PostgresMemberRoomAuthorizer implements MemberRoomAuthorizer {
    */
   async resolve(proof: MemberRoomRequestProof): Promise<RoomActor> {
     valid(proof);
-    this.resolved.delete(proof);
     const sessionHash = fingerprint(proof.appSession),
       bearerHash = fingerprint(proof.accessToken);
+    // A proof object is bound to its first verified credentials; mutation must not re-trust it.
+    const prior = this.resolved.get(proof);
+    if (
+      prior &&
+      (prior.sessionHash !== sessionHash || prior.bearerHash !== bearerHash)
+    )
+      throw required();
     try {
       const userId = await this.sessions.requireActive(
         proof.accessToken,
@@ -56,7 +62,8 @@ export class PostgresMemberRoomAuthorizer implements MemberRoomAuthorizer {
       );
       if (
         fingerprint(proof.appSession) !== sessionHash ||
-        fingerprint(proof.accessToken) !== bearerHash
+        fingerprint(proof.accessToken) !== bearerHash ||
+        (prior && prior.userId !== userId)
       )
         throw required();
       this.resolved.set(proof, { userId, sessionHash, bearerHash });

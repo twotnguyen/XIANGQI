@@ -3,6 +3,7 @@ import type {
   RoomAction,
   RoomCommand,
 } from "@xiangqi/shared";
+import type { RoomRequestProof } from "../room/room-session.js";
 import { RealtimeError } from "./realtime.types.js";
 
 function object(value: unknown): Record<string, unknown> {
@@ -25,22 +26,49 @@ export function uuid(value: unknown): string {
  */
 export function parseHandshake(value: unknown): RealtimeHandshake {
   const input = object(value);
+  const keys = Object.keys(input).sort().join(",");
+  // Unknown key sets (e.g. a guest handshake without roomId) are authentication failures.
   if (
-    typeof input.accessToken !== "string" ||
-    !input.accessToken ||
-    input.accessToken.length > 8192 ||
-    typeof input.appSession !== "string" ||
-    !/^[A-Za-z0-9_-]{43}$/.test(input.appSession)
+    keys !== "accessToken,appSession,roomId,tabId" &&
+    keys !== "guestCapability,roomId,tabId"
   )
     throw new RealtimeError(
       "AUTH_REQUIRED",
       "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
     );
+  const roomId = uuid(input.roomId);
+  const tabId = uuid(input.tabId);
+  if (
+    keys === "accessToken,appSession,roomId,tabId" &&
+    typeof input.accessToken === "string" &&
+    input.accessToken.length > 0 &&
+    input.accessToken.length <= 8192 &&
+    typeof input.appSession === "string" &&
+    /^[A-Za-z0-9_-]{43}$/.test(input.appSession)
+  )
+    return {
+      accessToken: input.accessToken,
+      appSession: input.appSession,
+      roomId,
+      tabId,
+    };
+  if (
+    keys === "guestCapability,roomId,tabId" &&
+    typeof input.guestCapability === "string" &&
+    /^[A-Za-z0-9_-]{43}$/.test(input.guestCapability)
+  )
+    return { guestCapability: input.guestCapability, roomId, tabId };
+  throw new RealtimeError(
+    "AUTH_REQUIRED",
+    "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+  );
+}
+export function handshakeProof(handshake: RealtimeHandshake): RoomRequestProof {
+  if ("guestCapability" in handshake)
+    return { guestCapability: handshake.guestCapability };
   return {
-    accessToken: input.accessToken,
-    appSession: input.appSession,
-    roomId: uuid(input.roomId),
-    tabId: uuid(input.tabId),
+    accessToken: handshake.accessToken,
+    appSession: handshake.appSession,
   };
 }
 /**

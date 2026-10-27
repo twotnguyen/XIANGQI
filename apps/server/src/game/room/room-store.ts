@@ -235,6 +235,11 @@ export class RoomStore extends RoomViewerStore {
           [s.actor.userId],
         )
       ).rowCount;
+    if (occupied && input.intent === "play")
+      throw new RoomError(
+        "ALREADY_SEATED",
+        "Bạn đang giữ vị trí chơi ở nơi khác",
+      );
     const playing =
       input.intent !== "watch" &&
       r.status === "WAITING" &&

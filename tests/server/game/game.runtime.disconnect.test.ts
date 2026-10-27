@@ -6,9 +6,13 @@ import { io, type Socket } from "socket.io-client";
 import { createApp } from "@server/app.js";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
 import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
@@ -27,7 +31,10 @@ async function waitFor<T>(
   throw new Error("Synthetic disconnect runtime wait timed out");
 }
 
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "managed runtime physical disconnect adjudication",
   () => {
@@ -40,14 +47,14 @@ describe.skipIf(!databaseUrl)(
         { id: string; email: string; email_confirmed_at: string }
       >();
       const auth = {
-        getUser: async (token: string) => {
+        verifyAccessToken: async (token: string) => {
           const user = users.get(token);
           if (!user) throw new Error("Synthetic provider rejected bearer");
-          return user;
+          return { userId: user.id, email: user.email };
         },
       };
       const sessions = new SessionService(
-        new PostgresLoginStore(pool),
+        new PostgresLoginStore(loginPool),
         auth as never,
       );
       async function member() {

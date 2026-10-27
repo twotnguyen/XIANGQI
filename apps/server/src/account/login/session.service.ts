@@ -3,7 +3,8 @@ import { createHash, randomBytes } from "node:crypto";
 import {
   LoginError,
   type LoginStore,
-  type PasswordAuth,
+  type SessionTokenVerifier,
+  type VerifiedAccessToken,
 } from "./login.types.js";
 import type { Session } from "../auth/registration.types.js";
 export interface ValidatedSession {
@@ -26,7 +27,7 @@ function tokenHash(token: unknown): string {
 export class SessionService {
   constructor(
     public readonly store: LoginStore,
-    private readonly auth: PasswordAuth,
+    private readonly auth: SessionTokenVerifier,
     private readonly now = () => new Date(),
   ) {}
   /**
@@ -54,8 +55,8 @@ export class SessionService {
     });
     return { appSession, expiresAt: expiresAt.toISOString() };
   }
-  private async currentSession(appSession: unknown): Promise<ValidatedSession> {
-    const session = await this.store.sessionByHash(tokenHash(appSession));
+  private async currentSession(sessionHash: string): Promise<ValidatedSession> {
+    const session = await this.store.sessionByHash(sessionHash);
     if (
       !session ||
       session.revokedAt ||
@@ -80,17 +81,18 @@ export class SessionService {
    * Kiểm tra phiên appSession còn hiệu lực và tài khoản đang hoạt động.
    */
   async requireValidSession(appSession: unknown) {
-    const { userId, expiresAt, remember } =
-      await this.currentSession(appSession);
+    const { userId, expiresAt, remember } = await this.currentSession(
+      tokenHash(appSession),
+    );
     return { userId, expiresAt, remember };
   }
   private async validateProviderUser(
     user: Session["user"],
-    appSession: unknown,
+    sessionHash: string,
     userId: string,
   ): Promise<ValidatedSession> {
     // Re-read after the provider: revocation, expiry and activation may change in flight.
-    const current = await this.currentSession(appSession);
+    const current = await this.currentSession(sessionHash);
     if (
       user.id !== userId ||
       user.id !== current.userId ||
@@ -101,22 +103,29 @@ export class SessionService {
       throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
     return current;
   }
-  private async validateAccessToken(
-    accessToken: unknown,
-    appSession: unknown,
-    userId: string,
-  ): Promise<ValidatedSession> {
-    if (typeof accessToken !== "string" || !accessToken)
-      throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
-    const user = await this.auth.getUser(accessToken);
-    return this.validateProviderUser(user, appSession, userId);
-  }
   /**
-   * Xác thực kép: kiểm tra appSession và đối chiếu với Bearer access token từ Auth Provider.
+   * Xác thực kép: appSession hiện hành và JWT có chữ ký/hạn/issuer/audience đã kiểm.
    */
   async requireActiveSession(accessToken: unknown, appSession: unknown) {
-    const session = await this.currentSession(appSession);
-    return this.validateAccessToken(accessToken, appSession, session.userId);
+    const sessionHash = tokenHash(appSession);
+    let bearer: VerifiedAccessToken;
+    try {
+      if (typeof accessToken !== "string" || !accessToken)
+        throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
+      bearer = await this.auth.verifyAccessToken(accessToken);
+    } catch (error) {
+      // Preserve session-expiry/revocation precedence even if JWT verification failed.
+      await this.currentSession(sessionHash);
+      throw error;
+    }
+    // Read after verification/key fetch so changes in flight cannot authorize stale sessions.
+    const current = await this.currentSession(sessionHash);
+    if (
+      bearer.userId !== current.userId ||
+      bearer.email.toLowerCase() !== current.email.toLowerCase()
+    )
+      throw new LoginError("SESSION_INVALID", "Phiên đăng nhập không hợp lệ");
+    return current;
   }
   async requireActive(
     accessToken: unknown,
@@ -128,11 +137,12 @@ export class SessionService {
    * Làm mới access token của người dùng đồng thời đảm bảo session ứng dụng vẫn nhất quán.
    */
   async refresh(appSession: unknown, refresh: () => Promise<Session>) {
-    const initial = await this.currentSession(appSession);
+    const sessionHash = tokenHash(appSession);
+    const initial = await this.currentSession(sessionHash);
     const session = await refresh();
     const actor = await this.validateProviderUser(
       session.user,
-      appSession,
+      sessionHash,
       initial.userId,
     );
     return { session, actor };

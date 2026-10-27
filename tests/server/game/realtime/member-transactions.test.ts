@@ -2,18 +2,26 @@ import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "@server/game/realtime/member-transactions.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { databaseUrl, pool, reset } from "./member-transactions.test-helper.js";
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 async function setup() {
   const id = randomUUID(),
     email = `synthetic-${id}@example.invalid`,
@@ -28,13 +36,12 @@ async function setup() {
   );
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async () => ({
-      id,
-      email,
-      email_confirmed_at: now.toISOString(),
-    })),
+    verifyAccessToken: vi.fn(async () => ({ userId: id, email })),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider),
+  const sessions = new SessionService(
+      new PostgresLoginStore(loginPool),
+      provider,
+    ),
     issued = await sessions.issue(id, false);
   const proof = {
     accessToken: "synthetic-bearer",
@@ -43,19 +50,19 @@ async function setup() {
   const authorizer = new PostgresMemberRoomAuthorizer(sessions),
     coordinator = new RoomTransactions(pool),
     rooms = new RoomStore();
+  const sessionAuthorizer = new RoomSessionAuthorizer(
+    authorizer,
+    new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+  );
   const entry = await new RoomHttpService(
     rooms,
     coordinator,
-    authorizer,
+    sessionAuthorizer,
   ).create(proof, { commandId: randomUUID() });
-  provider.getUser.mockClear();
-  const identities = new MemberRealtimeIdentities(authorizer),
-    transactions = new MemberRealtimeTransactions(coordinator, authorizer);
-  const identity = await identities.resolve(
-    proof.accessToken,
-    proof.appSession,
-    proof,
-  );
+  provider.verifyAccessToken.mockClear();
+  const identities = new RoomRealtimeIdentities(sessionAuthorizer),
+    transactions = new RoomRealtimeTransactions(coordinator, sessionAuthorizer);
+  const identity = await identities.resolve(proof);
   const connection: RealtimeConnection = {
     identity,
     proof,
@@ -75,7 +82,10 @@ async function setup() {
     coordinator,
   };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "member realtime transaction boundary with actual SQL",
   () => {
@@ -112,7 +122,7 @@ describe.skipIf(!databaseUrl)(
           m.connection.roomId,
         ),
       ).toThrow();
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
       expect(
         (
           await pool.query(
@@ -126,7 +136,14 @@ describe.skipIf(!databaseUrl)(
       const m = await setup(),
         work = vi.fn();
       for (const connection of [
-        { ...m.connection, proof: undefined },
+        {
+          ...m.connection,
+          proof: {
+            accessToken: m.proof.accessToken,
+            appSession: m.proof.appSession,
+            guestCapability: "synthetic-guest",
+          },
+        },
         { ...m.connection, proof: { ...m.proof } },
         {
           ...m.connection,
@@ -145,27 +162,29 @@ describe.skipIf(!databaseUrl)(
         m.transactions.run(m.connection, work),
       ).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
       expect(work).not.toHaveBeenCalled();
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
     });
     it("requires resolver exact strings and original proof object", async () => {
       const m = await setup();
       await expect(
-        m.identities.resolve(m.proof.accessToken, m.proof.appSession),
+        m.identities.resolve({ accessToken: m.proof.accessToken } as never),
       ).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
       await expect(
-        m.identities.resolve("other", m.proof.appSession, m.proof),
+        m.identities.resolve({
+          accessToken: "other",
+          appSession: m.proof.appSession,
+          guestCapability: "synthetic-guest",
+        }),
       ).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
     });
     it("sanitizes provider outages without accepting a replacement proof", async () => {
       const m = await setup(),
         proof = { ...m.proof };
-      m.provider.getUser.mockRejectedValueOnce(
+      m.provider.verifyAccessToken.mockRejectedValueOnce(
         new Error("synthetic-private-provider-token"),
       );
-      await expect(
-        m.identities.resolve(proof.accessToken, proof.appSession, proof),
-      ).rejects.toMatchObject({
+      await expect(m.identities.resolve(proof)).rejects.toMatchObject({
         code: "REALTIME_UNAVAILABLE",
         message: "Chưa thể xác thực phiên đăng nhập",
       });
@@ -326,19 +345,22 @@ describe.skipIf(!databaseUrl)(
         blocker.release();
       }
       expect(work).not.toHaveBeenCalled();
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
     });
   },
 );
 
 describe("SQL-only member session checker seam", () => {
-  function connection(): RealtimeConnection {
+  function memberProof() {
+    return {
+      accessToken: "expired-provider-token",
+      appSession: "x".repeat(43),
+    };
+  }
+  function connection(proof = memberProof()): RealtimeConnection {
     return {
       identity: { userId: randomUUID(), kind: "member" },
-      proof: {
-        accessToken: "expired-provider-token",
-        appSession: "x".repeat(43),
-      },
+      proof,
       roomId: randomUUID(),
       tabId: randomUUID(),
       connectionId: randomUUID(),
@@ -347,17 +369,18 @@ describe("SQL-only member session checker seam", () => {
   it("checks only the capability and authoritative actor without provider resolve", async () => {
     const authorizer = {
       resolve: vi.fn(),
-    } as unknown as PostgresMemberRoomAuthorizer;
+    } as unknown as RoomSessionAuthorizer;
     const check = vi.fn(async () => false),
-      c = connection();
-    const identities = new MemberRealtimeIdentities(authorizer, check);
+      proof = memberProof(),
+      c = connection(proof);
+    const identities = new RoomRealtimeIdentities(authorizer, check);
     expect(await identities.sessionActive(c)).toBe(false);
-    expect(check).toHaveBeenCalledWith(c.identity.userId, c.proof!.appSession);
+    expect(check).toHaveBeenCalledWith(c.identity.userId, proof.appSession);
     expect(authorizer.resolve).not.toHaveBeenCalled();
   });
   it("sanitizes SQL failures and never classifies outage as ended", async () => {
-    const identities = new MemberRealtimeIdentities(
-      {} as PostgresMemberRoomAuthorizer,
+    const identities = new RoomRealtimeIdentities(
+      {} as RoomSessionAuthorizer,
       async () => {
         throw new Error("PRIVATE_SQL_SECRET");
       },
@@ -367,10 +390,11 @@ describe("SQL-only member session checker seam", () => {
     });
   });
   it("fails closed without configured checker or with Guest/malformed capability", async () => {
-    const c = connection(),
+    const proof = memberProof(),
+      c = connection(proof),
       check = vi.fn(async () => true),
-      identities = new MemberRealtimeIdentities(
-        {} as PostgresMemberRoomAuthorizer,
+      identities = new RoomRealtimeIdentities(
+        {} as RoomSessionAuthorizer,
         check,
       );
     expect(
@@ -382,14 +406,12 @@ describe("SQL-only member session checker seam", () => {
     expect(
       await identities.sessionActive({
         ...c,
-        proof: { ...c.proof!, appSession: "bad" },
+        proof: { ...proof, appSession: "bad" },
       }),
     ).toBe(false);
     expect(check).not.toHaveBeenCalled();
     await expect(
-      new MemberRealtimeIdentities(
-        {} as PostgresMemberRoomAuthorizer,
-      ).sessionActive(c),
+      new RoomRealtimeIdentities({} as RoomSessionAuthorizer).sessionActive(c),
     ).rejects.toMatchObject({ code: "REALTIME_UNAVAILABLE" });
   });
 });

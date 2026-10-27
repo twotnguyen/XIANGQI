@@ -1,4 +1,7 @@
 import { io, type Socket } from "socket.io-client";
+import { isSingleMove } from "../../shared/room-snapshot.js";
+import type { PublicRoomAuthProof } from "@xiangqi/shared";
+import { handshakeAuth } from "../../shared/realtime-proof.js";
 import type {
   ClientRealtimeEvents,
   ServerRealtimeEvents,
@@ -424,7 +427,7 @@ export interface RoomConnection {
 }
 export interface RoomConnectionInput {
   roomId: string;
-  getProof: () => Promise<{ accessToken: string; appSession: string }>;
+  getProof: () => Promise<PublicRoomAuthProof>;
   onSnapshot: (snapshot: RoomSnapshot) => void;
   onConnection: (connected: boolean) => void;
   onError: (message: string) => void;
@@ -443,6 +446,8 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   let closureNotified = false;
   let chatEpoch = 0;
   let latestRoomVersion = -1;
+  let chatScopeVersion = -1;
+  let latestSnapshot: RoomSnapshot | null = null;
   let chatRoomAuthority: string | null = null;
   const chatNotices = new Map<ChatChannel, ChatChanged>();
   const chatGrants = new Map<ChatChannel, ChatChanged>();
@@ -453,6 +458,12 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   }
   function observeSnapshot(snapshot: RoomSnapshot) {
     if (snapshot.version < latestRoomVersion) return;
+    if (
+      snapshot.version > latestRoomVersion &&
+      !isSingleMove(latestSnapshot, snapshot)
+    )
+      chatScopeVersion = snapshot.version;
+    latestSnapshot = snapshot;
     latestRoomVersion = snapshot.version;
     const authority = JSON.stringify([
       snapshot.role === "spectator" ? "spectator" : "player",
@@ -463,6 +474,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     ]);
     if (authority !== chatRoomAuthority) {
       chatRoomAuthority = authority;
+      chatScopeVersion = snapshot.version;
       invalidateChat();
     }
   }
@@ -475,7 +487,8 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       invalidateChat();
       void input.getProof().then(
         (proof) => {
-          if (!closed) done({ ...proof, roomId: input.roomId, tabId });
+          if (!closed)
+            done({ ...handshakeAuth(proof), roomId: input.roomId, tabId });
         },
         () => {
           if (closed) return;
@@ -589,7 +602,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                 );
                 const notice = chatNotices.get(channel);
                 if (
-                  page.roomVersion < latestRoomVersion ||
+                  page.roomVersion < chatScopeVersion ||
                   (notice && page.roomVersion < notice.roomVersion)
                 )
                   throw new Error("Quyền đọc chat đã thay đổi");

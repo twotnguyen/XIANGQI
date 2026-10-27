@@ -25,3 +25,12 @@ Native HTTP tests dùng Nest createApp thật, provider/boundary fixtures tổng
 Runtime Google mặc định tắt (`AUTH_GOOGLE_ENABLED=false`). Chỉ bật sau migrations1–5, bật login và cấu hình `GOOGLE_CLIENT_ID` phía server. Startup kiểm bảng/view cùng hai Auth triggers enabled; dùng JWKS Google HTTPS cố định, RS256/audience/issuer/expiry/email verified/nonce; không dùng decode-only. Maintainer chạy khi bootstrap và mỗi5phút, không chạy chồng; lỗi log chỉ event, không token. Runtime SQL/nativechallenge25tests cùng verifier12 +Authadapter15 +HTTP/cookie10 đã chạy local; chưa chứng minh OAuth live/Google email trùng thật. Guest chưa có HTTP/lifecycle production; missingport503 vẫn giữ. Rollback Auth owner authorization là cổng bắt buộc trước live apply.
 
 `GET /auth/providers` public no-store báo readiness thực của runtime: Google chỉ true khi đã khởi tạo, Guest hiện false vì HTTP/full lifecycle chưa tích hợp. Đây không phải cổng nghiệm thu OAuth hoặc chức năng Khách đã hoàn thành.
+
+## Guest HTTP (account/guest)
+
+- `POST /account/guest {displayName}` tạo Khách, trả DTO `{kind:'guest',userId,displayName,capability,expiresAt,deferred}` với `Cache-Control: no-store` và đặt cookie `xiangqi_guest` (HttpOnly, `Path=/`, SameSite theo `COOKIE_SAMESITE`, Secure theo cấu hình, `Max-Age` 7 ngày).
+- `GET /account/guest/session` khôi phục phiên từ cookie và đặt lại cookie. Hạn cookie độc lập với deadline server 12 giờ: phiên đang giữ ghế trả `deferred:true` sau deadline, không gia hạn `expiresAt`.
+- `POST /account/guest/logout {confirmedResign:boolean}` yêu cầu boolean (400 `GUEST_INPUT_INVALID`); ván đang diễn ra không xác nhận trả 409 `GUEST_RESIGN_CONFIRM_REQUIRED` và giữ cookie; thành công trả `{ended:true}` và xóa cookie.
+- `GUEST_INVALID` và `GUEST_EXPIRED` xóa cookie. Lỗi nội bộ trả 503 `GUEST_UNAVAILABLE` không lộ thông điệp gốc.
+- Media (`/media/*`) nhận `Authorization: Guest <capability>` qua `MediaPrincipalGuard`, mục đích `existing-room`; trộn với thông tin xác thực thành viên trả 401 `AUTH_MIXED_CREDENTIALS`. Cần cung cấp `GuestService` trong providers của `MediaModule`, nếu thiếu trả 503.
+- Mount: `GuestModule.forRoot(guests, secure = true)`. `/auth/providers` vẫn báo `guest:false` cho tới khi composition root mount module này.

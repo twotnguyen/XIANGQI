@@ -21,11 +21,17 @@ export class AiHistoryStore {
    */
   async finish(scope: RoomScope, snapshot: AiSnapshot, bootId: string) {
     if (
-      scope.actor.kind !== "member" ||
+      (scope.actor.kind !== "member" && scope.actor.kind !== "guest") ||
       scope.actor.userId !== snapshot.ownerId ||
       !scope.lockedActorIds.has(snapshot.ownerId)
     )
       fail();
+    if (scope.actor.kind === "guest") {
+      // Guest AI never writes public history: only the exact slot is released.
+      await this.reservations.check(scope, { gameId: snapshot.id, bootId });
+      await this.reservations.release(scope, { gameId: snapshot.id, bootId });
+      return { persisted: false, created: false, endedAt: null };
+    }
     const prepared = prepareAiHistory(snapshot);
     const client = scope.client;
     const existing = (

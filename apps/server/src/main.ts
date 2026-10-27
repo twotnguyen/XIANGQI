@@ -11,6 +11,8 @@ import { createMediaRuntime } from "./game/media/media.module.js";
 import { createHistoryRuntime } from "./game/history/history.module.js";
 import { createProfileRuntime } from "./account/profile/profile.module.js";
 import { AuthProvidersModule } from "./account/auth/registration.module.js";
+import { GuestModule } from "./account/guest/guest.module.js";
+import { GuestService } from "./account/guest/guest.service.js";
 
 config({ quiet: true });
 
@@ -20,6 +22,7 @@ config({ quiet: true });
  * gắn cổng HTTP/WebSocket và đóng theo thứ tự xác định khi tắt server hoặc khi mất khóa runtime.
  */
 let registration: Awaited<ReturnType<typeof createRegistrationRuntime>> = null;
+let media: Awaited<ReturnType<typeof createMediaRuntime>> = null;
 let rooms: Awaited<ReturnType<typeof createRoomRuntime>> = null;
 let ai: Awaited<ReturnType<typeof createAiRuntime>> = null;
 let app: Awaited<ReturnType<typeof createApp>> | null = null;
@@ -44,6 +47,7 @@ function closeAll(): Promise<void> {
       () => (app ? drainRealtime(app) : undefined),
       () => rooms?.close(),
       () => app?.close(),
+      () => media?.close(),
       () => registration?.close(),
     ];
     for (const close of steps) {
@@ -74,20 +78,29 @@ async function boot(): Promise<void> {
     const settings = readConfig(process.env);
     registration = await createRegistrationRuntime(process.env);
     const google = await createGoogleRuntime(process.env, registration);
-    const media = await createMediaRuntime(process.env, registration);
+    media = await createMediaRuntime(process.env, registration);
     rooms = await createRoomRuntime(
       process.env,
       registration,
       media?.access ?? null,
     );
     admit();
+    if (media && rooms)
+      media.module.providers = [
+        ...(media.module.providers ?? []),
+        { provide: GuestService, useValue: rooms.guests },
+      ];
     ai =
       registration && rooms
         ? await createAiRuntime({
             env: process.env,
             registration: { ...registration, pool: rooms.ownershipPool },
+            authorizer: rooms.authorizer,
+            guests: rooms.guests,
+            withScope: rooms.withScope,
           })
         : null;
+    if (ai && rooms) rooms.attachGuestAi(ai.guestTermination);
     admit();
     const friends = await createFriendRuntime(process.env, registration);
     const history = await createHistoryRuntime(process.env, registration);
@@ -106,7 +119,7 @@ async function boot(): Promise<void> {
     app = await createApp(
       settings.corsOrigins,
       [
-        AuthProvidersModule.forRoot({ google: !!google, guest: false }),
+        AuthProvidersModule.forRoot({ google: !!google, guest: !!rooms }),
         ...(registration ? [registration.module] : []),
         ...(google ? [google.module] : []),
         ...(rooms ? [rooms.module] : []),
@@ -114,6 +127,14 @@ async function boot(): Promise<void> {
         ...(friends ? [friends.module] : []),
         ...(media ? [media.module] : []),
         ...(history ? [history.module] : []),
+        ...(rooms
+          ? [
+              GuestModule.forRoot(
+                rooms.guests,
+                process.env.NODE_ENV === "production",
+              ),
+            ]
+          : []),
         ...(profile ? [profile.module] : []),
       ],
       registration?.checkDatabase,

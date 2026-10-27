@@ -4,6 +4,12 @@
 
 The caller acquires sorted actor locks (both players plus acting identity), then the room lock, supplies the same `PoolClient` as the room/realtime transaction, and commits receipts before publication. `MatchScope.canControl` is a trusted controller proof from that caller. The store checks current match identity, actual player seats, supplied lock sets, match version, effective history and rules.
 
+`MatchStoreCore.context` reads the locked room, the eligible match and the caller's player seat in one SQL statement. Materialized CTEs keep room → match row-lock order; a mismatched current match is rejected without locking that match. Membership, both player locks, rules and replay validation still run before an action.
+
+Draw state reads offers, each side's move count and expired-offer cooldown baselines in one statement. Read-only snapshots sample the database clock inside the same statement; actions retain their explicit deadline sample. Expiry comparisons use the same millisecond cutoff as JavaScript `Date`; mutation deadlines and `drawMoveCount` checks remain unchanged.
+
+MOVE event and move rows are inserted in one data-modifying CTE, with the move depending on the event's returned identity/version. Foreign keys and the surrounding transaction still enforce atomic history and receipt commits.
+
 ## Ports and results
 
 - `start(client, input)` implements the room `MatchStartPort` and returns `{ matchId }`. The room owns the transition to PLAYING, reservations/countdown cleanup and START notification. The initial position always uses `initialPosition()`. Replay of the same START token returns the existing ID after checking its room, players, time control and initial position.
@@ -38,3 +44,11 @@ Without that variable, SQL cases skip; codec/core tests still run. No Supabase-m
 `fixtures.ts` contains a literal 120-ply non-capture game from a reduced five-piece START. Its rook tours have 18/16 squares, so the full position cannot repeat within the first60 full turns; final squares/counters/FEN are independently specified. Other reduced fixtures cover legal mate/stalemate, first-to-third repetition, one-sided continuous check and an eight-ply six-piece dual countercheck cycle. These are actual core moves persisted in SQL; they are not a standard-opening recorded game. Production-start tests separately verify the complete32-piece initial position.
 
 The SQL callback and clock are fixture ports. Actual room/realtime receipt/publication integration, Clock59 expiry worker, restart/disconnect services, two-player+viewer browser demo and latency acceptance remain integration gates.
+
+## AI game recovery and retention
+
+`AiGames` (`apps/server/src/game/ai/ai-games.ts`) runs one engine search per computed turn. The search output is kept in memory as a `Completion` and is never searched again. A transient SQL failure (`AI_UNAVAILABLE`) on a still-current turn schedules a commit retry with the retained completion: the first retry waits 1s, then 2s, 4s, 8s, 16s, and every later retry waits the 30s cap. Each retry re-checks SQL authority before applying the completion. Lost authority (`RoomError`, changed epoch or version, cancelled game) discards the completion without applying or failing it.
+
+Undo, resign, drop and close cancel the pending retry timer and abort any running search. Epoch and version fences keep late callbacks from installing output into a newer game or a replacement reservation.
+
+Retention is bounded: each owner keeps at most one terminal AI game, readable for a 30-minute grace window, and the next game or terminal result supersedes it. ACTIVE and FINALIZING games are never pruned. Each live game holds at most one retained completion and one retry timer.

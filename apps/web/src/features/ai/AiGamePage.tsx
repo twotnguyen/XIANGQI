@@ -10,10 +10,11 @@ import {
 } from "./ai-socket-client.js";
 import { createGameAudio } from "../rooms/game-audio.js";
 import type { AuthorizedFetch } from "../rooms/room-client.js";
+import type { PublicRoomAuthProof } from "@xiangqi/shared";
 import { navigate } from "../../shared/navigation/navigation.js";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
 
-type Proof = () => Promise<{ accessToken: string; appSession: string }>;
+type Proof = () => Promise<PublicRoomAuthProof>;
 type Api = AiClient;
 
 const unavailable = "Chưa thể kết nối ván với máy. Kiểm tra mạng và thử lại.";

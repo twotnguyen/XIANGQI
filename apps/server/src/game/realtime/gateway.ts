@@ -15,7 +15,13 @@ import {
   type RealtimeConnection,
 } from "./realtime.types.js";
 import { errorAcknowledgement, type RealtimeStore } from "./store.js";
-import { parseCommand, parseHandshake, uuid } from "./protocol.js";
+import {
+  handshakeProof,
+  parseCommand,
+  parseHandshake,
+  uuid,
+} from "./protocol.js";
+import type { RoomRequestProof } from "../room/room-session.js";
 import { logEvent } from "../../core/logger.js";
 
 function authenticationFailure(error: unknown): RealtimeError {
@@ -32,7 +38,7 @@ function authenticationFailure(error: unknown): RealtimeError {
 
 export interface RealtimePublisher {
   publishChat?(roomId: string, channel: ChatChannel): Promise<void>;
-  publishSnapshots(roomId: string): Promise<void>;
+  publishSnapshots(roomId: string, minimumVersion?: number): Promise<void>;
   publishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
@@ -61,8 +67,7 @@ export function attachRealtime(
   type Peer = {
     socket: PeerSocket;
     connection: RealtimeConnection;
-    token: string;
-    appSession: string;
+    proof: RoomRequestProof;
     initialSnapshot?: RoomSnapshot;
     version: number;
     generation: number;
@@ -129,45 +134,106 @@ export function attachRealtime(
   }
   function disconnect(connection: RealtimeConnection) {
     const entry: PendingDisconnect = {
-      connection: {
-        identity: { ...connection.identity },
-        roomId: connection.roomId,
-        tabId: connection.tabId,
-        connectionId: connection.connectionId,
-      },
+      connection: { ...connection, identity: { ...connection.identity } },
       failures: 0,
     };
     pendingDisconnects.add(entry);
     return attemptDisconnect(entry);
   }
   async function authorize(peer: Peer) {
+    // Each request gets its own proof object: the resolver binds trust to that object only,
+    // and the same object travels with the connection into the command transaction.
+    const proof = { ...peer.proof };
     try {
-      const proof = { accessToken: peer.token, appSession: peer.appSession };
-      const current = await dependencies.identities.resolve(
-        peer.token,
-        peer.appSession,
-        proof,
-      );
-      if (uuid(current.userId) !== peer.connection.identity.userId)
+      const current = await dependencies.identities.resolve(proof);
+      if (
+        uuid(current.userId) !== peer.connection.identity.userId ||
+        current.kind !== peer.connection.identity.kind
+      )
         throw new Error();
       return { ...peer.connection, identity: current, proof };
     } catch (error) {
       throw authenticationFailure(error);
     }
   }
-  function sendSnapshot(peer: Peer, snapshot: RoomSnapshot) {
+  function recordDelivered(peer: Peer, snapshot: RoomSnapshot): boolean {
     if (
       snapshot.version < peer.version ||
       snapshot.control.generation < peer.generation
     )
-      return;
+      return false;
     peer.version = snapshot.version;
     peer.generation = snapshot.control.generation;
-    peer.socket.emit("room.snapshot", snapshot);
+    return true;
   }
-  function publishSnapshots(roomId: string): Promise<void> {
+  function sendSnapshot(peer: Peer, snapshot: RoomSnapshot) {
+    if (recordDelivered(peer, snapshot))
+      peer.socket.emit("room.snapshot", snapshot);
+  }
+  // Per room: at most one publication pass runs and at most one follow-up pass
+  // is queued. A pass re-authorizes and re-reads every recipient, so a caller
+  // may only join a pass that has not yet started reading; a trigger that
+  // arrives during a running pass always gets a fresh follow-up pass.
+  // A version floor lets a pass skip recipients already at that version without
+  // authorizing them (no private data is emitted for them). "all" (no floor)
+  // authorizes and reads every recipient.
+  type Floor = number | "all";
+  type RoomPublication = {
+    running?: Promise<void>;
+    queued?: Promise<void>;
+    queuedFloor?: Floor;
+  };
+  const roomPublications = new Map<string, RoomPublication>();
+  function mergeFloor(a: Floor, b: Floor): Floor {
+    return a === "all" || b === "all" ? "all" : Math.max(a, b);
+  }
+  function publishSnapshots(
+    roomId: string,
+    minimumVersion?: number,
+  ): Promise<void> {
     if (stopping) return Promise.reject(publicationFailure());
-    return track(() => doPublishSnapshots(roomId));
+    const floor: Floor = minimumVersion ?? "all";
+    const slot = roomPublications.get(roomId) ?? {};
+    roomPublications.set(roomId, slot);
+    if (slot.queued) {
+      slot.queuedFloor = mergeFloor(slot.queuedFloor ?? floor, floor);
+      return slot.queued;
+    }
+    if (!slot.running) return startPublication(roomId, slot, floor);
+    const previous = slot.running;
+    slot.queuedFloor = floor;
+    const queued: Promise<void> = track(async () => {
+      await previous.catch(() => undefined);
+      if (stopping) {
+        slot.queued = undefined;
+        slot.queuedFloor = undefined;
+        throw publicationFailure();
+      }
+      return startPublication(roomId, slot, slot.queuedFloor ?? floor);
+    });
+    slot.queued = queued;
+    return queued;
+  }
+  function startPublication(
+    roomId: string,
+    slot: RoomPublication,
+    floor: Floor,
+  ) {
+    slot.queued = undefined;
+    slot.queuedFloor = undefined;
+    const pass: Promise<void> = track(() =>
+      doPublishSnapshots(roomId, floor),
+    ).finally(() => {
+      if (slot.running === pass) slot.running = undefined;
+      if (
+        !slot.running &&
+        !slot.queued &&
+        roomPublications.get(roomId) === slot
+      )
+        roomPublications.delete(roomId);
+    });
+    slot.running = pass;
+    return pass;
   }
   function publishChat(roomId: string, channel: ChatChannel): Promise<void> {
     if (stopping || !dependencies.chat)
@@ -211,16 +277,23 @@ export function attachRealtime(
       );
     });
   }
-  async function doPublishSnapshots(roomId: string) {
+  async function doPublishSnapshots(roomId: string, floor: Floor) {
     await Promise.all(
       [...peers.values()]
         .filter(
-          (peer) => peer.socket.connected && peer.connection.roomId === roomId,
+          (peer) =>
+            peer.socket.connected &&
+            peer.connection.roomId === roomId &&
+            // Already at the floor: no authorization, read, or emit is needed.
+            !(floor !== "all" && peer.version >= floor),
         )
         .map((peer) =>
           track(async () => {
             try {
               const connection = await authorize(peer);
+              // Re-checked after authorization: an ack or an earlier pass may
+              // have delivered the floor while this recipient was verified.
+              if (floor !== "all" && peer.version >= floor) return;
               sendSnapshot(peer, await dependencies.store.snapshot(connection));
             } catch (error) {
               if (!denied(error)) throw publicationFailure();
@@ -323,17 +396,10 @@ export function attachRealtime(
         if (stopping)
           throw new RealtimeError("REALTIME_UNAVAILABLE", "Máy chủ đang dừng");
         const handshake = parseHandshake(socket.handshake.auth as unknown);
-        const proof = {
-          accessToken: handshake.accessToken,
-          appSession: handshake.appSession,
-        };
+        const proof = handshakeProof(handshake);
         let identity;
         try {
-          identity = await dependencies.identities.resolve(
-            handshake.accessToken,
-            handshake.appSession,
-            proof,
-          );
+          identity = await dependencies.identities.resolve(proof);
         } catch (error) {
           throw authenticationFailure(error);
         }
@@ -361,11 +427,10 @@ export function attachRealtime(
         peers.set(socket.id, {
           socket,
           connection,
-          token: handshake.accessToken,
-          appSession: handshake.appSession,
+          proof,
           initialSnapshot,
-          version: -1,
-          generation: -1,
+          version: initialSnapshot?.version ?? -1,
+          generation: initialSnapshot?.control.generation ?? -1,
           disconnect: disconnectOnce,
         });
         next();
@@ -424,8 +489,15 @@ export function attachRealtime(
         // The command transaction has committed; publication is an independent
         // side effect and must not delay delivery of its durable receipt.
         acknowledge(response);
-        if (response.snapshot && !stopping)
-          void publishSnapshots(peer.connection.roomId).catch(failedOperation);
+        if (response.snapshot && !stopping) {
+          // The ack delivered this snapshot to the origin; recording it lets the
+          // version floor skip the origin, while other recipients are re-read.
+          if (peer.socket.connected) recordDelivered(peer, response.snapshot);
+          void publishSnapshots(
+            peer.connection.roomId,
+            response.snapshot.version,
+          ).catch(failedOperation);
+        }
       }).catch(failedOperation);
     });
     socket.on("room.sync", (acknowledge) => {

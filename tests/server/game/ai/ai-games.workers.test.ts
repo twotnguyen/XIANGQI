@@ -33,11 +33,14 @@ it("does not install late old-game output into newly reserved game", async () =>
     requestedSide: "black",
     level: "easy",
   });
+  // Capture the in-flight engine job before resignation; the terminal game is evicted by the next create.
+  const oldEngine = f.games.waitForEngine(owner, old.id);
   await f.games.resign(owner, old.id, { version: 1 });
   const next = await f.games.create(owner, {
     requestedSide: "red",
     level: "medium",
   });
+  const before = f.games.read(owner, next.id);
   resolve({
     move: { from: 27, to: 36 },
     terminal: null,
@@ -47,8 +50,9 @@ it("does not install late old-game output into newly reserved game", async () =>
     nodes: 1,
     timedOut: false,
   });
-  await f.games.waitForEngine(owner, old.id);
+  await oldEngine;
   expect(next.id).not.toBe(old.id);
+  expect(f.games.read(owner, next.id)).toEqual(before);
   expect(f.games.read(owner, next.id).history).toHaveLength(1);
   expect(f.lifecycle.finish).toHaveBeenCalledTimes(1);
 });

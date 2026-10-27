@@ -3,21 +3,22 @@ import type { RoomSnapshot } from "@xiangqi/shared";
 import type { RoomTransactions } from "../room/room-transactions.js";
 import type { RoomStore } from "../room/room-store.js";
 import { uuid } from "../match/position-codec.js";
-import type { MemberRealtimeTransactions } from "./member-transactions.js";
+import type { RoomRealtimeTransactions } from "./member-transactions.js";
 import {
   RealtimeError,
   type RealtimeConnection,
   type RealtimePresence,
 } from "./realtime.types.js";
+
 /**
- * Quản lý trạng thái hiện diện (presence: trực tuyến / ngắt kết nối) của thành viên trong phòng cờ.
+ * Quản lý trạng thái hiện diện (presence: trực tuyến / ngắt kết nối) của thành viên và khách trong phòng cờ.
  */
-export class MemberRealtimePresence implements RealtimePresence {
+export class RoomRealtimePresence implements RealtimePresence {
   constructor(
     private readonly pool: Pool,
     private readonly coordinator: RoomTransactions,
     private readonly rooms: RoomStore,
-    private readonly transactions: MemberRealtimeTransactions,
+    private readonly transactions: RoomRealtimeTransactions,
     private readonly serverInstance: string,
     private readonly currentPeers: (
       roomId: string,
@@ -29,8 +30,9 @@ export class MemberRealtimePresence implements RealtimePresence {
         "Máy chủ kết nối chưa sẵn sàng",
       );
   }
+
   /**
-   * Cập nhật trạng thái kết nối thành công của thành viên vào bảng hiện diện `xiangqi_room.presence`.
+   * Cập nhật trạng thái kết nối thành công của người chơi vào bảng hiện diện `xiangqi_room.presence`.
    */
   async connected(
     client: PoolClient,
@@ -72,6 +74,7 @@ export class MemberRealtimePresence implements RealtimePresence {
     if (result === "seat-expired" || result === "viewer-expired")
       return "ended";
   }
+
   private nextGeneration(current?: string) {
     const previous = current === undefined ? 0 : Number(current);
     if (
@@ -85,12 +88,13 @@ export class MemberRealtimePresence implements RealtimePresence {
       );
     return previous + 1;
   }
+
   /**
-   * Xử lý khi kết nối socket bị đóng, kích hoạt thời gian ân hạn hoặc chuyển kết nối sang tab còn lại.
+   * Xử lý khi kết nối socket bị đóng. Chỉ hạ cấp: đánh dấu ngắt kết nối hoặc chuyển sang tab còn lại,
+   * không bao giờ tăng quyền. Khách không còn hoạt động vẫn được dọn presence của chính kết nối đó.
    */
   async disconnected(connection: RealtimeConnection): Promise<void> {
     if (
-      connection.identity.kind !== "member" ||
       !uuid.test(connection.identity.userId) ||
       !uuid.test(connection.roomId) ||
       !uuid.test(connection.tabId)
@@ -110,8 +114,8 @@ export class MemberRealtimePresence implements RealtimePresence {
       exists = Boolean(
         (
           await client.query(
-            `SELECT 1 FROM xiangqi_auth.principals n JOIN public.room_members m ON m.user_id=n.id WHERE n.id=$1 AND n.kind='member' AND m.room_id=$2`,
-            [captured.identity.userId, captured.roomId],
+            `SELECT 1 FROM xiangqi_auth.principals n JOIN public.room_members m ON m.user_id=n.id WHERE n.id=$1 AND n.kind=$2 AND m.room_id=$3`,
+            [captured.identity.userId, captured.identity.kind, captured.roomId],
           )
         ).rowCount,
       );
@@ -159,7 +163,7 @@ export class MemberRealtimePresence implements RealtimePresence {
               (peer) =>
                 peer.connectionId !== captured.connectionId &&
                 peer.roomId === captured.roomId &&
-                peer.identity.kind === "member" &&
+                peer.identity.kind === captured.identity.kind &&
                 peer.identity.userId === captured.identity.userId,
             )
             .sort((a, b) => a.connectionId.localeCompare(b.connectionId))[0];
@@ -186,13 +190,14 @@ export class MemberRealtimePresence implements RealtimePresence {
         JOIN xiangqi_auth.principals n ON n.id=c.user_id
         WHERE c.user_id=$1 AND c.room_id=$2 AND c.tab_id=$3 AND c.connection_id=$4
         AND p.connection_id=c.connection_id AND p.generation=c.generation
-        AND p.server_instance=$5 AND p.connected AND n.kind='member' FOR UPDATE OF c,p`,
+        AND p.server_instance=$5 AND p.connected AND n.kind=$6 FOR UPDATE OF c,p`,
             [
               captured.identity.userId,
               captured.roomId,
               captured.tabId,
               captured.connectionId,
               this.serverInstance,
+              captured.identity.kind,
             ],
           )
         ).rows[0];

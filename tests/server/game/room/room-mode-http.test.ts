@@ -17,6 +17,10 @@ import type {
   RoomTransactionInput,
   RoomTransactions,
 } from "@server/game/room/room-transactions.js";
+import type {
+  RoomRequestProof,
+  RoomSessionAuthorizer,
+} from "@server/game/room/room-session.js";
 const actor: RoomActor = {
   userId: "11111111-1111-4111-8111-111111111111",
   kind: "member",
@@ -58,15 +62,17 @@ const changeVisibility = vi.fn(
     visibility: RoomView["room"]["visibility"],
   ): Promise<RoomView> => ({ ...view, room: { ...view.room, visibility } }),
 );
-const resolve = vi.fn<(input: typeof proof) => Promise<RoomActor>>(
+const resolve = vi.fn<(input: RoomRequestProof) => Promise<RoomActor>>(
   async () => actor,
 );
 const authorize = vi.fn<
   (
-    input: typeof proof,
+    input: RoomRequestProof,
     actorProof: RoomActorProof,
   ) => Promise<RoomAuthorization>
 >(async () => ({ status: "active", actor }));
+const finish = vi.fn(async () => {});
+const settleEnded = vi.fn(async () => {});
 const trace: string[] = [];
 const withRoom = vi.fn(
   async (
@@ -93,7 +99,12 @@ const withRoom = vi.fn(
 const service = new RoomHttpService(
   { changeVisibility } as unknown as RoomStore,
   { withRoom } as unknown as RoomTransactions,
-  { resolve, authorize },
+  {
+    resolve,
+    authorize,
+    finish,
+    settleEnded,
+  } as unknown as RoomSessionAuthorizer,
 );
 let app: Awaited<ReturnType<typeof createApp>>, base: string;
 beforeAll(async () => {
@@ -255,12 +266,13 @@ it("does not mutate when the session ends during post-room authorization", async
   expect(response.status).toBe(401);
   expect(await response.json()).toMatchObject({ code: "AUTH_REQUIRED" });
   expect(changeVisibility).not.toHaveBeenCalled();
+  expect(settleEnded).toHaveBeenCalledTimes(1);
 });
-it("rejects guest identities before entering the member coordinator", async () => {
+it("admits Guest identities through the shared room coordinator as guest owners", async () => {
   resolve.mockResolvedValueOnce({ ...actor, kind: "guest" });
-  expect((await request()).status).toBe(403);
-  expect(withRoom).not.toHaveBeenCalled();
-  expect(changeVisibility).not.toHaveBeenCalled();
+  expect((await request()).status).toBe(200);
+  expect(withRoom).toHaveBeenCalledTimes(1);
+  expect(changeVisibility).toHaveBeenCalledTimes(1);
 });
 it.each([
   ["ROOM_HOST_REQUIRED", 403],

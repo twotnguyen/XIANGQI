@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
+import { SignJWT, exportJWK, generateKeyPair } from "jose";
 
 // An isolated provider boundary; real HTTP adapter + PostgreSQL remain under test.
 export async function startAuthFixture(pool: Pool, now: () => Date) {
@@ -18,8 +19,25 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
   const sessions = new Map<string, string>();
   const passwords = new Map<string, string>();
   const refreshTokens = new Map<string, string>();
-  function issueSession(user: { id: string }) {
-    const access = randomUUID();
+  const { privateKey, publicKey } = await generateKeyPair("ES256");
+  const kid = randomUUID();
+  const jwks = {
+    keys: [{ ...(await exportJWK(publicKey)), kid, alg: "ES256", use: "sig" }],
+  };
+  // Đặt sau khi server listen; issueSession chỉ được gọi từ handler.
+  let issuer = "";
+  async function issueSession(user: { id: string; email: string }) {
+    const access = await new SignJWT({
+      email: user.email,
+      role: "authenticated",
+    })
+      .setProtectedHeader({ alg: "ES256", kid })
+      .setSubject(user.id)
+      .setAudience("authenticated")
+      .setIssuer(issuer)
+      .setIssuedAt()
+      .setExpirationTime("3600s")
+      .sign(privateKey);
     const refresh = randomUUID();
     sessions.set(access, user.id);
     refreshTokens.set(refresh, user.id);
@@ -41,6 +59,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
       for await (const chunk of request) raw += String(chunk);
       const body = raw ? JSON.parse(raw) : {};
       const path = request.url;
+      if (path === "/auth/v1/.well-known/jwks.json") return respond(200, jwks);
       if (path === "/auth/v1/signup") {
         if (state.foreignSignupId)
           return respond(200, { id: state.foreignSignupId });
@@ -83,7 +102,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
             error_code: "invalid_credentials",
             msg: "fake-sensitive-fixture",
           });
-        return respond(200, issueSession(user));
+        return respond(200, await issueSession(user));
       }
       if (path === "/auth/v1/token?grant_type=refresh_token") {
         state.refreshRequests++;
@@ -102,7 +121,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
             msg: "fake-sensitive-fixture",
           });
         refreshTokens.delete(body.refresh_token);
-        return respond(200, issueSession(rows[0]));
+        return respond(200, await issueSession(rows[0]));
       }
       if (path === "/auth/v1/verify") {
         if (verifyGate) {
@@ -133,7 +152,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
           });
         if (state.failVerifyAfterConfirm)
           return respond(500, { msg: "fake-sensitive-fixture" });
-        return respond(200, issueSession(user));
+        return respond(200, await issueSession(user));
       }
       if (path === "/auth/v1/user") {
         const token = request.headers.authorization?.replace("Bearer ", "");
@@ -165,28 +184,29 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
       respond(500, { msg: "fixture_error" });
     }
   });
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const listening = Promise.withResolvers<void>();
+  server.listen(0, "127.0.0.1", listening.resolve);
+  await listening.promise;
   const address = server.address();
   if (!address || typeof address === "string")
     throw new Error("Fixture address unavailable");
+  const url = `http://127.0.0.1:${address.port}`;
+  issuer = `${url}/auth/v1`;
   return {
     state,
-    url: `http://127.0.0.1:${address.port}`,
+    url,
     holdVerification: () => {
-      let started!: () => void;
-      let release!: () => void;
-      const start = new Promise<void>((resolve) => {
-        started = resolve;
-      });
-      const wait = new Promise<void>((resolve) => {
-        release = resolve;
-      });
-      verifyGate = { started, wait };
-      return { started: start, release };
+      const started = Promise.withResolvers<void>();
+      const release = Promise.withResolvers<void>();
+      verifyGate = { started: started.resolve, wait: release.promise };
+      return { started: started.promise, release: release.resolve };
     },
-    close: () =>
-      new Promise<void>((resolve, reject) =>
-        server.close((error) => (error ? reject(error) : resolve())),
-      ),
+    close: () => {
+      const closed = Promise.withResolvers<void>();
+      server.close((error) =>
+        error ? closed.reject(error) : closed.resolve(),
+      );
+      return closed.promise;
+    },
   };
 }

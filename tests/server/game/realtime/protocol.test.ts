@@ -42,6 +42,7 @@ describe("application session capability handshake", () => {
     roomId: randomUUID(),
     tabId: randomUUID(),
   };
+  const capability = "Ab_9-".repeat(8) + "abc";
   it.each([
     { appSession: undefined },
     { appSession: null },
@@ -57,8 +58,77 @@ describe("application session capability handshake", () => {
     );
   });
   it("retains both valid proofs for the identity resolver", () => {
-    const handshake = { ...base, appSession: "Ab_9-".repeat(8) + "abc" };
+    const handshake = { ...base, appSession: capability };
     expect(parseHandshake(handshake)).toEqual(handshake);
+  });
+  it("accepts the exact guest handshake shape", () => {
+    const handshake = {
+      guestCapability: capability,
+      roomId: base.roomId,
+      tabId: base.tabId,
+    };
+    expect(parseHandshake(handshake)).toEqual(handshake);
+  });
+  it.each([
+    {
+      label: "member without appSession",
+      value: { accessToken: "t", roomId: base.roomId, tabId: base.tabId },
+    },
+    {
+      label: "member without accessToken",
+      value: { appSession: capability, roomId: base.roomId, tabId: base.tabId },
+    },
+    {
+      label: "guest without roomId",
+      value: { guestCapability: capability, tabId: base.tabId },
+    },
+    {
+      label: "member with guest capability",
+      value: { ...base, appSession: capability, guestCapability: capability },
+    },
+    {
+      label: "guest with bearer",
+      value: {
+        guestCapability: capability,
+        accessToken: "t",
+        roomId: base.roomId,
+        tabId: base.tabId,
+      },
+    },
+    {
+      label: "guest with appSession",
+      value: {
+        guestCapability: capability,
+        appSession: capability,
+        roomId: base.roomId,
+        tabId: base.tabId,
+      },
+    },
+    {
+      label: "member with extra key",
+      value: { ...base, appSession: capability, extra: "x" },
+    },
+    {
+      label: "guest with extra key",
+      value: {
+        guestCapability: capability,
+        roomId: base.roomId,
+        tabId: base.tabId,
+        extra: "x",
+      },
+    },
+    {
+      label: "malformed guest capability",
+      value: {
+        guestCapability: "a".repeat(42),
+        roomId: base.roomId,
+        tabId: base.tabId,
+      },
+    },
+  ])("rejects $label at parse level", ({ value }) => {
+    expect(() => parseHandshake(value)).toThrow(
+      "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+    );
   });
 });
 

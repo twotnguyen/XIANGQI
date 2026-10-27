@@ -1,19 +1,56 @@
 import {
+  createRemoteJWKSet,
+  decodeProtectedHeader,
+  errors,
+  jwtVerify,
+  type JWTPayload,
+  type JWTVerifyGetKey,
+} from "jose";
+import type { VerifiedAccessToken } from "../login/login.types.js";
+import {
   RegistrationError,
   type AuthProvider,
   type Session,
 } from "./registration.types.js";
+
+// Mã lỗi do chính token gây ra; mọi lỗi khác (tải JWKS, JWKS sai dạng, timeout) là lỗi dịch vụ.
+const TOKEN_ERROR_CODES: Record<string, true> = {
+  ERR_JOSE_ALG_NOT_ALLOWED: true,
+  ERR_JWKS_NO_MATCHING_KEY: true,
+  ERR_JWS_INVALID: true,
+  ERR_JWS_SIGNATURE_VERIFICATION_FAILED: true,
+  ERR_JWT_CLAIM_VALIDATION_FAILED: true,
+  ERR_JWT_EXPIRED: true,
+  ERR_JWT_INVALID: true,
+};
+function sessionInvalid(): RegistrationError {
+  return new RegistrationError(
+    "SESSION_INVALID",
+    "Phiên đăng nhập không hợp lệ",
+    401,
+  );
+}
 
 /**
  * Lớp giao tiếp trực tiếp với Supabase Auth (GoTrue API):
  * Đảm nhiệm đăng ký, xác thực OTP, đăng nhập mật khẩu, đổi Google ID token và quản trị tài khoản pending.
  */
 export class SupabaseAuth implements AuthProvider {
+  private readonly issuer: string;
+  // Khoá công khai được jose cache trong bộ nhớ theo mặc định của thư viện; không cache token hay kết quả xác minh.
+  private readonly signingKeys: JWTVerifyGetKey;
   constructor(
     private readonly url: string,
     private readonly publishable: string,
     private readonly secret: string,
-  ) {}
+  ) {
+    const base = url.replace(/\/$/, "");
+    this.issuer = `${base}/auth/v1`;
+    // createRemoteJWKSet không tải khoá cho tới lần xác minh đầu tiên.
+    this.signingKeys = createRemoteJWKSet(
+      new URL(`${this.issuer}/.well-known/jwks.json`),
+    );
+  }
   private async request(
     path: string,
     body?: unknown,
@@ -261,5 +298,49 @@ export class SupabaseAuth implements AuthProvider {
         401,
       );
     return user as unknown as Session["user"];
+  }
+  /**
+   * Xác minh access token của Supabase cục bộ bằng JWKS công khai đã tin cậy.
+   * Chỉ trả userId/email từ claim đã xác minh; không gọi Auth và không đọc DB.
+   */
+  async verifyAccessToken(token: string): Promise<VerifiedAccessToken> {
+    if (typeof token !== "string") throw sessionInvalid();
+    let kid: unknown;
+    try {
+      kid = decodeProtectedHeader(token).kid;
+    } catch {
+      throw sessionInvalid();
+    }
+    if (typeof kid !== "string" || kid.length === 0) throw sessionInvalid();
+    let payload: JWTPayload;
+    try {
+      ({ payload } = await jwtVerify(token, this.signingKeys, {
+        algorithms: ["ES256"],
+        issuer: this.issuer,
+        audience: "authenticated",
+        requiredClaims: ["sub", "exp", "iat", "email", "role"],
+      }));
+    } catch (error) {
+      const tokenError =
+        error instanceof errors.JOSEError &&
+        TOKEN_ERROR_CODES[error.code] === true;
+      throw tokenError
+        ? sessionInvalid()
+        : new RegistrationError(
+            "AUTH_PROVIDER_ERROR",
+            "Dịch vụ xác thực chưa thể xử lý yêu cầu",
+            503,
+          );
+    }
+    const { sub, email, role } = payload;
+    if (
+      role !== "authenticated" ||
+      typeof sub !== "string" ||
+      sub.length === 0 ||
+      typeof email !== "string" ||
+      email.length === 0
+    )
+      throw sessionInvalid();
+    return { userId: sub, email };
   }
 }

@@ -492,6 +492,79 @@ describe.skipIf(!databaseUrl)(
         ).rows[0].version,
       ).toBe(before);
     });
+    it("projects no offers and zero cooldown before any draw activity", async () => {
+      const f = await fixture();
+      expect(
+        await run(f, f.red, (s) =>
+          store.drawSnapshot(s, { matchId: f.matchId }),
+        ),
+      ).toEqual({ offers: [], remainingMoves: { red: 0, black: 0 } });
+    });
+    it("keeps each side's decline cooldown independent and decrements only by that side's moves", async () => {
+      const f = await fixture();
+      const offerA = await run(f, f.red, (s) =>
+        store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
+      );
+      const declinedA = await run(f, f.black, (s) =>
+        store.respondDraw(s, {
+          matchId: f.matchId,
+          matchVersion: offerA.match.version,
+          offerId: offerA.draw.offers[0]!.id,
+          accept: false,
+        }),
+      );
+      expect(declinedA.draw.remainingMoves).toEqual({ red: 5, black: 0 });
+      const moved = await run(f, f.red, (s) =>
+        store.move(s, {
+          matchId: f.matchId,
+          matchVersion: declinedA.match.version,
+          from: 54,
+          to: 45,
+        }),
+      );
+      expect(moved.applied).toBe(true);
+      const offerB = await run(f, f.black, (s) =>
+        store.offerDraw(s, {
+          matchId: f.matchId,
+          matchVersion: moved.match.version,
+        }),
+      );
+      expect(offerB.applied).toBe(true);
+      const declinedB = await run(f, f.red, (s) =>
+        store.respondDraw(s, {
+          matchId: f.matchId,
+          matchVersion: offerB.match.version,
+          offerId: offerB.draw.offers[0]!.id,
+          accept: false,
+        }),
+      );
+      expect(declinedB.draw.remainingMoves).toEqual({ red: 4, black: 5 });
+      expect(
+        await run(f, f.red, (s) =>
+          store.drawSnapshot(s, { matchId: f.matchId }),
+        ),
+      ).toEqual({ offers: [], remainingMoves: { red: 4, black: 5 } });
+    });
+    it("hides pending offers from the projection once the match has ended", async () => {
+      const f = await fixture();
+      const offer = await run(f, f.red, (s) =>
+        store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
+      );
+      expect(offer.draw.offers).toHaveLength(1);
+      const resigned = await run(f, f.black, (s) =>
+        store.resign(s, {
+          matchId: f.matchId,
+          matchVersion: offer.match.version,
+        }),
+      );
+      expect(resigned.applied).toBe(true);
+      expect(resigned.match.status).not.toBe("ACTIVE");
+      expect(
+        await run(f, f.red, (s) =>
+          store.drawSnapshot(s, { matchId: f.matchId }),
+        ),
+      ).toMatchObject({ offers: [] });
+    });
     it("an expired earlier disconnect beats draw acceptance while proposals do not stop clock consumption", async () => {
       const f = await fixture();
       const offer = await run(f, f.red, (s) =>

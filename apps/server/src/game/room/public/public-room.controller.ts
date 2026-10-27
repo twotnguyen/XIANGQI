@@ -13,7 +13,7 @@ import {
 import type { IncomingMessage } from "node:http";
 import { LoginError } from "../../../account/login/login.types.js";
 import { RoomError } from "../room.types.js";
-import { readMemberRoomProof } from "../room.controller.js";
+import { readRoomProof } from "../room.controller.js";
 import type {
   PublicRoomJoinInput,
   PublicRoomService,
@@ -47,7 +47,7 @@ export class PublicRoomController {
   @Get()
   @Header("Cache-Control", "no-store")
   list(@Req() request: IncomingMessage) {
-    return this.respond(() => this.service.list(readMemberRoomProof(request)));
+    return this.respond(() => this.service.list(readRoomProof(request)));
   }
   /**
    * Endpoint POST /public-rooms/:roomId/join: Tham gia vào phòng chơi cờ công khai từ sảnh.
@@ -61,7 +61,7 @@ export class PublicRoomController {
     @Body() body: unknown,
   ) {
     return this.respond(() => {
-      const proof = readMemberRoomProof(request);
+      const proof = readRoomProof(request);
       if (
         !body ||
         typeof body !== "object" ||

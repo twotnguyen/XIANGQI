@@ -3,8 +3,15 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { apply, databaseUrl, pool, reset } from "../room/room.test-helper.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { AiPresence } from "@server/game/ai/ai-presence.js";
 import { AiReservations } from "@server/game/ai/ai-reservations.js";
 import { AiHistoryStore } from "@server/game/ai/ai-history-store.js";
@@ -14,8 +21,15 @@ import { AiGames } from "@server/game/ai/ai-games.js";
 import type { EngineWorker } from "@xiangqi/engine";
 import { RoomRosterChanged } from "@server/game/room/room.types.js";
 import type { PoolClient } from "pg";
+import { scopeContext } from "../room/guest-scope.test-helper.js";
+import type { MemberRoomRequestProof } from "@server/game/room/room-http.service.js";
+type MemberOrigin = Omit<Extract<AiOrigin, { kind: "human" }>, "proof"> & {
+  proof: MemberRoomRequestProof;
+};
 
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const coordinator = new RoomTransactions(pool);
+const scopes = scopeContext();
 const reservations = new AiReservations();
 const history = new AiHistoryStore(reservations);
 const hash = (v: string) => createHash("sha256").update(v).digest("hex");
@@ -38,16 +52,19 @@ async function fixture() {
   );
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async () => ({
-      id: ownerId,
-      email,
-      email_confirmed_at: now.toISOString(),
-    })),
+    verifyAccessToken: vi.fn(async () => ({ userId: ownerId, email })),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider);
+  const sessions = new SessionService(
+    new PostgresLoginStore(loginPool),
+    provider,
+  );
   const issued = await sessions.issue(ownerId, false);
-  const authorizer = new PostgresMemberRoomAuthorizer(sessions);
-  const origin: Extract<AiOrigin, { kind: "human" }> = {
+  const guests = new GuestService(new GuestStore(pool));
+  const authorizer = new RoomSessionAuthorizer(
+    new PostgresMemberRoomAuthorizer(sessions),
+    new GuestRoomAuthorizer(guests, pool),
+  );
+  const origin: MemberOrigin = {
     kind: "human",
     proof: { accessToken: "synthetic-ai-token", appSession: issued.appSession },
     tab: { tabId: randomUUID(), connectionId: randomUUID(), generation: 1 },
@@ -85,7 +102,10 @@ async function fixture() {
   };
   const runner = new SqlAiTransactions({
     coordinator,
+    pool,
     authorizer,
+    guests,
+    withScope: scopes.withScope,
     reservations,
     history,
     bootId: boot.id,
@@ -93,7 +113,10 @@ async function fixture() {
   });
   return { ownerId, origin, provider, boot, runner, control, presence, actor };
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "AI SQL authority and post-commit RAM installation",
   () => {
@@ -117,7 +140,7 @@ describe.skipIf(!databaseUrl)(
       const f = await fixture(),
         gameId = randomUUID();
       const install = vi.fn();
-      f.provider.getUser.mockImplementation(async () => {
+      f.provider.verifyAccessToken.mockImplementation(async () => {
         const c = await pool.connect();
         try {
           await c.query("BEGIN");
@@ -134,9 +157,8 @@ describe.skipIf(!databaseUrl)(
           c.release();
         }
         return {
-          id: f.ownerId,
+          userId: f.ownerId,
           email: f.ownerId + "@example.invalid",
-          email_confirmed_at: new Date().toISOString(),
         };
       });
       const value = await f.runner.run(f.ownerId, f.origin, async (tx) => {

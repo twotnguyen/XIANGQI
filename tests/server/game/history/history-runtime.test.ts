@@ -5,11 +5,15 @@ import { initialPosition } from "@xiangqi/xiangqi-core";
 import type { createRegistrationRuntime } from "@server/account/auth/registration.module.js";
 import { createApp } from "@server/app.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { LoginError } from "@server/account/login/login.types.js";
 import { encodePosition } from "@server/game/match/position-codec.js";
 import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
 import { createHistoryRuntime } from "@server/game/history/history.module.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
 >;
@@ -24,7 +28,7 @@ function registration() {
     async signInPassword(): Promise<never> {
       throw new Error("Not used");
     },
-    async getUser(token: string) {
+    async verifyAccessToken(token: string) {
       const user = users.get(token);
       if (!user)
         throw new LoginError(
@@ -32,10 +36,10 @@ function registration() {
           "Synthetic bearer invalid",
           401,
         );
-      return user;
+      return { userId: user.id, email: user.email };
     },
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), auth);
+  const sessions = new SessionService(new PostgresLoginStore(loginPool), auth);
   return {
     users,
     sessions,
@@ -103,7 +107,10 @@ describe.skipIf(!databaseUrl)(
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     });
-    afterAll(() => pool.end());
+    afterAll(async () => {
+      await pool.end();
+      await loginPool.end();
+    });
     it("enables with migration1–7 alone, serves own terminal history, protects bad JSON and leaves borrowed pool open", async () => {
       const r = registration(),
         owner = await member(r),

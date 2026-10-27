@@ -3,9 +3,14 @@ import type { DynamicModule } from "@nestjs/common";
 import type { Pool } from "pg";
 import type { Socket } from "socket.io";
 import type { SessionService } from "../../account/login/session.service.js";
-import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
+import type { GuestService } from "../../account/guest/guest.service.js";
+import type { GuestAiTermination } from "../room/guest-room-port.js";
+import type {
+  RoomRequestProof,
+  RoomSessionAuthorizer,
+} from "../room/room-session.js";
 import { RoomTransactions } from "../room/room-transactions.js";
-import type { RoomScope } from "../room/room.types.js";
+import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { RoomAuthorization } from "../room/room-transactions.js";
 import { AiControl } from "./ai-control.js";
 import { createCompiledAiEngine, type AiEngine } from "./ai-engine.js";
@@ -25,7 +30,6 @@ import {
   type AiSocketAdmission,
   type AiSocketControl,
   type AiSocketProof,
-  type AiSocketSessionProof,
   type AiSocketSnapshot,
 } from "./ai-socket-gateway.js";
 import { AiModule } from "./ai.module.js";
@@ -44,6 +48,18 @@ function sessionRevoked(error: unknown) {
     ("code" in error && error.code === "AUTH_REQUIRED") ||
     ("status" in error && error.status === 401)
   );
+}
+
+/** Transport-only tabId is stripped here; the credential keeps its exact actor kind for every SQL authority check. */
+function credentialOf(
+  proof: AiSocketProof | RoomRequestProof,
+): RoomRequestProof {
+  if ("guestCapability" in proof)
+    return Object.freeze({ guestCapability: proof.guestCapability });
+  return Object.freeze({
+    accessToken: proof.accessToken,
+    appSession: proof.appSession,
+  });
 }
 /** Baseline schema AI (migration 11-12): bảng, RLS, policy, quyền app_server và cột ai trên active_players. */
 const AI_SCHEMA_READY_SQL = `
@@ -72,6 +88,9 @@ SELECT
 export interface AiRuntimeOptions {
   env: Record<string, string | undefined>;
   registration: { pool: Pool; sessions: SessionService | null };
+  authorizer: RoomSessionAuthorizer;
+  guests: GuestService;
+  withScope: <T>(scope: RoomScope, work: () => Promise<T>) => Promise<T>;
   /** Test seam; production uses the compiled engine worker outside the HTTP main thread. */
   engine?: AiEngine;
 }
@@ -79,6 +98,8 @@ export interface AiRuntimeOptions {
 export interface AiRuntime {
   /** Nest module carrying the AI HTTP controller; import it after registration. */
   module: DynamicModule;
+  /** Guest AI commit hook; the parent registers it through rooms.attachGuestAi. */
+  guestTermination: GuestAiTermination;
   /** Attach the AI socket namespace to the HTTP server; call after createApp and before listen. */
   attach(server: HttpServer): void;
   /** Begin lease heartbeats; call after the server is listening. */
@@ -104,15 +125,14 @@ export async function createAiRuntime(
   options: AiRuntimeOptions,
 ): Promise<AiRuntime | null> {
   if ((options.env.ROOMS_ENABLED ?? "false") !== "true") return null;
-  const { pool, sessions } = options.registration;
-  if (!sessions) throw new Error("AI runtime requires session service");
+  const { pool } = options.registration;
   const schema = await pool.query<{ ready: boolean }>(AI_SCHEMA_READY_SQL);
   if (schema.rows[0]?.ready !== true)
     throw new Error("AI migration is not ready");
 
   const engine = options.engine ?? (await createCompiledAiEngine());
   const coordinator = new RoomTransactions(pool);
-  const authorizer = new PostgresMemberRoomAuthorizer(sessions);
+  const { authorizer, guests, withScope } = options;
   const reservations = new AiReservations();
   let bootId: string;
   try {
@@ -131,6 +151,9 @@ export async function createAiRuntime(
   const transactions = new SqlAiTransactions({
     coordinator,
     authorizer,
+    pool,
+    guests,
+    withScope,
     reservations,
     history: new AiHistoryStore(reservations),
     bootId,
@@ -144,6 +167,23 @@ export async function createAiRuntime(
     bootId,
     control,
   });
+  const guestTermination: GuestAiTermination = {
+    async terminate(scope, input) {
+      const effect = await transactions.prepareGuestTermination(scope, input);
+      return {
+        commit() {
+          try {
+            games.drop(input.guestId, input.aiGameId);
+          } finally {
+            effect.commit();
+          }
+        },
+        rollback() {
+          effect.rollback();
+        },
+      };
+    },
+  };
   const corsOrigins = corsOriginsOf(options.env);
 
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
@@ -207,6 +247,7 @@ export async function createAiRuntime(
     sweeping ??= (async () => {
       if (lapsed()) fenced = true;
       if (fenced) await games.close();
+      games.prune();
       const failures: unknown[] = [];
       let cursor: AiExpiredCursor | null = null;
       for (;;) {
@@ -270,14 +311,11 @@ export async function createAiRuntime(
     socket: Socket,
     proof: AiSocketProof,
   ): Promise<AiSocketAdmission> => {
-    let session: AiSocketSessionProof = {
-      accessToken: proof.accessToken,
-      appSession: proof.appSession,
-    };
+    let session: RoomRequestProof = credentialOf(proof);
     const tabId = proof.tabId;
     let generation = 0;
     let watched: string | null = null;
-    let owner: string | null = null;
+    let owner: RoomScope["actor"] | null = null;
 
     const toControl = (attachment: AiAttachment): AiSocketControl => {
       generation = attachment.control.generation;
@@ -293,18 +331,29 @@ export async function createAiRuntime(
       };
     };
 
-    const attach = (sessionProof: AiSocketSessionProof, takeover: boolean) =>
+    const attach = (
+      sessionProof: RoomRequestProof,
+      takeover: boolean,
+      expectedOwner?: string,
+    ) =>
       transactions.read(sessionProof, async (scope, ownerId) => {
+        // Refresh stays on the admitted actor; any other principal is an expired session.
+        if (expectedOwner !== undefined && ownerId !== expectedOwner)
+          throw new RoomError(
+            "AUTH_REQUIRED",
+            "Phiên chơi với máy không hợp lệ",
+            401,
+          );
         const attachment = await presence.attach(scope, {
           tabId,
           connectionId: socket.id,
           takeover,
         });
-        owner = ownerId;
+        owner = scope.actor;
         control.bind(
           socket,
           ownerId,
-          sessionProof.appSession,
+          sessionProof,
           tabId,
           attachment.control.generation,
         );
@@ -349,11 +398,15 @@ export async function createAiRuntime(
     return {
       connect: () => attach(session, false),
       refresh: async (next) => {
-        const attachment = await attach(next, false);
-        session = {
-          accessToken: next.accessToken,
-          appSession: next.appSession,
-        };
+        const expectedOwner = owner?.userId;
+        if (expectedOwner === undefined)
+          throw new RoomError(
+            "AUTH_REQUIRED",
+            "Phiên chơi với máy không hợp lệ",
+            401,
+          );
+        const attachment = await attach(next, false, expectedOwner);
+        session = credentialOf(next);
         return attachment;
       },
       takeover: () => attach(session, true),
@@ -366,21 +419,21 @@ export async function createAiRuntime(
       close: async () => {
         control.unbind(socket);
         if (owner === null || generation === 0) return;
-        const ownerId: string = owner;
+        const actor = owner;
         try {
           await transactions.read(session, (scope, actorId) =>
             release(scope, actorId),
           );
         } catch (error) {
           if (!sessionRevoked(error)) throw error;
-          // Revoked session: downgrade-only fallback under the owner's actor lock; physical proof still fences.
+          // Revoked session: downgrade-only fallback under the admitted actor's own lock; physical proof still fences.
           await coordinator.withRoom(
-            { actor: { userId: ownerId, kind: "member" }, roomIds: [] },
+            { actor, roomIds: [] },
             async (proof): Promise<RoomAuthorization> => ({
               status: "active",
               actor: proof.actor,
             }),
-            (scope) => release(scope, ownerId),
+            (scope) => release(scope, actor.userId),
           );
         }
       },
@@ -389,6 +442,7 @@ export async function createAiRuntime(
 
   return {
     module: AiModule.forRoot(http),
+    guestTermination,
     attach(server) {
       if (closing) throw new Error("AI runtime is closed");
       if (gateway) throw new Error("AI socket gateway already attached");

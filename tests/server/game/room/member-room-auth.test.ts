@@ -3,7 +3,10 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { LoginError } from "@server/account/login/login.types.js";
 import { RegistrationError } from "@server/account/auth/registration.types.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import {
@@ -11,7 +14,12 @@ import {
   type RoomActorProof,
 } from "@server/game/room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { databaseUrl, pool, reset } from "./room-transactions.test-helper.js";
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 const coordinator = new RoomTransactions(pool),
   rooms = new RoomStore();
 const hash = (cap: string) => createHash("sha256").update(cap).digest("hex");
@@ -29,17 +37,20 @@ async function member() {
   );
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async () => ({
-      id,
-      email,
-      email_confirmed_at: now.toISOString(),
-    })),
+    verifyAccessToken: vi.fn(async () => ({ userId: id, email })),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider);
+  const sessions = new SessionService(
+    new PostgresLoginStore(loginPool),
+    provider,
+  );
   const issued = await sessions.issue(id, false),
     proof = { accessToken: "synthetic-bearer", appSession: issued.appSession };
   const authorizer = new PostgresMemberRoomAuthorizer(sessions);
-  return { id, provider, sessions, proof, authorizer };
+  const roomAuthorizer = new RoomSessionAuthorizer(
+    authorizer,
+    new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+  );
+  return { id, provider, sessions, proof, authorizer, roomAuthorizer };
 }
 async function tryActor(id: string) {
   const c = await pool.connect();
@@ -56,19 +67,21 @@ async function tryActor(id: string) {
     c.release();
   }
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)(
   "member room authorization with real local SQL",
   () => {
     beforeEach(reset);
     it("runs provider outside locks then checks authoritative sameclient cap/profile and creates actual room", async () => {
       const m = await member();
-      m.provider.getUser.mockImplementation(async () => {
+      m.provider.verifyAccessToken.mockImplementation(async () => {
         expect(await tryActor(m.id)).toBe(true);
         return {
-          id: m.id,
+          userId: m.id,
           email: `synthetic-${m.id}@example.invalid`,
-          email_confirmed_at: new Date().toISOString(),
         };
       });
       const actor = await m.authorizer.resolve(m.proof);
@@ -86,7 +99,7 @@ describe.skipIf(!databaseUrl)(
         (s) => rooms.create(s, { commandId: randomUUID() }),
       );
       expect(result.status).toBe("active");
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
       expect(poolCall).not.toHaveBeenCalled();
       expect(accountCall).not.toHaveBeenCalled();
     });
@@ -96,7 +109,7 @@ describe.skipIf(!databaseUrl)(
       const ownerService = new RoomHttpService(
         rooms,
         coordinator,
-        owner.authorizer,
+        owner.roomAuthorizer,
       );
       const entry = await ownerService.create(owner.proof, {
         commandId: randomUUID(),
@@ -104,7 +117,7 @@ describe.skipIf(!databaseUrl)(
       const joinService = new RoomHttpService(
         rooms,
         coordinator,
-        joiner.authorizer,
+        joiner.roomAuthorizer,
       );
       const joined = await joinService.join(joiner.proof, {
         commandId: randomUUID(),
@@ -112,7 +125,7 @@ describe.skipIf(!databaseUrl)(
         preference: "play",
       });
       expect(joined).toMatchObject({ roomId: entry.roomId, role: "black" });
-      expect(joiner.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(joiner.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
       expect(
         (
           await pool.query(
@@ -150,7 +163,7 @@ describe.skipIf(!databaseUrl)(
         ),
       ).rejects.toMatchObject({ code: "AUTH_REQUIRED", status: 401 });
       expect(work).not.toHaveBeenCalled();
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
     });
     it.each(["revocation", "expiry"])(
       "denies %s after upstream resolution while waiting for actor lock",
@@ -207,7 +220,7 @@ describe.skipIf(!databaseUrl)(
           blocker.release();
         }
         expect(work).not.toHaveBeenCalled();
-        expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+        expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
       },
     );
     it("samples server clock after session row lock, denying deadline crossed during wait", async () => {
@@ -321,7 +334,7 @@ describe.skipIf(!databaseUrl)(
       const created = await new RoomHttpService(
         rooms,
         coordinator,
-        m.authorizer,
+        m.roomAuthorizer,
       ).create(m.proof, { commandId: randomUUID() });
       await pool.query(
         "WITH t AS (SELECT clock_timestamp()+interval '300 milliseconds' AS at) UPDATE xiangqi_auth.app_sessions SET created_at=t.at-interval '12 hours',expires_at=t.at FROM t WHERE token_hash=$1",
@@ -463,7 +476,7 @@ describe.skipIf(!databaseUrl)(
         new LoginError("SESSION_EXPIRED", "private details"),
         new RegistrationError("UPSTREAM_INVALID", "private details", 401),
       ]) {
-        m.provider.getUser.mockRejectedValueOnce(error);
+        m.provider.verifyAccessToken.mockRejectedValueOnce(error);
         await expect(
           m.authorizer.resolve({ ...m.proof }),
         ).rejects.toMatchObject({
@@ -472,7 +485,7 @@ describe.skipIf(!databaseUrl)(
           message: "Phiên đăng nhập không hợp lệ",
         });
       }
-      m.provider.getUser.mockRejectedValueOnce(
+      m.provider.verifyAccessToken.mockRejectedValueOnce(
         new Error("private-token-secret"),
       );
       await expect(m.authorizer.resolve({ ...m.proof })).rejects.toMatchObject({

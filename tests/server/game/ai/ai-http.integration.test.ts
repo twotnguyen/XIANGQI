@@ -13,8 +13,15 @@ import {
 } from "vitest";
 import { createApp } from "@server/app.js";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { apply, databaseUrl, pool, reset } from "../room/room.test-helper.js";
 import { AiReservations } from "@server/game/ai/ai-reservations.js";
@@ -22,6 +29,8 @@ import { AiPresence } from "@server/game/ai/ai-presence.js";
 import { AiControl } from "@server/game/ai/ai-control.js";
 import { AiHistoryStore } from "@server/game/ai/ai-history-store.js";
 import { SqlAiTransactions } from "@server/game/ai/ai-sql-transactions.js";
+import { scopeContext } from "../room/guest-scope.test-helper.js";
+import type { MemberRoomRequestProof } from "@server/game/room/room-http.service.js";
 import { AiGames } from "@server/game/ai/ai-games.js";
 import { AiHttpService } from "@server/game/ai/ai-http.service.js";
 import { AiModule } from "@server/game/ai/ai.module.js";
@@ -31,17 +40,25 @@ const tokens = new Map<
   string,
   { id: string; email: string; email_confirmed_at: string }
 >();
-const sessions = new SessionService(new PostgresLoginStore(pool), {
-  signInPassword: vi.fn(),
-  getUser: async (token) => {
+const loginPool = createLoginPool({ connectionString: databaseUrl });
+const sessions = new SessionService(new PostgresLoginStore(loginPool), {
+  verifyAccessToken: async (token) => {
     const user = tokens.get(token);
     if (!user) throw Error("synthetic invalid provider token");
-    return user;
+    return { userId: user.id, email: user.email };
   },
 });
 const coordinator = new RoomTransactions(pool),
-  authorizer = new PostgresMemberRoomAuthorizer(sessions),
-  reservations = new AiReservations();
+  guests = new GuestService(new GuestStore(pool)),
+  authorizer = new RoomSessionAuthorizer(
+    new PostgresMemberRoomAuthorizer(sessions),
+    new GuestRoomAuthorizer(guests, pool),
+  ),
+  reservations = new AiReservations(),
+  scopes = scopeContext();
+type MemberOrigin = Omit<Extract<AiOrigin, { kind: "human" }>, "proof"> & {
+  proof: MemberRoomRequestProof;
+};
 let presence: AiPresence,
   control: AiControl,
   games: AiGames,
@@ -93,14 +110,8 @@ async function peer(
     (scope) => presence.attach(scope, { tabId, connectionId: socket.id }),
   );
   if (attached.status !== "active") throw Error("synthetic inactive peer");
-  control.bind(
-    socket,
-    a.id,
-    proof.appSession,
-    tabId,
-    attached.value.control.generation,
-  );
-  const origin: Extract<AiOrigin, { kind: "human" }> = {
+  control.bind(socket, a.id, proof, tabId, attached.value.control.generation);
+  const origin: MemberOrigin = {
     kind: "human",
     proof,
     tab: {
@@ -112,7 +123,7 @@ async function peer(
   return { socket, origin };
 }
 function request(
-  origin: Extract<AiOrigin, { kind: "human" }>,
+  origin: MemberOrigin,
   path: string,
   body?: unknown,
   headers: Record<string, string> = {},
@@ -165,7 +176,10 @@ describe.skipIf(!databaseUrl)(
       control = new AiControl(presence);
       const transactions = new SqlAiTransactions({
         coordinator,
+        pool,
         authorizer,
+        guests,
+        withScope: scopes.withScope,
         reservations,
         history: new AiHistoryStore(reservations),
         bootId: boot.id,
@@ -442,4 +456,7 @@ describe.skipIf(!databaseUrl)(
   },
 );
 
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});

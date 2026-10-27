@@ -24,6 +24,18 @@ import { RoomTransactions } from "./room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
 import { RoomStore } from "./room/room-store.js";
 import { RoomHttpService } from "./room/room-http.service.js";
+import { GuestService } from "../account/guest/guest.service.js";
+import { GuestStore } from "../account/guest/guest.store.js";
+import { GuestError } from "../account/guest/guest.types.js";
+import {
+  GuestRoomAuthorizer,
+  GuestRoomCoordinator,
+} from "./room/guest-room-auth.js";
+import {
+  RoomGuestPort,
+  type GuestAiTermination,
+} from "./room/guest-room-port.js";
+import { RoomSessionAuthorizer } from "./room/room-session.js";
 import { PublicRoomModule } from "./room/public/public-room.module.js";
 import { PublicRoomStore } from "./room/public/public-room-store.js";
 import { PublicRoomService } from "./room/public/public-room-service.js";
@@ -32,10 +44,10 @@ import { RoomModule } from "./room/room.module.js";
 import { RoomWorker } from "./room/room-worker.js";
 import { PostgresRoomWorkerPort } from "./room/postgres-room-worker-port.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "./realtime/member-transactions.js";
-import { MemberRealtimePresence } from "./realtime/member-presence.js";
+import { RoomRealtimePresence } from "./realtime/member-presence.js";
 import { GameRooms } from "./realtime/game-rooms.js";
 import { RealtimeStore } from "./realtime/store.js";
 import type { RealtimePublisher } from "./realtime/gateway.js";
@@ -228,8 +240,37 @@ async function bootRoomRuntime(
       );
     },
   });
-  const authorizer = new PostgresMemberRoomAuthorizer(sessions),
-    guard = new MemberRealtimeTransactions(coordinator, authorizer);
+  const authorizer = new PostgresMemberRoomAuthorizer(sessions);
+  const guestPort = new RoomGuestPort(
+    (client, guestId, roomId) =>
+      rooms
+        .leave(
+          getScope(client, { userId: guestId, kind: "guest" }, roomId),
+          roomId,
+        )
+        .then(() => undefined),
+    (client) => {
+      const scope = context.get(client);
+      if (!scope)
+        throw new RoomError(
+          "ROOM_AUTH_PROOF_INVALID",
+          "Giao dịch phòng chưa sẵn sàng",
+          503,
+        );
+      return scope;
+    },
+  );
+  const guests = new GuestService(
+    new GuestStore(pool),
+    guestPort,
+    () => new Date(),
+    new GuestRoomCoordinator(coordinator, withScope),
+  );
+  const sessionAuthorizer = new RoomSessionAuthorizer(
+    authorizer,
+    new GuestRoomAuthorizer(guests, pool),
+  );
+  const guard = new RoomRealtimeTransactions(coordinator, sessionAuthorizer);
   const transactions: RealtimeTransactions = {
     run: (connection, work) =>
       guard.run(connection, (client) =>
@@ -250,7 +291,7 @@ async function bootRoomRuntime(
         await publisher.publishChat(roomId, channel);
       })
     : undefined;
-  const presence = new MemberRealtimePresence(
+  const presence = new RoomRealtimePresence(
     pool,
     coordinator,
     rooms,
@@ -274,7 +315,7 @@ async function bootRoomRuntime(
     pool,
     rooms,
     coordinator,
-    authorizer,
+    sessionAuthorizer,
     (id) => publisher?.connections(id) ?? [],
   );
   const worker = new RoomWorker(
@@ -311,7 +352,7 @@ async function bootRoomRuntime(
           await publisher.publishRoomClosed(event.roomId, recipients);
           return;
         }
-        await publisher.publishSnapshots(event.roomId);
+        await publisher.publishSnapshots(event.roomId, event.version);
       },
     },
   );
@@ -442,6 +483,7 @@ async function bootRoomRuntime(
     closing: Promise<void> | undefined,
     stopping: Promise<void> | undefined;
   let nextReceiptCleanup = 0;
+  let nextGuestExpiry = 0;
   let nextMediaSweep = 0;
   let mediaInFlight: Promise<void> | null = null;
   const drainMedia = async () => {
@@ -491,6 +533,11 @@ async function bootRoomRuntime(
           nextReceiptCleanup = Date.now() + 60000;
           const removed = await roomPort.cleanupExpiredReceipts();
           nextReceiptCleanup = Date.now() + (removed >= 500 ? 1000 : 60000);
+        },
+        async () => {
+          if (Date.now() < nextGuestExpiry) return;
+          nextGuestExpiry = Date.now() + 60000;
+          await guests.expireDue();
         },
         () => clockWorker.tick(),
         () => disconnectWorker.tick(),
@@ -550,12 +597,12 @@ async function bootRoomRuntime(
     ? new PublicRoomService(
         new PublicRoomStore(rooms),
         coordinator,
-        authorizer,
+        sessionAuthorizer,
         withScope,
       )
     : null;
   const module = RoomModule.forRoot(
-    new RoomHttpService(rooms, coordinator, authorizer, withScope),
+    new RoomHttpService(rooms, coordinator, sessionAuthorizer, withScope),
   );
   if (publicService)
     module.imports = [
@@ -569,30 +616,33 @@ async function bootRoomRuntime(
   lock.ready();
   return {
     module,
+    guests,
+    authorizer: sessionAuthorizer,
+    withScope,
+    attachGuestAi(port: GuestAiTermination) {
+      guestPort.attachAiTermination(port);
+    },
     get ownershipPool(): Pool {
       return pool;
     },
     publicFeed: publicService
       ? {
-          open: (proof: PublicFeedProof) => {
-            if (proof.kind !== "member")
-              throw new RoomError(
-                "AUTH_REQUIRED",
-                "Phiên truy cập không hợp lệ",
-                401,
-              );
-            return publicService.open({
-              accessToken: proof.accessToken,
-              appSession: proof.appSession,
-            });
-          },
+          open: (proof: PublicFeedProof) =>
+            publicService.open(
+              proof.kind === "member"
+                ? {
+                    accessToken: proof.accessToken,
+                    appSession: proof.appSession,
+                  }
+                : { guestCapability: proof.guestCapability },
+            ),
         }
       : null,
     realtime: {
       store,
       ...(chat ? { chat } : {}),
-      identities: new MemberRealtimeIdentities(
-        authorizer,
+      identities: new RoomRealtimeIdentities(
+        sessionAuthorizer,
         (userId, appSession) =>
           read(async (client) => {
             const hash = createHash("sha256").update(appSession).digest("hex");
@@ -610,6 +660,19 @@ async function bootRoomRuntime(
             ).rows[0];
             return row?.active === true;
           }),
+        (guestCapability: string) =>
+          guests.requireActive(guestCapability, "read").then(
+            () => true,
+            (error: unknown) => {
+              if (
+                error instanceof GuestError &&
+                (error.code === "GUEST_INVALID" ||
+                  error.code === "GUEST_EXPIRED")
+              )
+                return false;
+              throw error;
+            },
+          ),
       ),
       onAttached: (attached: RealtimePublisher) => {
         if (publisher && publisher !== attached)

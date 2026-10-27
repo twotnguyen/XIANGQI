@@ -1,19 +1,27 @@
 import { createHash, randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { SessionService } from "@server/account/login/session.service.js";
-import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import {
+  createLoginPool,
+  PostgresLoginStore,
+} from "@server/account/login/postgres-login-store.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import type { RealtimeConnection } from "@server/game/realtime/realtime.types.js";
 import {
-  MemberRealtimeIdentities,
-  MemberRealtimeTransactions,
+  RoomRealtimeIdentities,
+  RoomRealtimeTransactions,
 } from "@server/game/realtime/member-transactions.js";
-import { MemberRealtimePresence } from "@server/game/realtime/member-presence.js";
+import { RoomRealtimePresence } from "@server/game/realtime/member-presence.js";
+import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
+import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
+import { GuestService } from "@server/account/guest/guest.service.js";
+import { GuestStore } from "@server/account/guest/guest.store.js";
 import { databaseUrl, pool, reset } from "./member-transactions.test-helper.js";
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
+const loginPool = createLoginPool({ connectionString: databaseUrl });
 async function setup() {
   const id = randomUUID(),
     email = `synthetic-${id}@example.invalid`,
@@ -28,13 +36,12 @@ async function setup() {
   );
   const provider = {
     signInPassword: vi.fn(),
-    getUser: vi.fn(async () => ({
-      id,
-      email,
-      email_confirmed_at: now.toISOString(),
-    })),
+    verifyAccessToken: vi.fn(async () => ({ userId: id, email })),
   };
-  const sessions = new SessionService(new PostgresLoginStore(pool), provider),
+  const sessions = new SessionService(
+      new PostgresLoginStore(loginPool),
+      provider,
+    ),
     issued = await sessions.issue(id, false);
   const proof = {
     accessToken: "synthetic-bearer",
@@ -43,19 +50,19 @@ async function setup() {
   const authorizer = new PostgresMemberRoomAuthorizer(sessions),
     coordinator = new RoomTransactions(pool),
     rooms = new RoomStore();
+  const sessionAuthorizer = new RoomSessionAuthorizer(
+    authorizer,
+    new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
+  );
   const entry = await new RoomHttpService(
     rooms,
     coordinator,
-    authorizer,
+    sessionAuthorizer,
   ).create(proof, { commandId: randomUUID() });
-  provider.getUser.mockClear();
-  const identities = new MemberRealtimeIdentities(authorizer),
-    transactions = new MemberRealtimeTransactions(coordinator, authorizer);
-  const identity = await identities.resolve(
-    proof.accessToken,
-    proof.appSession,
-    proof,
-  );
+  provider.verifyAccessToken.mockClear();
+  const identities = new RoomRealtimeIdentities(sessionAuthorizer),
+    transactions = new RoomRealtimeTransactions(coordinator, sessionAuthorizer);
+  const identity = await identities.resolve(proof);
   const connection: RealtimeConnection = {
     identity,
     proof,
@@ -64,7 +71,7 @@ async function setup() {
     connectionId: randomUUID(),
   };
   const serverInstance = randomUUID(),
-    presence = new MemberRealtimePresence(
+    presence = new RoomRealtimePresence(
       pool,
       coordinator,
       rooms,
@@ -121,7 +128,10 @@ async function state(m: Awaited<ReturnType<typeof setup>>) {
     )
   ).rows[0];
 }
-afterAll(() => pool.end());
+afterAll(async () => {
+  await pool.end();
+  await loginPool.end();
+});
 describe.skipIf(!databaseUrl)("member realtime physical presence SQL", () => {
   beforeEach(reset);
   it("writes writable control using exact authenticated transaction client and server fence", async () => {
@@ -136,7 +146,7 @@ describe.skipIf(!databaseUrl)("member realtime physical presence SQL", () => {
       server_instance: m.serverInstance,
       disconnected_at: null,
     });
-    expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+    expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
   });
   it("readonly control never marks a player online", async () => {
     const m = await setup();
@@ -171,14 +181,14 @@ describe.skipIf(!databaseUrl)("member realtime physical presence SQL", () => {
           : "UPDATE xiangqi_auth.app_sessions SET revoked_at=clock_timestamp() WHERE token_hash=$1",
         [hash(m.proof.appSession)],
       );
-      m.provider.getUser.mockRejectedValue(
+      m.provider.verifyAccessToken.mockRejectedValue(
         new Error("synthetic provider unavailable"),
       );
-      await m.presence.disconnected({ ...m.connection, proof: undefined });
+      await m.presence.disconnected({ ...m.connection, proof: { ...m.proof } });
       const row = await state(m);
       expect(row.connected).toBe(false);
       expect(row.disconnected_at).toBeInstanceOf(Date);
-      expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+      expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
       await m.presence.disconnected(m.connection);
       expect((await state(m)).disconnected_at).toEqual(row.disconnected_at);
     },
@@ -207,7 +217,7 @@ describe.skipIf(!databaseUrl)("member realtime physical presence SQL", () => {
       generation: 2,
       disconnected_at: null,
     });
-    const other = new MemberRealtimePresence(
+    const other = new RoomRealtimePresence(
       pool,
       m.coordinator,
       m.rooms,
@@ -273,6 +283,6 @@ describe.skipIf(!databaseUrl)("member realtime physical presence SQL", () => {
     });
     await m.presence.disconnected(m.connection);
     expect((await state(m)).connected).toBe(false);
-    expect(m.provider.getUser).toHaveBeenCalledTimes(1);
+    expect(m.provider.verifyAccessToken).toHaveBeenCalledTimes(1);
   });
 });
