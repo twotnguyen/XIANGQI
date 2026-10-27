@@ -23,6 +23,7 @@ const snapshot: AiSnapshot = {
   status: "ACTIVE",
   engineState: "IDLE",
   engineError: null,
+  undoUsed: 0,
   outcome: null,
 };
 const result = {
@@ -36,7 +37,8 @@ const create = vi.fn(async () => result);
 const move = vi.fn(async () => result);
 const resign = vi.fn(async () => result);
 const retry = vi.fn(async () => result);
-const service: AiHttpApi = { current, read, create, move, resign, retry };
+const undo = vi.fn(async () => result);
+const service: AiHttpApi = { current, read, create, move, resign, retry, undo };
 let app: Awaited<ReturnType<typeof createApp>>, base: string;
 beforeAll(async () => {
   app = await createApp(["http://localhost:5173"], [AiModule.forRoot(service)]);

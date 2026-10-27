@@ -76,6 +76,8 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
   let watchedGame: string | null = null;
   let latestVersion = -1;
   let capability: string | null = null;
+  // Game to re-attach after a connection/control generation drop; never reused as live attachment.
+  let resume: string | null = null;
   const pending = new Set<(message: string) => void>();
   const waiters = new Set<(proof: AiControlProof) => void>();
   function authority(): AiControlProof {
@@ -87,9 +89,27 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       generation: control.generation,
     };
   }
+  function assertAuthority(proof: AiControlProof): AiControlProof {
+    const now = authority();
+    if (
+      now.tabId !== proof.tabId ||
+      now.connectionId !== proof.connectionId ||
+      now.generation !== proof.generation
+    )
+      throw Error(unavailable);
+    return now;
+  }
+  function attach(target: string): Promise<void> {
+    watchEpoch++;
+    watchedGame = target;
+    latestVersion = -1;
+    return command("ai.watch", { gameId: target });
+  }
   function revoke(message = unavailable) {
     epoch++;
     const wasReady = control !== null;
+    if (watchedGame !== null) resume = watchedGame;
+    watchedGame = null;
     control = null;
     latestVersion = -1;
     for (const cancel of [...pending]) cancel(message);
@@ -138,6 +158,12 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
   function acceptControl(value: unknown) {
     const next = parseControl(value);
     if (control && next.generation < control.generation) return;
+    const sameAuthority =
+      control !== null &&
+      next.generation === control.generation &&
+      next.connectionId === control.connectionId;
+    // Control generation/connection change invalidates in-flight commands.
+    if (!sameAuthority) epoch++;
     if (
       !control ||
       next.generation !== control.generation ||
@@ -148,7 +174,17 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
     const wasReady = control !== null;
     control = next;
     options.onControl({ ...next });
-    if (!wasReady) options.onConnection(true);
+    if (!wasReady) {
+      options.onConnection(true);
+      // Re-attach only the game the page asked for before the drop, with a fresh watch epoch.
+      if (resume !== null) {
+        const target = resume;
+        resume = null;
+        attach(target).catch(() => {
+          if (!disposed && watchedGame === target) options.onError(unavailable);
+        });
+      }
+    }
     for (const resolve of [...waiters]) resolve(authority());
   }
   function task<T>(
@@ -313,7 +349,7 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
     if (!disposed) close(expired);
   });
   socket.connect();
-  return {
+  const connection: AiConnection = {
     getControl() {
       if (disposed) return Promise.reject(Error(unavailable));
       if (control) {
@@ -365,20 +401,23 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
     watch(gameId) {
       if (!isId(gameId))
         return Promise.reject(Error("Thông tin ván không hợp lệ."));
-      if (disposed || !control || !socket.connected)
-        return Promise.reject(Error(unavailable));
-      watchedGame = gameId.toLowerCase();
-      latestVersion = -1;
-      watchEpoch++;
-      return command("ai.watch", { gameId: watchedGame });
+      const target = gameId.toLowerCase();
+      // Bind to the authority that exists after waiting; stale proofs are rejected before emit.
+      return connection.getControl().then((proof) => {
+        assertAuthority(proof);
+        resume = null;
+        return attach(target);
+      });
     },
     takeover() {
-      if (disposed || !control || !socket.connected)
-        return Promise.reject(Error(unavailable));
-      return command("ai.takeover");
+      return connection.getControl().then((proof) => {
+        assertAuthority(proof);
+        return command("ai.takeover");
+      });
     },
     disconnect() {
       close();
     },
   };
+  return connection;
 }

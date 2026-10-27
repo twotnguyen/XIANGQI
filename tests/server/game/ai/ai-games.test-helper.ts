@@ -17,6 +17,8 @@ export function memoryTransactions() {
     reserve: vi.fn<AiTransaction["reserve"]>(async () => {}),
     check: vi.fn<AiTransaction["check"]>(async () => {}),
     finish: vi.fn<AiTransaction["finish"]>(async () => {}),
+    drop: vi.fn<AiTransaction["drop"]>(async () => {}),
+    reclaim: vi.fn<AiTransaction["reclaim"]>(async () => false),
   };
   const commit = vi.fn(async () => {});
   const pending = new Map<string, Promise<unknown>>();
@@ -48,6 +50,18 @@ export function memoryTransactions() {
               finish: async (snapshot) => {
                 await lifecycle.finish(snapshot);
                 authorized = true;
+              },
+              drop: async (gameId) => {
+                await lifecycle.drop(gameId);
+                authorized = true;
+              },
+              reclaim: async (gameId, expiredBootId) => {
+                const reclaimed = await lifecycle.reclaim(
+                  gameId,
+                  expiredBootId,
+                );
+                authorized = true;
+                return reclaimed;
               },
             };
             const staged = await work(transaction);

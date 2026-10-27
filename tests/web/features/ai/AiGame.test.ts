@@ -53,6 +53,7 @@ function snapshot(): AiGameSnapshot {
     position,
     history: [position],
     version: 0,
+    undoUsed: 0,
     status: "ACTIVE",
     engineState: "IDLE",
     engineError: null,

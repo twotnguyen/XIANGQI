@@ -39,6 +39,8 @@ export interface AiSnapshot {
   engineState: "IDLE" | "THINKING" | "RETRY";
   engineError: "ENGINE_TIMEOUT" | "ENGINE_BUSY" | null;
   outcome: AiOutcome | null;
+  /** Số lần undo đã dùng trong ván; tối đa `MAX_UNDO`. */
+  undoUsed: number;
 }
 export interface AiOptions {
   engine: Pick<EngineWorker, "ready" | "search">;
@@ -59,7 +61,9 @@ export class AiError extends Error {
       | "AI_ILLEGAL_MOVE"
       | "AI_NOT_YOUR_TURN"
       | "AI_FINISHED"
-      | "AI_BUSY",
+      | "AI_BUSY"
+      | "AI_UNDO_UNAVAILABLE"
+      | "AI_UNDO_EXHAUSTED",
   ) {
     super(
       code === "AI_UNAVAILABLE"
@@ -75,6 +79,8 @@ type Game = {
   job?: Promise<void>;
   terminalStatus?: "FINISHED" | "ABANDONED";
 };
+/** Số lần undo tối đa trong một ván (BA 6.3). */
+const MAX_UNDO = 3;
 /**
  * Lớp điều phối cốt lõi quản lý các ván đấu với máy cờ AI (khởi tạo, đi cờ, tìm nước đi, đầu hàng và thử lại).
  */
@@ -234,6 +240,7 @@ export class AiGames {
           engineState: side === "black" ? "THINKING" : "IDLE",
           engineError: null,
           outcome: null,
+          undoUsed: 0,
         },
       };
       return {
@@ -257,6 +264,18 @@ export class AiGames {
     origin: AiOrigin = { kind: "internal" },
   ): Promise<AiSnapshot> {
     return this.track(this.createGame(owner, input, origin));
+  }
+  /**
+   * Bỏ trạng thái RAM của ván P1 khi hết ân hạn 30 phút hoặc boot hết hạn.
+   * Không ghi lịch sử: huỷ job đang chạy và fence callback cũ bằng epoch.
+   */
+  drop(owner: string, id: string): void {
+    const game = this.games.get(id);
+    if (!game || game.snapshot.ownerId !== owner) return;
+    this.cancel(game);
+    game.epoch++;
+    this.games.delete(id);
+    if (this.active.get(owner) === id) this.active.delete(owner);
   }
   private cancel(game: Game): void {
     game.abort?.abort();
@@ -517,6 +536,50 @@ export class AiGames {
           };
         });
         return this.afterTransition(owner, result, origin);
+      })(),
+    );
+  }
+  /**
+   * Undo theo 6.3: tối đa 3 lần/ván. Khi máy đang nghĩ/retry thì hủy lượt đó và lùi nước đi của người;
+   * khi đến lượt người thì lùi 2 nước (nước máy + nước người). Không áp dụng sau khi ván kết thúc.
+   */
+  undo(
+    owner: string,
+    id: string,
+    input: { version: number },
+    origin: AiOrigin = { kind: "internal" },
+  ): Promise<AiSnapshot> {
+    return this.track(
+      (async () => {
+        const result = await this.run(owner, origin, async (tx) => {
+          const game = this.find(owner, id);
+          this.check(game, input.version);
+          if (game.snapshot.status !== "ACTIVE")
+            throw new AiError("AI_FINISHED");
+          await tx.check(id);
+          if (game.snapshot.undoUsed >= MAX_UNDO)
+            throw new AiError("AI_UNDO_EXHAUSTED");
+          const waiting = game.snapshot.engineState !== "IDLE";
+          const plies = waiting ? 1 : 2;
+          if (game.snapshot.history.length - 1 < plies)
+            throw new AiError("AI_UNDO_UNAVAILABLE");
+          const draft = this.copy(game);
+          draft.history.splice(-plies);
+          draft.position = draft.history[draft.history.length - 1]!;
+          draft.engineState = "IDLE";
+          draft.engineError = null;
+          draft.undoUsed++;
+          draft.version++;
+          const staged = this.staged(game, draft, game.epoch + 1);
+          return {
+            ...staged,
+            install: () => {
+              staged.install();
+              if (waiting) this.cancel(game);
+            },
+          };
+        });
+        return result;
       })(),
     );
   }

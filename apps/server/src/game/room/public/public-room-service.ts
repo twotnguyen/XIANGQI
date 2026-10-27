@@ -9,7 +9,11 @@ import type {
   MemberRoomAuthorizer,
   MemberRoomRequestProof,
 } from "../room-http.service.js";
-import type { PublicRoomStore } from "./public-room-store.js";
+import type { PublicRoomStore, PublicRoomView } from "./public-room-store.js";
+import {
+  PublicRoomCatalog,
+  type PublicRoomTick,
+} from "./public-room-catalog.js";
 import type { RoomTransactions } from "../room-transactions.js";
 export type PublicRoomJoinInput = {
   commandId: string;
@@ -17,19 +21,31 @@ export type PublicRoomJoinInput = {
 };
 export type PublicRoomEntry = Omit<RoomEntry, "inviteCode">;
 /**
+ * Nguồn đọc phòng công khai đã xác thực phiên người đọc. Mỗi lần đọc kiểm lại quyền trong
+ * giao dịch riêng; các lần đọc cùng `tick` dùng chung một truy vấn catalog.
+ */
+export type PublicRoomReader = {
+  read(tick: PublicRoomTick): Promise<PublicRoomView[]>;
+};
+/**
  * Dịch vụ xử lý nghiệp vụ tìm kiếm và tham gia phòng chơi cờ công khai (sảnh chờ):
  * Cung cấp danh sách phòng công khai theo thời gian thực và điều phối tham gia phòng từ sảnh.
  */
 export class PublicRoomService {
+  private readonly catalog: PublicRoomCatalog;
   constructor(
-    private readonly store: Pick<PublicRoomStore, "list" | "join">,
+    private readonly store: Pick<PublicRoomStore, "catalog" | "join">,
     private readonly transactions: Pick<RoomTransactions, "withRoom">,
     private readonly authorizer: MemberRoomAuthorizer,
     private readonly withScope: <T>(
       scope: RoomScope,
       work: () => Promise<T>,
     ) => Promise<T>,
-  ) {}
+  ) {
+    this.catalog = new PublicRoomCatalog((client) =>
+      this.store.catalog(client),
+    );
+  }
   private async resolved(proof: MemberRoomRequestProof) {
     if (
       !proof ||
@@ -68,13 +84,14 @@ export class PublicRoomService {
   }
   /**
    * Mở phiên kết nối nguồn đọc danh sách phòng công khai (dùng cho feed Socket.IO).
+   * Mỗi lần `read` vẫn mở giao dịch và kiểm quyền người đọc; chỉ truy vấn catalog được chia sẻ theo `tick`.
    */
-  async open(proof: MemberRoomRequestProof) {
+  async open(proof: MemberRoomRequestProof): Promise<PublicRoomReader> {
     const trusted = await this.resolved(proof);
     return {
-      read: () =>
+      read: (tick: PublicRoomTick) =>
         this.run(trusted.proof, trusted.actor, [], (scope) =>
-          this.store.list(scope),
+          this.catalog.read(tick, scope.client),
         ),
     };
   }
@@ -82,7 +99,7 @@ export class PublicRoomService {
    * Lấy danh sách các phòng cờ công khai hiện có thông qua truy vấn HTTP.
    */
   async list(proof: MemberRoomRequestProof) {
-    return (await this.open(proof)).read();
+    return (await this.open(proof)).read({});
   }
   /**
    * Tham gia vào một phòng cờ công khai được chọn từ danh sách sảnh.

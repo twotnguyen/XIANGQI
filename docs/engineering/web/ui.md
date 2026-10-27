@@ -44,6 +44,10 @@ Thử lại dựng lại kết nối; phải nhận snapshot realtime mới trư
 Refresh khi quay lại tab chỉ chạy cho ván đang ACTIVE, không đọc lại phòng
 WAITING mỗi lần focus. Phản hồi refresh cũ bị bỏ qua khi bắt đầu rời phòng.
 
+`features/rooms/useRoomConnection.ts` giữ vòng đời socket, fallback HTTP và các
+epoch/ref đồng bộ; `RoomPage` giữ lệnh và điều phối giao diện. Nút Thử lại đóng
+kết nối cũ rồi chờ snapshot realtime mới; HTTP không cấp lại quyền điều khiển.
+
 `Suspense` giữ shell khi trang đang tải; boundary đổi theo route để dọn socket
 và effect của trang cũ ngay khi rời trang, kể cả trang mới chưa tải xong.
 Dialog Tạo phòng/Thiết lập máy tải khi mở, không thay cả Sảnh bằng màn chờ.
@@ -65,6 +69,21 @@ giả hoặc thay đổi luồng xác thực.
 `LoadingScreen` được dùng chung cho fallback entry và kiểm tra phiên. Entry
 import trực tiếp component cùng CSS/token trước khi tải router bất đồng bộ,
 để giai đoạn đầu cũng có khung chờ đầy đủ, không hiện dòng chữ ở góc trang.
+
+## Đánh với máy và phạm vi route
+
+AI dùng `makeAiClient` và `connectAi` tới runtime server; web không chạy engine
+tìm nước hoặc lưu bản ván chính thức trong sessionStorage. Thiết lập phe/mức
+được gửi tới server, URL dùng ID server cấp. Snapshot chứa số lần đi lại đã dùng;
+đi lại khi máy đang nghĩ phải hủy tác vụ cũ, phản hồi trễ không được ghi đè ván.
+Mất trạng thái sau restart/hết ân hạn hiển thị lỗi thật, không tự dựng ván thay thế.
+Rời ván/đăng xuất chủ động chỉ điều hướng sau khi người dùng xác nhận và server
+đã nhận đầu hàng; hủy xác nhận hoặc lỗi server giữ phiên/giao diện hiện tại.
+
+`/forgot-password`, `/reset-password` và `/leaderboard` dùng `P2ScopePage` để
+phân định tính năng P2 chưa mở, giữ guard phiên và đường quay lại phù hợp.
+Không gửi OTP giả, không hiển thị Elo mẫu hoặc coi route có tên là tính năng
+đã triển khai.
 
 ## Phòng chờ thi đấu
 

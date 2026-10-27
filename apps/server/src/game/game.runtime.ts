@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import type { PoolClient } from "pg";
+import type { Pool, PoolClient } from "pg";
 import { maskForbiddenChat } from "@xiangqi/shared";
 import { ChatStore } from "./chat/chat-store.js";
 import { ChatRealtimeService } from "./chat/chat-realtime.js";
@@ -41,6 +41,19 @@ import { RealtimeStore } from "./realtime/store.js";
 import type { RealtimePublisher } from "./realtime/gateway.js";
 import type { RealtimeTransactions } from "./realtime/realtime.types.js";
 import { logEvent } from "../core/logger.js";
+import {
+  acquireRuntimeLock,
+  fenceClient,
+  unfenceClient,
+  type RuntimeLock,
+} from "../core/runtime-lock.js";
+type RoomRegistration = NonNullable<
+  Awaited<ReturnType<typeof createRegistrationRuntime>>
+>;
+type RoomMedia = {
+  revoke(roomId: string, userId: string): Promise<void>;
+  revokeRoom(roomId: string): Promise<void>;
+} | null;
 /**
  * Khởi tạo toàn bộ môi trường chạy phòng cờ (Room Runtime):
  * - Kiểm tra tính sẵn sàng của schema và migration CSDL (room, draw, chat, public room).
@@ -53,10 +66,7 @@ export async function createRoomRuntime(
   registration: NonNullable<
     Awaited<ReturnType<typeof createRegistrationRuntime>>
   > | null,
-  media: {
-    revoke(roomId: string, userId: string): Promise<void>;
-    revokeRoom(roomId: string): Promise<void>;
-  } | null = null,
+  media: RoomMedia = null,
 ) {
   const enabled = env.ROOMS_ENABLED ?? "false";
   if (enabled === "false") return null;
@@ -66,7 +76,24 @@ export async function createRoomRuntime(
     !registration?.sessions
   )
     throw new Error("Invalid Room configuration");
-  const pool = registration.pool;
+  const sessions = registration.sessions;
+  const lock = await acquireRuntimeLock(registration.pool);
+  try {
+    return await bootRoomRuntime(registration, sessions, media, lock);
+  } catch (error) {
+    await lock.release().catch(() => undefined);
+    throw error;
+  }
+}
+
+async function bootRoomRuntime(
+  registration: RoomRegistration,
+  sessions: NonNullable<RoomRegistration["sessions"]>,
+  media: RoomMedia,
+  lock: RuntimeLock,
+) {
+  const admission = new RoomAdmission();
+  const pool = admittedPool(registration.pool, admission, lock);
   let drawReady: boolean;
   let chatReady = false;
   let publicReady: boolean;
@@ -208,7 +235,7 @@ export async function createRoomRuntime(
       );
     },
   });
-  const authorizer = new PostgresMemberRoomAuthorizer(registration.sessions),
+  const authorizer = new PostgresMemberRoomAuthorizer(sessions),
     guard = new MemberRealtimeTransactions(coordinator, authorizer);
   const transactions: RealtimeTransactions = {
     run: (connection, work) =>
@@ -371,6 +398,7 @@ export async function createRoomRuntime(
   // Managed rooms only: old legacy state lacks the canonical match encoding.
   let cursor: string | null = null;
   do {
+    lock.ready();
     const batch = await read((client) =>
       client.query<{ id: string; owner_id: string; kind: RoomActor["kind"] }>(
         "SELECT r.id,r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND ($1::uuid IS NULL OR r.id>$1) ORDER BY r.id LIMIT 50",
@@ -383,6 +411,7 @@ export async function createRoomRuntime(
         async (proof) => ({ status: "active", actor: proof.actor }),
         (scope) =>
           withScope(scope, async () => {
+            lock.ready();
             const current = (
               await scope.client.query<{
                 status: string;
@@ -417,7 +446,8 @@ export async function createRoomRuntime(
     inFlight: Promise<void> | null = null,
     started = false,
     closed = false,
-    closing: Promise<void> | undefined;
+    closing: Promise<void> | undefined,
+    stopping: Promise<void> | undefined;
   let nextReceiptCleanup = 0;
   let nextMediaSweep = 0;
   let mediaInFlight: Promise<void> | null = null;
@@ -484,13 +514,32 @@ export async function createRoomRuntime(
     }, 100);
     timer.unref();
   };
+  void lock.lost.then(() => {
+    closed = true;
+    clearTimeout(timer);
+    void admission.close();
+  });
+  // Quiesce: đóng cổng nhận trước, rồi chờ tick/media/chat và thao tác đang chạy; giữ khóa tới close().
+  const stop = () =>
+    (stopping ??= (async () => {
+      closed = true;
+      clearTimeout(timer);
+      const drained = admission.close();
+      try {
+        await inFlight;
+        await mediaInFlight;
+        await chatWorker?.close();
+      } finally {
+        await drained;
+      }
+    })());
   const close = () =>
     (closing ??= (async () => {
-      closed = true;
-      if (timer) clearTimeout(timer);
-      await inFlight;
-      await mediaInFlight;
-      await chatWorker?.close();
+      try {
+        await stop();
+      } finally {
+        await lock.release();
+      }
     })());
   const publicService = publicReady
     ? new PublicRoomService(
@@ -512,8 +561,12 @@ export async function createRoomRuntime(
     ...(module.providers ?? []),
     { provide: "ROOM_RUNTIME_LIFECYCLE", useValue: { onModuleDestroy: close } },
   ];
+  lock.ready();
   return {
     module,
+    get ownershipPool(): Pool {
+      return pool;
+    },
     publicFeed: publicService
       ? {
           open: (proof: PublicFeedProof) => {
@@ -569,6 +622,149 @@ export async function createRoomRuntime(
         schedule();
       }
     },
+    ready: async () => {
+      lock.ready();
+      if (!started || closed) throw new Error("Room runtime is not ready");
+    },
+    lost: lock.lost,
+    stop,
     close,
   };
+}
+/** Cổng nhận thao tác: đóng nhận mới rồi chờ các thao tác đang chạy kết thúc. */
+class RoomAdmission {
+  private open = true;
+  private active = 0;
+  private readonly idle: Promise<void>;
+  private resolveIdle!: () => void;
+  constructor() {
+    this.idle = new Promise<void>((resolve) => {
+      this.resolveIdle = resolve;
+    });
+  }
+  assertOpen(): void {
+    if (!this.open)
+      throw new RoomError(
+        "ROOM_RUNTIME_UNAVAILABLE",
+        "Máy chủ phòng đang dừng",
+        503,
+      );
+  }
+  enter(): () => void {
+    this.assertOpen();
+    this.active += 1;
+    let left = false;
+    return () => {
+      if (left) return;
+      left = true;
+      this.active -= 1;
+      if (this.active === 0 && !this.open) this.resolveIdle();
+    };
+  }
+  close(): Promise<void> {
+    this.open = false;
+    if (this.active === 0) this.resolveIdle();
+    return this.idle;
+  }
+}
+
+/**
+ * Mọi truy cập DB của runtime đi qua cổng nhận và fence: kết nối chỉ dùng được khi
+ * holder PID của khóa đơn vẫn giữ khóa (xem runtime-lock). Kết nối xếp hàng trước khi
+ * đóng cổng được kiểm tra lại sau khi lấy được, nên không ghi khi máy chủ đã dừng.
+ */
+function admittedPool(
+  pool: Pool,
+  admission: RoomAdmission,
+  lock: RuntimeLock,
+): Pool {
+  const connect = async (target: Pool): Promise<PoolClient> => {
+    const exit = admission.enter();
+    let client: PoolClient;
+    try {
+      client = await target.connect();
+    } catch (error) {
+      exit();
+      throw error;
+    }
+    const release = client.release.bind(client) as (
+      error?: Error | boolean,
+    ) => void;
+    let left = false;
+    const leave = () => {
+      if (left) return;
+      left = true;
+      exit();
+    };
+    try {
+      admission.assertOpen();
+      lock.ready();
+      await fenceClient(client, lock.holderPid);
+    } catch (error) {
+      release(true);
+      leave();
+      throw error;
+    }
+    let returned = false;
+    client.release = (error?: Error | boolean) => {
+      if (returned) return;
+      returned = true;
+      if (error) {
+        release(error);
+        leave();
+        return;
+      }
+      unfenceClient(client)
+        .then(
+          () => release(),
+          () => release(true),
+        )
+        .finally(leave);
+    };
+    return client;
+  };
+  return new Proxy(pool, {
+    get(target, key) {
+      if (key === "connect")
+        return (...args: unknown[]) => {
+          const callback =
+            typeof args.at(-1) === "function"
+              ? (args.pop() as (...results: unknown[]) => void)
+              : undefined;
+          const acquired = connect(target);
+          if (!callback) return acquired;
+          acquired.then(
+            (client) =>
+              callback(undefined, client, (error?: Error | boolean) =>
+                client.release(error),
+              ),
+            (error: unknown) => callback(error),
+          );
+          return undefined;
+        };
+      if (key === "query")
+        return (...args: unknown[]) => {
+          const callback =
+            typeof args.at(-1) === "function"
+              ? (args.pop() as (...results: unknown[]) => void)
+              : undefined;
+          const result = (async () => {
+            const client = await connect(target);
+            try {
+              return await Reflect.apply(client.query, client, args);
+            } finally {
+              client.release();
+            }
+          })();
+          if (!callback) return result;
+          result.then(
+            (value) => callback(undefined, value),
+            (error: unknown) => callback(error),
+          );
+          return undefined;
+        };
+      const value = Reflect.get(target, key, target);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
 }

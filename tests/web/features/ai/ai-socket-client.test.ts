@@ -72,6 +72,7 @@ function envelope(version = 0, gameId = id, generation = 1) {
       position: fen,
       history: [fen],
       version,
+      undoUsed: 0,
       status: "ACTIVE",
       engineState: "IDLE",
       engineError: null,
@@ -174,10 +175,16 @@ it("rejects old watch acknowledgements and snapshots when another game is watche
     rejected = expect(old).rejects.toThrow();
   const fresh = f.peer.watch(other);
   deliver("ai.control", { ...f.control, gameId: other });
+  await vi.waitFor(() => expect(acks).toHaveLength(2));
   acks[1]!(null, { ok: true });
   await fresh;
+  const seen = f.onControl.mock.calls.length;
   acks[0]!(null, { ok: true, control: f.control });
   await rejected;
+  expect(f.onControl).toHaveBeenCalledTimes(seen);
+  expect(f.onControl).toHaveBeenLastCalledWith(
+    expect.objectContaining({ gameId: other }),
+  );
   deliver("ai.snapshot", envelope(9));
   deliver("ai.snapshot", envelope(0, other));
   expect(f.onSnapshot).toHaveBeenCalledExactlyOnceWith(envelope(0, other));
@@ -231,12 +238,12 @@ it("cancels pending proof and late callbacks on final disconnect", async () => {
 it("invalidates authority on network loss and never accepts a late ACK after reconnect", async () => {
   const f = await observer();
   deliver("ai.control", f.control);
-  let ack!: (error: null, value: unknown) => void;
-  fixture.emit.mockImplementation((_event, callback) => {
-    ack = callback;
-  });
+  const acks: Array<(error: null, value: unknown) => void> = [];
+  fixture.emit.mockImplementation((_event, ...args) => acks.push(args.at(-1)));
   const pending = f.peer.takeover(),
     rejected = expect(pending).rejects.toThrow();
+  await vi.waitFor(() => expect(acks).toHaveLength(1));
+  const ack = acks[0]!;
   deliver("disconnect");
   deliver("connect");
   ack(null, { ok: true, control: f.control });
@@ -259,4 +266,57 @@ it("contains server errors and terminal session expiry clears authority", async 
   expect(f.onError.mock.calls.flat().join()).not.toContain("private-token");
   expect(fixture.socket.disconnect).toHaveBeenCalledOnce();
   await expect(f.peer.getControl()).rejects.toThrow();
+});
+it("rejects an earlier watch when a later watch races it before ready", async () => {
+  const f = await observer();
+  deliver("ai.control", f.control);
+  const first = f.peer.watch(id);
+  const second = f.peer.watch(other);
+  await vi.waitFor(() => expect(fixture.emit).toHaveBeenCalledTimes(2));
+  const acks = fixture.emit.mock.calls.map((call) => call.at(-1));
+  acks[1]!(null, { ok: true });
+  await expect(second).resolves.toBeUndefined();
+  acks[0]!(null, { ok: true });
+  await expect(first).rejects.toThrow();
+});
+
+it("re-attaches the watched game exactly once after a connection drop", async () => {
+  success();
+  const f = await observer();
+  deliver("ai.control", f.control);
+  await f.peer.watch(id);
+  deliver("disconnect");
+  expect(f.onConnection).toHaveBeenLastCalledWith(false);
+  deliver("ai.control", f.control);
+  await vi.waitFor(() => expect(fixture.emit).toHaveBeenCalledTimes(2));
+  deliver("ai.control", f.control);
+  const watches = fixture.emit.mock.calls.filter(
+    (call) => call[0] === "ai.watch",
+  );
+  expect(watches).toHaveLength(2);
+  expect(watches[1]![1]).toEqual({ gameId: id });
+});
+
+it("rejects a watch whose authority is revoked before the watch is emitted", async () => {
+  success();
+  const f = await observer();
+  deliver("ai.control", f.control);
+  const watch = f.peer.watch(id);
+  deliver("disconnect");
+  await expect(watch).rejects.toThrow();
+  expect(fixture.emit.mock.calls.some((call) => call[0] === "ai.watch")).toBe(
+    false,
+  );
+});
+
+it("rejects a takeover whose authority is revoked before the takeover is emitted", async () => {
+  success();
+  const f = await observer();
+  deliver("ai.control", f.control);
+  const takeover = f.peer.takeover();
+  deliver("disconnect");
+  await expect(takeover).rejects.toThrow();
+  expect(
+    fixture.emit.mock.calls.some((call) => call[0] === "ai.takeover"),
+  ).toBe(false);
 });

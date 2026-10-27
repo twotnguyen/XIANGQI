@@ -47,6 +47,7 @@ export interface AiHttpApi {
   ): Promise<AiHttpResult>;
   resign(origin: Human, gameId: string, version: number): Promise<AiHttpResult>;
   retry(origin: Human, gameId: string, version: number): Promise<AiHttpResult>;
+  undo(origin: Human, gameId: string, version: number): Promise<AiHttpResult>;
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const safeCodes = new Set([
@@ -73,6 +74,8 @@ const safeCodes = new Set([
   "AI_ADMISSION_REQUIRED",
   "AI_SCOPE_INVALID",
   "AI_GENERATION_EXHAUSTED",
+  "AI_UNDO_UNAVAILABLE",
+  "AI_UNDO_EXHAUSTED",
 ]);
 function invalid(): never {
   throw new RoomError(
@@ -132,6 +135,7 @@ function publish(result: AiHttpResult) {
       history: [...s.history],
       version: s.version,
       status: s.status,
+      undoUsed: s.undoUsed,
       engineState: s.engineState,
       engineError: s.engineError,
       outcome:
@@ -313,6 +317,27 @@ export class AiController {
     return this.respond(request, async () =>
       publish(
         await this.service.retry(
+          human(request),
+          id(gameId),
+          version(object(body, ["version"]).version),
+        ),
+      ),
+    );
+  }
+
+  /**
+   * Hoàn tác nước đi (tối đa 3 lần/ván) theo BA 6.3.
+   */
+  @Post(":gameId/undo")
+  @HttpCode(200)
+  undo(
+    @Req() request: IncomingMessage,
+    @Param("gameId") gameId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(request, async () =>
+      publish(
+        await this.service.undo(
           human(request),
           id(gameId),
           version(object(body, ["version"]).version),

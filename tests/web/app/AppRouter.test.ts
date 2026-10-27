@@ -23,6 +23,10 @@ const mock = vi.hoisted(() => ({
   refresh: vi.fn(),
   logout: vi.fn(),
   authorizedFetch: vi.fn(),
+  where: { kind: "none", roomId: null, matchId: null } as Record<
+    string,
+    unknown
+  >,
   getRealtimeProof: vi.fn(),
   sockets: [] as {
     handlers: Map<string, (value?: unknown) => void>;
@@ -69,6 +73,19 @@ function feedRooms(rows: unknown[], index = mock.sockets.length - 1) {
 }
 vi.mock("@web/features/auth/SessionProvider.js", () => ({
   useSession: () => mock,
+}));
+vi.mock("@web/features/ai/ai-socket-client.js", () => ({
+  connectAi: () => ({
+    getControl: async () => ({
+      tabId: "33333333-3333-4333-8333-333333333333",
+      connectionId: "fixture-socket",
+      generation: 1,
+    }),
+    refresh: async () => undefined,
+    watch: async () => undefined,
+    takeover: async () => undefined,
+    disconnect: () => undefined,
+  }),
 }));
 vi.mock("@web/features/auth/LoginPage.js", () => ({
   LoginPage: ({
@@ -179,7 +196,7 @@ vi.mock("@web/features/profile/profile-client.js", () => ({
       displayName: "Thành viên",
     }),
     updateDisplayName: async (displayName: string) => ({ displayName }),
-    location: async () => ({ kind: "none", roomId: null, matchId: null }),
+    location: async () => mock.where,
   }),
 }));
 vi.mock("@web/features/profile/ProfilePage.js", () => ({
@@ -210,6 +227,7 @@ const reply = (body: unknown, status = 200) =>
 beforeEach(() => {
   vi.clearAllMocks();
   mock.sockets.length = 0;
+  mock.where = { kind: "none", roomId: null, matchId: null };
   mock.getRealtimeProof.mockResolvedValue({
     accessToken: "synthetic-bearer",
     appSession: "a".repeat(43),
@@ -973,16 +991,154 @@ it("trusts a committed join ACK when a same-connection feed update removes the d
   );
   expect(window.location.pathname).toBe("/rooms/" + room.roomId);
 });
-it("opens AI setup dialog from lobby and navigates to AI game page on start", async () => {
+it("sends an anonymous leaderboard visit to login and returns to that P2 route after sign-in", async () => {
+  window.history.replaceState(null, "", "/leaderboard");
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  fireEvent.click(await screen.findByText("Hoàn tất đăng nhập"));
+  expect(
+    await screen.findByRole("heading", { name: "Bảng xếp hạng" }),
+  ).toBeTruthy();
+  expect(window.location.pathname).toBe("/leaderboard");
+  expect(
+    screen.getByRole("link", { name: "Quay về Sảnh" }).getAttribute("href"),
+  ).toBe("/lobby");
+});
+it.each([
+  { path: "/forgot-password", title: "Quên mật khẩu" },
+  { path: "/reset-password", title: "Đặt lại mật khẩu" },
+])(
+  "keeps $path readable for an anonymous visitor and links back to login",
+  async ({ path, title }) => {
+    window.history.replaceState(null, "", path);
+    render(createElement(AppRouter));
+    expect(await screen.findByRole("heading", { name: title })).toBeTruthy();
+    expect(mock.authorizedFetch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("link", { name: "Về trang đăng nhập" }));
+    await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+    expect(
+      await screen.findByRole("heading", { name: "Đăng nhập" }),
+    ).toBeTruthy();
+  },
+);
+it("denies a Guest the P2 leaderboard without redirecting or showing scope actions", () => {
+  mock.state = { status: "guest" };
+  window.history.replaceState(null, "", "/leaderboard");
+  const { container } = render(createElement(AppRouter));
+  expect(container.querySelector("#p2-scope-title")).toBeNull();
+  expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
+  expect(window.location.pathname).toBe("/leaderboard");
+  expect(
+    screen.getAllByRole("link").map((link) => link.getAttribute("href")),
+  ).toEqual(["/login"]);
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+});
+it("keeps a signed-in member on the P2 scope page and returns to the lobby from it", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/leaderboard");
+  render(createElement(AppRouter));
+  expect(
+    await screen.findByRole("heading", { name: "Bảng xếp hạng" }),
+  ).toBeTruthy();
+  expect(window.location.pathname).toBe("/leaderboard");
+  fireEvent.click(screen.getByRole("link", { name: "Quay về Sảnh" }));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
+  expect(screen.queryByRole("heading", { name: "Bảng xếp hạng" })).toBeNull();
+});
+const aiId = "22222222-2222-4222-8222-222222222222";
+const aiFen = serializePosition(initialPosition());
+const aiSnapshot = {
+  snapshot: {
+    id: aiId,
+    requestedSide: "black",
+    actualSide: "red",
+    level: "hard",
+    position: aiFen,
+    history: [aiFen],
+    version: 0,
+    undoUsed: 0,
+    status: "ACTIVE",
+    engineState: "IDLE",
+    engineError: null,
+    outcome: null,
+  },
+  serverNow: "2026-10-11T00:00:00Z",
+  control: { mode: "controller", reason: null, generation: 1 },
+};
+function aiServer(create: () => Response = () => reply(aiSnapshot)) {
+  mock.authorizedFetch.mockImplementation(
+    async (path: string, init?: RequestInit) => {
+      if (path === "/public-rooms") return reply([room]);
+      if (path === "/ai" && init?.method === "POST") return create();
+      if (path === `/ai/${aiId}`) return reply(aiSnapshot);
+      return reply([]);
+    },
+  );
+}
+it("starts the chosen AI level and side on the server then opens the server game route", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  aiServer();
   render(createElement(AppRouter));
   feedRooms([room]);
   fireEvent.click(screen.getByRole("button", { name: "Chọn cấp độ máy" }));
-  expect(await screen.findByRole("button", { name: "Bắt đầu" })).toBeTruthy();
+  fireEvent.click(await screen.findByRole("radio", { name: "Khó" }));
+  fireEvent.click(screen.getByRole("radio", { name: "Đen (máy đi trước)" }));
   fireEvent.click(screen.getByRole("button", { name: "Bắt đầu" }));
-  await vi.waitFor(() =>
-    expect(window.location.pathname).toMatch(/^\/ai\/[0-9a-f-]{36}$/),
+  await vi.waitFor(() => expect(window.location.pathname).toBe(`/ai/${aiId}`));
+  const create = mock.authorizedFetch.mock.calls.find(
+    ([url, init]) => url === "/ai" && init?.method === "POST",
   );
+  expect(JSON.parse(create![1].body)).toEqual({
+    level: "hard",
+    requestedSide: "black",
+  });
+  expect(screen.queryByRole("dialog")).toBeNull();
+});
+it("keeps the chosen AI settings in the dialog and does not navigate when the server refuses the game", async () => {
+  mock.state = member;
+  window.history.replaceState(null, "", "/lobby");
+  aiServer(() => reply({ code: "ACTIVE_GAME_EXISTS" }, 409));
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  fireEvent.click(screen.getByRole("button", { name: "Chọn cấp độ máy" }));
+  fireEvent.click(await screen.findByRole("radio", { name: "Khó" }));
+  fireEvent.click(screen.getByRole("radio", { name: "Đen (máy đi trước)" }));
+  fireEvent.click(screen.getByRole("button", { name: "Bắt đầu" }));
+  expect((await screen.findByRole("alert")).textContent).toBe(
+    "Chưa thể bắt đầu ván với máy. Vui lòng thử lại.",
+  );
+  expect(window.location.pathname).toBe("/lobby");
+  expect(screen.getByRole("dialog")).toBeTruthy();
+  expect(
+    (screen.getByRole("radio", { name: "Khó" }) as HTMLInputElement).checked,
+  ).toBe(true);
+  expect(
+    (
+      screen.getByRole("radio", {
+        name: "Đen (máy đi trước)",
+      }) as HTMLInputElement
+    ).checked,
+  ).toBe(true);
+});
+it("shows an active AI game banner that returns to its server route and blocks another room entry", async () => {
+  mock.state = member;
+  mock.where = { kind: "playing-ai", roomId: null, matchId: aiId };
+  window.history.replaceState(null, "", "/lobby");
+  aiServer();
+  render(createElement(AppRouter));
+  feedRooms([room]);
+  const resume = await screen.findByRole("link", { name: "Quay lại" });
+  expect(resume.getAttribute("href")).toBe(`/ai/${aiId}`);
+  expect(
+    screen
+      .getByRole("button", { name: "Vào chơi" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  fireEvent.click(resume);
+  await vi.waitFor(() => expect(window.location.pathname).toBe(`/ai/${aiId}`));
 });

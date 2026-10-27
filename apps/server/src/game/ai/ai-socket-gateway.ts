@@ -158,6 +158,9 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
     !Array.isArray(s.history) ||
     !s.history.every((item) => typeof item === "string") ||
     !generation(s.version) ||
+    !Number.isSafeInteger(s.undoUsed) ||
+    (s.undoUsed as number) < 0 ||
+    (s.undoUsed as number) > 3 ||
     !["ACTIVE", "FINALIZING", "FINISHED", "ABANDONED"].includes(
       s.status as string,
     ) ||
@@ -196,6 +199,7 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
       position: s.position,
       history: [...s.history],
       version: s.version,
+      undoUsed: s.undoUsed,
       status: s.status,
       engineState: s.engineState,
       engineError: s.engineError,

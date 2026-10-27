@@ -47,9 +47,9 @@ function fixture() {
     order.push("authorize");
     return { status: "active", actor };
   });
-  const list = vi.fn<(scope: RoomScope) => Promise<PublicRoomView[]>>(
+  const catalog = vi.fn<(client: unknown) => Promise<PublicRoomView[]>>(
     async () => {
-      order.push("list");
+      order.push("catalog");
       return [];
     },
   );
@@ -99,14 +99,14 @@ function fixture() {
   }
   return {
     service: new PublicRoomService(
-      { list, join },
+      { catalog, join },
       transactions,
       { resolve, authorize },
       withScope,
     ),
     resolve,
     authorize,
-    list,
+    catalog,
     join,
     scope,
     order,
@@ -123,8 +123,8 @@ test("open owns unchanged private proof; resolveonce then same-client reauthoriz
   expect(privateProof).toEqual(proof());
   incoming.accessToken = "changed";
   incoming.appSession = "changed";
-  await source.read();
-  await source.read();
+  await source.read({});
+  await source.read({});
   expect(f.resolve).toHaveBeenCalledTimes(1);
   expect(f.authorize).toHaveBeenCalledTimes(4);
   for (const [received, actorProof] of f.authorize.mock.calls) {
@@ -132,7 +132,10 @@ test("open owns unchanged private proof; resolveonce then same-client reauthoriz
     expect(received).toEqual(proof());
     expect(actorProof.client).toBe(f.scope.client);
   }
-  expect(f.list.mock.calls.map((c) => c[0])).toEqual([f.scope, f.scope]);
+  expect(f.catalog.mock.calls.map((c) => c[0])).toEqual([
+    f.scope.client,
+    f.scope.client,
+  ]);
   expect(f.scoped).toHaveBeenCalledTimes(2);
   expect(f.inputs.mock.calls.map((c) => c[0])).toEqual([
     { actor, roomIds: [] },
@@ -145,7 +148,7 @@ test("open owns unchanged private proof; resolveonce then same-client reauthoriz
     "room-locks",
     "authorize",
     "scope",
-    "list",
+    "catalog",
   ]);
 });
 test("HTTP list uses a resolved member and returns store authoritative array", async () => {
@@ -153,7 +156,7 @@ test("HTTP list uses a resolved member and returns store authoritative array", a
   expect(await f.service.list(proof())).toEqual([]);
   expect(f.resolve).toHaveBeenCalledTimes(1);
   expect(f.authorize).toHaveBeenCalledTimes(2);
-  expect(f.list).toHaveBeenCalledTimes(1);
+  expect(f.catalog).toHaveBeenCalledTimes(1);
 });
 test("join locks exact target, preserves scope/client and redacts invitation/extra fields", async () => {
   const f = fixture();
@@ -207,11 +210,11 @@ test("ended transaction maps401 and never reads", async () => {
   const f = fixture();
   const source = await f.service.open(proof());
   f.authorize.mockResolvedValue({ status: "ended" });
-  await expect(source.read()).rejects.toMatchObject({
+  await expect(source.read({})).rejects.toMatchObject({
     code: "AUTH_REQUIRED",
     status: 401,
   });
-  expect(f.list).not.toHaveBeenCalled();
+  expect(f.catalog).not.toHaveBeenCalled();
   expect(f.scoped).not.toHaveBeenCalled();
 });
 test("expiry after room-lock wait blocks work, without second provider resolve", async () => {
@@ -222,8 +225,8 @@ test("expiry after room-lock wait blocks work, without second provider resolve",
     .mockRejectedValueOnce(
       new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401),
     );
-  await expect(source.read()).rejects.toMatchObject({ status: 401 });
-  expect(f.list).not.toHaveBeenCalled();
+  await expect(source.read({})).rejects.toMatchObject({ status: 401 });
+  expect(f.catalog).not.toHaveBeenCalled();
   expect(f.resolve).toHaveBeenCalledTimes(1);
 });
 test("SQL auth outage propagates sanitized503; subsequent read can recover", async () => {
@@ -235,9 +238,9 @@ test("SQL auth outage propagates sanitized503; subsequent read can recover", asy
     503,
   );
   f.authorize.mockRejectedValueOnce(error);
-  await expect(source.read()).rejects.toBe(error);
-  expect(f.list).not.toHaveBeenCalled();
-  await expect(source.read()).resolves.toEqual([]);
+  await expect(source.read({})).rejects.toBe(error);
+  expect(f.catalog).not.toHaveBeenCalled();
+  await expect(source.read({})).resolves.toEqual([]);
   expect(f.resolve).toHaveBeenCalledTimes(1);
 });
 test("canonical UUIDs are forwarded to coordinator and store, not opaque authority fields", async () => {
@@ -261,5 +264,57 @@ test("resolve failure does not enter transaction or expose credentials", async (
     status: 401,
   });
   expect(f.inputs).not.toHaveBeenCalled();
-  expect(f.list).not.toHaveBeenCalled();
+  expect(f.catalog).not.toHaveBeenCalled();
+});
+test("readers sharing one tick share one catalog query while each still authorizes its own transaction", async () => {
+  const f = fixture();
+  const a = await f.service.open(proof());
+  const b = await f.service.open(proof());
+  const tick = {};
+  await expect(Promise.all([a.read(tick), b.read(tick)])).resolves.toEqual([
+    [],
+    [],
+  ]);
+  expect(f.catalog).toHaveBeenCalledTimes(1);
+  expect(f.authorize).toHaveBeenCalledTimes(4);
+});
+test("a revoked reader in a shared tick gets auth failure and never receives catalog rows", async () => {
+  const f = fixture();
+  f.authorize.mockImplementation(async (p) =>
+    p.appSession === "revoked"
+      ? { status: "ended" }
+      : { status: "active", actor },
+  );
+  const live = await f.service.open({
+    accessToken: "live",
+    appSession: "live",
+  });
+  const revoked = await f.service.open({
+    accessToken: "revoked",
+    appSession: "revoked",
+  });
+  const tick = {};
+  const results = await Promise.allSettled([
+    revoked.read(tick),
+    live.read(tick),
+  ]);
+  expect(results[0]).toMatchObject({
+    status: "rejected",
+    reason: { code: "AUTH_REQUIRED", status: 401 },
+  });
+  expect(results[1]).toEqual({ status: "fulfilled", value: [] });
+  expect(f.catalog).toHaveBeenCalledTimes(1);
+});
+test("a catalog failure is shared only by its tick, is not an auth error, and the next tick reloads", async () => {
+  const f = fixture();
+  const failure = Object.assign(Error("private-database"), { status: 503 });
+  f.catalog.mockRejectedValueOnce(failure);
+  const a = await f.service.open(proof());
+  const b = await f.service.open(proof());
+  const tick = {};
+  const results = await Promise.allSettled([a.read(tick), b.read(tick)]);
+  expect(results.map((r) => r.status)).toEqual(["rejected", "rejected"]);
+  expect(f.catalog).toHaveBeenCalledTimes(1);
+  await expect(b.read({})).resolves.toEqual([]);
+  expect(f.catalog).toHaveBeenCalledTimes(2);
 });

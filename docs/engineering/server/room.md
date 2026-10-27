@@ -97,3 +97,12 @@ Chỉ đánh dấu outbox đã giao sau khi xóa cả phòng media riêng và st
 LiveKit trả HTTP 404 với mã `not_found`. Lỗi khác giữ sự kiện và backoff.
 API server dùng HTTPS tương ứng URL WSS; `DeleteRoom` cần grant `roomCreate`,
 `RemoveParticipant` dùng `roomAdmin` kèm đúng tên phòng. Không log token/khóa.
+
+## Public feed: catalog dùng chung theo tick
+
+- `PublicRoomCatalog` (`public/public-room-catalog.ts`) đọc danh sách phòng PUBLIC một lần cho mỗi tick (cache `WeakMap` theo định danh tick). Truy vấn catalog không nhận actor, giữ `visibility='PUBLIC'` và `LIMIT 50` trong SQL.
+- Mỗi người đọc vẫn xác thực riêng trong `withRoom` (prepare, lock, reauthorize) trước khi nhận dữ liệu. Phiên bị thu hồi hoặc hết hạn không nhận dòng nào; lỗi auth chỉ ảnh hưởng người đọc đó.
+- Single-flight theo tick: người đọc cùng tick nhận cùng một promise (kể cả khi đã xong hoặc lỗi). Tick mới không dùng lại lần tải đang chạy: nó xếp hàng sau lần tải đó và tự truy vấn mới, nên tối đa một truy vấn catalog chạy tại một thời điểm. Người đọc tick cũ đến muộn vẫn nhận kết quả của tick cũ, không sinh truy vấn mới. Lỗi chỉ được chia sẻ trong đúng tick đó; tick sau tải lại.
+- Tham số: `PUBLIC_FEED_POLL_MS = 1000` (không đổi), `LIMIT 50`.
+- Người đọc có xác thực kết thúc sau khi tick kế tiếp bắt đầu vẫn nhận kết quả của tick mình; không kích hoạt truy vấn catalog mới. Xác thực vẫn được kiểm tra riêng trong transaction của người đó.
+- Số đo trước/sau (số truy vấn catalog, số transaction và tổng số câu lệnh mỗi tick với 50 người đọc) lấy từ probe `tests/load/public-feed-query-probe.ts` chạy trên DB test cục bộ (`PUBLIC_FEED_PROBE_SERVER_SRC` trỏ về baseline HEAD để so sánh). Không có số liệu trong tài liệu này.

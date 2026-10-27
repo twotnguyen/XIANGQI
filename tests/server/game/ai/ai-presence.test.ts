@@ -388,6 +388,68 @@ describe.skipIf(!databaseUrl)(
           .rows[0].n,
       ).toBe(0);
     });
+    it("downgrades an inactive owner's physical disconnect in SQL but never a stale proof after takeover", async () => {
+      const f = await fixture(),
+        id = await game(f),
+        newer = origin();
+      newer.tab.generation = (
+        await run(f.a, (s) => f.port.attach(s, newer.tab))
+      ).control.generation;
+      await pool.query(
+        "UPDATE auth.users SET email_confirmed_at=NULL WHERE id=$1",
+        [f.a.userId],
+      );
+      await expect(
+        run(f.a, (s) => f.port.authorize(s, newer)),
+      ).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
+      await run(f.a, (s) => f.port.disconnected(s, { ...f.o.tab, gameId: id }));
+      expect(
+        (
+          await pool.query(
+            "SELECT connected,disconnected_at IS NOT NULL AS gone FROM xiangqi_ai.presence WHERE owner_id=$1",
+            [f.a.userId],
+          )
+        ).rows[0],
+      ).toEqual({ connected: true, gone: false });
+      expect(
+        (
+          await pool.query(
+            "SELECT connected FROM xiangqi_ai.controllers WHERE owner_id=$1",
+            [f.a.userId],
+          )
+        ).rows[0],
+      ).toEqual({ connected: true });
+      await run(f.a, (s) =>
+        f.port.disconnected(s, { ...newer.tab, gameId: id }),
+      );
+      expect(
+        (
+          await pool.query(
+            "SELECT connected,disconnected_at IS NOT NULL AS gone FROM xiangqi_ai.presence WHERE owner_id=$1",
+            [f.a.userId],
+          )
+        ).rows[0],
+      ).toEqual({ connected: false, gone: true });
+      expect(
+        (
+          await pool.query(
+            "SELECT connected FROM xiangqi_ai.controllers WHERE owner_id=$1",
+            [f.a.userId],
+          )
+        ).rows[0],
+      ).toEqual({ connected: false });
+      await pool.query(
+        "UPDATE xiangqi_ai.presence SET disconnected_at=clock_timestamp()-interval '30 minutes' WHERE owner_id=$1",
+        [f.a.userId],
+      );
+      const due = await sql((c) => f.port.dueExpired(c));
+      expect(
+        due.map((d) => ({ ownerId: d.ownerId, gameId: d.gameId })),
+      ).toContainEqual({
+        ownerId: f.a.userId,
+        gameId: id,
+      });
+    });
     it("never applies an old game disconnect to a replacement game on the same socket", async () => {
       const f = await fixture(),
         old = await game(f),

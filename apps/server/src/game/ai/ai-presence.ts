@@ -70,10 +70,15 @@ export class AiPresence {
   ) {
     this.bootId = id(bootId);
   }
-  private async slot(scope: RoomScope): Promise<string | null> {
+  private owner(scope: RoomScope): string {
     const owner = id(scope.actor.userId);
     if (!scope.lockedActorIds.has(owner)) sessionNotReady("AI_SCOPE_INVALID");
     if (scope.actor.kind !== "member") sessionNotReady("AUTH_REQUIRED", 401);
+    return owner;
+  }
+  /** Admission read: principal phải active. Chỉ dùng cho attach/authorize/bind/retention/mutation. */
+  private async slot(scope: RoomScope): Promise<string | null> {
+    const owner = this.owner(scope);
     const principal = (
       await scope.client.query(
         `SELECT 1 FROM xiangqi_auth.principals n JOIN xiangqi_auth.accounts a ON a.id=n.id JOIN public.profiles p ON p.user_id=n.id WHERE n.id=$1 AND n.kind='member' AND n.auth_user_id=a.id AND a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending`,
@@ -81,6 +86,25 @@ export class AiPresence {
       )
     ).rowCount;
     if (!principal) sessionNotReady("AUTH_REQUIRED", 401);
+    return this.reserved(scope, owner);
+  }
+  /** Downgrade-only read cho trusted physical disconnect: owner inactive vẫn được hạ connected=false; chỉ cần identity member tồn tại. */
+  private async cleanupSlot(scope: RoomScope): Promise<string | null> {
+    const owner = this.owner(scope);
+    const principal = (
+      await scope.client.query(
+        "SELECT 1 FROM xiangqi_auth.principals WHERE id=$1 AND kind='member'",
+        [owner],
+      )
+    ).rowCount;
+    if (!principal) sessionNotReady("AUTH_REQUIRED", 401);
+    return this.reserved(scope, owner);
+  }
+  /** Fence chung: lock active_players, room scope và reservation/boot; không kiểm tra principal active. */
+  private async reserved(
+    scope: RoomScope,
+    owner: string,
+  ): Promise<string | null> {
     const row = (
       await scope.client.query<{
         ai_game_id: string | null;
@@ -285,7 +309,7 @@ export class AiPresence {
   ): Promise<void> {
     const p = physical(input),
       gameId = input.gameId === null ? null : id(input.gameId),
-      actual = await this.slot(scope);
+      actual = await this.cleanupSlot(scope);
     if (actual !== gameId) return;
     const current = await this.controller(scope);
     if (!this.matches(current, p) || !current?.connected) return;

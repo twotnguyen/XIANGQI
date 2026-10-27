@@ -1,3 +1,4 @@
+import type { PoolClient } from "pg";
 import { RoomError, type RoomScope } from "../room.types.js";
 import type { RoomStore } from "../room-store.js";
 import { uuid } from "../../match/position-codec.js";
@@ -17,12 +18,13 @@ export class PublicRoomStore {
       throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
   }
   /**
-   * Truy vấn danh sách tối đa 50 phòng cờ công khai đang mở (chờ người hoặc đang chơi).
+   * Catalog công khai dùng chung (tối đa 50 phòng PUBLIC đang mở chờ người hoặc đang chơi).
+   * Không đọc phiên hay người đọc: chỉ trả dữ liệu PUBLIC. Quyền của từng người đọc phải được
+   * kiểm trong giao dịch riêng của họ trước khi kết quả được dùng.
    */
-  async list(scope: RoomScope): Promise<PublicRoomView[]> {
-    this.actor(scope);
+  async catalog(client: PoolClient): Promise<PublicRoomView[]> {
     const rows = (
-      await scope.client.query<{
+      await client.query<{
         id: string;
         name: string;
         display_name: string;
@@ -34,18 +36,18 @@ export class PublicRoomStore {
         spectators: number;
         public_opened_at: Date | null;
       }>(`WITH server_time AS MATERIALIZED(SELECT clock_timestamp() at)
- SELECT r.id,r.name,p.display_name,n.kind,r.time_control,r.status,r.viewer_limit,r.public_opened_at,
- occupancy.players,occupancy.spectators
- FROM public.rooms r JOIN public.profiles p ON p.user_id=r.owner_id
- JOIN xiangqi_auth.principals n ON n.id=r.owner_id CROSS JOIN server_time
- CROSS JOIN LATERAL(
- SELECT count(*) FILTER(WHERE m.role='PLAYER')::integer players,
- count(*) FILTER(WHERE m.role='SPECTATOR' AND (m.disconnected_at IS NULL OR m.disconnected_at+interval '5 minutes'>server_time.at))::integer spectators
- FROM public.room_members m WHERE m.room_id=r.id) occupancy
- WHERE r.visibility='PUBLIC' AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED')
- AND r.invite_code IS NOT NULL AND r.time_control IN(300,600,900) AND r.viewer_limit BETWEEN 0 AND 5
- AND EXISTS(SELECT 1 FROM public.room_members host WHERE host.room_id=r.id AND host.user_id=r.owner_id AND host.role='PLAYER')
- ORDER BY r.public_opened_at DESC NULLS LAST,r.id DESC LIMIT 50`)
+SELECT r.id,r.name,p.display_name,n.kind,r.time_control,r.status,r.viewer_limit,r.public_opened_at,
+occupancy.players,occupancy.spectators
+FROM public.rooms r JOIN public.profiles p ON p.user_id=r.owner_id
+JOIN xiangqi_auth.principals n ON n.id=r.owner_id CROSS JOIN server_time
+CROSS JOIN LATERAL(
+SELECT count(*) FILTER(WHERE m.role='PLAYER')::integer players,
+count(*) FILTER(WHERE m.role='SPECTATOR' AND (m.disconnected_at IS NULL OR m.disconnected_at+interval '5 minutes'>server_time.at))::integer spectators
+FROM public.room_members m WHERE m.room_id=r.id) occupancy
+WHERE r.visibility='PUBLIC' AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED')
+AND r.invite_code IS NOT NULL AND r.time_control IN(300,600,900) AND r.viewer_limit BETWEEN 0 AND 5
+AND EXISTS(SELECT 1 FROM public.room_members host WHERE host.room_id=r.id AND host.user_id=r.owner_id AND host.role='PLAYER')
+ORDER BY r.public_opened_at DESC NULLS LAST,r.id DESC LIMIT 50`)
     ).rows;
     return rows.map((r) => ({
       roomId: r.id,

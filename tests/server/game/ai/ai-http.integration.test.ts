@@ -26,6 +26,7 @@ import { AiGames } from "@server/game/ai/ai-games.js";
 import { AiHttpService } from "@server/game/ai/ai-http.service.js";
 import { AiModule } from "@server/game/ai/ai.module.js";
 import type { AiOrigin } from "@server/game/ai/ai-transactions.js";
+import { initialPosition, legalMoves } from "@xiangqi/xiangqi-core";
 const tokens = new Map<
   string,
   { id: string; email: string; email_confirmed_at: string }
@@ -248,6 +249,52 @@ describe.skipIf(!databaseUrl)(
           })
         ).json(),
       ).toEqual({ gameId: result.snapshot.id });
+    });
+    it("undoes the waiting engine ply through native HTTP and stops at the per-game undo limit", async () => {
+      const a = await member(),
+        p = await peer(a),
+        created = await (
+          await request(p.origin, "/ai", {
+            level: "easy",
+            requestedSide: "red",
+          })
+        ).json(),
+        id = created.snapshot.id as string,
+        move = legalMoves(initialPosition())[0]!;
+      let version = 1;
+      for (let used = 1; used <= 3; used++) {
+        const moved = await request(p.origin, `/ai/${id}/move`, {
+          version,
+          move,
+        });
+        expect(moved.status).toBe(200);
+        const waiting = await moved.json();
+        expect(waiting.snapshot).toMatchObject({
+          engineState: "THINKING",
+          undoUsed: used - 1,
+        });
+        const undone = await request(p.origin, `/ai/${id}/undo`, {
+          version: waiting.snapshot.version,
+        });
+        expect(undone.status).toBe(200);
+        const body = await undone.json();
+        expect(body.snapshot).toMatchObject({
+          engineState: "IDLE",
+          undoUsed: used,
+          history: [expect.any(String)],
+        });
+        version = body.snapshot.version;
+      }
+      const moved = await request(p.origin, `/ai/${id}/move`, {
+        version,
+        move,
+      });
+      expect(moved.status).toBe(200);
+      const exhausted = await request(p.origin, `/ai/${id}/undo`, {
+        version: (await moved.json()).snapshot.version,
+      });
+      expect(exhausted.status).not.toBe(200);
+      expect((await exhausted.json()).code).toBe("AI_UNDO_EXHAUSTED");
     });
     it("rejects forged physical connection even with a valid member session before reserving a seat", async () => {
       const a = await member(),

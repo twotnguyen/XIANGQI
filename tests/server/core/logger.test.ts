@@ -21,6 +21,18 @@ describe("operational logs", () => {
     });
     expect(line).not.toContain(secret);
   });
+  it("preserves media revocation failures without logging provider secrets", () => {
+    const line = logEvent("error", "media_revocation_failed", {
+      token: "private-media-token",
+      message: "provider response with private-media-token",
+    });
+    expect(JSON.parse(line)).toEqual({
+      time: expect.any(String),
+      level: "error",
+      event: "media_revocation_failed",
+    });
+    expect(line).not.toContain("private-media-token");
+  });
   it("does not allow arbitrary values to become event, level or numeric metadata", () => {
     const secret = "fake-sensitive-fixture";
     const line = logEvent(secret, secret, { port: secret });

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { useSession } from "../features/auth/SessionProvider.js";
 import { AppShell } from "./layouts/AppShell.js";
+import { P2ScopePage } from "./P2ScopePage.js";
 import {
   LobbyShell,
   type DataState,
@@ -140,11 +141,13 @@ function Lobby({
   onEntered,
   blockedReason,
   banner,
+  requestLogout,
 }: {
   client: RoomClient;
   onEntered: (entry: RoomEntry) => void;
   blockedReason?: string;
   banner?: ReactNode;
+  requestLogout: (run: () => Promise<void>) => void;
 }) {
   const { authorizedFetch, logout, getRealtimeProof } = useSession();
   const publicClient = useMemo(
@@ -338,29 +341,13 @@ function Lobby({
             open={aiDialog}
             onClose={() => setAiDialog(false)}
             onStart={async (selection) => {
-              // Board rules are needed only when a game starts, not on lobby reload.
-              const { initialPosition, serializePosition } =
-                await import("@xiangqi/xiangqi-core");
-              const position = serializePosition(initialPosition());
-              const gameId = crypto.randomUUID();
-              sessionStorage.setItem(
-                `xiangqi_ai_game_${gameId}`,
-                JSON.stringify({
-                  level: selection.level,
-                  requestedSide: selection.requestedSide,
-                  actualSide:
-                    selection.requestedSide === "random"
-                      ? Math.random() < 0.5
-                        ? "red"
-                        : "black"
-                      : selection.requestedSide,
-                  position,
-                  history: [position],
-                  version: 0,
-                  undoRemaining: 3,
-                  status: "ACTIVE",
-                  outcome: null,
-                }),
+              // Lazy by design: the AI page chunk must not join the lobby bundle.
+              const { startAiGame } =
+                await import("../features/ai/AiGamePage.js");
+              const gameId = await startAiGame(
+                authorizedFetch,
+                getRealtimeProof,
+                selection,
               );
               setAiDialog(false);
               navigate(`/ai/${gameId}`);
@@ -373,10 +360,12 @@ function Lobby({
         loading={loggingOut}
         onClick={() => {
           if (loggingOut) return;
-          setLoggingOut(true);
-          void logout()
-            .catch(() => setNotice("Chưa thể đăng xuất. Vui lòng thử lại."))
-            .finally(() => setLoggingOut(false));
+          requestLogout(() => {
+            setLoggingOut(true);
+            return logout()
+              .catch(() => setNotice("Chưa thể đăng xuất. Vui lòng thử lại."))
+              .finally(() => setLoggingOut(false));
+          });
         }}
       >
         Đăng xuất
@@ -398,6 +387,9 @@ const titles: Partial<Record<Route["name"], string>> = {
   history: "Lịch sử ván đấu",
   replay: "Xem lại ván đấu",
   "access-denied": "Không thể truy cập",
+  "forgot-password": "Quên mật khẩu",
+  "reset-password": "Đặt lại mật khẩu",
+  leaderboard: "Bảng xếp hạng",
 };
 /**
  * Component điều hướng chính của ứng dụng web, kiểm soát phân quyền route, điều hướng URL và kết nối layout chung.
@@ -457,6 +449,47 @@ export function AppRouter() {
   const container = useRef<HTMLDivElement>(null);
   const route = resolveRoute(location.pathname, location.search);
   const decision = guardRoute(route, session.state);
+  const [logoutGate, setLogoutGate] = useState<{
+    gameId: string;
+    run: () => Promise<void>;
+  } | null>(null);
+  // Ván AI đang mở (route /ai/:id hoặc vị trí đang chơi dở) cần đầu hàng trước khi đăng xuất.
+  const aiGameId =
+    route.name === "ai"
+      ? route.id
+      : where?.kind === "playing-ai"
+        ? (where.matchId ?? null)
+        : null;
+  const performSessionLogout = () => {
+    pending.current = null;
+    return session
+      .logout()
+      .catch(() => setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại."));
+  };
+  const guardedLogout = (run: () => Promise<void>) => {
+    if (aiGameId) setLogoutGate({ gameId: aiGameId, run });
+    else void run();
+  };
+  const confirmLogoutGate = async () => {
+    const gate = logoutGate;
+    if (!gate) return;
+    try {
+      // Lazy by design (như startAiGame): chunk AI không được vào bundle sảnh.
+      const { resignActiveAiGame } =
+        await import("../features/ai/AiGamePage.js");
+      await resignActiveAiGame(
+        session.authorizedFetch,
+        session.getRealtimeProof,
+        gate.gameId,
+      );
+    } catch {
+      setLogoutGate(null);
+      setRoomNotice("Chưa thể đầu hàng ván đang chơi. Vui lòng thử lại.");
+      return;
+    }
+    setLogoutGate(null);
+    await gate.run();
+  };
   const title = titles[route.name] || "Chức năng đang chuẩn bị";
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
   useEffect(() => {
@@ -581,6 +614,7 @@ export function AppRouter() {
         key={session.state.userId}
         client={client}
         onEntered={enterRoom}
+        requestLogout={guardedLogout}
         blockedReason={
           where && where.kind !== "none"
             ? "Bạn đang ở trong một ván/phòng khác."
@@ -591,7 +625,13 @@ export function AppRouter() {
             <section className="xq-rejoin-banner" role="status">
               <p>
                 Bạn có ván đang chơi dở.{" "}
-                <NavigationLink href={`/rooms/${where.roomId}`}>
+                <NavigationLink
+                  href={
+                    where.kind === "playing-ai" && where.matchId
+                      ? `/ai/${where.matchId}`
+                      : `/rooms/${where.roomId}`
+                  }
+                >
                   Quay lại
                 </NavigationLink>
               </p>
@@ -609,10 +649,7 @@ export function AppRouter() {
         client={profileClient}
         guest={false}
         onSaved={setProfileName}
-        onLogout={() => {
-          pending.current = null;
-          void session.logout();
-        }}
+        onLogout={() => guardedLogout(performSessionLogout)}
       />
     );
   else if (route.name === "join" && session.state.status === "active-member")
@@ -638,7 +675,33 @@ export function AppRouter() {
       />
     );
   else if (route.name === "ai" && session.state.status === "active-member")
-    content = <AiGamePage key={route.id} gameId={route.id} />;
+    content = (
+      <AiGamePage
+        key={route.id}
+        gameId={route.id}
+        authorizedFetch={session.authorizedFetch}
+        getProof={session.getRealtimeProof}
+      />
+    );
+  else if (decision.kind === "access-denied")
+    content = (
+      <section className="xq-panel xq-stack">
+        <h1>{title}</h1>
+        <p>Phiên Khách không có quyền xem nội dung này.</p>
+        <NavigationLink href="/login">Về trang đăng nhập</NavigationLink>
+      </section>
+    );
+  else if (
+    route.name === "forgot-password" ||
+    route.name === "reset-password" ||
+    route.name === "leaderboard"
+  )
+    content = (
+      <P2ScopePage
+        route={route.name}
+        signedIn={session.state.status === "active-member"}
+      />
+    );
   else if (route.name === "room" && session.state.status === "active-member")
     content =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -712,16 +775,29 @@ export function AppRouter() {
             guest: false,
           }}
           bell={<FriendsBell client={friendClient} />}
-          onLogout={() => {
-            pending.current = null;
-            void session.logout();
-          }}
+          onLogout={() => guardedLogout(performSessionLogout)}
         >
           {page}
           <RoomInvitePopup client={friendClient} />
         </AppShell>
       ) : (
         page
+      )}
+      {logoutGate && (
+        <Dialog
+          open
+          onClose={() => setLogoutGate(null)}
+          title="Đăng xuất khi đang có ván?"
+          danger
+          onConfirm={() => void confirmLogoutGate()}
+          confirmLabel="Đầu hàng và đăng xuất"
+          cancelLabel="Ở lại"
+        >
+          <p>
+            Đăng xuất sẽ được tính là đầu hàng và thua ván đang chơi với máy.
+            Ván đấu với máy không thay đổi Elo.
+          </p>
+        </Dialog>
       )}
     </div>
   );

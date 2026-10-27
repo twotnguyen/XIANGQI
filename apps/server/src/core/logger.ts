@@ -8,6 +8,8 @@ const events = [
   "realtime_maintenance_failed",
   "server_shutdown_failed",
   "realtime_disconnect_failed",
+  "media_revocation_failed",
+  "room_runtime_lock_lost",
   "unknown_event",
 ];
 

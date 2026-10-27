@@ -6,7 +6,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { RoomSnapshot } from "@xiangqi/shared";
 import { parsePosition, playMove, type Position } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "../../shared/board/XiangqiBoard.js";
 import {
@@ -24,7 +23,8 @@ import {
   type RoomConnectionInput,
   type RoomView,
 } from "./room-client.js";
-import { createGameAudio } from "./game-audio.js";
+import { useRoomConnection } from "./useRoomConnection.js";
+import { createGameAudio, type GameAudio } from "./game-audio.js";
 import { MatchClocks } from "./match/MatchClocks.js";
 import { MatchResult } from "./match/MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
@@ -42,7 +42,6 @@ import {
 } from "./room-labels.js";
 
 import { RoomChat } from "../chat/RoomChat.js";
-import { useRoomChat } from "../chat/useRoomChat.js";
 import type { MediaClient } from "../media/media-client.js";
 import { MediaSeats } from "../media/MediaSeats.js";
 const LazyMediaPanel = lazy(() =>
@@ -80,16 +79,9 @@ export function RoomPage({
   media,
   mediaClient,
 }: RoomPageProps) {
-  const [view, setView] = useState<RoomView | null>(null);
-  const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
-  const [connected, setConnected] = useState(false);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [retry, setRetry] = useState(0);
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
   const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null);
-  const [actionError, setActionError] = useState("");
   const [copying, setCopying] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -97,225 +89,46 @@ export function RoomPage({
   const [settingsStatus, setSettingsStatus] = useState("");
   const [swapNow, setSwapNow] = useState(() => Date.now());
   const settingsPending = useRef(false);
-  const connection = useRef<RoomConnection | null>(null);
-  const roomChat = useRoomChat(roomId, connection);
-  const epoch = useRef(0);
-  const refreshEpoch = useRef(0);
-  const versionFloor = useRef(0);
-  const latest = useRef<RoomSnapshot | null>(null);
   const audio = useRef<AudioContext | null>(null);
-  const commandPending = useRef(false);
-  const commandEpoch = useRef(0);
-  const connectedRef = useRef(false);
-  const audioBaseline = useRef(true);
-  const gameAudio = useRef<ReturnType<typeof createGameAudio> | null>(null);
+  const gameAudio = useRef<GameAudio | null>(null);
   const [muted, setMuted] = useState(false);
-  const leaveCallback = useRef(onLeft);
-  leaveCallback.current = onLeft;
-  const [optimistic, setOptimistic] = useState<{
-    position: Position;
-    lastMove: { from: number; to: number };
-    matchVersion: number;
-  } | null>(null);
-  function invalidateCommands() {
-    setActionError("");
-    commandEpoch.current++;
-    if (commandPending.current) setBusy(false);
-    commandPending.current = false;
-    setOptimistic(null);
-  }
-  function acceptSnapshot(value: RoomSnapshot) {
-    const prior = latest.current;
-    if (
-      !connectedRef.current ||
-      value.roomId !== roomId ||
-      value.version < versionFloor.current ||
-      (prior &&
-        (value.version < prior.version ||
-          value.control.generation < prior.control.generation ||
-          (value.version === prior.version &&
-            Date.parse(value.serverNow) < Date.parse(prior.serverNow))))
-    )
-      return false;
-    if (
-      prior &&
-      (prior.match?.id !== value.match?.id ||
-        prior.match?.status !== value.match?.status ||
-        prior.role !== value.role ||
-        prior.control.generation !== value.control.generation ||
-        prior.control.mode !== value.control.mode)
-    )
-      invalidateCommands();
-    // A duplicate authoritative sample must not refund local elapsed time.
-    if (
-      prior?.clocks &&
-      value.clocks &&
-      prior.clocks.asOf === value.clocks.asOf &&
-      prior.clocks.redMs === value.clocks.redMs &&
-      prior.clocks.blackMs === value.clocks.blackMs &&
-      prior.clocks.running === value.clocks.running
-    )
-      value = { ...value, clocks: prior.clocks };
-    gameAudio.current?.accept(audioBaseline.current ? null : prior, value);
-    audioBaseline.current = false;
-    versionFloor.current = value.version;
-    if (prior?.match?.status === "ACTIVE" && value.match?.status !== "ACTIVE") {
+  const {
+    view,
+    setView,
+    snapshot,
+    setSnapshot,
+    connected,
+    error,
+    setError,
+    retry,
+    busy,
+    setBusy,
+    actionError,
+    setActionError,
+    optimistic,
+    setOptimistic,
+    roomChat,
+    connection,
+    connectedRef,
+    epoch,
+    refreshEpoch,
+    versionFloor,
+    latest,
+    commandPending,
+    commandEpoch,
+    acceptSnapshot,
+  } = useRoomConnection({
+    roomId,
+    client,
+    getProof,
+    connect,
+    onLeft,
+    gameAudio,
+    onMatchEnded: () => {
       setSettingsOpen(false);
       setLeaveConfirm(null);
-    }
-    latest.current = value;
-    roomChat.update(value, true);
-    setSnapshot(value);
-    setView(value);
-    setOptimistic((prev) =>
-      prev && value.match && value.match.version <= prev.matchVersion
-        ? prev
-        : null,
-    );
-    return true;
-  }
-  useEffect(() => {
-    let alive = true;
-    epoch.current++;
-    roomChat.clear();
-    latest.current = null;
-    versionFloor.current = 0;
-    setBusy(false);
-    commandPending.current = false;
-    audioBaseline.current = true;
-    setSnapshot(null);
-    setView(null);
-    connectedRef.current = false;
-    setConnected(false);
-    setError("");
-    const loadingTimeout = setTimeout(() => {
-      if (alive && !latest.current) {
-        setError(
-          (prev) =>
-            prev ||
-            "Chưa thể kết nối phòng. Vui lòng kiểm tra máy chủ hoặc thử lại.",
-        );
-      }
-    }, 6000);
-    let fallbackStarted = false;
-    let connectionGeneration = 0;
-    const loadDisplayFallback = () => {
-      if (!alive || connectedRef.current || fallbackStarted) return;
-      fallbackStarted = true;
-      const requestGeneration = connectionGeneration;
-      const requestEpoch = epoch.current;
-      void client.snapshot(roomId).then(
-        (value) => {
-          if (
-            alive &&
-            epoch.current === requestEpoch &&
-            connectionGeneration === requestGeneration &&
-            !connectedRef.current &&
-            value.version >= versionFloor.current
-          ) {
-            versionFloor.current = value.version;
-            setView(value);
-          }
-        },
-        (error) => {
-          if (
-            !alive ||
-            epoch.current !== requestEpoch ||
-            connectionGeneration !== requestGeneration ||
-            connectedRef.current ||
-            connection.current !== peer
-          )
-            return;
-          if (
-            error instanceof RoomRequestError &&
-            error.code === "ROOM_FORBIDDEN"
-          ) {
-            leaveCallback.current("Phòng không còn khả dụng.");
-          } else if (!latest.current) {
-            setError(
-              "Chưa thể tải phòng. Kiểm tra quyền vào phòng và kết nối.",
-            );
-          }
-        },
-      );
-    };
-    const peer = connect({
-      roomId,
-      getProof,
-      onSnapshot: (value) => {
-        if (alive && acceptSnapshot(value)) setError("");
-      },
-      onConnection: (value) => {
-        if (alive) {
-          if (value !== connectedRef.current) connectionGeneration++;
-          refreshEpoch.current++;
-          connectedRef.current = value;
-          setConnected(value);
-          roomChat.update(null, value);
-          if (value) fallbackStarted = false;
-          if (!value) {
-            invalidateCommands();
-            audioBaseline.current = true;
-            setSnapshot(null);
-            loadDisplayFallback();
-          }
-        }
-      },
-      onError: (message) => {
-        if (alive) setError(message);
-      },
-      onClosed: (message) => {
-        if (alive) {
-          roomChat.clear();
-          leaveCallback.current(message);
-        }
-      },
-      onChatChanged: (notice) => {
-        if (alive) roomChat.changed(notice);
-      },
-    });
-    connection.current = peer;
-    const refreshVisible = () => {
-      if (
-        document.visibilityState !== "visible" ||
-        !connectedRef.current ||
-        !alive
-      )
-        return;
-      const current = latest.current;
-      if (!current?.match || current.match.status !== "ACTIVE") return;
-      const requestEpoch = ++refreshEpoch.current;
-      const matchId = current.match.id;
-      const isCurrent = () =>
-        alive &&
-        connectedRef.current &&
-        connection.current === peer &&
-        refreshEpoch.current === requestEpoch &&
-        latest.current?.match?.id === matchId;
-      void peer.refresh().then(
-        (value) => {
-          if (isCurrent() && acceptSnapshot(value)) setError("");
-        },
-        () => {
-          if (isCurrent())
-            setError("Chưa thể đồng bộ đồng hồ. Kiểm tra kết nối rồi thử lại.");
-        },
-      );
-    };
-    document.addEventListener("visibilitychange", refreshVisible);
-    return () => {
-      alive = false;
-      refreshEpoch.current++;
-      document.removeEventListener("visibilitychange", refreshVisible);
-      epoch.current++;
-      commandEpoch.current++;
-      connectedRef.current = false;
-      roomChat.clear();
-      clearTimeout(loadingTimeout);
-      peer.close();
-      if (connection.current === peer) connection.current = null;
-    };
-  }, [roomId, client, getProof, connect, retry]);
+    },
+  });
   useEffect(() => {
     const playback = createGameAudio();
     gameAudio.current = playback;
@@ -685,7 +498,7 @@ export function RoomPage({
         e instanceof RoomRequestError &&
         e.code === "ROOM_FORBIDDEN"
       ) {
-        leaveCallback.current("Phòng không còn khả dụng.");
+        onLeft("Phòng không còn khả dụng.");
         return;
       }
       const message =
@@ -781,10 +594,7 @@ export function RoomPage({
               textAlign: "center",
             }}
           >
-            <ErrorState
-              message={error}
-              onRetry={() => setRetry((value) => value + 1)}
-            />
+            <ErrorState message={error} onRetry={retry} />
             <Button variant="secondary" onClick={() => onLeft()}>
               Quay về Sảnh
             </Button>
@@ -966,10 +776,7 @@ export function RoomPage({
             (connected ? (
               <Notice tone="error" message={error} />
             ) : (
-              <ErrorState
-                message={error}
-                onRetry={() => setRetry((value) => value + 1)}
-              />
+              <ErrorState message={error} onRetry={retry} />
             ))}
           {room.downOffer?.inviteeId === userId && (
             <div

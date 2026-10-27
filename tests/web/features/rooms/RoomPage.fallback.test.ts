@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { createElement, useEffect } from "react";
 import { expect, it } from "vitest";
 import { screen, act, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -9,6 +10,7 @@ import {
   setup,
   visibility,
   actionable,
+  playing,
   useRoomPageHooks,
 } from "./RoomPage.test-helper.js";
 useRoomPageHooks();
@@ -90,4 +92,43 @@ it("keeps a waiting-room leave failure when the page regains focus", async () =>
   expect(f.refresh).not.toHaveBeenCalled();
   expect(screen.getByRole("alert").textContent).toBe(error);
   expect(error).toContain("Thao tác chưa thực hiện được");
+});
+
+it("retry after a failed display fallback rebuilds realtime and waits for a fresh snapshot", async () => {
+  const f = setup();
+  f.client.snapshot.mockRejectedValue(new Error("network"));
+  f.disconnect();
+  await screen.findByRole("alert");
+  f.client.snapshot.mockClear();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Thử lại" }));
+  expect(f.close).toHaveBeenCalledOnce();
+  expect(f.client.snapshot).not.toHaveBeenCalled();
+  expect(screen.queryByRole("heading", { name: "Kỳ hữu" })).toBeNull();
+  f.publish(snapshot);
+  expect(screen.queryByRole("heading", { name: "Kỳ hữu" })).toBeNull();
+  f.reconnect();
+  f.publish(snapshot);
+  expect(await screen.findByRole("heading", { name: "Kỳ hữu" })).toBeTruthy();
+});
+
+it("keeps chat mounted when the room moves from waiting to playing", async () => {
+  let mounts = 0;
+  let unmounts = 0;
+  function ChatProbe() {
+    useEffect(() => {
+      mounts++;
+      return () => {
+        unmounts++;
+      };
+    }, []);
+    return createElement("div", { "aria-label": "chat probe" });
+  }
+  const f = setup(snapshot, { chat: createElement(ChatProbe) });
+  await f.ready();
+  f.publish(playing());
+  expect(screen.getByLabelText("chat probe")).toBeTruthy();
+  expect(mounts).toBe(1);
+  expect(unmounts).toBe(0);
 });

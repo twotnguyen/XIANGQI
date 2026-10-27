@@ -16,6 +16,8 @@ export interface AiGameSnapshot {
   position: string;
   history: string[];
   version: number;
+  /** Số lần undo đã dùng; server-authoritative (tối đa 3). */
+  undoUsed: number;
   status: "ACTIVE" | "FINALIZING" | "FINISHED" | "ABANDONED";
   engineState: "IDLE" | "THINKING" | "RETRY";
   engineError: "ENGINE_TIMEOUT" | "ENGINE_BUSY" | null;
@@ -238,13 +240,18 @@ function AiGameView(props: AiGameProps) {
             </div>
           )}
           {active && (
-            <Button
-              variant="danger"
-              disabled={!available}
-              onClick={() => setConfirm(true)}
-            >
-              Đầu hàng
-            </Button>
+            <div className="xq-ai-actions">
+              <Button variant="secondary" onClick={props.onLobby}>
+                Về Sảnh
+              </Button>
+              <Button
+                variant="danger"
+                disabled={!available}
+                onClick={() => setConfirm(true)}
+              >
+                Đầu hàng
+              </Button>
+            </div>
           )}
           {result && resultDismissed && (
             <div>

@@ -10,7 +10,10 @@ import type { SqlAiTransactions } from "./ai-sql-transactions.js";
 import type { AiOrigin } from "./ai-transactions.js";
 type Human = Extract<AiOrigin, { kind: "human" }>;
 interface Options {
-  games: Pick<AiGames, "read" | "create" | "move" | "resign" | "retry">;
+  games: Pick<
+    AiGames,
+    "read" | "create" | "move" | "resign" | "retry" | "undo"
+  >;
   transactions: Pick<SqlAiTransactions, "read">;
   reservations: Pick<AiReservations, "check" | "held">;
   bootId: string;
@@ -142,6 +145,14 @@ export class AiHttpService implements AiHttpApi {
   retry(origin: Human, gameId: string, version: number): Promise<AiHttpResult> {
     return this.mutate(origin, (owner, proof) =>
       this.options.games.retry(owner, gameId, { version }, proof),
+    );
+  }
+  /**
+   * Undo nước đi theo BA 6.3 (tối đa 3 lần/ván, không sau khi kết thúc).
+   */
+  undo(origin: Human, gameId: string, version: number): Promise<AiHttpResult> {
+    return this.mutate(origin, (owner, proof) =>
+      this.options.games.undo(owner, gameId, { version }, proof),
     );
   }
 }

@@ -45,7 +45,7 @@ async function create(viewerLimit = 5) {
   return { host, ...entry };
 }
 async function list(a: RoomActor) {
-  return run(a, [], (s) => publicRooms.list(s));
+  return run(a, [], (s) => publicRooms.catalog(s.client));
 }
 async function join(
   a: RoomActor,
@@ -72,19 +72,12 @@ describe.skipIf(!databaseUrl)(
       ])
         await apply(`supabase/migrations/${name}.sql`);
     });
-    it("returns an empty list and refuses a forged actor scope before reading", async () => {
+    it("returns the same PUBLIC catalog for any reader transaction, with no actor passed to the catalog", async () => {
       const a = await actor();
       expect(await list(a)).toEqual([]);
-      await transaction([], [], (client) =>
-        expect(
-          publicRooms.list({
-            client,
-            actor: a,
-            lockedActorIds: new Set(),
-            lockedRoomIds: new Set(),
-          }),
-        ).rejects.toMatchObject({ code: "AUTH_REQUIRED" }),
-      );
+      expect(
+        await transaction([], [], (client) => publicRooms.catalog(client)),
+      ).toEqual([]);
     });
     it("projects only PUBLIC open managed rooms and safe Host display fields, preserving unknown dates", async () => {
       const a = await actor(),

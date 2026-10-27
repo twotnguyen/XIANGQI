@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { createElement, type ReactNode } from "react";
 import { afterEach, beforeEach, vi } from "vitest";
 import {
   cleanup,
@@ -47,7 +47,7 @@ export const snapshot: RoomSnapshot = {
   clocks: null,
   control: { mode: "writable", generation: 1, reason: null },
 };
-export function setup(state = snapshot) {
+export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
   let handlers: RoomConnectionInput;
   const command = vi.fn().mockResolvedValue({
     status: "ok",
@@ -101,6 +101,7 @@ export function setup(state = snapshot) {
       client,
       getProof: vi.fn(),
       onLeft,
+      ...extra,
       connect: (input) => {
         handlers = input;
         return { command, close, refresh, readChat, sendChat };

@@ -55,6 +55,7 @@ async function fixture() {
     status: "FINISHED",
     engineState: "IDLE",
     engineError: null,
+    undoUsed: 0,
     outcome: { reason: "RESIGN", winner: "black" },
   };
   await run(actor, (scope) =>
