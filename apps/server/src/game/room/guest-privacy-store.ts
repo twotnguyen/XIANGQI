@@ -58,12 +58,18 @@ export function redactGuestDisplayName(
  * - Lịch sử đối thủ và hồ sơ trận đấu được giữ nguyên; tên hiển thị đưa về nhãn chung qua profile.
  */
 export async function scrubGuestPrivacy(c: PoolClient, guestId: string) {
-  await c.query("DELETE FROM xiangqi_chat.messages WHERE sender_id=$1", [
-    guestId,
-  ]);
-  await c.query("DELETE FROM xiangqi_chat.receipts WHERE actor_id=$1", [
-    guestId,
-  ]);
+  // Chat is an optional schema (the runtime enables it only when present); skip cleanup when absent.
+  const chat = await c.query(
+    "SELECT to_regclass('xiangqi_chat.messages') IS NOT NULL AS present",
+  );
+  if (chat.rows[0]?.present === true) {
+    await c.query("DELETE FROM xiangqi_chat.messages WHERE sender_id=$1", [
+      guestId,
+    ]);
+    await c.query("DELETE FROM xiangqi_chat.receipts WHERE actor_id=$1", [
+      guestId,
+    ]);
+  }
   await c.query("DELETE FROM xiangqi_room.entry_receipts WHERE actor_id=$1", [
     guestId,
   ]);
