@@ -87,13 +87,7 @@ export class EmailVerificationStore {
           "Email đã được xác minh",
           409,
         );
-      const target = input.email ?? row.pendingEmail;
-      if (!target)
-        throw new EmailError(
-          "EMAIL_NOT_PENDING",
-          "Chưa có email nào đang chờ xác minh",
-          409,
-        );
+      // Cooldown applies even when the undelivered challenge was cleared after SMTP failure.
       if (
         row.lastSentAt &&
         now.getTime() - row.lastSentAt.getTime() < RESEND_COOLDOWN_MS
@@ -102,6 +96,13 @@ export class EmailVerificationStore {
           "EMAIL_RESEND_LIMITED",
           "Vui lòng đợi trước khi gửi lại mã",
           429,
+        );
+      const target = input.email ?? row.pendingEmail;
+      if (!target)
+        throw new EmailError(
+          "EMAIL_NOT_PENDING",
+          "Chưa có email nào đang chờ xác minh",
+          409,
         );
       const taken = await client.query(
         "SELECT 1 FROM xiangqi_auth.account_origins WHERE email_key=$1 AND user_id<>$2",
