@@ -194,7 +194,7 @@ it("maps EMAIL_RESEND_LIMITED to the wait message on resend", async () => {
   render(
     createElement(EmailVerification, {
       client: asProfileClient(api),
-      emailStatus: pending,
+      emailStatus: { ...pending, resendAt: null },
       reloadEmailStatus: vi.fn().mockResolvedValue(undefined),
     }),
   );

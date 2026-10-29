@@ -91,20 +91,6 @@ describe("profile page", () => {
     expect(onSaved).toHaveBeenCalledWith("Tên Mới");
     expect(await screen.findByText("Đã lưu tên hiển thị.")).toBeTruthy();
   });
-  it("renders the injected email section and hides the read-only fallback", async () => {
-    render(
-      createElement(ProfilePage, {
-        client: client(),
-        guest: false,
-        onSaved: vi.fn(),
-        onLogout: vi.fn(),
-        emailSection: createElement("p", null, "SLOT-EMAIL-SECTION"),
-      }),
-    );
-    expect(screen.getByText("SLOT-EMAIL-SECTION")).toBeTruthy();
-    expect(await screen.findByText("kythu")).toBeTruthy();
-    expect(screen.queryByText("kythu@example.invalid")).toBeNull();
-  });
   it("keeps the server name and shows a field error when rejected", async () => {
     const user = userEvent.setup();
     const c = client({

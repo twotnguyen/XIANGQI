@@ -251,7 +251,9 @@ async function signOutGuest() {
   fireEvent.click(
     await screen.findByRole("button", { name: "Tài khoản: Lữ khách" }),
   );
-  const menu = await screen.findByRole("menu", { name: "Tài khoản cá nhân" });
+  const menu = await screen.findByRole("region", {
+    name: "Tài khoản cá nhân",
+  });
   await act(async () => {
     fireEvent.click(within(menu).getByRole("button", { name: /Đăng xuất/ }));
   });

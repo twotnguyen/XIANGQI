@@ -140,7 +140,9 @@ async function openLogout() {
   fireEvent.click(
     await screen.findByRole("button", { name: "Tài khoản: Thành viên" }),
   );
-  const menu = await screen.findByRole("menu", { name: "Tài khoản cá nhân" });
+  const menu = await screen.findByRole("region", {
+    name: "Tài khoản cá nhân",
+  });
   fireEvent.click(within(menu).getByRole("button", { name: /Đăng xuất/ }));
 }
 

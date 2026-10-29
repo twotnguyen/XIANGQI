@@ -669,6 +669,17 @@ it("creates through the authorized form then enters the actual server room route
   fireEvent.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(screen.getByRole("dialog")).toBeTruthy();
   fireEvent.click(
+    within(screen.getByRole("dialog")).getByRole("radio", { name: "15 phút" }),
+  );
+  fireEvent.change(
+    within(screen.getByRole("dialog")).getByLabelText("Người xem"),
+    { target: { value: "2" } },
+  );
+  fireEvent.change(
+    within(screen.getByRole("dialog")).getByLabelText("Quyền truy cập"),
+    { target: { value: "PUBLIC" } },
+  );
+  fireEvent.click(
     within(screen.getByRole("dialog")).getByRole("button", {
       name: "Tạo phòng",
     }),
@@ -681,8 +692,9 @@ it("creates through the authorized form then enters the actual server room route
   );
   expect(JSON.parse(create![1].body)).toEqual({
     commandId: expect.stringMatching(/^[0-9a-f-]{36}$/),
-    timeMinutes: 10,
-    viewerLimit: 5,
+    timeMinutes: 15,
+    viewerLimit: 2,
+    visibility: "PUBLIC",
   });
   expect(
     await screen.findByRole("heading", { name: "Phòng chờ " + roomId }),

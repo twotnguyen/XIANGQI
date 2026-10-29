@@ -247,20 +247,22 @@ it("shows a connection error when the initial read fails transiently", async () 
   ).toBeTruthy();
 });
 
-it("disables the takeover button until the socket reports connected", async () => {
+it("blocks takeover while disconnected and permits it after the socket connects", async () => {
   mount(fetchWith(async () => json(envelope(snapshot()))));
   await screen.findByText("Lượt đi lại: 3/3");
   act(() => {
     socket.onControl?.({ mode: "observer", gameId: id, generation: 1 });
   });
-  const takeover = (await screen.findByRole("button", {
+  const takeover = await screen.findByRole("button", {
     name: "Chuyển quyền điều khiển về tab này",
-  })) as HTMLButtonElement;
-  expect(takeover.disabled).toBe(true);
+  });
+  fireEvent.click(takeover);
+  expect(socket.takeover).not.toHaveBeenCalled();
   act(() => {
     socket.onConnection?.(true);
   });
-  await vi.waitFor(() => expect(takeover.disabled).toBe(false));
+  fireEvent.click(takeover);
+  await vi.waitFor(() => expect(socket.takeover).toHaveBeenCalledTimes(1));
 });
 
 it("sends one undo while a previous undo is still in flight", async () => {

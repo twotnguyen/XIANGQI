@@ -23,6 +23,13 @@ const guestDto = (expiresAt: string, deferred = false) => ({
   deferred,
   capability,
 });
+const verifiedEmail = {
+  email: "kythu@example.invalid",
+  emailVerified: true,
+  pendingEmail: null,
+  expiresAt: null,
+  resendAt: null,
+};
 
 let latest: { accept(result: unknown): void } | null = null;
 let failures: unknown[] = [];
@@ -335,6 +342,7 @@ it("ignores a late cookie restore that resolves after logout", async () => {
 it("ignores a late cookie restore that resolves after a member accept", async () => {
   const restore = deferred<Response>();
   route({
+    "/account/email": () => reply(verifiedEmail),
     "/account/guest/session": () => restore.promise,
   });
   await mount();
@@ -456,6 +464,7 @@ it("drops a guest to anonymous when a guest-authorized request is rejected as ex
 it("drops guest proof when a member signs in, so a guest capability is never used with a member session", async () => {
   route({
     "/account/guest": () => reply(guestDto("2030-01-01T12:00:00Z"), 201),
+    "/account/email": () => reply(verifiedEmail),
   });
   await mount();
   await click("start");
