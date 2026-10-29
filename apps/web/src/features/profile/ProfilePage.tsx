@@ -240,64 +240,56 @@ export function ProfilePage({
               >
                 <header className="xq-profile-section-heading">
                   <h2 id="xq-profile-title">Hồ sơ cá nhân</h2>
-                  <p>Thông tin giúp kỳ hữu nhận ra bạn trên bàn cờ.</p>
                 </header>
-                <div className="xq-profile-summary">
-                  <div className="xq-profile-avatar" aria-hidden="true">
-                    {Array.from(profile?.displayName ?? "?")[0]?.toUpperCase()}
-                  </div>
-                  <div>
-                    <h3>{profile?.displayName}</h3>
-                    <p>
-                      Ảnh đại diện được tạo từ chữ cái đầu trong tên của bạn.
+                <div className="xq-profile-columns">
+                  <div className="xq-profile-column">
+                    <dl className="xq-profile-details">
+                      <div>
+                        <dt>Tên đăng nhập</dt>
+                        <dd>{profile?.username}</dd>
+                      </div>
+                      {!emailSection && (
+                        <div>
+                          <dt>Email</dt>
+                          <dd>{profile?.email ?? "Chưa có email"}</dd>
+                        </div>
+                      )}
+                    </dl>
+                    <p className="xq-profile-note">
+                      Tên đăng nhập chỉ để xem, chưa hỗ trợ thay đổi tại đây.
                     </p>
+                    <form
+                      className="xq-profile-form"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        void save();
+                      }}
+                    >
+                      <TextField
+                        label="Tên hiển thị"
+                        helper="2–30 ký tự, là tên người khác nhìn thấy."
+                        autoComplete="nickname"
+                        value={name}
+                        error={fieldError}
+                        onChange={(event) => setName(event.target.value)}
+                      />
+                      {status && (
+                        <Notice
+                          tone="success"
+                          message={status}
+                          onDismiss={() => setStatus("")}
+                        />
+                      )}
+                      <div className="xq-profile-form-footer">
+                        <p>Đổi tên hiển thị không cần mã OTP.</p>
+                        <Button type="submit" loading={saving}>
+                          Lưu tên hiển thị
+                        </Button>
+                      </div>
+                    </form>
                   </div>
+                  <div className="xq-profile-column">{emailSection}</div>
                 </div>
-                <dl className="xq-profile-details">
-                  <div>
-                    <dt>Tên đăng nhập</dt>
-                    <dd>{profile?.username}</dd>
-                  </div>
-                  {!emailSection && (
-                    <div>
-                      <dt>Email</dt>
-                      <dd>{profile?.email ?? "Chưa có email"}</dd>
-                    </div>
-                  )}
-                </dl>
-                <p className="xq-profile-note">
-                  Tên đăng nhập chỉ để xem, chưa hỗ trợ thay đổi tại đây.
-                </p>
-                {emailSection}
-                <form
-                  className="xq-profile-form"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    void save();
-                  }}
-                >
-                  <TextField
-                    label="Tên hiển thị"
-                    helper="2–30 ký tự, là tên người khác nhìn thấy."
-                    autoComplete="nickname"
-                    value={name}
-                    error={fieldError}
-                    onChange={(event) => setName(event.target.value)}
-                  />
-                  {status && (
-                    <Notice
-                      tone="success"
-                      message={status}
-                      onDismiss={() => setStatus("")}
-                    />
-                  )}
-                  <div className="xq-profile-form-footer">
-                    <p>Đổi tên hiển thị không cần mã OTP.</p>
-                    <Button type="submit" loading={saving}>
-                      Lưu tên hiển thị
-                    </Button>
-                  </div>
-                </form>
               </section>
               <section
                 id="xq-settings-appearance"
@@ -359,7 +351,10 @@ export function ProfilePage({
               >
                 <header className="xq-profile-section-heading">
                   <h2 id="xq-password-title">Đổi mật khẩu</h2>
-                  <p>Phiên hiện tại vẫn đăng nhập; các thiết bị khác sẽ bị đăng xuất.</p>
+                  <p>
+                    Phiên hiện tại vẫn đăng nhập; các thiết bị khác sẽ bị đăng
+                    xuất.
+                  </p>
                 </header>
                 <PasswordChangeForm client={client} />
               </section>

@@ -62,6 +62,12 @@ trong khung cài đặt, không thay token toàn ứng dụng. Khách chỉ th�
 phiên và Đăng xuất; không gọi API hồ sơ thành viên. Luồng xác nhận đăng xuất
 khi đang đấu giữ nguyên.
 
+Tab Hồ sơ cá nhân (30/10/2026): tiêu đề "Cài đặt" và câu phụ nằm cùng một dòng;
+thẻ chia hai cột trên desktop (tên đăng nhập + tên hiển thị | email), bỏ khối avatar
+và phụ đề lặp với sidebar. Màn thấp (cao tối đa 800px) ẩn câu nhắc ở chân sidebar.
+Đo bằng trình duyệt với API giả: không cuộn trang ở 1280×720, 1366×768, 1440×900,
+cả khi có banner thiếu email. Dưới 800px vẫn một cột và cuộn bình thường.
+
 Email là tùy chọn từ 29/10: đăng ký có nút bỏ qua tại bước Email/OTP. `SessionProvider`
 tải `GET /account/email` riêng sau khi xác thực thành viên, không chặn quyền vào app.
 Banner toàn cục và mục email trong Hồ sơ phân biệt chưa có, đang chờ, đã xác minh và
