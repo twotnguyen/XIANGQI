@@ -207,7 +207,15 @@ bị từ chối. Reset tiêu thụ quyền và thu hồi phiên trước remote
 Kiểm chứng local dùng Nest/PostgreSQL thật và adapter SupabaseAuth qua Auth HTTP
 fixture. Trình duyệt 360 px đã chạy recovery → OTP → reset → Login và đổi mật khẩu
 Hồ sơ → reload vẫn là cùng thành viên; sai mật khẩu/xác nhận lệch không thành công.
-Đây chưa phải bằng chứng Google OAuth, GoTrue hoặc thư đến hộp thư SMTP thật.
+Đây chưa phải bằng chứng Google OAuth hoặc thư đến hộp thư SMTP thật.
+
+Smoke bổ sung sau đó đã chạy GoTrue v2.197.0 thật trong Docker với PostgreSQL 17
+riêng và toàn bộ migration repo: adapter xác minh ES256/JWKS; đổi mật khẩu giữ
+capability/hạn, mật khẩu cũ bị từ chối và refresh token thay thế dùng được; recovery
+thu hồi capability cũ, đăng nhập/refresh bằng mật khẩu mới thành công. Mailer smoke
+chỉ thu OTP, không gửi thư ra ngoài; không dùng khóa/dữ liệu Supabase Cloud.
+Cấu hình signing JWK theo [GoTrue v2.197.0](https://github.com/supabase/auth/blob/v2.197.0/internal/conf/jwk.go),
+private key có `key_ops: ["sign", "verify"]`; sandbox Auth dùng search path `auth,public`.
 
 ## Vòng đời phiên, thiết bị và đăng xuất (YC1)
 

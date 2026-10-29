@@ -323,7 +323,7 @@ Không thêm abstraction, hàng đợi, logging hoặc dependency chỉ để �
 - Đã đối chiếu baseline Google/onboarding, khóa đăng nhập, Khách và Hồ sơ/email; phiên/thiết bị có kiểm thử API/socket và ván online/AI trên PostgreSQL local. Khách quá 12 giờ còn ghế PLAYER được ở lại cả WAITING lẫn PLAYING; rời ghế mới kết thúc phiên deferred.
 - Quy ước xử lý an toàn đã nêu công khai: username không tồn tại cùng phản hồi thiếu email; không giới hạn nhà cung cấp email vào riêng Gmail; đổi chủ động không kéo dài hạn phiên.
 - Đã triển khai và commit từng bước theo yêu cầu PO; chưa áp migration hoặc chạy fixture trên Supabase đang phục vụ ứng dụng, chưa push.
-- Chưa nghiệm thu toàn bộ YC1 trên dịch vụ thật: còn Google OAuth, Auth và nhận OTP qua hộp thư được phép. Chỉ chuyển YC2 sau khi YC1 được đánh giá và xử lý theo phạm vi giao; chỉ sang P2 khi P1 ổn.
+- Chưa nghiệm thu toàn bộ YC1 trên dịch vụ thật: còn Google OAuth và nhận OTP qua hộp thư được phép; GoTrue tự host đã kiểm chứng luồng mật khẩu nhưng chưa thay nghiệm thu bản triển khai Supabase Cloud. Chỉ chuyển YC2 sau khi YC1 được đánh giá và xử lý theo phạm vi giao; chỉ sang P2 khi P1 ổn.
 
 ## 17. Bằng chứng triển khai và kiểm chứng local
 
@@ -334,7 +334,7 @@ Không thêm abstraction, hàng đợi, logging hoặc dependency chỉ để �
 - Typecheck toàn monorepo và ESLint toàn bộ file TypeScript thay đổi đạt.
 - Trình duyệt 360 px, Vite + Nest + PostgreSQL local: username không đủ điều kiện báo đúng câu; OTP → nhập mật khẩu mới → xác nhận lệch bị chặn → reset thành công về Login có thông báo. Hồ sơ: mật khẩu cũ sai bị chặn; đổi thành công xóa ba ô; reload vẫn đăng nhập; không tràn ngang.
 - SMTP thật: xác thực kết nối thành công, **không gửi thư**. Chưa có bằng chứng thời gian thư tới hộp thư, spam hoặc hạn mức năm địa chỉ/giờ.
-- Docker daemon không chạy nên chưa dựng GoTrue local; Google OAuth thật cần tài khoản/phiên tương tác được phép. Không dùng thông tin cấu hình sẵn làm bằng chứng đăng nhập hoặc gửi thư thành công.
+- Sau khi PO chọn tiếp tục trên môi trường thử, đã khởi động Docker và chạy **GoTrue v2.197.0 thật + PostgreSQL 17 riêng**, áp baseline và toàn bộ migration repo. Adapter `SupabaseAuth` xác minh ES256/JWKS thật; đổi mật khẩu giữ capability/hạn, mật khẩu cũ bị từ chối, refresh token thay thế dùng được. Recovery qua service thu hồi capability cũ; mật khẩu mới đăng nhập và refresh thành công. Mailer ở smoke này chỉ thu OTP, **không gửi thư ngoài**; chưa chạy Google hoặc ghi Supabase Cloud.
 - Smoke ngoài vitest: Nest/PostgreSQL/Socket.IO + Auth HTTP fixture; login thiết bị khác kết thúc phòng chờ cũ, API cũ 401, API mới 200, socket cũ đóng; logout xong API mới 401. Kiểm thử DB trong `session-seat.test.ts` xác nhận rollback migration thiết bị giữ tài khoản, capability và ghế; áp lại không mất phiên.
 - Lượt hồi quy xanh vẫn phát log `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` và cảnh báo navigation của jsdom. Không che log, không tính việc test xanh là bằng chứng vận hành production không lỗi.
 - Chưa áp hai migration `20261030000001_password_recovery.sql`, `20261031000001_session_devices.sql` trên môi trường đang phục vụ người dùng. Có rollback tương ứng; rollback migration thiết bị đã có kiểm thử giữ dữ liệu. Chưa push hoặc chuyển Jira Done.
@@ -344,12 +344,12 @@ Không thêm abstraction, hàng đợi, logging hoặc dependency chỉ để �
 | AC | Bằng chứng local | Giới hạn |
 |---|---|---|
 | MK-01–04 | `password-change.test.ts`, `password-recovery.test.ts` phía web; quyền, mật khẩu cũ, validation; Hồ sơ trên trình duyệt | Không thay cho screen reader thực tế |
-| MK-05–06 | `password-change.test.ts`: giữ profile/user_id/capability/hạn, thay refresh cookie, thu hồi phiên khác, mật khẩu cũ/mới | Hành vi token Auth thật cần nghiệm thu riêng |
+| MK-05–06 | `password-change.test.ts`: giữ profile/user_id/capability/hạn, thay refresh cookie, thu hồi phiên khác; smoke GoTrue thật xác nhận mật khẩu cũ bị từ chối, refresh mới dùng được và hạn không đổi | Chưa nghiệm thu bản triển khai Supabase Cloud |
 | MK-07 | `game/account-session.test.ts`: đổi mật khẩu trong ván online giữ ACTIVE/outcome null, socket, capability và hạn cũ | Provider là synthetic; không suy đã nghiệm thu Auth thật |
 | MK-08 | Lỗi ghi trước/sau commit; đối soát; checkpoint HMAC cho retry khi credentials đã đổi nhưng cấp token lỗi | Không cam kết transaction phân tán Auth/Postgres |
 | MK-09–10 | Username hoa thường, không tồn tại/thiếu email/pending, địa chỉ kỹ thuật bị loại | Chính sách phản hồi có rủi ro dò điều kiện khôi phục đã được PO chấp nhận |
 | MK-11–14 | Contact đúng tài khoản, không nhận email/user_id giả, hash/HMAC, cooldown, 5 lần sai, 180 giây, không dùng OTP làm phiên app | Giao OTP tới hộp thư ngoài nhóm: **BLOCKED** chờ email thử được phép và quan sát hộp thư |
-| MK-15–18 | Validation không tiêu thụ quyền; reset một lần, replay/trộn tài khoản/concurrent bị chặn, thu hồi phiên và lỗi Auth không báo thành công giả | Socket và ván được hồi quy trong nhóm lifecycle riêng |
+| MK-15–18 | Validation không tiêu thụ quyền; reset một lần, replay/trộn tài khoản/concurrent bị chặn, thu hồi phiên và lỗi Auth không báo thành công giả; GoTrue thật xác nhận mật khẩu mới đăng nhập/refresh được, capability cũ mất quyền | OTP trong smoke GoTrue được thu ở mailer boundary, không thay nghiệm thu nhận thư |
 | MK-19 | Đổi/reset giữ `account_origins` của Google và cùng user_id; username/password mới dùng được qua Auth fixture | Google OAuth thật sau đổi/reset: **BLOCKED** chờ phiên Google được phép |
 | MK-20 | Secret staged không khớp các giá trị bí mật môi trường; API không trả email; UI 360 px, form có nhãn/focus/lỗi và không lưu capability lên URL/storage | Chưa kiểm screen reader hoặc hai thiết bị vật lý |
 
