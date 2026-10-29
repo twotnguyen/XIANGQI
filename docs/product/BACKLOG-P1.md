@@ -288,7 +288,7 @@
 - **AC-YC1-MK-01–08:** đổi mật khẩu tại Hồ sơ bằng mật khẩu cũ + mới + xác nhận; kiểm quyền/lỗi; giữ phiên hiện tại với hạn cũ, thu hồi phiên khác; không làm mất danh tính/dữ liệu hoặc tự đầu hàng ván của phiên đang giữ.
 - **AC-YC1-MK-09–18:** Quên mật khẩu nhập username; chỉ OTP tới email đã xác minh; thiếu email/username không tồn tại trả thông báo không đủ điều kiện; OTP sai/hết hạn/trái mục đích không reset; thành công thu hồi phiên cũ và về Login, không tự đăng nhập.
 - **AC-YC1-MK-19–20:** tài khoản Google vẫn cùng danh tính, bảo mật secret, giao diện và hồi quy hai luồng.
-- Mọi Given/When/Then chi tiết nằm ở mục 14.2 của tài liệu YC1, là phần bổ sung nghiệm thu P1, không phải phụ lục P2. Chưa thực thi hoặc cập nhật Task/Jira/ước lượng; không đánh dấu Done từ việc chốt đặc tả.
+- Mọi Given/When/Then chi tiết nằm ở mục 14.2 của tài liệu YC1, là phần bổ sung nghiệm thu P1, không phải phụ lục P2. Code và bằng chứng local cập nhật tại mục 17 của đặc tả YC1; Task/Jira/ước lượng chưa cập nhật, không tự đánh dấu Done khi còn gate dịch vụ thật.
 
 ---
 

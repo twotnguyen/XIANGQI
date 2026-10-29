@@ -2,7 +2,7 @@
 
 **Ngày cập nhật:** 30/10/2026. **Phạm vi:** YC1 của P1, bao gồm hai chức năng mật khẩu được PO bổ sung trong phiên đánh giá. **Hạn P1:** giữ 04/11/2026.
 
-**Trạng thái:** đặc tả yêu cầu, không phải xác nhận đã triển khai hoặc đã nghiệm thu. Đăng ký ba bước và các quyết định mật khẩu dưới đây đã được PO xác nhận; Google, Khách và chính sách phiên kế thừa BA, chưa được review lại từng phần trong vòng hiện tại.
+**Trạng thái:** đã triển khai các luồng YC1 và bổ sung kiểm thử local, đang chạy hồi quy liên miền. Chưa nghiệm thu dịch vụ Auth/Google/SMTP thật hoặc đóng Task Jira. Bằng chứng và giới hạn được ghi ở mục 17.
 
 ## 1. Mục tiêu, nguồn và quyết định đã chốt
 
@@ -266,7 +266,7 @@ Thông báo câu chữ trong mục 9–10 là bản chuẩn hóa chính tả t�
 
 Các mã nguồn giữ nguyên; yêu cầu mật khẩu dưới đây bổ sung, không tái sử dụng mã cũ để thay nghĩa. Thông báo đăng nhập chống dò và phản hồi quên mật khẩu cụ thể là hai chính sách khác nhau.
 
-### 14.2 Tiêu chí bổ sung mật khẩu — chưa thực thi
+### 14.2 Tiêu chí bổ sung mật khẩu
 
 Mã `AC-YC1-MK-*` dùng cho tài liệu đặc tả và bổ sung backlog P1; không phải mã Jira hoặc chứng nhận PASS.
 
@@ -301,9 +301,9 @@ Mã `AC-YC1-MK-*` dùng cho tài liệu đặc tả và bổ sung backlog P1; kh
 - Ghi PASS/FAIL/BLOCKED từng ca với môi trường, bản dựng, ngày và bằng chứng; chưa chạy thì ghi chưa chạy, không dùng sự tồn tại của tài liệu để đóng Task.
 - Hồi quy D1–D4 và D10 cùng các luồng phiên/phòng bị ảnh hưởng; nghiệm thu P1 tổng vẫn cần D1–D10 và NFR/gate liên quan.
 
-## 15. Phạm vi triển khai cần chạm khi được giao code
+## 15. Phạm vi tác động triển khai
 
-Đây là danh sách tác động theo miền, không phải khẳng định đã tìm/kiểm từng file implementation trong lần viết tài liệu này.
+Danh sách dưới đây là ranh giới cần đối chiếu khi triển khai; trạng thái kiểm chứng thực tế nằm ở mục 17, không suy PASS chỉ từ sự tồn tại của code.
 
 | Khu vực | Công việc liên quan |
 |---|---|
@@ -320,7 +320,108 @@ Không thêm abstraction, hàng đợi, logging hoặc dependency chỉ để �
 ## 16. Trạng thái review và bước tiếp theo
 
 - Đã chốt: đăng ký ba bước; hai chức năng mật khẩu thuộc P1; recovery nhập username; thông báo thiếu email; đổi chủ động giữ phiên hiện tại/thu hồi phiên khác; recovery về Login.
-- Kế thừa BA, chưa review lại từng phần: Google/onboarding, khóa đăng nhập, quyền Khách, Display Name/email, thời hạn phiên và xử thua khi đăng nhập thiết bị khác.
+- Đã đối chiếu baseline Google/onboarding, khóa đăng nhập, Khách và Hồ sơ/email; phiên/thiết bị có kiểm thử API/socket và ván online/AI trên PostgreSQL local. Khách quá 12 giờ còn ghế PLAYER được ở lại cả WAITING lẫn PLAYING; rời ghế mới kết thúc phiên deferred.
 - Quy ước xử lý an toàn đã nêu công khai: username không tồn tại cùng phản hồi thiếu email; không giới hạn nhà cung cấp email vào riêng Gmail; đổi chủ động không kéo dài hạn phiên.
-- Chưa giao triển khai trong tác vụ viết tài liệu; chưa kiểm chứng runtime hoặc nghiệm thu các chức năng mới.
-- Tiếp tục YC1 theo thứ tự: Google → đăng nhập/khóa thử sai → Khách → hồ sơ/email → phiên. Chỉ chuyển YC2 sau khi YC1 được đánh giá và xử lý theo phạm vi giao; chỉ sang P2 khi P1 ổn.
+- Đã triển khai và commit từng bước theo yêu cầu PO; chưa áp migration hoặc chạy fixture trên Supabase đang phục vụ ứng dụng, chưa push.
+- Chưa nghiệm thu toàn bộ YC1 trên dịch vụ thật: còn Google OAuth, Auth và nhận OTP qua hộp thư được phép. Chỉ chuyển YC2 sau khi YC1 được đánh giá và xử lý theo phạm vi giao; chỉ sang P2 khi P1 ổn.
+
+## 17. Bằng chứng triển khai và kiểm chứng local
+
+### 17.1 Môi trường và phạm vi bằng chứng
+
+- Node 22.22.3; PostgreSQL 17 cô lập theo `tests/server/db.sh`. Auth HTTP fixture dùng JWT ES256/JWKS và adapter `SupabaseAuth` thật; không gọi fixture này là GoTrue thật.
+- Hồi quy cuối: **158/158 file, 1.917/1.917 test đạt** bằng lệnh `fnm exec --using 22 bash tests/server/db.sh test tests/server/game tests/server/account tests/server/core/layering.test.ts tests/web/features/auth tests/web/features/profile tests/web/features/lobby tests/web/features/media tests/web/app tests/web/shared/navigation`. Phạm vi gồm cả hồi quy game liên quan, không phải 1.917 yêu cầu YC1.
+- Typecheck toàn monorepo và ESLint toàn bộ file TypeScript thay đổi đạt.
+- Trình duyệt 360 px, Vite + Nest + PostgreSQL local: username không đủ điều kiện báo đúng câu; OTP → nhập mật khẩu mới → xác nhận lệch bị chặn → reset thành công về Login có thông báo. Hồ sơ: mật khẩu cũ sai bị chặn; đổi thành công xóa ba ô; reload vẫn đăng nhập; không tràn ngang.
+- SMTP thật: xác thực kết nối thành công, **không gửi thư**. Chưa có bằng chứng thời gian thư tới hộp thư, spam hoặc hạn mức năm địa chỉ/giờ.
+- Docker daemon không chạy nên chưa dựng GoTrue local; Google OAuth thật cần tài khoản/phiên tương tác được phép. Không dùng thông tin cấu hình sẵn làm bằng chứng đăng nhập hoặc gửi thư thành công.
+- Smoke ngoài vitest: Nest/PostgreSQL/Socket.IO + Auth HTTP fixture; login thiết bị khác kết thúc phòng chờ cũ, API cũ 401, API mới 200, socket cũ đóng; logout xong API mới 401. Kiểm thử DB trong `session-seat.test.ts` xác nhận rollback migration thiết bị giữ tài khoản, capability và ghế; áp lại không mất phiên.
+- Lượt hồi quy xanh vẫn phát log `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` và cảnh báo navigation của jsdom. Không che log, không tính việc test xanh là bằng chứng vận hành production không lỗi.
+- Chưa áp hai migration `20261030000001_password_recovery.sql`, `20261031000001_session_devices.sql` trên môi trường đang phục vụ người dùng. Có rollback tương ứng; rollback migration thiết bị đã có kiểm thử giữ dữ liệu. Chưa push hoặc chuyển Jira Done.
+
+### 17.2 Truy vết hai luồng mật khẩu
+
+| AC | Bằng chứng local | Giới hạn |
+|---|---|---|
+| MK-01–04 | `password-change.test.ts`, `password-recovery.test.ts` phía web; quyền, mật khẩu cũ, validation; Hồ sơ trên trình duyệt | Không thay cho screen reader thực tế |
+| MK-05–06 | `password-change.test.ts`: giữ profile/user_id/capability/hạn, thay refresh cookie, thu hồi phiên khác, mật khẩu cũ/mới | Hành vi token Auth thật cần nghiệm thu riêng |
+| MK-07 | `game/account-session.test.ts`: đổi mật khẩu trong ván online giữ ACTIVE/outcome null, socket, capability và hạn cũ | Provider là synthetic; không suy đã nghiệm thu Auth thật |
+| MK-08 | Lỗi ghi trước/sau commit; đối soát; checkpoint HMAC cho retry khi credentials đã đổi nhưng cấp token lỗi | Không cam kết transaction phân tán Auth/Postgres |
+| MK-09–10 | Username hoa thường, không tồn tại/thiếu email/pending, địa chỉ kỹ thuật bị loại | Chính sách phản hồi có rủi ro dò điều kiện khôi phục đã được PO chấp nhận |
+| MK-11–14 | Contact đúng tài khoản, không nhận email/user_id giả, hash/HMAC, cooldown, 5 lần sai, 180 giây, không dùng OTP làm phiên app | Giao OTP tới hộp thư ngoài nhóm: **BLOCKED** chờ email thử được phép và quan sát hộp thư |
+| MK-15–18 | Validation không tiêu thụ quyền; reset một lần, replay/trộn tài khoản/concurrent bị chặn, thu hồi phiên và lỗi Auth không báo thành công giả | Socket và ván được hồi quy trong nhóm lifecycle riêng |
+| MK-19 | Đổi/reset giữ `account_origins` của Google và cùng user_id; username/password mới dùng được qua Auth fixture | Google OAuth thật sau đổi/reset: **BLOCKED** chờ phiên Google được phép |
+| MK-20 | Secret staged không khớp các giá trị bí mật môi trường; API không trả email; UI 360 px, form có nhãn/focus/lỗi và không lưu capability lên URL/storage | Chưa kiểm screen reader hoặc hai thiết bị vật lý |
+
+Các đường dẫn kiểm thử backend ở `tests/server/account/password/`, frontend ở
+`tests/web/features/auth/password-recovery.test.ts`; chi tiết thiết kế và hậu quả
+lỗi một phần ở [tài liệu đăng nhập](../engineering/server/login.md).
+
+### 17.3 Truy vết 60 AC nền
+
+Đường dẫn rút gọn: `account/` = `tests/server/account/`, `game/` =
+`tests/server/game/`, `web/` = `tests/web/`. Có kiểm thử không đồng nghĩa đã PASS
+gate môi trường thật; cột cuối nêu phần chưa được local chứng minh.
+
+| AC | Bộ kiểm thử / kịch bản local | Giới hạn nghiệm thu |
+|---|---|---|
+| 01.1.1 | `account/auth/registration.service.test.ts`, `web/features/auth/RegistrationPage.test.ts`: định dạng/từ cấm | — |
+| 01.1.2 | Cùng hai bộ: trùng tên, kiểm availability, hoa thường | — |
+| 01.1.3 | `RegistrationPage.test.ts`: ngắn/xác nhận lệch không sang bước | — |
+| 01.1.4 | `registration.service.test.ts`, `RegistrationPage.test.ts`: email đã dùng không gửi OTP | — |
+| 01.1.5 | HTTP Auth fixture + đồng hồ OTP trên form | Giao OTP tới Gmail ngoài nhóm chưa kiểm |
+| 01.1.6 | `account/auth/schema.test.ts`: kích hoạt/profile/user_id; router giữ đích | Auth/SMTP thật chưa kiểm |
+| 01.1.7 | `registration.service.test.ts`, `RegistrationPage.test.ts`: sai/hết hạn/giới hạn | Ngưỡng provider thật chưa đo |
+| 01.1.8 | `RegistrationPage.test.ts`: resend 60 giây; server kiểm lại | — |
+| 01.1.9 | `schema.test.ts`, `registration.service.test.ts`: phục hồi completed-pending, dọn 60–65 phút, race | — |
+| 01.1.10 | `registration.service.test.ts`, `RegistrationPage.test.ts`: tên bị lấy lúc chờ OTP | — |
+| 01.1.11 | Template/cấu hình có sẵn; SMTP verify kết nối đạt | **BLOCKED:** chưa quan sát inbox, spam, tên/nội dung thư và thời gian nhận |
+| 01.1.12 | Không dùng synthetic count để thay bằng chứng gửi thật | **BLOCKED:** chưa có năm địa chỉ thử được phép/hộp thư quan sát |
+| 01.1.13 | `registration.service.test.ts`, `RegistrationPage.test.ts`: provider lỗi, báo lỗi an toàn | — |
+| 01.1.14 | `account/email/username-registration.test.ts`, `RegistrationPage.optional-email.test.ts`: skip hai bước, không contact verified | — |
+| 01.1.15 | `username-registration.test.ts`: đăng nhập lại cùng user_id; smoke trình duyệt skip đã ghi tại tài liệu login | Provider thật chưa kiểm trong lượt này |
+| 01.2.1 | `account/login/login.test.ts`: username hoa thường | — |
+| 01.2.2 | `login.test.ts`, `timing.test.ts`: cùng lỗi và sàn thời gian | Không suy độ trễ GoTrue thật từ fixture |
+| 01.2.3 | `login.test.ts`: lần sai thứ năm khóa 15 phút | — |
+| 01.2.4 | `login.test.ts`: đúng mật khẩu trong khóa vẫn bị chặn | — |
+| 01.2.5 | `login.test.ts`: username không tồn tại cũng bị khóa | — |
+| 01.2.6 | `login.test.ts`: thành công xóa failures | — |
+| 01.2.7 | `login.test.ts`, `login-cookies.test.ts`, `account/session/cookies.test.ts`: 30 ngày/12 giờ, cookie không ghi nhớ | Đóng/mở trình duyệt có bật session restore chưa nghiệm thu |
+| 01.2.8 | `web/shared/navigation/routes.test.ts`: thành viên mở Login/Register về Sảnh | — |
+| 01.2.9 | `account/google/google.test-cases.ts`: Google qua khóa, failures không đổi | Google OAuth thật chưa kiểm |
+| 01.3.1 | `account/google/google-http.test.ts`, `web/features/auth/GoogleOnboardingPage.test.ts`: pending/email chỉ đọc/không OTP | Google popup/token thật chưa kiểm |
+| 01.3.2 | `google.test-cases.ts`, `GoogleOnboardingPage.test.ts`: username/password, từ cấm, Display Name | — |
+| 01.3.3 | `google.test-cases.ts`: email-origin collision, identity rollback | Không gọi provider tự liên kết thật để thử trên dữ liệu người dùng |
+| 01.3.4 | `google.test-cases.ts`: completed member đăng nhập Google | Google OAuth thật chưa kiểm |
+| 01.3.5 | `google.test-cases.ts`: onboarding rồi LoginService username/password cùng user_id | Boundary Google/password provider là synthetic |
+| 01.3.6 | `GoogleOnboardingPage.test.ts`, `routes.test.ts`: pending không vào app | — |
+| 01.3.7 | `google.test-cases.ts`: expiry, cleanup race, không xóa completed | — |
+| 01.3.8 | Nội dung dưới nút Khách trong `LoginPage.tsx`; không tạo test pin nguyên câu chữ | Kiểm thị giác độc lập vẫn cần khi nghiệm thu tổng |
+| 01.3.9 | `account/guest/guest.test-cases.ts`, `account/guest/guest-http.test.ts`, `GuestNameDialog.test.ts` | Nhãn mọi bề mặt cần tổng duyệt P1 |
+| 01.3.10 | `guest.test-cases.ts`, `GuestNameDialog.test.ts`: độ dài/từ cấm, lỗi tại ô | — |
+| 01.3.11 | `game/guest-runtime.test.ts`, `game/room/guest-room-auth.test.ts`: giới hạn phòng Khách | Tooltip/nhãn giữ theo mẫu Sảnh |
+| 01.3.12 | `guest.test-cases.ts`, `guest-http.test.ts`, `game/guest-runtime.test.ts`: 12 giờ deferred khi giữ ghế, cả WAITING ban đầu và WAITING sau ván; logout rời ghế mới dọn | — |
+| 01.3.13 | `guest-http.test.ts`, `game/guest-runtime.test.ts`: logout/expiry dọn PII | — |
+| 01.3.14 | Cùng ca Google qua khóa ở 01.2.9 | Google OAuth thật chưa kiểm |
+| 01.3.15 | `web/app/AppRouter.test.ts`: Khách tiếp tục lời mời đúng một lần | — |
+| 01.4.1 | `login.test.ts`, `web/features/auth/SessionProvider.test.ts`: refresh giữ hạn | — |
+| 01.4.2 | `game/account-session.test.ts`: PLAYING hết phiên, socket đóng, clock không reset, cùng thiết bị tiếp tục | Không phải hai thiết bị vật lý |
+| 01.4.3 | `game/account-session.test.ts`, `game/ai/ai-presence.test.ts`: AI giữ 30 phút/cùng thiết bị tiếp tục | — |
+| 01.4.4 | `game/account-session.test.ts`: online/AI RESIGN, thu hồi socket/API; `AppRouter.test.ts`: displaced về Sảnh | Socket idle đóng theo nhịp kiểm, quyền lệnh bị từ chối ngay qua DB |
+| 01.4.5 | `game/room/session-seat.test.ts`: WAITING rời ghế, không kết quả thua | — |
+| 01.4.6 | `game/room/room.test.ts`, `game/ai/ai-reservations.test.ts`; `web/features/lobby/LobbyShell.test.ts` | Hồi quy liên miền, không chỉ disabled UI |
+| 01.4.7 | `web/app/AppRouter.test.ts`, `LobbyShell.test.ts`: banner trở lại phòng/AI | — |
+| 01.4.8 | `game/account-session.test.ts`: server 409/hủy giữ nguyên/đồng ý RESIGN; `AppRouter.test.ts` | — |
+| 01.4.9 | `game/room/session-seat.test.ts`: WAITING logout không ghi thua | — |
+| 01.4.10 | `account/profile/profile.test.ts`, `ProfilePage.test.ts`: cập nhật Display Name | — |
+| 01.4.11 | Cùng hai bộ: giới hạn/từ cấm không ghi | — |
+| 01.4.12 | `ProfilePage.test.ts`, `EmailVerification.test.ts`; Hồ sơ trình duyệt đã xem | — |
+| 01.4.13 | `AppRouter.test.ts`, `account-session.test.ts`: logout từ Hồ sơ dùng cùng gate | — |
+| 01.4.14 | `AppRouter.test.ts`, `ProfilePage.test.ts`: Khách không Bạn bè/settings thành viên | — |
+| 01.4.15 | `account/friend/friend.test.ts`: loại Khách khỏi tìm kiếm/từ chối lời mời đích Khách | — |
+| 01.4.16 | `AppRouter.test.ts`, `room.test.ts`: vị trí đang giữ ưu tiên hơn phòng mời | — |
+| 01.4.17 | `LobbyShell.test.ts`, `game/ai/ai-reservations.test.ts`: đang ngồi online không tạo AI | — |
+| 01.4.18 | `SessionProvider.test.ts`, `ProfilePage.test.ts`: thiếu/pending email không hạ quyền, không hiện credential kỹ thuật | — |
+| 01.4.19 | `account/email/email.test.ts`, `EmailVerification.test.ts`: cooldown/hạn/SMTP lỗi | Thư thực tới inbox chưa kiểm |
+| 01.4.20 | `email.test.ts`: cùng user_id/credential; `game/account-session.test.ts`: xác minh contact khi đang đấu giữ credential kỹ thuật, capability/hạn, ghế, ván và socket; UI reload bỏ cảnh báo | Giao OTP qua SMTP thật chưa nghiệm thu |
+| 01.4.21 | `email.test.ts`: sai/hết hạn/dùng lại/khác user/5 lần sai/trùng | — |
