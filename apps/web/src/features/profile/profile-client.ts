@@ -1,7 +1,7 @@
 export interface ProfileView {
   userId: string;
   username: string;
-  email: string;
+  email: string | null;
   displayName: string;
 }
 export type ProfileLocationKind =
@@ -66,6 +66,9 @@ export function createProfileClient(authorizedFetch: AuthorizedFetch) {
       throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
     }
   }
+  function accepted(value: unknown) {
+    record(value);
+  }
   return {
     read: () =>
       request("/profile", (value) => {
@@ -73,7 +76,7 @@ export function createProfileClient(authorizedFetch: AuthorizedFetch) {
         if (
           typeof view.userId !== "string" ||
           typeof view.username !== "string" ||
-          typeof view.email !== "string" ||
+          (view.email !== null && typeof view.email !== "string") ||
           typeof view.displayName !== "string"
         )
           throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
@@ -106,6 +109,16 @@ export function createProfileClient(authorizedFetch: AuthorizedFetch) {
           matchId: typeof result.matchId === "string" ? result.matchId : null,
         };
       }),
+    sendEmail: (email: string) =>
+      request("/account/email/send", accepted, { email }),
+    resendEmail: () => request("/account/email/resend", accepted, {}),
+    verifyEmail: (otp: string) =>
+      request("/account/email/verify", accepted, { otp }),
+    changePassword: (body: {
+      currentPassword: string;
+      newPassword: string;
+      passwordConfirmation: string;
+    }) => request("/account/password/change", accepted, body),
   };
 }
 export type ProfileClient = ReturnType<typeof createProfileClient>;

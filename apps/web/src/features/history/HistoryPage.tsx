@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Button } from "../../shared/ui/primitives.js";
 import {
   HistoryRequestError,
@@ -34,6 +34,52 @@ const reasons: Record<string, string> = {
   SERVER_RESTART: "Máy chủ khởi động lại",
   AI_UNAVAILABLE: "Máy cờ gặp sự cố",
 };
+const dateTime = new Intl.DateTimeFormat("vi-VN", {
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+});
+const HistoryRow = memo(function HistoryRow({
+  item,
+  onReplay,
+}: {
+  item: HistoryItem;
+  onReplay: HistoryPageProps["onReplay"];
+}) {
+  return (
+    <li className="xq-history-row">
+      <div>
+        <p className="xq-history-type">{item.typeLabel}</p>
+        <h2>{item.opponent.displayName}</h2>
+        <p>
+          Phe của bạn: <strong>{item.side === "red" ? "Đỏ" : "Đen"}</strong>
+        </p>
+        <time dateTime={item.endedAt}>
+          {dateTime.format(new Date(item.endedAt))}
+        </time>
+      </div>
+      <div className="xq-history-result">
+        <strong className={`xq-history-${item.result.kind.toLowerCase()}`}>
+          {item.result.label}
+        </strong>
+        <p>{reasons[item.result.reason] ?? "Ván đã kết thúc"}</p>
+        {!item.result.countsForWdl && (
+          <p className="xq-history-excluded">Không tính thắng/thua/hòa</p>
+        )}
+      </div>
+      <Button
+        variant="secondary"
+        onClick={() => onReplay(item.id)}
+        aria-label={`Xem lại ván với ${item.opponent.displayName}`}
+      >
+        Xem lại
+      </Button>
+    </li>
+  );
+});
 interface State {
   client: HistoryPageProps["client"];
   filter: HistoryInput["filter"];
@@ -124,7 +170,7 @@ export function HistoryPage({ client, onReplay }: HistoryPageProps) {
       if (token === epoch.current) pending.current = false;
     }
   }
-  useLayoutEffect(() => {
+  useEffect(() => {
     const token = ++epoch.current;
     pending.current = false;
     lastRequest.current = undefined;
@@ -136,7 +182,9 @@ export function HistoryPage({ client, onReplay }: HistoryPageProps) {
       loading: true,
       error: "",
     });
-    void load(undefined, token);
+    queueMicrotask(() => {
+      if (token === epoch.current) void load(undefined, token);
+    });
     return () => {
       epoch.current++;
     };
@@ -182,39 +230,7 @@ export function HistoryPage({ client, onReplay }: HistoryPageProps) {
         )}
         <ol className="xq-history-list">
           {items.map((item) => (
-            <li key={item.id} className="xq-history-row">
-              <div>
-                <p className="xq-history-type">{item.typeLabel}</p>
-                <h2>{item.opponent.displayName}</h2>
-                <p>
-                  Phe của bạn:{" "}
-                  <strong>{item.side === "red" ? "Đỏ" : "Đen"}</strong>
-                </p>
-                <time dateTime={item.endedAt}>
-                  {new Date(item.endedAt).toLocaleString("vi-VN")}
-                </time>
-              </div>
-              <div className="xq-history-result">
-                <strong
-                  className={`xq-history-${item.result.kind.toLowerCase()}`}
-                >
-                  {item.result.label}
-                </strong>
-                <p>{reasons[item.result.reason] ?? "Ván đã kết thúc"}</p>
-                {!item.result.countsForWdl && (
-                  <p className="xq-history-excluded">
-                    Không tính thắng/thua/hòa
-                  </p>
-                )}
-              </div>
-              <Button
-                variant="secondary"
-                onClick={() => onReplay(item.id)}
-                aria-label={`Xem lại ván với ${item.opponent.displayName}`}
-              >
-                Xem lại
-              </Button>
-            </li>
+            <HistoryRow key={item.id} item={item} onReplay={onReplay} />
           ))}
         </ol>
         {visible && state.next && !error && (

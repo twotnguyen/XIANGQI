@@ -1,15 +1,15 @@
 # BIÊN BẢN CHỐT YÊU CẦU NGHIỆP VỤ & PHẠM VI SẢN PHẨM (BA SCOPE FREEZE)
 
-> **Lịch triển khai hiện hành (10/10/2026):** Jira và repo đã đồng bộ 880 giờ, hạn hoàn thành/Release v1.0 04/11/2026; 36 mục BA Done, 71 Task To Do, chưa bắt đầu Sprint. Các mốc 05/11 trong quyết định có ngày bên dưới được giữ như lịch sử; lịch thực hiện hiện tại xem [KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md). Không thay đổi phạm vi hoặc tiêu chí nghiệp vụ đã chốt.
+> **Baseline lịch triển khai 10/10/2026:** 880 giờ, hạn 04/11/2026; trạng thái Jira trong mục 0.1 là ảnh chụp kế hoạch, không phải tiến độ hiện tại. **PO bổ sung phạm vi mật khẩu YC1 ngày 30/10 theo 0.18**, giữ hạn; chưa cập nhật giờ/Task/Jira trong lần đặc tả này.
 
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  
-> **Cập nhật lần cuối:** 10/10/2026 — thống nhất mục 0.1 với kế hoạch Jira 880 giờ, hạn 04/11; giữ các quyết định nghiệp vụ đã duyệt.
+> **Cập nhật lần cuối:** 30/10/2026 — bổ sung YC1 mật khẩu P1 theo 0.18, 1.7 và 1.9; giữ hạn 04/11, số kế hoạch cũ là baseline chưa tái ước lượng.
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
-> **Ưu tiên hiện tại — PO chốt lại 05/10/2026:** tập trung đúng tám yêu cầu MVP ở Phần 11. Phòng tự tạo có `PUBLIC` (hiện ở Sảnh để vào xem), `CODE_ONLY` (vào qua mã/link, không hiện ở Sảnh) và `LOCKED` (chặn người mới), tối đa **năm người xem**. PO đính chính giới hạn về năm người xem, tối đa bảy người/phòng; giữ danh sách công khai đã chốt. Ghép ngẫu nhiên, Đánh Hạng, Tái đấu, Quên mật khẩu và các mở rộng giữ P2; câu trả lời P2 được ghi nhận nhưng không đưa vào MVP.
+> **Ưu tiên hiện tại:** tập trung tám yêu cầu MVP ở Phần 11. Phòng tự tạo có `PUBLIC`, `CODE_ONLY`, `LOCKED`, tối đa năm người xem/bảy người trong phòng. **PO bổ sung 30/10/2026: đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP lên P1** (0.18). Ghép ngẫu nhiên, Ranked, Tái đấu, khôi phục Username và các mở rộng khác giữ P2.
 
 > **Ghi chú rà soát 03/10/2026.** Product Owner uỷ quyền cho agent tự xử lý mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Các quyết định thêm hoặc sửa trong đợt này đã được Product Owner **duyệt toàn bộ ngày 03/10/2026** (gồm nhóm 1–8 và loạt trả lời nhóm B). Riêng các con số tạm (120 nửa nước không ăn quân, luật đuổi quân liên tục, quy mô 50 người dùng đồng thời) được xác nhận lại ở Giai đoạn 2.
 >
@@ -23,7 +23,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ---
 
-## PHẦN 0: QUYẾT ĐỊNH HIỆN HÀNH (07–10/10/2026) — ƯU TIÊN CAO NHẤT
+## PHẦN 0: QUYẾT ĐỊNH HIỆN HÀNH — ƯU TIÊN CAO NHẤT (cập nhật 30/10/2026)
 
 > Product Owner (Twot) duyệt ngày 07/10/2026 (mục 0.1–0.11) và 08/10/2026 (mục 0.12–0.16) sau đợt review BA (Q1–Q10, F1–F5 và câu hỏi bổ sung về đổi bên/đấu lại). Khi phần nào khác trong tài liệu, nhật ký cũ, DANH-MUC, README hoặc mockup mâu thuẫn với Phần 0 thì **Phần 0 thắng**. Các mục bị ảnh hưởng đã được sửa trực tiếp và gắn nhãn **(07/10)**.
 
@@ -38,13 +38,14 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 * **Cấu trúc:** Task là loại Task thường, cha là Epic, liên kết `relates to` tới Story. Không đưa họp/báo cáo quản lý thành Task triển khai. P2 chỉ ghi ở mức Epic trong Backlog, chưa đưa vào kế hoạch P1 trên Jira. Các mục hiện có được cập nhật theo Jira Key, không xoá và nhập lại.
 * **Story Points:** giữ giá trị đã có trên Jira, tổng 198 điểm; độc lập với cập nhật giờ ước lượng, không tự quy đổi lại từ giờ. Bảng giờ/người/ngày và mô tả công việc ở [kế hoạch Jira](../planning/KE-HOACH-JIRA.md) và [danh sách chi tiết](../planning/jira/reports/JIRA-MUC-CHI-TIET.md).
 
-> **Đã thay thế:** quy tắc R1 cũ (mọi BA bắt đầu 09/10, các ngoại lệ đợi Task cuối), phương án 848 giờ, hạn 05/11 và yêu cầu xoá 98 mục/nhập lại là lịch sử. Không dùng để điều chỉnh kế hoạch hiện hành. Phạm vi nghiệp vụ và 268 tiêu chí nghiệm thu không thay đổi.
+> **Đã thay thế:** quy tắc R1 cũ, phương án 848 giờ, hạn 05/11 và yêu cầu xóa/nhập lại là lịch sử. Baseline 268 AC trước 30/10 được giữ để truy vết; bổ sung YC1 mật khẩu và phân kỳ mới theo 0.18, không suy khối lượng mới đã nằm sẵn trong 880 giờ.
 
 ### 0.2 Đăng nhập và đăng ký (P1)
 * **Ba cách vào ứng dụng ở `SCR-LOGIN`:** (1) Username + Mật khẩu; (2) Đăng nhập bằng Google; (3) **Khách** (xem 0.3).
-* **Hai cách đăng ký:** (a) Username + Mật khẩu → Email → OTP email (1.1); (b) Google → đặt Username + Mật khẩu ở `SCR-ONBOARDING`, **không OTP** (1.2). Sau khi đăng ký, người dùng đăng nhập bằng Username + Mật khẩu **hoặc** bấm Đăng nhập bằng Google (tài khoản Google đã đăng ký).
+* **Hai cách đăng ký (PO đổi 29/10/2026):** (a) Username + Mật khẩu + Xác nhận mật khẩu; Email và OTP là **tùy chọn**, được bỏ qua tại bước Email hoặc OTP để vào ứng dụng ngay (1.1); (b) Google → đặt Username + Mật khẩu ở `SCR-ONBOARDING`, **không OTP** (1.2). Tài khoản chưa có email vẫn đăng nhập bằng Username + Mật khẩu và dùng các tính năng thành viên P1.
 * **Đăng nhập Username + Mật khẩu:** chỉ dùng username (không dùng email làm tên đăng nhập), **không phân biệt hoa thường**. Sai username hoặc mật khẩu luôn báo một câu chung: *"Sai tên đăng nhập hoặc mật khẩu"*.
 * **Khoá thử sai:** đếm theo username đã chuẩn hoá chữ thường, **kể cả username không tồn tại**. Sai **5 lần trong 15 phút** → chặn đăng nhập bằng mật khẩu cho username đó **15 phút** tính từ lần sai thứ 5. Trong thời gian chặn, mọi lần thử (kể cả đúng mật khẩu) đều báo: *"Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút"*. Đăng nhập thành công đặt lại bộ đếm. Đăng nhập Google **không** tính vào và không bị chặn bởi bộ đếm này.
+* **Email bổ sung sau (29/10):** ứng dụng và Hồ sơ nhắc rõ chưa có email hoặc email đang chờ xác minh. Người dùng thêm email và nhập OTP ngay trong Hồ sơ; chỉ mã đúng mới gắn email đã xác minh vào **cùng tài khoản/user_id**, không tạo tài khoản ứng dụng mới, không thay đổi phiên hoặc dữ liệu ván. Không tự gộp tài khoản có email trùng. Chưa có email đã xác minh thì không có địa chỉ khôi phục tài khoản.
 
 ### 0.3 Chế độ Khách lên P1
 * Khách thuộc **P1**, áp dụng **đúng Quyết định 1.3** cho các tính năng có ở P1: nhập tên tạm qua `MODAL-GUEST-NAME` (2–20 ký tự, qua bộ lọc từ cấm), phiên tối đa 12 giờ (không hết khi đang ngồi ghế/trong ván), nhãn **"(Khách)"** cạnh tên, tối đa **1 phòng đang mở** do mình tạo.
@@ -56,6 +57,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ### 0.4 Gửi email OTP qua SMTP ngoài
 * Thay quyết định "SMTP mặc định của Supabase" ở 10.1. Lý do: dịch vụ mặc định **chỉ gửi tới địa chỉ đã cấp phép trước (thành viên team Supabase)**, hạn mức **2 thư/giờ**, không cam kết giao thư → người ngoài nhóm (giảng viên, "khách hàng") không đăng ký được.
 * Gắn một dịch vụ SMTP có gói miễn phí vào **Custom SMTP** của Supabase Auth. Tiêu chí chọn: gửi được tới Gmail bất kỳ; không bắt buộc tên miền riêng; hạn mức miễn phí đủ cho phát triển và demo. Nhà cung cấp cụ thể chốt trong Task cấu hình (kiểm tra hạn mức tại thời điểm làm). Điều chỉnh giới hạn tốc độ gửi email của Supabase Auth cho phù hợp.
+* **Bổ sung 29/10:** OTP đăng ký tùy chọn vẫn qua Supabase; OTP thêm email cho tài khoản đang đăng nhập được máy chủ gửi qua SMTP thật bằng cùng nhóm cấu hình `SMTP_*`. Thiếu cấu hình/lỗi gửi phải báo lỗi, không giả thành công và không chặn đăng ký bỏ qua email.
 
 ### 0.5 Danh sách phòng PUBLIC tại Sảnh
 * **Cột hiển thị:** Tên phòng · Host (Display Name, kèm "(Khách)" nếu là Khách) · Mức giờ · Trạng thái (*Đang chờ* / *Đang đấu*) · Người xem **x/N** (N = trần đã chọn; phòng "Không có người xem" hiện *"Không cho xem"*).
@@ -95,8 +97,8 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ### 0.11 Hệ quả phân kỳ
 * **Lên P1:** Chế độ Khách (1.3, `MODAL-GUEST-NAME`), Xin đổi bên trong phòng tự tạo (`MODAL-SIDE-SWAP-PROMPT`), khoá thử sai đăng nhập, SMTP ngoài, nút "Vào chơi" ở Sảnh, "Ván mới" ở ván AI, "Ở lại phòng" ở hộp kết quả.
-* **Thành phần giao diện:** P1 = **26**, P2 = **11** (tổng 37 không đổi).
-* **Vẫn P2:** Đánh Hạng, ghép ngẫu nhiên, Tái đấu, Xin đi lại, Quên mật khẩu/khôi phục Username, đổi Username, chat 1-1, Thách đấu, sticker, QR, Lịch sử/Replay/FEN/PGN, mức giờ Không giới hạn + chống treo ván, widget AI, công cụ demo, `MODAL-MEDIA-TAB-SWITCH`, giao diện Giấy Sáng/Theo hệ thống.
+* **Thành phần giao diện cập nhật 30/10:** P1 = **28**, P2 = **9**, tổng 37 không đổi; hai màn Quên/Đặt lại mật khẩu chuyển P1 theo 0.18.
+* **Vẫn P2:** Đánh Hạng, ghép ngẫu nhiên, Tái đấu, Xin đi lại, khôi phục Username, đổi Username, chat 1-1, Thách đấu, sticker, QR, Lịch sử/Replay/FEN/PGN, mức giờ Không giới hạn + chống treo ván, widget AI, công cụ demo, `MODAL-MEDIA-TAB-SWITCH`, giao diện Giấy Sáng/Theo hệ thống. **Quên mật khẩu chuyển P1 theo 0.18, PO chốt 30/10.**
 
 ### 0.12 Lặp thế và chu kỳ lặp (PO chốt 08/10)
 * **Hai thế cờ giống nhau** khi vị trí của mọi quân giống hệt **và** cùng một bên tới lượt đi.
@@ -132,23 +134,34 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 Ba câu hỏi của lượt review đã được giải quyết; không còn điều kiện chờ PO cho ba điểm này. Đồng bộ vào AC/TC và Task hiện có, giữ **9 Epic / 27 Story / 71 Task**.
 
+### 0.18 YC1: đăng ký ba bước và hai chức năng mật khẩu P1 — PO chốt 30/10/2026
+
+* Giữ đăng ký ba bước, được bỏ qua Email/OTP như 1.1.
+* **Đổi mật khẩu tại Hồ sơ thuộc P1:** thành viên đang đăng nhập nhập mật khẩu cũ + mật khẩu mới + xác nhận mới; chỉ đổi khi mật khẩu cũ đúng và dữ liệu mới hợp lệ. Thành công giữ phiên hiện tại, không kéo dài hạn phiên, đăng xuất các phiên khác; không cần email hoặc OTP thay mật khẩu cũ.
+* **Quên mật khẩu thuộc P1:** nhập **username**, gửi OTP chỉ tới email liên hệ đã xác minh của đúng tài khoản; OTP đúng mới cho đặt mật khẩu mới/xác nhận. Thành công thu hồi phiên cũ, về Login để đăng nhập lại; OTP không tự cấp phiên ứng dụng.
+* Tài khoản chưa có/chỉ có email pending: thông báo **"Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu."** Không gửi OTP hoặc dùng email kỹ thuật. Username không tồn tại dùng cùng phản hồi không đủ điều kiện; không trả địa chỉ email cho người chưa xác minh. Đây là quy ước an toàn cho trường hợp PO chưa yêu cầu câu chữ riêng.
+* PO chọn username sau khi được nêu rủi ro phản hồi cụ thể có thể bị dùng dò trạng thái email; không tuyên bố luồng recovery chống dò hoàn toàn. Đăng nhập vẫn dùng thông báo chung và khóa thử sai cũ. "Gmail" không bổ sung ràng buộc chỉ chấp nhận @gmail.com; tiếp tục hỗ trợ email hợp lệ theo 1.1.
+* Khôi phục Username và đổi Username vẫn P2; đổi email đã xác minh vẫn ngoài phạm vi. Không thay hạn 04/11/2026; YC1–YC8 P1 được xử lý trước P2.
+* Đặc tả riêng và 20 tiêu chí bổ sung: [P1-YC1-TAI-KHOAN-VA-XAC-THUC.md](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Số 268 AC/880 giờ/71 Task trong kế hoạch cũ là baseline trước thay đổi, không chứng minh đã bao gồm công việc mới; chưa cập nhật Jira/ước lượng trong tác vụ tài liệu này. Hai màn hình quên/reset chuyển P1; bảng đếm 26/11 cũ được thay bằng 28/9, tổng 37 không đổi.
+
 ---
 
 ## PHẦN 1: TÀI KHOẢN & ĐĂNG NHẬP (Yêu cầu 1)
 
-### Quyết định 1.1: Luồng Đăng ký tài khoản hệ thống (Wizard 3 bước: Username+Mật khẩu $\rightarrow$ Email $\rightarrow$ OTP xác minh)
-* **Lựa chọn đã chốt:** **[REG-FLOW] Đăng ký theo quy trình phân bước trực quan kèm xác minh OTP Email**
+### Quyết định 1.1: Đăng ký Username + Mật khẩu; Email/OTP tùy chọn, bổ sung sau (PO đổi 29/10/2026)
+* **Lựa chọn đã chốt:** **[REG-FLOW] Có thể bỏ qua Email hoặc OTP, hoàn tất tài khoản và vào ứng dụng ngay**
 * **Mô tả nghiệp vụ:**
   * Tại màn hình Đăng ký (`SCR-REGISTER`), giao diện hiển thị 2 khung nhập liệu ban đầu:
     * `Username:` (Tên đăng nhập: duy nhất toàn hệ thống, 3–20 ký tự, viết liền không dấu `^[a-zA-Z0-9_]{3,20}$`).
     * `Mật khẩu:` (Tối thiểu 8 ký tự, có ô xác nhận lại mật khẩu).
   * **Quy trình 3 bước hoàn tất đăng ký:**
     1. **Bước 1 (Nhập Username & Mật khẩu):** Người dùng điền đầy đủ và bấm nút **"Xác nhận / Tiếp tục"**. Hệ thống kiểm tra tính duy nhất (UNIQUE) của `username` và từ chối tên chứa từ cấm ngay ở bước này (0.17, PO duyệt 09/10).
-    2. **Bước 2 (Nhập Email):** Giao diện chuyển tiếp mượt mà sang khung nhập `Email:`. Người dùng điền địa chỉ email chính chủ và bấm **"Xác nhận Email"**.
-    3. **Bước 3 (Xác thực Email qua mã OTP):** Hệ thống kích hoạt Supabase Auth gửi mã OTP 6 chữ số đến địa chỉ email vừa nhập, đồng thời hiển thị khung nhập mã OTP. Người dùng kiểm tra hòm thư (check mail), lấy mã và nhập vào hệ thống để xác nhận email vừa nhập là chính xác và đang hoạt động. Xác thực OTP thành công $\rightarrow$ Tài khoản chuyển sang trạng thái `ACTIVE`, tự động đăng nhập và đưa vào sảnh chính.
-  * **Thời điểm tạo tài khoản:** Tài khoản **dùng được** (có hồ sơ và đăng nhập được) chỉ có **sau khi OTP xác thực thành công và hoàn tất bước cuối**. Trước đó người dùng chưa có hồ sơ và không đăng nhập được; **hệ thống xác thực (Supabase) có thể giữ tạm một bản ghi xác thực chưa xác nhận** (Product Owner chọn Phương án B ngày 03/10/2026), được dọn sau khoảng 1 giờ (tối đa khoảng 65 phút) để email không bị kẹt; username **không bị giữ chỗ** khi người dùng bỏ dở giữa chừng (đóng tab, hết hạn OTP). Máy chủ kiểm tra lại tính duy nhất của `username` và `email` ở bước cuối; nếu username đã bị người khác lấy trong lúc chờ thì báo lỗi và quay về Bước 1.
+    2. **Bước 2 (Email tùy chọn):** Người dùng nhập email chính chủ và bấm **"Xác nhận Email"**, hoặc chọn **"Bỏ qua email, vào Sảnh"**. Bỏ qua thì tạo tài khoản thành viên hoạt động bằng credentials hợp lệ và tự đăng nhập, chưa có email đã xác minh.
+    3. **Bước 3 (OTP tùy chọn):** Nếu chọn thêm email ngay, Supabase gửi OTP 6 số; mã đúng hoàn tất tài khoản với email đã xác minh. Người dùng vẫn được **bỏ qua OTP** để vào ứng dụng; bản đăng ký email tạm chưa xác minh được hủy an toàn, không được tự coi email đó là đã xác minh.
+  * **Thời điểm tạo tài khoản:** Tài khoản dùng được khi hoàn tất qua OTP **hoặc chủ động bỏ qua email/OTP**. Việc chỉ đóng tab không phải hành động bỏ qua và không hoàn tất tài khoản. Nhánh đang chờ OTP có thể giữ bản xác thực Supabase tạm, dọn khoảng 60–65 phút, không giữ username. Máy chủ kiểm lại username khi hoàn tất; tên bị người khác lấy thì báo lỗi quay về bước 1. Tài khoản đã hoàn tất qua bỏ qua không thuộc diện dọn đăng ký tạm.
   * **Phục hồi đăng ký (duyệt 04/10):** Nếu đã ghi `profiles.completed_at` nhưng còn cờ `PENDING`, tác vụ phục hồi hoàn tất xoá cờ, **không xoá tài khoản đã ghi hoàn tất**; trước khi phục hồi xong vẫn chặn sử dụng. Nếu chưa có `completed_at`, tiếp tục chặn và dọn theo thời hạn hiện có. Đăng ký, phục hồi và dọn cùng danh tính phải tuần tự hoá để tránh xoá nhầm.
   * **Email đã tồn tại:** Ở Bước 2, nếu email đã có tài khoản thì hiển thị ⚠️ *"Email này đã được đăng ký"* (cùng thông báo với luồng Google) và không gửi OTP.
+  * **Xác minh sau trong Hồ sơ:** trạng thái phân biệt chưa có email, đang chờ xác minh và đã xác minh. Gửi/gửi lại OTP phải gắn với danh tính phiên hiện hành; mã 6 số, hạn 180 giây, gửi lại sau 60 giây, tối đa 5 lần nhập sai cho yêu cầu thêm email. Kiểm trùng email cả lúc gửi lẫn hoàn tất; email đang chờ chưa được coi là email đã xác minh. Thành công cập nhật cùng `user_id`, giữ phiên/ghế/dữ liệu; cảnh báo ẩn sau phản hồi thành công từ server.
 
 ---
 
@@ -240,19 +253,16 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
   3. **Bước 3 (Xác thực & Mở khóa):** Hệ thống xác thực OTP thành công $\rightarrow$ Mở khóa cho phép nhập liệu ô `Username` mới.
   4. **Bước 4 (Đổi & Xác nhận):** Người dùng nhập `username` mới mong muốn (unique, 3–20 ký tự) và bấm **"Xác nhận thay đổi"** $\rightarrow$ Cập nhật thành công.
 * **Bảo toàn dữ liệu tuyệt đối (Data Integrity):** Toàn bộ lịch sử ván cờ, điểm Elo, tin nhắn chat và danh sách bạn bè đều gắn với `user_id` (UUID bất biến). Đổi Username bảo toàn nguyên vẹn 100% dữ liệu.
-* **Chính sách đối với Email:** Trường `email` hiển thị khóa cứng hoàn toàn (`READONLY` / `DISABLED`), tuyệt đối không cho phép đổi nhằm bảo vệ danh tính gốc Supabase Auth và là đích nhận OTP bất biến.
+* **Chính sách đối với Email (29/10):** Cho phép bổ sung và xác minh email đầu tiên cho tài khoản chưa có email. Trước khi xác minh có thể nhập lại email đích; sau khi đã xác minh thì email chỉ đọc, không có chức năng đổi/xóa email. Định danh kỹ thuật dùng với Supabase không phải email liên hệ và không được hiển thị thay email người dùng.
 
 ---
 
-### Quyết định 1.7: Khôi phục Username & Đặt lại mật khẩu (P2)
-* **Lựa chọn đã chốt:** **[PWD-RESET] Khôi phục Username và đặt lại mật khẩu bằng OTP gửi về email; áp dụng cho mọi tài khoản, vẫn thuộc P2**
-* **Mô tả nghiệp vụ:**
-  1. Ở `SCR-FORGOT-PASSWORD` người dùng nhập email. Hệ thống **luôn** trả cùng một thông báo *"Nếu email này đã đăng ký, mã khôi phục đã được gửi"*, không tiết lộ email có tồn tại hay không.
-  2. Mã OTP 6 chữ số dùng **đúng quy tắc của `Quyết định 1.5`** (hạn 3 phút, giới hạn nhập sai theo `Quyết định 1.5`, gửi lại sau 60 giây).
-  3. Ở `SCR-RESET-PASSWORD` xác minh OTP trước; **chỉ sau OTP hợp lệ** mới hiển thị **Username hiện tại** của tài khoản gắn với email đó (PO duyệt 05/10). Nếu chỉ quên Username, quay về Đăng nhập và dùng mật khẩu hiện tại, không bắt buộc đổi mật khẩu. Nếu quên cả mật khẩu, tiếp tục nhập mật khẩu mới (tối thiểu 8 ký tự) + xác nhận. Dùng lại hai màn hình/URL khôi phục hiện có, không thêm màn hình. Email được chuyển giữa hai màn hình bằng trạng thái của ứng dụng, **không đặt email lên URL**.
-  4. Đổi thành công: mọi phiên đăng nhập khác của tài khoản bị đăng xuất; người dùng phải đăng nhập lại bằng mật khẩu mới.
-  5. Tài khoản tạo bằng Google cũng có mật khẩu (`Quyết định 1.2`) nên dùng được luồng này.
-  6. **PO xác nhận và bổ sung 05/10:** OTP không phải phương thức đăng nhập trực tiếp vào ứng dụng. OTP đăng ký chỉ hoàn tất đăng ký theo 1.1; OTP khôi phục (P2) chỉ cho xác thực, xem Username hiện tại và đặt lại mật khẩu nếu cần, sau đó về màn hình Đăng nhập để đăng nhập lại. Xác minh OTP khôi phục không tự cấp quyền dùng ứng dụng; trước khi xác minh vẫn dùng thông báo chung, không tiết lộ email có tài khoản hay không.
+### Quyết định 1.7: Quên mật khẩu bằng username (P1) và khôi phục Username (P2)
+* **P1 — PO chốt 30/10:** tại `/forgot-password` nhập username, không nhập email đích; server chỉ gửi OTP tới email liên hệ đã xác minh của tài khoản. Chưa có email đã xác minh hoặc username không tồn tại trả thông báo không đủ điều kiện ở 0.18. Lỗi SMTP báo lỗi thật, không giả đã gửi.
+* OTP 6 số, hạn 180 giây, gửi lại sau 60 giây, giới hạn xác minh theo 1.5. Đúng OTP mới mở quyền đặt mật khẩu mới tối thiểu 8 ký tự + xác nhận khớp, không hỏi mật khẩu cũ. Quyền này giới hạn đúng tài khoản/yêu cầu/mục đích, không dùng OTP đăng ký/thêm email thay thế.
+* Reset thành công giữ user_id/dữ liệu, vô hiệu quyền reset đã dùng và thu hồi phiên đăng nhập cũ; về `/login`, phải đăng nhập lại. Không tự cấp quyền dùng ứng dụng hoặc vào phòng bằng OTP; không lộ email/token trên URL/log. Tài khoản Google có mật khẩu ứng dụng cũng dùng được.
+* **P2 — chỉ khôi phục Username:** người quên username nhập email, phản hồi chung "Nếu email này đã đăng ký, mã khôi phục đã được gửi"; chỉ OTP đúng mới hiện username hiện tại, sau đó về Login dùng mật khẩu hiện có. Không tự reset mật khẩu hay đăng nhập. Nếu cần reset sau khi biết username thì dùng luồng P1 bên trên. Email không nằm trên URL.
+* Luồng P1 phản hồi cụ thể thiếu email thay thế yêu cầu cũ luôn phản hồi chung cho Quên mật khẩu; yêu cầu không dò email vẫn áp cho luồng khôi phục Username P2. Chi tiết bảo mật/ngoại lệ và nghiệm thu theo tài liệu YC1, không dùng thay đổi này để nới quyền phiên ứng dụng.
 
 ---
 
@@ -269,6 +279,15 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
   * *Đang trong hàng đợi:* Người đang tìm trận (Casual hoặc Ranked) hiển thị là 🟠 *"Đang đấu"* (không nhận lời mời hay Thách đấu); nếu mất kết nối quá **30 giây** thì tự rút khỏi hàng đợi.
   * *Ván dở:* Nếu có ván hoặc phòng đang dở, Sảnh hiển thị banner **"Bạn có ván đang chơi dở — Quay lại"**.
   * **Đăng xuất chủ động (duyệt 04/10):** Khi đang đấu online, hiện xác nhận rõ hậu quả đầu hàng; đồng ý thì máy chủ kết thúc ván `RESIGN`, thực hiện rời phòng rồi đăng xuất; Huỷ giữ nguyên ván và phiên. Không được chỉ xoá phiên ở client để thay cho lệnh đầu hàng. Đăng xuất ở `WAITING`/`FINISHED` thực hiện rời phòng theo 2.3, không xử thua. Ván AI theo 6.3. Đóng tab/mất mạng vẫn theo ân hạn, không đồng nhất với Đăng xuất chủ động.
+
+
+### Quyết định 1.9: Đổi mật khẩu trong Hồ sơ (P1, PO chốt 30/10/2026)
+* Thành viên có phiên hợp lệ mở Hồ sơ, nhập **Mật khẩu hiện tại / Mật khẩu mới / Xác nhận mật khẩu mới**. Server kiểm mật khẩu cũ và kiểm lại mật khẩu mới tối thiểu 8 ký tự, xác nhận khớp, đúng tài khoản phiên; Khách/người chưa đăng nhập không có quyền.
+* Không bắt buộc email đã xác minh hoặc OTP cho luồng này. Mật khẩu cũ sai/dữ liệu mới lỗi thì không đổi và không thu hồi phiên như thể thành công.
+* Thành công giữ phiên thực hiện với hạn cũ, thu hồi các phiên khác cả ở API/socket/refresh. Không tạo đăng nhập từ thiết bị khác hoặc tự xử đầu hàng ván ở phiên đang giữ. Không đổi danh tính, email, Google, bạn bè hoặc dữ liệu ván.
+* Lỗi một phần giữa Auth và thu hồi phiên phải đối soát/xử lý và báo đúng, không báo hoàn tất giả. Không log/lưu mật khẩu thô; kiểm quyền lại khi ghi cuối. Chi tiết tại đặc tả YC1.
+
+---
 
 ## PHẦN 2: TẠO PHÒNG, PHÒNG CHỜ & MỜI BẠN (Yêu cầu 2 & 3)
 
@@ -397,7 +416,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 ### Quyết định 2.7: Phòng tự tạo — thông số, cách mời và khóa phòng
 * **Lựa chọn đã chốt (PO làm rõ 05/10/2026):** **[ROOM-SPEC] Mời nhanh bạn bè online hoặc chia sẻ link/mã cho người chưa kết bạn; phòng có `PUBLIC` / `CODE_ONLY` / `LOCKED`, tối đa năm người xem**
 * **Mô tả nghiệp vụ:**
-  1. **Trường khi tạo phòng (`MODAL-CREATE-ROOM`, cập nhật theo yêu cầu PO 19/10/2026):** Không yêu cầu nhập tên phòng. Người dùng chỉ chọn mức giờ (4 mức, `Quyết định 2.1`; P1 chỉ 5/10/15 phút), số người xem tối đa (**Không có người xem**, hoặc 1–5; **mặc định 5**; không đổi sau khi tạo). Máy chủ tự cấp ID và mã phòng **8 chữ số**, đặt tên hiển thị **"Phòng <mã>"**. Phòng tạo ở `CODE_ONLY`; Host có thể mở `PUBLIC` tại Cài đặt phòng. `LOCKED` chỉ bật sau khi đủ hai người chơi (`Quyết định 2.8`). Phe mặc định của Host là Đỏ (`Quyết định 2.3`). Mức giờ **không đổi được** sau khi tạo phòng. Phòng đã tồn tại giữ nguyên tên/mã.
+  1. **Trường khi tạo phòng (`MODAL-CREATE-ROOM`, PO bỏ tên phòng 19/10/2026 và duyệt chọn quyền truy cập 28/10/2026):** Không yêu cầu nhập tên phòng. Người dùng chọn mức giờ (4 mức, `Quyết định 2.1`; P1 chỉ 5/10/15 phút), số người xem tối đa (**Không có người xem**, hoặc 1–5; **mặc định 5**; không đổi sau khi tạo) và **Quyền truy cập**: **Chỉ qua mã/link/lời mời (`CODE_ONLY`, được chọn mặc định)** hoặc **Công khai (`PUBLIC`)**. Người dùng có thể đổi lựa chọn quyền truy cập ngay trong form trước khi tạo; máy chủ tạo phòng trực tiếp ở chế độ đã chọn. Máy chủ tự cấp ID và mã phòng **8 chữ số**, đặt tên hiển thị **"Phòng <mã>"**. Host vẫn có thể đổi quyền truy cập tại Cài đặt phòng. Không cho chọn `LOCKED` khi tạo; chỉ bật sau khi đủ hai người chơi (`Quyết định 2.8`). Phe mặc định của Host là Đỏ (`Quyết định 2.3`). Mức giờ **không đổi được** sau khi tạo phòng. Phòng đã tồn tại giữ nguyên tên/mã/quyền truy cập.
   2. **Quyền vào phòng:**
 
 | Chế độ | Hiện ở Sảnh | Người mới vào bằng | Ghi chú |
@@ -848,7 +867,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
   * **Ván bị gián đoạn khi máy chủ khởi động lại (PO chốt lại 09/10, 0.17):** hiện hộp kết quả trung tính **"Ván bị gián đoạn"**: không có bên thắng, thua hay hoà; không đổi Elo. Phòng tự tạo về `WAITING`, reset Sẵn sàng, có *Ở lại phòng* và *Rời phòng*, không hạn đóng 10 phút. Luật P2 của ghép ngẫu nhiên/Ranked giữ theo 2.0/7.2; trạng thái AI P1 theo 6.3.
   * **Yêu cầu phi chức năng NFR-08, NFR-09, NFR-10 (PO duyệt 04/10/2026):** (08) nhật ký vận hành có cấu trúc, điểm kiểm tra sức khoẻ, không ghi mật khẩu/OTP/token/nội dung chat; (09) lưu giữ dữ liệu: ván online và nước đi lưu bền, ván với máy chỉ ở bộ nhớ, chat phòng xoá khi phòng đóng, biên lai lệnh xoá sau 24 giờ, nhật ký giữ tối đa 14 ngày; (10) tin chat, tên hiển thị, tên phòng hiển thị như văn bản thuần. Chi tiết và cách kiểm ở mục NFR của [BACKLOG-P1.md](BACKLOG-P1.md). Từ nay là điều kiện bắt buộc của nghiệm thu P1.
   * **Cổng kiểm chứng (PO duyệt 04/10/2026; chi tiết nay ở mục Cổng kiểm chứng của BACKLOG-P1.md; (a) sửa 07/10 theo SMTP ngoài):** (a) demo đăng ký phải dùng **OTP thật** tới email thật (kể cả email ngoài nhóm), không dùng giả lập làm bằng chứng; (b) GATE-OTP: gọi thẳng chức năng đổi email của hệ thống đăng nhập phải không đổi được (nếu cấu hình không chặn được thì ghi "bị chặn" cho phần đó), và email ngoài nhóm hoặc vượt hạn mức thì báo lỗi thật, không để tài khoản kẹt; (c) GATE-MEDIA: ghi thời gian thu hồi quyền thực tế và mức dùng hạn mức miễn phí của LiveKit, **không đặt ngưỡng đạt**; (d) phần camera/micro của bài tải chạy **quy mô nhỏ (~3 phòng)**, **chỉ ghi số đo**, không nằm trong điều kiện đạt P1.
-  * **Google OAuth vào P1 (PO quyết định 04/10/2026):** **đăng ký và đăng nhập bằng Google chạy thật ở P1** (`Quyết định 1.2`, `SCR-ONBOARDING`, tiêu chí hiện hành ở US-01.3 trong BACKLOG-P1.md). Liên kết *Quên mật khẩu?* hiện mờ "Sắp ra mắt"; nút *Guest* (Khách) **hoạt động ở P1 từ 07/10** (Phần 0 mục 0.3). Hệ quả: cần dịch vụ Google OAuth (khoá do nhóm tạo trên Google), thử nghiệm **không tự liên kết cùng email** của Supabase (cổng GATE-GOOGLE chuyển P1) và thêm công việc vào Epic 1.
+  * **Google OAuth và Khách ở P1:** đăng ký/đăng nhập Google chạy thật, có onboarding và không tự liên kết email trùng; Khách hoạt động từ 07/10. **Liên kết Quên mật khẩu hoạt động ở P1 từ 30/10** theo 0.18/1.7, không còn "Sắp ra mắt".
   * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
   * ~~ĐÃ THAY bởi Phần 0 mục 0.16 (08/10): LiveKit tự chạy + LiveKit Cloud dự phòng~~ **Hạ tầng media (PO chốt 04/10/2026):** dùng **LiveKit Cloud** (gói miễn phí lúc bắt đầu, không tự dựng LiveKit); hạn mức, chi phí và việc thu hồi quyền kiểm theo GATE-MEDIA ở BACKLOG-P1.md.
   * **Quy mô thiết kế:** Hướng tới tối đa khoảng **50 người dùng đồng thời và 10 phòng/ván cùng lúc**. Đo bằng GATE-REALTIME (US-00.5, BACKLOG-P1.md).
@@ -859,7 +878,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 
 ### Quyết định 10.2: Cố ý KHÔNG làm trong phạm vi này
 * **Lựa chọn đã chốt:** **[OUT-OF-SCOPE] Danh sách loại trừ tường minh**
-* **Danh sách:** giải đấu · gợi ý nước đi khi đánh với máy · cộng giây sau mỗi nước · đổi chữ Hán sang chữ Việt · đổi email · **xoá tài khoản** (đã duyệt 03/10; nếu cần, xử lý thủ công theo yêu cầu, chưa có chức năng trong ứng dụng) · **báo cáo vi phạm, quản trị viên, khoá/cấm tài khoản** · **chặn người dùng riêng** (đã có cách thay thế ở `Quyết định 5.5`) · **tải ảnh đại diện** · **trang hồ sơ công khai riêng** · **đa ngôn ngữ** · **điều khoản sử dụng và chính sách quyền riêng tư** (rủi ro đã ghi nhận) · luật đuổi quân liên tục chi tiết (để Giai đoạn 2) · **đổi mật khẩu khi đang đăng nhập** (dùng Quên mật khẩu, `Quyết định 1.7`) · **bảng xếp hạng theo tuần/ngày hoặc theo mùa** (chỉ một bảng toàn thời gian, `Quyết định 7.1`).
+* **Danh sách:** giải đấu · gợi ý nước đi khi đánh với máy · cộng giây sau mỗi nước · đổi chữ Hán sang chữ Việt · đổi email · **xoá tài khoản** (đã duyệt 03/10; nếu cần, xử lý thủ công theo yêu cầu, chưa có chức năng trong ứng dụng) · **báo cáo vi phạm, quản trị viên, khoá/cấm tài khoản** · **chặn người dùng riêng** (đã có cách thay thế ở `Quyết định 5.5`) · **tải ảnh đại diện** · **trang hồ sơ công khai riêng** · **đa ngôn ngữ** · **điều khoản sử dụng và chính sách quyền riêng tư** (rủi ro đã ghi nhận) · luật đuổi quân liên tục chi tiết (để Giai đoạn 2) · **bảng xếp hạng theo tuần/ngày hoặc theo mùa** (chỉ một bảng toàn thời gian, `Quyết định 7.1`). Đổi mật khẩu trong Hồ sơ đã được đưa vào P1 theo 0.18/1.9 ngày 30/10.
 
 ---
 
@@ -885,7 +904,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 
 | # | Mục tiêu cốt lõi | Quyết định / thành phần phục vụ |
 |---|---|---|
-| 1 | Giao diện đăng ký / đăng nhập | 1.1 (đăng ký 3 bước OTP), **1.2 (đăng ký và đăng nhập bằng Google, PO kéo lên P1 ngày 04/10/2026)**, đăng nhập Username + Mật khẩu và khoá thử sai (0.2), **Khách (1.3, 0.3 — lên P1 07/10)**, SMTP ngoài (0.4), 1.8 (phiên); `SCR-LOGIN`, `SCR-REGISTER`, `SCR-ONBOARDING`, `MODAL-GUEST-NAME`, `SCR-PROFILE-SETTINGS` (chỉ Display Name và Đăng xuất) |
+| 1 | Giao diện đăng ký / đăng nhập và quản lý tài khoản | 1.1 đăng ký ba bước email/OTP tùy chọn; 1.2 Google; 0.2 đăng nhập/khóa thử sai; 0.3 Khách; 0.4 SMTP; 1.8 phiên; **0.18, 1.7 Quên mật khẩu bằng username và 1.9 Đổi mật khẩu tại Hồ sơ (P1 từ 30/10)**; gồm Login, Register, Onboarding, Guest Name, Profile Settings, Forgot Password và Reset Password |
 | 2 | Tạo phòng chơi game | 2.3, 2.7, 2.8, Xin đổi bên (0.6), sau ván (0.7); `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`, `MODAL-SIDE-SWAP-PROMPT` |
 | 3 | Mời bạn vào phòng (ngay trong game, gửi link, mã phòng) | 2.2 (Link + Mã 8 ký tự), 2.4 (tự chuyển vào phòng sau đăng nhập), 2.5 (**mời bạn bè đang online**), 5.5 (hệ thống bạn bè tối thiểu: tìm theo username, kết bạn hai chiều, trạng thái online/đang đấu, chuông lời mời kết bạn); `MODAL-INVITE`, `SCR-FRIENDS`. Nhắn tin 1-1 và Thách đấu là P2 |
 | 4 | Khởi tạo bàn cờ | 3.1, 3.4 (bàn cờ SVG, quân chữ Hán, click/kéo thả, âm thanh) |
@@ -894,7 +913,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 | 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1 (3 mức chia sẻ, người xem chỉ nhận), 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 0.13 (chat và camera/mic ở cả phòng chờ), 0.14 (lỗi media không ảnh hưởng ván), 0.16 (hạ tầng LiveKit); `PANEL-CHAT`, `PANEL-MEDIA` |
 | 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe), Ván mới (0.9); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
 
-* **Làm sau (P2), đã chuyển khỏi P1:** Đánh Hạng toàn bộ (Elo, ghép trận Ranked, bảng xếp hạng, quy tắc Ranked, `Quyết định 7.1`, `7.2`, `8.1`, phần Ranked của `8.3`) · Ghép ngẫu nhiên Casual · Quên/đặt lại mật khẩu (1.7) · Đổi username (1.6) · Chat 1-1 giữa bạn bè và Thách đấu (5.2, 8.2, nút "Nhắn tin"/"Thách đấu" ở `SCR-FRIENDS`) · Sticker (5.1) · Mã QR (2.2 phần QR) · Xin đi lại ở Đánh Thường (3.2, 3.6 phần đi lại) và đi lại với máy (6.3 phần Undo) · Tái đấu (có chọn phe, 0.8) · mức giờ "Không giới hạn" và cảnh báo chống treo ván · Lịch sử ván, Replay, FEN/PGN, lưu ván AI (6.2, 9.1) · widget AI, công cụ demo (9.2, 9.3) · `MODAL-MEDIA-TAB-SWITCH` · lựa chọn Giấy Sáng/Theo hệ thống (10.3).
+* **Làm sau (P2):** Đánh Hạng toàn bộ, ghép ngẫu nhiên Casual, khôi phục Username (1.7 phần P2), đổi Username (1.6), chat 1-1, Thách đấu, sticker, QR, Xin đi lại online/AI, Tái đấu chọn phe, giờ Không giới hạn/chống treo ván, lịch sử/replay/FEN/PGN/lưu AI, widget AI, công cụ demo, chuyển media giữa tab, Giấy Sáng/Theo hệ thống. Quên mật khẩu và Đổi mật khẩu trong Hồ sơ thuộc P1 theo 0.18.
 * **Quy tắc hiển thị tính năng P2 trong màn hình P1:** xem `DANH-MUC` §7 (lối vào điều hướng chính `DISABLED` + "Sắp ra mắt"; chức năng nằm sâu thì ẩn hẳn).
 * **Hệ quả cho P1:**
   * Sảnh có bốn lựa chọn theo 2.0: Tự tạo phòng và Đánh với máy hoạt động ở P1; Đánh Thường ghép ngẫu nhiên và Đánh Hạng hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*. Có Vào phòng bằng mã và Luật chơi mở rộng/thu gọn (10.4); có danh sách phòng `PUBLIC` với nút Vào chơi/Vào xem (0.5).

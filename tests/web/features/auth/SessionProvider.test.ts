@@ -11,6 +11,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import {
   SessionProvider,
   useSession,
+  LogoutConfirmRequired,
 } from "@web/features/auth/SessionProvider.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 
@@ -54,6 +55,7 @@ function Probe() {
   );
 }
 function mount(strict = false) {
+  vi.stubGlobal("fetch", withEmailStatus(globalThis.fetch));
   return render(
     createElement(
       strict ? StrictMode : "div",
@@ -69,10 +71,27 @@ function withoutGuest(
   inner: (url: string, init?: RequestInit) => Promise<Response>,
 ) {
   return vi.fn((url: string, init?: RequestInit) =>
-    new URL(url).pathname === "/account/guest/session"
+    new URL(url).pathname === "/api/account/guest/session"
       ? Promise.resolve(reply({ code: "AUTH_REQUIRED" }, 401))
       : inner(url, init),
   );
+}
+const verifiedEmail = {
+  email: "kythu@example.invalid",
+  emailVerified: true,
+  pendingEmail: null,
+  expiresAt: null,
+  resendAt: null,
+};
+// Answers GET /account/email from a fixture so member call counts stay unchanged.
+let emailReply = () => reply(verifiedEmail);
+let emailCalls: { url: string; init?: RequestInit }[] = [];
+function withEmailStatus(inner: typeof fetch) {
+  return vi.fn((url: string | URL | Request, init?: RequestInit) => {
+    if (!String(url).endsWith("/account/email")) return inner(url, init);
+    emailCalls.push({ url: String(url), init });
+    return Promise.resolve(emailReply());
+  });
 }
 afterEach(() => {
   cleanup();
@@ -80,6 +99,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
+  emailCalls = [];
+  emailReply = () => reply(verifiedEmail);
 });
 it("bootstraps from HttpOnly cookies without storage or token fields in public state", async () => {
   const storage = vi.spyOn(Storage.prototype, "setItem");
@@ -88,7 +109,7 @@ it("bootstraps from HttpOnly cookies without storage or token fields in public s
   mount();
   await vi.waitFor(() => expect(state().status).toBe("active-member"));
   expect(request).toHaveBeenCalledWith(
-    "http://localhost:3000/auth/refresh",
+    `${window.location.origin}/api/auth/refresh`,
     expect.objectContaining({ method: "POST", credentials: "include" }),
   );
   expect(request.mock.calls[0]![1].body).toBeUndefined();
@@ -466,9 +487,9 @@ it("refreshes an expired bearer before revoking the application session on logou
   });
   expect(state().status).toBe("anonymous");
   expect(request.mock.calls.map(([url]) => new URL(url).pathname)).toEqual([
-    "/auth/refresh",
-    "/auth/refresh",
-    "/auth/logout",
+    "/api/auth/refresh",
+    "/api/auth/refresh",
+    "/api/auth/logout",
   ]);
 });
 
@@ -488,8 +509,8 @@ it("keeps an expired-bearer actor when logout renewal is unavailable without sen
   });
   expect(state().status).toBe("active-member");
   expect(request.mock.calls.map(([url]) => new URL(url).pathname)).toEqual([
-    "/auth/refresh",
-    "/auth/refresh",
+    "/api/auth/refresh",
+    "/api/auth/refresh",
   ]);
   await act(async () => {
     await vi.advanceTimersByTimeAsync(15000);
@@ -520,6 +541,35 @@ it("cancels logout-renewal retries when a newer login is accepted", async () => 
   });
   expect(request).toHaveBeenCalledTimes(2);
 });
+
+it("retains the member after the server demands logout confirmation and signs out only after consent", async () => {
+  const request = vi.fn((url: string, init?: RequestInit) => {
+    if (url.endsWith("/auth/refresh")) return Promise.resolve(reply(session));
+    const confirmed = JSON.parse(String(init?.body ?? "{}")).confirm === true;
+    return Promise.resolve(
+      confirmed
+        ? reply({ loggedOut: true })
+        : reply({ code: "LOGOUT_CONFIRM_REQUIRED" }, 409),
+    );
+  });
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("active-member"));
+  await act(async () => {
+    await expect(current.logout()).rejects.toBeInstanceOf(
+      LogoutConfirmRequired,
+    );
+  });
+  expect(state().status).toBe("active-member");
+  expect(memberProof(await current.getRealtimeProof()).appSession).toBe(
+    session.appSession,
+  );
+  await act(async () => {
+    await current.logout(true);
+  });
+  expect(state().status).toBe("anonymous");
+  await expect(current.getRealtimeProof()).rejects.toThrow();
+});
 const googlePending = {
   kind: "pending",
   expiresAt: "2030-01-01T00:00:00Z",
@@ -548,9 +598,9 @@ it("bootstraps pending Google only after member401 and server readiness, with se
     avatar: googlePending.avatar,
   });
   expect(request.mock.calls.map(([url]) => new URL(url).pathname)).toEqual([
-    "/auth/refresh",
-    "/auth/providers",
-    "/auth/google/onboarding",
+    "/api/auth/refresh",
+    "/api/auth/providers",
+    "/api/auth/google/onboarding",
   ]);
   expect(storage).not.toHaveBeenCalled();
   await expect(current.authorizedFetch("/protected")).rejects.toThrow();
@@ -658,4 +708,64 @@ it("refreshes an expired socket bearer once and rejects unavailable or fixed-exp
   vi.setSystemTime(new Date(session.expiresAt));
   await expect(current.getRealtimeProof()).rejects.toThrow();
   expect(request).toHaveBeenCalledTimes(2);
+});
+it("reads GET /account/email once for an active member and exposes the status", async () => {
+  const request = vi.fn().mockResolvedValue(reply(session));
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(current.emailStatus.status).toBe("ready"));
+  expect(state().status).toBe("active-member");
+  expect(current.emailStatus).toMatchObject({
+    status: "ready",
+    email: "kythu@example.invalid",
+    emailVerified: true,
+  });
+  expect(emailCalls).toHaveLength(1);
+  expect(emailCalls[0]!.url.endsWith("/account/email")).toBe(true);
+  expect(emailCalls[0]!.init?.redirect).toBe("error");
+  expect(
+    request.mock.calls.some(([url]) => String(url).endsWith("/account/email")),
+  ).toBe(false);
+});
+it("keeps the member active when email status fails and recovers through reloadEmailStatus", async () => {
+  emailReply = () => reply({ code: "UNAVAILABLE" }, 503);
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(reply(session)));
+  mount();
+  await vi.waitFor(() => expect(current.emailStatus.status).toBe("error"));
+  expect(state().status).toBe("active-member");
+  emailReply = () => reply(verifiedEmail);
+  await act(async () => {
+    await current.reloadEmailStatus();
+  });
+  expect(current.emailStatus.status).toBe("ready");
+  expect(emailCalls).toHaveLength(2);
+  expect(state().status).toBe("active-member");
+});
+it("never reads email status for anonymous visitors", async () => {
+  vi.stubGlobal(
+    "fetch",
+    withoutGuest(
+      vi
+        .fn()
+        .mockResolvedValueOnce(reply({ code: "AUTH_REQUIRED" }, 401))
+        .mockResolvedValueOnce(reply({ google: false, guest: false })),
+    ),
+  );
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("anonymous"));
+  await act(async () => {});
+  expect(emailCalls).toEqual([]);
+  expect(current.emailStatus.status).toBe("idle");
+});
+it("resets email status to idle after logout so the next account never sees the previous one", async () => {
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply(session))
+    .mockResolvedValueOnce(reply({ ok: true }));
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(current.emailStatus.status).toBe("ready"));
+  fireEvent.click(screen.getByText("logout"));
+  await vi.waitFor(() => expect(state().status).toBe("anonymous"));
+  expect(current.emailStatus.status).toBe("idle");
 });

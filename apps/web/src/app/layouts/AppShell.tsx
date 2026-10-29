@@ -1,5 +1,5 @@
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, useId, type ReactNode } from "react";
 import { Button, Dialog, Tooltip } from "../../shared/ui/primitives.js";
 import "./AppShell.css";
 export interface ShellUser {
@@ -27,6 +27,8 @@ export function AppShell({
   const [menu, setMenu] = useState(false);
   const [userDropdown, setUserDropdown] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const userTrigger = useRef<HTMLButtonElement>(null);
+  const userDropdownId = useId();
 
   useEffect(() => {
     if (!userDropdown) return;
@@ -41,6 +43,7 @@ export function AppShell({
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setUserDropdown(false);
+        userTrigger.current?.focus();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -56,20 +59,19 @@ export function AppShell({
       <NavigationLink
         href="/lobby"
         aria-current={active === "/lobby" ? "page" : undefined}
+        onClick={() => setMenu(false)}
       >
         Sảnh
       </NavigationLink>
       {user?.guest ? (
-        <Button
-          variant="ghost"
-          disabledReason="Khách không dùng chức năng bạn bè."
-        >
+        <Button variant="ghost" disabledReason="Đăng ký tài khoản để kết bạn">
           Bạn bè
         </Button>
       ) : (
         <NavigationLink
           href="/friends"
           aria-current={active === "/friends" ? "page" : undefined}
+          onClick={() => setMenu(false)}
         >
           Bạn bè
         </NavigationLink>
@@ -88,6 +90,7 @@ export function AppShell({
         <NavigationLink
           href="/settings"
           aria-current={active === "/settings" ? "page" : undefined}
+          onClick={() => setMenu(false)}
         >
           Hồ sơ
         </NavigationLink>
@@ -103,6 +106,7 @@ export function AppShell({
         <NavigationLink
           href="/history"
           aria-current={active === "/history" ? "page" : undefined}
+          onClick={() => setMenu(false)}
         >
           Lịch sử
         </NavigationLink>
@@ -135,10 +139,11 @@ export function AppShell({
             <div className="xq-user-menu-wrap" ref={userMenuRef}>
               <button
                 type="button"
+                ref={userTrigger}
                 className="xq-user-pill"
                 onClick={() => setUserDropdown((open) => !open)}
                 aria-expanded={userDropdown}
-                aria-haspopup="true"
+                aria-controls={userDropdown ? userDropdownId : undefined}
                 aria-label={`Tài khoản: ${user.displayName}`}
               >
                 <span className="xq-user-avatar" aria-hidden="true">
@@ -155,7 +160,8 @@ export function AppShell({
               {userDropdown && (
                 <div
                   className="xq-user-dropdown"
-                  role="menu"
+                  id={userDropdownId}
+                  role="region"
                   aria-label="Tài khoản cá nhân"
                 >
                   <div className="xq-dropdown-header">

@@ -66,8 +66,8 @@ export class LoginService {
   /**
    * Thực hiện quy trình đăng nhập tài khoản với thời gian phản hồi sàn an toàn.
    */
-  async login(input: unknown) {
-    return this.withResponseFloor(() => this.authenticate(input));
+  async login(input: unknown, deviceToken: string | null = null) {
+    return this.withResponseFloor(() => this.authenticate(input, deviceToken));
   }
   /**
    * Xác thực tài khoản với mật khẩu trong luồng khôi phục / hoàn tất đăng ký.
@@ -93,7 +93,7 @@ export class LoginService {
       });
     });
   }
-  private async authenticate(input: unknown) {
+  private async authenticate(input: unknown, deviceToken: string | null) {
     if (!input || typeof input !== "object") throw invalidLogin();
     const {
       username,
@@ -124,6 +124,7 @@ export class LoginService {
         account.userId,
         remember,
         store,
+        deviceToken,
       );
       await store.resetAttempts(key);
       return {

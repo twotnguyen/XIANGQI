@@ -173,10 +173,22 @@ function applyUnchecked(position: Position, move: Move): Position {
  * Loại bỏ các nước ăn tướng trực tiếp và các nước đi khiến Tướng bên mình bị chiếu.
  */
 export function legalMoves(position: Position): Move[] {
-  return pseudoLegalMoves(position).filter(
-    (move) =>
-      position.board[move.to]?.type !== "king" &&
-      !isInCheck(applyUnchecked(position, move), position.turn),
+  return pseudoLegalMoves(position).filter((move) =>
+    isLegalCandidate(position, move),
+  );
+}
+
+function isLegalCandidate(position: Position, move: Move): boolean {
+  return (
+    position.board[move.to]?.type !== "king" &&
+    !isInCheck(applyUnchecked(position, move), position.turn)
+  );
+}
+
+// Adjudication only needs one legal reply, not every reply's check evaluation.
+export function hasLegalMove(position: Position): boolean {
+  return pseudoLegalMoves(position).some((move) =>
+    isLegalCandidate(position, move),
   );
 }
 

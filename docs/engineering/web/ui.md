@@ -23,6 +23,64 @@ của từng tính năng. Không coi preview hoặc guard phía client là nghi�
 phân quyền. Phóng to 200%, screen reader và đánh giá không phân biệt màu
 vẫn cần được kiểm xuyên suốt trước bàn giao đầy đủ.
 
+## Chỉnh giao diện đồng bộ (28/10/2026)
+
+- Giữ token nâu/vàng, phông local và component hiện có; native control trong
+  `.xq-ui` dùng color-scheme tối. Không thêm thư viện UI.
+- Header chuyển sang menu gọn dưới 1200px; dưới 600px thu gọn tên thương hiệu,
+  vẫn giữ tên truy cập cho liên kết. Tên tài khoản dài co lại với ellipsis.
+  Escape đóng bảng tài khoản và trả focus về nút mở; chọn liên kết trong menu
+  điện thoại đóng hộp thoại điều hướng.
+- Dialog giới hạn theo `100dvh`, chia tiêu đề / nội dung cuộn / hành động,
+  để nút đóng và Hủy không bị cuộn khỏi màn hình thấp. Chỉ style header/footer
+  trực tiếp của Dialog, không tác động header/footer lồng trong nội dung.
+- Form tạo phòng trong Dialog không lặp tiêu đề và khung; standalone vẫn giữ
+  thẻ riêng. Mã phòng sai tại Sảnh hiển thị lỗi trong luồng, không đè trợ giúp
+  hoặc thẻ bên dưới.
+- Auth tăng vùng bấm và cỡ chữ trợ giúp; input mobile giữ 16px. Hồ sơ và bạn
+  bè cho nội dung dài co/ngắt dòng. Lời mời phòng giữ trong luồng trang, không
+  tạo lớp phủ mới che bàn cờ/chat. Media một cột trên mobile; replay giữ chiều
+  cao tối thiểu cho bàn cờ và danh sách nước ở màn thấp.
+
+Đã xem `/dev/ui`, `/dev/lobby`, `/dev/login`, `/dev/register`, `/dev/board`
+ở 360×800 và 1280×720: không tràn ngang. Đã thao tác focus vòng, Escape và
+trả focus của menu; dialog tạo phòng ở 844×390 giữ footer trong màn hình và
+cuộn tới nút Tạo phòng bằng focus. Đây là kiểm giao diện preview, không phải
+nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị media.
+
+## Cài đặt dạng sidebar (29/10/2026)
+
+`/settings` dùng `features/profile/ProfilePage.tsx`: sidebar chia Hồ sơ cá nhân,
+Giao diện và Phiên đăng nhập. Các mục giữ mounted, chỉ ẩn bằng `hidden` để
+không mất tên đang nhập dở khi chuyển mục. Dưới 800px, sidebar thành thanh chọn
+ba mục phía trên nội dung; nút Đăng xuất vẫn truy cập được.
+
+Hồ sơ giữ API đổi tên và kiểm tra 2–30 ký tự; tên đăng nhập chỉ để xem,
+avatar lấy chữ cái đầu theo Unicode. Giao diện có bản xem trước cho ba chủ đề
+hiện có, áp dụng ngay và lưu bằng cơ chế theme sẵn có. Token sáng/tối chỉ đổi
+trong khung cài đặt, không thay token toàn ứng dụng. Khách chỉ thấy thông tin
+phiên và Đăng xuất; không gọi API hồ sơ thành viên. Luồng xác nhận đăng xuất
+khi đang đấu giữ nguyên.
+
+Tab Hồ sơ cá nhân (30/10/2026): tiêu đề "Cài đặt" và câu phụ nằm cùng một dòng;
+thẻ chia hai cột trên desktop (tên đăng nhập + tên hiển thị | email), bỏ khối avatar
+và phụ đề lặp với sidebar. Màn thấp (cao tối đa 800px) ẩn câu nhắc ở chân sidebar.
+Đo bằng trình duyệt với API giả: không cuộn trang ở 1280×720, 1366×768, 1440×900,
+cả khi có banner thiếu email. Dưới 800px vẫn một cột và cuộn bình thường.
+
+Email là tùy chọn từ 29/10: đăng ký có nút bỏ qua tại bước Email/OTP. `SessionProvider`
+tải `GET /account/email` riêng sau khi xác thực thành viên, không chặn quyền vào app.
+Banner toàn cục và mục email trong Hồ sơ phân biệt chưa có, đang chờ, đã xác minh và
+lỗi tải trạng thái; xác minh/gửi lại dùng API `/account/email/*`, giữ cùng tài khoản.
+Email đã xác minh chỉ đọc; không hiển thị email credential kỹ thuật. Lỗi SMTP/OTP
+phải hiển thị thật, không coi là thành công hoặc quảng bá khôi phục mật khẩu P2.
+
+Đã xem trang thật bằng phiên thành viên ở desktop 1366×900 và mobile 390×844;
+đã chuyển mục, chọn chủ đề sáng/hệ thống/cổ phong. Test riêng
+`tests/web/features/profile/ProfilePage.test.ts` đạt 7/7 dưới Node 22, bao gồm
+giữ bản nháp khi đổi mục, lưu tên, chọn chủ đề và xác nhận đăng xuất.
+Chưa thao tác lưu tên hoặc đăng xuất trên tài khoản thật.
+
 ## Chế độ Khách
 
 Đăng nhập có nút "Chơi nhanh với tư cách Khách (Guest)", mở hộp thoại
@@ -43,6 +101,12 @@ AI thì hỏi xác nhận đầu hàng trước; nếu đang có ván phòng th�
 sau. Kết nối phòng và AI dùng `getRealtimeProof()`; HTTP dùng `sessionFetch`, còn
 route thành viên giữ `authorizedFetch`.
 
+Khi tạo Khách thành công, máy chủ xóa cookie thành viên
+(`xiangqi_session`, `xiangqi_refresh`) rồi ghi cookie Khách trong cùng phản hồi.
+Khi refresh thành viên trả 401, cookie thành viên hết hiệu lực cũng được xóa trước
+khi frontend khôi phục Khách; lỗi tạm thời không xóa cookie. Không nới kiểm tra
+proof trộn. Nút Khách ở `/login` đã nối luồng thật; `/dev/*` chỉ là preview.
+
 ## Tải giao diện theo màn hình
 
 Entry chỉ tải preview khi mở route `/dev/*` tương ứng. Router tải trang đăng nhập,
@@ -54,6 +118,12 @@ Mở form Tạo phòng đồng thời tải trước module `RoomPage` để ch�
 mã lên thao tác nhập form và request tạo phòng. Reload `/rooms/:id` tải module
 phòng song song với kiểm tra phiên, nhưng chỉ đọc dữ liệu phòng sau khi phiên
 được xác thực. Không tải graph phòng khi chỉ reload Sảnh.
+
+Form Tạo phòng có mục Quyền truy cập: mặc định chọn **Chỉ qua mã/link/lời mời**
+(`CODE_ONLY`), được đổi sang **Công khai** (`PUBLIC`) ngay trước khi tạo.
+Mô tả theo lựa chọn giải thích phòng có hiện ở Sảnh hay không. Form gửi quyền
+truy cập cùng thời gian/số người xem trong một yêu cầu tạo phòng; không có
+lựa chọn Khóa phòng lúc tạo.
 
 Socket là đường tải phòng chính; chỉ đọc HTTP dự phòng khi socket báo mất
 kết nối. HTTP chỉ giúp hiển thị, không cấp quyền điều khiển. Phản hồi HTTP
@@ -86,6 +156,12 @@ Các GET khởi tạo Sảnh/thông báo chờ một
 microtask và kiểm lifecycle, bỏ lượt mount bị hủy của StrictMode; không tắt
 StrictMode hoặc thêm cache dữ liệu.
 
+Trang lịch sử dùng effect không chặn paint; GET khởi tạo cũng chờ microtask
+và kiểm epoch để bỏ lượt mount đã hủy trong StrictMode. Mỗi dòng dùng
+`React.memo` và chung một `Intl.DateTimeFormat("vi-VN")`: tải thêm hoặc đổi
+trạng thái chờ/lỗi không render lại dòng cũ khi item và callback giữ nguyên.
+Không cache lịch sử; đổi client/bộ lọc vẫn ẩn dữ liệu cũ ngay và bỏ phản hồi trễ.
+
 Phiên đăng nhập vẫn được kiểm thật tại backend trước khi hiện Sảnh. Việc tách
 mã tải không thay thế kiểm quyền, không lưu token vào localStorage và không
 loại bỏ trạng thái chờ/lỗi khi dịch vụ xác thực chưa trả lời.
@@ -117,29 +193,110 @@ Không gửi OTP giả, không hiển thị Elo mẫu hoặc coi route có tên 
 
 ## Phòng chờ thi đấu
 
-`RoomPage.tsx` và `features/rooms/rooms.css` dùng token Kỳ Đài Cổ Phong:
-hai ghế nền gỗ trầm với quân Đỏ/Đen mặt ngà, VS và đổi bên ở giữa;
-camera/mic dưới ghế, chat bên phải, mã mời/người xem ở hàng cuối.
-Hai kênh chat khi cùng mở xếp dọc để giữ đủ chỗ soạn tin.
-Dưới 1024px các khối xếp một cột; dưới 541px hai ghế cũng xếp dọc.
-Trang cuộn tự nhiên, không khoá chiều cao làm mất nội dung trên laptop.
+`RoomPage.tsx` và `features/rooms/rooms.css` dùng token Kỳ Đài Cổ Phong.
+Desktop dùng toàn bộ chiều ngang, không giới hạn 1440px hay căn giữa; cột
+camera sát mép trái màn hình. Bố cục giữ **ba cột**:
+- **Trái:** camera đối thủ ở trên, camera của bạn ở dưới (theo người chơi,
+  không cố định theo phe); người xem giữ thứ tự Đỏ/Đen. Các điều khiển media
+  nằm dưới; cuối cột là mã phòng và hai nút Sao chép mã / Sao chép link.
+- **Giữa:** hai ghế Đỏ/Đen xếp dọc, cụm đổi ghế/bên nằm giữa hai ghế;
+  danh sách người xem ở cuối cột.
+- **Phải:** khung chat chạy suốt chiều cao hai hàng của grid.
+Trên desktop, nhãn và mã phòng nằm cùng một hàng; mã dùng số tabular trong ô
+nền riêng, hai nút sao chép chia đều chiều rộng. Khối mã phòng gọn khoảng
+114px, không giữ khoảng trống cho thông báo thành công đã bỏ.
+Sao chép thành công chỉ hiện dấu tích trong đúng nút vừa bấm trong 1,5 giây,
+sau đó trở lại nhãn cũ; không hiện dòng thông báo thành công bên dưới.
+Hiệu ứng vẽ dấu tích tôn trọng `prefers-reduced-motion`, kích thước nút không đổi.
+Lỗi sao chép giữ `role="status"` và hiện nổi ngay phía trên khối mã phòng,
+không làm thay đổi chiều cao grid. Trong lúc sao chép, cả hai nút khóa thao tác
+nhưng không thêm spinner hay dòng giải thích disabled. Trạng thái khóa không đổi
+độ mờ hay màu hover của nút, tránh nhấp nháy khi bấm liên tục.
+
+Grid desktop dùng cột `minmax(260px, 320px) / minmax(320px, 1fr) /
+minmax(260px, 320px)`; chat và camera rộng bằng nhau, không lớn dần theo
+màn hình rộng. Hàng trên nhận chiều cao còn lại sau hàng mã phòng/người xem.
+Grid là size container; hai camera tính kích thước theo chiều cao khả dụng sau
+khi chừa chỗ cho nhãn, điều khiển và mã phòng, giữ **16:9** và không lớn hơn
+chiều rộng cột. Desktop thấp (≤740px) giảm padding media và chiều cao select.
+Ở chiều cao này, ghế người chơi dùng padding/avatar/nút gọn hơn; chữ chờ camera
+giới hạn một dòng có ellipsis để không bị cắt dọc trong khung hình nhỏ.
+Các khối nằm trong viewport, không đẩy trang cuộn xuống; camera không cuộn riêng.
+Không hiện thông báo mặc định
+“Camera và mic đang tắt.”; lỗi thiết bị/kết nối vẫn hiển thị.
+Nút camera/mic chỉ có icon, không có spinner. Hai nhóm nút của bạn và đối thủ
+đều căn giữa bên dưới khung hình tương ứng; trên desktop nút tròn 36px,
+icon 18px. Nút đối thủ ẩn/hiện camera và tắt/bật tiếng chỉ trên máy bạn,
+không đổi kích thước khung hình. Tắt tiếng áp dụng cả với audio track mới; không gửi lệnh
+tắt thiết bị của đối thủ, không thay đổi mức chia sẻ. Người xem không có các
+nút dành riêng cho đối thủ. Hai nút luôn hiện ở khung đối diện, kể cả ghế
+trống; có thể chọn trước và giữ tùy chọn khi đối thủ vào phòng.
+Shell chia một chiều cao `100dvh` cho thanh điều hướng và nội dung phòng;
+không cộng thêm một viewport cho trang con. Đã kiểm tra trạng thái phòng chờ
+thông thường ở 1728×958, 1366×768, 1280×720 và 1024×640: vùng nội dung không
+tràn dọc. Chat/danh sách dài vẫn có cuộn nội bộ; hai kênh chat xếp dọc,
+ô nhập và nút gửi nằm cùng hàng.
+CSS desktop đặt trong `@media (min-width: 1024px)`, tách khỏi khối mobile
+`@media (max-width: 1023px)`. Ưu tiên hoàn thiện desktop; mobile giữ bố cục
+cũ với lề ngang và camera co giãn, chưa thiết kế lại theo desktop. Hai giao
+diện vẫn dùng chung component, dữ liệu và kết nối, không dựng hai phiên media.
+Dưới 1024px, bộ chọn Phòng chờ / Camera / Trò chuyện dùng radio native
+(có điều hướng bàn phím), chuyển khu vực trong cùng khung thay vì xếp dài trang.
+Dưới 600px, hai ghế nằm cạnh nhau. Khu vực không chọn chỉ ẩn bằng CSS:
+chat/media vẫn mounted, không mất bản nháp hay ngắt kết nối khi chuyển mục.
+Trên mobile, mã phòng ở trên và hai nút sao chép ở hàng dưới để không đè lên
+mã; ẩn đoạn hướng dẫn dài. Các khối phòng chờ xếp sát nhau theo chiều cao
+nội dung, không kéo giãn khoảng trống giữa ghế và cụm mời.
+Lịch sử chat và danh sách người xem cuộn trong khung; nội dung lỗi dài hoặc
+phóng to vẫn truy cập được bằng cuộn nội bộ, không cắt bằng `overflow:hidden`.
 Nút Sẵn sàng nằm trong ghế của người đang điều khiển; dữ liệu,
 quyền thao tác và trạng thái kết nối vẫn lấy từ luồng phòng hiện có.
 
-CSS phòng chờ giới hạn bằng `.is-waiting`, không đổi màu màn đang đấu.
-Chat/media giữ cùng vị trí trong cây React khi chuyển sang ván để tránh
-ngắt kết nối do thay bố cục. Dùng ảnh nền và phông local có sẵn; không thêm
-nút demo, Elo mẫu, QR hoặc chức năng P2 từ mockup.
+CSS phòng chờ giới hạn bằng `.is-waiting`, không đổi bố cục màn đang đấu.
+Chat/media giữ cùng vị trí trong cây React khi chuyển sang ván. Metadata
+header dùng `.xq-waiting-meta`, tránh trùng selector thẻ phòng ở Sảnh.
+Dùng ảnh nền và phông local có sẵn; không thêm dữ liệu mẫu hay tính năng P2.
+
+`RoomInvite` dùng hai nút **Sao chép mã** và **Sao chép link**, không còn liên
+kết điều hướng ở cụm chia sẻ. Container sao chép URL mời tuyệt đối
+`<origin>/rooms/join?token=<mã được encode>` bằng Clipboard API; chỉ thông
+báo thành công sau khi API hoàn tất, lỗi được hiển thị để thử lại/chia sẻ mã.
+Hai thao tác bị chặn khi đang sao chép; phòng `LOCKED` vẫn ẩn cả cụm.
+Đã kiểm tra lại phòng thật khi tách CSS: desktop 1366×768 giữ ba cột, nội dung
+bắt đầu tại x=0, camera đúng 16:9; ở 1023×768 chuyển sang một cột, có lề ngang
+và camera dùng kích thước co giãn riêng. Cả hai không tràn ngang. Đây là kiểm
+ranh giới bố cục, chưa nghiệm thu thiết kế mobile hay bật camera/mic thật.
+Lượt kiểm tra nút Sao chép link trước đó giữ nguyên URL trang và hiện thông
+báo thành công; chưa đọc lại clipboard.
 
 `MediaSeats` luôn giữ hai ô camera theo ghế Đỏ/Đen, kể cả khi chưa có track,
 ghế trống, đang tải media hoặc chưa có dịch vụ media. Video được gắn theo
 identity người chơi, không theo thứ tự track; đổi ghế thì hình đi theo người,
 rời ghế thì hình cũ không còn hiển thị. Audio không tạo thêm ô camera.
-`MediaPanel` gắn preview camera của chính mình ở chế độ muted để không phát
-lại tiếng của mình. Khi mở phòng hoặc kết nối lại, panel chỉ join receive-only
+`MediaPanel` gắn video ở chế độ muted; tiếng đối thủ phát qua track audio riêng.
+Nhận hình/tiếng không phụ thuộc việc bật thiết bị của người nhận. Sau khi join,
+panel đối chiếu các remote track đã subscribe với sự kiện đến sau, gắn mỗi track
+một lần để không bỏ sót track đến trong lúc kết nối hoặc phát tiếng trùng.
+Khi mở phòng hoặc kết nối lại, panel chỉ join receive-only
 (camera/mic tắt, token không publish); người xem vào phòng stage và không bao
 giờ publish. Chỉ khi người chơi bấm bật thiết bị mới publish: phòng riêng khi
 mức đã xác nhận khác `NONE`, và phòng stage chỉ khi mức đã xác nhận là `ALL`.
+Sau lần cấp quyền phát đầu tiên, bật/tắt thiết bị chỉ cập nhật track tương ứng
+trên các kết nối hiện có; không rejoin, không ngắt thiết bị còn lại hoặc luồng
+đối thủ. Khi bật một thiết bị thất bại, tắt riêng thiết bị đó trên mọi phòng media,
+giữ thiết bị còn lại. Tắt cả hai vẫn giữ kết nối nhận; đổi mức chia sẻ buộc lấy
+ticket mới trước khi phát lại, không dùng quyền phát của mức cũ.
+
+Nút camera/mic chỉ hiển thị icon tĩnh 44×44px; `aria-label`, `title` và
+`aria-pressed` mô tả thao tác/trạng thái. Không truyền `loading` cho hai nút,
+không hiện spinner hay chữ “Đang xử lý”. Khi cập nhật track trên phiên đã sẵn
+sàng, mỗi thiết bị có khóa đang xử lý riêng: thao tác camera không chặn mic và
+ngược lại; bấm lặp cùng thiết bị bị bỏ qua. Chỉ cập nhật trạng thái thiết bị
+được chọn, không ghi đè cờ thiết bị kia khi hai thao tác hoàn tất khác thứ tự.
+Đổi mức chia sẻ chờ cả hai thao tác track hoàn tất; việc khởi tạo/kết nối lại
+và cấp lại quyền vẫn dùng khóa chung, không chạy song song các lần rejoin.
+Đã xem nút icon và xác nhận không có spinner trên phòng thật; chưa bật thiết
+bị thật hoặc chạy các ca hồi quy chờ thiết bị/đổi thứ tự hoàn tất.
 Đổi mức chia sẻ chỉ áp dụng sau khi máy chủ xác nhận; nếu lưu thất bại, camera
 và mic tắt, panel rejoin receive-only ở mức đã xác nhận. Mọi tác vụ join/publish
 đang chờ đều bị vô hiệu khi đổi phòng, ngắt kết nối hoặc unmount, và phòng/track

@@ -33,6 +33,15 @@ import {
 } from "../login/postgres-login-store.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionModule } from "../session/session.module.js";
+import { UsernameRegistrationController } from "./username-registration.controller.js";
+import { UsernameRegistrationService } from "./username-registration.service.js";
+import { EmailVerificationStore } from "../email/email.store.js";
+import { EmailVerificationService } from "../email/email.service.js";
+import { EmailModule } from "../email/email.module.js";
+import { createSmtpEmailSender } from "../email/smtp-email.js";
+import { PasswordModule } from "../password/password.module.js";
+import { PasswordService } from "../password/password.service.js";
+import { PasswordStore } from "../password/password.store.js";
 /**
  * Tác vụ nền định kỳ dọn dẹp các tài khoản đăng ký quá hạn không hoàn tất
  * hoặc khôi phục các trạng thái tài khoản đang pending.
@@ -83,7 +92,10 @@ export class RegistrationModule {
     store: RegistrationStore,
     auth: AuthProvider,
     issueApplicationSession:
-      | ((userId: string) => Promise<{ appSession: string; expiresAt: string }>)
+      | ((
+          userId: string,
+          deviceToken: string | null,
+        ) => Promise<{ appSession: string; expiresAt: string }>)
       | null = null,
     authenticateRecovery:
       | ((
@@ -218,7 +230,7 @@ export async function createRegistrationRuntime(
   let schemaReady = true;
   try {
     const schema = await pool.query(
-      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AS \"loginReady\"",
+      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
     );
     if (
       !schema.rows[0]?.ready ||
@@ -259,7 +271,10 @@ export async function createRegistrationRuntime(
   const module: DynamicModule = RegistrationModule.forRoot(
     new PostgresRegistrationStore(pool),
     auth,
-    sessions ? (userId) => sessions.issue(userId) : null,
+    sessions
+      ? (userId, deviceToken) =>
+          sessions.issue(userId, true, undefined, deviceToken)
+      : null,
     login
       ? async (account, password) => {
           try {
@@ -280,18 +295,48 @@ export async function createRegistrationRuntime(
         }
       : null,
   );
-  if (sessions && login) {
+  if (sessions && login && sessionPool) {
+    const emailStore = new EmailVerificationStore(sessionPool);
+    const mailer = createSmtpEmailSender(env);
+    const emails = new EmailVerificationService(
+      emailStore,
+      mailer,
+      settings.secret,
+    );
+    const usernameRegistration = new UsernameRegistrationService(
+      new PostgresRegistrationStore(pool),
+      auth,
+      emailStore,
+      (userId, deviceToken) =>
+        sessions.issue(userId, true, undefined, deviceToken),
+    );
     module.imports = [
       SessionModule.forRoot(
         sessions,
         (token) => auth.refreshSession(token),
         env.NODE_ENV === "production",
       ),
+      EmailModule.forRoot(emails, sessions),
+      PasswordModule.forRoot(
+        new PasswordService(
+          new PasswordStore(sessionPool),
+          auth,
+          mailer,
+          settings.secret,
+        ),
+        sessions,
+        env.NODE_ENV === "production",
+      ),
     ];
-    module.controllers = [...(module.controllers ?? []), LoginController];
+    module.controllers = [
+      ...(module.controllers ?? []),
+      LoginController,
+      UsernameRegistrationController,
+    ];
     module.providers = [
       ...(module.providers ?? []),
       { provide: LoginService, useValue: login },
+      { provide: UsernameRegistrationService, useValue: usernameRegistration },
     ];
   }
   let closing: Promise<void> | undefined;

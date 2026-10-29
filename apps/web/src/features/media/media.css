@@ -1,6 +1,7 @@
 .xq-media {
   display: grid;
   gap: 16px;
+  margin: 0;
   padding: 20px;
   background: linear-gradient(
     180deg,
@@ -27,14 +28,26 @@
   gap: 10px;
   flex-wrap: wrap;
 }
+.xq-media-toggles .xq-button-group {
+  flex: 0 0 var(--touch-min);
+}
+.xq-media-toggles .xq-help {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 .xq-media-toggles button {
-  min-height: 38px;
+  min-height: var(--touch-min);
+  width: var(--touch-min);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
+  padding: var(--space-2);
   border-radius: 8px;
   font-size: 13px;
   transition: all 0.2s ease;
@@ -43,6 +56,8 @@
 .xq-media-icon {
   flex-shrink: 0;
   display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .xq-media-toggles button.is-active,
@@ -91,6 +106,7 @@
 }
 
 .xq-media-feed {
+  position: relative;
   aspect-ratio: 4 / 3;
   background: #0d0805;
   border: 1.5px solid rgba(198, 146, 42, 0.35);
@@ -125,8 +141,28 @@
 .xq-media-audio {
   display: none;
 }
-.xq-media-privacy {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-ink-muted);
+.xq-media-receive-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.xq-media-receive-controls .xq-button {
+  width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: 8px;
+  justify-content: center;
+  background: var(--color-surface-sunken);
+}
+.xq-media-receive-controls svg {
+  width: 20px;
+  height: 20px;
+}
+.xq-media-receive-controls [aria-pressed="true"] {
+  border-color: var(--color-gold-light);
+  color: var(--color-gold-light);
+}
+@media (max-width: 600px) {
+  .xq-media-feeds {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

@@ -2,7 +2,7 @@
 
 **Tài liệu:** Kiến trúc Giao diện & Bản đồ Màn hình Chuẩn hóa (UI/UX Screen Inventory)  
 **Dự án:** Cờ Tướng Trực Tuyến (`XIANGQI`)  
-**Ngày cập nhật:** 10/10/2026 · **Phiên bản:** v1.2.2 (đồng bộ BA Phần 0, gồm từ chối username chứa từ cấm và phòng tự tạo về WAITING sau server khởi động lại; giữ 26 thành phần P1 / 11 P2)
+**Ngày cập nhật:** 30/10/2026 · **Phiên bản:** v1.2.3 (đồng bộ BA 0.18: Quên/Đặt lại mật khẩu và đổi mật khẩu trong Hồ sơ ở P1; 28 thành phần P1 / 9 P2, tổng 37)
 **Nguồn đặc tả:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
 
 ---
@@ -75,7 +75,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * **Nút `Khách` (Chơi nhanh) — Nằm riêng biệt nổi bật (P1 từ 07/10):**
     * Bấm vào mở `MODAL-GUEST-NAME` nhập tên tạm vào chơi ngay (phiên Khách tối đa 12 giờ, tên gắn nhãn "(Khách)", không cần duy nhất; quyền hạn xem BA-SCOPE `Quyết định 1.3`).
     * **Visual Note ngay dưới nút:** ⚠️ *"Chế độ Khách (Guest) không được tham gia đánh Xếp hạng để tính điểm Elo và không lưu lịch sử ván cờ."*
-  * Liên kết phụ: *"Quên mật khẩu?"* là P2, P1 hiển thị vô hiệu với tooltip *"Sắp ra mắt"*; *"Đăng ký tài khoản mới"* (`/register`) hoạt động ở P1.
+  * Liên kết **"Quên mật khẩu?" hoạt động ở P1** từ 30/10, mở `/forgot-password` nhập username theo BA 0.18/1.7; "Đăng ký tài khoản mới" mở `/register`.
 
 ---
 
@@ -87,29 +87,30 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
     * Ô `Username:` (3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, kiểm tra trùng lặp debounce 300ms; từ chối username chứa từ cấm ngay bước nhập theo BA 0.17).
     * Ô `Mật khẩu:` (tối thiểu 8 ký tự) + Ô `Xác nhận mật khẩu`.
     * Nút *"Tiếp tục"* $\rightarrow$ Chuyển Bước 2. Phía dưới có nút *"Đăng ký bằng Google"*.
-  * **Bước 2 (Nhập Email):**
+  * **Bước 2 (Email tùy chọn, cập nhật 29/10):**
     * Ô `Email chính chủ:`.
     * Nút *"Xác nhận Email"* $\rightarrow$ Kích hoạt Supabase Auth gửi OTP 6 số và chuyển Bước 3. Nút *"Quay lại"*.
+    * Nút **"Bỏ qua email, vào Sảnh"** tạo tài khoản với username/mật khẩu đã nhập, không bắt buộc email.
   * **Bước 3 (Xác thực Email qua mã OTP):**
     * Dòng thông báo: *"Mã OTP 6 số đã được gửi đến email [user-email]."*
     * 6 ô nhập mã OTP đơn lẻ, tự động nhảy tiêu điểm khi gõ.
     * Đồng hồ đếm lùi thời hạn mã: **3 phút (180 giây)**.
     * Nút *"Gửi lại mã OTP"* (kèm bộ đếm lùi 60 giây chống spam).
     * **Xử lý bảo mật:** Nhập sai nhiều lần bị giới hạn (mục tiêu 5 lần, theo BA-SCOPE `Quyết định 1.5`) $\rightarrow$ khóa form và bắt buộc chờ hoặc bấm gửi lại mã mới.
-    * Tài khoản chỉ được tạo khi OTP đúng; bỏ dở thì không có tài khoản và username không bị giữ. Email đã đăng ký ở Bước 2 $\rightarrow$ báo *"Email này đã được đăng ký"*.
+    * Có nút **"Bỏ qua email, vào Sảnh"** tại bước OTP. Chỉ bỏ dở/đóng tab thì chưa hoàn tất; chủ động bỏ qua sẽ hoàn tất tài khoản nhưng chưa xác minh email. Email đã đăng ký ở Bước 2 vẫn báo *"Email này đã được đăng ký"*.
     * Nhập đúng OTP $\rightarrow$ Tài khoản chuyển sang `ACTIVE`, tự động gán `display_name = username` (Phương án C), tự động đăng nhập và đưa vào `/lobby`.
 
 ---
 
-### 3. `SCR-FORGOT-PASSWORD` — Trang Yêu Cầu Khôi Phục Tài Khoản (P2)
-* **URL:** `/forgot-password` | **Quyền:** Tất cả.
-* **Thành phần:** Ô nhập `Email đã đăng ký` + Nút `Gửi mã khôi phục` $\rightarrow$ Chuyển sang `/reset-password`. Luôn hiện cùng thông báo *"Nếu email này đã đăng ký, mã khôi phục đã được gửi"*; email chuyển giữa hai màn hình bằng trạng thái ứng dụng, **không đặt lên URL** (BA-SCOPE `Quyết định 1.7`).
+### 3. `SCR-FORGOT-PASSWORD` — Trang Quên Mật Khẩu (P1)
+* **URL:** `/forgot-password` | **Quyền:** Chưa có phiên thành viên, không cần biết mật khẩu.
+* **Thành phần:** Ô **Username** + nút **Gửi mã khôi phục**. Server chỉ gửi tới email liên hệ đã xác minh của tài khoản. Chưa có/chỉ pending email hoặc username không tồn tại: "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu." Lỗi SMTP báo lỗi thật, không giả đã gửi. Gửi thành công mới chuyển `/reset-password`; không trả email đầy đủ hoặc đặt secret/email lên URL. Khôi phục Username bằng email vẫn P2, không thay form username của P1. Chi tiết: [đặc tả YC1](../product/P1-YC1-TAI-KHOAN-VA-XAC-THUC.md).
 
 ---
 
-### 4. `SCR-RESET-PASSWORD` — Trang Khôi Phục Username / Đặt Lại Mật Khẩu (P2)
-* **URL:** `/reset-password` | **Quyền:** Người có mã khôi phục hợp lệ.
-* **Thành phần:** 6 ô nhập OTP xác thực email theo `Quyết định 1.5`. Xác minh hợp lệ mới hiện Username hiện tại và lựa chọn *Về Đăng nhập* nếu chỉ quên Username (không bắt buộc đổi mật khẩu), hoặc tiếp tục Ô `Mật khẩu mới` + Ô `Xác nhận mật khẩu mới` + Nút `Xác nhận đổi mật khẩu`. Đổi thành công $\rightarrow$ đăng xuất mọi phiên khác, về `/login`. OTP khôi phục không tự đăng nhập ứng dụng; email chuyển bằng trạng thái ứng dụng, không trên URL. Dùng màn hình hiện có, không tăng số thành phần (BA 1.7, PO duyệt P2 05/10).
+### 4. `SCR-RESET-PASSWORD` — Trang Xác Minh OTP / Đặt Lại Mật Khẩu (P1)
+* **URL:** `/reset-password` | **Quyền:** Ngữ cảnh yêu cầu khôi phục hợp lệ; chưa có quyền ứng dụng.
+* **Thành phần:** OTP 6 số, hạn 180 giây/resend 60 giây theo BA 1.5; OTP đúng mới mở **Mật khẩu mới / Xác nhận mật khẩu mới**, tối thiểu 8 ký tự và khớp. Không hỏi mật khẩu cũ. Thành công vô hiệu quyền reset đã dùng, thu hồi phiên cũ, về `/login` và đăng nhập lại; không tự vào ứng dụng. Mã sai/hết hạn/khác mục đích không đổi mật khẩu. Khôi phục Username P2 chỉ hiện username sau OTP và về Login, không reset bằng quyền đó.
 
 ---
 
@@ -239,8 +240,10 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Bố cục (Layout):** Header cố định, Card thông tin người chơi cá nhân, Form chỉnh sửa hồ sơ.
 * **Thành phần & Dữ liệu:**
   * Avatar chữ cái đầu/hình đại diện, Display Name, Username (`@username`), Email liên kết, Điểm Elo hiện tại.
+  * **Email tùy chọn (29/10):** chưa có email thì hiện cảnh báo và form nhập email; đang chờ xác minh thì hiện email đích, OTP 6 số, hạn 180 giây và gửi lại sau 60 giây. Mã đúng gắn email vào cùng tài khoản, giữ phiên và dữ liệu; email đã xác minh chỉ đọc. Toàn ứng dụng có thông báo không modal dẫn về `/settings`, ẩn sau khi server xác nhận thành công. Không hiển thị email định danh kỹ thuật, không coi lỗi tải trạng thái là đã xác minh.
   * Form cập nhật Display Name (đổi tự do, không cần OTP).
-  * Nút `🔑 Đổi Username Qua OTP`: Mở `MODAL-OTP-USERNAME` để thực hiện quy trình 4 bước xác thực OTP qua email. Username cũ bị khoá 30 ngày sau khi đổi (BA-SCOPE `Quyết định 1.4`).
+  * **P2 — Đổi Username Qua OTP:** mở `MODAL-OTP-USERNAME`, tên cũ giữ 30 ngày theo BA 1.4; không hiện như chức năng P1.
+  * **P1 — Đổi mật khẩu:** form ngay trong Hồ sơ gồm **Mật khẩu hiện tại / Mật khẩu mới / Xác nhận mật khẩu mới**. Server kiểm mật khẩu cũ và hai ô mới; thành công giữ phiên thực hiện với hạn cũ, đăng xuất phiên khác; không cần email/OTP. Khách không có chức năng này. Không thêm modal/trang độc lập; chi tiết theo BA 0.18/1.9 và đặc tả YC1.
   * **P1:** chỉ Kỳ Đài Cổ Phong, ẩn bộ chọn. **P2:** Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong), theo BA 10.3 và DESIGN §2.3.
   * Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên).
   * Không có chức năng xoá tài khoản trong ứng dụng ở giai đoạn này (đã duyệt 03/10).
@@ -291,10 +294,10 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 ## 7. BẢNG MA TRẬN 37 THÀNH PHẦN TOÀN DIỆN
 
-**Ưu tiên (đã duyệt 03/10, cập nhật 07/10):** P1 = MVP hạn kế hoạch hiện hành 04/11/2026 (đồng bộ Jira ngày 10/10; mốc gốc 05/11) (**26 thành phần**, gồm `SCR-ONBOARDING` do PO kéo lên 04/10/2026, `MODAL-GUEST-NAME` và `MODAL-SIDE-SWAP-PROMPT` lên P1 ngày 07/10), P2 = làm sau (**11 thành phần**). Cách phân kỳ và lý do: BA-SCOPE `Phần 11`. Màn hình P2 vẫn giữ nguyên đặc tả bên trên.
+**Ưu tiên cập nhật 30/10:** P1 hạn 04/11/2026 có **28 thành phần**, P2 có **9 thành phần**; tổng 37 không đổi. `SCR-FORGOT-PASSWORD` và `SCR-RESET-PASSWORD` chuyển P1 theo BA 0.18; đổi mật khẩu nằm trong Hồ sơ có sẵn. Khôi phục Username vẫn P2; không tự thêm trang mới hoặc đổi lịch/Jira.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
-* **Lối vào cấp điều hướng chính** (thẻ Đánh Thường ghép ngẫu nhiên và Đánh Hạng ở Sảnh, mục Lịch sử và Bảng xếp hạng ở thanh điều hướng, liên kết *Quên mật khẩu?* ở màn đăng nhập (PO duyệt 04/10/2026; nút Khách hoạt động ở P1 từ 07/10), nút Nhắn tin và Thách đấu ở Bạn bè; **nút Đăng nhập/Đăng ký bằng Google hoạt động ở P1**, PO quyết định 04/10/2026) hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*.
+* **Lối vào P2 cấp điều hướng chính** (Ghép ngẫu nhiên, Đánh Hạng, Lịch sử, Bảng xếp hạng, Nhắn tin/Thách đấu) hiển thị `DISABLED` kèm "Sắp ra mắt" ở P1. **Google, Khách và Quên mật khẩu hoạt động ở P1**; không áp quy tắc P2 lên các nút này.
 * **Chức năng nằm sâu trong màn hình P1** (Sticker, Xin đi lại, Tái đấu, Xem lại ở kết quả ván, đi lại với máy, Lưu lịch sử, widget AI) **ẩn hoàn toàn** ở P1, không để nút xám.
 * `MODAL-MATCH-RESULT` ở P1 chỉ có *Ở lại phòng*/*Rời phòng* (online) hoặc *Ván mới*/*Về Sảnh* (AI); không hiện Tái đấu và Xem lại.
 
@@ -302,8 +305,8 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 |:---:|---|---|:---:|---|:---:|
 | 1 | `SCR-LOGIN` | Đăng nhập hệ thống & nút Khách | Routed Page | `/login` | **P1** |
 | 2 | `SCR-REGISTER` | Đăng ký tài khoản (Wizard 3 bước OTP 3 phút) | Routed Page | `/register` | **P1** |
-| 3 | `SCR-FORGOT-PASSWORD` | Yêu cầu khôi phục Username/mật khẩu | Routed Page | `/forgot-password` | P2 |
-| 4 | `SCR-RESET-PASSWORD` | Khôi phục Username/đặt lại mật khẩu | Routed Page | `/reset-password` | P2 |
+| 3 | `SCR-FORGOT-PASSWORD` | Quên mật khẩu bằng username, gửi OTP tới email đã xác minh | Routed Page | `/forgot-password` | **P1** |
+| 4 | `SCR-RESET-PASSWORD` | OTP hợp lệ rồi đặt mật khẩu mới, về đăng nhập | Routed Page | `/reset-password` | **P1** |
 | 5 | `SCR-ONBOARDING` | Đăng ký Google OA tạo Username + Password | Routed Page | `/onboarding` | **P1** |
 | 6 | `SCR-LOBBY` | P1: Tự tạo phòng, Máy; Thường/Hạng hiển thị vô hiệu, thuộc P2 | Routed Page | `/lobby` | **P1** |
 | 7 | `SCR-WAITING-ROOM` | Phòng chờ, đổi ghế solo, đếm 3s, nhượng Host | Routed Page | `/rooms/:id` (`WAITING`) | **P1** |
@@ -314,7 +317,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 12 | `SCR-HISTORY` | Lịch sử ván đấu cá nhân (lọc Rank/Casual/Máy) | Routed Page | `/history` | P2 |
 | 13 | `SCR-REPLAY` | Xem lại ván cờ từng nước, bảng biên bản, auto-play | Routed Page | `/history/:id` | P2 |
 | 14 | `SCR-ACCESS-DENIED` | Màn hình từ chối truy cập (Phòng đầy, Cấm xem) | Routed Page | `/access-denied` | **P1** |
-| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, email chỉ đọc; P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
+| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, thêm/xác minh email tùy chọn (đã xác minh chỉ đọc); P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | **P1** (07/10) |
 | 17 | `MODAL-CREATE-ROOM` | P1: tạo phòng, 5/10/15 phút; P2: Không giới hạn | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
 | 18 | `MODAL-INVITE` | P1: link, mã 8 số, mời bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
@@ -346,5 +349,5 @@ Ma trận điều kiện và kết quả **năm trạng thái của từng thàn
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
-4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
+4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); email được bổ sung/xác minh lần đầu rồi chỉ đọc; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
 5. Số lượng: 15 màn hình + 15 modal + 4 khung nhúng + 3 lớp phủ = **37**; `/rooms/:id` dùng chung cho `SCR-WAITING-ROOM` và `SCR-GAME-ROOM` nên chỉ có **14 URL** phân biệt.

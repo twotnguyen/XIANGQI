@@ -177,6 +177,31 @@ describe("profile page", () => {
     expect(screen.queryByLabelText("Tên hiển thị")).toBeNull();
     expect(screen.getByRole("button", { name: "Đăng xuất" })).toBeTruthy();
   });
+  it("keeps an unsaved name when switching settings sections", async () => {
+    const user = userEvent.setup();
+    const c = client();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    const input = await screen.findByLabelText("Tên hiển thị");
+    await user.clear(input);
+    await user.type(input, "Tên chưa lưu");
+    await user.click(screen.getByRole("button", { name: "Giao diện" }));
+    expect(screen.queryByRole("textbox", { name: "Tên hiển thị" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Phiên đăng nhập" }));
+    await user.click(screen.getByRole("button", { name: "Hồ sơ cá nhân" }));
+    expect(
+      (screen.getByLabelText("Tên hiển thị") as HTMLInputElement).value,
+    ).toBe("Tên chưa lưu");
+    expect(c.updateDisplayName).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    expect(c.updateDisplayName).toHaveBeenCalledWith("Tên chưa lưu");
+  });
   it("offers the default theme, applies a chosen theme and hides the choice from guests", async () => {
     const user = userEvent.setup();
     const store = new Map<string, string>();
@@ -197,6 +222,7 @@ describe("profile page", () => {
       }),
     );
     await screen.findByText("kythu");
+    await user.click(screen.getByRole("button", { name: "Giao diện" }));
     const classic = screen.getByRole("radio", {
       name: "Kỳ Đài Cổ Phong",
     }) as HTMLInputElement;
@@ -214,5 +240,27 @@ describe("profile page", () => {
       }),
     );
     expect(screen.queryByRole("radio", { name: "Giấy Sáng" })).toBeNull();
+  });
+  it("offers password change to members and hides it from guests", async () => {
+    const { unmount } = render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByText("kythu");
+    expect(screen.getByRole("button", { name: "Đổi mật khẩu" })).toBeTruthy();
+    unmount();
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: true,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    expect(screen.queryByRole("button", { name: "Đổi mật khẩu" })).toBeNull();
   });
 });

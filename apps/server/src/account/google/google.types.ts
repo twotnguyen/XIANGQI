@@ -24,7 +24,8 @@ export interface GoogleAuth {
 export type GoogleSessionIssuer = (
   userId: string,
   remember: boolean,
-) => Promise<{ appSession: string; expiresAt: string }>;
+  deviceToken: string | null,
+) => Promise<{ appSession: string; expiresAt: string; displaced?: boolean }>;
 export class GoogleError extends Error {
   constructor(
     public readonly code: string,

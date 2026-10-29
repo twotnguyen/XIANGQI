@@ -23,4 +23,6 @@ const result = ending(history);
 - Caller kiểm đồng hồ trước khi chấp nhận nước; timeout, mất kết nối, đầu hàng và hòa thỏa thuận do máy chủ xử lý.
 - `perft(position,depth)` nhận độ sâu nguyên không âm, đếm nhánh nước hợp lệ, không áp dụng luật hòa lặp/120.
 
+`ending` dừng kiểm tra an toàn Tướng ngay khi tìm được một nước trả lời hợp lệ, thay vì tính đầy đủ danh sách như `legalMoves` dùng cho gợi ý trên giao diện. Hai đường dùng cùng điều kiện hợp lệ; chiếu hết/hết nước vẫn xét hết ứng viên. Tối ưu áp dụng cho cả server và client, không bỏ kiểm tra luật hoặc thay đổi API công khai.
+
 Chạy từ gốc repo: `pnpm test:core` đo độ phủ và kiểm ngưỡng dòng≥90%. Expected perft từ [bài tác giả Maksim Korzh](https://talkchess.com/viewtopic.php?t=76430): khai cuộc44/1920/79666 ở depth1/2/3; thế chiến thuật trong test38/1128/43929. Những con số này không chứng minh mọi tình huống đều đúng; kiểm riêng an toàn Tướng và thứ tự phân xử trong các suite.

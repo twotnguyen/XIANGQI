@@ -1,5 +1,5 @@
 /**
- * Live probe: REALTIME_LOAD_URL=https://host:8443 REALTIME_LOAD_ORIGIN=https://allowed-origin \
+ * Live probe: REALTIME_LOAD_URL=http://127.0.0.1:3000 REALTIME_LOAD_ORIGIN=https://allowed-origin \
  * REALTIME_LOAD_PROOFS=.local/realtime-load/<runId>/proofs.json \
  * REALTIME_LOAD_OUTPUT=.local/realtime-load/<runId>/result.json \
  * pnpm exec tsx tests/load/realtime.ts

@@ -88,7 +88,15 @@ export async function createGoogleRuntime(
     new GoogleStore(registration.pool),
     new GoogleTokenVerifier(settings.clientId),
     registration.auth,
-    (userId, remember) => sessions.issue(userId, remember),
+    async (userId, remember, deviceToken) => {
+      const account = await sessions.store.accountById(userId);
+      if (!account)
+        return sessions.issue(userId, remember, undefined, deviceToken);
+      return sessions.store.withUsernameLock(
+        account.username.toLowerCase(),
+        (store) => sessions.issue(userId, remember, store, deviceToken),
+      );
+    },
     settings.clientId,
   );
   const module = GoogleModule.forRoot(

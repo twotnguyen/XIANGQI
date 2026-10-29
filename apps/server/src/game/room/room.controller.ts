@@ -109,7 +109,10 @@ export class RoomController {
           (typeof input.viewerLimit !== "number" ||
             !Number.isInteger(input.viewerLimit) ||
             input.viewerLimit < 0 ||
-            input.viewerLimit > 5))
+            input.viewerLimit > 5)) ||
+        (input.visibility !== undefined &&
+          input.visibility !== "CODE_ONLY" &&
+          input.visibility !== "PUBLIC")
       )
         invalidRoomInput();
       return this.service.create(authority, {
@@ -120,6 +123,9 @@ export class RoomController {
         ...(input.viewerLimit === undefined
           ? {}
           : { viewerLimit: input.viewerLimit as number }),
+        ...(input.visibility === undefined
+          ? {}
+          : { visibility: input.visibility as "CODE_ONLY" | "PUBLIC" }),
       });
     });
   }

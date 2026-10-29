@@ -80,6 +80,7 @@ export async function baseline() {
     "20261011000002_realtime",
     "20261011000003_username_login",
     "20261011000004_legacy_moves_security",
+    "20261031000001_session_devices",
   ])
     await apply(`supabase/migrations/${name}.sql`);
 }

@@ -24,6 +24,7 @@ export interface AppSession {
   expiresAt: Date;
   remember: boolean;
   revokedAt: Date | null;
+  deviceHash: string | null;
 }
 export interface SessionAccount extends AppSession {
   account: LoginAccount | null;
@@ -43,8 +44,22 @@ export interface LoginStore {
   accountByUsername(username: string): Promise<LoginAccount | null>;
   accountById(userId: string): Promise<LoginAccount | null>;
   saveSession(session: AppSession): Promise<void>;
+  latestDeviceHash(userId: string): Promise<string | null | undefined>;
   sessionByHash(hash: string): Promise<SessionAccount | null>;
   revokeSession(hash: string, time: Date): Promise<void>;
+}
+
+// Cross-domain port: ends the user's room seats and revokes their live sessions in one room transaction.
+// Implemented by the game runtime (RoomTransactions); called inside the username lock.
+export interface SessionSeatPort {
+  endSeats(input: {
+    userId: string;
+    at: Date;
+    confirmed: boolean;
+    // Set on logout: the caller's session must still be live under the actor lock.
+    sessionHash?: string;
+    replacement?: AppSession;
+  }): Promise<{ displaced: boolean }>;
 }
 export class LoginError extends Error {
   constructor(

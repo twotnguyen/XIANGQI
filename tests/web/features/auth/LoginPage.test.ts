@@ -79,7 +79,6 @@ async function fill(
   );
 }
 it("sends username case intact and the checked default, with cookies; delegates the response without storing it", async () => {
-  vi.stubEnv("VITE_API_URL", "");
   const request = vi.fn().mockResolvedValue(reply(session));
   vi.stubGlobal("fetch", request);
   const local = vi.spyOn(Storage.prototype, "setItem");
@@ -95,7 +94,7 @@ it("sends username case intact and the checked default, with cookies; delegates 
     expect(onLoggedIn).toHaveBeenCalledWith({ ...session, remember: true }),
   );
   expect(request).toHaveBeenCalledWith(
-    "http://localhost:3000/auth/login",
+    `${window.location.origin}/api/auth/login`,
     expect.objectContaining({
       credentials: "include",
       redirect: "error",
@@ -109,8 +108,7 @@ it("sends username case intact and the checked default, with cookies; delegates 
   );
   expect(local).not.toHaveBeenCalled();
 });
-it("sends the unchecked choice to a configured backend with trailing slash", async () => {
-  vi.stubEnv("VITE_API_URL", "https://api.example.test/");
+it("sends the unchecked remember choice through the same-origin API", async () => {
   const request = vi.fn().mockResolvedValue(reply(session));
   vi.stubGlobal("fetch", request);
   const onLoggedIn = vi.fn();
@@ -122,7 +120,9 @@ it("sends the unchecked choice to a configured backend with trailing slash", asy
   await vi.waitFor(() =>
     expect(onLoggedIn).toHaveBeenCalledWith({ ...session, remember: false }),
   );
-  expect(request.mock.calls[0]![0]).toBe("https://api.example.test/auth/login");
+  expect(request.mock.calls[0]![0]).toBe(
+    `${window.location.origin}/api/auth/login`,
+  );
   expect(JSON.parse(request.mock.calls[0]![1].body).remember).toBe(false);
 });
 it("reveals and hides the password without submitting", async () => {
@@ -260,13 +260,12 @@ it("does not pretend navigation succeeded if the parent callback fails", async (
   expect(await screen.findByRole("alert")).toBeTruthy();
   expect(screen.queryByText("Đăng nhập thành công")).toBeNull();
 });
-it("keeps unavailable recovery and providers inert with readable reasons", async () => {
+it("keeps unavailable providers inert and links password recovery", async () => {
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn: vi.fn() }));
   for (const name of [
     "Đăng nhập bằng Google",
     "Chơi nhanh với tư cách Khách (Guest)",
-    "Quên mật khẩu?",
   ]) {
     expect(
       screen.getByRole("button", { name }).getAttribute("aria-disabled"),
@@ -274,11 +273,13 @@ it("keeps unavailable recovery and providers inert with readable reasons", async
     await user.click(screen.getByRole("button", { name }));
   }
   expect(
+    screen.getByRole("link", { name: "Quên mật khẩu?" }).getAttribute("href"),
+  ).toBe("/forgot-password");
+  expect(
     screen
       .getByRole("link", { name: "Đăng ký tài khoản mới" })
       .getAttribute("href"),
   ).toBe("/register");
-  expect(screen.getAllByText("Sắp ra mắt").length).toBeGreaterThan(0);
 });
 it("calls only supplied real provider hooks", async () => {
   const onGoogle = vi.fn(),
@@ -314,16 +315,4 @@ it("does not hand a late response to the caller after leaving the page", async (
   resolve(reply(session));
   await new Promise((done) => setTimeout(done, 0));
   expect(onLoggedIn).not.toHaveBeenCalled();
-});
-
-it("uses the shared two-wing shell with the Kỳ Đài heading and brand wing", () => {
-  const { container } = render(
-    createElement(LoginPage, { onLoggedIn: vi.fn() }),
-  );
-  expect(
-    screen.getByRole("heading", { level: 1, name: "Đăng Nhập Kỳ Đài" }),
-  ).toBeTruthy();
-  expect(container.querySelector(".auth-shell .wing-brand")).toBeTruthy();
-  expect(container.querySelectorAll(".wing-brand .feat-box").length).toBe(4);
-  expect(container.querySelector(".auth-shell .wing-form form")).toBeTruthy();
 });

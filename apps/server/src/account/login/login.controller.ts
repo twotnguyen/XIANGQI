@@ -6,10 +6,12 @@ import {
   Inject,
   Optional,
   Post,
+  Req,
   Res,
 } from "@nestjs/common";
-import type { ServerResponse } from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { writeSessionCookies } from "../session/cookies.js";
+import { deviceToken } from "./device.js";
 import { LoginService } from "./login.service.js";
 import { LoginError } from "./login.types.js";
 /**
@@ -30,16 +32,23 @@ export class LoginController {
   @HttpCode(200)
   async login(
     @Body() body: unknown,
+    @Req() request: IncomingMessage,
     @Res({ passthrough: true }) response: ServerResponse,
   ) {
     response.setHeader("Cache-Control", "no-store");
+    // Same browser keeps the same opaque device id; a new browser gets a fresh one.
+    const device = deviceToken(request.headers.cookie);
     try {
-      const result = await this.loginService.login(body);
+      const result = await this.loginService.login(body, device.token);
       if (result.appSession && result.refresh_token && result.expiresAt) {
         const remember = (body as { remember?: boolean }).remember ?? true;
         writeSessionCookies(
           response,
-          { ...result, remember },
+          {
+            ...result,
+            remember,
+            deviceToken: device.fresh ? device.token : undefined,
+          },
           this.secureCookies,
         );
       }

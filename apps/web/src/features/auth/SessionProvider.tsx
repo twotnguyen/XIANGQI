@@ -1,3 +1,7 @@
+import type {
+  AccountEmailStatus,
+  EmailStatusState,
+} from "../../shared/account-email.js";
 import {
   createContext,
   useCallback,
@@ -53,9 +57,11 @@ interface Credentials {
 }
 interface SessionContextValue {
   state: SessionState;
+  emailStatus: EmailStatusState;
+  reloadEmailStatus(): Promise<void>;
   accept(result: unknown): void;
   refresh(): Promise<void>;
-  logout(): Promise<void>;
+  logout(confirmed?: boolean): Promise<void>;
   authorizedFetch(path: string, init?: RequestInit): Promise<Response>;
   getRealtimeProof(): Promise<PublicRoomAuthProof>;
   startGuest(displayName: string, signal?: AbortSignal): Promise<void>;
@@ -64,6 +70,27 @@ interface SessionContextValue {
   sessionFetch(path: string, init?: RequestInit): Promise<Response>;
 }
 const SessionContext = createContext<SessionContextValue | null>(null);
+function parseEmailStatus(value: unknown): AccountEmailStatus {
+  if (!value || typeof value !== "object") throw new Error(unavailable);
+  const result = value as Record<string, unknown>;
+  if (
+    typeof result.emailVerified !== "boolean" ||
+    !(result.email === null || typeof result.email === "string") ||
+    !(
+      result.pendingEmail === null || typeof result.pendingEmail === "string"
+    ) ||
+    !(result.expiresAt === null || typeof result.expiresAt === "string") ||
+    !(result.resendAt === null || typeof result.resendAt === "string")
+  )
+    throw new Error(unavailable);
+  return {
+    email: result.email as string | null,
+    emailVerified: result.emailVerified,
+    pendingEmail: result.pendingEmail as string | null,
+    expiresAt: result.expiresAt as string | null,
+    resendAt: result.resendAt as string | null,
+  };
+}
 const unavailable = "Chưa thể xác thực phiên đăng nhập. Vui lòng thử lại.";
 const guestMinDelayMs = 1000;
 const guestRetryMs = 30000;
@@ -129,6 +156,12 @@ export class GuestRequestError extends Error {
     readonly code: string,
   ) {
     super(code);
+  }
+}
+/** Đăng xuất member khi đang có ván cần xác nhận lại (server trả 409 LOGOUT_CONFIRM_REQUIRED). */
+export class LogoutConfirmRequired extends Error {
+  constructor() {
+    super("LOGOUT_CONFIRM_REQUIRED");
   }
 }
 async function readCode(response: Response): Promise<string> {
@@ -456,57 +489,74 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return pending;
   }, [anonymous, install, invalidateRequest, restoreGuest]);
   refreshRef.current = refresh;
-  const logout = useCallback(() => {
-    if (loggingOut.current) return loggingOut.current;
-    const initial = credentials.current;
-    if (!initial) return Promise.resolve();
-    if (renewal.current !== null) clearTimeout(renewal.current);
-    renewal.current = null;
-    let pending: Promise<void> | null = null;
-    pending = (async () => {
-      try {
-        if (initial.bearerExpiresAt <= Date.now()) await refresh();
-        else await Promise.resolve();
-        if (loggingOut.current !== pending || !mounted.current) return;
-        const record = credentials.current;
-        if (!record) return;
-        if (record.bearerExpiresAt <= Date.now()) throw new Error(unavailable);
-        if (renewal.current !== null) clearTimeout(renewal.current);
-        renewal.current = null;
-        const requestEpoch = invalidateRequest();
-        const abort = new AbortController();
-        controller.current = abort;
-        const response = await fetch(backend("/auth/logout"), {
-          method: "POST",
-          credentials: "include",
-          redirect: "error",
-          headers: {
-            Authorization: `Bearer ${record.bearer}`,
-            "X-Xiangqi-Session": record.capability,
-          },
-          signal: abort.signal,
-        });
-        if (
-          abort.signal.aborted ||
-          !mounted.current ||
-          epoch.current !== requestEpoch
-        )
-          return;
-        if (!response.ok) throw new Error(unavailable);
-        anonymous();
-      } catch {
-        if (mounted.current && loggingOut.current === pending) {
+  const logout = useCallback(
+    (confirmed = false) => {
+      if (loggingOut.current) return loggingOut.current;
+      const initial = credentials.current;
+      if (!initial) return Promise.resolve();
+      if (renewal.current !== null) clearTimeout(renewal.current);
+      renewal.current = null;
+      let pending: Promise<void> | null = null;
+      pending = (async () => {
+        try {
+          if (initial.bearerExpiresAt <= Date.now()) await refresh();
+          else await Promise.resolve();
+          if (loggingOut.current !== pending || !mounted.current) return;
+          const record = credentials.current;
+          if (!record) return;
+          if (record.bearerExpiresAt <= Date.now())
+            throw new Error(unavailable);
           if (renewal.current !== null) clearTimeout(renewal.current);
-          renewal.current = setTimeout(() => void refreshRef.current(), 15000);
-          throw new Error(unavailable);
+          renewal.current = null;
+          const requestEpoch = invalidateRequest();
+          const abort = new AbortController();
+          controller.current = abort;
+          const response = await fetch(backend("/auth/logout"), {
+            method: "POST",
+            credentials: "include",
+            redirect: "error",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${record.bearer}`,
+              "X-Xiangqi-Session": record.capability,
+            },
+            body: JSON.stringify({ confirm: confirmed }),
+            signal: abort.signal,
+          });
+          if (
+            abort.signal.aborted ||
+            !mounted.current ||
+            epoch.current !== requestEpoch
+          )
+            return;
+          if (!response.ok) {
+            if (
+              response.status === 409 &&
+              (await readCode(response)) === "LOGOUT_CONFIRM_REQUIRED"
+            )
+              throw new LogoutConfirmRequired();
+            throw new Error(unavailable);
+          }
+          anonymous();
+        } catch (failure) {
+          if (mounted.current && loggingOut.current === pending) {
+            if (renewal.current !== null) clearTimeout(renewal.current);
+            renewal.current = setTimeout(
+              () => void refreshRef.current(),
+              15000,
+            );
+            if (failure instanceof LogoutConfirmRequired) throw failure;
+            throw new Error(unavailable, { cause: failure });
+          }
         }
-      }
-    })().finally(() => {
-      if (loggingOut.current === pending) loggingOut.current = null;
-    });
-    loggingOut.current = pending;
-    return pending;
-  }, [anonymous, invalidateRequest, refresh]);
+      })().finally(() => {
+        if (loggingOut.current === pending) loggingOut.current = null;
+      });
+      loggingOut.current = pending;
+      return pending;
+    },
+    [anonymous, invalidateRequest, refresh],
+  );
   const getRealtimeProof =
     useCallback(async (): Promise<PublicRoomAuthProof> => {
       if (!mounted.current || loggingOut.current) throw new Error(unavailable);
@@ -671,6 +721,55 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     },
     [anonymous, armGuest, invalidateRequest],
   );
+  const [emailState, setEmailState] = useState<EmailStatusState>({
+    status: "idle",
+  });
+  const memberId = state.status === "active-member" ? state.userId : null;
+  const memberRef = useRef<string | null>(null);
+  const emailRequest = useRef(0);
+  const fetchRef = useRef(authorizedFetch);
+  useEffect(() => {
+    fetchRef.current = authorizedFetch;
+  }, [authorizedFetch]);
+  // Trạng thái email tách khỏi SessionState: lỗi tải không bao giờ được coi là đã xác minh.
+  const loadEmailStatus = useCallback(async (userId: string) => {
+    const request = ++emailRequest.current;
+    setEmailState((previous) =>
+      previous.status === "ready" ? previous : { status: "loading" },
+    );
+    try {
+      const response = await fetchRef.current("/account/email", {
+        method: "GET",
+        redirect: "error",
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error(unavailable);
+      const status = parseEmailStatus(await response.json());
+      if (
+        mounted.current &&
+        emailRequest.current === request &&
+        memberRef.current === userId
+      )
+        setEmailState({ status: "ready", ...status });
+    } catch {
+      if (
+        mounted.current &&
+        emailRequest.current === request &&
+        memberRef.current === userId
+      )
+        setEmailState({ status: "error" });
+    }
+  }, []);
+  const reloadEmailStatus = useCallback(async () => {
+    const userId = memberRef.current;
+    if (userId) await loadEmailStatus(userId);
+  }, [loadEmailStatus]);
+  useEffect(() => {
+    memberRef.current = memberId;
+    emailRequest.current += 1;
+    setEmailState({ status: "idle" });
+    if (memberId !== null) void loadEmailStatus(memberId);
+  }, [memberId, loadEmailStatus]);
   useEffect(() => {
     mounted.current = true;
     const lifecycleEpoch = epoch.current;
@@ -691,6 +790,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     <SessionContext.Provider
       value={{
         state,
+        emailStatus: emailState,
+        reloadEmailStatus,
         accept,
         refresh,
         logout,

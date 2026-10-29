@@ -37,10 +37,11 @@ async function create(viewerLimit = 5) {
     [host.userId, "Public Fixture Host"],
   );
   const entry = await run(host, [], (s) =>
-    rooms.create(s, { commandId: randomUUID(), viewerLimit }),
-  );
-  await run(host, [entry.roomId], (s) =>
-    rooms.changeVisibility(s, entry.roomId, entry.version, "PUBLIC"),
+    rooms.create(s, {
+      commandId: randomUUID(),
+      viewerLimit,
+      visibility: "PUBLIC",
+    }),
   );
   return { host, ...entry };
 }
@@ -71,6 +72,77 @@ describe.skipIf(!databaseUrl)(
         "20261017000018_room_code_digits",
       ])
         await apply(`supabase/migrations/${name}.sql`);
+    });
+    it("creates a discoverable public room atomically and binds receipt to visibility", async () => {
+      const host = await actor();
+      const input = { commandId: randomUUID(), visibility: "PUBLIC" as const };
+      const entry = await run(host, [], (s) => rooms.create(s, input));
+      const view = await run(host, [entry.roomId], (s) =>
+        rooms.snapshot(s, entry.roomId),
+      );
+      expect(view.room).toMatchObject({
+        visibility: "PUBLIC",
+        status: "WAITING",
+        seats: { red: host.userId, black: null },
+      });
+      expect(await list(await actor())).toEqual([
+        expect.objectContaining({
+          roomId: entry.roomId,
+          publicOpenedAt: expect.any(String),
+          emptySeats: 1,
+        }),
+      ]);
+      expect(await run(host, [], (s) => rooms.create(s, input))).toEqual(entry);
+      await expect(
+        run(host, [], (s) =>
+          rooms.create(s, { ...input, visibility: "CODE_ONLY" }),
+        ),
+      ).rejects.toMatchObject({ code: "COMMAND_ID_REUSED" });
+      expect(
+        (
+          await pool.query(
+            "SELECT type FROM xiangqi_room.outbox WHERE room_id=$1",
+            [entry.roomId],
+          )
+        ).rows,
+      ).toEqual([{ type: "room.created" }]);
+    });
+    it("defaults to code-only, accepts explicit code-only replay and rejects locked creation", async () => {
+      const host = await actor();
+      for (const visibility of ["LOCKED", "", null, false]) {
+        await expect(
+          run(host, [], (s) =>
+            rooms.create(s, {
+              commandId: randomUUID(),
+              visibility: visibility as "CODE_ONLY",
+            }),
+          ),
+        ).rejects.toMatchObject({ code: "ROOM_INPUT_INVALID" });
+      }
+      const input = { commandId: randomUUID() };
+      const entry = await run(host, [], (s) => rooms.create(s, input));
+      expect(
+        (
+          await run(host, [entry.roomId], (s) =>
+            rooms.snapshot(s, entry.roomId),
+          )
+        ).room.visibility,
+      ).toBe("CODE_ONLY");
+      expect(await list(await actor())).toEqual([]);
+      expect(
+        await run(host, [], (s) =>
+          rooms.create(s, { ...input, visibility: "CODE_ONLY" }),
+        ),
+      ).toEqual(entry);
+      await expect(
+        run(host, [], (s) =>
+          rooms.create(s, { ...input, visibility: "PUBLIC" }),
+        ),
+      ).rejects.toMatchObject({ code: "COMMAND_ID_REUSED" });
+      expect(
+        (await pool.query("SELECT count(*)::int n FROM public.rooms")).rows[0]
+          .n,
+      ).toBe(1);
     });
     it("returns the same PUBLIC catalog for any reader transaction, with no actor passed to the catalog", async () => {
       const a = await actor();

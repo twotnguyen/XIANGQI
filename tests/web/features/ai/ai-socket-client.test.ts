@@ -113,9 +113,9 @@ it("uses an isolated authenticated namespace with one tab identity and fresh han
     });
   const f = await observer(proof);
   expect(fixture.io).toHaveBeenCalledWith(
-    "http://localhost:3000/ai",
+    "http://localhost/ai",
     expect.objectContaining({
-      path: "/ai/socket.io",
+      path: "/api/ai/socket.io",
       transports: ["websocket"],
       withCredentials: true,
       autoConnect: false,

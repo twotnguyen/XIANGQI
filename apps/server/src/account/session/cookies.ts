@@ -1,5 +1,7 @@
 const names = ["xiangqi_session", "xiangqi_refresh"] as const;
-export type SessionCookieName = (typeof names)[number];
+// Opaque per-browser device id; never cleared on logout so the same browser stays the same device.
+const deviceName = "xiangqi_device";
+export type SessionCookieName = (typeof names)[number] | typeof deviceName;
 interface CookieResponse {
   setHeader(name: string, value: string[]): unknown;
 }
@@ -8,6 +10,8 @@ export interface CookieSession {
   refresh_token: string;
   expiresAt: string;
   remember: boolean;
+  // Set only when a new device token was minted for this response.
+  deviceToken?: string;
 }
 function flags(secure: boolean) {
   const sameSite =
@@ -49,10 +53,15 @@ export function writeSessionCookies(
     (session.remember
       ? `; Max-Age=${Math.max(0, Math.floor((deadline - now.getTime()) / 1000))}`
       : "");
-  response.setHeader("Set-Cookie", [
+  const cookies = [
     `${names[0]}=${encoded(session.appSession)}${suffix}`,
     `${names[1]}=${encoded(session.refresh_token)}${suffix}`,
-  ]);
+  ];
+  if (session.deviceToken)
+    cookies.push(
+      `${deviceName}=${encoded(session.deviceToken)}${flags(secure)}; Max-Age=34560000`,
+    );
+  response.setHeader("Set-Cookie", cookies);
 }
 /**
  * Xóa bỏ các cookie phiên làm việc trên trình duyệt (đặt Max-Age=0) khi đăng xuất.

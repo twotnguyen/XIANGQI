@@ -16,7 +16,7 @@ RoomScope.activeActorIds là các proof còn active đã được worker/root ki
 
 ## API local
 
-- create(scope,{commandId,timeMinutes?,viewerLimit?}) → roomId/version/role RED/inviteCode. Mặc định 10 phút/5 người xem, CODE_ONLY. Máy chủ tự sinh UUID và mã 8 chữ số bằng crypto, thử lại tối đa 5 lần khi trùng mã; lưu tên hiển thị `Phòng <mã>`, không nhận tên từ client. Entry receipt fingerprint gồm mức giờ/số người xem, không gồm ID/mã tự sinh; gửi lại cùng lệnh trả phòng đã tạo. Không đổi tên hay mã của phòng cũ, không cần migration.
+- create(scope,{commandId,timeMinutes?,viewerLimit?,visibility?}) → roomId/version/role RED/inviteCode. Mặc định 10 phút/5 người xem, `CODE_ONLY`; chỉ nhận `CODE_ONLY` hoặc `PUBLIC`, từ chối `LOCKED` khi tạo. Ghi quyền truy cập đã chọn ngay trong giao dịch tạo phòng; `PUBLIC` ghi `public_opened_at` và được catalog Sảnh đọc sau commit, không gọi lệnh đổi quyền riêng. Máy chủ tự sinh UUID và mã 8 chữ số bằng crypto, thử lại tối đa 5 lần khi trùng mã; lưu tên hiển thị `Phòng <mã>`, không nhận tên từ client. Entry receipt fingerprint phân biệt quyền truy cập cùng mức giờ/số người xem; `CODE_ONLY` giữ fingerprint cũ và tương đương bỏ trống `visibility`. ID/mã tự sinh không thuộc fingerprint; gửi lại cùng lệnh trả phòng đã tạo, đổi quyền truy cập với cùng commandId bị từ chối. Không đổi phòng cũ, không cần migration.
 - resolveCode(client,code) → roomId chỉ cho authenticated admission nội bộ; code không bỏ qua LOCKED/auth/seat/capacity. Root trả link `/rooms/:id`, không dùng host/header không tin cậy để sinh absolute URL.
 - join(scope,{commandId,roomId,intent,expectedVersion?}), snapshot, switchSeat, ready.
 - create/join initially retain a seat for60s before first controlling socket; verified connection clears disconnected_at. A lost create response cannot reserve an offline seat indefinitely. Connected lone Host vẫn chờ vô hạn.
@@ -56,7 +56,7 @@ Receipt, khóa actor/phòng và thứ tự khóa không đổi.
 
 ## Guest port
 
-RoomGuestPort.seatedSeat: ghế là ván AI (active_players.ai_game_id) hoặc PLAYER membership trong phòng `status='PLAYING'` chưa đóng. Reservation WAITING/FINISHED (active_players.room_id) và membership ở phòng không PLAYING KHÔNG phải ghế: khách hết hạn không được gia hạn 12h để tiếp tục Ready/ván mới và sẽ kết thúc ở lần auth/finish/worker kế tiếp. Ghế PLAYING và AI giữ 12h defer như cũ. end với `reason='logout'` khi khách đang ở phòng PLAYING (PLAYER) hoặc có ván AI phải có `confirmedResign`, nếu không trả 409 `GUEST_RESIGN_CONFIRM_REQUIRED` trước mọi leave/scrub. end mặc định GUEST_UNAVAILABLE cho đến root cung cấp full same-client termination (room/match/chat/media/structured snapshot PII scrub); không giả UPDATE profile là đủ xóa PII. Guest integration test dùng synthetic no-history/no-media fixture cleanup và GuestService thật để chứng minh12h/defer/final-leave đồng giao dịch. Production full cleanup còn gate riêng.
+RoomGuestPort.seatedSeat: ghế là ván AI (`active_players.ai_game_id`) hoặc PLAYER membership trong phòng chưa đóng, kể cả WAITING sau ván. Theo BA 0.3/1.3, Khách quá 12 giờ được tiếp tục đúng phòng đang giữ ghế, không tạo/vào ghế phòng khác; rời ghế/ván mới kết thúc phiên và dọn PII. SPECTATOR không được gia hạn như người giữ ghế. `end(reason='logout')` chỉ đòi `confirmedResign` khi thực sự PLAYING hoặc có AI; WAITING rời phòng không xử thua. Root cung cấp full same-client termination (room/match/chat/media/structured snapshot PII scrub), không giả UPDATE profile là đủ xóa PII.
 
 ## Migration000006
 

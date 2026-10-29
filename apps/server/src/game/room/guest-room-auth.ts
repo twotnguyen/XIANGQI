@@ -69,7 +69,7 @@ function sanitized(error: unknown): RoomError {
     if (error.code === "GUEST_ROOM_LIMIT")
       return new RoomError(
         "GUEST_ROOM_LIMIT",
-        "Khách chỉ được tạo một phòng đang mở",
+        "Khách chỉ được mở 1 phòng cùng lúc",
         409,
       );
     if (error.code === "GUEST_RESIGN_CONFIRM_REQUIRED")

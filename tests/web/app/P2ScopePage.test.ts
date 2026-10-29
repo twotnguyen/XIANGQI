@@ -12,8 +12,6 @@ it("points a signed-in member from a P2 route back to the lobby", () => {
 });
 
 it("points an anonymous visitor from a P2 route to login", () => {
-  render(
-    createElement(P2ScopePage, { route: "forgot-password", signedIn: false }),
-  );
+  render(createElement(P2ScopePage, { route: "leaderboard", signedIn: false }));
   expect(screen.getByRole("link").getAttribute("href")).toBe("/login");
 });

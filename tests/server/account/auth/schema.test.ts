@@ -311,6 +311,40 @@ describe.skipIf(!url)(
     });
     const email = () => `${randomUUID()}@example.invalid`;
     beforeAll(async () => {
+      await pool.query(
+        "DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
+      );
+      await pool.query(
+        await readFile(
+          "tests/server/fixtures/managed-auth.test-fixture.sql",
+          "utf8",
+        ),
+      );
+      await pool.query(
+        "ALTER SCHEMA public OWNER TO postgres; GRANT app_server TO postgres WITH SET TRUE; CREATE TABLE auth.identities(id uuid PRIMARY KEY,user_id uuid REFERENCES auth.users(id),provider text NOT NULL,provider_id text NOT NULL,identity_data jsonb DEFAULT '{}',UNIQUE(provider,provider_id)); ALTER TABLE auth.identities OWNER TO supabase_auth_admin; GRANT SELECT,TRIGGER,REFERENCES ON auth.identities TO postgres",
+      );
+      for (const file of [
+        "../baseline/20260913_legacy_public.sql",
+        "20261011000001_email_registration.sql",
+        "20261011000002_realtime.sql",
+        "20261011000003_username_login.sql",
+        "20261011000004_legacy_moves_security.sql",
+        "20261011000005_google_guest.sql",
+        "20261029000001_username_account_email.sql",
+        "20261031000001_session_devices.sql",
+      ]) {
+        const client = await pool.connect();
+        try {
+          await client.query("SET ROLE postgres");
+          await client.query(
+            await readFile(`supabase/migrations/${file}`, "utf8"),
+          );
+        } finally {
+          await client.query("ROLLBACK");
+          await client.query("RESET ROLE");
+          client.release();
+        }
+      }
       fixture = await startAuthFixture(pool, () => clock);
       expect(
         (await runtimePool.query("SELECT session_user,current_user")).rows[0],
@@ -320,6 +354,17 @@ describe.skipIf(!url)(
         new SupabaseAuth(fixture.url, "fake-public-key", "fake-server-key"),
         () => clock,
       );
+      // Real registration seed: step one must see a completed profile named "legacy".
+      const seed = await service.email({
+        username: "legacy",
+        password: "fake-password-fixture",
+        passwordConfirmation: "fake-password-fixture",
+        email: "legacy-seed@example.invalid",
+      });
+      await service.verify({
+        registrationToken: seed.registrationToken,
+        otp: "123456",
+      });
     });
     afterAll(async () => {
       await fixture.close();
@@ -339,6 +384,7 @@ describe.skipIf(!url)(
     it("creates only an unconfirmed identity and capability draft at step two", async () => {
       const address = email();
       const input = credentials();
+      const sentBefore = fixture.state.sent;
       const registration = await service.email({ ...input, email: address });
       expect(registration.registrationToken.length).toBeGreaterThanOrEqual(43);
       const { rows } = await pool.query(
@@ -352,7 +398,7 @@ describe.skipIf(!url)(
       await expect(
         service.email({ ...credentials(), email: address }),
       ).rejects.toMatchObject({ code: "EMAIL_TAKEN" });
-      expect(fixture.state.sent).toBe(1);
+      expect(fixture.state.sent).toBe(sentBefore + 1);
     });
     it("completes verified profiles with original case, logs in and allows active use", async () => {
       const input = credentials();

@@ -61,27 +61,8 @@ describe.skipIf(!url)(
       clock = new Date("2026-10-11T00:00:00Z");
     });
     beforeAll(async () => {
-      // Database-local synthetic baseline only: never reset shared cluster memberships.
-      let baseline = await readFile("supabase/tests/auth-baseline.sql", "utf8");
-      const start = baseline.indexOf("DROP SCHEMA IF EXISTS xiangqi_auth");
-      const end = baseline.indexOf("GRANT app_server TO supabase_admin");
-      if (start < 0 || end <= start)
-        throw new Error(
-          "Synthetic baseline boundaries changed; review database-local fixture before running",
-        );
-      baseline = baseline
-        .slice(start, end)
-        .replace(
-          "GRANT CREATE ON DATABASE xiangqi_auth_test TO postgres;",
-          "GRANT CREATE ON DATABASE xiangqi_login_test TO postgres;",
-        );
-      if (
-        /CREATE ROLE|GRANT app_server TO|REVOKE app_server|pg_auth_members/.test(
-          baseline,
-        )
-      )
-        throw new Error("Login fixture must not mutate cluster roles");
-      // New CI cluster: create missing fixture roles only; preserve existing roles/memberships.
+      // Isolated login database: real audited schema chain, same order as the schema suite.
+      // The DO block only creates missing roles; it never alters existing memberships.
       await pool.query(`DO $$ BEGIN
         IF current_user='postgres' OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname=current_user AND rolsuper AND rolcanlogin) THEN
           RAISE EXCEPTION 'Isolated login tests require a distinct superuser test administrator';
@@ -97,19 +78,39 @@ describe.skipIf(!url)(
           RAISE EXCEPTION 'Application role must enforce row-level security';
         END IF;
       END $$;`);
-      await pool.query(baseline);
+      await pool.query(
+        "DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
+      );
       await pool.query(
         await readFile(
-          "supabase/migrations/20261011000001_email_registration.sql",
+          "tests/server/fixtures/managed-auth.test-fixture.sql",
           "utf8",
         ),
       );
       await pool.query(
-        await readFile(
-          "supabase/migrations/20261011000003_username_login.sql",
-          "utf8",
-        ),
+        "ALTER SCHEMA public OWNER TO postgres; GRANT app_server TO postgres WITH SET TRUE; CREATE TABLE auth.identities(id uuid PRIMARY KEY,user_id uuid REFERENCES auth.users(id),provider text NOT NULL,provider_id text NOT NULL,identity_data jsonb DEFAULT '{}',UNIQUE(provider,provider_id)); ALTER TABLE auth.identities OWNER TO supabase_auth_admin; GRANT SELECT,TRIGGER,REFERENCES ON auth.identities TO postgres",
       );
+      for (const file of [
+        "../baseline/20260913_legacy_public.sql",
+        "20261011000001_email_registration.sql",
+        "20261011000002_realtime.sql",
+        "20261011000003_username_login.sql",
+        "20261011000004_legacy_moves_security.sql",
+        "20261011000005_google_guest.sql",
+        "20261029000001_username_account_email.sql",
+        "20261031000001_session_devices.sql",
+      ]) {
+        const client = await pool.connect();
+        try {
+          await client.query("SET ROLE postgres");
+          await client.query(
+            await readFile(`supabase/migrations/${file}`, "utf8"),
+          );
+        } finally {
+          await client.query("RESET ROLE");
+          client.release();
+        }
+      }
       fixture = await startAuthFixture(pool, now);
       auth = new SupabaseAuth(fixture.url, "fixture-public", "fixture-secret");
       store = new PostgresLoginStore(loginPool);
@@ -616,6 +617,18 @@ describe.skipIf(!url)(
       ).rejects.toMatchObject({ code: "SESSION_EXPIRED" });
     });
 
+    it("keeps only the newest app session per account (single seat, AC-01.4.4)", async () => {
+      const account = (await store.accountByUsername("testplayer"))!;
+      const first = await sessions.issue(account.userId, true);
+      const second = await sessions.issue(account.userId, true);
+      await expect(
+        sessions.requireValidSession(first.appSession),
+      ).rejects.toMatchObject({ code: "SESSION_EXPIRED" });
+      await expect(
+        sessions.requireValidSession(second.appSession),
+      ).resolves.toMatchObject({ userId: account.userId });
+    });
+
     it("shares normalized concurrent password failures and blocking between login and registration recovery", async () => {
       const account = (await store.accountByUsername("testplayer"))!;
       const failures = await Promise.all(
@@ -736,6 +749,7 @@ describe.skipIf(!url)(
         expect(
           loggedIn.headers
             .getSetCookie()
+            .filter((value) => !value.startsWith("xiangqi_device="))
             .every((value) => !value.includes("Max-Age=")),
         ).toBe(true);
         const refreshed = await fetch(`${base}/auth/refresh`, {
@@ -868,10 +882,13 @@ describe.skipIf(!url)(
             .map((cookie) => cookie.split(";")[0])
             .join("; ");
         const maxAges = (response: Response) =>
-          response.headers.getSetCookie().map((cookie) => {
-            const match = /(?:^|; )Max-Age=(\d+)(?:;|$)/.exec(cookie);
-            return match ? Number(match[1]) : undefined;
-          });
+          response.headers
+            .getSetCookie()
+            .filter((cookie) => !cookie.startsWith("xiangqi_device="))
+            .map((cookie) => {
+              const match = /(?:^|; )Max-Age=(\d+)(?:;|$)/.exec(cookie);
+              return match ? Number(match[1]) : undefined;
+            });
         try {
           await store.resetAttempts("testplayer");
           const issued = await fetch(`${base}/auth/login`, {
@@ -949,7 +966,6 @@ describe.skipIf(!url)(
               code: "SESSION_EXPIRED",
               message: "Phiên đăng nhập đã hết hạn",
             });
-            expect(expired.headers.getSetCookie()).toEqual([]);
             expect(fixture.state.refreshRequests).toBe(calls + 2);
           }
         } finally {

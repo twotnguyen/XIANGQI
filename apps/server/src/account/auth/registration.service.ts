@@ -23,7 +23,8 @@ function emailAddress(value: unknown): string {
   if (
     typeof value !== "string" ||
     value.length > 254 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+    value.trim().toLowerCase().endsWith(".xiangqi.invalid")
   )
     throw new RegistrationError("EMAIL_INVALID", "Email không hợp lệ", 400, 2);
   return value.trim().toLowerCase();
@@ -45,7 +46,10 @@ export class RegistrationService {
     public readonly auth: AuthProvider,
     public readonly now = () => new Date(),
     private readonly issueApplicationSession:
-      | ((userId: string) => Promise<{ appSession: string; expiresAt: string }>)
+      | ((
+          userId: string,
+          deviceToken: string | null,
+        ) => Promise<{ appSession: string; expiresAt: string }>)
       | null = null,
     private readonly authenticateRecovery:
       | ((
@@ -197,11 +201,14 @@ export class RegistrationService {
   /**
    * Xác minh mã OTP do người dùng nhập, hoàn tất hồ sơ người dùng và cấp phiên đăng nhập.
    */
-  async verify(input: {
-    registrationToken: string;
-    otp: string;
-    password?: string;
-  }) {
+  async verify(
+    input: {
+      registrationToken: string;
+      otp: string;
+      password?: string;
+    },
+    deviceToken: string | null = null,
+  ) {
     const initial = await this.getDraft(input.registrationToken);
     return this.store.withLocks(
       [`email:${initial.email}`, `username:${initial.username.toLowerCase()}`],
@@ -284,6 +291,7 @@ export class RegistrationService {
           await store.clearPending(draft.userId);
           applicationSession = await this.issueApplicationSession?.(
             draft.userId,
+            deviceToken,
           );
           await store.removeDraft(draft.userId);
           await store.removeIntent(draft.email);

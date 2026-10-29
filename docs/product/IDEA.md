@@ -28,15 +28,15 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 ## 4. Phạm vi và ưu tiên
 
-**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, chế độ phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic với kênh người xem riêng, đánh với máy theo cấp độ. Chỉ giao diện Kỳ Đài Cổ Phong.
+**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Chỉ giao diện Kỳ Đài Cổ Phong.
 
-**P2:** Đánh Hạng/Elo, ghép ngẫu nhiên, Tái đấu có chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, QR, khôi phục mật khẩu/Username, đổi Username, tiện ích demo, giao diện bổ sung (BA Phần 11).
+**P2:** Đánh Hạng/Elo, ghép ngẫu nhiên, Tái đấu chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, QR, khôi phục Username, đổi Username, tiện ích demo, giao diện bổ sung (BA Phần 11). Quên mật khẩu không còn thuộc P2.
 
 **Không làm:** xem BA 10.2.
 
 ## 5. Thành công được chứng minh thế nào?
 
-- 9 Epic (EP-01 → EP-08 khớp 8 yêu cầu khách hàng, EP-00 nền tảng), 27 User Story, 268 tiêu chí nghiệm thu có ca kiểm thử đối ứng; 71 Task, 880 giờ trong 4 Sprint ([KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md)).
+- Baseline trước bổ sung 30/10: 9 Epic, 27 Story, 268 AC, 71 Task và 880 giờ trong 4 Sprint ([kế hoạch](../planning/KE-HOACH-JIRA.md)). YC1 có thêm 20 tiêu chí mật khẩu tại đặc tả riêng; chưa tái ước lượng hoặc cập nhật Jira trong tác vụ tài liệu này.
 - Kế hoạch dự kiến: BA đã chốt; lịch triển khai từ 10/10, hoàn tất và tổng duyệt ngày 04/11. Jira hiện có 36 mục BA Done và 71 Task To Do; bốn Sprint chưa bắt đầu. Chưa triển khai sản phẩm; số AC/TC là độ phủ đặc tả, không phải số ca đã kiểm đạt.
 - Điều kiện nghiệm thu: kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
 - Luật cờ kiểm độc lập ở máy chủ; không tin kết quả client gửi.

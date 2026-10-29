@@ -232,8 +232,9 @@ export function connectPublicRooms(input: PublicRoomsConnectionInput) {
     connected = false,
     epoch = 0;
   const current = () => !closed && !denied;
-  const socket = io(`${getApiBaseUrl()}/public-rooms`, {
-    path: "/public-rooms/socket.io",
+  const api = new URL(getApiBaseUrl());
+  const socket = io(`${api.origin}/public-rooms`, {
+    path: `${api.pathname}/public-rooms/socket.io`,
     autoConnect: false,
     auth: (done) => {
       const attempt = ++epoch;

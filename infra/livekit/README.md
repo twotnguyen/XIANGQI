@@ -73,7 +73,7 @@ Bộ mặc định chỉ dành cho cùng máy, chưa phải cấu hình LAN hoà
    ```
 
 4. IP và URL trên chỉ là ví dụ: phải thay bằng máy, DNS và proxy thực. Đồng bộ URL
-   web/API, CORS và Supabase redirect tương ứng trong bản tổng. Lệnh chuyển media
+   web, CORS và Supabase redirect tương ứng trong bản tổng; API đi cùng origin `/api`. Lệnh chuyển media
    không tự cấu hình DNS, TLS, CORS, OAuth hay firewall.
 5. Trên Docker Desktop, kiểm tra UDP/TCP port forwarding từ máy thứ hai; địa chỉ
    quảng bá media phải là IP máy chủ LAN, không phải IP container. Cấu hình này
@@ -86,15 +86,14 @@ tạo lại container rồi chuyển `local` nếu cần. Nếu vừa sửa hồ
 ## Demo qua Tailscale, giữ LiveKit Cloud
 
 IP Tailscale qua HTTP không phải secure context cho camera/mic. Dùng Tailscale
-Serve cấp HTTPS cho web/API; các thiết bị cần cùng tailnet và được phép truy cập
+Serve cấp HTTPS cho web; API đi cùng origin qua `/api`. Các thiết bị cần cùng tailnet và được phép truy cập
 máy chủ. Không cần bật Funnel hoặc chuyển LiveKit Cloud sang Docker.
 
-Trên máy đang chạy web cổng 5173 và API cổng 3000:
+Trên máy đang chạy web cổng 5173 (API cổng 3000 được Vite proxy qua `/api`, không mở cổng HTTPS riêng):
 
 ```sh
 tailscale serve status
 tailscale serve --bg --https=443 http://127.0.0.1:5173
-tailscale serve --bg --https=8443 http://127.0.0.1:3000
 ```
 
 Nếu CLI chưa có trong PATH trên macOS, dùng
@@ -105,7 +104,6 @@ Lấy hostname `.ts.net` thật từ kết quả Serve, ví dụ `machine.tailne
 Cập nhật `.env` tổng, đối chiếu thay đổi riêng trước khi đồng bộ hai bản sao:
 
 ```dotenv
-VITE_API_URL=https://machine.tailnet.ts.net:8443
 DEV_ALLOWED_HOSTS=machine.tailnet.ts.net
 ```
 
@@ -119,23 +117,19 @@ HTTP bằng IP cũ. Đăng nhập lại bằng hai tài khoản khác nhau vì c
 không chuyển sang hostname mới. Đăng nhập Google cần origin mới được cho phép
 riêng ở Google; cấu hình Serve không tự sửa dashboard OAuth.
 
-Kiểm tra HTTPS không bỏ qua chứng chỉ, health API, CORS của origin mới và
+Kiểm tra HTTPS không bỏ qua chứng chỉ, `https://machine.tailnet.ts.net/api/ready`, CORS của origin mới và
 `window.isSecureContext`. API media từ chối người chưa đăng nhập là bình thường.
 LiveKit `ListRooms` xác thực thành công chỉ chứng minh URL/khóa Cloud hoạt động,
 không chứng minh hình tiếng hai chiều. Hai thiết bị vẫn cần kiểm tra camera/mic
 trong cùng phòng và các mức chia sẻ; Cloud vẫn sử dụng quota.
 
-Serve chạy nền qua lần khởi động lại Tailscale. Khi không cần, tắt riêng hai
-proxy vừa tạo, không dùng `serve reset` để tránh xóa cấu hình khác:
+Serve chạy nền qua lần khởi động lại Tailscale. Khi không cần, tắt riêng proxy vừa tạo, không dùng `serve reset` để tránh xóa cấu hình khác:
 
 ```sh
 tailscale serve --https=443 off
-tailscale serve --https=8443 off
 ```
 
-Nếu quay lại truy cập web bằng HTTP localhost, đổi `VITE_API_URL` về
-`http://localhost:3000`, đồng bộ `.env` và nạp lại web/server. Không cần đổi
-khóa LiveKit.
+Nếu quay lại truy cập web bằng HTTP localhost, không cần biến URL API (web luôn gọi `/api` cùng origin). Giữ `CORS_ORIGINS` và `DEV_ALLOWED_HOSTS` theo cấu hình đang dùng, rồi nạp lại web/server. Không cần đổi khóa LiveKit.
 
 ## Kiểm tra
 

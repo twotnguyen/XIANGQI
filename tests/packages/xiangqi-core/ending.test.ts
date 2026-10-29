@@ -55,6 +55,22 @@ describe("terminal position priority (AC-04.1.4/5/7/8)", () => {
     expect(ending([loopingPosition(119)])).toBeNull();
   });
 
+  it("keeps the match active when early candidates expose the general but a later move is legal", () => {
+    const position = fixture(
+      [
+        ["black", "king", 4, 0],
+        ["red", "rook", 3, 1],
+        ["red", "pawn", 4, 2],
+        ["red", "king", 4, 9],
+      ],
+      "black",
+      119,
+    );
+    expect(isInCheck(position, "black")).toBe(false);
+    expect(legalMoves(position)).toEqual([{ from: 4, to: 5 }]);
+    expect(ending([position])).toBeNull();
+  });
+
   it("adjudicates a general with no escapes and in check as checkmate, before 120 draw", () => {
     const position = fixture(
       [

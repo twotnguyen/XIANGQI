@@ -436,7 +436,7 @@ export interface RoomConnectionInput {
 }
 
 /**
- * Thiết lập kết nối thời gian thực qua Socket.IO tới namespace `/rooms` cho một phòng cờ cụ thể.
+ * Thiết lập kết nối thời gian thực qua Socket.IO tới namespace gốc (`/`) tại `/api/socket.io` cho một phòng cờ cụ thể.
  * Đồng bộ snapshot phòng (bàn cờ, đồng hồ, lượt đi, danh sách người chơi/khán giả),
  * gửi lệnh ván cờ (đi quân, xin hòa, chấp nhận/từ chối hòa, đầu hàng, sẵn sàng),
  * tích hợp đọc/gửi tin nhắn chat trong phòng, và tự động xử lý kết nối lại/mất kết nối.
@@ -478,10 +478,12 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       invalidateChat();
     }
   }
+  const api = new URL(getApiBaseUrl());
   const socket: Socket<
     ServerRealtimeEvents & ServerChatEvents,
     ClientRealtimeEvents & ClientChatEvents
-  > = io(getApiBaseUrl(), {
+  > = io(api.origin, {
+    path: `${api.pathname}/socket.io`,
     autoConnect: false,
     auth: (done) => {
       invalidateChat();

@@ -240,7 +240,7 @@ export class GuestService {
     )
       throw new GuestError(
         "GUEST_ROOM_LIMIT",
-        "Khách chỉ được tạo một phòng đang mở",
+        "Khách chỉ được mở 1 phòng cùng lúc",
         409,
       );
     return {

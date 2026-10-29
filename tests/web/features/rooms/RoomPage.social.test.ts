@@ -126,7 +126,7 @@ it("moves a non-host player to spectator from the viewers panel", async () => {
     .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
   expect(fixture.client.toSpectator).toHaveBeenCalledWith("room", 8);
 });
-it("shows the invite code with a copy action and hides it when the host locks the room", async () => {
+it("copies the room code or full invite URL without navigating and hides sharing when locked", async () => {
   const fixture = setup({
     ...snapshot,
     room: { ...snapshot.room, visibility: "CODE_ONLY", inviteCode: "70521348" },
@@ -141,15 +141,69 @@ it("shows the invite code with a copy action and hides it when the host locks th
   });
   await u.click(screen.getByRole("button", { name: "Sao chép mã" }));
   expect(copied).toEqual(["70521348"]);
-  expect((await screen.findByRole("status")).textContent).toBe(
-    "Đã sao chép mã phòng.",
-  );
+  expect(
+    within(screen.getByRole("button", { name: "Sao chép mã" })).getByRole(
+      "img",
+      {
+        name: "Sao chép thành công",
+      },
+    ),
+  ).toBeTruthy();
+  const pathBeforeCopy = window.location.href;
+  await u.click(screen.getByRole("button", { name: "Sao chép link" }));
+  expect(copied).toEqual([
+    "70521348",
+    `${window.location.origin}/rooms/join?token=70521348`,
+  ]);
+  expect(window.location.href).toBe(pathBeforeCopy);
+  expect(
+    within(screen.getByRole("button", { name: "Sao chép link" })).getByRole(
+      "img",
+      {
+        name: "Sao chép thành công",
+      },
+    ),
+  ).toBeTruthy();
+  expect(
+    within(screen.getByRole("button", { name: "Sao chép mã" })).queryByRole(
+      "img",
+    ),
+  ).toBeNull();
   fixture.publish({
     ...snapshot,
     version: 9,
     room: { ...snapshot.room, visibility: "LOCKED", inviteCode: null },
   });
   await waitFor(() => expect(screen.queryByText("70521348")).toBeNull());
+});
+
+it("reports a rejected clipboard write without navigating or claiming success", async () => {
+  const fixture = setup({
+    ...snapshot,
+    room: { ...snapshot.room, visibility: "CODE_ONLY", inviteCode: "70521348" },
+  });
+  await fixture.ready();
+  const u = userEvent.setup();
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: {
+      writeText: vi.fn().mockRejectedValue(new Error("NotAllowedError")),
+    },
+  });
+  const pathBeforeCopy = window.location.href;
+  await u.click(screen.getByRole("button", { name: "Sao chép link" }));
+  expect(
+    await screen.findByText(
+      "Chưa sao chép được link. Hãy thử lại hoặc chia sẻ mã phòng.",
+    ),
+  ).toBeTruthy();
+  expect(screen.queryByRole("img", { name: "Sao chép thành công" })).toBeNull();
+  expect(window.location.href).toBe(pathBeforeCopy);
+  expect(
+    screen
+      .getByRole("button", { name: "Sao chép link" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
 });
 
 it.each([

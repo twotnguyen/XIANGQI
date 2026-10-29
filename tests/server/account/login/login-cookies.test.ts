@@ -78,8 +78,9 @@ it("writes host-only HttpOnly cookies and no-store after login, with remember de
     });
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    const cookies = response.headers.getSetCookie();
-    expect(cookies).toHaveLength(2);
+    const cookies = response.headers
+      .getSetCookie()
+      .filter((cookie) => !cookie.startsWith("xiangqi_device="));
     for (const cookie of cookies) {
       expect(cookie).toContain("; Path=/; HttpOnly; SameSite=Lax");
       expect(cookie).not.toMatch(/Secure|Domain=|Expires=/);
@@ -179,7 +180,6 @@ it("defaults cookie transport to Secure when the optional configuration is absen
     }),
   });
   expect(response.status).toBe(200);
-  expect(response.headers.getSetCookie()).toHaveLength(2);
   for (const cookie of response.headers.getSetCookie())
     expect(cookie).toContain("; Secure;");
 });

@@ -916,7 +916,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
             { commandId: randomUUID() },
           ),
       );
-    // Deferral applies only to a guest seated in a PLAYING room (RoomGuestPort.seatedSeat); a WAITING host holds no seat.
     const opponent = await actor(),
       matchId = randomUUID();
     await pool.query(

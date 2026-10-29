@@ -152,6 +152,37 @@ export class SupabaseAuth implements AuthProvider {
       );
     }
   }
+  async createUsernameAccount(
+    email: string,
+    password: string,
+    intentNonce: string,
+  ): Promise<string> {
+    const user = await this.request(
+      "admin/users",
+      {
+        email,
+        id: email.split("@")[0],
+        password,
+        // This confirms a technical credential, not a user's contact email.
+        email_confirm: true,
+        app_metadata: { registration_pending: true },
+        user_metadata: { registration_intent: intentNonce },
+      },
+      true,
+    );
+    if (
+      typeof user.id !== "string" ||
+      !/^[0-9a-f-]{36}$/i.test(user.id) ||
+      user.id !== email.split("@")[0] ||
+      user.email !== email
+    )
+      throw new RegistrationError(
+        "AUTH_PROVIDER_ERROR",
+        "Dịch vụ xác thực chưa thể xử lý yêu cầu",
+        503,
+      );
+    return user.id;
+  }
   async updatePendingPassword(userId: string, password: string) {
     await this.request(
       `admin/users/${userId}`,

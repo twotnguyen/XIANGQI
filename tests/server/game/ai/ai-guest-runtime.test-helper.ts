@@ -29,16 +29,6 @@ export { databaseUrl, pool };
 
 export const AI_ORIGIN = "http://localhost:5173";
 
-// Migrations applied on top of the game runtime baseline. Names come from supabase/migrations.
-const AI_MIGRATIONS = [
-  "20261011000008_room_modes",
-  "20261011000009_match_draw",
-  "20261011000010_room_chat",
-  "20261011000011_ai_reservations",
-  "20261011000012_ai_presence",
-  "20261019060000_guest_privacy_receipt_redaction",
-];
-
 /** Drops AI-owned schemas (not dropped by the shared reset) and rebuilds the schema with AI tables. */
 export async function resetAiGuestDatabase(): Promise<void> {
   if (!databaseUrl) throw new Error("ROOM_RUNTIME_TEST_DATABASE_URL required");
@@ -46,8 +36,15 @@ export async function resetAiGuestDatabase(): Promise<void> {
     "DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_chat CASCADE",
   );
   await reset();
-  for (const file of AI_MIGRATIONS)
-    await apply(`supabase/migrations/${file}.sql`);
+  for (const migration of [
+    "20261011000008_room_modes",
+    "20261011000009_match_draw",
+    "20261011000010_room_chat",
+    "20261011000011_ai_reservations",
+    "20261011000012_ai_presence",
+    "20261019060000_guest_privacy_receipt_redaction",
+  ])
+    await apply(`supabase/migrations/${migration}.sql`);
 }
 
 export interface AiTab {
@@ -86,7 +83,7 @@ export async function bootAiGuestRuntime(): Promise<AiGuestBoot> {
     },
   });
   if (!ai) throw new Error("AI runtime disabled for test env");
-  rooms.attachGuestAi(ai.guestTermination);
+  rooms.attachAiTermination(ai.sessionTermination);
   const app = await createApp(
     [AI_ORIGIN],
     [

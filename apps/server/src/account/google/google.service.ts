@@ -96,7 +96,12 @@ export class GoogleService {
    * Xác thực Google ID Token gửi từ client:
    * Kiểm tra chữ ký, so khớp nonce, liên kết với Supabase Auth và phân nhánh thành công hoặc cần onboarding.
    */
-  async authenticate(credential: unknown, challenge: unknown, remember = true) {
+  async authenticate(
+    credential: unknown,
+    challenge: unknown,
+    remember = true,
+    deviceToken: string | null = null,
+  ) {
     const nonce = hash(challenge);
     if (
       typeof credential !== "string" ||
@@ -224,7 +229,12 @@ export class GoogleService {
       },
     );
     if (decision.kind === "member") {
-      const result = await this.issue(decision.account, session, remember);
+      const result = await this.issue(
+        decision.account,
+        session,
+        remember,
+        deviceToken,
+      );
       if (decision.draftHash)
         await this.db(() =>
           this.store.deleteDraft(decision.account.userId, decision.draftHash!),
@@ -238,6 +248,7 @@ export class GoogleService {
     account: GoogleAccount,
     session: Session,
     remember: boolean,
+    deviceToken: string | null,
   ) {
     try {
       return {
@@ -245,7 +256,7 @@ export class GoogleService {
         access_token: session.access_token,
         refresh_token: session.refresh_token,
         expires_in: session.expires_in,
-        ...(await this.issuer(account.userId, remember)),
+        ...(await this.issuer(account.userId, remember, deviceToken)),
         userId: account.userId,
         username: account.username!,
         remember,
@@ -292,6 +303,7 @@ export class GoogleService {
     capability: unknown,
     proof: Session,
     input: { username: unknown; password: unknown },
+    deviceToken: string | null = null,
   ) {
     const tokenHash = hash(capability),
       username = validateUsername(input.username);
@@ -420,6 +432,7 @@ export class GoogleService {
       finished.account,
       finished.session,
       finished.remember,
+      deviceToken,
     );
     await this.db(() =>
       this.store.deleteDraft(finished.account.userId, tokenHash),

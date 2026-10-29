@@ -17,6 +17,8 @@ export interface LoginResult {
   appSession: string;
   expiresAt: string;
   remember: boolean;
+  // Server: thiết bị này vừa thay thiết bị trước; ghế cũ đã kết thúc.
+  displaced?: boolean;
 }
 import { getApiBaseUrl } from "../../shared/api.js";
 
@@ -164,6 +166,12 @@ export function LoginPage({
         </h1>
       </div>
       <p className="form-subtitle">— Bước một nước cờ, kết vạn tâm giao —</p>
+      {new URLSearchParams(window.location.search).get("passwordReset") ===
+        "1" && (
+        <p className="form-success" role="status">
+          Đã đặt lại mật khẩu. Vui lòng đăng nhập bằng mật khẩu mới.
+        </p>
+      )}
       {error && (
         <div
           ref={errorRegion}
@@ -252,20 +260,10 @@ export function LoginPage({
                 />
                 <span>Ghi nhớ 30 ngày</span>
               </label>
-              <button
-                type="button"
-                className="link-forgot"
-                aria-disabled="true"
-                title="Sắp ra mắt"
-                aria-describedby="login-forgot-help"
-                onClick={(event) => event.preventDefault()}
-              >
+              <NavigationLink href="/forgot-password" className="link-forgot">
                 Quên mật khẩu?
-              </button>
+              </NavigationLink>
             </div>
-            <span className="sr-only" id="login-forgot-help">
-              Sắp ra mắt
-            </span>
             <p className="session-note">
               {remember
                 ? "Giữ phiên 30 ngày từ lúc đăng nhập."
@@ -344,8 +342,8 @@ export function LoginPage({
             <div className="guest-alert">
               <span aria-hidden="true">⚠️</span>
               <span>
-                <strong>Lưu ý:</strong> Khách không tham gia Đánh Hạng và không
-                lưu lịch sử ván cờ.
+                <strong>Lưu ý:</strong> Chế độ Khách (Guest) không được tham gia
+                đánh Xếp hạng để tính điểm Elo và không lưu lịch sử ván cờ.
               </span>
             </div>
           </div>

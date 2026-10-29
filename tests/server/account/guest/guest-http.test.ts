@@ -1,7 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { IncomingMessage } from "node:http";
 import { createApp } from "@server/app.js";
 import { GuestModule } from "@server/account/guest/guest.module.js";
 import { memoryGuests } from "./guest-http.test-helper.js";
+import { readRoomProof } from "@server/game/room/room.controller.js";
 
 const ORIGIN = "http://localhost:5173";
 const HOUR = 3600000;
@@ -135,6 +137,40 @@ describe("Khách HTTP: tạo và khôi phục phiên", () => {
     const restored = (await response.json()) as { userId: string };
     expect(restored.userId).toBe(body.userId);
     expect(setCookie(response)).toContain(`xiangqi_guest=${body.capability}`);
+  });
+
+  it("creating Guest replaces member cookies so Guest can authenticate room requests", async () => {
+    const cookies = new Map([
+      ["xiangqi_session", "m".repeat(43)],
+      ["xiangqi_refresh", "expired-refresh"],
+    ]);
+    const cookie = [...cookies]
+      .map(([key, value]) => `${key}=${value}`)
+      .join("; ");
+    const response = await call("POST", "", {
+      cookie,
+      body: { displayName: "Khách thử" },
+    });
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { capability: string };
+    for (const header of response.headers.getSetCookie()) {
+      const [name, value] = pair(header).split("=") as [string, string];
+      if (/(?:^|;)\s*Max-Age=0(?:;|$)/i.test(header)) cookies.delete(name);
+      else cookies.set(name, value);
+    }
+    expect(cookies.has("xiangqi_session")).toBe(false);
+    expect(cookies.has("xiangqi_refresh")).toBe(false);
+    expect(
+      readRoomProof({
+        headers: {
+          authorization: `Guest ${body.capability}`,
+          cookie: [...cookies]
+            .map(([key, value]) => `${key}=${value}`)
+            .join("; "),
+        },
+      } as IncomingMessage),
+    ).toEqual({ guestCapability: body.capability });
+    expect(cookies.get("xiangqi_guest")).toBe(body.capability);
   });
 
   it("từ chối cookie thiếu, sai định dạng, trùng lặp hoặc chỉ có trong query", async () => {

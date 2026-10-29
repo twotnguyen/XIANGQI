@@ -7,6 +7,7 @@ import {
   Post,
   Optional,
   Res,
+  Req,
   Header,
   Get,
   Injectable,
@@ -15,8 +16,9 @@ import {
 } from "@nestjs/common";
 import { RegistrationService } from "./registration.service.js";
 import { RegistrationError, type Credentials } from "./registration.types.js";
-import type { ServerResponse } from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { writeSessionCookies } from "../session/cookies.js";
+import { deviceToken } from "../login/device.js";
 /**
  * Guard bảo vệ các route yêu cầu tài khoản đã kích hoạt và hoàn tất đăng ký:
  * Xác thực Bearer token từ Authorization header và kiểm tra trạng thái hoạt động của tài khoản.
@@ -125,10 +127,12 @@ export class RegistrationController {
   @HttpCode(200)
   verify(
     @Body() body: { registrationToken: string; otp: string; password?: string },
+    @Req() request: IncomingMessage,
     @Res({ passthrough: true }) response: ServerResponse,
   ) {
     return this.respond(async () => {
-      const session = await this.registration.verify(body);
+      const device = deviceToken(request.headers.cookie);
+      const session = await this.registration.verify(body, device.token);
       if (session.appSession && session.expiresAt)
         writeSessionCookies(
           response,
@@ -137,6 +141,7 @@ export class RegistrationController {
             appSession: session.appSession,
             expiresAt: session.expiresAt,
             remember: true,
+            deviceToken: device.fresh ? device.token : undefined,
           },
           this.secure,
         );

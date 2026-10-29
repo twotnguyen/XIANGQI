@@ -17,6 +17,8 @@ const GUEST_CAPABILITY = "guest-capability-synthetic-0123456789abcdefghijk";
 
 const mock = vi.hoisted(() => ({
   state: { status: "anonymous" } as Record<string, unknown>,
+  emailStatus: { status: "idle" } as Record<string, unknown>,
+  reloadEmailStatus: vi.fn(),
   accept: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),
@@ -249,7 +251,9 @@ async function signOutGuest() {
   fireEvent.click(
     await screen.findByRole("button", { name: "Tài khoản: Lữ khách" }),
   );
-  const menu = await screen.findByRole("menu", { name: "Tài khoản cá nhân" });
+  const menu = await screen.findByRole("region", {
+    name: "Tài khoản cá nhân",
+  });
   await act(async () => {
     fireEvent.click(within(menu).getByRole("button", { name: /Đăng xuất/ }));
   });
