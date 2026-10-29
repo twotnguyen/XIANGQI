@@ -50,6 +50,44 @@ giữa các request, không đổi role database và không gia hạn `expiresAt
 Reload frontend vẫn phải chờ `/auth/refresh` trước khi mở trang cần đăng nhập.
 Không dùng dữ liệu localStorage làm bằng chứng phiên hợp lệ.
 
+### Email tùy chọn (29/10/2026)
+
+`POST /auth/register/skip` nhận username/password/passwordConfirmation và capability
+draft nếu bỏ qua ở bước OTP. Server kiểm lại username, chỉ hủy draft chưa xác minh
+thuộc capability đó, tạo profile hoàn tất và cấp phiên. Không coi đóng tab là bỏ qua.
+Supabase password vẫn dùng credential email kỹ thuật `<uuid>@username.xiangqi.invalid`
+được cấp bằng Admin API; việc xác nhận credential này không chứng minh email liên hệ.
+Marker `xiangqi_auth.username_accounts` tồn tại trước khi cấp phiên. Tài khoản thường
+và Google cũ không bị chuyển đổi. Bỏ qua không làm giảm quyền thành viên.
+
+`GET /account/email` trả email liên hệ, trạng thái xác minh và yêu cầu đang chờ;
+`POST /account/email/send`, `/resend`, `/verify` chỉ nhận user từ SessionGuard.
+OTP thêm email có 6 số, hạn 180 giây, gửi lại sau 60 giây, tối đa 5 lần nhập sai,
+HMAC lưu trong DB và ràng buộc user/email/thời điểm gửi; không lưu hoặc log mã thô.
+Chỉ OTP đúng mới cập nhật email liên hệ và khóa duy nhất trong `account_origins`,
+giữ nguyên credential Auth/user_id/JWT/appSession. Email đã xác minh không đổi được;
+Google không tự liên kết vào tài khoản mật khẩu có cùng email liên hệ.
+
+Migration `20261029000001_username_account_email.sql` (sau migrations 1–5) là điều kiện
+khởi động login runtime mới. Rollback đi kèm từ chối khi đã có tài khoản username-only.
+Gửi email thật cần nhóm `SMTP_*` ở server; thiếu cấu hình trả 503, không giả thành công
+và không ngăn đăng ký bỏ qua email. Frontend tải trạng thái email riêng sau auth,
+không dùng trạng thái cảnh báo email để cấp hoặc thu hồi quyền chơi.
+
+SMTP chạy sau khi transaction lưu challenge đã commit, ngoài khóa actor và không giữ
+kết nối DB; mail chậm không được chặn nước đi của người chơi. Nếu gửi lỗi, chỉ xóa
+challenge còn khớp hash, giữ cooldown và không xóa challenge mới hơn.
+
+Kiểm chứng tích hợp: giao diện đăng ký bỏ qua email tạo tài khoản thật, đăng xuất/
+đăng nhập bằng username thành công và Hồ sơ hiển thị cảnh báo thiếu email. Luồng OTP
+đã chạy qua store/service với DB thật và bộ thu thư thử: từ chối mã sai và dùng lại mã,
+xác minh đúng tài khoản, giữ nguyên credential và các phiên ứng dụng. Reload Hồ sơ
+hiển thị email đã xác minh và bỏ cảnh báo. Tài khoản thử đã xóa; chưa xác nhận thư
+đến hộp thư SMTP thật. Typecheck nguồn server, các màn hình auth/profile và test
+liên quan đạt dưới Node 22; chưa chạy bộ test tự động.
+
+Cấu hình triển khai:
+
 Áp dụng migration `20261011000003_username_login.sql` sau migration đăng ký,
 sau khi kiểm thử, kiểm dữ liệu và chuẩn bị khôi phục. Đặt
 `AUTH_REGISTRATION_ENABLED=true` và `AUTH_LOGIN_ENABLED=true` để mở runtime.

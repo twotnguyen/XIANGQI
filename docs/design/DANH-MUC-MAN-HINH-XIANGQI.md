@@ -87,16 +87,17 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
     * Ô `Username:` (3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, kiểm tra trùng lặp debounce 300ms; từ chối username chứa từ cấm ngay bước nhập theo BA 0.17).
     * Ô `Mật khẩu:` (tối thiểu 8 ký tự) + Ô `Xác nhận mật khẩu`.
     * Nút *"Tiếp tục"* $\rightarrow$ Chuyển Bước 2. Phía dưới có nút *"Đăng ký bằng Google"*.
-  * **Bước 2 (Nhập Email):**
+  * **Bước 2 (Email tùy chọn, cập nhật 29/10):**
     * Ô `Email chính chủ:`.
     * Nút *"Xác nhận Email"* $\rightarrow$ Kích hoạt Supabase Auth gửi OTP 6 số và chuyển Bước 3. Nút *"Quay lại"*.
+    * Nút **"Bỏ qua email, vào Sảnh"** tạo tài khoản với username/mật khẩu đã nhập, không bắt buộc email.
   * **Bước 3 (Xác thực Email qua mã OTP):**
     * Dòng thông báo: *"Mã OTP 6 số đã được gửi đến email [user-email]."*
     * 6 ô nhập mã OTP đơn lẻ, tự động nhảy tiêu điểm khi gõ.
     * Đồng hồ đếm lùi thời hạn mã: **3 phút (180 giây)**.
     * Nút *"Gửi lại mã OTP"* (kèm bộ đếm lùi 60 giây chống spam).
     * **Xử lý bảo mật:** Nhập sai nhiều lần bị giới hạn (mục tiêu 5 lần, theo BA-SCOPE `Quyết định 1.5`) $\rightarrow$ khóa form và bắt buộc chờ hoặc bấm gửi lại mã mới.
-    * Tài khoản chỉ được tạo khi OTP đúng; bỏ dở thì không có tài khoản và username không bị giữ. Email đã đăng ký ở Bước 2 $\rightarrow$ báo *"Email này đã được đăng ký"*.
+    * Có nút **"Bỏ qua email, vào Sảnh"** tại bước OTP. Chỉ bỏ dở/đóng tab thì chưa hoàn tất; chủ động bỏ qua sẽ hoàn tất tài khoản nhưng chưa xác minh email. Email đã đăng ký ở Bước 2 vẫn báo *"Email này đã được đăng ký"*.
     * Nhập đúng OTP $\rightarrow$ Tài khoản chuyển sang `ACTIVE`, tự động gán `display_name = username` (Phương án C), tự động đăng nhập và đưa vào `/lobby`.
 
 ---
@@ -239,6 +240,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Bố cục (Layout):** Header cố định, Card thông tin người chơi cá nhân, Form chỉnh sửa hồ sơ.
 * **Thành phần & Dữ liệu:**
   * Avatar chữ cái đầu/hình đại diện, Display Name, Username (`@username`), Email liên kết, Điểm Elo hiện tại.
+  * **Email tùy chọn (29/10):** chưa có email thì hiện cảnh báo và form nhập email; đang chờ xác minh thì hiện email đích, OTP 6 số, hạn 180 giây và gửi lại sau 60 giây. Mã đúng gắn email vào cùng tài khoản, giữ phiên và dữ liệu; email đã xác minh chỉ đọc. Toàn ứng dụng có thông báo không modal dẫn về `/settings`, ẩn sau khi server xác nhận thành công. Không hiển thị email định danh kỹ thuật, không coi lỗi tải trạng thái là đã xác minh.
   * Form cập nhật Display Name (đổi tự do, không cần OTP).
   * Nút `🔑 Đổi Username Qua OTP`: Mở `MODAL-OTP-USERNAME` để thực hiện quy trình 4 bước xác thực OTP qua email. Username cũ bị khoá 30 ngày sau khi đổi (BA-SCOPE `Quyết định 1.4`).
   * **P1:** chỉ Kỳ Đài Cổ Phong, ẩn bộ chọn. **P2:** Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong), theo BA 10.3 và DESIGN §2.3.
@@ -314,7 +316,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 12 | `SCR-HISTORY` | Lịch sử ván đấu cá nhân (lọc Rank/Casual/Máy) | Routed Page | `/history` | P2 |
 | 13 | `SCR-REPLAY` | Xem lại ván cờ từng nước, bảng biên bản, auto-play | Routed Page | `/history/:id` | P2 |
 | 14 | `SCR-ACCESS-DENIED` | Màn hình từ chối truy cập (Phòng đầy, Cấm xem) | Routed Page | `/access-denied` | **P1** |
-| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, email chỉ đọc; P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
+| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, thêm/xác minh email tùy chọn (đã xác minh chỉ đọc); P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | **P1** (07/10) |
 | 17 | `MODAL-CREATE-ROOM` | P1: tạo phòng, 5/10/15 phút; P2: Không giới hạn | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
 | 18 | `MODAL-INVITE` | P1: link, mã 8 số, mời bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
@@ -346,5 +348,5 @@ Ma trận điều kiện và kết quả **năm trạng thái của từng thàn
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
-4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); Email khoá cứng; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
+4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); email được bổ sung/xác minh lần đầu rồi chỉ đọc; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
 5. Số lượng: 15 màn hình + 15 modal + 4 khung nhúng + 3 lớp phủ = **37**; `/rooms/:id` dùng chung cho `SCR-WAITING-ROOM` và `SCR-GAME-ROOM` nên chỉ có **14 URL** phân biệt.

@@ -158,6 +158,12 @@ it("does not call the provider for expired application sessions", async () => {
     body: JSON.stringify({ refresh_token: "old-refresh" }),
   });
   expect(response.status).toBe(401);
+  const cleared = response.headers.getSetCookie();
+  for (const name of ["xiangqi_session", "xiangqi_refresh"]) {
+    expect(cleared.find((cookie) => cookie.startsWith(`${name}=`))).toMatch(
+      /Max-Age=0(?:;|$)/,
+    );
+  }
   expect(refresh).not.toHaveBeenCalled();
 });
 it("rejects malformed refresh input before contacting the provider", async () => {
@@ -183,6 +189,7 @@ it("preserves upstream outages as retryable errors without disclosing provider t
     body: JSON.stringify({ refresh_token: "old-refresh" }),
   });
   expect(response.status).toBe(503);
+  expect(response.headers.getSetCookie()).toEqual([]);
   expect(await response.json()).toEqual({
     code: "SESSION_UNAVAILABLE",
     message: "Chưa thể xác thực phiên đăng nhập",

@@ -27,7 +27,6 @@ vi.mock("socket.io-client", () => ({
 afterEach(() => {
   fixture.handlers.clear();
   vi.clearAllMocks();
-  vi.unstubAllEnvs();
 });
 const member = {
   kind: "member" as const,
@@ -60,7 +59,6 @@ function setup(getProof = vi.fn(async () => member)) {
   };
 }
 test("actual URL/path, private proof fresh each handshake and stale completion fenced", async () => {
-  vi.stubEnv("VITE_API_URL", "http://localhost:3002/");
   let first!: (value: typeof member) => void;
   const getProof = vi
     .fn()
@@ -72,8 +70,8 @@ test("actual URL/path, private proof fresh each handshake and stale completion f
     )
     .mockResolvedValueOnce({ ...member, accessToken: "new" });
   const f = setup(getProof);
-  expect(fixture.url).toBe("http://localhost:3002/public-rooms");
-  expect(fixture.options?.path).toBe("/public-rooms/socket.io");
+  expect(fixture.url).toBe("http://localhost/public-rooms");
+  expect(fixture.options?.path).toBe("/api/public-rooms/socket.io");
   const old = vi.fn(),
     newer = vi.fn();
   fixture.options!.auth(old);

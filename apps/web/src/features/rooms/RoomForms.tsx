@@ -4,9 +4,10 @@ import "./rooms.css";
 export interface CreateRoomInput {
   timeMinutes: 5 | 10 | 15;
   viewerLimit: number;
+  visibility: "CODE_ONLY" | "PUBLIC";
 }
 /**
- * Biểu mẫu tạo phòng cờ mới (chọn nhịp đấu thời gian mỗi bên và giới hạn số lượng người xem).
+ * Biểu mẫu tạo phòng cờ mới với thời gian, giới hạn người xem và quyền truy cập.
  */
 export function CreateRoomForm({
   onCreate,
@@ -15,6 +16,9 @@ export function CreateRoomForm({
 }) {
   const [timeMinutes, setTime] = useState<5 | 10 | 15>(10);
   const [viewerLimit, setViewers] = useState(5);
+  const [visibility, setVisibility] = useState<"CODE_ONLY" | "PUBLIC">(
+    "CODE_ONLY",
+  );
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   async function submit(event: FormEvent) {
@@ -26,6 +30,7 @@ export function CreateRoomForm({
       await onCreate({
         timeMinutes,
         viewerLimit,
+        visibility,
       });
     } catch {
       setNotice("Chưa thể tạo phòng. Kiểm tra kết nối và thử lại.");
@@ -71,9 +76,27 @@ export function CreateRoomForm({
           ))}
         </select>
       </label>
+      <label className="xq-room-select">
+        Quyền truy cập
+        <select
+          value={visibility}
+          disabled={busy}
+          onChange={(event) =>
+            setVisibility(event.target.value as CreateRoomInput["visibility"])
+          }
+        >
+          <option value="CODE_ONLY">Chỉ qua mã/link/lời mời</option>
+          <option value="PUBLIC">Công khai</option>
+        </select>
+      </label>
       <p className="xq-help">
-        Thời gian và số người xem được giữ nguyên sau khi tạo. Phòng chỉ vào
-        bằng mã hoặc lời mời.
+        {visibility === "PUBLIC"
+          ? "Hiện ở Sảnh. Người khác có thể vào chơi hoặc vào xem khi còn chỗ."
+          : "Không hiện ở Sảnh. Người khác cần mã, link hoặc lời mời để vào phòng."}
+      </p>
+      <p className="xq-help">
+        Thời gian và số người xem được giữ nguyên sau khi tạo. Chủ phòng có thể
+        đổi quyền truy cập trong Cài đặt phòng.
       </p>
       {notice && <Notice tone="error" message={notice} />}
       <Button type="submit" loading={busy}>

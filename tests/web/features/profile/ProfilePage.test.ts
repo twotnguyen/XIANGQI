@@ -91,6 +91,20 @@ describe("profile page", () => {
     expect(onSaved).toHaveBeenCalledWith("Tên Mới");
     expect(await screen.findByText("Đã lưu tên hiển thị.")).toBeTruthy();
   });
+  it("renders the injected email section and hides the read-only fallback", async () => {
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+        emailSection: createElement("p", null, "SLOT-EMAIL-SECTION"),
+      }),
+    );
+    expect(screen.getByText("SLOT-EMAIL-SECTION")).toBeTruthy();
+    expect(await screen.findByText("kythu")).toBeTruthy();
+    expect(screen.queryByText("kythu@example.invalid")).toBeNull();
+  });
   it("keeps the server name and shows a field error when rejected", async () => {
     const user = userEvent.setup();
     const c = client({
@@ -177,6 +191,31 @@ describe("profile page", () => {
     expect(screen.queryByLabelText("Tên hiển thị")).toBeNull();
     expect(screen.getByRole("button", { name: "Đăng xuất" })).toBeTruthy();
   });
+  it("keeps an unsaved name when switching settings sections", async () => {
+    const user = userEvent.setup();
+    const c = client();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    const input = await screen.findByLabelText("Tên hiển thị");
+    await user.clear(input);
+    await user.type(input, "Tên chưa lưu");
+    await user.click(screen.getByRole("button", { name: "Giao diện" }));
+    expect(screen.queryByRole("textbox", { name: "Tên hiển thị" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Phiên đăng nhập" }));
+    await user.click(screen.getByRole("button", { name: "Hồ sơ cá nhân" }));
+    expect(
+      (screen.getByLabelText("Tên hiển thị") as HTMLInputElement).value,
+    ).toBe("Tên chưa lưu");
+    expect(c.updateDisplayName).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    expect(c.updateDisplayName).toHaveBeenCalledWith("Tên chưa lưu");
+  });
   it("offers the default theme, applies a chosen theme and hides the choice from guests", async () => {
     const user = userEvent.setup();
     const store = new Map<string, string>();
@@ -197,6 +236,7 @@ describe("profile page", () => {
       }),
     );
     await screen.findByText("kythu");
+    await user.click(screen.getByRole("button", { name: "Giao diện" }));
     const classic = screen.getByRole("radio", {
       name: "Kỳ Đài Cổ Phong",
     }) as HTMLInputElement;

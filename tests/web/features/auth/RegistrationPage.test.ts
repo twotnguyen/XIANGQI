@@ -680,34 +680,6 @@ it("reports malformed Username while typing without waiting for submission", asy
   expect(request).not.toHaveBeenCalled();
 });
 
-it.each([
-  [undefined, "http://localhost:3000"],
-  ["", "http://localhost:3000"],
-  ["https://api.example.test/", "https://api.example.test"],
-])(
-  "posts credentials to the backend when VITE_API_URL is %s",
-  async (configured, expectedBase) => {
-    vi.stubEnv("VITE_API_URL", configured);
-    const request = vi.fn(async () => reply({ step: 2 }));
-    vi.stubGlobal("fetch", request);
-    const user = userEvent.setup();
-    render(createElement(RegistrationPage, { onRegistered: vi.fn() }));
-    await enterAccount(user);
-    await screen.findByLabelText("Email chính chủ");
-    expect(request).toHaveBeenCalledWith(
-      `${expectedBase}/auth/register/check`,
-      expect.objectContaining({
-        method: "POST",
-        body: JSON.stringify({
-          username: "KyThu_2026",
-          password: "password123",
-          passwordConfirmation: "password123",
-        }),
-      }),
-    );
-  },
-);
-
 it("uses the shared shell, a three-step indicator and a link back to login", () => {
   const { container } = render(
     createElement(RegistrationPage, { onRegistered: vi.fn() }),

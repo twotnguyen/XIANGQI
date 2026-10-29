@@ -48,6 +48,13 @@ Bearer Supabase được xác minh chữ ký ES256, issuer/audience/role và h�
 
 `GuestModule`/`GuestService` (`account/guest/`) cấp khách qua `POST /account/guest` (HTTP 200, cookie `xiangqi_guest`). `GuestService.expireDue()` chạy trong tick bảo trì mỗi 60 giây; dọn dẹp commit qua `GuestRoomCoordinator` trước khi trả `GUEST_EXPIRED`. `game/game.runtime.ts` ghép `RoomSessionAuthorizer` từ `PostgresMemberRoomAuthorizer` và `GuestRoomAuthorizer`; REST phòng, phòng công khai, realtime và media đều dùng bộ ghép này. Khách đang có ghế AI bị từ chối (503) cho đến khi cổng kết thúc AI được gắn ở giai đoạn AI.
 
+Khách được mở cùng runtime phòng; `/auth/providers` trả `guest: true` khi runtime
+này tồn tại. Tạo phiên Khách thành công phải xóa cookie
+`xiangqi_session` và `xiangqi_refresh` trước khi append `xiangqi_guest`. Refresh
+thành viên trả 401 cũng xóa cookie thành viên hết hiệu lực, để khôi phục Khách
+không trộn hai loại proof; 503 giữ cookie để thử lại. GET khôi phục Khách không
+xóa cookie thành viên còn hiệu lực. Kiểm tra từ chối proof trộn vẫn giữ nguyên.
+
 Media dùng pool riêng (`MEDIA_POOL_MAX = 3`), tách khỏi pool phòng. Thu hồi media đi qua outbox và chỉ xả sau commit.
 
 ## Cơ sở dữ liệu

@@ -162,8 +162,14 @@ export function MediaPanel({
   const [level, setLevel] = useState<ShareLevel>("OPPONENT");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [pendingDevices, setPendingDevices] = useState({
+    camera: false,
+    mic: false,
+  });
+  const devicePending = useRef({ camera: false, mic: false });
   const [feeds, setFeeds] = useState<MediaFeed[]>([]);
   const rooms = useRef<Room[]>([]);
+  const publishReady = useRef(false);
   const epoch = useRef(0);
   const levelRef = useRef<ShareLevel>("OPPONENT");
   const shareVersion = useRef(0);
@@ -174,11 +180,14 @@ export function MediaPanel({
     setLevel(next);
   }, []);
 
-  // Mọi lần đổi vòng đời hoặc yêu cầu mới làm tác vụ cũ thành stale và giải phóng phòng cũ.
+  // Đổi vòng đời hoặc cấp lại ticket làm tác vụ cũ thành stale và giải phóng phòng cũ.
   const invalidate = useCallback(() => {
     const id = ++epoch.current;
     const live = rooms.current;
     rooms.current = [];
+    publishReady.current = false;
+    devicePending.current = { camera: false, mic: false };
+    setPendingDevices(devicePending.current);
     setFeeds([]);
     elements.current.clear();
     for (const room of live) releaseRoom(room);
@@ -204,19 +213,22 @@ export function MediaPanel({
     (track: RemoteTrack, participant: RemoteParticipant, roomName: string) => {
       if (track.kind !== Track.Kind.Video && track.kind !== Track.Kind.Audio)
         return;
+      const sid = track.sid ?? `${participant.identity}-${track.kind}`;
+      const key = `${roomName}:${participant.identity}:${sid}`;
+      if (elements.current.has(key)) return;
       const element = track.attach();
+      // Video phát im lặng; âm thanh đối thủ đi qua track audio riêng.
+      if (track.kind === Track.Kind.Video) element.muted = true;
       element.setAttribute(
         "aria-label",
         `${track.kind === Track.Kind.Video ? "Hình" : "Tiếng"} của ${participant.identity}`,
       );
       element.setAttribute("playsinline", "true");
-      const sid = track.sid ?? `${participant.identity}-${track.kind}`;
-      const key = `${roomName}:${participant.identity}:${sid}`;
-      elements.current.set(sid, element);
       setFeeds((previous) => [
         ...previous,
         { key, identity: participant.identity, element },
       ]);
+      elements.current.set(key, element);
     },
     [],
   );
@@ -235,21 +247,26 @@ export function MediaPanel({
       live.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
         if (current()) attachTrack(track, participant, roomName);
       });
-      live.on(RoomEvent.TrackUnsubscribed, (track) => {
-        const sid = track.sid ?? `${roomName}-unnamed`;
-        const element =
-          elements.current.get(sid) ?? elements.current.get(track.sid ?? "");
-        elements.current.delete(sid);
+      live.on(RoomEvent.TrackUnsubscribed, (track, _pub, participant) => {
+        if (!current()) return;
+        const sid = track.sid ?? `${participant.identity}-${track.kind}`;
+        const key = `${roomName}:${participant.identity}:${sid}`;
+        const element = elements.current.get(key);
+        elements.current.delete(key);
+        track.detach();
         if (element) element.remove();
-        setFeeds((previous) =>
-          previous.filter((feed) => feed.element !== element),
-        );
+        setFeeds((previous) => previous.filter((feed) => feed.key !== key));
       });
       await live.connect(url, token);
       if (!current()) {
         releaseRoom(live);
         return;
       }
+      // Track có thể được subscribe trước khi Room phát sự kiện ở trạng thái connected.
+      for (const participant of live.remoteParticipants.values())
+        for (const publication of participant.getTrackPublications())
+          if (publication.track)
+            attachTrack(publication.track, participant, roomName);
       if (publish.camera) {
         const publication = await live.localParticipant.setCameraEnabled(true);
         if (!current()) {
@@ -305,13 +322,14 @@ export function MediaPanel({
             : Promise.resolve(),
         ]);
         if (!current()) return;
+        publishReady.current = canPublish;
         setStatus(
           notice ??
             (enabled
               ? canPublish
                 ? "Đang chia sẻ hình tiếng."
                 : "Đã bật thiết bị nhưng mức chia sẻ là Không chia sẻ."
-              : "Camera và mic đang tắt."),
+              : ""),
         );
       } catch (error) {
         if (!current()) return;
@@ -348,7 +366,7 @@ export function MediaPanel({
   }, [connected, invalidate, run]);
 
   async function toggle(kind: "camera" | "mic") {
-    if (busy) return;
+    if (busy || devicePending.current[kind]) return;
     if (!connected) {
       setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
       return;
@@ -358,13 +376,78 @@ export function MediaPanel({
       mic: kind === "mic" ? !mic : mic,
       level,
     };
-    setCamera(next.camera);
-    setMic(next.mic);
-    await run(next);
+    if (kind === "camera") setCamera(next.camera);
+    else setMic(next.mic);
+    if (!publishReady.current) {
+      await run(next);
+      return;
+    }
+    const id = epoch.current;
+    const liveRooms = rooms.current;
+    devicePending.current = { ...devicePending.current, [kind]: true };
+    setPendingDevices(devicePending.current);
+    setStatus("");
+    const update = async (live: Room, enabled: boolean) => {
+      const publication =
+        kind === "camera"
+          ? await live.localParticipant.setCameraEnabled(enabled)
+          : await live.localParticipant.setMicrophoneEnabled(enabled);
+      if (epoch.current !== id) {
+        releaseRoom(live);
+        return;
+      }
+      if (kind !== "camera" || live !== liveRooms[0]) return;
+      if (enabled && publication?.track) {
+        const element = publication.track.attach();
+        element.muted = true;
+        element.setAttribute("playsinline", "true");
+        element.setAttribute("aria-label", "Camera của bạn");
+        setFeeds((previous) => [
+          ...previous.filter((feed) => feed.key !== `local:${userId}`),
+          { key: `local:${userId}`, identity: userId, element },
+        ]);
+      } else {
+        setFeeds((previous) =>
+          previous.filter((feed) => feed.key !== `local:${userId}`),
+        );
+      }
+    };
+    try {
+      const results = await Promise.allSettled(
+        liveRooms.map((live) => update(live, next[kind])),
+      );
+      if (epoch.current !== id) return;
+      const failure = results.find((result) => result.status === "rejected");
+      if (failure?.status === "rejected") throw failure.reason;
+      setStatus(
+        `${kind === "camera" ? "Camera" : "Mic"} đã ${next[kind] ? "bật" : "tắt"}.`,
+      );
+    } catch (error) {
+      if (epoch.current !== id) return;
+      await Promise.allSettled(liveRooms.map((live) => update(live, false)));
+      if (epoch.current !== id) return;
+      const trackKind = kind === "camera" ? Track.Kind.Video : Track.Kind.Audio;
+      for (const live of liveRooms)
+        for (const publication of live.localParticipant.getTrackPublications())
+          if (publication.track?.kind === trackKind) publication.track.stop();
+      if (kind === "camera") {
+        setCamera(false);
+        setFeeds((previous) =>
+          previous.filter((feed) => feed.key !== `local:${userId}`),
+        );
+      } else setMic(false);
+      setStatus(mediaErrorMessage(error, true));
+    } finally {
+      if (epoch.current === id) {
+        devicePending.current = { ...devicePending.current, [kind]: false };
+        setPendingDevices(devicePending.current);
+      }
+    }
   }
 
   async function share(next: ShareLevel) {
-    if (busy) return;
+    if (busy || devicePending.current.camera || devicePending.current.mic)
+      return;
     const id = epoch.current;
     shareVersion.current += 1;
     setBusy(true);
@@ -390,6 +473,8 @@ export function MediaPanel({
     }
     if (epoch.current !== id) return;
     confirmLevel(confirmed);
+    // Mức mới cần ticket mới, kể cả khi cả hai thiết bị đang tắt.
+    publishReady.current = false;
     if (connected && (camera || mic))
       await run({ camera, mic, level: confirmed });
     else setBusy(false);
@@ -406,31 +491,33 @@ export function MediaPanel({
             <Button
               variant={camera ? "primary" : "secondary"}
               aria-pressed={camera}
-              loading={busy}
+              aria-label={camera ? "Tắt camera" : "Bật camera"}
+              title={camera ? "Tắt camera" : "Bật camera"}
+              disabled={busy || pendingDevices.camera}
               disabledReason={!connected ? "Chưa kết nối phòng." : undefined}
               onClick={() => void toggle("camera")}
               className={`xq-media-btn ${camera ? "is-active" : ""}`}
             >
               <CameraIcon off={!camera} />
-              <span>{camera ? "Tắt camera" : "Bật camera"}</span>
             </Button>
             <Button
               variant={mic ? "primary" : "secondary"}
               aria-pressed={mic}
-              loading={busy}
+              aria-label={mic ? "Tắt mic" : "Bật mic"}
+              title={mic ? "Tắt mic" : "Bật mic"}
+              disabled={busy || pendingDevices.mic}
               disabledReason={!connected ? "Chưa kết nối phòng." : undefined}
               onClick={() => void toggle("mic")}
               className={`xq-media-btn ${mic ? "is-active" : ""}`}
             >
               <MicIcon off={!mic} />
-              <span>{mic ? "Tắt mic" : "Bật mic"}</span>
             </Button>
           </div>
           <label className="xq-media-share">
             Mức chia sẻ
             <select
               value={level}
-              disabled={busy}
+              disabled={busy || pendingDevices.camera || pendingDevices.mic}
               onChange={(event) => void share(event.target.value as ShareLevel)}
             >
               {(["NONE", "OPPONENT", "ALL"] as ShareLevel[]).map((option) => (
@@ -445,9 +532,6 @@ export function MediaPanel({
         <p>Người xem chỉ nhận hình tiếng theo mức chia sẻ của người chơi.</p>
       )}
       {status && <Notice message={status} />}
-      <p className="xq-media-privacy">
-        Chỉ trực tiếp — không ghi âm, không ghi hình.
-      </p>
     </section>
   );
 }

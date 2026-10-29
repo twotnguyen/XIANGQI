@@ -447,7 +447,7 @@ body:has(.auth-shell) {
   position: absolute;
   right: 6px;
   min-width: 44px;
-  min-height: 36px;
+  min-height: 44px;
   background: none;
   border: none;
   font-family: inherit;
@@ -462,7 +462,7 @@ body:has(.auth-shell) {
   color: #a31d24;
 }
 .auth-shell .field-hint {
-  font-size: 10.5px;
+  font-size: 12px;
   line-height: 1.4;
   color: #6e5a4b;
   margin: 3px 0 0;
@@ -485,6 +485,8 @@ body:has(.auth-shell) {
 .auth-shell .options-row {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   margin: 8px 0 14px;
   font-size: 12px;
@@ -494,6 +496,7 @@ body:has(.auth-shell) {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-height: 44px;
   cursor: pointer;
   user-select: none;
 }
@@ -508,6 +511,9 @@ body:has(.auth-shell) {
   background: none;
   border: none;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font: inherit;
   color: #a31d24;
   font-weight: 600;
@@ -522,7 +528,7 @@ body:has(.auth-shell) {
   text-decoration: none;
 }
 .auth-shell .session-note {
-  font-size: 11px;
+  font-size: 12px;
   color: #6c5b50;
   margin: -6px 0 12px;
 }
@@ -566,13 +572,13 @@ body:has(.auth-shell) {
 }
 .auth-shell .btn-back {
   width: 100%;
-  min-height: 38px;
+  min-height: 44px;
   background: transparent;
   color: #6e5b4d;
   border: 1px solid #c4a57b;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
@@ -585,6 +591,31 @@ body:has(.auth-shell) {
   opacity: 0.6;
   cursor: not-allowed;
 }
+.auth-shell .register-skip {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+.auth-shell .btn-skip {
+  width: 100%;
+  min-height: 44px;
+  background: transparent;
+  color: #6e5b4d;
+  border: 1px dashed #c4a57b;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-shell .btn-skip:hover:not(:disabled) {
+  background: rgba(220, 195, 160, 0.2);
+  color: #24160e;
+}
+.auth-shell .btn-skip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .auth-shell .divider {
   display: flex;
@@ -592,7 +623,7 @@ body:has(.auth-shell) {
   text-align: center;
   margin: 11px 0;
   color: #8c7b6e;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-weight: 600;
@@ -612,7 +643,7 @@ body:has(.auth-shell) {
 
 .auth-shell .btn-google {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   background: #fff;
   color: #3c4043;
   border: 1.5px solid rgba(190, 165, 130, 0.7);
@@ -658,7 +689,7 @@ body:has(.auth-shell) {
 .auth-shell .google-slot .xq-help,
 .auth-shell .google-slot p {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   color: #6c5b50;
   text-align: center;
 }
@@ -670,7 +701,7 @@ body:has(.auth-shell) {
   width: 100%;
 }
 .auth-shell .google-slot .xq-button {
-  min-height: 32px;
+  min-height: 44px;
   padding: 4px 8px;
   background: transparent;
   color: #6e5b4d;
@@ -694,13 +725,13 @@ body:has(.auth-shell) {
 }
 .auth-shell .btn-guest {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   background: linear-gradient(180deg, #fbf2de 0%, #eedbb7 100%);
   color: #643513;
   border: 1.5px solid #ba9158;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -726,7 +757,7 @@ body:has(.auth-shell) {
   padding: 5px 7px;
   border-radius: 4px;
   margin: 6px 0 0;
-  font-size: 10.5px;
+  font-size: 12px;
   color: #9a3412;
   line-height: 1.35;
   text-align: left;
@@ -734,11 +765,11 @@ body:has(.auth-shell) {
 .auth-shell .alert-callout {
   padding: 7px 10px;
   margin: 0 0 12px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 .auth-shell .form-note {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
   color: #6c5b50;
   margin: 6px 0 0;
@@ -941,7 +972,7 @@ body:has(.auth-shell) {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   margin: 0 0 14px;
   padding: 6px 10px;
   background: rgba(248, 240, 225, 0.6);
@@ -961,9 +992,9 @@ body:has(.auth-shell) {
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  font-size: 11.5px;
+  font-size: 12.5px;
   text-decoration: underline;
-  min-height: 32px;
+  min-height: 44px;
 }
 .auth-shell .btn-resend:disabled {
   color: #7d7164;
@@ -1056,7 +1087,7 @@ body:has(.auth-shell) {
   }
   .auth-shell .input-elem {
     height: 44px;
-    font-size: 14.5px;
+    font-size: 16px;
   }
   .auth-shell .btn-submit {
     min-height: 46px;

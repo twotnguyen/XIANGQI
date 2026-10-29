@@ -284,17 +284,37 @@ export function RegistrationPage({
           otp: otp.join(""),
           password,
         });
-        setComplete(true);
-        setPassword("");
-        setPasswordConfirmation("");
-        setToken("");
-        setOtp(Array(6).fill(""));
-        try {
-          await onRegistered(session);
-        } catch {
-          setError("Tài khoản đã được tạo. Vui lòng đăng nhập để vào Sảnh.");
-        }
+        await finish(session);
       }
+    } catch (reason) {
+      handleError(reason);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function finish(session: RegistrationSession) {
+    setComplete(true);
+    setPassword("");
+    setPasswordConfirmation("");
+    setToken("");
+    setOtp(Array(6).fill(""));
+    try {
+      await onRegistered(session);
+    } catch {
+      setError("Tài khoản đã được tạo. Vui lòng đăng nhập để vào Sảnh.");
+    }
+  }
+  async function skip() {
+    if (busy || googleSending.current || complete || recovering) return;
+    setBusy(true);
+    setError("");
+    try {
+      await finish(
+        await post<RegistrationSession>("skip", {
+          ...credentials,
+          ...(registrationToken ? { registrationToken } : {}),
+        }),
+      );
     } catch (reason) {
       handleError(reason);
     } finally {
@@ -686,6 +706,22 @@ export function RegistrationPage({
               <p className="form-note">
                 Có thể gửi mã mới sau {resendSeconds}s.
               </p>
+            )}
+            {step > 1 && !recovering && (
+              <div className="register-skip">
+                <p className="form-note">
+                  Bạn có thể bỏ qua email và thêm sau trong Cài đặt. Tài khoản
+                  chưa có email sẽ được nhắc cho tới khi xác minh.
+                </p>
+                <button
+                  className="btn-skip"
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void skip()}
+                >
+                  Bỏ qua email, vào Sảnh
+                </button>
+              </div>
             )}
             {step > 1 && !recovering && (
               <button

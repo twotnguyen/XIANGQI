@@ -1,3 +1,5 @@
+import { EmailVerification } from "../features/profile/EmailVerification.js";
+import { EmailStatusBanner } from "../features/profile/EmailStatusBanner.js";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import {
@@ -384,7 +386,7 @@ const titles: Partial<Record<Route["name"], string>> = {
   join: "Vào phòng",
   ai: "Đánh với máy",
   friends: "Bạn bè",
-  settings: "Hồ sơ",
+  settings: "Cài đặt",
   history: "Lịch sử ván đấu",
   replay: "Xem lại ván đấu",
   "access-denied": "Không thể truy cập",
@@ -682,6 +684,15 @@ export function AppRouter() {
         guest={session.state.status === "guest"}
         onSaved={setProfileName}
         onLogout={() => guardedLogout(performSessionLogout)}
+        emailSection={
+          session.state.status === "active-member" ? (
+            <EmailVerification
+              client={profileClient}
+              emailStatus={session.emailStatus}
+              reloadEmailStatus={session.reloadEmailStatus}
+            />
+          ) : undefined
+        }
       />
     );
   else if (route.name === "join" && signedIn)
@@ -752,7 +763,7 @@ export function AppRouter() {
           }}
         />
       ) : (
-        <section>
+        <section className="xq-panel xq-stack">
           <h1>Phòng cờ</h1>
           <p>Định danh phòng không hợp lệ.</p>
           <NavigationLink href="/lobby">Quay về Sảnh</NavigationLink>
@@ -778,7 +789,7 @@ export function AppRouter() {
     <Suspense
       key={`${location.pathname}${location.search}:${decision.kind}`}
       fallback={
-        <section aria-busy="true">
+        <section className="xq-panel xq-stack" aria-busy="true">
           <h1>{title}</h1>
           <p role="status">Đang tải giao diện…</p>
         </section>
@@ -804,6 +815,12 @@ export function AppRouter() {
           }
           onLogout={() => guardedLogout(performSessionLogout)}
         >
+          {session.state.status === "active-member" && (
+            <EmailStatusBanner
+              status={session.emailStatus}
+              reloadEmailStatus={session.reloadEmailStatus}
+            />
+          )}
           {page}
           {session.state.status === "active-member" && (
             <RoomInvitePopup client={friendClient} />

@@ -71,7 +71,6 @@ Môi trường: `cp .env.example .env` rồi chép sang `apps/web/.env` và `app
 
 Bẫy khi chạy test local:
 - `node_modules` cũ gây hàng trăm test web fail với `Cannot read properties of null (reading 'useState')`; xóa `node_modules` và `pnpm install --frozen-lockfile` dưới Node 22.
-- Nếu `.env` đặt `VITE_API_URL` khác `http://localhost:3000`, `ai-socket-client` và `SessionProvider` fail: chạy với `VITE_API_URL=http://localhost:3000`.
 - Test đo thời gian dùng ngưỡng `process.env.CI ? 2500 : 2000`; `CI=true` mô phỏng ngưỡng CI.
 
 ## Quy tắc kiến trúc cho mọi nhánh việc

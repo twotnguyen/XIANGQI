@@ -125,7 +125,7 @@ async function request(
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
 }
-it("creates with dual proof, whitelist fields and no-store, ignoring forged actor/settings", async () => {
+it("creates with dual proof, selected visibility and no-store, ignoring forged actor", async () => {
   const response = await request("/rooms", {
     commandId,
     timeMinutes: 5,
@@ -142,6 +142,7 @@ it("creates with dual proof, whitelist fields and no-store, ignoring forged acto
     commandId,
     timeMinutes: 5,
     viewerLimit: 0,
+    visibility: "PUBLIC",
   });
   expect(authorize.mock.calls.at(-1)?.[1]).toMatchObject({ client, actor });
 });
@@ -207,6 +208,10 @@ it("rejects malformed bodies/UUID and unsupported input types with400", async ()
     null,
     { commandId, timeMinutes: "5" },
     { commandId, viewerLimit: false },
+    { commandId, visibility: "LOCKED" },
+    { commandId, visibility: "public" },
+    { commandId, visibility: null },
+    { commandId, visibility: true },
   ]) {
     expect((await request("/rooms", body)).status).toBe(400);
   }

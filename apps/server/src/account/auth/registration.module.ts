@@ -33,6 +33,12 @@ import {
 } from "../login/postgres-login-store.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionModule } from "../session/session.module.js";
+import { UsernameRegistrationController } from "./username-registration.controller.js";
+import { UsernameRegistrationService } from "./username-registration.service.js";
+import { EmailVerificationStore } from "../email/email.store.js";
+import { EmailVerificationService } from "../email/email.service.js";
+import { EmailModule } from "../email/email.module.js";
+import { createSmtpEmailSender } from "../email/smtp-email.js";
 /**
  * Tác vụ nền định kỳ dọn dẹp các tài khoản đăng ký quá hạn không hoàn tất
  * hoặc khôi phục các trạng thái tài khoản đang pending.
@@ -218,7 +224,7 @@ export async function createRegistrationRuntime(
   let schemaReady = true;
   try {
     const schema = await pool.query(
-      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AS \"loginReady\"",
+      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AS \"loginReady\"",
     );
     if (
       !schema.rows[0]?.ready ||
@@ -280,18 +286,36 @@ export async function createRegistrationRuntime(
         }
       : null,
   );
-  if (sessions && login) {
+  if (sessions && login && sessionPool) {
+    const emailStore = new EmailVerificationStore(sessionPool);
+    const emails = new EmailVerificationService(
+      emailStore,
+      createSmtpEmailSender(env),
+      settings.secret,
+    );
+    const usernameRegistration = new UsernameRegistrationService(
+      new PostgresRegistrationStore(pool),
+      auth,
+      emailStore,
+      (userId) => sessions.issue(userId),
+    );
     module.imports = [
       SessionModule.forRoot(
         sessions,
         (token) => auth.refreshSession(token),
         env.NODE_ENV === "production",
       ),
+      EmailModule.forRoot(emails, sessions),
     ];
-    module.controllers = [...(module.controllers ?? []), LoginController];
+    module.controllers = [
+      ...(module.controllers ?? []),
+      LoginController,
+      UsernameRegistrationController,
+    ];
     module.providers = [
       ...(module.providers ?? []),
       { provide: LoginService, useValue: login },
+      { provide: UsernameRegistrationService, useValue: usernameRegistration },
     ];
   }
   let closing: Promise<void> | undefined;

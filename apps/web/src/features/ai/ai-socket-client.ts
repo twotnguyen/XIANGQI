@@ -282,8 +282,9 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       else socket.timeout(5000).emit(event, payload, ack);
     });
   }
-  const socket = io(`${getApiBaseUrl()}/ai`, {
-    path: "/ai/socket.io",
+  const api = new URL(getApiBaseUrl());
+  const socket = io(`${api.origin}/ai`, {
+    path: `${api.pathname}/ai/socket.io`,
     transports: ["websocket"],
     withCredentials: true,
     autoConnect: false,

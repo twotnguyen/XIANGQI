@@ -13,6 +13,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { guestFailure, guestSessionDto } from "./guest.dto.js";
 import type { GuestService } from "./guest.service.js";
 import { GuestError } from "./guest.types.js";
+import { clearSessionCookies } from "../session/cookies.js";
 import {
   clearGuestCookie,
   readGuestCookie,
@@ -73,6 +74,7 @@ export class GuestController {
     return this.respond(response, async () => {
       const input = object(body);
       const created = await this.config.service.create(input.displayName);
+      clearSessionCookies(response, this.config.secure);
       writeGuestCookie(response, created.capability, this.config.secure);
       return guestSessionDto(created, created.capability);
     });

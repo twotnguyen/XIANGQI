@@ -107,7 +107,7 @@ vẫn được backend xác minh bằng GoTrue thật; không dùng mock provide
 chỉ decode JWT làm bằng chứng đăng nhập. Không in file proofs vào log.
 
 ```sh
-REALTIME_LOAD_URL='https://HOST.ts.net:8443' \
+REALTIME_LOAD_URL='http://127.0.0.1:3000' \
 REALTIME_LOAD_ORIGIN='https://HOST.ts.net' \
 REALTIME_LOAD_PROOFS='.local/realtime-load/RUN_ID/proofs.json' \
 REALTIME_LOAD_OUTPUT='.local/realtime-load/RUN_ID/result.json' \
@@ -115,6 +115,9 @@ REALTIME_LOAD_MANIFEST='.local/realtime-load/RUN_ID/resources.json' \
 REALTIME_LOAD_ROUNDS=20 \
 pnpm --filter @xiangqi/server exec tsx ../../tests/load/realtime.ts
 ```
+Probe chạy trên máy chủ và gọi trực tiếp NestJS (không qua `/api`); origin web vẫn
+phải có trong `CORS_ORIGINS`. Không cần mở cổng API riêng ra tailnet.
+
 
 Probe tạo 10 phòng với hai người chơi và ba người xem mỗi phòng; giữ 50 socket,
 chờ đủ snapshot và 10 ván thực sự ACTIVE, rồi gửi 20 vòng nước hợp lệ đồng thời

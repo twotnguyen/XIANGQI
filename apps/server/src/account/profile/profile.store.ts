@@ -5,6 +5,7 @@ import { ProfileError } from "./profile.types.js";
 export interface ProfileRow {
   username: string | null;
   displayName: string;
+  email: string | null;
 }
 export interface LocationRow {
   roomId: string;
@@ -29,13 +30,21 @@ export class ProfileStore {
   private async row(client: PoolClient, userId: string): Promise<ProfileRow> {
     const row = (
       await client.query(
-        "SELECT username,display_name FROM public.profiles WHERE user_id=$1",
+        `SELECT p.username,p.display_name,
+          CASE WHEN e.user_id IS NULL THEN a.email ELSE e.email END AS email
+         FROM public.profiles p JOIN xiangqi_auth.accounts a ON a.id=p.user_id
+         LEFT JOIN xiangqi_auth.username_accounts e ON e.user_id=p.user_id
+         WHERE p.user_id=$1`,
         [userId],
       )
     ).rows[0];
     if (!row)
       throw new ProfileError("PROFILE_MISSING", "Không tìm thấy hồ sơ", 404);
-    return { username: row.username, displayName: row.display_name };
+    return {
+      username: row.username,
+      displayName: row.display_name,
+      email: row.email,
+    };
   }
   /**
    * Truy vấn thông tin hồ sơ của người dùng từ bảng public.profiles.

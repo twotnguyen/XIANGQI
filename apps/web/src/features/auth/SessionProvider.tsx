@@ -1,3 +1,7 @@
+import type {
+  AccountEmailStatus,
+  EmailStatusState,
+} from "../../shared/account-email.js";
 import {
   createContext,
   useCallback,
@@ -53,6 +57,8 @@ interface Credentials {
 }
 interface SessionContextValue {
   state: SessionState;
+  emailStatus: EmailStatusState;
+  reloadEmailStatus(): Promise<void>;
   accept(result: unknown): void;
   refresh(): Promise<void>;
   logout(): Promise<void>;
@@ -64,6 +70,27 @@ interface SessionContextValue {
   sessionFetch(path: string, init?: RequestInit): Promise<Response>;
 }
 const SessionContext = createContext<SessionContextValue | null>(null);
+function parseEmailStatus(value: unknown): AccountEmailStatus {
+  if (!value || typeof value !== "object") throw new Error(unavailable);
+  const result = value as Record<string, unknown>;
+  if (
+    typeof result.emailVerified !== "boolean" ||
+    !(result.email === null || typeof result.email === "string") ||
+    !(
+      result.pendingEmail === null || typeof result.pendingEmail === "string"
+    ) ||
+    !(result.expiresAt === null || typeof result.expiresAt === "string") ||
+    !(result.resendAt === null || typeof result.resendAt === "string")
+  )
+    throw new Error(unavailable);
+  return {
+    email: result.email as string | null,
+    emailVerified: result.emailVerified,
+    pendingEmail: result.pendingEmail as string | null,
+    expiresAt: result.expiresAt as string | null,
+    resendAt: result.resendAt as string | null,
+  };
+}
 const unavailable = "Chưa thể xác thực phiên đăng nhập. Vui lòng thử lại.";
 const guestMinDelayMs = 1000;
 const guestRetryMs = 30000;
@@ -671,6 +698,55 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     },
     [anonymous, armGuest, invalidateRequest],
   );
+  const [emailState, setEmailState] = useState<EmailStatusState>({
+    status: "idle",
+  });
+  const memberId = state.status === "active-member" ? state.userId : null;
+  const memberRef = useRef<string | null>(null);
+  const emailRequest = useRef(0);
+  const fetchRef = useRef(authorizedFetch);
+  useEffect(() => {
+    fetchRef.current = authorizedFetch;
+  }, [authorizedFetch]);
+  // Trạng thái email tách khỏi SessionState: lỗi tải không bao giờ được coi là đã xác minh.
+  const loadEmailStatus = useCallback(async (userId: string) => {
+    const request = ++emailRequest.current;
+    setEmailState((previous) =>
+      previous.status === "ready" ? previous : { status: "loading" },
+    );
+    try {
+      const response = await fetchRef.current("/account/email", {
+        method: "GET",
+        redirect: "error",
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error(unavailable);
+      const status = parseEmailStatus(await response.json());
+      if (
+        mounted.current &&
+        emailRequest.current === request &&
+        memberRef.current === userId
+      )
+        setEmailState({ status: "ready", ...status });
+    } catch {
+      if (
+        mounted.current &&
+        emailRequest.current === request &&
+        memberRef.current === userId
+      )
+        setEmailState({ status: "error" });
+    }
+  }, []);
+  const reloadEmailStatus = useCallback(async () => {
+    const userId = memberRef.current;
+    if (userId) await loadEmailStatus(userId);
+  }, [loadEmailStatus]);
+  useEffect(() => {
+    memberRef.current = memberId;
+    emailRequest.current += 1;
+    setEmailState({ status: "idle" });
+    if (memberId !== null) void loadEmailStatus(memberId);
+  }, [memberId, loadEmailStatus]);
   useEffect(() => {
     mounted.current = true;
     const lifecycleEpoch = epoch.current;
@@ -691,6 +767,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     <SessionContext.Provider
       value={{
         state,
+        emailStatus: emailState,
+        reloadEmailStatus,
         accept,
         refresh,
         logout,

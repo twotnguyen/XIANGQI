@@ -92,7 +92,7 @@ export class PostgresRegistrationStore implements RegistrationStore {
    */
   async accountByEmail(email: string): Promise<Account | null> {
     const { rows } = await this.query(
-      `${accountSelect} WHERE lower(u.email)=lower($1)`,
+      `${accountSelect} WHERE u.id=(SELECT o.user_id FROM xiangqi_auth.account_origins o WHERE o.email_key=lower($1))`,
       [email],
     );
     return rows[0] ?? null;

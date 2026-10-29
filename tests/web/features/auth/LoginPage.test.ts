@@ -79,7 +79,6 @@ async function fill(
   );
 }
 it("sends username case intact and the checked default, with cookies; delegates the response without storing it", async () => {
-  vi.stubEnv("VITE_API_URL", "");
   const request = vi.fn().mockResolvedValue(reply(session));
   vi.stubGlobal("fetch", request);
   const local = vi.spyOn(Storage.prototype, "setItem");
@@ -95,7 +94,7 @@ it("sends username case intact and the checked default, with cookies; delegates 
     expect(onLoggedIn).toHaveBeenCalledWith({ ...session, remember: true }),
   );
   expect(request).toHaveBeenCalledWith(
-    "http://localhost:3000/auth/login",
+    `${window.location.origin}/api/auth/login`,
     expect.objectContaining({
       credentials: "include",
       redirect: "error",
@@ -109,8 +108,7 @@ it("sends username case intact and the checked default, with cookies; delegates 
   );
   expect(local).not.toHaveBeenCalled();
 });
-it("sends the unchecked choice to a configured backend with trailing slash", async () => {
-  vi.stubEnv("VITE_API_URL", "https://api.example.test/");
+it("sends the unchecked remember choice through the same-origin API", async () => {
   const request = vi.fn().mockResolvedValue(reply(session));
   vi.stubGlobal("fetch", request);
   const onLoggedIn = vi.fn();
@@ -122,7 +120,9 @@ it("sends the unchecked choice to a configured backend with trailing slash", asy
   await vi.waitFor(() =>
     expect(onLoggedIn).toHaveBeenCalledWith({ ...session, remember: false }),
   );
-  expect(request.mock.calls[0]![0]).toBe("https://api.example.test/auth/login");
+  expect(request.mock.calls[0]![0]).toBe(
+    `${window.location.origin}/api/auth/login`,
+  );
   expect(JSON.parse(request.mock.calls[0]![1].body).remember).toBe(false);
 });
 it("reveals and hides the password without submitting", async () => {

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
 import { afterEach, expect, it } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AppShell } from "@web/app/layouts/AppShell.js";
 afterEach(() => cleanup());
 it("provides a main skip target and working navigation addresses", () => {
@@ -46,4 +46,24 @@ it("labels a Guest and blocks the friends entry", () => {
       .getByRole("button", { name: "Lịch sử" })
       .getAttribute("aria-disabled"),
   ).toBe("true");
+});
+it("returns keyboard focus to the account trigger when Escape closes its panel", () => {
+  render(
+    createElement(AppShell, {
+      title: "Sảnh",
+      user: { displayName: "Kỳ hữu", guest: false },
+      children: "Nội dung",
+    }),
+  );
+  const trigger = screen.getByRole("button", { name: "Tài khoản: Kỳ hữu" });
+  fireEvent.click(trigger);
+  const panel = screen.getByRole("region", { name: "Tài khoản cá nhân" });
+  const link = panel.querySelector("a")!;
+  link.focus();
+  fireEvent.keyDown(link, { key: "Escape" });
+  expect(
+    screen.queryByRole("region", { name: "Tài khoản cá nhân" }),
+  ).toBeNull();
+  expect(trigger.getAttribute("aria-expanded")).toBe("false");
+  expect(document.activeElement).toBe(trigger);
 });

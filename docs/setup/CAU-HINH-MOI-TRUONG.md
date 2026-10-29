@@ -30,15 +30,20 @@ Dù file trong thư mục web có đủ biến, trình duyệt chỉ được nh
 
 Biến bắt buộc còn trống nghĩa là chưa đủ để chạy chức năng tương ứng. Các biến được ghi tùy chọn có thể để trống khi công cụ hoặc ứng dụng không sử dụng. Nếu giá trị chứa khoảng trắng hoặc `#`, dùng chuỗi có dấu nháy phù hợp với bộ nạp dotenv; không chạy `source .env`. Khi đưa lên hosting, nhập biến server vào phần Environment/Secrets và biến Vite vào môi trường build. Không tải file `.env` tổng hợp lên dịch vụ lưu trữ tĩnh. Sau khi thay biến Vite phải khởi động lại dev server hoặc build lại.
 
+**Web và API cùng origin.** Web gọi API bằng đường dẫn tương đối `/api/...`; Socket.IO dùng `/api/socket.io`, `/api/ai/socket.io`, `/api/public-rooms/socket.io`. Không có biến URL API. Trong dev/preview, Vite proxy `/api` tới `http://127.0.0.1:3000`, bỏ tiền tố `/api`, chuyển tiếp WebSocket và đổi `Path=/auth/google` trong `Set-Cookie` thành `Path=/api/auth/google`.
+
+Hosting tĩnh HTTPS cần reverse proxy cùng origin tương đương: `/api/*` tới server NestJS (bỏ `/api`), chuyển tiếp WebSocket cho các path Socket.IO, giữ `Host`/`Origin` để CORS khớp, và đổi `Set-Cookie` Google như trên. Nếu host tĩnh không proxy được, web không chạy được với API; đây là yêu cầu hạ tầng còn thiếu, không được coi là đã triển khai.
+
+Cookie không phân biệt cổng: `localhost:5173` và `localhost:3000` dùng chung cookie. Mỗi hostname (ví dụ `localhost`, `machine.tailnet.ts.net`) có phiên riêng, không dùng chung với hostname khác.
+
 ## 2. Danh mục biến
 
 | Biến | Nguồn / cách dùng |
 |---|---|
-| `VITE_API_URL` | URL NestJS; dự kiến dùng cả HTTP API và Socket.IO |
-| `DEV_ALLOWED_HOSTS` | Hostname dev web được Vite cho phép khi đi qua proxy, phân cách bằng dấu phẩy, không có scheme/port. Ví dụ hostname Tailscale `.ts.net`; để trống khi không dùng proxy. Không tắt kiểm tra host bằng wildcard. |
+| `DEV_ALLOWED_HOSTS` | Hostname đầy đủ (exact) của web dev khi đi qua proxy, phân cách bằng dấu phẩy, không có scheme/port. Ví dụ `machine.tailnet.ts.net`; không dùng dạng `.ts.net` hay wildcard. Để trống khi không dùng proxy. |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase URL và khóa công khai nếu giao diện dùng SDK Auth |
 | `NODE_ENV`, `PORT`, `LOG_LEVEL` | Cấu hình chạy server; mẫu dùng development, 3000, info |
-| `CORS_ORIGINS` | Danh sách origin web cho phép, quy ước phân cách bằng dấu phẩy khi triển khai loader; không dùng wildcard với phiên đăng nhập |
+| `CORS_ORIGINS` | Liệt kê mọi origin web công khai dạng `scheme://host[:port]`, phân cách bằng dấu phẩy, ví dụ `http://localhost:5173,https://machine.tailnet.ts.net` và origin HTTPS production. Không wildcard, không path. Mọi origin trình duyệt dùng để gọi API phải có trong danh sách. |
 | `HISTORY_ENABLED` | Mặc định `false`. Chỉ bật cùng `AUTH_LOGIN_ENABLED=true` sau khi kiểm migration 1–7 và quyền `app_server`; runtime dùng chung pool/phiên đăng nhập, kiểm schema và từ chối khởi động nếu chưa sẵn sàng. API lịch sử chỉ dành cho người chơi sở hữu ván; bộ lọc Đánh Hạng chưa có dữ liệu thật trả lỗi dịch vụ chưa sẵn sàng. |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Cùng project với web; truy cập thông thường cần token người dùng và chính sách RLS |
 | `SUPABASE_SECRET_KEY` | Khóa đặc quyền chỉ ở server, dành cho các luồng quản trị đã kiểm quyền |
@@ -72,7 +77,7 @@ Publishable key công khai được; secret key có thể bỏ qua RLS nên ph�
 
 1. Tạo/chọn project ở [Google Cloud](https://console.cloud.google.com/), mở Google Auth Platform.
 2. Điền Branding, email hỗ trợ và Audience; nếu ở chế độ thử nghiệm, thêm tài khoản nhóm/giảng viên cần thử vào Test users. Chỉ xin thông tin đăng nhập cơ bản: openid, email, profile.
-3. Tạo OAuth client loại **Web application**. Authorized JavaScript origins là origin web, ví dụ `http://localhost:5173`; không thêm đường dẫn callback vào ô origin.
+3. Tạo OAuth client loại **Web application** (một Client ID dùng được cho nhiều origin). Ở **Authorized JavaScript origins**, thêm từng origin web đầy đủ, ví dụ `http://localhost:5173`, `https://machine.tailnet.ts.net` (nếu dùng Tailscale) và origin HTTPS production. Mỗi origin gồm scheme + hostname + port riêng; không wildcard, không đường dẫn, không thêm callback vào ô này.
 4. Mở Google provider của Supabase và sao chép callback được hiển thị vào **Authorized redirect URIs** của Google. Với Supabase hosted thường là `https://PROJECT_REF.supabase.co/auth/v1/callback`, kể cả web chạy local.
 5. Ghi Client ID/Secret vào phiếu `.env` riêng và nhập vào Google provider của Supabase; bật provider.
 6. Luồng quay về ứng dụng dùng `redirectTo` trùng allowlist Supabase ở mục 3. Callback Google → Supabase và callback Supabase → web là hai địa chỉ khác nhau.
@@ -87,7 +92,7 @@ Tham khảo [hướng dẫn Google của Supabase](https://supabase.com/docs/gui
 
 1. Chọn nhà cung cấp SMTP ngoài có thể gửi đến Gmail ngoài nhóm, đáp ứng yêu cầu không bắt buộc tên miền riêng và hạn mức dev/demo đã chốt. Kiểm tra điều kiện thực tế lúc đăng ký; nếu nhà cung cấp chỉ gửi sandbox hoặc bắt buộc tên miền thì chưa đáp ứng yêu cầu này.
 2. Tạo tài khoản và xác minh địa chỉ gửi theo nhà cung cấp. Lấy host, port, username, password SMTP riêng và chế độ TLS/STARTTLS; không mặc định mật khẩu SMTP là mật khẩu đăng nhập tài khoản.
-3. Điền các trường `SMTP_*` vào phiếu `.env`, rồi nhập vào Authentication → Custom SMTP của Supabase. Phiếu này không tự cấu hình dịch vụ. NestJS không cần giữ một bản SMTP thứ hai nếu Supabase gửi OTP.
+3. Điền các trường `SMTP_*` vào `.env` riêng phía server, đồng thời nhập vào Authentication → Custom SMTP của Supabase cho nhánh đăng ký OTP. Từ 29/10, NestJS cũng dùng cấu hình này để gửi OTP bổ sung email trong Hồ sơ: cần `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER_EMAIL`; `SMTP_SECURITY=tls` (TLS trực tiếp, thường 465) hoặc `starttls` (thường 587), tên gửi tùy chọn `SMTP_SENDER_NAME`. Thiếu cấu hình chỉ chặn gửi mã bằng lỗi 503; đăng ký bỏ qua email vẫn hoạt động. Không đưa bất kỳ secret SMTP nào vào biến `VITE_*`.
 4. Chọn template email tương ứng luồng đăng ký mà nhóm triển khai; nếu dùng OTP dạng mã, hiển thị token trong template thay vì chỉ có link. Cấu hình thời hạn, độ dài mã và giới hạn gửi khớp BA/AC hiện hành; kiểm tra cả hạn mức Supabase lẫn nhà cung cấp.
 5. Khi ứng dụng đã có, thử OTP thật đến ba Gmail ngoài nhóm, ghi thời gian nhận/spam và thử năm thư trong một giờ theo kế hoạch kiểm chứng. Kiểm tra mã sai, hết hạn, gửi lại và trường hợp vượt hạn mức; không đánh dấu đạt chỉ vì gửi được email thử từ dashboard.
 

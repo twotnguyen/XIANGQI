@@ -142,6 +142,10 @@ export class SessionController {
         appSession: capability,
         ...actor,
       };
+    }).catch((error: unknown) => {
+      if (error instanceof HttpException && error.getStatus() === 401)
+        clearSessionCookies(response, this.secure);
+      throw error;
     });
   }
   /**

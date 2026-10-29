@@ -31,6 +31,9 @@ describe.skipIf(!databaseUrl)("profile service over store", () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
+    await apply(
+      "supabase/migrations/20261029000001_username_account_email.sql",
+    );
   });
   it("reads username, read-only email and display name", async () => {
     const id = await member("profread");

@@ -185,8 +185,8 @@
 
 ### EP-01 · Đăng ký và đăng nhập (YC1)
 
-#### US-01.1 · Đăng ký bằng Username + Mật khẩu + OTP email
-**Là** khách truy cập, **tôi muốn** đăng ký bằng username, mật khẩu và email có mã OTP gửi tới hộp thư thật, **để** có tài khoản chính thức.
+#### US-01.1 · Đăng ký bằng Username + Mật khẩu; Email/OTP tùy chọn
+**Là** khách truy cập, **tôi muốn** tạo tài khoản bằng username, mật khẩu và xác nhận mật khẩu, được bỏ qua email/OTP để vào ứng dụng và xác minh email sau trong Hồ sơ.
 *Nguồn:* BA 1.1, 1.4, 1.5. *Màn hình:* `SCR-REGISTER`.
 *Nguồn:* BA 0.4. *Ghi chú:* gắn vào Custom SMTP của Supabase Auth; khoá SMTP chỉ lưu phía máy chủ/Supabase.
 *Sprint thi công:* S1, S2. *Story Points:* **9** (tổng điểm 3 Task, 40 giờ).
@@ -206,6 +206,8 @@
 | AC-01.1.11 | SMTP ngoài đã cấu hình | Đăng ký bằng Gmail không thuộc nhóm | Thư OTP tới hộp thư (mục tiêu ≤ 1 phút), tên người gửi "Cờ Tướng Online", nội dung tiếng Việt | M |
 | AC-01.1.12 | Đăng ký liên tiếp 5 lần trong 1 giờ bằng 5 email khác nhau | Gửi OTP | Cả 5 thư đều gửi được (không còn giới hạn 2 thư/giờ của SMTP mặc định) | M |
 | AC-01.1.13 | Dịch vụ SMTP lỗi hoặc hết hạn mức | Gửi OTP | Giao diện báo lỗi thật *"Không gửi được mã, vui lòng thử lại sau"*; tài khoản không bị kẹt | I |
+| AC-01.1.14 | Credentials hợp lệ, ở bước Email hoặc OTP | Bấm "Bỏ qua email, vào Sảnh" | Tạo tài khoản thành viên, tự đăng nhập; không đánh dấu email đã xác minh; tài khoản không bị dọn như bản đăng ký tạm | I, E2E |
+| AC-01.1.15 | Đã bỏ qua email/OTP | Đăng xuất và đăng nhập lại bằng username + mật khẩu | Thành công; giữ cùng user_id và dữ liệu | I, E2E |
 
 #### US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai
 **Là** người dùng, **tôi muốn** đăng nhập bằng username và mật khẩu an toàn, **để** vào ứng dụng mà tài khoản không bị dò mật khẩu.
@@ -267,28 +269,32 @@
 | AC-01.4.9 | Đang ở phòng `WAITING` | Bấm Đăng xuất | Rời phòng theo 2.3 (không xử thua) rồi đăng xuất | E2E |
 | AC-01.4.10 | Ở Cài đặt hồ sơ | Nhập Display Name 2–30 ký tự hợp lệ, bấm "Lưu thay đổi" | Lưu ngay, không cần OTP; tên mới hiện ở thanh điều hướng và trong phòng ở lần cập nhật kế tiếp | E2E |
 | AC-01.4.11 | Ở Cài đặt hồ sơ | Display Name chứa từ cấm hoặc sai độ dài | Từ chối lưu (không che `***`), báo lỗi tại ô | U, E2E |
-| AC-01.4.12 | Ở Cài đặt hồ sơ | Xem thông tin | Thấy avatar chữ cái đầu, `@username`, email **chỉ đọc**; không có nút đổi Username (P2), không có bộ chọn giao diện | E2E |
+| AC-01.4.12 | Ở Cài đặt hồ sơ | Xem thông tin | Thấy avatar chữ cái đầu, `@username`; email đã xác minh chỉ đọc, chưa có email thì có luồng bổ sung/xác minh; không có nút đổi Username (P2) | E2E |
 | AC-01.4.13 | Ở Cài đặt hồ sơ | Bấm "Đăng xuất" | Đăng xuất theo AC-01.4.8/AC-01.4.9 | E2E |
 | AC-01.4.14 | Khách | Mở mục Bạn bè, tab mời bạn bè trong `MODAL-INVITE`, hoặc Cài đặt hồ sơ | Bạn bè ở thanh điều hướng `DISABLED` kèm tooltip *"Đăng ký tài khoản để kết bạn"*; tab mời bạn bè ẩn (vẫn có link/mã); Cài đặt chỉ có Đăng xuất | E2E |
 | AC-01.4.15 | Khách | Người dùng khác tìm username hoặc mời Khách | Khách không xuất hiện trong tìm kiếm bạn bè, không nhận được lời mời bạn bè | I |
 | AC-01.4.16 | Đang trong ván ở nơi khác | Mở link mời | Luật 1.8 được kiểm trước; không tự vào phòng mới để ngồi ghế | I |
 | AC-01.4.17 | Đang ngồi ghế phòng online | Bấm "Đánh với máy" | `DISABLED` theo AC-01.4.6 | E2E |
+| AC-01.4.18 | Thành viên chưa có email hoặc đang chờ xác minh | Vào ứng dụng/Hồ sơ | Cảnh báo không modal với liên kết đến Hồ sơ; không chặn chơi hoặc đổi quyền thành viên; không hiển thị định danh email kỹ thuật | E2E |
+| AC-01.4.19 | Thành viên chưa xác minh email | Gửi/gửi lại OTP trong Hồ sơ | Mã thật 6 số, hạn 180 giây, gửi lại sau 60 giây; email trùng/lỗi SMTP báo lỗi thật | I, E2E |
+| AC-01.4.20 | Có yêu cầu email thuộc tài khoản đang đăng nhập | Xác minh OTP đúng | Email được gắn vào cùng user_id, giữ nguyên phiên/dữ liệu/ghế; cảnh báo biến mất | I, E2E |
+| AC-01.4.21 | OTP sai, hết hạn, đã dùng hoặc thuộc yêu cầu khác | Gửi xác minh | Không gắn email; tối đa 5 lần nhập sai mỗi yêu cầu; không tạo hoặc gộp tài khoản | I |
 
 ---
 
 ### EP-02 · Tạo phòng (YC2)
 
 #### US-02.1 · Tạo phòng, ghế và bắt đầu ván
-**Là** người dùng hoặc Khách, **tôi muốn** tạo phòng với tên, mức giờ, số người xem rồi cùng đối thủ Sẵn sàng để bắt đầu, **để** so tài với người mình mời.
+**Là** người dùng hoặc Khách, **tôi muốn** tạo phòng với mức giờ, số người xem và quyền truy cập rồi cùng đối thủ Sẵn sàng để bắt đầu, **để** so tài với người mình mời.
 *Nguồn:* BA 2.1, 2.3 mục 1, 2.7 mục 1, 2.8 mục 1. *Màn hình:* `MODAL-CREATE-ROOM`, `SCR-WAITING-ROOM`.
 *Nguồn:* BA 2.3 mục 1, 3, 4, 5; 2.8 mục 4; 8.3. *Màn hình:* `SCR-WAITING-ROOM`.
 *Sprint thi công:* S2, S3. *Story Points:* **10** (tổng điểm 3 Task, 48 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
-| AC-02.1.1 | Ở Sảnh, không ngồi ghế nơi khác | Bấm "Tạo phòng" | Mở form: Tên phòng (1–60 ký tự), Mức giờ 5/10/15 phút (**mặc định 10**), Người xem *Không có người xem* hoặc 1–5 (**mặc định 5**) | E2E |
-| AC-02.1.2 | Form | Tên phòng rỗng, > 60 ký tự hoặc chứa từ cấm | Từ chối, báo lỗi tại ô | U, E2E |
-| AC-02.1.3 | Form hợp lệ | Bấm Tạo | Phòng tạo ở `CODE_ONLY`, có mã 8 ký tự do máy chủ sinh và link mời; người tạo là Host, ngồi **ghế Đỏ**; vào `/rooms/:id` trạng thái `WAITING` | E2E |
+| AC-02.1.1 | Ở Sảnh, không ngồi ghế nơi khác | Bấm "Tạo phòng" | Mở form: Mức giờ 5/10/15 phút (**mặc định 10**), Người xem *Không có người xem* hoặc 1–5 (**mặc định 5**), Quyền truy cập **Chỉ qua mã/link/lời mời (`CODE_ONLY`, mặc định)** hoặc **Công khai (`PUBLIC`)**, được đổi ngay trong form; không nhập tên phòng | E2E |
+| AC-02.1.2 | Yêu cầu tạo phòng | Mức giờ, số người xem hoặc quyền truy cập ngoài lựa chọn cho phép (kể cả `LOCKED`) | Máy chủ từ chối, không tạo phòng | U, I |
+| AC-02.1.3 | Form hợp lệ | Bấm Tạo | Phòng tạo trực tiếp ở quyền truy cập đã chọn; có mã **8 chữ số** do máy chủ sinh, tên `Phòng <mã>` và link mời; người tạo là Host, ngồi **ghế Đỏ**; vào `/rooms/:id` trạng thái `WAITING` | E2E |
 | AC-02.1.4 | Phòng đã tạo | Tìm cách đổi mức giờ hoặc số người xem | Không có chức năng đổi | M |
 | AC-02.1.5 | Sức chứa | Kiểm tra | = 2 + số người xem đã chọn (tối đa 7) | U |
 | AC-02.1.6 | Chỉ có một người ngồi ghế (Host) | Bấm "Đổi ghế" | Chuyển Đỏ ↔ Đen tùy thích, không cần ai duyệt | E2E |
@@ -527,7 +533,7 @@
 | AC-06.2.12 | Thanh điều hướng | Xem mục | Sảnh, Bạn bè hoạt động (Khách: Bạn bè `DISABLED`); Lịch sử, Bảng xếp hạng `DISABLED` *"Sắp ra mắt"*; chuông lời mời kết bạn; avatar + Display Name mở menu Cài đặt hồ sơ | E2E |
 | AC-06.2.13 | Màn hình `SCR-LOGIN` | Xem liên kết "Quên mật khẩu?" | `DISABLED` kèm *"Sắp ra mắt"* | E2E |
 | AC-06.2.14 | Khách | Vào phòng bằng mã/link, Vào chơi/Vào xem ở Sảnh, Đánh với máy | Đều được phép theo luật phòng | E2E |
-| AC-06.2.15 | Host | Chuyển sang `PUBLIC` | Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây | E2E |
+| AC-06.2.15 | Host | Tạo phòng với quyền truy cập `PUBLIC` hoặc chuyển phòng sang `PUBLIC` | Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây | E2E |
 | AC-06.2.16 | Phòng `PUBLIC` | Host chuyển sang `CODE_ONLY` hoặc `LOCKED` | Phòng biến khỏi danh sách Sảnh; yêu cầu vào từ danh sách cũ bị máy chủ từ chối | I, E2E |
 
 #### US-06.3 · Người xem và đuổi người xem

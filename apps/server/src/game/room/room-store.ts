@@ -24,21 +24,33 @@ export class RoomStore extends RoomViewerStore {
       commandId: string;
       timeMinutes?: number;
       viewerLimit?: number;
+      visibility?: "CODE_ONLY" | "PUBLIC";
     },
   ): Promise<RoomEntry> {
     this.scope(s);
     if (!uuid.test(input.commandId)) invalidRoomInput();
     const time = input.timeMinutes ?? 10,
-      viewers = input.viewerLimit ?? 5;
+      viewers = input.viewerLimit ?? 5,
+      visibility =
+        input.visibility === undefined ? "CODE_ONLY" : input.visibility;
     if (
       ![5, 10, 15].includes(time) ||
       !Number.isInteger(viewers) ||
       viewers < 0 ||
-      viewers > 5
+      viewers > 5 ||
+      !["CODE_ONLY", "PUBLIC"].includes(visibility)
     )
       invalidRoomInput();
     const digest = createHash("sha256")
-        .update(JSON.stringify({ type: "create", time, viewers }))
+        .update(
+          JSON.stringify({
+            type: "create",
+            time,
+            viewers,
+            // Giữ fingerprint của biên lai CODE_ONLY đã lưu trước khi có lựa chọn này.
+            ...(visibility === "CODE_ONLY" ? {} : { visibility }),
+          }),
+        )
         .digest("hex"),
       old = await this.replay(s, input.commandId, digest);
     if (old) return old;
@@ -64,14 +76,27 @@ export class RoomStore extends RoomViewerStore {
     for (let attempt = 0; attempt < 5; attempt++) {
       code = Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
       const row = await s.client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,'CODE_ONLY',$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
-        [id, s.actor.userId, `Phòng ${code}`, time * 60, viewers, code],
+        "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,$7,$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
+        [
+          id,
+          s.actor.userId,
+          `Phòng ${code}`,
+          time * 60,
+          viewers,
+          code,
+          visibility,
+        ],
       );
       if (row.rowCount) break;
       code = "";
     }
     if (!code)
       throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
+    if (visibility === "PUBLIC")
+      await s.client.query(
+        "UPDATE public.rooms SET public_opened_at=clock_timestamp() WHERE id=$1",
+        [id],
+      );
     await s.client.query(
       `WITH reserved AS (
         INSERT INTO public.active_players(user_id,room_id)

@@ -9,12 +9,31 @@ it("submits chosen room settings without a room name", async () => {
   const create = vi.fn().mockResolvedValue(undefined);
   render(createElement(CreateRoomForm, { onCreate: create }));
   const user = userEvent.setup();
+  expect(
+    (screen.getByLabelText("Quyền truy cập") as HTMLSelectElement).value,
+  ).toBe("CODE_ONLY");
   await user.click(screen.getByLabelText("15 phút"));
   await user.selectOptions(screen.getByLabelText("Người xem"), "3");
+  await user.selectOptions(screen.getByLabelText("Quyền truy cập"), "PUBLIC");
   await user.click(screen.getByRole("button", { name: "Tạo phòng" }));
   expect(create).toHaveBeenCalledExactlyOnceWith({
     timeMinutes: 15,
     viewerLimit: 3,
+    visibility: "PUBLIC",
+  });
+});
+it("can switch back to code-only before creating", async () => {
+  const create = vi.fn().mockResolvedValue(undefined);
+  render(createElement(CreateRoomForm, { onCreate: create }));
+  const user = userEvent.setup();
+  const access = screen.getByLabelText("Quyền truy cập");
+  await user.selectOptions(access, "PUBLIC");
+  await user.selectOptions(access, "CODE_ONLY");
+  await user.click(screen.getByRole("button", { name: "Tạo phòng" }));
+  expect(create).toHaveBeenCalledExactlyOnceWith({
+    timeMinutes: 10,
+    viewerLimit: 5,
+    visibility: "CODE_ONLY",
   });
 });
 it("keeps eight digits only and rejects letters", async () => {

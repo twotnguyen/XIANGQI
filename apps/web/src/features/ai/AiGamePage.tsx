@@ -379,9 +379,9 @@ export function AiGamePage({
       {!canControl && control && (
         <div role="status">
           <p>Ván này đang mở ở tab khác.</p>
-          <button type="button" disabled={!connected} onClick={takeover}>
+          <Button variant="secondary" disabled={!connected} onClick={takeover}>
             Chuyển quyền điều khiển về tab này
-          </button>
+          </Button>
         </div>
       )}
       {error && <p role="alert">{error}</p>}

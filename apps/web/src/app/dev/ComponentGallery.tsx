@@ -299,21 +299,24 @@ export function LobbyPreview() {
           title="Tạo phòng minh họa"
         >
           <CreateRoomForm
-            onCreate={async ({ timeMinutes, viewerLimit }) => {
-              setRooms((previous) => [
-                {
-                  ...fixtures[0]!,
-                  id: `local-${previous.length}`,
-                  name: `Phòng minh họa ${previous.length + 1}`,
-                  timeMinutes,
-                  spectatorLimit: viewerLimit,
-                },
-                ...previous,
-              ]);
+            onCreate={async ({ timeMinutes, viewerLimit, visibility }) => {
+              if (visibility === "PUBLIC")
+                setRooms((previous) => [
+                  {
+                    ...fixtures[0]!,
+                    id: `local-${previous.length}`,
+                    name: `Phòng minh họa ${previous.length + 1}`,
+                    timeMinutes,
+                    spectatorLimit: viewerLimit,
+                  },
+                  ...previous,
+                ]);
               setOpen(false);
               setState("success");
               setNotice(
-                "Phòng minh họa đã được thêm vào danh sách local. Chưa tạo phòng thật.",
+                visibility === "PUBLIC"
+                  ? "Phòng công khai minh họa đã được thêm vào danh sách local. Chưa tạo phòng thật."
+                  : "Phòng minh họa chỉ qua mã/link/lời mời không hiện ở Sảnh. Chưa tạo phòng thật.",
               );
             }}
           />

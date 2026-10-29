@@ -1,3 +1,4 @@
+import "./friends.css";
 import { useEffect, useState } from "react";
 import { navigate } from "../../shared/navigation/navigation.js";
 import { Button } from "../../shared/ui/primitives.js";
@@ -76,21 +77,27 @@ export function RoomInvitePopup({ client }: { client: FriendClient }) {
     }
   }
   return (
-    <section role="dialog" aria-label="Lời mời vào phòng">
+    <section
+      role="dialog"
+      aria-label="Lời mời vào phòng"
+      className="xq-room-invite-popup"
+    >
       <p>
         Người chơi {invite.inviter.displayName} (@{invite.inviter.username}) mời
         bạn tham gia phòng cờ {invite.roomName}. Còn {seconds} giây.
       </p>
-      <Button loading={busy === invite.id} onClick={() => void answer(true)}>
-        Tham gia
-      </Button>{" "}
-      <Button
-        variant="secondary"
-        loading={busy === invite.id}
-        onClick={() => void answer(false)}
-      >
-        Từ chối
-      </Button>
+      <div className="xq-room-invite-popup__actions">
+        <Button loading={busy === invite.id} onClick={() => void answer(true)}>
+          Tham gia
+        </Button>
+        <Button
+          variant="secondary"
+          loading={busy === invite.id}
+          onClick={() => void answer(false)}
+        >
+          Từ chối
+        </Button>
+      </div>
       {error && (
         <p role="alert" aria-live="assertive">
           {error}

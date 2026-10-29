@@ -42,9 +42,10 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 
 ### 0.2 Đăng nhập và đăng ký (P1)
 * **Ba cách vào ứng dụng ở `SCR-LOGIN`:** (1) Username + Mật khẩu; (2) Đăng nhập bằng Google; (3) **Khách** (xem 0.3).
-* **Hai cách đăng ký:** (a) Username + Mật khẩu → Email → OTP email (1.1); (b) Google → đặt Username + Mật khẩu ở `SCR-ONBOARDING`, **không OTP** (1.2). Sau khi đăng ký, người dùng đăng nhập bằng Username + Mật khẩu **hoặc** bấm Đăng nhập bằng Google (tài khoản Google đã đăng ký).
+* **Hai cách đăng ký (PO đổi 29/10/2026):** (a) Username + Mật khẩu + Xác nhận mật khẩu; Email và OTP là **tùy chọn**, được bỏ qua tại bước Email hoặc OTP để vào ứng dụng ngay (1.1); (b) Google → đặt Username + Mật khẩu ở `SCR-ONBOARDING`, **không OTP** (1.2). Tài khoản chưa có email vẫn đăng nhập bằng Username + Mật khẩu và dùng các tính năng thành viên P1.
 * **Đăng nhập Username + Mật khẩu:** chỉ dùng username (không dùng email làm tên đăng nhập), **không phân biệt hoa thường**. Sai username hoặc mật khẩu luôn báo một câu chung: *"Sai tên đăng nhập hoặc mật khẩu"*.
 * **Khoá thử sai:** đếm theo username đã chuẩn hoá chữ thường, **kể cả username không tồn tại**. Sai **5 lần trong 15 phút** → chặn đăng nhập bằng mật khẩu cho username đó **15 phút** tính từ lần sai thứ 5. Trong thời gian chặn, mọi lần thử (kể cả đúng mật khẩu) đều báo: *"Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút"*. Đăng nhập thành công đặt lại bộ đếm. Đăng nhập Google **không** tính vào và không bị chặn bởi bộ đếm này.
+* **Email bổ sung sau (29/10):** ứng dụng và Hồ sơ nhắc rõ chưa có email hoặc email đang chờ xác minh. Người dùng thêm email và nhập OTP ngay trong Hồ sơ; chỉ mã đúng mới gắn email đã xác minh vào **cùng tài khoản/user_id**, không tạo tài khoản ứng dụng mới, không thay đổi phiên hoặc dữ liệu ván. Không tự gộp tài khoản có email trùng. Chưa có email đã xác minh thì không có địa chỉ khôi phục tài khoản.
 
 ### 0.3 Chế độ Khách lên P1
 * Khách thuộc **P1**, áp dụng **đúng Quyết định 1.3** cho các tính năng có ở P1: nhập tên tạm qua `MODAL-GUEST-NAME` (2–20 ký tự, qua bộ lọc từ cấm), phiên tối đa 12 giờ (không hết khi đang ngồi ghế/trong ván), nhãn **"(Khách)"** cạnh tên, tối đa **1 phòng đang mở** do mình tạo.
@@ -56,6 +57,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ### 0.4 Gửi email OTP qua SMTP ngoài
 * Thay quyết định "SMTP mặc định của Supabase" ở 10.1. Lý do: dịch vụ mặc định **chỉ gửi tới địa chỉ đã cấp phép trước (thành viên team Supabase)**, hạn mức **2 thư/giờ**, không cam kết giao thư → người ngoài nhóm (giảng viên, "khách hàng") không đăng ký được.
 * Gắn một dịch vụ SMTP có gói miễn phí vào **Custom SMTP** của Supabase Auth. Tiêu chí chọn: gửi được tới Gmail bất kỳ; không bắt buộc tên miền riêng; hạn mức miễn phí đủ cho phát triển và demo. Nhà cung cấp cụ thể chốt trong Task cấu hình (kiểm tra hạn mức tại thời điểm làm). Điều chỉnh giới hạn tốc độ gửi email của Supabase Auth cho phù hợp.
+* **Bổ sung 29/10:** OTP đăng ký tùy chọn vẫn qua Supabase; OTP thêm email cho tài khoản đang đăng nhập được máy chủ gửi qua SMTP thật bằng cùng nhóm cấu hình `SMTP_*`. Thiếu cấu hình/lỗi gửi phải báo lỗi, không giả thành công và không chặn đăng ký bỏ qua email.
 
 ### 0.5 Danh sách phòng PUBLIC tại Sảnh
 * **Cột hiển thị:** Tên phòng · Host (Display Name, kèm "(Khách)" nếu là Khách) · Mức giờ · Trạng thái (*Đang chờ* / *Đang đấu*) · Người xem **x/N** (N = trần đã chọn; phòng "Không có người xem" hiện *"Không cho xem"*).
@@ -136,19 +138,20 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 
 ## PHẦN 1: TÀI KHOẢN & ĐĂNG NHẬP (Yêu cầu 1)
 
-### Quyết định 1.1: Luồng Đăng ký tài khoản hệ thống (Wizard 3 bước: Username+Mật khẩu $\rightarrow$ Email $\rightarrow$ OTP xác minh)
-* **Lựa chọn đã chốt:** **[REG-FLOW] Đăng ký theo quy trình phân bước trực quan kèm xác minh OTP Email**
+### Quyết định 1.1: Đăng ký Username + Mật khẩu; Email/OTP tùy chọn, bổ sung sau (PO đổi 29/10/2026)
+* **Lựa chọn đã chốt:** **[REG-FLOW] Có thể bỏ qua Email hoặc OTP, hoàn tất tài khoản và vào ứng dụng ngay**
 * **Mô tả nghiệp vụ:**
   * Tại màn hình Đăng ký (`SCR-REGISTER`), giao diện hiển thị 2 khung nhập liệu ban đầu:
     * `Username:` (Tên đăng nhập: duy nhất toàn hệ thống, 3–20 ký tự, viết liền không dấu `^[a-zA-Z0-9_]{3,20}$`).
     * `Mật khẩu:` (Tối thiểu 8 ký tự, có ô xác nhận lại mật khẩu).
   * **Quy trình 3 bước hoàn tất đăng ký:**
     1. **Bước 1 (Nhập Username & Mật khẩu):** Người dùng điền đầy đủ và bấm nút **"Xác nhận / Tiếp tục"**. Hệ thống kiểm tra tính duy nhất (UNIQUE) của `username` và từ chối tên chứa từ cấm ngay ở bước này (0.17, PO duyệt 09/10).
-    2. **Bước 2 (Nhập Email):** Giao diện chuyển tiếp mượt mà sang khung nhập `Email:`. Người dùng điền địa chỉ email chính chủ và bấm **"Xác nhận Email"**.
-    3. **Bước 3 (Xác thực Email qua mã OTP):** Hệ thống kích hoạt Supabase Auth gửi mã OTP 6 chữ số đến địa chỉ email vừa nhập, đồng thời hiển thị khung nhập mã OTP. Người dùng kiểm tra hòm thư (check mail), lấy mã và nhập vào hệ thống để xác nhận email vừa nhập là chính xác và đang hoạt động. Xác thực OTP thành công $\rightarrow$ Tài khoản chuyển sang trạng thái `ACTIVE`, tự động đăng nhập và đưa vào sảnh chính.
-  * **Thời điểm tạo tài khoản:** Tài khoản **dùng được** (có hồ sơ và đăng nhập được) chỉ có **sau khi OTP xác thực thành công và hoàn tất bước cuối**. Trước đó người dùng chưa có hồ sơ và không đăng nhập được; **hệ thống xác thực (Supabase) có thể giữ tạm một bản ghi xác thực chưa xác nhận** (Product Owner chọn Phương án B ngày 03/10/2026), được dọn sau khoảng 1 giờ (tối đa khoảng 65 phút) để email không bị kẹt; username **không bị giữ chỗ** khi người dùng bỏ dở giữa chừng (đóng tab, hết hạn OTP). Máy chủ kiểm tra lại tính duy nhất của `username` và `email` ở bước cuối; nếu username đã bị người khác lấy trong lúc chờ thì báo lỗi và quay về Bước 1.
+    2. **Bước 2 (Email tùy chọn):** Người dùng nhập email chính chủ và bấm **"Xác nhận Email"**, hoặc chọn **"Bỏ qua email, vào Sảnh"**. Bỏ qua thì tạo tài khoản thành viên hoạt động bằng credentials hợp lệ và tự đăng nhập, chưa có email đã xác minh.
+    3. **Bước 3 (OTP tùy chọn):** Nếu chọn thêm email ngay, Supabase gửi OTP 6 số; mã đúng hoàn tất tài khoản với email đã xác minh. Người dùng vẫn được **bỏ qua OTP** để vào ứng dụng; bản đăng ký email tạm chưa xác minh được hủy an toàn, không được tự coi email đó là đã xác minh.
+  * **Thời điểm tạo tài khoản:** Tài khoản dùng được khi hoàn tất qua OTP **hoặc chủ động bỏ qua email/OTP**. Việc chỉ đóng tab không phải hành động bỏ qua và không hoàn tất tài khoản. Nhánh đang chờ OTP có thể giữ bản xác thực Supabase tạm, dọn khoảng 60–65 phút, không giữ username. Máy chủ kiểm lại username khi hoàn tất; tên bị người khác lấy thì báo lỗi quay về bước 1. Tài khoản đã hoàn tất qua bỏ qua không thuộc diện dọn đăng ký tạm.
   * **Phục hồi đăng ký (duyệt 04/10):** Nếu đã ghi `profiles.completed_at` nhưng còn cờ `PENDING`, tác vụ phục hồi hoàn tất xoá cờ, **không xoá tài khoản đã ghi hoàn tất**; trước khi phục hồi xong vẫn chặn sử dụng. Nếu chưa có `completed_at`, tiếp tục chặn và dọn theo thời hạn hiện có. Đăng ký, phục hồi và dọn cùng danh tính phải tuần tự hoá để tránh xoá nhầm.
   * **Email đã tồn tại:** Ở Bước 2, nếu email đã có tài khoản thì hiển thị ⚠️ *"Email này đã được đăng ký"* (cùng thông báo với luồng Google) và không gửi OTP.
+  * **Xác minh sau trong Hồ sơ:** trạng thái phân biệt chưa có email, đang chờ xác minh và đã xác minh. Gửi/gửi lại OTP phải gắn với danh tính phiên hiện hành; mã 6 số, hạn 180 giây, gửi lại sau 60 giây, tối đa 5 lần nhập sai cho yêu cầu thêm email. Kiểm trùng email cả lúc gửi lẫn hoàn tất; email đang chờ chưa được coi là email đã xác minh. Thành công cập nhật cùng `user_id`, giữ phiên/ghế/dữ liệu; cảnh báo ẩn sau phản hồi thành công từ server.
 
 ---
 
@@ -240,7 +243,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
   3. **Bước 3 (Xác thực & Mở khóa):** Hệ thống xác thực OTP thành công $\rightarrow$ Mở khóa cho phép nhập liệu ô `Username` mới.
   4. **Bước 4 (Đổi & Xác nhận):** Người dùng nhập `username` mới mong muốn (unique, 3–20 ký tự) và bấm **"Xác nhận thay đổi"** $\rightarrow$ Cập nhật thành công.
 * **Bảo toàn dữ liệu tuyệt đối (Data Integrity):** Toàn bộ lịch sử ván cờ, điểm Elo, tin nhắn chat và danh sách bạn bè đều gắn với `user_id` (UUID bất biến). Đổi Username bảo toàn nguyên vẹn 100% dữ liệu.
-* **Chính sách đối với Email:** Trường `email` hiển thị khóa cứng hoàn toàn (`READONLY` / `DISABLED`), tuyệt đối không cho phép đổi nhằm bảo vệ danh tính gốc Supabase Auth và là đích nhận OTP bất biến.
+* **Chính sách đối với Email (29/10):** Cho phép bổ sung và xác minh email đầu tiên cho tài khoản chưa có email. Trước khi xác minh có thể nhập lại email đích; sau khi đã xác minh thì email chỉ đọc, không có chức năng đổi/xóa email. Định danh kỹ thuật dùng với Supabase không phải email liên hệ và không được hiển thị thay email người dùng.
 
 ---
 
@@ -397,7 +400,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 ### Quyết định 2.7: Phòng tự tạo — thông số, cách mời và khóa phòng
 * **Lựa chọn đã chốt (PO làm rõ 05/10/2026):** **[ROOM-SPEC] Mời nhanh bạn bè online hoặc chia sẻ link/mã cho người chưa kết bạn; phòng có `PUBLIC` / `CODE_ONLY` / `LOCKED`, tối đa năm người xem**
 * **Mô tả nghiệp vụ:**
-  1. **Trường khi tạo phòng (`MODAL-CREATE-ROOM`, cập nhật theo yêu cầu PO 19/10/2026):** Không yêu cầu nhập tên phòng. Người dùng chỉ chọn mức giờ (4 mức, `Quyết định 2.1`; P1 chỉ 5/10/15 phút), số người xem tối đa (**Không có người xem**, hoặc 1–5; **mặc định 5**; không đổi sau khi tạo). Máy chủ tự cấp ID và mã phòng **8 chữ số**, đặt tên hiển thị **"Phòng <mã>"**. Phòng tạo ở `CODE_ONLY`; Host có thể mở `PUBLIC` tại Cài đặt phòng. `LOCKED` chỉ bật sau khi đủ hai người chơi (`Quyết định 2.8`). Phe mặc định của Host là Đỏ (`Quyết định 2.3`). Mức giờ **không đổi được** sau khi tạo phòng. Phòng đã tồn tại giữ nguyên tên/mã.
+  1. **Trường khi tạo phòng (`MODAL-CREATE-ROOM`, PO bỏ tên phòng 19/10/2026 và duyệt chọn quyền truy cập 28/10/2026):** Không yêu cầu nhập tên phòng. Người dùng chọn mức giờ (4 mức, `Quyết định 2.1`; P1 chỉ 5/10/15 phút), số người xem tối đa (**Không có người xem**, hoặc 1–5; **mặc định 5**; không đổi sau khi tạo) và **Quyền truy cập**: **Chỉ qua mã/link/lời mời (`CODE_ONLY`, được chọn mặc định)** hoặc **Công khai (`PUBLIC`)**. Người dùng có thể đổi lựa chọn quyền truy cập ngay trong form trước khi tạo; máy chủ tạo phòng trực tiếp ở chế độ đã chọn. Máy chủ tự cấp ID và mã phòng **8 chữ số**, đặt tên hiển thị **"Phòng <mã>"**. Host vẫn có thể đổi quyền truy cập tại Cài đặt phòng. Không cho chọn `LOCKED` khi tạo; chỉ bật sau khi đủ hai người chơi (`Quyết định 2.8`). Phe mặc định của Host là Đỏ (`Quyết định 2.3`). Mức giờ **không đổi được** sau khi tạo phòng. Phòng đã tồn tại giữ nguyên tên/mã/quyền truy cập.
   2. **Quyền vào phòng:**
 
 | Chế độ | Hiện ở Sảnh | Người mới vào bằng | Ghi chú |

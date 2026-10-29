@@ -45,7 +45,7 @@ export class ProfileService {
     return {
       userId,
       username: row.username ?? identity.username,
-      email: identity.email,
+      email: row.email,
       displayName: row.displayName,
     };
   }

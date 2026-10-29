@@ -23,7 +23,8 @@ function emailAddress(value: unknown): string {
   if (
     typeof value !== "string" ||
     value.length > 254 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+    value.trim().toLowerCase().endsWith(".xiangqi.invalid")
   )
     throw new RegistrationError("EMAIL_INVALID", "Email không hợp lệ", 400, 2);
   return value.trim().toLowerCase();

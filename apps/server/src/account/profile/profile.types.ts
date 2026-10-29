@@ -10,7 +10,7 @@ export class ProfileError extends Error {
 export interface ProfileView {
   userId: string;
   username: string;
-  email: string;
+  email: string | null;
   displayName: string;
 }
 export type ProfileLocationKind =

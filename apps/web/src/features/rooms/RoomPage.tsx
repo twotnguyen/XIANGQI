@@ -84,6 +84,12 @@ export function RoomPage({
   const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null);
   const [copying, setCopying] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
+  const [copied, setCopied] = useState<"code" | "link" | null>(null);
+  useEffect(() => {
+    if (!copied || copying) return;
+    const timer = setTimeout(() => setCopied(null), 1500);
+    return () => clearTimeout(timer);
+  }, [copied, copying]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsStatus, setSettingsStatus] = useState("");
@@ -147,16 +153,28 @@ export function RoomPage({
     const timer = setInterval(() => setSwapNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [swapOfferId]);
-  async function copyInvite(value: string) {
+  async function copyInvite(code: string, format: "code" | "link") {
     if (copying) return;
     setCopying(true);
-    setCopyStatus("");
     try {
       if (!navigator.clipboard?.writeText) throw Error("clipboard unavailable");
+      const value =
+        format === "link"
+          ? new URL(
+              `/rooms/join?token=${encodeURIComponent(code)}`,
+              window.location.origin,
+            ).href
+          : code;
       await navigator.clipboard.writeText(value);
-      setCopyStatus("Đã sao chép mã phòng.");
+      setCopied(format);
+      setCopyStatus("");
     } catch {
-      setCopyStatus("Chưa sao chép được. Hãy chọn mã và sao chép thủ công.");
+      setCopied(null);
+      setCopyStatus(
+        format === "link"
+          ? "Chưa sao chép được link. Hãy thử lại hoặc chia sẻ mã phòng."
+          : "Chưa sao chép được. Hãy chọn mã và sao chép thủ công.",
+      );
     } finally {
       setCopying(false);
     }
@@ -666,7 +684,7 @@ export function RoomPage({
                 : "Phòng chờ thi đấu"}
           </p>
           {!playingLayout && (
-            <div className="xq-room-meta">
+            <div className="xq-waiting-meta">
               <span>{room.timeMinutes} phút mỗi bên</span>
               <span>{visibilityLabel(room.visibility)}</span>
             </div>
@@ -739,6 +757,27 @@ export function RoomPage({
           </Button>
         </div>
       </header>
+      {!playingLayout && (
+        <fieldset className="xq-room-mobile-nav" aria-label="Khu vực phòng chờ">
+          <label>
+            <input
+              type="radio"
+              name={`room-area-${roomId}`}
+              value="room"
+              defaultChecked
+            />
+            Phòng chờ
+          </label>
+          <label>
+            <input type="radio" name={`room-area-${roomId}`} value="media" />
+            Camera
+          </label>
+          <label>
+            <input type="radio" name={`room-area-${roomId}`} value="chat" />
+            Trò chuyện
+          </label>
+        </fieldset>
+      )}
       <fieldset className="match-actions__confirmation" disabled={busy}>
         <Dialog
           open={leaveConfirm !== null}
@@ -919,7 +958,9 @@ export function RoomPage({
             code={code}
             copying={copying}
             copyStatus={copyStatus}
-            onCopy={() => void copyInvite(code)}
+            copied={copied}
+            onCopy={() => void copyInvite(code, "code")}
+            onCopyLink={() => void copyInvite(code, "link")}
           />
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">

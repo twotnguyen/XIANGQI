@@ -9,6 +9,12 @@
 .xq-ui p {
   margin: 0;
 }
+.xq-ui h1,
+.xq-ui h2,
+.xq-ui h3,
+.xq-ui p {
+  overflow-wrap: anywhere;
+}
 .xq-ui h1 {
   font: 600 var(--text-2xl)/var(--leading-2xl) var(--font-serif);
 }
@@ -58,6 +64,13 @@
   cursor: pointer;
   text-decoration: none;
   max-width: 100%;
+  min-inline-size: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast);
 }
 .xq-button-primary {
   background: var(--color-btn-primary-bg);
@@ -70,6 +83,15 @@
   background: var(--color-surface);
   color: var(--color-ink);
   border-color: var(--color-border);
+}
+.xq-button-secondary:hover:not([aria-disabled="true"]) {
+  border-color: var(--color-gold-light);
+  background: var(--color-surface-sunken);
+}
+.xq-button[aria-pressed="true"] {
+  border-color: var(--color-gold-light);
+  background: var(--color-gold);
+  color: var(--color-btn-primary-fg);
 }
 .xq-button-danger {
   background: var(--color-btn-danger-bg);
@@ -152,9 +174,11 @@
   border: 1px solid currentColor;
   border-radius: var(--radius-md);
   overflow-wrap: anywhere;
+  flex-wrap: wrap;
 }
 .xq-notice > span {
   flex: 1;
+  min-inline-size: min(100%, 160px);
 }
 .xq-notice-info {
   color: var(--color-info);
@@ -336,16 +360,31 @@
       rgba(200, 140, 50, 0.12) 0%,
       transparent 70%
     ),
-    linear-gradient(180deg, #2c1a11 0%, #1a0f0a 100%);
-  border: 2px solid var(--color-gold);
+    var(--color-surface);
+  border: 1px solid var(--color-gold);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
-  width: min(520px, calc(100% - 32px));
-  max-height: calc(100svh - 48px);
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
   overflow: auto;
+  overscroll-behavior: contain;
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.8),
     0 0 20px rgba(198, 146, 42, 0.2);
+}
+.xq-dialog[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-4);
+}
+.xq-dialog > div {
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: var(--space-1);
+  scroll-padding-block: var(--space-3);
 }
 .xq-dialog h2 {
   font-family: var(--font-serif);
@@ -358,20 +397,32 @@
   background: rgba(10, 6, 4, 0.85);
   backdrop-filter: blur(4px);
 }
-.xq-dialog header,
-.xq-dialog footer {
+.xq-dialog > header,
+.xq-dialog > footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
 }
-.xq-dialog footer {
+.xq-dialog > footer {
   justify-content: flex-end;
-  margin-top: var(--space-6);
   flex-wrap: wrap;
 }
-.xq-dialog header {
-  margin-bottom: var(--space-4);
+.xq-dialog > header {
+  align-items: flex-start;
+}
+.xq-dialog > header h2 {
+  padding-block: var(--space-2);
+}
+.xq-dialog > header > .xq-button-group {
+  flex-shrink: 0;
+}
+@media (max-width: 599px) {
+  .xq-dialog {
+    padding: var(--space-4);
+    max-height: calc(100dvh - 24px);
+    width: calc(100% - 24px);
+  }
 }
 .xq-sr-only {
   position: absolute;
@@ -389,6 +440,11 @@
   background: var(--color-surface);
   min-width: 0;
 }
+@media (max-width: 599px) {
+  .xq-ui .xq-panel {
+    padding: var(--space-4);
+  }
+}
 .xq-stack {
   display: grid;
   gap: var(--space-4);
@@ -398,4 +454,8 @@
   gap: var(--space-3);
   align-items: center;
   flex-wrap: wrap;
+}
+.xq-stack > *,
+.xq-row > * {
+  min-inline-size: 0;
 }

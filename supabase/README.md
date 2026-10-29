@@ -65,3 +65,18 @@ Không dùng `db push --include-all` để áp các migration cũ vào schema đ
 Giữ metadata trước thay đổi trong `.local/`, không chứa bản sao dữ liệu người
 dùng. Bản SQL kiểm thử dùng PostgreSQL cô lập và kiểm cả từ chối orphan,
 giữ dữ liệu hợp lệ, cascade trạng thái phụ và rollback; không reset Supabase.
+
+## Email tùy chọn — 29/10/2026
+
+`20261029000001_username_account_email.sql` cần migrations 1–5, thêm bảng
+`xiangqi_auth.username_accounts` với RLS và quyền riêng `app_server`. Tài khoản mới
+được bỏ qua email/OTP, dùng credential Supabase kỹ thuật bất biến và có email liên hệ
+ban đầu là NULL. Không biến credential được admin xác nhận thành email người dùng
+đã xác minh; `/profile` và `/account/email` không hiển thị credential này.
+
+Sau OTP đúng, email liên hệ được lưu và origin key chuyển từ khóa kỹ thuật sang
+email thật trong cùng transaction. Unique `account_origins.email_key` chống trùng
+với đăng ký email/Google và các tài khoản username khác. Ngoại lệ trigger chỉ cho
+chuyển một lần trên cùng user; không gỡ trigger bất biến `auth.users.email`.
+Credential/JWT/phiên và dữ liệu cũ không đổi. Rollback từ chối nếu bảng còn tài khoản,
+không xóa dữ liệu để ép rollback qua.

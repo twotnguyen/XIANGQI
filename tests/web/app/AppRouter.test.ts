@@ -19,6 +19,15 @@ import {
 } from "@xiangqi/xiangqi-core";
 const mock = vi.hoisted(() => ({
   state: { status: "anonymous" } as Record<string, unknown>,
+  emailStatus: {
+    status: "ready",
+    email: "kythu@example.invalid",
+    emailVerified: true,
+    pendingEmail: null,
+    expiresAt: null,
+    resendAt: null,
+  } as Record<string, unknown>,
+  reloadEmailStatus: vi.fn(),
   accept: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),

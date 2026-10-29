@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { createElement } from "react";
+import { createElement, StrictMode } from "react";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
@@ -280,4 +280,16 @@ it("shows AI difficulty and interrupted exclusion, handles unmount before comple
   );
   view2.unmount();
   late.resolve(page());
+});
+it("loads history only once through StrictMode mount cleanup", async () => {
+  const client = { list: vi.fn().mockResolvedValue(page()) };
+  render(
+    createElement(
+      StrictMode,
+      null,
+      createElement(HistoryPage, { client, onReplay: vi.fn() }),
+    ),
+  );
+  await screen.findByText("Khách");
+  expect(client.list).toHaveBeenCalledTimes(1);
 });

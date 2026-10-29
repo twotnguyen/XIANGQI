@@ -17,6 +17,8 @@ const GUEST_CAPABILITY = "guest-capability-synthetic-0123456789abcdefghijk";
 
 const mock = vi.hoisted(() => ({
   state: { status: "anonymous" } as Record<string, unknown>,
+  emailStatus: { status: "idle" } as Record<string, unknown>,
+  reloadEmailStatus: vi.fn(),
   accept: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),
