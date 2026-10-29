@@ -241,4 +241,26 @@ describe("profile page", () => {
     );
     expect(screen.queryByRole("radio", { name: "Giấy Sáng" })).toBeNull();
   });
+  it("offers password change to members and hides it from guests", async () => {
+    const { unmount } = render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByText("kythu");
+    expect(screen.getByRole("button", { name: "Đổi mật khẩu" })).toBeTruthy();
+    unmount();
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: true,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    expect(screen.queryByRole("button", { name: "Đổi mật khẩu" })).toBeNull();
+  });
 });

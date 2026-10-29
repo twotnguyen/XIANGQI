@@ -13,6 +13,7 @@ import {
   type ProfileLocation,
   type ProfileView,
 } from "./profile-client.js";
+import { PasswordChangeForm } from "./PasswordChangeForm.js";
 import { THEME_OPTIONS } from "../../shared/theme/theme.js";
 import { useTheme } from "../../shared/theme/useTheme.js";
 import "./profile.css";
@@ -27,6 +28,11 @@ const SETTINGS_SECTIONS = [
     id: "appearance",
     label: "Giao diện",
     icon: "M4 3h16v13H4zM8 21h8M12 16v5",
+  },
+  {
+    id: "password",
+    label: "Đổi mật khẩu",
+    icon: "M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z",
   },
   {
     id: "session",
@@ -344,6 +350,18 @@ export function ProfilePage({
                   Chủ đề được áp dụng ngay và ghi nhớ trên trình duyệt này.
                   Không cần bấm lưu.
                 </p>
+              </section>
+              <section
+                id="xq-settings-password"
+                aria-labelledby="xq-password-title"
+                className="xq-profile-card"
+                hidden={activeSection !== "password"}
+              >
+                <header className="xq-profile-section-heading">
+                  <h2 id="xq-password-title">Đổi mật khẩu</h2>
+                  <p>Phiên hiện tại vẫn đăng nhập; các thiết bị khác sẽ bị đăng xuất.</p>
+                </header>
+                <PasswordChangeForm client={client} />
               </section>
             </>
           )}

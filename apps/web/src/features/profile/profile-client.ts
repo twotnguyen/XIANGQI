@@ -114,6 +114,11 @@ export function createProfileClient(authorizedFetch: AuthorizedFetch) {
     resendEmail: () => request("/account/email/resend", accepted, {}),
     verifyEmail: (otp: string) =>
       request("/account/email/verify", accepted, { otp }),
+    changePassword: (body: {
+      currentPassword: string;
+      newPassword: string;
+      passwordConfirmation: string;
+    }) => request("/account/password/change", accepted, body),
   };
 }
 export type ProfileClient = ReturnType<typeof createProfileClient>;

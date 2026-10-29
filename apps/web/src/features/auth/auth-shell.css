@@ -328,6 +328,10 @@ body:has(.auth-shell) {
 
 /* Cánh phải: giấy da và biểu mẫu */
 .auth-shell .wing-form {
+  --color-ink: #201915;
+  --color-ink-muted: #6e5a4b;
+  --color-surface-sunken: rgba(248, 243, 233, 0.7);
+  --color-border: rgba(175, 140, 95, 0.55);
   background:
     radial-gradient(
       circle at 85% 10%,
@@ -341,6 +345,10 @@ body:has(.auth-shell) {
   flex-direction: column;
   justify-content: center;
   position: relative;
+}
+.auth-shell form:has(.xq-field) {
+  display: grid;
+  gap: var(--space-4);
 }
 .auth-shell .wing-form-spread {
   justify-content: space-between;
@@ -521,11 +529,6 @@ body:has(.auth-shell) {
 }
 .auth-shell .link-forgot:hover {
   text-decoration: underline;
-}
-.auth-shell .link-forgot[aria-disabled="true"] {
-  color: #8c7b6e;
-  cursor: not-allowed;
-  text-decoration: none;
 }
 .auth-shell .session-note {
   font-size: 12px;
