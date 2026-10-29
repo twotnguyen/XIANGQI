@@ -1,6 +1,6 @@
 import type { Position, Side } from "./position.js";
 import { serializePosition } from "./position.js";
-import { isInCheck, legalMoves } from "./moves.js";
+import { hasLegalMove, isInCheck } from "./moves.js";
 
 export interface MatchEnding {
   reason:
@@ -33,7 +33,7 @@ export function ending(history: readonly Position[]): MatchEnding | null {
   const current = history.at(-1);
   if (!current) return null;
 
-  if (legalMoves(current).length === 0) {
+  if (!hasLegalMove(current)) {
     return {
       reason: isInCheck(current, current.turn) ? "CHECKMATE" : "STALEMATE",
       winner: opposite(current.turn),
