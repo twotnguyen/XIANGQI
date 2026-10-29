@@ -69,7 +69,7 @@ export class RoomStore extends RoomViewerStore {
     if (limits.guestRoom)
       throw new RoomError(
         "GUEST_ROOM_LIMIT",
-        "Khách chỉ được tạo một phòng đang mở",
+        "Khách chỉ được mở 1 phòng cùng lúc",
       );
     const id = randomUUID();
     let code = "";

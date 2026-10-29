@@ -21,6 +21,7 @@ import {
   clearGoogleCookies,
   writeGoogleMemberCookies,
 } from "./http-cookies.js";
+import { deviceToken } from "../login/device.js";
 export type GoogleHttpService = Pick<
   GoogleService,
   "beginChallenge" | "authenticate" | "onboarding" | "complete"
@@ -68,6 +69,7 @@ function publicMember(
     userId: result.userId,
     username: result.username,
     remember: result.remember,
+    ...(result.displaced === true ? { displaced: true } : {}),
   };
 }
 /**
@@ -134,11 +136,13 @@ export class GoogleController {
   ) {
     return this.respond(async () => {
       const input = object(body),
-        capability = cookie(request, "xiangqi_google_challenge");
+        capability = cookie(request, "xiangqi_google_challenge"),
+        device = deviceToken(request.headers.cookie);
       const result = await this.config.service.authenticate(
         input.credential,
         capability,
         input.remember === undefined ? true : (input.remember as boolean),
+        device.token,
       );
       if (result.kind === "pending") {
         writeGoogleCookie(
@@ -164,7 +168,7 @@ export class GoogleController {
       }
       writeGoogleMemberCookies(
         response,
-        result,
+        { ...result, deviceToken: device.fresh ? device.token : undefined },
         this.config.secure,
         this.config.now(),
       );
@@ -204,7 +208,8 @@ export class GoogleController {
     return this.respond(async () => {
       const input = object(body),
         capability = cookie(request, "xiangqi_google_onboarding"),
-        refresh = cookie(request, "xiangqi_google_refresh");
+        refresh = cookie(request, "xiangqi_google_refresh"),
+        device = deviceToken(request.headers.cookie);
       const pending = await this.config.service.onboarding(capability);
       let proof: Session;
       try {
@@ -222,13 +227,15 @@ export class GoogleController {
         this.config.secure,
         this.config.now(),
       );
-      const member = await this.config.service.complete(capability, proof, {
-        username: input.username,
-        password: input.password,
-      });
+      const member = await this.config.service.complete(
+        capability,
+        proof,
+        { username: input.username, password: input.password },
+        device.token,
+      );
       writeGoogleMemberCookies(
         response,
-        member,
+        { ...member, deviceToken: device.fresh ? device.token : undefined },
         this.config.secure,
         this.config.now(),
       );

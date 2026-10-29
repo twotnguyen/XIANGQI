@@ -164,3 +164,98 @@ contract đệm 2,15 giây, chạy riêng ca đo thời gian đạt: median tên
 2.155 ms, tên không tồn tại 2.156 ms. ESLint, server typecheck/build và Prettier
 đạt. Hai ca biên bổ sung kiểm hành vi đã có trong production; không có thay đổi
 module production trong phạm vi test này.
+
+## Đổi và khôi phục mật khẩu — YC1 P1
+
+Migration `20261030000001_password_recovery.sql` thêm challenge khôi phục và
+`app_sessions.password_change_hash`; phải áp dụng sau migration email tùy chọn.
+Rollback chỉ xóa các bằng chứng thao tác này, không đổi credentials hoặc danh tính.
+
+| Endpoint | Bằng chứng / dữ liệu | Kết quả |
+|---|---|---|
+| `POST /account/password/change` | Bearer + appSession; `currentPassword`, `newPassword`, `passwordConfirmation` | Kiểm mật khẩu cũ, đổi cùng user_id, thu hồi phiên khác; giữ capability và hạn của phiên thực hiện, thay refresh cookie |
+| `POST /auth/password/recovery` | `username` | Tra email liên hệ đã xác minh; gửi OTP, trả `requestId`, `expiresAt`, `resendAt`, không trả email |
+| `POST /auth/password/recovery/resend` | `requestId` | Gửi lại sau 60 giây, vô hiệu mã/quyền reset trước |
+| `POST /auth/password/recovery/verify` | `requestId`, `otp` | Mã đúng cấp `resetToken` chỉ dùng đặt mật khẩu; không cấp phiên ứng dụng |
+| `POST /auth/password/recovery/reset` | `requestId`, `resetToken`, `newPassword`, `passwordConfirmation` | Tiêu thụ quyền một lần, thu hồi phiên cũ, đổi mật khẩu, xóa cookie; về Login |
+
+Username không tồn tại, thiếu email hoặc email chỉ pending cùng trả
+`PASSWORD_RECOVERY_UNAVAILABLE`. Không cho client chọn email hoặc user_id.
+Mật khẩu tối thiểu 8 ký tự, không trim; sai mật khẩu cũ không thu hồi phiên.
+Khóa thử sai đăng nhập không bị xóa bởi đổi/reset mật khẩu hoặc Google.
+
+Recovery dùng SMTP đã cấu hình để gửi đến contact email, không gửi tới credential
+kỹ thuật. OTP 6 số có hạn 180 giây; HMAC ràng buộc purpose/user/request/email/sent_at,
+giới hạn 5 lần sai lưu trong SQL. Request/reset capability ngẫu nhiên 256 bit chỉ
+lưu SHA-256; bảng FORCE RLS, chỉ app_server có quyền. Trình duyệt giữ ngữ cảnh
+recovery trong bộ nhớ, không URL/storage; reload phải yêu cầu mã mới.
+
+`PasswordStore.withUser` tuần tự hóa bằng khóa password rồi khóa username giống
+đăng nhập. Auth HTTP không giữ transaction/khóa actor; transaction ngắn kiểm lại
+phiên và trạng thái trước ghi. SMTP chạy ngoài cả khóa password/username/actor.
+Lỗi SMTP chỉ bỏ challenge còn khớp hash, giữ cooldown.
+
+Auth và Postgres không có transaction chung. Khi Auth báo lỗi ghi không rõ kết
+quả, service đối soát bằng password grant với mật khẩu mới. Đổi từ Hồ sơ lưu HMAC
+của đúng thao tác đã xác thực trên phiên hiện tại: nếu ghi credentials thành công
+nhưng cấp token lỗi, gửi lại đúng ba trường được tiếp tục, không dùng mật khẩu cũ
+đã hết hiệu lực làm điều kiện mới. Không lưu mật khẩu thô, không kéo dài hạn; xóa
+checkpoint khi cấp token và kiểm phiên cuối thành công. Phiên hết hạn/thu hồi vẫn
+bị từ chối. Reset tiêu thụ quyền và thu hồi phiên trước remote write; nếu không
+đối soát được thì báo lỗi, phải xin OTP mới, không để grant cũ dùng lại.
+
+Kiểm chứng local dùng Nest/PostgreSQL thật và adapter SupabaseAuth qua Auth HTTP
+fixture. Trình duyệt 360 px đã chạy recovery → OTP → reset → Login và đổi mật khẩu
+Hồ sơ → reload vẫn là cùng thành viên; sai mật khẩu/xác nhận lệch không thành công.
+Đây chưa phải bằng chứng Google OAuth, GoTrue hoặc thư đến hộp thư SMTP thật.
+
+## Vòng đời phiên, thiết bị và đăng xuất (YC1)
+
+- Thiết bị là cookie `xiangqi_device`: token opaque 32 byte base64url, HttpOnly,
+  Max-Age 400 ngày. Server chỉ lưu `app_sessions.device_hash` (SHA-256 của token),
+  không lưu fingerprint. Cookie không cấp quyền đăng nhập và được giữ sau logout để nhận diện trình duyệt.
+- `POST /auth/login` đọc hoặc cấp cookie thiết bị, gọi Auth trước, sau đó trong
+  username lock gọi `SessionService.issue(userId, remember, store, deviceToken)`.
+- Thiết bị khác phiên gần nhất: `issue` chuẩn bị phiên thay thế rồi gọi
+  `SessionSeatPort.endSeats` dưới username lock. Cùng transaction phòng xử lý
+  RESIGN/rời ghế, thu hồi phiên cũ và INSERT phiên mới; lỗi INSERT rollback cả ván,
+  ghế và thu hồi phiên. Phòng chờ rời ghế nhưng không ghi kết quả thua.
+- `POST /auth/logout` nhận body `{ confirm?: boolean }`. Khi đang PLAYING và chưa có
+  `confirm: true`, server trả 409 `LOGOUT_CONFIRM_REQUIRED` và không thu hồi phiên.
+  Khi có xác nhận, port xử lý ghế và thu hồi phiên trong cùng lock.
+- `RoomSessionSeats` (`apps/server/src/game/room/session-seat-port.ts`) chạy qua
+  `RoomTransactions.withRoom` với actor là user; SQL nằm ở `session-seat-store.ts`.
+  Logout gửi `sessionHash`: phiên phải còn hiệu lực dưới actor lock, nếu không trả
+  401 `SESSION_EXPIRED`. Được gắn bằng `sessions.attachSeats` trong `game.runtime.ts`;
+  không gắn port thì logout chỉ thu hồi phiên.
+- Ván AI kết thúc qua `AiSessionTermination`: actor vẫn là member, không scrub PII.
+  Lấy snapshot RESIGN dưới actor lock và owner gate, ghi kết quả qua `AiHistoryStore`
+  trong cùng transaction, giải phóng reservation. Chỉ sau COMMIT mới hủy job/drop
+  RAM; rollback giữ nguyên ván. Nhánh Khách vẫn không ghi lịch sử.
+- `displaced: true` chỉ khi có ghế PLAYER/AI thực sự bị kết thúc, không phải mọi
+  thay đổi thiết bị. Login và Google trả cờ này; frontend bỏ đích lời mời, về Sảnh.
+  Không giữ ghế thì lời mời đang chờ vẫn được tiếp tục.
+- Đăng ký/Google/login cùng đọc/cấp cookie thiết bị. Google cấp phiên dưới cùng
+  username lock nhưng không xóa bộ đếm thử sai. Lookup thiết bị ưu tiên phiên chưa
+  thu hồi để hai lần login cùng timestamp không chọn nhầm thiết bị cũ.
+- Frontend hỏi xác nhận khi biết đang đấu; nếu vị trí cũ, HTTP 409
+  `LOGOUT_CONFIRM_REQUIRED` mở xác nhận từ server và giữ phiên. Xác nhận một ván AI
+  cũ không được dùng làm đồng ý đầu hàng ván online khác.
+
+Kiểm chứng local: `tests/server/game/account-session.test.ts` chạy native Nest,
+Socket.IO, room/AI runtime và PostgreSQL thật. Các ca online/AI kiểm kết quả RESIGN,
+thu hồi socket/API, cùng thiết bị tiếp tục trong ân hạn (online 60 giây, AI 30 phút),
+đổi mật khẩu khi đang chơi giữ ván/hạn, recovery chỉ gây mất kết nối và giữ grace.
+Trigger lỗi INSERT phiên thay thế kiểm rollback cả online và AI/RAM. Bộ
+`room/session-seat.test.ts` kiểm WAITING không ghi thua và recheck hết hạn/tài khoản
+dưới khóa. Ranh giới provider của các fixture này là synthetic, không Google thật.
+
+Smoke ngoài vitest đã chạy Nest + PostgreSQL + SupabaseAuth HTTP fixture +
+Socket.IO: tạo phòng 200 → login thiết bị mới 200/displaced → API cũ 401, API mới
+200 → socket cũ bị đóng → phòng chờ cũ CLOSED → logout 200 → API mới 401.
+Socket cũ mất quyền lệnh ngay qua DB; đóng transport idle được phát hiện ở nhịp
+kiểm phiên production 10 giây (test 1 giây), không phải cam kết đóng TCP tức thì.
+
+Vị trí Hồ sơ/Sảnh đọc reservation AI đang giữ (không chờ ván có bản ghi history);
+trả `playing-ai` với roomId null để banner dẫn đúng `/ai/:id` và chặn tạo vị trí
+chơi thứ hai. Membership chỉ xem không bị coi là ghế đang chơi.

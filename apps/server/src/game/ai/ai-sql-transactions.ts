@@ -13,6 +13,7 @@ import {
 } from "../room/room-transactions.js";
 import type { AiHistoryStore } from "./ai-history-store.js";
 import type { AiReservations } from "./ai-reservations.js";
+import type { AiSnapshot } from "./ai-games.js";
 import type {
   AiCommit,
   AiOrigin,
@@ -330,20 +331,21 @@ export class SqlAiTransactions implements AiTransactions {
     }
   }
   /**
-   * Chuẩn bị kết thúc ván AI của khách trong scope đã khóa: chỉ giải phóng ghế SQL và giữ owner gate
+   * Kết thúc ván trong scope đã khóa: thành viên ghi kết quả, Khách chỉ giải phóng ghế; giữ owner gate
    * đến khi commit/rollback. RAM do lớp transport drop sau COMMIT; không tạo transaction lồng nhau.
    */
-  async prepareGuestTermination(
+  async prepareTermination(
     scope: RoomScope,
-    input: { guestId: string; aiGameId: string; reason: "expiry" | "logout" },
+    input: { ownerId: string; aiGameId: string; reason: "expiry" | "logout" },
+    snapshot: () => AiSnapshot,
   ): Promise<GuestCommitEffect> {
     if (
-      scope.actor.kind !== "guest" ||
-      scope.actor.userId !== input.guestId ||
-      !scope.lockedActorIds.has(input.guestId)
+      (scope.actor.kind !== "guest" && scope.actor.kind !== "member") ||
+      scope.actor.userId !== input.ownerId ||
+      !scope.lockedActorIds.has(input.ownerId)
     )
       denied("AI_FORBIDDEN", 403);
-    const unlock = await this.gate(input.guestId);
+    const unlock = await this.gate(input.ownerId);
     let open = true;
     const settle = () => {
       if (open) {
@@ -352,10 +354,17 @@ export class SqlAiTransactions implements AiTransactions {
       }
     };
     try {
-      await this.options.reservations.release(scope, {
-        gameId: input.aiGameId,
-        bootId: this.options.bootId,
-      });
+      if (scope.actor.kind === "member")
+        await this.options.history.finish(
+          scope,
+          snapshot(),
+          this.options.bootId,
+        );
+      else
+        await this.options.reservations.release(scope, {
+          gameId: input.aiGameId,
+          bootId: this.options.bootId,
+        });
     } catch (error) {
       settle();
       throw error;

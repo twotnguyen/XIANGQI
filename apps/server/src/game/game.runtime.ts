@@ -1,6 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { maskForbiddenChat } from "@xiangqi/shared";
+import { RoomSessionSeats } from "./room/session-seat-port.js";
+import { SessionSeatStore } from "./room/session-seat-store.js";
 import { ChatStore } from "./chat/chat-store.js";
 import { ChatRealtimeService } from "./chat/chat-realtime.js";
 import { ChatOutboxWorker } from "./chat/chat-worker.js";
@@ -13,16 +15,14 @@ import {
   dueDisconnectMatches,
 } from "./match/disconnect-worker.js";
 import { PostgresClockWorkerPort } from "./clock/postgres-clock-port.js";
-import { MatchStore } from "./match/match-store.js";
 import { DrawWorker, dueDrawOffers } from "./match/draw-worker.js";
 import {
   RoomError,
   type RoomScope,
   type RoomActor,
 } from "./room/room.types.js";
-import { RoomTransactions } from "./room/room-transactions.js";
+import { createRoomWiring } from "./room/room-wiring.js";
 import { PostgresMemberRoomAuthorizer } from "./room/member-room-auth.js";
-import { RoomStore } from "./room/room-store.js";
 import { RoomHttpService } from "./room/room-http.service.js";
 import { GuestService } from "../account/guest/guest.service.js";
 import { GuestStore } from "../account/guest/guest.store.js";
@@ -33,7 +33,7 @@ import {
 } from "./room/guest-room-auth.js";
 import {
   RoomGuestPort,
-  type GuestAiTermination,
+  type AiSessionTermination,
 } from "./room/guest-room-port.js";
 import { RoomSessionAuthorizer } from "./room/room-session.js";
 import { PublicRoomModule } from "./room/public/public-room.module.js";
@@ -179,67 +179,17 @@ async function bootRoomRuntime(
   } catch {
     throw new Error("Room migration is not ready");
   }
-  const coordinator = new RoomTransactions(pool),
-    clock = new ClockService(),
+  const clock = new ClockService(),
     instance = randomUUID();
-  const context = new WeakMap<PoolClient, RoomScope>();
-  const withScope = async <T>(scope: RoomScope, work: () => Promise<T>) => {
-    if (context.has(scope.client))
-      throw new RoomError(
-        "ROOM_AUTH_PROOF_INVALID",
-        "Giao dịch phòng chưa sẵn sàng",
-        503,
-      );
-    context.set(scope.client, scope);
-    try {
-      return await work();
-    } finally {
-      context.delete(scope.client);
-    }
-  };
-  const getScope = (client: PoolClient, actor: RoomActor, roomId: string) => {
-    const scope = context.get(client);
-    if (
-      !scope ||
-      scope.client !== client ||
-      scope.actor.userId !== actor.userId ||
-      scope.actor.kind !== actor.kind ||
-      !scope.lockedActorIds.has(actor.userId) ||
-      !scope.lockedRoomIds.has(roomId)
-    )
-      throw new RoomError(
-        "ROOM_AUTH_PROOF_INVALID",
-        "Giao dịch phòng chưa sẵn sàng",
-        503,
-      );
-    return scope;
-  };
-  const rooms = new RoomStore({
-    start: (client, input) => matches.start(client, input),
-    leave: async (client, input) => {
-      const scope = getScope(client, input.actor, input.roomId);
-      const match = await matches.snapshot(client, input.roomId, input.matchId);
-      await matches.resign(
-        { ...scope, roomId: input.roomId, canControl: true },
-        { matchId: input.matchId, matchVersion: match.version },
-      );
-    },
-  });
-  const matches = new MatchStore(clock, {
-    onMatchEnded: async (client, input) => {
-      const scope = context.get(client);
-      if (!scope)
-        throw new RoomError(
-          "ROOM_AUTH_PROOF_INVALID",
-          "Giao dịch phòng chưa sẵn sàng",
-          503,
-        );
-      await rooms.onMatchEnded(
-        getScope(client, scope.actor, input.roomId),
-        input,
-      );
-    },
-  });
+  const { coordinator, context, withScope, getScope, rooms, matches } =
+    createRoomWiring(pool, clock);
+  const sessionSeats = new RoomSessionSeats(
+    coordinator,
+    rooms,
+    new SessionSeatStore(),
+    withScope,
+  );
+  sessions.attachSeats(sessionSeats);
   const authorizer = new PostgresMemberRoomAuthorizer(sessions);
   const guestPort = new RoomGuestPort(
     (client, guestId, roomId) =>
@@ -619,8 +569,9 @@ async function bootRoomRuntime(
     guests,
     authorizer: sessionAuthorizer,
     withScope,
-    attachGuestAi(port: GuestAiTermination) {
+    attachAiTermination(port: AiSessionTermination) {
       guestPort.attachAiTermination(port);
+      sessionSeats.attachAiTermination(port);
     },
     get ownershipPool(): Pool {
       return pool;

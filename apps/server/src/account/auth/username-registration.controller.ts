@@ -7,10 +7,12 @@ import {
   Inject,
   Optional,
   Post,
+  Req,
   Res,
 } from "@nestjs/common";
-import type { ServerResponse } from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { writeSessionCookies } from "../session/cookies.js";
+import { deviceToken } from "../login/device.js";
 import { RegistrationError } from "./registration.types.js";
 import { UsernameRegistrationService } from "./username-registration.service.js";
 
@@ -27,13 +29,19 @@ export class UsernameRegistrationController {
   @Header("Cache-Control", "no-store")
   async skip(
     @Body() body: unknown,
+    @Req() request: IncomingMessage,
     @Res({ passthrough: true }) response: ServerResponse,
   ) {
     try {
-      const session = await this.registration.register(body);
+      const device = deviceToken(request.headers.cookie);
+      const session = await this.registration.register(body, device.token);
       writeSessionCookies(
         response,
-        { ...session, remember: true },
+        {
+          ...session,
+          remember: true,
+          deviceToken: device.fresh ? device.token : undefined,
+        },
         this.secure,
       );
       return session;

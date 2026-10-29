@@ -45,6 +45,7 @@ export async function reset() {
     "20261011000006_rooms",
     "20261011000007_match_outcomes",
     "20261017000018_room_code_digits",
+    "20261031000001_session_devices",
   ])
     await apply(`supabase/migrations/${file}.sql`);
 }

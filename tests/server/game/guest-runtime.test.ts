@@ -190,6 +190,42 @@ describe.skipIf(!databaseUrl)("guest runtime acceptance", () => {
     }
   });
 
+  it("keeps an expired Guest host in its initial WAITING room until leaving the seat", async () => {
+    const guest = await createGuest(boot!, "Khách phòng chờ");
+    const created = await guestCall(boot!, guest.cap, "POST", "/rooms", {
+      commandId: randomUUID(),
+      timeMinutes: 5,
+    });
+    expect(created.status).toBe(200);
+    const roomId = (await created.json()).roomId;
+    await expireGuest(guest.userId);
+    const current = await guestCall(
+      boot!,
+      guest.cap,
+      "GET",
+      `/rooms/${roomId}`,
+    );
+    expect(current.status).toBe(200);
+    expect(
+      (
+        await fetch(boot!.base + "/account/guest/session", {
+          headers: { Cookie: "xiangqi_guest=" + guest.cap },
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await guestCall(boot!, guest.cap, "POST", "/rooms", {
+          commandId: randomUUID(),
+          timeMinutes: 5,
+        })
+      ).status,
+    ).toBe(403);
+    expect((await logout(boot!, guest.cap, false)).status).toBe(200);
+    expect(await sessionCount(guest.userId)).toBe(0);
+    expect(await seatOf(roomId, guest.userId)).toBeUndefined();
+  });
+
   it("allows one open guest room and rejects a second room and a second seat", async () => {
     const seated = await playingPair(boot!, "Khách Ba");
     try {
@@ -369,7 +405,7 @@ describe.skipIf(!databaseUrl)("guest runtime acceptance", () => {
     expect(await privateNameLeaks(guest.name)).toBe(0);
   });
 
-  it("does not keep a deferred expired guest seated in a WAITING room after its match finished", async () => {
+  it("keeps a deferred expired Guest seated after the room returns to WAITING and ends the session only on leaving", async () => {
     const seated = await playingPair(boot!, "Khách Tám");
     try {
       await expireGuest(seated.guest.userId);
@@ -397,7 +433,11 @@ describe.skipIf(!databaseUrl)("guest runtime acceptance", () => {
         "GET",
         `/rooms/${seated.roomId}`,
       );
-      expect(access.status).toBe(401);
+      expect(access.status).toBe(200);
+      expect(await seatOf(seated.roomId, seated.guest.userId)).toBeDefined();
+      expect(await sessionCount(seated.guest.userId)).toBe(1);
+      const loggedOut = await logout(boot!, seated.guest.cap, false);
+      expect(loggedOut.status).toBe(200);
       expect(await seatOf(seated.roomId, seated.guest.userId)).toBeUndefined();
       expect(await sessionCount(seated.guest.userId)).toBe(0);
       expect(await privateNameLeaks(seated.guest.name)).toBe(0);

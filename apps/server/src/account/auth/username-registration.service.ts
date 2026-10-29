@@ -23,11 +23,12 @@ export class UsernameRegistrationService {
     },
     private readonly issueSession: (
       userId: string,
+      deviceToken: string | null,
     ) => Promise<{ appSession: string; expiresAt: string }>,
     private readonly now = () => new Date(),
   ) {}
 
-  async register(input: unknown) {
+  async register(input: unknown, deviceToken: string | null = null) {
     const credentials = validateCredentials(input);
     const supplied = (input as Record<string, unknown>).registrationToken;
     let draftHash: string | null = null;
@@ -119,7 +120,7 @@ export class UsernameRegistrationService {
           "Dịch vụ xác thực chưa thể xử lý yêu cầu",
           503,
         );
-      const session = await this.issueSession(userId);
+      const session = await this.issueSession(userId, deviceToken);
       await store.removeIntent(email);
       return {
         access_token: provider.access_token,

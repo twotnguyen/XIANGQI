@@ -8,15 +8,13 @@ import {
   createLoginPool,
   PostgresLoginStore,
 } from "@server/account/login/postgres-login-store.js";
-import { RoomStore } from "@server/game/room/room-store.js";
-import { RoomTransactions } from "@server/game/room/room-transactions.js";
+import { createRoomWiring } from "@server/game/room/room-wiring.js";
 import { RoomHttpService } from "@server/game/room/room-http.service.js";
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomSessionAuthorizer } from "@server/game/room/room-session.js";
 import { GuestRoomAuthorizer } from "@server/game/room/guest-room-auth.js";
 import { GuestService } from "@server/account/guest/guest.service.js";
 import { GuestStore } from "@server/account/guest/guest.store.js";
-import { MatchStore } from "@server/game/match/match-store.js";
 import { ClockService } from "@server/game/clock/clock.service.js";
 export const databaseUrl = process.env.ROOM_RUNTIME_TEST_DATABASE_URL;
 if (databaseUrl) {
@@ -59,9 +57,14 @@ function registration() {
     context: { pool, sessions, auth } as unknown as Registration,
   };
 }
-async function member(r: ReturnType<typeof registration>) {
+async function member(
+  r: ReturnType<typeof registration>,
+  usernameOnly = false,
+) {
   const id = randomUUID(),
-    email = `synthetic-${id}@example.invalid`,
+    email = usernameOnly
+      ? `${id}@username.xiangqi.invalid`
+      : `synthetic-${id}@example.invalid`,
     at = new Date();
   await pool.query(
     "INSERT INTO auth.users(id,email,email_confirmed_at) VALUES($1,$2,$3)",
@@ -89,11 +92,16 @@ async function waitFor<T>(
   }
   throw new Error("Synthetic runtime wait timed out");
 }
-async function oldRoom(r: ReturnType<typeof registration>, playing = false) {
-  const a = await member(r),
+async function oldRoom(
+  r: ReturnType<typeof registration>,
+  playing = false,
+  usernameOnly = false,
+) {
+  const a = await member(r, usernameOnly),
     b = await member(r),
-    rooms = new RoomStore(),
-    coordinator = new RoomTransactions(pool),
+    wiring = createRoomWiring(pool, new ClockService()),
+    rooms = wiring.rooms,
+    coordinator = wiring.coordinator,
     authorizer = new RoomSessionAuthorizer(
       new PostgresMemberRoomAuthorizer(r.sessions),
       new GuestRoomAuthorizer(new GuestService(new GuestStore(pool)), pool),
@@ -141,7 +149,7 @@ async function oldRoom(r: ReturnType<typeof registration>, playing = false) {
         [entry.roomId, token, at, a.id, b.id],
       );
       if (playing) {
-        const match = new MatchStore(new ClockService(), undefined as never),
+        const match = wiring.matches,
           created = await match.start(scope.client, {
             roomId: entry.roomId,
             startToken: token,
@@ -177,7 +185,7 @@ export async function apply(file: string) {
 export async function reset() {
   if (!databaseUrl) throw new Error("Dedicated test URL required");
   await pool.query(
-    "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
+    "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
   );
   await apply("tests/server/fixtures/managed-auth.test-fixture.sql");
   await pool.query(
@@ -193,6 +201,7 @@ export async function reset() {
     "20261011000006_rooms",
     "20261011000007_match_outcomes",
     "20261017000018_room_code_digits",
+    "20261031000001_session_devices",
   ])
     await apply(`supabase/migrations/${file}.sql`);
 }

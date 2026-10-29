@@ -4,7 +4,7 @@ import type { Pool } from "pg";
 import type { Socket } from "socket.io";
 import type { SessionService } from "../../account/login/session.service.js";
 import type { GuestService } from "../../account/guest/guest.service.js";
-import type { GuestAiTermination } from "../room/guest-room-port.js";
+import type { AiSessionTermination } from "../room/guest-room-port.js";
 import type {
   RoomRequestProof,
   RoomSessionAuthorizer,
@@ -98,8 +98,8 @@ export interface AiRuntimeOptions {
 export interface AiRuntime {
   /** Nest module carrying the AI HTTP controller; import it after registration. */
   module: DynamicModule;
-  /** Guest AI commit hook; the parent registers it through rooms.attachGuestAi. */
-  guestTermination: GuestAiTermination;
+  /** Session termination commit hook; root attaches it to room/session lifecycle. */
+  sessionTermination: AiSessionTermination;
   /** Attach the AI socket namespace to the HTTP server; call after createApp and before listen. */
   attach(server: HttpServer): void;
   /** Begin lease heartbeats; call after the server is listening. */
@@ -167,13 +167,15 @@ export async function createAiRuntime(
     bootId,
     control,
   });
-  const guestTermination: GuestAiTermination = {
+  const sessionTermination: AiSessionTermination = {
     async terminate(scope, input) {
-      const effect = await transactions.prepareGuestTermination(scope, input);
+      const effect = await transactions.prepareTermination(scope, input, () =>
+        games.terminationSnapshot(input.ownerId, input.aiGameId),
+      );
       return {
         commit() {
           try {
-            games.drop(input.guestId, input.aiGameId);
+            games.drop(input.ownerId, input.aiGameId);
           } finally {
             effect.commit();
           }
@@ -442,7 +444,7 @@ export async function createAiRuntime(
 
   return {
     module: AiModule.forRoot(http),
-    guestTermination,
+    sessionTermination,
     attach(server) {
       if (closing) throw new Error("AI runtime is closed");
       if (gateway) throw new Error("AI socket gateway already attached");

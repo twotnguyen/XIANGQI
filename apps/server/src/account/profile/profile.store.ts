@@ -8,7 +8,7 @@ export interface ProfileRow {
   email: string | null;
 }
 export interface LocationRow {
-  roomId: string;
+  roomId: string | null;
   status: string;
   currentMatchId: string | null;
   mode: string | null;
@@ -71,11 +71,15 @@ export class ProfileStore {
     return transaction(this.pool, async (client) => {
       const row = (
         await client.query(
-          `SELECT r.id AS room_id,r.status,r.current_match_id,m.mode
+          `SELECT NULL::uuid AS room_id,'PLAYING' AS status,
+             (to_jsonb(a)->>'ai_game_id')::uuid AS current_match_id,'AI' AS mode
+           FROM public.active_players a WHERE a.user_id=$1 AND to_jsonb(a)->>'ai_game_id' IS NOT NULL
+           UNION ALL
+           SELECT r.id AS room_id,r.status,r.current_match_id,m.mode
            FROM public.room_members rm JOIN public.rooms r ON r.id=rm.room_id
            LEFT JOIN public.matches m ON m.id=r.current_match_id
-           WHERE rm.user_id=$1 AND r.closed_at IS NULL
-           ORDER BY rm.joined_at DESC LIMIT 1`,
+           WHERE rm.user_id=$1 AND rm.role='PLAYER' AND r.closed_at IS NULL
+           LIMIT 1`,
           [userId],
         )
       ).rows[0];

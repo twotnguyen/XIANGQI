@@ -67,7 +67,6 @@ export async function setupPasswords(): Promise<PasswordFixture> {
   await reset();
   await apply("supabase/migrations/20261029000001_username_account_email.sql");
   await apply("supabase/migrations/20261030000001_password_recovery.sql");
-  await apply("supabase/migrations/20261031000001_session_devices.sql");
   let time = Date.now();
   const now = () => new Date(time);
   const provider = await startAuthFixture(pool, now);

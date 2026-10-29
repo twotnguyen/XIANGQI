@@ -119,6 +119,16 @@ describe.skipIf(!databaseUrl)("profile service over store", () => {
       roomId,
       matchId,
     });
+    const viewer = await member("profileviewer");
+    await pool.query(
+      "INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'SPECTATOR',NULL)",
+      [roomId, viewer],
+    );
+    expect(await service.location(viewer)).toEqual({
+      kind: "none",
+      roomId: null,
+      matchId: null,
+    });
   });
 });
 

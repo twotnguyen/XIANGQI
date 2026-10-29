@@ -156,11 +156,23 @@ export class SessionController {
   @HttpCode(200)
   @UseGuards(SessionGuard)
   logout(
+    @Body() body: unknown,
     @Req() request: AuthenticatedRequest,
     @Res({ passthrough: true }) response: ServerResponse,
   ) {
     return this.respond(async () => {
-      await this.sessions.revoke(this.capability(request));
+      const session = request.session;
+      if (!session)
+        throw new LoginError(
+          "SESSION_INVALID",
+          "Phiên đăng nhập không hợp lệ",
+          401,
+        );
+      const confirmed =
+        typeof body === "object" && body !== null && "confirm" in body
+          ? body.confirm === true
+          : false;
+      await this.sessions.logout(this.capability(request), session, confirmed);
       clearSessionCookies(response, this.secure);
       return { loggedOut: true };
     });

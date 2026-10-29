@@ -296,6 +296,19 @@ export class AiGames {
     if (this.active.get(owner) === id) this.active.delete(owner);
     if (this.terminals.get(owner)?.id === id) this.terminals.delete(owner);
   }
+
+  /** Caller holds the SQL actor lock and owner gate; RAM stays unchanged until the outer commit drops it. */
+  terminationSnapshot(owner: string, id: string): AiSnapshot {
+    const snapshot = this.copy(this.find(owner, id));
+    if (snapshot.status === "ACTIVE")
+      this.finalizing(snapshot, {
+        reason: "RESIGN",
+        winner: snapshot.actualSide === "red" ? "black" : "red",
+      });
+    snapshot.status =
+      snapshot.outcome?.reason === "ENGINE_FAILURE" ? "ABANDONED" : "FINISHED";
+    return snapshot;
+  }
   /**
    * Bỏ các ván kết thúc đã quá ân hạn 30 phút. Ván ACTIVE/FINALIZING không bao giờ bị bỏ ở đây.
    */

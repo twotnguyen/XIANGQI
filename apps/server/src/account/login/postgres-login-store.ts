@@ -121,17 +121,20 @@ export class PostgresLoginStore implements LoginStore {
   /**
    * Lưu bản ghi phiên ứng dụng mới (app session) vào bảng xiangqi_auth.app_sessions.
    */
-  async saveSession(session: AppSession) {
-    await this.query(
-      `INSERT INTO xiangqi_auth.app_sessions(token_hash,user_id,created_at,expires_at,remember) VALUES($1,$2,$3,$4,$5)`,
-      [
-        session.tokenHash,
-        session.userId,
-        session.createdAt,
-        session.expiresAt,
-        session.remember,
-      ],
-    );
+  saveSession(session: AppSession) {
+    return saveAppSession(this.client ?? this.pool, session);
+  }
+  /**
+   * Device hash of the user's newest session, or undefined when the user has never logged in.
+   */
+  async latestDeviceHash(userId: string): Promise<string | null | undefined> {
+    const row = (
+      await this.query(
+        'SELECT device_hash AS "deviceHash" FROM xiangqi_auth.app_sessions WHERE user_id=$1 ORDER BY (revoked_at IS NULL) DESC, created_at DESC, revoked_at DESC NULLS FIRST LIMIT 1',
+        [userId],
+      )
+    ).rows[0] as { deviceHash: string | null } | undefined;
+    return row ? row.deviceHash : undefined;
   }
   /**
    * Truy vấn thông tin phiên làm việc và tài khoản liên kết theo mã băm token.
@@ -163,4 +166,23 @@ export class PostgresLoginStore implements LoginStore {
       [hash, time],
     );
   }
+}
+
+/** Reuse the same atomic session write inside a room lifecycle transaction. */
+export async function saveAppSession(
+  client: Pick<PoolClient, "query">,
+  session: AppSession,
+): Promise<void> {
+  await client.query(
+    `WITH revoked AS (UPDATE xiangqi_auth.app_sessions SET revoked_at=$3 WHERE user_id=$2 AND revoked_at IS NULL)
+     INSERT INTO xiangqi_auth.app_sessions(token_hash,user_id,created_at,expires_at,remember,device_hash) VALUES($1,$2,$3,$4,$5,$6)`,
+    [
+      session.tokenHash,
+      session.userId,
+      session.createdAt,
+      session.expiresAt,
+      session.remember,
+      session.deviceHash,
+    ],
+  );
 }

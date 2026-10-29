@@ -25,7 +25,10 @@ export interface AuthFixture {
 }
 
 // An isolated provider boundary; real HTTP adapter + PostgreSQL remain under test.
-export async function startAuthFixture(pool: Pool, now: () => Date): Promise<AuthFixture> {
+export async function startAuthFixture(
+  pool: Pool,
+  now: () => Date,
+): Promise<AuthFixture> {
   const state = {
     sent: 0,
     refreshRequests: 0,

@@ -22,13 +22,13 @@ export type GuestRoomLeave = (
 ) => Promise<void>;
 
 /**
- * Cổng kết thúc ván AI của khách. Root gắn implementation thật qua attachAiTermination;
- * cho đến khi gắn, khách đang có ván AI bị từ chối (fail closed).
+ * Cổng kết thúc ván AI của chủ phiên (thành viên hoặc Khách); root gắn implementation thật.
+ * Thiếu port phải từ chối, không giả giải phóng ghế là đã kết thúc ván.
  */
-export interface GuestAiTermination {
+export interface AiSessionTermination {
   terminate(
     scope: RoomScope,
-    input: { guestId: string; aiGameId: string; reason: "expiry" | "logout" },
+    input: { ownerId: string; aiGameId: string; reason: "expiry" | "logout" },
   ): Promise<GuestCommitEffect>;
 }
 
@@ -36,7 +36,7 @@ export interface GuestAiTermination {
  * Cổng kết nối giữa module Phòng cờ và module Người chơi Khách (Guest).
  */
 export class RoomGuestPort implements GuestRoomPort {
-  private aiTermination: GuestAiTermination | null = null;
+  private aiTermination: AiSessionTermination | null = null;
 
   // scopeOf must return the trusted scope of the outer coordinator transaction for this client.
   constructor(
@@ -44,12 +44,12 @@ export class RoomGuestPort implements GuestRoomPort {
     private readonly scopeOf: (client: PoolClient) => RoomScope,
   ) {}
 
-  attachAiTermination(port: GuestAiTermination) {
+  attachAiTermination(port: AiSessionTermination) {
     this.aiTermination = port;
   }
 
   /**
-   * Kiểm tra và trả về ghế đang giữ: ván AI (ai_game_id) hoặc phòng đang PLAYING.
+   * Kiểm tra ghế đang giữ: ván AI hoặc PLAYER trong phòng chưa đóng, kể cả phòng chờ.
    */
   async seatedSeat(client: PoolClient, id: string): Promise<GuestSeat> {
     const reservation = (
@@ -62,7 +62,7 @@ export class RoomGuestPort implements GuestRoomPort {
       return { kind: "ai", matchId: reservation.ai_game_id as string };
     const rooms = (
       await client.query(
-        "SELECT m.room_id FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id WHERE m.user_id=$1 AND m.role='PLAYER' AND r.closed_at IS NULL AND r.status='PLAYING'",
+        "SELECT m.room_id FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id WHERE m.user_id=$1 AND m.role='PLAYER' AND r.closed_at IS NULL",
         [id],
       )
     ).rows;
@@ -116,7 +116,7 @@ export class RoomGuestPort implements GuestRoomPort {
           409,
         );
       const effect = await this.aiTermination.terminate(this.scopeOf(client), {
-        guestId: id,
+        ownerId: id,
         aiGameId: reservation.ai_game_id as string,
         reason: input.reason,
       });
