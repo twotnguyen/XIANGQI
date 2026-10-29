@@ -5,6 +5,7 @@
 > **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 10/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
 > **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md).
 > **Cấu trúc:** **EP-01 → EP-08 khớp đúng 8 yêu cầu của khách hàng (YC1 → YC8)**; EP-00 là Epic nền tảng phục vụ chung.
+> **Bổ sung PO 30/10/2026:** YC1 P1 có **Đổi mật khẩu trong Hồ sơ** và **Quên mật khẩu bằng username/OTP** theo BA 0.18, 1.7, 1.9. Đặc tả và **20 AC bổ sung AC-YC1-MK-01–20** tại [tài liệu YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Các số 268 AC/880 giờ/71 Task là baseline trước thay đổi, chưa gồm việc tái lập kế hoạch cho phần bổ sung; không tự đổi Jira/giờ trong lần cập nhật tài liệu.
 
 ---
 
@@ -88,7 +89,7 @@
 | Epic | Tên | Yêu cầu | Story | Story Points | Mô tả ngắn |
 |---|---|---|---|---|---|
 | EP-00 | Nền tảng kỹ thuật và chất lượng | Hỗ trợ tất cả | US-00.1 – 00.5 | 33 | Việc kỹ thuật và kiểm thử chung mà 8 yêu cầu cùng dựa vào: khung dự án, CI, cơ sở dữ liệu, khung realtime, kế hoạch kiểm thử, nghiệm thu tổng và đóng gói demo. |
-| EP-01 | Đăng ký và đăng nhập | YC1 | US-01.1 – 01.4 | 34 | Đăng ký bằng username + mật khẩu + OTP email hoặc Google; đăng nhập bằng username + mật khẩu (khoá thử sai), Google hoặc Khách; quản lý phiên và hồ sơ. |
+| EP-01 | Đăng ký và đăng nhập | YC1 | US-01.1 – 01.4 và bổ sung mật khẩu 30/10 | 34 (baseline) | Đăng ký ba bước email/OTP tùy chọn, Google/Khách, đăng nhập/khóa thử sai, hồ sơ/phiên; Đổi mật khẩu và Quên mật khẩu thuộc P1 theo đặc tả YC1. |
 | EP-02 | Tạo phòng | YC2 | US-02.1 – 02.2 | 16 | Tạo phòng, ghế Đỏ/Đen, Đổi ghế/Xin đổi bên, Sẵn sàng và đếm ngược, chuyển Host, ở lại phòng sau ván. |
 | EP-03 | Mời vào phòng | YC3 | US-03.1 – 03.2 | 17 | Mời bằng link/mã 8 ký tự cho người chưa kết bạn; kết bạn và mời bạn đang online ngay trong game. |
 | EP-04 | Khởi tạo bàn cờ | YC4 | US-04.1 – 04.3 | 16 | Lõi luật cờ dùng chung, bàn cờ SVG quân chữ Hán, đi cờ bằng click/kéo thả, âm thanh. |
@@ -107,7 +108,7 @@
 | EP-P2-03 | Đề nghị mở rộng trong ván: Xin đi lại, Tái đấu có chọn phe, mức giờ Không giới hạn + chống treo ván | 0.8, 2.1, 3.2, 3.3 mục 5, 3.6 |
 | EP-P2-04 | Lịch sử, Replay, FEN/PGN, lưu ván AI, đi lại với máy | 6.2, 6.3 (Undo), 7.3, 9.1 |
 | EP-P2-05 | Xã hội mở rộng: chat 1-1, Thách đấu, sticker, QR | 2.2, 2.7 mục 4, 5.1, 5.2, 8.2 |
-| EP-P2-06 | Khôi phục và quản lý tài khoản: quên mật khẩu/khôi phục Username, đổi Username | 1.4, 1.6, 1.7 |
+| EP-P2-06 | Khôi phục Username và đổi Username; Quên mật khẩu đã chuyển P1 ngày 30/10 | 1.4, 1.6, 1.7 phần P2 |
 | EP-P2-07 | Tiện ích demo và giao diện bổ sung: widget AI, giả lập mạng, `MODAL-MEDIA-TAB-SWITCH`, Giấy Sáng/Theo hệ thống | 1.8, 9.2, 9.3, 10.3 |
 
 ---
@@ -279,6 +280,15 @@
 | AC-01.4.19 | Thành viên chưa xác minh email | Gửi/gửi lại OTP trong Hồ sơ | Mã thật 6 số, hạn 180 giây, gửi lại sau 60 giây; email trùng/lỗi SMTP báo lỗi thật | I, E2E |
 | AC-01.4.20 | Có yêu cầu email thuộc tài khoản đang đăng nhập | Xác minh OTP đúng | Email được gắn vào cùng user_id, giữ nguyên phiên/dữ liệu/ghế; cảnh báo biến mất | I, E2E |
 | AC-01.4.21 | OTP sai, hết hạn, đã dùng hoặc thuộc yêu cầu khác | Gửi xác minh | Không gắn email; tối đa 5 lần nhập sai mỗi yêu cầu; không tạo hoặc gộp tài khoản | I |
+
+#### Bổ sung YC1 ngày 30/10 — Đổi mật khẩu và Quên mật khẩu (P1)
+
+*Nguồn:* BA 0.18, 1.7 và 1.9; [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md), mục 9–10 và 14.2.
+
+- **AC-YC1-MK-01–08:** đổi mật khẩu tại Hồ sơ bằng mật khẩu cũ + mới + xác nhận; kiểm quyền/lỗi; giữ phiên hiện tại với hạn cũ, thu hồi phiên khác; không làm mất danh tính/dữ liệu hoặc tự đầu hàng ván của phiên đang giữ.
+- **AC-YC1-MK-09–18:** Quên mật khẩu nhập username; chỉ OTP tới email đã xác minh; thiếu email/username không tồn tại trả thông báo không đủ điều kiện; OTP sai/hết hạn/trái mục đích không reset; thành công thu hồi phiên cũ và về Login, không tự đăng nhập.
+- **AC-YC1-MK-19–20:** tài khoản Google vẫn cùng danh tính, bảo mật secret, giao diện và hồi quy hai luồng.
+- Mọi Given/When/Then chi tiết nằm ở mục 14.2 của tài liệu YC1, là phần bổ sung nghiệm thu P1, không phải phụ lục P2. Chưa thực thi hoặc cập nhật Task/Jira/ước lượng; không đánh dấu Done từ việc chốt đặc tả.
 
 ---
 
@@ -531,7 +541,7 @@
 | AC-06.2.10 | Mở Sảnh | Xem bốn lựa chọn | "Đánh Thường – Ghép ngẫu nhiên" và "Đánh Hạng" `DISABLED` kèm *"Sắp ra mắt"*; "Tự tạo phòng" và "Đánh với máy" hoạt động; có ô "Vào phòng bằng mã" | E2E |
 | AC-06.2.11 | Mở Sảnh | Mở mục "Luật chơi" | Mở rộng/thu gọn tại chỗ (không trang/modal mới), dùng được bằng bàn phím; nội dung nêu: cách đi của 7 loại quân; chiếu hết = thua; **hết nước đi = thua**; lặp thế 3 lần = hoà; **chiếu liên tục = bên chiếu thua** (cả hai cùng chiếu = hoà); **120 nửa nước không ăn quân = hoà**; xin hoà, đầu hàng, hết giờ, mất kết nối 60 giây; **đuổi quân liên tục không xử riêng (xử hoà theo lặp thế)**; câu *"Đây là bộ luật rút gọn của ứng dụng, không phải toàn bộ luật thi đấu chính thức"* | E2E, M |
 | AC-06.2.12 | Thanh điều hướng | Xem mục | Sảnh, Bạn bè hoạt động (Khách: Bạn bè `DISABLED`); Lịch sử, Bảng xếp hạng `DISABLED` *"Sắp ra mắt"*; chuông lời mời kết bạn; avatar + Display Name mở menu Cài đặt hồ sơ | E2E |
-| AC-06.2.13 | Màn hình `SCR-LOGIN` | Xem liên kết "Quên mật khẩu?" | `DISABLED` kèm *"Sắp ra mắt"* | E2E |
+| AC-06.2.13 | Màn hình `SCR-LOGIN` | Bấm "Quên mật khẩu?" | Liên kết hoạt động ở P1, mở form nhập username theo BA 0.18/1.7; không còn `DISABLED`/"Sắp ra mắt" | E2E |
 | AC-06.2.14 | Khách | Vào phòng bằng mã/link, Vào chơi/Vào xem ở Sảnh, Đánh với máy | Đều được phép theo luật phòng | E2E |
 | AC-06.2.15 | Host | Tạo phòng với quyền truy cập `PUBLIC` hoặc chuyển phòng sang `PUBLIC` | Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây | E2E |
 | AC-06.2.16 | Phòng `PUBLIC` | Host chuyển sang `CODE_ONLY` hoặc `LOCKED` | Phòng biến khỏi danh sách Sảnh; yêu cầu vào từ danh sách cũ bị máy chủ từ chối | I, E2E |
@@ -739,7 +749,7 @@ Lịch chi tiết, phụ thuộc và điều kiện bàn giao ở [KE-HOACH-JIRA
 
 ## 10. Truy vết
 
-Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** ở [bản đồ truy vết AC](../planning/jira/reports/TRUY-VET-AC.md). Đây là phân công kiểm thử, không phải bộ TC đã viết hoặc kết quả PASS. T02 dựng mẫu/dữ liệu; từng Task viết TC chi tiết và lưu bằng chứng trong phạm vi của mình. Không tạo thêm Story/Task để chứa TC.
+Bản đồ **268 AC baseline → Task triển khai → Task nghiệm thu** ở [bản đồ truy vết AC](../planning/jira/reports/TRUY-VET-AC.md). Bổ sung mật khẩu 30/10 có **20 AC-YC1-MK-01–20** tại [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md), chưa phân công lại vào Task/Jira. Đây là truy vết yêu cầu, không phải kết quả PASS; từng Task phải có TC/biến thể và bằng chứng, không tạo Story/Task chỉ để chứa TC.
 
 ### 10.1 Yêu cầu khách hàng → Epic → Story
 
@@ -755,7 +765,7 @@ Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** 
 | YC8 | Đánh với máy theo cấp độ | EP-08: US-08.1 – 08.3 |
 | — | Nền tảng và chất lượng phục vụ chung | EP-00: US-00.1 – 00.5 |
 
-### 10.2 Thành phần giao diện P1 (26) → Story
+### 10.2 Thành phần giao diện P1 (28 từ 30/10) → Story
 
 | Thành phần | Story | Thành phần | Story |
 |---|---|---|---|
@@ -773,13 +783,15 @@ Bản đồ đầy đủ **268 AC → Task triển khai → Task nghiệm thu** 
 | `PANEL-CHAT` | 07.1 | `PANEL-MEDIA` | 07.2 |
 | `PANEL-SPECTATORS` | 06.3 | `OVERLAY-RECONNECTING` | 05.3 |
 
+`SCR-FORGOT-PASSWORD` và `SCR-RESET-PASSWORD` chuyển từ P2 sang P1 theo BA 0.18, gắn bổ sung YC1 mật khẩu; Đổi mật khẩu nằm trong `SCR-PROFILE-SETTINGS`, không thêm trang/modal riêng. Tổng giao diện vẫn 37: P1 28, P2 9.
+
 ### 10.3 Số lượng
 
 | Hạng mục | Số lượng |
 |---|---|
 | Epic P1 / P2 | 9 / 7 |
 | User Story P1 | 27 (EP-00: 5, EP-01 → EP-08: 22) |
-| Tiêu chí nghiệm thu P1 | 268 AC; TC có cùng mã gốc và biến thể, sẽ được viết/thực thi trong Task |
+| Tiêu chí nghiệm thu P1 | 268 AC baseline và 20 AC-YC1-MK-01–20 bổ sung ngày 30/10; TC/biến thể và phân công Task phải được cập nhật khi triển khai |
 | Task | 71, xem KE-HOACH-JIRA.md |
 | NFR / Cổng kiểm chứng / Kịch bản demo | 12 / 9 / 10 |
 

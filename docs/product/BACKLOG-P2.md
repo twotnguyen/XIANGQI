@@ -8,6 +8,8 @@ Nguồn BA đã được PO duyệt; Story, AC/TC và ước lượng dưới đ
 
 Giữ nguyên P1: 9 Epic, 27 Story, 71 Task, 268 AC, 880 giờ, hạn 04/11/2026. P2 riêng: **7 Epic, 25 Story, 50 Task, 75 AC/TC; 768 giờ đề xuất**. Đây là tổng ước lượng kỹ thuật, không phải giờ đã làm hoặc cam kết chung hạn P1. Mỗi Story có Task triển khai tích hợp và Task kiểm chứng; Task triển khai bao gồm migration/code/UI/unit/integration trong phạm vi Story. Có thể phân nhỏ thêm khi triển khai nếu cần mà không giảm phạm vi.
 
+**Điều chỉnh PO 30/10:** Quên mật khẩu bằng username/OTP và Đổi mật khẩu trong Hồ sơ thuộc **P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). US-P2-21 chỉ còn khôi phục Username. Số giờ/Task/Jira trên là baseline cũ, chưa tái ước lượng hoặc cập nhật issue; không diễn giải 768 giờ là cam kết mới sau chuyển phạm vi.
+
 Phụ thuộc là kỹ thuật; Codex có thể làm sớm khi đầu vào thật đã đủ, không sửa lịch nhân sự P1. Kiểm QA chờ các nhánh tích hợp ghi rõ trong JSON. P2 không đẩy vào Sprint 1. [Dữ liệu nguồn P2](../planning/jira/data/p2-backlog.json) riêng, không sửa baseline `docs/planning/jira/data/plan-data.json` hoặc báo cáo sinh tự động.
 
 ## Quyền, chất lượng và bàn giao
@@ -16,7 +18,7 @@ BA 0.3 ưu tiên: Khách giữ đủ quyền P1, mọi lệnh tính năng P2 b�
 
 Giữ 12 NFR, 9 gate và hồi quy D1–D10 P1 sau P2. Kiểm SUCCESS/LOADING/EMPTY/ERROR/DISABLED, bàn phím, responsive, reduced motion, contrast theo DESIGN. API/socket/RLS kiểm độc lập UI; mock/unit không thay thế dịch vụ thật, LAN/media thiết bị thật, SMTP/OAuth hoặc máy demo thật. Mọi kết quả ghi PASS/FAIL/BLOCKED cùng bản dựng, môi trường, dữ liệu và ngày. Chỉ đóng Task sau đạt đầu ra và kiểm tra bắt buộc; không dùng việc tạo backlog làm chứng cứ Done.
 
-Ngoài phạm vi giữ BA 10.2 và 3.5: giải đấu, hint, cộng giây, đổi email, xóa tài khoản, report/admin/ban, chặn riêng, avatar upload, hồ sơ công khai, đa ngôn ngữ, luật đuổi quân riêng, đổi mật khẩu đang đăng nhập và xếp hạng theo mùa.
+Ngoài phạm vi giữ BA 10.2 và 3.5: giải đấu, hint, cộng giây, đổi email đã xác minh, xóa tài khoản, report/admin/ban, chặn riêng, avatar upload, hồ sơ công khai, đa ngôn ngữ, luật đuổi quân riêng và xếp hạng theo mùa. Đổi mật khẩu trong Hồ sơ và Quên mật khẩu không còn bị loại trừ/để P2, thuộc P1 từ 30/10 theo BA 0.18.
 
 ## Epic và truy vết
 
@@ -412,19 +414,21 @@ Mục yêu cầu: **P2-20**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-134.
 | T-P2-20-I | XIAN-178 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T04, T09, T56, T65 |
 | T-P2-20-Q | XIAN-179 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-20-I |
 
-### US-P2-21 · Khôi phục username và mật khẩu
+### US-P2-21 · Khôi phục username (không gồm đặt lại mật khẩu)
 
 Mục yêu cầu: **P2-21**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-135.
 
 **Nguồn chính xác:** BA 1.7,1.5;247/226; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T04, T09, T56.
 
+**Phạm vi sau PO chốt 30/10:** chỉ tìm lại username bằng email/OTP. Reset mật khẩu theo username thuộc P1, không nghiệm thu hoặc triển khai trùng trong Story P2 này.
+
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
 | AC-P2-21.1 / TC-P2-21.1 | Email có hoặc không tài khoản | Yêu cầu khôi phục | Cùng thông báo Nếu email này đã đăng ký, mã khôi phục đã được gửi. Không lộ Username/presence trước OTP valid; email nằm trong state, không URL. |
 | AC-P2-21.2 / TC-P2-21.2 | OTP sáu số/180 giây, resend 60 giây | Xác minh đúng hoặc sai | Chỉ valid mới hiện username hiện tại; OTP không cấp quyền ứng dụng. Chỉ quên username thì về Login với mật khẩu cũ; tài khoản Google cũng dùng được. |
-| AC-P2-21.3 / TC-P2-21.3 | Muốn đặt lại mật khẩu | Nhập ít nhất tám ký tự và xác nhận | Đăng xuất mọi phiên khác, về Login và bắt đăng nhập mới. Mismatch/invalid OTP không reset, không tự đăng nhập. |
+| AC-P2-21.3 / TC-P2-21.3 | Đã xác minh OTP khôi phục Username | Về Login hoặc chuyển nhu cầu sang Quên mật khẩu | Không đổi mật khẩu, không cấp phiên ứng dụng; đăng nhập bằng username đã tìm và mật khẩu hiện có, hoặc chủ động bắt đầu luồng Quên mật khẩu P1. Quyền tìm username không tự thay thế quyền reset. |
 
-**TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: Auth/SMTP/session; enumeration/no-app-access assertions/direct session refresh; real OTP được phép + mock automated.
+**TC:** Kiểm email có/không tài khoản cùng phản hồi; OTP thật, sai/hết hạn/khác yêu cầu; chỉ hiện username sau xác minh, không cấp quyền ứng dụng hoặc tự đổi mật khẩu. Email không lên URL. Hồi quy giao điểm với Quên mật khẩu P1; không dùng mock thay bằng chứng SMTP/Auth thật.
 
 | Task | Jira | Đầu ra | Giờ đề xuất | Phụ thuộc |
 |---|---|---|---|---|
