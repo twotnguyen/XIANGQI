@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  RemoteTrack,
-  RemoteParticipant,
-  Room,
-  RoomEvent,
-  Track,
-} from "livekit-client";
+import { RemoteParticipant, Room, RoomEvent, Track } from "livekit-client";
 import { Button, Notice } from "../../shared/ui/primitives.js";
 import {
   MediaRequestError,
@@ -210,7 +204,7 @@ export function MediaPanel({
   }, [client, roomId, confirmLevel]);
 
   const attachTrack = useCallback(
-    (track: RemoteTrack, participant: RemoteParticipant, roomName: string) => {
+    (track: Track, participant: RemoteParticipant, roomName: string) => {
       if (track.kind !== Track.Kind.Video && track.kind !== Track.Kind.Audio)
         return;
       const sid = track.sid ?? `${participant.identity}-${track.kind}`;

@@ -714,7 +714,12 @@ it("keeps the member active when email status fails and recovers through reloadE
 it("never reads email status for anonymous visitors", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockResolvedValue(reply({ code: "AUTH_REQUIRED" }, 401)),
+    withoutGuest(
+      vi
+        .fn()
+        .mockResolvedValueOnce(reply({ code: "AUTH_REQUIRED" }, 401))
+        .mockResolvedValueOnce(reply({ google: false, guest: false })),
+    ),
   );
   mount();
   await vi.waitFor(() => expect(state().status).toBe("anonymous"));

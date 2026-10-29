@@ -172,8 +172,9 @@ const URL = "wss://media.example.invalid";
 const EXPIRES = "2026-10-11T00:10:00Z";
 
 beforeEach(() => {
-  // jsdom chưa hiện thực HTMLMediaElement.play; mô phỏng như trình duyệt: trả Promise đã resolve.
+  // jsdom chưa hiện thực play/pause của HTMLMediaElement.
   vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+  vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -254,7 +255,8 @@ function leave(view: RenderResult, client: MediaClient, boundary: Boundary) {
   else view.rerender(panel(client, { connected: false }));
 }
 
-const cameraButton = () => screen.getByRole("button", { name: /camera/ });
+const cameraButton = () =>
+  screen.getByRole("button", { name: /^(Bật|Tắt) camera$/ });
 const select = () => screen.getByLabelText("Mức chia sẻ") as HTMLSelectElement;
 
 /** Nhường microtask để chuỗi await của component chạy hết; không dùng thời gian thực. */
