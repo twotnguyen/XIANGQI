@@ -3,8 +3,29 @@ import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import { SignJWT, exportJWK, generateKeyPair } from "jose";
 
+export interface AuthFixture {
+  state: {
+    sent: number;
+    refreshRequests: number;
+    failRefresh: boolean;
+    failMail: boolean;
+    failMailAfterCreate: boolean;
+    foreignSignupId: string | undefined;
+    failClear: boolean;
+    failVerifyAfterConfirm: boolean;
+    limited: boolean;
+    failPasswordUpdate: boolean;
+    failPasswordUpdateAfterWrite: boolean;
+    failPasswordSession: boolean;
+  };
+  url: string;
+  holdVerification(): { started: Promise<void>; release(): void };
+  holdPasswordUpdate(): { started: Promise<void>; release(): void };
+  close(): Promise<void>;
+}
+
 // An isolated provider boundary; real HTTP adapter + PostgreSQL remain under test.
-export async function startAuthFixture(pool: Pool, now: () => Date) {
+export async function startAuthFixture(pool: Pool, now: () => Date): Promise<AuthFixture> {
   const state = {
     sent: 0,
     refreshRequests: 0,
@@ -15,10 +36,14 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
     failClear: false,
     failVerifyAfterConfirm: false,
     limited: false,
+    failPasswordUpdate: false,
+    failPasswordUpdateAfterWrite: false,
+    failPasswordSession: false,
   };
   const sessions = new Map<string, string>();
   const passwords = new Map<string, string>();
   const refreshTokens = new Map<string, string>();
+  const blockedPasswordSessions = new Set<string>();
   const { privateKey, publicKey } = await generateKeyPair("ES256");
   const kid = randomUUID();
   const jwks = {
@@ -49,6 +74,7 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
     };
   }
   let verifyGate: { started: () => void; wait: Promise<void> } | undefined;
+  let passwordGate: { started: () => void; wait: Promise<void> } | undefined;
   const server = createServer(async (request, response) => {
     const respond = (status: number, body: unknown) => {
       response.writeHead(status, { "Content-Type": "application/json" });
@@ -94,6 +120,8 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
           [body.email],
         );
         const user = rows[0];
+        if (state.failPasswordSession && blockedPasswordSessions.has(user?.id))
+          return respond(503, { msg: "fake-sensitive-fixture" });
         if (
           !user?.email_confirmed_at ||
           passwords.get(user.id) !== body.password
@@ -169,7 +197,23 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
           await pool.query("DELETE FROM auth.users WHERE id=$1", [id]);
           return respond(200, {});
         }
-        if (body.password && id) passwords.set(id, body.password);
+        if (typeof body.password === "string" && id) {
+          if (passwordGate) {
+            const gate = passwordGate;
+            passwordGate = undefined;
+            gate.started();
+            await gate.wait;
+          }
+          if (state.failPasswordUpdate)
+            return respond(503, { msg: "fake-sensitive-fixture" });
+          passwords.set(id, body.password);
+          if (state.failPasswordSession) blockedPasswordSessions.add(id);
+          for (const [refresh, owner] of refreshTokens) {
+            if (owner === id) refreshTokens.delete(refresh);
+          }
+          if (state.failPasswordUpdateAfterWrite)
+            return respond(503, { msg: "fake-sensitive-fixture" });
+        }
         if (state.failClear && body.app_metadata)
           return respond(500, { msg: "fake-sensitive-fixture" });
         if (body.app_metadata)
@@ -195,6 +239,12 @@ export async function startAuthFixture(pool: Pool, now: () => Date) {
   return {
     state,
     url,
+    holdPasswordUpdate: () => {
+      const started = Promise.withResolvers<void>();
+      const release = Promise.withResolvers<void>();
+      passwordGate = { started: started.resolve, wait: release.promise };
+      return { started: started.promise, release: release.resolve };
+    },
     holdVerification: () => {
       const started = Promise.withResolvers<void>();
       const release = Promise.withResolvers<void>();
