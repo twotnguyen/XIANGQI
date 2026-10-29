@@ -331,6 +331,7 @@ describe.skipIf(!url)(
         "20261011000004_legacy_moves_security.sql",
         "20261011000005_google_guest.sql",
         "20261029000001_username_account_email.sql",
+        "20261031000001_session_devices.sql",
       ]) {
         const client = await pool.connect();
         try {
@@ -353,6 +354,17 @@ describe.skipIf(!url)(
         new SupabaseAuth(fixture.url, "fake-public-key", "fake-server-key"),
         () => clock,
       );
+      // Real registration seed: step one must see a completed profile named "legacy".
+      const seed = await service.email({
+        username: "legacy",
+        password: "fake-password-fixture",
+        passwordConfirmation: "fake-password-fixture",
+        email: "legacy-seed@example.invalid",
+      });
+      await service.verify({
+        registrationToken: seed.registrationToken,
+        otp: "123456",
+      });
     });
     afterAll(async () => {
       await fixture.close();
@@ -372,6 +384,7 @@ describe.skipIf(!url)(
     it("creates only an unconfirmed identity and capability draft at step two", async () => {
       const address = email();
       const input = credentials();
+      const sentBefore = fixture.state.sent;
       const registration = await service.email({ ...input, email: address });
       expect(registration.registrationToken.length).toBeGreaterThanOrEqual(43);
       const { rows } = await pool.query(
@@ -385,7 +398,7 @@ describe.skipIf(!url)(
       await expect(
         service.email({ ...credentials(), email: address }),
       ).rejects.toMatchObject({ code: "EMAIL_TAKEN" });
-      expect(fixture.state.sent).toBe(1);
+      expect(fixture.state.sent).toBe(sentBefore + 1);
     });
     it("completes verified profiles with original case, logs in and allows active use", async () => {
       const input = credentials();

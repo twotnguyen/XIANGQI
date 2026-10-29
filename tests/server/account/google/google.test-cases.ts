@@ -18,7 +18,11 @@ import {
   createLoginPool,
   PostgresLoginStore,
 } from "@server/account/login/postgres-login-store.js";
-import type { Session } from "@server/account/auth/registration.types.js";
+import {
+  RegistrationError,
+  type Session,
+} from "@server/account/auth/registration.types.js";
+import { LoginService } from "@server/account/login/login.service.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 describe.skipIf(!databaseUrl)(
   "verified Google boundary with real database/session persistence",
@@ -33,6 +37,7 @@ describe.skipIf(!databaseUrl)(
     let passwordCalls = 0;
     let passwordGate: { entered: () => void; wait: Promise<void> } | undefined;
     const tokens = new Map<string, string>();
+    const passwords = new Map<string, string>();
     const auth: GoogleAuth = {
       async exchangeIDToken() {
         if (failExchange) throw new Error("private provider payload");
@@ -81,9 +86,10 @@ describe.skipIf(!databaseUrl)(
           throw Object.assign(new Error("private bad token"), { status: 401 });
         return changedUserAfterClear ? { ...u, id: randomUUID() } : u;
       },
-      async setPassword(id) {
+      async setPassword(id, password) {
         passwordCalls++;
         if (failPassword) throw new Error("private password failure");
+        passwords.set(id, password);
         if (passwordGate) {
           const gate = passwordGate;
           passwordGate = undefined;
@@ -94,13 +100,18 @@ describe.skipIf(!databaseUrl)(
         for (const [access, owner] of tokens)
           if (owner === id) tokens.delete(access);
       },
-      async signInPassword(email) {
+      async signInPassword(email, password) {
         const user = (
           await pool.query(
             "SELECT id,email,email_confirmed_at FROM auth.users WHERE lower(email)=lower($1)",
             [email],
           )
         ).rows[0];
+        if (passwords.get(user.id) !== password)
+          throw new RegistrationError(
+            "RECOVERY_PASSWORD_INVALID",
+            "private password mismatch",
+          );
         const access = randomUUID();
         tokens.set(access, user.id);
         return {
@@ -297,6 +308,84 @@ describe.skipIf(!databaseUrl)(
         ).rows[0].n,
       ).toBe(1);
     });
+    it("lets a Google-onboarded member sign in by username and password as the same account (AC-01.3.5)", async () => {
+      const email = "google-password-login@example.invalid";
+      const pending = await service.authenticate(
+        "fixture",
+        (await challenge(email)).capability,
+        false,
+      );
+      if (pending.kind !== "pending") throw new Error("Expected pending");
+      await service.complete(pending.capability, pending.session, {
+        username: "GoogleLogin",
+        password: "Password123",
+      });
+      const member = await service.authenticate(
+        "fixture",
+        (await challenge(email)).capability,
+        false,
+      );
+      if (member.kind !== "member") throw new Error("Expected member");
+      const login = new LoginService(
+        new PostgresLoginStore(loginPool),
+        auth,
+        sessions,
+        () => time,
+        0,
+      );
+      const result = await login.login({
+        username: "GoogleLogin",
+        password: "Password123",
+      });
+      expect(result.userId).toBe(member.userId);
+    });
+    it("keeps Google sign-in working while the password username is locked and leaves attempts unchanged (AC-01.2.9, AC-01.3.14)", async () => {
+      const email = "google-locked@example.invalid";
+      const pending = await service.authenticate(
+        "fixture",
+        (await challenge(email)).capability,
+        false,
+      );
+      if (pending.kind !== "pending") throw new Error("Expected pending");
+      await service.complete(pending.capability, pending.session, {
+        username: "GoogleLocked",
+        password: "Password123",
+      });
+      const member = await service.authenticate(
+        "fixture",
+        (await challenge(email)).capability,
+        false,
+      );
+      if (member.kind !== "member") throw new Error("Expected member");
+      const login = new LoginService(
+        new PostgresLoginStore(loginPool),
+        auth,
+        sessions,
+        () => time,
+        0,
+      );
+      for (let i = 0; i < 5; i++)
+        await login
+          .login({ username: "GoogleLocked", password: "wrong" })
+          .catch(() => undefined);
+      await expect(
+        login.login({ username: "GoogleLocked", password: "Password123" }),
+      ).rejects.toMatchObject({ code: "LOGIN_LOCKED" });
+      const attemptsSql =
+        "SELECT to_jsonb(la) j FROM xiangqi_auth.login_attempts la WHERE username_key='googlelocked'";
+      const before = (await pool.query(attemptsSql)).rows[0].j;
+      const again = await service.authenticate(
+        "fixture",
+        (await challenge(email)).capability,
+        false,
+      );
+      if (again.kind !== "member") throw new Error("Expected member");
+      expect(again.userId).toBe(member.userId);
+      expect((await pool.query(attemptsSql)).rows[0].j).toEqual(before);
+      await expect(
+        login.login({ username: "GoogleLocked", password: "Password123" }),
+      ).rejects.toMatchObject({ code: "LOGIN_LOCKED" });
+    }, 30000);
     it("distinguishes verifier/provider outage from invalid proof and cleans only owned incomplete users", async () => {
       const c = await challenge("cleanup@example.invalid");
       const pending = await service.authenticate("fixture", c.capability);

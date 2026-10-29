@@ -106,6 +106,31 @@ describe.skipIf(!url)("friendships", () => {
     await expect(service.sendRequest(a, "nosuchuserzz")).rejects.toMatchObject({
       code: "FRIEND_NOT_FOUND",
     });
+    await expect(service.sendRequest(g, "hostuser")).rejects.toMatchObject({
+      code: "FRIEND_GUEST_DENIED",
+    });
+    await expect(
+      service.inviteToRoom(g, randomUUID(), "hostuser"),
+    ).rejects.toMatchObject({ code: "FRIEND_GUEST_DENIED" });
+  });
+  it("excludes Guest usernames from member search and rejects invitations targeting a Guest", async () => {
+    const sender = await member("friendsearcher");
+    const real = await member("peer_member");
+    await guest("peer_guest");
+    expect(
+      (await service.search(sender, "peer_")).map((peer) => peer.username),
+    ).toEqual(["peer_member"]);
+    await expect(
+      service.sendRequest(sender, "peer_guest"),
+    ).rejects.toMatchObject({ code: "FRIEND_NOT_FOUND" });
+    expect(
+      (
+        await pool.query(
+          "SELECT sender_id,receiver_id FROM xiangqi_social.friend_requests",
+        )
+      ).rows,
+    ).toEqual([]);
+    expect(await service.listRequests(real)).toEqual([]);
   });
   it("invites an online friend and revokes on lock at accept", async () => {
     const host = await member("invhost");

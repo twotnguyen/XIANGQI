@@ -12,6 +12,8 @@ import { EmailVerificationStore } from "@server/account/email/email.store.js";
 import { EmailVerificationService } from "@server/account/email/email.service.js";
 import type { Session } from "@server/account/auth/registration.types.js";
 import { PostgresLoginStore } from "@server/account/login/postgres-login-store.js";
+import { LoginService } from "@server/account/login/login.service.js";
+import { SessionService } from "@server/account/login/session.service.js";
 
 const unused = (): Promise<never> =>
   Promise.reject(new Error("unused in stub"));
@@ -120,6 +122,33 @@ describe.skipIf(!databaseUrl)("username registration without email", () => {
     expect(
       (await new PostgresLoginStore(pool).accountByUsername(username))?.active,
     ).toBe(true);
+  });
+
+  it("keeps the same user after a skipped-email account signs in again by username and password", async () => {
+    const { registration, auth } = service();
+    const username = "Skip" + randomUUID().slice(0, 8);
+    const password = "fake-password-fixture";
+    const registered = await registration.register({
+      username,
+      password,
+      passwordConfirmation: password,
+    });
+    const store = new PostgresLoginStore(pool);
+    const login = new LoginService(
+      store,
+      {
+        signInPassword: (email, pw) =>
+          pw === password
+            ? auth.signInPassword(email)
+            : Promise.reject(new Error("wrong password")),
+      },
+      new SessionService(store, { verifyAccessToken: unused }),
+      () => new Date(),
+      0,
+    );
+    const again = await login.login({ username, password });
+    expect(again.userId).toBe(registered.userId);
+    expect(again.username).toBe(username);
   });
 
   it("cancels only the capability-owned unconfirmed draft when skipping OTP", async () => {
