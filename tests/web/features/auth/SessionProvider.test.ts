@@ -11,6 +11,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import {
   SessionProvider,
   useSession,
+  LogoutConfirmRequired,
 } from "@web/features/auth/SessionProvider.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 
@@ -539,6 +540,35 @@ it("cancels logout-renewal retries when a newer login is accepted", async () => 
     await vi.advanceTimersByTimeAsync(15000);
   });
   expect(request).toHaveBeenCalledTimes(2);
+});
+
+it("retains the member after the server demands logout confirmation and signs out only after consent", async () => {
+  const request = vi.fn((url: string, init?: RequestInit) => {
+    if (url.endsWith("/auth/refresh")) return Promise.resolve(reply(session));
+    const confirmed = JSON.parse(String(init?.body ?? "{}")).confirm === true;
+    return Promise.resolve(
+      confirmed
+        ? reply({ loggedOut: true })
+        : reply({ code: "LOGOUT_CONFIRM_REQUIRED" }, 409),
+    );
+  });
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("active-member"));
+  await act(async () => {
+    await expect(current.logout()).rejects.toBeInstanceOf(
+      LogoutConfirmRequired,
+    );
+  });
+  expect(state().status).toBe("active-member");
+  expect(memberProof(await current.getRealtimeProof()).appSession).toBe(
+    session.appSession,
+  );
+  await act(async () => {
+    await current.logout(true);
+  });
+  expect(state().status).toBe("anonymous");
+  await expect(current.getRealtimeProof()).rejects.toThrow();
 });
 const googlePending = {
   kind: "pending",

@@ -122,6 +122,11 @@ vi.mock("@web/features/auth/LoginPage.js", () => ({
         { onClick: () => onLoggedIn({ fixture: "login" }) },
         "Hoàn tất đăng nhập",
       ),
+      createElement(
+        "button",
+        { onClick: () => onLoggedIn({ fixture: "login", displaced: true }) },
+        "Đăng nhập từ thiết bị mới",
+      ),
     ),
 }));
 vi.mock("@web/features/auth/RegistrationPage.js", () => ({
@@ -1049,13 +1054,15 @@ it.each([
   { path: "/forgot-password", title: "Quên mật khẩu" },
   { path: "/reset-password", title: "Đặt lại mật khẩu" },
 ])(
-  "keeps $path readable for an anonymous visitor and links back to login",
+  "renders $path for an anonymous visitor and links back to login",
   async ({ path, title }) => {
     window.history.replaceState(null, "", path);
     render(createElement(AppRouter));
     expect(await screen.findByRole("heading", { name: title })).toBeTruthy();
     expect(mock.authorizedFetch).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("link", { name: "Về trang đăng nhập" }));
+    fireEvent.click(
+      await screen.findByRole("link", { name: "Quay lại đăng nhập" }),
+    );
     await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
     expect(
       await screen.findByRole("heading", { name: "Đăng nhập" }),
@@ -1167,20 +1174,71 @@ it("keeps the chosen AI settings in the dialog and does not navigate when the se
     ).checked,
   ).toBe(true);
 });
-it("shows an active AI game banner that returns to its server route and blocks another room entry", async () => {
-  mock.state = member;
-  mock.where = { kind: "playing-ai", roomId: null, matchId: aiId };
-  window.history.replaceState(null, "", "/lobby");
-  aiServer();
+it.each(["playing-ai", "playing-online", "waiting"] as const)(
+  "shows the held %s position and blocks entering a second room or AI game",
+  async (kind) => {
+    mock.state = member;
+    mock.where = {
+      kind,
+      roomId: kind === "playing-ai" ? null : room.roomId,
+      matchId: kind === "waiting" ? null : aiId,
+    };
+    window.history.replaceState(null, "", "/lobby");
+    aiServer();
+    render(createElement(AppRouter));
+    feedRooms([room]);
+    const resume = await screen.findByRole("link", { name: "Quay lại" });
+    expect(resume.getAttribute("href")).toBe(
+      kind === "playing-ai" ? `/ai/${aiId}` : `/rooms/${room.roomId}`,
+    );
+    expect(
+      screen
+        .getByRole("button", { name: "Vào chơi" })
+        .getAttribute("aria-disabled"),
+    ).toBe("true");
+    for (const name of ["Tạo phòng", "Chọn cấp độ máy"]) {
+      const button = screen.getByRole("button", { name });
+      expect(button.getAttribute("aria-disabled")).toBe("true");
+      fireEvent.click(button);
+    }
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(resume);
+    await vi.waitFor(() =>
+      expect(window.location.pathname).toBe(
+        kind === "playing-ai" ? `/ai/${aiId}` : `/rooms/${room.roomId}`,
+      ),
+    );
+  },
+);
+
+it("sends a displaced login to the lobby instead of a pending room invite", async () => {
+  window.history.replaceState(null, "", "/rooms/fixture-room?intent=spectator");
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
   render(createElement(AppRouter));
-  feedRooms([room]);
-  const resume = await screen.findByRole("link", { name: "Quay lại" });
-  expect(resume.getAttribute("href")).toBe(`/ai/${aiId}`);
-  expect(
-    screen
-      .getByRole("button", { name: "Vào chơi" })
-      .getAttribute("aria-disabled"),
-  ).toBe("true");
-  fireEvent.click(resume);
-  await vi.waitFor(() => expect(window.location.pathname).toBe(`/ai/${aiId}`));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  fireEvent.click(await screen.findByText("Đăng nhập từ thiết bị mới"));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
+  expect(mock.accept).toHaveBeenCalledWith(
+    expect.objectContaining({ displaced: true }),
+  );
+});
+
+it("asks before logging out of a live online match and logs out only after confirmation", async () => {
+  window.history.replaceState(null, "", "/lobby");
+  mock.state = member;
+  mock.where = {
+    kind: "playing-online",
+    roomId: "fixture-room",
+    matchId: "fixture-match",
+  };
+  render(createElement(AppRouter));
+  fireEvent.click(await screen.findByText("Đăng xuất"));
+  expect(await screen.findByText("Đăng xuất khi đang có ván?")).toBeTruthy();
+  fireEvent.click(screen.getByText("Ở lại"));
+  expect(mock.logout).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByText("Đăng xuất"));
+  fireEvent.click(await screen.findByText("Đầu hàng và đăng xuất"));
+  await vi.waitFor(() => expect(mock.logout).toHaveBeenCalledWith(true));
 });

@@ -10,6 +10,7 @@ import {
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AppRouter } from "@web/app/AppRouter.js";
 import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
+import { LogoutConfirmRequired } from "@web/features/auth/SessionProvider.js";
 
 const mock = vi.hoisted(() => ({
   state: { status: "anonymous" } as Record<string, unknown>,
@@ -42,6 +43,7 @@ const mock = vi.hoisted(() => ({
 
 vi.mock("@web/features/auth/SessionProvider.js", () => ({
   useSession: () => mock,
+  LogoutConfirmRequired: class extends Error {},
 }));
 // Socket boundary: control is granted; no snapshots are pushed.
 vi.mock("@web/features/ai/ai-socket-client.js", () => ({
@@ -227,4 +229,30 @@ it("logs out without a second resign when the server game is already finished", 
   );
   await vi.waitFor(() => expect(mock.logout).toHaveBeenCalledOnce());
   expect(resignRequests()).toHaveLength(0);
+});
+
+it("does not reuse consent for an old AI game to resign the current online match", async () => {
+  mock.where = {
+    kind: "playing-online",
+    roomId: "current-room",
+    matchId: "current-match",
+  };
+  aiServer(() => reply(resignedEnvelope), resignedEnvelope);
+  mock.logout.mockImplementation(async (confirmed: boolean) => {
+    if (!confirmed) throw new LogoutConfirmRequired();
+  });
+  render(createElement(AppRouter));
+  await openLogout();
+  await screen.findByRole("dialog", { name: "Đăng xuất khi đang có ván?" });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Đầu hàng và đăng xuất" }),
+  );
+  await vi.waitFor(() => expect(mock.logout).toHaveBeenCalledWith(false));
+  await screen.findByRole("dialog", { name: "Đăng xuất khi đang có ván?" });
+  expect(mock.logout.mock.calls.some(([confirmed]) => confirmed === true)).toBe(
+    false,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Ở lại" }));
+  expect(resignRequests()).toHaveLength(0);
+  expect(mock.logout).toHaveBeenCalledOnce();
 });

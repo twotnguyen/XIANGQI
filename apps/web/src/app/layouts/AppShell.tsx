@@ -64,10 +64,7 @@ export function AppShell({
         Sảnh
       </NavigationLink>
       {user?.guest ? (
-        <Button
-          variant="ghost"
-          disabledReason="Khách không dùng chức năng bạn bè."
-        >
+        <Button variant="ghost" disabledReason="Đăng ký tài khoản để kết bạn">
           Bạn bè
         </Button>
       ) : (

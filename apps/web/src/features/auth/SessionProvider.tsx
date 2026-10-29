@@ -61,7 +61,7 @@ interface SessionContextValue {
   reloadEmailStatus(): Promise<void>;
   accept(result: unknown): void;
   refresh(): Promise<void>;
-  logout(): Promise<void>;
+  logout(confirmed?: boolean): Promise<void>;
   authorizedFetch(path: string, init?: RequestInit): Promise<Response>;
   getRealtimeProof(): Promise<PublicRoomAuthProof>;
   startGuest(displayName: string, signal?: AbortSignal): Promise<void>;
@@ -156,6 +156,12 @@ export class GuestRequestError extends Error {
     readonly code: string,
   ) {
     super(code);
+  }
+}
+/** Đăng xuất member khi đang có ván cần xác nhận lại (server trả 409 LOGOUT_CONFIRM_REQUIRED). */
+export class LogoutConfirmRequired extends Error {
+  constructor() {
+    super("LOGOUT_CONFIRM_REQUIRED");
   }
 }
 async function readCode(response: Response): Promise<string> {
@@ -483,57 +489,74 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return pending;
   }, [anonymous, install, invalidateRequest, restoreGuest]);
   refreshRef.current = refresh;
-  const logout = useCallback(() => {
-    if (loggingOut.current) return loggingOut.current;
-    const initial = credentials.current;
-    if (!initial) return Promise.resolve();
-    if (renewal.current !== null) clearTimeout(renewal.current);
-    renewal.current = null;
-    let pending: Promise<void> | null = null;
-    pending = (async () => {
-      try {
-        if (initial.bearerExpiresAt <= Date.now()) await refresh();
-        else await Promise.resolve();
-        if (loggingOut.current !== pending || !mounted.current) return;
-        const record = credentials.current;
-        if (!record) return;
-        if (record.bearerExpiresAt <= Date.now()) throw new Error(unavailable);
-        if (renewal.current !== null) clearTimeout(renewal.current);
-        renewal.current = null;
-        const requestEpoch = invalidateRequest();
-        const abort = new AbortController();
-        controller.current = abort;
-        const response = await fetch(backend("/auth/logout"), {
-          method: "POST",
-          credentials: "include",
-          redirect: "error",
-          headers: {
-            Authorization: `Bearer ${record.bearer}`,
-            "X-Xiangqi-Session": record.capability,
-          },
-          signal: abort.signal,
-        });
-        if (
-          abort.signal.aborted ||
-          !mounted.current ||
-          epoch.current !== requestEpoch
-        )
-          return;
-        if (!response.ok) throw new Error(unavailable);
-        anonymous();
-      } catch {
-        if (mounted.current && loggingOut.current === pending) {
+  const logout = useCallback(
+    (confirmed = false) => {
+      if (loggingOut.current) return loggingOut.current;
+      const initial = credentials.current;
+      if (!initial) return Promise.resolve();
+      if (renewal.current !== null) clearTimeout(renewal.current);
+      renewal.current = null;
+      let pending: Promise<void> | null = null;
+      pending = (async () => {
+        try {
+          if (initial.bearerExpiresAt <= Date.now()) await refresh();
+          else await Promise.resolve();
+          if (loggingOut.current !== pending || !mounted.current) return;
+          const record = credentials.current;
+          if (!record) return;
+          if (record.bearerExpiresAt <= Date.now())
+            throw new Error(unavailable);
           if (renewal.current !== null) clearTimeout(renewal.current);
-          renewal.current = setTimeout(() => void refreshRef.current(), 15000);
-          throw new Error(unavailable);
+          renewal.current = null;
+          const requestEpoch = invalidateRequest();
+          const abort = new AbortController();
+          controller.current = abort;
+          const response = await fetch(backend("/auth/logout"), {
+            method: "POST",
+            credentials: "include",
+            redirect: "error",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${record.bearer}`,
+              "X-Xiangqi-Session": record.capability,
+            },
+            body: JSON.stringify({ confirm: confirmed }),
+            signal: abort.signal,
+          });
+          if (
+            abort.signal.aborted ||
+            !mounted.current ||
+            epoch.current !== requestEpoch
+          )
+            return;
+          if (!response.ok) {
+            if (
+              response.status === 409 &&
+              (await readCode(response)) === "LOGOUT_CONFIRM_REQUIRED"
+            )
+              throw new LogoutConfirmRequired();
+            throw new Error(unavailable);
+          }
+          anonymous();
+        } catch (failure) {
+          if (mounted.current && loggingOut.current === pending) {
+            if (renewal.current !== null) clearTimeout(renewal.current);
+            renewal.current = setTimeout(
+              () => void refreshRef.current(),
+              15000,
+            );
+            if (failure instanceof LogoutConfirmRequired) throw failure;
+            throw new Error(unavailable, { cause: failure });
+          }
         }
-      }
-    })().finally(() => {
-      if (loggingOut.current === pending) loggingOut.current = null;
-    });
-    loggingOut.current = pending;
-    return pending;
-  }, [anonymous, invalidateRequest, refresh]);
+      })().finally(() => {
+        if (loggingOut.current === pending) loggingOut.current = null;
+      });
+      loggingOut.current = pending;
+      return pending;
+    },
+    [anonymous, invalidateRequest, refresh],
+  );
   const getRealtimeProof =
     useCallback(async (): Promise<PublicRoomAuthProof> => {
       if (!mounted.current || loggingOut.current) throw new Error(unavailable);

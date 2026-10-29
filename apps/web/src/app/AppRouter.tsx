@@ -4,6 +4,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import {
   GuestRequestError,
+  LogoutConfirmRequired,
   useSession,
 } from "../features/auth/SessionProvider.js";
 import { GuestNameDialog } from "../features/auth/GuestNameDialog.js";
@@ -56,6 +57,16 @@ import { makeHistoryClient } from "../features/history/history-client.js";
 const LoginPage = lazy(() =>
   import("../features/auth/LoginPage.js").then((module) => ({
     default: module.LoginPage,
+  })),
+);
+const ForgotPasswordPage = lazy(() =>
+  import("../features/auth/ForgotPasswordPage.js").then((module) => ({
+    default: module.ForgotPasswordPage,
+  })),
+);
+const ResetPasswordPage = lazy(() =>
+  import("../features/auth/ResetPasswordPage.js").then((module) => ({
+    default: module.ResetPasswordPage,
   })),
 );
 const RegistrationPage = lazy(() =>
@@ -456,6 +467,9 @@ export function AppRouter() {
     gameId: string;
     run: (confirmedResign: boolean) => Promise<void>;
   } | null>(null);
+  const [onlineLogout, setOnlineLogout] = useState<{
+    run: (confirmedResign: boolean) => Promise<void>;
+  } | null>(null);
   // Người đang đăng nhập (member hoặc Khách) dưới dạng tham chiếu đã thu hẹp để đọc userId an toàn.
   const actor =
     session.state.status === "active-member" || session.state.status === "guest"
@@ -491,12 +505,15 @@ export function AppRouter() {
     pending.current = null;
     if (session.state.status === "guest")
       return logoutGuestSession(confirmedResign);
-    return session
-      .logout()
-      .catch(() => setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại."));
+    return session.logout(confirmedResign).catch((failure: unknown) => {
+      if (!confirmedResign && failure instanceof LogoutConfirmRequired)
+        setOnlineLogout({ run: performSessionLogout });
+      else setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại.");
+    });
   };
   const guardedLogout = (run: (confirmedResign: boolean) => Promise<void>) => {
     if (aiGameId) setLogoutGate({ gameId: aiGameId, run });
+    else if (where?.kind === "playing-online") setOnlineLogout({ run });
     else void run(false);
   };
   const confirmLogoutGate = async () => {
@@ -517,7 +534,7 @@ export function AppRouter() {
       return;
     }
     setLogoutGate(null);
-    await gate.run(true);
+    await gate.run(false);
   };
   const title = titles[route.name] || "Chức năng đang chuẩn bị";
   useEffect(() => subscribeLocation(() => setLocation(getLocation())), []);
@@ -562,7 +579,10 @@ export function AppRouter() {
   }, [location.pathname, location.search, decision.kind, title]);
   const complete = (result: unknown) => {
     session.accept(result);
-    const destination = pending.current || "/lobby";
+    // Thiết bị mới vừa thay ghế cũ: không giữ lời mời đang chờ, về lobby.
+    const displaced = (result as { displaced?: unknown })?.displaced === true;
+    const destination =
+      !displaced && pending.current ? pending.current : "/lobby";
     pending.current = null;
     navigate(destination, { replace: true, authDestination: null });
   };
@@ -734,14 +754,12 @@ export function AppRouter() {
         <NavigationLink href="/login">Về trang đăng nhập</NavigationLink>
       </section>
     );
-  else if (
-    route.name === "forgot-password" ||
-    route.name === "reset-password" ||
-    route.name === "leaderboard"
-  )
+  else if (route.name === "forgot-password") content = <ForgotPasswordPage />;
+  else if (route.name === "reset-password") content = <ResetPasswordPage />;
+  else if (route.name === "leaderboard")
     content = (
       <P2ScopePage
-        route={route.name}
+        route="leaderboard"
         signedIn={session.state.status === "active-member"}
       />
     );
@@ -842,6 +860,25 @@ export function AppRouter() {
           <p>
             Đăng xuất sẽ được tính là đầu hàng và thua ván đang chơi với máy.
             Ván đấu với máy không thay đổi Elo.
+          </p>
+        </Dialog>
+      )}
+      {onlineLogout && (
+        <Dialog
+          open
+          onClose={() => setOnlineLogout(null)}
+          title="Đăng xuất khi đang có ván?"
+          danger
+          onConfirm={() => {
+            const gate = onlineLogout;
+            setOnlineLogout(null);
+            void gate.run(true);
+          }}
+          confirmLabel="Đầu hàng và đăng xuất"
+          cancelLabel="Ở lại"
+        >
+          <p>
+            Đăng xuất sẽ được tính là đầu hàng và thua ván đang chơi trực tuyến.
           </p>
         </Dialog>
       )}

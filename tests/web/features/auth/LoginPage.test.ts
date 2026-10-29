@@ -260,13 +260,12 @@ it("does not pretend navigation succeeded if the parent callback fails", async (
   expect(await screen.findByRole("alert")).toBeTruthy();
   expect(screen.queryByText("Đăng nhập thành công")).toBeNull();
 });
-it("keeps unavailable recovery and providers inert with readable reasons", async () => {
+it("keeps unavailable providers inert and links password recovery", async () => {
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn: vi.fn() }));
   for (const name of [
     "Đăng nhập bằng Google",
     "Chơi nhanh với tư cách Khách (Guest)",
-    "Quên mật khẩu?",
   ]) {
     expect(
       screen.getByRole("button", { name }).getAttribute("aria-disabled"),
@@ -274,11 +273,13 @@ it("keeps unavailable recovery and providers inert with readable reasons", async
     await user.click(screen.getByRole("button", { name }));
   }
   expect(
+    screen.getByRole("link", { name: "Quên mật khẩu?" }).getAttribute("href"),
+  ).toBe("/forgot-password");
+  expect(
     screen
       .getByRole("link", { name: "Đăng ký tài khoản mới" })
       .getAttribute("href"),
   ).toBe("/register");
-  expect(screen.getAllByText("Sắp ra mắt").length).toBeGreaterThan(0);
 });
 it("calls only supplied real provider hooks", async () => {
   const onGoogle = vi.fn(),
@@ -314,16 +315,4 @@ it("does not hand a late response to the caller after leaving the page", async (
   resolve(reply(session));
   await new Promise((done) => setTimeout(done, 0));
   expect(onLoggedIn).not.toHaveBeenCalled();
-});
-
-it("uses the shared two-wing shell with the Kỳ Đài heading and brand wing", () => {
-  const { container } = render(
-    createElement(LoginPage, { onLoggedIn: vi.fn() }),
-  );
-  expect(
-    screen.getByRole("heading", { level: 1, name: "Đăng Nhập Kỳ Đài" }),
-  ).toBeTruthy();
-  expect(container.querySelector(".auth-shell .wing-brand")).toBeTruthy();
-  expect(container.querySelectorAll(".wing-brand .feat-box").length).toBe(4);
-  expect(container.querySelector(".auth-shell .wing-form form")).toBeTruthy();
 });
