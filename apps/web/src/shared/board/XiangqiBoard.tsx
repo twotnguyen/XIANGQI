@@ -381,30 +381,18 @@ export function XiangqiBoard({
                     className="xq-board-last"
                     transform={`translate(${fromX} ${fromY})`}
                   >
-                    {/* Dấu chấm tròn và vòng tròn mảnh mờ tại ô xuất phát */}
-                    <circle
-                      className="xq-board-last-from-ring"
-                      cx={0}
-                      cy={0}
-                      r="16"
-                    />
-                    <circle
-                      className="xq-board-last-from-dot"
-                      cx={0}
-                      cy={0}
-                      r="4"
+                    <path
+                      className="xq-board-last-corners"
+                      d="M-11-18H-18V-11M11-18H18V-11M18 11V18H11M-11 18H-18V11"
                     />
                   </g>
                   <g
                     className="xq-board-last"
                     transform={`translate(${toX} ${toY})`}
                   >
-                    {/* Vòng viền vàng kim thanh nhã ôm quanh quân cờ vừa di chuyển */}
-                    <circle
-                      className="xq-board-last-dest-ring"
-                      cx={0}
-                      cy={0}
-                      r="20.5"
+                    <path
+                      className="xq-board-last-corners"
+                      d="M-11-18H-18V-11M11-18H18V-11M18 11V18H11M-11 18H-18V11"
                     />
                   </g>
                 </g>

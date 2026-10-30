@@ -157,11 +157,16 @@ export function RoomPage({
       audio.current = null;
     };
   }, []);
+  useEffect(() => {
+    if (!connected || snapshot?.control.mode !== "writable")
+      setLeaveConfirm(null);
+  }, [connected, snapshot?.control.mode]);
   const canRematch =
     view !== null &&
     view.room.status === "WAITING" &&
-    view.room.inviteCode !== null &&
+    (view.room.inviteCode !== null || view.room.visibility === "LOCKED") &&
     (view.role === "red" || view.role === "black") &&
+    Boolean(view.room.seats.red && view.room.seats.black) &&
     snapshot?.match != null &&
     snapshot.match.status !== "ACTIVE" &&
     view.room.countdown === null &&
@@ -447,11 +452,23 @@ export function RoomPage({
       }
     }
   }
+  function ownsHttpControl() {
+    const state = latest.current;
+    return Boolean(
+      connectedRef.current &&
+      connection.current &&
+      state &&
+      state.version >= versionFloor.current &&
+      (state.control.mode === "writable" ||
+        (state.role === "spectator" && state.control.reason === "not_allowed")),
+    );
+  }
   async function changeVisibility(visibility: RoomView["room"]["visibility"]) {
     const current = latest.current;
     if (
       !current ||
       !connectedRef.current ||
+      current.control.mode !== "writable" ||
       current.room.hostId !== userId ||
       current.role === "spectator" ||
       busy ||
@@ -472,10 +489,18 @@ export function RoomPage({
     setSettingsError("");
     setSettingsStatus("");
     try {
+      const control = await peer!.getControl();
+      if (
+        !isCurrent() ||
+        latest.current?.control.mode !== "writable" ||
+        latest.current.control.generation !== control.generation
+      )
+        return;
       const next = await client.changeVisibility(
         roomId,
         current.version,
         visibility,
+        control,
       );
       if (
         !isCurrent() ||
@@ -530,18 +555,25 @@ export function RoomPage({
       | "rematch-decline",
     side: "KEEP" | "SWAP" = "SWAP",
   ) {
-    if (!view || busy) return;
+    if (!view || busy || !ownsHttpControl()) return;
     const requestEpoch = epoch.current;
     if (action === "leave") refreshEpoch.current++;
     setBusy(true);
     setError("");
     setLeaveError("");
     try {
+      const control = await connection.current!.getControl();
+      if (
+        epoch.current !== requestEpoch ||
+        !ownsHttpControl() ||
+        latest.current?.control.generation !== control.generation
+      )
+        return;
       if (action === "leave") {
-        await client.leave(roomId, view.version);
+        await client.leave(roomId, view.version, control);
         if (epoch.current === requestEpoch) onLeft();
       } else if (action === "switch") {
-        const next = await client.switchSeat(roomId, view.version);
+        const next = await client.switchSeat(roomId, view.version, control);
         if (
           epoch.current === requestEpoch &&
           next.version >= versionFloor.current
@@ -553,21 +585,28 @@ export function RoomPage({
       } else {
         const next =
           action === "swap-propose"
-            ? await client.proposeSwap(roomId, view.version)
+            ? await client.proposeSwap(roomId, view.version, control)
             : action === "swap-withdraw"
-              ? await client.withdrawSwap(roomId, view.version)
+              ? await client.withdrawSwap(roomId, view.version, control)
               : action === "rematch-propose"
-                ? await client.proposeRematch(roomId, view.version, side)
+                ? await client.proposeRematch(
+                    roomId,
+                    view.version,
+                    side,
+                    control,
+                  )
                 : action === "rematch-accept" || action === "rematch-decline"
                   ? await client.respondRematch(
                       roomId,
                       view.version,
                       action === "rematch-accept",
+                      control,
                     )
                   : await client.respondSwap(
                       roomId,
                       view.version,
                       action === "swap-accept",
+                      control,
                     );
         if (
           epoch.current === requestEpoch &&
@@ -575,7 +614,8 @@ export function RoomPage({
         ) {
           versionFloor.current = next.version;
           setView(next);
-          setSnapshot(null);
+          // Keep the terminal board and result while a rematch offer is exchanged.
+          if (!action.startsWith("rematch")) setSnapshot(null);
         }
       }
     } catch (e) {
@@ -595,7 +635,8 @@ export function RoomPage({
             : swapMessage(e.code, e.message)
           : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
       setError(message);
-      if (action === "leave") setLeaveError(message);
+      if (action === "leave" || action.startsWith("rematch"))
+        setLeaveError(message);
       if (e instanceof RoomRequestError && e.code === "VERSION_STALE") {
         try {
           const next = await client.snapshot(roomId);
@@ -635,26 +676,63 @@ export function RoomPage({
     }
   }
   async function viewerAction(
-    action: "to-spectator" | "invite-down" | "respond-down" | "kick",
+    action:
+      | "to-spectator"
+      | "move-to-spectator"
+      | "invite-down"
+      | "respond-down"
+      | "kick",
     extra: { targetId?: string; accept?: boolean } = {},
   ) {
-    if (!view || busy) return;
+    if (!view || busy || !ownsHttpControl()) return;
+    if (
+      action === "move-to-spectator" &&
+      (!connectedRef.current ||
+        latest.current?.control.mode !== "writable" ||
+        latest.current.version < versionFloor.current)
+    )
+      return;
     const requestEpoch = epoch.current;
     setBusy(true);
     setError("");
     try {
+      const control = await connection.current!.getControl();
+      if (
+        epoch.current !== requestEpoch ||
+        !ownsHttpControl() ||
+        latest.current?.control.generation !== control.generation
+      )
+        return;
       const next =
         action === "to-spectator"
-          ? await client.toSpectator(roomId, view.version)
-          : action === "invite-down"
-            ? await client.inviteDown(roomId, view.version, extra.targetId!)
-            : action === "respond-down"
-              ? await client.respondDown(
+          ? await client.toSpectator(roomId, view.version, control)
+          : action === "move-to-spectator"
+            ? await client.moveToSpectator(
+                roomId,
+                view.version,
+                extra.targetId!,
+                control,
+              )
+            : action === "invite-down"
+              ? await client.inviteDown(
                   roomId,
                   view.version,
-                  extra.accept === true,
+                  extra.targetId!,
+                  control,
                 )
-              : await client.kickViewer(roomId, view.version, extra.targetId!);
+              : action === "respond-down"
+                ? await client.respondDown(
+                    roomId,
+                    view.version,
+                    extra.accept === true,
+                    control,
+                  )
+                : await client.kickViewer(
+                    roomId,
+                    view.version,
+                    extra.targetId!,
+                    control,
+                  );
       if (
         epoch.current === requestEpoch &&
         next.version >= versionFloor.current
@@ -702,10 +780,7 @@ export function RoomPage({
     snapshot?.control.mode === "writable" &&
     snapshot.version >= versionFloor.current;
   const canManage =
-    connected &&
-    Boolean(snapshot) &&
-    room.hostId === userId &&
-    view.role !== "spectator";
+    writable && room.hostId === userId && view.role !== "spectator";
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
   const clockState = snapshot ?? latest.current;
@@ -739,6 +814,29 @@ export function RoomPage({
     >
       {room.ready[view.role as "red" | "black"] ? "Huỷ sẵn sàng" : "Sẵn sàng"}
     </Button>
+  );
+  const resultVisible = Boolean(
+    connected &&
+    snapshot?.match &&
+    snapshot.match.status !== "ACTIVE" &&
+    !room.countdown &&
+    liveMatchId === snapshot.match.id &&
+    (snapshot.role === "spectator" || dismissedResult !== snapshot.match.id),
+  );
+  const resultInModal = resultVisible && player;
+  const rematchPanel = (
+    <RematchPanel
+      offer={isMember ? (room.rematchOffer ?? null) : null}
+      selfId={userId}
+      canPropose={canRematch && isMember && writable}
+      clockSkew={clockSkew}
+      busy={busy}
+      writable={writable}
+      onPropose={(side) => void httpAction("rematch-propose", side)}
+      onRespond={(accept) =>
+        void httpAction(accept ? "rematch-accept" : "rematch-decline")
+      }
+    />
   );
   return (
     <main
@@ -798,14 +896,16 @@ export function RoomPage({
             variant="ghost"
             loading={busy}
             disabledReason={
-              player &&
-              room.status === "PLAYING" &&
-              (!connected ||
-                !snapshot ||
-                snapshot.version < versionFloor.current ||
-                snapshot.match?.status !== "ACTIVE")
-                ? "Chờ đồng bộ ván cờ để xác nhận rời phòng."
-                : undefined
+              !ownsHttpControl()
+                ? "Cần kết nối và quyền điều khiển phòng."
+                : player &&
+                    room.status === "PLAYING" &&
+                    (!connected ||
+                      !snapshot ||
+                      snapshot.version < versionFloor.current ||
+                      snapshot.match?.status !== "ACTIVE")
+                  ? "Chờ đồng bộ ván cờ để xác nhận rời phòng."
+                  : undefined
             }
             onClick={() => {
               const current = latest.current;
@@ -866,6 +966,7 @@ export function RoomPage({
           onConfirm={() => {
             const current = latest.current;
             if (
+              !ownsHttpControl() ||
               !connectedRef.current ||
               current?.match?.id !== leaveConfirm ||
               current.match.status !== "ACTIVE" ||
@@ -904,6 +1005,11 @@ export function RoomPage({
               </p>
               <Button
                 loading={busy}
+                disabledReason={
+                  !ownsHttpControl()
+                    ? "Cần kết nối và quyền điều khiển phòng."
+                    : undefined
+                }
                 onClick={() =>
                   void viewerAction("respond-down", { accept: true })
                 }
@@ -913,6 +1019,11 @@ export function RoomPage({
               <Button
                 variant="secondary"
                 loading={busy}
+                disabledReason={
+                  !ownsHttpControl()
+                    ? "Cần kết nối và quyền điều khiển phòng."
+                    : undefined
+                }
                 onClick={() =>
                   void viewerAction("respond-down", { accept: false })
                 }
@@ -957,6 +1068,9 @@ export function RoomPage({
             onSwapReopen={() => setSwapCollapsedId(null)}
             readyControl={readyControl}
             onAction={(action) => void httpAction(action)}
+            onMoveToSpectator={(targetId) =>
+              void viewerAction("move-to-spectator", { targetId })
+            }
           />
           {clockState?.clocks && (
             <MatchClocks
@@ -1072,8 +1186,7 @@ export function RoomPage({
               player &&
               room.hostId !== userId &&
               room.status === "WAITING" &&
-              !room.countdown &&
-              (room.spectators?.length ?? 0) < room.viewerLimit
+              !room.countdown
             }
             canInviteDown={
               player &&
@@ -1084,6 +1197,7 @@ export function RoomPage({
             canKick={player}
             downOfferInviteeId={room.downOffer?.inviteeId ?? null}
             busy={busy}
+            writable={writable}
             onMoveToSpectator={() => void viewerAction("to-spectator")}
             onInviteDown={(target) =>
               void viewerAction("invite-down", { targetId: target })
@@ -1135,6 +1249,13 @@ export function RoomPage({
                     userId={userId}
                     writable={writable}
                     tabId={connection.current?.tabId ?? ""}
+                    getControl={() =>
+                      connection.current
+                        ? connection.current.getControl()
+                        : Promise.reject(
+                            new RoomRequestError("ROOM_TAB_READ_ONLY", 403),
+                          )
+                    }
                     onTakeover={() =>
                       connection.current
                         ? connection.current.takeover()
@@ -1165,43 +1286,31 @@ export function RoomPage({
         status={settingsStatus}
         onChange={changeVisibility}
       />
-      <RematchPanel
-        offer={isMember ? (view?.room.rematchOffer ?? null) : null}
-        selfId={userId}
-        canPropose={canRematch && isMember}
-        clockSkew={clockSkew}
-        busy={busy}
-        onPropose={(side) => void httpAction("rematch-propose", side)}
-        onRespond={(accept) =>
-          void httpAction(accept ? "rematch-accept" : "rematch-decline")
-        }
-      />
+      {!resultInModal && rematchPanel}
       <SwapPrompt
         open={swapModalOpen}
         seconds={swapSeconds}
+        writable={writable}
         busy={busy}
         onAccept={() => void httpAction("swap-accept")}
         onDecline={() => void httpAction("swap-decline")}
         onCollapse={() => setSwapCollapsedId(swapOfferId)}
       />
-      {connected &&
-        snapshot?.match &&
-        snapshot.match.status !== "ACTIVE" &&
-        liveMatchId === snapshot.match.id &&
-        (snapshot.role === "spectator" ||
-          dismissedResult !== snapshot.match.id) && (
-          <MatchResult
-            match={snapshot.match}
-            role={snapshot.role}
-            leaving={busy}
-            error={leaveError}
-            onStay={() => {
-              setDismissedResult(snapshot.match!.id);
-              setLeaveError("");
-            }}
-            onLeave={() => void httpAction("leave")}
-          />
-        )}
+      {resultVisible && snapshot?.match && (
+        <MatchResult
+          match={snapshot.match}
+          role={snapshot.role}
+          leaving={busy}
+          canLeave={ownsHttpControl()}
+          error={leaveError}
+          rematch={rematchPanel}
+          onStay={() => {
+            setDismissedResult(snapshot.match!.id);
+            setLeaveError("");
+          }}
+          onLeave={() => void httpAction("leave")}
+        />
+      )}
     </main>
   );
 }

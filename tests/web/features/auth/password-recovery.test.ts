@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { ForgotPasswordPage } from "@web/features/auth/ForgotPasswordPage.js";
@@ -163,3 +169,140 @@ it.each([
     ).toBe("/forgot-password");
   },
 );
+
+it("ignores a password request after switching to username recovery", async () => {
+  let finish!: (response: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finish = resolve;
+    }),
+  );
+  render(createElement(ForgotPasswordPage));
+  fireEvent.change(screen.getByLabelText("Tên đăng nhập (Username)"), {
+    target: { value: "alice" },
+  });
+  fireEvent.submit(screen.getByRole("form", { name: "Quên mật khẩu" }));
+  fireEvent.click(screen.getByRole("button", { name: "Quên tên đăng nhập?" }));
+  await act(async () => {
+    finish(json({ requestId, expiresAt: future(), resendAt: past() }));
+  });
+  expect(screen.getByLabelText("Email đã xác minh")).toBeTruthy();
+  expect(getPendingRecovery()).toBeNull();
+  expect(window.location.pathname).toBe("/forgot-password");
+});
+
+it("does not replace a newer recovery context after leaving the forgot page", async () => {
+  let finish!: (response: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finish = resolve;
+    }),
+  );
+  const view = render(createElement(ForgotPasswordPage));
+  fireEvent.change(screen.getByLabelText("Tên đăng nhập (Username)"), {
+    target: { value: "alice" },
+  });
+  fireEvent.submit(screen.getByRole("form", { name: "Quên mật khẩu" }));
+  view.unmount();
+  const newer = {
+    requestId: "n".repeat(43),
+    expiresAt: future(),
+    resendAt: past(),
+  };
+  setPendingRecovery(newer);
+  window.history.replaceState(null, "", "/login");
+  await act(async () => {
+    finish(json({ requestId, expiresAt: future(), resendAt: past() }));
+  });
+  expect(getPendingRecovery()).toEqual(newer);
+  expect(window.location.pathname).toBe("/login");
+});
+
+it("drops an OTP grant when its input changed while verification was pending", async () => {
+  let finish!: (response: Response) => void;
+  setPendingRecovery({ requestId, expiresAt: future(), resendAt: past() });
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finish = resolve;
+    }),
+  );
+  render(createElement(ResetPasswordPage));
+  fireEvent.change(screen.getByLabelText("Mã OTP"), {
+    target: { value: "123456" },
+  });
+  fireEvent.submit(screen.getByRole("form", { name: "Nhập mã OTP" }));
+  fireEvent.change(screen.getByLabelText("Mã OTP"), {
+    target: { value: "654321" },
+  });
+  await act(async () => {
+    finish(json({ resetToken: "b".repeat(43) }));
+  });
+  expect(screen.queryByRole("form", { name: "Đặt mật khẩu mới" })).toBeNull();
+  expect((screen.getByLabelText("Mã OTP") as HTMLInputElement).value).toBe(
+    "654321",
+  );
+});
+
+it("does not apply a resend response after a different recovery request was started", async () => {
+  let finish!: (response: Response) => void;
+  setPendingRecovery({ requestId, expiresAt: future(), resendAt: past() });
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finish = resolve;
+    }),
+  );
+  render(createElement(ResetPasswordPage));
+  fireEvent.click(screen.getByRole("button", { name: "Gửi lại mã" }));
+  const newer = {
+    requestId: "n".repeat(43),
+    expiresAt: future(),
+    resendAt: past(),
+  };
+  setPendingRecovery(newer);
+  await act(async () => {
+    finish(json({ requestId, expiresAt: future(), resendAt: past() }));
+  });
+  expect(getPendingRecovery()).toEqual(newer);
+  expect(screen.queryByText("Đã gửi lại mã OTP.")).toBeNull();
+});
+
+it("does not clear a new context or redirect after leaving an in-flight reset", async () => {
+  let finish!: (response: Response) => void;
+  setPendingRecovery({ requestId, expiresAt: future(), resendAt: past() });
+  window.history.replaceState(null, "", "/reset-password");
+  fetchMock
+    .mockResolvedValueOnce(json({ resetToken: "b".repeat(43) }))
+    .mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        finish = resolve;
+      }),
+    );
+  const view = render(createElement(ResetPasswordPage));
+  fireEvent.change(screen.getByLabelText("Mã OTP"), {
+    target: { value: "123456" },
+  });
+  await act(async () => {
+    fireEvent.submit(screen.getByRole("form", { name: "Nhập mã OTP" }));
+  });
+  fireEvent.change(screen.getByLabelText("Mật khẩu mới"), {
+    target: { value: "newsecret" },
+  });
+  fireEvent.change(screen.getByLabelText("Nhập lại mật khẩu mới"), {
+    target: { value: "newsecret" },
+  });
+  fireEvent.submit(screen.getByRole("form", { name: "Đặt mật khẩu mới" }));
+  fireEvent.click(screen.getByRole("link", { name: "Quay lại đăng nhập" }));
+  view.unmount();
+  const newer = {
+    requestId: "n".repeat(43),
+    expiresAt: future(),
+    resendAt: past(),
+  };
+  setPendingRecovery(newer);
+  await act(async () => {
+    finish(json({ ok: true }));
+  });
+  expect(getPendingRecovery()).toEqual(newer);
+  expect(window.location.pathname).toBe("/login");
+  expect(window.location.search).toBe("");
+});

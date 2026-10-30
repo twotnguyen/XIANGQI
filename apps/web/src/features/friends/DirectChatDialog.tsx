@@ -51,6 +51,7 @@ export function DirectChatDialog({
     () => document.visibilityState === "visible" && document.hasFocus(),
   );
   const [visibleMax, setVisibleMax] = useState(0);
+  const [readPoll, setReadPoll] = useState(0);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
@@ -62,6 +63,8 @@ export function DirectChatDialog({
   const revokedRef = useRef(false);
   const logRef = useRef<HTMLDivElement>(null);
   const loadSeq = useRef(0);
+  const mounted = useRef(false);
+  const reading = useRef(false);
 
   const revoke = useCallback(() => {
     revokedRef.current = true;
@@ -78,11 +81,15 @@ export function DirectChatDialog({
     const seq = ++loadSeq.current;
     try {
       const page = await client.messages(friend.userId);
-      if (seq !== loadSeq.current || revokedRef.current) return;
+      if (!mounted.current || seq !== loadSeq.current || revokedRef.current)
+        return;
       setMessages((prev) => mergeLatest(prev ?? [], page.messages));
       setLoadFailed(false);
+      // Tận dụng poll lịch sử để thử lại watermark lỗi mạng, tối đa một lần/nhịp.
+      setReadPoll((value) => value + 1);
     } catch (error) {
-      if (revokedRef.current) return;
+      if (!mounted.current || seq !== loadSeq.current || revokedRef.current)
+        return;
       if (
         error instanceof FriendRequestError &&
         error.code === "DM_NOT_FRIENDS"
@@ -93,9 +100,14 @@ export function DirectChatDialog({
   }, [client, friend.userId, revoke]);
 
   useEffect(() => {
+    mounted.current = true;
     void load();
     const timer = window.setInterval(() => void load(), POLL_MS);
-    return () => window.clearInterval(timer);
+    return () => {
+      mounted.current = false;
+      loadSeq.current++;
+      window.clearInterval(timer);
+    };
   }, [load]);
 
   // Theo dõi tab có đang hiện và có focus không; đổi trạng thái thì đánh giá lại việc báo đã đọc.
@@ -138,17 +150,33 @@ export function DirectChatDialog({
 
   // Báo đã đọc: watermark chỉ tăng; chỉ gửi khi tab hiện, có focus và có tin đến nhìn thấy mới hơn.
   useEffect(() => {
-    if (!active || revoked || visibleMax <= markedSeq.current) return;
-    markedSeq.current = visibleMax;
-    client.markRead(friend.userId, visibleMax).catch((error: unknown) => {
-      markedSeq.current = 0;
-      if (
-        error instanceof FriendRequestError &&
-        error.code === "DM_NOT_FRIENDS"
-      )
-        revoke();
-    });
-  }, [active, client, friend.userId, revoke, revoked, visibleMax]);
+    if (
+      !mounted.current ||
+      !active ||
+      revoked ||
+      revokedRef.current ||
+      reading.current ||
+      visibleMax <= markedSeq.current
+    )
+      return;
+    reading.current = true;
+    client.markRead(friend.userId, visibleMax).then(
+      (readSeq) => {
+        if (mounted.current && !revokedRef.current)
+          markedSeq.current = Math.max(markedSeq.current, readSeq);
+        reading.current = false;
+      },
+      (error: unknown) => {
+        reading.current = false;
+        if (!mounted.current || revokedRef.current) return;
+        if (
+          error instanceof FriendRequestError &&
+          error.code === "DM_NOT_FRIENDS"
+        )
+          revoke();
+      },
+    );
+  }, [active, client, friend.userId, readPoll, revoke, revoked, visibleMax]);
 
   // Giữ đáy khi đang ở cuối; khi tải tin cũ thì giữ nguyên vị trí đang đọc.
   useLayoutEffect(() => {

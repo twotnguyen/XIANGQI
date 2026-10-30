@@ -10,13 +10,21 @@ import {
 
 type Step = "email" | "otp" | "done";
 
+function remainingSeconds(deadline: number, now: number) {
+  return Math.max(0, Math.ceil((deadline - now) / 1000));
+}
+
+function clock(seconds: number) {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 function failureText(error: unknown) {
   if (error instanceof PasswordRequestError)
     switch (error.code) {
       case "USERNAME_INVALID_INPUT":
         return "Email hoặc mã yêu cầu không hợp lệ.";
       case "USERNAME_OTP_INVALID":
-        return "Mã xác minh không đúng.";
+        return "Mã xác minh không đúng hoặc không còn hiệu lực. Hãy kiểm tra mã hoặc gửi mã mới.";
       case "USERNAME_RATE_LIMITED":
         return "Vui lòng đợi trước khi gửi lại mã.";
       case "USERNAME_PROVIDER_ERROR":
@@ -36,12 +44,21 @@ export function UsernameRecoveryPanel() {
   const [otp, setOtp] = useState("");
   const [requestId, setRequestId] = useState("");
   const [resendAt, setResendAt] = useState(0);
+  const [expiresAt, setExpiresAt] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const sending = useRef(false);
+  const generation = useRef(0);
   const errorRegion = useRef<HTMLDivElement>(null);
+
+  useEffect(
+    () => () => {
+      generation.current += 1;
+    },
+    [],
+  );
 
   useEffect(() => {
     if (error) errorRegion.current?.focus();
@@ -53,25 +70,38 @@ export function UsernameRecoveryPanel() {
     return () => window.clearInterval(timer);
   }, [step]);
 
-  async function run(action: () => Promise<void>) {
+  async function run(action: (current: () => boolean) => Promise<void>) {
     if (sending.current) return;
     sending.current = true;
+    const started = generation.current;
+    const current = () => generation.current === started;
     setBusy(true);
     setError("");
     try {
-      await action();
+      await action(current);
     } catch (failure) {
+      if (!current()) return;
       setError(failureText(failure));
     } finally {
-      sending.current = false;
-      setBusy(false);
+      if (current()) {
+        sending.current = false;
+        setBusy(false);
+      }
     }
   }
 
   function submitEmail(event: FormEvent) {
     event.preventDefault();
-    void run(async () => {
+    void run(async (current) => {
       const sent = await startUsernameRecovery(email.trim());
+      if (!current()) return;
+      if (
+        !Number.isFinite(Date.parse(sent.expiresAt)) ||
+        !Number.isFinite(Date.parse(sent.resendAt))
+      )
+        throw new PasswordRequestError("USERNAME_BAD_RESPONSE", 502);
+      setExpiresAt(Date.parse(sent.expiresAt));
+      setNow(Date.now());
       setRequestId(sent.requestId);
       setResendAt(Date.parse(sent.resendAt));
       setStep("otp");
@@ -80,12 +110,18 @@ export function UsernameRecoveryPanel() {
 
   function submitOtp(event: FormEvent) {
     event.preventDefault();
+    if (Date.now() >= expiresAt) {
+      setError("Mã đã hết hạn. Vui lòng gửi lại mã.");
+      return;
+    }
     if (!/^[0-9]{6}$/.test(otp)) {
       setError("Mã xác minh gồm 6 chữ số.");
       return;
     }
-    void run(async () => {
-      setUsername(await verifyUsernameRecovery(requestId, otp));
+    void run(async (current) => {
+      const recovered = await verifyUsernameRecovery(requestId, otp);
+      if (!current()) return;
+      setUsername(recovered);
       setRequestId("");
       setOtp("");
       setStep("done");
@@ -93,16 +129,35 @@ export function UsernameRecoveryPanel() {
   }
 
   function resend() {
-    void run(async () => {
+    if (Date.now() < resendAt) return;
+    void run(async (current) => {
       const sent = await resendUsernameRecovery(requestId);
+      if (!current()) return;
+      if (
+        !Number.isFinite(Date.parse(sent.expiresAt)) ||
+        !Number.isFinite(Date.parse(sent.resendAt))
+      )
+        throw new PasswordRequestError("USERNAME_BAD_RESPONSE", 502);
+      setExpiresAt(Date.parse(sent.expiresAt));
+      setNow(Date.now());
       setRequestId(sent.requestId);
       setResendAt(Date.parse(sent.resendAt));
       setOtp("");
     });
   }
 
+  function invalidate() {
+    generation.current += 1;
+    sending.current = false;
+    setBusy(false);
+  }
+
   function restart() {
+    invalidate();
     setRequestId("");
+    setExpiresAt(0);
+    setResendAt(0);
+    setUsername("");
     setOtp("");
     setError("");
     setStep("email");
@@ -123,7 +178,8 @@ export function UsernameRecoveryPanel() {
       </section>
     );
 
-  const canResend = now >= resendAt;
+  const remaining = remainingSeconds(expiresAt, now);
+  const cooldown = remainingSeconds(resendAt, now);
 
   return (
     <section aria-labelledby="username-recovery-title">
@@ -161,7 +217,11 @@ export function UsernameRecoveryPanel() {
             spellCheck={false}
             value={email}
             disabled={busy}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              invalidate();
+              setEmail(event.target.value);
+              setError("");
+            }}
           />
           <Button type="submit" loading={busy} className="btn-submit">
             Gửi mã OTP
@@ -175,39 +235,53 @@ export function UsernameRecoveryPanel() {
           aria-busy={busy}
         >
           <p className="form-subtitle">
-            Nhập mã 6 chữ số đã gửi tới email đã xác minh.
+            Nếu email này đã đăng ký, mã khôi phục đã được gửi.
+          </p>
+          <p id="username-recovery-expiry" className="form-subtitle">
+            {remaining > 0
+              ? `Mã còn hiệu lực ${clock(remaining)}.`
+              : "Mã đã hết hạn. Vui lòng gửi lại mã."}
           </p>
           <TextField
             label="Mã OTP"
             id="username-recovery-otp"
+            aria-describedby="username-recovery-expiry"
             name="otp"
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}
             value={otp}
             disabled={busy}
-            onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
+            onChange={(event) => {
+              invalidate();
+              setOtp(event.target.value.replace(/\D/g, ""));
+              setError("");
+            }}
           />
-          <Button type="submit" loading={busy} className="btn-submit">
+          <Button
+            type="submit"
+            loading={busy}
+            className="btn-submit"
+            disabledReason={
+              remaining === 0
+                ? "Mã đã hết hạn. Vui lòng gửi lại mã."
+                : undefined
+            }
+          >
             Xác minh
           </Button>
           <Button
             type="button"
             variant="secondary"
             disabledReason={
-              canResend ? undefined : "Đợi 60 giây trước khi gửi lại mã."
+              cooldown > 0 ? `Gửi lại mã sau ${cooldown}s.` : undefined
             }
             disabled={busy}
             onClick={resend}
           >
             Gửi lại mã
           </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={busy}
-            onClick={restart}
-          >
+          <Button type="button" variant="ghost" onClick={restart}>
             Dùng email khác
           </Button>
         </form>

@@ -14,6 +14,7 @@ import {
   pool,
   registration,
   reset,
+  roomControl,
   waitFor,
 } from "./game.runtime.test-helper.js";
 async function publicationFixture(viewer = false) {
@@ -81,6 +82,27 @@ async function publicationFixture(viewer = false) {
     async () => latest,
     (value) => Boolean(value),
   );
+  const hostSocket = b
+    ? io(base, {
+        autoConnect: false,
+        transports: ["websocket"],
+        reconnection: false,
+        auth: {
+          accessToken: a.token,
+          appSession: a.appSession,
+          roomId: entry.roomId,
+          tabId: randomUUID(),
+        },
+      })
+    : socket;
+  if (b) {
+    const hostJoined = new Promise<void>((resolve, reject) => {
+      hostSocket.once("room.snapshot", () => resolve());
+      hostSocket.once("connect_error", reject);
+    });
+    hostSocket.connect();
+    await hostJoined;
+  }
   return {
     r,
     a,
@@ -91,9 +113,11 @@ async function publicationFixture(viewer = false) {
     headers,
     entry,
     socket,
+    hostSocket,
     latest: () => latest,
     close: async () => {
       socket.disconnect();
+      if (hostSocket !== socket) hostSocket.disconnect();
       await runtime.close();
       await app.close();
     },
@@ -271,7 +295,10 @@ describe.skipIf(!databaseUrl)(
         const left = await fetch(`${f.base}/rooms/${f.entry.roomId}/leave`, {
           method: "POST",
           headers: f.headers(f.a),
-          body: JSON.stringify({ expectedVersion: version }),
+          body: JSON.stringify({
+            expectedVersion: version,
+            control: await roomControl(f.hostSocket),
+          }),
         });
         expect(left.status).toBe(200);
         expect(
@@ -367,6 +394,7 @@ describe.skipIf(!databaseUrl)(
         runtime.realtime,
       );
       let socket: Socket | undefined;
+      let hostSocket: Socket | undefined;
       try {
         await app.listen(0, "127.0.0.1");
         await runtime.start();
@@ -389,8 +417,32 @@ describe.skipIf(!databaseUrl)(
           commandId: randomUUID(),
           timeMinutes: 5,
         });
+        hostSocket = io(base, {
+          autoConnect: false,
+          transports: ["websocket"],
+          reconnection: false,
+          auth: {
+            accessToken: a.token,
+            appSession: a.appSession,
+            roomId: entry.roomId,
+            tabId: randomUUID(),
+          },
+        });
+        const hostJoined = new Promise<void>((resolve, reject) => {
+          hostSocket!.once("room.snapshot", () => resolve());
+          hostSocket!.once("connect_error", reject);
+        });
+        hostSocket.connect();
+        await hostJoined;
+        const beforeSwitchResponse = await fetch(
+          `${base}/rooms/${entry.roomId}`,
+          { headers: headers(a) },
+        );
+        expect(beforeSwitchResponse.status).toBe(200);
+        const beforeSwitch = await beforeSwitchResponse.json();
         const switched = await post(`/rooms/${entry.roomId}/switch-seat`, a, {
-          expectedVersion: entry.version,
+          expectedVersion: beforeSwitch.version,
+          control: await roomControl(hostSocket),
         });
         expect(switched.role).toBe("black");
         const joined = await post("/rooms/join", b, {
@@ -427,6 +479,7 @@ describe.skipIf(!databaseUrl)(
         expect(
           await post(`/rooms/${entry.roomId}/leave`, a, {
             expectedVersion: current.version,
+            control: await roomControl(hostSocket),
           }),
         ).toMatchObject({ left: true });
         const changed = await waitFor(
@@ -444,6 +497,7 @@ describe.skipIf(!databaseUrl)(
         ).toBe(0);
       } finally {
         socket?.disconnect();
+        hostSocket?.disconnect();
         await runtime.close();
         await app.close();
       }

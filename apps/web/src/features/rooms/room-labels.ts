@@ -63,6 +63,10 @@ export function viewerActionMessage(error: unknown) {
     "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
   if (!(error instanceof RoomRequestError)) return generic;
   switch (error.code) {
+    case "FRIEND_BUSY":
+      return "Người này đang ở trong một ván/phòng khác.";
+    case "ALREADY_SEATED":
+      return "Bạn đang ở trong một ván/phòng khác.";
     case "ROOM_FULL":
       return "Phòng đã đầy chỗ xem.";
     case "SEAT_FULL":

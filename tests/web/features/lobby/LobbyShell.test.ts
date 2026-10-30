@@ -34,6 +34,7 @@ it("invites players and spectators through separate callbacks with a Guest host 
     ["fixture-room", "spectator"],
   ]);
   expect(screen.getByText("Kỳ hữu (Khách)")).toBeTruthy();
+  expect(screen.getByText("1/5 người xem")).toBeTruthy();
 });
 it.each([
   { seats: 2 as const, viewers: 5, spectatorLimit: 5 },
@@ -48,6 +49,11 @@ it.each([
   const list = screen.getByRole("region", { name: "Phòng công khai" });
   expect(within(list).queryByRole("button", { name: "Vào chơi" })).toBeNull();
   expect(within(list).queryByRole("button", { name: "Vào xem" })).toBeNull();
+  expect(
+    within(list).getByText(
+      props.spectatorLimit === 0 ? "Không cho xem" : "5/5 người xem",
+    ),
+  ).toBeTruthy();
 });
 it("blocks unfinished P2 actions and dispatches an eight-digit room code", async () => {
   const props = callbacks();

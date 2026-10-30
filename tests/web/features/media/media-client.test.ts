@@ -3,6 +3,11 @@ import {
   MediaRequestError,
   createMediaClient,
 } from "@web/features/media/media-client.js";
+const control = {
+  tabId: "11111111-1111-4111-8111-111111111111",
+  connectionId: "peer",
+  generation: 2,
+};
 function ok(body: unknown) {
   return { ok: true, json: async () => body } as Response;
 }
@@ -51,14 +56,22 @@ describe("media client", () => {
       "/media/share?roomId=room",
       expect.anything(),
     );
-    expect(await client.setShare("room", "NONE")).toEqual({ level: "NONE" });
+    expect(await client.setShare("room", "NONE", control)).toEqual({
+      level: "NONE",
+    });
+    expect(fetch).toHaveBeenLastCalledWith(
+      "/media/share",
+      expect.objectContaining({
+        body: JSON.stringify({ roomId: "room", level: "NONE", control }),
+      }),
+    );
   });
   it("maps server codes and rejects malformed payloads", async () => {
     const denied = createMediaClient(
       vi.fn().mockResolvedValue(fail("MEDIA_PLAYER_REQUIRED", 403)),
     );
     const error = await denied
-      .setShare("room", "ALL")
+      .setShare("room", "ALL", control)
       .catch((value: unknown) => value);
     expect(error).toBeInstanceOf(MediaRequestError);
     expect((error as MediaRequestError).code).toBe("MEDIA_PLAYER_REQUIRED");

@@ -33,6 +33,10 @@ export async function takeControl(
     "INSERT INTO xiangqi_realtime.controllers(user_id,room_id,tab_id,connection_id,generation) VALUES($1,$2,$3,'test',1) ON CONFLICT(user_id,room_id) DO UPDATE SET tab_id=EXCLUDED.tab_id,connection_id=EXCLUDED.connection_id,generation=xiangqi_realtime.controllers.generation+1",
     [userId, roomId, tabId],
   );
+  await pool.query(
+    "INSERT INTO xiangqi_room.presence(room_id,user_id,connection_id,generation,server_instance,connected,last_seen_at) SELECT room_id,user_id,connection_id,generation,$3,true,clock_timestamp() FROM xiangqi_realtime.controllers WHERE room_id=$1 AND user_id=$2 ON CONFLICT(room_id,user_id) DO UPDATE SET connection_id=EXCLUDED.connection_id,generation=EXCLUDED.generation,connected=true,last_seen_at=EXCLUDED.last_seen_at",
+    [roomId, userId, "11111111-1111-4111-8111-111111111111"],
+  );
 }
 let inviteSequence = 0;
 /** Creates a room owned by `owner`. Every room gets its own invite code (rooms_invite_code_unique). */

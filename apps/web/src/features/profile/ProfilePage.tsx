@@ -129,6 +129,13 @@ export function ProfilePage({
   const [isSfxOn, setIsSfxOn] = useState(isSfxEnabled);
   const [pieceStyle, setPieceStyle] = useState<PieceStyleId>(getPieceStyle);
   const [copyError, setCopyError] = useState("");
+  const lifecycle = useRef(0);
+  const loadRequest = useRef(0);
+  const savingRef = useRef(false);
+  const currentClient = useRef(client);
+  const currentProfile = useRef(profile);
+  currentClient.current = client;
+  currentProfile.current = profile;
 
   function handleSelectPieceStyle(id: PieceStyleId) {
     setPieceStyle(id);
@@ -148,6 +155,12 @@ export function ProfilePage({
   }
 
   async function load() {
+    const started = lifecycle.current;
+    const request = ++loadRequest.current;
+    const current = () =>
+      lifecycle.current === started &&
+      loadRequest.current === request &&
+      currentClient.current === client;
     setFailed(false);
     // Khách không có hồ sơ máy chủ: không gọi API hồ sơ hay vị trí của thành viên.
     if (guest) return;
@@ -156,19 +169,30 @@ export function ProfilePage({
         client.read(),
         client.location().catch(() => null),
       ]);
+      if (!current()) return;
       setProfile(view);
       setName(view.displayName);
       setLocation(where);
     } catch {
-      setFailed(true);
+      if (current()) setFailed(true);
     }
   }
   useEffect(() => {
+    lifecycle.current += 1;
+    savingRef.current = false;
+    setSaving(false);
+    setProfile(null);
+    setStatus("");
+    setFieldError("");
     void load();
-  }, [guest]);
+    return () => {
+      lifecycle.current += 1;
+      savingRef.current = false;
+    };
+  }, [client, guest]);
 
   async function save() {
-    if (saving) return;
+    if (savingRef.current || guest || !profile) return;
     const trimmed = name.trim();
     const length = Array.from(trimmed).length;
     if (length < 2 || length > 30) {
@@ -176,21 +200,34 @@ export function ProfilePage({
       setStatus("");
       return;
     }
+    savingRef.current = true;
+    const started = lifecycle.current;
+    const userId = profile.userId;
+    const current = () =>
+      lifecycle.current === started &&
+      currentClient.current === client &&
+      currentProfile.current?.userId === userId;
     setSaving(true);
     setFieldError("");
     setStatus("");
     try {
       const result = await client.updateDisplayName(trimmed);
+      if (!current()) return;
       onSaved(result.displayName);
-      setName(result.displayName);
+      setName((draft) =>
+        draft.trim() === trimmed ? result.displayName : draft,
+      );
       setProfile((previous) =>
         previous ? { ...previous, displayName: result.displayName } : previous,
       );
       setStatus("Đã lưu tên hiển thị.");
     } catch (error) {
-      setFieldError(nameError(error));
+      if (current()) setFieldError(nameError(error));
     } finally {
-      setSaving(false);
+      if (current()) {
+        savingRef.current = false;
+        setSaving(false);
+      }
     }
   }
 

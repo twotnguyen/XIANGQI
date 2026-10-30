@@ -16,6 +16,7 @@ import {
   pool,
   reset,
   resetLegacy,
+  roomControl,
 } from "./game.runtime.test-helper.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 type Registration = NonNullable<
@@ -103,13 +104,45 @@ async function fixture() {
     expect(response.status).toBe(200);
     return (await response.json()) as { roomId: string; inviteCode: string };
   };
+  const roomControllers = new Map<
+    string,
+    { socket: Socket; snapshot: import("@xiangqi/shared").RoomSnapshot }
+  >();
+  const roomPeer = async (roomId: string) => {
+    const existing = roomControllers.get(roomId);
+    if (existing) return existing;
+    const socket = io(base, {
+      autoConnect: false,
+      reconnection: false,
+      transports: ["websocket"],
+      auth: {
+        accessToken: members[0]!.token,
+        appSession: members[0]!.appSession,
+        roomId,
+        tabId: randomUUID(),
+      },
+    });
+    sockets.push(socket);
+    const initial = new Promise<import("@xiangqi/shared").RoomSnapshot>(
+      (resolve, reject) => {
+        socket.once("room.snapshot", resolve);
+        socket.once("connect_error", reject);
+      },
+    );
+    socket.connect();
+    const peer = { socket, snapshot: await initial };
+    roomControllers.set(roomId, peer);
+    return peer;
+  };
   const mode = async (roomId: string, visibility: string) => {
+    const controller = await roomPeer(roomId);
     const current = await request("/rooms/" + roomId);
     expect(current.status).toBe(200);
     const state = (await current.json()) as { version: number };
     const response = await request(`/rooms/${roomId}/visibility`, 0, {
       expectedVersion: state.version,
       visibility,
+      control: await roomControl(controller.socket),
     });
     expect(response.status).toBe(200);
   };
@@ -155,28 +188,7 @@ async function fixture() {
     create,
     mode,
     feed,
-    roomPeer: async (roomId: string) => {
-      const socket = io(base, {
-        autoConnect: false,
-        reconnection: false,
-        transports: ["websocket"],
-        auth: {
-          accessToken: members[0]!.token,
-          appSession: members[0]!.appSession,
-          roomId,
-          tabId: randomUUID(),
-        },
-      });
-      sockets.push(socket);
-      const initial = new Promise<import("@xiangqi/shared").RoomSnapshot>(
-        (resolve, reject) => {
-          socket.once("room.snapshot", resolve);
-          socket.once("connect_error", reject);
-        },
-      );
-      socket.connect();
-      return { socket, snapshot: await initial };
-    },
+    roomPeer,
     close: async () => {
       sockets.forEach((s) => s.disconnect());
       await runtime.close();

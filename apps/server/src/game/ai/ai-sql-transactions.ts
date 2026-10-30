@@ -288,6 +288,29 @@ export class SqlAiTransactions implements AiTransactions {
                   authorized = true;
                   liveGames.delete(gameId);
                 },
+                expire: async (gameId, snapshot, abandonedBy) => {
+                  if (origin.kind !== "sweep")
+                    denied("AI_AUTHORITY_REQUIRED", 403);
+                  if (
+                    snapshot &&
+                    (snapshot.id !== gameId || snapshot.ownerId !== ownerId)
+                  )
+                    denied("AI_FORBIDDEN", 403);
+                  authorized = true;
+                  if (
+                    !(await reservations.expiredPresence(scope, {
+                      gameId,
+                      bootId,
+                    }))
+                  )
+                    return false;
+                  if (snapshot)
+                    await history.finish(scope, snapshot, bootId, abandonedBy);
+                  else await reservations.release(scope, { gameId, bootId });
+                  finalizeGuest = true;
+                  liveGames.delete(gameId);
+                  return true;
+                },
                 reclaim: async (gameId, expiredBootId) => {
                   if (origin.kind !== "sweep")
                     denied("AI_AUTHORITY_REQUIRED", 403);

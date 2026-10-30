@@ -72,7 +72,11 @@ it("result Leave waits for HTTP acknowledgement and uses the terminal room versi
   await userEvent
     .setup()
     .click(screen.getByRole("dialog").querySelectorAll("button")[1]!);
-  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", state.version);
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith(
+    "room",
+    state.version,
+    f.control,
+  );
   expect(f.onLeft).not.toHaveBeenCalled();
   expect(
     screen

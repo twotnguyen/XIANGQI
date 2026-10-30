@@ -128,6 +128,30 @@ async function finishedCustomRoom() {
     },
   };
 }
+async function replaceOpponent(
+  fixture: Awaited<ReturnType<typeof finishedCustomRoom>>,
+) {
+  const { b, roomId } = fixture;
+  await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
+  const replacement = await admitted();
+  await run(replacement.a, replacement.proof, [roomId], (s) =>
+    store.join(s, { commandId: randomUUID(), roomId, intent: "auto" }),
+  );
+  await run(replacement.a, replacement.proof, [roomId], (s) =>
+    store.presence(
+      s,
+      roomId,
+      {
+        connectionId: replacement.a.userId,
+        generation: 1,
+        serverInstance: randomUUID(),
+      },
+      true,
+    ),
+  );
+  return replacement;
+}
+
 describe.skipIf(!databaseUrl)("custom room rematch offers", () => {
   beforeEach(async () => {
     startCalls.length = 0;
@@ -325,6 +349,93 @@ describe.skipIf(!databaseUrl)("custom room rematch offers", () => {
         ])
       ).rows[0].status,
     ).toBe("WAITING");
+  });
+  it.each(["KEEP", "SWAP"] as const)(
+    "%s cannot create a rematch for A-C from the previous A-B result",
+    async (side) => {
+      const fixture = await finishedCustomRoom();
+      const { h, roomId } = fixture;
+      const replacement = await replaceOpponent(fixture);
+      for (const player of [h, replacement])
+        await expect(
+          run(player.a, player.proof, [roomId], (s) =>
+            matchStore.proposeRematch(s, roomId, side),
+          ),
+        ).rejects.toMatchObject({ code: "REMATCH_DENIED" });
+      const state = (
+        await pool.query(
+          "SELECT (SELECT count(*)::int FROM xiangqi_room.rematch_offers WHERE room_id=$1) AS offers, (SELECT count(*)::int FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdowns, (SELECT count(*)::int FROM public.matches WHERE room_id=$1) AS matches, status FROM public.rooms WHERE id=$1",
+          [roomId],
+        )
+      ).rows[0];
+      expect(state).toEqual({
+        offers: 0,
+        countdowns: 0,
+        matches: 1,
+        status: "WAITING",
+      });
+      expect(startCalls).toHaveLength(0);
+    },
+  );
+  it("rejects an old persisted A-C offer tied to A-B instead of starting a different pair", async () => {
+    const fixture = await finishedCustomRoom();
+    const { h, roomId } = fixture;
+    const replacement = await replaceOpponent(fixture);
+    // Model an offer previously accepted by the old implementation, using the real schema.
+    await pool.query(
+      "WITH t AS MATERIALIZED(SELECT clock_timestamp() AS now) INSERT INTO xiangqi_room.rematch_offers(id,room_id,match_id,proposer_id,responder_id,side,status,created_at,expires_at,resolved_at) SELECT $1,$2,m.id,$3,$4,'SWAP','PENDING',t.now,t.now+interval '30 seconds',NULL FROM public.matches m CROSS JOIN t WHERE m.room_id=$2 ORDER BY m.created_at DESC LIMIT 1",
+      [randomUUID(), roomId, h.a.userId, replacement.a.userId],
+    );
+    await expect(
+      run(replacement.a, replacement.proof, [roomId], (s) =>
+        matchStore.respondRematch(s, roomId, true),
+      ),
+    ).rejects.toMatchObject({ code: "REMATCH_STALE" });
+    const state = (
+      await pool.query(
+        "SELECT (SELECT count(*)::int FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdowns, (SELECT count(*)::int FROM public.matches WHERE room_id=$1) AS matches, status FROM public.rooms WHERE id=$1",
+        [roomId],
+      )
+    ).rows[0];
+    expect(state).toEqual({ countdowns: 0, matches: 1, status: "WAITING" });
+    expect(startCalls).toHaveLength(0);
+  });
+  it("keeps a locked custom room locked while the same pair rematches without a visible code", async () => {
+    const { h, b, roomId, view } = await finishedCustomRoom();
+    const locked = await run(h.a, h.proof, [roomId], (s) =>
+      matchStore.changeVisibility(s, roomId, view.version, "LOCKED"),
+    );
+    expect(locked.room.inviteCode).toBeNull();
+    const storedBefore = (
+      await pool.query(
+        "SELECT invite_code,time_control FROM public.rooms WHERE id=$1",
+        [roomId],
+      )
+    ).rows[0];
+    expect(storedBefore.invite_code).toBe(view.room.inviteCode);
+    await run(h.a, h.proof, [roomId], (s) =>
+      matchStore.proposeRematch(s, roomId, "KEEP"),
+    );
+    const accepted = await run(b.a, b.proof, [roomId], (s) =>
+      matchStore.respondRematch(s, roomId, true),
+    );
+    expect(accepted.room.visibility).toBe("LOCKED");
+    expect(accepted.room.inviteCode).toBeNull();
+    expect(accepted.room.countdown).not.toBeNull();
+    await pool.query(
+      "UPDATE xiangqi_room.countdowns SET due_at=clock_timestamp()-interval '1 second' WHERE room_id=$1",
+      [roomId],
+    );
+    await run(h.a, h.proof, [roomId], (s) => matchStore.startDue(s, roomId));
+    expect(startCalls).toHaveLength(1);
+    expect(
+      (
+        await pool.query(
+          "SELECT visibility,invite_code,time_control,status FROM public.rooms WHERE id=$1",
+          [roomId],
+        )
+      ).rows[0],
+    ).toEqual({ ...storedBefore, visibility: "LOCKED", status: "PLAYING" });
   });
   it("a ranked room without an invite code is rejected with REMATCH_DENIED", async () => {
     const h = await admitted();

@@ -7,6 +7,7 @@ import {
   loginPool,
   reset,
   pool,
+  roomControl,
   waitFor,
 } from "./game.runtime.test-helper.js";
 import {
@@ -418,6 +419,7 @@ describe.skipIf(!databaseUrl)("guest runtime acceptance", () => {
         `/rooms/${seated.roomId}/leave`,
         {
           expectedVersion: version,
+          control: await roomControl(seated.hostSocket),
         },
       );
       expect(left.status).toBe(200);

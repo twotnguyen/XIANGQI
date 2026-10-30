@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { databaseUrl, reset, loginPool } from "./game.runtime.test-helper.js";
+import {
+  databaseUrl,
+  reset,
+  loginPool,
+  roomControl,
+} from "./game.runtime.test-helper.js";
 import {
   bootGuestRuntime,
   memberCall,
@@ -48,6 +53,21 @@ async function join(m: MemberFixture, code: string, preference = "auto") {
     preference,
   });
 }
+async function openController(member: MemberFixture, roomId: string) {
+  const socket = boot!.open({
+    accessToken: member.token,
+    appSession: member.appSession,
+    roomId,
+    tabId: randomUUID(),
+  });
+  const joined = new Promise<void>((resolve, reject) => {
+    socket.once("room.snapshot", () => resolve());
+    socket.once("connect_error", reject);
+  });
+  socket.connect();
+  await joined;
+  return socket;
+}
 async function befriend(a: MemberFixture, b: MemberFixture) {
   const username = (
     await pool.query("SELECT username FROM public.profiles WHERE user_id=$1", [
@@ -83,6 +103,7 @@ describe.skipIf(!databaseUrl)("YC3 HTTP with real room transactions", () => {
       "/friends/invites",
       { roomId: b.roomId, username },
     );
+    const senderSocket = await openController(sender, b.roomId);
     const snapshot = await call<{ version: number }>(
       sender,
       `/rooms/${b.roomId}`,
@@ -90,6 +111,7 @@ describe.skipIf(!databaseUrl)("YC3 HTTP with real room transactions", () => {
     await call(sender, `/rooms/${b.roomId}/leave`, {
       commandId: randomUUID(),
       expectedVersion: snapshot.version,
+      control: await roomControl(senderSocket),
     });
     const removed = await fetch(boot!.base + `/friends/${viewer.id}`, {
       method: "DELETE",
@@ -164,6 +186,7 @@ describe.skipIf(!databaseUrl)("YC3 HTTP with real room transactions", () => {
         )
       ).rows[0].status,
     ).toBe("PENDING");
+    const hostSocket = await openController(hostB, b.roomId);
     const snapshot = await call<{ version: number }>(
       hostB,
       `/rooms/${b.roomId}`,
@@ -171,6 +194,7 @@ describe.skipIf(!databaseUrl)("YC3 HTTP with real room transactions", () => {
     await call(hostB, `/rooms/${b.roomId}/visibility`, {
       visibility: "LOCKED",
       expectedVersion: snapshot.version,
+      control: await roomControl(hostSocket),
     });
     expect(await call(viewer, "/friends/invites")).toEqual([]);
     expect(

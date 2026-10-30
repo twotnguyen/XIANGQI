@@ -263,13 +263,10 @@ export class UsernameService {
       );
     try {
       await this.mailer.sendOtp(issued.contactEmail, input.otp);
+      if (!(await this.store.confirmDelivery(userId, purpose, issued)))
+        throw new Error("OTP delivery superseded");
     } catch {
-      await this.store.discard(
-        userId,
-        purpose,
-        input.requestHash,
-        issued.otpHash,
-      );
+      await this.store.discard(userId, purpose, issued);
       throw new UsernameError(
         "USERNAME_PROVIDER_ERROR",
         "Không gửi được mã, vui lòng thử lại sau",

@@ -69,6 +69,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   for (const [name, descriptor] of originals) {
@@ -227,4 +228,155 @@ it("clears the history and disables the composer as soon as the friendship is re
   expect(
     (screen.getByLabelText("Nội dung tin nhắn") as HTMLInputElement).disabled,
   ).toBe(true);
+});
+
+it("retries a failed read watermark on the existing poll without requiring new focus or scrolling", async () => {
+  vi.useFakeTimers();
+  const markRead = vi
+    .fn()
+    .mockRejectedValueOnce(new TypeError("network interrupted"))
+    .mockResolvedValue(1);
+  const client = fakeClient({
+    messages: vi.fn(async () => ({
+      messages: [msg(1, FRIEND, "đang nhìn thấy")],
+      readSeq: 0,
+    })),
+    markRead,
+  });
+  const { container } = renderChat(client);
+  await act(async () => {});
+  reportVisible(container, [1]);
+  await act(async () => {});
+  expect(markRead).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1999);
+  });
+  expect(markRead).toHaveBeenCalledTimes(1);
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1);
+  });
+  expect(markRead).toHaveBeenCalledTimes(2);
+  expect(markRead).toHaveBeenLastCalledWith(FRIEND, 1);
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(4000);
+  });
+  expect(markRead).toHaveBeenCalledTimes(2);
+});
+
+it.each(["unfocused", "hidden"] as const)(
+  "does not retry a failed read watermark while the tab is %s",
+  async (state) => {
+    vi.useFakeTimers();
+    const markRead = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError("network interrupted"))
+      .mockResolvedValue(1);
+    const client = fakeClient({
+      messages: vi.fn(async () => ({
+        messages: [msg(1, FRIEND, "tin đến")],
+        readSeq: 0,
+      })),
+      markRead,
+    });
+    const { container } = renderChat(client);
+    await act(async () => {});
+    reportVisible(container, [1]);
+    await act(async () => {});
+    expect(markRead).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      if (state === "unfocused") {
+        vi.mocked(document.hasFocus).mockReturnValue(false);
+        window.dispatchEvent(new Event("blur"));
+      } else {
+        Object.defineProperty(document, "visibilityState", {
+          configurable: true,
+          get: () => "hidden",
+        });
+        document.dispatchEvent(new Event("visibilitychange"));
+      }
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(6000);
+    });
+    expect(markRead).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      vi.mocked(document.hasFocus).mockReturnValue(true);
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        get: () => "visible",
+      });
+      window.dispatchEvent(new Event("focus"));
+    });
+    await act(async () => {});
+    expect(markRead).toHaveBeenCalledTimes(2);
+  },
+);
+
+it("does not overlap read requests or retry after the friendship is revoked", async () => {
+  vi.useFakeTimers();
+  let rejectRead!: (error: unknown) => void;
+  const markRead = vi.fn(
+    () =>
+      new Promise<number>((_resolve, reject) => {
+        rejectRead = reject;
+      }),
+  );
+  const client = fakeClient({
+    messages: vi.fn(async () => ({
+      messages: [msg(1, FRIEND, "tin riêng")],
+      readSeq: 0,
+    })),
+    markRead,
+  });
+  const { container } = renderChat(client);
+  await act(async () => {});
+  reportVisible(container, [1]);
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(6000);
+  });
+  expect(markRead).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    rejectRead(new FriendRequestError("DM_NOT_FRIENDS", 403));
+  });
+  expect(screen.queryByText("tin riêng")).toBeNull();
+  expect(
+    (screen.getByLabelText("Nội dung tin nhắn") as HTMLInputElement).disabled,
+  ).toBe(true);
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(6000);
+  });
+  expect(markRead).toHaveBeenCalledTimes(1);
+});
+
+it("stops read retries and history polling after unmount", async () => {
+  vi.useFakeTimers();
+  let rejectRead!: (error: unknown) => void;
+  const markRead = vi.fn(
+    () =>
+      new Promise<number>((_resolve, reject) => {
+        rejectRead = reject;
+      }),
+  );
+  const client = fakeClient({
+    messages: vi.fn(async () => ({
+      messages: [msg(1, FRIEND, "tin đến")],
+      readSeq: 0,
+    })),
+    markRead,
+  });
+  const { container, unmount } = renderChat(client);
+  await act(async () => {});
+  reportVisible(container, [1]);
+  expect(markRead).toHaveBeenCalledTimes(1);
+  unmount();
+  await act(async () => {
+    rejectRead(new TypeError("network interrupted"));
+    await vi.advanceTimersByTimeAsync(6000);
+  });
+  expect(markRead).toHaveBeenCalledTimes(1);
+  expect(client.messages).toHaveBeenCalledTimes(1);
 });

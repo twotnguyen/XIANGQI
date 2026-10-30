@@ -43,6 +43,7 @@ it("mode save uses current CAS, waits for canonical HTTP and hides the old invit
     "room",
     3,
     "LOCKED",
+    f.control,
   );
   expect(screen.getByText("70521348")).toBeTruthy();
   await act(async () =>
@@ -125,6 +126,7 @@ it("settings uses the latest room version while open and preserves the mode on a
     "room",
     7,
     "PUBLIC",
+    f.control,
   );
   expect(await screen.findByText(/Chế độ hiện tại: Chỉ qua mã/)).toBeTruthy();
   expect(screen.getByRole("dialog").textContent).toContain("Phòng đã thay đổi");

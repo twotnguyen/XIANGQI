@@ -36,6 +36,8 @@ describe("room labels", () => {
   });
 
   it.each([
+    ["FRIEND_BUSY", "Người này đang ở trong một ván/phòng khác."],
+    ["ALREADY_SEATED", "Bạn đang ở trong một ván/phòng khác."],
     ["ROOM_FULL", "Phòng đã đầy chỗ xem."],
     ["SEAT_FULL", "Ghế đã đủ hai người chơi."],
     ["HOST_STAYS", "Chủ phòng không tự chuyển xuống xem."],

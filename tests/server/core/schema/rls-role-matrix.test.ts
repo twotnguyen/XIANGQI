@@ -33,6 +33,7 @@ const migrations = [
   "20261102000003_unlimited_inactivity",
   "20261102000004_direct_messages",
   "20261102000005_account_theme",
+  "20261103000001_username_otp_delivery",
 ];
 const appSchemas = [
   "public",

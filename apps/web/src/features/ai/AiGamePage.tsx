@@ -90,10 +90,12 @@ export function AiGamePage({
   gameId,
   authorizedFetch,
   getProof,
+  allowUndo = true,
 }: {
   gameId: string;
   authorizedFetch: AuthorizedFetch;
   getProof: Proof;
+  allowUndo?: boolean;
 }) {
   const [snapshot, setSnapshot] = useState<AiGameSnapshot | null>(null);
   const [control, setControl] = useState<AiControl | null>(null);
@@ -295,11 +297,12 @@ export function AiGamePage({
   }, [gameId, run]);
 
   const handleUndo = useCallback(async () => {
+    if (!allowUndo) return;
     const response = await run((client, current) =>
       client.undo(current.id, current.version),
     );
     if (response && response.snapshot.id === gameId) setLastMove(null);
-  }, [gameId, run]);
+  }, [allowUndo, gameId, run]);
 
   // Lỗi được ném lại để AiSetupDialog giữ level/side và hiện thông báo.
   const handleStart = useCallback(
@@ -389,12 +392,12 @@ export function AiGamePage({
         snapshot={snapshot}
         connected={connected}
         canControl={canControl}
-        undoRemaining={3 - snapshot.undoUsed}
+        undoRemaining={allowUndo ? 3 - snapshot.undoUsed : undefined}
         lastMove={lastMove}
         onMove={handleMove}
         onResign={handleResign}
         onRetry={handleRetry}
-        onUndo={handleUndo}
+        onUndo={allowUndo ? handleUndo : undefined}
         onNewGame={() => setNewGameDialog(true)}
         onLobby={requestLeave}
       />

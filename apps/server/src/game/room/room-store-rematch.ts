@@ -48,13 +48,29 @@ export class RoomRematchStore extends RoomSwapStore {
     )
       throw new RoomError("REMATCH_DENIED", "Đang đếm vào ván, không tái đấu");
     const match = (
-      await s.client.query<{ id: string; status: string }>(
-        "SELECT id,status FROM public.matches WHERE room_id=$1 ORDER BY created_at DESC LIMIT 1",
+      await s.client.query<{
+        id: string;
+        status: string;
+        red_user_id: string | null;
+        black_user_id: string | null;
+      }>(
+        "SELECT id,status,red_user_id,black_user_id FROM public.matches WHERE room_id=$1 ORDER BY created_at DESC LIMIT 1",
         [id],
       )
     ).rows[0];
     if (!match || !["FINISHED", "INTERRUPTED"].includes(match.status))
       throw new RoomError("REMATCH_DENIED", "Chưa có ván kết thúc để tái đấu");
+    const seated = new Set(players.map((p) => p.user_id));
+    if (
+      !match.red_user_id ||
+      !match.black_user_id ||
+      !seated.has(match.red_user_id) ||
+      !seated.has(match.black_user_id)
+    )
+      throw new RoomError(
+        "REMATCH_DENIED",
+        "Chỉ tái đấu với đúng hai người của ván vừa kết thúc",
+      );
     const other = players.find((m) => m.user_id !== s.actor.userId)!;
     return { other, matchId: match.id };
   }
@@ -120,8 +136,13 @@ export class RoomRematchStore extends RoomSwapStore {
     const players = members.filter((m) => m.role === "PLAYER");
     const seated = new Set(players.map((m) => m.user_id));
     const latest = (
-      await s.client.query<{ id: string }>(
-        "SELECT id FROM public.matches WHERE room_id=$1 ORDER BY created_at DESC LIMIT 1",
+      await s.client.query<{
+        id: string;
+        status: string;
+        red_user_id: string | null;
+        black_user_id: string | null;
+      }>(
+        "SELECT id,status,red_user_id,black_user_id FROM public.matches WHERE room_id=$1 ORDER BY created_at DESC LIMIT 1",
         [id],
       )
     ).rows[0];
@@ -137,7 +158,13 @@ export class RoomRematchStore extends RoomSwapStore {
       seated.size !== 2 ||
       !seated.has(offer.proposer_id) ||
       !seated.has(offer.responder_id) ||
-      latest?.id !== offer.match_id ||
+      !latest ||
+      latest.id !== offer.match_id ||
+      !["FINISHED", "INTERRUPTED"].includes(latest.status) ||
+      !latest.red_user_id ||
+      !latest.black_user_id ||
+      !seated.has(latest.red_user_id) ||
+      !seated.has(latest.black_user_id) ||
       (
         await s.client.query(
           "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",

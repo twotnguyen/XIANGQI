@@ -83,11 +83,15 @@ export class AiHttpService implements AiHttpApi {
   private async mutate(
     supplied: Human,
     work: (owner: string, origin: Human) => Promise<AiSnapshot>,
+    memberOnly = false,
   ): Promise<AiHttpResult> {
     const origin = originCopy(supplied);
     const { owner, control } = await this.options.transactions.read(
       origin.proof,
       async (scope, owner) => {
+        // P2 Undo chỉ dành cho thành viên; loại actor lấy từ phiên đã xác thực.
+        if (memberOnly && scope.actor.kind !== "member")
+          sessionNotReady("AI_FORBIDDEN", 403);
         const control = await this.options.control.inspect(scope, origin);
         if (control.mode !== "controller") sessionNotReady("TAB_READ_ONLY");
         return { owner, control };
@@ -156,8 +160,11 @@ export class AiHttpService implements AiHttpApi {
    * Undo nước đi theo BA 6.3 (tối đa 3 lần/ván, không sau khi kết thúc).
    */
   undo(origin: Human, gameId: string, version: number): Promise<AiHttpResult> {
-    return this.mutate(origin, (owner, proof) =>
-      this.options.games.undo(owner, gameId, { version }, proof),
+    return this.mutate(
+      origin,
+      (owner, proof) =>
+        this.options.games.undo(owner, gameId, { version }, proof),
+      true,
     );
   }
 }

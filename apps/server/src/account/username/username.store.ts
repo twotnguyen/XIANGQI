@@ -32,7 +32,15 @@ export interface IssueInput {
 }
 export type Issued =
   | { kind: "unavailable" }
-  | { kind: "ok"; contactEmail: string; otpHash: string; expiresAt: Date };
+  | {
+      kind: "ok";
+      contactEmail: string;
+      otpHash: string;
+      expiresAt: Date;
+      requestHash: string;
+      sentAt: Date;
+      priorVerifiedHash: string | null;
+    };
 export type Applied = { kind: "invalid" } | { kind: "ok"; username: string };
 
 async function readAccount(
@@ -102,18 +110,28 @@ export class UsernameStore {
       if (!account?.active || !account.contactEmail)
         return { kind: "unavailable" };
       const prior = (
-        await client.query<{ requestHash: string; sentAt: Date }>(
-          `SELECT request_hash AS "requestHash",sent_at AS "sentAt" FROM xiangqi_auth.username_challenges
-           WHERE user_id=$1 AND purpose=$2 FOR UPDATE`,
+        await client.query<{
+          requestHash: string;
+          lastIssueAt: Date;
+          verifiedHash: string | null;
+        }>(
+          `SELECT request_hash AS "requestHash",COALESCE(last_issue_at,sent_at) AS "lastIssueAt",verified_hash AS "verifiedHash"
+           FROM xiangqi_auth.username_challenges WHERE user_id=$1 AND purpose=$2 FOR UPDATE`,
           [userId, purpose],
         )
       ).rows[0];
-      if (input.priorHash && prior?.requestHash !== input.priorHash)
+      if (
+        input.priorHash &&
+        (prior?.requestHash !== input.priorHash || prior?.verifiedHash)
+      )
         throw new UsernameError(
           "USERNAME_REQUEST_INVALID",
           "Yêu cầu xác minh không hợp lệ",
         );
-      if (prior && input.sentAt.getTime() - prior.sentAt.getTime() < RESEND_MS)
+      if (
+        prior &&
+        input.sentAt.getTime() - prior.lastIssueAt.getTime() < RESEND_MS
+      )
         throw new UsernameError(
           "USERNAME_RATE_LIMITED",
           "Vui lòng đợi trước khi gửi lại mã",
@@ -122,13 +140,13 @@ export class UsernameStore {
       const contactEmail = account.contactEmail;
       const otpHash = input.otpHash(contactEmail);
       const expiresAt = new Date(input.sentAt.getTime() + OTP_MS);
+      // Chỉ giữ chỗ lần gửi và cooldown. Mã/capability đang hợp lệ không đổi trước khi SMTP xác nhận.
       await client.query(
-        `INSERT INTO xiangqi_auth.username_challenges(user_id,purpose,request_hash,contact_email,otp_hash,sent_at,expires_at)
-         VALUES($1,$2,$3,$4,$5,$6,$7)
-         ON CONFLICT(user_id,purpose) DO UPDATE SET request_hash=EXCLUDED.request_hash,contact_email=EXCLUDED.contact_email,
-           otp_hash=EXCLUDED.otp_hash,sent_at=EXCLUDED.sent_at,expires_at=EXCLUDED.expires_at,
-           verified_hash=NULL,verified_expires_at=NULL,
-           attempts=CASE WHEN username_challenges.expires_at>EXCLUDED.sent_at THEN username_challenges.attempts ELSE 0 END`,
+        `INSERT INTO xiangqi_auth.username_challenges(user_id,purpose,request_hash,contact_email,sent_at,expires_at,
+           pending_request_hash,pending_otp_hash,last_issue_at)
+         VALUES($1,$2,$3,$4,$6,$7,$3,$5,$6)
+         ON CONFLICT(user_id,purpose) DO UPDATE SET pending_request_hash=EXCLUDED.pending_request_hash,
+           pending_otp_hash=EXCLUDED.pending_otp_hash,last_issue_at=EXCLUDED.last_issue_at`,
         [
           userId,
           purpose,
@@ -139,22 +157,64 @@ export class UsernameStore {
           expiresAt,
         ],
       );
-      return { kind: "ok", contactEmail, otpHash, expiresAt };
+      return {
+        kind: "ok",
+        contactEmail,
+        otpHash,
+        expiresAt,
+        requestHash: input.requestHash,
+        sentAt: input.sentAt,
+        priorVerifiedHash: prior?.verifiedHash ?? null,
+      };
     });
   }
 
+  /** Chỉ callback của lần gửi hiện hành được thay mã và cấp lại năm lượt thử. */
+  async confirmDelivery(
+    userId: string,
+    purpose: UsernamePurpose,
+    issued: Extract<Issued, { kind: "ok" }>,
+  ): Promise<boolean> {
+    return transaction(this.pool, async (client) => {
+      await actorLock(client, userId);
+      const account = await readAccount(client, userId);
+      if (!account?.active || account.contactEmail !== issued.contactEmail)
+        return false;
+      const result = await client.query(
+        `UPDATE xiangqi_auth.username_challenges SET request_hash=$3,contact_email=$6,otp_hash=$4,sent_at=$5,expires_at=$7,
+           attempts=0,verified_hash=NULL,verified_expires_at=NULL,pending_request_hash=NULL,pending_otp_hash=NULL
+         WHERE user_id=$1 AND purpose=$2 AND pending_request_hash=$3 AND pending_otp_hash=$4 AND last_issue_at=$5
+           AND verified_hash IS NOT DISTINCT FROM $8`,
+        [
+          userId,
+          purpose,
+          issued.requestHash,
+          issued.otpHash,
+          issued.sentAt,
+          issued.contactEmail,
+          issued.expiresAt,
+          issued.priorVerifiedHash,
+        ],
+      );
+      return result.rowCount === 1;
+    });
+  }
+
+  /** SMTP lỗi không xóa proof/số lần sai hoặc cooldown; callback cũ không được đụng lần gửi mới. */
   async discard(
     userId: string,
     purpose: UsernamePurpose,
-    requestHash: string,
-    otpHash: string,
+    issued: Extract<Issued, { kind: "ok" }>,
   ): Promise<void> {
-    await this.pool.query(
-      "DELETE FROM xiangqi_auth.username_challenges WHERE user_id=$1 AND purpose=$2 AND request_hash=$3 AND otp_hash=$4",
-      [userId, purpose, requestHash, otpHash],
-    );
+    await transaction(this.pool, async (client) => {
+      await actorLock(client, userId);
+      await client.query(
+        `UPDATE xiangqi_auth.username_challenges SET pending_request_hash=NULL,pending_otp_hash=NULL
+         WHERE user_id=$1 AND purpose=$2 AND pending_request_hash=$3 AND pending_otp_hash=$4 AND last_issue_at=$5`,
+        [userId, purpose, issued.requestHash, issued.otpHash, issued.sentAt],
+      );
+    });
   }
-
   /**
    * OTP đúng thì cấp capability có phạm vi (chỉ lưu hash) và vô hiệu OTP; sai thì tăng attempts và commit.
    */

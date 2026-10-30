@@ -1,6 +1,6 @@
 .xq-board {
   --board-select: #d4af37;
-  --board-last-move: #f59e0b;
+  --board-last-move: #1e4f7a;
   --board-check: #ef4444;
   --board-focus: #155e75;
 }
@@ -16,26 +16,10 @@
 }
 
 .xq-board-capture {
-  fill: rgba(220, 38, 38, 0.15);
-  stroke: #dc2626;
+  fill: none;
+  stroke: var(--board-hint);
   stroke-width: 2.4;
-  stroke-dasharray: 6 3;
-  filter: drop-shadow(0 1px 2px rgba(90, 10, 10, 0.3));
-  animation: xq-capture-pulse 1.5s ease-in-out infinite;
 }
-
-@keyframes xq-capture-pulse {
-  0%,
-  100% {
-    stroke-opacity: 0.95;
-    r: 19px;
-  }
-  50% {
-    stroke-opacity: 0.5;
-    r: 20.5px;
-  }
-}
-
 .xq-board-last {
   fill: none;
   stroke: var(--board-last-move);
@@ -44,44 +28,8 @@
   filter: drop-shadow(0 1px 2px rgba(35, 18, 5, 0.4));
 }
 
-/* Dấu vết nước đi (Last Move Indicators) */
 .xq-board-last-indicators {
   pointer-events: none;
-}
-
-/* Dấu vết ô xuất phát: dấu chấm tròn tinh tế và vòng tròn mảnh mờ */
-.xq-board-last-from-ring {
-  fill: rgba(245, 158, 11, 0.08);
-  stroke: #f59e0b;
-  stroke-width: 1.4;
-  opacity: 0.8;
-}
-
-.xq-board-last-from-dot {
-  fill: #f59e0b;
-  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.7));
-}
-
-/* Vòng viền vàng kim thanh nhã ôm quanh quân cờ vừa di chuyển */
-.xq-board-last-dest-ring {
-  fill: none;
-  stroke: #f5ca67;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  filter: drop-shadow(0 1px 3px rgba(35, 18, 5, 0.5));
-  animation: xq-dest-ring-pulse 2.2s ease-in-out infinite;
-}
-
-@keyframes xq-dest-ring-pulse {
-  0%,
-  100% {
-    stroke-opacity: 0.95;
-    stroke-width: 2.4;
-  }
-  50% {
-    stroke-opacity: 0.55;
-    stroke-width: 1.9;
-  }
 }
 
 .xq-board-check {
@@ -184,7 +132,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .xq-board-capture,
-  .xq-board-last-dest-ring,
   .xq-board-returning,
   .xq-board-piece-slide,
   .xq-board-piece {

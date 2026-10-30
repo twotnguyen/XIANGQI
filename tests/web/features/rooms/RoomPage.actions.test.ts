@@ -224,21 +224,30 @@ it("active player Leave warns before HTTP, Stay preserves the game, confirmation
         finish = resolve;
       }),
   );
-  fireEvent.click(
-    within(screen.getByRole("dialog", { name: "Rời phòng?" })).getByRole(
-      "button",
-      { name: "Rời phòng" },
-    ),
-  );
-  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", 3);
+  await act(async () => {
+    fireEvent.click(
+      within(screen.getByRole("dialog", { name: "Rời phòng?" })).getByRole(
+        "button",
+        { name: "Rời phòng" },
+      ),
+    );
+  });
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", 3, f.control);
   expect(f.onLeft).not.toHaveBeenCalled();
   await act(async () => finish({ roomId: "room", left: true }));
   expect(f.onLeft).toHaveBeenCalledOnce();
 });
 it("spectators Leave without claiming resignation or opening player confirmation", async () => {
-  const f = setup({ ...actionable(), role: "spectator", draw: null });
+  const f = setup({
+    ...actionable(),
+    role: "spectator",
+    draw: null,
+    control: { mode: "readonly", generation: 1, reason: "not_allowed" },
+  });
   await f.ready();
-  fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
-  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", 3);
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
+  });
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", 3, f.control);
   expect(screen.queryByRole("dialog", { name: "Rời phòng?" })).toBeNull();
 });

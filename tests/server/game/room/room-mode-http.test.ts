@@ -96,8 +96,14 @@ const withRoom = vi.fn(
     return { status: "active", value: await work(scope) };
   },
 );
+const control = {
+  tabId: "11111111-1111-4111-8111-111111111111",
+  connectionId: "physical-tab",
+  generation: 1,
+};
+const assertHttpControl = vi.fn(async () => {});
 const service = new RoomHttpService(
-  { changeVisibility } as unknown as RoomStore,
+  { changeVisibility, assertHttpControl } as unknown as RoomStore,
   { withRoom } as unknown as RoomTransactions,
   {
     resolve,
@@ -138,7 +144,11 @@ async function request(
       Origin: "http://localhost:5174",
       ...headers,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(
+      body && typeof body === "object" && !Array.isArray(body)
+        ? { ...body, control }
+        : body,
+    ),
   });
 }
 it.each(["PUBLIC", "CODE_ONLY", "LOCKED"] as const)(
@@ -253,7 +263,7 @@ it("requires both proofs and never falls back to cookie for a malformed explicit
       Cookie: `xiangqi_session=${proof.appSession}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ visibility: "PUBLIC", expectedVersion: 8 }),
+    body: JSON.stringify({ visibility: "PUBLIC", expectedVersion: 8, control }),
   });
   expect(response.status).toBe(200);
   expect(resolve).toHaveBeenLastCalledWith(proof);

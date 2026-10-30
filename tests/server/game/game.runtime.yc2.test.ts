@@ -16,7 +16,12 @@ import {
 } from "@server/account/login/postgres-login-store.js";
 import type { RoomView } from "@server/game/room/room.types.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
-import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+import {
+  databaseUrl,
+  pool,
+  reset,
+  roomControl,
+} from "./game.runtime.test-helper.js";
 import {
   ackOk,
   bootGuestRuntime,
@@ -195,7 +200,10 @@ async function leave(room: Room, who: "red" | "black") {
     seat.member,
     "POST",
     `/rooms/${room.roomId}/leave`,
-    { expectedVersion: await freshVersion(room, who) },
+    {
+      expectedVersion: await freshVersion(room, who),
+      control: await roomControl(seat.socket),
+    },
   );
   expect(response.status).toBe(200);
 }
@@ -211,7 +219,11 @@ async function setVisibility(
     seat.member,
     "POST",
     `/rooms/${room.roomId}/visibility`,
-    { expectedVersion: await freshVersion(room, who), visibility },
+    {
+      expectedVersion: await freshVersion(room, who),
+      visibility,
+      control: await roomControl(seat.socket),
+    },
   );
   expect(response.status).toBe(200);
 }

@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 import {
   Body,
   Controller,
@@ -184,8 +185,35 @@ export class RoomController {
         authority,
         id(roomId),
         input.expectedVersion as number,
+        this.control(input),
       );
     });
+  }
+  private control(input: Record<string, unknown>): RoomControlProof {
+    const value = input.control as Partial<RoomControlProof> | undefined;
+    if (
+      !value ||
+      typeof value !== "object" ||
+      Array.isArray(value) ||
+      typeof value.tabId !== "string" ||
+      !uuid.test(value.tabId) ||
+      typeof value.connectionId !== "string" ||
+      !value.connectionId ||
+      value.connectionId.length > 128 ||
+      !Number.isSafeInteger(value.generation) ||
+      (value.generation ?? 0) <= 0 ||
+      (value.generation ?? 0) > 2_147_483_647
+    )
+      throw new RoomError(
+        "ROOM_TAB_READ_ONLY",
+        "Tab này chỉ có quyền xem",
+        403,
+      );
+    return {
+      tabId: value.tabId.toLowerCase(),
+      connectionId: value.connectionId,
+      generation: value.generation!,
+    };
   }
   private versioned(input: Record<string, unknown>) {
     if (
@@ -213,6 +241,7 @@ export class RoomController {
         authority,
         id(roomId),
         this.versioned(input),
+        this.control(input),
       );
     });
   }
@@ -236,6 +265,7 @@ export class RoomController {
         id(roomId),
         this.versioned(input),
         input.targetId as string,
+        this.control(input),
       );
     });
   }
@@ -259,6 +289,7 @@ export class RoomController {
         id(roomId),
         this.versioned(input),
         input.targetId as string,
+        this.control(input),
       );
     });
   }
@@ -282,6 +313,7 @@ export class RoomController {
         id(roomId),
         this.versioned(input),
         input.accept as boolean,
+        this.control(input),
       );
     });
   }
@@ -305,6 +337,7 @@ export class RoomController {
         id(roomId),
         this.versioned(input),
         input.targetId as string,
+        this.control(input),
       );
     });
   }
@@ -331,6 +364,7 @@ export class RoomController {
         authority,
         id(roomId),
         input.expectedVersion as number,
+        this.control(input),
       );
     });
   }
@@ -357,6 +391,7 @@ export class RoomController {
         authority,
         id(roomId),
         input.expectedVersion as number,
+        this.control(input),
       );
     });
   }
@@ -383,6 +418,7 @@ export class RoomController {
         authority,
         id(roomId),
         input.expectedVersion as number,
+        this.control(input),
       );
     });
   }
@@ -411,6 +447,7 @@ export class RoomController {
         id(roomId),
         input.expectedVersion as number,
         input.accept as boolean,
+        this.control(input),
       );
     });
   }
@@ -439,6 +476,7 @@ export class RoomController {
         id(roomId),
         input.expectedVersion as number,
         input.side as "KEEP" | "SWAP",
+        this.control(input),
       );
     });
   }
@@ -467,6 +505,7 @@ export class RoomController {
         id(roomId),
         input.expectedVersion as number,
         input.accept as boolean,
+        this.control(input),
       );
     });
   }
@@ -496,6 +535,7 @@ export class RoomController {
         id(roomId),
         input.expectedVersion as number,
         input.visibility as "PUBLIC" | "CODE_ONLY" | "LOCKED",
+        this.control(input),
       );
     });
   }

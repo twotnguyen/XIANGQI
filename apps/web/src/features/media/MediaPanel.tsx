@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { RoomControlProof } from "@xiangqi/shared";
 import { RemoteParticipant, Room, RoomEvent, Track } from "livekit-client";
 import { Button, Dialog, Notice } from "../../shared/ui/primitives.js";
 import {
@@ -143,6 +144,7 @@ export function MediaPanel({
   writable,
   tabId,
   onTakeover,
+  getControl,
   seats,
   userId,
 }: {
@@ -155,6 +157,7 @@ export function MediaPanel({
   tabId: string;
   // Chuyển quyền điều khiển sang tab này qua máy chủ; ném lỗi nếu thất bại.
   onTakeover: () => Promise<void>;
+  getControl?: () => Promise<RoomControlProof>;
   seats: { red: string | null; black: string | null };
   userId: string;
 }) {
@@ -166,6 +169,7 @@ export function MediaPanel({
   const [level, setLevel] = useState<ShareLevel>("OPPONENT");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mediaFailed, setMediaFailed] = useState(false);
   const [pendingDevices, setPendingDevices] = useState({
     camera: false,
     mic: false,
@@ -248,6 +252,16 @@ export function MediaPanel({
       const current = () => epoch.current === id;
       const live = new Room({ adaptiveStream: true, dynacast: true });
       rooms.current.push(live);
+      live.on(RoomEvent.Disconnected, () => {
+        if (!current()) return;
+        // LiveKit đã hết khả năng tự nối lại; chỉ dọn media, không phát lệnh phòng/ván.
+        invalidate();
+        setCamera(false);
+        setMic(false);
+        setBusy(false);
+        setMediaFailed(true);
+        setStatus("Camera/mic tạm thời không dùng được");
+      });
       live.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
         if (current()) attachTrack(track, participant, roomName);
       });
@@ -293,7 +307,7 @@ export function MediaPanel({
         if (!current()) releaseRoom(live);
       }
     },
-    [attachTrack, userId],
+    [attachTrack, invalidate, userId],
   );
 
   // Lấy ticket theo đúng quyền thiết bị đang yêu cầu rồi chỉ phát khi mức đã xác nhận cho phép.
@@ -305,6 +319,7 @@ export function MediaPanel({
       const id = invalidate();
       const current = () => epoch.current === id;
       setBusy(true);
+      setMediaFailed(false);
       setStatus("");
       try {
         const ticket = await client.token(roomId, next.camera, next.mic, tabId);
@@ -342,6 +357,7 @@ export function MediaPanel({
         setCamera(false);
         setMic(false);
         setBusy(false);
+        setMediaFailed(true);
         setStatus(mediaErrorMessage(error, next.camera || next.mic));
       } finally {
         if (current()) setBusy(false);
@@ -484,14 +500,22 @@ export function MediaPanel({
   }
 
   async function share(next: ShareLevel) {
-    if (busy || devicePending.current.camera || devicePending.current.mic)
+    if (
+      !writable ||
+      busy ||
+      devicePending.current.camera ||
+      devicePending.current.mic
+    )
       return;
     const id = epoch.current;
     shareVersion.current += 1;
     setBusy(true);
     let confirmed: ShareLevel;
     try {
-      confirmed = (await client.setShare(roomId, next)).level;
+      if (!getControl) throw new Error("Room control unavailable");
+      const control = await getControl();
+      if (epoch.current !== id) return;
+      confirmed = (await client.setShare(roomId, next, control)).level;
     } catch {
       if (epoch.current !== id) return;
       // Không xác nhận được: tắt phát, giữ mức đã xác nhận và chỉ join receive-only (không stage).
@@ -575,6 +599,18 @@ export function MediaPanel({
         <Notice message="Tab này chỉ có thể xem. Camera và mic đang tắt; bật lại sẽ hỏi chuyển thiết bị sang tab này." />
       )}
       {status && <Notice message={status} />}
+      {mediaFailed && (
+        <Button
+          variant="secondary"
+          loading={busy}
+          disabledReason={!connected ? "Chưa kết nối phòng." : undefined}
+          onClick={() =>
+            void run({ camera: false, mic: false, level: levelRef.current })
+          }
+        >
+          Thử lại camera/mic
+        </Button>
+      )}
       <Dialog
         open={switching}
         onClose={cancelSwitch}

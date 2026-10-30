@@ -236,7 +236,7 @@ export async function createRegistrationRuntime(
   let schemaReady = true;
   try {
     const schema = await pool.query(
-      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
+      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.username_challenges') AND attname IN ('pending_request_hash','pending_otp_hash','last_issue_at') AND NOT attisdropped)=3 AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
     );
     if (
       !schema.rows[0]?.ready ||

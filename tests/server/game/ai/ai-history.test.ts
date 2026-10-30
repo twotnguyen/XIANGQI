@@ -73,6 +73,24 @@ describe("AI terminal effective history", () => {
     expect(history.status).toBe("INTERRUPTED");
     expect(history.outcome).toEqual({ reason: "AI_UNAVAILABLE", winner: null });
   });
+  it("fingerprints explicit physical expiry without reclassifying ordinary engine failures", () => {
+    const abandoned: AiSnapshot = {
+      ...snapshot(),
+      status: "ABANDONED",
+      outcome: { reason: "ENGINE_FAILURE", winner: null },
+    };
+    const expired = prepareAiHistory(abandoned, "DISCONNECT"),
+      interrupted = prepareAiHistory(abandoned);
+    expect(expired.outcome).toEqual({
+      reason: "AI_UNAVAILABLE",
+      winner: null,
+      abandonedBy: "DISCONNECT",
+    });
+    expect(expired.fingerprint).not.toBe(interrupted.fingerprint);
+    expect(() => prepareAiHistory(snapshot(), "DISCONNECT")).toThrow(
+      "AI_HISTORY_INVALID",
+    );
+  });
   it("rejects mismatched final FEN and an illegal or edited effective transition", () => {
     const game = snapshot();
     expect(() =>
