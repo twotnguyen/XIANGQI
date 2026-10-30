@@ -6,9 +6,7 @@ Ngày lập: **30/10/2026**. Trạng thái: **tổng quan phục vụ review; đ
 
 **PO cập nhật theo BA 0.20:** bỏ QR khỏi cả P1/P2; đưa Thách đấu (`US-P2-19`/XIAN-133), DM/unread (`US-P2-18`/XIAN-132), Không giới hạn/chống treo (`US-P2-10`/XIAN-124), Tái đấu **phòng tự tạo** (phần custom `US-P2-09`/XIAN-123) lên **P1**. Tái đấu Casual/ghép ngẫu nhiên và Ranked P1 theo BA 0.27. Mục 13 giữ số/mã cũ để tra cứu; bảng giờ/Epic là baseline lịch sử chưa tái ước lượng, không phải tổng P2 còn lại hoặc bằng chứng triển khai.
 
-**PO bổ sung BA 0.21:** toàn bộ Đổi Username (`US-P2-20`/XIAN-134), Khôi phục Username (`US-P2-21`/XIAN-135), media giữa tab (`US-P2-24`/XIAN-138), Giấy Sáng/Theo hệ thống (`US-P2-25`/XIAN-139) thuộc P1, đã có mã và bằng chứng local tại YC1 mục 19; chưa nghiệm thu Cloud/PO. Giữ phiên hợp lệ/hạn cũ khi đổi tên; theme lưu tài khoản/đồng bộ lựa chọn, OS theo từng thiết bị; Khách được chơi/xem phòng Không giới hạn do thành viên tạo và chịu chống treo, không tự tạo mức này.
-
-> **Đối chiếu mã 31/10/2026:** các câu “chưa triển khai” trong sổ review 30/10 là snapshot lịch sử. BA 0.20/0.21 và bằng chứng YC1 mục 19, YC2 mục 20, YC3 mục 16 xác nhận đã có mã và kiểm chứng local cho các bổ sung P1. Kết quả sửa các khoảng trống tìm được, kiểm tra mới và phần còn lại nằm ở mục 16; chưa có xác nhận nghiệm thu toàn bộ P1 hoặc cập nhật Jira.
+**PO bổ sung BA 0.21:** toàn bộ Đổi Username (`US-P2-20`/XIAN-134), Khôi phục Username (`US-P2-21`/XIAN-135), media giữa tab (`US-P2-24`/XIAN-138), Giấy Sáng/Theo hệ thống (`US-P2-25`/XIAN-139) thuộc P1, chưa triển khai/nghiệm thu. Giữ phiên hợp lệ/hạn cũ khi đổi tên; theme lưu tài khoản/đồng bộ lựa chọn, OS theo từng thiết bị; Khách được chơi/xem phòng Không giới hạn do thành viên tạo và chịu chống treo, không tự tạo mức này.
 
 ## 1. Mục đích, nguồn và cách sử dụng
 
@@ -340,7 +338,7 @@ Nguồn: BA 0.9, 0.17, 6.1–6.3, 11; US-08.1–08.3.
 | NFR-11 Media | Mặc định tắt; không ghi/lưu |
 | NFR-12 Dữ liệu cá nhân | P1 chỉ thu thập dữ liệu cần cho tài khoản, bạn bè và ván; không hỏi tuổi |
 
-P1 có ba lựa chọn Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống trong Hồ sơ thành viên theo BA 0.21; mặc định vẫn là Cổ Phong, lựa chọn lưu tài khoản và đồng bộ thiết bị. Mỗi màn hình có trạng thái thành công, tải, rỗng, lỗi, vô hiệu hóa có giải thích phù hợp.
+P1 dùng Kỳ Đài Cổ Phong, không có bộ chọn theme. Mỗi màn hình có trạng thái thành công, tải, rỗng, lỗi, vô hiệu hóa có giải thích phù hợp.
 
 Công nghệ đã chọn: TypeScript, Node 22.13 đến trước 23, pnpm; React/Vite/SVG; NestJS/Socket.IO; Supabase PostgreSQL/Auth, Google OAuth và SMTP ngoài; LiveKit; engine TypeScript riêng. Cấu trúc monorepo: apps/web, apps/server, packages/shared, packages/xiangqi-core, packages/engine, tests, supabase, infra.
 
@@ -923,9 +921,7 @@ Khi có quyết định, ghi: ngày; phần; nội dung trước/sau; lý do; ph
 
 ## 16. Đối chiếu tài liệu và hoàn thiện mã P1 — 31/10/2026
 
-> **Lưu ý phạm vi (rà chéo 31/10/2026):** mục 16 là báo cáo của lượt hoàn thiện mã P1 và được viết trước BA 0.27–0.36. Các câu "giữ P1 trước P2", "không mở Ranked/Casual/Undo online" và "P2 còn thiếu" chỉ mô tả phạm vi lượt đó; hiện toàn bộ Story `US-P2-*` (trừ QR) thuộc P1 và nằm trong danh sách cần làm ([trạng thái](../planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md), [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)).
-
-Đã đọc tám tài liệu trong thư mục product và đối chiếu các nhóm YC1–YC8 với mã/caller/test. Phần 0 của BA là nguồn ưu tiên: giữ P1 trước P2, không tạo QR, không sửa lịch/giờ/trạng thái Jira. Nhánh triển khai: feat/product-p1-completion từ develop; PR giao diện #156 được giữ riêng.
+Báo cáo hiện trạng mã của PR #157 (nhánh feat/product-p1-completion), đối chiếu YC1–YC8 với mã/caller/test. Mục này **chỉ bổ sung** sự kiện về mã đã sửa và không thay các quyết định BA Phần 0 (kể cả BA 0.27–0.36); không tạo QR, không sửa lịch/giờ/trạng thái Jira.
 
 ### 16.1 Những khoảng trống đã sửa
 
@@ -953,18 +949,18 @@ Riêng lượt đầu ở mục 16.1 không mở thêm phạm vi BA, không đ�
 - TypeScript web/server/tests, ESLint các file TS/TSX đổi, Prettier code/CSS và git diff --check đạt. Không chạy build trong phiên này.
 - Đã xem Sảnh local: nhãn 2/5, 1/5 và Không cho xem cập nhật đúng; không tràn ngang. Preview dùng dữ liệu minh họa, không thay nghiệm thu tài khoản/phòng thật.
 - Hồi quy PostgreSQL cho cặp Tái đấu bị thay người, custom LOCKED và API Khách Undo AI đã được chạy ở lượt tiếp: 12 ca Tái đấu và 9 ca Khách đạt. Dùng PostgreSQL 17 tạm, dữ liệu tổng hợp riêng trên loopback; không trỏ fixture vào Supabase/production.
-- Chưa nghiệm thu SMTP/Google/LiveKit thiết bị thật, Cloud migrations, p95/tải 50 người, toàn bộ D1–D10 hoặc PO. Không coi unit/component xanh là PASS cho các cổng này.
+- Chưa nghiệm thu SMTP/Google/LiveKit thiết bị thật, Cloud migrations, p95/tải 50 người, toàn bộ kịch bản demo (D1–D14) hoặc PO. Không coi unit/component xanh là PASS cho các cổng này.
 
 ### 16.3 Phần còn lại sau lượt này
 
-P2 còn thiếu mã hoặc cần hoàn thiện: Ranked 01–06, Casual queue 07 và phần Tái đấu Casual 09, Undo online 08, sticker 17, widget AI 22, công cụ demo mạng 23. Đường P2-12 hết hạn 30 phút của chức năng lưu AI đã được sửa ở mục 16.4; chưa coi một đường sửa này là nghiệm thu toàn Story. History/Replay/FEN/PGN và Undo AI đã có mã, không mặc định cần viết lại.
+Story `US-P2-*` còn thiếu mã hoặc cần hoàn thiện tại thời điểm PR (đều thuộc P1 theo BA 0.27): Ranked 01–06, Casual queue 07 và phần Tái đấu Casual 09, Undo online 08, sticker 17, widget AI 22, công cụ demo mạng 23. Đường P2-12 hết hạn 30 phút của chức năng lưu AI đã được sửa ở mục 16.4; chưa coi một đường sửa này là nghiệm thu toàn Story. History/Replay/FEN/PGN và Undo AI đã có mã, không mặc định cần viết lại.
 
-Các cổng nghiệm thu P1 còn thiếu bằng chứng hiện tại vẫn phải hoàn tất trước khi tuyên bố P1 ổn và chuyển triển khai P2. Không tự đánh dấu Jira Done hoặc áp kết quả đo cũ cho bản sửa mới.
+Các cổng nghiệm thu còn thiếu bằng chứng hiện tại vẫn phải hoàn tất. Không tự đánh dấu Jira Done hoặc áp kết quả đo cũ cho bản sửa mới.
 
 
 ### 16.4 Lượt rà soát tiếp theo — 31/10/2026
 
-Tiếp tục trên cùng nhánh/PR #157. Sửa các đường đã triển khai theo yêu cầu hiện hành; không thay phân kỳ, không mở Ranked/Casual/Undo online hoặc tự đánh dấu Jira Done.
+Tiếp tục trên cùng nhánh/PR #157. Sửa các đường đã triển khai theo yêu cầu hiện hành; không tự đánh dấu Jira Done.
 
 | Yêu cầu / truy vết | Lỗi và kết quả sửa |
 |---|---|
