@@ -21,13 +21,16 @@
   font: inherit;
   min-height: var(--touch-min);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 .room-chat button {
   padding: var(--space-2) var(--space-3);
   background: var(--color-surface);
   color: var(--color-ink);
   cursor: pointer;
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast);
 }
 .room-chat button:disabled {
   cursor: default;
@@ -47,7 +50,8 @@
 .room-chat__tabs [aria-selected="true"],
 .room-chat__toggles [aria-pressed="true"] {
   border-color: var(--color-gold);
-  background: var(--color-surface-sunken);
+  background: color-mix(in srgb, var(--color-gold) 10%, var(--color-surface));
+  color: var(--color-gold-light);
 }
 .room-chat__panes {
   display: grid;
@@ -58,8 +62,8 @@
 .room-chat__pane {
   min-width: 0;
   padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   display: flex;
   flex-direction: column;
@@ -77,6 +81,8 @@
   overflow-wrap: anywhere;
   height: 240px;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-inline-end: 6px;
 }
 .room-chat ol {
   list-style: none;
@@ -142,5 +148,8 @@
   }
   .room-chat__messages {
     height: 200px;
+  }
+  .room-chat textarea {
+    font-size: 16px;
   }
 }

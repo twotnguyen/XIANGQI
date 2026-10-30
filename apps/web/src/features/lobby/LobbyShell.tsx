@@ -7,6 +7,7 @@ import {
   Skeleton,
   TextField,
 } from "../../shared/ui/primitives.js";
+import { AppIcon } from "../../shared/ui/AppIcon.js";
 import "./LobbyShell.css";
 import { GameRules } from "./GameRules.js";
 
@@ -41,7 +42,7 @@ export interface LobbyShellProps {
 }
 
 /**
- * Giao diện chính của Sảnh (Hero banner, 4 chế độ chơi phong cách 3D, thanh nhập mã phòng tập trung và danh sách phòng cờ).
+ * Sảnh kỳ hữu: lời chào, chế độ chơi, vào bằng mã và danh sách phòng công khai.
  */
 export function LobbyShell({
   rooms,
@@ -76,42 +77,16 @@ export function LobbyShell({
 
   return (
     <div className="xq-lobby xq-stack">
-      {/* 1. TOP HEADER BANNER CHUẨN DESIGN */}
-      <div className="xq-lobby-header-bar">
-        {/* KHỐI TRÁI: AVATAR TƯỚNG + TIÊU ĐỀ */}
-        <div className="xq-header-left">
-          <div className="xq-header-general-wrap">
-            <img
-              src="/images/lobby-avatar-general.png"
-              alt="Tướng"
-              className="xq-header-general-img"
-            />
-          </div>
-          <div className="xq-header-text">
-            <div className="xq-header-title-row">
-              <h1>Sảnh kỳ hữu</h1>
-            </div>
-            <div className="xq-header-meta-row">
-              <span className="xq-header-tagline">
-                Kỳ Đài Trực Tuyến — Nơi Kỳ Hữu So Tài
-              </span>
-              <span className="xq-online-badge">
-                <span className="xq-live-pulse" aria-hidden="true" />
-                Kỳ đài trực tuyến
-              </span>
-              {fixture && (
-                <span className="xq-fixture-pill">Dữ liệu minh họa</span>
-              )}
-            </div>
-          </div>
+      <header className="xq-lobby-welcome">
+        <div>
+          <p className="xq-eyebrow">KỲ ĐÀI CỔ PHONG</p>
+          <h1>Sảnh kỳ hữu</h1>
+          <p className="xq-welcome-copy">
+            Gặp gỡ kỳ hữu. Cùng nhau viết nên những ván cờ hay.
+          </p>
         </div>
-
-        {/* THƯ PHÁP CHÌM Ở GIỮA */}
-        <div className="xq-header-calligraphy" aria-hidden="true">
-          楚河 漢界
-        </div>
-
-        <div className="xq-header-right">
+        <div className="xq-welcome-actions">
+          {fixture && <span className="xq-fixture-pill">Dữ liệu minh họa</span>}
           <button
             type="button"
             className="xq-rules-pill-btn"
@@ -123,26 +98,85 @@ export function LobbyShell({
               section?.querySelector("summary")?.focus({ preventScroll: true });
             }}
           >
-            <span aria-hidden="true">📜</span> Luật chơi
+            <AppIcon name="book" />
+            Luật chơi
           </button>
+        </div>
+      </header>
+
+      <div className="xq-lobby-hero">
+        <div className="xq-hero-copy">
+          <span className="xq-hero-kicker">
+            <span aria-hidden="true" />
+            MỘT BÀN CỜ. MUÔN THẾ TRẬN.
+          </span>
+          <h2>
+            Mỗi nước cờ,
+            <br />
+            <em>một tầm nhìn.</em>
+          </h2>
+          <p>
+            Thưởng một ván cờ hay, gặp một người bạn mới. Chọn đối thủ của bạn
+            và bắt đầu cuộc so tài.
+          </p>
+          <div className="xq-hero-actions">
+            <Button onClick={onCreate} disabledReason={blockedReason}>
+              <AppIcon name="plus" />
+              Mở bàn cờ
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={onPlayAI}
+              disabledReason={blockedReason}
+            >
+              Đấu với máy
+              <AppIcon name="arrow" />
+            </Button>
+          </div>
+          <div className="xq-hero-note">
+            <span aria-hidden="true">帥</span>Chơi cùng bạn bè · Rèn luyện mỗi
+            ngày
+          </div>
+        </div>
+        <div className="xq-hero-art" aria-hidden="true">
+          <div className="xq-hero-calligraphy">棋逢對手</div>
+          <img
+            src="/images/lobby-mode-create.png"
+            alt=""
+            width="1024"
+            height="1024"
+            fetchPriority="high"
+          />
+          <div className="xq-hero-art-caption">
+            <span>楚河 · 漢界</span>
+            <span>TĨNH TÂM · ĐỊNH THẾ</span>
+          </div>
         </div>
       </div>
 
-      {/* 2. CHẾ ĐỘ CHƠI (4 CARDS CAO CẤP) */}
       <section className="xq-modes-section" aria-label="Chế độ chơi">
-        <h2 className="xq-section-heading">Chế độ chơi</h2>
+        <div className="xq-section-intro">
+          <div>
+            <span className="xq-eyebrow">CHỌN CÁCH CỦA BẠN</span>
+            <h2 className="xq-section-heading">Khởi đầu một ván cờ</h2>
+          </div>
+          <p>Bạn muốn thử sức hôm nay thế nào?</p>
+        </div>
 
         <div className="xq-modes-grid-target">
-          {/* CARD 1: TỰ TẠO PHÒNG */}
           <article className="xq-mode-card-target card-create">
             <div className="xq-card-art">
               <img
                 src="/images/lobby-mode-create.png"
                 alt="Tự tạo phòng"
                 className="xq-art-img"
+                width="1024"
+                height="1024"
+                loading="lazy"
               />
             </div>
             <div className="xq-card-content">
+              <span className="xq-mode-label">CÙNG KỲ HỮU</span>
               <h3>Tự tạo phòng</h3>
               <p>Tạo phòng riêng, mời bạn bè bằng mã hoặc liên kết</p>
             </div>
@@ -157,16 +191,19 @@ export function LobbyShell({
             </div>
           </article>
 
-          {/* CARD 2: ĐẤU VỚI MÁY */}
           <article className="xq-mode-card-target card-ai">
             <div className="xq-card-art art-glow-red">
               <img
                 src="/images/lobby-mode-ai.png"
                 alt="Đấu với máy"
                 className="xq-art-img"
+                width="1024"
+                height="1024"
+                loading="lazy"
               />
             </div>
             <div className="xq-card-content">
+              <span className="xq-mode-label">RÈN CHIẾN THUẬT</span>
               <h3>Đấu với máy</h3>
               <p>Rèn luyện chiến thuật từ Dễ đến Khó</p>
             </div>
@@ -181,18 +218,21 @@ export function LobbyShell({
             </div>
           </article>
 
-          {/* CARD 3: GHÉP NGẪU NHIÊN */}
           <article className="xq-mode-card-target card-quick">
             <div className="xq-card-art art-glow-gold">
               <img
                 src="/images/lobby-mode-quick.png"
                 alt="Ghép ngẫu nhiên"
                 className="xq-art-img"
+                width="1024"
+                height="1024"
+                loading="lazy"
               />
             </div>
             <div className="xq-card-content">
+              <span className="xq-mode-label">SẮP RA MẮT</span>
               <h3>Ghép ngẫu nhiên</h3>
-              <p>Giao lưu không tính Elo (Giai đoạn P2)</p>
+              <p>Gặp gỡ đối thủ mới trong những ván giao hữu.</p>
             </div>
             <div className="xq-card-btn-wrap">
               <Button variant="secondary" disabledReason="Sắp ra mắt">
@@ -201,18 +241,21 @@ export function LobbyShell({
             </div>
           </article>
 
-          {/* CARD 4: ĐẤU HẠNG (DISABLED / GIAI ĐOẠN 2) */}
           <article className="xq-mode-card-target card-ranked card-disabled">
             <div className="xq-card-art">
               <img
                 src="/images/lobby-mode-ranked.png"
                 alt="Đấu hạng"
                 className="xq-art-img"
+                width="1024"
+                height="1024"
+                loading="lazy"
               />
             </div>
             <div className="xq-card-content">
+              <span className="xq-mode-label">SẮP RA MẮT</span>
               <h3>Đấu hạng</h3>
-              <p>Thi đấu xếp hạng chưa mở (Giai đoạn P2)</p>
+              <p>Chinh phục thứ hạng. Chế độ đang phát triển.</p>
             </div>
             <div className="xq-card-btn-wrap">
               <Button variant="secondary" disabledReason="Sắp ra mắt">
@@ -223,8 +266,16 @@ export function LobbyShell({
         </div>
       </section>
 
-      {/* 3. THANH NHẬP MÃ 8 SỐ Ở GIỮA */}
       <div className="xq-middle-code-section">
+        <div className="xq-code-intro">
+          <span className="xq-code-icon">
+            <AppIcon name="key" />
+          </span>
+          <div>
+            <h2>Đã có hẹn với kỳ hữu?</h2>
+            <p>Nhập mã 8 chữ số để đến đúng bàn cờ.</p>
+          </div>
+        </div>
         <form
           className="xq-middle-code-form"
           onSubmit={(event) => {
@@ -243,7 +294,9 @@ export function LobbyShell({
           <TextField
             label="Mã phòng"
             inputMode="numeric"
-            placeholder="Nhập mã 8 số…"
+            placeholder="0000 0000"
+            autoComplete="off"
+            helper="Mã phòng gồm 8 chữ số"
             value={code}
             onChange={(event) => {
               setCode(event.target.value.replace(/\D/g, ""));
@@ -258,11 +311,11 @@ export function LobbyShell({
             disabledReason={blockedReason}
           >
             Vào phòng
+            <AppIcon name="arrow" />
           </Button>
         </form>
       </div>
 
-      {/* 4. PHÒNG CÔNG KHAI */}
       <section
         className="xq-panel xq-target-rooms-section"
         aria-label="Phòng công khai"
@@ -270,14 +323,16 @@ export function LobbyShell({
       >
         <div className="xq-target-rooms-head">
           <div className="xq-rooms-title-box">
-            <span className="xq-rooms-icon" aria-hidden="true">
-              📜
-            </span>
-            <h2>Phòng công khai</h2>
+            <div>
+              <span className="xq-eyebrow">CÙNG NHAU SO TÀI</span>
+              <h2>Phòng công khai</h2>
+              <p className="xq-rooms-subtitle">
+                Chọn một bàn cờ để vào chơi hoặc theo dõi.
+              </p>
+            </div>
           </div>
 
           <div className="xq-rooms-head-actions">
-            {/* TABS LỌC THỜI GIAN */}
             <div
               className="xq-filter-pill-group"
               role="group"
@@ -301,30 +356,29 @@ export function LobbyShell({
               </button>
               <button
                 type="button"
-                aria-pressed={timeFilter === 15}
-                className={`xq-filter-btn ${timeFilter === 15 ? "active" : ""}`}
-                onClick={() => setTimeFilter(15)}
-              >
-                15 phút
-              </button>
-              <button
-                type="button"
                 aria-pressed={timeFilter === 10}
                 className={`xq-filter-btn ${timeFilter === 10 ? "active" : ""}`}
                 onClick={() => setTimeFilter(10)}
               >
                 10 phút
               </button>
+              <button
+                type="button"
+                aria-pressed={timeFilter === 15}
+                className={`xq-filter-btn ${timeFilter === 15 ? "active" : ""}`}
+                onClick={() => setTimeFilter(15)}
+              >
+                15 phút
+              </button>
             </div>
 
-            {/* NÚT TẠO PHÒNG MỚI MÀU VÀNG */}
             <Button onClick={onCreate} disabledReason={blockedReason}>
-              + Tạo phòng mới
+              <AppIcon name="plus" />
+              Tạo phòng mới
             </Button>
           </div>
         </div>
 
-        {/* DANH SÁCH PHÒNG */}
         {state === "loading" ? (
           <Skeleton label="Đang tải phòng công khai…" />
         ) : state === "error" ? (
@@ -358,6 +412,15 @@ export function LobbyShell({
             {filteredRooms.map((room) => (
               <article className="xq-target-room-row" key={room.id}>
                 <div className="xq-target-room-info">
+                  <span
+                    className={
+                      "xq-room-seal " +
+                      (room.status === "playing" ? "is-playing" : "")
+                    }
+                    aria-hidden="true"
+                  >
+                    {room.status === "playing" ? "將" : "帥"}
+                  </span>
                   <div className="xq-room-primary-text">
                     <h3>{room.name}</h3>
                     <span>
@@ -367,7 +430,7 @@ export function LobbyShell({
                   </div>
                   <span className="xq-target-room-sep">•</span>
                   <span className="xq-target-room-time">
-                    ⏱️{" "}
+                    <AppIcon name="clock" />{" "}
                     {room.timeMinutes === 0
                       ? "Không giới hạn"
                       : `${room.timeMinutes} phút`}
@@ -418,7 +481,6 @@ export function LobbyShell({
         )}
       </section>
 
-      {/* 5. LUẬT CHƠI RÚT GỌN */}
       <div ref={rulesRef}>
         <GameRules />
       </div>

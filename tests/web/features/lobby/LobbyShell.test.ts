@@ -76,9 +76,9 @@ it("rejects a malformed code without invoking a room action", async () => {
     "true",
   );
   const input = screen.getByLabelText("Mã phòng");
-  expect(
-    document.getElementById(input.getAttribute("aria-describedby")!),
-  ).toBeTruthy();
+  const described = input.getAttribute("aria-describedby")!.split(" ");
+  expect(described.length).toBeGreaterThan(0);
+  for (const id of described) expect(document.getElementById(id)).toBeTruthy();
 });
 it("keeps room names as text and offers the error retry callback", async () => {
   const props = callbacks();

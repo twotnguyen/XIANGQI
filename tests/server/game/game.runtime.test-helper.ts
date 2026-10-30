@@ -1,5 +1,5 @@
 import type { RoomControlProof } from "@xiangqi/shared";
-import { readFile } from "node:fs/promises";
+import { applySql } from "../fixtures/apply-sql.test-helper.js";
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { vi } from "vitest";
@@ -174,15 +174,7 @@ async function oldRoom(
   return { a, b, roomId: entry.roomId, matchId };
 }
 export async function apply(file: string) {
-  const c = await pool.connect();
-  try {
-    if (!file.includes("test-fixture")) await c.query("SET ROLE postgres");
-    // Keep audited function bodies identical on LF and CRLF checkouts.
-    await c.query((await readFile(file, "utf8")).replace(/\r\n/g, "\n"));
-  } finally {
-    await c.query("ROLLBACK; RESET ROLE");
-    c.release();
-  }
+  await applySql(pool, file);
 }
 async function resetSchemas(files: string[]) {
   if (!databaseUrl) throw new Error("Dedicated test URL required");

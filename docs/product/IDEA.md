@@ -4,7 +4,7 @@
 
 ## 1. Sản phẩm và mục đích
 
-Web cờ tướng tiếng Việt để giao lưu qua phòng online và luyện tập với máy. Trải nghiệm kết hợp bàn cờ đúng bộ luật rút gọn của dự án với chat, camera và mic tự chọn. Đây là đồ án môn Quản trị Dự án CNTT mô phỏng làm việc với khách hàng; thành công P1 được đo bằng **tám mục tiêu của khách hàng chạy từ đầu đến cuối** (kịch bản D1–D10), không bằng số màn hình hay số tài liệu.
+Web cờ tướng tiếng Việt để giao lưu qua phòng online và luyện tập với máy. Trải nghiệm kết hợp bàn cờ đúng bộ luật rút gọn của dự án với chat, camera và mic tự chọn. Đây là đồ án môn Quản trị Dự án CNTT mô phỏng làm việc với khách hàng; thành công P1 được đo bằng **tám mục tiêu của khách hàng chạy từ đầu đến cuối** (kịch bản D1–D14), không bằng số màn hình hay số tài liệu.
 
 ## 2. Ai dùng và để làm gì?
 
@@ -30,20 +30,20 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 **P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). P1 còn gồm Thách đấu, DM/unread, Tái đấu phòng tự tạo, Không giới hạn/chống treo, Đổi/Khôi phục Username, chuyển media giữa tab và ba lựa chọn chủ đề theo BA 0.20–0.21.
 
-**P2:** Đánh Hạng/Elo, ghép ngẫu nhiên và Tái đấu Casual, Xin đi lại online/AI, Lịch sử/Replay/FEN/PGN, sticker, widget AI và công cụ demo mạng. Một số phần P2 đã có mã nhưng chưa đồng nghĩa nghiệm thu đầy đủ. **QR đã bị loại khỏi cả hai phân kỳ**; các mục chuyển P1 theo BA 0.20–0.21 không còn nằm trong danh sách P2 còn lại.
+**Từ BA 0.27 (31/10/2026) không còn mục P2:** Đánh Hạng/Elo/bảng xếp hạng, ghép ngẫu nhiên, Tái đấu chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, khôi phục/đổi Username, tiện ích demo và giao diện bổ sung đều thuộc P1. QR vẫn bị loại. Chưa tái ước lượng giờ/Jira.
 
 **Không làm:** xem BA 10.2.
 
 ## 5. Thành công được chứng minh thế nào?
 
 - Baseline trước bổ sung 30/10: 9 Epic, 27 Story, 268 AC, 71 Task và 880 giờ trong 4 Sprint ([kế hoạch](../planning/KE-HOACH-JIRA.md)). YC1 có thêm 20 tiêu chí mật khẩu tại đặc tả riêng; chưa tái ước lượng hoặc cập nhật Jira trong tác vụ tài liệu này.
-- Kế hoạch dự kiến: BA đã chốt; lịch triển khai từ 10/10, hoàn tất và tổng duyệt ngày 04/11. Snapshot kế hoạch ban đầu có 36 mục BA Done và 71 Task To Do; đây không phải trạng thái Jira hiện tại. Sản phẩm đã có nhiều phần triển khai và bằng chứng local trong các đặc tả YC1–YC3; xem đối chiếu ngày 31/10 ở TONG-QUAN-YEU-CAU mục 16. Số AC/TC và trạng thái BA không thay kết quả nghiệm thu phần mềm.
-- Điều kiện nghiệm thu: kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
+- Kế hoạch dự kiến: BA đã chốt; lịch triển khai từ 10/10, hoàn tất và tổng duyệt ngày 04/11. Ảnh chụp Jira ngày 10/10 ghi 36 mục BA Done và 71 Task To Do, bốn Sprint chưa bắt đầu; ảnh chụp này **chưa được cập nhật** nên không phản ánh tiến độ hiện tại. Mã đã có và kiểm chứng local cho nhiều phần YC1–YC8 (xem [TONG-QUAN-YEU-CAU mục 16](TONG-QUAN-YEU-CAU.md)); phần mới chốt 31/10 chưa triển khai. Số AC/TC là độ phủ đặc tả, không phải số ca đã kiểm đạt.
+- Điều kiện nghiệm thu: kịch bản demo D1–D14 chạy trọn vẹn trên máy demo.
 - Luật cờ kiểm độc lập ở máy chủ; không tin kết quả client gửi.
 - Ngưỡng máy cờ, đồng bộ và quy mô phải đo thật; không đạt ghi BLOCKED, không hạ ngưỡng ngầm.
 
 ## 6. Đọc tiếp
 
-1. [Quyết định nghiệp vụ và phân kỳ](BA-SCOPE-DECISIONS.md)
+1. [Quyết định nghiệp vụ và phân kỳ](BA-SCOPE-DECISIONS.md) · đặc tả từng yêu cầu: [YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md) · [YC2](P1-YC2-TAO-PHONG.md) · [YC3](P1-YC3-MOI-VAO-PHONG.md) · [YC4](P1-YC4-BAN-CO-VA-LUAT.md) · [YC5](P1-YC5-VAN-ONLINE-VA-SU-CO.md) · [YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md) · [YC7](P1-YC7-CHAT-CAMERA-VA-MIC.md) · [YC8](P1-YC8-DAU-VOI-MAY.md) · [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)
 2. [Backlog P1: Epic, User Story, AC, TC](BACKLOG-P1.md) · [Kế hoạch Jira](../planning/KE-HOACH-JIRA.md)
 3. [Danh mục màn hình](../design/DANH-MUC-MAN-HINH-XIANGQI.md) · [Hệ thống thiết kế](../design/DESIGN.md)

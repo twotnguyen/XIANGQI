@@ -1,5 +1,7 @@
 # T18 / XIAN-54: phòng tự tạo
 
+> **Lưu ý (31/10/2026):** tài liệu này mô tả mã hiện tại. Quyết định PO [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) chưa triển khai (xem mục "Tác động triển khai" của từng YC) và thay mọi câu "Sẵn sàng của cả hai"/"reset Ready cả phòng" ở dưới: phòng tự tạo dùng Host Bắt đầu và Sẵn sàng của đối thủ ([YC2 mục 21](../../product/P1-YC2-TAO-PHONG.md), BA 0.29), ghép trận dùng hộp xác nhận 30 giây ([YC9](../../product/P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)).
+
 > Cấu trúc thư mục: `public/` chứa danh sách phòng công khai (feed, service, store, controller, module). Phần nối kết cả miền game nằm ở `apps/server/src/game/game.runtime.ts`.
 
 RoomStore nhận PoolClient của giao dịch ngoài, không mở pool/giao dịch/provider HTTP riêng. Root owns HTTP/session guards, shared protocol, RealtimeStore actor-first hook, gateway presence callbacks và scheduler. Không dùng trực tiếp trusted RoomScope từ body client.

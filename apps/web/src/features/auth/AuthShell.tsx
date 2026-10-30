@@ -9,9 +9,7 @@ export interface AuthFeature {
   text: string;
 }
 
-/**
- * Khung giao diện dùng chung cho các trang xác thực (/login, /register) với câu đối cổ phong và panel hai cánh.
- */
+/** Khung xác thực chung, giữ biểu mẫu riêng biệt với phần giới thiệu kỳ đài. */
 export function AuthShell({
   slogan,
   features,
@@ -25,23 +23,7 @@ export function AuthShell({
 }) {
   return (
     <main className="auth-shell xq-ui">
-      <div className="couplet couplet-l" aria-hidden="true">
-        <span>楚</span>
-        <span>河</span>
-        <span>爭</span>
-        <span>雄</span>
-      </div>
-      <div className="couplet couplet-r" aria-hidden="true">
-        <span>漢</span>
-        <span>界</span>
-        <span>稱</span>
-        <span>王</span>
-      </div>
       <div className="master-modal">
-        <span className="c-decor ctl" aria-hidden="true" />
-        <span className="c-decor ctr" aria-hidden="true" />
-        <span className="c-decor cbl" aria-hidden="true" />
-        <span className="c-decor cbr" aria-hidden="true" />
         <div className="wing-brand">
           <div className="brand-hero">
             <div className="token-3d" aria-hidden="true">
@@ -49,28 +31,70 @@ export function AuthShell({
             </div>
             <div className="brand-title-wrap">
               <p className="hero-title">CỜ TƯỚNG ONLINE</p>
-              <span className="brand-subtitle-mini" aria-hidden="true">
-                XIANGQI PLATFORM
-              </span>
+              <span className="brand-subtitle-mini">KỲ ĐÀI CỔ PHONG</span>
             </div>
           </div>
-          <p className="hero-slogan">{slogan}</p>
-          <div className="feat-grid">
-            {features.map((feature) => (
-              <div className="feat-box" key={feature.title}>
-                <div className="feat-ico" aria-hidden="true">
-                  {feature.icon}
-                </div>
-                <div className="feat-desc">
-                  <h5>{feature.title}</h5>
-                  <p>{feature.text}</p>
-                </div>
-              </div>
-            ))}
+          <div className="brand-story">
+            <span className="brand-eyebrow">NƠI NHỮNG KỲ THỦ GẶP NHAU</span>
+            <p>
+              Một bàn cờ.
+              <br />
+              <em>Vạn cuộc đấu trí.</em>
+            </p>
+            <span className="brand-description">
+              Tìm bạn tâm giao, rèn từng nước cờ và viết tiếp kỳ phổ của riêng
+              bạn.
+            </span>
           </div>
+          <div className="auth-board-art" aria-hidden="true">
+            <svg viewBox="0 0 280 310" fill="none">
+              <rect x="5" y="5" width="270" height="300" rx="10" />
+              <path d="M20 20H260V290H20ZM20 50H260M20 80H260M20 110H260M20 140H260M20 170H260M20 200H260M20 230H260M20 260H260M50 20V140M80 20V140M110 20V140M140 20V140M170 20V140M200 20V140M230 20V140M50 170V290M80 170V290M110 170V290M140 170V290M170 170V290M200 170V290M230 170V290M110 20L170 80M170 20L110 80M110 230L170 290M170 230L110 290" />
+              <text x="140" y="159" textAnchor="middle" className="auth-river">
+                楚 河 · 漢 界
+              </text>
+              <g className="auth-art-piece auth-art-piece-red">
+                <circle cx="80" cy="80" r="22" />
+                <circle cx="80" cy="80" r="17" />
+                <text x="80" y="89" textAnchor="middle">
+                  帥
+                </text>
+              </g>
+              <g className="auth-art-piece">
+                <circle cx="200" cy="200" r="22" />
+                <circle cx="200" cy="200" r="17" />
+                <text x="200" y="209" textAnchor="middle">
+                  馬
+                </text>
+              </g>
+              <g className="auth-art-piece auth-art-piece-red">
+                <circle cx="110" cy="260" r="22" />
+                <circle cx="110" cy="260" r="17" />
+                <text x="110" y="269" textAnchor="middle">
+                  炮
+                </text>
+              </g>
+            </svg>
+          </div>
+          <p className="hero-slogan">{slogan}</p>
+          {features.length > 0 && (
+            <div className="feat-grid">
+              {features.map((feature) => (
+                <div className="feat-box" key={feature.title}>
+                  <div className="feat-ico" aria-hidden="true">
+                    {feature.icon}
+                  </div>
+                  <div className="feat-desc">
+                    <strong>{feature.title}</strong>
+                    <p>{feature.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="brand-foot">
             <span>Đồ án 2026 · HUTECH</span>
-            <span>Chuẩn WCAG 2.1 AA</span>
+            <span>Cờ hay, bạn hữu</span>
           </div>
         </div>
         <div className={`wing-form${spread ? " wing-form-spread" : ""}`}>
@@ -80,7 +104,6 @@ export function AuthShell({
     </main>
   );
 }
-
 /**
  * Biểu tượng logo màu SVG 4 màu của Google.
  */

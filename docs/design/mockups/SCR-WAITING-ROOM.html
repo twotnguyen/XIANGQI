@@ -639,13 +639,13 @@
         </div>
 
         <div>
-          <div style="margin-bottom: 12px;">
-            <span class="ready-status-badge status-ready" id="red-ready-status">
-              ✓ Đã Sẵn Sàng
-            </span>
-          </div>
-          <button type="button" class="btn-action-seat btn-toggle-ready" id="btn-red-ready" onclick="toggleRedReady()">
-            Sẵn Sàng Xuất Quân
+          <!-- BA 0.29: Chủ phòng không có "Sẵn sàng"; chỉ có Bắt đầu (sáng khi đối thủ đã Sẵn sàng) -->
+          <button type="button" class="btn-action-seat btn-toggle-ready" id="btn-red-start" onclick="hostStart()" disabled>
+            Bắt Đầu
+          </button>
+          <div id="start-hint" style="margin-top: 6px; font-size: 12px; color: #C8B6A2;">Chờ đối thủ sẵn sàng</div>
+          <button type="button" class="btn-action-seat" id="btn-transfer-host" style="margin-top: 8px; background: rgba(255,255,255,0.08); color: #C8B6A2; border: 1px solid #4B5563;" onclick="transferHost()">
+            👑 Nhường Host
           </button>
         </div>
       </div>
@@ -680,6 +680,13 @@
               ✓ Đã Sẵn Sàng
             </span>
           </div>
+          <!-- BA 0.29: đối thủ bấm Sẵn sàng; BA 0.33: Host có Mời rời ghế -->
+          <button type="button" class="btn-action-seat btn-toggle-ready is-ready" id="btn-black-ready" onclick="toggleBlackReady()" style="margin-bottom: 8px;">
+            Hủy Sẵn Sàng
+          </button>
+          <button type="button" class="btn-action-seat" id="btn-invite-leave" style="margin-bottom: 8px; background: rgba(255,255,255,0.08); color: #C8B6A2; border: 1px solid #4B5563;" onclick="inviteLeaveSeat()">
+            🚪 Mời Rời Ghế
+          </button>
           <button type="button" class="btn-action-seat" id="btn-black-action" style="background: rgba(255,255,255,0.08); color: #C8B6A2; border: 1px solid #4B5563;" onclick="moveToSpectator()">
             Đối Thủ Đã Sẵn Sàng
           </button>
@@ -949,7 +956,7 @@
           Chủ phòng mời bạn (<span id="seat-invitee-name" style="color: var(--gold-light);">Kỳ Vương Ba Vì</span>) xuống ghế thi đấu phe Đen!
         </p>
         <p style="font-size: 11.5px; color: #C8B6A2; margin: 10px 0 16px;">
-          Sau khi xuống ghế, bạn cần bấm <strong>Sẵn sàng</strong> để cùng bắt đầu ván cờ.
+          Sau khi xuống ghế, bạn bấm <strong>Sẵn sàng</strong>; chủ phòng bấm <strong>Bắt đầu</strong> để vào ván cờ.
         </p>
         <div style="display: flex; gap: 10px;">
           <button type="button" onclick="rejectSeatInvite()" style="flex: 1; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid #542C15; border-radius: 6px; color: #C8B6A2; font-weight: 700; cursor: pointer;">
@@ -964,7 +971,7 @@
   </div>
 
   <script>
-    let isRedReady = true;
+    let isBlackReady = true; // BA 0.29: chỉ đối thủ có Sẵn sàng
     let countdownVal = 3;
     let countdownTimer = null;
     let currentRoomMode = 'TWO_PLAYERS';
@@ -1005,6 +1012,11 @@
         blackBadge.className = 'ready-status-badge status-waiting';
         blackAction.textContent = 'Mời bạn bè / Chia sẻ link';
         blackAction.onclick = openInviteModal;
+        document.getElementById('btn-black-ready').style.display = 'none';
+        document.getElementById('btn-invite-leave').style.display = 'none';
+        document.getElementById('btn-transfer-host').style.display = 'none';
+        isBlackReady = false;
+        refreshStart();
       } else {
         btn2p.style.background = 'rgba(198,146,42,0.3)';
         btn2p.style.borderColor = 'var(--gold-light)';
@@ -1021,6 +1033,11 @@
         blackBadge.className = 'ready-status-badge status-ready';
         blackAction.textContent = '👁️ Chuyển Sang Người Xem';
         blackAction.onclick = moveToSpectator;
+        document.getElementById('btn-black-ready').style.display = '';
+        document.getElementById('btn-invite-leave').style.display = '';
+        document.getElementById('btn-transfer-host').style.display = '';
+        isBlackReady = true;
+        toggleBlackReady(true);
       }
     }
 
@@ -1066,25 +1083,58 @@
       }, 1000);
     }
 
-    function toggleRedReady() {
-      isRedReady = !isRedReady;
-      const btn = document.getElementById('btn-red-ready');
-      const badge = document.getElementById('red-ready-status');
-      if (isRedReady) {
-        btn.textContent = 'Hủy Sẵn Sàng';
-        btn.classList.add('is-ready');
-        badge.className = 'ready-status-badge status-ready';
-        badge.textContent = '✓ Đã Sẵn Sàng';
-      } else {
-        btn.textContent = 'Sẵn Sàng Xuất Quân';
-        btn.classList.remove('is-ready');
-        badge.className = 'ready-status-badge status-waiting';
-        badge.textContent = '⏳ Chưa Sẵn Sàng';
+    // BA 0.29 / YC2 mục 21: đối thủ Sẵn sàng -> nút Bắt đầu của Host sáng ngay -> Host bấm -> đếm 3-2-1.
+    function refreshStart() {
+      const start = document.getElementById('btn-red-start');
+      const hint = document.getElementById('start-hint');
+      const twoPlayers = currentRoomMode === 'TWO_PLAYERS';
+      const can = twoPlayers && isBlackReady;
+      start.disabled = !can;
+      hint.textContent = !twoPlayers ? 'Chờ người chơi thứ hai' : (can ? 'Đối thủ đã sẵn sàng' : 'Chờ đối thủ sẵn sàng');
+      if (!can) {
         clearInterval(countdownTimer);
         document.getElementById('countdown-banner').style.display = 'none';
       }
     }
 
+    function toggleBlackReady(forceReady) {
+      isBlackReady = (typeof forceReady === 'boolean') ? forceReady : !isBlackReady;
+      const btn = document.getElementById('btn-black-ready');
+      const badge = document.getElementById('black-ready-status');
+      if (isBlackReady) {
+        btn.textContent = 'Hủy Sẵn Sàng';
+        btn.classList.add('is-ready');
+        badge.className = 'ready-status-badge status-ready';
+        badge.textContent = '✓ Đã Sẵn Sàng';
+      } else {
+        btn.textContent = 'Sẵn Sàng';
+        btn.classList.remove('is-ready');
+        badge.className = 'ready-status-badge status-waiting';
+        badge.textContent = '⏳ Chưa Sẵn Sàng';
+      }
+      refreshStart();
+    }
+
+    function hostStart() {
+      if (document.getElementById('btn-red-start').disabled) return;
+      startMatchCountdown();
+    }
+
+    function transferHost() {
+      if (confirm('Nhường quyền Chủ phòng cho đối thủ? Quyền chuyển ngay, Sẵn sàng của đối thủ được đặt lại.')) {
+        alert('✓ Đã nhường Chủ phòng (BA 0.29). Nút Bắt đầu và Cài đặt phòng chuyển sang người kia.');
+        toggleBlackReady(false);
+      }
+    }
+
+    function inviteLeaveSeat() {
+      if (confirm('Mời người chơi thứ hai rời ghế về Sảnh? Họ không bị chặn và vào lại được nếu phòng chưa khóa.')) {
+        alert('✓ Đã mời rời ghế (BA 0.33).');
+        setWaitingRoomState('SOLO_HOST');
+      }
+    }
+
+    refreshStart();
 
     let sideSwapTimer = null;
     let sideSwapSeconds = 30;
@@ -1122,21 +1172,14 @@
       document.getElementById('red-name').textContent = blackName;
       document.getElementById('black-name').textContent = redName;
 
-      // BA 0.6 & 2.3: Ready state of both resets to false on swap
-      isRedReady = false;
-      const btnRed = document.getElementById('btn-red-ready');
-      const badgeRed = document.getElementById('red-ready-status');
-      btnRed.textContent = 'Sẵn Sàng Xuất Quân';
-      btnRed.classList.remove('is-ready');
-      badgeRed.className = 'ready-status-badge status-waiting';
-      badgeRed.textContent = '⏳ Chưa Sẵn Sàng';
-
+      // BA 0.29: sau đổi bên, Sẵn sàng của đối thủ reset (Chủ phòng không có Sẵn sàng)
+      toggleBlackReady(false);
       const badgeBlack = document.getElementById('black-ready-status');
       badgeBlack.className = 'ready-status-badge status-waiting';
       badgeBlack.textContent = '⏳ Chưa Sẵn Sàng';
       clearInterval(countdownTimer);
       document.getElementById('countdown-banner').style.display = 'none';
-      alert('✓ Đã hoán đổi phe Đỏ ↔ Đen thành công! Trạng thái Sẵn sàng của cả 2 bên đã được đặt lại (BA 0.6).');
+      alert('✓ Đã hoán đổi phe Đỏ ↔ Đen thành công! Sẵn sàng của đối thủ đã được đặt lại (BA 0.29).');
     }
 
     function rejectSideSwap() {

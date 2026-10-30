@@ -2,7 +2,7 @@
   --board-select: #d4af37;
   --board-last-move: #1e4f7a;
   --board-check: #ef4444;
-  --board-focus: #f5ca67;
+  --board-focus: #155e75;
 }
 
 .xq-board-signs {
@@ -52,10 +52,12 @@
   cursor: default;
 }
 
-.xq-board-hit:focus,
 .xq-board-hit:focus-visible {
-  outline: none;
-  stroke: none;
+  /* Inline reset suppresses browser SVG outlines; retain a visible keyboard target. */
+  stroke: var(--board-focus) !important;
+  stroke-width: 2.4;
+  stroke-dasharray: 5 3;
+  paint-order: stroke;
 }
 
 .xq-board-can-move .xq-board-svg {
@@ -78,9 +80,9 @@
 
 /* Nhấc nhẹ nhàng đứng tại chỗ với vầng sáng hoàng kim nổi bật */
 .xq-board-piece-selected {
-  transform: scale(1.09);
-  filter: drop-shadow(0 0 10px rgba(245, 202, 103, 0.85))
-    drop-shadow(0 8px 16px rgba(15, 7, 2, 0.65)) !important;
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 3px rgba(245, 202, 103, 0.6))
+    drop-shadow(0 5px 8px rgba(15, 7, 2, 0.5)) !important;
 }
 
 .xq-board-ghost {
@@ -129,6 +131,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .xq-board-capture,
   .xq-board-returning,
   .xq-board-piece-slide,
   .xq-board-piece {

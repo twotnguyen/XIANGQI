@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { applySql } from "../../fixtures/apply-sql.test-helper.js";
 import { Pool } from "pg";
 export const databaseUrl = process.env.DRAW_WORKER_TEST_DATABASE_URL;
 if (databaseUrl) {
@@ -16,15 +16,7 @@ if (databaseUrl) {
 }
 export const pool = new Pool({ connectionString: databaseUrl });
 async function apply(file: string) {
-  const client = await pool.connect();
-  try {
-    if (!file.includes("test-fixture")) await client.query("SET ROLE postgres");
-    // Keep audited function bodies identical on LF and CRLF checkouts.
-    await client.query((await readFile(file, "utf8")).replace(/\r\n/g, "\n"));
-  } finally {
-    await client.query("ROLLBACK; RESET ROLE");
-    client.release();
-  }
+  await applySql(pool, file);
 }
 export async function reset() {
   if (!databaseUrl) throw new Error("Dedicated draw worker URL required");

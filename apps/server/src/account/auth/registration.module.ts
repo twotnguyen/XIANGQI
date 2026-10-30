@@ -229,6 +229,9 @@ export async function createRegistrationRuntime(
   };
   const pool = new Pool(poolOptions);
   pool.on("error", logPoolError);
+  pool.on("connect", (client) => {
+    client.on("error", () => {});
+  });
   let sessionPool: Pool | null = null;
   let schemaReady = true;
   try {
