@@ -143,7 +143,7 @@ theo cùng cấu trúc thư mục.
 | Mục đích, người dùng và trải nghiệm | [IDEA.md](docs/product/IDEA.md) |
 | Quyết định nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md) |
 | User Story, tiêu chí nghiệm thu và kiểm thử | [P1](docs/product/BACKLOG-P1.md), [P2](docs/product/BACKLOG-P2.md) |
-| Phạm vi P1/P2 và tiến độ triển khai | [Danh mục](docs/planning/jira/reports/PHAM-VI-P1-P2.md), [Kế hoạch triển khai](docs/planning/jira/reports/KE-HOACH-TRIEN-KHAI-P1-P2.md) |
+| Phạm vi P1/P2 và tiến độ triển khai | [Trạng thái triển khai các Story `US-P2-*`](docs/planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md) |
 | Màn hình và thiết kế | [Danh mục màn hình](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md) |
 | Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md) |
 | Dữ liệu, báo cáo và công cụ Jira | [docs/planning/jira/README.md](docs/planning/jira/README.md) |

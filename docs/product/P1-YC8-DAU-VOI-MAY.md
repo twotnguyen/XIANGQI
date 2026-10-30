@@ -211,7 +211,7 @@ Có code sẵn cho AI, Undo, History và Replay; không cần thiết lập mộ
 
 ### 12.2 Báo cáo engine local cũ
 
-Nguồn [GATE-ENGINE-LOCAL](../planning/jira/reports/GATE-ENGINE-LOCAL.md), ngày11/10/2026, **không chạy lại trong lượt này**:
+Nguồn [GATE-ENGINE-LOCAL](../archive/2026-10-11-bang-chung-local/GATE-ENGINE-LOCAL.md), ngày11/10/2026, **không chạy lại trong lượt này**:
 
 - Đo50 thế/cấp trên AppleM3Pro, Node26.7.0, một lần có tải nền; khác Node22 của dự án và chưa phải máy demo.
 - Dễ/Trung bình đạt timing trong lượt đo; cấp Khó p95 đạt3.000ms nhưng2mẫu vượt trần nhỏ, depth6 chỉ5/50 thế. Không dùng kết quả này hứa luôn đạt depth6.
