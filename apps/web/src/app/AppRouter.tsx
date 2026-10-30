@@ -54,6 +54,7 @@ import {
   PublicRoomRequestError,
 } from "../features/rooms/public-room-client.js";
 import type { PublicRoomView } from "@xiangqi/shared";
+import { useRoomCreation } from "../features/rooms/useRoomCreation.js";
 import { createMediaClient } from "../features/media/media-client.js";
 import { createProfileClient } from "../features/profile/profile-client.js";
 import type { ProfileLocation } from "../features/profile/profile-client.js";
@@ -203,6 +204,7 @@ function Lobby({
   const [loggingOut, setLoggingOut] = useState(false);
   const [dialog, setDialog] = useState(false);
   const [aiDialog, setAiDialog] = useState(false);
+  const creation = useRoomCreation(client, onEntered);
   useEffect(() => {
     const generation = ++epoch.current;
     let alive = true,
@@ -349,7 +351,9 @@ function Lobby({
           <Suspense fallback={<p role="status">Đang tải biểu mẫu…</p>}>
             <CreateRoomForm
               allowUnlimited={sessionState.status === "active-member"}
-              onCreate={async (input) => onEntered(await client.create(input))}
+              onCreate={creation.create}
+              creating={creation.creating}
+              recoveryInput={creation.recoveryInput}
             />
           </Suspense>
         </Dialog>
