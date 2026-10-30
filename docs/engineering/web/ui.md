@@ -10,6 +10,13 @@ Chạy `pnpm --filter @xiangqi/web dev`, mở `/dev/ui` để kiểm thành ph�
 `/dev/lobby` để xem vị trí tích hợp Sảnh. Danh sách phòng trong preview có
 nhãn dữ liệu minh họa; preview không cấp quyền vào phòng hoặc chơi cờ.
 
+PR #153 giữ hiệu ứng và bố cục mới nhưng dùng token theo chủ đề cho shell,
+auth, Sảnh, phòng và đồng hồ. Chấm đích ô trống kế thừa `--board-hint`
+(`#3a2a1a`), tương phản tính từ các stop nền gỗ đạt 6,70–9,68:1.
+Đã xem bàn cờ tương tác ở 390×844, chọn Tốt hiện đúng chấm đích; auth ở
+390×844 giữ input 16px và không tràn ngang. Đã xem auth và đồng hồ thật
+với dữ liệu minh họa ở 1366×900 dưới chủ đề Giấy Sáng. Chưa nghiệm thu ván online.
+
 Ưu tiên desktop/laptop: 1280×720, 1366×768, 1440×900, 1536×864,
 1920×1080; sau đó mobile 360×800 và 390×844. Các kiểm trình duyệt đã kiểm
 tràn ngang, vùng thao tác tối thiểu 44px, dialog bằng bàn phím và font local.

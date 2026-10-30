@@ -115,8 +115,14 @@
   --radius-full: 999px;
   --border-width: 1px;
   --focus-ring: 3px solid var(--color-focus);
-  --shadow-1: 0 1px 2px rgba(40, 34, 28, 0.12);
-  --shadow-2: 0 4px 12px rgba(40, 34, 28, 0.18);
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 12px 35px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-gold: 0 0 20px rgba(245, 202, 103, 0.25), 0 4px 15px rgba(0, 0, 0, 0.5);
+  --shadow-board: 0 20px 50px rgba(0, 0, 0, 0.75), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --gradient-gold: linear-gradient(135deg, #fce5a3 0%, #d4af37 50%, #aa771c 100%);
+  --gradient-gold-dark: linear-gradient(180deg, #3a2212 0%, #20120a 100%);
+  --gradient-card: linear-gradient(180deg, rgba(38, 22, 16, 0.88) 0%, rgba(20, 12, 8, 0.94) 100%);
   --z-sticky: 100;
   --z-dropdown: 200;
   --z-banner: 300;

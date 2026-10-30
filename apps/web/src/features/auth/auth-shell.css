@@ -93,12 +93,13 @@ body:has(.auth-shell) {
   display: grid;
   grid-template-columns: 1.08fr 1fr;
   background: var(--color-surface);
-  border: 3.5px solid var(--color-divider);
-  border-radius: 14px;
+  border: 2px solid color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+  border-radius: 16px;
   box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.85),
-    0 0 0 1px rgba(245, 202, 103, 0.25),
-    inset 0 0 25px rgba(0, 0, 0, 0.7);
+    0 30px 80px color-mix(in srgb, var(--color-black) 60%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-gold-light) 35%, transparent),
+    0 0 40px color-mix(in srgb, var(--color-gold) 15%, transparent),
+    inset 0 0 30px color-mix(in srgb, var(--color-black) 12%, transparent);
   position: relative;
   z-index: 10;
   overflow: hidden;
@@ -434,15 +435,15 @@ body:has(.auth-shell) {
 }
 .auth-shell .input-elem {
   width: 100%;
-  height: 42px;
-  padding: 0 38px;
-  font-size: 14px;
+  height: 44px;
+  padding: 0 40px;
+  font-size: 14.5px;
   font-family: inherit;
   color: var(--color-ink);
   font-weight: 600;
   background: var(--color-surface-sunken);
   border: 1.5px solid var(--color-border);
-  border-radius: 7px;
+  border-radius: 8px;
   outline: none;
   box-shadow:
     inset 0 2px 4px color-mix(in srgb, var(--color-black) 10%, transparent),
@@ -459,7 +460,9 @@ body:has(.auth-shell) {
 .auth-shell .input-elem:focus {
   background: var(--color-surface);
   border-color: var(--color-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 25%, transparent);
+  box-shadow:
+    0 0 0 3.5px color-mix(in srgb, var(--color-focus) 25%, transparent),
+    0 2px 6px color-mix(in srgb, var(--color-black) 5%, transparent);
 }
 .auth-shell .input-elem[aria-invalid="true"] {
   border-color: var(--color-danger);
@@ -555,26 +558,26 @@ body:has(.auth-shell) {
 
 .auth-shell .btn-submit {
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   background: linear-gradient(
     180deg,
     var(--color-red) 0%,
     var(--color-btn-danger-bg) 100%
   );
   color: var(--color-btn-danger-fg);
-  border: 1.5px solid var(--color-btn-danger-bg);
-  border-radius: 7px;
+  border: 1.5px solid color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 14.5px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   box-shadow:
-    0 3px 8px color-mix(in srgb, var(--color-btn-danger-bg) 40%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 40%, transparent);
+    0 4px 12px color-mix(in srgb, var(--color-btn-danger-bg) 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 45%, transparent);
   transition:
     background 0.2s,
     box-shadow 0.2s,
@@ -582,9 +585,10 @@ body:has(.auth-shell) {
 }
 .auth-shell .btn-submit:hover:not([aria-disabled="true"]):not(:disabled) {
   filter: brightness(1.1);
-  box-shadow: 0 5px 12px
-    color-mix(in srgb, var(--color-btn-danger-bg) 50%, transparent);
-  transform: translateY(-1px);
+  box-shadow:
+    0 6px 18px color-mix(in srgb, var(--color-btn-danger-bg) 55%, transparent),
+    0 0 14px color-mix(in srgb, var(--color-gold-light) 35%, transparent);
+  transform: translateY(-2px);
 }
 .auth-shell .btn-submit:disabled,
 .auth-shell .btn-submit[aria-disabled="true"] {
