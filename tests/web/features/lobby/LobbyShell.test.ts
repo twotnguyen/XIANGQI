@@ -69,8 +69,9 @@ it("rejects a malformed code without invoking a room action", async () => {
   expect(screen.getByLabelText("Mã phòng").getAttribute("aria-invalid")).toBe(
     "true",
   );
+  const input = screen.getByLabelText("Mã phòng");
   expect(
-    screen.getByText("Mã phòng gồm đúng 8 chữ số. Kiểm tra lại rồi thử lại."),
+    document.getElementById(input.getAttribute("aria-describedby")!),
   ).toBeTruthy();
 });
 it("keeps room names as text and offers the error retry callback", async () => {
@@ -159,7 +160,9 @@ it("pending admission disables all room joins and never changes seats optimistic
   );
   const list = screen.getByRole("region", { name: "Phòng công khai" });
   expect(list.getAttribute("aria-busy")).toBe("true");
-  for (const button of within(list).getAllByRole("button")) {
+  for (const button of within(list).getAllByRole("button", {
+    name: /Vào chơi|Vào xem/,
+  })) {
     expect(button.getAttribute("aria-disabled")).toBe("true");
     await userEvent.setup().click(button);
   }
@@ -188,7 +191,7 @@ it("preserves server room ordering and includes the frozen inline keyboard rules
       .getAllByRole("heading", { level: 3 })
       .map((h) => h.textContent),
   ).toEqual([room.name, second.name]);
-  const summary = screen.getByText("Luật chơi");
+  const summary = screen.getByText("Luật chơi", { selector: "summary" });
   expect(summary.tagName).toBe("SUMMARY");
   summary.focus();
   expect(document.activeElement).toBe(summary);
@@ -196,4 +199,53 @@ it("preserves server room ordering and includes the frozen inline keyboard rules
   expect(summary.closest("details")!.open).toBe(true);
   expect(screen.getByText(/Đây là bộ luật rút gọn/)).toBeTruthy();
   expect(document.querySelector("dialog")).toBeNull();
+});
+it("filters supported time controls and retains server order across feed updates", async () => {
+  const rooms: PublicRoom[] = [
+    { ...room, id: "five", name: "Năm phút", timeMinutes: 5 },
+    { ...room, id: "fifteen", name: "Mười lăm phút", timeMinutes: 15 },
+    room,
+  ];
+  const props = callbacks();
+  const view = render(createElement(LobbyShell, { ...props, rooms }));
+  const list = screen.getByRole("region", { name: "Phòng công khai" });
+  const names = () =>
+    within(list)
+      .queryAllByRole("heading", { level: 3 })
+      .map((heading) => heading.textContent);
+  const user = userEvent.setup();
+  for (const [label, expected] of [
+    ["5 phút", ["Năm phút"]],
+    ["15 phút", ["Mười lăm phút"]],
+    ["10 phút", [room.name]],
+    ["Tất cả", rooms.map((entry) => entry.name)],
+  ] as const) {
+    const button = screen.getByRole("button", { name: label });
+    await user.click(button);
+    expect(button.getAttribute("aria-pressed")).toBe("true");
+    expect(names()).toEqual(expected);
+  }
+  await user.click(screen.getByRole("button", { name: "10 phút" }));
+  view.rerender(
+    createElement(LobbyShell, { ...props, rooms: rooms.slice(0, 2) }),
+  );
+  expect(names()).toEqual([]);
+  expect(screen.getByText("Không tìm thấy phòng phù hợp")).toBeTruthy();
+  await user.click(screen.getByRole("button", { name: "Tất cả" }));
+  expect(names()).toEqual(["Năm phút", "Mười lăm phút"]);
+});
+
+it("blocks code submission by Enter while the actor is already occupied", async () => {
+  const props = callbacks();
+  render(
+    createElement(LobbyShell, {
+      ...props,
+      rooms: [],
+      blockedReason: "Đang trong ván",
+    }),
+  );
+  await userEvent
+    .setup()
+    .type(screen.getByLabelText("Mã phòng"), "12345678{Enter}");
+  expect(props.onJoinCode).not.toHaveBeenCalled();
 });

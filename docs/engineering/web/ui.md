@@ -10,6 +10,18 @@ Chạy `pnpm --filter @xiangqi/web dev`, mở `/dev/ui` để kiểm thành ph�
 `/dev/lobby` để xem vị trí tích hợp Sảnh. Danh sách phòng trong preview có
 nhãn dữ liệu minh họa; preview không cấp quyền vào phòng hoặc chơi cờ.
 
+Sảnh PR #152 giữ bốn thẻ chế độ và ảnh minh họa local; subgrid căn hàng nút
+giữa các thẻ, kể cả khi nút P2 có lý do vô hiệu hóa. Bộ lọc thời gian mỗi bên
+dùng các mức thật 5/10/15 phút và Tất cả, công bố trạng thái qua `aria-pressed`,
+giữ thứ tự snapshot máy chủ. Không hiển thị số online/Elo khi chưa có dữ liệu.
+Ô mã phòng dùng `TextField` chung để nối nhãn/lỗi; tên chủ Khách giữ `(Khách)`.
+Nút Luật chơi mở disclosure hiện có và chuyển focus tới summary.
+
+Đã kiểm preview ở 360×800, 390×844 và 1366×900: không tràn ngang, ảnh tải đủ,
+control Sảnh cao tối thiểu 44px; mã sai/Enter, bộ lọc, mở luật và dialog tạo
+phòng/Escape hoạt động. Giảm chuyển động tắt animation. Chưa nghiệm thu
+phòng/ván thật với server trong lần kiểm này.
+
 Ưu tiên desktop/laptop: 1280×720, 1366×768, 1440×900, 1536×864,
 1920×1080; sau đó mobile 360×800 và 390×844. Các kiểm trình duyệt đã kiểm
 tràn ngang, vùng thao tác tối thiểu 44px, dialog bằng bàn phím và font local.

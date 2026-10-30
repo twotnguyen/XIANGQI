@@ -1,9 +1,10 @@
-import { useState, useId } from "react";
+import { useState, useRef } from "react";
 import {
   Button,
   EmptyState,
   ErrorState,
   Skeleton,
+  TextField,
 } from "../../shared/ui/primitives.js";
 import "./LobbyShell.css";
 import { GameRules } from "./GameRules.js";
@@ -56,8 +57,8 @@ export function LobbyShell({
 }: LobbyShellProps) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
-  const [timeFilter, setTimeFilter] = useState<"all" | 5 | 15 | "blitz">("all");
-  const codeInputId = useId();
+  const [timeFilter, setTimeFilter] = useState<"all" | 5 | 10 | 15>("all");
+  const rulesRef = useRef<HTMLDivElement>(null);
 
   const joinDisabledReason = blockedReason
     ? blockedReason
@@ -69,7 +70,6 @@ export function LobbyShell({
 
   const filteredRooms = rooms.filter((room) => {
     if (timeFilter === "all") return true;
-    if (timeFilter === "blitz") return room.timeMinutes === 5;
     return room.timeMinutes === timeFilter;
   });
 
@@ -96,7 +96,7 @@ export function LobbyShell({
               </span>
               <span className="xq-online-badge">
                 <span className="xq-live-pulse" aria-hidden="true" />
-                Trực tuyến: 1.250
+                Kỳ đài trực tuyến
               </span>
               {fixture && (
                 <span className="xq-fixture-pill">Dữ liệu minh họa</span>
@@ -110,48 +110,20 @@ export function LobbyShell({
           楚河 漢界
         </div>
 
-        {/* KHỐI PHẢI: USER CHIP + CÀI ĐẶT / LUẬT CHƠI */}
         <div className="xq-header-right">
-          <div className="xq-user-stat-chip">
-            <div className="xq-user-avatar-mini" aria-hidden="true">
-              👤
-            </div>
-            <span className="xq-user-elo-text">👑 Elo: 1450</span>
-            <span className="xq-chevron-down" aria-hidden="true">
-              ▾
-            </span>
-          </div>
-
-          <div className="xq-quick-actions">
-            <button
-              type="button"
-              className="xq-icon-btn"
-              title="Cài đặt"
-              aria-label="Cài đặt"
-            >
-              ⚙️
-            </button>
-            <button
-              type="button"
-              className="xq-icon-btn"
-              title="Âm thanh"
-              aria-label="Âm thanh"
-            >
-              🔊
-            </button>
-            <button
-              type="button"
-              className="xq-rules-pill-btn"
-              onClick={() => {
-                const el = document.getElementById("xq-rules-section");
-                el?.scrollIntoView({ behavior: "smooth" });
-                const details = el?.querySelector("details");
-                if (details) details.open = true;
-              }}
-            >
-              📜 Luật chơi
-            </button>
-          </div>
+          <button
+            type="button"
+            className="xq-rules-pill-btn"
+            onClick={() => {
+              const section = rulesRef.current;
+              const details = section?.querySelector("details");
+              if (details) details.open = true;
+              section?.scrollIntoView({ block: "start" });
+              section?.querySelector("summary")?.focus({ preventScroll: true });
+            }}
+          >
+            <span aria-hidden="true">📜</span> Luật chơi
+          </button>
         </div>
       </div>
 
@@ -203,7 +175,7 @@ export function LobbyShell({
                 onClick={onPlayAI}
                 disabledReason={blockedReason}
               >
-                Vào chơi
+                Chọn cấp độ máy
               </Button>
             </div>
           </article>
@@ -219,7 +191,7 @@ export function LobbyShell({
             </div>
             <div className="xq-card-content">
               <h3>Ghép ngẫu nhiên</h3>
-              <p>Tìm đối thủ cùng trình độ ngay lập tức</p>
+              <p>Giao lưu không tính Elo (Giai đoạn P2)</p>
             </div>
             <div className="xq-card-btn-wrap">
               <Button variant="secondary" disabledReason="Sắp ra mắt">
@@ -243,7 +215,7 @@ export function LobbyShell({
             </div>
             <div className="xq-card-btn-wrap">
               <Button variant="secondary" disabledReason="Sắp ra mắt">
-                Đấu hạng
+                Đánh hạng
               </Button>
             </div>
           </article>
@@ -256,30 +228,29 @@ export function LobbyShell({
           className="xq-middle-code-form"
           onSubmit={(event) => {
             event.preventDefault();
+            if (blockedReason) return;
             if (!/^[0-9]{8}$/.test(code)) {
-              setCodeError("Mã phòng gồm đúng 8 chữ số.");
+              setCodeError(
+                "Mã phòng gồm đúng 8 chữ số. Kiểm tra lại rồi thử lại.",
+              );
               return;
             }
             setCodeError("");
             onJoinCode(code);
           }}
         >
-          <div className="xq-middle-input-shell">
-            <input
-              id={codeInputId}
-              type="text"
-              inputMode="numeric"
-              placeholder="[  Nhập mã 8 số...  ]"
-              value={code}
-              onChange={(e) => {
-                setCode(e.target.value.replace(/\D/g, ""));
-                setCodeError("");
-              }}
-              maxLength={8}
-              className="xq-middle-code-input"
-              aria-label="Mã phòng 8 số"
-            />
-          </div>
+          <TextField
+            label="Mã phòng"
+            inputMode="numeric"
+            placeholder="Nhập mã 8 số…"
+            value={code}
+            onChange={(event) => {
+              setCode(event.target.value.replace(/\D/g, ""));
+              setCodeError("");
+            }}
+            maxLength={8}
+            error={codeError}
+          />
           <Button
             type="submit"
             variant="secondary"
@@ -288,7 +259,6 @@ export function LobbyShell({
             Vào phòng
           </Button>
         </form>
-        {codeError && <p className="xq-code-inline-error">{codeError}</p>}
       </div>
 
       {/* 4. PHÒNG CÔNG KHAI */}
@@ -307,9 +277,14 @@ export function LobbyShell({
 
           <div className="xq-rooms-head-actions">
             {/* TABS LỌC THỜI GIAN */}
-            <div className="xq-filter-pill-group" role="tablist">
+            <div
+              className="xq-filter-pill-group"
+              role="group"
+              aria-label="Lọc thời gian mỗi bên"
+            >
               <button
                 type="button"
+                aria-pressed={timeFilter === "all"}
                 className={`xq-filter-btn ${timeFilter === "all" ? "active" : ""}`}
                 onClick={() => setTimeFilter("all")}
               >
@@ -317,6 +292,7 @@ export function LobbyShell({
               </button>
               <button
                 type="button"
+                aria-pressed={timeFilter === 5}
                 className={`xq-filter-btn ${timeFilter === 5 ? "active" : ""}`}
                 onClick={() => setTimeFilter(5)}
               >
@@ -324,6 +300,7 @@ export function LobbyShell({
               </button>
               <button
                 type="button"
+                aria-pressed={timeFilter === 15}
                 className={`xq-filter-btn ${timeFilter === 15 ? "active" : ""}`}
                 onClick={() => setTimeFilter(15)}
               >
@@ -331,22 +308,18 @@ export function LobbyShell({
               </button>
               <button
                 type="button"
-                className={`xq-filter-btn ${timeFilter === "blitz" ? "active" : ""}`}
-                onClick={() => setTimeFilter("blitz")}
+                aria-pressed={timeFilter === 10}
+                className={`xq-filter-btn ${timeFilter === 10 ? "active" : ""}`}
+                onClick={() => setTimeFilter(10)}
               >
-                Cờ chớp
+                10 phút
               </button>
             </div>
 
             {/* NÚT TẠO PHÒNG MỚI MÀU VÀNG */}
-            <button
-              type="button"
-              className="xq-create-room-gold-btn"
-              onClick={onCreate}
-              disabled={Boolean(blockedReason)}
-            >
+            <Button onClick={onCreate} disabledReason={blockedReason}>
               + Tạo phòng mới
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -384,10 +357,13 @@ export function LobbyShell({
             {filteredRooms.map((room) => (
               <article className="xq-target-room-row" key={room.id}>
                 <div className="xq-target-room-info">
-                  <span className="xq-room-primary-text">
-                    <strong>{room.name}</strong>
-                    {room.hostName && ` (${room.hostName})`}
-                  </span>
+                  <div className="xq-room-primary-text">
+                    <h3>{room.name}</h3>
+                    <span>
+                      {room.hostName}
+                      {room.hostGuest ? " (Khách)" : ""}
+                    </span>
+                  </div>
                   <span className="xq-target-room-sep">•</span>
                   <span className="xq-target-room-time">
                     ⏱️ {room.timeMinutes} phút
@@ -428,7 +404,7 @@ export function LobbyShell({
                       disabledReason={joinDisabledReason}
                       onClick={() => onJoinRoom(room.id, "spectator")}
                     >
-                      Xem
+                      Vào xem
                     </Button>
                   )}
                 </div>
@@ -439,7 +415,7 @@ export function LobbyShell({
       </section>
 
       {/* 5. LUẬT CHƠI RÚT GỌN */}
-      <div id="xq-rules-section">
+      <div ref={rulesRef}>
         <GameRules />
       </div>
     </div>
