@@ -63,6 +63,7 @@ const extraMigrations = [
   "20261102000001_username_management",
   "20261102000004_direct_messages",
   "20261102000005_account_theme",
+  "20261103000001_username_otp_delivery",
 ];
 
 // Real production boot: Postgres-backed room/guest runtime, Nest HTTP app and
