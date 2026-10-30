@@ -1,6 +1,7 @@
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { useState, useRef, useEffect, useId, type ReactNode } from "react";
 import { Button, Dialog, Tooltip } from "../../shared/ui/primitives.js";
+import { AppIcon } from "../../shared/ui/AppIcon.js";
 import "./AppShell.css";
 export interface ShellUser {
   displayName: string;
@@ -61,10 +62,12 @@ export function AppShell({
         aria-current={active === "/lobby" ? "page" : undefined}
         onClick={() => setMenu(false)}
       >
+        <AppIcon name="lobby" />
         Sảnh
       </NavigationLink>
       {user?.guest ? (
         <Button variant="ghost" disabledReason="Đăng ký tài khoản để kết bạn">
+          <AppIcon name="friends" />
           Bạn bè
         </Button>
       ) : (
@@ -73,6 +76,7 @@ export function AppShell({
           aria-current={active === "/friends" ? "page" : undefined}
           onClick={() => setMenu(false)}
         >
+          <AppIcon name="friends" />
           Bạn bè
         </NavigationLink>
       )}
@@ -84,6 +88,7 @@ export function AppShell({
             onLogout ? undefined : "Chưa kết nối chức năng đăng xuất."
           }
         >
+          <AppIcon name="logout" />
           Đăng xuất
         </Button>
       ) : (
@@ -92,6 +97,7 @@ export function AppShell({
           aria-current={active === "/settings" ? "page" : undefined}
           onClick={() => setMenu(false)}
         >
+          <AppIcon name="profile" />
           Hồ sơ
         </NavigationLink>
       )}
@@ -100,6 +106,7 @@ export function AppShell({
           variant="ghost"
           disabledReason="Khách không có lịch sử ván đấu."
         >
+          <AppIcon name="history" />
           Lịch sử
         </Button>
       ) : (
@@ -108,11 +115,13 @@ export function AppShell({
           aria-current={active === "/history" ? "page" : undefined}
           onClick={() => setMenu(false)}
         >
+          <AppIcon name="history" />
           Lịch sử
         </NavigationLink>
       )}
       <Tooltip text="Sắp ra mắt">
         <Button variant="ghost" disabledReason="Sắp ra mắt">
+          <AppIcon name="trophy" />
           Bảng xếp hạng
         </Button>
       </Tooltip>
@@ -128,7 +137,10 @@ export function AppShell({
           <span className="xq-logo-token" aria-hidden="true">
             帥
           </span>
-          <span className="xq-brand-title">Cờ Tướng Online</span>
+          <span className="xq-brand-copy">
+            <span className="xq-brand-title">Cờ Tướng Online</span>
+            <span className="xq-brand-subtitle">KỲ ĐÀI CỔ PHONG</span>
+          </span>
         </NavigationLink>
         <nav className="xq-desktop-nav" aria-label="Điều hướng chính">
           {navigation}
@@ -147,14 +159,14 @@ export function AppShell({
                 aria-label={`Tài khoản: ${user.displayName}`}
               >
                 <span className="xq-user-avatar" aria-hidden="true">
-                  {user.displayName.trim().charAt(0).toUpperCase() || "K"}
+                  {Array.from(user.displayName.trim())[0]?.toUpperCase() || "K"}
                 </span>
                 <span className="xq-user-name">
                   {user.displayName}
                   {user.guest ? " (Khách)" : ""}
                 </span>
                 <span className="xq-user-arrow" aria-hidden="true">
-                  {userDropdown ? "▴" : "▾"}
+                  ⌄
                 </span>
               </button>
               {userDropdown && (
@@ -166,17 +178,15 @@ export function AppShell({
                 >
                   <div className="xq-dropdown-header">
                     <div className="xq-dropdown-avatar" aria-hidden="true">
-                      {user.displayName.trim().charAt(0).toUpperCase() || "K"}
+                      {Array.from(user.displayName.trim())[0]?.toUpperCase() ||
+                        "K"}
                     </div>
                     <div className="xq-dropdown-user-details">
                       <strong className="xq-dropdown-name">
                         {user.displayName}
                       </strong>
                       <span className="xq-dropdown-role">
-                        {user.guest ? "Tài khoản Khách" : "⚔️ Kỳ thủ Kỳ Đài"}
-                      </span>
-                      <span className="xq-dropdown-status">
-                        🟢 Đang trực tuyến
+                        {user.guest ? "Tài khoản Khách" : "Kỳ thủ Kỳ Đài"}
                       </span>
                     </div>
                   </div>
@@ -190,7 +200,7 @@ export function AppShell({
                       className="xq-dropdown-item"
                       onClick={() => setUserDropdown(false)}
                     >
-                      <span>🏛️</span>
+                      <AppIcon name="lobby" />
                       <span>Sảnh cờ</span>
                     </NavigationLink>
                     {!user.guest && (
@@ -199,7 +209,7 @@ export function AppShell({
                         className="xq-dropdown-item"
                         onClick={() => setUserDropdown(false)}
                       >
-                        <span>📜</span>
+                        <AppIcon name="profile" />
                         <span>Hồ sơ cá nhân</span>
                       </NavigationLink>
                     )}
@@ -215,7 +225,7 @@ export function AppShell({
                       }}
                       disabled={!onLogout}
                     >
-                      <span>🚪</span>
+                      <AppIcon name="logout" />
                       <span>Đăng xuất</span>
                     </button>
                   </div>
@@ -229,7 +239,7 @@ export function AppShell({
               onClick={() => setMenu(true)}
               aria-label="Mở điều hướng"
             >
-              Menu
+              <AppIcon name="menu" />
             </Button>
           </span>
         </div>
@@ -242,6 +252,18 @@ export function AppShell({
       >
         {children}
       </main>
+      <footer className="xq-site-footer">
+        <span className="xq-footer-seal" aria-hidden="true">
+          象棋
+        </span>
+        <span>
+          Cờ Tướng Online <span aria-hidden="true">·</span> Kết nối kỳ hữu, trọn
+          từng nước cờ.
+        </span>
+        <span className="xq-footer-motto" aria-hidden="true">
+          楚河 · 漢界
+        </span>
+      </footer>
       <Dialog open={menu} onClose={() => setMenu(false)} title="Điều hướng">
         <nav className="xq-menu-nav" aria-label="Điều hướng điện thoại">
           {navigation}

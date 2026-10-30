@@ -1,45 +1,27 @@
-/* Vỏ giao diện dùng chung cho /login và /register (theo mockups/SCR-LOGIN.html
-   và mockups/SCR-REGISTER.html): thẻ chính hai cánh, cánh đỏ thương hiệu bên
-   trái và cánh giấy da chứa biểu mẫu bên phải. */
+/* Khung xác thực: kỳ đài trầm ấm, biểu mẫu rõ ràng và không phụ thuộc ảnh ngoài. */
 html:has(.auth-shell),
 body:has(.auth-shell) {
   margin: 0;
   background: var(--color-paper);
 }
 .auth-shell.xq-ui {
-  --gold-main: var(--color-gold);
-  --gold-light: var(--color-gold-light);
-  --gold-dark: var(--color-gold-dark);
-  --crimson-top: #8e161c;
-  --crimson-mid: #680e13;
-  --crimson-dark: #3f0609;
   box-sizing: border-box;
   width: 100%;
   max-width: none;
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0;
-  padding: 24px 16px;
+  padding: 40px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden;
-  background-color: var(--color-paper);
-  background-image:
+  background:
     radial-gradient(
-      ellipse at 50% 30%,
-      color-mix(in srgb, var(--color-gold) 18%, transparent) 0%,
-      transparent 70%
+      ellipse at 12% 20%,
+      color-mix(in srgb, var(--color-gold) 10%, transparent),
+      transparent 55%
     ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--color-paper) 65%, transparent) 0%,
-      color-mix(in srgb, var(--color-paper) 92%, transparent) 100%
-    ),
-    url("/images/login-bg-scenic.webp");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+    var(--color-paper);
   font-family: var(--font-ui);
 }
 .auth-shell *,
@@ -47,317 +29,238 @@ body:has(.auth-shell) {
 .auth-shell *::after {
   box-sizing: border-box;
 }
-
-/* Câu đối treo hai bên (màn hình rộng) */
-.auth-shell .couplet {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  padding: 18px 6px;
-  background: linear-gradient(180deg, #96181e 0%, #5e0b10 100%);
-  border: 1.5px solid var(--gold-light);
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.8),
-    0 0 15px rgba(245, 202, 103, 0.25);
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  font-family: var(--font-han);
-  font-size: 22px;
-  font-weight: 600;
-  color: #f8e2b2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-  z-index: 5;
-  pointer-events: none;
-}
-.auth-shell .couplet-l {
-  left: calc(50% - 580px);
-}
-.auth-shell .couplet-r {
-  right: calc(50% - 580px);
-}
-@media (max-width: 1240px) {
-  .auth-shell .couplet {
-    display: none;
-  }
-}
-
-/* Thẻ chính */
 .auth-shell .master-modal {
   width: 100%;
-  max-width: 1020px;
-  min-height: 590px;
+  max-width: 1120px;
+  min-height: 680px;
   display: grid;
-  grid-template-columns: 1.08fr 1fr;
+  grid-template-columns: 1fr 1.04fr;
   background: var(--color-surface);
-  border: 2px solid color-mix(in srgb, var(--color-gold-light) 45%, transparent);
-  border-radius: 16px;
-  box-shadow:
-    0 30px 80px color-mix(in srgb, var(--color-black) 60%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--color-gold-light) 35%, transparent),
-    0 0 40px color-mix(in srgb, var(--color-gold) 15%, transparent),
-    inset 0 0 30px color-mix(in srgb, var(--color-black) 12%, transparent);
-  position: relative;
-  z-index: 10;
+  border: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 24px 80px
+    color-mix(in srgb, var(--color-black) 28%, transparent);
   overflow: hidden;
   margin: auto;
 }
-.auth-shell .c-decor {
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  pointer-events: none;
-  z-index: 15;
-}
-.auth-shell .c-decor::before,
-.auth-shell .c-decor::after {
-  content: "";
-  position: absolute;
-  background: linear-gradient(
-    45deg,
-    var(--color-gold-light),
-    var(--color-gold-dark)
-  );
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-}
-.auth-shell .ctl {
-  top: 8px;
-  left: 8px;
-}
-.auth-shell .ctl::before {
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 3px;
-}
-.auth-shell .ctl::after {
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 20px;
-}
-.auth-shell .ctr {
-  top: 8px;
-  right: 8px;
-}
-.auth-shell .ctr::before {
-  top: 0;
-  right: 0;
-  width: 20px;
-  height: 3px;
-}
-.auth-shell .ctr::after {
-  top: 0;
-  right: 0;
-  width: 3px;
-  height: 20px;
-}
-.auth-shell .cbl {
-  bottom: 8px;
-  left: 8px;
-}
-.auth-shell .cbl::before {
-  bottom: 0;
-  left: 0;
-  width: 20px;
-  height: 3px;
-}
-.auth-shell .cbl::after {
-  bottom: 0;
-  left: 0;
-  width: 3px;
-  height: 20px;
-}
-.auth-shell .cbr {
-  bottom: 8px;
-  right: 8px;
-}
-.auth-shell .cbr::before {
-  bottom: 0;
-  right: 0;
-  width: 20px;
-  height: 3px;
-}
-.auth-shell .cbr::after {
-  bottom: 0;
-  right: 0;
-  width: 3px;
-  height: 20px;
-}
-
-/* Cánh trái: thương hiệu */
 .auth-shell .wing-brand {
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: var(--color-ink);
   background:
-    radial-gradient(
-      circle at 50% 25%,
-      rgba(240, 60, 60, 0.25) 0%,
-      transparent 65%
-    ),
     linear-gradient(
       155deg,
-      var(--crimson-top) 0%,
-      var(--crimson-mid) 50%,
-      var(--crimson-dark) 100%
-    );
-  color: #fff;
-  padding: clamp(24px, 4vw, 44px) clamp(20px, 3.5vw, 38px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-right: 2px solid var(--gold-dark);
-  position: relative;
+      color-mix(in srgb, var(--color-surface) 94%, transparent),
+      color-mix(in srgb, var(--color-surface-sunken) 92%, transparent)
+    ),
+    url("/images/login-bg-scenic.webp") center / cover;
+  border-right: 1px solid var(--color-divider);
+  min-width: 0;
 }
 .auth-shell .brand-hero {
-  text-align: center;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 14px;
 }
 .auth-shell .brand-title-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  min-width: 0;
+}
+.auth-shell .hero-title {
+  margin: 0 0 3px;
+  color: var(--color-ink);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 1.3px;
+  line-height: 1.4;
 }
 .auth-shell .brand-subtitle-mini {
-  display: none;
+  display: block;
+  color: var(--color-gold-light);
+  font-size: 10px;
+  letter-spacing: 2.6px;
+  line-height: 1.6;
 }
 .auth-shell .token-3d {
-  width: clamp(72px, 7.5vw, 92px);
-  height: clamp(72px, 7.5vw, 92px);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 28%,
-    #f7dcb2 0%,
-    #d8a562 45%,
-    #9e6b2a 85%,
-    #643e12 100%
-  );
-  border: 3.5px solid #fff8e7;
-  box-shadow:
-    0 12px 25px rgba(0, 0, 0, 0.7),
-    inset 0 4px 6px rgba(255, 255, 255, 0.7),
-    inset 0 -6px 10px rgba(0, 0, 0, 0.5),
-    0 0 25px rgba(245, 202, 103, 0.4);
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  margin-bottom: 14px;
   position: relative;
-  flex-shrink: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #fff1d4, #d5ad70);
+  border: 2px solid #b98a4c;
+  box-shadow:
+    0 4px 0 #65411e,
+    0 7px 16px #0003;
 }
 .auth-shell .token-3d::after {
   content: "";
   position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(120, 60, 15, 0.55);
+  inset: 4px;
+  border: 1px solid #9f733c;
+  border-radius: inherit;
 }
 .auth-shell .token-char {
+  color: #9b2429;
   font-family: var(--font-han);
-  font-size: clamp(46px, 4.8vw, 58px);
+  font-size: 31px;
   font-weight: 600;
-  color: #991319;
   line-height: 1;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.4),
-    0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 3px 6px rgba(50, 10, 10, 0.8);
-  filter: drop-shadow(0 0 8px rgba(245, 202, 103, 0.45));
 }
-.auth-shell .hero-title {
-  font-family: var(--font-serif);
-  font-size: clamp(22px, 2.4vw, 27px);
-  line-height: 1.25;
+.auth-shell .brand-story {
+  margin-top: 8px;
+}
+.auth-shell .brand-eyebrow {
+  color: var(--color-gold-light);
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1.5px;
-  background: linear-gradient(180deg, #fff6e5 0%, #e5bf77 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0 0 4px;
+  letter-spacing: 1.7px;
+}
+.auth-shell .brand-story > p {
+  margin: 12px 0;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 3.2vw, 42px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.8px;
+}
+.auth-shell .brand-story em {
+  color: var(--color-gold-light);
+  font-style: normal;
+}
+.auth-shell .brand-description {
+  display: block;
+  max-width: 350px;
+  color: var(--color-ink-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.auth-shell .auth-board-art {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  margin: -8px 0 -12px;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--color-gold) 10%, transparent),
+    transparent 65%
+  );
+}
+.auth-shell .auth-board-art svg {
+  width: 180px;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  transform: perspective(600px) rotateX(15deg) rotateZ(-10deg);
+  color: var(--color-gold-light);
+}
+.auth-shell .auth-board-art svg > rect {
+  fill: color-mix(in srgb, var(--color-gold) 4%, var(--color-surface-sunken));
+  stroke: color-mix(in srgb, var(--color-gold) 35%, transparent);
+  stroke-width: 1;
+}
+.auth-shell .auth-board-art svg > path {
+  stroke: color-mix(in srgb, var(--color-gold-light) 30%, transparent);
+  stroke-width: 1;
+}
+.auth-shell .auth-river {
+  fill: var(--color-gold-light);
+  font-family: var(--font-han);
+  font-size: 12px;
+  letter-spacing: 4px;
+}
+.auth-shell .auth-art-piece > circle:first-child {
+  fill: #eed7af;
+  stroke: #ad7f44;
+  stroke-width: 2;
+  filter: drop-shadow(0 4px 2px #0004);
+}
+.auth-shell .auth-art-piece > circle:nth-child(2) {
+  stroke: #35291f;
+  stroke-width: 1;
+}
+.auth-shell .auth-art-piece > text {
+  fill: #35291f;
+  font-family: var(--font-han);
+  font-size: 26px;
+}
+.auth-shell .auth-art-piece-red > circle:nth-child(2) {
+  stroke: #9b2429;
+}
+.auth-shell .auth-art-piece-red > text {
+  fill: #9b2429;
 }
 .auth-shell .hero-slogan {
-  font-family: var(--font-ui);
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-family: var(--font-serif);
+  font-size: 13px;
   font-style: italic;
-  font-size: clamp(12.5px, 1.2vw, 14px);
-  color: #f8e2c3;
-  margin: 0 0 20px;
   text-align: center;
+  line-height: 1.7;
 }
 .auth-shell .feat-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 12px;
-  width: 100%;
-  text-align: left;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 14px;
 }
 .auth-shell .feat-box {
-  background: rgba(30, 8, 10, 0.45);
-  border: 1px solid rgba(245, 202, 103, 0.25);
-  border-radius: 8px;
-  padding: 8px 10px;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  backdrop-filter: blur(4px);
+  gap: 9px;
+  min-width: 0;
 }
 .auth-shell .feat-ico {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: linear-gradient(
-    135deg,
-    var(--color-gold) 0%,
-    var(--color-gold-dark) 100%
-  );
-  color: var(--color-btn-primary-fg);
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  font-size: 11px;
-  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-gold) 8%, transparent);
+  font-size: 14px;
 }
-.auth-shell .feat-desc h5 {
-  font-size: 11.5px;
+.auth-shell .feat-desc {
+  min-width: 0;
+}
+.auth-shell .feat-desc strong {
+  display: block;
+  margin: 0 0 4px;
+  color: var(--color-ink);
+  font-size: 12px;
   font-weight: 600;
-  color: #f8ead0;
-  margin: 0 0 2px;
+  line-height: 1.5;
 }
 .auth-shell .feat-desc p {
-  font-size: 10px;
-  color: #ceb59a;
-  line-height: 1.25;
   margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 .auth-shell .brand-foot {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  border-top: 1px solid rgba(245, 202, 103, 0.2);
-  padding-top: 12px;
-  font-size: 11px;
-  color: #c8aa8b;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-ink-muted);
+  font-size: 10px;
+  line-height: 1.6;
 }
-
-/* Cánh phải: giấy da và biểu mẫu */
 .auth-shell .wing-form {
-  background:
-    radial-gradient(
-      circle at 85% 10%,
-      color-mix(in srgb, var(--color-gold) 8%, transparent) 0%,
-      transparent 50%
-    ),
-    linear-gradient(
-      180deg,
-      var(--color-surface) 0%,
-      var(--color-surface-sunken) 100%
-    );
-  color: var(--color-ink);
-  padding: clamp(24px, 3.8vw, 38px) clamp(20px, 3.2vw, 34px);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: relative;
+  padding: 40px clamp(24px, 4vw, 48px);
+  color: var(--color-ink);
+  background: var(--color-surface);
 }
 .auth-shell form:has(.xq-field) {
   display: grid;
@@ -374,7 +277,7 @@ body:has(.auth-shell) {
 }
 .auth-shell .form-title {
   font-family: var(--font-serif);
-  font-size: clamp(20px, 2.2vw, 24px);
+  font-size: clamp(24px, 2.5vw, 30px);
   line-height: 1.3;
   font-weight: 600;
   color: var(--color-ink);
@@ -408,7 +311,7 @@ body:has(.auth-shell) {
 .auth-shell .form-subtitle {
   font-size: 12px;
   color: var(--color-ink-muted);
-  margin: 0 0 14px;
+  margin: 0 0 18px;
 }
 
 .auth-shell .field-row {
@@ -435,14 +338,14 @@ body:has(.auth-shell) {
 }
 .auth-shell .input-elem {
   width: 100%;
-  height: 44px;
-  padding: 0 40px;
-  font-size: 14.5px;
+  height: 48px;
+  padding: 0 52px 0 40px;
+  font-size: 16px;
   font-family: inherit;
   color: var(--color-ink);
   font-weight: 600;
   background: var(--color-surface-sunken);
-  border: 1.5px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
   border-radius: 8px;
   outline: none;
   box-shadow:
@@ -475,7 +378,7 @@ body:has(.auth-shell) {
   position: absolute;
   right: 6px;
   min-width: 44px;
-  min-height: 44px;
+  min-height: 48px;
   background: none;
   border: none;
   font-family: inherit;
@@ -484,7 +387,7 @@ body:has(.auth-shell) {
   color: var(--color-ink-muted);
   cursor: pointer;
   padding: 6px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 .auth-shell .btn-eye:hover {
   color: var(--color-ink);
@@ -524,7 +427,7 @@ body:has(.auth-shell) {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 44px;
+  min-height: 48px;
   cursor: pointer;
   user-select: none;
 }
@@ -541,7 +444,7 @@ body:has(.auth-shell) {
   padding: 0;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 48px;
   font: inherit;
   color: var(--color-gold-light);
   font-weight: 600;
@@ -565,11 +468,12 @@ body:has(.auth-shell) {
     var(--color-btn-danger-bg) 100%
   );
   color: var(--color-btn-danger-fg);
-  border: 1.5px solid color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-gold-light) 45%, transparent);
   border-radius: 8px;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -588,7 +492,7 @@ body:has(.auth-shell) {
   box-shadow:
     0 6px 18px color-mix(in srgb, var(--color-btn-danger-bg) 55%, transparent),
     0 0 14px color-mix(in srgb, var(--color-gold-light) 35%, transparent);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 .auth-shell .btn-submit:disabled,
 .auth-shell .btn-submit[aria-disabled="true"] {
@@ -596,16 +500,15 @@ body:has(.auth-shell) {
   cursor: not-allowed;
 }
 .auth-shell .btn-caps {
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.15px;
 }
 .auth-shell .btn-back {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   background: transparent;
   color: var(--color-ink-muted);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -627,11 +530,11 @@ body:has(.auth-shell) {
 }
 .auth-shell .btn-skip {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   background: transparent;
   color: var(--color-ink-muted);
   border: 1px dashed var(--color-border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -673,11 +576,11 @@ body:has(.auth-shell) {
 
 .auth-shell .btn-google {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   background: #fff;
   color: #3c4043;
-  border: 1.5px solid var(--color-border);
-  border-radius: 7px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
+  border-radius: 10px;
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 600;
@@ -731,7 +634,7 @@ body:has(.auth-shell) {
   width: 100%;
 }
 .auth-shell .google-slot .xq-button {
-  min-height: 44px;
+  min-height: 48px;
   padding: 4px 8px;
   background: transparent;
   color: var(--color-ink-muted);
@@ -750,20 +653,20 @@ body:has(.auth-shell) {
   margin-top: 10px;
   background: var(--color-surface-sunken);
   border: 1.5px solid var(--color-divider);
-  border-radius: 7px;
+  border-radius: 10px;
   padding: 8px 10px;
 }
 .auth-shell .btn-guest {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   background: linear-gradient(
     180deg,
     var(--color-surface) 0%,
     var(--color-surface-sunken) 100%
   );
   color: var(--color-ink);
-  border: 1.5px solid var(--color-border);
-  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
+  border-radius: 8px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -811,15 +714,19 @@ body:has(.auth-shell) {
 
 .auth-shell .reg-foot {
   display: flex;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: 4px;
   text-align: center;
   font-size: 12px;
   color: var(--color-ink-muted);
-  margin-top: 12px;
+  margin-top: 20px;
 }
 .auth-shell .reg-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--color-gold-light);
   font-weight: 600;
   text-decoration: none;
@@ -834,7 +741,7 @@ body:has(.auth-shell) {
   border: 1px solid var(--color-danger);
   border-left: 3px solid var(--color-danger);
   color: var(--color-danger);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px 10px;
   margin: 0 0 12px;
   font-size: 12px;
@@ -856,7 +763,7 @@ body:has(.auth-shell) {
   border: 1px solid var(--color-success);
   border-left: 3px solid var(--color-success);
   color: var(--color-success);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 10px 12px;
   font-size: 13px;
   font-weight: 600;
@@ -975,7 +882,7 @@ body:has(.auth-shell) {
   font-weight: 600;
   color: var(--color-ink);
   background: var(--color-surface-sunken);
-  border: 1.5px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
   border-radius: 8px;
   outline: none;
   box-shadow: inset 0 2px 4px
@@ -1009,10 +916,10 @@ body:has(.auth-shell) {
   justify-content: space-between;
   gap: 8px;
   font-size: 12.5px;
-  margin: 0 0 14px;
+  margin: 0 0 18px;
   padding: 6px 10px;
   background: var(--color-surface-sunken);
-  border-radius: 6px;
+  border-radius: 8px;
 }
 .auth-shell .otp-timer-row p {
   margin: 0;
@@ -1030,7 +937,7 @@ body:has(.auth-shell) {
   cursor: pointer;
   font-size: 12.5px;
   text-decoration: underline;
-  min-height: 44px;
+  min-height: 48px;
 }
 .auth-shell .btn-resend:disabled {
   color: var(--color-ink-muted);
@@ -1054,108 +961,108 @@ body:has(.auth-shell) {
   border: 0;
 }
 
-/* Điện thoại: cánh trái thành dải thương hiệu gọn */
-@media (max-width: 768px) {
+/* Màn hình thấp thu gọn phần trang trí, giữ nguyên khả năng truy cập biểu mẫu. */
+@media (min-width: 801px) and (max-height: 820px) {
   .auth-shell.xq-ui {
-    padding: 14px 12px 28px;
+    padding-block: 24px;
+  }
+  .auth-shell .wing-brand {
+    gap: 20px;
+  }
+  .auth-shell .auth-board-art svg {
+    width: 150px;
+  }
+  .auth-shell .auth-board-art {
+    min-height: 150px;
+  }
+}
+@media (max-width: 1000px) and (min-width: 801px) {
+  .auth-shell .wing-brand {
+    padding: 28px;
+  }
+  .auth-shell .feat-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .auth-shell .auth-board-art {
+    display: none;
+  }
+}
+@media (max-width: 800px) {
+  .auth-shell.xq-ui {
+    padding: 20px 16px 32px;
   }
   .auth-shell .master-modal {
     grid-template-columns: 1fr;
-    max-width: 390px;
+    max-width: 480px;
     min-height: auto;
+    border-radius: 20px;
     margin: 0 auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   }
   .auth-shell .wing-brand {
-    padding: 20px 16px 16px;
-    border-right: none;
-    border-bottom: 2px solid var(--gold-dark);
+    padding: 24px;
+    gap: 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-divider);
   }
   .auth-shell .brand-hero {
-    flex-direction: row;
-    align-items: center;
     justify-content: center;
     gap: 12px;
   }
   .auth-shell .token-3d {
-    width: 46px;
-    height: 46px;
-    margin-bottom: 0;
-    border-width: 2.5px;
+    width: 44px;
+    height: 44px;
   }
   .auth-shell .token-char {
     font-size: 26px;
   }
-  .auth-shell .brand-title-wrap {
-    align-items: flex-start;
-    text-align: left;
-  }
   .auth-shell .hero-title {
-    font-size: 20px;
-    margin-bottom: 1px;
+    font-size: 16px;
   }
   .auth-shell .brand-subtitle-mini {
-    display: block;
-    font-size: 9.5px;
-    letter-spacing: 1.5px;
-    color: var(--color-btn-danger-fg);
-    text-transform: uppercase;
-    font-weight: 600;
+    font-size: 9px;
+    letter-spacing: 2px;
   }
-  .auth-shell .hero-slogan {
-    font-size: 12px;
-    margin: 8px 0 0;
-    width: 100%;
-    opacity: 0.95;
-  }
+  .auth-shell .brand-story,
+  .auth-shell .auth-board-art,
   .auth-shell .feat-grid,
   .auth-shell .brand-foot {
     display: none;
   }
+  .auth-shell .hero-slogan {
+    font-size: 12px;
+  }
   .auth-shell .wing-form {
-    padding: 18px 16px 20px;
+    padding: 28px 24px;
   }
   .auth-shell .form-title {
-    font-size: 20px;
+    font-size: 25px;
   }
   .auth-shell .input-elem {
-    height: 44px;
     font-size: 16px;
   }
-  .auth-shell .btn-submit {
-    min-height: 46px;
-    font-size: 15px;
-  }
-  .auth-shell .otp-input {
-    height: 44px;
-    font-size: 18px;
+  .auth-shell .otp-grid {
+    gap: 6px;
   }
 }
-@media (max-width: 360px) {
+@media (max-width: 380px) {
   .auth-shell.xq-ui {
-    padding: 8px 6px 16px;
+    padding: 12px 10px 24px;
   }
   .auth-shell .wing-brand {
-    padding: 16px 12px 12px;
-  }
-  .auth-shell .hero-title {
-    font-size: 18px;
-  }
-  .auth-shell .token-3d {
-    width: 40px;
-    height: 40px;
-  }
-  .auth-shell .token-char {
-    font-size: 22px;
+    padding: 20px 16px;
   }
   .auth-shell .wing-form {
-    padding: 14px 12px 16px;
+    padding: 24px 18px;
   }
   .auth-shell .form-title {
-    font-size: 18px;
+    font-size: 23px;
   }
   .auth-shell .otp-grid {
-    gap: 5px;
+    gap: 4px;
+  }
+  .auth-shell .otp-input {
+    font-size: 18px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

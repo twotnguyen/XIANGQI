@@ -86,7 +86,6 @@ nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị 
 
 Kiểm local: trình duyệt thật với Nest/Socket.IO, PostgreSQL 17 riêng; chỉ provider Auth là synthetic. Đã đi qua login, đăng ký bỏ email và Khách từ link; mã có số 0 đầu giữ nguyên; clipboard thật, Escape trả focus; nhận nhiều popup, Esc chỉ từ chối một popup, chuyển A→B thất bại/thành công. Đã xem 1366×768 và 360×800; modal không tràn ngang, phòng chờ mobile không cuộn toàn trang. Không thay bằng chứng này cho Google/SMTP/LiveKit production hoặc nghiệm thu PO.
 
-
 ## Cài đặt dạng sidebar (29/10/2026)
 
 `/settings` dùng `features/profile/ProfilePage.tsx`: sidebar chia Hồ sơ cá nhân,
@@ -250,22 +249,23 @@ Không gửi OTP giả, không hiển thị Elo mẫu hoặc coi route có tên 
 `RoomPage.tsx` và `features/rooms/rooms.css` dùng token Kỳ Đài Cổ Phong.
 Desktop dùng toàn bộ chiều ngang, không giới hạn 1440px hay căn giữa; cột
 camera sát mép trái màn hình. Bố cục giữ **ba cột**:
+
 - **Trái:** camera đối thủ ở trên, camera của bạn ở dưới (theo người chơi,
   không cố định theo phe); người xem giữ thứ tự Đỏ/Đen. Các điều khiển media
   nằm dưới; cuối cột là mã phòng và hai nút Sao chép mã / Sao chép link.
 - **Giữa:** hai ghế Đỏ/Đen xếp dọc, cụm đổi ghế/bên nằm giữa hai ghế;
   danh sách người xem ở cuối cột.
 - **Phải:** khung chat chạy suốt chiều cao hai hàng của grid.
-Trên desktop, nhãn và mã phòng nằm cùng một hàng; mã dùng số tabular trong ô
-nền riêng, hai nút sao chép chia đều chiều rộng. Khối mã phòng gọn khoảng
-114px, không giữ khoảng trống cho thông báo thành công đã bỏ.
-Sao chép thành công chỉ hiện dấu tích trong đúng nút vừa bấm trong 1,5 giây,
-sau đó trở lại nhãn cũ; không hiện dòng thông báo thành công bên dưới.
-Hiệu ứng vẽ dấu tích tôn trọng `prefers-reduced-motion`, kích thước nút không đổi.
-Lỗi sao chép giữ `role="status"` và hiện nổi ngay phía trên khối mã phòng,
-không làm thay đổi chiều cao grid. Trong lúc sao chép, cả hai nút khóa thao tác
-nhưng không thêm spinner hay dòng giải thích disabled. Trạng thái khóa không đổi
-độ mờ hay màu hover của nút, tránh nhấp nháy khi bấm liên tục.
+  Trên desktop, nhãn và mã phòng nằm cùng một hàng; mã dùng số tabular trong ô
+  nền riêng, hai nút sao chép chia đều chiều rộng. Khối mã phòng gọn khoảng
+  114px, không giữ khoảng trống cho thông báo thành công đã bỏ.
+  Sao chép thành công chỉ hiện dấu tích trong đúng nút vừa bấm trong 1,5 giây,
+  sau đó trở lại nhãn cũ; không hiện dòng thông báo thành công bên dưới.
+  Hiệu ứng vẽ dấu tích tôn trọng `prefers-reduced-motion`, kích thước nút không đổi.
+  Lỗi sao chép giữ `role="status"` và hiện nổi ngay phía trên khối mã phòng,
+  không làm thay đổi chiều cao grid. Trong lúc sao chép, cả hai nút khóa thao tác
+  nhưng không thêm spinner hay dòng giải thích disabled. Trạng thái khóa không đổi
+  độ mờ hay màu hover của nút, tránh nhấp nháy khi bấm liên tục.
 
 Grid desktop dùng cột `minmax(260px, 320px) / minmax(320px, 1fr) /
 minmax(260px, 320px)`; chat và camera rộng bằng nhau, không lớn dần theo
@@ -373,3 +373,16 @@ hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều 
 ## Banner chống treo ván (US-P2-10)
 
 `features/rooms/match/InactivityBanner.tsx` chỉ hiện cho bên đang đến lượt khi snapshot có `match.inactivity`. Banner không modal, không khóa focus, không che bàn cờ hay nút Đầu hàng; có `role="status"`. Đếm lùi lấy từ `expiresAt` của server. Khi `confirmsLeft` = 0 thì ẩn nút "Tôi còn đây". Ván không giới hạn không có đồng hồ từng bên (snapshot không gửi `clocks`).
+
+## Nâng cấp giao diện kỳ đài (31/10/2026)
+
+- Đồng bộ nền nâu trầm, viền mảnh và vàng dịu bằng token hiện có; giữ hai chủ đề, phông/ảnh local và palette bàn cờ. Không thêm dependency UI.
+- Shell có thương hiệu hai dòng, biểu tượng SVG nét, điều hướng active, menu mobile và footer gọn. Footer ẩn trong phòng để không lấy diện tích bố cục khóa theo viewport. Avatar shell lấy ký tự Unicode đầu tiên.
+- Sảnh có hero với thao tác tạo phòng/đấu máy, bốn thẻ chế độ, khối vào bằng mã và danh sách phòng phân cấp rõ. Nút các thẻ căn cùng hàng cả khi có dòng giải thích vô hiệu hóa. Giữ đủ bộ lọc Tất cả/5/10/15 phút, mã 8 chữ số, trạng thái tải/trống/lỗi và quyền vào chơi/xem. Chế độ chưa mở vẫn có nhãn Sắp ra mắt; không hiển thị số online/Elo giả.
+- Auth có panel giới thiệu và bàn cờ SVG trang trí, form chữ 16px/cao 48px; nút hiện mật khẩu có khoảng trống riêng. Bỏ tuyên bố WCAG chưa được nghiệm thu.
+- Bàn online mobile lấy chiều rộng khả dụng thay vì co theo chiều cao; desktop giữ kích thước tối thiểu 320px. Sidebar chat xếp dọc, nút phòng/media trở lại 44px. Đồng hồ, AI, bạn bè, hồ sơ, lịch sử và replay dùng panel/spacing nhất quán; sửa tương phản avatar/tin nhắn/nút lưu dưới Giấy Sáng.
+- SVG có focus bàn phím rõ, giảm chuyển động bao phủ vòng nước đi; nhãn Lượt/Chú giải có nền tối riêng để đọc được dưới mọi theme.
+
+Đã chạy web Vite và server NestJS local dưới Node 22.23.3. Đã kiểm trực tiếp /dev/lobby, /dev/login, /dev/register và /dev/board ở desktop 1366/1440px và mobile 360/390px: không tràn ngang, ảnh tải đầy đủ, input auth 16px/cao48px và nút Sảnh tối thiểu44px. Đã thao tác lọc 5 phút/Tất cả, mã sai, dialog tạo phòng ở 844×390, menu/Escape/trả focus, đổi góc nhìn/thế cờ và chú giải. Đã xem Sảnh và auth dưới Giấy Sáng bằng thuộc tính HTML local tạm thời, đã khôi phục trước commit.
+
+Typecheck web, ESLint các TSX đổi và git diff --check đạt. Test local: không chạy (không được yêu cầu); không chạy build theo quy ước repository. Chưa nghiệm thu phòng/ván thật, trang cần tài khoản, Google/SMTP/LiveKit hoặc thiết bị camera/mic; các preview là dữ liệu minh họa, không thay bằng chứng nghiệp vụ.
