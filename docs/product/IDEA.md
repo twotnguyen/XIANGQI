@@ -1,6 +1,6 @@
 # Cờ Tướng Online · Ý tưởng sản phẩm
 
-**Bản tổng quan, đồng bộ phạm vi BA 0.18–0.21; đối chiếu mã ngày 31/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
+**Bản tổng quan, đồng bộ phạm vi BA 0.18–0.36; đối chiếu mã ngày 31/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
 
 ## 1. Sản phẩm và mục đích
 
@@ -28,7 +28,7 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 ## 4. Phạm vi và ưu tiên
 
-**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). P1 còn gồm Thách đấu, DM/unread, Tái đấu phòng tự tạo, Không giới hạn/chống treo, Đổi/Khôi phục Username, chuyển media giữa tab và ba lựa chọn chủ đề theo BA 0.20–0.21.
+**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). P1 còn gồm Thách đấu, DM/unread, Tái đấu phòng tự tạo, Không giới hạn/chống treo, Đổi/Khôi phục Username, chuyển media giữa tab và ba lựa chọn chủ đề theo BA 0.20–0.21, cùng toàn bộ phần P2 còn lại (trừ QR) theo BA 0.27–0.36.
 
 **Từ BA 0.27 (31/10/2026) không còn mục P2:** Đánh Hạng/Elo/bảng xếp hạng, ghép ngẫu nhiên, Tái đấu chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, khôi phục/đổi Username, tiện ích demo và giao diện bổ sung đều thuộc P1. QR vẫn bị loại. Chưa tái ước lượng giờ/Jira.
 
