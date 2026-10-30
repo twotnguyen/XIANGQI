@@ -13,6 +13,9 @@ jobs:
   checks:
     name: Fast Checks & Build (full tests on main)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       full: ${{ steps.filter.outputs.full }}
       code: ${{ steps.filter.outputs.web == 'true' || steps.filter.outputs.server == 'true' }}
@@ -38,6 +41,7 @@ jobs:
           CI_EVENT: ${{ github.event_name }}
           CI_BASE_REF: ${{ github.base_ref }}
           CI_BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         run: node .github/scripts/ci-scope.mjs
       - run: pnpm install --frozen-lockfile
         if: steps.filter.outputs.web == 'true' || steps.filter.outputs.server == 'true'
@@ -87,190 +91,8 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4, 5, 6]
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_auth_test
-          POSTGRES_USER: auth_test_admin
-          POSTGRES_PASSWORD: isolated-ci-test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U auth_test_admin -d xiangqi_auth_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      realtime-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_realtime_test
-          POSTGRES_USER: realtime_test_admin
-          POSTGRES_PASSWORD: isolated-realtime-ci-test
-        ports:
-          - 5433:5432
-        options: >-
-          --health-cmd "pg_isready -U realtime_test_admin -d xiangqi_realtime_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      login-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_login_test
-          POSTGRES_USER: login_test_admin
-          POSTGRES_PASSWORD: isolated-login-ci-test
-        ports:
-          - 5434:5432
-        options: >-
-          --health-cmd "pg_isready -U login_test_admin -d xiangqi_login_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      schema-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_schema_test
-          POSTGRES_USER: schema_test_admin
-          POSTGRES_PASSWORD: isolated-schema-ci-test
-        ports:
-          - 55443:5432
-        options: >-
-          --health-cmd "pg_isready -U schema_test_admin -d xiangqi_schema_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      google-guest-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: google_guest_test
-          POSTGRES_USER: google_guest_test_admin
-          POSTGRES_PASSWORD: isolated-google-guest-ci-test
-        ports:
-          - 55445:5432
-        options: >-
-          --health-cmd "pg_isready -U google_guest_test_admin -d google_guest_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      room-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_room_test
-          POSTGRES_USER: room_test_admin
-          POSTGRES_PASSWORD: isolated-room-ci-test
-        ports:
-          - 55446:5432
-        options: >-
-          --health-cmd "pg_isready -U room_test_admin -d xiangqi_room_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      match-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_match_test
-          POSTGRES_USER: match_test_admin
-          POSTGRES_PASSWORD: isolated-match-ci-test
-        ports:
-          - 55447:5432
-        options: >-
-          --health-cmd "pg_isready -U match_test_admin -d xiangqi_match_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      clock-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_clock_test
-          POSTGRES_USER: clock_test_admin
-          POSTGRES_PASSWORD: isolated-clock-ci-test
-        ports:
-          - 55448:5432
-        options: >-
-          --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      room-transactions-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_room_transactions_test
-          POSTGRES_USER: room_transaction_test_admin
-          POSTGRES_PASSWORD: isolated-room-transactions-ci-test
-        ports:
-          - 55449:5432
-        options: >-
-          --health-cmd "pg_isready -U room_transaction_test_admin -d xiangqi_room_transactions_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      clock-port-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_clock_port_test
-          POSTGRES_USER: clock_test_admin
-          POSTGRES_PASSWORD: isolated-clock-port-ci-test
-        ports:
-          - 55451:5432
-        options: >-
-          --health-cmd "pg_isready -U clock_test_admin -d xiangqi_clock_port_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-      member-realtime-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_member_realtime_test
-          POSTGRES_USER: member_realtime_test_admin
-          POSTGRES_PASSWORD: isolated-member-realtime-ci-test
-        ports:
-          - 55450:5432
-        options: >-
-          --health-cmd "pg_isready -U member_realtime_test_admin -d xiangqi_member_realtime_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
-
-      room-runtime-postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: xiangqi_room_runtime_test
-          POSTGRES_USER: room_runtime_test_admin
-          POSTGRES_PASSWORD: isolated-room-runtime-ci-test
-        ports:
-          - 55452:5432
-        options: >-
-          --health-cmd "pg_isready -U room_runtime_test_admin -d xiangqi_room_runtime_test"
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 10
-          --tmpfs /var/lib/postgresql/data
     env:
-      ROOM_RUNTIME_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test
-      DRAW_WORKER_TEST_DATABASE_URL: postgresql://room_runtime_test_admin:isolated-room-runtime-ci-test@127.0.0.1:55452/xiangqi_room_runtime_test
-      MEMBER_REALTIME_TEST_DATABASE_URL: postgresql://member_realtime_test_admin:isolated-member-realtime-ci-test@127.0.0.1:55450/xiangqi_member_realtime_test
-      CLOCK_PORT_TEST_DATABASE_URL: postgresql://clock_test_admin:isolated-clock-port-ci-test@127.0.0.1:55451/xiangqi_clock_port_test
-      ROOM_TRANSACTION_TEST_DATABASE_URL: postgresql://room_transaction_test_admin:isolated-room-transactions-ci-test@127.0.0.1:55449/xiangqi_room_transactions_test
-      CLOCK_TEST_DATABASE_URL: postgresql://clock_test_admin:isolated-clock-ci-test@127.0.0.1:55448/xiangqi_clock_test
-      MATCH_TEST_DATABASE_URL: postgresql://match_test_admin:isolated-match-ci-test@127.0.0.1:55447/xiangqi_match_test
-      ROOM_TEST_DATABASE_URL: postgresql://room_test_admin:isolated-room-ci-test@127.0.0.1:55446/xiangqi_room_test
-      GOOGLE_GUEST_TEST_DATABASE_URL: postgresql://google_guest_test_admin:isolated-google-guest-ci-test@127.0.0.1:55445/google_guest_test
-      SCHEMA_TEST_DATABASE_URL: postgresql://schema_test_admin:isolated-schema-ci-test@127.0.0.1:55443/xiangqi_schema_test
-      LOGIN_TEST_DATABASE_URL: postgresql://login_test_admin:isolated-login-ci-test@localhost:5434/xiangqi_login_test
-      AUTH_TEST_DATABASE_URL: postgresql://auth_test_admin:isolated-ci-test@localhost:5432/xiangqi_auth_test
-      REALTIME_TEST_DATABASE_URL: postgresql://realtime_test_admin:isolated-realtime-ci-test@localhost:5433/xiangqi_realtime_test
+      XQ_PG_DOCKER: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -279,7 +101,9 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec vitest run tests/server --shard=${{ matrix.shard }}/6 --no-file-parallelism --bail 1
+      - run: node .github/scripts/server-shards.mjs --self-test
+      - run: node tests/server/db-scope.mjs --self-test
+      - run: node .github/scripts/server-shards.mjs --run ${{ matrix.shard }}
 
   db-gate:
     name: Database Integration Gate

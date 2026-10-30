@@ -1,5 +1,9 @@
 # Kế hoạch hiện hành — đồng bộ Jira ngày 10/10/2026
 
+> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../../../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.
+
+> **Sprint:** lần đọc Jira ngày 11/10 ghi Sprint 1 ACTIVE từ 11/10/2026 và Sprint 2–4 FUTURE; chưa có lần đọc lại sau đó. Câu "cả 4 Sprint chưa bắt đầu" bên dưới thuộc ảnh chụp 10/10.
+
 Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot.json), đọc trực tiếp từ Jira; dữ liệu sinh tài liệu: [plan-data.json](../data/plan-data.json) và [descriptions.json](../data/descriptions.json).
 
 - Board duy nhất: 38; cả 4 Sprint chưa bắt đầu.
@@ -14,7 +18,7 @@ Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot
 
 ## Cấu hình GitHub hiện hành
 
-Chỉ có `main` và `develop`; `main` là mặc định. Không còn bộ quy tắc bảo vệ nhánh, bắt buộc PR/Approve/Code Owner hay CI. Đây là cấu hình GitHub, không thay đổi trạng thái Jira. AC-00.1.2, Story US-00.1 và Description T01 đã đồng bộ: CI tự chạy khi push/PR, báo kết quả lint/typecheck/unit test; không dùng bảo vệ nhánh để chặn gộp. Đây là yêu cầu triển khai, chưa phải bằng chứng CI đã chạy đạt. Xem [README](../../../../README.md#quy-trình-git).
+Theo `AGENTS.md` (30/10/2026): chỉ có `main` và `develop`; `develop` là nhánh mặc định và tích hợp; `main` có branch protection với hai check bắt buộc `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, chỉ nhận PR từ `develop`. Đây thay ghi chú ngày 10/10 "không còn bộ quy tắc bảo vệ nhánh"; chưa đối chiếu cấu hình GitHub thực tế. AC-00.1.2 và Description T01 trong Jira còn câu cũ; đồng bộ lại khi có yêu cầu cập nhật Jira. Xem [BACKLOG-P1 AC-00.1.2](../../../product/BACKLOG-P1.md).
 
 ## Dữ liệu đã đồng bộ
 

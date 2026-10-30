@@ -56,6 +56,19 @@ tests/server/db.sh test      # toàn bộ test; dựng đủ cụm cần thiết
 
 Runner xóa các biến `*_TEST_DATABASE_URL` thuộc danh sách quản lý được kế thừa, rồi chỉ cấp URL local cho cụm đã chọn; tên database chưa được khai báo hoặc import tương đối không phân giải được sẽ báo lỗi trước khi dựng cụm. Guard host/port/tên database trong các bộ test giữ nguyên. `start`, `stop`, `status`, `env`, `purge` vẫn thao tác toàn bộ danh sách cụm như trước.
 
+CI dùng cùng runner với `XQ_PG_DOCKER=1`: chỉ dựng container `postgres:17.6`
+cho các cụm đã chọn, bind cổng trên `127.0.0.1`, dữ liệu trong tmpfs và dọn
+container của chính lượt chạy khi kết thúc hoặc lỗi. Không dùng Supabase hay
+database có sẵn. Các guard URL và chế độ tuần tự trong mỗi shard giữ nguyên.
+
+Các helper room/match/clock/runtime dùng `fixtures/apply-sql.test-helper.ts`
+để gửi `SET ROLE postgres` cùng **một file SQL**, giảm từ ba xuống hai lượt
+trao đổi với PostgreSQL cho mỗi migration/baseline. Không gộp nhiều migration,
+không bỏ `beforeEach` reset schema hay replay migration; `ROLLBACK; RESET ROLE`
+vẫn chạy sau thành công hoặc lỗi, rồi connection luôn được trả về pool.
+Test SQL thật kiểm cả commit tường minh, transaction chưa commit, lỗi giữa
+file và khôi phục role. Các test migration/rollback gốc vẫn giữ nguyên.
+
 Self-check của bộ chọn (chỉ chạy khi được yêu cầu; không dựng database):
 
 ```sh
@@ -70,7 +83,7 @@ Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được đi�
 
 **Phân quyền thành viên:** ruleset GitHub [Protected branches: owner-only updates](https://github.com/twotnguyen/XIANGQI/rules/26200968) giới hạn tạo/cập nhật/xóa `main` và `develop`, chỉ tài khoản `twotnguyen` (ID `195888848`) được bypass. Thành viên giữ quyền push nhánh riêng và mở PR vào `develop`, nhưng không được push trực tiếp hoặc tự merge vào hai nhánh tích hợp. Chủ repo review rồi merge PR vào `develop`, hoặc có thể code/push thẳng `develop`. `main` vẫn chịu protection riêng, kể cả chủ repo: bắt buộc PR phát hành và required checks. Quyền bypass ruleset này không bỏ qua protection riêng của `main`; không cấp bypass cho cả nhóm admin hay bot.
 
-**Luồng phát triển:** push `develop` hoặc PR vào `develop` có thay đổi mã chạy lint/typecheck toàn repo, build ứng dụng bị ảnh hưởng và unit/core; không chạy database. `.github/scripts/ci-scope.mjs` chọn build theo diff:
+**Luồng phát triển:** push `develop` hoặc PR vào `develop` có thay đổi mã chạy lint/typecheck toàn repo, build ứng dụng bị ảnh hưởng và unit/core; không chạy database. Nếu lượt push xác minh được đã có PR `develop` → `main` trong cùng repository bao phủ **đúng head SHA**, build/unit chỉ chạy ở PR phát hành. API lỗi, head chưa đồng bộ hoặc không có PR thì push vẫn chạy bình thường. Mở PR sau khi lượt push đã hoàn tất không thu hồi công việc đã chạy. `.github/scripts/ci-scope.mjs` chọn build theo diff:
 
 | Vùng thay đổi                                                             | Build trên `develop`                    |
 | ------------------------------------------------------------------------- | --------------------------------------- |
@@ -79,7 +92,37 @@ Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được đi�
 | `packages/`, `tests/packages/`                                            | Cả hai ứng dụng                         |
 | Cấu hình gốc, workflow, đường dẫn chưa phân loại hoặc không đọc được diff | Cả hai ứng dụng; không tự bật test nặng |
 
-**Cửa phát hành:** chỉ PR `develop` → `main` trong chính repository được chấp nhận. PR có thay đổi mã chạy mọi nhóm test/build, gồm sáu shard server với PostgreSQL cô lập. Không kích hoạt CI khi push `main`: kết quả kiểm chứng nằm trên PR trước merge, không tạo check xanh giả cho commit merge.
+**Cửa phát hành:** chỉ PR `develop` → `main` trong chính repository được chấp nhận. PR có thay đổi mã luôn chạy mọi nhóm test/build, gồm sáu shard server với PostgreSQL cô lập; không tái sử dụng trạng thái xanh của lượt push để bỏ kiểm tra bản tích hợp. Không kích hoạt CI khi push `main`: kết quả kiểm chứng nằm trên PR trước merge, không tạo check xanh giả cho commit merge.
+
+`.github/scripts/server-shards.mjs` khám phá danh sách test hiện tại bằng Vitest,
+rồi chia longest-first theo thời gian từng file trong `server-test-timings.json`.
+Baseline lấy từ log Vitest của run `41100975346` (155 file), không dùng thời gian
+job của GitHub vì số đó không khớp log thực thi trong lần đo này. File mới vẫn
+được gán shard với chi phí dự phòng; file đã xóa không được gọi lại. Mỗi file
+hiện tại phải thuộc đúng một shard và chạy tuần tự trong shard.
+
+Xem kế hoạch hoặc tự kiểm bộ chia (không chạy test/database):
+
+```sh
+node .github/scripts/server-shards.mjs --self-test
+node .github/scripts/server-shards.mjs --plan
+```
+
+Khi cập nhật baseline, lấy dòng tổng thời gian **từng file** trong log Vitest
+của cả sáu shard đã thành công, cập nhật map đường dẫn → milliseconds và giữ
+đầy đủ file mới. Thời gian kế hoạch là ước lượng để cân tải, không phải cam kết
+thời gian CI; setup runner/container, import và cleanup còn có chi phí riêng.
+
+Đối chiếu danh sách hiện tại sau tối ưu: 156 file được chọn đúng một lần,
+tải ước lượng mỗi shard khoảng 70,26 giây và tổng số cụm PostgreSQL cần dựng
+là 32 thay vì 72 (12 cụm × 6 shard). Đây là kế hoạch tính từ baseline, chưa
+phải thời gian end-to-end của một lượt GitHub Actions mới.
+
+Smoke trong Linux/Docker cô lập với Node 22: 5 regression SQL pass; 50 test
+room/chat pass ở cả helper trước và sau tối ưu; một shard thật gồm 26 file,
+250 test pass và không còn container test sau khi kết thúc. Lượt đo room/chat
+đơn lẻ là 7,92 giây trước và 7,81 giây sau; chênh lệch nhỏ, chưa đủ kết luận
+mức tăng tốc fixture ổn định.
 
 **PR chỉ sửa tài liệu:** workflow vẫn chạy với Markdown, `docs/` hoặc `.env.example`; kiểm tra nguồn PR và bộ lọc vẫn chạy, nhưng bỏ qua cài dependency/lint/typecheck/build/unit/database. Hai required checks vẫn kết thúc thành công nếu các kiểm tra nhẹ đạt. Không đọc được diff thì chạy đầy đủ thay vì coi là tài liệu.
 
