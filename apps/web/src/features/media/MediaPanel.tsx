@@ -169,6 +169,7 @@ export function MediaPanel({
   const [level, setLevel] = useState<ShareLevel>("OPPONENT");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mediaFailed, setMediaFailed] = useState(false);
   const [pendingDevices, setPendingDevices] = useState({
     camera: false,
     mic: false,
@@ -251,6 +252,16 @@ export function MediaPanel({
       const current = () => epoch.current === id;
       const live = new Room({ adaptiveStream: true, dynacast: true });
       rooms.current.push(live);
+      live.on(RoomEvent.Disconnected, () => {
+        if (!current()) return;
+        // LiveKit đã hết khả năng tự nối lại; chỉ dọn media, không phát lệnh phòng/ván.
+        invalidate();
+        setCamera(false);
+        setMic(false);
+        setBusy(false);
+        setMediaFailed(true);
+        setStatus("Camera/mic tạm thời không dùng được");
+      });
       live.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
         if (current()) attachTrack(track, participant, roomName);
       });
@@ -296,7 +307,7 @@ export function MediaPanel({
         if (!current()) releaseRoom(live);
       }
     },
-    [attachTrack, userId],
+    [attachTrack, invalidate, userId],
   );
 
   // Lấy ticket theo đúng quyền thiết bị đang yêu cầu rồi chỉ phát khi mức đã xác nhận cho phép.
@@ -308,6 +319,7 @@ export function MediaPanel({
       const id = invalidate();
       const current = () => epoch.current === id;
       setBusy(true);
+      setMediaFailed(false);
       setStatus("");
       try {
         const ticket = await client.token(roomId, next.camera, next.mic, tabId);
@@ -345,6 +357,7 @@ export function MediaPanel({
         setCamera(false);
         setMic(false);
         setBusy(false);
+        setMediaFailed(true);
         setStatus(mediaErrorMessage(error, next.camera || next.mic));
       } finally {
         if (current()) setBusy(false);
@@ -586,6 +599,18 @@ export function MediaPanel({
         <Notice message="Tab này chỉ có thể xem. Camera và mic đang tắt; bật lại sẽ hỏi chuyển thiết bị sang tab này." />
       )}
       {status && <Notice message={status} />}
+      {mediaFailed && (
+        <Button
+          variant="secondary"
+          loading={busy}
+          disabledReason={!connected ? "Chưa kết nối phòng." : undefined}
+          onClick={() =>
+            void run({ camera: false, mic: false, level: levelRef.current })
+          }
+        >
+          Thử lại camera/mic
+        </Button>
+      )}
       <Dialog
         open={switching}
         onClose={cancelSwitch}

@@ -137,6 +137,12 @@ const live = vi.hoisted(() => {
       if (notify) emit();
       return { element, emit };
     }
+    emitDisconnected() {
+      this.record.connected = false;
+      const handler = this.handlers.get("Disconnected") as
+        (() => void) | undefined;
+      handler?.();
+    }
     async connect(url: string, token: string) {
       this.record.url = url;
       this.record.token = token;
@@ -159,6 +165,7 @@ vi.mock("livekit-client", () => ({
   RoomEvent: {
     TrackSubscribed: "TrackSubscribed",
     TrackUnsubscribed: "TrackUnsubscribed",
+    Disconnected: "Disconnected",
   },
   Track: { Kind: { Video: "video", Audio: "audio" } },
 }));

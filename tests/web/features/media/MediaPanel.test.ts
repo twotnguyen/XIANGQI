@@ -438,6 +438,69 @@ describe("media panel tab switch", () => {
   });
 });
 
+describe("media service disconnects after joining", () => {
+  it("stops every private/stage track on a final disconnect and retries receive-only", async () => {
+    const { client } = harness({ level: "ALL" });
+    const onTakeover = vi.fn(async () => {});
+    const view = render(panel(client, { onTakeover }));
+    await settle();
+    const user = userEvent.setup();
+    await user.click(cameraButton());
+    await waitFor(() => expect(live.state.rooms[2]?.camera).toBe(true));
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật mic" }));
+    await waitFor(() => expect(live.state.rooms[2]?.mic).toBe(true));
+    const opened = live.state.rooms.slice(1);
+    await act(async () => {
+      live.state.instances[2]!.emitDisconnected();
+    });
+    expect(
+      screen.getByText("Camera/mic tạm thời không dùng được"),
+    ).toBeTruthy();
+    expect(
+      opened.every(
+        (room) =>
+          room.disconnected && room.tracks.every((track) => track.stopped),
+      ),
+    ).toBe(true);
+    expect(view.container.querySelectorAll("video,audio")).toHaveLength(0);
+    expect(cameraButton().getAttribute("aria-pressed")).toBe("false");
+    expect(
+      screen
+        .getByRole("button", { name: "Bật mic" })
+        .getAttribute("aria-pressed"),
+    ).toBe("false");
+    const before = live.state.rooms.length;
+    await user.click(
+      screen.getByRole("button", { name: "Thử lại camera/mic" }),
+    );
+    await waitFor(() => expect(live.state.rooms[before]?.connected).toBe(true));
+    expect(client.token).toHaveBeenLastCalledWith("room", false, false, "tab");
+    expect(live.state.rooms[before]!.tracks).toHaveLength(0);
+    expect(onTakeover).not.toHaveBeenCalled();
+    expect(
+      screen.queryByText("Camera/mic tạm thời không dùng được"),
+    ).toBeNull();
+  });
+
+  it("lets spectators retry reception after the media service disconnects", async () => {
+    const { client } = harness({ role: "spectator" });
+    render(panel(client, { role: "spectator", userId: "viewer" }));
+    await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
+    await act(async () => {
+      live.state.instances[0]!.emitDisconnected();
+    });
+    expect(
+      screen.getByText("Camera/mic tạm thời không dùng được"),
+    ).toBeTruthy();
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Thử lại camera/mic" }));
+    await waitFor(() => expect(live.state.rooms[1]?.connected).toBe(true));
+    expect(screen.queryByRole("button", { name: "Bật camera" })).toBeNull();
+    expect(live.state.rooms[1]!.tracks).toHaveLength(0);
+  });
+});
 it("does not change media sharing if control proof cannot be obtained", async () => {
   const { client } = harness();
   render(
