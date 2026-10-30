@@ -46,6 +46,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   for (const [name, descriptor] of originals) {
@@ -107,4 +108,49 @@ it("opens the friend list and then the chat with the chosen friend", async () =>
     await screen.findByRole("log", { name: "Lịch sử với Bạn A" }),
   ).toBeTruthy();
   expect(client.messages).toHaveBeenCalledWith(FRIEND);
+});
+
+it("shows a recoverable error instead of an endless loader when the initial friend list fails", async () => {
+  const client = fakeClient();
+  vi.mocked(client.list).mockRejectedValueOnce(
+    new TypeError("PRIVATE_PROVIDER_MESSAGE"),
+  );
+  render(createElement(DirectChatHub, { client, userId: ME }));
+  fireEvent.click(await screen.findByRole("button", { name: /Tin nhắn/ }));
+  expect(await screen.findByRole("alert")).toBeTruthy();
+  expect(screen.queryByText("Đang tải danh sách bạn bè…")).toBeNull();
+  expect(screen.queryByText("PRIVATE_PROVIDER_MESSAGE")).toBeNull();
+
+  fireEvent.click(screen.getByRole("button", { name: "Thử lại" }));
+  expect(
+    await screen.findByRole("button", { name: /Nhắn tin với Bạn A/ }),
+  ).toBeTruthy();
+  expect(screen.queryByRole("alert")).toBeNull();
+  expect(client.list).toHaveBeenCalledTimes(2);
+});
+
+it("retains known friends while reporting a refresh failure and clears the error after retry", async () => {
+  vi.useFakeTimers();
+  const client = fakeClient();
+  render(createElement(DirectChatHub, { client, userId: ME }));
+  await act(async () => {});
+  fireEvent.click(screen.getByRole("button", { name: /Tin nhắn/ }));
+  await act(async () => {});
+  expect(
+    screen.getByRole("button", { name: /Nhắn tin với Bạn A/ }),
+  ).toBeTruthy();
+
+  vi.mocked(client.list).mockRejectedValueOnce(new TypeError("network error"));
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(2000);
+  });
+  expect(screen.getByRole("alert")).toBeTruthy();
+  expect(screen.getByText(/Đang giữ danh sách gần nhất/)).toBeTruthy();
+  expect(
+    screen.getByRole("button", { name: /Nhắn tin với Bạn A/ }),
+  ).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Thử lại" }));
+  await act(async () => {});
+  expect(screen.queryByRole("alert")).toBeNull();
+  expect(client.list).toHaveBeenCalledTimes(3);
 });
