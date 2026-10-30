@@ -1,5 +1,7 @@
 # Tài liệu và dữ liệu Jira XIAN
 
+> **Phạm vi hiện hành (31/10/2026):** dữ liệu, báo cáo sinh tự động và số liệu trong thư mục này là baseline Jira ngày 10/10. Phạm vi sản phẩm hiện hành nằm ở [docs/product](../../product/BA-SCOPE-DECISIONS.md) (BA 0.18–0.36) và chưa được tái ước lượng vào Jira. `tools/build_plan.py --check` hiện báo lỗi dữ liệu EP-08 (Components không phủ Task con) từ trước các thay đổi này; chưa sửa. Tên Task T51 và T71 trên Jira còn ghi D1–D10; bảng demo hiện hành D1–D14 nằm ở [BACKLOG-P1 §8](../../product/BACKLOG-P1.md).
+
 Nhóm bắt đầu từ [trạng thái hiện hành](reports/CURRENT-JIRA-STATE.md), [kế hoạch tổng thể](../KE-HOACH-JIRA.md) và [mô tả công việc](reports/JIRA-MUC-CHI-TIET.md).
 
 | Thư mục | Nội dung | Khi cần dùng |
@@ -12,6 +14,7 @@ Nhóm bắt đầu từ [trạng thái hiện hành](reports/CURRENT-JIRA-STATE.
 
 ## Tài liệu thường dùng
 
+- [Tra cứu 71 Task để chọn mã commit](TRA-CUU-TASK-COMMIT.md) — đọc khi phân loại công việc và gắn Jira Key trước commit.
 - [Phân công và giờ từng người](reports/PHAN-CONG-CAN-BANG.md)
 - [Kết quả kiểm tra kế hoạch](reports/KIEM-TRA-KE-HOACH.md)
 - [Truy vết tiêu chí nghiệm thu](reports/TRUY-VET-AC.md)
