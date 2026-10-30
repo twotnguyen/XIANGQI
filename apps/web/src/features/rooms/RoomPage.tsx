@@ -676,10 +676,22 @@ export function RoomPage({
     }
   }
   async function viewerAction(
-    action: "to-spectator" | "invite-down" | "respond-down" | "kick",
+    action:
+      | "to-spectator"
+      | "move-to-spectator"
+      | "invite-down"
+      | "respond-down"
+      | "kick",
     extra: { targetId?: string; accept?: boolean } = {},
   ) {
     if (!view || busy || !ownsHttpControl()) return;
+    if (
+      action === "move-to-spectator" &&
+      (!connectedRef.current ||
+        latest.current?.control.mode !== "writable" ||
+        latest.current.version < versionFloor.current)
+    )
+      return;
     const requestEpoch = epoch.current;
     setBusy(true);
     setError("");
@@ -694,26 +706,33 @@ export function RoomPage({
       const next =
         action === "to-spectator"
           ? await client.toSpectator(roomId, view.version, control)
-          : action === "invite-down"
-            ? await client.inviteDown(
+          : action === "move-to-spectator"
+            ? await client.moveToSpectator(
                 roomId,
                 view.version,
                 extra.targetId!,
                 control,
               )
-            : action === "respond-down"
-              ? await client.respondDown(
-                  roomId,
-                  view.version,
-                  extra.accept === true,
-                  control,
-                )
-              : await client.kickViewer(
+            : action === "invite-down"
+              ? await client.inviteDown(
                   roomId,
                   view.version,
                   extra.targetId!,
                   control,
-                );
+                )
+              : action === "respond-down"
+                ? await client.respondDown(
+                    roomId,
+                    view.version,
+                    extra.accept === true,
+                    control,
+                  )
+                : await client.kickViewer(
+                    roomId,
+                    view.version,
+                    extra.targetId!,
+                    control,
+                  );
       if (
         epoch.current === requestEpoch &&
         next.version >= versionFloor.current
@@ -1049,6 +1068,9 @@ export function RoomPage({
             onSwapReopen={() => setSwapCollapsedId(null)}
             readyControl={readyControl}
             onAction={(action) => void httpAction(action)}
+            onMoveToSpectator={(targetId) =>
+              void viewerAction("move-to-spectator", { targetId })
+            }
           />
           {clockState?.clocks && (
             <MatchClocks
