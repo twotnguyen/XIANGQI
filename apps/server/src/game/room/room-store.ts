@@ -16,6 +16,13 @@ import { alphabet, uuid } from "./room-store-core.js";
  */
 export class RoomStore extends RoomViewerStore {
   /**
+   * Xếp `media.revoke-user` cho người dùng trong scope; bump version để tránh trùng UNIQUE(room,version,type) khi takeover lặp lại.
+   */
+  async queueMediaRevoke(s: RoomScope, id: string): Promise<void> {
+    this.scope(s, id);
+    await this.bump(s, id, "media.revoke-user", { userId: s.actor.userId });
+  }
+  /**
    * Tạo phòng cờ mới với mã mời ngẫu nhiên, giữ ghế Đỏ cho chủ phòng và thiết lập thời gian/khán giả.
    */
   async create(
@@ -29,12 +36,14 @@ export class RoomStore extends RoomViewerStore {
   ): Promise<RoomEntry> {
     this.scope(s);
     if (!uuid.test(input.commandId)) invalidRoomInput();
-    const time = input.timeMinutes ?? 10,
+    const time = input.timeMinutes ?? (s.actor.kind === "member" ? 0 : 10),
       viewers = input.viewerLimit ?? 5,
       visibility =
         input.visibility === undefined ? "CODE_ONLY" : input.visibility;
     if (
-      ![5, 10, 15].includes(time) ||
+      !(s.actor.kind === "member" ? [0, 5, 10, 15] : [5, 10, 15]).includes(
+        time,
+      ) ||
       !Number.isInteger(viewers) ||
       viewers < 0 ||
       viewers > 5 ||

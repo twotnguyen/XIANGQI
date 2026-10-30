@@ -134,7 +134,10 @@ export function RoomSettings({
                 Chế độ hiện tại: {modes[room.visibility]}
               </p>
               <p>
-                {room.timeMinutes} phút ·{" "}
+                {room.timeMinutes === 0
+                  ? "Không giới hạn"
+                  : `${room.timeMinutes} phút`}{" "}
+                ·{" "}
                 {room.viewerLimit === 0
                   ? "Không có người xem"
                   : `Tối đa ${room.viewerLimit} người xem`}

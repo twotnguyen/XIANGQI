@@ -4,6 +4,8 @@
 
 **Trạng thái:** PO đã chốt Q1–Q8 và tên người gửi ngày 30/10/2026; đã triển khai server/web và kiểm chứng local theo mục 13. Bằng chứng local không phải xác nhận CI/Cloud hoặc nghiệm thu PO; không đổi trạng thái Jira.
 
+**PO mở rộng P1 theo BA 0.20:** Thách đấu (`US-P2-19`/XIAN-133) và DM/unread (`US-P2-18`/XIAN-132) thuộc P1; **QR bỏ hẳn**, chỉ Sao chép link/Sao chép mã. Mục 15 bổ sung sáu AC mang mã cũ; AC-03.2.14 đổi từ disabled sang hoạt động có kiểm quyền. Bằng chứng mục 13 là **trước mở rộng**, không nghiệm thu thay phần mới hoặc AC-03.2.14 đã đổi.
+
 ## 1. Mục tiêu và nguồn có thẩm quyền
 
 Người dùng rủ người khác vào đúng phòng tự tạo theo hai đường độc lập:
@@ -20,10 +22,10 @@ Thứ tự ưu tiên: **BA Phần 0 → phần BA còn lại → Backlog P1 → 
 | Nội dung                                                    | Cách áp dụng trong P1                                                                                                  |
 | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Một số AC ghi “mã 8 ký tự”                                  | BA 2.7 quy định cụ thể **8 chữ số**, máy chủ cấp; giữ cả số 0 đầu nếu có. Không suy thành mã chữ/số tùy ý              |
-| BA 2.2/2.8 có nhắc ba cách link/mã/QR                       | Phần 11 phân kỳ rõ: P1 chỉ link/mã, **QR là P2**                                                                       |
+| Nguồn cũ có QR | BA 0.20 **loại QR khỏi cả P1/P2**, chỉ chia sẻ link/mã; không tạo ảnh/nút QR |
 | Mẫu popup từng ghi `[Tên Host]`                             | PO đã chốt dùng **tên người thực sự gửi**, cả Host và người chơi còn lại đủ quyền đều được mời; BA 2.5/0.19 đã đồng bộ |
-| BA 5.5 nhắc tin nhắn chưa đọc, Elo/thẻ công khai            | Phần 11 loại chat 1–1 và huy hiệu tin chưa đọc khỏi P1; không kéo chúng vào YC3. Số đếm lời mời kết bạn vẫn thuộc P1   |
-| Danh mục §11 mô tả Thách đấu P2 còn có câu “nhập tên phòng” | BA 2.7 đã bỏ nhập tên. Không dùng mô tả P2 cũ để thêm ô tên hay tạo phòng từ trang Bạn bè ở P1                         |
+| BA 5.5 nhắc DM/unread | **P1 theo 0.20**; badge DM tách số đếm/đích chuông lời mời kết bạn; Elo/thẻ Ranked vẫn P2 |
+| Mô tả Thách đấu cũ có câu “nhập tên phòng” | P1 dùng form YC2 hiện hành **không nhập tên**; mặc định Thách đấu 10 phút/CODE_ONLY/5 người xem |
 
 BA, Backlog, Danh mục và tổng quan yêu cầu đã được đồng bộ theo lựa chọn PO. Không tự đổi lịch, ước lượng hoặc trạng thái Task Jira.
 
@@ -34,8 +36,8 @@ BA, Backlog, Danh mục và tổng quan yêu cầu đã được đồng bộ th
 | Chia sẻ/sao chép link và mã; nhập mã tại Sảnh                        | Tạo phòng, mức giờ, Ready, đếm ngược, đổi bên, Host transfer: YC2                                    |
 | Giữ đích qua login/register/onboarding Google/Khách theo quyền YC1   | Tự rời ván/đầu hàng hoặc bỏ ưu tiên phiên để nhận lời mời mới                                        |
 | Xếp ghế trống hoặc người xem khi vào; xử lý đầy/đóng/khóa/bị chặn    | Toàn bộ danh sách phòng PUBLIC, đổi quyền phòng, quản lý ghế/kick: YC6; YC3 kiểm giao điểm vào phòng |
-| Tìm username, gửi/nhận/thu hồi/chấp nhận/từ chối/hết hạn/hủy kết bạn | Nhắn tin 1–1, Thách đấu, QR, Ranked, ghép ngẫu nhiên, lịch sử/replay: P2                             |
-| Online/Đang đấu/Offline, chuông lời mời kết bạn                      | Nút mời tạo phòng tự động trên `/friends`                                                            |
+| Tìm/kết bạn, thu hồi/chấp nhận/từ chối/hết hạn/hủy kết bạn; DM/unread và Thách đấu theo mục 15 | Ranked, ghép ngẫu nhiên, lịch sử/replay: P2; QR bị loại hẳn |
+| Online/Đang đấu/Offline, chuông kết bạn, badge DM tách biệt | Không tự tạo phòng khi mở Friends; chỉ xác nhận form Thách đấu mới tạo rồi mời |
 | Mời bạn online trong phòng, popup 30 giây và xử lý Tham gia/Từ chối  | Email/push notification ngoài ứng dụng hoặc lời mời phòng lưu trong chuông                           |
 
 Không viết lại chức năng đã có chỉ vì đổi tên yêu cầu. Phần code hiện hữu cần được kiểm chứng lại theo AC và quyết định PO, không được đánh dấu PASS chỉ vì tìm thấy file/test.
@@ -76,7 +78,7 @@ Hạn là thời gian máy chủ; reload, đóng/mở popup hoặc nhiều tab k
 ### 5.1 Chia sẻ phòng
 
 1. Một trong hai người đang ngồi ghế bấm **Chia sẻ phòng** ở phòng tự tạo, cả lúc chờ và đang ván.
-2. `MODAL-INVITE` hiển thị link, mã monospace/tabular và nút **Sao chép** riêng; P1 không QR.
+2. `MODAL-INVITE` có link, mã monospace/tabular cùng hai nút **Sao chép link / Sao chép mã**; không ảnh/khối/nút QR ở cả P1/P2. Tab mời bạn bè giữ nguyên.
 3. Thành viên có phần mời bạn bè; Khách chỉ có link/mã. Người xem không có nút mở chức năng.
 4. Chỉ báo “Đã sao chép” khi clipboard thật sự thành công. Nếu trình duyệt từ chối, giữ link/mã có thể chọn để sao chép thủ công, không báo thành công giả.
 5. Khi phòng bị khóa, mã/link/lời mời cũ không thể cấp quyền cho người mới. Mở lại phải dùng bản mới; không suy “đã copy trước” thành quyền vượt khóa.
@@ -151,15 +153,15 @@ Việc có thêm token/link không làm bỏ qua kiểm tra vị trí chơi, dan
 | Hủy kết bạn                         | Hai bên không còn trong danh sách nhau; không xóa tài khoản hay dữ liệu phòng/ván                                    |
 | A bị B từ chối hai lần              | Chặn A→B, B vẫn được gửi A; khi đã kết bạn thành công reset bộ đếm cặp, hủy kết bạn sau đó không khôi phục số đếm cũ |
 
-Việc hết hạn/thu hồi không tự được tính thành một lần từ chối. Không đưa chức năng tin nhắn/lưu lịch sử 1–1 P2 vào tiêu chí hoàn tất P1.
+Việc hết hạn/thu hồi không tự tính thành một lần từ chối. DM/lịch sử bền và unread thuộc P1 mở rộng theo BA 0.20, nghiệm thu riêng theo mục 15, không suy từ kết quả kết bạn.
 
 ### 6.3 Trang Bạn bè và chuông
 
 - Có danh sách bạn và danh sách lời mời đang chờ; người nhận Chấp nhận/Từ chối, người gửi có đường Thu hồi.
 - Hủy kết bạn không được chỉ ẩn ở client của người bấm; phía kia phải cập nhật đúng.
 - Chuông có số đếm **lời mời kết bạn đang chờ**; bấm chuyển `/friends` và tự mở tab **Lời mời kết bạn đang chờ**, dùng chung danh sách/hành động. Xử lý ở một nơi phải đồng bộ danh sách/số đếm ở nơi khác, không thêm dropdown riêng.
-- Không có nút mời vào phòng trên `/friends`. Nhắn tin và Thách đấu ở trạng thái DISABLED + “Sắp ra mắt”.
-- Không có huy hiệu tin nhắn chưa đọc trong P1. Không dùng chung số đếm pending friend request với số tin nhắn/lời mời vào phòng.
+- **Nhắn tin** mở DM với accepted friend; **Thách đấu** mở form tạo phòng và mời người đã chọn sau xác nhận, theo mục 15. Không thêm nút “mời vào phòng đang có” từ Friends ngoài cơ chế Thách đấu này.
+- Badge tin nhắn chưa đọc thuộc P1, mở hội thoại; không dùng chung số đếm/đích của chuông pending friend request hoặc lời mời vào phòng.
 
 ## 7. Trạng thái bạn và điều kiện nhận mời
 
@@ -228,7 +230,7 @@ Yêu cầu chung: thao tác bàn phím, nhãn điều khiển, lý do disabled t
 | Bạn Offline                                    | “Ngoại tuyến”                                                                                                                                                                                      |
 | Bạn bận                                        | “Bạn bè đang trong ván khác”                                                                                                                                                                       |
 | Khách mở Bạn bè                                | DISABLED, “Đăng ký tài khoản để kết bạn”; tab mời bạn bè ẩn                                                                                                                                        |
-| Chức năng Nhắn tin/Thách đấu P2                | DISABLED, “Sắp ra mắt”                                                                                                                                                                             |
+| Nhắn tin/Thách đấu P1 | Nhắn tin chỉ accepted friend; Thách đấu chỉ đủ quyền/Online/hết cooldown và người gửi không giữ vị trí khác; lý do disabled cụ thể, không “Sắp ra mắt” |
 | Bị chặn vào phòng                              | “Bạn đã bị đuổi và chặn tham gia phòng cờ này!”; không lộ chat/media phòng                                                                                                                         |
 | Phòng khóa, link/mã cũ, invite hết hạn/thu hồi | Nêu đúng lý do bằng tiếng Việt, không giả thành mã còn hiệu lực hay join thành công; câu chữ chi tiết chưa có AC cố định                                                                           |
 | Backend/clipboard/network lỗi                  | Báo thất bại thật, không xóa dữ liệu nhập hay ghi nhận hành động thành công chưa xác nhận                                                                                                          |
@@ -259,7 +261,7 @@ Bảng dưới giữ **Given/When/Then gốc và mức kiểm bắt buộc theo 
 | AC-03.2.11 | Ngồi ghế còn kết nối → Đang đấu; mất mọi kết nối thì theo AC-03.2.12                                      | E2E     | T49; kiểm thêm ràng buộc AI theo YC1 |
 | AC-03.2.12 | Server nhận biết mất mọi kết nối → Offline kể cả giữ ghế; không mất ràng buộc vị trí                      | E2E     | T49                                  |
 | AC-03.2.13 | Chuông có số đếm, bấm chuyển `/friends` và tự mở tab Lời mời dùng chung                                   | E2E     | T49                                  |
-| AC-03.2.14 | Nhắn tin/Thách đấu disabled “Sắp ra mắt”; trang Friends không nút mời phòng                               | E2E     | T49                                  |
+| AC-03.2.14 | Nhắn tin/Thách đấu hoạt động có kiểm quyền theo AC-P2-18.1–3 và AC-P2-19.1–3; không QR | E2E | T49 và Task mở rộng giữ mã cũ |
 | AC-03.2.15 | Thành viên ngồi ghế có phần mời bạn trong Chia sẻ; người xem không nút Chia sẻ                            | E2E     | T49                                  |
 | AC-03.2.16 | Online và hết cooldown10giây toàn người gửi mới mời được; Offline/BUSY/cooldown có lý do                  | E2E     | T49                                  |
 | AC-03.2.17 | Nhiều popup đồng thời, tên người thực sự gửi, hạn gốc30giây; người gửi rời ghế/hủy bạn không tự thu hồi   | E2E     | T49                                  |
@@ -342,13 +344,13 @@ Nguồn có thẩm quyền: **BA 0.19**. Q1–Q8 và tên người thực sự g
 ### Q8. Chuông chuyển đến tab Lời mời
 
 - Bấm chuông chuyển `/friends` và tự chọn **Lời mời kết bạn đang chờ**.
-- Dùng chung danh sách, số đếm và Chấp nhận/Từ chối/Thu hồi; không dựng dropdown khác hoặc tin nhắn chưa đọc P2.
+- Dùng chung danh sách, số đếm và Chấp nhận/Từ chối/Thu hồi; không dựng dropdown khác. Badge DM P1 theo 0.20 là hành vi riêng, không đổi Q8.
 
 ### Tên người gửi — đã chốt
 
 Popup dùng **tên người thực sự gửi**, không luôn ghi Host. Quyền mời của cả hai người ngồi ghế giữ nguyên.
 
-## 13. Triển khai và bằng chứng local — 30/10/2026
+## 13. Triển khai và bằng chứng local baseline — 30/10/2026, trước BA 0.20
 
 ### 13.1 Phạm vi mã
 
@@ -385,7 +387,7 @@ Popup dùng **tên người thực sự gửi**, không luôn ghi Host. Quyền 
 | AC-03.2.11 | UI có ghế → Đang đấu và nút Mời không dùng được; server xét toàn bộ `active_players`, không riêng room_id                                                  |
 | AC-03.2.12 | UI ngắt mọi heartbeat → Offline sau 7.980 ms trong mẫu local, nối lại vẫn giữ ghế; DB hai lease giữ online tới khi cả hai hết hạn và không xóa reservation |
 | AC-03.2.13 | UI chuông từ Sảnh mở `/friends?tab=requests`, đúng incoming/actions, không dropdown riêng                                                                  |
-| AC-03.2.14 | UI Nhắn tin/Thách đấu disabled + Sắp ra mắt; không mời phòng tại Friends                                                                                   |
+| AC-03.2.14 | **Bằng chứng cũ, không đạt yêu cầu mở rộng:** UI Nhắn tin/Thách đấu còn disabled. Cần triển khai mục 15 và nghiệm thu lại AC này |
 | AC-03.2.15 | UI Host và người chơi Đen có modal/tab bạn; Khách không có tab; Người xem không có nút chia sẻ                                                             |
 | AC-03.2.16 | UI các trạng thái/lý do disabled và cooldown; HTTP thật trước hạn trả 429, sau hạn gửi thành công; decline trả còn 9.996 ms                                |
 | AC-03.2.17 | UI hai sender độc lập tạo hai popup cùng lúc trên 360px, mẫu giao 1.070 ms; HTTP deadline đúng 30.000 ms; runtime DB sender rời ghế/hủy bạn không revoke   |
@@ -414,8 +416,43 @@ Popup dùng **tên người thực sự gửi**, không luôn ghi Host. Quyền 
 
 1. Q1–Q8 và tên người gửi đã chốt; BA 0.19, Backlog, Danh mục và tổng quan đã đồng bộ. Không còn câu hỏi PO mở trong nhóm này.
 2. Giữ 28 mã AC baseline, bổ sung điều kiện theo quyết định PO vào AC tương ứng; không coi số AC không đổi là công việc/ước lượng không đổi.
-3. Đối chiếu các luồng code và test hiện có để lập phần sửa còn thiếu; không viết lại toàn bộ YC3 hoặc kéo P2 vào.
-4. Nghiệm thu đủ28AC với người gửi/người nhận độc lập, Guest, auth redirect, phòng thật và deadline/presence có số đo; ca biên bảo mật cần server/DB thật, UI cần xem bề mặt thật.
+3. Đối chiếu code/test hiện có để lập phần sửa còn thiếu; không viết lại toàn bộ YC3. Thách đấu/DM đã thuộc P1 theo 0.20, không chờ P2.
+4. Nghiệm thu lại baseline bị đổi cùng sáu AC bổ sung mục 15; các ca quyền/race cần server/DB thật và UI thật. Bằng chứng baseline không thay kết quả mới.
 5. Kết quả local, CI, Cloud và nghiệm thu PO ghi riêng; chưa có bằng chứng thì để chưa kiểm chứng, không tự đóng Task Jira.
 
-**Giới hạn:** YC3 đã được triển khai và kiểm chứng local theo mục 13; phát hành cần áp migration mới và kiểm CI/môi trường đích riêng. Không tự chuyển Task Jira Done hoặc coi kiểm local là nghiệm thu PO.
+**Giới hạn:** mục 13 chỉ kiểm chứng baseline trước BA 0.20; bằng chứng mới của DM/Thách đấu và AC-03.2.14 nằm tại mục 16. Cloud/CI và nghiệm thu PO chưa xác nhận; không tự Jira Done.
+
+## 15. Bổ sung P1 — Thách đấu và DM/unread (BA 0.20)
+
+**Trạng thái:** đã triển khai và kiểm chứng local theo mục 16. Giữ mã `US-P2-*`, `AC-P2-*` và Jira để truy vết; không còn là “Sắp ra mắt P2”. AC/TC gốc ở [BACKLOG-P2.md](BACKLOG-P2.md), phạm vi ở [Backlog P1](BACKLOG-P1.md).
+
+### 15.1 Thách đấu bạn bè — US-P2-19 / XIAN-133
+
+1. Từ bạn accepted đang Online, người gửi không giữ vị trí chơi khác và hết cooldown → Thách đấu mở lại form YC2, giữ rõ bạn đích. Không tạo/gửi chỉ vì mở form.
+2. Không nhập tên; server sinh tên/mã. Mặc định **10 phút/CODE_ONLY/5 người xem**, chỉnh hợp lệ kể cả Không giới hạn với thành viên. Hủy không ghi phòng/lời mời.
+3. Chỉ xác nhận mới tạo phòng rồi gửi đúng bạn đích. Server recheck friendship/Online/BUSY, vị trí và cooldown **10 giây toàn người gửi**; retry/đa tab không tạo trùng.
+4. Dùng lại popup **30 giây**, nhiều popup độc lập, X/Esc = Từ chối/phản hồi/cooldown, giữ invite khi rời/hủy bạn và chuyển A→B nguyên tử theo BA 0.19; không thêm một loại lời mời khác.
+5. Phòng đã tạo nhưng gửi thất bại/bạn bận/từ chối/hết hạn → giữ phòng cho Host quản lý; không tự đóng/chuyển AI/báo giả thành công.
+6. Kiểm **AC-P2-19.1–3**: hủy/xác nhận, đúng đích, quan hệ/presence/cooldown đổi khi form mở, tạo/gửi thất bại, lệnh lặp và một vị trí.
+
+### 15.2 Nhắn tin trực tiếp và tin chưa đọc — US-P2-18 / XIAN-132
+
+- Chỉ hai thành viên accepted friends đọc/gửi; kiểm độc lập API/socket/RLS. Người lạ/bên thứ ba/Khách bị từ chối. Giữ filter/rate limit hiện hành; **sticker vẫn P2**.
+- Lịch sử **lưu bền**, không xóa khi đóng phòng/hủy bạn. Hủy bạn thu hồi đọc/gửi ngay và ẩn hội thoại/history, kể cả hội thoại mở/request/socket đang chạy; kết bạn lại hiện lại.
+- Badge là tổng **incoming chưa đọc từ bạn hiện tại**, không tính tin mình. Tách khỏi chuông kết bạn và phản hồi lời mời phòng.
+- Chỉ read khi tin thực sự hiện trong **viewport của hội thoại ở tab hoạt động**; tải ngầm/tab nền/tin ngoài vùng nhìn không đủ. Server lưu/đồng bộ read state giữa thiết bị.
+- Hủy bạn loại hội thoại khỏi badge nhưng giữ read state; refriend tính lại tin vẫn chưa đọc, không tự read hoặc biến tin đã đọc thành unread.
+- Khung DM có lịch sử cuộn nội bộ, không làm trang Friends dài vô hạn; mobile có người nhận, trạng thái gửi/lỗi/thử lại và trạng thái bị thu hồi quyền.
+- Kiểm **AC-P2-18.1–3**: lịch sử/reload, giả ID/third-party/RLS, unfriend thu hồi tức thì, refriend/read state, incoming/outgoing, viewport/active/background/multi-device và race quyền khi gửi.
+
+### 15.3 Ranh giới và nghiệm thu
+
+Tái đấu custom và Không giới hạn/chống treo thuộc P1 ở [YC2 mục 19](P1-YC2-TAO-PHONG.md#19-bổ-sung-p1--tái-đấu-và-không-giới-hạnchống-treo-ba-020), giao YC5. QR bị loại, không test/tạo ảnh. Test/commit mục 13 chỉ phủ baseline trước mở rộng; không tự cập nhật Jira Done hoặc dùng làm bằng chứng phần mới.
+
+## 16. Bằng chứng local cho Thách đấu và DM
+
+- Suite Node 22/PostgreSQL 17: 247 file/2.873 test PASS, gồm DM HTTP/DB/RLS, thu hồi quyền khi hủy bạn, lịch sử khi kết bạn lại, read watermark đơn điệu và form Thách đấu.
+- UI production hai thành viên: kết bạn qua tìm kiếm/chuông; Thách đấu mở form 10 phút/CODE_ONLY/5; Hủy giữ số phòng bằng 0 trên DB; xác nhận tạo phòng rồi bạn nhận popup và vào cùng phòng thành công.
+- DM gửi hai chiều, badge incoming riêng với chuông kết bạn, đọc hội thoại cập nhật badge; reload vẫn giữ lịch sử trên DB. Dialog giới hạn chiều cao và cuộn lịch sử riêng.
+- Thách đấu lỗi gửi mời vẫn giữ phòng đã tạo; retry tạo dùng cùng commandId/input, không tự tạo phòng thứ hai sau phản hồi không rõ. Backend tiếp tục kiểm friend/presence/cooldown và lời mời cũ 30 giây.
+- Không còn QR. Chưa áp migration lên Cloud, chưa kiểm CI/PO hoặc push; bằng chứng local không thay nghiệm thu môi trường phát hành.

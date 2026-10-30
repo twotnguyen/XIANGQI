@@ -2,7 +2,9 @@
 
 **Ngày lập:** 30/10/2026. **Phạm vi:** YC2 của P1 (EP-02: US-02.1, US-02.2; 27 AC). **Hạn P1:** giữ 04/11/2026.
 
-**Trạng thái:** đã triển khai và kiểm chứng local YC2 theo Q1–Q7; đủ bảng truy vết 27 AC (mục 16), bằng chứng và giới hạn ở mục 18. Chưa đóng Task Jira, chưa push.
+**PO bổ sung phạm vi theo BA 0.20:** P1 có Tái đấu chọn phe **phòng tự tạo**, Không giới hạn/chống treo và giao điểm tạo phòng từ Thách đấu. QR bị bỏ hoàn toàn. Bằng chứng mục 15–18 là **baseline trước bổ sung**, không chứng minh mặc định/mức giờ/Tái đấu mới đã triển khai hoặc đạt; cần kiểm lại AC-02.1.1, AC-02.2.14 và các AC bổ sung ở mục 19.
+
+**Trạng thái:** baseline theo Q1–Q7 (27 AC, mục 16/18); bổ sung BA 0.20 đã triển khai và kiểm chứng local tại mục 20. Chưa áp migration lên Cloud hoặc xác nhận CI/PO; chưa đóng Task Jira hoặc push phần bổ sung.
 
 ## 1. Mục tiêu, nguồn và thứ tự ưu tiên
 
@@ -28,9 +30,9 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 2. Ghế Đỏ/Đen, "Đổi ghế" khi chỉ một người ngồi ghế, "Xin đổi bên" khi đủ hai người.
 3. Sẵn sàng/huỷ Sẵn sàng, đếm 3-2-1, kiểm tra lại phía máy chủ rồi tạo ván (Match ID mới).
 4. Mất kết nối ở phòng chờ: giữ ghế 60 giây; huỷ đếm; chuyển Host; đóng phòng khi không còn người ngồi ghế.
-5. Sau ván: `MODAL-MATCH-RESULT` chỉ "Ở lại phòng"/"Rời phòng"; phòng về `WAITING`; giữ ghế, người xem, chế độ, mức giờ, Host.
+5. Sau ván phòng về WAITING, giữ ghế/người xem/quyền/mức giờ/Host; có Ở lại/Rời và **Tái đấu chọn phe custom** theo BA 0.20/mục 19, không Xem lại.
 
-### 2.2 Không thuộc YC2 (không làm trong lần này)
+### 2.2 Ranh giới với YC khác và phạm vi mới
 
 | Chủ đề | Thuộc | Ghi chú |
 |---|---|---|
@@ -38,7 +40,7 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 | Bàn cờ, luật đi, đồng hồ chạy, kết thúc ván | YC4/YC5 | YC2 chỉ yêu cầu tạo ván đúng và chuyển màn |
 | `PUBLIC`/`CODE_ONLY`/`LOCKED` đổi sau tạo, danh sách Sảnh, người xem, kick | YC6 | YC2 chỉ yêu cầu chọn `CODE_ONLY`/`PUBLIC` lúc tạo |
 | Chat hai kênh, camera/mic | YC7 | Phòng chờ có chat/media theo BA 0.13 nhưng nghiệm thu ở YC7; YC2 chỉ giữ nguyên kênh khi ở lại phòng (AC-02.2.9) |
-| Mã QR, Tái đấu, mức giờ Không giới hạn, Thách đấu | P2 | Ẩn hoàn toàn ở P1, không để nút xám |
+| Tái đấu custom, Không giới hạn/chống treo, Thách đấu | **P1 bổ sung theo BA 0.20** | Mục 19; Thách đấu chi tiết ở YC3; chống treo giao YC5. QR bị loại khỏi cả P1/P2 |
 | Ghép ngẫu nhiên, Đánh Hạng | P2 | Không có phòng chờ, không có Xin đổi bên |
 
 ## 3. Vai trò và quyền
@@ -56,7 +58,7 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 
 | Tham số | Quy tắc |
 |---|---|
-| Mức giờ | Chỉ 5, 10 hoặc 15 phút mỗi bên (mặc định 10); không cộng giây; cố định sau khi tạo |
+| Mức giờ | Thành viên: Không giới hạn/5/10/15 phút; **mặc định Không giới hạn** theo BA 0.20. Khách: 5/10/15, mặc định 10. Thách đấu: mặc định 10. Không cộng giây, không đổi sau khi tạo |
 | Người xem tối đa | 0–5 (mặc định 5); cố định sau khi tạo |
 | Sức chứa | `2 + số người xem tối đa` (tối đa 7) |
 | Quyền truy cập khi tạo | `CODE_ONLY` (mặc định) hoặc `PUBLIC`; mọi giá trị khác, kể cả `LOCKED`, bị từ chối |
@@ -84,7 +86,7 @@ stateDiagram-v2
 ## 6. Tạo phòng (US-02.1: AC-02.1.1 – 02.1.5)
 
 1. Ở Sảnh, người dùng chưa ngồi ghế nơi khác bấm **Tạo phòng** → mở form `MODAL-CREATE-ROOM`.
-2. Form có: Mức giờ (5/10/15, mặc định 10); Người xem (*Không có người xem*, 1–5, mặc định 5); Quyền truy cập (**Chỉ qua mã/link/lời mời** — mặc định, hoặc **Công khai**). Không có ô tên phòng, không có mức giờ Không giới hạn, không có `LOCKED`.
+2. Form thành viên có Không giới hạn/5/10/15 (**mặc định Không giới hạn**); Khách giữ 5/10/15 (**mặc định 10**); Thách đấu mặc định 10. Người xem 0–5 (**mặc định 5**); quyền CODE_ONLY (**mặc định**) hoặc PUBLIC. Không có ô tên, QR hoặc LOCKED khi tạo.
 3. Bấm Tạo → máy chủ kiểm lại mọi trường, sinh ID và mã 8 chữ số, đặt tên `Phòng <mã>`, tạo phòng ở quyền đã chọn, đặt người tạo làm Host ngồi ghế Đỏ, trạng thái `WAITING`. Client vào `/rooms/:id`.
 4. Phòng chờ hiển thị mã và link mời (khối chia sẻ chi tiết thuộc YC3). Không có chức năng đổi mức giờ hoặc số người xem sau khi tạo — cả giao diện lẫn API.
 5. Lỗi hợp lệ (đang giữ vị trí khác, Khách đã có phòng mở, dịch vụ không sẵn sàng) phải báo bằng tiếng Việt rõ ràng, giữ nguyên lựa chọn trong form, không tạo phòng trùng khi bấm lặp (lệnh có `commandId`).
@@ -156,7 +158,7 @@ stateDiagram-v2
 ## 11. Sau ván và ở lại phòng (AC-02.2.8 – 02.2.14)
 
 1. Ván kết thúc: **ngay lập tức** phòng về `WAITING`, Sẵn sàng của cả hai = chưa. Hộp kết quả chỉ là lớp hiển thị.
-2. `MODAL-MATCH-RESULT` ở P1 chỉ có **Ở lại phòng** và **Rời phòng** cho người chơi; không có Tái đấu, Xem lại; người xem chỉ thấy kết quả, không có nút.
+2. `MODAL-MATCH-RESULT` có **Ở lại phòng / Rời phòng**, thêm **Tái đấu** cho hai thành viên đủ quyền theo mục 19; không Xem lại. Người xem chỉ thấy kết quả, không có nút người chơi.
 3. **Ở lại phòng**: về phòng chờ; giữ nguyên ghế/phe, người xem, chế độ phòng, mức giờ, Host, Kênh Riêng và Kênh Chung.
 4. Cả hai Sẵn sàng → ván mới, Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng.
 5. **Rời phòng**: ghế trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn giữ khoá.
@@ -173,7 +175,7 @@ stateDiagram-v2
 | `SCR-WAITING-ROOM` | Hai ghế lớn Đỏ/Đen; cụm nút Sẵn sàng / Đổi ghế / Xin đổi bên / Chia sẻ phòng (người chơi) / Cài đặt phòng (Host); khối chat/media theo YC7 |
 | `MODAL-SIDE-SWAP-PROMPT` | Đếm lùi 30 giây; Đồng ý / Từ chối; hành vi khi Esc/đóng: xem Q5 |
 | Đếm 3-2-1 | Số lớn, có âm thanh, tôn trọng `prefers-reduced-motion`; thông báo cho trình đọc màn hình |
-| `MODAL-MATCH-RESULT` | Chỉ Ở lại phòng / Rời phòng; không hiện chức năng P2 |
+| `MODAL-MATCH-RESULT` | Ở lại/Rời; Tái đấu chọn Giữ phe/Đổi phe cho cặp đủ quyền. Xem lại vẫn P2 |
 
 Năm trạng thái cho mọi thao tác chính (`SUCCESS`, `LOADING`, `EMPTY`, `ERROR`, `DISABLED` có tooltip) theo DANH-MUC §2; `DISABLED` của Xin đổi bên có tooltip đếm giây. Dùng token và primitives sẵn có, rộng tối thiểu 360 px, vùng bấm tối thiểu 44 px, tiếng Việt có dấu, nút chỉ có biểu tượng phải có tên truy cập.
 
@@ -277,3 +279,37 @@ Hai test reset Sẵn sàng khi xuống xem đã được quan sát **fail trư�
 Giới hạn: không nghiệm thu YC3/YC6/YC7, Google/OAuth, LiveKit cam/mic hoặc tải nhiều người trong lần này. Smoke báo lỗi media chưa cấu hình nhưng không chặn ván. Chưa nghe âm thanh trên loa và chưa chạy screen reader; test đếm/âm thanh không thay thế hai kiểm tra thiết bị này. Lượt full vẫn có log `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` và cảnh báo navigation của jsdom; không che log, không coi suite xanh là bằng chứng production không lỗi.
 
 Không thêm migration/dependency. Tự kiểm server: SQL thay đổi chỉ trong store; controller không chạm DB; ghi ghế vẫn qua `withRoom`/biên lai/outbox sau commit; không thêm tầng abstraction mới.
+
+## 19. Bổ sung P1 — Tái đấu và Không giới hạn/chống treo (BA 0.20)
+
+**Trạng thái:** đã triển khai, bằng chứng local tại mục 20; không kế thừa PASS từ baseline. AC chi tiết giữ mã cũ tại [BACKLOG-P2.md](BACKLOG-P2.md), được đưa vào phạm vi [Backlog P1](BACKLOG-P1.md).
+
+### 19.1 Tái đấu chọn phe — phần custom US-P2-09 / XIAN-123
+
+- Sau ván trong cùng phòng tự tạo, hai thành viên vẫn giữ ghế: người đề nghị chọn **Giữ phe / Đổi phe**, mặc định Đổi. Đối thủ thấy rõ lựa chọn và có 30 giây Đồng ý/Từ chối.
+- Đồng ý → server kiểm lại cặp/ghế/phòng/kết quả và trạng thái chưa bắt đầu ván khác; đếm 3 giây → Match ID mới **không cần Ready lại**. Dùng cơ chế kiểm kết nối/hủy đếm của phòng hiện có, không vượt ràng buộc một vị trí.
+- Giữ mức giờ (kể cả Không giới hạn), quyền phòng, Host, blocks, spectators và chat cùng cặp. Không đổi tên/mã hoặc tạo phòng khác chỉ vì tái đấu.
+- Hai đề nghị đồng thời giữ đề nghị tới trước, bên gửi sau thấy đề nghị đối thủ. Thay ghế/đã có ván mới làm đề nghị cũ vô hiệu; retry không tạo hai ván.
+- Không dùng/không đồng ý Tái đấu vẫn giữ đường **Ở lại → Xin đổi bên nếu muốn → Ready**; không tự tạo ván mới. Khách không gửi/nhận Tái đấu theo quyền nguồn; không tự đồng ý thay họ.
+- Nghiệm thu **AC-P2-09.1–3 phần custom**: Giữ/Đổi, chấp nhận/hết hạn, đồng thời, thay ghế/Ready/rời/mất mạng sát accept/countdown, ván mới duy nhất và giữ chat/quyền. Casual và Tái đấu Casual vẫn P2; Ranked không có Tái đấu.
+
+### 19.2 Không giới hạn và chống treo — US-P2-10 / XIAN-124
+
+- Form thành viên có bốn mức, mặc định Không giới hạn; Thách đấu mặc định 10. Khách không tự tạo mức Không giới hạn, nhưng **được chơi/xem phòng mức này do thành viên tạo** theo ghế/chỗ trống, phiên/khóa/chặn; khi chơi chịu cùng chống treo/INACTIVITY (PO chốt BA 0.21).
+- Trong ván online Không giới hạn, chỉ bên tới lượt không đi **3 phút** nhận banner đếm **30 giây**. Banner không modal, không trap focus, không che bàn cờ hoặc Đầu hàng. Không áp AI hay xử phạt Host ngồi chờ một mình.
+- Hết cảnh báo không phản hồi → server kết thúc `INACTIVITY`, bên không hoạt động thua. “Tôi còn đây” reset 3 phút tối đa hai lần liên tiếp khi chưa có nước mới; lần nhắc thứ ba không có nút. Đi nước mới reset chuỗi.
+- Timer/hạn/kết quả do server quyết định, reconnect/retry không tự reset hoặc xử thua hai lần. Các chế độ 5/10/15 vẫn giữ đồng hồ và TIMEOUT hiện hành.
+- Nghiệm thu **AC-P2-10.1–3**: mặc định/validation/quyền, mốc 3 phút +30 giây, lần xác nhận 1/2/3, reset theo nước đi, đúng người tới lượt, kết thúc/mất mạng/reconnect đồng thời, UI banner thực trên 360px.
+
+### 19.3 Giao điểm Thách đấu và chia sẻ
+
+Thách đấu từ trang Bạn bè dùng cùng form tạo phòng không tên, mặc định 10 phút/CODE_ONLY/5 người xem; chỉ xác nhận mới tạo rồi gửi lời mời cho bạn đã chọn. Chi tiết **AC-P2-19.1–3** ở YC3. Chia sẻ chỉ có Sao chép link/Sao chép mã; không QR ở bất kỳ phân kỳ nào, vẫn giữ tab mời bạn bè.
+
+## 20. Bằng chứng local cho tái đấu và Không giới hạn
+
+- Suite PostgreSQL 17/Node 22: 247 file/2.873 test PASS, gồm race tái đấu, hết hạn, quyền Khách, clock invariant ONLINE/AI, idempotency “Tôi còn đây”, reset chuỗi khi đi nước, hòa và ưu tiên disconnect.
+- Hai trình duyệt production: Giữ phe và Đổi phe đều được đối thủ chấp nhận, đếm rồi vào ván mới không Ready lại; cùng phòng/mã/mức giờ.
+- Ván online Không giới hạn có clock anchor lưu DB nhưng snapshot `clocks: null`; web không tạo đồng hồ giả. Regression parser phủ ACTIVE/FINISHED và từ chối thiếu deadline chống treo.
+- UI banner 30 giây và “Tôi còn đây” chạy với worker thật; xác nhận ghi lại anchor và `inactivity_extensions=1` trên DB smoke. Một ván im lặng thực tế kết thúc “Không phản hồi quá lâu”.
+- Form thành viên mặc định Không giới hạn; Thách đấu mặc định 10 phút; Khách chỉ tạo 5/10/15 nhưng được tham gia phòng 0 theo quyền. Chia sẻ chỉ copy link/mã, không ảnh QR.
+- Bố cục desktop giới hạn viewport, vùng phụ cuộn nội bộ. Migration có rollback, kiểm trên DB local riêng; Cloud/CI và nghiệm thu PO chưa xác nhận.

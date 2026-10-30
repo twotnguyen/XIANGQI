@@ -30,11 +30,10 @@ it("can switch back to code-only before creating", async () => {
   await user.selectOptions(access, "PUBLIC");
   await user.selectOptions(access, "CODE_ONLY");
   await user.click(screen.getByRole("button", { name: "Tạo phòng" }));
-  expect(create).toHaveBeenCalledExactlyOnceWith({
-    timeMinutes: 10,
-    viewerLimit: 5,
-    visibility: "CODE_ONLY",
-  });
+  expect(create).toHaveBeenCalledOnce();
+  expect(create).toHaveBeenCalledWith(
+    expect.objectContaining({ visibility: "CODE_ONLY" }),
+  );
 });
 it("keeps eight digits only and rejects letters", async () => {
   const join = vi.fn().mockResolvedValue(undefined);

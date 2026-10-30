@@ -102,6 +102,7 @@ async function fixture() {
     outsider = await member();
   const entry = await http.create(red.proof, {
     commandId: randomUUID(),
+    timeMinutes: 10,
   });
   await http.join(black.proof, {
     commandId: randomUUID(),
@@ -213,6 +214,7 @@ async function fixture() {
     v,
     entry,
     rooms,
+    game,
     matches,
     rt,
     http,
@@ -236,6 +238,10 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
+      await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply(
+        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
     });
     it("starts with both verified members then commits actual red/black moves and replays one receipt", async () => {
       const f = await fixture(),
@@ -541,11 +547,15 @@ describe.skipIf(!databaseUrl)(
             }
           });
         });
+        const synced = await new Promise<CommandAcknowledgement>((resolve) =>
+          a.socket.emit("room.sync", resolve),
+        );
+        if (synced.status !== "ok") throw new Error("Room sync must succeed");
         const command = parseCommand({
           commandId: randomUUID(),
           roomId: f.entry.roomId,
-          expectedVersion: a.initial.version,
-          action: f.move(a.initial.match!, 54, 45),
+          expectedVersion: synced.snapshot.version,
+          action: f.move(synced.snapshot.match!, 54, 45),
         });
         const ack = await new Promise<CommandAcknowledgement>((resolve) =>
           a.socket.emit("room.command", command, resolve),
@@ -564,6 +574,59 @@ describe.skipIf(!databaseUrl)(
         if (server.listening)
           await new Promise<void>((resolve) => server.close(() => resolve()));
       }
+    });
+  },
+);
+
+describe.skipIf(!databaseUrl)(
+  "media revoke outbox written by the room store on real PG",
+  () => {
+    beforeEach(async () => {
+      await reset();
+      await apply("supabase/migrations/20261011000007_match_outcomes.sql");
+      await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply(
+        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
+    });
+    it("commits media.revoke-user with each takeover, drops it on rollback, and orders revokes by room version", async () => {
+      const f = await fixture();
+      const outbox = async () =>
+        (
+          await pool.query<{
+            type: string;
+            payload: { userId: string };
+            room_version: string;
+          }>(
+            "SELECT type,payload,room_version::text FROM xiangqi_room.outbox WHERE room_id=$1 AND type='media.revoke-user' ORDER BY room_version",
+            [f.entry.roomId],
+          )
+        ).rows;
+      await f.connect(f.r);
+      expect(await outbox()).toHaveLength(0);
+      const second = {
+        ...f.r,
+        tabId: randomUUID(),
+        connectionId: randomUUID(),
+      };
+      await f.connect(second);
+      const afterFirst = await outbox();
+      expect(afterFirst).toHaveLength(1);
+      expect(afterFirst[0]!.payload).toEqual({ userId: f.red.id });
+      await expect(
+        f.transactions.run(second, async (client) => {
+          await f.game.queueMediaRevoke(client, second.identity, second.roomId);
+          throw new Error("rollback probe");
+        }),
+      ).rejects.toThrow("rollback probe");
+      expect(await outbox()).toHaveLength(1);
+      const third = { ...f.r, tabId: randomUUID(), connectionId: randomUUID() };
+      await f.connect(third);
+      const rows = await outbox();
+      expect(rows).toHaveLength(2);
+      expect(Number(rows[1]!.room_version)).toBeGreaterThan(
+        Number(rows[0]!.room_version),
+      );
     });
   },
 );

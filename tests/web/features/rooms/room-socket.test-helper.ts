@@ -50,6 +50,7 @@ function snapshot(lastMove: unknown = null) {
       graceUntil: { red: null, black: null },
       countdown: null,
       swapOffer: null,
+      rematchOffer: null,
       downOffer: null,
       spectators: [],
     },

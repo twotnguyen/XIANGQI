@@ -2,7 +2,7 @@
 
 **Tài liệu:** Kiến trúc Giao diện & Bản đồ Màn hình Chuẩn hóa (UI/UX Screen Inventory)  
 **Dự án:** Cờ Tướng Trực Tuyến (`XIANGQI`)  
-**Ngày cập nhật:** 30/10/2026 · **Phiên bản:** v1.2.3 (đồng bộ BA 0.18: Quên/Đặt lại mật khẩu và đổi mật khẩu trong Hồ sơ ở P1; 28 thành phần P1 / 9 P2, tổng 37)
+**Ngày cập nhật:** 30/10/2026 · **Phiên bản:** v1.2.5 — BA 0.20/0.21: QR bỏ; P1 thêm các phần phòng/xã hội và khôi phục/đổi Username, media giữa tab, theme. **32 P1 / 5 P2**, tổng 37; đặc tả đích, không phải bằng chứng đã dựng/nghiệm thu.
 **Nguồn đặc tả:** Khóa cứng phạm vi theo [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md). Phần bổ sung của đợt rà soát 03/10/2026 đã được Product Owner duyệt. Các mã `R01`–`R21`, `ARCH-xx`, `SCR-RULE-xx` là nhãn kế thừa từ bộ tài liệu cũ; luật tương ứng đã viết bằng chữ ngay tại chỗ dùng.
 
 ---
@@ -104,13 +104,13 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 
 ### 3. `SCR-FORGOT-PASSWORD` — Trang Quên Mật Khẩu (P1)
 * **URL:** `/forgot-password` | **Quyền:** Chưa có phiên thành viên, không cần biết mật khẩu.
-* **Thành phần:** Ô **Username** + nút **Gửi mã khôi phục**. Server chỉ gửi tới email liên hệ đã xác minh của tài khoản. Chưa có/chỉ pending email hoặc username không tồn tại: "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu." Lỗi SMTP báo lỗi thật, không giả đã gửi. Gửi thành công mới chuyển `/reset-password`; không trả email đầy đủ hoặc đặt secret/email lên URL. Khôi phục Username bằng email vẫn P2, không thay form username của P1. Chi tiết: [đặc tả YC1](../product/P1-YC1-TAI-KHOAN-VA-XAC-THUC.md).
+* **Thành phần:** Quên mật khẩu P1 vẫn nhập **Username**, chỉ OTP tới email verified đúng tài khoản; thiếu email/pending/không tồn tại báo theo BA 0.18, lỗi SMTP báo thật. Gửi thành công mới sang reset; không email/token trên URL. **Tìm Username qua email cũng P1 theo 0.21**, có ngữ cảnh riêng trên bề mặt Auth hiện có: phản hồi chung, OTP đúng mới hiện tên rồi về Login, không thay form/reset bằng quyền tìm tên.
 
 ---
 
 ### 4. `SCR-RESET-PASSWORD` — Trang Xác Minh OTP / Đặt Lại Mật Khẩu (P1)
 * **URL:** `/reset-password` | **Quyền:** Ngữ cảnh yêu cầu khôi phục hợp lệ; chưa có quyền ứng dụng.
-* **Thành phần:** OTP 6 số, hạn 180 giây/resend 60 giây theo BA 1.5; OTP đúng mới mở **Mật khẩu mới / Xác nhận mật khẩu mới**, tối thiểu 8 ký tự và khớp. Không hỏi mật khẩu cũ. Thành công vô hiệu quyền reset đã dùng, thu hồi phiên cũ, về `/login` và đăng nhập lại; không tự vào ứng dụng. Mã sai/hết hạn/khác mục đích không đổi mật khẩu. Khôi phục Username P2 chỉ hiện username sau OTP và về Login, không reset bằng quyền đó.
+* **Thành phần:** reset mật khẩu: OTP 6 số/180 giây, resend 60 giây; đúng mã mới nhập mật khẩu mới/xác nhận ≥8 ký tự, khớp. Thành công thu hồi phiên cũ/quyền đã dùng, về Login, không tự vào app. Sai/hết hạn/khác mục đích không đổi. **Khôi phục Username P1** chỉ hiện tên sau OTP và về Login; quyền tìm tên không thay quyền reset.
 
 ---
 
@@ -206,7 +206,7 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **URL:** `/friends` | **Quyền:** Người dùng đã đăng nhập.
 * **Thành phần:**
   * Ô tìm kiếm theo `username` → nút "Kết bạn"; Khách không dùng màn hình này. Giới hạn 200 bạn, 50 tổng lời mời chờ gửi+nhận; bị cùng người từ chối 2 lần thì chặn gửi theo chiều đó, chiều ngược vẫn được gửi; kết bạn thành công reset bộ đếm cặp về 0 (BA 5.5, 0.19 Q1). Presence: mất mọi kết nối đã được server nhận biết thì hiện Offline kể cả còn giữ vị trí trong ân hạn, không cho nhận mời để chiếm thêm ghế (0.19 Q7).
-  * Tab 1: *"Danh sách bạn bè"* (`status = ACCEPTED`): Avatar, Display Name, @username, Điểm Elo, Trạng thái 🟢 *Online* / 🟠 *Đang đấu* / ⚫ *Offline*. Nút *"Thách đấu"* (chỉ sáng khi 🟢 Online; = mở form Tạo phòng, nhập tên, mặc định 10 phút/CODE_ONLY/tối đa 5 người xem (PO chốt 05/10); được chỉnh trong form trước khi xác nhận; xác nhận mới tạo và gửi mời theo BA 2.7). **Ở P1** nút "Thách đấu" và "Nhắn tin" `DISABLED` kèm tooltip *"Sắp ra mắt"*; trang này **không có nút mời vào phòng**; mời bạn bè online chỉ qua `MODAL-INVITE` bên trong phòng. Mở `MODAL-DIRECT-CHAT` bằng nút *"Nhắn tin"* là P2.
+  * Tab 1: **Danh sách bạn bè** accepted: Avatar, Display Name, @username và Online/Đang đấu/Offline (Elo theo Ranked P2). **P1:** Nhắn tin mở DM chỉ giữa bạn accepted; lịch sử bền, hủy bạn thu hồi quyền/ẩn lịch sử, refriend hiện lại. **Thách đấu** chỉ khi bạn Online/người gửi đủ quyền/hết cooldown: mở lại form tạo phòng **không tên**, mặc định **10 phút/CODE_ONLY/5 người xem**, được chỉnh hợp lệ. Hủy không tạo/gửi; xác nhận mới tạo rồi gửi lời mời cho bạn đích, dùng cooldown/popup của BA 0.19. Gửi thất bại/bạn bận/từ chối/hết hạn sau tạo không tự đóng phòng. Không có nút mời vào phòng đang có tại Friends.
   * Tab 2: **"Lời mời kết bạn đang chờ"**: danh sách yêu cầu đến kèm Chấp nhận/Từ chối, yêu cầu đã gửi có Thu hồi. Bấm chuông ở navbar chuyển `/friends` và tự chọn tab này, dùng chung danh sách/hành động/số đếm; không thêm dropdown riêng (PO chốt 30/10, BA 0.19 Q8).
 
 ---
@@ -243,9 +243,9 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
   * Avatar chữ cái đầu/hình đại diện, Display Name, Username (`@username`), Email liên kết, Điểm Elo hiện tại.
   * **Email tùy chọn (29/10):** chưa có email thì hiện cảnh báo và form nhập email; đang chờ xác minh thì hiện email đích, OTP 6 số, hạn 180 giây và gửi lại sau 60 giây. Mã đúng gắn email vào cùng tài khoản, giữ phiên và dữ liệu; email đã xác minh chỉ đọc. Toàn ứng dụng có thông báo không modal dẫn về `/settings`, ẩn sau khi server xác nhận thành công. Không hiển thị email định danh kỹ thuật, không coi lỗi tải trạng thái là đã xác minh.
   * Form cập nhật Display Name (đổi tự do, không cần OTP).
-  * **P2 — Đổi Username Qua OTP:** mở `MODAL-OTP-USERNAME`, tên cũ giữ 30 ngày theo BA 1.4; không hiện như chức năng P1.
+  * **P1 — Đổi Username qua OTP:** `MODAL-OTP-USERNAME`, email verified của chính tài khoản; chưa có dẫn thêm/xác minh. Giữ tên cũ 30 ngày, UUID/dữ liệu/Display Name và mọi phiên hợp lệ/hạn cũ; không gián đoạn ván (BA 0.21).
   * **P1 — Đổi mật khẩu:** form ngay trong Hồ sơ gồm **Mật khẩu hiện tại / Mật khẩu mới / Xác nhận mật khẩu mới**. Server kiểm mật khẩu cũ và hai ô mới; thành công giữ phiên thực hiện với hạn cũ, đăng xuất phiên khác; không cần email/OTP. Khách không có chức năng này. Không thêm modal/trang độc lập; chi tiết theo BA 0.18/1.9 và đặc tả YC1.
-  * **P1:** chỉ Kỳ Đài Cổ Phong, ẩn bộ chọn. **P2:** Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống (mặc định Kỳ Đài Cổ Phong), theo BA 10.3 và DESIGN §2.3.
+  * **P1:** bộ chọn Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống, mặc định Kỳ Đài Cổ Phong. Lưu theo tài khoản/đồng bộ lựa chọn giữa thiết bị; Theo hệ thống dùng OS từng thiết bị, explicit không bị OS ghi đè; giữ màu bàn/phông (BA 0.21, DESIGN §2.3).
   * Avatar luôn tự sinh từ chữ cái đầu Display Name (không tải ảnh lên).
   * Không có chức năng xoá tài khoản trong ứng dụng ở giai đoạn này (đã duyệt 03/10).
   * Nút `Đăng Xuất` (`SCR-LOGIN`).
@@ -259,27 +259,27 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không modal**; các hộp còn lại áp quy tắc modal tương ứng.
 
 1. **`MODAL-GUEST-NAME` (Nhập Tên Khách Tạm Thời):** Mở từ nút Guest tại `SCR-LOGIN`. Nhập Display Name tạm (2–20 ký tự, có dấu tiếng Việt, qua bộ lọc từ cấm, không cần duy nhất). Nhắc nhở cấm đánh Ranked và không lưu lịch sử. Nút *"Vào chơi"* và *"Hủy"*.
-2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ `SCR-LOBBY`. Không nhập tên; máy chủ đặt `Phòng <mã 8 chữ số>` (BA 19/10). Chọn thời gian P1: 5p/10p/15p (**mặc định 10p**, không cộng giây, không đổi sau khi tạo); P2 thêm Không giới hạn. Chọn quyền truy cập ngay trong form: `CODE_ONLY` (**mặc định**) hoặc `PUBLIC` (BA 28/10); `LOCKED` chỉ bật qua Cài đặt phòng khi đủ hai người chơi (BA 2.7/2.8). Chọn **Người xem**: *Không có người xem* hoặc tối đa 1–5 (**mặc định 5**, không đổi sau khi tạo).
+2. **`MODAL-CREATE-ROOM` (Thiết Lập Tạo Phòng):** Mở từ Sảnh hoặc Thách đấu P1. Không nhập tên; server đặt `Phòng <mã 8 chữ số>`. Thành viên có Không giới hạn/5/10/15 (**mặc định Không giới hạn**, BA 0.20); Khách có 5/10/15 (**mặc định 10**); Thách đấu mặc định **10**. Không cộng giây/đổi mức sau tạo. Quyền CODE_ONLY (**mặc định**) hoặc PUBLIC; LOCKED chỉ qua Cài đặt khi đủ hai ghế. Người xem 0–5 (**mặc định 5**, không đổi sau tạo). Hủy form Thách đấu không tạo/gửi.
 3. **`MODAL-INVITE` (Chia Sẻ Phòng Đa Kênh):** Chỉ người ngồi ghế trong phòng tự tạo mở được. P1 có link/mã 8 số tabular và tab mời bạn bè Online; Guest ẩn tab bạn, không QR. Cooldown 10 giây theo toàn người gửi, dùng chung người nhận/phòng/tab; hiển thị lý do và thời gian còn lại. Người nhận thấy **nhiều popup đồng thời**, mỗi popup có **tên người thực sự gửi**, tên phòng, Tham gia/Từ chối và deadline gốc 30 giây. X/Esc = Từ chối popup đang tương tác, không thu gọn/không đóng tất cả; phản hồi màn hình người gửi và chờ ít nhất 10 giây từ phản hồi đó mới gửi lại. Không lưu room invite trong chuông; hết hạn tự nhiên không giả là Từ chối. Người gửi rời ghế/hủy kết bạn vẫn giữ invite đến hạn, trừ khi phòng khóa/đóng hoặc mất quyền vào hiện tại. Người nhận đang xem A thì chỉ rời A sau khi chuyển/nhận chỗ B thành công; B đầy/khóa/lỗi giữ A và báo lỗi tại chỗ. Không coi precheck slot là giữ chỗ. Các popup độc lập, dùng được từ 360px (BA 0.19 Q2–Q6).
 4. **`MODAL-ROOM-SETTINGS` (Cài Đặt Phòng Động):** Chỉ phòng tự tạo: Host đổi giữa `PUBLIC`, `CODE_ONLY` và `LOCKED`; **`LOCKED` chỉ bật được khi đã đủ 2 người chơi** (trước đó nút `DISABLED` kèm tooltip), người đang có ghế/đang xem mất mạng vẫn vào lại được (người chơi 60 giây, người xem 5 phút). Khóa chặn người mới, thu hồi mã/link/lời mời chưa dùng, **giữ người xem hiện có**; mở lại sinh mã/link mới. PUBLIC hiện tại Sảnh; CODE_ONLY/LOCKED không hiện; lời gọi từ mục danh sách cũ phải kiểm lại quyền (BA 4.3).
 5. **`MODAL-MATCHMAKING` (Hàng Đợi Tìm Trận Ranked):** Radar quét đối thủ theo Elo ($\Delta Elo \le 100$, $\pm 50$ mỗi 10s), đồng hồ đếm giây. Nút *"Hủy tìm trận"* (hủy tự do khi chưa thấy đối thủ; khóa nút khi `MATCH_FOUND`).
 6. **`MODAL-AI-SETUP` (Chọn Cấp Độ & Phe Cờ AI):** Mở từ Sảnh. Chọn cấp độ Dễ/Trung bình/Khó. Chọn phe cờ: 🔴 Đỏ (đi trước), ⚫ Đen (đi sau - máy tự đi nước đầu), 🎲 Ngẫu nhiên (50/50).
 7. **`MODAL-OTP-USERNAME` (Xác Thực OTP Đổi Username):** Mở từ Cài đặt hồ sơ. Quy trình 4 bước: 1) Bấm đổi $\rightarrow$ 2) Nhập 6 số OTP (hạn 3p, giới hạn nhập sai) $\rightarrow$ 3) Xác thực mở khóa $\rightarrow$ 4) Nhập username mới và xác nhận.
-8. **`MODAL-DIRECT-CHAT` (Khung Chat Riêng 1-1 Bạn Bè):** Mở từ `SCR-FRIENDS`. Ràng buộc bạn bè chính thức (`status = ACCEPTED`). Lịch sử tin nhắn, bộ lọc từ cấm `***`, khay 12 sticker cờ tướng.
+8. **`MODAL-DIRECT-CHAT` (Khung Chat Riêng 1-1 Bạn Bè) — P1:** mở từ Bạn bè hoặc badge DM; chỉ accepted friends. Lịch sử bền cuộn nội bộ; filter/rate limit hiện hành. Read chỉ khi tin trong viewport/tab hoạt động; tải nền không read; server đồng bộ thiết bị. Hủy bạn thu hồi đọc/gửi ngay/ẩn lịch sử và bỏ khỏi badge nhưng giữ read state; refriend hiện lại và tính đúng unread. Khay 12 sticker **vẫn P2**.
 9. **`MODAL-SIDE-SWAP-PROMPT` (Nhận Đề Nghị Đổi Bên):** Hiện phía người nhận khi đối thủ xin đổi bên trong phòng chờ. Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý"* và *"Từ chối"*.
 10. **`MODAL-DRAW-PROMPT` (Nhận Đề Nghị Xin Hòa):** Hiện phía người nhận khi đối thủ xin hòa trong ván. Đồng hồ đếm lùi **30 giây**. Nút *"Chấp nhận Hòa"* và *"Từ chối"*. **Không giữ focus**, bàn cờ tiếp tục thao tác theo quyền lượt; X/Esc thu gọn, có nút mở lại, không tạm dừng đồng hồ/hạn; theo `SCR-RULE-06`.
 11. **`MODAL-UNDO-PROMPT` (Nhận Đề Nghị Xin Đi Lại):** Hiện phía người nhận khi đối thủ bấm xin đi lại trong phòng tự tạo hoặc ghép ngẫu nhiên (P2, cùng luật BA 3.2/3.6). Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý cho đi lại"* và *"Từ chối"*. **Không giữ focus**, bàn cờ tiếp tục thao tác theo quyền lượt; X/Esc thu gọn, có nút mở lại, không tạm dừng đồng hồ/hạn; theo `SCR-RULE-06`.
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua; ở Đánh Hạng còn trừ điểm Elo, Đánh Thường và Đánh với máy không đổi Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc người chơi còn lại bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
-15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Biểu ngữ Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted). Biến động Elo (Ranked). **Gián đoạn do server khởi động lại (BA 0.17, PO duyệt 09/10):** kết quả trung tính, không có người thắng/thua/hoà; phòng tự tạo về `WAITING`, reset Sẵn sàng, vẫn có *Ở lại phòng* / *Rời phòng*, không hạn đóng 10 phút. Cụm nút P1: ván online phòng tự tạo có 🏠 *Ở lại phòng* (phòng đã về `WAITING`, BA 0.7) và 🚪 *Rời phòng*; ván AI có *Ván mới* và *Về Sảnh* (BA 0.9). P2: 🔄 *Tái đấu* (phòng tự tạo và ghép ngẫu nhiên, người đề nghị chọn Giữ phe/Đổi phe, đối thủ đồng ý trong 30 giây; ghép ngẫu nhiên đặt lại 15 phút/bên; Ranked cấm; BA 0.8), 📜 *Xem lại (Replay)*.
+15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted); Elo theo Ranked P2. Server restart theo BA 0.17: kết quả trung tính không người thắng/thua/hòa, custom về WAITING/reset Ready, không hạn đóng 10 phút. **P1 custom:** Ở lại/Rời và **Tái đấu** cho hai thành viên đủ quyền: chọn Giữ/Đổi phe (mặc định Đổi), đối thủ Đồng ý/Từ chối 30 giây; accept kiểm lại ghế/cặp → đếm 3 giây → ván mới không Ready lại; cùng phòng/mức giờ/quyền/người xem/chat. Không dùng thì giữ đường Ready/Xin đổi bên. AI giữ Ván mới/Về Sảnh. **P2:** Xem lại; Tái đấu Casual reset 15 phút/bên; Ranked không Tái đấu. Đề nghị cũ/thay ghế không hồi sinh ván.
 
 ---
 
 ## 5. CHI TIẾT 4 KHUNG NHÚNG CHỨC NĂNG (EMBEDDED PANELS)
 
-1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** Cố định đầu mọi trang. Logo, Điều hướng (Sảnh, Bảng Xếp Hạng, Bạn bè, Lịch sử), Huy hiệu Elo cá nhân theo phân kỳ, chuông có số đếm lời mời kết bạn chờ; bấm chuyển `/friends` và tự mở tab Lời mời kết bạn đang chờ (BA 0.19 Q8). Avatar + Display Name mở menu Cài đặt hồ sơ. Huy hiệu tin nhắn chưa đọc thuộc P2 (BA Phần 11), không gộp với số đếm lời mời kết bạn hay phản hồi Từ chối lời mời phòng.
-2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** Nằm ở cột phải `SCR-GAME-ROOM`. Chat phòng xoá khi phòng đóng; **ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có `[Kênh Riêng]`, không Kênh Chung/người xem** (BA 2.0, 5.4, 7.2); `[Kênh Riêng]` chỉ hiện cho 2 người đang ngồi ghế (cặp mới không đọc tin cũ; cùng cặp Đổi bên hoặc chơi ván tiếp trong cùng phòng giữ chat ngay ở P1 theo BA 0.7/0.13; Tái đấu là P2), người xem mới chỉ thấy `[Kênh Chung]` từ lúc vào. **Bố cục phòng tự tạo theo BA 5.3 (PO chốt 05/10/2026):** máy tính mặc định chỉ mở Kênh Riêng; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời hai khung, hoặc ẩn bớt một trong hai rồi mở lại; điện thoại chuyển giữa hai tab trong một khung, mặc định Kênh Riêng. Người xem chỉ có Kênh Chung; ẩn khung không thay đổi quyền đọc/gửi. Bộ lọc từ cấm `***`. Khay 12 Sticker cờ tướng 1 chạm (P2).
+1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** cố định đầu trang; Logo, Sảnh/Bảng Xếp Hạng/Bạn bè/Lịch sử, Elo theo phân kỳ, Avatar/Display Name mở cài đặt. Chuông có số đếm pending friend request → `/friends` tab lời mời theo BA 0.19. **Badge DM P1** theo BA 0.20 đếm incoming chưa đọc từ bạn hiện tại, mở hội thoại; tách số đếm/đích của chuông kết bạn và phản hồi mời phòng.
+2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** chat phòng xóa khi đóng. Casual ngẫu nhiên/Ranked P2 chỉ Kênh Riêng, không người xem/Kênh Chung. Kênh Riêng chỉ hai người ngồi ghế: cặp mới không đọc tin cũ; cùng cặp đổi bên/chơi tiếp/**Tái đấu custom P1** giữ chat. Người xem chỉ Kênh Chung từ lúc vào. Desktop custom mặc định chỉ Kênh Riêng, tự mở/ẩn thêm Kênh Chung để xem đồng thời hai khung; mobile một khung chuyển tab, mặc định Kênh Riêng. Ẩn khung không đổi quyền. Filter `***`; 12 sticker vẫn P2. DM P1 lưu bền, không áp xóa theo phòng.
 3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM` và trong `SCR-WAITING-ROOM` (BA 0.13). Lỗi dịch vụ media: ván tiếp tục, hiện "Camera/mic tạm thời không dùng được" (BA 0.14). 2 video trực tiếp SFU của 2 người chơi. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ **chung cho camera và mic đang bật**: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; ghép ngẫu nhiên và Ranked chỉ có 2 mức đầu). Phòng tự tạo chọn sẵn **Chỉ đối thủ**, camera/mic mặc định Tắt; muốn người xem thấy/nghe phải chủ động chọn chia sẻ cả người xem (BA 4.1, PO duyệt 05/10). Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Người xem tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 người chơi giao lưu.
 4. **`PANEL-SPECTATORS` (Danh Sách Người Xem Trong Phòng Tự Tạo):** Nằm ở cột phải `SCR-GAME-ROOM` (ghép ngẫu nhiên và Ranked không có người xem). Tiêu đề: *"Người xem (X / N)"* (N = số người xem tối đa của phòng: 1–5). Cả Chủ phòng và người chơi còn lại đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
 
@@ -289,18 +289,18 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 1. **`ALERT-INACTIVITY-BANNER` (Cảnh Báo Chống Treo Ván R17):** Banner cam nổi bật ngay trên bàn cờ ván không giới hạn giờ khi quá 3 phút không đi cờ. **Không trap focus, không che bàn cờ, không che nút Đầu hàng (`SCR-RULE-07`)**. Đếm ngược **30 giây** (không nhấp nháy, theo `DESIGN.md` §4) + Nút *"Tôi còn đây"*. Hết 30s im lặng $\rightarrow$ Xử thua `INACTIVITY`.
 2. **`OVERLAY-RECONNECTING` (Lớp Phủ Mất Kết Nối Toàn Cục):** Phủ mờ toàn màn hình khi đứt kết nối Socket.IO. Không đóng được bằng Esc (`SCR-RULE-02`). **Nội dung theo vai trò (rà soát cuối):** (a) *người chơi đang đấu online*: đếm ngược ân hạn **60 giây**, nối lại thì tự tắt, quá 60s xử thua `DISCONNECT`, đồng hồ ván vẫn chạy (hết giờ trước thì `TIMEOUT`); (b) *người chơi ở phòng chờ hoặc phòng đã kết thúc*: giữ ghế 60 giây rồi mất ghế, **không** xử thua; (c) *người xem*: giữ chỗ 5 phút rồi mất chỗ, không xử thua; (d) *ván với máy*: giữ ván 30 phút, không xử thua. Quy tắc gốc: BA-SCOPE `Quyết định 8.3`.
-3. **`MODAL-MEDIA-TAB-SWITCH` (Cảnh Báo Độc Quyền Thiết Bị Media Đa Tab):** Popup cảnh báo khi mở 2 tab cùng lúc và bấm bật mic/cam ở tab thứ hai (`ARCH-11`). Nút *"Chuyển thiết bị sang tab này"* (thu hồi tab cũ) và nút *"Hủy bỏ"*.
+3. **`MODAL-MEDIA-TAB-SWITCH` — P1:** tab thứ hai cùng thiết bị chủ động bật khi tranh mic/cam → Chuyển thiết bị sang tab này / Hủy bỏ. Chuyển thu hồi quyền phát/dừng track cũ, tab cũ chỉ đọc; tab mới bật theo quyền. Hủy/reconnect không tự chiếm; giữ tiếp quản thường với tab mới mặc định Tắt, không lách luật thiết bị khác (BA 0.21).
 
 ---
 
 ## 7. BẢNG MA TRẬN 37 THÀNH PHẦN TOÀN DIỆN
 
-**Ưu tiên cập nhật 30/10:** P1 hạn 04/11/2026 có **28 thành phần**, P2 có **9 thành phần**; tổng 37 không đổi. `SCR-FORGOT-PASSWORD` và `SCR-RESET-PASSWORD` chuyển P1 theo BA 0.18; đổi mật khẩu nằm trong Hồ sơ có sẵn. Khôi phục Username vẫn P2; không tự thêm trang mới hoặc đổi lịch/Jira.
+**Ưu tiên hiện hành BA 0.21:** **32 P1 / 5 P2**, tổng 37. OTP Username và chuyển media tab chuyển P1; tìm Username dùng bề mặt Auth hiện có, theme nằm ở Hồ sơ. Không tự thêm trang/đổi lịch/Jira hoặc coi danh mục là bằng chứng triển khai.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
-* **Lối vào P2 cấp điều hướng chính** (Ghép ngẫu nhiên, Đánh Hạng, Lịch sử, Bảng xếp hạng, Nhắn tin/Thách đấu) hiển thị `DISABLED` kèm "Sắp ra mắt" ở P1. **Google, Khách và Quên mật khẩu hoạt động ở P1**; không áp quy tắc P2 lên các nút này.
-* **Chức năng nằm sâu trong màn hình P1** (Sticker, Xin đi lại, Tái đấu, Xem lại ở kết quả ván, đi lại với máy, Lưu lịch sử, widget AI) **ẩn hoàn toàn** ở P1, không để nút xám.
-* `MODAL-MATCH-RESULT` ở P1 chỉ có *Ở lại phòng*/*Rời phòng* (online) hoặc *Ván mới*/*Về Sảnh* (AI); không hiện Tái đấu và Xem lại.
+* **Lối vào P2 cấp điều hướng chính** (Ghép ngẫu nhiên, Đánh Hạng, Lịch sử, Bảng xếp hạng) `DISABLED` + “Sắp ra mắt”. **Nhắn tin/Thách đấu thuộc P1** theo BA 0.20, trạng thái phụ thuộc quyền/quan hệ/presence/cooldown, không dùng nhãn Sắp ra mắt.
+* **Chức năng P2 nằm sâu** (Sticker, Xin đi lại, Xem lại, đi lại với máy, Lưu lịch sử, widget AI) ẩn hoàn toàn ở P1. Không áp quy tắc ẩn này lên Tái đấu custom, DM hoặc Không giới hạn/chống treo đã chuyển P1.
+* Kết quả custom P1 có Ở lại/Rời và Tái đấu chọn phe cho cặp đủ quyền; AI Ván mới/Về Sảnh. Xem lại vẫn P2. QR bị bỏ, không nút/ảnh ở cả hai phân kỳ.
 
 | STT | Mã Thành Phần | Tên Gọi Nghiệp Vụ | Phân Loại | Vị Trí / URL | Ưu tiên |
 |:---:|---|---|:---:|---|:---:|
@@ -314,33 +314,33 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 8 | `SCR-GAME-ROOM` | Bàn cờ SVG thi đấu, 2 cách đi, đồng hồ, thao tác | Routed Page | `/rooms/:id` (`PLAYING`) | **P1** |
 | 9 | `SCR-AI-GAME` | P1: bàn cờ đấu máy, không giới hạn giờ; P2: Undo 3 lần | Routed Page | `/ai/:id` | **P1** |
 | 10 | `SCR-LEADERBOARD` | Bảng Xếp Hạng Top 50 & Dòng ghim rank cá nhân | Routed Page | `/leaderboard` | P2 |
-| 11 | `SCR-FRIENDS` | P1: bạn bè, Online/Offline, mời vào phòng; P2: Thách đấu/Nhắn tin | Routed Page | `/friends` | **P1** |
+| 11 | `SCR-FRIENDS` | P1: bạn bè/presence, Nhắn tin/DM và Thách đấu | Routed Page | `/friends` | **P1** |
 | 12 | `SCR-HISTORY` | Lịch sử ván đấu cá nhân (lọc Rank/Casual/Máy) | Routed Page | `/history` | P2 |
 | 13 | `SCR-REPLAY` | Xem lại ván cờ từng nước, bảng biên bản, auto-play | Routed Page | `/history/:id` | P2 |
 | 14 | `SCR-ACCESS-DENIED` | Màn hình từ chối truy cập (Phòng đầy, Cấm xem) | Routed Page | `/access-denied` | **P1** |
-| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, Đăng xuất, thêm/xác minh email tùy chọn (đã xác minh chỉ đọc); P2: đổi Username qua OTP | Routed Page | `/settings` | **P1** |
+| 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, email/xác minh, mật khẩu, Đổi Username OTP, theme đồng bộ tài khoản, Đăng xuất | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | **P1** (07/10) |
-| 17 | `MODAL-CREATE-ROOM` | P1: tạo phòng, 5/10/15 phút; P2: Không giới hạn | Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
+| 17 | `MODAL-CREATE-ROOM` | P1: tạo phòng Không giới hạn/5/10/15; Thách đấu dùng lại form | Modal Dialog | Mở từ Sảnh/Bạn bè | **P1** |
 | 18 | `MODAL-INVITE` | P1: link, mã 8 số, mời bạn bè | Modal Dialog | Mở từ phòng chờ/thi đấu | **P1** |
 | 19 | `MODAL-ROOM-SETTINGS` | Đổi chế độ phòng động (Khóa phòng giữ khách cũ) | Modal Dialog | Mở bởi Host | **P1** |
 | 20 | `MODAL-MATCHMAKING` | Hàng đợi tìm trận Ranked ngẫu nhiên (Hủy tự do) | Modal Dialog | Mở từ `SCR-LOBBY` | P2 |
 | 21 | `MODAL-AI-SETUP` | Chọn cấp độ AI (Dễ/Trung bình/Khó) & Phe cờ (Đỏ/Đen/Random)| Modal Dialog | Mở từ `SCR-LOBBY` | **P1** |
-| 22 | `MODAL-OTP-USERNAME` | Xác thực OTP 4 bước Đổi Username trong Hồ sơ | Modal Dialog | Mở từ `SCR-PROFILE-SETTINGS`| P2 |
-| 23 | `MODAL-DIRECT-CHAT` | Khung Chat riêng 1-1 giữa Bạn bè chính thức (R21) | Floating/Modal | Nổi góc phải hoặc từ Bạn bè | P2 |
+| 22 | `MODAL-OTP-USERNAME` | OTP 4 bước Đổi Username, giữ tên cũ/phiên/dữ liệu | Modal Dialog | Từ Hồ sơ | **P1** |
+| 23 | `MODAL-DIRECT-CHAT` | Chat 1-1 bạn bè, lịch sử bền, read/unread đồng bộ | Floating/Modal | Từ Bạn bè/badge DM | **P1** |
 | 24 | `MODAL-SIDE-SWAP-PROMPT`| Nhận đề nghị đổi phe cờ Đỏ/Đen (hạn 30s) | Modal Prompt | Mở phía đối thủ phòng chờ | **P1** (07/10) |
 | 25 | `MODAL-DRAW-PROMPT` | Nhận đề nghị xin hòa cờ trong ván (hạn 30s) | Non-modal Prompt | Mở phía đối thủ trong ván | **P1** |
 | 26 | `MODAL-UNDO-PROMPT` | Nhận đề nghị xin đi lại (hạn 30s, trần 3 lần) | Non-modal Prompt | Mở phía đối thủ trong ván | P2 |
 | 27 | `MODAL-CONFIRM-RESIGN` | Xác nhận đầu hàng ván cờ (cảnh báo thua ngay) | Modal Dialog | Mở khi bấm Đầu hàng | **P1** |
 | 28 | `MODAL-CONFIRM-LEAVE` | Xác nhận rời phòng khi đang đấu (xử thua) | Modal Dialog | Mở khi bấm Rời phòng | **P1** |
 | 29 | `MODAL-CONFIRM-KICK` | Xác nhận đuổi người xem (chặn vào lại đến đóng phòng)| Modal Dialog | Mở khi bấm Kick người xem | **P1** |
-| 30 | `MODAL-MATCH-RESULT` | P1: kết quả và Ở lại/Rời hoặc Ván mới/Về Sảnh; P2: Elo, Tái đấu, Replay | Modal Dialog | Tự mở khi ván kết thúc | **P1** |
+| 30 | `MODAL-MATCH-RESULT` | P1: kết quả, Ở lại/Rời, Tái đấu custom hoặc Ván mới/Về Sảnh; P2: Elo/Tái đấu Casual/Replay | Modal Dialog | Khi ván kết thúc | **P1** |
 | 31 | `PANEL-NAVBAR` | Thanh điều hướng Header toàn cục + Icon thông báo | Embedded Panel| Cố định đầu mọi trang | **P1** |
 | 32 | `PANEL-CHAT` | P1: chat 2 kênh, bộ lọc từ cấm; P2: 12 sticker | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
 | 33 | `PANEL-MEDIA` | Face cam & Mic LiveKit SFU 2 người chơi (3 mức chia sẻ) | Embedded Panel| Cột trái `SCR-GAME-ROOM` | **P1** |
 | 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa N, 1–5) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
-| 35 | `ALERT-INACTIVITY-BANNER`| Cảnh báo chống treo ván R17 đếm 30s không modal | System Alert | Banner nổi trên bàn cờ | P2 |
+| 35 | `ALERT-INACTIVITY-BANNER` | P1: không đi 3 phút → cảnh báo 30 giây; tối đa hai lần Tôi còn đây | System Alert | Không modal/không che bàn/Đầu hàng | **P1** |
 | 36 | `OVERLAY-RECONNECTING` | Lớp phủ mất kết nối Socket.IO ân hạn 60s | System Overlay| Phủ mờ toàn màn hình | **P1** |
-| 37 | `MODAL-MEDIA-TAB-SWITCH`| Cảnh báo độc quyền thiết bị Mic/Cam đa tab | System Dialog | Nổi khi tranh chấp thiết bị | P2 |
+| 37 | `MODAL-MEDIA-TAB-SWITCH` | Chuyển/Hủy thiết bị Mic/Cam giữa tab; thu hồi track/quyền cũ | System Dialog | Khi tranh thiết bị chủ động | **P1** |
 
 ---
 
@@ -350,5 +350,5 @@ Ma trận điều kiện và kết quả **năm trạng thái của từng thàn
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
-4. Không có dữ liệu mồ côi: Display Name đổi tự do ở Hồ sơ; Username đổi qua OTP (P2); email được bổ sung/xác minh lần đầu rồi chỉ đọc; ván AI của tài khoản chính thức lưu Lịch sử và Replay ở P2, P1 chỉ giữ trong bộ nhớ theo BA 6.3; không có trang hồ sơ công khai nên mọi nơi hiện tên người khác chỉ mở thẻ tóm tắt.
+4. Bảo toàn danh tính: đổi Display Name tự do, Đổi Username OTP **P1** giữ UUID/dữ liệu/mọi phiên hợp lệ/hạn cũ theo 0.21; email verified bất biến. Lịch sử/Replay/lưu AI vẫn P2; AI P1 giữ bộ nhớ theo BA 6.3. Không hồ sơ công khai; thẻ tóm tắt theo phân kỳ.
 5. Số lượng: 15 màn hình + 15 modal + 4 khung nhúng + 3 lớp phủ = **37**; `/rooms/:id` dùng chung cho `SCR-WAITING-ROOM` và `SCR-GAME-ROOM` nên chỉ có **14 URL** phân biệt.

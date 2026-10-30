@@ -106,6 +106,7 @@ it("a seat change that clears the offer closes the prompt at once", () => {
         ...snapshot.room,
         seats: { red: "b", black: "a" },
         swapOffer: null,
+        rematchOffer: null,
       },
     });
   });

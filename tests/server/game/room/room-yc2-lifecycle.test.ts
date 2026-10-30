@@ -95,6 +95,7 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
+    await apply("supabase/migrations/20261102000002_custom_rematch.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
   });
 

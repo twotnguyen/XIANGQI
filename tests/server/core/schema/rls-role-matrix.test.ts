@@ -25,7 +25,14 @@ const migrations = [
   "20261011000016_room_viewers",
   "20261011000017_rls_hardening",
   "20261017000018_room_code_digits",
+  "20261029000001_username_account_email",
+  "20261030000001_password_recovery",
   "20261101000001_friend_presence_invites",
+  "20261102000001_username_management",
+  "20261102000002_custom_rematch",
+  "20261102000003_unlimited_inactivity",
+  "20261102000004_direct_messages",
+  "20261102000005_account_theme",
 ];
 const appSchemas = [
   "public",

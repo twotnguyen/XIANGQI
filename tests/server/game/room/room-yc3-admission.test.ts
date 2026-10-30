@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { RoomStore } from "@server/game/room/room-store.js";
@@ -53,12 +52,6 @@ afterAll(() => pool.end());
 describe.skipIf(!databaseUrl)("YC3 room admission", () => {
   beforeEach(async () => {
     await reset();
-    await pool.query(
-      await readFile(
-        "supabase/migrations/20261011000008_room_modes.sql",
-        "utf8",
-      ),
-    );
   });
   it("moves a viewer only after acquiring B and replays without moving twice", async () => {
     const hostA = await actor(),

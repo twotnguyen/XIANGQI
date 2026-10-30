@@ -56,6 +56,7 @@ nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị 
 - Popup xếp cùng lúc ở góc màn hình trong vùng tối đa 50dvh có cuộn; không giành focus hoặc bẫy focus, bàn cờ/chat vẫn hoạt động. Esc/X trên popup đang tương tác = Từ chối đúng invite. Deadline tuyệt đối từ server, không reset khi reload. API accept trả chỗ đã cấp thật; lỗi B giữ route/phòng A và báo ngay trong popup.
 - Phản hồi từ chối hiện cả khi người gửi đã rời phòng; trong Dialog đang mở, tab Bạn bè cũng hiển thị phản hồi và cooldown toàn tài khoản. Thông báo có ack, không trộn vào chuông kết bạn.
 - Khung `xq-main` phòng chờ xếp dọc banner email và phòng, tránh banner ép phòng về chiều rộng 0 trên mobile. Nút chia sẻ giữ wrapper/grid-slot cũ khi chuyển nội dung sang Dialog, không bị thanh chọn phòng/camera/chat che.
+- Nhắn tin bạn bè mở `DirectChatDialog` (Dialog chuẩn): log cuộn nội bộ `role="log"` có thể focus, composer có nhãn ẩn và bộ đếm 200 ký tự; poll HTTP 2 giây. Nút "Tải tin cũ" lấy 50 tin trước tin cũ nhất đã tải. Đánh dấu đã đọc theo tin đến có ít nhất 50% hiển thị trong log (IntersectionObserver), chỉ khi tab hiển thị và cửa sổ có focus; mốc đọc không giảm. Bạn đã hủy: dialog xóa lịch sử ngay ở lần poll/gửi đầu tiên nhận `DM_NOT_FRIENDS`, hiện trạng thái thu hồi và khóa composer. `DirectChatHub` (tách khỏi chuông lời mời) hiện badge tổng tin chưa đọc ở mọi route, poll 2 giây, không render khi chưa đăng nhập hoặc là Khách.
 
 Kiểm local: trình duyệt thật với Nest/Socket.IO, PostgreSQL 17 riêng; chỉ provider Auth là synthetic. Đã đi qua login, đăng ký bỏ email và Khách từ link; mã có số 0 đầu giữ nguyên; clipboard thật, Escape trả focus; nhận nhiều popup, Esc chỉ từ chối một popup, chuyển A→B thất bại/thành công. Đã xem 1366×768 và 360×800; modal không tràn ngang, phòng chờ mobile không cuộn toàn trang. Không thay bằng chứng này cho Google/SMTP/LiveKit production hoặc nghiệm thu PO.
 
@@ -68,9 +69,13 @@ Giao diện, Đổi mật khẩu và Phiên đăng nhập. Các mục giữ moun
 thanh chọn phía trên nội dung; nút Đăng xuất vẫn truy cập được.
 
 Hồ sơ giữ API đổi tên và kiểm tra 2–30 ký tự; tên đăng nhập chỉ để xem,
-avatar lấy chữ cái đầu theo Unicode. Giao diện có bản xem trước cho ba chủ đề
-hiện có, áp dụng ngay và lưu bằng cơ chế theme sẵn có. Token sáng/tối chỉ đổi
-trong khung cài đặt, không thay token toàn ứng dụng. Khách chỉ thấy thông tin
+avatar lấy chữ cái đầu theo Unicode. Chủ đề lưu theo tài khoản qua `GET/PUT /profile/theme`
+(`ThemeSettings`, chỉ thành viên), không dùng localStorage. Ba lựa chọn: Kỳ Đài Cổ Phong
+(mặc định khi chưa đặt), Giấy Sáng và Theo hệ thống (theo `prefers-color-scheme` của từng thiết
+bị). Giao diện chỉ đổi sau khi server xác nhận; lỗi giữ chủ đề hiện tại. `AccountThemeSync`
+đặt lại mặc định khi khách/đăng xuất/đổi tài khoản rồi đọc lựa chọn của tài khoản mới. Khi đang đăng nhập, `AccountThemeSync` đọc lại mỗi 5 giây khi tab hiển thị và khi cửa sổ lấy focus, không chồng request; kết quả cũ không ghi đè lần lưu cục bộ xảy ra trong lúc chờ, và chỉ áp khi khác chủ đề hiện tại.
+Màu nằm ở token `:root` và `:root[data-theme="paper-light"]` trong `../styles/tokens.css`; bàn
+cờ ghim palette riêng trong `.xq-board` nên không đổi theo chủ đề. Khách chỉ thấy thông tin
 phiên và Đăng xuất; không gọi API hồ sơ thành viên. Luồng xác nhận đăng xuất
 khi đang đấu giữ nguyên.
 
@@ -309,6 +314,7 @@ trên các kết nối hiện có; không rejoin, không ngắt thiết bị cò
 đối thủ. Khi bật một thiết bị thất bại, tắt riêng thiết bị đó trên mọi phòng media,
 giữ thiết bị còn lại. Tắt cả hai vẫn giữ kết nối nhận; đổi mức chia sẻ buộc lấy
 ticket mới trước khi phát lại, không dùng quyền phát của mức cũ.
+Tab không giữ quyền điều khiển (`writable=false`) không publish: bấm bật camera/mic mở hộp thoại `MODAL-MEDIA-TAB-SWITCH` (“Chuyển thiết bị sang tab này” / “Hủy bỏ”, Esc đóng, focus trap). Chỉ xác nhận mới gọi `onTakeover`; hủy, Esc, kết nối lại hoặc mất phiên không chuyển quyền. Khi quyền chuyển đi, panel dừng camera/mic và rejoin receive-only; tab mới luôn bắt đầu với thiết bị tắt. Lỗi thiết bị không dừng ván.
 
 Nút camera/mic chỉ hiển thị icon tĩnh 44×44px; `aria-label`, `title` và
 `aria-pressed` mô tả thao tác/trạng thái. Không truyền `loading` cho hai nút,
@@ -337,3 +343,7 @@ Kết quả ván chỉ hiện khi phòng vừa chuyển sang PLAYING trong phiê
 phòng đã kết thúc giữ bố cục chờ và không mở lại kết quả. Esc trên kết quả ván = Ở lại phòng.
 Khi Rời phòng đang chờ, nút Ở lại và Escape không đóng kết quả. Rời thất bại giữ
 hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều hướng sau khi rời thành công.
+
+## Banner chống treo ván (US-P2-10)
+
+`features/rooms/match/InactivityBanner.tsx` chỉ hiện cho bên đang đến lượt khi snapshot có `match.inactivity`. Banner không modal, không khóa focus, không che bàn cờ hay nút Đầu hàng; có `role="status"`. Đếm lùi lấy từ `expiresAt` của server. Khi `confirmsLeft` = 0 thì ẩn nút "Tôi còn đây". Ván không giới hạn không có đồng hồ từng bên (snapshot không gửi `clocks`).

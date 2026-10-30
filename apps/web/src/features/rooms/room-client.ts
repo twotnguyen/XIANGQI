@@ -123,7 +123,7 @@ function parseView(value: unknown, roomId: string): RoomView {
     ) ||
     !["PUBLIC", "CODE_ONLY", "LOCKED"].includes(room.visibility as string) ||
     (room.hostId !== null && !isId(room.hostId)) ||
-    ![5, 10, 15].includes(room.timeMinutes as number) ||
+    ![0, 5, 10, 15].includes(room.timeMinutes as number) ||
     !Number.isInteger(room.viewerLimit) ||
     (room.viewerLimit as number) < 0 ||
     (room.viewerLimit as number) > 5 ||
@@ -208,19 +208,37 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
   if (snapshot.match === null) {
     if (snapshot.clocks !== null) invalidResponse();
   } else {
-    const clocks = record(snapshot.clocks),
-      match = record(snapshot.match);
+    const match = record(snapshot.match);
     if (
-      !Number.isSafeInteger(clocks.redMs) ||
-      (clocks.redMs as number) < 0 ||
-      !Number.isSafeInteger(clocks.blackMs) ||
-      (clocks.blackMs as number) < 0 ||
-      !isDate(clocks.asOf) ||
       !["red", "black"].includes(match.turn as string) ||
-      !["ACTIVE", "FINISHED", "INTERRUPTED"].includes(match.status as string) ||
-      clocks.running !== (match.status === "ACTIVE" ? match.turn : null)
+      !["ACTIVE", "FINISHED", "INTERRUPTED"].includes(match.status as string)
     )
       invalidResponse();
+    if (record(snapshot.room).timeMinutes === 0) {
+      if (snapshot.clocks !== null) invalidResponse();
+      if (match.status === "ACTIVE") {
+        const inactivity = record(match.inactivity);
+        if (
+          !isDate(inactivity.promptAt) ||
+          !isDate(inactivity.expiresAt) ||
+          Date.parse(inactivity.promptAt as string) >=
+            Date.parse(inactivity.expiresAt as string) ||
+          ![0, 1, 2].includes(inactivity.confirmsLeft as number)
+        )
+          invalidResponse();
+      } else if (match.inactivity !== null) invalidResponse();
+    } else {
+      const clocks = record(snapshot.clocks);
+      if (
+        !Number.isSafeInteger(clocks.redMs) ||
+        (clocks.redMs as number) < 0 ||
+        !Number.isSafeInteger(clocks.blackMs) ||
+        (clocks.blackMs as number) < 0 ||
+        !isDate(clocks.asOf) ||
+        clocks.running !== (match.status === "ACTIVE" ? match.turn : null)
+      )
+        invalidResponse();
+    }
   }
   let normalizedDraw: RoomSnapshot["draw"] = null;
   if (snapshot.draw !== undefined && snapshot.draw !== null) {
@@ -316,10 +334,10 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
     }
   }
   return {
-    create: (input: CreateRoomInput) =>
+    create: (input: CreateRoomInput, commandId: string = generateUuid()) =>
       request("/rooms", parseEntry, {
-        commandId: generateUuid(),
         ...input,
+        commandId,
       }),
     join: (code: string) =>
       request("/rooms/join", parseEntry, {
@@ -427,12 +445,34 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
         (value) => parseView(value, roomId),
         { expectedVersion, accept },
       ),
+    proposeRematch: (
+      roomId: string,
+      expectedVersion: number,
+      side: "KEEP" | "SWAP",
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/rematch-propose`,
+        (value) => parseView(value, roomId),
+        { expectedVersion, side },
+      ),
+    respondRematch: (
+      roomId: string,
+      expectedVersion: number,
+      accept: boolean,
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/rematch-respond`,
+        (value) => parseView(value, roomId),
+        { expectedVersion, accept },
+      ),
   };
 }
 export type RoomClient = ReturnType<typeof createRoomClient>;
 export interface RoomConnection {
   refresh(): Promise<RoomSnapshot>;
   command(action: RoomAction, version: number): Promise<CommandAcknowledgement>;
+  readonly tabId: string;
+  takeover(): Promise<void>;
   readChat(channel: ChatChannel, after?: number): Promise<ChatPage>;
   sendChat(
     channel: ChatChannel,
@@ -500,6 +540,8 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     ClientRealtimeEvents & ClientChatEvents
   > = io(api.origin, {
     path: `${api.pathname}/socket.io`,
+    transports: ["websocket"],
+    withCredentials: true,
     autoConnect: false,
     auth: (done) => {
       invalidateChat();
@@ -586,6 +628,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     if (!closed) socket.connect();
   });
   return {
+    tabId,
     readChat(channel, after = 0) {
       if (!isChatChannel(channel) || !Number.isSafeInteger(after) || after < 0)
         return Promise.reject(new Error("Tin nhắn không hợp lệ"));
@@ -756,6 +799,45 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                     new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại."),
                   );
                 }
+              }
+            },
+          );
+      });
+    },
+    takeover() {
+      if (closed || closureNotified || !socket.connected)
+        return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
+      return new Promise<void>((resolve, reject) => {
+        socket
+          .timeout(8000)
+          .emit(
+            "session.takeover",
+            (error: Error | null, acknowledgement: CommandAcknowledgement) => {
+              if (closed || error) {
+                reject(new Error("Chưa nhận được xác nhận giành quyền."));
+                return;
+              }
+              if (acknowledgement?.status !== "ok") {
+                reject(
+                  new Error(
+                    acknowledgement?.error?.message ??
+                      "Không thể giành lại quyền thao tác.",
+                  ),
+                );
+                return;
+              }
+              try {
+                const parsed = parseSnapshot(
+                  acknowledgement.snapshot,
+                  input.roomId,
+                );
+                observeSnapshot(parsed);
+                input.onSnapshot(parsed);
+                resolve();
+              } catch {
+                reject(
+                  new Error("Phản hồi phòng không hợp lệ. Vui lòng tải lại."),
+                );
               }
             },
           );

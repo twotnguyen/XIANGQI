@@ -109,6 +109,14 @@ export function readyCommand(
 
 class FixtureRooms implements RoomCollaborator {
   failAfterMutation = false;
+  revokes: Array<{ roomId: string; userId: string }> = [];
+  async queueMediaRevoke(
+    _client: PoolClient,
+    identity: RealtimeIdentity,
+    roomId: string,
+  ): Promise<void> {
+    this.revokes.push({ roomId, userId: identity.userId });
+  }
   async authorize(
     client: PoolClient,
     identity: RealtimeIdentity,
@@ -156,6 +164,7 @@ class FixtureRooms implements RoomCollaborator {
         graceUntil: { red: null, black: null },
         countdown: null,
         swapOffer: null,
+        rematchOffer: null,
         downOffer: null,
         spectators: [],
         seats: { red: members[0]!, black: members[1] ?? null },

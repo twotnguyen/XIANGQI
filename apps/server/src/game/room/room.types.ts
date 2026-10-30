@@ -65,6 +65,13 @@ export interface RoomView {
       responderId: string;
       expiresAt: string;
     } | null;
+    rematchOffer: {
+      id: string;
+      proposerId: string;
+      responderId: string;
+      side: "KEEP" | "SWAP";
+      expiresAt: string;
+    } | null;
     swapCooldownUntil?: string | null;
     spectators: { userId: string; displayName: string }[];
     downOffer: { id: string; inviteeId: string; expiresAt: string } | null;

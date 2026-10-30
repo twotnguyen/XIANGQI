@@ -193,8 +193,7 @@ async function roomFixture() {
 }
 
 async function chatSchema() {
-  for (const n of ["08_room_modes", "09_match_draw", "10_room_chat"])
-    await apply(`supabase/migrations/202610110000${n}.sql`);
+  await apply("supabase/migrations/20261011000010_room_chat.sql");
 }
 function request<T>(socket: Socket, event: string, body: object) {
   return new Promise<ChatAcknowledgement<T>>((resolve, reject) => {

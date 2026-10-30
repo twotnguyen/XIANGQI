@@ -29,6 +29,11 @@ type SnapshotRow = {
   swap_responder_id: string | null;
   swap_expires_at: Date | null;
   swap_cooldown_until: Date | null;
+  rematch_id: string | null;
+  rematch_proposer_id: string | null;
+  rematch_responder_id: string | null;
+  rematch_side: "KEEP" | "SWAP" | null;
+  rematch_expires_at: Date | null;
 };
 /**
  * Tầng lưu trữ cơ sở của phòng cờ:
@@ -111,7 +116,7 @@ export class RoomStoreCore {
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
-        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
+        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR EXISTS(SELECT 1 FROM xiangqi_room.rematch_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
       )
     ).rows.map((r) => r.id as string);
   }
@@ -278,8 +283,8 @@ export class RoomStoreCore {
   protected async snapshotSource(s: RoomScope): Promise<string> {
     const includeDown = await this.downTableExists(s);
     const includeSwap = await this.swapTableExists(s);
-    const offerJoins = `${includeDown ? "LEFT JOIN LATERAL (SELECT id,invitee_id,expires_at FROM xiangqi_room.seat_invites WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) down_offer ON TRUE" : ""} ${includeSwap ? "LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) swap_offer ON TRUE" : ""}`;
-    const offerColumns = `${includeDown ? "down_offer.id AS down_id,down_offer.invitee_id AS down_invitee_id,down_offer.expires_at AS down_expires_at" : "NULL::uuid AS down_id,NULL::uuid AS down_invitee_id,NULL::timestamptz AS down_expires_at"},${includeSwap ? "swap_offer.id AS swap_id,swap_offer.proposer_id AS swap_proposer_id,swap_offer.responder_id AS swap_responder_id,swap_offer.expires_at AS swap_expires_at" : "NULL::uuid AS swap_id,NULL::uuid AS swap_proposer_id,NULL::uuid AS swap_responder_id,NULL::timestamptz AS swap_expires_at"}`;
+    const offerJoins = `${includeDown ? "LEFT JOIN LATERAL (SELECT id,invitee_id,expires_at FROM xiangqi_room.seat_invites WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) down_offer ON TRUE" : ""} ${includeSwap ? "LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) swap_offer ON TRUE" : ""} LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,side,expires_at FROM xiangqi_room.rematch_offers WHERE room_id=$1 AND status='PENDING' LIMIT 1) rematch_offer ON TRUE`;
+    const offerColumns = `${includeDown ? "down_offer.id AS down_id,down_offer.invitee_id AS down_invitee_id,down_offer.expires_at AS down_expires_at" : "NULL::uuid AS down_id,NULL::uuid AS down_invitee_id,NULL::timestamptz AS down_expires_at"},${includeSwap ? "swap_offer.id AS swap_id,swap_offer.proposer_id AS swap_proposer_id,swap_offer.responder_id AS swap_responder_id,swap_offer.expires_at AS swap_expires_at" : "NULL::uuid AS swap_id,NULL::uuid AS swap_proposer_id,NULL::uuid AS swap_responder_id,NULL::timestamptz AS swap_expires_at"},rematch_offer.id AS rematch_id,rematch_offer.proposer_id AS rematch_proposer_id,rematch_offer.responder_id AS rematch_responder_id,rematch_offer.side AS rematch_side,rematch_offer.expires_at AS rematch_expires_at`;
     // Hạn khóa tuyệt đối chỉ của người đang xem (proposer); nhánh thiếu bảng vẫn tham chiếu $2 để khớp số tham số.
     const cooldown = includeSwap
       ? `(SELECT resolved_at+interval '60 seconds' FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND proposer_id=$2 AND ${swapCooldownOpen} ORDER BY resolved_at DESC LIMIT 1) AS swap_cooldown_until`
@@ -361,6 +366,11 @@ export class RoomStoreCore {
       swap_responder_id,
       swap_expires_at,
       swap_cooldown_until,
+      rematch_id,
+      rematch_proposer_id,
+      rematch_responder_id,
+      rematch_side,
+      rematch_expires_at,
     } = snap!;
     const down = down_id
       ? {
@@ -427,6 +437,15 @@ export class RoomStoreCore {
               proposerId: swap.proposer_id,
               responderId: swap.responder_id,
               expiresAt: (swap.expires_at as Date).toISOString(),
+            }
+          : null,
+        rematchOffer: rematch_id
+          ? {
+              id: rematch_id,
+              proposerId: rematch_proposer_id!,
+              responderId: rematch_responder_id!,
+              side: rematch_side!,
+              expiresAt: rematch_expires_at!.toISOString(),
             }
           : null,
         swapCooldownUntil: swap_cooldown_until

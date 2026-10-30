@@ -44,6 +44,7 @@ it("shows accept and decline to the responder with a countdown", async () => {
       ...snapshot.room,
       seats: { red: "b", black: "a" },
       swapOffer: null,
+      rematchOffer: null,
       downOffer: null,
       spectators: [],
     },

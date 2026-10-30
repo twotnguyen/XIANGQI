@@ -2,6 +2,10 @@
 
 Ngày lập: **30/10/2026**. Trạng thái: **tổng quan phục vụ review; đã ghi quyết định PO về mục tiêu, thứ tự P1 trước P2 và hai chức năng mật khẩu lên P1**. Không phải báo cáo đã triển khai/nghiệm thu.
 
+**PO cập nhật theo BA 0.20:** bỏ QR khỏi cả P1/P2; đưa Thách đấu (`US-P2-19`/XIAN-133), DM/unread (`US-P2-18`/XIAN-132), Không giới hạn/chống treo (`US-P2-10`/XIAN-124), Tái đấu **phòng tự tạo** (phần custom `US-P2-09`/XIAN-123) lên **P1**. Tái đấu Casual/ghép ngẫu nhiên và Ranked vẫn P2. Mục 13 giữ số/mã cũ để tra cứu; bảng giờ/Epic là baseline lịch sử chưa tái ước lượng, không phải tổng P2 còn lại hoặc bằng chứng triển khai.
+
+**PO bổ sung BA 0.21:** toàn bộ Đổi Username (`US-P2-20`/XIAN-134), Khôi phục Username (`US-P2-21`/XIAN-135), media giữa tab (`US-P2-24`/XIAN-138), Giấy Sáng/Theo hệ thống (`US-P2-25`/XIAN-139) thuộc P1, chưa triển khai/nghiệm thu. Giữ phiên hợp lệ/hạn cũ khi đổi tên; theme lưu tài khoản/đồng bộ lựa chọn, OS theo từng thiết bị; Khách được chơi/xem phòng Không giới hạn do thành viên tạo và chịu chống treo, không tự tạo mức này.
+
 ## 1. Mục đích, nguồn và cách sử dụng
 
 Tài liệu này gom toàn bộ phạm vi chức năng **P1 và 25 mục P2**, yêu cầu chất lượng, dữ liệu, ngoại lệ và nghiệm thu để đọc, đánh giá, bổ sung, cải thiện hoặc thiết kế lại. Nội dung chi tiết theo chức năng; không sao chép mọi hàng AC/TC hoặc lịch Task từ backlog. Đây không phải báo cáo nghiệm thu, không xác nhận phần mềm đã đáp ứng yêu cầu và không thay thế BA/backlog.
@@ -110,7 +114,7 @@ Nguồn: BA 0.3, 2.8, 4.1–4.2, 11.
 - OTP 6 số, hạn 180 giây, gửi lại sau 60 giây. OTP đăng ký dùng giới hạn xác minh của Supabase với mục tiêu 5 lần sai, không cam kết đếm chính xác từng mã; OTP thêm email có tối đa 5 lần sai cho yêu cầu đó.
 - Email chưa xác minh không được xem là email đã gắn thành công. Kiểm trùng cả khi gửi và khi hoàn tất; thiếu SMTP/lỗi gửi phải báo lỗi thật.
 - Display Name mặc định bằng username, kể cả Google; được đổi trong Hồ sơ, 2–30 ký tự, hỗ trợ tiếng Việt, không cần duy nhất/OTP nhưng phải qua bộ lọc.
-- Avatar tự sinh từ chữ cái đầu. Không tải ảnh lên. Đổi username và khôi phục username vẫn P2; **Đổi mật khẩu và Quên mật khẩu thuộc P1 từ 30/10**. Đổi email đã xác minh không thuộc phạm vi.
+- Avatar chữ cái đầu, không tải ảnh lên. Đổi/khôi phục Username, Đổi/Quên mật khẩu đều P1 theo 0.18/0.21. Đổi/xóa email đã xác minh vẫn ngoài phạm vi; không tự gộp danh tính.
 
 ### 4.3 Khách, phiên và nhiều thiết bị
 
@@ -138,7 +142,7 @@ Nguồn: BA 0.2–0.4, 0.15, 0.17, 1.1–1.8; US-01.1–01.4.
 - **Quên mật khẩu:** ở Đăng nhập chọn chức năng, nhập **username**; server chỉ gửi OTP tới email liên hệ đã xác minh của tài khoản. OTP đúng mới cho đặt mật khẩu mới/xác nhận; thành công thu hồi phiên cũ và về Login, không tự đăng nhập.
 - **Thiếu email:** hiện "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu." Pending không đủ điều kiện; không dùng email kỹ thuật. Username không tồn tại cùng phản hồi thiếu điều kiện để không bổ sung một câu dò tồn tại riêng.
 - PO đã được nêu rủi ro dò trạng thái trước khi chọn username/phản hồi cụ thể; không trả email đích đầy đủ. Tiếp tục hỗ trợ email hợp lệ theo BA, không tự giới hạn @gmail.com.
-- Đăng ký ba bước/email tùy chọn không đổi; khôi phục username/đổi username vẫn P2. Quyết định mới thay loại trừ cũ về đổi mật khẩu và chuyển phần Quên mật khẩu từ P2 sang P1.
+- Đăng ký ba bước/email tùy chọn giữ nguyên; Quên/Đổi mật khẩu thuộc P1 theo 0.18, Khôi phục/Đổi Username thuộc P1 theo 0.21, có mục đích OTP tách biệt.
 - BA 0.18/1.7/1.9, backlog và danh mục màn hình được đồng bộ; chưa triển khai code hoặc cập nhật Jira/giờ. Chi tiết và nghiệm thu tại đặc tả YC1.
 
 ## 5. Sảnh, tạo phòng và vòng đời — YC2, YC6
@@ -148,7 +152,7 @@ Nguồn: BA 0.2–0.4, 0.15, 0.17, 1.1–1.8; US-01.1–01.4.
 - P1 hoạt động: Tự tạo phòng, Đánh với máy, Vào phòng bằng mã, danh sách PUBLIC và Luật chơi mở rộng/thu gọn.
 - Ghép ngẫu nhiên và Ranked là P2; lối vào chính ở P1 bị vô hiệu hóa kèm “Sắp ra mắt”.
 - Không nhập tên phòng. Server tự sinh ID, mã **8 chữ số**, tên “Phòng <mã>”. Một số đoạn cũ vẫn gọi mã 8 ký tự; khi review dùng quy định cụ thể tại BA 2.7.
-- Chọn 5/10/15 phút mỗi bên, mặc định 10 phút; không cộng giây. Không giới hạn thời gian online thuộc P2.
+- Thành viên tạo phòng có Không giới hạn/5/10/15 phút, **mặc định Không giới hạn** theo BA 0.20; Khách giữ 5/10/15, mặc định 10; Thách đấu mặc định 10. Không cộng giây. Chống treo cho ván online Không giới hạn thuộc P1 (mục 13.11), không áp AI.
 - Chọn 0–5 người xem, mặc định 5, không đổi sau khi tạo; tối đa 7 người trong phòng.
 - Chọn PUBLIC hoặc CODE_ONLY ngay tại form; mặc định CODE_ONLY. Không tạo trực tiếp LOCKED.
 
@@ -171,7 +175,7 @@ Danh sách PUBLIC tối đa 50 phòng, sắp theo lần mở PUBLIC gần nhất
 - Hai người Sẵn sàng → đếm 3 giây → server kiểm lại ghế/kết nối/Sẵn sàng trước khi tạo ván.
 - Mất mạng trong đếm ngược → hủy đếm, reset Sẵn sàng, giữ ghế theo ân hạn; chưa tạo ván thì không ghi thua.
 - Kết thúc ván tự tạo → WAITING ngay, giữ ghế, Host, người xem, chế độ và chat theo luật; đồng hồ reset cho ván mới. Kết quả có “Ở lại phòng”/“Rời phòng”.
-- Ván kế tiếp cần Sẵn sàng lại; muốn đổi phe dùng Xin đổi bên. Đây không phải cơ chế Tái đấu P2.
+- P1 thêm **Tái đấu custom chọn Giữ/Đổi phe**: đối thủ đồng ý trong 30 giây → kiểm lại → đếm 3 giây → ván mới không Ready lại. Không dùng thì vẫn Ở lại → Xin đổi bên nếu muốn → cả hai Ready. Khách không gửi/nhận Tái đấu theo quyền nguồn.
 - Host rời thì chuyển cho người chơi còn lại. Không còn người ngồi ghế thì đóng phòng, đưa người xem về Sảnh. Host ngồi chờ một mình không có hạn chờ cố định.
 
 **Cần đánh giá:** mặc định CODE_ONLY; mức giờ; giới hạn và quyền đổi trần người xem; thao tác chơi tiếp; cách báo phòng đầy/khóa/ghế vừa bị lấy; tính dễ hiểu giữa Đổi ghế, Xin đổi bên và Tái đấu.
@@ -190,7 +194,7 @@ Nguồn: BA 0.5–0.7, 0.10, 2.1, 2.3, 2.7–2.8; US-02.x, US-06.1–06.2.
 - Link/mã dùng được cho người chưa kết bạn. Chưa đăng nhập thì chọn đăng nhập/đăng ký/Khách rồi tự vào đúng phòng, nhưng kiểm ràng buộc vị trí chơi trước.
 - Vào bằng mã/link/lời mời: còn ghế thì ngồi ghế; đủ ghế thì làm người xem nếu còn chỗ. “Vào xem” tại Sảnh không tự xếp vào ghế; “Vào chơi” gặp ghế vừa kín thì có thể chuyển sang xem kèm thông báo nếu còn chỗ.
 - Đang xem A mà vào B: chỉ rời chỗ xem A khi chuyển nguyên tử/nhận chỗ B thành công; B đầy/khóa/lỗi thì giữ A và báo lỗi tại chỗ. Precheck slot không bảo đảm chỗ; không tự rời ghế/ván chơi khác (0.19 Q5).
-- Trang Bạn bè P1 không tạo phòng rồi mời tự động; đó là Thách đấu P2. Chat 1–1 cũng là P2.
+- **P1 theo BA 0.20:** Friends có Thách đấu → form không tên → xác nhận tạo phòng rồi mời bạn đã chọn; có Nhắn tin/DM bền và unread đồng bộ thiết bị, thu hồi quyền ngay khi hủy bạn. Chia sẻ chỉ Sao chép link/Sao chép mã; QR bỏ hẳn. Chi tiết ở YC3 mục 15.
 
 **Đã chốt 30/10:** Q1–Q8 và tên người gửi ở [đặc tả YC3](P1-YC3-MOI-VAO-PHONG.md), BA 0.19; không còn câu hỏi PO mở trong nhóm này. Chốt đặc tả không phải nghiệm thu triển khai.
 
@@ -380,6 +384,9 @@ P2 không chỉ có Ranked. P2 gồm thi đấu ngẫu nhiên, tiện ích ván,
 
 Nghiệp vụ dẫn về BA đã duyệt; 25 Story và ước lượng dưới đây được tổng hợp từ Backlog P2, bản phân rã chưa có xác nhận riêng của PO. Các tiêu chí được ghi để đánh giá/kiểm chứng, không phải bằng chứng PASS hoặc quyết định mới trong vòng review.
 
+**Phân kỳ mới theo BA 0.20:** các mục 13.10 (custom), 13.11, 13.19, 13.20 đã thuộc **P1**; 13.17 (QR) đã bị loại bỏ. Tên mã/file `P2` và giờ dưới đây giữ truy vết gốc, không coi là công việc P2 còn chờ hoặc ước lượng mới.
+**Bổ sung 0.21:** mục 13.21, 13.22, 13.25, 13.26 cũng đã chuyển toàn bộ P1; giữ mã/Epic/giờ cũ để truy vết, không dùng chúng tính tổng P2 còn lại.
+
 | Epic P2 | Phạm vi yêu cầu | Giờ đề xuất trong backlog |
 |---|---|---|
 | EP-P2-01 | P2-01–06: Elo, Ranked, bảo vệ người nhận, bảng xếp hạng | 212 |
@@ -523,7 +530,7 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Truy vết:** US-P2-08; BA 3.2, 3.6, 0.12. Phụ thuộc: lõi/cây nước/lệnh P1 và Casual P2-07.
 
-### 13.10 P2-09 — Tái đấu có chọn phe
+### 13.10 P2-09 — Tái đấu có chọn phe: custom P1 / Casual P2
 
 - Phòng tự tạo/Casual sau ván; không Ranked hoặc Khách. Chọn Giữ phe/Đổi phe, mặc định Đổi; người nhận thấy lựa chọn và có 30 giây.
 - Đồng ý → đếm 3 giây, tạo Match ID mới trong cùng phòng, không cần Sẵn sàng lại.
@@ -534,13 +541,13 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Nghiệm thu:** hai lựa chọn phe, đề nghị chéo, đổi thành phần ghế, sát hạn đóng phòng và giữ chat đúng cặp.
 
-**Cần đánh giá:** có cần hai luồng chơi tiếp song song trong phòng tự tạo không; tương tác với người chơi Khách.
+**Đã chốt:** giữ cả Tái đấu custom và đường Ready/Xin đổi bên; Khách không gửi/nhận Tái đấu theo quyền nguồn. Kiểm tránh hai luồng cùng khởi tạo ván.
 
-**Truy vết:** US-P2-09; BA 0.8, 2.3, 5.3. Phụ thuộc: chơi tiếp/đổi bên P1, Casual P2-07.
+**Truy vết:** US-P2-09; BA 0.8/0.20, 2.3, 5.3. Custom P1 phụ thuộc chơi tiếp/đổi bên P1, không chờ P2-07; chỉ phần Casual chờ ghép ngẫu nhiên P2.
 
-### 13.11 P2-10 — Không giới hạn giờ và chống treo ván
+### 13.11 P2-10 — Không giới hạn giờ và chống treo ván: P1
 
-- Phòng tự tạo có thêm Không giới hạn, là mặc định P2 theo nguồn; 5/10/15 phút vẫn có, không cộng giây. Khách không chọn mức P2.
+- Thành viên tạo phòng có Không giới hạn mặc định; 5/10/15 vẫn có, không cộng giây; Thách đấu mặc định 10. Khách không tự tạo mức Không giới hạn nhưng được chơi/xem phòng mức này do thành viên tạo, theo quyền/chỗ trống và cùng chống treo (PO 0.21).
 - Chỉ bên **đang tới lượt** không đi 3 phút mới bị hỏi; banner đếm 30 giây, không modal, không che bàn/Đầu hàng hay giữ focus.
 - Im lặng hết 30 giây → thua INACTIVITY. “Tôi còn đây” reset 3 phút tối đa hai lần liên tiếp chưa có nước mới.
 - Lần nhắc thứ ba không có nút xác nhận; hết hạn thua. Có nước mới reset chuỗi nhắc.
@@ -548,7 +555,7 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Nghiệm thu:** biên 3 phút/30 giây, hai lần xác nhận và lần ba, reset sau nước mới, không hỏi nhầm bên chưa tới lượt.
 
-**Cần đánh giá:** mặc định Không giới hạn có làm trải nghiệm kém hơn 10 phút không; quyền tham gia phòng mức P2 của đối thủ Khách; mức giờ không đổi sau tạo theo BA 2.7.
+**Đã chốt:** Khách được chơi/xem phòng Không giới hạn do thành viên tạo theo BA 0.21; không tự tạo mức này. Mặc định thành viên Không giới hạn không đổi phòng đang có; mức giờ cố định sau tạo.
 
 **Truy vết:** US-P2-10; BA 2.1, 3.3 mục 5. Phụ thuộc: form phòng, đồng hồ và kết quả P1.
 
@@ -618,18 +625,10 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Truy vết:** US-P2-15; BA 9.1. Phụ thuộc: P2-13 và ký pháp/lõi luật.
 
-### 13.17 P2-16 — QR mời phòng
+### 13.17 P2-16 — QR mời phòng: ĐÃ LOẠI KHỎI PHẠM VI
 
-- QR ở phòng chờ/modal mời của phòng tự tạo, chứa cùng URL/token lời mời; không tạo quyền chơi/xem khác với link/mã. Có tải ảnh hoặc copy QR.
-- Quét trên điện thoại mở đúng phòng; chưa đăng nhập thì giữ đích qua login/signup và kiểm lại quyền/sức chứa khi join.
-- LOCKED vô hiệu link/mã/QR/lời mời chưa dùng; mở lại sinh mã/link/QR mới, bản cũ không dùng lại được. Người đang trong phòng giữ quyền/reconnect theo hạn.
-- Không cấp chức năng P2 cho Khách theo nguồn; điểm người quét rồi chọn Khách cần làm rõ riêng, không tự thu hẹp quyền vào bằng link P1.
+PO bỏ theo BA 0.20: không QR/ảnh/nút tải hoặc copy QR ở P1/P2; chỉ **Sao chép link / Sao chép mã**, vẫn giữ tab mời bạn bè. `US-P2-16`/XIAN-130 và các AC/Task QR chỉ giữ lịch sử, không còn yêu cầu triển khai hoặc quét/giải mã để nghiệm thu. Không tự sửa/xóa issue Jira.
 
-**Nghiệm thu:** giải mã đúng URL, quét điện thoại thật, redirect sau đăng nhập, QR cũ bị từ chối sau khóa/mở, không vượt chỗ/quyền.
-
-**Cần đánh giá:** QR giúp gì hơn copy link trong demo/thực tế; quyền tạo, hiển thị và sử dụng QR với Khách cần diễn đạt không mâu thuẫn.
-
-**Truy vết:** US-P2-16; BA 2.2, 2.4, 4.3, 0.3. Phụ thuộc: link/token và phân quyền phòng P1.
 
 ### 13.18 P2-17 — Bộ 12 sticker
 
@@ -644,7 +643,7 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Truy vết:** US-P2-17; BA 5.1, 5.3–5.4. Phụ thuộc: chat P1, P2-18 cho DM.
 
-### 13.19 P2-18 — Chat trực tiếp và tin chưa đọc
+### 13.19 P2-18 — Chat trực tiếp và tin chưa đọc: P1
 
 - Chỉ hai tài khoản đã là bạn accepted được đọc/gửi DM; API/socket/RLS từ chối người lạ, bên thứ ba và Khách.
 - Lịch sử DM lưu bền. Hủy kết bạn thu hồi quyền ngay và ẩn lịch sử, không xóa; kết bạn lại hiện lại.
@@ -659,21 +658,21 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Truy vết:** US-P2-18; BA 5.2, 5.5, 8.2. Phụ thuộc: bạn bè/xác thực/chat P1.
 
-### 13.20 P2-19 — Thách đấu bạn bè
+### 13.20 P2-19 — Thách đấu bạn bè: P1
 
 - Từ bạn accepted đang Online mở lại form tạo phòng; mặc định **10 phút / CODE_ONLY / 5 người xem**, được chỉnh trong phạm vi mức giờ/quyền hợp lệ.
 - Không nhập tên phòng theo BA 2.7 cập nhật; tên/mã tự sinh. Hủy form không tạo phòng hoặc gửi lời mời.
-- Chỉ xác nhận mới tạo phòng rồi mời; server kiểm vị trí chơi và trạng thái bạn tại thời điểm xử lý, không chỉ lúc mở form.
+- Chỉ xác nhận mới tạo phòng rồi mời đúng bạn đích; server kiểm một vị trí, friendship/Online/BUSY và cooldown 10 giây toàn người gửi theo BA 0.19. Retry không tạo trùng; popup/expiry/reply dùng lại YC3.
 - Không mời người bận/offline, không cấp quyền cho Khách. Nếu đã tạo phòng rồi bạn vừa bận/từ chối/hết hạn, phòng vẫn tồn tại cho Host quản lý.
-- Không tự đóng phòng, chuyển sang AI hoặc giả chấp nhận. Đây là đường tắt “tạo phòng + mời”, không phải mời vào phòng hiện có P1.
+- Không tự đóng phòng/chuyển AI/giả thành công nếu gửi thất bại hoặc không được nhận. Đây là đường tắt tạo phòng + mời P1, không phải mời vào phòng hiện có.
 
 **Nghiệm thu:** hủy không có tác dụng phụ, confirm đúng một lần, race bạn vừa bận, từ chối/hết hạn giữ phòng, không vượt một vị trí chơi.
 
-**Cần đánh giá:** có cần đường tắt riêng khi đã có tạo phòng/mời không; cách dẫn người gửi xử lý phòng khi bạn không vào.
+**Đã chốt:** Thách đấu thuộc P1 theo BA 0.20, dùng chung tạo phòng/lời mời; UI báo rõ phòng đã tạo khi bạn không vào hoặc gửi thất bại.
 
-**Truy vết:** US-P2-19; BA 2.7 mục 4, 2.5. Backlog còn chữ “tên” ở AC-P2-19.1, không áp thay đổi cũ đó lên form.
+**Truy vết:** US-P2-19; BA 0.20, 2.7 mục 4, 2.5. AC-P2-19.1 đã đồng bộ **không nhập tên**, mặc định 10 phút/CODE_ONLY/5 người xem.
 
-### 13.21 P2-20 — Đổi username qua OTP
+### 13.21 P2-20 — Đổi username qua OTP: P1
 
 - Luồng: yêu cầu đổi → gửi OTP tới email → xác minh → nhập và xác nhận username mới.
 - OTP 6 số/180 giây, resend 60 giây; giới hạn gần đúng 5 lần sai theo BA 1.5. Chỉ OTP đúng mới mở quyền đổi.
@@ -683,11 +682,11 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Nghiệm thu:** trùng tên/race, OTP sai/hết hạn, chủ cũ lấy lại/biên 30 ngày, dữ liệu trước/sau nguyên vẹn, API không vượt xác minh.
 
-**Cần đánh giá:** cần cho đổi liên tục không; xử lý tài khoản chưa có email đã xác minh sau cập nhật 29/10 phải chốt trước triển khai, không gửi OTP tới định danh email kỹ thuật.
+**Đã chốt 0.21:** thiếu email verified dẫn thêm/xác minh, không OTP tới email tùy ý/kỹ thuật; giữ mọi phiên hợp lệ/hạn cũ, không gián đoạn ván. Đăng nhập mới dùng Username mới; không cooldown đổi theo BA nguồn.
 
 **Truy vết:** US-P2-20; BA 1.4–1.6, 0.2. Phụ thuộc: email/OTP, hồ sơ/phiên P1 và dữ liệu định danh bền.
 
-### 13.22 P2-21 — Khôi phục username (không gồm đặt lại mật khẩu)
+### 13.22 P2-21 — Khôi phục username (không gồm đặt lại mật khẩu): P1
 
 - Người quên username nhập email, phản hồi chung "Nếu email này đã đăng ký, mã khôi phục đã được gửi".
 - OTP đúng mới hiện username hiện tại; OTP 6 số/180 giây, resend 60 giây, giới hạn theo BA 1.5. Email không lên URL.
@@ -698,7 +697,7 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Cần đánh giá:** trải nghiệm nối tiếp sang Quên mật khẩu P1; ranh giới quyền của hai mục đích OTP.
 
-**Truy vết:** US-P2-21; BA 1.7 phần P2 và 1.5; Reset mật khẩu đã chuyển P1 theo BA 0.18. Giờ/Task cũ chưa tái lập kế hoạch.
+**Truy vết:** US-P2-21, BA 0.21/1.7/1.5; cùng P1 với reset theo 0.18 nhưng quyền OTP tách biệt. Giờ/Task chưa tái lập kế hoạch.
 
 ### 13.23 P2-22 — Widget thông số AI
 
@@ -726,7 +725,7 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Truy vết:** US-P2-23; BA 9.3. Phụ thuộc: realtime/reconnect P1.
 
-### 13.25 P2-24 — Chuyển thiết bị media giữa tab
+### 13.25 P2-24 — Chuyển thiết bị media giữa tab: P1
 
 - Khi tab thứ hai cùng thiết bị tranh camera/mic, hiện hộp Chuyển thiết bị sang tab này / Hủy bỏ.
 - Chọn Chuyển: dừng track/thu hồi phát ở tab cũ, tab cũ chỉ đọc; tab mới bật thiết bị theo quyền và thao tác được chấp thuận.
@@ -740,17 +739,17 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Truy vết:** US-P2-24; BA 1.8, danh mục MODAL-MEDIA-TAB-SWITCH. Phụ thuộc: phiên và media P1.
 
-### 13.26 P2-25 — Giấy Sáng và Theo hệ thống
+### 13.26 P2-25 — Giấy Sáng và Theo hệ thống: P1
 
-- Kỳ Đài Cổ Phong vẫn mặc định nếu chưa chọn; thêm Giấy Sáng và Theo hệ thống trong settings. Khách không chọn chức năng P2.
-- Theo hệ thống phản ứng khi OS đổi sáng/tối; lựa chọn theme cụ thể không bị OS ghi đè.
+- Bộ chọn Hồ sơ P1 có Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống; chưa chọn mặc định Kỳ Đài Cổ Phong. Lưu lựa chọn theo tài khoản/đồng bộ thiết bị; Khách giữ hạn chế chọn theme bổ sung.
+- Theo hệ thống dùng OS từng thiết bị, không đồng bộ màu thực tế; explicit không bị OS ghi đè.
 - Không đổi màu bàn cờ giữa theme; phông theo Design 3.1.
 - Mọi theme giữ tương phản, bàn phím, reduced motion và đủ trạng thái UI; responsive không cuộn ngang hoặc che bàn/Đầu hàng/đồng hồ.
 - Backlog yêu cầu kiểm bốn kích thước; ma trận kích thước cụ thể theo đặc tả giao diện, không suy đã đạt từ một ảnh desktop.
 
 **Nghiệm thu:** OS đổi sáng/tối, theme explicit giữ nguyên, mọi trạng thái và bốn kích thước theo nguồn; kiểm màu bàn cờ/contrast thực.
 
-**Cần đánh giá:** nhu cầu thật so với một theme hoàn thiện; cách lưu lựa chọn theo thiết bị/tài khoản cần rà đặc tả, không tự đặt chính sách mới.
+**Đã chốt 0.21:** theme thuộc P1, lưu theo tài khoản/đồng bộ lựa chọn giữa thiết bị. Cần bằng chứng lưu/reload/cách ly tài khoản/OS/thiết bị, không suy từ token.
 
 **Truy vết:** US-P2-25; BA 10.3, Design 2.3/3.1. Phụ thuộc: tokens, settings và bàn cờ P1.
 
@@ -758,9 +757,9 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 **Những quy tắc đã có cần giữ đồng nhất:**
 
-- Chế độ phòng quyết định khả năng vào; link/mã/QR không vượt LOCKED, danh sách chặn, ghế hoặc sức chứa.
+- Link/mã không vượt LOCKED, danh sách chặn, ghế hoặc sức chứa. QR đã loại bỏ theo BA 0.20.
 - Khóa rồi mở phòng thu hồi lời mời cũ, không thu quyền media của người đang ở lại chỉ vì khóa phòng. Mã/link mới không được nhầm với ID phòng/ván.
-- Mức giờ không đổi sau tạo phòng theo BA 2.7; “mặc định Không giới hạn khi có P2” không phải tự sửa phòng đang tồn tại hoặc form Thách đấu mặc định 10 phút.
+- Mức giờ không đổi sau tạo. Mặc định Không giới hạn áp form tạo phòng thành viên P1 theo 0.20, không sửa phòng đang tồn tại hoặc mặc định 10 phút của Thách đấu.
 - Elo chỉ Ranked hoàn tất; giới hạn cặp Ranked đếm **bắt đầu**, kể cả INTERRUPTED; hai bộ đếm không dùng thay nhau.
 - Undo thay nhánh hiệu lực; replay, FEN/PGN, lặp thế và không ăn quân phải đi theo nhánh mới. Không xóa/ghi đè lịch sử trái quy định để giả Undo.
 - Khôi phục/đổi username phải giữ cùng danh tính và quyền dữ liệu. Thêm email đầu tiên không đồng nghĩa cho đổi email đã xác minh.
@@ -770,11 +769,10 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 | Điểm | Vì sao cần chốt |
 |---|---|
-| Thành viên dùng Undo/Tái đấu với đối thủ Khách | Khách không có quyền P2 nhưng đề nghị cần hai bên trả lời; không được tự đồng ý thay Khách |
-| Khách trong phòng mức giờ Không giới hạn | Backlog cấm Khách chọn mức P2 nhưng cần phân biệt tạo/chọn với tham gia phòng có sẵn |
-| QR dẫn tới link P1 và người quét chọn Khách | Cần phân biệt quyền tạo/dùng tính năng QR với quyền vào phòng bằng link của Khách |
+| Thành viên dùng Undo/Tái đấu với đối thủ Khách | Undo vẫn P2; Tái đấu custom lên P1 nhưng giữ quyền nguồn không cho Khách gửi/nhận; không tự đồng ý thay họ |
+| Khách trong phòng Không giới hạn — đã chốt 0.21 | Được chơi/xem theo quyền/chỗ trống, chịu chống treo; vẫn không tự tạo mức này |
 | Sticker trong kênh có Khách | Quyền gửi bị cấm không tự suy thành cấm đọc/render tin hợp lệ của thành viên |
-| Đổi username/khôi phục khi chưa có email | Cập nhật email tùy chọn 29/10 tạo tình huống các mô tả P2 cũ chưa giải thích đủ |
+| Đổi/tìm Username thiếu email — đã chốt 0.21 | Đổi tên cần bổ sung/xác minh trước; tìm tên không có đường recovery nếu thiếu email verified. Không dùng email kỹ thuật |
 | Lịch sử AI sau restart | Lưu ván kết thúc không tự bảo đảm khôi phục thế đang chơi; cần quy định mất trạng thái/bản lưu một phần rõ |
 | Chuẩn FEN/PGN cờ tướng | Cần chỉ rõ ký pháp và tương thích mong muốn trước khi nghiệm thu xuất/nhập với công cụ khác |
 
@@ -786,9 +784,9 @@ Không mở rộng quyền Khách hoặc giảm nghiệm thu để lấp các kh
 
 - Kết quả/lệnh bền P1 → Elo P2-01 và giới hạn cặp P2-03 → queue P2-02 → quyền Ranked P2-04 → trải nghiệm media Ranked P2-05.
 - Dữ liệu lịch sử P2-11 + Elo → bảng P2-06. AI P1 + lưu P2-12 + Undo P2-14 phải được nghiệm thu nhất quán với Replay P2-13 → xuất P2-15.
-- Bạn bè/chat P1 → DM P2-18 → sticker ở DM P2-17; phòng/lời mời P1 → Thách đấu P2-19 và QR P2-16.
-- Cây nước/phiên bản/đồng hồ P1 → Undo online P2-08. Vòng đời phòng/Casual P2-07 → Tái đấu P2-09.
-- OTP/email/phiên P1 → đổi username P2-20 và khôi phục P2-21. Media/ownership P1 → P2-24.
+- Bạn bè/chat P1 → DM/unread P1 → sticker DM P2. Phòng/lời mời P1 → Thách đấu P1; QR bị loại bỏ, không là dependency.
+- Cây nước/phiên bản/đồng hồ P1 → Undo online P2-08. Vòng đời custom → Tái đấu custom P1; chỉ Tái đấu Casual chờ P2-07.
+- OTP/email/phiên P1 → Đổi/Khôi phục Username P1; media/ownership P1 → chuyển media tab P1; Hồ sơ/token UI → theme đồng bộ tài khoản P1. Chưa triển khai các phần bổ sung này.
 - Widget, demo mạng và theme không thay thế chất lượng AI, reconnect hoặc trợ năng nền.
 
 Một Task có thể làm khi đủ đầu vào; không suy mọi P2 phải chờ toàn bộ P1 xong. Ngược lại, có UI/worker riêng không đủ để đóng chức năng chưa tích hợp. Chi tiết phụ thuộc Task triển khai/QA giữ ở Backlog P2.
@@ -831,7 +829,7 @@ Chín cổng kiểm chứng: SMTP, Google, email bất biến, đăng nhập use
 - Phủ đủ 75 AC/TC và các biến thể của 25 Story, không coi ba hàng AC của mỗi Story là chỉ ba tình huống cần kiểm.
 - Kiểm dữ liệu Elo bằng đáp án độc lập, thời gian sát biên, tranh chấp lệnh/ghép, cây nước Undo và từng thế Replay; đối chiếu dữ liệu lưu bền.
 - Kiểm API/socket/RLS trực tiếp bên cạnh UI: giả quyền, đoán ID, lệnh cũ/trùng, OTP recovery không có quyền app, chức năng demo bị tắt.
-- Dịch vụ thật: SMTP/Google/RLS trên môi trường được phép; QR quét điện thoại; track media Ranked và chuyển tab quan sát thật. Mock không thay được bằng chứng này.
+- Dịch vụ thật: SMTP/Google/RLS trên môi trường được phép; track media Ranked/chuyển tab quan sát thật. QR bị loại, không còn gate quét điện thoại. Mock không thay bằng chứng dịch vụ thật.
 - Hồi quy D1–D10, 12 NFR và 9 gate; mỗi phần ghi PASS/FAIL/BLOCKED, bản dựng, môi trường, dữ liệu, ngày và bằng chứng. Không coi mô phỏng mất mạng là đã thử LAN thật.
 - Kiểm bản sao mới, migration, hướng dẫn chạy, dữ liệu thử và bí mật trong Git/bundle/bằng chứng. Không đóng triển khai khi chỉ có mock, placeholder hoặc màn hình không nối backend.
 
@@ -856,8 +854,8 @@ Replay không khôi phục ván chơi; quyền chủ ván không đồng nghĩa 
 | Phòng | Có đoạn cũ gọi mã 8 ký tự; BA 2.7 quy định cụ thể 8 chữ số, không nhập tên, chọn quyền ngay khi tạo | Dùng BA 2.7; rà lại mô tả và trường giao diện liên quan khi review phòng |
 | P2 | BA/backlog P1 còn câu chỉ ở mức Epic; đã tồn tại backlog P2 có phân rã chi tiết | Phân biệt baseline kế hoạch P1 với phân rã P2, chưa coi phân rã là PO duyệt riêng |
 | Luật đuổi quân | BA 10.2 còn cụm để Giai đoạn 2; BA 3.5 ghi không xử riêng cả P1/P2 | Theo quy định rõ tại BA 3.5; báo PO trước khi đồng bộ câu cũ |
-| Thách đấu P2 | AC-P2-19.1 còn yêu cầu trường tên, BA 2.7 đã bỏ tên từ 19/10 | Tổng quan dùng form hiện hành không nhập tên; chưa sửa backlog nguồn |
-| Tài khoản và email tùy chọn | Quên mật khẩu nay thuộc P1 và cần email đã xác minh; khôi phục username/đổi username còn P2 | Đặc tả YC1 nêu thông báo thiếu email và quyền recovery; không gửi mã tới email pending/kỹ thuật |
+| Thách đấu đã lên P1 | AC-P2-19.1 từng ghi tên phòng trái BA 2.7 | Đã đồng bộ backlog/YC3/Danh mục theo BA 0.20: không tên, mặc định 10 phút/CODE_ONLY/5 người xem; chưa là bằng chứng code |
+| Tài khoản/email tùy chọn | Đổi/Quên mật khẩu và Đổi/Khôi phục Username đều P1 theo 0.18/0.21 | Giữ mục đích OTP riêng; thiếu email không bypass bằng địa chỉ tùy ý hoặc email kỹ thuật |
 
 Nguồn mật khẩu đã được đồng bộ theo quyết định 30/10; các lệch không liên quan trong bảng vẫn chờ review. Những lệch tài liệu không phải bằng chứng code sai; chưa kiểm runtime/Jira hoặc kết quả đo hiện tại.
 
@@ -883,11 +881,11 @@ Thứ tự dưới đây theo PO: **P1 trước, đúng thứ tự YC1–YC8; ch
 | 10 | Cổng tổng P1: nền tảng, chất lượng, nghiệm thu và hồi quy — mục 12, 14 | Chưa nghiệm thu; các phần liên quan được rà cùng từng YC |
 | 11 | Ranked/Elo/media Ranked/bảng — P2-01–06 | Chờ P1 ổn |
 | 12 | Ghép Casual — P2-07 | Chờ P1 ổn |
-| 13 | Undo online, Tái đấu, Không giới hạn — P2-08–10 | Chờ P1 ổn |
+| 13 | Undo online P2; Tái đấu custom và Không giới hạn/chống treo P1; Tái đấu Casual P2 | P1 bổ sung theo BA 0.20, chưa triển khai/nghiệm thu |
 | 14 | Lịch sử, lưu AI, Replay, Undo AI, xuất — P2-11–15 | Chờ P1 ổn |
-| 15 | QR, sticker, DM, Thách đấu — P2-16–19 | Chờ P1 ổn |
-| 16 | Đổi username và khôi phục — P2-20–21 | Chờ P1 ổn |
-| 17 | Widget, demo, chuyển media, theme — P2-22–25 | Chờ P1 ổn |
+| 15 | QR bị loại; sticker P2; DM/unread và Thách đấu P1 | Hai chức năng P1 bổ sung chưa triển khai/nghiệm thu |
+| 16 | Đổi/Khôi phục Username — mã nguồn P2-20–21, **P1** | Chốt 0.21; chưa triển khai/nghiệm thu |
+| 17 | Widget/demo còn P2; media giữa tab/theme — mã nguồn P2-24–25, **P1** | Hai bổ sung P1 chốt 0.21, chưa triển khai/nghiệm thu |
 | 18 | Quyền liên chức năng, loại trừ và nghiệm thu toàn bộ P1/P2 | Chưa đánh giá |
 
 ### 15.2 Cách chốt mỗi phần

@@ -4,13 +4,13 @@
   background-image:
     radial-gradient(
       ellipse at 50% 15%,
-      rgba(200, 130, 40, 0.16) 0%,
+      color-mix(in srgb, var(--color-gold) 16%, transparent) 0%,
       transparent 65%
     ),
     linear-gradient(
       180deg,
-      rgba(20, 12, 8, 0.55) 0%,
-      rgba(20, 12, 8, 0.85) 100%
+      color-mix(in srgb, var(--color-paper) 55%, transparent) 0%,
+      color-mix(in srgb, var(--color-paper) 85%, transparent) 100%
     ),
     url("/images/login-bg-scenic.webp");
   background-size: cover;
@@ -28,12 +28,12 @@
   padding: var(--space-4) var(--space-8);
   background: linear-gradient(
     180deg,
-    rgba(35, 20, 14, 0.96) 0%,
-    rgba(22, 12, 8, 0.92) 100%
+    color-mix(in srgb, var(--color-surface) 96%, transparent) 0%,
+    color-mix(in srgb, var(--color-surface-sunken) 92%, transparent) 100%
   );
   border-bottom: 2px solid var(--color-gold-dark);
   backdrop-filter: blur(8px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-black) 60%, transparent);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
@@ -56,11 +56,15 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
-  background: radial-gradient(circle, #d8a562 0%, #875b26 100%);
+  background: radial-gradient(
+    circle,
+    var(--color-wood) 0%,
+    var(--color-wood-edge) 100%
+  );
   border: 2px solid var(--color-gold-light);
   color: var(--color-btn-danger-bg);
   font: 900 24px var(--font-han);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-black) 60%, transparent);
   flex-shrink: 0;
 }
 
@@ -69,7 +73,11 @@
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 1px;
-  background: linear-gradient(180deg, #fff5df 0%, #e2be78 100%);
+  background: linear-gradient(
+    180deg,
+    var(--color-ink) 0%,
+    var(--color-gold-light) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
@@ -101,7 +109,7 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--touch-min);
-  color: #e2cfb7;
+  color: var(--color-ink-muted);
   text-decoration: none;
   padding: 6px 12px;
   font-size: 14px;
@@ -113,15 +121,16 @@
 .xq-desktop-nav a:hover,
 .xq-menu-nav a:hover {
   color: var(--color-gold-light);
-  background: rgba(220, 160, 50, 0.15);
-  text-shadow: 0 0 10px rgba(245, 202, 103, 0.3);
+  background: color-mix(in srgb, var(--color-gold) 15%, transparent);
+  text-shadow: 0 0 10px
+    color-mix(in srgb, var(--color-gold-light) 30%, transparent);
 }
 
 .xq-desktop-nav a[aria-current="page"] {
   border-bottom: 3px solid var(--color-gold-light);
   color: var(--color-gold-light);
   font-weight: 700;
-  background: rgba(220, 160, 50, 0.12);
+  background: color-mix(in srgb, var(--color-gold) 12%, transparent);
 }
 
 .xq-account {
@@ -143,19 +152,20 @@
   height: var(--touch-min);
   flex-shrink: 0;
   border-radius: 50%;
-  background: rgba(45, 26, 18, 0.88);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
   border: 1.5px solid var(--color-gold-dark);
   color: var(--color-gold-light);
   font-size: 16px;
   text-decoration: none;
   transition: all var(--motion-fast);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-black) 40%, transparent);
 }
 
 .xq-friends-bell:hover {
   border-color: var(--color-gold-light);
-  background: rgba(65, 38, 25, 0.95);
-  box-shadow: 0 0 10px rgba(245, 202, 103, 0.3);
+  background: color-mix(in srgb, var(--color-divider) 95%, transparent);
+  box-shadow: 0 0 10px
+    color-mix(in srgb, var(--color-gold-light) 30%, transparent);
   transform: translateY(-1px);
 }
 
@@ -163,16 +173,16 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background: #dc2626;
-  color: #ffffff;
+  background: var(--color-btn-danger-bg);
+  color: var(--color-btn-danger-fg);
   font-size: 10px;
   font-weight: 700;
   border-radius: 10px;
   padding: 1px 5px;
   min-width: 16px;
   text-align: center;
-  border: 1px solid #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-surface);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-black) 50%, transparent);
 }
 
 .xq-user-menu-wrap {
@@ -185,11 +195,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(45, 26, 18, 0.88);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
   border: 1.5px solid var(--color-gold-dark);
   padding: 4px 14px 4px 6px;
   border-radius: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-black) 40%, transparent);
   transition: all var(--motion-fast);
   cursor: pointer;
   font-family: inherit;
@@ -204,7 +214,8 @@
 
 .xq-user-pill:hover {
   border-color: var(--color-gold-light);
-  box-shadow: 0 0 12px rgba(245, 202, 103, 0.25);
+  box-shadow: 0 0 12px
+    color-mix(in srgb, var(--color-gold-light) 25%, transparent);
 }
 
 .xq-user-arrow {
@@ -217,8 +228,12 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #b91c1c, #680e13);
-  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--color-red),
+    var(--color-btn-danger-bg)
+  );
+  color: var(--color-btn-danger-fg);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -229,7 +244,7 @@
 
 .xq-user-name {
   font-weight: 600;
-  color: #fff5df;
+  color: var(--color-ink);
   font-size: 13.5px;
   white-space: nowrap;
   overflow: hidden;
@@ -246,8 +261,8 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.6),
-    0 0 15px rgba(198, 146, 42, 0.2);
+    0 16px 36px color-mix(in srgb, var(--color-black) 60%, transparent),
+    0 0 15px color-mix(in srgb, var(--color-gold) 20%, transparent);
   z-index: 200;
   padding: 14px 0 10px;
   color: var(--color-ink);
@@ -276,8 +291,12 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #b91c1c, #680e13);
-  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--color-red),
+    var(--color-btn-danger-bg)
+  );
+  color: var(--color-btn-danger-fg);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -358,20 +377,21 @@
   min-block-size: var(--touch-min);
   padding: 9px 12px;
   border-radius: 6px;
-  background: linear-gradient(180deg, #8e161c 0%, #680e13 100%);
-  color: #ffffff;
+  background: var(--color-btn-danger-bg);
+  color: var(--color-btn-danger-fg);
   font-size: 13px;
   font-weight: 700;
-  border: 1px solid #570b0e;
+  border: 1px solid var(--color-btn-danger-bg);
   cursor: pointer;
   transition: all var(--motion-fast);
   font-family: inherit;
 }
 
 .xq-dropdown-logout:hover:not(:disabled) {
-  background: linear-gradient(180deg, #a82027 0%, #7a1217 100%);
+  background: var(--color-red);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(142, 22, 28, 0.4);
+  box-shadow: 0 4px 10px
+    color-mix(in srgb, var(--color-btn-danger-bg) 40%, transparent);
 }
 
 .xq-dropdown-logout:disabled {
