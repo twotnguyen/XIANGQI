@@ -781,6 +781,7 @@ export function AppRouter() {
       <AiGamePage
         key={route.id}
         gameId={route.id}
+        allowUndo={session.state.status === "active-member"}
         authorizedFetch={session.sessionFetch}
         getProof={session.getRealtimeProof}
       />
