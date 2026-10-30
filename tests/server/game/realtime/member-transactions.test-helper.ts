@@ -19,7 +19,8 @@ async function apply(file: string) {
   const c = await pool.connect();
   try {
     if (!file.includes("test-fixture")) await c.query("SET ROLE postgres");
-    await c.query(await readFile(file, "utf8"));
+    // Keep audited function bodies identical on LF and CRLF checkouts.
+    await c.query((await readFile(file, "utf8")).replace(/\r\n/g, "\n"));
   } finally {
     await c.query("ROLLBACK; RESET ROLE");
     c.release();
