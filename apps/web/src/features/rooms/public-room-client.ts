@@ -76,7 +76,7 @@ export function parsePublicRooms(value: unknown): PublicRoomView[] {
       !host.displayName.trim() ||
       Array.from(host.displayName).length > 30 ||
       typeof host.isGuest !== "boolean" ||
-      ![5, 10, 15].includes(row.timeMinutes as number) ||
+      ![0, 5, 10, 15].includes(row.timeMinutes as number) ||
       !["waiting", "playing"].includes(row.status as string) ||
       !integer(row.viewerLimit, 5) ||
       !integer(row.spectators, row.viewerLimit) ||
@@ -235,6 +235,8 @@ export function connectPublicRooms(input: PublicRoomsConnectionInput) {
   const api = new URL(getApiBaseUrl());
   const socket = io(`${api.origin}/public-rooms`, {
     path: `${api.pathname}/public-rooms/socket.io`,
+    transports: ["websocket"],
+    withCredentials: true,
     autoConnect: false,
     auth: (done) => {
       const attempt = ++epoch;

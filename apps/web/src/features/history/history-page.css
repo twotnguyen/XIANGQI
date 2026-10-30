@@ -48,16 +48,16 @@
   border-radius: var(--radius-md);
   background: linear-gradient(
     180deg,
-    rgba(38, 22, 14, 0.92) 0%,
-    rgba(24, 14, 9, 0.96) 100%
+    color-mix(in srgb, var(--color-surface) 92%, transparent) 0%,
+    color-mix(in srgb, var(--color-surface-sunken) 96%, transparent) 100%
   );
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-black) 35%, transparent);
   overflow-wrap: anywhere;
   transition: all var(--motion-fast);
 }
 .xq-history-row:hover {
   border-color: var(--color-gold);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--color-black) 50%, transparent);
 }
 .xq-history-row h2 {
   font-size: 18px;

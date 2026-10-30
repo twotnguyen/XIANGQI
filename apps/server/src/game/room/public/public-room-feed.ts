@@ -78,7 +78,7 @@ function safeRooms(value: unknown): PublicRoomView[] {
       host.displayName.length < 1 ||
       host.displayName.length > 30 ||
       typeof host.isGuest !== "boolean" ||
-      ![5, 10, 15].includes(row.timeMinutes as number) ||
+      ![0, 5, 10, 15].includes(row.timeMinutes as number) ||
       !["waiting", "playing"].includes(row.status as string) ||
       !bounded(row.spectators, 5) ||
       !bounded(row.viewerLimit, 5) ||
