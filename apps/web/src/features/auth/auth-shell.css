@@ -89,12 +89,13 @@ body:has(.auth-shell) {
   display: grid;
   grid-template-columns: 1.08fr 1fr;
   background: #23120a;
-  border: 3.5px solid #542c15;
-  border-radius: 14px;
+  border: 2px solid rgba(212, 175, 55, 0.45);
+  border-radius: 16px;
   box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.85),
-    0 0 0 1px rgba(245, 202, 103, 0.25),
-    inset 0 0 25px rgba(0, 0, 0, 0.7);
+    0 30px 80px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(245, 202, 103, 0.35),
+    0 0 40px rgba(212, 175, 55, 0.15),
+    inset 0 0 30px rgba(0, 0, 0, 0.7);
   position: relative;
   z-index: 10;
   overflow: hidden;
@@ -417,18 +418,18 @@ body:has(.auth-shell) {
 }
 .auth-shell .input-elem {
   width: 100%;
-  height: 42px;
-  padding: 0 38px;
-  font-size: 14px;
+  height: 44px;
+  padding: 0 40px;
+  font-size: 14.5px;
   font-family: inherit;
   color: #201915;
   font-weight: 600;
-  background: rgba(248, 243, 233, 0.7);
+  background: rgba(248, 243, 233, 0.75);
   border: 1.5px solid rgba(175, 140, 95, 0.55);
-  border-radius: 7px;
+  border-radius: 8px;
   outline: none;
   box-shadow:
-    inset 0 2px 4px rgba(70, 45, 20, 0.1),
+    inset 0 2px 4px rgba(70, 45, 20, 0.08),
     0 1px 0 rgba(255, 255, 255, 0.7);
   transition:
     background 0.2s,
@@ -442,7 +443,7 @@ body:has(.auth-shell) {
 .auth-shell .input-elem:focus {
   background: #fff;
   border-color: #a31d24;
-  box-shadow: 0 0 0 3px rgba(163, 29, 36, 0.16);
+  box-shadow: 0 0 0 3.5px rgba(163, 29, 36, 0.18), 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 .auth-shell .input-elem[aria-invalid="true"] {
   border-color: #b91c1c;
@@ -538,31 +539,31 @@ body:has(.auth-shell) {
 
 .auth-shell .btn-submit {
   width: 100%;
-  min-height: 44px;
-  background: linear-gradient(180deg, #a82027 0%, #7a1217 100%);
+  min-height: 46px;
+  background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%);
   color: #fffdf7;
-  border: 1.5px solid #570b0e;
-  border-radius: 7px;
+  border: 1.5px solid rgba(245, 202, 103, 0.45);
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 14.5px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   box-shadow:
-    0 3px 8px rgba(122, 18, 23, 0.4),
-    inset 0 1px 0 rgba(255, 220, 140, 0.4);
-  transition:
-    background 0.2s,
-    box-shadow 0.2s,
-    transform 0.2s;
+    0 4px 12px rgba(127, 29, 29, 0.45),
+    inset 0 1px 0 rgba(255, 220, 140, 0.45);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .auth-shell .btn-submit:hover:not([aria-disabled="true"]):not(:disabled) {
-  background: linear-gradient(180deg, #ba262e 0%, #8c151b 100%);
-  box-shadow: 0 5px 12px rgba(122, 18, 23, 0.5);
-  transform: translateY(-1px);
+  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  border-color: #f5ca67;
+  box-shadow:
+    0 6px 18px rgba(185, 28, 28, 0.55),
+    0 0 14px rgba(245, 202, 103, 0.35);
+  transform: translateY(-2px);
 }
 .auth-shell .btn-submit:disabled,
 .auth-shell .btn-submit[aria-disabled="true"] {

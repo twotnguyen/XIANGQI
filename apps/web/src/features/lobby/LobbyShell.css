@@ -3,24 +3,48 @@
   width: 100%;
 }
 
-/* 1. HERO WELCOME BANNER (KỲ ĐÀI CỔ PHONG) */
+/* 1. HERO WELCOME BANNER (KỲ ĐÀI CỔ PHONG HOÀNG GIA) */
 .xq-welcome-banner {
-  background: linear-gradient(
-    135deg,
-    rgba(142, 22, 28, 0.96) 0%,
-    rgba(80, 10, 14, 0.98) 100%
-  );
-  border: 2px solid var(--color-gold);
+  background:
+    radial-gradient(
+      circle at 15% 30%,
+      rgba(220, 38, 38, 0.42) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 85% 70%,
+      rgba(200, 130, 40, 0.28) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(150, 24, 30, 0.98) 0%,
+      rgba(90, 12, 16, 0.99) 50%,
+      rgba(50, 8, 11, 1) 100%
+    );
+  border: 2px solid #d4af37;
   border-radius: var(--radius-lg);
-  padding: 28px 34px;
+  padding: 32px 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.6),
-    inset 0 0 35px rgba(0, 0, 0, 0.5);
+    0 16px 45px rgba(0, 0, 0, 0.75),
+    0 0 25px rgba(212, 175, 55, 0.25),
+    inset 0 0 35px rgba(0, 0, 0, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
   position: relative;
   overflow: hidden;
+}
+
+.xq-welcome-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 245, 223, 0.6), transparent);
 }
 
 .xq-banner-text {
@@ -33,7 +57,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
@@ -44,21 +68,22 @@
   font-size: 12px;
   font-weight: 700;
   color: #f5ca67;
-  background: rgba(18, 9, 6, 0.65);
-  border: 1px solid #9e701e;
-  padding: 4px 14px;
+  background: rgba(18, 9, 6, 0.75);
+  border: 1px solid #c6922a;
+  padding: 5px 16px;
   border-radius: 20px;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
 }
 
 .xq-live-pulse {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   background-color: #22c55e;
   border-radius: 50%;
   display: inline-block;
-  box-shadow: 0 0 10px #22c55e;
+  box-shadow: 0 0 12px #22c55e;
   animation: xqPulse 2s infinite ease-in-out;
 }
 
@@ -82,26 +107,29 @@
   color: #fca5a5;
   background: rgba(220, 38, 38, 0.25);
   border: 1px solid #ef4444;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
 }
 
 .xq-welcome-banner h1 {
   font-family: var(--font-serif);
-  font-size: clamp(26px, 3.5vw, 36px);
-  color: #fff5df;
-  margin: 0 0 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  font-size: clamp(28px, 4vw, 38px);
+  margin: 0 0 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  background: linear-gradient(180deg, #fffcf5 0%, #fae0a2 55%, #d4af37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
 }
 
 .xq-welcome-banner p {
-  font-size: 14.5px;
-  color: #eedcc6;
-  line-height: 1.65;
+  font-size: 15px;
+  color: #f4e5d2;
+  line-height: 1.68;
   margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  max-width: 680px;
 }
 
 .xq-banner-calligraphy {
@@ -110,32 +138,32 @@
   top: 50%;
   transform: translateY(-50%);
   font-family: var(--font-han);
-  font-size: clamp(56px, 7vw, 92px);
+  font-size: clamp(60px, 8vw, 100px);
   font-weight: 900;
-  color: rgba(245, 202, 103, 0.07);
-  text-shadow: 0 0 30px rgba(245, 202, 103, 0.15);
+  color: rgba(245, 202, 103, 0.08);
+  text-shadow: 0 0 35px rgba(245, 202, 103, 0.18);
   pointer-events: none;
-  letter-spacing: 20px;
+  letter-spacing: 24px;
   user-select: none;
   white-space: nowrap;
 }
 
-/* 2. GAME MODES GRID (SCR-LOBBY DARK LACQUER) */
+/* 2. GAME MODES GRID (SƠN MÀI KHẢM VÀNG CAO CẤP) */
 .xq-lobby-modes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  gap: 22px;
 }
 
 .xq-mode-card {
   background: linear-gradient(
     180deg,
-    rgba(38, 22, 16, 0.95) 0%,
+    rgba(40, 24, 17, 0.96) 0%,
     rgba(22, 12, 8, 0.98) 100%
   ) !important;
-  border: 1.5px solid #7a4e0f !important;
-  border-radius: 14px;
-  padding: 22px 20px;
+  border: 1.5px solid rgba(198, 146, 42, 0.45) !important;
+  border-radius: 16px;
+  padding: 24px 22px;
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
@@ -143,98 +171,124 @@
   position: relative;
   overflow: hidden;
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(245, 202, 103, 0.15);
-  transition: all 0.25s ease;
+    0 12px 35px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(245, 202, 103, 0.2);
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
   color: #fff5df !important;
+}
+
+.xq-mode-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(245, 202, 103, 0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .xq-mode-card:hover {
   border-color: #f5ca67 !important;
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.6),
-    0 0 25px rgba(198, 146, 42, 0.35);
+    0 22px 50px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(198, 146, 42, 0.4);
+}
+
+.xq-mode-card:hover::before {
+  opacity: 1;
 }
 
 .xq-mode-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .xq-mode-icon-box {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  background: radial-gradient(circle, #5a3522 0%, #301a10 100%);
-  border: 1.5px solid #c4a57b;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 35% 35%, #6a3d24 0%, #351a0e 100%);
+  border: 1.5px solid #d4af37;
   display: grid;
   place-items: center;
-  font-size: 26px;
+  font-size: 28px;
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.4),
-    0 2px 10px rgba(0, 0, 0, 0.3);
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.45),
+    0 0 12px rgba(212, 175, 55, 0.2);
   flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.xq-mode-card:hover .xq-mode-icon-box {
+  transform: scale(1.06);
 }
 
 .xq-mode-badge {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 4px;
+  padding: 5px 12px;
+  border-radius: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .badge-p1 {
-  background: rgba(37, 99, 235, 0.25);
-  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.3);
+  color: #bfdbfe;
   border: 1px solid #3b82f6;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
 }
 
 .badge-ai {
-  background: rgba(16, 185, 129, 0.25);
-  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.3);
+  color: #a7f3d0;
   border: 1px solid #10b981;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 .badge-p2 {
-  background: rgba(100, 116, 139, 0.25);
-  color: #cbd5e1;
+  background: rgba(100, 116, 139, 0.3);
+  color: #e2e8f0;
   border: 1px solid #64748b;
 }
 
 .badge-ranked {
-  background: rgba(220, 38, 38, 0.25);
-  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.3);
+  color: #fecaca;
   border: 1px solid #ef4444;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
 }
 
 .xq-mode-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .xq-mode-body h2,
 .xq-mode-body h3 {
   font-family: var(--font-serif);
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 700;
-  color: #fff5df !important;
+  color: #fffcf5 !important;
   margin: 0;
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.4px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 .xq-mode-desc {
-  font-size: 13.5px;
-  color: #eedcc6 !important;
-  line-height: 1.55;
+  font-size: 14px;
+  color: #f0dfcb !important;
+  line-height: 1.6;
   margin: 0;
   min-height: 44px;
 }
@@ -242,25 +296,26 @@
 .xq-mode-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
   margin-top: auto;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .xq-pill {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid #8a643e;
-  padding: 3px 10px;
-  border-radius: 5px;
+  background: rgba(18, 9, 6, 0.6);
+  border: 1px solid #9a724a;
+  padding: 4px 11px;
+  border-radius: 6px;
   color: #fff5df;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .xq-pill.strict {
-  background: rgba(185, 28, 28, 0.35);
+  background: rgba(185, 28, 28, 0.4);
   border-color: #ef4444;
-  color: #fecaca !important;
+  color: #fee2e2 !important;
 }
 
 /* Specific Mode Card Accents */
@@ -577,32 +632,47 @@
 .xq-room-card {
   background: linear-gradient(
     180deg,
-    rgba(46, 26, 18, 0.92) 0%,
-    rgba(30, 16, 11, 0.96) 100%
+    rgba(44, 26, 18, 0.94) 0%,
+    rgba(26, 14, 10, 0.98) 100%
   ) !important;
-  border: 1.5px solid #6e492b !important;
-  border-radius: 10px;
-  padding: 18px 20px;
+  border: 1.5px solid rgba(198, 146, 42, 0.4) !important;
+  border-radius: 12px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  transition: all 0.2s ease;
+  gap: 16px;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(245, 202, 103, 0.15);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   color: #fff5df !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.xq-room-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #d4af37, #8e161c);
+  opacity: 0.8;
 }
 
 .xq-room-card:hover {
   border-color: #f5ca67 !important;
   background: linear-gradient(
     180deg,
-    rgba(56, 32, 22, 0.96) 0%,
-    rgba(36, 20, 14, 0.98) 100%
+    rgba(58, 34, 23, 0.98) 0%,
+    rgba(34, 18, 12, 1) 100%
   ) !important;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow:
-    0 10px 26px rgba(198, 146, 42, 0.25),
-    0 2px 8px rgba(0, 0, 0, 0.4);
+    0 14px 32px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(198, 146, 42, 0.35);
 }
 
 .xq-room-top {
