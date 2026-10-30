@@ -1,6 +1,13 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi, type Mock } from "vitest";
 import { createProfileClient } from "@web/features/profile/profile-client.js";
@@ -30,6 +37,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
 });
 
 it("asks for the OTP first and keeps the name step on a taken name without a new code", async () => {
@@ -106,4 +114,164 @@ it("offers email verification instead of continuing when no verified email exist
   expect(onVerifyEmail).toHaveBeenCalledOnce();
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(screen.queryByLabelText("Tên đăng nhập mới")).toBeNull();
+});
+
+it("keeps the server deadline through rerenders and blocks an expired code until resend", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date("2026-10-31T00:00:00Z"));
+  const started = Date.now();
+  fetchMock
+    .mockResolvedValueOnce(
+      json({
+        requestId: "r".repeat(43),
+        expiresAt: new Date(started + 180_000).toISOString(),
+        resendAt: new Date(started + 60_000).toISOString(),
+      }),
+    )
+    .mockResolvedValueOnce(
+      json({
+        requestId: "r".repeat(43),
+        expiresAt: new Date(started + 360_000).toISOString(),
+        resendAt: new Date(started + 240_000).toISOString(),
+      }),
+    );
+  const props = {
+    client: createProfileClient(fetchMock),
+    username: "kythu",
+    onChanged: vi.fn(),
+  };
+  const view = render(createElement(UsernameSettings, props));
+  fireEvent.click(screen.getByRole("button", { name: "Đổi tên đăng nhập" }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Gửi mã xác minh" }));
+  });
+  expect(screen.getByText("Mã còn hiệu lực 3:00.")).toBeTruthy();
+  expect(
+    screen
+      .getByRole("button", { name: "Gửi lại mã" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  act(() => vi.advanceTimersByTime(60_000));
+  view.rerender(createElement(UsernameSettings, props));
+  expect(screen.getByText("Mã còn hiệu lực 2:00.")).toBeTruthy();
+  expect(
+    screen
+      .getByRole("button", { name: "Gửi lại mã" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+  fireEvent.change(screen.getByLabelText("Mã xác minh"), {
+    target: { value: "123456" },
+  });
+  act(() => vi.advanceTimersByTime(120_000));
+  expect(
+    screen
+      .getByRole("button", { name: "Xác nhận mã" })
+      .getAttribute("aria-disabled"),
+  ).toBe("true");
+  fireEvent.submit(
+    screen.getByRole("form", { name: "Xác minh đổi tên đăng nhập" }),
+  );
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("alert").textContent).toContain("Mã đã hết hạn");
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Gửi lại mã" }));
+  });
+  expect(screen.getByText("Mã còn hiệu lực 3:00.")).toBeTruthy();
+  expect(
+    screen
+      .getByRole("button", { name: "Xác nhận mã" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+});
+
+it("drops a verification grant that arrives after closing and reopening the dialog", async () => {
+  let finish!: (response: Response) => void;
+  fetchMock
+    .mockResolvedValueOnce(
+      json({
+        requestId: "r".repeat(43),
+        expiresAt: future(),
+        resendAt: past(),
+      }),
+    )
+    .mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        finish = resolve;
+      }),
+    );
+  render(
+    createElement(UsernameSettings, {
+      client: createProfileClient(fetchMock),
+      username: "kythu",
+      onChanged: vi.fn(),
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Đổi tên đăng nhập" }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Gửi mã xác minh" }));
+  });
+  fireEvent.change(screen.getByLabelText("Mã xác minh"), {
+    target: { value: "123456" },
+  });
+  fireEvent.submit(
+    screen.getByRole("form", { name: "Xác minh đổi tên đăng nhập" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Đóng" }));
+  fireEvent.click(screen.getByRole("button", { name: "Đổi tên đăng nhập" }));
+  await act(async () => {
+    finish(json({ changeToken: "t".repeat(43), expiresAt: future() }));
+  });
+  expect(screen.queryByLabelText("Tên đăng nhập mới")).toBeNull();
+  expect(screen.getByRole("button", { name: "Gửi mã xác minh" })).toBeTruthy();
+});
+
+it("does not announce a stale rename after leaving the settings page", async () => {
+  let finish!: (response: Response) => void;
+  const onChanged = vi.fn();
+  fetchMock
+    .mockResolvedValueOnce(
+      json({
+        requestId: "r".repeat(43),
+        expiresAt: future(),
+        resendAt: past(),
+      }),
+    )
+    .mockResolvedValueOnce(
+      json({ changeToken: "t".repeat(43), expiresAt: future() }),
+    )
+    .mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        finish = resolve;
+      }),
+    );
+  const view = render(
+    createElement(UsernameSettings, {
+      client: createProfileClient(fetchMock),
+      username: "kythu",
+      onChanged,
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Đổi tên đăng nhập" }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Gửi mã xác minh" }));
+  });
+  fireEvent.change(screen.getByLabelText("Mã xác minh"), {
+    target: { value: "123456" },
+  });
+  await act(async () => {
+    fireEvent.submit(
+      screen.getByRole("form", { name: "Xác minh đổi tên đăng nhập" }),
+    );
+  });
+  fireEvent.change(screen.getByLabelText("Tên đăng nhập mới"), {
+    target: { value: "fresh_name" },
+  });
+  fireEvent.submit(
+    screen.getByRole("form", { name: "Nhập tên đăng nhập mới" }),
+  );
+  view.unmount();
+  await act(async () => {
+    finish(json({ username: "fresh_name" }));
+  });
+  expect(onChanged).not.toHaveBeenCalled();
 });
