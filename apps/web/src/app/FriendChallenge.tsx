@@ -69,9 +69,11 @@ export function FriendChallenge({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const attempt = useRef<{ input: CreateRoomInput; commandId: string } | null>(
-    null,
-  );
+  const attempt = useRef<{
+    input: CreateRoomInput;
+    commandId: string;
+    username: string;
+  } | null>(null);
   const alive = useRef(true);
   useEffect(() => {
     alive.current = true;
@@ -85,34 +87,46 @@ export function FriendChallenge({
     setBusy(true);
     setError("");
     try {
-      const [peers, state] = await Promise.all([
-        friends.list(),
-        friends.inviteState(),
-      ]);
-      if (!alive.current) return;
-      const current = peers.find((item) => item.userId === peer.userId);
-      if (!current || current.status !== "online") {
-        setError(
-          !current
-            ? "Hai người không còn là bạn bè."
-            : "Bạn hiện không thể nhận lời mời. Vui lòng thử lại khi bạn Online.",
-        );
-        return;
+      if (!attempt.current) {
+        const [peers, state] = await Promise.all([
+          friends.list(),
+          friends.inviteState(),
+        ]);
+        if (!alive.current) return;
+        const current = peers.find((item) => item.userId === peer.userId);
+        if (!current || current.status !== "online") {
+          setError(
+            !current
+              ? "Hai người không còn là bạn bè."
+              : "Bạn hiện không thể nhận lời mời. Vui lòng thử lại khi bạn Online.",
+          );
+          return;
+        }
+        if (
+          state.cooldownUntil &&
+          Date.parse(state.cooldownUntil) > Date.now()
+        ) {
+          setError(
+            "Bạn đang trong thời gian chờ gửi lời mời. Vui lòng thử lại sau 10 giây.",
+          );
+          return;
+        }
+        attempt.current = {
+          input,
+          commandId: generateUuid(),
+          username: current.username,
+        };
       }
-      if (state.cooldownUntil && Date.parse(state.cooldownUntil) > Date.now()) {
-        setError(
-          "Bạn đang trong thời gian chờ gửi lời mời. Vui lòng thử lại sau 10 giây.",
-        );
-        return;
-      }
-      attempt.current ??= { input, commandId: generateUuid() };
+      // Khôi phục đúng lệnh đã gửi trước khi kiểm điều kiện mời hiện tại:
+      // phòng có thể đã được tạo dù client chưa nhận phản hồi.
       const entry = await rooms.create(
         attempt.current.input,
         attempt.current.commandId,
       );
+      if (!alive.current) return;
       let notice = "Đã tạo phòng và gửi lời mời cho bạn.";
       try {
-        await friends.invite(entry.roomId, current.username);
+        await friends.invite(entry.roomId, attempt.current.username);
       } catch (failure) {
         notice = `Phòng đã tạo và vẫn được giữ. Chưa xác nhận gửi được lời mời: ${friendErrorText(failure)}`;
       }
