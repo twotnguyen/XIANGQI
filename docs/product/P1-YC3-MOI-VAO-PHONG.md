@@ -459,7 +459,7 @@ Tái đấu custom và Không giới hạn/chống treo thuộc P1 ở [YC2 mụ
 - UI production hai thành viên: kết bạn qua tìm kiếm/chuông; Thách đấu mở form 10 phút/CODE_ONLY/5; Hủy giữ số phòng bằng 0 trên DB; xác nhận tạo phòng rồi bạn nhận popup và vào cùng phòng thành công.
 - DM gửi hai chiều, badge incoming riêng với chuông kết bạn, đọc hội thoại cập nhật badge; reload vẫn giữ lịch sử trên DB. Dialog giới hạn chiều cao và cuộn lịch sử riêng.
 - Thách đấu lỗi gửi mời vẫn giữ phòng đã tạo; retry tạo dùng cùng commandId/input, không tự tạo phòng thứ hai sau phản hồi không rõ. Backend tiếp tục kiểm friend/presence/cooldown và lời mời cũ 30 giây.
-- Không còn QR. Chưa áp migration lên Cloud, chưa kiểm CI/PO hoặc push; bằng chứng local không thay nghiệm thu môi trường phát hành.
+- Không còn QR. Cloud: chưa ghi nhận đã áp các migration `20261101`–`20261102` (chỉ hai migration YC1 đã áp, xem YC1 mục 16–17), chưa kiểm CI/PO hoặc push; bằng chứng local không thay nghiệm thu môi trường phát hành.
 
 ## 17. Quyết định PO khi rà soát YC3 — 31/10/2026
 

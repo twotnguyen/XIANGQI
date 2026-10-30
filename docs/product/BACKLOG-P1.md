@@ -66,7 +66,7 @@
 
 ### 2.2 Definition of Done (chức năng của một Story được nghiệm thu khi — kiểm tại các Task được giao trong bản đồ nghiệm thu)
 - [ ] Mọi AC đạt; mỗi AC có TC tương ứng **PASS** và được ghi kết quả trong Jira.
-- [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), tích hợp vào `develop`, kiểm tra lint/typecheck/unit test đạt. Đây là tiêu chuẩn chất lượng của nhóm; GitHub hiện không cưỡng chế PR, Approve hoặc CI, PR là lựa chọn khi phối hợp.
+- [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), tích hợp vào `develop`, kiểm tra lint/typecheck/unit test đạt. Đây là tiêu chuẩn chất lượng của nhóm; GitHub: `main` có branch protection với hai check bắt buộc `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, chỉ nhận PR từ `develop` (theo AGENTS.md, cập nhật 30/10; chưa đối chiếu cấu hình GitHub thực tế); `develop` là nhánh mặc định và tích hợp; merge vào `develop` không bắt buộc PR hay Approve.
 - [ ] Luật nghiệp vụ kiểm ở **máy chủ**, không tin dữ liệu client gửi.
 - [ ] Màn hình đủ **5 trạng thái** (`SUCCESS`, `LOADING`, `EMPTY`, `ERROR`, `DISABLED` có tooltip) theo DANH-MUC §2 và đúng `DESIGN.md`.
 - [ ] Chạy được ở môi trường demo local; responsive từ 360 px; tiếng Việt.
@@ -135,13 +135,13 @@
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-00.1.1 | Máy dev mới clone repo, có Node + pnpm | Chạy `pnpm install` rồi `pnpm dev` | Web và server cùng chạy; `GET /health` trả 200 | M |
-| AC-00.1.2 | Push vào `main`/`develop` hoặc PR hướng vào một trong hai nhánh | CI tự chạy | Chạy lint, typecheck, unit test; tất cả đạt thì CI thành công, bất kỳ bước nào lỗi thì CI thất bại; không cấu hình bảo vệ nhánh hoặc bắt buộc CI đạt để GitHub cho phép gộp | I |
+| AC-00.1.2 | Push vào `main`/`develop` hoặc PR hướng vào một trong hai nhánh | CI tự chạy | Chạy lint, typecheck, unit test; tất cả đạt thì CI thành công, bất kỳ bước nào lỗi thì CI thất bại; vào `main` chỉ gộp được qua PR từ `develop` khi hai check bắt buộc đạt (AGENTS.md); `develop` không bắt buộc check để gộp | I |
 | AC-00.1.3 | Repo | Kiểm tra file môi trường | Có `.env.example` liệt kê mọi biến; không có khoá bí mật trong git; biến `VITE_*` không chứa bí mật | M |
 | AC-00.1.4 | Server chạy | Gọi `/health` | Trả trạng thái server, kết nối CSDL và máy cờ | I |
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; **không** chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
 
-> **Cấu hình nhánh cập nhật 10/10:** chỉ `main`/`develop`, mặc định `main`, không bảo vệ nhánh và không bắt buộc PR/Approve. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
+> **Cấu hình nhánh (đồng bộ AGENTS.md 30/10, thay ghi chú 10/10 "không bảo vệ nhánh"):** chỉ `main`/`develop`; `main` có branch protection với hai check bắt buộc `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, chỉ nhận PR từ `develop` (theo AGENTS.md, cập nhật 30/10; chưa đối chiếu cấu hình GitHub thực tế); `develop` là nhánh mặc định và tích hợp. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
 
 #### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.
@@ -361,7 +361,7 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 | AC-02.2.11 | Một người chơi bấm "Rời phòng" | Hệ thống | Ghế đó trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn khoá | E2E |
 | AC-02.2.12 | Sau ván, không ai rời | 10 phút trôi qua | Phòng **không** tự đóng | I |
 | AC-02.2.13 | Người thứ hai vừa ngồi vào ghế còn lại | Xem cụm nút | Nút "Đổi ghế" biến mất, chỉ còn "Xin đổi bên" (US-02.2); người thứ hai rời ghế thì "Đổi ghế" xuất hiện lại | E2E |
-| AC-02.2.14 | Hộp kết quả phòng tự tạo | Nút | Ở lại phòng/Rời phòng; thêm **Tái đấu** chọn phe cho hai thành viên đủ quyền theo AC-P2-09.1–3 (phần custom P1). Không Xem lại; không tự đồng ý thay Khách | E2E |
+| AC-02.2.14 | Hộp kết quả phòng tự tạo | Nút | Ở lại phòng/Rời phòng; thêm **Tái đấu** chọn phe cho hai thành viên đủ quyền theo AC-P2-09.1–3 (phần custom P1). Xem lại theo BA 0.22 chỉ cho thành viên khi bản lưu sẵn sàng; không tự đồng ý thay Khách | E2E |
 
 ---
 
@@ -879,3 +879,8 @@ Bản đồ **268 AC baseline → Task triển khai → Task nghiệm thu** ở 
 | 3 | Tùng sở hữu lõi luật và ván online; Tình giữ khung realtime, xây máy cờ, LiveKit và CI/DevOps; Đông tinh chỉnh máy cờ. Các phần sau phụ thuộc nền này | Rủi ro tiến độ | Kế hoạch Jira: Tùng làm lõi luật và Tình làm khung realtime ngay **S1** và công bố hợp đồng sự kiện trong US-00.3 để Story phòng và Story ván không phải chờ nhau |
 | 4 | Thư là Tester chính cho phạm vi 268 AC và các biến thể TC | Rủi ro | Nhạn/Kỳ kiêm kiểm thử Story mà mình không làm (phân trong KE-HOACH-JIRA.md); dev tự viết unit test |
 | 5 | Máy cờ cấp Khó có mục tiêu độ sâu 6/ngân sách 3 giây; chưa có số đo | Rủi ro kỹ thuật | T24 từ 14–17/10 (S1–S2), T59 tinh chỉnh/đo 18–19/10 (S2), T68 kiểm độc lập 30/10 (S3); không đạt thì báo PO, **không tự hạ ngưỡng** |
+| 6 | Khóa thử sai đăng nhập theo username (5 lần/15 phút) cho phép người khác cố ý khóa tài khoản người khác | Rủi ro đã ghi nhận | Giữ BA 0.2/0.28; đăng nhập Google không bị khóa; reset mật khẩu xóa khóa; chưa có cơ chế chặn theo địa chỉ mạng và PO chưa yêu cầu |
+| 7 | Chưa có điều khoản sử dụng và chính sách quyền riêng tư dù hệ thống thu email | Rủi ro đã ghi nhận | BA 10.2 loại trừ; PO không chọn bổ sung khi rà YC1 (BA 0.28 mục 9) |
+| 8 | Trạng thái migration trên Cloud | Theo dõi | Đã áp hai migration YC1 (`20261030000001`, `20261031000001`); chưa ghi nhận đã áp `20261101`–`20261102`; chỉ áp khi PO yêu cầu riêng |
+| 9 | Hạn 04/11/2026 với phạm vi mở rộng 31/10 (BA 0.18–0.36; Ranked và Casual baseline khoảng 256 giờ cộng nhiều bổ sung YC1–YC9) chưa được tái ước lượng | Rủi ro tiến độ | PO giữ hạn; hạng mục chưa xong ghi BLOCKED, không hạ ngưỡng; ưu tiên YC1–YC8 trước YC9 (BA 0.27 mục 7) |
+| 10 | Mockup chỉ có giao diện Kỳ Đài Cổ Phong, không có mockup Giấy Sáng/Theo hệ thống; mockup phòng chờ và ghép trận theo luồng cũ | Giới hạn | Mockup chỉ tham khảo (thứ tự ưu tiên cuối); màu Giấy Sáng theo DESIGN §2.2; luồng theo YC2 mục 21 và YC9 mục 16 |

@@ -17,7 +17,7 @@
 | 🟡 | **Đề xuất** để lấp chỗ đặc tả chưa quy định. Design được đổi, nhưng phải sửa **cùng lúc** file này + Figma + `apps/web/src/shared/styles/tokens.css` và **đo lại tương phản** |
 | P1 / P2 | P1 có Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống theo BA 0.21; không còn tính năng P2 (BA 0.27) |
 
-- Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này.
+- Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này. Mockup trong `docs/design/mockups/` chỉ có giao diện Kỳ Đài Cổ Phong và chỉ để tham khảo; màu Giấy Sáng/Theo hệ thống lấy từ §2.2, không có mockup riêng.
 - Mọi tỉ lệ tương phản trong file đã được **tính** theo công thức WCAG 2.1 (độ chói tương đối). Khi dựng thật vẫn phải **đo lại** trên màn hình thật.
 
 ---
@@ -465,7 +465,7 @@ Thanh điều hướng trên cùng; nội dung giữa trang rộng tối đa 128
 ## 9. Nội dung và giọng văn
 
 - Toàn bộ giao diện **tiếng Việt**, kể cả lỗi và nhãn trợ năng (`DT` §11).
-- Câu ngắn, xưng "bạn", nói **việc cần làm tiếp**. Lỗi theo mẫu *điều gì xảy ra + cách sửa*: "Mã phòng không đúng. Kiểm tra lại 8 ký tự rồi thử lại."
+- Câu ngắn, xưng "bạn", nói **việc cần làm tiếp**. Lỗi theo mẫu *điều gì xảy ra + cách sửa*: "Mã phòng không đúng. Kiểm tra lại 8 chữ số rồi thử lại."
 - ⛔ Không lộ chi tiết kỹ thuật (mã HTTP, stack), không tiết lộ dữ liệu vượt quyền (ví dụ "email đã tồn tại" ở màn quên mật khẩu).
 - Thuật ngữ dùng thống nhất: **người chơi**, **người xem**, **chủ phòng**, **máy** — ⛔ không "viewer", "bot", "owner".
 - Thời gian: `mm:ss` cho đồng hồ và đếm ngược; ngày giờ dạng `27/09/2026 14:05`.

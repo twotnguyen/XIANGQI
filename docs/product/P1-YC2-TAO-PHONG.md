@@ -8,7 +8,7 @@
 
 **Rà soát 31/10/2026:** PO chốt luồng Host Bắt đầu + đối thủ Sẵn sàng, nút Nhường Host, người xem phải thoát phòng mới tạo phòng và không giới hạn tạo phòng (mục 21); **chưa triển khai**.
 
-**Trạng thái:** baseline theo Q1–Q7 (27 AC, mục 16/18); bổ sung BA 0.20 đã triển khai và kiểm chứng local tại mục 20. Chưa áp migration lên Cloud hoặc xác nhận CI/PO; chưa đóng Task Jira hoặc push phần bổ sung.
+**Trạng thái:** baseline theo Q1–Q7 (27 AC, mục 16/18); bổ sung BA 0.20 đã triển khai và kiểm chứng local tại mục 20. Cloud: chưa ghi nhận đã áp migration của phần bổ sung BA 0.20 (chỉ hai migration YC1 đã áp, xem YC1 mục 16–17); chưa xác nhận CI/PO; chưa đóng Task Jira hoặc push phần bổ sung.
 
 ## 1. Mục tiêu, nguồn và thứ tự ưu tiên
 
@@ -162,7 +162,7 @@ stateDiagram-v2
 ## 11. Sau ván và ở lại phòng (AC-02.2.8 – 02.2.14)
 
 1. Ván kết thúc: **ngay lập tức** phòng về `WAITING`, Sẵn sàng của đối thủ = chưa. Hộp kết quả chỉ là lớp hiển thị.
-2. `MODAL-MATCH-RESULT` có **Ở lại phòng / Rời phòng**, thêm **Tái đấu** cho hai thành viên đủ quyền theo mục 19; không Xem lại. Người xem chỉ thấy kết quả, không có nút người chơi.
+2. `MODAL-MATCH-RESULT` có **Ở lại phòng / Rời phòng**, thêm **Tái đấu** cho hai thành viên đủ quyền theo mục 19; Xem lại theo BA 0.22 (thành viên, khi bản lưu sẵn sàng). Người xem chỉ thấy kết quả, không có nút người chơi.
 3. **Ở lại phòng**: về phòng chờ; giữ nguyên ghế/phe, người xem, chế độ phòng, mức giờ, Host, Kênh Riêng và Kênh Chung.
 4. Đối thủ Sẵn sàng, Host Bắt đầu → ván mới, Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng.
 5. **Rời phòng**: ghế trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn giữ khoá.
