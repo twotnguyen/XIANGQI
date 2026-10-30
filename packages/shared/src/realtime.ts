@@ -37,6 +37,7 @@ export interface RoomStateSnapshot {
       expiresAt: string;
     } | null;
     spectators: { userId: string; displayName: string }[];
+    swapCooldownUntil?: string | null;
   };
   match: {
     id: string;
