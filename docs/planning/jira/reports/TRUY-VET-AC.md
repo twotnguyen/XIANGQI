@@ -1,5 +1,7 @@
 # Truy vết nghiệm thu — 268 AC / 71 Task
 
+> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../../../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.
+
 > Phân công dự kiến, **chưa có TC đã thực thi, chưa có PASS**. TC dùng mã AC tương ứng, thêm hậu tố cho nhiều nhánh. Tiêu chí nguồn: BACKLOG-P1; dữ liệu máy đọc: AC-TASK-MAP.json.
 
 Task được nghiệm thu theo đúng AC giao trong bảng. Các AC chưa đủ đầu vào chuyển tới Task tích hợp được ghi rõ; không công bố 100% Story từ kiểm cục bộ. T51 kiểm hồi quy đầy đủ sau mọi triển khai, có thể song song QA chuyên đề; T70 chờ cả hai nhóm và T66. Mỗi bằng chứng cần bản dựng, môi trường, dữ liệu, ngày/người chạy và kết quả PASS/FAIL/BLOCKED.

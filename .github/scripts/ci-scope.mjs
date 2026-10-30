@@ -1,9 +1,55 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
+import console from "node:console";
+import process from "node:process";
+import { URL } from "node:url";
 
 function isMainGate({ event, baseRef }) {
   return event === "pull_request" && baseRef === "main";
+}
+
+async function releaseCoversPush(context, request = globalThis.fetch) {
+  if (
+    context.event !== "push" ||
+    context.ref !== "refs/heads/develop" ||
+    !context.repository ||
+    !context.sha ||
+    !process.env.GH_TOKEN
+  )
+    return false;
+  try {
+    const url = new URL(
+      `/repos/${context.repository}/pulls`,
+      process.env.GITHUB_API_URL || "https://api.github.com",
+    );
+    url.searchParams.set("state", "open");
+    url.searchParams.set("base", "main");
+    url.searchParams.set("head", `${context.repository.split("/")[0]}:develop`);
+    const response = await request(url, {
+      headers: {
+        Authorization: `Bearer ${process.env.GH_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      signal: globalThis.AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
+    const pulls = await response.json();
+    return pulls.some(
+      (pr) =>
+        pr.state === "open" &&
+        pr.base?.ref === "main" &&
+        pr.base?.repo?.full_name === context.repository &&
+        pr.head?.ref === "develop" &&
+        pr.head?.repo?.full_name === context.repository &&
+        pr.head?.sha === context.sha,
+    );
+  } catch (error) {
+    console.error(
+      `Cannot confirm release PR; running push checks: ${error.message}`,
+    );
+    return false;
+  }
 }
 
 function scopeForPaths(paths, full) {
@@ -155,6 +201,54 @@ if (process.argv.includes("--self-test")) {
     }),
     false,
   );
+  const push = {
+    event: "push",
+    ref: "refs/heads/develop",
+    repository: "owner/xiangqi",
+    sha: "a".repeat(40),
+  };
+  const release = {
+    state: "open",
+    base: { ref: "main", repo: { full_name: push.repository } },
+    head: {
+      ref: "develop",
+      repo: { full_name: push.repository },
+      sha: push.sha,
+    },
+  };
+  const token = process.env.GH_TOKEN;
+  process.env.GH_TOKEN = "synthetic-scope-token";
+  try {
+    const response = (pulls) => async () => globalThis.Response.json(pulls);
+    assert.equal(await releaseCoversPush(push, response([release])), true);
+    for (const pr of [
+      { ...release, state: "closed" },
+      { ...release, base: { ...release.base, ref: "develop" } },
+      { ...release, head: { ...release.head, sha: "b".repeat(40) } },
+      {
+        ...release,
+        head: { ...release.head, repo: { full_name: "fork/xiangqi" } },
+      },
+    ])
+      assert.equal(await releaseCoversPush(push, response([pr])), false);
+    assert.equal(await releaseCoversPush(push, response([])), false);
+    assert.equal(
+      await releaseCoversPush({ ...push, event: "pull_request" }, () => {
+        throw new Error("PR gates must not query deduplication");
+      }),
+      false,
+    );
+    assert.equal(
+      await releaseCoversPush(
+        push,
+        async () => new globalThis.Response("", { status: 403 }),
+      ),
+      false,
+    );
+  } finally {
+    if (token === undefined) delete process.env.GH_TOKEN;
+    else process.env.GH_TOKEN = token;
+  }
   assert.equal(isMainGate({ event: "push", ref: "refs/heads/develop" }), false);
   const { mkdtempSync, mkdirSync, writeFileSync, renameSync, rmSync } =
     await import("node:fs");
@@ -223,8 +317,18 @@ if (process.argv.includes("--self-test")) {
     event: process.env.CI_EVENT,
     baseRef: process.env.CI_BASE_REF,
     before: process.env.CI_BEFORE,
+    ref: process.env.GITHUB_REF,
+    sha: process.env.GITHUB_SHA,
+    repository: process.env.GITHUB_REPOSITORY,
   };
-  const scope = scopeForPaths(changedPaths(context), isMainGate(context));
+  const delegated = await releaseCoversPush(context);
+  const scope = delegated
+    ? { full: false, web: false, server: false }
+    : scopeForPaths(changedPaths(context), isMainGate(context));
+  if (delegated)
+    console.log(
+      "Release PR covers this exact develop SHA; build/unit run on the PR.",
+    );
   const outputs =
     Object.entries(scope)
       .map(([key, value]) => `${key}=${value}`)

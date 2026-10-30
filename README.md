@@ -4,7 +4,7 @@
 
 Đây là đồ án môn **Quản trị Dự án Công nghệ Thông tin**, thực hiện từ phân tích yêu cầu khách hàng đến lập kế hoạch, xây dựng và nghiệm thu sản phẩm.
 
-> **Đang triển khai.** Mã nguồn trên `main` đã có web React/Vite, server NestJS/Socket.IO và các tính năng P1 đã tích hợp (đăng ký/đăng nhập, phòng, ván thời gian thực, chat, ván với máy, bạn bè, media), cùng một phần P2 (lịch sử, replay, mã QR mời). Việc nghiệm thu từng Task vẫn theo Jira và các cổng kiểm chứng trong [BACKLOG-P1.md](docs/product/BACKLOG-P1.md); nhiều Task trên Jira chưa được cập nhật trạng thái, và các kiểm chứng như camera/mic nhiều thiết bị, Google OAuth, RLS trên môi trường thật chưa hoàn tất. Phạm vi P1 được lập kế hoạch **880 giờ**, hạn **04/11/2026**. Xem [kế hoạch và tiến độ](docs/planning/KE-HOACH-JIRA.md).
+> **Đang triển khai.** Mã nguồn trên `main` đã có web React/Vite, server NestJS/Socket.IO và các tính năng P1 đã tích hợp (đăng ký/đăng nhập, phòng, ván thời gian thực, chat, ván với máy, bạn bè, media), cùng một phần các Story mang mã `US-P2-*` (lịch sử, replay; mã QR mời đã bỏ). Việc nghiệm thu từng Task vẫn theo Jira và các cổng kiểm chứng trong [BACKLOG-P1.md](docs/product/BACKLOG-P1.md); nhiều Task trên Jira chưa được cập nhật trạng thái, và các kiểm chứng như camera/mic nhiều thiết bị, Google OAuth, RLS trên môi trường thật chưa hoàn tất. Kế hoạch gốc (ảnh chụp Jira 10/10) là **880 giờ**, hạn **04/11/2026**; phạm vi đã mở rộng theo BA 0.18–0.36 và chưa được tái ước lượng. Xem [kế hoạch và tiến độ](docs/planning/KE-HOACH-JIRA.md).
 
 [Chuẩn bị môi trường](docs/setup/CAU-HINH-MOI-TRUONG.md) · [Đặc tả P1](docs/product/BACKLOG-P1.md) · [Mockup](docs/design/mockups/index.html) · [Jira XIAN](https://xiangqi-web.atlassian.net/jira/software/c/projects/XIAN/boards/38)
 
@@ -17,7 +17,7 @@
 - **Luyện tập với máy:** ba cấp Dễ, Trung bình, Khó; chọn phe và bắt đầu ván mới.
 - **Tài khoản và chế độ Khách:** đăng ký với OTP email, đăng nhập Google hoặc vào nhanh dưới vai trò Khách.
 
-Đánh hạng/Elo, ghép ngẫu nhiên, lịch sử và replay thuộc P2, chưa nằm trong kế hoạch triển khai P1. Phạm vi và luật chi tiết được quản lý tại [quyết định nghiệp vụ](docs/product/BA-SCOPE-DECISIONS.md).
+Đánh hạng/Elo, ghép ngẫu nhiên, lịch sử và replay đã thuộc P1 theo BA 0.27 (mã QR mời bị loại); phần chưa triển khai xem [trạng thái Story `US-P2-*`](docs/planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md). Phạm vi và luật chi tiết được quản lý tại [quyết định nghiệp vụ](docs/product/BA-SCOPE-DECISIONS.md).
 
 ## Công nghệ
 
@@ -42,7 +42,7 @@ git clone https://github.com/twotnguyen/XIANGQI.git
 cd XIANGQI
 ```
 
-`main` là nhánh mặc định; `develop` dùng để tích hợp công việc của nhóm.
+`develop` là nhánh mặc định và nhánh tích hợp; `main` là nhánh phát hành có branch protection, chỉ nhận PR từ `develop`.
 
 ### 2. Chuẩn bị môi trường riêng
 
@@ -85,7 +85,7 @@ pnpm build
 pnpm format:check
 ```
 
-CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; PR/push `main` mới chạy đầy đủ. Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server chạy trực tiếp `src/main.ts` bằng `tsx` (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói. `pnpm build:server` kiểm tra kiểu server và build engine cần cho runtime; không tạo `apps/server/dist`.
+CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; chỉ PR `develop` → `main` mới chạy đầy đủ (push `main` không chạy CI). Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server chạy trực tiếp `src/main.ts` bằng `tsx` (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói. `pnpm build:server` kiểm tra kiểu server và build engine cần cho runtime; không tạo `apps/server/dist`.
 
 Build web luôn dùng React production, kể cả khi `.env` dùng `NODE_ENV=development` cho server. CI có PostgreSQL 17 riêng để chạy kiểm thử SQL/HTTP đăng ký; chạy local theo [hướng dẫn database](supabase/README.md). Đăng ký mặc định tắt: chỉ bật `AUTH_REGISTRATION_ENABLED=true` sau khi migration, quyền runtime và cấu hình SMTP/OTP trên đúng project đã được kiểm chứng. Runtime dùng `DIRECT_URL` với direct/session pooler, không dùng transaction pooler 6543. Kiểm thử tự động dùng Auth HTTP fixture; nhận OTP thật, hoàn tất vào Sảnh và các cổng nghiệm thu vẫn cần bằng chứng riêng.
 
@@ -143,7 +143,7 @@ theo cùng cấu trúc thư mục.
 | Mục đích, người dùng và trải nghiệm | [IDEA.md](docs/product/IDEA.md) |
 | Quyết định nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md) |
 | User Story, tiêu chí nghiệm thu và kiểm thử | [P1](docs/product/BACKLOG-P1.md), [P2](docs/product/BACKLOG-P2.md) |
-| Phạm vi P1/P2 và tiến độ triển khai | [Danh mục](docs/planning/jira/reports/PHAM-VI-P1-P2.md), [Kế hoạch triển khai](docs/planning/jira/reports/KE-HOACH-TRIEN-KHAI-P1-P2.md) |
+| Phạm vi P1/P2 và tiến độ triển khai | [Trạng thái triển khai các Story `US-P2-*`](docs/planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md) |
 | Màn hình và thiết kế | [Danh mục màn hình](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md) |
 | Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md) |
 | Dữ liệu, báo cáo và công cụ Jira | [docs/planning/jira/README.md](docs/planning/jira/README.md) |

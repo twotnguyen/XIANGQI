@@ -1,5 +1,7 @@
 # KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)
 
+> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.
+
 > **Đồng bộ Jira ngày 10/10/2026 · phiên bản 3.0.** 9 Epic + 27 Story BA đã Done; 71 Task triển khai To Do, **880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả bốn Sprint chưa bắt đầu.
 
 Nguồn dữ liệu: [snapshot Jira](jira/data/current-jira-snapshot.json), [kế hoạch](jira/data/plan-data.json), [Description](jira/data/descriptions.json). Nghiệp vụ: [BA](../product/BA-SCOPE-DECISIONS.md), [backlog](../product/BACKLOG-P1.md), [truy vết 268 AC](jira/reports/TRUY-VET-AC.md). [Danh sách 107 mục](jira/reports/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/exports/xian-import.csv) được sinh từ cùng nguồn.
