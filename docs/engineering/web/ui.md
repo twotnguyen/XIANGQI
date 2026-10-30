@@ -10,6 +10,23 @@ Chạy `pnpm --filter @xiangqi/web dev`, mở `/dev/ui` để kiểm thành ph�
 `/dev/lobby` để xem vị trí tích hợp Sảnh. Danh sách phòng trong preview có
 nhãn dữ liệu minh họa; preview không cấp quyền vào phòng hoặc chơi cờ.
 
+Sảnh PR #152 giữ bốn thẻ chế độ và ảnh minh họa local; subgrid căn hàng nút
+giữa các thẻ, kể cả khi nút P2 có lý do vô hiệu hóa. Bộ lọc thời gian mỗi bên
+dùng các mức thật 5/10/15 phút và Tất cả, công bố trạng thái qua `aria-pressed`,
+giữ thứ tự snapshot máy chủ. Không hiển thị số online/Elo khi chưa có dữ liệu.
+Ô mã phòng dùng `TextField` chung để nối nhãn/lỗi; tên chủ Khách giữ `(Khách)`.
+Nút Luật chơi mở disclosure hiện có và chuyển focus tới summary; summary giữ
+vùng chạm tối thiểu 44px. Sảnh dùng token theo chủ đề, giữ nhãn “Không giới hạn”
+cho phòng có `timeMinutes = 0`.
+
+Đã kiểm preview ở 360×800, 390×844 và 1366×900: không tràn ngang, ảnh tải đủ,
+control Sảnh cao tối thiểu 44px; mã sai/Enter, bộ lọc, mở luật và dialog tạo
+phòng/Escape hoạt động. Giảm chuyển động tắt animation. Chưa nghiệm thu
+phòng/ván thật với server trong lần kiểm này.
+
+Sau tích hợp develop, đã xem Sảnh ở 390×844 (tối) và 1366×900 (Giấy Sáng):
+không tràn ngang; summary đo được 44px, mở/đóng và chuyển focus đúng.
+Đã thao tác lọc 5 phút/Tất cả và gửi mã sai bằng Enter để kiểm tra báo lỗi.
 PR #153 giữ hiệu ứng và bố cục mới nhưng dùng token theo chủ đề cho shell,
 auth, Sảnh, phòng và đồng hồ. Chấm đích ô trống kế thừa `--board-hint`
 (`#3a2a1a`), tương phản tính từ các stop nền gỗ đạt 6,70–9,68:1.
