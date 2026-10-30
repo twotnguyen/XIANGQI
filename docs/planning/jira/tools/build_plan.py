@@ -217,7 +217,7 @@ def generate_detail(backlog):
  return '\n'.join(out)
 
 def traceability_md():
- out=['# Truy vết nghiệm thu — 268 AC / 71 Task\n', '> Phân công dự kiến, **chưa có TC đã thực thi, chưa có PASS**. TC dùng mã AC tương ứng, thêm hậu tố cho nhiều nhánh. Tiêu chí nguồn: BACKLOG-P1; dữ liệu máy đọc: AC-TASK-MAP.json.\n',
+ out=['# Truy vết nghiệm thu — 268 AC / 71 Task\n', '> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../../../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.\n', '> Phân công dự kiến, **chưa có TC đã thực thi, chưa có PASS**. TC dùng mã AC tương ứng, thêm hậu tố cho nhiều nhánh. Tiêu chí nguồn: BACKLOG-P1; dữ liệu máy đọc: AC-TASK-MAP.json.\n',
  'Task được nghiệm thu theo đúng AC giao trong bảng. Các AC chưa đủ đầu vào chuyển tới Task tích hợp được ghi rõ; không công bố 100% Story từ kiểm cục bộ. T51 kiểm hồi quy đầy đủ sau mọi triển khai, có thể song song QA chuyên đề; T70 chờ cả hai nhóm và T66. Mỗi bằng chứng cần bản dựng, môi trường, dữ liệu, ngày/người chạy và kết quả PASS/FAIL/BLOCKED.\n']
  for st in [x['id'] for x in ISSUES if x['type']=='Story']:
   rows=[[r['ac'],', '.join(r['implementation_tasks']),r['verification_task'],'Tích hợp/đối soát' if r['stage']=='integration' else 'Task',r['notes']] for r in ACS if r['story']==st]
@@ -314,6 +314,7 @@ def validate_live_parity():
 
 def generate_plan(parallel):
  out=['# KẾ HOẠCH JIRA — Cờ Tướng Online (XIAN)\n',
+ '> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.\n',
  '> **Đồng bộ Jira ngày 10/10/2026 · phiên bản 3.0.** 9 Epic + 27 Story BA đã Done; 71 Task triển khai To Do, **880 giờ**, hạn hoàn thành và Release v1.0 **04/11/2026**. Cả bốn Sprint chưa bắt đầu.\n',
  'Nguồn dữ liệu: [snapshot Jira](jira/data/current-jira-snapshot.json), [kế hoạch](jira/data/plan-data.json), [Description](jira/data/descriptions.json). Nghiệp vụ: [BA](../product/BA-SCOPE-DECISIONS.md), [backlog](../product/BACKLOG-P1.md), [truy vết 268 AC](jira/reports/TRUY-VET-AC.md). [Danh sách 107 mục](jira/reports/JIRA-MUC-CHI-TIET.md) và [CSV đối chiếu](jira/exports/xian-import.csv) được sinh từ cùng nguồn.\n',
  '## 1. Quy tắc lịch và cách đọc\n',
@@ -351,7 +352,7 @@ def generate_plan(parallel):
 
 
 def report(parallel):
- out=['# Kiểm tra kế hoạch đồng bộ Jira — 10/10/2026\n',
+ out=['# Kiểm tra kế hoạch đồng bộ Jira — 10/10/2026\n', '> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../../../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.\n',
  table(['Kiểm tra','Kết quả'],[['Dữ liệu','107 mục khớp snapshot Jira: 9 Epic, 27 Story, 71 Task'],['Description','107/107 đủ bảy phần, khớp nội dung Jira'],['Status / Resolution','36 BA Done/Done; 71 Task To Do/Resolution trống'],['Giờ ước lượng / còn lại',f'{TOTAL_HOURS} / {TOTAL_HOURS}; chưa ghi giờ thực tế'],['Story Points Jira',sum(task_points(x) for x in TASKS.values())],['AC',len(ACS)],['Phụ thuộc',sum(len(x['deps']) for x in TASKS.values())],['Giới hạn ngày',f"Tối đa {max(parallel.values())} Task/ngày; mỗi người 1 Task/ngày"],['Thứ tự bắt đầu','Epic < Story < Task'],['Độc lập nghiệm thu chuyên đề','Đạt theo AC và phạm vi Task'],['Release','Task không vượt hạn phiên bản; BA không gắn phiên bản'],['Hạn cuối',DATA['deadline']],['Sprint','4 future; chưa bắt đầu'],['Task qua ranh giới Sprint',', '.join(k for k,x in TASKS.items() if x['end_slot']>SPRINTS[x['sprint']-1][1])]]),
  '\n## Đối chiếu nhãn Sprint trên Jira\n',
  f'Đã đối chiếu 71 Task; số nhãn lệch trường Sprint: **{len(label_mismatches())}**. Trường Sprint là nguồn chính. Lịch sử sửa 13 nhãn: [sprint-label-sync-2026-10-10.json](https://github.com/twotnguyen/XIANGQI/blob/a586f372549561d8c2f0f508bc7ab10d431d5ef7/jira/sprint-label-sync-2026-10-10.json).\n',

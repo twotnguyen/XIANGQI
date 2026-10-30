@@ -128,7 +128,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-50",
         "XIAN-56"
@@ -218,7 +218,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-48",
         "XIAN-92",
@@ -304,7 +304,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-50",
         "XIAN-56"
@@ -397,7 +397,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-59",
         "XIAN-68",
@@ -490,7 +490,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-69",
         "XIAN-94",
@@ -579,7 +579,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-76",
         "XIAN-140",
@@ -677,7 +677,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-54",
         "XIAN-56",
@@ -767,7 +767,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-46",
         "XIAN-68",
@@ -855,7 +855,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-77",
         "XIAN-82",
@@ -943,7 +943,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-54",
         "XIAN-59",
@@ -1035,7 +1035,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-50",
         "XIAN-56",
@@ -1120,7 +1120,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-99",
         "XIAN-160"
@@ -1211,7 +1211,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-47",
         "XIAN-46",
@@ -1299,7 +1299,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-60",
         "XIAN-70",
@@ -1381,7 +1381,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-164"
       ]
@@ -1464,7 +1464,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-62",
         "XIAN-89"
@@ -1551,7 +1551,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-73",
         "XIAN-78",
@@ -1642,7 +1642,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-50",
         "XIAN-67",
@@ -1731,7 +1731,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-54",
         "XIAN-67",
@@ -1822,7 +1822,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-40",
         "XIAN-45",
@@ -1911,7 +1911,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-40",
         "XIAN-45",
@@ -1999,7 +1999,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-60",
         "XIAN-95",
@@ -2084,7 +2084,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-48",
         "XIAN-88"
@@ -2171,7 +2171,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-69",
         "XIAN-92",
@@ -2256,7 +2256,7 @@
       ],
       "status": "To Do",
       "spec_status": "BA nguồn đã duyệt; phân rã AC/TC mới chưa PO xác nhận riêng",
-      "guest_policy": "BA 0.3 ưu tiên: mọi lệnh chức năng P2 của Khách bị từ chối. Giữ quyền P1 của Khách; ghi khác biệt với BA 1.3 trong truy vết, không coi đây là blocker.",
+      "guest_policy": "BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu, Undo AI, History/Replay/export (xem YC9 và BA 0.22).",
       "dependency_jira_keys": [
         "XIAN-39",
         "XIAN-101"
