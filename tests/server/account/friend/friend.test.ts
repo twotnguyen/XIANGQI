@@ -83,7 +83,10 @@ describe.skipIf(!url)("friendships", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
+    await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     await apply("supabase/migrations/20261011000014_friendships.sql");
     await apply(
       "supabase/migrations/20261101000001_friend_presence_invites.sql",

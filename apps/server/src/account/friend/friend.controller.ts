@@ -16,6 +16,7 @@ import type { IncomingMessage } from "node:http";
 import { FriendError } from "./friend.types.js";
 import { httpFailure, invalidInput } from "../../core/http-errors.js";
 import { FriendService } from "./friend.service.js";
+import { DirectMessageService } from "./direct-message.service.js";
 import { RoomError } from "../../game/room/room.types.js";
 import { readMemberRoomProof } from "../../game/room/room.controller.js";
 import {
@@ -49,6 +50,18 @@ function boolField(body: unknown, key: string): boolean {
   if (typeof value !== "boolean") invalidInput("FRIEND_INPUT_INVALID");
   return value as boolean;
 }
+function seqOf(value: unknown): number {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0)
+    invalidInput("FRIEND_INPUT_INVALID");
+  return value as number;
+}
+function seqQuery(value: string | undefined): number | null {
+  if (value === undefined) return null;
+  const n = Number(value);
+  if (!/^[1-9][0-9]*$/.test(value) || !Number.isSafeInteger(n))
+    invalidInput("FRIEND_INPUT_INVALID");
+  return n;
+}
 
 /**
  * Controller tính năng bạn bè, presence và lời mời phòng.
@@ -57,7 +70,10 @@ function boolField(body: unknown, key: string): boolean {
 @Controller("friends")
 @UseGuards(SessionGuard)
 export class FriendController {
-  constructor(@Inject(FriendService) private readonly friends: FriendService) {}
+  constructor(
+    @Inject(FriendService) private readonly friends: FriendService,
+    @Inject(DirectMessageService) private readonly dm: DirectMessageService,
+  ) {}
   private user(request: AuthenticatedRequest) {
     if (!request.userId) invalidInput("FRIEND_INPUT_INVALID");
     return request.userId as string;
@@ -180,6 +196,60 @@ export class FriendController {
     const proof = this.proofOf(request);
     return this.friends
       .respondRoomInvite(userId, uuidOf(id), { accept: true, commandId, proof })
+      .catch(fail);
+  }
+  /** GET /friends/dm/unread: tổng tin chưa đọc từ bạn hiện tại, kèm từng bạn. */
+  @Get("dm/unread")
+  @Header("Cache-Control", "no-store")
+  unread(@Req() request: AuthenticatedRequest) {
+    return this.dm.unread(this.user(request)).catch(fail);
+  }
+  /** GET /friends/:userId/messages?before=seq: 50 tin gần nhất trước seq, kèm readSeq. */
+  @Get(":userId/messages")
+  @Header("Cache-Control", "no-store")
+  messages(
+    @Req() request: AuthenticatedRequest,
+    @Param("userId") userId: string,
+    @Query("before") before?: string,
+  ) {
+    return this.dm
+      .list(this.user(request), uuidOf(userId), seqQuery(before))
+      .catch(fail);
+  }
+  /** POST /friends/:userId/messages: gửi tin cho bạn; commandId giúp replay an toàn. */
+  @Post(":userId/messages")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  sendMessage(
+    @Req() request: AuthenticatedRequest,
+    @Param("userId") userId: string,
+    @Body() body: unknown,
+  ) {
+    return this.dm
+      .send(
+        this.user(request),
+        uuidOf(userId),
+        uuidOf(bodyField(body, "commandId")),
+        bodyField(body, "content"),
+      )
+      .catch(fail);
+  }
+  /** POST /friends/:userId/read: đánh dấu đã đọc tới seq; server kẹp theo tin đến và chỉ tăng. */
+  @Post(":userId/read")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  markRead(
+    @Req() request: AuthenticatedRequest,
+    @Param("userId") userId: string,
+    @Body() body: unknown,
+  ) {
+    return this.dm
+      .markRead(
+        this.user(request),
+        uuidOf(userId),
+        seqOf(bodyField(body, "upToSeq")),
+      )
+      .then((readSeq) => ({ readSeq }))
       .catch(fail);
   }
   /** Đọc proof thành viên phòng; lỗi phiên/phòng được ánh xạ qua fail. */

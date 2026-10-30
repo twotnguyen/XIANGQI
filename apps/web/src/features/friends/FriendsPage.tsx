@@ -12,13 +12,16 @@ import {
   Skeleton,
   Tabs,
   TextField,
+  Badge,
 } from "../../shared/ui/primitives.js";
 import {
   friendErrorText as errorText,
   type FriendClient,
   type FriendPeer,
   type FriendRequest,
+  type DirectUnread,
 } from "./friend-client.js";
+import { DirectChatDialog } from "./DirectChatDialog.js";
 function tabFromLocation(): string {
   const tab = new URLSearchParams(getLocation().search).get("tab");
   return tab === "requests" ? "requests" : "list";
@@ -32,10 +35,26 @@ function statusLabel(status: FriendPeer["status"]) {
       : "Ngoại tuyến";
 }
 
+export type FriendChallengeTarget = Pick<
+  FriendPeer,
+  "userId" | "username" | "displayName"
+>;
+
 /**
  * Màn hình quản lý bạn bè: danh sách bạn bè, trạng thái trực tuyến/đang đấu, duyệt lời mời kết bạn và tìm kiếm kỳ hữu.
  */
-export function FriendsPage({ client }: { client: FriendClient }) {
+export function FriendsPage({
+  client,
+  onChallenge,
+  challengeBlockedReason,
+}: {
+  client: FriendClient;
+  onChallenge?: (friend: FriendChallengeTarget) => void;
+  challengeBlockedReason?: string;
+}) {
+  const [cooldownUntil, setCooldownUntil] = useState<string | null>(null);
+  const [unread, setUnread] = useState<DirectUnread | null>(null);
+  const [chatWith, setChatWith] = useState<FriendPeer | null>(null);
   const [friends, setFriends] = useState<FriendPeer[] | null>(null);
   const [requests, setRequests] = useState<FriendRequest[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -56,13 +75,17 @@ export function FriendsPage({ client }: { client: FriendClient }) {
     const seq = ++loadSeq.current;
     loading.current = true;
     try {
-      const [list, pending] = await Promise.all([
+      const [list, pending, invites, dm] = await Promise.all([
         client.list(),
         client.requests(),
+        client.inviteState(),
+        client.unread(),
       ]);
       if (seq !== loadSeq.current) return;
       setFriends(list);
       setRequests(pending);
+      setCooldownUntil(invites.cooldownUntil);
+      setUnread(dm);
       setFailed(false);
     } catch {
       if (seq === loadSeq.current) setFailed(true);
@@ -342,15 +365,39 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                         </div>
 
                         <div className="xq-friends__actions">
-                          <Button variant="ghost" disabledReason="Sắp ra mắt">
+                          <Button
+                            variant="ghost"
+                            onClick={() => setChatWith(friend)}
+                          >
                             Nhắn tin
                           </Button>
-                          <Button
-                            variant="secondary"
-                            disabledReason="Sắp ra mắt"
-                          >
-                            Thách đấu
-                          </Button>
+                          <Badge
+                            count={
+                              unread?.peers.find(
+                                (p) => p.peerId === friend.userId,
+                              )?.unread ?? 0
+                            }
+                            label="tin chưa đọc"
+                          />
+                          {onChallenge && (
+                            <Button
+                              variant="secondary"
+                              disabledReason={
+                                friend.status !== "online"
+                                  ? friend.status === "in-match"
+                                    ? "Bạn bè đang trong ván khác"
+                                    : "Ngoại tuyến"
+                                  : (challengeBlockedReason ??
+                                    (cooldownUntil !== null &&
+                                    Date.parse(cooldownUntil) > Date.now()
+                                      ? "Vừa gửi lời mời, chờ ít giây"
+                                      : undefined))
+                              }
+                              onClick={() => onChallenge(friend)}
+                            >
+                              Thách đấu
+                            </Button>
+                          )}
                           <Button
                             variant="danger"
                             loading={busy === `unfriend-${friend.userId}`}
@@ -484,6 +531,13 @@ export function FriendsPage({ client }: { client: FriendClient }) {
           ]}
         />
       </section>
+      {chatWith && (
+        <DirectChatDialog
+          client={client}
+          friend={chatWith}
+          onClose={() => setChatWith(null)}
+        />
+      )}
     </main>
   );
 }

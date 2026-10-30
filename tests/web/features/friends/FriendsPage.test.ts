@@ -40,11 +40,20 @@ function client(overrides: Partial<FriendClient> = {}): FriendClient {
     respond: vi.fn().mockResolvedValue({ accepted: true }),
     revoke: vi.fn().mockResolvedValue({ revoked: true }),
     unfriend: vi.fn().mockResolvedValue({ removed: true }),
+    presence: vi.fn().mockResolvedValue(undefined),
     invite: vi.fn(),
     invites: vi.fn().mockResolvedValue([]),
+    inviteState: vi
+      .fn()
+      .mockResolvedValue({ cooldownUntil: null, declines: [] }),
+    ackInviteState: vi.fn().mockResolvedValue(undefined),
     respondInvite: vi.fn(),
+    messages: vi.fn().mockResolvedValue({ messages: [], readSeq: 0 }),
+    sendMessage: vi.fn(),
+    markRead: vi.fn().mockResolvedValue(0),
+    unread: vi.fn().mockResolvedValue({ total: 0, peers: [] }),
     ...overrides,
-  } as unknown as FriendClient;
+  };
 }
 describe("friends page", () => {
   it("shows friends with presence and handles accept", async () => {
@@ -127,9 +136,11 @@ describe("friends page", () => {
     const c = client({
       search: vi.fn(
         () =>
-          new Promise<Awaited<ReturnType<FriendClient["search"]>>>((resolve) => {
-            finish = resolve;
-          }),
+          new Promise<Awaited<ReturnType<FriendClient["search"]>>>(
+            (resolve) => {
+              finish = resolve;
+            },
+          ),
       ),
     });
     render(createElement(FriendsPage, { client: c }));

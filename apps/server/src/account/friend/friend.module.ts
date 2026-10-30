@@ -2,6 +2,8 @@ import { Module, type DynamicModule } from "@nestjs/common";
 import type { Pool } from "pg";
 import { FriendStore } from "./friend.store.js";
 import { FriendService } from "./friend.service.js";
+import { DirectMessageStore } from "./direct-message.store.js";
+import { DirectMessageService } from "./direct-message.service.js";
 import type { FriendRoomPort } from "./friend.room-port.js";
 import { SessionService } from "../login/session.service.js";
 import { SessionGuard } from "../login/session.guard.js";
@@ -28,6 +30,10 @@ export class FriendModule {
           useValue: new FriendService(new FriendStore(pool), rooms),
         },
         { provide: SessionService, useValue: sessions },
+        {
+          provide: DirectMessageService,
+          useValue: new DirectMessageService(new DirectMessageStore(pool)),
+        },
         SessionGuard,
       ],
     };
@@ -62,7 +68,8 @@ export async function createFriendRuntime(
         'xiangqi_social.friend_requests','xiangqi_social.friendships',
         'xiangqi_social.friend_decline_counts','xiangqi_social.room_invites',
         'xiangqi_social.presence_leases','xiangqi_social.invite_cooldowns',
-        'xiangqi_social.room_invite_declines']) name)
+        'xiangqi_social.room_invite_declines','xiangqi_social.direct_messages',
+        'xiangqi_social.direct_message_reads','xiangqi_social.direct_message_rate']) name)
       AND has_table_privilege('app_server','xiangqi_social.friend_decline_counts','DELETE')
       AND EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='xiangqi_social.room_invites'::regclass AND attname='response_body' AND NOT attisdropped)
       AND EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.rooms'::regclass AND tgname='social_room_invites_revoked' AND tgenabled='O') AS ready`);

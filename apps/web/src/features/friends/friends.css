@@ -345,3 +345,112 @@
   overflow: hidden;
   clip-path: inset(50%);
 }
+.xq-dm {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.xq-dm__log {
+  display: grid;
+  gap: var(--space-2);
+  min-height: 140px;
+  max-height: min(50dvh, 360px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+.xq-dm__log:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+.xq-dm__status {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+.xq-dm__row {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.xq-dm__row--mine {
+  justify-items: end;
+}
+.xq-dm__bubble {
+  margin: 0;
+  max-width: 85%;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.xq-dm__row--mine .xq-dm__bubble {
+  background: var(--color-wood-edge);
+}
+.xq-dm__row time {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+.xq-dm__error {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+}
+.xq-dm__composer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.xq-dm__input {
+  flex: 1 1 160px;
+  min-width: 0;
+  min-height: var(--touch-min);
+  box-sizing: border-box;
+  padding: var(--space-2);
+  color: var(--color-ink);
+  background: var(--color-surface-sunken);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--text-md);
+}
+.xq-dm__count {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.xq-dm__count--over {
+  color: var(--color-danger);
+}
+.xq-dm__composer .xq-button {
+  min-height: var(--touch-min);
+}
+
+.xq-dm-list {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: min(50dvh, 360px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.xq-dm-list .xq-button {
+  width: 100%;
+  min-height: var(--touch-min);
+}
+
+.xq-dm-list .xq-button-group {
+  width: 100%;
+}

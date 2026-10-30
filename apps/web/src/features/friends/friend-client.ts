@@ -48,6 +48,21 @@ export interface DeclinedInvite {
   cooldownUntil: string | null;
 }
 export type InviteAnswer = DeclinedInvite | AcceptedInvite;
+export interface DirectMessage {
+  id: string;
+  seq: number;
+  senderId: string;
+  content: string;
+  createdAt: string;
+}
+export interface DirectMessagePage {
+  messages: DirectMessage[];
+  readSeq: number;
+}
+export interface DirectUnread {
+  total: number;
+  peers: { peerId: string; unread: number }[];
+}
 export type AuthorizedFetch = (
   path: string,
   init?: RequestInit,
@@ -71,6 +86,14 @@ export interface FriendClient {
     accept: boolean,
     commandId: string,
   ): Promise<InviteAnswer>;
+  messages(userId: string, before?: number): Promise<DirectMessagePage>;
+  sendMessage(
+    userId: string,
+    content: string,
+    commandId: string,
+  ): Promise<DirectMessage>;
+  markRead(userId: string, upToSeq: number): Promise<number>;
+  unread(): Promise<DirectUnread>;
 }
 
 export class FriendRequestError extends Error {
@@ -96,6 +119,14 @@ export function friendErrorText(error: unknown): string {
       return "Hai bạn đã là bạn bè.";
     case "FRIEND_OFFLINE":
       return "Bạn bè đang ngoại tuyến.";
+    case "DM_NOT_FRIENDS":
+      return "Chỉ bạn bè mới được nhắn tin. Cuộc trò chuyện đã bị khóa.";
+    case "DM_RATE_LIMITED":
+      return "Bạn nhắn quá nhanh. Thử lại sau vài giây.";
+    case "DM_COMMAND_ID_REUSED":
+      return "Tin nhắn bị trùng. Vui lòng tải lại cuộc trò chuyện.";
+    case "DM_INPUT_INVALID":
+      return "Tin nhắn không hợp lệ (tối đa 200 ký tự).";
     case "FRIEND_BUSY":
     case "ALREADY_SEATED":
       return "Bạn đang ở trong một ván/phòng khác.";
@@ -237,6 +268,26 @@ function parseInviteAnswer(value: unknown): InviteAnswer {
   };
 }
 
+function directMessage(entry: Record<string, unknown>): DirectMessage {
+  return {
+    id: text(entry, "id"),
+    seq: number(entry, "seq"),
+    senderId: text(entry, "senderId"),
+    content: text(entry, "content"),
+    createdAt: date(entry, "createdAt"),
+  };
+}
+function parseUnread(value: unknown): DirectUnread {
+  const entry = record(value);
+  return {
+    total: number(entry, "total"),
+    peers: list(entry.peers, (peerEntry) => ({
+      peerId: text(peerEntry, "peerId"),
+      unread: number(peerEntry, "unread"),
+    })),
+  };
+}
+
 /**
  * Client thao tác bạn bè, presence và lời mời vào phòng. Lỗi luôn là FriendRequestError với mã an toàn.
  */
@@ -332,5 +383,31 @@ export function createFriendClient(
         parseInviteAnswer,
         { accept, commandId },
       ),
+    messages: (userId, before) => {
+      const query = before === undefined ? "" : `?before=${before}`;
+      return request(
+        `/friends/${encodeURIComponent(userId)}/messages${query}`,
+        (value) => {
+          const entry = record(value);
+          return {
+            messages: list(entry.messages, directMessage),
+            readSeq: number(entry, "readSeq"),
+          };
+        },
+      );
+    },
+    sendMessage: (userId, content, commandId) =>
+      request(
+        `/friends/${encodeURIComponent(userId)}/messages`,
+        (value) => directMessage(record(record(value).message)),
+        { content, commandId },
+      ),
+    markRead: (userId, upToSeq) =>
+      request(
+        `/friends/${encodeURIComponent(userId)}/read`,
+        (value) => number(record(value), "readSeq"),
+        { upToSeq },
+      ),
+    unread: () => request("/friends/dm/unread", parseUnread),
   };
 }
