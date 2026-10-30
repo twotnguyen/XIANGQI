@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
 import {
+  act,
   cleanup,
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -375,5 +377,95 @@ describe("profile page", () => {
     expect(screen.getByText("Email đang chờ xác minh")).toBeTruthy();
     expect(screen.queryByRole("textbox", { name: /^Email/ })).toBeNull();
     expect(screen.queryByText("Đã liên kết")).toBeNull();
+  });
+});
+
+describe("profile request ownership", () => {
+  it("does not notify the shell when a save resolves after leaving the page", async () => {
+    const update = Promise.withResolvers<{ displayName: string }>();
+    const c = client({ updateDisplayName: vi.fn(() => update.promise) });
+    const onSaved = vi.fn();
+    const view = render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        authorizedFetch: authorizedFetchStub(),
+        onSaved,
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByDisplayValue("kythu");
+    fireEvent.change(screen.getByLabelText("Tên hiển thị"), {
+      target: { value: "Tên A" },
+    });
+    fireEvent.submit(screen.getByLabelText("Tên hiển thị").closest("form")!);
+    view.unmount();
+    await act(async () => {
+      update.resolve({ displayName: "Tên A" });
+    });
+    expect(onSaved).not.toHaveBeenCalled();
+  });
+
+  it("ignores account A's save after loading account B through another client", async () => {
+    const update = Promise.withResolvers<{ displayName: string }>();
+    const first = client({ updateDisplayName: vi.fn(() => update.promise) });
+    const second = client({
+      read: vi.fn().mockResolvedValue({
+        userId: "user-b",
+        username: "account_b",
+        email: "b@example.invalid",
+        displayName: "Tên B",
+      }),
+    });
+    const onSaved = vi.fn();
+    const props = {
+      guest: false,
+      authorizedFetch: authorizedFetchStub(),
+      onSaved,
+      onLogout: vi.fn(),
+    };
+    const view = render(
+      createElement(ProfilePage, { ...props, client: first }),
+    );
+    await screen.findByDisplayValue("kythu");
+    fireEvent.change(screen.getByLabelText("Tên hiển thị"), {
+      target: { value: "Tên A" },
+    });
+    fireEvent.submit(screen.getByLabelText("Tên hiển thị").closest("form")!);
+    view.rerender(createElement(ProfilePage, { ...props, client: second }));
+    await screen.findByDisplayValue("account_b");
+    await act(async () => {
+      update.resolve({ displayName: "Tên A" });
+    });
+    expect(onSaved).not.toHaveBeenCalled();
+    expect(
+      (screen.getByLabelText("Tên hiển thị") as HTMLInputElement).value,
+    ).toBe("Tên B");
+    expect(screen.queryByText("Đã lưu tên hiển thị.")).toBeNull();
+  });
+
+  it("keeps a new unsaved draft while acknowledging the submitted name", async () => {
+    const update = Promise.withResolvers<{ displayName: string }>();
+    const c = client({ updateDisplayName: vi.fn(() => update.promise) });
+    const onSaved = vi.fn();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        authorizedFetch: authorizedFetchStub(),
+        onSaved,
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByDisplayValue("kythu");
+    const field = screen.getByLabelText("Tên hiển thị");
+    fireEvent.change(field, { target: { value: "Tên đã gửi" } });
+    fireEvent.submit(field.closest("form")!);
+    fireEvent.change(field, { target: { value: "Bản nháp tiếp theo" } });
+    await act(async () => {
+      update.resolve({ displayName: "Tên đã gửi" });
+    });
+    expect(onSaved).toHaveBeenCalledWith("Tên đã gửi");
+    expect((field as HTMLInputElement).value).toBe("Bản nháp tiếp theo");
   });
 });

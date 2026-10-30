@@ -431,6 +431,14 @@ const titles: Partial<Record<Route["name"], string>> = {
  */
 export function AppRouter() {
   const session = useSession();
+  const memberId =
+    session.state.status === "active-member" ? session.state.userId : null;
+  const identity =
+    session.state.status === "active-member" || session.state.status === "guest"
+      ? `${session.state.status}:${session.state.userId}`
+      : null;
+  const currentIdentity = useRef(identity);
+  currentIdentity.current = identity;
   const client = useMemo(
     () => createRoomClient(session.sessionFetch),
     [session.sessionFetch],
@@ -451,20 +459,39 @@ export function AppRouter() {
     () => createProfileClient(session.authorizedFetch),
     [session.authorizedFetch],
   );
-  const [profileName, setProfileName] = useState<string | null>(null);
-  const [where, setWhere] = useState<ProfileLocation | null>(null);
+  const profileLookup = useRef(0);
+  const [storedProfileName, setProfileName] = useState<{
+    userId: string;
+    displayName: string;
+  } | null>(null);
+  const [storedWhere, setWhere] = useState<{
+    userId: string;
+    value: ProfileLocation;
+  } | null>(null);
+  const profileName =
+    storedProfileName?.userId === memberId
+      ? storedProfileName.displayName
+      : null;
+  const where = storedWhere?.userId === memberId ? storedWhere.value : null;
   useEffect(() => {
-    if (session.state.status !== "active-member") {
+    const lookup = ++profileLookup.current;
+    if (!memberId) {
       setProfileName(null);
       setWhere(null);
       return;
     }
     let alive = true;
     queueMicrotask(() => {
-      if (!alive) return;
+      if (!alive || profileLookup.current !== lookup) return;
       void profileClient.read().then(
         (view) => {
-          if (alive) setProfileName(view.displayName);
+          if (
+            alive &&
+            profileLookup.current === lookup &&
+            currentIdentity.current === identity &&
+            view.userId === memberId
+          )
+            setProfileName({ userId: memberId, displayName: view.displayName });
         },
         () => undefined,
       );
@@ -472,7 +499,7 @@ export function AppRouter() {
     return () => {
       alive = false;
     };
-  }, [profileClient, session.state.status]);
+  }, [profileClient, memberId, identity]);
   const [roomNotice, setRoomNotice] = useState("");
   const enterRoom = (entry: RoomEntry) => {
     setRoomNotice(entry.notice ?? "");
@@ -485,10 +512,12 @@ export function AppRouter() {
   const route = resolveRoute(location.pathname, location.search);
   const decision = guardRoute(route, session.state);
   const [logoutGate, setLogoutGate] = useState<{
+    owner: string;
     gameId: string;
     run: (confirmedResign: boolean) => Promise<void>;
   } | null>(null);
   const [onlineLogout, setOnlineLogout] = useState<{
+    owner: string;
     run: (confirmedResign: boolean) => Promise<void>;
   } | null>(null);
   // Người đang đăng nhập (member hoặc Khách) dưới dạng tham chiếu đã thu hẹp để đọc userId an toàn.
@@ -504,7 +533,7 @@ export function AppRouter() {
         ? { displayName: profileName ?? session.state.username, guest: false }
         : null;
   const [guestDialog, setGuestDialog] = useState(false);
-  const [guestResign, setGuestResign] = useState(false);
+  const [guestResign, setGuestResign] = useState<string | null>(null);
   // Ván AI đang mở (route /ai/:id hoặc vị trí đang chơi dở) cần đầu hàng trước khi đăng xuất.
   const aiGameId =
     route.name === "ai"
@@ -512,48 +541,60 @@ export function AppRouter() {
       : where?.kind === "playing-ai"
         ? (where.matchId ?? null)
         : null;
-  const logoutGuestSession = (confirmedResign: boolean) =>
-    session.logoutGuest(confirmedResign).catch((failure: unknown) => {
+  const logoutGuestSession = (confirmedResign: boolean): Promise<void> => {
+    if (!identity || currentIdentity.current !== identity)
+      return Promise.resolve();
+    return session.logoutGuest(confirmedResign).catch((failure: unknown) => {
+      if (currentIdentity.current !== identity) return;
       if (
         !confirmedResign &&
         failure instanceof GuestRequestError &&
         failure.code === "GUEST_RESIGN_CONFIRM_REQUIRED"
       )
-        setGuestResign(true);
+        setGuestResign(identity);
       else setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại.");
     });
+  };
   const performSessionLogout = (confirmedResign: boolean): Promise<void> => {
+    if (!identity || currentIdentity.current !== identity)
+      return Promise.resolve();
     pending.current = null;
     if (session.state.status === "guest")
       return logoutGuestSession(confirmedResign);
     return session.logout(confirmedResign).catch((failure: unknown) => {
+      if (currentIdentity.current !== identity) return;
       if (!confirmedResign && failure instanceof LogoutConfirmRequired)
-        setOnlineLogout({ run: performSessionLogout });
+        setOnlineLogout({ owner: identity, run: performSessionLogout });
       else setRoomNotice("Chưa thể đăng xuất. Vui lòng thử lại.");
     });
   };
   const guardedLogout = (run: (confirmedResign: boolean) => Promise<void>) => {
-    if (aiGameId) setLogoutGate({ gameId: aiGameId, run });
-    else if (where?.kind === "playing-online") setOnlineLogout({ run });
+    if (!identity || currentIdentity.current !== identity) return;
+    if (aiGameId) setLogoutGate({ owner: identity, gameId: aiGameId, run });
+    else if (where?.kind === "playing-online")
+      setOnlineLogout({ owner: identity, run });
     else void run(false);
   };
   const confirmLogoutGate = async () => {
     const gate = logoutGate;
-    if (!gate) return;
+    if (!gate || gate.owner !== currentIdentity.current) return;
     try {
       // Lazy by design (như startAiGame): chunk AI không được vào bundle sảnh.
       const { resignActiveAiGame } =
         await import("../features/ai/AiGamePage.js");
+      if (gate.owner !== currentIdentity.current) return;
       await resignActiveAiGame(
         session.sessionFetch,
         session.getRealtimeProof,
         gate.gameId,
       );
     } catch {
+      if (gate.owner !== currentIdentity.current) return;
       setLogoutGate(null);
       setRoomNotice("Chưa thể đầu hàng ván đang chơi. Vui lòng thử lại.");
       return;
     }
+    if (gate.owner !== currentIdentity.current) return;
     setLogoutGate(null);
     await gate.run(false);
   };
@@ -563,13 +604,14 @@ export function AppRouter() {
     if (route.name === "room") void loadRoomPage().catch(() => undefined);
   }, [route.name]);
   useEffect(() => {
-    if (session.state.status !== "active-member") return;
+    if (!memberId) return;
     let alive = true;
     queueMicrotask(() => {
       if (!alive) return;
       void profileClient.location().then(
         (value) => {
-          if (alive) setWhere(value);
+          if (alive && currentIdentity.current === identity)
+            setWhere({ userId: memberId, value });
         },
         () => undefined,
       );
@@ -577,7 +619,7 @@ export function AppRouter() {
     return () => {
       alive = false;
     };
-  }, [profileClient, session.state.status, location.pathname]);
+  }, [profileClient, memberId, identity, location.pathname]);
   useEffect(() => {
     if (decision.kind !== "redirect") return;
     if (decision.preserveDestination && route.name !== "onboarding")
@@ -729,7 +771,12 @@ export function AppRouter() {
         authorizedFetch={session.authorizedFetch}
         client={profileClient}
         guest={session.state.status === "guest"}
-        onSaved={setProfileName}
+        onSaved={(displayName) => {
+          if (memberId && currentIdentity.current === identity) {
+            profileLookup.current++;
+            setProfileName({ userId: memberId, displayName });
+          }
+        }}
         onLogout={() => guardedLogout(performSessionLogout)}
         emailSection={
           session.state.status === "active-member" ? (
@@ -776,10 +823,10 @@ export function AppRouter() {
         id={route.id}
       />
     );
-  else if (route.name === "ai" && signedIn)
+  else if (route.name === "ai" && actor)
     content = (
       <AiGamePage
-        key={route.id}
+        key={`${actor.userId}:${route.id}`}
         gameId={route.id}
         allowUndo={session.state.status === "active-member"}
         authorizedFetch={session.sessionFetch}
@@ -908,7 +955,7 @@ export function AppRouter() {
       ) : (
         page
       )}
-      {logoutGate && (
+      {logoutGate && logoutGate.owner === identity && (
         <Dialog
           open
           onClose={() => setLogoutGate(null)}
@@ -924,7 +971,7 @@ export function AppRouter() {
           </p>
         </Dialog>
       )}
-      {onlineLogout && (
+      {onlineLogout && onlineLogout.owner === identity && (
         <Dialog
           open
           onClose={() => setOnlineLogout(null)}
@@ -932,6 +979,7 @@ export function AppRouter() {
           danger
           onConfirm={() => {
             const gate = onlineLogout;
+            if (gate.owner !== currentIdentity.current) return;
             setOnlineLogout(null);
             void gate.run(true);
           }}
@@ -943,14 +991,14 @@ export function AppRouter() {
           </p>
         </Dialog>
       )}
-      {guestResign && (
+      {identity && guestResign === identity && (
         <Dialog
           open
-          onClose={() => setGuestResign(false)}
+          onClose={() => setGuestResign(null)}
           title="Đăng xuất sẽ xin thua ván đang chơi"
           danger
           onConfirm={() => {
-            setGuestResign(false);
+            setGuestResign(null);
             void logoutGuestSession(true);
           }}
           confirmLabel="Xin thua và đăng xuất"
