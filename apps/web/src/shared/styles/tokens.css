@@ -22,22 +22,22 @@
 /* Mặc định là Kỳ Đài Cổ Phong (tối). Giấy Sáng ghi đè trên root; xem DESIGN §2.3. */
 :root {
   color-scheme: dark;
-  --color-paper: #120d0a;
-  --color-surface: #241610;
-  --color-surface-sunken: #180f0a;
-  --color-ink: #fff5df;
-  --color-ink-muted: #c8b6a2;
+  --color-paper: #141210;
+  --color-surface: #211d18;
+  --color-surface-sunken: #191612;
+  --color-ink: #f3ead8;
+  --color-ink-muted: #b9ad9a;
   --color-border: #9a7550;
-  --color-divider: #3d2012;
+  --color-divider: #3b3227;
   --color-wood: #d8ae72;
   --color-wood-edge: #704525;
   --color-red: #a51f25;
   --color-black: #24201c;
   --color-focus: #f5ca67;
   --color-gold: #c6922a;
-  --color-gold-light: #f5ca67;
+  --color-gold-light: #e6bf76;
   --color-gold-dark: #7a4e0f;
-  --color-success: #86efac;
+  --color-success: #99c4a1;
   --color-warning: #fcd34d;
   --color-danger: #fca5a5;
   --color-info: #93c5fd;
@@ -109,20 +109,31 @@
   --space-6: 24px;
   --space-8: 32px;
   --touch-min: 44px;
-  --radius-sm: 4px;
+  --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 14px;
   --radius-full: 999px;
   --border-width: 1px;
   --focus-ring: 3px solid var(--color-focus);
-  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
-  --shadow-3: 0 12px 35px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.45);
-  --shadow-gold: 0 0 20px rgba(245, 202, 103, 0.25), 0 4px 15px rgba(0, 0, 0, 0.5);
-  --shadow-board: 0 20px 50px rgba(0, 0, 0, 0.75), 0 8px 24px rgba(0, 0, 0, 0.5);
-  --gradient-gold: linear-gradient(135deg, #fce5a3 0%, #d4af37 50%, #aa771c 100%);
+  --shadow-1: 0 2px 5px rgb(0 0 0 / 12%);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 18%);
+  --shadow-3: 0 20px 60px rgb(0 0 0 / 28%);
+  --shadow-gold:
+    0 0 20px rgba(245, 202, 103, 0.25), 0 4px 15px rgba(0, 0, 0, 0.5);
+  --shadow-board:
+    0 20px 50px rgba(0, 0, 0, 0.75), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --gradient-gold: linear-gradient(
+    135deg,
+    #fce5a3 0%,
+    #d4af37 50%,
+    #aa771c 100%
+  );
   --gradient-gold-dark: linear-gradient(180deg, #3a2212 0%, #20120a 100%);
-  --gradient-card: linear-gradient(180deg, rgba(38, 22, 16, 0.88) 0%, rgba(20, 12, 8, 0.94) 100%);
+  --gradient-card: linear-gradient(
+    180deg,
+    rgba(38, 22, 16, 0.88) 0%,
+    rgba(20, 12, 8, 0.94) 100%
+  );
   --z-sticky: 100;
   --z-dropdown: 200;
   --z-banner: 300;
