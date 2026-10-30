@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Button,
   Dialog,
@@ -16,6 +16,16 @@ import {
 import { PasswordChangeForm } from "./PasswordChangeForm.js";
 import { THEME_OPTIONS } from "../../shared/theme/theme.js";
 import { useTheme } from "../../shared/theme/useTheme.js";
+import {
+  getPieceStyle,
+  setPieceStyle as applyPieceStyle,
+  isMusicEnabled,
+  setMusicEnabled,
+  isSfxEnabled,
+  setSfxEnabled,
+  playClickSound,
+  type PieceStyleId,
+} from "../../shared/preferences.js";
 import "./profile.css";
 
 const SETTINGS_SECTIONS = [
@@ -74,8 +84,6 @@ const PIECE_STYLES = [
   },
 ] as const;
 
-type PieceStyleId = (typeof PIECE_STYLES)[number]["id"];
-
 function nameError(error: unknown) {
   if (error instanceof ProfileRequestError) {
     switch (error.code) {
@@ -120,87 +128,27 @@ export function ProfilePage({
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // --- Quản lý Âm thanh & Nhạc nền (BGM & SFX) ---
-  const [isMusicOn, setIsMusicOn] = useState(() => {
-    return typeof localStorage !== "undefined"
-      ? localStorage.getItem("xq-music-enabled") === "true"
-      : false;
-  });
-  const [isSfxOn, setIsSfxOn] = useState(() => {
-    return typeof localStorage !== "undefined"
-      ? localStorage.getItem("xq-sfx-enabled") !== "false"
-      : true;
-  });
+  const [isMusicOn, setIsMusicOn] = useState(isMusicEnabled);
+  const [isSfxOn, setIsSfxOn] = useState(isSfxEnabled);
+  const [pieceStyle, setPieceStyle] = useState<PieceStyleId>(getPieceStyle);
+  const [copyError, setCopyError] = useState("");
 
-  // 1. Tạo tham chiếu cho Nhạc nền (BGM)
-  const bgmRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (typeof Audio !== "undefined") {
-      const audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-      audio.loop = true;
-      audio.volume = 0.3;
-      bgmRef.current = audio;
-    }
-    return () => {
-      if (bgmRef.current) {
-        bgmRef.current.pause();
-        bgmRef.current = null;
-      }
-    };
-  }, []);
-
-  // 2. Bật/Tắt Nhạc nền lặp lại
-  useEffect(() => {
-    if (bgmRef.current) {
-      if (isMusicOn) {
-        bgmRef.current.play().catch(() => {
-          /* Trình duyệt có thể chặn autoplay trước tương tác */
-        });
-      } else {
-        bgmRef.current.pause();
-      }
-    }
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("xq-music-enabled", String(isMusicOn));
-    }
-  }, [isMusicOn]);
-
-  useEffect(() => {
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("xq-sfx-enabled", String(isSfxOn));
-    }
-  }, [isSfxOn]);
-
-  // --- Quản lý Kiểu quân cờ (Piece Style) ---
-  const [pieceStyle, setPieceStyle] = useState<PieceStyleId>(() => {
-    if (typeof localStorage !== "undefined") {
-      const saved = localStorage.getItem("xq-piece-style");
-      if (saved === "jade" || saved === "ebony" || saved === "classic") {
-        return saved;
-      }
-    }
-    return "classic";
-  });
-
-  const handleSelectPieceStyle = (id: PieceStyleId) => {
+  function handleSelectPieceStyle(id: PieceStyleId) {
     setPieceStyle(id);
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("xq-piece-style", id);
-    }
-  };
+    applyPieceStyle(id);
+  }
 
-  // 3. Hiệu ứng âm thanh khi bấm nút (SFX)
-  const playClickSound = () => {
-    if (!isSfxOn || typeof Audio === "undefined") return;
+  async function copyUsername() {
+    if (!profile?.username) return;
+    setStatus("");
+    setCopyError("");
     try {
-      const click = new Audio("https://actions.google.com/sounds/v1/wood/wood_click.ogg");
-      click.volume = 0.7;
-      void click.play().catch(() => {});
+      await navigator.clipboard.writeText(profile.username);
+      setStatus("Đã sao chép tên đăng nhập!");
     } catch {
-      /* Bỏ qua nếu lỗi audio */
+      setCopyError("Chưa thể sao chép. Hãy chọn và sao chép tên đăng nhập.");
     }
-  };
+  }
 
   async function load() {
     setFailed(false);
@@ -360,11 +308,15 @@ export function ProfilePage({
                 </header>
                 <div className="xq-profile-grid-top">
                   <div className="xq-profile-field-readonly">
-                    <label className="xq-profile-label">
+                    <label
+                      htmlFor="xq-profile-username"
+                      className="xq-profile-label"
+                    >
                       <span>Tên đăng nhập</span>
                     </label>
                     <div className="xq-profile-input-copy">
                       <input
+                        id="xq-profile-username"
                         type="text"
                         readOnly
                         value={profile?.username ?? ""}
@@ -377,10 +329,7 @@ export function ProfilePage({
                         aria-label="Sao chép tên đăng nhập"
                         onClick={() => {
                           playClickSound();
-                          if (profile?.username) {
-                            void navigator.clipboard?.writeText(profile.username);
-                            setStatus("Đã sao chép tên đăng nhập!");
-                          }
+                          void copyUsername();
                         }}
                       >
                         <svg
@@ -393,38 +342,51 @@ export function ProfilePage({
                           className="xq-icon-sm"
                           aria-hidden="true"
                         >
-                          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                          <rect
+                            width="14"
+                            height="14"
+                            x="8"
+                            y="8"
+                            rx="2"
+                            ry="2"
+                          />
                           <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                         </svg>
                       </button>
                     </div>
                   </div>
 
-                  <div className="xq-profile-field-readonly">
-                    <label className="xq-profile-label xq-profile-label-split">
-                      <span>Email</span>
-                      <span className="xq-profile-badge-verified">
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        {profile?.email ? "Đã liên kết" : "Chưa liên kết"}
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      readOnly
-                      value={profile?.email ?? "Chưa có email"}
-                      className="xq-profile-readonly-input"
-                    />
-                  </div>
+                  {!emailSection && (
+                    <div className="xq-profile-field-readonly">
+                      <label
+                        htmlFor="xq-profile-email"
+                        className="xq-profile-label xq-profile-label-split"
+                      >
+                        <span>Email</span>
+                        <span className="xq-profile-badge-verified">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                          {profile?.email ? "Đã liên kết" : "Chưa liên kết"}
+                        </span>
+                      </label>
+                      <input
+                        id="xq-profile-email"
+                        type="text"
+                        readOnly
+                        value={profile?.email ?? "Chưa có email"}
+                        className="xq-profile-readonly-input"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <form
@@ -436,24 +398,16 @@ export function ProfilePage({
                   }}
                 >
                   <div className="xq-profile-name-section">
-                    <div className="xq-profile-label-row">
-                      <label htmlFor="xq-display-name-input" className="xq-profile-label">
-                        Tên hiển thị
-                      </label>
-                      <span className="xq-profile-char-count">
-                        {Array.from(name).length}/30
-                      </span>
-                    </div>
-
+                    <span className="xq-profile-char-count">
+                      {Array.from(name).length}/30
+                    </span>
                     <div className="xq-profile-inline-input-group">
-                      <input
-                        id="xq-display-name-input"
-                        type="text"
-                        maxLength={30}
+                      <TextField
+                        label="Tên hiển thị"
+                        helper="2–30 ký tự, là tên người khác nhìn thấy."
                         autoComplete="nickname"
                         value={name}
-                        aria-invalid={Boolean(fieldError)}
-                        className="xq-profile-display-input"
+                        error={fieldError}
                         onChange={(event) => setName(event.target.value)}
                       />
                       <Button
@@ -461,19 +415,13 @@ export function ProfilePage({
                         variant="primary"
                         loading={saving}
                         className="xq-profile-save-btn"
-                        onClick={playClickSound}
                       >
-                        Lưu thay đổi
+                        Lưu tên hiển thị
                       </Button>
                     </div>
-                    <p className="xq-profile-input-hint">
-                      * Đây là tên mà các kỳ thủ khác sẽ nhìn thấy trên bàn cờ.
-                    </p>
                   </div>
 
-                  {fieldError && (
-                    <Notice tone="error" message={fieldError} />
-                  )}
+                  {copyError && <Notice tone="error" message={copyError} />}
                   {status && (
                     <Notice
                       tone="success"
@@ -484,9 +432,7 @@ export function ProfilePage({
                 </form>
 
                 {emailSection && (
-                  <div className="xq-profile-email-extra">
-                    {emailSection}
-                  </div>
+                  <div className="xq-profile-email-extra">{emailSection}</div>
                 )}
               </section>
               <section
@@ -545,10 +491,9 @@ export function ProfilePage({
                     {PIECE_STYLES.map((piece) => {
                       const isSelected = pieceStyle === piece.id;
                       return (
-                        <div
+                        <button
                           key={piece.id}
-                          role="button"
-                          tabIndex={0}
+                          type="button"
                           aria-pressed={isSelected}
                           className={`xq-profile-piece-card ${
                             isSelected ? "xq-piece-card-active" : ""
@@ -556,13 +501,6 @@ export function ProfilePage({
                           onClick={() => {
                             playClickSound();
                             handleSelectPieceStyle(piece.id);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              playClickSound();
-                              handleSelectPieceStyle(piece.id);
-                            }
                           }}
                         >
                           <div
@@ -584,7 +522,7 @@ export function ProfilePage({
                               {piece.desc}
                             </span>
                           </div>
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
@@ -592,12 +530,24 @@ export function ProfilePage({
 
                 {/* Âm thanh & Nhạc nền */}
                 <div className="xq-profile-audio-settings">
-                  <h3 className="xq-profile-audio-heading">Âm thanh &amp; Nhạc nền</h3>
-                  
+                  <h3 className="xq-profile-audio-heading">
+                    Âm thanh &amp; Nhạc nền
+                  </h3>
+
                   <div className="xq-profile-toggle-row">
                     <div className="xq-profile-toggle-info">
-                      <div className="xq-profile-toggle-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <div
+                        className="xq-profile-toggle-icon"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           {isSfxOn ? (
                             <>
                               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
@@ -627,13 +577,8 @@ export function ProfilePage({
                       onClick={() => {
                         const next = !isSfxOn;
                         setIsSfxOn(next);
-                        if (next && typeof Audio !== "undefined") {
-                          try {
-                            const click = new Audio("https://actions.google.com/sounds/v1/wood/wood_click.ogg");
-                            click.volume = 0.7;
-                            void click.play().catch(() => {});
-                          } catch {}
-                        }
+                        setSfxEnabled(next);
+                        if (next) playClickSound();
                       }}
                     >
                       <span className="xq-profile-toggle-thumb" />
@@ -642,8 +587,18 @@ export function ProfilePage({
 
                   <div className="xq-profile-toggle-row">
                     <div className="xq-profile-toggle-info">
-                      <div className="xq-profile-toggle-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <div
+                        className="xq-profile-toggle-icon"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M9 18V5l12-2v13" />
                           <circle cx="6" cy="18" r="3" />
                           <circle cx="18" cy="16" r="3" />
@@ -651,7 +606,9 @@ export function ProfilePage({
                       </div>
                       <div>
                         <strong>Nhạc nền Cổ phong (BGM)</strong>
-                        <p>Giai điệu thư giãn nhẹ nhàng trong suốt quá trình chơi</p>
+                        <p>
+                          Giai điệu thư giãn nhẹ nhàng trong suốt quá trình chơi
+                        </p>
                       </div>
                     </div>
                     <button
@@ -663,6 +620,7 @@ export function ProfilePage({
                       onClick={() => {
                         playClickSound();
                         setIsMusicOn(!isMusicOn);
+                        setMusicEnabled(!isMusicOn);
                       }}
                     >
                       <span className="xq-profile-toggle-thumb" />
@@ -671,7 +629,8 @@ export function ProfilePage({
                 </div>
 
                 <p className="xq-profile-tip">
-                  Cài đặt chủ đề và âm thanh được lưu tự động trên trình duyệt này.
+                  Cài đặt chủ đề, quân cờ và âm thanh được lưu tự động trên
+                  trình duyệt này.
                 </p>
               </section>
               <section

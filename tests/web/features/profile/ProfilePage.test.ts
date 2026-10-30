@@ -79,8 +79,16 @@ describe("profile page", () => {
         onLogout: vi.fn(),
       }),
     );
-    expect(await screen.findByText("kythu")).toBeTruthy();
-    expect(screen.getByText("kythu@example.invalid")).toBeTruthy();
+    const username = (await screen.findByRole("textbox", {
+      name: "Tên đăng nhập",
+    })) as HTMLInputElement;
+    await waitFor(() => expect(username.value).toBe("kythu"));
+    expect(username.readOnly).toBe(true);
+    const email = screen.getByRole("textbox", {
+      name: /^Email/,
+    }) as HTMLInputElement;
+    expect(email.value).toBe("kythu@example.invalid");
+    expect(email.readOnly).toBe(true);
     const input = screen.getByLabelText("Tên hiển thị");
     await user.clear(input);
     await user.type(input, "Tên Mới");
@@ -139,7 +147,7 @@ describe("profile page", () => {
         onLogout,
       }),
     );
-    await screen.findByText("kythu");
+    await screen.findByDisplayValue("kythu");
     await user.click(screen.getByRole("button", { name: "Đăng xuất" }));
     const dialog = screen.getByRole("dialog", {
       name: "Đăng xuất khi đang đấu",
@@ -161,7 +169,7 @@ describe("profile page", () => {
         onLogout,
       }),
     );
-    await screen.findByText("kythu");
+    await screen.findByDisplayValue("kythu");
     await user.click(screen.getByRole("button", { name: "Đăng xuất" }));
     expect(onLogout).toHaveBeenCalledOnce();
   });
@@ -221,7 +229,7 @@ describe("profile page", () => {
         onLogout: vi.fn(),
       }),
     );
-    await screen.findByText("kythu");
+    await screen.findByDisplayValue("kythu");
     await user.click(screen.getByRole("button", { name: "Giao diện" }));
     const classic = screen.getByRole("radio", {
       name: "Kỳ Đài Cổ Phong",
@@ -250,7 +258,7 @@ describe("profile page", () => {
         onLogout: vi.fn(),
       }),
     );
-    await screen.findByText("kythu");
+    await screen.findByDisplayValue("kythu");
     expect(screen.getByRole("button", { name: "Đổi mật khẩu" })).toBeTruthy();
     unmount();
     render(
@@ -262,5 +270,83 @@ describe("profile page", () => {
       }),
     );
     expect(screen.queryByRole("button", { name: "Đổi mật khẩu" })).toBeNull();
+  });
+  it("reports clipboard failure without claiming success, then retries", async () => {
+    const user = userEvent.setup();
+    const writeText = vi
+      .spyOn(navigator.clipboard, "writeText")
+      .mockRejectedValueOnce(new DOMException("Denied", "NotAllowedError"))
+      .mockResolvedValueOnce(undefined);
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByDisplayValue("kythu");
+    await user.click(
+      screen.getByRole("button", { name: "Sao chép tên đăng nhập" }),
+    );
+    expect(
+      await screen.findByText(
+        "Chưa thể sao chép. Hãy chọn và sao chép tên đăng nhập.",
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText("Đã sao chép tên đăng nhập!")).toBeNull();
+    await user.click(
+      screen.getByRole("button", { name: "Sao chép tên đăng nhập" }),
+    );
+    expect(await screen.findByText("Đã sao chép tên đăng nhập!")).toBeTruthy();
+    expect(writeText).toHaveBeenLastCalledWith("kythu");
+    expect(
+      screen.queryByText(
+        "Chưa thể sao chép. Hãy chọn và sao chép tên đăng nhập.",
+      ),
+    ).toBeNull();
+    writeText.mockRestore();
+  });
+  it("accepts thirty Unicode code points and rejects thirty-one before sending", async () => {
+    const user = userEvent.setup();
+    const c = client();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    await screen.findByDisplayValue("kythu");
+    const input = screen.getByRole("textbox", { name: "Tên hiển thị" });
+    await user.clear(input);
+    await user.type(input, "𠀀".repeat(31));
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    expect(c.updateDisplayName).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Tên hiển thị cần 2–30 ký tự."),
+    ).toBeTruthy();
+    await user.clear(input);
+    await user.type(input, "𠀀".repeat(30));
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    await waitFor(() =>
+      expect(c.updateDisplayName).toHaveBeenCalledWith("𠀀".repeat(30)),
+    );
+  });
+  it("leaves email status to the account email flow rather than duplicating profile email", async () => {
+    render(
+      createElement(ProfilePage, {
+        client: client(),
+        guest: false,
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+        emailSection: createElement("p", null, "Email đang chờ xác minh"),
+      }),
+    );
+    await screen.findByDisplayValue("kythu");
+    expect(screen.getByText("Email đang chờ xác minh")).toBeTruthy();
+    expect(screen.queryByRole("textbox", { name: /^Email/ })).toBeNull();
+    expect(screen.queryByText("Đã liên kết")).toBeNull();
   });
 });

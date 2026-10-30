@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { createGameAudio } from "@web/features/rooms/game-audio";
@@ -103,6 +104,7 @@ const moved = () =>
   });
 beforeEach(() => {
   vi.useFakeTimers();
+  globalThis.localStorage.clear();
   vi.stubGlobal("AudioContext", MockAudioContext);
   oscillators.length = 0;
   contexts.length = 0;
@@ -273,6 +275,17 @@ describe("accepted game audio", () => {
     expect(oscillators).toHaveLength(1);
     expect(contexts).toHaveLength(1);
     expect(contexts[0]!.close).toHaveBeenCalledOnce();
+  });
+  it("reads and writes the shared SFX preference, so room mute cannot diverge", async () => {
+    const helper = audio();
+    await helper.unlock();
+    expect(helper.toggle()).toBe(true);
+    expect(globalThis.localStorage.getItem("xq-sfx-enabled")).toBe("false");
+    helper.accept(snapshot(), moved());
+    expect(oscillators).toHaveLength(0);
+    expect(helper.toggle()).toBe(false);
+    expect(globalThis.localStorage.getItem("xq-sfx-enabled")).toBe("true");
+    expect(helper.muted).toBe(false);
   });
   it("does not replay events observed while locked or muted, and fails safely without WebAudio", async () => {
     const helper = audio();
