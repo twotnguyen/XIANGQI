@@ -182,7 +182,7 @@ export async function apply(file: string) {
     c.release();
   }
 }
-export async function reset() {
+async function resetSchemas(files: string[]) {
   if (!databaseUrl) throw new Error("Dedicated test URL required");
   await pool.query(
     "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
@@ -192,7 +192,11 @@ export async function reset() {
     "ALTER SCHEMA public OWNER TO postgres; GRANT app_server TO postgres WITH SET TRUE; CREATE TABLE auth.identities(id uuid PRIMARY KEY,user_id uuid REFERENCES auth.users(id),provider text NOT NULL,provider_id text NOT NULL,identity_data jsonb DEFAULT '{}',UNIQUE(provider,provider_id)); ALTER TABLE auth.identities OWNER TO supabase_auth_admin; GRANT SELECT,TRIGGER,REFERENCES ON auth.identities TO postgres",
   );
   await apply("supabase/baseline/20260913_legacy_public.sql");
-  for (const file of [
+  for (const file of files) await apply(`supabase/migrations/${file}.sql`);
+}
+// Legacy baseline (1-7 + 17/31 + 2): used only to prove discovery is absent before migration 8.
+export async function resetLegacy() {
+  await resetSchemas([
     "20261011000001_email_registration",
     "20261011000002_realtime",
     "20261011000003_username_login",
@@ -202,7 +206,26 @@ export async function reset() {
     "20261011000007_match_outcomes",
     "20261017000018_room_code_digits",
     "20261031000001_session_devices",
-  ])
-    await apply(`supabase/migrations/${file}.sql`);
+    "20261102000002_custom_rematch",
+  ]);
 }
+// Full current schema (1-9 + 2 + 3) in order: 8 must precede 3 because 3 replaces guard_settings from 6.
+export async function reset() {
+  await resetSchemas([
+    "20261011000001_email_registration",
+    "20261011000002_realtime",
+    "20261011000003_username_login",
+    "20261011000004_legacy_moves_security",
+    "20261011000005_google_guest",
+    "20261011000006_rooms",
+    "20261011000007_match_outcomes",
+    "20261011000008_room_modes",
+    "20261011000009_match_draw",
+    "20261017000018_room_code_digits",
+    "20261031000001_session_devices",
+    "20261102000002_custom_rematch",
+    "20261102000003_unlimited_inactivity",
+  ]);
+}
+
 export { env, member, oldRoom, registration, waitFor };

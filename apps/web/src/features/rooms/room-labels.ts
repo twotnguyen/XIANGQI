@@ -32,6 +32,30 @@ export function swapMessage(code: string, fallback: string) {
 }
 
 /**
+ * Ánh xạ mã lỗi tái đấu (US-P2-09) thành thông báo tiếng Việt.
+ */
+export function rematchMessage(code: string, fallback: string) {
+  switch (code) {
+    case "REMATCH_ALREADY_PENDING":
+      return "Đang có đề nghị tái đấu chờ trả lời.";
+    case "REMATCH_NOT_PENDING":
+      return "Không còn đề nghị tái đấu nào.";
+    case "REMATCH_FORBIDDEN":
+      return "Chỉ người được mời mới trả lời đề nghị này.";
+    case "REMATCH_EXPIRED":
+      return "Đề nghị tái đấu đã hết hạn (30 giây).";
+    case "REMATCH_STALE":
+      return "Thành phần phòng đã thay đổi. Đề nghị tái đấu đã huỷ.";
+    case "REMATCH_DENIED":
+      return "Phòng này chưa thể tái đấu. Chỉ phòng tùy chỉnh có hai thành viên sau ván kết thúc.";
+    case "PLAYER_DISCONNECTED":
+      return "Có người chơi chưa kết nối nên chưa thể bắt đầu tái đấu.";
+    default:
+      return fallback;
+  }
+}
+
+/**
  * Chuyển đổi lỗi thao tác khán giả (đầy phòng, chủ phòng không thể xuống xem, cấm đuổi...) thành câu thông báo thân thiện.
  */
 export function viewerActionMessage(error: unknown) {

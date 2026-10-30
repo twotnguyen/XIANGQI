@@ -30,7 +30,7 @@ Không khóa theo thứ tự tùy ý: hai người chơi sẽ deadlock. Lệnh m
 
 ## Store chia lớp bằng kế thừa
 
-`RoomStore` = `RoomStoreCore` (helper, `snapshot`) → `RoomSwapStore` → `RoomViewerStore` → `RoomStore`. `MatchStore` = `MatchStoreCore` → `MatchDrawStore` → `MatchStore`.
+`RoomStore` = `RoomStoreCore` (helper, `snapshot`) → `RoomSwapStore` → `RoomRematchStore` → `RoomViewerStore` → `RoomStore`. `MatchStore` = `MatchStoreCore` → `MatchDrawStore` → `MatchStore`.
 
 Nơi khác chỉ import `RoomStore` và `MatchStore`. Thêm lệnh vào lớp theo nhóm lệnh; helper dùng chung ở core (`protected`). Lớp con không được gọi ngược lên lớp con khác.
 
@@ -38,7 +38,19 @@ Nơi khác chỉ import `RoomStore` và `MatchStore`. Thêm lệnh vào lớp th
 
 `game/realtime/gateway.ts` xác thực handshake, cho một tab điều khiển mỗi actor và phòng (chặn bằng `connectionId`) và gửi snapshot riêng cho từng người nhận. Snapshot HTTP chỉ để hiển thị. Đồng hồ, ân hạn mất kết nối và hết hạn xin hòa là worker phía server. Ván với máy (`game/ai/`) có gateway riêng.
 
+Ván không giới hạn (`time_control = 0`, `game/match/inactivity.ts`) không có đồng hồ từng nước. Mốc chống treo là `runningSinceEpochMs + 210000` ms (nhắc 180 s, ân hạn 30 s), do clock worker quyết định. Hết hạn thì bên đến lượt thua với lý do `INACTIVITY`. `match.still-here` (`matches.inactivity_extensions`, tối đa 2 lần liên tiếp, reset khi có nước đi) mở lại cửa sổ 3 phút; không có outbox và không đổi version. Snapshot không gửi `clocks` cho ván không giới hạn.
+
 Feed Sảnh (`game/room/public/public-room-feed.ts`) giữ `PUBLIC_FEED_POLL_MS = 1000` ms cho AC-06.2.3/06.2.15 (≤ 2 giây). Mỗi người đọc vẫn kiểm quyền trong giao dịch riêng; catalog PUBLIC dùng chung theo tick qua `PublicRoomCatalog`, không chia sẻ quyền hoặc phiên. Probe PostgreSQL test cô lập với 50 người đọc, 50 phòng PUBLIC và 5 phòng CODE_ONLY đo được 50 → 1 truy vấn catalog/tick, 350 → 301 câu SQL/tick, không có dòng riêng tư lọt ra. Đây là số đo query cục bộ, không phải nghiệm thu độ trễ mạng production.
+
+## YC3: bạn bè, presence và lời mời phòng
+
+- `FriendStore.withUsers` khóa hai actor theo thứ tự trước khi gửi/chấp nhận kết bạn; giới hạn 200 bạn và 50 tổng pending kiểm cả hai phía. Accept reset bộ đếm từ chối cả cặp; thu hồi/hết hạn không tính là Từ chối.
+- `POST /friends/presence` nhận `connectionId` UUID của tab, chỉ sau xác thực thành viên. Web heartbeat mỗi 2 giây, lease DB 8 giây; còn bất kỳ lease hợp lệ thì không Offline. `listFriends` chiếu trạng thái trong một SQL, ưu tiên Offline rồi mới xét mọi reservation `active_players` (phòng/AI). Lease hết hạn không giải phóng ghế. Danh sách/chuông/popup đọc mỗi 2 giây, không chồng request và không cho kết quả cũ ghi đè sau mutation.
+- Tin nhắn riêng (`direct_messages`, `direct_message_reads`, `direct_message_rate`) chỉ giữa hai bạn hiện tại: gửi/đọc/lịch sử đều khóa cặp bằng `actorLock` và kiểm tra `friendships` dưới khóa, nên hủy kết bạn chặn ngay còn kết bạn lại khôi phục lịch sử. Idempotency theo `UNIQUE(sender_id, command_id)` + fingerprint sha256; khác nội dung cùng `commandId` → 409 `DM_COMMAND_ID_REUSED`. Lọc `maskForbiddenChat` trước khi lưu, 5 tin/10 giây qua `direct_message_rate`. Watermark `read_seq` đơn điệu (chỉ tăng, kẹp theo tin đến); badge chưa đọc chỉ tính bạn hiện tại. Web poll HTTP 2 giây, không dùng socket.
+- Lời mời phòng giữ deadline gốc 30 giây và dedupe pending. Cooldown 10 giây dùng chung toàn người gửi; Từ chối/X/Esc kéo hạn ít nhất đến lúc xử lý +10 giây. Thông báo từ chối lưu bền, một dòng/invite, chỉ đúng người gửi được ack; hết hạn tự nhiên không tạo thông báo.
+- `FriendRoomPort` nối sang `RoomFriendInvites`: resolve proof/prefetch đích rồi `RoomTransactions.withRoom` khóa đầy đủ nguồn/đích, kiểm phiên và invite, join thật, ghi kết quả/commandId trong cùng commit. Không giữ khóa social/caller trước `withRoom`; lỗi B rollback giữ A. Replay chỉ trả kết quả khi vẫn có quyền phòng. Sender rời ghế/hủy bạn không revoke; trigger khóa/đóng phòng thu hồi pending trong cùng transaction.
+- Cần migration `20261101000001_friend_presence_invites.sql` và rollback đối ứng trước khi bật runtime mới. Rollback từ chối sau khi đã ghi presence/cooldown/phản hồi. Migration chỉ expire pending đã quá hạn trước khi tạo unique index; nếu còn duplicate **đang còn hạn**, chờ hết 30 giây và chạy lại, không xóa dữ liệu hay sửa migration cũ. Runtime bạn bè yêu cầu port phòng và schema mới sẵn sàng; không khởi động với accept giả/trả mã.
+
 
 ## Xác thực hai lớp
 
@@ -60,6 +72,8 @@ Media dùng pool riêng (`MEDIA_POOL_MAX = 3`), tách khỏi pool phòng. Thu h�
 ## Cơ sở dữ liệu
 
 `supabase/migrations/` có thứ tự và mỗi migration có bản `rollback/` đối ứng; `baseline/` cho bảng cũ. Schema gồm `xiangqi_{auth,realtime,room,chat,social}` và `public`. Migration xác nhận định nghĩa index/constraint hiện có trước khi đổi. Thêm migration mới kèm rollback thay vì sửa cái đã áp dụng.
+
+Chủ đề tài khoản là cột `public.profiles.theme_choice` (migration `20261102000005_account_theme`, rollback kèm theo; NULL = mặc định `co-phong`, giá trị hợp lệ lấy từ `@xiangqi/shared`). `ProfileStore` đọc/ghi qua `GET/PUT /profile/theme`; PUT chỉ nhận đúng khóa `theme`, giá trị ngoài danh sách trả 400 `PROFILE_THEME_INVALID`. Rollback từ chối khi còn dòng có chủ đề đã đặt.
 
 ## Web
 

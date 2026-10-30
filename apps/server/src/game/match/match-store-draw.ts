@@ -17,6 +17,7 @@ import {
   type RoomMatch,
 } from "./match-store-core.js";
 import { MatchStoreCore } from "./match-store-core.js";
+import { inactivityExpired } from "./inactivity.js";
 
 /**
  * Lớp mở rộng quản lý toàn bộ cơ chế xin hòa, rút đề nghị, chấp thuận, từ chối và thời gian chờ cầu hòa.
@@ -214,7 +215,13 @@ export class MatchDrawStore extends MatchStoreCore {
       return result(false, "MATCH_FINISHED", "Ván đã kết thúc.");
     }
     at = await this.drawTime(scope.client);
-    const checked = this.needClock().beforeAction(match.clock, match.turn, at);
+    const unlimited = match.inactivity !== null;
+    const checked = unlimited
+      ? {
+          clock: match.clock,
+          expired: inactivityExpired(match.clock, at) ? match.turn : null,
+        }
+      : this.needClock().beforeAction(match.clock, match.turn, at);
     validClock(checked.clock);
     if (checked.expired) {
       if (checked.expired !== match.turn) corrupt();
@@ -222,12 +229,20 @@ export class MatchDrawStore extends MatchStoreCore {
         scope.client,
         row,
         history.at(-1)!,
-        { reason: "TIMEOUT", winner: opposite(checked.expired) },
+        unlimited
+          ? { reason: "INACTIVITY", winner: opposite(checked.expired) }
+          : { reason: "TIMEOUT", winner: opposite(checked.expired) },
         at,
         checked.clock,
         match.lastMove,
       );
-      return result(false, "MATCH_TIME_EXPIRED", "Thời gian suy nghĩ đã hết.");
+      return unlimited
+        ? result(
+            false,
+            "MATCH_INACTIVITY_EXPIRED",
+            "Đã hết thời gian xác nhận.",
+          )
+        : result(false, "MATCH_TIME_EXPIRED", "Thời gian suy nghĩ đã hết.");
     }
     if (action !== "expire" && match.version !== input.matchVersion)
       return result(false, "MATCH_VERSION_CONFLICT", "Thế cờ đã thay đổi.");

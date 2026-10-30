@@ -27,6 +27,8 @@ import { GuestError } from "../../account/guest/guest.types.js";
 import { guestFailure } from "../../account/guest/guest.dto.js";
 const fail = httpFailure(MediaError);
 const GUEST_BEARER = /^Guest ([A-Za-z0-9_-]{43})$/;
+const TAB_ID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type MediaRequest = AuthenticatedRequest & {
   headers: Record<string, string | string[] | undefined>;
@@ -123,14 +125,21 @@ export class MediaController {
     if (
       typeof input.roomId !== "string" ||
       typeof input.camera !== "boolean" ||
-      typeof input.mic !== "boolean"
+      typeof input.mic !== "boolean" ||
+      typeof input.tabId !== "string" ||
+      !TAB_ID.test(input.tabId)
     )
       invalidInput("MEDIA_INPUT_INVALID");
     return this.media
-      .tokenFor(this.user(request), input.roomId as string, {
-        camera: input.camera as boolean,
-        mic: input.mic as boolean,
-      })
+      .tokenFor(
+        this.user(request),
+        input.roomId as string,
+        {
+          camera: input.camera as boolean,
+          mic: input.mic as boolean,
+        },
+        input.tabId as string,
+      )
       .catch(fail);
   }
   /**

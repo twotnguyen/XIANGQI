@@ -35,7 +35,8 @@ export type MatchOutcome = {
     | "TIMEOUT"
     | "DISCONNECT"
     | "DRAW_AGREEMENT"
-    | "SERVER_RESTART";
+    | "SERVER_RESTART"
+    | "INACTIVITY";
   winner: Side | null;
 };
 export type MatchView = {
@@ -49,6 +50,12 @@ export type MatchView = {
   outcome: MatchOutcome | null;
   endedAt: string | null;
   clock: MatchClock;
+  inactivity: {
+    promptAt: string;
+    expiresAt: string;
+    confirmsLeft: number;
+  } | null;
+  unlimited: boolean;
 };
 export type MatchCommandResult = {
   applied: boolean;

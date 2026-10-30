@@ -1,4 +1,8 @@
-import { containsForbiddenName } from "@xiangqi/shared";
+import {
+  containsForbiddenName,
+  isThemeChoice,
+  type ThemeChoice,
+} from "@xiangqi/shared";
 import type { ProfileStore } from "./profile.store.js";
 import {
   DISPLAY_NAME_MAX,
@@ -10,6 +14,17 @@ import {
 
 function fail(code: string, message: string, status = 409): never {
   throw new ProfileError(code, message, status);
+}
+/** Body chỉ được có đúng khóa `theme` với giá trị trong danh sách cho phép; không mặc định. */
+function themeInput(input: unknown): ThemeChoice {
+  if (typeof input !== "object" || input === null || Array.isArray(input))
+    fail("PROFILE_THEME_INVALID", "Giao diện không hợp lệ", 400);
+  const keys = Object.keys(input);
+  if (keys.length !== 1 || keys[0] !== "theme")
+    fail("PROFILE_THEME_INVALID", "Giao diện không hợp lệ", 400);
+  if (!("theme" in input) || !isThemeChoice(input.theme))
+    fail("PROFILE_THEME_INVALID", "Giao diện không hợp lệ", 400);
+  return input.theme;
 }
 function displayName(input: unknown): string {
   if (typeof input !== "string")
@@ -59,6 +74,23 @@ export class ProfileService {
     const name = displayName(input);
     await this.store.updateDisplayName(userId, name);
     return { displayName: name };
+  }
+  /**
+   * Đọc lựa chọn giao diện đã lưu của tài khoản.
+   */
+  async readTheme(userId: string): Promise<{ theme: ThemeChoice }> {
+    return { theme: await this.store.theme(userId) };
+  }
+  /**
+   * Lưu lựa chọn giao diện; lỗi validation không ghi gì vào CSDL.
+   */
+  async updateTheme(
+    userId: string,
+    input: unknown,
+  ): Promise<{ theme: ThemeChoice }> {
+    const theme = themeInput(input);
+    await this.store.setTheme(userId, theme);
+    return { theme };
   }
   /**
    * Xác định vị trí phòng chơi hiện tại của người dùng (chưa vào phòng, đang chờ, hoặc đang trong ván cờ).

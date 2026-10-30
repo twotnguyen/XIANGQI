@@ -3,6 +3,7 @@ import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { navigate } from "../../shared/navigation/navigation.js";
 import { Button, TextField } from "../../shared/ui/primitives.js";
 import { AuthShell } from "./AuthShell.js";
+import { UsernameRecoveryPanel } from "./UsernameRecoveryPanel.js";
 import {
   PasswordRequestError,
   setPendingRecovery,
@@ -34,6 +35,7 @@ export function ForgotPasswordPage() {
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [forUsername, setForUsername] = useState(false);
   const sending = useRef(false);
   const errorRegion = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -60,6 +62,25 @@ export function ForgotPasswordPage() {
       setBusy(false);
     }
   }
+
+  if (forUsername)
+    return (
+      <AuthShell
+        slogan="“Kỳ đạo tương phùng, tương đối kiến diện”"
+        features={[]}
+      >
+        <UsernameRecoveryPanel />
+        <p className="reg-foot">
+          <button
+            type="button"
+            className="link-forgot"
+            onClick={() => setForUsername(false)}
+          >
+            Quay lại quên mật khẩu
+          </button>
+        </p>
+      </AuthShell>
+    );
 
   return (
     <AuthShell slogan="“Kỳ đạo tương phùng, tương đối kiến diện”" features={[]}>
@@ -104,6 +125,15 @@ export function ForgotPasswordPage() {
           Gửi mã OTP
         </Button>
       </form>
+      <p className="reg-foot">
+        <button
+          type="button"
+          className="link-forgot"
+          onClick={() => setForUsername(true)}
+        >
+          Quên tên đăng nhập?
+        </button>
+      </p>
       <p className="reg-foot">
         <NavigationLink href="/login">Quay lại đăng nhập</NavigationLink>
       </p>

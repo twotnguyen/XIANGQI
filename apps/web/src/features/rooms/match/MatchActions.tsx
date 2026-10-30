@@ -7,6 +7,7 @@ export type MatchAction = Extract<
   {
     type:
       | "match.resign"
+      | "match.still-here"
       | "match.draw.offer"
       | "match.draw.withdraw"
       | "match.draw.respond";

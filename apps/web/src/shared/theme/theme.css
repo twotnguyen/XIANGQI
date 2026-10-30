@@ -1,40 +1,4 @@
-:root[data-theme="co-phong"] {
-  color-scheme: light;
-}
-:root[data-theme="paper-light"] {
-  color-scheme: light;
-  color: #1f2933;
-  background: #fbfaf7;
-}
-:root[data-theme="paper-light"] body {
-  background: #fbfaf7;
-}
-:root[data-theme="paper-light"] section,
-:root[data-theme="paper-light"] .xq-panel {
-  background: #ffffff;
-  border-color: #d9e2ec;
-}
-:root[data-theme="paper-dark"] {
-  color-scheme: dark;
-  color: #f3f4f6;
-  background: #14181d;
-}
-:root[data-theme="paper-dark"] body {
-  background: #14181d;
-}
-:root[data-theme="paper-dark"] section,
-:root[data-theme="paper-dark"] .xq-panel {
-  background: #1e242b;
-  border-color: #39424d;
-}
-:root[data-theme="paper-dark"] a {
-  color: #9ecbff;
-}
-/* The board keeps its own wood palette in every theme. */
-:root[data-theme] .xq-board,
-:root[data-theme] .xq-board * {
-  color-scheme: light;
-}
+/* Màu theme nằm ở tokens.css (:root[data-theme]); file này chỉ giữ giảm chuyển động. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -11,14 +11,18 @@ import {
 } from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
 import type { PublicRoomView } from "@server/game/room/public/public-room-store.js";
-import { apply, databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+import {
+  databaseUrl,
+  pool,
+  reset,
+  resetLegacy,
+} from "./game.runtime.test-helper.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 type Registration = NonNullable<
   Awaited<ReturnType<typeof createRegistrationRuntime>>
 >;
 const origin = "http://localhost:5174";
-async function fixture(modes = true) {
-  if (modes) await apply("supabase/migrations/20261011000008_room_modes.sql");
+async function fixture() {
   const users = new Map<
     string,
     { id: string; email: string; email_confirmed_at: string }
@@ -197,7 +201,8 @@ describe.skipIf(!databaseUrl)(
   () => {
     beforeEach(reset);
     it("keeps migration 1–7 discovery unavailable and closes without owning the borrowed pool", async () => {
-      const f = await fixture(false);
+      await resetLegacy();
+      const f = await fixture();
       try {
         expect(f.runtime.publicFeed).toBeNull();
         expect((await f.request("/public-rooms")).status).toBe(404);

@@ -3,6 +3,8 @@
 **Cập nhật:** 2026-10-10 (làm rõ P1/P2 và bố cục; giữ quyết định thiết kế đã chốt; mockup chỉ tham khảo) · **Dành cho:** AI agent và Frontend dựng giao diện · người thiết kế làm Figma · Tester rà thiết kế
 **Nguồn luật:** [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) · [DANH-MUC-MAN-HINH-XIANGQI.md](DANH-MUC-MAN-HINH-XIANGQI.md) · chuẩn WCAG 2.1 AA
 
+> **Phân kỳ hiện hành BA 0.20/0.21 (PO 30/10/2026):** bỏ QR; P1 thêm phòng/xã hội, khôi phục/đổi Username, media giữa tab và Giấy Sáng/Theo hệ thống. **32 P1 / 5 P2**, tổng 37; chưa phải bằng chứng triển khai. Sticker/Undo/Replay/Casual/Ranked và Tái đấu Casual vẫn P2.
+
 > Các mã `DT-xx`, `DEC-xxx`, `GR-COORD`, `SCR-RULE-xx` trong file này là nhãn kế thừa từ bộ tài liệu cũ đã xoá. Nội dung luật đã được viết ngay tại chỗ dùng nó; không cần và không thể tra ở nơi khác. Các mã `TK…` (task Jira cũ) đã được gỡ khỏi file này.
 
 ---
@@ -13,7 +15,7 @@
 |---|---|
 | **Chốt** | Lấy nguyên từ đặc tả (`DT-*`, `SCR-*`, `DEC-*`). ⛔ Không được đổi ở đây — muốn đổi phải sửa đặc tả trước |
 | 🟡 | **Đề xuất** để lấp chỗ đặc tả chưa quy định. Design được đổi, nhưng phải sửa **cùng lúc** file này + Figma + `apps/web/src/shared/styles/tokens.css` và **đo lại tương phản** |
-| P1 / P2 | P1 dùng cố định Kỳ Đài Cổ Phong; Giấy Sáng/Theo hệ thống là P2. Tính năng P2 không nằm trong nghiệm thu P1 |
+| P1 / P2 | P1 có Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống theo BA 0.21; tính năng còn P2 không nằm trong nghiệm thu P1 |
 
 - Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này.
 - Mọi tỉ lệ tương phản trong file đã được **tính** theo công thức WCAG 2.1 (độ chói tương đối). Khi dựng thật vẫn phải **đo lại** trên màn hình thật.
@@ -85,13 +87,13 @@ Tương phản đã đo (đặc tả): mực/giấy **12,95** · mực/gỗ **7,
 
 ### 2.3 Chế độ tối (Kỳ Đài Cổ Phong / Tea-Room Theme) — **Chốt chuẩn giao diện**
 
-**Phân kỳ theo BA 10.3 (duyệt 04/10):** P1 chỉ **Kỳ Đài Cổ Phong**, không có bộ chọn. P2 thêm **Giấy Sáng (Light Paper Theme)** và **Theo hệ thống**. Các token dưới đây mô tả thiết kế đích cho cả hai; không có nghĩa phải dựng Giấy Sáng trong P1. Cả hai phải được đo ở giao diện thực để nghiệm thu WCAG 2.1 AA; bảng token không phải bằng chứng đã đạt mọi trạng thái.
+**P1 theo BA 0.21:** đủ Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống; chưa chọn mặc định Kỳ Đài Cổ Phong. Lựa chọn lưu theo tài khoản/đồng bộ thiết bị; Theo hệ thống dùng OS của từng thiết bị, explicit không bị OS ghi đè. Token dưới đây là thiết kế, không phải bằng chứng tương phản thật; kiểm WCAG 2.1 AA cho mọi trạng thái khi triển khai.
 
 **Nguyên tắc:**
 1. **Bàn cờ giữ nguyên** màu sắc vật liệu gỗ mộc chuẩn Á Đông (`#D8AE72`, quân cờ, đường kẻ, dấu trạng thái) ở cả hai chế độ — đảm bảo mọi tương phản quân/gỗ đã đo không bị ảnh hưởng.
 2. Phần **khung giao diện, thẻ card và sảnh chờ**:
    - Ở chế độ Kỳ Đài Cổ Phong: Sử dụng gam nâu trầm gỗ mun (`#120D0A`, `#241610`), viền đồng thau dập nổi (viền trang trí `#542C15` không mang thông tin; viền hoàng kim `#C6922A`), chữ vàng ngà xuyến chỉ (`#FFF5DF`, `#E2CFB7`), mang lại chiều sâu không gian tĩnh tại.
-3. **Chỉ P2**, người dùng tuỳ chọn trong Cài đặt hồ sơ (Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống), mặc định Kỳ Đài Cổ Phong; P1 không tự theo hệ điều hành.
+3. Bộ chọn ở Hồ sơ thuộc **P1**; theme mới chỉ áp cho chủ thể được phép, Khách giữ hạn chế nguồn. Đồng bộ **lựa chọn**, không ép cùng màu OS giữa thiết bị; không đổi màu bàn cờ.
 
 | Token CSS | Sáng (Giấy Sáng) | Tối (Kỳ Đài Cổ Phong) | Tương phản ở chế độ tối |
 |---|---|---|---|
@@ -274,7 +276,7 @@ Kích thước: cao ≥ 44 px, đệm ngang 16 px, chữ `--text-md` 600, bo `--
 
 ### 6.2 Ô nhập, checkbox, radio, công tắc
 
-**P2 — PO duyệt 05/10:** Khôi phục Username/mật khẩu dùng hai màn hình Auth hiện có: sau OTP hợp lệ mới hiện Username, có lựa chọn về Đăng nhập để giữ mật khẩu hoặc tiếp tục đặt lại; OTP không tự đăng nhập (BA 1.7).
+**P1 — BA 0.18/0.21:** hai mục đích Auth riêng: Quên mật khẩu nhập Username → OTP → mật khẩu mới; Quên Username nhập email → OTP đúng mới hiện tên → Login, không tự đổi mật khẩu/đăng nhập. Không lộ email/OTP lên URL, không dùng quyền tìm tên thay quyền reset. Hồ sơ có OTP Đổi Username, giữ mọi phiên hợp lệ/hạn cũ.
 
 - Ô nhập: nền `--color-surface-sunken`, viền `--color-border`, cao ≥ 44 px, **nhãn chữ luôn hiện** (không chỉ placeholder).
 - Lỗi: viền `--color-danger` **+ biểu tượng `circle-alert` + câu lỗi tiếng Việt** dưới ô, nói cách sửa (`DT-10`). Giữ dữ liệu người dùng đã nhập (trừ mật khẩu).
@@ -327,11 +329,11 @@ Câu bắt buộc (chốt):
 
 - **Cảnh báo treo ván** (`SCR-RULE-07`): vùng cảnh báo **không modal** (`--z-banner`), nền `--color-warning-bg`, không che bàn và nút Đầu hàng, **không có X**, không bẫy focus; "Bạn còn trong ván đấu không?" + nút **"Tôi còn đây"** + đếm ngược. Trình đọc màn hình **không** đọc từng giây.
 - **Mất kết nối:** lớp phủ `--z-overlay-blocking`, "Đang kết nối lại…" + thời gian giữ ván theo máy chủ; đối thủ thấy "Đối thủ mất kết nối — còn 00:45".
-- **Kết quả:** "🏆 Bạn thắng!" · "Bạn thua" · "Hoà" · "Ván bị gián đoạn — không có người thắng" (người xem: "Đỏ thắng"…), lý do bằng chữ. **P1, kết thúc ván thông thường:** phòng tự tạo có [Ở lại phòng] [Rời phòng], về WAITING ngay và không có hạn đóng 10 phút (BA 0.7); ván AI có [Ván mới] [Về Sảnh] (BA 0.9). **Gián đoạn do server khởi động lại (PO duyệt 09/10, BA 0.17):** phòng tự tạo cũng về WAITING, reset Sẵn sàng và có [Ở lại phòng] [Rời phòng], không hạn đóng 10 phút; nội dung kết quả trung tính, không có người thắng/thua/hoà. **P2:** [Xem lại] và [Tái đấu] theo chế độ/phân kỳ; phòng tự tạo/ghép ngẫu nhiên có Tái đấu chọn Giữ phe/Đổi phe khi cả hai vẫn ở phòng và cùng đồng ý, Ranked không có (BA 0.8). Chỉ các chế độ giữ FINISHED có "Phòng đóng sau mm:ss"; ghép ngẫu nhiên đóng khi cả hai rời hoặc hết 10 phút từ kết thúc ván, không nhận người mới (BA 2.0).
+- **Kết quả:** “Bạn thắng/Bạn thua/Hoà/Ván bị gián đoạn — không có người thắng”; người xem hiện bên thắng, có lý do chữ. **P1 custom:** về WAITING ngay, không hạn đóng 10 phút; có Ở lại/Rời và **Tái đấu** cho hai thành viên đủ quyền, chọn Giữ/Đổi (mặc định Đổi), đối thủ đồng ý trong 30 giây → kiểm lại → đếm 3 giây → ván mới không Ready lại. Không dùng Tái đấu vẫn Ready/Xin đổi bên. AI giữ Ván mới/Về Sảnh. Server restart theo BA 0.17: custom WAITING/reset Ready, kết quả trung tính, không người thắng/thua/hoà. **P2:** Replay, Tái đấu Casual (cố định 15 phút); Ranked không Tái đấu. Chỉ chế độ giữ FINISHED có “Phòng đóng sau mm:ss”; Casual đóng khi cả hai rời hoặc 10 phút từ kết thúc, không nhận người mới.
 
 ### 6.9 Chat và camera/mic
 
-**P1:** cùng hai người Đổi bên hoặc ở lại phòng chơi tiếp giữ chat riêng; chat và camera/mic hoạt động cả ở phòng chờ, chuyển vào ván không ngắt media (BA 0.7, 0.13). Thay người trong cặp thì chỉ đọc từ mốc cặp mới, phòng đóng xoá chat (BA 5.3). **P2:** Tái đấu cùng cặp trong cùng phòng cũng giữ chat riêng.
+**P1:** cùng cặp đổi bên/chơi tiếp/Tái đấu custom giữ chat riêng; chat/media hoạt động từ phòng chờ vào ván không ngắt (BA 0.7/0.13/0.20). Thay người đặt mốc cặp mới; chat phòng xóa khi đóng. **DM P1** chỉ accepted friends, lịch sử bền không xóa theo phòng; unfriend thu hồi quyền/ẩn lịch sử; read/unread đồng bộ thiết bị theo viewport/tab hoạt động, badge tách chuông kết bạn. **Sticker vẫn P2**; Tái đấu Casual vẫn P2.
 
 - **Ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có Kênh riêng**, không Kênh Chung/người xem (BA 2.0, 5.4, 7.2). **Bố cục chat theo BA 5.3 (PO chốt 05/10/2026):** ở phòng có hai kênh, trên máy tính **mặc định chỉ mở Kênh Riêng**; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"**, hoặc ẩn bớt một trong hai rồi mở lại; trên điện thoại dùng hai tab trong một khung, mặc định chọn Kênh Riêng. Người xem chỉ thấy Kênh Chung. Ẩn khung không thay đổi quyền đọc/gửi. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
 - Trạng thái tin: đang gửi · đã gửi · gửi lỗi + "Thử lại".

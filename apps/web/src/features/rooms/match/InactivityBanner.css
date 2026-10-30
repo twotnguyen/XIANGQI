@@ -1,0 +1,45 @@
+.inactivity-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 14px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold-light);
+  border-radius: 8px;
+  font-family: var(--font-ui);
+}
+.inactivity-banner__text {
+  flex: 1 1 200px;
+  margin: 0;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
+.inactivity-banner__text strong {
+  color: var(--color-gold-light);
+  font-variant-numeric: tabular-nums;
+}
+.inactivity-banner__action {
+  min-height: 44px;
+  padding: 0 16px;
+  color: var(--color-ink);
+  background: var(--color-gold-light);
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.inactivity-banner__action:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: 2px;
+}
+.inactivity-banner__action:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

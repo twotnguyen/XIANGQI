@@ -136,6 +136,7 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
+    await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
   });
   afterAll(() => pool.end());
   it("returns only own terminal matches from both colors; outsiders and active games are absent", async () => {
@@ -364,6 +365,7 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
       "RESIGN",
       "DISCONNECT",
       "PERPETUAL_CHECK",
+      "INACTIVITY",
     ]) {
       for (const winner of ["RED", "BLACK"] as const) {
         const id = await game(a, b, { reason, winner });
@@ -404,7 +406,7 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
       [b, "black"],
     ] as const) {
       const page = await run(actor, (s) => store.list(s, { limit: 50 }));
-      expect(page.items).toHaveLength(21);
+      expect(page.items).toHaveLength(expected.size);
       for (const item of page.items) {
         const result = expected.get(item.id)!;
         expect(item.result).toMatchObject({
@@ -426,6 +428,8 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
       { reason: "DRAW_NO_CAPTURE", winner: "RED" },
       { reason: "PERPETUAL_CHECK", winner: "GREEN" },
       { reason: "PERPETUAL_CHECK", winner: ["RED"] },
+      { reason: "INACTIVITY", winner: null },
+      { reason: "UNKNOWN_TEST_REASON", winner: "RED" },
     ]) {
       const c = await pool.connect();
       try {

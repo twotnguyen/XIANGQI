@@ -217,6 +217,7 @@ export class HistoryStore {
           "RESIGN",
           "DISCONNECT",
           "PERPETUAL_CHECK",
+          "INACTIVITY",
         ].includes(reason)
       )
         fail("HISTORY_CORRUPT", 409);

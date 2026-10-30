@@ -19,22 +19,32 @@
   gap: 0.25rem 0.5rem;
   min-width: 0;
   padding: 0.85rem 1.2rem;
-  border: 1.5px solid rgba(198, 146, 42, 0.35);
+  border: 1.5px solid var(--color-border);
   border-radius: 10px;
-  background: linear-gradient(180deg, #1c100a 0%, #0e0704 100%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(245, 202, 103, 0.15);
+  background: linear-gradient(
+    180deg,
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
+  );
+  box-shadow: var(--shadow-2);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .match-clocks__side--running {
-  border-color: #f5ca67;
-  box-shadow: 0 0 20px rgba(245, 202, 103, 0.35), inset 0 0 0 1px #f5ca67;
-  background: linear-gradient(180deg, #28170e 0%, #140a05 100%);
+  border-color: var(--color-gold-light);
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--color-gold-light) 35%, transparent),
+    inset 0 0 0 1px var(--color-gold-light);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-surface) 85%, var(--color-gold)) 0%,
+    var(--color-surface-sunken) 100%
+  );
 }
 .match-clocks__label {
   font-weight: 700;
   font-size: 0.9rem;
   letter-spacing: 0.3px;
-  color: #eedcc6;
+  color: var(--color-ink-muted);
 }
 .match-clocks__time {
   font-family: var(--font-mono);
@@ -42,8 +52,9 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
-  color: #fff9ea;
-  text-shadow: 0 0 12px rgba(245, 202, 103, 0.35);
+  color: var(--color-ink);
+  text-shadow: 0 0 12px
+    color-mix(in srgb, var(--color-gold-light) 35%, transparent);
   letter-spacing: 1px;
 }
 .match-clocks__turn {

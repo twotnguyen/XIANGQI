@@ -19,7 +19,9 @@
   font-style: normal;
   font-display: swap;
 }
-.xq-ui {
+/* Mặc định là Kỳ Đài Cổ Phong (tối). Giấy Sáng ghi đè trên root; xem DESIGN §2.3. */
+:root {
+  color-scheme: dark;
   --color-paper: #120d0a;
   --color-surface: #241610;
   --color-surface-sunken: #180f0a;
@@ -53,6 +55,33 @@
   --board-last-move: #1e4f7a;
   --board-check: #a51f25;
   --board-focus: #155e75;
+}
+:root[data-theme="paper-light"] {
+  color-scheme: light;
+  --color-paper: #f5e8cc;
+  --color-surface: #fbf5e8;
+  --color-surface-sunken: #ede0c4;
+  --color-ink: #28221c;
+  --color-ink-muted: #5e5145;
+  --color-border: #8c6a48;
+  --color-divider: #d9c7a3;
+  --color-focus: #155e75;
+  --color-gold: #7a4e0f;
+  --color-gold-light: #7a4e0f;
+  --color-success: #2e6b34;
+  --color-warning: #8a4b00;
+  --color-danger: #a51f25;
+  --color-info: #1f5a85;
+  --color-success-bg: #e2edd6;
+  --color-warning-bg: #f6e1b8;
+  --color-danger-bg: #f5dad3;
+  --color-info-bg: #dce7ef;
+  --color-btn-primary-bg: #704525;
+  --color-btn-primary-fg: #f5e8cc;
+  --color-btn-danger-bg: #a51f25;
+  --color-btn-danger-fg: #f5e8cc;
+}
+.xq-ui {
   --font-ui:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -103,7 +132,6 @@
   --motion-move: 180ms;
   --motion-fast: 120ms;
   --motion-base: 200ms;
-  color-scheme: dark;
   color: var(--color-ink);
   background: var(--color-paper);
   font-family: var(--font-ui);

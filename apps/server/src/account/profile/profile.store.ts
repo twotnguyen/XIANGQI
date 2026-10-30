@@ -1,3 +1,4 @@
+import { DEFAULT_THEME, type ThemeChoice } from "@xiangqi/shared";
 import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
 import { ProfileError } from "./profile.types.js";
@@ -90,6 +91,37 @@ export class ProfileStore {
         currentMatchId: row.current_match_id,
         mode: row.mode,
       };
+    });
+  }
+
+  /**
+   * Đọc lựa chọn giao diện của tài khoản; chưa chọn trả mặc định Kỳ Đài Cổ Phong.
+   */
+  theme(userId: string): Promise<ThemeChoice> {
+    return this.withUser(userId, async (client) => {
+      const row = (
+        await client.query(
+          "SELECT theme_choice FROM public.profiles WHERE user_id=$1",
+          [userId],
+        )
+      ).rows[0];
+      if (!row)
+        throw new ProfileError("PROFILE_MISSING", "Không tìm thấy hồ sơ", 404);
+      return (row.theme_choice as ThemeChoice | null) ?? DEFAULT_THEME;
+    });
+  }
+
+  /**
+   * Ghi lựa chọn giao diện; ghi lại cùng giá trị là không đổi trạng thái.
+   */
+  setTheme(userId: string, theme: ThemeChoice): Promise<void> {
+    return this.withUser(userId, async (client) => {
+      const result = await client.query(
+        "UPDATE public.profiles SET theme_choice=$2,updated_at=clock_timestamp() WHERE user_id=$1",
+        [userId, theme],
+      );
+      if (result.rowCount !== 1)
+        throw new ProfileError("PROFILE_MISSING", "Không tìm thấy hồ sơ", 404);
     });
   }
 }

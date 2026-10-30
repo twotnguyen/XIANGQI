@@ -31,13 +31,16 @@ import { MatchResult } from "./match/MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./match/MatchActions.js";
 import { ReconnectStatus } from "./match/ReconnectStatus.js";
+import { InactivityBanner } from "./match/InactivityBanner.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
 import { Countdown } from "./RoomCountdown.js";
 import { RoomDetails } from "./RoomDetails.js";
 import { RoomInvite } from "./RoomInvite.js";
 import { RoomSeats } from "./RoomSeats.js";
+import { RematchPanel } from "./RematchPanel.js";
 import { SwapPrompt } from "./SwapPrompt.js";
 import {
+  rematchMessage,
   swapMessage,
   viewerActionMessage,
   visibilityLabel,
@@ -65,6 +68,8 @@ export interface RoomPageProps {
   chat?: ReactNode;
   media?: ReactNode;
   mediaClient?: MediaClient;
+  renderInviteFriends?: (roomId: string) => ReactNode;
+  isMember?: boolean;
 }
 /**
  * Trang phòng cờ trực tuyến: điều phối kết nối realtime, bàn cờ, đồng hồ đấu, ghế ngồi, video/audio và chat phòng.
@@ -80,6 +85,8 @@ export function RoomPage({
   chat,
   media,
   mediaClient,
+  renderInviteFriends,
+  isMember = false,
 }: RoomPageProps) {
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
@@ -150,11 +157,21 @@ export function RoomPage({
       audio.current = null;
     };
   }, []);
+  const canRematch =
+    view !== null &&
+    view.room.status === "WAITING" &&
+    view.room.inviteCode !== null &&
+    (view.role === "red" || view.role === "black") &&
+    snapshot?.match != null &&
+    snapshot.match.status !== "ACTIVE" &&
+    view.room.countdown === null &&
+    view.room.rematchOffer === null;
   const swapOfferId = view?.room.swapOffer?.id ?? null;
   const swapExpiresAt = view?.room.swapOffer?.expiresAt ?? null;
   const cooldownUntil = view?.room.swapCooldownUntil ?? null;
   const receivedAt = useMemo(() => Date.now(), [view?.serverNow]);
   const clockSkew = view ? Date.parse(view.serverNow) - receivedAt : 0;
+  const liveMatch = snapshot?.match ?? null;
   const timed = Boolean(swapOfferId || cooldownUntil);
   useEffect(() => {
     if (!timed) return;
@@ -507,7 +524,11 @@ export function RoomPage({
       | "swap-propose"
       | "swap-withdraw"
       | "swap-accept"
-      | "swap-decline",
+      | "swap-decline"
+      | "rematch-propose"
+      | "rematch-accept"
+      | "rematch-decline",
+    side: "KEEP" | "SWAP" = "SWAP",
   ) {
     if (!view || busy) return;
     const requestEpoch = epoch.current;
@@ -535,11 +556,19 @@ export function RoomPage({
             ? await client.proposeSwap(roomId, view.version)
             : action === "swap-withdraw"
               ? await client.withdrawSwap(roomId, view.version)
-              : await client.respondSwap(
-                  roomId,
-                  view.version,
-                  action === "swap-accept",
-                );
+              : action === "rematch-propose"
+                ? await client.proposeRematch(roomId, view.version, side)
+                : action === "rematch-accept" || action === "rematch-decline"
+                  ? await client.respondRematch(
+                      roomId,
+                      view.version,
+                      action === "rematch-accept",
+                    )
+                  : await client.respondSwap(
+                      roomId,
+                      view.version,
+                      action === "swap-accept",
+                    );
         if (
           epoch.current === requestEpoch &&
           next.version >= versionFloor.current
@@ -561,7 +590,9 @@ export function RoomPage({
       }
       const message =
         e instanceof RoomRequestError
-          ? swapMessage(e.code, e.message)
+          ? action.startsWith("rematch")
+            ? rematchMessage(e.code, e.message)
+            : swapMessage(e.code, e.message)
           : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
       setError(message);
       if (action === "leave") setLeaveError(message);
@@ -725,7 +756,11 @@ export function RoomPage({
           </p>
           {!playingLayout && (
             <div className="xq-waiting-meta">
-              <span>{room.timeMinutes} phút mỗi bên</span>
+              <span>
+                {room.timeMinutes === 0
+                  ? "Không giới hạn"
+                  : `${room.timeMinutes} phút mỗi bên`}
+              </span>
               <span>{visibilityLabel(room.visibility)}</span>
             </div>
           )}
@@ -961,6 +996,23 @@ export function RoomPage({
               />
             </div>
           )}
+          {snapshot && liveMatch && (
+            <InactivityBanner
+              match={liveMatch}
+              role={snapshot.role}
+              serverNow={snapshot.serverNow}
+              busy={busy}
+              onStillHere={() =>
+                matchAction({
+                  type: "match.still-here",
+                  payload: {
+                    matchId: liveMatch.id,
+                    matchVersion: liveMatch.version,
+                  },
+                })
+              }
+            />
+          )}
           {snapshot && (
             <MatchActions
               match={snapshot.match}
@@ -995,7 +1047,7 @@ export function RoomPage({
             <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
           )}
         </section>
-        {code && room.visibility !== "LOCKED" && (
+        {view.role !== "spectator" && code && room.visibility !== "LOCKED" && (
           <RoomInvite
             code={code}
             copying={copying}
@@ -1003,6 +1055,11 @@ export function RoomPage({
             copied={copied}
             onCopy={() => void copyInvite(code, "code")}
             onCopyLink={() => void copyInvite(code, "link")}
+            friends={
+              isMember && renderInviteFriends
+                ? renderInviteFriends(roomId)
+                : undefined
+            }
           />
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">
@@ -1076,6 +1133,13 @@ export function RoomPage({
                     connected={connected && Boolean(snapshot)}
                     seats={room.seats}
                     userId={userId}
+                    writable={writable}
+                    tabId={connection.current?.tabId ?? ""}
+                    onTakeover={() =>
+                      connection.current
+                        ? connection.current.takeover()
+                        : Promise.reject(new Error("Chưa kết nối phòng."))
+                    }
                   />
                 </Suspense>
               ) : (
@@ -1100,6 +1164,17 @@ export function RoomPage({
         error={settingsError}
         status={settingsStatus}
         onChange={changeVisibility}
+      />
+      <RematchPanel
+        offer={isMember ? (view?.room.rematchOffer ?? null) : null}
+        selfId={userId}
+        canPropose={canRematch && isMember}
+        clockSkew={clockSkew}
+        busy={busy}
+        onPropose={(side) => void httpAction("rematch-propose", side)}
+        onRespond={(accept) =>
+          void httpAction(accept ? "rematch-accept" : "rematch-decline")
+        }
       />
       <SwapPrompt
         open={swapModalOpen}

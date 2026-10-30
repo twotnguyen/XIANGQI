@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ErrorState, Notice, Skeleton } from "../../shared/ui/primitives.js";
+import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import {
   RoomRequestError,
   type RoomClient,
@@ -53,7 +54,7 @@ export function InviteEntry({
   return (
     <main className="xq-ui xq-room-page">
       <div className="xq-room-form">
-        <h1>Vào phòng được mời</h1>
+        <h1>{error ? "Không thể truy cập phòng" : "Vào phòng được mời"}</h1>
         {!valid ? (
           <Notice
             tone="error"
@@ -66,6 +67,9 @@ export function InviteEntry({
           />
         ) : (
           <Skeleton label="Đang vào phòng…" />
+        )}
+        {(!valid || error) && (
+          <NavigationLink href="/lobby">Quay về Sảnh chính</NavigationLink>
         )}
       </div>
     </main>

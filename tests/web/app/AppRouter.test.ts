@@ -205,6 +205,15 @@ vi.mock("@web/features/friends/FriendsPage.js", () => ({
 vi.mock("@web/features/friends/FriendsBell.js", () => ({
   FriendsBell: () => null,
 }));
+vi.mock("@web/features/friends/DirectChatHub.js", () => ({
+  DirectChatHub: () => null,
+}));
+vi.mock("@web/features/profile/AccountThemeSync.js", () => ({
+  AccountThemeSync: () => null,
+}));
+vi.mock("@web/features/friends/FriendsPresence.js", () => ({
+  FriendsPresence: () => null,
+}));
 vi.mock("@web/features/friends/RoomInvitePopup.js", () => ({
   RoomInvitePopup: () => null,
 }));

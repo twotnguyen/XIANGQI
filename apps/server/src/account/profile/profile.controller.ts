@@ -6,6 +6,7 @@ import {
   HttpCode,
   Inject,
   Patch,
+  Put,
   Req,
   UseGuards,
 } from "@nestjs/common";
@@ -63,6 +64,29 @@ export class ProfileController {
       )
       .catch(fail);
   }
+  /**
+   * Endpoint GET /profile/theme: Lấy lựa chọn giao diện đã lưu của tài khoản (mặc định co-phong).
+   */
+  @Get("theme")
+  @Header("Cache-Control", "no-store")
+  readTheme(@Req() request: AuthenticatedRequest) {
+    return this.identity(request)
+      .then((identity) => this.profiles.readTheme(identity.userId))
+      .catch(fail);
+  }
+
+  /**
+   * Endpoint PUT /profile/theme: Lưu lựa chọn giao diện (co-phong | paper-light | system) cho tài khoản.
+   */
+  @Put("theme")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  updateTheme(@Req() request: AuthenticatedRequest, @Body() body: unknown) {
+    return this.identity(request)
+      .then((identity) => this.profiles.updateTheme(identity.userId, body))
+      .catch(fail);
+  }
+
   /**
    * Endpoint GET /profile/location: Kiểm tra người dùng hiện đang ở đâu (phòng chờ, trận đấu online hay trận AI).
    */

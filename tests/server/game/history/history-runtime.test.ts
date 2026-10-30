@@ -106,6 +106,9 @@ describe.skipIf(!databaseUrl)(
       );
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
+      await apply(
+        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
     });
     afterAll(async () => {
       await pool.end();

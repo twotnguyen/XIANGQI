@@ -1,5 +1,6 @@
 import type { PoolClient } from "pg";
 import { earliestDisconnect } from "../match/disconnect-worker.js";
+import { inactivityExpired } from "../match/inactivity.js";
 import type { MatchStore } from "../match/match-store.js";
 import { uuid } from "../match/position-codec.js";
 import type { ClockService } from "./clock.service.js";
@@ -23,11 +24,11 @@ export async function dueMatches(
  WITH server_time AS MATERIALIZED(SELECT floor(extract(epoch FROM clock_timestamp())*1000)::numeric now_ms),
  candidates AS (
  SELECT m.room_id,m.id,
- (m.clock->>'runningSinceEpochMs')::numeric +
- (CASE WHEN m.position->>'turn'='RED' THEN m.clock->>'redMs' ELSE m.clock->>'blackMs' END)::numeric deadline
+(m.clock->>'runningSinceEpochMs')::numeric +
+(CASE WHEN m.time_control=0 THEN 210000::numeric WHEN m.position->>'turn'='RED' THEN (m.clock->>'redMs')::numeric ELSE (m.clock->>'blackMs')::numeric END) deadline
  FROM public.matches m JOIN public.rooms r ON r.id=m.room_id
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'
- WHERE m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(300,600,900)
+ WHERE m.mode='ONLINE' AND m.status='ACTIVE' AND (m.time_control IN(300,600,900) OR m.time_control=0)
  AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1'
  AND r.status='PLAYING' AND r.current_match_id=m.id)
  SELECT room_id AS "roomId",id AS "matchId",deadline::text AS "deadlineEpochMs"
@@ -133,23 +134,28 @@ export class ClockWorker {
       candidate.roomId,
       candidate.matchId,
     );
-    const checked = this.clock.beforeAction(match.clock, match.turn, at);
-    if (!checked.expired) return;
-    const disconnect = await earliestDisconnect(
-      scope.client,
-      candidate.roomId,
-      row.red_user_id,
-      row.black_user_id,
-    );
-    const deadline =
-      match.clock.runningSinceEpochMs +
-      (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
-    if (disconnect && disconnect.deadline < deadline) return;
+    const unlimited = match.inactivity !== null;
+    const expired = unlimited
+      ? inactivityExpired(match.clock, at)
+      : this.clock.beforeAction(match.clock, match.turn, at).expired !== null;
+    if (!expired) return;
+    if (!unlimited) {
+      const disconnect = await earliestDisconnect(
+        scope.client,
+        candidate.roomId,
+        row.red_user_id,
+        row.black_user_id,
+      );
+      const deadline =
+        match.clock.runningSinceEpochMs +
+        (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
+      if (disconnect && disconnect.deadline < deadline) return;
+    }
     await this.matches.finish(scope.client, {
       ...candidate,
       outcome: {
-        reason: "TIMEOUT",
-        winner: checked.expired === "red" ? "black" : "red",
+        reason: unlimited ? "INACTIVITY" : "TIMEOUT",
+        winner: match.turn === "red" ? "black" : "red",
       },
       at,
     });

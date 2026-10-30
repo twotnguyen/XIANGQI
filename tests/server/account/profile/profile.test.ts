@@ -34,6 +34,7 @@ describe.skipIf(!databaseUrl)("profile service over store", () => {
     await apply(
       "supabase/migrations/20261029000001_username_account_email.sql",
     );
+    await apply("supabase/migrations/20261102000005_account_theme.sql");
   });
   it("reads username, read-only email and display name", async () => {
     const id = await member("profread");
@@ -128,6 +129,40 @@ describe.skipIf(!databaseUrl)("profile service over store", () => {
       kind: "none",
       roomId: null,
       matchId: null,
+    });
+  });
+  it("stores account theme, defaults to co-phong and rejects unknown values", async () => {
+    const id = await member("themeuser");
+    await expect(service.readTheme(id)).resolves.toEqual({ theme: "co-phong" });
+    await expect(
+      service.updateTheme(id, { theme: "paper-light" }),
+    ).resolves.toEqual({ theme: "paper-light" });
+    await expect(service.readTheme(id)).resolves.toEqual({
+      theme: "paper-light",
+    });
+    await expect(
+      service.updateTheme(id, { theme: "paper-dark" }),
+    ).rejects.toMatchObject({ code: "PROFILE_THEME_INVALID", status: 400 });
+    await expect(
+      service.updateTheme(id, { theme: "system", extra: 1 }),
+    ).rejects.toMatchObject({ code: "PROFILE_THEME_INVALID", status: 400 });
+    await expect(service.readTheme(id)).resolves.toEqual({
+      theme: "paper-light",
+    });
+  });
+  it("shares one account theme across two devices' service clients", async () => {
+    const id = await member("twodevice");
+    const deviceA = new ProfileService(new ProfileStore(pool));
+    const deviceB = new ProfileService(new ProfileStore(pool));
+    await expect(deviceA.updateTheme(id, { theme: "system" })).resolves.toEqual(
+      { theme: "system" },
+    );
+    await expect(deviceB.readTheme(id)).resolves.toEqual({ theme: "system" });
+    await expect(
+      deviceB.updateTheme(id, { theme: "paper-light" }),
+    ).resolves.toEqual({ theme: "paper-light" });
+    await expect(deviceA.readTheme(id)).resolves.toEqual({
+      theme: "paper-light",
     });
   });
 });

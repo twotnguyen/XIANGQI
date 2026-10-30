@@ -69,6 +69,7 @@ function snapshot(
       graceUntil: { red: null, black: null },
       countdown: null,
       swapOffer: null,
+      rematchOffer: null,
       downOffer: null,
       spectators: [],
     },

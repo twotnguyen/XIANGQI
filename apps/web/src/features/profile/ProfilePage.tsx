@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Button,
   Dialog,
@@ -14,8 +14,9 @@ import {
   type ProfileView,
 } from "./profile-client.js";
 import { PasswordChangeForm } from "./PasswordChangeForm.js";
-import { THEME_OPTIONS } from "../../shared/theme/theme.js";
-import { useTheme } from "../../shared/theme/useTheme.js";
+import type { AuthorizedFetch } from "./profile-client.js";
+import { ThemeSettings } from "./ThemeSettings.js";
+import { UsernameSettings } from "./UsernameSettings.js";
 import {
   getPieceStyle,
   setPieceStyle as applyPieceStyle,
@@ -50,12 +51,6 @@ const SETTINGS_SECTIONS = [
     icon: "M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7l-9-4Zm-4 9 3 3 5-6",
   },
 ] as const;
-
-const THEME_DESCRIPTIONS = {
-  "co-phong": "Nâu trầm và sắc vàng, đậm chất kỳ đài.",
-  "paper-light": "Nền giấy sáng, nhẹ nhàng và rõ nét.",
-  system: "Tự chọn sáng hoặc tối theo thiết bị.",
-};
 
 const PIECE_STYLES = [
   {
@@ -106,15 +101,17 @@ export function ProfilePage({
   guest,
   onSaved,
   onLogout,
+  authorizedFetch,
   emailSection,
 }: {
   client: ProfileClient;
+  authorizedFetch: AuthorizedFetch;
   guest: boolean;
   onSaved: (displayName: string) => void;
   onLogout: () => void;
   emailSection?: ReactNode;
 }) {
-  const theme = useTheme();
+  const emailRef = useRef<HTMLDivElement>(null);
   const [section, setSection] =
     useState<(typeof SETTINGS_SECTIONS)[number]["id"]>("profile");
   const activeSection = guest ? "session" : section;
@@ -355,6 +352,27 @@ export function ProfilePage({
                       </button>
                     </div>
                   </div>
+                  {profile && (
+                    <UsernameSettings
+                      client={client}
+                      username={profile.username}
+                      onVerifyEmail={
+                        emailSection
+                          ? () => {
+                              emailRef.current?.scrollIntoView({
+                                block: "nearest",
+                              });
+                              emailRef.current?.focus();
+                            }
+                          : undefined
+                      }
+                      onChanged={(username) =>
+                        setProfile((previous) =>
+                          previous ? { ...previous, username } : previous,
+                        )
+                      }
+                    />
+                  )}
 
                   {!emailSection && (
                     <div className="xq-profile-field-readonly">
@@ -432,7 +450,14 @@ export function ProfilePage({
                 </form>
 
                 {emailSection && (
-                  <div className="xq-profile-email-extra">{emailSection}</div>
+                  <div
+                    ref={emailRef}
+                    tabIndex={-1}
+                    aria-label="Thêm hoặc xác minh email"
+                    className="xq-profile-email-extra"
+                  >
+                    {emailSection}
+                  </div>
                 )}
               </section>
               <section
@@ -445,44 +470,7 @@ export function ProfilePage({
                   <h2 id="xq-appearance-title">Giao diện</h2>
                   <p>Chọn sắc thái phù hợp cho những giờ bên bàn cờ.</p>
                 </header>
-                <fieldset className="xq-profile-theme">
-                  <legend>Chủ đề hiển thị</legend>
-                  <div className="xq-profile-theme-options">
-                    {THEME_OPTIONS.map((option) => (
-                      <label
-                        key={option.value}
-                        className="xq-profile-theme-option"
-                        onClick={playClickSound}
-                      >
-                        <span
-                          className={`xq-profile-theme-preview xq-profile-theme-${option.value}`}
-                          aria-hidden="true"
-                        >
-                          <span className="xq-profile-preview-sidebar" />
-                          <span className="xq-profile-preview-content">
-                            <span />
-                            <span />
-                            <span />
-                          </span>
-                        </span>
-                        <span className="xq-profile-theme-label">
-                          <input
-                            type="radio"
-                            name="xq-theme"
-                            value={option.value}
-                            aria-label={option.label}
-                            checked={theme.choice === option.value}
-                            onChange={() => theme.setChoice(option.value)}
-                          />
-                          <strong>{option.label}</strong>
-                        </span>
-                        <span className="xq-profile-theme-description">
-                          {THEME_DESCRIPTIONS[option.value]}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
+                <ThemeSettings authorizedFetch={authorizedFetch} />
 
                 {/* Kiểu quân cờ (Piece Style) */}
                 <fieldset className="xq-profile-piece-style">
@@ -629,8 +617,8 @@ export function ProfilePage({
                 </div>
 
                 <p className="xq-profile-tip">
-                  Cài đặt chủ đề, quân cờ và âm thanh được lưu tự động trên
-                  trình duyệt này.
+                  Chủ đề được lưu theo tài khoản và đồng bộ thiết bị. Quân cờ và
+                  âm thanh được lưu trên trình duyệt này.
                 </p>
               </section>
               <section

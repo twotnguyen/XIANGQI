@@ -245,6 +245,9 @@ function panel(client: MediaClient, overrides: Partial<Panel> = {}) {
     connected: true,
     seats: { red: "a", black: "b" },
     userId: "a",
+    writable: true,
+    tabId: "tab",
+    onTakeover: async () => {},
     ...overrides,
   });
 }

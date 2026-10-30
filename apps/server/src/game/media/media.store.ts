@@ -59,6 +59,21 @@ export class MediaTx {
     return Boolean(seat);
   }
   /**
+   * Tab đang giữ quyền điều khiển phòng của người dùng (nguồn sự thật từ realtime). Thiếu dòng nghĩa là chưa có tab nào.
+   */
+  async controllingTab(
+    roomId: string,
+    userId: string,
+  ): Promise<string | undefined> {
+    const row = (
+      await this.client.query<{ tab_id: string }>(
+        "SELECT tab_id FROM xiangqi_realtime.controllers WHERE user_id=$1 AND room_id=$2",
+        [userId, roomId],
+      )
+    ).rows[0];
+    return row?.tab_id;
+  }
+  /**
    * Lưu hoặc cập nhật mức độ chia sẻ camera/mic của người dùng trong phòng.
    */
   async saveShare(

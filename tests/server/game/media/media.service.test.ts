@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { decodeJwt, jwtVerify } from "jose";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { MediaAccess } from "@server/game/media/media.service.js";
@@ -17,11 +18,14 @@ import {
   queueRevoke,
   resetMediaSchema,
   seat,
+  takeControl,
   url,
   waitForBlockedAdvisoryLock,
 } from "./media.test-helper.js";
 
 afterAll(() => pool.end());
+// Tab giữ quyền điều khiển trong các test; tab khác dùng cho kịch bản chuyển quyền.
+const TAB = randomUUID();
 
 describe.skipIf(!url)("media access", () => {
   beforeEach(resetMediaSchema);
@@ -32,10 +36,13 @@ describe.skipIf(!url)("media access", () => {
     const a = await actor();
     const roomId = await makeRoom(a.userId);
     await seat(roomId, a.userId, "RED");
-    const on = await access.tokenFor(a.userId, roomId, {
-      camera: true,
-      mic: false,
-    });
+    await takeControl(roomId, a.userId, TAB);
+    const on = await access.tokenFor(
+      a.userId,
+      roomId,
+      { camera: true, mic: false },
+      TAB,
+    );
     expect(on.roomName).toBe(privateRoomName(roomId));
     const privateGrant = decodeJwt(on.token).video as Record<string, unknown>;
     expect(privateGrant).toMatchObject({
@@ -44,10 +51,12 @@ describe.skipIf(!url)("media access", () => {
       canSubscribe: true,
     });
     await jwtVerify(on.token, new TextEncoder().encode(config.apiSecret));
-    const off = await access.tokenFor(a.userId, roomId, {
-      camera: false,
-      mic: false,
-    });
+    const off = await access.tokenFor(
+      a.userId,
+      roomId,
+      { camera: false, mic: false },
+      TAB,
+    );
     expect(
       (decodeJwt(off.token).video as Record<string, unknown>).canPublish,
     ).toBe(false);
@@ -60,21 +69,26 @@ describe.skipIf(!url)("media access", () => {
     const a = await actor();
     const roomId = await makeRoom(a.userId);
     await seat(roomId, a.userId, "RED");
+    await takeControl(roomId, a.userId, TAB);
     await access.setShare(a.userId, roomId, "ALL");
-    const all = await access.tokenFor(a.userId, roomId, {
-      camera: true,
-      mic: true,
-    });
+    const all = await access.tokenFor(
+      a.userId,
+      roomId,
+      { camera: true, mic: true },
+      TAB,
+    );
     expect(all.stage?.roomName).toBe(stageRoomName(roomId));
     const b = await actor();
     await pool.query(
       "INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'SPECTATOR',NULL)",
       [roomId, b.userId],
     );
-    const view = await access.tokenFor(b.userId, roomId, {
-      camera: true,
-      mic: true,
-    });
+    const view = await access.tokenFor(
+      b.userId,
+      roomId,
+      { camera: true, mic: true },
+      TAB,
+    );
     expect(view.roomName).toBe(stageRoomName(roomId));
     const grant = decodeJwt(view.token).video as Record<string, unknown>;
     expect(grant).toMatchObject({
@@ -84,10 +98,12 @@ describe.skipIf(!url)("media access", () => {
     });
     expect(grant.room).not.toBe(privateRoomName(roomId));
     await access.setShare(a.userId, roomId, "NONE");
-    const none = await access.tokenFor(a.userId, roomId, {
-      camera: true,
-      mic: true,
-    });
+    const none = await access.tokenFor(
+      a.userId,
+      roomId,
+      { camera: true, mic: true },
+      TAB,
+    );
     expect(none.stage).toBeNull();
     expect(
       (decodeJwt(none.token).video as Record<string, unknown>).canPublish,
@@ -101,7 +117,12 @@ describe.skipIf(!url)("media access", () => {
     const roomId = await makeRoom(a.userId);
     const outsider = await actor();
     await expect(
-      access.tokenFor(outsider.userId, roomId, { camera: true, mic: true }),
+      access.tokenFor(
+        outsider.userId,
+        roomId,
+        { camera: true, mic: true },
+        TAB,
+      ),
     ).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
     await expect(
       access.setShare(outsider.userId, roomId, "ALL"),
@@ -111,6 +132,41 @@ describe.skipIf(!url)("media access", () => {
     await expect(
       access.setShare(a.userId, roomId, "EVERYONE" as never),
     ).rejects.toMatchObject({ code: "MEDIA_INPUT_INVALID" });
+  });
+  it("refuses publish from a tab that does not hold control and moves rights on takeover", async () => {
+    const access = new MediaAccess(config, new MediaStore(pool), async () => {
+      throw new Error("no fetch expected");
+    });
+    const a = await actor();
+    const roomId = await makeRoom(a.userId);
+    await seat(roomId, a.userId, "RED");
+    await takeControl(roomId, a.userId, TAB);
+    const other = randomUUID();
+    await expect(
+      access.tokenFor(a.userId, roomId, { camera: true, mic: false }, other),
+    ).rejects.toMatchObject({ code: "MEDIA_TAB_READ_ONLY" });
+    const listen = await access.tokenFor(
+      a.userId,
+      roomId,
+      { camera: false, mic: false },
+      other,
+    );
+    expect(
+      (decodeJwt(listen.token).video as Record<string, unknown>).canPublish,
+    ).toBe(false);
+    await takeControl(roomId, a.userId, other);
+    await expect(
+      access.tokenFor(a.userId, roomId, { camera: true, mic: false }, TAB),
+    ).rejects.toMatchObject({ code: "MEDIA_TAB_READ_ONLY" });
+    const on = await access.tokenFor(
+      a.userId,
+      roomId,
+      { camera: true, mic: false },
+      other,
+    );
+    expect(
+      (decodeJwt(on.token).video as Record<string, unknown>).canPublish,
+    ).toBe(true);
   });
   it("uses HTTP service URLs and room-scoped grants for both participant scopes", async () => {
     const calls: { url: string; body: string; token: string }[] = [];
@@ -261,10 +317,12 @@ describe.skipIf(!url)("media access", () => {
     await seat(roomId, a.userId, "RED");
     let issued = false;
     const token = access
-      .tokenFor(a.userId.toUpperCase(), roomId.toUpperCase(), {
-        camera: false,
-        mic: false,
-      })
+      .tokenFor(
+        a.userId.toUpperCase(),
+        roomId.toUpperCase(),
+        { camera: false, mic: false },
+        TAB,
+      )
       .then((value) => {
         issued = true;
         return value;

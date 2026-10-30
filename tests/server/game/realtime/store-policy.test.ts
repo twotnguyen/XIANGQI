@@ -73,6 +73,7 @@ function fixture() {
     authorize: vi.fn(async () => ({ canControl: true, version: 0 })),
     snapshot: vi.fn(async () => snapshot),
     execute: vi.fn(async () => snapshot),
+    queueMediaRevoke: vi.fn(async () => {}),
   };
   let committed = 0;
   const run = vi.fn(

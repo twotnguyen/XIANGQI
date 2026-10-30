@@ -99,6 +99,7 @@ async function fixture() {
     outsider = await member();
   const entry = await http.create(red.proof, {
     commandId: randomUUID(),
+    timeMinutes: 10,
   });
   await http.join(black.proof, {
     commandId: randomUUID(),
@@ -234,6 +235,10 @@ describe.skipIf(!databaseUrl)(
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
       await apply("supabase/migrations/20261011000009_match_draw.sql");
+      await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply(
+        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
     });
     it("commits one durable offer through replay, rejects command ID reuse, keeps canonical lastMove through withdrawal", async () => {
       const f = await fixture(),

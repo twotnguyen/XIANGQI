@@ -26,6 +26,8 @@ function client(join: RoomClient["join"]): RoomClient {
     proposeSwap: vi.fn(),
     withdrawSwap: vi.fn(),
     respondSwap: vi.fn(),
+    proposeRematch: vi.fn(),
+    respondRematch: vi.fn(),
     toSpectator: vi.fn(),
     moveToSpectator: vi.fn(),
     inviteDown: vi.fn(),

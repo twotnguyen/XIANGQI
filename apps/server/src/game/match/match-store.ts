@@ -27,6 +27,11 @@ import {
   validClock,
 } from "./match-store-core.js";
 import { MatchDrawStore } from "./match-store-draw.js";
+import {
+  UNLIMITED_TIME_CONTROL,
+  inactivityExpired,
+  unlimitedClock,
+} from "./inactivity.js";
 
 export type CurrentMatch = RoomMatch & { match: MatchView | null };
 /**
@@ -56,7 +61,7 @@ export class MatchStore extends MatchDrawStore {
       assertUuid(value);
     if (
       input.redId === input.blackId ||
-      ![300, 600, 900].includes(input.timeControlSeconds) ||
+      ![0, 300, 600, 900].includes(input.timeControlSeconds) ||
       !Number.isFinite(input.startedAt.getTime())
     )
       reject("MATCH_INVALID_INPUT", "Dữ liệu bắt đầu ván không hợp lệ.", 400);
@@ -113,7 +118,12 @@ export class MatchStore extends MatchDrawStore {
     const position = encodePosition(initialPosition());
     const matchId = randomUUID();
     const initialClock = validClock(
-      clock.start(input.timeControlSeconds as 300 | 600 | 900, input.startedAt),
+      input.timeControlSeconds === UNLIMITED_TIME_CONTROL
+        ? unlimitedClock(input.startedAt)
+        : clock.start(
+            input.timeControlSeconds as 300 | 600 | 900,
+            input.startedAt,
+          ),
     );
     await client.query(
       "INSERT INTO public.matches(id,room_id,mode,status,red_user_id,black_user_id,position,time_control,clock,created_at) VALUES($1,$2,'ONLINE','ACTIVE',$3,$4,$5,$6,$7,$8)",
@@ -218,9 +228,8 @@ export class MatchStore extends MatchDrawStore {
         "MATCH_VERSION_CONFLICT",
         "Thế cờ đã thay đổi.",
       );
-    const clock = this.needClock();
     const at = this.now();
-    const checked = clock.beforeAction(match.clock, match.turn, at);
+    const checked = this.checkTime(match, at);
     validClock(checked.clock);
     if (checked.expired) {
       if (checked.expired !== match.turn) corrupt();
@@ -228,7 +237,10 @@ export class MatchStore extends MatchDrawStore {
         scope.client,
         row,
         history.at(-1)!,
-        { reason: "TIMEOUT", winner: opposite(checked.expired) },
+        {
+          reason: match.inactivity ? "INACTIVITY" : "TIMEOUT",
+          winner: opposite(checked.expired),
+        },
         at,
         checked.clock,
         match.lastMove,
@@ -257,7 +269,10 @@ export class MatchStore extends MatchDrawStore {
       version: String(version),
       ply: row.ply + 1,
       active_move_ids: [...active, moveId],
-      clock: validClock(clock.afterMove(checked.clock, next.turn, at)),
+      clock: match.inactivity
+        ? unlimitedClock(at)
+        : validClock(this.needClock().afterMove(checked.clock, next.turn, at)),
+      inactivity_extensions: 0,
     };
     const lastMove = { from: input.from, to: input.to, eventVersion: version };
     const outcome = ending([...history, next]);
@@ -303,7 +318,7 @@ export class MatchStore extends MatchDrawStore {
            SELECT $1,event.match_id,$3,event.version,$5,$6,$7 FROM event
            RETURNING id
          ), upd AS (
-           UPDATE public.matches SET position=$8,version=$9,ply=$10,active_move_ids=$11,clock=$12,repetition_counts=$13,status=$14,outcome=$15,ended_at=$16,proposal=NULL,updated_at=$20
+          UPDATE public.matches SET position=$8,version=$9,ply=$10,active_move_ids=$11,clock=$12,repetition_counts=$13,status=$14,outcome=$15,ended_at=$16,proposal=NULL,updated_at=$20,inactivity_extensions=$21
            WHERE id=$2 RETURNING id
          ), bump AS (
            UPDATE public.rooms SET room_version=room_version+1 WHERE id=$17 RETURNING id,room_version
@@ -331,6 +346,7 @@ export class MatchStore extends MatchDrawStore {
           randomUUID(),
           payload,
           this.now(),
+          updated.inactivity_extensions,
         ],
       );
       result = this.view(updated, next, lastMove);
@@ -372,11 +388,15 @@ export class MatchStore extends MatchDrawStore {
         "Thế cờ đã thay đổi.",
       );
     const at = this.now();
-    const checked = this.needClock().beforeAction(match.clock, match.turn, at);
+    const checked = this.checkTime(match, at);
     validClock(checked.clock);
     if (checked.expired && checked.expired !== match.turn) corrupt();
     const outcome: MatchOutcome = {
-      reason: checked.expired ? "TIMEOUT" : "RESIGN",
+      reason: checked.expired
+        ? match.inactivity
+          ? "INACTIVITY"
+          : "TIMEOUT"
+        : "RESIGN",
       winner: opposite(checked.expired ?? side),
     };
     return {
@@ -398,6 +418,81 @@ export class MatchStore extends MatchDrawStore {
             },
           }
         : {}),
+    };
+  }
+
+  /** Ván không giới hạn: người đang tới lượt xác nhận "Tôi còn đây" để reset cửa sổ chống treo (tối đa 2 lần liên tiếp). */
+  async stillHere(
+    scope: MatchScope,
+    input: { matchId: string; matchVersion: number },
+  ): Promise<MatchCommandResult> {
+    const { room, row, side, history, match } = await this.context(
+      scope,
+      input,
+    );
+    if (row.status !== "ACTIVE")
+      return this.denied(match, "MATCH_FINISHED", "Ván đã kết thúc.");
+    if (room.current_match_id !== row.id || room.status !== "PLAYING")
+      reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+    const ended = await this.expiredDisconnect(
+      scope,
+      row,
+      match,
+      history.at(-1)!,
+    );
+    if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
+    if (match.version !== input.matchVersion)
+      return this.denied(
+        match,
+        "MATCH_VERSION_CONFLICT",
+        "Thế cờ đã thay đổi.",
+      );
+    if (!match.inactivity)
+      return this.denied(
+        match,
+        "MATCH_NOT_UNLIMITED",
+        "Ván này có đồng hồ, không cần xác nhận.",
+      );
+    if (side !== match.turn)
+      return this.denied(match, "MATCH_NOT_YOUR_TURN", "Chưa đến lượt bạn.");
+    const at = this.now();
+    if (inactivityExpired(match.clock, at)) {
+      const terminal = await this.end(
+        scope.client,
+        row,
+        history.at(-1)!,
+        { reason: "INACTIVITY", winner: opposite(match.turn) },
+        at,
+        match.clock,
+        match.lastMove,
+      );
+      return this.denied(
+        terminal,
+        "MATCH_INACTIVITY_EXPIRED",
+        "Đã hết thời gian xác nhận.",
+      );
+    }
+    if (at.getTime() < Date.parse(match.inactivity.promptAt))
+      return this.denied(
+        match,
+        "MATCH_INACTIVITY_NOT_DUE",
+        "Chưa đến lúc hỏi xác nhận.",
+      );
+    if (match.inactivity.confirmsLeft <= 0)
+      return this.denied(
+        match,
+        "MATCH_INACTIVITY_LIMIT",
+        "Đã xác nhận tối đa, cần đi nước để tiếp tục.",
+      );
+    const next = {
+      ...row,
+      clock: unlimitedClock(at),
+      inactivity_extensions: row.inactivity_extensions + 1,
+    };
+    await this.update(scope.client, next);
+    return {
+      applied: true,
+      match: this.view(next, history.at(-1)!, match.lastMove),
     };
   }
   /**
@@ -422,6 +517,7 @@ export class MatchStore extends MatchDrawStore {
         "DISCONNECT",
         "DRAW_AGREEMENT",
         "SERVER_RESTART",
+        "INACTIVITY",
       ].includes(reason) ||
       (["DRAW_AGREEMENT", "SERVER_RESTART"].includes(reason)
         ? winner !== null
@@ -429,7 +525,24 @@ export class MatchStore extends MatchDrawStore {
     )
       reject("MATCH_INVALID_OUTCOME", "Kết quả máy chủ không hợp lệ.", 400);
     let clock = row.clock;
-    if (reason === "TIMEOUT") {
+    if (reason === "INACTIVITY") {
+      if (
+        row.time_control !== UNLIMITED_TIME_CONTROL ||
+        !inactivityExpired(validClock(row.clock), input.at) ||
+        winner !== opposite(history.at(-1)!.turn)
+      )
+        reject(
+          "MATCH_INVALID_OUTCOME",
+          "Chưa hết thời gian xác nhận hoặc phe thắng không hợp lệ.",
+          400,
+        );
+    } else if (reason === "TIMEOUT") {
+      if (row.time_control === UNLIMITED_TIME_CONTROL)
+        reject(
+          "MATCH_INVALID_OUTCOME",
+          "Ván không giới hạn không có hết giờ.",
+          400,
+        );
       const turn = history.at(-1)!.turn;
       const checked = this.needClock().beforeAction(
         validClock(row.clock),

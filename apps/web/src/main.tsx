@@ -5,7 +5,6 @@ import type { HealthStatus } from "@xiangqi/shared";
 import "./shared/styles/global.css";
 import "./shared/theme/theme.css";
 import { SessionProvider } from "./features/auth/SessionProvider.js";
-import { applyTheme, readStoredTheme } from "./shared/theme/theme.js";
 import { getApiBaseUrl } from "./shared/api.js";
 import { LoadingScreen } from "./shared/ui/primitives.js";
 import { getPieceStyle, setPieceStyle } from "./shared/preferences.js";
@@ -154,11 +153,6 @@ if (previewBoard) document.title = "Cờ Tướng Online · Bàn cờ";
 if (previewRegistration) document.title = "Cờ Tướng Online · Đăng ký";
 if (previewLogin) document.title = "Cờ Tướng Online · Đăng nhập";
 
-applyTheme(
-  readStoredTheme(window.localStorage),
-  document.documentElement.dataset,
-  window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
-);
 setPieceStyle(getPieceStyle());
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

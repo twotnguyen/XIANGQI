@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { PublicRoomView } from "@xiangqi/shared";
 import {
   Button,
   EmptyState,
@@ -14,7 +15,7 @@ export interface PublicRoom {
   name: string;
   hostName: string;
   hostGuest: boolean;
-  timeMinutes: 5 | 10 | 15;
+  timeMinutes: PublicRoomView["timeMinutes"];
   status: "waiting" | "playing";
   seats: 0 | 1 | 2;
   viewers: number;
@@ -328,7 +329,10 @@ export function LobbyShell({
                 </div>
                 <div className="xq-room-meta">
                   <span className="xq-meta-item">
-                    ⏱️ {room.timeMinutes} phút / bên
+                    ⏱️{" "}
+                    {room.timeMinutes === 0
+                      ? "Không giới hạn"
+                      : `${room.timeMinutes} phút / bên`}
                   </span>
                   <span className="xq-meta-item">
                     {room.status === "waiting" ? "Đang chờ" : "Đang đấu"}

@@ -51,6 +51,7 @@ function fixture() {
         graceUntil: { red: null, black: "2026-10-11T12:01:00Z" },
         countdown: null,
         swapOffer: null,
+        rematchOffer: null,
         downOffer: null,
         spectators: [],
       },
@@ -70,6 +71,8 @@ function fixture() {
       blackMs: 600000,
       runningSinceEpochMs: at.getTime() - 2000,
     },
+    inactivity: null,
+    unlimited: false,
   };
   const roomStore = {
     snapshot: vi.fn(async () => room),
@@ -222,6 +225,7 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         swapOffer: null,
         downOffer: null,
         swapCooldownUntil: null, // proposer-only visibility is enforced in room-store-core; covered by room-side-swap DB tests
+        rematchOffer: null,
         spectators: [],
       },
       match: {
@@ -234,6 +238,7 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         winner: null,
         endedAt: null,
         result: null,
+        inactivity: null,
       },
       clocks: {
         redMs: 598000,

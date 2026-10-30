@@ -41,6 +41,10 @@ const messages = {
   MATCH_DRAW_EXPIRED: "Đề nghị không còn hiệu lực.",
   MATCH_DRAW_SENDER_REQUIRED: "Chỉ người gửi được rút đề nghị.",
   MATCH_DRAW_RECEIVER_REQUIRED: "Chỉ người nhận được phản hồi đề nghị.",
+  MATCH_NOT_UNLIMITED: "Ván này có đồng hồ, không cần xác nhận.",
+  MATCH_INACTIVITY_NOT_DUE: "Chưa đến lúc hỏi xác nhận.",
+  MATCH_INACTIVITY_LIMIT: "Đã xác nhận tối đa, cần đi nước để tiếp tục.",
+  MATCH_INACTIVITY_EXPIRED: "Đã hết thời gian xác nhận.",
   READY_DENIED: "Không thể Sẵn sàng lúc này",
   PLAYER_DISCONNECTED: "Chưa có kết nối điều khiển",
   ROOM_INPUT_INVALID: "Thông tin phòng không hợp lệ",
@@ -161,15 +165,16 @@ export class GameRooms implements RoomCollaborator {
       }
     }
     const current = room.room;
-    const clock = match
-      ? match.status === "ACTIVE"
-        ? this.clock.beforeAction(
-            match.clock,
-            match.turn,
-            new Date(room.serverNow),
-          ).clock
-        : match.clock
-      : null;
+    const clock =
+      match && !match.unlimited
+        ? match.status === "ACTIVE"
+          ? this.clock.beforeAction(
+              match.clock,
+              match.turn,
+              new Date(room.serverNow),
+            ).clock
+          : match.clock
+        : null;
     const matchScope: MatchScope = {
       client: scope.client,
       actor: scope.actor,
@@ -223,6 +228,7 @@ export class GameRooms implements RoomCollaborator {
         countdown: current.countdown
           ? { token: current.countdown.token, dueAt: current.countdown.dueAt }
           : null,
+        rematchOffer: current.rematchOffer,
         swapOffer: current.swapOffer ?? null,
         swapCooldownUntil: current.swapCooldownUntil ?? null,
         downOffer: current.downOffer ?? null,
@@ -245,6 +251,7 @@ export class GameRooms implements RoomCollaborator {
             winner: match.outcome?.winner ?? null,
             endedAt: match.endedAt,
             result: match.outcome?.reason ?? null,
+            inactivity: match.inactivity ?? null,
           }
         : null,
       clocks:
@@ -323,6 +330,12 @@ export class GameRooms implements RoomCollaborator {
             command.action.payload,
           );
           break;
+        case "match.still-here":
+          result = await this.matches.stillHere(
+            matchScope,
+            command.action.payload,
+          );
+          break;
         case "match.draw.offer":
         case "match.draw.withdraw":
         case "match.draw.respond":
@@ -377,5 +390,18 @@ export class GameRooms implements RoomCollaborator {
         };
       throw error;
     }
+  }
+  /**
+   * Xếp `media.revoke-user` cho tab cũ cùng transaction đổi controller; room store kiểm scope và sở hữu outbox.
+   */
+  async queueMediaRevoke(
+    client: PoolClient,
+    identity: RealtimeIdentity,
+    roomId: string,
+  ): Promise<void> {
+    await this.rooms.queueMediaRevoke(
+      this.scope(client, identity, roomId),
+      roomId,
+    );
   }
 }

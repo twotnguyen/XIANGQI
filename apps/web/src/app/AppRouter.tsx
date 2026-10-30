@@ -1,6 +1,15 @@
 import { EmailVerification } from "../features/profile/EmailVerification.js";
 import { EmailStatusBanner } from "../features/profile/EmailStatusBanner.js";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { AccountThemeSync } from "../features/profile/AccountThemeSync.js";
+import {
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode, RefObject } from "react";
 import {
   GuestRequestError,
@@ -32,6 +41,8 @@ import {
 import { FriendsBell } from "../features/friends/FriendsBell.js";
 import { RoomInvitePopup } from "../features/friends/RoomInvitePopup.js";
 import { createFriendClient } from "../features/friends/friend-client.js";
+import { FriendsPresence } from "../features/friends/FriendsPresence.js";
+import { RoomFriendInvite } from "../features/friends/RoomFriendInvite.js";
 import {
   createRoomClient,
   type RoomClient,
@@ -99,9 +110,14 @@ const InviteEntry = lazy(() =>
     default: module.InviteEntry,
   })),
 );
-const FriendsPage = lazy(() =>
-  import("../features/friends/FriendsPage.js").then((module) => ({
-    default: module.FriendsPage,
+const FriendsRoute = lazy(() =>
+  import("./FriendChallenge.js").then((module) => ({
+    default: module.FriendsRoute,
+  })),
+);
+const DirectChatHub = lazy(() =>
+  import("../features/friends/DirectChatHub.js").then((module) => ({
+    default: module.DirectChatHub,
   })),
 );
 const ProfilePage = lazy(() =>
@@ -168,7 +184,7 @@ function Lobby({
   requestLogout: (run: (confirmedResign: boolean) => Promise<void>) => void;
   performLogout: (confirmedResign: boolean) => Promise<void>;
 }) {
-  const { sessionFetch, getRealtimeProof } = useSession();
+  const { sessionFetch, getRealtimeProof, state: sessionState } = useSession();
   const publicClient = useMemo(
     () => makePublicRoomClient(sessionFetch),
     [sessionFetch],
@@ -332,6 +348,7 @@ function Lobby({
         <Dialog open onClose={() => setDialog(false)} title="Tạo phòng">
           <Suspense fallback={<p role="status">Đang tải biểu mẫu…</p>}>
             <CreateRoomForm
+              allowUnlimited={sessionState.status === "active-member"}
               onCreate={async (input) => onEntered(await client.create(input))}
             />
           </Suspense>
@@ -700,6 +717,12 @@ export function AppRouter() {
   else if (route.name === "settings" && signedIn)
     content = (
       <ProfilePage
+        key={
+          session.state.status === "active-member"
+            ? session.state.userId
+            : "guest"
+        }
+        authorizedFetch={session.authorizedFetch}
         client={profileClient}
         guest={session.state.status === "guest"}
         onSaved={setProfileName}
@@ -720,7 +743,19 @@ export function AppRouter() {
       <InviteEntry client={client} onEntered={enterRoom} code={route.token} />
     );
   else if (route.name === "friends" && session.state.status === "active-member")
-    content = <FriendsPage client={friendClient} />;
+    content = (
+      <FriendsRoute
+        key={session.state.userId}
+        friends={friendClient}
+        rooms={client}
+        onEntered={enterRoom}
+        blockedReason={
+          where && where.kind !== "none"
+            ? "Bạn đang ở trong một ván/phòng khác."
+            : undefined
+        }
+      />
+    );
   else if (route.name === "history" && session.state.status === "active-member")
     content = (
       <HistoryPage
@@ -775,6 +810,10 @@ export function AppRouter() {
           client={client}
           getProof={session.getRealtimeProof}
           mediaClient={mediaClient}
+          isMember={actor.status === "active-member"}
+          renderInviteFriends={(roomId) => (
+            <RoomFriendInvite client={friendClient} roomId={roomId} />
+          )}
           onLeft={(message) => {
             setRoomNotice(message ?? "");
             navigate("/lobby");
@@ -818,6 +857,12 @@ export function AppRouter() {
   );
   return (
     <div ref={container} className="xq-ui">
+      <AccountThemeSync
+        userId={
+          session.state.status === "active-member" ? session.state.userId : null
+        }
+        authorizedFetch={session.authorizedFetch}
+      />
       {roomNotice && signedIn && (
         <Notice message={roomNotice} onDismiss={() => setRoomNotice("")} />
       )}
@@ -828,7 +873,15 @@ export function AppRouter() {
           user={shellUser}
           bell={
             session.state.status === "active-member" ? (
-              <FriendsBell client={friendClient} />
+              <Fragment key={session.state.userId}>
+                <FriendsBell client={friendClient} />
+                <Suspense fallback={null}>
+                  <DirectChatHub
+                    client={friendClient}
+                    userId={session.state.userId}
+                  />
+                </Suspense>
+              </Fragment>
             ) : undefined
           }
           onLogout={() => guardedLogout(performSessionLogout)}
@@ -841,7 +894,10 @@ export function AppRouter() {
           )}
           {page}
           {session.state.status === "active-member" && (
-            <RoomInvitePopup client={friendClient} />
+            <Fragment key={session.state.userId}>
+              <FriendsPresence client={friendClient} />
+              <RoomInvitePopup client={friendClient} onEntered={enterRoom} />
+            </Fragment>
           )}
         </AppShell>
       ) : (

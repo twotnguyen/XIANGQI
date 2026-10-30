@@ -150,10 +150,12 @@ describe.skipIf(!databaseUrl)("Room runtime media revocation", () => {
       "INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'SPECTATOR',NULL)",
       [g.roomId, former.id],
     );
-    const token = await media.tokenFor(former.id, g.roomId, {
-      camera: true,
-      mic: true,
-    });
+    const token = await media.tokenFor(
+      former.id,
+      g.roomId,
+      { camera: true, mic: true },
+      randomUUID(),
+    );
     expect(decodeJwt(token.token).video).toMatchObject({
       room: stageRoomName(g.roomId),
       canPublish: false,

@@ -314,6 +314,7 @@ test.each([
   ["duplicate roomID", [room(), room()]],
   ["invalid name", [{ ...room(), name: "x".repeat(61) }]],
   ["private status", [{ ...room(), status: "locked" }]],
+  ["unsupported time", [{ ...room(), timeMinutes: 7 }]],
 ])("authoritative %s is rejected safely", async (_name, rows) => {
   const url = await setup(async () => ({
     read: async () => rows as PublicRoomView[],
@@ -328,6 +329,16 @@ test.each([
     message: "Không thể tải danh sách phòng",
   });
   expect(snapshots).not.toHaveBeenCalled();
+});
+test("time 0 unlimited room passes the public feed boundary", async () => {
+  const url = await setup(async () => ({
+    read: async () => [{ ...room(), timeMinutes: 0 }],
+  }));
+  const socket = connect(url);
+  const initial = event(socket, "public.rooms");
+  socket.connect();
+  const first = (await initial) as { rooms: PublicRoomView[] };
+  expect(first.rooms).toEqual([expect.objectContaining({ timeMinutes: 0 })]);
 });
 
 test("recovery from SQL503 publishes a fresh successful snapshot even when rooms are unchanged", async () => {
