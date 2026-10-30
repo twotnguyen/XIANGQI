@@ -437,7 +437,7 @@ Popup dùng **tên người thực sự gửi**, không luôn ghi Host. Quyền 
 
 ### 15.2 Nhắn tin trực tiếp và tin chưa đọc — US-P2-18 / XIAN-132
 
-- Chỉ hai thành viên accepted friends đọc/gửi; kiểm độc lập API/socket/RLS. Người lạ/bên thứ ba/Khách bị từ chối. Giữ filter/rate limit hiện hành; **sticker vẫn P2**.
+- Chỉ hai thành viên accepted friends đọc/gửi; kiểm độc lập API/socket/RLS. Người lạ/bên thứ ba/Khách bị từ chối. Giữ filter/rate limit hiện hành; **sticker DM đã lên P1 theo BA0.24**, không mở DM cho Khách dù Khách được sticker trong kênh phòng đúng vai trò.
 - Lịch sử **lưu bền**, không xóa khi đóng phòng/hủy bạn. Hủy bạn thu hồi đọc/gửi ngay và ẩn hội thoại/history, kể cả hội thoại mở/request/socket đang chạy; kết bạn lại hiện lại.
 - Badge là tổng **incoming chưa đọc từ bạn hiện tại**, không tính tin mình. Tách khỏi chuông kết bạn và phản hồi lời mời phòng.
 - Chỉ read khi tin thực sự hiện trong **viewport của hội thoại ở tab hoạt động**; tải ngầm/tab nền/tin ngoài vùng nhìn không đủ. Server lưu/đồng bộ read state giữa thiết bị.

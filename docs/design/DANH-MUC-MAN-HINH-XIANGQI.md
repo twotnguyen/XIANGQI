@@ -265,7 +265,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 5. **`MODAL-MATCHMAKING` (Hàng Đợi Tìm Trận Ranked):** Radar quét đối thủ theo Elo ($\Delta Elo \le 100$, $\pm 50$ mỗi 10s), đồng hồ đếm giây. Nút *"Hủy tìm trận"* (hủy tự do khi chưa thấy đối thủ; khóa nút khi `MATCH_FOUND`).
 6. **`MODAL-AI-SETUP` (Chọn Cấp Độ & Phe Cờ AI):** Mở từ Sảnh. Chọn cấp độ Dễ/Trung bình/Khó. Chọn phe cờ: 🔴 Đỏ (đi trước), ⚫ Đen (đi sau - máy tự đi nước đầu), 🎲 Ngẫu nhiên (50/50).
 7. **`MODAL-OTP-USERNAME` (Xác Thực OTP Đổi Username):** Mở từ Cài đặt hồ sơ. Quy trình 4 bước: 1) Bấm đổi $\rightarrow$ 2) Nhập 6 số OTP (hạn 3p, giới hạn nhập sai) $\rightarrow$ 3) Xác thực mở khóa $\rightarrow$ 4) Nhập username mới và xác nhận.
-8. **`MODAL-DIRECT-CHAT` (Khung Chat Riêng 1-1 Bạn Bè) — P1:** mở từ Bạn bè hoặc badge DM; chỉ accepted friends. Lịch sử bền cuộn nội bộ; filter/rate limit hiện hành. Read chỉ khi tin trong viewport/tab hoạt động; tải nền không read; server đồng bộ thiết bị. Hủy bạn thu hồi đọc/gửi ngay/ẩn lịch sử và bỏ khỏi badge nhưng giữ read state; refriend hiện lại và tính đúng unread. Khay 12 sticker **vẫn P2**.
+8. **`MODAL-DIRECT-CHAT` — P1:** mở từ Bạn bè/badge DM, chỉ accepted friends; lịch sử bền cuộn nội bộ, filter/rate hiện hành. Read khi tin trong viewport/tab hoạt động; tải nền không read, đồng bộ thiết bị. Unfriend thu hồi đọc/gửi/ẩn lịch sử và bỏ khỏi badge nhưng giữ read state; refriend hiện lại. **Đủ12 sticker P1 theo BA0.24**, không mở DM cho Khách.
 9. **`MODAL-SIDE-SWAP-PROMPT` (Nhận Đề Nghị Đổi Bên):** Hiện phía người nhận khi đối thủ xin đổi bên trong phòng chờ. Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý"* và *"Từ chối"*.
 10. **`MODAL-DRAW-PROMPT` (Nhận Đề Nghị Xin Hòa):** Hiện phía người nhận khi đối thủ xin hòa trong ván. Đồng hồ đếm lùi **30 giây**. Nút *"Chấp nhận Hòa"* và *"Từ chối"*. **Không giữ focus**, bàn cờ tiếp tục thao tác theo quyền lượt; X/Esc thu gọn, có nút mở lại, không tạm dừng đồng hồ/hạn; theo `SCR-RULE-06`.
 11. **`MODAL-UNDO-PROMPT` (Nhận Đề Nghị Xin Đi Lại):** Hiện phía người nhận khi đối thủ bấm xin đi lại trong phòng tự tạo hoặc ghép ngẫu nhiên (P2, cùng luật BA 3.2/3.6). Đồng hồ đếm lùi **30 giây**. Nút *"Đồng ý cho đi lại"* và *"Từ chối"*. **Không giữ focus**, bàn cờ tiếp tục thao tác theo quyền lượt; X/Esc thu gọn, có nút mở lại, không tạm dừng đồng hồ/hạn; theo `SCR-RULE-06`.
@@ -279,9 +279,11 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 ## 5. CHI TIẾT 4 KHUNG NHÚNG CHỨC NĂNG (EMBEDDED PANELS)
 
 1. **`PANEL-NAVBAR` (Thanh Điều Hướng Header):** cố định đầu trang; Logo, Sảnh/Bảng Xếp Hạng/Bạn bè/Lịch sử, Elo theo phân kỳ, Avatar/Display Name mở cài đặt. Chuông có số đếm pending friend request → `/friends` tab lời mời theo BA 0.19. **Badge DM P1** theo BA 0.20 đếm incoming chưa đọc từ bạn hiện tại, mở hội thoại; tách số đếm/đích của chuông kết bạn và phản hồi mời phòng.
-2. **`PANEL-CHAT` (Khung Chat 2 Kênh & Sticker):** chat phòng xóa khi đóng. Casual ngẫu nhiên/Ranked P2 chỉ Kênh Riêng, không người xem/Kênh Chung. Kênh Riêng chỉ hai người ngồi ghế: cặp mới không đọc tin cũ; cùng cặp đổi bên/chơi tiếp/**Tái đấu custom P1** giữ chat. Người xem chỉ Kênh Chung từ lúc vào. Desktop custom mặc định chỉ Kênh Riêng, tự mở/ẩn thêm Kênh Chung để xem đồng thời hai khung; mobile một khung chuyển tab, mặc định Kênh Riêng. Ẩn khung không đổi quyền. Filter `***`; 12 sticker vẫn P2. DM P1 lưu bền, không áp xóa theo phòng.
+2. **`PANEL-CHAT` (Khung Chat2 kênh & Sticker):** phòng đóng xóa chat. Casual/Ranked P2 chỉ Riêng; custom có Riêng cho hai ghế, Chung cho mọi người trong phòng. Cặp mới không đọc chat riêng cũ, cùng cặp đổi bên/chơi tiếp/Tái đấu custom giữ chat. Người xem chỉ Chung từ lúc vào. Desktop mặc định Riêng, mở/ẩn thêm Chung; mobile chuyển tab. Filter `***`; **12 sticker P1 cho cả thành viên/Khách đúng vai trò**, một sticker là một tin theo rate hiện hành; không gửi lệnh ván từ cảm xúc. DM P1 bền, chỉ accepted friends, không xóa theo phòng (BA0.24).
 3. **`PANEL-MEDIA` (Khung Camera Face Cam & Micro LiveKit SFU):** Nằm ở cột trái `SCR-GAME-ROOM` và trong `SCR-WAITING-ROOM` (BA 0.13). Lỗi dịch vụ media: ván tiếp tục, hiện "Camera/mic tạm thời không dùng được" (BA 0.14). 2 video trực tiếp SFU của 2 người chơi. Nút Bật/Tắt độc lập Cam & Mic (kèm 3 mức chia sẻ **chung cho camera và mic đang bật**: Không chia sẻ / Chỉ đối thủ / Cả đối thủ và người xem; ghép ngẫu nhiên và Ranked chỉ có 2 mức đầu). Phòng tự tạo chọn sẵn **Chỉ đối thủ**, camera/mic mặc định Tắt; muốn người xem thấy/nghe phải chủ động chọn chia sẻ cả người xem (BA 4.1, PO duyệt 05/10). Ở Ranked hình/tiếng đối thủ mặc định ẩn, có nút *"Hiện"* và *"Tắt ngay"*. Người xem tuyệt đối cấm bật cam/mic (chỉ xem/nghe). Ván Ranked mở tự do cho 2 người chơi giao lưu.
 4. **`PANEL-SPECTATORS` (Danh Sách Người Xem Trong Phòng Tự Tạo):** Nằm ở cột phải `SCR-GAME-ROOM` (ghép ngẫu nhiên và Ranked không có người xem). Tiêu đề: *"Người xem (X / N)"* (N = số người xem tối đa của phòng: 1–5). Cả Chủ phòng và người chơi còn lại đều thấy và có quyền bấm nút *"Kick"* cạnh tên mỗi người xem.
+
+**Mời người xem xuống ghế — BA0.24:** Host ở WAITING/còn ghế, một pending/phòng, hạn30giây không giữ chỗ. Khung nonmodal chỉ Chấp nhận/Từ chối và đếm ngược; không X/Esc riêng, không trap focus. Sau Từ chối/hết hạn, cooldown10giây Host–phòng chung người nhận/tab; hiển thị lý do/hạn còn lại. Người chơi đủ quyền tự xuống xem nhưng hết chỗ/N=0 thấy nút disabled có lý do; Host không có nút tự xuống.
 
 ---
 
@@ -298,8 +300,8 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 **Ưu tiên hiện hành BA 0.21:** **32 P1 / 5 P2**, tổng 37. OTP Username và chuyển media tab chuyển P1; tìm Username dùng bề mặt Auth hiện có, theme nằm ở Hồ sơ. Không tự thêm trang/đổi lịch/Jira hoặc coi danh mục là bằng chứng triển khai.
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
-* **Lối vào P2 cấp điều hướng chính** (Ghép ngẫu nhiên, Đánh Hạng, Lịch sử, Bảng xếp hạng) `DISABLED` + “Sắp ra mắt”. **Nhắn tin/Thách đấu thuộc P1** theo BA 0.20, trạng thái phụ thuộc quyền/quan hệ/presence/cooldown, không dùng nhãn Sắp ra mắt.
-* **Chức năng P2 nằm sâu** (Sticker, Xin đi lại, Xem lại, đi lại với máy, Lưu lịch sử, widget AI) ẩn hoàn toàn ở P1. Không áp quy tắc ẩn này lên Tái đấu custom, DM hoặc Không giới hạn/chống treo đã chuyển P1.
+* **Lối vào còn P2** (Ghép ngẫu nhiên, Đánh Hạng, Bảng xếp hạng) `DISABLED` + “Sắp ra mắt”. History custom/AI của thành viên đã P1 theo BA0.22; Nhắn tin/Thách đấu P1 theo0.20, phụ thuộc quyền/quan hệ/presence/cooldown, không Sắp ra mắt. Khách không History/Bạn bè/DM.
+* **Chức năng còn P2 nằm sâu** (phần Ranked/Casual chưa chuyển, widget AI) ẩn ở P1. Không ẩn sticker, Undo custom/AI, History custom/AI/Replay/export hoặc phần đã chuyển theo BA0.20–0.24 chỉ vì mã nguồn còn tiền tố P2.
 * Kết quả custom P1 có Ở lại/Rời và Tái đấu chọn phe cho cặp đủ quyền; AI Ván mới/Về Sảnh. Xem lại vẫn P2. QR bị bỏ, không nút/ảnh ở cả hai phân kỳ.
 
 | STT | Mã Thành Phần | Tên Gọi Nghiệp Vụ | Phân Loại | Vị Trí / URL | Ưu tiên |
@@ -335,7 +337,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 29 | `MODAL-CONFIRM-KICK` | Xác nhận đuổi người xem (chặn vào lại đến đóng phòng)| Modal Dialog | Mở khi bấm Kick người xem | **P1** |
 | 30 | `MODAL-MATCH-RESULT` | P1: kết quả, Ở lại/Rời, Tái đấu custom hoặc Ván mới/Về Sảnh; P2: Elo/Tái đấu Casual/Replay | Modal Dialog | Khi ván kết thúc | **P1** |
 | 31 | `PANEL-NAVBAR` | Thanh điều hướng Header toàn cục + Icon thông báo | Embedded Panel| Cố định đầu mọi trang | **P1** |
-| 32 | `PANEL-CHAT` | P1: chat 2 kênh, bộ lọc từ cấm; P2: 12 sticker | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
+| 32 | `PANEL-CHAT` | P1: chat2 kênh, filter và12 sticker cho thành viên/Khách theo vai trò (BA0.24) | Embedded Panel | Cột phải `SCR-GAME-ROOM` | **P1** |
 | 33 | `PANEL-MEDIA` | Face cam & Mic LiveKit SFU 2 người chơi (3 mức chia sẻ) | Embedded Panel| Cột trái `SCR-GAME-ROOM` | **P1** |
 | 34 | `PANEL-SPECTATORS` | Danh sách người xem (tối đa N, 1–5) + nút Kick cho 2 bên | Embedded Panel| Cột phải `SCR-GAME-ROOM` | **P1** |
 | 35 | `ALERT-INACTIVITY-BANNER` | P1: không đi 3 phút → cảnh báo 30 giây; tối đa hai lần Tôi còn đây | System Alert | Không modal/không che bàn/Đầu hàng | **P1** |

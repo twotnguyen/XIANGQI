@@ -228,6 +228,8 @@ Chu kỳ lặp tính từ lần xuất hiện thứ nhất đến thứ ba của
 
 Nguồn: BA 0.12, 0.17, 3.1, 3.3–3.5, 10.4; US-04.1–04.3.
 
+Đặc tả chi tiết và đối chiếu code/P2: [P1 · YC4 — Bàn cờ và luật](P1-YC4-BAN-CO-VA-LUAT.md). **PO chốt BA0.22:** History custom/AI, lưu AI/Bỏ dở, Replay, FEN/PGN, Undo AI chỉ thành viên và Xin đi lại custom cho cả thành viên/Khách thuộc P1. Casual/Ranked, widget AI và demo mạng vẫn P2. Đây là phạm vi đã duyệt, chưa là kết quả nghiệm thu.
+
 ## 8. Vận hành ván online và sự cố — YC5
 
 - Server quyết định lượt đi, nước hợp lệ, đồng hồ và kết quả; lệnh có định danh chống trùng và phiên bản trạng thái theo hợp đồng realtime.
@@ -244,6 +246,8 @@ Nguồn: BA 0.12, 0.17, 3.1, 3.3–3.5, 10.4; US-04.1–04.3.
 
 Nguồn: BA 0.17, 1.8, 3.3, 3.5–3.6, 8.3; US-05.1–05.3.
 
+Đặc tả và bảng so sánh P2: [P1 · YC5 — Ván online và sự cố](P1-YC5-VAN-ONLINE-VA-SU-CO.md). Theo BA 0.20–0.23, Undo custom/Khách, Tái đấu custom, Không giới hạn và **demo mạng chỉ môi trường demo** thuộc P1. Hai mốc mất mạng bằng nhau tuyệt đối sau grace xử hòa riêng; deadline đến trước quyết định, bằng nhau TIMEOUT → DISCONNECT → INACTIVITY. Casual/Ranked giữ P2; mới chốt đặc tả, chưa nghiệm thu thay đổi.
+
 ## 9. Người xem và kiểm soát phòng — YC6
 
 - Người xem theo dõi cùng trạng thái realtime, không có độ trễ cố ý.
@@ -258,6 +262,8 @@ Nguồn: BA 0.17, 1.8, 3.3, 3.5–3.6, 8.3; US-05.1–05.3.
 **Bằng chứng cần có:** không vượt trần khi chuyển vai trò đồng thời; chặn người đã bị đuổi qua mọi lối vào; thu hồi media thật; reconnect trong/phía ngoài hạn; người xem không gửi được lệnh chơi bằng API/socket trực tiếp.
 
 Nguồn: BA 2.8, 4.1–4.3, 8.3; US-06.3.
+
+Đặc tả và đối chiếu P2: [P1 · YC6 — Phòng và người xem](P1-YC6-PHONG-VA-NGUOI-XEM.md). BA0.24 chốt12 sticker P1 cho thành viên/Khách đúng vai trò; mời xuống ghế cooldown10giây Host–phòng, khung hai nút/đếm ngược, không X/Esc riêng. Casual/Ranked giữ P2; mới chốt đặc tả, chưa nghiệm thu code.
 
 ## 10. Chat, camera và mic — YC7
 
@@ -630,16 +636,16 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 PO bỏ theo BA 0.20: không QR/ảnh/nút tải hoặc copy QR ở P1/P2; chỉ **Sao chép link / Sao chép mã**, vẫn giữ tab mời bạn bè. `US-P2-16`/XIAN-130 và các AC/Task QR chỉ giữ lịch sử, không còn yêu cầu triển khai hoặc quét/giải mã để nghiệm thu. Không tự sửa/xóa issue Jira.
 
 
-### 13.18 P2-17 — Bộ 12 sticker
+### 13.18 P2-17 — Bộ12 sticker, đã chuyển P1 theo BA0.24
 
 - Khay cảm xúc gửi một chạm, lưu shortcode, hiển thị SVG; không nhận HTML/SVG tùy ý từ người dùng.
 - Danh sách: `clap` (vỗ tay), `heart` (tim), `think` (suy nghĩ), `sweat` (toát mồ hôi), `cry` (khóc), `tea` (trà), `lightning` (nhanh), `silent` (cạn lời), `thumbsup` (đồng ý), `handshake` (giao lưu), `flag` (đầu hàng tâm phục), `fire` (kịch tính).
-- Theo quyền chat: người xem chỉ Chung, Ranked chỉ Riêng, DM chỉ bạn accepted; Khách không gửi sticker P2.
+- P1 cho cả thành viên/Khách theo vai trò: người chơi đúng kênh, người xem chỉ Chung; DM chỉ hai thành viên accepted friends, Khách không DM. Ranked còn P2 và chỉ Riêng.
 - Server kiểm allowlist, quyền, giới hạn tốc độ/độ dài phù hợp; không dùng shortcode để vượt bộ lọc hoặc XSS.
 
 **Nghiệm thu:** đủ 12 biểu tượng, render đúng, shortcode lạ/quyền giả bị từ chối, không bypass chống spam, hoạt động ở từng kênh có quyền.
 
-**Cần đánh giá:** có đáng giữ đủ bộ không; nhận sticker từ thành viên trong kênh có Khách cần phân biệt với quyền gửi của Khách.
+**PO đã chốt BA0.24:** đủ12 sticker cho Khách gửi/đọc trong kênh phòng được phép; không quota chống spam riêng, một sticker là một tin. Cảm xúc không thực hiện lệnh đầu hàng/đồng ý đề nghị.
 
 **Truy vết:** US-P2-17; BA 5.1, 5.3–5.4. Phụ thuộc: chat P1, P2-18 cho DM.
 
@@ -771,7 +777,7 @@ PO bỏ theo BA 0.20: không QR/ảnh/nút tải hoặc copy QR ở P1/P2; chỉ
 |---|---|
 | Thành viên dùng Undo/Tái đấu với đối thủ Khách | Undo vẫn P2; Tái đấu custom lên P1 nhưng giữ quyền nguồn không cho Khách gửi/nhận; không tự đồng ý thay họ |
 | Khách trong phòng Không giới hạn — đã chốt 0.21 | Được chơi/xem theo quyền/chỗ trống, chịu chống treo; vẫn không tự tạo mức này |
-| Sticker trong kênh có Khách | Quyền gửi bị cấm không tự suy thành cấm đọc/render tin hợp lệ của thành viên |
+| Sticker trong kênh có Khách — chốt0.24 | Khách được gửi/đọc theo vai trò; người xem chỉ Chung, không DM hoặc quyền phát media |
 | Đổi/tìm Username thiếu email — đã chốt 0.21 | Đổi tên cần bổ sung/xác minh trước; tìm tên không có đường recovery nếu thiếu email verified. Không dùng email kỹ thuật |
 | Lịch sử AI sau restart | Lưu ván kết thúc không tự bảo đảm khôi phục thế đang chơi; cần quy định mất trạng thái/bản lưu một phần rõ |
 | Chuẩn FEN/PGN cờ tướng | Cần chỉ rõ ký pháp và tương thích mong muốn trước khi nghiệm thu xuất/nhập với công cụ khác |
@@ -784,7 +790,7 @@ Không mở rộng quyền Khách hoặc giảm nghiệm thu để lấp các kh
 
 - Kết quả/lệnh bền P1 → Elo P2-01 và giới hạn cặp P2-03 → queue P2-02 → quyền Ranked P2-04 → trải nghiệm media Ranked P2-05.
 - Dữ liệu lịch sử P2-11 + Elo → bảng P2-06. AI P1 + lưu P2-12 + Undo P2-14 phải được nghiệm thu nhất quán với Replay P2-13 → xuất P2-15.
-- Bạn bè/chat P1 → DM/unread P1 → sticker DM P2. Phòng/lời mời P1 → Thách đấu P1; QR bị loại bỏ, không là dependency.
+- Bạn bè/chat P1 → DM/unread P1 → sticker DM P1 theo0.24, chỉ accepted friends. Phòng/lời mời P1 → Thách đấu P1; QR bị loại, không là dependency.
 - Cây nước/phiên bản/đồng hồ P1 → Undo online P2-08. Vòng đời custom → Tái đấu custom P1; chỉ Tái đấu Casual chờ P2-07.
 - OTP/email/phiên P1 → Đổi/Khôi phục Username P1; media/ownership P1 → chuyển media tab P1; Hồ sơ/token UI → theme đồng bộ tài khoản P1. Chưa triển khai các phần bổ sung này.
 - Widget, demo mạng và theme không thay thế chất lượng AI, reconnect hoặc trợ năng nền.
@@ -883,7 +889,7 @@ Thứ tự dưới đây theo PO: **P1 trước, đúng thứ tự YC1–YC8; ch
 | 12 | Ghép Casual — P2-07 | Chờ P1 ổn |
 | 13 | Undo online P2; Tái đấu custom và Không giới hạn/chống treo P1; Tái đấu Casual P2 | P1 bổ sung theo BA 0.20, chưa triển khai/nghiệm thu |
 | 14 | Lịch sử, lưu AI, Replay, Undo AI, xuất — P2-11–15 | Chờ P1 ổn |
-| 15 | QR bị loại; sticker P2; DM/unread và Thách đấu P1 | Hai chức năng P1 bổ sung chưa triển khai/nghiệm thu |
+| 15 | QR bị loại; sticker, DM/unread và Thách đấu P1 | Sticker mới chốt0.24, chưa nghiệm thu; bằng chứng phần khác theo đặc tả tương ứng |
 | 16 | Đổi/Khôi phục Username — mã nguồn P2-20–21, **P1** | Chốt 0.21; chưa triển khai/nghiệm thu |
 | 17 | Widget/demo còn P2; media giữa tab/theme — mã nguồn P2-24–25, **P1** | Hai bổ sung P1 chốt 0.21, chưa triển khai/nghiệm thu |
 | 18 | Quyền liên chức năng, loại trừ và nghiệm thu toàn bộ P1/P2 | Chưa đánh giá |
