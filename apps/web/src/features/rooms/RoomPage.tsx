@@ -2,6 +2,7 @@ import {
   useEffect,
   lazy,
   Suspense,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -35,6 +36,7 @@ import { Countdown } from "./RoomCountdown.js";
 import { RoomDetails } from "./RoomDetails.js";
 import { RoomInvite } from "./RoomInvite.js";
 import { RoomSeats } from "./RoomSeats.js";
+import { SwapPrompt } from "./SwapPrompt.js";
 import {
   swapMessage,
   viewerActionMessage,
@@ -93,7 +95,9 @@ export function RoomPage({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsStatus, setSettingsStatus] = useState("");
-  const [swapNow, setSwapNow] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [swapCollapsedId, setSwapCollapsedId] = useState<string | null>(null);
+  const [liveMatchId, setLiveMatchId] = useState<string | null>(null);
   const settingsPending = useRef(false);
   const audio = useRef<AudioContext | null>(null);
   const gameAudio = useRef<GameAudio | null>(null);
@@ -147,12 +151,48 @@ export function RoomPage({
     };
   }, []);
   const swapOfferId = view?.room.swapOffer?.id ?? null;
+  const swapExpiresAt = view?.room.swapOffer?.expiresAt ?? null;
+  const cooldownUntil = view?.room.swapCooldownUntil ?? null;
+  const receivedAt = useMemo(() => Date.now(), [view?.serverNow]);
+  const clockSkew = view ? Date.parse(view.serverNow) - receivedAt : 0;
+  const timed = Boolean(swapOfferId || cooldownUntil);
   useEffect(() => {
-    if (!swapOfferId) return;
-    setSwapNow(Date.now());
-    const timer = setInterval(() => setSwapNow(Date.now()), 1000);
+    if (!timed) return;
+    setNowMs(Date.now());
+    const timer = setInterval(() => setNowMs(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, [swapOfferId]);
+  }, [timed]);
+  const remainingSeconds = (until: string | null) =>
+    until
+      ? Math.max(0, Math.ceil((Date.parse(until) - nowMs - clockSkew) / 1000))
+      : 0;
+  const swapSeconds = remainingSeconds(swapExpiresAt);
+  const cooldownSeconds = remainingSeconds(cooldownUntil);
+  const swapOfferOpen = Boolean(
+    swapOfferId &&
+    view?.room.swapOffer?.responderId === userId &&
+    !view?.room.countdown &&
+    swapSeconds > 0,
+  );
+  const swapModalOpen = swapOfferOpen && swapCollapsedId !== swapOfferId;
+  const swapReopenSeconds =
+    swapOfferOpen && swapCollapsedId === swapOfferId ? swapSeconds : null;
+  // undefined = no snapshot yet; the first snapshot of a load never opens a result.
+  const previousMatchId = useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (!snapshot) return;
+    const previous = previousMatchId.current;
+    previousMatchId.current = snapshot.match?.id ?? null;
+    if (!snapshot.match) return;
+    // Q1: a terminal match that differs from the last seen one is live, even if its PLAYING snapshot was coalesced; a duplicate or reconnect of the same match is not.
+    if (
+      snapshot.room.status === "PLAYING" ||
+      (previous !== undefined &&
+        previous !== snapshot.match.id &&
+        snapshot.match.status !== "ACTIVE")
+    )
+      setLiveMatchId(snapshot.match.id);
+  }, [snapshot]);
   async function copyInvite(code: string, format: "code" | "link") {
     if (copying) return;
     setCopying(true);
@@ -638,7 +678,7 @@ export function RoomPage({
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
   const clockState = snapshot ?? latest.current;
-  const playingLayout = Boolean(clockState?.match);
+  const playingLayout = room.status === "PLAYING" && Boolean(clockState?.match);
   const active =
     room.status === "PLAYING" && snapshot?.match?.status === "ACTIVE";
   let board = null;
@@ -877,7 +917,9 @@ export function RoomPage({
             solo={solo}
             writable={writable}
             busy={busy}
-            swapNow={swapNow}
+            swapCooldownSeconds={cooldownSeconds}
+            swapReopenSeconds={swapReopenSeconds}
+            onSwapReopen={() => setSwapCollapsedId(null)}
             readyControl={readyControl}
             onAction={(action) => void httpAction(action)}
           />
@@ -1059,9 +1101,18 @@ export function RoomPage({
         status={settingsStatus}
         onChange={changeVisibility}
       />
+      <SwapPrompt
+        open={swapModalOpen}
+        seconds={swapSeconds}
+        busy={busy}
+        onAccept={() => void httpAction("swap-accept")}
+        onDecline={() => void httpAction("swap-decline")}
+        onCollapse={() => setSwapCollapsedId(swapOfferId)}
+      />
       {connected &&
         snapshot?.match &&
         snapshot.match.status !== "ACTIVE" &&
+        liveMatchId === snapshot.match.id &&
         (snapshot.role === "spectator" ||
           dismissedResult !== snapshot.match.id) && (
           <MatchResult

@@ -312,3 +312,16 @@ bị thật hoặc chạy các ca hồi quy chờ thiết bị/đổi thứ tự
 và mic tắt, panel rejoin receive-only ở mức đã xác nhận. Mọi tác vụ join/publish
 đang chờ đều bị vô hiệu khi đổi phòng, ngắt kết nối hoặc unmount, và phòng/track
 của thế hệ cũ được giải phóng.
+
+## Đổi bên trong phòng chờ (YC2 P1)
+
+Người được mời đổi bên nhận hộp thoại `SwapPrompt` (Dialog, giữ focus, đếm ngược
+theo `expiresAt` của server). Esc, X và "Thu gọn" chỉ thu hộp thoại, không từ chối;
+khi thu, nút "Xem đề nghị đổi bên (N giây)" trong phòng chờ mở lại trong cùng deadline.
+Hết giờ thì server coi là từ chối. "Xin đổi bên" của người đề nghị bị khóa kèm lý do
+đếm ngược theo `swapCooldownUntil` (chỉ người đề nghị nhận giá trị này).
+
+Kết quả ván chỉ hiện khi phòng vừa chuyển sang PLAYING trong phiên hiện tại; tải lại
+phòng đã kết thúc giữ bố cục chờ và không mở lại kết quả. Esc trên kết quả ván = Ở lại phòng.
+Khi Rời phòng đang chờ, nút Ở lại và Escape không đóng kết quả. Rời thất bại giữ
+hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều hướng sau khi rời thành công.

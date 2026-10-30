@@ -105,7 +105,10 @@ export function MatchResult({
       className="xq-ui match-result"
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-reason`}
-      onCancel={(event) => event.preventDefault()}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!leaving) onStay();
+      }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
         if (event.shiftKey && document.activeElement === stay.current) {
