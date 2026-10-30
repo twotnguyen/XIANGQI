@@ -57,7 +57,8 @@ function SetupForm({
     try {
       await onStart({ level, requestedSide: side });
       if (alive.current) onClose();
-    } catch {
+    } catch (err) {
+      console.error("[DEBUG SetupForm catch error]:", err);
       if (alive.current)
         setError("Chưa thể bắt đầu ván với máy. Vui lòng thử lại.");
     } finally {
@@ -135,7 +136,7 @@ function SetupForm({
           nhiên.
         </p>
         {error && <p role="alert">{error}</p>}
-        <Button type="submit" loading={busy}>
+        <Button type="submit" loading={busy} className="xq-ai-btn-start">
           Bắt đầu
         </Button>
       </form>

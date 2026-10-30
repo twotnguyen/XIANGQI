@@ -285,12 +285,11 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
   const api = new URL(getApiBaseUrl());
   const socket = io(`${api.origin}/ai`, {
     path: `${api.pathname}/ai/socket.io`,
-    transports: ["websocket"],
     withCredentials: true,
     autoConnect: false,
     auth: (done) => {
       if (disposed) return;
-      revoke();
+      if (control !== null) revoke();
       const currentEpoch = epoch;
       void options.getProof().then(
         (value) => {
