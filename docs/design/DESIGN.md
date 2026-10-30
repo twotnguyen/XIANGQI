@@ -17,7 +17,7 @@
 | 🟡 | **Đề xuất** để lấp chỗ đặc tả chưa quy định. Design được đổi, nhưng phải sửa **cùng lúc** file này + Figma + `apps/web/src/shared/styles/tokens.css` và **đo lại tương phản** |
 | P1 / P2 | P1 có Kỳ Đài Cổ Phong/Giấy Sáng/Theo hệ thống theo BA 0.21; không còn tính năng P2 (BA 0.27) |
 
-- Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này. Mockup trong `docs/design/mockups/` chỉ có giao diện Kỳ Đài Cổ Phong và chỉ để tham khảo; màu Giấy Sáng/Theo hệ thống lấy từ §2.2, không có mockup riêng.
+- Mâu thuẫn giữa file này và đặc tả ⇒ **đặc tả thắng**; báo người dùng để sửa file này. Mockup trong `docs/design/mockups/` chỉ có giao diện Kỳ Đài Cổ Phong và chỉ để tham khảo; màu Giấy Sáng/Theo hệ thống lấy từ §2.2, không có mockup riêng. **Tạm thời (PO 31/10/2026, xem thử PR #156):** `tokens.css` dùng bảng màu tối, bán kính `--radius-sm`/`--radius-lg` và bóng mới của PR #156; các mã hex và tỷ lệ tương phản ở §2.2 chưa cập nhật và chưa đo lại. Chốt giữ thì cập nhật §2.2, không giữ thì hoàn `tokens.css` về bản trước PR.
 - Mọi tỉ lệ tương phản trong file đã được **tính** theo công thức WCAG 2.1 (độ chói tương đối). Khi dựng thật vẫn phải **đo lại** trên màn hình thật.
 
 ---
