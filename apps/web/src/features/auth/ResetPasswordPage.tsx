@@ -41,7 +41,14 @@ export function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const sending = useRef(false);
+  const generation = useRef(0);
   const errorRegion = useRef<HTMLDivElement>(null);
+  useEffect(
+    () => () => {
+      generation.current += 1;
+    },
+    [],
+  );
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -50,8 +57,16 @@ export function ResetPasswordPage() {
     if (error) errorRegion.current?.focus();
   }, [error]);
 
+  function invalidate() {
+    generation.current += 1;
+    sending.current = false;
+    setBusy(false);
+    setError("");
+  }
+
   // Mất ngữ cảnh (tải lại trang, hết hạn yêu cầu): buộc bắt đầu lại từ /forgot-password.
   function abandon(message: string) {
+    invalidate();
     setPendingRecovery(null);
     setRecovery(null);
     setResetToken(null);
@@ -59,22 +74,37 @@ export function ResetPasswordPage() {
   }
 
   async function run(
-    work: () => Promise<void>,
+    work: (current: () => boolean) => Promise<void>,
     onError: (failure: unknown) => string | "restart",
   ) {
-    if (sending.current) return;
+    if (
+      sending.current ||
+      !recovery ||
+      getPendingRecovery()?.requestId !== recovery.requestId
+    )
+      return;
     sending.current = true;
+    const started = generation.current;
+    const requestId = recovery?.requestId;
+    const startedPath = window.location.pathname;
+    const current = () =>
+      generation.current === started &&
+      window.location.pathname === startedPath &&
+      getPendingRecovery()?.requestId === requestId;
     setBusy(true);
     setError("");
     try {
-      await work();
+      await work(current);
     } catch (failure) {
+      if (!current()) return;
       const message = onError(failure);
       if (message === "restart") abandon(restart);
       else setError(message);
     } finally {
-      sending.current = false;
-      setBusy(false);
+      if (generation.current === started) {
+        sending.current = false;
+        setBusy(false);
+      }
     }
   }
 
@@ -119,8 +149,9 @@ export function ResetPasswordPage() {
       setError("Mã OTP gồm 6 chữ số.");
       return;
     }
-    void run(async () => {
+    void run(async (current) => {
       const result = await verifyRecovery(recovery.requestId, otp);
+      if (!current()) return;
       setResetToken(result.resetToken);
       setOtp("");
     }, verifyFailure);
@@ -128,8 +159,9 @@ export function ResetPasswordPage() {
 
   function resend() {
     if (!recovery) return;
-    void run(async () => {
+    void run(async (current) => {
       const next = await resendRecovery(recovery.requestId);
+      if (!current()) return;
       setPendingRecovery(next);
       setRecovery(next);
       setOtp("");
@@ -145,13 +177,14 @@ export function ResetPasswordPage() {
       return;
     }
     void run(
-      async () => {
+      async (current) => {
         await resetPassword({
           requestId: recovery.requestId,
           resetToken,
           newPassword,
           passwordConfirmation: confirmation,
         });
+        if (!current()) return;
         setPendingRecovery(null);
         setNewPassword("");
         setConfirmation("");
@@ -206,7 +239,7 @@ export function ResetPasswordPage() {
             Phiên khôi phục không còn hiệu lực. Vui lòng bắt đầu lại.
           </p>
           <p className="reg-foot">
-            <NavigationLink href="/forgot-password">
+            <NavigationLink href="/forgot-password" onClick={invalidate}>
               Quên mật khẩu
             </NavigationLink>
           </p>
@@ -234,7 +267,10 @@ export function ResetPasswordPage() {
             maxLength={6}
             value={otp}
             disabled={busy}
-            onChange={(event) => setOtp(event.target.value)}
+            onChange={(event) => {
+              invalidate();
+              setOtp(event.target.value);
+            }}
           />
           <Button type="submit" loading={busy} className="btn-submit">
             Xác minh mã
@@ -264,7 +300,10 @@ export function ResetPasswordPage() {
             aria-describedby={error ? "reset-error" : undefined}
             value={newPassword}
             disabled={busy}
-            onChange={(event) => setNewPassword(event.target.value)}
+            onChange={(event) => {
+              invalidate();
+              setNewPassword(event.target.value);
+            }}
           />
           <TextField
             label="Nhập lại mật khẩu mới"
@@ -274,7 +313,10 @@ export function ResetPasswordPage() {
             aria-describedby={error ? "reset-error" : undefined}
             value={confirmation}
             disabled={busy}
-            onChange={(event) => setConfirmation(event.target.value)}
+            onChange={(event) => {
+              invalidate();
+              setConfirmation(event.target.value);
+            }}
           />
           <Button type="submit" loading={busy} className="btn-submit">
             Đặt lại mật khẩu
@@ -282,7 +324,9 @@ export function ResetPasswordPage() {
         </form>
       )}
       <p className="reg-foot">
-        <NavigationLink href="/login">Quay lại đăng nhập</NavigationLink>
+        <NavigationLink href="/login" onClick={invalidate}>
+          Quay lại đăng nhập
+        </NavigationLink>
       </p>
     </AuthShell>
   );
