@@ -86,7 +86,11 @@ export class RoomStoreCore {
    */
   async resolveCode(client: PoolClient, input: unknown): Promise<string> {
     if (typeof input !== "string" || !/^[0-9]{8}$/.test(input))
-      throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
+      throw new RoomError(
+        "ROOM_FORBIDDEN",
+        "Mã phòng không tồn tại hoặc phòng đã đóng",
+        403,
+      );
     const row = (
       await client.query(
         "SELECT id FROM public.rooms WHERE invite_code=$1 AND closed_at IS NULL AND visibility<>'LOCKED'",
@@ -94,7 +98,11 @@ export class RoomStoreCore {
       )
     ).rows[0];
     if (!row)
-      throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
+      throw new RoomError(
+        "ROOM_FORBIDDEN",
+        "Mã phòng không tồn tại hoặc phòng đã đóng",
+        403,
+      );
     return row.id as string;
   }
   /**

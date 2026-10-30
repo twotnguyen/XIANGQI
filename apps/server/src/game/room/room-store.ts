@@ -247,7 +247,11 @@ export class RoomStore extends RoomViewerStore {
     if (r.visibility === "LOCKED")
       throw new RoomError("ROOM_LOCKED", "Phòng đã khóa", 403);
     if (await this.kickedOut(s, input.roomId, s.actor.userId))
-      throw new RoomError("ROOM_BLOCKED", "Bạn đã bị đuổi khỏi phòng này", 403);
+      throw new RoomError(
+        "ROOM_BLOCKED",
+        "Bạn đã bị đuổi và chặn tham gia phòng cờ này!",
+        403,
+      );
     if (
       input.expectedVersion !== undefined &&
       input.expectedVersion !== Number(r.room_version)
@@ -260,10 +264,10 @@ export class RoomStore extends RoomViewerStore {
           [s.actor.userId],
         )
       ).rowCount;
-    if (occupied && input.intent === "play")
+    if (occupied && input.intent !== "watch")
       throw new RoomError(
         "ALREADY_SEATED",
-        "Bạn đang giữ vị trí chơi ở nơi khác",
+        "Bạn đang ở trong một ván/phòng khác",
       );
     const playing =
       input.intent !== "watch" &&
@@ -274,7 +278,10 @@ export class RoomStore extends RoomViewerStore {
       !playing &&
       members.filter((m) => m.role === "SPECTATOR").length >= r.viewer_limit
     )
-      throw new RoomError("ROOM_FULL", "Phòng đã đầy");
+      throw new RoomError(
+        "ROOM_FULL",
+        "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!",
+      );
     const side = playing
       ? seats.some((m) => m.side === "RED")
         ? "BLACK"
@@ -293,13 +300,26 @@ export class RoomStore extends RoomViewerStore {
       "INSERT INTO public.room_members(room_id,user_id,role,side,disconnected_at) VALUES($1,$2,$3,$4,clock_timestamp())",
       [input.roomId, s.actor.userId, playing ? "PLAYER" : "SPECTATOR", side],
     );
+    // Both rooms are locked by withRoom; any failure rolls back the new place too.
+    if (input.intent !== "watch") {
+      const sources = await s.client.query<{ room_id: string }>(
+        "SELECT room_id FROM public.room_members WHERE user_id=$1 AND role='SPECTATOR' AND room_id<>$2 ORDER BY room_id",
+        [s.actor.userId, input.roomId],
+      );
+      for (const source of sources.rows) await this.leave(s, source.room_id);
+    }
     const version = await this.bump(s, input.roomId, "room.members-changed");
     const response: RoomEntry = {
       roomId: input.roomId,
       version,
       role: side === "RED" ? "red" : side === "BLACK" ? "black" : "spectator",
-      ...(input.intent === "play" && !playing
-        ? { notice: "Ghế vừa có người, bạn đang xem trận" }
+      ...(input.intent !== "watch" && !playing
+        ? {
+            notice:
+              input.intent === "play"
+                ? "Ghế vừa có người, bạn đang xem trận"
+                : "Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem.",
+          }
         : {}),
     };
     await this.receipt(s, input.commandId, digest, response);
