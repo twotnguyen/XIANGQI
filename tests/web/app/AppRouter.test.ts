@@ -205,6 +205,9 @@ vi.mock("@web/features/friends/FriendsPage.js", () => ({
 vi.mock("@web/features/friends/FriendsBell.js", () => ({
   FriendsBell: () => null,
 }));
+vi.mock("@web/features/friends/FriendsPresence.js", () => ({
+  FriendsPresence: () => null,
+}));
 vi.mock("@web/features/friends/RoomInvitePopup.js", () => ({
   RoomInvitePopup: () => null,
 }));

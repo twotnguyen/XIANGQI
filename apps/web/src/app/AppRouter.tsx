@@ -1,6 +1,14 @@
 import { EmailVerification } from "../features/profile/EmailVerification.js";
 import { EmailStatusBanner } from "../features/profile/EmailStatusBanner.js";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode, RefObject } from "react";
 import {
   GuestRequestError,
@@ -32,6 +40,8 @@ import {
 import { FriendsBell } from "../features/friends/FriendsBell.js";
 import { RoomInvitePopup } from "../features/friends/RoomInvitePopup.js";
 import { createFriendClient } from "../features/friends/friend-client.js";
+import { FriendsPresence } from "../features/friends/FriendsPresence.js";
+import { RoomFriendInvite } from "../features/friends/RoomFriendInvite.js";
 import {
   createRoomClient,
   type RoomClient,
@@ -720,7 +730,7 @@ export function AppRouter() {
       <InviteEntry client={client} onEntered={enterRoom} code={route.token} />
     );
   else if (route.name === "friends" && session.state.status === "active-member")
-    content = <FriendsPage client={friendClient} />;
+    content = <FriendsPage key={session.state.userId} client={friendClient} />;
   else if (route.name === "history" && session.state.status === "active-member")
     content = (
       <HistoryPage
@@ -775,6 +785,10 @@ export function AppRouter() {
           client={client}
           getProof={session.getRealtimeProof}
           mediaClient={mediaClient}
+          isMember={actor.status === "active-member"}
+          renderInviteFriends={(roomId) => (
+            <RoomFriendInvite client={friendClient} roomId={roomId} />
+          )}
           onLeft={(message) => {
             setRoomNotice(message ?? "");
             navigate("/lobby");
@@ -828,7 +842,7 @@ export function AppRouter() {
           user={shellUser}
           bell={
             session.state.status === "active-member" ? (
-              <FriendsBell client={friendClient} />
+              <FriendsBell key={session.state.userId} client={friendClient} />
             ) : undefined
           }
           onLogout={() => guardedLogout(performSessionLogout)}
@@ -841,7 +855,10 @@ export function AppRouter() {
           )}
           {page}
           {session.state.status === "active-member" && (
-            <RoomInvitePopup client={friendClient} />
+            <Fragment key={session.state.userId}>
+              <FriendsPresence client={friendClient} />
+              <RoomInvitePopup client={friendClient} onEntered={enterRoom} />
+            </Fragment>
           )}
         </AppShell>
       ) : (

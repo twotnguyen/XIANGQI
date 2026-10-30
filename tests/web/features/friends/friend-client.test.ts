@@ -1,59 +1,56 @@
-import { describe, expect, it, vi } from "vitest";
+import { expect, it, vi } from "vitest";
 import {
   FriendRequestError,
   createFriendClient,
 } from "@web/features/friends/friend-client.js";
-function ok(body: unknown) {
-  return { ok: true, json: async () => body } as Response;
-}
-function fail(code: string, status = 409) {
-  return {
-    ok: false,
-    status,
-    json: async () => ({ code, message: "denied" }),
-  } as Response;
-}
-describe("friend client", () => {
-  it("lists peers and parses presence", async () => {
-    const fetch = vi
+const ok = (body: unknown) =>
+  new Response(JSON.stringify(body), { status: 200 });
+it("accepts search results without inventing a presence status", async () => {
+  const people = [{ userId: "u", username: "a", displayName: "A" }];
+  const client = createFriendClient(vi.fn().mockResolvedValue(ok(people)));
+  expect(await client.search("a")).toEqual(people);
+});
+it("never leaks upstream response text through errors", async () => {
+  const client = createFriendClient(
+    vi
       .fn()
       .mockResolvedValue(
-        ok([
-          { userId: "u", username: "a", displayName: "A", status: "online" },
-        ]),
-      );
-    const client = createFriendClient(fetch);
-    expect(await client.list()).toEqual([
-      { userId: "u", username: "a", displayName: "A", status: "online" },
-    ]);
-    expect(fetch).toHaveBeenCalledWith("/friends", expect.anything());
-  });
-  it("maps server codes without leaking bodies", async () => {
-    const fetch = vi.fn().mockResolvedValue(fail("FRIEND_LIMIT", 403));
-    const client = createFriendClient(fetch);
-    const failure = await client.send("a").catch((error: unknown) => error);
-    expect(failure).toBeInstanceOf(FriendRequestError);
-    expect((failure as FriendRequestError).code).toBe("FRIEND_LIMIT");
-  });
-  it("sends room invites and answers with room code", async () => {
-    const fetch = vi
+        new Response(
+          JSON.stringify({
+            code: "FRIEND_LIMIT",
+            message: "private provider details",
+          }),
+          { status: 403 },
+        ),
+      ),
+  );
+  const error = await client.send("a").catch((error: unknown) => error);
+  expect(error).toBeInstanceOf(FriendRequestError);
+  expect(error).toMatchObject({ code: "FRIEND_LIMIT", status: 403 });
+  expect((error as Error).message).not.toContain("private provider details");
+});
+it.each([
+  { accepted: true, roomId: "B", role: "viewer", version: 1 },
+  { accepted: true, roomId: "B", role: "black" },
+  { accepted: true, roomId: "B", role: "black", version: -1 },
+])(
+  "rejects a malformed joined result rather than navigating with it: %j",
+  async (body) => {
+    const client = createFriendClient(vi.fn().mockResolvedValue(ok(body)));
+    await expect(client.respondInvite("i", true, "cmd")).rejects.toMatchObject({
+      code: "FRIEND_BAD_RESPONSE",
+    });
+  },
+);
+it("rejects a malformed peer rather than silently treating it as online", async () => {
+  const client = createFriendClient(
+    vi
       .fn()
-      .mockResolvedValueOnce(ok({ id: "i" }))
-      .mockResolvedValueOnce(
-        ok({ accepted: true, roomId: "r", code: "12345678" }),
-      );
-    const client = createFriendClient(fetch);
-    await client.invite("r", "b");
-    expect(fetch).toHaveBeenCalledWith(
-      "/friends/invites",
-      expect.objectContaining({ method: "POST" }),
-    );
-    const accepted = await client.respondInvite("i", true);
-    expect(accepted).toMatchObject({ accepted: true, code: "12345678" });
-  });
-  it("rejects malformed payloads", async () => {
-    const fetch = vi.fn().mockResolvedValue(ok([{ userId: "u" }]));
-    const client = createFriendClient(fetch);
-    await expect(client.list()).rejects.toBeInstanceOf(FriendRequestError);
+      .mockResolvedValue(
+        ok([{ userId: "u", username: "a", displayName: "A", status: "busy" }]),
+      ),
+  );
+  await expect(client.list()).rejects.toMatchObject({
+    code: "FRIEND_BAD_RESPONSE",
   });
 });

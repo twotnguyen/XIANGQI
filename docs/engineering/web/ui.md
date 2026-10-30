@@ -38,15 +38,27 @@ vẫn cần được kiểm xuyên suốt trước bàn giao đầy đủ.
   thẻ riêng. Mã phòng sai tại Sảnh hiển thị lỗi trong luồng, không đè trợ giúp
   hoặc thẻ bên dưới.
 - Auth tăng vùng bấm và cỡ chữ trợ giúp; input mobile giữ 16px. Hồ sơ và bạn
-  bè cho nội dung dài co/ngắt dòng. Lời mời phòng giữ trong luồng trang, không
-  tạo lớp phủ mới che bàn cờ/chat. Media một cột trên mobile; replay giữ chiều
-  cao tối thiểu cho bàn cờ và danh sách nước ở màn thấp.
+  bè cho nội dung dài co/ngắt dòng. YC3 bổ sung popup lời mời không modal ở góc
+  màn hình, nhiều lời mời độc lập; chi tiết và kiểm chứng ở mục YC3 dưới đây.
+  Media một cột trên mobile; replay giữ chiều cao tối thiểu ở màn thấp.
 
 Đã xem `/dev/ui`, `/dev/lobby`, `/dev/login`, `/dev/register`, `/dev/board`
 ở 360×800 và 1280×720: không tràn ngang. Đã thao tác focus vòng, Escape và
 trả focus của menu; dialog tạo phòng ở 844×390 giữ footer trong màn hình và
 cuộn tới nút Tạo phòng bằng focus. Đây là kiểm giao diện preview, không phải
 nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị media.
+
+## YC3: chia sẻ phòng và bạn bè (30/10/2026)
+
+- Trang Bạn bè hai cột trên desktop, một cột dưới 800px; danh sách/kết quả tìm kiếm cuộn riêng. Giữ token/phông/component sẵn có, không thêm thư viện. Tìm kiếm bỏ phản hồi cũ khi đổi input; quan hệ đã là bạn/pending đổi hành động, không tạo lời mời trùng.
+- Chuông mở `/friends?tab=requests`; `Tabs.defaultId` chọn danh sách Lời mời dùng chung, kể cả bấm lại chuông khi đang ở Bạn bè. Poll 2 giây cập nhật quan hệ, presence và số đếm; lỗi cập nhật giữ danh sách cũ kèm cảnh báo, không giả thành rỗng.
+- Người ngồi ghế mở Dialog **Mời vào phòng**: mã/link có thể chọn, hai nút clipboard chỉ báo thành công sau ghi thật. Thành viên có tab Bạn bè; Khách không có; người xem không có nút mở. `RoomPage` nhận slot `renderInviteFriends` từ app, không import chéo feature.
+- Popup xếp cùng lúc ở góc màn hình trong vùng tối đa 50dvh có cuộn; không giành focus hoặc bẫy focus, bàn cờ/chat vẫn hoạt động. Esc/X trên popup đang tương tác = Từ chối đúng invite. Deadline tuyệt đối từ server, không reset khi reload. API accept trả chỗ đã cấp thật; lỗi B giữ route/phòng A và báo ngay trong popup.
+- Phản hồi từ chối hiện cả khi người gửi đã rời phòng; trong Dialog đang mở, tab Bạn bè cũng hiển thị phản hồi và cooldown toàn tài khoản. Thông báo có ack, không trộn vào chuông kết bạn.
+- Khung `xq-main` phòng chờ xếp dọc banner email và phòng, tránh banner ép phòng về chiều rộng 0 trên mobile. Nút chia sẻ giữ wrapper/grid-slot cũ khi chuyển nội dung sang Dialog, không bị thanh chọn phòng/camera/chat che.
+
+Kiểm local: trình duyệt thật với Nest/Socket.IO, PostgreSQL 17 riêng; chỉ provider Auth là synthetic. Đã đi qua login, đăng ký bỏ email và Khách từ link; mã có số 0 đầu giữ nguyên; clipboard thật, Escape trả focus; nhận nhiều popup, Esc chỉ từ chối một popup, chuyển A→B thất bại/thành công. Đã xem 1366×768 và 360×800; modal không tràn ngang, phòng chờ mobile không cuộn toàn trang. Không thay bằng chứng này cho Google/SMTP/LiveKit production hoặc nghiệm thu PO.
+
 
 ## Cài đặt dạng sidebar (29/10/2026)
 
