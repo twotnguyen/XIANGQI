@@ -1,5 +1,9 @@
 # P1 · YC7 — Chat, camera và mic
 
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
+**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 17 (link chỉ là văn bản, kết nối LiveKit theo nhu cầu, video tự điều chỉnh không đặt trần, dấu báo tin chưa xem); **chưa triển khai**.
+
 **Ngày lập/chốt:** 31/10/2026. **Phạm vi:** EP-07, US-07.1–07.2 và giao điểm các Story đã chuyển P1. **Trạng thái:** tám quyết định PO đã chốt tại mục15/BA0.25; đã đối chiếu nguồn/code, chưa triển khai hoặc nghiệm thu lại phần mềm.
 
 ## 1. Mục tiêu và nguồn ưu tiên
@@ -24,7 +28,7 @@ Nguồn theo thứ tự:
 | Camera/mic | Tắt mặc định, hai nút độc lập, ba mức chia sẻ custom | Người xem tuyệt đối không phát; không ghi/lưu media |
 | DM/unread | Accepted friends, lịch sử bền, đọc/badge đồng bộ — BA0.20 | Không DM Khách/người lạ; không xóa DM theo vòng đời phòng |
 | Chuyển media giữa tab | Chuyển/Hủy có chủ ý — BA0.21 | Không tự giành quyền khi reconnect, không vượt luật thiết bị khác |
-| Casual/Ranked | Chỉ đối chiếu tương lai | Chưa chuyển mode lên P1; không mang policy Ranked áp mặc định custom |
+| Casual/Ranked | **P1 theo BA 0.27**, đặc tả ở [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md) mục 4–5 | Chỉ Kênh Riêng giữa hai người; Ranked mặc định ẨN hình/tiếng đối thủ ở phía người nhận (BA 5.4); không mang policy Ranked áp mặc định cho custom |
 
 Không thêm upload ảnh/file, voice message, gọi riêng ngoài phòng, chia sẻ màn hình, tìm kiếm/xóa/sửa/thu hồi tin hoặc read receipt chat phòng khi chưa có yêu cầu. Không đưa QR trở lại.
 
@@ -258,12 +262,14 @@ Tải app50 người/10 ván không tự chứng minh tải media; khoảng3 ph�
 
 ## 14. P2 liên quan: đã lên P1 và phần còn lại
 
+> **Lưu ý (rà chéo 31/10/2026):** mục này là đối chiếu lịch sử trước BA 0.27–0.36. Ghép ngẫu nhiên Casual, Ranked và các phần Casual/Ranked đã **P1** (xem [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)); mọi câu "giữ P2", "queue 3 phút", "xác nhận 10 giây" hay "vào ván ngay" bên dưới đã bị thay.
+
 | Story / Jira | Quan hệ YC7 | Hiện hành / đề xuất |
 |---|---|---|
 | US-P2-17 / XIAN-131 | Trực tiếp:12 sticker trong phòng và DM | **Đã P1 BA0.24**, cả Khách đúng vai trò; không cần xin chuyển lần nữa |
 | US-P2-18 / XIAN-132 | Trực tiếp:DM, lịch sử bền, badge/read | **Đã P1 BA0.20**, accepted friends; nghiệm thu giao điểm filter/sticker/quyền |
 | US-P2-24 / XIAN-138 | Trực tiếp:chuyển thiết bị giữa tab | **Đã P1 BA0.21**, dừng track/quyền thật, không chỉ modal |
-| US-P2-05 / XIAN-119 | Trực tiếp:policy người nhận ẩn media và Tắt ngay trong Ranked | **Story Ranked vẫn P2**. BA0.25 tách nút tắt nhận custom sang P1, mặc định nhận nếu được phép; không chuyển mặc định ẨN hoặc cả mode Ranked |
+| US-P2-05 / XIAN-119 | Trực tiếp:policy người nhận ẩn media và Tắt ngay trong Ranked | **Story Ranked P1 theo BA 0.27**. BA0.25 tách nút tắt nhận custom sang P1, mặc định nhận nếu được phép; không chuyển mặc định ẨN hoặc cả mode Ranked |
 | US-P2-04 / XIAN-118 | Quyền/vòng đời Ranked, không spectator/Kênh Chung | **Giữ P2**; không cần để hoàn thành YC7 custom |
 | US-P2-07 / XIAN-121 | Casual chỉ Riêng, không người xem, media hai người | **Giữ P2 theo BA0.23**, không hỏi lại việc kéo cả mode |
 | US-P2-09 / XIAN-123 | Tái đấu giữ chat cùng cặp/media theo phòng | Custom đã P1, Casual P2; không reset nhầm conversation vì Match ID mới |
@@ -271,7 +277,7 @@ Tải app50 người/10 ván không tự chứng minh tải media; khoảng3 ph�
 | US-P2-25 / XIAN-139 | Theme tác động contrast/chat/picker/media trạng thái | Đã P1 BA0.21; kiểm UI chứ không mở theme mới cho Khách |
 | US-P2-11/13/15 / XIAN-125/127/129 | History/Replay/export sau ván | Custom/AI đã P1; **không lưu chat hoặc media theo ván** |
 
-**Kết luận phân kỳ:** sticker, DM và chuyển tab đã P1; PO bổ sung **tắt nhận media custom mặc định hiện** theo BA0.25 với3 AC riêng tại mục15.1. Ranked/Elo/queue và mặc định ẨN của Ranked vẫn P2. Đây là chốt đặc tả, chưa là bằng chứng phần mới đã triển khai.
+**Kết luận phân kỳ:** sticker, DM và chuyển tab đã P1; PO bổ sung **tắt nhận media custom mặc định hiện** theo BA0.25 với3 AC riêng tại mục15.1. Ranked/Elo/queue và mặc định ẨN của Ranked P1 theo BA 0.27. Đây là chốt đặc tả, chưa là bằng chứng phần mới đã triển khai.
 
 Không có Story P2 sẵn cho report/admin/ban cá nhân, ghi âm, gọi riêng hoặc upload chat. Không trình bày các mục đó như tính năng chỉ cần chuyển phân kỳ.
 
@@ -300,7 +306,7 @@ Phần mới cần ưu tiên khi triển khai: sticker đúng BA0.24; quyết đ
 | Q2 — Viewer reconnect | **Giữ mốc trong ân hạn** | Trong5phút giữ chỗ/còn quyền được đọc bù; rời thật/quá grace đặt mốc mới |
 | Q3 — Không chia sẻ | **Tắt thiết bị và ngừng phát** | Dừng capture, hai nút Tắt; đổi mức không tự bật lại |
 | Q4 — Thay đối thủ | **Tắt khi thay cặp** | Người còn lại chủ động bật lại cho người mới; cùng cặp đổi phe/chơi tiếp/Tái đấu không ngắt |
-| Q5 — Bảo vệ người nhận | **Thêm nút tắt nhận, mặc định hiện** | Người chơi/người xem ngừng nhận tại máy mình, không tác động người phát/người khác; Ranked vẫn P2 |
+| Q5 — Bảo vệ người nhận | **Thêm nút tắt nhận, mặc định hiện** | Người chơi/người xem ngừng nhận tại máy mình, không tác động người phát/người khác; Ranked P1 theo BA 0.27 |
 
 Không còn câu hỏi chờ cho năm mục này. Chi tiết receiver bên dưới là hợp đồng P1 cho phần tách, không thay mặc định ẩn của Ranked.
 
@@ -350,3 +356,40 @@ Giữ cách đếm Unicode code point hiện có; không cần PO chọn token/S
 5. Commit/push/Jira/deploy là thao tác riêng, chỉ khi được yêu cầu.
 
 **Lượt tài liệu:** không sửa code/migration hoặc bật dịch vụ. **Test local: không chạy (không được yêu cầu).** Chưa xem giao diện hoặc kiểm thiết bị/media thật.
+
+## 17. Quyết định PO khi rà soát YC7 — 31/10/2026
+
+**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Bổ sung cho mục 6, 9, 10, 11, 12.
+
+| # | Quyết định | AC bổ sung |
+|---|---|---|
+| 1 | **Link trong chat hiển thị như văn bản, không bấm được** (phòng và DM). Không tự biến thành liên kết, không xem trước, không mở trang ngoài từ nội dung chat | AC-YC7-RV-01 |
+| 2 | **Kết nối LiveKit theo nhu cầu:** chỉ kết nối khi người đó đang bật camera/mic hoặc khi có người chia sẻ tới họ; không kết nối chỉ vì vào phòng. Người xem không kết nối nếu không ai chia sẻ cho người xem. Ngắt khi không còn cần (tắt hết thiết bị và không còn nguồn nhận) | AC-YC7-RV-02, 03 |
+| 3 | **Chất lượng video tự điều chỉnh theo mạng, không đặt trần độ phân giải/khung hình.** Dùng cơ chế thích ứng của LiveKit; băng thông và phút thực tế ghi vào GATE-MEDIA, không đặt ngưỡng đạt | AC-YC7-RV-04 |
+| 4 | **Dấu báo tin chưa xem trong phòng:** chấm có số trên nút/tab Chat khi chưa mở khung chat tương ứng, phân biệt Riêng/Chung; chỉ ở máy mình, không gửi biên nhận cho ai, không âm thanh; mất khi mở kênh đó | AC-YC7-RV-05 |
+
+### 17.1 Quy tắc chi tiết
+
+- **Link:** chuỗi dạng URL giữ nguyên là văn bản có thể chọn/sao chép; vẫn qua bộ lọc từ cấm và giới hạn 200 ký tự; không tự thêm thẻ liên kết, không `href`.
+- **Kết nối theo nhu cầu:** khi người chơi bật camera/mic lần đầu hoặc người khác bắt đầu chia sẻ tới họ, ứng dụng xin token và kết nối; khi đổi mức chia sẻ sang “Cả đối thủ và người xem”, người xem đủ điều kiện kết nối lúc đó. Mất Socket.IO phòng vẫn ngắt theo mục 10. Thời gian kết nối ban đầu không tính vào “≤ 2 giây” của AC-07.2 (đó là thời gian từ khi đã kết nối); đo riêng và ghi vào GATE-MEDIA — PO xác nhận 31/10.
+- **Video thích ứng:** bật cơ chế giảm/tăng chất lượng theo băng thông người nhận (simulcast/adaptive stream). Không đặt trần nên mức tiêu thụ băng thông không dự đoán được; Cloud miễn phí có thể có giới hạn băng thông ngoài số phút, phải kiểm khi chạy GATE-MEDIA. Khi quá giới hạn dịch vụ hoặc chất lượng quá thấp: hiện *“Camera/mic tạm thời không dùng được”* hoặc hạ chất lượng, ván và chat vẫn tiếp tục (BA 0.14).
+- **Dấu báo tin chưa xem:** chỉ đếm tin đến của người khác (không tính tin mình gửi, không tính tin trước mốc vào); tối đa hiển thị “99+”; mobile ở tab Ván/Camera thấy chấm trên tab Chat; desktop khi khung chat đang ẩn thấy chấm trên nút mở chat. Mở kênh và tin nằm trong vùng nhìn thì xóa số của kênh đó. Không đổi thành read receipt phòng và không gửi lên máy chủ như trạng thái đọc.
+
+### 17.2 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC7-RV-01 | Gửi tin chứa `https://example.com` ở Riêng, Chung và DM | Hiển thị đúng chuỗi như văn bản, không phải thẻ `a`, không `href`, không xem trước; sao chép được; lọc từ cấm và giới hạn 200 ký tự vẫn áp dụng |
+| AC-YC7-RV-02 | Người xem vào phòng khi không ai bật thiết bị hoặc chia sẻ tới người xem | Không có kết nối LiveKit nào của người xem; chat và bàn vẫn bình thường |
+| AC-YC7-RV-03 | Người chơi bật camera và chọn “Cả đối thủ và người xem”; sau đó tắt hết | Người xem và đối thủ kết nối khi cần và nhận hình; khi tắt hết và không còn nguồn, kết nối được ngắt; kiểm bằng danh sách participant phía provider, không chỉ giao diện |
+| AC-YC7-RV-04 | Hai người chơi bật camera, năm người xem nhận, mạng bị giới hạn | Chất lượng tự hạ thay vì đứt; ván/chat không gián đoạn; ghi băng thông và phút thực vào GATE-MEDIA; không đặt ngưỡng đạt |
+| AC-YC7-RV-05 | Khung chat đang ẩn hoặc ở tab khác; có tin Riêng và Chung mới từ người khác | Chấm báo có số riêng cho từng kênh, không âm thanh; không tính tin mình gửi; mở kênh thì mất số; không có biên nhận đọc gửi đi |
+
+**PO xác nhận 31/10/2026:** (a) thời gian kết nối ban đầu không tính vào “≤ 2 giây” của AC-07.2, ghi riêng vào GATE-MEDIA; (b) trạng thái Tắt nhận hình/tiếng của người nhận lưu theo phiên trình duyệt, không đồng bộ giữa thiết bị; (c) người phát thấy hình xem trước của chính mình khi đang phát (lật gương) và không có xem trước khi chọn “Không chia sẻ”.
+
+### 17.3 Tác động triển khai (chưa làm)
+
+- Chat: bỏ tự biến link thành liên kết nếu `RoomChat`/`DirectChatDialog` đang có; kiểm test hiển thị văn bản thuần.
+- Media: `MediaPanel`/`media.service.ts` kết nối theo nhu cầu (hiện kết nối khi vào phòng nếu có); thêm ngắt khi không còn cần; bật adaptive stream/dynacast.
+- Chat phòng: đếm tin chưa xem phía client theo kênh và hiển thị chấm trên nút/tab Chat.
+- Cần số đo thật cho GATE-MEDIA (băng thông, phút, thời gian kết nối); bằng chứng ở mục 13–14 là trước các thay đổi này.

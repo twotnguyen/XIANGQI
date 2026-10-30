@@ -1,5 +1,9 @@
 # P1 · YC4 — Bàn cờ, lõi luật, thao tác và âm thanh
 
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
+**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 16 (chuyển chọn quân, hiện nước ngay, không xác nhận nước đi, ký hiệu xuất); **chưa triển khai**.
+
 **Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi đã duyệt:** EP-04, US-04.1–04.3 và sáu phần mở rộng tại BA0.22/mục12–14. **Trạng thái:** đã chốt đặc tả và đối chiếu mã nguồn; chưa nghiệm thu lại YC4 hoặc phần bổ sung trong lượt này. Không tự cập nhật Jira/lịch hoặc coi có code là đã hoàn thành.
 
 ## 1. Mục tiêu và nguồn quyết định
@@ -28,7 +32,7 @@ Tài liệu này làm rõ cách triển khai/nghiệm thu, không thay bộ lu�
 | Âm thanh | Đi/ăn/chiếu/kết thúc, nút tắt tiếng | Không tự bật camera/mic; lỗi audio không gián đoạn ván |
 | Người xem | Bàn cờ chỉ đọc và cùng trạng thái mới nhất | YC6 quản quyền vào/xem; YC7 chat/media |
 | AI | Dùng cùng bàn và lõi luật | YC8 chọn cấp độ/phe, worker, ngân sách tính toán, lỗi máy |
-| Đi lại, lịch sử, Replay, xuất ván | P1 theo BA0.22, chi tiết mục12–14 | Undo custom cho thành viên/Khách; Undo AI và History/Replay/export chỉ thành viên; Casual/Ranked vẫn P2 |
+| Đi lại, lịch sử, Replay, xuất ván | P1 theo BA0.22, chi tiết mục12–14 | Undo custom cho thành viên/Khách; Undo AI và History/Replay/export chỉ thành viên; Casual/Ranked P1 theo BA 0.27 |
 
 Không thuộc cả P1/P2 theo BA: gợi ý nước tốt cho người chơi, bộ luật giải đấu đầy đủ, xử đuổi quân riêng. Chấm nước hợp lệ là chỉ dẫn hợp lệ, **không phải hint AI**.
 
@@ -40,7 +44,7 @@ Không thuộc cả P1/P2 theo BA: gợi ý nước tốt cho người chơi, b�
 | Người chơi chưa tới lượt | Theo phe của mình | Không; không hiện đích hợp lệ như thể được đi |
 | Người xem | Mặc định Đỏ phía dưới | Không; API/socket cũng phải từ chối nước giả |
 | Tab chỉ đọc hoặc mất quyền điều khiển | Theo vai trò hiện tại | Không; không giành quyền chỉ bằng click bàn |
-| Đang gửi nước | Giữ trạng thái có chỉ báo chờ | Không gửi nước thứ hai |
+| Đang gửi nước | Quân đã hiện ở đích, không có chỉ báo chờ nhìn thấy (PO 31/10) | Không gửi nước thứ hai |
 | Mất kết nối / đang đồng bộ lại | Trạng thái gần nhất kèm thông báo | Không coi nước cục bộ là đã được chấp nhận |
 | Ván kết thúc | Thế cuối cùng | Chỉ đọc; ván mới phải có Match ID mới |
 | Replay P1, thành viên là người chơi/chủ ván AI | Theo phe của chủ ván | Chỉ tua mốc, tuyệt đối không gửi nước vào ván live; Khách/người xem/người ngoài không được đọc |
@@ -140,7 +144,7 @@ Hai thế giống nhau khi vị trí mọi quân và **bên tới lượt** gi�
 1. Đủ quyền và đúng lượt: chọn quân mình → vòng chọn + mọi đích hợp lệ của riêng quân đó.
 2. Đích trống dùng chấm; đích ăn quân dùng vòng cố định quanh quân địch, không nhấp nháy.
 3. Chọn đích hợp lệ → gửi một ý định từ–đến, chuyển chờ phản hồi.
-4. Click lại quân, click đích không hợp lệ hoặc Esc → bỏ chọn. Khi đã chọn mà bấm quân mình khác, code hiện bỏ chọn; cần chọn lại nếu muốn đổi quân, không tự đặc tả thành chuyển chọn ngay.
+4. Click lại quân, click đích không hợp lệ hoặc Esc → bỏ chọn. Khi đã chọn mà bấm quân mình khác thì **chuyển chọn ngay** sang quân mới (PO 31/10, mục 16).
 5. Bàn phím: mũi tên theo hướng đang nhìn; Enter/Space chọn/xác nhận; Esc hủy; focus nhìn thấy, không tạo 90 điểm Tab liên tiếp.
 6. Thay thế cờ, lượt/quyền, pending hoặc góc nhìn → hủy lựa chọn/kéo cũ; không gửi dựa trên thế đã lỗi thời.
 
@@ -158,7 +162,7 @@ Hai thế giống nhau khi vị trí mọi quân và **bên tới lượt** gi�
 |---|---|
 | SUCCESS | Thế mới từ server, lượt đổi, dấu nước cuối cập nhật |
 | LOADING ban đầu | Chỉ báo đang tải/đồng bộ; không cho tương tác với khai cuộc giả |
-| PENDING nước | Có “Đang gửi nước…”, khóa gửi thêm; nếu vẽ quân dự kiến thì phải phân biệt chưa xác nhận |
+| PENDING nước | Quân **hiện ngay** ở đích như đã đi (không dấu, không chữ chờ), khóa gửi thêm bằng `aria-busy`; máy chủ từ chối thì hoàn về và báo lỗi (PO 31/10, mục 16.1) |
 | EMPTY / không có ván | Phòng chờ hoặc thông báo phù hợp; không cho đi trên bàn minh họa |
 | ERROR | Lỗi tiếng Việt, không tự ăn quân/đổi lượt; đồng bộ lại trạng thái server khi cần |
 | DISABLED | Giải thích theo vai trò/lượt/quyền; không chỉ nút mờ không lý do |
@@ -220,8 +224,8 @@ Bảng dưới là **kế hoạch**, không phải kết quả PASS của lượ
 | AC-04.2.3 | Desktop và 360px không cuộn ngang | Browser thật, đo viewport và chạm |
 | AC-04.2.4 | Phân biệt không chỉ màu, nhãn và lượt | Keyboard, screen reader, mô phỏng mù màu |
 | AC-04.3.1 | Vòng chọn, chấm đích, vòng ăn | Chọn quân có cả đích trống và ăn |
-| AC-04.3.2 | Click/chạm đích hợp lệ đi đúng | Client→server→hai người/người xem |
-| AC-04.3.3 | Click lại/sai/Esc hủy | Không phát nước ngoài ý muốn |
+| AC-04.3.2 | Click/chạm đích hợp lệ đi đúng | Client→server→hai người/người xem; quân hiện ngay ở máy người đi, đối thủ nhận khi máy chủ xác nhận (AC-YC4-RV-02…04) |
+| AC-04.3.3 | Click lại/sai/Esc hủy | Không phát nước ngoài ý muốn; bấm quân mình khác thì chuyển chọn (AC-YC4-RV-01) |
 | AC-04.3.4 | Chuột/chạm kéo hợp lệ | Co giãn, lật bàn, không gửi trùng |
 | AC-04.3.5 | Thả sai trả về | Ngoài bàn, pointercancel, reduced motion |
 | AC-04.3.6 | Sai lượt/người xem không chọn | UI và API/socket giả mạo |
@@ -256,6 +260,8 @@ Bổ sung hồi quy: lệnh trùng/cũ, đổi quyền giữa kéo, mất mạng
 
 ## 12. Đối chiếu P2 và phạm vi P1 đã được PO duyệt
 
+> **Lưu ý (rà chéo 31/10/2026):** mục này là đối chiếu lịch sử trước BA 0.27–0.36. Ghép ngẫu nhiên Casual, Ranked và các phần Casual/Ranked đã **P1** (xem [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)); mọi câu "giữ P2", "queue 3 phút", "xác nhận 10 giây" hay "vào ván ngay" bên dưới đã bị thay.
+
 ### 12.1 Liên quan trực tiếp
 
 | Chức năng / mã nguồn | Quan hệ với YC4 | Phạm vi phải đi cùng | Quyết định PO31/10 |
@@ -271,7 +277,7 @@ Xin đi lại online không giống nút Undo AI: đối thủ được từ ch�
 
 | Chức năng / mã nguồn | Liên quan | Phân kỳ sau quyết định |
 |---|---|---|
-| **Lịch sử cá nhân** — US-P2-11 / **XIAN-125**, AC-P2-11.1–3 | Điểm vào Replay, lọc ván, phe/đối thủ/kết quả; chỉ chủ ván | **Custom/AI P1**, Ranked/Elo/thống kê Ranked vẫn P2; không dựng số liệu giả |
+| **Lịch sử cá nhân** — US-P2-11 / **XIAN-125**, AC-P2-11.1–3 | Điểm vào Replay, lọc ván, phe/đối thủ/kết quả; chỉ chủ ván | **Custom/AI P1**, Ranked/Elo/thống kê Ranked P1 theo BA 0.27; không dựng số liệu giả |
 | **Lưu ván AI/Bỏ dở** — US-P2-12 / **XIAN-126**, AC-P2-12.1–3 | Cung cấp dữ liệu bền cho History/Replay AI | **P1**: terminal chống trùng, Bỏ dở sau30phút, không lưu Khách, không hứa khôi phục ACTIVE qua restart |
 | Widget AI — US-P2-22 / **XIAN-136**, AC-P2-22.1–3 | Nodes/depth/thời gian cạnh bàn, không thay bằng chứng engine | **Đã P1 theo BA0.26**, mọi môi trường/chỉ thành viên, thu gọn mặc định; chỉ nước máy đã áp, không PV tương lai hoặc hint. Chi tiết YC8 |
 | Demo mạng — US-P2-23 / **XIAN-137**, AC-P2-23.1–3 | Giúp trình diễn bàn/đồng hồ đồng bộ sau reconnect | **Đã chuyển P1 theo BA 0.23 khi chốt YC5**: chỉ môi trường demo, production chặn UI/lệnh trực tiếp; không thay kiểm LAN/thiết bị thật |
@@ -305,7 +311,7 @@ Không tái ước lượng giờ/Sprint hoặc sửa issue Jira trong tài li�
 
 | Câu hỏi đã hỏi | Trả lời PO | Hệ quả bắt buộc |
 |---|---|---|
-| Q1 — Cụm xem lại lên P1? | **Custom và AI đầy đủ** | XIAN-125/126/127/129 vào P1 theo phần custom/AI; Ranked/Elo giữ P2, không cắt lưu AI/Bỏ dở khỏi cụm |
+| Q1 — Cụm xem lại lên P1? | **Custom và AI đầy đủ** | XIAN-125/126/127/129 vào P1 theo phần custom/AI; Ranked/Elo P1 theo BA 0.27, không cắt lưu AI/Bỏ dở khỏi cụm |
 | Q2 — Đi lại với máy? | **Có, chỉ thành viên** | XIAN-128 P1; tối đa3 lần thành công, lùi1/2 theo trạng thái máy; UI/API từ chối Khách |
 | Q3 — Xin đi lại online? | **Có, chỉ phòng tự tạo** | Phần custom XIAN-122 P1, không chờ ghép ngẫu nhiên; giữ luật30s/quota3/cooldown3/không hoàn giờ |
 | Q4 — Ván custom có Khách? | **Khách được gửi và trả lời** | Khách/thành viên cùng quyền và giới hạn; không tự đồng ý thay ai. Ngoại lệ này không mở Undo AI hoặc History/export cho Khách |
@@ -329,3 +335,44 @@ Hướng nhìn người xem giữ mặc định Đỏ ở dưới; chưa bổ su
 - Đã thêm đặc tả/liên kết và đồng bộ quyết định PO vào BA0.22/backlog P1/P2; không sửa runtime, bật cờ, migration hoặc Jira. Quyền Khách đổi ở **đặc tả** cho Undo custom, chưa tuyên bố code đã đáp ứng.
 - Không lấy kết quả kiểm thử các lượt trước làm chứng cứ PASS cho toàn bộ YC4/phần mở rộng. **Test local: không chạy (không được yêu cầu).**
 - Chưa xem giao diện, chưa chạy test/build, chưa kiểm thiết bị cảm ứng/âm thanh thật trong lượt tài liệu; chưa commit/push tài liệu này.
+
+## 16. Quyết định PO khi rà soát YC4 — 31/10/2026
+
+**Chưa triển khai**; code và test hiện còn theo trạng thái cũ (ví dụ chọn quân khác đang bỏ chọn). Bổ sung cho mục 7, 8, 9, 10.
+
+| # | Quyết định | AC bổ sung |
+|---|---|---|
+| 1 | **Chọn quân khác:** đã chọn một quân mình, bấm sang quân mình khác thì **chuyển chọn ngay** sang quân mới và hiện đích của quân đó. Bấm lại chính quân đang chọn, ô đích không hợp lệ hoặc Esc vẫn bỏ chọn | AC-YC4-RV-01 |
+| 2 | **Hiện nước đi ngay:** bấm/thả đích hợp lệ thì quân **hiện ngay** ở đích trên máy người đi (không chờ máy chủ), đồng thời gửi nước; máy chủ vẫn là nơi quyết định. Đối thủ và người xem nhận nước **ngay khi máy chủ xác nhận**, đồng bộ nhanh nhất có thể theo NFR-01 (p95 < 100 ms, đo thật, không đạt ghi BLOCKED) | AC-YC4-RV-02, 03, 04 |
+| 3 | **Không có bước xác nhận nước đi**, kể cả trên điện thoại: chạm đích hợp lệ là đi (BA 3.4) | — |
+| 4 | **Ký hiệu:** biên bản trong UI (Replay) dùng tiếng Việt truyền thống (“Pháo … bình/tiến/thoái …”); PGN ghi nước đi bằng **tọa độ ICCS** (cột a–i, hàng 0–9; hàng 0 là phía Đỏ, hàng 9 là phía Đen theo `squareName` trong `packages/shared/src/replay-export.ts`) kèm FEN thế bắt đầu; FEN theo chuẩn cờ tướng thông dụng: chữ hoa = Đỏ, `w` = Đỏ đi, `b` = Đen đi | AC-YC4-RV-05 |
+
+### 16.1 Hành vi “hiện ngay” (nước chờ xác nhận)
+
+Câu hỏi của PO: *khi đưa quân tới đích thì web hiện ngay và đồng bộ với đối thủ ngay chứ?* Câu trả lời đã chốt: **máy người đi hiện ngay; đối thủ nhận ngay khi máy chủ xác nhận.** Máy chủ vẫn phải kiểm trước khi phát cho đối thủ, nên cần xử lý thêm các việc sau:
+
+1. Quân di chuyển ngay đến đích và trông **như đã đi chính thức**: **không có dấu “chưa xác nhận” và không có chữ “Đang gửi nước…”** (PO 31/10). Ăn quân thì quân bị ăn ẩn ngay. Khóa gửi thêm bằng thuộc tính trợ năng `aria-busy`, không hiện chữ.
+2. Máy chủ **chấp nhận**: cập nhật thế/lượt/đồng hồ theo snapshot; **không phát lại âm thanh** và không chạy lại hiệu ứng.
+3. Máy chủ **từ chối** (sai lượt, hết giờ, mất quyền điều khiển, lệnh cũ, nước không hợp lệ do thế đã đổi): quân **trượt về vị trí cũ** (không hiệu ứng nếu giảm chuyển động), hiện lỗi tiếng Việt, trả thế về đúng snapshot máy chủ.
+4. Mất kết nối khi đang chờ: hiện “Đang đồng bộ lại…” (thông báo mất kết nối sẵn có); sau nối lại lấy snapshot máy chủ làm chuẩn — nước đã được chấp nhận thì giữ, chưa thì hoàn về; không gửi lại tự động một nước đã quá lượt.
+5. Trong lúc chờ không cho chọn hay kéo quân khác; đồng hồ hiển thị theo máy chủ, không tự chuyển lượt cục bộ.
+6. Âm thanh đi/ăn/chiếu phát **một lần ngay khi hiện nước**; hoàn về do từ chối không phát âm thanh; nước của đối thủ phát khi nhận.
+7. Người xem và đối thủ không bao giờ thấy nước chưa được máy chủ chấp nhận.
+
+### 16.2 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC4-RV-01 | Đã chọn quân A của mình; bấm quân B của mình | Chọn chuyển sang B, vòng chọn và đích của A biến mất, đích của B hiện; bấm lại B hoặc ô sai hoặc Esc thì bỏ chọn; làm được bằng chuột, chạm, bàn phím |
+| AC-YC4-RV-02 | Người chơi bấm hoặc thả đích hợp lệ | Quân hiện ngay ở đích như đã đi, không dấu và không chữ “Đang gửi nước…”; chỉ gửi đúng một lệnh; khi máy chủ chấp nhận không phát lại âm thanh |
+| AC-YC4-RV-03 | Máy chủ từ chối nước (sai lượt, hết giờ, mất quyền, nước cũ) | Quân hoàn về đúng vị trí gốc, thế bằng snapshot máy chủ, báo lỗi tiếng Việt; đối thủ và người xem không thấy nước đó |
+| AC-YC4-RV-04 | Mất kết nối khi nước đang chờ; nối lại | Thế cuối theo snapshot máy chủ: nước đã chấp nhận thì giữ, chưa thì hoàn về; không tạo hai nước, không tự gửi lại nước quá lượt |
+| AC-YC4-RV-05 | Xuất PGN và Copy FEN từ Replay | PGN ghi nước bằng ICCS và FEN bắt đầu chuẩn cờ tướng, kết quả `1-0`/`0-1`/`1/2-1/2`/`*`; FEN đọc lại đúng bằng bộ kiểm độc lập; Replay hiển thị biên bản tiếng Việt |
+
+**PO xác nhận 31/10:** (a) không có luật tự hòa do thiếu lực — ván không có nước thắng thì kết thúc bằng lặp thế hoặc 120 nửa nước không ăn quân; (b) tắt/bật tiếng giữ theo phiên trình duyệt như mục 8.2; (c) **không có dấu “chưa xác nhận” và không có chữ “Đang gửi nước…”**, nước bị từ chối thì quân nhảy về chỗ cũ kèm thông báo lỗi.
+
+### 16.3 Tác động triển khai (chưa làm)
+
+- `XiangqiBoard.tsx`: chuyển chọn quân khác; vẽ nước chờ xác nhận và hoàn về; ghi nhận âm thanh một lần theo nước. Container (`RoomPage`/`AiGame`) giữ trạng thái chờ và đối chiếu snapshot, khối vẽ vẫn chỉ nhận props.
+- Cần xác định độ trễ máy chủ thực tế: đo cũ ≈ 1,9 giây; “hiện ngay” chỉ che độ trễ ở máy người đi, đối thủ chỉ nhanh khi đạt NFR-01.
+- Bằng chứng ở mục 11 là trước các thay đổi này; không kế thừa PASS.

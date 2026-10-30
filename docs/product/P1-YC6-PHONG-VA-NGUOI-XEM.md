@@ -1,5 +1,9 @@
 # P1 · YC6 — Quyền phòng, Sảnh công khai và người xem
 
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
+**Rà soát 31/10/2026:** PO chốt thêm Mời rời ghế, Xin ngồi ghế (nhiều yêu cầu, Host duyệt), danh sách tên người xem cho mọi người và bộ lọc Sảnh tại mục 17; **chưa triển khai**.
+
 **Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi:** EP-06, US-06.1–06.3 và giao điểm P1 theo BA0.19–0.24. **Trạng thái:** đã chốt đặc tả và đối chiếu code; chưa sửa hoặc nghiệm thu lại runtime trong lượt này. Ba lựa chọn PO tại mục15 đã ghi vào BA0.24: sticker cho cả Khách theo vai trò, cooldown10giây Host–phòng và khung mời ghế hai nút không X/Esc riêng.
 
 ## 1. Mục tiêu và nguồn ưu tiên
@@ -23,7 +27,7 @@ Nguồn:
 | Quyền truy cập | PUBLIC/CODE_ONLY/LOCKED, Host quản lý, xoay mã khi mở khóa | CODE_ONLY không phải phòng có mật khẩu hoặc chỉ dành bạn bè |
 | Sảnh | Tối đa 50 phòng PUBLIC, nút Vào chơi/Vào xem, cập nhật ≤2 giây | Không thêm queue Casual/Ranked, tìm kiếm/lọc/phân trang nếu chưa duyệt |
 | Sức chứa | 2 ghế + 0–5 chỗ xem; kiểm server, giữ chỗ trong hạn | Không tăng trần hoặc đổi viewerLimit sau tạo |
-| Chuyển vai trò | Người chơi không phải Host xuống xem; Host chuyển người kia/mời người xem xuống ghế | Không hoán đổi trực tiếp, không tự ngồi, không đổi vai trong ACTIVE |
+| Chuyển vai trò | Người chơi không phải Host xuống xem; Host chuyển người kia/mời người xem xuống ghế | Không hoán đổi trực tiếp, không tự ngồi (chỉ Xin ngồi chờ Host duyệt, mục 17), không đổi vai trong ACTIVE |
 | Kick | Cả hai người chơi được đuổi người xem; chặn danh tính tới CLOSED | Không đuổi đối thủ giữa ván bằng nút Kick, không ban toàn hệ thống |
 | Đồng bộ | Người xem nhận bàn/lượt/clock/kết quả đúng quyền | Không độ trễ cố ý, không nhận quyền chơi |
 | Chat/media | Thu hồi/cấp lại quyền theo vai trò, Kênh Chung cho người xem | YC7 phụ trách transport/filter/media; lỗi media không dừng ván |
@@ -126,7 +130,7 @@ Danh sách tên/số đếm cần nhất quán với chỗ được giữ, khôn
 Chỉ người chơi không phải Host, phòng WAITING/sau ván đã về WAITING, chưa đếm bắt đầu, còn chỗ xem. Thành công:
 
 1. Chuyển membership thành SPECTATOR, bỏ phe/Ready và giải phóng reservation ghế đúng phòng.
-2. Reset Ready cả hai, hủy countdown/đề nghị ghế hoặc đổi bên không còn hợp lệ.
+2. Reset Sẵn sàng của đối thủ (Host không có Sẵn sàng, YC2 mục 21.1), hủy countdown/đề nghị ghế hoặc đổi bên không còn hợp lệ.
 3. Mất quyền điều khiển ván và đọc/gửi Kênh Riêng; cập nhật token/track media, không giữ quyền phát cũ.
 4. Tăng phiên bản/phát snapshot sau commit; không xóa toàn bộ chat chung hoặc reset ván cũ sai vòng đời.
 
@@ -243,7 +247,7 @@ Bảng là kế hoạch, không phải kết quả PASS của lượt đặc t�
 | AC-06.2.7 | Vào xem không tự ngồi | Phòng còn ghế, gọi API với watch |
 | AC-06.2.8 | Không phòng PUBLIC có EMPTY/Tạo phòng | Không nhầm lỗi feed thành EMPTY |
 | AC-06.2.9 | CODE_ONLY/LOCKED không trong feed | Catalog/cache/response cũ, phiên bị thu hồi |
-| AC-06.2.10 | Bốn mode đúng phân kỳ | Custom/AI hoạt động; Casual/Ranked Sắp ra mắt theo BA 0.23 |
+| AC-06.2.10 | Bốn mode đúng phân kỳ | Cả bốn mode hoạt động theo BA 0.27; Khách bị chặn Đánh Hạng kèm tooltip |
 | AC-06.2.11 | Luật chơi thu gọn, đúng luật rút gọn | Hết nước thua, chiếu/lặp/120, không đuổi riêng; keyboard |
 | AC-06.2.12 | Navigation theo BA hiện hành | History thành viên hoạt động theo BA 0.22, leaderboard P2; Khách không History/Bạn bè |
 | AC-06.2.13 | Quên mật khẩu hoạt động P1 | Không nhãn Sắp ra mắt, dùng username/OTP YC1 |
@@ -270,6 +274,8 @@ Hồi quy chung: tranh chỗ cuối; khóa hoặc kick đúng lúc accept; nhi�
 Không đặt PASS cho media hoặc độ trễ chỉ bằng unit/SQL fixture. Kiểm API/socket/RLS và browser thật, GATE-MEDIA ghi thời gian provider; kiểm mạng LAN/thiết bị thật theo gate dự án. Chưa chạy các ca này trong lượt tài liệu.
 
 ## 14. Đối chiếu code và những phần P2 liên quan
+
+> **Lưu ý (rà chéo 31/10/2026):** mục này là đối chiếu lịch sử trước BA 0.27–0.36. Ghép ngẫu nhiên Casual, Ranked và các phần Casual/Ranked đã **P1** (xem [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)); mọi câu "giữ P2", "queue 3 phút", "xác nhận 10 giây" hay "vào ván ngay" bên dưới đã bị thay.
 
 ### 14.1 Code hiện tại — chỉ đọc, chưa tái hiện runtime
 
@@ -311,7 +317,7 @@ Một số tài liệu/design vẫn ghi Lịch sử/Replay P2 hoặc luôn Sắp
 - XIAN-138 media giữa tab, XIAN-139 theme: giữ role/readonly/contrast, không mở publish cho người xem.
 - XIAN-130 QR đã bỏ cả hai phân kỳ, không đưa lại.
 
-**Phạm vi đã chốt:**37 AC YC6 giữ nguyên, mở rộng hành vi AC-06.3.5 theo BA0.24;3 AC sticker nguồn bổ sung P1 cho thành viên/Khách đúng vai trò. Casual/Ranked/leaderboard giữ P2. Chốt phạm vi không thay kiểm chứng quyền thật, race, cooldown hoặc thu hồi media.
+**Phạm vi đã chốt:**37 AC YC6 giữ nguyên, mở rộng hành vi AC-06.3.5 theo BA0.24;3 AC sticker nguồn bổ sung P1 cho thành viên/Khách đúng vai trò. Casual/Ranked/leaderboard P1 theo BA 0.27. Chốt phạm vi không thay kiểm chứng quyền thật, race, cooldown hoặc thu hồi media.
 
 ## 15. Các quyết định PO đã chốt — BA0.24
 
@@ -338,3 +344,53 @@ Không còn câu hỏi chờ cho ba quyết định này. Quyền Kick của c�
 - **AC-06.3.5/khung:** khung30giây với hai nút và countdown từ server; Esc không thay trạng thái lời mời. Không modal/focus trap, không che bàn. Hết hạn/mất quyền/ghế bị lấy không tự promote; giữ người xem, thông báo rõ và cập nhật pending/cooldown chính thức.
 
 **Lượt hiện tại:** chỉ tài liệu/đối chiếu nguồn, không sửa code/migration/runtime/cờ, không Jira/MCP dịch vụ. **Test local: không chạy (không được yêu cầu).** Chưa xem giao diện hoặc kiểm media/thiết bị thật; chưa commit/push tài liệu YC6.
+
+## 17. Quyết định PO khi rà soát YC6 — 31/10/2026
+
+**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Bổ sung hoặc sửa mục 2, 3, 7, 8, 12.
+
+| # | Quyết định | AC bổ sung |
+|---|---|---|
+| 1 | **Mời rời ghế:** Host có nút **Mời rời ghế** để gỡ người chơi thứ hai về Sảnh khi phòng `WAITING`, đủ hai người, không đang đếm. Có hộp xác nhận. Người bị gỡ **không bị chặn** (khác Kick) và vào lại được nếu phòng chưa `LOCKED`. Không dùng được khi đang ván, một mình, hoặc nhắm chính Host; người chơi thứ hai và người xem không có nút | AC-YC6-RV-01, 02 |
+| 2 | **Danh sách tên người xem hiển thị cho mọi người trong phòng** (kèm “(Khách)”); chỉ hai người chơi có nút Kick | AC-YC6-RV-03 |
+| 3 | **Xin ngồi ghế:** người xem gửi yêu cầu để Host **Đồng ý/Từ chối**. Hạn **30 giây**; bị từ chối hoặc hết hạn thì chờ **10 giây** mới xin lại (theo từng người xem). **Nhiều yêu cầu cùng lúc** (tối đa 5, mỗi người xem một). Host Đồng ý thì người xin **ngồi vào ghế ngay** (không cần xác nhận lần hai); các yêu cầu còn lại tự đóng với thông báo “Ghế đã có người” | AC-YC6-RV-04…07 |
+| 4 | **Bộ lọc Sảnh:** hai nút lọc **Đang chờ** và **Còn chỗ xem**, tắt mặc định; không đổi thứ tự (mới nhất lên đầu) | AC-YC6-RV-08 |
+
+### 17.1 Xin ngồi ghế — quy tắc chi tiết
+
+- Điều kiện để người xem thấy nút **Xin ngồi ghế** hoạt động: phòng `WAITING`, còn ghế trống, không đang đếm, người xem không giữ vị trí chơi khác (kể cả AI), hết cooldown 10 giây. Không đủ điều kiện thì `DISABLED` kèm lý do (ví dụ *“Ghế đã đủ người”*, *“Đang trong ván”*, *“Chờ 7 giây để xin lại”*), không biến mất. Khi đang ván không có Xin ngồi (không đổi vai trong `ACTIVE`).
+- Yêu cầu chỉ hiện cho **Host** (trong panel Người xem, mỗi yêu cầu một hàng có tên, đếm ngược, **Đồng ý / Từ chối**, không modal, không X/Esc riêng, không trap focus). Người chơi thứ hai không quyết định.
+- Mỗi người xem tối đa một yêu cầu đang chờ; gửi lặp không tạo bản sao hay gia hạn.
+- Host Đồng ý: máy chủ kiểm lại dưới khóa phòng — yêu cầu còn hạn, người xin vẫn là người xem trong phòng, ghế còn trống, phòng `WAITING` không đếm, người xin không giữ vị trí khác (kể cả AI) — rồi chuyển người xin thành người chơi ở phe còn trống, giải phóng chỗ xem, reset Sẵn sàng của đối thủ (YC2 mục 21.1) và đóng mọi yêu cầu và lời mời ghế còn lại. Không đủ điều kiện: báo lỗi nghiệp vụ rõ ràng, giữ vai trò xem.
+- Host Từ chối: chỉ đóng yêu cầu đó, người xin chờ 10 giây. Hết hạn 30 giây tính như Từ chối nhưng không báo “bị từ chối”.
+- **Cùng tồn tại với lời mời xuống ghế của Host** (mục 8): lời mời vẫn một pending/phòng; hai loại có thể cùng chờ, ai vào ghế trước thì các đề nghị còn lại tự đóng. Cooldown 10 giây của lời mời (theo Host–phòng) và của Xin ngồi (theo người xem) độc lập.
+- Server là nguồn sự thật cho hạn và cooldown; reload, nhiều tab không làm mới hạn hay tạo thêm yêu cầu.
+
+### 17.2 Mời rời ghế — quy tắc chi tiết
+
+- Chỉ Host; nhắm người chơi thứ hai. Xác nhận nêu rõ tên và *“Người này vẫn có thể vào lại phòng nếu phòng chưa bị khóa.”* Hủy không gửi lệnh.
+- Thành công: người bị gỡ mất ghế, Kênh Riêng và quyền phát media, được đưa về Sảnh kèm thông báo *“Chủ phòng đã mời bạn rời ghế”*; Sẵn sàng đã reset; đề nghị đổi bên và lời mời ghế đang chờ bị đóng; Host trở lại trạng thái ngồi một mình (có Đổi ghế).
+- Không ghi block (khác Kick, mục 9). Nếu muốn ngăn vào lại thì khóa phòng (`LOCKED`). Không có cooldown riêng.
+- Không áp dụng khi ván `ACTIVE`, khi đang đếm, hoặc khi phòng chỉ có một người ngồi ghế; Host không tự gỡ chính mình.
+
+### 17.3 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC6-RV-01 | Phòng `WAITING` đủ hai người, Host bấm Mời rời ghế và xác nhận | Người chơi thứ hai về Sảnh với thông báo, ghế trống, không bị block, vào lại được khi chưa `LOCKED`; chat riêng và media bị thu hồi thật |
+| AC-YC6-RV-02 | Đang đếm, đang ván, một mình, người chơi thứ hai hoặc người xem gọi lệnh | Không có nút hoặc `DISABLED`; gọi trực tiếp bị từ chối; không đổi phòng |
+| AC-YC6-RV-03 | Phòng có người xem | Mọi người trong phòng (người chơi và người xem) thấy danh sách tên người xem; chỉ hai người chơi thấy Kick; người xem không thể gọi Kick |
+| AC-YC6-RV-04 | Người xem đủ điều kiện bấm Xin ngồi ghế | Host thấy yêu cầu với đếm ngược 30 giây; người xin thấy “Đang chờ chủ phòng”; hết hạn thì tự đóng, chờ 10 giây mới xin lại |
+| AC-YC6-RV-05 | Ba người xem cùng xin; Host Đồng ý một người | Người đó ngồi ghế ngay; hai yêu cầu còn lại tự đóng với *“Ghế đã có người”*; không ai có hai vai trò; Sẵn sàng của đối thủ reset |
+| AC-YC6-RV-06 | Host Đồng ý nhưng người xin vừa rời phòng, hoặc đang giữ vị trí AI, hoặc ghế vừa đầy | Báo lỗi nghiệp vụ, không đổi vai, không lỗi SQL chung chung |
+| AC-YC6-RV-07 | Xin ngồi khi đang ván, ghế đầy, cooldown, đã có vị trí khác; gọi API trực tiếp | Nút `DISABLED` có lý do; API từ chối; người chơi và người ngoài không gửi được |
+| AC-YC6-RV-08 | Sảnh bật lọc Đang chờ và/hoặc Còn chỗ xem | Chỉ hiện phòng khớp, giữ thứ tự mới nhất; bỏ lọc trả lại danh sách; cập nhật vẫn trong 2 giây; trạng thái rỗng khi không phòng khớp có giải thích |
+
+**PO xác nhận 31/10/2026:** (a) Mời rời ghế không có cooldown (Host có thể khóa phòng để chặn vào lại); (b) bộ lọc Sảnh áp lên 50 phòng mới nhất ở phía client, không truy vấn thêm phòng ngoài 50; (c) Xin ngồi ghế và lời mời của Host có thể cùng chờ trong một phòng.
+
+### 17.4 Tác động triển khai (chưa làm)
+
+- Hai lệnh phòng mới (Mời rời ghế, Xin ngồi ghế/Trả lời yêu cầu) trong `RoomStore` đúng lớp (`RoomViewerStore`), qua `withRoom`, có `commandId`; hợp đồng `realtime.ts`, `SpectatorsPanel`, `RoomPage`, `RoomLobby`/bộ lọc Sảnh.
+- Cần bảng/cột lưu yêu cầu Xin ngồi (người xin, hạn, cooldown) — có thể cần migration kèm rollback.
+- Panel Người xem: danh sách tên cho mọi vai trò, hàng yêu cầu cho Host.
+- Bằng chứng ở mục 14 là trước các thay đổi này; không kế thừa PASS.

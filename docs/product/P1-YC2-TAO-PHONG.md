@@ -1,14 +1,18 @@
 # P1 · YC2 — Tạo phòng, ghế, Sẵn sàng, đổi bên và ở lại phòng
 
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
 **Ngày lập:** 30/10/2026. **Phạm vi:** YC2 của P1 (EP-02: US-02.1, US-02.2; 27 AC). **Hạn P1:** giữ 04/11/2026.
 
 **PO bổ sung phạm vi theo BA 0.20:** P1 có Tái đấu chọn phe **phòng tự tạo**, Không giới hạn/chống treo và giao điểm tạo phòng từ Thách đấu. QR bị bỏ hoàn toàn. Bằng chứng mục 15–18 là **baseline trước bổ sung**, không chứng minh mặc định/mức giờ/Tái đấu mới đã triển khai hoặc đạt; cần kiểm lại AC-02.1.1, AC-02.2.14 và các AC bổ sung ở mục 19.
+
+**Rà soát 31/10/2026:** PO chốt luồng Host Bắt đầu + đối thủ Sẵn sàng, nút Nhường Host, người xem phải thoát phòng mới tạo phòng và không giới hạn tạo phòng (mục 21); **chưa triển khai**.
 
 **Trạng thái:** baseline theo Q1–Q7 (27 AC, mục 16/18); bổ sung BA 0.20 đã triển khai và kiểm chứng local tại mục 20. Chưa áp migration lên Cloud hoặc xác nhận CI/PO; chưa đóng Task Jira hoặc push phần bổ sung.
 
 ## 1. Mục tiêu, nguồn và thứ tự ưu tiên
 
-YC2 cho phép người dùng hoặc Khách tạo một phòng riêng để so tài: chọn mức giờ, số người xem, quyền truy cập; ngồi ghế Đỏ làm Host; chờ người thứ hai; hai bên bấm Sẵn sàng, đếm 3-2-1 và vào ván. Sau ván, phòng về trạng thái chờ để đánh tiếp, đổi bên hoặc rời mà không phải tạo phòng mới.
+YC2 cho phép người dùng hoặc Khách tạo một phòng riêng để so tài: chọn mức giờ, số người xem, quyền truy cập; ngồi ghế Đỏ làm Host; chờ người thứ hai; đối thủ bấm Sẵn sàng, Host bấm Bắt đầu, đếm 3-2-1 và vào ván (mục 21). Sau ván, phòng về trạng thái chờ để đánh tiếp, đổi bên hoặc rời mà không phải tạo phòng mới.
 
 Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 và các Quyết định 2.0, 2.1, 2.3, 2.6–2.8, 8.3; [Backlog P1 — EP-02](BACKLOG-P1.md); [Danh mục màn hình](../design/DANH-MUC-MAN-HINH-XIANGQI.md) §7 và nhóm modal. Khi nguồn mâu thuẫn, **BA Phần 0 thắng**. Tài liệu này chỉ làm rõ để PO/dev/QA dùng chung, không đổi luật.
 
@@ -28,9 +32,9 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 
 1. Tạo phòng (`MODAL-CREATE-ROOM`), mã 8 chữ số, link mời, phòng chờ `/rooms/:id` ở `WAITING` (`SCR-WAITING-ROOM`).
 2. Ghế Đỏ/Đen, "Đổi ghế" khi chỉ một người ngồi ghế, "Xin đổi bên" khi đủ hai người.
-3. Sẵn sàng/huỷ Sẵn sàng, đếm 3-2-1, kiểm tra lại phía máy chủ rồi tạo ván (Match ID mới).
+3. Sẵn sàng/huỷ Sẵn sàng (người chơi thứ hai), Bắt đầu (Host), Nhường Host, đếm 3-2-1, kiểm tra lại phía máy chủ rồi tạo ván (Match ID mới).
 4. Mất kết nối ở phòng chờ: giữ ghế 60 giây; huỷ đếm; chuyển Host; đóng phòng khi không còn người ngồi ghế.
-5. Sau ván phòng về WAITING, giữ ghế/người xem/quyền/mức giờ/Host; có Ở lại/Rời và **Tái đấu chọn phe custom** theo BA 0.20/mục 19, không Xem lại.
+5. Sau ván phòng về WAITING, giữ ghế/người xem/quyền/mức giờ/Host; có Ở lại/Rời và **Tái đấu chọn phe custom** theo BA 0.20/mục 19; Xem lại theo BA 0.22 (thành viên, khi bản lưu sẵn sàng).
 
 ### 2.2 Ranh giới với YC khác và phạm vi mới
 
@@ -41,7 +45,7 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 | `PUBLIC`/`CODE_ONLY`/`LOCKED` đổi sau tạo, danh sách Sảnh, người xem, kick | YC6 | YC2 chỉ yêu cầu chọn `CODE_ONLY`/`PUBLIC` lúc tạo |
 | Chat hai kênh, camera/mic | YC7 | Phòng chờ có chat/media theo BA 0.13 nhưng nghiệm thu ở YC7; YC2 chỉ giữ nguyên kênh khi ở lại phòng (AC-02.2.9) |
 | Tái đấu custom, Không giới hạn/chống treo, Thách đấu | **P1 bổ sung theo BA 0.20** | Mục 19; Thách đấu chi tiết ở YC3; chống treo giao YC5. QR bị loại khỏi cả P1/P2 |
-| Ghép ngẫu nhiên, Đánh Hạng | P2 | Không có phòng chờ, không có Xin đổi bên |
+| Ghép ngẫu nhiên, Đánh Hạng | **P1 theo BA 0.27** | Không có phòng chờ, không có Xin đổi bên |
 
 ## 3. Vai trò và quyền
 
@@ -49,9 +53,9 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 |---|---|
 | Thành viên hoặc Khách, không ngồi ghế nơi khác, đang ở Sảnh | Tạo phòng (mỗi Khách tối đa 1 phòng đang mở theo BA 0.3) |
 | Người đang giữ ghế/ván ở nơi khác | Không tạo được phòng; thấy lý do và đường quay lại vị trí hiện tại (theo YC1, một vị trí chơi) |
-| Host | Ngồi ghế; Đổi ghế (khi một mình); Sẵn sàng; Xin đổi bên (khi đủ hai người); Rời phòng |
+| Host | Ngồi ghế; Đổi ghế (khi một mình); **Bắt đầu** (không có Sẵn sàng); Xin đổi bên và **Nhường Host** (khi đủ hai người); Rời phòng |
 | Người chơi thứ hai | Sẵn sàng; Xin đổi bên; Rời phòng; không có "Đổi ghế" |
-| Người xem | Không có Sẵn sàng, Đổi ghế, Xin đổi bên, nút trong hộp kết quả |
+| Người xem | Không có Sẵn sàng, Bắt đầu, Đổi ghế, Xin đổi bên, Nhường Host, nút trong hộp kết quả; muốn tạo phòng phải thoát phòng về Sảnh trước (mục 21.3) |
 | Máy chủ | Nguồn sự thật duy nhất cho ghế, Sẵn sàng, đếm, Host, trạng thái phòng; không tin client |
 
 ## 4. Tham số phòng và quy tắc dữ liệu
@@ -73,7 +77,7 @@ Nguồn: [BA Phần 0](BA-SCOPE-DECISIONS.md) mục 0.3, 0.5–0.7, 0.10, 0.13 v
 ```mermaid
 stateDiagram-v2
     [*] --> WAITING: tạo phòng (Host ngồi Đỏ)
-    WAITING --> COUNTDOWN: đủ hai người ngồi, cả hai Sẵn sàng và đang kết nối
+    WAITING --> COUNTDOWN: đủ hai người ngồi, đối thủ Sẵn sàng, Host bấm Bắt đầu và cả hai đang kết nối
     COUNTDOWN --> WAITING: một người mất kết nối / rời ghế / đổi thành phần ghế (huỷ đếm, reset Sẵn sàng)
     COUNTDOWN --> PLAYING: hết 3 giây, máy chủ kiểm lại rồi tạo Match ID mới
     PLAYING --> WAITING: ván kết thúc (reset Sẵn sàng, giữ ghế/Host/người xem)
@@ -98,20 +102,20 @@ stateDiagram-v2
 
 | Tình huống | Hành vi |
 |---|---|
-| Chỉ Host ngồi ghế | Nút **Đổi ghế** chuyển Đỏ ↔ Đen tùy thích, không cần duyệt; Sẵn sàng của Host reset |
-| Người thứ hai ngồi vào ghế còn lại | "Đổi ghế" biến mất; chỉ còn **Xin đổi bên** (mục 10); Sẵn sàng của cả hai reset |
+| Chỉ Host ngồi ghế | Nút **Đổi ghế** chuyển Đỏ ↔ Đen tùy thích, không cần duyệt (Host không có Sẵn sàng) |
+| Người thứ hai ngồi vào ghế còn lại | "Đổi ghế" biến mất; chỉ còn **Xin đổi bên** (mục 10); Sẵn sàng của đối thủ reset |
 | Người thứ hai rời ghế, còn một người | "Đổi ghế" xuất hiện lại |
-| Thành phần người ngồi ghế thay đổi (vào, rời, mất ghế, xuống/lên ghế) | Sẵn sàng của cả hai reset; đề nghị đổi bên đang chờ bị huỷ |
+| Thành phần người ngồi ghế thay đổi (vào, rời, mất ghế, xuống/lên ghế) | Sẵn sàng của đối thủ reset; đề nghị đổi bên đang chờ bị huỷ |
 
 ### 7.2 Sẵn sàng
 
-- Giao diện cho bấm Sẵn sàng khi đủ hai người theo AC-02.1.7. Khi người thứ hai ngồi vào hoặc thành phần ghế thay đổi, Sẵn sàng của cả phòng reset (AC-02.1.10).
+- **Từ mục 21.1:** chỉ người chơi thứ hai bấm Sẵn sàng; Host bấm Bắt đầu khi đối thủ đã Sẵn sàng. Khi thành phần ghế thay đổi, Sẵn sàng của đối thủ reset (AC-02.1.10). Mọi câu "cả hai Sẵn sàng" bên dưới đọc theo quy tắc này.
 - Trạng thái Sẵn sàng của từng người hiển thị realtime cho mọi người trong phòng.
 - Chỉ người ngồi ghế được bấm; người xem không có nút.
 
 ### 7.3 Đếm 3-2-1
 
-1. Điều kiện bắt đầu đếm: đủ hai người ngồi ghế, cả hai Sẵn sàng. Hiển thị **3… 2… 1…** kèm âm thanh (một tiếng mỗi giây), có thể tắt tiếng theo cài đặt âm thanh hiện có.
+1. Điều kiện bắt đầu đếm: đủ hai người ngồi ghế, đối thủ đã Sẵn sàng và Host bấm Bắt đầu. Hiển thị **3… 2… 1…** kèm âm thanh (một tiếng mỗi giây), có thể tắt tiếng theo cài đặt âm thanh hiện có.
 2. Trong lúc đếm: không có "Xin đổi bên", "Đổi ghế"; đề nghị đổi bên chờ tự huỷ.
 3. Hết đếm, **máy chủ kiểm lại** hai ghế, Sẵn sàng và kết nối rồi mới tạo ván với **Match ID mới**; hai client chuyển `SCR-GAME-ROOM`; đồng hồ Đỏ bắt đầu chạy. Thiếu bất kỳ điều kiện nào: không tạo ván, quay về chờ và reset Sẵn sàng.
 4. Không ván nào được tạo hai lần cho cùng một lần đếm, kể cả khi hai máy chủ/worker cùng xử lý.
@@ -120,9 +124,9 @@ stateDiagram-v2
 
 | Sự kiện | Hành vi |
 |---|---|
-| Người chơi mất kết nối khi đang đếm | Huỷ đếm; Sẵn sàng của cả hai về chưa; giữ ghế người mất kết nối **60 giây**; không tạo ván; không xử thua |
-| Người chơi mất kết nối ở phòng chờ (không đếm) | Giữ ghế 60 giây; Sẵn sàng của cả hai reset (hành vi hiện có, xem Q4) |
-| Nối lại trong 60 giây | Giữ nguyên ghế; cả hai phải Sẵn sàng lại để đếm lại |
+| Người chơi mất kết nối khi đang đếm | Huỷ đếm; Sẵn sàng của đối thủ về chưa; giữ ghế người mất kết nối **60 giây**; không tạo ván; không xử thua |
+| Người chơi mất kết nối ở phòng chờ (không đếm) | Giữ ghế 60 giây; Sẵn sàng của đối thủ reset (xem Q4) |
+| Nối lại trong 60 giây | Giữ nguyên ghế; đối thủ phải Sẵn sàng lại và Host bấm Bắt đầu để đếm lại |
 | Quá 60 giây | Mất ghế như rời ghế (mục 7.1, 8, 9) |
 | Người xem mất kết nối | Thuộc YC6 (giữ chỗ 5 phút), không đổi YC2 |
 
@@ -147,20 +151,20 @@ stateDiagram-v2
 | Điều kiện | Phòng `WAITING`, đủ hai người ngồi ghế, không đang đếm; cả hai người chơi có nút **Xin đổi bên**, người xem không có |
 | Gửi | A bấm → tối đa **một** đề nghị chờ cho phòng; A thấy trạng thái chờ và nút **Rút đề nghị** |
 | Nhận | B thấy `MODAL-SIDE-SWAP-PROMPT` đếm lùi **30 giây** với **Đồng ý / Từ chối** |
-| Đồng ý | Hoán đổi Đỏ ↔ Đen; Sẵn sàng của cả hai reset |
+| Đồng ý | Hoán đổi Đỏ ↔ Đen; Sẵn sàng của đối thủ reset |
 | Từ chối hoặc hết 30 giây | A bị khoá gửi lại **60 giây**: nút `DISABLED` kèm tooltip đếm giây còn lại |
 | Rút đề nghị | Đề nghị biến mất; có áp dụng khoá 60 giây hay không: xem Q3 |
-| Tự huỷ | Khi cả hai Sẵn sàng và bắt đầu đếm; khi một người rời ghế/thành phần ghế đổi |
+| Tự huỷ | Khi đối thủ Sẵn sàng, Host bấm Bắt đầu và bắt đầu đếm; khi một người rời ghế/thành phần ghế đổi |
 | Ẩn nút | Khi đang đếm 3-2-1 hoặc đang ván |
 
 Đồng hồ 30 giây và khoá 60 giây tính theo thời gian máy chủ; client chỉ hiển thị. Bấm "Đồng ý" sau khi đề nghị đã hết hạn/bị huỷ được báo rõ và không hoán đổi.
 
 ## 11. Sau ván và ở lại phòng (AC-02.2.8 – 02.2.14)
 
-1. Ván kết thúc: **ngay lập tức** phòng về `WAITING`, Sẵn sàng của cả hai = chưa. Hộp kết quả chỉ là lớp hiển thị.
+1. Ván kết thúc: **ngay lập tức** phòng về `WAITING`, Sẵn sàng của đối thủ = chưa. Hộp kết quả chỉ là lớp hiển thị.
 2. `MODAL-MATCH-RESULT` có **Ở lại phòng / Rời phòng**, thêm **Tái đấu** cho hai thành viên đủ quyền theo mục 19; không Xem lại. Người xem chỉ thấy kết quả, không có nút người chơi.
 3. **Ở lại phòng**: về phòng chờ; giữ nguyên ghế/phe, người xem, chế độ phòng, mức giờ, Host, Kênh Riêng và Kênh Chung.
-4. Cả hai Sẵn sàng → ván mới, Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng.
+4. Đối thủ Sẵn sàng, Host Bắt đầu → ván mới, Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng.
 5. **Rời phòng**: ghế trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn giữ khoá.
 6. Không ai rời: phòng **không** tự đóng sau 10 phút.
 7. Muốn đổi phe thì dùng Xin đổi bên (mục 10).
@@ -175,7 +179,7 @@ stateDiagram-v2
 | `SCR-WAITING-ROOM` | Hai ghế lớn Đỏ/Đen; cụm nút Sẵn sàng / Đổi ghế / Xin đổi bên / Chia sẻ phòng (người chơi) / Cài đặt phòng (Host); khối chat/media theo YC7 |
 | `MODAL-SIDE-SWAP-PROMPT` | Đếm lùi 30 giây; Đồng ý / Từ chối; hành vi khi Esc/đóng: xem Q5 |
 | Đếm 3-2-1 | Số lớn, có âm thanh, tôn trọng `prefers-reduced-motion`; thông báo cho trình đọc màn hình |
-| `MODAL-MATCH-RESULT` | Ở lại/Rời; Tái đấu chọn Giữ phe/Đổi phe cho cặp đủ quyền. Xem lại vẫn P2 |
+| `MODAL-MATCH-RESULT` | Ở lại/Rời; Tái đấu chọn Giữ phe/Đổi phe cho cặp đủ quyền. Xem lại P1 theo BA 0.22 (khi bản lưu sẵn sàng) |
 
 Năm trạng thái cho mọi thao tác chính (`SUCCESS`, `LOADING`, `EMPTY`, `ERROR`, `DISABLED` có tooltip) theo DANH-MUC §2; `DISABLED` của Xin đổi bên có tooltip đếm giây. Dùng token và primitives sẵn có, rộng tối thiểu 360 px, vùng bấm tối thiểu 44 px, tiếng Việt có dấu, nút chỉ có biểu tượng phải có tên truy cập.
 
@@ -184,12 +188,12 @@ Năm trạng thái cho mọi thao tác chính (`SUCCESS`, `LOADING`, `EMPTY`, `E
 - Mọi thay đổi ghế/Sẵn sàng/Host/đếm là transaction qua `RoomTransactions.withRoom`, khoá actor rồi khoá phòng theo thứ tự đã sắp xếp; lệnh mang `commandId`, idempotent qua biên lai.
 - Tác dụng phụ (phát Socket.IO, huỷ media) đi qua outbox sau commit; hẹn giờ (đếm, hết hạn đề nghị, ân hạn 60 giây) do worker máy chủ xử lý, không phụ thuộc client.
 - Luật chỉ nằm ở máy chủ: client gửi ý định, không gửi kết quả (ghế, trạng thái, Match ID).
-- Tạo phòng, đổi ghế, Sẵn sàng, Xin đổi bên có giới hạn tần suất hợp lý để chống spam; không đổi chu kỳ đọc Sảnh 1 giây.
+- Tạo phòng, đổi ghế, Sẵn sàng, Bắt đầu, Xin đổi bên không giới hạn ở mức người dùng, chỉ có trần kỹ thuật 60 lệnh/phút mỗi loại (mục 21.4); không đổi chu kỳ đọc Sảnh 1 giây.
 - Không thêm migration nếu lược đồ hiện có đủ; nếu cần thì kèm `rollback/`, không sửa migration đã áp dụng.
 
 ## 14. Trường hợp biên cần xử lý
 
-1. Hai người cùng bấm Sẵn sàng đồng thời: chỉ một lần đếm, một ván.
+1. Đối thủ hủy Sẵn sàng đúng lúc Host bấm Bắt đầu, hoặc Host bấm Bắt đầu hai lần/hai tab: chỉ một lần đếm, một ván hoặc không ván nào.
 2. Một người rời đúng giây hết đếm: máy chủ kiểm lại, không tạo ván.
 3. Hai đề nghị đổi bên gửi gần như cùng lúc: chỉ một đề nghị được nhận, đề nghị còn lại nhận lỗi rõ ràng.
 4. Bấm "Tạo phòng" hai lần, hoặc mở hai tab: không tạo hai phòng; tab thứ hai thấy vị trí hiện tại.
@@ -291,7 +295,7 @@ Không thêm migration/dependency. Tự kiểm server: SQL thay đổi chỉ tro
 - Giữ mức giờ (kể cả Không giới hạn), quyền phòng, Host, blocks, spectators và chat cùng cặp. Không đổi tên/mã hoặc tạo phòng khác chỉ vì tái đấu.
 - Hai đề nghị đồng thời giữ đề nghị tới trước, bên gửi sau thấy đề nghị đối thủ. Thay ghế/đã có ván mới làm đề nghị cũ vô hiệu; retry không tạo hai ván.
 - Không dùng/không đồng ý Tái đấu vẫn giữ đường **Ở lại → Xin đổi bên nếu muốn → Ready**; không tự tạo ván mới. Khách không gửi/nhận Tái đấu theo quyền nguồn; không tự đồng ý thay họ.
-- Nghiệm thu **AC-P2-09.1–3 phần custom**: Giữ/Đổi, chấp nhận/hết hạn, đồng thời, thay ghế/Ready/rời/mất mạng sát accept/countdown, ván mới duy nhất và giữ chat/quyền. Casual và Tái đấu Casual vẫn P2; Ranked không có Tái đấu.
+- Nghiệm thu **AC-P2-09.1–3 phần custom**: Giữ/Đổi, chấp nhận/hết hạn, đồng thời, thay ghế/Ready/rời/mất mạng sát accept/countdown, ván mới duy nhất và giữ chat/quyền. Tái đấu Casual: xem YC9; Ranked không có Tái đấu.
 
 ### 19.2 Không giới hạn và chống treo — US-P2-10 / XIAN-124
 
@@ -313,3 +317,63 @@ Thách đấu từ trang Bạn bè dùng cùng form tạo phòng không tên, m�
 - UI banner 30 giây và “Tôi còn đây” chạy với worker thật; xác nhận ghi lại anchor và `inactivity_extensions=1` trên DB smoke. Một ván im lặng thực tế kết thúc “Không phản hồi quá lâu”.
 - Form thành viên mặc định Không giới hạn; Thách đấu mặc định 10 phút; Khách chỉ tạo 5/10/15 nhưng được tham gia phòng 0 theo quyền. Chia sẻ chỉ copy link/mã, không ảnh QR.
 - Bố cục desktop giới hạn viewport, vùng phụ cuộn nội bộ. Migration có rollback, kiểm trên DB local riêng; Cloud/CI và nghiệm thu PO chưa xác nhận.
+
+## 21. Quyết định PO khi rà soát YC2 — 31/10/2026
+
+Các quyết định dưới đây sửa mục 1, 3, 5, 7, 8, 11, 13, 14. **Chưa triển khai**; code, test và mockup `SCR-WAITING-ROOM.html` còn theo luồng cũ (cả hai bấm Sẵn sàng).
+
+### 21.1 Bắt đầu ván bằng nút của Host (phòng tự tạo)
+
+- **Người chơi thứ hai** có nút **Sẵn sàng / Hủy Sẵn sàng**. **Host không có Sẵn sàng**; Host có nút **Bắt đầu**.
+- **Bắt đầu** chỉ sáng và có hiệu lực khi: đủ hai người ngồi ghế, đối thủ đã Sẵn sàng, cả hai đang kết nối, phòng ở `WAITING` và không đang đếm. Chưa đủ điều kiện thì `DISABLED` kèm tooltip (*"Chờ người chơi thứ hai"* hoặc *"Chờ đối thủ sẵn sàng"*). Host đang ngồi một mình vẫn thấy nút, ở trạng thái `DISABLED`.
+- **Đồng bộ nhanh:** ngay khi đối thủ bấm Sẵn sàng/Hủy, nút Bắt đầu của Host sáng/tắt theo, không cần tải lại. Mục tiêu độ trễ dùng ngưỡng NFR-01 (p95 < 100 ms trong môi trường demo, đo thật; không đạt ghi BLOCKED) — PO xác nhận 31/10.
+- Host bấm Bắt đầu → **đếm 3-2-1** (giữ nguyên, có âm thanh) → máy chủ kiểm lại hai ghế, Sẵn sàng của đối thủ và kết nối → tạo ván, Match ID mới. Thiếu điều kiện nào: không tạo ván, quay về chờ.
+- Trong lúc đếm, đối thủ hủy Sẵn sàng, mất kết nối, rời ghế hoặc thành phần ghế đổi → hủy đếm, về chờ, Sẵn sàng của đối thủ reset, giữ ghế 60 giây cho người mất kết nối (AC-02.1.9).
+- **Reset Sẵn sàng của đối thủ** khi: thành phần ghế đổi, Xin đổi bên được đồng ý, Nhường Host, đối thủ mất kết nối ở phòng chờ, ván kết thúc.
+- Sau ván: phòng về `WAITING`; đối thủ phải Sẵn sàng lại, Host bấm Bắt đầu. Tái đấu (mục 19.1) vẫn vào ván không cần Sẵn sàng/Bắt đầu.
+- **Chỉ áp cho phòng tự tạo (kể cả Thách đấu).** Đánh Thường ghép ngẫu nhiên và Ranked dùng hộp Xác nhận 30 giây rồi đếm 3-2-1 (YC9 mục 16), không có Sẵn sàng/Bắt đầu của Host.
+- Mọi câu "cả hai Sẵn sàng", "Sẵn sàng của cả hai" ở mục 5–14 của tài liệu này, ở BA 0.6/0.7/2.3/2.8 và BACKLOG-P1 AC-02.1.7–02.1.10 được hiểu theo quy tắc này.
+
+### 21.2 Nhường Host
+
+- Chỉ **Host** thấy nút **Nhường Host**, chỉ khi phòng `WAITING`, đủ hai người ngồi ghế và không đang đếm. Không nhường khi đang ván hoặc khi chỉ có một người ngồi ghế.
+- Bấm → hộp xác nhận → **chuyển ngay**, người nhận không phải đồng ý. Người nhận thành Host (có Bắt đầu, Cài đặt phòng, quyền Host khác); Host cũ thành người chơi thứ hai (có Sẵn sàng). Ghế/phe không đổi; Sẵn sàng của người chơi thứ hai reset.
+- Chuyển nguyên tử, idempotent theo `commandId`; trạng thái do máy chủ quyết định; thông báo cho cả phòng. Người xem không có nút.
+- Chuyển Host tự động khi Host rời/mất ghế (mục 8) giữ nguyên.
+
+### 21.3 Người xem phải thoát phòng mới tạo phòng
+
+- Người xem chỉ xem khi đang ở trong phòng. **Về Sảnh = rời hẳn phòng xem**, giải phóng chỗ xem ngay.
+- Sảnh **không** có thông báo hay nút để quay lại phòng đang xem (khác người chơi: ván dở vẫn có banner "Quay lại").
+- Người đang xem muốn tạo phòng phải thoát phòng về Sảnh rồi mới tạo. Nút Tạo phòng ở phòng xem không có; ở Sảnh luôn dùng được nếu không ngồi ghế nơi khác.
+- Không đổi: người xem mất kết nối (đóng tab, mất mạng) giữ chỗ 5 phút và vào lại bằng link/mã (YC6); chuyển thẳng từ phòng xem A sang phòng B bằng link/lời mời vẫn nguyên tử theo BA 0.19 Q5.
+
+### 21.4 Không giới hạn tạo phòng
+
+- Người dùng không bị giới hạn số lần tạo phòng và có thể tạo, rời/hủy phòng rồi tạo phòng khác ngay. Phòng chỉ có Host một mình: Host rời thì phòng đóng ngay (mục 9).
+- **Trần kỹ thuật rất cao** để bảo vệ hệ thống, không tác động người dùng bình thường: mỗi tài khoản (Khách tính theo phiên) tối đa **60 lệnh/phút cho mỗi loại lệnh phòng** (tạo phòng, đổi ghế, Sẵn sàng, Bắt đầu, Xin đổi bên). Vượt trần: *"Thao tác quá nhanh, vui lòng thử lại sau"*, không ghi dữ liệu. Giá trị do dev chỉnh được; PO xác nhận 31/10.
+- Giữ: Khách tối đa 1 phòng đang mở; chu kỳ đọc Sảnh 1 giây không đổi; khóa 60 giây của Xin đổi bên (mục 10) không đổi.
+- Rủi ro đã nêu và PO chấp nhận: có thể tạo và hủy phòng liên tục làm danh sách PUBLIC nháy và tăng ghi dữ liệu; chỉ giảm bằng trần kỹ thuật ở trên.
+
+### 21.5 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC2-RV-01 | Phòng tự tạo, Host ngồi một mình | Nút Bắt đầu hiện nhưng `DISABLED` kèm tooltip; Host không có nút Sẵn sàng |
+| AC-YC2-RV-02 | Đủ hai người, đối thủ bấm Sẵn sàng | Nút Bắt đầu của Host sáng ngay không cần tải lại; đối thủ Hủy Sẵn sàng thì tắt ngay |
+| AC-YC2-RV-03 | Host bấm Bắt đầu khi đủ điều kiện | Đếm 3-2-1 rồi máy chủ kiểm lại và tạo đúng một ván, Match ID mới; bấm lặp hoặc hai tab không tạo hai ván |
+| AC-YC2-RV-04 | Đang đếm, đối thủ hủy Sẵn sàng / mất kết nối / rời ghế | Hủy đếm, không tạo ván, Sẵn sàng của đối thủ reset, giữ ghế 60 giây với người mất kết nối |
+| AC-YC2-RV-05 | Host bấm Bắt đầu bằng API khi đối thủ chưa Sẵn sàng hoặc người khác (không phải Host) gọi lệnh | Máy chủ từ chối, không tạo ván |
+| AC-YC2-RV-06 | Host bấm Nhường Host trong phòng chờ đủ hai người, xác nhận | Quyền Host chuyển ngay, nút Bắt đầu/Cài đặt phòng đổi chủ, Sẵn sàng của người chơi thứ hai reset, ghế/phe giữ nguyên |
+| AC-YC2-RV-07 | Nhường Host khi đang đếm, đang ván, một mình, hoặc người xem/người chơi thứ hai gọi | Nút ẩn hoặc `DISABLED`; gọi trực tiếp bị từ chối |
+| AC-YC2-RV-08 | Người đang xem phòng A về Sảnh | Chỗ xem được giải phóng; Sảnh không có banner hay nút quay lại phòng A; bấm Tạo phòng dùng được |
+| AC-YC2-RV-09 | Người dùng tạo phòng rồi rời/hủy rồi tạo tiếp liên tục dưới trần | Mọi lần tạo thành công, không khóa chờ; Khách vẫn tối đa 1 phòng mở |
+| AC-YC2-RV-10 | Một tài khoản gửi trên 60 lệnh phòng cùng loại trong một phút | Lệnh vượt trần bị từ chối với thông báo quá nhanh, dữ liệu không đổi |
+
+### 21.6 Tác động triển khai (chưa làm)
+
+- Đổi mô hình Sẵn sàng: hiện lưu Sẵn sàng cả hai ghế; cần Sẵn sàng chỉ cho người không phải Host và lệnh Bắt đầu mới. Ảnh hưởng `RoomStore` (lớp và hợp đồng `realtime.ts`), `RoomSeats`/`RoomPage`, test phòng, mockup `SCR-WAITING-ROOM.html`, AC-02.1.7–02.1.10, D5, D7.
+- Nhường Host: lệnh mới trong `RoomStore`, nút ở `RoomSeats`, AC mới; thêm vào danh sách lệnh trong `docs/engineering/server/room.md` khi triển khai.
+- Người xem: bỏ mọi banner "quay lại phòng đang xem" nếu đã có; kiểm đường Về Sảnh giải phóng chỗ xem.
+- Trần 60 lệnh/phút: dùng cơ chế giới hạn sẵn có nếu có; không thêm hạ tầng mới.
+- Bằng chứng ở mục 15–20 là trước các thay đổi này; không kế thừa PASS.

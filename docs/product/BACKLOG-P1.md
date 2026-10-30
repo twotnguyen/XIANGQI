@@ -1,12 +1,12 @@
 # BACKLOG P1 — Cờ Tướng Online (XIANGQI)
 
 > **Phiên bản:** 3.0 · **Ngày:** 10/10/2026 · **Người lập:** BA · **PO duyệt:** cấu trúc 9 Epic / 27 Story chốt 07/10
-> **Phạm vi:** P1 (MVP, hạn **04/11/2026**). P2 chỉ liệt kê ở mức Epic (mục 4.2).
+> **Phạm vi:** P1 (MVP, hạn **04/11/2026**). Từ BA 0.27 (31/10) phần P2 cũ cũng thuộc P1; mục 4.2 giữ bảng Epic mang mã P2 để truy vết.
 
 > **PO bổ sung 30/10/2026 — BA 0.20:** P1 thêm Thách đấu (`US-P2-19`/XIAN-133), DM/unread (`US-P2-18`/XIAN-132), Không giới hạn/chống treo (`US-P2-10`/XIAN-124), Tái đấu **phòng tự tạo** (phần custom `US-P2-09`/XIAN-123). Giữ mã AC/Jira cũ để truy vết; **QR bị loại khỏi cả P1/P2**, chỉ chia sẻ bằng Sao chép link / Sao chép mã. Số Story/Task/AC/giờ trước thay đổi là baseline lịch sử; chưa tái ước lượng hoặc cập nhật issue. Bổ sung phạm vi **chưa triển khai/nghiệm thu**, không kế thừa kết quả PASS cũ.
 > **PO bổ sung BA 0.21:** toàn bộ US-P2-20/XIAN-134, US-P2-21/XIAN-135, US-P2-24/XIAN-138, US-P2-25/XIAN-139 thuộc P1, giữ 12 mã AC nguồn. Đổi Username giữ mọi phiên/hạn cũ; theme lưu theo tài khoản/đồng bộ thiết bị. Khách được chơi/xem phòng Không giới hạn do thành viên tạo và chịu chống treo, không tự tạo mức này. Chưa triển khai/nghiệm thu hoặc tái ước lượng/Jira.
-> **PO bổ sung 31/10 — BA0.22:** thêm History custom/AI, lưu AI/Bỏ dở, Replay, FEN/PGN, Undo AI chỉ thành viên và Xin đi lại custom cho cả thành viên/Khách. Giữ18 AC nguồn tại BACKLOG-P2, xem đặc tả YC4 mục12–14; chưa nghiệm thu/Jira Done. Ranked/Casual còn lại vẫn P2.
-> **PO chốt YC5 — BA 0.23:** demo mạng XIAN-137/AC-P2-23.1–3 lên P1, chỉ môi trường demo; thêm hòa mất mạng trùng timestamp tuyệt đối và chính sách deadline trước, bằng nhau TIMEOUT → DISCONNECT → INACTIVITY. Casual giữ P2. Mới chốt tài liệu, chưa nghiệm thu phần mới.
+> **PO bổ sung 31/10 — BA0.22:** thêm History custom/AI, lưu AI/Bỏ dở, Replay, FEN/PGN, Undo AI chỉ thành viên và Xin đi lại custom cho cả thành viên/Khách. Giữ18 AC nguồn tại BACKLOG-P2, xem đặc tả YC4 mục12–14; chưa nghiệm thu/Jira Done. Ranked/Casual còn lại cũng lên P1 theo BA 0.27.
+> **PO chốt YC5 — BA 0.23:** demo mạng XIAN-137/AC-P2-23.1–3 lên P1, chỉ môi trường demo; thêm hòa mất mạng trùng timestamp tuyệt đối và chính sách deadline trước, bằng nhau TIMEOUT → DISCONNECT → INACTIVITY. Casual lên P1 theo BA 0.27 (thay quyết định giữ P2 ở 0.23). Mới chốt tài liệu, chưa nghiệm thu phần mới.
 > **PO chốt YC6 — BA0.24:** đủ12 sticker XIAN-131/AC-P2-17.1–3 lên P1 cho thành viên/Khách theo vai trò; DM vẫn chỉ accepted friends. Mời xuống ghế bị Từ chối/hết hạn chờ10giây theo Host–phòng, chung người nhận/tab; khung nonmodal hai nút/đếm ngược, không X/Esc riêng. Chưa nghiệm thu phần mới.
 > **PO chốt YC8 — BA0.26:** widget XIAN-136/AC-P2-22.1–3 P1 mọi môi trường/chỉ thành viên; chỉ nước máy đã áp, không PV tương lai. Offline cho xong tối đa nước máy đang chờ; grace30phút từ mất controller, tab chỉ đọc không kéo dài hạn. Đã chốt đặc tả, chưa triển khai/kiểm chứng phần mới.
 > **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 10/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
@@ -104,16 +104,19 @@
 | EP-06 | Chế độ phòng và người xem | YC6 | US-06.1 – 06.3 | 22 | PUBLIC / CODE_ONLY / LOCKED, danh sách phòng ở Sảnh, tối đa 5 người xem (7 người/phòng), đuổi người xem. |
 | EP-07 | Chat, camera và mic | YC7 | US-07.1 – 07.2 | 14 | Kênh Riêng cho hai người chơi, Kênh Chung cho người xem, bộ lọc từ cấm; camera/mic qua LiveKit với ba mức chia sẻ. |
 | EP-08 | Đánh với máy theo cấp độ | YC8 | US-08.1 – 08.3 | 24 | Máy cờ ba cấp Dễ/Trung bình/Khó, chọn phe, Ván mới, ổn định ván với máy. |
+| EP-09 | Ghép trận Casual, Đánh Hạng, Elo, bảng xếp hạng | YC9 (PO bổ sung 31/10, BA 0.27) | US-P2-01…07 và phần Casual/Ranked của US-P2-08/09/11, mã truy vết | chưa tính | Đặc tả: [P1-YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md); chưa có Task/ước lượng/Jira |
 | **Cộng** | | | 27 Story | **198** | |
 
 ### 4.2 Epic P2 (chỉ ở mức Epic, chưa tách Story)
 
+> Từ BA 0.27 mọi Epic dưới đây thuộc P1; mã `EP-P2-*` chỉ còn là định danh truy vết.
+
 | Epic | Tên | Nguồn BA |
 |---|---|---|
-| EP-P2-01 | Đánh Hạng, Elo, bảng xếp hạng | 2.0, 5.4, 7.1, 7.2, 7.3, 8.1, 8.3 (phần Ranked) |
-| EP-P2-02 | Đánh Thường ghép ngẫu nhiên | 2.0 |
-| EP-P2-03 | P2 còn Xin đi lại/Tái đấu Casual; custom, Không giới hạn/chống treo lên P1 theo BA0.20/0.22 | 0.8, 0.20, 0.22, 3.2, 3.6 |
-| EP-P2-04 | History custom/AI, Replay, FEN/PGN, lưu AI, Undo AI chuyển P1; phần Ranked còn P2, giữ mã nguồn | 0.22, 6.2, 6.3, 7.3, 9.1 |
+| EP-P2-01 | Đánh Hạng, Elo, bảng xếp hạng — **P1 theo BA 0.27** | 2.0, 5.4, 7.1, 7.2, 7.3, 8.1, 8.3 (phần Ranked) |
+| EP-P2-02 | Đánh Thường ghép ngẫu nhiên — **P1 theo BA 0.27** | 2.0 |
+| EP-P2-03 | Xin đi lại/Tái đấu Casual P1 theo BA 0.27; custom, Không giới hạn/chống treo lên P1 theo BA0.20/0.22 | 0.8, 0.20, 0.22, 3.2, 3.6 |
+| EP-P2-04 | History custom/AI, Replay, FEN/PGN, lưu AI, Undo AI chuyển P1; phần Ranked P1 theo BA 0.27, giữ mã nguồn | 0.22, 6.2, 6.3, 7.3, 9.1 |
 | EP-P2-05 | DM/unread, Thách đấu và sticker chuyển P1 theo0.20/0.24; QR bị loại, giữ mã Epic/Story nguồn | 0.20, 0.24, 5.1 |
 | EP-P2-06 | Đổi/khôi phục Username chuyển toàn bộ P1 theo 0.21; giữ mã Epic/Story lịch sử | 0.21, 1.4–1.7 |
 | EP-P2-07 | Widget AI chuyển P1 theo0.26; demo mạng theo0.23, media giữa tab và theme theo0.21; giữ Epic/Story nguồn | 0.21, 0.23, 0.26, 9.2, 9.3 |
@@ -177,13 +180,13 @@
 | AC-00.4.3 | Cuối mỗi Sprint | Chạy hồi quy | Báo cáo PASS/FAIL/BLOCKED theo TC, lỗi mở được ghi Jira | M |
 
 #### US-00.5 · Nghiệm thu tổng, NFR và đóng gói demo
-**Là** PO, **tôi muốn** đo NFR, chạy đủ D1–D10 và có bản demo chạy được theo hướng dẫn, **để** chứng minh 8 yêu cầu cốt lõi với khách hàng.
+**Là** PO, **tôi muốn** đo NFR, chạy đủ D1–D14 (D11–D14 bổ sung 31/10 theo BA 0.27) và có bản demo chạy được theo hướng dẫn, **để** chứng minh 8 yêu cầu cốt lõi với khách hàng.
 *Sprint thi công:* S4. *Story Points:* **10** (tổng điểm 4 Task, 52 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
-| AC-00.5.1 | Môi trường demo local | Chạy D1–D10 (mục 8) | Tất cả PASS; kịch bản tự động hoá được thì có test Playwright | E2E, M |
-| AC-00.5.2 | Bản phát hành v1.0 | Chạy lại D1–D10 trên máy demo thật | Tất cả PASS, có ghi hình làm bằng chứng | M |
+| AC-00.5.1 | Môi trường demo local | Chạy D1–D14 (mục 8) | Tất cả PASS; kịch bản tự động hoá được thì có test Playwright | E2E, M |
+| AC-00.5.2 | Bản phát hành v1.0 | Chạy lại D1–D14 trên máy demo thật | Tất cả PASS, có ghi hình làm bằng chứng | M |
 | AC-00.5.3 | Mục 6 và 7 | Đo | Mỗi NFR/GATE có số đo, ngày đo, người đo; không đạt thì ghi **BLOCKED** kèm lý do, không tự hạ ngưỡng | M |
 | AC-00.5.4 | Bài tải | Chạy kịch bản 50 người dùng / 10 ván đồng thời | Báo cáo độ trễ nước đi p95, lỗi, CPU/RAM | I |
 | AC-00.5.5 | Máy sạch, có Node + pnpm, có file `.env` được cấp | Làm theo README | Chạy được toàn bộ ứng dụng trong ≤ 15 phút | M |
@@ -329,10 +332,10 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 | AC-02.1.4 | Phòng đã tạo | Tìm cách đổi mức giờ hoặc số người xem | Không có chức năng đổi | M |
 | AC-02.1.5 | Sức chứa | Kiểm tra | = 2 + số người xem đã chọn (tối đa 7) | U |
 | AC-02.1.6 | Chỉ có một người ngồi ghế (Host) | Bấm "Đổi ghế" | Chuyển Đỏ ↔ Đen tùy thích, không cần ai duyệt | E2E |
-| AC-02.1.7 | Đủ hai người | Mỗi người bấm "Sẵn sàng"/huỷ Sẵn sàng | Trạng thái hiển thị realtime cho cả phòng | E2E |
-| AC-02.1.8 | Cả hai Sẵn sàng | Hệ thống | Đếm **3… 2… 1…** kèm âm thanh; hết đếm, máy chủ kiểm lại hai ghế, Sẵn sàng và kết nối rồi tạo ván (Match ID mới), chuyển `SCR-GAME-ROOM`, đồng hồ Đỏ chạy | E2E |
-| AC-02.1.9 | Đang đếm | Một người mất kết nối | Huỷ đếm, Sẵn sàng của cả hai về chưa sẵn sàng, giữ ghế người mất kết nối 60 giây; không tạo ván, không xử thua | I, E2E |
-| AC-02.1.10 | Phòng `WAITING` | Thành phần người ngồi ghế thay đổi | Sẵn sàng của cả hai reset | I |
+| AC-02.1.7 | Đủ hai người | Người chơi thứ hai bấm "Sẵn sàng"/huỷ Sẵn sàng; Host chỉ có nút "Bắt đầu" (BA 0.29) | Trạng thái Sẵn sàng hiển thị realtime cho cả phòng; nút Bắt đầu của Host sáng ngay khi đối thủ Sẵn sàng, `DISABLED` kèm tooltip khi chưa đủ điều kiện | E2E |
+| AC-02.1.8 | Đối thủ đã Sẵn sàng, Host bấm "Bắt đầu" | Hệ thống | Đếm **3… 2… 1…** kèm âm thanh; hết đếm, máy chủ kiểm lại hai ghế, Sẵn sàng và kết nối rồi tạo ván (Match ID mới), chuyển `SCR-GAME-ROOM`, đồng hồ Đỏ chạy | E2E |
+| AC-02.1.9 | Đang đếm | Một người mất kết nối | Huỷ đếm, Sẵn sàng của đối thủ về chưa sẵn sàng, giữ ghế người mất kết nối 60 giây; không tạo ván, không xử thua | I, E2E |
+| AC-02.1.10 | Phòng `WAITING` | Thành phần người ngồi ghế thay đổi | Sẵn sàng của đối thủ reset | I |
 | AC-02.1.11 | Host rời phòng `WAITING` khi còn người chơi thứ hai | Host rời | Quyền Host chuyển cho người chơi còn lại | E2E |
 | AC-02.1.12 | Không còn người ngồi ghế (Host rời khi chỉ một mình, hoặc người cuối mất ghế sau 60 giây) | Hệ thống | Phòng `CLOSED`; người xem về Sảnh với thông báo *"Phòng đã đóng"*; chat phòng bị xoá | I, E2E |
 | AC-02.1.13 | Host chỉ ngồi một mình rất lâu | Không ai vào | Phòng **không** tự đóng do chờ lâu (BA 0.10) | M |
@@ -347,12 +350,12 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 |---|---|---|---|---|
 | AC-02.2.1 | Phòng `WAITING` đủ hai người (vừa vào hoặc sau ván) | Xem cụm nút | Cả hai người chơi có nút "Xin đổi bên"; người xem không có | E2E |
 | AC-02.2.2 | A bấm "Xin đổi bên" | B nhận | B thấy `MODAL-SIDE-SWAP-PROMPT` đếm 30 giây với "Đồng ý"/"Từ chối"; A thấy trạng thái chờ và nút "Rút đề nghị" | E2E |
-| AC-02.2.3 | B bấm "Đồng ý" | Hệ thống | Hai người hoán đổi Đỏ ↔ Đen; Sẵn sàng của cả hai về chưa sẵn sàng | E2E |
+| AC-02.2.3 | B bấm "Đồng ý" | Hệ thống | Hai người hoán đổi Đỏ ↔ Đen; Sẵn sàng của đối thủ về chưa sẵn sàng | E2E |
 | AC-02.2.4 | B từ chối hoặc hết 30 giây | A muốn gửi lại | Nút của A `DISABLED` 60 giây kèm tooltip đếm giây còn lại | E2E |
 | AC-02.2.5 | A đang có đề nghị chờ | A bấm lại | Không gửi được đề nghị thứ hai (tối đa 1 đề nghị chờ) | I |
 | AC-02.2.6 | Đề nghị đang chờ | Cả hai Sẵn sàng và bắt đầu đếm, hoặc một người rời ghế | Đề nghị tự huỷ | I |
 | AC-02.2.7 | Đang đếm 3-2-1 hoặc đang ván | Xem cụm nút | Không có nút "Xin đổi bên" | E2E |
-| AC-02.2.8 | Ván vừa kết thúc | Hệ thống | Hộp kết quả có "Ở lại phòng" và "Rời phòng"; phòng đã ở `WAITING`, Sẵn sàng của cả hai = chưa | E2E |
+| AC-02.2.8 | Ván vừa kết thúc | Hệ thống | Hộp kết quả có "Ở lại phòng" và "Rời phòng"; phòng đã ở `WAITING`, Sẵn sàng của đối thủ = chưa | E2E |
 | AC-02.2.9 | Bấm "Ở lại phòng" | Hệ thống | Về phòng chờ; giữ nguyên ghế/phe, người xem, chế độ phòng, mức giờ, Host, Kênh Riêng và Kênh Chung | E2E |
 | AC-02.2.10 | Cả hai Sẵn sàng | Hệ thống | Ván mới với Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng | E2E |
 | AC-02.2.11 | Một người chơi bấm "Rời phòng" | Hệ thống | Ghế đó trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn khoá | E2E |
@@ -377,7 +380,7 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 | AC-03.1.4 | Vào phòng | Còn ghế trống | Được xếp vào ghế trống (Host Đỏ → vào Đen và ngược lại) | E2E |
 | AC-03.1.5 | Vào phòng | Hai ghế đã kín, còn chỗ xem | Vào làm Người xem, thông báo *"Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem."* | E2E |
 | AC-03.1.6 | Vào phòng, phòng đã đủ sức chứa (hoặc "Không có người xem" và đủ 2 ghế) | Máy chủ từ chối | Không có phòng xem nguồn → SCR-ACCESS-DENIED: "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!" + "Quay về Sảnh chính". Đang xem A muốn chuyển sang B → giữ A, báo lỗi tại chỗ theo BA 0.19 Q5, không đẩy khỏi A | E2E |
-| AC-03.1.7 | Mã sai hoặc phòng đã đóng | Nhập mã | Báo *"Mã phòng không tồn tại hoặc phòng đã đóng"* | E2E |
+| AC-03.1.7 | Mã sai hoặc phòng đã đóng | Nhập mã | Báo *"Mã phòng không tồn tại hoặc phòng đã đóng"*; tối đa 10 lần nhập mã sai/60 giây mỗi tài khoản hoặc phiên Khách; mã đã dùng không cấp lại (BA 0.30). | E2E |
 
 #### US-03.2 · Bạn bè và mời bạn online
 **Là** người dùng, **tôi muốn** kết bạn, biết bạn nào đang online và mời họ vào phòng ngay trong game, **để** rủ bạn chơi chỉ với một chạm.
@@ -388,7 +391,7 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
-| AC-03.2.1 | Ở `SCR-FRIENDS` | Gõ tiền tố username (không phân biệt hoa thường) | Hiện kết quả gồm avatar, Display Name, `@username`, nút "Kết bạn"; không hiện Khách | E2E |
+| AC-03.2.1 | Ở `SCR-FRIENDS` | Gõ tiền tố username (không phân biệt hoa thường) | Hiện kết quả gồm avatar, Display Name, `@username`, nút "Kết bạn"; không hiện Khách; tiền tố tối thiểu 3 ký tự, tối đa 20 kết quả (BA 0.30). | E2E |
 | AC-03.2.2 | Chưa là bạn | Bấm "Kết bạn" | Bên kia thấy lời mời ở tab "Lời mời kết bạn đang chờ" và ở chuông | E2E |
 | AC-03.2.3 | Có lời mời đến | Bấm "Chấp nhận" / "Từ chối" | Chấp nhận → cả hai thấy nhau trong danh sách bạn, reset bộ đếm từ chối của cặp về 0; Từ chối → lời mời biến mất | E2E |
 | AC-03.2.4 | Đã gửi lời mời | Bấm thu hồi | Lời mời bị huỷ ở cả hai phía | I |
@@ -404,7 +407,7 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 | AC-03.2.14 | Ở `SCR-FRIENDS` với bạn accepted | Bấm Nhắn tin hoặc Thách đấu | **Hoạt động ở P1** theo AC-P2-18.1–3 và AC-P2-19.1–3. Nhắn tin mở DM; Thách đấu mở form tạo phòng rồi mời người đã chọn khi đủ quyền/Online/hết cooldown. Không nhầm thành mời vào một phòng bất kỳ đang có | E2E |
 | AC-03.2.15 | Người dùng đang ngồi ghế phòng tự tạo | Mở "Chia sẻ phòng" | Có tab bạn bè; người xem không thấy nút Chia sẻ | E2E |
 | AC-03.2.16 | Danh sách bạn trong tab | Xem/bấm "Mời" | 🟢 bấm được khi hết cooldown; ⚫ `DISABLED` nhãn "Ngoại tuyến"; 🟠 `DISABLED` tooltip "Bạn bè đang trong ván khác". Cooldown 10 giây toàn người gửi dùng chung người nhận/phòng/tab; gửi lại sau Từ chối theo BA 0.19 Q3/Q6, server trả hạn còn lại | E2E |
-| AC-03.2.17 | Gửi mời hợp lệ cho bạn 🟢 | Bạn nhận | Popup góc màn hình "Người chơi [Tên người thực sự gửi] mời bạn tham gia phòng cờ [Tên phòng]" với [Tham gia] [Từ chối], hạn gốc 30 giây; nhiều popup hiển thị đồng thời, độc lập. Người gửi rời ghế/hủy kết bạn không tự thu hồi invite (BA 0.19 Q2/Q4) | E2E |
+| AC-03.2.17 | Gửi mời hợp lệ cho bạn 🟢 | Bạn nhận | Popup góc màn hình "Người chơi [Tên người thực sự gửi] mời bạn tham gia phòng cờ [Tên phòng]" với [Tham gia] [Từ chối], hạn gốc 30 giây; nhiều popup hiển thị đồng thời, độc lập. Người gửi rời ghế/hủy kết bạn không tự thu hồi invite (BA 0.19 Q2/Q4) Tối đa 5 popup đồng thời cho một người nhận; lời mời thứ 6 bị từ chối lúc gửi (BA 0.30). | E2E |
 | AC-03.2.18 | Popup đang hiện; người nhận có thể đang xem phòng A | Bấm "Tham gia" phòng B | Kiểm lại quyền/chỗ: ghế trống → ghế; hết ghế → xem nếu còn chỗ; đầy → từ chối. Đang xem A thì chỉ rời A khi nhận chỗ B thành công bằng chuyển nguyên tử; B đầy/khóa/lỗi giữ A, báo lỗi tại chỗ; không điều hướng rời A chỉ vì precheck slot thành công. Không có phòng A thì đầy → SCR-ACCESS-DENIED | E2E |
 | AC-03.2.19 | Một hay nhiều popup lời mời | Hết 30 giây, hoặc Từ chối/X/Esc trên popup đang tương tác | Lời mời đó vô hiệu, popup mất, không lưu chuông; không đóng toàn bộ popup khác. Chủ động Từ chối/X/Esc thông báo người gửi và đặt cooldown gửi lại ít nhất đến thời điểm từ chối +10 giây; hết hạn tự nhiên không báo giả Từ chối và không reset cooldown (BA 0.19 Q6) | E2E |
 | AC-03.2.20 | Lời mời đã gửi, sau đó phòng chuyển `LOCKED` | Người nhận bấm Tham gia | Bị từ chối (lời mời chưa dùng đã bị thu hồi) | I |
@@ -416,7 +419,7 @@ AC chi tiết và các ca kiểm nằm tại [BACKLOG-P2.md](BACKLOG-P2.md); tê
 
 | Phạm vi P1 mới | Story / Jira | AC cần nghiệm thu bổ sung | Giao điểm |
 |---|---|---|---|
-| Tái đấu chọn Giữ phe/Đổi phe, chấp nhận 30 giây → đếm 3 giây → ván mới không Ready lại | US-P2-09 / XIAN-123 | AC-P2-09.1–3 **chỉ phần custom**; phần Casual vẫn P2 | YC2, YC5; không chờ ghép ngẫu nhiên |
+| Tái đấu chọn Giữ phe/Đổi phe, chấp nhận 30 giây → đếm 3 giây → ván mới không Ready lại | US-P2-09 / XIAN-123 | AC-P2-09.1–3 **chỉ phần custom**; phần Casual P1 theo BA 0.27 | YC2, YC5; không chờ ghép ngẫu nhiên |
 | Không giới hạn và chống treo: 3 phút không đi → cảnh báo 30 giây; tối đa hai lần Tôi còn đây; hết hạn INACTIVITY | US-P2-10 / XIAN-124 | AC-P2-10.1–3 | YC2, YC5; không áp AI |
 | DM lịch sử bền, read/unread đồng bộ thiết bị; hủy bạn thu hồi quyền ngay và ẩn lịch sử | US-P2-18 / XIAN-132 | AC-P2-18.1–3 | YC3, YC7; badge tách chuông kết bạn |
 | Bạn bè → Thách đấu → form không tên → xác nhận tạo phòng và gửi lời mời hiện có | US-P2-19 / XIAN-133 | AC-P2-19.1–3 | YC2, YC3; cooldown theo BA 0.19 |
@@ -470,8 +473,8 @@ AC chi tiết và các ca kiểm nằm tại [BACKLOG-P2.md](BACKLOG-P2.md); tê
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-04.3.1 | Tới lượt mình | Click/chạm vào quân mình | Quân có vòng chọn; chấm tròn ở mọi ô được đi; vòng cố định (không nhấp nháy) quanh quân đối phương ăn được | E2E |
-| AC-04.3.2 | Đã chọn quân | Click ô hợp lệ | Quân đi tới ô đó | E2E |
-| AC-04.3.3 | Đã chọn quân | Click lại quân, click ô không hợp lệ, hoặc nhấn `Esc` | Huỷ chọn | E2E |
+| AC-04.3.2 | Đã chọn quân | Click ô hợp lệ | Quân đi tới ô đó; quân hiện ngay ở máy người đi, đối thủ nhận khi máy chủ xác nhận (BA 0.31) | E2E |
+| AC-04.3.3 | Đã chọn quân | Click lại quân, click ô không hợp lệ, hoặc nhấn `Esc` | Huỷ chọn; bấm quân mình khác thì chuyển chọn (BA 0.31) | E2E |
 | AC-04.3.4 | Tới lượt mình | Kéo thả (chuột hoặc chạm giữ) vào ô hợp lệ | Hạ quân thành công | E2E |
 | AC-04.3.5 | Kéo thả | Thả vào ô không hợp lệ | Quân trượt mượt về chỗ cũ | E2E |
 | AC-04.3.6 | Không phải lượt mình, hoặc là người xem | Bấm/kéo quân | Không chọn được quân | E2E |
@@ -484,8 +487,8 @@ AC chi tiết và các ca kiểm nằm tại [BACKLOG-P2.md](BACKLOG-P2.md); tê
 
 | Chức năng P1 | Story / Jira | AC cần nghiệm thu |
 |---|---|---|
-| Xin đi lại custom: cả thành viên/Khách gửi/trả lời, quota3, hạn30s, cooldown3 nước mình, không hoàn thời gian | US-P2-08 / XIAN-122 | AC-P2-08.1–3, chỉ custom; Casual P2 |
-| Lịch sử cá nhân custom/AI, quyền chủ ván | US-P2-11 / XIAN-125 | AC-P2-11.1–3, phần Ranked/Elo P2 |
+| Xin đi lại custom: cả thành viên/Khách gửi/trả lời, quota3, hạn30s, cooldown3 nước mình, không hoàn thời gian | US-P2-08 / XIAN-122 | AC-P2-08.1–3, custom và Casual (Casual P1 theo BA 0.27); Ranked cấm |
+| Lịch sử cá nhân custom/AI, quyền chủ ván | US-P2-11 / XIAN-125 | AC-P2-11.1–3, phần Ranked/Elo P1 theo BA 0.27 |
 | Lưu AI/Bỏ dở, không lưu Khách | US-P2-12 / XIAN-126 | AC-P2-12.1–3 |
 | Replay riêng tư, biên bản Việt, autoplay1,5s | US-P2-13 / XIAN-127 | AC-P2-13.1–3 |
 | Undo AI tối đa3, chỉ thành viên | US-P2-14 / XIAN-128 | AC-P2-14.1–3 |
@@ -497,7 +500,7 @@ Given/When/Then/TC tại [BACKLOG-P2](BACKLOG-P2.md), quyền/chi tiết tại [
 
 ### EP-05 · Hai người đánh cờ online (YC5)
 
-Đặc tả chi tiết và đối chiếu P2: [P1 · YC5 — Ván online và sự cố](P1-YC5-VAN-ONLINE-VA-SU-CO.md), gồm 28 AC chi tiết và giao điểm BA 0.20–0.23. PO đã chốt demo mạng P1, hòa mất mạng trùng mốc và ưu tiên deadline ở mục 15; Casual giữ P2. Chưa nghiệm thu phần bổ sung.
+Đặc tả chi tiết và đối chiếu P2: [P1 · YC5 — Ván online và sự cố](P1-YC5-VAN-ONLINE-VA-SU-CO.md), gồm 28 AC chi tiết và giao điểm BA 0.20–0.23. PO đã chốt demo mạng P1, hòa mất mạng trùng mốc và ưu tiên deadline ở mục 15; Casual lên P1 theo BA 0.27. Chưa nghiệm thu phần bổ sung.
 
 #### US-05.1 · Ván online: đi cờ, đồng hồ và kết thúc ván
 **Là** người chơi, **tôi muốn** nước đi được máy chủ phân xử và đồng bộ ngay, đồng hồ chính xác và kết quả rõ ràng, **để** ván đấu công bằng.
@@ -594,9 +597,9 @@ Given/When/Then/TC tại [BACKLOG-P2](BACKLOG-P2.md), quyền/chi tiết tại [
 | AC-06.2.7 | Bấm "Vào xem" | Còn chỗ | Vào làm Người xem, không tự chiếm ghế dù ghế trống | E2E |
 | AC-06.2.8 | Không có phòng PUBLIC | Mở Sảnh | Trạng thái `EMPTY` có lời giải thích và nút "Tạo phòng" | E2E |
 | AC-06.2.9 | Phòng `CODE_ONLY`/`LOCKED` | Mở Sảnh | Không xuất hiện | I |
-| AC-06.2.10 | Mở Sảnh | Xem bốn lựa chọn | "Đánh Thường – Ghép ngẫu nhiên" và "Đánh Hạng" `DISABLED` kèm *"Sắp ra mắt"*; "Tự tạo phòng" và "Đánh với máy" hoạt động; có ô "Vào phòng bằng mã" | E2E |
+| AC-06.2.10 | Mở Sảnh | Xem bốn lựa chọn | cả bốn lựa chọn hoạt động theo BA 0.27 ("Đánh Thường – Ghép ngẫu nhiên", "Đánh Hạng", "Tự tạo phòng", "Đánh với máy"); Khách bị chặn "Đánh Hạng" kèm tooltip giải thích; có ô "Vào phòng bằng mã" | E2E |
 | AC-06.2.11 | Mở Sảnh | Mở mục "Luật chơi" | Mở rộng/thu gọn tại chỗ (không trang/modal mới), dùng được bằng bàn phím; nội dung nêu: cách đi của 7 loại quân; chiếu hết = thua; **hết nước đi = thua**; lặp thế 3 lần = hoà; **chiếu liên tục = bên chiếu thua** (cả hai cùng chiếu = hoà); **120 nửa nước không ăn quân = hoà**; xin hoà, đầu hàng, hết giờ, mất kết nối 60 giây; **đuổi quân liên tục không xử riêng (xử hoà theo lặp thế)**; câu *"Đây là bộ luật rút gọn của ứng dụng, không phải toàn bộ luật thi đấu chính thức"* | E2E, M |
-| AC-06.2.12 | Thanh điều hướng | Xem mục | Sảnh/Bạn bè hoạt động; Khách không có Bạn bè hoặc History. Thành viên mở Lịch sử custom/AI theo BA 0.22, không “Sắp ra mắt”; Bảng xếp hạng vẫn P2/disabled có lý do. Chuông mở tab lời mời bạn bè theo BA 0.19; avatar + Display Name mở Hồ sơ theo quyền | E2E |
+| AC-06.2.12 | Thanh điều hướng | Xem mục | Sảnh/Bạn bè hoạt động; Khách không có Bạn bè hoặc History. Thành viên mở Lịch sử custom/AI theo BA 0.22, không “Sắp ra mắt”; Bảng xếp hạng P1 theo BA 0.27 (Khách bị chặn, có tooltip lý do). Chuông mở tab lời mời bạn bè theo BA 0.19; avatar + Display Name mở Hồ sơ theo quyền | E2E |
 | AC-06.2.13 | Màn hình `SCR-LOGIN` | Bấm "Quên mật khẩu?" | Liên kết hoạt động ở P1, mở form nhập username theo BA 0.18/1.7; không còn `DISABLED`/"Sắp ra mắt" | E2E |
 | AC-06.2.14 | Khách | Vào phòng bằng mã/link, Vào chơi/Vào xem ở Sảnh, Đánh với máy | Đều được phép theo luật phòng | E2E |
 | AC-06.2.15 | Host | Tạo phòng với quyền truy cập `PUBLIC` hoặc chuyển phòng sang `PUBLIC` | Phòng xuất hiện ở danh sách Sảnh trong ≤ 2 giây | E2E |
@@ -759,15 +762,17 @@ Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp th
 | GATE-GOOGLE | Không tự liên kết tài khoản cùng email | Tạo tài khoản email X bằng mật khẩu rồi đăng nhập Google bằng X | Hệ thống báo "Email này đã được đăng ký", không gộp tài khoản |
 | GATE-EMAIL | Email không đổi được | Gọi thẳng API đổi email của Supabase bằng phiên người dùng | API trực tiếp không đổi được email; nếu chỉ chặn giao diện/tầng ứng dụng mà API vẫn đổi được thì GATE-EMAIL = BLOCKED, không PASS |
 | GATE-AUTH-USERNAME | Đăng nhập bằng username trên nền Supabase | Tra email theo username phía máy chủ + khoá thử sai | Không lộ email/sự tồn tại username; độ trễ đăng nhập |
-| GATE-SESSION | Một vị trí chơi, thiết bị khác xử thua | Đăng nhập 2 trình duyệt khác nhau giữa ván | Ván xử thua đúng, thiết bị cũ bị đăng xuất |
+| GATE-SESSION | Một vị trí chơi, thiết bị khác xử thua (chỉ kiểm khi luật thiết bị BẬT; tạm tắt khi phát triển, BA 0.28) | Đăng nhập 2 trình duyệt khác nhau giữa ván | Ván xử thua đúng, thiết bị cũ bị đăng xuất |
 | GATE-GUEST | Khách bằng đăng nhập ẩn danh | Tạo/huỷ phiên Khách, kiểm hạn 12 giờ | Phương án kỹ thuật chốt, giới hạn |
-| GATE-MEDIA | LiveKit tự chạy (Docker) và LiveKit Cloud: quyền phát, thu hồi khi đuổi, chuyển môi trường bằng biến, HTTPS cho demo LAN (BA 0.16) | 1 phòng 2 người chơi + 5 người xem trên các máy khác nhau trong LAN; đuổi 1 người; đổi sang Cloud | CPU/RAM LiveKit tự chạy, thời gian thu hồi quyền, phút Cloud đã dùng, **không đặt ngưỡng đạt** |
-| GATE-ENGINE | Độ sâu/thời gian máy cờ bằng TypeScript | Chạy bộ 50 thế giữa ván ở mỗi cấp trên máy demo | p95 thời gian, độ sâu đạt được, kết quả bộ chiếu hết |
+| GATE-MEDIA | LiveKit tự chạy (Docker) và LiveKit Cloud: quyền phát, thu hồi khi đuổi, chuyển môi trường bằng biến, HTTPS cho demo LAN (BA 0.16) | 1 phòng 2 người chơi + 5 người xem trên các máy khác nhau trong LAN; đuổi 1 người; đổi sang Cloud | CPU/RAM LiveKit tự chạy, thời gian thu hồi quyền, phút Cloud đã dùng, **không đặt ngưỡng đạt**; kết nối LiveKit theo nhu cầu và video tự điều chỉnh không đặt trần: ghi băng thông, phút và thời gian kết nối ban đầu (BA 0.34) |
+| GATE-ENGINE | Độ sâu/thời gian máy cờ bằng TypeScript | Chạy bộ 50 thế giữa ván ở mỗi cấp trên máy demo | p95 thời gian, độ sâu đạt được, kết quả bộ chiếu hết; cấp Khó không đạt ngưỡng thì ghi BLOCKED và báo PO, không tự hạ/nâng (BA 0.35) |
 | GATE-REALTIME | Tải Socket.IO | Kịch bản 50 client / 10 ván | p95 độ trễ, lỗi, tài nguyên |
 
 ---
 
 ## 8. Kịch bản demo đầu-cuối D1–D10
+
+> Bảng gồm **D1–D14**; D11–D14 bổ sung 31/10 theo BA 0.27 (tên mục giữ nguyên để không gãy liên kết).
 
 | Mã | Kịch bản | YC | Story chính |
 |---|---|---|---|
@@ -775,12 +780,16 @@ Phân biệt **thử tính khả thi sớm** với **nghiệm thu tích hợp th
 | D2 | Đăng ký bằng Google → onboarding → Đăng xuất → đăng nhập bằng username/mật khẩu → Đăng xuất → đăng nhập Google | YC1 | US-01.3, 01.2 |
 | D3 | Nhập sai mật khẩu 5 lần → bị chặn 15 phút (kể cả mật khẩu đúng) → đăng nhập Google vẫn được | YC1 | US-01.2 |
 | D4 | A tạo phòng (10 phút, 5 người xem) → mời B (bạn online) qua pop-up → gửi mã cho C (chưa kết bạn) → C vào làm người xem; D mở link khi chưa đăng nhập → vào bằng Khách → tự vào phòng làm người xem | YC2, YC3, YC1 | US-02.1, 03.1, 03.2, 01.3 |
-| D5 | A và B Xin đổi bên → Sẵn sàng → đếm 3-2-1 → đánh online (click và kéo thả), Xin hoà bị từ chối, chat Kênh Riêng; người xem chat Kênh Chung; A, B bật camera/mic, A chọn chia sẻ cả người xem → ván kết thúc bằng chiếu hết | YC4, YC5, YC7 | US-02.2, 04.x, 05.1, 05.2, 07.1, 07.2 |
+| D5 | A và B Xin đổi bên → B Sẵn sàng, A (Host) Bắt đầu → đếm 3-2-1 → đánh online (click và kéo thả), Xin hoà bị từ chối, chat Kênh Riêng; người xem chat Kênh Chung; A, B bật camera/mic, A chọn chia sẻ cả người xem → ván kết thúc bằng chiếu hết | YC4, YC5, YC7 | US-02.2, 04.x, 05.1, 05.2, 07.1, 07.2 |
 | D6 | A mở PUBLIC → người lạ E thấy phòng ở Sảnh, "Vào xem" → A khoá LOCKED → F có mã cũ cũng không vào được → B đuổi E → E không vào lại được | YC6 | US-06.1, 06.2, 06.3 |
 | D7 | Sau ván: "Ở lại phòng" → Xin đổi bên → ván 2; một người rời → người còn lại thành Host, phòng vẫn chờ | YC2, YC5 | US-02.2, 02.1 |
 | D8 | Rút mạng một người chơi 30 giây → nối lại tiếp tục; lần hai rút quá 60 giây → xử thua `DISCONNECT` | YC5 | US-05.3 |
 | D9 | Đánh với máy cấp Dễ cầm Đỏ → đầu hàng → "Ván mới" đổi sang Đen cấp Khó → máy đi trước; cho xem giải thế chiếu hết | YC8 | US-08.1, 08.2, 08.3 |
-| D10 | Đang ván online ở laptop → đăng nhập cùng tài khoản trên điện thoại → ván xử thua, laptop bị đăng xuất, điện thoại vào Sảnh | YC1, YC5 | US-01.4 |
+| D10 | Đang ván online ở laptop → đăng nhập cùng tài khoản trên điện thoại → ván xử thua, laptop bị đăng xuất, điện thoại vào Sảnh (**phải bật luật thiết bị**; tạm tắt khi phát triển, BA 0.28) | YC1, YC5 | US-01.4 |
+| D11 | Hai thành viên A, B cùng bấm Ghép ngẫu nhiên → ghép ≤ 2 phút → xác nhận 30 giây → đếm 3-2-1 → ván 15 phút, Xin đi lại được chấp nhận → hết ván Tái đấu Giữ/Đổi phe; Khách C ghép với D được, Khách bấm Đánh Hạng bị chặn kèm tooltip | YC9, YC5 | US-P2-07, US-P2-08/09 (Casual) |
+| D12 | A, B tìm Đánh Hạng → ghép → xác nhận 30 giây → đếm 3-2-1 → ván 10 phút không người xem/Undo → hộp kết quả hiện Elo trước/sau và ±; Lịch sử có cột biến động; bảng Top 50 và dòng ghim; cặp thứ tư trong 24 giờ không ghép lại | YC9 | US-P2-01…06 |
+| D13 | A nhắn tin B (bạn accepted), B thấy badge chưa đọc rồi đọc; A Thách đấu B (form 10 phút/CODE_ONLY/5 người xem), B nhận popup vào phòng, gửi sticker ở Kênh Riêng; Khách không thấy DM | YC3, YC7 | US-P2-17/18/19 |
+| D14 | Thành viên đánh máy, dùng Undo AI, kết thúc → Lịch sử → Replay → Copy FEN, tải PGN; Khách không có Lịch sử/Replay/Undo AI | YC4, YC8 | US-P2-11…15 |
 
 ---
 ## 9. Thứ tự phụ thuộc và phân bổ Sprint
@@ -827,6 +836,7 @@ Bản đồ **268 AC baseline → Task triển khai → Task nghiệm thu** ở 
 | YC6 | Công khai / khoá / khoá có mã, tối đa 5 người xem – 7 người/phòng | EP-06: US-06.1 – 06.3 |
 | YC7 | Chat, camera, mic giữa hai người; kênh chat người xem riêng | EP-07: US-07.1 – 07.2 |
 | YC8 | Đánh với máy theo cấp độ | EP-08: US-08.1 – 08.3 |
+| YC9 | Ghép trận Casual, Đánh Hạng, Elo, bảng xếp hạng (PO bổ sung 31/10, không thuộc 8 yêu cầu gốc) | EP-09: US-P2-01…07 |
 | — | Nền tảng và chất lượng phục vụ chung | EP-00: US-00.1 – 00.5 |
 
 ### 10.2 Thành phần giao diện P1 (28 từ 30/10) → Story
@@ -847,15 +857,15 @@ Bản đồ **268 AC baseline → Task triển khai → Task nghiệm thu** ở 
 | `PANEL-CHAT` | 07.1 | `PANEL-MEDIA` | 07.2 |
 | `PANEL-SPECTATORS` | 06.3 | `OVERLAY-RECONNECTING` | 05.3 |
 
-`SCR-FORGOT-PASSWORD` và `SCR-RESET-PASSWORD` chuyển từ P2 sang P1 theo BA 0.18, gắn bổ sung YC1 mật khẩu; Đổi mật khẩu nằm trong `SCR-PROFILE-SETTINGS`, không thêm trang/modal riêng. Tổng giao diện vẫn 37: P1 28, P2 9.
+`SCR-FORGOT-PASSWORD` và `SCR-RESET-PASSWORD` chuyển từ P2 sang P1 theo BA 0.18, gắn bổ sung YC1 mật khẩu; Đổi mật khẩu nằm trong `SCR-PROFILE-SETTINGS`, không thêm trang/modal riêng. Tổng giao diện 37: P1 37, P2 0 theo BA 0.27 (bảng 10.2 chưa liệt kê `SCR-LEADERBOARD`, `MODAL-MATCHMAKING`, `MODAL-UNDO-PROMPT`).
 
 ### 10.3 Số lượng
 
 | Hạng mục | Số lượng |
 |---|---|
-| Epic P1 / P2 | 9 / 7 |
+| Epic P1 / P2 | 9 + 7 (EP-P2-* nay P1 theo BA 0.27) / 0 |
 | User Story P1 | 27 (EP-00: 5, EP-01 → EP-08: 22) |
-| Tiêu chí nghiệm thu P1 | 268 AC baseline và 20 AC-YC1-MK-01–20 bổ sung ngày 30/10; TC/biến thể và phân công Task phải được cập nhật khi triển khai |
+| Tiêu chí nghiệm thu P1 | 268 AC baseline và 20 AC-YC1-MK-01–20 bổ sung ngày 30/10; TC/biến thể và phân công Task phải được cập nhật khi triển khai; file này hiện có **274 hàng AC** (sáu AC email tùy chọn 29/10 chưa nằm trong bản đồ 268); bổ sung 31/10 theo đặc tả YC: **63 AC rà soát AC-YC1…YC9-RV** (11/10/4/5/8/8/5/5/7), 4 AC-YC9-HT, 3 AC-YC7-RX, chưa vào bản đồ Task/TRUY-VET-AC |
 | Task | 71, xem KE-HOACH-JIRA.md |
 | NFR / Cổng kiểm chứng / Kịch bản demo | 12 / 9 / 10 |
 

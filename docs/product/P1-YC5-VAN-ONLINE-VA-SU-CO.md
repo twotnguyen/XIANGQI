@@ -1,6 +1,10 @@
 # P1 · YC5 — Ván online, đồng hồ, đề nghị và xử lý sự cố
 
-**Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi:** EP-05, US-05.1–05.3 và giao điểm P1 theo BA 0.20–0.23, gồm demo mạng chỉ môi trường demo. **Trạng thái:** đã chốt đặc tả và đối chiếu code; chưa sửa hoặc nghiệm thu lại runtime trong lượt này. Bốn quyết định PO tại mục 15 đã được ghi vào BA 0.23; Casual/Ranked giữ P2.
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
+**Rà soát 31/10/2026:** PO chốt năm điểm tại mục 17 (đi nước = tự Từ chối, Hủy ván khi chưa có nước, ván bị hủy vào Lịch sử, báo tới lượt bằng âm thanh, Xin hòa không ngưỡng); **chưa triển khai**. Hạng mục Hủy ván làm đổi danh sách kết quả ở mục 10.2.
+
+**Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi:** EP-05, US-05.1–05.3 và giao điểm P1 theo BA 0.20–0.23, gồm demo mạng chỉ môi trường demo. **Trạng thái:** đã chốt đặc tả và đối chiếu code; chưa sửa hoặc nghiệm thu lại runtime trong lượt này. Bốn quyết định PO tại mục 15 đã được ghi vào BA 0.23; Casual/Ranked P1 theo BA 0.27.
 
 ## 1. Mục tiêu, nguồn và cách đọc
 
@@ -48,7 +52,7 @@ AI thuộc YC8: không đồng hồ người, không xin hòa, không chống tr
 ```mermaid
 stateDiagram-v2
     [*] --> WAITING: phòng tự tạo, ghế hợp lệ
-    WAITING --> COUNTDOWN: cả hai Ready hoặc chấp nhận Tái đấu hợp lệ
+    WAITING --> COUNTDOWN: đối thủ Sẵn sàng và Host bấm Bắt đầu (phòng tự tạo), hoặc cả hai Xác nhận (ghép trận), hoặc chấp nhận Tái đấu hợp lệ
     COUNTDOWN --> WAITING: mất kết nối hoặc thay ghế, hủy đếm
     COUNTDOWN --> ACTIVE: đủ3 giây và server kiểm lại, Match ID mới
     ACTIVE --> FINISHED: thắng/thua/hòa
@@ -135,6 +139,7 @@ Lỗi camera/mic không tính là mất kết nối ván, không dừng bộ đ�
 |Đầu hàng|Modal nói rõ sẽ thua, focus mặc định ở Hủy|`RESIGN`, đối thủ thắng; không phụ thuộc đang tới lượt ai|
 |Rời khi ván đang chạy|Cảnh báo rời=đầu hàng, có Ở lại|Kết thúc `RESIGN` rồi rời; chuyển Host theo YC2 nếu cần|
 |Hủy/Esc ở xác nhận|Đóng xác nhận, giữ nguyên ván|Không gửi resign/rời như thể đồng ý|
+|Hủy ván (chưa có nước nào)|Xác nhận, focus mặc định ở Giữ ván|`ABORTED`, không cần đối thủ đồng ý; chỉ custom và ghép ngẫu nhiên (mục 17.2)|
 |Đóng tab/mất mạng|Không thể tin sự kiện unload là xác nhận|Áp ân hạn mất kết nối; không tự RESIGN|
 |Rời sau ván|Không biến thành đầu hàng ván đã kết thúc|Giữ nguyên kết quả cũ, thực hiện quyền rời phòng|
 
@@ -151,6 +156,7 @@ Server luôn kiểm kết quả/deadline trước hiệu lực resign: nếu vá
 - Đối thủ Đồng ý trước hạn → `DRAW_AGREEMENT`; chỉ người nhận trả lời, người gửi được Rút.
 - Từ chối hoặc hết hạn → người gửi chờ **5nước tiếp theo của chính mình**, không phải5ply hoặc5nước của đối thủ. Hiển thị còn bao nhiêu, không dùng cooldown10giây của lời mời phòng.
 - X/Esc chỉ thu gọn, có Mở lại; không từ chối/đồng ý thay người dùng. Bàn và đồng hồ tiếp tục; đề nghị không trap focus.
+- Người nhận đi một nước cờ khi đề nghị còn chờ thì đề nghị tự kết thúc như Từ chối (PO 31/10, mục 17). Xin hòa không có ngưỡng nước tối thiểu.
 - Hết ván đóng mọi đề nghị, accept muộn không đổi kết quả. Hai người có đề nghị riêng không được khiến hai transaction tạo hai RESULT.
 
 ### 8.2 Xin đi lại custom đã lên P1 — BA0.22
@@ -211,6 +217,7 @@ Dữ liệu nước/kết quả online vẫn bền phục vụ lịch sử; “k
 |DRAW_SIMULTANEOUS_DISCONNECT|Hòa do cả hai mất kết nối đồng thời|BA 0.23; timestamp bằng nhau tuyệt đối, cả hai quá grace; không INTERRUPTED; reason mới cần triển khai|
 |INACTIVITY|Bên tới lượt không phản hồi thua|Chỉ online Không giới hạn|
 |INTERRUPTED / cause SERVER_RESTART|Trung tính|Không W/D/L/hòa; không giả khôi phục|
+|ABORTED (Hủy ván, PO 31/10)|Trung tính, “Ván bị hủy”|Chỉ khi chưa có nước; không W/D/L/Elo; vào Lịch sử, không Replay; không áp Ranked/AI|
 
 ### 10.3 Ưu tiên kết quả đã được PO chốt — BA 0.23
 
@@ -296,14 +303,16 @@ Các điểm trên là đầu vào cho nhiệm vụ code/kiểm thử tiếp the
 
 ## 14. P2 liên quan YC5: đã lên P1 và còn có thể cân nhắc
 
+> **Lưu ý (rà chéo 31/10/2026):** mục này là đối chiếu lịch sử trước BA 0.27–0.36. Ghép ngẫu nhiên Casual, Ranked và các phần Casual/Ranked đã **P1** (xem [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)); mọi câu "giữ P2", "queue 3 phút", "xác nhận 10 giây" hay "vào ván ngay" bên dưới đã bị thay.
+
 ### 14.1 Đã lên P1 — không hỏi chuyển lần nữa
 
 | Story / Jira | Giao điểm YC5 và ranh giới |
 |---|---|
-|US-P2-08 / XIAN-122|Xin đi lại **custom**, cả thành viên/Khách; Casual vẫn P2|
-|US-P2-09 / XIAN-123|Tái đấu **custom** chọn phe trong 30 giây → đếm 3 giây; chỉ cặp thành viên, Casual vẫn P2|
+|US-P2-08 / XIAN-122|Xin đi lại **custom**, cả thành viên/Khách; Casual P1 theo BA 0.27|
+|US-P2-09 / XIAN-123|Tái đấu **custom** chọn phe trong 30 giây → đếm 3 giây; chỉ cặp thành viên, Casual P1 theo BA 0.27|
 |US-P2-10 / XIAN-124|Không giới hạn/chống treo; Khách chơi được nhưng không tạo mức 0; không áp AI|
-|US-P2-11/13/15 / XIAN-125/127/129|Lưu/đọc kết quả online custom và Replay/export đúng nhánh; Ranked còn P2|
+|US-P2-11/13/15 / XIAN-125/127/129|Lưu/đọc kết quả online custom và Replay/export đúng nhánh; Ranked P1 theo BA 0.27|
 |US-P2-24 / XIAN-138|Tiếp quản media giữa tab, readonly; không biến thành reset grace/đồng hồ|
 
 Undo AI/lưu AI và theme cũng đã lên P1 nhưng thuộc YC8/YC1; chỉ kiểm giao điểm, không mở rộng luật online hoặc quyền Khách do suy diễn.
@@ -326,7 +335,7 @@ Undo AI/lưu AI và theme cũng đã lên P1 nhưng thuộc YC8/YC1; chỉ kiể
 |Ranked media US-P2-05/XIAN-119|Quyền nhận/phát, không người xem, chỉ Kênh Riêng|Giữ P2 theo Ranked, thuộc YC7; không cần để giải quyết mạng/đồng hồ P1|
 |Widget AI US-P2-22/XIAN-136; sticker US-P2-17/XIAN-131|Cạnh bàn/chat nhưng không phân xử ván online|Widget AI đã P1 theo BA0.26, mọi môi trường/chỉ thành viên, chỉ nước máy đã áp; sticker P1 theo BA0.24 cho cả Khách đúng vai trò|
 
-**Phạm vi sau khi PO chốt:** demo mạng lên P1; Casual và phần Undo/Tái đấu Casual giữ P2, Ranked/Elo vẫn P2. Ưu tiên hoàn thiện quyền Khách, timer, ưu tiên deadline, reason hòa mới và gate P1; công cụ demo không thay kiểm mạng/thiết bị thật.
+**Phạm vi sau khi PO chốt:** demo mạng lên P1; Casual và phần Undo/Tái đấu Casual P1 theo BA 0.27, Ranked/Elo P1 theo BA 0.27. Ưu tiên hoàn thiện quyền Khách, timer, ưu tiên deadline, reason hòa mới và gate P1; công cụ demo không thay kiểm mạng/thiết bị thật.
 
 ## 15. Các quyết định PO đã chốt — BA 0.23
 
@@ -335,7 +344,7 @@ Undo AI/lưu AI và theme cũng đã lên P1 nhưng thuộc YC8/YC1; chỉ kiể
 |Q1 — Demo mạng XIAN-137?|**Đưa lên P1, chỉ môi trường demo**|Ngắt/nối thật, quyền đúng chủ thể, không Admin; production ẩn và từ chối lệnh trực tiếp. Giữ AC-P2-23.1–3/Task/Jira nguồn|
 |Q2 — Mất mạng trùng timestamp tuyệt đối?|**Hòa, lý do mất mạng đồng thời**|Thêm reason `DRAW_SIMULTANEOUS_DISCONNECT` cho cả DB/contract/UI/history/replay/export; winner=null, không INTERRUPTED; không dùng UUID hoặc làm tròn giây|
 |Q3 — Ưu tiên các hạn kết thúc?|**Hạn đến trước; bằng nhau ưu tiên mất mạng**|Chọn deadline trước; bằng nhau TIMEOUT → DISCONNECT → INACTIVITY. Hòa trùng mốc thuộc nhóm DISCONNECT; mọi đường action/worker thống nhất|
-|Q4 — Gói ghép Casual?|**Giữ cả gói ở P2**|Không triển khai queue hoặc Undo/Tái đấu Casual trong P1. Không ảnh hưởng custom đã duyệt; Ranked/Elo giữ P2|
+|Q4 — Gói ghép Casual?|**Giữ cả gói ở P2**|Không triển khai queue hoặc Undo/Tái đấu Casual trong P1. Không ảnh hưởng custom đã duyệt; Ranked/Elo P1 theo BA 0.27|
 
 Không còn câu hỏi chờ cho bốn lựa chọn này. Quota Undo/quyền Khách/3 phút sau Undo giữ BA 0.22; chính sách restart/SLO không đổi. Đây là **đặc tả đã duyệt**, chưa phải bằng chứng code/Cloud đã đáp ứng.
 
@@ -355,3 +364,48 @@ Không còn câu hỏi chờ cho bốn lựa chọn này. Quota Undo/quyền Kh�
 - **AC-05.1.10–12 và giao điểm AC-P2-11/13/15:** reason hòa mới đọc được từ DB/snapshot, hai người/người xem/History/Replay thống nhất; PGN là `1/2-1/2`, không `*`; người ngoài/Khách vẫn không có quyền đọc lịch sử riêng. Dữ liệu kết quả cũ giữ nguyên, không tự viết lại quá khứ từ UUID thành hòa.
 
 **Lượt hiện tại:** chỉ soạn tài liệu/đối chiếu nguồn; không sửa runtime/migration, không bật dịch vụ/cờ, không MCP/Jira. **Test local: không chạy (không được yêu cầu).** Chưa xem giao diện hoặc đo SLO hiện tại; chưa commit/push tài liệu.
+
+## 17. Quyết định PO khi rà soát YC5 — 31/10/2026
+
+**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Bổ sung cho mục 7, 8, 10, 11.
+
+| # | Quyết định | AC bổ sung |
+|---|---|---|
+| 1 | **Đi nước = tự Từ chối.** Khi có đề nghị Xin hòa hoặc Xin đi lại đang chờ, người nhận đi một nước cờ thì đề nghị kết thúc như **Từ chối**: Xin hòa — người gửi chờ 5 nước của chính mình; Xin đi lại — không trừ quota, người gửi chờ 3 nước của chính mình. Người gửi nhận thông báo *"Đối thủ đã đi nước, đề nghị bị từ chối."* | AC-YC5-RV-01, 02 |
+| 2 | **Hủy ván khi chưa có nước đi nào.** Mỗi người chơi tự hủy được, không cần đối thủ đồng ý, có hộp xác nhận. Chỉ hợp lệ cho đến khi **Đỏ đi nước đầu tiên**; sau đó chỉ còn Đầu hàng. Áp dụng phòng tự tạo và Đánh Thường ghép ngẫu nhiên; **không áp cho Ranked và ván với máy** (giữ Đầu hàng) | AC-YC5-RV-03, 04, 05 |
+| 3 | **Ván bị hủy được ghi vào Lịch sử** là "Ván bị hủy": winner=null, không thắng/thua/hòa, không Elo, không đếm ván Ranked, không có Replay/FEN/PGN (chưa có nước). Cả hai thành viên thấy dòng này; Khách không có Lịch sử | AC-YC5-RV-06 |
+| 4 | **Báo tới lượt chỉ bằng âm thanh:** khi đối thủ đi một nước thì phát âm đi quân sẵn có (YC4 mục 8.2), kể cả khi tab đang ẩn nếu trình duyệt cho phép phát. Không đổi tiêu đề tab, không dùng thông báo trình duyệt | AC-YC5-RV-07 |
+| 5 | **Xin hòa bất cứ lúc nào**, kể cả trước nước đầu; không có ngưỡng nước tối thiểu (khác Ranked: 20 nước/bên) | AC-YC5-RV-08 |
+
+### 17.2 Hủy ván — quy tắc chi tiết
+
+- Nút **Hủy ván** hiện cạnh **Đầu hàng** chỉ khi ván `ACTIVE`, chưa có nước nào và người bấm là người chơi có quyền điều khiển; sau nước đầu nút biến mất. Người xem không có.
+- Máy chủ kiểm lại số nước = 0 dưới khóa. Đỏ đi nước đầu và đối thủ bấm Hủy gần như đồng thời: chỉ một lệnh thắng theo thứ tự máy chủ; lệnh còn lại nhận lỗi rõ ràng, không tạo hai kết quả.
+- Đồng hồ bên Đỏ chạy từ lúc bắt đầu; hết giờ trước khi Hủy hợp lệ thì `TIMEOUT` thắng theo mục 10.3 (kiểm deadline trước, như mọi lệnh).
+- Sau Hủy: ván kết thúc với reason `ABORTED` (trung tính). **Phòng tự tạo** về `WAITING` ngay, giữ ghế/Host/người xem, Sẵn sàng của đối thủ reset (YC2 mục 21.1). **Ghép ngẫu nhiên** giữ vòng đời `FINISHED` (không về `WAITING`, đóng khi cả hai rời hoặc sau 10 phút), có Ở lại/Rời; Tái đấu theo YC9 — PO xác nhận 31/10.
+- Hộp kết quả trung tính "Ván bị hủy" cho cả hai người và người xem, không hiện thắng/thua; đóng hộp không đổi trạng thái server.
+- Hủy ván không bù giờ, không tính vào quota Xin đi lại/Xin hòa, không đếm vào giới hạn cặp Ranked.
+- Hộp xác nhận dùng khung như xác nhận Đầu hàng, focus mặc định ở nút Giữ ván (chưa thêm mã thành phần giao diện mới; thiết kế cuối cùng khi dựng).
+
+### 17.3 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC5-RV-01 | Có Xin hòa đang chờ; người nhận đi một nước | Đề nghị kết thúc như Từ chối, người gửi nhận thông báo và chờ 5 nước của mình; nước vẫn được áp; lệnh Đồng ý đến sau bị từ chối |
+| AC-YC5-RV-02 | Có Xin đi lại đang chờ; người nhận đi một nước | Kết thúc như Từ chối: không lùi nước, không trừ quota, người gửi chờ 3 nước của mình; người gửi không đi được trong lúc chờ nhưng được đi lại khi đề nghị kết thúc |
+| AC-YC5-RV-03 | Ván custom vừa bắt đầu, chưa có nước; một người bấm Hủy ván và xác nhận | Ván `ABORTED`, không thắng/thua/hòa; phòng về `WAITING`, Sẵn sàng đối thủ reset; ghi Lịch sử; không cần đối thủ đồng ý |
+| AC-YC5-RV-04 | Đã có nước đầu của Đỏ; hoặc ván Ranked; hoặc ván AI; hoặc người xem/tab chỉ đọc; gọi Hủy ván qua UI hoặc API | Không có nút hoặc `DISABLED`; gọi trực tiếp bị từ chối; không đổi ván |
+| AC-YC5-RV-05 | Đỏ đi nước đầu và đối thủ bấm Hủy ván đồng thời; hoặc hai người cùng hủy | Đúng một kết quả hợp lệ (nước đi hoặc `ABORTED`), không hai kết quả; lệnh thua nhận lỗi rõ; retry cùng `commandId` không tạo bản sao |
+| AC-YC5-RV-06 | Ván bị hủy xong; thành viên mở Lịch sử | Có dòng "Ván bị hủy", không tính W/D/L, không Elo, không có nút Xem lại/FEN/PGN; Khách không có Lịch sử |
+| AC-YC5-RV-07 | Tab của người chơi đang ẩn; đối thủ đi một nước | Phát âm đi quân khi trình duyệt cho phép; không đổi tiêu đề tab, không thông báo trình duyệt; tắt tiếng thì không phát; reconnect không phát lại lịch sử |
+| AC-YC5-RV-08 | Ván custom vừa bắt đầu, chưa có nước; một người Xin hòa | Gửi được, hạn 30 giây, đối thủ trả lời như Xin hòa thường; không có ngưỡng nước tối thiểu |
+
+**PO xác nhận 31/10/2026:** (a) người gửi Xin hòa tự đi một nước khi đề nghị còn chờ thì đề nghị tự rút, không phạt chờ 5 nước; (b) Hủy ván ở ghép ngẫu nhiên giữ vòng đời `FINISHED`; (c) reason mới là `ABORTED`.
+
+### 17.4 Tác động triển khai (chưa làm)
+
+- Loại kết quả mới `ABORTED` (trung tính) ở luật kết thúc/hợp đồng chung: `packages/shared` (kết quả), `RoomStore`/`MatchStore` (lệnh và kết thúc), lịch sử/`HistoryStore`, `MatchResult` (hộp kết quả), migration nếu cột reason có ràng buộc; thêm vào danh sách lý do kết thúc ở BA 3.5.
+- Lệnh `abortMatch` qua `withRoom` có `commandId`, kiểm số nước = 0 dưới khóa.
+- Nước đi của người nhận phải đóng đề nghị Xin hòa/Xin đi lại đang chờ trong cùng transaction.
+- Âm thanh nước đối thủ khi tab ẩn: chỉ phụ thuộc chính sách phát tự động của trình duyệt (cần kiểm Chrome, Safari, Firefox).
+- Bằng chứng ở mục 13 là trước các thay đổi này; không kế thừa PASS.

@@ -1,5 +1,9 @@
 # P1 · YC8 — Đấu với máy, độ khó và ổn định ván AI
 
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
+**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 17 (Khó không đạt thì BLOCKED, máy ngẫu nhiên nhẹ, lịch sử giữ vĩnh viễn, nút Bỏ ván ở banner Sảnh); **chưa triển khai**.
+
 **Ngày lập/chốt:** 31/10/2026. **Phạm vi:** EP-08, US-08.1–08.3 và các giao điểm P1 theo BA0.22/0.26. **Trạng thái:** bốn lựa chọn PO đã chốt tại mục15; đã đối chiếu nguồn/code, chưa triển khai hoặc nghiệm thu lại phần mềm.
 
 ## 1. Mục tiêu và nguồn ưu tiên
@@ -263,6 +267,8 @@ Các AC nguồn đã chuyển P1:
 
 ## 14. So sánh P2 và đề xuất phân kỳ
 
+> **Lưu ý (rà chéo 31/10/2026):** mục này là đối chiếu lịch sử trước BA 0.27–0.36. Ghép ngẫu nhiên Casual, Ranked và các phần Casual/Ranked đã **P1** (xem [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)); mọi câu "giữ P2", "queue 3 phút", "xác nhận 10 giây" hay "vào ván ngay" bên dưới đã bị thay.
+
 | Story / Jira | Liên quan YC8 | Phân kỳ hiện hành / đề xuất |
 |---|---|---|
 | US-P2-12 / XIAN-126 | Trực tiếp: lưu AI/terminal/Bỏ dở | **Đã P1 BA0.22**, không xin chuyển lại |
@@ -275,7 +281,7 @@ Các AC nguồn đã chuyển P1:
 | US-P2-25 / XIAN-139 | Gián tiếp: theme bàn/setup/history/widget | Đã P1 BA0.21, giữ contrast/quyền Khách |
 | US-P2-01/02/06 / XIAN-115/116/120 | Elo/queue/leaderboard không cần cho AI | Giữ P2, ván AI không đổi Elo |
 
-**Kết luận:** cả sáu Story trực tiếp (History/lưu AI/Replay/Undo/export/widget) đã P1 theo phần AI được duyệt. Widget chỉ thành viên, mọi môi trường, không PV tương lai; không thay gate chất lượng. Không có Story P2 riêng đã duyệt cho khôi phục ACTIVE qua restart, đổi cấp giữa ván, cấp Siêu khó hoặc hint; Ranked/Elo/queue giữ P2.
+**Kết luận:** cả sáu Story trực tiếp (History/lưu AI/Replay/Undo/export/widget) đã P1 theo phần AI được duyệt. Widget chỉ thành viên, mọi môi trường, không PV tương lai; không thay gate chất lượng. Không có Story P2 riêng đã duyệt cho khôi phục ACTIVE qua restart, đổi cấp giữa ván, cấp Siêu khó hoặc hint; Ranked/Elo/queue P1 theo BA 0.27.
 
 ## 15. Bốn quyết định PO đã chốt — BA0.26
 
@@ -316,3 +322,40 @@ Không còn câu hỏi chờ trong bốn mục này. Giữ No Hint, Undo chỉ t
 5. Commit/push/deploy/Jira chỉ theo yêu cầu riêng.
 
 **Lượt này:** chỉ tài liệu/đối chiếu nguồn, không bật cờ, migration hoặc thay code. **Test local: không chạy (không được yêu cầu).** Chưa xem giao diện hoặc đo engine/runtime hiện tại.
+
+## 17. Quyết định PO khi rà soát YC8 — 31/10/2026
+
+**Chưa triển khai**; code và số đo hiện còn như mục 12. Bổ sung cho mục 6, 9, 10.
+
+| # | Quyết định | AC bổ sung |
+|---|---|---|
+| 1 | **Cấp Khó không đạt ngưỡng (độ sâu 6 trong 3 giây, 100% bộ chiếu hết ngắn) thì ghi BLOCKED, giữ nguyên ngưỡng, báo PO quyết định hướng khắc phục.** Không tự nâng ngân sách, hạ mục tiêu hoặc đổi tiêu chí để báo đạt | AC-YC8-RV-01 |
+| 2 | **Máy có yếu tố ngẫu nhiên nhẹ:** khi có nhiều nước có điểm đánh giá gần bằng nhau thì chọn ngẫu nhiên giữa chúng để mỗi ván khác nhau. Nước chiếu hết bắt buộc và nước tránh bị chiếu hết bắt buộc luôn được chọn; không đổi độ sâu hay ngân sách thời gian | AC-YC8-RV-02 |
+| 3 | **Lịch sử và Replay của thành viên giữ vĩnh viễn, không giới hạn số ván và không tự xóa** (ván custom, AI, Bỏ dở, ván bị hủy). Áp dụng cho mọi nơi có History/Replay | AC-YC8-RV-03 |
+| 4 | **Banner ván dở ở Sảnh có thêm nút Bỏ ván (Đầu hàng) có xác nhận** cho ván AI: đồng ý thì `RESIGN`, hủy worker, giải phóng vị trí chơi ngay; Hủy giữ nguyên ván | AC-YC8-RV-04, 05 |
+
+### 17.1 Quy tắc chi tiết
+
+- **Ngẫu nhiên nhẹ:** áp cho cả ba cấp; ngưỡng “gần bằng nhau” (độ lệch điểm) do dev chọn, ghi trong mã và tài liệu kỹ thuật; không được làm máy bỏ nước thắng/chiếu hết hoặc nước tránh thua hiển nhiên chỉ vì ngẫu nhiên. Nguồn ngẫu nhiên có thể gieo hạt cố định trong test để kết quả lặp lại được; bộ kiểm chiếu hết và đo p95 vẫn dùng chế độ xác định.
+- **Kiểm cấp Khó:** vẫn dùng bộ chiếu hết độc lập và đấu máy 20 ván/cặp theo mục 13; kết quả BLOCKED ghi rõ số đo (độ sâu đạt, p95, tỷ lệ chiếu hết) thay vì kết luận đạt/không đạt chung chung.
+- **Banner Sảnh:** hiện “Quay lại ván” và “Bỏ ván” cho chủ ván AI còn hạn 30 phút. Bỏ ván dùng cùng hộp xác nhận Đầu hàng (focus mặc định ở Giữ ván). Thành viên được lưu History kết quả `RESIGN`; Khách không lưu. Sau đó vị trí chơi được giải phóng để vào phòng khác.
+- **Giữ vĩnh viễn:** không có job xóa theo tuổi hoặc theo số lượng; không có chức năng xóa ván của người dùng. Dung lượng dữ liệu tăng theo thời gian và được theo dõi trong vận hành, không thành lý do tự cắt lịch sử.
+
+### 17.2 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC8-RV-01 | Đo lại cấp Khó nhưng không đạt độ sâu 6 hoặc không đạt 100% bộ chiếu hết | Gate ghi BLOCKED kèm số đo thực; ngưỡng không bị sửa; không có thay đổi ngân sách/mục tiêu nếu PO chưa quyết |
+| AC-YC8-RV-02 | Chơi nhiều ván cùng chuỗi nước người từ khai cuộc, mỗi cấp; chạy bộ chiếu hết | Ít nhất hai chuỗi nước máy khác nhau ở khai cuộc; mọi thế chiếu hết bắt buộc vẫn được giải đúng; nước máy luôn hợp lệ; gieo hạt cố định thì kết quả lặp lại |
+| AC-YC8-RV-03 | Thành viên có ván cũ nhiều tháng | Lịch sử và Replay vẫn xem được; không có job xóa; số ván không bị cắt |
+| AC-YC8-RV-04 | Chủ ván AI ở Sảnh khi ván còn trong 30 phút | Banner có Quay lại và Bỏ ván; Bỏ ván + xác nhận → `RESIGN`, hủy worker, giải phóng vị trí; thành viên có History, Khách không; Hủy giữ nguyên ván |
+| AC-YC8-RV-05 | Người khác, tab hết quyền hoặc API trực tiếp gọi Bỏ ván của ván không phải của mình | Bị từ chối; ván không đổi |
+
+**PO xác nhận 31/10/2026:** (a) ngẫu nhiên nhẹ áp cho cả ba cấp với cùng ngưỡng lệch điểm do dev chọn; (b) nút Bỏ ván ở banner chỉ cho ván AI, ván online/phòng chờ vẫn chỉ có Quay lại (rời ngay trong phòng).
+
+### 17.3 Tác động triển khai (chưa làm)
+
+- `packages/engine`: chọn ngẫu nhiên giữa nước điểm gần bằng nhau có thể cấu hình gieo hạt; giữ đường xác định cho bộ kiểm và GATE-ENGINE.
+- Banner Sảnh (`LobbyShell`/banner ván dở): thêm Bỏ ván gọi cùng lệnh Đầu hàng AI; kiểm quyền chủ ván.
+- Không thêm job dọn lịch sử; thêm theo dõi dung lượng nếu cần.
+- Bằng chứng ở mục 12 và số đo `GATE-ENGINE-LOCAL` là trước các thay đổi này; không kế thừa PASS.
