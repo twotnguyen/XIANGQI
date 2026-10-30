@@ -104,7 +104,7 @@ export class RoomController {
       if (
         (input.timeMinutes !== undefined &&
           (typeof input.timeMinutes !== "number" ||
-            ![5, 10, 15].includes(input.timeMinutes))) ||
+            ![0, 5, 10, 15].includes(input.timeMinutes))) ||
         (input.viewerLimit !== undefined &&
           (typeof input.viewerLimit !== "number" ||
             !Number.isInteger(input.viewerLimit) ||
@@ -407,6 +407,62 @@ export class RoomController {
       )
         invalidRoomInput();
       return this.service.respondSwap(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+        input.accept as boolean,
+      );
+    });
+  }
+  /**
+   * Endpoint POST /rooms/:roomId/rematch-propose: Đề nghị tái đấu (side KEEP | SWAP).
+   */
+  @Post(":roomId/rematch-propose")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  proposeRematch(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readRoomProof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0 ||
+        (input.side !== "KEEP" && input.side !== "SWAP")
+      )
+        invalidRoomInput();
+      return this.service.proposeRematch(
+        authority,
+        id(roomId),
+        input.expectedVersion as number,
+        input.side as "KEEP" | "SWAP",
+      );
+    });
+  }
+  /**
+   * Endpoint POST /rooms/:roomId/rematch-respond: Đồng ý hoặc từ chối đề nghị tái đấu.
+   */
+  @Post(":roomId/rematch-respond")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  respondRematch(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readRoomProof(request),
+        input = object(body);
+      if (
+        !Number.isSafeInteger(input.expectedVersion) ||
+        (input.expectedVersion as number) < 0 ||
+        typeof input.accept !== "boolean"
+      )
+        invalidRoomInput();
+      return this.service.respondRematch(
         authority,
         id(roomId),
         input.expectedVersion as number,

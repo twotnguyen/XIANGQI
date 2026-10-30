@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { invalidRoomInput, RoomError, type RoomScope } from "./room.types.js";
-import { RoomSwapStore } from "./room-store-swap.js";
+import { RoomRematchStore } from "./room-store-rematch.js";
 /**
  * Lớp mở rộng của RoomStore quản lý vai trò khán giả và tương tác ghế ngồi:
  * Chuyển đổi vai trò người chơi/khán giả, mời khán giả xuống ghế và đuổi khán giả khỏi phòng.
  */
-export class RoomViewerStore extends RoomSwapStore {
+export class RoomViewerStore extends RoomRematchStore {
   private async expireDownOffers(s: RoomScope, id: string) {
     if (!(await this.downTableExists(s))) return 0;
     const due = (
