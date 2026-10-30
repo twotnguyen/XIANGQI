@@ -979,4 +979,4 @@ Tiếp tục trên cùng nhánh/PR #157. Sửa các đường đã triển khai 
 
 TypeScript web/server/tests, ESLint các file đổi, Prettier code/CSS và diff check đạt. Preview /dev/ui tải được, console không có lỗi; đây là trang minh họa. Không chạy build local hoặc đo lại tải/độ trễ production.
 
-**Migration bắt buộc trước backend mới:** 20261103000001_username_otp_delivery (ba cột marker/cooldown), có rollback cùng tên. Đã áp, rollback và áp lại trên DB test; FORCE RLS và quyền cột được giữ. Chưa áp Cloud hoặc cấu hình SMTP/Google/LiveKit thật. Các cổng D1–D10, thiết bị/dịch vụ thật và PO vẫn chưa nghiệm thu; không kết luận toàn bộ P1 đã hoàn tất.
+**Migration bắt buộc trước backend mới:** 20261103000001_username_otp_delivery (ba cột marker/cooldown), có rollback cùng tên. Đã áp, rollback và áp lại trên DB test; FORCE RLS và quyền cột được giữ. Đã áp lên Cloud ngày 31/10/2026 cùng 7 migration còn thiếu; chưa cấu hình SMTP/Google/LiveKit thật. Các cổng D1–D10, thiết bị/dịch vụ thật và PO vẫn chưa nghiệm thu; không kết luận toàn bộ P1 đã hoàn tất.

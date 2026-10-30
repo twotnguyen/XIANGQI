@@ -8,7 +8,7 @@
 
 **Rà soát 31/10/2026:** PO chốt luồng Host Bắt đầu + đối thủ Sẵn sàng, nút Nhường Host, người xem phải thoát phòng mới tạo phòng và không giới hạn tạo phòng (mục 21); **chưa triển khai**.
 
-**Trạng thái:** baseline theo Q1–Q7 (27 AC, mục 16/18); bổ sung BA 0.20 đã triển khai và kiểm chứng local tại mục 20. Cloud: chưa ghi nhận đã áp migration của phần bổ sung BA 0.20 (chỉ hai migration YC1 đã áp, xem YC1 mục 16–17); chưa xác nhận CI/PO; chưa đóng Task Jira hoặc push phần bổ sung.
+**Trạng thái:** baseline theo Q1–Q7 (27 AC, mục 16/18); bổ sung BA 0.20 đã triển khai và kiểm chứng local tại mục 20. Cloud: migration của phần bổ sung BA 0.20 đã áp ngày 31/10/2026 (xem YC1 mục 16–17 và BACKLOG-P1 mục 11); chưa xác nhận CI/PO; chưa đóng Task Jira hoặc push phần bổ sung.
 
 ## 1. Mục tiêu, nguồn và thứ tự ưu tiên
 

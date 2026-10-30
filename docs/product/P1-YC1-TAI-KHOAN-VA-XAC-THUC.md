@@ -6,7 +6,7 @@
 
 **Rà soát 31/10/2026:** PO chốt thêm chín điểm tại mục 20 (thiết bị = trình duyệt, reset xóa khóa, đổi Username 1 lần/7 ngày, cảnh báo bỏ qua email, lối vào Quên tên đăng nhập, trần OTP, ký tự tên, chữ "email"); **chưa triển khai**, các mục 9–11, 13, 18 dưới đây đã sửa theo.
 
-**Trạng thái:** baseline tại mục 17; bổ sung BA 0.21 đã triển khai và kiểm chứng local tại mục 19. Cloud: đã áp hai migration `20261030000001_password_recovery` và `20261031000001_session_devices` (PO chọn, mục 17); **chưa ghi nhận đã áp** các migration `20261101000001`–`20261102000005` (YC1 mục 19, YC2 mục 20, YC3 mục 16); chưa xác nhận CI hoặc nghiệm thu PO; không tự Jira Done.
+**Trạng thái:** baseline tại mục 17; bổ sung BA 0.21 đã triển khai và kiểm chứng local tại mục 19. Cloud: đã áp hai migration `20261030000001_password_recovery` và `20261031000001_session_devices` (PO chọn, mục 17); đã áp ngày 31/10/2026 (PO yêu cầu) các migration còn lại `20261019060000`, `20261101000001`–`20261102000005`, `20261103000001`, sổ khớp local (BACKLOG-P1 mục 11 dòng 8); chưa xác nhận CI hoặc nghiệm thu PO; không tự Jira Done.
 
 ## 1. Mục tiêu, nguồn và quyết định đã chốt
 
