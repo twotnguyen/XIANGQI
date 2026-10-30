@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import type { RoomStateSnapshot } from "@xiangqi/shared";
 import "../../../shared/styles/tokens.css";
 import "./MatchResult.css";
@@ -10,6 +10,7 @@ export interface MatchResultProps {
   onLeave: () => void;
   leaving?: boolean;
   error?: string;
+  rematch?: ReactNode;
 }
 const reasons: Readonly<Record<string, string>> = {
   CHECKMATE: "Chiếu hết",
@@ -42,11 +43,11 @@ export function MatchResult({
   onLeave,
   leaving = false,
   error = "",
+  rematch,
 }: MatchResultProps) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const stay = useRef<HTMLButtonElement>(null);
-  const leave = useRef<HTMLButtonElement>(null);
   const terminal = Boolean(match && match.status !== "ACTIVE");
   const player = role !== "spectator";
   useEffect(() => {
@@ -112,20 +113,25 @@ export function MatchResult({
       }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
-        if (event.shiftKey && document.activeElement === stay.current) {
+        const controls = Array.from(
+          event.currentTarget.querySelectorAll<HTMLElement>(
+            'button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href], [tabindex="0"]',
+          ),
+        ).filter((control) => !control.hidden && !control.closest("[hidden]"));
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
           event.preventDefault();
-          leave.current?.focus();
-        } else if (
-          !event.shiftKey &&
-          document.activeElement === leave.current
-        ) {
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
           event.preventDefault();
-          stay.current?.focus();
+          first?.focus();
         }
       }}
     >
       {content}
       {error && <p role="alert">{error}</p>}
+      {rematch}
       <footer className="match-result__actions">
         <button
           ref={stay}
@@ -138,7 +144,6 @@ export function MatchResult({
           Ở lại phòng
         </button>
         <button
-          ref={leave}
           type="button"
           aria-disabled={leaving}
           aria-busy={leaving}

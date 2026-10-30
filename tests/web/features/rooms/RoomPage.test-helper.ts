@@ -48,7 +48,10 @@ export const snapshot: RoomSnapshot = {
   clocks: null,
   control: { mode: "writable", generation: 1, reason: null },
 };
-export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
+export function setup(
+  state = snapshot,
+  extra: { chat?: ReactNode; isMember?: boolean } = {},
+) {
   let handlers: RoomConnectionInput;
   const command = vi.fn().mockResolvedValue({
     status: "ok",

@@ -61,3 +61,38 @@
     flex: 1;
   }
 }
+
+.xq-rematch-panel {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 0;
+  padding: 16px;
+  min-width: 0;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+.xq-rematch-panel fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.xq-rematch-panel legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-weight: var(--weight-semibold);
+}
+.xq-rematch-panel label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+.xq-rematch-panel input {
+  accent-color: var(--color-gold);
+}

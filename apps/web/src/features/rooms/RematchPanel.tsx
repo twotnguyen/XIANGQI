@@ -18,6 +18,7 @@ const SIDE_LABEL: Record<RematchSide, string> = {
 function useSeconds(expiresAt: string | null, clockSkew: number) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
+    setNow(Date.now());
     if (!expiresAt) return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);

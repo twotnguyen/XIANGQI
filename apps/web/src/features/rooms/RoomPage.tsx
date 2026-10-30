@@ -160,8 +160,9 @@ export function RoomPage({
   const canRematch =
     view !== null &&
     view.room.status === "WAITING" &&
-    view.room.inviteCode !== null &&
+    (view.room.inviteCode !== null || view.room.visibility === "LOCKED") &&
     (view.role === "red" || view.role === "black") &&
+    Boolean(view.room.seats.red && view.room.seats.black) &&
     snapshot?.match != null &&
     snapshot.match.status !== "ACTIVE" &&
     view.room.countdown === null &&
@@ -575,7 +576,8 @@ export function RoomPage({
         ) {
           versionFloor.current = next.version;
           setView(next);
-          setSnapshot(null);
+          // Keep the terminal board and result while a rematch offer is exchanged.
+          if (!action.startsWith("rematch")) setSnapshot(null);
         }
       }
     } catch (e) {
@@ -595,7 +597,8 @@ export function RoomPage({
             : swapMessage(e.code, e.message)
           : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
       setError(message);
-      if (action === "leave") setLeaveError(message);
+      if (action === "leave" || action.startsWith("rematch"))
+        setLeaveError(message);
       if (e instanceof RoomRequestError && e.code === "VERSION_STALE") {
         try {
           const next = await client.snapshot(roomId);
@@ -739,6 +742,28 @@ export function RoomPage({
     >
       {room.ready[view.role as "red" | "black"] ? "Huỷ sẵn sàng" : "Sẵn sàng"}
     </Button>
+  );
+  const resultVisible = Boolean(
+    connected &&
+    snapshot?.match &&
+    snapshot.match.status !== "ACTIVE" &&
+    !room.countdown &&
+    liveMatchId === snapshot.match.id &&
+    (snapshot.role === "spectator" || dismissedResult !== snapshot.match.id),
+  );
+  const resultInModal = resultVisible && player;
+  const rematchPanel = (
+    <RematchPanel
+      offer={isMember ? (room.rematchOffer ?? null) : null}
+      selfId={userId}
+      canPropose={canRematch && isMember}
+      clockSkew={clockSkew}
+      busy={busy}
+      onPropose={(side) => void httpAction("rematch-propose", side)}
+      onRespond={(accept) =>
+        void httpAction(accept ? "rematch-accept" : "rematch-decline")
+      }
+    />
   );
   return (
     <main
@@ -1164,17 +1189,7 @@ export function RoomPage({
         status={settingsStatus}
         onChange={changeVisibility}
       />
-      <RematchPanel
-        offer={isMember ? (view?.room.rematchOffer ?? null) : null}
-        selfId={userId}
-        canPropose={canRematch && isMember}
-        clockSkew={clockSkew}
-        busy={busy}
-        onPropose={(side) => void httpAction("rematch-propose", side)}
-        onRespond={(accept) =>
-          void httpAction(accept ? "rematch-accept" : "rematch-decline")
-        }
-      />
+      {!resultInModal && rematchPanel}
       <SwapPrompt
         open={swapModalOpen}
         seconds={swapSeconds}
@@ -1183,24 +1198,20 @@ export function RoomPage({
         onDecline={() => void httpAction("swap-decline")}
         onCollapse={() => setSwapCollapsedId(swapOfferId)}
       />
-      {connected &&
-        snapshot?.match &&
-        snapshot.match.status !== "ACTIVE" &&
-        liveMatchId === snapshot.match.id &&
-        (snapshot.role === "spectator" ||
-          dismissedResult !== snapshot.match.id) && (
-          <MatchResult
-            match={snapshot.match}
-            role={snapshot.role}
-            leaving={busy}
-            error={leaveError}
-            onStay={() => {
-              setDismissedResult(snapshot.match!.id);
-              setLeaveError("");
-            }}
-            onLeave={() => void httpAction("leave")}
-          />
-        )}
+      {resultVisible && snapshot?.match && (
+        <MatchResult
+          match={snapshot.match}
+          role={snapshot.role}
+          leaving={busy}
+          error={leaveError}
+          rematch={rematchPanel}
+          onStay={() => {
+            setDismissedResult(snapshot.match!.id);
+            setLeaveError("");
+          }}
+          onLeave={() => void httpAction("leave")}
+        />
+      )}
     </main>
   );
 }
