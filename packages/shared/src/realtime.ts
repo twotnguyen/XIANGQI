@@ -1,3 +1,10 @@
+/** Physical controller credential for HTTP mutations; not a session or an admission grant. */
+export interface RoomControlProof {
+  tabId: string;
+  connectionId: string;
+  generation: number;
+}
+
 import type { ClientChatEvents, ServerChatEvents } from "./chat.js";
 export type RoomRole = "red" | "black" | "spectator";
 

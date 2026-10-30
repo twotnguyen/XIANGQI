@@ -9,6 +9,7 @@ export interface MatchResultProps {
   onStay: () => void;
   onLeave: () => void;
   leaving?: boolean;
+  canLeave?: boolean;
   error?: string;
   rematch?: ReactNode;
 }
@@ -42,6 +43,7 @@ export function MatchResult({
   onStay,
   onLeave,
   leaving = false,
+  canLeave = true,
   error = "",
   rematch,
 }: MatchResultProps) {
@@ -147,8 +149,12 @@ export function MatchResult({
           type="button"
           aria-disabled={leaving}
           aria-busy={leaving}
+          disabled={!canLeave}
+          title={
+            !canLeave ? "Cần kết nối và quyền điều khiển phòng." : undefined
+          }
           onClick={() => {
-            if (!leaving) onLeave();
+            if (!leaving && canLeave) onLeave();
           }}
         >
           Rời phòng

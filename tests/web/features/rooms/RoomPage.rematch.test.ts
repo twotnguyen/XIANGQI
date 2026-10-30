@@ -45,6 +45,7 @@ it.each(["SWAP", "KEEP"] as const)(
       "room",
       state.version,
       side,
+      fixture.control,
     );
     expect(
       await within(modal).findByText(/Đang chờ đối thủ trả lời/),
@@ -92,6 +93,7 @@ it("accepts an incoming side choice inside the result and reveals the authoritat
     "room",
     state.version,
     true,
+    fixture.control,
   );
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(

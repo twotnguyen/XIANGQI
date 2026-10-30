@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { RoomControlProof } from "@xiangqi/shared";
 import { RemoteParticipant, Room, RoomEvent, Track } from "livekit-client";
 import { Button, Dialog, Notice } from "../../shared/ui/primitives.js";
 import {
@@ -143,6 +144,7 @@ export function MediaPanel({
   writable,
   tabId,
   onTakeover,
+  getControl,
   seats,
   userId,
 }: {
@@ -155,6 +157,7 @@ export function MediaPanel({
   tabId: string;
   // Chuyển quyền điều khiển sang tab này qua máy chủ; ném lỗi nếu thất bại.
   onTakeover: () => Promise<void>;
+  getControl?: () => Promise<RoomControlProof>;
   seats: { red: string | null; black: string | null };
   userId: string;
 }) {
@@ -484,14 +487,22 @@ export function MediaPanel({
   }
 
   async function share(next: ShareLevel) {
-    if (busy || devicePending.current.camera || devicePending.current.mic)
+    if (
+      !writable ||
+      busy ||
+      devicePending.current.camera ||
+      devicePending.current.mic
+    )
       return;
     const id = epoch.current;
     shareVersion.current += 1;
     setBusy(true);
     let confirmed: ShareLevel;
     try {
-      confirmed = (await client.setShare(roomId, next)).level;
+      if (!getControl) throw new Error("Room control unavailable");
+      const control = await getControl();
+      if (epoch.current !== id) return;
+      confirmed = (await client.setShare(roomId, next, control)).level;
     } catch {
       if (epoch.current !== id) return;
       // Không xác nhận được: tắt phát, giữ mức đã xác nhận và chỉ join receive-only (không stage).

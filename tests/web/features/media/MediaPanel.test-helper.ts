@@ -248,6 +248,11 @@ function panel(client: MediaClient, overrides: Partial<Panel> = {}) {
     writable: true,
     tabId: "tab",
     onTakeover: async () => {},
+    getControl: async () => ({
+      tabId: "tab",
+      connectionId: "socket-a",
+      generation: 1,
+    }),
     ...overrides,
   });
 }

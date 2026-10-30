@@ -57,3 +57,40 @@ describe("media token body", () => {
     expect(response).toMatchObject({ code: "MEDIA_INPUT_INVALID" });
   });
 });
+
+describe("media share controller proof", () => {
+  const control = { tabId: TAB, connectionId: "peer", generation: 2 };
+  const valid = { roomId: "room-1", level: "ALL", control };
+  it("forwards the physical connection and generation", async () => {
+    const setShare = vi.fn().mockResolvedValue({ level: "ALL" });
+    const controller = new MediaController({ setShare } as never);
+    await controller.share(request, valid);
+    expect(setShare).toHaveBeenCalledExactlyOnceWith(
+      "user-1",
+      "room-1",
+      "ALL",
+      control,
+    );
+  });
+  it.each([
+    undefined,
+    null,
+    {},
+    { ...control, tabId: "tab" },
+    { ...control, connectionId: "" },
+    { ...control, connectionId: "x".repeat(129) },
+    { ...control, generation: 0 },
+    { ...control, generation: 1.5 },
+    { ...control, generation: 2_147_483_648 },
+    { ...control, generation: "2" },
+  ])("rejects invalid or omitted proof: %j", (proof) => {
+    const setShare = vi.fn();
+    const controller = new MediaController({ setShare } as never);
+    expect(
+      rejectedResponse(() =>
+        controller.share(request, { ...valid, control: proof }),
+      ),
+    ).toMatchObject({ code: "MEDIA_INPUT_INVALID" });
+    expect(setShare).not.toHaveBeenCalled();
+  });
+});

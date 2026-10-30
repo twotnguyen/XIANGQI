@@ -18,7 +18,11 @@ it("proposes a side swap and shows the waiting state with withdraw", async () =>
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: "Xin đổi bên" }));
-  expect(fixture.client.proposeSwap).toHaveBeenCalledWith("room", 3);
+  expect(fixture.client.proposeSwap).toHaveBeenCalledWith(
+    "room",
+    3,
+    fixture.control,
+  );
   expect(fixture.client.proposeSwap).toHaveBeenCalledTimes(1);
 });
 it("shows accept and decline to the responder with a countdown", async () => {
@@ -50,7 +54,12 @@ it("shows accept and decline to the responder with a countdown", async () => {
     },
   });
   await userEvent.setup().click(screen.getByRole("button", { name: "Đồng ý" }));
-  expect(fixture.client.respondSwap).toHaveBeenCalledWith("room", 4, true);
+  expect(fixture.client.respondSwap).toHaveBeenCalledWith(
+    "room",
+    4,
+    true,
+    fixture.control,
+  );
 });
 it("maps swap cooldown failures to Vietnamese guidance", async () => {
   const fixture = setup();
@@ -88,7 +97,12 @@ it("lists spectators with capacity and confirms a kick before calling the server
   await userEvent
     .setup()
     .click(within(dialog).getByRole("button", { name: "Đuổi khỏi phòng" }));
-  expect(fixture.client.kickViewer).toHaveBeenCalledWith("room", 6, "w1");
+  expect(fixture.client.kickViewer).toHaveBeenCalledWith(
+    "room",
+    6,
+    "w1",
+    fixture.control,
+  );
 });
 it("answers a host seat invite as the invited viewer", async () => {
   const invited: RoomSnapshot = {
@@ -111,7 +125,12 @@ it("answers a host seat invite as the invited viewer", async () => {
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: "Chấp nhận" }));
-  expect(fixture.client.respondDown).toHaveBeenCalledWith("room", 7, true);
+  expect(fixture.client.respondDown).toHaveBeenCalledWith(
+    "room",
+    7,
+    true,
+    fixture.control,
+  );
 });
 it("moves a non-host player to spectator from the viewers panel", async () => {
   const guest: RoomSnapshot = {
@@ -125,7 +144,11 @@ it("moves a non-host player to spectator from the viewers panel", async () => {
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
-  expect(fixture.client.toSpectator).toHaveBeenCalledWith("room", 8);
+  expect(fixture.client.toSpectator).toHaveBeenCalledWith(
+    "room",
+    8,
+    fixture.control,
+  );
 });
 it("copies the room code or full invite URL without navigating and hides sharing when locked", async () => {
   const fixture = setup({

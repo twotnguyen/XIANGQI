@@ -143,6 +143,11 @@ export function RoomSeats({
                     <Button
                       variant="secondary"
                       loading={busy}
+                      disabledReason={
+                        !writable
+                          ? "Cần kết nối và quyền điều khiển ghế."
+                          : undefined
+                      }
                       onClick={() => void onAction("swap-withdraw")}
                     >
                       Rút đề nghị

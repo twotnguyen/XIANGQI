@@ -8,6 +8,7 @@ const fixture = vi.hoisted(() => ({
   options: null as null | { auth: (done: (proof: unknown) => void) => void },
   emit: vi.fn(),
   socket: {
+    id: "test-connection",
     connected: true,
     connect: vi.fn(),
     disconnect: vi.fn(),

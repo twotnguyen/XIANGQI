@@ -234,7 +234,11 @@ describe("media panel share failures", () => {
       const publishing = live.state.rooms.slice(1);
       await settle();
       await user.selectOptions(select(), target);
-      expect(client.setShare).toHaveBeenCalledWith("room", target);
+      expect(client.setShare).toHaveBeenCalledWith("room", target, {
+        tabId: "tab",
+        connectionId: "socket-a",
+        generation: 1,
+      });
       expect(await screen.findByText(/Chưa thể đổi mức chia sẻ/)).toBeTruthy();
       expect(select().value).toBe("ALL");
       expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
@@ -265,7 +269,11 @@ describe("media panel share failures", () => {
       await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
       await settle();
       await userEvent.setup().selectOptions(select(), "ALL");
-      expect(client.setShare).toHaveBeenCalledWith("room", "ALL");
+      expect(client.setShare).toHaveBeenCalledWith("room", "ALL", {
+        tabId: "tab",
+        connectionId: "socket-a",
+        generation: 1,
+      });
       leave(view, client, boundary);
       save.resolve({ level: "ALL" });
       await flush();
@@ -428,4 +436,21 @@ describe("media panel tab switch", () => {
     );
     expect(cameraButton().getAttribute("aria-pressed")).toBe("false");
   });
+});
+
+it("does not change media sharing if control proof cannot be obtained", async () => {
+  const { client } = harness();
+  render(
+    panel(client, {
+      getControl: async () => {
+        throw new Error("no control");
+      },
+    }),
+  );
+  await settle();
+  fireEvent.change(select(), { target: { value: "ALL" } });
+  await waitFor(() =>
+    expect(screen.getByText(/Chưa thể đổi mức chia sẻ/)).toBeTruthy(),
+  );
+  expect(client.setShare).not.toHaveBeenCalled();
 });

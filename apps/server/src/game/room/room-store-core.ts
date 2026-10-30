@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 import type { PoolClient, QueryResultRow } from "pg";
 import { randomUUID } from "node:crypto";
 import {
@@ -40,6 +41,46 @@ type SnapshotRow = {
  * Quản lý sự kiện outbox, kiểm tra biên lai idempotency, giải mã invite code và truy vấn snapshot phòng.
  */
 export class RoomStoreCore {
+  /** Verify the physical owner after withRoom has acquired the actor and room locks. */
+  async assertHttpControl(
+    s: RoomScope,
+    roomId: string,
+    control?: RoomControlProof,
+  ) {
+    this.scope(s, roomId);
+    if (
+      !control ||
+      typeof control.tabId !== "string" ||
+      !uuid.test(control.tabId) ||
+      typeof control.connectionId !== "string" ||
+      !control.connectionId ||
+      control.connectionId.length > 128 ||
+      !Number.isSafeInteger(control.generation) ||
+      control.generation <= 0 ||
+      control.generation > 2_147_483_647
+    )
+      throw new RoomError(
+        "ROOM_TAB_READ_ONLY",
+        "Tab này chỉ có quyền xem",
+        403,
+      );
+    const current = await s.client.query(
+      "SELECT 1 FROM xiangqi_realtime.controllers c JOIN xiangqi_room.presence p ON p.room_id=c.room_id AND p.user_id=c.user_id WHERE c.user_id=$1 AND c.room_id=$2 AND c.tab_id=$3 AND c.connection_id=$4 AND c.generation=$5 AND p.connection_id=c.connection_id AND p.connected",
+      [
+        s.actor.userId,
+        roomId,
+        control.tabId.toLowerCase(),
+        control.connectionId,
+        control.generation,
+      ],
+    );
+    if (!current.rowCount)
+      throw new RoomError(
+        "ROOM_TAB_READ_ONLY",
+        "Tab này chỉ có quyền xem",
+        403,
+      );
+  }
   constructor(protected readonly matches?: MatchStartPort) {}
   protected swapTableReady: boolean | null = null;
   protected seatTableReady: boolean | null = null;

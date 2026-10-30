@@ -133,7 +133,7 @@ it("a solo seat shows Đổi ghế and never Xin đổi bên", () => {
   expect(screen.queryByRole("button", { name: "Xin đổi bên" })).toBeNull();
 });
 
-it("cooldown disables Xin đổi bên with a ticking tooltip, never dispatches, then re-enables at zero", () => {
+it("cooldown disables Xin đổi bên with a ticking tooltip, never dispatches, then re-enables at zero", async () => {
   fake();
   const f = open({
     ...snapshot,
@@ -158,8 +158,14 @@ it("cooldown disables Xin đổi bên with a ticking tooltip, never dispatches, 
   tick(59_000);
   const enabled = screen.getByRole("button", { name: "Xin đổi bên" });
   expect(enabled.getAttribute("aria-disabled")).toBe("false");
-  fireEvent.click(enabled);
-  expect(f.client.proposeSwap).toHaveBeenCalledExactlyOnceWith("room", 3);
+  await act(async () => {
+    fireEvent.click(enabled);
+  });
+  expect(f.client.proposeSwap).toHaveBeenCalledExactlyOnceWith(
+    "room",
+    3,
+    f.control,
+  );
 });
 
 it("withdrawing the proposal starts no cooldown", async () => {
@@ -173,7 +179,7 @@ it("withdrawing the proposal starts no cooldown", async () => {
   f.client.withdrawSwap.mockResolvedValue(withdrawn);
   fireEvent.click(screen.getByRole("button", { name: "Rút đề nghị" }));
   await act(async () => {});
-  expect(f.client.withdrawSwap).toHaveBeenCalledWith("room", 4);
+  expect(f.client.withdrawSwap).toHaveBeenCalledWith("room", 4, f.control);
   // The action clears the snapshot until the authoritative realtime state arrives.
   act(() => {
     f.publish(withdrawn);

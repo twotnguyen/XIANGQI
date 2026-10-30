@@ -37,6 +37,7 @@ export function RematchPanel({
   selfId,
   canPropose,
   busy,
+  writable = true,
   clockSkew,
   onPropose,
   onRespond,
@@ -45,6 +46,7 @@ export function RematchPanel({
   selfId: string;
   canPropose: boolean;
   busy: boolean;
+  writable?: boolean;
   clockSkew: number;
   onPropose: (side: RematchSide) => void;
   onRespond: (accept: boolean) => void;
@@ -61,12 +63,21 @@ export function RematchPanel({
             giây để trả lời.
           </p>
           <div className="xq-swap-prompt-actions">
-            <Button loading={busy} onClick={() => onRespond(true)}>
+            <Button
+              loading={busy}
+              disabledReason={
+                !writable ? "Cần kết nối và quyền điều khiển phòng." : undefined
+              }
+              onClick={() => onRespond(true)}
+            >
               Đồng ý
             </Button>
             <Button
               variant="secondary"
               loading={busy}
+              disabledReason={
+                !writable ? "Cần kết nối và quyền điều khiển phòng." : undefined
+              }
               onClick={() => onRespond(false)}
             >
               Từ chối
@@ -88,7 +99,7 @@ export function RematchPanel({
   if (!canPropose) return null;
   return (
     <section className="xq-rematch-panel" aria-label="Tái đấu">
-      <fieldset disabled={busy}>
+      <fieldset disabled={busy || !writable}>
         <legend>Phe sau ván tái đấu</legend>
         {(["SWAP", "KEEP"] as const).map((value) => (
           <label key={value}>
@@ -103,7 +114,13 @@ export function RematchPanel({
           </label>
         ))}
       </fieldset>
-      <Button loading={busy} onClick={() => onPropose(side)}>
+      <Button
+        loading={busy}
+        disabledReason={
+          !writable ? "Cần kết nối và quyền điều khiển phòng." : undefined
+        }
+        onClick={() => onPropose(side)}
+      >
         Đề nghị tái đấu
       </Button>
     </section>

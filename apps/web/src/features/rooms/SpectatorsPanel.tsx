@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
 export interface SpectatorSeat {
   userId: string;
@@ -19,6 +19,7 @@ export function SpectatorsPanel({
   canKick,
   downOfferInviteeId,
   busy,
+  writable = true,
   onMoveToSpectator,
   onInviteDown,
   onKick,
@@ -31,11 +32,15 @@ export function SpectatorsPanel({
   canKick: boolean;
   downOfferInviteeId: string | null;
   busy: boolean;
+  writable?: boolean;
   onMoveToSpectator: () => void;
   onInviteDown: (userId: string) => void;
   onKick: (userId: string) => void;
 }) {
   const [pendingKick, setPendingKick] = useState<SpectatorSeat | null>(null);
+  useEffect(() => {
+    if (!writable) setPendingKick(null);
+  }, [writable]);
   return (
     <section className="xq-viewers" aria-label="Người xem">
       <h2>
@@ -55,6 +60,11 @@ export function SpectatorsPanel({
                 <Button
                   variant="secondary"
                   loading={busy}
+                  disabledReason={
+                    !writable
+                      ? "Cần kết nối và quyền điều khiển phòng."
+                      : undefined
+                  }
                   onClick={() => onInviteDown(watcher.userId)}
                 >
                   Mời xuống ghế
@@ -64,6 +74,11 @@ export function SpectatorsPanel({
                 <Button
                   variant="danger"
                   loading={busy}
+                  disabledReason={
+                    !writable
+                      ? "Cần kết nối và quyền điều khiển phòng."
+                      : undefined
+                  }
                   onClick={() => setPendingKick(watcher)}
                 >
                   Đuổi
@@ -81,9 +96,11 @@ export function SpectatorsPanel({
           variant="secondary"
           loading={busy}
           disabledReason={
-            spectators.length >= limit
-              ? "Phòng không còn chỗ cho người xem"
-              : undefined
+            !writable
+              ? "Cần kết nối và quyền điều khiển phòng."
+              : spectators.length >= limit
+                ? "Phòng không còn chỗ cho người xem"
+                : undefined
           }
           onClick={onMoveToSpectator}
         >
@@ -100,7 +117,7 @@ export function SpectatorsPanel({
         onConfirm={() => {
           const target = pendingKick;
           setPendingKick(null);
-          if (target) onKick(target.userId);
+          if (target && writable && !busy) onKick(target.userId);
         }}
       >
         <p>
