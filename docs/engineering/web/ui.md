@@ -27,6 +27,12 @@ phòng/ván thật với server trong lần kiểm này.
 Sau tích hợp develop, đã xem Sảnh ở 390×844 (tối) và 1366×900 (Giấy Sáng):
 không tràn ngang; summary đo được 44px, mở/đóng và chuyển focus đúng.
 Đã thao tác lọc 5 phút/Tất cả và gửi mã sai bằng Enter để kiểm tra báo lỗi.
+PR #153 giữ hiệu ứng và bố cục mới nhưng dùng token theo chủ đề cho shell,
+auth, Sảnh, phòng và đồng hồ. Chấm đích ô trống kế thừa `--board-hint`
+(`#3a2a1a`), tương phản tính từ các stop nền gỗ đạt 6,70–9,68:1.
+Đã xem bàn cờ tương tác ở 390×844, chọn Tốt hiện đúng chấm đích; auth ở
+390×844 giữ input 16px và không tràn ngang. Đã xem auth và đồng hồ thật
+với dữ liệu minh họa ở 1366×900 dưới chủ đề Giấy Sáng. Chưa nghiệm thu ván online.
 
 Ưu tiên desktop/laptop: 1280×720, 1366×768, 1440×900, 1536×864,
 1920×1080; sau đó mobile 360×800 và 390×844. Các kiểm trình duyệt đã kiểm
