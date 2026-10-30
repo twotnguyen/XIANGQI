@@ -139,6 +139,7 @@ it("copies the room code or full invite URL without navigating and hides sharing
     configurable: true,
     value: { writeText: vi.fn((value: string) => void copied.push(value)) },
   });
+  await u.click(screen.getByRole("button", { name: "Mời vào phòng" }));
   await u.click(screen.getByRole("button", { name: "Sao chép mã" }));
   expect(copied).toEqual(["70521348"]);
   expect(
@@ -191,6 +192,7 @@ it("reports a rejected clipboard write without navigating or claiming success", 
     },
   });
   const pathBeforeCopy = window.location.href;
+  await u.click(screen.getByRole("button", { name: "Mời vào phòng" }));
   await u.click(screen.getByRole("button", { name: "Sao chép link" }));
   expect(
     await screen.findByText(

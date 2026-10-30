@@ -350,12 +350,17 @@ export function Badge({ count, label }: { count: number; label: string }) {
 export function Tabs({
   items,
   label,
+  defaultId,
 }: {
   items: { id: string; label: string; content: ReactNode }[];
   label: string;
+  defaultId?: string;
 }) {
   const group = useId();
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(() => {
+    const index = items.findIndex((item) => item.id === defaultId);
+    return index < 0 ? 0 : index;
+  });
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
     <div className="xq-tabs">

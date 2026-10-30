@@ -55,13 +55,23 @@ export class RoomRequestError extends Error {
         ? "Chỉ khoá được khi đã đủ 2 người chơi"
         : code === "ROOM_FORBIDDEN" && context === "visibility"
           ? "Chỉ chủ phòng được đổi chế độ"
-          : code === "VERSION_STALE"
-            ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
-            : status === 401
-              ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-              : status === 503
-                ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
-                : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
+          : code === "ROOM_FULL"
+            ? "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"
+            : code === "ROOM_BLOCKED"
+              ? "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"
+              : code === "ROOM_LOCKED"
+                ? "Phòng đã khóa, không thể nhận người mới."
+                : code === "ROOM_FORBIDDEN" || code === "ROOM_CODE_CHANGED"
+                  ? "Mã phòng không tồn tại hoặc phòng đã đóng"
+                  : code === "ALREADY_SEATED"
+                    ? "Bạn đang ở trong một ván/phòng khác"
+                    : code === "VERSION_STALE"
+                      ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+                      : status === 401
+                        ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+                        : status === 503
+                          ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
+                          : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
     );
   }
 }

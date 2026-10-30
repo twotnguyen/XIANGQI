@@ -566,6 +566,7 @@
 }
 .xq-ui .xq-main:has(.xq-room-page.is-waiting) {
   display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   max-width: none;
@@ -1484,4 +1485,21 @@
     grid-column: 1;
     grid-row: 2;
   }
+}
+
+.xq-room-share-content {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.xq-room-share-content .xq-room-invite-actions {
+  grid-column: auto;
+  grid-row: auto;
+}
+.xq-room-share-content .xq-room-invite-status {
+  position: static;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }

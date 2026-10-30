@@ -65,6 +65,8 @@ export interface RoomPageProps {
   chat?: ReactNode;
   media?: ReactNode;
   mediaClient?: MediaClient;
+  renderInviteFriends?: (roomId: string) => ReactNode;
+  isMember?: boolean;
 }
 /**
  * Trang phòng cờ trực tuyến: điều phối kết nối realtime, bàn cờ, đồng hồ đấu, ghế ngồi, video/audio và chat phòng.
@@ -80,6 +82,8 @@ export function RoomPage({
   chat,
   media,
   mediaClient,
+  renderInviteFriends,
+  isMember = false,
 }: RoomPageProps) {
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
@@ -995,7 +999,7 @@ export function RoomPage({
             <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
           )}
         </section>
-        {code && room.visibility !== "LOCKED" && (
+        {view.role !== "spectator" && code && room.visibility !== "LOCKED" && (
           <RoomInvite
             code={code}
             copying={copying}
@@ -1003,6 +1007,11 @@ export function RoomPage({
             copied={copied}
             onCopy={() => void copyInvite(code, "code")}
             onCopyLink={() => void copyInvite(code, "link")}
+            friends={
+              isMember && renderInviteFriends
+                ? renderInviteFriends(roomId)
+                : undefined
+            }
           />
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">
