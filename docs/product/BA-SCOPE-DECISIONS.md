@@ -9,7 +9,7 @@
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
-> **Ưu tiên hiện tại:** tám YC P1 và các bổ sung 0.18–0.24. Ranked/Elo/leaderboard, ghép ngẫu nhiên/Undo/Tái đấu Casual, phần Ranked của lịch sử/thống kê và widget AI vẫn P2. Undo custom/AI, History custom/AI/Replay/export, demo mạng và sticker đã chuyển theo quyết định mới; QR ngoài phạm vi.
+> **Ưu tiên hiện tại:** tám YC P1 và các bổ sung0.18–0.26. Ranked/Elo/leaderboard, ghép ngẫu nhiên/Undo/Tái đấu Casual và phần Ranked của lịch sử/thống kê vẫn P2. Undo custom/AI, History custom/AI/Replay/export, demo mạng, sticker và widget AI chỉ thành viên đã chuyển P1; QR ngoài phạm vi.
 
 > **Ghi chú rà soát 03/10/2026.** Product Owner uỷ quyền cho agent tự xử lý mâu thuẫn và chỗ mơ hồ của Giai đoạn 1. Các quyết định thêm hoặc sửa trong đợt này đã được Product Owner **duyệt toàn bộ ngày 03/10/2026** (gồm nhóm 1–8 và loạt trả lời nhóm B). Riêng các con số tạm (120 nửa nước không ăn quân, luật đuổi quân liên tục, quy mô 50 người dùng đồng thời) được xác nhận lại ở Giai đoạn 2.
 >
@@ -98,7 +98,7 @@ Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, 
 ### 0.11 Hệ quả phân kỳ
 * **Lên P1:** Chế độ Khách (1.3, `MODAL-GUEST-NAME`), Xin đổi bên trong phòng tự tạo (`MODAL-SIDE-SWAP-PROMPT`), khoá thử sai đăng nhập, SMTP ngoài, nút "Vào chơi" ở Sảnh, "Ván mới" ở ván AI, "Ở lại phòng" ở hộp kết quả.
 * **Thành phần giao diện theo 0.21:** **32 P1 / 5 P2**, tổng 37; thêm `MODAL-OTP-USERNAME`, `MODAL-MEDIA-TAB-SWITCH` vào P1 so với 30/7 ở 0.20. Khôi phục Username dùng bề mặt Auth hiện có, theme trong Hồ sơ; không tự thêm mã thành phần.
-* **Vẫn P2 theo 0.22–0.24:** Ranked/Elo/leaderboard, ghép ngẫu nhiên/Undo/Tái đấu Casual, phần Ranked của lịch sử/thống kê và widget AI. History custom/AI, Replay/export, Undo custom/AI, demo mạng và sticker đã chuyển P1; QR bị loại khỏi cả hai phân kỳ.
+* **Vẫn P2 theo0.22–0.26:** Ranked/Elo/leaderboard, ghép ngẫu nhiên/Undo/Tái đấu Casual và phần Ranked của lịch sử/thống kê. History custom/AI, Replay/export, Undo custom/AI, demo mạng, sticker và widget AI đã P1; QR bị loại khỏi cả hai phân kỳ.
 
 ### 0.12 Lặp thế và chu kỳ lặp (PO chốt 08/10)
 * **Hai thế cờ giống nhau** khi vị trí của mọi quân giống hệt **và** cùng một bên tới lượt đi.
@@ -194,7 +194,7 @@ PO duyệt bốn lựa chọn phạm vi và một giao điểm chống treo tron
 6. **Xin đi lại online custom — phần US-P2-08 / XIAN-122:** thuộc P1; Casual vẫn P2, Ranked cấm. **Thành viên và Khách đều được gửi và trả lời**, cùng quota/cooldown; đây là ngoại lệ rõ ràng thay hạn chế quyền cũ của Khách. Đã có ít nhất một nước mình mới xin; lùi về trước nước gần nhất của người xin (1 hoặc2 nửa nước). Đối thủ đồng ý trong30 giây mới áp; mỗi bên tối đa3 lần thành công/ván. Từ chối/hết hạn không trừ lượt, chờ3 nước tiếp theo của chính người xin trước gửi lại. Người xin không đi tiếp khi pending; được Rút; khung nonmodal, X/Esc chỉ thu gọn. Đồng hồ tiếp tục, không hoàn thời gian; accept muộn/phiên bản cũ không đảo kết quả. Không cần triển khai ghép Casual để làm phần custom.
    * **PO chốt giao điểm Không giới hạn:** Undo thành công cấp **3 phút mới cho bên được trả lượt**, giữ số lần “Tôi còn đây” đã dùng trong chuỗi chưa có nước mới; không phục hồi quota Undo. Không dùng deadline cũ của đối thủ để xử người được trả lượt. Đây là bộ đếm chống treo, không hoàn thời gian đồng hồ5/10/15 phút; Undo không được cứu ván đã kết thúc/đã đến hạn theo kiểm server.
 7. **Nhánh và kiểm chứng:** sau Undo, lặp/chiếu liên tục/120 nửa nước, Replay và xuất ván chỉ dùng nhánh hiệu lực. Giao diện gọn, giữ bàn/đồng hồ/Đầu hàng dễ thấy; không tăng cuộn toàn trang vì biên bản. Giữ25 AC YC4 và18 mã AC-P2-08/11/12/13/14/15.1–3, tách ca P1/P2 khi ghi kết quả.
-8. **Trạng thái:** mới chốt đặc tả và đối chiếu code có sẵn; chưa nghiệm thu phần0.22, chưa bật cờ/migration/deploy hoặc cập nhật Jira trong lượt này. Widget AI XIAN-136 vẫn P2; demo mạng XIAN-137 đã chuyển P1 theo quyết định YC5 ở0.23. Không mở rộng luật đuổi quân/hint. Bằng chứng cũ không thay kiểm mới.
+8. **Trạng thái:** mới chốt đặc tả và đối chiếu code có sẵn; chưa nghiệm thu phần0.22, chưa bật cờ/migration/deploy hoặc cập nhật Jira trong lượt này. Widget AI XIAN-136 đã chuyển P1 chỉ thành viên theo0.26, không PV tương lai; demo mạng XIAN-137 đã P1 theo0.23. Không mở rộng luật đuổi quân/hint. Bằng chứng cũ không thay kiểm mới.
 
 ### 0.23 YC5: demo mạng P1 và ưu tiên kết thúc — PO chốt 31/10/2026
 
@@ -203,7 +203,7 @@ PO duyệt bốn lựa chọn tại [đặc tả YC5](P1-YC5-VAN-ONLINE-VA-SU-CO
 1. **Demo mạng — US-P2-23 / XIAN-137 lên P1**, giữ AC-P2-23.1–3 và Task/Jira nguồn. Chỉ môi trường bật cờ demo mới có công cụ; ngắt/nối socket thật, sử dụng grace/đồng hồ/snapshot/kết quả thật. Production ẩn UI và từ chối lệnh trực tiếp; không thêm Admin, không cho người ngoài điều khiển người chơi khác, không coi mô phỏng là kiểm LAN/thiết bị thật.
 2. **Hai người mất mạng đúng cùng timestamp:** nếu cả hai vẫn mất kết nối, cùng quá grace và chưa có nguyên nhân kết thúc ưu tiên trước, xử **hòa với lý do riêng**, không thắng/thua và không INTERRUPTED. Chỉ bằng nhau tuyệt đối theo timestamp server lưu, không làm tròn theo giây hoặc tick. Nếu timestamp khác nhau vẫn bên mất mạng trước thua DISCONNECT. Bỏ quy tắc UUID nhỏ hơn thua. Mã lý do đặc tả để triển khai: `DRAW_SIMULTANEOUS_DISCONNECT`, winner=null; cập nhật DB/contract/UI/history/replay/export và test cùng nhau. Đây là hòa thật, PGN xuất `1/2-1/2`, không `*` như gián đoạn.
 3. **Ưu tiên deadline:** nguyên nhân hợp lệ có deadline sớm nhất quyết định; worker muộn hoặc action tới muộn không đảo thứ tự. Bằng nhau tuyệt đối ưu tiên **TIMEOUT → DISCONNECT → INACTIVITY**. Hòa đồng thời ở mục2 thuộc nhóm nguyên nhân DISCONNECT khi so ưu tiên; TIMEOUT bằng hạn thắng nhóm này, INACTIVITY đến trước vẫn thắng nhóm này. Giữ terminal đã commit, không hồi sinh ván qua reconnect/accept/Undo. Ván có giờ không xét INACTIVITY; ván Không giới hạn không xét TIMEOUT.
-4. **Casual giữ P2:** US-P2-07/XIAN-121 và phần Casual của XIAN-122/123 không chuyển; Ranked/Elo/leaderboard và widget AI giữ P2. Không áp luật phòng ghép FINISHED10phút hoặc ngưỡng hòa20nước Ranked vào custom.
+4. **Casual giữ P2:** US-P2-07/XIAN-121 và phần Casual của XIAN-122/123 không chuyển; Ranked/Elo/leaderboard giữ P2. Widget AI đã P1 chỉ thành viên theo0.26. Không áp luật phòng ghép FINISHED10phút hoặc ngưỡng hòa20nước Ranked vào custom.
 5. **Kiểm chứng và trạng thái:** mở rộng AC-05.3.5 cho timestamp trùng/khác, AC-05.1.10–12 cho hòa mới, AC-05.3.4 và AC-P2-10.2–3 cho ưu tiên deadline; không tạo bộ AC trùng. Khách có quyền online phải được kiểm cùng thành viên; sửa test pin UUID/khóa Khách theo BA, không coi test cũ là luật. Mới chốt tài liệu; chưa sửa runtime/migration/cờ, chưa nghiệm thu, deploy, cập nhật Jira hoặc tái ước lượng.
 
 ### 0.24 YC6/YC7: sticker P1 và mời người xem xuống ghế — PO chốt 31/10/2026
@@ -215,6 +215,35 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
 3. **Mời xuống ghế:** giữ một pending/phòng, hạn30giây, không giữ ghế, chỉ Host mời và người xem được mời trả lời; accept kiểm lại quyền/vị trí kể cả AI. Sau **Từ chối hoặc hết hạn**, cooldown **10giây theo cặp Host–phòng**, chung mọi người nhận và tab. Tính từ lúc server ghi Từ chối hoặc deadline hết hạn gốc, không từ lúc worker dọn. Không cooldown vì lỗi gửi/đóng do ghế đổi hoặc phòng đóng; không trộn với cooldown mời vào phòng YC3. Host mới có khóa danh tính–phòng riêng; Host cũ trở lại không xóa hạn còn hiệu lực, đổi tab không reset.
 4. **Khung nhận lời mời ghế:** nonmodal, chỉ Chấp nhận/Từ chối và đếm ngược; **không X/Esc riêng**, không bắt Esc toàn trang để từ chối/thu gọn lời mời. Không trap focus/che bàn, hết hạn không tự chấp nhận. Phản hồi ràng buộc đúng offer ID/phiên bản để không trả lời offer mới bằng request cũ.
 5. **Trạng thái/nghiệm thu:** mới chốt đặc tả, chưa triển khai/kiểm chứng runtime. Giữ37 AC YC6, mở rộng AC-06.3.5 cho cooldown/khung/hợp đồng và3 AC sticker nguồn cho quyền Khách. Kiểm API/socket/RLS, stale/retry/nhiều tab, member/guest và DM/unfriend/unread. Không tự cập nhật Jira/giờ/lịch hoặc báo Done.
+
+### 0.25 YC7: quota chat và quyền riêng tư media — PO chốt 31/10/2026
+
+PO duyệt năm câu hỏi tại [đặc tả YC7](P1-YC7-CHAT-CAMERA-VA-MIC.md). Các quyết định này bổ sung/thay chi tiết tương ứng của5.3/4.1; không đưa Ranked hoặc Casual lên P1.
+
+1. **Quota chat gộp toàn người gửi:** tối đa5 tin thành công trong cửa sổ trượt10giây, chung Riêng/Chung/mọi DM, mọi phòng/tab/kết nối; text và sticker cùng quota. Retry cùng ý định không thành tin/quota mới; gửi lỗi không tính tin thành công. Khách dùng quota theo danh tính Khách, không vì quyết định này có quyền DM. Server phải xử lý atomically khi gửi đồng thời khác kênh/peer.
+2. **Người xem reconnect:** trong5phút giữ chỗ và còn quyền thì giữ mốc vào, đọc bù tin Chung lúc offline; không thấy tin trước mốc vào ban đầu. Chủ động rời/quá grace rồi vào lại là lượt mới, đặt mốc mới; kick/đóng/phiên mất quyền không được lách bằng reconnect.
+3. **Không chia sẻ:** dừng capture và phát, camera/mic về Tắt, không giữ preview đang capture. Đổi sang Chỉ đối thủ/Cả đối thủ và người xem không tự bật lại, phải chủ động bật thiết bị.
+4. **Thay cặp người chơi:** tắt camera/mic của người còn lại, chủ động bật lại cho đối thủ mới; người mới cũng mặc định Tắt. Cùng cặp đổi phe/chơi tiếp/Tái đấu không ngắt media chỉ vì ván mới. Người rời/xuống xem mất quyền cũ; không giữ track/token vượt vai trò.
+5. **Tách quyền tắt nhận sang custom P1:** mỗi người chơi/người xem có hành động ẩn/tắt nhận hình và tiếng tại máy mình; custom mặc định nhận media nếu người phát cho phép. Tắt nhận không tắt thiết bị hoặc đổi mức chia sẻ của người phát, không ảnh hưởng người nhận khác. Hiện lại vẫn kiểm quyền hiện hành; không cho subscribe vượt policy. Ranked vẫn P2, giữ mặc định ẨN riêng ở5.4. Không tuyên bố toàn US-P2-05/XIAN-119 đã chuyển P1.
+6. **Nghiệm thu:** giữ27 AC baseline và9 AC nguồn sticker/DM/chuyển tab đã P1; thêm3 AC-YC7-RX.1–3 cho phần tắt nhận tách mới tại YC7. Kiểm quota liên miền đồng thời/retry, mốc xem/rejoin, capture thực khi NONE/thay cặp, audio/video thực khi tắt nhận. Mới chốt tài liệu, chưa triển khai hoặc PASS; không tự đổi Jira/lịch/giờ.
+
+**PO làm rõ thêm Q6–Q8 (YC7):**
+
+7. **Mốc Chung xuyên suốt lần ở phòng:** PLAYER↔SPECTATOR giữ nguyên mốc vào; lên ghế không mở tin trước lúc vào, xuống xem không mất tin Chung đang có quyền đọc. Reconnect trong grace giữ mốc; rời thật/quá grace vào lại đặt mốc mới. Riêng vẫn theo mốc cặp, không dùng floor Chung để cấp quyền Riêng.
+8. **Mất kết nối phòng:** khi tab nhận biết mất Socket.IO phòng, dừng capture/phát và ngắt nhận media tại tab đó dù LiveKit còn nối. Khi nối lại phải xác thực quyền mới, chỉ nhận lại nguồn chưa bị người dùng Tắt nhận; camera/mic vẫn Tắt, cần chủ động bật. Không đổi ân hạn ghế/chỗ xem, không dừng đồng hồ hoặc tạo kết quả ván vì lỗi media.
+9. **Panel và chạy nền:** đổi panel Ván/Chat/Camera trong cùng trang không tắt media, luôn có chỉ báo đang phát và đường tắt thiết bị. Khi browser báo trang bị ẩn (đổi tab trình duyệt, thu nhỏ, khóa màn hình nếu có tín hiệu), dừng capture/phát và đặt hai nút Tắt; quay lại không tự phát. Việc chỉ ẩn panel không phải trang bị ẩn. Không hứa ứng dụng xử lý tức thì sau khi OS đã treo/kill tiến trình; phải kiểm browser/OS thật. Quyết định này không tự yêu cầu dừng nhận audio khi xuống nền và không tự xử người chơi mất kết nối/đầu hàng.
+10. **Kiểm chứng bổ sung:** mở rộng AC-07.1.5/14 cho đổi vai, AC-07.2.1/4/6/13 và AC-YC7-RX.2–3 cho mất socket/ẩn trang/tác vụ cấp quyền đang chờ; không thêm bộ AC trùng. Ba lựa chọn đã chốt, chưa triển khai hoặc nghiệm thu runtime.
+
+### 0.26 YC8: widget AI P1 và hành vi khi mất kết nối — PO chốt 31/10/2026
+
+PO duyệt bốn lựa chọn tại [đặc tả YC8](P1-YC8-DAU-VOI-MAY.md). Mục này thay mọi chỗ còn ghi widget XIAN-136 thuộc P2 hoặc hiển thị PV dự tính. Không đổi No Hint, quyền Undo/lịch sử Khách hoặc ngân sách engine.
+
+1. **US-P2-22 / XIAN-136 lên P1 ở mọi môi trường, chỉ thành viên là chủ ván.** Khay thông số thu gọn mặc định, số thật nodes/depth/thời gian từ worker đang xử lý đúng game/generation. Khách/người khác không được nhận telemetry widget qua API/socket, không chỉ ẩn UI; không thêm Admin hoặc giới hạn demo-only.
+2. **Chỉ hiển thị nước máy đã đi:** trong lúc tìm kiếm có thể cập nhật số đo thật, nhưng không phát/hiện best move dự tính hoặc chuỗi PV tương lai. Chỉ sau khi nước máy đã áp thành công mới hiển thị nước đó; gọi là “Nước máy vừa đi”, không gọi full PV. Không tính engine cho lượt người/hint; Undo/cancel/retry/thay ván loại dữ liệu tác vụ cũ. Đây là thay đổi yêu cầu PV, không trì hoãn một phần PV sang P2.
+3. **Offline lúc máy đang nghĩ:** cho hoàn thành tối đa nước máy đang chờ, giữ budget/watchdog bình thường. Nước hợp lệ có thể kết thúc ván theo luật, lưu kết quả thật; nếu chưa kết thúc thì chờ người, không đi thay người. Máy đi/xuất telemetry/worker retry không đặt lại hạn30phút. Reconnect nhận snapshot gồm nước máy đã commit, không lặp nước người hoặc bốc lại phe.
+4. **Grace tính từ mất tab điều khiển:** tab chỉ đọc không kéo dài/reset30phút. Muốn tiếp tục phải chủ động tiếp quản đúng quyền trong hạn; UI chỉ đọc phải có cảnh báo/hạn giữ ván và đường tiếp quản rõ. Không tự chiếm control khi reload/reconnect. Quá hạn thành viên lưu Bỏ dở/nhánh hiệu lực, Khách không lưu theo0.22; không tự xử DISCONNECT/TIMEOUT như online.
+5. **Nghiệm thu/phân kỳ:** giữ19 AC YC8 và18 AC nguồn của US-P2-11/12/13/14/15/22; sửa ba AC-P2-22.1–3 theo PV mới, không nhân bản ID. Kiểm số đo thật/ownership/member–guest/generation và UI gọn; kiểm worker offline, deadline/controller, expiry lưu Bỏ dở, không ảnh hưởng online. Mới chốt tài liệu, chưa sửa runtime/migration hoặc PASS; không tự sửa trạng thái Jira, giờ hoặc lịch.
+
 
 
 
@@ -759,7 +788,7 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
   * Giúp người chơi theo dõi được tiến trình rèn luyện cờ của bản thân theo thời gian.
   * Tận dụng tối đa giao diện Replay (`SCR-REPLAY`) đã được thiết kế sẵn.
 * **Quyền xem lại, áp dụng mọi chế độ (đã duyệt 03/10):** Chỉ **2 người chơi của ván** xem lại từ Lịch sử; người xem không xem lại được; **không có link chia sẻ**; ván Ranked cũng riêng tư như vậy. Replay hiển thị chuỗi nước đi **hiệu lực**, không hiện các nước đã đi lại.
-* **Đường dẫn Replay (PO chốt 05/10/2026, phương án A):** chỉ dùng `/history/:id`; mọi nút Xem lại dẫn tới đường này. Không triển khai đường dẫn thay thế `/rooms/:id/replay/:matchId`. Replay vẫn thuộc P2 và giữ nguyên quyền xem lại ở trên.
+* **Đường dẫn Replay (PO chốt 05/10/2026, phương án A; phân kỳ cập nhật0.22):** chỉ dùng `/history/:id`; mọi nút Xem lại dẫn tới đường này. Không triển khai đường dẫn thay thế `/rooms/:id/replay/:matchId`. Replay custom/AI đã P1 theo0.22, chỉ thành viên là người chơi/chủ ván AI; Khách/người xem/người ngoài không được đọc hoặc xuất.
 
 ---
 
@@ -785,7 +814,7 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
      * *Phía máy cờ:* Vẫn tuân thủ nghiêm ngặt ngân sách thời gian tối đa theo từng cấp độ (Dễ $\le 300$ms, Trung bình $\le 1000$ms, Khó $\le 3000$ms).
   4. **Hòa, đầu hàng, bỏ dở:**
      * Ván với máy **không có nút Xin hòa**; hòa chỉ xảy ra theo `Quyết định 3.5` (lặp thế, 120 nửa nước không ăn quân). Người chơi có nút **Đầu hàng**. **Chủ động Rời ván/Đăng xuất khi ván AI còn chạy (duyệt 04/10)** cần xác nhận đầu hàng; đồng ý thì kết thúc `RESIGN`, huỷ tác vụ máy và giải phóng vị trí chơi; Huỷ giữ nguyên. Đóng tab/mất mạng vẫn giữ ván theo mục tiếp theo.
-     * Mất kết nối hoặc đóng tab giữa ván: ván được **giữ 30 phút** để vào lại cùng đường dẫn `/ai/:id` (Sảnh có banner "ván đang chơi dở"). Quá 30 phút: P1 bỏ trạng thái ván trong bộ nhớ; P2 lưu vào Lịch sử với kết quả **"Bỏ dở"** (không tính thắng/thua). Ván của Khách không lưu (`Quyết định 1.3`). **AI P1 chỉ trong bộ nhớ:** máy chủ khởi động lại làm mất trạng thái; thông báo *"Ván không còn trạng thái để tiếp tục"*, cho về Sảnh hoặc chủ động tạo ván mới, không tự lưu Lịch sử/khôi phục giả (PO duyệt 05/10).
+     * Mất kết nối hoặc đóng tab giữa ván: ván được **giữ 30 phút** để vào lại cùng đường dẫn `/ai/:id` (Sảnh có banner "ván đang chơi dở"). **Phân kỳ theo0.22:** quá hạn hủy tác vụ/giải phóng vị trí, thành viên lưu Lịch sử **Bỏ dở** và nhánh hiệu lực ngay trong P1, không W/D/L/Elo; Khách không lưu. ACTIVE vẫn trong RAM, restart mất trạng thái; báo *"Ván không còn trạng thái để tiếp tục"*, cho về Sảnh/chủ động tạo mới, không giả khôi phục hoặc giả lưu nhánh đã mất.
 
 ---
 
@@ -902,14 +931,12 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
 ---
 
 ### Quyết định 9.2: Bảng thông số tính toán AI thời gian thực (AI Debug Metrics Widget)
-* **Lựa chọn đã chốt:** **[P2 - Demo Tool] Widget hiển thị chỉ số tính toán của thuật toán AI**
-* **Mô tả nghiệp vụ:**
-  * Khi người chơi thi đấu với AI, ở góc màn hình có một widget thu nhỏ hiển thị các chỉ số nhảy số trực tiếp:
-    * *Số thế cờ đã duyệt (Nodes evaluated):* ví dụ `48,210 nodes`.
-    * *Độ sâu tìm kiếm thực tế (Search Depth):* `Depth 4/4` (hoặc `Depth 6/6`).
-    * *Thời gian tính toán (Compute Latency):* `320 ms`.
-    * *Nước cờ dự tính tối ưu (Principal Variation / PV):* ví dụ `C2.5`.
-  * **Ý nghĩa thực tế:** Bằng chứng thuyết phục 100% trước Hội đồng chấm thi rằng nhóm **tự viết thuật toán Minimax / Alpha-Beta thuần túy**, xóa tan hoàn toàn nghi vấn "gọi API dịch vụ cờ bên ngoài".
+* **Lựa chọn đã chốt theo0.26:** **[P1 — chỉ thành viên, mọi môi trường] Widget thông số engine thật, thu gọn mặc định.**
+* **Mô tả nghiệp vụ hiện hành:**
+  * Nodes, completed depth so với target và thời gian tính từ worker đúng ván/tác vụ; không fake số, không gắn depth mục tiêu thành depth đã đạt.
+  * Chỉ chủ ván thành viên nhận widget; Khách/người khác bị chặn cả API/socket. Không thêm vai trò Admin hoặc giới hạn demo-only.
+  * **Không hiển thị/phát PV dự tính:** sau khi máy đi thành công mới hiện **Nước máy vừa đi**. Không chuỗi phản ứng dự kiến của người, không hint hoặc chạy engine cho lượt người.
+  * Undo/cancel/retry/thay ván loại dữ liệu cũ, không làm giảm yêu cầu budget/chất lượng AI. Chỉ số UI không thay code/trace/bộ kiểm độc lập khi chứng minh thuật toán.
 
 ---
 
@@ -937,7 +964,7 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
   * **Nơi chạy demo (PO quyết định 04/10/2026; hạn demo nay là 05/11/2026; bố trí media xem Phần 0 mục 0.16):** **ưu tiên chạy trên máy cục bộ (local)**; chỉ dùng Render làm phương án dự phòng nếu cần có địa chỉ trên mạng. Hệ quả: không bắt buộc dịch vụ trả phí hay thẻ thanh toán cho phần máy chủ ứng dụng; vẫn dùng Supabase và LiveKit Cloud đã chọn (cần mạng). Kịch bản demo D1–D10 phải chạy được ở môi trường cục bộ.
   * **Chat Kênh Riêng khi đổi người ngồi ghế (PO quyết định 04/10/2026):** khi cặp người ngồi ghế thay đổi (ví dụ A và B đang chat riêng, B xuống xem, C lên ngồi), **người mới ngồi không đọc được tin cũ**, và **không ai** trong cặp mới đọc được tin của cặp cũ. Kênh Riêng chỉ hiển thị tin tạo từ lúc **cặp ngồi ghế hiện tại hình thành** (mốc muộn hơn trong hai mốc bắt đầu ngồi ghế). Người rời ghế mất quyền đọc Kênh Riêng.
   * **Ván bị gián đoạn khi máy chủ khởi động lại (PO chốt lại 09/10, 0.17):** hiện hộp kết quả trung tính **"Ván bị gián đoạn"**: không có bên thắng, thua hay hoà; không đổi Elo. Phòng tự tạo về `WAITING`, reset Sẵn sàng, có *Ở lại phòng* và *Rời phòng*, không hạn đóng 10 phút. Luật P2 của ghép ngẫu nhiên/Ranked giữ theo 2.0/7.2; trạng thái AI P1 theo 6.3.
-  * **Yêu cầu phi chức năng NFR-08, NFR-09, NFR-10 (PO duyệt 04/10/2026):** (08) nhật ký vận hành có cấu trúc, điểm kiểm tra sức khoẻ, không ghi mật khẩu/OTP/token/nội dung chat; (09) lưu giữ dữ liệu: ván online và nước đi lưu bền, ván với máy chỉ ở bộ nhớ, chat phòng xoá khi phòng đóng, biên lai lệnh xoá sau 24 giờ, nhật ký giữ tối đa 14 ngày; (10) tin chat, tên hiển thị, tên phòng hiển thị như văn bản thuần. Chi tiết và cách kiểm ở mục NFR của [BACKLOG-P1.md](BACKLOG-P1.md). Từ nay là điều kiện bắt buộc của nghiệm thu P1.
+  * **NFR-08/09/10 (cập nhật phân kỳ0.22):** log có cấu trúc/health, không mật khẩu/OTP/token/chat; online và nước đi lưu bền, AI ACTIVE trong RAM nhưng terminal/nhánh hiệu lực và Bỏ dở của thành viên lưu bền theo0.22, Khách không lưu; chat phòng xóa khi đóng, biên lai24giờ, log tối đa14ngày; nội dung người dùng là văn bản thuần. Đây là yêu cầu nghiệm thu, không phải bằng chứng đã đạt.
   * **Cổng kiểm chứng (PO duyệt 04/10/2026; chi tiết nay ở mục Cổng kiểm chứng của BACKLOG-P1.md; (a) sửa 07/10 theo SMTP ngoài):** (a) demo đăng ký phải dùng **OTP thật** tới email thật (kể cả email ngoài nhóm), không dùng giả lập làm bằng chứng; (b) GATE-OTP: gọi thẳng chức năng đổi email của hệ thống đăng nhập phải không đổi được (nếu cấu hình không chặn được thì ghi "bị chặn" cho phần đó), và email ngoài nhóm hoặc vượt hạn mức thì báo lỗi thật, không để tài khoản kẹt; (c) GATE-MEDIA: ghi thời gian thu hồi quyền thực tế và mức dùng hạn mức miễn phí của LiveKit, **không đặt ngưỡng đạt**; (d) phần camera/micro của bài tải chạy **quy mô nhỏ (~3 phòng)**, **chỉ ghi số đo**, không nằm trong điều kiện đạt P1.
   * **Google OAuth và Khách ở P1:** đăng ký/đăng nhập Google chạy thật, có onboarding và không tự liên kết email trùng; Khách hoạt động từ 07/10. **Liên kết Quên mật khẩu hoạt động ở P1 từ 30/10** theo 0.18/1.7, không còn "Sắp ra mắt".
   * ~~ĐÃ THAY bởi Phần 0 mục 0.1 (07/10)~~ **Quyết định về tiến độ (PO, 04/10/2026):** Product Owner quyết định giữ **đủ P1 trong 14 ngày với nhóm 7 người** (04/10/2026), biết đây là rủi ro rất cao và nhận nhóm sẽ làm được. Ước lượng của agent (128 người-ngày; lịch cơ sở 38,4 ngày) chỉ là tham khảo, không phải cam kết hay căn cứ để cắt phạm vi.
@@ -985,13 +1012,13 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
 | 7 | Chat 2 người + camera + mic; kênh chat người xem tách riêng | 4.1 (3 mức chia sẻ, người xem chỉ nhận), 5.3 (2 kênh, giới hạn chat, bộ lọc từ cấm), 0.13 (chat và camera/mic ở cả phòng chờ), 0.14 (lỗi media không ảnh hưởng ván), 0.16 (hạ tầng LiveKit); `PANEL-CHAT`, `PANEL-MEDIA` |
 | 8 | Đánh với máy theo cấp độ | 6.1, 6.3 (3 cấp, chọn phe), Ván mới (0.9); `SCR-AI-GAME`, `MODAL-AI-SETUP` |
 
-* **Làm sau (P2) theo0.22–0.24:** Ranked/Elo/leaderboard, ghép ngẫu nhiên/Undo/Tái đấu Casual, phần Ranked của lịch sử/thống kê và widget AI. History custom/AI, Replay/export, Undo custom/AI, demo mạng, sticker cùng các bổ sung0.18–0.21 đã thuộc P1; QR bị bỏ.
+* **Làm sau (P2) theo0.22–0.26:** Ranked/Elo/leaderboard, ghép ngẫu nhiên/Undo/Tái đấu Casual và phần Ranked của lịch sử/thống kê. History custom/AI, Replay/export, Undo custom/AI, demo mạng, sticker, widget AI cùng các bổ sung0.18–0.21 đã P1; QR bị bỏ.
 * **Quy tắc hiển thị tính năng P2 trong màn hình P1:** xem `DANH-MUC` §7 (lối vào điều hướng chính `DISABLED` + "Sắp ra mắt"; chức năng nằm sâu thì ẩn hẳn).
 * **Hệ quả cho P1:**
   * Sảnh có bốn lựa chọn theo 2.0: Tự tạo phòng và Đánh với máy hoạt động ở P1; Đánh Thường ghép ngẫu nhiên và Đánh Hạng hiển thị `DISABLED` kèm tooltip *"Sắp ra mắt"*. Có Vào phòng bằng mã và Luật chơi mở rộng/thu gọn (10.4); có danh sách phòng `PUBLIC` với nút Vào chơi/Vào xem (0.5).
   * Đăng nhập bằng Username + Mật khẩu, bằng Google (`Quyết định 1.2`) hoặc **Khách** (0.3); người chưa đăng nhập vào link mời được chọn một trong ba cách rồi tự vào phòng.
-  * Ván Đánh Thường **không có Elo** và ván có tài khoản **chưa lưu Lịch sử** ở P1; màn hình Lịch sử, Replay, Bảng xếp hạng chưa làm (màn hình Bạn bè **có** ở P1).
-  * `MODAL-MATCH-RESULT` P1: online custom có Ở lại/Rời và Tái đấu chọn phe cho hai thành viên đủ quyền; AI có Ván mới/Về Sảnh. Xem lại vẫn P2.
+  * Ván custom/AI thành viên có History/Replay/export P1 theo0.22, không Elo; Khách không History/Replay/export. Ranked/leaderboard/thống kê Ranked còn P2, không giả số liệu hoặc coi mã Story P2 là lý do ẩn chức năng đã chuyển.
+  * `MODAL-MATCH-RESULT` P1: custom có Ở lại/Rời và Tái đấu chọn phe cho cặp đủ quyền; AI có Ván mới/Về Sảnh. Thành viên được Xem lại khi bản lưu sẵn sàng theo0.22, không cấp quyền này cho Khách.
 * **Bạn bè P1:** tìm/kết bạn, danh sách/presence và chuông lời mời; thêm Nhắn tin/DM bền/unread và Thách đấu tạo phòng rồi mời theo 0.20. Mời vào phòng đang ngồi vẫn qua modal Chia sẻ, không thay bằng tự tạo phòng. Badge DM tách chuông kết bạn.
 * **Ưu tiên theo thành phần:** `DANH-MUC` §7 có **32 P1 / 5 P2**, tổng 37 theo 0.21; không phải số lượng đã triển khai.
 * **Rủi ro đã ghi nhận:** 8 mục tiêu này vẫn gồm hai hạng mục khó (camera/mic qua LiveKit và máy cờ tự viết). Với 7 người đến hạn 04/11/2026, thực hiện theo lịch phụ thuộc ở kế hoạch Jira. Có thể triển khai cấp Dễ trước như bước trung gian, nhưng P1 vẫn phải nghiệm thu đủ ba cấp; không tự giảm phạm vi để giữ hạn.
@@ -1015,12 +1042,12 @@ PO duyệt ba lựa chọn tại [đặc tả YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md)
 | 11 | Tương tác Chat | **[9B] Đủ12 sticker cảm xúc**, thành viên/Khách theo vai trò; DM vẫn chỉ accepted friends | **P1 theo0.24** |
 | 12 | Chat trực tiếp | Chỉ accepted friends, lịch sử bền, read/unread đồng bộ và thu hồi quyền khi unfriend | **P1 theo 0.20** |
 | 13 | Gợi ý nước khi đấu AI| **[10A] Không làm gợi ý nước đi (No Hint)**, tập trung chất lượng AI 3 cấp; nghiệm thu cấp Khó giải đúng 100% bộ chiếu hết ngắn bắt buộc (6.1, PO làm rõ 05/10) | **P1 — MVP** |
-| 14 | Lưu lịch sử ván AI | **[11B] Lưu đầy đủ ván AI vào Hồ sơ**, hỗ trợ xem lại (Replay) từng nước cờ | **P2 — làm sau MVP** |
+| 14 | Lưu lịch sử ván AI | Lưu terminal/nhánh hiệu lực/Bỏ dở cho thành viên, Replay riêng chủ ván; Khách không lưu, ACTIVE RAM/restart không khôi phục giả | **P1 theo0.22** |
 | 15 | **Hệ thống Xếp hạng Elo** | **[12C] Điểm Elo chuẩn FIDE, Bảng xếp hạng Top 50 (đồng bộ với `Quyết định 7.1`), Ghép trận tự động Matchmaking** | **P2 — làm sau MVP** |
 | 16 | **Quy tắc ván Ranked** | **[EC-01] Ghép ngẫu nhiên 100%; CẤM XEM (No Spectators); CẤM UNDO; Khách không được đấu; 10 phút Rapid** | **P2 — làm sau MVP** |
 | 17 | **Rage Quit ván Ranked** | **[EC-03] Ân hạn 60s, quá hạn xử thua trừ Elo bình thường; sập server không đổi Elo** | **P2 — làm sau MVP** |
 | 18 | Xuất FEN / PGN | **[13B] Nút Copy FEN và Download PGN** tại màn hình Replay | **Mở rộng (Stretch P2)** |
-| 19 | **AI Debug Metrics** | **[P2 - Tool] Widget hiển thị số node, depth, thời gian tính của thuật toán AI** | **Mở rộng (Stretch P2)** |
+| 19 | **AI Debug Metrics** | Widget nodes/depth/thời gian thật, chỉ nước máy đã áp, không PV tương lai; chủ ván thành viên, mọi môi trường | **P1 theo0.26** |
 | 20 | **Demo Admin Controls** | **[P2 - Tool] Phím tắt giả lập rớt mạng 60s và khôi phục phục vụ bảo vệ đồ án** (chỉ bật bằng cờ chế độ demo, không có vai trò Admin) | **Mở rộng (Stretch P2)** |
 | 21 | Khôi phục Username, mật khẩu và phiên | Tìm Username qua email/OTP theo 0.21; Quên mật khẩu theo 0.18; quyền OTP tách biệt, không tự cấp phiên; giữ luật phiên/vị trí 1.8 | **P1** |
 | 22 | Bạn bè và thông báo | Kết bạn/presence/chuông, mời Online, DM/unread và Thách đấu tạo phòng rồi mời | **P1 theo 0.19/0.20** |

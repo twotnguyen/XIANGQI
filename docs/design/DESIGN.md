@@ -333,11 +333,13 @@ Câu bắt buộc (chốt):
 
 ### 6.9 Chat và camera/mic
 
-**P1:** cùng cặp đổi bên/chơi tiếp/Tái đấu custom giữ chat riêng; chat/media hoạt động từ phòng chờ vào ván không ngắt (BA 0.7/0.13/0.20). Thay người đặt mốc cặp mới; chat phòng xóa khi đóng. **DM P1** chỉ accepted friends, lịch sử bền không xóa theo phòng; unfriend thu hồi quyền/ẩn lịch sử; read/unread đồng bộ thiết bị theo viewport/tab hoạt động, badge tách chuông kết bạn. **Sticker vẫn P2**; Tái đấu Casual vẫn P2.
+**P1:** cùng cặp đổi bên/chơi tiếp/Tái đấu custom giữ chat riêng; chat/media hoạt động từ phòng chờ vào ván không ngắt (BA 0.7/0.13/0.20). Thay người đặt mốc cặp mới; chat phòng xóa khi đóng. **DM P1** chỉ accepted friends, lịch sử bền không xóa theo phòng; unfriend thu hồi quyền/ẩn lịch sử; read/unread đồng bộ thiết bị theo viewport/tab hoạt động, badge tách chuông kết bạn. **Đủ12 sticker P1 theo BA0.24**, cả thành viên/Khách đúng vai trò; người xem chỉ Chung, DM chỉ thành viên accepted friends, cùng giới hạn chat. Tái đấu Casual vẫn P2. Đặc tả và năm quyết định BA0.25: [YC7](../product/P1-YC7-CHAT-CAMERA-VA-MIC.md).
 
 - **Ghép ngẫu nhiên Đánh Thường và Đánh Hạng (P2) chỉ có Kênh riêng**, không Kênh Chung/người xem (BA 2.0, 5.4, 7.2). **Bố cục chat theo BA 5.3 (PO chốt 05/10/2026):** ở phòng có hai kênh, trên máy tính **mặc định chỉ mở Kênh Riêng**; người chơi tự mở thêm Kênh Chung để hiển thị đồng thời **2 khung** có nhãn **"Kênh riêng người chơi"** và **"Kênh chung"**, hoặc ẩn bớt một trong hai rồi mở lại; trên điện thoại dùng hai tab trong một khung, mặc định chọn Kênh Riêng. Người xem chỉ thấy Kênh Chung. Ẩn khung không thay đổi quyền đọc/gửi. Kênh chung luôn có dòng "ℹ️ Người chơi cũng đọc và gửi được ở kênh này"; tin của người chơi có huy hiệu "Người chơi · Đỏ/Đen".
 - Trạng thái tin: đang gửi · đã gửi · gửi lỗi + "Thử lại".
 - Camera/mic: bật/tắt **độc lập từng thiết bị**; **một mức chia sẻ chung** cho cả camera và mic đang bật. Phòng tự tạo có **Không chia sẻ · Chỉ đối thủ · Đối thủ và người xem**; ghép ngẫu nhiên/Đánh Hạng chỉ có hai mức đầu vì không người xem (BA 2.0, 4.1). Camera/mic mặc định Tắt; phòng tự tạo chọn sẵn **Chỉ đối thủ**, muốn người xem thấy/nghe phải chủ động đổi mức chia sẻ (BA 4.1, PO duyệt 05/10); trạng thái tách rõ: xin quyền · đang kết nối · đang áp dụng · đã áp dụng · bị từ chối · lỗi. Ghi chú "Chỉ trực tiếp — không ghi âm, không ghi hình".
+- **BA0.25:** quota chat chung toàn người gửi (Riêng/Chung/mọi DM), text/sticker cùng5 tin/10giây; viewer reconnect trong grace giữ mốc vào. Không chia sẻ hoặc thay cặp người chơi dừng capture/phát, nút cam/mic về Tắt; cùng cặp đổi phe/Tái đấu không ngắt. Người chơi/người xem có Tắt nhận hình/tiếng theo từng nguồn tại máy mình, custom mặc định nhận nếu được phép; không tắt thiết bị người phát, không tự bật lại nhận khi provider reconnect. Chi tiết/AC tại [YC7 mục15](../product/P1-YC7-CHAT-CAMERA-VA-MIC.md#15-năm-quyết-định-po-đã-chốt--ba025).
+- **YC7 Q6–Q8/BA0.25:** đổi vai giữ mốc Chung trong lần ở phòng. Mất Socket.IO phòng dừng capture/phát/nhận, reconnect xác thực lại và không tự phát. Đổi panel Ván/Chat/Camera vẫn phát, luôn có chỉ báo và đường tắt; browser báo trang hidden thì dừng capture/phát, quay lại phải chủ động bật. Không tự nhả ghế/đầu hàng vì xuống nền; không hứa xử lý tức thì khi OS đã đình chỉ trang.
 
 ---
 
@@ -499,9 +501,11 @@ Bảng dưới mô tả tổ chức thiết kế cho toàn sản phẩm. Bàn gi
 | `10 · Tài khoản & Auth` | `SCR-LOGIN`, `MODAL-GUEST-NAME`, `SCR-REGISTER` (3 bước), `SCR-FORGOT-PASSWORD`, `SCR-RESET-PASSWORD`, `SCR-ONBOARDING`, `SCR-PROFILE-SETTINGS`, `MODAL-OTP-USERNAME` |
 | `11 · Sảnh & Ghép trận` | `SCR-LOBBY` (4 lựa chọn theo BA 2.0; danh sách phòng PUBLIC, Vào chơi/Vào xem), `MODAL-CREATE-ROOM`, `MODAL-MATCHMAKING` (radar Elo), `MODAL-AI-SETUP`, `SCR-WAITING-ROOM`, `MODAL-INVITE`, `MODAL-SIDE-SWAP-PROMPT` |
 | `12 · Phòng thi đấu` | `SCR-GAME-ROOM` (Casual vs Ranked), đồng hồ, đề nghị hòa/undo, cờ treo, mất kết nối, `MODAL-MATCH-RESULT`, `SCR-ACCESS-DENIED` |
-| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 người chơi), `PANEL-CHAT` (máy tính mặc định Kênh Riêng, mở thêm Kênh Chung hoặc ẩn bớt một; điện thoại dùng tab Riêng/Chung; 12 sticker P2, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
+| `13 · Chat & LiveKit` | `PANEL-MEDIA` (Cam/Mic 2 người chơi), `PANEL-CHAT` (máy tính mặc định Kênh Riêng, mở thêm Kênh Chung hoặc ẩn bớt một; điện thoại dùng tab Riêng/Chung; 12 sticker P1 theo BA0.24, lọc ***), `PANEL-SPECTATORS` (Kick người xem) |
 | `14 · Xếp hạng & Xã hội` | `SCR-LEADERBOARD` (Top 50 + Sticky User Row), `SCR-FRIENDS`, `MODAL-DIRECT-CHAT` (chat 1-1 bạn bè) |
-| `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp độ P1; đi lại tối đa 3 lần là P2), `SCR-HISTORY`, `SCR-REPLAY` (bảng nước đi, xuất FEN/PGN) |
+| `15 · Đấu máy & Lịch sử` | `SCR-AI-GAME` (3 cấp; Undo tối đa3 lần chỉ thành viên P1 theo BA0.22), `SCR-HISTORY`, `SCR-REPLAY` (custom/AI P1, biên bản/FEN/PGN riêng chủ ván); [đặc tả YC8](../product/P1-YC8-DAU-VOI-MAY.md) |
+
+**YC8/BA0.26:** widget AI P1 mọi môi trường/chỉ chủ ván thành viên, thu gọn mặc định; số thật từ worker, chỉ nước máy đã áp, không PV tương lai/hint. Tab chỉ đọc có cảnh báo hạn giữ ván/đường chủ động tiếp quản; không tự giành control khi reconnect. Không tăng cuộn trang hoặc che bàn/Đầu hàng vì widget.
 
 ### 11.2 Quy ước
 

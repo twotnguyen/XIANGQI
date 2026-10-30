@@ -273,7 +273,7 @@ Xin đi lại online không giống nút Undo AI: đối thủ được từ ch�
 |---|---|---|
 | **Lịch sử cá nhân** — US-P2-11 / **XIAN-125**, AC-P2-11.1–3 | Điểm vào Replay, lọc ván, phe/đối thủ/kết quả; chỉ chủ ván | **Custom/AI P1**, Ranked/Elo/thống kê Ranked vẫn P2; không dựng số liệu giả |
 | **Lưu ván AI/Bỏ dở** — US-P2-12 / **XIAN-126**, AC-P2-12.1–3 | Cung cấp dữ liệu bền cho History/Replay AI | **P1**: terminal chống trùng, Bỏ dở sau30phút, không lưu Khách, không hứa khôi phục ACTIVE qua restart |
-| Widget AI — US-P2-22 / **XIAN-136**, AC-P2-22.1–3 | Hiển thị nodes/depth/latency/PV cạnh bàn; chứng minh engine thật | **Giữ P2**: chủ yếu YC8/demo, tăng chật màn; PV không được biến thành hint cho người chơi |
+| Widget AI — US-P2-22 / **XIAN-136**, AC-P2-22.1–3 | Nodes/depth/thời gian cạnh bàn, không thay bằng chứng engine | **Đã P1 theo BA0.26**, mọi môi trường/chỉ thành viên, thu gọn mặc định; chỉ nước máy đã áp, không PV tương lai hoặc hint. Chi tiết YC8 |
 | Demo mạng — US-P2-23 / **XIAN-137**, AC-P2-23.1–3 | Giúp trình diễn bàn/đồng hồ đồng bộ sau reconnect | **Đã chuyển P1 theo BA 0.23 khi chốt YC5**: chỉ môi trường demo, production chặn UI/lệnh trực tiếp; không thay kiểm LAN/thiết bị thật |
 
 ### 12.3 Đã thuộc P1, không xin chuyển lần nữa

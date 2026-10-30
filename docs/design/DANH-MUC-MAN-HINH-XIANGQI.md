@@ -187,10 +187,10 @@ Mọi màn hình và khung dữ liệu bắt buộc phải được thiết kế
 * **Bố cục:** Tinh gọn, chỉ gồm Bàn cờ SVG lớn và Thẻ Người chơi vs Thẻ Máy cờ.
 * **Quy chuẩn vận hành:**
   * **Đồng hồ thi đấu:** Hoàn toàn **không giới hạn thời gian (No Time Limit)** đối với người chơi; máy cờ tính toán phản hồi nhanh theo cấp độ (Khó $\le 3000$ms). Không áp dụng cơ chế chống treo ván R17.
-  * **Nút "Đi lại" (Undo):** Bấm lùi ngay **1 cặp nước đi (2 plies: 1 nước máy + 1 nước người)** ngay lập tức không cần máy đồng ý. Hiển thị nhãn *"Lượt đi lại: X/3"*, hết 3 lần nút bị `DISABLED`. Nếu máy đang nghĩ: huỷ tác vụ và chỉ lùi nước vừa đi của người chơi, vẫn tính một lượt (AC-HIS-03-02, P2).
-  * Không có nút gợi ý nước đi (No Hint). Không có nút Xin hòa (chỉ có Đầu hàng). Cầm Đen mà người chơi chưa đi nước nào thì nút "Đi lại" `DISABLED` kèm tooltip. P1: ván đang chơi bị mất kết nối được giữ trong bộ nhớ tối đa 30 phút để vào lại `/ai/:id`; quá hạn bỏ trạng thái, không lưu lịch sử. Máy không phản hồi quá 10 giây thì giữ nguyên ván/thế, hiện Thử lại để tính nước tiếp, không gửi lại nước người (PO chốt 09/10). Nếu lỗi thực sự làm ván Bỏ dở, Thử lại tạo ván mới cùng cấp và phe thực tế; máy chủ khởi động lại mất trạng thái thì không giả khôi phục. Lưu ván vào lịch sử là P2; ván AI không tính Elo, ván Khách không lưu.
-  * Ván kết thúc mở `MODAL-MATCH-RESULT` với **Ván mới** (mở `MODAL-AI-SETUP` điền sẵn cấp độ và phe vừa chơi, đổi được) và **Về Sảnh** — P1 (BA 0.9). *(P2)* Ván của tài khoản chính thức lưu vào Lịch sử và có nút Xem lại.
-  * *(Stretch P2):* Widget nhỏ hiển thị thông số AI Debug (số node duyệt, depth, độ trễ tính toán ms).
+  * **Đi lại AI — P1 theo BA0.22, chỉ thành viên:** tối đa3 lần thành công/ván, hiện "Lượt đi lại: X/3"; máy đã đi lùi2 plies, đang nghĩ hủy/fence worker và lùi1 nước người. Chưa có nước người/hết quota/đã kết thúc/tab chỉ đọc thì disabled có lý do; Khách không có quyền Undo ở UI/API.
+  * Không có hint hoặc Xin hòa; có Đầu hàng. Mất mạng/đóng tab giữ ACTIVE trong RAM30phút; quá hạn thành viên lưu Bỏ dở/nhánh hiệu lực, Khách không lưu. Worker không phản hồi quá10giây giữ ván/thế và Thử lại cùng thế; ABANDONED thật Retry tạo ID mới cùng cấp/phe thực tế. Restart không khôi phục giả ACTIVE đã mất.
+  * Kết quả có **Ván mới / Về Sảnh**; Ván mới mở setup điền cấp/lựa chọn phe ban đầu, đổi được; thành viên có Xem lại khi bản lưu sẵn sàng. History/Replay/export AI đã P1 theo0.22; không mở cho Khách.
+  * **Widget AI XIAN-136 P1 theo BA0.26:** mọi môi trường, chỉ chủ ván thành viên; thu gọn mặc định, nodes/depth/thời gian từ worker thật; chỉ hiện “Nước máy vừa đi” sau áp thành công, không PV tương lai. Khách/người khác không telemetry qua API/socket. Offline cho xong tối đa nước máy đang chờ; grace30phút tính từ mất controller, tab chỉ đọc có cảnh báo/đường tiếp quản, không reset hạn. [Đặc tả YC8](../product/P1-YC8-DAU-VOI-MAY.md).
 
 ---
 
@@ -272,7 +272,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua; ở Đánh Hạng còn trừ điểm Elo, Đánh Thường và Đánh với máy không đổi Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc người chơi còn lại bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
-15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Thắng/Thua/Hòa kèm lý do (Checkmate, Stalemate, Resign, Timeout, Disconnect, Inactivity, Draw 3-rep, Draw agreement, Draw no-capture, Perpetual check, Interrupted); Elo theo Ranked P2. Server restart theo BA 0.17: kết quả trung tính không người thắng/thua/hòa, custom về WAITING/reset Ready, không hạn đóng 10 phút. **P1 custom:** Ở lại/Rời và **Tái đấu** cho hai thành viên đủ quyền: chọn Giữ/Đổi phe (mặc định Đổi), đối thủ Đồng ý/Từ chối 30 giây; accept kiểm lại ghế/cặp → đếm 3 giây → ván mới không Ready lại; cùng phòng/mức giờ/quyền/người xem/chat. Không dùng thì giữ đường Ready/Xin đổi bên. AI giữ Ván mới/Về Sảnh. **P2:** Xem lại; Tái đấu Casual reset 15 phút/bên; Ranked không Tái đấu. Đề nghị cũ/thay ghế không hồi sinh ván.
+15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Thắng/Thua/Hòa và lý do tiếng Việt; Elo chỉ Ranked P2. Restart online theo BA0.17/YC5, custom về WAITING/reset Ready với kết quả gián đoạn trung tính. **P1 custom:** Ở lại/Rời, Tái đấu Giữ/Đổi phe cho hai thành viên đủ quyền; Đồng ý trong30giây, kiểm lại cặp/ghế rồi đếm3giây vào ván mới không Ready lại; giữ phòng/mức giờ/quyền/người xem/chat. Không dùng thì Ready/Xin đổi bên. **AI:** Ván mới/Về Sảnh; Retry sự cố theo YC8 không đồng nghĩa Ván mới. **Xem lại P1 custom/AI:** chỉ thành viên có quyền khi bản lưu sẵn sàng, không Khách. **P2:** Tái đấu Casual reset15phút/bên, Ranked không Tái đấu. Đề nghị cũ/thay ghế không hồi sinh ván.
 
 ---
 
@@ -301,8 +301,8 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 
 **Quy tắc hiển thị tính năng P2 bên trong thành phần P1 (rà soát cuối):**
 * **Lối vào còn P2** (Ghép ngẫu nhiên, Đánh Hạng, Bảng xếp hạng) `DISABLED` + “Sắp ra mắt”. History custom/AI của thành viên đã P1 theo BA0.22; Nhắn tin/Thách đấu P1 theo0.20, phụ thuộc quyền/quan hệ/presence/cooldown, không Sắp ra mắt. Khách không History/Bạn bè/DM.
-* **Chức năng còn P2 nằm sâu** (phần Ranked/Casual chưa chuyển, widget AI) ẩn ở P1. Không ẩn sticker, Undo custom/AI, History custom/AI/Replay/export hoặc phần đã chuyển theo BA0.20–0.24 chỉ vì mã nguồn còn tiền tố P2.
-* Kết quả custom P1 có Ở lại/Rời và Tái đấu chọn phe cho cặp đủ quyền; AI Ván mới/Về Sảnh. Xem lại vẫn P2. QR bị bỏ, không nút/ảnh ở cả hai phân kỳ.
+* **Chức năng còn P2 nằm sâu** (phần Ranked/Casual chưa chuyển) ẩn ở P1. Không ẩn sticker, Undo custom/AI, History custom/AI/Replay/export, widget AI hoặc phần đã chuyển theo BA0.20–0.26 chỉ vì mã nguồn còn tiền tố P2; áp quyền thành viên/Khách tương ứng.
+* Kết quả custom P1 có Ở lại/Rời và Tái đấu chọn phe cho cặp đủ quyền; AI Ván mới/Về Sảnh. Xem lại custom/AI của thành viên đã P1 khi bản lưu sẵn sàng, Khách không có quyền; QR bị bỏ cả hai phân kỳ.
 
 | STT | Mã Thành Phần | Tên Gọi Nghiệp Vụ | Phân Loại | Vị Trí / URL | Ưu tiên |
 |:---:|---|---|:---:|---|:---:|
@@ -314,11 +314,11 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 6 | `SCR-LOBBY` | P1: Tự tạo phòng, Máy; Thường/Hạng hiển thị vô hiệu, thuộc P2 | Routed Page | `/lobby` | **P1** |
 | 7 | `SCR-WAITING-ROOM` | Phòng chờ, đổi ghế solo, đếm 3s, nhượng Host | Routed Page | `/rooms/:id` (`WAITING`) | **P1** |
 | 8 | `SCR-GAME-ROOM` | Bàn cờ SVG thi đấu, 2 cách đi, đồng hồ, thao tác | Routed Page | `/rooms/:id` (`PLAYING`) | **P1** |
-| 9 | `SCR-AI-GAME` | P1: bàn cờ đấu máy, không giới hạn giờ; P2: Undo 3 lần | Routed Page | `/ai/:id` | **P1** |
+| 9 | `SCR-AI-GAME` | P1: đấu máy3 cấp, không giới hạn giờ, Undo tối đa3 lần chỉ thành viên theo BA0.22 | Routed Page | `/ai/:id` | **P1** |
 | 10 | `SCR-LEADERBOARD` | Bảng Xếp Hạng Top 50 & Dòng ghim rank cá nhân | Routed Page | `/leaderboard` | P2 |
 | 11 | `SCR-FRIENDS` | P1: bạn bè/presence, Nhắn tin/DM và Thách đấu | Routed Page | `/friends` | **P1** |
-| 12 | `SCR-HISTORY` | Lịch sử ván đấu cá nhân (lọc Rank/Casual/Máy) | Routed Page | `/history` | P2 |
-| 13 | `SCR-REPLAY` | Xem lại ván cờ từng nước, bảng biên bản, auto-play | Routed Page | `/history/:id` | P2 |
+| 12 | `SCR-HISTORY` | P1: lịch sử custom/AI riêng thành viên; Ranked/thống kê Ranked còn P2 | Routed Page | `/history` | **P1 theo0.22** |
+| 13 | `SCR-REPLAY` | P1: xem lại custom/AI riêng người chơi, biên bản/tự phát/FEN/PGN | Routed Page | `/history/:id` | **P1 theo0.22** |
 | 14 | `SCR-ACCESS-DENIED` | Màn hình từ chối truy cập (Phòng đầy, Cấm xem) | Routed Page | `/access-denied` | **P1** |
 | 15 | `SCR-PROFILE-SETTINGS` | P1: Display Name, email/xác minh, mật khẩu, Đổi Username OTP, theme đồng bộ tài khoản, Đăng xuất | Routed Page | `/settings` | **P1** |
 | 16 | `MODAL-GUEST-NAME` | Nhập Tên hiển thị tạm thời cho Khách (2-20 ký tự) | Modal Dialog | Nổi trên `SCR-LOGIN` | **P1** (07/10) |
@@ -335,7 +335,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 | 27 | `MODAL-CONFIRM-RESIGN` | Xác nhận đầu hàng ván cờ (cảnh báo thua ngay) | Modal Dialog | Mở khi bấm Đầu hàng | **P1** |
 | 28 | `MODAL-CONFIRM-LEAVE` | Xác nhận rời phòng khi đang đấu (xử thua) | Modal Dialog | Mở khi bấm Rời phòng | **P1** |
 | 29 | `MODAL-CONFIRM-KICK` | Xác nhận đuổi người xem (chặn vào lại đến đóng phòng)| Modal Dialog | Mở khi bấm Kick người xem | **P1** |
-| 30 | `MODAL-MATCH-RESULT` | P1: kết quả, Ở lại/Rời, Tái đấu custom hoặc Ván mới/Về Sảnh; P2: Elo/Tái đấu Casual/Replay | Modal Dialog | Khi ván kết thúc | **P1** |
+| 30 | `MODAL-MATCH-RESULT` | P1: kết quả, Ở lại/Rời/Tái đấu custom hoặc Ván mới/Về Sảnh AI, Xem lại khi bản lưu sẵn sàng; P2: Elo/Tái đấu Casual | Modal Dialog | Khi ván kết thúc | **P1** |
 | 31 | `PANEL-NAVBAR` | Thanh điều hướng Header toàn cục + Icon thông báo | Embedded Panel| Cố định đầu mọi trang | **P1** |
 | 32 | `PANEL-CHAT` | P1: chat2 kênh, filter và12 sticker cho thành viên/Khách theo vai trò (BA0.24) | Embedded Panel | Cột phải `SCR-GAME-ROOM` | **P1** |
 | 33 | `PANEL-MEDIA` | Face cam & Mic LiveKit SFU 2 người chơi (3 mức chia sẻ) | Embedded Panel| Cột trái `SCR-GAME-ROOM` | **P1** |
@@ -352,5 +352,5 @@ Ma trận điều kiện và kết quả **năm trạng thái của từng thàn
 1. Mỗi quyết định nghiệp vụ trong [BA-SCOPE-DECISIONS.md](../product/BA-SCOPE-DECISIONS.md) có ít nhất một màn hình, modal hoặc khung nhúng phục vụ (đối chiếu qua ma trận 37 thành phần ở §7).
 2. Mọi nút bấm và hành động có đích đến rõ ràng, không có ngõ cụt.
 3. Mọi modal hai chiều (Đổi bên, Xin hòa, Xin đi lại) có đủ hai phía: Người gửi (đang chờ, có nút Rút đề nghị) và Người nhận (đếm ngược 30 giây, Đồng ý/Từ chối).
-4. Bảo toàn danh tính: đổi Display Name tự do, Đổi Username OTP **P1** giữ UUID/dữ liệu/mọi phiên hợp lệ/hạn cũ theo 0.21; email verified bất biến. Lịch sử/Replay/lưu AI vẫn P2; AI P1 giữ bộ nhớ theo BA 6.3. Không hồ sơ công khai; thẻ tóm tắt theo phân kỳ.
+4. Bảo toàn danh tính: đổi Display Name tự do, Đổi Username OTP **P1** giữ UUID/dữ liệu/mọi phiên hợp lệ/hạn cũ theo0.21; email verified bất biến. History/Replay/lưu terminal AI thành viên đã P1 theo0.22; ACTIVE trong RAM, restart không khôi phục giả. Không hồ sơ công khai; thẻ tóm tắt theo phân kỳ.
 5. Số lượng: 15 màn hình + 15 modal + 4 khung nhúng + 3 lớp phủ = **37**; `/rooms/:id` dùng chung cho `SCR-WAITING-ROOM` và `SCR-GAME-ROOM` nên chỉ có **14 URL** phân biệt.

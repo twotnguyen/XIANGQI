@@ -8,6 +8,7 @@
 > **PO bổ sung 31/10 — BA0.22:** thêm History custom/AI, lưu AI/Bỏ dở, Replay, FEN/PGN, Undo AI chỉ thành viên và Xin đi lại custom cho cả thành viên/Khách. Giữ18 AC nguồn tại BACKLOG-P2, xem đặc tả YC4 mục12–14; chưa nghiệm thu/Jira Done. Ranked/Casual còn lại vẫn P2.
 > **PO chốt YC5 — BA 0.23:** demo mạng XIAN-137/AC-P2-23.1–3 lên P1, chỉ môi trường demo; thêm hòa mất mạng trùng timestamp tuyệt đối và chính sách deadline trước, bằng nhau TIMEOUT → DISCONNECT → INACTIVITY. Casual giữ P2. Mới chốt tài liệu, chưa nghiệm thu phần mới.
 > **PO chốt YC6 — BA0.24:** đủ12 sticker XIAN-131/AC-P2-17.1–3 lên P1 cho thành viên/Khách theo vai trò; DM vẫn chỉ accepted friends. Mời xuống ghế bị Từ chối/hết hạn chờ10giây theo Host–phòng, chung người nhận/tab; khung nonmodal hai nút/đếm ngược, không X/Esc riêng. Chưa nghiệm thu phần mới.
+> **PO chốt YC8 — BA0.26:** widget XIAN-136/AC-P2-22.1–3 P1 mọi môi trường/chỉ thành viên; chỉ nước máy đã áp, không PV tương lai. Offline cho xong tối đa nước máy đang chờ; grace30phút từ mất controller, tab chỉ đọc không kéo dài hạn. Đã chốt đặc tả, chưa triển khai/kiểm chứng phần mới.
 > **Nguồn luật:** [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) — **Phần 0 (cập nhật 10/10) ưu tiên cao nhất**. Tài liệu này **không tạo luật mới**: mỗi tiêu chí dẫn về quyết định BA tương ứng. Nếu thấy khác BA thì BA thắng và phải báo PO.
 > **Kế hoạch Task, giờ, người làm, ngày:** [KE-HOACH-JIRA.md](../planning/KE-HOACH-JIRA.md).
 > **Cấu trúc:** **EP-01 → EP-08 khớp đúng 8 yêu cầu của khách hàng (YC1 → YC8)**; EP-00 là Epic nền tảng phục vụ chung.
@@ -115,7 +116,7 @@
 | EP-P2-04 | History custom/AI, Replay, FEN/PGN, lưu AI, Undo AI chuyển P1; phần Ranked còn P2, giữ mã nguồn | 0.22, 6.2, 6.3, 7.3, 9.1 |
 | EP-P2-05 | DM/unread, Thách đấu và sticker chuyển P1 theo0.20/0.24; QR bị loại, giữ mã Epic/Story nguồn | 0.20, 0.24, 5.1 |
 | EP-P2-06 | Đổi/khôi phục Username chuyển toàn bộ P1 theo 0.21; giữ mã Epic/Story lịch sử | 0.21, 1.4–1.7 |
-| EP-P2-07 | P2 còn widget AI; demo mạng chuyển P1 theo 0.23, media giữa tab và theme theo 0.21 | 0.21, 0.23, 9.2, 9.3 |
+| EP-P2-07 | Widget AI chuyển P1 theo0.26; demo mạng theo0.23, media giữa tab và theme theo0.21; giữ Epic/Story nguồn | 0.21, 0.23, 0.26, 9.2, 9.3 |
 
 ---
 ## 5. User Story và tiêu chí nghiệm thu P1
@@ -630,6 +631,8 @@ Given/When/Then/TC tại [BACKLOG-P2](BACKLOG-P2.md), quyền/chi tiết tại [
 
 ### EP-07 · Chat, camera và mic (YC7)
 
+Đặc tả chi tiết và đối chiếu P2: [P1 · YC7 — Chat, camera và mic](P1-YC7-CHAT-CAMERA-VA-MIC.md). Giữ27 AC baseline (14 chat +13 media); sticker/DM/chuyển media tab đã P1 theo BA0.20/0.21/0.24. BA0.25 chốt quota chung toàn người gửi, mốc xem trong grace, NONE/thay cặp tắt thiết bị, thêm tắt nhận custom mặc định hiện và3 AC-YC7-RX.1–3; chưa là bằng chứng triển khai.
+
 #### US-07.1 · Hai kênh chat và bộ lọc
 **Là** người chơi, **tôi muốn** một kênh riêng với đối thủ tách khỏi kênh của người xem, có lọc lời thô tục và chống spam, **để** trò chuyện văn minh và riêng tư.
 *Nguồn:* BA 5.3 mục 1, 10.1 (chat khi đổi người), 4.1. *Màn hình:* `PANEL-CHAT`.
@@ -681,6 +684,8 @@ Given/When/Then/TC tại [BACKLOG-P2](BACKLOG-P2.md), quyền/chi tiết tại [
 
 ### EP-08 · Đánh với máy theo cấp độ (YC8)
 
+Đặc tả chi tiết và đối chiếu P2: [P1 · YC8 — Đấu với máy](P1-YC8-DAU-VOI-MAY.md). Giữ19 AC baseline và18 AC nguồn History/lưu AI/Replay/Undo/export/widget. BA0.26 chốt widget mọi môi trường/chỉ thành viên, chỉ nước máy đã áp; offline hoàn thành tối đa nước máy đang chờ, grace30phút từ mất controller dù tab chỉ đọc còn mở. Khách không Undo/lịch sử/widget; chưa là bằng chứng triển khai hoặc PASS.
+
 #### US-08.1 · Thiết lập và chơi ván với máy
 **Là** người chơi, **tôi muốn** chọn cấp độ và phe rồi chơi với máy không giới hạn thời gian, **để** luyện tập.
 *Nguồn:* BA 2.0 mục 4, 6.3, 0.9. *Màn hình:* `MODAL-AI-SETUP`, `SCR-AI-GAME`.
@@ -714,8 +719,8 @@ Given/When/Then/TC tại [BACKLOG-P2](BACKLOG-P2.md), quyền/chi tiết tại [
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
-| AC-08.3.1 | Đang ván AI | Đóng tab hoặc mất mạng, quay lại trong 30 phút | Vào lại `/ai/:id` (hoặc banner ở Sảnh) và chơi tiếp đúng thế cũ | E2E |
-| AC-08.3.2 | Quá 30 phút | Hệ thống | Bỏ trạng thái ván trong bộ nhớ; không lưu lịch sử (P1) | I |
+| AC-08.3.1 | Đang ván AI | Mất tab điều khiển, quay lại/tiếp quản hợp lệ trong30phút | Vào lại `/ai/:id` hoặc banner Sảnh, nhận trạng thái đã commit; máy có thể đã hoàn thành tối đa nước đang chờ theo BA0.26. Tab chỉ đọc không kéo dài grace; không lặp nước người/bốc lại phe/reset quota | E2E |
+| AC-08.3.2 | Quá 30 phút | Hệ thống | Hủy tác vụ, giải phóng vị trí và bỏ trạng thái ACTIVE trong bộ nhớ; thành viên lưu **Bỏ dở**/nhánh hiệu lực theo BA0.22, không W/D/L/Elo; Khách không lưu | I |
 | AC-08.3.3 | Máy cờ không trả lời quá 10 giây hoặc lỗi | Hệ thống | Báo *"Máy cờ gặp sự cố"* kèm "Thử lại"; chỉ không phản hồi quá 10 giây thì giữ nguyên ván/thế, Thử lại tính nước trên cùng thế, không gửi lại nước người; nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp và phe thực tế | I, M |
 | AC-08.3.4 | Bấm "Thử lại" nhiều lần liên tiếp | Hệ thống | Chỉ xử lý một lần (chặn bấm trùng) | I |
 | AC-08.3.5 | Máy chủ khởi động lại | Người chơi quay lại | *"Ván không còn trạng thái để tiếp tục"*, về Sảnh hoặc tạo ván mới; không khôi phục giả | M |
@@ -737,7 +742,7 @@ Given/When/Then/TC tại [BACKLOG-P2](BACKLOG-P2.md), quyền/chi tiết tại [
 | NFR-06 | Trợ năng | WCAG 2.1 AA cơ bản: tương phản, nhãn, thao tác bàn phím ở form/modal, tôn trọng giảm chuyển động | 3.1, 3.4, DESIGN |
 | NFR-07 | Ngôn ngữ | Toàn bộ giao diện tiếng Việt | 10.1 |
 | NFR-08 | Nhật ký và sức khoẻ | Log có cấu trúc, `/health`; không log mật khẩu/OTP/token/chat | 10.1 |
-| NFR-09 | Lưu giữ dữ liệu | Ván online và nước đi lưu bền; ván AI chỉ trong bộ nhớ; chat phòng xoá khi phòng đóng; biên lai lệnh xoá sau 24 giờ; log tối đa 14 ngày | 10.1 |
+| NFR-09 | Lưu giữ dữ liệu | Ván online/nước đi lưu bền; AI ACTIVE trong RAM, terminal/nhánh hiệu lực và Bỏ dở thành viên lưu bền theo BA0.22, Khách không lưu; chat phòng xóa khi đóng; biên lai24giờ; log tối đa14ngày | 0.22, 10.1 |
 | NFR-10 | Hiển thị an toàn | Chat, Display Name, tên phòng, tên Khách hiển thị như văn bản thuần | 10.1 |
 | NFR-11 | Quyền riêng tư media | Camera/mic mặc định tắt; không ghi, không lưu | 4.1 |
 | NFR-12 | Dữ liệu cá nhân | Chỉ lưu email, username, Display Name, mật khẩu băm, bạn bè, ván; không hỏi tuổi | 10.1 |

@@ -324,7 +324,7 @@ Undo AI/lưu AI và theme cũng đã lên P1 nhưng thuộc YC8/YC1; chỉ kiể
 |Elo US-P2-01/XIAN-115; queue Ranked US-P2-02/XIAN-116; giới hạn cặp US-P2-03/XIAN-117|Tính điểm đúng một lần theo kết quả YC5, chống bơm/ghép đồng thời|Giữ P2 cùng Ranked; không tự tính Elo cho custom/AI|
 |Leaderboard US-P2-06/XIAN-120|Đọc thống kê Ranked, không có nghĩa mọi ván P1 phải xếp hạng|Giữ P2; không giả số liệu|
 |Ranked media US-P2-05/XIAN-119|Quyền nhận/phát, không người xem, chỉ Kênh Riêng|Giữ P2 theo Ranked, thuộc YC7; không cần để giải quyết mạng/đồng hồ P1|
-|Widget AI US-P2-22/XIAN-136; sticker US-P2-17/XIAN-131|Cạnh bàn/chat nhưng không phân xử ván online|Widget AI giữ P2; sticker đã lên P1 theo BA0.24 khi chốt YC6/YC7, cho cả Khách đúng vai trò|
+|Widget AI US-P2-22/XIAN-136; sticker US-P2-17/XIAN-131|Cạnh bàn/chat nhưng không phân xử ván online|Widget AI đã P1 theo BA0.26, mọi môi trường/chỉ thành viên, chỉ nước máy đã áp; sticker P1 theo BA0.24 cho cả Khách đúng vai trò|
 
 **Phạm vi sau khi PO chốt:** demo mạng lên P1; Casual và phần Undo/Tái đấu Casual giữ P2, Ranked/Elo vẫn P2. Ưu tiên hoàn thiện quyền Khách, timer, ưu tiên deadline, reason hòa mới và gate P1; công cụ demo không thay kiểm mạng/thiết bị thật.
 

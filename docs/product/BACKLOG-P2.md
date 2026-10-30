@@ -125,6 +125,8 @@ Mục yêu cầu: **P2-04**; Epic **EP-P2-01** / XIAN-108. Jira Story: XIAN-118.
 Mục yêu cầu: **P2-05**; Epic **EP-P2-01** / XIAN-108. Jira Story: XIAN-119.
 
 **Nguồn chính xác:** BA 5.4,4.1;617/526; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T33, T58, P2-04, P2-17.
+**Phần tách P1 theo BA0.25:** custom có nút Tắt nhận/Hiện hình và tiếng cục bộ cho người chơi/người xem, **mặc định nhận nếu người phát cho phép**;3 AC-YC7-RX.1–3 tại [YC7](P1-YC7-CHAT-CAMERA-VA-MIC.md). US-P2-05/XIAN-119 và3 AC Ranked dưới đây **vẫn P2**, giữ mặc định ẨN của Ranked; không mở mode Ranked vì dùng chung cơ chế nhận.
+
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
@@ -442,19 +444,21 @@ Mục yêu cầu: **P2-21**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-135.
 | T-P2-21-I | XIAN-180 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T04, T09, T56 |
 | T-P2-21-Q | XIAN-181 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-21-I |
 
-### US-P2-22 · Widget thông số AI
+### US-P2-22 · Widget thông số AI — P1 chỉ thành viên theo BA0.26
 
 Mục yêu cầu: **P2-22**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-136.
 
 **Nguồn chính xác:** BA 9.2;813; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T24, T59, T38.
 
+**PO chốt0.26:** mọi môi trường, chỉ thành viên là chủ ván; thu gọn mặc định. **Thay yêu cầu PV:** chỉ hiện nước máy đã áp thành công, không best move/chuỗi PV tương lai; không để full PV thành việc P2 còn thiếu. Giữ ba ID AC/TC và Task/Jira nguồn; chưa triển khai/nghiệm thu. Chi tiết [YC8 mục15](P1-YC8-DAU-VOI-MAY.md#15-bốn-quyết-định-po-đã-chốt--ba026).
+
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-22.1 / TC-P2-22.1 | AI đang tính | Widget cập nhật | Nodes, depth, latency và PV từ worker thật, không giả số; không dịch vụ cờ ngoài. |
-| AC-P2-22.2 / TC-P2-22.2 | Worker hoàn tất hoặc hết budget | Đối chiếu telemetry | Widget khớp trace actual depth/time/nodes/best PV đúng ván; giữ ngưỡng P1. Worker đã hủy không cập nhật nhầm widget. |
-| AC-P2-22.3 / TC-P2-22.3 | Người đang tới lượt | Dùng widget | Không tính hint cho bên người; PV là đầu ra máy đang tính. Giữ No Hint theo BA 6.1. |
+| AC-P2-22.1 / TC-P2-22.1 | Chủ ván thành viên, AI đang tính | Mở widget | Nodes, completed depth/target và compute latency từ worker thật, đúng tác vụ; chưa có thì báo chưa có số liệu. Khách/người khác bị chặn UI/API/socket; không fake hoặc dịch vụ cờ ngoài |
+| AC-P2-22.2 / TC-P2-22.2 | Worker hoàn tất/hết budget hoặc bị hủy | Đối chiếu trace và nước đã commit | Số khớp depth/time/nodes thật, giữ ngưỡng P1; chỉ hiện “Nước máy vừa đi” sau áp thành công. Worker cũ sau Undo/cancel/retry/thay ván không cập nhật nhầm |
+| AC-P2-22.3 / TC-P2-22.3 | Mọi lượt và mọi payload | Xem widget/gọi trực tiếp | Không phát/hiện best move hoặc PV tương lai, không tính hint cho bên người. Số cuối/nước đã áp được gắn đúng lượt; giữ No Hint theo BA6.1/0.26 |
 
-**TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: Engine telemetry/UI; compare worker metrics với widget, trace actual depth/budget, board no-hint remains.
+**TC:** đối chiếu trace worker thật với widget; quyền member/guest/người khác qua API/socket; before/after commit, budget/cancel/Undo/Retry/stale generation; không future move/PV hoặc engine chạy lượt người; browser desktop/mobile và kiểm overhead thực. Không lấy mock numbers/source text hoặc nhãn UI làm bằng chứng runtime.
 
 | Task | Jira | Đầu ra | Giờ đề xuất | Phụ thuộc |
 |---|---|---|---|---|

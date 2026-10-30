@@ -228,7 +228,7 @@ Chu kỳ lặp tính từ lần xuất hiện thứ nhất đến thứ ba của
 
 Nguồn: BA 0.12, 0.17, 3.1, 3.3–3.5, 10.4; US-04.1–04.3.
 
-Đặc tả chi tiết và đối chiếu code/P2: [P1 · YC4 — Bàn cờ và luật](P1-YC4-BAN-CO-VA-LUAT.md). **PO chốt BA0.22:** History custom/AI, lưu AI/Bỏ dở, Replay, FEN/PGN, Undo AI chỉ thành viên và Xin đi lại custom cho cả thành viên/Khách thuộc P1. Casual/Ranked, widget AI và demo mạng vẫn P2. Đây là phạm vi đã duyệt, chưa là kết quả nghiệm thu.
+Đặc tả chi tiết và đối chiếu code/P2: [P1 · YC4 — Bàn cờ và luật](P1-YC4-BAN-CO-VA-LUAT.md). BA0.22 đưa History custom/AI, lưu AI/Bỏ dở, Replay, FEN/PGN, Undo AI chỉ thành viên và Xin đi lại custom cho cả thành viên/Khách vào P1. Demo mạng đã P1 theo0.23; widget AI chỉ thành viên đã P1 theo0.26. Casual/Ranked giữ P2; phạm vi đã duyệt không phải kết quả nghiệm thu.
 
 ## 8. Vận hành ván online và sự cố — YC5
 
@@ -290,6 +290,8 @@ Nguồn: BA 2.8, 4.1–4.3, 8.3; US-06.3.
 
 Nguồn: BA 0.13–0.16, 4.1–4.2, 5.3, 10.1; US-07.1–07.2.
 
+Đặc tả chi tiết: [P1 · YC7 — Chat, camera và mic](P1-YC7-CHAT-CAMERA-VA-MIC.md), gồm27 AC baseline,9 AC nguồn sticker/DM/chuyển tab và3 AC tắt nhận custom. BA0.25 chốt quota chung toàn người gửi, giữ mốc viewer trong grace, NONE/thay cặp tắt thiết bị, tắt nhận cục bộ mặc định hiện cho người chơi/người xem. Ranked vẫn P2; chưa triển khai/kiểm chứng phần mới.
+
 ## 11. Đánh với máy — YC8
 
 - Chọn Đỏ/Đen/Ngẫu nhiên; Đỏ đi trước. Cầm Đen thì máy đi trước, bàn cờ xoay theo phe.
@@ -307,13 +309,15 @@ Nguồn: BA 0.13–0.16, 4.1–4.2, 5.3, 10.1; US-07.1–07.2.
 - Không phản hồi quá 10 giây: giữ ván/thế, cho Thử lại trên cùng thế, không gửi lại nước người. Nếu lỗi thực sự đã làm ván Bỏ dở thì Thử lại tạo ván mới cùng cấp/phe thực tế.
 - Mất mạng giữ ván 30 phút. P1 lưu bộ nhớ, restart mất trạng thái, phải thông báo đúng; không giả phục hồi.
 - Sau ván: Ván mới mở lại thiết lập điền sẵn cấp/lựa chọn phe trước, được đổi rồi bắt đầu với ID mới; hoặc Về Sảnh.
-- Không có gợi ý nước tốt. Undo AI và lưu lịch sử AI là P2, dù phần luật chi tiết đã mô tả.
+- Không có gợi ý nước tốt. Undo AI chỉ thành viên, tối đa3 lần thành công/ván; History/lưu AI/Bỏ dở/Replay/export đã P1 theo BA0.22. Khách chơi được nhưng không Undo AI hoặc lưu/xem lịch sử.
 
-**Cần đánh giá:** mục tiêu độ sâu so với thời gian/sức mạnh thực tế; mất ván sau restart; mức cần thiết của Undo; các phương án cải thiện AI phải được đánh giá riêng, không tự thêm dependency hay đổi engine.
+**Cần đánh giá:** bằng chứng chất lượng/thời gian trên máy demo và Node22, mất ACTIVE sau restart. Widget đã P1 chỉ thành viên theo0.26, không hiển thị PV tương lai; không tự thêm dependency/đổi engine hoặc coi chỉ số UI là bằng chứng đạt gate.
 
 **Bằng chứng cần có:** 50 thế giữa ván mỗi cấp trên máy demo, bộ chiếu hết có đáp án, phân cấp sức mạnh, chọn phe, lỗi/timeout engine, reconnect, không làm chậm online.
 
 Nguồn: BA 0.9, 0.17, 6.1–6.3, 11; US-08.1–08.3.
+
+Đặc tả chi tiết: [P1 · YC8 — Đấu với máy](P1-YC8-DAU-VOI-MAY.md), gồm19 AC baseline và18 AC nguồn. BA0.26 chốt widget mọi môi trường/chỉ thành viên, chỉ nước máy đã áp; offline hoàn thành tối đa nước máy đang chờ, grace30phút từ mất controller dù còn tab chỉ đọc. Bốn lựa chọn đã chốt, chưa triển khai/nghiệm thu phần mới.
 
 ## 12. Chất lượng, dữ liệu và nền tảng — EP-00
 
@@ -327,7 +331,7 @@ Nguồn: BA 0.9, 0.17, 6.1–6.3, 11; US-08.1–08.3.
 | NFR-06 Trợ năng | WCAG 2.1 AA cơ bản: tương phản, nhãn, bàn phím form/modal, giảm chuyển động |
 | NFR-07 Ngôn ngữ | Giao diện tiếng Việt |
 | NFR-08 Vận hành | Log có cấu trúc, /health; không log mật khẩu/OTP/token/chat |
-| NFR-09 Lưu giữ | Online/nước đi lưu bền; AI P1 trong bộ nhớ; chat xóa khi phòng đóng; biên lai lệnh xóa sau 24 giờ; log tối đa 14 ngày |
+| NFR-09 Lưu giữ | Online/nước đi lưu bền; AI ACTIVE trong RAM, terminal/nhánh hiệu lực/Bỏ dở thành viên lưu bền theo0.22, Khách không lưu; chat phòng xóa khi đóng; biên lai24giờ; log tối đa14ngày |
 | NFR-10 Hiển thị an toàn | Nội dung người dùng được hiển thị dạng văn bản thuần |
 | NFR-11 Media | Mặc định tắt; không ghi/lưu |
 | NFR-12 Dữ liệu cá nhân | P1 chỉ thu thập dữ liệu cần cho tài khoản, bạn bè và ván; không hỏi tuổi |
@@ -705,18 +709,16 @@ PO bỏ theo BA 0.20: không QR/ảnh/nút tải hoặc copy QR ở P1/P2; chỉ
 
 **Truy vết:** US-P2-21, BA 0.21/1.7/1.5; cùng P1 với reset theo 0.18 nhưng quyền OTP tách biệt. Giờ/Task chưa tái lập kế hoạch.
 
-### 13.23 P2-22 — Widget thông số AI
+### 13.23 P2-22 — Widget thông số AI: đã P1 theo BA0.26
 
-- Hiển thị nodes, độ sâu thực, thời gian tính và PV từ worker thật, đúng ván/tác vụ; không số giả hoặc dịch vụ cờ ngoài.
-- Khi hết budget phải phản ánh độ sâu thực đạt, không gắn nhãn depth mục tiêu như đã hoàn thành.
-- Kết quả/tác vụ đã hủy không cập nhật nhầm widget của thế/ván mới. Không làm mất ngưỡng phản hồi P1.
-- PV chỉ là đầu ra máy đang tính cho bên máy, không tính hint cho bên người.
+- Mọi môi trường, chỉ thành viên là chủ ván, thu gọn mặc định; Khách/người khác bị chặn cả API/socket, không chỉ ẩn giao diện.
+- Hiển thị nodes, completed depth/target và compute latency thật theo game/generation; không giả số, không dùng timer chờ client làm số đo engine.
+- **Không phát/hiện PV tương lai hoặc best move chưa áp:** sau commit mới hiện “Nước máy vừa đi”. Yêu cầu PV cũ được PO thay, không còn phần full PV chờ P2.
+- Kết quả/công việc bị hủy, Undo, Retry hoặc thay ván không cập nhật nhầm widget; không tính hint/engine cho bên người, không giảm ngưỡng phản hồi P1.
 
-**Nghiệm thu:** đối chiếu widget với trace worker thực, timeout/cancel và budget; không có gợi ý nước người hoặc dữ liệu tác vụ cũ.
+**Nghiệm thu:** AC-P2-22.1–3 giữ ID, đã cập nhật theo BA0.26; đối chiếu trace thật và nước đã commit, quyền/member–guest, stale generation, browser desktop/mobile và overhead.
 
-**Cần đánh giá:** đây là công cụ chứng minh thuật toán hay tính năng người dùng; PV có làm lộ ý đồ máy và ảnh hưởng trải nghiệm không; điều kiện hiển thị cần chốt riêng.
-
-**Truy vết:** US-P2-22; BA 9.2, 6.1. Phụ thuộc: engine/telemetry/AI P1.
+**Truy vết:** US-P2-22/XIAN-136; BA0.26/9.2/6.1; [YC8 mục15](P1-YC8-DAU-VOI-MAY.md#15-bốn-quyết-định-po-đã-chốt--ba026). Phụ thuộc engine/telemetry/AI P1. Chốt đặc tả không phải PASS.
 
 ### 13.24 P2-23 — Công cụ demo mạng
 
@@ -888,10 +890,10 @@ Thứ tự dưới đây theo PO: **P1 trước, đúng thứ tự YC1–YC8; ch
 | 11 | Ranked/Elo/media Ranked/bảng — P2-01–06 | Chờ P1 ổn |
 | 12 | Ghép Casual — P2-07 | Chờ P1 ổn |
 | 13 | Undo online P2; Tái đấu custom và Không giới hạn/chống treo P1; Tái đấu Casual P2 | P1 bổ sung theo BA 0.20, chưa triển khai/nghiệm thu |
-| 14 | Lịch sử, lưu AI, Replay, Undo AI, xuất — P2-11–15 | Chờ P1 ổn |
+| 14 | Lịch sử, lưu AI, Replay, Undo AI, xuất — mã nguồn P2-11–15, **P1 custom/AI** | Chốt0.22, cần bằng chứng triển khai/nghiệm thu phần mới |
 | 15 | QR bị loại; sticker, DM/unread và Thách đấu P1 | Sticker mới chốt0.24, chưa nghiệm thu; bằng chứng phần khác theo đặc tả tương ứng |
 | 16 | Đổi/Khôi phục Username — mã nguồn P2-20–21, **P1** | Chốt 0.21; chưa triển khai/nghiệm thu |
-| 17 | Widget/demo còn P2; media giữa tab/theme — mã nguồn P2-24–25, **P1** | Hai bổ sung P1 chốt 0.21, chưa triển khai/nghiệm thu |
+| 17 | Widget AI, demo mạng, media giữa tab/theme — mã nguồn P2-22–25, **P1** | Widget chốt0.26 mọi môi trường/chỉ thành viên; demo mạng chỉ demo0.23, media/theme0.21; chưa suy PASS từ phân kỳ |
 | 18 | Quyền liên chức năng, loại trừ và nghiệm thu toàn bộ P1/P2 | Chưa đánh giá |
 
 ### 15.2 Cách chốt mỗi phần
