@@ -57,8 +57,7 @@ function SetupForm({
     try {
       await onStart({ level, requestedSide: side });
       if (alive.current) onClose();
-    } catch (err) {
-      console.error("[DEBUG SetupForm catch error]:", err);
+    } catch {
       if (alive.current)
         setError("Chưa thể bắt đầu ván với máy. Vui lòng thử lại.");
     } finally {

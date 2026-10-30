@@ -39,26 +39,18 @@ export async function startAiGame(
   getProof: Proof,
   selection: AiSetupSelection,
 ): Promise<string> {
-  console.log("[DEBUG startAiGame] connecting AI socket...");
   const connection = connectAi({
     getProof,
-    onControl: (c) => console.log("[DEBUG onControl]", c),
+    onControl: () => {},
     onSnapshot: () => {},
-    onConnection: (c) => console.log("[DEBUG onConnection]", c),
-    onError: (e) => console.error("[DEBUG onError]", e),
+    onConnection: () => {},
+    onError: () => {},
   });
   try {
-    console.log("[DEBUG startAiGame] waiting for control...");
-    const ctrl = await connection.getControl();
-    console.log("[DEBUG startAiGame] got control:", ctrl);
+    await connection.getControl();
     const client = makeAiClient(authorizedFetch, () => connection.getControl());
-    console.log("[DEBUG startAiGame] creating game with selection:", selection);
     const response = await client.create(selection);
-    console.log("[DEBUG startAiGame] created:", response);
     return response.snapshot.id;
-  } catch (err) {
-    console.error("[DEBUG startAiGame failed]:", err);
-    throw err;
   } finally {
     connection.disconnect();
   }
@@ -189,8 +181,7 @@ export function AiGamePage({
     const client = makeAiClient(authorizedFetch, () => conn.getControl());
     connection.current = conn;
     api.current = client;
-    conn.watch(gameId).catch((err) => {
-      console.error("[DEBUG conn.watch failed]:", err);
+    conn.watch(gameId).catch(() => {
       if (live && alive.current) setError(unavailable);
     });
     // Đọc lại khi epoch đổi trước khi phản hồi về: không bỏ trống trạng thái ván.
@@ -206,7 +197,6 @@ export function AiGamePage({
           apply(response);
         },
         (cause: unknown) => {
-          console.error("[DEBUG client.read failed]:", cause);
           if (!live || !alive.current) return;
           if (token !== fence.current) {
             load();

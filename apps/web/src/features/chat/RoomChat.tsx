@@ -234,12 +234,6 @@ function ChatPane({
             setError(null);
             setStatus(null);
           }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              void send();
-            }
-          }}
         />
         <div className="room-chat__compose-meta">
           <span>{count}/200 ký tự</span>
