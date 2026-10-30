@@ -1,47 +1,29 @@
 name: CI
 on:
   push:
-    branches: [main, develop]
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".env.example"
+    branches: [develop]
   pull_request:
     branches: [main, develop]
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".env.example"
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 permissions:
   contents: read
-  pull-requests: write
 jobs:
   checks:
     name: Fast Checks & Build (full tests on main)
     runs-on: ubuntu-latest
     outputs:
       full: ${{ steps.filter.outputs.full }}
+      code: ${{ steps.filter.outputs.web == 'true' || steps.filter.outputs.server == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Verify PR source branch for main
-        if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref != 'develop'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_REF: ${{ github.head_ref }}
+        if: github.event_name == 'pull_request' && github.base_ref == 'main' && (github.head_ref != 'develop' || github.event.pull_request.head.repo.full_name != github.repository)
         run: |
-          echo "::error::Chỉ cho phép mở Pull Request vào 'main' từ nhánh 'develop'. Nhánh '${HEAD_REF}' không được merge trực tiếp vào 'main'."
-          gh pr comment "$PR_NUMBER" --body "⚠️ **Quy chuẩn Git Flow của dự án XIANGQI:**
-
-          Nhánh **\`main\`** chỉ nhận Pull Request từ nhánh **\`develop\`**.
-          Các nhánh tính năng/sửa lỗi (\`${HEAD_REF}\`) phải được mở PR vào nhánh **\`develop\`** trước.
-
-          👉 Vui lòng đổi Base Branch của PR này từ \`main\` sang \`develop\`." || true
+          echo "::error::main chỉ nhận PR từ develop trong chính repository này."
           exit 1
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -56,10 +38,11 @@ jobs:
           CI_EVENT: ${{ github.event_name }}
           CI_BASE_REF: ${{ github.base_ref }}
           CI_BEFORE: ${{ github.event.before }}
-          CI_REF: ${{ github.ref }}
         run: node .github/scripts/ci-scope.mjs
       - run: pnpm install --frozen-lockfile
+        if: steps.filter.outputs.web == 'true' || steps.filter.outputs.server == 'true'
       - name: Run lint and typecheck concurrently
+        if: steps.filter.outputs.web == 'true' || steps.filter.outputs.server == 'true'
         run: |
           pnpm lint &
           PID_LINT=$!
@@ -79,6 +62,8 @@ jobs:
 
   unit-tests:
     name: Unit & Core Tests
+    needs: checks
+    if: needs.checks.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +80,8 @@ jobs:
 
   db-integration:
     name: Database Integration Tests (${{ matrix.shard }}/6)
-    if: (github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main'
+    needs: checks
+    if: needs.checks.outputs.full == 'true' && needs.checks.outputs.code == 'true'
     strategy:
       fail-fast: true
       matrix:
@@ -297,12 +283,20 @@ jobs:
 
   db-gate:
     name: Database Integration Gate
-    needs: [db-integration, unit-tests]
-    if: always() && ((github.base_ref == 'main' && github.head_ref == 'develop') || github.ref == 'refs/heads/main')
+    needs: [checks, db-integration, unit-tests]
+    if: always() && github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Verify all database and unit test shards passed
         run: |
+          if [ "${{ needs.checks.result }}" != "success" ]; then
+            echo "::error::Kiểm tra nguồn PR, phạm vi hoặc build đã thất bại."
+            exit 1
+          fi
+          if [ "${{ needs.checks.outputs.code }}" = "false" ]; then
+            echo "PR chỉ sửa tài liệu: không cần chạy unit/database/build."
+            exit 0
+          fi
           if [ "${{ needs.db-integration.result }}" != "success" ] || [ "${{ needs.unit-tests.result }}" != "success" ]; then
             echo "::error::Một hoặc nhiều bài kiểm thử database hoặc unit test đã thất bại."
             exit 1

@@ -2,10 +2,8 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
 
-function isMainGate({ event, baseRef, ref }) {
-  return event === "pull_request"
-    ? baseRef === "main"
-    : ref === "refs/heads/main";
+function isMainGate({ event, baseRef }) {
+  return event === "pull_request" && baseRef === "main";
 }
 
 function scopeForPaths(paths, full) {
@@ -19,7 +17,7 @@ function scopeForPaths(paths, full) {
     web: true,
     server: true,
   });
-  if (full || paths === null) return all();
+  if (paths === null) return all();
   for (const path of paths) {
     if (
       path.endsWith(".md") ||
@@ -27,6 +25,7 @@ function scopeForPaths(paths, full) {
       path === ".env.example"
     )
       continue;
+    if (full) return all();
     if (path.startsWith("apps/web/") || path.startsWith("tests/web/")) {
       scope.web = true;
     } else if (
@@ -125,6 +124,20 @@ if (process.argv.includes("--self-test")) {
     "server",
     "web",
   ]);
+  assert.deepEqual(scopeForPaths(["docs/example.md"], true), {
+    full: true,
+    web: false,
+    server: false,
+  });
+  assert.deepEqual(
+    enabled(scopeForPaths(["docs/example.md", "apps/web/page.ts"], true)),
+    ["full", "server", "web"],
+  );
+  assert.deepEqual(enabled(scopeForPaths(null, true)), [
+    "full",
+    "server",
+    "web",
+  ]);
   assert.equal(
     isMainGate({
       event: "pull_request",
@@ -133,7 +146,7 @@ if (process.argv.includes("--self-test")) {
     }),
     true,
   );
-  assert.equal(isMainGate({ event: "push", ref: "refs/heads/main" }), true);
+  assert.equal(isMainGate({ event: "push", ref: "refs/heads/main" }), false);
   assert.equal(
     isMainGate({
       event: "pull_request",
@@ -210,7 +223,6 @@ if (process.argv.includes("--self-test")) {
     event: process.env.CI_EVENT,
     baseRef: process.env.CI_BASE_REF,
     before: process.env.CI_BEFORE,
-    ref: process.env.CI_REF,
   };
   const scope = scopeForPaths(changedPaths(context), isMainGate(context));
   const outputs =
