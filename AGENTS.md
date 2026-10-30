@@ -17,7 +17,8 @@ Bắt đầu từ code và caller bị ảnh hưởng. Chỉ mở tài liệu kh
 - **Server, sửa cục bộ theo mẫu có sẵn** (thông báo lỗi, một truy vấn, một trường): code store/service và caller là đủ.
 - **Server, đổi hành vi miền** (lệnh, luồng, trạng thái): `docs/engineering/server/{clock,google,login,match,realtime,room,schema}.md` của miền đó.
 - **Server, chạm khởi động, giao dịch/khóa, realtime, xác thực, migration hoặc ranh giới tầng**: thêm `docs/engineering/server/architecture.md`. `patterns.md` chỉ khi thêm hoặc đổi pattern.
-- **Không đọc** (baseline cũ, dễ gây nhầm): `docs/archive/`, `docs/planning/KE-HOACH-JIRA.md`, `docs/planning/jira/{data,exports,reports}/` trừ `reports/P2-TRANG-THAI-TRIEN-KHAI.md` (số liệu ảnh chụp Jira 10/10, chưa theo phạm vi `docs/product`; `docs/product` thắng). Chọn mã commit chỉ cần `docs/planning/jira/TRA-CUU-TASK-COMMIT.md`.
+- **Không đọc** (baseline cũ, dễ gây nhầm): `docs/archive/`, `docs/planning/KE-HOACH-JIRA.md`, `docs/planning/jira/{data,exports,reports}/` trừ `reports/P2-TRANG-THAI-TRIEN-KHAI.md` (số liệu ảnh chụp Jira 10/10, chưa theo phạm vi `docs/product`; `docs/product` thắng). Chọn mã commit chỉ cần `docs/planning/jira/TRA-CUU-TASK-COMMIT.md` (mở `reports/JIRA-MUC-CHI-TIET.md` đúng mục `#tNN` khi nó yêu cầu đối chiếu Description/AC).
+- **`docs/engineering/`** mô tả mã hiện tại. Quyết định BA 0.27–0.36 chưa triển khai nằm ở mục "Tác động triển khai" của YC; khi khác nhau, `docs/product` thắng và mã cần sửa theo.
 - **Jira**: `docs/planning/jira/README.md`. **Supabase**: `docs/setup/CAU-HINH-MOI-TRUONG.md` mục 8. Chỉ dùng MCP của dịch vụ mà tác vụ thật sự chạm.
 - **Subagent**: chỉ khi phải đọc hoặc review từ ~10 file trở lên; yêu cầu trả lời tiếng Việt, không đề xuất lệnh test.
 

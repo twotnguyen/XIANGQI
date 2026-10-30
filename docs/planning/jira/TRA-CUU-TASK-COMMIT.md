@@ -1,6 +1,6 @@
 # Tra cứu 71 Task P1 để gắn mã commit
 
-Dùng khi phân loại thay đổi, chọn nhánh và viết commit. Phạm vi: T01–T71; không gồm Task P2. BE = server; FE = giao diện web.
+Dùng khi phân loại thay đổi, chọn nhánh và viết commit. Phạm vi: T01–T71; không gồm Task của Story `US-P2-*` (đã thuộc P1 theo BA 0.27): tra theo mục 7. BE = server; FE = giao diện web.
 
 Nguồn: [ánh xạ Jira chính thức](reports/ANH-XA-JIRA-107-MUC.md), [mô tả và nghiệm thu từng mục](reports/JIRA-MUC-CHI-TIET.md). Đây là bản tra cứu ngắn, không thay thế Description/AC và không xác nhận Task đã hoàn thành.
 

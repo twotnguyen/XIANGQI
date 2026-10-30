@@ -1,5 +1,7 @@
 # Đăng nhập bằng Username — XIAN-45 / T09
 
+> **Lưu ý (31/10/2026):** tài liệu này mô tả mã hiện tại. Quyết định PO [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) chưa triển khai (xem mục "Tác động triển khai" của từng YC) và thay luật "thiết bị khác xử thua" và mã thiết bị theo hồ sơ trình duyệt: luật được tạm tắt khi phát triển và bật lại trước nghiệm thu ([YC1 mục 20](../../product/P1-YC1-TAI-KHOAN-VA-XAC-THUC.md), BA 0.28).
+
 `POST /auth/login` nhận `{ username, password, remember? }`; `remember` mặc định
 `true`. Username được chuẩn hoá chữ thường để tra tài khoản và dùng chung bộ đếm.
 Email chỉ dùng nội bộ, không nằm trong phản hồi đăng nhập hoặc thông tin phiên.

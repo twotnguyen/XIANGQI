@@ -1,5 +1,7 @@
 # Khung giao diện — XIAN-39 / T03
 
+> **Lưu ý (31/10/2026):** tài liệu này mô tả mã hiện tại. Quyết định PO [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) chưa triển khai (xem mục "Tác động triển khai" của từng YC) và thay mọi câu "P2", "chưa mở" hoặc nút Đánh Thường/Đánh Hạng bị vô hiệu hóa ở dưới ([YC9](../../product/P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)), bố cục Sẵn sàng/Bắt đầu của phòng chờ ([YC2 mục 21](../../product/P1-YC2-TAO-PHONG.md)) và nước đi hiện ngay ([YC4](../../product/P1-YC4-BAN-CO-VA-LUAT.md)) khi hai bên khác nhau.
+
 Biến giao diện Kỳ Đài Cổ Phong ở `../styles/tokens.css`. Phông được self-host
 với giấy phép tại `public/fonts/UI-FONTS.md`; giao diện không tải phông từ CDN.
 `primitives.tsx` cung cấp nút, trường nhập, dialog, tooltip, toast, tab, badge,
