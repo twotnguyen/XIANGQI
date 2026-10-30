@@ -19,6 +19,21 @@ export async function resetMediaSchema() {
   await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   await apply("supabase/migrations/20261011000015_media_share.sql");
 }
+/** Makes `tabId` the realtime controller of the user in the room, as the gateway's takeover does. */
+export async function takeControl(
+  roomId: string,
+  userId: string,
+  tabId: string,
+) {
+  await pool.query(
+    "INSERT INTO xiangqi_realtime.tabs(user_id,room_id,tab_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
+    [userId, roomId, tabId],
+  );
+  await pool.query(
+    "INSERT INTO xiangqi_realtime.controllers(user_id,room_id,tab_id,connection_id,generation) VALUES($1,$2,$3,'test',1) ON CONFLICT(user_id,room_id) DO UPDATE SET tab_id=EXCLUDED.tab_id,connection_id=EXCLUDED.connection_id,generation=xiangqi_realtime.controllers.generation+1",
+    [userId, roomId, tabId],
+  );
+}
 let inviteSequence = 0;
 /** Creates a room owned by `owner`. Every room gets its own invite code (rooms_invite_code_unique). */
 export async function makeRoom(owner: string) {

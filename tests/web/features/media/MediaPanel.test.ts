@@ -1,7 +1,13 @@
 // @vitest-environment jsdom
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   MediaToken as Ticket,
   ShareLevel,
@@ -66,7 +72,7 @@ describe("media panel joins and receives", () => {
     render(panel(client, { role: "spectator", userId: "viewer" }));
     await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
     const [room] = live.state.rooms;
-    expect(client.token).toHaveBeenCalledWith("room", false, false);
+    expect(client.token).toHaveBeenCalledWith("room", false, false, "tab");
     expect(room!.token).toBe("viewer-token");
     expect(room!.camera || room!.mic).toBe(false);
     expect(room!.tracks).toHaveLength(0);
@@ -80,7 +86,7 @@ describe("media panel joins and receives", () => {
     const { client } = harness({ level: "OPPONENT" });
     render(panel(client));
     await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
-    expect(client.token).toHaveBeenCalledWith("room", false, false);
+    expect(client.token).toHaveBeenCalledWith("room", false, false, "tab");
     const [room] = live.state.rooms;
     expect(room!.token).toBe("private-token");
     expect(room!.camera || room!.mic).toBe(false);
@@ -96,7 +102,13 @@ describe("media panel joins and receives", () => {
     view.rerender(panel(client, { connected: true }));
     await waitFor(() => expect(live.state.rooms).toHaveLength(2));
     await waitFor(() => expect(live.state.rooms[1]?.connected).toBe(true));
-    expect(client.token).toHaveBeenNthCalledWith(2, "room", false, false);
+    expect(client.token).toHaveBeenNthCalledWith(
+      2,
+      "room",
+      false,
+      false,
+      "tab",
+    );
     expect(live.state.rooms[1]!.camera || live.state.rooms[1]!.mic).toBe(false);
   });
 
@@ -113,7 +125,12 @@ describe("media panel joins and receives", () => {
     view.rerender(panel(client, { roomId: "room-2" }));
     await waitFor(() => expect(live.state.rooms).toHaveLength(3));
     await waitFor(() => expect(live.state.rooms[2]?.connected).toBe(true));
-    expect(client.token).toHaveBeenLastCalledWith("room-2", false, false);
+    expect(client.token).toHaveBeenLastCalledWith(
+      "room-2",
+      false,
+      false,
+      "tab",
+    );
     expect(live.state.rooms[2]!.camera).toBe(false);
     expect(cameraButton().getAttribute("aria-pressed")).toBe("false");
   });
@@ -129,7 +146,7 @@ describe("media panel publishing", () => {
       .setup()
       .click(screen.getByRole("button", { name: "Bật camera" }));
     await waitFor(() => expect(live.state.rooms[1]?.camera).toBe(true));
-    expect(client.token).toHaveBeenLastCalledWith("room", true, false);
+    expect(client.token).toHaveBeenLastCalledWith("room", true, false, "tab");
     expect(live.state.rooms.some((room) => room.token === "stage-token")).toBe(
       false,
     );
@@ -228,7 +245,12 @@ describe("media panel share failures", () => {
         publishing.every((room) => room.tracks.every((t) => t.stopped)),
       ).toBe(true);
       const rejoined = live.state.rooms.slice(3);
-      expect(client.token).toHaveBeenLastCalledWith("room", false, false);
+      expect(client.token).toHaveBeenLastCalledWith(
+        "room",
+        false,
+        false,
+        "tab",
+      );
       expect(rejoined.some((room) => room.camera || room.mic)).toBe(false);
       expect(rejoined.some((room) => room.token === "stage-token")).toBe(false);
     },
@@ -278,7 +300,7 @@ describe("media panel lifecycle", () => {
       await userEvent
         .setup()
         .click(screen.getByRole("button", { name: "Bật camera" }));
-      expect(client.token).toHaveBeenLastCalledWith("room", true, false);
+      expect(client.token).toHaveBeenLastCalledWith("room", true, false, "tab");
       leave(view, client, boundary);
       pending.resolve(serverTicket("red", "ALL", true));
       await flush();
@@ -335,5 +357,75 @@ describe("media panel lifecycle", () => {
       true,
     );
     expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
+  });
+});
+
+describe("media panel tab switch", () => {
+  beforeEach(() => {
+    HTMLDialogElement.prototype.showModal = function () {
+      this.setAttribute("open", "");
+    };
+    HTMLDialogElement.prototype.close = function () {
+      this.removeAttribute("open");
+    };
+  });
+  const dialogEl = () =>
+    document
+      .querySelector('[data-modal="MODAL-MEDIA-TAB-SWITCH"]')!
+      .closest("dialog")!;
+  it("asks before taking devices from another tab and never publishes while read-only", async () => {
+    const { client } = harness();
+    const onTakeover = vi.fn(async () => {});
+    render(panel(client, { writable: false, onTakeover }));
+    await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
+    const user = userEvent.setup();
+    await user.click(cameraButton());
+    expect(
+      await screen.findByText("Chuyển thiết bị sang tab này?"),
+    ).toBeTruthy();
+    expect(dialogEl().hasAttribute("open")).toBe(true);
+    expect(client.token).not.toHaveBeenCalledWith("room", true, false, "tab");
+    await user.click(screen.getByRole("button", { name: "Hủy bỏ" }));
+    expect(dialogEl().hasAttribute("open")).toBe(false);
+    await user.click(cameraButton());
+    fireEvent(dialogEl(), new Event("cancel", { cancelable: true }));
+    expect(dialogEl().hasAttribute("open")).toBe(false);
+    expect(onTakeover).not.toHaveBeenCalled();
+    await user.click(cameraButton());
+    await user.click(
+      screen.getByRole("button", { name: "Chuyển thiết bị sang tab này" }),
+    );
+    await waitFor(() => expect(onTakeover).toHaveBeenCalledTimes(1));
+    expect(await screen.findByText(/Đã chuyển thiết bị/)).toBeTruthy();
+  });
+  it("reconnecting a read-only tab never takes control", async () => {
+    const { client } = harness();
+    const onTakeover = vi.fn(async () => {});
+    const view = render(panel(client, { writable: false, onTakeover }));
+    await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
+    view.rerender(
+      panel(client, { writable: false, onTakeover, connected: false }),
+    );
+    view.rerender(panel(client, { writable: false, onTakeover }));
+    await flush();
+    expect(onTakeover).not.toHaveBeenCalled();
+    expect(dialogEl().hasAttribute("open")).toBe(false);
+  });
+  it("stops local devices and rejoins receive-only when control moves to another tab", async () => {
+    const { client } = harness();
+    const view = render(panel(client));
+    await settle();
+    await userEvent.setup().click(cameraButton());
+    await waitFor(() => expect(live.state.rooms[1]?.camera).toBe(true));
+    view.rerender(panel(client, { writable: false }));
+    await waitFor(() =>
+      expect(client.token).toHaveBeenLastCalledWith(
+        "room",
+        false,
+        false,
+        "tab",
+      ),
+    );
+    expect(cameraButton().getAttribute("aria-pressed")).toBe("false");
   });
 });
