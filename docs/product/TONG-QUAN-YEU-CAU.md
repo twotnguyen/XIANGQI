@@ -932,18 +932,42 @@ Khi có quyết định, ghi: ngày; phần; nội dung trước/sau; lý do; ph
 | YC6, AC-06.3.3 / XIAN-94 | Khi hàng xem đầy/không cho xem, người chơi đủ quyền vẫn thấy nút xuống xem bị vô hiệu hóa kèm lý do. |
 | Ranh giới P1/P2, BA 0.3, AC-P2-14.1 / XIAN-166 | Khách không dùng Undo AI: ẩn nút/quota ở web và kiểm principal thành viên ở service trước mutation; các thao tác AI P1 được giữ. |
 
-Các thay đổi không mở thêm phạm vi BA, không đổi luật kết quả, không thêm migration hoặc dependency. SQL bổ sung chỉ trong store; ghi phòng vẫn qua transaction/biên lai/outbox hiện có.
+Riêng lượt đầu ở mục 16.1 không mở thêm phạm vi BA, không đổi luật kết quả, không thêm migration hoặc dependency. SQL bổ sung chỉ trong store; ghi phòng vẫn qua transaction/biên lai/outbox hiện có.
 
 ### 16.2 Kiểm chứng và giới hạn
 
 - Đã chạy hồi quy tập trung: 19 file / 221 test đạt (18 file web và một file service AI), gồm tạo phòng, Sảnh, OTP/mật khẩu, DM, Thách đấu, kết quả/Tái đấu, người xem, bàn cờ và chống treo. Bao gồm hồi quy tích hợp Router/AI; không coi test service giả biên xác thực là nghiệm thu API/PostgreSQL thật.
 - TypeScript web/server/tests, ESLint các file TS/TSX đổi, Prettier code/CSS và git diff --check đạt. Không chạy build trong phiên này.
 - Đã xem Sảnh local: nhãn 2/5, 1/5 và Không cho xem cập nhật đúng; không tràn ngang. Preview dùng dữ liệu minh họa, không thay nghiệm thu tài khoản/phòng thật.
-- Đã viết hồi quy PostgreSQL thật cho cặp Tái đấu bị thay người, custom LOCKED và API Khách Undo AI. Chưa chạy các ca DB trong phiên này: không có PostgreSQL local, Docker daemon chưa chạy. Không trỏ fixture test vào Supabase/production.
+- Hồi quy PostgreSQL cho cặp Tái đấu bị thay người, custom LOCKED và API Khách Undo AI đã được chạy ở lượt tiếp: 12 ca Tái đấu và 9 ca Khách đạt. Dùng PostgreSQL 17 tạm, dữ liệu tổng hợp riêng trên loopback; không trỏ fixture vào Supabase/production.
 - Chưa nghiệm thu SMTP/Google/LiveKit thiết bị thật, Cloud migrations, p95/tải 50 người, toàn bộ D1–D10 hoặc PO. Không coi unit/component xanh là PASS cho các cổng này.
 
 ### 16.3 Phần còn lại sau lượt này
 
-P2 còn thiếu mã hoặc cần hoàn thiện: Ranked 01–06, Casual queue 07 và phần Tái đấu Casual 09, Undo online 08, sticker 17, widget AI 22, công cụ demo mạng 23. P2-12 đã có lưu AI nhưng đường hết hạn 30 phút còn drop mà chưa lưu Bỏ dở bền; không ghi hoàn tất Story này. History/Replay/FEN/PGN và Undo AI đã có mã, không mặc định cần viết lại.
+P2 còn thiếu mã hoặc cần hoàn thiện: Ranked 01–06, Casual queue 07 và phần Tái đấu Casual 09, Undo online 08, sticker 17, widget AI 22, công cụ demo mạng 23. Đường P2-12 hết hạn 30 phút của chức năng lưu AI đã được sửa ở mục 16.4; chưa coi một đường sửa này là nghiệm thu toàn Story. History/Replay/FEN/PGN và Undo AI đã có mã, không mặc định cần viết lại.
 
 Các cổng nghiệm thu P1 còn thiếu bằng chứng hiện tại vẫn phải hoàn tất trước khi tuyên bố P1 ổn và chuyển triển khai P2. Không tự đánh dấu Jira Done hoặc áp kết quả đo cũ cho bản sửa mới.
+
+
+### 16.4 Lượt rà soát tiếp theo — 31/10/2026
+
+Tiếp tục trên cùng nhánh/PR #157. Sửa các đường đã triển khai theo yêu cầu hiện hành; không thay phân kỳ, không mở Ranked/Casual/Undo online hoặc tự đánh dấu Jira Done.
+
+| Yêu cầu / truy vết | Lỗi và kết quả sửa |
+|---|---|
+| YC1, BA 1.5, AC-P2-20.1/21.2 — XIAN-178, XIAN-180 | Gửi mã mới thành công cấp lại năm lượt thử. SMTP lỗi giữ mã/capability/số lần sai cũ và cooldown; callback gửi muộn được đối chiếu marker, request, hash, thời điểm và capability để không ghi đè lần gửi hoặc xác minh mới. Không tuyên bố quản lý quota của nhà cung cấp. |
+| YC1, US-01.4 / T65 — XIAN-101 | Hồ sơ bỏ kết quả sau unmount/đổi tài khoản và giữ draft mới khi save cũ về. Header/vị trí/hộp xác nhận đăng xuất gắn actor; phản hồi A không tác động B. Lookup tên cũ cùng actor không đè tên vừa lưu; trang AI remount khi đổi actor cùng URL. |
+| YC6, AC-06.3 — XIAN-91 | Xuống xem hoặc Host chuyển đối thủ xuống xem phát outbox thu hồi media trong cùng transaction. Mời/chấp nhận xuống ghế kiểm cả reservation AI có room_id NULL; lỗi không làm mất ghế hoặc thay roster. |
+| YC6, AC-06.3.4 — XIAN-94 | Host có nút chuyển đối thủ sang người xem tại ghế đối thủ, kèm trạng thái thiếu quyền/đầy hàng xem; dùng version và API hiện hành. |
+| AC-00.3.5, BA 1.8 — XIAN-48, XIAN-57, XIAN-61 | Cả 13 HTTP mutation phòng bắt buộc proof tab/kết nối/generation. Store đối chiếu controller và presence connected dưới withRoom. Thiếu/sai proof không ghi; FE khóa thao tác và đóng xác nhận cũ khi mất quyền. Spectator sở hữu kết nối vẫn được trả lời lời mời/rời; create/join/read và cleanup tin cậy giữ ngoại lệ. |
+| YC7, AC-P2-24.2–3 — XIAN-186 | Đổi mức chia sẻ camera/mic cũng yêu cầu proof kết nối hiện hành dưới actor lock; tab cũ/mất kết nối không đổi cấu hình chia sẻ. |
+| YC7, AC-07.2 — XIAN-94 | LiveKit ngắt cuối phiên dừng mọi track private/stage, hiện Camera/mic tạm thời không dùng được và cho thử lại chỉ nhận; không phát lệnh phòng/ván hoặc tự bật lại thiết bị. |
+| Chức năng AI đã có, AC-P2-12.2 — XIAN-162 | Hết ân hạn 30 phút kiểm lại đúng reservation/boot/presence dưới khóa; lưu phần nước hiệu lực và Bỏ dở trung lập cho thành viên trước COMMIT rồi mới hủy job/xóa RAM. Rollback giữ RAM/ghế, candidate cũ không đụng ván mới, terminal thật được giữ; Khách không lưu history. Metadata phân biệt mất kết nối với lỗi engine/restart. |
+| Chức năng xuất đã có, AC-P2-15 — XIAN-168 | Response FEN/PGN sau rời replay, đổi biên bản hoặc mất quyền không còn ghi clipboard/tải tệp/ghi đè trạng thái mới. |
+| Hạ tầng kiểm chứng Windows | Chuẩn hóa CRLF thành LF khi nạp SQL test để checksum function khớp migration đã audit; không sửa migration cũ hoặc giá trị checksum. |
+
+**Kiểm chứng quan sát được:** 62 file / 718 test đạt, không skip (17 file server, 45 file web; lấy kết quả mới nhất từng file sau khi sửa fixture). Có API/session/coordinator/RealtimeStore/presence/PostgreSQL thật cho quyền phòng; PostgreSQL cho OTP, AI expiry/concurrency/rollback, media và ma trận RLS. Các provider/engine được thay bằng biên tổng hợp theo fixture, không xem là E2E dịch vụ thật. Cặp Tái đấu và API Khách của lượt đầu cũng đã chạy trên DB như mục 16.2.
+
+TypeScript web/server/tests, ESLint các file đổi, Prettier code/CSS và diff check đạt. Preview /dev/ui tải được, console không có lỗi; đây là trang minh họa. Không chạy build local hoặc đo lại tải/độ trễ production.
+
+**Migration bắt buộc trước backend mới:** 20261103000001_username_otp_delivery (ba cột marker/cooldown), có rollback cùng tên. Đã áp, rollback và áp lại trên DB test; FORCE RLS và quyền cột được giữ. Chưa áp Cloud hoặc cấu hình SMTP/Google/LiveKit thật. Các cổng D1–D10, thiết bị/dịch vụ thật và PO vẫn chưa nghiệm thu; không kết luận toàn bộ P1 đã hoàn tất.
