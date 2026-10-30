@@ -77,7 +77,16 @@ export function SpectatorsPanel({
         </ul>
       )}
       {canMoveToSpectator && (
-        <Button variant="secondary" loading={busy} onClick={onMoveToSpectator}>
+        <Button
+          variant="secondary"
+          loading={busy}
+          disabledReason={
+            spectators.length >= limit
+              ? "Phòng không còn chỗ cho người xem"
+              : undefined
+          }
+          onClick={onMoveToSpectator}
+        >
           Chuyển sang xem
         </Button>
       )}

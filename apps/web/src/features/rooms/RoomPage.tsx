@@ -1072,8 +1072,7 @@ export function RoomPage({
               player &&
               room.hostId !== userId &&
               room.status === "WAITING" &&
-              !room.countdown &&
-              (room.spectators?.length ?? 0) < room.viewerLimit
+              !room.countdown
             }
             canInviteDown={
               player &&
