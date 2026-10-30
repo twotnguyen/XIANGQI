@@ -59,6 +59,7 @@ const extraMigrations = [
   "20261019000021_principal_fk_indexes",
   "20261019053133_idle_in_transaction_timeout",
   "20261019060000_guest_privacy_receipt_redaction",
+  "20261101000001_friend_presence_invites",
 ];
 
 // Real production boot: Postgres-backed room/guest runtime, Nest HTTP app and
@@ -81,7 +82,11 @@ export async function bootGuestRuntime(): Promise<GuestBoot> {
       PROFILE_ENABLED: "true",
       HISTORY_ENABLED: "true",
     };
-    const friends = await createFriendRuntime(modules, r.context);
+    const friends = await createFriendRuntime(
+      modules,
+      r.context,
+      runtime.friendInvites,
+    );
     const history = await createHistoryRuntime(modules, r.context);
     const profile = await createProfileRuntime(modules, r.context);
     if (!friends || !history || !profile)

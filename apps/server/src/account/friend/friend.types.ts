@@ -29,3 +29,24 @@ export interface RoomInviteView {
   createdAt: string;
   expiresAt: string;
 }
+/** Thông báo từ chối gửi cho người mời; ack để tiêu thụ. */
+export interface InviteDeclineView {
+  id: string;
+  inviteId: string;
+  displayName: string;
+  createdAt: string;
+}
+export interface InviteStateView {
+  cooldownUntil: string | null;
+  declines: InviteDeclineView[];
+}
+/** Phản hồi lưu bền vững theo lời mời; replay trả lại đúng body này. */
+export type RoomInviteResponse =
+  | { accepted: false; cooldownUntil: string }
+  | {
+      accepted: true;
+      roomId: string;
+      version: number;
+      role: "red" | "black" | "spectator";
+      notice?: string;
+    };

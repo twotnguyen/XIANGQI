@@ -1,6 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { maskForbiddenChat } from "@xiangqi/shared";
+import { FriendStore } from "../account/friend/friend.store.js";
+import { RoomFriendInvites } from "./room/friend-room-port.js";
 import { RoomSessionSeats } from "./room/session-seat-port.js";
 import { SessionSeatStore } from "./room/session-seat-store.js";
 import { ChatStore } from "./chat/chat-store.js";
@@ -568,6 +570,13 @@ async function bootRoomRuntime(
     module,
     guests,
     authorizer: sessionAuthorizer,
+    friendInvites: new RoomFriendInvites(
+      new FriendStore(pool),
+      rooms,
+      coordinator,
+      sessionAuthorizer,
+      withScope,
+    ),
     withScope,
     attachAiTermination(port: AiSessionTermination) {
       guestPort.attachAiTermination(port);

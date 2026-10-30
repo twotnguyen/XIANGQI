@@ -40,6 +40,15 @@ Nơi khác chỉ import `RoomStore` và `MatchStore`. Thêm lệnh vào lớp th
 
 Feed Sảnh (`game/room/public/public-room-feed.ts`) giữ `PUBLIC_FEED_POLL_MS = 1000` ms cho AC-06.2.3/06.2.15 (≤ 2 giây). Mỗi người đọc vẫn kiểm quyền trong giao dịch riêng; catalog PUBLIC dùng chung theo tick qua `PublicRoomCatalog`, không chia sẻ quyền hoặc phiên. Probe PostgreSQL test cô lập với 50 người đọc, 50 phòng PUBLIC và 5 phòng CODE_ONLY đo được 50 → 1 truy vấn catalog/tick, 350 → 301 câu SQL/tick, không có dòng riêng tư lọt ra. Đây là số đo query cục bộ, không phải nghiệm thu độ trễ mạng production.
 
+## YC3: bạn bè, presence và lời mời phòng
+
+- `FriendStore.withUsers` khóa hai actor theo thứ tự trước khi gửi/chấp nhận kết bạn; giới hạn 200 bạn và 50 tổng pending kiểm cả hai phía. Accept reset bộ đếm từ chối cả cặp; thu hồi/hết hạn không tính là Từ chối.
+- `POST /friends/presence` nhận `connectionId` UUID của tab, chỉ sau xác thực thành viên. Web heartbeat mỗi 2 giây, lease DB 8 giây; còn bất kỳ lease hợp lệ thì không Offline. `listFriends` chiếu trạng thái trong một SQL, ưu tiên Offline rồi mới xét mọi reservation `active_players` (phòng/AI). Lease hết hạn không giải phóng ghế. Danh sách/chuông/popup đọc mỗi 2 giây, không chồng request và không cho kết quả cũ ghi đè sau mutation.
+- Lời mời phòng giữ deadline gốc 30 giây và dedupe pending. Cooldown 10 giây dùng chung toàn người gửi; Từ chối/X/Esc kéo hạn ít nhất đến lúc xử lý +10 giây. Thông báo từ chối lưu bền, một dòng/invite, chỉ đúng người gửi được ack; hết hạn tự nhiên không tạo thông báo.
+- `FriendRoomPort` nối sang `RoomFriendInvites`: resolve proof/prefetch đích rồi `RoomTransactions.withRoom` khóa đầy đủ nguồn/đích, kiểm phiên và invite, join thật, ghi kết quả/commandId trong cùng commit. Không giữ khóa social/caller trước `withRoom`; lỗi B rollback giữ A. Replay chỉ trả kết quả khi vẫn có quyền phòng. Sender rời ghế/hủy bạn không revoke; trigger khóa/đóng phòng thu hồi pending trong cùng transaction.
+- Cần migration `20261101000001_friend_presence_invites.sql` và rollback đối ứng trước khi bật runtime mới. Rollback từ chối sau khi đã ghi presence/cooldown/phản hồi. Migration chỉ expire pending đã quá hạn trước khi tạo unique index; nếu còn duplicate **đang còn hạn**, chờ hết 30 giây và chạy lại, không xóa dữ liệu hay sửa migration cũ. Runtime bạn bè yêu cầu port phòng và schema mới sẵn sàng; không khởi động với accept giả/trả mã.
+
+
 ## Xác thực hai lớp
 
 Bearer Supabase được xác minh chữ ký ES256, issuer/audience/role và hạn bằng `jose` + JWKS công khai ngoài transaction; không gọi Auth userinfo từng lệnh. Chỉ cache khóa công khai, không cache token/phiên/quyền. Sau xác minh, tra capability base64url 43 ký tự (băm trong `xiangqi_auth.app_sessions`) và tài khoản hiện hành; transaction game kiểm lại phiên dưới khóa trước khi đọc/ghi. Refresh vẫn qua Auth và kiểm DB trước/sau. JWT còn hạn + khóa đã cache có thể dùng khi Auth API lỗi; thu hồi trực tiếp bearer/key phụ thuộc hạn/cache (xem [login.md](login.md)), còn thu hồi appSession vẫn qua DB. Khách là loại actor riêng. `DIRECT_URL` phải là direct/session pooler, không phải cổng 6543.

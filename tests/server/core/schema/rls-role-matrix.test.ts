@@ -25,6 +25,7 @@ const migrations = [
   "20261011000016_room_viewers",
   "20261011000017_rls_hardening",
   "20261017000018_room_code_digits",
+  "20261101000001_friend_presence_invites",
 ];
 const appSchemas = [
   "public",
