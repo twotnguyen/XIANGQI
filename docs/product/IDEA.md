@@ -1,6 +1,6 @@
 # Cờ Tướng Online · Ý tưởng sản phẩm
 
-**Bản tổng quan, đồng bộ quyết định PO đến ngày 09/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
+**Bản tổng quan, đồng bộ phạm vi BA 0.18–0.21; đối chiếu mã ngày 31/10/2026.** Tài liệu này chỉ giới thiệu sản phẩm, không tạo luật. Nguồn luật: [BA-SCOPE-DECISIONS.md](BA-SCOPE-DECISIONS.md) (Phần 0 ưu tiên cao nhất); tiêu chí nghiệm thu: [BACKLOG-P1.md](BACKLOG-P1.md).
 
 ## 1. Sản phẩm và mục đích
 
@@ -28,16 +28,16 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 ## 4. Phạm vi và ưu tiên
 
-**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Chỉ giao diện Kỳ Đài Cổ Phong.
+**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). P1 còn gồm Thách đấu, DM/unread, Tái đấu phòng tự tạo, Không giới hạn/chống treo, Đổi/Khôi phục Username, chuyển media giữa tab và ba lựa chọn chủ đề theo BA 0.20–0.21.
 
-**P2:** Đánh Hạng/Elo, ghép ngẫu nhiên, Tái đấu chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, QR, khôi phục Username, đổi Username, tiện ích demo, giao diện bổ sung (BA Phần 11). Quên mật khẩu không còn thuộc P2.
+**P2:** Đánh Hạng/Elo, ghép ngẫu nhiên và Tái đấu Casual, Xin đi lại online/AI, Lịch sử/Replay/FEN/PGN, sticker, widget AI và công cụ demo mạng. Một số phần P2 đã có mã nhưng chưa đồng nghĩa nghiệm thu đầy đủ. **QR đã bị loại khỏi cả hai phân kỳ**; các mục chuyển P1 theo BA 0.20–0.21 không còn nằm trong danh sách P2 còn lại.
 
 **Không làm:** xem BA 10.2.
 
 ## 5. Thành công được chứng minh thế nào?
 
 - Baseline trước bổ sung 30/10: 9 Epic, 27 Story, 268 AC, 71 Task và 880 giờ trong 4 Sprint ([kế hoạch](../planning/KE-HOACH-JIRA.md)). YC1 có thêm 20 tiêu chí mật khẩu tại đặc tả riêng; chưa tái ước lượng hoặc cập nhật Jira trong tác vụ tài liệu này.
-- Kế hoạch dự kiến: BA đã chốt; lịch triển khai từ 10/10, hoàn tất và tổng duyệt ngày 04/11. Jira hiện có 36 mục BA Done và 71 Task To Do; bốn Sprint chưa bắt đầu. Chưa triển khai sản phẩm; số AC/TC là độ phủ đặc tả, không phải số ca đã kiểm đạt.
+- Kế hoạch dự kiến: BA đã chốt; lịch triển khai từ 10/10, hoàn tất và tổng duyệt ngày 04/11. Snapshot kế hoạch ban đầu có 36 mục BA Done và 71 Task To Do; đây không phải trạng thái Jira hiện tại. Sản phẩm đã có nhiều phần triển khai và bằng chứng local trong các đặc tả YC1–YC3; xem đối chiếu ngày 31/10 ở TONG-QUAN-YEU-CAU mục 16. Số AC/TC và trạng thái BA không thay kết quả nghiệm thu phần mềm.
 - Điều kiện nghiệm thu: kịch bản demo D1–D10 chạy trọn vẹn trên máy demo.
 - Luật cờ kiểm độc lập ở máy chủ; không tin kết quả client gửi.
 - Ngưỡng máy cờ, đồng bộ và quy mô phải đo thật; không đạt ghi BLOCKED, không hạ ngưỡng ngầm.

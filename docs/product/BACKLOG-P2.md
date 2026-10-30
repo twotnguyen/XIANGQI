@@ -6,7 +6,7 @@ Nguồn BA đã được PO duyệt; Story, AC/TC và ước lượng dưới đ
 
 **PO đổi phạm vi 30/10/2026 — BA 0.20:** `US-P2-19`/XIAN-133 (Thách đấu), `US-P2-18`/XIAN-132 (DM/unread), `US-P2-10`/XIAN-124 (Không giới hạn/chống treo) thuộc **P1**; phần phòng tự tạo của `US-P2-09`/XIAN-123 cũng thuộc **P1**, phần Casual vẫn P2. **Bỏ `US-P2-16`/XIAN-130 (QR) khỏi cả hai phân kỳ.** Giữ mã cũ và các AC/Task dưới đây để truy vết, không tự tạo issue/mã thay thế hoặc đánh dấu đã triển khai. Bảng giờ/Epic/Task và dữ liệu kế hoạch là baseline lịch sử, không phải tổng phạm vi P2 còn lại; chưa tái ước lượng hoặc cập nhật Jira.
 
-**PO bổ sung BA 0.21:** `US-P2-20`/XIAN-134, `US-P2-21`/XIAN-135, `US-P2-24`/XIAN-138 và `US-P2-25`/XIAN-139 đều **P1**, giữ toàn bộ AC/Task/ID cũ. Chưa triển khai/nghiệm thu hoặc sửa Jira; bảng Epic/giờ là baseline trước chuyển, không phải tổng P2 còn lại.
+**PO bổ sung BA 0.21:** `US-P2-20`/XIAN-134, `US-P2-21`/XIAN-135, `US-P2-24`/XIAN-138 và `US-P2-25`/XIAN-139 đều **P1**, giữ toàn bộ AC/Task/ID cũ. Đã có mã và bằng chứng local tại YC1 mục 19; chưa nghiệm thu Cloud/PO hoặc sửa Jira. Bảng Epic/giờ là baseline trước chuyển, không phải tổng P2 còn lại.
 
 ## Baseline và ước lượng
 
