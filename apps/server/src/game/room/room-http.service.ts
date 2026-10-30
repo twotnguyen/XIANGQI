@@ -273,6 +273,34 @@ export class RoomHttpService {
     });
   }
   /**
+   * Đề nghị tái đấu sau ván phòng tùy chỉnh: giữ phe (KEEP) hoặc đổi phe (SWAP).
+   */
+  async proposeRematch(
+    proof: RoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    side: "KEEP" | "SWAP",
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.proposeRematch(scope, roomId, side);
+    });
+  }
+  /**
+   * Đồng ý hoặc từ chối đề nghị tái đấu.
+   */
+  async respondRematch(
+    proof: RoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    accept: boolean,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.respondRematch(scope, roomId, accept);
+    });
+  }
+  /**
    * Thay đổi chế độ hiển thị phòng cờ (PUBLIC, CODE_ONLY, LOCKED).
    */
   async changeVisibility(

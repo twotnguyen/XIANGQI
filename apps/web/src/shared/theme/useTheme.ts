@@ -1,49 +1,86 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  applyTheme,
-  isThemeChoice,
-  readStoredTheme,
-  storeTheme,
-  type ThemeChoice,
-} from "./theme.js";
+import { useSyncExternalStore } from "react";
+import { DEFAULT_THEME, type ThemeChoice } from "@xiangqi/shared";
+import { applyTheme } from "./theme.js";
 
-function browserStorage(): Storage | null {
-  try {
-    return typeof window === "undefined" ? null : window.localStorage;
-  } catch {
-    return null;
-  }
+/*
+ * Chủ đề đang áp dụng trên thiết bị. Nguồn đúng là tài khoản trên server; module này
+ * chỉ giữ giá trị đã được server xác nhận (hoặc mặc định khi khách/đăng xuất). Không dùng localStorage.
+ */
+let applied: ThemeChoice = DEFAULT_THEME;
+let writes = 0;
+const listeners = new Set<() => void>();
+const darkQuery =
+  typeof window !== "undefined" && typeof window.matchMedia === "function"
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
+
+function render() {
+  applyTheme(
+    applied,
+    document.documentElement.dataset,
+    darkQuery?.matches ?? false,
+  );
+}
+
+darkQuery?.addEventListener?.("change", () => {
+  if (applied === "system") render();
+});
+
+/**
+ * Đặt chủ đề đang áp dụng và cập nhật thẻ html; chỉ gọi sau khi server xác nhận.
+ */
+export function setAppliedTheme(choice: ThemeChoice) {
+  applied = choice;
+  writes += 1;
+  render();
+  listeners.forEach((listener) => listener());
+}
+
+export function currentAppliedTheme(): ThemeChoice {
+  return applied;
+}
+
+/** Số lần ghi local; đọc trước và sau một request để biết kết quả có bị ghi đè không. */
+export function appliedThemeWrites(): number {
+  return writes;
+}
+
+let accountScope = 0;
+
+/**
+ * Gọi khi người dùng đổi (hoặc đăng xuất/khách). Kết quả lưu của phạm vi cũ bị bỏ qua.
+ */
+export function beginAccountScope() {
+  accountScope += 1;
+  listeners.forEach((listener) => listener());
+}
+
+export function currentAccountScope(): number {
+  return accountScope;
+}
+
+export function useAccountScope(): number {
+  return useSyncExternalStore(
+    subscribe,
+    () => accountScope,
+    () => 0,
+  );
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
 }
 
 /**
- * Custom React hook quản lý trạng thái chủ đề giao diện, đồng bộ với localStorage và phản ứng theo chế độ sáng/tối của hệ điều hành.
+ * Hook trả về chủ đề đang áp dụng trên thiết bị.
  */
-export function useTheme() {
-  const [choice, setChoiceState] = useState<ThemeChoice>(() =>
-    readStoredTheme(browserStorage() ?? { getItem: () => null }),
+export function useAppliedTheme(): ThemeChoice {
+  return useSyncExternalStore(
+    subscribe,
+    () => applied,
+    () => DEFAULT_THEME,
   );
-  useEffect(() => {
-    const media =
-      typeof window.matchMedia === "function"
-        ? window.matchMedia("(prefers-color-scheme: dark)")
-        : null;
-    const apply = () =>
-      applyTheme(
-        choice,
-        document.documentElement.dataset,
-        media?.matches ?? false,
-      );
-    apply();
-    if (choice !== "system" || !media) return;
-    const listener = () => apply();
-    media.addEventListener?.("change", listener);
-    return () => media.removeEventListener?.("change", listener);
-  }, [choice]);
-  const setChoice = useCallback((next: ThemeChoice) => {
-    if (!isThemeChoice(next)) return;
-    const storage = browserStorage();
-    if (storage) storeTheme(storage, next);
-    setChoiceState(next);
-  }, []);
-  return { choice, setChoice };
 }

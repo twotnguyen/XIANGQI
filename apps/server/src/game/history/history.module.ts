@@ -121,7 +121,7 @@ export async function createHistoryRuntime(
           AND pg_catalog.md5(pg_catalog.pg_get_constraintdef(oid))='9ed29788a7d07ed31ce99d03f2fc81a4')
         AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid='public.matches'::pg_catalog.regclass
           AND conname='matches_status_and_outcome_invariants' AND contype='c' AND convalidated
-          AND pg_catalog.md5(pg_catalog.pg_get_constraintdef(oid))='b065e4eab6b66eb703d4e215ab8d2c29')
+          AND pg_catalog.md5(pg_catalog.pg_get_constraintdef(oid))='32fedf9b06220a513a35e17ae3b0bf28')
         AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid='public.match_events'::pg_catalog.regclass
           AND contype='u' AND convalidated AND pg_catalog.pg_get_constraintdef(oid)='UNIQUE (match_id, version)')
         AND EXISTS(SELECT 1 FROM pg_catalog.pg_index WHERE indexrelid=pg_catalog.to_regclass('public.match_start_token_unique')

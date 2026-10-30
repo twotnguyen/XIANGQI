@@ -47,6 +47,7 @@ function snapshot(): RoomSnapshot {
       graceUntil: { red: null, black: null },
       countdown: null,
       swapOffer: null,
+      rematchOffer: null,
       downOffer: null,
       spectators: [],
     },
@@ -71,6 +72,8 @@ function setup() {
       refresh: vi.fn(),
       command: vi.fn(),
       close: vi.fn(),
+      tabId: "chat-tab",
+      takeover: vi.fn(async () => {}),
     },
   };
   const hook = renderHook(() => useRoomChat(roomId, connection));

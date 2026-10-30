@@ -41,11 +41,9 @@ export interface GuestBoot {
   close(): Promise<void>;
 }
 
-// Migrations after the shared reset() baseline (1-7, 18), in name order. Required
+// Migrations after the shared reset() baseline (1-9, 17, 31, 2, 3), in name order. Required
 // by room chat/AI reservations, friends/media/viewers, FK/index and privacy grants.
 const extraMigrations = [
-  "20261011000008_room_modes",
-  "20261011000009_match_draw",
   "20261011000010_room_chat",
   "20261011000011_ai_reservations",
   "20261011000012_ai_presence",
@@ -59,6 +57,12 @@ const extraMigrations = [
   "20261019000021_principal_fk_indexes",
   "20261019053133_idle_in_transaction_timeout",
   "20261019060000_guest_privacy_receipt_redaction",
+  "20261029000001_username_account_email",
+  "20261030000001_password_recovery",
+  "20261101000001_friend_presence_invites",
+  "20261102000001_username_management",
+  "20261102000004_direct_messages",
+  "20261102000005_account_theme",
 ];
 
 // Real production boot: Postgres-backed room/guest runtime, Nest HTTP app and
@@ -81,7 +85,11 @@ export async function bootGuestRuntime(): Promise<GuestBoot> {
       PROFILE_ENABLED: "true",
       HISTORY_ENABLED: "true",
     };
-    const friends = await createFriendRuntime(modules, r.context);
+    const friends = await createFriendRuntime(
+      modules,
+      r.context,
+      runtime.friendInvites,
+    );
     const history = await createHistoryRuntime(modules, r.context);
     const profile = await createProfileRuntime(modules, r.context);
     if (!friends || !history || !profile)

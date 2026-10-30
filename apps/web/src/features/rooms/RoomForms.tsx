@@ -1,20 +1,32 @@
 import { useState, type FormEvent } from "react";
 import { Button, TextField, Notice } from "../../shared/ui/primitives.js";
 import "./rooms.css";
+/** 0 = Không giới hạn (chỉ thành viên tạo phòng); 5/10/15 phút mỗi bên. */
+export type RoomTimeMinutes = 0 | 5 | 10 | 15;
 export interface CreateRoomInput {
-  timeMinutes: 5 | 10 | 15;
+  timeMinutes: RoomTimeMinutes;
   viewerLimit: number;
   visibility: "CODE_ONLY" | "PUBLIC";
 }
 /**
  * Biểu mẫu tạo phòng cờ mới với thời gian, giới hạn người xem và quyền truy cập.
+ * `allowUnlimited=false` (Khách) ẩn mức Không giới hạn; mức mặc định là 10 phút.
  */
 export function CreateRoomForm({
   onCreate,
+  initialTimeMinutes,
+  allowUnlimited = true,
 }: {
   onCreate: (input: CreateRoomInput) => Promise<void>;
+  initialTimeMinutes?: RoomTimeMinutes;
+  allowUnlimited?: boolean;
 }) {
-  const [timeMinutes, setTime] = useState<5 | 10 | 15>(10);
+  const [timeMinutes, setTime] = useState<RoomTimeMinutes>(
+    initialTimeMinutes ?? (allowUnlimited ? 0 : 10),
+  );
+  const choices: RoomTimeMinutes[] = allowUnlimited
+    ? [0, 5, 10, 15]
+    : [5, 10, 15];
   const [viewerLimit, setViewers] = useState(5);
   const [visibility, setVisibility] = useState<"CODE_ONLY" | "PUBLIC">(
     "CODE_ONLY",
@@ -49,7 +61,7 @@ export function CreateRoomForm({
       <fieldset disabled={busy}>
         <legend>Thời gian mỗi bên</legend>
         <div className="xq-room-options">
-          {([5, 10, 15] as const).map((value) => (
+          {choices.map((value) => (
             <label key={value}>
               <input
                 type="radio"
@@ -57,7 +69,7 @@ export function CreateRoomForm({
                 checked={timeMinutes === value}
                 onChange={() => setTime(value)}
               />
-              {value} phút
+              {value === 0 ? "Không giới hạn" : `${value} phút`}
             </label>
           ))}
         </div>

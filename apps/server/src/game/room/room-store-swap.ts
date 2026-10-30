@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { invalidRoomInput, RoomError, type RoomScope } from "./room.types.js";
-import { RoomStoreCore } from "./room-store-core.js";
+import { RoomStoreCore, swapCooldownOpen } from "./room-store-core.js";
 /**
  * Lớp mở rộng của RoomStore hỗ trợ tính năng đề nghị đổi bên (Red <-> Black) giữa 2 người chơi.
  */
@@ -47,7 +47,7 @@ export class RoomSwapStore extends RoomStoreCore {
       throw new RoomError("SWAP_ALREADY_PENDING", "Đang có đề nghị đổi bên");
     const cooling = (
       await s.client.query(
-        "SELECT resolved_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND proposer_id=$2 AND status IN('DECLINED','EXPIRED') AND resolved_at+interval '60 seconds'>clock_timestamp() ORDER BY resolved_at DESC LIMIT 1",
+        `SELECT resolved_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND proposer_id=$2 AND ${swapCooldownOpen} ORDER BY resolved_at DESC LIMIT 1`,
         [id, s.actor.userId],
       )
     ).rows[0];

@@ -146,6 +146,7 @@ export class MediaAccess {
     rawUserId: string,
     rawRoomId: string,
     devices: { camera: boolean; mic: boolean },
+    tabId: string,
   ): Promise<
     MediaToken & { stage: { token: string; roomName: string } | null }
   > {
@@ -163,6 +164,16 @@ export class MediaAccess {
       if (!role)
         throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
       const publishing = devices.camera || devices.mic;
+      // Chỉ tab đang điều khiển phòng mới được phát; tab chỉ xem chỉ nhận hình tiếng.
+      if (
+        role === "PLAYER" &&
+        publishing &&
+        (await tx.controllingTab(roomId, userId)) !== tabId.toLowerCase()
+      )
+        throw new MediaError(
+          "MEDIA_TAB_READ_ONLY",
+          "Tab này chỉ có thể xem. Hãy chuyển thiết bị sang tab này trước khi bật camera hoặc mic.",
+        );
       const ttl = 600;
       const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
       if (role !== "PLAYER") {

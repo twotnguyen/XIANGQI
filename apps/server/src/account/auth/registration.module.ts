@@ -42,6 +42,9 @@ import { createSmtpEmailSender } from "../email/smtp-email.js";
 import { PasswordModule } from "../password/password.module.js";
 import { PasswordService } from "../password/password.service.js";
 import { PasswordStore } from "../password/password.store.js";
+import { UsernameModule } from "../username/username.module.js";
+import { UsernameService } from "../username/username.service.js";
+import { UsernameStore } from "../username/username.store.js";
 /**
  * Tác vụ nền định kỳ dọn dẹp các tài khoản đăng ký quá hạn không hoàn tất
  * hoặc khôi phục các trạng thái tài khoản đang pending.
@@ -230,7 +233,7 @@ export async function createRegistrationRuntime(
   let schemaReady = true;
   try {
     const schema = await pool.query(
-      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
+      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
     );
     if (
       !schema.rows[0]?.ready ||
@@ -317,6 +320,14 @@ export async function createRegistrationRuntime(
         env.NODE_ENV === "production",
       ),
       EmailModule.forRoot(emails, sessions),
+      UsernameModule.forRoot(
+        new UsernameService(
+          new UsernameStore(sessionPool),
+          mailer,
+          settings.secret,
+        ),
+        sessions,
+      ),
       PasswordModule.forRoot(
         new PasswordService(
           new PasswordStore(sessionPool),

@@ -31,7 +31,7 @@ section.reconnect-status {
   text-align: center;
 }
 .reconnect-status--blocking::backdrop {
-  background: rgba(18, 13, 10, 0.78);
+  background: color-mix(in srgb, var(--color-paper) 78%, transparent);
 }
 .reconnect-status--blocking h2 {
   margin: 0 0 12px;

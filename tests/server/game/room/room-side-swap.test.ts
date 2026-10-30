@@ -73,7 +73,10 @@ describe.skipIf(!databaseUrl)("side swap offers", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
+    await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
   });
   it("proposes, accepts, swaps seats and resets ready", async () => {
@@ -205,5 +208,122 @@ describe.skipIf(!databaseUrl)("side swap offers", () => {
         store.respondSwap(s, e.roomId, true),
       ),
     ).rejects.toMatchObject({ code: "SWAP_NOT_PENDING" });
+  });
+  it("exposes the sixty-second cooldown to the proposer only, as an absolute server time", async () => {
+    const { h, b, roomId } = await waitingPair();
+    await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.respondSwap(s, roomId, false),
+    );
+    const {
+      rows: [declined],
+    } = await pool.query(
+      "SELECT resolved_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='DECLINED'",
+      [roomId],
+    );
+    const expected = new Date(
+      declined.resolved_at.getTime() + 60_000,
+    ).toISOString();
+    const proposer = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(proposer.room.swapCooldownUntil).toBe(expected);
+    const responder = await run(b.a, b.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(responder.room.swapCooldownUntil).toBeNull();
+  });
+  it("never applies a cooldown after withdraw and clears it once sixty seconds pass", async () => {
+    const { h, b, roomId } = await waitingPair();
+    await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
+    await run(h.a, h.proof, [roomId], (s) => store.withdrawSwap(s, roomId));
+    const withdrawn = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(withdrawn.room.swapCooldownUntil).toBeNull();
+    await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.respondSwap(s, roomId, false),
+    );
+    const cooling = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(cooling.room.swapCooldownUntil).not.toBeNull();
+    await pool.query(
+      "UPDATE xiangqi_room.side_swap_offers SET resolved_at=clock_timestamp()-interval '61 seconds' WHERE room_id=$1 AND status='DECLINED'",
+      [roomId],
+    );
+    const cleared = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(cleared.room.swapCooldownUntil).toBeNull();
+  });
+  it("exposes the cooldown after the worker expires an unanswered offer", async () => {
+    const { h, b, roomId } = await waitingPair();
+    await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
+    await pool.query(
+      "WITH t AS MATERIALIZED(SELECT clock_timestamp()-interval '1 second' deadline) UPDATE xiangqi_room.side_swap_offers SET created_at=t.deadline-interval '30 seconds',expires_at=t.deadline FROM t WHERE room_id=$1 AND status='PENDING'",
+      [roomId],
+    );
+    await run(h.a, h.proof, [roomId], (s) => store.expireSwapOffers(s, roomId));
+    const {
+      rows: [expired],
+    } = await pool.query(
+      "SELECT resolved_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='EXPIRED'",
+      [roomId],
+    );
+    const proposer = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(proposer.room.swapCooldownUntil).toBe(
+      new Date(expired.resolved_at.getTime() + 60_000).toISOString(),
+    );
+    const responder = await run(b.a, b.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(responder.room.swapCooldownUntil).toBeNull();
+  });
+  it("lets the declined seat counter-propose while the decliner stays cooled", async () => {
+    const { h, b, roomId } = await waitingPair();
+    await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.respondSwap(s, roomId, false),
+    );
+    const counter = await run(b.a, b.proof, [roomId], (s) =>
+      store.proposeSwap(s, roomId),
+    );
+    expect(counter.room.swapOffer).toMatchObject({
+      proposerId: b.a.userId,
+      responderId: h.a.userId,
+    });
+    await expect(
+      run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId)),
+    ).rejects.toMatchObject({ code: "SWAP_ALREADY_PENDING" });
+    const decliner = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(decliner.room.swapCooldownUntil).not.toBeNull();
+    const counterer = await run(b.a, b.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(counterer.room.swapCooldownUntil).toBeNull();
+  });
+  it("keeps the cooldown across leave and rejoin so reseating does not bypass it", async () => {
+    const { h, b, roomId } = await waitingPair();
+    await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.respondSwap(s, roomId, false),
+    );
+    await run(h.a, h.proof, [roomId], (s) => store.leave(s, roomId));
+    await run(h.a, h.proof, [roomId], (s) =>
+      store.join(s, { commandId: randomUUID(), roomId, intent: "auto" }),
+    );
+    const snap = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(snap.room.swapCooldownUntil).not.toBeNull();
+    await expect(
+      run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId)),
+    ).rejects.toMatchObject({ code: "SWAP_COOLDOWN" });
   });
 });

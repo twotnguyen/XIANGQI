@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { invalidRoomInput, RoomError, type RoomScope } from "./room.types.js";
-import { RoomSwapStore } from "./room-store-swap.js";
+import { RoomRematchStore } from "./room-store-rematch.js";
 /**
  * Lớp mở rộng của RoomStore quản lý vai trò khán giả và tương tác ghế ngồi:
  * Chuyển đổi vai trò người chơi/khán giả, mời khán giả xuống ghế và đuổi khán giả khỏi phòng.
  */
-export class RoomViewerStore extends RoomSwapStore {
+export class RoomViewerStore extends RoomRematchStore {
   private async expireDownOffers(s: RoomScope, id: string) {
     if (!(await this.downTableExists(s))) return 0;
     const due = (
@@ -38,6 +38,8 @@ export class RoomViewerStore extends RoomSwapStore {
       "DELETE FROM public.active_players WHERE user_id=$1 AND room_id=$2",
       [s.actor.userId, id],
     );
+    await this.cancel(s, id);
+    await this.closeSwapOffers(s, id);
     await this.closeDownOffers(s, id);
     await this.bump(s, id, "room.seats-changed");
     return this.snapshot(s, id);
@@ -63,6 +65,8 @@ export class RoomViewerStore extends RoomSwapStore {
       "DELETE FROM public.active_players WHERE user_id=$1 AND room_id=$2",
       [targetId, id],
     );
+    await this.cancel(s, id);
+    await this.closeSwapOffers(s, id);
     await this.closeDownOffers(s, id);
     await this.bump(s, id, "room.seats-changed");
     return this.snapshot(s, id);
@@ -200,6 +204,8 @@ export class RoomViewerStore extends RoomSwapStore {
       "INSERT INTO public.active_players(user_id,room_id,match_id) VALUES($1,$2,NULL)",
       [s.actor.userId, id],
     );
+    await this.cancel(s, id);
+    await this.closeSwapOffers(s, id);
     await this.closeDownOffers(s, id);
     await this.bump(s, id, "room.seat-invite-accepted", { offerId: offer.id });
     return this.snapshot(s, id);

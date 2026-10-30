@@ -10,7 +10,7 @@
   overflow: auto;
 }
 .match-result::backdrop {
-  background: rgba(18, 13, 10, 0.72);
+  background: color-mix(in srgb, var(--color-paper) 72%, transparent);
 }
 .match-result h2 {
   margin: 0 0 12px;

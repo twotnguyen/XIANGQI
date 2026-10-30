@@ -298,6 +298,22 @@ describe.skipIf(!realtimeTestUrl)(
         await restart.command(current, readyCommand(room.roomId)),
       ).toMatchObject({ status: "error", error: { code: "TAB_READ_ONLY" } });
     });
+    it("queues one media.revoke-user per controller change in the same transaction, never on reconnect", async () => {
+      const room = await addRoom(fixture.admin);
+      const old = room.connection();
+      const current = room.connection();
+      const count = () =>
+        fixture.rooms.revokes.filter((r) => r.roomId === room.roomId).length;
+      await store.connect(old);
+      expect(count()).toBe(0);
+      await store.connect(current);
+      expect(count()).toBe(1);
+      await store.connect(current);
+      expect(count()).toBe(1);
+      const restart = new RealtimeStore(fixture.runtime, fixture.rooms);
+      await restart.connect({ ...old, connectionId: randomUUID() });
+      expect(count()).toBe(1);
+    });
     it("fences older connections even when they share the same stable tab ID", async () => {
       const room = await addRoom(fixture.admin);
       const first = room.connection();

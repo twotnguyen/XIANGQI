@@ -15,12 +15,18 @@ giữa các thẻ, kể cả khi nút P2 có lý do vô hiệu hóa. Bộ lọc 
 dùng các mức thật 5/10/15 phút và Tất cả, công bố trạng thái qua `aria-pressed`,
 giữ thứ tự snapshot máy chủ. Không hiển thị số online/Elo khi chưa có dữ liệu.
 Ô mã phòng dùng `TextField` chung để nối nhãn/lỗi; tên chủ Khách giữ `(Khách)`.
-Nút Luật chơi mở disclosure hiện có và chuyển focus tới summary.
+Nút Luật chơi mở disclosure hiện có và chuyển focus tới summary; summary giữ
+vùng chạm tối thiểu 44px. Sảnh dùng token theo chủ đề, giữ nhãn “Không giới hạn”
+cho phòng có `timeMinutes = 0`.
 
 Đã kiểm preview ở 360×800, 390×844 và 1366×900: không tràn ngang, ảnh tải đủ,
 control Sảnh cao tối thiểu 44px; mã sai/Enter, bộ lọc, mở luật và dialog tạo
 phòng/Escape hoạt động. Giảm chuyển động tắt animation. Chưa nghiệm thu
 phòng/ván thật với server trong lần kiểm này.
+
+Sau tích hợp develop, đã xem Sảnh ở 390×844 (tối) và 1366×900 (Giấy Sáng):
+không tràn ngang; summary đo được 44px, mở/đóng và chuyển focus đúng.
+Đã thao tác lọc 5 phút/Tất cả và gửi mã sai bằng Enter để kiểm tra báo lỗi.
 
 Ưu tiên desktop/laptop: 1280×720, 1366×768, 1440×900, 1536×864,
 1920×1080; sau đó mobile 360×800 và 390×844. Các kiểm trình duyệt đã kiểm
@@ -50,9 +56,9 @@ vẫn cần được kiểm xuyên suốt trước bàn giao đầy đủ.
   thẻ riêng. Mã phòng sai tại Sảnh hiển thị lỗi trong luồng, không đè trợ giúp
   hoặc thẻ bên dưới.
 - Auth tăng vùng bấm và cỡ chữ trợ giúp; input mobile giữ 16px. Hồ sơ và bạn
-  bè cho nội dung dài co/ngắt dòng. Lời mời phòng giữ trong luồng trang, không
-  tạo lớp phủ mới che bàn cờ/chat. Media một cột trên mobile; replay giữ chiều
-  cao tối thiểu cho bàn cờ và danh sách nước ở màn thấp.
+  bè cho nội dung dài co/ngắt dòng. YC3 bổ sung popup lời mời không modal ở góc
+  màn hình, nhiều lời mời độc lập; chi tiết và kiểm chứng ở mục YC3 dưới đây.
+  Media một cột trên mobile; replay giữ chiều cao tối thiểu ở màn thấp.
 
 Đã xem `/dev/ui`, `/dev/lobby`, `/dev/login`, `/dev/register`, `/dev/board`
 ở 360×800 và 1280×720: không tràn ngang. Đã thao tác focus vòng, Escape và
@@ -60,25 +66,51 @@ trả focus của menu; dialog tạo phòng ở 844×390 giữ footer trong màn
 cuộn tới nút Tạo phòng bằng focus. Đây là kiểm giao diện preview, không phải
 nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị media.
 
+## YC3: chia sẻ phòng và bạn bè (30/10/2026)
+
+- Trang Bạn bè hai cột trên desktop, một cột dưới 800px; danh sách/kết quả tìm kiếm cuộn riêng. Giữ token/phông/component sẵn có, không thêm thư viện. Tìm kiếm bỏ phản hồi cũ khi đổi input; quan hệ đã là bạn/pending đổi hành động, không tạo lời mời trùng.
+- Chuông mở `/friends?tab=requests`; `Tabs.defaultId` chọn danh sách Lời mời dùng chung, kể cả bấm lại chuông khi đang ở Bạn bè. Poll 2 giây cập nhật quan hệ, presence và số đếm; lỗi cập nhật giữ danh sách cũ kèm cảnh báo, không giả thành rỗng.
+- Người ngồi ghế mở Dialog **Mời vào phòng**: mã/link có thể chọn, hai nút clipboard chỉ báo thành công sau ghi thật. Thành viên có tab Bạn bè; Khách không có; người xem không có nút mở. `RoomPage` nhận slot `renderInviteFriends` từ app, không import chéo feature.
+- Popup xếp cùng lúc ở góc màn hình trong vùng tối đa 50dvh có cuộn; không giành focus hoặc bẫy focus, bàn cờ/chat vẫn hoạt động. Esc/X trên popup đang tương tác = Từ chối đúng invite. Deadline tuyệt đối từ server, không reset khi reload. API accept trả chỗ đã cấp thật; lỗi B giữ route/phòng A và báo ngay trong popup.
+- Phản hồi từ chối hiện cả khi người gửi đã rời phòng; trong Dialog đang mở, tab Bạn bè cũng hiển thị phản hồi và cooldown toàn tài khoản. Thông báo có ack, không trộn vào chuông kết bạn.
+- Khung `xq-main` phòng chờ xếp dọc banner email và phòng, tránh banner ép phòng về chiều rộng 0 trên mobile. Nút chia sẻ giữ wrapper/grid-slot cũ khi chuyển nội dung sang Dialog, không bị thanh chọn phòng/camera/chat che.
+- Nhắn tin bạn bè mở `DirectChatDialog` (Dialog chuẩn): log cuộn nội bộ `role="log"` có thể focus, composer có nhãn ẩn và bộ đếm 200 ký tự; poll HTTP 2 giây. Nút "Tải tin cũ" lấy 50 tin trước tin cũ nhất đã tải. Đánh dấu đã đọc theo tin đến có ít nhất 50% hiển thị trong log (IntersectionObserver), chỉ khi tab hiển thị và cửa sổ có focus; mốc đọc không giảm. Bạn đã hủy: dialog xóa lịch sử ngay ở lần poll/gửi đầu tiên nhận `DM_NOT_FRIENDS`, hiện trạng thái thu hồi và khóa composer. `DirectChatHub` (tách khỏi chuông lời mời) hiện badge tổng tin chưa đọc ở mọi route, poll 2 giây, không render khi chưa đăng nhập hoặc là Khách.
+
+Kiểm local: trình duyệt thật với Nest/Socket.IO, PostgreSQL 17 riêng; chỉ provider Auth là synthetic. Đã đi qua login, đăng ký bỏ email và Khách từ link; mã có số 0 đầu giữ nguyên; clipboard thật, Escape trả focus; nhận nhiều popup, Esc chỉ từ chối một popup, chuyển A→B thất bại/thành công. Đã xem 1366×768 và 360×800; modal không tràn ngang, phòng chờ mobile không cuộn toàn trang. Không thay bằng chứng này cho Google/SMTP/LiveKit production hoặc nghiệm thu PO.
+
+
 ## Cài đặt dạng sidebar (29/10/2026)
 
 `/settings` dùng `features/profile/ProfilePage.tsx`: sidebar chia Hồ sơ cá nhân,
-Giao diện và Phiên đăng nhập. Các mục giữ mounted, chỉ ẩn bằng `hidden` để
-không mất tên đang nhập dở khi chuyển mục. Dưới 800px, sidebar thành thanh chọn
-ba mục phía trên nội dung; nút Đăng xuất vẫn truy cập được.
+Giao diện, Đổi mật khẩu và Phiên đăng nhập. Các mục giữ mounted, chỉ ẩn bằng
+`hidden` để không mất tên đang nhập dở khi chuyển mục. Dưới 800px, sidebar thành
+thanh chọn phía trên nội dung; nút Đăng xuất vẫn truy cập được.
 
 Hồ sơ giữ API đổi tên và kiểm tra 2–30 ký tự; tên đăng nhập chỉ để xem,
-avatar lấy chữ cái đầu theo Unicode. Giao diện có bản xem trước cho ba chủ đề
-hiện có, áp dụng ngay và lưu bằng cơ chế theme sẵn có. Token sáng/tối chỉ đổi
-trong khung cài đặt, không thay token toàn ứng dụng. Khách chỉ thấy thông tin
+avatar lấy chữ cái đầu theo Unicode. Chủ đề lưu theo tài khoản qua `GET/PUT /profile/theme`
+(`ThemeSettings`, chỉ thành viên), không dùng localStorage. Ba lựa chọn: Kỳ Đài Cổ Phong
+(mặc định khi chưa đặt), Giấy Sáng và Theo hệ thống (theo `prefers-color-scheme` của từng thiết
+bị). Giao diện chỉ đổi sau khi server xác nhận; lỗi giữ chủ đề hiện tại. `AccountThemeSync`
+đặt lại mặc định khi khách/đăng xuất/đổi tài khoản rồi đọc lựa chọn của tài khoản mới. Khi đang đăng nhập, `AccountThemeSync` đọc lại mỗi 5 giây khi tab hiển thị và khi cửa sổ lấy focus, không chồng request; kết quả cũ không ghi đè lần lưu cục bộ xảy ra trong lúc chờ, và chỉ áp khi khác chủ đề hiện tại.
+Màu nằm ở token `:root` và `:root[data-theme="paper-light"]` trong `../styles/tokens.css`; bàn
+cờ ghim palette riêng trong `.xq-board` nên không đổi theo chủ đề. Khách chỉ thấy thông tin
 phiên và Đăng xuất; không gọi API hồ sơ thành viên. Luồng xác nhận đăng xuất
 khi đang đấu giữ nguyên.
 
-Tab Hồ sơ cá nhân (30/10/2026): tiêu đề "Cài đặt" và câu phụ nằm cùng một dòng;
-thẻ chia hai cột trên desktop (tên đăng nhập + tên hiển thị | email), bỏ khối avatar
-và phụ đề lặp với sidebar. Màn thấp (cao tối đa 800px) ẩn câu nhắc ở chân sidebar.
-Đo bằng trình duyệt với API giả: không cuộn trang ở 1280×720, 1366×768, 1440×900,
-cả khi có banner thiếu email. Dưới 800px vẫn một cột và cuộn bình thường.
+Tab Hồ sơ cá nhân (30/10/2026): tên đăng nhập/email chỉ đọc nằm cùng hàng trên
+desktop, form tên hiển thị ở dưới; mobile xếp một cột. Nút sao chép chỉ báo thành
+công sau khi clipboard hoàn tất, lỗi cho phép chọn tên để sao chép thủ công.
+Form dùng `TextField` chung, giữ trợ giúp/lỗi truy cập và giới hạn 2–30 điểm mã
+Unicode (không dùng `maxLength` UTF-16). Khi có `emailSection`, chỉ luồng email
+tài khoản hiển thị trạng thái để không lặp email hoặc khẳng định đã xác minh sai.
+
+Giao diện có ba kiểu quân Ngọc Bích Cổ, Gỗ Mun Khảm và Truyền Thống. Lựa chọn
+được áp dụng lên SVG dùng chung ở online, AI và replay, khôi phục lúc khởi động.
+`shared/preferences.ts` giữ lựa chọn trên trình duyệt; storage bị chặn/đầy thì
+chỉ giữ trong phiên. SFX và nút tắt tiếng trong phòng dùng cùng tùy chọn.
+Click và nhạc nền ngũ cung được tổng hợp bằng Web Audio, không tải audio bên
+thứ ba. Nhạc mặc định tắt, chỉ khởi động sau tương tác; runtime ở gốc ứng dụng
+không bị tháo khi đổi route, dispose hủy cả lượt resume đang chờ.
 
 Email là tùy chọn từ 29/10: đăng ký có nút bỏ qua tại bước Email/OTP. `SessionProvider`
 tải `GET /account/email` riêng sau khi xác thực thành viên, không chặn quyền vào app.
@@ -87,11 +119,13 @@ lỗi tải trạng thái; xác minh/gửi lại dùng API `/account/email/*`, g
 Email đã xác minh chỉ đọc; không hiển thị email credential kỹ thuật. Lỗi SMTP/OTP
 phải hiển thị thật, không coi là thành công hoặc quảng bá khôi phục mật khẩu P2.
 
-Đã xem trang thật bằng phiên thành viên ở desktop 1366×900 và mobile 390×844;
-đã chuyển mục, chọn chủ đề sáng/hệ thống/cổ phong. Test riêng
-`tests/web/features/profile/ProfilePage.test.ts` đạt 7/7 dưới Node 22, bao gồm
-giữ bản nháp khi đổi mục, lưu tên, chọn chủ đề và xác nhận đăng xuất.
-Chưa thao tác lưu tên hoặc đăng xuất trên tài khoản thật.
+Kiểm chứng PR #150: đã xem component hồ sơ thật với client dữ liệu minh họa ở
+1366×900 và 390×844, chọn chủ đề sáng, không tràn ngang; nút hiển thị đạt 44px.
+Đã chọn cả ba kiểu và tải lại `/dev/board`: màu mặt SVG khớp lựa chọn đã lưu.
+Web Audio thật lên lịch nhạc sau bật và tiếp tục qua đổi mục; tắt thì ngừng
+lên lịch nốt mới. Dưới Node 22, unit ngoài core đạt 1.012/1.012; lint file đổi,
+typecheck web/test và build web thành công. Chưa nghe loa thực hoặc nghiệm thu
+phiên thành viên/online/AI/replay với server thật trong lần kiểm này.
 
 ## Chế độ Khách
 
@@ -298,6 +332,7 @@ trên các kết nối hiện có; không rejoin, không ngắt thiết bị cò
 đối thủ. Khi bật một thiết bị thất bại, tắt riêng thiết bị đó trên mọi phòng media,
 giữ thiết bị còn lại. Tắt cả hai vẫn giữ kết nối nhận; đổi mức chia sẻ buộc lấy
 ticket mới trước khi phát lại, không dùng quyền phát của mức cũ.
+Tab không giữ quyền điều khiển (`writable=false`) không publish: bấm bật camera/mic mở hộp thoại `MODAL-MEDIA-TAB-SWITCH` (“Chuyển thiết bị sang tab này” / “Hủy bỏ”, Esc đóng, focus trap). Chỉ xác nhận mới gọi `onTakeover`; hủy, Esc, kết nối lại hoặc mất phiên không chuyển quyền. Khi quyền chuyển đi, panel dừng camera/mic và rejoin receive-only; tab mới luôn bắt đầu với thiết bị tắt. Lỗi thiết bị không dừng ván.
 
 Nút camera/mic chỉ hiển thị icon tĩnh 44×44px; `aria-label`, `title` và
 `aria-pressed` mô tả thao tác/trạng thái. Không truyền `loading` cho hai nút,
@@ -313,3 +348,20 @@ bị thật hoặc chạy các ca hồi quy chờ thiết bị/đổi thứ tự
 và mic tắt, panel rejoin receive-only ở mức đã xác nhận. Mọi tác vụ join/publish
 đang chờ đều bị vô hiệu khi đổi phòng, ngắt kết nối hoặc unmount, và phòng/track
 của thế hệ cũ được giải phóng.
+
+## Đổi bên trong phòng chờ (YC2 P1)
+
+Người được mời đổi bên nhận hộp thoại `SwapPrompt` (Dialog, giữ focus, đếm ngược
+theo `expiresAt` của server). Esc, X và "Thu gọn" chỉ thu hộp thoại, không từ chối;
+khi thu, nút "Xem đề nghị đổi bên (N giây)" trong phòng chờ mở lại trong cùng deadline.
+Hết giờ thì server coi là từ chối. "Xin đổi bên" của người đề nghị bị khóa kèm lý do
+đếm ngược theo `swapCooldownUntil` (chỉ người đề nghị nhận giá trị này).
+
+Kết quả ván chỉ hiện khi phòng vừa chuyển sang PLAYING trong phiên hiện tại; tải lại
+phòng đã kết thúc giữ bố cục chờ và không mở lại kết quả. Esc trên kết quả ván = Ở lại phòng.
+Khi Rời phòng đang chờ, nút Ở lại và Escape không đóng kết quả. Rời thất bại giữ
+hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều hướng sau khi rời thành công.
+
+## Banner chống treo ván (US-P2-10)
+
+`features/rooms/match/InactivityBanner.tsx` chỉ hiện cho bên đang đến lượt khi snapshot có `match.inactivity`. Banner không modal, không khóa focus, không che bàn cờ hay nút Đầu hàng; có `role="status"`. Đếm lùi lấy từ `expiresAt` của server. Khi `confirmsLeft` = 0 thì ẩn nút "Tôi còn đây". Ván không giới hạn không có đồng hồ từng bên (snapshot không gửi `clocks`).

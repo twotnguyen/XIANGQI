@@ -1475,16 +1475,15 @@
     "story": "US-02.1",
     "implementation_tasks": [
       "T18",
-      "T21",
-      "T37"
+      "T21"
     ],
     "verification_task": "T28",
     "stage": "task",
-    "notes": "T28 kiểm form và API tên phòng, gồm bộ lọc từ cấm T37; phải có bộ lọc thật trước khi nghiệm thu nhánh từ cấm. Hồi quy tại T51.",
+    "notes": "T28 kiểm form và API tạo phòng: mức giờ, trần người xem, quyền CODE_ONLY/PUBLIC; không nhập hoặc lọc tên phòng (BA 19/10, 28/10). Hồi quy tại T51.",
     "criterion": {
       "given": "Ở Sảnh, không ngồi ghế nơi khác",
       "when": "Bấm \"Tạo phòng\"",
-      "then": "Mở form: Tên phòng (1–60 ký tự), Mức giờ 5/10/15 phút (**mặc định 10**), Người xem *Không có người xem* hoặc 1–5 (**mặc định 5**)",
+      "then": "Mở form: Mức giờ 5/10/15 phút (**mặc định 10**), Người xem *Không có người xem* hoặc 1–5 (**mặc định 5**), Quyền truy cập **Chỉ qua mã/link/lời mời (`CODE_ONLY`, mặc định)** hoặc **Công khai (`PUBLIC`)**, được đổi ngay trong form; không nhập tên phòng",
       "test_level": "E2E"
     }
   },
@@ -1493,17 +1492,16 @@
     "story": "US-02.1",
     "implementation_tasks": [
       "T18",
-      "T21",
-      "T37"
+      "T21"
     ],
     "verification_task": "T28",
     "stage": "task",
-    "notes": "T28 kiểm form và API tên phòng, gồm bộ lọc từ cấm T37; phải có bộ lọc thật trước khi nghiệm thu nhánh từ cấm. Hồi quy tại T51.",
+    "notes": "T28 kiểm form và API tạo phòng: mức giờ, trần người xem, quyền CODE_ONLY/PUBLIC; không nhập hoặc lọc tên phòng (BA 19/10, 28/10). Hồi quy tại T51.",
     "criterion": {
-      "given": "Form",
-      "when": "Tên phòng rỗng, > 60 ký tự hoặc chứa từ cấm",
-      "then": "Từ chối, báo lỗi tại ô",
-      "test_level": "U, E2E"
+      "given": "Yêu cầu tạo phòng",
+      "when": "Mức giờ, số người xem hoặc quyền truy cập ngoài lựa chọn cho phép (kể cả `LOCKED`)",
+      "then": "Máy chủ từ chối, không tạo phòng",
+      "test_level": "U, I"
     }
   },
   {
@@ -1519,7 +1517,7 @@
     "criterion": {
       "given": "Form hợp lệ",
       "when": "Bấm Tạo",
-      "then": "Phòng tạo ở `CODE_ONLY`, có mã 8 ký tự do máy chủ sinh và link mời; người tạo là Host, ngồi **ghế Đỏ**; vào `/rooms/:id` trạng thái `WAITING`",
+      "then": "Phòng tạo trực tiếp ở quyền truy cập đã chọn; có mã **8 chữ số** do máy chủ sinh, tên `Phòng <mã>` và link mời; người tạo là Host, ngồi **ghế Đỏ**; vào `/rooms/:id` trạng thái `WAITING`",
       "test_level": "E2E"
     }
   },

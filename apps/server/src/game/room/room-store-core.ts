@@ -12,6 +12,9 @@ import {
 export const alphabet = "0123456789";
 export const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** Đề nghị đổi bên đang trong 60 giây khóa của người gửi: bị từ chối/hết hạn; rút không khóa (Q3). */
+export const swapCooldownOpen =
+  "status IN('DECLINED','EXPIRED') AND resolved_at+interval '60 seconds'>clock_timestamp()";
 /** Cột phụ của snapshot, đọc cùng SELECT phòng (xem RoomStoreCore.snapshotSource). */
 type SnapshotRow = {
   countdown_token: string | null;
@@ -25,6 +28,12 @@ type SnapshotRow = {
   swap_proposer_id: string | null;
   swap_responder_id: string | null;
   swap_expires_at: Date | null;
+  swap_cooldown_until: Date | null;
+  rematch_id: string | null;
+  rematch_proposer_id: string | null;
+  rematch_responder_id: string | null;
+  rematch_side: "KEEP" | "SWAP" | null;
+  rematch_expires_at: Date | null;
 };
 /**
  * Tầng lưu trữ cơ sở của phòng cờ:
@@ -82,7 +91,11 @@ export class RoomStoreCore {
    */
   async resolveCode(client: PoolClient, input: unknown): Promise<string> {
     if (typeof input !== "string" || !/^[0-9]{8}$/.test(input))
-      throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
+      throw new RoomError(
+        "ROOM_FORBIDDEN",
+        "Mã phòng không tồn tại hoặc phòng đã đóng",
+        403,
+      );
     const row = (
       await client.query(
         "SELECT id FROM public.rooms WHERE invite_code=$1 AND closed_at IS NULL AND visibility<>'LOCKED'",
@@ -90,7 +103,11 @@ export class RoomStoreCore {
       )
     ).rows[0];
     if (!row)
-      throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
+      throw new RoomError(
+        "ROOM_FORBIDDEN",
+        "Mã phòng không tồn tại hoặc phòng đã đóng",
+        403,
+      );
     return row.id as string;
   }
   /**
@@ -99,7 +116,7 @@ export class RoomStoreCore {
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
-        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
+        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR EXISTS(SELECT 1 FROM xiangqi_room.rematch_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
       )
     ).rows.map((r) => r.id as string);
   }
@@ -218,7 +235,7 @@ export class RoomStoreCore {
     const rows = (
       await s.client.query(
         `SELECT r.*,clock_timestamp() AS server_now,m.user_id AS member_user_id,m.role AS member_role,m.side AS member_side,m.ready AS member_ready,m.disconnected_at AS member_disconnected_at,(m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) AS member_viewer_expired${snapshot ? ",snap.*" : ""} FROM public.rooms r LEFT JOIN public.room_members m ON m.room_id=r.id${snapshot ? ` CROSS JOIN ${snapshot}` : ""} WHERE r.id=$1 ORDER BY m.user_id`,
-        [id],
+        snapshot ? [id, s.actor.userId] : [id],
       )
     ).rows as (QueryResultRow &
       Partial<SnapshotRow> & {
@@ -266,9 +283,13 @@ export class RoomStoreCore {
   protected async snapshotSource(s: RoomScope): Promise<string> {
     const includeDown = await this.downTableExists(s);
     const includeSwap = await this.swapTableExists(s);
-    const offerJoins = `${includeDown ? "LEFT JOIN LATERAL (SELECT id,invitee_id,expires_at FROM xiangqi_room.seat_invites WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) down_offer ON TRUE" : ""} ${includeSwap ? "LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) swap_offer ON TRUE" : ""}`;
-    const offerColumns = `${includeDown ? "down_offer.id AS down_id,down_offer.invitee_id AS down_invitee_id,down_offer.expires_at AS down_expires_at" : "NULL::uuid AS down_id,NULL::uuid AS down_invitee_id,NULL::timestamptz AS down_expires_at"},${includeSwap ? "swap_offer.id AS swap_id,swap_offer.proposer_id AS swap_proposer_id,swap_offer.responder_id AS swap_responder_id,swap_offer.expires_at AS swap_expires_at" : "NULL::uuid AS swap_id,NULL::uuid AS swap_proposer_id,NULL::uuid AS swap_responder_id,NULL::timestamptz AS swap_expires_at"}`;
-    return `(SELECT (SELECT token FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_token,(SELECT due_at FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_due_at,COALESCE((SELECT json_agg(json_build_object('user_id',m.user_id,'display_name',COALESCE(p.display_name,'Khách')) ORDER BY m.user_id) FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR'),'[]'::json) AS spectators,ARRAY(SELECT user_id::text FROM xiangqi_room.presence WHERE room_id=$1 AND connected) AS online,${offerColumns} FROM (SELECT 1) room_snapshot ${offerJoins}) snap`;
+    const offerJoins = `${includeDown ? "LEFT JOIN LATERAL (SELECT id,invitee_id,expires_at FROM xiangqi_room.seat_invites WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) down_offer ON TRUE" : ""} ${includeSwap ? "LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,expires_at FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND status='PENDING' ORDER BY created_at DESC LIMIT 1) swap_offer ON TRUE" : ""} LEFT JOIN LATERAL (SELECT id,proposer_id,responder_id,side,expires_at FROM xiangqi_room.rematch_offers WHERE room_id=$1 AND status='PENDING' LIMIT 1) rematch_offer ON TRUE`;
+    const offerColumns = `${includeDown ? "down_offer.id AS down_id,down_offer.invitee_id AS down_invitee_id,down_offer.expires_at AS down_expires_at" : "NULL::uuid AS down_id,NULL::uuid AS down_invitee_id,NULL::timestamptz AS down_expires_at"},${includeSwap ? "swap_offer.id AS swap_id,swap_offer.proposer_id AS swap_proposer_id,swap_offer.responder_id AS swap_responder_id,swap_offer.expires_at AS swap_expires_at" : "NULL::uuid AS swap_id,NULL::uuid AS swap_proposer_id,NULL::uuid AS swap_responder_id,NULL::timestamptz AS swap_expires_at"},rematch_offer.id AS rematch_id,rematch_offer.proposer_id AS rematch_proposer_id,rematch_offer.responder_id AS rematch_responder_id,rematch_offer.side AS rematch_side,rematch_offer.expires_at AS rematch_expires_at`;
+    // Hạn khóa tuyệt đối chỉ của người đang xem (proposer); nhánh thiếu bảng vẫn tham chiếu $2 để khớp số tham số.
+    const cooldown = includeSwap
+      ? `(SELECT resolved_at+interval '60 seconds' FROM xiangqi_room.side_swap_offers WHERE room_id=$1 AND proposer_id=$2 AND ${swapCooldownOpen} ORDER BY resolved_at DESC LIMIT 1) AS swap_cooldown_until`
+      : "(SELECT NULL::timestamptz WHERE $2::uuid IS NULL) AS swap_cooldown_until";
+    return `(SELECT (SELECT token FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_token,(SELECT due_at FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_due_at,COALESCE((SELECT json_agg(json_build_object('user_id',m.user_id,'display_name',COALESCE(p.display_name,'Khách')) ORDER BY m.user_id) FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR'),'[]'::json) AS spectators,ARRAY(SELECT user_id::text FROM xiangqi_room.presence WHERE room_id=$1 AND connected) AS online,${cooldown},${offerColumns} FROM (SELECT 1) room_snapshot ${offerJoins}) snap`;
   }
   protected async member(
     s: RoomScope,
@@ -344,6 +365,12 @@ export class RoomStoreCore {
       swap_proposer_id,
       swap_responder_id,
       swap_expires_at,
+      swap_cooldown_until,
+      rematch_id,
+      rematch_proposer_id,
+      rematch_responder_id,
+      rematch_side,
+      rematch_expires_at,
     } = snap!;
     const down = down_id
       ? {
@@ -411,6 +438,18 @@ export class RoomStoreCore {
               responderId: swap.responder_id,
               expiresAt: (swap.expires_at as Date).toISOString(),
             }
+          : null,
+        rematchOffer: rematch_id
+          ? {
+              id: rematch_id,
+              proposerId: rematch_proposer_id!,
+              responderId: rematch_responder_id!,
+              side: rematch_side!,
+              expiresAt: rematch_expires_at!.toISOString(),
+            }
+          : null,
+        swapCooldownUntil: swap_cooldown_until
+          ? (swap_cooldown_until as Date).toISOString()
           : null,
         spectators: watchers.map((m) => ({
           userId: m.user_id,

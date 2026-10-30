@@ -23,13 +23,13 @@
   border-radius: 14px;
   background: linear-gradient(
     180deg,
-    rgba(32, 22, 17, 0.92) 0%,
-    rgba(18, 12, 9, 0.96) 100%
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
   );
-  border: 1px solid rgba(198, 146, 42, 0.28);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 28%, transparent);
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(245, 202, 103, 0.15);
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 15%, transparent);
   margin-bottom: 22px;
 }
 
@@ -67,7 +67,7 @@
   font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 700;
-  color: #fff5df;
+  color: var(--color-ink);
   margin: 0;
   letter-spacing: 0.3px;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
@@ -83,7 +83,7 @@
 
 .xq-header-tagline {
   font-size: 12.5px;
-  color: #c8b6a2;
+  color: var(--color-ink-muted);
 }
 
 .xq-online-badge {
@@ -92,9 +92,9 @@
   gap: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #86efac;
-  background: rgba(21, 46, 27, 0.85);
-  border: 1px solid rgba(134, 239, 172, 0.35);
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success-bg) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
   padding: 2px 9px;
   border-radius: 999px;
 }
@@ -103,31 +103,31 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #86efac;
+  background: var(--color-success);
   animation: xq-pulse 1.8s infinite;
 }
 
 @keyframes xq-pulse {
   0% {
     transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(134, 239, 172, 0.7);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-success) 70%, transparent);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 5px rgba(134, 239, 172, 0);
+    box-shadow: 0 0 0 5px transparent;
   }
   100% {
     transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(134, 239, 172, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
 .xq-fixture-pill {
   font-size: 10.5px;
   padding: 2px 7px;
-  background: rgba(58, 36, 14, 0.7);
-  border: 1px solid rgba(198, 146, 42, 0.4);
-  color: #f5ca67;
+  background: color-mix(in srgb, var(--color-warning-bg) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  color: var(--color-gold-light);
   border-radius: 4px;
 }
 
@@ -140,7 +140,7 @@
   font-family: var(--font-han);
   font-size: 64px;
   letter-spacing: 12px;
-  color: #fff5df;
+  color: var(--color-ink);
   opacity: 0.08;
   pointer-events: none;
   user-select: none;
@@ -160,9 +160,9 @@
   min-height: var(--touch-min);
   padding: 0 12px;
   border-radius: 7px;
-  background: rgba(24, 16, 12, 0.85);
-  border: 1px solid rgba(198, 146, 42, 0.4);
-  color: #f5ca67;
+  background: var(--color-surface-sunken);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  color: var(--color-gold-light);
   font-weight: 700;
   font-size: 12.5px;
   display: flex;
@@ -174,33 +174,33 @@
 }
 
 .xq-rules-pill-btn:hover {
-  background: rgba(45, 28, 18, 0.95);
-  border-color: #f5ca67;
-  box-shadow: 0 0 12px rgba(245, 202, 103, 0.25);
+  background: var(--color-surface);
+  border-color: var(--color-gold-light);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--color-gold-light) 25%, transparent);
 }
 
 /* 2. SECTION CHẾ ĐỘ CHƠI */
 .xq-modes-section {
   background: linear-gradient(
     180deg,
-    rgba(28, 18, 13, 0.88) 0%,
-    rgba(16, 10, 8, 0.94) 100%
+    var(--color-surface-sunken) 0%,
+    var(--color-surface-sunken) 100%
   ) !important;
-  border: 1.5px solid rgba(198, 146, 42, 0.28) !important;
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 28%, transparent) !important;
   border-radius: 16px !important;
   padding: 20px 22px 24px !important;
   margin-top: 0 !important;
   margin-bottom: 24px !important;
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(245, 202, 103, 0.12) !important;
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 12%, transparent) !important;
 }
 
 .xq-section-heading {
   font-family: var(--font-serif);
   font-size: 20px;
   font-weight: 700;
-  color: #fff5df !important;
+  color: var(--color-ink) !important;
   margin: 0 0 16px 0;
   letter-spacing: 0.3px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
@@ -227,10 +227,10 @@
 .xq-mode-card-target {
   background: linear-gradient(
     180deg,
-    rgba(34, 22, 16, 0.94) 0%,
-    rgba(18, 11, 8, 0.98) 100%
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
   );
-  border: 1.5px solid rgba(198, 146, 42, 0.28);
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 28%, transparent);
   border-radius: 14px;
   padding: 16px 14px 18px;
   display: grid;
@@ -241,16 +241,16 @@
   overflow: hidden;
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(245, 202, 103, 0.12);
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 12%, transparent);
   transition: all 0.25s ease;
 }
 
 .xq-mode-card-target:hover:not(.card-disabled) {
-  border-color: #f5ca67;
+  border-color: var(--color-gold-light);
   transform: translateY(-4px);
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.6),
-    0 0 20px rgba(198, 146, 42, 0.3);
+    0 0 20px color-mix(in srgb, var(--color-gold) 30%, transparent);
 }
 
 /* Card riêng của AI (Ánh đỏ chuẩn target) */
@@ -258,22 +258,22 @@
   background:
     radial-gradient(
       circle at 50% 30%,
-      rgba(165, 31, 37, 0.18) 0%,
+      color-mix(in srgb, var(--color-btn-danger-bg) 18%, transparent) 0%,
       transparent 65%
     ),
     linear-gradient(
       180deg,
-      rgba(40, 16, 18, 0.94) 0%,
-      rgba(20, 8, 10, 0.98) 100%
+      color-mix(in srgb, var(--color-btn-danger-bg) 40%, var(--color-surface)) 0%,
+      color-mix(in srgb, var(--color-btn-danger-bg) 15%, var(--color-surface-sunken)) 100%
     );
-  border-color: rgba(165, 31, 37, 0.4);
+  border-color: color-mix(in srgb, var(--color-btn-danger-bg) 40%, transparent);
 }
 
 .card-ai:hover:not(.card-disabled) {
-  border-color: #f87171;
+  border-color: var(--color-danger);
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.6),
-    0 0 20px rgba(239, 68, 68, 0.25);
+    0 0 20px color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 /* Card Disabled (Đấu hạng Giai đoạn 2) */
@@ -292,7 +292,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(14, 10, 7, 0.6);
+  background: color-mix(in srgb, var(--color-surface-sunken) 60%, transparent);
 }
 
 .xq-art-img {
@@ -316,14 +316,14 @@
   font-family: var(--font-serif);
   font-size: 18px;
   font-weight: 700;
-  color: #fff5df;
+  color: var(--color-ink);
   margin: 0;
   letter-spacing: 0.2px;
 }
 
 .xq-card-content p {
   font-size: 12.5px;
-  color: #c8b6a2;
+  color: var(--color-ink-muted);
   line-height: 1.45;
   margin: 0;
   min-height: 36px;
@@ -398,16 +398,16 @@
 .xq-target-rooms-section {
   background: linear-gradient(
     180deg,
-    rgba(30, 20, 15, 0.94) 0%,
-    rgba(16, 10, 8, 0.98) 100%
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
   ) !important;
-  border: 1.5px solid rgba(198, 146, 42, 0.28) !important;
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 28%, transparent) !important;
   border-radius: 14px;
   padding: 20px 22px;
   box-shadow:
     0 12px 36px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(245, 202, 103, 0.12);
-  color: #fff5df !important;
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 12%, transparent);
+  color: var(--color-ink) !important;
   margin-bottom: 24px;
 }
 
@@ -419,7 +419,7 @@
   gap: 14px;
   margin-bottom: 18px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(198, 146, 42, 0.2);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 20%, transparent);
 }
 
 .xq-rooms-title-box {
@@ -436,7 +436,7 @@
   font-family: var(--font-serif);
   font-size: 20px;
   font-weight: 700;
-  color: #fff5df;
+  color: var(--color-ink);
   margin: 0;
 }
 
@@ -451,8 +451,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  background: rgba(14, 9, 6, 0.85);
-  border: 1px solid rgba(198, 146, 42, 0.25);
+  background: var(--color-surface-sunken);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
   border-radius: 8px;
   padding: 3px;
   gap: 3px;
@@ -472,13 +472,13 @@
 }
 
 .xq-filter-btn:hover {
-  color: #fff5df;
+  color: var(--color-ink);
 }
 
 .xq-filter-btn.active {
-  background: rgba(198, 146, 42, 0.28);
-  border: 1px solid rgba(245, 202, 103, 0.5);
-  color: #f5ca67;
+  background: color-mix(in srgb, var(--color-gold) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold-light) 50%, transparent);
+  color: var(--color-gold-light);
   font-weight: 700;
 }
 
@@ -490,8 +490,8 @@
 }
 
 .xq-target-room-row {
-  background: rgba(16, 10, 7, 0.85);
-  border: 1px solid rgba(198, 146, 42, 0.2);
+  background: var(--color-surface-sunken);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 20%, transparent);
   border-radius: 8px;
   padding: 12px 16px;
   display: flex;
@@ -503,8 +503,8 @@
 }
 
 .xq-target-room-row:hover {
-  border-color: rgba(245, 202, 103, 0.45);
-  background: rgba(26, 17, 12, 0.95);
+  border-color: color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+  background: var(--color-surface-sunken);
 }
 
 .xq-target-room-info {
@@ -515,11 +515,11 @@
   flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
-  color: #eedcc6;
+  color: var(--color-ink);
 }
 
 .xq-room-primary-text {
-  color: #fff5df;
+  color: var(--color-ink);
   font-weight: 600;
 }
 
@@ -534,26 +534,26 @@
 }
 
 .xq-target-room-sep {
-  color: #7a4e0f;
+  color: var(--color-gold-dark);
 }
 
 .xq-target-room-time {
-  color: #f5ca67;
+  color: var(--color-gold-light);
   font-weight: 600;
 }
 
 .xq-target-room-status.status-waiting {
-  color: #86efac;
+  color: var(--color-success);
   font-weight: 600;
 }
 
 .xq-target-room-status.status-playing {
-  color: #fca5a5;
+  color: var(--color-danger);
   font-weight: 600;
 }
 
 .xq-target-room-viewers {
-  color: #c8b6a2;
+  color: var(--color-ink-muted);
   font-size: 12px;
 }
 
@@ -574,16 +574,20 @@
 
 /* 5. ACCORDION LUẬT CHƠI RÚT GỌN */
 .xq-rules-accordion {
-  border: 1px solid rgba(198, 146, 42, 0.25);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
   border-radius: 10px;
-  background: rgba(18, 11, 8, 0.7);
+  background: color-mix(in srgb, var(--color-surface-sunken) 70%, transparent);
   padding: 8px 16px;
 }
 
 .xq-rules-summary {
   font-family: var(--font-serif);
   font-weight: 700;
-  color: #f5ca67;
+  min-height: var(--touch-min);
+  line-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  color: var(--color-gold-light);
   font-size: 15px;
   cursor: pointer;
 }

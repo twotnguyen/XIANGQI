@@ -245,8 +245,6 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await reset();
       for (const migration of [
-        "20261011000008_room_modes",
-        "20261011000009_match_draw",
         "20261011000010_room_chat",
         "20261011000011_ai_reservations",
         "20261011000012_ai_presence",

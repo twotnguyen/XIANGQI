@@ -10,7 +10,11 @@ export function RoomDetails({ room }: { room: RoomView["room"] }) {
       <h2>Phòng của kỳ hữu</h2>
       <dl>
         <dt>Mỗi bên</dt>
-        <dd>{room.timeMinutes} phút</dd>
+        <dd>
+          {room.timeMinutes === 0
+            ? "Không giới hạn"
+            : `${room.timeMinutes} phút`}
+        </dd>
         <dt>Người xem tối đa</dt>
         <dd>{room.viewerLimit}</dd>
         <dt>Chế độ</dt>

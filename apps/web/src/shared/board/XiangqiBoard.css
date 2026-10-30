@@ -17,6 +17,9 @@
   --color-ink: #fff5df;
   --color-ink-muted: #c8b6a2;
   --color-focus: #f5ca67;
+  /* Bàn cờ giữ palette cố định ở mọi theme (DESIGN §2.3 nguyên tắc 1). */
+  --color-paper: #120d0a;
+  color-scheme: dark;
   --font-ui:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -104,6 +107,62 @@
 
 .xq-board-piece-black {
   color: var(--color-black);
+}
+
+/* Kiểu quân theo root data-piece-style; mặc định giữ gradient gỗ trong SVG. */
+:root[data-piece-style] .xq-board-piece-face {
+  fill: var(--piece-face);
+  stroke: var(--piece-rim);
+}
+
+:root[data-piece-style] .xq-board-piece-groove {
+  stroke: var(--piece-groove);
+}
+
+:root[data-piece-style] .xq-board-legend-glyph {
+  background: var(--piece-face);
+}
+
+:root[data-piece-style="jade"] .xq-board-piece-red {
+  --piece-face: #862222;
+  --piece-rim: #e05e5e;
+  --piece-groove: rgba(255, 204, 204, 0.35);
+  color: #ffcccc;
+}
+
+:root[data-piece-style="jade"] .xq-board-piece-black {
+  --piece-face: #1d5140;
+  --piece-rim: #57bb92;
+  --piece-groove: rgba(201, 255, 231, 0.35);
+  color: #c9ffe7;
+}
+
+:root[data-piece-style="ebony"] .xq-board-piece-red {
+  --piece-face: #3d2218;
+  --piece-rim: #c8954f;
+  --piece-groove: rgba(200, 149, 79, 0.45);
+  color: #e55353;
+}
+
+:root[data-piece-style="ebony"] .xq-board-piece-black {
+  --piece-face: #1f1c1a;
+  --piece-rim: #a67c43;
+  --piece-groove: rgba(166, 124, 67, 0.45);
+  color: #e6dfd5;
+}
+
+:root[data-piece-style="classic"] .xq-board-piece-red {
+  --piece-face: #f4e8cc;
+  --piece-rim: #b84040;
+  --piece-groove: rgba(120, 90, 40, 0.3);
+  color: #b82525;
+}
+
+:root[data-piece-style="classic"] .xq-board-piece-black {
+  --piece-face: #f4e8cc;
+  --piece-rim: #333333;
+  --piece-groove: rgba(51, 51, 51, 0.3);
+  color: #1a1a1a;
 }
 
 .xq-board-piece-face {

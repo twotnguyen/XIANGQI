@@ -168,24 +168,17 @@ it.each(["red", "black", null] as const)(
     expect(f.onLeave).not.toHaveBeenCalled();
   },
 );
-it("only explicit Stay/Leave act, with no Escape or backdrop dismissal and no local restart", () => {
+it("Esc and the cancel event only stay on the result, never leave or decline", () => {
   const f = setup();
   const modal = screen.getByRole("dialog");
   const cancel = new Event("cancel", { bubbles: true, cancelable: true });
   fireEvent(modal, cancel);
-  fireEvent.keyDown(modal, { key: "Escape" });
-  fireEvent.click(modal);
   expect(cancel.defaultPrevented).toBe(true);
-  expect(f.onStay).not.toHaveBeenCalled();
-  expect(f.onLeave).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "Ở lại phòng" }));
   expect(f.onStay).toHaveBeenCalledOnce();
   expect(f.onLeave).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
   expect(f.onLeave).toHaveBeenCalledOnce();
-  expect(
-    screen.queryByText(/Tái đấu|Ván mới|Xin hoà|Đầu hàng|10:00/),
-  ).toBeNull();
+  expect(f.onStay).toHaveBeenCalledOnce();
 });
 it("focuses Stay, wraps Tab between the two actions, and restores the previous focus on unmount", () => {
   const trigger = document.createElement("button");
@@ -245,4 +238,14 @@ it("blocks duplicate pending actions and resumes only when the owner clears leav
   );
   fireEvent.click(screen.getByRole("button", { name: "Rời phòng" }));
   expect(f.onLeave).toHaveBeenCalledOnce();
+});
+it("Esc while leave is pending neither stays nor closes the result", () => {
+  const f = setup(match(), "red", true);
+  const modal = screen.getByRole("dialog");
+  const cancel = new Event("cancel", { bubbles: true, cancelable: true });
+  fireEvent(modal, cancel);
+  expect(cancel.defaultPrevented).toBe(true);
+  expect(f.onStay).not.toHaveBeenCalled();
+  expect(f.onLeave).not.toHaveBeenCalled();
+  expect(screen.getByRole("dialog")).toBeTruthy();
 });

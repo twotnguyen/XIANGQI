@@ -3,7 +3,7 @@
   min-inline-size: 0;
   padding: clamp(16px, 2.5vw, 32px);
   min-height: calc(100vh - 72px);
-  color: var(--color-ink, #fff5df);
+  color: var(--color-ink);
 }
 
 .xq-ai-header,
@@ -19,7 +19,8 @@
   gap: var(--space-4);
   margin-block-end: clamp(16px, 2vw, 24px);
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(198, 146, 42, 0.25);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-gold) 25%, transparent);
 }
 
 .xq-ai h1 {
@@ -28,7 +29,11 @@
   font-size: clamp(24px, 3vw, 32px);
   font-weight: 700;
   letter-spacing: 0.5px;
-  background: linear-gradient(180deg, #fff5df 0%, #e2be78 100%);
+  background: linear-gradient(
+    180deg,
+    var(--color-ink) 0%,
+    var(--color-gold-light) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -66,8 +71,8 @@
   border: 10px solid #4a2614;
   border-radius: 12px;
   box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.8),
-    0 0 0 1px rgba(245, 202, 103, 0.3);
+    0 16px 40px color-mix(in srgb, var(--color-black) 80%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-gold-light) 30%, transparent);
   padding: 6px;
 }
 
@@ -78,19 +83,19 @@
   overflow-wrap: anywhere;
   background: linear-gradient(
     180deg,
-    rgba(38, 22, 14, 0.92) 0%,
-    rgba(24, 14, 9, 0.96) 100%
+    color-mix(in srgb, var(--color-surface) 92%, transparent) 0%,
+    color-mix(in srgb, var(--color-surface-sunken) 96%, transparent) 100%
   );
   border: 1.5px solid var(--color-gold-dark);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black) 50%, transparent);
 }
 
 .xq-ai-player {
   padding: 14px 16px;
-  background: rgba(255, 253, 248, 0.04);
-  border: 1px solid rgba(198, 146, 42, 0.2);
+  background: color-mix(in srgb, var(--color-ink) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 20%, transparent);
   border-inline-start: 4px solid var(--color-gold);
   border-radius: 8px;
   transition: all var(--motion-fast);
@@ -115,15 +120,15 @@
   font-size: 14px;
   font-weight: 600;
   text-align: center;
-  background: rgba(198, 146, 42, 0.15);
-  border: 1px solid rgba(198, 146, 42, 0.35);
+  background: color-mix(in srgb, var(--color-gold) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
   color: var(--color-gold-light);
 }
 
 .xq-ai-info [role="alert"] {
   padding: 12px;
   border-radius: 8px;
-  background: rgba(165, 31, 37, 0.2);
+  background: color-mix(in srgb, var(--color-red) 20%, transparent);
   border: 1px solid var(--color-red);
 }
 

@@ -125,6 +125,7 @@ export function useMatchHooks() {
   beforeAll(async () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
+    await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     red = (await actor()).userId;
     black = (await actor()).userId;
     viewer = (await actor()).userId;

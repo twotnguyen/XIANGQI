@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RemoteParticipant, Room, RoomEvent, Track } from "livekit-client";
-import { Button, Notice } from "../../shared/ui/primitives.js";
+import { Button, Dialog, Notice } from "../../shared/ui/primitives.js";
 import {
   MediaRequestError,
   type MediaClient,
@@ -140,6 +140,9 @@ export function MediaPanel({
   role,
   client,
   connected,
+  writable,
+  tabId,
+  onTakeover,
   seats,
   userId,
 }: {
@@ -147,9 +150,16 @@ export function MediaPanel({
   role: "red" | "black" | "spectator";
   client: MediaClient;
   connected: boolean;
+  // Tab hiện tại đang giữ quyền điều khiển phòng (snapshot máy chủ).
+  writable: boolean;
+  tabId: string;
+  // Chuyển quyền điều khiển sang tab này qua máy chủ; ném lỗi nếu thất bại.
+  onTakeover: () => Promise<void>;
   seats: { red: string | null; black: string | null };
   userId: string;
 }) {
+  const [switching, setSwitching] = useState(false);
+  const [switchPending, setSwitchPending] = useState(false);
   const [camera, setCamera] = useState(false);
   const [mic, setMic] = useState(false);
   // Mức đang áp dụng: chỉ đổi khi máy chủ xác nhận; mặc định khớp máy chủ (OPPONENT).
@@ -297,7 +307,7 @@ export function MediaPanel({
       setBusy(true);
       setStatus("");
       try {
-        const ticket = await client.token(roomId, next.camera, next.mic);
+        const ticket = await client.token(roomId, next.camera, next.mic, tabId);
         if (!current()) return;
         const enabled = next.camera || next.mic;
         const canPublish =
@@ -337,7 +347,7 @@ export function MediaPanel({
         if (current()) setBusy(false);
       }
     },
-    [client, connect, invalidate, role, roomId],
+    [client, connect, invalidate, role, roomId, tabId],
   );
 
   // Vòng đời: join receive-only khi mount/kết nối lại; cleanup vô hiệu tác vụ đang chờ.
@@ -359,8 +369,21 @@ export function MediaPanel({
     };
   }, [connected, invalidate, run]);
 
+  // Tab mất quyền điều khiển (tab khác chiếm): dừng camera/mic local, chỉ giữ nhận hình.
+  useEffect(() => {
+    if (writable || !connected) return;
+    setCamera(false);
+    setMic(false);
+    void run({ camera: false, mic: false, level: levelRef.current });
+  }, [writable, connected, run]);
+
   async function toggle(kind: "camera" | "mic") {
     if (busy || devicePending.current[kind]) return;
+    // Tab chỉ xem: không bật thiết bị trực tiếp, hỏi xác nhận chuyển thiết bị sang tab này.
+    if (!writable) {
+      setSwitching(true);
+      return;
+    }
     if (!connected) {
       setStatus("Chưa kết nối phòng, camera và mic tạm tắt.");
       return;
@@ -439,6 +462,27 @@ export function MediaPanel({
     }
   }
 
+  // Hủy hoặc Esc: đóng hộp thoại, không gọi máy chủ.
+  function cancelSwitch() {
+    if (!switchPending) setSwitching(false);
+  }
+
+  // Chỉ xác nhận của người dùng mới chuyển quyền điều khiển; thiết bị tab mới luôn bắt đầu tắt.
+  async function confirmSwitch() {
+    if (switchPending) return;
+    setSwitchPending(true);
+    try {
+      await onTakeover();
+      setSwitching(false);
+      setStatus("Đã chuyển thiết bị sang tab này. Camera và mic đang tắt.");
+    } catch {
+      setSwitching(false);
+      setStatus("Chưa thể chuyển thiết bị sang tab này. Vui lòng thử lại.");
+    } finally {
+      setSwitchPending(false);
+    }
+  }
+
   async function share(next: ShareLevel) {
     if (busy || devicePending.current.camera || devicePending.current.mic)
       return;
@@ -511,7 +555,9 @@ export function MediaPanel({
             Mức chia sẻ
             <select
               value={level}
-              disabled={busy || pendingDevices.camera || pendingDevices.mic}
+              disabled={
+                busy || !writable || pendingDevices.camera || pendingDevices.mic
+              }
               onChange={(event) => void share(event.target.value as ShareLevel)}
             >
               {(["NONE", "OPPONENT", "ALL"] as ShareLevel[]).map((option) => (
@@ -525,7 +571,26 @@ export function MediaPanel({
       ) : (
         <p>Người xem chỉ nhận hình tiếng theo mức chia sẻ của người chơi.</p>
       )}
+      {canPublish && !writable && (
+        <Notice message="Tab này chỉ có thể xem. Camera và mic đang tắt; bật lại sẽ hỏi chuyển thiết bị sang tab này." />
+      )}
       {status && <Notice message={status} />}
+      <Dialog
+        open={switching}
+        onClose={cancelSwitch}
+        title="Chuyển thiết bị sang tab này?"
+        dismissible={!switchPending}
+        onConfirm={() => void confirmSwitch()}
+        confirmLabel="Chuyển thiết bị sang tab này"
+        cancelLabel="Hủy bỏ"
+      >
+        <div data-modal="MODAL-MEDIA-TAB-SWITCH">
+          <p>
+            Camera và mic đang dùng ở tab khác sẽ bị tắt. Tab này sẽ nhận quyền
+            điều khiển, media mặc định tắt và bật theo quyền của bạn.
+          </p>
+        </div>
+      </Dialog>
     </section>
   );
 }

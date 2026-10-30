@@ -19,7 +19,9 @@ export function RoomSeats({
   solo,
   writable,
   busy,
-  swapNow,
+  swapCooldownSeconds,
+  swapReopenSeconds,
+  onSwapReopen,
   readyControl,
   onAction,
 }: {
@@ -30,7 +32,9 @@ export function RoomSeats({
   solo: boolean;
   writable: boolean;
   busy: boolean;
-  swapNow: number;
+  swapCooldownSeconds: number;
+  swapReopenSeconds: number | null;
+  onSwapReopen: () => void;
   readyControl: ReactNode;
   onAction: (action: SeatAction) => void;
 }) {
@@ -117,59 +121,38 @@ export function RoomSeats({
                   disabledReason={
                     !writable
                       ? "Cần kết nối và quyền điều khiển ghế."
-                      : undefined
+                      : swapCooldownSeconds > 0
+                        ? `Có thể xin đổi bên lại sau ${swapCooldownSeconds} giây.`
+                        : undefined
                   }
                   onClick={() => void onAction("swap-propose")}
                 >
                   Xin đổi bên
                 </Button>
               )}
-              {!solo && !room.countdown && room.swapOffer && (
-                <div
-                  className="xq-swap-prompt"
-                  role="group"
-                  aria-label="Đề nghị đổi bên"
-                >
-                  {room.swapOffer.responderId === userId ? (
-                    <>
-                      <p>
-                        Đối thủ muốn đổi bên Đỏ ↔ Đen. Còn{" "}
-                        {Math.max(
-                          0,
-                          Math.ceil(
-                            (Date.parse(room.swapOffer.expiresAt) - swapNow) /
-                              1000,
-                          ),
-                        )}{" "}
-                        giây để trả lời.
-                      </p>
-                      <Button
-                        loading={busy}
-                        onClick={() => void onAction("swap-accept")}
-                      >
-                        Đồng ý
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => void onAction("swap-decline")}
-                      >
-                        Từ chối
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <p>Đang chờ đối thủ trả lời đề nghị đổi bên…</p>
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => void onAction("swap-withdraw")}
-                      >
-                        Rút đề nghị
-                      </Button>
-                    </>
-                  )}
-                </div>
+              {!solo &&
+                !room.countdown &&
+                room.swapOffer &&
+                room.swapOffer.responderId !== userId && (
+                  <div
+                    className="xq-swap-prompt"
+                    role="group"
+                    aria-label="Đề nghị đổi bên"
+                  >
+                    <p>Đang chờ đối thủ trả lời đề nghị đổi bên…</p>
+                    <Button
+                      variant="secondary"
+                      loading={busy}
+                      onClick={() => void onAction("swap-withdraw")}
+                    >
+                      Rút đề nghị
+                    </Button>
+                  </div>
+                )}
+              {swapReopenSeconds !== null && (
+                <Button variant="secondary" onClick={onSwapReopen}>
+                  Xem đề nghị đổi bên ({swapReopenSeconds} giây)
+                </Button>
               )}
             </div>
           )}

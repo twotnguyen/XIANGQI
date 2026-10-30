@@ -21,6 +21,7 @@ const reasons: Readonly<Record<string, string>> = {
   DRAW_AGREEMENT: "Thoả thuận hoà",
   DRAW_NO_CAPTURE: "120 nửa nước không ăn quân",
   PERPETUAL_CHECK: "Chiếu liên tục",
+  INACTIVITY: "Không phản hồi quá lâu",
 };
 const draws = new Set([
   "DRAW_REPETITION",
@@ -105,7 +106,10 @@ export function MatchResult({
       className="xq-ui match-result"
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-reason`}
-      onCancel={(event) => event.preventDefault()}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!leaving) onStay();
+      }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
         if (event.shiftKey && document.activeElement === stay.current) {

@@ -11,6 +11,7 @@ it("continues healthy due rooms and committed publication after one room transac
     {
       expireDisconnected: async () => false,
       expireSwapOffers: async () => 0,
+      expireRematchOffers: async () => 0,
       startDue: started,
     } as unknown as RoomStore,
     {

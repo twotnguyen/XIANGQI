@@ -32,7 +32,7 @@ export async function dueDisconnectMatches(
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'
  JOIN public.room_members p ON p.room_id=r.id AND p.role='PLAYER' AND p.user_id IN(m.red_user_id,m.black_user_id)
  WHERE r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status='PLAYING' AND r.current_match_id=m.id
- AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(300,600,900)
+ AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(0,300,600,900)
  AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1'
  AND p.disconnected_at IS NOT NULL AND NOT EXISTS(SELECT 1 FROM xiangqi_room.presence q WHERE q.room_id=p.room_id AND q.user_id=p.user_id AND q.connected)
  GROUP BY m.room_id,m.id)
@@ -158,7 +158,7 @@ export class DisconnectWorker {
  JOIN xiangqi_auth.principals nr ON nr.id=m.red_user_id JOIN xiangqi_auth.principals nb ON nb.id=m.black_user_id
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'
  WHERE m.id=$1 AND m.room_id=$2 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status='PLAYING' AND r.current_match_id=m.id
- AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(300,600,900) AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1' FOR UPDATE OF m,r`,
+ AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(0,300,600,900) AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1' FOR UPDATE OF m,r`,
         [candidate.matchId, candidate.roomId],
       )
     ).rows[0];
@@ -196,7 +196,7 @@ export class DisconnectWorker {
       match.clock.runningSinceEpochMs +
       (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
     // Clock wins exact ties. A late maintenance batch must preserve the earlier actual deadline.
-    const timeout = clockDeadline <= disconnect.deadline;
+    const timeout = !match.unlimited && clockDeadline <= disconnect.deadline;
     await this.matches.finish(scope.client, {
       ...candidate,
       outcome: {

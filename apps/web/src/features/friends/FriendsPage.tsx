@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./friends.css";
+import {
+  getLocation,
+  subscribeLocation,
+} from "../../shared/navigation/navigation.js";
 import {
   Button,
   EmptyState,
@@ -8,13 +12,20 @@ import {
   Skeleton,
   Tabs,
   TextField,
+  Badge,
 } from "../../shared/ui/primitives.js";
 import {
-  FriendRequestError,
+  friendErrorText as errorText,
   type FriendClient,
   type FriendPeer,
   type FriendRequest,
+  type DirectUnread,
 } from "./friend-client.js";
+import { DirectChatDialog } from "./DirectChatDialog.js";
+function tabFromLocation(): string {
+  const tab = new URLSearchParams(getLocation().search).get("tab");
+  return tab === "requests" ? "requests" : "list";
+}
 
 function statusLabel(status: FriendPeer["status"]) {
   return status === "online"
@@ -24,65 +35,100 @@ function statusLabel(status: FriendPeer["status"]) {
       : "Ngoại tuyến";
 }
 
-function errorText(error: unknown) {
-  if (error instanceof FriendRequestError) {
-    switch (error.code) {
-      case "FRIEND_LIMIT":
-        return "Bạn đã có tối đa 200 bạn.";
-      case "FRIEND_INVITE_LIMIT":
-        return "Quá nhiều lời mời đang chờ (tối đa 50).";
-      case "FRIEND_BLOCKED":
-        return "Không thể gửi lời mời lúc này.";
-      case "FRIEND_ALREADY":
-        return "Hai bạn đã là bạn bè.";
-      default:
-        return "Thao tác chưa thực hiện được. Vui lòng thử lại.";
-    }
-  }
-  return "Chưa thể tải dữ liệu. Kiểm tra kết nối rồi thử lại.";
-}
+export type FriendChallengeTarget = Pick<
+  FriendPeer,
+  "userId" | "username" | "displayName"
+>;
 
 /**
  * Màn hình quản lý bạn bè: danh sách bạn bè, trạng thái trực tuyến/đang đấu, duyệt lời mời kết bạn và tìm kiếm kỳ hữu.
  */
-export function FriendsPage({ client }: { client: FriendClient }) {
+export function FriendsPage({
+  client,
+  onChallenge,
+  challengeBlockedReason,
+}: {
+  client: FriendClient;
+  onChallenge?: (friend: FriendChallengeTarget) => void;
+  challengeBlockedReason?: string;
+}) {
+  const [cooldownUntil, setCooldownUntil] = useState<string | null>(null);
+  const [unread, setUnread] = useState<DirectUnread | null>(null);
+  const [chatWith, setChatWith] = useState<FriendPeer | null>(null);
   const [friends, setFriends] = useState<FriendPeer[] | null>(null);
   const [requests, setRequests] = useState<FriendRequest[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<FriendPeer[] | null>(null);
+  const [results, setResults] = useState<Omit<FriendPeer, "status">[] | null>(
+    null,
+  );
   const [searching, setSearching] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
+  const [tabVersion, setTabVersion] = useState(0);
+  const [defaultTab, setDefaultTab] = useState(tabFromLocation);
+  const searchSeq = useRef(0);
+  const loadSeq = useRef(0);
+  const loading = useRef(false);
 
-  async function load() {
-    setFailed(false);
+  const load = useCallback(async () => {
+    const seq = ++loadSeq.current;
+    loading.current = true;
     try {
-      const [list, pending] = await Promise.all([
+      const [list, pending, invites, dm] = await Promise.all([
         client.list(),
         client.requests(),
+        client.inviteState(),
+        client.unread(),
       ]);
+      if (seq !== loadSeq.current) return;
       setFriends(list);
       setRequests(pending);
+      setCooldownUntil(invites.cooldownUntil);
+      setUnread(dm);
+      setFailed(false);
     } catch {
-      setFailed(true);
+      if (seq === loadSeq.current) setFailed(true);
+    } finally {
+      if (seq === loadSeq.current) loading.current = false;
     }
-  }
+  }, [client]);
 
   useEffect(() => {
     void load();
-  }, []);
+    const timer = setInterval(() => {
+      if (!loading.current) void load();
+    }, 2000);
+    return () => {
+      clearInterval(timer);
+      loadSeq.current++;
+      searchSeq.current++;
+      loading.current = false;
+    };
+  }, [load]);
+
+  useEffect(
+    () =>
+      subscribeLocation(() => {
+        setDefaultTab(tabFromLocation());
+        setTabVersion((version) => version + 1);
+      }),
+    [],
+  );
 
   async function search() {
-    if (!query.trim() || busy) return;
+    const q = query.trim();
+    if (!q || busy) return;
+    const seq = ++searchSeq.current;
     setSearching(true);
     setNotice("");
     try {
-      setResults(await client.search(query.trim()));
+      const found = await client.search(q);
+      if (seq === searchSeq.current) setResults(found);
     } catch (error) {
-      setNotice(errorText(error));
+      if (seq === searchSeq.current) setNotice(errorText(error));
     } finally {
-      setSearching(false);
+      if (seq === searchSeq.current) setSearching(false);
     }
   }
 
@@ -100,7 +146,7 @@ export function FriendsPage({ client }: { client: FriendClient }) {
     }
   }
 
-  if (failed)
+  if (failed && !friends)
     return (
       <main className="xq-friends xq-ui">
         <header className="xq-friends__header">
@@ -146,6 +192,12 @@ export function FriendsPage({ client }: { client: FriendClient }) {
       {notice && (
         <Notice tone="error" message={notice} onDismiss={() => setNotice("")} />
       )}
+      {failed && (
+        <Notice
+          tone="error"
+          message="Chưa cập nhật được danh sách. Đang thử kết nối lại…"
+        />
+      )}
 
       {/* KHỐI TÌM KIẾM BẠN BÈ */}
       <section className="xq-friends__search-card" aria-label="Tìm bạn bè">
@@ -169,7 +221,12 @@ export function FriendsPage({ client }: { client: FriendClient }) {
               placeholder="Nhập tên đăng nhập người chơi..."
               helper=""
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                searchSeq.current++;
+                setSearching(false);
+                setResults(null);
+                setQuery(event.target.value);
+              }}
             />
           </div>
           <Button
@@ -212,17 +269,40 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                       </span>
                     </div>
                   </div>
-                  <Button
-                    variant="primary"
-                    loading={busy === `send-${peer.userId}`}
-                    onClick={() =>
-                      void act(`send-${peer.userId}`, () =>
-                        client.send(peer.username),
+                  {friends.some((friend) => friend.userId === peer.userId) ? (
+                    <span className="xq-friends__username">Đã là bạn</span>
+                  ) : requests.some(
+                      (request) => request.peer.userId === peer.userId,
+                    ) ? (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setDefaultTab("requests");
+                        setTabVersion((version) => version + 1);
+                      }}
+                    >
+                      {requests.some(
+                        (request) =>
+                          request.peer.userId === peer.userId &&
+                          request.direction === "incoming",
                       )
-                    }
-                  >
-                    Kết bạn
-                  </Button>
+                        ? "Xem lời mời"
+                        : "Đã gửi lời mời"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      disabled={busy !== null}
+                      loading={busy === `send-${peer.userId}`}
+                      onClick={() =>
+                        void act(`send-${peer.userId}`, () =>
+                          client.send(peer.username),
+                        )
+                      }
+                    >
+                      Kết bạn
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -236,6 +316,8 @@ export function FriendsPage({ client }: { client: FriendClient }) {
         aria-label="Danh sách và lời mời"
       >
         <Tabs
+          key={`${defaultTab}-${tabVersion}`}
+          defaultId={defaultTab}
           label="Bạn bè và lời mời"
           items={[
             {
@@ -283,15 +365,39 @@ export function FriendsPage({ client }: { client: FriendClient }) {
                         </div>
 
                         <div className="xq-friends__actions">
-                          <Button variant="ghost" disabledReason="Sắp ra mắt">
+                          <Button
+                            variant="ghost"
+                            onClick={() => setChatWith(friend)}
+                          >
                             Nhắn tin
                           </Button>
-                          <Button
-                            variant="secondary"
-                            disabledReason="Sắp ra mắt"
-                          >
-                            Thách đấu
-                          </Button>
+                          <Badge
+                            count={
+                              unread?.peers.find(
+                                (p) => p.peerId === friend.userId,
+                              )?.unread ?? 0
+                            }
+                            label="tin chưa đọc"
+                          />
+                          {onChallenge && (
+                            <Button
+                              variant="secondary"
+                              disabledReason={
+                                friend.status !== "online"
+                                  ? friend.status === "in-match"
+                                    ? "Bạn bè đang trong ván khác"
+                                    : "Ngoại tuyến"
+                                  : (challengeBlockedReason ??
+                                    (cooldownUntil !== null &&
+                                    Date.parse(cooldownUntil) > Date.now()
+                                      ? "Vừa gửi lời mời, chờ ít giây"
+                                      : undefined))
+                              }
+                              onClick={() => onChallenge(friend)}
+                            >
+                              Thách đấu
+                            </Button>
+                          )}
                           <Button
                             variant="danger"
                             loading={busy === `unfriend-${friend.userId}`}
@@ -425,6 +531,13 @@ export function FriendsPage({ client }: { client: FriendClient }) {
           ]}
         />
       </section>
+      {chatWith && (
+        <DirectChatDialog
+          client={client}
+          friend={chatWith}
+          onClose={() => setChatWith(null)}
+        />
+      )}
     </main>
   );
 }

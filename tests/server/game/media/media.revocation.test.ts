@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { decodeJwt } from "jose";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { MediaAccess } from "@server/game/media/media.service.js";
@@ -18,10 +19,13 @@ import {
   queueRevoke,
   resetMediaSchema,
   seat,
+  takeControl,
   url,
 } from "./media.test-helper.js";
 
 afterAll(() => pool.end());
+// Tab giữ quyền điều khiển cho các lượt phát; dùng chung cho mọi test trong file.
+const TAB = randomUUID();
 
 function access(fetchFn: typeof fetch) {
   return new MediaAccess(config, new MediaStore(pool), fetchFn);
@@ -34,13 +38,16 @@ describe.skipIf(!url)("media revocation", () => {
     const player = await actor();
     const roomId = await makeRoom(owner.userId);
     await seat(roomId, player.userId, "RED");
+    await takeControl(roomId, player.userId, TAB);
     const eventId = await queueRevoke(roomId, player.userId);
     await demoteToSpectator(roomId, player.userId);
     const p = provider();
-    const token = await access(p.fetchFn).tokenFor(player.userId, roomId, {
-      camera: true,
-      mic: true,
-    });
+    const token = await access(p.fetchFn).tokenFor(
+      player.userId,
+      roomId,
+      { camera: true, mic: true },
+      TAB,
+    );
     expect(p.calls.map((call) => call.body.room)).toEqual([
       privateRoomName(roomId),
       stageRoomName(roomId),
@@ -62,18 +69,65 @@ describe.skipIf(!url)("media revocation", () => {
     const player = await actor();
     const roomId = await makeRoom(owner.userId);
     await seat(roomId, player.userId, "RED");
+    await takeControl(roomId, player.userId, TAB);
     const eventId = await queueRevoke(roomId, player.userId);
     const p = provider();
     const media = access(p.fetchFn);
-    const token = await media.tokenFor(player.userId, roomId, {
-      camera: true,
-      mic: true,
-    });
+    const token = await media.tokenFor(
+      player.userId,
+      roomId,
+      { camera: true, mic: true },
+      TAB,
+    );
     expect(p.calls).toHaveLength(2);
     expect(decodeJwt(token.token).video).toMatchObject({
       room: privateRoomName(roomId),
       canPublish: true,
     });
+    await expect(
+      media.revoke(roomId, player.userId, eventId),
+    ).resolves.toBeUndefined();
+    expect(p.calls).toHaveLength(2);
+    expect(await deliveredAt(eventId)).not.toBeNull();
+  });
+  it("after takeover: old tab reconnect cannot publish, and a delayed revoke never removes the new publisher", async () => {
+    const owner = await actor();
+    const player = await actor();
+    const roomId = await makeRoom(owner.userId);
+    await seat(roomId, player.userId, "RED");
+    const oldTab = TAB,
+      newTab = randomUUID();
+    await takeControl(roomId, player.userId, oldTab);
+    // Takeover commits controller change and outbox row in one transaction.
+    await takeControl(roomId, player.userId, newTab);
+    const eventId = await queueRevoke(roomId, player.userId);
+    const p = provider();
+    const media = access(p.fetchFn);
+    const fresh = await media.tokenFor(
+      player.userId,
+      roomId,
+      { camera: true, mic: true },
+      newTab,
+    );
+    // Delayed revoke is settled (both rooms removed) before the new token is minted.
+    expect(p.calls).toHaveLength(2);
+    expect(decodeJwt(fresh.token).video).toMatchObject({ canPublish: true });
+    await expect(
+      media.tokenFor(
+        player.userId,
+        roomId,
+        { camera: true, mic: true },
+        oldTab,
+      ),
+    ).rejects.toMatchObject({ code: "MEDIA_TAB_READ_ONLY" });
+    const listen = await media.tokenFor(
+      player.userId,
+      roomId,
+      { camera: false, mic: false },
+      oldTab,
+    );
+    expect(decodeJwt(listen.token).video).toMatchObject({ canPublish: false });
+    expect(p.calls).toHaveLength(2);
     await expect(
       media.revoke(roomId, player.userId, eventId),
     ).resolves.toBeUndefined();
@@ -91,18 +145,22 @@ describe.skipIf(!url)("media revocation", () => {
     );
     const failing = provider({ fail: true });
     await expect(
-      access(failing.fetchFn).tokenFor(user.userId, roomId, {
-        camera: false,
-        mic: false,
-      }),
+      access(failing.fetchFn).tokenFor(
+        user.userId,
+        roomId,
+        { camera: false, mic: false },
+        TAB,
+      ),
     ).rejects.toThrow();
     expect(failing.calls).toHaveLength(2);
     expect(await deliveredAt(eventId)).toBeNull();
     const ok = provider();
-    const token = await access(ok.fetchFn).tokenFor(user.userId, roomId, {
-      camera: false,
-      mic: false,
-    });
+    const token = await access(ok.fetchFn).tokenFor(
+      user.userId,
+      roomId,
+      { camera: false, mic: false },
+      TAB,
+    );
     expect(ok.calls).toHaveLength(2);
     expect(await deliveredAt(eventId)).not.toBeNull();
     expect(decodeJwt(token.token).video).toMatchObject({

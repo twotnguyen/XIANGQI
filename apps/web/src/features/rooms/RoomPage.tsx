@@ -2,6 +2,7 @@ import {
   useEffect,
   lazy,
   Suspense,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -30,12 +31,16 @@ import { MatchResult } from "./match/MatchResult.js";
 import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./match/MatchActions.js";
 import { ReconnectStatus } from "./match/ReconnectStatus.js";
+import { InactivityBanner } from "./match/InactivityBanner.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
 import { Countdown } from "./RoomCountdown.js";
 import { RoomDetails } from "./RoomDetails.js";
 import { RoomInvite } from "./RoomInvite.js";
 import { RoomSeats } from "./RoomSeats.js";
+import { RematchPanel } from "./RematchPanel.js";
+import { SwapPrompt } from "./SwapPrompt.js";
 import {
+  rematchMessage,
   swapMessage,
   viewerActionMessage,
   visibilityLabel,
@@ -63,6 +68,8 @@ export interface RoomPageProps {
   chat?: ReactNode;
   media?: ReactNode;
   mediaClient?: MediaClient;
+  renderInviteFriends?: (roomId: string) => ReactNode;
+  isMember?: boolean;
 }
 /**
  * Trang phòng cờ trực tuyến: điều phối kết nối realtime, bàn cờ, đồng hồ đấu, ghế ngồi, video/audio và chat phòng.
@@ -78,6 +85,8 @@ export function RoomPage({
   chat,
   media,
   mediaClient,
+  renderInviteFriends,
+  isMember = false,
 }: RoomPageProps) {
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
@@ -93,7 +102,9 @@ export function RoomPage({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsStatus, setSettingsStatus] = useState("");
-  const [swapNow, setSwapNow] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [swapCollapsedId, setSwapCollapsedId] = useState<string | null>(null);
+  const [liveMatchId, setLiveMatchId] = useState<string | null>(null);
   const settingsPending = useRef(false);
   const audio = useRef<AudioContext | null>(null);
   const gameAudio = useRef<GameAudio | null>(null);
@@ -146,13 +157,59 @@ export function RoomPage({
       audio.current = null;
     };
   }, []);
+  const canRematch =
+    view !== null &&
+    view.room.status === "WAITING" &&
+    view.room.inviteCode !== null &&
+    (view.role === "red" || view.role === "black") &&
+    snapshot?.match != null &&
+    snapshot.match.status !== "ACTIVE" &&
+    view.room.countdown === null &&
+    view.room.rematchOffer === null;
   const swapOfferId = view?.room.swapOffer?.id ?? null;
+  const swapExpiresAt = view?.room.swapOffer?.expiresAt ?? null;
+  const cooldownUntil = view?.room.swapCooldownUntil ?? null;
+  const receivedAt = useMemo(() => Date.now(), [view?.serverNow]);
+  const clockSkew = view ? Date.parse(view.serverNow) - receivedAt : 0;
+  const liveMatch = snapshot?.match ?? null;
+  const timed = Boolean(swapOfferId || cooldownUntil);
   useEffect(() => {
-    if (!swapOfferId) return;
-    setSwapNow(Date.now());
-    const timer = setInterval(() => setSwapNow(Date.now()), 1000);
+    if (!timed) return;
+    setNowMs(Date.now());
+    const timer = setInterval(() => setNowMs(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, [swapOfferId]);
+  }, [timed]);
+  const remainingSeconds = (until: string | null) =>
+    until
+      ? Math.max(0, Math.ceil((Date.parse(until) - nowMs - clockSkew) / 1000))
+      : 0;
+  const swapSeconds = remainingSeconds(swapExpiresAt);
+  const cooldownSeconds = remainingSeconds(cooldownUntil);
+  const swapOfferOpen = Boolean(
+    swapOfferId &&
+    view?.room.swapOffer?.responderId === userId &&
+    !view?.room.countdown &&
+    swapSeconds > 0,
+  );
+  const swapModalOpen = swapOfferOpen && swapCollapsedId !== swapOfferId;
+  const swapReopenSeconds =
+    swapOfferOpen && swapCollapsedId === swapOfferId ? swapSeconds : null;
+  // undefined = no snapshot yet; the first snapshot of a load never opens a result.
+  const previousMatchId = useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (!snapshot) return;
+    const previous = previousMatchId.current;
+    previousMatchId.current = snapshot.match?.id ?? null;
+    if (!snapshot.match) return;
+    // Q1: a terminal match that differs from the last seen one is live, even if its PLAYING snapshot was coalesced; a duplicate or reconnect of the same match is not.
+    if (
+      snapshot.room.status === "PLAYING" ||
+      (previous !== undefined &&
+        previous !== snapshot.match.id &&
+        snapshot.match.status !== "ACTIVE")
+    )
+      setLiveMatchId(snapshot.match.id);
+  }, [snapshot]);
   async function copyInvite(code: string, format: "code" | "link") {
     if (copying) return;
     setCopying(true);
@@ -467,7 +524,11 @@ export function RoomPage({
       | "swap-propose"
       | "swap-withdraw"
       | "swap-accept"
-      | "swap-decline",
+      | "swap-decline"
+      | "rematch-propose"
+      | "rematch-accept"
+      | "rematch-decline",
+    side: "KEEP" | "SWAP" = "SWAP",
   ) {
     if (!view || busy) return;
     const requestEpoch = epoch.current;
@@ -495,11 +556,19 @@ export function RoomPage({
             ? await client.proposeSwap(roomId, view.version)
             : action === "swap-withdraw"
               ? await client.withdrawSwap(roomId, view.version)
-              : await client.respondSwap(
-                  roomId,
-                  view.version,
-                  action === "swap-accept",
-                );
+              : action === "rematch-propose"
+                ? await client.proposeRematch(roomId, view.version, side)
+                : action === "rematch-accept" || action === "rematch-decline"
+                  ? await client.respondRematch(
+                      roomId,
+                      view.version,
+                      action === "rematch-accept",
+                    )
+                  : await client.respondSwap(
+                      roomId,
+                      view.version,
+                      action === "swap-accept",
+                    );
         if (
           epoch.current === requestEpoch &&
           next.version >= versionFloor.current
@@ -521,7 +590,9 @@ export function RoomPage({
       }
       const message =
         e instanceof RoomRequestError
-          ? swapMessage(e.code, e.message)
+          ? action.startsWith("rematch")
+            ? rematchMessage(e.code, e.message)
+            : swapMessage(e.code, e.message)
           : "Thao tác chưa thực hiện được. Kiểm tra trạng thái phòng rồi thử lại.";
       setError(message);
       if (action === "leave") setLeaveError(message);
@@ -638,7 +709,7 @@ export function RoomPage({
   const solo =
     Number(Boolean(room.seats.red)) + Number(Boolean(room.seats.black)) === 1;
   const clockState = snapshot ?? latest.current;
-  const playingLayout = Boolean(clockState?.match);
+  const playingLayout = room.status === "PLAYING" && Boolean(clockState?.match);
   const active =
     room.status === "PLAYING" && snapshot?.match?.status === "ACTIVE";
   let board = null;
@@ -685,7 +756,11 @@ export function RoomPage({
           </p>
           {!playingLayout && (
             <div className="xq-waiting-meta">
-              <span>{room.timeMinutes} phút mỗi bên</span>
+              <span>
+                {room.timeMinutes === 0
+                  ? "Không giới hạn"
+                  : `${room.timeMinutes} phút mỗi bên`}
+              </span>
               <span>{visibilityLabel(room.visibility)}</span>
             </div>
           )}
@@ -877,7 +952,9 @@ export function RoomPage({
             solo={solo}
             writable={writable}
             busy={busy}
-            swapNow={swapNow}
+            swapCooldownSeconds={cooldownSeconds}
+            swapReopenSeconds={swapReopenSeconds}
+            onSwapReopen={() => setSwapCollapsedId(null)}
             readyControl={readyControl}
             onAction={(action) => void httpAction(action)}
           />
@@ -919,6 +996,23 @@ export function RoomPage({
               />
             </div>
           )}
+          {snapshot && liveMatch && (
+            <InactivityBanner
+              match={liveMatch}
+              role={snapshot.role}
+              serverNow={snapshot.serverNow}
+              busy={busy}
+              onStillHere={() =>
+                matchAction({
+                  type: "match.still-here",
+                  payload: {
+                    matchId: liveMatch.id,
+                    matchVersion: liveMatch.version,
+                  },
+                })
+              }
+            />
+          )}
           {snapshot && (
             <MatchActions
               match={snapshot.match}
@@ -953,7 +1047,7 @@ export function RoomPage({
             <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
           )}
         </section>
-        {code && room.visibility !== "LOCKED" && (
+        {view.role !== "spectator" && code && room.visibility !== "LOCKED" && (
           <RoomInvite
             code={code}
             copying={copying}
@@ -961,6 +1055,11 @@ export function RoomPage({
             copied={copied}
             onCopy={() => void copyInvite(code, "code")}
             onCopyLink={() => void copyInvite(code, "link")}
+            friends={
+              isMember && renderInviteFriends
+                ? renderInviteFriends(roomId)
+                : undefined
+            }
           />
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">
@@ -1034,6 +1133,13 @@ export function RoomPage({
                     connected={connected && Boolean(snapshot)}
                     seats={room.seats}
                     userId={userId}
+                    writable={writable}
+                    tabId={connection.current?.tabId ?? ""}
+                    onTakeover={() =>
+                      connection.current
+                        ? connection.current.takeover()
+                        : Promise.reject(new Error("Chưa kết nối phòng."))
+                    }
                   />
                 </Suspense>
               ) : (
@@ -1059,9 +1165,29 @@ export function RoomPage({
         status={settingsStatus}
         onChange={changeVisibility}
       />
+      <RematchPanel
+        offer={isMember ? (view?.room.rematchOffer ?? null) : null}
+        selfId={userId}
+        canPropose={canRematch && isMember}
+        clockSkew={clockSkew}
+        busy={busy}
+        onPropose={(side) => void httpAction("rematch-propose", side)}
+        onRespond={(accept) =>
+          void httpAction(accept ? "rematch-accept" : "rematch-decline")
+        }
+      />
+      <SwapPrompt
+        open={swapModalOpen}
+        seconds={swapSeconds}
+        busy={busy}
+        onAccept={() => void httpAction("swap-accept")}
+        onDecline={() => void httpAction("swap-decline")}
+        onCollapse={() => setSwapCollapsedId(swapOfferId)}
+      />
       {connected &&
         snapshot?.match &&
         snapshot.match.status !== "ACTIVE" &&
+        liveMatchId === snapshot.match.id &&
         (snapshot.role === "spectator" ||
           dismissedResult !== snapshot.match.id) && (
           <MatchResult

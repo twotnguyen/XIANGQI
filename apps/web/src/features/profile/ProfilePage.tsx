@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Button,
   Dialog,
@@ -14,8 +14,19 @@ import {
   type ProfileView,
 } from "./profile-client.js";
 import { PasswordChangeForm } from "./PasswordChangeForm.js";
-import { THEME_OPTIONS } from "../../shared/theme/theme.js";
-import { useTheme } from "../../shared/theme/useTheme.js";
+import type { AuthorizedFetch } from "./profile-client.js";
+import { ThemeSettings } from "./ThemeSettings.js";
+import { UsernameSettings } from "./UsernameSettings.js";
+import {
+  getPieceStyle,
+  setPieceStyle as applyPieceStyle,
+  isMusicEnabled,
+  setMusicEnabled,
+  isSfxEnabled,
+  setSfxEnabled,
+  playClickSound,
+  type PieceStyleId,
+} from "../../shared/preferences.js";
 import "./profile.css";
 
 const SETTINGS_SECTIONS = [
@@ -41,11 +52,32 @@ const SETTINGS_SECTIONS = [
   },
 ] as const;
 
-const THEME_DESCRIPTIONS = {
-  "co-phong": "Nâu trầm và sắc vàng, đậm chất kỳ đài.",
-  "paper-light": "Nền giấy sáng, nhẹ nhàng và rõ nét.",
-  system: "Tự chọn sáng hoặc tối theo thiết bị.",
-};
+const PIECE_STYLES = [
+  {
+    id: "jade",
+    title: "Ngọc Bích Cổ",
+    desc: "Ngọc đỏ và xanh lục trong suốt.",
+    redPiece: "帥",
+    blackPiece: "將",
+    previewClass: "xq-piece-preview-jade",
+  },
+  {
+    id: "ebony",
+    title: "Gỗ Mun Khảm",
+    desc: "Gỗ sẫm màu với viền đồng.",
+    redPiece: "兵",
+    blackPiece: "卒",
+    previewClass: "xq-piece-preview-ebony",
+  },
+  {
+    id: "classic",
+    title: "Truyền Thống",
+    desc: "Thiết kế phẳng 2D tiêu chuẩn.",
+    redPiece: "車",
+    blackPiece: "車",
+    previewClass: "xq-piece-preview-classic",
+  },
+] as const;
 
 function nameError(error: unknown) {
   if (error instanceof ProfileRequestError) {
@@ -69,15 +101,17 @@ export function ProfilePage({
   guest,
   onSaved,
   onLogout,
+  authorizedFetch,
   emailSection,
 }: {
   client: ProfileClient;
+  authorizedFetch: AuthorizedFetch;
   guest: boolean;
   onSaved: (displayName: string) => void;
   onLogout: () => void;
   emailSection?: ReactNode;
 }) {
-  const theme = useTheme();
+  const emailRef = useRef<HTMLDivElement>(null);
   const [section, setSection] =
     useState<(typeof SETTINGS_SECTIONS)[number]["id"]>("profile");
   const activeSection = guest ? "session" : section;
@@ -90,6 +124,28 @@ export function ProfilePage({
   const [fieldError, setFieldError] = useState("");
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  const [isMusicOn, setIsMusicOn] = useState(isMusicEnabled);
+  const [isSfxOn, setIsSfxOn] = useState(isSfxEnabled);
+  const [pieceStyle, setPieceStyle] = useState<PieceStyleId>(getPieceStyle);
+  const [copyError, setCopyError] = useState("");
+
+  function handleSelectPieceStyle(id: PieceStyleId) {
+    setPieceStyle(id);
+    applyPieceStyle(id);
+  }
+
+  async function copyUsername() {
+    if (!profile?.username) return;
+    setStatus("");
+    setCopyError("");
+    try {
+      await navigator.clipboard.writeText(profile.username);
+      setStatus("Đã sao chép tên đăng nhập!");
+    } catch {
+      setCopyError("Chưa thể sao chép. Hãy chọn và sao chép tên đăng nhập.");
+    }
+  }
 
   async function load() {
     setFailed(false);
@@ -198,7 +254,10 @@ export function ProfilePage({
                 type="button"
                 aria-pressed={activeSection === item.id}
                 aria-controls={`xq-settings-${item.id}`}
-                onClick={() => setSection(item.id)}
+                onClick={() => {
+                  playClickSound();
+                  setSection(item.id);
+                }}
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -223,7 +282,10 @@ export function ProfilePage({
             <Button
               variant="secondary"
               loading={loggingOut}
-              onClick={requestLogout}
+              onClick={() => {
+                playClickSound();
+                requestLogout();
+              }}
             >
               Đăng xuất
             </Button>
@@ -241,30 +303,123 @@ export function ProfilePage({
                 <header className="xq-profile-section-heading">
                   <h2 id="xq-profile-title">Hồ sơ cá nhân</h2>
                 </header>
-                <div className="xq-profile-columns">
-                  <div className="xq-profile-column">
-                    <dl className="xq-profile-details">
-                      <div>
-                        <dt>Tên đăng nhập</dt>
-                        <dd>{profile?.username}</dd>
-                      </div>
-                      {!emailSection && (
-                        <div>
-                          <dt>Email</dt>
-                          <dd>{profile?.email ?? "Chưa có email"}</dd>
-                        </div>
-                      )}
-                    </dl>
-                    <p className="xq-profile-note">
-                      Tên đăng nhập chỉ để xem, chưa hỗ trợ thay đổi tại đây.
-                    </p>
-                    <form
-                      className="xq-profile-form"
-                      onSubmit={(event) => {
-                        event.preventDefault();
-                        void save();
-                      }}
+                <div className="xq-profile-grid-top">
+                  <div className="xq-profile-field-readonly">
+                    <label
+                      htmlFor="xq-profile-username"
+                      className="xq-profile-label"
                     >
+                      <span>Tên đăng nhập</span>
+                    </label>
+                    <div className="xq-profile-input-copy">
+                      <input
+                        id="xq-profile-username"
+                        type="text"
+                        readOnly
+                        value={profile?.username ?? ""}
+                        className="xq-profile-readonly-input"
+                      />
+                      <button
+                        type="button"
+                        className="xq-profile-copy-btn"
+                        title="Sao chép tên đăng nhập"
+                        aria-label="Sao chép tên đăng nhập"
+                        onClick={() => {
+                          playClickSound();
+                          void copyUsername();
+                        }}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="xq-icon-sm"
+                          aria-hidden="true"
+                        >
+                          <rect
+                            width="14"
+                            height="14"
+                            x="8"
+                            y="8"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  {profile && (
+                    <UsernameSettings
+                      client={client}
+                      username={profile.username}
+                      onVerifyEmail={
+                        emailSection
+                          ? () => {
+                              emailRef.current?.scrollIntoView({
+                                block: "nearest",
+                              });
+                              emailRef.current?.focus();
+                            }
+                          : undefined
+                      }
+                      onChanged={(username) =>
+                        setProfile((previous) =>
+                          previous ? { ...previous, username } : previous,
+                        )
+                      }
+                    />
+                  )}
+
+                  {!emailSection && (
+                    <div className="xq-profile-field-readonly">
+                      <label
+                        htmlFor="xq-profile-email"
+                        className="xq-profile-label xq-profile-label-split"
+                      >
+                        <span>Email</span>
+                        <span className="xq-profile-badge-verified">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                          {profile?.email ? "Đã liên kết" : "Chưa liên kết"}
+                        </span>
+                      </label>
+                      <input
+                        id="xq-profile-email"
+                        type="text"
+                        readOnly
+                        value={profile?.email ?? "Chưa có email"}
+                        className="xq-profile-readonly-input"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <form
+                  className="xq-profile-form"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    playClickSound();
+                    void save();
+                  }}
+                >
+                  <div className="xq-profile-name-section">
+                    <span className="xq-profile-char-count">
+                      {Array.from(name).length}/30
+                    </span>
+                    <div className="xq-profile-inline-input-group">
                       <TextField
                         label="Tên hiển thị"
                         helper="2–30 ký tự, là tên người khác nhìn thấy."
@@ -273,23 +428,37 @@ export function ProfilePage({
                         error={fieldError}
                         onChange={(event) => setName(event.target.value)}
                       />
-                      {status && (
-                        <Notice
-                          tone="success"
-                          message={status}
-                          onDismiss={() => setStatus("")}
-                        />
-                      )}
-                      <div className="xq-profile-form-footer">
-                        <p>Đổi tên hiển thị không cần mã OTP.</p>
-                        <Button type="submit" loading={saving}>
-                          Lưu tên hiển thị
-                        </Button>
-                      </div>
-                    </form>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        loading={saving}
+                        className="xq-profile-save-btn"
+                      >
+                        Lưu tên hiển thị
+                      </Button>
+                    </div>
                   </div>
-                  <div className="xq-profile-column">{emailSection}</div>
-                </div>
+
+                  {copyError && <Notice tone="error" message={copyError} />}
+                  {status && (
+                    <Notice
+                      tone="success"
+                      message={status}
+                      onDismiss={() => setStatus("")}
+                    />
+                  )}
+                </form>
+
+                {emailSection && (
+                  <div
+                    ref={emailRef}
+                    tabIndex={-1}
+                    aria-label="Thêm hoặc xác minh email"
+                    className="xq-profile-email-extra"
+                  >
+                    {emailSection}
+                  </div>
+                )}
               </section>
               <section
                 id="xq-settings-appearance"
@@ -301,46 +470,155 @@ export function ProfilePage({
                   <h2 id="xq-appearance-title">Giao diện</h2>
                   <p>Chọn sắc thái phù hợp cho những giờ bên bàn cờ.</p>
                 </header>
-                <fieldset className="xq-profile-theme">
-                  <legend>Chủ đề hiển thị</legend>
-                  <div className="xq-profile-theme-options">
-                    {THEME_OPTIONS.map((option) => (
-                      <label
-                        key={option.value}
-                        className="xq-profile-theme-option"
-                      >
-                        <span
-                          className={`xq-profile-theme-preview xq-profile-theme-${option.value}`}
-                          aria-hidden="true"
+                <ThemeSettings authorizedFetch={authorizedFetch} />
+
+                {/* Kiểu quân cờ (Piece Style) */}
+                <fieldset className="xq-profile-piece-style">
+                  <legend>Kiểu quân cờ</legend>
+                  <div className="xq-profile-piece-options">
+                    {PIECE_STYLES.map((piece) => {
+                      const isSelected = pieceStyle === piece.id;
+                      return (
+                        <button
+                          key={piece.id}
+                          type="button"
+                          aria-pressed={isSelected}
+                          className={`xq-profile-piece-card ${
+                            isSelected ? "xq-piece-card-active" : ""
+                          }`}
+                          onClick={() => {
+                            playClickSound();
+                            handleSelectPieceStyle(piece.id);
+                          }}
                         >
-                          <span className="xq-profile-preview-sidebar" />
-                          <span className="xq-profile-preview-content">
-                            <span />
-                            <span />
-                            <span />
-                          </span>
-                        </span>
-                        <span className="xq-profile-theme-label">
-                          <input
-                            type="radio"
-                            name="xq-theme"
-                            value={option.value}
-                            aria-label={option.label}
-                            checked={theme.choice === option.value}
-                            onChange={() => theme.setChoice(option.value)}
-                          />
-                          <strong>{option.label}</strong>
-                        </span>
-                        <span className="xq-profile-theme-description">
-                          {THEME_DESCRIPTIONS[option.value]}
-                        </span>
-                      </label>
-                    ))}
+                          <div
+                            className={`xq-profile-piece-preview ${piece.previewClass}`}
+                            aria-hidden="true"
+                          >
+                            <span className="xq-piece-disc xq-piece-red">
+                              {piece.redPiece}
+                            </span>
+                            <span className="xq-piece-disc xq-piece-black">
+                              {piece.blackPiece}
+                            </span>
+                          </div>
+                          <div className="xq-profile-piece-body">
+                            <strong className="xq-profile-piece-title">
+                              {piece.title}
+                            </strong>
+                            <span className="xq-profile-piece-desc">
+                              {piece.desc}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </fieldset>
+
+                {/* Âm thanh & Nhạc nền */}
+                <div className="xq-profile-audio-settings">
+                  <h3 className="xq-profile-audio-heading">
+                    Âm thanh &amp; Nhạc nền
+                  </h3>
+
+                  <div className="xq-profile-toggle-row">
+                    <div className="xq-profile-toggle-info">
+                      <div
+                        className="xq-profile-toggle-icon"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          {isSfxOn ? (
+                            <>
+                              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                            </>
+                          ) : (
+                            <>
+                              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                              <line x1="23" y1="9" x2="17" y2="15" />
+                              <line x1="17" y1="9" x2="23" y2="15" />
+                            </>
+                          )}
+                        </svg>
+                      </div>
+                      <div>
+                        <strong>Hiệu ứng âm thanh (SFX)</strong>
+                        <p>Âm thanh khi nhấp chuột, di chuyển quân, ăn quân</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isSfxOn}
+                      aria-label="Bật hoặc tắt hiệu ứng âm thanh"
+                      className={`xq-profile-toggle-btn ${isSfxOn ? "xq-toggle-on" : ""}`}
+                      onClick={() => {
+                        const next = !isSfxOn;
+                        setIsSfxOn(next);
+                        setSfxEnabled(next);
+                        if (next) playClickSound();
+                      }}
+                    >
+                      <span className="xq-profile-toggle-thumb" />
+                    </button>
+                  </div>
+
+                  <div className="xq-profile-toggle-row">
+                    <div className="xq-profile-toggle-info">
+                      <div
+                        className="xq-profile-toggle-icon"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M9 18V5l12-2v13" />
+                          <circle cx="6" cy="18" r="3" />
+                          <circle cx="18" cy="16" r="3" />
+                        </svg>
+                      </div>
+                      <div>
+                        <strong>Nhạc nền Cổ phong (BGM)</strong>
+                        <p>
+                          Giai điệu thư giãn nhẹ nhàng trong suốt quá trình chơi
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isMusicOn}
+                      aria-label="Bật hoặc tắt nhạc nền"
+                      className={`xq-profile-toggle-btn ${isMusicOn ? "xq-toggle-on" : ""}`}
+                      onClick={() => {
+                        playClickSound();
+                        setIsMusicOn(!isMusicOn);
+                        setMusicEnabled(!isMusicOn);
+                      }}
+                    >
+                      <span className="xq-profile-toggle-thumb" />
+                    </button>
+                  </div>
+                </div>
+
                 <p className="xq-profile-tip">
-                  Chủ đề được áp dụng ngay và ghi nhớ trên trình duyệt này.
-                  Không cần bấm lưu.
+                  Chủ đề được lưu theo tài khoản và đồng bộ thiết bị. Quân cờ và
+                  âm thanh được lưu trên trình duyệt này.
                 </p>
               </section>
               <section

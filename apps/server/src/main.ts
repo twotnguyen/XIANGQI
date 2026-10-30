@@ -102,7 +102,11 @@ async function boot(): Promise<void> {
         : null;
     if (ai && rooms) rooms.attachAiTermination(ai.sessionTermination);
     admit();
-    const friends = await createFriendRuntime(process.env, registration);
+    const friends = await createFriendRuntime(
+      process.env,
+      registration,
+      rooms?.friendInvites,
+    );
     const history = await createHistoryRuntime(process.env, registration);
     const profile = await createProfileRuntime(process.env, registration);
     const runtimeCheck =

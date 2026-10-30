@@ -8,8 +8,8 @@
     Roboto,
     sans-serif
   );
-  color: #242424;
-  background: #120d0a;
+  color: var(--color-ink);
+  background: var(--color-paper);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -21,8 +21,8 @@
 }
 body {
   margin: 0;
-  color: var(--color-ink, #fff5df);
-  background: #120d0a;
+  color: var(--color-ink);
+  background: var(--color-paper);
   font-family: var(--font-ui, system-ui, sans-serif);
 }
 main {
@@ -40,17 +40,17 @@ li {
 section {
   margin-top: 32px;
   padding: 24px;
-  background: white;
-  border: 1px solid #dad5c9;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
 }
 
 html:has(.board-preview-page),
 body:has(.board-preview-page) {
-  background: #120d0a;
+  background: var(--color-paper);
 }
 .registration-session-status {
-  color: #fff5df;
+  color: var(--color-ink);
   text-align: center;
 }
 .board-preview-page {
