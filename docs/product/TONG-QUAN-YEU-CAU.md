@@ -966,7 +966,7 @@ Tiếp tục trên cùng nhánh/PR #157. Sửa các đường đã triển khai 
 | Chức năng xuất đã có, AC-P2-15 — XIAN-168 | Response FEN/PGN sau rời replay, đổi biên bản hoặc mất quyền không còn ghi clipboard/tải tệp/ghi đè trạng thái mới. |
 | Hạ tầng kiểm chứng Windows | Chuẩn hóa CRLF thành LF khi nạp SQL test để checksum function khớp migration đã audit; không sửa migration cũ hoặc giá trị checksum. |
 
-**Kiểm chứng quan sát được:** 62 file / 718 test đạt, không skip (17 file server, 45 file web; lấy kết quả mới nhất từng file sau khi sửa fixture). Có API/session/coordinator/RealtimeStore/presence/PostgreSQL thật cho quyền phòng; PostgreSQL cho OTP, AI expiry/concurrency/rollback, media và ma trận RLS. Các provider/engine được thay bằng biên tổng hợp theo fixture, không xem là E2E dịch vụ thật. Cặp Tái đấu và API Khách của lượt đầu cũng đã chạy trên DB như mục 16.2.
+**Kiểm chứng quan sát được:** 69 file / 763 test đạt, không skip (24 file server, 45 file web; lấy kết quả mới nhất từng file sau khi sửa fixture). Có 45 ca runtime HTTP/Socket.IO/PostgreSQL cho rời phòng, đổi ghế/quyền, tái đấu và vòng đời Khách; fixture lấy proof từ socket đang điều khiển thật. Có API/session/coordinator/RealtimeStore/presence/PostgreSQL thật cho quyền phòng; PostgreSQL cho OTP, AI expiry/concurrency/rollback, media và ma trận RLS. Các provider/engine được thay bằng biên tổng hợp theo fixture, không xem là E2E dịch vụ thật. Cặp Tái đấu và API Khách của lượt đầu cũng đã chạy trên DB như mục 16.2.
 
 TypeScript web/server/tests, ESLint các file đổi, Prettier code/CSS và diff check đạt. Preview /dev/ui tải được, console không có lỗi; đây là trang minh họa. Không chạy build local hoặc đo lại tải/độ trễ production.
 
