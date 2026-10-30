@@ -184,18 +184,19 @@ Nguồn: BA 0.5–0.7, 0.10, 2.1, 2.3, 2.7–2.8; US-02.x, US-06.1–06.2.
 
 - Thành viên tìm bạn bằng tiền tố username, không phân biệt hoa thường; kết bạn hai chiều qua Chấp nhận/Từ chối, người gửi được thu hồi.
 - Tối đa 200 bạn, tổng 50 lời mời kết bạn chờ gửi + nhận; lời mời hết hạn sau 30 ngày.
-- Hai lời mời ngược chiều chỉ giữ một đề nghị, không tự thành bạn. Cùng người nhận từ chối hai lần thì chặn gửi lại cho người đó theo luật hiện hành.
-- Trạng thái Online/Đang đấu/Offline; chỉ bạn Online, không bận vị trí chơi khác mới nhận mời phòng. Mục tiêu cập nhật trạng thái trong 5 giây.
-- Mời bạn trong phòng chỉ dành cho người đang ngồi ghế; popup người nhận có Tham gia/Từ chối, hạn 30 giây, không lưu trong chuông.
+- Hai lời mời kết bạn ngược chiều chỉ giữ một đề nghị, không tự thành bạn. B từ chối A hai lần thì chặn A→B, không chặn chiều ngược; kết bạn thành công reset bộ đếm cặp về 0, hủy kết bạn không phục hồi bộ đếm cũ (PO chốt 30/10, BA 0.19 Q1).
+- Online/Đang đấu/Offline; Online cập nhật trong ≤5 giây. Mất mọi kết nối đã được server nhận biết thì hiện Offline kể cả còn giữ ghế/vị trí; vẫn chặn nhận mời sang ghế khác. Bấm chuông chuyển `/friends` và tự mở tab Lời mời kết bạn đang chờ, dùng chung danh sách/số đếm (0.19 Q7–Q8).
+- Mời phòng chỉ dành cho người ngồi ghế; cooldown **10 giây theo toàn người gửi**, dùng chung người nhận/phòng/tab. **Nhiều popup đồng thời**, mỗi popup có tên người thực sự gửi, Tham gia/Từ chối, deadline gốc **30 giây**. Từ chối/X/Esc kết thúc popup đó, thông báo người gửi và chờ ít nhất 10 giây từ phản hồi trước khi gửi lại; hết hạn tự nhiên không báo giả là Từ chối. Không lưu vào chuông. Người gửi rời ghế/hủy kết bạn không tự thu hồi invite đã cấp, vẫn kiểm quyền/phòng/chỗ khi nhận (0.19 Q2–Q4, Q6).
 - Link/mã dùng được cho người chưa kết bạn. Chưa đăng nhập thì chọn đăng nhập/đăng ký/Khách rồi tự vào đúng phòng, nhưng kiểm ràng buộc vị trí chơi trước.
 - Vào bằng mã/link/lời mời: còn ghế thì ngồi ghế; đủ ghế thì làm người xem nếu còn chỗ. “Vào xem” tại Sảnh không tự xếp vào ghế; “Vào chơi” gặp ghế vừa kín thì có thể chuyển sang xem kèm thông báo nếu còn chỗ.
+- Đang xem A mà vào B: chỉ rời chỗ xem A khi chuyển nguyên tử/nhận chỗ B thành công; B đầy/khóa/lỗi thì giữ A và báo lỗi tại chỗ. Precheck slot không bảo đảm chỗ; không tự rời ghế/ván chơi khác (0.19 Q5).
 - Trang Bạn bè P1 không tạo phòng rồi mời tự động; đó là Thách đấu P2. Chat 1–1 cũng là P2.
 
-**Cần đánh giá:** kết bạn có quá nhiều bước cho nhóm chơi quen nhau; cần giữ hệ thống bạn bè tối thiểu ở P1 đến mức nào; luật từ chối hai lần có cách khôi phục quan hệ phù hợp không; lời mời cần hiển thị gì để tránh vào nhầm phòng.
+**Đã chốt 30/10:** Q1–Q8 và tên người gửi ở [đặc tả YC3](P1-YC3-MOI-VAO-PHONG.md), BA 0.19; không còn câu hỏi PO mở trong nhóm này. Chốt đặc tả không phải nghiệm thu triển khai.
 
-**Bằng chứng cần có:** lời mời hết hạn/bận/offline; Khách bị từ chối đúng quyền; link qua đăng nhập giữ đích; chấp nhận lời mời khi phòng vừa đầy/khóa không vượt quyền.
+**Bằng chứng cần có:** 28 AC YC3 cùng reset bộ đếm, nhiều popup trên 360px, cooldown dùng chung mọi tab/người nhận, phản hồi Từ chối không trùng/không giả từ hết hạn, giữ invite khi người gửi rời, chuyển phòng thất bại vẫn giữ A, Offline không mất vị trí và chuông mở đúng tab.
 
-Nguồn: BA 0.3, 2.4–2.8, 5.5, 11; US-03.1–03.2.
+Nguồn: BA 0.3, **0.19**, 2.4–2.8, 5.5, 11; US-03.1–03.2.
 
 ## 7. Bàn cờ và bộ luật — YC4
 

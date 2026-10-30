@@ -5,7 +5,7 @@
 > **Dự án:** Cờ Tướng Online (XIANGQI)  
 > **Đại diện Product Owner:** Twot  
 > **Đại diện Phân tích Nghiệp vụ (BA):** Hermes Agent  
-> **Cập nhật lần cuối:** 30/10/2026 — bổ sung YC1 mật khẩu P1 theo 0.18, 1.7 và 1.9; giữ hạn 04/11, số kế hoạch cũ là baseline chưa tái ước lượng.
+> **Cập nhật lần cuối:** 30/10/2026 — YC1 mật khẩu P1 theo 0.18, 1.7, 1.9; chốt YC3 Q1–Q8 và tên người gửi theo 0.19; giữ hạn 04/11, số kế hoạch cũ là baseline chưa tái ước lượng.
 
 Tài liệu này ghi nhận chính thức các quyết định điều chỉnh, bổ sung hoặc giữ nguyên tính năng sau quá trình rà soát giữa BA và Product Owner nhằm chốt cứng phạm vi triển khai (Scope Freeze).
 
@@ -143,6 +143,20 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 * PO chọn username sau khi được nêu rủi ro phản hồi cụ thể có thể bị dùng dò trạng thái email; không tuyên bố luồng recovery chống dò hoàn toàn. Đăng nhập vẫn dùng thông báo chung và khóa thử sai cũ. "Gmail" không bổ sung ràng buộc chỉ chấp nhận @gmail.com; tiếp tục hỗ trợ email hợp lệ theo 1.1.
 * Khôi phục Username và đổi Username vẫn P2; đổi email đã xác minh vẫn ngoài phạm vi. Không thay hạn 04/11/2026; YC1–YC8 P1 được xử lý trước P2.
 * Đặc tả riêng và 20 tiêu chí bổ sung: [P1-YC1-TAI-KHOAN-VA-XAC-THUC.md](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Số 268 AC/880 giờ/71 Task trong kế hoạch cũ là baseline trước thay đổi, không chứng minh đã bao gồm công việc mới; chưa cập nhật Jira/ước lượng trong tác vụ tài liệu này. Hai màn hình quên/reset chuyển P1; bảng đếm 26/11 cũ được thay bằng 28/9, tổng 37 không đổi.
+
+### 0.19 YC3: kết bạn, lời mời phòng và presence — PO chốt 30/10/2026
+
+1. **Q1 — Khôi phục kết bạn:** sau hai lần B từ chối A, chỉ chặn chiều A gửi B; B vẫn có thể chủ động gửi A. Khi hai người **kết bạn thành công**, reset bộ đếm từ chối của cặp về 0; sau đó hủy kết bạn không khôi phục bộ đếm cũ. Thu hồi/hết hạn không tính là Từ chối và không tự reset.
+2. **Q2 — Nhiều lời mời phòng:** hiển thị **nhiều popup đồng thời**, mỗi popup có người gửi/phòng, hành động và deadline 30 giây riêng. Không xếp hàng ẩn hoặc thay lời mời cũ bằng lời mời mới; bố cục phải dùng được từ 360px.
+3. **Q3 — Cooldown:** **10 giây theo tài khoản người gửi**, dùng chung giữa các người nhận, phòng và tab; không phải mỗi cặp 10 giây. Gửi thành công bắt đầu cooldown, gửi thất bại không giả thành đã gửi; bấm lại không tạo trùng hoặc gia hạn lời mời đang chờ. Server quyết định hạn và trả thời gian còn lại. Cách tính sau phản hồi Từ chối theo Q6 bên dưới.
+4. **Q4 — Giữ invite đã cấp:** người gửi rời ghế/rời phòng/xuống xem hoặc hai bên hủy kết bạn **không tự thu hồi** lời mời đã gửi, vẫn giữ đến deadline gốc 30 giây. Khi nhận, vẫn kiểm phiên, vị trí, khóa/chặn, phòng còn mở và sức chứa; không yêu cầu người gửi vẫn ngồi ghế hoặc vẫn còn quan hệ bạn bè để dùng invite đã cấp. Khóa/đóng phòng vẫn vô hiệu lời mời; không giữ invite qua các rào chắn này.
+5. **Q5 — Chuyển phòng khi đang xem:** người đang xem A chỉ rời chỗ xem A khi nhận được chỗ hợp lệ ở B; B đầy/khóa/lỗi thì **giữ A**. Máy chủ kiểm lại và chuyển trạng thái nguyên tử, không coi một lần kiểm tra slot trước đó là đã bảo đảm chỗ; lỗi ghi phải rollback, không để mất A mà chưa có B. Ghế/người xem ở B vẫn theo 2.8, không tự rời ghế/ván đang chơi ở nơi khác. Không mở rộng thành xem nhiều phòng cùng lúc bằng thao tác chuyển này.
+6. **Q6 — Từ chối và phản hồi:** nút Từ chối, X hoặc Esc của popup đều kết thúc lời mời đó như **Từ chối**, không thu gọn/mở lại. Người gửi nhận thông báo người nhận đã từ chối và có thể gửi lại sau **10 giây**. Quy ước tính hạn để đáp ứng “sau 10 giây”: khi server ghi nhận Từ chối, cooldown toàn người gửi được kéo ít nhất đến thời điểm đó +10 giây; không rút ngắn một cooldown đang muộn hơn. Mỗi lời mời chỉ phát một phản hồi dù nhiều tab/retry. Hết hạn tự nhiên không được báo giả là người nhận chủ động Từ chối, không tự khởi động lại cooldown. Nhiều popup: X/Esc chỉ xử lý popup đang tương tác, không từ chối toàn bộ; phản hồi không lưu thành lời mời trong chuông.
+7. **Q7 — Offline ưu tiên hiển thị:** khi server nhận biết mất **mọi kết nối** thì hiện Offline, kể cả còn ghế/vị trí đang được giữ. Quyền giữ vị trí vẫn còn, không nhận lời mời để chiếm thêm ghế; không đổi hạn ghế 60 giây/chỗ xem 5 phút. Còn kết nối hợp lệ ở tab khác thì không tự thành Offline. Chưa bổ sung ngưỡng số giây nhận biết mất mạng ngoài AC hiện có.
+8. **Q8 — Chuông:** bấm chuông chuyển đến `/friends`, tự mở tab **Lời mời kết bạn đang chờ**, có số đếm và dùng chung danh sách/hành động; không thêm dropdown riêng hoặc nhắn tin chưa đọc P2.
+9. **Tên người mời:** popup hiện **tên người thực sự gửi**, không luôn ghi tên Host; cả hai người ngồi ghế đủ quyền đều được mời.
+
+Giữ baseline **28 AC YC3** và mã hiện có; bổ sung chi tiết vào AC liên quan, không đổi hạn/giờ/Task/Jira. Đặc tả và ca biên: [P1-YC3-MOI-VAO-PHONG.md](P1-YC3-MOI-VAO-PHONG.md). Chốt đặc tả không phải bằng chứng đã triển khai hoặc PASS.
 
 ---
 
@@ -397,8 +411,9 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
     * 🟠 **Bạn bè đang trong ván/phòng khác ("Đang đấu"):** coi như không mời được; nút "Mời" `DISABLED` kèm tooltip *"Bạn bè đang trong ván khác"*. Khách không gửi/nhận được lời mời bạn bè (có thể chia sẻ link/QR/mã).
   * **Cơ chế hiển thị lời mời cho người nhận:**
     * Khi được mời, trên màn hình của bạn bè đang online sẽ lập tức xuất hiện một pop-up thông báo nổi ở góc:
-      > ✉️ *"Người chơi [Tên Host] mời bạn tham gia phòng cờ [Tên phòng]"* kèm 2 nút: **[Tham gia]** và **[Từ chối]**.
+      > ✉️ *"Người chơi [Tên người thực sự gửi] mời bạn tham gia phòng cờ [Tên phòng]"* kèm 2 nút: **[Tham gia]** và **[Từ chối]** (PO chốt 30/10, 0.19).
     * Pop-up có thời hạn đếm lùi **30 giây**, nếu người nhận không bấm thì pop-up sẽ tự động biến mất và lời mời hết hiệu lực.
+    * **PO chốt 30/10 (0.19 Q2–Q6):** nhiều popup đồng thời; cooldown 10 giây theo toàn người gửi, gồm hạn gửi lại sau Từ chối; X/Esc = Từ chối và phản hồi về màn hình người gửi. Người gửi rời ghế hoặc hủy kết bạn không thu hồi invite đã cấp; vẫn hạn gốc 30 giây và kiểm khóa/chặn/phòng/chỗ/vị trí khi nhận.
 
 ---
 
@@ -436,6 +451,7 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
   1. **Thiết lập khi tạo phòng — MVP chốt lại 05/10:** chọn *Không có người xem* hoặc tối đa 1–5 người xem (**mặc định 5**). Sức chứa phòng = 2 + số này (tối đa 7). Không đổi sau khi tạo.
   2. **Mời người vào:** Bấm "Chia sẻ phòng" tạo cùng lúc **3 hình thức**: Link, Mã 8 ký tự, Mã QR. Cả ba cho **cùng một quyền**, không phân biệt xem/chơi. Chỉ 2 người chơi thấy nút Chia sẻ.
   3. **Người mới vào đâu:** Trong **phòng tự tạo**, người có link/mã hoặc lời mời được vào theo `Quyết định 2.7`, không bắt buộc kết bạn. Ghế đấu còn trống thì vào **ngay ghế đó**. Hai ghế đã kín thì vào làm **Người xem** nếu còn chỗ (`Quyết định 2.6`); hết chỗ thì báo phòng đầy. Nút **Vào xem** tại Sảnh cho vào với vai trò Người xem ở phòng `PUBLIC`; máy chủ không tự xếp người bấm nút này vào ghế chơi. Nút **Vào chơi** (07/10) xếp vào ghế trống, ghế vừa hết thì xử lý theo Phần 0 mục 0.5. Ghép ngẫu nhiên, Đánh Hạng và AI không nhận người xem.
+     * **Chuyển từ phòng đang xem (PO chốt 30/10, 0.19 Q5):** chỉ rời chỗ xem A khi nhận được chỗ hợp lệ ở B; kiểm/ghi chuyển nguyên tử, B đầy/khóa/lỗi thì giữ A. Không biến precheck slot thành bảo đảm chỗ, không tự rời ghế/ván khác để tham gia.
   4. **Đổi chỗ giữa ghế và người xem trong phòng tự tạo** (chỉ khi phòng `WAITING` hoặc `FINISHED`, **không đổi chỗ khi ván đang diễn ra**):
      * Người ngồi ghế tự bấm *"Chuyển sang người xem"*. **Điều kiện (rà soát cuối):** chỉ khi phòng còn chỗ xem (số người xem hiện tại thấp hơn số người xem tối đa của phòng). Phòng "Không có người xem" hoặc đã đủ người xem thì nút `DISABLED` kèm tooltip *"Phòng không còn chỗ cho người xem"*; không bao giờ vượt trần. Không có thao tác hoán đổi trực tiếp.
      * Host bấm *"Chuyển sang người xem"* cho một người đang ngồi ghế (cùng điều kiện còn chỗ xem), hoặc gửi *"Mời xuống ghế"* cho một người xem khi còn ghế trống. **PO duyệt 05/10:** lời mời xuống ghế cần người xem **Chấp nhận**; Từ chối thì tiếp tục xem. Lời mời không giữ ghế: khi chấp nhận, máy chủ kiểm lại trạng thái phòng, quyền, vị trí chơi và ghế trống; nếu ghế đã có người thì thông báo và giữ vai trò Người xem. Xuống ghế thành công vẫn phải bấm Sẵn sàng theo 2.3.
@@ -649,10 +665,10 @@ Ba câu hỏi của lượt review đã được giải quyết; không còn đi
 * **Lựa chọn đã chốt:** **[FRIENDS] Kết bạn hai chiều theo username; trạng thái online/đang đấu; không có chức năng Chặn riêng**
 * **Mô tả nghiệp vụ:**
   1. **Tìm & gửi lời mời:** Chỉ tài khoản chính thức mới có Bạn bè. Tìm theo `username` (tiền tố, không phân biệt hoa thường). Kết bạn là **hai chiều**: gửi lời mời $\rightarrow$ bên kia **Chấp nhận** hoặc **Từ chối**. Người gửi có thể thu hồi lời mời. Lời mời chờ tự hết hạn sau **30 ngày**.
-  2. **Giới hạn:** Tối đa **200 bạn** và **50 lời mời đang chờ** mỗi tài khoản; 50 là **tổng gửi + nhận** (duyệt 04/10). Hai yêu cầu ngược chiều đồng thời chỉ giữ **một lời mời**, không tự thành bạn; bên nhận phải Chấp nhận. Nếu một người bị **cùng một người nhận từ chối 2 lần** thì không gửi lại được lời mời cho người đó (chống quấy rối); đây là cách thay cho chức năng Chặn.
+  2. **Giới hạn:** Tối đa **200 bạn** và **50 lời mời đang chờ** mỗi tài khoản; 50 là **tổng gửi + nhận** (duyệt 04/10). Hai yêu cầu ngược chiều đồng thời chỉ giữ **một lời mời**, không tự thành bạn; bên nhận phải Chấp nhận. Cùng người nhận từ chối 2 lần thì chặn người gửi gửi lại theo chiều đó; chiều ngược vẫn được gửi. **PO chốt 30/10 (0.19 Q1):** kết bạn thành công reset bộ đếm từ chối của cặp về 0; hủy kết bạn sau đó không phục hồi số đếm cũ. Không có chức năng Chặn riêng.
   3. **Huỷ kết bạn:** Hai bên mất quyền nhắn tin 1-1 ngay. Lịch sử tin nhắn **được giữ nhưng ẩn**, hiện lại nếu kết bạn lại.
-  4. **Trạng thái:** 🟢 Online (có kết nối hoạt động) · 🟠 Đang đấu (đang ngồi ghế trong ván/phòng) · ⚫ Offline. Chỉ trạng thái 🟢 mới nhận được lời mời vào phòng (`Quyết định 2.5`).
-  5. **Thông báo:** Icon chuông liệt kê lời mời kết bạn đang chờ; huy hiệu **tin chưa đọc** hiện trên mục Bạn bè. Lời mời vào phòng là pop-up 30 giây, không lưu lại trong chuông.
+  4. **Trạng thái:** 🟢 Online (có kết nối hoạt động, không bận vị trí chơi) · 🟠 Đang đấu (đang ngồi ghế/ván và còn kết nối) · ⚫ Offline (server đã nhận biết mất mọi kết nối). **PO chốt 30/10 (0.19 Q7):** Offline ưu tiên hiển thị cả trong ân hạn giữ ghế/vị trí; không giải phóng vị trí hoặc cho nhận mời sang ghế khác vì đổi nhãn. Chỉ 🟢 mới nhận lời mời phòng mới.
+  5. **Thông báo:** chuông có số đếm lời mời kết bạn chờ; bấm chuyển `/friends` và tự mở tab Lời mời, dùng chung danh sách/hành động (**PO chốt 30/10, 0.19 Q8**). Lời mời phòng là nhiều popup đồng thời hạn 30 giây, không lưu chuông; Từ chối/X/Esc phản hồi cho người gửi theo 0.19 Q6. Huy hiệu tin nhắn chưa đọc thuộc P2 theo Phần 11.
   6. **Hồ sơ người khác:** Không có trang hồ sơ công khai riêng. Bấm vào tên một người ở bảng xếp hạng, kết quả tìm kiếm hoặc thẻ đối thủ chỉ hiện thẻ tóm tắt (Avatar, Display Name, `@username`, Elo, cấp bậc, thắng/thua/hòa) cùng nút **"Kết bạn"**; nút "Nhắn tin" chỉ hiện khi đã là bạn (`Quyết định 8.2`).
 
 ## PHẦN 6: CHƠI VỚI MÁY AI (Yêu cầu 8)

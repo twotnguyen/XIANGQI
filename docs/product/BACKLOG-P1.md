@@ -345,7 +345,7 @@
 
 #### US-03.1 · Mời bằng link/mã và vào phòng
 **Là** người được mời (kể cả chưa kết bạn), **tôi muốn** vào phòng bằng link hoặc mã, **để** chơi hoặc xem ngay.
-*Nguồn:* BA 2.4, 2.6, 2.7, 2.8, 4.2, 0.3. *Màn hình:* `MODAL-INVITE`, `SCR-LOBBY`, `SCR-LOGIN`, `SCR-ACCESS-DENIED`.
+*Nguồn:* BA 0.3, 0.19 Q5, 2.4, 2.6, 2.7, 2.8, 4.2. *Màn hình:* `MODAL-INVITE`, `SCR-LOBBY`, `SCR-LOGIN`, `SCR-ACCESS-DENIED`.
 *Sprint thi công:* S2, S3. *Story Points:* **7** (tổng điểm 3 Task, 28 giờ).
 
 | AC | Given | When | Then | Kiểm |
@@ -355,37 +355,37 @@
 | AC-03.1.3 | Chưa đăng nhập | Mở link mời | Thấy màn Đăng nhập/Đăng ký; sau khi đăng nhập hoặc đăng ký xong thì **tự vào đúng phòng** (đường vào bằng Khách: xem US-01.3), không phải mở link lần hai | E2E |
 | AC-03.1.4 | Vào phòng | Còn ghế trống | Được xếp vào ghế trống (Host Đỏ → vào Đen và ngược lại) | E2E |
 | AC-03.1.5 | Vào phòng | Hai ghế đã kín, còn chỗ xem | Vào làm Người xem, thông báo *"Ghế đấu đã đủ 2 người, bạn đang tham gia phòng với vai trò Người xem."* | E2E |
-| AC-03.1.6 | Vào phòng | Phòng đã đủ sức chứa (hoặc "Không có người xem" và đủ 2 ghế) | `SCR-ACCESS-DENIED`: *"Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"* + nút "Quay về Sảnh chính" | E2E |
+| AC-03.1.6 | Vào phòng, phòng đã đủ sức chứa (hoặc "Không có người xem" và đủ 2 ghế) | Máy chủ từ chối | Không có phòng xem nguồn → SCR-ACCESS-DENIED: "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!" + "Quay về Sảnh chính". Đang xem A muốn chuyển sang B → giữ A, báo lỗi tại chỗ theo BA 0.19 Q5, không đẩy khỏi A | E2E |
 | AC-03.1.7 | Mã sai hoặc phòng đã đóng | Nhập mã | Báo *"Mã phòng không tồn tại hoặc phòng đã đóng"* | E2E |
 
 #### US-03.2 · Bạn bè và mời bạn online
 **Là** người dùng, **tôi muốn** kết bạn, biết bạn nào đang online và mời họ vào phòng ngay trong game, **để** rủ bạn chơi chỉ với một chạm.
 *Nguồn:* BA 5.5, Phần 11 (Bạn bè P1 tối thiểu). *Màn hình:* `SCR-FRIENDS`.
 *Nguồn:* BA 5.5 mục 4–5, 1.8 (hàng đợi). *Màn hình:* `SCR-FRIENDS`, `PANEL-NAVBAR`.
-*Nguồn:* BA 2.5, 2.7 mục 3, 2.8, 4.3. *Màn hình:* `MODAL-INVITE`.
+*Nguồn:* BA 0.19 (PO chốt YC3 Q1–Q8 và tên người gửi 30/10/2026), 2.5, 2.7 mục 3, 2.8, 4.3. *Màn hình:* `MODAL-INVITE`.
 *Sprint thi công:* S3, S4. *Story Points:* **10** (tổng điểm 3 Task, 40 giờ).
 
 | AC | Given | When | Then | Kiểm |
 |---|---|---|---|---|
 | AC-03.2.1 | Ở `SCR-FRIENDS` | Gõ tiền tố username (không phân biệt hoa thường) | Hiện kết quả gồm avatar, Display Name, `@username`, nút "Kết bạn"; không hiện Khách | E2E |
 | AC-03.2.2 | Chưa là bạn | Bấm "Kết bạn" | Bên kia thấy lời mời ở tab "Lời mời kết bạn đang chờ" và ở chuông | E2E |
-| AC-03.2.3 | Có lời mời đến | Bấm "Chấp nhận" / "Từ chối" | Chấp nhận → cả hai thấy nhau trong danh sách bạn; Từ chối → lời mời biến mất | E2E |
+| AC-03.2.3 | Có lời mời đến | Bấm "Chấp nhận" / "Từ chối" | Chấp nhận → cả hai thấy nhau trong danh sách bạn, reset bộ đếm từ chối của cặp về 0; Từ chối → lời mời biến mất | E2E |
 | AC-03.2.4 | Đã gửi lời mời | Bấm thu hồi | Lời mời bị huỷ ở cả hai phía | I |
 | AC-03.2.5 | Lời mời chờ quá 30 ngày | Hệ thống kiểm | Lời mời tự hết hạn | I |
 | AC-03.2.6 | Đã có 200 bạn **hoặc** tổng lời mời chờ (gửi + nhận) = 50 | Gửi lời mời mới | Bị chặn kèm lý do | I |
-| AC-03.2.7 | A đã bị B từ chối 2 lần | A gửi lại cho B | Không gửi được | I |
+| AC-03.2.7 | A đã bị B từ chối 2 lần, chưa kết bạn thành công lại | A gửi lại cho B | Không gửi được; B vẫn được chủ động gửi A. Khi kết bạn thành công reset bộ đếm của cặp, hủy kết bạn sau đó không khôi phục bộ đếm cũ (BA 0.19 Q1) | I |
 | AC-03.2.8 | A và B gửi lời mời cho nhau gần như cùng lúc | Máy chủ xử lý | Chỉ giữ **một** lời mời, không tự thành bạn; bên nhận phải Chấp nhận | I |
 | AC-03.2.9 | Danh sách bạn | Bấm "Huỷ kết bạn" | Hai bên không còn trong danh sách của nhau | E2E |
 | AC-03.2.10 | Bạn B mở ứng dụng (có kết nối) | A xem danh sách | B hiện 🟢 Online trong ≤ 5 giây, không cần tải lại | E2E |
-| AC-03.2.11 | B ngồi ghế trong một phòng | A xem danh sách | B hiện 🟠 Đang đấu | E2E |
-| AC-03.2.12 | B đóng mọi tab | A xem danh sách | B chuyển ⚫ Offline (sau khi hết thời gian nhận biết mất kết nối) | E2E |
-| AC-03.2.13 | Có lời mời kết bạn đang chờ | Bấm chuông ở thanh điều hướng | Liệt kê lời mời, có số đếm | E2E |
+| AC-03.2.11 | B ngồi ghế trong một phòng và còn kết nối | A xem danh sách | B hiện 🟠 Đang đấu; mất mọi kết nối đã được server nhận biết thì áp dụng AC-03.2.12 | E2E |
+| AC-03.2.12 | B đóng mọi tab/mất mọi kết nối | A xem danh sách sau khi server nhận biết mất kết nối | B hiện ⚫ Offline kể cả còn giữ ghế trong ân hạn; không giải phóng vị trí hoặc cho nhận lời mời sang ghế khác; còn kết nối ở tab khác thì không Offline | E2E |
+| AC-03.2.13 | Có lời mời kết bạn đang chờ | Bấm chuông ở thanh điều hướng | Chuyển `/friends`, tự mở tab Lời mời kết bạn đang chờ; danh sách/hành động dùng chung và có số đếm, không dropdown riêng (BA 0.19 Q8) | E2E |
 | AC-03.2.14 | Ở `SCR-FRIENDS` | Nhìn nút "Nhắn tin", "Thách đấu" | `DISABLED` kèm tooltip *"Sắp ra mắt"*; trang không có nút mời vào phòng | E2E |
 | AC-03.2.15 | Người dùng đang ngồi ghế phòng tự tạo | Mở "Chia sẻ phòng" | Có tab bạn bè; người xem không thấy nút Chia sẻ | E2E |
-| AC-03.2.16 | Danh sách bạn trong tab | Xem nút "Mời" | 🟢 bấm được; ⚫ `DISABLED` nhãn *"Ngoại tuyến"*; 🟠 `DISABLED` tooltip *"Bạn bè đang trong ván khác"* | E2E |
-| AC-03.2.17 | Gửi mời cho bạn 🟢 | Bạn nhận | Pop-up góc màn hình *"Người chơi [Tên] mời bạn tham gia phòng cờ [Tên phòng]"* với [Tham gia] [Từ chối], đếm lùi 30 giây | E2E |
-| AC-03.2.18 | Pop-up đang hiện | Bấm "Tham gia" | Vào phòng theo 2.8: ghế trống → ghế; hết ghế → người xem nếu còn chỗ; đầy → `SCR-ACCESS-DENIED` | E2E |
-| AC-03.2.19 | Pop-up | Không bấm trong 30 giây hoặc bấm "Từ chối" | Pop-up biến mất, lời mời hết hiệu lực; không lưu vào chuông | E2E |
+| AC-03.2.16 | Danh sách bạn trong tab | Xem/bấm "Mời" | 🟢 bấm được khi hết cooldown; ⚫ `DISABLED` nhãn "Ngoại tuyến"; 🟠 `DISABLED` tooltip "Bạn bè đang trong ván khác". Cooldown 10 giây toàn người gửi dùng chung người nhận/phòng/tab; gửi lại sau Từ chối theo BA 0.19 Q3/Q6, server trả hạn còn lại | E2E |
+| AC-03.2.17 | Gửi mời hợp lệ cho bạn 🟢 | Bạn nhận | Popup góc màn hình "Người chơi [Tên người thực sự gửi] mời bạn tham gia phòng cờ [Tên phòng]" với [Tham gia] [Từ chối], hạn gốc 30 giây; nhiều popup hiển thị đồng thời, độc lập. Người gửi rời ghế/hủy kết bạn không tự thu hồi invite (BA 0.19 Q2/Q4) | E2E |
+| AC-03.2.18 | Popup đang hiện; người nhận có thể đang xem phòng A | Bấm "Tham gia" phòng B | Kiểm lại quyền/chỗ: ghế trống → ghế; hết ghế → xem nếu còn chỗ; đầy → từ chối. Đang xem A thì chỉ rời A khi nhận chỗ B thành công bằng chuyển nguyên tử; B đầy/khóa/lỗi giữ A, báo lỗi tại chỗ; không điều hướng rời A chỉ vì precheck slot thành công. Không có phòng A thì đầy → SCR-ACCESS-DENIED | E2E |
+| AC-03.2.19 | Một hay nhiều popup lời mời | Hết 30 giây, hoặc Từ chối/X/Esc trên popup đang tương tác | Lời mời đó vô hiệu, popup mất, không lưu chuông; không đóng toàn bộ popup khác. Chủ động Từ chối/X/Esc thông báo người gửi và đặt cooldown gửi lại ít nhất đến thời điểm từ chối +10 giây; hết hạn tự nhiên không báo giả Từ chối và không reset cooldown (BA 0.19 Q6) | E2E |
 | AC-03.2.20 | Lời mời đã gửi, sau đó phòng chuyển `LOCKED` | Người nhận bấm Tham gia | Bị từ chối (lời mời chưa dùng đã bị thu hồi) | I |
 | AC-03.2.21 | Người được mời đang ngồi ghế phòng khác | Bấm Tham gia | Không được ngồi ghế thứ hai; thông báo theo AC-01.4.6 | I |
 
