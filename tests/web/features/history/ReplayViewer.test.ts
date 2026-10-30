@@ -310,3 +310,111 @@ it("copies the FEN at the selected ply and downloads the PGN without chess servi
   expect(revoke).toHaveBeenCalledWith("blob:xiangqi");
   spy.mockRestore();
 });
+
+function delayedExport() {
+  let resolve!: (value: { fen: string; pgn: string }) => void;
+  let reject!: (error: Error) => void;
+  const promise = new Promise<{ fen: string; pgn: string }>((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
+  return { promise, resolve, reject };
+}
+
+it("does not copy a delayed export after leaving the replay", async () => {
+  const pending = delayedExport();
+  userEvent.setup();
+  const writeText = vi
+    .spyOn(navigator.clipboard, "writeText")
+    .mockResolvedValue(undefined);
+  const view = render(
+    createElement(ReplayViewer, {
+      record: record(),
+      moveLabels: labels,
+      exportAt: () => pending.promise,
+    }),
+  );
+  fireEvent.click(button("Copy FEN"));
+  view.unmount();
+  await act(async () => {
+    pending.resolve({ fen: "old-fen", pgn: "old-pgn" });
+    await pending.promise;
+  });
+  expect(writeText).not.toHaveBeenCalled();
+});
+
+it("keeps exports for a new record separate from a delayed old response", async () => {
+  const old = delayedExport(),
+    next = delayedExport();
+  const exportAt = vi
+    .fn()
+    .mockReturnValueOnce(old.promise)
+    .mockReturnValueOnce(next.promise);
+  userEvent.setup();
+  const writeText = vi
+    .spyOn(navigator.clipboard, "writeText")
+    .mockResolvedValue(undefined);
+  const view = render(
+    createElement(ReplayViewer, {
+      record: record(),
+      moveLabels: labels,
+      exportAt,
+    }),
+  );
+  fireEvent.click(button("Copy FEN"));
+  const other = record();
+  other.id = "22222222-2222-4222-8222-222222222222";
+  view.rerender(
+    createElement(ReplayViewer, {
+      record: other,
+      moveLabels: labels,
+      exportAt,
+    }),
+  );
+  const activeCopy = button("Copy FEN");
+  fireEvent.click(activeCopy);
+  await act(async () => {
+    old.resolve({ fen: "old-fen", pgn: "old-pgn" });
+    await old.promise;
+  });
+  expect(writeText).not.toHaveBeenCalled();
+  expect(activeCopy.getAttribute("aria-busy")).toBe("true");
+  await act(async () => {
+    next.resolve({ fen: other.positions[0]!.fen, pgn: "new-pgn" });
+    await next.promise;
+  });
+  expect(writeText).toHaveBeenCalledExactlyOnceWith(other.positions[0]!.fen);
+});
+
+it.each(["resolve", "reject"] as const)(
+  "ignores a delayed PGN %s after export permission is removed",
+  async (outcome) => {
+    const pending = delayedExport();
+    const createUrl = vi.fn(() => "blob:old-export");
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: createUrl,
+    });
+    const r = record();
+    const view = render(
+      createElement(ReplayViewer, {
+        record: r,
+        moveLabels: labels,
+        exportAt: () => pending.promise,
+      }),
+    );
+    fireEvent.click(button("Tải PGN"));
+    view.rerender(
+      createElement(ReplayViewer, { record: r, moveLabels: labels }),
+    );
+    await act(async () => {
+      if (outcome === "resolve")
+        pending.resolve({ fen: "old-fen", pgn: "old-pgn" });
+      else pending.reject(new Error("permission revoked"));
+      await pending.promise.catch(() => undefined);
+    });
+    expect(createUrl).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.queryByText(/Đã tải tệp PGN/)).toBeNull();
+  },
+);
