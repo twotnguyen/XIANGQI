@@ -44,6 +44,10 @@ Snapshot đầy đủ vẫn được đọc từ server khi gửi giao diện; k
 bỏ kiểm quyền hoặc cấp quyền điều khiển từ dữ liệu frontend.
 
 Snapshot đọc phòng, roster, countdown, người xem, presence và offer trong MỘT SELECT: phòng LEFT JOIN roster, CROSS JOIN một dòng nguồn snapshot. Khi cache kiểm tra bảng offer đã sẵn sàng, snapshot chỉ còn một truy vấn. Các bảng offer tùy chọn vẫn được dò khi dùng lần đầu; không cache dữ liệu phòng và không đổi contract.
+Đề nghị đổi bên: `room.swapCooldownUntil` (ISO tuyệt đối, server tính `resolved_at + 60s`) chỉ có cho người gửi có đề nghị DECLINED/EXPIRED trong 60 giây; các người khác và đề nghị WITHDRAWN luôn `null`. Đọc từ cùng SELECT snapshot, không thêm truy vấn hay migration; cùng điều kiện `swapCooldownOpen` với `proposeSwap`.
+Thành phần ghế đổi phải đi qua `cancel` (hủy countdown, reset Sẵn sàng cả phòng)
+và đóng đề nghị đổi ghế đang chờ. Cả `toSpectator` và `moveToSpectator` dùng cùng
+cleanup này; không chỉ reset cờ của người vừa rời ghế.
 Nếu bảng biến mất sau khi đã dò, lỗi SQL được trả lên, không retry trong giao dịch
 đã lỗi. Gateway gửi snapshot đã commit từ admission, không đọc lại toàn bộ phòng.
 

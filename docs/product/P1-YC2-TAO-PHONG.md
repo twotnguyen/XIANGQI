@@ -2,7 +2,7 @@
 
 **Ngày lập:** 30/10/2026. **Phạm vi:** YC2 của P1 (EP-02: US-02.1, US-02.2; 27 AC). **Hạn P1:** giữ 04/11/2026.
 
-**Trạng thái:** đặc tả đầy đủ, PO đã chốt Q1–Q7 ngày 30/10/2026 (mục 17). Nội dung phân tích dựa trên BA, Backlog và đối chiếu mã hiện có (mục 15). Chưa sửa mã, chưa chạy test và chưa đóng Task Jira.
+**Trạng thái:** đã triển khai và kiểm chứng local YC2 theo Q1–Q7; đủ bảng truy vết 27 AC (mục 16), bằng chứng và giới hạn ở mục 18. Chưa đóng Task Jira, chưa push.
 
 ## 1. Mục tiêu, nguồn và thứ tự ưu tiên
 
@@ -103,7 +103,7 @@ stateDiagram-v2
 
 ### 7.2 Sẵn sàng
 
-- Host được bấm Sẵn sàng hoặc huỷ trước khi có người thứ hai; khi người thứ hai ngồi vào, Sẵn sàng của Host reset (theo AC-02.1.10).
+- Giao diện cho bấm Sẵn sàng khi đủ hai người theo AC-02.1.7. Khi người thứ hai ngồi vào hoặc thành phần ghế thay đổi, Sẵn sàng của cả phòng reset (AC-02.1.10).
 - Trạng thái Sẵn sàng của từng người hiển thị realtime cho mọi người trong phòng.
 - Chỉ người ngồi ghế được bấm; người xem không có nút.
 
@@ -196,54 +196,47 @@ Năm trạng thái cho mọi thao tác chính (`SUCCESS`, `LOADING`, `EMPTY`, `E
 7. Máy chủ khởi động lại khi đang đếm: huỷ đếm, về chờ, reset Sẵn sàng; không tạo ván nửa chừng.
 8. Tải lại trang khi đang đếm hoặc có modal đề nghị: client khôi phục đúng từ snapshot máy chủ (số giây còn lại tính từ hạn máy chủ).
 
-## 15. Hiện trạng mã (đối chiếu ngày 30/10/2026)
+## 15. Thay đổi triển khai (30/10/2026)
 
-Đã đọc mã và test hiện có, **chưa chạy test mới**. Phần lớn AC đã có triển khai. Bốn điểm cần xử lý hoặc xác nhận:
+- Snapshot thêm `room.swapCooldownUntil`: hạn ISO tuyệt đối từ cùng truy vấn hiện có, chỉ người gửi bị từ chối/hết hạn nhận giá trị; người khác nhận `null`. Không thêm migration hoặc timer nghiệp vụ trên client.
+- `RoomSeats` hiển thị nút bị khóa và lý do đếm giây theo thời gian server. `SwapPrompt` dùng Dialog giữ focus, đếm thời hạn server; Esc/X/Thu gọn không gửi từ chối, có nút mở lại khi đề nghị còn hiệu lực.
+- `RoomPage` chỉ mở kết quả cho ván đã quan sát đang chạy trong phiên đó. Snapshot đầu tiên sau reload không mở lại kết quả cũ. Kết quả chỉ có Ở lại phòng/Rời phòng; Escape = ở lại, nhưng không đóng khi yêu cầu rời đang chờ. Rời lỗi giữ modal, báo lỗi an toàn và cho thử lại.
+- Sửa nguyên nhân reset Sẵn sàng ở `room-store-viewers.ts`: cả hai đường người chơi tự xuống xem và Host chuyển người chơi xuống xem đều gọi cleanup countdown/readiness và đóng đề nghị đổi ghế trước snapshot cuối.
+- Cập nhật danh mục màn hình và nguồn `AC-TASK-MAP.json`/báo cáo truy vết theo BA 19/10, 28/10: không nhập/lọc tên phòng, chọn CODE_ONLY/PUBLIC ngay trong form. Không sửa lịch, giờ, người nhận hoặc trạng thái Jira.
 
-| Mức | Điểm | Vị trí | Liên quan |
-|---|---|---|---|
-| Trung bình | Nút Xin đổi bên chưa `DISABLED` + tooltip đếm 60 giây; hiện chỉ báo lỗi dạng toast sau khi bấm | `apps/web/src/features/rooms/RoomSeats.tsx:113-126`, máy chủ đã có `SWAP_COOLDOWN` ở `room-store-swap.ts` | AC-02.2.4 |
-| Trung bình | Lời nhắc đổi bên là khung `role="group"` trong trang, không phải modal như `MODAL-SIDE-SWAP-PROMPT` | `RoomSeats.tsx:127-172` | AC-02.2.2, Q5 |
-| Thấp–trung bình | `MatchResult` có thể hiện lại sau khi tải trang khi phòng đã `WAITING` (snapshot vẫn trả ván vừa xong; trạng thái "Ở lại" chỉ lưu cục bộ) | `room-store-core.ts:267`, `RoomPage.tsx:641,1066` | AC-02.2.8, Q1 |
-| Thấp | Khoảng trống test: reset Sẵn sàng khi đổi ghế/ghế đổi, xoá chat khi đóng phòng, sức chứa 7, Xin đổi bên ở web, người xem không có nút ở hộp kết quả | `tests/**` | AC-02.1.5, 02.1.10, 02.1.12, 02.2.1–2.2.4, 02.2.14 |
+## 16. Bảng truy vết AC → bằng chứng local
 
-Chưa xác minh được từ mã: điều hướng web sau khi tạo (AC-02.1.3), đồng hồ Đỏ bắt đầu chạy ở ván mới (AC-02.1.8), giữ nguyên kênh chat khi ở lại phòng (AC-02.2.9).
+Đường dẫn rút gọn: `room/` = `tests/server/game/room/`; `runtime` = `tests/server/game/game.runtime.yc2.test.ts`; `web/` = `tests/web/features/rooms/`. Kết quả chạy và giới hạn ở mục 18; không dùng sự hiện diện của mã làm chứng cứ PASS.
 
-Lệch tài liệu (không phải lỗi mã, BA thắng): `DANH-MUC-MAN-HINH-XIANGQI.md` mục `MODAL-CREATE-ROOM` còn mô tả "Nhập tên phòng (1–60 ký tự…)" và "phòng tạo ở `CODE_ONLY`, `PUBLIC` mở qua Cài đặt phòng"; `TRUY-VET-AC.md` còn gắn AC-02.1.1/02.1.2 với bộ lọc tên phòng. Đề xuất sửa sau khi PO duyệt tài liệu này.
-
-## 16. Bảng truy vết AC
-
-Cột "Hiện trạng" lấy từ đối chiếu mã ở mục 15; "ĐỦ" chỉ nghĩa là đã thấy mã triển khai, **không phải đã PASS** — nghiệm thu cần bằng chứng test hoặc chạy thật.
-
-| AC | Nội dung rút gọn | Hiện trạng | Ghi chú |
-|---|---|---|---|
-| 02.1.1 | Form: 5/10/15, 0–5 xem, CODE_ONLY/PUBLIC, không tên | ĐỦ | |
-| 02.1.2 | Máy chủ từ chối giá trị ngoài tập (kể cả LOCKED) | ĐỦ, có test | |
-| 02.1.3 | Mã 8 số, `Phòng <mã>`, Host ghế Đỏ, `/rooms/:id` WAITING | ĐỦ server; web chưa xác minh | |
-| 02.1.4 | Không đổi mức giờ/số người xem sau tạo | ĐỦ (không có route) | |
-| 02.1.5 | Sức chứa = 2 + xem (≤ 7) | ĐỦ (suy ra) | Thiếu test |
-| 02.1.6 | Đổi ghế một mình | ĐỦ, có test | |
-| 02.1.7 | Sẵn sàng realtime | ĐỦ | |
-| 02.1.8 | Đếm 3-2-1, kiểm lại, tạo ván, đồng hồ Đỏ | ĐỦ; đồng hồ Đỏ chưa xác minh | |
-| 02.1.9 | Mất kết nối khi đếm: huỷ, reset, giữ ghế 60s | ĐỦ, có test | |
-| 02.1.10 | Đổi thành phần ghế → reset Sẵn sàng | ĐỦ (suy ra) | Thiếu test |
-| 02.1.11 | Host rời → chuyển Host | ĐỦ, có test | |
-| 02.1.12 | Hết người ngồi → CLOSED, "Phòng đã đóng", xoá chat | ĐỦ | Thiếu test xoá chat |
-| 02.1.13 | Không tự đóng vì chờ lâu | ĐỦ (theo vắng mặt) | |
-| 02.2.1 | Nút Xin đổi bên khi đủ hai người | ĐỦ (mã) | Thiếu test web |
-| 02.2.2 | B thấy modal 30s; A thấy Rút | **LỆCH** | Chưa phải modal (Q5) |
-| 02.2.3 | Đồng ý → hoán đổi, reset Sẵn sàng | ĐỦ, có test | |
-| 02.2.4 | Khoá 60s, nút DISABLED + tooltip | **THIẾU phía web** | Máy chủ có khoá |
-| 02.2.5 | Tối đa 1 đề nghị chờ | ĐỦ, có test | |
-| 02.2.6 | Tự huỷ khi đếm hoặc rời ghế | ĐỦ | Thiếu test |
-| 02.2.7 | Ẩn nút khi đếm/đang ván | ĐỦ (mã) | Thiếu test web |
-| 02.2.8 | Hộp kết quả; phòng WAITING; Sẵn sàng = chưa | ĐỦ, có rủi ro tải lại (Q1) | |
-| 02.2.9 | Ở lại phòng giữ ghế, người xem, chế độ, giờ, Host, kênh | ĐỦ phần ghế/Host; kênh chưa xác minh | |
-| 02.2.10 | Ván mới, Match ID mới, đồng hồ đầy | ĐỦ | Thiếu test riêng |
-| 02.2.11 | Rời phòng: ghế trống, WAITING, chuyển Host, giữ LOCKED | ĐỦ | Thiếu test |
-| 02.2.12 | Không tự đóng sau 10 phút | ĐỦ (theo vắng mặt) | |
-| 02.2.13 | Đổi ghế ẩn khi đủ hai, hiện lại khi một | ĐỦ, có test | |
-| 02.2.14 | Hộp kết quả chỉ hai nút; không Tái đấu/Xem lại | ĐỦ | Thiếu test cho người xem |
+| AC | Nội dung | Test hoặc quan sát |
+|---|---|---|
+| 02.1.1 | Form đúng lựa chọn và mặc định | `web/RoomForms.test.ts`; trình duyệt form 10 phút/5 xem/CODE_ONLY, không tên |
+| 02.1.2 | Từ chối tham số ngoài tập | `room/room.test.ts`, `room/room-http.test.ts`: validation trước ghi |
+| 02.1.3 | Mã 8 số, Host Đỏ, vào phòng chờ | `room/room.test.ts`; trình duyệt tạo và vào `/rooms/:id` |
+| 02.1.4 | Thời gian/trần xem bất biến | `web/RoomSettings.test.ts`; không có API đổi hai tham số sau tạo |
+| 02.1.5 | Tối đa 2 + 5 | `room/room-yc2-lifecycle.test.ts`: người xem thứ sáu nhận ROOM_FULL |
+| 02.1.6 | Đổi ghế một mình | `room/room.test.ts`; `web/RoomSeats.test.ts` |
+| 02.1.7 | Sẵn sàng realtime | `tests/server/game/game.runtime.test.ts`; hai trình duyệt Sẵn sàng cùng ván |
+| 02.1.8 | Đếm, tạo ván, đồng hồ Đỏ | `runtime`: countdown thật, đồng hồ đỏ chạy/đen đầy; `web/RoomCountdown.test.ts` |
+| 02.1.9 | Mất kết nối khi đếm | `room/room.test.ts`: huỷ đếm/reset/giữ ghế; runtime hiện có |
+| 02.1.10 | Đổi thành phần ghế reset cả hai | `room/room-yc2-lifecycle.test.ts`: rời ghế, tự xuống xem, Host chuyển xuống xem, disconnect |
+| 02.1.11 | Chuyển Host khi rời | `tests/server/game/game.runtime.test.ts`; lifecycle: quá 60 giây chuyển Host không xử thua |
+| 02.1.12 | Đóng phòng và xoá chat | `runtime`: rời ghế cuối, xoá chat SQL, gửi room.closed tới người xem |
+| 02.1.13 | Host chờ lâu không tự đóng | `room/room-yc2-lifecycle.test.ts`: connected Host với last_seen_at cũ hai giờ, chạy xử lý hạn |
+| 02.2.1 | Quyền Xin đổi bên | `web/RoomSeats.test.ts`, `web/RoomPage.swap.test.ts`: hai ghế/người xem/solo |
+| 02.2.2 | Modal 30 giây, người gửi có Rút | `web/RoomPage.swap.test.ts`; trình duyệt modal và focus |
+| 02.2.3 | Đồng ý đổi bên/reset | `room/room-side-swap.test.ts`; hai trình duyệt đổi Đỏ ↔ Đen |
+| 02.2.4 | Cooldown 60 giây và tooltip | `room/room-side-swap.test.ts`: hạn/riêng người gửi/qua reseat; `web/RoomPage.swap.test.ts`; trình duyệt reload vẫn khóa |
+| 02.2.5 | Chỉ một đề nghị | `room/room-side-swap.test.ts`; web không gửi lặp khi đang chờ |
+| 02.2.6 | Đếm/rời ghế tự huỷ | `room/room-yc2-lifecycle.test.ts`: kiểm CLOSED và không tạo cooldown |
+| 02.2.7 | Ẩn đổi bên khi đếm/đang đấu | `web/RoomPage.swap.test.ts`; trình duyệt ván thật |
+| 02.2.8 | Kết quả → WAITING/reset | `runtime`; `web/RoomPage.result.test.ts`: live/reload/reconnect |
+| 02.2.9 | Giữ ghế/Host/xem/quyền/chat | `runtime`: kiểm cả ROOM_PUBLIC và PLAYERS_PRIVATE sau RESIGN |
+| 02.2.10 | Ván mới ID mới/đồng hồ đầy | `runtime`: hai lượt countdown thật, Match ID khác và clock reset |
+| 02.2.11 | Rời phòng giữ LOCKED/chuyển Host | `runtime`: hai ca rời peer/Host |
+| 02.2.12 | Không đóng sau mười phút | Phép đo runtime và hai socket thật, xem kết quả mục 18 |
+| 02.2.13 | Chuyển nút solo/hai ghế | `web/RoomSeats.test.ts`, `web/RoomPage.swap.test.ts` |
+| 02.2.14 | Chỉ hai nút đúng vai trò | `web/match/MatchResult.test.ts`, `web/RoomPage.result.test.ts`; trình duyệt thắng/thua |
 
 ## 17. Câu hỏi cần PO quyết định
 
@@ -259,11 +252,28 @@ PO trả lời ngày 30/10/2026: chọn đúng cách hiểu đề xuất cho c�
 | Q6 | X/Esc ở hộp kết quả có là "Ở lại phòng" không | **Chốt: có**; phòng đã ở `WAITING`, chỉ "Rời phòng" mới rời |
 | Q7 | Đóng modal đề nghị đổi bên khi chưa trả lời, có mở lại được trong 30 giây không | **Chốt: có**, qua nút/biểu ngữ trong phòng chờ |
 
-## 18. Kiểm thử đề xuất
+## 18. Kiểm chứng đã chạy
 
-Theo AGENTS.md, chưa chạy test trong bước đặc tả này. Khi PO duyệt và giao việc:
+Theo yêu cầu triển khai, commit và test đầy đủ của PO; Node 22.22.3, PostgreSQL 17 cô lập.
 
-- **Máy chủ (PostgreSQL thật qua `tests/server/db.sh`):** tạo phòng đủ tập hợp lệ/không hợp lệ; sức chứa 7; Đổi ghế và reset Sẵn sàng khi thành phần ghế đổi; đếm → ván một lần duy nhất; mất kết nối khi đếm; chuyển Host; đóng phòng và xoá chat; Xin đổi bên (30 giây, 60 giây, 1 đề nghị, tự huỷ); về `WAITING` sau ván và giữ nguyên ghế/Host/người xem; không đóng sau 10 phút.
-- **Web:** form mặc định và không có tên phòng; nút Xin đổi bên `DISABLED` + tooltip đếm; modal đề nghị; hộp kết quả (người chơi và người xem); tải lại không hiện lại hộp kết quả (nếu Q1 giữ nguyên).
-- **Trình duyệt thật hai người:** vòng D4 → D7 của kịch bản demo cho phần phòng chờ, đo ở 360 px và desktop.
-- Kết quả phải được ghi đúng thực tế; điều kiện chưa chạy được ghi `BLOCKED`, không coi là PASS.
+| Kiểm tra | Kết quả quan sát |
+|---|---|
+| `fnm exec --using 22 bash tests/server/db.sh test` | **227/227 file, 2.728/2.728 test đạt**; lượt cuối không dùng chung database với smoke |
+| Web phòng/router + realtime projection | **32 file, 408 test đạt** |
+| `fnm exec --using 22 pnpm -r typecheck` | Đạt cả workspace |
+| `fnm exec --using 22 pnpm build` | Đạt; cảnh báo chunk LiveKit >500 kB còn nguyên |
+| ESLint các file TypeScript thay đổi | Đạt |
+| Prettier các file TypeScript thay đổi | Đạt; sửa định dạng `RoomPage.result.test.ts` sau lượt check đầu |
+| Nguồn truy vết → `TRUY-VET-AC.md` | Khớp kết quả `traceability_md()`; cả 27 Given/When/Then/mức kiểm trong mapping khớp Backlog P1, không sinh lại lịch/tài liệu khác |
+| Hai trình duyệt độc lập | Guest → tạo phòng → vào bằng mã → đổi bên → Sẵn sàng/đếm → ván → đầu hàng → thắng/thua → ở lại và reload không mở kết quả cũ |
+| Modal và cooldown | Focus nằm trong modal; Escape thu gọn, nút mở lại giữ hạn 30 giây; hoán đổi đúng hai đầu; từ chối khóa đúng người gửi và reload vẫn thấy khóa |
+| Giao diện thật | Đã xem ảnh 1366×768 và 360×800, hộp kết quả hai nút và modal đổi bên; không tràn ngang |
+| Chờ sau ván >10 phút | **611 giây thực**: WAITING, hai ghế/hai kết nối, Host và Match ID giữ nguyên; `/ready` 200, `/auth/refresh` không cookie 401; hai trình duyệt reload vẫn ở phòng chờ, không mở lại kết quả |
+
+Smoke chạy Vite `127.0.0.1:5182` → Nest `127.0.0.1:3182`, cụm PostgreSQL riêng tại `55462/xiangqi_yc2_smoke`. Hai danh tính Khách và Socket.IO thật; provider Auth không khả dụng và không được gọi trong đường Guest. Không dùng tài khoản, fixture hoặc migration trên Cloud.
+
+Hai test reset Sẵn sàng khi xuống xem đã được quan sát **fail trước sửa / pass sau sửa**: cờ người còn lại trước đó vẫn `true`. Lượt full chạy cùng smoke trên DB test đã thất bại do khóa runtime; chuyển smoke sang DB riêng rồi lượt cuối đạt, không đổi mã để bỏ khóa. Phép đo mười phút đầu thấy SQL còn phòng ở giây 611 nhưng runtime mất quyền phục vụ, nên không dùng kết quả đó nghiệm thu; đo lại trên cụm PostgreSQL riêng với kiểm tra readiness và bootstrap Auth ở cuối.
+
+Giới hạn: không nghiệm thu YC3/YC6/YC7, Google/OAuth, LiveKit cam/mic hoặc tải nhiều người trong lần này. Smoke báo lỗi media chưa cấu hình nhưng không chặn ván. Chưa nghe âm thanh trên loa và chưa chạy screen reader; test đếm/âm thanh không thay thế hai kiểm tra thiết bị này. Lượt full vẫn có log `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` và cảnh báo navigation của jsdom; không che log, không coi suite xanh là bằng chứng production không lỗi.
+
+Không thêm migration/dependency. Tự kiểm server: SQL thay đổi chỉ trong store; controller không chạm DB; ghi ghế vẫn qua `withRoom`/biên lai/outbox sau commit; không thêm tầng abstraction mới.
