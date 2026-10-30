@@ -284,8 +284,8 @@ export class AiGames {
     return this.track(this.createGame(owner, input, origin));
   }
   /**
-   * Bỏ trạng thái RAM của ván P1 khi hết ân hạn 30 phút hoặc boot hết hạn.
-   * Không ghi lịch sử: huỷ job đang chạy và fence callback cũ bằng epoch.
+   * Xóa RAM sau khi thao tác lưu/giải phóng đã COMMIT hoặc khi boot hết hạn.
+   * Huỷ job đang chạy và fence callback cũ bằng epoch.
    */
   drop(owner: string, id: string): void {
     const game = this.games.get(id);
@@ -295,6 +295,37 @@ export class AiGames {
     this.games.delete(id);
     if (this.active.get(owner) === id) this.active.delete(owner);
     if (this.terminals.get(owner)?.id === id) this.terminals.delete(owner);
+  }
+
+  /** Persist physical grace expiry under the SQL owner gate; cancel/drop RAM only after COMMIT. */
+  expire(owner: string, id: string): Promise<boolean> {
+    return this.track(
+      this.options.transactions.run(owner, { kind: "sweep" }, async (tx) => {
+        const game = this.games.get(id);
+        if (game && game.snapshot.ownerId !== owner)
+          throw new AiError("AI_FORBIDDEN");
+        const terminal = game && !this.closed ? this.copy(game) : null;
+        let abandonedBy: "DISCONNECT" | undefined;
+        if (terminal?.status === "ACTIVE") {
+          // Reuse the neutral AI terminal encoding; explicit history metadata distinguishes disconnect expiry.
+          this.finalizing(terminal, { reason: "ENGINE_FAILURE", winner: null });
+          terminal.status = "ABANDONED";
+          abandonedBy = "DISCONNECT";
+        } else if (terminal?.status === "FINALIZING") {
+          terminal.status =
+            terminal.outcome?.reason === "ENGINE_FAILURE"
+              ? "ABANDONED"
+              : "FINISHED";
+        }
+        const expired = await tx.expire(id, terminal, abandonedBy);
+        return {
+          value: expired,
+          install: () => {
+            if (expired) this.drop(owner, id);
+          },
+        };
+      }),
+    );
   }
 
   /** Caller holds the SQL actor lock and owner gate; RAM stays unchanged until the outer commit drops it. */

@@ -66,7 +66,11 @@ const HistoryRow = memo(function HistoryRow({
         <strong className={`xq-history-${item.result.kind.toLowerCase()}`}>
           {item.result.label}
         </strong>
-        <p>{reasons[item.result.reason] ?? "Ván đã kết thúc"}</p>
+        <p>
+          {item.result.kind === "ABANDONED"
+            ? "Mất kết nối quá 30 phút"
+            : (reasons[item.result.reason] ?? "Ván đã kết thúc")}
+        </p>
         {!item.result.countsForWdl && (
           <p className="xq-history-excluded">Không tính thắng/thua/hòa</p>
         )}

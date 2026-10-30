@@ -189,10 +189,16 @@ export class HistoryStore {
         !["BOTH_OFFLINE", "SERVER_RESTART", "AI_UNAVAILABLE"].includes(reason)
       )
         fail("HISTORY_CORRUPT", 409);
+      const abandoned =
+        row.mode === "AI" &&
+        reason === "AI_UNAVAILABLE" &&
+        row.outcome.abandonedBy === "DISCONNECT";
+      if (row.outcome.abandonedBy !== undefined && !abandoned)
+        fail("HISTORY_CORRUPT", 409);
       result = {
-        kind: "INTERRUPTED",
+        kind: abandoned ? "ABANDONED" : "INTERRUPTED",
         reason,
-        label: "Bị gián đoạn",
+        label: abandoned ? "Bỏ dở" : "Bị gián đoạn",
         countsForWdl: false,
       };
     } else if (
