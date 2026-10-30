@@ -71,6 +71,9 @@ export function createMediaPool(connection: PoolConfig): Pool {
   pool.on("error", () => {
     process.stderr.write(logEvent("error", "media_pool_failed") + "\n");
   });
+  pool.on("connect", (client) => {
+    client.on("error", () => {});
+  });
   return pool;
 }
 /**

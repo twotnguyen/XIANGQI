@@ -135,7 +135,7 @@ function SetupForm({
           nhiên.
         </p>
         {error && <p role="alert">{error}</p>}
-        <Button type="submit" loading={busy}>
+        <Button type="submit" loading={busy} className="xq-ai-btn-start">
           Bắt đầu
         </Button>
       </form>
