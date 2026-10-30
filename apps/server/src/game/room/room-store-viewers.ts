@@ -41,7 +41,10 @@ export class RoomViewerStore extends RoomRematchStore {
     await this.cancel(s, id);
     await this.closeSwapOffers(s, id);
     await this.closeDownOffers(s, id);
-    await this.bump(s, id, "room.seats-changed");
+    const version = await this.bump(s, id, "room.seats-changed");
+    await this.event(s, id, version, "media.revoke-user", {
+      userId: s.actor.userId,
+    });
     return this.snapshot(s, id);
   }
   /**
@@ -68,7 +71,8 @@ export class RoomViewerStore extends RoomRematchStore {
     await this.cancel(s, id);
     await this.closeSwapOffers(s, id);
     await this.closeDownOffers(s, id);
-    await this.bump(s, id, "room.seats-changed");
+    const version = await this.bump(s, id, "room.seats-changed");
+    await this.event(s, id, version, "media.revoke-user", { userId: targetId });
     return this.snapshot(s, id);
   }
   /**
@@ -90,7 +94,7 @@ export class RoomViewerStore extends RoomRematchStore {
     await this.expireDownOffers(s, id);
     const blocked = (
       await s.client.query(
-        "SELECT 1 FROM public.active_players WHERE user_id=$1 AND room_id IS NOT NULL AND room_id<>$2 LIMIT 1",
+        "SELECT 1 FROM public.active_players WHERE user_id=$1 AND room_id IS DISTINCT FROM $2::uuid LIMIT 1",
         [targetId, id],
       )
     ).rowCount;
@@ -167,16 +171,21 @@ export class RoomViewerStore extends RoomRematchStore {
     const me = members.find((m) => m.user_id === s.actor.userId);
     const busy = (
       await s.client.query(
-        "SELECT 1 FROM public.active_players WHERE user_id=$1 AND room_id IS NOT NULL AND room_id<>$2 LIMIT 1",
+        "SELECT 1 FROM public.active_players WHERE user_id=$1 AND room_id IS DISTINCT FROM $2::uuid LIMIT 1",
         [s.actor.userId, id],
       )
     ).rowCount;
+    if (busy)
+      throw new RoomError(
+        "ALREADY_SEATED",
+        "Bạn đang ở trong một ván/phòng khác",
+        409,
+      );
     if (
       r.status !== "WAITING" ||
       !me ||
       me.role !== "SPECTATOR" ||
       players.length >= 2 ||
-      busy ||
       (
         await s.client.query(
           "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
