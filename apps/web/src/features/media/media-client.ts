@@ -90,8 +90,8 @@ export function createMediaClient(authorizedFetch: AuthorizedFetch) {
     };
   }
   return {
-    token: (roomId: string, camera: boolean, mic: boolean) =>
-      request("/media/token", parseToken, { roomId, camera, mic }),
+    token: (roomId: string, camera: boolean, mic: boolean, tabId: string) =>
+      request("/media/token", parseToken, { roomId, camera, mic, tabId }),
     setShare: (roomId: string, level: ShareLevel) =>
       request(
         "/media/share",

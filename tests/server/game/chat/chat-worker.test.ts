@@ -93,8 +93,7 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await pool.query("DROP SCHEMA IF EXISTS xiangqi_chat CASCADE");
       await reset();
-      for (const n of ["08_room_modes", "09_match_draw", "10_room_chat"])
-        await apply(`supabase/migrations/202610110000${n}.sql`);
+      await apply("supabase/migrations/20261011000010_room_chat.sql");
     });
     it("publishes only committed reference room/channel then deletes outbox without deleting message/receipt", async () => {
       const f = await fixture(),

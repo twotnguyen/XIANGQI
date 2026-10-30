@@ -25,11 +25,19 @@ describe("media client", () => {
       }),
     );
     const client = createMediaClient(fetch);
-    const ticket = await client.token("room", true, false);
+    const ticket = await client.token("room", true, false, "tab");
     expect(ticket).toMatchObject({ roomName: "xiangqi-room", stage: null });
     expect(fetch).toHaveBeenCalledWith(
       "/media/token",
-      expect.objectContaining({ method: "POST" }),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          roomId: "room",
+          camera: true,
+          mic: false,
+          tabId: "tab",
+        }),
+      }),
     );
   });
   it("reads and writes the share level", async () => {
@@ -55,9 +63,9 @@ describe("media client", () => {
     expect(error).toBeInstanceOf(MediaRequestError);
     expect((error as MediaRequestError).code).toBe("MEDIA_PLAYER_REQUIRED");
     const broken = createMediaClient(vi.fn().mockResolvedValue(ok({ url: 1 })));
-    await expect(broken.token("room", false, false)).rejects.toBeInstanceOf(
-      MediaRequestError,
-    );
+    await expect(
+      broken.token("room", false, false, "tab"),
+    ).rejects.toBeInstanceOf(MediaRequestError);
   });
 });
 
@@ -65,11 +73,13 @@ it("surfaces a deferred guest's media refusal as its server code, not a generic 
   const client = createMediaClient(
     vi.fn().mockResolvedValue(fail("GUEST_DEFERRED", 403)),
   );
-  await expect(client.token("room", false, false)).rejects.toMatchObject({
-    code: "GUEST_DEFERRED",
-    status: 403,
-  });
-  await expect(client.token("room", false, false)).rejects.toBeInstanceOf(
-    MediaRequestError,
+  await expect(client.token("room", false, false, "tab")).rejects.toMatchObject(
+    {
+      code: "GUEST_DEFERRED",
+      status: 403,
+    },
   );
+  await expect(
+    client.token("room", false, false, "tab"),
+  ).rejects.toBeInstanceOf(MediaRequestError);
 });

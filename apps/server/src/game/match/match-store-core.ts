@@ -14,6 +14,11 @@ import {
 } from "./match.types.js";
 import { replayHistory, type HistoryMove } from "./history.js";
 import { corrupt, decodeMove, record, toFen, uuid } from "./position-codec.js";
+import {
+  inactivityExpired,
+  inactivityView,
+  UNLIMITED_TIME_CONTROL,
+} from "./inactivity.js";
 
 export type MatchRow = {
   id: string;
@@ -28,6 +33,7 @@ export type MatchRow = {
   active_move_ids: unknown;
   clock: MatchClock;
   time_control: number;
+  inactivity_extensions: number;
   outcome: unknown;
   ended_at: Date | null;
   created_at: Date;
@@ -86,6 +92,7 @@ export function storedOutcome(value: unknown): MatchOutcome | null {
       "DISCONNECT",
       "DRAW_AGREEMENT",
       "SERVER_RESTART",
+      "INACTIVITY",
     ].includes(String(value.reason)) ||
     !(
       value.winner === null ||
@@ -137,6 +144,7 @@ const roomMatchOf = (r: RoomMatchRow): RoomMatch => {
           active_move_ids: r.m_active_move_ids,
           clock: r.m_clock,
           time_control: r.m_time_control,
+          inactivity_extensions: r.m_inactivity_extensions,
           outcome: r.m_outcome,
           ended_at: r.m_ended_at,
           created_at: r.m_created_at,
@@ -271,7 +279,7 @@ export class MatchStoreCore {
          lm.id AS m_id,lm.room_id AS m_room_id,lm.mode AS m_mode,lm.status AS m_status,
          lm.red_user_id AS m_red_user_id,lm.black_user_id AS m_black_user_id,lm.position AS m_position,
          lm.version AS m_version,lm.ply AS m_ply,lm.active_move_ids AS m_active_move_ids,lm.clock AS m_clock,
-         lm.time_control AS m_time_control,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
+         lm.time_control AS m_time_control,lm.inactivity_extensions AS m_inactivity_extensions,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
          lm.created_at AS m_created_at,lm.rule_set_version AS m_rule_set_version,
          (SELECT side FROM public.room_members WHERE room_id=lr.id AND user_id=$3 AND role='PLAYER') AS seat_side
        FROM lr LEFT JOIN lm ON true`,
@@ -302,7 +310,7 @@ export class MatchStoreCore {
          lm.id AS m_id,lm.room_id AS m_room_id,lm.mode AS m_mode,lm.status AS m_status,
          lm.red_user_id AS m_red_user_id,lm.black_user_id AS m_black_user_id,lm.position AS m_position,
          lm.version AS m_version,lm.ply AS m_ply,lm.active_move_ids AS m_active_move_ids,lm.clock AS m_clock,
-         lm.time_control AS m_time_control,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
+         lm.time_control AS m_time_control,lm.inactivity_extensions AS m_inactivity_extensions,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
          lm.created_at AS m_created_at,lm.rule_set_version AS m_rule_set_version,
          (SELECT side FROM public.room_members WHERE room_id=lr.id AND user_id=$2 AND role='PLAYER') AS seat_side
        FROM lr LEFT JOIN lm ON true`,
@@ -452,7 +460,27 @@ export class MatchStoreCore {
       outcome: storedOutcome(row.outcome),
       endedAt: row.ended_at?.toISOString() ?? null,
       clock: validClock(row.clock),
+      unlimited: row.time_control === UNLIMITED_TIME_CONTROL,
+      inactivity:
+        row.time_control === UNLIMITED_TIME_CONTROL && row.status === "ACTIVE"
+          ? inactivityView(
+              validClock(row.clock),
+              Number(row.inactivity_extensions),
+            )
+          : null,
     };
+  }
+  /** Đồng hồ thường, hoặc mốc hết hạn chống treo với ván không giới hạn. */
+  protected checkTime(
+    match: MatchView,
+    at: Date,
+  ): { clock: MatchClock; expired: Side | null } {
+    if (match.inactivity)
+      return {
+        clock: match.clock,
+        expired: inactivityExpired(match.clock, at) ? match.turn : null,
+      };
+    return this.needClock().beforeAction(match.clock, match.turn, at);
   }
   /**
    * Nạp và kiểm tra tính toàn vẹn của ngữ cảnh thực thi: phòng, ván, người chơi, quyền điều khiển và khóa giao dịch.
@@ -508,7 +536,8 @@ export class MatchStoreCore {
     const deadline =
       match.clock.runningSinceEpochMs +
       (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
-    if (disconnect.deadline >= deadline) return null;
+    // Unlimited matches have no clock deadline; only the disconnect grace decides.
+    if (!match.unlimited && disconnect.deadline >= deadline) return null;
     const at = new Date(
       Number(
         (
@@ -534,7 +563,7 @@ export class MatchStoreCore {
    */
   protected async update(client: PoolClient, row: MatchRow) {
     await client.query(
-      "UPDATE public.matches SET position=$2,version=$3,ply=$4,active_move_ids=$5,clock=$6,repetition_counts=$7,status=$8,outcome=$9,ended_at=$10,proposal=NULL,updated_at=$11 WHERE id=$1",
+      "UPDATE public.matches SET position=$2,version=$3,ply=$4,active_move_ids=$5,clock=$6,repetition_counts=$7,status=$8,outcome=$9,ended_at=$10,proposal=NULL,updated_at=$11,inactivity_extensions=$12 WHERE id=$1",
       [
         row.id,
         row.position,
@@ -547,6 +576,7 @@ export class MatchStoreCore {
         row.outcome,
         row.ended_at,
         this.now(),
+        row.inactivity_extensions,
       ],
     );
   }

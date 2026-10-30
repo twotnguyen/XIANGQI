@@ -68,7 +68,10 @@ describe.skipIf(!databaseUrl)("room snapshot", () => {
     // Chỉ migration lõi: không có bảng seat_invites và side_swap_offers,
     // nên snapshot phải trả offer là null mà không lỗi.
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
+    await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
   });
 
   it("returns seats, online presence and spectators in one snapshot", async () => {

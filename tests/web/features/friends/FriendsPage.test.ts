@@ -1,11 +1,21 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FriendsPage } from "@web/features/friends/FriendsPage.js";
 import type { FriendClient } from "@web/features/friends/friend-client.js";
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 function client(overrides: Partial<FriendClient> = {}): FriendClient {
   return {
     search: vi.fn().mockResolvedValue([]),
@@ -30,11 +40,20 @@ function client(overrides: Partial<FriendClient> = {}): FriendClient {
     respond: vi.fn().mockResolvedValue({ accepted: true }),
     revoke: vi.fn().mockResolvedValue({ revoked: true }),
     unfriend: vi.fn().mockResolvedValue({ removed: true }),
+    presence: vi.fn().mockResolvedValue(undefined),
     invite: vi.fn(),
     invites: vi.fn().mockResolvedValue([]),
+    inviteState: vi
+      .fn()
+      .mockResolvedValue({ cooldownUntil: null, declines: [] }),
+    ackInviteState: vi.fn().mockResolvedValue(undefined),
     respondInvite: vi.fn(),
+    messages: vi.fn().mockResolvedValue({ messages: [], readSeq: 0 }),
+    sendMessage: vi.fn(),
+    markRead: vi.fn().mockResolvedValue(0),
+    unread: vi.fn().mockResolvedValue({ total: 0, peers: [] }),
     ...overrides,
-  } as unknown as FriendClient;
+  };
 }
 describe("friends page", () => {
   it("shows friends with presence and handles accept", async () => {
@@ -86,5 +105,53 @@ describe("friends page", () => {
     render(createElement(FriendsPage, { client: failing }));
     await screen.findByRole("button", { name: "Thử lại" });
     await act(async () => {});
+  });
+  it("refreshes presence without reloading and keeps the last list on a transient failure", async () => {
+    vi.useFakeTimers();
+    const c = client();
+    render(createElement(FriendsPage, { client: c }));
+    await act(async () => {});
+    expect(screen.getByText("Trực tuyến")).toBeTruthy();
+    vi.mocked(c.list).mockResolvedValue([
+      {
+        userId: "b",
+        username: "banb",
+        displayName: "Bạn B",
+        status: "offline",
+      },
+    ]);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+    expect(screen.getByText("Ngoại tuyến")).toBeTruthy();
+    vi.mocked(c.list).mockRejectedValue(new Error("offline"));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+    expect(screen.getByText("@banb")).toBeTruthy();
+    expect(screen.getByText(/Chưa cập nhật được danh sách/)).toBeTruthy();
+  });
+  it("does not display an old search result after the input has changed", async () => {
+    let finish!: (peers: Awaited<ReturnType<FriendClient["search"]>>) => void;
+    const c = client({
+      search: vi.fn(
+        () =>
+          new Promise<Awaited<ReturnType<FriendClient["search"]>>>(
+            (resolve) => {
+              finish = resolve;
+            },
+          ),
+      ),
+    });
+    render(createElement(FriendsPage, { client: c }));
+    await screen.findByText("@banb");
+    const input = screen.getByLabelText("Tên đăng nhập");
+    fireEvent.change(input, { target: { value: "old" } });
+    fireEvent.click(screen.getByRole("button", { name: "Tìm" }));
+    fireEvent.change(input, { target: { value: "new" } });
+    await act(async () =>
+      finish([{ userId: "old", username: "old", displayName: "Old result" }]),
+    );
+    expect(screen.queryByText("@old")).toBeNull();
   });
 });

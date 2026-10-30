@@ -178,6 +178,14 @@ export class RealtimeStore {
             connection.connectionId,
           ],
         );
+        if (current.rowCount && current.rows[0].tab_id !== connection.tabId) {
+          // Tab cũ đang publish cùng danh tính LiveKit: thu hồi trong cùng transaction với việc đổi controller.
+          await this.rooms.queueMediaRevoke(
+            client,
+            connection.identity,
+            connection.roomId,
+          );
+        }
       }
       const control = await this.control(client, connection, access.canControl);
       if (

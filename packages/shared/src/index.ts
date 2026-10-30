@@ -25,3 +25,5 @@ export type {
   ReplayExportSource,
   ReplaySide,
 } from "./replay-export.js";
+export { DEFAULT_THEME, THEME_CHOICES, isThemeChoice } from "./theme.js";
+export type { ThemeChoice } from "./theme.js";

@@ -31,6 +31,13 @@ export interface RoomStateSnapshot {
       responderId: string;
       expiresAt: string;
     } | null;
+    rematchOffer: {
+      id: string;
+      proposerId: string;
+      responderId: string;
+      side: "KEEP" | "SWAP";
+      expiresAt: string;
+    } | null;
     downOffer: {
       id: string;
       inviteeId: string;
@@ -49,6 +56,11 @@ export interface RoomStateSnapshot {
     winner: "red" | "black" | null;
     endedAt: string | null;
     result: string | null;
+    inactivity?: {
+      promptAt: string;
+      expiresAt: string;
+      confirmsLeft: number;
+    } | null;
   } | null;
   clocks: {
     redMs: number;
@@ -80,6 +92,7 @@ export interface RoomSnapshot extends RoomStateSnapshot {
  * - `room.ready`: Báo sẵn sàng bắt đầu ván.
  * - `match.move`: Đi một nước cờ (từ ô `from` đến ô `to`).
  * - `match.resign`: Đầu hàng.
+ * - `match.still-here`: Xác nhận "Tôi còn đây" trong ván không giới hạn.
  * - `match.draw.*`: Xin hòa, rút đề nghị hòa, chấp nhận hoặc từ chối hòa.
  * - `media.sharing`: Thay đổi phạm vi chia sẻ camera/micro.
  */
@@ -96,6 +109,10 @@ export type RoomAction =
     }
   | {
       type: "match.resign";
+      payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.still-here";
       payload: { matchId: string; matchVersion: number };
     }
   | {
@@ -153,6 +170,10 @@ export type RealtimeErrorCode =
   | "MATCH_DRAW_EXPIRED"
   | "MATCH_DRAW_SENDER_REQUIRED"
   | "MATCH_DRAW_RECEIVER_REQUIRED"
+  | "MATCH_NOT_UNLIMITED"
+  | "MATCH_INACTIVITY_NOT_DUE"
+  | "MATCH_INACTIVITY_LIMIT"
+  | "MATCH_INACTIVITY_EXPIRED"
   | "READY_DENIED"
   | "PLAYER_DISCONNECTED"
   | "ROOM_INPUT_INVALID";

@@ -345,6 +345,10 @@
   margin-bottom: var(--space-2);
 }
 
+.xq-profile-grid-top > .xq-username-settings {
+  align-self: end;
+}
+
 .xq-profile-field-readonly {
   display: grid;
   gap: var(--space-2);
@@ -480,7 +484,6 @@
 }
 
 .xq-profile-email-extra {
-  margin-top: var(--space-4);
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-divider);
 }
@@ -565,7 +568,7 @@
 .xq-profile-theme-preview {
   display: flex;
   gap: var(--space-2);
-  height: 92px;
+  height: 60px;
   padding: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -669,7 +672,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
-  height: 84px;
+  height: 60px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
@@ -909,31 +912,6 @@
   color: var(--color-ink);
 }
 
-:root[data-theme="paper-light"] .xq-profile-layout {
-  --color-ink: #1f2933;
-  --color-ink-muted: #52606d;
-  --color-surface: #ffffff;
-  --color-surface-sunken: #f0f4f8;
-  --color-divider: #d9e2ec;
-  --color-border: #9aa5b1;
-  --color-wood-edge: #d9e2ec;
-  --color-gold-light: #7a4e0f;
-  --color-focus: #7a4e0f;
-  --color-success: #18713c;
-  --color-warning: #946200;
-  color-scheme: light;
-}
-
-:root[data-theme="paper-dark"] .xq-profile-layout {
-  --color-ink: #f3f4f6;
-  --color-ink-muted: #bac4ce;
-  --color-surface: #1e242b;
-  --color-surface-sunken: #14181d;
-  --color-divider: #39424d;
-  --color-border: #8292a2;
-  --color-wood-edge: #39424d;
-}
-
 @media (min-width: 801px) and (max-height: 800px) {
   .xq-profile-sidebar-footer p {
     display: none;
@@ -960,8 +938,8 @@
 
   .xq-profile-sidebar {
     position: static;
-    gap: var(--space-4);
-    padding: var(--space-4);
+    gap: var(--space-2);
+    padding: 0;
   }
 
   .xq-profile-identity,
@@ -971,7 +949,7 @@
   }
 
   .xq-profile-nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-1);
   }
 
@@ -985,8 +963,7 @@
   }
 
   .xq-profile-sidebar-footer {
-    padding-top: var(--space-3);
-    justify-items: end;
+    display: none;
   }
 
   .xq-profile-theme-options {
@@ -1001,7 +978,7 @@
 
   .xq-profile-theme-preview {
     grid-row: span 2;
-    height: 80px;
+    height: 48px;
   }
 
   .xq-profile-grid-top {
@@ -1053,5 +1030,28 @@
 @media (prefers-reduced-motion: reduce) {
   .xq-profile-card {
     animation: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  #xq-settings-appearance {
+    max-height: calc(100dvh - 250px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 800px) {
+  .xq-main:has(.xq-profile) {
+    padding: 12px;
+  }
+  .xq-profile {
+    padding: 0;
+  }
+  .xq-profile-heading {
+    margin-bottom: 12px;
+  }
+  #xq-settings-appearance {
+    max-height: calc(100dvh - 300px);
+    overflow-y: auto;
   }
 }

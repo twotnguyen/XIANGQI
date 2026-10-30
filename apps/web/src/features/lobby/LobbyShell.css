@@ -1,818 +1,640 @@
+/* ==========================================================================
+   LOBBY SHELL STYLES — PHONG CÁCH KỲ ĐÀI Á ĐÔNG HIỆN ĐẠI (MATCH TARGET UI)
+   ========================================================================== */
+
 .xq-lobby {
-  gap: var(--space-6);
   width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 12px 16px 40px;
+  box-sizing: border-box;
 }
 
-/* 1. HERO WELCOME BANNER (KỲ ĐÀI CỔ PHONG) */
-.xq-welcome-banner {
-  background: linear-gradient(
-    135deg,
-    rgba(142, 22, 28, 0.96) 0%,
-    rgba(80, 10, 14, 0.98) 100%
-  );
-  border: 2px solid var(--color-gold);
-  border-radius: var(--radius-lg);
-  padding: 28px 34px;
+/* 1. TOP HEADER BANNER CHUẨN TARGET DESIGN */
+.xq-lobby-header-bar {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-gold) 28%, transparent);
   box-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.6),
-    inset 0 0 35px rgba(0, 0, 0, 0.5);
-  position: relative;
-  overflow: hidden;
+    0 10px 30px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 15%, transparent);
+  margin-bottom: 22px;
 }
 
-.xq-banner-text {
-  position: relative;
+.xq-header-left {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
   z-index: 2;
-  max-width: 780px;
 }
 
-.xq-banner-sub {
+.xq-header-general-wrap {
+  width: 52px;
+  height: 62px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.xq-online-pill {
+.xq-header-general-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+.xq-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.xq-header-title-row h1 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  line-height: 1.2;
+}
+
+.xq-header-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.xq-header-tagline {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+}
+
+.xq-online-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #f5ca67;
-  background: rgba(18, 9, 6, 0.65);
-  border: 1px solid #9e701e;
-  padding: 4px 14px;
-  border-radius: 20px;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success-bg) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
+  padding: 2px 9px;
+  border-radius: 999px;
 }
 
 .xq-live-pulse {
-  width: 7px;
-  height: 7px;
-  background-color: #22c55e;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  display: inline-block;
-  box-shadow: 0 0 10px #22c55e;
-  animation: xqPulse 2s infinite ease-in-out;
+  background: var(--color-success);
+  animation: xq-pulse 1.8s infinite;
 }
 
-@keyframes xqPulse {
-  0%,
+@keyframes xq-pulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-success) 70%, transparent);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px transparent;
+  }
   100% {
     transform: scale(0.9);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 1;
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
 .xq-fixture-pill {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #fca5a5;
-  background: rgba(220, 38, 38, 0.25);
-  border: 1px solid #ef4444;
-  padding: 4px 10px;
-  border-radius: 20px;
+  font-size: 10.5px;
+  padding: 2px 7px;
+  background: color-mix(in srgb, var(--color-warning-bg) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  color: var(--color-gold-light);
+  border-radius: 4px;
 }
 
-.xq-welcome-banner h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(26px, 3.5vw, 36px);
-  color: #fff5df;
-  margin: 0 0 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-.xq-welcome-banner p {
-  font-size: 14.5px;
-  color: #eedcc6;
-  line-height: 1.65;
-  margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-}
-
-.xq-banner-calligraphy {
+/* THƯ PHÁP CHÌM Ở GIỮA BANNER */
+.xq-header-calligraphy {
   position: absolute;
-  right: 28px;
+  left: 56%;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
   font-family: var(--font-han);
-  font-size: clamp(56px, 7vw, 92px);
-  font-weight: 900;
-  color: rgba(245, 202, 103, 0.07);
-  text-shadow: 0 0 30px rgba(245, 202, 103, 0.15);
+  font-size: 64px;
+  letter-spacing: 12px;
+  color: var(--color-ink);
+  opacity: 0.08;
   pointer-events: none;
-  letter-spacing: 20px;
   user-select: none;
   white-space: nowrap;
 }
 
-/* 2. GAME MODES GRID (SCR-LOBBY DARK LACQUER) */
-.xq-lobby-modes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.xq-mode-card {
-  background: linear-gradient(
-    180deg,
-    rgba(38, 22, 16, 0.95) 0%,
-    rgba(22, 12, 8, 0.98) 100%
-  ) !important;
-  border: 1.5px solid #7a4e0f !important;
-  border-radius: 14px;
-  padding: 22px 20px;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: flex-start !important;
-  min-height: 420px;
-  position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(245, 202, 103, 0.15);
-  transition: all 0.25s ease;
-  color: #fff5df !important;
-}
-
-.xq-mode-card:hover {
-  border-color: #f5ca67 !important;
-  transform: translateY(-4px);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.6),
-    0 0 25px rgba(198, 146, 42, 0.35);
-}
-
-.xq-mode-header {
+/* KHỐI PHẢI HEADER */
+.xq-header-right {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.xq-mode-icon-box {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  background: radial-gradient(circle, #5a3522 0%, #301a10 100%);
-  border: 1.5px solid #c4a57b;
-  display: grid;
-  place-items: center;
-  font-size: 26px;
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.4),
-    0 2px 10px rgba(0, 0, 0, 0.3);
+  gap: 12px;
+  z-index: 2;
   flex-shrink: 0;
 }
 
-.xq-mode-badge {
-  font-size: 10.5px;
+.xq-rules-pill-btn {
+  min-height: var(--touch-min);
+  padding: 0 12px;
+  border-radius: 7px;
+  background: var(--color-surface-sunken);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  color: var(--color-gold-light);
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.badge-p1 {
-  background: rgba(37, 99, 235, 0.25);
-  color: #93c5fd;
-  border: 1px solid #3b82f6;
-}
-
-.badge-ai {
-  background: rgba(16, 185, 129, 0.25);
-  color: #6ee7b7;
-  border: 1px solid #10b981;
-}
-
-.badge-p2 {
-  background: rgba(100, 116, 139, 0.25);
-  color: #cbd5e1;
-  border: 1px solid #64748b;
-}
-
-.badge-ranked {
-  background: rgba(220, 38, 38, 0.25);
-  color: #fca5a5;
-  border: 1px solid #ef4444;
-}
-
-.xq-mode-body {
-  flex: 1;
+  font-size: 12.5px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.xq-mode-body h2,
-.xq-mode-body h3 {
+.xq-rules-pill-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-gold-light);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--color-gold-light) 25%, transparent);
+}
+
+/* 2. SECTION CHẾ ĐỘ CHƠI */
+.xq-modes-section {
+  background: linear-gradient(
+    180deg,
+    var(--color-surface-sunken) 0%,
+    var(--color-surface-sunken) 100%
+  ) !important;
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 28%, transparent) !important;
+  border-radius: 16px !important;
+  padding: 20px 22px 24px !important;
+  margin-top: 0 !important;
+  margin-bottom: 24px !important;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 12%, transparent) !important;
+}
+
+.xq-section-heading {
   font-family: var(--font-serif);
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 700;
-  color: #fff5df !important;
-  margin: 0;
+  color: var(--color-ink) !important;
+  margin: 0 0 16px 0;
   letter-spacing: 0.3px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.xq-mode-desc {
-  font-size: 13.5px;
-  color: #eedcc6 !important;
-  line-height: 1.55;
-  margin: 0;
-  min-height: 44px;
+.xq-modes-grid-target {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 
-.xq-mode-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: auto;
-  margin-bottom: 4px;
+@media (max-width: 900px) {
+  .xq-modes-grid-target {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.xq-pill {
-  font-size: 11px;
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid #8a643e;
-  padding: 3px 10px;
-  border-radius: 5px;
-  color: #fff5df;
+@media (max-width: 520px) {
+  .xq-modes-grid-target {
+    grid-template-columns: 1fr;
+  }
 }
 
-.xq-pill.strict {
-  background: rgba(185, 28, 28, 0.35);
-  border-color: #ef4444;
-  color: #fecaca !important;
-}
-
-/* Specific Mode Card Accents */
-.xq-mode-ai {
-  background:
-    radial-gradient(
-      circle at 85% 10%,
-      rgba(16, 185, 129, 0.08) 0%,
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(24, 28, 22, 0.96) 0%,
-      rgba(16, 20, 15, 0.98) 100%
-    ) !important;
-  border-color: #0d9488 !important;
-}
-
-.xq-mode-ai:hover {
-  border-color: #2dd4bf !important;
+.xq-mode-card-target {
+  background: linear-gradient(
+    180deg,
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
+  );
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 28%, transparent);
+  border-radius: 14px;
+  padding: 16px 14px 18px;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  min-height: 290px;
+  position: relative;
+  overflow: hidden;
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.6),
-    0 0 25px rgba(13, 148, 136, 0.35);
+    0 10px 24px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 12%, transparent);
+  transition: all 0.25s ease;
 }
 
-.xq-mode-ai h2 {
-  color: #a7f3d0 !important;
-}
-
-.xq-mode-ai .xq-mode-icon-box {
-  background: radial-gradient(circle, #5a3522 0%, #301a10 100%);
-  border-color: #c4a57b;
-}
-
-.xq-ranked-card {
-  border-color: var(--color-gold) !important;
-  background:
-    radial-gradient(
-      circle at 85% 10%,
-      rgba(245, 202, 103, 0.18) 0%,
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(55, 12, 16, 0.96) 0%,
-      rgba(28, 6, 8, 0.98) 100%
-    ) !important;
-  color: #fff5df !important;
-}
-
-.xq-ranked-card h3 {
-  color: #fca5a5 !important;
-}
-
-.xq-ranked-card .xq-mode-icon-box {
-  background: radial-gradient(circle, #7a1217 0%, #3f0609 100%);
+.xq-mode-card-target:hover:not(.card-disabled) {
   border-color: var(--color-gold-light);
-  color: #f5ca67;
-}
-
-.xq-ranked-card:hover {
-  border-color: var(--color-gold-light) !important;
+  transform: translateY(-4px);
   box-shadow:
-    0 18px 42px rgba(0, 0, 0, 0.7),
-    0 0 28px rgba(245, 202, 103, 0.4);
+    0 16px 36px rgba(0, 0, 0, 0.6),
+    0 0 20px color-mix(in srgb, var(--color-gold) 30%, transparent);
 }
 
-.xq-mode-footer {
-  margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px dashed rgba(245, 202, 103, 0.25);
+/* Card riêng của AI (Ánh đỏ chuẩn target) */
+.card-ai {
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      color-mix(in srgb, var(--color-btn-danger-bg) 18%, transparent) 0%,
+      transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-btn-danger-bg) 40%, var(--color-surface)) 0%,
+      color-mix(in srgb, var(--color-btn-danger-bg) 15%, var(--color-surface-sunken)) 100%
+    );
+  border-color: color-mix(in srgb, var(--color-btn-danger-bg) 40%, transparent);
+}
+
+.card-ai:hover:not(.card-disabled) {
+  border-color: var(--color-danger);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.6),
+    0 0 20px color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+/* Card Disabled (Đấu hạng Giai đoạn 2) */
+.card-disabled {
+  opacity: 0.55;
+  filter: grayscale(15%);
+  cursor: not-allowed;
+}
+
+.xq-card-art {
+  height: 115px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-surface-sunken) 60%, transparent);
+}
+
+.xq-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.xq-card-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 
-.xq-mode-footer > .xq-button-group {
+.xq-card-content h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.xq-card-content p {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+  line-height: 1.45;
+  margin: 0;
+  min-height: 36px;
+}
+
+.xq-card-btn-wrap {
   width: 100%;
 }
 
-.xq-mode-footer > .xq-button-group > button {
+.xq-card-btn-wrap .xq-button-group {
   width: 100%;
-  height: 42px;
-  font-size: 13.5px;
+}
+
+.xq-card-btn-wrap button {
+  width: 100%;
+  min-height: var(--touch-min);
+  font-size: 13px;
   font-weight: 700;
   border-radius: 7px;
 }
 
-.xq-mode-footer > .xq-button-group .xq-help {
-  display: none;
-}
-
-.xq-mode-subnote {
-  min-height: 58px;
-  background: rgba(18, 10, 6, 0.65);
-  border: 1px solid rgba(198, 146, 42, 0.25);
-  border-radius: 8px;
-  padding: 8px 12px;
+/* 3. MIDDLE CODE BAR (NHẬP MÃ 8 SỐ Ở GIỮA) */
+.xq-middle-code-section {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  box-sizing: border-box;
+  align-items: center;
+  margin: 18px 0 28px;
 }
 
-.xq-subnote-label {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #c4a57b;
-  line-height: 1.2;
-}
-
-.xq-subnote-text {
-  font-size: 11.5px;
-  color: #eedcc6;
-  line-height: 1.35;
-}
-
-.xq-code-form {
-  min-height: 58px;
+.xq-middle-code-form {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-.xq-code-input-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
-  gap: 8px;
-  height: 100%;
+  gap: 10px;
+  max-width: 420px;
+  width: 100%;
 }
 
-.xq-code-input-row .xq-field {
+.xq-middle-code-form .xq-field {
   flex: 1;
+  min-width: 0;
   margin: 0;
-  position: relative;
 }
 
-.xq-code-input-row .xq-field label {
+.xq-middle-code-form .xq-field label {
   position: absolute;
   width: 1px;
   height: 1px;
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
-  border: 0;
 }
 
-.xq-code-input-row .xq-field input {
-  height: 40px;
-  background: rgba(18, 10, 6, 0.85);
-  border: 1.5px solid #8a643e;
-  border-radius: 6px;
-  color: #fff5df;
+.xq-middle-code-form input {
+  min-height: var(--touch-min);
   font-family: var(--font-mono);
-  font-weight: 700;
   font-size: 16px;
-  letter-spacing: 1.5px;
-  padding: 0 10px;
-  text-transform: uppercase;
-  width: 100%;
-  box-sizing: border-box;
+  text-align: center;
 }
 
-.xq-code-input-row .xq-field input:focus {
-  border-color: #f5ca67;
-  box-shadow: 0 0 10px rgba(245, 202, 103, 0.35);
-}
-
-.xq-code-input-row .xq-field input::placeholder {
-  color: #8a643e;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  font-size: 12px;
-}
-
-.xq-code-input-row > .xq-button-group {
-  flex-shrink: 0;
-  margin: 0;
-}
-
-.xq-code-input-row > .xq-button-group > button {
-  height: 40px;
-  padding: 0 14px;
-  font-size: 12.5px;
+.xq-middle-code-form .xq-button-group button {
+  min-height: var(--touch-min);
+  padding: 0 18px;
+  font-size: 13px;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: 8px;
   white-space: nowrap;
 }
 
-.xq-code-input-row .xq-help {
-  font-size: 12px;
-  color: var(--color-ink-muted);
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-.xq-code-input-row .xq-field-error {
-  font-size: 12px;
-  color: #fca5a5;
-  background: rgba(40, 10, 10, 0.95);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid #ef4444;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-/* 3. PUBLIC ROOMS SECTION */
-.xq-rooms-section {
+/* 4. SECTION PHÒNG CÔNG KHAI (TARGET DESIGN) */
+.xq-target-rooms-section {
   background: linear-gradient(
     180deg,
-    rgba(35, 20, 14, 0.96) 0%,
-    rgba(22, 12, 8, 0.98) 100%
+    var(--color-surface) 0%,
+    var(--color-surface-sunken) 100%
   ) !important;
-  border: 2px solid #7a4e0f !important;
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 28%, transparent) !important;
   border-radius: 14px;
-  padding: 26px;
+  padding: 20px 22px;
   box-shadow:
     0 12px 36px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(245, 202, 103, 0.15);
-  color: #fff5df !important;
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold-light) 12%, transparent);
+  color: var(--color-ink) !important;
+  margin-bottom: 24px;
 }
 
-.xq-rooms-section .xq-data-state {
-  padding: 38px 20px;
-  background: rgba(20, 10, 6, 0.55);
-  border: 1.5px dashed rgba(245, 202, 103, 0.25);
-  border-radius: 12px;
-}
-
-.xq-rooms-section .xq-data-state h2 {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff5df !important;
-  margin: 0;
-  letter-spacing: 0.3px;
-}
-
-.xq-rooms-section .xq-data-state p {
-  color: #eedcc6 !important;
-  font-size: 14px;
-  max-width: 440px;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.xq-rooms-section .xq-state-piece {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #875b26 0%, #3a2210 100%);
-  border: 2px solid var(--color-gold-light);
-  color: var(--color-gold-light);
-  font: 900 28px var(--font-han);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-}
-
-.xq-rooms-head-row {
+.xq-target-rooms-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
   flex-wrap: wrap;
-  gap: 12px;
-}
-
-.xq-rooms-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.xq-rooms-title-icon {
-  font-size: 24px;
-}
-
-.xq-rooms-title-wrap h2 {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 700;
-  color: #fff5df !important;
-  margin: 0;
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-}
-
-.xq-rooms-count-pill {
-  font-size: 11.5px;
-  font-weight: 700;
-  background: rgba(198, 146, 42, 0.2);
-  color: #f5ca67;
-  padding: 4px 14px;
-  border-radius: 12px;
-  border: 1px solid #c6922a;
-}
-
-.xq-room-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-  gap: 16px;
-}
-
-.xq-room-card {
-  background: linear-gradient(
-    180deg,
-    rgba(46, 26, 18, 0.92) 0%,
-    rgba(30, 16, 11, 0.96) 100%
-  ) !important;
-  border: 1.5px solid #6e492b !important;
-  border-radius: 10px;
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   gap: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  transition: all 0.2s ease;
-  color: #fff5df !important;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 20%, transparent);
 }
 
-.xq-room-card:hover {
-  border-color: #f5ca67 !important;
-  background: linear-gradient(
-    180deg,
-    rgba(56, 32, 22, 0.96) 0%,
-    rgba(36, 20, 14, 0.98) 100%
-  ) !important;
-  transform: translateY(-2px);
-  box-shadow:
-    0 10px 26px rgba(198, 146, 42, 0.25),
-    0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.xq-room-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.xq-room-title-block {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.xq-room-title-block h3 {
-  font-family: var(--font-serif);
-  font-size: 16.5px;
-  font-weight: 700;
-  color: #fff5df !important;
-  margin: 0 0 4px 0;
-}
-
-.xq-room-title-block .xq-help {
-  font-size: 13px;
-  color: #eedcc6 !important;
-  margin: 0;
-}
-
-.xq-status-badge {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
-}
-
-.badge-waiting {
-  background: rgba(22, 101, 52, 0.35);
-  color: #86efac;
-  border: 1px solid #22c55e;
-}
-
-.badge-playing {
-  background: rgba(153, 27, 27, 0.35);
-  color: #fca5a5;
-  border: 1px solid #ef4444;
-}
-
-.xq-room-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #c8b6a2 !important;
-  border-top: 1px dashed rgba(245, 202, 103, 0.2);
-  padding-top: 10px;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.xq-meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.xq-room-actions {
+.xq-rooms-title-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
 }
 
-/* 4. RULES ACCORDION (IMPERIAL SCROLL DESIGN) */
-.xq-rules-accordion {
-  background: linear-gradient(
-    180deg,
-    rgba(35, 20, 14, 0.96) 0%,
-    rgba(22, 12, 8, 0.98) 100%
-  ) !important;
-  border: 2px solid #7a4e0f !important;
-  border-radius: 14px;
-  padding: 22px 28px;
-  box-shadow:
-    0 12px 36px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(245, 202, 103, 0.15);
-  color: #fff5df !important;
-  transition: all 0.25s ease;
+.xq-rooms-icon {
+  font-size: 20px;
 }
 
-.xq-rules-summary {
-  min-height: 44px;
-  cursor: pointer;
+.xq-rooms-title-box h2 {
   font-family: var(--font-serif);
   font-size: 20px;
   font-weight: 700;
-  line-height: 44px;
-  color: #fff5df !important;
-  user-select: none;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.xq-rooms-head-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
-  position: relative;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.xq-rules-summary::before {
-  content: "📜";
-  font-size: 22px;
+.xq-filter-pill-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background: var(--color-surface-sunken);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
 }
 
-.xq-rules-summary:hover {
-  color: #f5ca67 !important;
+.xq-filter-btn {
+  background: transparent;
+  min-height: var(--touch-min);
+  border: 1px solid transparent;
+  color: var(--color-ink-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.xq-rules-accordion[open] {
-  border-color: #f5ca67 !important;
+.xq-filter-btn:hover {
+  color: var(--color-ink);
 }
 
-.xq-rules-accordion[open] .xq-rules-summary {
-  border-bottom: 1.5px solid rgba(245, 202, 103, 0.3);
-  margin-bottom: 18px;
-  padding-bottom: 8px;
+.xq-filter-btn.active {
+  background: color-mix(in srgb, var(--color-gold) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold-light) 50%, transparent);
+  color: var(--color-gold-light);
+  font-weight: 700;
 }
 
-.xq-rules-lead {
+/* DANH SÁCH HÀNG PHÒNG */
+.xq-target-room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xq-target-room-row {
+  background: var(--color-surface-sunken);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 20%, transparent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.xq-target-room-row:hover {
+  border-color: color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+  background: var(--color-surface-sunken);
+}
+
+.xq-target-room-info {
+  display: flex;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+.xq-room-primary-text {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.xq-room-primary-text h3 {
+  margin: 0;
   font-size: 14px;
-  color: #eedcc6 !important;
-  font-style: italic;
-  margin-bottom: 18px;
+}
+
+.xq-room-primary-text span {
+  color: var(--color-ink-muted);
+  font-size: 12px;
+}
+
+.xq-target-room-sep {
+  color: var(--color-gold-dark);
+}
+
+.xq-target-room-time {
+  color: var(--color-gold-light);
+  font-weight: 600;
+}
+
+.xq-target-room-status.status-waiting {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.xq-target-room-status.status-playing {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.xq-target-room-viewers {
+  color: var(--color-ink-muted);
+  font-size: 12px;
+}
+
+.xq-target-room-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.xq-target-room-actions .xq-button-group button {
+  min-height: var(--touch-min);
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+/* 5. ACCORDION LUẬT CHƠI RÚT GỌN */
+.xq-rules-accordion {
+  border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-surface-sunken) 70%, transparent);
+  padding: 8px 16px;
+}
+
+.xq-rules-summary {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  min-height: var(--touch-min);
+  line-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  color: var(--color-gold-light);
+  font-size: 15px;
+  cursor: pointer;
 }
 
 .xq-rules-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 18px;
-  align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-4);
 }
 
 .xq-rule-card {
-  background: rgba(22, 12, 8, 0.85);
-  border: 1px solid #5a3522;
-  border-radius: 10px;
-  padding: 18px 20px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
+  padding: var(--space-4);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
 }
 
 .xq-rule-card h2 {
-  font-family: var(--font-serif);
-  font-size: 17px;
-  font-weight: 700;
-  color: #f5ca67 !important;
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed rgba(245, 202, 103, 0.25);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  color: var(--color-gold-light);
+  font-size: 18px;
 }
 
 .xq-rule-list {
-  padding-left: 20px;
-  margin: 0 0 12px 0;
-  color: #eedcc6 !important;
-  line-height: 1.65;
+  padding-left: var(--space-4);
 }
 
-.xq-rule-list li {
-  margin-bottom: 8px;
-  font-size: 13.5px;
-}
-
-.xq-rule-list strong {
-  color: #fca5a5 !important;
-}
-
-.xq-rule-notes {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px dashed rgba(245, 202, 103, 0.25);
-  font-size: 13px;
-  color: #c8b6a2 !important;
-  line-height: 1.55;
-}
-
-.xq-rule-notes p {
-  margin: 0 0 6px 0;
-  color: #c8b6a2 !important;
-}
-
-.xq-rule-notes p:last-child {
-  margin: 0;
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .xq-lobby-modes {
-    grid-template-columns: 1fr;
+@media (max-width: 520px) {
+  .xq-lobby {
+    padding-inline: 0;
   }
-  .xq-welcome-banner {
-    padding: 20px;
+
+  .xq-lobby-header-bar,
+  .xq-modes-section,
+  .xq-target-rooms-section {
+    padding: var(--space-4) !important;
   }
-  .xq-code-form {
-    grid-template-columns: 1fr;
+
+  .xq-target-room-actions {
+    flex-wrap: wrap;
   }
-  .xq-code-form > .xq-button-group {
-    margin-top: 0;
-  }
-  .xq-rules-grid {
-    grid-template-columns: 1fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xq-lobby *,
+  .xq-lobby *::before,
+  .xq-lobby *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }

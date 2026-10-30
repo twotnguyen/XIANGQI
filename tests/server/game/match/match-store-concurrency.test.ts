@@ -116,6 +116,7 @@ describe.skipIf(!databaseUrl)("MatchStore concurrent commands", () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261011000009_match_draw.sql");
+    await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
   });
 
   it("never produces two results when a move races both resignations", async () => {

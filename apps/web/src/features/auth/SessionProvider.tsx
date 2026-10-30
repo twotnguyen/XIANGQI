@@ -584,6 +584,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const authorizedFetch = useCallback(
     async (path: string, init: RequestInit = {}) => {
       const url = backend(path);
+      const accountAtStart = credentials.current?.member.userId;
       if (loggingOut.current) throw new Error(unavailable);
       if (
         credentials.current &&
@@ -594,6 +595,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const record = credentials.current;
       if (
         !record ||
+        record.member.userId !== accountAtStart ||
         Date.parse(record.member.expiresAt) <= Date.now() ||
         record.bearerExpiresAt <= Date.now()
       )

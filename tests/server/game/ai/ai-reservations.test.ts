@@ -57,6 +57,10 @@ describe.skipIf(!databaseUrl)(
         await apply(`supabase/migrations/202610110000${suffix}.sql`);
       await apply(migration);
       await apply("supabase/migrations/20261017000018_room_code_digits.sql");
+      await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply(
+        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
     });
     it("installs additive AI columns and private forced-RLS lease metadata", async () => {
       const columns = (

@@ -30,7 +30,7 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function parseWindow(value: unknown): RecoveryWindow {
+export function parseWindow(value: unknown): RecoveryWindow {
   const result = record(value);
   if (
     typeof result.requestId !== "string" ||
@@ -45,7 +45,7 @@ function parseWindow(value: unknown): RecoveryWindow {
   };
 }
 
-async function post<T>(
+export async function post<T>(
   path: string,
   body: object,
   parse: (value: unknown) => T,

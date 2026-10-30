@@ -145,6 +145,51 @@ it.each([
   expect(onError).not.toHaveBeenCalled();
   peer.close();
 });
+it.each(["ACTIVE", "FINISHED"])(
+  "accepts %s unlimited snapshots without fabricated clocks",
+  (status) => {
+    const { peer, onSnapshot, onError } = observer();
+    const base = snapshot();
+    const state = {
+      ...base,
+      room: { ...base.room, timeMinutes: 0 },
+      match: {
+        ...base.match,
+        status,
+        inactivity:
+          status === "ACTIVE"
+            ? {
+                promptAt: "2026-10-11T00:03:00Z",
+                expiresAt: "2026-10-11T00:03:30Z",
+                confirmsLeft: 2,
+              }
+            : null,
+      },
+      clocks: null,
+    };
+    fixture.handlers.get("room.snapshot")?.(state);
+    expect(onSnapshot).toHaveBeenCalledExactlyOnceWith({
+      ...state,
+      draw: null,
+    });
+    expect(onError).not.toHaveBeenCalled();
+    peer.close();
+  },
+);
+it("rejects an unlimited active snapshot without an authoritative inactivity deadline", () => {
+  const { peer, onSnapshot, onError } = observer();
+  const base = snapshot();
+  fixture.handlers.get("room.snapshot")?.({
+    ...base,
+    room: { ...base.room, timeMinutes: 0 },
+    clocks: null,
+  });
+  expect(onSnapshot).not.toHaveBeenCalled();
+  expect(onError).toHaveBeenCalledWith(
+    "Phản hồi phòng không hợp lệ. Vui lòng tải lại.",
+  );
+  peer.close();
+});
 const badMoves = [
   undefined,
   {},

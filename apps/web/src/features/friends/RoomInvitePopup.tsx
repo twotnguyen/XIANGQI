@@ -1,108 +1,187 @@
 import "./friends.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { navigate } from "../../shared/navigation/navigation.js";
 import { Button } from "../../shared/ui/primitives.js";
-import {
-  FriendRequestError,
-  type FriendClient,
-  type RoomInvite,
+import type {
+  AcceptedInvite,
+  FriendClient,
+  InviteDecline,
+  RoomInvite,
 } from "./friend-client.js";
+import { friendErrorText } from "./friend-client.js";
+
+const POLL_MS = 2000;
+const TICK_MS = 1000;
+
 /**
- * Hộp thông báo popup hiển thị lời mời vào phòng cờ từ bạn bè (kèm đếm ngược thời gian chấp nhận/từ chối).
+ * Các popup lời mời vào phòng từ bạn bè. Mỗi lời mời có deadline tuyệt đối từ server (sống sót qua reload),
+ * không chặn thao tác trang (không modal), và chỉ chuyển phòng sau khi server xác nhận accepted:true.
  */
-export function RoomInvitePopup({ client }: { client: FriendClient }) {
-  const [invites, setInvites] = useState<RoomInvite[] | null>(null);
+export function RoomInvitePopup({
+  client,
+  onEntered,
+}: {
+  client: FriendClient;
+  onEntered?: (entry: AcceptedInvite) => void;
+}) {
+  const [invites, setInvites] = useState<RoomInvite[]>([]);
+  const [declines, setDeclines] = useState<InviteDecline[]>([]);
+  const [busy, setBusy] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [now, setNow] = useState(() => Date.now());
-  const [busy, setBusy] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const epoch = useRef(0);
+  const inFlight = useRef(false);
+  const pending = useRef(new Set<string>());
+  const commandIds = useRef(new Map<string, string>());
+
   useEffect(() => {
-    let alive = true;
-    async function poll() {
-      if (!alive) return;
+    let active = true;
+    const poll = async () => {
+      if (inFlight.current) return;
+      inFlight.current = true;
+      const started = epoch.current;
       try {
-        const list = await client.invites();
-        if (alive) setInvites(list);
+        const [nextInvites, state] = await Promise.all([
+          client.invites(),
+          client.inviteState(),
+        ]);
+        if (active && started === epoch.current) {
+          setInvites(nextInvites);
+          setNow(Date.now());
+          setDeclines(state.declines);
+        }
       } catch {
-        if (alive) setInvites((previous) => previous ?? []);
+        /* Lỗi mạng tạm thời: giữ popup hiện tại, lần poll sau thử lại. */
+      } finally {
+        inFlight.current = false;
       }
-    }
-    queueMicrotask(() => void poll());
-    const timer = setInterval(poll, 5000);
+    };
+    void poll();
+    const timer = window.setInterval(() => void poll(), POLL_MS);
     return () => {
-      alive = false;
-      clearInterval(timer);
+      active = false;
+      window.clearInterval(timer);
     };
   }, [client]);
 
+  const hasItems = invites.length > 0 || declines.length > 0;
   useEffect(() => {
-    if (
-      !invites ||
-      !invites.some((invite) => Date.parse(invite.expiresAt) > Date.now())
-    )
-      return;
-    setNow(Date.now());
-    const clock = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(clock);
-  }, [invites]);
-  if (!invites) return null;
-  const live = invites.filter((invite) => Date.parse(invite.expiresAt) > now);
-  if (!live.length) return null;
-  const invite = live[0]!;
-  const seconds = Math.max(
-    0,
-    Math.ceil((Date.parse(invite.expiresAt) - now) / 1000),
-  );
-  async function answer(accept: boolean) {
-    if (busy) return;
-    setBusy(invite.id);
-    setError("");
+    if (!hasItems) return;
+    const clock = window.setInterval(() => setNow(Date.now()), TICK_MS);
+    return () => window.clearInterval(clock);
+  }, [hasItems]);
+
+  async function answer(invite: RoomInvite, accept: boolean) {
+    if (pending.current.has(invite.id)) return;
+    pending.current.add(invite.id);
+    let commandId = commandIds.current.get(invite.id);
+    if (!commandId) {
+      commandId = crypto.randomUUID();
+      commandIds.current.set(invite.id, commandId);
+    }
+    setBusy((prev) => ({ ...prev, [invite.id]: true }));
+    setErrors((prev) => ({ ...prev, [invite.id]: "" }));
     try {
-      const result = await client.respondInvite(invite.id, accept);
-      setInvites((previous) =>
-        (previous ?? []).filter((item) => item.id !== invite.id),
-      );
-      if (accept && result.code) navigate(`/rooms/join?token=${result.code}`);
-    } catch (failure) {
-      setError(
-        failure instanceof FriendRequestError
-          ? failure.code === "FRIEND_BUSY"
-            ? "Bạn đang ở trong một ván/phòng khác."
-            : failure.code === "FRIEND_INVITE_REVOKED"
-              ? "Phòng đã khoá lời mời này."
-              : "Lời mời đã hết hiệu lực."
-          : "Chưa thể trả lời. Vui lòng thử lại.",
-      );
+      const result = await client.respondInvite(invite.id, accept, commandId);
+      commandIds.current.delete(invite.id);
+      epoch.current += 1;
+      setInvites((prev) => prev.filter((item) => item.id !== invite.id));
+      if (result.accepted) {
+        if (onEntered) onEntered(result);
+        else navigate(`/rooms/${encodeURIComponent(result.roomId)}`);
+      }
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, [invite.id]: friendErrorText(error) }));
     } finally {
-      setBusy(null);
+      pending.current.delete(invite.id);
+      setBusy((prev) => ({ ...prev, [invite.id]: false }));
     }
   }
+
+  async function dismiss(decline: InviteDecline) {
+    epoch.current += 1;
+    setDeclines((prev) => prev.filter((item) => item.id !== decline.id));
+    try {
+      await client.ackInviteState(decline.id);
+    } catch {
+      /* Chưa ack được: lần poll sau sẽ hiện lại và thử ack lần nữa. */
+    }
+  }
+
+  const live = invites.filter((invite) => Date.parse(invite.expiresAt) > now);
+  if (!live.length && !declines.length) return null;
+
   return (
-    <section
-      role="dialog"
-      aria-label="Lời mời vào phòng"
-      className="xq-room-invite-popup"
-    >
-      <p>
-        Người chơi {invite.inviter.displayName} (@{invite.inviter.username}) mời
-        bạn tham gia phòng cờ {invite.roomName}. Còn {seconds} giây.
-      </p>
-      <div className="xq-room-invite-popup__actions">
-        <Button loading={busy === invite.id} onClick={() => void answer(true)}>
-          Tham gia
-        </Button>
-        <Button
-          variant="secondary"
-          loading={busy === invite.id}
-          onClick={() => void answer(false)}
+    <div className="xq-room-invite-stack">
+      {live.map((invite) => {
+        const seconds = Math.max(
+          0,
+          Math.ceil((Date.parse(invite.expiresAt) - now) / 1000),
+        );
+        const isBusy = Boolean(busy[invite.id]);
+        return (
+          <section
+            key={invite.id}
+            className="xq-room-invite-popup"
+            aria-labelledby={`room-invite-${invite.id}`}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && !isBusy) {
+                event.stopPropagation();
+                void answer(invite, false);
+              }
+            }}
+          >
+            <header className="xq-room-invite-popup__header">
+              <h2 id={`room-invite-${invite.id}`}>Lời mời vào phòng</h2>
+              <button
+                type="button"
+                className="xq-room-invite-popup__close"
+                aria-label="Từ chối lời mời"
+                disabled={isBusy}
+                onClick={() => void answer(invite, false)}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </header>
+            <p>
+              Người chơi {invite.inviter.displayName} mời bạn tham gia phòng cờ{" "}
+              <strong>{invite.roomName}</strong>. Còn {seconds} giây.
+            </p>
+            {errors[invite.id] && <p role="alert">{errors[invite.id]}</p>}
+            <div className="xq-room-invite-popup__actions">
+              <Button
+                variant="secondary"
+                disabled={isBusy}
+                onClick={() => void answer(invite, false)}
+              >
+                Từ chối
+              </Button>
+              <Button
+                loading={isBusy}
+                onClick={() => void answer(invite, true)}
+              >
+                Tham gia
+              </Button>
+            </div>
+          </section>
+        );
+      })}
+      {declines.map((decline) => (
+        <section
+          key={decline.id}
+          className="xq-room-invite-popup"
+          role="status"
         >
-          Từ chối
-        </Button>
-      </div>
-      {error && (
-        <p role="alert" aria-live="assertive">
-          {error}
-        </p>
-      )}
-    </section>
+          <p>{decline.displayName} đã từ chối lời mời tham gia phòng.</p>
+          <div className="xq-room-invite-popup__actions">
+            <Button variant="ghost" onClick={() => void dismiss(decline)}>
+              Đã hiểu
+            </Button>
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }

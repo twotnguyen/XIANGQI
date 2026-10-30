@@ -57,6 +57,12 @@ export interface RoomCollaborator {
     identity: RealtimeIdentity,
     command: RoomCommand,
   ): Promise<RoomStateSnapshot | RoomExecutionResult>;
+  // Queues media.revoke-user for the identity's old publisher, in the caller's transaction and scope.
+  queueMediaRevoke(
+    client: PoolClient,
+    identity: RealtimeIdentity,
+    roomId: string,
+  ): Promise<void>;
 }
 export interface RealtimeConnection {
   identity: RealtimeIdentity;

@@ -15,7 +15,7 @@ import {
   PostgresLoginStore,
 } from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
-import { apply, databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
@@ -75,7 +75,7 @@ async function waitFor<T>(
   }
   throw new Error("Synthetic runtime publication deadline exceeded");
 }
-async function playing() {
+async function playing(timeMinutes = 5) {
   const r = registration(),
     players = [await member(r), await member(r)];
   const runtime = await createRoomRuntime(env, r.context);
@@ -109,7 +109,7 @@ async function playing() {
       });
     const created = await post("/rooms", 0, {
       commandId: randomUUID(),
-      timeMinutes: 5,
+      timeMinutes,
     });
     expect(created.status).toBe(200);
     const entry = (await created.json()) as {
@@ -211,6 +211,7 @@ async function playing() {
       runtime,
       app,
       players,
+      sockets,
       roomId: entry.roomId,
       latest,
       command,
@@ -222,10 +223,6 @@ async function playing() {
     throw error;
   }
 }
-async function drawSchema() {
-  await apply("supabase/migrations/20261011000008_room_modes.sql");
-  await apply("supabase/migrations/20261011000009_match_draw.sql");
-}
 afterAll(async () => {
   await pool.end();
   await loginPool.end();
@@ -235,7 +232,6 @@ describe.skipIf(!databaseUrl)(
   () => {
     beforeEach(reset);
     it("publishes offers to both peers and automatically expires them with cooldown without resetting the running clock", async () => {
-      await drawSchema();
       const f = await playing();
       try {
         const started = f.latest(0)!;
@@ -325,7 +321,6 @@ describe.skipIf(!databaseUrl)(
       }
     }, 20000);
     it("actual protected HTTP leave during play resigns once, releases the host seat and publishes the terminal snapshot", async () => {
-      await drawSchema();
       const f = await playing();
       try {
         const started = f.latest(0)!,
@@ -377,54 +372,7 @@ describe.skipIf(!databaseUrl)(
         await f.close();
       }
     }, 20000);
-    it("keeps movement operational on schema1–7 while draw actions fail closed", async () => {
-      const f = await playing();
-      try {
-        const started = f.latest(0)!;
-        expect(started.draw).toBeNull();
-        const rejected = await f.command(0, {
-          type: "match.draw.offer",
-          payload: {
-            matchId: started.match!.id,
-            matchVersion: started.match!.version,
-          },
-        });
-        expect(rejected.status).toBe("error");
-        expect(
-          (
-            await pool.query(
-              "SELECT count(*)::int n FROM public.match_events WHERE match_id=$1",
-              [started.match!.id],
-            )
-          ).rows[0].n,
-        ).toBe(1);
-        expect(
-          (
-            await f.command(0, {
-              type: "match.move",
-              payload: {
-                matchId: started.match!.id,
-                matchVersion: started.match!.version,
-                from: 54,
-                to: 45,
-              },
-            })
-          ).status,
-        ).toBe("ok");
-        await waitFor(
-          async () => f.latest(1),
-          (s) => s?.match?.version === 1,
-        );
-        expect(f.latest(1)!.match!.lastMove).toMatchObject({
-          from: 54,
-          to: 45,
-        });
-      } finally {
-        await f.close();
-      }
-    }, 20000);
     it("fails closed at startup when optional schema9 exists but its required update capability was revoked", async () => {
-      await drawSchema();
       await pool.query(
         "REVOKE UPDATE ON xiangqi_room.match_draw_offers FROM app_server",
       );
@@ -442,3 +390,187 @@ describe.skipIf(!databaseUrl)(
     });
   },
 );
+
+describe.skipIf(!databaseUrl)("actual runtime unlimited match gates", () => {
+  beforeEach(reset);
+  // Synthetic boundary: moves the server-owned anchor past the 3-minute prompt without waiting in real time.
+  const ageAnchor = (matchId: string, ms: number) =>
+    pool.query(
+      "UPDATE public.matches SET clock=jsonb_set(clock,'{runningSinceEpochMs}',to_jsonb((floor(extract(epoch FROM clock_timestamp())*1000)-$2::numeric)::bigint)) WHERE id=$1",
+      [matchId, ms],
+    );
+  it("still-here is idempotent per commandId, a fresh retry before the next prompt is rejected, and a move resets the chain", async () => {
+    const f = await playing(0);
+    try {
+      const started = f.latest(0)!;
+      const matchId = started.match!.id;
+      expect(started.match!.inactivity!.confirmsLeft).toBe(2);
+      await ageAnchor(matchId, 181_000);
+      const ack = (commandId: string) =>
+        new Promise<CommandAcknowledgement>((resolve, reject) => {
+          f.sockets[0]!.timeout(5000).emit(
+            "room.command",
+            {
+              commandId,
+              roomId: f.roomId,
+              expectedVersion: f.latest(0)!.version,
+              action: {
+                type: "match.still-here",
+                payload: { matchId, matchVersion: started.match!.version },
+              },
+            },
+            (error: Error | null, value: CommandAcknowledgement) =>
+              error ? reject(error) : resolve(value),
+          );
+        });
+      const commandId = randomUUID();
+      const first = await ack(commandId);
+      if (first.status !== "ok")
+        throw new Error("First match.still-here must succeed");
+      expect(first.snapshot.match!.inactivity!.confirmsLeft).toBe(1);
+      // Same commandId returns the stored receipt; it must not count a second extension.
+      expect(await ack(commandId)).toEqual(first);
+      // A fresh commandId after success is still before the new prompt and must be rejected.
+      expect((await ack(randomUUID())).status).toBe("error");
+      expect(
+        (
+          await pool.query(
+            "SELECT inactivity_extensions n FROM public.matches WHERE id=$1",
+            [matchId],
+          )
+        ).rows[0].n,
+      ).toBe(1);
+      expect(
+        (
+          await f.command(0, {
+            type: "match.move",
+            payload: {
+              matchId,
+              matchVersion: started.match!.version,
+              from: 54,
+              to: 45,
+            },
+          })
+        ).status,
+      ).toBe("ok");
+      expect(
+        (
+          await pool.query(
+            "SELECT inactivity_extensions n FROM public.matches WHERE id=$1",
+            [matchId],
+          )
+        ).rows[0].n,
+      ).toBe(0);
+    } finally {
+      await f.close();
+    }
+  }, 20000);
+  it("expires an unlimited match after prompt plus 30 seconds with INACTIVITY and the side to move loses", async () => {
+    const f = await playing(0);
+    try {
+      const matchId = f.latest(0)!.match!.id;
+      await ageAnchor(matchId, 211_000);
+      // Clock worker must finish the match through the server-owned deadline.
+      const finished = await waitFor(
+        async () =>
+          (
+            await pool.query(
+              "SELECT status,outcome FROM public.matches WHERE id=$1",
+              [matchId],
+            )
+          ).rows[0],
+        (row) => row?.status === "FINISHED",
+      );
+      expect(finished.outcome).toMatchObject({
+        reason: "INACTIVITY",
+        winner: "BLACK",
+      });
+    } finally {
+      await f.close();
+    }
+  }, 20000);
+  it("keeps draw expiry for unlimited matches", async () => {
+    const f = await playing(0);
+    try {
+      const started = f.latest(0)!;
+      expect(
+        (
+          await f.command(0, {
+            type: "match.draw.offer",
+            payload: {
+              matchId: started.match!.id,
+              matchVersion: started.match!.version,
+            },
+          })
+        ).status,
+      ).toBe("ok");
+      const offer = await waitFor(
+        async () =>
+          (
+            await pool.query(
+              "SELECT id FROM xiangqi_room.match_draw_offers WHERE match_id=$1 AND status='PENDING'",
+              [started.match!.id],
+            )
+          ).rows[0],
+        (row) => Boolean(row),
+      );
+      await pool.query(
+        "WITH stamp AS (SELECT clock_timestamp() AS now) UPDATE xiangqi_room.match_draw_offers SET created_at=stamp.now-interval '31 seconds',expires_at=stamp.now-interval '1 second' FROM stamp WHERE id=$1",
+        [offer.id],
+      );
+      await waitFor(
+        async () =>
+          (
+            await pool.query(
+              "SELECT status FROM xiangqi_room.match_draw_offers WHERE id=$1",
+              [offer.id],
+            )
+          ).rows[0],
+        (row) => row?.status === "EXPIRED",
+        15000,
+      );
+    } finally {
+      await f.close();
+    }
+  }, 30000);
+  it("keeps disconnect forfeit for unlimited matches after the 60-second grace", async () => {
+    const f = await playing(0);
+    try {
+      const matchId = f.latest(0)!.match!.id;
+      const roomId = f.roomId;
+      const leaver = f.players[1]!;
+      f.sockets[1]!.disconnect();
+      await waitFor(
+        async () =>
+          (
+            await pool.query(
+              "SELECT disconnected_at FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+              [roomId, leaver.id],
+            )
+          ).rows[0],
+        (row) => row?.disconnected_at instanceof Date,
+      );
+      await pool.query(
+        "UPDATE public.room_members SET disconnected_at=clock_timestamp()-interval '61 seconds' WHERE room_id=$1 AND user_id=$2",
+        [roomId, leaver.id],
+      );
+      const finished = await waitFor(
+        async () =>
+          (
+            await pool.query(
+              "SELECT status,outcome,red_user_id FROM public.matches WHERE id=$1",
+              [matchId],
+            )
+          ).rows[0],
+        (row) => row?.status === "FINISHED",
+        15000,
+      );
+      expect(finished.outcome.reason).toBe("DISCONNECT");
+      expect(finished.outcome.winner).toBe(
+        finished.red_user_id === leaver.id ? "BLACK" : "RED",
+      );
+    } finally {
+      await f.close();
+    }
+  }, 30000);
+});

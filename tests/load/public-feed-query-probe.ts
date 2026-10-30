@@ -138,6 +138,8 @@ async function main() {
       "20261011000008_room_modes",
       "20261011000013_side_swap",
       "20261017000018_room_code_digits",
+      "20261102000002_custom_rematch",
+      "20261102000003_unlimited_inactivity",
     ])
       await apply(`supabase/migrations/${name}.sql`);
 

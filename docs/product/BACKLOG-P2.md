@@ -1,8 +1,12 @@
-# BACKLOG P2 — XIANGQI
+# BACKLOG MỞ RỘNG — P2 và các Story chuyển P1
 
 Ngày lập: 11/10/2026. Phạm vi P2 được giao mới qua goal, gồm cả Stretch; chưa là xác nhận đã triển khai. Nhóm Epic giữ [BACKLOG-P1 §4.2](BACKLOG-P1.md#42-epic-p2-chỉ-ở-mức-epic-chưa-tách-story). Nguồn nghiệp vụ là [BA-SCOPE-DECISIONS](BA-SCOPE-DECISIONS.md), ưu tiên Phần 0. Danh mục phủ toàn bộ 25 mục tại [PHAM-VI-P1-P2](../planning/jira/reports/PHAM-VI-P1-P2.md).
 
 Nguồn BA đã được PO duyệt; Story, AC/TC và ước lượng dưới đây là phân rã kỹ thuật Codex bổ sung, chưa có xác nhận riêng của PO và không tự coi là BA Done. TC chưa chạy, toàn bộ issue mới giữ To Do trong backlog. Không gán Sprint, ngày cam kết, assignee hoặc release.
+
+**PO đổi phạm vi 30/10/2026 — BA 0.20:** `US-P2-19`/XIAN-133 (Thách đấu), `US-P2-18`/XIAN-132 (DM/unread), `US-P2-10`/XIAN-124 (Không giới hạn/chống treo) thuộc **P1**; phần phòng tự tạo của `US-P2-09`/XIAN-123 cũng thuộc **P1**, phần Casual vẫn P2. **Bỏ `US-P2-16`/XIAN-130 (QR) khỏi cả hai phân kỳ.** Giữ mã cũ và các AC/Task dưới đây để truy vết, không tự tạo issue/mã thay thế hoặc đánh dấu đã triển khai. Bảng giờ/Epic/Task và dữ liệu kế hoạch là baseline lịch sử, không phải tổng phạm vi P2 còn lại; chưa tái ước lượng hoặc cập nhật Jira.
+
+**PO bổ sung BA 0.21:** `US-P2-20`/XIAN-134, `US-P2-21`/XIAN-135, `US-P2-24`/XIAN-138 và `US-P2-25`/XIAN-139 đều **P1**, giữ toàn bộ AC/Task/ID cũ. Chưa triển khai/nghiệm thu hoặc sửa Jira; bảng Epic/giờ là baseline trước chuyển, không phải tổng P2 còn lại.
 
 ## Baseline và ước lượng
 
@@ -186,11 +190,13 @@ Mục yêu cầu: **P2-08**; Epic **EP-P2-03** / XIAN-110. Jira Story: XIAN-122.
 | T-P2-08-I | XIAN-154 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 32 | T10, T32, P2-07 |
 | T-P2-08-Q | XIAN-155 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 12 | T-P2-08-I |
 
-### US-P2-09 · Tái đấu có chọn phe
+### US-P2-09 · Tái đấu có chọn phe — custom P1 / Casual P2
 
 Mục yêu cầu: **P2-09**; Epic **EP-P2-03** / XIAN-110. Jira Story: XIAN-123.
 
 **Nguồn chính xác:** BA 0.8,2.3,5.3;82/331/601; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T41, T46, P2-07.
+
+**Phân kỳ hiện hành (BA 0.20):** P1 triển khai/nghiệm thu phần custom, **không phụ thuộc P2-07**; chỉ phần Casual chờ P2-07. Giữ cả ba mã AC dưới đây, tách ca custom P1 và Casual P2 khi ghi kết quả; P1 đạt không đồng nghĩa cả Story/Jira đã Done. Không mở quyền Khách hoặc Ranked.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
@@ -205,7 +211,7 @@ Mục yêu cầu: **P2-09**; Epic **EP-P2-03** / XIAN-110. Jira Story: XIAN-123.
 | T-P2-09-I | XIAN-156 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T41, T46, P2-07 |
 | T-P2-09-Q | XIAN-157 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-09-I |
 
-### US-P2-10 · Không giới hạn giờ và chống treo ván
+### US-P2-10 · Không giới hạn giờ và chống treo ván — P1
 
 Mục yêu cầu: **P2-10**; Epic **EP-P2-03** / XIAN-110. Jira Story: XIAN-124.
 
@@ -213,7 +219,7 @@ Mục yêu cầu: **P2-10**; Epic **EP-P2-03** / XIAN-110. Jira Story: XIAN-124.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-10.1 / TC-P2-10.1 | Form custom có bốn mức giờ | Chọn Không giới hạn | Không giới hạn là mặc định P2; 5/10/15 phút vẫn hoạt động, không cộng giây. Khách không chọn mức P2; AI không áp inactivity. |
+| AC-P2-10.1 / TC-P2-10.1 | Form custom thành viên có bốn mức | Chọn Không giới hạn | Mặc định tạo phòng thành viên Không giới hạn; Thách đấu 10 phút; 5/10/15 vẫn có, không cộng giây. Khách không tự tạo mức này, nhưng **được chơi/xem phòng Không giới hạn do thành viên tạo** theo quyền/chỗ trống và chịu cùng chống treo (PO 0.21). AI không áp inactivity. |
 | AC-P2-10.2 / TC-P2-10.2 | Bên tới lượt không đi 3 phút | Hiện cảnh báo | Banner 30 giây không modal, không che bàn cờ/Đầu hàng và không trap focus. Chỉ bên tới lượt bị hỏi; im lặng hết hạn thua INACTIVITY. |
 | AC-P2-10.3 / TC-P2-10.3 | Chưa có nước mới | Bấm Tôi còn đây liên tiếp | Đặt lại 3 phút tối đa hai lần liên tiếp. Lần thứ ba không có nút; hết 30 giây thua. Đi nước mới đặt lại chuỗi nhắc. |
 
@@ -319,24 +325,11 @@ Mục yêu cầu: **P2-15**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-129.
 | T-P2-15-I | XIAN-168 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 16 | P2-13 |
 | T-P2-15-Q | XIAN-169 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 4 | T-P2-15-I |
 
-### US-P2-16 · QR mời phòng
+### US-P2-16 · QR mời phòng — ĐÃ LOẠI KHỎI PHẠM VI
 
-Mục yêu cầu: **P2-16**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-130.
+**PO bỏ theo BA 0.20:** không triển khai/nghiệm thu QR ở P1 hoặc P2; chia sẻ chỉ có Sao chép link / Sao chép mã, vẫn giữ tab mời bạn bè.
 
-**Nguồn chính xác:** BA 2.2,2.4,4.3;320/361/554; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T26, T53.
-
-| AC / TC chưa chạy | Given | When | Then |
-|---|---|---|---|
-| AC-P2-16.1 / TC-P2-16.1 | Phòng custom đang mở | Hiện QR ở waiting/invite | QR chứa cùng link token với mã tám ký tự, không quyền chơi/xem riêng. Có tải ảnh hoặc copy QR; Khách không sử dụng chức năng P2. |
-| AC-P2-16.2 / TC-P2-16.2 | Người quét QR chưa đăng nhập | Login/signup sau quét | Giữ đích và tự join theo quyền/sức chứa hiện tại. Quét điện thoại thật mở đúng URL; không cấp QR cho Khách theo BA 0.3. |
-| AC-P2-16.3 / TC-P2-16.3 | Host khóa rồi mở lại | Dùng QR cũ hoặc mới | LOCKED thu hồi QR/link/mã chưa dùng. Mở lại sinh QR/link/code mới; QR cũ bị từ chối. |
-
-**TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: P1 link/access/permissions; decode golden QR→đúng URL, scan điện thoại thật→join, oldQR rejected.
-
-| Task | Jira | Đầu ra | Giờ đề xuất | Phụ thuộc |
-|---|---|---|---|---|
-| T-P2-16-I | XIAN-170 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 12 | T26, T53 |
-| T-P2-16-Q | XIAN-171 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-16-I |
+Giữ `XIAN-130`, `T-P2-16-I`/`XIAN-170`, `T-P2-16-Q`/`XIAN-171` và `AC-P2-16.1–3` như định danh lịch sử đã rút, không tái sử dụng. Không yêu cầu giải mã/quét QR, ảnh QR hoặc test QR. Chưa sửa trạng thái issue Jira hoặc baseline dữ liệu sinh báo cáo.
 
 ### US-P2-17 · Bộ 12 sticker
 
@@ -357,7 +350,7 @@ Mục yêu cầu: **P2-17**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-131.
 | T-P2-17-I | XIAN-172 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 16 | T37, T42, P2-18 |
 | T-P2-17-Q | XIAN-173 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 4 | T-P2-17-I |
 
-### US-P2-18 · Chat trực tiếp và tin chưa đọc
+### US-P2-18 · Chat trực tiếp và tin chưa đọc — P1
 
 Mục yêu cầu: **P2-18**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-132.
 
@@ -376,7 +369,7 @@ Mục yêu cầu: **P2-18**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-132.
 | T-P2-18-I | XIAN-174 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 32 | T14, T31, T37, T40 |
 | T-P2-18-Q | XIAN-175 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 12 | T-P2-18-I |
 
-### US-P2-19 · Thách đấu bạn bè
+### US-P2-19 · Thách đấu bạn bè — P1
 
 Mục yêu cầu: **P2-19**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-133.
 
@@ -384,9 +377,9 @@ Mục yêu cầu: **P2-19**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-133.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-19.1 / TC-P2-19.1 | Bạn accepted đang Online | Mở Thách đấu | Dùng form Create: tên, mặc định 10 phút/CODE_ONLY/5 người xem, chỉnh hợp lệ. Hủy không tạo phòng hoặc gửi lời mời. |
-| AC-P2-19.2 / TC-P2-19.2 | Đã xác nhận form | Tạo phòng và mời | Chỉ confirm mới tạo/gửi. Server kiểm một vị trí chơi và recheck bạn online; không mời bạn bận/offline. Khách không có quyền. |
-| AC-P2-19.3 / TC-P2-19.3 | Bạn vừa bận, từ chối hoặc hết hạn | Sau khi phòng đã tạo | Phòng vẫn tồn tại cho Host quản lý; không tự đóng, chuyển sang AI hoặc ghi đã chấp nhận. |
+| AC-P2-19.1 / TC-P2-19.1 | Bạn accepted đang Online | Mở Thách đấu | Dùng lại form Create **không nhập tên**, tên/mã tự sinh; mặc định **10 phút/CODE_ONLY/5 người xem**, được đổi hợp lệ kể cả Không giới hạn với thành viên. Hủy không tạo phòng hoặc gửi lời mời. |
+| AC-P2-19.2 / TC-P2-19.2 | Đã xác nhận form | Tạo phòng và mời | Chỉ confirm mới tạo/gửi cho người đã chọn. Server kiểm một vị trí chơi, recheck quan hệ/Online/BUSY và dùng cooldown 10 giây toàn người gửi, popup 30 giây của BA 0.19. Khách không có quyền; retry không tạo phòng/lời mời trùng. |
+| AC-P2-19.3 / TC-P2-19.3 | Bạn vừa bận, gửi thất bại, từ chối hoặc hết hạn | Sau khi phòng đã tạo | Phòng vẫn tồn tại cho Host quản lý; không tự đóng, chuyển sang AI hoặc ghi đã gửi/đã chấp nhận. |
 
 **TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: P1 friends/create/invite + unlimited nếu enabled; E2E cancel/confirm/race busy/reject; one-position server.
 
@@ -395,11 +388,13 @@ Mục yêu cầu: **P2-19**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-133.
 | T-P2-19-I | XIAN-176 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 16 | T18, T31, T40 |
 | T-P2-19-Q | XIAN-177 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 4 | T-P2-19-I |
 
-### US-P2-20 · Đổi username qua OTP
+### US-P2-20 · Đổi username qua OTP — P1
 
 Mục yêu cầu: **P2-20**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-134.
 
 **Nguồn chính xác:** BA 1.4,1.6;195/235; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T04, T09, T56, T65.
+
+**BA 0.21:** OTP chỉ tới email đã xác minh của chính tài khoản; chưa có thì dẫn thêm/xác minh email. Đổi thành công giữ mọi phiên hợp lệ/hạn cũ, không gián đoạn ván; đăng nhập mới dùng Username mới. Không nhận tên cũ để đăng nhập chỉ vì tên đang giữ chỗ. Các điều kiện này thuộc AC-P2-20.1/20.3; kiểm API/socket/refresh và ván đang chạy.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
@@ -414,13 +409,13 @@ Mục yêu cầu: **P2-20**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-134.
 | T-P2-20-I | XIAN-178 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T04, T09, T56, T65 |
 | T-P2-20-Q | XIAN-179 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-20-I |
 
-### US-P2-21 · Khôi phục username (không gồm đặt lại mật khẩu)
+### US-P2-21 · Khôi phục username (không gồm đặt lại mật khẩu) — P1
 
 Mục yêu cầu: **P2-21**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-135.
 
 **Nguồn chính xác:** BA 1.7,1.5;247/226; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T04, T09, T56.
 
-**Phạm vi sau PO chốt 30/10:** chỉ tìm lại username bằng email/OTP. Reset mật khẩu theo username thuộc P1, không nghiệm thu hoặc triển khai trùng trong Story P2 này.
+**P1 theo BA 0.21:** tìm Username bằng email đã xác minh/OTP; tách mục đích khỏi Quên mật khẩu P1, không dùng quyền tìm tên để reset hoặc cấp phiên.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
@@ -473,7 +468,7 @@ Mục yêu cầu: **P2-23**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-137.
 | T-P2-23-I | XIAN-184 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 12 | T12, T52 |
 | T-P2-23-Q | XIAN-185 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 4 | T-P2-23-I |
 
-### US-P2-24 · Chuyển thiết bị media giữa các tab
+### US-P2-24 · Chuyển thiết bị media giữa các tab — P1
 
 Mục yêu cầu: **P2-24**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-138.
 
@@ -492,7 +487,7 @@ Mục yêu cầu: **P2-24**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-138.
 | T-P2-24-I | XIAN-186 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 16 | T33, T56, T58 |
 | T-P2-24-Q | XIAN-187 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-24-I |
 
-### US-P2-25 · Giấy Sáng và Theo hệ thống
+### US-P2-25 · Giấy Sáng và Theo hệ thống — P1
 
 Mục yêu cầu: **P2-25**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-139.
 
@@ -500,8 +495,8 @@ Mục yêu cầu: **P2-25**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-139.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-25.1 / TC-P2-25.1 | Người chưa chọn theme | Mở ứng dụng | Kỳ Đài Cổ Phong mặc định; Giấy Sáng/Theo hệ thống có trong settings. Phông theo DESIGN 3.1; Khách không chọn P2 theo BA 0.3. |
-| AC-P2-25.2 / TC-P2-25.2 | Đã chọn Theo hệ thống hoặc theme rõ ràng | OS đổi dark/light | Theo hệ thống phản ứng OS, theme rõ ràng giữ lựa chọn. Màu bàn cờ không đổi giữa các theme. |
+| AC-P2-25.1 / TC-P2-25.1 | Thành viên chưa chọn hoặc đã lưu theme | Mở app/đăng nhập thiết bị khác | Chưa chọn mặc định Kỳ Đài Cổ Phong; có Giấy Sáng/Theo hệ thống ở Hồ sơ; **lưu theo tài khoản và đồng bộ lựa chọn giữa thiết bị** (PO 0.21). Phông DESIGN 3.1; Khách không chọn theme bổ sung theo quyền nguồn. |
+| AC-P2-25.2 / TC-P2-25.2 | Chọn Theo hệ thống hoặc theme explicit | OS đổi dark/light/thiết bị khác mở app | Theo hệ thống dùng OS từng thiết bị, không ép cùng màu thực tế; explicit không bị OS ghi đè. Màu bàn cờ không đổi. |
 | AC-P2-25.3 / TC-P2-25.3 | Mọi theme tại bốn kích thước | Kiểm states và trợ năng | Giữ DESIGN: keyboard, contrast, reduced motion, không cuộn ngang, không che bàn cờ/Đầu hàng/đồng hồ. SUCCESS/LOADING/EMPTY/ERROR/DISABLED có đủ giải thích. |
 
 **TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: P1 tokens/settings/board; compare board tokens, contrast mọi trạng thái, E2E OS dark/light/explicit theme/4sizes.
@@ -513,9 +508,9 @@ Mục yêu cầu: **P2-25**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-139.
 
 ## Kịch bản nghiệm thu P2
 
-- Chạy đủ 75 TC và mọi biến thể của 25 Story, kiểm cả API/socket/RLS và UI.
+- Số 75 TC/25 Story là baseline lịch sử. Các phần đã chuyển theo BA 0.20/0.21 nghiệm thu P1 (Tái đấu chỉ custom); phần Casual/các Story còn lại nghiệm thu P2. AC-P2-16.1–3 (QR) đã rút, không chạy hoặc tính thiếu coverage. Kiểm API/socket/RLS/UI cho các AC hiệu lực; bằng chứng P1 cũ không thay phần mới.
 - Dùng dữ liệu Elo, biên thời gian, nhánh Undo và thế Replay có đáp án độc lập; đối chiếu kết quả lưu bền.
-- Kiểm QR bằng điện thoại thật, receiver media Ranked, chuyển media giữa hai tab, OTP/Google/RLS bằng môi trường được phép.
+- Kiểm receiver media Ranked, chuyển media hai tab, OTP/Google/RLS trên môi trường được phép. QR đã bỏ, không yêu cầu quét điện thoại hoặc dùng test QR làm gate.
 - Kiểm hồi quy D1–D10, 12 NFR và 9 gate; ghi phần chưa có điều kiện thật là BLOCKED, không nhận PASS từ mock.
 - Kiểm bản sao mới, hướng dẫn chạy, migration và dữ liệu thử; rà bí mật trong Git/bundle/bằng chứng.
 - Liên kết code/commit/PR và báo cáo TC tới issue trước Done; tích hợp develop/main và xác minh remote theo goal.

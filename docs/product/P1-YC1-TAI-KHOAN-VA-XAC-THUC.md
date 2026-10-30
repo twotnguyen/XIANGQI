@@ -1,8 +1,8 @@
 # P1 · YC1 — Tài khoản, đăng nhập, hồ sơ và mật khẩu
 
-**Ngày cập nhật:** 30/10/2026. **Phạm vi:** YC1 của P1, bao gồm hai chức năng mật khẩu được PO bổ sung trong phiên đánh giá. **Hạn P1:** giữ 04/11/2026.
+**Ngày cập nhật:** 30/10/2026. **Phạm vi:** YC1 P1 gồm baseline, hai chức năng mật khẩu theo BA 0.18 và bốn bổ sung theo **BA 0.21** (mục 18). Hạn P1 giữ 04/11/2026.
 
-**Trạng thái:** đã triển khai các luồng YC1 và bổ sung kiểm thử local, đang chạy hồi quy liên miền. Chưa nghiệm thu dịch vụ Auth/Google/SMTP thật hoặc đóng Task Jira. Bằng chứng và giới hạn được ghi ở mục 17.
+**Trạng thái:** baseline tại mục 17; bổ sung BA 0.21 đã triển khai và kiểm chứng local tại mục 19. Chưa triển khai migration lên Cloud, chưa xác nhận CI hoặc nghiệm thu PO; không tự Jira Done.
 
 ## 1. Mục tiêu, nguồn và quyết định đã chốt
 
@@ -18,7 +18,7 @@ Nguồn: [BA Phần 0 và Phần 1](BA-SCOPE-DECISIONS.md), [Backlog P1 — EP-0
 | Quên mật khẩu | Thuộc P1; người dùng nhập username; OTP chỉ gửi tới email đã xác minh của đúng tài khoản |
 | Thiếu email đã xác minh | Thông báo rõ không khôi phục được; email đang chờ xác minh không đủ điều kiện |
 | Reset thành công | Đặt mật khẩu mới, quay về đăng nhập; không tự đăng nhập bằng OTP; thu hồi phiên cũ |
-| Phân kỳ còn lại | Khôi phục username và đổi username vẫn P2; không kéo các tính năng P2 khác lên P1 |
+| Phạm vi bổ sung 0.21 | Khôi phục/đổi Username, chuyển camera/mic giữa tab, Giấy Sáng/Theo hệ thống đều P1; chi tiết mục 18, bằng chứng mới tại mục 19 |
 
 **Thuật ngữ email/Gmail:** “Gmail đã xác thực” trong trao đổi được hiểu là email liên hệ đã xác minh của tài khoản. Giữ hỗ trợ email hợp lệ theo BA, không tự thêm điều kiện chỉ nhận đuôi `@gmail.com`. Email kỹ thuật của nhà cung cấp Auth không phải email khôi phục.
 
@@ -36,15 +36,17 @@ Nguồn: [BA Phần 0 và Phần 1](BA-SCOPE-DECISIONS.md), [Backlog P1 — EP-0
 6. Quên mật khẩu bằng username và OTP email đã xác minh.
 7. Một vị trí chơi, tiếp quản tab, đổi thiết bị, hết hạn và thu hồi phiên.
 8. Giữ đích lời mời khi xác thực, nhưng không vượt luật phiên/vị trí chơi.
+9. Khôi phục Username qua email/OTP, đổi Username qua OTP; giữ mọi phiên hợp lệ/hạn cũ khi đổi.
+10. Chuyển/Hủy camera/mic giữa tab (giao YC7); lựa chọn theme ở Hồ sơ lưu theo tài khoản/đồng bộ thiết bị (giao UI toàn ứng dụng).
 
 ### 2.2 Không thuộc lần đặc tả này
 
-Đổi username, khôi phục username khi không nhớ tên đăng nhập (P2); đổi/xóa email đã xác minh; tải avatar; xóa tài khoản; khôi phục thủ công qua admin. Không tự thêm đăng nhập bằng email, số điện thoại hoặc OTP đăng nhập.
+Đổi/xóa email đã xác minh, tải avatar, xóa tài khoản, khôi phục thủ công qua admin vẫn ngoài phạm vi. Không thêm đăng nhập bằng email/SMS/OTP hoặc tự gộp danh tính. Khôi phục/đổi Username đã lên P1 theo 0.21, không còn trong loại trừ.
 
 | Chủ thể | Quyền trong YC1 |
 |---|---|
-| Chưa đăng nhập | Đăng ký, đăng nhập, Google, vào Khách, yêu cầu khôi phục mật khẩu bằng username |
-| Thành viên hợp lệ | Sửa hồ sơ của mình, thêm email đầu tiên, đổi mật khẩu có mật khẩu cũ, đăng xuất |
+| Chưa đăng nhập | Đăng ký/đăng nhập/Google/Khách; Quên mật khẩu bằng Username hoặc tìm Username qua email đã xác minh/OTP theo mục đích riêng |
+| Thành viên hợp lệ | Hồ sơ/email/mật khẩu, Đổi Username qua OTP, bộ chọn theme P1; media giữa tab chỉ khi có quyền điều khiển/thiết bị hợp lệ |
 | Tài khoản Google đã hoàn tất | Có cả Google và mật khẩu đã đặt; dùng hai luồng mật khẩu như thành viên khác |
 | Khách | Có tên tạm và phiên riêng; Hồ sơ chỉ có Đăng xuất; không có đổi/khôi phục mật khẩu cho danh tính Khách |
 | Đăng ký/onboarding chưa hoàn tất | Không có quyền sử dụng chức năng thành viên |
@@ -141,7 +143,7 @@ Không thêm yêu cầu mật khẩu có chữ hoa/số/ký tự đặc biệt h
 - Kiểm trùng khi gửi và hoàn tất. Email đang chờ có thể sửa đích trước xác minh theo BA; không coi pending là địa chỉ khôi phục.
 - Xác minh thành công giữ user_id, phiên, ghế/ván và dữ liệu; bỏ cảnh báo sau phản hồi thành công server.
 - Email đã xác minh chỉ đọc, không đổi/xóa; thêm email không tạo tài khoản ứng dụng mới hoặc tự gộp với tài khoản khác.
-- Đổi mật khẩu thuộc Hồ sơ ngay P1 theo mục 9; đổi username vẫn P2. Khách không có hai chức năng này.
+- Đổi mật khẩu mục 9, **Đổi Username và theme mục 18** đều P1. Khách không có các quyền tài khoản/theme bổ sung theo nguồn. Đổi Username không tự đổi Display Name/email, không gia hạn hoặc thu hồi phiên đang hợp lệ.
 
 ## 9. Đổi mật khẩu chủ động trong Hồ sơ — P1
 
@@ -218,6 +220,8 @@ Không trả địa chỉ email đầy đủ cho người chưa xác minh. Mọi
 | Thiết bị khác khi chỉ ở phòng chờ | Rời ghế/đăng xuất thiết bị cũ, không ghi thua; thiết bị mới về Sảnh |
 | Đổi mật khẩu Hồ sơ | Giữ phiên thực hiện, thu hồi phiên khác; không tự gia hạn/đăng nhập khác thiết bị |
 | Reset mật khẩu | Thu hồi phiên cũ; recovery không có quyền chơi, về Login |
+| Đổi Username qua OTP | Giữ mọi phiên hợp lệ/hạn cũ, không gián đoạn ván; đăng nhập mới dùng Username mới, không dùng tên cũ vì đang giữ chỗ |
+| Chủ động chuyển media giữa tab | Hộp Chuyển/Hủy P1 theo mục 18; không tự giành quyền khi hủy/reconnect |
 | Đăng xuất chủ động giữa ván | Xác nhận đầu hàng; đồng ý mới RESIGN/rời/đăng xuất; hủy giữ nguyên |
 | Đăng xuất phòng chờ | Rời theo vòng đời phòng, không ghi thua |
 
@@ -243,11 +247,11 @@ Link mời qua đăng ký/đăng nhập/Khách phải giữ đích. Tuy nhiên l
 | SCR-REGISTER `/register` | Wizard ba bước, bỏ qua tại bước email/OTP |
 | SCR-ONBOARDING `/onboarding` | Email Google chỉ đọc, username/mật khẩu, Hoàn tất thiết lập |
 | MODAL-GUEST-NAME | Tên Khách và cảnh báo quyền |
-| SCR-PROFILE-SETTINGS `/settings` | Display Name, username, email/trạng thái xác minh, **Đổi mật khẩu**, Đăng xuất |
+| SCR-PROFILE-SETTINGS `/settings` | Display Name, @username, email/xác minh, Đổi mật khẩu, **Đổi Username qua OTP**, **bộ chọn theme** và Đăng xuất |
 | SCR-FORGOT-PASSWORD `/forgot-password` | **Username**, Gửi mã, trạng thái lỗi/thiếu email/gửi thành công |
 | SCR-RESET-PASSWORD `/reset-password` | OTP → mật khẩu mới/xác nhận → về đăng nhập |
 
-Khôi phục username bằng email vẫn P2, không đưa thành trường email thay username trong form quên mật khẩu P1.
+**Khôi phục Username bằng email cũng thuộc P1** theo 0.21, nhưng là luồng/mục đích riêng, không thay ô Username của Quên mật khẩu. OTP tìm tên không cấp quyền reset hoặc đăng nhập.
 
 Tất cả form có nhãn, lỗi tiếng Việt gắn trường, focus/bàn phím và reduced motion phù hợp; responsive từ 360 px. Loading khóa gửi trùng nhưng không để mất đường xử lý lỗi. Trạng thái rỗng/chưa có email phải có giải thích, không nhầm là lỗi tải dữ liệu. Không dùng “Sắp ra mắt” cho hai chức năng mật khẩu P1 đã được duyệt.
 
@@ -313,7 +317,7 @@ Danh sách dưới đây là ranh giới cần đối chiếu khi triển khai; 
 | Shared contracts | Request/response/error dùng chung, không để client quyết tài khoản hoặc email đích |
 | Database/store/realtime | Chỉ thêm schema nếu hiện trạng cần; giữ user_id, xử lý concurrency và socket/refresh của phiên thu hồi |
 | Test/fixture | Bổ sung 20 tiêu chí mật khẩu, hồi quy đăng ký/Google/phiên; dữ liệu cô lập, không trỏ test xóa schema vào Supabase thật |
-| Docs/design/backlog | Đồng bộ P1, tách khôi phục username P2 khỏi reset password P1, phản ánh thay đổi ước lượng khi có kế hoạch được duyệt |
+| Docs/design/backlog | Đồng bộ BA 0.21/P1, giữ mã AC nguồn; tách OTP tìm Username/đổi Username/reset mật khẩu, bằng chứng và kế hoạch |
 
 Không thêm abstraction, hàng đợi, logging hoặc dependency chỉ để “chuẩn bị tương lai”. Không giả có API/endpoint/migration hoặc kết quả chạy thật trong tài liệu yêu cầu.
 
@@ -425,3 +429,49 @@ gate môi trường thật; cột cuối nêu phần chưa được local chứn
 | 01.4.19 | `account/email/email.test.ts`, `EmailVerification.test.ts`: cooldown/hạn/SMTP lỗi | Thư thực tới inbox chưa kiểm |
 | 01.4.20 | `email.test.ts`: cùng user_id/credential; `game/account-session.test.ts`: xác minh contact khi đang đấu giữ credential kỹ thuật, capability/hạn, ghế, ván và socket; UI reload bỏ cảnh báo | Giao OTP qua SMTP thật chưa nghiệm thu |
 | 01.4.21 | `email.test.ts`: sai/hết hạn/dùng lại/khác user/5 lần sai/trùng | — |
+
+## 18. Bổ sung P1 theo BA 0.21
+
+**Đã triển khai và kiểm chứng local; bằng chứng tại mục 19.** Giữ mã Story/Jira/AC cũ tại [BACKLOG-P2.md](BACKLOG-P2.md); bốn phần đã chuyển vào [Backlog P1](BACKLOG-P1.md), tên `P2` trong mã không còn chỉ phân kỳ. Không tự đổi lịch/giờ/Jira hoặc coi bằng chứng baseline mục 17 bao gồm các phần này.
+
+### 18.1 Khôi phục Username — US-P2-21 / XIAN-135
+
+- Chọn Quên tên đăng nhập, nhập email liên hệ đã xác minh. Phản hồi chung có/không tài khoản: “Nếu email này đã đăng ký, mã khôi phục đã được gửi”; không lộ Username/presence trước xác minh.
+- OTP 6 số/180 giây, resend 60 giây, giới hạn theo BA 1.5. Sai/hết hạn/khác tài khoản/mục đích/đã dùng không mở quyền. Email/OTP/capability không nằm trên URL/log.
+- Mã đúng chỉ hiện **Username hiện tại**, không tự đổi mật khẩu/cấp phiên app. Về Login dùng mật khẩu hiện có; muốn reset phải chủ động vào Quên mật khẩu P1 bằng Username vừa tìm, dùng quyền riêng. Tài khoản Google có email hợp lệ cũng dùng được; Khách/không email verified không có đường này.
+- Nghiệm thu **AC-P2-21.1–3**: phản hồi không dò email, OTP thật/giới hạn/lỗi SMTP, đổi tên trong khi recovery chờ, không lộ tên trước OTP, không nâng quyền thành login/reset.
+
+### 18.2 Đổi Username qua OTP — US-P2-20 / XIAN-134
+
+- Hồ sơ → Đổi Username → gửi mã tới **email đã xác minh của chính tài khoản** → xác minh → nhập/xác nhận tên mới. Không có email hợp lệ dẫn đến thêm/xác minh; không cho nhập email tùy ý để nhận OTP đổi tên.
+- Tên mới 3–20 ký tự, mẫu/từ cấm/unique không phân biệt hoa thường như đăng ký; recheck khi ghi, không coi kiểm trước là giữ chỗ. Không cooldown đổi theo BA.
+- Tên cũ giữ **30 ngày** chỉ chủ cũ lấy lại; người khác thấy đã có người dùng; đúng hạn mới giải phóng. Giữ chỗ không phải alias đăng nhập; đăng nhập mới dùng Username hiện tại.
+- Giữ UUID/bạn bè/DM/phòng/ván/dữ liệu khác; không tự sửa Display Name/email/mật khẩu. **PO chốt giữ mọi phiên hợp lệ và hạn cũ**, không tự thu hồi/gia hạn/đầu hàng ván.
+- Nghiệm thu **AC-P2-20.1–3**: OTP thật/quyền, thiếu email, race đăng ký/đổi tên/lấy lại, biên 30 ngày, login/tìm bạn tên mới, bảo toàn dữ liệu và API/socket/refresh/ghế/ván trên phiên đang có.
+
+### 18.3 Camera/mic giữa tab — US-P2-24 / XIAN-138
+
+- Tab thứ hai cùng thiết bị chủ động bật khi tranh media → `MODAL-MEDIA-TAB-SWITCH` với Chuyển thiết bị sang tab này / Hủy bỏ.
+- Chuyển dừng track/thu hồi phát cũ, tab cũ chỉ đọc; tab mới bật theo quyền hiện tại. Hủy không chiếm; reconnect tab cũ không tự giành control/media.
+- Không thay luồng tiếp quản thường (media cũ dừng, tab mới mặc định Tắt) hoặc luật đăng nhập thiết bị khác. Không cấp media cho người xem/phiên thiếu quyền; lỗi media không làm gián đoạn ván.
+- Nghiệm thu **AC-P2-24.1–3** bằng hai tab/track thật, Chuyển/Hủy/reconnect, quyền phát cũ dừng và chỉ đúng tab có điều khiển; không lấy mock làm bằng chứng thiết bị.
+
+### 18.4 Giấy Sáng và Theo hệ thống — US-P2-25 / XIAN-139
+
+- Bộ chọn ở Hồ sơ: Kỳ Đài Cổ Phong / Giấy Sáng / Theo hệ thống. Chưa chọn mặc định Kỳ Đài Cổ Phong; Khách giữ hạn chế theme bổ sung theo quyền nguồn.
+- **PO chốt lưu lựa chọn theo tài khoản, đồng bộ giữa thiết bị.** Với Theo hệ thống, màu thực tế theo OS từng thiết bị, không ép các thiết bị cùng màu. Lựa chọn explicit không bị OS ghi đè.
+- Giữ màu bàn cờ/phông; mọi trạng thái, bàn phím/reduced motion/contrast/responsive, không che bàn/Đầu hàng/đồng hồ hoặc tràn ngang. Lưu thất bại báo thật, không giả đã đồng bộ.
+- Nghiệm thu **AC-P2-25.1–3**: lưu/reload/đăng nhập thiết bị khác/cách ly tài khoản, OS sáng/tối và explicit, bốn kích thước theo DESIGN, tương phản thực; bộ token chưa phải bằng chứng đạt.
+
+### 18.5 Quyền Khách với phòng Không giới hạn — giao YC2/YC5
+
+PO chốt Khách được chơi hoặc xem phòng Không giới hạn **do thành viên tạo**, theo ghế/chỗ trống, phiên/khóa/chặn hiện hành. Khi chơi chịu cùng luật chống treo/INACTIVITY. Khách vẫn không tự tạo mức Không giới hạn; không suy quyền tham gia thành quyền chọn mức khi tạo. Ca nghiệm thu bổ sung tại **AC-P2-10.1**.
+
+## 19. Bằng chứng local cho bổ sung BA 0.21
+
+- Node 22, PostgreSQL 17 cô lập: suite tích hợp 247 file/2.873 test PASS; có kiểm OTP khác mục đích, reservation tên cũ, giữ phiên/hạn cũ, quyền media và theme theo tài khoản. Các regression bổ sung sau lượt này được kiểm riêng trước commit.
+- UI production với GoTrue ES256, SMTP TLS và LiveKit cục bộ thật: đổi tên sau OTP; tên trùng bị từ chối rồi nhập tên khác không gửi lại OTP; UUID/Display Name/capability và hạn phiên không đổi. Khôi phục chỉ hiện tên mới sau OTP, không cấp phiên.
+- Hai target Chrome riêng: tab mới dừng camera tab cũ; tab chỉ đọc mở xác nhận lấy quyền; Esc không lấy quyền; Chuyển làm tab kia chỉ đọc và tab được cấp quyền bật camera được.
+- Giấy Sáng lưu server, xuất hiện ở tab cùng tài khoản; Theo hệ thống lưu bền và phân giải theo OS từng tab. Hồ sơ desktop và recovery 360 px được kiểm trực quan; không thay palette bàn cờ.
+- Regression cuối: 5 file/77 test PASS; typecheck, lint các file sửa và build workspace PASS. Settings production đo đúng viewport 1366×768 và 360×800, không cuộn toàn trang; card dài cuộn nội bộ. Contrast token văn bản chính/phụ/tiêu đề trên nền panel đo được tối thiểu 5,92:1 ở Giấy Sáng và 8,91:1 ở Cổ Phong; không coi phép đo này thay kiểm mọi pixel/trạng thái.
+- Năm migration bổ sung có rollback; đã rollback/apply trên DB smoke riêng. Chưa áp lên Cloud, chưa xác minh CI/PO hoặc thiết bị camera vật lý. Token LiveKit đã phát có TTL 600 giây; thu hồi điều khiển không phải vô hiệu mật mã tức thời mọi bản sao JWT.

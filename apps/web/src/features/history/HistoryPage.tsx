@@ -33,6 +33,7 @@ const reasons: Record<string, string> = {
   BOTH_OFFLINE: "Hai người mất kết nối",
   SERVER_RESTART: "Máy chủ khởi động lại",
   AI_UNAVAILABLE: "Máy cờ gặp sự cố",
+  INACTIVITY: "Không phản hồi quá lâu",
 };
 const dateTime = new Intl.DateTimeFormat("vi-VN", {
   year: "numeric",

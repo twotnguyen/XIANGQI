@@ -16,7 +16,7 @@ const joins = `FROM xiangqi_room.match_draw_offers o
  JOIN public.matches m ON m.id=o.match_id JOIN public.rooms r ON r.id=m.room_id
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'`;
 const eligible = `o.status='PENDING' AND o.expires_at<=clock_timestamp()
- AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(300,600,900)
+ AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(0,300,600,900)
  AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1'
  AND r.invite_code IS NOT NULL AND r.status='PLAYING' AND r.current_match_id=m.id`;
 /**

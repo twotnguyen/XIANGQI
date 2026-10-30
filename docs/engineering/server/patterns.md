@@ -26,7 +26,7 @@ Dự án gọi Repository là *store* và không dùng interface cho store (clas
 | **Idempotent Receiver** | Gửi lại cùng lệnh không làm hai lần | `commandId` và bảng biên lai `xiangqi_room.entry_receipts` |
 | **Container / Presentational** (web) | Tách phần giữ trạng thái khỏi phần chỉ vẽ | `RoomPage` giữ kết nối và lệnh; `RoomSeats`, `RoomInvite`, `RoomDetails`, `RoomCountdown` chỉ nhận props. `XiangqiBoard` ghép `BoardGrid`, `BoardDefs`, `PieceContent` |
 
-Store lớn được chia theo nhóm lệnh bằng kế thừa (`RoomStoreCore` → `RoomSwapStore` → `RoomViewerStore` → `RoomStore`, `MatchStoreCore` → `MatchDrawStore` → `MatchStore`). Đây là cách tổ chức file, không phải pattern GoF; nơi khác chỉ import `RoomStore` và `MatchStore`.
+Store lớn được chia theo nhóm lệnh bằng kế thừa (`RoomStoreCore` → `RoomSwapStore` → `RoomRematchStore` → `RoomViewerStore` → `RoomStore`, `MatchStoreCore` → `MatchDrawStore` → `MatchStore`). Đây là cách tổ chức file, không phải pattern GoF; nơi khác chỉ import `RoomStore` và `MatchStore`.
 
 ## Trạng thái phân tầng
 

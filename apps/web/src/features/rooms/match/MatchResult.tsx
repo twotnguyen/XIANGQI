@@ -21,6 +21,7 @@ const reasons: Readonly<Record<string, string>> = {
   DRAW_AGREEMENT: "Thoả thuận hoà",
   DRAW_NO_CAPTURE: "120 nửa nước không ăn quân",
   PERPETUAL_CHECK: "Chiếu liên tục",
+  INACTIVITY: "Không phản hồi quá lâu",
 };
 const draws = new Set([
   "DRAW_REPETITION",

@@ -87,4 +87,42 @@ describe("profile client", () => {
     );
     await expect(client.location()).rejects.toBeInstanceOf(ProfileRequestError);
   });
+  it("runs the OTP-first username change and returns the capability", async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        ok({
+          requestId: "r",
+          expiresAt: "e",
+          resendAt: "s",
+          maskedEmail: "k***@x.invalid",
+        }),
+      )
+      .mockResolvedValueOnce(ok({ changeToken: "t", expiresAt: "x" }))
+      .mockResolvedValueOnce(ok({ username: "kythu_new" }));
+    const client = createProfileClient(fetch);
+    expect(await client.changeUsernameRequest()).toMatchObject({
+      requestId: "r",
+    });
+    expect(await client.changeUsernameVerify("r", "123456")).toEqual({
+      changeToken: "t",
+      expiresAt: "x",
+    });
+    expect(await client.changeUsernameFinalize("t", "kythu_new")).toBe(
+      "kythu_new",
+    );
+    expect(fetch.mock.calls.map(([path]) => path)).toEqual([
+      "/account/username/change/request",
+      "/account/username/change/verify",
+      "/account/username/change/finalize",
+    ]);
+  });
+  it("maps a taken name on finalize to a profile error", async () => {
+    const client = createProfileClient(
+      vi.fn().mockResolvedValue(fail("USERNAME_TAKEN", 409)),
+    );
+    await expect(
+      client.changeUsernameFinalize("t", "taken_name"),
+    ).rejects.toMatchObject({ code: "USERNAME_TAKEN", status: 409 });
+  });
 });

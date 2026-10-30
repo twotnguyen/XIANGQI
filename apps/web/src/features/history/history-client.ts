@@ -73,6 +73,7 @@ const decisive = [
   "RESIGN",
   "DISCONNECT",
   "PERPETUAL_CHECK",
+  "INACTIVITY",
 ];
 const draws = [
   "AGREED_DRAW",

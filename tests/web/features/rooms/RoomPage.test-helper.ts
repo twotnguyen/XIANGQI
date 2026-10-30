@@ -40,6 +40,7 @@ export const snapshot: RoomSnapshot = {
     graceUntil: { red: null, black: null },
     countdown: null,
     swapOffer: null,
+    rematchOffer: null,
     downOffer: null,
     spectators: [],
   },
@@ -66,6 +67,8 @@ export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
     proposeSwap: vi.fn(),
     withdrawSwap: vi.fn(),
     respondSwap: vi.fn(),
+    proposeRematch: vi.fn(),
+    respondRematch: vi.fn(),
     toSpectator: vi.fn(),
     moveToSpectator: vi.fn(),
     inviteDown: vi.fn(),
@@ -104,7 +107,15 @@ export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
       ...extra,
       connect: (input) => {
         handlers = input;
-        return { command, close, refresh, readChat, sendChat };
+        return {
+          command,
+          close,
+          refresh,
+          readChat,
+          sendChat,
+          tabId: "tab",
+          takeover: vi.fn().mockResolvedValue(undefined),
+        };
       },
     }),
   );

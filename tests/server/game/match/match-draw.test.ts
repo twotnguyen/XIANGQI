@@ -107,6 +107,9 @@ describe.skipIf(!databaseUrl)(
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
       await apply(migration);
+      await apply(
+        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
     });
     it("persists an offer without pausing the clock and only the receiver can accept it", async () => {
       const f = await fixture();

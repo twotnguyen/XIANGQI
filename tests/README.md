@@ -68,7 +68,9 @@ Chỉ chạy lệnh trên với database test cô lập này; không trỏ biế
 
 Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được điều phối duy nhất tại [AGENTS.md — Coding nhanh và phạm vi kiểm chứng](../AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules). Các lệnh ở đây không cấp quyền tự chạy test local, kể cả một file, test mới hoặc self-check; không chạy lại kết quả còn hiệu lực.
 
-**Luồng phát triển:** push `develop` hoặc PR vào `develop` chỉ chạy lint/typecheck toàn repo và build ứng dụng bị ảnh hưởng. Không chạy các bộ core/unit/database. `.github/scripts/ci-scope.mjs` chọn build theo diff:
+**Phân quyền thành viên:** ruleset GitHub [Protected branches: owner-only updates](https://github.com/twotnguyen/XIANGQI/rules/26200968) giới hạn tạo/cập nhật/xóa `main` và `develop`, chỉ tài khoản `twotnguyen` (ID `195888848`) được bypass. Thành viên giữ quyền push nhánh riêng và mở PR vào `develop`, nhưng không được push trực tiếp hoặc tự merge vào hai nhánh tích hợp. Chủ repo review rồi merge PR vào `develop`, hoặc có thể code/push thẳng `develop`. `main` vẫn chịu protection riêng, kể cả chủ repo: bắt buộc PR phát hành và required checks. Quyền bypass ruleset này không bỏ qua protection riêng của `main`; không cấp bypass cho cả nhóm admin hay bot.
+
+**Luồng phát triển:** push `develop` hoặc PR vào `develop` có thay đổi mã chạy lint/typecheck toàn repo, build ứng dụng bị ảnh hưởng và unit/core; không chạy database. `.github/scripts/ci-scope.mjs` chọn build theo diff:
 
 | Vùng thay đổi                                                             | Build trên `develop`                    |
 | ------------------------------------------------------------------------- | --------------------------------------- |
@@ -77,9 +79,13 @@ Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được đi�
 | `packages/`, `tests/packages/`                                            | Cả hai ứng dụng                         |
 | Cấu hình gốc, workflow, đường dẫn chưa phân loại hoặc không đọc được diff | Cả hai ứng dụng; không tự bật test nặng |
 
-PR vào `main` và push `main` chạy mọi nhóm test/build cùng toàn bộ test server trên 12 cụm PostgreSQL cô lập. Giữ cả hai sự kiện để kiểm tra cả cập nhật qua PR và push trực tiếp. Thay đổi chỉ gồm Markdown, `docs/` hoặc `.env.example` vẫn không kích hoạt workflow.
+**Cửa phát hành:** chỉ PR `develop` → `main` trong chính repository được chấp nhận. PR có thay đổi mã chạy mọi nhóm test/build, gồm sáu shard server với PostgreSQL cô lập. Không kích hoạt CI khi push `main`: kết quả kiểm chứng nằm trên PR trước merge, không tạo check xanh giả cho commit merge.
 
-**Luồng tích hợp `main`:** core chạy một lần với coverage, sau đó `test:unit` loại thư mục core để không chạy trùng. Các lệnh local giữ nguyên để dùng khi chủ động yêu cầu kiểm tra toàn diện, không phải thủ tục trước mỗi commit/push:
+**PR chỉ sửa tài liệu:** workflow vẫn chạy với Markdown, `docs/` hoặc `.env.example`; kiểm tra nguồn PR và bộ lọc vẫn chạy, nhưng bỏ qua cài dependency/lint/typecheck/build/unit/database. Hai required checks vẫn kết thúc thành công nếu các kiểm tra nhẹ đạt. Không đọc được diff thì chạy đầy đủ thay vì coi là tài liệu.
+
+**Protection `main`:** bắt buộc PR, áp dụng cả admin, required checks `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, yêu cầu cập nhật theo base mới nhất; không bắt người khác approve trong repo cá nhân. Giữ tên check cũ để không làm đứt protection. Quy tắc nhánh nguồn do required CI check kiểm tra cả tên `develop` và repository nguồn; GitHub không có bộ lọc nhánh nguồn tương đương trong branch protection. Dùng merge commit cho PR phát hành rồi fast-forward `develop` theo `main`.
+
+Core chạy một lần với coverage, sau đó `test:unit` loại thư mục core để không chạy trùng. Các lệnh local giữ nguyên để dùng khi chủ động yêu cầu kiểm tra toàn diện, không phải thủ tục trước mỗi commit/push:
 
 ```sh
 pnpm test:core --bail 1
@@ -92,7 +98,7 @@ Self-check của bộ lọc (chỉ chạy khi được yêu cầu; không cần 
 node .github/scripts/ci-scope.mjs --self-test
 ```
 
-Self-check kiểm tra ranh giới web/server/package, ảnh hưởng package dùng chung, cổng `main`, diff push/PR trên Git thật, rename liên vùng và fallback khi thiếu commit gốc. Bộ lọc dùng diff không gộp rename để không bỏ mất vùng cũ khi chuyển file.
+Self-check kiểm tra ranh giới web/server/package, ảnh hưởng package dùng chung, cổng PR `main`, docs-only và docs trộn mã trong đợt phát hành, diff push/PR trên Git thật, rename liên vùng và fallback khi thiếu commit gốc. Bộ lọc dùng diff không gộp rename để không bỏ mất vùng cũ khi chuyển file.
 
 ## Đo tải realtime trên dịch vụ đang chạy
 
@@ -115,9 +121,9 @@ REALTIME_LOAD_MANIFEST='.local/realtime-load/RUN_ID/resources.json' \
 REALTIME_LOAD_ROUNDS=20 \
 pnpm --filter @xiangqi/server exec tsx ../../tests/load/realtime.ts
 ```
+
 Probe chạy trên máy chủ và gọi trực tiếp NestJS (không qua `/api`); origin web vẫn
 phải có trong `CORS_ORIGINS`. Không cần mở cổng API riêng ra tailnet.
-
 
 Probe tạo 10 phòng với hai người chơi và ba người xem mỗi phòng; giữ 50 socket,
 chờ đủ snapshot và 10 ván thực sự ACTIVE, rồi gửi 20 vòng nước hợp lệ đồng thời

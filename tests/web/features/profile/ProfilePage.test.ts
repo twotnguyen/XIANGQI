@@ -66,6 +66,10 @@ function client(overrides: Partial<ProfileClient> = {}): ProfileClient {
   } as unknown as ProfileClient;
 }
 
+function authorizedFetchStub() {
+  return vi.fn(async () => new Response("{}", { status: 404 }));
+}
+
 describe("profile page", () => {
   it("shows avatar letter, username and read-only email and saves a name", async () => {
     const user = userEvent.setup();
@@ -75,6 +79,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: c,
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved,
         onLogout: vi.fn(),
       }),
@@ -113,6 +118,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: c,
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved,
         onLogout: vi.fn(),
       }),
@@ -143,6 +149,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: c,
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout,
       }),
@@ -165,6 +172,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: client(),
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout,
       }),
@@ -178,6 +186,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: client(),
         guest: true,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -192,6 +201,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: c,
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -210,21 +220,24 @@ describe("profile page", () => {
     await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
     expect(c.updateDisplayName).toHaveBeenCalledWith("Tên chưa lưu");
   });
-  it("offers the default theme, applies a chosen theme and hides the choice from guests", async () => {
+  it("loads the account theme, saves a chosen theme to the account and hides the choice from guests", async () => {
     const user = userEvent.setup();
-    const store = new Map<string, string>();
-    const setItem = vi.fn((key: string, value: string) => {
-      store.set(key, value);
-    });
-    Object.defineProperty(window, "localStorage", {
-      configurable: true,
-      value: { getItem: (key: string) => store.get(key) ?? null, setItem },
+    const authorizedFetch = vi.fn(async (_path: string, init?: RequestInit) => {
+      const theme =
+        init?.method === "PUT"
+          ? JSON.parse(String(init.body)).theme
+          : "co-phong";
+      return new Response(JSON.stringify({ theme }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     });
     delete document.documentElement.dataset.theme;
     const view = render(
       createElement(ProfilePage, {
         client: client(),
         guest: false,
+        authorizedFetch,
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -236,13 +249,22 @@ describe("profile page", () => {
     }) as HTMLInputElement;
     expect(classic.checked).toBe(true);
     await user.click(screen.getByRole("radio", { name: "Giấy Sáng" }));
-    expect(document.documentElement.dataset.theme).toBe("paper-light");
-    expect(setItem).toHaveBeenCalledWith("xiangqi.theme", "paper-light");
+    await waitFor(() => {
+      expect(authorizedFetch).toHaveBeenCalledWith(
+        "/profile/theme",
+        expect.objectContaining({
+          method: "PUT",
+          body: JSON.stringify({ theme: "paper-light" }),
+        }),
+      );
+      expect(document.documentElement.dataset.theme).toBe("paper-light");
+    });
     view.unmount();
     render(
       createElement(ProfilePage, {
         client: client(),
         guest: true,
+        authorizedFetch,
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -254,6 +276,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: client(),
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -265,6 +288,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: client(),
         guest: true,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -281,6 +305,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: client(),
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -314,6 +339,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: c,
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
       }),
@@ -339,6 +365,7 @@ describe("profile page", () => {
       createElement(ProfilePage, {
         client: client(),
         guest: false,
+        authorizedFetch: authorizedFetchStub(),
         onSaved: vi.fn(),
         onLogout: vi.fn(),
         emailSection: createElement("p", null, "Email đang chờ xác minh"),

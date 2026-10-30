@@ -17,6 +17,9 @@
   --color-ink: #fff5df;
   --color-ink-muted: #c8b6a2;
   --color-focus: #f5ca67;
+  /* Bàn cờ giữ palette cố định ở mọi theme (DESIGN §2.3 nguyên tắc 1). */
+  --color-paper: #120d0a;
+  color-scheme: dark;
   --font-ui:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -42,7 +45,9 @@
   block-size: auto;
   overflow: visible;
   cursor: default;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  border-radius: 6px;
 }
 
 .xq-board-grid {
@@ -90,12 +95,13 @@
   font-family: var(--font-han);
   font-size: calc(var(--xq-grid) * 0.52);
   font-weight: 700;
-  fill: #734821;
+  fill: #6e421c;
   stroke: none;
   text-anchor: middle;
   dominant-baseline: central;
-  letter-spacing: 0.28em;
-  opacity: 0.88;
+  letter-spacing: 0.32em;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 1px rgba(255, 235, 205, 0.35));
 }
 
 .xq-board-piece-red {

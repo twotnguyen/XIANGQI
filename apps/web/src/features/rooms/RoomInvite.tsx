@@ -1,7 +1,8 @@
-import { Button } from "../../shared/ui/primitives.js";
+import { useState, type ReactNode } from "react";
+import { Button, Dialog, Tabs } from "../../shared/ui/primitives.js";
 
 /**
- * Khung hiển thị mã mời phòng cờ và đường dẫn chia sẻ kèm nút sao chép nhanh vào clipboard.
+ * Nút mở hộp thoại mời vào phòng: mã phòng, đường dẫn (có thể chọn để sao chép thủ công) và tab bạn bè khi được truyền vào.
  */
 export function RoomInvite({
   code,
@@ -10,6 +11,7 @@ export function RoomInvite({
   copyStatus,
   onCopy,
   onCopyLink,
+  friends,
 }: {
   code: string;
   copying: boolean;
@@ -17,15 +19,28 @@ export function RoomInvite({
   copyStatus: string;
   onCopy: () => void;
   onCopyLink: () => void;
+  friends?: ReactNode;
 }) {
-  return (
-    <section className="xq-room-invite" aria-label="Mời người vào phòng">
+  const [open, setOpen] = useState(false);
+  const link = `${window.location.origin}/rooms/join?token=${encodeURIComponent(code)}`;
+  const linkTab = (
+    <div className="xq-room-share-content">
       <div className="xq-room-invite-code">
         <span className="xq-room-invite-label">Mã phòng</span>
         <strong>{code}</strong>
       </div>
+      <label className="xq-room-invite-label" htmlFor="room-invite-link">
+        Đường dẫn
+      </label>
+      <input
+        id="room-invite-link"
+        className="xq-room-invite-link"
+        readOnly
+        value={link}
+        onFocus={(event) => event.currentTarget.select()}
+      />
       <p className="xq-room-invite-hint">
-        Chia sẻ mã hoặc đường dẫn để mời kỳ hữu vào chơi hay xem.
+        Chia sẻ mã hoặc đường dẫn để mời người khác vào chơi hay xem.
       </p>
       <div className="xq-room-invite-actions">
         <Button
@@ -48,7 +63,27 @@ export function RoomInvite({
       <p className="xq-room-invite-status" role="status" aria-live="polite">
         {copyStatus}
       </p>
-    </section>
+    </div>
+  );
+  return (
+    <div className="xq-room-invite">
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Mời vào phòng
+      </Button>
+      <Dialog open={open} onClose={() => setOpen(false)} title="Mời vào phòng">
+        {friends ? (
+          <Tabs
+            label="Cách mời"
+            items={[
+              { id: "link", label: "Mã và link", content: linkTab },
+              { id: "friends", label: "Bạn bè", content: friends },
+            ]}
+          />
+        ) : (
+          linkTab
+        )}
+      </Dialog>
+    </div>
   );
 }
 
