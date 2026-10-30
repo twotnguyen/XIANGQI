@@ -28,6 +28,47 @@ function record(value: unknown): Record<string, unknown> {
     throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
   return value as Record<string, unknown>;
 }
+export interface UsernameSent {
+  requestId: string;
+  expiresAt: string;
+  resendAt: string;
+  maskedEmail: string | null;
+}
+function usernameSent(value: unknown): UsernameSent {
+  const result = record(value);
+  if (
+    typeof result.requestId !== "string" ||
+    typeof result.expiresAt !== "string" ||
+    typeof result.resendAt !== "string"
+  )
+    throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
+  return {
+    requestId: result.requestId,
+    expiresAt: result.expiresAt,
+    resendAt: result.resendAt,
+    maskedEmail:
+      typeof result.maskedEmail === "string" ? result.maskedEmail : null,
+  };
+}
+function usernameChanged(value: unknown): string {
+  const result = record(value);
+  if (typeof result.username !== "string")
+    throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
+  return result.username;
+}
+export interface UsernameCapability {
+  changeToken: string;
+  expiresAt: string;
+}
+function usernameCapability(value: unknown): UsernameCapability {
+  const result = record(value);
+  if (
+    typeof result.changeToken !== "string" ||
+    typeof result.expiresAt !== "string"
+  )
+    throw new ProfileRequestError("PROFILE_BAD_RESPONSE", 502);
+  return { changeToken: result.changeToken, expiresAt: result.expiresAt };
+}
 /**
  * Khởi tạo client gọi API hồ sơ cá nhân (đọc thông tin, cập nhật tên hiển thị, kiểm tra trạng thái phòng/trận đang tham gia).
  */
@@ -119,6 +160,20 @@ export function createProfileClient(authorizedFetch: AuthorizedFetch) {
       newPassword: string;
       passwordConfirmation: string;
     }) => request("/account/password/change", accepted, body),
+    changeUsernameRequest: () =>
+      request("/account/username/change/request", usernameSent, {}),
+    changeUsernameResend: (requestId: string) =>
+      request("/account/username/change/resend", usernameSent, { requestId }),
+    changeUsernameVerify: (requestId: string, otp: string) =>
+      request("/account/username/change/verify", usernameCapability, {
+        requestId,
+        otp,
+      }),
+    changeUsernameFinalize: (changeToken: string, username: string) =>
+      request("/account/username/change/finalize", usernameChanged, {
+        changeToken,
+        username,
+      }),
   };
 }
 export type ProfileClient = ReturnType<typeof createProfileClient>;
