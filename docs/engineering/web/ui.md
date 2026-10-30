@@ -51,9 +51,9 @@ nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị 
 ## Cài đặt dạng sidebar (29/10/2026)
 
 `/settings` dùng `features/profile/ProfilePage.tsx`: sidebar chia Hồ sơ cá nhân,
-Giao diện và Phiên đăng nhập. Các mục giữ mounted, chỉ ẩn bằng `hidden` để
-không mất tên đang nhập dở khi chuyển mục. Dưới 800px, sidebar thành thanh chọn
-ba mục phía trên nội dung; nút Đăng xuất vẫn truy cập được.
+Giao diện, Đổi mật khẩu và Phiên đăng nhập. Các mục giữ mounted, chỉ ẩn bằng
+`hidden` để không mất tên đang nhập dở khi chuyển mục. Dưới 800px, sidebar thành
+thanh chọn phía trên nội dung; nút Đăng xuất vẫn truy cập được.
 
 Hồ sơ giữ API đổi tên và kiểm tra 2–30 ký tự; tên đăng nhập chỉ để xem,
 avatar lấy chữ cái đầu theo Unicode. Giao diện có bản xem trước cho ba chủ đề
@@ -62,11 +62,20 @@ trong khung cài đặt, không thay token toàn ứng dụng. Khách chỉ th�
 phiên và Đăng xuất; không gọi API hồ sơ thành viên. Luồng xác nhận đăng xuất
 khi đang đấu giữ nguyên.
 
-Tab Hồ sơ cá nhân (30/10/2026): tiêu đề "Cài đặt" và câu phụ nằm cùng một dòng;
-thẻ chia hai cột trên desktop (tên đăng nhập + tên hiển thị | email), bỏ khối avatar
-và phụ đề lặp với sidebar. Màn thấp (cao tối đa 800px) ẩn câu nhắc ở chân sidebar.
-Đo bằng trình duyệt với API giả: không cuộn trang ở 1280×720, 1366×768, 1440×900,
-cả khi có banner thiếu email. Dưới 800px vẫn một cột và cuộn bình thường.
+Tab Hồ sơ cá nhân (30/10/2026): tên đăng nhập/email chỉ đọc nằm cùng hàng trên
+desktop, form tên hiển thị ở dưới; mobile xếp một cột. Nút sao chép chỉ báo thành
+công sau khi clipboard hoàn tất, lỗi cho phép chọn tên để sao chép thủ công.
+Form dùng `TextField` chung, giữ trợ giúp/lỗi truy cập và giới hạn 2–30 điểm mã
+Unicode (không dùng `maxLength` UTF-16). Khi có `emailSection`, chỉ luồng email
+tài khoản hiển thị trạng thái để không lặp email hoặc khẳng định đã xác minh sai.
+
+Giao diện có ba kiểu quân Ngọc Bích Cổ, Gỗ Mun Khảm và Truyền Thống. Lựa chọn
+được áp dụng lên SVG dùng chung ở online, AI và replay, khôi phục lúc khởi động.
+`shared/preferences.ts` giữ lựa chọn trên trình duyệt; storage bị chặn/đầy thì
+chỉ giữ trong phiên. SFX và nút tắt tiếng trong phòng dùng cùng tùy chọn.
+Click và nhạc nền ngũ cung được tổng hợp bằng Web Audio, không tải audio bên
+thứ ba. Nhạc mặc định tắt, chỉ khởi động sau tương tác; runtime ở gốc ứng dụng
+không bị tháo khi đổi route, dispose hủy cả lượt resume đang chờ.
 
 Email là tùy chọn từ 29/10: đăng ký có nút bỏ qua tại bước Email/OTP. `SessionProvider`
 tải `GET /account/email` riêng sau khi xác thực thành viên, không chặn quyền vào app.
@@ -75,11 +84,13 @@ lỗi tải trạng thái; xác minh/gửi lại dùng API `/account/email/*`, g
 Email đã xác minh chỉ đọc; không hiển thị email credential kỹ thuật. Lỗi SMTP/OTP
 phải hiển thị thật, không coi là thành công hoặc quảng bá khôi phục mật khẩu P2.
 
-Đã xem trang thật bằng phiên thành viên ở desktop 1366×900 và mobile 390×844;
-đã chuyển mục, chọn chủ đề sáng/hệ thống/cổ phong. Test riêng
-`tests/web/features/profile/ProfilePage.test.ts` đạt 7/7 dưới Node 22, bao gồm
-giữ bản nháp khi đổi mục, lưu tên, chọn chủ đề và xác nhận đăng xuất.
-Chưa thao tác lưu tên hoặc đăng xuất trên tài khoản thật.
+Kiểm chứng PR #150: đã xem component hồ sơ thật với client dữ liệu minh họa ở
+1366×900 và 390×844, chọn chủ đề sáng, không tràn ngang; nút hiển thị đạt 44px.
+Đã chọn cả ba kiểu và tải lại `/dev/board`: màu mặt SVG khớp lựa chọn đã lưu.
+Web Audio thật lên lịch nhạc sau bật và tiếp tục qua đổi mục; tắt thì ngừng
+lên lịch nốt mới. Dưới Node 22, unit ngoài core đạt 1.012/1.012; lint file đổi,
+typecheck web/test và build web thành công. Chưa nghe loa thực hoặc nghiệm thu
+phiên thành viên/online/AI/replay với server thật trong lần kiểm này.
 
 ## Chế độ Khách
 
@@ -301,3 +312,16 @@ bị thật hoặc chạy các ca hồi quy chờ thiết bị/đổi thứ tự
 và mic tắt, panel rejoin receive-only ở mức đã xác nhận. Mọi tác vụ join/publish
 đang chờ đều bị vô hiệu khi đổi phòng, ngắt kết nối hoặc unmount, và phòng/track
 của thế hệ cũ được giải phóng.
+
+## Đổi bên trong phòng chờ (YC2 P1)
+
+Người được mời đổi bên nhận hộp thoại `SwapPrompt` (Dialog, giữ focus, đếm ngược
+theo `expiresAt` của server). Esc, X và "Thu gọn" chỉ thu hộp thoại, không từ chối;
+khi thu, nút "Xem đề nghị đổi bên (N giây)" trong phòng chờ mở lại trong cùng deadline.
+Hết giờ thì server coi là từ chối. "Xin đổi bên" của người đề nghị bị khóa kèm lý do
+đếm ngược theo `swapCooldownUntil` (chỉ người đề nghị nhận giá trị này).
+
+Kết quả ván chỉ hiện khi phòng vừa chuyển sang PLAYING trong phiên hiện tại; tải lại
+phòng đã kết thúc giữ bố cục chờ và không mở lại kết quả. Esc trên kết quả ván = Ở lại phòng.
+Khi Rời phòng đang chờ, nút Ở lại và Escape không đóng kết quả. Rời thất bại giữ
+hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều hướng sau khi rời thành công.

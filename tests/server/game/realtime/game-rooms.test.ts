@@ -221,6 +221,7 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
         countdown: null,
         swapOffer: null,
         downOffer: null,
+        swapCooldownUntil: null, // proposer-only visibility is enforced in room-store-core; covered by room-side-swap DB tests
         spectators: [],
       },
       match: {

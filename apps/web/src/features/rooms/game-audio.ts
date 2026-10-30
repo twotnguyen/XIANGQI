@@ -1,7 +1,7 @@
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { isInCheck, parsePosition } from "@xiangqi/xiangqi-core";
+import { isSfxEnabled, setSfxEnabled } from "../../shared/preferences.js";
 
-let sessionMuted = false;
 const stops = new Set<() => void>();
 
 export interface GameAudio {
@@ -17,6 +17,7 @@ export interface GameAudio {
  * Khởi tạo bộ quản lý âm thanh trò chơi bằng Web Audio API (tổng hợp sóng âm qua Oscillator).
  * Phát các hiệu ứng âm thanh: đi quân thường (440Hz), ăn quân (220Hz), chiếu tướng (880Hz), kết thúc ván (660Hz).
  * So khớp snapshot phòng trước/sau để xác định nước đi mới hoặc kết quả mới.
+ * Trạng thái tắt/bật đọc và ghi cùng tùy chọn SFX trong shared/preferences.
  * Tự động bỏ qua an toàn nếu trình duyệt chặn AudioContext hoặc không hỗ trợ.
  */
 export function createGameAudio(): GameAudio {
@@ -33,7 +34,7 @@ export function createGameAudio(): GameAudio {
   }
   stops.add(stop);
   function tone(frequency: number) {
-    if (closed || sessionMuted || context?.state !== "running") return;
+    if (closed || !isSfxEnabled() || context?.state !== "running") return;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     const duration = frequency === 660 ? 0.3 : frequency === 880 ? 0.15 : 0.08;
@@ -56,7 +57,7 @@ export function createGameAudio(): GameAudio {
     oscillator.stop(context.currentTime + duration);
   }
   function setMuted(value: boolean) {
-    sessionMuted = value;
+    setSfxEnabled(!value);
     if (value) for (const stopAudio of stops) stopAudio();
   }
   return {
@@ -90,7 +91,7 @@ export function createGameAudio(): GameAudio {
       mark.move = Math.max(mark.move, moveVersion);
       if (terminal) mark.result = Math.max(mark.result, match.version);
       seen.set(match.id, mark);
-      if (baseline || sessionMuted || context?.state !== "running") return;
+      if (baseline || !isSfxEnabled() || context?.state !== "running") return;
       if (newMove && match.lastMove) {
         const position = parsePosition(match.position);
         const capture = parsePosition(prior.position).board[match.lastMove.to];
@@ -108,12 +109,12 @@ export function createGameAudio(): GameAudio {
       }
     },
     get muted() {
-      return sessionMuted;
+      return !isSfxEnabled();
     },
     setMuted,
     toggle() {
-      setMuted(!sessionMuted);
-      return sessionMuted;
+      setMuted(isSfxEnabled());
+      return !isSfxEnabled();
     },
     close() {
       if (closed) return;

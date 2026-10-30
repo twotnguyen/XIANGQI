@@ -149,6 +149,12 @@ function parseView(value: unknown, roomId: string): RoomView {
     if (!isId(offer.id) || !isId(offer.inviteeId) || !isDate(offer.expiresAt))
       invalidResponse();
   }
+  if (
+    room.swapCooldownUntil !== null &&
+    room.swapCooldownUntil !== undefined &&
+    !isDate(room.swapCooldownUntil)
+  )
+    invalidResponse();
   if (!Array.isArray(room.spectators)) invalidResponse();
   for (const entry of room.spectators as unknown[]) {
     const watcher = record(entry);

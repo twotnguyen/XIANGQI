@@ -8,6 +8,8 @@ import { SessionProvider } from "./features/auth/SessionProvider.js";
 import { applyTheme, readStoredTheme } from "./shared/theme/theme.js";
 import { getApiBaseUrl } from "./shared/api.js";
 import { LoadingScreen } from "./shared/ui/primitives.js";
+import { getPieceStyle, setPieceStyle } from "./shared/preferences.js";
+import { startBackgroundMusic } from "./shared/background-music.js";
 const AppRouter = lazy(() =>
   import("./app/AppRouter.js").then((module) => ({
     default: module.AppRouter,
@@ -132,6 +134,11 @@ function HealthPreview() {
   );
 }
 
+function AudioRuntime() {
+  useEffect(() => startBackgroundMusic(), []);
+  return null;
+}
+
 const previewHealth =
   import.meta.env.DEV && window.location.pathname === "/dev/health";
 const previewBoard =
@@ -152,6 +159,7 @@ applyTheme(
   document.documentElement.dataset,
   window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
 );
+setPieceStyle(getPieceStyle());
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {previewBoard ? (
@@ -178,6 +186,7 @@ createRoot(document.getElementById("root")!).render(
       <HealthPreview />
     ) : (
       <SessionProvider>
+        <AudioRuntime />
         <Suspense fallback={<LoadingScreen />}>
           <AppRouter />
         </Suspense>

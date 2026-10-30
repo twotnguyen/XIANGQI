@@ -130,8 +130,8 @@ Task được nghiệm thu theo đúng AC giao trong bảng. Các AC chưa đủ
 
 | AC | Task triển khai/đầu vào | Nghiệm thu tại | Mức | Ghi chú |
 |---|---|---|---|---|
-| AC-02.1.1 | T18, T21, T37 | T28 | Task | T28 kiểm form và API tên phòng, gồm bộ lọc từ cấm T37; phải có bộ lọc thật trước khi nghiệm thu nhánh từ cấm. Hồi quy tại T51. |
-| AC-02.1.2 | T18, T21, T37 | T28 | Task | T28 kiểm form và API tên phòng, gồm bộ lọc từ cấm T37; phải có bộ lọc thật trước khi nghiệm thu nhánh từ cấm. Hồi quy tại T51. |
+| AC-02.1.1 | T18, T21 | T28 | Task | T28 kiểm form và API tạo phòng: mức giờ, trần người xem, quyền CODE_ONLY/PUBLIC; không nhập hoặc lọc tên phòng (BA 19/10, 28/10). Hồi quy tại T51. |
+| AC-02.1.2 | T18, T21 | T28 | Task | T28 kiểm form và API tạo phòng: mức giờ, trần người xem, quyền CODE_ONLY/PUBLIC; không nhập hoặc lọc tên phòng (BA 19/10, 28/10). Hồi quy tại T51. |
 | AC-02.1.3 | T18, T21 | T28 | Task | Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS. |
 | AC-02.1.4 | T18, T21 | T28 | Task | Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS. |
 | AC-02.1.5 | T18 | T28 | Task | Nghiệm thu cục bộ tại Task được chỉ định; hồi quy lại tại T51 sau khi toàn bộ tính năng hoàn tất. Không phải bằng chứng TC đã viết hoặc đã PASS. |
