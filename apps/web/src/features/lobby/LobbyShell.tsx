@@ -384,11 +384,11 @@ export function LobbyShell({
                       ? `Đang chờ (${room.seats}/2)`
                       : `Đang đấu (${room.seats}/2)`}
                   </span>
-                  {room.spectatorLimit > 0 && (
-                    <span className="xq-target-room-viewers">
-                      [{room.viewers} xem]
-                    </span>
-                  )}
+                  <span className="xq-target-room-viewers">
+                    {room.spectatorLimit === 0
+                      ? "Không cho xem"
+                      : room.viewers + "/" + room.spectatorLimit + " người xem"}
+                  </span>
                 </div>
 
                 <div className="xq-target-room-actions">
