@@ -241,7 +241,7 @@ export async function createAiRuntime(
     return warm;
   };
   /**
-   * Thu hồi boot đã hết hạn và bỏ ván RAM hết ân hạn 30 phút (không ghi lịch sử).
+   * Thu hồi boot đã hết hạn; ván còn RAM hết ân hạn 30 phút được lưu trước khi giải phóng.
    * Lease cục bộ đã quá hạn thì fence và bỏ mọi ván RAM trước khi quét.
    * Lỗi từng dòng không dừng cả lượt: được ghi vào sweepError (làm /ready thất bại) và thử lại lượt sau.
    */
@@ -282,14 +282,8 @@ export async function createAiRuntime(
           client.release();
         }
         for (const row of page)
-          await transactions
-            .run(row.ownerId, { kind: "sweep" }, async (tx) => {
-              await tx.drop(row.gameId);
-              return {
-                value: undefined,
-                install: () => games.drop(row.ownerId, row.gameId),
-              };
-            })
+          await games
+            .expire(row.ownerId, row.gameId)
             .catch((error: unknown) => {
               failures.push(error);
             });

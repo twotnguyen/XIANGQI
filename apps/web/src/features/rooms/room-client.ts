@@ -6,6 +6,7 @@ import type {
   ClientRealtimeEvents,
   ServerRealtimeEvents,
   RoomSnapshot,
+  RoomControlProof,
   RoomAction,
   CommandAcknowledgement,
   RoomStateSnapshot,
@@ -51,27 +52,29 @@ export class RoomRequestError extends Error {
     context?: "visibility",
   ) {
     super(
-      code === "ROOM_LOCK_REQUIRES_PLAYERS"
-        ? "Chỉ khoá được khi đã đủ 2 người chơi"
-        : code === "ROOM_FORBIDDEN" && context === "visibility"
-          ? "Chỉ chủ phòng được đổi chế độ"
-          : code === "ROOM_FULL"
-            ? "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"
-            : code === "ROOM_BLOCKED"
-              ? "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"
-              : code === "ROOM_LOCKED"
-                ? "Phòng đã khóa, không thể nhận người mới."
-                : code === "ROOM_FORBIDDEN" || code === "ROOM_CODE_CHANGED"
-                  ? "Mã phòng không tồn tại hoặc phòng đã đóng"
-                  : code === "ALREADY_SEATED"
-                    ? "Bạn đang ở trong một ván/phòng khác"
-                    : code === "VERSION_STALE"
-                      ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
-                      : status === 401
-                        ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-                        : status === 503
-                          ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
-                          : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
+      code === "ROOM_TAB_READ_ONLY"
+        ? "Tab này chỉ có thể xem. Hãy chuyển quyền điều khiển trước khi thao tác."
+        : code === "ROOM_LOCK_REQUIRES_PLAYERS"
+          ? "Chỉ khoá được khi đã đủ 2 người chơi"
+          : code === "ROOM_FORBIDDEN" && context === "visibility"
+            ? "Chỉ chủ phòng được đổi chế độ"
+            : code === "ROOM_FULL"
+              ? "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"
+              : code === "ROOM_BLOCKED"
+                ? "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"
+                : code === "ROOM_LOCKED"
+                  ? "Phòng đã khóa, không thể nhận người mới."
+                  : code === "ROOM_FORBIDDEN" || code === "ROOM_CODE_CHANGED"
+                    ? "Mã phòng không tồn tại hoặc phòng đã đóng"
+                    : code === "ALREADY_SEATED"
+                      ? "Bạn đang ở trong một ván/phòng khác"
+                      : code === "VERSION_STALE"
+                        ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+                        : status === 401
+                          ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+                          : status === 503
+                            ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
+                            : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
     );
   }
 }
@@ -306,6 +309,13 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
     body?: object,
     context?: "visibility",
   ): Promise<T> {
+    if (
+      body &&
+      path !== "/rooms" &&
+      path !== "/rooms/join" &&
+      !(body as { control?: RoomControlProof }).control
+    )
+      throw new RoomRequestError("ROOM_TAB_READ_ONLY", 403);
     const response = await authorizedFetch(path, {
       method: body ? "POST" : "GET",
       redirect: "error",
@@ -353,70 +363,83 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
       roomId: string,
       expectedVersion: number,
       visibility: RoomView["room"]["visibility"],
+      control: RoomControlProof,
     ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/visibility`,
         (value) => parseView(value, roomId),
-        { expectedVersion, visibility },
+        { control, expectedVersion, visibility },
         "visibility",
       ),
-    switchSeat: (roomId: string, expectedVersion: number) =>
+    switchSeat: (
+      roomId: string,
+      expectedVersion: number,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/switch-seat`,
         (value) => parseView(value, roomId),
-        {
-          expectedVersion,
-        },
+        { control, expectedVersion },
       ),
-    toSpectator: (roomId: string, expectedVersion: number) =>
+    toSpectator: (
+      roomId: string,
+      expectedVersion: number,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/to-spectator`,
         (value) => parseView(value, roomId),
-        {
-          expectedVersion,
-        },
+        { control, expectedVersion },
       ),
     moveToSpectator: (
       roomId: string,
       expectedVersion: number,
       targetId: string,
+      control: RoomControlProof,
     ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/move-to-spectator`,
         (value) => parseView(value, roomId),
-        {
-          expectedVersion,
-          targetId,
-        },
+        { control, expectedVersion, targetId },
       ),
-    inviteDown: (roomId: string, expectedVersion: number, targetId: string) =>
+    inviteDown: (
+      roomId: string,
+      expectedVersion: number,
+      targetId: string,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/invite-down`,
         (value) => parseView(value, roomId),
-        {
-          expectedVersion,
-          targetId,
-        },
+        { control, expectedVersion, targetId },
       ),
-    respondDown: (roomId: string, expectedVersion: number, accept: boolean) =>
+    respondDown: (
+      roomId: string,
+      expectedVersion: number,
+      accept: boolean,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/respond-down`,
         (value) => parseView(value, roomId),
-        {
-          expectedVersion,
-          accept,
-        },
+        { control, expectedVersion, accept },
       ),
-    kickViewer: (roomId: string, expectedVersion: number, targetId: string) =>
+    kickViewer: (
+      roomId: string,
+      expectedVersion: number,
+      targetId: string,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/kick`,
         (value) => parseView(value, roomId),
-        {
-          expectedVersion,
-          targetId,
-        },
+        { control, expectedVersion, targetId },
       ),
-    leave: (roomId: string, expectedVersion: number) =>
+    leave: (
+      roomId: string,
+      expectedVersion: number,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/leave`,
         (value) => {
@@ -425,45 +448,60 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
             invalidResponse();
           return { roomId, left: true as const };
         },
-        { expectedVersion },
+        { control, expectedVersion },
       ),
-    proposeSwap: (roomId: string, expectedVersion: number) =>
+    proposeSwap: (
+      roomId: string,
+      expectedVersion: number,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/swap-propose`,
         (value) => parseView(value, roomId),
-        { expectedVersion },
+        { control, expectedVersion },
       ),
-    withdrawSwap: (roomId: string, expectedVersion: number) =>
+    withdrawSwap: (
+      roomId: string,
+      expectedVersion: number,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/swap-withdraw`,
         (value) => parseView(value, roomId),
-        { expectedVersion },
+        { control, expectedVersion },
       ),
-    respondSwap: (roomId: string, expectedVersion: number, accept: boolean) =>
+    respondSwap: (
+      roomId: string,
+      expectedVersion: number,
+      accept: boolean,
+      control: RoomControlProof,
+    ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/swap-respond`,
         (value) => parseView(value, roomId),
-        { expectedVersion, accept },
+        { control, expectedVersion, accept },
       ),
     proposeRematch: (
       roomId: string,
       expectedVersion: number,
       side: "KEEP" | "SWAP",
+      control: RoomControlProof,
     ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/rematch-propose`,
         (value) => parseView(value, roomId),
-        { expectedVersion, side },
+        { control, expectedVersion, side },
       ),
     respondRematch: (
       roomId: string,
       expectedVersion: number,
       accept: boolean,
+      control: RoomControlProof,
     ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/rematch-respond`,
         (value) => parseView(value, roomId),
-        { expectedVersion, accept },
+        { control, expectedVersion, accept },
       ),
   };
 }
@@ -472,6 +510,7 @@ export interface RoomConnection {
   refresh(): Promise<RoomSnapshot>;
   command(action: RoomAction, version: number): Promise<CommandAcknowledgement>;
   readonly tabId: string;
+  getControl(): Promise<RoomControlProof>;
   takeover(): Promise<void>;
   readChat(channel: ChatChannel, after?: number): Promise<ChatPage>;
   sendChat(
@@ -504,6 +543,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   let latestRoomVersion = -1;
   let chatScopeVersion = -1;
   let latestSnapshot: RoomSnapshot | null = null;
+  let controlReady = false;
   let chatRoomAuthority: string | null = null;
   const chatNotices = new Map<ChatChannel, ChatChanged>();
   const chatGrants = new Map<ChatChannel, ChatChanged>();
@@ -512,8 +552,18 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     chatEpoch++;
     chatGrants.clear();
   }
-  function observeSnapshot(snapshot: RoomSnapshot) {
-    if (snapshot.version < latestRoomVersion) return;
+  function observeSnapshot(snapshot: RoomSnapshot, physicalId = socket.id) {
+    if (closed || !socket.connected || physicalId !== socket.id) return;
+    if (
+      snapshot.version < latestRoomVersion ||
+      (latestSnapshot &&
+        snapshot.control.generation < latestSnapshot.control.generation)
+    )
+      return;
+    controlReady =
+      snapshot.control.mode === "writable" ||
+      (snapshot.role === "spectator" &&
+        snapshot.control.reason === "not_allowed");
     if (
       snapshot.version > latestRoomVersion &&
       !isSingleMove(latestSnapshot, snapshot)
@@ -562,14 +612,17 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   });
   const tabId = generateUuid();
   socket.on("connect", () => {
+    controlReady = false;
     invalidateChat();
     input.onConnection(true);
   });
   socket.on("disconnect", () => {
+    controlReady = false;
     invalidateChat();
     input.onConnection(false);
   });
   socket.on("connect_error", () => {
+    controlReady = false;
     invalidateChat();
     input.onConnection(false);
     input.onError("Chưa thể kết nối phòng. Kiểm tra mạng và phiên đăng nhập.");
@@ -599,6 +652,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     }
   });
   socket.on("session.read_only", () => {
+    controlReady = false;
     invalidateChat();
     input.onError("Phiên này đã được mở ở tab khác. Tab hiện tại chỉ xem.");
   });
@@ -629,6 +683,22 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   });
   return {
     tabId,
+    getControl() {
+      if (
+        closed ||
+        closureNotified ||
+        !socket.connected ||
+        !socket.id ||
+        !controlReady ||
+        !latestSnapshot
+      )
+        return Promise.reject(new RoomRequestError("ROOM_TAB_READ_ONLY", 403));
+      return Promise.resolve({
+        tabId,
+        connectionId: socket.id,
+        generation: latestSnapshot.control.generation,
+      });
+    },
     readChat(channel, after = 0) {
       if (!isChatChannel(channel) || !Number.isSafeInteger(after) || after < 0)
         return Promise.reject(new Error("Tin nhắn không hợp lệ"));
@@ -731,13 +801,20 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     refresh() {
       if (closed || !socket.connected)
         return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
+      const physicalId = socket.id;
       return new Promise((resolve, reject) => {
         socket
           .timeout(8000)
           .emit(
             "room.sync",
             (error: Error | null, acknowledgement: CommandAcknowledgement) => {
-              if (closed || error || acknowledgement?.status !== "ok") {
+              if (
+                closed ||
+                !socket.connected ||
+                socket.id !== physicalId ||
+                error ||
+                acknowledgement?.status !== "ok"
+              ) {
                 reject(
                   new Error(
                     "Chưa thể đồng bộ phòng. Kiểm tra kết nối và phiên đăng nhập.",
@@ -750,7 +827,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                   acknowledgement.snapshot,
                   input.roomId,
                 );
-                observeSnapshot(parsed);
+                observeSnapshot(parsed, physicalId);
                 resolve(parsed);
               } catch {
                 reject(
@@ -770,6 +847,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
         expectedVersion,
         action,
       };
+      const physicalId = socket.id;
       return new Promise((resolve, reject) => {
         socket
           .timeout(8000)
@@ -777,7 +855,12 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
             "room.command",
             command,
             (error: Error | null, acknowledgement: CommandAcknowledgement) => {
-              if (error)
+              if (
+                closed ||
+                !socket.connected ||
+                socket.id !== physicalId ||
+                error
+              )
                 reject(
                   new Error(
                     "Chưa nhận được xác nhận. Kiểm tra trạng thái phòng trước khi thao tác lại.",
@@ -788,7 +871,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                   const ack = record(acknowledgement);
                   if (ack.status === "ok" || ack.snapshot !== undefined) {
                     const parsed = parseSnapshot(ack.snapshot, input.roomId);
-                    observeSnapshot(parsed);
+                    observeSnapshot(parsed, physicalId);
                     resolve({
                       ...acknowledgement,
                       snapshot: parsed,
@@ -807,13 +890,19 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     takeover() {
       if (closed || closureNotified || !socket.connected)
         return Promise.reject(new Error("Kết nối phòng đang gián đoạn."));
+      const physicalId = socket.id;
       return new Promise<void>((resolve, reject) => {
         socket
           .timeout(8000)
           .emit(
             "session.takeover",
             (error: Error | null, acknowledgement: CommandAcknowledgement) => {
-              if (closed || error) {
+              if (
+                closed ||
+                !socket.connected ||
+                socket.id !== physicalId ||
+                error
+              ) {
                 reject(new Error("Chưa nhận được xác nhận giành quyền."));
                 return;
               }
@@ -831,7 +920,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
                   acknowledgement.snapshot,
                   input.roomId,
                 );
-                observeSnapshot(parsed);
+                observeSnapshot(parsed, physicalId);
                 input.onSnapshot(parsed);
                 resolve();
               } catch {
@@ -845,6 +934,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     },
     close() {
       closed = true;
+      controlReady = false;
       invalidateChat();
       socket.removeAllListeners();
       socket.disconnect();

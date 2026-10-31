@@ -24,6 +24,7 @@ interface AiBody {
     id: string;
     version: number;
     history: string[];
+    undoUsed: number;
     status: string;
     outcome: { reason: string; winner: string | null } | null;
   };
@@ -94,6 +95,38 @@ describe.skipIf(!databaseUrl)("guest AI game acceptance", () => {
 
     expect(await historyRowCount()).toBe(0);
     expect(await countRows("public.matches")).toBe(0);
+  });
+
+  it("forbids P2 undo for an authenticated guest without changing the game or blocking P1 resign", async () => {
+    const guest = await createGuest(boot!, "Khách Không Undo");
+    const tab = await boot!.openTab(guest);
+    const gameId = await createGuestAiGame(boot!, tab);
+    expect(await watch(tab, gameId)).toMatchObject({ ok: true });
+    const moved = await guestAi(boot!, tab, "POST", `/ai/${gameId}/move`, {
+      version: 1,
+      move: { from: 58, to: 49 },
+    });
+    expect(moved.status).toBe(200);
+    const before = (await moved.json()) as AiBody;
+    expect(before.snapshot.history).toHaveLength(2);
+    const denied = await guestAi(boot!, tab, "POST", `/ai/${gameId}/undo`, {
+      version: before.snapshot.version,
+    });
+    expect(denied.status).toBe(403);
+    expect((await denied.json()).code).toBe("AI_FORBIDDEN");
+    const read = await guestAi(boot!, tab, "GET", `/ai/${gameId}`);
+    expect(read.status).toBe(200);
+    const after = (await read.json()) as AiBody;
+    expect(after.snapshot).toEqual(before.snapshot);
+    expect(after.snapshot.undoUsed).toBe(0);
+    expect(await heldAiSeats(guest.userId)).toBe(1);
+    expect(
+      (
+        await guestAi(boot!, tab, "POST", `/ai/${gameId}/resign`, {
+          version: after.snapshot.version,
+        })
+      ).status,
+    ).toBe(200);
   });
 
   it("refuses a mixed guest and member proof on the AI socket", async () => {

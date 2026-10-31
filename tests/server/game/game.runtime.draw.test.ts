@@ -15,7 +15,12 @@ import {
   PostgresLoginStore,
 } from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
-import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+import {
+  databaseUrl,
+  pool,
+  reset,
+  roomControl,
+} from "./game.runtime.test-helper.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
@@ -327,6 +332,7 @@ describe.skipIf(!databaseUrl)(
           matchId = started.match!.id;
         const response = await f.post(`/rooms/${f.roomId}/leave`, 0, {
           expectedVersion: started.version,
+          control: await roomControl(f.sockets[0]!),
         });
         expect(response.status).toBe(200);
         expect(await response.json()).toEqual({ roomId: f.roomId, left: true });

@@ -18,6 +18,7 @@ export function memoryTransactions() {
     check: vi.fn<AiTransaction["check"]>(async () => {}),
     finish: vi.fn<AiTransaction["finish"]>(async () => {}),
     drop: vi.fn<AiTransaction["drop"]>(async () => {}),
+    expire: vi.fn<AiTransaction["expire"]>(async () => true),
     reclaim: vi.fn<AiTransaction["reclaim"]>(async () => false),
   };
   const commit = vi.fn(async () => {});
@@ -54,6 +55,11 @@ export function memoryTransactions() {
               drop: async (gameId) => {
                 await lifecycle.drop(gameId);
                 authorized = true;
+              },
+              expire: async (...args) => {
+                const expired = await lifecycle.expire(...args);
+                authorized = true;
+                return expired;
               },
               reclaim: async (gameId, expiredBootId) => {
                 const reclaimed = await lifecycle.reclaim(

@@ -3,7 +3,12 @@ import type { RoomAction, RoomSnapshot } from "@xiangqi/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Socket } from "socket.io-client";
 import type { RoomView } from "@server/game/room/room.types.js";
-import { databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+import {
+  databaseUrl,
+  pool,
+  reset,
+  roomControl,
+} from "./game.runtime.test-helper.js";
 import {
   bootGuestRuntime,
   command,
@@ -182,7 +187,11 @@ async function rematch(
     seatFor(room, who).member,
     "POST",
     `/rooms/${room.roomId}/${path}`,
-    { expectedVersion: await freshVersion(room, who), ...body },
+    {
+      expectedVersion: await freshVersion(room, who),
+      control: await roomControl(seatFor(room, who).socket),
+      ...body,
+    },
   );
 }
 
@@ -317,6 +326,8 @@ describe.skipIf(!databaseUrl)("rematch actual runtime (custom room)", () => {
         preference: "play",
       });
       expect(joined.status).toBe(200);
+      const host = await openSeat(boot, red, entry.roomId);
+      await snapshotWhen(host.tracker, (s) => s.control.mode === "writable");
       const view = (await (
         await memberCall(boot, red, "GET", `/rooms/${entry.roomId}`)
       ).json()) as RoomView;
@@ -325,7 +336,11 @@ describe.skipIf(!databaseUrl)("rematch actual runtime (custom room)", () => {
         red,
         "POST",
         `/rooms/${entry.roomId}/rematch-propose`,
-        { expectedVersion: view.version, side: "KEEP" },
+        {
+          expectedVersion: view.version,
+          side: "KEEP",
+          control: await roomControl(host.socket),
+        },
       );
       expect(denied.status).not.toBe(200);
       expect(await denied.text()).toContain("REMATCH_DENIED");

@@ -16,10 +16,14 @@ export function CreateRoomForm({
   onCreate,
   initialTimeMinutes,
   allowUnlimited = true,
+  creating = false,
+  recoveryInput = null,
 }: {
   onCreate: (input: CreateRoomInput) => Promise<void>;
   initialTimeMinutes?: RoomTimeMinutes;
   allowUnlimited?: boolean;
+  creating?: boolean;
+  recoveryInput?: CreateRoomInput | null;
 }) {
   const [timeMinutes, setTime] = useState<RoomTimeMinutes>(
     initialTimeMinutes ?? (allowUnlimited ? 0 : 10),
@@ -33,17 +37,15 @@ export function CreateRoomForm({
   );
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  const selection = recoveryInput ?? { timeMinutes, viewerLimit, visibility };
+  const locked = busy || creating || recoveryInput !== null;
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (busy) return;
+    if (busy || creating) return;
     setBusy(true);
     setNotice("");
     try {
-      await onCreate({
-        timeMinutes,
-        viewerLimit,
-        visibility,
-      });
+      await onCreate(selection);
     } catch {
       setNotice("Chưa thể tạo phòng. Kiểm tra kết nối và thử lại.");
     } finally {
@@ -58,7 +60,7 @@ export function CreateRoomForm({
     >
       <h2>Tạo phòng cờ</h2>
       <p>Mã phòng được cấp tự động. Chọn nhịp đấu và mời một kỳ hữu.</p>
-      <fieldset disabled={busy}>
+      <fieldset disabled={locked}>
         <legend>Thời gian mỗi bên</legend>
         <div className="xq-room-options">
           {choices.map((value) => (
@@ -66,7 +68,7 @@ export function CreateRoomForm({
               <input
                 type="radio"
                 name="timeMinutes"
-                checked={timeMinutes === value}
+                checked={selection.timeMinutes === value}
                 onChange={() => setTime(value)}
               />
               {value === 0 ? "Không giới hạn" : `${value} phút`}
@@ -77,8 +79,8 @@ export function CreateRoomForm({
       <label className="xq-room-select">
         Người xem
         <select
-          value={viewerLimit}
-          disabled={busy}
+          value={selection.viewerLimit}
+          disabled={locked}
           onChange={(event) => setViewers(Number(event.target.value))}
         >
           {[0, 1, 2, 3, 4, 5].map((value) => (
@@ -91,8 +93,8 @@ export function CreateRoomForm({
       <label className="xq-room-select">
         Quyền truy cập
         <select
-          value={visibility}
-          disabled={busy}
+          value={selection.visibility}
+          disabled={locked}
           onChange={(event) =>
             setVisibility(event.target.value as CreateRoomInput["visibility"])
           }
@@ -102,7 +104,7 @@ export function CreateRoomForm({
         </select>
       </label>
       <p className="xq-help">
-        {visibility === "PUBLIC"
+        {selection.visibility === "PUBLIC"
           ? "Hiện ở Sảnh. Người khác có thể vào chơi hoặc vào xem khi còn chỗ."
           : "Không hiện ở Sảnh. Người khác cần mã, link hoặc lời mời để vào phòng."}
       </p>
@@ -111,7 +113,13 @@ export function CreateRoomForm({
         đổi quyền truy cập trong Cài đặt phòng.
       </p>
       {notice && <Notice tone="error" message={notice} />}
-      <Button type="submit" loading={busy}>
+      {recoveryInput && (
+        <p className="xq-help" role="status">
+          Chưa xác nhận được phòng trước. Lựa chọn được giữ nguyên; bấm Tạo
+          phòng để kiểm tra lại cùng yêu cầu, không tạo thêm phòng.
+        </p>
+      )}
+      <Button type="submit" loading={busy || creating}>
         Tạo phòng
       </Button>
     </form>

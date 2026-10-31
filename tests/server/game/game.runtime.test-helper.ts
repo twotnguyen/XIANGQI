@@ -1,4 +1,5 @@
-import { readFile } from "node:fs/promises";
+import type { RoomControlProof } from "@xiangqi/shared";
+import { applySql } from "../fixtures/apply-sql.test-helper.js";
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { vi } from "vitest";
@@ -173,14 +174,7 @@ async function oldRoom(
   return { a, b, roomId: entry.roomId, matchId };
 }
 export async function apply(file: string) {
-  const c = await pool.connect();
-  try {
-    if (!file.includes("test-fixture")) await c.query("SET ROLE postgres");
-    await c.query(await readFile(file, "utf8"));
-  } finally {
-    await c.query("ROLLBACK; RESET ROLE");
-    c.release();
-  }
+  await applySql(pool, file);
 }
 async function resetSchemas(files: string[]) {
   if (!databaseUrl) throw new Error("Dedicated test URL required");
@@ -229,3 +223,25 @@ export async function reset() {
 }
 
 export { env, member, oldRoom, registration, waitFor };
+
+/** Reads authority established by the real room socket; never seeds or bypasses the controller gate. */
+export async function roomControl(socket: {
+  id?: string;
+  connected: boolean;
+}): Promise<RoomControlProof> {
+  if (!socket.connected || !socket.id)
+    throw new Error("Fixture must connect its controlling room socket first");
+  const { rows } = await pool.query<{
+    tabId: string;
+    connectionId: string;
+    generation: number;
+  }>(
+    'SELECT c.tab_id AS "tabId",c.connection_id AS "connectionId",c.generation FROM xiangqi_realtime.controllers c JOIN xiangqi_room.presence p ON p.room_id=c.room_id AND p.user_id=c.user_id WHERE c.connection_id=$1 AND p.connection_id=c.connection_id AND p.connected',
+    [socket.id],
+  );
+  if (rows.length !== 1)
+    throw new Error(
+      "Fixture needs exactly one active room controller for this socket",
+    );
+  return rows[0]!;
+}

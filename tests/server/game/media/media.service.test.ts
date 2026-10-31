@@ -26,6 +26,7 @@ import {
 afterAll(() => pool.end());
 // Tab giữ quyền điều khiển trong các test; tab khác dùng cho kịch bản chuyển quyền.
 const TAB = randomUUID();
+const CONTROL = { tabId: TAB, connectionId: "test", generation: 1 };
 
 describe.skipIf(!url)("media access", () => {
   beforeEach(resetMediaSchema);
@@ -70,7 +71,7 @@ describe.skipIf(!url)("media access", () => {
     const roomId = await makeRoom(a.userId);
     await seat(roomId, a.userId, "RED");
     await takeControl(roomId, a.userId, TAB);
-    await access.setShare(a.userId, roomId, "ALL");
+    await access.setShare(a.userId, roomId, "ALL", CONTROL);
     const all = await access.tokenFor(
       a.userId,
       roomId,
@@ -97,7 +98,7 @@ describe.skipIf(!url)("media access", () => {
       canPublishData: false,
     });
     expect(grant.room).not.toBe(privateRoomName(roomId));
-    await access.setShare(a.userId, roomId, "NONE");
+    await access.setShare(a.userId, roomId, "NONE", CONTROL);
     const none = await access.tokenFor(
       a.userId,
       roomId,
@@ -125,12 +126,12 @@ describe.skipIf(!url)("media access", () => {
       ),
     ).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
     await expect(
-      access.setShare(outsider.userId, roomId, "ALL"),
+      access.setShare(outsider.userId, roomId, "ALL", CONTROL),
     ).rejects.toMatchObject({
       code: "MEDIA_PLAYER_REQUIRED",
     });
     await expect(
-      access.setShare(a.userId, roomId, "EVERYONE" as never),
+      access.setShare(a.userId, roomId, "EVERYONE" as never, CONTROL),
     ).rejects.toMatchObject({ code: "MEDIA_INPUT_INVALID" });
   });
   it("refuses publish from a tab that does not hold control and moves rights on takeover", async () => {
@@ -367,6 +368,46 @@ describe.skipIf(!url)("media access", () => {
     const roomId = await makeRoom(a.userId);
     await seat(roomId, a.userId, "RED");
     await expect(access.getShare(a.userId, roomId)).resolves.toEqual({
+      level: "OPPONENT",
+    });
+  });
+});
+
+describe.skipIf(!url)("media share tab isolation", () => {
+  beforeEach(resetMediaSchema);
+  it("rejects old or missing control without changing the persisted share", async () => {
+    const access = new MediaAccess(config, new MediaStore(pool));
+    const a = await actor(),
+      roomId = await makeRoom(a.userId);
+    await seat(roomId, a.userId, "RED");
+    await takeControl(roomId, a.userId, TAB);
+    await access.setShare(a.userId, roomId, "ALL", CONTROL);
+    const tabId = randomUUID();
+    await takeControl(roomId, a.userId, tabId);
+    const current = { tabId, connectionId: "test", generation: 2 };
+    for (const proof of [
+      undefined,
+      CONTROL,
+      { ...current, generation: 1 },
+      { ...current, connectionId: "old-peer" },
+    ]) {
+      await expect(
+        access.setShare(a.userId, roomId, "NONE", proof as never),
+      ).rejects.toMatchObject({ code: "MEDIA_TAB_READ_ONLY" });
+      expect(await access.getShare(a.userId, roomId)).toEqual({ level: "ALL" });
+    }
+    await access.setShare(a.userId, roomId, "OPPONENT", current);
+    expect(await access.getShare(a.userId, roomId)).toEqual({
+      level: "OPPONENT",
+    });
+    await pool.query(
+      "UPDATE xiangqi_room.presence SET connected=false WHERE room_id=$1 AND user_id=$2",
+      [roomId, a.userId],
+    );
+    await expect(
+      access.setShare(a.userId, roomId, "NONE", current),
+    ).rejects.toMatchObject({ code: "MEDIA_TAB_READ_ONLY" });
+    expect(await access.getShare(a.userId, roomId)).toEqual({
       level: "OPPONENT",
     });
   });

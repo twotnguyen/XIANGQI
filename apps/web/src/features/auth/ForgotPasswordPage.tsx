@@ -37,10 +37,29 @@ export function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [forUsername, setForUsername] = useState(false);
   const sending = useRef(false);
+  const generation = useRef(0);
   const errorRegion = useRef<HTMLDivElement>(null);
+  useEffect(
+    () => () => {
+      generation.current += 1;
+    },
+    [],
+  );
   useEffect(() => {
     if (error) errorRegion.current?.focus();
   }, [error]);
+
+  function invalidate() {
+    generation.current += 1;
+    sending.current = false;
+    setBusy(false);
+    setError("");
+  }
+
+  function chooseMode(usernameRecovery: boolean) {
+    invalidate();
+    setForUsername(usernameRecovery);
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -51,15 +70,24 @@ export function ForgotPasswordPage() {
       return;
     }
     sending.current = true;
+    const started = generation.current;
+    const startedPath = window.location.pathname;
+    const current = () =>
+      generation.current === started &&
+      window.location.pathname === startedPath;
     setBusy(true);
     try {
-      setPendingRecovery(await startRecovery(username));
+      const recovery = await startRecovery(username);
+      if (!current()) return;
+      setPendingRecovery(recovery);
       navigate("/reset-password");
     } catch (failure) {
-      setError(sendError(failure));
+      if (current()) setError(sendError(failure));
     } finally {
-      sending.current = false;
-      setBusy(false);
+      if (current()) {
+        sending.current = false;
+        setBusy(false);
+      }
     }
   }
 
@@ -74,7 +102,7 @@ export function ForgotPasswordPage() {
           <button
             type="button"
             className="link-forgot"
-            onClick={() => setForUsername(false)}
+            onClick={() => chooseMode(false)}
           >
             Quay lại quên mật khẩu
           </button>
@@ -119,7 +147,10 @@ export function ForgotPasswordPage() {
           aria-describedby={error ? "forgot-error" : undefined}
           value={username}
           disabled={busy}
-          onChange={(event) => setUsername(event.target.value)}
+          onChange={(event) => {
+            invalidate();
+            setUsername(event.target.value);
+          }}
         />
         <Button type="submit" loading={busy} className="btn-submit">
           Gửi mã OTP
@@ -129,13 +160,15 @@ export function ForgotPasswordPage() {
         <button
           type="button"
           className="link-forgot"
-          onClick={() => setForUsername(true)}
+          onClick={() => chooseMode(true)}
         >
           Quên tên đăng nhập?
         </button>
       </p>
       <p className="reg-foot">
-        <NavigationLink href="/login">Quay lại đăng nhập</NavigationLink>
+        <NavigationLink href="/login" onClick={invalidate}>
+          Quay lại đăng nhập
+        </NavigationLink>
       </p>
     </AuthShell>
   );

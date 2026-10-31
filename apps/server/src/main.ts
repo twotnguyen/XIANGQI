@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { createApp, drainRealtime } from "./app.js";
 import { readConfig } from "./core/config.js";
+import { createRequestLimiter } from "./core/request-limit.js";
 import { logEvent } from "./core/logger.js";
 import { createRegistrationRuntime } from "./account/auth/registration.module.js";
 import { createGoogleRuntime } from "./account/google/google.module.js";
@@ -145,6 +146,7 @@ async function boot(): Promise<void> {
       rooms?.realtime,
       rooms?.publicFeed,
       runtimeCheck,
+      createRequestLimiter({ trustedProxyHops: settings.trustedProxyHops }),
     );
     admit();
     ai?.attach(app.getHttpServer());

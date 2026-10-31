@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 import { SignJWT } from "jose";
 import type { MediaStore, MediaTx } from "./media.store.js";
 import {
@@ -108,6 +109,7 @@ export class MediaAccess {
     rawUserId: string,
     rawRoomId: string,
     level: ShareLevel,
+    control: RoomControlProof,
   ): Promise<{ level: ShareLevel }> {
     const userId = rawUserId.toLowerCase(),
       roomId = rawRoomId.toLowerCase();
@@ -122,6 +124,18 @@ export class MediaAccess {
         throw new MediaError(
           "MEDIA_PLAYER_REQUIRED",
           "Chỉ người ngồi ghế đổi mức chia sẻ",
+          403,
+        );
+      if (
+        !control ||
+        !Number.isSafeInteger(control.generation) ||
+        control.generation <= 0 ||
+        control.generation > 2_147_483_647 ||
+        !(await tx.hasControl(roomId, userId, control))
+      )
+        throw new MediaError(
+          "MEDIA_TAB_READ_ONLY",
+          "Tab này chỉ có quyền xem",
           403,
         );
       await tx.saveShare(roomId, userId, level);

@@ -19,7 +19,12 @@ export class AiHistoryStore {
   /**
    * Lưu ván cờ AI vào bảng matches, match_events, match_moves và giải phóng vị trí trong active_players.
    */
-  async finish(scope: RoomScope, snapshot: AiSnapshot, bootId: string) {
+  async finish(
+    scope: RoomScope,
+    snapshot: AiSnapshot,
+    bootId: string,
+    abandonedBy?: "DISCONNECT",
+  ) {
     if (
       (scope.actor.kind !== "member" && scope.actor.kind !== "guest") ||
       scope.actor.userId !== snapshot.ownerId ||
@@ -32,7 +37,7 @@ export class AiHistoryStore {
       await this.reservations.release(scope, { gameId: snapshot.id, bootId });
       return { persisted: false, created: false, endedAt: null };
     }
-    const prepared = prepareAiHistory(snapshot);
+    const prepared = prepareAiHistory(snapshot, abandonedBy);
     const client = scope.client;
     const existing = (
       await client.query<{
@@ -94,10 +99,12 @@ export class AiHistoryStore {
         !record(result.payload.outcome) ||
         result.payload.outcome.reason !== prepared.outcome.reason ||
         result.payload.outcome.winner !== prepared.outcome.winner ||
+        result.payload.outcome.abandonedBy !== prepared.outcome.abandonedBy ||
         result.payload.historyFingerprint !== prepared.fingerprint ||
         !record(existing.outcome) ||
         existing.outcome.reason !== prepared.outcome.reason ||
-        existing.outcome.winner !== prepared.outcome.winner
+        existing.outcome.winner !== prepared.outcome.winner ||
+        existing.outcome.abandonedBy !== prepared.outcome.abandonedBy
       )
         fail();
       const moves = (

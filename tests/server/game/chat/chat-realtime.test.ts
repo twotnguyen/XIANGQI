@@ -335,7 +335,24 @@ describe.skipIf(!databaseUrl)(
           [f.entry.roomId],
         )
       ).rows[0].version;
-      await f.http.leave(f.b.proof, f.entry.roomId, version);
+      await f.control(reconnect);
+      await pool.query(
+        "INSERT INTO xiangqi_room.presence(room_id,user_id,connection_id,generation,server_instance,connected,last_seen_at) VALUES($1,$2,$3,1,$4,true,clock_timestamp()) ON CONFLICT(room_id,user_id) DO UPDATE SET connection_id=excluded.connection_id,connected=true,last_seen_at=clock_timestamp()",
+        [f.entry.roomId, f.b.id, reconnect.connectionId, randomUUID()],
+      );
+      const generation = Number(
+        (
+          await pool.query(
+            "SELECT generation FROM xiangqi_realtime.controllers WHERE user_id=$1 AND room_id=$2",
+            [f.b.id, f.entry.roomId],
+          )
+        ).rows[0].generation,
+      );
+      await f.http.leave(f.b.proof, f.entry.roomId, version, {
+        tabId: reconnect.tabId,
+        connectionId: reconnect.connectionId,
+        generation,
+      });
       await f.join(f.b, "watch");
       const fresh = await f.service.read(viewer, { channel: "ROOM_PUBLIC" });
       expect(fresh.scopeToken).not.toBe(before.scopeToken);

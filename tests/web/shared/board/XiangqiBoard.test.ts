@@ -211,6 +211,11 @@ it("marks cannon captures from legal core and preserves previous-move and check 
   expect(markers).toHaveLength(2);
   expect(markers[0]!.getAttribute("transform")).toBe("translate(344 144)");
   expect(markers[1]!.getAttribute("transform")).toBe("translate(344 184)");
+  for (const marker of markers) {
+    expect(marker.querySelector("circle")).toBeNull();
+    const corners = marker.querySelector("path");
+    expect(corners?.getAttribute("d")?.match(/M/g)).toHaveLength(4);
+  }
   expect(screen.queryByRole("button")).toBeNull();
 });
 it("selects legal pawn targets, sends intent, and keeps the canonical piece at its source", () => {

@@ -1,5 +1,5 @@
 /**
- * Đọc và thẩm định tính hợp lệ của cấu hình server từ biến môi trường (PORT, CORS_ORIGINS, LOG_LEVEL).
+ * Đọc và thẩm định tính hợp lệ của cấu hình server từ biến môi trường (PORT, CORS_ORIGINS, LOG_LEVEL, TRUST_PROXY_HOPS).
  */
 export function readConfig(env: Record<string, string | undefined>) {
   const portValue = env.PORT ?? "3000";
@@ -33,5 +33,10 @@ export function readConfig(env: Record<string, string | undefined>) {
   if (!["debug", "info", "warn", "error"].includes(logLevel)) {
     throw new Error("Invalid configuration: LOG_LEVEL");
   }
-  return { port, corsOrigins, logLevel };
+  const hopsValue = env.TRUST_PROXY_HOPS ?? "0";
+  const trustedProxyHops = Number(hopsValue);
+  if (!/^\d+$/.test(hopsValue) || trustedProxyHops > 5) {
+    throw new Error("Invalid configuration: TRUST_PROXY_HOPS");
+  }
+  return { port, corsOrigins, logLevel, trustedProxyHops };
 }

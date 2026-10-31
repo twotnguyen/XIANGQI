@@ -9,6 +9,7 @@ export function SwapPrompt({
   open,
   seconds,
   busy,
+  writable = true,
   onAccept,
   onDecline,
   onCollapse,
@@ -16,6 +17,7 @@ export function SwapPrompt({
   open: boolean;
   seconds: number;
   busy: boolean;
+  writable?: boolean;
   onAccept: () => void;
   onDecline: () => void;
   onCollapse: () => void;
@@ -29,10 +31,23 @@ export function SwapPrompt({
     >
       <p>Đối thủ muốn đổi bên Đỏ ↔ Đen. Còn {seconds} giây để trả lời.</p>
       <div className="xq-swap-prompt-actions">
-        <Button loading={busy} onClick={onAccept}>
+        <Button
+          loading={busy}
+          disabledReason={
+            !writable ? "Cần kết nối và quyền điều khiển phòng." : undefined
+          }
+          onClick={onAccept}
+        >
           Đồng ý
         </Button>
-        <Button variant="secondary" loading={busy} onClick={onDecline}>
+        <Button
+          variant="secondary"
+          loading={busy}
+          disabledReason={
+            !writable ? "Cần kết nối và quyền điều khiển phòng." : undefined
+          }
+          onClick={onDecline}
+        >
           Từ chối
         </Button>
       </div>

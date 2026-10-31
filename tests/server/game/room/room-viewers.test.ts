@@ -9,6 +9,7 @@ import {
   transaction,
 } from "./room.test-helper.js";
 import { RoomStore } from "@server/game/room/room-store.js";
+import { AiReservations } from "@server/game/ai/ai-reservations.js";
 import type { RoomActor, RoomScope } from "@server/game/room/room.types.js";
 afterAll(() => pool.end());
 const store = new RoomStore();
@@ -74,6 +75,21 @@ async function fullRoom() {
   );
   return { h, b, w, roomId: e.roomId };
 }
+async function reserveAi(
+  player: Awaited<ReturnType<typeof admitted>>,
+  roomId: string,
+) {
+  await apply("supabase/migrations/20261011000011_ai_reservations.sql");
+  const reservations = new AiReservations();
+  const boot = await transaction([], [], (client) =>
+    reservations.createBoot(client),
+  );
+  const gameId = randomUUID();
+  await run(player.a, player.proof, [roomId], (s) =>
+    reservations.reserve(s, { gameId, bootId: boot.id }),
+  );
+  return gameId;
+}
 describe.skipIf(!databaseUrl)("room viewers", () => {
   beforeEach(async () => {
     await pool.query(
@@ -124,6 +140,145 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
     );
     expect(declined.room.downOffer).toBeNull();
     expect(declined.room.seats).toEqual({ red: h.a.userId, black: null });
+  });
+  it.each(["self", "host"] as const)(
+    "%s demotion queues a durable revoke for the former player",
+    async (action) => {
+      const { h, b, roomId } = await fullRoom();
+      const moved =
+        action === "self"
+          ? await run(b.a, b.proof, [roomId], (s) =>
+              store.toSpectator(s, roomId),
+            )
+          : await run(h.a, h.proof, [roomId], (s) =>
+              store.moveToSpectator(s, roomId, b.a.userId),
+            );
+      const rows = (
+        await pool.query(
+          "SELECT type,room_version::float8 AS version,payload,delivered_at FROM xiangqi_room.outbox WHERE room_id=$1 AND type IN('room.seats-changed','media.revoke-user')",
+          [roomId],
+        )
+      ).rows;
+      expect(rows.filter((row) => row.type === "media.revoke-user")).toEqual([
+        expect.objectContaining({
+          version: moved.version,
+          payload: { userId: b.a.userId },
+          delivered_at: null,
+        }),
+      ]);
+      expect(
+        rows.find((row) => row.type === "room.seats-changed"),
+      ).toMatchObject({ version: moved.version });
+      const pending = await run(h.a, h.proof, [roomId], (s) =>
+        store.pendingEvents(s.client),
+      );
+      expect(pending.map((event) => event.type)).not.toContain(
+        "media.revoke-user",
+      );
+      expect(moved.room.seats.black).toBeNull();
+      expect(
+        moved.room.spectators?.some((person) => person.userId === b.a.userId),
+      ).toBe(true);
+    },
+  );
+  it.each(["self", "host"] as const)(
+    "%s demotion rolls back if its media revoke cannot be stored",
+    async (action) => {
+      const { h, b, roomId } = await fullRoom();
+      await pool.query(
+        "CREATE FUNCTION public.fail_demotion_revoke() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN IF NEW.type='media.revoke-user' THEN RAISE EXCEPTION 'synthetic demotion revoke failure'; END IF; RETURN NEW; END$$; CREATE TRIGGER fail_demotion_revoke BEFORE INSERT ON xiangqi_room.outbox FOR EACH ROW EXECUTE FUNCTION public.fail_demotion_revoke()",
+      );
+      try {
+        await expect(
+          action === "self"
+            ? run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId))
+            : run(h.a, h.proof, [roomId], (s) =>
+                store.moveToSpectator(s, roomId, b.a.userId),
+              ),
+        ).rejects.toThrow("synthetic demotion revoke failure");
+      } finally {
+        await pool.query(
+          "DROP TRIGGER fail_demotion_revoke ON xiangqi_room.outbox; DROP FUNCTION public.fail_demotion_revoke()",
+        );
+      }
+      expect(
+        (
+          await pool.query(
+            "SELECT role,side FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+            [roomId, b.a.userId],
+          )
+        ).rows[0],
+      ).toEqual({ role: "PLAYER", side: "BLACK" });
+      expect(
+        (
+          await pool.query(
+            "SELECT room_id FROM public.active_players WHERE user_id=$1",
+            [b.a.userId],
+          )
+        ).rows[0].room_id,
+      ).toBe(roomId);
+      expect(
+        (
+          await pool.query(
+            "SELECT count(*)::int AS n FROM xiangqi_room.outbox WHERE room_id=$1 AND type='media.revoke-user'",
+            [roomId],
+          )
+        ).rows[0].n,
+      ).toBe(0);
+    },
+  );
+  it("does not invite an audience member who already holds a real AI reservation", async () => {
+    const { h, b, w, roomId } = await fullRoom();
+    await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
+    const gameId = await reserveAi(w, roomId);
+    await expect(
+      run(h.a, h.proof, [roomId], (s) =>
+        store.inviteDown(s, roomId, w.a.userId),
+      ),
+    ).rejects.toMatchObject({ code: "FRIEND_BUSY", status: 409 });
+    expect(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM xiangqi_room.seat_invites WHERE room_id=$1",
+          [roomId],
+        )
+      ).rows[0].n,
+    ).toBe(0);
+    expect(
+      (
+        await pool.query(
+          "SELECT room_id,ai_game_id FROM public.active_players WHERE user_id=$1",
+          [w.a.userId],
+        )
+      ).rows[0],
+    ).toMatchObject({ room_id: null, ai_game_id: gameId });
+  });
+  it("rejects accepting a seat after an AI game reserves the invitee's position", async () => {
+    const { h, b, w, roomId } = await fullRoom();
+    await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
+    await run(h.a, h.proof, [roomId], (s) =>
+      store.inviteDown(s, roomId, w.a.userId),
+    );
+    const gameId = await reserveAi(w, roomId);
+    await expect(
+      run(w.a, w.proof, [roomId], (s) => store.respondDown(s, roomId, true)),
+    ).rejects.toMatchObject({ code: "ALREADY_SEATED", status: 409 });
+    const state = await run(h.a, h.proof, [roomId], (s) =>
+      store.snapshot(s, roomId),
+    );
+    expect(state.room.seats.black).toBeNull();
+    expect(state.room.countdown).toBeNull();
+    expect(
+      state.room.spectators?.some((person) => person.userId === w.a.userId),
+    ).toBe(true);
+    expect(
+      (
+        await pool.query(
+          "SELECT room_id,ai_game_id FROM public.active_players WHERE user_id=$1",
+          [w.a.userId],
+        )
+      ).rows[0],
+    ).toMatchObject({ room_id: null, ai_game_id: gameId });
   });
   it("kicks a viewer and blocks re-entry until close", async () => {
     const { h, b, w, roomId } = await fullRoom();

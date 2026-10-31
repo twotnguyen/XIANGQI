@@ -9,6 +9,8 @@
 #
 # Cần Postgres 17 (initdb, pg_ctl, psql, createdb). Đặt PGBIN nếu không tự tìm thấy.
 # Dữ liệu nằm ở ${XQ_PG_DIR:-${TMPDIR:-/tmp}/xq-pg}; chỉ dùng cho test, không chứa dữ liệu thật.
+# XQ_PG_DOCKER=1 (chỉ với test): thay vì initdb/pg_ctl, mỗi cụm cần thiết chạy là một container
+# postgres:17.6 (tmpfs, bind 127.0.0.1 ở cổng cụm); container bị xóa khi lệnh kết thúc hoặc bị ngắt.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -72,6 +74,63 @@ env_one() {
   if [ "$4" = ROOM_RUNTIME_TEST_DATABASE_URL ]; then echo "export DRAW_WORKER_TEST_DATABASE_URL=postgresql://$2@127.0.0.1:$1/$3"; fi
 }
 
+PG_IMAGE=postgres:17.6
+RUN_ID=""
+CHILD=""
+DOCKER_CONTAINERS=()
+
+docker_cleanup() { # chỉ xóa container do lần chạy này tạo
+  [ -n "$CHILD" ] && kill -- "-$CHILD" 2>/dev/null || true
+  local name
+  for name in ${DOCKER_CONTAINERS[@]+"${DOCKER_CONTAINERS[@]}"}; do
+    docker rm -f -v "$name" >/dev/null 2>&1 || true
+  done
+}
+docker_start_one() { # $1 = cổng, $2 = admin, $3 = database
+  local name="$RUN_ID-$1"
+  DOCKER_CONTAINERS+=("$name")
+  docker run -d --name "$name" \
+    -e POSTGRES_USER="$2" -e POSTGRES_DB="$3" -e POSTGRES_HOST_AUTH_METHOD=trust \
+    --tmpfs /var/lib/postgresql/data \
+    -p "127.0.0.1:$1:5432" \
+    "$PG_IMAGE" -c fsync=off -c synchronous_commit=off -c max_connections=100 >/dev/null
+}
+docker_wait_one() { # $1 = cổng, $2 = admin, $3 = database; sẵn sàng khi truy vấn qua TCP trong container
+  local name="$RUN_ID-$1" i
+  for i in $(seq 1 120); do
+    if docker exec "$name" psql -h 127.0.0.1 -U "$2" -d "$3" -tAc 'SELECT 1' >/dev/null 2>&1; then return 0; fi
+    if [ "$(docker inspect -f '{{.State.Running}}' "$name" 2>/dev/null)" != true ]; then
+      docker logs "$name" >&2 || true
+      echo "Container $name thoát trước khi sẵn sàng." >&2
+      return 1
+    fi
+    sleep 0.5
+  done
+  echo "Hết thời gian chờ container $name (cổng $1)." >&2
+  return 1
+}
+docker_test() { # đối số vitest; luôn chạy vitest như tiến trình con để cleanup chạy sau đó
+  if ! command -v docker >/dev/null || ! docker info >/dev/null 2>&1; then
+    echo "XQ_PG_DOCKER=1 cần Docker đang chạy." >&2
+    exit 1
+  fi
+  RUN_ID="xq-pg-$$-$RANDOM-$(date +%s)"
+  trap docker_cleanup EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  trap 'exit 129' HUP
+  each_cluster docker_start_one
+  each_cluster docker_wait_one
+  eval "$(each_cluster env_one)"
+  local status=0
+  set -m
+  pnpm exec vitest run --no-file-parallelism "$@" &
+  CHILD=$!
+  wait "$CHILD" || status=$?
+  CHILD=""
+  exit "$status"
+}
+
 cmd="${1:-status}"
 [ $# -gt 0 ] && shift
 if [ "$cmd" != test ]; then PGBIN="$(find_pgbin)"; fi
@@ -87,6 +146,7 @@ case "$cmd" in
     REQUIRED_DATABASES="$(printf '%s\n' "$files" | node tests/server/db-scope.mjs "${CLUSTERS[@]##*:}")"
     for cluster in "${CLUSTERS[@]}"; do unset "${cluster##*:}"; done
     unset DRAW_WORKER_TEST_DATABASE_URL
+    if [ "${XQ_PG_DOCKER:-0}" = 1 ]; then docker_test "$@"; fi
     if [ -n "$REQUIRED_DATABASES" ]; then PGBIN="$(find_pgbin)"; fi
     each_cluster start_one
     eval "$(each_cluster env_one)"

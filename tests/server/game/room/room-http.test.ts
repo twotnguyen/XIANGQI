@@ -80,8 +80,15 @@ const withRoom = vi.fn(
     return { status: "active", value: await work(scope) };
   },
 );
+const control = {
+  tabId: "11111111-1111-4111-8111-111111111111",
+  connectionId: "physical-tab",
+  generation: 1,
+};
+const assertHttpControl = vi.fn(async () => {});
 const service = new RoomHttpService(
   {
+    assertHttpControl,
     create,
     join,
     snapshot,
@@ -122,7 +129,18 @@ async function request(
       Origin: "http://localhost:5173",
       ...headers,
     },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    ...(body === undefined
+      ? {}
+      : {
+          body: JSON.stringify(
+            body &&
+              typeof body === "object" &&
+              !Array.isArray(body) &&
+              /^\/rooms\/[^/]+\//.test(path)
+              ? { ...body, control }
+              : body,
+          ),
+        }),
   });
 }
 it("creates with dual proof, selected visibility and no-store, ignoring forged actor", async () => {

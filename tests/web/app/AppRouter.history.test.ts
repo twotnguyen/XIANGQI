@@ -1,0 +1,171 @@
+// @vitest-environment jsdom
+// Helper first: its vi.mock calls must register before AppRouter loads.
+import {
+  useAppRouterHooks,
+  mock,
+  member,
+  reply,
+  guest,
+} from "./AppRouter.test-helper.js";
+import { createElement } from "react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { expect, it, vi } from "vitest";
+import { AppRouter } from "@web/app/AppRouter.js";
+import { navigate } from "@web/shared/navigation/navigation.js";
+import {
+  initialPosition,
+  playMove,
+  serializePosition,
+} from "@xiangqi/xiangqi-core";
+
+useAppRouterHooks();
+const historyId = "77777777-7777-4777-8777-777777777777";
+const initialReplay = initialPosition();
+const replayRecord = {
+  id: historyId,
+  mode: "CASUAL",
+  side: "red",
+  positions: [initialReplay, playMove(initialReplay, { from: 54, to: 45 })].map(
+    (p) => ({ fen: serializePosition(p), turn: p.turn }),
+  ),
+  moves: [{ from: 54, to: 45, side: "red" }],
+  result: { reason: "CHECKMATE", winner: "red" },
+};
+it("loads owned replay at the single canonical route with a readonly board", async () => {
+  window.history.replaceState(null, "", `/history/${historyId}`);
+  mock.state = member;
+  mock.authorizedFetch.mockResolvedValue(reply(replayRecord));
+  render(createElement(AppRouter));
+  await screen.findByRole("heading", { name: "Biên bản ván đấu" });
+  expect(mock.authorizedFetch).toHaveBeenCalledExactlyOnceWith(
+    `/history/${historyId}`,
+    { method: "GET", redirect: "error" },
+  );
+  expect(screen.getByText("Tốt 9 tiến 1")).toBeTruthy();
+  expect(document.title).toContain("Xem lại ván đấu");
+  expect(document.activeElement).toBe(
+    screen.getByRole("heading", { name: "Xem lại ván đấu" }),
+  );
+});
+it("never reads a replay for a Guest or an invalid match ID", async () => {
+  window.history.replaceState(null, "", `/history/${historyId}`);
+  mock.state = guest;
+  const view = render(createElement(AppRouter));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  mock.state = member;
+  act(() => navigate("/history/invalid-id"));
+  view.rerender(createElement(AppRouter));
+  await screen.findByRole("alert");
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  expect(
+    screen.queryByRole("heading", { name: "Biên bản ván đấu" }),
+  ).toBeNull();
+});
+it("fences a late private replay when the logged-in account changes", async () => {
+  window.history.replaceState(null, "", `/history/${historyId}`);
+  mock.state = member;
+  let release!: (r: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((done) => {
+        release = done;
+      }),
+  );
+  mock.authorizedFetch.mockResolvedValue(
+    reply({
+      ...replayRecord,
+      moves: [],
+      positions: [replayRecord.positions[0]],
+    }),
+  );
+  const view = render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledTimes(1));
+  mock.state = { ...member, userId: "new-private-owner" };
+  view.rerender(createElement(AppRouter));
+  await screen.findByText("Ván đấu kết thúc ở thế cờ ban đầu.");
+  await act(async () => release(reply(replayRecord)));
+  expect(screen.queryByText("Tốt 9 tiến 1")).toBeNull();
+});
+const historyPage = {
+  items: [
+    {
+      id: historyId,
+      type: "CASUAL",
+      typeLabel: "Đánh Thường",
+      side: "red",
+      opponent: { displayName: "Đối thủ lịch sử", isGuest: false },
+      result: {
+        kind: "WIN",
+        reason: "RESIGN",
+        label: "Thắng",
+        countsForWdl: true,
+      },
+      eloDelta: null,
+      startedAt: "2026-10-11T00:00:00.000001Z",
+      endedAt: "2026-10-11T01:00:00.000001Z",
+      replayPath: `/history/${historyId}`,
+    },
+  ],
+  nextCursor: null,
+};
+it("loads member history through authorized HTTP and opens only the replay route", async () => {
+  window.history.replaceState(null, "", "/history");
+  mock.state = member;
+  mock.authorizedFetch.mockResolvedValue(reply(historyPage));
+  render(createElement(AppRouter));
+  expect(
+    await screen.findByRole("heading", { name: "Đối thủ lịch sử" }),
+  ).toBeTruthy();
+  expect(mock.authorizedFetch).toHaveBeenCalledExactlyOnceWith(
+    "/history?filter=ALL&limit=20",
+    { method: "GET", redirect: "error" },
+  );
+  expect(document.title).toContain("Lịch sử ván đấu");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Xem lại ván với Đối thủ lịch sử" }),
+  );
+  expect(window.location.pathname).toBe(`/history/${historyId}`);
+});
+it("preserves a history destination through login without reading anonymous data", async () => {
+  window.history.replaceState(null, "", "/history");
+  mock.authorizedFetch.mockResolvedValue(reply(historyPage));
+  render(createElement(AppRouter));
+  await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  mock.accept.mockImplementation(() => {
+    mock.state = member;
+  });
+  fireEvent.click(await screen.findByText("Hoàn tất đăng nhập"));
+  await screen.findByRole("heading", { name: "Đối thủ lịch sử" });
+  expect(window.location.pathname).toBe("/history");
+});
+it("does not read history for Guests", () => {
+  window.history.replaceState(null, "", "/history");
+  mock.state = guest;
+  render(createElement(AppRouter));
+  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  expect(screen.queryByRole("heading", { name: "Đối thủ lịch sử" })).toBeNull();
+});
+it("drops a late history response after the authenticated owner changes", async () => {
+  window.history.replaceState(null, "", "/history");
+  mock.state = member;
+  let release!: (response: Response) => void;
+  mock.authorizedFetch.mockImplementationOnce(
+    () =>
+      new Promise<Response>((resolve) => {
+        release = resolve;
+      }),
+  );
+  mock.authorizedFetch.mockResolvedValue(
+    reply({ items: [], nextCursor: null }),
+  );
+  const view = render(createElement(AppRouter));
+  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledTimes(1));
+  mock.state = { ...member, userId: "another-member" };
+  view.rerender(createElement(AppRouter));
+  await screen.findByText("Chưa có ván đấu trong bộ lọc này.");
+  await act(async () => {
+    release(reply(historyPage));
+  });
+  expect(screen.queryByRole("heading", { name: "Đối thủ lịch sử" })).toBeNull();
+});

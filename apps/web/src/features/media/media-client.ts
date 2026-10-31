@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 export type ShareLevel = "NONE" | "OPPONENT" | "ALL";
 export type AuthorizedFetch = (
   path: string,
@@ -92,7 +93,7 @@ export function createMediaClient(authorizedFetch: AuthorizedFetch) {
   return {
     token: (roomId: string, camera: boolean, mic: boolean, tabId: string) =>
       request("/media/token", parseToken, { roomId, camera, mic, tabId }),
-    setShare: (roomId: string, level: ShareLevel) =>
+    setShare: (roomId: string, level: ShareLevel, control: RoomControlProof) =>
       request(
         "/media/share",
         (value) => {
@@ -101,7 +102,7 @@ export function createMediaClient(authorizedFetch: AuthorizedFetch) {
             throw new MediaRequestError("MEDIA_BAD_RESPONSE", 502);
           return { level: result.level as ShareLevel };
         },
-        { roomId, level },
+        { roomId, level, control },
       ),
     getShare: (roomId: string) =>
       request(`/media/share?roomId=${encodeURIComponent(roomId)}`, (value) => {

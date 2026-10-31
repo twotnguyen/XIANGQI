@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 import type { GuestPurpose } from "../../account/guest/guest.types.js";
 import type {
   RoomRequestProof,
@@ -123,6 +124,17 @@ export class RoomHttpService {
       "join-room",
     );
   }
+  private async mutate<T>(
+    proof: RoomRequestProof,
+    roomId: string,
+    control: RoomControlProof,
+    work: (scope: RoomScope) => Promise<T>,
+  ) {
+    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+      await this.store.assertHttpControl(scope, roomId, control);
+      return work(scope);
+    });
+  }
   private async requireVersion(
     scope: RoomScope,
     roomId: string,
@@ -143,8 +155,9 @@ export class RoomHttpService {
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.switchSeat(scope, roomId);
     });
@@ -156,8 +169,9 @@ export class RoomHttpService {
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.toSpectator(scope, roomId);
     });
@@ -170,8 +184,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     targetId: string,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.moveToSpectator(scope, roomId, targetId);
     });
@@ -184,8 +199,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     targetId: string,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.inviteDown(scope, roomId, targetId);
     });
@@ -198,8 +214,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     accept: boolean,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.respondDown(scope, roomId, accept);
     });
@@ -212,8 +229,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     targetId: string,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.kickViewer(scope, roomId, targetId);
     });
@@ -225,8 +243,9 @@ export class RoomHttpService {
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       await this.store.leave(scope, roomId);
       return { roomId, left: true as const };
@@ -239,8 +258,9 @@ export class RoomHttpService {
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.proposeSwap(scope, roomId);
     });
@@ -252,8 +272,9 @@ export class RoomHttpService {
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.withdrawSwap(scope, roomId);
     });
@@ -266,8 +287,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     accept: boolean,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.respondSwap(scope, roomId, accept);
     });
@@ -280,8 +302,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     side: "KEEP" | "SWAP",
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.proposeRematch(scope, roomId, side);
     });
@@ -294,8 +317,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     accept: boolean,
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], async (scope) => {
+    return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
       return this.store.respondRematch(scope, roomId, accept);
     });
@@ -308,8 +332,9 @@ export class RoomHttpService {
     roomId: string,
     expectedVersion: number,
     visibility: RoomView["room"]["visibility"],
+    control: RoomControlProof,
   ) {
-    return this.run(proof, await this.actor(proof), [roomId], (scope) =>
+    return this.mutate(proof, roomId, control, (scope) =>
       this.store.changeVisibility(scope, roomId, expectedVersion, visibility),
     );
   }

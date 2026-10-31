@@ -16,7 +16,7 @@ export interface HistoryItem {
   opponent: { displayName: string; isGuest: boolean };
   aiLevel?: "EASY" | "MEDIUM" | "HARD";
   result: {
-    kind: "WIN" | "LOSS" | "DRAW" | "INTERRUPTED";
+    kind: "WIN" | "LOSS" | "DRAW" | "INTERRUPTED" | "ABANDONED";
     reason: string;
     label: string;
     countsForWdl: boolean;
@@ -138,7 +138,12 @@ function item(v: unknown): HistoryItem {
     (result.kind === "INTERRUPTED" &&
       interruptions.includes(result.reason as string) &&
       result.countsForWdl === false &&
-      result.label === "Bị gián đoạn");
+      result.label === "Bị gián đoạn") ||
+    (r.type === "AI" &&
+      result.kind === "ABANDONED" &&
+      result.reason === "AI_UNAVAILABLE" &&
+      result.countsForWdl === false &&
+      result.label === "Bỏ dở");
   if (!valid) invalid();
   return r as unknown as HistoryItem;
 }

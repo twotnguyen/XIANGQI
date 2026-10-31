@@ -29,6 +29,7 @@ export async function setupUsernames(): Promise<UsernameFixture> {
   const f = await setupPasswords();
   await pool.query("DROP TABLE IF EXISTS xiangqi_auth.username_challenges");
   await apply("supabase/migrations/20261102000001_username_management.sql");
+  await apply("supabase/migrations/20261103000001_username_otp_delivery.sql");
   let time = Date.now();
   const now = () => new Date(time);
   const messages: { to: string; otp: string }[] = [];

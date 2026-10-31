@@ -45,6 +45,25 @@ export class LoginService {
       ? Number(process.env.LOGIN_RESPONSE_FLOOR_MS)
       : INVALID_RESPONSE_FLOOR_MS,
   ) {}
+  // Một instance duy nhất (khóa runtime), nên hàng đợi trong tiến trình đủ để xếp hàng cùng username
+  // mà không giữ kết nối DB trong lúc chờ lượt hay chờ padding; khóa DB chỉ lấy khi làm việc thật.
+  private readonly queues = new Map<string, Promise<void>>();
+  private async serialized<T>(key: string, work: () => Promise<T>): Promise<T> {
+    const previous = this.queues.get(key) ?? Promise.resolve();
+    let release!: () => void;
+    const turn = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const tail = previous.then(() => turn);
+    this.queues.set(key, tail);
+    await previous;
+    try {
+      return await work();
+    } finally {
+      release();
+      if (this.queues.get(key) === tail) this.queues.delete(key);
+    }
+  }
   private async withResponseFloor<T>(work: () => Promise<T>): Promise<T> {
     const started = performance.now();
     let floor = RESPONSE_FLOOR_MS;
@@ -84,13 +103,21 @@ export class LoginService {
       )
         throw invalidLogin();
       const key = account.username.toLowerCase();
-      return this.store.withUsernameLock(key, async (store) => {
-        const provider = await this.withResponseFloor(() =>
-          this.passwordAttempt(key, account, password, store, true),
-        );
-        await store.resetAttempts(key);
-        return provider;
-      });
+      return this.serialized(key, () =>
+        this.withResponseFloor(() =>
+          this.store.withUsernameLock(key, async (store) => {
+            const provider = await this.passwordAttempt(
+              key,
+              account,
+              password,
+              store,
+              true,
+            );
+            await store.resetAttempts(key);
+            return provider;
+          }),
+        ),
+      );
     });
   }
   private async authenticate(input: unknown, deviceToken: string | null) {
@@ -109,33 +136,35 @@ export class LoginService {
     )
       throw invalidLogin();
     const key = username.toLowerCase();
-    return this.store.withUsernameLock(key, async (store) => {
-      const account = await store.accountByUsername(key);
-      const provider = await this.withResponseFloor(() =>
-        this.passwordAttempt(
-          key,
-          account?.active ? account : null,
-          password,
-          store,
-        ),
-      );
-      if (!account) throw unavailable();
-      const session = await this.sessions.issue(
-        account.userId,
-        remember,
-        store,
-        deviceToken,
-      );
-      await store.resetAttempts(key);
-      return {
-        access_token: provider.access_token,
-        refresh_token: provider.refresh_token,
-        expires_in: provider.expires_in,
-        userId: account.userId,
-        username: account.username,
-        ...session,
-      };
-    });
+    return this.serialized(key, () =>
+      this.withResponseFloor(() =>
+        this.store.withUsernameLock(key, async (store) => {
+          const account = await store.accountByUsername(key);
+          const provider = await this.passwordAttempt(
+            key,
+            account?.active ? account : null,
+            password,
+            store,
+          );
+          if (!account) throw unavailable();
+          const session = await this.sessions.issue(
+            account.userId,
+            remember,
+            store,
+            deviceToken,
+          );
+          await store.resetAttempts(key);
+          return {
+            access_token: provider.access_token,
+            refresh_token: provider.refresh_token,
+            expires_in: provider.expires_in,
+            userId: account.userId,
+            username: account.username,
+            ...session,
+          };
+        }),
+      ),
+    );
   }
   private async passwordAttempt(
     key: string,

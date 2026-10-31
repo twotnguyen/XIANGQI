@@ -73,6 +73,11 @@ function setup() {
       command: vi.fn(),
       close: vi.fn(),
       tabId: "chat-tab",
+      getControl: vi.fn(async () => ({
+        tabId: roomId,
+        connectionId: "chat-socket",
+        generation: 1,
+      })),
       takeover: vi.fn(async () => {}),
     },
   };

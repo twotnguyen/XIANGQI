@@ -28,6 +28,19 @@ export function ReplayViewer({
   const [exportStatus, setExportStatus] = useState("");
   const [exportError, setExportError] = useState("");
   const selectedRow = useRef<HTMLButtonElement | null>(null);
+  const exportEpoch = useRef(0);
+  const exportBusy = useRef(false);
+  useLayoutEffect(() => {
+    exportEpoch.current++;
+    exportBusy.current = false;
+    setExportState("idle");
+    setExportStatus("");
+    setExportError("");
+    return () => {
+      exportEpoch.current++;
+      exportBusy.current = false;
+    };
+  }, [record, exportAt]);
   const current = playback.record === record;
   const index = current ? playback.index : 0;
   const playing = current && playback.playing;
@@ -56,43 +69,61 @@ export function ReplayViewer({
       playing: false,
     });
   }
+
   async function copyFen() {
-    if (!exportAt || exportState === "busy") return;
+    if (!exportAt || exportBusy.current) return;
+    const epoch = exportEpoch.current;
+    const active = () => exportEpoch.current === epoch;
+    exportBusy.current = true;
     setExportState("busy");
     setExportStatus("");
     setExportError("");
     try {
       const { fen } = await exportAt(index);
+      if (!active()) return;
       if (!navigator.clipboard?.writeText) throw Error("clipboard unavailable");
       await navigator.clipboard.writeText(fen);
-      setExportStatus("Đã sao chép FEN của thế cờ hiện tại.");
+      if (active()) setExportStatus("Đã sao chép FEN của thế cờ hiện tại.");
     } catch {
-      setExportError("Chưa thể sao chép FEN. Vui lòng thử lại.");
+      if (active()) setExportError("Chưa thể sao chép FEN. Vui lòng thử lại.");
     } finally {
-      setExportState("idle");
+      if (active()) {
+        exportBusy.current = false;
+        setExportState("idle");
+      }
     }
   }
   async function downloadPgn() {
-    if (!exportAt || exportState === "busy") return;
+    if (!exportAt || exportBusy.current) return;
+    const epoch = exportEpoch.current;
+    const active = () => exportEpoch.current === epoch;
+    exportBusy.current = true;
     setExportState("busy");
     setExportStatus("");
     setExportError("");
     try {
       const { pgn } = await exportAt(last);
-      const blob = new Blob([pgn], { type: "application/x-chess-pgn" }),
-        url = URL.createObjectURL(blob),
-        anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = `${record.id}.pgn`;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(url);
-      setExportStatus("Đã tải tệp PGN của ván đấu.");
+      if (!active()) return;
+      const blob = new Blob([pgn], { type: "application/x-chess-pgn" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      try {
+        anchor.href = url;
+        anchor.download = record.id + ".pgn";
+        document.body.appendChild(anchor);
+        anchor.click();
+      } finally {
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+      if (active()) setExportStatus("Đã tải tệp PGN của ván đấu.");
     } catch {
-      setExportError("Chưa thể tải PGN. Vui lòng thử lại.");
+      if (active()) setExportError("Chưa thể tải PGN. Vui lòng thử lại.");
     } finally {
-      setExportState("idle");
+      if (active()) {
+        exportBusy.current = false;
+        setExportState("idle");
+      }
     }
   }
   const position = parsePosition(record.positions[index]!.fen);

@@ -24,6 +24,7 @@ export function RoomSeats({
   onSwapReopen,
   readyControl,
   onAction,
+  onMoveToSpectator,
 }: {
   room: RoomView["room"];
   userId: string;
@@ -37,13 +38,23 @@ export function RoomSeats({
   onSwapReopen: () => void;
   readyControl: ReactNode;
   onAction: (action: SeatAction) => void;
+  onMoveToSpectator?: (userId: string) => void;
 }) {
   return (
     <div className="xq-room-seats">
       {(["red", "black"] as const).map((side) => {
         const occupant = room.seats[side],
           label = side === "red" ? "Đỏ" : "Đen",
-          ready = Boolean(occupant) && room.connected[side] && room.ready[side];
+          ready = Boolean(occupant) && room.connected[side] && room.ready[side],
+          canMoveOpponent = Boolean(
+            player &&
+            room.hostId === userId &&
+            room.status === "WAITING" &&
+            !room.countdown &&
+            occupant &&
+            occupant !== userId &&
+            onMoveToSpectator,
+          );
         return (
           <section
             className={`xq-room-seat ${side}`}
@@ -81,15 +92,34 @@ export function RoomSeats({
                     : "Chưa sẵn sàng"}
             </p>
             {!playingLayout && occupant === userId && readyControl}
-            {!playingLayout && occupant !== userId && (
-              <p className="xq-room-seat-hint">
-                {occupant
-                  ? ready
-                    ? "Đối thủ đã sẵn sàng"
-                    : "Đang chờ đối thủ sẵn sàng"
-                  : "Mời kỳ hữu bằng mã phòng"}
-              </p>
-            )}
+            {!playingLayout &&
+              occupant !== userId &&
+              (canMoveOpponent ? (
+                <Button
+                  variant="secondary"
+                  loading={busy}
+                  disabledReason={
+                    !writable
+                      ? "Cần kết nối và quyền điều khiển ghế."
+                      : (room.spectators?.length ?? 0) >= room.viewerLimit
+                        ? "Phòng không còn chỗ cho người xem"
+                        : undefined
+                  }
+                  onClick={() => {
+                    if (occupant) onMoveToSpectator?.(occupant);
+                  }}
+                >
+                  Chuyển sang người xem
+                </Button>
+              ) : (
+                <p className="xq-room-seat-hint">
+                  {occupant
+                    ? ready
+                      ? "Đối thủ đã sẵn sàng"
+                      : "Đang chờ đối thủ sẵn sàng"
+                    : "Mời kỳ hữu bằng mã phòng"}
+                </p>
+              ))}
           </section>
         );
       })}
@@ -143,6 +173,11 @@ export function RoomSeats({
                     <Button
                       variant="secondary"
                       loading={busy}
+                      disabledReason={
+                        !writable
+                          ? "Cần kết nối và quyền điều khiển ghế."
+                          : undefined
+                      }
                       onClick={() => void onAction("swap-withdraw")}
                     >
                       Rút đề nghị

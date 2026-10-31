@@ -1,5 +1,7 @@
 # T18 / XIAN-54: phòng tự tạo
 
+> **Lưu ý (31/10/2026):** tài liệu này mô tả mã hiện tại. Quyết định PO [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) chưa triển khai (xem mục "Tác động triển khai" của từng YC) và thay mọi câu "Sẵn sàng của cả hai"/"reset Ready cả phòng" ở dưới: phòng tự tạo dùng Host Bắt đầu và Sẵn sàng của đối thủ ([YC2 mục 21](../../product/P1-YC2-TAO-PHONG.md), BA 0.29), ghép trận dùng hộp xác nhận 30 giây ([YC9](../../product/P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)).
+
 > Cấu trúc thư mục: `public/` chứa danh sách phòng công khai (feed, service, store, controller, module). Phần nối kết cả miền game nằm ở `apps/server/src/game/game.runtime.ts`.
 
 RoomStore nhận PoolClient của giao dịch ngoài, không mở pool/giao dịch/provider HTTP riêng. Root owns HTTP/session guards, shared protocol, RealtimeStore actor-first hook, gateway presence callbacks và scheduler. Không dùng trực tiếp trusted RoomScope từ body client.
@@ -15,6 +17,9 @@ RoomStore nhận PoolClient của giao dịch ngoài, không mở pool/giao dị
 RoomScope.activeActorIds là các proof còn active đã được worker/root kiểm mới cho **cả hai** người chơi; không dùng sự tồn tại profile/presence làm proof. Không cung cấp set này thì countdown bị hủy an toàn. Session provider proof ngoài locks, app session/Guest expiry DB recheck trong transaction. Guest deferred existing-room được tiếp tục Ready/ván cùng phòng; không cấp new-room/join-room.
 
 ## API local
+
+Các HTTP mutation sau khi đã vào phòng bắt buộc có `control: {tabId, connectionId, generation}` từ `RoomConnection.getControl()`. Store đối chiếu controller hiện hành và presence đang kết nối dưới `withRoom`; thiếu/sai proof không được ghi. Thế hệ hợp lệ là số nguyên `1..2_147_483_647`. Tab superseded/disconnected chỉ xem; người xem sở hữu kết nối vẫn được trả lời mời xuống ghế và rời phòng. Create/join/read chưa cần controller; cleanup nội bộ tiếp tục đi qua transaction tin cậy. Media/share cũng kiểm proof này dưới actor lock; quyền đọc và token nhận media giữ hợp đồng hiện có.
+
 
 - create(scope,{commandId,timeMinutes?,viewerLimit?,visibility?}) → roomId/version/role RED/inviteCode. Mặc định 10 phút/5 người xem, `CODE_ONLY`; chỉ nhận `CODE_ONLY` hoặc `PUBLIC`, từ chối `LOCKED` khi tạo. Ghi quyền truy cập đã chọn ngay trong giao dịch tạo phòng; `PUBLIC` ghi `public_opened_at` và được catalog Sảnh đọc sau commit, không gọi lệnh đổi quyền riêng. Máy chủ tự sinh UUID và mã 8 chữ số bằng crypto, thử lại tối đa 5 lần khi trùng mã; lưu tên hiển thị `Phòng <mã>`, không nhận tên từ client. Entry receipt fingerprint phân biệt quyền truy cập cùng mức giờ/số người xem; `CODE_ONLY` giữ fingerprint cũ và tương đương bỏ trống `visibility`. ID/mã tự sinh không thuộc fingerprint; gửi lại cùng lệnh trả phòng đã tạo, đổi quyền truy cập với cùng commandId bị từ chối. Không đổi phòng cũ, không cần migration.
 - resolveCode(client,code) → roomId chỉ cho authenticated admission nội bộ; code không bỏ qua LOCKED/auth/seat/capacity. Root trả link `/rooms/:id`, không dùng host/header không tin cậy để sinh absolute URL.

@@ -23,25 +23,41 @@ export function InactivityBanner({
   onStillHere,
 }: InactivityBannerProps) {
   const inactivity = match?.inactivity ?? null;
-  const [now, setNow] = useState(() => Date.now());
+  const clockKey =
+    match && inactivity && match.status === "ACTIVE" && match.turn === role
+      ? `${match.id}/${serverNow}/${inactivity.promptAt}/${inactivity.expiresAt}`
+      : null;
+  const [sample, setSample] = useState(() => {
+    const now = performance.now();
+    return { key: clockKey, receivedAt: now, now };
+  });
 
   useEffect(() => {
-    if (!inactivity) return;
-    const id = window.setInterval(() => setNow(Date.now()), 500);
-    return () => window.clearInterval(id);
-  }, [inactivity]);
+    const now = performance.now();
+    setSample({ key: clockKey, receivedAt: now, now });
+    if (!clockKey) return;
+    const redraw = () =>
+      setSample((previous) => ({ ...previous, now: performance.now() }));
+    const id = window.setInterval(redraw, 500);
+    document.addEventListener("visibilitychange", redraw);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", redraw);
+    };
+  }, [clockKey]);
 
-  if (!match || !inactivity) return null;
-  if (role === "spectator" || match.status !== "ACTIVE") return null;
-  if (match.turn !== role) return null;
+  if (!match || !inactivity || !clockKey) return null;
 
-  // Lệch đồng hồ máy khách so với server, để đếm lùi đúng theo server.
-  const skew = Date.parse(serverNow) - now;
-  const promptAt = Date.parse(inactivity.promptAt) - skew;
-  if (now < promptAt) return null;
+  // Anchor each authoritative snapshot once, then advance with monotonic elapsed time.
+  // Recomputing skew against the ticking time would freeze the warning deadline.
+  const elapsed =
+    sample.key === clockKey ? Math.max(0, sample.now - sample.receivedAt) : 0;
+  const serverTime = Date.parse(serverNow) + elapsed;
+  if (serverTime < Date.parse(inactivity.promptAt)) return null;
 
-  const expiresAt = Date.parse(inactivity.expiresAt) - skew;
-  const left = Math.ceil(Math.max(0, expiresAt - now) / 1000);
+  const left = Math.ceil(
+    Math.max(0, Date.parse(inactivity.expiresAt) - serverTime) / 1000,
+  );
   const canConfirm = inactivity.confirmsLeft > 0;
 
   return (

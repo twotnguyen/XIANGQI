@@ -9,7 +9,7 @@ export type AiOrigin =
       tab: { tabId: string; connectionId: string; generation: number };
     }
   | { kind: "internal" }
-  /** Quét nền: chỉ thu hồi/bỏ dữ liệu của boot đã hết hạn, không yêu cầu owner còn active. */
+  /** Quét nền: thu hồi boot hết hạn hoặc kết thúc ván hết ân hạn, không yêu cầu owner còn active. */
   | { kind: "sweep" };
 
 export interface AiTransaction {
@@ -17,6 +17,12 @@ export interface AiTransaction {
   check(gameId: string): Promise<void>;
   finish(snapshot: AiSnapshot): Promise<void>;
   drop(gameId: string): Promise<void>;
+  /** Sweep only: recheck the physical grace, persist a canonical terminal and release the exact slot. */
+  expire(
+    gameId: string,
+    snapshot: AiSnapshot | null,
+    abandonedBy?: "DISCONNECT",
+  ): Promise<boolean>;
   reclaim(gameId: string, expiredBootId: string): Promise<boolean>;
 }
 

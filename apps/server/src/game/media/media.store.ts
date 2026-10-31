@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
 import type { ShareLevel } from "./media.types.js";
@@ -74,8 +75,27 @@ export class MediaTx {
     return row?.tab_id;
   }
   /**
-   * Lưu hoặc cập nhật mức độ chia sẻ camera/mic của người dùng trong phòng.
+   * Kiểm tra tab, kết nối và thế hệ hiện hành của người dùng dưới actor lock.
    */
+
+  async hasControl(
+    roomId: string,
+    userId: string,
+    control: RoomControlProof,
+  ): Promise<boolean> {
+    const current = await this.client.query(
+      "SELECT 1 FROM xiangqi_realtime.controllers c JOIN xiangqi_room.presence p ON p.room_id=c.room_id AND p.user_id=c.user_id WHERE c.user_id=$1 AND c.room_id=$2 AND c.tab_id=$3 AND c.connection_id=$4 AND c.generation=$5 AND p.connection_id=c.connection_id AND p.connected",
+      [
+        userId,
+        roomId,
+        control.tabId.toLowerCase(),
+        control.connectionId,
+        control.generation,
+      ],
+    );
+    return Boolean(current.rowCount);
+  }
+  /** Lưu mức chia sẻ sau khi đã xác minh controller dưới actor lock. */
   async saveShare(
     roomId: string,
     userId: string,

@@ -141,12 +141,16 @@ function fetchWith(route: FakeFetchRoute) {
   });
 }
 
-function mount(authorizedFetch: ReturnType<typeof fetchWith>) {
+function mount(
+  authorizedFetch: ReturnType<typeof fetchWith>,
+  allowUndo = true,
+) {
   return render(
     createElement(AiGamePage, {
       gameId: id,
       authorizedFetch: authorizedFetch as never,
       getProof: proof,
+      allowUndo,
     }),
   );
 }
@@ -214,6 +218,17 @@ it("shows the server-side undo count from the snapshot", async () => {
     ),
   );
   expect(await screen.findByText("Lượt đi lại: 2/3")).toBeTruthy();
+});
+
+it("hides the P2 undo action and quota for a guest while retaining P1 game controls", async () => {
+  const f = fetchWith(async () => json(envelope(midGame())));
+  mount(f, false);
+  grantControl();
+  expect(await screen.findByRole("button", { name: "Đầu hàng" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Về Sảnh" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Đi lại" })).toBeNull();
+  expect(screen.queryByText(/Lượt đi lại:/)).toBeNull();
+  expect(undoCalls(f)).toHaveLength(0);
 });
 
 it("keeps a newer socket snapshot when an older HTTP read resolves later", async () => {

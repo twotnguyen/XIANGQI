@@ -51,7 +51,11 @@ it("solo host switch uses room CAS and never gives itself a seat optimistically"
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: "Đổi ghế" }));
-  expect(fixture.client.switchSeat).toHaveBeenCalledWith("room", 3);
+  expect(fixture.client.switchSeat).toHaveBeenCalledWith(
+    "room",
+    3,
+    fixture.control,
+  );
   expect(fixture.client.switchSeat).toHaveBeenCalledTimes(1);
   expect(screen.getByText("Bạn · Đỏ")).toBeTruthy();
 });

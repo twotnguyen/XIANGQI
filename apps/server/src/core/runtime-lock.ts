@@ -44,9 +44,15 @@ export async function acquireRuntimeLock(pool: Pool): Promise<RuntimeLock> {
   };
   const onError = (error: Error) => markLost(error);
   const onEnd = () => markLost(new Error("Runtime lock connection ended"));
+  let heartbeatTimer: NodeJS.Timeout | null = null;
   const detach = () => {
+    if (heartbeatTimer) {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = null;
+    }
     client.removeListener("error", onError);
     client.removeListener("end", onEnd);
+    client.on("error", () => {});
   };
   client.on("error", onError);
   client.on("end", onEnd);
@@ -75,6 +81,14 @@ export async function acquireRuntimeLock(pool: Pool): Promise<RuntimeLock> {
         BARRIER_KEY,
       ]);
       await client.query("RESET lock_timeout");
+      heartbeatTimer = setInterval(() => {
+        if (released || lostError) {
+          if (heartbeatTimer) clearInterval(heartbeatTimer);
+          return;
+        }
+        client.query("SELECT 1").catch((err: Error) => markLost(err));
+      }, 30_000);
+      heartbeatTimer.unref();
     }
   } catch (error) {
     detach();

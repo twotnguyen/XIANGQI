@@ -17,7 +17,10 @@ function invalid(): never {
 /**
  * Kiểm tra tính hợp lệ và toàn vẹn của ván đấu AI (tái hiện nước đi, kiểm tra kết quả) và tính toán fingerprint trước khi lưu trữ vào CSDL.
  */
-export function prepareAiHistory(snapshot: AiSnapshot) {
+export function prepareAiHistory(
+  snapshot: AiSnapshot,
+  abandonedBy?: "DISCONNECT",
+) {
   if (
     !uuid.test(snapshot.id) ||
     !uuid.test(snapshot.ownerId) ||
@@ -77,6 +80,11 @@ export function prepareAiHistory(snapshot: AiSnapshot) {
     positions.push(position);
   }
   const outcome = snapshot.outcome;
+  if (
+    abandonedBy !== undefined &&
+    (abandonedBy !== "DISCONNECT" || snapshot.status !== "ABANDONED")
+  )
+    invalid();
   if (snapshot.status === "ABANDONED") {
     if (
       outcome.reason !== "ENGINE_FAILURE" ||
@@ -108,6 +116,7 @@ export function prepareAiHistory(snapshot: AiSnapshot) {
         : outcome.winner === "red"
           ? "RED"
           : "BLACK",
+    ...(abandonedBy ? { abandonedBy } : {}),
   };
   const fingerprint = createHash("sha256")
     .update(

@@ -181,6 +181,31 @@ export class AiReservations {
     };
   }
   /**
+   * Khóa và kiểm tra lại ân hạn vật lý của đúng ván; candidate quét có thể đã cũ.
+   */
+  async expiredPresence(
+    scope: RoomScope,
+    input: { gameId: string; bootId: string },
+  ): Promise<boolean> {
+    const gameId = id(input.gameId),
+      bootId = id(input.bootId),
+      row = await this.slot(scope);
+    if (!row || row.ai_game_id !== gameId || row.ai_boot_id !== bootId)
+      return false;
+    await this.check(scope, { gameId, bootId });
+    await scope.client.query(
+      "SELECT game_id FROM xiangqi_ai.presence WHERE owner_id=$1 AND boot_id=$2 AND game_id=$3 FOR UPDATE",
+      [scope.actor.userId, bootId, gameId],
+    );
+    const expired = (
+      await scope.client.query<{ expired: boolean }>(
+        "SELECT NOT connected AND disconnected_at+interval '30 minutes'<=clock_timestamp() AS expired FROM xiangqi_ai.presence WHERE owner_id=$1 AND boot_id=$2 AND game_id=$3",
+        [scope.actor.userId, bootId, gameId],
+      )
+    ).rows[0];
+    return expired?.expired === true;
+  }
+  /**
    * Giải phóng vị trí ghế chơi cờ với máy khỏi bảng `public.active_players`.
    */
   async release(

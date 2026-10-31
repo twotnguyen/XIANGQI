@@ -249,3 +249,23 @@ it("Esc while leave is pending neither stays nor closes the result", () => {
   expect(f.onLeave).not.toHaveBeenCalled();
   expect(screen.getByRole("dialog")).toBeTruthy();
 });
+
+it("includes rematch controls in the modal keyboard cycle", () => {
+  render(
+    createElement(MatchResult, {
+      match: match(),
+      role: "red",
+      onStay: vi.fn(),
+      onLeave: vi.fn(),
+      rematch: createElement("button", { type: "button" }, "Tái đấu"),
+    }),
+  );
+  const modal = screen.getByRole("dialog");
+  const rematch = within(modal).getByRole("button", { name: "Tái đấu" });
+  const leave = within(modal).getByRole("button", { name: "Rời phòng" });
+  leave.focus();
+  fireEvent.keyDown(leave, { key: "Tab" });
+  expect(document.activeElement).toBe(rematch);
+  fireEvent.keyDown(rematch, { key: "Tab", shiftKey: true });
+  expect(document.activeElement).toBe(leave);
+});

@@ -132,6 +132,19 @@ export class RegistrationModule {
 /**
  * Đọc và thẩm định biến môi trường cấu hình đăng ký (Supabase URL, API keys, kết nối database).
  */
+/** Kích thước pool từ env: mặc định `fallback`, chỉ nhận số nguyên trong [min, max]. */
+function poolSize(
+  value: string | undefined,
+  fallback: number,
+  min: number,
+  max: number,
+): number {
+  if (value === undefined) return fallback;
+  const size = Number(value);
+  if (!/^\d+$/.test(value) || size < min || size > max) throw new Error();
+  return size;
+}
+
 export function readRegistrationConfig(
   env: Record<string, string | undefined>,
 ) {
@@ -178,6 +191,9 @@ export function readRegistrationConfig(
       secret,
       databaseUrl,
       loginEnabled: loginEnabled === "true",
+      // Pool chính gồm 1 kết nối giữ khóa runtime; phần còn lại phục vụ phòng, AI, lịch sử, bạn bè.
+      poolMax: poolSize(env.DB_POOL_MAX, 5, 5, 20),
+      loginPoolMax: poolSize(env.LOGIN_POOL_MAX, 5, 2, 20),
     };
   } catch {
     throw new Error("Invalid registration configuration");
@@ -224,16 +240,19 @@ export async function createRegistrationRuntime(
       ),
       rejectUnauthorized: true,
     },
-    max: 5,
+    max: settings.poolMax,
     connectionTimeoutMillis: 10000,
   };
   const pool = new Pool(poolOptions);
   pool.on("error", logPoolError);
+  pool.on("connect", (client) => {
+    client.on("error", () => {});
+  });
   let sessionPool: Pool | null = null;
   let schemaReady = true;
   try {
     const schema = await pool.query(
-      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
+      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.username_challenges') AND attname IN ('pending_request_hash','pending_otp_hash','last_issue_at') AND NOT attisdropped)=3 AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
     );
     if (
       !schema.rows[0]?.ready ||
@@ -247,7 +266,10 @@ export async function createRegistrationRuntime(
       // Registration keeps its connection while invoking password/session work.
       // A separate pool prevents five concurrent registrations exhausting their own nested calls.
       // Login pool: each new connection is already app_server; this pool is never reset to another role.
-      sessionPool = createLoginPool(poolOptions);
+      sessionPool = createLoginPool({
+        ...poolOptions,
+        max: settings.loginPoolMax,
+      });
       sessionPool.on("error", logPoolError);
       await sessionPool.query("SELECT 1");
     }

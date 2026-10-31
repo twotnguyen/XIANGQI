@@ -47,3 +47,34 @@ it("keeps eight digits only and rejects letters", async () => {
   await user.click(screen.getByRole("button", { name: "Vào phòng" }));
   expect(join).toHaveBeenCalledTimes(1);
 });
+
+it("shows and locks the original choices while recovering an uncertain room creation", async () => {
+  const create = vi.fn().mockResolvedValue(undefined);
+  const input = {
+    timeMinutes: 15 as const,
+    viewerLimit: 2,
+    visibility: "PUBLIC" as const,
+  };
+  render(
+    createElement(CreateRoomForm, { onCreate: create, recoveryInput: input }),
+  );
+  expect((screen.getByLabelText("15 phút") as HTMLInputElement).checked).toBe(
+    true,
+  );
+  expect((screen.getByLabelText("Người xem") as HTMLSelectElement).value).toBe(
+    "2",
+  );
+  expect(
+    (screen.getByLabelText("Người xem") as HTMLSelectElement).disabled,
+  ).toBe(true);
+  expect(
+    (screen.getByLabelText("Quyền truy cập") as HTMLSelectElement).value,
+  ).toBe("PUBLIC");
+  expect(screen.getByRole("status").textContent).toContain(
+    "không tạo thêm phòng",
+  );
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Tạo phòng" }));
+  expect(create).toHaveBeenCalledExactlyOnceWith(input);
+});

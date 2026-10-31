@@ -1,6 +1,10 @@
 # P1 · YC3 — Mời vào phòng bằng link/mã và bạn bè online
 
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
 **Ngày lập:** 30/10/2026. **Phạm vi:** EP-03, US-03.1 và US-03.2, tổng **28 AC** (7 + 21). Giữ hạn P1 theo BA, không tái ước lượng hay đổi kế hoạch Jira trong tài liệu này.
+
+**Rà soát 31/10/2026:** PO chốt thêm bốn điểm tại mục 17 (giới hạn thử mã sai, tìm username tối thiểu 3 ký tự, không tái sử dụng mã phòng, tối đa 5 popup mời); **chưa triển khai**.
 
 **Trạng thái:** PO đã chốt Q1–Q8 và tên người gửi ngày 30/10/2026; đã triển khai server/web và kiểm chứng local theo mục 13. Bằng chứng local không phải xác nhận CI/Cloud hoặc nghiệm thu PO; không đổi trạng thái Jira.
 
@@ -24,7 +28,7 @@ Thứ tự ưu tiên: **BA Phần 0 → phần BA còn lại → Backlog P1 → 
 | Một số AC ghi “mã 8 ký tự”                                  | BA 2.7 quy định cụ thể **8 chữ số**, máy chủ cấp; giữ cả số 0 đầu nếu có. Không suy thành mã chữ/số tùy ý              |
 | Nguồn cũ có QR | BA 0.20 **loại QR khỏi cả P1/P2**, chỉ chia sẻ link/mã; không tạo ảnh/nút QR |
 | Mẫu popup từng ghi `[Tên Host]`                             | PO đã chốt dùng **tên người thực sự gửi**, cả Host và người chơi còn lại đủ quyền đều được mời; BA 2.5/0.19 đã đồng bộ |
-| BA 5.5 nhắc DM/unread | **P1 theo 0.20**; badge DM tách số đếm/đích chuông lời mời kết bạn; Elo/thẻ Ranked vẫn P2 |
+| BA 5.5 nhắc DM/unread | **P1 theo 0.20**; badge DM tách số đếm/đích chuông lời mời kết bạn; Elo/thẻ Ranked P1 theo BA 0.27 |
 | Mô tả Thách đấu cũ có câu “nhập tên phòng” | P1 dùng form YC2 hiện hành **không nhập tên**; mặc định Thách đấu 10 phút/CODE_ONLY/5 người xem |
 
 BA, Backlog, Danh mục và tổng quan yêu cầu đã được đồng bộ theo lựa chọn PO. Không tự đổi lịch, ước lượng hoặc trạng thái Task Jira.
@@ -36,7 +40,7 @@ BA, Backlog, Danh mục và tổng quan yêu cầu đã được đồng bộ th
 | Chia sẻ/sao chép link và mã; nhập mã tại Sảnh                        | Tạo phòng, mức giờ, Ready, đếm ngược, đổi bên, Host transfer: YC2                                    |
 | Giữ đích qua login/register/onboarding Google/Khách theo quyền YC1   | Tự rời ván/đầu hàng hoặc bỏ ưu tiên phiên để nhận lời mời mới                                        |
 | Xếp ghế trống hoặc người xem khi vào; xử lý đầy/đóng/khóa/bị chặn    | Toàn bộ danh sách phòng PUBLIC, đổi quyền phòng, quản lý ghế/kick: YC6; YC3 kiểm giao điểm vào phòng |
-| Tìm/kết bạn, thu hồi/chấp nhận/từ chối/hết hạn/hủy kết bạn; DM/unread và Thách đấu theo mục 15 | Ranked, ghép ngẫu nhiên, lịch sử/replay: P2; QR bị loại hẳn |
+| Tìm/kết bạn, thu hồi/chấp nhận/từ chối/hết hạn/hủy kết bạn; DM/unread và Thách đấu theo mục 15 | Ranked, ghép ngẫu nhiên, lịch sử/replay: thuộc P1 nhưng ở YC khác (BA 0.27); QR bị loại hẳn |
 | Online/Đang đấu/Offline, chuông kết bạn, badge DM tách biệt | Không tự tạo phòng khi mở Friends; chỉ xác nhận form Thách đấu mới tạo rồi mời |
 | Mời bạn online trong phòng, popup 30 giây và xử lý Tham gia/Từ chối  | Email/push notification ngoài ứng dụng hoặc lời mời phòng lưu trong chuông                           |
 
@@ -125,7 +129,7 @@ flowchart TD
 | Bị kick/chặn trong vòng đời phòng                    | Không vào lại bằng mã/link/lời mời mới của cùng danh tính cho đến khi phòng đóng                                                  |
 | Ghế đang mất mạng nhưng còn 60 giây                  | Giữ ghế cho chủ cũ, không xem là ghế trống                                                                                        |
 | Người xem nối lại trong 5 phút                       | Luồng nối lại giữ chỗ theo YC6, kể cả phòng đã khóa; quá hạn coi là người mới                                                     |
-| Sau ván tự tạo                                       | Phòng về WAITING theo YC2; lời mời/join phải đọc trạng thái hiện tại, không áp dụng quy tắc FINISHED của phòng ghép ngẫu nhiên P2 |
+| Sau ván tự tạo                                       | Phòng về WAITING theo YC2; lời mời/join phải đọc trạng thái hiện tại, không áp dụng quy tắc FINISHED của phòng ghép ngẫu nhiên (YC9) |
 
 Việc có thêm token/link không làm bỏ qua kiểm tra vị trí chơi, danh sách chặn hoặc sức chứa.
 
@@ -247,8 +251,8 @@ Bảng dưới giữ **Given/When/Then gốc và mức kiểm bắt buộc theo 
 | AC-03.1.4  | Ghế trống được cấp đúng phe còn lại                                                                       | E2E     | T29                                  |
 | AC-03.1.5  | Hết ghế, còn chỗ xem → Người xem và đúng thông báo                                                        | E2E     | T29                                  |
 | AC-03.1.6  | Hết chỗ: Access Denied nếu không có phòng xem nguồn; đang xem A chuyển B thì giữ A và báo lỗi tại chỗ     | E2E     | T29                                  |
-| AC-03.1.7  | Mã sai/phòng đóng trả đúng lỗi, không join                                                                | E2E     | T29                                  |
-| AC-03.2.1  | Tìm tiền tố username không phân biệt hoa thường, đúng trường, không Guest                                 | E2E     | T49                                  |
+| AC-03.1.7  | Mã sai/phòng đóng trả đúng lỗi, không join. Thêm: tối đa 10 lần nhập mã sai/60 giây (AC-YC3-RV-01); mã đã dùng không bao giờ cấp lại (AC-YC3-RV-03). | E2E     | T29                                  |
+| AC-03.2.1  | Tìm tiền tố username không phân biệt hoa thường, đúng trường, không Guest. Thêm: tiền tố tối thiểu 3 ký tự, tối đa 20 kết quả (AC-YC3-RV-02). | E2E     | T49                                  |
 | AC-03.2.2  | Gửi kết bạn → bên kia có pending và chuông                                                                | E2E     | T49                                  |
 | AC-03.2.3  | Chấp nhận tạo bạn hai phía và reset bộ đếm từ chối cặp; Từ chối xóa pending                               | E2E     | T49                                  |
 | AC-03.2.4  | Thu hồi xóa pending ở hai phía                                                                            | I       | T49                                  |
@@ -264,7 +268,7 @@ Bảng dưới giữ **Given/When/Then gốc và mức kiểm bắt buộc theo 
 | AC-03.2.14 | Nhắn tin/Thách đấu hoạt động có kiểm quyền theo AC-P2-18.1–3 và AC-P2-19.1–3; không QR | E2E | T49 và Task mở rộng giữ mã cũ |
 | AC-03.2.15 | Thành viên ngồi ghế có phần mời bạn trong Chia sẻ; người xem không nút Chia sẻ                            | E2E     | T49                                  |
 | AC-03.2.16 | Online và hết cooldown10giây toàn người gửi mới mời được; Offline/BUSY/cooldown có lý do                  | E2E     | T49                                  |
-| AC-03.2.17 | Nhiều popup đồng thời, tên người thực sự gửi, hạn gốc30giây; người gửi rời ghế/hủy bạn không tự thu hồi   | E2E     | T49                                  |
+| AC-03.2.17 | Nhiều popup đồng thời, tên người thực sự gửi, hạn gốc30giây; người gửi rời ghế/hủy bạn không tự thu hồi. Thêm: tối đa 5 popup đồng thời cho một người nhận, lời mời thứ 6 bị từ chối lúc gửi (AC-YC3-RV-04). | E2E     | T49                                  |
 | AC-03.2.18 | Tham gia kiểm lại chỗ; đang xem A thì nhận B thành công mới rời A, B lỗi vẫn giữ A                        | E2E     | T49                                  |
 | AC-03.2.19 | Từ chối/X/Esc phản hồi đúng người gửi và cooldown10giây; hết hạn không giả Từ chối; popup khác giữ nguyên | E2E     | T49                                  |
 | AC-03.2.20 | Khóa phòng sau khi gửi → lời mời chưa dùng bị thu hồi, không join                                         | I       | T49                                  |
@@ -437,7 +441,7 @@ Popup dùng **tên người thực sự gửi**, không luôn ghi Host. Quyền 
 
 ### 15.2 Nhắn tin trực tiếp và tin chưa đọc — US-P2-18 / XIAN-132
 
-- Chỉ hai thành viên accepted friends đọc/gửi; kiểm độc lập API/socket/RLS. Người lạ/bên thứ ba/Khách bị từ chối. Giữ filter/rate limit hiện hành; **sticker vẫn P2**.
+- Chỉ hai thành viên accepted friends đọc/gửi; kiểm độc lập API/socket/RLS. Người lạ/bên thứ ba/Khách bị từ chối. Giữ filter/rate limit hiện hành; **sticker DM đã lên P1 theo BA0.24**, không mở DM cho Khách dù Khách được sticker trong kênh phòng đúng vai trò.
 - Lịch sử **lưu bền**, không xóa khi đóng phòng/hủy bạn. Hủy bạn thu hồi đọc/gửi ngay và ẩn hội thoại/history, kể cả hội thoại mở/request/socket đang chạy; kết bạn lại hiện lại.
 - Badge là tổng **incoming chưa đọc từ bạn hiện tại**, không tính tin mình. Tách khỏi chuông kết bạn và phản hồi lời mời phòng.
 - Chỉ read khi tin thực sự hiện trong **viewport của hội thoại ở tab hoạt động**; tải ngầm/tab nền/tin ngoài vùng nhìn không đủ. Server lưu/đồng bộ read state giữa thiết bị.
@@ -455,4 +459,37 @@ Tái đấu custom và Không giới hạn/chống treo thuộc P1 ở [YC2 mụ
 - UI production hai thành viên: kết bạn qua tìm kiếm/chuông; Thách đấu mở form 10 phút/CODE_ONLY/5; Hủy giữ số phòng bằng 0 trên DB; xác nhận tạo phòng rồi bạn nhận popup và vào cùng phòng thành công.
 - DM gửi hai chiều, badge incoming riêng với chuông kết bạn, đọc hội thoại cập nhật badge; reload vẫn giữ lịch sử trên DB. Dialog giới hạn chiều cao và cuộn lịch sử riêng.
 - Thách đấu lỗi gửi mời vẫn giữ phòng đã tạo; retry tạo dùng cùng commandId/input, không tự tạo phòng thứ hai sau phản hồi không rõ. Backend tiếp tục kiểm friend/presence/cooldown và lời mời cũ 30 giây.
-- Không còn QR. Chưa áp migration lên Cloud, chưa kiểm CI/PO hoặc push; bằng chứng local không thay nghiệm thu môi trường phát hành.
+- Không còn QR. Cloud: đã áp các migration `20261101`–`20261102` ngày 31/10/2026 (xem BACKLOG-P1 mục 11), chưa kiểm CI/PO hoặc push; bằng chứng local không thay nghiệm thu môi trường phát hành.
+
+## 17. Quyết định PO khi rà soát YC3 — 31/10/2026
+
+**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Các quyết định dưới đây bổ sung cho mục 5, 6, 8, 11.
+
+| # | Quyết định | AC bổ sung |
+|---|---|---|
+| 1 | **Giới hạn thử mã sai:** tối đa **10 lần nhập mã sai trong 60 giây** (cửa sổ trượt) mỗi tài khoản hoặc phiên Khách. Vượt: *"Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau {n} giây"*, không kiểm tra mã trong thời gian đó. Nhập đúng mã không bị tính | AC-YC3-RV-01 |
+| 2 | **Tìm bạn:** tiền tố username **tối thiểu 3 ký tự**, tối đa **20 kết quả** sắp theo username tăng dần; dưới 3 ký tự không truy vấn và hiện gợi ý nhập thêm; loại bản thân và Khách | AC-YC3-RV-02 |
+| 3 | **Mã phòng không tái sử dụng:** mã 8 chữ số đã cấp cho một phòng không bao giờ cấp lại cho phòng khác; link/mã của phòng đã đóng luôn báo *"Mã phòng không tồn tại hoặc phòng đã đóng"*. Trùng mã khi sinh thì sinh lại | AC-YC3-RV-03 |
+| 4 | **Tối đa 5 popup mời đồng thời** cho một người nhận (lời mời còn hạn, chưa trả lời). Lời mời thứ 6 bị **từ chối tại lúc gửi**: người gửi thấy *"Người nhận đang có quá nhiều lời mời, vui lòng thử lại sau"*; không tạo invite, không bắt đầu cooldown người gửi, không phát thông báo Từ chối và không tính vào bộ đếm từ chối kết bạn | AC-YC3-RV-04 |
+
+**PO xác nhận 31/10/2026 — ba điểm a–c:**
+
+| # | Điểm | Mặc định |
+|---|---|---|
+| a | Trạng thái Online | Bạn bè luôn thấy Online/Đang đấu/Offline; không có chế độ ẩn |
+| b | DM | Không sửa/xóa tin, không xóa hội thoại; lịch sử lưu bền theo BA 0.20; độ dài và tốc độ theo quy tắc chat hiện hành (200 ký tự, 5 tin/10 giây dùng chung) |
+| c | Hủy kết bạn | Có hộp xác nhận trước khi hủy; không thông báo cho phía kia ngoài việc danh sách cập nhật |
+
+### 17.1 Tiêu chí bổ sung
+
+| Mã | Given / When | Then bắt buộc |
+|---|---|---|
+| AC-YC3-RV-01 | Một tài khoản hoặc phiên Khách nhập 10 mã sai trong 60 giây rồi nhập tiếp (kể cả mã đúng) | Bị từ chối kèm số giây chờ; hết cửa sổ trượt thì dùng lại được; nhập đúng không làm tăng bộ đếm; Khách đổi phiên mới có bộ đếm mới (chấp nhận, không chặn theo IP) |
+| AC-YC3-RV-02 | Tìm với 0, 1, 2 ký tự và với tiền tố khớp hơn 20 tài khoản | Dưới 3 ký tự không gọi truy vấn và hiện gợi ý; từ 3 ký tự trả tối đa 20 kết quả, thứ tự username tăng dần; gọi API trực tiếp với dưới 3 ký tự bị từ chối; không có Khách và bản thân |
+| AC-YC3-RV-03 | Phòng đóng; phòng mới được tạo sau đó | Phòng mới không bao giờ nhận mã của phòng đã đóng; mở link/mã cũ luôn báo phòng không tồn tại hoặc đã đóng |
+| AC-YC3-RV-04 | Người nhận đang có 5 popup mời còn hạn; người thứ sáu gửi mời | Lời mời bị từ chối ngay tại server với thông báo cho người gửi; không invite mới, cooldown không bắt đầu; khi một popup hết hạn/được trả lời thì gửi lại được |
+
+### 17.2 Tác động triển khai (chưa làm)
+
+- Cần bộ đếm thử mã sai theo tài khoản/phiên (cửa sổ trượt 60 giây), ngưỡng tìm bạn tối thiểu 3 ký tự và trần 20 kết quả ở server và client, lưu mã phòng đã dùng (không tái sử dụng), đếm popup mời còn hạn theo người nhận.
+- Bằng chứng ở mục 13 và 16 là trước các thay đổi này; không kế thừa PASS.

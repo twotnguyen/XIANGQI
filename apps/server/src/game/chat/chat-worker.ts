@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from "pg";
 import type { ChatChannel } from "./chat-store.js";
+import { transaction } from "../../core/postgres.js";
 type Cursor = { deadline: string; messageId: string };
 type Entry = Cursor & { roomId: string; channel: ChatChannel };
 /**
@@ -39,26 +40,8 @@ export class ChatOutboxWorker {
     this.closed = true;
     await this.inFlight?.catch(() => {});
   }
-  private async transaction<T>(
-    work: (client: PoolClient) => Promise<T>,
-  ): Promise<T> {
-    const client = await this.pool.connect();
-    let broken = false;
-    try {
-      await client.query("BEGIN; SET LOCAL ROLE app_server");
-      const result = await work(client);
-      await client.query("COMMIT");
-      return result;
-    } catch (error) {
-      try {
-        await client.query("ROLLBACK");
-      } catch {
-        broken = true;
-      }
-      throw error;
-    } finally {
-      client.release(broken);
-    }
+  private transaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
+    return transaction(this.pool, work);
   }
   private async batch(): Promise<void> {
     const entries = await this.transaction(async (client) => {

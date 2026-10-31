@@ -106,6 +106,30 @@ it("accepts matching project configuration and a session pooler", () => {
     url: configured.SUPABASE_URL,
   });
 });
+it("keeps the default pool sizes and accepts bounded overrides from the environment", () => {
+  expect(readRegistrationConfig(configured)).toMatchObject({
+    poolMax: 5,
+    loginPoolMax: 5,
+  });
+  expect(
+    readRegistrationConfig({
+      ...configured,
+      DB_POOL_MAX: "8",
+      LOGIN_POOL_MAX: "3",
+    }),
+  ).toMatchObject({ poolMax: 8, loginPoolMax: 3 });
+});
+it.each([
+  { DB_POOL_MAX: "4" },
+  { DB_POOL_MAX: "21" },
+  { DB_POOL_MAX: "5.5" },
+  { LOGIN_POOL_MAX: "1" },
+  { LOGIN_POOL_MAX: "x" },
+])("rejects out-of-range pool size %j", (override) => {
+  expect(() => readRegistrationConfig({ ...configured, ...override })).toThrow(
+    "Invalid registration configuration",
+  );
+});
 it.each([
   { SUPABASE_URL: "https://other.supabase.co" },
   { SUPABASE_SECRET_KEY: "" },

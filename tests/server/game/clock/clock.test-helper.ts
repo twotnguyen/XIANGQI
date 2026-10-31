@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { applySql } from "../../fixtures/apply-sql.test-helper.js";
 import { randomUUID } from "node:crypto";
 import { Pool, type PoolClient } from "pg";
 export const databaseUrl = process.env.CLOCK_TEST_DATABASE_URL;
@@ -17,14 +17,7 @@ if (databaseUrl) {
 }
 export const pool = new Pool({ connectionString: databaseUrl });
 async function apply(file: string) {
-  const c = await pool.connect();
-  try {
-    if (!file.includes("test-fixture")) await c.query("SET ROLE postgres");
-    await c.query(await readFile(file, "utf8"));
-  } finally {
-    await c.query("ROLLBACK; RESET ROLE");
-    c.release();
-  }
+  await applySql(pool, file);
 }
 export async function reset() {
   if (!databaseUrl) throw new Error("Dedicated test URL required");

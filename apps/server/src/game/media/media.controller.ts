@@ -1,3 +1,4 @@
+import type { RoomControlProof } from "@xiangqi/shared";
 import {
   Body,
   Controller,
@@ -150,10 +151,21 @@ export class MediaController {
   @Header("Cache-Control", "no-store")
   share(@Req() request: AuthenticatedRequest, @Body() body: unknown) {
     const input = (body ?? {}) as Record<string, unknown>;
+    const control = input.control as Partial<RoomControlProof> | undefined;
     if (
       typeof input.roomId !== "string" ||
       typeof input.level !== "string" ||
-      !(SHARE_LEVELS as string[]).includes(input.level as string)
+      !(SHARE_LEVELS as string[]).includes(input.level as string) ||
+      !control ||
+      typeof control.tabId !== "string" ||
+      !TAB_ID.test(control.tabId) ||
+      typeof control.connectionId !== "string" ||
+      !control.connectionId ||
+      control.connectionId.length > 128 ||
+      typeof control.generation !== "number" ||
+      !Number.isSafeInteger(control.generation) ||
+      control.generation <= 0 ||
+      control.generation > 2_147_483_647
     )
       invalidInput("MEDIA_INPUT_INVALID");
     return this.media
@@ -161,6 +173,7 @@ export class MediaController {
         this.user(request),
         input.roomId as string,
         input.level as ShareLevel,
+        control as RoomControlProof,
       )
       .catch(fail);
   }

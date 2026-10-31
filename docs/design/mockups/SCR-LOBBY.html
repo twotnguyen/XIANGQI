@@ -843,11 +843,11 @@
           </button>
         </div>
 
-        <!-- MODE 3: GHÉP NGẪU NHIÊN CASUAL (P2) -->
+        <!-- MODE 3: GHÉP NGẪU NHIÊN CASUAL (P1 theo BA 0.27) -->
         <div class="mode-card">
           <div>
-            <div class="mode-badge" style="background: rgba(100, 116, 139, 0.25); color: #94A3B8; border: 1px solid #475569;">🔒 Sắp ra mắt (P2)</div>
-            <div class="mode-icon-box" style="filter: grayscale(0.5);">🍵</div>
+            <div class="mode-badge" style="background: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid #10B981;">P1 · BA 0.27</div>
+            <div class="mode-icon-box">🍵</div>
             <h3 class="mode-title" style="color: #CBD5E1;">Ghép Ngẫu Nhiên</h3>
             <p class="mode-desc">
               Tìm đối thủ giao lưu tức thì không tính Elo. Cố định 15 phút mỗi bên. Riêng tư 100%, không người xem.
@@ -858,15 +858,15 @@
               <span class="rule-pill">Chat & Cam riêng</span>
             </div>
           </div>
-          <button type="button" class="btn-mode-cta" style="background: rgba(255,255,255,0.06); border: 1px solid #475569; color: #94A3B8; cursor: pointer;" onclick="alert('Tính năng Đánh Thường ghép ngẫu nhiên thuộc Giai đoạn 2 (P2) · Sắp ra mắt!')">
+          <button type="button" class="btn-mode-cta" style="background: rgba(16,185,129,0.2); border: 1px solid #10B981; color: #6EE7B7; cursor: pointer;" onclick="openMatchmakingModal('CASUAL')">
             ⚡ Ghép Ngẫu Nhiên (15p)
           </button>
         </div>
 
-        <!-- MODE 4: ĐÁNH HẠNG ELO (P2) -->
+        <!-- MODE 4: ĐÁNH HẠNG ELO (P1 theo BA 0.27) -->
         <div class="mode-card featured">
           <div>
-            <div class="mode-badge badge-ranked">🔒 Sắp ra mắt (P2)</div>
+            <div class="mode-badge badge-ranked">P1 · BA 0.27</div>
             <div class="mode-icon-box">🏆</div>
             <h3 class="mode-title" style="color: #FCA5A5;">Đánh Xếp Hạng (Ranked)</h3>
             <p class="mode-desc">
@@ -878,7 +878,7 @@
               <span class="rule-pill">10 phút Rapid</span>
             </div>
           </div>
-          <button type="button" class="btn-mode-cta btn-mode-ranked" onclick="openMatchmakingModal()">
+          <button type="button" class="btn-mode-cta btn-mode-ranked" onclick="openMatchmakingModal('RANKED')">
             🏆 TÌM TRẬN XẾP HẠNG (Demo) ❯
           </button>
         </div>
@@ -1064,28 +1064,42 @@
     </div>
   </div>
 
-  <!-- MODAL 2: MODAL-MATCHMAKING (RANKED QUEUE) -->
+  <!-- MODAL 2: MODAL-MATCHMAKING (Casual + Ranked; BA 0.36: tìm 2 phút, xác nhận 30 giây) -->
   <div id="modal-matchmaking" class="modal-backdrop">
     <div class="modal-box" style="text-align: center;">
       <div class="modal-header">
-        <h3 style="color: #FCA5A5;">⚔️ Tìm Trận Xếp Hạng (Ranked Elo)</h3>
+        <h3 id="mm-title" style="color: #FCA5A5;">⚔️ Tìm Trận Xếp Hạng (Ranked Elo)</h3>
         <button type="button" onclick="cancelMatchmaking()" style="background: none; border: none; font-size: 18px; color: #C8B6A2; cursor: pointer;">✕</button>
       </div>
       <div class="modal-body">
-        <div class="radar-circle">
-          <span style="font-size: 32px;">⚔️</span>
+        <!-- Giai đoạn 1: đang tìm (tối đa 2 phút) -->
+        <div id="mm-stage-search">
+          <div class="radar-circle"><span style="font-size: 32px;">⚔️</span></div>
+          <h4 style="font-size: 16px; color: #FFF; margin-bottom: 4px;">Đang Tìm Đối Thủ...</h4>
+          <p style="font-size: 12px; color: var(--gold-light);" id="queue-status-text">Ranked: biên Elo ±100, mở thêm ±50 mỗi 10 giây đến ±400</p>
+          <div style="font-size: 24px; font-weight: 800; color: #FFF; margin: 12px 0;" id="queue-timer">00:00</div>
+          <div style="font-size: 11px; color: #C8B6A2; margin-bottom: 10px;">Tối đa 2 phút; hết thời gian sẽ dừng và báo tìm lại sau. Hủy bất kỳ lúc nào, không phạt.</div>
+          <button type="button" id="btn-cancel-queue" onclick="cancelMatchmaking()" style="width: 100%; height: 40px; background: rgba(255,255,255,0.1); border: 1.5px solid #6B7280; border-radius: 8px; color: #E5E7EB; cursor: pointer;">
+            ✕ Hủy Tìm Trận (không mất điểm)
+          </button>
         </div>
-        <h4 style="font-size: 16px; color: #FFF; margin-bottom: 4px;">Đang Tìm Đối Thủ Tương Đương Elo...</h4>
-        <p style="font-size: 12px; color: var(--gold-light);" id="queue-status-text">Đang tìm người chơi trong khoảng Elo 1180 – 1380</p>
-        <div style="font-size: 24px; font-weight: 800; color: #FFF; margin: 12px 0;" id="queue-timer">00:08</div>
-
-        <div style="background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.4); padding: 8px 10px; border-radius: 6px; font-size: 11px; color: #FCA5A5; line-height: 1.4; margin-bottom: 16px;">
-          ⚠️ <strong>Lưu ý:</strong> Ván Ranked cố định 10 phút, cấm 100% người xem vào xem và cấm xin đi lại (Undo). Bạn có thể bấm Hủy bất kỳ lúc nào trước khi tìm thấy đối thủ.
+        <!-- Giai đoạn 2: đã ghép, hộp xác nhận 30 giây (không hiện tên/Elo đối thủ) -->
+        <div id="mm-stage-confirm" style="display: none;">
+          <h4 style="font-size: 16px; color: #86EFAC; margin-bottom: 4px;">✓ Đã Ghép Được Đối Thủ</h4>
+          <p style="font-size: 12px; color: #C8B6A2;">Thông tin đối thủ chỉ hiện khi cả hai đã xác nhận.</p>
+          <div style="font-size: 32px; font-weight: 800; color: #FFF; margin: 12px 0;" id="mm-confirm-timer">30s</div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" id="btn-mm-decline" onclick="declineMatch()" style="flex: 1; height: 40px; background: rgba(255,255,255,0.1); border: 1.5px solid #6B7280; border-radius: 8px; color: #E5E7EB; cursor: pointer;">Từ chối</button>
+            <button type="button" id="btn-mm-accept" onclick="acceptMatch()" style="flex: 1; height: 40px; background: linear-gradient(180deg, #15803D 0%, #166534 100%); border: none; border-radius: 8px; color: #FFF; font-weight: 700; cursor: pointer;">Xác nhận</button>
+          </div>
+          <p style="font-size: 11px; color: #C8B6A2; margin-top: 8px;" id="mm-confirm-note">Hết 30 giây không xác nhận bạn sẽ về Sảnh và không tự tìm tiếp.</p>
         </div>
-
-        <button type="button" id="btn-cancel-queue" onclick="cancelMatchmaking()" style="width: 100%; height: 40px; background: rgba(255,255,255,0.1); border: 1.5px solid #6B7280; border-radius: 6px; color: #FFF; font-weight: 700; cursor: pointer;">
-          ✕ Hủy Tìm Trận (An toàn không mất điểm)
-        </button>
+        <!-- Giai đoạn 3: hết thời gian -->
+        <div id="mm-stage-timeout" style="display: none;">
+          <h4 style="font-size: 16px; color: #FCA5A5;">Không tìm được đối thủ</h4>
+          <p style="font-size: 12px; color: #C8B6A2; margin: 8px 0 12px;">Vui lòng tìm lại sau.</p>
+          <button type="button" onclick="cancelMatchmaking()" style="width: 100%; height: 40px; background: rgba(255,255,255,0.1); border: 1.5px solid #6B7280; border-radius: 8px; color: #E5E7EB; cursor: pointer;">Về Sảnh</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1189,37 +1203,86 @@
       window.location.href = 'SCR-WAITING-ROOM.html?room=999&seat=black';
     }
 
-    // Matchmaking Logic
+    // Matchmaking Logic (BA 0.36 / YC9 mục 16): tìm tối đa 2 phút; ghép được -> xác nhận 30 giây
     let matchTimer = null;
+    let confirmTimer = null;
     let matchSeconds = 0;
+    let matchMode = 'RANKED';
 
-    function openMatchmakingModal() {
-      if (savedUser && savedUser.is_guest) {
+    function mmShow(stage) {
+      ['search', 'confirm', 'timeout'].forEach(s => {
+        document.getElementById('mm-stage-' + s).style.display = (s === stage) ? 'block' : 'none';
+      });
+    }
+
+    function openMatchmakingModal(mode) {
+      matchMode = mode || 'RANKED';
+      if (matchMode === 'RANKED' && savedUser && savedUser.is_guest) {
         alert('⚠️ Chế độ Khách không được phép tham gia Đánh Xếp Hạng (Ranked Elo). Vui lòng Đăng xuất để tạo tài khoản chính thức!');
         return;
       }
+      document.getElementById('mm-title').textContent = matchMode === 'RANKED' ? '⚔️ Tìm Trận Xếp Hạng (Ranked Elo)' : '⚡ Ghép Ngẫu Nhiên (15 phút)';
+      document.getElementById('queue-status-text').textContent = matchMode === 'RANKED' ? 'Ranked: biên Elo ±100, mở thêm ±50 mỗi 10 giây đến ±400' : 'Đánh Thường: không tính Elo';
       openModal('modal-matchmaking');
+      mmShow('search');
       matchSeconds = 0;
+      document.getElementById('queue-timer').textContent = '00:00';
       clearInterval(matchTimer);
+      clearInterval(confirmTimer);
       matchTimer = setInterval(() => {
         matchSeconds++;
-        const s = matchSeconds < 10 ? '0' + matchSeconds : matchSeconds;
-        document.getElementById('queue-timer').textContent = '00:' + s;
-
-        // Mock opponent found at 4 seconds
-        if (matchSeconds === 4) {
-          document.getElementById('queue-status-text').innerHTML = '<strong style="color: #86EFAC;">✓ ĐÃ TÌM THẤY ĐỐI THỦ: Trần Hưng Đạo (1290 Elo)! Đang vào trận...</strong>';
-          document.getElementById('btn-cancel-queue').disabled = true;
-          document.getElementById('btn-cancel-queue').textContent = 'Đang khởi tạo bàn cờ...';
-          setTimeout(() => {
-            window.location.href = 'SCR-GAME-ROOM.html?mode=ranked&match_id=rank_8892';
-          }, 1200);
-        }
+        const m = Math.floor(matchSeconds / 60), s = matchSeconds % 60;
+        document.getElementById('queue-timer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        // Demo: tìm thấy đối thủ ở giây thứ 4 (thực tế tối đa 2 phút = 120 giây)
+        if (matchSeconds === 4) { clearInterval(matchTimer); showConfirmBox(); }
+        if (matchSeconds >= 120) { clearInterval(matchTimer); mmShow('timeout'); }
       }, 1000);
+    }
+
+    function showConfirmBox() {
+      mmShow('confirm');
+      let left = 30;
+      const timerEl = document.getElementById('mm-confirm-timer');
+      timerEl.textContent = left + 's';
+      clearInterval(confirmTimer);
+      confirmTimer = setInterval(() => {
+        left--;
+        timerEl.textContent = left + 's';
+        if (left <= 0) { clearInterval(confirmTimer); declineMatch(true); }
+      }, 1000);
+    }
+
+    function acceptMatch() {
+      clearInterval(confirmTimer);
+      document.getElementById('btn-mm-accept').disabled = true;
+      document.getElementById('btn-mm-decline').disabled = true;
+      document.getElementById('mm-confirm-note').textContent = 'Đã xác nhận. Chờ đối thủ xác nhận...';
+      // Demo: đối thủ xác nhận sau 1,5 giây -> đếm 3-2-1 -> vào phòng
+      setTimeout(() => {
+        const t = document.getElementById('mm-confirm-timer');
+        let n = 3;
+        t.textContent = n;
+        const c = setInterval(() => {
+          n--;
+          if (n > 0) { t.textContent = n; return; }
+          clearInterval(c);
+          t.textContent = 'VÀO TRẬN!';
+          setTimeout(() => {
+            window.location.href = 'SCR-GAME-ROOM.html?mode=' + matchMode.toLowerCase() + '&match_id=mm_8892';
+          }, 700);
+        }, 1000);
+      }, 1500);
+    }
+
+    function declineMatch(expired) {
+      clearInterval(confirmTimer);
+      closeModal('modal-matchmaking');
+      alert(expired ? 'Hết 30 giây không xác nhận: bạn về Sảnh và không tự tìm tiếp. Nếu bên kia đã xác nhận, họ tự quay lại hàng đợi với đồng hồ tìm mới 2 phút.' : 'Đã từ chối. Bạn về Sảnh; không bị phạt.');
     }
 
     function cancelMatchmaking() {
       clearInterval(matchTimer);
+      clearInterval(confirmTimer);
       closeModal('modal-matchmaking');
     }
 

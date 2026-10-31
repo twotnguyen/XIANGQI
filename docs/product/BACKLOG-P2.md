@@ -1,12 +1,20 @@
 # BACKLOG MỞ RỘNG — P2 và các Story chuyển P1
 
-Ngày lập: 11/10/2026. Phạm vi P2 được giao mới qua goal, gồm cả Stretch; chưa là xác nhận đã triển khai. Nhóm Epic giữ [BACKLOG-P1 §4.2](BACKLOG-P1.md#42-epic-p2-chỉ-ở-mức-epic-chưa-tách-story). Nguồn nghiệp vụ là [BA-SCOPE-DECISIONS](BA-SCOPE-DECISIONS.md), ưu tiên Phần 0. Danh mục phủ toàn bộ 25 mục tại [PHAM-VI-P1-P2](../planning/jira/reports/PHAM-VI-P1-P2.md).
+> **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
+
+Ngày lập: 11/10/2026. Phạm vi P2 được giao mới qua goal, gồm cả Stretch; chưa là xác nhận đã triển khai. Nhóm Epic giữ [BACKLOG-P1 §4.2](BACKLOG-P1.md#42-epic-p2-chỉ-ở-mức-epic-chưa-tách-story). Nguồn nghiệp vụ là [BA-SCOPE-DECISIONS](BA-SCOPE-DECISIONS.md), ưu tiên Phần 0. Danh mục phủ toàn bộ 25 mục tại [P2-TRANG-THAI-TRIEN-KHAI](../planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md).
 
 Nguồn BA đã được PO duyệt; Story, AC/TC và ước lượng dưới đây là phân rã kỹ thuật Codex bổ sung, chưa có xác nhận riêng của PO và không tự coi là BA Done. TC chưa chạy, toàn bộ issue mới giữ To Do trong backlog. Không gán Sprint, ngày cam kết, assignee hoặc release.
 
-**PO đổi phạm vi 30/10/2026 — BA 0.20:** `US-P2-19`/XIAN-133 (Thách đấu), `US-P2-18`/XIAN-132 (DM/unread), `US-P2-10`/XIAN-124 (Không giới hạn/chống treo) thuộc **P1**; phần phòng tự tạo của `US-P2-09`/XIAN-123 cũng thuộc **P1**, phần Casual vẫn P2. **Bỏ `US-P2-16`/XIAN-130 (QR) khỏi cả hai phân kỳ.** Giữ mã cũ và các AC/Task dưới đây để truy vết, không tự tạo issue/mã thay thế hoặc đánh dấu đã triển khai. Bảng giờ/Epic/Task và dữ liệu kế hoạch là baseline lịch sử, không phải tổng phạm vi P2 còn lại; chưa tái ước lượng hoặc cập nhật Jira.
+**PO đổi phạm vi 30/10/2026 — BA 0.20:** `US-P2-19`/XIAN-133 (Thách đấu), `US-P2-18`/XIAN-132 (DM/unread), `US-P2-10`/XIAN-124 (Không giới hạn/chống treo) thuộc **P1**; phần phòng tự tạo của `US-P2-09`/XIAN-123 cũng thuộc **P1**, phần Casual P1 theo BA 0.27. **Bỏ `US-P2-16`/XIAN-130 (QR) khỏi cả hai phân kỳ.** Giữ mã cũ và các AC/Task dưới đây để truy vết, không tự tạo issue/mã thay thế hoặc đánh dấu đã triển khai. Bảng giờ/Epic/Task và dữ liệu kế hoạch là baseline lịch sử, không phải tổng phạm vi P2 còn lại; chưa tái ước lượng hoặc cập nhật Jira.
 
 **PO bổ sung BA 0.21:** `US-P2-20`/XIAN-134, `US-P2-21`/XIAN-135, `US-P2-24`/XIAN-138 và `US-P2-25`/XIAN-139 đều **P1**, giữ toàn bộ AC/Task/ID cũ. Chưa triển khai/nghiệm thu hoặc sửa Jira; bảng Epic/giờ là baseline trước chuyển, không phải tổng P2 còn lại.
+
+**PO bổ sung 31/10/2026 — BA 0.22:** History **custom/AI** (US-P2-11/XIAN-125), lưu AI/Bỏ dở (12/XIAN-126), Replay (13/XIAN-127), Undo AI **chỉ thành viên** (14/XIAN-128), FEN/PGN (15/XIAN-129) và Xin đi lại online **custom** (08/XIAN-122) lên **P1**. Khách được gửi/trả lời Xin đi lại custom cùng luật thành viên, nhưng không Undo AI/History/Replay/export. Casual/Ranked và các phần phụ thuộc riêng P1 theo BA 0.27; giữ18 mã AC nguồn, không tự nghiệm thu/Jira Done. Chi tiết tại [YC4](P1-YC4-BAN-CO-VA-LUAT.md).
+
+**PO chốt YC5 — BA 0.23:** US-P2-23/XIAN-137 (demo mạng) lên **P1**, chỉ môi trường demo; production phải từ chối lệnh trực tiếp. Giữ AC-P2-23.1–3/Task/Jira, chưa nghiệm thu. Ghép Casual US-P2-07/XIAN-121 và Undo/Tái đấu Casual P1 theo BA 0.27; xem [YC5](P1-YC5-VAN-ONLINE-VA-SU-CO.md) cho hòa mất mạng trùng mốc và ưu tiên deadline mới.
+
+**PO chốt YC6 — BA0.24:** US-P2-17/XIAN-131 (đủ12 sticker) lên **P1 cho thành viên/Khách theo quyền kênh**; người xem chỉ Chung, Khách không DM, không kéo Ranked/Casual lên. Giữ AC-P2-17.1–3/Task/Jira, chưa nghiệm thu. Cooldown/khung mời xuống ghế tại [YC6](P1-YC6-PHONG-VA-NGUOI-XEM.md).
 
 ## Baseline và ước lượng
 
@@ -18,9 +26,9 @@ Phụ thuộc là kỹ thuật; Codex có thể làm sớm khi đầu vào thậ
 
 ## Quyền, chất lượng và bàn giao
 
-BA 0.3 ưu tiên: Khách giữ đủ quyền P1, mọi lệnh tính năng P2 bị từ chối. Khác biệt với danh sách quyền dự kiến ở BA 1.3 được ghi trong truy vết; không tự mở quyền theo nguồn thấp hơn. Hành vi P2 làm việc với đối thủ Khách phải kiểm lại đúng quyền và không tự chấp nhận thay họ.
+BA 0.3 và 0.27: Khách giữ đủ quyền P1 và được ghép ngẫu nhiên Casual; Khách bị từ chối Ranked/Elo/bảng xếp hạng, DM, Thách đấu, Tái đấu. Khác biệt với danh sách quyền dự kiến ở BA 1.3 được ghi trong truy vết; không tự mở quyền theo nguồn thấp hơn. Hành vi P2 làm việc với đối thủ Khách phải kiểm lại đúng quyền và không tự chấp nhận thay họ.
 
-Giữ 12 NFR, 9 gate và hồi quy D1–D10 P1 sau P2. Kiểm SUCCESS/LOADING/EMPTY/ERROR/DISABLED, bàn phím, responsive, reduced motion, contrast theo DESIGN. API/socket/RLS kiểm độc lập UI; mock/unit không thay thế dịch vụ thật, LAN/media thiết bị thật, SMTP/OAuth hoặc máy demo thật. Mọi kết quả ghi PASS/FAIL/BLOCKED cùng bản dựng, môi trường, dữ liệu và ngày. Chỉ đóng Task sau đạt đầu ra và kiểm tra bắt buộc; không dùng việc tạo backlog làm chứng cứ Done.
+Giữ 12 NFR, 9 gate và hồi quy D1–D14 P1 sau P2. Kiểm SUCCESS/LOADING/EMPTY/ERROR/DISABLED, bàn phím, responsive, reduced motion, contrast theo DESIGN. API/socket/RLS kiểm độc lập UI; mock/unit không thay thế dịch vụ thật, LAN/media thiết bị thật, SMTP/OAuth hoặc máy demo thật. Mọi kết quả ghi PASS/FAIL/BLOCKED cùng bản dựng, môi trường, dữ liệu và ngày. Chỉ đóng Task sau đạt đầu ra và kiểm tra bắt buộc; không dùng việc tạo backlog làm chứng cứ Done.
 
 Ngoài phạm vi giữ BA 10.2 và 3.5: giải đấu, hint, cộng giây, đổi email đã xác minh, xóa tài khoản, report/admin/ban, chặn riêng, avatar upload, hồ sơ công khai, đa ngôn ngữ, luật đuổi quân riêng và xếp hạng theo mùa. Đổi mật khẩu trong Hồ sơ và Quên mật khẩu không còn bị loại trừ/để P2, thuộc P1 từ 30/10 theo BA 0.18.
 
@@ -65,8 +73,8 @@ Mục yêu cầu: **P2-02**; Epic **EP-P2-01** / XIAN-108. Jira Story: XIAN-116.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-02.1 / TC-P2-02.1 | Tài khoản chính thức chưa có vị trí chơi | Tìm Ranked | Biên ±100 mở thêm 50 mỗi 10 giây, dùng biên lớn hơn của hai người. Đúng 60 giây thử ±400 lần cuối rồi mới timeout; không phạt hoặc ghép bot. |
-| AC-P2-02.2 / TC-P2-02.2 | Hai đối thủ vừa ghép | MATCH_FOUND hoặc hủy đồng thời | Ghép nguyên tử, phe ngẫu nhiên, 10 phút/bên, vào ván ngay. Chỉ hủy được trước MATCH_FOUND; sau đó nút bị khóa. |
+| AC-P2-02.1 / TC-P2-02.1 | Tài khoản chính thức chưa có vị trí chơi | Tìm Ranked | Biên ±100 mở thêm 50 mỗi 10 giây, dùng biên lớn hơn của hai người. Đúng 60 giây thử ±400 lần cuối rồi mới timeout; không phạt hoặc ghép bot. **Thay bởi BA 0.36 / YC9 mục 16:** tìm 2 phút, xác nhận 30 giây, có Từ chối. |
+| AC-P2-02.2 / TC-P2-02.2 | Hai đối thủ vừa ghép | MATCH_FOUND hoặc hủy đồng thời | Ghép nguyên tử, phe ngẫu nhiên, 10 phút/bên, vào ván ngay. Chỉ hủy được trước MATCH_FOUND; sau đó nút bị khóa. **Thay bởi BA 0.36 / YC9 mục 16:** tìm 2 phút, xác nhận 30 giây, có Từ chối. |
 | AC-P2-02.3 / TC-P2-02.3 | Người đang trong hàng đợi | Mất mạng hoặc server restart | Quá 30 giây mất mạng thì rút queue. Restart mất queue và báo Hàng đợi đã bị huỷ, hãy tìm lại. Không phạt; người queued không nhận invite/challenge. |
 
 **TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: Elo/auth/socket/single-position; fake-clock tests tại10/59.999/60s, race cancel-found/restart/disconnect.
@@ -119,6 +127,8 @@ Mục yêu cầu: **P2-04**; Epic **EP-P2-01** / XIAN-108. Jira Story: XIAN-118.
 Mục yêu cầu: **P2-05**; Epic **EP-P2-01** / XIAN-108. Jira Story: XIAN-119.
 
 **Nguồn chính xác:** BA 5.4,4.1;617/526; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T33, T58, P2-04, P2-17.
+**Phần tách P1 theo BA0.25:** custom có nút Tắt nhận/Hiện hình và tiếng cục bộ cho người chơi/người xem, **mặc định nhận nếu người phát cho phép**;3 AC-YC7-RX.1–3 tại [YC7](P1-YC7-CHAT-CAMERA-VA-MIC.md). US-P2-05/XIAN-119 và3 AC Ranked dưới đây **P1 theo BA 0.27**, giữ mặc định ẨN của Ranked; không mở mode Ranked vì dùng chung cơ chế nhận.
+
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
@@ -160,8 +170,8 @@ Mục yêu cầu: **P2-07**; Epic **EP-P2-02** / XIAN-109. Jira Story: XIAN-121.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-07.1 / TC-P2-07.1 | Tài khoản chưa có vị trí chơi | Tìm hoặc hủy Casual | Tìm tối đa 3 phút; hủy trong lúc tìm không phạt. Timeout về Sảnh, không bot; mất mạng quá 30 giây rút queue. Khách bị từ chối theo BA 0.3. |
-| AC-P2-07.2 / TC-P2-07.2 | Casual vừa ghép | Xác nhận trong 10 giây | Người queued trước là Host, phe ngẫu nhiên, 15 phút/bên không cộng giây. Cả hai Ready mới đếm 3 giây; chưa Ready về Sảnh, đã Ready tự tìm tiếp. Cả hai chưa Ready cùng về Sảnh; chưa bắt đầu không xử thua. |
+| AC-P2-07.1 / TC-P2-07.1 | Tài khoản chưa có vị trí chơi | Tìm hoặc hủy Casual | Tìm tối đa 3 phút; hủy trong lúc tìm không phạt. Timeout về Sảnh, không bot; mất mạng quá 30 giây rút queue. Khách được tìm Casual như thành viên (PO xác nhận BA 0.27); Khách không Ranked. **Thay bởi BA 0.36 / YC9 mục 16:** tìm 2 phút, xác nhận 30 giây, có Từ chối. |
+| AC-P2-07.2 / TC-P2-07.2 | Casual vừa ghép | Hộp xác nhận 30 giây (Xác nhận/Từ chối, BA 0.36 / YC9 mục 16) | Phe ngẫu nhiên, 15 phút/bên không cộng giây. Cả hai Xác nhận mới đếm 3 giây; người Từ chối hoặc hết 30 giây về Sảnh, người đã Xác nhận tự tìm tiếp (đồng hồ tìm mới 2 phút). Cả hai không xác nhận cùng về Sảnh; chưa bắt đầu không xử thua. Tìm tối đa 2 phút. |
 | AC-P2-07.3 / TC-P2-07.3 | Phòng Casual random | Gọi quyền phòng hoặc kết thúc | Không Elo/PUBLIC/người xem/chia sẻ/Kênh Chung hoặc mở settings người xem. Có private chat/media. FINISHED tới cả hai rời hoặc 10 phút từ end, không WAITING/người mới; undo/rematch theo P2-08/09. |
 
 **TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: P1 room/match/session + P2-08/09; tests races ready/timeout/disconnect/cancel, both/unilateral confirm, fixed clocks, no privilege reopening.
@@ -177,11 +187,15 @@ Mục yêu cầu: **P2-08**; Epic **EP-P2-03** / XIAN-110. Jira Story: XIAN-122.
 
 **Nguồn chính xác:** BA 3.2,3.6,0.12;443/513/101; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T10, T32, P2-07.
 
+**Phân kỳ/quyền hiện hành BA0.22:** custom thuộc P1, không chờ P2-07; Casual P1 theo BA 0.27. Khách được gửi và trả lời trong custom, cùng hạn mức/cooldown; Ranked cấm. Các Task/giờ bên dưới là baseline, không làm thay đổi quyền hoặc bắt buộc ghép Casual trước custom.
+
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-08.1 / TC-P2-08.1 | Người đã đi ít nhất một nước ở custom/Casual | Xin đi lại | Một pending mỗi người, hạn 30 giây, rút được. Người xin không đi nước mới. Đối thủ đồng ý thì lùi trước nước mình gần nhất, 1 hoặc 2 plies. Ranked và Khách bị từ chối. |
+| AC-P2-08.1 / TC-P2-08.1 | Người đã đi ít nhất một nước ở custom/Casual | Xin đi lại | Một pending mỗi người, hạn30 giây, rút được. Người xin không đi nước mới. Đối thủ đồng ý thì lùi trước nước mình gần nhất,1 hoặc2 plies. Custom P1 cho cả thành viên/Khách gửi và trả lời (BA0.22); Casual P2, Ranked cấm. |
 | AC-P2-08.2 / TC-P2-08.2 | Đề nghị đồng ý, từ chối hoặc hết hạn | Cập nhật quota và đồng hồ | Chỉ thành công trừ lượt, tối đa 3/bên/ván. Từ chối/hết hạn chờ 3 nước mình. Đồng hồ tiếp tục và không hoàn thời gian. |
 | AC-P2-08.3 / TC-P2-08.3 | Đã undo hoặc ván kết thúc | Xét lặp, không ăn quân, Replay hoặc accept muộn | Chỉ nhánh hiệu lực được tính. Khung nonmodal; X/Esc thu gọn, không từ chối. Accept muộn không đổi kết quả; phiên bản trạng thái cũ bị từ chối. |
+
+**Bổ sung AC-P2-08.2 theo PO/BA0.22:** custom Không giới hạn sau Undo thành công có3 phút mới cho bên được trả lượt; giữ số lần “Tôi còn đây” của chuỗi chưa có nước mới và quota Undo đã dùng. Phòng5/10/15 vẫn không hoàn thời gian. Kiểm sau0/1/2 lần xác nhận, đúng bên tới lượt, accept sát hạn và ván đã kết thúc.
 
 **TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: Core move tree/receipts/proposals/clock; TC one/two plies,3→4,stale accept/end race/clock preservation/repetition branches, Ranked denied.
 
@@ -236,6 +250,8 @@ Mục yêu cầu: **P2-11**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-125.
 
 **Nguồn chính xác:** BA 6.2,7.3,1.3;658/754/176; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T14, T20, T56.
 
+**Phân kỳ BA0.22:** custom/AI P1; Ranked, Elo delta và thống kê Ranked P1 theo BA 0.27. P1 không giả Ranked hoặc tạo thống kê thay thế. Giữ ba AC, tách biến thể theo phân kỳ; Khách không History dù được Xin đi lại custom.
+
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
 | AC-P2-11.1 / TC-P2-11.1 | Tài khoản chính thức | Mở và lọc Lịch sử | Hiện tất cả/Ranked/Casual/AI, phe, đối thủ, loại, kết quả/lý do, Elo delta; AI có nhãn cấp độ. Thống kê chỉ Ranked hoàn tất. |
@@ -249,7 +265,7 @@ Mục yêu cầu: **P2-11**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-125.
 | T-P2-11-I | XIAN-160 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T14, T20, T56 |
 | T-P2-11-Q | XIAN-161 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-11-I, T-P2-12-I, T-P2-14-I |
 
-### US-P2-12 · Lưu ván AI và Bỏ dở
+### US-P2-12 · Lưu ván AI và Bỏ dở — P1 theo BA0.22
 
 Mục yêu cầu: **P2-12**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-126.
 
@@ -268,7 +284,7 @@ Mục yêu cầu: **P2-12**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-126.
 | T-P2-12-I | XIAN-162 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T63, P2-11 |
 | T-P2-12-Q | XIAN-163 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-12-I |
 
-### US-P2-13 · Replay riêng tư
+### US-P2-13 · Replay riêng tư — P1 theo BA0.22
 
 Mục yêu cầu: **P2-13**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-127.
 
@@ -287,7 +303,7 @@ Mục yêu cầu: **P2-13**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-127.
 | T-P2-13-I | XIAN-164 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T11, T10, P2-11 |
 | T-P2-13-Q | XIAN-165 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-13-I, T-P2-08-I, T-P2-14-I |
 
-### US-P2-14 · Đi lại với máy
+### US-P2-14 · Đi lại với máy — P1, chỉ thành viên theo BA0.22
 
 Mục yêu cầu: **P2-14**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-128.
 
@@ -306,7 +322,7 @@ Mục yêu cầu: **P2-14**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-128.
 | T-P2-14-I | XIAN-166 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T24, T34, T63 |
 | T-P2-14-Q | XIAN-167 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-14-I |
 
-### US-P2-15 · Copy FEN và tải PGN
+### US-P2-15 · Copy FEN và tải PGN — P1 theo BA0.22
 
 Mục yêu cầu: **P2-15**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-129.
 
@@ -331,7 +347,7 @@ Mục yêu cầu: **P2-15**; Epic **EP-P2-04** / XIAN-111. Jira Story: XIAN-129.
 
 Giữ `XIAN-130`, `T-P2-16-I`/`XIAN-170`, `T-P2-16-Q`/`XIAN-171` và `AC-P2-16.1–3` như định danh lịch sử đã rút, không tái sử dụng. Không yêu cầu giải mã/quét QR, ảnh QR hoặc test QR. Chưa sửa trạng thái issue Jira hoặc baseline dữ liệu sinh báo cáo.
 
-### US-P2-17 · Bộ 12 sticker
+### US-P2-17 · Bộ12 sticker — P1 cho cả thành viên/Khách theo BA0.24
 
 Mục yêu cầu: **P2-17**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-131.
 
@@ -340,7 +356,7 @@ Mục yêu cầu: **P2-17**; Epic **EP-P2-05** / XIAN-112. Jira Story: XIAN-131.
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
 | AC-P2-17.1 / TC-P2-17.1 | Người đúng vai trò/kênh | Mở khay và gửi sticker | Đủ 12: clap, heart, think, sweat, cry, tea, lightning, silent, thumbsup, handshake, flag, fire. Một chạm gửi; lưu shortcode, hiển thị SVG. |
-| AC-P2-17.2 / TC-P2-17.2 | Player, spectator hoặc accepted friend | Gửi private/public/direct | Quyền như chat text: spectator chỉ public, DM chỉ accepted friend, Ranked chỉ private. Không bypass filter/rate/length; Khách không gửi sticker P2. |
+| AC-P2-17.2 / TC-P2-17.2 | Player/spectator là thành viên hoặc Khách; DM là accepted friends | Gửi private/public/direct | P1 theo BA0.24: người chơi đúng kênh, người xem chỉ public, Khách được sticker phòng nhưng không DM. DM chỉ hai thành viên accepted friends; Ranked P2 chỉ private. Không vượt filter/rate/length; một sticker tính một tin |
 | AC-P2-17.3 / TC-P2-17.3 | Shortcode không hợp lệ hoặc quyền giả | Gọi API/socket | Server kiểm allowlist và quyền, không XSS hoặc ghi HTML tùy ý. |
 
 **TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: P1 chat + P2-18; schema/unknown shortcode validation, E2E picker/role/channels, rate tests.
@@ -398,7 +414,7 @@ Mục yêu cầu: **P2-20**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-134.
 
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-20.1 / TC-P2-20.1 | Tài khoản muốn đổi username | Thực hiện bốn bước OTP | Email OTP sáu số/180 giây, resend 60 giây, giới hạn gần đúng năm sai theo BA 1.5. Valid OTP mới mở username mới 3–20, unique không phân biệt hoa thường; không cooldown đổi tên. |
+| AC-P2-20.1 / TC-P2-20.1 | Tài khoản muốn đổi username | Thực hiện bốn bước OTP | Email OTP sáu số/180 giây, resend 60 giây, giới hạn gần đúng năm sai theo BA 1.5. Valid OTP mới mở username mới 3–20, unique không phân biệt hoa thường; tối đa 1 lần đổi mỗi 7 ngày (BA 0.28), lấy lại tên cũ cũng tính. |
 | AC-P2-20.2 / TC-P2-20.2 | Username cũ đã đổi | Đăng ký hoặc đổi lại trong 30 ngày | Tên cũ giữ 30 ngày chỉ chủ cũ lấy lại. Người khác thấy đã có người dùng; đúng 30 ngày hết giữ chỗ. |
 | AC-P2-20.3 / TC-P2-20.3 | Đổi username thành công hoặc cố đổi email | Kiểm bản ghi và API | Giữ UUID, friends, messages, matches và Elo; email readonly và server bất biến. Không tự đổi Display Name. |
 
@@ -430,26 +446,28 @@ Mục yêu cầu: **P2-21**; Epic **EP-P2-06** / XIAN-113. Jira Story: XIAN-135.
 | T-P2-21-I | XIAN-180 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 24 | T04, T09, T56 |
 | T-P2-21-Q | XIAN-181 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 8 | T-P2-21-I |
 
-### US-P2-22 · Widget thông số AI
+### US-P2-22 · Widget thông số AI — P1 chỉ thành viên theo BA0.26
 
 Mục yêu cầu: **P2-22**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-136.
 
 **Nguồn chính xác:** BA 9.2;813; tên mục BA là định danh, dòng là vị trí lúc đối chiếu. Phụ thuộc triển khai: T24, T59, T38.
 
+**PO chốt0.26:** mọi môi trường, chỉ thành viên là chủ ván; thu gọn mặc định. **Thay yêu cầu PV:** chỉ hiện nước máy đã áp thành công, không best move/chuỗi PV tương lai; không để full PV thành việc P2 còn thiếu. Giữ ba ID AC/TC và Task/Jira nguồn; chưa triển khai/nghiệm thu. Chi tiết [YC8 mục15](P1-YC8-DAU-VOI-MAY.md#15-bốn-quyết-định-po-đã-chốt--ba026).
+
 | AC / TC chưa chạy | Given | When | Then |
 |---|---|---|---|
-| AC-P2-22.1 / TC-P2-22.1 | AI đang tính | Widget cập nhật | Nodes, depth, latency và PV từ worker thật, không giả số; không dịch vụ cờ ngoài. |
-| AC-P2-22.2 / TC-P2-22.2 | Worker hoàn tất hoặc hết budget | Đối chiếu telemetry | Widget khớp trace actual depth/time/nodes/best PV đúng ván; giữ ngưỡng P1. Worker đã hủy không cập nhật nhầm widget. |
-| AC-P2-22.3 / TC-P2-22.3 | Người đang tới lượt | Dùng widget | Không tính hint cho bên người; PV là đầu ra máy đang tính. Giữ No Hint theo BA 6.1. |
+| AC-P2-22.1 / TC-P2-22.1 | Chủ ván thành viên, AI đang tính | Mở widget | Nodes, completed depth/target và compute latency từ worker thật, đúng tác vụ; chưa có thì báo chưa có số liệu. Khách/người khác bị chặn UI/API/socket; không fake hoặc dịch vụ cờ ngoài |
+| AC-P2-22.2 / TC-P2-22.2 | Worker hoàn tất/hết budget hoặc bị hủy | Đối chiếu trace và nước đã commit | Số khớp depth/time/nodes thật, giữ ngưỡng P1; chỉ hiện “Nước máy vừa đi” sau áp thành công. Worker cũ sau Undo/cancel/retry/thay ván không cập nhật nhầm |
+| AC-P2-22.3 / TC-P2-22.3 | Mọi lượt và mọi payload | Xem widget/gọi trực tiếp | Không phát/hiện best move hoặc PV tương lai, không tính hint cho bên người. Số cuối/nước đã áp được gắn đúng lượt; giữ No Hint theo BA6.1/0.26 |
 
-**TC:** Mỗi TC thiết lập Given bằng dữ liệu thử cô lập, thực hiện When qua API/socket/UI theo quyền rồi đối chiếu toàn bộ Then. Không chỉ kiểm giao diện hoặc sao chép implementation làm đáp án. Các biến thể bắt buộc bổ sung: Engine telemetry/UI; compare worker metrics với widget, trace actual depth/budget, board no-hint remains.
+**TC:** đối chiếu trace worker thật với widget; quyền member/guest/người khác qua API/socket; before/after commit, budget/cancel/Undo/Retry/stale generation; không future move/PV hoặc engine chạy lượt người; browser desktop/mobile và kiểm overhead thực. Không lấy mock numbers/source text hoặc nhãn UI làm bằng chứng runtime.
 
 | Task | Jira | Đầu ra | Giờ đề xuất | Phụ thuộc |
 |---|---|---|---|---|
 | T-P2-22-I | XIAN-182 | Triển khai hoàn chỉnh server/web/migration cần thiết và unit/integration test trong phạm vi Story; không đóng khi chỉ có mock/scaffold. | 12 | T24, T59, T38 |
 | T-P2-22-Q | XIAN-183 | Thực thi mọi AC/TC và biến thể, directAPI/socket/RLS theo quyền, E2E và dịch vụ/thiết bị thật cần thiết; hồi quy P1 phần liên quan. | 4 | T-P2-22-I |
 
-### US-P2-23 · Công cụ demo mạng
+### US-P2-23 · Công cụ demo mạng — P1 theo BA 0.23
 
 Mục yêu cầu: **P2-23**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-137.
 
@@ -511,6 +529,6 @@ Mục yêu cầu: **P2-25**; Epic **EP-P2-07** / XIAN-114. Jira Story: XIAN-139.
 - Số 75 TC/25 Story là baseline lịch sử. Các phần đã chuyển theo BA 0.20/0.21 nghiệm thu P1 (Tái đấu chỉ custom); phần Casual/các Story còn lại nghiệm thu P2. AC-P2-16.1–3 (QR) đã rút, không chạy hoặc tính thiếu coverage. Kiểm API/socket/RLS/UI cho các AC hiệu lực; bằng chứng P1 cũ không thay phần mới.
 - Dùng dữ liệu Elo, biên thời gian, nhánh Undo và thế Replay có đáp án độc lập; đối chiếu kết quả lưu bền.
 - Kiểm receiver media Ranked, chuyển media hai tab, OTP/Google/RLS trên môi trường được phép. QR đã bỏ, không yêu cầu quét điện thoại hoặc dùng test QR làm gate.
-- Kiểm hồi quy D1–D10, 12 NFR và 9 gate; ghi phần chưa có điều kiện thật là BLOCKED, không nhận PASS từ mock.
+- Kiểm hồi quy D1–D14, 12 NFR và 9 gate; ghi phần chưa có điều kiện thật là BLOCKED, không nhận PASS từ mock.
 - Kiểm bản sao mới, hướng dẫn chạy, migration và dữ liệu thử; rà bí mật trong Git/bundle/bằng chứng.
 - Liên kết code/commit/PR và báo cáo TC tới issue trước Done; tích hợp develop/main và xác minh remote theo goal.

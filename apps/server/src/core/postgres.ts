@@ -2,16 +2,19 @@ import type { Pool, PoolClient } from "pg";
 /**
  * Quản lý vòng đời transaction PostgreSQL với role 'app_server':
  * Tự động kết nối, mở transaction, chuyển role, thực thi callback và commit hoặc rollback khi có lỗi.
+ * Một lượt đi về cho BEGIN và đổi role; `readOnly` mở giao dịch READ ONLY.
  */
 export async function transaction<T>(
   pool: Pool,
   work: (client: PoolClient) => Promise<T>,
+  options: { readOnly?: boolean } = {},
 ): Promise<T> {
   const client = await pool.connect();
   let broken = false;
   try {
-    await client.query("BEGIN");
-    await client.query("SET LOCAL ROLE app_server");
+    await client.query(
+      `${options.readOnly ? "BEGIN READ ONLY" : "BEGIN"}; SET LOCAL ROLE app_server`,
+    );
     const value = await work(client);
     await client.query("COMMIT");
     return value;

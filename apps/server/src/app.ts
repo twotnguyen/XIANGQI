@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { PrivateBodyFilter } from "./core/private-body-filter.js";
+import type { RequestLimiter } from "./core/request-limit.js";
 import type { HealthStatus } from "@xiangqi/shared";
 import { Server } from "socket.io";
 import {
@@ -113,6 +114,7 @@ export async function createApp(
   realtime: Omit<RealtimeDependencies, "corsOrigins"> | null = null,
   publicRooms: Omit<PublicRoomFeedDependencies, "corsOrigins"> | null = null,
   runtimeCheck: (() => Promise<void>) | null = null,
+  requestLimiter: RequestLimiter | null = null,
 ) {
   let closeSockets: () => Promise<void> = async () => {};
   const app = await NestFactory.create(
@@ -131,6 +133,7 @@ export async function createApp(
     { logger: false },
   );
   app.useGlobalFilters(new PrivateBodyFilter(app.getHttpAdapter()));
+  if (requestLimiter) app.use(requestLimiter.middleware);
   app.use(
     (request: IncomingMessage, response: ServerResponse, next: () => void) => {
       const origin = request.headers.origin;

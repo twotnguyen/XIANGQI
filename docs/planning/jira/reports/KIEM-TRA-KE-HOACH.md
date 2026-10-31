@@ -1,5 +1,7 @@
 # Kiểm tra kế hoạch đồng bộ Jira — 10/10/2026
 
+> **Phạm vi hiện hành (31/10/2026):** tài liệu này là ảnh chụp Jira ngày 10/10 (9 Epic / 27 Story / 71 Task / 880 giờ / 268 AC). Phạm vi sản phẩm ở [docs/product](../../../product/BA-SCOPE-DECISIONS.md) từ BA 0.18 đến 0.36 đã mở rộng hơn (toàn bộ P2 lên P1, thêm YC9, 63 AC rà soát mới) và **chưa được tái ước lượng hay cập nhật vào Jira và lịch này**; hạn 04/11/2026 chưa được đánh giá khả thi với phạm vi mới. Khi khác nhau, `docs/product` thắng.
+
 | Kiểm tra | Kết quả |
 |---|---|
 | Dữ liệu | 107 mục khớp snapshot Jira: 9 Epic, 27 Story, 71 Task |

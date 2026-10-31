@@ -75,7 +75,15 @@ async function share(
   return fetch(`${root}/media/share`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ roomId, level: "OPPONENT" }),
+    body: JSON.stringify({
+      roomId,
+      level: "OPPONENT",
+      control: {
+        tabId: "11111111-1111-4111-8111-111111111111",
+        connectionId: "test",
+        generation: 1,
+      },
+    }),
   });
 }
 

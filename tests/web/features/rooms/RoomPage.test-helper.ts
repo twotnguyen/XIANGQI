@@ -48,7 +48,10 @@ export const snapshot: RoomSnapshot = {
   clocks: null,
   control: { mode: "writable", generation: 1, reason: null },
 };
-export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
+export function setup(
+  state = snapshot,
+  extra: { chat?: ReactNode; isMember?: boolean } = {},
+) {
   let handlers: RoomConnectionInput;
   const command = vi.fn().mockResolvedValue({
     status: "ok",
@@ -79,6 +82,12 @@ export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
   };
   const refresh = vi.fn().mockResolvedValue(state);
   const close = vi.fn();
+  const control = {
+    tabId: "11111111-1111-4111-8111-111111111111",
+    connectionId: "test-connection",
+    generation: 1,
+  };
+  const getControl = vi.fn().mockResolvedValue(control);
   const readChat = vi
     .fn()
     .mockImplementation(async (channel: ChatChannel): Promise<ChatPage> => ({
@@ -113,7 +122,8 @@ export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
           refresh,
           readChat,
           sendChat,
-          tabId: "tab",
+          tabId: control.tabId,
+          getControl,
           takeover: vi.fn().mockResolvedValue(undefined),
         };
       },
@@ -121,6 +131,8 @@ export function setup(state = snapshot, extra: { chat?: ReactNode } = {}) {
   );
   return {
     client,
+    control,
+    getControl,
     command,
     refresh,
     close,

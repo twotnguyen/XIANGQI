@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Badge, Button, Dialog } from "../../shared/ui/primitives.js";
+import {
+  Badge,
+  Button,
+  Dialog,
+  ErrorState,
+} from "../../shared/ui/primitives.js";
 import type {
   DirectUnread,
   FriendClient,
@@ -23,6 +28,8 @@ export function DirectChatHub({
   const [unread, setUnread] = useState<DirectUnread | null>(null);
   const [open, setOpen] = useState(false);
   const [friends, setFriends] = useState<FriendPeer[] | null>(null);
+  const [listFailed, setListFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [chatWith, setChatWith] = useState<FriendPeer | null>(null);
   const loadSeq = useRef(0);
 
@@ -42,12 +49,17 @@ export function DirectChatHub({
 
   useEffect(() => {
     if (!open) return;
+    let active = true;
+    let inFlight = false;
     const refresh = async () => {
+      if (inFlight) return;
+      inFlight = true;
       const seq = ++loadSeq.current;
       try {
         const list = await client.list();
-        if (seq !== loadSeq.current) return;
+        if (!active || seq !== loadSeq.current) return;
         setFriends(list);
+        setListFailed(false);
         // Bạn đã bị hủy kết bạn thì đóng hội thoại đang mở ngay phía client.
         setChatWith((current) =>
           current && !list.some((friend) => friend.userId === current.userId)
@@ -55,13 +67,19 @@ export function DirectChatHub({
             : current,
         );
       } catch {
-        // Giữ danh sách cũ; hộp thoại vẫn hiển thị lỗi riêng khi tải tin.
+        if (active && seq === loadSeq.current) setListFailed(true);
+      } finally {
+        inFlight = false;
       }
     };
     void refresh();
     const timer = window.setInterval(() => void refresh(), POLL_MS);
-    return () => window.clearInterval(timer);
-  }, [client, open]);
+    return () => {
+      active = false;
+      loadSeq.current++;
+      window.clearInterval(timer);
+    };
+  }, [attempt, client, open]);
 
   if (userId === null) return null;
   const total = unread?.total ?? 0;
@@ -91,8 +109,18 @@ export function DirectChatHub({
           title="Tin nhắn"
           cancelLabel="Đóng"
         >
+          {listFailed && (
+            <ErrorState
+              message={
+                friends === null
+                  ? "Chưa tải được danh sách bạn bè. Vui lòng thử lại."
+                  : "Chưa cập nhật được danh sách bạn bè. Đang giữ danh sách gần nhất."
+              }
+              onRetry={() => setAttempt((value) => value + 1)}
+            />
+          )}
           {friends === null ? (
-            <p>Đang tải danh sách bạn bè…</p>
+            !listFailed && <p role="status">Đang tải danh sách bạn bè…</p>
           ) : friends.length === 0 ? (
             <p>Chưa có bạn bè để nhắn tin.</p>
           ) : (

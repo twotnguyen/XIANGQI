@@ -22,20 +22,13 @@
 
 .xq-profile h1 {
   font-family: var(--font-serif);
-  font-size: clamp(26px, 3vw, 36px);
+  font-size: clamp(28px, 3vw, 38px);
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
-  color: var(--color-gold-light);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--color-gold-light) 55%, var(--color-ink)),
-    var(--color-gold-light) 50%,
-    var(--color-gold)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-ink);
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
 }
 
 .xq-profile-heading p,
@@ -51,7 +44,7 @@
 
 .xq-profile-layout {
   display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
+  grid-template-columns: 232px minmax(0, 1fr);
   gap: var(--space-6);
   align-items: start;
   color: var(--color-ink);
@@ -73,9 +66,9 @@
     var(--color-surface),
     var(--color-surface-sunken)
   );
-  border: 1px solid color-mix(in srgb, var(--color-wood-edge) 70%, transparent);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-1);
 }
 
 .xq-profile-identity,
@@ -135,7 +128,7 @@
       var(--color-gold) 50%,
       var(--color-gold-dark)
     );
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-1);
   color: var(--color-gold-light);
   font-family: var(--font-serif);
   font-size: 26px;
@@ -175,16 +168,10 @@
 }
 
 .xq-profile-nav button[aria-pressed="true"] {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--color-gold) 38%, transparent),
-    color-mix(in srgb, var(--color-gold-dark) 20%, transparent) 60%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--color-gold) 12%, var(--color-surface));
   border-left-color: var(--color-gold-light);
   color: var(--color-ink);
   font-weight: 600;
-  box-shadow: var(--shadow-1);
 }
 
 .xq-profile-nav svg {
@@ -248,9 +235,9 @@
     var(--color-surface),
     var(--color-surface-sunken)
   );
-  border: 1px solid color-mix(in srgb, var(--color-wood-edge) 75%, transparent);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-1);
   animation: xq-profile-enter var(--motion-base) ease-out;
 }
 
@@ -312,7 +299,7 @@
   margin: 0;
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface-sunken);
-  border: 1px solid color-mix(in srgb, var(--color-wood-edge) 70%, transparent);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-lg);
   color: var(--color-ink-muted);
   overflow-wrap: anywhere;
@@ -356,13 +343,13 @@
 
 .xq-profile-label {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  color: var(--color-gold-light);
-  font-size: var(--text-xs);
+  gap: var(--space-2);
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .xq-profile-label-split {
@@ -399,16 +386,17 @@
 
 .xq-profile-readonly-input {
   width: 100%;
+  min-width: 0;
+  min-height: 48px;
   padding: var(--space-3) var(--space-4);
-  padding-right: 44px;
+  padding-right: 60px;
   background: var(--color-surface-sunken);
-  border: 1px solid color-mix(in srgb, var(--color-wood-edge) 70%, transparent);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
   color: var(--color-ink-muted);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   cursor: default;
-  outline: none;
 }
 
 .xq-profile-copy-btn {
@@ -469,17 +457,12 @@
 .xq-profile-save-btn {
   flex-shrink: 0;
   white-space: nowrap;
-  font-weight: 700;
+  font-weight: 600;
   padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(
-    135deg,
-    var(--color-gold-light),
-    var(--color-gold) 60%,
-    var(--color-gold-dark)
-  );
+  border-radius: var(--radius-md);
+  background: var(--color-btn-primary-bg);
   color: var(--color-btn-primary-fg);
-  border: 0;
+  border: 1px solid transparent;
   box-shadow: var(--shadow-1);
 }
 
@@ -542,8 +525,7 @@
 
 .xq-profile-theme-option:has(input:checked) {
   border-color: var(--color-gold-light);
-  box-shadow: 0 0 15px
-    color-mix(in srgb, var(--color-gold-light) 30%, transparent);
+  box-shadow: inset 0 0 0 1px var(--color-gold-light);
   background: var(--color-surface-sunken);
 }
 
@@ -662,8 +644,7 @@
 
 .xq-profile-piece-card.xq-piece-card-active {
   border-color: var(--color-gold-light);
-  box-shadow: 0 0 15px
-    color-mix(in srgb, var(--color-gold-light) 30%, transparent);
+  box-shadow: inset 0 0 0 1px var(--color-gold-light);
   background: var(--color-surface-sunken);
 }
 
@@ -829,9 +810,11 @@
 }
 
 .xq-profile-toggle-info p {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
+  line-height: 1.6;
   color: var(--color-ink-muted);
   margin-top: 2px;
+  overflow-wrap: anywhere;
 }
 
 .xq-profile-toggle-btn {
@@ -1050,8 +1033,44 @@
   .xq-profile-heading {
     margin-bottom: 12px;
   }
-  #xq-settings-appearance {
-    max-height: calc(100dvh - 300px);
-    overflow-y: auto;
+}
+
+.xq-profile-readonly-input:focus-visible,
+.xq-profile-nav button:focus-visible,
+.xq-profile-copy-btn:focus-visible,
+.xq-profile-toggle-btn:focus-visible,
+.xq-profile-piece-card:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+.xq-profile-theme-option:has(input:focus-visible) {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+.xq-profile-piece-body,
+.xq-profile-theme-description,
+.xq-profile-toggle-info > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  .xq-profile-nav button {
+    border-left: 0;
+    border-bottom: 3px solid transparent;
+  }
+  .xq-profile-nav button[aria-pressed="true"] {
+    border-bottom-color: var(--color-gold-light);
+  }
+  .xq-profile-piece-card {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    align-items: center;
+  }
+  .xq-profile-piece-preview {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+  .xq-profile-toggle-info {
+    gap: var(--space-3);
   }
 }

@@ -77,7 +77,11 @@
   color: var(--color-btn-primary-fg);
 }
 .xq-button-primary:hover:not([aria-disabled="true"]) {
-  background: var(--color-gold-light);
+  background: color-mix(
+    in srgb,
+    var(--color-btn-primary-bg) 88%,
+    var(--color-ink)
+  );
 }
 .xq-button-secondary {
   background: var(--color-surface);
@@ -124,7 +128,7 @@
   min-height: var(--touch-min);
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-ink);
   background: var(--color-surface-sunken);
   font: inherit;
@@ -368,9 +372,7 @@
   max-height: calc(100dvh - 32px);
   overflow: auto;
   overscroll-behavior: contain;
-  box-shadow:
-    0 16px 40px color-mix(in srgb, var(--color-black) 80%, transparent),
-    0 0 20px color-mix(in srgb, var(--color-gold) 20%, transparent);
+  box-shadow: var(--shadow-3);
 }
 .xq-dialog[open] {
   display: grid;
@@ -435,7 +437,7 @@
 .xq-ui .xq-panel {
   margin: 0;
   padding: var(--space-6);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   min-width: 0;
