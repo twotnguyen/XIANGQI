@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { maskForbiddenChat } from "@xiangqi/shared";
+import { breakpoints } from "../../shared/styles/breakpoints.js";
 import "./room-chat.css";
 
 export type RoomChatChannel = "PLAYERS_PRIVATE" | "ROOM_PUBLIC";
@@ -279,7 +280,7 @@ function ChatPane({
  * Khung trò chuyện trong phòng cờ (hỗ trợ chuyển đổi giữa Kênh riêng kỳ thủ và Kênh chung phòng, thích ứng giao diện mobile/desktop).
  */
 export function RoomChat(props: RoomChatProps) {
-  const query = "(max-width: 767px)";
+  const query = `(max-width: ${breakpoints.phone - 1}px)`;
   const [mobile, setMobile] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia?.(query).matches,
   );
