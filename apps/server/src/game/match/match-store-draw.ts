@@ -178,14 +178,29 @@ export class MatchDrawStore extends MatchStoreCore {
     return this.drawAction(scope, { ...input, matchVersion: 0 }, "expire");
   }
   /**
+   * Nước đi vừa áp đóng đề nghị hòa đang chờ trong cùng giao dịch (YC5 mục 17): của đối thủ → Từ chối (người gửi chờ 5 nước của mình), của chính người đi → tự rút không phạt.
+   */
+  async closeDrawOffersOnMove(
+    scope: MatchScope,
+    input: { matchId: string },
+  ): Promise<MatchView | null> {
+    const result = await this.drawAction(
+      scope,
+      { ...input, matchVersion: 0 },
+      "moved",
+    );
+    return result.applied ? result.match : null;
+  }
+  /**
    * Điều phối và thực thi các hành động cầu hòa với đầy đủ kiểm tra khóa, trạng thái đồng hồ và xung đột phiên bản.
    */
   private async drawAction(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number; offerId?: string },
-    action: "offer" | "withdraw" | "accept" | "decline" | "expire",
+    action: "offer" | "withdraw" | "accept" | "decline" | "expire" | "moved",
   ): Promise<MatchDrawCommandResult> {
-    if (action !== "offer" && action !== "expire") assertUuid(input.offerId!);
+    if (action !== "offer" && action !== "expire" && action !== "moved")
+      assertUuid(input.offerId!);
     const ctx = await this.context(scope, input);
     let { match } = ctx;
     const { row, room, side, history } = ctx;
@@ -244,7 +259,11 @@ export class MatchDrawStore extends MatchStoreCore {
           )
         : result(false, "MATCH_TIME_EXPIRED", "Thời gian suy nghĩ đã hết.");
     }
-    if (action !== "expire" && match.version !== input.matchVersion)
+    if (
+      action !== "expire" &&
+      action !== "moved" &&
+      match.version !== input.matchVersion
+    )
       return result(false, "MATCH_VERSION_CONFLICT", "Thế cờ đã thay đổi.");
     const event = async (offerId: string, sender: string, status: string) => {
       row.version = String(Number(row.version) + 1);
@@ -278,8 +297,9 @@ export class MatchDrawStore extends MatchStoreCore {
         sender: string;
         expires_at: Date;
       }>(
-        "SELECT id,sender,expires_at FROM xiangqi_room.match_draw_offers WHERE match_id=$1 AND status='PENDING' AND expires_at<=$2 ORDER BY expires_at,id",
-        [row.id, at],
+        "SELECT id,sender,expires_at FROM xiangqi_room.match_draw_offers WHERE match_id=$1 AND status='PENDING' AND expires_at<=$2 AND $3::boolean ORDER BY expires_at,id",
+        // Nước đi không tự hết hạn đề nghị quá hạn: worker hạn xử lý (và tính nước người gửi từ mốc hạn).
+        [row.id, at, action !== "moved"],
       )
     ).rows;
     for (const offer of due) {
@@ -297,6 +317,27 @@ export class MatchDrawStore extends MatchStoreCore {
     }
     if (action === "expire") return result(due.length > 0);
     const sender = side === "red" ? "RED" : "BLACK";
+    if (action === "moved") {
+      const pending = (
+        await scope.client.query<{ id: string; sender: string }>(
+          "SELECT id,sender FROM xiangqi_room.match_draw_offers WHERE match_id=$1 AND status='PENDING' AND expires_at>$2 ORDER BY created_at,id",
+          [row.id, at],
+        )
+      ).rows;
+      for (const offer of pending) {
+        const own = offer.sender === sender;
+        const count = own
+          ? null
+          : await this.drawMoveCount(scope.client, row.id, offer.sender, at);
+        const status = own ? "WITHDRAWN" : "DECLINED";
+        await scope.client.query(
+          "UPDATE xiangqi_room.match_draw_offers SET status=$2,resolved_at=$3,cooldown_after_move_count=$4 WHERE id=$1",
+          [offer.id, status, at, count],
+        );
+        await event(offer.id, offer.sender, status);
+      }
+      return result(pending.length > 0);
+    }
     if (action === "offer") {
       const state = await this.drawState(scope.client, match, at);
       if (state.offers.some((o) => o.sender === side))

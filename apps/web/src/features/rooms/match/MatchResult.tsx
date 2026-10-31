@@ -65,32 +65,38 @@ export function MatchResult({
   }, [match?.id, terminal, player]);
   if (!match || !terminal) return null;
 
+  const aborted = match.result === "ABORTED";
   const interrupted =
-    match.status === "INTERRUPTED" || match.result === "SERVER_RESTART";
-  const title = interrupted
-    ? "Ván bị gián đoạn"
-    : match.winner
-      ? player
-        ? match.winner === role
-          ? "Bạn thắng!"
-          : "Bạn thua"
-        : match.winner === "red"
-          ? "Đỏ thắng"
-          : "Đen thắng"
-      : draws.has(match.result ?? "")
-        ? "Hoà"
-        : "Kết quả ván cờ";
-  const reason = interrupted
-    ? "Máy chủ đã khởi động lại."
-    : Object.hasOwn(reasons, match.result ?? "")
-      ? reasons[match.result!]
-      : "Lý do kết thúc chưa được đồng bộ.";
+    !aborted &&
+    (match.status === "INTERRUPTED" || match.result === "SERVER_RESTART");
+  const title = aborted
+    ? "Ván bị hủy"
+    : interrupted
+      ? "Ván bị gián đoạn"
+      : match.winner
+        ? player
+          ? match.winner === role
+            ? "Bạn thắng!"
+            : "Bạn thua"
+          : match.winner === "red"
+            ? "Đỏ thắng"
+            : "Đen thắng"
+        : draws.has(match.result ?? "")
+          ? "Hoà"
+          : "Kết quả ván cờ";
+  const reason = aborted
+    ? "Ván được hủy trước nước đi đầu tiên."
+    : interrupted
+      ? "Máy chủ đã khởi động lại."
+      : Object.hasOwn(reasons, match.result ?? "")
+        ? reasons[match.result!]
+        : "Lý do kết thúc chưa được đồng bộ.";
   const content = (
     <>
       <h2 id={`${id}-title`}>{title}</h2>
       <div id={`${id}-reason`}>
         <p>{reason}</p>
-        {interrupted && <p>Ván cờ không được tính kết quả.</p>}
+        {(interrupted || aborted) && <p>Ván cờ không được tính kết quả.</p>}
       </div>
     </>
   );

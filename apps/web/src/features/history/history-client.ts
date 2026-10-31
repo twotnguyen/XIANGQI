@@ -83,7 +83,12 @@ const draws = [
   "DRAW_AGREEMENT",
   "PERPETUAL_CHECK",
 ];
-const interruptions = ["BOTH_OFFLINE", "SERVER_RESTART", "AI_UNAVAILABLE"];
+const interruptions = [
+  "BOTH_OFFLINE",
+  "SERVER_RESTART",
+  "AI_UNAVAILABLE",
+  "ABORTED",
+];
 function item(v: unknown): HistoryItem {
   const preliminary = v as Record<string, unknown>;
   const r = object(v, [
@@ -138,7 +143,8 @@ function item(v: unknown): HistoryItem {
     (result.kind === "INTERRUPTED" &&
       interruptions.includes(result.reason as string) &&
       result.countsForWdl === false &&
-      result.label === "Bị gián đoạn") ||
+      result.label ===
+        (result.reason === "ABORTED" ? "Ván bị hủy" : "Bị gián đoạn")) ||
     (r.type === "AI" &&
       result.kind === "ABANDONED" &&
       result.reason === "AI_UNAVAILABLE" &&

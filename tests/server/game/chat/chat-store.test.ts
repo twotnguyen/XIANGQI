@@ -85,6 +85,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("supports WAITING self private chat and never writes legacy messages or raw receipt/outbox bodies", async () => {
       const f = await fixture();

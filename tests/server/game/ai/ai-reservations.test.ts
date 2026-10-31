@@ -62,6 +62,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("installs additive AI columns and private forced-RLS lease metadata", async () => {
       const columns = (

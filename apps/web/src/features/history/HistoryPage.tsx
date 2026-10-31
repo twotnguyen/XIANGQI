@@ -34,6 +34,7 @@ const reasons: Record<string, string> = {
   SERVER_RESTART: "Máy chủ khởi động lại",
   AI_UNAVAILABLE: "Máy cờ gặp sự cố",
   INACTIVITY: "Không phản hồi quá lâu",
+  ABORTED: "Hủy trước nước đầu tiên",
 };
 const dateTime = new Intl.DateTimeFormat("vi-VN", {
   year: "numeric",
@@ -75,13 +76,16 @@ const HistoryRow = memo(function HistoryRow({
           <p className="xq-history-excluded">Không tính thắng/thua/hòa</p>
         )}
       </div>
-      <Button
-        variant="secondary"
-        onClick={() => onReplay(item.id)}
-        aria-label={`Xem lại ván với ${item.opponent.displayName}`}
-      >
-        Xem lại
-      </Button>
+      {/* Ván bị hủy chưa có nước đi nên không có Replay/FEN/PGN. */}
+      {item.result.reason !== "ABORTED" && (
+        <Button
+          variant="secondary"
+          onClick={() => onReplay(item.id)}
+          aria-label={`Xem lại ván với ${item.opponent.displayName}`}
+        >
+          Xem lại
+        </Button>
+      )}
     </li>
   );
 });

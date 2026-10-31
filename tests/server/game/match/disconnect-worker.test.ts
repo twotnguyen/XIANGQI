@@ -166,6 +166,7 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
   });
   afterAll(() => pool.end());
   it("ends at the SQL 60-second boundary, publishes atomically and never repeats", async () => {
@@ -365,6 +366,7 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
     const bad = [];
     for (let i = 0; i < 50; i++) {
       const s = await setup();

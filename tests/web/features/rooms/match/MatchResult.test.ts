@@ -137,6 +137,24 @@ it.each(["FINISHED", "INTERRUPTED"] as const)(
     ).toEqual(["Ở lại phòng", "Rời phòng"]);
   },
 );
+it.each(["red", "black", "spectator"] as const)(
+  'ABORTED is a neutral "Ván bị hủy" for %s without win/loss text (AC-YC5-RV-03)',
+  (role) => {
+    setup({ ...match("ABORTED", null), status: "INTERRUPTED" }, role);
+    expect(screen.getByRole("heading", { name: "Ván bị hủy" })).toBeTruthy();
+    expect(
+      screen.getByText("Ván được hủy trước nước đi đầu tiên."),
+    ).toBeTruthy();
+    expect(screen.queryByText("Máy chủ đã khởi động lại.")).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: /thắng|thua|hoà|gián đoạn/i }),
+    ).toBeNull();
+    if (role !== "spectator")
+      expect(
+        screen.getAllByRole("button").map((button) => button.textContent),
+      ).toEqual(["Ở lại phòng", "Rời phòng"]);
+  },
+);
 it("INTERRUPTED remains neutral even when its old reason suggests a win", () => {
   setup({ ...match("TIMEOUT"), status: "INTERRUPTED" });
   expect(

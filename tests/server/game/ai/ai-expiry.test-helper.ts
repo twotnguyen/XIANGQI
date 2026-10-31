@@ -49,6 +49,7 @@ export async function resetExpiry() {
   ])
     await apply(`supabase/migrations/202610110000${suffix}.sql`);
   await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+  await apply("supabase/migrations/20261103000005_match_aborted.sql");
 }
 export async function run<T>(
   actor: RoomActor,

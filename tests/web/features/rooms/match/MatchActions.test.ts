@@ -121,6 +121,28 @@ it("opens the existing danger confirmation with exact bold consequence and cance
   });
   expect(screen.queryByRole("dialog")).toBeNull();
 });
+it("shows Hủy ván only before the first move and sends match.abort after confirmation (AC-YC5-RV-03/04)", async () => {
+  const view = setup();
+  fireEvent.click(screen.getByRole("button", { name: "Hủy ván" }));
+  const dialog = screen.getByRole("dialog", { name: "Hủy ván?" });
+  expect(document.activeElement).toBe(
+    within(dialog).getByRole("button", { name: "Giữ ván" }),
+  );
+  expect(view.props.onAction).not.toHaveBeenCalled();
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole("button", { name: "Hủy ván" })),
+  );
+  expect(view.props.onAction).toHaveBeenCalledExactlyOnceWith({
+    type: "match.abort",
+    payload: { matchId: match.id, matchVersion: 3 },
+  });
+  cleanup();
+  setup({
+    match: { ...match, lastMove: { from: 54, to: 45, eventVersion: 1 } },
+  });
+  expect(screen.queryByRole("button", { name: "Hủy ván" })).toBeNull();
+  expect(screen.getByRole("button", { name: "Đầu hàng" })).toBeTruthy();
+});
 it("cancelling confirmation never resigns and new authoritative versions are used at confirmation", async () => {
   const view = setup();
   fireEvent.click(screen.getByRole("button", { name: "Đầu hàng" }));

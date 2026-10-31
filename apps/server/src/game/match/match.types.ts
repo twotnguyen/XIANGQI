@@ -36,7 +36,8 @@ export type MatchOutcome = {
     | "DISCONNECT"
     | "DRAW_AGREEMENT"
     | "SERVER_RESTART"
-    | "INACTIVITY";
+    | "INACTIVITY"
+    | "ABORTED";
   winner: Side | null;
 };
 export type MatchView = {

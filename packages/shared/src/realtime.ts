@@ -100,6 +100,7 @@ export interface RoomSnapshot extends RoomStateSnapshot {
  * - `room.start`: Host bắt đầu đếm 3-2-1 khi đối thủ đã sẵn sàng.
  * - `match.move`: Đi một nước cờ (từ ô `from` đến ô `to`).
  * - `match.resign`: Đầu hàng.
+ * - `match.abort`: Hủy ván khi chưa có nước đi (kết quả trung tính ABORTED).
  * - `match.still-here`: Xác nhận "Tôi còn đây" trong ván không giới hạn.
  * - `match.draw.*`: Xin hòa, rút đề nghị hòa, chấp nhận hoặc từ chối hòa.
  * - `media.sharing`: Thay đổi phạm vi chia sẻ camera/micro.
@@ -118,6 +119,10 @@ export type RoomAction =
     }
   | {
       type: "match.resign";
+      payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.abort";
       payload: { matchId: string; matchVersion: number };
     }
   | {
@@ -169,6 +174,7 @@ export type RealtimeErrorCode =
   | "MATCH_NOT_YOUR_TURN"
   | "MATCH_ILLEGAL_MOVE"
   | "MATCH_TIME_EXPIRED"
+  | "MATCH_ABORT_NOT_ALLOWED"
   | "MATCH_ID_MISMATCH"
   | "MATCH_PLAYER_REQUIRED"
   | "MATCH_READ_ONLY"

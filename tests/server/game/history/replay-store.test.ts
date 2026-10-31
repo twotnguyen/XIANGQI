@@ -162,6 +162,7 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
   });
   afterAll(() => pool.end());
   it("returns only effective canonical branch for both player colors, omits private IDs and discarded moves", async () => {

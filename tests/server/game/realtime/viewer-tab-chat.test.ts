@@ -168,6 +168,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("new viewer tab supersedes old chat including replay; old reconnect/restart cannot steal but explicit takeover never grants game authority", async () => {
       const f = await fixture(),

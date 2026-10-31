@@ -83,6 +83,10 @@ export function fixture() {
       applied: true,
       match,
     })),
+    abort: vi.fn(async (): Promise<MatchCommandResult> => ({
+      applied: true,
+      match,
+    })),
     current: vi.fn(async (client: PoolClient, roomId: string) => {
       const currentId = (
         await client.query<{ current_match_id: string | null }>(

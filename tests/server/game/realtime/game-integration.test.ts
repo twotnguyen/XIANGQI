@@ -242,6 +242,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("starts with both verified members then commits actual red/black moves and replays one receipt", async () => {
       const f = await fixture(),
@@ -589,6 +590,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("commits media.revoke-user with each takeover, drops it on rollback, and orders revokes by room version", async () => {
       const f = await fixture();

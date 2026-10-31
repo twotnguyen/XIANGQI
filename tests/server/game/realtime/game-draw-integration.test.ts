@@ -239,6 +239,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("commits one durable offer through replay, rejects command ID reuse, keeps canonical lastMove through withdrawal", async () => {
       const f = await fixture(),

@@ -233,6 +233,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
       app = await createApp(
         ["http://localhost:5173"],
         [HistoryModule.forRoot(history, replay)],

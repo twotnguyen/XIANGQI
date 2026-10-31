@@ -161,6 +161,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
     });
     it("commits canonical masked messages and metadata ACK; uppercase command UUID deduplicates", async () => {
       const f = await fixture(),

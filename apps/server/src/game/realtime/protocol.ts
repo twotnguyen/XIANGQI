@@ -117,7 +117,9 @@ export function parseCommand(value: unknown): RoomCommand {
       },
     };
   else if (
-    (action.type === "match.resign" || action.type === "match.still-here") &&
+    (action.type === "match.resign" ||
+      action.type === "match.abort" ||
+      action.type === "match.still-here") &&
     Object.keys(payload).every((key) =>
       ["matchId", "matchVersion"].includes(key),
     ) &&

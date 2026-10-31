@@ -151,7 +151,7 @@ describe("application session capability handshake", () => {
 });
 
 function matchCommand(
-  type: "match.move" | "match.resign",
+  type: "match.move" | "match.resign" | "match.abort",
   overrides: Record<string, unknown> = {},
 ) {
   return {
@@ -169,7 +169,7 @@ function matchCommand(
     },
   };
 }
-describe.each(["match.move", "match.resign"] as const)(
+describe.each(["match.move", "match.resign", "match.abort"] as const)(
   "match identity protocol %s",
   (type) => {
     it.each([0, Number.MAX_SAFE_INTEGER])(

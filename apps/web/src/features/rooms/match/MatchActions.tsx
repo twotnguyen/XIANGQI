@@ -7,6 +7,7 @@ export type MatchAction = Extract<
   {
     type:
       | "match.resign"
+      | "match.abort"
       | "match.still-here"
       | "match.draw.offer"
       | "match.draw.withdraw"
@@ -50,7 +51,7 @@ export function MatchActions({
     inFlight = useRef(false);
   const [pending, setPending] = useState(false),
     [notice, setNotice] = useState(""),
-    [confirm, setConfirm] = useState<string | null>(null),
+    [confirm, setConfirm] = useState<"resign" | "abort" | null>(null),
     [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const offers = active ? (draw?.offers ?? []) : [];
   const clockKey = offers.length
@@ -149,10 +150,21 @@ export function MatchActions({
           type="button"
           className="xq-button xq-button-danger"
           disabled={!canAct || working}
-          onClick={() => setConfirm(match.id)}
+          onClick={() => setConfirm("resign")}
         >
           Đầu hàng
         </button>
+        {/* Hủy ván chỉ khi chưa có nước đi nào; máy chủ kiểm lại dưới khóa. */}
+        {match.lastMove === null && (
+          <button
+            type="button"
+            className="xq-button xq-button-secondary"
+            disabled={!canAct || working}
+            onClick={() => setConfirm("abort")}
+          >
+            Hủy ván
+          </button>
+        )}
         <button
           type="button"
           className="xq-button xq-button-secondary"
@@ -294,20 +306,39 @@ export function MatchActions({
       })}
       <fieldset className="match-actions__confirmation" disabled={working}>
         <Dialog
-          open={confirm === match.id && canAct}
+          open={confirm === "resign" && canAct}
           onClose={() => {
             if (!inFlight.current && !busy) setConfirm(null);
           }}
           title="Đầu hàng?"
           danger
           onConfirm={() => {
-            if (confirm === match.id)
+            if (confirm === "resign")
               void send({ type: "match.resign", payload });
           }}
           confirmLabel="Đầu hàng"
         >
           <p>
             <strong>Bạn sẽ thua ván này ngay lập tức.</strong>
+          </p>
+        </Dialog>
+        <Dialog
+          open={confirm === "abort" && canAct}
+          onClose={() => {
+            if (!inFlight.current && !busy) setConfirm(null);
+          }}
+          title="Hủy ván?"
+          danger
+          onConfirm={() => {
+            if (confirm === "abort")
+              void send({ type: "match.abort", payload });
+          }}
+          confirmLabel="Hủy ván"
+          cancelLabel="Giữ ván"
+        >
+          <p>
+            Ván kết thúc ngay, không ai thắng hay thua và không cần đối thủ đồng
+            ý. Chỉ hủy được khi chưa có nước đi nào.
           </p>
         </Dialog>
       </fieldset>

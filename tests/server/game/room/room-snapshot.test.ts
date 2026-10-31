@@ -73,6 +73,7 @@ describe.skipIf(!databaseUrl)("room snapshot", () => {
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
     await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
   });
 
   it("returns seats, online presence and spectators in one snapshot", async () => {

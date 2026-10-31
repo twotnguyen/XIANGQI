@@ -31,6 +31,7 @@ const messages = {
   MATCH_NOT_YOUR_TURN: "Chưa đến lượt bạn.",
   MATCH_ILLEGAL_MOVE: "Nước đi không hợp lệ.",
   MATCH_TIME_EXPIRED: "Thời gian suy nghĩ đã hết.",
+  MATCH_ABORT_NOT_ALLOWED: "Chỉ hủy được ván khi chưa có nước đi.",
   MATCH_ID_MISMATCH: "Ván trong phòng đã thay đổi.",
   MATCH_PLAYER_REQUIRED: "Chỉ người chơi được điều khiển ván.",
   MATCH_READ_ONLY: "Tab này chỉ theo dõi ván.",
@@ -336,6 +337,9 @@ export class GameRooms implements RoomCollaborator {
             matchScope,
             command.action.payload,
           );
+          break;
+        case "match.abort":
+          result = await this.matches.abort(matchScope, command.action.payload);
           break;
         case "match.still-here":
           result = await this.matches.stillHere(

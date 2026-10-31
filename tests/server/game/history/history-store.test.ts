@@ -137,6 +137,7 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
   });
   afterAll(() => pool.end());
   it("returns only own terminal matches from both colors; outsiders and active games are absent", async () => {
@@ -159,6 +160,27 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     });
     expect(page.items[1]!.result.kind).toBe("WIN");
     expect(JSON.stringify(page)).not.toContain(b.userId);
+  });
+  it('lists an aborted match as a neutral "Ván bị hủy" outside W/D/L and Elo (AC-YC5-RV-06)', async () => {
+    const a = await member("A"),
+      b = await member("B");
+    const id = await game(a, b, {
+      status: "INTERRUPTED",
+      reason: "ABORTED",
+      winner: null,
+    });
+    const page = await run(a, (s) => store.list(s));
+    expect(page.items).toHaveLength(1);
+    expect(page.items[0]).toMatchObject({
+      id,
+      eloDelta: null,
+      result: {
+        kind: "INTERRUPTED",
+        reason: "ABORTED",
+        label: "Ván bị hủy",
+        countsForWdl: false,
+      },
+    });
   });
   it("filters canonical Casual and AI, projects difficulty, and keeps neutral results outside WDL", async () => {
     const a = await member("A"),

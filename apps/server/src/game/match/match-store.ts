@@ -6,6 +6,7 @@ import {
   type Position,
 } from "@xiangqi/xiangqi-core";
 import type { PoolClient } from "pg";
+import type { Side } from "@xiangqi/xiangqi-core";
 import {
   type MatchCommandResult,
   type MatchOutcome,
@@ -357,6 +358,16 @@ export class MatchStore extends MatchDrawStore {
       positions: [...history, next],
       lastMove,
     });
+    if (!outcome) {
+      // Đề nghị hòa còn chờ kết thúc cùng giao dịch với nước đi; phiên bản ván tăng theo từng đề nghị.
+      const afterOffers = await this.closeDrawOffersOnMove(scope, {
+        matchId: row.id,
+      });
+      if (afterOffers) {
+        this.historyCache.delete(row.id);
+        result = afterOffers;
+      }
+    }
     return { applied: true, match: result };
   }
   /**
@@ -365,6 +376,41 @@ export class MatchStore extends MatchDrawStore {
   async resign(
     scope: MatchScope,
     input: { matchId: string; matchVersion: number },
+  ): Promise<MatchCommandResult> {
+    return this.playerEnding(scope, input, (side) => ({
+      reason: "RESIGN",
+      winner: opposite(side),
+    }));
+  }
+  /**
+   * Hủy ván khi chưa có nước đi nào (YC5 mục 17.2): kết quả trung tính ABORTED, chỉ ván online tự tạo/Đánh Thường.
+   */
+  async abort(
+    scope: MatchScope,
+    input: { matchId: string; matchVersion: number },
+  ): Promise<MatchCommandResult> {
+    return this.playerEnding(
+      scope,
+      input,
+      () => ({ reason: "ABORTED", winner: null }),
+      (row) =>
+        Number(row.ply) === 0 && row.mode === "ONLINE"
+          ? null
+          : {
+              code: "MATCH_ABORT_NOT_ALLOWED",
+              message: "Chỉ hủy được ván khi chưa có nước đi.",
+            },
+    );
+  }
+  /**
+   * Khung chung cho lệnh người chơi kết thúc ván (đầu hàng, hủy): kiểm hạn/phiên bản trước, hết giờ thì bên hết giờ thua.
+   */
+  private async playerEnding(
+    scope: MatchScope,
+    input: { matchId: string; matchVersion: number },
+    normal: (side: Side) => MatchOutcome,
+    refuse: (row: MatchRow) => { code: string; message: string } | null = () =>
+      null,
   ): Promise<MatchCommandResult> {
     const { room, row, side, history, match } = await this.context(
       scope,
@@ -381,24 +427,25 @@ export class MatchStore extends MatchDrawStore {
       history.at(-1)!,
     );
     if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
+    const at = this.now();
+    const checked = this.checkTime(match, at);
+    validClock(checked.clock);
+    if (checked.expired && checked.expired !== match.turn) corrupt();
+    // Hết giờ thắng lệnh bị từ chối; lệnh không hợp lệ (đã có nước) báo trước lỗi phiên bản cũ.
+    const refused = checked.expired ? null : refuse(row);
+    if (refused) return this.denied(match, refused.code, refused.message);
     if (match.version !== input.matchVersion)
       return this.denied(
         match,
         "MATCH_VERSION_CONFLICT",
         "Thế cờ đã thay đổi.",
       );
-    const at = this.now();
-    const checked = this.checkTime(match, at);
-    validClock(checked.clock);
-    if (checked.expired && checked.expired !== match.turn) corrupt();
-    const outcome: MatchOutcome = {
-      reason: checked.expired
-        ? match.inactivity
-          ? "INACTIVITY"
-          : "TIMEOUT"
-        : "RESIGN",
-      winner: opposite(checked.expired ?? side),
-    };
+    const outcome: MatchOutcome = checked.expired
+      ? {
+          reason: match.inactivity ? "INACTIVITY" : "TIMEOUT",
+          winner: opposite(checked.expired),
+        }
+      : normal(side);
     return {
       applied: !checked.expired,
       match: await this.end(

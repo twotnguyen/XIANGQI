@@ -78,6 +78,7 @@ describe.skipIf(!databaseUrl)("side swap offers", () => {
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
     await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
   });
   it("proposes, accepts, swaps seats and resets ready", async () => {

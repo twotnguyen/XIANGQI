@@ -201,7 +201,7 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
     expect(result.error).toBeUndefined();
     expect(f.matchStore.move).not.toHaveBeenCalled();
   });
-  it.each(["match.move", "match.resign"] as const)(
+  it.each(["match.move", "match.resign", "match.abort"] as const)(
     "delegates %s with same client, identity, match identity/version and lock proof",
     async (type) => {
       const f = fixture(),
@@ -217,7 +217,11 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
       );
       const result = await f.adapter.execute(f.client, f.identity, command),
         method =
-          type === "match.move" ? f.matchStore.move : f.matchStore.resign;
+          type === "match.move"
+            ? f.matchStore.move
+            : type === "match.abort"
+              ? f.matchStore.abort
+              : f.matchStore.resign;
       expect(method).toHaveBeenCalledWith(
         {
           client: f.client,

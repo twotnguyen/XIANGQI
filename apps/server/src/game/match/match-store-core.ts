@@ -93,6 +93,7 @@ export function storedOutcome(value: unknown): MatchOutcome | null {
       "DRAW_AGREEMENT",
       "SERVER_RESTART",
       "INACTIVITY",
+      "ABORTED",
     ].includes(String(value.reason)) ||
     !(
       value.winner === null ||
@@ -608,7 +609,9 @@ export class MatchStoreCore {
     const updated: MatchRow = {
       ...row,
       version: String(version),
-      status: outcome.reason === "SERVER_RESTART" ? "INTERRUPTED" : "FINISHED",
+      status: ["SERVER_RESTART", "ABORTED"].includes(outcome.reason)
+        ? "INTERRUPTED"
+        : "FINISHED",
       outcome: dbOutcome(outcome),
       ended_at: at,
       clock: validClock(clock),
