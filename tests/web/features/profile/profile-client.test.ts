@@ -14,6 +14,25 @@ function fail(code: string, status = 400) {
   } as Response;
 }
 describe("profile client", () => {
+  it("only accepts bounded numeric cooldown days in an error", async () => {
+    for (const days of [6, 0, 8, "6", "private-upstream"]) {
+      const client = createProfileClient(
+        vi
+          .fn()
+          .mockResolvedValue({
+            ok: false,
+            status: 429,
+            json: async () => ({
+              code: "USERNAME_CHANGE_LIMITED",
+              retryAfterDays: days,
+            }),
+          } as Response),
+      );
+      await expect(client.changeUsernameRequest()).rejects.toMatchObject({
+        retryAfterDays: days === 6 ? 6 : undefined,
+      });
+    }
+  });
   it("reads username, email and display name", async () => {
     const fetch = vi.fn().mockResolvedValue(
       ok({

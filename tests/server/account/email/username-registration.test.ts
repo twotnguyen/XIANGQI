@@ -77,6 +77,7 @@ describe.skipIf(!databaseUrl)("username registration without email", () => {
     await apply(
       "supabase/migrations/20261029000001_username_account_email.sql",
     );
+    await apply("supabase/migrations/20261103000002_yc1_account_rules.sql");
   });
   afterAll(() => pool.end());
 

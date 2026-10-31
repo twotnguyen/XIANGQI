@@ -4,6 +4,17 @@ import { readSessionCookie } from "../session/cookies.js";
 const DEVICE_COOKIE = "xiangqi_device";
 const DEVICE_TOKEN = /^[A-Za-z0-9_-]{43}$/;
 
+export function readDeviceEnforcement(
+  env: Record<string, string | undefined>,
+): boolean {
+  const setting = env.SESSION_DEVICE_ENFORCEMENT_ENABLED;
+  if (setting === undefined || setting === "")
+    return env.NODE_ENV === "production";
+  if (setting !== "true" && setting !== "false")
+    throw new Error("Invalid session device configuration");
+  return setting === "true";
+}
+
 /**
  * Lấy mã thiết bị từ cookie; trình duyệt chưa có thì cấp mã mới.
  * `fresh` = true thì caller phải ghi lại cookie cho phản hồi.

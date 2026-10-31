@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { navigate } from "../../shared/navigation/navigation.js";
-import { Button, TextField } from "../../shared/ui/primitives.js";
+import { Button, Tabs, TextField } from "../../shared/ui/primitives.js";
 import { AuthShell } from "./AuthShell.js";
 import { UsernameRecoveryPanel } from "./UsernameRecoveryPanel.js";
 import {
@@ -11,7 +11,7 @@ import {
 } from "./password-recovery.js";
 
 const recoveryUnavailable =
-  "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu.";
+  "Tài khoản không có email đã xác minh nên không thể khôi phục mật khẩu.";
 
 function sendError(error: unknown) {
   if (error instanceof PasswordRequestError)
@@ -22,6 +22,8 @@ function sendError(error: unknown) {
         return "Tên đăng nhập gồm 3–20 ký tự chữ, số hoặc dấu gạch dưới.";
       case "PASSWORD_RATE_LIMITED":
         return "Bạn đã yêu cầu quá nhiều lần. Vui lòng thử lại sau.";
+      case "PASSWORD_OTP_LIMITED":
+        return "Bạn đã yêu cầu quá nhiều mã, vui lòng thử lại sau";
       case "PASSWORD_PROVIDER_ERROR":
         return "Không gửi được mã, vui lòng thử lại sau.";
     }
@@ -29,13 +31,43 @@ function sendError(error: unknown) {
 }
 
 /**
- * Bước 1 khôi phục mật khẩu: nhập tên đăng nhập để nhận mã OTP qua Gmail đã xác minh.
+ * Chọn khôi phục mật khẩu hoặc tìm Username bằng hai mục đích OTP riêng biệt.
  */
 export function ForgotPasswordPage() {
+  return (
+    <AuthShell slogan="“Kỳ đạo tương phùng, tương đối kiến diện”" features={[]}>
+      <h1 className="form-title">Khôi phục tài khoản</h1>
+      <Tabs
+        label="Khôi phục tài khoản"
+        defaultId={
+          new URLSearchParams(window.location.search).get("tab") === "username"
+            ? "username"
+            : "password"
+        }
+        items={[
+          {
+            id: "password",
+            label: "Quên mật khẩu",
+            content: <PasswordRecoveryForm />,
+          },
+          {
+            id: "username",
+            label: "Quên tên đăng nhập",
+            content: <UsernameRecoveryPanel />,
+          },
+        ]}
+      />
+      <p className="reg-foot">
+        <NavigationLink href="/login">Quay lại đăng nhập</NavigationLink>
+      </p>
+    </AuthShell>
+  );
+}
+
+function PasswordRecoveryForm() {
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [forUsername, setForUsername] = useState(false);
   const sending = useRef(false);
   const generation = useRef(0);
   const errorRegion = useRef<HTMLDivElement>(null);
@@ -54,11 +86,6 @@ export function ForgotPasswordPage() {
     sending.current = false;
     setBusy(false);
     setError("");
-  }
-
-  function chooseMode(usernameRecovery: boolean) {
-    invalidate();
-    setForUsername(usernameRecovery);
   }
 
   async function submit(event: FormEvent) {
@@ -91,32 +118,13 @@ export function ForgotPasswordPage() {
     }
   }
 
-  if (forUsername)
-    return (
-      <AuthShell
-        slogan="“Kỳ đạo tương phùng, tương đối kiến diện”"
-        features={[]}
-      >
-        <UsernameRecoveryPanel />
-        <p className="reg-foot">
-          <button
-            type="button"
-            className="link-forgot"
-            onClick={() => chooseMode(false)}
-          >
-            Quay lại quên mật khẩu
-          </button>
-        </p>
-      </AuthShell>
-    );
-
   return (
-    <AuthShell slogan="“Kỳ đạo tương phùng, tương đối kiến diện”" features={[]}>
-      <h1 className="form-title" id="forgot-title">
+    <>
+      <h2 className="form-title" id="forgot-title">
         Quên mật khẩu
-      </h1>
+      </h2>
       <p className="form-subtitle">
-        Nhập tên đăng nhập. Mã OTP sẽ được gửi tới Gmail đã xác minh của tài
+        Nhập tên đăng nhập. Mã OTP sẽ được gửi tới email đã xác minh của tài
         khoản.
       </p>
       {error && (
@@ -156,20 +164,6 @@ export function ForgotPasswordPage() {
           Gửi mã OTP
         </Button>
       </form>
-      <p className="reg-foot">
-        <button
-          type="button"
-          className="link-forgot"
-          onClick={() => chooseMode(true)}
-        >
-          Quên tên đăng nhập?
-        </button>
-      </p>
-      <p className="reg-foot">
-        <NavigationLink href="/login" onClick={invalidate}>
-          Quay lại đăng nhập
-        </NavigationLink>
-      </p>
-    </AuthShell>
+    </>
   );
 }

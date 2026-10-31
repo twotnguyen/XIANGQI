@@ -1,28 +1,17 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { containsForbiddenName } from "@xiangqi/shared";
+import { isValidDisplayName, normalizeDisplayName } from "@xiangqi/shared";
 import { Dialog, TextField } from "../../shared/ui/primitives.js";
 import { GuestRequestError, useSession } from "./SessionProvider.js";
 
 const invalidNameMessage = "Tên Khách cần 2–20 ký tự hợp lệ";
 
 /**
- * Chuẩn hóa và kiểm tra tên như máy chủ (NFC, cắt khoảng trắng, 2–20 ký tự, không ký tự điều khiển, không từ cấm).
+ * Dùng cùng chuẩn hóa và quy tắc tên với máy chủ, giới hạn Khách ở 20 ký tự.
  * Trả về null nếu tên không hợp lệ để không gửi yêu cầu vô ích.
  */
 function checkGuestName(raw: string): string | null {
-  const name = raw.normalize("NFC").trim();
-  const length = Array.from(name).length;
-  if (length < 2 || length > 20) return null;
-  if (
-    Array.from(name).some(
-      (c) =>
-        c.charCodeAt(0) < 32 ||
-        (c.charCodeAt(0) >= 127 && c.charCodeAt(0) <= 159),
-    )
-  )
-    return null;
-  if (containsForbiddenName(name)) return null;
-  return name;
+  const name = normalizeDisplayName(raw);
+  return isValidDisplayName(name, 20) ? name : null;
 }
 
 /**

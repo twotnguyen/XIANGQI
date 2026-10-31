@@ -40,6 +40,48 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+it("shows the server cooldown days without displaying an upstream message", async () => {
+  fetchMock.mockResolvedValue(
+    json(
+      {
+        code: "USERNAME_CHANGE_LIMITED",
+        retryAfterDays: 6,
+        message: "private-upstream",
+      },
+      429,
+    ),
+  );
+  const user = userEvent.setup();
+  render(
+    createElement(UsernameSettings, {
+      client: createProfileClient(fetchMock),
+      username: "kythu",
+      onChanged: vi.fn(),
+    }),
+  );
+  await user.click(screen.getByRole("button", { name: "Đổi tên đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Gửi mã xác minh" }));
+  expect((await screen.findByRole("alert")).textContent).toContain("6 ngày");
+  expect(screen.queryByText("private-upstream")).toBeNull();
+});
+
+it("explains the shared hourly OTP limit separately from the resend cooldown", async () => {
+  fetchMock.mockResolvedValue(json({ code: "USERNAME_OTP_LIMITED" }, 429));
+  const user = userEvent.setup();
+  render(
+    createElement(UsernameSettings, {
+      client: createProfileClient(fetchMock),
+      username: "kythu",
+      onChanged: vi.fn(),
+    }),
+  );
+  await user.click(screen.getByRole("button", { name: "Đổi tên đăng nhập" }));
+  await user.click(screen.getByRole("button", { name: "Gửi mã xác minh" }));
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "yêu cầu quá nhiều mã",
+  );
+});
+
 it("asks for the OTP first and keeps the name step on a taken name without a new code", async () => {
   const user = userEvent.setup();
   const onChanged = vi.fn();

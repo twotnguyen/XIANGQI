@@ -121,8 +121,8 @@ export class PostgresLoginStore implements LoginStore {
   /**
    * Lưu bản ghi phiên ứng dụng mới (app session) vào bảng xiangqi_auth.app_sessions.
    */
-  saveSession(session: AppSession) {
-    return saveAppSession(this.client ?? this.pool, session);
+  saveSession(session: AppSession, revokeOthers = true) {
+    return saveAppSession(this.client ?? this.pool, session, revokeOthers);
   }
   /**
    * Device hash of the user's newest session, or undefined when the user has never logged in.
@@ -172,9 +172,10 @@ export class PostgresLoginStore implements LoginStore {
 export async function saveAppSession(
   client: Pick<PoolClient, "query">,
   session: AppSession,
+  revokeOthers = true,
 ): Promise<void> {
   await client.query(
-    `WITH revoked AS (UPDATE xiangqi_auth.app_sessions SET revoked_at=$3 WHERE user_id=$2 AND revoked_at IS NULL)
+    `WITH revoked AS (UPDATE xiangqi_auth.app_sessions SET revoked_at=$3 WHERE user_id=$2 AND revoked_at IS NULL AND $7::boolean)
      INSERT INTO xiangqi_auth.app_sessions(token_hash,user_id,created_at,expires_at,remember,device_hash) VALUES($1,$2,$3,$4,$5,$6)`,
     [
       session.tokenHash,
@@ -183,6 +184,7 @@ export async function saveAppSession(
       session.expiresAt,
       session.remember,
       session.deviceHash,
+      revokeOthers,
     ],
   );
 }

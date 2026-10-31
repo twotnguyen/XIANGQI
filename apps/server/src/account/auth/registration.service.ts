@@ -8,7 +8,10 @@ import {
   type Draft,
   type Session,
 } from "./registration.types.js";
-import { containsForbiddenName } from "@xiangqi/shared";
+import {
+  containsForbiddenName,
+  passwordValidationMessage,
+} from "@xiangqi/shared";
 function hashToken(value: unknown): string {
   if (typeof value !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(value))
     throw new RegistrationError(
@@ -416,13 +419,13 @@ export function validateCredentials(value: unknown): Credentials {
     );
   const input = value as Partial<Credentials>;
   const username = validateUsername(input.username);
-  if (typeof input.password !== "string" || input.password.length < 8)
-    throw new RegistrationError(
-      "PASSWORD_INVALID",
-      "Mật khẩu cần tối thiểu 8 ký tự",
-      400,
-      1,
-    );
+  const passwordError =
+    typeof input.password === "string"
+      ? passwordValidationMessage(input.password)
+      : "Mật khẩu cần tối thiểu 8 ký tự";
+  if (passwordError)
+    throw new RegistrationError("PASSWORD_INVALID", passwordError, 400, 1);
+  const password = input.password as string;
   if (input.password !== input.passwordConfirmation)
     throw new RegistrationError(
       "PASSWORD_MISMATCH",
@@ -432,7 +435,7 @@ export function validateCredentials(value: unknown): Credentials {
     );
   return {
     username,
-    password: input.password,
-    passwordConfirmation: input.passwordConfirmation,
+    password,
+    passwordConfirmation: password,
   };
 }

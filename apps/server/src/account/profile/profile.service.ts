@@ -1,12 +1,12 @@
 import {
   containsForbiddenName,
+  normalizeDisplayName,
+  isValidDisplayName,
   isThemeChoice,
   type ThemeChoice,
 } from "@xiangqi/shared";
 import type { ProfileStore } from "./profile.store.js";
 import {
-  DISPLAY_NAME_MAX,
-  DISPLAY_NAME_MIN,
   ProfileError,
   type ProfileLocation,
   type ProfileView,
@@ -29,18 +29,11 @@ function themeInput(input: unknown): ThemeChoice {
 function displayName(input: unknown): string {
   if (typeof input !== "string")
     fail("PROFILE_NAME_INVALID", "Tên hiển thị cần 2–30 ký tự", 400);
-  const name = (input as string).normalize("NFC").trim();
-  const length = Array.from(name).length;
-  if (length < DISPLAY_NAME_MIN || length > DISPLAY_NAME_MAX)
-    fail("PROFILE_NAME_INVALID", "Tên hiển thị cần 2–30 ký tự", 400);
-  if (
-    Array.from(name).some((character) => {
-      const code = character.codePointAt(0)!;
-      return code < 32 || (code >= 127 && code <= 159);
-    }) ||
-    containsForbiddenName(name)
-  )
+  const name = normalizeDisplayName(input);
+  if (containsForbiddenName(name))
     fail("PROFILE_NAME_FORBIDDEN", "Tên hiển thị chứa từ không được phép", 400);
+  if (!isValidDisplayName(name))
+    fail("PROFILE_NAME_INVALID", "Tên hiển thị cần 2–30 ký tự hợp lệ", 400);
   return name;
 }
 /**

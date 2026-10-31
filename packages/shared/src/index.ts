@@ -14,6 +14,11 @@ export interface HealthStatus {
 }
 
 export { containsForbiddenName, normalizeName } from "./auth-filter.js";
+export {
+  normalizeDisplayName,
+  isValidDisplayName,
+  passwordValidationMessage,
+} from "./auth-validation.js";
 export type * from "./realtime.js";
 export { maskForbiddenChat } from "./chat-filter.js";
 export type * from "./chat.js";

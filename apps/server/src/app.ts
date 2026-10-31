@@ -10,6 +10,8 @@ import {
 } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { PrivateBodyFilter } from "./core/private-body-filter.js";
+import { tabSessionMiddlewareFor } from "./account/session/tab-session.js";
+import { readDeviceEnforcement } from "./account/login/device.js";
 import type { RequestLimiter } from "./core/request-limit.js";
 import type { HealthStatus } from "@xiangqi/shared";
 import { Server } from "socket.io";
@@ -133,6 +135,7 @@ export async function createApp(
     { logger: false },
   );
   app.useGlobalFilters(new PrivateBodyFilter(app.getHttpAdapter()));
+  app.use(tabSessionMiddlewareFor(readDeviceEnforcement(process.env)));
   if (requestLimiter) app.use(requestLimiter.middleware);
   app.use(
     (request: IncomingMessage, response: ServerResponse, next: () => void) => {

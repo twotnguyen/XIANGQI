@@ -108,12 +108,47 @@ export class SupabaseAuth implements AuthProvider {
           "Mật khẩu không đúng, vui lòng xác thực lại",
           401,
         );
-      if (!response.ok)
+      if (!response.ok) {
+        if (
+          [400, 422].includes(response.status) &&
+          body &&
+          typeof body === "object" &&
+          "password" in body &&
+          (path === "signup" ||
+            path === "admin/users" ||
+            path.startsWith("admin/users/"))
+        ) {
+          const problem: unknown = await response.json().catch(() => null);
+          const code =
+            problem && typeof problem === "object"
+              ? "error_code" in problem
+                ? problem.error_code
+                : "code" in problem
+                  ? problem.code
+                  : null
+              : null;
+          if (
+            typeof code === "string" &&
+            [
+              "weak_password",
+              "password_too_long",
+              "password_too_short",
+              "same_password",
+            ].includes(code)
+          )
+            throw new RegistrationError(
+              "PASSWORD_PROVIDER_REJECTED",
+              "Dịch vụ xác thực không chấp nhận mật khẩu này, vui lòng chọn mật khẩu khác",
+              400,
+              1,
+            );
+        }
         throw new RegistrationError(
           "AUTH_PROVIDER_ERROR",
           "Dịch vụ xác thực chưa thể xử lý yêu cầu",
           503,
         );
+      }
       const value: unknown = await response.json();
       if (!value || typeof value !== "object" || Array.isArray(value))
         throw new Error();
@@ -144,7 +179,12 @@ export class SupabaseAuth implements AuthProvider {
       )
         throw new Error();
       return user.id;
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof RegistrationError &&
+        error.code === "PASSWORD_PROVIDER_REJECTED"
+      )
+        throw error;
       throw new RegistrationError(
         "OTP_SEND_FAILED",
         "Không gửi được mã, vui lòng thử lại sau",

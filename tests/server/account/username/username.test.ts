@@ -127,6 +127,40 @@ describe.skipIf(!databaseUrl)("username change and recovery", () => {
     expect(u.messages.length).toBe(messagesBefore);
   });
 
+  it("keeps the seven-day rename cooldown across requests and rechecks it before finalize", async () => {
+    const user = await member();
+    const { changeToken } = await verifiedCapability(user);
+    expect((await finalize(user, changeToken, nameOf(user, "c"))).status).toBe(
+      200,
+    );
+    const sent = u.messages.length;
+    const tooSoon = await requestCode(user);
+    expect(tooSoon.status).toBe(429);
+    expect(await tooSoon.json()).toMatchObject({
+      code: "USERNAME_CHANGE_LIMITED",
+      retryAfterDays: 7,
+    });
+    expect(u.messages).toHaveLength(sent);
+    u.advance(7 * 24 * 3600_000 - 1);
+    expect((await requestCode(user)).status).toBe(429);
+    u.advance(1);
+    const next = await verifiedCapability(user);
+    await pool.query(
+      "UPDATE public.profiles SET username_changed_at=username_changed_at+interval '7 days' WHERE user_id=$1",
+      [user.userId],
+    );
+    expect((await finalize(user, next.changeToken, user.username)).status).toBe(
+      429,
+    );
+    await pool.query(
+      "UPDATE public.profiles SET username_changed_at=username_changed_at-interval '7 days' WHERE user_id=$1",
+      [user.userId],
+    );
+    expect((await finalize(user, next.changeToken, user.username)).status).toBe(
+      200,
+    );
+  });
+
   it("consumes the capability on success so the same token cannot rename twice", async () => {
     const user = await member();
     const { changeToken } = await verifiedCapability(user);

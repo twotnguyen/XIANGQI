@@ -30,6 +30,7 @@ export class SessionService {
     public readonly store: LoginStore,
     private readonly auth: SessionTokenVerifier,
     private readonly now = () => new Date(),
+    private readonly enforceDevice = true,
   ) {}
   private seats: SessionSeatPort | null = null;
   /** Gắn port ghế phòng khi game runtime khởi động. */
@@ -54,7 +55,9 @@ export class SessionService {
     const createdAt = this.now();
     const deviceHash = deviceToken === null ? null : tokenHash(deviceToken);
     // A login from another device ends the seats held by the previous device (same device keeps them).
-    const previous = await store.latestDeviceHash(userId);
+    const previous = this.enforceDevice
+      ? await store.latestDeviceHash(userId)
+      : undefined;
     const appSession = randomBytes(32).toString("base64url");
     const expiresAt = new Date(
       createdAt.getTime() + (remember ? 30 * 24 : 12) * 3600000,
@@ -76,7 +79,7 @@ export class SessionService {
         confirmed: true,
         replacement,
       }));
-    else await store.saveSession(replacement);
+    else await store.saveSession(replacement, this.enforceDevice);
     return { appSession, expiresAt: expiresAt.toISOString(), displaced };
   }
   private async currentSession(sessionHash: string): Promise<ValidatedSession> {

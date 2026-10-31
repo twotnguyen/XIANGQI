@@ -24,6 +24,43 @@ afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
 });
+it("checks new-password limits in UTF-8 bytes before advancing", async () => {
+  const request = vi.fn().mockResolvedValue(reply({ step: 2 }));
+  vi.stubGlobal("fetch", request);
+  render(createElement(RegistrationPage, { onRegistered: vi.fn() }));
+  fireEvent.change(screen.getByLabelText("Tên đăng nhập (Username)"), {
+    target: { value: "KyThu" },
+  });
+  for (const password of ["🙂".repeat(7), "🙂".repeat(19)]) {
+    fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
+      target: { value: password },
+    });
+    fireEvent.change(screen.getByLabelText("Xác nhận mật khẩu"), {
+      target: { value: password },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+    );
+    expect(request).not.toHaveBeenCalled();
+  }
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Mật khẩu tối đa 72 byte (chữ có dấu tính nhiều byte)",
+  );
+  const password = "🙂".repeat(18);
+  fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
+    target: { value: password },
+  });
+  fireEvent.change(screen.getByLabelText("Xác nhận mật khẩu"), {
+    target: { value: password },
+  });
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole("button", { name: "Tiếp tục: Nhập Email" }),
+    );
+  });
+  expect(screen.getByLabelText("Email chính chủ")).toBeTruthy();
+});
+
 it("offers Google only on the account step while keeping the email wizard unchanged", async () => {
   vi.stubGlobal(
     "fetch",

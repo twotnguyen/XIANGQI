@@ -180,11 +180,29 @@ export class GoogleController {
    */
   @Get("onboarding")
   @Header("Cache-Control", "no-store")
-  onboarding(@Req() request: IncomingMessage) {
+  onboarding(
+    @Req() request: IncomingMessage,
+    @Res({ passthrough: true }) response: ServerResponse,
+  ) {
     return this.respond(async () => {
       const result = await this.config.service.onboarding(
         cookie(request, "xiangqi_google_onboarding"),
       );
+      for (const name of [
+        "xiangqi_google_onboarding",
+        "xiangqi_google_refresh",
+      ] as const) {
+        const value = readGoogleCookie(request.headers.cookie, name);
+        if (value)
+          writeGoogleCookie(
+            response,
+            name,
+            value,
+            result.expiresAt,
+            this.config.secure,
+            this.config.now(),
+          );
+      }
       return {
         kind: "pending" as const,
         expiresAt: result.expiresAt,

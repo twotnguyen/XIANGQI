@@ -18,6 +18,7 @@ const emailErrors: Record<string, string> = {
   EMAIL_OTP_EXPIRED: "Mã đã hết hạn. Hãy gửi mã mới.",
   EMAIL_OTP_LOCKED: "Nhập sai quá nhiều lần. Hãy gửi mã mới.",
   EMAIL_RESEND_LIMITED: "Vui lòng đợi trước khi gửi lại mã.",
+  EMAIL_OTP_LIMITED: "Bạn đã yêu cầu quá nhiều mã, vui lòng thử lại sau",
 };
 
 function emailError(error: unknown) {

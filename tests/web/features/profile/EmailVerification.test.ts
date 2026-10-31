@@ -52,6 +52,38 @@ function submitOtp() {
   );
 }
 
+it("explains the shared OTP send limit in the profile email form", async () => {
+  const api = client();
+  api.sendEmail.mockRejectedValueOnce(
+    new ProfileRequestError("EMAIL_OTP_LIMITED", 429),
+  );
+  const user = userEvent.setup();
+  const reloadEmailStatus = vi.fn();
+  render(
+    createElement(EmailVerification, {
+      client: asProfileClient(api),
+      emailStatus: {
+        status: "ready",
+        email: null,
+        emailVerified: false,
+        pendingEmail: null,
+        expiresAt: null,
+        resendAt: null,
+      },
+      reloadEmailStatus,
+    }),
+  );
+  await user.type(
+    screen.getByLabelText("Email nhận mã"),
+    "member@example.invalid",
+  );
+  await user.click(screen.getByRole("button", { name: "Gửi mã xác minh" }));
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "yêu cầu quá nhiều mã",
+  );
+  expect(reloadEmailStatus).not.toHaveBeenCalled();
+});
+
 it("shows a banner for a pending email and links to settings", () => {
   render(
     createElement(EmailStatusBanner, {

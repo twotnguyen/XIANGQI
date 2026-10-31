@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { passwordValidationMessage } from "@xiangqi/shared";
 import { Button, Notice, TextField } from "../../shared/ui/primitives.js";
 import { ProfileRequestError, type ProfileClient } from "./profile-client.js";
 
@@ -11,6 +12,8 @@ function changeError(error: unknown) {
         return "Mật khẩu hiện tại không đúng.";
       case "PASSWORD_INVALID_INPUT":
         return passwordRule;
+      case "PASSWORD_PROVIDER_REJECTED":
+        return "Dịch vụ xác thực không chấp nhận mật khẩu này, vui lòng chọn mật khẩu khác";
       case "PASSWORD_RATE_LIMITED":
         return "Bạn thử quá nhiều lần. Vui lòng thử lại sau.";
       case "PASSWORD_PROVIDER_ERROR":
@@ -45,8 +48,9 @@ export function PasswordChangeForm({ client }: { client: ProfileClient }) {
       setError("Nhập mật khẩu hiện tại.");
       return;
     }
-    if (next.length < 8 || next !== confirmation) {
-      setError(passwordRule);
+    const invalidPassword = passwordValidationMessage(next);
+    if (invalidPassword || next !== confirmation) {
+      setError(invalidPassword || passwordRule);
       return;
     }
     sending.current = true;
@@ -100,7 +104,7 @@ export function PasswordChangeForm({ client }: { client: ProfileClient }) {
       />
       <TextField
         label="Mật khẩu mới"
-        helper="Ít nhất 8 ký tự. Mật khẩu được giữ nguyên, không tự cắt khoảng trắng."
+        helper="8–72 byte (chữ có dấu tính nhiều byte). Mật khẩu được giữ nguyên, không tự cắt khoảng trắng."
         id="password-new"
         type={type}
         autoComplete="new-password"

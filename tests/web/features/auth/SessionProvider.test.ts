@@ -12,7 +12,7 @@ import {
 } from "./SessionProvider.test-helper.js";
 
 afterEach(resetSession);
-it("bootstraps from HttpOnly cookies without storage or token fields in public state", async () => {
+it("bootstraps from HttpOnly cookies with only a public tab selector in storage and no tokens in public state", async () => {
   const storage = vi.spyOn(Storage.prototype, "setItem");
   const request = vi.fn().mockResolvedValue(reply(session));
   vi.stubGlobal("fetch", request);
@@ -30,7 +30,11 @@ it("bootstraps from HttpOnly cookies without storage or token fields in public s
     expiresAt: session.expiresAt,
     remember: true,
   });
-  expect(storage).not.toHaveBeenCalled();
+  expect(
+    storage.mock.calls.every(
+      ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
+    ),
+  ).toBe(true);
 });
 it("accepts login in memory and sends credentials only to relative backend paths", async () => {
   const request = vi

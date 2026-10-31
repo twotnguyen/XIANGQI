@@ -6,8 +6,13 @@ import {
   type ReactNode,
 } from "react";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
-import { containsForbiddenName } from "@xiangqi/shared";
+import { tabSessionFetch } from "../../shared/tab-session.js";
+import {
+  containsForbiddenName,
+  passwordValidationMessage,
+} from "@xiangqi/shared";
 import { AuthShell, type AuthFeature } from "./AuthShell.js";
+import { Button, Dialog } from "../../shared/ui/primitives.js";
 
 export interface RegistrationSession {
   access_token: string;
@@ -30,6 +35,8 @@ interface ApiError {
 const messages: Record<string, string> = {
   USERNAME_TAKEN: "Username đã có người dùng. Vui lòng chọn Username khác.",
   USERNAME_FORBIDDEN: "Username chứa từ không được phép sử dụng.",
+  PASSWORD_PROVIDER_REJECTED:
+    "Dịch vụ xác thực không chấp nhận mật khẩu này, vui lòng chọn mật khẩu khác",
   EMAIL_TAKEN: "Email này đã được đăng ký",
   OTP_INVALID: "Mã OTP không đúng. Vui lòng kiểm tra lại mã trong Email.",
   OTP_EXPIRED: "Mã OTP đã hết hạn. Vui lòng gửi lại mã mới.",
@@ -53,7 +60,7 @@ async function post<T>(
   signal?: AbortSignal,
 ): Promise<T> {
   const base = getApiBaseUrl();
-  const response = await fetch(`${base}/auth/register/${path}`, {
+  const response = await tabSessionFetch(`${base}/auth/register/${path}`, {
     method: "POST",
     credentials: "include",
     redirect: "error",
@@ -117,6 +124,7 @@ export function RegistrationPage({
   const [complete, setComplete] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmSkip, setConfirmSkip] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const focusAfterResend = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -128,8 +136,8 @@ export function RegistrationPage({
     ? messages.USERNAME_FORBIDDEN
     : !/^[a-zA-Z0-9_]{3,20}$/.test(username)
       ? "Username gồm 3–20 chữ cái, số hoặc dấu gạch dưới."
-      : password.length < 8
-        ? "Mật khẩu cần ít nhất 8 ký tự."
+      : passwordValidationMessage(password)
+        ? passwordValidationMessage(password)
         : password !== passwordConfirmation
           ? "Xác nhận mật khẩu chưa khớp."
           : "";
@@ -474,9 +482,12 @@ export function RegistrationPage({
                         setError("");
                       }}
                       autoComplete="new-password"
-                      placeholder="Tối thiểu 8 ký tự"
+                      placeholder="8–72 byte"
                       aria-describedby="password-help registration-error"
-                      aria-invalid={attempted && password.length < 8}
+                      aria-invalid={
+                        attempted &&
+                        Boolean(passwordValidationMessage(password))
+                      }
                       disabled={busy}
                     />
                     <button
@@ -494,7 +505,7 @@ export function RegistrationPage({
                     </button>
                   </div>
                   <p id="password-help" className="field-hint">
-                    Ít nhất 8 ký tự.
+                    Từ 8 đến 72 byte (chữ có dấu tính nhiều byte).
                   </p>
                 </div>
                 <div className="field-row">
@@ -717,7 +728,7 @@ export function RegistrationPage({
                   className="btn-skip"
                   type="button"
                   disabled={busy}
-                  onClick={() => void skip()}
+                  onClick={() => setConfirmSkip(true)}
                 >
                   Bỏ qua email, vào Sảnh
                 </button>
@@ -758,6 +769,37 @@ export function RegistrationPage({
             </div>
           </>
         )}
+        <Dialog
+          open={confirmSkip}
+          title="Bỏ qua xác minh email?"
+          onClose={() => setConfirmSkip(false)}
+          cancelLabel="Đóng"
+        >
+          <p>
+            Nếu không có email đã xác minh, bạn sẽ không thể khôi phục mật khẩu.
+          </p>
+          <div className="xq-stack">
+            <Button
+              onClick={() => {
+                setConfirmSkip(false);
+                void skip();
+              }}
+            >
+              Vẫn bỏ qua
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setConfirmSkip(false);
+                setStep(2);
+                setError("");
+                setAttempted(false);
+              }}
+            >
+              Thêm email
+            </Button>
+          </div>
+        </Dialog>
       </div>
       <div className="reg-foot">
         <span>Đã có tài khoản kỳ đài?</span>

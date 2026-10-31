@@ -56,9 +56,22 @@ it("stores the request in memory and moves to the OTP step on send", async () =>
   expect(window.location.search).toBe("");
 });
 
-it("shows the exact unavailable message when no verified Gmail exists", async () => {
+it("reports the shared OTP limit without claiming an email was sent", async () => {
+  fetchMock.mockResolvedValueOnce(json({ code: "PASSWORD_OTP_LIMITED" }, 429));
+  const user = userEvent.setup();
+  render(createElement(ForgotPasswordPage));
+  await user.type(screen.getByLabelText(/Tên đăng nhập/), "alice");
+  await user.click(screen.getByRole("button", { name: "Gửi mã OTP" }));
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "yêu cầu quá nhiều mã",
+  );
+  expect(getPendingRecovery()).toBeNull();
+  expect(window.location.pathname).toBe("/forgot-password");
+});
+
+it("shows the exact unavailable message when no verified email exists", async () => {
   const message =
-    "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu.";
+    "Tài khoản không có email đã xác minh nên không thể khôi phục mật khẩu.";
   fetchMock.mockResolvedValueOnce(
     json({ code: "PASSWORD_RECOVERY_UNAVAILABLE", message }, 400),
   );
@@ -95,6 +108,38 @@ it("verifies OTP, resets the password and clears recovery context without app lo
   expect(getPendingRecovery()).toBeNull();
 });
 
+it("keeps the verified grant when Auth certainly rejects the new password", async () => {
+  setPendingRecovery({ requestId, expiresAt: future(), resendAt: past() });
+  fetchMock
+    .mockResolvedValueOnce(json({ resetToken: "b".repeat(43) }))
+    .mockResolvedValueOnce(json({ code: "PASSWORD_PROVIDER_REJECTED" }, 400))
+    .mockResolvedValueOnce(json({ code: "PASSWORD_INVALID_INPUT" }, 400));
+  const user = userEvent.setup();
+  render(createElement(ResetPasswordPage));
+  await user.type(screen.getByLabelText("Mã OTP"), "123456");
+  await user.click(screen.getByRole("button", { name: "Xác minh mã" }));
+  await user.type(screen.getByLabelText("Mật khẩu mới"), "newsecret");
+  await user.type(screen.getByLabelText("Nhập lại mật khẩu mới"), "newsecret");
+  await user.click(screen.getByRole("button", { name: "Đặt lại mật khẩu" }));
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "chọn mật khẩu khác",
+  );
+  expect(getPendingRecovery()?.requestId).toBe(requestId);
+  await user.clear(screen.getByLabelText("Mật khẩu mới"));
+  await user.type(screen.getByLabelText("Mật khẩu mới"), "othersecret");
+  await user.clear(screen.getByLabelText("Nhập lại mật khẩu mới"));
+  await user.type(
+    screen.getByLabelText("Nhập lại mật khẩu mới"),
+    "othersecret",
+  );
+  await user.click(screen.getByRole("button", { name: "Đặt lại mật khẩu" }));
+  expect(fetchMock).toHaveBeenCalledTimes(3);
+  expect(JSON.parse(fetchMock.mock.calls[2]![1].body)).toMatchObject({
+    resetToken: "b".repeat(43),
+    newPassword: "othersecret",
+  });
+});
+
 it("rejects a mismatched new password before calling the server", async () => {
   setPendingRecovery({ requestId, expiresAt: future(), resendAt: past() });
   fetchMock.mockResolvedValueOnce(json({ resetToken: "b".repeat(43) }));
@@ -109,6 +154,65 @@ it("rejects a mismatched new password before calling the server", async () => {
   expect((await screen.findByRole("alert")).textContent).toContain(
     "khớp với xác nhận",
   );
+});
+
+it("rejects passwords over seventy-two bytes during reset", async () => {
+  setPendingRecovery({ requestId, expiresAt: future(), resendAt: past() });
+  fetchMock.mockResolvedValueOnce(json({ resetToken: "b".repeat(43) }));
+  const user = userEvent.setup();
+  render(createElement(ResetPasswordPage));
+  await user.type(screen.getByLabelText("Mã OTP"), "123456");
+  await user.click(screen.getByRole("button", { name: "Xác minh mã" }));
+  const password = "🙂".repeat(19);
+  fireEvent.change(screen.getByLabelText("Mật khẩu mới"), {
+    target: { value: password },
+  });
+  fireEvent.change(screen.getByLabelText("Nhập lại mật khẩu mới"), {
+    target: { value: password },
+  });
+  await user.click(screen.getByRole("button", { name: "Đặt lại mật khẩu" }));
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Mật khẩu tối đa 72 byte (chữ có dấu tính nhiều byte)",
+  );
+});
+
+it("checks Unicode password limits when changing a password", async () => {
+  const changePassword = vi.fn().mockResolvedValue(undefined);
+  render(
+    createElement(PasswordChangeForm, { client: { changePassword } as never }),
+  );
+  fireEvent.change(screen.getByLabelText("Mật khẩu hiện tại"), {
+    target: { value: "oldsecret" },
+  });
+  for (const password of ["🙂".repeat(7), "🙂".repeat(19)]) {
+    fireEvent.change(screen.getByLabelText("Mật khẩu mới"), {
+      target: { value: password },
+    });
+    fireEvent.change(screen.getByLabelText("Nhập lại mật khẩu mới"), {
+      target: { value: password },
+    });
+    fireEvent.submit(screen.getByRole("form", { name: "Đổi mật khẩu" }));
+    expect(changePassword).not.toHaveBeenCalled();
+  }
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Mật khẩu tối đa 72 byte (chữ có dấu tính nhiều byte)",
+  );
+  const password = "🙂".repeat(18);
+  fireEvent.change(screen.getByLabelText("Mật khẩu mới"), {
+    target: { value: password },
+  });
+  fireEvent.change(screen.getByLabelText("Nhập lại mật khẩu mới"), {
+    target: { value: password },
+  });
+  await act(async () => {
+    fireEvent.submit(screen.getByRole("form", { name: "Đổi mật khẩu" }));
+  });
+  expect(changePassword).toHaveBeenCalledWith({
+    currentPassword: "oldsecret",
+    newPassword: password,
+    passwordConfirmation: password,
+  });
 });
 
 it("submits the change-password body and rejects a mismatched confirmation", async () => {
@@ -182,7 +286,7 @@ it("ignores a password request after switching to username recovery", async () =
     target: { value: "alice" },
   });
   fireEvent.submit(screen.getByRole("form", { name: "Quên mật khẩu" }));
-  fireEvent.click(screen.getByRole("button", { name: "Quên tên đăng nhập?" }));
+  fireEvent.click(screen.getByRole("tab", { name: "Quên tên đăng nhập" }));
   await act(async () => {
     finish(json({ requestId, expiresAt: future(), resendAt: past() }));
   });

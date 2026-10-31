@@ -20,7 +20,14 @@ import { UsernameError } from "./username.types.js";
 function fail(error: unknown): never {
   if (error instanceof UsernameError || error instanceof RegistrationError)
     throw new HttpException(
-      { code: error.code, message: error.message },
+      {
+        code: error.code,
+        message: error.message,
+        ...(error instanceof UsernameError &&
+        error.code === "USERNAME_CHANGE_LIMITED"
+          ? { retryAfterDays: error.retryAfterDays }
+          : {}),
+      },
       error.status,
     );
   throw new HttpException(

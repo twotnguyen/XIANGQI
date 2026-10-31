@@ -43,7 +43,7 @@ export interface LoginStore {
   resetAttempts(username: string): Promise<void>;
   accountByUsername(username: string): Promise<LoginAccount | null>;
   accountById(userId: string): Promise<LoginAccount | null>;
-  saveSession(session: AppSession): Promise<void>;
+  saveSession(session: AppSession, revokeOthers?: boolean): Promise<void>;
   latestDeviceHash(userId: string): Promise<string | null | undefined>;
   sessionByHash(hash: string): Promise<SessionAccount | null>;
   revokeSession(hash: string, time: Date): Promise<void>;
