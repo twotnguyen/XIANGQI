@@ -520,7 +520,8 @@ Các quyết định dưới đây sửa hoặc làm rõ mục 4, 6, 10, 11, 13,
 
 - Đã có mã và ca kiểm viết sẵn: bỏ chữ “Gmail” (RV-08), xóa bộ đếm khóa khi reset (RV-02), cột `username_changed_at` và cooldown 7 ngày (RV-03), quota OTP chung theo email và UUID (RV-06), kiểm ký tự tên và mật khẩu (tối thiểu 8 ký tự, tối đa 72 byte) ở `packages/shared/src/auth-validation.ts` (RV-07, RV-09), Dialog bỏ qua email (RV-04), tab Quên tên đăng nhập (RV-05), phiên theo tab và cờ `SESSION_DEVICE_ENFORCEMENT_ENABLED` (RV-10, RV-11). Chi tiết ở [login.md](../engineering/server/login.md) và [ui.md](../engineering/web/ui.md).
 - Mã thiết bị (RV-01) là cookie `xiangqi_device`: mỗi hồ sơ trình duyệt hoặc cửa sổ ẩn danh có kho cookie riêng nên đã là một thiết bị theo định nghĩa PO; luật bật mặc định khi `NODE_ENV=production` (`render.yaml`). Placeholder email ở bước đăng ký đã đổi từ Gmail sang `ten@example.com` (RV-08).
-- Chưa làm hoặc chưa kiểm: hai migration `20261103000002`, `20261103000003` chưa áp DB; chưa chạy test, chưa kiểm dịch vụ thật, chưa xem giao diện.
+- Hai migration `20261103000002`, `20261103000003` đã áp lên Cloud ngày 31/10/2026 theo yêu cầu PO (từng file bằng `psql` rồi `migration repair --status applied`; `db push` vẫn bị chặn bởi lịch sử tháng 9); sổ khớp local, đã kiểm cột/bảng mới tồn tại, chưa kiểm hành vi ứng dụng trên Cloud.
+- Chưa làm hoặc chưa kiểm: chưa chạy test, chưa kiểm dịch vụ thật, chưa xem giao diện.
 - Bằng chứng ở mục 17 và 19 là trước các thay đổi này; không kế thừa PASS.
 - Luật thiết bị tắt/bật: theo mã nguồn hiện tại mã thiết bị (`xiangqi_device`) và phiên đều lưu bằng cookie dùng chung cả hồ sơ trình duyệt, nên chỉ tắt luật xử thua thì hai tab vẫn ghi đè phiên của nhau; cần tách phiên theo tab (mục 20.3).
 
