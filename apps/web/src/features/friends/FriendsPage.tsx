@@ -6,6 +6,7 @@ import {
 } from "../../shared/navigation/navigation.js";
 import {
   Button,
+  Dialog,
   EmptyState,
   ErrorState,
   Notice,
@@ -63,6 +64,10 @@ export function FriendsPage({
     null,
   );
   const [searching, setSearching] = useState(false);
+  const [unfriendTarget, setUnfriendTarget] = useState<{
+    userId: string;
+    displayName: string;
+  } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [tabVersion, setTabVersion] = useState(0);
@@ -118,7 +123,12 @@ export function FriendsPage({
 
   async function search() {
     const q = query.trim();
-    if (!q || busy) return;
+    if (busy) return;
+    if (q.length < 3) {
+      setResults(null);
+      setNotice("Nhập ít nhất 3 ký tự để tìm bạn");
+      return;
+    }
     const seq = ++searchSeq.current;
     setSearching(true);
     setNotice("");
@@ -401,11 +411,7 @@ export function FriendsPage({
                           <Button
                             variant="danger"
                             loading={busy === `unfriend-${friend.userId}`}
-                            onClick={() =>
-                              void act(`unfriend-${friend.userId}`, () =>
-                                client.unfriend(friend.userId),
-                              )
-                            }
+                            onClick={() => setUnfriendTarget(friend)}
                           >
                             Hủy kết bạn
                           </Button>
@@ -538,6 +544,27 @@ export function FriendsPage({
           onClose={() => setChatWith(null)}
         />
       )}
+      <Dialog
+        open={unfriendTarget !== null}
+        onClose={() => setUnfriendTarget(null)}
+        title="Hủy kết bạn?"
+        cancelLabel="Giữ bạn bè"
+        confirmLabel="Xác nhận hủy kết bạn"
+        danger
+        onConfirm={() => {
+          const target = unfriendTarget;
+          setUnfriendTarget(null);
+          if (target)
+            void act(`unfriend-${target.userId}`, () =>
+              client.unfriend(target.userId),
+            );
+        }}
+      >
+        <p>
+          Bạn và {unfriendTarget?.displayName} sẽ không còn trong danh sách bạn
+          bè của nhau. Phía kia không nhận thông báo riêng.
+        </p>
+      </Dialog>
     </main>
   );
 }

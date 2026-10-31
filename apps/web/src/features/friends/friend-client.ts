@@ -130,6 +130,8 @@ export function friendErrorText(error: unknown): string {
     case "FRIEND_BUSY":
     case "ALREADY_SEATED":
       return "Bạn đang ở trong một ván/phòng khác.";
+    case "FRIEND_INVITE_RECIPIENT_FULL":
+      return "Người nhận đang có quá nhiều lời mời, vui lòng thử lại sau";
     case "FRIEND_INVITE_COOLDOWN":
       return "Bạn cần chờ hết 10 giây trước khi mời tiếp.";
     case "FRIEND_ROOM_FULL":
