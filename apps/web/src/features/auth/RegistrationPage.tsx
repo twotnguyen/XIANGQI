@@ -583,7 +583,7 @@ export function RegistrationPage({
                         setError("");
                       }}
                       autoComplete="email"
-                      placeholder="kythu@gmail.com"
+                      placeholder="ten@example.com"
                       aria-describedby="registration-email-help registration-error"
                       aria-invalid={Boolean(error)}
                       maxLength={254}
